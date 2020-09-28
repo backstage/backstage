@@ -88,6 +88,26 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 9376
+      name: port1
+    - protocol: TCP
+      port: 81
+      targetPort: 9377
+      name: port2
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dice-roller-lb
+  labels:
+    'backstage.io/kubernetes-id': dice-roller
+spec:
+  selector:
+    app: dice-roller
+  ports:
+    - port: 8765
+      targetPort: 9376
+  type: LoadBalancer
 
 ---
 apiVersion: v1

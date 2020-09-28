@@ -16,9 +16,6 @@ backend:
 proxy:
   '/circleci/api':
     target: https://circleci.com/api/v1.1
-    changeOrigin: true
-    pathRewrite:
-      '^/proxy/circleci/api/': '/'
     headers:
       Circle-Token:
         $secret:
@@ -30,6 +27,15 @@ proxy:
       Authorization:
         $secret:
           env: JENKINS_BASIC_AUTH_HEADER
+
+  '/travisci/api':
+    target: https://api.travis-ci.com
+    changeOrigin: true
+    headers:
+      Authorization:
+        $secret:
+          env: TRAVISCI_AUTH_TOKEN
+      travis-api-version: 3
 
 organization:
   name: Spotify

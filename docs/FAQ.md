@@ -86,7 +86,7 @@ well-known tech and a large flora of components.
 
 ### What technology does Backstage use?
 
-The code base is a large-scale React application that uses TypeScript. For
+The codebase is a large-scale React application that uses TypeScript. For
 [Phase 2](https://github.com/spotify/backstage#project-roadmap), we plan to use
 Node.js and GraphQL.
 
@@ -205,7 +205,7 @@ Please report sensitive security issues via Spotify's
 ### Does Backstage collect any information that is shared with Spotify?
 
 No. Backstage does not collect any telemetry from any third party using the
-platform. Spotify, and the open source community, does have access to
+platform. Spotify, and the open source community, do have access to
 [GitHub Insights](https://github.com/features/insights), which contains
 information such as contributors, commits, traffic, and dependencies. Backstage
 is an open platform, but you are in control of your own data. You control who

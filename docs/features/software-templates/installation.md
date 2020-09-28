@@ -240,7 +240,7 @@ scaffolder:
 
 You can configure who can see the new repositories that the scaffolder creates
 by specifying `visibility` option. Valid options are `public`, `private` and
-`internal`. `internal` options is for GitHub Enterprise clients, which means
+`internal`. `internal` option is for GitHub Enterprise clients, which means
 public within the organization.
 
 ### Running the Backend

@@ -8,10 +8,10 @@ Publishers are responsible for pushing and storing the templated skeleton after
 the values have been templated by the `Templater`. See
 [Create your own templater](./create-your-own-templater.md) for more info.
 
-They receive a directory or location where the templater has sucessfully run and
-is now ready to store somewhere. They also are given some other options which
-are sent from the frontend, such as the `storePath` which is a string of where
-the frontend thinks we should save this templated folder.
+They receive a directory or location where the templater has successfully run
+and is now ready to store somewhere. They also are given some other options
+which are sent from the frontend, such as the `storePath` which is a string of
+where the frontend thinks we should save this templated folder.
 
 Currently we provide the following `publishers`:
 
