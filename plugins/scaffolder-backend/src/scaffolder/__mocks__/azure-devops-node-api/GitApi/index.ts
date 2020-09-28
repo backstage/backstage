@@ -13,9 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export type RemoteProtocol =
-  | 'file'
-  | 'github'
-  | 'gitlab'
-  | 'gitlab/api'
-  | 'azure/api';
+
+export const mockGitApi = {
+  createRepository: jest.fn(),
+};
+
+export class GitApi {
+  constructor() {
+    return mockGitApi;
+  }
+}
