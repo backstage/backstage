@@ -1,0 +1,55 @@
+/*
+ * Copyright 2020 Spotify AB
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import React from 'react';
+import { Avatar, Box, Typography, Grid } from '@material-ui/core';
+import { Alert } from '../../types';
+import { getAlertNavigation } from '../../utils/alerts';
+import { useAlertInsightsSectionStyles as useStyles } from '../../utils/styles';
+import { useScroll } from '../../hooks';
+
+type AlertInsightsSectionHeaderProps = {
+  alert: Alert;
+  number: number;
+  title: string;
+  subtitle: string;
+};
+
+const AlertInsightsSectionHeader = ({
+  alert,
+  number,
+  title,
+  subtitle,
+}: AlertInsightsSectionHeaderProps) => {
+  const { ScrollAnchor } = useScroll(getAlertNavigation(alert, number));
+  const classes = useStyles();
+  return (
+    <Box position="relative" mb={3} textAlign="left">
+      <ScrollAnchor top={-20} behavior="smooth" />
+      <Grid container spacing={2}>
+        <Grid item>
+          <Avatar className={classes.button}>{number}</Avatar>
+        </Grid>
+        <Grid item>
+          <Typography variant="h5">{title}</Typography>
+          <Typography gutterBottom>{subtitle}</Typography>
+        </Grid>
+      </Grid>
+    </Box>
+  );
+};
+
+export default AlertInsightsSectionHeader;

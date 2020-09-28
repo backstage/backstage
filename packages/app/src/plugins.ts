@@ -34,3 +34,4 @@ export { plugin as ApiDocs } from '@backstage/plugin-api-docs';
 export { plugin as GithubPullRequests } from '@roadiehq/backstage-plugin-github-pull-requests';
 export { plugin as GcpProjects } from '@backstage/plugin-gcp-projects';
 export { plugin as Kubernetes } from '@backstage/plugin-kubernetes';
+export { plugin as CostInsights } from '@backstage/plugin-cost-insights';
