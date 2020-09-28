@@ -1,0 +1,37 @@
+name: Check Markdown files quality
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  check-all-files:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: documentation quality check
+        uses: errata-ai/vale-action@v1.3.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  check-changed-files:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: changed files
+        id: file_changes
+        uses: trilom/file-changes-action@v1.2.3
+
+      - name: documentation quality check of updated files
+        uses: errata-ai/vale-action@v1.3.0
+        with:
+          files: '${{ steps.file_changes.outputs.files_modified }}'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
