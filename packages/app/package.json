@@ -10,6 +10,7 @@
     "@backstage/plugin-api-docs": "^0.1.1-alpha.23",
     "@backstage/plugin-catalog": "^0.1.1-alpha.23",
     "@backstage/plugin-circleci": "^0.1.1-alpha.23",
+    "@backstage/plugin-cost-insights": "^0.1.1-alpha.23",
     "@backstage/plugin-explore": "^0.1.1-alpha.23",
     "@backstage/plugin-gcp-projects": "^0.1.1-alpha.23",
     "@backstage/plugin-github-actions": "^0.1.1-alpha.23",
