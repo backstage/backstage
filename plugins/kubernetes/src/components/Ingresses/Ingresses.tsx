@@ -16,29 +16,29 @@
 
 import React from 'react';
 import { Grid } from '@material-ui/core';
-import { V1ConfigMap } from '@kubernetes/client-node';
+import { ExtensionsV1beta1Ingress } from '@kubernetes/client-node';
 import { InfoCard, StructuredMetadataTable } from '@backstage/core';
 
-type ConfigMapsProps = {
-  configMaps: V1ConfigMap[];
+type IngressesProps = {
+  ingresses: ExtensionsV1beta1Ingress[];
   children?: React.ReactNode;
 };
 
-export const ConfigMaps = ({ configMaps }: ConfigMapsProps) => {
+export const Ingresses = ({ ingresses }: IngressesProps) => {
   return (
     <Grid container>
-      {configMaps.map((cm, i) => {
+      {ingresses.map((ingress, i) => {
         return (
           <Grid item key={i}>
             <InfoCard
-              title={cm.metadata?.name ?? 'un-named service'}
-              subheader="Config Map"
+              title={ingress.metadata?.name ?? 'un-named ingress'}
+              subheader="Ingress"
             >
               <div>
                 <StructuredMetadataTable
                   metadata={{
-                    immutable: `${cm.immutable === true}`,
-                    data: cm.data,
+                    backend: ingress.status?.loadBalancer?.ingress,
+                    rules: ingress.spec?.rules,
                   }}
                 />
               </div>

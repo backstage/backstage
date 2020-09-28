@@ -15,7 +15,13 @@
  */
 
 import { ClusterDetails } from '..';
-import { AppsV1Api, CoreV1Api, KubeConfig } from '@kubernetes/client-node';
+import {
+  AppsV1Api,
+  AutoscalingV1Api,
+  CoreV1Api,
+  KubeConfig,
+  NetworkingV1beta1Api,
+} from '@kubernetes/client-node';
 
 export class KubernetesClientProvider {
   private readonly coreClientMap: {
@@ -26,9 +32,19 @@ export class KubernetesClientProvider {
     [key: string]: AppsV1Api;
   };
 
+  private readonly autoscalingClientMap: {
+    [key: string]: AutoscalingV1Api;
+  };
+
+  private readonly networkingBeta1ClientMap: {
+    [key: string]: NetworkingV1beta1Api;
+  };
+
   constructor() {
     this.coreClientMap = {};
     this.appsClientMap = {};
+    this.autoscalingClientMap = {};
+    this.networkingBeta1ClientMap = {};
   }
 
   // visible for testing
@@ -90,6 +106,38 @@ export class KubernetesClientProvider {
     const client = kc.makeApiClient(AppsV1Api);
 
     this.appsClientMap[clientMapKey] = client;
+
+    return client;
+  }
+
+  getAutoscalingClientByClusterDetails(clusterDetails: ClusterDetails) {
+    const clientMapKey = clusterDetails.name;
+
+    if (this.autoscalingClientMap.hasOwnProperty(clientMapKey)) {
+      return this.autoscalingClientMap[clientMapKey];
+    }
+
+    const kc = this.getKubeConfig(clusterDetails);
+
+    const client = kc.makeApiClient(AutoscalingV1Api);
+
+    this.autoscalingClientMap[clientMapKey] = client;
+
+    return client;
+  }
+
+  getNetworkingBeta1Client(clusterDetails: ClusterDetails) {
+    const clientMapKey = clusterDetails.name;
+
+    if (this.networkingBeta1ClientMap.hasOwnProperty(clientMapKey)) {
+      return this.networkingBeta1ClientMap[clientMapKey];
+    }
+
+    const kc = this.getKubeConfig(clusterDetails);
+
+    const client = kc.makeApiClient(NetworkingV1beta1Api);
+
+    this.networkingBeta1ClientMap[clientMapKey] = client;
 
     return client;
   }

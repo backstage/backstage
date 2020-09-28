@@ -31,6 +31,8 @@ describe('KubernetesClientProvider', () => {
     const kubernetesClientProvider: any = {
       getCoreClientByClusterDetails: jest.fn(() => clientMock),
       getAppsClientByClusterDetails: jest.fn(() => clientMock),
+      getAutoscalingClientByClusterDetails: jest.fn(() => clientMock),
+      getNetworkingBeta1Client: jest.fn(() => clientMock),
     };
 
     const sut = new KubernetesClientBasedFetcher({
