@@ -31,6 +31,15 @@ proxy:
         $secret:
           env: JENKINS_BASIC_AUTH_HEADER
 
+  '/travisci/api':
+    target: https://api.travis-ci.com
+    changeOrigin: true
+    headers:
+      Authorization:
+        $secret:
+          env: TRAVISCI_AUTH_TOKEN
+      travis-api-version: 3
+
 organization:
   name: Spotify
 
