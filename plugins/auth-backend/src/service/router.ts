@@ -34,20 +34,20 @@ export interface RouterOptions {
   discovery: PluginEndpointDiscovery;
 }
 
-export async function createRouter(
-  options: RouterOptions,
-): Promise<express.Router> {
+export async function createRouter({
+  logger,
+  config,
+  discovery,
+  database,
+}: RouterOptions): Promise<express.Router> {
   const router = Router();
-  const logger = options.logger.child({ plugin: 'auth' });
 
-  const appUrl = options.config.getString('app.baseUrl');
-  const authUrl = await options.discovery.getExternalBaseUrl('auth');
+  const appUrl = config.getString('app.baseUrl');
+  const authUrl = await discovery.getExternalBaseUrl('auth');
 
   const keyDurationSeconds = 3600;
 
-  const keyStore = await DatabaseKeyStore.create({
-    database: options.database,
-  });
+  const keyStore = await DatabaseKeyStore.create({ database });
   const tokenIssuer = new TokenFactory({
     issuer: authUrl,
     keyStore,
@@ -59,7 +59,7 @@ export async function createRouter(
   router.use(express.urlencoded({ extended: false }));
   router.use(express.json());
 
-  const providersConfig = options.config.getConfig('auth.providers');
+  const providersConfig = config.getConfig('auth.providers');
   const providers = providersConfig.keys();
 
   for (const providerId of providers) {
@@ -70,6 +70,7 @@ export async function createRouter(
         config: providersConfig.getConfig(providerId),
         logger,
         tokenIssuer,
+        discovery,
       });
 
       const r = Router();
