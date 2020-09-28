@@ -31,6 +31,8 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.0.1
       - name: yarn install
         run: yarn install --frozen-lockfile
 
