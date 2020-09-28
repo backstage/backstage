@@ -34,7 +34,6 @@ const DEFAULT_OBJECTS = new Set<KubernetesObjectTypes>([
   'pods',
   'services',
   'configmaps',
-  'secrets',
   'deployments',
   'replicasets',
 ]);
