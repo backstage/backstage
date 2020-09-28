@@ -66,7 +66,7 @@ export type LocationProcessor = {
    *
    * @param error The error
    * @param location The location where the error occurred
-   * @param emit A sink for items resulting from this handilng
+   * @param emit A sink for items resulting from this handling
    * @returns Nothing
    */
   handleError?(
@@ -110,6 +110,4 @@ export type LocationProcessorResult =
   | LocationProcessorEntityResult
   | LocationProcessorErrorResult;
 
-export type LocationProcessorRead = (
-  location: LocationSpec,
-) => Promise<LocationProcessorResult>;
+export type LocationProcessorRead = (location: LocationSpec) => Promise<Buffer>;
