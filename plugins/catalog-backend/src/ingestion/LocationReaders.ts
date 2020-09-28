@@ -15,26 +15,28 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { Config, ConfigReader } from '@backstage/config';
 import {
   Entity,
   EntityPolicies,
   EntityPolicy,
   LocationSpec,
 } from '@backstage/catalog-model';
+import { Config, ConfigReader } from '@backstage/config';
 import { Logger } from 'winston';
+import { CatalogRulesEnforcer } from './CatalogRules';
 import { AnnotateLocationEntityProcessor } from './processors/AnnotateLocationEntityProcessor';
+import { ApiDefinitionAtLocationProcessor } from './processors/ApiDefinitionAtLocationProcessor';
+import { AzureApiReaderProcessor } from './processors/AzureApiReaderProcessor';
+import { BitbucketApiReaderProcessor } from './processors/BitbucketApiReaderProcessor';
 import { EntityPolicyProcessor } from './processors/EntityPolicyProcessor';
 import { FileReaderProcessor } from './processors/FileReaderProcessor';
 import { GithubReaderProcessor } from './processors/GithubReaderProcessor';
 import { GitlabApiReaderProcessor } from './processors/GitlabApiReaderProcessor';
 import { GitlabReaderProcessor } from './processors/GitlabReaderProcessor';
-import { BitbucketApiReaderProcessor } from './processors/BitbucketApiReaderProcessor';
-import { AzureApiReaderProcessor } from './processors/AzureApiReaderProcessor';
-import { UrlReaderProcessor } from './processors/UrlReaderProcessor';
 import { LocationRefProcessor } from './processors/LocationEntityProcessor';
-import { StaticLocationProcessor } from './processors/StaticLocationProcessor';
+import { PlaceholderProcessor } from './processors/PlaceholderProcessor';
 import * as result from './processors/results';
+import { StaticLocationProcessor } from './processors/StaticLocationProcessor';
 import {
   LocationProcessor,
   LocationProcessorDataResult,
@@ -44,10 +46,9 @@ import {
   LocationProcessorLocationResult,
   LocationProcessorResult,
 } from './processors/types';
+import { UrlReaderProcessor } from './processors/UrlReaderProcessor';
 import { YamlProcessor } from './processors/YamlProcessor';
 import { LocationReader, ReadLocationResult } from './types';
-import { CatalogRulesEnforcer } from './CatalogRules';
-import { ApiDefinitionAtLocationProcessor } from './processors/ApiDefinitionAtLocationProcessor';
 
 // The max amount of nesting depth of generated work items
 const MAX_DEPTH = 10;
@@ -86,6 +87,7 @@ export class LocationReaders implements LocationReader {
       new AzureApiReaderProcessor(config),
       new UrlReaderProcessor(),
       new YamlProcessor(),
+      PlaceholderProcessor.default(),
       new ApiDefinitionAtLocationProcessor(),
       new EntityPolicyProcessor(entityPolicy),
       new LocationRefProcessor(),
