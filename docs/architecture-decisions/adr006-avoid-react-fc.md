@@ -13,7 +13,7 @@ with next to no benefits in combination with a few downsides.
 The main reasons were:
 
 - **children props** were implicitly added
-- **Generic Type** were not supported on children
+- **Generic Type** was not supported on children
 
 Read more about the removal in
 [this PR](https://github.com/facebook/create-react-app/pull/8177).

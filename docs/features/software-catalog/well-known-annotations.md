@@ -57,7 +57,7 @@ spec:
 
 This annotation allows to fetch an API definition from another location, instead
 of wrapping the API definition inside the definition field. This allows to
-easitly consume existing API definition. The definition is fetched during
+easily consume existing API definition. The definition is fetched during
 ingestion by a processor and included in the entity. It is updated on every
 refresh. The annotation contains a location reference string that contains the
 location processor type and the target.
