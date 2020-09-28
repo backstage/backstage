@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const exec = require('child_process').execSync;
+const { execSync, spawnSync } = require('child_process');
 const path = require('path');
 
 const validMDFilesCommand = 'git ls-files | shx grep ".md"';
@@ -26,7 +26,7 @@ const inheritStdIo = {
 if (process.platform === 'win32') {
   try {
     // get list of all md files except in directories of gitignore.
-    let filesToLint = exec(validMDFilesCommand, {
+    let filesToLint = execSync(validMDFilesCommand, {
       stdio: ['ignore', 'pipe', 'inherit'],
     });
 
@@ -34,18 +34,17 @@ if (process.platform === 'win32') {
     filesToLint = filesToLint
       .toString()
       .split('\n')
-      .map(filepath => path.join(process.cwd(), filepath))
-      .join('\n');
+      .map(filepath => (filepath ? path.join(process.cwd(), filepath) : null))
+      .filter(Boolean);
 
-    // pass arguments
-    exec(`vale ${filesToLint}`, inheritStdIo);
+    spawnSync('vale', filesToLint, inheritStdIo);
   } catch (e) {
     process.exit(1);
   }
 } else {
   // use xargs
   try {
-    exec(`${validMDFilesCommand} | xargs vale`, inheritStdIo);
+    execSync(`${validMDFilesCommand} | xargs vale`, inheritStdIo);
   } catch (e) {
     process.exit(1);
   }
