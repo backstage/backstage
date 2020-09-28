@@ -52,6 +52,7 @@ interface GroupedResponses extends DeploymentTriple {
   ingresses: ExtensionsV1beta1Ingress[];
 }
 
+// TODO this could probably be a lodash groupBy
 const groupResponses = (fetchResponse: FetchResponse[]) => {
   return fetchResponse.reduce(
     (prev, next) => {
