@@ -1,5 +1,5 @@
 {
-  "name": "@zalando-sunrise/backstage",
+  "name": "root",
   "private": true,
   "engines": {
     "node": "12 || 14"

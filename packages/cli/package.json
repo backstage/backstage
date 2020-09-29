@@ -1,5 +1,5 @@
 {
-  "name": "@zalando-sunrise/backstage-cli",
+  "name": "@backstage/backstage-cli",
   "description": "CLI for developing Backstage plugins and apps",
   "version": "0.1.1-alpha.23",
   "private": false,
