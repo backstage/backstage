@@ -17,16 +17,20 @@
 import { createRouter } from './router';
 import * as winston from 'winston';
 import { ConfigReader } from '@backstage/config';
-import { loadBackendConfig } from '@backstage/backend-common';
+import {
+  loadBackendConfig,
+  SingleHostDiscovery,
+} from '@backstage/backend-common';
 
 describe('createRouter', () => {
   it('works', async () => {
     const logger = winston.createLogger();
     const config = ConfigReader.fromConfigs(await loadBackendConfig());
+    const discovery = SingleHostDiscovery.fromConfig(config);
     const router = await createRouter({
       config,
       logger,
-      pathPrefix: '/proxy',
+      discovery,
     });
     expect(router).toBeDefined();
   });

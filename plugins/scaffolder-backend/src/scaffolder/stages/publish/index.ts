@@ -16,4 +16,5 @@
 export * from './publishers';
 export * from './github';
 export * from './gitlab';
+export * from './azure';
 export * from './types';

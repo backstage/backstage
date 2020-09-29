@@ -7,7 +7,9 @@ An app to roll dice (it doesn't actually do that).
 ## Prerequisites
 
 - kubectl installed
-- Minikube installed
+- Minikube installed, with the following addons
+  - metrics-server
+  - ingress
 - jq installed
 - Backstage locally built and ready to run
 

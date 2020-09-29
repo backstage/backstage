@@ -67,7 +67,7 @@ be left out in its own yaml file because that's the default value there too),
 and name `pet-managers`.
 
 The entries in `implementsApis` are also references. In this case, none of them
-need to specify a kind since we know from the context that that's the only kind
+needs to specify a kind since we know from the context that that's the only kind
 that's supported here. The second entry specifies a namespace but the other ones
 don't, and in this context, the default is to refer to the same namespace as the
 originating entity (`external-systems` here). So the three references
@@ -79,7 +79,7 @@ there to exist three API kind entities in the catalog matching those references.
 
 This is a more verbose version of a reference, where each part of the
 kind-namespace-name triplet is expressed as a field in a structure. This format
-can be used where necessary, such as if either of the three elements contain
+can be used where necessary, such as if either of the three elements contains
 colons or forward slashes. Avoid using it where possible, since it is harder to
 read and write for humans.
 

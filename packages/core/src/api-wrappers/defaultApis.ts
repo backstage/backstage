@@ -44,6 +44,8 @@ import {
   createApiFactory,
   configApiRef,
   UrlPatternDiscovery,
+  samlAuthApiRef,
+  SamlAuth,
 } from '@backstage/core-api';
 
 export const defaultApis = [
@@ -131,5 +133,12 @@ export const defaultApis = [
     },
     factory: ({ discoveryApi, oauthRequestApi }) =>
       OAuth2.create({ discoveryApi, oauthRequestApi }),
+  }),
+  createApiFactory({
+    api: samlAuthApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+    },
+    factory: ({ discoveryApi }) => SamlAuth.create({ discoveryApi }),
   }),
 ];

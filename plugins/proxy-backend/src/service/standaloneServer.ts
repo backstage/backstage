@@ -17,6 +17,7 @@
 import {
   createServiceBuilder,
   loadBackendConfig,
+  SingleHostDiscovery,
 } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
@@ -37,10 +38,11 @@ export async function startStandaloneServer(
   logger.debug('Creating application...');
 
   const config = ConfigReader.fromConfigs(await loadBackendConfig());
+  const discovery = SingleHostDiscovery.fromConfig(config);
   const router = await createRouter({
     config,
     logger,
-    pathPrefix: '/proxy',
+    discovery,
   });
   const service = createServiceBuilder(module)
     .enableCors({ origin: 'http://localhost:3000' })

@@ -18,6 +18,7 @@ import express from 'express';
 import { Logger } from 'winston';
 import { TokenIssuer } from '../identity';
 import { Config } from '@backstage/config';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
 
 export type AuthProviderConfig = {
   /**
@@ -115,6 +116,7 @@ export type AuthProviderFactoryOptions = {
   config: Config;
   logger: Logger;
   tokenIssuer: TokenIssuer;
+  discovery: PluginEndpointDiscovery;
 };
 
 export type AuthProviderFactory = (
