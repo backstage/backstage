@@ -58,8 +58,10 @@ export const useEntityFromUrl = (): EntityLoadingStatus => {
  * Always going to return an entity, or throw an error if not a descendant of a EntityProvider.
  */
 export const useEntity = () => {
-  const { entity, loading, error } = useContext<EntityLoadingStatus>(
-    EntityContext as any,
-  );
+  const { entity, loading, error } = useContext<{
+    entity: Entity;
+    loading: boolean;
+    error: Error;
+  }>(EntityContext as any);
   return { entity, loading, error };
 };
