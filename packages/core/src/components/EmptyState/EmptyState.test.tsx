@@ -24,7 +24,7 @@ describe('<EmptyState />', () => {
     const rendered = await renderWithEffects(
       wrapInTestApp(
         <EmptyState
-          type="missingAnnotation"
+          missing="field"
           title="Your plugin is missing an annotation"
           action={<Button aria-label="button">DOCS</Button>}
         />,

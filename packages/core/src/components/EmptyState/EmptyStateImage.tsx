@@ -22,7 +22,7 @@ import noBuild from './assets/noBuild.svg';
 import { makeStyles } from '@material-ui/core';
 
 type Props = {
-  type: 'missingAnnotation' | 'noInformation' | 'createComponent' | 'noBuild';
+  missing: 'field' | 'info' | 'content' | 'data';
 };
 
 const useStyles = makeStyles({
@@ -36,10 +36,10 @@ const useStyles = makeStyles({
   },
 });
 
-export const EmptyStateImage = ({ type }: Props) => {
+export const EmptyStateImage = ({ missing }: Props) => {
   const classes = useStyles();
-  switch (type) {
-    case 'missingAnnotation':
+  switch (missing) {
+    case 'field':
       return (
         <img
           src={missingAnnotation}
@@ -48,7 +48,7 @@ export const EmptyStateImage = ({ type }: Props) => {
           data-testid="missingAnnotation"
         />
       );
-    case 'noInformation':
+    case 'info':
       return (
         <img
           src={noInformation}
@@ -56,7 +56,7 @@ export const EmptyStateImage = ({ type }: Props) => {
           className={classes.generalImg}
         />
       );
-    case 'createComponent':
+    case 'content':
       return (
         <img
           src={createComponent}
@@ -64,7 +64,7 @@ export const EmptyStateImage = ({ type }: Props) => {
           className={classes.generalImg}
         />
       );
-    case 'noBuild':
+    case 'data':
       return (
         <img src={noBuild} alt="no Build" className={classes.generalImg} />
       );

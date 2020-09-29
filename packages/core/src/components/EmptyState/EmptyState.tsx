@@ -27,7 +27,7 @@ const useStyles = makeStyles(theme => ({
   action: {
     marginTop: theme.spacing(2),
   },
-  imgPlacholder: {
+  imageContainer: {
     position: 'relative',
   },
   backgroundImage: {
@@ -39,11 +39,11 @@ const useStyles = makeStyles(theme => ({
 type Props = {
   title: string;
   description?: string;
-  type: 'missingAnnotation' | 'noInformation' | 'createComponent' | 'noBuild';
+  missing: 'field' | 'info' | 'content' | 'data';
   action?: JSX.Element;
 };
 
-export const EmptyState = ({ title, description, type, action }: Props) => {
+export const EmptyState = ({ title, description, missing, action }: Props) => {
   const classes = useStyles();
   return (
     <Grid
@@ -65,13 +65,13 @@ export const EmptyState = ({ title, description, type, action }: Props) => {
           {action}
         </Grid>
       </Grid>
-      <Grid item xs={12} md={6} className={classes.imgPlacholder}>
+      <Grid item xs={12} md={6} className={classes.imageContainer}>
         <img
           src={Background}
           className={classes.backgroundImage}
           alt="background"
         />
-        <EmptyStateImage type={type} />
+        <EmptyStateImage missing={missing} />
       </Grid>
     </Grid>
   );

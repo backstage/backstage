@@ -1,4 +1,3 @@
-import { Button } from '@material-ui/core';
 /*
  * Copyright 2020 Spotify AB
  *
@@ -17,6 +16,7 @@ import { Button } from '@material-ui/core';
 
 import React from 'react';
 import { EmptyState } from './EmptyState';
+import { Button } from '@material-ui/core';
 
 export default {
   title: 'EmptyState',
@@ -28,9 +28,9 @@ const containerStyle = { width: '100%', height: '100vh' };
 export const MissingAnnotation = () => (
   <div style={containerStyle}>
     <EmptyState
-      type="missingAnnotation"
+      missing="field"
       title="Your plugin is missing an annotation"
-      description="Add a descripton here."
+      description="Add a description here."
     />
   </div>
 );
@@ -38,9 +38,9 @@ export const MissingAnnotation = () => (
 export const NoInformation = () => (
   <div style={containerStyle}>
     <EmptyState
-      type="noInformation"
+      missing="info"
       title="No information to display"
-      description="Add a descripton here."
+      description="Add a description here."
     />
   </div>
 );
@@ -48,9 +48,9 @@ export const NoInformation = () => (
 export const CreateComponent = () => (
   <div style={containerStyle}>
     <EmptyState
-      type="createComponent"
+      missing="content"
       title="Create a component"
-      description="Add a descripton here."
+      description="Add a description here."
     />
   </div>
 );
@@ -58,9 +58,9 @@ export const CreateComponent = () => (
 export const NoBuild = () => (
   <div style={containerStyle}>
     <EmptyState
-      type="noBuild"
+      missing="data"
       title="No builds to show"
-      description="Add a descripton here."
+      description="Add a description here."
     />
   </div>
 );
@@ -68,7 +68,7 @@ export const NoBuild = () => (
 export const WithAction = () => (
   <div style={containerStyle}>
     <EmptyState
-      type="missingAnnotation"
+      missing="field"
       title="Your plugin is missing an annotation"
       description="Click the docs to learn more."
       action={
