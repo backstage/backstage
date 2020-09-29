@@ -14,13 +14,5 @@
  * limitations under the License.
  */
 
-import { useAsync } from 'react-use';
-import { Entity } from '@backstage/catalog-model';
-import { GITHUB_ACTIONS_ANNOTATION } from '../../universal';
-
-export const useProjectName = (entity: Entity) => {
-  const { value, loading, error } = useAsync(async () => {
-    return entity?.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION] ?? '';
-  });
-  return { value, loading, error };
-};
+// This file is shared between frontend and backend plugins
+module.exports.GITHUB_ACTIONS_ANNOTATION = 'github.com/project-slug';

@@ -19,7 +19,8 @@ import { TemplaterBase, TemplaterRunOptions } from '..';
 import path from 'path';
 import { TemplaterRunResult } from '../types';
 import * as yaml from 'yaml';
-import { GITHUB_ACTIONS_ANNOTATION } from '@backstage/plugin-github-actions';
+// eslint-disable-next-line monorepo/no-internal-import
+import { GITHUB_ACTIONS_ANNOTATION } from '@backstage/plugin-github-actions/universal';
 
 export class CreateReactAppTemplater implements TemplaterBase {
   public async run(options: TemplaterRunOptions): Promise<TemplaterRunResult> {
