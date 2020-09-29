@@ -32,7 +32,6 @@ import { BitbucketApiReaderProcessor } from './processors/BitbucketApiReaderProc
 import { EntityPolicyProcessor } from './processors/EntityPolicyProcessor';
 import { FileReaderProcessor } from './processors/FileReaderProcessor';
 import { GithubOrgReaderProcessor } from './processors/GithubOrgReaderProcessor';
-import { GithubReaderProcessor } from './processors/GithubReaderProcessor';
 import { GitlabApiReaderProcessor } from './processors/GitlabApiReaderProcessor';
 import { GitlabReaderProcessor } from './processors/GitlabReaderProcessor';
 import { LocationRefProcessor } from './processors/LocationEntityProcessor';
@@ -76,14 +75,12 @@ export class LocationReaders implements LocationReader {
     entityPolicy?: EntityPolicy;
   }): LocationProcessor[] {
     const {
-      logger,
       config = new ConfigReader({}, 'missing-config'),
       entityPolicy = new EntityPolicies(),
     } = options;
     return [
       StaticLocationProcessor.fromConfig(config),
       new FileReaderProcessor(),
-      GithubReaderProcessor.fromConfig(config, logger),
       new GitlabApiReaderProcessor(config),
       new GitlabReaderProcessor(),
       new BitbucketApiReaderProcessor(config),
