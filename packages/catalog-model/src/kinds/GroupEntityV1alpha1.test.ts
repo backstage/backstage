@@ -53,14 +53,14 @@ describe('GroupV1alpha1Policy', () => {
     await expect(policy.enforce(entity)).resolves.toBe(entity);
   });
 
-  it('rejects unknown apiVersion', async () => {
+  it('ignores unknown apiVersion', async () => {
     (entity as any).apiVersion = 'backstage.io/v1beta0';
-    await expect(policy.enforce(entity)).rejects.toThrow(/apiVersion/);
+    await expect(policy.enforce(entity)).resolves.toBeUndefined();
   });
 
-  it('rejects unknown kind', async () => {
+  it('ignores unknown kind', async () => {
     (entity as any).kind = 'Wizard';
-    await expect(policy.enforce(entity)).rejects.toThrow(/kind/);
+    await expect(policy.enforce(entity)).resolves.toBeUndefined();
   });
 
   it('rejects missing type', async () => {
@@ -98,6 +98,11 @@ describe('GroupV1alpha1Policy', () => {
     await expect(policy.enforce(entity)).resolves.toBe(entity);
   });
 
+  it('accepts no ancestors', async () => {
+    (entity as any).spec.ancestors = [];
+    await expect(policy.enforce(entity)).resolves.toBe(entity);
+  });
+
   it('rejects missing children', async () => {
     delete (entity as any).spec.children;
     await expect(policy.enforce(entity)).rejects.toThrow(/children/);
@@ -108,6 +113,11 @@ describe('GroupV1alpha1Policy', () => {
     await expect(policy.enforce(entity)).resolves.toBe(entity);
   });
 
+  it('accepts no children', async () => {
+    (entity as any).spec.children = [];
+    await expect(policy.enforce(entity)).resolves.toBe(entity);
+  });
+
   it('rejects missing descendants', async () => {
     delete (entity as any).spec.descendants;
     await expect(policy.enforce(entity)).rejects.toThrow(/descendants/);
@@ -115,6 +125,11 @@ describe('GroupV1alpha1Policy', () => {
 
   it('accepts empty descendants', async () => {
     (entity as any).spec.descendants = [''];
+    await expect(policy.enforce(entity)).resolves.toBe(entity);
+  });
+
+  it('accepts no descendants', async () => {
+    (entity as any).spec.descendants = [];
     await expect(policy.enforce(entity)).resolves.toBe(entity);
   });
 });

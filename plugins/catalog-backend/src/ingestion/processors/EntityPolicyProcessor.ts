@@ -25,6 +25,10 @@ export class EntityPolicyProcessor implements LocationProcessor {
   }
 
   async processEntity(entity: Entity): Promise<Entity> {
-    return await this.policy.enforce(entity);
+    const output = await this.policy.enforce(entity);
+    if (!output) {
+      throw new Error(`No policy applied to entity`);
+    }
+    return output;
   }
 }

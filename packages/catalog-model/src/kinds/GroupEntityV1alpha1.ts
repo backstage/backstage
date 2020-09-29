@@ -44,15 +44,35 @@ export class GroupEntityV1alpha1Policy implements EntityPolicy {
         .object({
           type: yup.string().required().min(1),
           parent: yup.string().notRequired().min(1),
-          ancestors: yup.array(yup.string()).required(),
-          children: yup.array(yup.string()).required(),
-          descendants: yup.array(yup.string()).required(),
+          // Use these manual tests because yup .required() requires at least
+          // one element and there is no simple workaround -_-
+          ancestors: yup.array(yup.string()).test({
+            name: 'isDefined',
+            message: 'ancestors must be defined',
+            test: v => Boolean(v),
+          }),
+          children: yup.array(yup.string()).test({
+            name: 'isDefined',
+            message: 'children must be defined',
+            test: v => Boolean(v),
+          }),
+          descendants: yup.array(yup.string()).test({
+            name: 'isDefined',
+            message: 'descendants must be defined',
+            test: v => Boolean(v),
+          }),
         })
         .required(),
     });
   }
 
-  async enforce(envelope: Entity): Promise<Entity> {
+  async enforce(envelope: Entity): Promise<Entity | undefined> {
+    if (
+      KIND !== envelope.kind ||
+      !API_VERSION.includes(envelope.apiVersion as any)
+    ) {
+      return undefined;
+    }
     return await this.schema.validate(envelope, { strict: true });
   }
 }

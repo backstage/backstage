@@ -48,7 +48,13 @@ export class LocationEntityV1alpha1Policy implements EntityPolicy {
     });
   }
 
-  async enforce(envelope: Entity): Promise<Entity> {
+  async enforce(envelope: Entity): Promise<Entity | undefined> {
+    if (
+      KIND !== envelope.kind ||
+      !API_VERSION.includes(envelope.apiVersion as any)
+    ) {
+      return undefined;
+    }
     return await this.schema.validate(envelope, { strict: true });
   }
 }

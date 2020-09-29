@@ -40,7 +40,10 @@ class AllEntityPolicies implements EntityPolicy {
   async enforce(entity: Entity): Promise<Entity> {
     let result = entity;
     for (const policy of this.policies) {
-      result = await policy.enforce(entity);
+      const output = await policy.enforce(entity);
+      if (output) {
+        result = output;
+      }
     }
     return result;
   }
@@ -51,12 +54,11 @@ class AllEntityPolicies implements EntityPolicy {
 class AnyEntityPolicy implements EntityPolicy {
   constructor(private readonly policies: EntityPolicy[]) {}
 
-  async enforce(entity: Entity): Promise<Entity> {
+  async enforce(entity: Entity): Promise<Entity | undefined> {
     for (const policy of this.policies) {
-      try {
-        return await policy.enforce(entity);
-      } catch {
-        continue;
+      const output = await policy.enforce(entity);
+      if (output !== null) {
+        return output;
       }
     }
     throw new Error(`The entity did not match any known policy`);
@@ -98,7 +100,7 @@ export class EntityPolicies implements EntityPolicy {
     this.policy = policy;
   }
 
-  enforce(entity: Entity): Promise<Entity> {
+  enforce(entity: Entity): Promise<Entity | undefined> {
     return this.policy.enforce(entity);
   }
 }

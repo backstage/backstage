@@ -50,13 +50,25 @@ export class UserEntityV1alpha1Policy implements EntityPolicy {
               picture: yup.string().min(1).notRequired(),
             })
             .notRequired(),
-          memberOf: yup.array(yup.string()).required(),
+          // Use this manual test because yup .required() requires at least one
+          // element and there is no simple workaround -_-
+          memberOf: yup.array(yup.string()).test({
+            name: 'isDefined',
+            message: 'memberOf must be defined',
+            test: v => Boolean(v),
+          }),
         })
         .required(),
     });
   }
 
-  async enforce(envelope: Entity): Promise<Entity> {
+  async enforce(envelope: Entity): Promise<Entity | undefined> {
+    if (
+      KIND !== envelope.kind ||
+      !API_VERSION.includes(envelope.apiVersion as any)
+    ) {
+      return undefined;
+    }
     return await this.schema.validate(envelope, { strict: true });
   }
 }

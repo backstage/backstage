@@ -49,7 +49,7 @@ paths:
         '200':
           description: A paged array of pets
           content:
-            application/json:    
+            application/json:
               schema:
                 $ref: "#/components/schemas/Pets"
 components:
@@ -86,14 +86,14 @@ components:
     await expect(policy.enforce(entity)).resolves.toBe(entity);
   });
 
-  it('rejects unknown apiVersion', async () => {
+  it('ignores unknown apiVersion', async () => {
     (entity as any).apiVersion = 'backstage.io/v1beta0';
-    await expect(policy.enforce(entity)).rejects.toThrow(/apiVersion/);
+    await expect(policy.enforce(entity)).resolves.toBeUndefined();
   });
 
-  it('rejects unknown kind', async () => {
+  it('ignores unknown kind', async () => {
     (entity as any).kind = 'Wizard';
-    await expect(policy.enforce(entity)).rejects.toThrow(/kind/);
+    await expect(policy.enforce(entity)).resolves.toBeUndefined();
   });
 
   it('rejects missing type', async () => {

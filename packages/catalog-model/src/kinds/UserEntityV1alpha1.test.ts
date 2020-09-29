@@ -54,14 +54,14 @@ describe('UserV1alpha1Policy', () => {
     await expect(policy.enforce(entity)).resolves.toBe(entity);
   });
 
-  it('rejects unknown apiVersion', async () => {
+  it('ignores unknown apiVersion', async () => {
     (entity as any).apiVersion = 'backstage.io/v1beta0';
-    await expect(policy.enforce(entity)).rejects.toThrow(/apiVersion/);
+    await expect(policy.enforce(entity)).resolves.toBeUndefined();
   });
 
-  it('rejects unknown kind', async () => {
+  it('ignores unknown kind', async () => {
     (entity as any).kind = 'Wizard';
-    await expect(policy.enforce(entity)).rejects.toThrow(/kind/);
+    await expect(policy.enforce(entity)).resolves.toBeUndefined();
   });
 
   it('spec accepts unknown additional fields', async () => {
@@ -145,6 +145,16 @@ describe('UserV1alpha1Policy', () => {
 
   it('rejects wrong memberOf item', async () => {
     (entity as any).spec.memberOf[0] = 7;
+    await expect(policy.enforce(entity)).rejects.toThrow(/memberOf/);
+  });
+
+  it('accepts empty memberOf', async () => {
+    (entity as any).spec.memberOf = [];
+    await expect(policy.enforce(entity)).resolves.toBe(entity);
+  });
+
+  it('rejects null memberOf', async () => {
+    (entity as any).spec.memberOf = null;
     await expect(policy.enforce(entity)).rejects.toThrow(/memberOf/);
   });
 });
