@@ -20,8 +20,6 @@ import { catalogApiRef } from '../api/types';
 import { useAsync } from 'react-use';
 import { Entity } from '@backstage/catalog-model';
 
-// const REDIRECT_DELAY = 2000;
-
 type EntityLoadingStatus = {
   entity?: Entity;
   loading: boolean;
@@ -47,14 +45,6 @@ export const useEntityFromUrl = (): EntityLoadingStatus => {
   );
 
   useEffect(() => {
-    // Commenting to check EntityNotFound page
-    // if (error || (!loading && !entity)) {
-    //   errorApi.post(new Error('Entity not found!'));
-    //   setTimeout(() => {
-    //     navigate('/');
-    //   }, REDIRECT_DELAY);
-    // }
-
     if (!name) {
       errorApi.post(new Error('No name provided!'));
       navigate('/');
