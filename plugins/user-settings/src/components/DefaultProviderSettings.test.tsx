@@ -24,7 +24,7 @@ import {
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import { fireEvent } from '@testing-library/react';
 import * as React from 'react';
-import { ConfiguredProviderSettings } from './ConfiguredProviderSettings';
+import { DefaultProviderSettings } from './DefaultProviderSettings';
 
 const mockSignInHandler = jest.fn().mockReturnValue('');
 const mockGoogleAuth = {
@@ -33,7 +33,7 @@ const mockGoogleAuth = {
       unsubscribe: () => null,
     }),
   }),
-  getIdToken: mockSignInHandler,
+  signIn: mockSignInHandler,
 };
 
 const createConfig = () =>
@@ -62,7 +62,7 @@ describe('<ConfiguredProviderSettings />', () => {
     const rendered = await renderWithEffects(
       wrapInTestApp(
         <ApiProvider apis={apiRegistry}>
-          <ConfiguredProviderSettings />
+          <DefaultProviderSettings />
         </ApiProvider>,
       ),
     );
@@ -73,8 +73,7 @@ describe('<ConfiguredProviderSettings />', () => {
     ).toBeInTheDocument();
 
     const button = rendered.getByTitle('Sign in to Google');
-    expect(mockSignInHandler).toHaveBeenCalledTimes(1);
     fireEvent.click(button);
-    expect(mockSignInHandler).toHaveBeenCalledTimes(2);
+    expect(mockSignInHandler).toHaveBeenCalledTimes(1);
   });
 });

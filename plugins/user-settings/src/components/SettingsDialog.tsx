@@ -35,7 +35,7 @@ import {
   CardTab,
   InfoCard,
 } from '@backstage/core';
-import { ConfiguredProviderSettings } from './ConfiguredProviderSettings';
+import { DefaultProviderSettings } from './DefaultProviderSettings';
 import { ProviderSettings } from './UserSettings';
 import { Alert } from '@material-ui/lab';
 
@@ -61,7 +61,7 @@ export const SettingsDialog = ({
   const featureFlags = featureFlagsApi.getRegisteredFlags();
   const [selectedTab, setSelectedTab] = useState<string | number>('auth');
 
-  const providers = providerSettings ?? <ConfiguredProviderSettings />;
+  const providers = providerSettings ?? <DefaultProviderSettings />;
 
   const handleChange = (
     _ev: ChangeEvent<{}>,
@@ -107,7 +107,7 @@ export const SettingsDialog = ({
             {featureFlags.length > 0 ? (
               <FeatureFlagsList featureFlags={featureFlags} />
             ) : (
-              // TODO(marcuseide): Replace with empty state component
+              // TODO(marcuseide): Replace with empty state component?
               <Alert severity="info">No registered Feature Flags found</Alert>
             )}
           </CardTab>

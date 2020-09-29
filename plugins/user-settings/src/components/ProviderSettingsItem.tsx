@@ -13,9 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React from 'react';
-import { IconComponent, OAuthApi, OpenIdConnectApi } from '@backstage/core';
+import React, { useEffect, useState } from 'react';
+import {
+  ApiRef,
+  SessionApi,
+  useApi,
+  IconComponent,
+  SessionState,
+} from '@backstage/core';
 import {
   ListItem,
   ListItemIcon,
@@ -25,57 +30,70 @@ import {
 } from '@material-ui/core';
 import PowerButton from '@material-ui/icons/PowerSettingsNew';
 import { ToggleButton } from '@material-ui/lab';
-import {
-  ApiRef,
-  SessionApi,
-  useApi,
-  IconComponent,
-  SessionState,
-} from '@backstage/core-api';
 
-type OAuthProviderSidebarProps = {
+type Props = {
   title: string;
   description: string;
   icon: IconComponent;
   apiRef: ApiRef<SessionApi>;
 };
 
-export const ProviderSettingsItem: FC<OAuthProviderSidebarProps> = ({
+export const ProviderSettingsItem = ({
   title,
   description,
   icon: Icon,
-  signedIn,
-  api,
-  signInHandler,
-}: Props) => (
-  <ListItem>
-    <ListItemIcon>
-      <Icon />
-    </ListItemIcon>
-    <ListItemText
-      primary={title}
-      secondary={
-        <Tooltip placement="top" arrow title={description}>
-          <span>{description}</span>
-        </Tooltip>
-      }
-      secondaryTypographyProps={{ noWrap: true, style: { width: '80%' } }}
-    />
-    <ListItemSecondaryAction>
-      <Tooltip
-        placement="top"
-        arrow
-        title={signedIn ? `Sign out from ${title}` : `Sign in to ${title}`}
-      >
-        <ToggleButton
-          size="small"
-          value={title}
-          selected={signedIn}
-          onChange={() => (signedIn ? api.logout() : signInHandler())}
+  apiRef,
+}: Props) => {
+  const api = useApi(apiRef);
+  const [signedIn, setSignedIn] = useState(false);
+
+  useEffect(() => {
+    let didCancel = false;
+
+    const subscription = api
+      .sessionState$()
+      .subscribe((sessionState: SessionState) => {
+        if (!didCancel) {
+          setSignedIn(sessionState === SessionState.SignedIn);
+        }
+      });
+
+    return () => {
+      didCancel = true;
+      subscription.unsubscribe();
+    };
+  }, [api]);
+
+  return (
+    <ListItem>
+      <ListItemIcon>
+        <Icon />
+      </ListItemIcon>
+      <ListItemText
+        primary={title}
+        secondary={
+          <Tooltip placement="top" arrow title={description}>
+            <span>{description}</span>
+          </Tooltip>
+        }
+        secondaryTypographyProps={{ noWrap: true, style: { width: '80%' } }}
+      />
+      <ListItemSecondaryAction>
+        <Tooltip
+          placement="top"
+          arrow
+          title={signedIn ? `Sign out from ${title}` : `Sign in to ${title}`}
         >
-          <PowerButton color={signedIn ? 'primary' : undefined} />
-        </ToggleButton>
-      </Tooltip>
-    </ListItemSecondaryAction>
-  </ListItem>
-);
+          <ToggleButton
+            size="small"
+            value={title}
+            selected={signedIn}
+            onChange={() => (signedIn ? api.signOut() : api.signIn())}
+          >
+            <PowerButton color={signedIn ? 'primary' : undefined} />
+          </ToggleButton>
+        </Tooltip>
+      </ListItemSecondaryAction>
+    </ListItem>
+  );
+};

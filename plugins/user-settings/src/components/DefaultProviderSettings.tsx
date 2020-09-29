@@ -21,15 +21,13 @@ import {
   oauth2ApiRef,
   oktaAuthApiRef,
   microsoftAuthApiRef,
-  samlAuthApiRef,
   useApi,
 } from '@backstage/core';
 import Star from '@material-ui/icons/Star';
 import React from 'react';
-import { OAuthProviderSettings } from './OAuthProviderSettings';
-import { OIDCProviderSettings } from './OIDCProviderSettings';
+import { ProviderSettingsItem } from './ProviderSettingsItem';
 
-export const ConfiguredProviderSettings = () => {
+export const DefaultProviderSettings = () => {
   const configApi = useApi(configApiRef);
   const providersConfig = configApi.getOptionalConfig('auth.providers');
   const providers = providersConfig?.keys() ?? [];
@@ -39,6 +37,7 @@ export const ConfiguredProviderSettings = () => {
       {providers.includes('google') && (
         <ProviderSettingsItem
           title="Google"
+          description={googleAuthApiRef.description}
           apiRef={googleAuthApiRef}
           icon={Star}
         />
@@ -46,6 +45,7 @@ export const ConfiguredProviderSettings = () => {
       {providers.includes('microsoft') && (
         <ProviderSettingsItem
           title="Microsoft"
+          description={microsoftAuthApiRef.description}
           apiRef={microsoftAuthApiRef}
           icon={Star}
         />
@@ -53,6 +53,7 @@ export const ConfiguredProviderSettings = () => {
       {providers.includes('github') && (
         <ProviderSettingsItem
           title="Github"
+          description={githubAuthApiRef.description}
           apiRef={githubAuthApiRef}
           icon={Star}
         />
@@ -60,6 +61,7 @@ export const ConfiguredProviderSettings = () => {
       {providers.includes('gitlab') && (
         <ProviderSettingsItem
           title="Gitlab"
+          description={gitlabAuthApiRef.description}
           apiRef={gitlabAuthApiRef}
           icon={Star}
         />
@@ -67,20 +69,15 @@ export const ConfiguredProviderSettings = () => {
       {providers.includes('okta') && (
         <ProviderSettingsItem
           title="Okta"
+          description={oktaAuthApiRef.description}
           apiRef={oktaAuthApiRef}
-          icon={Star}
-        />
-      )}
-      {providers.includes('saml') && (
-        <ProviderSettingsItem
-          title="SAML"
-          apiRef={samlAuthApiRef}
           icon={Star}
         />
       )}
       {providers.includes('oauth2') && (
         <ProviderSettingsItem
           title="YourOrg"
+          description={oauth2ApiRef.description}
           apiRef={oauth2ApiRef}
           icon={Star}
         />

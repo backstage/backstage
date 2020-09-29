@@ -22,11 +22,6 @@ import {
   SidebarDivider,
   SidebarSearchField,
   SidebarSpace,
-<<<<<<< HEAD
-  SidebarUserSettings,
-  ProviderSettingsItem,
-=======
->>>>>>> a4e66bae0... Update storybook for Sidebar
 } from '.';
 import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
