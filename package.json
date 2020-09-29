@@ -1,5 +1,5 @@
 {
-  "name": "root",
+  "name": "@zalando-sunrise/backstage",
   "private": true,
   "engines": {
     "node": "12 || 14"
@@ -67,5 +67,19 @@
     "transformModules": [
       "@kyma-project/asyncapi-react"
     ]
-  }
+  },
+  "description": "![headline](docs/assets/headline.png)",
+  "directories": {
+    "doc": "docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zalando-incubator/backstage.git"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/zalando-incubator/backstage/issues"
+  },
+  "homepage": "https://github.com/zalando-incubator/backstage#readme"
 }
