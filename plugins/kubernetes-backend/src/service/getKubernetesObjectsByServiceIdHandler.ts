@@ -34,9 +34,10 @@ const DEFAULT_OBJECTS = new Set<KubernetesObjectTypes>([
   'pods',
   'services',
   'configmaps',
-  'secrets',
   'deployments',
   'replicasets',
+  'horizontalpodautoscalers',
+  'ingresses',
 ]);
 
 export const handleGetKubernetesObjectsByServiceId: GetKubernetesObjectsByServiceIdHandler = async (

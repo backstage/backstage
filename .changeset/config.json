@@ -34,7 +34,6 @@
       "@backstage/plugin-gitops-profiles",
       "@backstage/plugin-graphiql",
       "@backstage/plugin-graphql-backend",
-      "@backstage/plugin-identity-backend",
       "@backstage/plugin-jenkins",
       "@backstage/plugin-lighthouse",
       "@backstage/plugin-newrelic",

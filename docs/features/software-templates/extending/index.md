@@ -11,13 +11,13 @@ You're at the right place.
 This guide is going to take you through how the Scaffolder in Backstage works.
 We'll dive into some jargon and run through what's going on in the backend to be
 able to create these templates. There's also more guides that you might find
-useful at the bottom of this document. At it's core, theres 3 simple stages.
+useful at the bottom of this document. At its core, there are 3 simple stages.
 
 1. Pick a skeleton
 2. Template some variables into the skeleton
 3. Send the templated skeleton somewhere
 
-These three steps are translated to the folllowing stages under the hood in the
+These three steps are translated to the following stages under the hood in the
 scaffolder that you will need to know:
 
 1. Prepare
@@ -38,7 +38,7 @@ the router to pick the correct `Preparer` to run for the `Template` entity.
 
 **Templater** - The templater is responsible for actually running the chosen
 templater on top of the previously returned temporary directory from the
-**Preprarer**. We advise making these Docker containers as it can keep all
+**Preparer**. We advise making these Docker containers as it can keep all
 dependencies--for example Cookiecutter--self contained and not a dependency on
 the host machine.
 
@@ -82,7 +82,7 @@ Once that has been posted, a job will be setup with different stages, and the
 job processor will complete each stage before moving onto the next stage, whilst
 collecting logs and mutating the running job.
 
-Here's some futher reading that you might find useful:
+Here's some further reading that you might find useful:
 
 - [Adding your own Template](../adding-templates.md)
 - [Creating your own Templater](./create-your-own-templater.md)

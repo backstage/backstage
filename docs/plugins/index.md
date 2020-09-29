@@ -9,7 +9,7 @@ Backstage is a single-page application composed of a set of plugins.
 Our goal for the plugin ecosystem is that the definition of a plugin is flexible
 enough to allow you to expose pretty much any kind of infrastructure or software
 development tool as a plugin in Backstage. By following strong
-[design guidelines](../dls/design.md) we ensure the the overall user experience
+[design guidelines](../dls/design.md) we ensure the overall user experience
 stays consistent between plugins.
 
 ![plugin](../assets/my-plugin_screenshot.png)
@@ -21,7 +21,7 @@ To create a plugin, follow the steps outlined [here](create-a-plugin.md).
 ## Suggesting a plugin
 
 If you start developing a plugin that you aim to release as open source, we
-suggest that you create a new
+suggest that you create a
 [new Issue](https://github.com/spotify/backstage/issues/new?labels=plugin&template=plugin_template.md&title=%5BPlugin%5D+THE+PLUGIN+NAME).
 This helps the community know what plugins are in development.
 

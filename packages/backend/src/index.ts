@@ -36,7 +36,6 @@ import { ConfigReader, AppConfig } from '@backstage/config';
 import healthcheck from './plugins/healthcheck';
 import auth from './plugins/auth';
 import catalog from './plugins/catalog';
-import identity from './plugins/identity';
 import kubernetes from './plugins/kubernetes';
 import rollbar from './plugins/rollbar';
 import scaffolder from './plugins/scaffolder';
@@ -73,7 +72,6 @@ async function main() {
   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
   const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
   const authEnv = useHotMemoize(module, () => createEnv('auth'));
-  const identityEnv = useHotMemoize(module, () => createEnv('identity'));
   const proxyEnv = useHotMemoize(module, () => createEnv('proxy'));
   const rollbarEnv = useHotMemoize(module, () => createEnv('rollbar'));
   const sentryEnv = useHotMemoize(module, () => createEnv('sentry'));
@@ -88,7 +86,6 @@ async function main() {
   apiRouter.use('/scaffolder', await scaffolder(scaffolderEnv));
   apiRouter.use('/sentry', await sentry(sentryEnv));
   apiRouter.use('/auth', await auth(authEnv));
-  apiRouter.use('/identity', await identity(identityEnv));
   apiRouter.use('/techdocs', await techdocs(techdocsEnv));
   apiRouter.use('/kubernetes', await kubernetes(kubernetesEnv));
   apiRouter.use('/proxy', await proxy(proxyEnv));

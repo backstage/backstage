@@ -21,6 +21,9 @@ out a new branch that you will use for the release, e.g.
 $ git checkout -b new-release
 ```
 
+First bump the `CHANGELOG.md` in the root of the repo and commit. You bump it by
+adding a header for the new version just below the `## Next Release` one.
+
 Then, from the root of the repo, run
 
 ```sh

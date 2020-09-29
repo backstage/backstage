@@ -18,7 +18,7 @@ Backstage natively supports tracking of the following component
 Since these types are likely not the only kind of software you will want to
 track in Backstage, it is possible to
 
-It is possible to add your own software types that fits your organization's data
+It is possible to add your own software types that fit your organization's data
 model. Inside Spotify our model has grown significantly over the years, and now
 includes ML models, Apps, data pipelines and many more.
 
@@ -30,7 +30,7 @@ catalog.
 ## The Other type
 
 It might be tempting to put software that doesn't fit into any of the existing
-types into Other. There are a few reasons why we advice against this; firstly,
+types into Other. There are a few reasons why we advise against this; firstly,
 we have found that it is preferred to match the conceptual model that your
 engineers have when describing your software. Secondly, Backstage helps your
 engineers manage their software by integrating the infrastructure tooling

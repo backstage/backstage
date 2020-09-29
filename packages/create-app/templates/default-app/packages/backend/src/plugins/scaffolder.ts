@@ -18,8 +18,8 @@ import type { PluginEnvironment } from '../types';
 import Docker from 'dockerode';
 
 export default async function createPlugin({
- logger,
- config,
+  logger,
+  config,
 }: PluginEnvironment) {
   const cookiecutterTemplater = new CookieCutter();
   const craTemplater = new CreateReactAppTemplater();
@@ -39,31 +39,60 @@ export default async function createPlugin({
 
   const publishers = new Publishers();
 
-  const githubToken = config.getString('scaffolder.github.token');
-  const repoVisibility = config.getString(
-    'scaffolder.github.visibility',
-  ) as RepoVisibilityOptions;
+  const githubConfig = config.getOptionalConfig('scaffolder.github');
 
-  const githubClient = new Octokit({ auth: githubToken });
-  const githubPublisher = new GithubPublisher({
-    client: githubClient,
-    token: githubToken,
-    repoVisibility,
-  });
-  publishers.register('file', githubPublisher);
-  publishers.register('github', githubPublisher);
+  if (githubConfig) {
+    try {
+      const repoVisibility = githubConfig.getString(
+        'visibility',
+      ) as RepoVisibilityOptions;
+
+      const githubToken = githubConfig.getString('token');
+      const githubClient = new Octokit({ auth: githubToken });
+      const githubPublisher = new GithubPublisher({
+        client: githubClient,
+        token: githubToken,
+        repoVisibility,
+      });
+      publishers.register('file', githubPublisher);
+      publishers.register('github', githubPublisher);
+    } catch (e) {
+      const providerName = 'github';
+      if (process.env.NODE_ENV !== 'development') {
+        throw new Error(
+          `Failed to initialize ${providerName} scaffolding provider, ${e.message}`,
+        );
+      }
+
+      logger.warn(
+        `Skipping ${providerName} scaffolding provider, ${e.message}`,
+      );
+    }
+  }
 
   const gitLabConfig = config.getOptionalConfig('scaffolder.gitlab.api');
-
   if (gitLabConfig) {
-    const gitLabToken = gitLabConfig.getString('token');
-    const gitLabClient = new Gitlab({
-      host: gitLabConfig.getOptionalString('baseUrl'),
-      token: gitLabToken,
-    });
-    const gitLabPublisher = new GitlabPublisher(gitLabClient, gitLabToken);
-    publishers.register('gitlab', gitLabPublisher);
-    publishers.register('gitlab/api', gitLabPublisher);
+    try {
+      const gitLabToken = gitLabConfig.getString('token');
+      const gitLabClient = new Gitlab({
+        host: gitLabConfig.getOptionalString('baseUrl'),
+        token: gitLabToken,
+      });
+      const gitLabPublisher = new GitlabPublisher(gitLabClient, gitLabToken);
+      publishers.register('gitlab', gitLabPublisher);
+      publishers.register('gitlab/api', gitLabPublisher);
+    } catch (e) {
+      const providerName = 'gitlab';
+      if (process.env.NODE_ENV !== 'development') {
+        throw new Error(
+          `Failed to initialize ${providerName} scaffolding provider, ${e.message}`,
+        );
+      }
+
+      logger.warn(
+        `Skipping ${providerName} scaffolding provider, ${e.message}`,
+      );
+    }
   }
 
   const dockerClient = new Docker();

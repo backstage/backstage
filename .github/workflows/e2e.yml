@@ -26,7 +26,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        node-version: [12.x]
+        node-version: [12.x, 14.x]
 
     env:
       CI: true
@@ -47,7 +47,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock', '**/package.json') }}
+          key: ${{ runner.os }}-v${{ matrix.node-version }}-node_modules-${{ hashFiles('yarn.lock', '**/package.json') }}
       - name: find location of global yarn cache
         id: yarn-cache
         if: steps.cache-modules.outputs.cache-hit != 'true'

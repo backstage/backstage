@@ -16,9 +16,6 @@ backend:
 proxy:
   '/circleci/api':
     target: https://circleci.com/api/v1.1
-    changeOrigin: true
-    pathRewrite:
-      '^/proxy/circleci/api/': '/'
     headers:
       Circle-Token:
         $secret:
@@ -30,6 +27,15 @@ proxy:
       Authorization:
         $secret:
           env: JENKINS_BASIC_AUTH_HEADER
+
+  '/travisci/api':
+    target: https://api.travis-ci.com
+    changeOrigin: true
+    headers:
+      Authorization:
+        $secret:
+          env: TRAVISCI_AUTH_TOKEN
+      travis-api-version: 3
 
 organization:
   name: Spotify
@@ -132,6 +138,12 @@ scaffolder:
       token:
         $secret:
           env: GITLAB_ACCESS_TOKEN
+  azure:
+    baseUrl: https://dev.azure.com/{your-organization}
+    api:
+      token:
+        $secret:
+          env: AZURE_PRIVATE_TOKEN
 
 auth:
   providers:
@@ -215,3 +227,23 @@ auth:
         tenantId:
           $secret:
             env: AUTH_MICROSOFT_TENANT_ID
+costInsights:
+  engineerCost: 200000
+  products:
+    computeEngine:
+      name: Compute Engine
+      icon: compute
+    cloudDataflow:
+      name: Cloud Dataflow
+      icon: data
+    cloudStorage:
+      name: Cloud Storage
+      icon: storage
+    bigQuery:
+      name: Big Query
+      icon: search
+  metrics:
+    dailyCost:
+      name: Your Company's Daily Cost
+    DAU:
+      name: Cost Per DAU

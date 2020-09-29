@@ -32,7 +32,7 @@ working on.
 
 ## Naming Test Files
 
-Tests should be name `[filename].test.js`.
+Tests should be named `[filename].test.js`.
 
 For example, the tests for **`Link.js`** exist in the file **`Link.test.js`**.
 
@@ -54,7 +54,7 @@ TODO.
 
 # Writing Unit Tests
 
-The following principles are good guides to determining if you are writing high
+The following principles are good guides for determining if you are writing high
 quality frontend unit tests.
 
 ## Bad Unit Test Principle
@@ -170,7 +170,7 @@ input changes
 component is mounted, just that it is mounted in response to the input.
 
 ✓ **Fulfills Scalability Principle**: If we decide to refactor the entire way
-the loading indicator is displayed the test still works without touching it.
+the loading indicator has displayed the test still works without touching it.
 
 ✓ **Fulfills Broken Functionality Principle**: this test verifies the
 functionality (displaying an indicator) is working, rather than how it is
