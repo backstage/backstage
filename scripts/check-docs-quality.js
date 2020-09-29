@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 /*
  * Copyright 2020 Spotify AB
  *
@@ -18,7 +16,7 @@
 const { execSync, spawnSync } = require('child_process');
 const path = require('path');
 
-const validMDFilesCommand = 'git ls-files | ./node_modules/.bin/shx grep ".md"';
+const listFilesTrackedByGit = 'git ls-files';
 
 const inheritStdIo = {
   stdio: 'inherit',
@@ -26,6 +24,7 @@ const inheritStdIo = {
 
 // xargs is not supported by shx.
 if (process.platform === 'win32') {
+  const validMDFilesCommand = `${listFilesTrackedByGit} | .\\node_modules\\.bin\\shx grep ".md"`;
   try {
     // get list of all md files except in directories of gitignore.
     let filesToLint = execSync(validMDFilesCommand, {
@@ -39,11 +38,24 @@ if (process.platform === 'win32') {
       .map(filepath => (filepath ? path.join(process.cwd(), filepath) : null))
       .filter(Boolean);
 
-    spawnSync('vale', filesToLint, inheritStdIo);
+    const output = spawnSync('vale', filesToLint, inheritStdIo);
+
+    // if the command does not succeed
+    if (output.status !== 0) {
+      // if it contains system level error. [in this case vale does not exist]
+      if (output.error) {
+        console.error(
+          'Please install vale linter(https://docs.errata.ai/vale/install)\n',
+        );
+      }
+      process.exit(1);
+    }
   } catch (e) {
+    console.error(e.message);
     process.exit(1);
   }
 } else {
+  const validMDFilesCommand = `${listFilesTrackedByGit} | ./node_modules/.bin/shx grep ".md"`;
   // use xargs
   try {
     execSync(`${validMDFilesCommand} | xargs vale`, inheritStdIo);
