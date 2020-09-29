@@ -67,11 +67,11 @@ export async function createRouter(
       })
       .get('/entities/by-name/:kind/:namespace/:name', async (req, res) => {
         const { kind, namespace, name } = req.params;
-        const entity = await entitiesCatalog.entityByName(
+        const entity = await entitiesCatalog.entityByName({
           kind,
           namespace,
           name,
-        );
+        });
         if (!entity) {
           res
             .status(404)

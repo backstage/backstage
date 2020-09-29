@@ -15,34 +15,43 @@
  */
 
 import {
+  createApiFactory,
   createPlugin,
   createRouteRef,
-  createApiFactory,
+  googleAuthApiRef,
 } from '@backstage/core';
-import { ProjectListPage } from './components/ProjectListPage';
-import { ProjectDetailsPage } from './components/ProjectDetailsPage';
+import { gcpApiRef, GcpClient } from './api';
 import { NewProjectPage } from './components/NewProjectPage';
-import { GCPApiRef, GCPClient } from './api';
+import { ProjectDetailsPage } from './components/ProjectDetailsPage';
+import { ProjectListPage } from './components/ProjectListPage';
 
 export const rootRouteRef = createRouteRef({
   path: '/gcp-projects',
   title: 'GCP Projects',
 });
-export const ProjectRouteRef = createRouteRef({
+export const projectRouteRef = createRouteRef({
   path: '/gcp-projects/project',
   title: 'GCP Project Page',
 });
-export const NewProjectRouteRef = createRouteRef({
+export const newProjectRouteRef = createRouteRef({
   path: '/gcp-projects/new',
   title: 'GCP Project Page',
 });
 
 export const plugin = createPlugin({
   id: 'gcp-projects',
-  apis: [createApiFactory(GCPApiRef, new GCPClient())],
+  apis: [
+    createApiFactory({
+      api: gcpApiRef,
+      deps: { googleAuthApi: googleAuthApiRef },
+      factory({ googleAuthApi }) {
+        return new GcpClient(googleAuthApi);
+      },
+    }),
+  ],
   register({ router }) {
     router.addRoute(rootRouteRef, ProjectListPage);
-    router.addRoute(ProjectRouteRef, ProjectDetailsPage);
-    router.addRoute(NewProjectRouteRef, NewProjectPage);
+    router.addRoute(projectRouteRef, ProjectDetailsPage);
+    router.addRoute(newProjectRouteRef, NewProjectPage);
   },
 });

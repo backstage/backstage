@@ -28,7 +28,7 @@ type Options<T> = {
   /** Storage key to use to store sessions */
   storageKey: string;
   /** Used to get the scope of the session */
-  sessionScopes: SessionScopesFunc<T>;
+  sessionScopes?: SessionScopesFunc<T>;
   /** Used to check if the session needs to be refreshed, defaults to never refresh */
   sessionShouldRefresh?: SessionShouldRefreshFunc<T>;
 };

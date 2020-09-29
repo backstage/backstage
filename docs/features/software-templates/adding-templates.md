@@ -5,7 +5,7 @@ description: Documentation on Adding your own Templates
 ---
 
 Templates are stored in the **Service Catalog** under a kind `Template`. The
-minimum that the a template skeleton needs is a `template.yaml` but it would be
+minimum that the template skeleton needs is a `template.yaml` but it would be
 good to also have some files in there that can be templated in.
 
 A simple `template.yaml` definition might look something like this:
@@ -30,7 +30,7 @@ spec:
   templater: cookiecutter
   # what does this template create
   type: website
-  # if the template is not in the current directory where this definition is kept then specfiy
+  # if the template is not in the current directory where this definition is kept then specify
   path: './template'
   # the schema for the form which is displayed in the frontend.
   # should follow JSON schema for forms: https://jsonforms.io/
@@ -88,7 +88,7 @@ running:
 ```sh
 curl \
   --location \
-  --request POST 'localhost:7000/catalog/locations' \
+  --request POST 'localhost:7000/api/catalog/locations' \
   --header 'Content-Type: application/json' \
   --data-raw "{\"type\": \"file\", \"target\": \"${YOUR PATH HERE}/template.yaml\"}"
 ```
@@ -98,7 +98,7 @@ If loading from a Git location, you can run the following
 ```sh
 curl \
   --location \
-  --request POST 'localhost:7000/catalog/locations' \
+  --request POST 'localhost:7000/api/catalog/locations' \
   --header 'Content-Type: application/json' \
   --data-raw "{\"type\": \"github\", \"target\": \"https://${YOUR GITHUB REPO}blob/master/${PATH TO FOLDER}/template.yaml\"}"
 ```
@@ -107,7 +107,7 @@ This should then have added the catalog, and also should now be listed under the
 create page at http://localhost:3000/create.
 
 The `type` field which is chosen in the request to add the `template.yaml` to
-the Service Catalog here, will be come the `PreparerKey` which will be used to
+the Service Catalog here, will become the `PreparerKey` which will be used to
 select the `Preparer` when creating a job.
 
 ### Adding form values in the Scaffolder Wizard

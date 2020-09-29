@@ -34,3 +34,29 @@ export type EntityPolicy = {
 };
 
 export type JSONSchema = JSONSchema7 & { [key in string]?: JsonValue };
+
+/**
+ * A complete entity name, with the full kind-namespace-name triplet.
+ */
+export type EntityName = {
+  kind: string;
+  namespace: string;
+  name: string;
+};
+
+/**
+ * A reference by name to an entity, either as a compact string representation,
+ * or as a compound reference structure.
+ *
+ * The string representation is on the form [<kind>:][<namespace>/]<name>.
+ *
+ * Left-out parts of the reference need to be handled by the application,
+ * either by rejecting the reference or by falling back to default values.
+ */
+export type EntityRef =
+  | string
+  | {
+      kind?: string;
+      namespace?: string;
+      name: string;
+    };

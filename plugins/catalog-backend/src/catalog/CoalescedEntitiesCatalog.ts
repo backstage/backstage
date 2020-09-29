@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import { Entity, EntityName } from '@backstage/catalog-model';
 import { Logger } from 'winston';
 import { EntityFilters } from '../database';
 import { EntitiesCatalog } from './types';
@@ -72,14 +72,10 @@ export class CoalescedEntitiesCatalog implements EntitiesCatalog {
     return results.find(Boolean);
   }
 
-  async entityByName(
-    kind: string,
-    namespace: string | undefined,
-    name: string,
-  ): Promise<Entity | undefined> {
+  async entityByName(name: EntityName): Promise<Entity | undefined> {
     const ops = this.inner.map(async catalog => {
       try {
-        return await catalog.entityByName(kind, namespace, name);
+        return await catalog.entityByName(name);
       } catch (e) {
         this.logger.warn(`Inner entityByName call failed, ${e}`);
         return undefined;

@@ -13,7 +13,7 @@ If you haven't setup Backstage already, start
 ## Installing TechDocs
 
 TechDocs is provided with the Backstage application by default. If you want to
-set up TechDocs manually, keep follow the instructions below.
+set up TechDocs manually, keep following the instructions below.
 
 ### Adding the package
 
@@ -57,8 +57,8 @@ The default storage and request URLs:
 
 ```yaml
 techdocs:
-  storageUrl: http://localhost:7000/techdocs/static/docs
-  requestUrl: http://localhost:7000/techdocs/docs
+  storageUrl: http://localhost:7000/api/techdocs/static/docs
+  requestUrl: http://localhost:7000/api/techdocs/docs
 ```
 
 If you want `techdocs-backend` to manage building and publishing, you want

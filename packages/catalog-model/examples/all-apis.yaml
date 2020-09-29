@@ -8,3 +8,5 @@ spec:
   targets:
     - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/hello-world-api.yaml
     - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/streetlights-api.yaml
+    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/spotify-api.yaml
+    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/swapi-graphql.yaml

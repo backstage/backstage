@@ -16,7 +16,9 @@
 
 import { NotFoundError } from '@backstage/backend-common';
 import {
+  EntityName,
   generateUpdatedEntity,
+  getEntityName,
   LOCATION_ANNOTATION,
 } from '@backstage/catalog-model';
 import type { Entity } from '@backstage/catalog-model';
@@ -34,20 +36,15 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
   }
 
   async entityByUid(uid: string): Promise<Entity | undefined> {
-    const matches = await this.database.transaction(tx =>
-      this.database.entities(tx, [{ key: 'uid', values: [uid] }]),
+    const response = await this.database.transaction(tx =>
+      this.database.entityByUid(tx, uid),
     );
-
-    return matches.length ? matches[0].entity : undefined;
+    return response?.entity;
   }
 
-  async entityByName(
-    kind: string,
-    namespace: string | undefined,
-    name: string,
-  ): Promise<Entity | undefined> {
+  async entityByName(name: EntityName): Promise<Entity | undefined> {
     const response = await this.database.transaction(tx =>
-      this.entityByNameInternal(tx, kind, name, namespace),
+      this.database.entityByName(tx, name),
     );
     return response?.entity;
   }
@@ -61,12 +58,7 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
       // entity) existing entity, to know whether to update or add
       const existing = entity.metadata.uid
         ? await this.database.entityByUid(tx, entity.metadata.uid)
-        : await this.entityByNameInternal(
-            tx,
-            entity.kind,
-            entity.metadata.name,
-            entity.metadata.namespace,
-          );
+        : await this.database.entityByName(tx, getEntityName(entity));
 
       // If it's an update, run the algorithm for annotation merging, updating
       // etag/generation, etc.
@@ -112,26 +104,5 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
       }
       return undefined;
     });
-  }
-
-  private async entityByNameInternal(
-    tx: unknown,
-    kind: string,
-    name: string,
-    namespace: string | undefined,
-  ): Promise<DbEntityResponse | undefined> {
-    const matches = await this.database.entities(tx, [
-      { key: 'kind', values: [kind] },
-      { key: 'name', values: [name] },
-      {
-        key: 'namespace',
-        values:
-          !namespace || namespace === 'default'
-            ? [null, 'default']
-            : [namespace],
-      },
-    ]);
-
-    return matches.length ? matches[0] : undefined;
   }
 }

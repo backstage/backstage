@@ -5,7 +5,7 @@
   "types": "src/index.ts",
   "private": true,
   "engines": {
-    "node": "12"
+    "node": "12 || 14"
   },
   "scripts": {
     "build": "backstage-cli backend:build",
@@ -22,7 +22,6 @@
     "@backstage/config": "^{{version}}",
     "@backstage/plugin-auth-backend": "^{{version}}",
     "@backstage/plugin-catalog-backend": "^{{version}}",
-    "@backstage/plugin-identity-backend": "^{{version}}",
     "@backstage/plugin-proxy-backend": "^{{version}}",
     "@backstage/plugin-rollbar-backend": "^{{version}}",
     "@backstage/plugin-scaffolder-backend": "^{{version}}",
@@ -31,6 +30,7 @@
     "@gitbeaker/node": "^23.5.0",
     "dockerode": "^3.2.0",
     "express": "^4.17.1",
+    "express-promise-router": "^3.0.3",
     "knex": "^0.21.1",
     {{#if dbTypePG}}
     "pg": "^8.3.0",
