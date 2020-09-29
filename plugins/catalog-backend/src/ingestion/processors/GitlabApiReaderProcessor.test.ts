@@ -62,21 +62,10 @@ describe('GitlabApiReaderProcessor', () => {
         ),
         err: undefined,
       },
-      {
-        target:
-          'https://gitlab.com/groupA/teams/teamA/repoA/-/blob/branch/my/path/',
-        url: null,
-        err:
-          'Incorrect url: https://gitlab.com/groupA/teams/teamA/repoA/-/blob/branch/my/path/, Error: GitLab url does not end in .ya?ml',
-      },
     ];
 
     for (const test of tests) {
-      if (test.err) {
-        expect(() => processor.buildRawUrl(test.target, 12345)).toThrowError(
-          test.err,
-        );
-      } else if (test.url) {
+      if (test.url) {
         expect(processor.buildRawUrl(test.target, 12345).toString()).toEqual(
           test.url.toString(),
         );

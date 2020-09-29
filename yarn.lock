@@ -4766,6 +4766,11 @@
     "@types/keygrip" "*"
     "@types/node" "*"
 
+"@types/core-js@^2.5.4":
+  version "2.5.4"
+  resolved "https://registry.npmjs.org/@types/core-js/-/core-js-2.5.4.tgz#fc42ebde7d9cfa7c5f2668f117449b02348e41fd"
+  integrity sha512-Xwy8o12ak+iYgFr/KCVaVK5Sy+jFMiiPAID3+ObvMlBzy26XQJw5xu+a6rlHsrJENXj/AwJOGsJpVohUjAzSKQ==
+
 "@types/cors@^2.8.4", "@types/cors@^2.8.6":
   version "2.8.6"
   resolved "https://registry.npmjs.org/@types/cors/-/cors-2.8.6.tgz#cfaab33c49c15b1ded32f235111ce9123009bd02"
@@ -8327,6 +8332,16 @@ codemirror@^5.52.2:
   version "5.53.2"
   resolved "https://registry.npmjs.org/codemirror/-/codemirror-5.53.2.tgz#9799121cf8c50809cca487304e9de3a74d33f428"
   integrity sha512-wvSQKS4E+P8Fxn/AQ+tQtJnF1qH5UOlxtugFLpubEZ5jcdH2iXTVinb+Xc/4QjshuOxRm4fUsU2QPF1JJKiyXA==
+
+codeowners-utils@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.npmjs.org/codeowners-utils/-/codeowners-utils-1.0.2.tgz#9d30148bf957c53d55f75df432cb1e3b4bc6ee28"
+  integrity sha512-4oLRCymV7azxGHMpM3F297D651VdwZa21hVfFCn/cOd8Fq8tFrpfpyRpSBQkaZCyFPkfOhEld9xceCF7btyiug==
+  dependencies:
+    cross-spawn "^7.0.2"
+    find-up "^4.1.0"
+    ignore "^5.1.4"
+    locate-path "^5.0.0"
 
 collapse-white-space@^1.0.2:
   version "1.0.6"

@@ -35,6 +35,7 @@ import { GitlabApiReaderProcessor } from './processors/GitlabApiReaderProcessor'
 import { GitlabReaderProcessor } from './processors/GitlabReaderProcessor';
 import { LocationRefProcessor } from './processors/LocationEntityProcessor';
 import { PlaceholderProcessor } from './processors/PlaceholderProcessor';
+import { CodeOwnersProcessor } from './processors/CodeOwnersProcessor';
 import * as result from './processors/results';
 import { StaticLocationProcessor } from './processors/StaticLocationProcessor';
 import {
@@ -88,6 +89,7 @@ export class LocationReaders implements LocationReader {
       new UrlReaderProcessor(),
       new YamlProcessor(),
       PlaceholderProcessor.default(),
+      new CodeOwnersProcessor(),
       new ApiDefinitionAtLocationProcessor(),
       new EntityPolicyProcessor(entityPolicy),
       new LocationRefProcessor(),

@@ -106,8 +106,7 @@ export class BitbucketApiReaderProcessor implements LocationProcessor {
         empty !== '' ||
         userOrOrg === '' ||
         repoName === '' ||
-        srcKeyword !== 'src' ||
-        !restOfPath.join('/').match(/\.yaml$/)
+        srcKeyword !== 'src'
       ) {
         throw new Error('Wrong Bitbucket URL or Invalid file path');
       }
