@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
-import { LocationSpec } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
+import { getVoidLogger } from '../logging';
 import {
   getApiRequestOptions,
   getApiUrl,
   getRawRequestOptions,
   getRawUrl,
-  GithubReaderProcessor,
+  GithubUrlReader,
   ProviderConfig,
   readConfig,
-} from './GithubReaderProcessor';
+} from './GithubUrlReader';
 
-describe('GithubReaderProcessor', () => {
+describe('GithubUrlReader', () => {
   describe('getApiRequestOptions', () => {
     it('sets the correct API version', () => {
       const config: ProviderConfig = { target: '', apiBaseUrl: '' };
@@ -238,31 +237,15 @@ describe('GithubReaderProcessor', () => {
   });
 
   describe('implementation', () => {
-    it('rejects unknown types', async () => {
-      const processor = new GithubReaderProcessor([
-        { target: 'https://github.com', apiBaseUrl: 'https://api.github.com' },
-      ]);
-      const location: LocationSpec = {
-        type: 'not-github',
-        target: 'https://github.com',
-      };
-      await expect(
-        processor.readLocation(location, false, () => {}),
-      ).resolves.toBeFalsy();
-    });
-
     it('rejects unknown targets', async () => {
-      const processor = new GithubReaderProcessor([
-        { target: 'https://github.com', apiBaseUrl: 'https://api.github.com' },
-      ]);
-      const location: LocationSpec = {
-        type: 'github',
-        target: 'https://not.github.com/apa',
-      };
+      const processor = new GithubUrlReader({
+        target: 'https://github.com',
+        apiBaseUrl: 'https://api.github.com',
+      });
       await expect(
-        processor.readLocation(location, false, () => {}),
+        processor.read('https://not.github.com/apa'),
       ).rejects.toThrow(
-        /There is no GitHub provider that matches https:\/\/not.github.com\/apa/,
+        'Incorrect URL: https://not.github.com/apa, Error: Invalid GitHub URL or file path',
       );
     });
   });

@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import parseGitUri from 'git-url-parse';
-import fetch, { HeadersInit, RequestInit } from 'node-fetch';
+import fetch, { HeadersInit, RequestInit, Response } from 'node-fetch';
 import { Logger } from 'winston';
-import * as result from './results';
-import { LocationProcessor, LocationProcessorEmit } from './types';
+import { NotFoundError } from '../errors';
+import { UrlReader } from './types';
 
 /**
  * The configuration parameters for a single GitHub API provider.
@@ -101,7 +100,7 @@ export function getApiUrl(target: string, provider: ProviderConfig): URL {
       !ref ||
       (filepathtype !== 'blob' && filepathtype !== 'raw')
     ) {
-      throw new Error('Wrong URL or invalid file path');
+      throw new Error('Invalid GitHub URL or file path');
     }
 
     const pathWithoutSlash = filepath.replace(/^\//, '');
@@ -126,7 +125,7 @@ export function getRawUrl(target: string, provider: ProviderConfig): URL {
       !ref ||
       (filepathtype !== 'blob' && filepathtype !== 'raw')
     ) {
-      throw new Error('Wrong URL or invalid file path');
+      throw new Error('Invalid GitHub URL or file path');
     }
 
     const pathWithoutSlash = filepath.replace(/^\//, '');
@@ -205,65 +204,38 @@ export function readConfig(config: Config, logger: Logger): ProviderConfig[] {
  * A processor that adds the ability to read files from GitHub v3 APIs, such as
  * the one exposed by GitHub itself.
  */
-export class GithubReaderProcessor implements LocationProcessor {
-  private providers: ProviderConfig[];
+export class GithubUrlReader implements UrlReader {
+  private config: ProviderConfig;
 
-  static fromConfig(config: Config, logger: Logger) {
-    return new GithubReaderProcessor(readConfig(config, logger));
+  constructor(config: ProviderConfig) {
+    this.config = config;
   }
 
-  constructor(providers: ProviderConfig[]) {
-    this.providers = providers;
-  }
+  async read(url: string): Promise<Buffer> {
+    const useApi =
+      this.config.apiBaseUrl && (this.config.token || !this.config.rawBaseUrl);
+    const ghUrl = useApi
+      ? getApiUrl(url, this.config)
+      : getRawUrl(url, this.config);
+    const options = useApi
+      ? getApiRequestOptions(this.config)
+      : getRawRequestOptions(this.config);
 
-  async readLocation(
-    location: LocationSpec,
-    optional: boolean,
-    emit: LocationProcessorEmit,
-  ): Promise<boolean> {
-    // The github/api type is for backward compatibility
-    if (location.type !== 'github' && location.type !== 'github/api') {
-      return false;
-    }
-
-    const provider = this.providers.find(p =>
-      location.target.startsWith(`${p.target}/`),
-    );
-    if (!provider) {
-      throw new Error(
-        `There is no GitHub provider that matches ${location.target}. Please add a configuration entry for it under catalog.processors.github.providers.`,
-      );
-    }
-
+    let response: Response;
     try {
-      const useApi =
-        provider.apiBaseUrl && (provider.token || !provider.rawBaseUrl);
-      const url = useApi
-        ? getApiUrl(location.target, provider)
-        : getRawUrl(location.target, provider);
-      const options = useApi
-        ? getApiRequestOptions(provider)
-        : getRawRequestOptions(provider);
-      const response = await fetch(url.toString(), options);
-
-      if (response.ok) {
-        const data = await response.buffer();
-        emit(result.data(location, data));
-      } else {
-        const message = `${location.target} could not be read as ${url}, ${response.status} ${response.statusText}`;
-        if (response.status === 404) {
-          if (!optional) {
-            emit(result.notFoundError(location, message));
-          }
-        } else {
-          emit(result.generalError(location, message));
-        }
-      }
+      response = await fetch(ghUrl.toString(), options);
     } catch (e) {
-      const message = `Unable to read ${location.type} ${location.target}, ${e}`;
-      emit(result.generalError(location, message));
+      throw new Error(`Unable to read ${url}, ${e}`);
     }
 
-    return true;
+    if (response.ok) {
+      return response.buffer();
+    }
+
+    const message = `${url} could not be read as ${ghUrl}, ${response.status} ${response.statusText}`;
+    if (response.status === 404) {
+      throw new NotFoundError(message);
+    }
+    throw new Error(message);
   }
 }
