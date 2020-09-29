@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /*
  * Copyright 2020 Spotify AB
  *
@@ -16,7 +18,7 @@
 const { execSync, spawnSync } = require('child_process');
 const path = require('path');
 
-const validMDFilesCommand = 'git ls-files | shx grep ".md"';
+const validMDFilesCommand = 'git ls-files | ./node_modules/.bin/shx grep ".md"';
 
 const inheritStdIo = {
   stdio: 'inherit',
