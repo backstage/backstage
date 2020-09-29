@@ -96,10 +96,10 @@ const useStyles = makeStyles(theme => ({
       content: '"🔗"',
       'font-family': 'inherit',
     },
-    '& .asyncapi__info, .asyncapi__channel, .asyncapi__channels > div, .asyncapi__schema, .asyncapi__message, .asyncapi__server, .asyncapi__servers > div, .asyncapi__messages > div, .asyncapi__schemas > div': {
+    '& .asyncapi__info, .asyncapi__channel, .asyncapi__channels > div, .asyncapi__schema, .asyncapi__channel-operations-list .asyncapi__messages-list-item .asyncapi__message, .asyncapi__message, .asyncapi__server, .asyncapi__servers > div, .asyncapi__messages > div, .asyncapi__schemas > div': {
       'background-color': 'inherit',
     },
-    '& .asyncapi__channel-parameters-header, .asyncapi__channel-operations-header': {
+    '& .asyncapi__channel-parameters-header, .asyncapi__channel-operations-header, .asyncapi__channel-operation-oneOf-subscribe-header, .asyncapi__channel-operation-oneOf-publish-header': {
       'background-color': 'inherit',
       color: theme.palette.text.primary,
     },
