@@ -109,7 +109,9 @@ export const DismissableBanner = ({
           : { vertical: 'top', horizontal: 'center' }
       }
       open={!dismissedBanners.has(id)}
-      classes={{ root: classNames(classes.root, fixed && classes.topPosition) }}
+      classes={{
+        root: classNames(classes.root, !fixed && classes.topPosition),
+      }}
     >
       <SnackbarContent
         classes={{

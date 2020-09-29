@@ -15,18 +15,27 @@
  */
 import {
   Router as FirebaseFunctionsRouter,
-  isPluginApplicableToEntity as isFirebaseFunctionsAvailable,
+  isOnlyOneFirebaseFunction as isFirebaseFunctionsWidgetAvailable,
   FirebaseFunctionWidget,
 } from '@roadiehq/backstage-plugin-firebase-functions';
+import {
+  Router as TravisCIRouter,
+  isPluginApplicableToEntity as isTravisCIAvailable,
+  RecentTravisCIBuildsWidget,
+} from '@roadiehq/backstage-plugin-travis-ci';
 import {
   isPluginApplicableToEntity as isGitHubActionsAvailable,
   RecentWorkflowRunsCard,
   Router as GitHubActionsRouter,
 } from '@backstage/plugin-github-actions';
 import {
+  Router as CloudbuildRouter,
+  isPluginApplicableToEntity as isCloudbuildAvailable,
+} from '@backstage/plugin-cloudbuild';
+import {
+  Router as JenkinsRouter,
   isPluginApplicableToEntity as isJenkinsAvailable,
   LatestRunCard as JenkinsLatestRunCard,
-  Router as JenkinsRouter,
 } from '@backstage/plugin-jenkins';
 import {
   isPluginApplicableToEntity as isCircleCIAvailable,
@@ -56,6 +65,10 @@ const CICDSwitcher = ({ entity }: { entity: Entity }) => {
       return <GitHubActionsRouter entity={entity} />;
     case isCircleCIAvailable(entity):
       return <CircleCIRouter entity={entity} />;
+    case isCloudbuildAvailable(entity):
+      return <CloudbuildRouter entity={entity} />;
+    case isTravisCIAvailable(entity):
+      return <TravisCIRouter entity={entity} />;
     default:
       return (
         <WarningPanel title="CI/CD switcher:">
@@ -74,6 +87,9 @@ const RecentCICDRunsSwitcher = ({ entity }: { entity: Entity }) => {
       break;
     case isGitHubActionsAvailable(entity):
       content = <RecentWorkflowRunsCard entity={entity} />;
+      break;
+    case isTravisCIAvailable(entity):
+      content = <RecentTravisCIBuildsWidget entity={entity} />;
       break;
     default:
       content = null;
@@ -94,6 +110,11 @@ const OverviewContent = ({ entity }: { entity: Entity }) => (
       <AboutCard entity={entity} />
     </Grid>
     <RecentCICDRunsSwitcher entity={entity} />
+    {isFirebaseFunctionsWidgetAvailable(entity) ? (
+      <Grid item md={6} lg={3}>
+        <FirebaseFunctionWidget entity={entity} />
+      </Grid>
+    ) : null}
   </Grid>
 );
 
@@ -131,7 +152,7 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
     />
     <EntityPageLayout.Content
       path="/firebase-functions/*"
-      title="Firebase functions"
+      title="Firebase Functions"
       element={<FirebaseFunctionsRouter entity={entity} />}
     />
   </EntityPageLayout>

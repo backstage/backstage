@@ -25,7 +25,7 @@ should be avoided in our codebase when adding new code.
 
 Here is an example:
 
-```ts
+```typescript
 /* Avoid this: */
 type BadProps = { text: string };
 const BadComponent: FC<BadProps> = ({ text, children }) => (

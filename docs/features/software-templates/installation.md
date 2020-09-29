@@ -217,6 +217,11 @@ The Github access token is retrieved from environment variables via the config.
 The config file needs to specify what environment variable the token is
 retrieved from. Your config should have the following objects.
 
+You can configure who can see the new repositories that the scaffolder creates
+by specifying `visibility` option. Valid options are `public`, `private` and
+`internal`. `internal` options is for GitHub Enterprise clients, which means
+public within the organization.
+
 #### Gitlab
 
 For Gitlab, we currently support the configuration of the GitLab publisher and
@@ -238,10 +243,23 @@ scaffolder:
           env: SCAFFOLDER_GITLAB_PRIVATE_TOKEN
 ```
 
-You can configure who can see the new repositories that the scaffolder creates
-by specifying `visibility` option. Valid options are `public`, `private` and
-`internal`. `internal` option is for GitHub Enterprise clients, which means
-public within the organization.
+#### Azure DevOps
+
+For Azure DevOps we support both the preparer and publisher stage with the
+configuration of a private access token (PAT). For the publisher it's also
+required to define the base URL for the client to connect to the service. This
+will hopefully support on-prem installations as well but that has not been
+verified.
+
+```yaml
+scaffolder:
+  azure:
+    baseUrl: https://dev.azure.com/{your-organization}
+    api:
+      token:
+        $secret:
+          env: AZURE_PRIVATE_TOKEN
+```
 
 ### Running the Backend
 

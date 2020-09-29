@@ -20,8 +20,6 @@ import { catalogApiRef } from '../api/types';
 import { useAsync } from 'react-use';
 import { Entity } from '@backstage/catalog-model';
 
-const REDIRECT_DELAY = 2000;
-
 type EntityLoadingStatus = {
   entity?: Entity;
   loading: boolean;
@@ -47,13 +45,6 @@ export const useEntityFromUrl = (): EntityLoadingStatus => {
   );
 
   useEffect(() => {
-    if (error || (!loading && !entity)) {
-      errorApi.post(new Error('Entity not found!'));
-      setTimeout(() => {
-        navigate('/');
-      }, REDIRECT_DELAY);
-    }
-
     if (!name) {
       errorApi.post(new Error('No name provided!'));
       navigate('/');
@@ -67,6 +58,10 @@ export const useEntityFromUrl = (): EntityLoadingStatus => {
  * Always going to return an entity, or throw an error if not a descendant of a EntityProvider.
  */
 export const useEntity = () => {
-  const { entity } = useContext<{ entity: Entity }>(EntityContext as any);
-  return { entity };
+  const { entity, loading, error } = useContext<{
+    entity: Entity;
+    loading: boolean;
+    error: Error;
+  }>(EntityContext as any);
+  return { entity, loading, error };
 };

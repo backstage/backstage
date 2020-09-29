@@ -15,11 +15,12 @@
  */
 
 import {
+  ExtensionsV1beta1Ingress,
   V1ConfigMap,
   V1Deployment,
+  V1HorizontalPodAutoscaler,
   V1Pod,
   V1ReplicaSet,
-  V1Secret,
   V1Service,
 } from '@kubernetes/client-node';
 
@@ -43,9 +44,10 @@ export type FetchResponse =
   | PodFetchResponse
   | ServiceFetchResponse
   | ConfigMapFetchResponse
-  | SecretFetchResponse
   | DeploymentFetchResponse
-  | ReplicaSetsFetchResponse;
+  | ReplicaSetsFetchResponse
+  | HorizontalPodAutoscalersFetchResponse
+  | IngressesFetchResponse;
 
 // TODO fairly sure there's a easier way to do this
 
@@ -53,9 +55,10 @@ export type KubernetesObjectTypes =
   | 'pods'
   | 'services'
   | 'configmaps'
-  | 'secrets'
   | 'deployments'
-  | 'replicasets';
+  | 'replicasets'
+  | 'horizontalpodautoscalers'
+  | 'ingresses';
 
 export interface PodFetchResponse {
   type: 'pods';
@@ -72,11 +75,6 @@ export interface ConfigMapFetchResponse {
   resources: Array<V1ConfigMap>;
 }
 
-export interface SecretFetchResponse {
-  type: 'secrets';
-  resources: Array<V1Secret>;
-}
-
 export interface DeploymentFetchResponse {
   type: 'deployments';
   resources: Array<V1Deployment>;
@@ -85,6 +83,16 @@ export interface DeploymentFetchResponse {
 export interface ReplicaSetsFetchResponse {
   type: 'replicasets';
   resources: Array<V1ReplicaSet>;
+}
+
+export interface HorizontalPodAutoscalersFetchResponse {
+  type: 'horizontalpodautoscalers';
+  resources: Array<V1HorizontalPodAutoscaler>;
+}
+
+export interface IngressesFetchResponse {
+  type: 'ingresses';
+  resources: Array<ExtensionsV1beta1Ingress>;
 }
 
 // Fetches information from a kubernetes cluster using the cluster details object

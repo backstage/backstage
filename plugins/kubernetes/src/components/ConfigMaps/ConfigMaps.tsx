@@ -32,7 +32,7 @@ export const ConfigMaps = ({ configMaps }: ConfigMapsProps) => {
           <Grid item key={i}>
             <InfoCard
               title={cm.metadata?.name ?? 'un-named service'}
-              subheader="ConfigMap"
+              subheader="Config Map"
             >
               <div>
                 <StructuredMetadataTable
