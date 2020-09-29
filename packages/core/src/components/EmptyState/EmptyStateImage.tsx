@@ -25,7 +25,7 @@ type Props = {
   type: 'missingAnnotation' | 'noInformation' | 'createComponent' | 'noBuild';
 };
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles({
   generalImg: {
     width: '75%',
     zIndex: 2,
@@ -34,7 +34,7 @@ const useStyles = makeStyles(() => ({
     top: '50%',
     transform: 'translate(-50%, 15%)',
   },
-}));
+});
 
 export const EmptyStateImage = ({ type }: Props) => {
   const classes = useStyles();
