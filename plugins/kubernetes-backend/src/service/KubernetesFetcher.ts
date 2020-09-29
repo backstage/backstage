@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import http from 'http';
 import {
   AppsV1Api,
   AutoscalingV1Api,
@@ -34,7 +35,11 @@ import {
   ClusterDetails,
   KubernetesObjectTypes,
   FetchResponse,
+  FetchResponseWrapper,
+  KubernetesFetchError,
+  KubernetesErrorTypes,
 } from '..';
+import lodash, { Dictionary } from 'lodash';
 
 export interface Clients {
   core: CoreV1Api;
@@ -47,6 +52,46 @@ export interface KubernetesClientBasedFetcherOptions {
   kubernetesClientProvider: KubernetesClientProvider;
   logger: Logger;
 }
+
+type FetchResult = FetchResponse | KubernetesFetchError;
+
+const isError = (fr: FetchResult): fr is KubernetesFetchError =>
+  fr.hasOwnProperty('errorType');
+
+function fetchResultsToResponseWrapper(
+  results: FetchResult[],
+): FetchResponseWrapper {
+  const groupBy: Dictionary<FetchResult[]> = lodash.groupBy(results, value => {
+    return isError(value) ? 'errors' : 'responses';
+  });
+
+  return {
+    errors: groupBy.errors ?? [],
+    responses: groupBy.responses ?? [],
+  } as FetchResponseWrapper; // TODO would be nice to get rid of this 'as'
+}
+
+const statusCodeToErrorType = (statusCode: number): KubernetesErrorTypes => {
+  switch (statusCode) {
+    case 401:
+      return 'UNAUTHORIZED_ERROR';
+    case 500:
+      return 'SYSTEM_ERROR';
+    default:
+      return 'UNKNOWN_ERROR';
+  }
+};
+
+const captureKubernetesErrorsRethrowOthers = (e: any): KubernetesFetchError => {
+  if (e.response && e.response.statusCode) {
+    return {
+      errorType: statusCodeToErrorType(e.response.statusCode),
+      statusCode: e.response.statusCode,
+      resourcePath: e.response.request.uri.pathname,
+    };
+  }
+  throw e;
+};
 
 export class KubernetesClientBasedFetcher implements KubernetesFetcher {
   private readonly kubernetesClientProvider: KubernetesClientProvider;
@@ -64,12 +109,14 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     serviceId: string,
     clusterDetails: ClusterDetails,
     objectTypesToFetch: Set<KubernetesObjectTypes>,
-  ): Promise<FetchResponse[]> {
-    return Promise.all(
-      Array.from(objectTypesToFetch).map(type => {
-        return this.fetchByObjectType(serviceId, clusterDetails, type);
-      }),
-    );
+  ): Promise<FetchResponseWrapper> {
+    const fetchResults = Array.from(objectTypesToFetch).map(type => {
+      return this.fetchByObjectType(serviceId, clusterDetails, type).catch(
+        captureKubernetesErrorsRethrowOthers,
+      );
+    });
+
+    return Promise.all(fetchResults).then(fetchResultsToResponseWrapper);
   }
 
   // TODO could probably do with a tidy up
@@ -122,7 +169,9 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
 
   private singleClusterFetch<T>(
     clusterDetails: ClusterDetails,
-    fn: (client: Clients) => Promise<{ body: { items: Array<T> } }>,
+    fn: (
+      client: Clients,
+    ) => Promise<{ body: { items: Array<T> }; response: http.IncomingMessage }>,
   ): Promise<Array<T>> {
     const core = this.kubernetesClientProvider.getCoreClientByClusterDetails(
       clusterDetails,
@@ -138,8 +187,8 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     );
 
     this.logger.debug(`calling cluster=${clusterDetails.name}`);
-    return fn({ core, apps, autoscaling, networkingBeta1 }).then(result => {
-      return result.body.items;
+    return fn({ core, apps, autoscaling, networkingBeta1 }).then(({ body }) => {
+      return body.items;
     });
   }
 
