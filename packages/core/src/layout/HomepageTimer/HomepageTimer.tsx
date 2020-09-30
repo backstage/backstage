@@ -20,15 +20,10 @@ import { ConfigApi, useApi, configApiRef } from '@backstage/core-api';
 
 const timeFormat = { hour: '2-digit', minute: '2-digit' };
 
-class TimeObj {
+type TimeObj = {
   time: string;
   label: string;
-
-  constructor(time: string, label: string) {
-    this.time = time;
-    this.label = label;
-  }
-}
+};
 
 function getTimes(configApi: ConfigApi) {
   const d = new Date();
@@ -40,11 +35,7 @@ function getTimes(configApi: ConfigApi) {
     return clocks;
   }
 
-  const clockConfigs = configApi.getOptionalConfigArray('homepage.clocks');
-
-  if (!clockConfigs) {
-    return clocks;
-  }
+  const clockConfigs = configApi.getConfigArray('homepage.clocks');
 
   for (const clock of clockConfigs) {
     if (clock.has('label') && clock.has('timezone')) {
@@ -56,7 +47,7 @@ function getTimes(configApi: ConfigApi) {
       const time = d.toLocaleTimeString(lang, options);
       const label = clock.getString('label');
 
-      clocks.push(new TimeObj(time, label));
+      clocks.push({ time, label });
     }
   }
 
