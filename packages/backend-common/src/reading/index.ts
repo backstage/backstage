@@ -15,3 +15,4 @@
  */
 
 export type { UrlReader } from './types';
+export { UrlReaders } from './UrlReaders';
