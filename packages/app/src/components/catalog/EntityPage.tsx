@@ -47,8 +47,8 @@ import {
   useEntity,
 } from '@backstage/plugin-catalog';
 import { Entity } from '@backstage/catalog-model';
-import { Grid } from '@material-ui/core';
-import { WarningPanel } from '@backstage/core';
+import { Button, Grid } from '@material-ui/core';
+import { EmptyState } from '@backstage/core';
 
 const CICDSwitcher = ({ entity }: { entity: Entity }) => {
   // This component is just an example of how you can implement your company's logic in entity page.
@@ -66,10 +66,20 @@ const CICDSwitcher = ({ entity }: { entity: Entity }) => {
       return <TravisCIRouter entity={entity} />;
     default:
       return (
-        <WarningPanel title="CI/CD switcher:">
-          No CI/CD is available for this entity. Check corresponding
-          annotations!
-        </WarningPanel>
+        <EmptyState
+          title="No CI/CD available for this entity"
+          missing="info"
+          description="You need to add an annotation to your component if you want to enable CI/CD for it. You can read more about annotations in Backstage by clicking the button below."
+          action={
+            <Button
+              variant="contained"
+              color="primary"
+              href="https://backstage.io/docs/features/software-catalog/well-known-annotations"
+            >
+              Read more
+            </Button>
+          }
+        />
       );
   }
 };
