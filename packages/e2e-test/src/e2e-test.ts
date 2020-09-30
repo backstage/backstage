@@ -33,6 +33,7 @@ import {
 import pgtools from 'pgtools';
 import { findPaths } from '@backstage/cli-common';
 
+/* eslint-disable-next-line no-restricted-syntax */
 const paths = findPaths(__dirname);
 
 const templatePackagePaths = [

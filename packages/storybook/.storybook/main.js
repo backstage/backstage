@@ -13,6 +13,7 @@ module.exports = {
     'storybook-dark-mode/register',
   ],
   webpackFinal: async config => {
+    /* eslint-disable-next-line no-restricted-syntax */
     const coreSrc = path.resolve(__dirname, '../../core/src');
 
     // Mirror config in packages/cli/src/lib/bundler

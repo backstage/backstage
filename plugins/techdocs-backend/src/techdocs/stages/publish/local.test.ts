@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/* eslint-disable no-restricted-syntax */
 import fs from 'fs-extra';
 import path from 'path';
 import { getVoidLogger } from '@backstage/backend-common';
