@@ -28,27 +28,33 @@ class TimeObj {
     this.time = time;
     this.label = label;
   }
-};
+}
 
 function getTimes(configApi: ConfigApi) {
   const d = new Date();
   const lang = window.navigator.language;
 
-  let _a;
-  var clocks = [];
+  const clocks: TimeObj[] = [];
 
-  const clockConfigs = (_a = configApi.getOptionalConfigArray("homepage.clocks")) !== null ? _a : [];
+  if (!configApi.has('homepage.clocks')) {
+    return clocks;
+  }
 
-  for (let clock of clockConfigs) {
+  const clockConfigs = configApi.getOptionalConfigArray('homepage.clocks');
+
+  if (!clockConfigs) {
+    return clocks;
+  }
+
+  for (const clock of clockConfigs) {
     if (clock.has('label') && clock.has('timezone')) {
-
       const options = {
         timeZone: clock.getString('timezone'),
         ...timeFormat,
       };
 
-      let time = d.toLocaleTimeString(lang, options);
-      let label = clock.getString('label');
+      const time = d.toLocaleTimeString(lang, options);
+      const label = clock.getString('label');
 
       clocks.push(new TimeObj(time, label));
     }
@@ -75,16 +81,18 @@ export const HomepageTimer = () => {
     };
   }, [configApi]);
 
-
   if (clocks.length !== 0) {
     return (
       <>
-        {clocks.map((clock) => (
-          <HeaderLabel label={clock.label} value={clock.time} key={clock.label} />
+        {clocks.map(clock => (
+          <HeaderLabel
+            label={clock.label}
+            value={clock.time}
+            key={clock.label}
+          />
         ))}
       </>
     );
-  } else {
-    return null;
   }
+  return null;
 };
