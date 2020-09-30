@@ -32,6 +32,8 @@ import {
 } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { DocsBuilder } from './helpers';
+import { TechDocsMetadata } from './metadata';
+import { getLocationForEntity } from '../helpers';
 
 type RouterOptions = {
   preparers: PreparerBuilder;
@@ -59,6 +61,42 @@ export async function createRouter({
   discovery,
 }: RouterOptions): Promise<express.Router> {
   const router = Router();
+
+  router.get('/metadata/mkdocs/*', async (req, res) => {
+    const storageUrl = config.getString('techdocs.storageUrl');
+    const { '0': path } = req.params;
+
+    const metadataURL = `${storageUrl}/${path}/techdocs_metadata.json`;
+
+    try {
+      const mkDocsMetadata = await (await fetch(metadataURL)).json();
+      res.send(mkDocsMetadata);
+    } catch (err) {
+      logger.info('[TechDocs] MkDocs Metadata not found');
+      throw new Error(`Unable to get metadata for ${path} with error ${err}`);
+    }
+  });
+
+  router.get('/metadata/entity/:kind/:namespace/:name', async (req, res) => {
+    const baseUrl = config.getString('backend.baseUrl');
+
+    const { kind, namespace, name } = req.params;
+
+    try {
+      const entity = (await (
+        await fetch(
+          `${baseUrl}/api/catalog/entities/by-name/${kind}/${namespace}/${name}`,
+        )
+      ).json()) as Entity;
+
+      const locationMetadata = getLocationForEntity(entity);
+      res.send({ ...entity, locationMetadata });
+    } catch (err) {
+      throw new Error(
+        `Unable to get metadata for ${kind}/${namespace}/${name} with error ${err}`,
+      );
+    }
+  });
 
   router.get('/docs/:kind/:namespace/:name/*', async (req, res) => {
     const storageUrl = config.getString('techdocs.storageUrl');
