@@ -21,7 +21,7 @@ import { CircularProgress } from '@material-ui/core';
 import { ParsedEntityId } from '../../types';
 import { AsyncState } from 'react-use/lib/useAsync';
 
-type TechDocsHeaderProps = {
+type TechDocsPageHeaderProps = {
   entityId: ParsedEntityId;
   metadataRequest: {
     entity: AsyncState<any>;
@@ -29,10 +29,10 @@ type TechDocsHeaderProps = {
   };
 };
 
-export const TechDocsHeader = ({
+export const TechDocsPageHeader = ({
   entityId,
   metadataRequest,
-}: TechDocsHeaderProps) => {
+}: TechDocsPageHeaderProps) => {
   const { mkdocs: mkdocsMetadata, entity: entityMetadata } = metadataRequest;
 
   const { value: mkDocsMetadataValues } = mkdocsMetadata;

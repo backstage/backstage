@@ -33,10 +33,10 @@ jest.mock('react-router-dom', () => {
   };
 });
 
-jest.mock('./TechDocsHeader', () => {
+jest.mock('./TechDocsPageHeader', () => {
   return {
     __esModule: true,
-    TechDocsHeader: () => <div />,
+    TechDocsPageHeader: () => <div />,
   };
 });
 
