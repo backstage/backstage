@@ -100,12 +100,49 @@ metadata:
 ```
 
 The value of this annotation is the so-called slug that identifies a project on
-[GitHub](https://github.com) that is related to this entity. It is on the format
+[GitHub](https://github.com) (either the public one, or a private GitHub
+Enterprise installation) that is related to this entity. It is on the format
 `<organization>/<project>`, and is the same as can be seen in the URL location
 bar of the browser when viewing that project.
 
 Specifying this annotation will enable GitHub related features in Backstage for
 that entity.
+
+### github.com/team-slug
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    github.com/team-slug: spotify/backstage-core
+```
+
+The value of this annotation is the so-called slug that identifies a team on
+[GitHub](https://github.com) (either the public one, or a private GitHub
+Enterprise installation) that is related to this entity. It is on the format
+`<organization>/<team>`, and is the same as can be seen in the URL location bar
+of the browser when viewing that team.
+
+This annotation can be used on a [Group entity](descriptor-format.md#kind-group)
+to note that it originated from that team on GitHub.
+
+### github.com/user-login
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    github.com/user-login: freben
+```
+
+The value of this annotation is the so-called login that identifies a user on
+[GitHub](https://github.com) (either the public one, or a private GitHub
+Enterprise installation) that is related to this entity. It is on the format
+`<username>`, and is the same as can be seen in the URL location bar of the
+browser when viewing that user.
+
+This annotation can be used on a [User entity](descriptor-format.md#kind-user)
+to note that it originated from that user on GitHub.
 
 ### sentry.io/project-slug
 

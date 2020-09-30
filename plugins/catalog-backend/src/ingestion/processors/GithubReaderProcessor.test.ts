@@ -243,7 +243,7 @@ describe('GithubReaderProcessor', () => {
         { target: 'https://github.com', apiBaseUrl: 'https://api.github.com' },
       ]);
       const location: LocationSpec = {
-        type: 'not-github/api',
+        type: 'not-github',
         target: 'https://github.com',
       };
       await expect(
@@ -256,7 +256,7 @@ describe('GithubReaderProcessor', () => {
         { target: 'https://github.com', apiBaseUrl: 'https://api.github.com' },
       ]);
       const location: LocationSpec = {
-        type: 'github/api',
+        type: 'github',
         target: 'https://not.github.com/apa',
       };
       await expect(
