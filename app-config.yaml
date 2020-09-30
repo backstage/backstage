@@ -69,7 +69,7 @@ kubernetes:
 
 catalog:
   rules:
-    - allow: [Component, API, Group, Template, Location]
+    - allow: [Component, API, Group, User, Template, Location]
   processors:
     github:
       providers:
@@ -86,6 +86,18 @@ catalog:
         #### Example for how to add your GitHub Enterprise instance using raw HTTP fetches (token is optional):
         # - target: https://ghe.example.net
         #   rawBaseUrl: https://ghe.example.net/raw
+        #   token:
+        #     $secret:
+        #       env: GHE_PRIVATE_TOKEN
+    githubOrg:
+      providers:
+        - target: https://github.com
+          token:
+            $secret:
+              env: GITHUB_PRIVATE_TOKEN
+        #### Example for how to add your GitHub Enterprise instance using the API:
+        # - target: https://ghe.example.net
+        #   apiBaseUrl: https://ghe.example.net/api/v3
         #   token:
         #     $secret:
         #       env: GHE_PRIVATE_TOKEN
@@ -109,19 +121,15 @@ catalog:
     # Backstage example components
     - type: github
       target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
-
     # Example component for github-actions
     - type: github
       target: https://github.com/spotify/backstage/blob/master/plugins/github-actions/examples/sample.yaml
-
     # Example component for techdocs
     - type: github
       target: https://github.com/spotify/backstage/blob/master/plugins/techdocs-backend/examples/documented-component/documented-component.yaml
-
     # Backstage example APIs
     - type: github
       target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
-
     # Backstage example templates
     - type: github
       target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/all-templates.yaml

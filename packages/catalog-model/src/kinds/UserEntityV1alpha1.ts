@@ -16,10 +16,33 @@
 
 import * as yup from 'yup';
 import type { Entity } from '../entity/Entity';
-import type { EntityPolicy } from '../types';
+import { schemaPolicy } from './util';
 
 const API_VERSION = ['backstage.io/v1alpha1', 'backstage.io/v1beta1'] as const;
 const KIND = 'User' as const;
+
+const schema = yup.object<Partial<UserEntityV1alpha1>>({
+  apiVersion: yup.string().required().oneOf(API_VERSION),
+  kind: yup.string().required().equals([KIND]),
+  spec: yup
+    .object({
+      profile: yup
+        .object({
+          displayName: yup.string().min(1).notRequired(),
+          email: yup.string().min(1).notRequired(),
+          picture: yup.string().min(1).notRequired(),
+        })
+        .notRequired(),
+      // Use this manual test because yup .required() requires at least one
+      // element and there is no simple workaround -_-
+      memberOf: yup.array(yup.string()).test({
+        name: 'isDefined',
+        message: 'memberOf must be defined',
+        test: v => Boolean(v),
+      }),
+    })
+    .required(),
+});
 
 export interface UserEntityV1alpha1 extends Entity {
   apiVersion: typeof API_VERSION[number];
@@ -34,29 +57,4 @@ export interface UserEntityV1alpha1 extends Entity {
   };
 }
 
-export class UserEntityV1alpha1Policy implements EntityPolicy {
-  private schema: yup.Schema<any>;
-
-  constructor() {
-    this.schema = yup.object<Partial<UserEntityV1alpha1>>({
-      apiVersion: yup.string().required().oneOf(API_VERSION),
-      kind: yup.string().required().equals([KIND]),
-      spec: yup
-        .object({
-          profile: yup
-            .object({
-              displayName: yup.string().min(1).notRequired(),
-              email: yup.string().min(1).notRequired(),
-              picture: yup.string().min(1).notRequired(),
-            })
-            .notRequired(),
-          memberOf: yup.array(yup.string()).required(),
-        })
-        .required(),
-    });
-  }
-
-  async enforce(envelope: Entity): Promise<Entity> {
-    return await this.schema.validate(envelope, { strict: true });
-  }
-}
+export const userEntityV1alpha1Policy = schemaPolicy(KIND, API_VERSION, schema);

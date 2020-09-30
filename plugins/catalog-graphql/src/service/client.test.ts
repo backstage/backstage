@@ -20,9 +20,8 @@ import { setupServer } from 'msw/node';
 describe('Catalog GraphQL Module', () => {
   const worker = setupServer();
 
-  beforeAll(() => worker.listen());
+  beforeAll(() => worker.listen({ onUnhandledRequest: 'error' }));
   afterAll(() => worker.close());
-
   afterEach(() => worker.resetHandlers());
 
   const baseUrl = 'http://localhost:1234';

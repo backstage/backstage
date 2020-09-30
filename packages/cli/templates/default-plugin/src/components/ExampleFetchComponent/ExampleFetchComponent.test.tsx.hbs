@@ -7,7 +7,7 @@ import { setupServer } from 'msw/node';
 describe('ExampleFetchComponent', () => {
   const server = setupServer();
   // Enable API mocking before tests.
-  beforeAll(() => server.listen())
+  beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
 
   // Reset any runtime request handlers we may add during the tests.
   afterEach(() => server.resetHandlers())
