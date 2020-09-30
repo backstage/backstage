@@ -14,59 +14,88 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React from 'react';
 import { HeaderLabel } from '../HeaderLabel';
+import { useApi, configApiRef } from '@backstage/core';
 
 const timeFormat = { hour: '2-digit', minute: '2-digit' };
-const utcOptions = { timeZone: 'UTC', ...timeFormat };
-const nycOptions = { timeZone: 'America/New_York', ...timeFormat };
-const tyoOptions = { timeZone: 'Asia/Tokyo', ...timeFormat };
-const stoOptions = { timeZone: 'Europe/Stockholm', ...timeFormat };
-
 const defaultTimes = {
-  timeNY: '',
-  timeUTC: '',
-  timeTYO: '',
-  timeSTO: '',
+  timeOne: { time: '', label: '' },
+  timeTwo: { time: '', label: '' },
+  timeThree: { time: '', label: '' },
+  timeFour: { time: '', label: '' },
 };
 
-function getTimes() {
+function updateTimeObject(configApi: configApi, config: string, timeObject) {
+  const timezoneConfig = configApi.getOptionalConfig('homepageTimer');
   const d = new Date();
   const lang = window.navigator.language;
 
-  // Using the browser native toLocaleTimeString instead of huge moment-tz
-  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toLocaleTimeString
-  const timeNY = d.toLocaleTimeString(lang, nycOptions);
-  const timeUTC = d.toLocaleTimeString(lang, utcOptions);
-  const timeTYO = d.toLocaleTimeString(lang, tyoOptions);
-  const timeSTO = d.toLocaleTimeString(lang, stoOptions);
+  if (
+    timezoneConfig.has(`${config}.label`) &&
+    timezoneConfig.has(`${config}.timezone`)
+  ) {
+    const options = {
+      timeZone: timezoneConfig.getString(`${config}.timezone`),
+      ...timeFormat,
+    };
 
-  return { timeNY, timeUTC, timeTYO, timeSTO };
+    // Using the browser native toLocaleTimeString instead of huge moment-tz
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toLocaleTimeString
+    timeObject.time = d.toLocaleTimeString(lang, options);
+    timeObject.label = timezoneConfig.getString(`${config}.label`);
+  }
 }
 
-export const HomepageTimer: FC<{}> = () => {
-  const [{ timeNY, timeUTC, timeTYO, timeSTO }, setTimes] = React.useState(
+function getTimes(configApi) {
+  const timeOne = { time: '', label: '' };
+  const timeTwo = { time: '', label: '' };
+  const timeThree = { time: '', label: '' };
+  const timeFour = { time: '', label: '' };
+
+  updateTimeObject(configApi, 'timeOne', timeOne);
+  updateTimeObject(configApi, 'timeTwo', timeTwo);
+  updateTimeObject(configApi, 'timeThree', timeThree);
+  updateTimeObject(configApi, 'timeFour', timeFour);
+
+  return { timeOne, timeTwo, timeThree, timeFour };
+}
+
+export const HomepageTimer = () => {
+  const configApi = useApi(configApiRef);
+
+  const [{ timeOne, timeTwo, timeThree, timeFour }, setTimes] = React.useState(
     defaultTimes,
   );
 
   React.useEffect(() => {
-    setTimes(getTimes());
+    setTimes(getTimes(configApi));
 
     const intervalId = setInterval(() => {
-      setTimes(getTimes());
+      setTimes(getTimes(configApi));
     }, 1000);
 
     return () => {
       clearInterval(intervalId);
     };
-  }, []);
+  }, [configApi]);
 
   return (
     <>
-      <HeaderLabel label="NYC" value={timeNY} />
-      <HeaderLabel label="UTC" value={timeUTC} />
-      <HeaderLabel label="STO" value={timeSTO} />
-      <HeaderLabel label="TYO" value={timeTYO} />
+      {/* HeaderLabel returns a literal <unknown> if an empty string is passed, thus the check to needs to be done
+      to check if the element needs to be present */}
+      {timeOne.label.length === 0 ? null : (
+        <HeaderLabel label={timeOne.label} value={timeOne.time} />
+      )}
+      {timeTwo.label.length === 0 ? null : (
+        <HeaderLabel label={timeTwo.label} value={timeTwo.time} />
+      )}
+      {timeThree.label.length === 0 ? null : (
+        <HeaderLabel label={timeThree.label} value={timeThree.time} />
+      )}
+      {timeFour.label.length === 0 ? null : (
+        <HeaderLabel label={timeFour.label} value={timeFour.time} />
+      )}
     </>
   );
 };
