@@ -72,13 +72,6 @@ guidelines to get started.
   Design System will make it easy to design and build plugins that are
   consistent across the platform -- supporting both developers and designers.
 
-- **Cloud Cost Insights plugin (from Spotify)** - Spotify teams are fully
-  responsible for their own software, including the cost of the cloud resources
-  they use. By making our internal cost insights plugin available as open source
-  you will also be able to treat cost as an engineering problem, and make it
-  easy for your engineers to see their spend and where there's opportunity to
-  reduce waste.
-
 - Further improvements to platform documentation
 
 ### Plugins
@@ -122,6 +115,7 @@ Chances are that someone will jump in and help build it.
 
 ### Completed milestones ✅
 
+- [Cost Insights plugin 💸](https://engineering.atspotify.com/2020/09/29/managing-clouds-from-the-ground-up-cost-engineering-at-spotify/)
 - [Donate Backstage to the CNCF 🎉](https://backstage.io/blog/2020/09/23/backstage-cncf-sandbox)
 - [TechDocs v1](https://backstage.io/blog/2020/09/08/announcing-tech-docs)
 - [Plugin marketplace](https://backstage.io/plugins)
