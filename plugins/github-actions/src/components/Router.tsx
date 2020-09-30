@@ -20,18 +20,47 @@ import { rootRouteRef, buildRouteRef } from '../plugin';
 import { WorkflowRunDetails } from './WorkflowRunDetails';
 import { WorkflowRunsTable } from './WorkflowRunsTable';
 import { GITHUB_ACTIONS_ANNOTATION } from './useProjectName';
-import { WarningPanel } from '@backstage/core';
+import { EmptyState } from '@backstage/core';
+import { Button } from '@material-ui/core';
+import PostAddIcon from '@material-ui/icons/PostAdd';
 
 export const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION]);
 
+const ActionButton = ({ entity }: { entity: Entity }) => {
+  const [type, target] =
+    entity.metadata.annotations?.['backstage.io/managed-by-location'].split(
+      /:(.+)/,
+    ) || [];
+
+  return type === 'github' ? (
+    <Button
+      variant="contained"
+      color="primary"
+      href={target.replace('blob', 'edit')}
+      startIcon={<PostAddIcon />}
+    >
+      Add annotation
+    </Button>
+  ) : (
+    <Button
+      variant="contained"
+      color="primary"
+      href="https://backstage.io/docs/features/software-catalog/well-known-annotations"
+    >
+      Read more
+    </Button>
+  );
+};
+
 export const Router = ({ entity }: { entity: Entity }) =>
-  // TODO(shmidt-i): move warning to a separate standardized component
   !isPluginApplicableToEntity(entity) ? (
-    <WarningPanel title="GitHubActions plugin:">
-      <pre>{GITHUB_ACTIONS_ANNOTATION}</pre> annotation is missing on the
-      entity.
-    </WarningPanel>
+    <EmptyState
+      missing="field"
+      title="Missing Annotation"
+      description={`The "${GITHUB_ACTIONS_ANNOTATION}" annotation is missing on "${entity.metadata.name}". You need to add the annotation to your component if you want to enable Github Actions for it.`}
+      action={<ActionButton entity={entity} />}
+    />
   ) : (
     <Routes>
       <Route
