@@ -27,9 +27,9 @@ import { PluginEnvironment } from './types';
 function makeCreateEnv(loadedConfigs: AppConfig[]) {
   const config = ConfigReader.fromConfigs(loadedConfigs);
 
-  return (plugin: string): PluginEnvironment => {
+  return async (plugin: string): Promise<PluginEnvironment> => {
     const logger = getRootLogger().child({ type: 'plugin', plugin });
-    const database = createDatabaseClient(
+    const database = await createDatabaseClient(
       config.getConfig('backend.database'),
       {
         connection: {
@@ -47,18 +47,18 @@ async function main() {
   const configReader = ConfigReader.fromConfigs(configs);
   const createEnv = makeCreateEnv(configs);
 
-  const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
-  const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
-  const authEnv = useHotMemoize(module, () => createEnv('auth'));
-  const proxyEnv = useHotMemoize(module, () => createEnv('proxy'));
-  const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
+  const catalogEnv = useHotMemoize(module, async () => createEnv('catalog'));
+  const scaffolderEnv = useHotMemoize(module, async () => createEnv('scaffolder'));
+  const authEnv = useHotMemoize(module, async () => createEnv('auth'));
+  const proxyEnv = useHotMemoize(module, async () => createEnv('proxy'));
+  const techdocsEnv = useHotMemoize(module, async () => createEnv('techdocs'));
 
   const apiRouter = Router();
-  apiRouter.use('/catalog', await catalog(catalogEnv))
-  apiRouter.use('/scaffolder', await scaffolder(scaffolderEnv))
-  apiRouter.use('/auth', await auth(authEnv))
-  apiRouter.use('/techdocs', await techdocs(techdocsEnv))
-  apiRouter.use('/proxy', await proxy(proxyEnv))
+  apiRouter.use('/catalog', await catalog(await catalogEnv))
+  apiRouter.use('/scaffolder', await scaffolder(await scaffolderEnv))
+  apiRouter.use('/auth', await auth(await authEnv))
+  apiRouter.use('/techdocs', await techdocs(await techdocsEnv))
+  apiRouter.use('/proxy', await proxy(await proxyEnv))
   apiRouter.use(notFoundHandler());
 
   const service = createServiceBuilder(module)

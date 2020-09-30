@@ -28,7 +28,7 @@ type DatabaseClient = 'pg' | 'sqlite3' | string;
  * @param dbConfig The database config
  * @param overrides Additional options to merge with the config
  */
-export function createDatabaseClient(
+export async function createDatabaseClient(
   dbConfig: Config,
   overrides?: Partial<knex.Config>,
 ) {

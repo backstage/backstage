@@ -15,26 +15,41 @@
  */
 
 import knex, { PgConnectionConfig } from 'knex';
-import { Config } from '@backstage/config';
+import { cloneDeep } from 'lodash';
+import { Config, JsonValue } from '@backstage/config';
 import { mergeDatabaseConfig } from './config';
 
 /**
- * Creates a knex postgres database connection
+ * Creates a knex Postgres database connection
  *
  * @param dbConfig The database config
  * @param overrides Additional options to merge with the config
  */
-export function createPgDatabaseClient(
+export async function createPgDatabaseClient(
   dbConfig: Config,
   overrides?: knex.Config,
 ) {
-  const knexConfig = buildPgDatabaseConfig(dbConfig, overrides);
+  const baseConfig = buildPgDatabaseConfig(dbConfig, overrides);
+  let knexConfig = baseConfig;
+
+  // Bootstrap the missing database.
+  if (!!baseConfig?.connection.database) {
+    const knexAdminConfig = buildPgDatabaseAdminConfig(cloneDeep(baseConfig));
+    const admin = knex(knexAdminConfig);
+
+    await ensurePgDatabase(admin, baseConfig.connection.database);
+    knexConfig = buildPgPluginConfig(
+      cloneDeep(baseConfig),
+      baseConfig.connection.database,
+    );
+  }
+
   const database = knex(knexConfig);
   return database;
 }
 
 /**
- * Builds a knex postgres database connection
+ * Builds a knex Postgres database connection
  *
  * @param dbConfig The database config
  * @param overrides Additional options to merge with the config
@@ -44,7 +59,7 @@ export function buildPgDatabaseConfig(
   overrides?: knex.Config,
 ) {
   return mergeDatabaseConfig(
-    dbConfig.get(),
+    cloneDeep(dbConfig.get()),
     {
       connection: getPgConnectionConfig(dbConfig, !!overrides),
       useNullAsDefault: true,
@@ -54,10 +69,35 @@ export function buildPgDatabaseConfig(
 }
 
 /**
- * Gets the postgres connection config
+ * Builds a knex Postgres database connection for database creation
  *
  * @param dbConfig The database config
- * @param parseConnectionString Flag to explictly control connection string parsing
+ */
+function buildPgDatabaseAdminConfig(dbConfig: JsonValue) {
+  return mergeDatabaseConfig(dbConfig, {
+    connection: {
+      database: 'postgres',
+    },
+  });
+}
+
+/**
+ * Builds a knex Postgres database connection for plugin consumption
+ *
+ * @param dbConfig The database config
+ * @param database The database granted to the plugin
+ */
+function buildPgPluginConfig(dbConfig: JsonValue, database: string) {
+  return mergeDatabaseConfig(dbConfig, {
+    connection: roleCredentials(database),
+  });
+}
+
+/**
+ * Gets the Postgres connection config
+ *
+ * @param dbConfig The database config
+ * @param parseConnectionString Flag to explicitly control connection string parsing
  */
 export function getPgConnectionConfig(
   dbConfig: Config,
@@ -75,6 +115,41 @@ export function getPgConnectionConfig(
   return shouldParseConnectionString
     ? parsePgConnectionString(connection as string)
     : connection;
+}
+
+/**
+ * Creates the missing Postgres database if it does not exist
+ *
+ * @param admin The administrative database connection, defaulting to the `postgres` database
+ * @param database The name of the database to create
+ */
+async function ensurePgDatabase(admin: knex, database: string) {
+  const result = await admin
+    .from('pg_database')
+    .where('datname', database)
+    .count<Record<string, { count: string }>>();
+
+  if (parseInt(result[0].count, 10) > 0) {
+    return;
+  }
+
+  const owner = roleCredentials(database);
+  await admin.raw(`CREATE ROLE ?? WITH LOGIN PASSWORD '${owner.password}'`, [
+    owner.user,
+  ]);
+  await admin.raw(`CREATE DATABASE ?? OWNER ??`, [database, owner.user]);
+}
+
+/**
+ * Creates credentials to own the given database
+ *
+ * @param database The name of the database to create a role for
+ */
+function roleCredentials(database: string) {
+  return {
+    user: database,
+    password: database,
+  };
 }
 
 /**

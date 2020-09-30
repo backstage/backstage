@@ -10,6 +10,9 @@ If you encounter issues while upgrading to a newer version, don't hesitate to re
 
 ### Backend (example-backend, or backends created with @backstage/create-app)
 
+- Backends configured with a Postgres database would require manual migration. Previous versions of Backstage would rely on a user-provided database, using the configured user in `app-config.yaml`. Backstage will now manage the databases and roles in the provided database instance; existing users would need to:
+  - Create a role for each Backstage database (e.g. create the `backstage_plugin_catalog` role)
+  - Change the ownership of each Backstage database to the corresponding role. In each database, run `REASSIGN OWNED BY <postgres user in app-config.yaml> TO <database owner role>`. For example, in the `backstage_plugin_catalog` database, run `REASSIGN OWNED BY postgres TO backstage_plugin_catalog`.
 - The default mount point for backend plugins have been changed to `/api`. These changes are done in the backend package itself, so it is recommended that you sync up existing backend packages with this new pattern. [#2562](https://github.com/spotify/backstage/pull/2562)
 - A service discovery mechanism for backend plugins has been added, and is now a requirement for several backend plugins. See [packages/backend/src/index.ts](./packages/backend/src/index.ts) for how to set it up using `SingleHostDiscovery` from `@backstage/backend-common`. Note that the default base path for plugins is set to `/api` to that change, but it can be set to use the old behavior via the `basePath` option. [#2600](https://github.com/spotify/backstage/pull/2600)
 
