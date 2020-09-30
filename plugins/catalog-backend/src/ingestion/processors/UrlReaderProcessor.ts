@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import { UrlReader } from '@backstage/backend-common';
 import { LocationSpec } from '@backstage/catalog-model';
-import fetch from 'node-fetch';
 import * as result from './results';
 import { LocationProcessor, LocationProcessorEmit } from './types';
 
 export class UrlReaderProcessor implements LocationProcessor {
+  constructor(private readonly reader: UrlReader) {}
+
   async readLocation(
     location: LocationSpec,
     optional: boolean,
@@ -30,24 +32,18 @@ export class UrlReaderProcessor implements LocationProcessor {
     }
 
     try {
-      const response = await fetch(location.target);
+      const data = await this.reader.read(location.target);
+      emit(result.data(location, data));
+    } catch (error) {
+      const message = `Unable to read ${location.type}, ${error}`;
 
-      if (response.ok) {
-        const data = await response.buffer();
-        emit(result.data(location, data));
-      } else {
-        const message = `${location.target} could not be read, ${response.status} ${response.statusText}`;
-        if (response.status === 404) {
-          if (!optional) {
-            emit(result.notFoundError(location, message));
-          }
-        } else {
-          emit(result.generalError(location, message));
+      if (error.name === 'NotFoundError') {
+        if (!optional) {
+          emit(result.notFoundError(location, message));
         }
+      } else {
+        emit(result.generalError(location, message));
       }
-    } catch (e) {
-      const message = `Unable to read ${location.type} ${location.target}, ${e}`;
-      emit(result.generalError(location, message));
     }
 
     return true;

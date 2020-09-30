@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
+import { getVoidLogger, UrlReader } from '@backstage/backend-common';
 import {
   Entity,
   EntityPolicies,
@@ -56,6 +56,7 @@ import { LocationReader, ReadLocationResult } from './types';
 const MAX_DEPTH = 10;
 
 type Options = {
+  reader?: UrlReader;
   logger?: Logger;
   config?: Config;
   processors?: LocationProcessor[];
@@ -71,6 +72,7 @@ export class LocationReaders implements LocationReader {
 
   static defaultProcessors(options: {
     logger: Logger;
+    reader?: UrlReader;
     config?: Config;
     entityPolicy?: EntityPolicy;
   }): LocationProcessor[] {
@@ -86,7 +88,7 @@ export class LocationReaders implements LocationReader {
       new BitbucketApiReaderProcessor(config),
       new AzureApiReaderProcessor(config),
       GithubOrgReaderProcessor.fromConfig(config),
-      new UrlReaderProcessor(),
+      options.reader ? new UrlReaderProcessor(options.reader) : [],
       new YamlProcessor(),
       PlaceholderProcessor.default(),
       new CodeOwnersProcessor(),
@@ -94,13 +96,14 @@ export class LocationReaders implements LocationReader {
       new EntityPolicyProcessor(entityPolicy),
       new LocationRefProcessor(),
       new AnnotateLocationEntityProcessor(),
-    ];
+    ].flat();
   }
 
   constructor({
     logger = getVoidLogger(),
     config,
-    processors = LocationReaders.defaultProcessors({ logger, config }),
+    reader,
+    processors = LocationReaders.defaultProcessors({ logger, reader, config }),
   }: Options) {
     this.logger = logger;
     this.processors = processors;
