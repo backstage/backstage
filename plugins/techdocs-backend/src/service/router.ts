@@ -72,14 +72,15 @@ export async function createRouter({
       const mkDocsMetadata = await (await fetch(metadataURL)).json();
       res.send(mkDocsMetadata);
     } catch (err) {
-      logger.info('[TechDocs] MkDocs Metadata not found');
+      logger.info(
+        `[TechDocs] Unable to get metadata for ${path} with error ${err}`,
+      );
       throw new Error(`Unable to get metadata for ${path} with error ${err}`);
     }
   });
 
   router.get('/metadata/entity/:kind/:namespace/:name', async (req, res) => {
     const baseUrl = config.getString('backend.baseUrl');
-
     const { kind, namespace, name } = req.params;
 
     try {
@@ -92,6 +93,9 @@ export async function createRouter({
       const locationMetadata = getLocationForEntity(entity);
       res.send({ ...entity, locationMetadata });
     } catch (err) {
+      logger.info(
+        `[TechDocs] Unable to get metadata for ${kind}/${namespace}/${name} with error ${err}`,
+      );
       throw new Error(
         `Unable to get metadata for ${kind}/${namespace}/${name} with error ${err}`,
       );
