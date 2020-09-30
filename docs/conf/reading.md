@@ -1,6 +1,7 @@
 ---
 id: reading
 title: Reading Backstage Configuration
+description: Documentation on Reading Backstage Configuration
 ---
 
 ## Config API

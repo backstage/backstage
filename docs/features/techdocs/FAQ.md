@@ -2,18 +2,16 @@
 id: faqs
 title: TechDocs FAQ
 sidebar_label: FAQ
+description: This page answers frequently asked questions about TechDocs
 ---
 
 This page answers frequently asked questions about [TechDocs](README.md).
 
-_Got a question that you think others might be interested in knowing the answer
-to? Edit this file
-[here](https://github.com/spotify/backstage/edit/master/docs/features/techdocs/FAQ.md)._
-
 ## Technology
 
-- [What static site generator is TechDocs using?](./#what-static-site-generator-is-techdocs-using)
-- [What is the mkdocs-techdocs-core plugin?](./#what-is-the-mkdocs-techdocs-core-plugin)
+- [What static site generator is TechDocs using?](#what-static-site-generator-is-techdocs-using)
+- [What is the mkdocs-techdocs-core plugin?](#what-is-the-mkdocs-techdocs-core-plugin)
+- [Does TechDocs support file formats other than Markdown (e.g. rst, asciidoc)?](#does-techdocs-support-file-formats-other-than-markdown-eg-rst-asciidoc-)
 
 #### What static site generator is TechDocs using?
 
@@ -30,3 +28,10 @@ package is a MkDocs Plugin that works like a wrapper around multiple MkDocs
 plugins (e.g.
 [MkDocs Monorepo Plugin](https://github.com/spotify/mkdocs-monorepo-plugin)) as
 well as a selection of Python Markdown extensions that TechDocs supports.
+
+#### Does TechDocs support file formats other than Markdown (e.g. rst, asciidoc) ?
+
+Not right now. We are currently using MkDocs to generate the documentation from
+source. So, they have to be in Markdown format. However, in future we want to
+support other alternatives to MkDocs. That will make it possible to use other
+file formats.

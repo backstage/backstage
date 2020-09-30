@@ -10,7 +10,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [12.x]
+        node-version: [12.x, 14.x]
 
     env:
       CI: true
@@ -30,7 +30,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock', '**/package.json') }}
+          key: ${{ runner.os }}-v${{ matrix.node-version }}-node_modules-${{ hashFiles('yarn.lock', '**/package.json') }}
       - name: find location of global yarn cache
         id: yarn-cache
         if: steps.cache-modules.outputs.cache-hit != 'true'
@@ -51,7 +51,7 @@ jobs:
         run: yarn lerna -- run lint
 
       - name: type checking and declarations
-        run: yarn tsc --incremental false
+        run: yarn tsc:full
 
       - name: build
         run: yarn build
@@ -59,21 +59,28 @@ jobs:
       - name: verify type dependencies
         run: yarn lint:type-deps
 
-      - name: test
-        run: yarn lerna -- run test -- --coverage
+      - name: test (and upload coverage)
+        run: |
+          yarn lerna -- run test -- --coverage
+          bash <(curl -s https://codecov.io/bash)
+          # Upload code coverage for some specific flags. Also see .codecov.yml
+          bash <(curl -s https://codecov.io/bash) -f packages/core/coverage/* -F core
+          bash <(curl -s https://codecov.io/bash) -f packages/core-api/coverage/* -F core-api
 
       # Publishes current version of packages that are not already present in the registry
       - name: publish
+        if: matrix.node-version == '12.x'
         run: yarn lerna -- publish from-package --yes
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # Tags the commit with the version in the core package if the tag doesn't exist
       - uses: Klemensas/action-autotag@1.2.3
+        if: matrix.node-version == '12.x'
         with:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          package_root: "packages/core"
-          tag_prefix: "v"
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          package_root: 'packages/core'
+          tag_prefix: 'v'
 
       - name: Discord notification
         if: ${{ failure() }}

@@ -16,6 +16,7 @@
 
 import { ComponentType } from 'react';
 import { RouteRef } from '../routing';
+import { AnyApiFactory } from '../apis';
 
 export type RouteOptions = {
   // Whether the route path must match exactly, defaults to true.
@@ -70,4 +71,5 @@ export type PluginOutput =
 export type BackstagePlugin = {
   getId(): string;
   output(): PluginOutput[];
+  getApis(): Iterable<AnyApiFactory>;
 };

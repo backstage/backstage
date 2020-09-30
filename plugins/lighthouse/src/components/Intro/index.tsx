@@ -71,7 +71,7 @@ export default builder.build() as ApiHolder;
 \`\`\`
 `;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   tabs: { marginBottom: -18 },
   tab: { minWidth: 72, paddingLeft: 1, paddingRight: 1 },
   content: { marginBottom: theme.spacing(2) },

@@ -28,6 +28,7 @@ import {
   GroupEntityV1alpha1Policy,
   LocationEntityV1alpha1Policy,
   TemplateEntityV1alpha1Policy,
+  UserEntityV1alpha1Policy,
 } from './kinds';
 import { EntityPolicy } from './types';
 
@@ -77,6 +78,7 @@ export class EntityPolicies implements EntityPolicy {
       EntityPolicies.anyOf([
         new ComponentEntityV1alpha1Policy(),
         new GroupEntityV1alpha1Policy(),
+        new UserEntityV1alpha1Policy(),
         new LocationEntityV1alpha1Policy(),
         new TemplateEntityV1alpha1Policy(),
         new ApiEntityV1alpha1Policy(),

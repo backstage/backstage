@@ -13,22 +13,98 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Router as GitHubActionsRouter } from '@backstage/plugin-github-actions';
-import { Router as SentryRouter } from '@backstage/plugin-sentry';
-import React from 'react';
 import {
+  isPluginApplicableToEntity as isTravisCIAvailable,
+  RecentTravisCIBuildsWidget,
+  Router as TravisCIRouter,
+} from '@roadiehq/backstage-plugin-travis-ci';
+import {
+  isPluginApplicableToEntity as isGitHubActionsAvailable,
+  RecentWorkflowRunsCard,
+  Router as GitHubActionsRouter,
+} from '@backstage/plugin-github-actions';
+import {
+  Router as CloudbuildRouter,
+  isPluginApplicableToEntity as isCloudbuildAvailable,
+} from '@backstage/plugin-cloudbuild';
+import {
+  Router as JenkinsRouter,
+  isPluginApplicableToEntity as isJenkinsAvailable,
+  LatestRunCard as JenkinsLatestRunCard,
+} from '@backstage/plugin-jenkins';
+import {
+  isPluginApplicableToEntity as isCircleCIAvailable,
+  Router as CircleCIRouter,
+} from '@backstage/plugin-circleci';
+import { Router as ApiDocsRouter } from '@backstage/plugin-api-docs';
+import { Router as SentryRouter } from '@backstage/plugin-sentry';
+import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
+import { Router as KubernetesRouter } from '@backstage/plugin-kubernetes';
+import React, { ReactNode } from 'react';
+import {
+  AboutCard,
   EntityPageLayout,
   useEntity,
-  AboutCard,
 } from '@backstage/plugin-catalog';
 import { Entity } from '@backstage/catalog-model';
 import { Grid } from '@material-ui/core';
+import { WarningPanel } from '@backstage/core';
+
+const CICDSwitcher = ({ entity }: { entity: Entity }) => {
+  // This component is just an example of how you can implement your company's logic in entity page.
+  // You can for example enforce that all components of type 'service' should use GitHubActions
+  switch (true) {
+    case isJenkinsAvailable(entity):
+      return <JenkinsRouter entity={entity} />;
+    case isGitHubActionsAvailable(entity):
+      return <GitHubActionsRouter entity={entity} />;
+    case isCircleCIAvailable(entity):
+      return <CircleCIRouter entity={entity} />;
+    case isCloudbuildAvailable(entity):
+      return <CloudbuildRouter entity={entity} />;
+    case isTravisCIAvailable(entity):
+      return <TravisCIRouter entity={entity} />;
+    default:
+      return (
+        <WarningPanel title="CI/CD switcher:">
+          No CI/CD is available for this entity. Check corresponding
+          annotations!
+        </WarningPanel>
+      );
+  }
+};
+
+const RecentCICDRunsSwitcher = ({ entity }: { entity: Entity }) => {
+  let content: ReactNode;
+  switch (true) {
+    case isJenkinsAvailable(entity):
+      content = <JenkinsLatestRunCard branch="master" />;
+      break;
+    case isGitHubActionsAvailable(entity):
+      content = <RecentWorkflowRunsCard entity={entity} />;
+      break;
+    case isTravisCIAvailable(entity):
+      content = <RecentTravisCIBuildsWidget entity={entity} />;
+      break;
+    default:
+      content = null;
+  }
+  if (!content) {
+    return null;
+  }
+  return (
+    <Grid item sm={6}>
+      {content}
+    </Grid>
+  );
+};
 
 const OverviewContent = ({ entity }: { entity: Entity }) => (
   <Grid container spacing={3}>
-    <Grid item>
+    <Grid item md={6}>
       <AboutCard entity={entity} />
     </Grid>
+    <RecentCICDRunsSwitcher entity={entity} />
   </Grid>
 );
 
@@ -42,12 +118,27 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
     <EntityPageLayout.Content
       path="/ci-cd/*"
       title="CI/CD"
-      element={<GitHubActionsRouter entity={entity} />}
+      element={<CICDSwitcher entity={entity} />}
     />
     <EntityPageLayout.Content
       path="/sentry"
       title="Sentry"
       element={<SentryRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/api/*"
+      title="API"
+      element={<ApiDocsRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/docs/*"
+      title="Docs"
+      element={<DocsRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/kubernetes/*"
+      title="Kubernetes"
+      element={<KubernetesRouter entity={entity} />}
     />
   </EntityPageLayout>
 );
@@ -62,22 +153,36 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
     <EntityPageLayout.Content
       path="/ci-cd/*"
       title="CI/CD"
-      element={<GitHubActionsRouter entity={entity} />}
+      element={<CICDSwitcher entity={entity} />}
     />
     <EntityPageLayout.Content
       path="/sentry"
       title="Sentry"
       element={<SentryRouter entity={entity} />}
     />
+    <EntityPageLayout.Content
+      path="/docs/*"
+      title="Docs"
+      element={<DocsRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/kubernetes/*"
+      title="Kubernetes"
+      element={<KubernetesRouter entity={entity} />}
+    />
   </EntityPageLayout>
 );
-
 const DefaultEntityPage = ({ entity }: { entity: Entity }) => (
   <EntityPageLayout>
     <EntityPageLayout.Content
       path="/*"
       title="Overview"
       element={<OverviewContent entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/docs/*"
+      title="Docs"
+      element={<DocsRouter entity={entity} />}
     />
   </EntityPageLayout>
 );

@@ -1,6 +1,7 @@
 ---
 id: proxying
 title: Proxying
+description: Documentation on Proxying
 ---
 
 ## Overview
@@ -22,7 +23,7 @@ const proxyEnv = useHotMemoize(module, () => createEnv('proxy'));
 const service = createServiceBuilder(module)
   .loadConfig(configReader)
   /** ... other routers ... */
-  .addRouter('/proxy', await proxy(proxyEnv, '/proxy'));
+  .addRouter('/proxy', await proxy(proxyEnv));
 ```
 
 ## Configuration
@@ -48,11 +49,14 @@ Each key under the proxy configuration entry is a route to match, below the
 prefix that the proxy plugin is mounted on. It must start with a slash. For
 example, if the backend mounts the proxy plugin as `/proxy`, the above
 configuration will lead to the proxy acting on backend requests to
-`/proxy/simple-example/...` and `/proxy/larger-example/v1/...`.
+`/api/proxy/simple-example/...` and `/api/proxy/larger-example/v1/...`.
 
 The value inside each route is either a simple URL string, or an object on the
 format accepted by
-[http-proxy-middleware](https://www.npmjs.com/package/http-proxy-middleware).
+[http-proxy-middleware](https://www.npmjs.com/package/http-proxy-middleware). It
+is also possible to limit the forwarded HTTP methods with the configuration
+`allowedMethods`, for example `allowedMethods: ['GET']` to enforce read-only
+access.
 
 If the value is a string, it is assumed to correspond to:
 
@@ -70,6 +74,6 @@ except with the following caveats for convenience:
   commonly useful value.
 - If `pathRewrite` is not specified, it is set to a single rewrite that removes
   the entire prefix and route. In the above example, a rewrite of
-  `'^/proxy/larger-example/v1/': '/'` is added. That means that a request to
-  `/proxy/larger-example/v1/some/path` will be translated to a request to
+  `'^/api/proxy/larger-example/v1/': '/'` is added. That means that a request to
+  `/api/proxy/larger-example/v1/some/path` will be translated to a request to
   `http://larger.example.com:8080/svc.v1/some/path`.

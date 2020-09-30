@@ -3,6 +3,8 @@ name: E2E Test Linux
 on:
   pull_request:
     paths-ignore:
+      - 'contrib/**'
+      - 'docs/**'
       - 'microsite/**'
 
 jobs:
@@ -24,7 +26,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        node-version: [12.x]
+        node-version: [12.x, 14.x]
 
     env:
       CI: true
@@ -45,7 +47,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock', '**/package.json') }}
+          key: ${{ runner.os }}-v${{ matrix.node-version }}-node_modules-${{ hashFiles('yarn.lock', '**/package.json') }}
       - name: find location of global yarn cache
         id: yarn-cache
         if: steps.cache-modules.outputs.cache-hit != 'true'
@@ -64,7 +66,7 @@ jobs:
 
       - run: yarn tsc
       - name: yarn build
-        run: yarn build --ignore example-app --ignore example-backend --ignore @techdocs/cli --ignore backstage-microsite
+        run: yarn build --ignore example-app --ignore example-backend --ignore @techdocs/cli
       - name: run E2E test
         run: |
           sudo sysctl fs.inotify.max_user_watches=524288

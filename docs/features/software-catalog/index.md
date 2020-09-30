@@ -1,7 +1,9 @@
 ---
 id: software-catalog-overview
 title: Backstage Service Catalog (alpha)
-sidebar_label: Backstage Service Catalog
+sidebar_label: Overview
+description: The Backstage Service Catalog — actually, a software catalog, since
+it includes more than just services
 ---
 
 ## What is a Service Catalog?
@@ -48,7 +50,7 @@ There are 3 ways to add components to the catalog:
 
 1. Manually register components
 2. Creating new components through Backstage
-3. Integrating with and [external source](external-integrations.md)
+3. Integrating with an [external source](external-integrations.md)
 
 ### Manually register components
 
@@ -82,7 +84,7 @@ registered in the catalog.
 ### Static catalog configuration
 
 In addition to manually registering components, it is also possible to register
-components though [static configuration](../../conf/index.md). For example, the
+components through [static configuration](../../conf/index.md). For example, the
 above example can be added using the following configuration:
 
 ```yaml

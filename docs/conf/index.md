@@ -1,6 +1,7 @@
 ---
 id: index
 title: Static Configuration in Backstage
+description: Documentation on Static Configuration in Backstage
 ---
 
 ## Summary

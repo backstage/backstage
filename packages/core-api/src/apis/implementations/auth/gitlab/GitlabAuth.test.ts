@@ -14,33 +14,37 @@
  * limitations under the License.
  */
 
+import MockOAuthApi from '../../OAuthRequestApi/MockOAuthApi';
+import { UrlPatternDiscovery } from '../../DiscoveryApi';
 import GitlabAuth from './GitlabAuth';
 
-describe('GitlabAuth', () => {
-  it('should get access token', async () => {
-    const getSession = jest
-      .fn()
-      .mockResolvedValue({ providerInfo: { accessToken: 'access-token' } });
-    const gitlabAuth = new GitlabAuth({ getSession } as any);
+const getSession = jest.fn();
 
-    expect(await gitlabAuth.getAccessToken()).toBe('access-token');
-    expect(getSession).toBeCalledTimes(1);
+jest.mock('../../../../lib/AuthSessionManager', () => ({
+  ...(jest.requireActual('../../../../lib/AuthSessionManager') as any),
+  RefreshingAuthSessionManager: class {
+    getSession = getSession;
+  },
+}));
+
+describe('GitlabAuth', () => {
+  afterEach(() => {
+    jest.resetAllMocks();
   });
 
-  it('should normalize scope', () => {
-    const tests = [
-      {
-        arguments: ['read_user api write_repository'],
-        expect: new Set(['read_user', 'api', 'write_repository']),
-      },
-      {
-        arguments: ['read_repository sudo'],
-        expect: new Set(['read_repository', 'sudo']),
-      },
-    ];
+  it.each([
+    [
+      'read_user api write_repository',
+      ['read_user', 'api', 'write_repository'],
+    ],
+    ['read_repository sudo', ['read_repository', 'sudo']],
+  ])(`should normalize scopes correctly - %p`, (scope, scopes) => {
+    const gitlabAuth = GitlabAuth.create({
+      oauthRequestApi: new MockOAuthApi(),
+      discoveryApi: UrlPatternDiscovery.compile('http://example.com'),
+    });
 
-    for (const test of tests) {
-      expect(GitlabAuth.normalizeScope(...test.arguments)).toEqual(test.expect);
-    }
+    gitlabAuth.getAccessToken(scope);
+    expect(getSession).toHaveBeenCalledWith({ scopes: new Set(scopes) });
   });
 });

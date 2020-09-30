@@ -1,22 +1,26 @@
 app:
   title: Backstage Example App
-  baseUrl: http://localhost:3000
+  baseUrl: http://localhost:7000
 
 backend:
   baseUrl: http://localhost:7000
   listen:
     port: 7000
-  cors:
-    origin: http://localhost:3000
-    methods: [GET, POST, PUT, DELETE]
-    credentials: true
   database:
     client: sqlite3
     connection: ':memory:'
+  csp:
+    connect-src: ["'self'", 'https:']
 
 # See README.md in the proxy-backend plugin for information on the configuration format
 proxy:
-  '/circleci/api': https://circleci.com/api/v1.1
+  '/circleci/api':
+    target: https://circleci.com/api/v1.1
+    headers:
+      Circle-Token:
+        $secret:
+          env: CIRCLECI_AUTH_TOKEN
+
   '/jenkins/api':
     target: http://localhost:8080
     headers:
@@ -24,11 +28,23 @@ proxy:
         $secret:
           env: JENKINS_BASIC_AUTH_HEADER
 
+  '/travisci/api':
+    target: https://api.travis-ci.com
+    changeOrigin: true
+    headers:
+      Authorization:
+        $secret:
+          env: TRAVISCI_AUTH_TOKEN
+      travis-api-version: 3
+
 organization:
   name: Spotify
 
 techdocs:
-  storageUrl: http://localhost:7000/techdocs/static/docs
+  storageUrl: http://localhost:7000/api/techdocs/static/docs
+  requestUrl: http://localhost:7000/api/techdocs/docs
+  generators:
+    techdocs: 'docker'
 
 sentry:
   organization: spotify
@@ -47,14 +63,32 @@ newrelic:
 lighthouse:
   baseUrl: http://localhost:3003
 
+kubernetes:
+  clusterLocatorMethod: 'configMultiTenant'
+  clusters: []
+
 catalog:
   rules:
     - allow: [Component, API, Group, Template, Location]
   processors:
-    githubApi:
-      privateToken:
-        $secret:
-          env: GITHUB_PRIVATE_TOKEN
+    github:
+      providers:
+        - target: https://github.com
+          token:
+            $secret:
+              env: GITHUB_PRIVATE_TOKEN
+        #### Example for how to add your GitHub Enterprise instance using the API:
+        # - target: https://ghe.example.net
+        #   apiBaseUrl: https://ghe.example.net/api/v3
+        #   token:
+        #     $secret:
+        #       env: GHE_PRIVATE_TOKEN
+        #### Example for how to add your GitHub Enterprise instance using raw HTTP fetches (token is optional):
+        # - target: https://ghe.example.net
+        #   rawBaseUrl: https://ghe.example.net/raw
+        #   token:
+        #     $secret:
+        #       env: GHE_PRIVATE_TOKEN
     bitbucketApi:
       username:
         $secret:
@@ -70,23 +104,46 @@ catalog:
       privateToken:
         $secret:
           env: AZURE_PRIVATE_TOKEN
-  exampleEntityLocations:
-    github:
-      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
-      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/playback-order-component.yaml
-      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/podcast-api-component.yaml
-      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/queue-proxy-component.yaml
-      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/searcher-component.yaml
-      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/playback-lib-component.yaml
-      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/www-artist-component.yaml
-      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/shuffle-api-component.yaml
-      - https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml
-      - https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/springboot-grpc-template/template.yaml
-      - https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/create-react-app/template.yaml
-      - https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml
-      - https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/docs-template/template.yaml
-      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/hello-world-api.yaml
-      - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/streetlights-api.yaml
+
+  locations:
+    # Backstage example components
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
+
+    # Example component for github-actions
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/plugins/github-actions/examples/sample.yaml
+
+    # Example component for techdocs
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/plugins/techdocs-backend/examples/documented-component/documented-component.yaml
+
+    # Backstage example APIs
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
+
+    # Backstage example templates
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/all-templates.yaml
+
+scaffolder:
+  github:
+    token:
+      $secret:
+        env: GITHUB_ACCESS_TOKEN
+    visibility: public # or 'internal' or 'private'
+  gitlab:
+    api:
+      baseUrl: https://gitlab.com
+      token:
+        $secret:
+          env: GITLAB_ACCESS_TOKEN
+  azure:
+    baseUrl: https://dev.azure.com/{your-organization}
+    api:
+      token:
+        $secret:
+          env: AZURE_PRIVATE_TOKEN
 
 auth:
   providers:
@@ -121,8 +178,8 @@ auth:
           $secret:
             env: GITLAB_BASE_URL
     saml:
-      entryPoint: "http://localhost:7001/"
-      issuer: "passport-saml"
+      entryPoint: 'http://localhost:7001/'
+      issuer: 'passport-saml'
     okta:
       development:
         clientId:
@@ -170,3 +227,23 @@ auth:
         tenantId:
           $secret:
             env: AUTH_MICROSOFT_TENANT_ID
+costInsights:
+  engineerCost: 200000
+  products:
+    computeEngine:
+      name: Compute Engine
+      icon: compute
+    cloudDataflow:
+      name: Cloud Dataflow
+      icon: data
+    cloudStorage:
+      name: Cloud Storage
+      icon: storage
+    bigQuery:
+      name: Big Query
+      icon: search
+  metrics:
+    dailyCost:
+      name: Your Company's Daily Cost
+    DAU:
+      name: Cost Per DAU

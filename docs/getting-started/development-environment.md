@@ -1,6 +1,8 @@
 ---
 id: development-environment
 title: Development Environment
+description: Documentation on how to get set up for doing development on
+the Backstage repository
 ---
 
 This section describes how to get set up for doing development on the Backstage
@@ -65,6 +67,7 @@ yarn storybook # Start local storybook, useful for working on components in @bac
 yarn workspace @backstage/plugin-welcome start # Serve welcome plugin only, also supports --check
 
 yarn tsc # Run typecheck, use --watch for watch mode
+yarn tsc:full # Run full type checking, for example without skipLibCheck, use in CI
 
 yarn build # Build published versions of packages, depends on tsc
 

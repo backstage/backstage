@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, useState } from 'react';
+import React, { useState } from 'react';
 import { Grid, makeStyles } from '@material-ui/core';
 import {
   InfoCard,
@@ -26,8 +26,9 @@ import {
   Header,
   SupportButton,
   ContentHeader,
+  RouteRef,
 } from '@backstage/core';
-import RegisterComponentForm from '../RegisterComponentForm';
+import { RegisterComponentForm } from '../RegisterComponentForm';
 import { catalogApiRef } from '@backstage/plugin-catalog';
 import { useMountedState } from 'react-use';
 import { Entity, Location } from '@backstage/catalog-model';
@@ -54,7 +55,12 @@ const FormStates = {
 } as const;
 
 type ValuesOf<T> = T extends Record<any, infer V> ? V : never;
-const RegisterComponentPage: FC<{}> = () => {
+
+export const RegisterComponentPage = ({
+  catalogRouteRef,
+}: {
+  catalogRouteRef: RouteRef;
+}) => {
   const classes = useStyles();
   const catalogApi = useApi(catalogApiRef);
   const [formState, setFormState] = useState<ValuesOf<typeof FormStates>>(
@@ -77,17 +83,19 @@ const RegisterComponentPage: FC<{}> = () => {
 
   const handleSubmit = async (formData: Record<string, string>) => {
     setFormState(FormStates.Submitting);
-    const { componentLocation: target } = formData;
+    const { scmType, componentLocation: target } = formData;
     try {
       const typeMapping = [
-        { url: /https:\/\/gitlab\.com\/.*/, type: 'gitlab' },
-        { url: /https:\/\/bitbucket\.org\/.*/, type: 'bitbucket/api' },
-        { url: /https:\/\/dev\.azure\.com\/.*/, type: 'azure/api' },
+        { url: /^https:\/\/gitlab\.com\/.*/, type: 'gitlab' },
+        { url: /^https:\/\/bitbucket\.org\/.*/, type: 'bitbucket/api' },
+        { url: /^https:\/\/dev\.azure\.com\/.*/, type: 'azure/api' },
         { url: /.*/, type: 'github' },
       ];
 
-      const type = typeMapping.filter(item => item.url.test(target))[0].type;
-
+      const type =
+        scmType === 'AUTO'
+          ? typeMapping.filter(item => item.url.test(target))[0].type
+          : scmType;
       const data = await catalogApi.addLocation(type, target);
 
       if (!isMounted()) return;
@@ -130,10 +138,9 @@ const RegisterComponentPage: FC<{}> = () => {
           entities={result.data!.entities}
           onClose={() => setFormState(FormStates.Idle)}
           classes={{ paper: classes.dialogPaper }}
+          catalogRouteRef={catalogRouteRef}
         />
       )}
     </Page>
   );
 };
-
-export default RegisterComponentPage;

@@ -1,7 +1,7 @@
 # FeatureFlagsApi
 
 The FeatureFlagsApi type is defined at
-[packages/core-api/src/apis/definitions/FeatureFlagsApi.ts:41](https://github.com/spotify/backstage/blob/f8780ff32509d0326bc513791ea60846d7614b34/packages/core-api/src/apis/definitions/FeatureFlagsApi.ts#L41).
+[packages/core-api/src/apis/definitions/FeatureFlagsApi.ts:41](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/FeatureFlagsApi.ts#L41).
 
 The following Utility API implements this type:
 [featureFlagsApiRef](./README.md#featureflags)

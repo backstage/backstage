@@ -1,6 +1,7 @@
 ---
 id: extending-templater
 title: Creating your own Templater
+description: Documentation on Creating your own Templater
 ---
 
 Templaters are responsible for taking the directory path for the skeleton
@@ -146,4 +147,4 @@ const templaters = new Templaters();
 templaters.register('handlebars', new HandlebarsTemplater());
 ```
 
-And then pass this in to the `createRouter` function.
+And then pass this into the `createRouter` function.

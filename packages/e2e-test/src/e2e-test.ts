@@ -55,6 +55,9 @@ async function main() {
   print('Creating a Backstage Plugin');
   const pluginName = await createPlugin('test-plugin', appDir);
 
+  print('Creating a Backstage Backend Plugin');
+  await createPlugin('test-backend-plugin', appDir, ['--backend']);
+
   print('Starting the app');
   await testAppServe(pluginName, appDir);
 
@@ -81,7 +84,11 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
     const path = paths.resolveOwnRoot(pkgJsonPath);
     const pkgTemplate = await fs.readFile(path, 'utf8');
     const { dependencies = {}, devDependencies = {} } = JSON.parse(
-      handlebars.compile(pkgTemplate)({ version: '0.0.0' }),
+      handlebars.compile(pkgTemplate)({
+        version: '0.0.0',
+        privatePackage: true,
+        scopeName: '@backstage',
+      }),
     );
 
     Array<string>()
@@ -234,8 +241,12 @@ async function overrideModuleResolutions(appDir: string, workspaceDir: string) {
 /**
  * Uses create-plugin command to create a new plugin in the app
  */
-async function createPlugin(pluginName: string, appDir: string) {
-  const child = spawnPiped(['yarn', 'create-plugin'], {
+async function createPlugin(
+  pluginName: string,
+  appDir: string,
+  options: string[] = [],
+) {
+  const child = spawnPiped(['yarn', 'create-plugin', ...options], {
     cwd: appDir,
   });
 
@@ -272,24 +283,37 @@ async function createPlugin(pluginName: string, appDir: string) {
 async function testAppServe(pluginName: string, appDir: string) {
   const startApp = spawnPiped(['yarn', 'start'], {
     cwd: appDir,
+    env: {
+      ...process.env,
+      GITHUB_ACCESS_TOKEN: 'abc',
+    },
   });
   Browser.localhost('localhost', 3000);
 
   let successful = false;
   try {
-    const browser = new Browser();
+    for (let attempts = 1; ; attempts++) {
+      try {
+        const browser = new Browser();
 
-    await waitForPageWithText(browser, '/', 'Backstage Service Catalog');
-    await waitForPageWithText(
-      browser,
-      `/${pluginName}`,
-      `Welcome to ${pluginName}!`,
-    );
+        await waitForPageWithText(browser, '/', 'Backstage Service Catalog');
+        await waitForPageWithText(
+          browser,
+          `/${pluginName}`,
+          `Welcome to ${pluginName}!`,
+        );
 
-    print('Both App and Plugin loaded correctly');
-    successful = true;
-  } catch (error) {
-    throw new Error(`App serve test failed, ${error}`);
+        print('Both App and Plugin loaded correctly');
+        successful = true;
+        break;
+      } catch (error) {
+        if (attempts >= 5) {
+          throw new Error(`App serve test failed, ${error}`);
+        }
+        console.log(`App serve failed, trying again, ${error}`);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+    }
   } finally {
     // Kill entire process group, otherwise we'll end up with hanging serve processes
     killTree(startApp.pid);
@@ -342,6 +366,10 @@ async function testBackendStart(appDir: string, isPostgres: boolean) {
 
   const child = spawnPiped(['yarn', 'workspace', 'backend', 'start'], {
     cwd: appDir,
+    env: {
+      ...process.env,
+      GITHUB_ACCESS_TOKEN: 'abc',
+    },
   });
 
   let stdout = '';
@@ -363,7 +391,7 @@ async function testBackendStart(appDir: string, isPostgres: boolean) {
 
     print('Try to fetch entities from the backend');
     // Try fetch entities, should be ok
-    await fetch('http://localhost:7000/catalog/entities').then(res =>
+    await fetch('http://localhost:7000/api/catalog/entities').then(res =>
       res.json(),
     );
     print('Entities fetched successfully');
@@ -386,5 +414,15 @@ async function testBackendStart(appDir: string, isPostgres: boolean) {
   }
 }
 
-process.on('unhandledRejection', handleError);
+process.on('unhandledRejection', (error: Error) => {
+  // Try to avoid exiting if the unhandled error is coming from jsdom, i.e. zombie.
+  // Those are typically errors on the page that should be benign, at least in the
+  // context of this test. We have other ways of asserting that the page is being
+  // rendered correctly.
+  if (error?.stack?.includes('node_modules/jsdom/lib')) {
+    console.log(`Ignored error inside jsdom, ${error}`);
+  } else {
+    handleError(error);
+  }
+});
 main().catch(handleError);

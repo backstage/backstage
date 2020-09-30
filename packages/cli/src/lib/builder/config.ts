@@ -37,7 +37,7 @@ export const makeConfigs = async (
   options: BuildOptions,
 ): Promise<RollupOptions[]> => {
   const typesInput = paths.resolveTargetRoot(
-    'dist',
+    'dist-types',
     relativePath(paths.targetRoot, paths.targetDir),
     'src/index.d.ts',
   );
@@ -94,14 +94,7 @@ export const makeConfigs = async (
         postcss(),
         imageFiles({
           exclude: /\.icon\.svg$/,
-          include: [
-            /\.css$/,
-            /\.svg$/,
-            /\.png$/,
-            /\.gif$/,
-            /\.jpg$/,
-            /\.jpeg$/,
-          ],
+          include: [/\.svg$/, /\.png$/, /\.gif$/, /\.jpg$/, /\.jpeg$/],
         }),
         json(),
         yaml(),

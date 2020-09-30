@@ -14,18 +14,8 @@
  * limitations under the License.
  */
 
-import { createPlugin, createRouteRef } from '@backstage/core';
-import RegisterComponentPage from './components/RegisterComponentPage';
-
-export const rootRoute = createRouteRef({
-  icon: () => null,
-  path: '/register-component',
-  title: 'Register component',
-});
+import { createPlugin } from '@backstage/core';
 
 export const plugin = createPlugin({
   id: 'register-component',
-  register({ router }) {
-    router.addRoute(rootRoute, RegisterComponentPage);
-  },
 });

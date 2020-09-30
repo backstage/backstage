@@ -22,16 +22,15 @@ import { WorkflowRunsTable } from './WorkflowRunsTable';
 import { GITHUB_ACTIONS_ANNOTATION } from './useProjectName';
 import { WarningPanel } from '@backstage/core';
 
-const isPluginApplicableToEntity = (entity: Entity) =>
-  Boolean(entity.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION]) &&
-  entity.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION] !== '';
+export const isPluginApplicableToEntity = (entity: Entity) =>
+  Boolean(entity.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION]);
 
 export const Router = ({ entity }: { entity: Entity }) =>
   // TODO(shmidt-i): move warning to a separate standardized component
   !isPluginApplicableToEntity(entity) ? (
-    <WarningPanel title=" GitHubActions plugin:">
-      `entity.metadata.annotations['
-      {GITHUB_ACTIONS_ANNOTATION}']` key is missing on the entity.{' '}
+    <WarningPanel title="GitHubActions plugin:">
+      <pre>{GITHUB_ACTIONS_ANNOTATION}</pre> annotation is missing on the
+      entity.
     </WarningPanel>
   ) : (
     <Routes>

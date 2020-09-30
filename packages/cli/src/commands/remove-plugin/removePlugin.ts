@@ -84,7 +84,7 @@ const removeAllStatementsContainingID = async (file: string, ID: string) => {
   const originalContent = await fse.readFile(file, 'utf8');
   const contentAfterRemoval = originalContent
     .split('\n')
-    .filter((statement) => !statement.includes(`${ID}`)) // get rid of lines with pluginName
+    .filter(statement => !statement.includes(`${ID}`)) // get rid of lines with pluginName
     .join('\n');
   if (originalContent !== contentAfterRemoval) {
     await fse.writeFile(file, contentAfterRemoval, 'utf8');
@@ -100,7 +100,7 @@ export const removeReferencesFromPluginsFile = async (
 ) => {
   const pluginNameCapitalized = pluginName
     .split('-')
-    .map((name) => capitalize(name))
+    .map(name => capitalize(name))
     .join('');
 
   await Task.forItem('removing', 'export references', async () => {

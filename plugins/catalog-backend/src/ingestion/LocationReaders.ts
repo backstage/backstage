@@ -15,27 +15,29 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { Config, ConfigReader } from '@backstage/config';
 import {
   Entity,
   EntityPolicies,
   EntityPolicy,
   LocationSpec,
 } from '@backstage/catalog-model';
+import { Config, ConfigReader } from '@backstage/config';
 import { Logger } from 'winston';
+import { CatalogRulesEnforcer } from './CatalogRules';
 import { AnnotateLocationEntityProcessor } from './processors/AnnotateLocationEntityProcessor';
+import { ApiDefinitionAtLocationProcessor } from './processors/ApiDefinitionAtLocationProcessor';
+import { AzureApiReaderProcessor } from './processors/AzureApiReaderProcessor';
+import { BitbucketApiReaderProcessor } from './processors/BitbucketApiReaderProcessor';
 import { EntityPolicyProcessor } from './processors/EntityPolicyProcessor';
 import { FileReaderProcessor } from './processors/FileReaderProcessor';
 import { GithubReaderProcessor } from './processors/GithubReaderProcessor';
-import { GithubApiReaderProcessor } from './processors/GithubApiReaderProcessor';
 import { GitlabApiReaderProcessor } from './processors/GitlabApiReaderProcessor';
 import { GitlabReaderProcessor } from './processors/GitlabReaderProcessor';
-import { BitbucketApiReaderProcessor } from './processors/BitbucketApiReaderProcessor';
-import { AzureApiReaderProcessor } from './processors/AzureApiReaderProcessor';
-import { UrlReaderProcessor } from './processors/UrlReaderProcessor';
 import { LocationRefProcessor } from './processors/LocationEntityProcessor';
-import { StaticLocationProcessor } from './processors/StaticLocationProcessor';
+import { PlaceholderProcessor } from './processors/PlaceholderProcessor';
+import { CodeOwnersProcessor } from './processors/CodeOwnersProcessor';
 import * as result from './processors/results';
+import { StaticLocationProcessor } from './processors/StaticLocationProcessor';
 import {
   LocationProcessor,
   LocationProcessorDataResult,
@@ -45,9 +47,9 @@ import {
   LocationProcessorLocationResult,
   LocationProcessorResult,
 } from './processors/types';
+import { UrlReaderProcessor } from './processors/UrlReaderProcessor';
 import { YamlProcessor } from './processors/YamlProcessor';
 import { LocationReader, ReadLocationResult } from './types';
-import { CatalogRulesEnforcer } from './CatalogRules';
 
 // The max amount of nesting depth of generated work items
 const MAX_DEPTH = 10;
@@ -67,24 +69,28 @@ export class LocationReaders implements LocationReader {
   private readonly rulesEnforcer: CatalogRulesEnforcer;
 
   static defaultProcessors(options: {
+    logger: Logger;
     config?: Config;
     entityPolicy?: EntityPolicy;
   }): LocationProcessor[] {
     const {
+      logger,
       config = new ConfigReader({}, 'missing-config'),
       entityPolicy = new EntityPolicies(),
     } = options;
     return [
       StaticLocationProcessor.fromConfig(config),
       new FileReaderProcessor(),
-      new GithubReaderProcessor(),
-      new GithubApiReaderProcessor(config),
+      GithubReaderProcessor.fromConfig(config, logger),
       new GitlabApiReaderProcessor(config),
       new GitlabReaderProcessor(),
       new BitbucketApiReaderProcessor(config),
       new AzureApiReaderProcessor(config),
       new UrlReaderProcessor(),
       new YamlProcessor(),
+      PlaceholderProcessor.default(),
+      new CodeOwnersProcessor(),
+      new ApiDefinitionAtLocationProcessor(),
       new EntityPolicyProcessor(entityPolicy),
       new LocationRefProcessor(),
       new AnnotateLocationEntityProcessor(),
@@ -94,7 +100,7 @@ export class LocationReaders implements LocationReader {
   constructor({
     logger = getVoidLogger(),
     config,
-    processors = LocationReaders.defaultProcessors({ config }),
+    processors = LocationReaders.defaultProcessors({ logger, config }),
   }: Options) {
     this.logger = logger;
     this.processors = processors;
@@ -218,7 +224,12 @@ export class LocationReaders implements LocationReader {
     for (const processor of this.processors) {
       if (processor.processEntity) {
         try {
-          current = await processor.processEntity(current, item.location, emit);
+          current = await processor.processEntity(
+            current,
+            item.location,
+            emit,
+            this.readLocation.bind(this),
+          );
         } catch (e) {
           const message = `Processor ${processor.constructor.name} threw an error while processing entity at ${item.location.type} ${item.location.target}, ${e}`;
           emit(result.generalError(item.location, message));
@@ -247,5 +258,41 @@ export class LocationReaders implements LocationReader {
         }
       }
     }
+  }
+
+  private async readLocation(location: LocationSpec): Promise<Buffer> {
+    let data: Buffer | undefined = undefined;
+    let error: Error | undefined = undefined;
+
+    await this.handleLocation(
+      {
+        type: 'location',
+        location,
+        optional: false,
+      },
+      output => {
+        if (output.type === 'error' && !error) {
+          error = output.error;
+        } else if (output.type === 'data') {
+          if (data) {
+            if (!error) {
+              error = new Error(
+                'More than one piece of data loaded unexpectedly',
+              );
+            }
+          } else {
+            data = output.data;
+          }
+        }
+      },
+    );
+
+    if (error) {
+      throw error;
+    } else if (!data) {
+      throw new Error('No data loaded');
+    }
+
+    return data;
   }
 }

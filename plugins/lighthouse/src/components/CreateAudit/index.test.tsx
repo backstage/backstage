@@ -78,9 +78,7 @@ describe('CreateAudit', () => {
             <CreateAudit />
           </ApiProvider>,
           {
-            routeEntries: [
-              `/lighthouse/create-audit?url=${encodeURIComponent(url)}`,
-            ],
+            routeEntries: [`/create-audit?url=${encodeURIComponent(url)}`],
           },
         ),
       );
@@ -137,7 +135,7 @@ describe('CreateAudit', () => {
 
       await wait(() => expect(rendered.getByLabelText(/URL/)).toBeEnabled());
 
-      expect(useNavigate()).toHaveBeenCalledWith('/lighthouse');
+      expect(useNavigate()).toHaveBeenCalledWith('..');
     });
   });
 

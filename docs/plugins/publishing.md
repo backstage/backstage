@@ -1,6 +1,7 @@
 ---
 id: publishing
 title: Publishing
+description: Documentation on Publishing NPM packages
 ---
 
 ## NPM
@@ -19,6 +20,9 @@ out a new branch that you will use for the release, e.g.
 ```sh
 $ git checkout -b new-release
 ```
+
+First bump the `CHANGELOG.md` in the root of the repo and commit. You bump it by
+adding a header for the new version just below the `## Next Release` one.
 
 Then, from the root of the repo, run
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Entity } from '@backstage/catalog-model';
+import { Entity, EntityName, getEntityName } from '@backstage/catalog-model';
 import lodash from 'lodash';
 import type { EntitiesCatalog } from './types';
 
@@ -34,17 +34,15 @@ export class StaticEntitiesCatalog implements EntitiesCatalog {
     return item ? lodash.cloneDeep(item) : undefined;
   }
 
-  async entityByName(
-    kind: string,
-    name: string,
-    namespace: string | undefined,
-  ): Promise<Entity | undefined> {
-    const item = this._entities.find(
-      e =>
-        kind === e.kind &&
-        name === e.metadata.name &&
-        namespace === e.metadata.namespace,
-    );
+  async entityByName(name: EntityName): Promise<Entity | undefined> {
+    const item = this._entities.find(e => {
+      const candidate = getEntityName(e);
+      return (
+        name.kind.toLowerCase() === candidate.kind.toLowerCase() &&
+        name.namespace.toLowerCase() === candidate.namespace.toLowerCase() &&
+        name.name.toLowerCase() === candidate.name.toLowerCase()
+      );
+    });
     return item ? lodash.cloneDeep(item) : undefined;
   }
 

@@ -18,8 +18,9 @@ import { BuildSummary, GitType } from 'circleci-api';
 import { useCallback, useEffect, useState } from 'react';
 import { useAsyncRetry } from 'react-use';
 import { circleCIApiRef } from '../api/index';
-import type { CITableBuildInfo } from '../pages/BuildsPage/lib/CITable';
-import { useSettings } from './useSettings';
+import type { CITableBuildInfo } from '../components/BuildsPage/lib/CITable';
+import { useEntity } from '@backstage/plugin-catalog';
+import { CIRCLECI_ANNOTATION } from '../constants';
 
 const makeReadableStatus = (status: string | undefined) => {
   if (!status) return '';
@@ -68,8 +69,25 @@ export const transform = (
   });
 };
 
+export const useProjectSlugFromEntity = () => {
+  const { entity } = useEntity();
+  const [vcs, owner, repo] = (
+    entity.metadata.annotations?.[CIRCLECI_ANNOTATION] ?? ''
+  ).split('/');
+  return { vcs, owner, repo };
+};
+
+export function mapVcsType(vcs: string): GitType {
+  switch (vcs) {
+    case 'github':
+      return GitType.GITHUB;
+    default:
+      return GitType.BITBUCKET;
+  }
+}
+
 export function useBuilds() {
-  const [{ repo, owner, token }] = useSettings();
+  const { repo, owner, vcs } = useProjectSlugFromEntity();
   const api = useApi(circleCIApiRef);
   const errorApi = useApi(errorApiRef);
 
@@ -79,7 +97,7 @@ export function useBuilds() {
 
   const getBuilds = useCallback(
     async ({ limit, offset }: { limit: number; offset: number }) => {
-      if (owner === '' || repo === '' || token === '') {
+      if (owner === '' || repo === '' || vcs === '') {
         return Promise.reject('No credentials provided');
       }
 
@@ -87,11 +105,10 @@ export function useBuilds() {
         return await api.getBuilds(
           { limit, offset },
           {
-            token: token,
             vcs: {
               owner: owner,
               repo: repo,
-              type: GitType.GITHUB,
+              type: mapVcsType(vcs),
             },
           },
         );
@@ -100,13 +117,12 @@ export function useBuilds() {
         return Promise.reject(e);
       }
     },
-    [repo, token, owner, api, errorApi],
+    [repo, owner, vcs, api, errorApi],
   );
 
   const restartBuild = async (buildId: number) => {
     try {
       await api.retry(buildId, {
-        token: token,
         vcs: {
           owner: owner,
           repo: repo,

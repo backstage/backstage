@@ -1,6 +1,9 @@
 ---
 id: oauth
 title: OAuth and OpenID Connect
+description: This section describes how Backstage allows plugins to request
+OAuth Access Tokens and OpenID Connect ID Tokens on behalf of the user, to be
+used for auth to various third party APIs
 ---
 
 This section describes how Backstage allows plugins to request OAuth Access
@@ -49,7 +52,7 @@ in a new popup window that is opened by the app. By using a popup-based flow it
 is possible to request authentication at any point in the app, without requiring
 a redirect. Because of this there is no need to ask for all scopes upfront, or
 interrupt the app with a redirect and forcing plugin authors to take care in
-restoring state after a redirect has been make. All in all it makes it much
+restoring state after a redirect has been made. All in all it makes it much
 easier to make authenticated requests inside a plugin.
 
 ## OAuth Flow
@@ -64,7 +67,7 @@ Component and APIs can request Access or ID Tokens from any available Auth
 provider. If there already exists a cached fresh token that covers (at least)
 the requested scopes, it will be returned immediately. If the OAuth provider
 implements token refreshes, this check will also trigger a token refresh attempt
-if no session is a available.
+if no session is available.
 
 If new scopes are requested, or the user is not yet logged in with that
 provider, a dialog is shown informing the user that they need to log in with the
@@ -104,10 +107,10 @@ request an access token.
 
 The following diagram visualizes the flow described in the previous section.
 
-![](oauth-popup-flow.svg)
+![Sequence Diagram](../assets/auth/oauth-popup-flow.svg)
 
 <!--
-@startuml oauth-popup-flow
+@startuml /../assets/auth/oauth-popup-flow
 
 skinparam monochrome true
 skinparam shadowing false

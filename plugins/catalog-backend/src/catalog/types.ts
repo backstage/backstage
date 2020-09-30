@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, Location } from '@backstage/catalog-model';
+import { Entity, EntityName, Location } from '@backstage/catalog-model';
 import type { EntityFilters } from '../database';
 
 //
@@ -24,11 +24,7 @@ import type { EntityFilters } from '../database';
 export type EntitiesCatalog = {
   entities(filters?: EntityFilters): Promise<Entity[]>;
   entityByUid(uid: string): Promise<Entity | undefined>;
-  entityByName(
-    kind: string,
-    namespace: string | undefined,
-    name: string,
-  ): Promise<Entity | undefined>;
+  entityByName(name: EntityName): Promise<Entity | undefined>;
   addOrUpdateEntity(entity: Entity, locationId?: string): Promise<Entity>;
   removeEntityByUid(uid: string): Promise<void>;
 };

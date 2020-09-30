@@ -78,6 +78,41 @@ const Background = props => {
         </Block.Container>
       </Block>
 
+      <Block className="stripe-bottom bg-black-grey">
+        <Block.Container style={{ justifyContent: 'flex-start' }}>
+          <Block.TextBox>
+            <Block.Title id="techdocs-demo">
+              Make documentation easy
+            </Block.Title>
+            <Block.Paragraph>
+              Documentation! Everyone needs it, no one wants to create it, and
+              no one can ever find it. Backstage follows a “docs like code”
+              approach: you write documentation in Markdown files right
+              alongside your code. This makes documentation easier to create,
+              maintain, find — and, you know, actually use. This demo video
+              showcases Spotify’s internal version of TechDocs. Learn more about{' '}
+              <a href="https://backstage.io/blog/2020/09/08/announcing-tech-docs">
+                TechDocs
+              </a>
+              .
+            </Block.Paragraph>
+            <Block.LinkButton href={'https://youtu.be/mOLCgdPw1iA'}>
+              Watch now
+            </Block.LinkButton>
+          </Block.TextBox>
+          <Block.MediaFrame>
+            <iframe
+              width="560"
+              height="315"
+              src="https://www.youtube.com/embed/mOLCgdPw1iA"
+              frameborder="0"
+              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+            ></iframe>
+          </Block.MediaFrame>
+        </Block.Container>
+      </Block>
+
       <Block small className="bg-black-grey">
         <Block.Container style={{ justifyContent: 'flex-start' }}>
           <Block.TextBox>

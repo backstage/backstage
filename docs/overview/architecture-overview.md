@@ -1,7 +1,25 @@
 ---
 id: architecture-overview
 title: Architecture overview
+description: Documentation on Architecture overview
 ---
+
+## Terminology
+
+Backstage is constructed out of three parts. We separate Backstage in this way
+because we see three groups of contributors that work with Backstage in three
+different ways.
+
+- Core - Base functionality built by core developers in the open source project.
+- App - The app is an instance of a Backstage app that is deployed and tweaked.
+  The app ties together core functionality with additional plugins. The app is
+  built and maintained by app developers, usually a productivity team within a
+  company.
+- Plugins - Additional functionality to make your Backstage app useful for your
+  company. Plugins can be specific to a company or open sourced and reusable. At
+  Spotify we have over 100 plugins built by over 50 different teams. It has been
+  very powerful to get contributions from various infrastructure teams added
+  into a single unified developer experience.
 
 ## Overview
 
@@ -171,21 +189,19 @@ The frontend container can be built with a provided command.
 ```bash
 yarn install
 yarn tsc
-yarn build
-yarn run docker-build
+yarn run docker-build:app
 ```
 
 Running this will simply generate a Docker container containing the contents of
-the UIs `dist` directory. The resulting container will be about 50MB in size.
+the UIs `dist` directory.
 
-The backend container can be built by running the following command in the
-`packages/backend` directory.
+The backend container can be built by running the following command:
 
 ```bash
-yarn run build-image
+yarn run docker-build
 ```
 
-This will create a ~500MB container called `example-backend`.
+This will create a container called `example-backend`.
 
 The lighthouse-audit-service container is already publicly available in Docker
 Hub and can be downloaded and ran with

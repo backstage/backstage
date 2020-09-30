@@ -1,12 +1,18 @@
 # Config
 
 The Config type is defined at
-[packages/config/src/types.ts:32](https://github.com/spotify/backstage/blob/f8780ff32509d0326bc513791ea60846d7614b34/packages/config/src/types.ts#L32).
+[packages/config/src/types.ts:32](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/config/src/types.ts#L32).
 
 The following Utility API implements this type:
 [configApiRef](./README.md#config)
 
 ## Members
+
+### has()
+
+<pre>
+has(key: string): boolean
+</pre>
 
 ### keys()
 
@@ -17,13 +23,13 @@ keys(): string[]
 ### get()
 
 <pre>
-get(key: string): <a href="#jsonvalue">JsonValue</a>
+get(key?: string): <a href="#jsonvalue">JsonValue</a>
 </pre>
 
 ### getOptional()
 
 <pre>
-getOptional(key: string): <a href="#jsonvalue">JsonValue</a> | undefined
+getOptional(key?: string): <a href="#jsonvalue">JsonValue</a> | undefined
 </pre>
 
 ### getConfig()
@@ -106,10 +112,12 @@ These types are part of the API declaration, but may not be unique to this API.
 
 <pre>
 export type Config = {
+  has(key: string): boolean;
+
   keys(): string[];
 
-  get(key: string): <a href="#jsonvalue">JsonValue</a>;
-  getOptional(key: string): <a href="#jsonvalue">JsonValue</a> | undefined;
+  get(key?: string): <a href="#jsonvalue">JsonValue</a>;
+  getOptional(key?: string): <a href="#jsonvalue">JsonValue</a> | undefined;
 
   getConfig(key: string): Config;
   getOptionalConfig(key: string): <a href="#config">Config</a> | undefined;
@@ -132,7 +140,7 @@ export type Config = {
 </pre>
 
 Defined at
-[packages/config/src/types.ts:32](https://github.com/spotify/backstage/blob/f8780ff32509d0326bc513791ea60846d7614b34/packages/config/src/types.ts#L32).
+[packages/config/src/types.ts:32](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/config/src/types.ts#L32).
 
 Referenced by: [getConfig](#getconfig), [getOptionalConfig](#getoptionalconfig),
 [getConfigArray](#getconfigarray),
@@ -145,7 +153,7 @@ export type JsonArray = <a href="#jsonvalue">JsonValue</a>[]
 </pre>
 
 Defined at
-[packages/config/src/types.ts:18](https://github.com/spotify/backstage/blob/f8780ff32509d0326bc513791ea60846d7614b34/packages/config/src/types.ts#L18).
+[packages/config/src/types.ts:18](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/config/src/types.ts#L18).
 
 Referenced by: [JsonValue](#jsonvalue).
 
@@ -156,7 +164,7 @@ export type JsonObject = { [key in string]?: <a href="#jsonvalue">JsonValue</a> 
 </pre>
 
 Defined at
-[packages/config/src/types.ts:17](https://github.com/spotify/backstage/blob/f8780ff32509d0326bc513791ea60846d7614b34/packages/config/src/types.ts#L17).
+[packages/config/src/types.ts:17](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/config/src/types.ts#L17).
 
 Referenced by: [JsonValue](#jsonvalue).
 
@@ -173,7 +181,7 @@ export type JsonValue =
 </pre>
 
 Defined at
-[packages/config/src/types.ts:19](https://github.com/spotify/backstage/blob/f8780ff32509d0326bc513791ea60846d7614b34/packages/config/src/types.ts#L19).
+[packages/config/src/types.ts:19](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/config/src/types.ts#L19).
 
 Referenced by: [get](#get), [getOptional](#getoptional),
 [JsonObject](#jsonobject), [JsonArray](#jsonarray), [Config](#config).

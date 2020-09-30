@@ -67,8 +67,9 @@ const siteConfig = {
     primaryColor: '#36BAA2',
     secondaryColor: '#121212',
     textColor: '#FFFFFF',
-    navigatorTitleTextColor: '#9e9e9e',
-    navigatorItemTextColor: '#616161',
+    navigatorTitleTextColor: '#e4e4e4',
+    navigatorItemTextColor: '#9e9e9e',
+    navGroupSubcategoryTitleColor: '#9e9e9e',
   },
 
   /* Colors for syntax highlighting */
@@ -93,8 +94,10 @@ const siteConfig = {
   cleanUrl: true,
 
   // Open Graph and Twitter card images.
-  ogImage: 'img/logo-gradient-on-dark.svg',
-  twitterImage: 'img/logo-gradient-on-dark.svg',
+  ogImage:
+    'logo_assets/png/Backstage_Identity_Assets_Artwork_RGB_04_Icon_Teal.png',
+  twitterImage:
+    'logo_assets/png/Backstage_Identity_Assets_Artwork_RGB_04_Icon_Teal.png',
 
   // For sites with a sizable amount of content, set collapsible to true.
   // Expand/collapse the links and subcategories under categories.

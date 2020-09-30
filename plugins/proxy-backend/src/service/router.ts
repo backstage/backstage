@@ -18,16 +18,21 @@ import { Config } from '@backstage/config';
 import express from 'express';
 import Router from 'express-promise-router';
 import createProxyMiddleware, {
-  Config as ProxyConfig,
+  Config as ProxyMiddlewareConfig,
   Proxy,
 } from 'http-proxy-middleware';
 import { Logger } from 'winston';
+import http from 'http';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
 
 export interface RouterOptions {
   logger: Logger;
   config: Config;
-  // The URL path prefix that the router itself is mounted as, commonly "/proxy"
-  pathPrefix: string;
+  discovery: PluginEndpointDiscovery;
+}
+
+export interface ProxyConfig extends ProxyMiddlewareConfig {
+  allowedMethods?: string[];
 }
 
 // Creates a proxy middleware, possibly with defaults added on top of the
@@ -58,7 +63,12 @@ function buildMiddleware(
   // Attach the logger to the proxy config
   fullConfig.logProvider = () => logger;
 
-  return createProxyMiddleware(fullConfig);
+  // Only permit the allowed HTTP methods if configured
+  const filter = (_pathname: string, req: http.IncomingMessage): boolean => {
+    return fullConfig?.allowedMethods?.includes(req.method!) ?? true;
+  };
+
+  return createProxyMiddleware(filter, fullConfig);
 }
 
 export async function createRouter(
@@ -66,16 +76,14 @@ export async function createRouter(
 ): Promise<express.Router> {
   const router = Router();
 
+  const externalUrl = await options.discovery.getExternalBaseUrl('proxy');
+  const { pathname: pathPrefix } = new URL(externalUrl);
+
   const proxyConfig = options.config.getOptional('proxy') ?? {};
   Object.entries(proxyConfig).forEach(([route, proxyRouteConfig]) => {
     router.use(
       route,
-      buildMiddleware(
-        options.pathPrefix,
-        options.logger,
-        route,
-        proxyRouteConfig,
-      ),
+      buildMiddleware(pathPrefix, options.logger, route, proxyRouteConfig),
     );
   });
 

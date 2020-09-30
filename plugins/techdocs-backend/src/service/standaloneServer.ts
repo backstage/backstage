@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { createServiceBuilder } from '@backstage/backend-common';
+import {
+  createServiceBuilder,
+  SingleHostDiscovery,
+} from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
@@ -38,6 +41,8 @@ export async function startStandaloneServer(
   options: ServerOptions,
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'techdocs-backend' });
+  const config = ConfigReader.fromConfigs([]);
+  const discovery = SingleHostDiscovery.fromConfig(config);
 
   logger.debug('Creating application...');
   const preparers = new Preparers();
@@ -45,7 +50,7 @@ export async function startStandaloneServer(
   preparers.register('dir', directoryPreparer);
 
   const generators = new Generators();
-  const techdocsGenerator = new TechdocsGenerator(logger);
+  const techdocsGenerator = new TechdocsGenerator(logger, config);
   generators.register('techdocs', techdocsGenerator);
 
   const publisher = new LocalPublish(logger);
@@ -59,7 +64,8 @@ export async function startStandaloneServer(
     logger,
     publisher,
     dockerClient,
-    config: ConfigReader.fromConfigs([]),
+    config,
+    discovery,
   });
   const service = createServiceBuilder(module)
     .enableCors({ origin: 'http://localhost:3000' })

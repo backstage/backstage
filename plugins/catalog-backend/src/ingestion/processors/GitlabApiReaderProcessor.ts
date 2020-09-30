@@ -83,10 +83,6 @@ export class GitlabApiReaderProcessor implements LocationProcessor {
 
       const branchAndfilePath = url.pathname.split('/-/blob/')[1];
 
-      if (!branchAndfilePath.match(/\.ya?ml$/)) {
-        throw new Error('GitLab url does not end in .ya?ml');
-      }
-
       const [branch, ...filePath] = branchAndfilePath.split('/');
 
       url.pathname = [

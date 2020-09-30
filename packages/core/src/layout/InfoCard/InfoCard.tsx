@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import React, { FC, ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import {
   Card,
   CardActions,
   CardContent,
   CardHeader,
+  CardHeaderProps,
   Divider,
   withStyles,
   makeStyles,
@@ -29,21 +30,26 @@ import { ErrorBoundary } from '../ErrorBoundary';
 import { BottomLink, BottomLinkProps } from '../BottomLink';
 
 const useStyles = makeStyles(theme => ({
-  header: {
-    padding: theme.spacing(2, 2, 2, 2.5),
-  },
   noPadding: {
     padding: 0,
     '&:last-child': {
       paddingBottom: 0,
     },
   },
+  header: {
+    display: 'inline-block',
+    padding: theme.spacing(2, 2, 2, 2.5),
+  },
+  headerTitle: {
+    fontWeight: 700,
+  },
+  headerSubheader: {
+    paddingTop: theme.spacing(1),
+  },
+  headerAvatar: {},
+  headerAction: {},
+  headerContent: {},
 }));
-
-const BoldHeader = withStyles(theme => ({
-  title: { fontWeight: 700 },
-  subheader: { paddingTop: theme.spacing(1) },
-}))(CardHeader);
 
 const CardActionsTopRight = withStyles(theme => ({
   root: {
@@ -130,7 +136,7 @@ type Props = {
   cardStyle?: object;
   children?: ReactNode;
   headerStyle?: object;
-  headerProps?: object;
+  headerProps?: CardHeaderProps;
   actionsClassName?: string;
   actions?: ReactNode;
   cardClassName?: string;
@@ -139,7 +145,7 @@ type Props = {
   noPadding?: boolean;
 };
 
-export const InfoCard: FC<Props> = ({
+export const InfoCard = ({
   title,
   subheader,
   divider,
@@ -155,7 +161,7 @@ export const InfoCard: FC<Props> = ({
   actionsTopRight,
   className,
   noPadding,
-}) => {
+}: Props): JSX.Element => {
   const classes = useStyles();
 
   /**
@@ -186,11 +192,18 @@ export const InfoCard: FC<Props> = ({
       <ErrorBoundary slackChannel={slackChannel}>
         {title && (
           <>
-            <BoldHeader
-              className={classes.header}
+            <CardHeader
+              classes={{
+                root: classes.header,
+                title: classes.headerTitle,
+                subheader: classes.headerSubheader,
+                avatar: classes.headerAvatar,
+                action: classes.headerAction,
+                content: classes.headerContent,
+              }}
               title={title}
               subheader={subheader}
-              style={{ display: 'inline-block', ...headerStyle }}
+              style={{ ...headerStyle }}
               {...headerProps}
             />
             <Divider />

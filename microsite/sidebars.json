@@ -3,14 +3,15 @@
     "Overview": [
       "overview/what-is-backstage",
       "overview/architecture-overview",
-      "overview/architecture-terminology",
       "overview/roadmap",
       "overview/vision",
       "overview/background",
-      "overview/adopting"
+      "overview/adopting",
+      "overview/logos"
     ],
     "Getting Started": [
       "getting-started/index",
+      "getting-started/running-backstage-locally",
       "getting-started/installation",
       "getting-started/development-environment",
       "getting-started/create-an-app",
@@ -31,14 +32,18 @@
         ]
       }
     ],
-    "Features": [
+    "Core Features": [
       {
         "type": "subcategory",
         "label": "Software Catalog",
         "ids": [
           "features/software-catalog/software-catalog-overview",
+          "features/software-catalog/installation",
+          "features/software-catalog/configuration",
           "features/software-catalog/system-model",
           "features/software-catalog/descriptor-format",
+          "features/software-catalog/references",
+          "features/software-catalog/well-known-annotations",
           "features/software-catalog/extending-the-model",
           "features/software-catalog/external-integrations",
           "features/software-catalog/software-catalog-api"
@@ -46,9 +51,10 @@
       },
       {
         "type": "subcategory",
-        "label": "Software creation templates",
+        "label": "Software Templates",
         "ids": [
           "features/software-templates/software-templates-index",
+          "features/software-templates/installation",
           "features/software-templates/adding-templates",
           "features/software-templates/extending/extending-index",
           "features/software-templates/extending/extending-templater",
@@ -58,12 +64,14 @@
       },
       {
         "type": "subcategory",
-        "label": "Docs-like-code",
+        "label": "TechDocs",
         "ids": [
           "features/techdocs/techdocs-overview",
           "features/techdocs/getting-started",
           "features/techdocs/concepts",
+          "features/techdocs/architecture",
           "features/techdocs/creating-and-publishing",
+          "features/techdocs/troubleshooting",
           "features/techdocs/faqs"
         ]
       }
@@ -92,7 +100,11 @@
       {
         "type": "subcategory",
         "label": "Publishing",
-        "ids": ["plugins/publishing", "plugins/publish-private", "plugins/add-to-marketplace"]
+        "ids": [
+          "plugins/publishing",
+          "plugins/publish-private",
+          "plugins/add-to-marketplace"
+        ]
       }
     ],
     "Configuration": [
@@ -133,7 +145,11 @@
         "ids": ["api/backend"]
       }
     ],
-    "Tutorials": ["tutorials/journey"],
+    "Tutorials": [
+      "tutorials/journey",
+      "tutorials/quickstart-app-auth",
+      "tutorials/quickstart-app-plugin"
+    ],
     "Architecture Decision Records (ADRs)": [
       "architecture-decisions/adrs-overview",
       "architecture-decisions/adrs-adr001",
@@ -143,7 +159,8 @@
       "architecture-decisions/adrs-adr005",
       "architecture-decisions/adrs-adr006",
       "architecture-decisions/adrs-adr007",
-      "architecture-decisions/adrs-adr008"
+      "architecture-decisions/adrs-adr008",
+      "architecture-decisions/adrs-adr009"
     ],
     "Contribute": ["../CONTRIBUTING"],
     "Support": ["overview/support"],

@@ -26,6 +26,8 @@ export interface ApiEntityV1alpha1 extends Entity {
   kind: typeof KIND;
   spec: {
     type: string;
+    lifecycle: string;
+    owner: string;
     definition: string;
   };
 }
@@ -40,6 +42,8 @@ export class ApiEntityV1alpha1Policy implements EntityPolicy {
       spec: yup
         .object({
           type: yup.string().required().min(1),
+          lifecycle: yup.string().required().min(1),
+          owner: yup.string().required().min(1),
           definition: yup.string().required().min(1),
         })
         .required(),

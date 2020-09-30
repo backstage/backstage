@@ -1,11 +1,15 @@
 # OpenIdConnectApi
 
 The OpenIdConnectApi type is defined at
-[packages/core-api/src/apis/definitions/auth.ts:104](https://github.com/spotify/backstage/blob/f8780ff32509d0326bc513791ea60846d7614b34/packages/core-api/src/apis/definitions/auth.ts#L104).
+[packages/core-api/src/apis/definitions/auth.ts:99](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/auth.ts#L99).
 
 The following Utility APIs implement this type:
 
+- [auth0AuthApiRef](./README.md#auth0auth)
+
 - [googleAuthApiRef](./README.md#googleauth)
+
+- [microsoftAuthApiRef](./README.md#microsoftauth)
 
 - [oauth2ApiRef](./README.md#oauth2)
 
@@ -28,14 +32,6 @@ user rejects the login request.
 
 <pre>
 getIdToken(options?: <a href="#authrequestoptions">AuthRequestOptions</a>): Promise&lt;string&gt;
-</pre>
-
-### logout()
-
-Log out the user's session. This will reload the page.
-
-<pre>
-logout(): Promise&lt;void&gt;
 </pre>
 
 ## Supporting types
@@ -70,6 +66,6 @@ export type AuthRequestOptions = {
 </pre>
 
 Defined at
-[packages/core-api/src/apis/definitions/auth.ts:40](https://github.com/spotify/backstage/blob/f8780ff32509d0326bc513791ea60846d7614b34/packages/core-api/src/apis/definitions/auth.ts#L40).
+[packages/core-api/src/apis/definitions/auth.ts:40](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/auth.ts#L40).
 
 Referenced by: [getIdToken](#getidtoken).

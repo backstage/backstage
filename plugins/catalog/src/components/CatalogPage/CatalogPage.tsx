@@ -46,6 +46,9 @@ const useStyles = makeStyles(theme => ({
     gridTemplateColumns: '250px 1fr',
     gridColumnGap: theme.spacing(2),
   },
+  buttonSpacing: {
+    marginLeft: theme.spacing(2),
+  },
 }));
 
 const CatalogPageContents = () => {
@@ -56,6 +59,7 @@ const CatalogPageContents = () => {
     reload,
     matchingEntities,
     availableTags,
+    isCatalogEmpty,
   } = useFilteredEntities();
   const configApi = useApi(configApiRef);
   const catalogApi = useApi(catalogApiRef);
@@ -141,6 +145,9 @@ const CatalogPageContents = () => {
     [isStarredEntity, userId, orgName],
   );
 
+  const showAddExampleEntities =
+    configApi.has('catalog.exampleEntityLocations') && isCatalogEmpty;
+
   return (
     <CatalogLayout>
       <CatalogTabs
@@ -158,6 +165,16 @@ const CatalogPageContents = () => {
           >
             Create Component
           </Button>
+          {showAddExampleEntities && (
+            <Button
+              className={styles.buttonSpacing}
+              variant="outlined"
+              color="primary"
+              onClick={addMockData}
+            >
+              Add example components
+            </Button>
+          )}
           <SupportButton>All your software catalog entities</SupportButton>
         </ContentHeader>
         <div className={styles.contentWrapper}>
@@ -174,7 +191,6 @@ const CatalogPageContents = () => {
             entities={matchingEntities}
             loading={loading}
             error={error}
-            onAddMockData={addMockData}
           />
         </div>
       </Content>

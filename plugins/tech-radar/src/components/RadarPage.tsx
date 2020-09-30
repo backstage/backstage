@@ -24,36 +24,46 @@ import {
   HeaderLabel,
   SupportButton,
   pageTheme,
-  useApi,
 } from '@backstage/core';
 import RadarComponent from '../components/RadarComponent';
-import { techRadarApiRef, TechRadarApi } from '../api';
+import { TechRadarComponentProps } from '../api';
 
-const RadarPage = (): JSX.Element => {
-  const techRadarApi = useApi<TechRadarApi>(techRadarApiRef);
-
-  return (
-    <Page theme={pageTheme.tool}>
-      <Header title={techRadarApi.title} subtitle={techRadarApi.subtitle}>
-        <HeaderLabel label="Owner" value="Spotify" />
-        <HeaderLabel label="Lifecycle" value="Beta" />
-      </Header>
-      <Content>
-        <ContentHeader title={techRadarApi.pageTitle}>
-          <SupportButton>
-            This is used for visualizing the official guidelines of different
-            areas of software development such as languages, frameworks,
-            infrastructure and processes.
-          </SupportButton>
-        </ContentHeader>
-        <Grid container spacing={3} direction="row">
-          <Grid item xs={12} sm={6} md={4}>
-            <RadarComponent {...techRadarApi} />
-          </Grid>
-        </Grid>
-      </Content>
-    </Page>
-  );
+export type TechRadarPageProps = TechRadarComponentProps & {
+  title?: string;
+  subtitle?: string;
+  pageTitle?: string;
 };
 
-export default RadarPage;
+export const RadarPage = ({
+  title,
+  subtitle,
+  pageTitle,
+  ...props
+}: TechRadarPageProps): JSX.Element => (
+  <Page theme={pageTheme.tool}>
+    <Header title={title} subtitle={subtitle}>
+      <HeaderLabel label="Owner" value="Spotify" />
+      <HeaderLabel label="Lifecycle" value="Beta" />
+    </Header>
+    <Content>
+      <ContentHeader title={pageTitle}>
+        <SupportButton>
+          This is used for visualizing the official guidelines of different
+          areas of software development such as languages, frameworks,
+          infrastructure and processes.
+        </SupportButton>
+      </ContentHeader>
+      <Grid container spacing={3} direction="row">
+        <Grid item xs={12} sm={6} md={4}>
+          <RadarComponent {...props} />
+        </Grid>
+      </Grid>
+    </Content>
+  </Page>
+);
+
+RadarPage.defaultProps = {
+  title: 'Tech Radar',
+  subtitle: 'Pick the recommended technologies for your projects',
+  pageTitle: 'Company Radar',
+};

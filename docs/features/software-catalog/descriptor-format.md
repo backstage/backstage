@@ -2,6 +2,8 @@
 id: descriptor-format
 title: Descriptor Format of Catalog Entities
 sidebar_label: YAML File Format
+description: Documentation on Descriptor Format of Catalog Entities which
+describes the default data shape and semantics of catalog entities
 ---
 
 This section describes the default data shape and semantics of catalog entities.
@@ -20,6 +22,8 @@ humans. However, the structure and semantics is the same in both cases.
 - [Kind: Component](#kind-component)
 - [Kind: Template](#kind-template)
 - [Kind: API](#kind-api)
+- [Kind: Group](#kind-group)
+- [Kind: User](#kind-user)
 
 ## Overall Shape Of An Entity
 
@@ -34,7 +38,7 @@ software catalog API.
     "annotations": {
       "backstage.io/managed-by-location": "file:/tmp/component-info.yaml",
       "example.com/service-discovery": "artistweb",
-      "circleci.com/project-slug": "gh/example-org/artist-website"
+      "circleci.com/project-slug": "github/example-org/artist-website"
     },
     "description": "The place to be, for great artists",
     "etag": "ZjU2MWRkZWUtMmMxZS00YTZiLWFmMWMtOTE1NGNiZDdlYzNk",
@@ -66,7 +70,7 @@ metadata:
     system: public-websites
   annotations:
     example.com/service-discovery: artistweb
-    circleci.com/project-slug: gh/example-org/artist-website
+    circleci.com/project-slug: github/example-org/artist-website
   tags:
     - java
 spec:
@@ -235,6 +239,9 @@ The `backstage.io/` prefix is reserved for use by Backstage core components.
 
 Values can be of any length, but are limited to being strings.
 
+There is a list of [well-known annotations](well-known-annotations.md), but
+anybody is free to add more annotations as they see fit.
+
 ### `tags` [optional]
 
 A list of single-valued strings, for example to classify catalog entities in
@@ -290,7 +297,7 @@ Exactly equal to `backstage.io/v1alpha1` and `Component`, respectively.
 
 The type of component as a string, e.g. `website`. This field is required.
 
-The software catalog accepts any type value, but an organisation should take
+The software catalog accepts any type value, but an organization should take
 great care to establish a proper taxonomy for these. Tools including Backstage
 itself may read this field and behave differently depending on its value. For
 example, a website type component may present tooling in the Backstage interface
@@ -304,9 +311,9 @@ The current set of well-known and common values for this field is:
 
 ### `spec.lifecycle` [required]
 
-The lifecyle state of the component, e.g. `production`. This field is required.
+The lifecycle state of the component, e.g. `production`. This field is required.
 
-The software catalog accepts any lifecycle value, but an organisation should
+The software catalog accepts any lifecycle value, but an organization should
 take great care to establish a proper taxonomy for these.
 
 The current set of well-known and common values for this field is:
@@ -418,7 +425,7 @@ potentially search and group templates by these tags.
 The type of component as a string, e.g. `website`. This field is optional but
 recommended.
 
-The software catalog accepts any type value, but an organisation should take
+The software catalog accepts any type value, but an organization should take
 great care to establish a proper taxonomy for these. Tools including Backstage
 itself may read this field and behave differently depending on its value. For
 example, a website type component may present tooling in the Backstage interface
@@ -468,6 +475,7 @@ Describes the following entity kind:
 An API describes an interface that can be exposed by a component. The API can be
 defined in different formats, like [OpenAPI](https://swagger.io/specification/),
 [AsyncAPI](https://www.asyncapi.com/docs/specifications/latest/),
+[GraphQL](https://graphql.org/learn/schema/),
 [gRPC](https://developers.google.com/protocol-buffers), or other formats.
 
 Descriptor files for this kind may look as follows.
@@ -480,6 +488,8 @@ metadata:
   description: Retrieve artist details
 spec:
   type: openapi
+  lifecycle: production
+  owner: artist-relations@example.com
   definition: |
     openapi: "3.0.0"
     info:
@@ -508,7 +518,7 @@ Exactly equal to `backstage.io/v1alpha1` and `API`, respectively.
 The type of the API definition as a string, e.g. `openapi`. This field is
 required.
 
-The software catalog accepts any type value, but an organisation should take
+The software catalog accepts any type value, but an organization should take
 great care to establish a proper taxonomy for these. Tools including Backstage
 itself may read this field and behave differently depending on its value. For
 example, an OpenAPI type API may be displayed using an OpenAPI viewer tooling in
@@ -524,7 +534,206 @@ The current set of well-known and common values for this field is:
   [Protocol Buffers](https://developers.google.com/protocol-buffers) to use with
   [gRPC](https://grpc.io/).
 
+### `spec.lifecycle` [required]
+
+The lifecycle state of the API, e.g. `production`. This field is required.
+
+The software catalog accepts any lifecycle value, but an organization should
+take great care to establish a proper taxonomy for these.
+
+The current set of well-known and common values for this field is:
+
+- `experimental` - an experiment or early, non-production API, signaling that
+  users may not prefer to consume it over other more established APIs, or that
+  there are low or no reliability guarantees
+- `production` - an established, owned, maintained API
+- `deprecated` - an API that is at the end of its lifecycle, and may disappear
+  at a later point in time
+
+### `spec.owner` [required]
+
+The owner of the API, e.g. `artist-relations@example.com`. This field is
+required.
+
+In Backstage, the owner of an API is the singular entity (commonly a team) that
+bears ultimate responsibility for the API, and has the authority and capability
+to develop and maintain it. They will be the point of contact if something goes
+wrong, or if features are to be requested. The main purpose of this field is for
+display purposes in Backstage, so that people looking at catalog items can get
+an understanding of to whom this API belongs. It is not to be used by automated
+processes to for example assign authorization in runtime systems. There may be
+others that also develop or otherwise touch the API, but there will always be
+one ultimate owner.
+
+Apart from being a string, the software catalog leaves the format of this field
+open to implementers to choose. Most commonly, it is set to the ID or email of a
+group of people in an organizational structure.
+
 ### `spec.definition` [required]
 
 The definition of the API, based on the format defined by `spec.type`. This
 field is required.
+
+## Kind: Group
+
+Describes the following entity kind:
+
+| Field        | Value                   |
+| ------------ | ----------------------- |
+| `apiVersion` | `backstage.io/v1alpha1` |
+| `kind`       | `Group`                 |
+
+A group describes an organizational entity, such as for example a team, a
+business unit, or a loose collection of people in an interest group. Members of
+these groups are modeled in the catalog as kind [`User`](#kind-user).
+
+Descriptor files for this kind may look as follows.
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: infrastructure
+  description: The infra business unit
+spec:
+  type: business-unit
+  parent: ops
+  ancestors: [ops, global-synergies, acme-corp]
+  children: [backstage, other]
+  descendants: [backstage, other, team-a, team-b, team-c, team-d]
+```
+
+In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)
+shape, this kind has the following structure.
+
+### `apiVersion` and `kind` [required]
+
+Exactly equal to `backstage.io/v1alpha1` and `Group`, respectively.
+
+### `spec.type` [required]
+
+The type of group as a string, e.g. `team`. There is currently no enforced set
+of values for this field, so it is left up to the adopting organization to
+choose a nomenclature that matches their org hierarchy.
+
+Some common values for this field could be:
+
+- `team`
+- `business-unit`
+- `product-area`
+- `root` - as a common virtual root of the hierarchy, if desired
+
+### `spec.parent` [optional]
+
+The immediate parent group in the hierarchy, if any. Not all groups must have a
+parent; the catalog supports multi-root hierarchies. Groups may however not have
+more than one parent.
+
+This field is an
+[entity reference](https://backstage.io/docs/features/software-catalog/references),
+with the default kind `Group` and the default namespace equal to the same
+namespace as the user. Only `Group` entities may be referenced. Most commonly,
+this field points to a group in the same namespace, so in those cases it is
+sufficient to enter only the `metadata.name` field of that group.
+
+### `spec.ancestors` [required]
+
+The recursive list of parents up the hierarchy, by stepping through parents one
+by one. The list must be present, but may be empty if `parent` is not present.
+The first entry in the list is equal to `parent`, and then the following ones
+are progressively farther up the hierarchy.
+
+The entries of this array are
+[entity references](https://backstage.io/docs/features/software-catalog/references),
+with the default kind `Group` and the default namespace equal to the same
+namespace as the user. Only `Group` entities may be referenced. Most commonly,
+these entries point to groups in the same namespace, so in those cases it is
+sufficient to enter only the `metadata.name` field of those groups.
+
+### `spec.children` [required]
+
+The immediate child groups of this group in the hierarchy (whose `parent` field
+points to this group). The list must be present, but may be empty if there are
+no child groups. The items are not guaranteed to be ordered in any particular
+way.
+
+The entries of this array are
+[entity references](https://backstage.io/docs/features/software-catalog/references),
+with the default kind `Group` and the default namespace equal to the same
+namespace as the user. Only `Group` entities may be referenced. Most commonly,
+these entries point to groups in the same namespace, so in those cases it is
+sufficient to enter only the `metadata.name` field of those groups.
+
+### `spec.descendants` [required]
+
+The immediate and recursive child groups of this group in the hierarchy
+(children, and children's children, etc.). The list must be present, but may be
+empty if there are no child groups. The items are not guaranteed to be ordered
+in any particular way.
+
+The entries of this array are
+[entity references](https://backstage.io/docs/features/software-catalog/references),
+with the default kind `Group` and the default namespace equal to the same
+namespace as the user. Only `Group` entities may be referenced. Most commonly,
+these entries point to groups in the same namespace, so in those cases it is
+sufficient to enter only the `metadata.name` field of those groups.
+
+## Kind: User
+
+Describes the following entity kind:
+
+| Field        | Value                   |
+| ------------ | ----------------------- |
+| `apiVersion` | `backstage.io/v1alpha1` |
+| `kind`       | `User`                  |
+
+A user describes a person, such as an employee, a contractor, or similar. Users
+belong to [`Group`](#kind-group) entities in the catalog.
+
+These catalog user entries are connected to the way that authentication within
+the Backstage ecosystem works. See the [auth](https://backstage.io/docs/auth)
+section of the docs for a discussion of these concepts.
+
+Descriptor files for this kind may look as follows.
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: jdoe
+spec:
+  profile:
+    displayName: Jenny Doe
+    email: jenny-doe@example.com
+    picture: https://example.com/staff/jenny-with-party-hat.jpeg
+  memberOf: [team-b, employees]
+```
+
+In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)
+shape, this kind has the following structure.
+
+### `apiVersion` and `kind` [required]
+
+Exactly equal to `backstage.io/v1alpha1` and `User`, respectively.
+
+### `spec.profile` [optional]
+
+Optional profile information about the user, mainly for display purposes. All
+fields of this structure are also optional. The email would be a primary email
+of some form, that the user may wish to be used for contacting them. The picture
+is expected to be a URL pointing to an image that's representative of the user,
+and that a browser could fetch and render on a profile page or similar.
+
+### `spec.memberOf` [required]
+
+The list of groups that the user is a direct member of (i.e., no transitive
+memberships are listed here). The list must be present, but may be empty if the
+user is not member of any groups. The items are not guaranteed to be ordered in
+any particular way.
+
+The entries of this array are
+[entity references](https://backstage.io/docs/features/software-catalog/references),
+with the default kind `Group` and the default namespace equal to the same
+namespace as the user. Only `Group` entities may be referenced. Most commonly,
+these entries point to groups in the same namespace, so in those cases it is
+sufficient to enter only the `metadata.name` field of those groups.

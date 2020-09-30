@@ -1,6 +1,7 @@
 ---
 id: add-auth-provider
 title: Adding authentication providers
+description: Documentation on Adding authentication providers
 ---
 
 ## Passport
@@ -228,9 +229,10 @@ name.
 
 ### Test the new provider
 
-You can `curl -i localhost:7000/auth/providerA/start` and which should provide a
-`302` redirect with a `Location` header. Paste the url from that header into a
-web browser and you should be able to trigger the authorization flow.
+You can `curl -i localhost:7000/api/auth/providerA/start` and which should
+provide a `302` redirect with a `Location` header. Paste the url from that
+header into a web browser and you should be able to trigger the authorization
+flow.
 
 ---
 

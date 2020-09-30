@@ -34,3 +34,4 @@ export * from './Table';
 export * from './Tabs';
 export * from './TrendLine';
 export * from './WarningPanel';
+export * from './EmptyState';
