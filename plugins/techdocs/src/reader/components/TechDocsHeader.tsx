@@ -15,24 +15,73 @@
  */
 
 import React from 'react';
+import GitHubIcon from '@material-ui/icons/GitHub';
+import { Header, HeaderLabel, Link } from '@backstage/core';
+import { CircularProgress } from '@material-ui/core';
+import { ParsedEntityId } from '../../types';
+import { AsyncState } from 'react-use/lib/useAsync';
 
-import { Header } from '@backstage/core';
-
-type TechDocsPageHeaderProps = {
-  title: string;
-  subtitle: string;
-  labels: any;
+type TechDocsHeaderProps = {
+  entityId: ParsedEntityId;
+  metadataRequest: {
+    entity: AsyncState<any>;
+    mkdocs: AsyncState<any>;
+  };
 };
 
 export const TechDocsHeader = ({
-  title,
-  subtitle,
-  labels,
-}: TechDocsPageHeaderProps) => {
-  if (!labels) return <Header title={title} subtitle={subtitle} />;
+  entityId,
+  metadataRequest,
+}: TechDocsHeaderProps) => {
+  const { mkdocs: mkdocsMetadata, entity: entityMetadata } = metadataRequest;
+
+  const { value: mkDocsMetadataValues } = mkdocsMetadata;
+  const { value: entityMetadataValues } = entityMetadata;
+
+  const { kind, name } = entityId;
+
+  const { site_name: siteName, site_description: siteDescription } =
+    mkDocsMetadataValues || {};
+
+  const {
+    locationMetadata,
+    spec: { owner, lifecycle },
+  } = entityMetadataValues || { spec: {} };
+
+  const labels = (
+    <>
+      <HeaderLabel
+        label="Component"
+        value={
+          <Link style={{ color: '#fff' }} to={`/catalog/${kind}/${name}`}>
+            {name}
+          </Link>
+        }
+      />
+      {owner ? <HeaderLabel label="Site Owner" value={owner} /> : null}
+      {lifecycle ? <HeaderLabel label="Lifecycle" value={lifecycle} /> : null}
+      {locationMetadata &&
+      locationMetadata.type !== 'dir' &&
+      locationMetadata.type !== 'file' ? (
+        <HeaderLabel
+          label=""
+          value={
+            <a href={locationMetadata.target} target="_blank">
+              <GitHubIcon style={{ marginTop: '-25px', fill: '#fff' }} />
+            </a>
+          }
+        />
+      ) : null}
+    </>
+  );
 
   return (
-    <Header title={title} subtitle={subtitle}>
+    <Header
+      title={siteName ? siteName : <CircularProgress />}
+      subtitle={
+        siteDescription && siteDescription !== 'None' ? siteDescription : ''
+      }
+    >
       {labels}
     </Header>
   );
