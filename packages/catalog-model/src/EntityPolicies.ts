@@ -23,12 +23,12 @@ import {
   SchemaValidEntityPolicy,
 } from './entity';
 import {
-  ApiEntityV1alpha1Policy,
-  ComponentEntityV1alpha1Policy,
-  GroupEntityV1alpha1Policy,
-  LocationEntityV1alpha1Policy,
-  TemplateEntityV1alpha1Policy,
-  UserEntityV1alpha1Policy,
+  apiEntityV1alpha1Policy,
+  componentEntityV1alpha1Policy,
+  groupEntityV1alpha1Policy,
+  locationEntityV1alpha1Policy,
+  templateEntityV1alpha1Policy,
+  userEntityV1alpha1Policy,
 } from './kinds';
 import { EntityPolicy } from './types';
 
@@ -78,12 +78,12 @@ export class EntityPolicies implements EntityPolicy {
         new ReservedFieldsEntityPolicy(),
       ]),
       EntityPolicies.anyOf([
-        new ComponentEntityV1alpha1Policy(),
-        new GroupEntityV1alpha1Policy(),
-        new UserEntityV1alpha1Policy(),
-        new LocationEntityV1alpha1Policy(),
-        new TemplateEntityV1alpha1Policy(),
-        new ApiEntityV1alpha1Policy(),
+        componentEntityV1alpha1Policy,
+        groupEntityV1alpha1Policy,
+        userEntityV1alpha1Policy,
+        locationEntityV1alpha1Policy,
+        templateEntityV1alpha1Policy,
+        apiEntityV1alpha1Policy,
       ]),
     ]);
   }

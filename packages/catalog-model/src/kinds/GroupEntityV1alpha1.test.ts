@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-import { EntityPolicy } from '../types';
 import {
   GroupEntityV1alpha1,
-  GroupEntityV1alpha1Policy,
+  groupEntityV1alpha1Policy as policy,
 } from './GroupEntityV1alpha1';
 
 describe('GroupV1alpha1Policy', () => {
   let entity: GroupEntityV1alpha1;
-  let policy: EntityPolicy;
 
   beforeEach(() => {
     entity = {
@@ -41,7 +39,6 @@ describe('GroupV1alpha1Policy', () => {
         descendants: ['desc-a', 'desc-b'],
       },
     };
-    policy = new GroupEntityV1alpha1Policy();
   });
 
   it('happy path: accepts valid data', async () => {

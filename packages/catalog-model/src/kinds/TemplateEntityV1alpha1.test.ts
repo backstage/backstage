@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-import { EntityPolicy } from '../types';
 import {
   TemplateEntityV1alpha1,
-  TemplateEntityV1alpha1Policy,
+  templateEntityV1alpha1Policy as policy,
 } from './TemplateEntityV1alpha1';
 
-describe('TemplateEntityV1alpah1', () => {
+describe('templateEntityV1alpha1', () => {
   let entity: TemplateEntityV1alpha1;
-  let policy: EntityPolicy;
 
   beforeEach(() => {
     entity = {
@@ -52,7 +50,6 @@ describe('TemplateEntityV1alpah1', () => {
         },
       },
     };
-    policy = new TemplateEntityV1alpha1Policy();
   });
 
   it('happy path: accepts valid data', async () => {

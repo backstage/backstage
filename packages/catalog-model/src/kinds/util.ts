@@ -14,21 +14,24 @@
  * limitations under the License.
  */
 
-import { Entity, EntityPolicy } from '@backstage/catalog-model';
-import { LocationProcessor } from './types';
+import * as yup from 'yup';
+import { Entity } from '../entity';
+import { EntityPolicy } from '../types';
 
-export class EntityPolicyProcessor implements LocationProcessor {
-  private readonly policy: EntityPolicy;
-
-  constructor(policy: EntityPolicy) {
-    this.policy = policy;
-  }
-
-  async processEntity(entity: Entity): Promise<Entity> {
-    const output = await this.policy.enforce(entity);
-    if (!output) {
-      throw new Error(`Entity did not match any known schema`);
-    }
-    return output;
-  }
+export function schemaPolicy(
+  kind: string,
+  apiVersion: readonly string[],
+  schema: yup.Schema<any>,
+): EntityPolicy {
+  return {
+    async enforce(envelope: Entity): Promise<Entity | undefined> {
+      if (
+        kind !== envelope.kind ||
+        !apiVersion.includes(envelope.apiVersion as any)
+      ) {
+        return undefined;
+      }
+      return await schema.validate(envelope, { strict: true });
+    },
+  };
 }

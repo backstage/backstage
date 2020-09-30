@@ -179,12 +179,14 @@ export class LocationReaders implements LocationReader {
         } catch (e) {
           const message = `Processor ${processor.constructor.name} threw an error while reading location ${item.location.type} ${item.location.target}, ${e}`;
           emit(result.generalError(item.location, message));
+          this.logger.warn(message);
         }
       }
     }
 
     const message = `No processor was able to read location ${item.location.type} ${item.location.target}`;
     emit(result.inputError(item.location, message));
+    this.logger.warn(message);
   }
 
   private async handleData(
@@ -204,6 +206,7 @@ export class LocationReaders implements LocationReader {
         } catch (e) {
           const message = `Processor ${processor.constructor.name} threw an error while parsing ${item.location.type} ${item.location.target}, ${e}`;
           emit(result.generalError(item.location, message));
+          this.logger.warn(message);
         }
       }
     }
@@ -232,13 +235,13 @@ export class LocationReaders implements LocationReader {
             this.readLocation.bind(this),
           );
         } catch (e) {
-          const message = `Processor ${
-            processor.constructor.name
-          } threw an error while processing entity ${current.kind}:${
-            current.metadata.namespace ?? ENTITY_DEFAULT_NAMESPACE
-          }/${current.metadata.name} at ${item.location.type} ${
-            item.location.target
-          }, ${e}`;
+          // Construct the name carefully, if we got validation errors we do
+          // not want to crash here due to missing metadata or so
+          const namespace = !current.metadata
+            ? ''
+            : current.metadata.namespace ?? ENTITY_DEFAULT_NAMESPACE;
+          const name = !current.metadata ? '' : current.metadata.name;
+          const message = `Processor ${processor.constructor.name} threw an error while processing entity ${current.kind}:${namespace}/${name} at ${item.location.type} ${item.location.target}, ${e}`;
           emit(result.generalError(item.location, message));
           this.logger.warn(message);
         }
@@ -263,6 +266,7 @@ export class LocationReaders implements LocationReader {
         } catch (e) {
           const message = `Processor ${processor.constructor.name} threw an error while handling another error at ${item.location.type} ${item.location.target}, ${e}`;
           emit(result.generalError(item.location, message));
+          this.logger.warn(message);
         }
       }
     }

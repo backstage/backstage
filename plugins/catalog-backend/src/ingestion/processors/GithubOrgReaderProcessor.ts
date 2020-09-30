@@ -152,19 +152,9 @@ export function parseUrl(urlString: string): { org: string } {
   const path = new URL(urlString).pathname.substr(1).split('/');
 
   // /spotify
-  if (path.length === 1) {
-    return { org: path[0] };
+  if (path.length === 1 && path[0].length) {
+    return { org: decodeURIComponent(path[0]) };
   }
 
-  // /orgs/spotify[/<teams or people>]
-  if (
-    path.length >= 2 &&
-    path.length <= 3 &&
-    path[0] === 'orgs' &&
-    [undefined, 'teams', 'people'].includes(path[2])
-  ) {
-    return { org: path[1] };
-  }
-
-  throw new Error(`Expected a URL pointing to /<org> or /orgs/<org>`);
+  throw new Error(`Expected a URL pointing to /<org>`);
 }

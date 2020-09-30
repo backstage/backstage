@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-import { EntityPolicy } from '../types';
 import {
   LocationEntityV1alpha1,
-  LocationEntityV1alpha1Policy,
+  locationEntityV1alpha1Policy as policy,
 } from './LocationEntityV1alpha1';
 
 describe('LocationV1alpha1Policy', () => {
   let entity: LocationEntityV1alpha1;
-  let policy: EntityPolicy;
 
   beforeEach(() => {
     entity = {
@@ -35,7 +33,6 @@ describe('LocationV1alpha1Policy', () => {
         type: 'github',
       },
     };
-    policy = new LocationEntityV1alpha1Policy();
   });
 
   it('happy path: accepts valid data', async () => {

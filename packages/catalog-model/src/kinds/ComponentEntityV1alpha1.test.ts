@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-import { EntityPolicy } from '../types';
 import {
   ComponentEntityV1alpha1,
-  ComponentEntityV1alpha1Policy,
+  componentEntityV1alpha1Policy as policy,
 } from './ComponentEntityV1alpha1';
 
 describe('ComponentV1alpha1Policy', () => {
   let entity: ComponentEntityV1alpha1;
-  let policy: EntityPolicy;
 
   beforeEach(() => {
     entity = {
@@ -38,7 +36,6 @@ describe('ComponentV1alpha1Policy', () => {
         implementsApis: ['api-0'],
       },
     };
-    policy = new ComponentEntityV1alpha1Policy();
   });
 
   it('happy path: accepts valid data', async () => {
