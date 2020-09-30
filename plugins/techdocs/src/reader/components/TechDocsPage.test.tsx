@@ -63,17 +63,15 @@ describe('<TechDocsPage />', () => {
       [techdocsStorageApiRef, techDocsStorageApi],
     ]);
 
-    let rendered;
     await act(async () => {
-      rendered = render(
+      const rendered = render(
         wrapInTestApp(
           <ApiProvider apis={apiRegistry}>
             <TechDocsPage />
           </ApiProvider>,
         ),
       );
+      expect(rendered.getByTestId('techdocs-content')).toBeInTheDocument();
     });
-
-    expect(rendered.getByTestId('techdocs-content')).toBeInTheDocument();
   });
 });

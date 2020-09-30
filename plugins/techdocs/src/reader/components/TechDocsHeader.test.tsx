@@ -20,10 +20,8 @@ import { wrapInTestApp } from '@backstage/test-utils';
 
 describe('<TechDocsHeader />', () => {
   it('should render a techdocs page header', async () => {
-    let rendered;
-
     await act(async () => {
-      rendered = render(
+      const rendered = render(
         wrapInTestApp(
           <TechDocsHeader
             entityId={{
@@ -55,18 +53,15 @@ describe('<TechDocsHeader />', () => {
           />,
         ),
       );
+      expect(rendered.container.innerHTML).toContain('header');
+      expect(rendered.getByText('test-site-name')).toBeDefined();
+      expect(rendered.getByText('test-site-desc')).toBeDefined();
     });
-
-    expect(rendered.container.innerHTML).toContain('header');
-    expect(rendered.getByText('test-site-name')).toBeDefined();
-    expect(rendered.getByText('test-site-desc')).toBeDefined();
   });
 
   it('should render a techdocs page header even if metadata is missing', async () => {
-    let rendered;
-
     await act(async () => {
-      rendered = render(
+      const rendered = render(
         wrapInTestApp(
           <TechDocsHeader
             entityId={{
@@ -85,8 +80,8 @@ describe('<TechDocsHeader />', () => {
           />,
         ),
       );
-    });
 
-    expect(rendered.container.innerHTML).toContain('header');
+      expect(rendered.container.innerHTML).toContain('header');
+    });
   });
 });
