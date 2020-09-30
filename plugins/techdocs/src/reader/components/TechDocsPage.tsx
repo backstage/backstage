@@ -19,7 +19,7 @@ import { useParams } from 'react-router-dom';
 import { Content, Page, pageTheme, useApi } from '@backstage/core';
 import { Reader } from './Reader';
 import { useAsync } from 'react-use';
-import { TechDocsHeader } from './TechDocsHeader';
+import { TechDocsPageHeader } from './TechDocsPageHeader';
 import { techdocsApiRef } from '../../api';
 
 export const TechDocsPage = () => {
@@ -47,7 +47,7 @@ export const TechDocsPage = () => {
 
   return (
     <Page theme={pageTheme.documentation}>
-      <TechDocsHeader
+      <TechDocsPageHeader
         metadataRequest={{
           mkdocs: mkdocsMetadataRequest,
           entity: entityMetadataRequest,

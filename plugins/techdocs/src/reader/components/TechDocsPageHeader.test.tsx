@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 import React from 'react';
-import { TechDocsHeader } from './TechDocsHeader';
+import { TechDocsPageHeader } from './TechDocsPageHeader';
 import { render, act } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
 
-describe('<TechDocsHeader />', () => {
+describe('<TechDocsPageHeader />', () => {
   it('should render a techdocs page header', async () => {
     await act(async () => {
       const rendered = render(
         wrapInTestApp(
-          <TechDocsHeader
+          <TechDocsPageHeader
             entityId={{
               kind: 'test',
               name: 'test-name',
@@ -63,7 +63,7 @@ describe('<TechDocsHeader />', () => {
     await act(async () => {
       const rendered = render(
         wrapInTestApp(
-          <TechDocsHeader
+          <TechDocsPageHeader
             entityId={{
               kind: 'test',
               name: 'test-name',
