@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { HeaderLabel } from '../HeaderLabel';
-import { useApi, configApiRef } from '@backstage/core';
+import { ConfigApi, useApi, configApiRef } from '@backstage/core-api';
 
 const timeFormat = { hour: '2-digit', minute: '2-digit' };
 const defaultTimes = {
@@ -26,28 +26,40 @@ const defaultTimes = {
   timeFour: { time: '', label: '' },
 };
 
-function updateTimeObject(configApi: configApi, config: string, timeObject) {
+interface timeObj {
+  time: string;
+  label: string;
+}
+
+function updateTimeObject(
+  configApi: ConfigApi,
+  config: string,
+  timeObject: timeObj,
+) {
   const timezoneConfig = configApi.getOptionalConfig('homepageTimer');
-  const d = new Date();
-  const lang = window.navigator.language;
 
-  if (
-    timezoneConfig.has(`${config}.label`) &&
-    timezoneConfig.has(`${config}.timezone`)
-  ) {
-    const options = {
-      timeZone: timezoneConfig.getString(`${config}.timezone`),
-      ...timeFormat,
-    };
+  if (timezoneConfig) {
+    const d = new Date();
+    const lang = window.navigator.language;
 
-    // Using the browser native toLocaleTimeString instead of huge moment-tz
-    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toLocaleTimeString
-    timeObject.time = d.toLocaleTimeString(lang, options);
-    timeObject.label = timezoneConfig.getString(`${config}.label`);
+    if (
+      timezoneConfig.has(`${config}.label`) &&
+      timezoneConfig.has(`${config}.timezone`)
+    ) {
+      const options = {
+        timeZone: timezoneConfig.getString(`${config}.timezone`),
+        ...timeFormat,
+      };
+
+      // Using the browser native toLocaleTimeString instead of huge moment-tz
+      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toLocaleTimeString
+      timeObject.time = d.toLocaleTimeString(lang, options);
+      timeObject.label = timezoneConfig.getString(`${config}.label`);
+    }
   }
 }
 
-function getTimes(configApi) {
+function getTimes(configApi: ConfigApi) {
   const timeOne = { time: '', label: '' };
   const timeTwo = { time: '', label: '' };
   const timeThree = { time: '', label: '' };
