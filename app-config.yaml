@@ -255,3 +255,13 @@ costInsights:
       name: Your Company's Daily Cost
     DAU:
       name: Cost Per DAU
+homepage:
+  clocks:
+    - label: UTC
+      timzone: UTC
+    - label: NYC
+      timezone: 'America/New_York'
+    - label: STO
+      timezone: 'Europe/Stockholm'
+    - label: TYO
+      timezone: 'Asia/Tokyo'
