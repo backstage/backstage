@@ -1,4 +1,4 @@
-import { Entity } from '@backstage/catalog-model';
+import fetch from 'node-fetch';
 /*
  * Copyright 2020 Spotify AB
  *
@@ -16,29 +16,25 @@ import { Entity } from '@backstage/catalog-model';
  */
 
 export class TechDocsMetadata {
-  private async getMetadataFile(docsURL: String) {
-    const metadataURL = `${docsURL}/techdocs_metadata.json`;
+  private async getMetadataFile(docsUrl: String) {
+    const metadataURL = `${docsUrl}/techdocs_metadata.json`;
 
-    const req = await fetch(metadataURL);
+    try {
+      const req = await fetch(metadataURL);
 
-    if (req.status === 404) {
-      throw new Error('Metadata file not found');
+      return await req.json();
+    } catch (error) {
+      throw new Error(error);
     }
-
-    return req.json();
   }
 
   public async getMkDocsMetaData(docsUrl: any) {
-    const {
-      site_name: siteName,
-      site_description: siteDescription,
-    }: any = await this.getMetadataFile(docsUrl);
+    const mkDocsMetadata = await this.getMetadataFile(docsUrl);
 
-    if (!siteName || !siteDescription) return null;
+    if (!mkDocsMetadata) return null;
 
     return {
-      siteName,
-      siteDescription,
+      ...mkDocsMetadata,
     };
   }
 }
