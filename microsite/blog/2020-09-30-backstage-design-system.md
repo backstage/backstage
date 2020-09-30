@@ -50,32 +50,33 @@ As you’re designing and building your plugins, make sure to take advantage of 
 ![img](assets/backstage-figma1-DS.png)
 ![img](assets/backstage-figma2-ds.png)
 
-**[Figma Community](https://www.figma.com/@backstage)**
+### [Figma Community](https://www.figma.com/@backstage)
 
-We are thrilled to be using Figma Community to share our design assets. You can duplicate our UI kit and design your own plugin for Backstage. Figma Community is currently in beta, so this is a neat opportunity to be testing out a new way of working. At the moment, it doesn’t support auto-updating of duplicated files, so we’ll be announcing new versions of our UI kit on Discord in the #design channel.
+We are thrilled to be using [Figma Community](https://www.figma.com/@backstage) to share our design assets. You can duplicate our UI kit and design your own plugin for Backstage. Figma Community is currently in beta, so this is a neat opportunity to be testing out a new way of working. At the moment, it doesn’t support auto-updating of duplicated files, so we’ll be announcing new versions of our UI kit on Discord in the #design channel.
 
 ![img](assets/backstage-storybook-ds.png)
 
-**[Storybook](https://backstage.io/storybook/)**
+### [Storybook](https://backstage.io/storybook/)
 
-This is where you can view our reusable components. If you’d like to help build up our design system, you can also help us add components that we’ve designed to Storybook as well. We post newly designed components and patterns to GitHub as issues, where contributors can pick them up and add them to our Storybook so they’re available for the rest of the Backstage community.
+You can view (and grab) our [reusable components on Storybook](https://backstage.io/storybook/). If you’d like to help build up our design system, you can also help us add components that we’ve designed to Storybook as well. We post newly designed components and patterns to GitHub as issues, where contributors can pick them up and add them to our Storybook so they’re available for the rest of the Backstage community.
 
 ![img](assets/backstage-guidelines-ds.png)
 
-**[Guidelines](https://backstage.io/docs/dls/design)**
+### [Guidelines](https://backstage.io/docs/dls/design)
 
 To keep up with our latest design guidelines, go to [Designing for Backstage](https://backstage.io/docs/dls/design). You’ll find more how-to’s and you can also learn more about our design philosophy and practices there. Down the line, we plan on including more in-depth component rules in this section (i.e., dos/don’ts, use cases, etc.).
 
 ![img](assets/backstage-github-ds.png)
 
-**[GitHub](https://github.com/spotify/backstage)**
+### [GitHub](https://github.com/spotify/backstage)
 
-Join in on the action by submitting issues and opening pull requests for all things related to components and patterns in Backstage.
+Join in on the action [at spotify/backstage on GitHub](https://github.com/spotify/backstage) by submitting issues and opening pull requests for all things related to components and patterns in Backstage.
 
 ![img](assets/backstage-discord-DS.png)
 
-**[Discord](https://discord.com/invite/MUpMjP2)**
-All design questions should be directed to the [#design](https://discord.com/channels/687207715902193673/696709358544879716) channel.
+### [Discord](https://discord.com/invite/MUpMjP2)
+
+All design questions should be directed to the [#design](https://discord.com/channels/687207715902193673/696709358544879716) channel in [Discord](https://discord.com/invite/MUpMjP2).
 
 ## What's next for Backstage design
 
