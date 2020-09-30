@@ -14,96 +14,60 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-
-import { TechDocsPageWrapper } from './TechDocsPageWrapper';
+import { Content, Page, pageTheme, useApi } from '@backstage/core';
 import { Reader } from './Reader';
-import { useApi, HeaderLabel, Link } from '@backstage/core';
-import GitHubIcon from '@material-ui/icons/GitHub';
-import { TechDocsMetadata } from '../../metadata';
 import { useAsync } from 'react-use';
-import { techdocsStorageApiRef } from '../../api';
-import { catalogApiRef } from '@backstage/plugin-catalog';
+import { TechDocsHeader } from './TechDocsHeader';
+import { techdocsApiRef } from '../../api';
 
 export const TechDocsPage = () => {
-  const { entityId, '*': path } = useParams();
-  const catalogApi = useApi(catalogApiRef);
+  const [documentReady, setDocumentReady] = useState<boolean>(false);
+  const { entityId } = useParams();
   const [kind, namespace, name] = entityId.split(':');
-  const techdocsStorageApi = useApi(techdocsStorageApiRef);
-  const optionalNamespace = namespace ? namespace : 'default';
-  const techDocsMetadata = new TechDocsMetadata();
 
-  const { value, loading, error } = useAsync(async () => {
-    const docsUrl = `http://localhost:7000/api/techdocs/static/docs/${kind}/${optionalNamespace}/${name}`;
-    return {
-      entityDocs: await techdocsStorageApi.getEntityDocs(
-        { kind, namespace, name },
-        path,
-      ),
-      mkDocsMetadata: await techDocsMetadata.getMkDocsMetaData(docsUrl),
-      entityMetadata: await catalogApi.getEntityByName({
-        kind,
-        namespace: optionalNamespace,
-        name,
-      }),
-    };
-  }, [kind, namespace, name, path]);
+  const techDocsApi = useApi(techdocsApiRef);
 
-  if (loading || error || !value) return null;
+  const mkdocsMetadataRequest = useAsync(() => {
+    if (documentReady) {
+      return techDocsApi.getMetadata('mkdocs', { kind, namespace, name });
+    }
 
-  const { entityDocs, entityMetadata, mkDocsMetadata } = value;
+    return Promise.resolve({ loading: true });
+  }, [kind, namespace, name, techDocsApi, documentReady]);
 
-  if (!entityDocs) return null;
+  const entityMetadataRequest = useAsync(() => {
+    return techDocsApi.getMetadata('entity', { kind, namespace, name });
+  }, [kind, namespace, name, techDocsApi]);
 
-  const { metadata, spec } = entityMetadata;
-
-  const repoURL = metadata.annotations['backstage.io/techdocs-ref'].replace(
-    'github:',
-    '',
-  );
-
-  // Header Labels to show additional metadata
-  const labels = (
-    <>
-      <HeaderLabel
-        label="Component"
-        value={
-          <Link style={{ color: '#fff' }} to={`/catalog/${kind}/${name}`}>
-            {name}
-          </Link>
-        }
-      />
-      <HeaderLabel label="Site Owner" value={spec?.owner} />
-      <HeaderLabel label="Lifecycle" value={spec?.lifecycle} />
-      <HeaderLabel
-        label=""
-        value={
-          <a href={repoURL} target="_blank">
-            <GitHubIcon style={{ marginTop: '-25px', fill: '#fff' }} />
-          </a>
-        }
-      />
-    </>
-  );
+  const onReady = () => {
+    setDocumentReady(true);
+  };
 
   return (
-    <TechDocsPageWrapper
-      labels={labels}
-      title={mkDocsMetadata.siteName}
-      subtitle={
-        mkDocsMetadata.siteDescription === 'None' || undefined
-          ? ''
-          : mkDocsMetadata.siteDescription
-      }
-    >
-      <Reader
+    <Page theme={pageTheme.documentation}>
+      <TechDocsHeader
+        metadataRequest={{
+          mkdocs: mkdocsMetadataRequest,
+          entity: entityMetadataRequest,
+        }}
         entityId={{
           kind,
           namespace,
           name,
         }}
       />
-    </TechDocsPageWrapper>
+      <Content data-testid="techdocs-content">
+        <Reader
+          onReady={onReady}
+          entityId={{
+            kind,
+            namespace,
+            name,
+          }}
+        />
+      </Content>
+    </Page>
   );
 };
