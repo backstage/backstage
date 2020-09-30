@@ -45,7 +45,7 @@ const { useParams }: { useParams: jest.Mock } = jest.requireMock(
 );
 
 describe('<TechDocsPage />', () => {
-  it('should render a header and content components', async () => {
+  it('should render techdocs page', async () => {
     useParams.mockReturnValue({
       entityId: 'Component::backstage',
     });
