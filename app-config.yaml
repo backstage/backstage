@@ -247,8 +247,8 @@ costInsights:
       name: Your Company's Daily Cost
     DAU:
       name: Cost Per DAU
-homepage: 
-  clocks: 
+homepage:
+  clocks:
     - label: UTC
       timzone: UTC
     - label: NYC
