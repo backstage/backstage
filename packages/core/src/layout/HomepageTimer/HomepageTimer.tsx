@@ -19,66 +19,49 @@ import { HeaderLabel } from '../HeaderLabel';
 import { ConfigApi, useApi, configApiRef } from '@backstage/core-api';
 
 const timeFormat = { hour: '2-digit', minute: '2-digit' };
-const defaultTimes = {
-  timeOne: { time: '', label: '' },
-  timeTwo: { time: '', label: '' },
-  timeThree: { time: '', label: '' },
-  timeFour: { time: '', label: '' },
-};
 
-interface timeObj {
+class TimeObj {
   time: string;
   label: string;
-}
 
-function updateTimeObject(
-  configApi: ConfigApi,
-  config: string,
-  timeObject: timeObj,
-) {
-  const timezoneConfig = configApi.getOptionalConfig('homepageTimer');
+  constructor(time: string, label: string) {
+    this.time = time;
+    this.label = label;
+  }
+};
 
-  if (timezoneConfig) {
-    const d = new Date();
-    const lang = window.navigator.language;
+function getTimes(configApi: ConfigApi) {
+  const d = new Date();
+  const lang = window.navigator.language;
 
-    if (
-      timezoneConfig.has(`${config}.label`) &&
-      timezoneConfig.has(`${config}.timezone`)
-    ) {
+  let _a;
+  var clocks = [];
+
+  const clockConfigs = (_a = configApi.getOptionalConfigArray("homepage.clocks")) !== null ? _a : [];
+
+  for (let clock of clockConfigs) {
+    if (clock.has('label') && clock.has('timezone')) {
+
       const options = {
-        timeZone: timezoneConfig.getString(`${config}.timezone`),
+        timeZone: clock.getString('timezone'),
         ...timeFormat,
       };
 
-      // Using the browser native toLocaleTimeString instead of huge moment-tz
-      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toLocaleTimeString
-      timeObject.time = d.toLocaleTimeString(lang, options);
-      timeObject.label = timezoneConfig.getString(`${config}.label`);
+      let time = d.toLocaleTimeString(lang, options);
+      let label = clock.getString('label');
+
+      clocks.push(new TimeObj(time, label));
     }
   }
-}
 
-function getTimes(configApi: ConfigApi) {
-  const timeOne = { time: '', label: '' };
-  const timeTwo = { time: '', label: '' };
-  const timeThree = { time: '', label: '' };
-  const timeFour = { time: '', label: '' };
-
-  updateTimeObject(configApi, 'timeOne', timeOne);
-  updateTimeObject(configApi, 'timeTwo', timeTwo);
-  updateTimeObject(configApi, 'timeThree', timeThree);
-  updateTimeObject(configApi, 'timeFour', timeFour);
-
-  return { timeOne, timeTwo, timeThree, timeFour };
+  return clocks;
 }
 
 export const HomepageTimer = () => {
   const configApi = useApi(configApiRef);
 
-  const [{ timeOne, timeTwo, timeThree, timeFour }, setTimes] = React.useState(
-    defaultTimes,
-  );
+  const defaultTimes: TimeObj[] = [];
+  const [clocks, setTimes] = React.useState(defaultTimes);
 
   React.useEffect(() => {
     setTimes(getTimes(configApi));
@@ -92,22 +75,16 @@ export const HomepageTimer = () => {
     };
   }, [configApi]);
 
-  return (
-    <>
-      {/* HeaderLabel returns a literal <unknown> if an empty string is passed, thus the check to needs to be done
-      to check if the element needs to be present */}
-      {timeOne.label.length === 0 ? null : (
-        <HeaderLabel label={timeOne.label} value={timeOne.time} />
-      )}
-      {timeTwo.label.length === 0 ? null : (
-        <HeaderLabel label={timeTwo.label} value={timeTwo.time} />
-      )}
-      {timeThree.label.length === 0 ? null : (
-        <HeaderLabel label={timeThree.label} value={timeThree.time} />
-      )}
-      {timeFour.label.length === 0 ? null : (
-        <HeaderLabel label={timeFour.label} value={timeFour.time} />
-      )}
-    </>
-  );
+
+  if (clocks.length !== 0) {
+    return (
+      <>
+        {clocks.map((clock) => (
+          <HeaderLabel label={clock.label} value={clock.time} key={clock.label} />
+        ))}
+      </>
+    );
+  } else {
+    return null;
+  }
 };
