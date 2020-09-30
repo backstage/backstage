@@ -67,28 +67,59 @@ kubernetes:
   clusterLocatorMethod: 'configMultiTenant'
   clusters: []
 
+# This sections configures the URL readers used by various parts of
+# Backstage to read data from remote URLs
+readers:
+  byHost:
+    - type: github
+      host: github.com
+      config:
+        token:
+          $secret:
+            env: GITHUB_PRIVATE_TOKEN
+    ### Example for how to add your GitHub Enterprise instance using the API:
+    # - type: github
+    #   host: ghe.example.net
+    #   config:
+    #     apiBaseUrl: https://ghe.example.net/api/v3
+    #     token:
+    #       $secret:
+    #         env: GHE_PRIVATE_TOKEN
+    ### Example for how to add your GitHub Enterprise instance using raw HTTP fetches (token is optional):
+    # - type: github
+    #   host: ghe.example.net
+    #   config:
+    #     rawBaseUrl: https://ghe.example.net/raw
+    #     token:
+    #       $secret:
+    #         env: GHE_PRIVATE_TOKEN
+    - type: gitlab
+      host: gitlab.com
+      config:
+        token:
+          $secret:
+            env: GITLAB_PRIVATE_TOKEN
+    - type: bitbucket
+      host: bitbucket.org
+      config:
+        username:
+          $secret:
+            env: BITBUCKET_USERNAME
+        appPassword:
+          $secret:
+            env: BITBUCKET_APP_PASSWORD
+    - type: azure
+      host: dev.azure.com
+      config:
+        privateToken:
+          $secret:
+            env: AZURE_PRIVATE_TOKEN
+
 catalog:
   rules:
     - allow: [Component, API, Group, User, Template, Location]
+
   processors:
-    github:
-      providers:
-        - target: https://github.com
-          token:
-            $secret:
-              env: GITHUB_PRIVATE_TOKEN
-        #### Example for how to add your GitHub Enterprise instance using the API:
-        # - target: https://ghe.example.net
-        #   apiBaseUrl: https://ghe.example.net/api/v3
-        #   token:
-        #     $secret:
-        #       env: GHE_PRIVATE_TOKEN
-        #### Example for how to add your GitHub Enterprise instance using raw HTTP fetches (token is optional):
-        # - target: https://ghe.example.net
-        #   rawBaseUrl: https://ghe.example.net/raw
-        #   token:
-        #     $secret:
-        #       env: GHE_PRIVATE_TOKEN
     githubOrg:
       providers:
         - target: https://github.com
@@ -101,21 +132,6 @@ catalog:
         #   token:
         #     $secret:
         #       env: GHE_PRIVATE_TOKEN
-    bitbucketApi:
-      username:
-        $secret:
-          env: BITBUCKET_USERNAME
-      appPassword:
-        $secret:
-          env: BITBUCKET_APP_PASSWORD
-    gitlabApi:
-      privateToken:
-        $secret:
-          env: GITLAB_PRIVATE_TOKEN
-    azureApi:
-      privateToken:
-        $secret:
-          env: AZURE_PRIVATE_TOKEN
 
   locations:
     # Backstage example components
