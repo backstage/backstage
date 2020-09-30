@@ -18,28 +18,83 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 
 describe('KubernetesClientProvider', () => {
+  let clientMock: any;
+  let kubernetesClientProvider: any;
+  let sut: KubernetesClientBasedFetcher;
+
   beforeEach(() => {
     jest.resetAllMocks();
-  });
-
-  it('should return pods, services', async () => {
-    const clientMock: any = {
+    clientMock = {
       listPodForAllNamespaces: jest.fn(),
       listServiceForAllNamespaces: jest.fn(),
     };
 
-    const kubernetesClientProvider: any = {
+    kubernetesClientProvider = {
       getCoreClientByClusterDetails: jest.fn(() => clientMock),
       getAppsClientByClusterDetails: jest.fn(() => clientMock),
       getAutoscalingClientByClusterDetails: jest.fn(() => clientMock),
       getNetworkingBeta1Client: jest.fn(() => clientMock),
     };
 
-    const sut = new KubernetesClientBasedFetcher({
+    sut = new KubernetesClientBasedFetcher({
       kubernetesClientProvider,
       logger: getVoidLogger(),
     });
+  });
 
+  const testErrorResponse = async (errorResponse: any, expectedResult: any) => {
+    clientMock.listPodForAllNamespaces.mockResolvedValueOnce({
+      body: {
+        items: [
+          {
+            metadata: {
+              name: 'pod-name',
+            },
+          },
+        ],
+      },
+    });
+
+    clientMock.listServiceForAllNamespaces.mockRejectedValue(errorResponse);
+
+    const result = await sut.fetchObjectsByServiceId(
+      'some-service',
+      {
+        name: 'cluster1',
+        url: 'http://localhost:9999',
+        serviceAccountToken: undefined,
+      },
+      new Set(['pods', 'services']),
+    );
+
+    expect(result).toStrictEqual({
+      errors: [expectedResult],
+      responses: [
+        {
+          type: 'pods',
+          resources: [
+            {
+              metadata: {
+                name: 'pod-name',
+              },
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(clientMock.listPodForAllNamespaces.mock.calls.length).toBe(1);
+    expect(clientMock.listServiceForAllNamespaces.mock.calls.length).toBe(1);
+
+    expect(
+      kubernetesClientProvider.getAppsClientByClusterDetails.mock.calls.length,
+    ).toBe(2);
+    expect(
+      kubernetesClientProvider.getCoreClientByClusterDetails.mock.calls.length,
+    ).toBe(2);
+  };
+
+  it('should return pods, services', async () => {
     clientMock.listPodForAllNamespaces.mockResolvedValueOnce({
       body: {
         items: [
@@ -74,28 +129,31 @@ describe('KubernetesClientProvider', () => {
       new Set(['pods', 'services']),
     );
 
-    expect(result).toStrictEqual([
-      {
-        type: 'pods',
-        resources: [
-          {
-            metadata: {
-              name: 'pod-name',
+    expect(result).toStrictEqual({
+      errors: [],
+      responses: [
+        {
+          type: 'pods',
+          resources: [
+            {
+              metadata: {
+                name: 'pod-name',
+              },
             },
-          },
-        ],
-      },
-      {
-        type: 'services',
-        resources: [
-          {
-            metadata: {
-              name: 'service-name',
+          ],
+        },
+        {
+          type: 'services',
+          resources: [
+            {
+              metadata: {
+                name: 'service-name',
+              },
             },
-          },
-        ],
-      },
-    ]);
+          ],
+        },
+      ],
+    });
 
     expect(clientMock.listPodForAllNamespaces.mock.calls.length).toBe(1);
     expect(clientMock.listServiceForAllNamespaces.mock.calls.length).toBe(1);
@@ -106,5 +164,91 @@ describe('KubernetesClientProvider', () => {
     expect(
       kubernetesClientProvider.getCoreClientByClusterDetails.mock.calls.length,
     ).toBe(2);
+  });
+  it('should throw error on unknown type', () => {
+    expect(() =>
+      sut.fetchObjectsByServiceId(
+        'some-service',
+        {
+          name: 'cluster1',
+          url: 'http://localhost:9999',
+          serviceAccountToken: undefined,
+        },
+        new Set<any>(['foo']),
+      ),
+    ).toThrow('unrecognised type=foo');
+
+    expect(clientMock.listPodForAllNamespaces.mock.calls.length).toBe(0);
+    expect(clientMock.listServiceForAllNamespaces.mock.calls.length).toBe(0);
+
+    expect(
+      kubernetesClientProvider.getAppsClientByClusterDetails.mock.calls.length,
+    ).toBe(0);
+    expect(
+      kubernetesClientProvider.getCoreClientByClusterDetails.mock.calls.length,
+    ).toBe(0);
+  });
+  // they're in testErrorResponse
+  // eslint-disable-next-line jest/expect-expect
+  it('should return pods, unauthorized error', async () => {
+    await testErrorResponse(
+      {
+        response: {
+          statusCode: 401,
+          request: {
+            uri: {
+              pathname: '/some/path',
+            },
+          },
+        },
+      },
+      {
+        errorType: 'UNAUTHORIZED_ERROR',
+        resourcePath: '/some/path',
+        statusCode: 401,
+      },
+    );
+  });
+  // they're in testErrorResponse
+  // eslint-disable-next-line jest/expect-expect
+  it('should return pods, system error', async () => {
+    await testErrorResponse(
+      {
+        response: {
+          statusCode: 500,
+          request: {
+            uri: {
+              pathname: '/some/path',
+            },
+          },
+        },
+      },
+      {
+        errorType: 'SYSTEM_ERROR',
+        resourcePath: '/some/path',
+        statusCode: 500,
+      },
+    );
+  });
+  // they're in testErrorResponse
+  // eslint-disable-next-line jest/expect-expect
+  it('should return pods, unknown error', async () => {
+    await testErrorResponse(
+      {
+        response: {
+          statusCode: 900,
+          request: {
+            uri: {
+              pathname: '/some/path',
+            },
+          },
+        },
+      },
+      {
+        errorType: 'UNKNOWN_ERROR',
+        resourcePath: '/some/path',
+        statusCode: 900,
+      },
+    );
   });
 });

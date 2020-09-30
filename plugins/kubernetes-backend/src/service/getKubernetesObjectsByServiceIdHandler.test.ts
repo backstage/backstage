@@ -26,38 +26,41 @@ const getClusterByServiceId = jest.fn();
 
 const mockFetch = (mock: jest.Mock) => {
   mock.mockImplementation((serviceId: string, clusterDetails: ClusterDetails) =>
-    Promise.resolve([
-      {
-        type: 'pods',
-        resources: [
-          {
-            metadata: {
-              name: `my-pods-${serviceId}-${clusterDetails.name}`,
+    Promise.resolve({
+      errors: [],
+      responses: [
+        {
+          type: 'pods',
+          resources: [
+            {
+              metadata: {
+                name: `my-pods-${serviceId}-${clusterDetails.name}`,
+              },
             },
-          },
-        ],
-      },
-      {
-        type: 'configmaps',
-        resources: [
-          {
-            metadata: {
-              name: `my-configmaps-${serviceId}-${clusterDetails.name}`,
+          ],
+        },
+        {
+          type: 'configmaps',
+          resources: [
+            {
+              metadata: {
+                name: `my-configmaps-${serviceId}-${clusterDetails.name}`,
+              },
             },
-          },
-        ],
-      },
-      {
-        type: 'services',
-        resources: [
-          {
-            metadata: {
-              name: `my-services-${serviceId}-${clusterDetails.name}`,
+          ],
+        },
+        {
+          type: 'services',
+          resources: [
+            {
+              metadata: {
+                name: `my-services-${serviceId}-${clusterDetails.name}`,
+              },
             },
-          },
-        ],
-      },
-    ]),
+          ],
+        },
+      ],
+    }),
   );
 };
 
@@ -96,6 +99,7 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
           cluster: {
             name: 'test-cluster',
           },
+          errors: [],
           resources: [
             {
               resources: [
@@ -166,6 +170,7 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
           cluster: {
             name: 'test-cluster',
           },
+          errors: [],
           resources: [
             {
               resources: [
@@ -203,6 +208,7 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
           cluster: {
             name: 'other-cluster',
           },
+          errors: [],
           resources: [
             {
               resources: [

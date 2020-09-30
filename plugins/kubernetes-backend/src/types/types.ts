@@ -34,10 +34,16 @@ export interface ClusterDetails {
 export interface ClusterObjects {
   cluster: { name: string };
   resources: FetchResponse[];
+  errors: KubernetesFetchError[];
 }
 
 export interface ObjectsByServiceIdResponse {
   items: ClusterObjects[];
+}
+
+export interface FetchResponseWrapper {
+  errors: KubernetesFetchError[];
+  responses: FetchResponse[];
 }
 
 export type FetchResponse =
@@ -102,10 +108,21 @@ export interface KubernetesFetcher {
     serviceId: string,
     clusterDetails: ClusterDetails,
     objectTypesToFetch: Set<KubernetesObjectTypes>,
-  ): Promise<FetchResponse[]>;
+  ): Promise<FetchResponseWrapper>;
 }
 
 // Used to locate which cluster(s) a service is running on
 export interface KubernetesClusterLocator {
   getClusterByServiceId(serviceId: string): Promise<ClusterDetails[]>;
+}
+
+export type KubernetesErrorTypes =
+  | 'UNAUTHORIZED_ERROR'
+  | 'SYSTEM_ERROR'
+  | 'UNKNOWN_ERROR';
+
+export interface KubernetesFetchError {
+  errorType: KubernetesErrorTypes;
+  statusCode?: number;
+  resourcePath?: string;
 }
