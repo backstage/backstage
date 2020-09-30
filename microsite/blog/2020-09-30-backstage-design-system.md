@@ -48,25 +48,25 @@ The quickest way to start is by duplicating our [Figma UI kit](https://www.figma
 As you’re designing and building your plugins, make sure to take advantage of these helpful resources.
 
 ![img](assets/backstage-figma1-DS.png)
-![img](assets/backstage-figma2-DS.png)
+![img](assets/backstage-figma2-ds.png)
 
 **[Figma Community](https://www.figma.com/@backstage)**
 
 We are thrilled to be using Figma Community to share our design assets. You can duplicate our UI kit and design your own plugin for Backstage. Figma Community is currently in beta, so this is a neat opportunity to be testing out a new way of working. At the moment, it doesn’t support auto-updating of duplicated files, so we’ll be announcing new versions of our UI kit on Discord in the #design channel.
 
-![img](assets/backstage-storybook-DS.png)
+![img](assets/backstage-storybook-ds.png)
 
 **[Storybook](https://backstage.io/storybook/)**
 
 This is where you can view our reusable components. If you’d like to help build up our design system, you can also help us add components that we’ve designed to Storybook as well. We post newly designed components and patterns to GitHub as issues, where contributors can pick them up and add them to our Storybook so they’re available for the rest of the Backstage community.
 
-![img](assets/backstage-guidelines-DS.png)
+![img](assets/backstage-guidelines-ds.png)
 
 **[Guidelines](https://backstage.io/docs/dls/design)**
 
 To keep up with our latest design guidelines, go to [Designing for Backstage](https://backstage.io/docs/dls/design). You’ll find more how-to’s and you can also learn more about our design philosophy and practices there. Down the line, we plan on including more in-depth component rules in this section (i.e., dos/don’ts, use cases, etc.).
 
-![img](assets/backstage-github-DS.png)
+![img](assets/backstage-github-ds.png)
 
 **[GitHub](https://github.com/spotify/backstage)**
 
