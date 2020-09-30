@@ -32,7 +32,6 @@ import {
 } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { DocsBuilder } from './helpers';
-import { TechDocsMetadata } from './metadata';
 import { getLocationForEntity } from '../helpers';
 
 type RouterOptions = {
