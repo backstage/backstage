@@ -79,8 +79,6 @@ All design questions should be directed to the [#design](https://discord.com/cha
 
 ## What's next for Backstage design
 
-![img](assets/backstage-guide-DS.png)
-
 There are a lot of exciting things that we’re envisioning for Backstage and open source design at Spotify. These include:
 
 - Expanding our Backstage Design System by building on the UI kit and component library in Figma and Storybook
