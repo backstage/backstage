@@ -8,21 +8,21 @@ backend:
     port: 7000
   database:
     client: sqlite3
-    connection: ':memory:'
+    connection: ":memory:"
 
 # See README.md in the proxy-backend plugin for information on the configuration format
 proxy:
-  '/circleci/api':
+  "/circleci/api":
     target: https://circleci.com/api/v1.1
     changeOrigin: true
     pathRewrite:
-      '^/proxy/circleci/api/': '/'
+      "^/proxy/circleci/api/": "/"
     headers:
       Circle-Token:
         $secret:
           env: CIRCLECI_AUTH_TOKEN
 
-  '/jenkins/api':
+  "/jenkins/api":
     target: http://localhost:8080
     headers:
       Authorization:
@@ -36,7 +36,7 @@ techdocs:
   storageUrl: http://localhost:7000/techdocs/static/docs
   requestUrl: http://localhost:7000/techdocs/docs
   generators:
-    techdocs: 'docker'
+    techdocs: "docker"
 
 sentry:
   organization: spotify
@@ -49,7 +49,7 @@ rollbar:
 
 newrelic:
   api:
-    baseUrl: 'https://api.newrelic.com/v2'
+    baseUrl: "https://api.newrelic.com/v2"
     key: NEW_RELIC_REST_API_KEY
 
 lighthouse:
@@ -84,10 +84,13 @@ catalog:
       appPassword:
         $secret:
           env: BITBUCKET_APP_PASSWORD
-    gitlabApi:
-      privateToken:
-        $secret:
-          env: GITLAB_PRIVATE_TOKEN
+    gitlab:
+      providers:
+        - target: https://gitlab.com
+          rawBaseUrl: https://gitlab.com
+          token:
+            $secret:
+              env: GITLAB_PRIVATE_TOKEN
     azureApi:
       privateToken:
         $secret:
@@ -160,8 +163,8 @@ auth:
           $secret:
             env: GITLAB_BASE_URL
     saml:
-      entryPoint: 'http://localhost:7001/'
-      issuer: 'passport-saml'
+      entryPoint: "http://localhost:7001/"
+      issuer: "passport-saml"
     okta:
       development:
         clientId:
