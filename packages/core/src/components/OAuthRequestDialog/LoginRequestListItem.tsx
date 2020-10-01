@@ -68,7 +68,7 @@ const LoginRequestListItem: FC<RowProps> = ({ request, busy, setBusy }) => {
         primary={request.provider.title}
         secondary={
           error && (
-            <Typography color="error">
+            <Typography variant="caption" color="error">
               {error.message || 'An unspecified error occurred'}
             </Typography>
           )
