@@ -109,17 +109,23 @@ const generatedColumns: TableColumn[] = [
     title: 'Build',
     field: 'buildName',
     highlight: true,
-    render: (row: Partial<CITableBuildInfo>) => (
-      <Link
-        component={RouterLink}
-        to={generatePath(buildRouteRef.path, {
-          branch: row.source?.branchName!,
-          buildNumber: row.buildNumber?.toString()!,
-        })}
-      >
-        {row.buildName}
-      </Link>
-    ),
+    render: (row: Partial<CITableBuildInfo>) => {
+      if (!row.source?.branchName || !row.buildNumber) {
+        return <>{row.buildName}</>;
+      }
+
+      return (
+        <Link
+          component={RouterLink}
+          to={generatePath(buildRouteRef.path, {
+            branch: row.source?.branchName,
+            buildNumber: row.buildNumber?.toString(),
+          })}
+        >
+          {row.buildName}
+        </Link>
+      );
+    },
   },
   {
     title: 'Source',
