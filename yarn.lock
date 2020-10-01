@@ -10764,7 +10764,7 @@ estraverse@^5.1.0:
   resolved "https://registry.npmjs.org/estraverse/-/estraverse-5.1.0.tgz#374309d39fd935ae500e7b92e8a6b4c720e59642"
   integrity sha512-FyohXK+R0vE+y1nHLoBM7ZTyqRpqAlhdZHCWIWEviFLiGB8b04H6bQs8G+XTthacvT8VuwvteiP7RJSxMs8UEw==
 
-estree-walker@^0.6.0, estree-walker@^0.6.1:
+estree-walker@^0.6.1:
   version "0.6.1"
   resolved "https://registry.npmjs.org/estree-walker/-/estree-walker-0.6.1.tgz#53049143f40c6eb918b23671d1fe3219f3a1b362"
   integrity sha512-SqmZANLWS0mnatqbSfRP5g8OXZC12Fgg1IwNtLsyHDzJizORW4khDfjPqJZsemPWBB2uqykUah5YpQ6epsqC/w==
@@ -20229,14 +20229,6 @@ rollup-plugin-esbuild@^2.0.0:
   dependencies:
     "@rollup/pluginutils" "^3.1.0"
 
-rollup-plugin-image-files@^1.4.2:
-  version "1.4.2"
-  resolved "https://registry.npmjs.org/rollup-plugin-image-files/-/rollup-plugin-image-files-1.4.2.tgz#0a329723bace95168a9a6efdacb51370c14fbfe5"
-  integrity sha512-tlydpQdGFssMWhPdWA9SFh4IGVSCzceNgJarJDID+km151IeIVzjATl8ZERNGS/QwMty25iammQqauxl1VUqDQ==
-  dependencies:
-    rollup "0.64.1"
-    rollup-pluginutils "2.4.1"
-
 rollup-plugin-peer-deps-external@^2.2.2:
   version "2.2.3"
   resolved "https://registry.npmjs.org/rollup-plugin-peer-deps-external/-/rollup-plugin-peer-deps-external-2.2.3.tgz#059a8aec1eefb48a475e9fcedc3b9e3deb521213"
@@ -20273,28 +20265,12 @@ rollup-plugin-typescript2@^0.27.3:
     resolve "1.17.0"
     tslib "2.0.1"
 
-rollup-pluginutils@2.4.1:
-  version "2.4.1"
-  resolved "https://registry.npmjs.org/rollup-pluginutils/-/rollup-pluginutils-2.4.1.tgz#de43ab54965bbf47843599a7f3adceb723de38db"
-  integrity sha512-wesMQ9/172IJDIW/lYWm0vW0LiKe5Ekjws481R7z9WTRtmO59cqyM/2uUlxvf6yzm/fElFmHUobeQOYz46dZJw==
-  dependencies:
-    estree-walker "^0.6.0"
-    micromatch "^3.1.10"
-
 rollup-pluginutils@^2.8.2:
   version "2.8.2"
   resolved "https://registry.npmjs.org/rollup-pluginutils/-/rollup-pluginutils-2.8.2.tgz#72f2af0748b592364dbd3389e600e5a9444a351e"
   integrity sha512-EEp9NhnUkwY8aif6bxgovPHMoMoNr2FulJziTndpt5H9RdwC47GSGuII9XxpSdzVGM0GWrNPHV6ie1LTNJPaLQ==
   dependencies:
     estree-walker "^0.6.1"
-
-rollup@0.64.1:
-  version "0.64.1"
-  resolved "https://registry.npmjs.org/rollup/-/rollup-0.64.1.tgz#9188ee368e5fcd43ffbc00ec414e72eeb5de87ba"
-  integrity sha512-+ThdVXrvonJdOTzyybMBipP0uz605Z8AnzWVY3rf+cSGnLO7uNkJBlN+9jXqWOomkvumXfm/esmBpA5d53qm7g==
-  dependencies:
-    "@types/estree" "0.0.39"
-    "@types/node" "*"
 
 rollup@2.23.x:
   version "2.23.0"
