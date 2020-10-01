@@ -40,6 +40,7 @@ const DEFAULT_OBJECTS = new Set<KubernetesObjectTypes>([
   'ingresses',
 ]);
 
+// Fans out the request to all clusters that the service lives in, aggregates their responses together
 export const handleGetKubernetesObjectsByServiceId: GetKubernetesObjectsByServiceIdHandler = async (
   serviceId,
   fetcher,
@@ -50,7 +51,9 @@ export const handleGetKubernetesObjectsByServiceId: GetKubernetesObjectsByServic
   const clusterDetails = await clusterLocator.getClusterByServiceId(serviceId);
 
   logger.info(
-    `serviceId=${serviceId} clusterDetails=${clusterDetails.map(c => c.name)}`,
+    `serviceId=${serviceId} clusterDetails=[${clusterDetails
+      .map(c => c.name)
+      .join(', ')}]`,
   );
 
   return Promise.all(
@@ -62,7 +65,8 @@ export const handleGetKubernetesObjectsByServiceId: GetKubernetesObjectsByServic
             cluster: {
               name: cd.name,
             },
-            resources: result,
+            resources: result.responses,
+            errors: result.errors,
           };
         });
     }),

@@ -216,7 +216,7 @@ const Background = props => {
         </Block.Container>
       </Block>
 
-      <Block className="stripe-bottom bg-black-grey">
+      <Block className="stripe bg-black">
         <Block.Container style={{ justifyContent: 'flex-start' }}>
           <Block.TextBox>
             <Block.Title>Manage data pipelines</Block.Title>

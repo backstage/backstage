@@ -23,12 +23,12 @@ import {
   SchemaValidEntityPolicy,
 } from './entity';
 import {
-  ApiEntityV1alpha1Policy,
-  ComponentEntityV1alpha1Policy,
-  GroupEntityV1alpha1Policy,
-  LocationEntityV1alpha1Policy,
-  TemplateEntityV1alpha1Policy,
-  UserEntityV1alpha1Policy,
+  apiEntityV1alpha1Policy,
+  componentEntityV1alpha1Policy,
+  groupEntityV1alpha1Policy,
+  locationEntityV1alpha1Policy,
+  templateEntityV1alpha1Policy,
+  userEntityV1alpha1Policy,
 } from './kinds';
 import { EntityPolicy } from './types';
 
@@ -40,7 +40,10 @@ class AllEntityPolicies implements EntityPolicy {
   async enforce(entity: Entity): Promise<Entity> {
     let result = entity;
     for (const policy of this.policies) {
-      result = await policy.enforce(entity);
+      const output = await policy.enforce(entity);
+      if (output) {
+        result = output;
+      }
     }
     return result;
   }
@@ -51,12 +54,11 @@ class AllEntityPolicies implements EntityPolicy {
 class AnyEntityPolicy implements EntityPolicy {
   constructor(private readonly policies: EntityPolicy[]) {}
 
-  async enforce(entity: Entity): Promise<Entity> {
+  async enforce(entity: Entity): Promise<Entity | undefined> {
     for (const policy of this.policies) {
-      try {
-        return await policy.enforce(entity);
-      } catch {
-        continue;
+      const output = await policy.enforce(entity);
+      if (output !== null) {
+        return output;
       }
     }
     throw new Error(`The entity did not match any known policy`);
@@ -76,12 +78,12 @@ export class EntityPolicies implements EntityPolicy {
         new ReservedFieldsEntityPolicy(),
       ]),
       EntityPolicies.anyOf([
-        new ComponentEntityV1alpha1Policy(),
-        new GroupEntityV1alpha1Policy(),
-        new UserEntityV1alpha1Policy(),
-        new LocationEntityV1alpha1Policy(),
-        new TemplateEntityV1alpha1Policy(),
-        new ApiEntityV1alpha1Policy(),
+        componentEntityV1alpha1Policy,
+        groupEntityV1alpha1Policy,
+        userEntityV1alpha1Policy,
+        locationEntityV1alpha1Policy,
+        templateEntityV1alpha1Policy,
+        apiEntityV1alpha1Policy,
       ]),
     ]);
   }
@@ -98,7 +100,7 @@ export class EntityPolicies implements EntityPolicy {
     this.policy = policy;
   }
 
-  enforce(entity: Entity): Promise<Entity> {
+  enforce(entity: Entity): Promise<Entity | undefined> {
     return this.policy.enforce(entity);
   }
 }

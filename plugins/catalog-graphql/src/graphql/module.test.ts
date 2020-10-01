@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { createModule } from './module';
 import { execute } from 'graphql';
 import { rest } from 'msw';
@@ -36,9 +37,8 @@ describe('Catalog Module', () => {
     },
   ]);
 
-  beforeAll(() => worker.listen());
+  beforeAll(() => worker.listen({ onUnhandledRequest: 'error' }));
   afterAll(() => worker.close());
-
   afterEach(() => worker.resetHandlers());
 
   describe('Default Entity', () => {
