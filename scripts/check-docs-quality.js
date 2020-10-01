@@ -23,6 +23,9 @@ const inheritStdIo = {
   stdio: 'inherit',
 };
 
+const ERROR_MESSAGE =
+  'Please install vale linter(https://docs.errata.ai/vale/install). Ignore this message if already installed.\n';
+
 // xargs is not supported by shx.
 if (process.platform === 'win32') {
   const validMDFilesCommand = `${listFilesTrackedByGit} | .\\node_modules\\.bin\\shx grep ".md"`;
@@ -45,9 +48,7 @@ if (process.platform === 'win32') {
     if (output.status !== 0) {
       // if it contains system level error. [in this case vale does not exist]
       if (output.error) {
-        console.error(
-          'Please install vale linter(https://docs.errata.ai/vale/install)\n',
-        );
+        console.error(ERROR_MESSAGE);
       }
       process.exit(1);
     }
@@ -61,6 +62,7 @@ if (process.platform === 'win32') {
   try {
     execSync(`${validMDFilesCommand} | xargs vale`, inheritStdIo);
   } catch (e) {
+    console.error(ERROR_MESSAGE);
     process.exit(1);
   }
 }
