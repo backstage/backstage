@@ -32,7 +32,7 @@ The `techdocs-backend` plugin currenly comes with one publisher -
 
 [TechDocs Backend](https://github.com/spotify/backstage/tree/master/plugins/techdocs-backend)
 
-More standalone publshers will come in the near future...
+More standalone publishers will come in the near future...
 
 ### TechDocs CLI
 
