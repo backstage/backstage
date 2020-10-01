@@ -24,13 +24,11 @@ Imagine a not-so-distant future where you walk up to Backstage, install it in yo
 
 Running services on Kubernetes? There’s a plugin for that. Using Snyk for security scanning? There’s a plugin for that. Grafana, DataDog, or Rollbar for monitoring? There’s a plugin for that. Using Jenkins, CircleCI, GitHub Actions, or Travis CI? Pick the CI plugin of your choice. You get the picture. Regardless of your stack, there’s a plugin that you can use.
 
-Like this vision? So do we! But we can’t do it alone. We’ll need your help. For this vision to come true, we need to foster a community where many companies and individual developers build and contribute their plugins. Being [accepted into the CNCF Sandbox](https://backstage.io/blog/2020/09/23/backstage-cncf-sandbox) will provide us with the groundwork and guidance to broaden the community even faster.
+Like this vision? So do we! But we can’t do it alone. We’ll need your help. For this vision to come true, we need to foster a community where many companies and individual developers build and contribute their plugins. Having been [accepted into the CNCF Sandbox](https://backstage.io/blog/2020/09/23/backstage-cncf-sandbox) provides us with the groundwork and guidance to broaden the community even faster.
 
-This grand vision is actually not that far off. Already today there is a growing ecosystem of Backstage plugins. To highlight all the amazing work that has been done by the community, and make it easier for Backstage adopters to see what plugins are available, we now have a Plugin marketplace:
+This grand vision is actually not that far off. Already today there is a growing ecosystem of Backstage plugins. To highlight all the amazing work that has been done by the community, and make it easier for Backstage adopters to see what plugins are available, we now have a Plugin Marketplace: [https://backstage.io/plugins](https://backstage.io/plugins)
 
 ![marketplace](assets/marketplace.png)
-
-https://backstage.io/plugins
 
 ## Creating and suggesting new plugins
 
@@ -40,6 +38,6 @@ If you start developing a plugin that you aim to release as open source, we sugg
 
 We are really excited to see all the amazing plugins that have already been built, and look forward to seeing even more ideas and collaboration as the Backstage community continues to grow.
 
-What plugins would you like to see in the Plugin Marketplace? [Tell us](https://github.com/spotify/backstage/issues/new?labels=plugin&template=plugin_template.md&title=%5BPlugin%5D+THE+PLUGIN+NAME).
+What plugins would you like to see in the Plugin Marketplace? [Tell us](https://github.com/spotify/backstage/issues/new?labels=plugin&template=plugin_template.md&title=%5BPlugin%5D+THE+PLUGIN+NAME)!
 
-_Special shout-out to community member [Iain Billett](https://github.com/iain-b) from Roadie for helping build and contribute the [plugin marketplace page](https://backstage.io/plugins) (as his first PR nonetheless!)._
+_Special shout-out to community member [Iain Billett](https://github.com/iain-b) from Roadie for helping build and contribute the [plugin marketplace page](https://backstage.io/plugins) (as his first PR no less!)._
