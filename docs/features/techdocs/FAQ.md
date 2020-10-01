@@ -18,7 +18,8 @@ This page answers frequently asked questions about [TechDocs](README.md).
 TechDocs is using [MkDocs](https://www.mkdocs.org/) to build project
 documentation under the hood. Documentation built with the
 [techdocs-container](https://github.com/spotify/backstage/blob/master/packages/techdocs-container/README.md)
-is using the MkDocs [Material Theme](https://github.com/squidfunk/mkdocs-material).
+is using the MkDocs
+[Material Theme](https://github.com/squidfunk/mkdocs-material).
 
 #### What is the mkdocs-techdocs-core plugin?
 
@@ -32,6 +33,6 @@ well as a selection of Python Markdown extensions that TechDocs supports.
 #### Does TechDocs support file formats other than Markdown (e.g. RST, AsciiDoc) ?
 
 Not right now. We are currently using MkDocs to generate the documentation from
-source, so the files have to be in Markdown format. However, in the future we want to
-support other static site generators which will make it possible to use other
-file formats.
+source, so the files have to be in Markdown format. However, in the future we
+want to support other static site generators which will make it possible to use
+otherfile formats.
