@@ -135,7 +135,7 @@ and describe what your plugin will do. This will help coordinate our
 contributors' efforts and avoid duplicating existing functionality.
 
 You can browse and search for all available plugins in the
-[plugin gallery](https://backstage.io/plugins).
+[Plugin Marketplace](https://backstage.io/plugins).
 
 ### Which plugin is used the most at Spotify?
 
