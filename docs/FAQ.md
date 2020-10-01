@@ -132,10 +132,10 @@ to see if it already exists or is in the works. If no one's thought of it yet,
 great! Open a new issue as
 [a plugin suggestion](https://github.com/spotify/backstage/issues/new/choose)
 and describe what your plugin will do. This will help coordinate our
-contributors' efforts and avoid duplicating existing functionality. In the
-future, we will create
-[a plugin gallery](https://github.com/spotify/backstage/issues/260) where people
-can browse and search for all available plugins.
+contributors' efforts and avoid duplicating existing functionality.
+
+You can browse and search for all available plugins in the
+[Plugin Marketplace](https://backstage.io/plugins).
 
 ### Which plugin is used the most at Spotify?
 
