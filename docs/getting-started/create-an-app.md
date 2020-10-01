@@ -38,6 +38,34 @@ app-folder is the name that was provided when prompted.
 Inside that directory, it will generate all the files and folder structure
 needed for you to run your app.
 
+### Troubleshooting
+
+The create app command doesn't always work as expected, this is a collection of
+some of the commonly encountered issues and solutions.
+
+#### Couldn't find any versions for "file-saver"
+
+You may encounter the following error message:
+
+```text
+Couldn't find any versions for "file-saver" that matches "eligrey-FileSaver.js-1.3.8.tar.gz-art-external"
+```
+
+This is likely because you have a globally configured NPM proxy, which breaks
+the installation of the `material-table` dependency. This is a known issue and
+being worked on in `material-table`, but for now you can work around it using
+the following:
+
+```bash
+NPM_CONFIG_REGISTRY=https://registry.npmjs.org npx @backstage/create-app
+```
+
+#### Can't find Python executable "python"
+
+The install process may also fail if no Python installation is available. Python
+is commonly available in most systems already, but if it isn't you can head for
+example [here](https://www.python.org/downloads/) to install it.
+
 ### General folder structure
 
 Below is a simplified layout of the files and folders generated when creating an
