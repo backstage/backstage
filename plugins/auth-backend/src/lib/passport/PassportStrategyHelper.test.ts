@@ -97,7 +97,7 @@ describe('PassportStrategyHelper', () => {
       );
       expect(spyAuthenticate).toBeCalledTimes(1);
       await expect(frameHandlerStrategyPromise).rejects.toThrow(
-        'Authentication failed, Error: MyCustomAuth error',
+        'Authentication failed, Please provide valid credentials.',
       );
     });
 

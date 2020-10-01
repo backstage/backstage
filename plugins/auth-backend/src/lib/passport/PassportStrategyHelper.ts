@@ -95,8 +95,14 @@ export const executeFrameHandlerStrategy = async <T, PrivateInfo = never>(
       ) => {
         reject(new Error(`Authentication rejected, ${info.message ?? ''}`));
       };
-      strategy.error = (error: Error) => {
-        reject(new Error(`Authentication failed, ${error}`));
+      strategy.error = () => {
+        reject(
+          new Error(
+            `Authentication failed, Please provide valid credentials${
+              providerStrategy.name ? ` for ${providerStrategy.name}` : ''
+            }.`,
+          ),
+        );
       };
       strategy.redirect = () => {
         reject(new Error('Unexpected redirect'));
