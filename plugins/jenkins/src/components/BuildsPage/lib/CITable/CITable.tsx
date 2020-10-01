@@ -118,8 +118,8 @@ const generatedColumns: TableColumn[] = [
         <Link
           component={RouterLink}
           to={generatePath(buildRouteRef.path, {
-            branch: row.source?.branchName,
-            buildNumber: row.buildNumber?.toString(),
+            branch: row.source.branchName,
+            buildNumber: row.buildNumber.toString(),
           })}
         >
           {row.buildName}
@@ -129,6 +129,7 @@ const generatedColumns: TableColumn[] = [
   },
   {
     title: 'Source',
+    field: 'source.branchName',
     render: (row: Partial<CITableBuildInfo>) => (
       <>
         <p>
@@ -142,6 +143,7 @@ const generatedColumns: TableColumn[] = [
   },
   {
     title: 'Status',
+    field: 'status',
     render: (row: Partial<CITableBuildInfo>) => {
       return (
         <Box display="flex" alignItems="center">
@@ -152,6 +154,7 @@ const generatedColumns: TableColumn[] = [
   },
   {
     title: 'Tests',
+    sorting: false,
     render: (row: Partial<CITableBuildInfo>) => {
       return (
         <>
@@ -174,6 +177,7 @@ const generatedColumns: TableColumn[] = [
   },
   {
     title: 'Actions',
+    sorting: false,
     render: (row: Partial<CITableBuildInfo>) => (
       <IconButton onClick={row.onRestartClick}>
         <RetryIcon />
