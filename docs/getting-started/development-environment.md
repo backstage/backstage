@@ -53,6 +53,12 @@ The development server does not include any checks by default, but they can be
 enabled using the `--check` flag. Note that using the flag may consume more
 system resources and slow things down.
 
+```bash
+
+$ yarn --check
+
+```
+
 ## Package Scripts
 
 There are many commands to be found in the root
