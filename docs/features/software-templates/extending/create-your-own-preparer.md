@@ -17,7 +17,7 @@ location protocols:
 These two are added to the `PreparersBuilder` and then passed into the
 `createRouter` function of the `@spotify/plugin-scaffolder-backend`
 
-An full example backend can be found
+A full example backend can be found
 [here](https://github.com/spotify/backstage/blob/d91c10f654475a60829fa33a5c81018e517a319a/packages/backend/src/plugins/scaffolder.ts),
 but it looks something like the following
 
@@ -98,4 +98,4 @@ const preparers = new Preparers();
 preparers.register('gcs', new GoogleCloudStoragePreparer());
 ```
 
-And then pass this in to the `createRouter` function.
+And then pass this into the `createRouter` function.

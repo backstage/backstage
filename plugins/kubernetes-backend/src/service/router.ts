@@ -74,6 +74,9 @@ export const makeRouter = (
       );
       res.send(response);
     } catch (e) {
+      logger.error(
+        `action=retrieveObjectsByServiceId service=${serviceId}, error=${e}`,
+      );
       res.status(500).send({ error: e.message });
     }
   });

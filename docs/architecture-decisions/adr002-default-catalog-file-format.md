@@ -22,7 +22,7 @@ This ADR describes the default format of these descriptor files.
 
 ### Inspiration
 
-Internally at Spotify, a home grown software catalog system is used heavily and
+Internally at Spotify, a homegrown software catalog system is used heavily and
 forms a core part of Backstage and other important pieces of the infrastructure.
 The user experience, learnings and certain pieces of metadata from that catalog
 are being carried over to the open source effort.

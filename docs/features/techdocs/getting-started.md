@@ -13,7 +13,7 @@ If you haven't setup Backstage already, start
 ## Installing TechDocs
 
 TechDocs is provided with the Backstage application by default. If you want to
-set up TechDocs manually, keep follow the instructions below.
+set up TechDocs manually, keep following the instructions below.
 
 ### Adding the package
 

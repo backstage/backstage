@@ -13,21 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TechDocsPageWrapper } from './TechDocsPageWrapper';
 import React from 'react';
-import { render } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { Box } from '@material-ui/core';
 
-describe('TechDocs Page Wrapper', () => {
-  it('should render a TechDocs Page Wrapper', async () => {
-    const { queryByText } = render(
-      wrapInTestApp(
-        <TechDocsPageWrapper title="test-title" subtitle="test-subtitle">
-          Test
-        </TechDocsPageWrapper>,
-      ),
-    );
-    expect(queryByText(/test-title/i)).toBeInTheDocument();
-    expect(queryByText(/test-subtitle/i)).toBeInTheDocument();
-  });
-});
+type CostOverviewFooterProps = {
+  children?: React.ReactNode;
+};
+
+const CostOverviewFooter = ({ children }: CostOverviewFooterProps) => (
+  <Box
+    display="flex"
+    flexDirection="row"
+    justifyContent="space-between"
+    alignItems="center"
+  >
+    {React.Children.map(children, child => (
+      <Box marginY={1}>{child}</Box>
+    ))}
+  </Box>
+);
+
+export default CostOverviewFooter;

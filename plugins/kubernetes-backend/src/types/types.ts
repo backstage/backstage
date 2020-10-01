@@ -15,11 +15,12 @@
  */
 
 import {
+  ExtensionsV1beta1Ingress,
   V1ConfigMap,
   V1Deployment,
+  V1HorizontalPodAutoscaler,
   V1Pod,
   V1ReplicaSet,
-  V1Secret,
   V1Service,
 } from '@kubernetes/client-node';
 
@@ -33,19 +34,26 @@ export interface ClusterDetails {
 export interface ClusterObjects {
   cluster: { name: string };
   resources: FetchResponse[];
+  errors: KubernetesFetchError[];
 }
 
 export interface ObjectsByServiceIdResponse {
   items: ClusterObjects[];
 }
 
+export interface FetchResponseWrapper {
+  errors: KubernetesFetchError[];
+  responses: FetchResponse[];
+}
+
 export type FetchResponse =
   | PodFetchResponse
   | ServiceFetchResponse
   | ConfigMapFetchResponse
-  | SecretFetchResponse
   | DeploymentFetchResponse
-  | ReplicaSetsFetchResponse;
+  | ReplicaSetsFetchResponse
+  | HorizontalPodAutoscalersFetchResponse
+  | IngressesFetchResponse;
 
 // TODO fairly sure there's a easier way to do this
 
@@ -53,9 +61,10 @@ export type KubernetesObjectTypes =
   | 'pods'
   | 'services'
   | 'configmaps'
-  | 'secrets'
   | 'deployments'
-  | 'replicasets';
+  | 'replicasets'
+  | 'horizontalpodautoscalers'
+  | 'ingresses';
 
 export interface PodFetchResponse {
   type: 'pods';
@@ -72,11 +81,6 @@ export interface ConfigMapFetchResponse {
   resources: Array<V1ConfigMap>;
 }
 
-export interface SecretFetchResponse {
-  type: 'secrets';
-  resources: Array<V1Secret>;
-}
-
 export interface DeploymentFetchResponse {
   type: 'deployments';
   resources: Array<V1Deployment>;
@@ -87,6 +91,16 @@ export interface ReplicaSetsFetchResponse {
   resources: Array<V1ReplicaSet>;
 }
 
+export interface HorizontalPodAutoscalersFetchResponse {
+  type: 'horizontalpodautoscalers';
+  resources: Array<V1HorizontalPodAutoscaler>;
+}
+
+export interface IngressesFetchResponse {
+  type: 'ingresses';
+  resources: Array<ExtensionsV1beta1Ingress>;
+}
+
 // Fetches information from a kubernetes cluster using the cluster details object
 // to target a specific cluster
 export interface KubernetesFetcher {
@@ -94,10 +108,21 @@ export interface KubernetesFetcher {
     serviceId: string,
     clusterDetails: ClusterDetails,
     objectTypesToFetch: Set<KubernetesObjectTypes>,
-  ): Promise<FetchResponse[]>;
+  ): Promise<FetchResponseWrapper>;
 }
 
 // Used to locate which cluster(s) a service is running on
 export interface KubernetesClusterLocator {
   getClusterByServiceId(serviceId: string): Promise<ClusterDetails[]>;
+}
+
+export type KubernetesErrorTypes =
+  | 'UNAUTHORIZED_ERROR'
+  | 'SYSTEM_ERROR'
+  | 'UNKNOWN_ERROR';
+
+export interface KubernetesFetchError {
+  errorType: KubernetesErrorTypes;
+  statusCode?: number;
+  resourcePath?: string;
 }

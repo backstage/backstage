@@ -14,59 +14,76 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React from 'react';
 import { HeaderLabel } from '../HeaderLabel';
+import { ConfigApi, useApi, configApiRef } from '@backstage/core-api';
 
 const timeFormat = { hour: '2-digit', minute: '2-digit' };
-const utcOptions = { timeZone: 'UTC', ...timeFormat };
-const nycOptions = { timeZone: 'America/New_York', ...timeFormat };
-const tyoOptions = { timeZone: 'Asia/Tokyo', ...timeFormat };
-const stoOptions = { timeZone: 'Europe/Stockholm', ...timeFormat };
 
-const defaultTimes = {
-  timeNY: '',
-  timeUTC: '',
-  timeTYO: '',
-  timeSTO: '',
+type TimeObj = {
+  time: string;
+  label: string;
 };
 
-function getTimes() {
+function getTimes(configApi: ConfigApi) {
   const d = new Date();
   const lang = window.navigator.language;
 
-  // Using the browser native toLocaleTimeString instead of huge moment-tz
-  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toLocaleTimeString
-  const timeNY = d.toLocaleTimeString(lang, nycOptions);
-  const timeUTC = d.toLocaleTimeString(lang, utcOptions);
-  const timeTYO = d.toLocaleTimeString(lang, tyoOptions);
-  const timeSTO = d.toLocaleTimeString(lang, stoOptions);
+  const clocks: TimeObj[] = [];
 
-  return { timeNY, timeUTC, timeTYO, timeSTO };
+  if (!configApi.has('homepage.clocks')) {
+    return clocks;
+  }
+
+  const clockConfigs = configApi.getConfigArray('homepage.clocks');
+
+  for (const clock of clockConfigs) {
+    if (clock.has('label') && clock.has('timezone')) {
+      const options = {
+        timeZone: clock.getString('timezone'),
+        ...timeFormat,
+      };
+
+      const time = d.toLocaleTimeString(lang, options);
+      const label = clock.getString('label');
+
+      clocks.push({ time, label });
+    }
+  }
+
+  return clocks;
 }
 
-export const HomepageTimer: FC<{}> = () => {
-  const [{ timeNY, timeUTC, timeTYO, timeSTO }, setTimes] = React.useState(
-    defaultTimes,
-  );
+export const HomepageTimer = () => {
+  const configApi = useApi(configApiRef);
+
+  const defaultTimes: TimeObj[] = [];
+  const [clocks, setTimes] = React.useState(defaultTimes);
 
   React.useEffect(() => {
-    setTimes(getTimes());
+    setTimes(getTimes(configApi));
 
     const intervalId = setInterval(() => {
-      setTimes(getTimes());
+      setTimes(getTimes(configApi));
     }, 1000);
 
     return () => {
       clearInterval(intervalId);
     };
-  }, []);
+  }, [configApi]);
 
-  return (
-    <>
-      <HeaderLabel label="NYC" value={timeNY} />
-      <HeaderLabel label="UTC" value={timeUTC} />
-      <HeaderLabel label="STO" value={timeSTO} />
-      <HeaderLabel label="TYO" value={timeTYO} />
-    </>
-  );
+  if (clocks.length !== 0) {
+    return (
+      <>
+        {clocks.map(clock => (
+          <HeaderLabel
+            label={clock.label}
+            value={clock.time}
+            key={clock.label}
+          />
+        ))}
+      </>
+    );
+  }
+  return null;
 };

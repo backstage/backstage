@@ -14,14 +14,23 @@
  * limitations under the License.
  */
 import {
+  isPluginApplicableToEntity as isTravisCIAvailable,
+  RecentTravisCIBuildsWidget,
+  Router as TravisCIRouter,
+} from '@roadiehq/backstage-plugin-travis-ci';
+import {
   isPluginApplicableToEntity as isGitHubActionsAvailable,
   RecentWorkflowRunsCard,
   Router as GitHubActionsRouter,
 } from '@backstage/plugin-github-actions';
 import {
+  Router as CloudbuildRouter,
+  isPluginApplicableToEntity as isCloudbuildAvailable,
+} from '@backstage/plugin-cloudbuild';
+import {
+  Router as JenkinsRouter,
   isPluginApplicableToEntity as isJenkinsAvailable,
   LatestRunCard as JenkinsLatestRunCard,
-  Router as JenkinsRouter,
 } from '@backstage/plugin-jenkins';
 import {
   isPluginApplicableToEntity as isCircleCIAvailable,
@@ -51,6 +60,10 @@ const CICDSwitcher = ({ entity }: { entity: Entity }) => {
       return <GitHubActionsRouter entity={entity} />;
     case isCircleCIAvailable(entity):
       return <CircleCIRouter entity={entity} />;
+    case isCloudbuildAvailable(entity):
+      return <CloudbuildRouter entity={entity} />;
+    case isTravisCIAvailable(entity):
+      return <TravisCIRouter entity={entity} />;
     default:
       return (
         <WarningPanel title="CI/CD switcher:">
@@ -69,6 +82,9 @@ const RecentCICDRunsSwitcher = ({ entity }: { entity: Entity }) => {
       break;
     case isGitHubActionsAvailable(entity):
       content = <RecentWorkflowRunsCard entity={entity} />;
+      break;
+    case isTravisCIAvailable(entity):
+      content = <RecentTravisCIBuildsWidget entity={entity} />;
       break;
     default:
       content = null;

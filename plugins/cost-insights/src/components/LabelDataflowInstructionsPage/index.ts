@@ -14,24 +14,4 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Header, Content, Page, pageTheme } from '@backstage/core';
-
-type TechDocsPageWrapperProps = {
-  title: string;
-  subtitle: string;
-  children: any;
-};
-
-export const TechDocsPageWrapper = ({
-  children,
-  title,
-  subtitle,
-}: TechDocsPageWrapperProps) => {
-  return (
-    <Page theme={pageTheme.documentation}>
-      <Header title={title} subtitle={subtitle} />
-      <Content>{children}</Content>
-    </Page>
-  );
-};
+export { default } from './LabelDataflowInstructionsPage';

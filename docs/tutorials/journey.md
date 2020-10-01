@@ -134,7 +134,7 @@ work.
 # 5. The First User
 
 At this point the only things that anyone that wants to use Sam's plugin needs
-to do is to add
+to do are to add
 https://raw.githubusercontent.com/sam/backstage-spotify-theme/master/annotation.json#/sam.wise/spotify-track-id
 to their catalog schema, import and add the `PlayerWidget` on the desired entity
 template pages, and make sure they're providing Spotify auth.
@@ -145,7 +145,7 @@ select a theme tune when creating a new component. Sam jumps on the idea and
 adds a new creation hook that is exported by the plugin. The hook can be
 installed either in a single, all, or component templates that match a label. It
 adds a field as a part of the component creation process with a nice search box
-that allow users to search for a track that they want to use as the theme tune.
+that allows users to search for a track that they want to use as the theme tune.
 
 # 6. Return to the Repo
 
@@ -203,7 +203,7 @@ backend plugin also extends the common GraphQL schema with a mutation that
 updates the track ID in the database.
 
 On the frontend the Pull Request doesn't change much. It defines the save action
-the was previously using the `RepoApi` in it's own API.
+the was previously using the `RepoApi` in its own API.
 
 ```ts
 type ThemeTuneStorageApi = {
@@ -247,7 +247,7 @@ once an internal concern of the plugin is now becoming a standard in the
 community.
 
 In order to standardize the annotation in Backstage, Sam submits a Pull Request
-to the Backstage Core repo. The request suggest a new well-known metadata
+to the Backstage Core repo. The request suggests a new well-known metadata
 annotation called `spotify.com/track-id`, with the same schema definition as
 Sam's label, and refers to Sam's own plugin and the `spotify-album-art` plugin
 as existing usages. The Backstage maintainers merge the Pull Request, after

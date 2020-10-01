@@ -27,7 +27,7 @@ describe('UrlReaderProcessor', () => {
   const mockApiOrigin = 'http://localhost:23000';
   const server = setupServer();
 
-  beforeAll(() => server.listen());
+  beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
   afterEach(() => server.resetHandlers());
   afterAll(() => server.close());
 

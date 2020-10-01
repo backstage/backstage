@@ -54,6 +54,41 @@ spec:
             - containerPort: 82
 
 ---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: dice-roller
+  labels:
+    'backstage.io/kubernetes-id': dice-roller
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: dice-roller
+  minReplicas: 10
+  maxReplicas: 15
+  targetCPUUtilizationPercentage: 50
+
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: dice-roller
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+  labels:
+    'backstage.io/kubernetes-id': dice-roller
+spec:
+  rules:
+    - host: nginx
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: dice-roller
+              servicePort: 80
+
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -88,6 +123,26 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 9376
+      name: port1
+    - protocol: TCP
+      port: 81
+      targetPort: 9377
+      name: port2
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dice-roller-lb
+  labels:
+    'backstage.io/kubernetes-id': dice-roller
+spec:
+  selector:
+    app: dice-roller
+  ports:
+    - port: 8765
+      targetPort: 9376
+  type: LoadBalancer
 
 ---
 apiVersion: v1

@@ -41,19 +41,8 @@ export class ApiDefinitionAtLocationProcessor implements LocationProcessor {
     const reference =
       entity.metadata.annotations[DEFINITION_AT_LOCATION_ANNOTATION];
     const { type, target } = extractReference(reference);
-    const result = await read({ type, target });
-
-    if (result.type === 'error') {
-      throw new Error(`Failed to read location: ${result.error.message}`);
-    }
-
-    if (result.type !== 'data') {
-      throw new Error(
-        `Only supports location processor results of type 'data', but got '${result.type}'`,
-      );
-    }
-
-    const definition = result.data.toString();
+    const data = await read({ type, target });
+    const definition = data.toString();
     const apiEntity = entity as ApiEntity;
     apiEntity.spec.definition = definition;
 
