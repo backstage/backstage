@@ -9,14 +9,13 @@ backend:
   database:
     client: sqlite3
     connection: ":memory:"
+  csp:
+    connect-src: ["'self'", "https:"]
 
 # See README.md in the proxy-backend plugin for information on the configuration format
 proxy:
   "/circleci/api":
     target: https://circleci.com/api/v1.1
-    changeOrigin: true
-    pathRewrite:
-      "^/proxy/circleci/api/": "/"
     headers:
       Circle-Token:
         $secret:
@@ -29,12 +28,21 @@ proxy:
         $secret:
           env: JENKINS_BASIC_AUTH_HEADER
 
+  "/travisci/api":
+    target: https://api.travis-ci.com
+    changeOrigin: true
+    headers:
+      Authorization:
+        $secret:
+          env: TRAVISCI_AUTH_TOKEN
+      travis-api-version: 3
+
 organization:
   name: Spotify
 
 techdocs:
-  storageUrl: http://localhost:7000/techdocs/static/docs
-  requestUrl: http://localhost:7000/techdocs/docs
+  storageUrl: http://localhost:7000/api/techdocs/static/docs
+  requestUrl: http://localhost:7000/api/techdocs
   generators:
     techdocs: "docker"
 
@@ -55,9 +63,13 @@ newrelic:
 lighthouse:
   baseUrl: http://localhost:3003
 
+kubernetes:
+  clusterLocatorMethod: "configMultiTenant"
+  clusters: []
+
 catalog:
   rules:
-    - allow: [Component, API, Group, Template, Location]
+    - allow: [Component, API, Group, User, Template, Location]
   processors:
     github:
       providers:
@@ -74,6 +86,18 @@ catalog:
         #### Example for how to add your GitHub Enterprise instance using raw HTTP fetches (token is optional):
         # - target: https://ghe.example.net
         #   rawBaseUrl: https://ghe.example.net/raw
+        #   token:
+        #     $secret:
+        #       env: GHE_PRIVATE_TOKEN
+    githubOrg:
+      providers:
+        - target: https://github.com
+          token:
+            $secret:
+              env: GITHUB_PRIVATE_TOKEN
+        #### Example for how to add your GitHub Enterprise instance using the API:
+        # - target: https://ghe.example.net
+        #   apiBaseUrl: https://ghe.example.net/api/v3
         #   token:
         #     $secret:
         #       env: GHE_PRIVATE_TOKEN
@@ -100,19 +124,15 @@ catalog:
     # Backstage example components
     - type: github
       target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
-
     # Example component for github-actions
     - type: github
       target: https://github.com/spotify/backstage/blob/master/plugins/github-actions/examples/sample.yaml
-
     # Example component for techdocs
     - type: github
       target: https://github.com/spotify/backstage/blob/master/plugins/techdocs-backend/examples/documented-component/documented-component.yaml
-
     # Backstage example APIs
     - type: github
       target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
-
     # Backstage example templates
     - type: github
       target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/all-templates.yaml
@@ -129,6 +149,12 @@ scaffolder:
       token:
         $secret:
           env: GITLAB_ACCESS_TOKEN
+  azure:
+    baseUrl: https://dev.azure.com/{your-organization}
+    api:
+      token:
+        $secret:
+          env: AZURE_PRIVATE_TOKEN
 
 auth:
   providers:
@@ -212,3 +238,33 @@ auth:
         tenantId:
           $secret:
             env: AUTH_MICROSOFT_TENANT_ID
+costInsights:
+  engineerCost: 200000
+  products:
+    computeEngine:
+      name: Compute Engine
+      icon: compute
+    cloudDataflow:
+      name: Cloud Dataflow
+      icon: data
+    cloudStorage:
+      name: Cloud Storage
+      icon: storage
+    bigQuery:
+      name: Big Query
+      icon: search
+  metrics:
+    dailyCost:
+      name: Your Company's Daily Cost
+    DAU:
+      name: Cost Per DAU
+homepage:
+  clocks:
+    - label: UTC
+      timzone: UTC
+    - label: NYC
+      timezone: "America/New_York"
+    - label: STO
+      timezone: "Europe/Stockholm"
+    - label: TYO
+      timezone: "Asia/Tokyo"

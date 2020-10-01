@@ -136,7 +136,11 @@ describe('createRouter', () => {
       const response = await request(app).get('/entities/by-name/k/ns/n');
 
       expect(entitiesCatalog.entityByName).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.entityByName).toHaveBeenCalledWith('k', 'ns', 'n');
+      expect(entitiesCatalog.entityByName).toHaveBeenCalledWith({
+        kind: 'k',
+        namespace: 'ns',
+        name: 'n',
+      });
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(expect.objectContaining(entity));
     });
@@ -147,7 +151,11 @@ describe('createRouter', () => {
       const response = await request(app).get('/entities/by-name/b/d/c');
 
       expect(entitiesCatalog.entityByName).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.entityByName).toHaveBeenCalledWith('b', 'd', 'c');
+      expect(entitiesCatalog.entityByName).toHaveBeenCalledWith({
+        kind: 'b',
+        namespace: 'd',
+        name: 'c',
+      });
       expect(response.status).toEqual(404);
       expect(response.text).toMatch(/name/);
     });

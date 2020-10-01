@@ -6,7 +6,7 @@ description: Documentation on User Authentication and Authorization in Backstage
 
 ## Summary
 
-The purpose of the Auth APIs in Backstage are to identify the user, and to
+The purpose of the Auth APIs in Backstage is to identify the user, and to
 provide a way for plugins to request access to 3rd party services on behalf of
 the user (OAuth). This documentation focuses on the implementation of that
 solution and how to extend it. For documentation on how to consume the Auth APIs

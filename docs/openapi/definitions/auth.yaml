@@ -6,10 +6,10 @@ info:
 
     **Provided by `@backstage/auth-backend`.**
 
-    The purpose of the Auth APIs in Backstage are to identify the user, and to provide a way for plugins 
+    The purpose of the Auth APIs in Backstage are to identify the user, and to provide a way for plugins
     to request access to 3rd party services on behalf of that user.
 
-    The API is supplied with a list of providers - such as `Google` or `Github` - and will add the endpoints 
+    The API is supplied with a list of providers - such as `Google` or `Github` - and will add the endpoints
     described below to each of those providers.
 
     Read more about [User Authentication and Authorization in Backstage](https://github.com/spotify/backstage/blob/master/docs/auth/overview.md).
@@ -21,7 +21,7 @@ externalDocs:
   description: Backstage official documentation
   url: https://github.com/spotify/backstage/blob/master/docs/README.md
 servers:
-  - url: http://localhost:7000/auth/
+  - url: http://localhost:7000/api/auth/
 tags:
   - name: provider
     description: List of endpoints per provider

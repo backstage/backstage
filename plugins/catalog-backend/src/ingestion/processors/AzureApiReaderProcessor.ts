@@ -107,8 +107,7 @@ export class AzureApiReaderProcessor implements LocationProcessor {
         srcKeyword !== '_git' ||
         repoName === '' ||
         path === '' ||
-        ref === '' ||
-        !path.match(/\.yaml$/)
+        ref === ''
       ) {
         throw new Error('Wrong Azure Devops URL or Invalid file path');
       }

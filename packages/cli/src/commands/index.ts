@@ -61,6 +61,10 @@ export function registerCommands(program: CommanderStatic) {
 
   program
     .command('create-plugin')
+    .option(
+      '--backend',
+      'Create plugin with the backend dependencies as default',
+    )
     .description('Creates a new plugin in the current repository')
     .option('--scope <scope>', 'NPM scope')
     .option('--npm-registry <URL>', 'NPM registry URL')

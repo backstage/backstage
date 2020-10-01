@@ -82,6 +82,10 @@ Extensions:
 
 ## Changelog
 
+### 0.0.9
+
+- Change development status to 3 - Alpha
+
 ### 0.0.8
 
 - Superfences and Codehilite doesn't work very well together (squidfunk/mkdocs-material#1604) so therefore the codehilite extension is replaced by pymdownx.highlight

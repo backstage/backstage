@@ -97,7 +97,7 @@ app, and the app itself.
 
 ### Core APIs
 
-Starting with the Backstage core library, it provides implementation for all of
+Starting with the Backstage core library, it provides implementations for all of
 the core APIs. The core APIs are the ones exported by `@backstage/core`, such as
 the `errorApiRef` and `configApiRef`. You can find a full list of them
 [here](../reference/utility-apis/README.md).
@@ -113,7 +113,7 @@ While doing so they should usually also provide default implementations of their
 own APIs, for example, the `catalog` plugin exports `catalogApiRef`, and also
 supplies a default `ApiFactory` of that API using the `CatalogClient`. There is
 one restriction to plugin-provided API Factories: plugins may not supply
-factories for core APIs, trying to do so will cause the app to crash.
+factories for core APIs, trying to do so will cause the app to refuse to start.
 
 Plugins supply their APIs through the `apis` option of `createPlugin`, for
 example:
@@ -248,8 +248,8 @@ directly tied to React.
 The indirection provided by Utility APIs also makes it straightforward to test
 components that depend on APIs, and to provide a standard common development
 environment for plugins. A proper test wrapper with mocked API implementations
-is not yet ready, but it will provided as a part of `@backstage/test-utils`. It
-will provide mocked variants of APIs, with additional methods for asserting a
+is not yet ready, but it will be provided as a part of `@backstage/test-utils`.
+It will provide mocked variants of APIs, with additional methods for asserting a
 component's interaction with the API.
 
 The common development environment for plugins is included in

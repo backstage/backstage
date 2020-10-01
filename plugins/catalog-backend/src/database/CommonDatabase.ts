@@ -22,9 +22,12 @@ import {
 import {
   Entity,
   EntityMeta,
-  entityMetaGeneratedFields,
+  EntityName,
+  ENTITY_DEFAULT_NAMESPACE,
+  ENTITY_META_GENERATED_FIELDS,
   generateEntityEtag,
   generateEntityUid,
+  getEntityName,
   Location,
 } from '@backstage/catalog-model';
 import Knex from 'knex';
@@ -172,7 +175,7 @@ export class CommonDatabase implements Database {
     let builder = tx<DbEntitiesRow>('entities');
     for (const [indexU, filter] of (filters ?? []).entries()) {
       const index = Number(indexU);
-      const key = filter.key.replace('*', '%');
+      const key = filter.key.toLowerCase().replace('*', '%');
       const keyOp = filter.key.includes('*') ? 'like' : '=';
 
       let matchNulls = false;
@@ -183,9 +186,9 @@ export class CommonDatabase implements Database {
         if (!value) {
           matchNulls = true;
         } else if (value.includes('*')) {
-          matchLike.push(value.replace('*', '%'));
+          matchLike.push(value.toLowerCase().replace('*', '%'));
         } else {
-          matchIn.push(value);
+          matchIn.push(value.toLowerCase());
         }
       }
 
@@ -219,16 +222,19 @@ export class CommonDatabase implements Database {
     return rows.map(row => this.toEntityResponse(row));
   }
 
-  async entity(
+  async entityByName(
     txOpaque: unknown,
-    kind: string,
-    name: string,
-    namespace?: string,
+    name: EntityName,
   ): Promise<DbEntityResponse | undefined> {
     const tx = txOpaque as Knex.Transaction<any, any>;
 
     const rows = await tx<DbEntitiesRow>('entities')
-      .where({ kind, name, namespace: namespace || null })
+      .whereRaw(
+        tx.raw(
+          'LOWER(kind) = LOWER(?) AND LOWER(namespace) = LOWER(?) AND LOWER(name) = LOWER(?)',
+          [name.kind, name.namespace, name.name],
+        ),
+      )
       .select();
 
     if (rows.length !== 1) {
@@ -240,11 +246,13 @@ export class CommonDatabase implements Database {
 
   async entityByUid(
     txOpaque: unknown,
-    id: string,
+    uid: string,
   ): Promise<DbEntityResponse | undefined> {
     const tx = txOpaque as Knex.Transaction<any, any>;
 
-    const rows = await tx<DbEntitiesRow>('entities').where({ id }).select();
+    const rows = await tx<DbEntitiesRow>('entities')
+      .where({ id: uid })
+      .select();
 
     if (rows.length !== 1) {
       return undefined;
@@ -381,36 +389,40 @@ export class CommonDatabase implements Database {
     tx: Knex.Transaction<any, any>,
     data: Entity,
   ): Promise<void> {
-    const newKind = data.kind;
-    const newName = data.metadata.name;
-    const newNamespace = data.metadata.namespace;
+    const {
+      kind: newKind,
+      namespace: newNamespace,
+      name: newName,
+    } = getEntityName(data);
     const newKindNorm = this.normalize(newKind);
+    const newNamespaceNorm = this.normalize(newNamespace);
     const newNameNorm = this.normalize(newName);
-    const newNamespaceNorm = this.normalize(newNamespace || '');
 
     for (const item of await this.entities(tx)) {
       if (data.metadata.uid === item.entity.metadata.uid) {
         continue;
       }
 
-      const oldKind = item.entity.kind;
-      const oldName = item.entity.metadata.name;
-      const oldNamespace = item.entity.metadata.namespace;
+      const {
+        kind: oldKind,
+        namespace: oldNamespace,
+        name: oldName,
+      } = getEntityName(item.entity);
       const oldKindNorm = this.normalize(oldKind);
+      const oldNamespaceNorm = this.normalize(oldNamespace);
       const oldNameNorm = this.normalize(oldName);
-      const oldNamespaceNorm = this.normalize(oldNamespace || '');
 
       if (
         oldKindNorm === newKindNorm &&
-        oldNameNorm === newNameNorm &&
-        oldNamespaceNorm === newNamespaceNorm
+        oldNamespaceNorm === newNamespaceNorm &&
+        oldNameNorm === newNameNorm
       ) {
         // Only throw if things were actually different - for completely equal
         // things, we let the database handle the conflict
         if (
           oldKind !== newKind ||
-          oldName !== newName ||
-          oldNamespace !== newNamespace
+          oldNamespace !== newNamespace ||
+          oldName !== newName
         ) {
           const message = `Kind, namespace, name are too similar to an existing entity`;
           throw new ConflictError(message);
@@ -431,9 +443,9 @@ export class CommonDatabase implements Database {
       api_version: entity.apiVersion,
       kind: entity.kind,
       name: entity.metadata.name,
-      namespace: entity.metadata.namespace || null,
+      namespace: entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE,
       metadata: JSON.stringify(
-        lodash.omit(entity.metadata, ...entityMetaGeneratedFields),
+        lodash.omit(entity.metadata, ...ENTITY_META_GENERATED_FIELDS),
       ),
       spec: entity.spec ? JSON.stringify(entity.spec) : null,
     };

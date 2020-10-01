@@ -15,25 +15,30 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { Config, ConfigReader } from '@backstage/config';
 import {
   Entity,
   EntityPolicies,
   EntityPolicy,
+  ENTITY_DEFAULT_NAMESPACE,
   LocationSpec,
 } from '@backstage/catalog-model';
+import { Config, ConfigReader } from '@backstage/config';
 import { Logger } from 'winston';
+import { CatalogRulesEnforcer } from './CatalogRules';
 import { AnnotateLocationEntityProcessor } from './processors/AnnotateLocationEntityProcessor';
+import { ApiDefinitionAtLocationProcessor } from './processors/ApiDefinitionAtLocationProcessor';
+import { AzureApiReaderProcessor } from './processors/AzureApiReaderProcessor';
+import { BitbucketApiReaderProcessor } from './processors/BitbucketApiReaderProcessor';
 import { EntityPolicyProcessor } from './processors/EntityPolicyProcessor';
 import { FileReaderProcessor } from './processors/FileReaderProcessor';
+import { GithubOrgReaderProcessor } from './processors/GithubOrgReaderProcessor';
 import { GithubReaderProcessor } from './processors/GithubReaderProcessor';
 import { GitLabReaderProcessor } from './processors/GitlabReaderProcessor';
-import { BitbucketApiReaderProcessor } from './processors/BitbucketApiReaderProcessor';
-import { AzureApiReaderProcessor } from './processors/AzureApiReaderProcessor';
-import { UrlReaderProcessor } from './processors/UrlReaderProcessor';
 import { LocationRefProcessor } from './processors/LocationEntityProcessor';
-import { StaticLocationProcessor } from './processors/StaticLocationProcessor';
+import { PlaceholderProcessor } from './processors/PlaceholderProcessor';
+import { CodeOwnersProcessor } from './processors/CodeOwnersProcessor';
 import * as result from './processors/results';
+import { StaticLocationProcessor } from './processors/StaticLocationProcessor';
 import {
   LocationProcessor,
   LocationProcessorDataResult,
@@ -43,9 +48,9 @@ import {
   LocationProcessorLocationResult,
   LocationProcessorResult,
 } from './processors/types';
+import { UrlReaderProcessor } from './processors/UrlReaderProcessor';
 import { YamlProcessor } from './processors/YamlProcessor';
 import { LocationReader, ReadLocationResult } from './types';
-import { CatalogRulesEnforcer } from './CatalogRules';
 
 // The max amount of nesting depth of generated work items
 const MAX_DEPTH = 10;
@@ -81,8 +86,12 @@ export class LocationReaders implements LocationReader {
       GitLabReaderProcessor.fromConfig(config, logger),
       new BitbucketApiReaderProcessor(config),
       new AzureApiReaderProcessor(config),
+      GithubOrgReaderProcessor.fromConfig(config),
       new UrlReaderProcessor(),
       new YamlProcessor(),
+      PlaceholderProcessor.default(),
+      new CodeOwnersProcessor(),
+      new ApiDefinitionAtLocationProcessor(),
       new EntityPolicyProcessor(entityPolicy),
       new LocationRefProcessor(),
       new AnnotateLocationEntityProcessor(),
@@ -170,12 +179,14 @@ export class LocationReaders implements LocationReader {
         } catch (e) {
           const message = `Processor ${processor.constructor.name} threw an error while reading location ${item.location.type} ${item.location.target}, ${e}`;
           emit(result.generalError(item.location, message));
+          this.logger.warn(message);
         }
       }
     }
 
     const message = `No processor was able to read location ${item.location.type} ${item.location.target}`;
     emit(result.inputError(item.location, message));
+    this.logger.warn(message);
   }
 
   private async handleData(
@@ -195,6 +206,7 @@ export class LocationReaders implements LocationReader {
         } catch (e) {
           const message = `Processor ${processor.constructor.name} threw an error while parsing ${item.location.type} ${item.location.target}, ${e}`;
           emit(result.generalError(item.location, message));
+          this.logger.warn(message);
         }
       }
     }
@@ -216,10 +228,22 @@ export class LocationReaders implements LocationReader {
     for (const processor of this.processors) {
       if (processor.processEntity) {
         try {
-          current = await processor.processEntity(current, item.location, emit);
+          current = await processor.processEntity(
+            current,
+            item.location,
+            emit,
+            this.readLocation.bind(this),
+          );
         } catch (e) {
-          const message = `Processor ${processor.constructor.name} threw an error while processing entity at ${item.location.type} ${item.location.target}, ${e}`;
+          // Construct the name carefully, if we got validation errors we do
+          // not want to crash here due to missing metadata or so
+          const namespace = !current.metadata
+            ? ''
+            : current.metadata.namespace ?? ENTITY_DEFAULT_NAMESPACE;
+          const name = !current.metadata ? '' : current.metadata.name;
+          const message = `Processor ${processor.constructor.name} threw an error while processing entity ${current.kind}:${namespace}/${name} at ${item.location.type} ${item.location.target}, ${e}`;
           emit(result.generalError(item.location, message));
+          this.logger.warn(message);
         }
       }
     }
@@ -242,8 +266,45 @@ export class LocationReaders implements LocationReader {
         } catch (e) {
           const message = `Processor ${processor.constructor.name} threw an error while handling another error at ${item.location.type} ${item.location.target}, ${e}`;
           emit(result.generalError(item.location, message));
+          this.logger.warn(message);
         }
       }
     }
+  }
+
+  private async readLocation(location: LocationSpec): Promise<Buffer> {
+    let data: Buffer | undefined = undefined;
+    let error: Error | undefined = undefined;
+
+    await this.handleLocation(
+      {
+        type: 'location',
+        location,
+        optional: false,
+      },
+      output => {
+        if (output.type === 'error' && !error) {
+          error = output.error;
+        } else if (output.type === 'data') {
+          if (data) {
+            if (!error) {
+              error = new Error(
+                'More than one piece of data loaded unexpectedly',
+              );
+            }
+          } else {
+            data = output.data;
+          }
+        }
+      },
+    );
+
+    if (error) {
+      throw error;
+    } else if (!data) {
+      throw new Error('No data loaded');
+    }
+
+    return data;
   }
 }
