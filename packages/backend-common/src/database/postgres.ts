@@ -15,6 +15,7 @@
  */
 
 import knex, { PgConnectionConfig } from 'knex';
+import { cloneDeep } from 'lodash';
 import { Config } from '@backstage/config';
 import { mergeDatabaseConfig } from './config';
 
@@ -44,7 +45,7 @@ export function buildPgDatabaseConfig(
   overrides?: knex.Config,
 ) {
   return mergeDatabaseConfig(
-    dbConfig.get(),
+    cloneDeep(dbConfig.get()),
     {
       connection: getPgConnectionConfig(dbConfig, !!overrides),
       useNullAsDefault: true,

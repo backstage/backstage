@@ -24,17 +24,17 @@
 
 import Router from 'express-promise-router';
 import {
-  ensureDatabaseExists,
-  createDatabaseClient,
   createServiceBuilder,
   loadBackendConfig,
   getRootLogger,
   useHotMemoize,
   notFoundHandler,
+  SingleDatabaseConfiguration,
+  SingleDatabaseManager,
   SingleHostDiscovery,
   UrlReaders,
 } from '@backstage/backend-common';
-import { ConfigReader, AppConfig } from '@backstage/config';
+import { ConfigReader } from '@backstage/config';
 import healthcheck from './plugins/healthcheck';
 import auth from './plugins/auth';
 import catalog from './plugins/catalog';
@@ -48,37 +48,29 @@ import graphql from './plugins/graphql';
 import app from './plugins/app';
 import { PluginEnvironment } from './types';
 
-function makeCreateEnv(loadedConfigs: AppConfig[]) {
-  const config = ConfigReader.fromConfigs(loadedConfigs);
+function makeCreateEnv(config: ConfigReader) {
   const root = getRootLogger();
   const reader = UrlReaders.default({ logger: root, config });
   const discovery = SingleHostDiscovery.fromConfig(config);
 
   root.info(`Created UrlReader ${reader}`);
 
+  const databaseConfig = new SingleDatabaseConfiguration(
+    config.getConfig('backend.database'),
+  );
+  const databaseManager = new SingleDatabaseManager(databaseConfig);
+
   return (plugin: string): PluginEnvironment => {
     const logger = root.child({ type: 'plugin', plugin });
-    const database = createDatabaseClient(
-      config.getConfig('backend.database'),
-      {
-        connection: {
-          database: `backstage_plugin_${plugin}`,
-        },
-      },
-    );
-    return { logger, database, config, reader, discovery };
+    const databaseFactory = databaseManager.getDatabaseFactory(plugin);
+    return { logger, database: databaseFactory, config, reader, discovery };
   };
 }
 
 async function main() {
   const configs = await loadBackendConfig();
   const configReader = ConfigReader.fromConfigs(configs);
-  const createEnv = makeCreateEnv(configs);
-  await ensureDatabaseExists(
-    configReader.getConfig('backend.database'),
-    'backstage_plugin_catalog',
-    'backstage_plugin_auth',
-  );
+  const createEnv = makeCreateEnv(configReader);
 
   const healthcheckEnv = useHotMemoize(module, () => createEnv('healthcheck'));
   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));

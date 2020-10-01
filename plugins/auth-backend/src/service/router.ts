@@ -17,7 +17,6 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import cookieParser from 'cookie-parser';
-import Knex from 'knex';
 import { Logger } from 'winston';
 import { createAuthProvider } from '../providers';
 import { Config } from '@backstage/config';
@@ -25,11 +24,12 @@ import { DatabaseKeyStore, TokenFactory, createOidcRouter } from '../identity';
 import {
   NotFoundError,
   PluginEndpointDiscovery,
+  PluginDatabaseFactory,
 } from '@backstage/backend-common';
 
 export interface RouterOptions {
   logger: Logger;
-  database: Knex;
+  database: PluginDatabaseFactory;
   config: Config;
   discovery: PluginEndpointDiscovery;
 }
@@ -47,7 +47,9 @@ export async function createRouter({
 
   const keyDurationSeconds = 3600;
 
-  const keyStore = await DatabaseKeyStore.create({ database });
+  const keyStore = await DatabaseKeyStore.create({
+    database: await database.getDatabase(),
+  });
   const tokenIssuer = new TokenFactory({
     issuer: authUrl,
     keyStore,

@@ -9,16 +9,17 @@
 import Router from 'express-promise-router';
 import {
   ensureDatabaseExists,
-  createDatabaseClient,
   createServiceBuilder,
   loadBackendConfig,
   getRootLogger,
   useHotMemoize,
   notFoundHandler,
+  SingleDatabaseConfiguration,
+  SingleDatabaseManager,
   SingleHostDiscovery,
   UrlReaders,
 } from '@backstage/backend-common';
-import { ConfigReader, AppConfig } from '@backstage/config';
+import { ConfigReader } from '@backstage/config';
 import auth from './plugins/auth';
 import catalog from './plugins/catalog';
 import scaffolder from './plugins/scaffolder';
@@ -26,32 +27,29 @@ import proxy from './plugins/proxy';
 import techdocs from './plugins/techdocs';
 import { PluginEnvironment } from './types';
 
-function makeCreateEnv(loadedConfigs: AppConfig[]) {
-  const config = ConfigReader.fromConfigs(loadedConfigs);
+function makeCreateEnv(config: ConfigReader) {
   const root = getRootLogger();
   const reader = UrlReaders.default({ logger: root, config });
   const discovery = SingleHostDiscovery.fromConfig(config);
 
   root.info(`Created UrlReader ${reader}`);
 
+  const databaseConfig = new SingleDatabaseConfiguration(
+    config.getConfig('backend.database'),
+  )
+  const databaseManager = new SingleDatabaseManager(databaseConfig);
+
   return (plugin: string): PluginEnvironment => {
     const logger = root.child({ type: 'plugin', plugin });
-    const database = createDatabaseClient(
-      config.getConfig('backend.database'),
-      {
-        connection: {
-          database: `backstage_plugin_${plugin}`,
-        },
-      },
-    );
-    return { logger, database, config, reader, discovery };
+    const databaseFactory = databaseManager.getDatabaseFactory(plugin);
+    return { logger, database: databaseFactory, config, reader, discovery };
   };
 }
 
 async function main() {
   const configs = await loadBackendConfig();
   const configReader = ConfigReader.fromConfigs(configs);
-  const createEnv = makeCreateEnv(configs);
+  const createEnv = makeCreateEnv(configReader);
   await ensureDatabaseExists(
     configReader.getConfig('backend.database'),
     'backstage_plugin_catalog',
