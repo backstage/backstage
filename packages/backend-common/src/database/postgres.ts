@@ -30,7 +30,7 @@ export async function createPgDatabaseClient(
   overrides?: knex.Config,
 ) {
   const baseConfig = buildPgDatabaseConfig(dbConfig, overrides);
-  let knexConfig = baseConfig;
+  const knexConfig = baseConfig;
 
   // Bootstrap the missing database.
   if (!!baseConfig?.connection.database) {
@@ -38,10 +38,6 @@ export async function createPgDatabaseClient(
     const admin = knex(knexAdminConfig);
 
     await ensurePgDatabase(admin, baseConfig.connection.database);
-    knexConfig = buildPgPluginConfig(
-      cloneDeep(baseConfig),
-      baseConfig.connection.database,
-    );
   }
 
   const database = knex(knexConfig);
@@ -78,18 +74,6 @@ function buildPgDatabaseAdminConfig(dbConfig: JsonValue) {
     connection: {
       database: 'postgres',
     },
-  });
-}
-
-/**
- * Builds a knex Postgres database connection for plugin consumption
- *
- * @param dbConfig The database config
- * @param database The database granted to the plugin
- */
-function buildPgPluginConfig(dbConfig: JsonValue, database: string) {
-  return mergeDatabaseConfig(dbConfig, {
-    connection: roleCredentials(database),
   });
 }
 
@@ -133,23 +117,7 @@ async function ensurePgDatabase(admin: knex, database: string) {
     return;
   }
 
-  const owner = roleCredentials(database);
-  await admin.raw(`CREATE ROLE ?? WITH LOGIN PASSWORD '${owner.password}'`, [
-    owner.user,
-  ]);
-  await admin.raw(`CREATE DATABASE ?? OWNER ??`, [database, owner.user]);
-}
-
-/**
- * Creates credentials to own the given database
- *
- * @param database The name of the database to create a role for
- */
-function roleCredentials(database: string) {
-  return {
-    user: database,
-    password: database,
-  };
+  await admin.raw(`CREATE DATABASE ??`, [database]);
 }
 
 /**
