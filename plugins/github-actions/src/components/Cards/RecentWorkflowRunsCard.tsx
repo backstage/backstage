@@ -20,13 +20,7 @@ import { useWorkflowRuns } from '../useWorkflowRuns';
 import React, { useEffect } from 'react';
 import { EmptyState, Table } from '@backstage/core';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
-import {
-  Button,
-  Card,
-  Link,
-  TableContainer,
-  Typography,
-} from '@material-ui/core';
+import { Button, Card, Link, TableContainer } from '@material-ui/core';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
 
 const firstLine = (message: string): string => message.split('\n')[0];
