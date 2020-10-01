@@ -19,6 +19,7 @@ import { Grid, TabProps } from '@material-ui/core';
 import {
   CardTab,
   Content,
+  googleAuthApiRef,
   Page,
   pageTheme,
   Progress,
@@ -28,6 +29,7 @@ import {
 import { Entity } from '@backstage/catalog-model';
 import { kubernetesApiRef } from '../../api/types';
 import {
+  AuthTokens,
   ClusterObjects,
   FetchResponse,
   ObjectsByServiceIdResponse,
@@ -105,16 +107,24 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
   >(undefined);
   const [error, setError] = useState<string | undefined>(undefined);
 
+  const googleAuth = useApi(googleAuthApiRef);
   useEffect(() => {
-    kubernetesApi
-      .getObjectsByServiceId(entity.metadata.name)
-      .then(result => {
-        setKubernetesObjects(result);
-      })
-      .catch(e => {
-        setError(e.message);
-      });
-  }, [entity.metadata.name, kubernetesApi]);
+    (async () => {
+      // TODO: Query Kubernetes backend to get info on which auth providers are in use
+      const googleAuthToken: string = await googleAuth.getAccessToken(
+        'https://www.googleapis.com/auth/cloud-platform',
+      );
+      const authTokens: AuthTokens = { google: googleAuthToken };
+      kubernetesApi
+        .getObjectsByServiceId(entity.metadata.name, authTokens)
+        .then(result => {
+          setKubernetesObjects(result);
+        })
+        .catch(e => {
+          setError(e.message);
+        });
+    })();
+  }, [entity.metadata.name, kubernetesApi, googleAuth]);
 
   const clustersWithErrors =
     kubernetesObjects?.items.filter(r => r.errors.length > 0) ?? [];

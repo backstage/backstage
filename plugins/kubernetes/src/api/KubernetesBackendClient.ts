@@ -16,7 +16,10 @@
 
 import { DiscoveryApi } from '@backstage/core';
 import { KubernetesApi } from './types';
-import { ObjectsByServiceIdResponse } from '@backstage/plugin-kubernetes-backend';
+import {
+  AuthTokens,
+  ObjectsByServiceIdResponse,
+} from '@backstage/plugin-kubernetes-backend';
 
 export class KubernetesBackendClient implements KubernetesApi {
   private readonly discoveryApi: DiscoveryApi;
@@ -25,9 +28,20 @@ export class KubernetesBackendClient implements KubernetesApi {
     this.discoveryApi = options.discoveryApi;
   }
 
-  private async getRequired(path: string): Promise<any> {
+  private async getRequired(
+    path: string,
+    authTokens: AuthTokens,
+  ): Promise<any> {
     const url = `${await this.discoveryApi.getBaseUrl('kubernetes')}${path}`;
-    const response = await fetch(url);
+    const requestBody: Object = { auth: authTokens };
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody),
+    });
 
     if (!response.ok) {
       const payload = await response.text();
@@ -40,7 +54,8 @@ export class KubernetesBackendClient implements KubernetesApi {
 
   async getObjectsByServiceId(
     serviceId: String,
+    authTokens: AuthTokens,
   ): Promise<ObjectsByServiceIdResponse> {
-    return await this.getRequired(`/services/${serviceId}`);
+    return await this.getRequired(`/services/${serviceId}`, authTokens);
   }
 }

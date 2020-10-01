@@ -89,6 +89,7 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
         getClusterByServiceId,
       },
       getVoidLogger(),
+      {},
     );
 
     expect(getClusterByServiceId.mock.calls.length).toBe(1);
@@ -160,6 +161,9 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
         getClusterByServiceId,
       },
       getVoidLogger(),
+      {
+        google: 'google_token_123',
+      },
     );
 
     expect(getClusterByServiceId.mock.calls.length).toBe(1);

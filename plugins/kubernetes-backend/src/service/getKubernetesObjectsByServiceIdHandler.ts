@@ -16,6 +16,7 @@
 
 import { Logger } from 'winston';
 import {
+  AuthTokens,
   KubernetesClusterLocator,
   KubernetesFetcher,
   KubernetesObjectTypes,
@@ -27,6 +28,7 @@ export type GetKubernetesObjectsByServiceIdHandler = (
   fetcher: KubernetesFetcher,
   clusterLocator: KubernetesClusterLocator,
   logger: Logger,
+  authTokens: AuthTokens,
   objectsToFetch?: Set<KubernetesObjectTypes>,
 ) => Promise<ObjectsByServiceIdResponse>;
 
@@ -46,9 +48,13 @@ export const handleGetKubernetesObjectsByServiceId: GetKubernetesObjectsByServic
   fetcher,
   clusterLocator,
   logger,
+  authTokens,
   objectsToFetch = DEFAULT_OBJECTS,
 ) => {
-  const clusterDetails = await clusterLocator.getClusterByServiceId(serviceId);
+  const clusterDetails = await clusterLocator.getClusterByServiceId(
+    serviceId,
+    authTokens,
+  );
 
   logger.info(
     `serviceId=${serviceId} clusterDetails=[${clusterDetails
