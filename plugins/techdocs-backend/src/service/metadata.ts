@@ -1,3 +1,4 @@
+import fetch from 'node-fetch';
 /*
  * Copyright 2020 Spotify AB
  *
@@ -14,24 +15,26 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Header, Content, Page, pageTheme } from '@backstage/core';
+export class TechDocsMetadata {
+  private async getMetadataFile(docsUrl: String) {
+    const metadataURL = `${docsUrl}/techdocs_metadata.json`;
 
-type TechDocsPageWrapperProps = {
-  title: string;
-  subtitle: string;
-  children: any;
-};
+    try {
+      const req = await fetch(metadataURL);
 
-export const TechDocsPageWrapper = ({
-  children,
-  title,
-  subtitle,
-}: TechDocsPageWrapperProps) => {
-  return (
-    <Page theme={pageTheme.documentation}>
-      <Header title={title} subtitle={subtitle} />
-      <Content>{children}</Content>
-    </Page>
-  );
-};
+      return await req.json();
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  public async getMkDocsMetaData(docsUrl: any) {
+    const mkDocsMetadata = await this.getMetadataFile(docsUrl);
+
+    if (!mkDocsMetadata) return null;
+
+    return {
+      ...mkDocsMetadata,
+    };
+  }
+}
