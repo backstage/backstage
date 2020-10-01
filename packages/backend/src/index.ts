@@ -24,6 +24,7 @@
 
 import Router from 'express-promise-router';
 import {
+  ensureDatabaseExists,
   createDatabaseClient,
   createServiceBuilder,
   loadBackendConfig,
@@ -68,6 +69,12 @@ async function main() {
   const configs = await loadBackendConfig();
   const configReader = ConfigReader.fromConfigs(configs);
   const createEnv = makeCreateEnv(configs);
+  await ensureDatabaseExists(
+    configReader.getConfig('backend.database'),
+    'backstage_plugin_catalog',
+    'backstage_plugin_auth',
+  );
+
   const healthcheckEnv = useHotMemoize(module, () => createEnv('healthcheck'));
   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
   const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
