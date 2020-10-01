@@ -90,7 +90,7 @@ export function getRawRequestOptions(provider: ProviderConfig): RequestInit {
 
 // Converts for example
 // from: https://gitlab.com/a/b/blob/branchname/path/to/c.yaml
-// to:   https://gitlab.com/api/v4/repos/a/b/contents/path/to/c.yaml?ref=branchname
+// to:   https://gitlab.com/api/v4/projects/a/b/repository/files/path/to/c.yaml/raw?ref=branchname
 export function getApiUrl(target: string, provider: ProviderConfig): URL {
   try {
     const { owner, name, ref, filepathtype, filepath } = parseGitUri(target);
@@ -107,9 +107,8 @@ export function getApiUrl(target: string, provider: ProviderConfig): URL {
 
     const pathWithoutSlash = filepath.replace(/^\//, '');
     return new URL(
-      `${provider.apiBaseUrl}/projects/${`${owner}/${name}`.replace(
-        /\//g,
-        '%2F',
+      `${provider.apiBaseUrl}/projects/${encodeURIComponent(
+        `${owner}/${name}`,
       )}/repository/files/${pathWithoutSlash}/raw?ref=${ref}`,
     );
   } catch (e) {
