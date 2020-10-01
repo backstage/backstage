@@ -8,6 +8,7 @@
 
 import Router from 'express-promise-router';
 import {
+  ensureDatabaseExists,
   createDatabaseClient,
   createServiceBuilder,
   loadBackendConfig,
@@ -27,9 +28,9 @@ import { PluginEnvironment } from './types';
 function makeCreateEnv(loadedConfigs: AppConfig[]) {
   const config = ConfigReader.fromConfigs(loadedConfigs);
 
-  return async (plugin: string): Promise<PluginEnvironment> => {
+  return (plugin: string): PluginEnvironment => {
     const logger = getRootLogger().child({ type: 'plugin', plugin });
-    const database = await createDatabaseClient(
+    const database = createDatabaseClient(
       config.getConfig('backend.database'),
       {
         connection: {
@@ -46,19 +47,24 @@ async function main() {
   const configs = await loadBackendConfig();
   const configReader = ConfigReader.fromConfigs(configs);
   const createEnv = makeCreateEnv(configs);
+  await ensureDatabaseExists(
+    configReader.getConfig('backend.database'),
+    'backstage_plugin_catalog',
+    'backstage_plugin_auth',
+  );
 
-  const catalogEnv = useHotMemoize(module, async () => createEnv('catalog'));
-  const scaffolderEnv = useHotMemoize(module, async () => createEnv('scaffolder'));
-  const authEnv = useHotMemoize(module, async () => createEnv('auth'));
-  const proxyEnv = useHotMemoize(module, async () => createEnv('proxy'));
-  const techdocsEnv = useHotMemoize(module, async () => createEnv('techdocs'));
+  const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
+  const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
+  const authEnv = useHotMemoize(module, () => createEnv('auth'));
+  const proxyEnv = useHotMemoize(module, () => createEnv('proxy'));
+  const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
 
   const apiRouter = Router();
-  apiRouter.use('/catalog', await catalog(await catalogEnv))
-  apiRouter.use('/scaffolder', await scaffolder(await scaffolderEnv))
-  apiRouter.use('/auth', await auth(await authEnv))
-  apiRouter.use('/techdocs', await techdocs(await techdocsEnv))
-  apiRouter.use('/proxy', await proxy(await proxyEnv))
+  apiRouter.use('/catalog', await catalog(catalogEnv))
+  apiRouter.use('/scaffolder', await scaffolder(scaffolderEnv))
+  apiRouter.use('/auth', await auth(authEnv))
+  apiRouter.use('/techdocs', await techdocs(techdocsEnv))
+  apiRouter.use('/proxy', await proxy(proxyEnv))
   apiRouter.use(notFoundHandler());
 
   const service = createServiceBuilder(module)

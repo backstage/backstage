@@ -164,9 +164,9 @@ describe('postgres', () => {
   });
 
   describe(createPgDatabaseClient, () => {
-    it('creates a postgres knex instance', async () => {
+    it('creates a postgres knex instance', () => {
       expect(
-        await createPgDatabaseClient(
+        createPgDatabaseClient(
           createConfig({
             host: 'acme',
             user: 'foo',
@@ -177,14 +177,13 @@ describe('postgres', () => {
       ).toBeTruthy();
     });
 
-    it('attempts to read an ssl cert', async () => {
-      expect(
-        async () =>
-          await createPgDatabaseClient(
-            createConfig(
-              'postgresql://postgres:pass@localhost:5432/dbname?sslrootcert=/path/to/file',
-            ),
+    it('attempts to read an ssl cert', () => {
+      expect(() =>
+        createPgDatabaseClient(
+          createConfig(
+            'postgresql://postgres:pass@localhost:5432/dbname?sslrootcert=/path/to/file',
           ),
+        ),
       ).toThrowError(/no such file or directory/);
     });
   });

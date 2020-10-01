@@ -15,37 +15,26 @@
  */
 
 import knex, { PgConnectionConfig } from 'knex';
-import { cloneDeep } from 'lodash';
-import { Config, JsonValue } from '@backstage/config';
+import { Config } from '@backstage/config';
 import { mergeDatabaseConfig } from './config';
 
 /**
- * Creates a knex Postgres database connection
+ * Creates a knex postgres database connection
  *
  * @param dbConfig The database config
  * @param overrides Additional options to merge with the config
  */
-export async function createPgDatabaseClient(
+export function createPgDatabaseClient(
   dbConfig: Config,
   overrides?: knex.Config,
 ) {
-  const baseConfig = buildPgDatabaseConfig(dbConfig, overrides);
-  const knexConfig = baseConfig;
-
-  // Bootstrap the missing database.
-  if (!!baseConfig?.connection.database) {
-    const knexAdminConfig = buildPgDatabaseAdminConfig(cloneDeep(baseConfig));
-    const admin = knex(knexAdminConfig);
-
-    await ensurePgDatabase(admin, baseConfig.connection.database);
-  }
-
+  const knexConfig = buildPgDatabaseConfig(dbConfig, overrides);
   const database = knex(knexConfig);
   return database;
 }
 
 /**
- * Builds a knex Postgres database connection
+ * Builds a knex postgres database connection
  *
  * @param dbConfig The database config
  * @param overrides Additional options to merge with the config
@@ -55,7 +44,7 @@ export function buildPgDatabaseConfig(
   overrides?: knex.Config,
 ) {
   return mergeDatabaseConfig(
-    cloneDeep(dbConfig.get()),
+    dbConfig.get(),
     {
       connection: getPgConnectionConfig(dbConfig, !!overrides),
       useNullAsDefault: true,
@@ -65,23 +54,10 @@ export function buildPgDatabaseConfig(
 }
 
 /**
- * Builds a knex Postgres database connection for database creation
+ * Gets the postgres connection config
  *
  * @param dbConfig The database config
- */
-function buildPgDatabaseAdminConfig(dbConfig: JsonValue) {
-  return mergeDatabaseConfig(dbConfig, {
-    connection: {
-      database: 'postgres',
-    },
-  });
-}
-
-/**
- * Gets the Postgres connection config
- *
- * @param dbConfig The database config
- * @param parseConnectionString Flag to explicitly control connection string parsing
+ * @param parseConnectionString Flag to explictly control connection string parsing
  */
 export function getPgConnectionConfig(
   dbConfig: Config,
@@ -102,25 +78,6 @@ export function getPgConnectionConfig(
 }
 
 /**
- * Creates the missing Postgres database if it does not exist
- *
- * @param admin The administrative database connection, defaulting to the `postgres` database
- * @param database The name of the database to create
- */
-async function ensurePgDatabase(admin: knex, database: string) {
-  const result = await admin
-    .from('pg_database')
-    .where('datname', database)
-    .count<Record<string, { count: string }>>();
-
-  if (parseInt(result[0].count, 10) > 0) {
-    return;
-  }
-
-  await admin.raw(`CREATE DATABASE ??`, [database]);
-}
-
-/**
  * Parses a connection string using pg-connection-string
  *
  * @param connectionString The postgres connection string
@@ -136,5 +93,41 @@ function requirePgConnectionString() {
   } catch (e) {
     const message = `Postgres: Install 'pg-connection-string'`;
     throw new Error(`${message}\n${e.message}`);
+  }
+}
+
+/**
+ * Creates the missing Postgres database if it does not exist
+ *
+ * @param dbConfig The database config
+ * @param databases The name of the databases to create
+ */
+export async function ensurePgDatabaseExists(
+  dbConfig: Config,
+  ...databases: Array<string>
+) {
+  const admin = createPgDatabaseClient(dbConfig, {
+    connection: {
+      database: 'postgres',
+    },
+  });
+
+  try {
+    const ensureDatabase = async (database: string) => {
+      const result = await admin
+        .from('pg_database')
+        .where('datname', database)
+        .count<Record<string, { count: string }>>();
+
+      if (parseInt(result[0].count, 10) > 0) {
+        return;
+      }
+
+      await admin.raw(`CREATE DATABASE ??`, [database]);
+    };
+
+    await Promise.all(databases.map(ensureDatabase));
+  } finally {
+    await admin.destroy();
   }
 }

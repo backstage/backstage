@@ -27,9 +27,9 @@ describe('database connection', () => {
     ]);
 
   describe(createDatabaseClient, () => {
-    it('returns a postgres connection', async () => {
+    it('returns a postgres connection', () => {
       expect(
-        await createDatabaseClient(
+        createDatabaseClient(
           createConfig({
             client: 'pg',
             connection: {
@@ -43,9 +43,9 @@ describe('database connection', () => {
       ).toBeTruthy();
     });
 
-    it('returns an sqlite connection', async () => {
+    it('returns an sqlite connection', () => {
       expect(
-        await createDatabaseClient(
+        createDatabaseClient(
           createConfig({
             client: 'sqlite3',
             connection: ':memory:',
@@ -55,25 +55,24 @@ describe('database connection', () => {
     });
 
     it('tries to create a mysql connection as a passthrough', () => {
-      expect(
-        async () =>
-          await createDatabaseClient(
-            createConfig({
-              client: 'mysql',
-              connection: {
-                host: '127.0.0.1',
-                user: 'foo',
-                password: 'bar',
-                database: 'dbname',
-              },
-            }),
-          ),
+      expect(() =>
+        createDatabaseClient(
+          createConfig({
+            client: 'mysql',
+            connection: {
+              host: '127.0.0.1',
+              user: 'foo',
+              password: 'bar',
+              database: 'dbname',
+            },
+          }),
+        ),
       ).toThrowError(/Cannot find module 'mysql'/);
     });
 
-    it('accepts overrides', async () => {
+    it('accepts overrides', () => {
       expect(
-        await createDatabaseClient(
+        createDatabaseClient(
           createConfig({
             client: 'pg',
             connection: {
@@ -93,24 +92,22 @@ describe('database connection', () => {
     });
 
     it('throws an error without a client', () => {
-      expect(
-        async () =>
-          await createDatabaseClient(
-            createConfig({
-              connection: '',
-            }),
-          ),
+      expect(() =>
+        createDatabaseClient(
+          createConfig({
+            connection: '',
+          }),
+        ),
       ).toThrowError();
     });
 
     it('throws an error without a connection', () => {
-      expect(
-        async () =>
-          await createDatabaseClient(
-            createConfig({
-              client: 'pg',
-            }),
-          ),
+      expect(() =>
+        createDatabaseClient(
+          createConfig({
+            client: 'pg',
+          }),
+        ),
       ).toThrowError();
     });
   });
