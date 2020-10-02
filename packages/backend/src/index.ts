@@ -32,6 +32,7 @@ import {
   useHotMemoize,
   notFoundHandler,
   SingleHostDiscovery,
+  UrlReaders,
 } from '@backstage/backend-common';
 import { ConfigReader, AppConfig } from '@backstage/config';
 import healthcheck from './plugins/healthcheck';
@@ -60,8 +61,9 @@ function makeCreateEnv(loadedConfigs: AppConfig[]) {
         },
       },
     );
+    const reader = UrlReaders.default({ logger }).createWithConfig(config);
     const discovery = SingleHostDiscovery.fromConfig(config);
-    return { logger, database, config, discovery };
+    return { logger, database, config, reader, discovery };
   };
 }
 
