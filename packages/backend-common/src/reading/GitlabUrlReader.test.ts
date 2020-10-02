@@ -35,7 +35,7 @@ describe('GitlabUrlReader', () => {
       },
     ]);
 
-  it('should build raw api', () => {
+  it('should build project urls', () => {
     const processor = new GitlabUrlReader(
       readConfig(createConfig(undefined))[0],
     );
@@ -69,7 +69,33 @@ describe('GitlabUrlReader', () => {
 
     for (const test of tests) {
       if (test.url) {
-        expect(processor.buildRawUrl(test.target, 12345).toString()).toEqual(
+        expect(
+          processor.buildProjectUrl(test.target, 12345).toString(),
+        ).toEqual(test.url.toString());
+      } else {
+        throw new Error(
+          'This should not have happened. Either err or url should have matched.',
+        );
+      }
+    }
+  });
+
+  it('should build raw urls', () => {
+    const processor = new GitlabUrlReader(
+      readConfig(createConfig(undefined))[0],
+    );
+
+    const tests = [
+      {
+        target: 'https://gitlab.example.com/a/b/blob/master/c.yaml',
+        url: new URL('https://gitlab.example.com/a/b/raw/master/c.yaml'),
+        err: undefined,
+      },
+    ];
+
+    for (const test of tests) {
+      if (test.url) {
+        expect(processor.buildRawUrl(test.target).toString()).toEqual(
           test.url.toString(),
         );
       } else {

@@ -68,8 +68,16 @@ export class GitlabUrlReader implements UrlReader {
   }
 
   async read(url: string): Promise<Buffer> {
-    const projectID = await this.getProjectID(url);
-    const builtUrl = this.buildRawUrl(url, projectID);
+    // TODO(Rugvip): merged the old GitlabReaderProcessor in here and used
+    // the existence of /~/blob/ to switch the logic. Don't know if this
+    // makes sense and it might require some more work.
+    let builtUrl: URL;
+    if (url.includes('/-/blob/')) {
+      const projectID = await this.getProjectID(url);
+      builtUrl = this.buildProjectUrl(url, projectID);
+    } else {
+      builtUrl = this.buildRawUrl(url);
+    }
 
     let response: Response;
     try {
@@ -89,9 +97,41 @@ export class GitlabUrlReader implements UrlReader {
     throw new Error(message);
   }
 
+  // Converts
+  // from: https://gitlab.example.com/a/b/blob/master/c.yaml
+  // to:   https://gitlab.example.com/a/b/raw/master/c.yaml
+  buildRawUrl(target: string): URL {
+    try {
+      const url = new URL(target);
+
+      const [empty, userOrOrg, repoName, ...restOfPath] = url.pathname
+        .split('/')
+        // for the common case https://gitlab.example.com/a/b/-/blob/master/c.yaml
+        .filter(path => path !== '-');
+
+      if (
+        empty !== '' ||
+        userOrOrg === '' ||
+        repoName === '' ||
+        !restOfPath.join('/').match(/\.yaml$/)
+      ) {
+        throw new Error('Wrong GitLab URL');
+      }
+
+      // Replace 'blob' with 'raw'
+      url.pathname = [empty, userOrOrg, repoName, 'raw', ...restOfPath].join(
+        '/',
+      );
+
+      return url;
+    } catch (e) {
+      throw new Error(`Incorrect url: ${target}, ${e}`);
+    }
+  }
+
   // convert https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/filepath
   // to https://gitlab.com/api/v4/projects/<PROJECTID>/repository/files/filepath?ref=branch
-  buildRawUrl(target: string, projectID: Number): URL {
+  buildProjectUrl(target: string, projectID: Number): URL {
     try {
       const url = new URL(target);
 
