@@ -75,7 +75,7 @@ export const MissingAnnotationEmptyState = ({ annotation }: Props) => {
     <EmptyState
       missing="field"
       title="Missing Annotation"
-      description={`The "${annotation}" annotation is missing on "${entity?.metadata?.name}". You need to add the annotation to your component if you want to enable Github Actions for it.`}
+      description={`The "${annotation}" annotation is missing on "${entity?.metadata?.name}". You need to add the annotation to your component if you want to enable this tool for it.`}
       action={
         <>
           <Typography variant="body1">
