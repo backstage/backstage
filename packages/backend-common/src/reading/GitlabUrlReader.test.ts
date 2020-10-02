@@ -14,28 +14,31 @@
  * limitations under the License.
  */
 
-import { GitlabApiReaderProcessor } from './GitlabApiReaderProcessor';
+import { GitlabUrlReader, readConfig } from './GitlabUrlReader';
 import { ConfigReader } from '@backstage/config';
 
-describe('GitlabApiReaderProcessor', () => {
+describe('GitlabUrlReader', () => {
   const createConfig = (token: string | undefined) =>
     ConfigReader.fromConfigs([
       {
         context: '',
         data: {
-          catalog: {
-            processors: {
-              gitlabApi: {
-                privateToken: token,
+          integrations: {
+            gitlab: [
+              {
+                host: 'gitlab.com',
+                token: token,
               },
-            },
+            ],
           },
         },
       },
     ]);
 
   it('should build raw api', () => {
-    const processor = new GitlabApiReaderProcessor(createConfig(undefined));
+    const processor = new GitlabUrlReader(
+      readConfig(createConfig(undefined))[0],
+    );
 
     const tests = [
       {
@@ -90,7 +93,7 @@ describe('GitlabApiReaderProcessor', () => {
       {
         token: '',
         err:
-          "Invalid type in config for key 'catalog.processors.gitlabApi.privateToken' in '', got empty-string, wanted string",
+          "Invalid type in config for key 'integrations.gitlab[0].token' in '', got empty-string, wanted string",
         expect: {
           headers: {
             'PRIVATE-TOKEN': '',
@@ -110,11 +113,11 @@ describe('GitlabApiReaderProcessor', () => {
     for (const test of tests) {
       if (test.err) {
         expect(
-          () => new GitlabApiReaderProcessor(createConfig(test.token)),
+          () => new GitlabUrlReader(readConfig(createConfig(test.token))[0]),
         ).toThrowError(test.err);
       } else {
-        const processor = new GitlabApiReaderProcessor(
-          createConfig(test.token),
+        const processor = new GitlabUrlReader(
+          readConfig(createConfig(test.token))[0],
         );
         expect(processor.getRequestOptions()).toEqual(test.expect);
       }

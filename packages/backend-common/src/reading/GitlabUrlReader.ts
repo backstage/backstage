@@ -14,65 +14,79 @@
  * limitations under the License.
  */
 
-import { LocationSpec } from '@backstage/catalog-model';
-import fetch, { RequestInit, HeadersInit } from 'node-fetch';
-import * as result from './results';
-import { LocationProcessor, LocationProcessorEmit } from './types';
+import fetch, { RequestInit, Response } from 'node-fetch';
 import { Config } from '@backstage/config';
+import { NotFoundError } from '../errors';
+import { UrlReader } from './types';
+import { ReaderFactory } from './UrlReaders';
 
-export class GitlabApiReaderProcessor implements LocationProcessor {
-  private privateToken: string;
+type Options = {
+  // TODO: added here for future support, but we only allow bitbucket.org for now
+  host: string;
+  token?: string;
+};
 
-  constructor(config: Config) {
-    this.privateToken =
-      config.getOptionalString('catalog.processors.gitlabApi.privateToken') ??
-      '';
+export function readConfig(config: Config): Options[] {
+  const optionsArr = Array<Options>();
+
+  const providerConfigs =
+    config.getOptionalConfigArray('integrations.gitlab') ?? [];
+
+  for (const providerConfig of providerConfigs) {
+    const host = providerConfig.getOptionalString('host') ?? 'gitlab.com';
+    const token = providerConfig.getOptionalString('token');
+
+    optionsArr.push({ host, token });
   }
+
+  // As a convenience we always make sure there's at least an unauthenticated
+  // reader for public gitlab repos.
+  if (!optionsArr.some(p => p.host === 'gitlab.com')) {
+    optionsArr.push({ host: 'gitlab.com' });
+  }
+
+  return optionsArr;
+}
+
+export class GitlabUrlReader implements UrlReader {
+  static factory: ReaderFactory = ({ config }) => {
+    return readConfig(config).map(options => {
+      const reader = new GitlabUrlReader(options);
+      const predicate = (url: URL) => url.host === options.host;
+      return { reader, predicate };
+    });
+  };
+
+  constructor(private readonly options: Options) {}
 
   getRequestOptions(): RequestInit {
-    const headers: HeadersInit = { 'PRIVATE-TOKEN': '' };
-    if (this.privateToken !== '') {
-      headers['PRIVATE-TOKEN'] = this.privateToken;
-    }
-
-    const requestOptions: RequestInit = {
-      headers,
+    return {
+      headers: {
+        ['PRIVATE-TOKEN']: this.options.token ?? '',
+      },
     };
-
-    return requestOptions;
   }
 
-  async readLocation(
-    location: LocationSpec,
-    optional: boolean,
-    emit: LocationProcessorEmit,
-  ): Promise<boolean> {
-    if (location.type !== 'gitlab/api') {
-      return false;
+  async read(url: string): Promise<Buffer> {
+    const projectID = await this.getProjectID(url);
+    const builtUrl = this.buildRawUrl(url, projectID);
+
+    let response: Response;
+    try {
+      response = await fetch(builtUrl.toString(), this.getRequestOptions());
+    } catch (e) {
+      throw new Error(`Unable to read ${url}, ${e}`);
     }
 
-    try {
-      const projectID = await this.getProjectID(location.target);
-      const url = this.buildRawUrl(location.target, projectID);
-      const response = await fetch(url.toString(), this.getRequestOptions());
-      if (response.ok) {
-        const data = await response.buffer();
-        emit(result.data(location, data));
-      } else {
-        const message = `${location.target} could not be read as ${url}, ${response.status} ${response.statusText}`;
-        if (response.status === 404) {
-          if (!optional) {
-            emit(result.notFoundError(location, message));
-          }
-        } else {
-          emit(result.generalError(location, message));
-        }
-      }
-    } catch (e) {
-      const message = `Unable to read ${location.type} ${location.target}, ${e}`;
-      emit(result.generalError(location, message));
+    if (response.ok) {
+      return response.buffer();
     }
-    return true;
+
+    const message = `${url} could not be read as ${builtUrl}, ${response.status} ${response.statusText}`;
+    if (response.status === 404) {
+      throw new NotFoundError(message);
+    }
+    throw new Error(message);
   }
 
   // convert https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/filepath

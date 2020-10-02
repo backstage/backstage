@@ -19,3 +19,4 @@ export { UrlReaders } from './UrlReaders';
 export { AzureUrlReader } from './AzureUrlReader';
 export { BitbucketUrlReader } from './BitbucketUrlReader';
 export { GithubUrlReader } from './GithubUrlReader';
+export { GitlabUrlReader } from './GitlabUrlReader';

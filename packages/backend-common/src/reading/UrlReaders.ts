@@ -24,6 +24,7 @@ import {
 import { AzureUrlReader } from './AzureUrlReader';
 import { BitbucketUrlReader } from './BitbucketUrlReader';
 import { GithubUrlReader } from './GithubUrlReader';
+import { GitlabUrlReader } from './GitlabUrlReader';
 
 export type ReaderFactoryOptions = {
   config: Config;
@@ -55,9 +56,10 @@ export class UrlReaders {
   static default({ logger }: { logger: Logger }) {
     return new UrlReaders(
       [
-        GithubUrlReader.factory,
-        BitbucketUrlReader.factory,
         AzureUrlReader.factory,
+        BitbucketUrlReader.factory,
+        GithubUrlReader.factory,
+        GitlabUrlReader.factory,
       ],
       logger,
     );
