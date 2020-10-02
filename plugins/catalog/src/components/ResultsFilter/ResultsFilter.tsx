@@ -25,7 +25,8 @@ import {
   Theme,
   Typography,
 } from '@material-ui/core';
-import React, { useCallback, useContext, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useCallback, useContext, useState, useEffect } from 'react';
 import { filterGroupsContext } from '../../filter/context';
 
 const useStyles = makeStyles<Theme>(theme => ({
@@ -51,13 +52,16 @@ const useStyles = makeStyles<Theme>(theme => ({
 
 type Props = {
   availableTags: string[];
+  initiallySelected: string[];
 };
 
 /**
  * The additional results filter in the sidebar.
  */
-export const ResultsFilter = ({ availableTags }: Props) => {
+export const ResultsFilter = ({ availableTags, initiallySelected }: Props) => {
   const classes = useStyles();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const context = useContext(filterGroupsContext);
@@ -73,6 +77,14 @@ export const ResultsFilter = ({ availableTags }: Props) => {
     },
     [setSelectedTags, setSelectedTagsFilter],
   );
+
+  useEffect(() => {
+    // workaround as the queryString refreshed on updateSelectedTags
+    const queryString = location.search;
+    setSelectedTags(initiallySelected);
+    updateSelectedTags(initiallySelected);
+    navigate({ ...location, search: `?${queryString}` });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>

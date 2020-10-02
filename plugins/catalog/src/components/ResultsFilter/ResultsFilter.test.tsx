@@ -93,7 +93,7 @@ describe('Results Filter', () => {
   it('should render all available tags', async () => {
     const tags = ['test', 'java'];
     const { findByText } = renderWrapped(
-      <ResultsFilter availableTags={tags} />,
+      <ResultsFilter availableTags={tags} initiallySelected={[]} />,
     );
     for (const tag of tags) {
       expect(await findByText(tag)).toBeInTheDocument();

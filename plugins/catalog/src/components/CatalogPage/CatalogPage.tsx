@@ -27,9 +27,11 @@ import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
 import { Button, makeStyles } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
 import StarIcon from '@material-ui/icons/Star';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { useQueryParams } from '../../hooks/useQueryParams';
 import { catalogApiRef } from '../../api/types';
+import { QueryParams } from '../../filter/types';
 import { EntityFilterGroupsProvider, useFilteredEntities } from '../../filter';
 import { useStarredEntities } from '../../hooks/useStarredEntites';
 import { ButtonGroup, CatalogFilter } from '../CatalogFilter/CatalogFilter';
@@ -61,6 +63,8 @@ const CatalogPageContents = () => {
     availableTags,
     isCatalogEmpty,
   } = useFilteredEntities();
+
+  const queryParams = useQueryParams();
   const configApi = useApi(configApiRef);
   const catalogApi = useApi(catalogApiRef);
   const errorApi = useApi(errorApiRef);
@@ -68,6 +72,8 @@ const CatalogPageContents = () => {
   const userId = useApi(identityApiRef).getUserId();
   const [selectedTab, setSelectedTab] = useState<string>();
   const [selectedSidebarItem, setSelectedSidebarItem] = useState<string>();
+  const [pageFilters, setPageFilters] = useState<Partial<QueryParams>>();
+
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
 
   const addMockData = useCallback(async () => {
@@ -85,6 +91,12 @@ const CatalogPageContents = () => {
       errorApi.post(err);
     }
   }, [catalogApi, configApi, errorApi, reload]);
+
+  // load filters from url on mount
+  useEffect(() => {
+    const urlPageFilters = queryParams.pageFilters;
+    setPageFilters(urlPageFilters);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const tabs = useMemo<LabeledComponentType[]>(
     () => [
@@ -150,10 +162,17 @@ const CatalogPageContents = () => {
 
   return (
     <CatalogLayout>
-      <CatalogTabs
-        tabs={tabs}
-        onChange={({ label }) => setSelectedTab(label)}
-      />
+      {pageFilters && (
+        <CatalogTabs
+          tabs={tabs}
+          onChange={({ label }) => setSelectedTab(label)}
+          initiallySelected={
+            pageFilters.filterKeys
+              ? pageFilters.filterKeys.type || tabs[0].id
+              : tabs[0].id
+          }
+        />
+      )}
       <Content>
         <WelcomeBanner />
         <ContentHeader title={selectedTab ?? ''}>
@@ -179,12 +198,23 @@ const CatalogPageContents = () => {
         </ContentHeader>
         <div className={styles.contentWrapper}>
           <div>
-            <CatalogFilter
-              buttonGroups={filterGroups}
-              onChange={({ label }) => setSelectedSidebarItem(label)}
-              initiallySelected="owned"
-            />
-            <ResultsFilter availableTags={availableTags} />
+            {pageFilters && (
+              <CatalogFilter
+                buttonGroups={filterGroups}
+                onChange={({ label }) => setSelectedSidebarItem(label)}
+                initiallySelected={
+                  pageFilters.filterKeys
+                    ? pageFilters.filterKeys['primary-sidebar'] || 'owned'
+                    : 'owned'
+                }
+              />
+            )}
+            {pageFilters && (
+              <ResultsFilter
+                availableTags={availableTags}
+                initiallySelected={pageFilters.tags || []}
+              />
+            )}
           </div>
           <CatalogTable
             titlePreamble={selectedSidebarItem ?? ''}

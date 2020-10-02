@@ -51,3 +51,21 @@ export type FilterGroupStates =
   | FilterGroupStatesReady
   | FilterGroupStatesError
   | FilterGroupStatesLoading;
+
+export type Maybe<T> = T | null;
+
+export type FilterKeys = {
+  [filterId: string]: string;
+};
+
+export type QueryParams = {
+  filterKeys: FilterKeys;
+  tags: string[];
+};
+
+export function getDefaultPageFilters(): QueryParams {
+  return {
+    filterKeys: {},
+    tags: [],
+  };
+}

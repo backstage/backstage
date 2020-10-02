@@ -41,12 +41,13 @@ export type OnChangeCallback = (tab: LabeledComponentType) => void;
 type Props = {
   tabs: LabeledComponentType[];
   onChange?: OnChangeCallback;
+  initiallySelected: string;
 };
 
 /**
  * The tabs at the top of the catalog list page, for component type filtering.
  */
-export const CatalogTabs = ({ tabs, onChange }: Props) => {
+export const CatalogTabs = ({ tabs, onChange, initiallySelected }: Props) => {
   const filterGroup = useMemo<FilterGroup>(() => {
     return {
       filters: Object.fromEntries(
@@ -55,14 +56,20 @@ export const CatalogTabs = ({ tabs, onChange }: Props) => {
     };
   }, [tabs]);
 
+  const initiallySelectedId =
+    tabs.findIndex(t => t.id === initiallySelected) || 0;
+
   const { setSelectedFilters } = useEntityFilterGroup('type', filterGroup, [
-    tabs[0].id,
+    tabs[initiallySelectedId].id,
   ]);
 
-  const [currentTabIndex, setCurrentTabIndex] = useState<number>(0);
+  const [currentTabIndex, setCurrentTabIndex] = useState<number>(
+    initiallySelectedId,
+  );
+
+  const onChangeRef = useRef<OnChangeCallback>();
 
   // Hold a reference to the callback
-  const onChangeRef = useRef<OnChangeCallback>();
   useEffect(() => {
     onChangeRef.current = onChange;
   }, [onChange]);
@@ -81,5 +88,11 @@ export const CatalogTabs = ({ tabs, onChange }: Props) => {
     [tabs, setSelectedFilters],
   );
 
-  return <HeaderTabs tabs={tabs} onChange={switchTab} />;
+  return (
+    <HeaderTabs
+      tabs={tabs}
+      onChange={switchTab}
+      selectedIndex={currentTabIndex}
+    />
+  );
 };

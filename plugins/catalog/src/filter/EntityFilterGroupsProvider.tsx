@@ -25,7 +25,11 @@ import {
   FilterGroup,
   FilterGroupState,
   FilterGroupStates,
+  QueryParams,
+  getDefaultPageFilters,
 } from './types';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { stringify } from '../utils/history';
 
 /**
  * Implementation of the shared filter groups state.
@@ -49,6 +53,13 @@ function useProvideEntityFilters(): FilterGroupsContext {
   const [{ value: entities, error }, doReload] = useAsyncFn(() =>
     catalogApi.getEntities({ kind: 'Component' }),
   );
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // holds ref to query string
+  const qsRef = useRef<string>('');
+  // Filters applied (used to construct query string)
+  const pageFilters = useRef<QueryParams>(getDefaultPageFilters());
 
   const filterGroups = useRef<{
     [filterGroupId: string]: FilterGroup;
@@ -118,16 +129,32 @@ function useProvideEntityFilters(): FilterGroupsContext {
     (filterGroupId: string, filters: string[]) => {
       selectedFilterKeys.current[filterGroupId] = new Set(filters);
       rebuild();
+
+      // store filter in query string
+      pageFilters.current.filterKeys[filterGroupId] = filters[0];
+      const queryString = stringify(pageFilters.current);
+      if (queryString !== qsRef.current) {
+        qsRef.current = queryString;
+        navigate({ ...location, search: `?${queryString}` });
+      }
     },
-    [rebuild],
+    [rebuild], // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   const setSelectedTags = useCallback(
     (tags: string[]) => {
       selectedTags.current = tags;
       rebuild();
+
+      // Store tags in query string
+      pageFilters.current.tags = tags;
+      const queryString = stringify(pageFilters.current);
+      if (queryString !== qsRef.current) {
+        qsRef.current = queryString;
+        navigate({ ...location, search: `?${queryString}` });
+      }
     },
-    [rebuild],
+    [rebuild], // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   const reload = useCallback(async () => {
