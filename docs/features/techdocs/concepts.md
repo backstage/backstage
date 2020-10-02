@@ -27,7 +27,7 @@ MkDocs.
 
 ### TechDocs publisher
 
-The `techdocs-backend` plugin currenly comes with one publisher -
+The `techdocs-backend` plugin currently comes with one publisher -
 `LocalPublish`.
 
 [TechDocs Backend](https://github.com/spotify/backstage/tree/master/plugins/techdocs-backend)
