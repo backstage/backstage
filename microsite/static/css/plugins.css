@@ -53,8 +53,8 @@
 .ButtonFilled {
   padding: 4px 8px;
   border-radius: 4px;
-  background-color: #36baa2;
-  color: white;
+  /*background-color: #121212;*/
+  color: #36baa2;
   margin-top: 36px;
 }
 
