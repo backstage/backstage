@@ -17,19 +17,18 @@
 import { Config } from '@backstage/config';
 import parseGitUri from 'git-url-parse';
 import fetch, { HeadersInit, RequestInit, Response } from 'node-fetch';
-import { Logger } from 'winston';
 import { NotFoundError } from '../errors';
 import { UrlReader } from './types';
+import { ReaderFactory } from './UrlReaders';
 
 /**
  * The configuration parameters for a single GitHub API provider.
  */
 export type ProviderConfig = {
   /**
-   * The prefix of the target that this matches on, e.g. "https://github.com",
-   * with no trailing slash.
+   * The host of the target that this matches on, e.g. "github.com"
    */
-  target: string;
+  host: string;
 
   /**
    * The base URL of the API of this provider, e.g. "https://api.github.com",
@@ -137,63 +136,47 @@ export function getRawUrl(target: string, provider: ProviderConfig): URL {
   }
 }
 
-export function readConfig(config: Config, logger: Logger): ProviderConfig[] {
+export function readConfig(config: Config): ProviderConfig[] {
   const providers: ProviderConfig[] = [];
 
-  // TODO(freben): Deprecate the old config root entirely in a later release
-  if (config.has('catalog.processors.githubApi')) {
-    logger.warn(
-      'The catalog.processors.githubApi configuration key has been deprecated, please use catalog.processors.github instead',
-    );
-  }
-
-  // In a previous version of the configuration, we only supported github,
-  // and the "privateToken" key held the token to use for it. The new
-  // configuration method is to use the "providers" key instead.
   const providerConfigs =
-    config.getOptionalConfigArray('catalog.processors.github.providers') ??
-    config.getOptionalConfigArray('catalog.processors.githubApi.providers') ??
-    [];
-  const legacyToken =
-    config.getOptionalString('catalog.processors.github.privateToken') ??
-    config.getOptionalString('catalog.processors.githubApi.privateToken');
+    config.getOptionalConfigArray('integrations.github') ?? [];
 
   // First read all the explicit providers
   for (const providerConfig of providerConfigs) {
-    const target = providerConfig.getString('target').replace(/\/+$/, '');
+    const host = providerConfig.getOptionalString('host') ?? 'github.com';
     let apiBaseUrl = providerConfig.getOptionalString('apiBaseUrl');
     let rawBaseUrl = providerConfig.getOptionalString('rawBaseUrl');
     const token = providerConfig.getOptionalString('token');
 
     if (apiBaseUrl) {
       apiBaseUrl = apiBaseUrl.replace(/\/+$/, '');
-    } else if (target === 'https://github.com') {
+    } else if (host === 'github.com') {
       apiBaseUrl = 'https://api.github.com';
     }
 
     if (rawBaseUrl) {
       rawBaseUrl = rawBaseUrl.replace(/\/+$/, '');
-    } else if (target === 'https://github.com') {
+    } else if (host === 'github.com') {
       rawBaseUrl = 'https://raw.githubusercontent.com';
     }
 
     if (!apiBaseUrl && !rawBaseUrl) {
       throw new Error(
-        `Provider at ${target} must configure an explicit apiBaseUrl or rawBaseUrl`,
+        `GitHub integration for ${host} must configure an explicit apiBaseUrl and rawBaseUrl`,
       );
     }
 
-    providers.push({ target, apiBaseUrl, rawBaseUrl, token });
+    providers.push({ host, apiBaseUrl, rawBaseUrl, token });
   }
 
   // If no explicit github.com provider was added, put one in the list as
   // a convenience
-  if (!providers.some(p => p.target === 'https://github.com')) {
+  if (!providers.some(p => p.host === 'github.com')) {
     providers.push({
-      target: 'https://github.com',
+      host: 'github.com',
       apiBaseUrl: 'https://api.github.com',
       rawBaseUrl: 'https://raw.githubusercontent.com',
-      token: legacyToken,
     });
   }
 
@@ -206,6 +189,14 @@ export function readConfig(config: Config, logger: Logger): ProviderConfig[] {
  */
 export class GithubUrlReader implements UrlReader {
   private config: ProviderConfig;
+
+  static factory: ReaderFactory = ({ config }) => {
+    return readConfig(config).map(provider => {
+      const reader = new GithubUrlReader(provider);
+      const predicate = (url: URL) => url.host === provider.host;
+      return { reader, predicate };
+    });
+  };
 
   constructor(config: ProviderConfig) {
     this.config = config;

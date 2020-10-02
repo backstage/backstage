@@ -14,16 +14,27 @@
  * limitations under the License.
  */
 
+import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 import { GithubUrlReader } from './GithubUrlReader';
 import { UrlReader } from './types';
-import { UrlReaderHostMux } from './UrlReaderHostMux';
+import {
+  UrlReaderPredicateMux,
+  UrlReaderPredicateTuple,
+} from './UrlReaderPredicateMux';
 
 export type ReaderFactoryOptions = {
   config: Config;
   logger: Logger;
 };
-export type ReaderFactory = (options: ReaderFactoryOptions) => UrlReader;
+
+/**
+ * A factory function that can read config to construct zero or more
+ * UrlReaders along with a predicate for when it should be used.
+ */
+export type ReaderFactory = (
+  options: ReaderFactoryOptions,
+) => UrlReaderPredicateTuple[];
 
 /**
  * UrlReaders provide various utilities related to the UrlReader interface.
@@ -33,22 +44,18 @@ export class UrlReaders {
    * Creates a new UrlReaders instance without any known types.
    */
   static empty({ logger }: { logger: Logger }) {
-    return new UrlReaders(new Map(), logger);
+    return new UrlReaders([], logger);
   }
 
   /**
-   * Creates a new UrlReaders instance that includes factories for all types
-   * implemented in this package.
+   * Creates a new UrlReaders instance that includes all the default factories from this package
    */
   static default({ logger }: { logger: Logger }) {
-    return new UrlReaders(
-      new Map([['github', GithubUrlReader.factory]]),
-      logger,
-    );
+    return new UrlReaders([GithubUrlReader.factory], logger);
   }
 
   private constructor(
-    private readonly factories: Map<string, ReaderFactory>,
+    private readonly factories: ReaderFactory[],
     private readonly logger: Logger,
   ) {}
 
@@ -57,33 +64,29 @@ export class UrlReaders {
    * reader type needs to have a registered factory, or an error will be thrown.
    */
   createWithConfig(config: Config): UrlReader {
-    const readerItems = config.getOptionalConfigArray('readers.byHost') ?? [];
-    const mux = new UrlReaderHostMux();
+    const mux = new UrlReaderPredicateMux();
+    const readers = [];
 
-    for (const readerItem of readerItems) {
-      const type = readerItem.getString('type');
-      const host = readerItem.getString('host');
-      const readerConfig = readerItem.getConfig('config');
+    for (const factory of this.factories) {
+      const tuples = factory({ config, logger: this.logger });
 
-      const factory = this.factories.get(type);
-      if (!factory) {
-        throw new Error(`Failed to create reader for unknown type '${type}'`);
+      for (const tuple of tuples) {
+        mux.register(tuple);
+        readers.push(tuple.reader);
       }
-      const reader = factory({
-        config: readerConfig,
-        logger: this.logger,
-      });
-
-      mux.register(host, reader);
     }
+
+    this.logger.info(
+      `Registered the following UrlReaders: ${readers.join(', ')}`,
+    );
 
     return mux;
   }
 
   /**
-   * Register a UrlReader factory for a given type
+   * Register a UrlReader factory
    */
-  register(type: string, factory: ReaderFactory) {
-    this.factories.set(type, factory);
+  addFactory(factory: ReaderFactory) {
+    this.factories.push(factory);
   }
 }
