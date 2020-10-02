@@ -62,19 +62,15 @@ export class GitlabReaderProcessor implements LocationProcessor {
     try {
       const url = new URL(target);
 
-      const [
-        empty,
-        userOrOrg,
-        repoName,
-        blobKeyword,
-        ...restOfPath
-      ] = url.pathname.split('/');
+      const [empty, userOrOrg, repoName, , ...restOfPath] = url.pathname
+        .split('/')
+        // for the common case https://gitlab.example.com/a/b/-/blob/master/c.yaml
+        .filter(path => path !== '-');
 
       if (
         empty !== '' ||
         userOrOrg === '' ||
         repoName === '' ||
-        blobKeyword !== 'blob' ||
         !restOfPath.join('/').match(/\.yaml$/)
       ) {
         throw new Error('Wrong GitLab URL');
