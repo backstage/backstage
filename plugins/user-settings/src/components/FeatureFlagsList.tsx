@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { List } from '@material-ui/core';
 import {
   useApi,
@@ -31,27 +31,32 @@ type Props = {
 
 export const FeatureFlagsList = ({ featureFlags }: Props) => {
   const featureFlagApi = useApi(featureFlagsApiRef);
-  const [state, setState] = useState<Record<FeatureFlagName, FeatureFlagState>>(
-    {},
+  const initialFlagState = featureFlags.reduce(
+    (result, featureFlag: FeatureFlagsRegistryItem) => {
+      const state = featureFlagApi.getFlags().get(featureFlag.name);
+
+      result[featureFlag.name] = state;
+      return result;
+    },
+    {} as Record<FeatureFlagName, FeatureFlagState>,
   );
 
-  useEffect(() => {
-    featureFlags.map(featureFlag => {
-      setState({
-        [featureFlag.name]: featureFlagApi.getFlags().get(featureFlag.name),
-      });
-    });
-  }, [featureFlagApi, featureFlags]);
+  const [state, setState] = useState<Record<FeatureFlagName, FeatureFlagState>>(
+    initialFlagState,
+  );
 
-  const toggleFlag = (flagName: FeatureFlagName) => {
-    const newState = featureFlagApi.getFlags().toggle(flagName);
+  const toggleFlag = useCallback(
+    (flagName: FeatureFlagName) => {
+      const newState = featureFlagApi.getFlags().toggle(flagName);
 
-    setState(prevState => ({
-      ...prevState,
-      [flagName]: newState,
-    }));
-    featureFlagApi.getFlags().save();
-  };
+      setState(prevState => ({
+        ...prevState,
+        [flagName]: newState,
+      }));
+      featureFlagApi.getFlags().save();
+    },
+    [featureFlagApi],
+  );
 
   return (
     <List dense>
