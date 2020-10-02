@@ -106,16 +106,23 @@ export class DocsBuilder {
     const buildMetadataStorage = new BuildMetadataStorage(
       this.entity.metadata.uid,
     );
-    const { target } = getLocationForEntity(this.entity);
-    const lastCommit = await getLastCommitTimestamp(target, this.logger);
-    const storageTimeStamp = buildMetadataStorage.getTimestamp();
+    const { type, target } = getLocationForEntity(this.entity);
 
-    // Check if documentation source is newer than what we have
-    if (storageTimeStamp && storageTimeStamp >= lastCommit) {
-      this.logger.debug(
-        `[TechDocs] Docs for entity ${getEntityId(this.entity)} is up to date.`,
-      );
-      return true;
+    // Unless docs are stored locally
+    const nonAgeCheckTypes = ['dir', 'file'];
+    if (!nonAgeCheckTypes.includes(type)) {
+      const lastCommit = await getLastCommitTimestamp(target, this.logger);
+      const storageTimeStamp = buildMetadataStorage.getTimestamp();
+
+      // Check if documentation source is newer than what we have
+      if (storageTimeStamp && storageTimeStamp >= lastCommit) {
+        this.logger.debug(
+          `[TechDocs] Docs for entity ${getEntityId(
+            this.entity,
+          )} is up to date.`,
+        );
+        return true;
+      }
     }
 
     this.logger.debug(
