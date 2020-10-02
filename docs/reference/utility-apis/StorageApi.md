@@ -35,7 +35,7 @@ remove(key: string): Promise&lt;void&gt;
 
 ### set()
 
-Save persistant data, and emit messages to anyone that is using observe\$ for
+Save persistent data, and emit messages to anyone that is using observe\$ for
 this key
 
 <pre>
@@ -85,7 +85,7 @@ Referenced by: [observe\$](#observe), [StorageApi](#storageapi).
 
 ### Observer
 
-This file contains non-react related core types used throught Backstage.
+This file contains non-react related core types used through Backstage.
 
 Observer interface for consuming an Observer, see TC39.
 
@@ -129,7 +129,7 @@ export interface StorageApi {
   remove(key: string): Promise&lt;void&gt;;
 
   /**
-   * Save persistant data, and emit messages to anyone that is using observe$ for this key
+   * Save persistent data, and emit messages to anyone that is using observe$ for this key
    *
    * @param {String} key Unique key associated with the data.
    */

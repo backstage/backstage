@@ -35,4 +35,4 @@ well as a selection of Python Markdown extensions that TechDocs supports.
 Not right now. We are currently using MkDocs to generate the documentation from
 source, so the files have to be in Markdown format. However, in the future we
 want to support other static site generators which will make it possible to use
-otherfile formats.
+other file formats.

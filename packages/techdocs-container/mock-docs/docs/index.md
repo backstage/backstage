@@ -1,7 +1,7 @@
 ## hello mock docs
 
 !!! test
-Testing somethin
+Testing something
 
 Abbreviations:
 Some text about MOCDOC
