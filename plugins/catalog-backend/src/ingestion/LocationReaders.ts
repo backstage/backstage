@@ -88,7 +88,12 @@ export class LocationReaders implements LocationReader {
       new BitbucketApiReaderProcessor(config),
       new AzureApiReaderProcessor(config),
       GithubOrgReaderProcessor.fromConfig(config),
-      options.reader ? new UrlReaderProcessor(options.reader) : [],
+      options.reader
+        ? new UrlReaderProcessor({
+            reader: options.reader,
+            logger: options.logger,
+          })
+        : [],
       new YamlProcessor(),
       PlaceholderProcessor.default(),
       new CodeOwnersProcessor(),
