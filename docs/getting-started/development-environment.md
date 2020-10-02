@@ -88,3 +88,14 @@ yarn create-plugin # Create a new plugin
 > See
 > [package.json](https://github.com/spotify/backstage/blob/master/package.json)
 > for other yarn commands/options.
+
+## Local configuration
+
+Backstage allows you to specify the configuration used while running the
+application on your computer. Local configuration is read from
+`app-config.development.local.yaml`. This file is ignored by Git, which means
+that you can safely use it to reference secrets like GitHub tokens worrying
+about these secrets inadvertently ending up in the Git repository.
+
+You can learn more about local configuration in
+[Static Configuration in Backstage](../conf/) section.
