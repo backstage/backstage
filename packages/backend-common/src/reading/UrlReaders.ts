@@ -22,6 +22,7 @@ import {
   UrlReaderPredicateMux,
   UrlReaderPredicateTuple,
 } from './UrlReaderPredicateMux';
+import { BitbucketUrlReader } from './BitbucketUrlReader';
 
 export type ReaderFactoryOptions = {
   config: Config;
@@ -51,7 +52,10 @@ export class UrlReaders {
    * Creates a new UrlReaders instance that includes all the default factories from this package
    */
   static default({ logger }: { logger: Logger }) {
-    return new UrlReaders([GithubUrlReader.factory], logger);
+    return new UrlReaders(
+      [GithubUrlReader.factory, BitbucketUrlReader.factory],
+      logger,
+    );
   }
 
   private constructor(

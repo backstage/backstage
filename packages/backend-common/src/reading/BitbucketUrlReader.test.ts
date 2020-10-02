@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { BitbucketApiReaderProcessor } from './BitbucketApiReaderProcessor';
+import { BitbucketUrlReader, readConfig } from './BitbucketUrlReader';
 import { ConfigReader } from '@backstage/config';
 
-describe('BitbucketApiReaderProcessor', () => {
+const host = 'bitbucket.org';
+
+describe('BitbucketUrlReader', () => {
   const createConfig = (
     username: string | undefined,
     appPassword: string | undefined,
@@ -26,22 +28,21 @@ describe('BitbucketApiReaderProcessor', () => {
       {
         context: '',
         data: {
-          catalog: {
-            processors: {
-              bitbucketApi: {
+          integrations: {
+            bitbucket: [
+              {
+                host,
                 username: username,
                 appPassword: appPassword,
               },
-            },
+            ],
           },
         },
       },
     ]);
 
   it('should build raw api', () => {
-    const processor = new BitbucketApiReaderProcessor(
-      createConfig(undefined, undefined),
-    );
+    const processor = new BitbucketUrlReader({ host });
 
     const tests = [
       {
@@ -90,7 +91,7 @@ describe('BitbucketApiReaderProcessor', () => {
           headers: {},
         },
         err:
-          "Invalid type in config for key 'catalog.processors.bitbucketApi.username' in '', got empty-string, wanted string",
+          "Invalid type in config for key 'integrations.bitbucket[0].username' in '', got empty-string, wanted string",
       },
       {
         username: 'only-user-provided',
@@ -99,7 +100,7 @@ describe('BitbucketApiReaderProcessor', () => {
           headers: {},
         },
         err:
-          "Invalid type in config for key 'catalog.processors.bitbucketApi.appPassword' in '', got empty-string, wanted string",
+          "Invalid type in config for key 'integrations.bitbucket[0].appPassword' in '', got empty-string, wanted string",
       },
       {
         username: '',
@@ -108,7 +109,7 @@ describe('BitbucketApiReaderProcessor', () => {
           headers: {},
         },
         err:
-          "Invalid type in config for key 'catalog.processors.bitbucketApi.username' in '', got empty-string, wanted string",
+          "Invalid type in config for key 'integrations.bitbucket[0].username' in '', got empty-string, wanted string",
       },
       {
         username: 'some-user',
@@ -132,6 +133,8 @@ describe('BitbucketApiReaderProcessor', () => {
         expect: {
           headers: {},
         },
+        err:
+          "Missing required config value at 'integrations.bitbucket[0].appPassword'",
       },
       {
         username: undefined,
@@ -146,13 +149,13 @@ describe('BitbucketApiReaderProcessor', () => {
       if (test.err) {
         expect(
           () =>
-            new BitbucketApiReaderProcessor(
-              createConfig(test.username, test.password),
+            new BitbucketUrlReader(
+              readConfig(createConfig(test.username, test.password))[0],
             ),
         ).toThrowError(test.err);
       } else {
-        const processor = new BitbucketApiReaderProcessor(
-          createConfig(test.username, test.password),
+        const processor = new BitbucketUrlReader(
+          readConfig(createConfig(test.username, test.password))[0],
         );
         expect(processor.getRequestOptions()).toEqual(test.expect);
       }

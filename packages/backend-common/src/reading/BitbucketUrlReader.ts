@@ -14,31 +14,72 @@
  * limitations under the License.
  */
 
-import { LocationSpec } from '@backstage/catalog-model';
-import fetch, { RequestInit, HeadersInit } from 'node-fetch';
-import * as result from './results';
-import { LocationProcessor, LocationProcessorEmit } from './types';
+import fetch, { RequestInit, HeadersInit, Response } from 'node-fetch';
 import { Config } from '@backstage/config';
+import { ReaderFactory } from './UrlReaders';
+import { UrlReader } from './types';
+import { NotFoundError } from '../errors';
 
-export class BitbucketApiReaderProcessor implements LocationProcessor {
-  private username: string;
-  private password: string;
+type Options = {
+  // TODO: added here for future support, but we only allow bitbucket.org for now
+  host: string;
+  auth?: {
+    username: string;
+    appPassword: string;
+  };
+};
 
-  constructor(config: Config) {
-    this.username =
-      config.getOptionalString('catalog.processors.bitbucketApi.username') ??
-      '';
-    this.password =
-      config.getOptionalString('catalog.processors.bitbucketApi.appPassword') ??
-      '';
+export function readConfig(config: Config): Options[] {
+  const optionsArr = Array<Options>();
+
+  const providerConfigs =
+    config.getOptionalConfigArray('integrations.bitbucket') ?? [];
+
+  for (const providerConfig of providerConfigs) {
+    const host = providerConfig.getOptionalString('host') ?? 'bitbucket.org';
+
+    let auth;
+    if (providerConfig.has('username')) {
+      const username = providerConfig.getString('username');
+      const appPassword = providerConfig.getString('appPassword');
+      auth = { username, appPassword };
+    }
+
+    optionsArr.push({ host, auth });
+  }
+
+  // As a convenience we always make sure there's at least an unauthenticated
+  // reader for public bitbucket repos.
+  if (!optionsArr.some(p => p.host === 'bitbucket.org')) {
+    optionsArr.push({ host: 'bitbucket.org' });
+  }
+
+  return optionsArr;
+}
+
+export class BitbucketUrlReader implements UrlReader {
+  static factory: ReaderFactory = ({ config }) => {
+    return readConfig(config).map(options => {
+      const reader = new BitbucketUrlReader(options);
+      const predicate = (url: URL) => url.host === options.host;
+      return { reader, predicate };
+    });
+  };
+
+  constructor(private readonly options: Options) {
+    if (options.host !== 'bitbucket.org') {
+      throw Error(
+        `Bitbucket integration currently only supports 'bitbucket.org', tried to use host '${options.host}'`,
+      );
+    }
   }
 
   getRequestOptions(): RequestInit {
     const headers: HeadersInit = {};
 
-    if (this.username !== '' && this.password !== '') {
+    if (this.options.auth) {
       headers.Authorization = `Basic ${Buffer.from(
-        `${this.username}:${this.password}`,
+        `${this.options.auth.username}:${this.options.auth.appPassword}`,
         'utf8',
       ).toString('base64')}`;
     }
@@ -50,38 +91,25 @@ export class BitbucketApiReaderProcessor implements LocationProcessor {
     return requestOptions;
   }
 
-  async readLocation(
-    location: LocationSpec,
-    optional: boolean,
-    emit: LocationProcessorEmit,
-  ): Promise<boolean> {
-    if (location.type !== 'bitbucket/api') {
-      return false;
-    }
+  async read(url: string): Promise<Buffer> {
+    const builtUrl = this.buildRawUrl(url);
 
+    let response: Response;
     try {
-      const url = this.buildRawUrl(location.target);
-
-      const response = await fetch(url.toString(), this.getRequestOptions());
-
-      if (response.ok) {
-        const data = await response.buffer();
-        emit(result.data(location, data));
-      } else {
-        const message = `${location.target} could not be read as ${url}, ${response.status} ${response.statusText}`;
-        if (response.status === 404) {
-          if (!optional) {
-            emit(result.notFoundError(location, message));
-          }
-        } else {
-          emit(result.generalError(location, message));
-        }
-      }
+      response = await fetch(builtUrl.toString(), this.getRequestOptions());
     } catch (e) {
-      const message = `Unable to read ${location.type} ${location.target}, ${e}`;
-      emit(result.generalError(location, message));
+      throw new Error(`Unable to read ${url}, ${e}`);
     }
-    return true;
+
+    if (response.ok) {
+      return response.buffer();
+    }
+
+    const message = `${url} could not be read as ${builtUrl}, ${response.status} ${response.statusText}`;
+    if (response.status === 404) {
+      throw new NotFoundError(message);
+    }
+    throw new Error(message);
   }
 
   // Converts
