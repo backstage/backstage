@@ -32,6 +32,7 @@ import { BitbucketApiReaderProcessor } from './processors/BitbucketApiReaderProc
 import { EntityPolicyProcessor } from './processors/EntityPolicyProcessor';
 import { FileReaderProcessor } from './processors/FileReaderProcessor';
 import { GithubOrgReaderProcessor } from './processors/GithubOrgReaderProcessor';
+import { GithubReaderProcessor } from './processors/GithubReaderProcessor';
 import { GitlabApiReaderProcessor } from './processors/GitlabApiReaderProcessor';
 import { GitlabReaderProcessor } from './processors/GitlabReaderProcessor';
 import { LocationRefProcessor } from './processors/LocationEntityProcessor';
@@ -77,16 +78,48 @@ export class LocationReaders implements LocationReader {
     entityPolicy?: EntityPolicy;
   }): LocationProcessor[] {
     const {
+      logger,
       config = new ConfigReader({}, 'missing-config'),
       entityPolicy = new EntityPolicies(),
     } = options;
+
+    // TODO(Rugvip): These are added for backwards compatibility if config exists
+    //   The idea is to have everyone migrate from using the old processors to the new
+    //   integration config driven UrlReaders. In an upcoming release we can then completely
+    //   remove support for the old processors, but still keep handling the deprecated location
+    //   types for a while, but with a warning.
+    const oldProcessors = [];
+    const pc = config.getOptionalConfig('catalog.processors');
+    if (pc?.has('github')) {
+      logger.warn(
+        `Using deprecated configuration for catalog.processors.github, move to using integrations.github instead`,
+      );
+      oldProcessors.push(GithubReaderProcessor.fromConfig(config, logger));
+    }
+    if (pc?.has('gitlabApi')) {
+      logger.warn(
+        `Using deprecated configuration for catalog.processors.gitlabApi, move to using integrations.gitlab instead`,
+      );
+      oldProcessors.push(new GitlabApiReaderProcessor(config));
+      oldProcessors.push(new GitlabReaderProcessor());
+    }
+    if (pc?.has('bitbucketApi')) {
+      logger.warn(
+        `Using deprecated configuration for catalog.processors.bitbucketApi, move to using integrations.bitbucket instead`,
+      );
+      oldProcessors.push(new BitbucketApiReaderProcessor(config));
+    }
+    if (pc?.has('azureApi')) {
+      logger.warn(
+        `Using deprecated configuration for catalog.processors.azureApi, move to using integrations.azure instead`,
+      );
+      oldProcessors.push(new AzureApiReaderProcessor(config));
+    }
+
     return [
       StaticLocationProcessor.fromConfig(config),
       new FileReaderProcessor(),
-      new GitlabApiReaderProcessor(config),
-      new GitlabReaderProcessor(),
-      new BitbucketApiReaderProcessor(config),
-      new AzureApiReaderProcessor(config),
+      ...oldProcessors,
       GithubOrgReaderProcessor.fromConfig(config),
       new UrlReaderProcessor(options),
       new YamlProcessor(),
@@ -96,7 +129,7 @@ export class LocationReaders implements LocationReader {
       new EntityPolicyProcessor(entityPolicy),
       new LocationRefProcessor(),
       new AnnotateLocationEntityProcessor(),
-    ].flat();
+    ];
   }
 
   constructor({
