@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getVoidLogger } from '@backstage/backend-common';
 import { LocationSpec } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import {
@@ -94,9 +95,15 @@ describe('GithubOrgReaderProcessor', () => {
 
   describe('implementation', () => {
     it('rejects unknown types', async () => {
-      const processor = new GithubOrgReaderProcessor([
-        { target: 'https://github.com', apiBaseUrl: 'https://api.github.com' },
-      ]);
+      const processor = new GithubOrgReaderProcessor(
+        [
+          {
+            target: 'https://github.com',
+            apiBaseUrl: 'https://api.github.com',
+          },
+        ],
+        getVoidLogger(),
+      );
       const location: LocationSpec = {
         type: 'not-github-org',
         target: 'https://github.com',
@@ -107,9 +114,15 @@ describe('GithubOrgReaderProcessor', () => {
     });
 
     it('rejects unknown targets', async () => {
-      const processor = new GithubOrgReaderProcessor([
-        { target: 'https://github.com', apiBaseUrl: 'https://api.github.com' },
-      ]);
+      const processor = new GithubOrgReaderProcessor(
+        [
+          {
+            target: 'https://github.com',
+            apiBaseUrl: 'https://api.github.com',
+          },
+        ],
+        getVoidLogger(),
+      );
       const location: LocationSpec = {
         type: 'github-org',
         target: 'https://not.github.com/apa',

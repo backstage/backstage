@@ -179,6 +179,21 @@ fallback (`rollbar.organization` followed by `organization.name`).
 Specifying this annotation may enable Rollbar related features in Backstage for
 that entity.
 
+### backstage.io/ldap-rdn, backstage.io/ldap-uuid, backstage.io/ldap-dn
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    backstage.io/ldap-rdn: my-team
+    backstage.io/ldap-uuid: c57e8ba2-6cc4-1039-9ebc-d5f241a7ca21
+    backstage.io/ldap-dn: cn=my-team,ou=access,ou=groups,ou=spotify,dc=spotify,dc=net
+```
+
+The value of these annotations are the corresponding attributes that were found
+when ingestion the entity from LDAP. Not all of them may be present, depending
+on what attributes that the server presented at ingestion time.
+
 ## Deprecated Annotations
 
 The following annotations are deprecated, and only listed here to aid in

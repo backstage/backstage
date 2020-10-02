@@ -17,6 +17,7 @@
 import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { graphql } from '@octokit/graphql';
+import { Logger } from 'winston';
 import * as results from './results';
 import { LocationProcessor, LocationProcessorEmit } from './types';
 import { getOrganizationTeams, getOrganizationUsers } from './util/github';
@@ -26,11 +27,14 @@ import { buildOrgHierarchy } from './util/org';
  * Extracts teams and users out of a GitHub org.
  */
 export class GithubOrgReaderProcessor implements LocationProcessor {
-  static fromConfig(config: Config) {
-    return new GithubOrgReaderProcessor(readConfig(config));
+  static fromConfig(config: Config, logger: Logger) {
+    return new GithubOrgReaderProcessor(readConfig(config), logger);
   }
 
-  constructor(private readonly providers: ProviderConfig[]) {}
+  constructor(
+    private readonly providers: ProviderConfig[],
+    private readonly logger: Logger,
+  ) {}
 
   async readLocation(
     location: LocationSpec,
@@ -59,13 +63,34 @@ export class GithubOrgReaderProcessor implements LocationProcessor {
           },
         });
 
+    // Read out all of the raw data
+    const startTimestamp = Date.now();
+    this.logger.info('Reading GitHub users and groups');
+
     const { users } = await getOrganizationUsers(client, org);
     const { groups, groupMemberUsers } = await getOrganizationTeams(
       client,
       org,
     );
-    buildOrgHierarchy(groups, users, groupMemberUsers);
 
+    const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);
+    this.logger.debug(
+      `Read ${users.length} GitHub users and ${groups.length} GitHub groups in ${duration} seconds`,
+    );
+
+    // Fill out the hierarchy
+    const usersByName = new Map(users.map(u => [u.metadata.name, u]));
+    for (const [groupName, userNames] of groupMemberUsers.entries()) {
+      for (const userName of userNames) {
+        const user = usersByName.get(userName);
+        if (user && !user.spec.memberOf.includes(groupName)) {
+          user.spec.memberOf.push(groupName);
+        }
+      }
+    }
+    buildOrgHierarchy(groups);
+
+    // Done!
     for (const group of groups) {
       emit(results.entity(location, group));
     }

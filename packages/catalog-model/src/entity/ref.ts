@@ -160,12 +160,29 @@ export function parseEntityRef(
  * @param ref The reference to serialize
  * @returns The same reference on either string or compound form
  */
-export function serializeEntityRef(ref: {
-  kind?: string;
-  namespace?: string;
-  name: string;
-}): EntityRef {
-  const { kind, namespace, name } = ref;
+export function serializeEntityRef(
+  ref:
+    | Entity
+    | {
+        kind?: string;
+        namespace?: string;
+        name: string;
+      },
+): EntityRef {
+  let kind;
+  let namespace;
+  let name;
+
+  if ('apiVersion' in ref) {
+    kind = ref.kind;
+    namespace = ref.metadata.namespace;
+    name = ref.metadata.name;
+  } else {
+    kind = ref.kind;
+    namespace = ref.namespace;
+    name = ref.name;
+  }
+
   if (
     kind?.includes(':') ||
     kind?.includes('/') ||

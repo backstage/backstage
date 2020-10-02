@@ -21,6 +21,7 @@ import {
   getEntityName,
   Location,
   LocationSpec,
+  serializeEntityRef,
 } from '@backstage/catalog-model';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from 'winston';
@@ -159,14 +160,13 @@ export class HigherOrderOperations implements HigherOrderOperation {
       );
     }
 
+    this.logger.info(
+      `Read ${readerOutput.entities.length} entities from location ${location.type} ${location.target}`,
+    );
+
+    const startTimestamp = Date.now();
     for (const item of readerOutput.entities) {
       const { entity } = item;
-
-      this.logger.debug(
-        `Read entity kind="${entity.kind}" namespace="${
-          entity.metadata.namespace || ''
-        }" name="${entity.metadata.name}"`,
-      );
 
       try {
         const previous = await this.entitiesCatalog.entityByName(
@@ -174,13 +174,9 @@ export class HigherOrderOperations implements HigherOrderOperation {
         );
 
         if (!previous) {
-          this.logger.debug(`No such entity found, adding`);
           await this.entitiesCatalog.addOrUpdateEntity(entity, location.id);
         } else if (entityHasChanges(previous, entity)) {
-          this.logger.debug(`Different from existing entity, updating`);
           await this.entitiesCatalog.addOrUpdateEntity(entity, location.id);
-        } else {
-          this.logger.debug(`Equal to existing entity, skipping update`);
         }
 
         await this.locationsCatalog.logUpdateSuccess(
@@ -188,10 +184,8 @@ export class HigherOrderOperations implements HigherOrderOperation {
           entity.metadata.name,
         );
       } catch (error) {
-        this.logger.debug(
-          `Failed refresh of entity kind="${entity.kind}" name="${
-            entity.metadata.name
-          }" namespace="${entity.metadata.namespace || ''}", ${error}`,
+        this.logger.info(
+          `Failed refresh of entity ${serializeEntityRef(entity)}, ${error}`,
         );
 
         await this.locationsCatalog.logUpdateFailure(
@@ -201,5 +195,10 @@ export class HigherOrderOperations implements HigherOrderOperation {
         );
       }
     }
+
+    const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);
+    this.logger.info(
+      `Wrote ${readerOutput.entities.length} entities from location ${location.type} ${location.target} in ${duration} seconds`,
+    );
   }
 }

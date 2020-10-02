@@ -5121,6 +5121,13 @@
     "@types/koa-compose" "*"
     "@types/node" "*"
 
+"@types/ldapjs@^1.0.9":
+  version "1.0.9"
+  resolved "https://registry.npmjs.org/@types/ldapjs/-/ldapjs-1.0.9.tgz#1224192d14cc5ab5218fcea72ebb04489c52cb95"
+  integrity sha512-3PvY7Drp1zoLbcGlothCAkoc5o6Jp9KvUPwHadlHyKp3yPvyeIh7w2zQc9UXMzgDRkoeGXUEODtbEs5XCh9ZyA==
+  dependencies:
+    "@types/node" "*"
+
 "@types/lodash@^4.14.151":
   version "4.14.161"
   resolved "https://registry.npmjs.org/@types/lodash/-/lodash-4.14.161.tgz#a21ca0777dabc6e4f44f3d07f37b765f54188b18"
@@ -6017,6 +6024,11 @@ abbrev@1:
   resolved "https://registry.npmjs.org/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
   integrity sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==
 
+abstract-logging@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/abstract-logging/-/abstract-logging-2.0.0.tgz#08a85814946c98ef06f4256ad470aba1886d4490"
+  integrity sha512-/oA9z7JszpIioo6J6dB79LVUgJ3eD3cxkAmdCkvWWS+Y9tPtALs1rLqOekLUXUbYqM2fB9TTK0ibAyZJJOP/CA==
+
 accepts@^1.3.5, accepts@~1.3.4, accepts@~1.3.5, accepts@~1.3.7:
   version "1.3.7"
   resolved "https://registry.npmjs.org/accepts/-/accepts-1.3.7.tgz#531bc726517a3b2b41f850021c6cc15eaab507cd"
@@ -6701,7 +6713,7 @@ asn1.js@^4.0.0:
     inherits "^2.0.1"
     minimalistic-assert "^1.0.0"
 
-asn1@~0.2.0, asn1@~0.2.3:
+asn1@^0.2.4, asn1@~0.2.0, asn1@~0.2.3:
   version "0.2.4"
   resolved "https://registry.npmjs.org/asn1/-/asn1-0.2.4.tgz#8d2475dfab553bb33e77b54e59e880bb8ce23136"
   integrity sha512-jxwzQpLQjSmWXgwaCZE9Nz+glAG01yF1QnWgbhGwHI5A6FRIEY6IVqtHhIepHqI7/kyEyQEagBC5mBEFlIYvdg==
@@ -7253,6 +7265,13 @@ backo2@^1.0.2:
   version "1.0.2"
   resolved "https://registry.npmjs.org/backo2/-/backo2-1.0.2.tgz#31ab1ac8b129363463e35b3ebb69f4dfcfba7947"
   integrity sha1-MasayLEpNjRj41s+u2n038+6eUc=
+
+backoff@^2.5.0:
+  version "2.5.0"
+  resolved "https://registry.npmjs.org/backoff/-/backoff-2.5.0.tgz#f616eda9d3e4b66b8ca7fca79f695722c5f8e26f"
+  integrity sha1-9hbtqdPktmuMp/ynn2lXIsX44m8=
+  dependencies:
+    precond "0.2"
 
 bail@^1.0.0:
   version "1.0.5"
@@ -14948,6 +14967,27 @@ lcid@^1.0.0:
   dependencies:
     invert-kv "^1.0.0"
 
+ldap-filter@^0.3.3:
+  version "0.3.3"
+  resolved "https://registry.npmjs.org/ldap-filter/-/ldap-filter-0.3.3.tgz#2b14c68a2a9d4104dbdbc910a1ca85fd189e9797"
+  integrity sha1-KxTGiiqdQQTb28kQocqF/Riel5c=
+  dependencies:
+    assert-plus "^1.0.0"
+
+ldapjs@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.npmjs.org/ldapjs/-/ldapjs-2.2.0.tgz#c23846d35bf215b4ba4721ff22f11d3df6391e2f"
+  integrity sha512-9+ekbj97nxRYQMRgEm/HYFhFLWSRKah2PnReUfhfM5f62XBeUSFolB+AQ2Jij5tqowpksTnrdNCZLP6C+V3uag==
+  dependencies:
+    abstract-logging "^2.0.0"
+    asn1 "^0.2.4"
+    assert-plus "^1.0.0"
+    backoff "^2.5.0"
+    ldap-filter "^0.3.3"
+    once "^1.4.0"
+    vasync "^2.2.0"
+    verror "^1.8.1"
+
 left-pad@^1.3.0:
   version "1.3.0"
   resolved "https://registry.npmjs.org/left-pad/-/left-pad-1.3.0.tgz#5b8a3a7765dfe001261dde915589e782f8c94d1e"
@@ -18389,6 +18429,11 @@ postgres-interval@^1.1.0:
   integrity sha512-9ZhXKM/rw350N1ovuWHbGxnGh/SNJ4cnxHiM0rxE4VN41wsg8P8zWn9hv/buK00RP4WvlOyr/RBDiptyxVbkZQ==
   dependencies:
     xtend "^4.0.0"
+
+precond@0.2:
+  version "0.2.3"
+  resolved "https://registry.npmjs.org/precond/-/precond-0.2.3.tgz#aa9591bcaa24923f1e0f4849d240f47efc1075ac"
+  integrity sha1-qpWRvKokkj8eD0hJ0kD0fvwQdaw=
 
 preferred-pm@^3.0.0:
   version "3.0.2"
@@ -23077,12 +23122,19 @@ vary@^1, vary@~1.1.2:
   resolved "https://registry.npmjs.org/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
   integrity sha1-IpnwLG3tMNSllhsLn3RSShj2NPw=
 
+vasync@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.npmjs.org/vasync/-/vasync-2.2.0.tgz#cfde751860a15822db3b132bc59b116a4adaf01b"
+  integrity sha1-z951GGChWCLbOxMrxZsRakra8Bs=
+  dependencies:
+    verror "1.10.0"
+
 vendors@^1.0.0:
   version "1.0.4"
   resolved "https://registry.npmjs.org/vendors/-/vendors-1.0.4.tgz#e2b800a53e7a29b93506c3cf41100d16c4c4ad8e"
   integrity sha512-/juG65kTL4Cy2su4P8HjtkTxk6VmJDiOPBufWniqQ6wknac6jNiXS9vU+hO3wgusiyqWlzTbVHi0dyJqRONg3w==
 
-verror@1.10.0:
+verror@1.10.0, verror@^1.8.1:
   version "1.10.0"
   resolved "https://registry.npmjs.org/verror/-/verror-1.10.0.tgz#3a105ca17053af55d6e270c1f8288682e18da400"
   integrity sha1-OhBcoXBTr1XW4nDB+CiGguGNpAA=
