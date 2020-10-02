@@ -198,10 +198,19 @@ function relativeLocation({
   try {
     // The two-value form of the URL constructor handles relative paths for us
     url = new URL(value, location.target);
-  } catch (e) {
-    throw new Error(
-      `Placeholder \$${key} could not form an URL out of ${location.target} and ${value}`,
-    );
+  } catch {
+    try {
+      // Check whether value is a valid absolute URL on it's own, if not fail.
+      url = new URL(value);
+    } catch {
+      // The only remaining case that isn't support is a relative file path that should be
+      // resolved using a relative file location. Accessing local file paths can lead to
+      // path traversal attacks and access to any file on the host system. Implementing this
+      // would require additional security measures.
+      throw new Error(
+        `Placeholder \$${key} could not form an URL out of ${location.target} and ${value}`,
+      );
+    }
   }
 
   return {
