@@ -74,7 +74,7 @@ the catalog under the `catalog.locations` key, for example:
 ```yaml
 catalog:
   locations:
-    - type: github
+    - type: url
       target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
 ```
 
@@ -97,7 +97,7 @@ catalog:
     - allow: [Component, API, Location, Template]
 
   locations:
-    - type: github
+    - type: url
       target: https://github.com/org/example/blob/master/org-data.yaml
       rules:
         - allow: [Group]
