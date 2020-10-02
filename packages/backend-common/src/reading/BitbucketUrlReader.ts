@@ -158,4 +158,9 @@ export class BitbucketUrlReader implements UrlReader {
       throw new Error(`Incorrect url: ${target}, ${e}`);
     }
   }
+
+  toString() {
+    const { host, auth } = this.options;
+    return `bitbucket{host=${host},authed=${Boolean(auth)}}`;
+  }
 }

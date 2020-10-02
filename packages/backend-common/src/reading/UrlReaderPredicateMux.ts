@@ -59,4 +59,10 @@ export class UrlReaderPredicateMux implements UrlReader {
 
     throw new Error(`No reader found that could handle '${url}'`);
   }
+
+  toString() {
+    return `predicateMux{readers=${this.readers
+      .map(t => t.reader)
+      .join(',')},fallback=${this.fallback}}`;
+  }
 }

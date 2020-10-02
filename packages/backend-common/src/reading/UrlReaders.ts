@@ -79,20 +79,14 @@ export class UrlReaders {
    */
   createWithConfig(config: Config): UrlReader {
     const mux = new UrlReaderPredicateMux({ fallback: this.fallback });
-    const readers = [];
 
     for (const factory of this.factories) {
       const tuples = factory({ config, logger: this.logger });
 
       for (const tuple of tuples) {
         mux.register(tuple);
-        readers.push(tuple.reader);
       }
     }
-
-    this.logger.info(
-      `Registered the following UrlReaders: ${readers.join(', ')}`,
-    );
 
     return mux;
   }

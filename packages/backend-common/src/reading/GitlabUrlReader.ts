@@ -187,4 +187,9 @@ export class GitlabUrlReader implements UrlReader {
       throw new Error(`Could not get GitLab ProjectID for: ${target}, ${e}`);
     }
   }
+
+  toString() {
+    const { host, token } = this.options;
+    return `gitlab{host=${host},authed=${Boolean(token)}}`;
+  }
 }

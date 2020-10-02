@@ -229,4 +229,9 @@ export class GithubUrlReader implements UrlReader {
     }
     throw new Error(message);
   }
+
+  toString() {
+    const { host, token } = this.config;
+    return `github{host=${host},authed=${Boolean(token)}}`;
+  }
 }

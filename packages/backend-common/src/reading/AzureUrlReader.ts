@@ -162,4 +162,9 @@ export class AzureUrlReader implements UrlReader {
       throw new Error(`Incorrect url: ${target}, ${e}`);
     }
   }
+
+  toString() {
+    const { host, token } = this.options;
+    return `azure{host=${host},authed=${Boolean(token)}}`;
+  }
 }

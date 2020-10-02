@@ -40,4 +40,8 @@ export class FetchUrlReader implements UrlReader {
     }
     throw new Error(message);
   }
+
+  toString() {
+    return 'fetch{}';
+  }
 }
