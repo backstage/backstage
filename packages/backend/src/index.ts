@@ -29,8 +29,7 @@ import {
   getRootLogger,
   useHotMemoize,
   notFoundHandler,
-  SingleDatabaseConfiguration,
-  SingleDatabaseManager,
+  SingleConnectionManager,
   SingleHostDiscovery,
   UrlReaders,
 } from '@backstage/backend-common';
@@ -55,15 +54,14 @@ function makeCreateEnv(config: ConfigReader) {
 
   root.info(`Created UrlReader ${reader}`);
 
-  const databaseConfig = new SingleDatabaseConfiguration(
+  const databaseManager = new SingleConnectionManager(
     config.getConfig('backend.database'),
   );
-  const databaseManager = new SingleDatabaseManager(databaseConfig);
 
   return (plugin: string): PluginEnvironment => {
     const logger = root.child({ type: 'plugin', plugin });
-    const databaseFactory = databaseManager.getDatabaseFactory(plugin);
-    return { logger, database: databaseFactory, config, reader, discovery };
+    const databaseFactory = databaseManager.getDatabaseClientFactory(plugin);
+    return { logger, databaseClientFactory: databaseFactory, config, reader, discovery };
   };
 }
 

@@ -30,12 +30,12 @@ export default async function createPlugin({
   logger,
   config,
   reader,
-  database,
+  databaseClientFactory,
 }: PluginEnvironment) {
   const locationReader = new LocationReaders({ logger, reader, config });
 
   const db = await DatabaseManager.createDatabase(
-    await database.getDatabase(),
+    await databaseClientFactory(),
     { logger },
   );
   const entitiesCatalog = new DatabaseEntitiesCatalog(db);

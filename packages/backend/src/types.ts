@@ -17,14 +17,14 @@
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 import {
-  PluginDatabaseFactory,
+  PluginDatabaseClientFactory,
   PluginEndpointDiscovery,
   UrlReader
 } from '@backstage/backend-common';
 
 export type PluginEnvironment = {
   logger: Logger;
-  database: PluginDatabaseFactory;
+  databaseClientFactory: PluginDatabaseClientFactory;
   config: Config;
   reader: UrlReader;
   discovery: PluginEndpointDiscovery;

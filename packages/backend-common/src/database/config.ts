@@ -23,5 +23,5 @@ import { merge } from 'lodash';
  * @param overrides Any additional overrides
  */
 export function mergeDatabaseConfig(config: any, ...overrides: any[]) {
-  return merge(config, ...overrides);
+  return merge({}, config, ...overrides);
 }

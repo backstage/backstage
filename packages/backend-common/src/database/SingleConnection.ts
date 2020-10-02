@@ -17,43 +17,39 @@
 import Knex from 'knex';
 import { Config } from '@backstage/config';
 import { createDatabaseClient, ensureDatabaseExists } from './connection';
-import {
-  DatabaseConfiguration,
-  PluginDatabaseFactory,
-  PluginDatabaseManager,
-} from './types';
+import { PluginDatabaseClientFactory } from './types';
 
-export class SingleDatabaseConfiguration implements DatabaseConfiguration {
+/**
+ * Implements a Database Manager which will automatically create new databases for plugins when requested. All
+ * requested databases are created with the credentials provided.
+ */
+export class SingleConnectionManager {
   private readonly config: Config;
 
   constructor(config: Config) {
     this.config = config;
   }
 
-  getDatabaseConfig(_pluginId: string): Config {
+  private getDatabaseConfig(): Config {
     return this.config;
   }
 
-  getAdminConfig(): Config {
+  private getAdminConfig(): Config {
     return this.config;
   }
-}
 
-export class SingleDatabaseManager implements PluginDatabaseManager {
-  private readonly config: DatabaseConfiguration;
-
-  constructor(config: DatabaseConfiguration) {
-    this.config = config;
+  /**
+   * Generates a PluginDatabaseClientFactory for consumption by plugins.
+   */
+  getDatabaseClientFactory(pluginId: string): PluginDatabaseClientFactory {
+    return (database?: string): Promise<Knex> => {
+      return this.getDatabase(pluginId, database);
+    };
   }
 
-  getDatabaseFactory(pluginId: string): PluginDatabaseFactory {
-    // eslint-disable-next-line no-use-before-define
-    return new SinglePluginDatabaseFactory(this, pluginId);
-  }
-
-  async getDatabase(pluginId: string, suffix?: string): Promise<Knex> {
-    const config = this.config.getDatabaseConfig(pluginId);
-    const overrides = SingleDatabaseManager.getDatabaseOverrides(
+  private async getDatabase(pluginId: string, suffix?: string): Promise<Knex> {
+    const config = this.getDatabaseConfig();
+    const overrides = SingleConnectionManager.getDatabaseOverrides(
       pluginId,
       suffix,
     );
@@ -76,21 +72,7 @@ export class SingleDatabaseManager implements PluginDatabaseManager {
   }
 
   private async ensureDatabase(database: string) {
-    const config = this.config.getAdminConfig();
+    const config = this.getAdminConfig();
     await ensureDatabaseExists(config, database);
-  }
-}
-
-export class SinglePluginDatabaseFactory implements PluginDatabaseFactory {
-  private manager: SingleDatabaseManager;
-  private readonly pluginId: string;
-
-  constructor(manager: SingleDatabaseManager, pluginId: string) {
-    this.manager = manager;
-    this.pluginId = pluginId;
-  }
-
-  getDatabase(database?: string): Promise<Knex> {
-    return this.manager.getDatabase(this.pluginId, database);
   }
 }

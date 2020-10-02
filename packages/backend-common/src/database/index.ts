@@ -16,4 +16,4 @@
 
 export * from './connection';
 export * from './types';
-export * from './SingleDatabase';
+export * from './SingleConnection';
