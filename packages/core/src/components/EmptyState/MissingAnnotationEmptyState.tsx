@@ -17,34 +17,7 @@
 import React from 'react';
 import { Button, Typography } from '@material-ui/core';
 import { EmptyState } from './EmptyState';
-import PostAddIcon from '@material-ui/icons/PostAdd';
-import { useEntity } from '@backstage/plugin-catalog';
 import { CodeSnippet } from '../CodeSnippet';
-
-type ActionButtonProps = {
-  type: string;
-  target: string;
-};
-
-const ActionButton = ({ type, target }: ActionButtonProps) =>
-  type === 'github' ? (
-    <Button
-      variant="contained"
-      color="primary"
-      href={target.replace('blob', 'edit')}
-      startIcon={<PostAddIcon />}
-    >
-      Edit component definition
-    </Button>
-  ) : (
-    <Button
-      variant="contained"
-      color="primary"
-      href="https://backstage.io/docs/features/software-catalog/well-known-annotations"
-    >
-      Read more
-    </Button>
-  );
 
 const COMPONENT_YAML = `# Example
 apiVersion: backstage.io/v1alpha1
@@ -65,17 +38,11 @@ type Props = {
 };
 
 export const MissingAnnotationEmptyState = ({ annotation }: Props) => {
-  const { entity } = useEntity();
-  const [type, target] =
-    entity?.metadata?.annotations?.['backstage.io/managed-by-location'].split(
-      /:(.+)/,
-    ) || [];
-
   return (
     <EmptyState
       missing="field"
       title="Missing Annotation"
-      description={`The "${annotation}" annotation is missing on "${entity?.metadata?.name}". You need to add the annotation to your component if you want to enable this tool for it.`}
+      description={`The "${annotation}" annotation is missing. You need to add the annotation to your component if you want to enable this tool for it.`}
       action={
         <>
           <Typography variant="body1">
@@ -88,7 +55,13 @@ export const MissingAnnotationEmptyState = ({ annotation }: Props) => {
             showLineNumbers
             highlightedNumbers={[7, 8]}
           />
-          <ActionButton type={type} target={target} />
+          <Button
+            variant="contained"
+            color="primary"
+            href="https://backstage.io/docs/features/software-catalog/well-known-annotations"
+          >
+            Read more
+          </Button>
         </>
       }
     />
