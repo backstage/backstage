@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import PropTypes from 'prop-types';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { docco, dark } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
 import { useTheme } from '@material-ui/core';
@@ -62,12 +61,4 @@ export const CodeSnippet = ({
       )}
     </div>
   );
-};
-
-// Type check for the JS files using this core component
-CodeSnippet.propTypes = {
-  text: PropTypes.string.isRequired,
-  language: PropTypes.string.isRequired,
-  showLineNumbers: PropTypes.bool,
-  showCopyCodeButton: PropTypes.bool,
 };
