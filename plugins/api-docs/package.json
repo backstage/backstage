@@ -24,7 +24,7 @@
     "@backstage/core": "^0.1.1-alpha.23",
     "@backstage/plugin-catalog": "^0.1.1-alpha.23",
     "@backstage/theme": "^0.1.1-alpha.23",
-    "@kyma-project/asyncapi-react": "^0.11.0",
+    "@kyma-project/asyncapi-react": "^0.13.1",
     "@material-icons/font": "^1.0.2",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
