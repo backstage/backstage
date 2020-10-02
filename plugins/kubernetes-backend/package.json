@@ -30,6 +30,7 @@
     "express-promise-router": "^3.0.3",
     "fs-extra": "^9.0.0",
     "helmet": "^4.0.0",
+    "lodash": "^4.17.15",
     "morgan": "^1.10.0",
     "stream-buffers": "^3.0.2",
     "winston": "^3.2.1",

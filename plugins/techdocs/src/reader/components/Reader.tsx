@@ -39,9 +39,10 @@ import { TechDocsNotFound } from './TechDocsNotFound';
 
 type Props = {
   entityId: ParsedEntityId;
+  onReady?: () => void;
 };
 
-export const Reader = ({ entityId }: Props) => {
+export const Reader = ({ entityId, onReady }: Props) => {
   const { kind, namespace, name } = entityId;
   const { '*': path } = useParams();
   const theme = useTheme<BackstageTheme>();
@@ -58,7 +59,9 @@ export const Reader = ({ entityId }: Props) => {
     if (!shadowRoot || loading || error) {
       return; // Shadow DOM isn't ready / It's not ready / Docs was not found
     }
-
+    if (onReady) {
+      onReady();
+    }
     // Pre-render
     const transformedElement = transformer(value as string, [
       sanitizeDOM(),
@@ -143,6 +146,7 @@ export const Reader = ({ entityId }: Props) => {
     navigate,
     techdocsStorageApi,
     theme,
+    onReady,
   ]);
 
   if (error) {

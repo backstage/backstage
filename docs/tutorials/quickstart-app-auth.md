@@ -11,10 +11,11 @@ title: Monorepo App Setup With Authentication
 > own environment. It starts with a skeleton install and verifying of the
 > monorepo's functionality. Next, GitHub authentication is added and tested.
 >
-> This document assumes you have NodeJS 12 active along with Yarn. Please note,
-> that at the time of this writing, the current version is 0.1.1-alpha.21. This
-> guide can still be used with future versions, just, verify as you go. If you
-> run into issues, you can compare your setup with mine here >
+> This document assumes you have NodeJS 12 active along with Yarn and Python.
+> Please note, that at the time of this writing, the current version is
+> 0.1.1-alpha.21. This guide can still be used with future versions, just,
+> verify as you go. If you run into issues, you can compare your setup with mine
+> here >
 > [simple-backstage-app](https://github.com/johnson-jesse/simple-backstage-app).
 
 # The Skeleton Application

@@ -25,7 +25,7 @@ const mockBaseUrl = 'http://backstage:9191/i-am-a-mock-base';
 const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);
 
 describe('CatalogClient', () => {
-  beforeAll(() => server.listen());
+  beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
   afterEach(() => server.resetHandlers());
   afterAll(() => server.close());
 

@@ -45,7 +45,7 @@ export default async function createPlugin({
 
   useHotCleanup(
     module,
-    runPeriodically(() => higherOrderOperation.refreshAllLocations(), 10000),
+    runPeriodically(() => higherOrderOperation.refreshAllLocations(), 100000),
   );
 
   return await createRouter({

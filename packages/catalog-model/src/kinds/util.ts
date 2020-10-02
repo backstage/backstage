@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Header, Content, Page, pageTheme } from '@backstage/core';
+import * as yup from 'yup';
+import { Entity } from '../entity';
+import { EntityPolicy } from '../types';
 
-type TechDocsPageWrapperProps = {
-  title: string;
-  subtitle: string;
-  children: any;
-};
-
-export const TechDocsPageWrapper = ({
-  children,
-  title,
-  subtitle,
-}: TechDocsPageWrapperProps) => {
-  return (
-    <Page theme={pageTheme.documentation}>
-      <Header title={title} subtitle={subtitle} />
-      <Content>{children}</Content>
-    </Page>
-  );
-};
+export function schemaPolicy(
+  kind: string,
+  apiVersion: readonly string[],
+  schema: yup.Schema<any>,
+): EntityPolicy {
+  return {
+    async enforce(envelope: Entity): Promise<Entity | undefined> {
+      if (
+        kind !== envelope.kind ||
+        !apiVersion.includes(envelope.apiVersion as any)
+      ) {
+        return undefined;
+      }
+      return await schema.validate(envelope, { strict: true });
+    },
+  };
+}

@@ -19,6 +19,7 @@ import {
   Entity,
   EntityPolicies,
   EntityPolicy,
+  ENTITY_DEFAULT_NAMESPACE,
   LocationSpec,
 } from '@backstage/catalog-model';
 import { Config, ConfigReader } from '@backstage/config';
@@ -30,6 +31,7 @@ import { AzureApiReaderProcessor } from './processors/AzureApiReaderProcessor';
 import { BitbucketApiReaderProcessor } from './processors/BitbucketApiReaderProcessor';
 import { EntityPolicyProcessor } from './processors/EntityPolicyProcessor';
 import { FileReaderProcessor } from './processors/FileReaderProcessor';
+import { GithubOrgReaderProcessor } from './processors/GithubOrgReaderProcessor';
 import { GithubReaderProcessor } from './processors/GithubReaderProcessor';
 import { GitlabApiReaderProcessor } from './processors/GitlabApiReaderProcessor';
 import { GitlabReaderProcessor } from './processors/GitlabReaderProcessor';
@@ -86,6 +88,7 @@ export class LocationReaders implements LocationReader {
       new GitlabReaderProcessor(),
       new BitbucketApiReaderProcessor(config),
       new AzureApiReaderProcessor(config),
+      GithubOrgReaderProcessor.fromConfig(config),
       new UrlReaderProcessor(),
       new YamlProcessor(),
       PlaceholderProcessor.default(),
@@ -178,12 +181,14 @@ export class LocationReaders implements LocationReader {
         } catch (e) {
           const message = `Processor ${processor.constructor.name} threw an error while reading location ${item.location.type} ${item.location.target}, ${e}`;
           emit(result.generalError(item.location, message));
+          this.logger.warn(message);
         }
       }
     }
 
     const message = `No processor was able to read location ${item.location.type} ${item.location.target}`;
     emit(result.inputError(item.location, message));
+    this.logger.warn(message);
   }
 
   private async handleData(
@@ -203,6 +208,7 @@ export class LocationReaders implements LocationReader {
         } catch (e) {
           const message = `Processor ${processor.constructor.name} threw an error while parsing ${item.location.type} ${item.location.target}, ${e}`;
           emit(result.generalError(item.location, message));
+          this.logger.warn(message);
         }
       }
     }
@@ -231,8 +237,15 @@ export class LocationReaders implements LocationReader {
             this.readLocation.bind(this),
           );
         } catch (e) {
-          const message = `Processor ${processor.constructor.name} threw an error while processing entity at ${item.location.type} ${item.location.target}, ${e}`;
+          // Construct the name carefully, if we got validation errors we do
+          // not want to crash here due to missing metadata or so
+          const namespace = !current.metadata
+            ? ''
+            : current.metadata.namespace ?? ENTITY_DEFAULT_NAMESPACE;
+          const name = !current.metadata ? '' : current.metadata.name;
+          const message = `Processor ${processor.constructor.name} threw an error while processing entity ${current.kind}:${namespace}/${name} at ${item.location.type} ${item.location.target}, ${e}`;
           emit(result.generalError(item.location, message));
+          this.logger.warn(message);
         }
       }
     }
@@ -255,6 +268,7 @@ export class LocationReaders implements LocationReader {
         } catch (e) {
           const message = `Processor ${processor.constructor.name} threw an error while handling another error at ${item.location.type} ${item.location.target}, ${e}`;
           emit(result.generalError(item.location, message));
+          this.logger.warn(message);
         }
       }
     }

@@ -18,3 +18,20 @@ import * as results from './results';
 
 export { results };
 export * from './types';
+
+export { AnnotateLocationEntityProcessor } from './AnnotateLocationEntityProcessor';
+export { ApiDefinitionAtLocationProcessor } from './ApiDefinitionAtLocationProcessor';
+export { AzureApiReaderProcessor } from './AzureApiReaderProcessor';
+export { BitbucketApiReaderProcessor } from './BitbucketApiReaderProcessor';
+export { CodeOwnersProcessor } from './CodeOwnersProcessor';
+export { EntityPolicyProcessor } from './EntityPolicyProcessor';
+export { FileReaderProcessor } from './FileReaderProcessor';
+export { GithubOrgReaderProcessor } from './GithubOrgReaderProcessor';
+export { GithubReaderProcessor } from './GithubReaderProcessor';
+export { GitlabApiReaderProcessor } from './GitlabApiReaderProcessor';
+export { GitlabReaderProcessor } from './GitlabReaderProcessor';
+export { LocationRefProcessor } from './LocationEntityProcessor';
+export { PlaceholderProcessor } from './PlaceholderProcessor';
+export { StaticLocationProcessor } from './StaticLocationProcessor';
+export { UrlReaderProcessor } from './UrlReaderProcessor';
+export { YamlProcessor } from './YamlProcessor';

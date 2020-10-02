@@ -25,7 +25,7 @@ const siteConfig = {
   fossWebsite: 'https://spotify.github.io/',
 
   // Google Analytics
-  gaTrackingId: 'UA-48912878-10',
+  gaTrackingId: 'UA-163836834-5',
 
   // For no header links in the top nav bar -> headerLinks: [],
   headerLinks: [
