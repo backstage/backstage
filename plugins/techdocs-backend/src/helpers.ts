@@ -19,8 +19,7 @@ import path from 'path';
 import parseGitUrl from 'git-url-parse';
 import NodeGit, { Clone, Repository } from 'nodegit';
 import fs from 'fs-extra';
-// @ts-ignore
-import defaultBranch from 'default-branch';
+import { getDefaultBranch } from './default-branch';
 import { Entity } from '@backstage/catalog-model';
 import { InputError } from '@backstage/backend-common';
 import { RemoteProtocol } from './techdocs/stages/prepare/types';
@@ -76,6 +75,7 @@ export const getLocationForEntity = (
 
   switch (type) {
     case 'github':
+    case 'gitlab':
       return { type, target };
     case 'dir':
       if (path.isAbsolute(target)) return { type, target };
@@ -89,7 +89,7 @@ export const getLocationForEntity = (
   }
 };
 
-export const getGitHubRepositoryTempFolder = async (
+export const getGitRepositoryTempFolder = async (
   repositoryUrl: string,
 ): Promise<string> => {
   const parsedGitLocation = parseGitUrl(repositoryUrl);
@@ -97,7 +97,7 @@ export const getGitHubRepositoryTempFolder = async (
   parsedGitLocation.git_suffix = false;
 
   if (!parsedGitLocation.ref) {
-    parsedGitLocation.ref = await defaultBranch(
+    parsedGitLocation.ref = await getDefaultBranch(
       parsedGitLocation.toString('https'),
     );
   }
@@ -113,16 +113,22 @@ export const getGitHubRepositoryTempFolder = async (
   );
 };
 
-export const checkoutGithubRepository = async (
+export const checkoutGitRepository = async (
   repoUrl: string,
   logger: Logger,
 ): Promise<string> => {
   const parsedGitLocation = parseGitUrl(repoUrl);
-  const repositoryTmpPath = await getGitHubRepositoryTempFolder(repoUrl);
+  const repositoryTmpPath = await getGitRepositoryTempFolder(repoUrl);
 
   // TODO: Should propably not be hardcoded names of env variables, but seems too hard to access config down here
-  const user = process.env.GITHUB_PRIVATE_TOKEN_USER || '';
-  const token = process.env.GITHUB_PRIVATE_TOKEN || '';
+  const user =
+    process.env.GITHUB_PRIVATE_TOKEN_USER ||
+    process.env.GITLAB_PRIVATE_TOKEN_USER ||
+    '';
+  const token =
+    process.env.GITHUB_PRIVATE_TOKEN ||
+    process.env.GITLAB_PRIVATE_TOKEN_USER ||
+    '';
 
   if (fs.existsSync(repositoryTmpPath)) {
     try {
@@ -160,10 +166,7 @@ export const getLastCommitTimestamp = async (
   repositoryUrl: string,
   logger: Logger,
 ): Promise<number> => {
-  const repositoryLocation = await checkoutGithubRepository(
-    repositoryUrl,
-    logger,
-  );
+  const repositoryLocation = await checkoutGitRepository(repositoryUrl, logger);
 
   const repository = await Repository.open(repositoryLocation);
   const commit = await repository.getReferenceCommit('HEAD');

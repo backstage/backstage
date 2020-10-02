@@ -25,7 +25,7 @@ import {
 
 import { Logger } from 'winston';
 
-export class GithubPreparer implements PreparerBase {
+export class GitlabPreparer implements PreparerBase {
   private readonly logger: Logger;
 
   constructor(logger: Logger) {
@@ -38,14 +38,14 @@ export class GithubPreparer implements PreparerBase {
       entity,
     );
 
-    if (type !== 'github') {
-      throw new InputError(`Wrong target type: ${type}, should be 'github'`);
+    if (type !== 'gitlab') {
+      throw new InputError(`Wrong target type: ${type}, should be 'gitlab'`);
     }
 
     try {
       const repoPath = await checkoutGitRepository(target, this.logger);
-
       const parsedGitLocation = parseGitUrl(target);
+
       return path.join(repoPath, parsedGitLocation.filepath);
     } catch (error) {
       this.logger.debug(`Repo checkout failed with error ${error.message}`);
