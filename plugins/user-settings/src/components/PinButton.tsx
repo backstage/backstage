@@ -26,13 +26,15 @@ import LockOpenIcon from '@material-ui/icons/LockOpen';
 import { ToggleButton } from '@material-ui/lab';
 import { SidebarPinStateContext } from '@backstage/core';
 
+type PinIconProps = { isPinned: boolean };
+
+const PinIcon = ({ isPinned }: PinIconProps) =>
+  isPinned ? <LockIcon color="primary" /> : <LockOpenIcon />;
+
 export const PinButton = () => {
   const { isPinned, toggleSidebarPinState } = useContext(
     SidebarPinStateContext,
   );
-
-  const PinIcon = () =>
-    isPinned ? <LockIcon color="primary" /> : <LockOpenIcon />;
 
   return (
     <ListItem>
@@ -54,7 +56,7 @@ export const PinButton = () => {
               toggleSidebarPinState();
             }}
           >
-            <PinIcon />
+            <PinIcon isPinned={isPinned} />
           </ToggleButton>
         </Tooltip>
       </ListItemSecondaryAction>

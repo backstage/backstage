@@ -17,7 +17,7 @@
 import React, { cloneElement } from 'react';
 import { useObservable } from 'react-use';
 import AutoIcon from '@material-ui/icons/BrightnessAuto';
-import { AppTheme, appThemeApiRef, useApi } from '@backstage/core';
+import { appThemeApiRef, useApi } from '@backstage/core';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import {
@@ -26,6 +26,42 @@ import {
   ListItemSecondaryAction,
   Tooltip,
 } from '@material-ui/core';
+
+type ThemeIconProps = {
+  id: string;
+  activeId: string | undefined;
+  icon: JSX.Element | undefined;
+};
+
+const ThemeIcon = ({ id, activeId, icon }: ThemeIconProps) =>
+  icon ? (
+    cloneElement(icon, {
+      color: activeId === id ? 'primary' : undefined,
+    })
+  ) : (
+    <AutoIcon color={activeId === id ? 'primary' : undefined} />
+  );
+
+type TooltipToggleButtonProps = {
+  children: JSX.Element;
+  title: string;
+  value: string;
+};
+
+// ToggleButtonGroup uses React.children.map instead of context
+// so wrapping with Tooltip breaks ToggleButton functionality.
+const TooltipToggleButton = ({
+  children,
+  title,
+  value,
+  ...props
+}: TooltipToggleButtonProps) => (
+  <Tooltip placement="top" arrow title={title}>
+    <ToggleButton value={value} {...props}>
+      {children}
+    </ToggleButton>
+  </Tooltip>
+);
 
 export const ThemeToggle = () => {
   const appThemeApi = useApi(appThemeApiRef);
@@ -47,36 +83,6 @@ export const ThemeToggle = () => {
     }
   };
 
-  // ToggleButtonGroup uses React.children.map instead of context
-  // so wrapping with Tooltip breaks ToggleButton functionality.
-  const TooltipToggleButton = ({
-    children,
-    title,
-    value,
-    ...props
-  }: {
-    children: JSX.Element;
-    title: string;
-    value: string;
-  }) => (
-    <Tooltip placement="top" arrow title={title}>
-      <ToggleButton value={value} {...props}>
-        {children}
-      </ToggleButton>
-    </Tooltip>
-  );
-
-  const ThemeIcon = ({ theme }: { theme: AppTheme }) => {
-    const themeIcon = themeIds.find(t => t.id === theme.id)?.icon;
-    return themeIcon ? (
-      cloneElement(themeIcon, {
-        color: themeId === theme.id ? 'primary' : undefined,
-      })
-    ) : (
-      <AutoIcon color={themeId === theme.id ? 'primary' : undefined} />
-    );
-  };
-
   return (
     <ListItem>
       <ListItemText primary="Theme" secondary="Change the theme mode" />
@@ -87,20 +93,24 @@ export const ThemeToggle = () => {
           value={themeId ?? 'auto'}
           onChange={handleSetTheme}
         >
-          {themeIds.map(theme => (
-            <TooltipToggleButton
-              key={theme.id}
-              title={`Select ${theme.title}`}
-              value={theme.variant}
-            >
-              <ThemeIcon theme={theme} />
-            </TooltipToggleButton>
-          ))}
-          <ToggleButton value="auto">
-            <Tooltip placement="top" arrow title="Select auto theme">
+          {themeIds.map(theme => {
+            const themeIcon = themeIds.find(t => t.id === theme.id)?.icon;
+
+            return (
+              <TooltipToggleButton
+                key={theme.id}
+                title={`Select ${theme.title}`}
+                value={theme.variant}
+              >
+                <ThemeIcon id={theme.id} icon={themeIcon} activeId={themeId} />
+              </TooltipToggleButton>
+            );
+          })}
+          <Tooltip placement="top" arrow title="Select auto theme">
+            <ToggleButton value="auto">
               <AutoIcon color={themeId === undefined ? 'primary' : undefined} />
-            </Tooltip>
-          </ToggleButton>
+            </ToggleButton>
+          </Tooltip>
         </ToggleButtonGroup>
       </ListItemSecondaryAction>
     </ListItem>

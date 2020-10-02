@@ -25,9 +25,7 @@ import {
 } from '@backstage/core';
 import { FlagItem } from './FeatureFlagsItem';
 
-type Props = {
-  featureFlags: FeatureFlagsRegistryItem[];
-};
+type Props = { featureFlags: FeatureFlagsRegistryItem[] };
 
 export const FeatureFlagsList = ({ featureFlags }: Props) => {
   const featureFlagApi = useApi(featureFlagsApiRef);
