@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-import React, { ChangeEvent, RefObject, useEffect, useState } from 'react';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  makeStyles,
-  PopoverActions,
-} from '@material-ui/core';
+import React, { ChangeEvent, useEffect, useState } from 'react';
+import { Card, CardContent, CardHeader, makeStyles } from '@material-ui/core';
 import { AppSettingsList } from './AppSettingsList';
 import { AuthProvidersList } from './AuthProviderList';
 import { FeatureFlagsList } from './FeatureFlagsList';
@@ -47,14 +41,11 @@ const useStyles = makeStyles({
 });
 
 type Props = {
-  popoverActionRef: RefObject<PopoverActions | null>;
   providerSettings?: ProviderSettings;
+  updatePosition: () => void;
 };
 
-export const SettingsDialog = ({
-  popoverActionRef,
-  providerSettings,
-}: Props) => {
+export const SettingsDialog = ({ providerSettings, updatePosition }: Props) => {
   const classes = useStyles();
   const { profile, displayName } = useUserProfile();
   const featureFlagsApi = useApi(featureFlagsApiRef);
@@ -62,6 +53,7 @@ export const SettingsDialog = ({
   const [selectedTab, setSelectedTab] = useState<string | number>('auth');
 
   const providers = providerSettings ?? <DefaultProviderSettings />;
+  const ref = React.useRef(updatePosition);
 
   const handleChange = (
     _ev: ChangeEvent<{}>,
@@ -72,8 +64,8 @@ export const SettingsDialog = ({
 
   // Update the position of the popover to handle different heights
   useEffect(() => {
-    popoverActionRef?.current?.updatePosition();
-  }, [selectedTab, popoverActionRef]);
+    ref.current?.();
+  }, [selectedTab]);
 
   return (
     <Card className={classes.root}>

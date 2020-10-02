@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useCallback } from 'react';
 import { Popover, PopoverActions } from '@material-ui/core';
 import { SignInAvatar } from './SignInAvatar';
 import { SettingsDialog } from './SettingsDialog';
@@ -42,6 +42,10 @@ export const UserSettings = ({ providerSettings }: Props) => {
     undefined,
   );
   const popoverActionRef = React.useRef<PopoverActions | null>(null);
+
+  const updatePosition = useCallback(() => {
+    popoverActionRef?.current?.updatePosition();
+  }, []);
 
   const handleOpen = (event?: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event?.currentTarget ?? undefined);
@@ -81,7 +85,7 @@ export const UserSettings = ({ providerSettings }: Props) => {
         }}
       >
         <SettingsDialog
-          popoverActionRef={popoverActionRef}
+          updatePosition={updatePosition}
           providerSettings={providerSettings}
         />
       </Popover>

@@ -21,7 +21,8 @@ import {
   featureFlagsApiRef,
 } from '@backstage/core';
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
-import * as React from 'react';
+import { fireEvent } from '@testing-library/react';
+import React from 'react';
 import { SettingsDialog } from './SettingsDialog';
 
 const apiRegistry = ApiRegistry.from([
@@ -29,13 +30,13 @@ const apiRegistry = ApiRegistry.from([
 ]);
 
 describe('<SettingsDialog />', () => {
-  const mockRef = { current: null };
+  const mockFn = jest.fn();
 
-  it('displays the users name and email, and the tabs and titles', async () => {
+  it('displays the users name and email, and the tabs and titles and updates the position', async () => {
     const rendered = await renderWithEffects(
       wrapInTestApp(
         <ApiProvider apis={apiRegistry}>
-          <SettingsDialog popoverActionRef={mockRef} />
+          <SettingsDialog updatePosition={mockFn} />
         </ApiProvider>,
       ),
     );
@@ -46,5 +47,10 @@ describe('<SettingsDialog />', () => {
     expect(rendered.getByText('Additional Settings')).toBeInTheDocument();
     expect(rendered.getByText('Auth Providers')).toBeInTheDocument();
     expect(rendered.getByText('Feature Flags')).toBeInTheDocument();
+
+    const flagButton = rendered.getByText('Feature Flags');
+    expect(mockFn).toBeCalledTimes(1);
+    fireEvent.click(flagButton);
+    expect(mockFn).toBeCalledTimes(2);
   });
 });
