@@ -56,7 +56,7 @@ import { LocationReader, ReadLocationResult } from './types';
 const MAX_DEPTH = 10;
 
 type Options = {
-  reader?: UrlReader;
+  reader: UrlReader;
   logger?: Logger;
   config?: Config;
   processors?: LocationProcessor[];
@@ -72,7 +72,7 @@ export class LocationReaders implements LocationReader {
 
   static defaultProcessors(options: {
     logger: Logger;
-    reader?: UrlReader;
+    reader: UrlReader;
     config?: Config;
     entityPolicy?: EntityPolicy;
   }): LocationProcessor[] {
@@ -88,12 +88,7 @@ export class LocationReaders implements LocationReader {
       new BitbucketApiReaderProcessor(config),
       new AzureApiReaderProcessor(config),
       GithubOrgReaderProcessor.fromConfig(config),
-      options.reader
-        ? new UrlReaderProcessor({
-            reader: options.reader,
-            logger: options.logger,
-          })
-        : [],
+      new UrlReaderProcessor(options),
       new YamlProcessor(),
       PlaceholderProcessor.default(),
       new CodeOwnersProcessor(),
