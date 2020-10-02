@@ -163,7 +163,7 @@ export function readConfig(config: Config): ProviderConfig[] {
 
     if (!apiBaseUrl && !rawBaseUrl) {
       throw new Error(
-        `GitHub integration for ${host} must configure an explicit apiBaseUrl and rawBaseUrl`,
+        `GitHub integration for '${host}' must configure an explicit apiBaseUrl and rawBaseUrl`,
       );
     }
 
