@@ -14,27 +14,63 @@
  * limitations under the License.
  */
 
-import { LocationSpec } from '@backstage/catalog-model';
-import fetch, { RequestInit, HeadersInit } from 'node-fetch';
-import * as result from './results';
-import { LocationProcessor, LocationProcessorEmit } from './types';
+import fetch, { RequestInit, HeadersInit, Response } from 'node-fetch';
 import { Config } from '@backstage/config';
+import { NotFoundError } from '../errors';
+import { UrlReader } from './types';
+import { ReaderFactory } from './UrlReaders';
 
-export class AzureApiReaderProcessor implements LocationProcessor {
-  private privateToken: string;
+type Options = {
+  // TODO: added here for future support, but we only allow dev.azure.com for now
+  host: string;
+  token?: string;
+};
 
-  constructor(config: Config) {
-    this.privateToken =
-      config.getOptionalString('catalog.processors.azureApi.privateToken') ??
-      '';
+export function readConfig(config: Config): Options[] {
+  const optionsArr = Array<Options>();
+
+  const providerConfigs =
+    config.getOptionalConfigArray('integrations.azure') ?? [];
+
+  for (const providerConfig of providerConfigs) {
+    const host = providerConfig.getOptionalString('host') ?? 'dev.azure.com';
+    const token = providerConfig.getOptionalString('token');
+
+    optionsArr.push({ host, token });
+  }
+
+  // As a convenience we always make sure there's at least an unauthenticated
+  // reader for public azure repos.
+  if (!optionsArr.some(p => p.host === 'dev.azure.com')) {
+    optionsArr.push({ host: 'dev.azure.com' });
+  }
+
+  return optionsArr;
+}
+
+export class AzureUrlReader implements UrlReader {
+  static factory: ReaderFactory = ({ config }) => {
+    return readConfig(config).map(options => {
+      const reader = new AzureUrlReader(options);
+      const predicate = (url: URL) => url.host === options.host;
+      return { reader, predicate };
+    });
+  };
+
+  constructor(private readonly options: Options) {
+    if (options.host !== 'dev.azure.com') {
+      throw Error(
+        `Azure integration currently only supports 'dev.azure.com', tried to use host '${options.host}'`,
+      );
+    }
   }
 
   getRequestOptions(): RequestInit {
     const headers: HeadersInit = {};
 
-    if (this.privateToken !== '') {
+    if (this.options.token) {
       headers.Authorization = `Basic ${Buffer.from(
-        `:${this.privateToken}`,
+        `:${this.options.token}`,
         'utf8',
       ).toString('base64')}`;
     }
@@ -46,39 +82,26 @@ export class AzureApiReaderProcessor implements LocationProcessor {
     return requestOptions;
   }
 
-  async readLocation(
-    location: LocationSpec,
-    optional: boolean,
-    emit: LocationProcessorEmit,
-  ): Promise<boolean> {
-    if (location.type !== 'azure/api') {
-      return false;
-    }
+  async read(url: string): Promise<Buffer> {
+    const builtUrl = this.buildRawUrl(url);
 
+    let response: Response;
     try {
-      const url = this.buildRawUrl(location.target);
-
-      const response = await fetch(url.toString(), this.getRequestOptions());
-
-      // for private repos when PAT is not valid, Azure API returns a http status code 203 with sign in page html
-      if (response.ok && response.status !== 203) {
-        const data = await response.buffer();
-        emit(result.data(location, data));
-      } else {
-        const message = `${location.target} could not be read as ${url}, ${response.status} ${response.statusText}`;
-        if (response.status === 404) {
-          if (!optional) {
-            emit(result.notFoundError(location, message));
-          }
-        } else {
-          emit(result.generalError(location, message));
-        }
-      }
+      response = await fetch(builtUrl.toString(), this.getRequestOptions());
     } catch (e) {
-      const message = `Unable to read ${location.type} ${location.target}, ${e}`;
-      emit(result.generalError(location, message));
+      throw new Error(`Unable to read ${url}, ${e}`);
     }
-    return true;
+
+    // for private repos when PAT is not valid, Azure API returns a http status code 203 with sign in page html
+    if (response.ok && response.status !== 203) {
+      return response.buffer();
+    }
+
+    const message = `${url} could not be read as ${builtUrl}, ${response.status} ${response.statusText}`;
+    if (response.status === 404) {
+      throw new NotFoundError(message);
+    }
+    throw new Error(message);
   }
 
   // Converts

@@ -14,28 +14,33 @@
  * limitations under the License.
  */
 
-import { AzureApiReaderProcessor } from './AzureApiReaderProcessor';
+import { AzureUrlReader, readConfig } from './AzureUrlReader';
 import { ConfigReader } from '@backstage/config';
 
-describe('AzureApiReaderProcessor', () => {
+const host = 'dev.azure.com';
+
+describe('AzureUrlReader', () => {
   const createConfig = (token: string | undefined) =>
     ConfigReader.fromConfigs([
       {
         context: '',
         data: {
-          catalog: {
-            processors: {
-              azureApi: {
-                privateToken: token,
+          integrations: {
+            azure: [
+              {
+                host,
+                token,
               },
-            },
+            ],
           },
         },
       },
     ]);
 
   it('should build raw api', () => {
-    const processor = new AzureApiReaderProcessor(createConfig(undefined));
+    const processor = new AzureUrlReader(
+      readConfig(createConfig(undefined))[0],
+    );
     const tests = [
       {
         target:
@@ -98,7 +103,7 @@ describe('AzureApiReaderProcessor', () => {
           headers: {},
         },
         err:
-          "Invalid type in config for key 'catalog.processors.azureApi.privateToken' in '', got empty-string, wanted string",
+          "Invalid type in config for key 'integrations.azure[0].token' in '', got empty-string, wanted string",
       },
       {
         token: undefined,
@@ -111,10 +116,12 @@ describe('AzureApiReaderProcessor', () => {
     for (const test of tests) {
       if (test.err) {
         expect(
-          () => new AzureApiReaderProcessor(createConfig(test.token)),
+          () => new AzureUrlReader(readConfig(createConfig(test.token))[0]),
         ).toThrowError(test.err);
       } else {
-        const processor = new AzureApiReaderProcessor(createConfig(test.token));
+        const processor = new AzureUrlReader(
+          readConfig(createConfig(test.token))[0],
+        );
         expect(processor.getRequestOptions()).toEqual(test.expect);
       }
     }

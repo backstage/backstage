@@ -16,5 +16,6 @@
 
 export type { UrlReader } from './types';
 export { UrlReaders } from './UrlReaders';
-export { GithubUrlReader } from './GithubUrlReader';
+export { AzureUrlReader } from './AzureUrlReader';
 export { BitbucketUrlReader } from './BitbucketUrlReader';
+export { GithubUrlReader } from './GithubUrlReader';

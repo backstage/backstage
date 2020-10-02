@@ -16,13 +16,14 @@
 
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
-import { GithubUrlReader } from './GithubUrlReader';
 import { UrlReader } from './types';
 import {
   UrlReaderPredicateMux,
   UrlReaderPredicateTuple,
 } from './UrlReaderPredicateMux';
+import { AzureUrlReader } from './AzureUrlReader';
 import { BitbucketUrlReader } from './BitbucketUrlReader';
+import { GithubUrlReader } from './GithubUrlReader';
 
 export type ReaderFactoryOptions = {
   config: Config;
@@ -53,7 +54,11 @@ export class UrlReaders {
    */
   static default({ logger }: { logger: Logger }) {
     return new UrlReaders(
-      [GithubUrlReader.factory, BitbucketUrlReader.factory],
+      [
+        GithubUrlReader.factory,
+        BitbucketUrlReader.factory,
+        AzureUrlReader.factory,
+      ],
       logger,
     );
   }
