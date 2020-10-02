@@ -51,6 +51,8 @@ jobs:
       # is broken we will see that from those builds, but we still want to push nightly
       # builds since upgrading to them is a manual process anyway.
 
+      - name: tsc
+        run: yarn tsc
       - name: build
         run: yarn build
 
