@@ -15,3 +15,4 @@
  */
 
 export { EmptyState } from './EmptyState';
+export { MissingAnnotationEmptyState } from './MissingAnnotationEmptyState';
