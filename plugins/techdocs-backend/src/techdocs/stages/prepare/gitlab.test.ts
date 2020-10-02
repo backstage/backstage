@@ -15,7 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { GithubPreparer } from './github';
+import { GitlabPreparer } from './gitlab';
 import { checkoutGitRepository } from '../../../helpers';
 
 function normalizePath(path: string) {
@@ -45,19 +45,20 @@ const createMockEntity = (annotations = {}) => {
 
 const logger = getVoidLogger();
 
-describe('github preparer', () => {
-  it('should prepare temp docs path from github repo', async () => {
-    const preparer = new GithubPreparer(logger);
+describe('gitlab preparer', () => {
+  it('should prepare temp docs path from gitlab repo', async () => {
+    const preparer = new GitlabPreparer(logger);
 
+    // TODO: fix url repo
     const mockEntity = createMockEntity({
       'backstage.io/techdocs-ref':
-        'github:https://github.com/spotify/backstage/blob/master/plugins/techdocs-backend/examples/documented-component',
+        'gitlab:https://gitlab.com/xesjkeee/go-logger/blob/master/catalog-info.yaml',
     });
 
     const tempDocsPath = await preparer.prepare(mockEntity);
     expect(checkoutGitRepository).toHaveBeenCalledTimes(1);
     expect(normalizePath(tempDocsPath)).toEqual(
-      '/tmp/backstage-repo/org/name/branch/plugins/techdocs-backend/examples/documented-component',
+      '/tmp/backstage-repo/org/name/branch/catalog-info.yaml',
     );
   });
 });
