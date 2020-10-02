@@ -42,7 +42,7 @@ of GitHub and run an initial build.
 
 ```bash
 # Start from your local development folder
-git clone git@github.com:spotify/backstage.git
+git clone --depth 1 git@github.com:spotify/backstage.git
 cd backstage
 
 # Fetch our dependencies and run an initial build
