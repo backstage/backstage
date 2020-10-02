@@ -93,9 +93,12 @@ yarn create-plugin # Create a new plugin
 
 Backstage allows you to specify the configuration used while running the
 application on your computer. Local configuration is read from
-`app-config.development.local.yaml`. This file is ignored by Git, which means
-that you can safely use it to reference secrets like GitHub tokens worrying
-about these secrets inadvertently ending up in the Git repository.
+`app-config.local.yaml`. This file is ignored by Git, which means that you can
+safely use it to reference secrets like GitHub tokens without worrying about
+these secrets, inadvertently ending up in the Git repository. You do not need to
+copy everything from the default config to the local config.
+`app-config.local.yaml` will be merged with `app-config.yaml` and overwrite the
+default app configs.
 
-You can learn more about local configuration in
+You can learn more about the local configuration in
 [Static Configuration in Backstage](../conf/) section.
