@@ -14,116 +14,111 @@
  * limitations under the License.
  */
 
-import { AzureUrlReader, readConfig } from './AzureUrlReader';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
 import { ConfigReader } from '@backstage/config';
+import { getVoidLogger } from '../logging';
+import { AzureUrlReader } from './AzureUrlReader';
 
-const host = 'dev.azure.com';
+const logger = getVoidLogger();
 
 describe('AzureUrlReader', () => {
-  const createConfig = (token: string | undefined) =>
-    ConfigReader.fromConfigs([
-      {
-        context: '',
-        data: {
-          integrations: {
-            azure: [
-              {
-                host,
-                token,
-              },
-            ],
-          },
-        },
-      },
-    ]);
+  const worker = setupServer();
 
-  it('should build raw api', () => {
-    const processor = new AzureUrlReader(
-      readConfig(createConfig(undefined))[0],
+  beforeAll(() => worker.listen({ onUnhandledRequest: 'error' }));
+  afterAll(() => worker.close());
+
+  beforeEach(() => {
+    worker.use(
+      rest.get('*', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.json({
+            url: req.url.toString(),
+            headers: req.headers.getAllHeaders(),
+          }),
+        ),
+      ),
     );
-    const tests = [
-      {
-        target:
-          'https://dev.azure.com/org-name/project-name/_git/repo-name?path=my-template.yaml&version=GBmaster',
-        url: new URL(
-          'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?path=my-template.yaml&version=master',
-        ),
-        err: undefined,
-      },
-      {
-        target:
-          'https://dev.azure.com/org-name/project-name/_git/repo-name?path=my-template.yaml',
-        url: new URL(
-          'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?path=my-template.yaml',
-        ),
-        err: undefined,
-      },
-      {
-        target: 'https://api.com/a/b/blob/master/path/to/c.yaml',
-        url: null,
-        err:
-          'Incorrect url: https://api.com/a/b/blob/master/path/to/c.yaml, Error: Wrong Azure Devops URL or Invalid file path',
-      },
-      {
-        target: 'com/a/b/blob/master/path/to/c.yaml',
-        url: null,
-        err:
-          'Incorrect url: com/a/b/blob/master/path/to/c.yaml, TypeError: Invalid URL: com/a/b/blob/master/path/to/c.yaml',
-      },
-    ];
+  });
+  afterEach(() => worker.resetHandlers());
 
-    for (const test of tests) {
-      if (test.err) {
-        expect(() => processor.buildRawUrl(test.target)).toThrowError(test.err);
-      } else if (test.url) {
-        expect(processor.buildRawUrl(test.target).toString()).toEqual(
-          test.url.toString(),
-        );
-      } else {
-        throw new Error(
-          'This should not have happened. Either err or url should have matched.',
-        );
-      }
-    }
+  const createConfig = (token?: string) =>
+    new ConfigReader(
+      {
+        integrations: { azure: [{ host: 'dev.azure.com', token }] },
+      },
+      'test-config',
+    );
+
+  it.each([
+    {
+      url:
+        'https://dev.azure.com/org-name/project-name/_git/repo-name?path=my-template.yaml&version=GBmaster',
+      config: createConfig(),
+      response: expect.objectContaining({
+        url:
+          'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?path=my-template.yaml&version=master',
+      }),
+    },
+    {
+      url:
+        'https://dev.azure.com/org-name/project-name/_git/repo-name?path=my-template.yaml',
+      config: createConfig(),
+      response: expect.objectContaining({
+        url:
+          'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?path=my-template.yaml',
+      }),
+    },
+    {
+      url: 'https://dev.azure.com/a/b/_git/repo-name?path=my-template.yaml',
+      config: createConfig('0123456789'),
+      response: expect.objectContaining({
+        headers: expect.objectContaining({
+          authorization: 'Basic OjAxMjM0NTY3ODk=',
+        }),
+      }),
+    },
+    {
+      url: 'https://dev.azure.com/a/b/_git/repo-name?path=my-template.yaml',
+      config: createConfig(undefined),
+      response: expect.objectContaining({
+        headers: expect.not.objectContaining({
+          authorization: expect.anything(),
+        }),
+      }),
+    },
+  ])('should handle happy path %#', async ({ url, config, response }) => {
+    const [{ reader }] = AzureUrlReader.factory({ config, logger });
+
+    const data = await reader.read(url);
+    const res = await JSON.parse(data.toString('utf-8'));
+    expect(res).toEqual(response);
   });
 
-  it('should return request options', () => {
-    const tests = [
-      {
-        token: '0123456789',
-        expect: {
-          headers: {
-            Authorization: 'Basic OjAxMjM0NTY3ODk=',
-          },
-        },
-      },
-      {
-        token: '',
-        expect: {
-          headers: {},
-        },
-        err:
-          "Invalid type in config for key 'integrations.azure[0].token' in '', got empty-string, wanted string",
-      },
-      {
-        token: undefined,
-        expect: {
-          headers: {},
-        },
-      },
-    ];
-
-    for (const test of tests) {
-      if (test.err) {
-        expect(
-          () => new AzureUrlReader(readConfig(createConfig(test.token))[0]),
-        ).toThrowError(test.err);
-      } else {
-        const processor = new AzureUrlReader(
-          readConfig(createConfig(test.token))[0],
-        );
-        expect(processor.getRequestOptions()).toEqual(test.expect);
-      }
-    }
+  it.each([
+    {
+      url: 'https://api.com/a/b/blob/master/path/to/c.yaml',
+      config: createConfig(),
+      error:
+        'Incorrect url: https://api.com/a/b/blob/master/path/to/c.yaml, Error: Wrong Azure Devops URL or Invalid file path',
+    },
+    {
+      url: 'com/a/b/blob/master/path/to/c.yaml',
+      config: createConfig(),
+      error:
+        'Incorrect url: com/a/b/blob/master/path/to/c.yaml, TypeError: Invalid URL: com/a/b/blob/master/path/to/c.yaml',
+    },
+    {
+      url: '',
+      config: createConfig(''),
+      error:
+        "Invalid type in config for key 'integrations.azure[0].token' in 'test-config', got empty-string, wanted string",
+    },
+  ])('should handle error path %#', async ({ url, config, error }) => {
+    await expect(async () => {
+      const [{ reader }] = AzureUrlReader.factory({ config, logger });
+      await reader.read(url);
+    }).rejects.toThrow(error);
   });
 });

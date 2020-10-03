@@ -26,7 +26,7 @@ type Options = {
   token?: string;
 };
 
-export function readConfig(config: Config): Options[] {
+function readConfig(config: Config): Options[] {
   const optionsArr = Array<Options>();
 
   const providerConfigs =
@@ -65,23 +65,6 @@ export class AzureUrlReader implements UrlReader {
     }
   }
 
-  getRequestOptions(): RequestInit {
-    const headers: HeadersInit = {};
-
-    if (this.options.token) {
-      headers.Authorization = `Basic ${Buffer.from(
-        `:${this.options.token}`,
-        'utf8',
-      ).toString('base64')}`;
-    }
-
-    const requestOptions: RequestInit = {
-      headers,
-    };
-
-    return requestOptions;
-  }
-
   async read(url: string): Promise<Buffer> {
     const builtUrl = this.buildRawUrl(url);
 
@@ -107,7 +90,7 @@ export class AzureUrlReader implements UrlReader {
   // Converts
   // from: https://dev.azure.com/{organization}/{project}/_git/reponame?path={path}&version=GB{commitOrBranch}&_a=contents
   // to:   https://dev.azure.com/{organization}/{project}/_apis/git/repositories/reponame/items?path={path}&version={commitOrBranch}
-  buildRawUrl(target: string): URL {
+  private buildRawUrl(target: string): URL {
     try {
       const url = new URL(target);
 
@@ -161,6 +144,19 @@ export class AzureUrlReader implements UrlReader {
     } catch (e) {
       throw new Error(`Incorrect url: ${target}, ${e}`);
     }
+  }
+
+  private getRequestOptions(): RequestInit {
+    const headers: HeadersInit = {};
+
+    if (this.options.token) {
+      headers.Authorization = `Basic ${Buffer.from(
+        `:${this.options.token}`,
+        'utf8',
+      ).toString('base64')}`;
+    }
+
+    return { headers };
   }
 
   toString() {

@@ -73,6 +73,7 @@
     "http-errors": "^1.7.3",
     "jest": "^26.0.1",
     "jest-fetch-mock": "^3.0.3",
+    "msw": "^0.20.5",
     "supertest": "^4.0.2"
   },
   "files": [
