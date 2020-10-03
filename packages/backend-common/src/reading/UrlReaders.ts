@@ -24,48 +24,34 @@ import { GithubUrlReader } from './GithubUrlReader';
 import { GitlabUrlReader } from './GitlabUrlReader';
 import { FetchUrlReader } from './FetchUrlReader';
 
+type CreateOptions = {
+  /** Root config object */
+  config: Config;
+  /** Logger used by all the readers */
+  logger: Logger;
+  /** A list of factories used to construct individual readers that match on URLs */
+  factories?: ReaderFactory[];
+  /** Fallback reader to use if none of the readers created by the factories match */
+  fallback?: UrlReader;
+};
+
 /**
  * UrlReaders provide various utilities related to the UrlReader interface.
  */
 export class UrlReaders {
   /**
-   * Creates a new UrlReaders instance without any known types.
+   * Creates a UrlReader without any known types.
    */
-  static empty({ logger }: { logger: Logger }) {
-    return new UrlReaders([], logger);
-  }
+  static create({
+    logger,
+    config,
+    factories,
+    fallback,
+  }: CreateOptions): UrlReader {
+    const mux = new UrlReaderPredicateMux({ fallback: fallback });
 
-  /**
-   * Creates a new UrlReaders instance that includes all the default factories from this package
-   */
-  static default({ logger }: { logger: Logger }) {
-    return new UrlReaders(
-      [
-        AzureUrlReader.factory,
-        BitbucketUrlReader.factory,
-        GithubUrlReader.factory,
-        GitlabUrlReader.factory,
-      ],
-      logger,
-      new FetchUrlReader(),
-    );
-  }
-
-  private constructor(
-    private readonly factories: ReaderFactory[],
-    private readonly logger: Logger,
-    private fallback?: UrlReader,
-  ) {}
-
-  /**
-   * Constructs a new UrlReader using the provided configuration. Any encountered
-   * reader type needs to have a registered factory, or an error will be thrown.
-   */
-  createWithConfig(config: Config): UrlReader {
-    const mux = new UrlReaderPredicateMux({ fallback: this.fallback });
-
-    for (const factory of this.factories) {
-      const tuples = factory({ config, logger: this.logger });
+    for (const factory of factories ?? []) {
+      const tuples = factory({ config, logger: logger });
 
       for (const tuple of tuples) {
         mux.register(tuple);
@@ -76,13 +62,23 @@ export class UrlReaders {
   }
 
   /**
-   * Register a UrlReader factory
+   * Creates a UrlReader that includes all the default factories from this package.
+   *
+   * Any additional factories passed will be loaded before the default ones.
+   *
+   * If no fallback reader is passed, a plain fetch reader will be used.
    */
-  addFactory(factory: ReaderFactory) {
-    this.factories.push(factory);
-  }
-
-  setFallback(reader?: UrlReader) {
-    this.fallback = reader;
+  static default({ logger, config, factories = [], fallback }: CreateOptions) {
+    return UrlReaders.create({
+      logger,
+      config,
+      factories: factories.concat([
+        AzureUrlReader.factory,
+        BitbucketUrlReader.factory,
+        GithubUrlReader.factory,
+        GitlabUrlReader.factory,
+      ]),
+      fallback: fallback ?? new FetchUrlReader(),
+    });
   }
 }

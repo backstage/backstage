@@ -40,7 +40,7 @@ export async function startStandaloneServer(
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'catalog-backend' });
   const config = ConfigReader.fromConfigs(await loadBackendConfig());
-  const reader = UrlReaders.default({ logger }).createWithConfig(config);
+  const reader = UrlReaders.default({ logger, config });
 
   logger.debug('Creating application...');
   const db = await DatabaseManager.createInMemoryDatabase({ logger });

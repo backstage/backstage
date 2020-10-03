@@ -35,9 +35,7 @@ describe('UrlReaderProcessor', () => {
 
   it('should load from url', async () => {
     const logger = getVoidLogger();
-    const reader = UrlReaders.default({ logger }).createWithConfig(
-      new ConfigReader({}),
-    );
+    const reader = UrlReaders.default({ logger, config: new ConfigReader({}) });
     const processor = new UrlReaderProcessor({ reader, logger });
     const spec = {
       type: 'url',
@@ -61,9 +59,7 @@ describe('UrlReaderProcessor', () => {
 
   it('should fail load from url with error', async () => {
     const logger = getVoidLogger();
-    const reader = UrlReaders.default({ logger }).createWithConfig(
-      new ConfigReader({}),
-    );
+    const reader = UrlReaders.default({ logger, config: new ConfigReader({}) });
     const processor = new UrlReaderProcessor({ reader, logger });
     const spec = {
       type: 'url',

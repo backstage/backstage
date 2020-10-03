@@ -29,7 +29,7 @@ import { PluginEnvironment } from './types';
 function makeCreateEnv(loadedConfigs: AppConfig[]) {
   const config = ConfigReader.fromConfigs(loadedConfigs);
   const root = getRootLogger();
-  const reader = UrlReaders.default({ logger: root }).createWithConfig(config);
+  const reader = UrlReaders.default({ logger: root, config });
   const discovery = SingleHostDiscovery.fromConfig(config);
 
   root.info(`Created UrlReader ${reader}`);
