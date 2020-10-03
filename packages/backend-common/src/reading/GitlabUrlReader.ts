@@ -17,8 +17,7 @@
 import fetch, { RequestInit, Response } from 'node-fetch';
 import { Config } from '@backstage/config';
 import { NotFoundError } from '../errors';
-import { UrlReader } from './types';
-import { ReaderFactory } from './UrlReaders';
+import { ReaderFactory, UrlReader } from './types';
 
 type Options = {
   host: string;

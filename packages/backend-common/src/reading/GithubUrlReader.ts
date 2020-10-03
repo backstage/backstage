@@ -18,8 +18,7 @@ import { Config } from '@backstage/config';
 import parseGitUri from 'git-url-parse';
 import fetch, { HeadersInit, RequestInit, Response } from 'node-fetch';
 import { NotFoundError } from '../errors';
-import { UrlReader } from './types';
-import { ReaderFactory } from './UrlReaders';
+import { ReaderFactory, UrlReader } from './types';
 
 /**
  * The configuration parameters for a single GitHub API provider.

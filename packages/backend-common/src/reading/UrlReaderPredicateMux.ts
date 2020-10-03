@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-import { UrlReader } from './types';
-
-export type UrlReaderPredicate = (url: URL) => boolean;
-
-export type UrlReaderPredicateTuple = {
-  predicate: UrlReaderPredicate;
-  reader: UrlReader;
-};
+import { UrlReader, UrlReaderPredicateTuple } from './types';
 
 type Options = {
   // UrlReader to fall back to if no other reader is matched

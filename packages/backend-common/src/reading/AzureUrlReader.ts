@@ -17,8 +17,7 @@
 import fetch, { RequestInit, HeadersInit, Response } from 'node-fetch';
 import { Config } from '@backstage/config';
 import { NotFoundError } from '../errors';
-import { UrlReader } from './types';
-import { ReaderFactory } from './UrlReaders';
+import { ReaderFactory, UrlReader } from './types';
 
 type Options = {
   // TODO: added here for future support, but we only allow dev.azure.com for now

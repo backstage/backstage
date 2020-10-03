@@ -16,29 +16,13 @@
 
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
-import { UrlReader } from './types';
-import {
-  UrlReaderPredicateMux,
-  UrlReaderPredicateTuple,
-} from './UrlReaderPredicateMux';
+import { ReaderFactory, UrlReader } from './types';
+import { UrlReaderPredicateMux } from './UrlReaderPredicateMux';
 import { AzureUrlReader } from './AzureUrlReader';
 import { BitbucketUrlReader } from './BitbucketUrlReader';
 import { GithubUrlReader } from './GithubUrlReader';
 import { GitlabUrlReader } from './GitlabUrlReader';
 import { FetchUrlReader } from './FetchUrlReader';
-
-export type ReaderFactoryOptions = {
-  config: Config;
-  logger: Logger;
-};
-
-/**
- * A factory function that can read config to construct zero or more
- * UrlReaders along with a predicate for when it should be used.
- */
-export type ReaderFactory = (
-  options: ReaderFactoryOptions,
-) => UrlReaderPredicateTuple[];
 
 /**
  * UrlReaders provide various utilities related to the UrlReader interface.

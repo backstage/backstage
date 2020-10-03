@@ -14,9 +14,26 @@
  * limitations under the License.
  */
 
+import { Logger } from 'winston';
+import { Config } from '@backstage/config';
+
 /**
  * A generic interface for fetching plain data from URLs.
  */
 export type UrlReader = {
   read(url: string): Promise<Buffer>;
 };
+
+export type UrlReaderPredicateTuple = {
+  predicate: (url: URL) => boolean;
+  reader: UrlReader;
+};
+
+/**
+ * A factory function that can read config to construct zero or more
+ * UrlReaders along with a predicate for when it should be used.
+ */
+export type ReaderFactory = (options: {
+  config: Config;
+  logger: Logger;
+}) => UrlReaderPredicateTuple[];
