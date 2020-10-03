@@ -21,7 +21,6 @@ import { UrlReader } from './types';
 import { ReaderFactory } from './UrlReaders';
 
 type Options = {
-  // TODO: added here for future support, but we only allow bitbucket.org for now
   host: string;
   token?: string;
 };
