@@ -15,15 +15,71 @@
  */
 /* eslint-disable no-restricted-imports */
 
+import moment from 'moment';
+import regression from 'regression';
 import {
-  CostInsightsApi,
   Alert,
+  ChangeStatistic,
   Cost,
+  CostInsightsApi,
+  DateAggregation,
   Duration,
-  Project,
-  ProductCost,
   Group,
+  ProductCost,
+  Project,
+  Trendline,
 } from '@backstage/plugin-cost-insights';
+
+function durationOf(intervals: string): Duration {
+  const match = intervals.match(/\/(?<duration>P\d+[DM])\//);
+  const { duration } = match!.groups!;
+  return duration as Duration;
+}
+
+function aggregationFor(
+  duration: Duration,
+  baseline: number,
+): DateAggregation[] {
+  const days = moment.duration(duration).asDays() * 2;
+
+  return [...Array(days).keys()].reduce(
+    (values: DateAggregation[], i: number): DateAggregation[] => {
+      const last = values.length ? values[values.length - 1].amount : baseline;
+      values.push({
+        date: moment()
+          .subtract(days, 'days')
+          .add(i, 'days')
+          .format('YYYY-MM-DD'),
+        amount: last + (baseline / 20) * (Math.random() * 2 - 1),
+      });
+      return values;
+    },
+    [],
+  );
+}
+
+function trendlineOf(aggregation: DateAggregation[]): Trendline {
+  const data = [...aggregation.map(a => [Date.parse(a.date) / 1000, a.amount])];
+  const result = regression.linear(data, { precision: 5 });
+  return {
+    slope: result.equation[0],
+    intercept: result.equation[1],
+  };
+}
+
+function changeOf(aggregation: DateAggregation[]): ChangeStatistic {
+  const half = Math.ceil(aggregation.length / 2);
+  const before = aggregation
+    .slice(0, half)
+    .reduce((sum, a) => sum + a.amount, 0);
+  const after = aggregation
+    .slice(half, aggregation.length)
+    .reduce((sum, a) => sum + a.amount, 0);
+  return {
+    ratio: (after - before) / before,
+    amount: after - before,
+  };
+}
 
 export class ExampleCostInsightsClient implements CostInsightsApi {
   private request(_: any, res: any): Promise<any> {
@@ -53,30 +109,17 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
     metric: string | null,
     intervals: string,
   ): Promise<Cost> {
+    const aggregation = aggregationFor(
+      durationOf(intervals),
+      metric ? 0.3 : 8_000,
+    );
     const groupDailyCost: Cost = await this.request(
       { group, metric, intervals },
       {
         id: metric, // costs with null ids will appear as "All Projects" in Cost Overview panel
-        aggregation: [
-          { date: '2020-08-01', amount: 75_000 / (metric ? 200_000 : 1) },
-          { date: '2020-08-02', amount: 120_000 / (metric ? 200_000 : 1) },
-          { date: '2020-08-03', amount: 110_000 / (metric ? 200_000 : 1) },
-          { date: '2020-08-04', amount: 90_000 / (metric ? 200_000 : 1) },
-          { date: '2020-08-05', amount: 80_000 / (metric ? 200_000 : 1) },
-          { date: '2020-08-06', amount: 85_000 / (metric ? 200_000 : 1) },
-          { date: '2020-08-07', amount: 82_500 / (metric ? 200_000 : 1) },
-          { date: '2020-08-08', amount: 100_000 / (metric ? 200_000 : 1) },
-          { date: '2020-08-09', amount: 130_000 / (metric ? 200_000 : 1) },
-          { date: '2020-08-10', amount: 140_000 / (metric ? 200_000 : 1) },
-        ],
-        change: {
-          ratio: 0.86,
-          amount: 65_000,
-        },
-        trendline: {
-          slope: 0,
-          intercept: 90_000,
-        },
+        aggregation: aggregation,
+        change: changeOf(aggregation),
+        trendline: trendlineOf(aggregation),
       },
     );
 
@@ -88,30 +131,17 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
     metric: string | null,
     intervals: string,
   ): Promise<Cost> {
+    const aggregation = aggregationFor(
+      durationOf(intervals),
+      metric ? 0.1 : 1_500,
+    );
     const projectDailyCost: Cost = await this.request(
       { project, metric, intervals },
       {
         id: 'project-a',
-        aggregation: [
-          { date: '2020-08-01', amount: 1000 },
-          { date: '2020-08-02', amount: 2000 },
-          { date: '2020-08-03', amount: 3000 },
-          { date: '2020-08-04', amount: 4000 },
-          { date: '2020-08-05', amount: 5000 },
-          { date: '2020-08-06', amount: 6000 },
-          { date: '2020-08-07', amount: 7000 },
-          { date: '2020-08-08', amount: 8000 },
-          { date: '2020-08-09', amount: 9000 },
-          { date: '2020-08-10', amount: 10_000 },
-        ],
-        change: {
-          ratio: 0.5,
-          amount: 10000,
-        },
-        trendline: {
-          slope: 0,
-          intercept: 0,
-        },
+        aggregation: aggregation,
+        change: changeOf(aggregation),
+        trendline: trendlineOf(aggregation),
       },
     );
 
@@ -134,7 +164,7 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
         entities: [
           {
             id: null, // entities with null ids will be appear as "Unlabeled" in product panels
-            aggregation: [45_000, 50_000],
+            aggregation: [15_000, 30_000],
           },
           {
             id: 'entity-a',
