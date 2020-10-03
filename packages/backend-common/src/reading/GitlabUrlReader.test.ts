@@ -14,139 +14,109 @@
  * limitations under the License.
  */
 
-import { GitlabUrlReader, readConfig } from './GitlabUrlReader';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
 import { ConfigReader } from '@backstage/config';
+import { getVoidLogger } from '../logging';
+import { GitlabUrlReader } from './GitlabUrlReader';
+
+const logger = getVoidLogger();
 
 describe('GitlabUrlReader', () => {
-  const createConfig = (token: string | undefined) =>
-    ConfigReader.fromConfigs([
-      {
-        context: '',
-        data: {
-          integrations: {
-            gitlab: [
-              {
-                host: 'gitlab.com',
-                token: token,
-              },
-            ],
-          },
-        },
-      },
-    ]);
+  const worker = setupServer();
 
-  it('should build project urls', () => {
-    const processor = new GitlabUrlReader(
-      readConfig(createConfig(undefined))[0],
+  beforeAll(() => worker.listen({ onUnhandledRequest: 'error' }));
+  afterAll(() => worker.close());
+
+  beforeEach(() => {
+    worker.use(
+      rest.get('*/api/v4/projects/:name', (_, res, ctx) =>
+        res(ctx.status(200), ctx.json({ id: 12345 })),
+      ),
+      rest.get('*', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.json({
+            url: req.url.toString(),
+            headers: req.headers.getAllHeaders(),
+          }),
+        ),
+      ),
+    );
+  });
+  afterEach(() => worker.resetHandlers());
+
+  const createConfig = (token?: string) =>
+    new ConfigReader(
+      {
+        integrations: { gitlab: [{ host: 'gitlab.com', token }] },
+      },
+      'test-config',
     );
 
-    const tests = [
-      {
-        target:
-          'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file.yaml',
-        url: new URL(
+  it.each([
+    // Project URLs
+    {
+      url:
+        'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file.yaml',
+      config: createConfig(),
+      response: expect.objectContaining({
+        url:
           'https://gitlab.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
-        ),
-        err: undefined,
-      },
-      {
-        target:
-          'https://gitlab.example.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file.yaml',
-        url: new URL(
+        headers: expect.objectContaining({
+          'private-token': '',
+        }),
+      }),
+    },
+    {
+      url:
+        'https://gitlab.example.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file.yaml',
+      config: createConfig('0123456789'),
+      response: expect.objectContaining({
+        url:
           'https://gitlab.example.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
-        ),
-        err: undefined,
-      },
-      {
-        target:
-          'https://gitlab.com/groupA/teams/teamA/repoA/-/blob/branch/my/path/to/file.yaml', // Repo not in subgroup
-        url: new URL(
+        headers: expect.objectContaining({
+          'private-token': '0123456789',
+        }),
+      }),
+    },
+    {
+      url:
+        'https://gitlab.com/groupA/teams/teamA/repoA/-/blob/branch/my/path/to/file.yaml', // Repo not in subgroup
+      config: createConfig(),
+      response: expect.objectContaining({
+        url:
           'https://gitlab.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
-        ),
-        err: undefined,
-      },
-    ];
+      }),
+    },
 
-    for (const test of tests) {
-      if (test.url) {
-        expect(
-          processor.buildProjectUrl(test.target, 12345).toString(),
-        ).toEqual(test.url.toString());
-      } else {
-        throw new Error(
-          'This should not have happened. Either err or url should have matched.',
-        );
-      }
-    }
+    // Raw URLs
+    {
+      url: 'https://gitlab.example.com/a/b/blob/master/c.yaml',
+      config: createConfig(),
+      response: expect.objectContaining({
+        url: 'https://gitlab.example.com/a/b/raw/master/c.yaml',
+      }),
+    },
+  ])('should handle happy path %#', async ({ url, config, response }) => {
+    const [{ reader }] = GitlabUrlReader.factory({ config, logger });
+
+    const data = await reader.read(url);
+    const res = await JSON.parse(data.toString('utf-8'));
+    expect(res).toEqual(response);
   });
 
-  it('should build raw urls', () => {
-    const processor = new GitlabUrlReader(
-      readConfig(createConfig(undefined))[0],
-    );
-
-    const tests = [
-      {
-        target: 'https://gitlab.example.com/a/b/blob/master/c.yaml',
-        url: new URL('https://gitlab.example.com/a/b/raw/master/c.yaml'),
-        err: undefined,
-      },
-    ];
-
-    for (const test of tests) {
-      if (test.url) {
-        expect(processor.buildRawUrl(test.target).toString()).toEqual(
-          test.url.toString(),
-        );
-      } else {
-        throw new Error(
-          'This should not have happened. Either err or url should have matched.',
-        );
-      }
-    }
-  });
-
-  it('should return request options', () => {
-    const tests = [
-      {
-        token: '0123456789',
-        expect: {
-          headers: {
-            'PRIVATE-TOKEN': '0123456789',
-          },
-        },
-      },
-      {
-        token: '',
-        err:
-          "Invalid type in config for key 'integrations.gitlab[0].token' in '', got empty-string, wanted string",
-        expect: {
-          headers: {
-            'PRIVATE-TOKEN': '',
-          },
-        },
-      },
-      {
-        token: undefined,
-        expect: {
-          headers: {
-            'PRIVATE-TOKEN': '',
-          },
-        },
-      },
-    ];
-
-    for (const test of tests) {
-      if (test.err) {
-        expect(
-          () => new GitlabUrlReader(readConfig(createConfig(test.token))[0]),
-        ).toThrowError(test.err);
-      } else {
-        const processor = new GitlabUrlReader(
-          readConfig(createConfig(test.token))[0],
-        );
-        expect(processor.getRequestOptions()).toEqual(test.expect);
-      }
-    }
+  it.each([
+    {
+      url: '',
+      config: createConfig(''),
+      error:
+        "Invalid type in config for key 'integrations.gitlab[0].token' in 'test-config', got empty-string, wanted string",
+    },
+  ])('should handle error path %#', async ({ url, config, error }) => {
+    await expect(async () => {
+      const [{ reader }] = GitlabUrlReader.factory({ config, logger });
+      await reader.read(url);
+    }).rejects.toThrow(error);
   });
 });

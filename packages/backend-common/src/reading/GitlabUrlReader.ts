@@ -26,7 +26,7 @@ type Options = {
   token?: string;
 };
 
-export function readConfig(config: Config): Options[] {
+function readConfig(config: Config): Options[] {
   const optionsArr = Array<Options>();
 
   const providerConfigs =
@@ -58,14 +58,6 @@ export class GitlabUrlReader implements UrlReader {
   };
 
   constructor(private readonly options: Options) {}
-
-  getRequestOptions(): RequestInit {
-    return {
-      headers: {
-        ['PRIVATE-TOKEN']: this.options.token ?? '',
-      },
-    };
-  }
 
   async read(url: string): Promise<Buffer> {
     // TODO(Rugvip): merged the old GitlabReaderProcessor in here and used
@@ -100,19 +92,23 @@ export class GitlabUrlReader implements UrlReader {
   // Converts
   // from: https://gitlab.example.com/a/b/blob/master/c.yaml
   // to:   https://gitlab.example.com/a/b/raw/master/c.yaml
-  buildRawUrl(target: string): URL {
+  private buildRawUrl(target: string): URL {
     try {
       const url = new URL(target);
 
-      const [empty, userOrOrg, repoName, ...restOfPath] = url.pathname
-        .split('/')
-        // for the common case https://gitlab.example.com/a/b/-/blob/master/c.yaml
-        .filter(path => path !== '-');
+      const [
+        empty,
+        userOrOrg,
+        repoName,
+        blobKeyword,
+        ...restOfPath
+      ] = url.pathname.split('/');
 
       if (
         empty !== '' ||
         userOrOrg === '' ||
         repoName === '' ||
+        blobKeyword !== 'blob' ||
         !restOfPath.join('/').match(/\.yaml$/)
       ) {
         throw new Error('Wrong GitLab URL');
@@ -131,7 +127,7 @@ export class GitlabUrlReader implements UrlReader {
 
   // convert https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/filepath
   // to https://gitlab.com/api/v4/projects/<PROJECTID>/repository/files/filepath?ref=branch
-  buildProjectUrl(target: string, projectID: Number): URL {
+  private buildProjectUrl(target: string, projectID: Number): URL {
     try {
       const url = new URL(target);
 
@@ -154,7 +150,7 @@ export class GitlabUrlReader implements UrlReader {
     }
   }
 
-  async getProjectID(target: string): Promise<Number> {
+  private async getProjectID(target: string): Promise<Number> {
     const url = new URL(target);
 
     if (
@@ -186,6 +182,14 @@ export class GitlabUrlReader implements UrlReader {
     } catch (e) {
       throw new Error(`Could not get GitLab ProjectID for: ${target}, ${e}`);
     }
+  }
+
+  private getRequestOptions(): RequestInit {
+    return {
+      headers: {
+        ['PRIVATE-TOKEN']: this.options.token ?? '',
+      },
+    };
   }
 
   toString() {
