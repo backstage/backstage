@@ -14,151 +14,140 @@
  * limitations under the License.
  */
 
-import { BitbucketUrlReader, readConfig } from './BitbucketUrlReader';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
 import { ConfigReader } from '@backstage/config';
+import { getVoidLogger } from '../logging';
+import { BitbucketUrlReader } from './BitbucketUrlReader';
 
-const host = 'bitbucket.org';
+const logger = getVoidLogger();
 
 describe('BitbucketUrlReader', () => {
-  const createConfig = (
-    username: string | undefined,
-    appPassword: string | undefined,
-  ) =>
-    ConfigReader.fromConfigs([
+  const worker = setupServer();
+
+  beforeAll(() => worker.listen({ onUnhandledRequest: 'error' }));
+  afterAll(() => worker.close());
+
+  beforeEach(() => {
+    worker.use(
+      rest.get('*', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.json({
+            url: req.url.toString(),
+            headers: req.headers.getAllHeaders(),
+          }),
+        ),
+      ),
+    );
+  });
+  afterEach(() => worker.resetHandlers());
+
+  const createConfig = (username?: string, appPassword?: string) =>
+    new ConfigReader(
       {
-        context: '',
-        data: {
-          integrations: {
-            bitbucket: [
-              {
-                host,
-                username: username,
-                appPassword: appPassword,
-              },
-            ],
-          },
+        integrations: {
+          bitbucket: [
+            {
+              host: 'bitbucket.org',
+              username: username,
+              appPassword: appPassword,
+            },
+          ],
         },
       },
-    ]);
+      'test-config',
+    );
 
-  it('should build raw api', () => {
-    const processor = new BitbucketUrlReader({ host });
-
-    const tests = [
-      {
-        target:
-          'https://bitbucket.org/org-name/repo-name/src/master/templates/my-template.yaml',
-        url: new URL(
+  it.each([
+    {
+      url:
+        'https://bitbucket.org/org-name/repo-name/src/master/templates/my-template.yaml',
+      config: createConfig(),
+      response: expect.objectContaining({
+        url:
           'https://api.bitbucket.org/2.0/repositories/org-name/repo-name/src/master/templates/my-template.yaml',
-        ),
-        err: undefined,
-      },
-      {
-        target: 'https://api.com/a/b/blob/master/path/to/c.yaml',
-        url: null,
-        err:
-          'Incorrect url: https://api.com/a/b/blob/master/path/to/c.yaml, Error: Wrong Bitbucket URL or Invalid file path',
-      },
-      {
-        target: 'com/a/b/blob/master/path/to/c.yaml',
-        url: null,
-        err:
-          'Incorrect url: com/a/b/blob/master/path/to/c.yaml, TypeError: Invalid URL: com/a/b/blob/master/path/to/c.yaml',
-      },
-    ];
+      }),
+    },
+    {
+      url:
+        'https://bitbucket.org/org-name/repo-name/src/master/templates/my-template.yaml',
+      config: createConfig('some-user', 'my-secret'),
+      response: expect.objectContaining({
+        headers: expect.objectContaining({
+          authorization: 'Basic c29tZS11c2VyOm15LXNlY3JldA==',
+        }),
+      }),
+    },
+    {
+      url:
+        'https://bitbucket.org/org-name/repo-name/src/master/templates/my-template.yaml',
+      config: createConfig(),
+      response: expect.objectContaining({
+        headers: expect.not.objectContaining({
+          authorization: expect.anything(),
+        }),
+      }),
+    },
+    {
+      url:
+        'https://bitbucket.org/org-name/repo-name/src/master/templates/my-template.yaml',
+      config: createConfig(undefined, 'only-password-provided'),
+      response: expect.objectContaining({
+        headers: expect.not.objectContaining({
+          authorization: expect.anything(),
+        }),
+      }),
+    },
+  ])('should handle happy path %#', async ({ url, config, response }) => {
+    const [{ reader }] = BitbucketUrlReader.factory({ config, logger });
 
-    for (const test of tests) {
-      if (test.err) {
-        expect(() => processor.buildRawUrl(test.target)).toThrowError(test.err);
-      } else if (test.url) {
-        expect(processor.buildRawUrl(test.target).toString()).toEqual(
-          test.url.toString(),
-        );
-      } else {
-        throw new Error(
-          'This should not have happened. Either err or url should have matched.',
-        );
-      }
-    }
+    const data = await reader.read(url);
+    const res = await JSON.parse(data.toString('utf-8'));
+    expect(res).toEqual(response);
   });
 
-  it('should return request options', () => {
-    const tests = [
-      {
-        username: '',
-        password: '',
-        expect: {
-          headers: {},
-        },
-        err:
-          "Invalid type in config for key 'integrations.bitbucket[0].username' in '', got empty-string, wanted string",
-      },
-      {
-        username: 'only-user-provided',
-        password: '',
-        expect: {
-          headers: {},
-        },
-        err:
-          "Invalid type in config for key 'integrations.bitbucket[0].appPassword' in '', got empty-string, wanted string",
-      },
-      {
-        username: '',
-        password: 'only-password-provided',
-        expect: {
-          headers: {},
-        },
-        err:
-          "Invalid type in config for key 'integrations.bitbucket[0].username' in '', got empty-string, wanted string",
-      },
-      {
-        username: 'some-user',
-        password: 'my-secret',
-        expect: {
-          headers: {
-            Authorization: 'Basic c29tZS11c2VyOm15LXNlY3JldA==',
-          },
-        },
-      },
-      {
-        username: undefined,
-        password: undefined,
-        expect: {
-          headers: {},
-        },
-      },
-      {
-        username: 'only-user-provided',
-        password: undefined,
-        expect: {
-          headers: {},
-        },
-        err:
-          "Missing required config value at 'integrations.bitbucket[0].appPassword'",
-      },
-      {
-        username: undefined,
-        password: 'only-password-provided',
-        expect: {
-          headers: {},
-        },
-      },
-    ];
-
-    for (const test of tests) {
-      if (test.err) {
-        expect(
-          () =>
-            new BitbucketUrlReader(
-              readConfig(createConfig(test.username, test.password))[0],
-            ),
-        ).toThrowError(test.err);
-      } else {
-        const processor = new BitbucketUrlReader(
-          readConfig(createConfig(test.username, test.password))[0],
-        );
-        expect(processor.getRequestOptions()).toEqual(test.expect);
-      }
-    }
+  it.each([
+    {
+      url: 'https://api.com/a/b/blob/master/path/to/c.yaml',
+      config: createConfig(),
+      error:
+        'Incorrect url: https://api.com/a/b/blob/master/path/to/c.yaml, Error: Wrong Bitbucket URL or Invalid file path',
+    },
+    {
+      url: 'com/a/b/blob/master/path/to/c.yaml',
+      config: createConfig(),
+      error:
+        'Incorrect url: com/a/b/blob/master/path/to/c.yaml, TypeError: Invalid URL: com/a/b/blob/master/path/to/c.yaml',
+    },
+    {
+      url: '',
+      config: createConfig('', ''),
+      error:
+        "Invalid type in config for key 'integrations.bitbucket[0].username' in 'test-config', got empty-string, wanted string",
+    },
+    {
+      url: '',
+      config: createConfig('only-user-provided', ''),
+      error:
+        "Invalid type in config for key 'integrations.bitbucket[0].appPassword' in 'test-config', got empty-string, wanted string",
+    },
+    {
+      url: '',
+      config: createConfig('', 'only-password-provided'),
+      error:
+        "Invalid type in config for key 'integrations.bitbucket[0].username' in 'test-config', got empty-string, wanted string",
+    },
+    {
+      url: '',
+      config: createConfig('only-user-provided', undefined),
+      error:
+        "Missing required config value at 'integrations.bitbucket[0].appPassword'",
+    },
+  ])('should handle error path %#', async ({ url, config, error }) => {
+    await expect(async () => {
+      const [{ reader }] = BitbucketUrlReader.factory({ config, logger });
+      await reader.read(url);
+    }).rejects.toThrow(error);
   });
 });

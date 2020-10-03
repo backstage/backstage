@@ -29,7 +29,7 @@ type Options = {
   };
 };
 
-export function readConfig(config: Config): Options[] {
+function readConfig(config: Config): Options[] {
   const optionsArr = Array<Options>();
 
   const providerConfigs =
@@ -74,23 +74,6 @@ export class BitbucketUrlReader implements UrlReader {
     }
   }
 
-  getRequestOptions(): RequestInit {
-    const headers: HeadersInit = {};
-
-    if (this.options.auth) {
-      headers.Authorization = `Basic ${Buffer.from(
-        `${this.options.auth.username}:${this.options.auth.appPassword}`,
-        'utf8',
-      ).toString('base64')}`;
-    }
-
-    const requestOptions: RequestInit = {
-      headers,
-    };
-
-    return requestOptions;
-  }
-
   async read(url: string): Promise<Buffer> {
     const builtUrl = this.buildRawUrl(url);
 
@@ -115,8 +98,7 @@ export class BitbucketUrlReader implements UrlReader {
   // Converts
   // from: https://bitbucket.org/orgname/reponame/src/master/file.yaml
   // to:   https://api.bitbucket.org/2.0/repositories/orgname/reponame/src/master/file.yaml
-
-  buildRawUrl(target: string): URL {
+  private buildRawUrl(target: string): URL {
     try {
       const url = new URL(target);
 
@@ -157,6 +139,21 @@ export class BitbucketUrlReader implements UrlReader {
     } catch (e) {
       throw new Error(`Incorrect url: ${target}, ${e}`);
     }
+  }
+
+  private getRequestOptions(): RequestInit {
+    const headers: HeadersInit = {};
+
+    if (this.options.auth) {
+      headers.Authorization = `Basic ${Buffer.from(
+        `${this.options.auth.username}:${this.options.auth.appPassword}`,
+        'utf8',
+      ).toString('base64')}`;
+    }
+
+    return {
+      headers,
+    };
   }
 
   toString() {
