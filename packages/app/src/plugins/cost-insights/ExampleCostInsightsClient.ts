@@ -24,7 +24,9 @@ import {
   CostInsightsApi,
   DateAggregation,
   Duration,
+  exclusiveEndDateOf,
   Group,
+  inclusiveStartDateOf,
   ProductCost,
   Project,
   Trendline,
@@ -40,14 +42,16 @@ function aggregationFor(
   duration: Duration,
   baseline: number,
 ): DateAggregation[] {
-  const days = moment.duration(duration).asDays() * 2;
+  const days = moment(exclusiveEndDateOf(duration)).diff(
+    inclusiveStartDateOf(duration),
+    'days',
+  );
 
   return [...Array(days).keys()].reduce(
     (values: DateAggregation[], i: number): DateAggregation[] => {
       const last = values.length ? values[values.length - 1].amount : baseline;
       values.push({
-        date: moment()
-          .subtract(days, 'days')
+        date: moment(inclusiveStartDateOf(duration))
           .add(i, 'days')
           .format('YYYY-MM-DD'),
         amount: last + (baseline / 20) * (Math.random() * 2 - 1),
