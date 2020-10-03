@@ -1,5 +1,5 @@
 ---
-'@backstage/catalog-backend': minor
+'@backstage/plugin-catalog-backend': minor
 ---
 
 Add the ability to import users from GitHub Organization into the catalog.
