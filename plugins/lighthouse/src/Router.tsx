@@ -23,6 +23,7 @@ import CreateAudit, { CreateAuditContent } from './components/CreateAudit';
 import { Entity } from '@backstage/catalog-model';
 import { LIGHTHOUSE_WEBSITE_URL_ANNOTATION } from '../constants';
 import { AuditListForEntity } from './components/AuditList/AuditListForEntity';
+import { EmptyState } from '@backstage/core';
 
 export const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[LIGHTHOUSE_WEBSITE_URL_ANNOTATION]) ||
@@ -36,13 +37,23 @@ export const Router = () => (
   </Routes>
 );
 
-export const EmbeddedRouter = () => (
-  <Routes>
-    <Route path={`/${rootRouteRef.path}`} element={<AuditListForEntity />} />
-    <Route path={`/${viewAuditRouteRef.path}`} element={<AuditViewContent />} />
-    <Route
-      path={`/${createAuditRouteRef.path}`}
-      element={<CreateAuditContent />}
+export const EmbeddedRouter = ({ entity }: { entity: Entity }) =>
+  !isPluginApplicableToEntity(entity) ? (
+    <EmptyState
+      missing="field"
+      title="Your plugin is missing an annotation"
+      description={`Please add the ${LIGHTHOUSE_WEBSITE_URL_ANNOTATION} annotation`}
     />
-  </Routes>
-);
+  ) : (
+    <Routes>
+      <Route path={`/${rootRouteRef.path}`} element={<AuditListForEntity />} />
+      <Route
+        path={`/${viewAuditRouteRef.path}`}
+        element={<AuditViewContent />}
+      />
+      <Route
+        path={`/${createAuditRouteRef.path}`}
+        element={<CreateAuditContent />}
+      />
+    </Routes>
+  );
