@@ -148,6 +148,10 @@ export default async (cmd: Command): Promise<void> => {
       chalk.green(`🥇  Successfully created ${chalk.cyan(answers.name)}`),
     );
     Task.log();
+    Task.log(
+      'See https://backstage.io/docs/tutorials/quickstart-app-auth to know more about enabling auth providers',
+    );
+    Task.log();
     Task.exit();
   } catch (error) {
     Task.error(error.message);
