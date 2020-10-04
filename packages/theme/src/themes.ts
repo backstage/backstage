@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { createTheme } from './baseTheme';
+import { createTheme, createPageTheme } from './baseTheme';
+import { pageTheme } from './pageTheme';
 import { yellow } from '@material-ui/core/colors';
 
 export const lightTheme = createTheme({
@@ -131,4 +132,9 @@ export const darkTheme = createTheme({
       indicator: '#9BF0E1',
     },
   },
+});
+
+export const customPageTheme = createPageTheme({
+  pageTheme,
+  palette: lightTheme.palette,
 });

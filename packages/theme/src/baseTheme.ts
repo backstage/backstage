@@ -19,6 +19,8 @@ import { darken, lighten } from '@material-ui/core/styles/colorManipulator';
 import { Overrides } from '@material-ui/core/styles/overrides';
 
 import {
+  BackstagePageTheme,
+  BackstagePageThemeOptions,
   BackstageTheme,
   BackstageThemeOptions,
   SimpleThemeOptions,
@@ -241,4 +243,16 @@ export function createTheme(options: SimpleThemeOptions): BackstageTheme {
   const overrides = createThemeOverrides(baseTheme);
   const theme = { ...baseTheme, overrides };
   return theme;
+}
+
+export function createPageTheme(
+  options: BackstagePageThemeOptions,
+): BackstagePageTheme {
+  const baseTheme = createTheme(options);
+  const pageTheme = options.pageTheme;
+
+  return {
+    pageTheme,
+    baseTheme,
+  };
 }

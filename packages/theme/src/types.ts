@@ -87,3 +87,24 @@ export type SimpleThemeOptions = {
   palette: BackstagePaletteOptions;
   fontFamily?: string;
 };
+
+export type PageTheme = {
+  colors: string[];
+  shape: string;
+  backgroundImage: string;
+};
+
+export type BackstagePage = Record<string, PageTheme>;
+
+export interface BackstagePageThemeOptions extends SimpleThemeOptions {
+  pageTheme: BackstagePage;
+}
+
+export interface BackstagePageTheme {
+  pageTheme: BackstagePage;
+  baseTheme: BackstageTheme;
+}
+
+export interface BackstagePageThemeConsumer extends BackstageTheme {
+  pageTheme: PageTheme;
+}
