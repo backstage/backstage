@@ -3,6 +3,7 @@
 ExampleComponent.tsx reference
 
 ```tsx
+import { customPageTheme } from '@backstage/theme';
 import React, { FC } from 'react';
 import { Typography, Grid } from '@material-ui/core';
 import {
@@ -25,7 +26,7 @@ const ExampleComponent: FC<{}> = () => {
   const profile = identityApi.getProfile();
 
   return (
-    <Page theme={pageTheme.tool}>
+    <Page pageTheme={customPageTheme.pageTheme.tool}>
       <Header
         title="Welcome to github-playground!"
         subtitle="Optional subtitle"
