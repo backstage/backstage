@@ -62,7 +62,10 @@ const LighthouseAuditStatus: FC<{ audit: Audit }> = ({ audit }) => (
   </>
 );
 
-const LighthouseAuditSummary: FC<{ audit: Audit }> = ({ audit }) => {
+const LighthouseAuditSummary: FC<{ audit: Audit; dense?: boolean }> = ({
+  audit,
+  dense = false,
+}) => {
   const { url } = audit;
   const flattenedCategoryData: Record<string, React.ReactNode> = {};
   if (audit.status === 'COMPLETED') {
@@ -82,10 +85,12 @@ const LighthouseAuditSummary: FC<{ audit: Audit }> = ({ audit }) => {
     ...flattenedCategoryData,
   };
 
-  return <StructuredMetadataTable metadata={tableData} />;
+  return <StructuredMetadataTable metadata={tableData} dense={dense} />;
 };
 
-export const LastLighthouseAuditCard: FC<{}> = () => {
+export const LastLighthouseAuditCard: FC<{ dense?: boolean }> = ({
+  dense = false,
+}) => {
   const { value: website, loading, error } = useWebsiteForEntity();
 
   let content;
@@ -96,7 +101,9 @@ export const LastLighthouseAuditCard: FC<{}> = () => {
     content = null;
   }
   if (website) {
-    content = <LighthouseAuditSummary audit={website.lastAudit} />;
+    content = (
+      <LighthouseAuditSummary audit={website.lastAudit} dense={dense} />
+    );
   }
   return <InfoCard title="Lighthouse Audit">{content}</InfoCard>;
 };
