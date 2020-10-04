@@ -1,97 +1,97 @@
 {
-    "name": "example-app",
-    "version": "0.1.1-alpha.23",
-    "private": true,
-    "bundled": true,
-    "dependencies": {
-        "@backstage/catalog-model": "^0.1.1-alpha.23",
-        "@backstage/cli": "^0.1.1-alpha.23",
-        "@backstage/core": "^0.1.1-alpha.23",
-        "@backstage/plugin-api-docs": "^0.1.1-alpha.23",
-        "@backstage/plugin-catalog": "^0.1.1-alpha.23",
-        "@backstage/plugin-circleci": "^0.1.1-alpha.23",
-        "@backstage/plugin-cloudbuild": "^0.1.1-alpha.23",
-        "@backstage/plugin-cost-insights": "^0.1.1-alpha.23",
-        "@backstage/plugin-explore": "^0.1.1-alpha.23",
-        "@backstage/plugin-gcp-projects": "^0.1.1-alpha.23",
-        "@backstage/plugin-github-actions": "^0.1.1-alpha.23",
-        "@backstage/plugin-gitops-profiles": "^0.1.1-alpha.23",
-        "@backstage/plugin-graphiql": "^0.1.1-alpha.23",
-        "@backstage/plugin-jenkins": "^0.1.1-alpha.23",
-        "@backstage/plugin-kubernetes": "^0.1.1-alpha.23",
-        "@backstage/plugin-lighthouse": "^0.1.1-alpha.23",
-        "@backstage/plugin-newrelic": "^0.1.1-alpha.23",
-        "@backstage/plugin-register-component": "^0.1.1-alpha.23",
-        "@backstage/plugin-rollbar": "^0.1.1-alpha.23",
-        "@backstage/plugin-scaffolder": "^0.1.1-alpha.23",
-        "@backstage/plugin-sentry": "^0.1.1-alpha.23",
-        "@backstage/plugin-tech-radar": "^0.1.1-alpha.23",
-        "@backstage/plugin-tech-stack": "^0.1.1-alpha.23",
-        "@backstage/plugin-techdocs": "^0.1.1-alpha.23",
-        "@backstage/plugin-welcome": "^0.1.1-alpha.23",
-        "@backstage/test-utils": "^0.1.1-alpha.23",
-        "@backstage/theme": "^0.1.1-alpha.23",
-        "@material-ui/core": "^4.11.0",
-        "@material-ui/icons": "^4.9.1",
-        "@octokit/rest": "^18.0.0",
-        "@roadiehq/backstage-plugin-github-pull-requests": "0.3.0",
-        "@roadiehq/backstage-plugin-travis-ci": "^0.2.3",
-        "history": "^5.0.0",
-        "prop-types": "^15.7.2",
-        "react": "^16.12.0",
-        "react-dom": "^16.12.0",
-        "react-hot-loader": "^4.12.21",
-        "react-router": "6.0.0-beta.0",
-        "react-router-dom": "6.0.0-beta.0",
-        "react-use": "^15.3.3",
-        "zen-observable": "^0.8.15"
-    },
-    "devDependencies": {
-        "@testing-library/cypress": "^6.0.0",
-        "@testing-library/jest-dom": "^5.10.1",
-        "@testing-library/react": "^10.4.1",
-        "@testing-library/user-event": "^12.0.7",
-        "@types/jest": "^26.0.7",
-        "@types/jquery": "^3.3.34",
-        "@types/node": "^12.0.0",
-        "@types/react-dom": "^16.9.8",
-        "@types/zen-observable": "^0.8.0",
-        "cross-env": "^7.0.0",
-        "cypress": "^4.2.0",
-        "eslint-plugin-cypress": "^2.10.3",
-        "start-server-and-test": "^1.10.11"
-    },
-    "scripts": {
-        "start": "backstage-cli app:serve",
-        "build": "backstage-cli app:build",
-        "clean": "backstage-cli clean",
-        "test": "backstage-cli test",
-        "test:e2e": "start-server-and-test start http://localhost:3000 cy:dev",
-        "test:e2e:ci": "start-server-and-test start http://localhost:3000 cy:run",
-        "lint": "backstage-cli lint",
-        "cy:dev": "cypress open",
-        "cy:run": "cypress run"
-    },
-    "browserslist": {
-        "production": [
-            ">0.2%",
-            "not dead",
-            "not op_mini all"
-        ],
-        "development": [
-            "last 1 chrome version",
-            "last 1 firefox version",
-            "last 1 safari version"
-        ]
-    },
-    "license": "Apache-2.0",
-    "proxy": {
-        "/circleci/api": {
-            "target": "https://circleci.com/api/v1.1",
-            "changeOrigin": true,
-            "pathRewrite": {
-                "^/circleci/api/": "/"
-            }
-        }
+  "name": "example-app",
+  "version": "0.1.1-alpha.23",
+  "private": true,
+  "bundled": true,
+  "dependencies": {
+    "@backstage/catalog-model": "^0.1.1-alpha.23",
+    "@backstage/cli": "^0.1.1-alpha.23",
+    "@backstage/core": "^0.1.1-alpha.23",
+    "@backstage/plugin-api-docs": "^0.1.1-alpha.23",
+    "@backstage/plugin-catalog": "^0.1.1-alpha.23",
+    "@backstage/plugin-circleci": "^0.1.1-alpha.23",
+    "@backstage/plugin-cloudbuild": "^0.1.1-alpha.23",
+    "@backstage/plugin-cost-insights": "^0.1.1-alpha.23",
+    "@backstage/plugin-explore": "^0.1.1-alpha.23",
+    "@backstage/plugin-gcp-projects": "^0.1.1-alpha.23",
+    "@backstage/plugin-github-actions": "^0.1.1-alpha.23",
+    "@backstage/plugin-gitops-profiles": "^0.1.1-alpha.23",
+    "@backstage/plugin-graphiql": "^0.1.1-alpha.23",
+    "@backstage/plugin-jenkins": "^0.1.1-alpha.23",
+    "@backstage/plugin-kubernetes": "^0.1.1-alpha.23",
+    "@backstage/plugin-lighthouse": "^0.1.1-alpha.23",
+    "@backstage/plugin-newrelic": "^0.1.1-alpha.23",
+    "@backstage/plugin-register-component": "^0.1.1-alpha.23",
+    "@backstage/plugin-rollbar": "^0.1.1-alpha.23",
+    "@backstage/plugin-scaffolder": "^0.1.1-alpha.23",
+    "@backstage/plugin-sentry": "^0.1.1-alpha.23",
+    "@backstage/plugin-tech-radar": "^0.1.1-alpha.23",
+    "@backstage/plugin-tech-stack": "^0.1.1-alpha.23",
+    "@backstage/plugin-techdocs": "^0.1.1-alpha.23",
+    "@backstage/plugin-welcome": "^0.1.1-alpha.23",
+    "@backstage/test-utils": "^0.1.1-alpha.23",
+    "@backstage/theme": "^0.1.1-alpha.23",
+    "@material-ui/core": "^4.11.0",
+    "@material-ui/icons": "^4.9.1",
+    "@octokit/rest": "^18.0.0",
+    "@roadiehq/backstage-plugin-github-pull-requests": "0.3.0",
+    "@roadiehq/backstage-plugin-travis-ci": "^0.2.3",
+    "history": "^5.0.0",
+    "prop-types": "^15.7.2",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-hot-loader": "^4.12.21",
+    "react-router": "6.0.0-beta.0",
+    "react-router-dom": "6.0.0-beta.0",
+    "react-use": "^15.3.3",
+    "zen-observable": "^0.8.15"
+  },
+  "devDependencies": {
+    "@testing-library/cypress": "^6.0.0",
+    "@testing-library/jest-dom": "^5.10.1",
+    "@testing-library/react": "^10.4.1",
+    "@testing-library/user-event": "^12.0.7",
+    "@types/jest": "^26.0.7",
+    "@types/jquery": "^3.3.34",
+    "@types/node": "^12.0.0",
+    "@types/react-dom": "^16.9.8",
+    "@types/zen-observable": "^0.8.0",
+    "cross-env": "^7.0.0",
+    "cypress": "^4.2.0",
+    "eslint-plugin-cypress": "^2.10.3",
+    "start-server-and-test": "^1.10.11"
+  },
+  "scripts": {
+    "start": "backstage-cli app:serve",
+    "build": "backstage-cli app:build",
+    "clean": "backstage-cli clean",
+    "test": "backstage-cli test",
+    "test:e2e": "start-server-and-test start http://localhost:3000 cy:dev",
+    "test:e2e:ci": "start-server-and-test start http://localhost:3000 cy:run",
+    "lint": "backstage-cli lint",
+    "cy:dev": "cypress open",
+    "cy:run": "cypress run"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "license": "Apache-2.0",
+  "proxy": {
+    "/circleci/api": {
+      "target": "https://circleci.com/api/v1.1",
+      "changeOrigin": true,
+      "pathRewrite": {
+        "^/circleci/api/": "/"
+      }
     }
+  }
 }
