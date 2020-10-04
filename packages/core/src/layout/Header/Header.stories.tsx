@@ -41,11 +41,9 @@ export const Home = () => (
 );
 
 export const HomeWithSubtitle = () => (
-  <Page pageTheme={customPageTheme.pageTheme.home}>
-    <Header title="Start/Home Page" subtitle="This is a subtitle">
-      {labels}
-    </Header>
-  </Page>
+  <Header title="Start/Home Page" subtitle="This is a subtitle">
+    {labels}
+  </Header>
 );
 
 export const Tool = () => (
