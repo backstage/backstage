@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, CSSProperties, FC, useContext } from 'react';
+import React, { ReactNode, CSSProperties, FC } from 'react';
 import { Helmet } from 'react-helmet';
-import { Typography, Tooltip, makeStyles } from '@material-ui/core';
-import { BackstageTheme } from '@backstage/theme';
-
-import { PageThemeContext } from '../Page/Page';
+import { Typography, Tooltip, makeStyles, useTheme } from '@material-ui/core';
+import { BackstageTheme, BackstagePageThemeConsumer } from '@backstage/theme';
 
 const useStyles = makeStyles<BackstageTheme, { backgroundImage: string }>(
   theme => ({
@@ -163,8 +161,10 @@ export const Header: FC<Props> = ({
   type,
   typeLink,
 }) => {
-  const theme = useContext(PageThemeContext);
-  const classes = useStyles({ backgroundImage: theme.backgroundImage });
+  const theme = useTheme<BackstagePageThemeConsumer>();
+  const classes = useStyles({
+    backgroundImage: theme.pageTheme.backgroundImage,
+  });
   const documentTitle = pageTitleOverride || title;
   const pageTitle = title || pageTitleOverride;
   const titleTemplate = `${documentTitle} | %s | Backstage`;
