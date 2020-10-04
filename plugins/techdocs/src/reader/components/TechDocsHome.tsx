@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { customPageTheme } from '@backstage/theme';
 import React from 'react';
 import { useAsync } from 'react-use';
 import { useNavigate, generatePath } from 'react-router-dom';
@@ -24,7 +25,6 @@ import {
   useApi,
   Content,
   Page,
-  pageTheme,
   Header,
 } from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog';
@@ -43,7 +43,7 @@ export const TechDocsHome = () => {
 
   if (loading) {
     return (
-      <Page theme={pageTheme.documentation}>
+      <Page pageTheme={customPageTheme.pageTheme.documentation}>
         <Header
           title="Documentation"
           subtitle="Documentation available in Backstage"
@@ -57,7 +57,7 @@ export const TechDocsHome = () => {
 
   if (error) {
     return (
-      <Page theme={pageTheme.documentation}>
+      <Page pageTheme={customPageTheme.pageTheme.documentation}>
         <Header
           title="Documentation"
           subtitle="Documentation available in Backstage"
@@ -70,7 +70,7 @@ export const TechDocsHome = () => {
   }
 
   return (
-    <Page theme={pageTheme.documentation}>
+    <Page pageTheme={customPageTheme.pageTheme.documentation}>
       <Header
         title="Documentation"
         subtitle="Documentation available in Backstage"

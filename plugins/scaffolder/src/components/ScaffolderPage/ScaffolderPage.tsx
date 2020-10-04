@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { customPageTheme } from '@backstage/theme';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import {
   Content,
@@ -22,7 +23,6 @@ import {
   Header,
   Lifecycle,
   Page,
-  pageTheme,
   Progress,
   SupportButton,
   useApi,
@@ -66,7 +66,7 @@ export const ScaffolderPage = () => {
   }, [error, errorApi]);
 
   return (
-    <Page theme={pageTheme.home}>
+    <Page pageTheme={customPageTheme.pageTheme.home}>
       <Header
         pageTitleOverride="Create a New Component"
         title={

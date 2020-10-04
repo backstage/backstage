@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import { customPageTheme } from '@backstage/theme';
 import React, { FC, useState } from 'react';
 import { Grid } from '@material-ui/core';
 import {
   Header,
   Page,
-  pageTheme,
   Content,
   ContentHeader,
   SupportButton,
@@ -33,7 +33,7 @@ const SentryPluginPage: FC<{}> = () => {
   const sentryProjectId = 'sample-sentry-project-id';
 
   return (
-    <Page theme={pageTheme.tool}>
+    <Page pageTheme={customPageTheme.pageTheme.tool}>
       <Header title="Sentry" />
       <Content>
         <ContentHeader title="Issue on Sentry">

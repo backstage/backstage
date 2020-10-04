@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { customPageTheme } from '@backstage/theme';
 import {
   Content,
   ContentHeader,
@@ -21,7 +22,6 @@ import {
   HeaderLabel,
   InfoCard,
   Page,
-  pageTheme,
   SimpleStepper,
   SimpleStepperStep,
   StructuredMetadataTable,
@@ -113,7 +113,7 @@ const labels = (
 
 export const NewProjectPage = () => {
   return (
-    <Page theme={pageTheme.service}>
+    <Page pageTheme={customPageTheme.pageTheme.service}>
       <Header title="New GCP Project" type="tool">
         {labels}
       </Header>

@@ -17,15 +17,8 @@ import React, { useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router';
 
 import { EntityContext } from '../../hooks/useEntity';
-import {
-  pageTheme,
-  PageTheme,
-  Page,
-  Header,
-  HeaderLabel,
-  Content,
-  Progress,
-} from '@backstage/core';
+import { Page, Header, HeaderLabel, Content, Progress } from '@backstage/core';
+import { customPageTheme, PageTheme } from '@backstage/theme';
 import { Entity } from '@backstage/catalog-model';
 import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
 import { Box } from '@material-ui/core';
@@ -36,7 +29,7 @@ import { Tabbed } from './Tabbed';
 
 const getPageTheme = (entity?: Entity): PageTheme => {
   const themeKey = entity?.spec?.type?.toString() ?? 'home';
-  return pageTheme[themeKey] ?? pageTheme.home;
+  return customPageTheme.pageTheme[themeKey] ?? customPageTheme.pageTheme.home;
 };
 
 const EntityPageTitle = ({
@@ -100,7 +93,7 @@ export const EntityPageLayout = ({
   const showRemovalDialog = () => setConfirmationDialogOpen(true);
 
   return (
-    <Page theme={getPageTheme(entity!)}>
+    <Page pageTheme={getPageTheme(entity!)}>
       <Header
         title={<EntityPageTitle title={headerTitle} entity={entity!} />}
         pageTitleOverride={headerTitle}

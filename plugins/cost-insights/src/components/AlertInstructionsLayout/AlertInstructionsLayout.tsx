@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
+import { customPageTheme } from '@backstage/theme';
 import React, { ReactNode } from 'react';
 import { Box, Button, Container, makeStyles } from '@material-ui/core';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import { Header, Page, pageTheme } from '@backstage/core';
+import { Header, Page } from '@backstage/core';
 import { CostInsightsThemeProvider } from '../CostInsightsPage/CostInsightsThemeProvider';
 
 const useStyles = makeStyles(theme => ({
@@ -39,7 +40,7 @@ const AlertInstructionsLayout = ({
   const classes = useStyles();
   return (
     <CostInsightsThemeProvider>
-      <Page theme={pageTheme.tool}>
+      <Page pageTheme={customPageTheme.pageTheme.tool}>
         <Header title="Cost Insights" pageTitleOverride={title} type="Tool" />
         <Container maxWidth="md" disableGutters className={classes.root}>
           <Box mb={3}>

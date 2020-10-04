@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { customPageTheme } from '@backstage/theme';
 import React from 'react';
 import { Grid } from '@material-ui/core';
 import {
@@ -23,7 +24,6 @@ import {
   Header,
   HeaderLabel,
   SupportButton,
-  pageTheme,
 } from '@backstage/core';
 import RadarComponent from '../components/RadarComponent';
 import { TechRadarComponentProps } from '../api';
@@ -40,7 +40,7 @@ export const RadarPage = ({
   pageTitle,
   ...props
 }: TechRadarPageProps): JSX.Element => (
-  <Page theme={pageTheme.tool}>
+  <Page pageTheme={customPageTheme.pageTheme.tool}>
     <Header title={title} subtitle={subtitle}>
       <HeaderLabel label="Owner" value="Spotify" />
       <HeaderLabel label="Lifecycle" value="Beta" />

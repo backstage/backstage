@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { customPageTheme } from '@backstage/theme';
 import React, { FC, useEffect, useState } from 'react';
 import {
   Content,
   Header,
   Page,
-  pageTheme,
   Table,
   Progress,
   HeaderLabel,
@@ -85,7 +84,7 @@ const ClusterPage: FC<{}> = () => {
   }, [pollingLog, api, params, githubAuth, githubAccessToken, githubUsername]);
 
   return (
-    <Page theme={pageTheme.home}>
+    <Page pageTheme={customPageTheme.pageTheme.home}>
       <Header title={`Cluster ${params.owner}/${params.repo}`}>
         <HeaderLabel label="Welcome" value={githubUsername} />
       </Header>

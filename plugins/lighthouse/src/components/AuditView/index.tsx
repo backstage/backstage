@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { customPageTheme } from '@backstage/theme';
 import React, { useState, useEffect, ReactNode, FC } from 'react';
 import {
   Link,
@@ -34,7 +35,6 @@ import {
 import Alert from '@material-ui/lab/Alert';
 import {
   useApi,
-  pageTheme,
   InfoCard,
   Header,
   Page,
@@ -173,7 +173,7 @@ const ConnectedAuditView: FC<{}> = () => {
   }
 
   return (
-    <Page theme={pageTheme.tool}>
+    <Page pageTheme={customPageTheme.pageTheme.tool}>
       <Header
         title="Lighthouse"
         subtitle="Website audits powered by Lighthouse"

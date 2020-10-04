@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
+import { customPageTheme } from '@backstage/theme';
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Content, Page, pageTheme, useApi } from '@backstage/core';
+import { Content, Page, useApi } from '@backstage/core';
 import { Reader } from './Reader';
 import { useAsync } from 'react-use';
 import { TechDocsPageHeader } from './TechDocsPageHeader';
@@ -46,7 +47,7 @@ export const TechDocsPage = () => {
   };
 
   return (
-    <Page theme={pageTheme.documentation}>
+    <Page pageTheme={customPageTheme.pageTheme.documentation}>
       <TechDocsPageHeader
         metadataRequest={{
           mkdocs: mkdocsMetadataRequest,

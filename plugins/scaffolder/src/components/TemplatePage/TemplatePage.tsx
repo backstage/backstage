@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { customPageTheme } from '@backstage/theme';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import {
   Content,
@@ -22,7 +23,6 @@ import {
   Lifecycle,
   Page,
   useApi,
-  pageTheme,
 } from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog';
 import { LinearProgress } from '@material-ui/core';
@@ -145,7 +145,7 @@ export const TemplatePage = () => {
   }
 
   return (
-    <Page theme={pageTheme.home}>
+    <Page pageTheme={customPageTheme.pageTheme.home}>
       <Header
         pageTitleOverride="Create a new component"
         title={

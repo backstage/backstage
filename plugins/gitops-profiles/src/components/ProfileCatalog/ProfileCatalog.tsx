@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { customPageTheme } from '@backstage/theme';
 import React, { FC, useEffect, useState } from 'react';
 import {
   Header,
   Page,
-  pageTheme,
   Content,
   ContentHeader,
   HeaderLabel,
@@ -259,7 +259,7 @@ const ProfileCatalog: FC<{}> = () => {
   ];
 
   return (
-    <Page theme={pageTheme.tool}>
+    <Page pageTheme={customPageTheme.pageTheme.tool}>
       <Header
         title="Create GitOps-managed Cluster"
         subtitle="Kubernetes cluster with ready-to-use profiles"

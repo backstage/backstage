@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
+import { customPageTheme } from '@backstage/theme';
 import React from 'react';
-import { Content, Header, Page, pageTheme } from '@backstage/core';
+import { Content, Header, Page } from '@backstage/core';
 import { RollbarProjectTable } from '../RollbarProjectTable/RollbarProjectTable';
 import { useRollbarEntities } from '../../hooks/useRollbarEntities';
 
@@ -23,7 +24,7 @@ export const RollbarHome = () => {
   const { entities, loading, error } = useRollbarEntities();
 
   return (
-    <Page theme={pageTheme.tool}>
+    <Page pageTheme={customPageTheme.pageTheme.tool}>
       <Header
         title="Rollbar"
         subtitle="Real-time error tracking & debugging tools for developers"

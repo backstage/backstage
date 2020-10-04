@@ -15,7 +15,7 @@
  */
 
 //  NEEDS WORK
-
+import { customPageTheme } from '@backstage/theme';
 import {
   Content,
   ContentHeader,
@@ -23,7 +23,6 @@ import {
   HeaderLabel,
   Link,
   Page,
-  pageTheme,
   SupportButton,
   useApi,
   WarningPanel,
@@ -136,7 +135,7 @@ const PageContents = () => {
 
 export const ProjectListPage = () => {
   return (
-    <Page theme={pageTheme.service}>
+    <Page pageTheme={customPageTheme.pageTheme.service}>
       <Header title="GCP Projects" type="tool">
         {labels}
       </Header>

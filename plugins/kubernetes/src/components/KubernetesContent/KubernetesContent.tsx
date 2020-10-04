@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { customPageTheme } from '@backstage/theme';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { Grid, TabProps } from '@material-ui/core';
 import {
   CardTab,
   Content,
   Page,
-  pageTheme,
   Progress,
   TabbedCard,
   useApi,
@@ -120,7 +120,7 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
     kubernetesObjects?.items.filter(r => r.errors.length > 0) ?? [];
 
   return (
-    <Page theme={pageTheme.tool}>
+    <Page pageTheme={customPageTheme.pageTheme.tool}>
       <Content>
         <Grid container spacing={3} direction="column">
           {kubernetesObjects === undefined && error === undefined && (

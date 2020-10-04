@@ -20,11 +20,10 @@ import {
   errorApiRef,
   Header,
   Page,
-  pageTheme,
-  PageTheme,
   Progress,
   useApi,
 } from '@backstage/core';
+import { customPageTheme, PageTheme } from '@backstage/theme';
 import { catalogApiRef } from '@backstage/plugin-catalog';
 import { Box } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
@@ -54,9 +53,10 @@ function headerProps(
   };
 }
 
+// REUSABLE IN plugins/catalog/src/components/EntityPageLayout/EntityPageLayout.tsx
 export const getPageTheme = (entity?: Entity): PageTheme => {
   const themeKey = entity?.spec?.type?.toString() ?? 'home';
-  return pageTheme[themeKey] ?? pageTheme.home;
+  return customPageTheme.pageTheme[themeKey] ?? customPageTheme.pageTheme.home;
 };
 
 type EntityPageTitleProps = {
@@ -107,7 +107,7 @@ export const ApiEntityPage = () => {
   );
 
   return (
-    <Page theme={getPageTheme(entity)}>
+    <Page pageTheme={getPageTheme(entity)}>
       <Header
         title={<EntityPageTitle title={headerTitle} entity={entity} />}
         pageTitleOverride={headerTitle}

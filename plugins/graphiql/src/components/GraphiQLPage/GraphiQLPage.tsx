@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { customPageTheme } from '@backstage/theme';
 import React from 'react';
 import {
   Content,
@@ -21,7 +21,6 @@ import {
   HeaderLabel,
   Page,
   Progress,
-  pageTheme,
   useApi,
 } from '@backstage/core';
 import { useAsync } from 'react-use';
@@ -60,7 +59,7 @@ export const GraphiQLPage = () => {
   }
 
   return (
-    <Page theme={pageTheme.tool}>
+    <Page pageTheme={customPageTheme.pageTheme.tool}>
       <Header title="GraphiQL">
         <HeaderLabel label="Owner" value="Spotify" />
         <HeaderLabel label="Lifecycle" value="Alpha" />

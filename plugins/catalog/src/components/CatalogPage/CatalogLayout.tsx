@@ -19,9 +19,9 @@ import {
   HomepageTimer,
   identityApiRef,
   Page,
-  pageTheme,
   useApi,
 } from '@backstage/core';
+import { customPageTheme } from '@backstage/theme';
 import React from 'react';
 import { getTimeBasedGreeting } from './utils/timeUtil';
 
@@ -35,7 +35,7 @@ const CatalogLayout = ({ children }: Props) => {
   const userId = useApi(identityApiRef).getUserId();
 
   return (
-    <Page theme={pageTheme.home}>
+    <Page pageTheme={customPageTheme.pageTheme.home}>
       <Header
         title={`${greeting.greeting}, ${profile.displayName || userId}!`}
         subtitle="Backstage Service Catalog"

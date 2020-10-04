@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { customPageTheme } from '@backstage/theme';
 import React, { useState, useMemo, FC, ReactNode } from 'react';
 import { useLocalStorage, useAsync } from 'react-use';
 import { useNavigate } from 'react-router-dom';
@@ -28,7 +28,6 @@ import {
   ContentHeader,
   HeaderLabel,
   Progress,
-  pageTheme,
   useApi,
 } from '@backstage/core';
 
@@ -95,7 +94,7 @@ const AuditList: FC<{}> = () => {
   }
 
   return (
-    <Page theme={pageTheme.tool}>
+    <Page pageTheme={customPageTheme.pageTheme.tool}>
       <Header
         title="Lighthouse"
         subtitle="Website audits powered by Lighthouse"

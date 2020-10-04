@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { customPageTheme } from '@backstage/theme';
 import React, { FC, useState } from 'react';
 import {
   Content,
@@ -21,7 +22,6 @@ import {
   Header,
   SupportButton,
   Page,
-  pageTheme,
   Progress,
   HeaderLabel,
   useApi,
@@ -91,7 +91,7 @@ const ClusterList: FC<{}> = () => {
   }
 
   return (
-    <Page theme={pageTheme.home}>
+    <Page pageTheme={customPageTheme.pageTheme.home}>
       <Header title="GitOps-managed Clusters">
         <HeaderLabel label="Welcome" value={githubUsername} />
       </Header>

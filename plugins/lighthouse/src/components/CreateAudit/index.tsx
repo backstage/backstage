@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { customPageTheme } from '@backstage/theme';
 import React, { useState, useCallback, FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -30,7 +31,6 @@ import {
   InfoCard,
   Header,
   Page,
-  pageTheme,
   Content,
   ContentHeader,
   HeaderLabel,
@@ -94,7 +94,7 @@ const CreateAudit: FC<{}> = () => {
   ]);
 
   return (
-    <Page theme={pageTheme.tool}>
+    <Page pageTheme={customPageTheme.pageTheme.tool}>
       <Header
         title="Lighthouse"
         subtitle="Website audits powered by Lighthouse"

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Header, Page, pageTheme } from '@backstage/core';
+import { Header, Page } from '@backstage/core';
+import { customPageTheme } from '@backstage/theme';
 import React from 'react';
 
 type Props = {
@@ -23,7 +24,7 @@ type Props = {
 
 export const ApiExplorerLayout = ({ children }: Props) => {
   return (
-    <Page theme={pageTheme.home}>
+    <Page pageTheme={customPageTheme.pageTheme.home}>
       <Header
         title="APIs"
         subtitle="Backstage API Explorer"

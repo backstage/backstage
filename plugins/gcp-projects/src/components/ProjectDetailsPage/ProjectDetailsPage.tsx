@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { customPageTheme } from '@backstage/theme';
 import {
   Content,
   ContentHeader,
   Header,
   HeaderLabel,
   Page,
-  pageTheme,
   SupportButton,
   useApi,
   WarningPanel,
@@ -149,7 +148,7 @@ const labels = (
 
 export const ProjectDetailsPage = () => {
   return (
-    <Page theme={pageTheme.service}>
+    <Page pageTheme={customPageTheme.pageTheme.service}>
       <Header title="GCP Project Details" type="other">
         {labels}
       </Header>

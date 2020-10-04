@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { customPageTheme } from '@backstage/theme';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import {
@@ -30,7 +31,6 @@ import {
   Header,
   HomepageTimer,
   Page,
-  pageTheme,
   ContentHeader,
   SupportButton,
   WarningPanel,
@@ -44,7 +44,7 @@ const WelcomePage = () => {
   const profile = { givenName: '' };
 
   return (
-    <Page theme={pageTheme.home}>
+    <Page pageTheme={customPageTheme.pageTheme.home}>
       <Header
         title={`Welcome ${profile.givenName || `to ${appTitle}`}`}
         subtitle="Let's start building a better developer experience"
