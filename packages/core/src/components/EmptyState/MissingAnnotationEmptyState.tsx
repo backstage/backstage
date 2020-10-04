@@ -56,8 +56,8 @@ export const MissingAnnotationEmptyState = ({ annotation }: Props) => {
       action={
         <>
           <Typography variant="body1">
-            Add the annotation to your component YAML as show in the highlighted
-            example below:
+            Add the annotation to your component YAML as shown in the
+            highlighted example below:
           </Typography>
           <div className={classes.code}>
             <CodeSnippet
