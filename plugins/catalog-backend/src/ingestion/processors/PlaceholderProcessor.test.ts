@@ -230,6 +230,114 @@ describe('PlaceholderProcessor', () => {
       target: 'https://github.com/spotify/backstage/a/file.yaml',
     });
   });
+
+  it('resolves absolute path for absolute location', async () => {
+    read.mockResolvedValue(Buffer.from('TEXT', 'utf-8'));
+    const processor = PlaceholderProcessor.default();
+
+    await expect(
+      processor.processEntity(
+        {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'n' },
+          spec: {
+            data: {
+              $text: 'https://github.com/spotify/backstage/catalog-info.yaml',
+            },
+          },
+        },
+        {
+          type: 'github',
+          target: 'https://github.com/spotify/backstage/a/b/catalog-info.yaml',
+        },
+        emit,
+        read,
+      ),
+    ).resolves.toEqual({
+      apiVersion: 'a',
+      kind: 'k',
+      metadata: { name: 'n' },
+      spec: { data: 'TEXT' },
+    });
+
+    expect(emit).not.toBeCalled();
+    expect(read).toBeCalledWith({
+      type: 'github',
+      target: 'https://github.com/spotify/backstage/catalog-info.yaml',
+    });
+  });
+
+  it('resolves absolute path for relative file location', async () => {
+    read.mockResolvedValue(Buffer.from('TEXT', 'utf-8'));
+    const processor = PlaceholderProcessor.default();
+
+    await expect(
+      processor.processEntity(
+        {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'n' },
+          spec: {
+            data: {
+              $text: 'https://github.com/spotify/backstage/catalog-info.yaml',
+            },
+          },
+        },
+        {
+          type: 'github',
+          target: './a/b/catalog-info.yaml',
+        },
+        emit,
+        read,
+      ),
+    ).resolves.toEqual({
+      apiVersion: 'a',
+      kind: 'k',
+      metadata: { name: 'n' },
+      spec: { data: 'TEXT' },
+    });
+
+    expect(emit).not.toBeCalled();
+    expect(read).toBeCalledWith({
+      type: 'github',
+      target: 'https://github.com/spotify/backstage/catalog-info.yaml',
+    });
+  });
+
+  it('not resolves relative file path for relative file location', async () => {
+    // We explicitly don't support this case, as it would allow for file system
+    // traversel attacks. If we want to implement this, we need to have additional
+    // security measures in place!
+    read.mockResolvedValue(Buffer.from('TEXT', 'utf-8'));
+    const processor = PlaceholderProcessor.default();
+
+    await expect(
+      processor.processEntity(
+        {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'n' },
+          spec: {
+            data: {
+              $text: '../c/catalog-info.yaml',
+            },
+          },
+        },
+        {
+          type: 'github',
+          target: './a/b/catalog-info.yaml',
+        },
+        emit,
+        read,
+      ),
+    ).rejects.toThrow(
+      'Placeholder $text could not form an URL out of ./a/b/catalog-info.yaml and ../c/catalog-info.yaml',
+    );
+
+    expect(emit).not.toBeCalled();
+    expect(read).not.toBeCalled();
+  });
 });
 
 describe('yamlPlaceholderResolver', () => {

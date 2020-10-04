@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { docco, dark } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
 import { useTheme } from '@material-ui/core';
@@ -27,19 +26,16 @@ type Props = {
   language: string;
   showLineNumbers?: boolean;
   showCopyCodeButton?: boolean;
+  highlightedNumbers?: number[];
 };
 
-const defaultProps = {
-  showLineNumbers: false,
-  showCopyCodeButton: false,
-};
-
-export const CodeSnippet: FC<Props> = props => {
-  const { text, language, showLineNumbers, showCopyCodeButton } = {
-    ...defaultProps,
-    ...props,
-  };
-
+export const CodeSnippet = ({
+  text,
+  language,
+  showLineNumbers = false,
+  showCopyCodeButton = false,
+  highlightedNumbers,
+}: Props) => {
   const theme = useTheme<BackstageTheme>();
   const mode = theme.palette.type === 'dark' ? dark : docco;
 
@@ -49,6 +45,12 @@ export const CodeSnippet: FC<Props> = props => {
         language={language}
         style={mode}
         showLineNumbers={showLineNumbers}
+        wrapLines
+        lineProps={(lineNumber: number) =>
+          highlightedNumbers?.includes(lineNumber)
+            ? { style: { backgroundColor: '#e6ffed' } }
+            : {}
+        }
       >
         {text}
       </SyntaxHighlighter>
@@ -59,12 +61,4 @@ export const CodeSnippet: FC<Props> = props => {
       )}
     </div>
   );
-};
-
-// Type check for the JS files using this core component
-CodeSnippet.propTypes = {
-  text: PropTypes.string.isRequired,
-  language: PropTypes.string.isRequired,
-  showLineNumbers: PropTypes.bool,
-  showCopyCodeButton: PropTypes.bool,
 };
