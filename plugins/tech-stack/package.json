@@ -21,6 +21,7 @@
         "clean": "backstage-cli clean"
     },
     "dependencies": {
+        "@backstage/catalog-model": "^0.1.1-alpha.23",
         "@backstage/core": "^0.1.1-alpha.23",
         "@backstage/theme": "^0.1.1-alpha.23",
         "@material-ui/core": "^4.11.0",
@@ -28,7 +29,7 @@
         "@material-ui/lab": "4.0.0-alpha.45",
         "react": "^16.13.1",
         "react-dom": "^16.13.1",
-        "react-use": "^5.3.3"
+        "react-use": "^15.3.3"
     },
     "devDependencies": {
         "@backstage/cli": "^0.1.1-alpha.23",

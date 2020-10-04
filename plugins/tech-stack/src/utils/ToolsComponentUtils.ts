@@ -13,30 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// import React from 'react';
 
-// import { Grid } from '@material-ui/core';
-// import {
-//   Header,
-//   Page,
-//   pageTheme,
-//   Content,
-//   ContentHeader,
-//   HeaderLabel,
-//   SupportButton,
-// } from '@backstage/core';
 
-// import ToolsCardComponent from '../ToolsCardComponent';
-
-// import { ToolsListConfig } from '../../ToolsListConfig';
-
-// export default function LighthouseSupportButton() {
-//   return (
-//     <SupportButton>
-//       Lighthouse audits run for any web domain, stored over time.
-//     </SupportButton>
-//   );
-// }
 import * as ToolsDefaultConfig from '../config/ToolsDefaultConfig.json';
 
 export function toolsListConfigFill(ToolsListConfig: Tools[]) {

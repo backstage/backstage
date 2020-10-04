@@ -15,7 +15,6 @@
  */
 
 import { createPlugin, createRouteRef } from '@backstage/core';
-// import ExampleComponent from './components/ExampleComponent';
 import ToolsComponent from './components/ToolsComponent';
 
 export const rootRouteRef = createRouteRef({

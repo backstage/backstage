@@ -21,22 +21,22 @@ you can define your tool list in config/ToolsListConfig.ts
 example :
 ’’’
 {
-type: 'prometheus',
-scm: 'https://github.com/test-com/prometheus-config',
-actions: [
-{
-caption: 'PROD',
-link: 'https://prometheus.prod.test.com',
-},
-{
-caption: 'Staging',
-link: 'https://prometheus.staging.test.com',
-},
-{
-caption: 'ROOT',
-link: 'https://prod.test.com',
-},
-],
+    type: 'prometheus',
+        scm: 'https://github.com/test-com/prometheus-config',
+            actions: [
+                {
+                    caption: 'PROD',
+                    link: 'https://prometheus.prod.test.com',
+                },
+                {
+                    caption: 'Staging',
+                    link: 'https://prometheus.staging.test.com',
+                },
+                {
+                    caption: 'ROOT',
+                    link: 'https://prod.test.com',
+                },
+            ],
 },
 ’’’
 
