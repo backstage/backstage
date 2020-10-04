@@ -53,12 +53,12 @@
 .ButtonFilled {
   padding: 4px 8px;
   border-radius: 4px;
-  color: #69DDC7;
+  color: #69ddc7;
   margin-top: 36px;
 }
 
 .ButtonFilled:hover {
-  border: 1px solid #69DDC7;
+  border: 1px solid #69ddc7;
   background-color: transparent;
 }
 
@@ -66,8 +66,8 @@
   font-size: small;
   border-radius: 16px;
   padding: 2px 8px;
-  border: 1px solid #69DDC7;
-  color: #69DDC7;
+  border: 1px solid #69ddc7;
+  color: #69ddc7;
 }
 
 .PluginCardLink {
@@ -111,5 +111,5 @@
 }
 
 #add-plugin-card {
-  border: 1px solid #69DDC7;
+  border: 1px solid #69ddc7;
 }
