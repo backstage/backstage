@@ -74,8 +74,15 @@ export async function readConfigFile(
       }
     }
 
+    // Check if there's any key that starts with a '$', in that case we treat
+    // this entire object as a secret.
     const [secretKey] = Object.keys(obj).filter(key => key.startsWith('$'));
     if (secretKey) {
+      if (Object.keys(obj).length !== 1) {
+        throw new Error(
+          `Secret key '${secretKey}' has adjacent keys at ${path}`,
+        );
+      }
       try {
         return await ctx.readSecret(path, {
           [secretKey.slice(1)]: obj[secretKey],

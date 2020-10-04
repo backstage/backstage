@@ -106,6 +106,24 @@ describe('readConfigFile', () => {
     });
   });
 
+  it('should not allow keys adjacent to secrets', async () => {
+    const readFile = memoryFiles({
+      './app-config.yaml': 'app: { extraKey: 3, $file: "./my-secret" }',
+    });
+    const readSecret = jest.fn().mockResolvedValue('secret');
+
+    const config = readConfigFile('./app-config.yaml', {
+      ...mockContext,
+      readFile,
+      readSecret: readSecret as ReadSecretFunc,
+    });
+
+    await expect(config).rejects.toThrow(
+      "Secret key '$file' has adjacent keys at .app",
+    );
+    expect(readSecret).not.toHaveBeenCalled();
+  });
+
   it('should read deprecated secrets', async () => {
     const readFile = memoryFiles({
       './app-config.yaml': 'app: { $secret: { file: "./my-secret" } }',
