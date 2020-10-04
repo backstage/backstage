@@ -18,9 +18,9 @@ import { errorApiRef, useApi } from '@backstage/core-api';
 import { GITHUB_ACTIONS_ANNOTATION } from '../useProjectName';
 import { useWorkflowRuns } from '../useWorkflowRuns';
 import React, { useEffect } from 'react';
-import { Table } from '@backstage/core';
+import { EmptyState, Table } from '@backstage/core';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
-import { Card, Link, TableContainer } from '@material-ui/core';
+import { Button, Card, Link, TableContainer } from '@material-ui/core';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
 
 const firstLine = (message: string): string => message.split('\n')[0];
@@ -54,7 +54,22 @@ export const RecentWorkflowRunsCard = ({
     }
   }, [error, errorApi]);
 
-  return (
+  return !runs.length ? (
+    <EmptyState
+      missing="data"
+      title="No Workflow Data"
+      description="This component has Github Actions enabled, but no data was found. Have you created any Workflows? Click the button below to create a new Workflow."
+      action={
+        <Button
+          variant="contained"
+          color="primary"
+          href={`https://github.com/${owner}/${repo}/actions/new`}
+        >
+          Create new Workflow
+        </Button>
+      }
+    />
+  ) : (
     <TableContainer component={Card}>
       <Table
         title="Recent Workflow Runs"
