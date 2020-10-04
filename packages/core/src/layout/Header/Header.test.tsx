@@ -15,8 +15,10 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
+import { act, render, RenderResult } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
+import { ThemeProvider } from '@material-ui/core';
+import { customPageTheme } from '@backstage/theme';
 import { Header } from './Header';
 
 jest.mock('react-helmet', () => {
@@ -25,37 +27,73 @@ jest.mock('react-helmet', () => {
   };
 });
 
+const ThemeProviderWrapper: React.FC = ({ children }) => (
+  <ThemeProvider
+    theme={{
+      pageTheme: customPageTheme.pageTheme.home,
+      ...customPageTheme.baseTheme,
+    }}
+  >
+    {children}
+  </ThemeProvider>
+);
+
 describe('<Header/>', () => {
-  it('should render with title', () => {
-    const rendered = render(wrapInTestApp(<Header title="Title" />));
-    rendered.getByText('Title');
+  it('should render with title', async () => {
+    let rendered: RenderResult | undefined;
+    await act(async () => {
+      rendered = render(wrapInTestApp(<Header title="Title" />), {
+        wrapper: ThemeProviderWrapper,
+      });
+    });
+    rendered?.getByText('Title');
   });
 
-  it('should set document title', () => {
-    const rendered = render(wrapInTestApp(<Header title="Title1" />));
-    rendered.getByText('Title1');
-    rendered.getByText('defaultTitle: Title1 | Backstage');
+  it('should set document title', async () => {
+    let rendered: RenderResult | undefined;
+    await act(async () => {
+      rendered = render(wrapInTestApp(<Header title="Title1" />), {
+        wrapper: ThemeProviderWrapper,
+      });
+    });
+    rendered?.getByText('Title1');
+    rendered?.getByText('defaultTitle: Title1 | Backstage');
   });
 
-  it('should override document title', () => {
-    const rendered = render(
-      wrapInTestApp(<Header title="Title1" pageTitleOverride="Title2" />),
-    );
-    rendered.getByText('Title1');
-    rendered.getByText('defaultTitle: Title2 | Backstage');
+  it('should override document title', async () => {
+    let rendered: RenderResult | undefined;
+    await act(async () => {
+      rendered = render(
+        wrapInTestApp(<Header title="Title1" pageTitleOverride="Title2" />),
+        {
+          wrapper: ThemeProviderWrapper,
+        },
+      );
+    });
+    rendered?.getByText('Title1');
+    rendered?.getByText('defaultTitle: Title2 | Backstage');
   });
 
-  it('should have subtitle', () => {
-    const rendered = render(
-      wrapInTestApp(<Header title="Title" subtitle="Subtitle" />),
-    );
-    rendered.getByText('Subtitle');
+  it('should have subtitle', async () => {
+    let rendered: RenderResult | undefined;
+    await act(async () => {
+      rendered = render(
+        wrapInTestApp(<Header title="Title" subtitle="Subtitle" />),
+        {
+          wrapper: ThemeProviderWrapper,
+        },
+      );
+    });
+    rendered?.getByText('Subtitle');
   });
 
-  it('should have type rendered', () => {
-    const rendered = render(
-      wrapInTestApp(<Header title="Title" type="tool" />),
-    );
-    rendered.getByText('tool');
+  it('should have type rendered', async () => {
+    let rendered: RenderResult | undefined;
+    await act(async () => {
+      rendered = render(wrapInTestApp(<Header title="Title" type="tool" />), {
+        wrapper: ThemeProviderWrapper,
+      });
+    });
+    rendered?.getByText('tool');
   });
 });
