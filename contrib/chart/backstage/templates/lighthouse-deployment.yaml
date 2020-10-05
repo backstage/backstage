@@ -33,6 +33,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: backstage-lighthouse
+            - configMapRef:
+                name: {{ include "backstage.fullname" . }}-app-env
 
           env:
             - name: LAS_PORT

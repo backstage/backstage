@@ -30,12 +30,10 @@ spec:
           {{- toYaml .Values.backend.resources | nindent 12 }}
 
           envFrom:
-            - configMapRef:
-                name: {{ include "backstage.fullname" . }}-app
-            - configMapRef:
-                name: {{ include "backstage.fullname" . }}-auth
             - secretRef:
                 name: {{ include "backstage.fullname" . }}-backend
+            - configMapRef:
+                name: {{ include "backstage.fullname" . }}-app-env
           env:
             - name: APP_CONFIG_backend_postgresPassword
               valueFrom:
@@ -45,11 +43,17 @@ spec:
           volumeMounts:
             - name: postgres-ca
               mountPath: {{ include "backstage.backend.postgresCaDir" . }}
+            - name: app-config
+              mountPath: {{ printf "/usr/src/app/%s" (include "backstage.appConfigFilename" .) }}
+              subPath: {{ include "backstage.appConfigFilename" . }}
 
       volumes:
         - name: postgres-ca
           configMap:
             name: {{ include "backstage.fullname" . }}-postgres-ca
+        - name: app-config
+          configMap:
+            name: {{ include "backstage.fullname" . }}-app-config
 
 {{- if .Values.backend.enabled }}
 ---

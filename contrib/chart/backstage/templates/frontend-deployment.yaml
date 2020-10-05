@@ -29,8 +29,16 @@ spec:
           resources:
             {{- toYaml .Values.backend.resources | nindent 12 }}
           envFrom:
-          - configMapRef:
-              name: {{ include "backstage.fullname" . }}-app
+            - configMapRef:
+                name: {{ include "backstage.fullname" . }}-app-env
+          volumeMounts:
+            - name: app-config
+              mountPath: {{ printf "/usr/share/nginx/html/static/%s" (include "backstage.appConfigFilename" .) }}
+              subPath: {{ include "backstage.appConfigFilename" . }}
+      volumes:
+        - name: app-config
+          configMap:
+            name: {{ include "backstage.fullname" . }}-app-config
 {{- if .Values.frontend.enabled }}
 ---
 apiVersion: v1

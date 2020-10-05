@@ -277,3 +277,10 @@ Postgres password for lighthouse
 {{- required "A valid .Values.lighthouse.database.connection.password is required when postgresql is not enabled" $secretName -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+app-config file name
+*/}}
+{{- define "backstage.appConfigFilename" -}}
+{{- "app-config.local.yaml" -}}
+{{- end -}}
