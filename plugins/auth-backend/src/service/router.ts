@@ -24,12 +24,12 @@ import { DatabaseKeyStore, TokenFactory, createOidcRouter } from '../identity';
 import {
   NotFoundError,
   PluginEndpointDiscovery,
-  PluginDatabaseClientFactory,
+  PluginDatabaseManager,
 } from '@backstage/backend-common';
 
 export interface RouterOptions {
   logger: Logger;
-  database: PluginDatabaseClientFactory;
+  database: PluginDatabaseManager;
   config: Config;
   discovery: PluginEndpointDiscovery;
 }
@@ -48,7 +48,7 @@ export async function createRouter({
   const keyDurationSeconds = 3600;
 
   const keyStore = await DatabaseKeyStore.create({
-    database: await database(),
+    database: await database.getClient(),
   });
   const tokenIssuer = new TokenFactory({
     issuer: authUrl,

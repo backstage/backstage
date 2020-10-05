@@ -17,16 +17,28 @@
 import Knex from 'knex';
 import { Config } from '@backstage/config';
 import { createDatabaseClient, ensureDatabaseExists } from './connection';
-import { PluginDatabaseClientFactory } from './types';
+import { PluginDatabaseManager } from './types';
 
 /**
- * Implements a Database Manager which will automatically create new databases for plugins when requested. All
- * requested databases are created with the credentials provided.
+ * Implements a Database Manager which will automatically create new databases
+ * for plugins when requested. All requested databases are created with the
+ * credentials provided.
  */
-export class SingleConnectionManager {
+export class SingleConnectionDatabaseManager {
   private readonly config: Config;
 
-  constructor(config: Config) {
+  /**
+   * Creates a new SingleConnectionDatabaseManager instance by reading from the `backend`
+   * config section, specifically the `.database` key for discovering the management
+   * database configuration.
+   */
+  static fromConfig(config: Config): SingleConnectionDatabaseManager {
+    return new SingleConnectionDatabaseManager(
+      config.getConfig('backend.database'),
+    );
+  }
+
+  private constructor(config: Config) {
     this.config = config;
   }
 
@@ -39,17 +51,21 @@ export class SingleConnectionManager {
   }
 
   /**
-   * Generates a PluginDatabaseClientFactory for consumption by plugins.
+   * Generates a PluginDatabaseManager for consumption by plugins.
    */
-  getDatabaseClientFactory(pluginId: string): PluginDatabaseClientFactory {
-    return (database?: string): Promise<Knex> => {
-      return this.getDatabase(pluginId, database);
+  forPlugin(pluginId: string): PluginDatabaseManager {
+    const _this = this;
+
+    return {
+      getClient(database?: string): Promise<Knex> {
+        return _this.getDatabase(pluginId, database);
+      },
     };
   }
 
   private async getDatabase(pluginId: string, suffix?: string): Promise<Knex> {
     const config = this.getDatabaseConfig();
-    const overrides = SingleConnectionManager.getDatabaseOverrides(
+    const overrides = SingleConnectionDatabaseManager.getDatabaseOverrides(
       pluginId,
       suffix,
     );

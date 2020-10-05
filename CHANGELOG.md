@@ -14,6 +14,7 @@ If you encounter issues while upgrading to a newer version, don't hesitate to re
 
 - The default mount point for backend plugins have been changed to `/api`. These changes are done in the backend package itself, so it is recommended that you sync up existing backend packages with this new pattern. [#2562](https://github.com/spotify/backstage/pull/2562)
 - A service discovery mechanism for backend plugins has been added, and is now a requirement for several backend plugins. See [packages/backend/src/index.ts](./packages/backend/src/index.ts) for how to set it up using `SingleHostDiscovery` from `@backstage/backend-common`. Note that the default base path for plugins is set to `/api` to that change, but it can be set to use the old behavior via the `basePath` option. [#2600](https://github.com/spotify/backstage/pull/2600)
+- A plugin database manager has been created, and plugins can now accept that interface as an argument during initialisation. Notably, the `auth` plugin has a [`createRouter` signature change](./plugins/auth-backend/src/service/router.ts). See [packages/backend/src/index.ts](./packages/backend/src/index.ts) on how to set it up. [#2697](https://github.com/spotify/backstage/pull/2697)
 
 ### @backstage/auth-backend
 

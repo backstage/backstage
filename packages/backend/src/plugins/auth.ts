@@ -19,14 +19,9 @@ import { PluginEnvironment } from '../types';
 
 export default async function createPlugin({
   logger,
-  databaseClientFactory,
+  database,
   config,
   discovery,
 }: PluginEnvironment) {
-  return await createRouter({
-    logger,
-    config,
-    database: databaseClientFactory,
-    discovery,
-  });
+  return await createRouter({ logger, config, database, discovery });
 }
