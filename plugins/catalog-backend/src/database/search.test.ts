@@ -125,46 +125,7 @@ describe('search', () => {
         },
         { entity_id: 'eid', key: 'apiversion', value: 'a' },
         { entity_id: 'eid', key: 'kind', value: 'b' },
-        { entity_id: 'eid', key: 'name', value: 'n' },
-        { entity_id: 'eid', key: 'namespace', value: null },
-        { entity_id: 'eid', key: 'uid', value: null },
-        { entity_id: 'eid', key: 'namespace', value: ENTITY_DEFAULT_NAMESPACE },
       ]);
-    });
-
-    it('adds prefix-stripped versions', () => {
-      const input: Entity = {
-        apiVersion: 'a',
-        kind: 'b',
-        metadata: {
-          name: 'name',
-          labels: {
-            lbl: 'lbl',
-          },
-          annotations: {
-            ann: 'ann',
-          },
-        },
-        spec: {
-          sub: {
-            spc: 'spc',
-          },
-        },
-      };
-      expect(buildEntitySearch('eid', input)).toStrictEqual(
-        expect.arrayContaining([
-          { entity_id: 'eid', key: 'metadata.name', value: 'name' },
-          { entity_id: 'eid', key: 'name', value: 'name' },
-          { entity_id: 'eid', key: 'metadata.labels.lbl', value: 'lbl' },
-          { entity_id: 'eid', key: 'labels.lbl', value: 'lbl' },
-          { entity_id: 'eid', key: 'lbl', value: 'lbl' },
-          { entity_id: 'eid', key: 'metadata.annotations.ann', value: 'ann' },
-          { entity_id: 'eid', key: 'annotations.ann', value: 'ann' },
-          { entity_id: 'eid', key: 'ann', value: 'ann' },
-          { entity_id: 'eid', key: 'spec.sub.spc', value: 'spc' },
-          { entity_id: 'eid', key: 'sub.spc', value: 'spc' },
-        ]),
-      );
     });
   });
 });
