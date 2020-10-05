@@ -8,14 +8,25 @@ metadata:
   {{- end }}
 spec:
   rules:
-  - http:
-      paths:
-      - path: /api
-        backend:
-          serviceName: {{ include "backend.serviceName" . }}
-          servicePort: 80
-      - path: /
-        backend:
-          serviceName: {{ include "frontend.serviceName" . }}
-          servicePort: 80
+    - host: {{ .Values.appConfig.app.baseUrl | trimPrefix "https://" | trimSuffix "/" }}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: {{ include "frontend.serviceName" . }}
+              servicePort: 80
+    - host: {{ .Values.appConfig.backend.baseUrl | trimPrefix "https://" | trimSuffix "/" }}
+      http:
+        paths:
+          - path: /api
+            backend:
+              serviceName: {{ include "backend.serviceName" . }}
+              servicePort: 80
+    - host: {{ .Values.appConfig.lighthouse.baseUrl | trimPrefix "https://" | trimSuffix "/" }}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: {{ include "lighthouse.serviceName" . }}
+              servicePort: 80
 
