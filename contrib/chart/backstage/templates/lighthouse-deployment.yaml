@@ -32,7 +32,7 @@ spec:
 
           envFrom:
             - configMapRef:
-                name: backstage-lighthouse
+                name: {{ include "backstage.fullname" . -}}-lighthouse
             - configMapRef:
                 name: {{ include "backstage.fullname" . }}-app-env
 
