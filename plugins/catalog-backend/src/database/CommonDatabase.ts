@@ -169,7 +169,7 @@ export class CommonDatabase implements Database {
     let builder = tx<DbEntitiesRow>('entities');
     for (const [indexU, filter] of (filters ?? []).entries()) {
       const index = Number(indexU);
-      const key = filter.key.toLowerCase().replace('*', '%');
+      const key = filter.key.toLowerCase().replace(/\*/g, '%');
       const keyOp = filter.key.includes('*') ? 'like' : '=';
 
       let matchNulls = false;
@@ -180,7 +180,7 @@ export class CommonDatabase implements Database {
         if (!value) {
           matchNulls = true;
         } else if (value.includes('*')) {
-          matchLike.push(value.toLowerCase().replace('*', '%'));
+          matchLike.push(value.toLowerCase().replace(/\*/g, '%'));
         } else {
           matchIn.push(value.toLowerCase());
         }
