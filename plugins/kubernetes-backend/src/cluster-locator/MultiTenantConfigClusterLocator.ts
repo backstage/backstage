@@ -15,8 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import { AuthTokens, ClusterDetails, KubernetesClusterLocator } from '..';
-import { AuthProviderType } from './types';
+import { ClusterDetails, KubernetesClusterLocator } from '..';
 
 // This cluster locator assumes that every service is located on every cluster
 // Therefore it will always return all clusters in an app configuration file
@@ -37,9 +36,7 @@ export class MultiTenantConfigClusterLocator
           name: c.getString('name'),
           url: c.getString('url'),
           serviceAccountToken: c.getOptionalString('serviceAccountToken'),
-          authProvider: (c.getOptionalString('authProvider')
-            ? c.getOptionalString('authProvider')
-            : 'serviceAccount') as AuthProviderType,
+          authProvider: c.getString('authProvider'),
         };
       }),
     );
@@ -47,27 +44,7 @@ export class MultiTenantConfigClusterLocator
 
   // As this implementation always returns all clusters serviceId is ignored here
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async getClusterByServiceId(
-    _serviceId: string,
-    authTokens: AuthTokens,
-  ): Promise<ClusterDetails[]> {
-    return this.clusterDetails.map(cd => {
-      const authProviderKind = cd.authProvider;
-      if (authProviderKind === 'google') {
-        const authToken: string | undefined = authTokens[authProviderKind];
-        const clusterDetailWithAuthToken: ClusterDetails = Object.assign(
-          {},
-          cd,
-        );
-        clusterDetailWithAuthToken.serviceAccountToken = authToken;
-        return clusterDetailWithAuthToken;
-        // TODO: When validation for authProvider key is added, remove allowance of undefined as value
-      } else if (authProviderKind === 'serviceAccount') {
-        return cd;
-      }
-      throw new Error(
-        `Unsupported Kubernetes auth provider "${authProviderKind}"`,
-      );
-    });
+  async getClusterByServiceId(_serviceId: string): Promise<ClusterDetails[]> {
+    return this.clusterDetails;
   }
 }

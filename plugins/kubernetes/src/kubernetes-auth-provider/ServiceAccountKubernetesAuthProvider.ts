@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core';
-import {
-  AuthRequestBody,
-  ObjectsByServiceIdResponse,
-} from '@backstage/plugin-kubernetes-backend';
+import { KubernetesAuthProvider } from './types';
+import { AuthRequestBody } from '@backstage/plugin-kubernetes-backend';
 
-export const kubernetesApiRef = createApiRef<KubernetesApi>({
-  id: 'plugin.kubernetes.service',
-  description:
-    'Used by the Kubernetes plugin to make requests to accompanying backend',
-});
-
-export interface KubernetesApi {
-  getObjectsByServiceId(
-    serviceId: String,
+export class ServiceAccountKubernetesAuthProvider
+  implements KubernetesAuthProvider {
+  async decorateRequestBodyForAuth(
     requestBody: AuthRequestBody,
-  ): Promise<ObjectsByServiceIdResponse>;
+  ): Promise<AuthRequestBody> {
+    // No-op, with service account for auth, cluster config/details should already have serviceAccountToken
+    return requestBody;
+  }
 }

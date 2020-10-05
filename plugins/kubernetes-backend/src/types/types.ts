@@ -24,15 +24,17 @@ import {
   V1Service,
 } from '@kubernetes/client-node';
 
-export interface AuthTokens {
-  google?: string;
-}
-
 export interface ClusterDetails {
   name: string;
   url: string;
-  authProvider: string | undefined;
+  authProvider: string;
   serviceAccountToken?: string | undefined;
+}
+
+export interface AuthRequestBody {
+  auth?: {
+    google?: string;
+  };
 }
 
 export interface ClusterObjects {
@@ -117,10 +119,7 @@ export interface KubernetesFetcher {
 
 // Used to locate which cluster(s) a service is running on
 export interface KubernetesClusterLocator {
-  getClusterByServiceId(
-    serviceId: string,
-    authTokens: AuthTokens,
-  ): Promise<ClusterDetails[]>;
+  getClusterByServiceId(serviceId: string): Promise<ClusterDetails[]>;
 }
 
 export type KubernetesErrorTypes =

@@ -15,5 +15,4 @@
  */
 
 export type ClusterLocatorMethod = 'configMultiTenant' | 'http';
-// TODO: When validation for authProvider key is added, remove allowance of undefined as value
 export type AuthProviderType = 'google' | 'serviceAccount';

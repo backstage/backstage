@@ -26,7 +26,11 @@ import {
   GetKubernetesObjectsByServiceIdHandler,
   handleGetKubernetesObjectsByServiceId,
 } from './getKubernetesObjectsByServiceIdHandler';
-import { AuthTokens, KubernetesClusterLocator, KubernetesFetcher } from '..';
+import {
+  AuthRequestBody,
+  KubernetesClusterLocator,
+  KubernetesFetcher,
+} from '../types/types';
 
 export interface RouterOptions {
   logger: Logger;
@@ -64,14 +68,14 @@ export const makeRouter = (
   // TODO error handling
   router.post('/services/:serviceId', async (req, res) => {
     const serviceId = req.params.serviceId;
-    const authTokens: AuthTokens = req.body.auth;
+    const requestBody: AuthRequestBody = req.body;
     try {
       const response = await handleGetByServiceId(
         serviceId,
         fetcher,
         clusterLocator,
         logger,
-        authTokens,
+        requestBody,
       );
       res.send(response);
     } catch (e) {

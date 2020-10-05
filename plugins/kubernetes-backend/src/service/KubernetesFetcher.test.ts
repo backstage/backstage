@@ -62,8 +62,8 @@ describe('KubernetesClientProvider', () => {
       {
         name: 'cluster1',
         url: 'http://localhost:9999',
-        serviceAccountToken: undefined,
-        authProvider: undefined,
+        serviceAccountToken: 'token',
+        authProvider: 'serviceAccount',
       },
       new Set(['pods', 'services']),
     );
@@ -125,8 +125,8 @@ describe('KubernetesClientProvider', () => {
       {
         name: 'cluster1',
         url: 'http://localhost:9999',
-        serviceAccountToken: undefined,
-        authProvider: undefined,
+        serviceAccountToken: 'token',
+        authProvider: 'serviceAccount',
       },
       new Set(['pods', 'services']),
     );
@@ -174,8 +174,8 @@ describe('KubernetesClientProvider', () => {
         {
           name: 'cluster1',
           url: 'http://localhost:9999',
-          serviceAccountToken: undefined,
-          authProvider: undefined,
+          serviceAccountToken: 'token',
+          authProvider: 'serviceAccount',
         },
         new Set<any>(['foo']),
       ),

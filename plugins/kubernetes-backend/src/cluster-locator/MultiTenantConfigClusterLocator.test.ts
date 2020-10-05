@@ -16,7 +16,6 @@
 
 import '@backstage/backend-common';
 import { MultiTenantConfigClusterLocator } from './MultiTenantConfigClusterLocator';
-import { AuthTokens } from '..';
 import { ConfigReader, Config } from '@backstage/config';
 
 describe('MultiTenantConfigClusterLocator', () => {
@@ -32,7 +31,7 @@ describe('MultiTenantConfigClusterLocator', () => {
       config.getConfigArray('clusters'),
     );
 
-    const result = await sut.getClusterByServiceId('ignored', {});
+    const result = await sut.getClusterByServiceId('ignored');
 
     expect(result).toStrictEqual([]);
   });
@@ -44,6 +43,7 @@ describe('MultiTenantConfigClusterLocator', () => {
           {
             name: 'cluster1',
             url: 'http://localhost:8080',
+            authProvider: 'serviceAccount',
           },
         ],
       },
@@ -54,7 +54,7 @@ describe('MultiTenantConfigClusterLocator', () => {
       config.getConfigArray('clusters'),
     );
 
-    const result = await sut.getClusterByServiceId('ignored', {});
+    const result = await sut.getClusterByServiceId('ignored');
 
     expect(result).toStrictEqual([
       {
@@ -72,49 +72,9 @@ describe('MultiTenantConfigClusterLocator', () => {
         clusters: [
           {
             name: 'cluster1',
-            serviceAccountToken: undefined,
+            serviceAccountToken: 'token',
             url: 'http://localhost:8080',
-          },
-          {
-            name: 'cluster2',
-            serviceAccountToken: undefined,
-            url: 'http://localhost:8081',
-          },
-        ],
-      },
-      'ctx',
-    );
-
-    const sut = MultiTenantConfigClusterLocator.fromConfig(
-      config.getConfigArray('clusters'),
-    );
-
-    const result = await sut.getClusterByServiceId('ignored', {});
-
-    expect(result).toStrictEqual([
-      {
-        name: 'cluster1',
-        serviceAccountToken: undefined,
-        url: 'http://localhost:8080',
-        authProvider: 'serviceAccount',
-      },
-      {
-        name: 'cluster2',
-        serviceAccountToken: undefined,
-        url: 'http://localhost:8081',
-        authProvider: 'serviceAccount',
-      },
-    ]);
-  });
-
-  it('clusters using google auth return cluster details with tokens', async () => {
-    const config: Config = new ConfigReader(
-      {
-        clusters: [
-          {
-            name: 'cluster1',
-            serviceAccountToken: 'abc',
-            url: 'http://localhost:8080',
+            authProvider: 'serviceAccount',
           },
           {
             name: 'cluster2',
@@ -130,48 +90,21 @@ describe('MultiTenantConfigClusterLocator', () => {
       config.getConfigArray('clusters'),
     );
 
-    const authTokens: AuthTokens = {
-      google: 'google_token_123',
-    };
-
-    const result = await sut.getClusterByServiceId('ignored', authTokens);
+    const result = await sut.getClusterByServiceId('ignored');
 
     expect(result).toStrictEqual([
       {
         name: 'cluster1',
-        serviceAccountToken: 'abc',
+        serviceAccountToken: 'token',
         url: 'http://localhost:8080',
         authProvider: 'serviceAccount',
       },
       {
         name: 'cluster2',
-        serviceAccountToken: 'google_token_123',
+        serviceAccountToken: undefined,
         url: 'http://localhost:8081',
         authProvider: 'google',
       },
     ]);
-  });
-
-  it('using unsupported auth throws error', async () => {
-    const config: Config = new ConfigReader(
-      {
-        clusters: [
-          {
-            name: 'cluster1',
-            url: 'http://localhost:8080',
-            authProvider: 'linode',
-          },
-        ],
-      },
-      'ctx',
-    );
-
-    const sut = MultiTenantConfigClusterLocator.fromConfig(
-      config.getConfigArray('clusters'),
-    );
-
-    await expect(sut.getClusterByServiceId('ignored', {})).rejects.toThrow(
-      'Unsupported Kubernetes auth provider "linode"',
-    );
   });
 });

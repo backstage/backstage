@@ -16,10 +16,11 @@
 
 import React, { ReactElement, useEffect, useState } from 'react';
 import { Grid, TabProps } from '@material-ui/core';
+import { Config } from '@backstage/config';
 import {
   CardTab,
+  configApiRef,
   Content,
-  googleAuthApiRef,
   Page,
   pageTheme,
   Progress,
@@ -29,11 +30,12 @@ import {
 import { Entity } from '@backstage/catalog-model';
 import { kubernetesApiRef } from '../../api/types';
 import {
-  AuthTokens,
+  AuthRequestBody,
   ClusterObjects,
   FetchResponse,
   ObjectsByServiceIdResponse,
 } from '@backstage/plugin-kubernetes-backend';
+import { kubernetesAuthProvidersApiRef } from '../../kubernetes-auth-provider/types';
 import { DeploymentTables } from '../DeploymentTables';
 import { DeploymentTriple } from '../../types/types';
 import {
@@ -107,16 +109,30 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
   >(undefined);
   const [error, setError] = useState<string | undefined>(undefined);
 
-  const googleAuth = useApi(googleAuthApiRef);
+  const configApi = useApi(configApiRef);
+  const clusters: Config[] = configApi.getConfigArray('kubernetes.clusters');
+  const allAuthProviders: string[] = clusters.map(c =>
+    c.getString('authProvider'),
+  );
+  const authProviders: string[] = [...new Set(allAuthProviders)];
+
+  const kubernetesAuthProvidersApi = useApi(kubernetesAuthProvidersApiRef);
+
   useEffect(() => {
     (async () => {
-      // TODO: Query Kubernetes backend to get info on which auth providers are in use
-      const googleAuthToken: string = await googleAuth.getAccessToken(
-        'https://www.googleapis.com/auth/cloud-platform',
-      );
-      const authTokens: AuthTokens = { google: googleAuthToken };
+      // For each auth type, invoke decorateRequestBodyForAuth on corresponding KubernetesAuthProvider
+      let requestBody: AuthRequestBody = {};
+      for (const authProviderStr of authProviders) {
+        // Multiple asyncs done sequentially instead of all at once to prevent same requestBody from being modified simultaneously
+        requestBody = await kubernetesAuthProvidersApi.decorateRequestBodyForAuth(
+          authProviderStr,
+          requestBody,
+        );
+      }
+
+      // TODO: Add validation on contents/format of requestBody
       kubernetesApi
-        .getObjectsByServiceId(entity.metadata.name, authTokens)
+        .getObjectsByServiceId(entity.metadata.name, requestBody)
         .then(result => {
           setKubernetesObjects(result);
         })
@@ -124,7 +140,9 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
           setError(e.message);
         });
     })();
-  }, [entity.metadata.name, kubernetesApi, googleAuth]);
+    /* eslint-disable react-hooks/exhaustive-deps */
+  }, [entity.metadata.name, kubernetesApi, kubernetesAuthProvidersApi]);
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   const clustersWithErrors =
     kubernetesObjects?.items.filter(r => r.errors.length > 0) ?? [];

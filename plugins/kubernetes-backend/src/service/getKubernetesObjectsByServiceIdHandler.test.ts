@@ -74,6 +74,7 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
       Promise.resolve([
         {
           name: 'test-cluster',
+          authProvider: 'serviceAccount',
         },
       ]),
     );
@@ -143,9 +144,11 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
       Promise.resolve([
         {
           name: 'test-cluster',
+          authProvider: 'serviceAccount',
         },
         {
           name: 'other-cluster',
+          authProvider: 'google',
         },
       ]),
     );
@@ -162,7 +165,9 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
       },
       getVoidLogger(),
       {
-        google: 'google_token_123',
+        auth: {
+          google: 'google_token_123',
+        },
       },
     );
 
