@@ -9,7 +9,7 @@ At Spotify, we find that cloud costs are optimized organically when:
 - The data is shown in software terms familiar to them.
 - Alerts and recommendations are targeted and actionable.
 
-Cost Insights shows trends over time, at the granularity of your software deployments - rather than the cloud provider's concepts. It can be used to troubleshoot cost anomalies, and promote cost-saving infrastructure migrations.
+Cost Insights shows trends over time, at the granularity of Backstage catalog entities - rather than the cloud provider's concepts. It can be used to troubleshoot cost anomalies, and promote cost-saving infrastructure migrations.
 
 ## Install
 
