@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "@spotify/prettier-config": "^8.0.0",
-    "docusaurus": "^2.0.0-alpha.64",
+    "docusaurus": "^2.0.0-alpha.65",
     "js-yaml": "^3.14.0",
     "prettier": "^2.0.5"
   },
