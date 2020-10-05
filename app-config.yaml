@@ -18,23 +18,20 @@ proxy:
     target: https://circleci.com/api/v1.1
     headers:
       Circle-Token:
-        $secret:
-          env: CIRCLECI_AUTH_TOKEN
+        $env: CIRCLECI_AUTH_TOKEN
 
   '/jenkins/api':
     target: http://localhost:8080
     headers:
       Authorization:
-        $secret:
-          env: JENKINS_BASIC_AUTH_HEADER
+        $env: JENKINS_BASIC_AUTH_HEADER
 
   '/travisci/api':
     target: https://api.travis-ci.com
     changeOrigin: true
     headers:
       Authorization:
-        $secret:
-          env: TRAVISCI_AUTH_TOKEN
+        $env: TRAVISCI_AUTH_TOKEN
       travis-api-version: 3
 
 organization:
@@ -52,8 +49,7 @@ sentry:
 rollbar:
   organization: spotify
   accountToken:
-    $secret:
-      env: ROLLBAR_ACCOUNT_TOKEN
+    $env: ROLLBAR_ACCOUNT_TOKEN
 
 newrelic:
   api:
@@ -71,38 +67,31 @@ integrations:
   github:
     - host: github.com
       token:
-        $secret:
-          env: GITHUB_PRIVATE_TOKEN
+        $env: GITHUB_PRIVATE_TOKEN
     ### Example for how to add your GitHub Enterprise instance using the API:
     # - host: ghe.example.net
     #   apiBaseUrl: https://ghe.example.net/api/v3
     #   token:
-    #     $secret:
-    #       env: GHE_PRIVATE_TOKEN
+    #     $env: GHE_PRIVATE_TOKEN
     ### Example for how to add your GitHub Enterprise instance using raw HTTP fetches (token is optional):
     # - host: ghe.example.net
     #   rawBaseUrl: https://ghe.example.net/raw
     #   token:
-    #     $secret:
-    #       env: GHE_PRIVATE_TOKEN
+    #     $env: GHE_PRIVATE_TOKEN
   gitlab:
     - host: gitlab.com
       token:
-        $secret:
-          env: GITLAB_PRIVATE_TOKEN
+        $env: GITLAB_PRIVATE_TOKEN
   bitbucket:
     - host: bitbucket.org
       username:
-        $secret:
-          env: BITBUCKET_USERNAME
+        $env: BITBUCKET_USERNAME
       appPassword:
-        $secret:
-          env: BITBUCKET_APP_PASSWORD
+        $env: BITBUCKET_APP_PASSWORD
   azure:
     - host: dev.azure.com
       token:
-        $secret:
-          env: AZURE_PRIVATE_TOKEN
+        $env: AZURE_PRIVATE_TOKEN
 
 catalog:
   rules:
@@ -113,14 +102,12 @@ catalog:
       providers:
         - target: https://github.com
           token:
-            $secret:
-              env: GITHUB_PRIVATE_TOKEN
+            $env: GITHUB_PRIVATE_TOKEN
         #### Example for how to add your GitHub Enterprise instance using the API:
         # - target: https://ghe.example.net
         #   apiBaseUrl: https://ghe.example.net/api/v3
         #   token:
-        #     $secret:
-        #       env: GHE_PRIVATE_TOKEN
+        #     $env: GHE_PRIVATE_TOKEN
 
   locations:
     # Backstage example components
@@ -142,104 +129,80 @@ catalog:
 scaffolder:
   github:
     token:
-      $secret:
-        env: GITHUB_ACCESS_TOKEN
+      $env: GITHUB_ACCESS_TOKEN
     visibility: public # or 'internal' or 'private'
   gitlab:
     api:
       baseUrl: https://gitlab.com
       token:
-        $secret:
-          env: GITLAB_ACCESS_TOKEN
+        $env: GITLAB_ACCESS_TOKEN
   azure:
     baseUrl: https://dev.azure.com/{your-organization}
     api:
       token:
-        $secret:
-          env: AZURE_PRIVATE_TOKEN
+        $env: AZURE_PRIVATE_TOKEN
 
 auth:
   providers:
     google:
       development:
         clientId:
-          $secret:
-            env: AUTH_GOOGLE_CLIENT_ID
+          $env: AUTH_GOOGLE_CLIENT_ID
         clientSecret:
-          $secret:
-            env: AUTH_GOOGLE_CLIENT_SECRET
+          $env: AUTH_GOOGLE_CLIENT_SECRET
     github:
       development:
         clientId:
-          $secret:
-            env: AUTH_GITHUB_CLIENT_ID
+          $env: AUTH_GITHUB_CLIENT_ID
         clientSecret:
-          $secret:
-            env: AUTH_GITHUB_CLIENT_SECRET
+          $env: AUTH_GITHUB_CLIENT_SECRET
         enterpriseInstanceUrl:
-          $secret:
-            env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
+          $env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
     gitlab:
       development:
         clientId:
-          $secret:
-            env: AUTH_GITLAB_CLIENT_ID
+          $env: AUTH_GITLAB_CLIENT_ID
         clientSecret:
-          $secret:
-            env: AUTH_GITLAB_CLIENT_SECRET
+          $env: AUTH_GITLAB_CLIENT_SECRET
         audience:
-          $secret:
-            env: GITLAB_BASE_URL
+          $env: GITLAB_BASE_URL
     saml:
       entryPoint: 'http://localhost:7001/'
       issuer: 'passport-saml'
     okta:
       development:
         clientId:
-          $secret:
-            env: AUTH_OKTA_CLIENT_ID
+          $env: AUTH_OKTA_CLIENT_ID
         clientSecret:
-          $secret:
-            env: AUTH_OKTA_CLIENT_SECRET
+          $env: AUTH_OKTA_CLIENT_SECRET
         audience:
-          $secret:
-            env: AUTH_OKTA_AUDIENCE
+          $env: AUTH_OKTA_AUDIENCE
     oauth2:
       development:
         clientId:
-          $secret:
-            env: AUTH_OAUTH2_CLIENT_ID
+          $env: AUTH_OAUTH2_CLIENT_ID
         clientSecret:
-          $secret:
-            env: AUTH_OAUTH2_CLIENT_SECRET
+          $env: AUTH_OAUTH2_CLIENT_SECRET
         authorizationUrl:
-          $secret:
-            env: AUTH_OAUTH2_AUTH_URL
+          $env: AUTH_OAUTH2_AUTH_URL
         tokenUrl:
-          $secret:
-            env: AUTH_OAUTH2_TOKEN_URL
+          $env: AUTH_OAUTH2_TOKEN_URL
     auth0:
       development:
         clientId:
-          $secret:
-            env: AUTH_AUTH0_CLIENT_ID
+          $env: AUTH_AUTH0_CLIENT_ID
         clientSecret:
-          $secret:
-            env: AUTH_AUTH0_CLIENT_SECRET
+          $env: AUTH_AUTH0_CLIENT_SECRET
         domain:
-          $secret:
-            env: AUTH_AUTH0_DOMAIN
+          $env: AUTH_AUTH0_DOMAIN
     microsoft:
       development:
         clientId:
-          $secret:
-            env: AUTH_MICROSOFT_CLIENT_ID
+          $env: AUTH_MICROSOFT_CLIENT_ID
         clientSecret:
-          $secret:
-            env: AUTH_MICROSOFT_CLIENT_SECRET
+          $env: AUTH_MICROSOFT_CLIENT_SECRET
         tenantId:
-          $secret:
-            env: AUTH_MICROSOFT_TENANT_ID
+          $env: AUTH_MICROSOFT_TENANT_ID
 costInsights:
   engineerCost: 200000
   products:

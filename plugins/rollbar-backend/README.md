@@ -10,8 +10,7 @@ The following values are read from the configuration file.
 rollbar:
   organization: spotify
   accountToken:
-    $secret:
-      env: ROLLBAR_ACCOUNT_TOKEN
+    $env: ROLLBAR_ACCOUNT_TOKEN
 ```
 
 _NOTE: The `ROLLBAR_ACCOUNT_TOKEN` environment variable must be set to a read

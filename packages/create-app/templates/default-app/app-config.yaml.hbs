@@ -22,22 +22,17 @@ backend:
     client: pg
     connection:
       host:
-        $secret:
-          env: POSTGRES_HOST
+        $env: POSTGRES_HOST
       port:
-        $secret:
-          env: POSTGRES_PORT
+        $env: POSTGRES_PORT
       user:
-        $secret:
-          env: POSTGRES_USER
+        $env: POSTGRES_USER
       password:
-        $secret:
-          env: POSTGRES_PASSWORD
+        $env: POSTGRES_PASSWORD
       # https://node-postgres.com/features/ssl
       #ssl: require # see https://www.postgresql.org/docs/current/libpq-ssl.html Table 33.1. SSL Mode Descriptions (e.g. require)
         #ca: # if you have a CA file and want to verify it you can uncomment this section
-        #  $secret:
-        #    file: <file-path>/ca/server.crt
+        #  $file: <file-path>/ca/server.crt
   {{/if}}
 
 proxy:
@@ -60,8 +55,7 @@ auth:
 scaffolder:
   github:
     token:
-      $secret:
-        env: GITHUB_ACCESS_TOKEN
+      $env: GITHUB_ACCESS_TOKEN
     visibility: public # or 'internal' or 'private'
 
 catalog:
@@ -72,14 +66,12 @@ catalog:
       providers:
         - target: https://github.com
           token:
-            $secret:
-              env: GITHUB_PRIVATE_TOKEN
+            $env: GITHUB_PRIVATE_TOKEN
         # Example for how to add your GitHub Enterprise instance:
         # - target: https://ghe.example.net
         #   apiBaseUrl: https://ghe.example.net/api/v3
         #   token:
-        #     $secret:
-        #       env: GHE_PRIVATE_TOKEN
+        #     $env: GHE_PRIVATE_TOKEN
   locations:
     # Backstage example components
     - type: url
