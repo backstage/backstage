@@ -118,7 +118,7 @@ appConfig:
     providers:
       google:
         development:
-          appOrigin: "http://localhost:3000/"
+          appOrigin: 'http://localhost:3000/'
           secure: false
           clientId:
             $secret:
@@ -128,7 +128,7 @@ appConfig:
               env: AUTH_GOOGLE_CLIENT_SECRET
       github:
         development:
-          appOrigin: "http://localhost:3000/"
+          appOrigin: 'http://localhost:3000/'
           secure: false
           clientId:
             $secret:
@@ -141,7 +141,7 @@ appConfig:
               env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
       gitlab:
         development:
-          appOrigin: "http://localhost:3000/"
+          appOrigin: 'http://localhost:3000/'
           secure: false
           clientId:
             $secret:
@@ -154,7 +154,7 @@ appConfig:
               env: GITLAB_BASE_URL
       okta:
         development:
-          appOrigin: "http://localhost:3000/"
+          appOrigin: 'http://localhost:3000/'
           secure: false
           clientId:
             $secret:
@@ -167,7 +167,7 @@ appConfig:
               env: AUTH_OKTA_AUDIENCE
       oauth2:
         development:
-          appOrigin: "http://localhost:3000/"
+          appOrigin: 'http://localhost:3000/'
           secure: false
           clientId:
             $secret:
