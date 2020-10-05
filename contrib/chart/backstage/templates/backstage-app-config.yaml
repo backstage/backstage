@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "backstage.fullname" . }}-app
+data:
+  APP_CONFIG_app_baseUrl: {{ .Values.appConfig.app.baseUrl | quote | quote }}
+  APP_CONFIG_app_title: {{ .Values.appConfig.app.title | quote | quote }}
+  APP_CONFIG_backend_baseUrl: {{ .Values.appConfig.backend.baseUrl | quote | quote }}
+  APP_CONFIG_backend_lighthouseHostname: {{ include "lighthouse.serviceName" . | quote | quote }}
+  APP_CONFIG_backend_listen: {{ .Values.appConfig.backend.listen | quote | quote }}
+  APP_CONFIG_backend_cors_origin: {{ .Values.appConfig.backend.cors.origin | quote | quote }}
+  APP_CONFIG_backend_database_client: {{ .Values.appConfig.backend.database.client | quote | quote }}
+  APP_CONFIG_backend_database_connection_port: {{ include "backend.postgresql.port" . | quote }}
+  APP_CONFIG_backend_database_connection_host: {{ include "backend.postgresql.host" . | quote | quote }}
+  APP_CONFIG_backend_database_connection_user: {{ include "backend.postgresql.user" . | quote | quote }}
+  APP_CONFIG_backend_database_connection_database: {{ .Values.appConfig.backend.database.connection.database | quote | quote }}
+  APP_CONFIG_backend_database_connection_ssl_rejectUnauthorized: {{ .Values.appConfig.backend.database.connection.ssl.rejectUnauthorized | quote }}
+  APP_CONFIG_backend_database_connection_ssl_ca: {{ include "backstage.backend.postgresCaFilename" . | quote | quote }}
+  APP_CONFIG_sentry_organization: {{ .Values.appConfig.sentry.organization | quote | quote }}
+  APP_CONFIG_techdocs_storageUrl: {{ .Values.appConfig.techdocs.storageUrl | quote | quote }}
+  APP_CONFIG_techdocs_requestUrl: {{ .Values.appConfig.techdocs.requestUrl | quote | quote }}
+  APP_CONFIG_auth_providers_github_development_appOrigin: {{ .Values.appConfig.auth.providers.github.development.appOrigin | quote | quote }}
+  APP_CONFIG_auth_providers_google_development_appOrigin: {{ .Values.appConfig.auth.providers.google.development.appOrigin | quote | quote }}
+  APP_CONFIG_auth_providers_gitlab_development_appOrigin: {{ .Values.appConfig.auth.providers.gitlab.development.appOrigin | quote | quote }}
+  APP_CONFIG_auth_providers_okta_development_appOrigin: {{ .Values.appConfig.auth.providers.okta.development.appOrigin | quote | quote }}
+  APP_CONFIG_auth_providers_oauth2_development_appOrigin: {{ .Values.appConfig.auth.providers.oauth2.development.appOrigin | quote | quote }}
+  APP_CONFIG_lighthouse_baseUrl: {{ .Values.appConfig.lighthouse.baseUrl | quote | quote }}

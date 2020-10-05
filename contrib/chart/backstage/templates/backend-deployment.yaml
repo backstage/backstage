@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "backstage.fullname" . }}-backend
+
+spec:
+  replicas: {{ .Values.backend.replicaCount }}
+
+  selector:
+    matchLabels:
+      app: backstage
+      component: backend
+
+  template:
+    metadata:
+      annotations:
+        ad.datadoghq.com/backstage.logs: '[{"source":"backstage","service":"backend"}]'
+      labels:
+        app: backstage
+        component: backend
+
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-backend
+          image: {{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}
+          imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.backend.containerPort }}
+          resources:
+          {{- toYaml .Values.backend.resources | nindent 12 }}
+
+          envFrom:
+            - configMapRef:
+                name: {{ include "backstage.fullname" . }}-app
+            - configMapRef:
+                name: {{ include "backstage.fullname" . }}-auth
+            - secretRef:
+                name: {{ include "backstage.fullname" . }}-backend
+          env:
+            - name: APP_CONFIG_backend_postgresPassword
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "backend.postgresql.passwordSecret" .}}
+                  key: postgresql-password
+          volumeMounts:
+            - name: postgres-ca
+              mountPath: {{ include "backstage.backend.postgresCaDir" . }}
+
+      volumes:
+        - name: postgres-ca
+          configMap:
+            name: {{ include "backstage.fullname" . }}-postgres-ca
+
+{{- if .Values.backend.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "backend.serviceName" . }}
+
+spec:
+  ports:
+    - port: 80
+      targetPort: {{ .Values.backend.containerPort }}
+
+  selector:
+    app: backstage
+    component: backend
+
+  type: ClusterIP
+{{- end }}

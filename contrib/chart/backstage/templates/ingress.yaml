@@ -1,0 +1,37 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: {{ include "backstage.fullname" . }}-ingress-backend
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          serviceName: {{ include "backend.serviceName" . }}
+          servicePort: 80
+        path: /api(/|$)(.*)
+---
+# Having rewrite rules in an ingress with a '/' path results in an error when loading the
+# site "Unexpected token: <". That's why we need two ingress resources
+# See https://stackoverflow.com/questions/59931177/gke-install-nginx-ingress-with-static-ip-and-fanout
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: {{ include "backstage.fullname" . }}-ingress-frontend
+  {{- with .Values.ingress.annotations }}
+  annotations:
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          serviceName: {{ include "frontend.serviceName" . }}
+          servicePort: 80
+        path: /

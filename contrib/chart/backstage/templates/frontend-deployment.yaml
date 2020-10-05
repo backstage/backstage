@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "backstage.fullname" . }}-frontend
+
+spec:
+  replicas: {{ .Values.frontend.replicaCount }}
+
+  selector:
+    matchLabels:
+      app: backstage
+      component: frontend
+
+  template:
+    metadata:
+      annotations:
+        ad.datadoghq.com/backstage.logs: '[{"source":"backstage","service":"frontend"}]'
+      labels:
+        app: backstage
+        component: frontend
+
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-frontend
+          image: {{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}
+          imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.frontend.containerPort }}
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}
+          envFrom:
+          - configMapRef:
+              name: {{ include "backstage.fullname" . }}-app
+{{- if .Values.frontend.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "frontend.serviceName" . }}
+
+spec:
+  ports:
+    - port: 80
+      targetPort: {{ .Values.frontend.containerPort }}
+
+  selector:
+    app: backstage
+    component: frontend
+
+  type: ClusterIP
+{{- end }}

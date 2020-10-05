@@ -1,0 +1,72 @@
+{{- if .Values.lighthouse.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "backstage.fullname" . }}-lighthouse
+
+spec:
+  replicas: {{ .Values.lighthouse.replicaCount }}
+
+  selector:
+    matchLabels:
+      app: backstage
+      component: lighthouse-audit-service
+
+  template:
+    metadata:
+      annotations:
+        ad.datadoghq.com/backstage.logs: '[{"source":"backstage","service":"lighthouse"}]'
+      labels:
+        app: backstage
+        component: lighthouse-audit-service
+
+    spec:
+      containers:
+        - name: lighthouse-audit-service
+          image: {{ .Values.lighthouse.image.repository }}:{{ .Values.lighthouse.image.tag }}
+          imagePullPolicy: {{ .Values.lighthouse.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.lighthouse.containerPort }}
+          resources:
+            {{- toYaml .Values.lighthouse.resources | nindent 12 }}
+
+          envFrom:
+            - configMapRef:
+                name: backstage-lighthouse
+
+          env:
+            - name: LAS_PORT
+              value: {{ .Values.lighthouse.containerPort | quote }}
+            - name: LAS_CORS
+              value: "true"
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "lighthouse.postgresql.passwordSecret" . }}
+                  key: postgresql-password
+
+          volumeMounts:
+            - name: postgres-ca
+              mountPath: {{ include "backstage.lighthouse.postgresCaDir" . }}
+
+      volumes:
+        - name: postgres-ca
+          configMap:
+            name: {{ include "backstage.fullname" . }}-postgres-ca
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "lighthouse.serviceName" . }}
+
+spec:
+  ports:
+    - port: 80
+      targetPort: {{ .Values.lighthouse.containerPort }}
+
+  selector:
+    app: backstage
+    component: lighthouse-audit-service
+
+  type: ClusterIP
+{{- end }}
