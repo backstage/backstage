@@ -23,6 +23,7 @@ import {
   TechdocsGenerator,
   GithubPreparer,
   GitlabPreparer,
+  AzurePreparer,
 } from '@backstage/plugin-techdocs-backend';
 import { PluginEnvironment } from '../types';
 import Docker from 'dockerode';
@@ -39,10 +40,12 @@ export default async function createPlugin({
   const preparers = new Preparers();
   const githubPreparer = new GithubPreparer(logger);
   const gitlabPreparer = new GitlabPreparer(logger);
+  const azurePreparer = new AzurePreparer(logger);
   const directoryPreparer = new DirectoryPreparer(logger);
   preparers.register('dir', directoryPreparer);
   preparers.register('github', githubPreparer);
   preparers.register('gitlab', gitlabPreparer);
+  preparers.register('azure/api', azurePreparer);
 
   const publisher = new LocalPublish(logger);
 
