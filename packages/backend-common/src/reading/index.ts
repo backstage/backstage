@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-import Knex from 'knex';
-import { Logger } from 'winston';
-import { Config } from '@backstage/config';
-import { PluginEndpointDiscovery, UrlReader } from '@backstage/backend-common';
-
-export type PluginEnvironment = {
-  logger: Logger;
-  database: Knex;
-  config: Config;
-  reader: UrlReader;
-  discovery: PluginEndpointDiscovery;
-};
+export type { UrlReader } from './types';
+export { UrlReaders } from './UrlReaders';
+export { AzureUrlReader } from './AzureUrlReader';
+export { BitbucketUrlReader } from './BitbucketUrlReader';
+export { GithubUrlReader } from './GithubUrlReader';
+export { GitlabUrlReader } from './GitlabUrlReader';

@@ -14,23 +14,21 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
-import { LocationSpec } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import {
   getApiRequestOptions,
   getApiUrl,
   getRawRequestOptions,
   getRawUrl,
-  GithubReaderProcessor,
+  GithubUrlReader,
   ProviderConfig,
   readConfig,
-} from './GithubReaderProcessor';
+} from './GithubUrlReader';
 
-describe('GithubReaderProcessor', () => {
+describe('GithubUrlReader', () => {
   describe('getApiRequestOptions', () => {
     it('sets the correct API version', () => {
-      const config: ProviderConfig = { target: '', apiBaseUrl: '' };
+      const config: ProviderConfig = { host: '', apiBaseUrl: '' };
       expect((getApiRequestOptions(config).headers as any).Accept).toEqual(
         'application/vnd.github.v3.raw',
       );
@@ -38,12 +36,12 @@ describe('GithubReaderProcessor', () => {
 
     it('inserts a token when needed', () => {
       const withToken: ProviderConfig = {
-        target: '',
+        host: '',
         apiBaseUrl: '',
         token: 'A',
       };
       const withoutToken: ProviderConfig = {
-        target: '',
+        host: '',
         apiBaseUrl: '',
       };
       expect(
@@ -58,12 +56,12 @@ describe('GithubReaderProcessor', () => {
   describe('getRawRequestOptions', () => {
     it('inserts a token when needed', () => {
       const withToken: ProviderConfig = {
-        target: '',
+        host: '',
         rawBaseUrl: '',
         token: 'A',
       };
       const withoutToken: ProviderConfig = {
-        target: '',
+        host: '',
         rawBaseUrl: '',
       };
       expect(
@@ -77,13 +75,13 @@ describe('GithubReaderProcessor', () => {
 
   describe('getApiUrl', () => {
     it('rejects targets that do not look like URLs', () => {
-      const config: ProviderConfig = { target: '', apiBaseUrl: '' };
+      const config: ProviderConfig = { host: '', apiBaseUrl: '' };
       expect(() => getApiUrl('a/b', config)).toThrow(/Incorrect URL: a\/b/);
     });
 
     it('happy path for github', () => {
       const config: ProviderConfig = {
-        target: 'https://github.com',
+        host: 'github.com',
         apiBaseUrl: 'https://api.github.com',
       };
       expect(
@@ -110,7 +108,7 @@ describe('GithubReaderProcessor', () => {
 
     it('happy path for ghe', () => {
       const config: ProviderConfig = {
-        target: 'https://ghe.mycompany.net',
+        host: 'ghe.mycompany.net',
         apiBaseUrl: 'https://ghe.mycompany.net/api/v3',
       };
       expect(
@@ -128,13 +126,13 @@ describe('GithubReaderProcessor', () => {
 
   describe('getRawUrl', () => {
     it('rejects targets that do not look like URLs', () => {
-      const config: ProviderConfig = { target: '', apiBaseUrl: '' };
+      const config: ProviderConfig = { host: '', apiBaseUrl: '' };
       expect(() => getRawUrl('a/b', config)).toThrow(/Incorrect URL: a\/b/);
     });
 
     it('happy path for github', () => {
       const config: ProviderConfig = {
-        target: 'https://github.com',
+        host: 'github.com',
         rawBaseUrl: 'https://raw.githubusercontent.com',
       };
       expect(
@@ -151,7 +149,7 @@ describe('GithubReaderProcessor', () => {
 
     it('happy path for ghe', () => {
       const config: ProviderConfig = {
-        target: 'https://ghe.mycompany.net',
+        host: 'ghe.mycompany.net',
         rawBaseUrl: 'https://ghe.mycompany.net/raw',
       };
       expect(
@@ -167,23 +165,23 @@ describe('GithubReaderProcessor', () => {
 
   describe('readConfig', () => {
     function config(
-      providers: { target: string; apiBaseUrl?: string; token?: string }[],
+      providers: { host: string; apiBaseUrl?: string; token?: string }[],
     ) {
       return ConfigReader.fromConfigs([
         {
           context: '',
           data: {
-            catalog: { processors: { github: { providers } } },
+            integrations: { github: providers },
           },
         },
       ]);
     }
 
     it('adds a default GitHub entry when missing', () => {
-      const output = readConfig(config([]), getVoidLogger());
+      const output = readConfig(config([]));
       expect(output).toEqual([
         {
-          target: 'https://github.com',
+          host: 'github.com',
           apiBaseUrl: 'https://api.github.com',
           rawBaseUrl: 'https://raw.githubusercontent.com',
         },
@@ -191,13 +189,10 @@ describe('GithubReaderProcessor', () => {
     });
 
     it('injects the correct GitHub API base URL when missing', () => {
-      const output = readConfig(
-        config([{ target: 'https://github.com' }]),
-        getVoidLogger(),
-      );
+      const output = readConfig(config([{ host: 'github.com' }]));
       expect(output).toEqual([
         {
-          target: 'https://github.com',
+          host: 'github.com',
           apiBaseUrl: 'https://api.github.com',
           rawBaseUrl: 'https://raw.githubusercontent.com',
         },
@@ -205,64 +200,33 @@ describe('GithubReaderProcessor', () => {
     });
 
     it('rejects custom targets with no base URLs', () => {
-      expect(() =>
-        readConfig(
-          config([{ target: 'https://ghe.company.com' }]),
-          getVoidLogger(),
-        ),
-      ).toThrow(
-        'Provider at https://ghe.company.com must configure an explicit apiBaseUrl or rawBaseUrl',
+      expect(() => readConfig(config([{ host: 'ghe.company.com' }]))).toThrow(
+        "GitHub integration for 'ghe.company.com' must configure an explicit apiBaseUrl and rawBaseUrl",
       );
     });
 
     it('rejects funky configs', () => {
+      expect(() => readConfig(config([{ host: 7 } as any]))).toThrow(/host/);
+      expect(() => readConfig(config([{ token: 7 } as any]))).toThrow(/token/);
       expect(() =>
-        readConfig(config([{ target: 7 } as any]), getVoidLogger()),
-      ).toThrow(/target/);
-      expect(() =>
-        readConfig(config([{ noTarget: '7' } as any]), getVoidLogger()),
-      ).toThrow(/target/);
-      expect(() =>
-        readConfig(
-          config([{ target: 'https://github.com', apiBaseUrl: 7 } as any]),
-          getVoidLogger(),
-        ),
+        readConfig(config([{ host: 'github.com', apiBaseUrl: 7 } as any])),
       ).toThrow(/apiBaseUrl/);
       expect(() =>
-        readConfig(
-          config([{ target: 'https://github.com', token: 7 } as any]),
-          getVoidLogger(),
-        ),
+        readConfig(config([{ host: 'github.com', token: 7 } as any])),
       ).toThrow(/token/);
     });
   });
 
   describe('implementation', () => {
-    it('rejects unknown types', async () => {
-      const processor = new GithubReaderProcessor([
-        { target: 'https://github.com', apiBaseUrl: 'https://api.github.com' },
-      ]);
-      const location: LocationSpec = {
-        type: 'not-github',
-        target: 'https://github.com',
-      };
-      await expect(
-        processor.readLocation(location, false, () => {}),
-      ).resolves.toBeFalsy();
-    });
-
     it('rejects unknown targets', async () => {
-      const processor = new GithubReaderProcessor([
-        { target: 'https://github.com', apiBaseUrl: 'https://api.github.com' },
-      ]);
-      const location: LocationSpec = {
-        type: 'github',
-        target: 'https://not.github.com/apa',
-      };
+      const processor = new GithubUrlReader({
+        host: 'github.com',
+        apiBaseUrl: 'https://api.github.com',
+      });
       await expect(
-        processor.readLocation(location, false, () => {}),
+        processor.read('https://not.github.com/apa'),
       ).rejects.toThrow(
-        /There is no GitHub provider that matches https:\/\/not.github.com\/apa/,
+        'Incorrect URL: https://not.github.com/apa, Error: Invalid GitHub URL or file path',
       );
     });
   });

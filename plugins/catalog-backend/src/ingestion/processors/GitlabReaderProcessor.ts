@@ -19,6 +19,11 @@ import fetch from 'node-fetch';
 import * as result from './results';
 import { LocationProcessor, LocationProcessorEmit } from './types';
 
+// ***********************************************************************
+// * NOTE: This has been replaced by packages/backend-common/src/reading *
+// * Don't implement new functionality here as this file will be removed *
+// ***********************************************************************
+
 export class GitlabReaderProcessor implements LocationProcessor {
   async readLocation(
     location: LocationSpec,

@@ -14,15 +14,26 @@
  * limitations under the License.
  */
 
-import Knex from 'knex';
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
-import { PluginEndpointDiscovery, UrlReader } from '@backstage/backend-common';
 
-export type PluginEnvironment = {
-  logger: Logger;
-  database: Knex;
-  config: Config;
-  reader: UrlReader;
-  discovery: PluginEndpointDiscovery;
+/**
+ * A generic interface for fetching plain data from URLs.
+ */
+export type UrlReader = {
+  read(url: string): Promise<Buffer>;
 };
+
+export type UrlReaderPredicateTuple = {
+  predicate: (url: URL) => boolean;
+  reader: UrlReader;
+};
+
+/**
+ * A factory function that can read config to construct zero or more
+ * UrlReaders along with a predicate for when it should be used.
+ */
+export type ReaderFactory = (options: {
+  config: Config;
+  logger: Logger;
+}) => UrlReaderPredicateTuple[];

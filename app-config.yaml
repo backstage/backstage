@@ -67,28 +67,48 @@ kubernetes:
   clusterLocatorMethod: 'configMultiTenant'
   clusters: []
 
+integrations:
+  github:
+    - host: github.com
+      token:
+        $secret:
+          env: GITHUB_PRIVATE_TOKEN
+    ### Example for how to add your GitHub Enterprise instance using the API:
+    # - host: ghe.example.net
+    #   apiBaseUrl: https://ghe.example.net/api/v3
+    #   token:
+    #     $secret:
+    #       env: GHE_PRIVATE_TOKEN
+    ### Example for how to add your GitHub Enterprise instance using raw HTTP fetches (token is optional):
+    # - host: ghe.example.net
+    #   rawBaseUrl: https://ghe.example.net/raw
+    #   token:
+    #     $secret:
+    #       env: GHE_PRIVATE_TOKEN
+  gitlab:
+    - host: gitlab.com
+      token:
+        $secret:
+          env: GITLAB_PRIVATE_TOKEN
+  bitbucket:
+    - host: bitbucket.org
+      username:
+        $secret:
+          env: BITBUCKET_USERNAME
+      appPassword:
+        $secret:
+          env: BITBUCKET_APP_PASSWORD
+  azure:
+    - host: dev.azure.com
+      token:
+        $secret:
+          env: AZURE_PRIVATE_TOKEN
+
 catalog:
   rules:
     - allow: [Component, API, Group, User, Template, Location]
+
   processors:
-    github:
-      providers:
-        - target: https://github.com
-          token:
-            $secret:
-              env: GITHUB_PRIVATE_TOKEN
-        #### Example for how to add your GitHub Enterprise instance using the API:
-        # - target: https://ghe.example.net
-        #   apiBaseUrl: https://ghe.example.net/api/v3
-        #   token:
-        #     $secret:
-        #       env: GHE_PRIVATE_TOKEN
-        #### Example for how to add your GitHub Enterprise instance using raw HTTP fetches (token is optional):
-        # - target: https://ghe.example.net
-        #   rawBaseUrl: https://ghe.example.net/raw
-        #   token:
-        #     $secret:
-        #       env: GHE_PRIVATE_TOKEN
     githubOrg:
       providers:
         - target: https://github.com
@@ -101,37 +121,22 @@ catalog:
         #   token:
         #     $secret:
         #       env: GHE_PRIVATE_TOKEN
-    bitbucketApi:
-      username:
-        $secret:
-          env: BITBUCKET_USERNAME
-      appPassword:
-        $secret:
-          env: BITBUCKET_APP_PASSWORD
-    gitlabApi:
-      privateToken:
-        $secret:
-          env: GITLAB_PRIVATE_TOKEN
-    azureApi:
-      privateToken:
-        $secret:
-          env: AZURE_PRIVATE_TOKEN
 
   locations:
     # Backstage example components
-    - type: github
+    - type: url
       target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
     # Example component for github-actions
-    - type: github
+    - type: url
       target: https://github.com/spotify/backstage/blob/master/plugins/github-actions/examples/sample.yaml
     # Example component for techdocs
-    - type: github
+    - type: url
       target: https://github.com/spotify/backstage/blob/master/plugins/techdocs-backend/examples/documented-component/documented-component.yaml
     # Backstage example APIs
-    - type: github
+    - type: url
       target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
     # Backstage example templates
-    - type: github
+    - type: url
       target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/all-templates.yaml
 
 scaffolder:
