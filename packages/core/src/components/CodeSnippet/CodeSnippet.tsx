@@ -27,6 +27,7 @@ type Props = {
   showLineNumbers?: boolean;
   showCopyCodeButton?: boolean;
   highlightedNumbers?: number[];
+  customStyle?: any;
 };
 
 export const CodeSnippet = ({
@@ -35,20 +36,27 @@ export const CodeSnippet = ({
   showLineNumbers = false,
   showCopyCodeButton = false,
   highlightedNumbers,
+  customStyle,
 }: Props) => {
   const theme = useTheme<BackstageTheme>();
   const mode = theme.palette.type === 'dark' ? dark : docco;
-
+  const highlightColor = theme.palette.type === 'dark' ? '#256bf3' : '#e6ffed';
   return (
     <div style={{ position: 'relative' }}>
       <SyntaxHighlighter
+        customStyle={customStyle}
         language={language}
         style={mode}
         showLineNumbers={showLineNumbers}
         wrapLines
+        lineNumberStyle={{ color: theme.palette.textVerySubtle }}
         lineProps={(lineNumber: number) =>
           highlightedNumbers?.includes(lineNumber)
-            ? { style: { backgroundColor: '#e6ffed' } }
+            ? {
+                style: {
+                  backgroundColor: highlightColor,
+                },
+              }
             : {}
         }
       >

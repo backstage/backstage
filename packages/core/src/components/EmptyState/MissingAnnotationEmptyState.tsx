@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { Button, Typography } from '@material-ui/core';
+import { Button, makeStyles, Typography } from '@material-ui/core';
+import { BackstageTheme } from '@backstage/theme';
 import { EmptyState } from './EmptyState';
 import { CodeSnippet } from '../CodeSnippet';
 
@@ -23,8 +24,8 @@ const COMPONENT_YAML = `# Example
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: backstage
-  description: backstage.io
+  name: example
+  description: example.com
   annotations:
     ANNOTATION: value
 spec:
@@ -37,7 +38,16 @@ type Props = {
   annotation: string;
 };
 
+const useStyles = makeStyles<BackstageTheme>(theme => ({
+  code: {
+    borderRadius: 6,
+    margin: `${theme.spacing(2)}px 0px`,
+    background: theme.palette.type === 'dark' ? '#444' : '#fff',
+  },
+}));
+
 export const MissingAnnotationEmptyState = ({ annotation }: Props) => {
+  const classes = useStyles();
   return (
     <EmptyState
       missing="field"
@@ -46,15 +56,18 @@ export const MissingAnnotationEmptyState = ({ annotation }: Props) => {
       action={
         <>
           <Typography variant="body1">
-            Add the annotation to your component YAML as per the highlighted
-            example below:
+            Add the annotation to your component YAML as shown in the
+            highlighted example below:
           </Typography>
-          <CodeSnippet
-            text={COMPONENT_YAML.replace('ANNOTATION', annotation)}
-            language="yaml"
-            showLineNumbers
-            highlightedNumbers={[7, 8]}
-          />
+          <div className={classes.code}>
+            <CodeSnippet
+              text={COMPONENT_YAML.replace('ANNOTATION', annotation)}
+              language="yaml"
+              showLineNumbers
+              highlightedNumbers={[7, 8]}
+              customStyle={{ background: 'inherit', fontSize: '115%' }}
+            />
+          </div>
           <Button
             variant="contained"
             color="primary"
