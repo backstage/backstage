@@ -60,7 +60,10 @@ const WidgetContent = ({
       metadata={{
         status: (
           <>
-            <WorkflowRunStatus status={lastRun.status} />
+            <WorkflowRunStatus
+              status={lastRun.status}
+              conclusion={lastRun.conclusion}
+            />
           </>
         ),
         message: lastRun.message,
