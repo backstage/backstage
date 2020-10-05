@@ -96,7 +96,7 @@ appConfig:
         port:
         password:
         ssl:
-          rejectUnauthorized: true
+          rejectUnauthorized: false
           ca:
   sentry:
     organization: spotify
