@@ -35,27 +35,51 @@ backstage-ingress   *       34.77.171.192   80      17m
 
 ## Customization
 
-Configuring a connection to an existing PostgreSQL instance is possible through the chart's values:
+Configuring a connection to an existing PostgreSQL instance is possible through the chart's values.
+
+First create a yaml file with the configuration you want to override, for example `backstage-prod.yaml`:
 
 ```bash
+postgresql:
+  enabled: false
+
 appConfig:
+  app:
+    baseUrl: https://backstage-demo.mydomain.com
+    title: Backstage
   backend:
+    baseUrl: https://backstage-demo.mydomain.com
+    cors:
+      origin: https://backstage-demo.mydomain.com
     database:
       client: pg
       connection:
         database: backstage_plugin_catalog
         host: <host>
-        user: <user>
-        port: <port>
+        user: <pg user>
         password: <password>
-        ssl:
-          rejectUnauthorized: true
+lighthouse:
+  database:
+    client: pg
+    connection:
+      host: <host>
+      user: <pg user>
+      password: <password>
+      database: lighthouse_audit_service
+
 ```
 
-For the CA, create a `configMap` named `ca.crt`:
+For the CA, create a `configMap` named `<helm_release_name>-postgres-ca` with a file called `ca.crt`:
 
 ```
-kubectl create configmap %s --from-file=ca.crt"
+kubectl create configmap my-backstage --from-file=ca.crt"
+```
+
+Now install the helm chart:
+
+```
+cd contrib/chart/backstage
+helm install -f backstage-prod.yaml my-backstage .
 ```
 
 ## Troubleshooting
