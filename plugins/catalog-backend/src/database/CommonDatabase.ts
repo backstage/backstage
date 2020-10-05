@@ -383,11 +383,18 @@ export class CommonDatabase implements Database {
     locationId: string | undefined,
     entity: Entity,
   ): DbEntitiesRow {
+    const lowerKind = entity.kind.toLowerCase();
+    const lowerNamespace = (
+      entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE
+    ).toLowerCase();
+    const lowerName = entity.metadata.name.toLowerCase();
+
     return {
       id: entity.metadata.uid!,
       location_id: locationId || null,
       etag: entity.metadata.etag!,
       generation: entity.metadata.generation!,
+      full_name: `${lowerKind}:${lowerNamespace}/${lowerName}`,
       api_version: entity.apiVersion,
       kind: entity.kind,
       name: entity.metadata.name,
