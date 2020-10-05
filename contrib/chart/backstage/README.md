@@ -35,6 +35,8 @@ backstage-ingress   *       34.77.171.192   80      17m
 
 ## Customization
 
+### Custom PostgreSQL instance
+
 Configuring a connection to an existing PostgreSQL instance is possible through the chart's values.
 
 First create a yaml file with the configuration you want to override, for example `backstage-prod.yaml`:
@@ -80,6 +82,22 @@ Now install the helm chart:
 ```
 cd contrib/chart/backstage
 helm install -f backstage-prod.yaml my-backstage .
+```
+
+### Different namespace
+
+To install the charts a specific namespace use `--namespace <ns>`:
+
+```
+helm install -f my_values.yaml --namespace demos backstage .
+```
+
+### Disable loading of demo data
+
+To deploy backstage with the pre-loaded demo data disable `backend.demoData`:
+
+```
+helm install -f my_values.yaml --set backend.demoData=false backstage .
 ```
 
 ## Troubleshooting

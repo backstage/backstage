@@ -16,6 +16,7 @@ backend:
         ca: {{ include "backstage.backend.postgresCaFilename" . | quote }}
 
 catalog:
+{{- if .Values.backend.demoData }}
   locations:
     # Backstage example components
     - type: github
@@ -32,6 +33,9 @@ catalog:
     # Backstage example templates
     - type: github
       target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/all-templates.yaml
+{{- else }}
+  locations: []
+{{- end }}
 
 sentry:
   organization: {{ .Values.appConfig.sentry.organization | quote }}
