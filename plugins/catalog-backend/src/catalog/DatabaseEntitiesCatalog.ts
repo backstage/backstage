@@ -90,7 +90,7 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
       const colocatedEntities = location
         ? await this.database.entities(tx, [
             {
-              key: LOCATION_ANNOTATION,
+              key: `metadata.annotations.${LOCATION_ANNOTATION}`,
               values: [location],
             },
           ])
