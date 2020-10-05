@@ -8,6 +8,8 @@ If you encounter issues while upgrading to a newer version, don't hesitate to re
 
 > Collect changes for the next release below
 
+## v0.1.1-alpha.24
+
 ### Backend (example-backend, or backends created with @backstage/create-app)
 
 - The default mount point for backend plugins have been changed to `/api`. These changes are done in the backend package itself, so it is recommended that you sync up existing backend packages with this new pattern. [#2562](https://github.com/spotify/backstage/pull/2562)
