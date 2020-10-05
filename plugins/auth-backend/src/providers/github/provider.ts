@@ -15,12 +15,15 @@
  */
 
 import express from 'express';
+import { Logger } from 'winston';
 import { Strategy as GithubStrategy } from 'passport-github2';
 import {
   executeFrameHandlerStrategy,
   executeRedirectStrategy,
   makeProfileInfo,
   PassportDoneCallback,
+  executeRefreshTokenStrategy,
+  executeFetchUserProfileStrategy,
 } from '../../lib/passport';
 import { RedirectInfo, AuthProviderFactory } from '../types';
 import {
@@ -31,10 +34,18 @@ import {
   OAuthEnvironmentHandler,
   OAuthStartRequest,
   encodeState,
+  OAuthRefreshRequest,
 } from '../../lib/oauth';
 import passport from 'passport';
+import { CatalogIdentityClient } from '../../lib/catalog';
+
+type PrivateInfo = {
+  refreshToken: string;
+};
 
 export type GithubAuthProviderOptions = OAuthProviderOptions & {
+  logger: Logger;
+  identityClient: CatalogIdentityClient;
   tokenUrl?: string;
   userProfileUrl?: string;
   authorizationUrl?: string;
@@ -42,6 +53,8 @@ export type GithubAuthProviderOptions = OAuthProviderOptions & {
 
 export class GithubAuthProvider implements OAuthHandlers {
   private readonly _strategy: GithubStrategy;
+  private readonly logger: Logger;
+  private readonly identityClient: CatalogIdentityClient;
 
   static transformPassportProfile(rawProfile: any): passport.Profile {
     const profile: passport.Profile = {
@@ -93,6 +106,8 @@ export class GithubAuthProvider implements OAuthHandlers {
   }
 
   constructor(options: GithubAuthProviderOptions) {
+    this.logger = options.logger;
+    this.identityClient = options.identityClient;
     this._strategy = new GithubStrategy(
       {
         clientID: options.clientId,
@@ -104,17 +119,17 @@ export class GithubAuthProvider implements OAuthHandlers {
       },
       (
         accessToken: any,
-        _: any,
+        refreshToken: any,
         params: any,
-        rawProfile: any,
-        done: PassportDoneCallback<OAuthResponse>,
+        rawProfile: passport.Profile,
+        done: PassportDoneCallback<OAuthResponse, PrivateInfo>,
       ) => {
         const oauthResponse = GithubAuthProvider.transformOAuthResponse(
           accessToken,
           rawProfile,
           params,
         );
-        done(undefined, oauthResponse);
+        done(undefined, oauthResponse, { refreshToken });
       },
     );
   }
@@ -126,20 +141,84 @@ export class GithubAuthProvider implements OAuthHandlers {
     });
   }
 
-  async handler(req: express.Request) {
-    const { response } = await executeFrameHandlerStrategy<OAuthResponse>(
-      req,
+  async handler(
+    req: express.Request,
+  ): Promise<{ response: OAuthResponse; refreshToken: string }> {
+    const { response, privateInfo } = await executeFrameHandlerStrategy<
+      OAuthResponse,
+      PrivateInfo
+    >(req, this._strategy);
+
+    return {
+      response: await this.populateIdentity(response),
+      refreshToken: privateInfo.refreshToken,
+    };
+  }
+
+  async refresh(req: OAuthRefreshRequest): Promise<OAuthResponse> {
+    const { accessToken, params } = await executeRefreshTokenStrategy(
       this._strategy,
+      req.refreshToken,
+      req.scope,
     );
 
-    return { response };
+    const profile = await executeFetchUserProfileStrategy(
+      this._strategy,
+      accessToken,
+      params.id_token,
+    );
+
+    return this.populateIdentity({
+      providerInfo: {
+        accessToken,
+        idToken: params.id_token,
+        expiresInSeconds: params.expires_in,
+        scope: params.scope,
+      },
+      profile,
+    });
+  }
+
+  private async populateIdentity(
+    response: OAuthResponse,
+  ): Promise<OAuthResponse> {
+    const { profile } = response;
+
+    if (!profile.email) {
+      throw new Error('Github profile contained no email');
+    }
+
+    try {
+      const user = await this.identityClient.findUser({
+        annotations: {
+          'github.com/email': profile.email,
+        },
+      });
+
+      return {
+        ...response,
+        backstageIdentity: {
+          id: user.metadata.name,
+        },
+      };
+    } catch (error) {
+      this.logger.warn(
+        `Failed to look up user, ${error}, falling back to allowing login based on email pattern, this will probably break in the future`,
+      );
+      return {
+        ...response,
+        backstageIdentity: { id: profile.email.split('@')[0] },
+      };
+    }
   }
 }
 
 export const createGithubProvider: AuthProviderFactory = ({
   globalConfig,
   config,
+  logger,
   tokenIssuer,
+  discovery,
 }) =>
   OAuthEnvironmentHandler.mapConfig(config, envConfig => {
     const providerId = 'github';
@@ -160,16 +239,18 @@ export const createGithubProvider: AuthProviderFactory = ({
     const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
 
     const provider = new GithubAuthProvider({
+      logger,
       clientId,
       clientSecret,
       callbackUrl,
+      identityClient: new CatalogIdentityClient({ discovery }),
       tokenUrl,
       userProfileUrl,
       authorizationUrl,
     });
 
     return OAuthAdapter.fromConfig(globalConfig, provider, {
-      disableRefresh: true,
+      disableRefresh: false,
       persistScopes: true,
       providerId,
       tokenIssuer,

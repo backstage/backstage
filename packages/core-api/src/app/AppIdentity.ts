@@ -62,7 +62,6 @@ export class AppIdentity implements IdentityApi {
       );
     }
     await this.signOutFunc?.();
-    localStorage.removeItem(`githubSession`);
     location.reload();
   }
 
