@@ -844,6 +844,7 @@ code {
   width: 700px;
   margin: 20px auto;
   max-width: calc(100vw - 80px);
+  padding-bottom: 80px;
 }
 
 @media only screen and (max-width: 485px) {

@@ -64,7 +64,7 @@ export class LocalPublish implements PublisherBase {
         }
 
         resolve({
-          remoteUrl: `http://localhost:7000/techdocs/static/docs/${entity.metadata.name}`,
+          remoteUrl: `http://localhost:7000/api/techdocs/static/docs/${entity.metadata.name}`,
         });
       });
     });

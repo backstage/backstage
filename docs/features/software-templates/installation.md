@@ -191,13 +191,13 @@ our example templates through static configuration. Add the following to the
 catalog:
   locations:
     # Backstage Example Templates
-    - type: github
+    - type: url
       target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml
-    - type: github
+    - type: url
       target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/springboot-grpc-template/template.yaml
-    - type: github
+    - type: url
       target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/create-react-app/template.yaml
-    - type: github
+    - type: url
       target: https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml
 ```
 
@@ -216,6 +216,11 @@ Apps integration further down the line.
 The Github access token is retrieved from environment variables via the config.
 The config file needs to specify what environment variable the token is
 retrieved from. Your config should have the following objects.
+
+You can configure who can see the new repositories that the scaffolder creates
+by specifying `visibility` option. Valid options are `public`, `private` and
+`internal`. `internal` options is for GitHub Enterprise clients, which means
+public within the organization.
 
 #### Gitlab
 
@@ -238,10 +243,23 @@ scaffolder:
           env: SCAFFOLDER_GITLAB_PRIVATE_TOKEN
 ```
 
-You can configure who can see the new repositories that the scaffolder creates
-by specifying `visibility` option. Valid options are `public`, `private` and
-`internal`. `internal` options is for GitHub Enterprise clients, which means
-public within the organization.
+#### Azure DevOps
+
+For Azure DevOps we support both the preparer and publisher stage with the
+configuration of a private access token (PAT). For the publisher it's also
+required to define the base URL for the client to connect to the service. This
+will hopefully support on-prem installations as well but that has not been
+verified.
+
+```yaml
+scaffolder:
+  azure:
+    baseUrl: https://dev.azure.com/{your-organization}
+    api:
+      token:
+        $secret:
+          env: AZURE_PRIVATE_TOKEN
+```
 
 ### Running the Backend
 

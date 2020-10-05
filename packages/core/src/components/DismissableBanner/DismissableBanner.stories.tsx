@@ -100,3 +100,15 @@ export const WithLink = () => (
     </ApiProvider>
   </div>
 );
+export const Fixed = () => (
+  <div style={containerStyle}>
+    <ApiProvider apis={apis}>
+      <DismissableBanner
+        message="This is a dismissable banner with a fixed position fixed at the bottom of the page"
+        variant="info"
+        id="fixed_dismissable"
+        fixed
+      />
+    </ApiProvider>
+  </div>
+);

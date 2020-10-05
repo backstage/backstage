@@ -4,7 +4,7 @@
 
 Deploying to heroku is relatively easy following these steps.
 
-First, make sure you have the [heroku CLI installed](https://devcenter.heroku.com/articles/heroku-cli) and log into it as well as loging into Heroku's [container registry](https://devcenter.heroku.com/articles/container-registry-and-runtime).
+First, make sure you have the [heroku CLI installed](https://devcenter.heroku.com/articles/heroku-cli) and log into it as well as login into Heroku's [container registry](https://devcenter.heroku.com/articles/container-registry-and-runtime).
 
 ```bash
 $ heroku login

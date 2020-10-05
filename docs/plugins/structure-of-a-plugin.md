@@ -84,7 +84,7 @@ structure our plugins. There are usually one or multiple page components and
 next to them you can split up the UI in as many components as you feel like.
 
 We have the `ExamplePage` to show an example Backstage page component. The
-`ExampleFetchComponent` show cases the common task of making an async request to
+`ExampleFetchComponent` showcases the common task of making an async request to
 a public API and plot the response data in a table using Material-UI components.
 
 You may tweak these components, rename them and/or replace them completely.

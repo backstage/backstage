@@ -44,7 +44,9 @@
     "@types/jest": "^26.0.7",
     "@types/node": "^12.0.0",
     "@types/testing-library__jest-dom": "^5.9.1",
-    "jest-fetch-mock": "^3.0.3"
+    "jest-fetch-mock": "^3.0.3",
+    "msw": "^0.20.5",
+    "node-fetch": "^2.6.1"
   },
   "files": [
     "dist"

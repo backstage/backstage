@@ -86,7 +86,7 @@ export const RegisterComponentPage = ({
     const { scmType, componentLocation: target } = formData;
     try {
       const typeMapping = [
-        { url: /^https:\/\/gitlab\.com\/.*/, type: 'gitlab' },
+        { url: /^https:\/\/gitlab\.com\/.*/, type: 'gitlab/api' },
         { url: /^https:\/\/bitbucket\.org\/.*/, type: 'bitbucket/api' },
         { url: /^https:\/\/dev\.azure\.com\/.*/, type: 'azure/api' },
         { url: /.*/, type: 'github' },

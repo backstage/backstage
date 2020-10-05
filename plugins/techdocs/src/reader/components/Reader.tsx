@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { useApi, Progress } from '@backstage/core';
+import { useApi } from '@backstage/core';
 import { useShadowDom } from '..';
 import { useAsync } from 'react-use';
 import { techdocsStorageApiRef } from '../../api';
@@ -23,6 +23,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ParsedEntityId } from '../../types';
 import { useTheme } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
+import TechDocsProgressBar from './TechDocsProgressBar';
 
 import transformer, {
   addBaseUrl,
@@ -38,9 +39,10 @@ import { TechDocsNotFound } from './TechDocsNotFound';
 
 type Props = {
   entityId: ParsedEntityId;
+  onReady?: () => void;
 };
 
-export const Reader = ({ entityId }: Props) => {
+export const Reader = ({ entityId, onReady }: Props) => {
   const { kind, namespace, name } = entityId;
   const { '*': path } = useParams();
   const theme = useTheme<BackstageTheme>();
@@ -57,7 +59,9 @@ export const Reader = ({ entityId }: Props) => {
     if (!shadowRoot || loading || error) {
       return; // Shadow DOM isn't ready / It's not ready / Docs was not found
     }
-
+    if (onReady) {
+      onReady();
+    }
     // Pre-render
     const transformedElement = transformer(value as string, [
       sanitizeDOM(),
@@ -142,6 +146,7 @@ export const Reader = ({ entityId }: Props) => {
     navigate,
     techdocsStorageApi,
     theme,
+    onReady,
   ]);
 
   if (error) {
@@ -150,7 +155,7 @@ export const Reader = ({ entityId }: Props) => {
 
   return (
     <>
-      {loading ? <Progress /> : null}
+      {loading ? <TechDocsProgressBar /> : null}
       <div ref={shadowDomRef} />
     </>
   );

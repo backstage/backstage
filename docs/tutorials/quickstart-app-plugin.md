@@ -20,10 +20,11 @@ title: Adding Custom Plugin to Existing Monorepo App
 > functionality, extend the Sidebar to make our life easy. Finally, we add
 > custom code to display GitHub repository information.
 >
-> This document assumes you have NodeJS 12 active along with Yarn. Please note,
-> that at the time of this writing, the current version is 0.1.1-alpha.21. This
-> guide can still be used with future versions, just, verify as you go. If you
-> run into issues, you can compare your setup with mine here >
+> This document assumes you have NodeJS 12 active along with Yarn and Python.
+> Please note, that at the time of this writing, the current version is
+> 0.1.1-alpha.21. This guide can still be used with future versions, just,
+> verify as you go. If you run into issues, you can compare your setup with mine
+> here >
 > [simple-backstage-app-plugin](https://github.com/johnson-jesse/simple-backstage-app-plugin).
 
 # The Skeleton Plugin
@@ -210,7 +211,7 @@ type Viewer = {
 };
 ```
 
-# The Tabel Model
+# The Table Model
 
 Using Backstage's own component library, let's define a custom table. This
 component will get used if we have data to display.
@@ -312,6 +313,6 @@ return (
 > Break apart ExampleFetchComponent into smaller logical parts contained in
 > their own files. Rename your components to something other than ExampleXxx.
 >
-> You might be real proud of a plugin you develop. Follow this next tutorial for
-> an in-depth look at publishing and including that for the entire Backstage
+> You might be really proud of a plugin you develop. Follow this next tutorial
+> for an in-depth look at publishing and including that for the entire Backstage
 > community. [TODO](#).

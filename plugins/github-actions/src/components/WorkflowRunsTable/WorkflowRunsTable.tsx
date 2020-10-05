@@ -14,11 +14,18 @@
  * limitations under the License.
  */
 import React, { FC } from 'react';
-import { Link, Typography, Box, IconButton, Tooltip } from '@material-ui/core';
+import {
+  Link,
+  Typography,
+  Box,
+  IconButton,
+  Tooltip,
+  Button,
+} from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import { Link as RouterLink, generatePath } from 'react-router-dom';
-import { Table, TableColumn } from '@backstage/core';
+import { EmptyState, Table, TableColumn } from '@backstage/core';
 import { useWorkflowRuns } from '../useWorkflowRuns';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import SyncIcon from '@material-ui/icons/Sync';
@@ -156,15 +163,34 @@ export const WorkflowRunsTable = ({
 }) => {
   const { value: projectName, loading } = useProjectName(entity);
   const [owner, repo] = (projectName ?? '/').split('/');
-  const [tableProps, { retry, setPage, setPageSize }] = useWorkflowRuns({
+  const [
+    { runs, ...tableProps },
+    { retry, setPage, setPageSize },
+  ] = useWorkflowRuns({
     owner,
     repo,
     branch,
   });
 
-  return (
+  return !runs ? (
+    <EmptyState
+      missing="data"
+      title="No Workflow Data"
+      description="This component has Github Actions enabled, but no data was found. Have you created any Workflows? Click the button below to create a new Workflow."
+      action={
+        <Button
+          variant="contained"
+          color="primary"
+          href={`https://github.com/${projectName}/actions/new`}
+        >
+          Create new Workflow
+        </Button>
+      }
+    />
+  ) : (
     <WorkflowRunsTableView
       {...tableProps}
+      runs={runs}
       loading={loading || tableProps.loading}
       retry={retry}
       onChangePageSize={setPageSize}

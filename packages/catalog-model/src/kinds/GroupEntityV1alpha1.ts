@@ -16,10 +16,38 @@
 
 import * as yup from 'yup';
 import type { Entity } from '../entity/Entity';
-import type { EntityPolicy } from '../types';
+import { schemaPolicy } from './util';
 
 const API_VERSION = ['backstage.io/v1alpha1', 'backstage.io/v1beta1'] as const;
 const KIND = 'Group' as const;
+
+const schema = yup.object<Partial<GroupEntityV1alpha1>>({
+  apiVersion: yup.string().required().oneOf(API_VERSION),
+  kind: yup.string().required().equals([KIND]),
+  spec: yup
+    .object({
+      type: yup.string().required().min(1),
+      parent: yup.string().notRequired().min(1),
+      // Use these manual tests because yup .required() requires at least
+      // one element and there is no simple workaround -_-
+      ancestors: yup.array(yup.string()).test({
+        name: 'isDefined',
+        message: 'ancestors must be defined',
+        test: v => Boolean(v),
+      }),
+      children: yup.array(yup.string()).test({
+        name: 'isDefined',
+        message: 'children must be defined',
+        test: v => Boolean(v),
+      }),
+      descendants: yup.array(yup.string()).test({
+        name: 'isDefined',
+        message: 'descendants must be defined',
+        test: v => Boolean(v),
+      }),
+    })
+    .required(),
+});
 
 export interface GroupEntityV1alpha1 extends Entity {
   apiVersion: typeof API_VERSION[number];
@@ -33,26 +61,8 @@ export interface GroupEntityV1alpha1 extends Entity {
   };
 }
 
-export class GroupEntityV1alpha1Policy implements EntityPolicy {
-  private schema: yup.Schema<any>;
-
-  constructor() {
-    this.schema = yup.object<Partial<GroupEntityV1alpha1>>({
-      apiVersion: yup.string().required().oneOf(API_VERSION),
-      kind: yup.string().required().equals([KIND]),
-      spec: yup
-        .object({
-          type: yup.string().required().min(1),
-          parent: yup.string().notRequired().min(1),
-          ancestors: yup.array(yup.string()).required(),
-          children: yup.array(yup.string()).required(),
-          descendants: yup.array(yup.string()).required(),
-        })
-        .required(),
-    });
-  }
-
-  async enforce(envelope: Entity): Promise<Entity> {
-    return await this.schema.validate(envelope, { strict: true });
-  }
-}
+export const groupEntityV1alpha1Policy = schemaPolicy(
+  KIND,
+  API_VERSION,
+  schema,
+);
