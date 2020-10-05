@@ -1,0 +1,8 @@
+charts:
+  - contrib/chart/backstage
+
+validate-maintainers: false
+debug: true
+target-branch: master
+chart-repos:
+  - bitnami=https://charts.bitnami.com/bitnami
