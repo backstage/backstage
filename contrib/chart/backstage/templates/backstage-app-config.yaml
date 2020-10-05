@@ -17,3 +17,10 @@ data:
   APP_CONFIG_techdocs_storageUrl: {{ .Values.appConfig.techdocs.storageUrl | quote | quote }}
   APP_CONFIG_techdocs_requestUrl: {{ .Values.appConfig.techdocs.requestUrl | quote | quote }}
   APP_CONFIG_lighthouse_baseUrl: {{ .Values.appConfig.lighthouse.baseUrl | quote | quote }}
+  APP_CONFIG_backend_database_connection_ssl_rejectUnauthorized: "false"
+  APP_CONFIG_auth_providers_github_development_appOrigin: {{ .Values.appConfig.auth.providers.github.development.appOrigin | quote | quote }}
+  APP_CONFIG_auth_providers_google_development_appOrigin: {{ .Values.appConfig.auth.providers.google.development.appOrigin | quote | quote }}
+  APP_CONFIG_auth_providers_gitlab_development_appOrigin: {{ .Values.appConfig.auth.providers.gitlab.development.appOrigin | quote | quote }}
+  APP_CONFIG_auth_providers_okta_development_appOrigin: {{ .Values.appConfig.auth.providers.okta.development.appOrigin | quote | quote }}
+  APP_CONFIG_auth_providers_oauth2_development_appOrigin: {{ .Values.appConfig.auth.providers.oauth2.development.appOrigin | quote | quote }}
+

@@ -1,6 +1,7 @@
 backend:
   lighthouseHostname: {{ include "lighthouse.serviceName" . | quote }}
-  listen: {{ .Values.appConfig.backend.listen | quote }}
+  listen:
+      port: {{ .Values.appConfig.backend.listen.port | default 7000 }}
   cors:
     origin: {{ .Values.appConfig.backend.cors.origin | quote }}
   database:
@@ -35,38 +36,10 @@ catalog:
 sentry:
   organization: {{ .Values.appConfig.sentry.organization | quote }}
 
-auth:
-  providers:
-    github:
-      development:
-        clientId: {{ .Values.auth.github.clientId }}
-        appOrigin: {{ .Values.appConfig.auth.providers.github.development.appOrigin | quote }}
-    google:
-      development:
-        clientId: {{ .Values.auth.google.clientId }}
-        appOrigin: {{ .Values.appConfig.auth.providers.google.development.appOrigin | quote }}
-    gitlab:
-      development:
-        clientId: {{ .Values.auth.gitlab.clientId }}
-        appOrigin: {{ .Values.appConfig.auth.providers.gitlab.development.appOrigin | quote }}
-        audience: {{ .Values.auth.gitlab.baseUrl }}
-    okta:
-      development:
-        clientId: {{ .Values.auth.okta.clientId }}
-        audience: {{ .Values.auth.okta.audience }}
-        appOrigin: {{ .Values.appConfig.auth.providers.okta.development.appOrigin | quote }}
-    oauth2:
-      development:
-        clientId: {{ .Values.auth.oauth2.clientId }}
-        tokenUrl: {{ .Values.auth.oauth2.tokenUrl }}
-        appOrigin: {{ .Values.appConfig.auth.providers.oauth2.development.appOrigin | quote }}
-    auth0:
-      development:
-        clientId: {{ .Values.auth.auth0.clientId }}
-    microsoft:
-      development:
-        clientId: {{ .Values.auth.microsoft.clientId }}
-        tenantId: {{ .Values.auth.microsoft.tenantId }}
 
 lighthouse:
   baseUrl: {{ .Values.appConfig.lighthouse.baseUrl | quote }}
+
+scaffolder:
+  azure:
+    baseUrl: https://dev.azure.com/some-org

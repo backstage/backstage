@@ -34,8 +34,12 @@ spec:
                 name: {{ include "backstage.fullname" . }}-backend
             - configMapRef:
                 name: {{ include "backstage.fullname" . }}-app-env
+            - configMapRef:
+                name: {{ include "backstage.fullname" . }}-auth
           env:
-            - name: APP_CONFIG_backend_postgresPassword
+            - name: NODE_ENV
+              value: {{ .Values.backend.nodeEnv | default "development" }}
+            - name: APP_CONFIG_backend_database_connection_password
               valueFrom:
                 secretKeyRef:
                   name: {{ include "backend.postgresql.passwordSecret" .}}

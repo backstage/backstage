@@ -6,8 +6,8 @@ frontend:
   enabled: true
   replicaCount: 1
   image:
-    repository: roadiehq/backstage-k8s-demo-frontend
-    tag: latest
+    repository: martinaif/backstage-k8s-demo-frontend
+    tag: test1
     pullPolicy: IfNotPresent
   containerPort: 80
   resources:
@@ -18,10 +18,11 @@ frontend:
 
 backend:
   enabled: true
+  nodeEnv: development
   replicaCount: 1
   image:
-    repository: roadiehq/backstage-k8s-demo-backend
-    tag: latest
+    repository: martinaif/backstage-k8s-demo-backend
+    tag: test1
     pullPolicy: IfNotPresent
   containerPort: 7000
   resources:
@@ -81,20 +82,21 @@ appConfig:
     baseUrl: https://demo.example.com
     title: Backstage
   backend:
-    baseUrl: /api
-    listen: 0.0.0.0:7000
+    baseUrl: https://demo.example.com
+    listen:
+      port: 7000
     cors:
       origin: https://demo.example.com
     database:
       client: pg
       connection:
-        database: backend
+        database: backstage_plugin_catalog
         host:
         user:
         port:
         password:
         ssl:
-          rejectUnauthorized: false
+          rejectUnauthorized: true
           ca:
   sentry:
     organization: spotify
@@ -116,7 +118,7 @@ appConfig:
     providers:
       google:
         development:
-          appOrigin: 'http://localhost:3000/'
+          appOrigin: "http://localhost:3000/"
           secure: false
           clientId:
             $secret:
@@ -126,7 +128,7 @@ appConfig:
               env: AUTH_GOOGLE_CLIENT_SECRET
       github:
         development:
-          appOrigin: 'http://localhost:3000/'
+          appOrigin: "http://localhost:3000/"
           secure: false
           clientId:
             $secret:
@@ -139,7 +141,7 @@ appConfig:
               env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
       gitlab:
         development:
-          appOrigin: 'http://localhost:3000/'
+          appOrigin: "http://localhost:3000/"
           secure: false
           clientId:
             $secret:
@@ -152,7 +154,7 @@ appConfig:
               env: GITLAB_BASE_URL
       okta:
         development:
-          appOrigin: 'http://localhost:3000/'
+          appOrigin: "http://localhost:3000/"
           secure: false
           clientId:
             $secret:
@@ -165,7 +167,7 @@ appConfig:
               env: AUTH_OKTA_AUDIENCE
       oauth2:
         development:
-          appOrigin: 'http://localhost:3000/'
+          appOrigin: "http://localhost:3000/"
           secure: false
           clientId:
             $secret:
@@ -230,6 +232,9 @@ auth:
     clientId: f
     clientSecret: f
     tenantId: f
+  azure:
+    api:
+      token: h
   sentryToken: e
   rollbarAccountToken: f
   # This is a 'Personal Access Token'
