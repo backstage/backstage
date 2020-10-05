@@ -27,7 +27,6 @@ import {
   ENTITY_META_GENERATED_FIELDS,
   generateEntityEtag,
   generateEntityUid,
-  getEntityName,
   Location,
 } from '@backstage/catalog-model';
 import Knex from 'knex';
@@ -53,7 +52,6 @@ import type {
 export class CommonDatabase implements Database {
   constructor(
     private readonly database: Knex,
-    private readonly normalize: (value: string) => string,
     private readonly logger: Logger,
   ) {}
 
@@ -87,8 +85,6 @@ export class CommonDatabase implements Database {
     } else if (request.entity.metadata.generation !== undefined) {
       throw new InputError('May not specify generation for new entities');
     }
-
-    await this.ensureNoSimilarNames(tx, request.entity);
 
     const newEntity = lodash.cloneDeep(request.entity);
     newEntity.metadata = {
@@ -146,8 +142,6 @@ export class CommonDatabase implements Database {
         );
       }
     }
-
-    await this.ensureNoSimilarNames(tx, request.entity);
 
     // Store the updated entity; select on the old etag to ensure that we do
     // not lose to another writer
@@ -382,52 +376,6 @@ export class CommonDatabase implements Database {
     } catch {
       // ignore intentionally - if this happens, the entity was deleted before
       // we got around to writing the entries
-    }
-  }
-
-  private async ensureNoSimilarNames(
-    tx: Knex.Transaction<any, any>,
-    data: Entity,
-  ): Promise<void> {
-    const {
-      kind: newKind,
-      namespace: newNamespace,
-      name: newName,
-    } = getEntityName(data);
-    const newKindNorm = this.normalize(newKind);
-    const newNamespaceNorm = this.normalize(newNamespace);
-    const newNameNorm = this.normalize(newName);
-
-    for (const item of await this.entities(tx)) {
-      if (data.metadata.uid === item.entity.metadata.uid) {
-        continue;
-      }
-
-      const {
-        kind: oldKind,
-        namespace: oldNamespace,
-        name: oldName,
-      } = getEntityName(item.entity);
-      const oldKindNorm = this.normalize(oldKind);
-      const oldNamespaceNorm = this.normalize(oldNamespace);
-      const oldNameNorm = this.normalize(oldName);
-
-      if (
-        oldKindNorm === newKindNorm &&
-        oldNamespaceNorm === newNamespaceNorm &&
-        oldNameNorm === newNameNorm
-      ) {
-        // Only throw if things were actually different - for completely equal
-        // things, we let the database handle the conflict
-        if (
-          oldKind !== newKind ||
-          oldNamespace !== newNamespace ||
-          oldName !== newName
-        ) {
-          const message = `Kind, namespace, name are too similar to an existing entity`;
-          throw new ConflictError(message);
-        }
-      }
     }
   }
 

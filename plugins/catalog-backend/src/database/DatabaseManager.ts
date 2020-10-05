@@ -15,7 +15,6 @@
  */
 
 import { getVoidLogger, resolvePackagePath } from '@backstage/backend-common';
-import { makeValidator } from '@backstage/catalog-model';
 import Knex from 'knex';
 import { Logger } from 'winston';
 import { CommonDatabase } from './CommonDatabase';
@@ -28,12 +27,10 @@ const migrationsDir = resolvePackagePath(
 
 export type CreateDatabaseOptions = {
   logger: Logger;
-  fieldNormalizer: (value: string) => string;
 };
 
 const defaultOptions: CreateDatabaseOptions = {
   logger: getVoidLogger(),
-  fieldNormalizer: makeValidator().normalizeEntityName,
 };
 
 export class DatabaseManager {
@@ -44,8 +41,8 @@ export class DatabaseManager {
     await knex.migrate.latest({
       directory: migrationsDir,
     });
-    const { logger, fieldNormalizer } = { ...defaultOptions, ...options };
-    return new CommonDatabase(knex, fieldNormalizer, logger);
+    const { logger } = { ...defaultOptions, ...options };
+    return new CommonDatabase(knex, logger);
   }
 
   public static async createInMemoryDatabase(
@@ -74,7 +71,7 @@ export class DatabaseManager {
     await knex.migrate.latest({
       directory: migrationsDir,
     });
-    const { logger, fieldNormalizer } = defaultOptions;
-    return new CommonDatabase(knex, fieldNormalizer, logger);
+    const { logger } = defaultOptions;
+    return new CommonDatabase(knex, logger);
   }
 }

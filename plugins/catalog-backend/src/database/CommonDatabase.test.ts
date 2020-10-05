@@ -149,24 +149,6 @@ describe('CommonDatabase', () => {
       ).rejects.toThrow(ConflictError);
     });
 
-    it('rejects adding the almost-same-kind entity twice', async () => {
-      entityRequest.entity.kind = 'some-kind';
-      await db.transaction(tx => db.addEntity(tx, entityRequest));
-      entityRequest.entity.kind = 'SomeKind';
-      await expect(
-        db.transaction(tx => db.addEntity(tx, entityRequest)),
-      ).rejects.toThrow(ConflictError);
-    });
-
-    it('rejects adding the almost-same-named entity twice', async () => {
-      entityRequest.entity.metadata.name = 'some-name';
-      await db.transaction(tx => db.addEntity(tx, entityRequest));
-      entityRequest.entity.metadata.name = 'SomeName';
-      await expect(
-        db.transaction(tx => db.addEntity(tx, entityRequest)),
-      ).rejects.toThrow(ConflictError);
-    });
-
     it('rejects adding the almost-same-namespace entity twice', async () => {
       entityRequest.entity.metadata.namespace = undefined;
       await db.transaction(tx => db.addEntity(tx, entityRequest));
