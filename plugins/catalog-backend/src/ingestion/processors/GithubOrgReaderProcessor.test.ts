@@ -95,15 +95,15 @@ describe('GithubOrgReaderProcessor', () => {
 
   describe('implementation', () => {
     it('rejects unknown types', async () => {
-      const processor = new GithubOrgReaderProcessor(
-        [
+      const processor = new GithubOrgReaderProcessor({
+        providers: [
           {
             target: 'https://github.com',
             apiBaseUrl: 'https://api.github.com',
           },
         ],
-        getVoidLogger(),
-      );
+        logger: getVoidLogger(),
+      });
       const location: LocationSpec = {
         type: 'not-github-org',
         target: 'https://github.com',
@@ -114,15 +114,15 @@ describe('GithubOrgReaderProcessor', () => {
     });
 
     it('rejects unknown targets', async () => {
-      const processor = new GithubOrgReaderProcessor(
-        [
+      const processor = new GithubOrgReaderProcessor({
+        providers: [
           {
             target: 'https://github.com',
             apiBaseUrl: 'https://api.github.com',
           },
         ],
-        getVoidLogger(),
-      );
+        logger: getVoidLogger(),
+      });
       const location: LocationSpec = {
         type: 'github-org',
         target: 'https://not.github.com/apa',

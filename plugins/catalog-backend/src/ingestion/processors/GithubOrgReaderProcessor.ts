@@ -27,14 +27,20 @@ import { buildOrgHierarchy } from './util/org';
  * Extracts teams and users out of a GitHub org.
  */
 export class GithubOrgReaderProcessor implements LocationProcessor {
-  static fromConfig(config: Config, logger: Logger) {
-    return new GithubOrgReaderProcessor(readConfig(config), logger);
+  private readonly providers: ProviderConfig[];
+  private readonly logger: Logger;
+
+  static fromConfig(config: Config, options: { logger: Logger }) {
+    return new GithubOrgReaderProcessor({
+      ...options,
+      providers: readConfig(config),
+    });
   }
 
-  constructor(
-    private readonly providers: ProviderConfig[],
-    private readonly logger: Logger,
-  ) {}
+  constructor(options: { providers: ProviderConfig[]; logger: Logger }) {
+    this.providers = options.providers;
+    this.logger = options.logger;
+  }
 
   async readLocation(
     location: LocationSpec,

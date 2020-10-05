@@ -24,14 +24,13 @@ import { errorString } from './util';
  * Helps out with promisifying calls, paging, binding etc.
  */
 export class LdapClient {
-  static create(target: string, bind?: BindConfig): Promise<LdapClient> {
-    return new Promise<LdapClient>((resolve, reject) => {
-      const client = ldap.createClient({ url: target });
-      if (!bind) {
-        resolve(new LdapClient(client));
-        return;
-      }
+  static async create(target: string, bind?: BindConfig): Promise<LdapClient> {
+    const client = ldap.createClient({ url: target });
+    if (!bind) {
+      return new LdapClient(client);
+    }
 
+    return new Promise<LdapClient>((resolve, reject) => {
       const { dn, secret } = bind;
       client.bind(dn, secret, err => {
         if (err) {
@@ -58,12 +57,12 @@ export class LdapClient {
 
         this.client.search(dn, options, (err, res) => {
           if (err) {
-            reject(errorString(err));
+            reject(new Error(errorString(err)));
             return;
           }
 
           res.on('searchReference', () => {
-            reject('Unable to handle referral');
+            reject(new Error('Unable to handle referral'));
           });
 
           res.on('searchEntry', entry => {
@@ -71,14 +70,14 @@ export class LdapClient {
           });
 
           res.on('error', e => {
-            reject(errorString(e));
+            reject(new Error(errorString(e)));
           });
 
           res.on('end', r => {
             if (!r) {
-              reject('Null response');
+              reject(new Error('Null response'));
             } else if (r.status !== 0) {
-              reject(`Got status ${r.status}: ${r.errorMessage}`);
+              reject(new Error(`Got status ${r.status}: ${r.errorMessage}`));
             } else {
               resolve(output);
             }
@@ -86,7 +85,7 @@ export class LdapClient {
         });
       });
     } catch (e) {
-      throw new Error(`LDAP search at ${dn} failed, ${e}`);
+      throw new Error(`LDAP search at ${dn} failed, ${e.message}`);
     }
   }
 }

@@ -173,7 +173,7 @@ export function serializeEntityRef(
   let namespace;
   let name;
 
-  if ('apiVersion' in ref) {
+  if ('metadata' in ref) {
     kind = ref.kind;
     namespace = ref.metadata.namespace;
     name = ref.metadata.name;

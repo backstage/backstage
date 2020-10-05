@@ -164,7 +164,7 @@ export class HigherOrderOperations implements HigherOrderOperation {
       `Read ${readerOutput.entities.length} entities from location ${location.type} ${location.target}`,
     );
 
-    const startTimestamp = Date.now();
+    const startTimestamp = process.hrtime();
     for (const item of readerOutput.entities) {
       const { entity } = item;
 
@@ -196,9 +196,10 @@ export class HigherOrderOperations implements HigherOrderOperation {
       }
     }
 
-    const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);
+    const delta = process.hrtime(startTimestamp);
+    const durationMs = ((delta[0] * 1e9 + delta[1]) / 1e6).toFixed(1);
     this.logger.info(
-      `Wrote ${readerOutput.entities.length} entities from location ${location.type} ${location.target} in ${duration} seconds`,
+      `Wrote ${readerOutput.entities.length} entities from location ${location.type} ${location.target} in ${durationMs} seconds`,
     );
   }
 }

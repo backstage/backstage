@@ -30,15 +30,21 @@ import { LocationProcessor, LocationProcessorEmit } from './types';
  * Extracts teams and users out of an LDAP server.
  */
 export class LdapOrgReaderProcessor implements LocationProcessor {
-  static fromConfig(config: Config, logger: Logger) {
+  private readonly providers: LdapProviderConfig[];
+  private readonly logger: Logger;
+
+  static fromConfig(config: Config, options: { logger: Logger }) {
     const c = config.getOptionalConfig('catalog.processors.ldapOrg');
-    return new LdapOrgReaderProcessor(c ? readLdapConfig(c) : [], logger);
+    return new LdapOrgReaderProcessor({
+      ...options,
+      providers: c ? readLdapConfig(c) : [],
+    });
   }
 
-  constructor(
-    private readonly providers: LdapProviderConfig[],
-    private readonly logger: Logger,
-  ) {}
+  constructor(options: { providers: LdapProviderConfig[]; logger: Logger }) {
+    this.providers = options.providers;
+    this.logger = options.logger;
+  }
 
   async readLocation(
     location: LocationSpec,
