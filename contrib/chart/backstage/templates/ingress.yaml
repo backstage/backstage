@@ -1,3 +1,6 @@
+{{- $frontendUrl := urlParse .Values.appConfig.app.baseUrl}}
+{{- $backendUrl := urlParse .Values.appConfig.backend.baseUrl}}
+{{- $lighthouseUrl := urlParse .Values.appConfig.lighthouse.baseUrl}}
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
@@ -8,24 +11,32 @@ metadata:
   {{- end }}
 spec:
   rules:
-    - host: {{ .Values.appConfig.app.baseUrl | trimPrefix "https://" | trimSuffix "/" }}
+    - host: {{ $frontendUrl.host }}
       http:
         paths:
           - path: /
             backend:
               serviceName: {{ include "frontend.serviceName" . }}
               servicePort: 80
-    - host: {{ .Values.appConfig.backend.baseUrl | trimPrefix "https://" | trimSuffix "/" }}
-      http:
-        paths:
-          - path: /api
+          - path: /techdocs
             backend:
               serviceName: {{ include "backend.serviceName" . }}
               servicePort: 80
-    - host: {{ .Values.appConfig.lighthouse.baseUrl | trimPrefix "https://" | trimSuffix "/" }}
+          - path: /metadata
+            backend:
+              serviceName: {{ include "backend.serviceName" . }}
+              servicePort: 80
+    - host: {{ $backendUrl.host }}
       http:
         paths:
-          - path: /
+          - path: {{ $backendUrl.path | default "/" }}
+            backend:
+              serviceName: {{ include "backend.serviceName" . }}
+              servicePort: 80
+    - host: {{ $lighthouseUrl.host }}
+      http:
+        paths:
+          - path: {{ $lighthouseUrl.path | default "/" }}
             backend:
               serviceName: {{ include "lighthouse.serviceName" . }}
               servicePort: 80

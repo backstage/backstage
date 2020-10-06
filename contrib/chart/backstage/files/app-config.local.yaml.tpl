@@ -40,10 +40,6 @@ catalog:
 sentry:
   organization: {{ .Values.appConfig.sentry.organization | quote }}
 
-
-lighthouse:
-  baseUrl: {{ .Values.appConfig.lighthouse.baseUrl | quote }}
-
 scaffolder:
   azure:
     baseUrl: https://dev.azure.com/some-org
