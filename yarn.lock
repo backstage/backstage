@@ -4467,16 +4467,15 @@
   dependencies:
     defer-to-connect "^2.0.0"
 
-"@testing-library/cypress@^6.0.0":
-  version "6.0.1"
-  resolved "https://registry.npmjs.org/@testing-library/cypress/-/cypress-6.0.1.tgz#c924a69617db6a403c498abcb63759b79318fc76"
-  integrity sha512-hcPu2OnVuSTX1yDubEe7TBRD6mP2VgyopP1WTBIrJP79INPZdgOAX+TMNH68uZ/r5b4C7100IB4hjPIEQ+/Xog==
+"@testing-library/cypress@^7.0.1":
+  version "7.0.1"
+  resolved "https://registry.npmjs.org/@testing-library/cypress/-/cypress-7.0.1.tgz#2843033acaefe96cb4cf789f16e98d957383e59d"
+  integrity sha512-LtggqG/7Hdc1EiKdmqXQwxWOO3ET1dkZtq0S8mIe8o+xaOtaVLrdCn0dE8Bi4Aj7z3w51w6wN9STdYymnUPlnQ==
   dependencies:
     "@babel/runtime" "^7.11.2"
     "@testing-library/dom" "^7.22.2"
-    "@types/testing-library__cypress" "^5.0.6"
 
-"@testing-library/dom@^7.11.0", "@testing-library/dom@^7.17.1", "@testing-library/dom@^7.22.2":
+"@testing-library/dom@^7.17.1", "@testing-library/dom@^7.22.2":
   version "7.23.0"
   resolved "https://registry.npmjs.org/@testing-library/dom/-/dom-7.23.0.tgz#c54c0fa53705ad867bcefb52fc0c96487fbc10f6"
   integrity sha512-H5m090auYH+obdZmsaYLrSWC5OauWD2CvNbz88KBxQJoXgkJzbU0DpAG8BS7Evj5WqCC3nAAKrLS6vw0ljUYLg==
@@ -5599,14 +5598,6 @@
   integrity sha512-imDtS4TAoTcXk0g7u4kkWqedB3E4qpjXzCpD2LU5M5NAXHzCDsypyvXSaG7mM8DKYkCRa7tFp4tS/lp/Wo7Q3w==
   dependencies:
     "@types/estree" "*"
-
-"@types/testing-library__cypress@^5.0.6":
-  version "5.0.6"
-  resolved "https://registry.npmjs.org/@types/testing-library__cypress/-/testing-library__cypress-5.0.6.tgz#9015f575c1a98f05996a4fe769071134ee488c26"
-  integrity sha512-TUp5wfanU7zUZigKqIeQDChnHQ1MEzbYqrI5iCQMFiesWNOASWm/el1lFBh1JPqmd6GkdDdDiHYJnkqd9le2ww==
-  dependencies:
-    "@testing-library/dom" "^7.11.0"
-    cypress "*"
 
 "@types/testing-library__jest-dom@^5.9.1":
   version "5.9.1"
@@ -9338,7 +9329,7 @@ cyclist@^1.0.1:
   resolved "https://registry.npmjs.org/cyclist/-/cyclist-1.0.1.tgz#596e9698fd0c80e12038c2b82d6eb1b35b6224d9"
   integrity sha1-WW6WmP0MgOEgOMK4LW6xs1tiJNk=
 
-cypress@*, cypress@^4.2.0:
+cypress@^4.2.0:
   version "4.12.1"
   resolved "https://registry.npmjs.org/cypress/-/cypress-4.12.1.tgz#0ead1b9f4c0917d69d8b57f996b6e01fe693b6ec"
   integrity sha512-9SGIPEmqU8vuRA6xst2CMTYd9sCFCxKSzrHt0wr+w2iAQMCIIsXsQ5Gplns1sT6LDbZcmLv6uehabAOl3fhc9Q==
