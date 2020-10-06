@@ -66,11 +66,6 @@ export const EmptyState = ({ title, description, missing, action }: Props) => {
         </Grid>
       </Grid>
       <Grid item xs={12} md={6} className={classes.imageContainer}>
-        <img
-          src={Background}
-          className={classes.backgroundImage}
-          alt="background"
-        />
         <EmptyStateImage missing={missing} />
       </Grid>
     </Grid>
