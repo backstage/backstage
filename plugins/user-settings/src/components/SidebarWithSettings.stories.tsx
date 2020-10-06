@@ -56,9 +56,7 @@ const createConfig = () =>
       context: '',
       data: {
         auth: {
-          providers: {
-            // google: { development: {} },
-          },
+          providers: {},
         },
       },
     },

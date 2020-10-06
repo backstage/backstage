@@ -18,8 +18,7 @@ import React from 'react';
 import { CodeSnippet, EmptyState } from '@backstage/core';
 import { Button, Typography } from '@material-ui/core';
 
-const EXAMPLE = `
-import { createPlugin } from '@backstage/core';
+const EXAMPLE = `import { createPlugin } from '@backstage/core';
 
 export default createPlugin({
   id: 'welcome',
@@ -43,7 +42,7 @@ export const EmptyFlags = () => (
           text={EXAMPLE}
           language="typescript"
           showLineNumbers
-          highlightedNumbers={[7]}
+          highlightedNumbers={[6]}
           customStyle={{ background: 'inherit', fontSize: '115%' }}
         />
         <Button

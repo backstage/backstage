@@ -24,7 +24,7 @@ import {
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import { fireEvent } from '@testing-library/react';
 import React from 'react';
-import { DefaultProviderSettings } from './DefaultProviderSettings';
+import { AuthProviders } from './AuthProviders';
 
 const mockSignInHandler = jest.fn().mockReturnValue('');
 const mockGoogleAuth = {
@@ -57,12 +57,12 @@ const apiRegistry = ApiRegistry.from([
   [googleAuthApiRef, mockGoogleAuth],
 ]);
 
-describe('<ConfiguredProviderSettings />', () => {
+describe('<AuthProviders />', () => {
   it('displays a provider and calls its sign-in handler on click', async () => {
     const rendered = await renderWithEffects(
       wrapInTestApp(
         <ApiProvider apis={apiRegistry}>
-          <DefaultProviderSettings />
+          <AuthProviders />
         </ApiProvider>,
       ),
     );

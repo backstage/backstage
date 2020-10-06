@@ -18,38 +18,38 @@ import React from 'react';
 import { CodeSnippet, EmptyState } from '@backstage/core';
 import { Button, Typography } from '@material-ui/core';
 
-const EXAMPLE = `
-import { createPlugin } from '@backstage/core';
-
-export default createPlugin({
-  id: 'welcome',
-  register({ router, featureFlags }) {
-    featureFlags.register('enable-example-feature');
-  },
-});
+const EXAMPLE = `auth:
+  providers:
+    google:
+      development:
+        clientId:
+          $env: AUTH_GOOGLE_CLIENT_ID
+        clientSecret:
+          $env: AUTH_GOOGLE_CLIENT_SECRET
 `;
 
 export const EmptyProviders = () => (
   <EmptyState
     missing="content"
     title="No Authentication Providers"
-    description=""
+    description="You can add Authentication Providers to Backstage which allows you to use these providers to authenticate yourself."
     action={
       <>
         <Typography variant="body1">
-          An example how how to add a feature flags is highlighted below:
+          Open <code>app-config.yaml</code> and make the changes as highlighted
+          below:
         </Typography>
         <CodeSnippet
           text={EXAMPLE}
-          language="typescript"
+          language="yaml"
           showLineNumbers
-          highlightedNumbers={[7]}
+          highlightedNumbers={[3, 4, 5, 6, 7, 8]}
           customStyle={{ background: 'inherit', fontSize: '115%' }}
         />
         <Button
           variant="contained"
           color="primary"
-          href="https://backstage.io/docs/api/utility-apis"
+          href="https://backstage.io/docs/auth/add-auth-provider"
         >
           Read More
         </Button>
