@@ -7,6 +7,11 @@ metadata:
   name: {{ include "backstage.fullname" . }}-ingress
   {{- with .Values.ingress.annotations }}
   annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      if ($scheme = https) {
+      add_header  Strict-Transport-Security "max-age=0;";
+      }
   {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
@@ -18,6 +23,8 @@ spec:
             backend:
               serviceName: {{ include "frontend.serviceName" . }}
               servicePort: 80
+{{/* Route the backend inside the same hostname as the frontend when they are the same */}}
+{{- if eq $frontendUrl.host $backendUrl.host}}
           - path: /techdocs
             backend:
               serviceName: {{ include "backend.serviceName" . }}
@@ -26,6 +33,12 @@ spec:
             backend:
               serviceName: {{ include "backend.serviceName" . }}
               servicePort: 80
+          - path: /api
+            backend:
+              serviceName: {{ include "backend.serviceName" . }}
+              servicePort: 80
+{{/* Route the backend through a different host */}}
+{{- else -}}
     - host: {{ $backendUrl.host }}
       http:
         paths:
@@ -33,11 +46,40 @@ spec:
             backend:
               serviceName: {{ include "backend.serviceName" . }}
               servicePort: 80
-    - host: {{ $lighthouseUrl.host }}
+{{- end }}
+{{/* Route lighthouse through a different host */}}
+{{- if not ( eq $frontendUrl.host $lighthouseUrl.host ) }}
+   - host: {{ $lighthouseUrl.host }}
       http:
         paths:
           - path: {{ $lighthouseUrl.path | default "/" }}
             backend:
               serviceName: {{ include "lighthouse.serviceName" . }}
               servicePort: 80
-
+{{- else }}
+{{/* Route lighthouse by path with re-write rules when it is hosted under the same hostname */}}
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: {{ include "backstage.fullname" . }}-ingress-lighthouse
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      if ($scheme = https) {
+      add_header  Strict-Transport-Security "max-age=0;";
+      }
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  rules:
+    - host: {{ $frontendUrl.host }}
+      http:
+        paths:
+          - path: {{$lighthouseUrl.path}}(/|$)(.*)
+            backend:
+              serviceName: {{ include "lighthouse.serviceName" . }}
+              servicePort: 80
+{{- end }}
