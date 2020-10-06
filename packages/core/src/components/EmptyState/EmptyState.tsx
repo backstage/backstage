@@ -17,7 +17,6 @@
 import React from 'react';
 import { makeStyles, Typography, Grid } from '@material-ui/core';
 import { EmptyStateImage } from './EmptyStateImage';
-import Background from './assets/Background.svg';
 
 const useStyles = makeStyles(theme => ({
   root: {
