@@ -22,12 +22,13 @@ import {
   FeatureFlagName,
   FeatureFlagState,
   FeatureFlagsRegistryItem,
+  InfoCard,
 } from '@backstage/core';
 import { FlagItem } from './FeatureFlagsItem';
 
 type Props = { featureFlags: FeatureFlagsRegistryItem[] };
 
-export const FeatureFlagsList = ({ featureFlags }: Props) => {
+export const FeatureFlags = ({ featureFlags }: Props) => {
   const featureFlagApi = useApi(featureFlagsApiRef);
   const initialFlagState = featureFlags.reduce(
     (result, featureFlag: FeatureFlagsRegistryItem) => {
@@ -57,19 +58,21 @@ export const FeatureFlagsList = ({ featureFlags }: Props) => {
   );
 
   return (
-    <List dense>
-      {featureFlags.map(featureFlag => {
-        const enabled = Boolean(state[featureFlag.name]);
+    <InfoCard>
+      <List dense>
+        {featureFlags.map(featureFlag => {
+          const enabled = Boolean(state[featureFlag.name]);
 
-        return (
-          <FlagItem
-            key={featureFlag.name}
-            flag={featureFlag}
-            enabled={enabled}
-            toggleHandler={toggleFlag}
-          />
-        );
-      })}
-    </List>
+          return (
+            <FlagItem
+              key={featureFlag.name}
+              flag={featureFlag}
+              enabled={enabled}
+              toggleHandler={toggleFlag}
+            />
+          );
+        })}
+      </List>
+    </InfoCard>
   );
 };

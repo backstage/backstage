@@ -13,14 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { InfoCard } from '@backstage/core';
+import { Grid, List } from '@material-ui/core';
+import React from 'react';
+import { PinButton } from './PinButton';
+import { Profile } from './Profile';
+import { ThemeToggle } from './ThemeToggle';
 
-import * as React from 'react';
-import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
-import { UserSettings } from './UserSettings';
-
-describe('<UserSettings />', () => {
-  it('renders', async () => {
-    const rendered = await renderWithEffects(wrapInTestApp(<UserSettings />));
-    expect(rendered.getByText('G')).toBeInTheDocument();
-  });
-});
+export const General = () => (
+  <Grid container spacing={3}>
+    <Grid item md={12}>
+      <Profile />
+    </Grid>
+    <Grid item md={12}>
+      <InfoCard>
+        <List dense>
+          <ThemeToggle />
+          <PinButton />
+        </List>
+      </InfoCard>
+    </Grid>
+  </Grid>
+);

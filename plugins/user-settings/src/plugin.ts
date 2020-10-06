@@ -13,7 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createPlugin } from '@backstage/core';
+import { createPlugin, createRouteRef } from '@backstage/core';
+
+export const settingsRouteRef = createRouteRef({
+  path: '/settings',
+  title: 'Settings',
+});
 
 export const plugin = createPlugin({
   id: 'user-settings',

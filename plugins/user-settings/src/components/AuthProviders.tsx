@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { List } from '@material-ui/core';
-import { ThemeToggle } from './ThemeToggle';
-import { PinButton } from './PinButton';
+import { InfoCard } from '@backstage/core';
 
-export const AppSettingsList = () => (
-  <List dense>
-    <ThemeToggle />
-    <PinButton />
-  </List>
+type Props = {
+  providers: React.ReactNode;
+};
+
+export const AuthProviders = ({ providers }: Props) => (
+  <InfoCard>
+    <List dense>{providers}</List>
+  </InfoCard>
 );

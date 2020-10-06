@@ -23,7 +23,7 @@ import {
 } from '@backstage/core';
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import { fireEvent } from '@testing-library/react';
-import * as React from 'react';
+import React from 'react';
 import { DefaultProviderSettings } from './DefaultProviderSettings';
 
 const mockSignInHandler = jest.fn().mockReturnValue('');

@@ -56,7 +56,6 @@ const handleSearch = (input: string) => {
 
 export const SampleSidebar = () => (
   <Sidebar>
-    {/* <SidebarLogo /> */}
     <SidebarSearchField onSearch={handleSearch} />
     <SidebarDivider />
     <SidebarItem icon={HomeOutlinedIcon} to="#" text="Home" />
@@ -92,7 +91,6 @@ const apis = ApiRegistry.from([
 
 export const WithUserSettingsPlugin = () => (
   <Sidebar>
-    {/* <SidebarLogo /> */}
     <SidebarSearchField onSearch={handleSearch} />
     <SidebarDivider />
     <SidebarItem icon={HomeOutlinedIcon} to="#" text="Home" />

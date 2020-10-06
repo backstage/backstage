@@ -15,12 +15,20 @@
  */
 
 import React from 'react';
-import { List } from '@material-ui/core';
+import { SidebarItem } from '@backstage/core';
+import { SignInAvatar } from './SignInAvatar';
+import { useUserProfile } from './useUserProfileInfo';
+import { settingsRouteRef } from '../plugin';
 
-type Props = {
-  providers: React.ReactNode;
+export const Settings = () => {
+  const { displayName } = useUserProfile();
+  const SidebarAvatar = () => <SignInAvatar />;
+
+  return (
+    <SidebarItem
+      text={displayName}
+      to={settingsRouteRef.path}
+      icon={SidebarAvatar}
+    />
+  );
 };
-
-export const AuthProvidersList = ({ providers }: Props) => (
-  <List dense>{providers}</List>
-);

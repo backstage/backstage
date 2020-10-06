@@ -16,7 +16,7 @@
 
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import { fireEvent } from '@testing-library/react';
-import * as React from 'react';
+import React from 'react';
 import { UserSettingsMenu } from './UserSettingsMenu';
 
 describe('<UserSettingsMenu />', () => {
