@@ -21,7 +21,6 @@ import {
 } from '@backstage/backend-common';
 import {
   Entity,
-  EntityMeta,
   EntityName,
   ENTITY_DEFAULT_NAMESPACE,
   ENTITY_META_GENERATED_FIELDS,
@@ -389,6 +388,11 @@ export class CommonDatabase implements Database {
     ).toLowerCase();
     const lowerName = entity.metadata.name.toLowerCase();
 
+    const data = {
+      ...entity,
+      metadata: lodash.omit(entity.metadata, ...ENTITY_META_GENERATED_FIELDS),
+    };
+
     return {
       id: entity.metadata.uid!,
       location_id: locationId || null,
@@ -399,29 +403,15 @@ export class CommonDatabase implements Database {
       kind: entity.kind,
       name: entity.metadata.name,
       namespace: entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE,
-      metadata: JSON.stringify(
-        lodash.omit(entity.metadata, ...ENTITY_META_GENERATED_FIELDS),
-      ),
-      spec: entity.spec ? JSON.stringify(entity.spec) : null,
+      data: JSON.stringify(data),
     };
   }
 
   private toEntityResponse(row: DbEntitiesRow): DbEntityResponse {
-    const entity: Entity = {
-      apiVersion: row.api_version,
-      kind: row.kind,
-      metadata: {
-        ...(JSON.parse(row.metadata) as EntityMeta),
-        uid: row.id,
-        etag: row.etag,
-        generation: Number(row.generation), // cast because of sqlite
-      },
-    };
-
-    if (row.spec) {
-      const spec = JSON.parse(row.spec);
-      entity.spec = spec;
-    }
+    const entity = JSON.parse(row.data) as Entity;
+    entity.metadata.uid = row.id;
+    entity.metadata.etag = row.etag;
+    entity.metadata.generation = Number(row.generation); // cast due to sqlite
 
     return {
       locationId: row.location_id || undefined,

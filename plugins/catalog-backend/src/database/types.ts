@@ -26,8 +26,7 @@ export type DbEntitiesRow = {
   etag: string;
   generation: number;
   full_name: string;
-  metadata: string;
-  spec: string | null;
+  data: string;
 };
 
 export type DbEntityRequest = {
