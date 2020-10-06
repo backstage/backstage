@@ -9,7 +9,7 @@ import { Link, makeStyles } from '@material-ui/core';
 import { NavLink } from 'react-router-dom';
 import LogoFull from './LogoFull';
 import LogoIcon from './LogoIcon';
-import { UserSettings } from '@backstage/plugin-user-settings'
+import { Settings as SidebarSettings } from '@backstage/plugin-user-settings';
 
 import {
   Sidebar,
@@ -36,7 +36,7 @@ export const AppSidebar = () => (
     <SidebarDivider />
     <SidebarSpace />
     <SidebarDivider />
-    <UserSettings />
+    <SidebarSettings />
   </Sidebar>
 );
 

@@ -26,18 +26,8 @@ import {
 import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { MemoryRouter } from 'react-router-dom';
-import {
-  ApiProvider,
-  ApiRegistry,
-  appThemeApiRef,
-  AppThemeSelector,
-  configApiRef,
-  ConfigReader,
-  FeatureFlags,
-  featureFlagsApiRef,
-} from '@backstage/core-api';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { UserSettings } from '@backstage/plugin-user-settings';
+import { Settings as SidebarSettings } from '@backstage/plugin-user-settings';
 
 export default {
   title: 'Sidebar',
@@ -67,28 +57,6 @@ export const SampleSidebar = () => (
   </Sidebar>
 );
 
-const createConfig = () =>
-  ConfigReader.fromConfigs([
-    {
-      context: '',
-      data: {
-        auth: {
-          providers: {
-            google: { development: {} },
-          },
-        },
-      },
-    },
-  ]);
-
-const config = createConfig();
-
-const apis = ApiRegistry.from([
-  [configApiRef, config],
-  [featureFlagsApiRef, new FeatureFlags()],
-  [appThemeApiRef, AppThemeSelector.createWithStorage([])],
-]);
-
 export const WithUserSettingsPlugin = () => (
   <Sidebar>
     <SidebarSearchField onSearch={handleSearch} />
@@ -100,8 +68,6 @@ export const WithUserSettingsPlugin = () => (
     <SidebarIntro />
     <SidebarSpace />
     <SidebarDivider />
-    <ApiProvider apis={apis}>
-      <UserSettings />
-    </ApiProvider>
+    <SidebarSettings />
   </Sidebar>
 );
