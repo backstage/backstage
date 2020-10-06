@@ -16,6 +16,7 @@
 
 import GithubIcon from '@material-ui/icons/AcUnit';
 import { DefaultAuthConnector } from '../../../../lib/AuthConnector';
+import { RefreshingAuthSessionManager } from '../../../../lib/AuthSessionManager';
 import { GithubSession } from './types';
 import {
   OAuthApi,
@@ -31,11 +32,11 @@ import {
   DiscoveryApi,
 } from '../../../definitions';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
-import {
-  AuthSessionStore,
-  StaticAuthSessionManager,
-} from '../../../../lib/AuthSessionManager';
 import { Observable } from '../../../../types';
+
+type Options = {
+  sessionManager: SessionManager<GithubSession>;
+};
 
 type CreateOptions = {
   discoveryApi: DiscoveryApi;
@@ -43,6 +44,8 @@ type CreateOptions = {
 
   environment?: string;
   provider?: AuthProvider & { id: string };
+  defaultScopes?: string[];
+  scopeTransform?: (scopes: string[]) => string[];
 };
 
 export type GithubAuthResponse = {
@@ -67,6 +70,7 @@ class GithubAuth implements OAuthApi, SessionApi {
     environment = 'development',
     provider = DEFAULT_PROVIDER,
     oauthRequestApi,
+    defaultScopes = ['read:user'],
   }: CreateOptions) {
     const connector = new DefaultAuthConnector({
       discoveryApi,
@@ -87,22 +91,25 @@ class GithubAuth implements OAuthApi, SessionApi {
       },
     });
 
-    const sessionManager = new StaticAuthSessionManager({
+    const sessionManager = new RefreshingAuthSessionManager({
       connector,
-      defaultScopes: new Set(['read:user']),
+      defaultScopes: new Set(defaultScopes),
       sessionScopes: (session: GithubSession) => session.providerInfo.scopes,
+      sessionShouldRefresh: (session: GithubSession) => {
+        const expiresInSec =
+          (session.providerInfo.expiresAt.getTime() - Date.now()) / 1000;
+        return expiresInSec < 60 * 5;
+      },
     });
 
-    const authSessionStore = new AuthSessionStore<GithubSession>({
-      manager: sessionManager,
-      storageKey: 'githubSession',
-      sessionScopes: (session: GithubSession) => session.providerInfo.scopes,
-    });
-
-    return new GithubAuth(authSessionStore);
+    return new GithubAuth({ sessionManager });
   }
 
-  constructor(private readonly sessionManager: SessionManager<GithubSession>) {}
+  private readonly sessionManager: SessionManager<GithubSession>;
+
+  constructor(options: Options) {
+    this.sessionManager = options.sessionManager;
+  }
 
   async signIn() {
     await this.getAccessToken();
