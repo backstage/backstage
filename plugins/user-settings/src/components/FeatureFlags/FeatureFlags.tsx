@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-import React, { useState, useCallback } from 'react';
-import { List } from '@material-ui/core';
+import React, { useCallback, useState } from 'react';
 import {
-  useApi,
-  featureFlagsApiRef,
   FeatureFlagName,
-  FeatureFlagState,
+  featureFlagsApiRef,
   FeatureFlagsRegistryItem,
+  FeatureFlagState,
   InfoCard,
+  useApi,
 } from '@backstage/core';
+import { List } from '@material-ui/core';
+import { EmptyFlags } from './EmptyFlags';
 import { FlagItem } from './FeatureFlagsItem';
 
-type Props = { featureFlags: FeatureFlagsRegistryItem[] };
-
-export const FeatureFlags = ({ featureFlags }: Props) => {
-  const featureFlagApi = useApi(featureFlagsApiRef);
+export const FeatureFlags = () => {
+  const featureFlagsApi = useApi(featureFlagsApiRef);
+  const featureFlags = featureFlagsApi.getRegisteredFlags();
   const initialFlagState = featureFlags.reduce(
     (result, featureFlag: FeatureFlagsRegistryItem) => {
-      const state = featureFlagApi.getFlags().get(featureFlag.name);
+      const state = featureFlagsApi.getFlags().get(featureFlag.name);
 
       result[featureFlag.name] = state;
       return result;
@@ -46,16 +46,20 @@ export const FeatureFlags = ({ featureFlags }: Props) => {
 
   const toggleFlag = useCallback(
     (flagName: FeatureFlagName) => {
-      const newState = featureFlagApi.getFlags().toggle(flagName);
+      const newState = featureFlagsApi.getFlags().toggle(flagName);
 
       setState(prevState => ({
         ...prevState,
         [flagName]: newState,
       }));
-      featureFlagApi.getFlags().save();
+      featureFlagsApi.getFlags().save();
     },
-    [featureFlagApi],
+    [featureFlagsApi],
   );
+
+  if (!featureFlags.length) {
+    return <EmptyFlags />;
+  }
 
   return (
     <InfoCard>

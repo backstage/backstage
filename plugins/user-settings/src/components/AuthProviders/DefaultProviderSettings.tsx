@@ -14,74 +14,70 @@
  * limitations under the License.
  */
 import {
-  configApiRef,
   githubAuthApiRef,
   gitlabAuthApiRef,
   googleAuthApiRef,
   oauth2ApiRef,
   oktaAuthApiRef,
   microsoftAuthApiRef,
-  useApi,
 } from '@backstage/core';
 import Star from '@material-ui/icons/Star';
 import React from 'react';
 import { ProviderSettingsItem } from './ProviderSettingsItem';
 
-export const DefaultProviderSettings = () => {
-  const configApi = useApi(configApiRef);
-  const providersConfig = configApi.getOptionalConfig('auth.providers');
-  const providers = providersConfig?.keys() ?? [];
-
-  return (
-    <>
-      {providers.includes('google') && (
-        <ProviderSettingsItem
-          title="Google"
-          description={googleAuthApiRef.description}
-          apiRef={googleAuthApiRef}
-          icon={Star}
-        />
-      )}
-      {providers.includes('microsoft') && (
-        <ProviderSettingsItem
-          title="Microsoft"
-          description={microsoftAuthApiRef.description}
-          apiRef={microsoftAuthApiRef}
-          icon={Star}
-        />
-      )}
-      {providers.includes('github') && (
-        <ProviderSettingsItem
-          title="Github"
-          description={githubAuthApiRef.description}
-          apiRef={githubAuthApiRef}
-          icon={Star}
-        />
-      )}
-      {providers.includes('gitlab') && (
-        <ProviderSettingsItem
-          title="Gitlab"
-          description={gitlabAuthApiRef.description}
-          apiRef={gitlabAuthApiRef}
-          icon={Star}
-        />
-      )}
-      {providers.includes('okta') && (
-        <ProviderSettingsItem
-          title="Okta"
-          description={oktaAuthApiRef.description}
-          apiRef={oktaAuthApiRef}
-          icon={Star}
-        />
-      )}
-      {providers.includes('oauth2') && (
-        <ProviderSettingsItem
-          title="YourOrg"
-          description={oauth2ApiRef.description}
-          apiRef={oauth2ApiRef}
-          icon={Star}
-        />
-      )}
-    </>
-  );
+type Props = {
+  configuredProviders: string[];
 };
+
+export const DefaultProviderSettings = ({ configuredProviders }: Props) => (
+  <>
+    {configuredProviders.includes('google') && (
+      <ProviderSettingsItem
+        title="Google"
+        description={googleAuthApiRef.description}
+        apiRef={googleAuthApiRef}
+        icon={Star}
+      />
+    )}
+    {configuredProviders.includes('microsoft') && (
+      <ProviderSettingsItem
+        title="Microsoft"
+        description={microsoftAuthApiRef.description}
+        apiRef={microsoftAuthApiRef}
+        icon={Star}
+      />
+    )}
+    {configuredProviders.includes('github') && (
+      <ProviderSettingsItem
+        title="Github"
+        description={githubAuthApiRef.description}
+        apiRef={githubAuthApiRef}
+        icon={Star}
+      />
+    )}
+    {configuredProviders.includes('gitlab') && (
+      <ProviderSettingsItem
+        title="Gitlab"
+        description={gitlabAuthApiRef.description}
+        apiRef={gitlabAuthApiRef}
+        icon={Star}
+      />
+    )}
+    {configuredProviders.includes('okta') && (
+      <ProviderSettingsItem
+        title="Okta"
+        description={oktaAuthApiRef.description}
+        apiRef={oktaAuthApiRef}
+        icon={Star}
+      />
+    )}
+    {configuredProviders.includes('oauth2') && (
+      <ProviderSettingsItem
+        title="YourOrg"
+        description={oauth2ApiRef.description}
+        apiRef={oauth2ApiRef}
+        icon={Star}
+      />
+    )}
+  </>
+);

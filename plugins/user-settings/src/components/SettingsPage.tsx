@@ -15,17 +15,9 @@
  */
 
 import React, { useState } from 'react';
-import {
-  Content,
-  featureFlagsApiRef,
-  Header,
-  HeaderTabs,
-  Page,
-  pageTheme,
-  useApi,
-} from '@backstage/core';
+import { Content, Header, HeaderTabs, Page, pageTheme } from '@backstage/core';
 import { General } from './General';
-import { AuthProviders, DefaultProviderSettings } from './AuthProviders';
+import { AuthProviders } from './AuthProviders';
 import { FeatureFlags } from './FeatureFlags';
 
 type Props = {
@@ -37,9 +29,6 @@ export const SettingsPage = ({ providerSettings }: Props) => {
   const onTabChange = (index: number) => {
     setActiveTab(index);
   };
-  const featureFlagsApi = useApi(featureFlagsApiRef);
-  const featureFlags = featureFlagsApi.getRegisteredFlags();
-  const providers = providerSettings ?? <DefaultProviderSettings />;
 
   const tabs = [
     { id: 'general', label: 'General' },
@@ -49,8 +38,8 @@ export const SettingsPage = ({ providerSettings }: Props) => {
 
   const content = [
     <General />,
-    <AuthProviders providers={providers} />,
-    <FeatureFlags featureFlags={featureFlags} />,
+    <AuthProviders providerSettings={providerSettings} />,
+    <FeatureFlags />,
   ];
 
   return (

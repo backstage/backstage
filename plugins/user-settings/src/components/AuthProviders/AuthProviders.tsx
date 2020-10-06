@@ -16,14 +16,29 @@
 
 import React from 'react';
 import { List } from '@material-ui/core';
-import { InfoCard } from '@backstage/core';
+import { configApiRef, InfoCard, useApi } from '@backstage/core';
+import { EmptyProviders } from './EmptyProviders';
+import { DefaultProviderSettings } from './DefaultProviderSettings';
 
 type Props = {
-  providers: React.ReactNode;
+  providerSettings?: JSX.Element;
 };
 
-export const AuthProviders = ({ providers }: Props) => (
-  <InfoCard>
-    <List dense>{providers}</List>
-  </InfoCard>
-);
+export const AuthProviders = ({ providerSettings }: Props) => {
+  const configApi = useApi(configApiRef);
+  const providersConfig = configApi.getOptionalConfig('auth.providers');
+  const configuredProviders = providersConfig?.keys() || [];
+  const providers = providerSettings ?? (
+    <DefaultProviderSettings configuredProviders={configuredProviders} />
+  );
+
+  if (!providerSettings && !configuredProviders?.length) {
+    return <EmptyProviders />;
+  }
+
+  return (
+    <InfoCard>
+      <List dense>{providers}</List>
+    </InfoCard>
+  );
+};
