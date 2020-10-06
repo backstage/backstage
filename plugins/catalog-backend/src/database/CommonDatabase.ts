@@ -207,9 +207,7 @@ export class CommonDatabase implements Database {
 
     const rows = await builder
       .select('entities.*')
-      .orderBy('kind', 'asc')
-      .orderBy('namespace', 'asc')
-      .orderBy('name', 'asc')
+      .orderBy('full_name', 'asc')
       .groupBy('id');
 
     return rows.map(row => this.toEntityResponse(row));
@@ -222,12 +220,9 @@ export class CommonDatabase implements Database {
     const tx = txOpaque as Knex.Transaction<any, any>;
 
     const rows = await tx<DbEntitiesRow>('entities')
-      .whereRaw(
-        tx.raw(
-          'LOWER(kind) = LOWER(?) AND LOWER(namespace) = LOWER(?) AND LOWER(name) = LOWER(?)',
-          [name.kind, name.namespace, name.name],
-        ),
-      )
+      .where({
+        full_name: `${name.kind}:${name.namespace}/${name.name}`.toLowerCase(),
+      })
       .select();
 
     if (rows.length !== 1) {
@@ -399,10 +394,6 @@ export class CommonDatabase implements Database {
       etag: entity.metadata.etag!,
       generation: entity.metadata.generation!,
       full_name: `${lowerKind}:${lowerNamespace}/${lowerName}`,
-      api_version: entity.apiVersion,
-      kind: entity.kind,
-      name: entity.metadata.name,
-      namespace: entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE,
       data: JSON.stringify(data),
     };
   }
