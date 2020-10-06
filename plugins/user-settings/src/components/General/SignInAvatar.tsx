@@ -17,7 +17,7 @@
 import React from 'react';
 import { BackstageTheme } from '@backstage/theme';
 import { makeStyles, Avatar } from '@material-ui/core';
-import { useUserProfile } from './useUserProfileInfo';
+import { useUserProfile } from '../useUserProfileInfo';
 import { sidebarConfig } from '@backstage/core';
 
 const useStyles = makeStyles<BackstageTheme, { size: number }>(theme => ({

@@ -18,7 +18,7 @@ import { Grid, Typography } from '@material-ui/core';
 import React from 'react';
 import { SignInAvatar } from './SignInAvatar';
 import { UserSettingsMenu } from './UserSettingsMenu';
-import { useUserProfile } from './useUserProfileInfo';
+import { useUserProfile } from '../useUserProfileInfo';
 
 export const Profile = () => {
   const { profile, displayName } = useUserProfile();

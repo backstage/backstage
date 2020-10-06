@@ -14,21 +14,4 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { SidebarItem } from '@backstage/core';
-import { SignInAvatar } from './General';
-import { useUserProfile } from './useUserProfileInfo';
-import { settingsRouteRef } from '../plugin';
-
-export const Settings = () => {
-  const { displayName } = useUserProfile();
-  const SidebarAvatar = () => <SignInAvatar />;
-
-  return (
-    <SidebarItem
-      text={displayName}
-      to={settingsRouteRef.path}
-      icon={SidebarAvatar}
-    />
-  );
-};
+export { FeatureFlags } from './FeatureFlags';

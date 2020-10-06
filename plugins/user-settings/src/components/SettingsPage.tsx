@@ -25,8 +25,7 @@ import {
   useApi,
 } from '@backstage/core';
 import { General } from './General';
-import { AuthProviders } from './AuthProviders';
-import { DefaultProviderSettings } from './DefaultProviderSettings';
+import { AuthProviders, DefaultProviderSettings } from './AuthProviders';
 import { FeatureFlags } from './FeatureFlags';
 
 type Props = {

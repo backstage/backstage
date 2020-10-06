@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export { UserSettings } from './UserSettings';
+export { General } from './General';
+export { SignInAvatar } from './SignInAvatar';
