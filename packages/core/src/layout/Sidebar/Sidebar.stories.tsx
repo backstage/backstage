@@ -26,8 +26,6 @@ import {
 import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { MemoryRouter } from 'react-router-dom';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { Settings as SidebarSettings } from '@backstage/plugin-user-settings';
 
 export default {
   title: 'Sidebar',
@@ -54,20 +52,5 @@ export const SampleSidebar = () => (
     <SidebarDivider />
     <SidebarIntro />
     <SidebarSpace />
-  </Sidebar>
-);
-
-export const WithUserSettingsPlugin = () => (
-  <Sidebar>
-    <SidebarSearchField onSearch={handleSearch} />
-    <SidebarDivider />
-    <SidebarItem icon={HomeOutlinedIcon} to="#" text="Home" />
-    <SidebarItem icon={HomeOutlinedIcon} to="#" text="Plugins" />
-    <SidebarItem icon={AddCircleOutlineIcon} to="#" text="Create..." />
-    <SidebarDivider />
-    <SidebarIntro />
-    <SidebarSpace />
-    <SidebarDivider />
-    <SidebarSettings />
   </Sidebar>
 );
