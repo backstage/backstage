@@ -3225,6 +3225,17 @@
     prop-types "^15.7.2"
     react-is "^16.8.0"
 
+"@material-ui/lab@^4.0.0-alpha.56":
+  version "4.0.0-alpha.56"
+  resolved "https://registry.npmjs.org/@material-ui/lab/-/lab-4.0.0-alpha.56.tgz#ff63080949b55b40625e056bbda05e130d216d34"
+  integrity sha512-xPlkK+z/6y/24ka4gVJgwPfoCF4RCh8dXb1BNE7MtF9bXEBLN/lBxNTK8VAa0qm3V2oinA6xtUIdcRh0aeRtVw==
+  dependencies:
+    "@babel/runtime" "^7.4.4"
+    "@material-ui/utils" "^4.10.2"
+    clsx "^1.0.4"
+    prop-types "^15.7.2"
+    react-is "^16.8.0"
+
 "@material-ui/pickers@^3.2.2":
   version "3.2.10"
   resolved "https://registry.npmjs.org/@material-ui/pickers/-/pickers-3.2.10.tgz#19df024895876eb0ec7cd239bbaea595f703f0ae"
@@ -3610,19 +3621,18 @@
   resolved "https://registry.npmjs.org/@rjsf/material-ui/-/material-ui-2.3.0.tgz#a051eb4db2ad778e39933a31ba806f415dd3ba90"
   integrity sha512-v/xZ4Xk18ZgBARcCe99IDqdO97GU0UC784gG8PhGGFDdy5Rbdy7ixTjHkGYttkr43PB7SX6ttohNhkKSW4nATQ==
 
-"@roadiehq/backstage-plugin-github-pull-requests@0.3.0":
-  version "0.3.0"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-pull-requests/-/backstage-plugin-github-pull-requests-0.3.0.tgz#465cb74b1dab6f34a5a5bf4fa57b6c1d312bc5b7"
-  integrity sha512-nSyMh8p3SAYj1yj5/+Po82g7aZwF5pWb+fh7bLPdf+ywl5pa+aKQxAVNCvlvgfN2WZ9gDTMbCPyWDgCfeJ/V9g==
+"@roadiehq/backstage-plugin-github-pull-requests@^0.4.3":
+  version "0.4.3"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-pull-requests/-/backstage-plugin-github-pull-requests-0.4.3.tgz#720fd3c53ae8e61d8cfc727cda47e236af442b02"
+  integrity sha512-IJGMys5FJ512sitaMwWgACll3ZTuE3nZUX05MNXly/WXty6VBcfboiPbSB6IzLAEWMmvYlV1YUwwL7hAl/62GQ==
   dependencies:
-    "@backstage/catalog-model" "^0.1.1-alpha.16"
-    "@backstage/core" "^0.1.1-alpha.16"
-    "@backstage/core-api" "^0.1.1-alpha.16"
-    "@backstage/plugin-catalog" "^0.1.1-alpha.16"
-    "@backstage/theme" "^0.1.1-alpha.16"
-    "@material-ui/core" "^4.9.1"
+    "@backstage/catalog-model" "^0.1.1-alpha.23"
+    "@backstage/core" "^0.1.1-alpha.23"
+    "@backstage/plugin-catalog" "^0.1.1-alpha.23"
+    "@backstage/theme" "^0.1.1-alpha.23"
+    "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
-    "@material-ui/lab" "4.0.0-alpha.45"
+    "@material-ui/lab" "^4.0.0-alpha.56"
     "@octokit/rest" "^18.0.0"
     "@octokit/types" "^5.0.1"
     "@types/react-dom" "^16.9.8"
@@ -3630,7 +3640,7 @@
     moment "^2.27.0"
     react "^16.13.1"
     react-dom "^16.13.1"
-    react-router-dom "6.0.0-beta.0"
+    react-router "6.0.0-beta.0"
     react-use "^15.3.3"
 
 "@roadiehq/backstage-plugin-travis-ci@^0.2.3":
