@@ -31,6 +31,8 @@ export class SingleConnectionDatabaseManager {
    * Creates a new SingleConnectionDatabaseManager instance by reading from the `backend`
    * config section, specifically the `.database` key for discovering the management
    * database configuration.
+   *
+   * @param config The loaded application configuration.
    */
   static fromConfig(config: Config): SingleConnectionDatabaseManager {
     return new SingleConnectionDatabaseManager(
@@ -52,6 +54,8 @@ export class SingleConnectionDatabaseManager {
 
   /**
    * Generates a PluginDatabaseManager for consumption by plugins.
+   *
+   * @param pluginId The plugin that the database manager should be created for. Plugin names should be unique.
    */
   forPlugin(pluginId: string): PluginDatabaseManager {
     const _this = this;
