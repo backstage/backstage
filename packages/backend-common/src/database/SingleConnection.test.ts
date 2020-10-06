@@ -76,27 +76,6 @@ describe('SingleConnectionDatabaseManager', () => {
       );
     });
 
-    it('allows plugins to get alternative databases', async () => {
-      const pluginId = 'test1';
-      const pluginManager = manager.forPlugin(pluginId);
-      await pluginManager.getClient();
-
-      const secondaryDatabase = 'extra';
-      await pluginManager.getClient(secondaryDatabase);
-
-      expect(mocked(createDatabaseClient).mock.calls).toHaveLength(2);
-      const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-2);
-
-      const mainCallArgs = mockCalls[0];
-      const secondaryCallArgs = mockCalls[1];
-      expect(secondaryCallArgs[1].connection.database).toEqual(
-        `backstage_plugin_${pluginId}_${secondaryDatabase}`,
-      );
-      expect(mainCallArgs[1].connection.database).not.toEqual(
-        secondaryCallArgs[1].connection.database,
-      );
-    });
-
     it('provides different plugins different databases', async () => {
       const plugin1Id = 'test1';
       const plugin2Id = 'test2';

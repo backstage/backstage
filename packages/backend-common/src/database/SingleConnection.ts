@@ -61,17 +61,16 @@ export class SingleConnectionDatabaseManager {
     const _this = this;
 
     return {
-      getClient(database?: string): Promise<Knex> {
-        return _this.getDatabase(pluginId, database);
+      getClient(): Promise<Knex> {
+        return _this.getDatabase(pluginId);
       },
     };
   }
 
-  private async getDatabase(pluginId: string, suffix?: string): Promise<Knex> {
+  private async getDatabase(pluginId: string): Promise<Knex> {
     const config = this.getDatabaseConfig();
     const overrides = SingleConnectionDatabaseManager.getDatabaseOverrides(
       pluginId,
-      suffix,
     );
     const overrideConfig = overrides.connection as Knex.ConnectionConfig;
     await this.ensureDatabase(overrideConfig.database);
@@ -79,14 +78,10 @@ export class SingleConnectionDatabaseManager {
     return createDatabaseClient(config, overrides);
   }
 
-  private static getDatabaseOverrides(
-    pluginId: string,
-    suffix?: string,
-  ): Knex.Config {
-    const dbSuffix = suffix ? `_${suffix}` : '';
+  private static getDatabaseOverrides(pluginId: string): Knex.Config {
     return {
       connection: {
-        database: `backstage_plugin_${pluginId}${dbSuffix}`,
+        database: `backstage_plugin_${pluginId}`,
       },
     };
   }

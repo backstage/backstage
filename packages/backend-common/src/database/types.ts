@@ -25,11 +25,6 @@ export interface PluginDatabaseManager {
    *
    * The purpose of this method is to allow plugins to get isolated data
    * stores so that plugins are discouraged from database integration.
-   *
-   * @param database This parameter can be omitted to get the default plugin
-   * database, or provide an identifier that will be used to identify a
-   * separate database from the default to connect to. This can be used for
-   * application-level sharding.
    */
-  getClient(database?: string): Promise<knex>;
+  getClient(): Promise<knex>;
 }
