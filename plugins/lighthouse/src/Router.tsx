@@ -26,8 +26,7 @@ import { AuditListForEntity } from './components/AuditList/AuditListForEntity';
 import { EmptyState } from '@backstage/core';
 
 export const isPluginApplicableToEntity = (entity: Entity) =>
-  Boolean(entity.metadata.annotations?.[LIGHTHOUSE_WEBSITE_URL_ANNOTATION]) ||
-  entity.metadata.name === 'marketing-site';
+  Boolean(entity.metadata.annotations?.[LIGHTHOUSE_WEBSITE_URL_ANNOTATION]);
 
 export const Router = () => (
   <Routes>
