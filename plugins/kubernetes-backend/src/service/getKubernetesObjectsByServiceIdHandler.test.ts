@@ -26,38 +26,41 @@ const getClusterByServiceId = jest.fn();
 
 const mockFetch = (mock: jest.Mock) => {
   mock.mockImplementation((serviceId: string, clusterDetails: ClusterDetails) =>
-    Promise.resolve([
-      {
-        type: 'pods',
-        resources: [
-          {
-            metadata: {
-              name: `my-pods-${serviceId}-${clusterDetails.name}`,
+    Promise.resolve({
+      errors: [],
+      responses: [
+        {
+          type: 'pods',
+          resources: [
+            {
+              metadata: {
+                name: `my-pods-${serviceId}-${clusterDetails.name}`,
+              },
             },
-          },
-        ],
-      },
-      {
-        type: 'configmaps',
-        resources: [
-          {
-            metadata: {
-              name: `my-configmaps-${serviceId}-${clusterDetails.name}`,
+          ],
+        },
+        {
+          type: 'configmaps',
+          resources: [
+            {
+              metadata: {
+                name: `my-configmaps-${serviceId}-${clusterDetails.name}`,
+              },
             },
-          },
-        ],
-      },
-      {
-        type: 'services',
-        resources: [
-          {
-            metadata: {
-              name: `my-services-${serviceId}-${clusterDetails.name}`,
+          ],
+        },
+        {
+          type: 'services',
+          resources: [
+            {
+              metadata: {
+                name: `my-services-${serviceId}-${clusterDetails.name}`,
+              },
             },
-          },
-        ],
-      },
-    ]),
+          ],
+        },
+      ],
+    }),
   );
 };
 
@@ -71,6 +74,7 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
       Promise.resolve([
         {
           name: 'test-cluster',
+          authProvider: 'serviceAccount',
         },
       ]),
     );
@@ -86,6 +90,7 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
         getClusterByServiceId,
       },
       getVoidLogger(),
+      {},
     );
 
     expect(getClusterByServiceId.mock.calls.length).toBe(1);
@@ -96,6 +101,7 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
           cluster: {
             name: 'test-cluster',
           },
+          errors: [],
           resources: [
             {
               resources: [
@@ -138,9 +144,11 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
       Promise.resolve([
         {
           name: 'test-cluster',
+          authProvider: 'serviceAccount',
         },
         {
           name: 'other-cluster',
+          authProvider: 'google',
         },
       ]),
     );
@@ -156,6 +164,11 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
         getClusterByServiceId,
       },
       getVoidLogger(),
+      {
+        auth: {
+          google: 'google_token_123',
+        },
+      },
     );
 
     expect(getClusterByServiceId.mock.calls.length).toBe(1);
@@ -166,6 +179,7 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
           cluster: {
             name: 'test-cluster',
           },
+          errors: [],
           resources: [
             {
               resources: [
@@ -203,6 +217,7 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
           cluster: {
             name: 'other-cluster',
           },
+          errors: [],
           resources: [
             {
               resources: [

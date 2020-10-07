@@ -16,7 +16,11 @@
 
 import fetch from 'node-fetch';
 import { UserEntity } from '@backstage/catalog-model';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import {
+  ConflictError,
+  NotFoundError,
+  PluginEndpointDiscovery,
+} from '@backstage/backend-common';
 
 type UserQuery = {
   annotations: Record<string, string>;
@@ -32,7 +36,12 @@ export class CatalogIdentityClient {
     this.discovery = options.discovery;
   }
 
-  async findUser(query: UserQuery): Promise<UserEntity[]> {
+  /**
+   * Looks up a single user using a query.
+   *
+   * Throws a NotFoundError or ConflictError if 0 or multiple users are found.
+   */
+  async findUser(query: UserQuery): Promise<UserEntity> {
     const params = new URLSearchParams();
     params.append('kind', 'User');
 
@@ -50,6 +59,16 @@ export class CatalogIdentityClient {
       );
     }
 
-    return response.json();
+    const users: UserEntity[] = await response.json();
+
+    if (users.length !== 1) {
+      if (users.length > 1) {
+        throw new ConflictError('User lookup resulted in multiple matches');
+      } else {
+        throw new NotFoundError('User not found');
+      }
+    }
+
+    return users[0];
   }
 }

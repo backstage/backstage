@@ -22,6 +22,11 @@ import { Logger } from 'winston';
 import * as result from './results';
 import { LocationProcessor, LocationProcessorEmit } from './types';
 
+// ***********************************************************************
+// * NOTE: This has been replaced by packages/backend-common/src/reading *
+// * Don't implement new functionality here as this file will be removed *
+// ***********************************************************************
+
 /**
  * The configuration parameters for a single GitHub API provider.
  */
@@ -99,8 +104,7 @@ export function getApiUrl(target: string, provider: ProviderConfig): URL {
       !owner ||
       !name ||
       !ref ||
-      (filepathtype !== 'blob' && filepathtype !== 'raw') ||
-      !filepath?.match(/\.ya?ml$/)
+      (filepathtype !== 'blob' && filepathtype !== 'raw')
     ) {
       throw new Error('Wrong URL or invalid file path');
     }
@@ -125,8 +129,7 @@ export function getRawUrl(target: string, provider: ProviderConfig): URL {
       !owner ||
       !name ||
       !ref ||
-      (filepathtype !== 'blob' && filepathtype !== 'raw') ||
-      !filepath?.match(/\.ya?ml$/)
+      (filepathtype !== 'blob' && filepathtype !== 'raw')
     ) {
       throw new Error('Wrong URL or invalid file path');
     }

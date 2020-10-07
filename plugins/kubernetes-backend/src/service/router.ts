@@ -26,7 +26,11 @@ import {
   GetKubernetesObjectsByServiceIdHandler,
   handleGetKubernetesObjectsByServiceId,
 } from './getKubernetesObjectsByServiceIdHandler';
-import { KubernetesClusterLocator, KubernetesFetcher } from '..';
+import {
+  AuthRequestBody,
+  KubernetesClusterLocator,
+  KubernetesFetcher,
+} from '../types/types';
 
 export interface RouterOptions {
   logger: Logger;
@@ -62,18 +66,22 @@ export const makeRouter = (
   router.use(express.json());
 
   // TODO error handling
-  router.get('/services/:serviceId', async (req, res) => {
+  router.post('/services/:serviceId', async (req, res) => {
     const serviceId = req.params.serviceId;
-
+    const requestBody: AuthRequestBody = req.body;
     try {
       const response = await handleGetByServiceId(
         serviceId,
         fetcher,
         clusterLocator,
         logger,
+        requestBody,
       );
       res.send(response);
     } catch (e) {
+      logger.error(
+        `action=retrieveObjectsByServiceId service=${serviceId}, error=${e}`,
+      );
       res.status(500).send({ error: e.message });
     }
   });

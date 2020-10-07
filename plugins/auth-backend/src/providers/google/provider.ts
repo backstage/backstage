@@ -149,35 +149,28 @@ export class GoogleAuthProvider implements OAuthHandlers {
       throw new Error('Google profile contained no email');
     }
 
-    const users = await this.identityClient.findUser({
-      annotations: {
-        'google.com/email': profile.email,
-      },
-    });
-    if (users.length !== 1) {
-      if (users.length > 1) {
-        this.logger.info(
-          `Multiple identities found for Google user ${profile.email}`,
-        );
-      } else {
-        this.logger.info(`No identity found for Google user ${profile.email}`);
-      }
+    try {
+      const user = await this.identityClient.findUser({
+        annotations: {
+          'google.com/email': profile.email,
+        },
+      });
 
+      return {
+        ...response,
+        backstageIdentity: {
+          id: user.metadata.name,
+        },
+      };
+    } catch (error) {
       this.logger.warn(
-        `Falling back to allowing login based on email pattern, this will probably break in the future`,
+        `Failed to look up user, ${error}, falling back to allowing login based on email pattern, this will probably break in the future`,
       );
       return {
         ...response,
         backstageIdentity: { id: profile.email.split('@')[0] },
       };
     }
-
-    return {
-      ...response,
-      backstageIdentity: {
-        id: users[0].metadata.name,
-      },
-    };
   }
 }
 

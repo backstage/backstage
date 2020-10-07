@@ -17,15 +17,6 @@
 import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import type { DbEntitiesSearchRow } from './types';
 
-// Search entries that start with these prefixes, also get a shorthand without
-// that prefix
-const SHORTHAND_KEY_PREFIXES = [
-  'metadata.',
-  'metadata.labels.',
-  'metadata.annotations.',
-  'spec.',
-];
-
 // These are excluded in the generic loop, either because they do not make sense
 // to index, or because they are special-case always inserted whether they are
 // null or not
@@ -158,15 +149,6 @@ export function buildEntitySearch(
 
   // Visit the entire structure recursively
   visitEntityPart(entityId, '', entity, result);
-
-  // Generate shorthands for fields directly under some common collections
-  for (const row of result.slice()) {
-    for (const stripPrefix of SHORTHAND_KEY_PREFIXES) {
-      if (row.key.startsWith(stripPrefix)) {
-        result.push({ ...row, key: row.key.substr(stripPrefix.length) });
-      }
-    }
-  }
 
   return result;
 }

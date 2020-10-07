@@ -100,12 +100,49 @@ metadata:
 ```
 
 The value of this annotation is the so-called slug that identifies a project on
-[GitHub](https://github.com) that is related to this entity. It is on the format
+[GitHub](https://github.com) (either the public one, or a private GitHub
+Enterprise installation) that is related to this entity. It is on the format
 `<organization>/<project>`, and is the same as can be seen in the URL location
 bar of the browser when viewing that project.
 
 Specifying this annotation will enable GitHub related features in Backstage for
 that entity.
+
+### github.com/team-slug
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    github.com/team-slug: spotify/backstage-core
+```
+
+The value of this annotation is the so-called slug that identifies a team on
+[GitHub](https://github.com) (either the public one, or a private GitHub
+Enterprise installation) that is related to this entity. It is on the format
+`<organization>/<team>`, and is the same as can be seen in the URL location bar
+of the browser when viewing that team.
+
+This annotation can be used on a [Group entity](descriptor-format.md#kind-group)
+to note that it originated from that team on GitHub.
+
+### github.com/user-login
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    github.com/user-login: freben
+```
+
+The value of this annotation is the so-called login that identifies a user on
+[GitHub](https://github.com) (either the public one, or a private GitHub
+Enterprise installation) that is related to this entity. It is on the format
+`<username>`, and is the same as can be seen in the URL location bar of the
+browser when viewing that user.
+
+This annotation can be used on a [User entity](descriptor-format.md#kind-user)
+to note that it originated from that user on GitHub.
 
 ### sentry.io/project-slug
 
@@ -141,6 +178,21 @@ fallback (`rollbar.organization` followed by `organization.name`).
 
 Specifying this annotation may enable Rollbar related features in Backstage for
 that entity.
+
+### backstage.io/ldap-rdn, backstage.io/ldap-uuid, backstage.io/ldap-dn
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    backstage.io/ldap-rdn: my-team
+    backstage.io/ldap-uuid: c57e8ba2-6cc4-1039-9ebc-d5f241a7ca21
+    backstage.io/ldap-dn: cn=my-team,ou=access,ou=groups,ou=spotify,dc=spotify,dc=net
+```
+
+The value of these annotations are the corresponding attributes that were found
+when ingestion the entity from LDAP. Not all of them may be present, depending
+on what attributes that the server presented at ingestion time.
 
 ## Deprecated Annotations
 

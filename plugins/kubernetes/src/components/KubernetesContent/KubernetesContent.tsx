@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
-import { Grid } from '@material-ui/core';
+import React, { ReactElement, useEffect, useState } from 'react';
+import { Grid, TabProps } from '@material-ui/core';
+import { Config } from '@backstage/config';
 import {
   CardTab,
+  configApiRef,
   Content,
   Page,
   pageTheme,
@@ -28,10 +30,12 @@ import {
 import { Entity } from '@backstage/catalog-model';
 import { kubernetesApiRef } from '../../api/types';
 import {
+  AuthRequestBody,
   ClusterObjects,
   FetchResponse,
   ObjectsByServiceIdResponse,
 } from '@backstage/plugin-kubernetes-backend';
+import { kubernetesAuthProvidersApiRef } from '../../kubernetes-auth-provider/types';
 import { DeploymentTables } from '../DeploymentTables';
 import { DeploymentTriple } from '../../types/types';
 import {
@@ -44,6 +48,7 @@ import { Services } from '../Services';
 import { ConfigMaps } from '../ConfigMaps';
 import { Ingresses } from '../Ingresses';
 import { HorizontalPodAutoscalers } from '../HorizontalPodAutoscalers';
+import { ErrorPanel } from './ErrorPanel';
 
 interface GroupedResponses extends DeploymentTriple {
   services: V1Service[];
@@ -94,8 +99,6 @@ const groupResponses = (fetchResponse: FetchResponse[]) => {
   );
 };
 
-// TODO proper error handling
-
 type KubernetesContentProps = { entity: Entity; children?: React.ReactNode };
 
 export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
@@ -106,23 +109,68 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
   >(undefined);
   const [error, setError] = useState<string | undefined>(undefined);
 
+  const configApi = useApi(configApiRef);
+  const clusters: Config[] = configApi.getConfigArray('kubernetes.clusters');
+  const allAuthProviders: string[] = clusters.map(c =>
+    c.getString('authProvider'),
+  );
+  const authProviders: string[] = [...new Set(allAuthProviders)];
+
+  const kubernetesAuthProvidersApi = useApi(kubernetesAuthProvidersApiRef);
+
   useEffect(() => {
-    kubernetesApi
-      .getObjectsByServiceId(entity.metadata.name)
-      .then(result => {
-        setKubernetesObjects(result);
-      })
-      .catch(e => {
-        setError(e.message);
-      });
-  }, [entity.metadata.name, kubernetesApi]);
+    (async () => {
+      // For each auth type, invoke decorateRequestBodyForAuth on corresponding KubernetesAuthProvider
+      let requestBody: AuthRequestBody = {};
+      for (const authProviderStr of authProviders) {
+        // Multiple asyncs done sequentially instead of all at once to prevent same requestBody from being modified simultaneously
+        requestBody = await kubernetesAuthProvidersApi.decorateRequestBodyForAuth(
+          authProviderStr,
+          requestBody,
+        );
+      }
+
+      // TODO: Add validation on contents/format of requestBody
+      kubernetesApi
+        .getObjectsByServiceId(entity.metadata.name, requestBody)
+        .then(result => {
+          setKubernetesObjects(result);
+        })
+        .catch(e => {
+          setError(e.message);
+        });
+    })();
+    /* eslint-disable react-hooks/exhaustive-deps */
+  }, [entity.metadata.name, kubernetesApi, kubernetesAuthProvidersApi]);
+  /* eslint-enable react-hooks/exhaustive-deps */
+
+  const clustersWithErrors =
+    kubernetesObjects?.items.filter(r => r.errors.length > 0) ?? [];
 
   return (
     <Page theme={pageTheme.tool}>
       <Content>
         <Grid container spacing={3} direction="column">
-          {kubernetesObjects === undefined && <Progress />}
-          {error !== undefined && <div>{error}</div>}
+          {kubernetesObjects === undefined && error === undefined && (
+            <Progress />
+          )}
+
+          {/* errors retrieved from the kubernetes clusters */}
+          {clustersWithErrors.length > 0 && (
+            <ErrorPanel
+              entityName={entity.metadata.name}
+              clustersWithErrors={clustersWithErrors}
+            />
+          )}
+
+          {/* other errors */}
+          {error !== undefined && (
+            <ErrorPanel
+              entityName={entity.metadata.name}
+              errorMessage={error}
+            />
+          )}
+
           {kubernetesObjects?.items.map((item, i) => (
             <Grid item key={i}>
               <Cluster clusterObjects={item} />
@@ -151,6 +199,43 @@ const Cluster = ({ clusterObjects }: ClusterProps) => {
   const hpas = groupedResponses.horizontalPodAutoscalers;
   const ingresses = groupedResponses.ingresses;
 
+  const tabs: ReactElement<TabProps>[] = [
+    <CardTab key={1} value="one" label="Deployments">
+      <DeploymentTables
+        deploymentTriple={{
+          deployments: groupedResponses.deployments,
+          replicaSets: groupedResponses.replicaSets,
+          pods: groupedResponses.pods,
+        }}
+      />
+    </CardTab>,
+    <CardTab key={2} value="two" label="Services">
+      <Services services={groupedResponses.services} />
+    </CardTab>,
+  ];
+
+  if (configMaps.length > 0) {
+    tabs.push(
+      <CardTab key={3} value="three" label="Config Maps">
+        <ConfigMaps configMaps={configMaps} />
+      </CardTab>,
+    );
+  }
+  if (hpas.length > 0) {
+    tabs.push(
+      <CardTab key={4} value="four" label="Horizontal Pod Autoscalers">
+        <HorizontalPodAutoscalers hpas={hpas} />
+      </CardTab>,
+    );
+  }
+  if (ingresses.length > 0) {
+    tabs.push(
+      <CardTab key={5} value="five" label="Ingresses">
+        <Ingresses ingresses={ingresses} />
+      </CardTab>,
+    );
+  }
+
   return (
     <>
       <TabbedCard
@@ -158,33 +243,7 @@ const Cluster = ({ clusterObjects }: ClusterProps) => {
         onChange={handleChange}
         title={clusterObjects.cluster.name}
       >
-        <CardTab value="one" label="Deployments">
-          <DeploymentTables
-            deploymentTriple={{
-              deployments: groupedResponses.deployments,
-              replicaSets: groupedResponses.replicaSets,
-              pods: groupedResponses.pods,
-            }}
-          />
-        </CardTab>
-        <CardTab value="two" label="Services">
-          <Services services={groupedResponses.services} />
-        </CardTab>
-        {configMaps && (
-          <CardTab value="three" label="Config Maps">
-            <ConfigMaps configMaps={configMaps} />
-          </CardTab>
-        )}
-        {hpas && (
-          <CardTab value="four" label="Horizontal Pod Autoscalers">
-            <HorizontalPodAutoscalers hpas={hpas} />
-          </CardTab>
-        )}
-        {ingresses && (
-          <CardTab value="five" label="Ingresses">
-            <Ingresses ingresses={ingresses} />
-          </CardTab>
-        )}
+        {tabs}
       </TabbedCard>
     </>
   );

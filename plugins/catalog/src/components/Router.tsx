@@ -15,6 +15,7 @@
  */
 import React, { ComponentType } from 'react';
 import { CatalogPage } from './CatalogPage';
+import { EntityNotFound } from './EntityNotFound';
 import { EntityPageLayout } from './EntityPageLayout';
 import { Route, Routes } from 'react-router';
 import { entityRoute, rootRoute } from '../routes';
@@ -45,9 +46,10 @@ const DefaultEntityPage = () => (
 );
 
 const EntityPageSwitch = ({ EntityPage }: { EntityPage: ComponentType }) => {
-  const { entity } = useEntity();
+  const { entity, loading, error } = useEntity();
   // Loading and error states
-  if (!entity) return <EntityPageLayout />;
+  if (loading) return <EntityPageLayout />;
+  if (error || (!loading && !entity)) return <EntityNotFound />;
 
   // Otherwise EntityPage provided from the App
   // Note that EntityPage will include EntityPageLayout already

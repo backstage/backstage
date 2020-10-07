@@ -17,6 +17,7 @@
 import {
   createServiceBuilder,
   loadBackendConfig,
+  UrlReaders,
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { Server } from 'http';
@@ -39,12 +40,13 @@ export async function startStandaloneServer(
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'catalog-backend' });
   const config = ConfigReader.fromConfigs(await loadBackendConfig());
+  const reader = UrlReaders.default({ logger, config });
 
   logger.debug('Creating application...');
   const db = await DatabaseManager.createInMemoryDatabase({ logger });
   const entitiesCatalog = new DatabaseEntitiesCatalog(db);
   const locationsCatalog = new DatabaseLocationsCatalog(db);
-  const locationReader = new LocationReaders({ logger, config });
+  const locationReader = new LocationReaders({ logger, config, reader });
   const higherOrderOperation = new HigherOrderOperations(
     entitiesCatalog,
     locationsCatalog,

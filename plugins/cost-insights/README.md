@@ -9,7 +9,7 @@ At Spotify, we find that cloud costs are optimized organically when:
 - The data is shown in software terms familiar to them.
 - Alerts and recommendations are targeted and actionable.
 
-Cost Insights shows trends over time, at the granularity of your software deployments - rather than the cloud provider's concepts. It can be used to troubleshoot cost anomalies, and promote cost-saving infrastructure migrations.
+Cost Insights shows trends over time, at the granularity of Backstage catalog entities - rather than the cloud provider's concepts. It can be used to troubleshoot cost anomalies, and promote cost-saving infrastructure migrations.
 
 ## Install
 
@@ -21,7 +21,7 @@ yarn add @backstage/plugin-cost-insights
 
 1. Configure `app-config.yaml`. See [Configuration](#configuration).
 
-2. Create a CostInsights client. Clients must implement the CostInsightsApi interface. See the [API file](https://github.com/spotify/backstage/plugins/cost-insights/src/api/CostInsightsApi.ts) for required methods and documentation.
+2. Create a CostInsights client. Clients must implement the CostInsightsApi interface. See the [API file](https://github.com/spotify/backstage/blob/master/plugins/cost-insights/src/api/CostInsightsApi.ts) for required methods and documentation.
 
 ```ts
 // path/to/CostInsightsClient.ts
@@ -58,7 +58,7 @@ export { plugin as CostInsights } from '@backstage/plugin-cost-insights';
 
 Cost Insights has only two required configuration fields: a map of cloud `products` for showing cost breakdowns and `engineerCost` - the average yearly cost of an engineer including benefits. Products must be defined as keys on the `products` field.
 
-You can optionally supply a product `icon` to display in Cost Insights navigation. See the [type file](https://github.com/spotify/backstage/plugins/cost-insights/types/Icon.ts) for supported types and Material UI icon [mappings](https://github.com/spotify/backstage/plugins/cost-insights/utils/navigation.ts).
+You can optionally supply a product `icon` to display in Cost Insights navigation. See the [type file](https://github.com/spotify/backstage/blob/master/plugins/cost-insights/src/types/Icon.ts) for supported types and Material UI icon [mappings](https://github.com/spotify/backstage/blob/master/plugins/cost-insights/src/utils/navigation.tsx).
 
 **Note:** Product keys should be unique and camelCased. Backstage does not support underscores in configuration keys.
 
@@ -81,7 +81,7 @@ costInsights:
 
 In the `Cost Overview` panel, users can choose from a dropdown of business metrics to see costs as they relate to a metric, such as daily active users. Metrics must be defined as keys on the `metrics` field. A user-friendly name is **required**. Metrics will be provided to the `getDailyCost` and `getProjectCosts` API methods via the `metric` parameter.
 
-**Note:** Cost Insights displays daily cost without a metric by default. The dropdown text for this default can be overriden by assigning it a value on the `dailyCost` field.
+**Note:** Cost Insights displays daily cost without a metric by default. The dropdown text for this default can be overridden by assigning it a value on the `dailyCost` field.
 
 ```yaml
 ## ./app-config.yaml

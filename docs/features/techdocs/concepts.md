@@ -25,7 +25,14 @@ MkDocs.
 
 [TechDocs Container](https://github.com/spotify/backstage/blob/master/packages/techdocs-container/README.md)
 
-### TechDocs publisher (coming soon)
+### TechDocs publisher
+
+The `techdocs-backend` plugin currently comes with one publisher -
+`LocalPublish`.
+
+[TechDocs Backend](https://github.com/spotify/backstage/tree/master/plugins/techdocs-backend)
+
+More standalone publishers will come in the near future...
 
 ### TechDocs CLI
 

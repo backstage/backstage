@@ -191,13 +191,13 @@ our example templates through static configuration. Add the following to the
 catalog:
   locations:
     # Backstage Example Templates
-    - type: github
+    - type: url
       target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml
-    - type: github
+    - type: url
       target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/springboot-grpc-template/template.yaml
-    - type: github
+    - type: url
       target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/create-react-app/template.yaml
-    - type: github
+    - type: url
       target: https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml
 ```
 
@@ -232,15 +232,13 @@ instance:
 scaffolder:
   github:
     token:
-      $secret:
-        env: GITHUB_ACCESS_TOKEN
+      $env: GITHUB_ACCESS_TOKEN
     visibility: public # or 'internal' or 'private'
   gitlab:
     api:
       baseUrl: https://gitlab.com
       token:
-        $secret:
-          env: SCAFFOLDER_GITLAB_PRIVATE_TOKEN
+        $env: SCAFFOLDER_GITLAB_PRIVATE_TOKEN
 ```
 
 #### Azure DevOps
@@ -257,8 +255,7 @@ scaffolder:
     baseUrl: https://dev.azure.com/{your-organization}
     api:
       token:
-        $secret:
-          env: AZURE_PRIVATE_TOKEN
+        $env: AZURE_PRIVATE_TOKEN
 ```
 
 ### Running the Backend

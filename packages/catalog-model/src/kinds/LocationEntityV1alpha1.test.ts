@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-import { EntityPolicy } from '../types';
 import {
   LocationEntityV1alpha1,
-  LocationEntityV1alpha1Policy,
+  locationEntityV1alpha1Policy as policy,
 } from './LocationEntityV1alpha1';
 
 describe('LocationV1alpha1Policy', () => {
   let entity: LocationEntityV1alpha1;
-  let policy: EntityPolicy;
 
   beforeEach(() => {
     entity = {
@@ -35,7 +33,6 @@ describe('LocationV1alpha1Policy', () => {
         type: 'github',
       },
     };
-    policy = new LocationEntityV1alpha1Policy();
   });
 
   it('happy path: accepts valid data', async () => {
@@ -47,14 +44,14 @@ describe('LocationV1alpha1Policy', () => {
     await expect(policy.enforce(entity)).resolves.toBe(entity);
   });
 
-  it('rejects unknown apiVersion', async () => {
+  it('ignores unknown apiVersion', async () => {
     (entity as any).apiVersion = 'backstage.io/v1beta0';
-    await expect(policy.enforce(entity)).rejects.toThrow(/apiVersion/);
+    await expect(policy.enforce(entity)).resolves.toBeUndefined();
   });
 
-  it('rejects unknown kind', async () => {
+  it('ignores unknown kind', async () => {
     (entity as any).kind = 'Wizard';
-    await expect(policy.enforce(entity)).rejects.toThrow(/kind/);
+    await expect(policy.enforce(entity)).resolves.toBeUndefined();
   });
 
   it('rejects missing type', async () => {

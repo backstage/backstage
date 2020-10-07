@@ -92,17 +92,4 @@ export class CommonValidatorFunctions {
       /^[a-z0-9]+(\-[a-z0-9]+)*$/.test(value)
     );
   }
-
-  /**
-   * Normalizes by keeping only a-z, A-Z, and 0-9; and converts to lowercase.
-   *
-   * @param value The value to normalize
-   */
-  static normalizeToLowercaseAlphanum(value: string): string {
-    return value
-      .split('')
-      .filter(x => /[a-zA-Z0-9]/.test(x))
-      .join('')
-      .toLowerCase();
-  }
 }
