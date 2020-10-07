@@ -46,6 +46,7 @@ export type WorkflowRun = {
     };
   };
   status: string;
+  conclusion: string;
   onReRunClick: () => void;
 };
 
@@ -84,7 +85,7 @@ const generatedColumns: TableColumn[] = [
 
     render: (row: Partial<WorkflowRun>) => (
       <Box display="flex" alignItems="center">
-        <WorkflowRunStatus status={row.status} />
+        <WorkflowRunStatus status={row.status} conclusion={row.conclusion} />
       </Box>
     ),
   },
