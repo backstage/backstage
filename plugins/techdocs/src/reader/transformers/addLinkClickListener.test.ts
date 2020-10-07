@@ -20,17 +20,55 @@ import { addLinkClickListener } from '.';
 describe('addLinkClickListener', () => {
   it('calls onClick when a link has been clicked', () => {
     const fn = jest.fn();
-    const shadowDom = createTestShadowDom(FIXTURES.FIXTURE_STANDARD_PAGE, {
-      preTransformers: [],
-      postTransformers: [
-        addLinkClickListener({
-          onClick: fn,
-        }),
-      ],
-    });
+    const shadowDom = createTestShadowDom(
+      `
+      <!DOCTYPE html>
+      <html>
+        <body>
+          <a href="http://localhost:3000/docs/test">Link</a>
+        </body>
+      </html>
+    `,
+      {
+        preTransformers: [],
+        postTransformers: [
+          addLinkClickListener({
+            baseUrl: 'http://localhost:3000',
+            onClick: fn,
+          }),
+        ],
+      },
+    );
 
     shadowDom.querySelector('a')?.click();
 
     expect(fn).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not call onClick when a link links to another baseUrl', () => {
+    const fn = jest.fn();
+    const shadowDom = createTestShadowDom(
+      `
+      <!DOCTYPE html>
+      <html>
+        <body>
+          <a href="http://example.com/docs/test">Link</a>
+        </body>
+      </html>
+    `,
+      {
+        preTransformers: [],
+        postTransformers: [
+          addLinkClickListener({
+            baseUrl: 'http://localhost:3000',
+            onClick: fn,
+          }),
+        ],
+      },
+    );
+
+    shadowDom.querySelector('a')?.click();
+
+    expect(fn).toHaveBeenCalledTimes(0);
   });
 });
