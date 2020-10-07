@@ -32,6 +32,7 @@ Codehilite
 codeowners
 config
 Config
+configmaps
 configs
 const
 cookiecutter
@@ -67,6 +68,7 @@ graphviz
 Hackathons
 haproxy
 heroku
+horizontalpodautoscalers
 Hostname
 http
 https
@@ -140,6 +142,7 @@ rankdir
 readme
 Readme
 Redash
+replicasets
 repo
 Repo
 repos
