@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export * from './apis';
-export { default as mockBreakpoint } from './mockBreakpoint';
-export { wrapInTestApp, renderInTestApp } from './appWrappers';
-export * from './msw';
+export const msw = {
+  setupDefaultHandlers: (worker: any) => {
+    beforeAll(() => worker.listen({ onUnhandledRequest: 'error' }));
+    afterAll(() => worker.close());
+    afterEach(() => worker.resetHandlers());
+  },
+};
