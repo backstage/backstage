@@ -90,6 +90,10 @@ export class CoalescedEntitiesCatalog implements EntitiesCatalog {
     throw new Error('Method not implemented.');
   }
 
+  addEntities(): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+
   removeEntityByUid(): Promise<void> {
     throw new Error('Method not implemented.');
   }

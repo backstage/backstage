@@ -45,6 +45,12 @@ import type {
   EntityFilters,
 } from './types';
 
+// The number of items that are sent per batch to the database layer, when
+// doing .batchInsert calls to knex. This needs to be low enough to not cause
+// errors in the underlying engine due to exceeding query limits, but large
+// enough to get the speed benefits.
+const BATCH_SIZE = 50;
+
 /**
  * The core database implementation.
  */
@@ -98,6 +104,48 @@ export class CommonDatabase implements Database {
     await this.updateEntitiesSearch(tx, newRow.id, newEntity);
 
     return { locationId: request.locationId, entity: newEntity };
+  }
+
+  async addEntities(
+    txOpaque: unknown,
+    request: DbEntityRequest[],
+  ): Promise<void> {
+    const tx = txOpaque as Knex.Transaction<any, any>;
+
+    const entityRows: DbEntitiesRow[] = [];
+    const searchRows: DbEntitiesSearchRow[] = [];
+
+    for (const { entity, locationId } of request) {
+      if (entity.metadata.uid !== undefined) {
+        throw new InputError('May not specify uid for new entities');
+      } else if (entity.metadata.etag !== undefined) {
+        throw new InputError('May not specify etag for new entities');
+      } else if (entity.metadata.generation !== undefined) {
+        throw new InputError('May not specify generation for new entities');
+      }
+
+      const newEntity = {
+        ...entity,
+        metadata: {
+          ...entity.metadata,
+          uid: generateEntityUid(),
+          etag: generateEntityEtag(),
+          generation: 1,
+        },
+      };
+
+      entityRows.push(this.toEntityRow(locationId, newEntity));
+      searchRows.push(...buildEntitySearch(newEntity.metadata.uid, newEntity));
+    }
+
+    await tx.batchInsert('entities', entityRows, BATCH_SIZE);
+    await tx<DbEntitiesSearchRow>('entities_search')
+      .whereIn(
+        'entity_id',
+        entityRows.map(r => r.id),
+      )
+      .del();
+    await tx.batchInsert('entities_search', searchRows, BATCH_SIZE);
   }
 
   async updateEntity(
@@ -165,10 +213,10 @@ export class CommonDatabase implements Database {
   ): Promise<DbEntityResponse[]> {
     const tx = txOpaque as Knex.Transaction<any, any>;
 
-    let builder = tx<DbEntitiesRow>('entities');
-    for (const [indexU, filter] of (filters ?? []).entries()) {
-      const index = Number(indexU);
-      const key = filter.key.toLowerCase().replace(/\*/g, '%');
+    let entitiesQuery = tx<DbEntitiesRow>('entities');
+
+    for (const filter of filters || []) {
+      const key = filter.key.toLowerCase().replace(/[*]/g, '%');
       const keyOp = filter.key.includes('*') ? 'like' : '=';
 
       let matchNulls = false;
@@ -179,36 +227,54 @@ export class CommonDatabase implements Database {
         if (!value) {
           matchNulls = true;
         } else if (value.includes('*')) {
-          matchLike.push(value.toLowerCase().replace(/\*/g, '%'));
+          matchLike.push(value.toLowerCase().replace(/[*]/g, '%'));
         } else {
           matchIn.push(value.toLowerCase());
         }
       }
 
-      builder = builder
-        .leftOuterJoin(`entities_search as t${index}`, function joins() {
-          this.on('entities.id', '=', `t${index}.entity_id`);
-          this.andOn(`t${index}.key`, keyOp, tx.raw('?', [key]));
-        })
-        .where(function rules() {
-          if (matchIn.length) {
-            this.orWhereIn(`t${index}.value`, matchIn);
-          }
-          if (matchLike.length) {
-            for (const x of matchLike) {
-              this.orWhere(`t${index}.value`, 'like', tx.raw('?', [x]));
+      // NOTE(freben): This used to be a set of OUTER JOIN, which may seem to
+      // make a lot of sense. However, it had abysmal performance on sqlite
+      // when datasets grew large, so we're using IN instead.
+      const matchQuery = tx<DbEntitiesSearchRow>('entities_search')
+        .select('entity_id')
+        .where(function keyFilter() {
+          this.andWhere('key', keyOp, key);
+          this.andWhere(function valueFilter() {
+            if (matchIn.length === 1) {
+              this.orWhere({ value: matchIn[0] });
+            } else if (matchIn.length > 1) {
+              this.orWhereIn('value', matchIn);
             }
-          }
-          if (matchNulls) {
-            this.orWhereNull(`t${index}.value`);
-          }
+            if (matchLike.length) {
+              for (const x of matchLike) {
+                this.orWhere('value', 'like', tx.raw('?', [x]));
+              }
+            }
+            if (matchNulls) {
+              // Match explicit nulls, and then handle absence separately below
+              this.orWhereNull('value');
+            }
+          });
         });
+
+      // Handle absence as nulls as well
+      entitiesQuery = entitiesQuery.andWhere(function match() {
+        this.whereIn('id', matchQuery);
+        if (matchNulls) {
+          this.orWhereNotIn(
+            'id',
+            tx<DbEntitiesSearchRow>('entities_search')
+              .select('entity_id')
+              .where('key', keyOp, key),
+          );
+        }
+      });
     }
 
-    const rows = await builder
+    const rows = await entitiesQuery
       .select('entities.*')
-      .orderBy('full_name', 'asc')
-      .groupBy('id');
+      .orderBy('full_name', 'asc');
 
     return rows.map(row => this.toEntityResponse(row));
   }

@@ -168,6 +168,79 @@ describe('CommonDatabase', () => {
     });
   });
 
+  describe('addEntities', () => {
+    it('happy path: adds entities to empty database', async () => {
+      await db.transaction(tx => db.addEntities(tx, [entityRequest]));
+      expect(true).toBeTruthy();
+    });
+
+    it('rejects adding the same-named entity twice', async () => {
+      const req: DbEntityRequest[] = [
+        {
+          entity: {
+            apiVersion: 'av1',
+            kind: 'k1',
+            metadata: { name: 'n1', namespace: 'ns1' },
+          },
+        },
+        {
+          entity: {
+            apiVersion: 'av1',
+            kind: 'k1',
+            metadata: { name: 'n1', namespace: 'ns1' },
+          },
+        },
+      ];
+      await expect(
+        db.transaction(tx => db.addEntities(tx, req)),
+      ).rejects.toThrow(ConflictError);
+    });
+
+    it('rejects adding the almost-same-namespace entity twice', async () => {
+      const req: DbEntityRequest[] = [
+        {
+          entity: {
+            apiVersion: 'av1',
+            kind: 'k1',
+            metadata: { name: 'n1', namespace: 'ns1' },
+          },
+        },
+        {
+          entity: {
+            apiVersion: 'av1',
+            kind: 'k1',
+            metadata: { name: 'n1', namespace: 'nS1' },
+          },
+        },
+      ];
+      await expect(
+        db.transaction(tx => db.addEntities(tx, req)),
+      ).rejects.toThrow(ConflictError);
+    });
+
+    it('accepts adding the same-named entity twice if on different namespaces', async () => {
+      const req: DbEntityRequest[] = [
+        {
+          entity: {
+            apiVersion: 'av1',
+            kind: 'k1',
+            metadata: { name: 'n1', namespace: 'ns1' },
+          },
+        },
+        {
+          entity: {
+            apiVersion: 'av1',
+            kind: 'k1',
+            metadata: { name: 'n1', namespace: 'ns2' },
+          },
+        },
+      ];
+      await expect(
+        db.transaction(tx => db.addEntities(tx, req)),
+      ).resolves.toBeUndefined();
+    });
+  });
+
   describe('locationHistory', () => {
     it('outputs the history correctly', async () => {
       const location: Location = {
