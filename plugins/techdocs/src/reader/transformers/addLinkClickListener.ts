@@ -32,7 +32,7 @@ export const addLinkClickListener = ({
         const href = target?.getAttribute('href');
 
         if (!href) return;
-        if (href.startsWith(window.location.origin)) {
+        if (href.startsWith(baseUrl)) {
           e.preventDefault();
           onClick(e, target.getAttribute('href')!);
         }

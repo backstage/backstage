@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createTestShadowDom, FIXTURES } from '../../test-utils';
+import { createTestShadowDom } from '../../test-utils';
 import { addLinkClickListener } from '.';
 
 describe('addLinkClickListener', () => {
