@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core';
-import {
-  AuthRequestBody,
-  ObjectsByServiceIdResponse,
-} from '@backstage/plugin-kubernetes-backend';
+import { KubernetesAuthTranslator } from './types';
+import { AuthRequestBody, ClusterDetails } from '../types/types';
 
-export const kubernetesApiRef = createApiRef<KubernetesApi>({
-  id: 'plugin.kubernetes.service',
-  description:
-    'Used by the Kubernetes plugin to make requests to accompanying backend',
-});
-
-export interface KubernetesApi {
-  getObjectsByServiceId(
-    serviceId: String,
-    requestBody: AuthRequestBody,
-  ): Promise<ObjectsByServiceIdResponse>;
+export class ServiceAccountKubernetesAuthTranslator
+  implements KubernetesAuthTranslator {
+  async decorateClusterDetailsWithAuth(
+    clusterDetails: ClusterDetails,
+    // To ignore TS6133 linting error where it detects 'requestBody' is declared but its value is never read.
+    // @ts-ignore-start
+    requestBody: AuthRequestBody, // eslint-disable-line @typescript-eslint/no-unused-vars
+    // @ts-ignore-end
+  ): Promise<ClusterDetails> {
+    return clusterDetails;
+  }
 }

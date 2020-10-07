@@ -18,9 +18,12 @@ import {
   createPlugin,
   createRouteRef,
   discoveryApiRef,
+  googleAuthApiRef,
 } from '@backstage/core';
 import { KubernetesBackendClient } from './api/KubernetesBackendClient';
 import { kubernetesApiRef } from './api/types';
+import { kubernetesAuthProvidersApiRef } from './kubernetes-auth-provider/types';
+import { KubernetesAuthProviders } from './kubernetes-auth-provider/KubernetesAuthProviders';
 
 export const rootCatalogKubernetesRouteRef = createRouteRef({
   path: '*',
@@ -35,6 +38,13 @@ export const plugin = createPlugin({
       deps: { discoveryApi: discoveryApiRef },
       factory: ({ discoveryApi }) =>
         new KubernetesBackendClient({ discoveryApi }),
+    }),
+    createApiFactory({
+      api: kubernetesAuthProvidersApiRef,
+      deps: { googleAuthApi: googleAuthApiRef },
+      factory: ({ googleAuthApi }) => {
+        return new KubernetesAuthProviders({ googleAuthApi });
+      },
     }),
   ],
 });
