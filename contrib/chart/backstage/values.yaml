@@ -102,10 +102,10 @@ appConfig:
   sentry:
     organization: spotify
   techdocs:
-    storageUrl: https://backend.example.com/techdocs/static/docs
-    requestUrl: https://backend.example.com/techdocs/docs
+    storageUrl: https://demo.example.com/api/techdocs/static/docs
+    requestUrl: https://demo.example.com/api/techdocs
   lighthouse:
-    baseUrl: https://lighthouse.example.com
+    baseUrl: https://demo.example.com/lighthouse-api
   rollbar:
     organization: roadie
 

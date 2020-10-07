@@ -23,22 +23,14 @@ spec:
             backend:
               serviceName: {{ include "frontend.serviceName" . }}
               servicePort: 80
-{{/* Route the backend inside the same hostname as the frontend when they are the same */}}
-{{- if eq $frontendUrl.host $backendUrl.host}}
-          - path: /techdocs
-            backend:
-              serviceName: {{ include "backend.serviceName" . }}
-              servicePort: 80
-          - path: /metadata
-            backend:
-              serviceName: {{ include "backend.serviceName" . }}
-              servicePort: 80
+          {{/* Route the backend inside the same hostname as the frontend when they are the same */}}
+          {{- if eq $frontendUrl.host $backendUrl.host}}
           - path: /api
             backend:
               serviceName: {{ include "backend.serviceName" . }}
               servicePort: 80
-{{/* Route the backend through a different host */}}
-{{- else -}}
+          {{/* Route the backend through a different host */}}
+          {{- else -}}
     - host: {{ $backendUrl.host }}
       http:
         paths:
@@ -46,7 +38,8 @@ spec:
             backend:
               serviceName: {{ include "backend.serviceName" . }}
               servicePort: 80
-{{- end }}
+         {{- end }}
+
 {{/* Route lighthouse through a different host */}}
 {{- if not ( eq $frontendUrl.host $lighthouseUrl.host ) }}
    - host: {{ $lighthouseUrl.host }}

@@ -2,8 +2,6 @@ backend:
   lighthouseHostname: {{ include "lighthouse.serviceName" . | quote }}
   listen:
       port: {{ .Values.appConfig.backend.listen.port | default 7000 }}
-  cors:
-    origin: {{ .Values.appConfig.backend.cors.origin | quote }}
   database:
     client: {{ .Values.appConfig.backend.database.client | quote }}
     connection:
@@ -43,3 +41,7 @@ sentry:
 scaffolder:
   azure:
     baseUrl: https://dev.azure.com/some-org
+
+techdocs:
+  generators:
+    techdocs: 'local'
