@@ -20,10 +20,11 @@ title: Adding Custom Plugin to Existing Monorepo App
 > functionality, extend the Sidebar to make our life easy. Finally, we add
 > custom code to display GitHub repository information.
 >
-> This document assumes you have NodeJS 12 active along with Yarn. Please note,
-> that at the time of this writing, the current version is 0.1.1-alpha.21. This
-> guide can still be used with future versions, just, verify as you go. If you
-> run into issues, you can compare your setup with mine here >
+> This document assumes you have NodeJS 12 active along with Yarn and Python.
+> Please note, that at the time of this writing, the current version is
+> 0.1.1-alpha.21. This guide can still be used with future versions, just,
+> verify as you go. If you run into issues, you can compare your setup with mine
+> here >
 > [simple-backstage-app-plugin](https://github.com/johnson-jesse/simple-backstage-app-plugin).
 
 # The Skeleton Plugin
@@ -34,7 +35,7 @@ title: Adding Custom Plugin to Existing Monorepo App
 1. When the process finishes, let's start the backend:
    `yarn --cwd packages/backend start`
 1. If you see errors starting, refer to
-   [Auth Configuration](https://github.com/johnson-jesse/simple-backstage-app/blob/master/README.md#the-auth-configuration)
+   [Auth Configuration](https://backstage.io/docs/tutorials/quickstart-app-auth#the-auth-configuration)
    for more information on environment variables.
 1. And now the frontend, from a new terminal window and the root of your
    project: `yarn start`
@@ -119,67 +120,10 @@ If everything is saved, you should see your name, id, and email on the
 github-playground page. Our data accessed is synchronous. So we just grab and
 go.
 
+https://github.com/spotify/backstage/tree/master/contrib
+
 6. Here is the entire file for reference
-<details><summary>Complete ExampleComponent.tsx</summary>
-<p>
-
-```tsx
-import React, { FC } from 'react';
-import { Typography, Grid } from '@material-ui/core';
-import {
-  InfoCard,
-  Header,
-  Page,
-  pageTheme,
-  Content,
-  ContentHeader,
-  HeaderLabel,
-  SupportButton,
-  identityApiRef,
-} from '@backstage/core';
-import { useApi } from '@backstage/core-api';
-import ExampleFetchComponent from '../ExampleFetchComponent';
-
-const ExampleComponent: FC<{}> = () => {
-  const identityApi = useApi(identityApiRef);
-  const userId = identityApi.getUserId();
-  const profile = identityApi.getProfile();
-
-  return (
-    <Page theme={pageTheme.tool}>
-      <Header
-        title="Welcome to github-playground!"
-        subtitle="Optional subtitle"
-      >
-        <HeaderLabel label="Owner" value="Team X" />
-        <HeaderLabel label="Lifecycle" value="Alpha" />
-      </Header>
-      <Content>
-        <ContentHeader title="Plugin title">
-          <SupportButton>A description of your plugin goes here.</SupportButton>
-        </ContentHeader>
-        <Grid container spacing={3} direction="column">
-          <Grid item>
-            <InfoCard title={userId}>
-              <Typography variant="body1">
-                {`${profile.displayName} | ${profile.email}`}
-              </Typography>
-            </InfoCard>
-          </Grid>
-          <Grid item>
-            <ExampleFetchComponent />
-          </Grid>
-        </Grid>
-      </Content>
-    </Page>
-  );
-};
-
-export default ExampleComponent;
-```
-
-</p>
-</details>
+   [ExampleComponent.tsx](https://github.com/spotify/backstage/tree/master/contrib/docs/tutorials/quickstart-app-plugin/ExampleComponent.md)
 
 # The Wipe
 
@@ -188,7 +132,7 @@ changes, let's start by wiping this component clean.
 
 1. Start by opening
    `root: plugins > github-playground > src > components > ExampleFetchComponent > ExampleFetchComponent.tsx`
-1. Replace everyting in the file with the following:
+1. Replace everything in the file with the following:
 
 ```tsx
 import React, { FC } from 'react';
@@ -267,7 +211,7 @@ type Viewer = {
 };
 ```
 
-# The Tabel Model
+# The Table Model
 
 Using Backstage's own component library, let's define a custom table. This
 component will get used if we have data to display.
@@ -329,8 +273,8 @@ const { value, loading, error } = useAsync(async (): Promise<any> => {
 }, []);
 ```
 
-4. The resolved data is conventiently destructured with value containing our
-   Viewer type. loading as a boolean, self explainatory. And error which is
+4. The resolved data is conveniently destructured with `value` containing our
+   Viewer type. `loading` as a boolean, self explanatory. And `error` which is
    present only if necessary. So let's use those as the first 3 of 4 multi
    return statements.
 5. Add the _if return_ blocks below our async block
@@ -358,123 +302,10 @@ return (
 8. After saving that, and given we don't have any errors, you should see a table
    with basic information on your repositories.
 9. Here is the entire file for reference
-<details><summary>Complete ExampleFetchComponent.tsx</summary>
-  <p>
-
-```tsx
-import React, { FC } from 'react';
-import { useAsync } from 'react-use';
-import Alert from '@material-ui/lab/Alert';
-import {
-  Table,
-  TableColumn,
-  Progress,
-  githubAuthApiRef,
-} from '@backstage/core';
-import { useApi } from '@backstage/core-api';
-import { graphql } from '@octokit/graphql';
-
-const query = `{
-viewer {
-  repositories(first: 100) {
-    totalCount
-    nodes {
-      name
-      createdAt
-      description
-      diskUsage
-      isFork
-    }
-    pageInfo {
-      endCursor
-      hasNextPage
-    }
-  }
-}
-}`;
-
-type Node = {
-  name: string;
-  createdAt: string;
-  description: string;
-  diskUsage: number;
-  isFork: boolean;
-};
-
-type Viewer = {
-  repositories: {
-    totalCount: number;
-    nodes: Node[];
-    pageInfo: {
-      endCursor: string;
-      hasNextPage: boolean;
-    };
-  };
-};
-
-type DenseTableProps = {
-  viewer: Viewer;
-};
-
-export const DenseTable: FC<DenseTableProps> = ({ viewer }) => {
-  const columns: TableColumn[] = [
-    { title: 'Name', field: 'name' },
-    { title: 'Created', field: 'createdAt' },
-    { title: 'Description', field: 'description' },
-    { title: 'Disk Usage', field: 'diskUsage' },
-    { title: 'Fork', field: 'isFork' },
-  ];
-
-  return (
-    <Table
-      title="List Of User's Repositories"
-      options={{ search: false, paging: false }}
-      columns={columns}
-      data={viewer.repositories.nodes}
-    />
-  );
-};
-
-const ExampleFetchComponent: FC<{}> = () => {
-  const auth = useApi(githubAuthApiRef);
-
-  const { value, loading, error } = useAsync(async (): Promise<any> => {
-    const token = await auth.getAccessToken();
-
-    const gqlEndpoint = graphql.defaults({
-      // Uncomment baseUrl if using enterprise
-      // baseUrl: 'https://github.MY-BIZ.com/api',
-      headers: {
-        authorization: `token ${token}`,
-      },
-    });
-    const { viewer } = await gqlEndpoint(query);
-    return viewer;
-  }, []);
-
-  if (loading) return <Progress />;
-  if (error) return <Alert severity="error">{error.message}</Alert>;
-  if (value && value.repositories) return <DenseTable viewer={value} />;
-
-  return (
-    <Table
-      title="List Of User's Repositories"
-      options={{ search: false, paging: false }}
-      columns={[]}
-      data={[]}
-    />
-  );
-};
-
-export default ExampleFetchComponent;
-```
-
-  </p>
-  </details>
-
-10. We finished! If there are no errors, you should see your own GitHub
-    repoistory information displayed in a basic table. If you run into issues,
-    you can compare the repo that backs this documdnt,
+   [ExampleFetchComponent.tsx](https://github.com/spotify/backstage/tree/master/contrib/docs/tutorials/quickstart-app-plugin/ExampleFetchComponent.md)
+10. We finished! You should see your own GitHub repository's information
+    displayed in a basic table. If you run into issues, you can compare the repo
+    that backs this document,
     [simple-backstage-app-plugin](https://github.com/johnson-jesse/simple-backstage-app-plugin)
 
 # Where to go from here
@@ -482,6 +313,6 @@ export default ExampleFetchComponent;
 > Break apart ExampleFetchComponent into smaller logical parts contained in
 > their own files. Rename your components to something other than ExampleXxx.
 >
-> You might be real proud of a plugin you develop. Follow this next tutorial for
-> an in-depth look at publishing and including that for the entire Backstage
+> You might be really proud of a plugin you develop. Follow this next tutorial
+> for an in-depth look at publishing and including that for the entire Backstage
 > community. [TODO](#).

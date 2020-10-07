@@ -1,11 +1,25 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import mockFetch from 'jest-fetch-mock';
 import ExampleFetchComponent from './ExampleFetchComponent';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
 
 describe('ExampleFetchComponent', () => {
+  const server = setupServer();
+  // Enable API mocking before tests.
+  beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
+
+  // Reset any runtime request handlers we may add during the tests.
+  afterEach(() => server.resetHandlers())
+
+  // Disable API mocking after the tests are done.
+  afterAll(() => server.close())
+
+  // setup mock response
+  beforeEach(() => {
+    server.use(rest.get('https://randomuser.me/*', (_, res, ctx) => res(ctx.status(200), ctx.delay(2000), ctx.json({}))))
+  })
   it('should render', async () => {
-    mockFetch.mockResponse(() => new Promise(() => {}));
     const rendered = render(<ExampleFetchComponent />);
     expect(await rendered.findByTestId('progress')).toBeInTheDocument();
   });

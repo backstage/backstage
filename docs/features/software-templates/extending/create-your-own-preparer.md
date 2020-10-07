@@ -17,7 +17,7 @@ location protocols:
 These two are added to the `PreparersBuilder` and then passed into the
 `createRouter` function of the `@spotify/plugin-scaffolder-backend`
 
-An full example backend can be found
+A full example backend can be found
 [here](https://github.com/spotify/backstage/blob/d91c10f654475a60829fa33a5c81018e517a319a/packages/backend/src/plugins/scaffolder.ts),
 but it looks something like the following
 
@@ -88,7 +88,7 @@ Some good examples exist here:
 - https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/src/scaffolder/stages/prepare/file.ts
 - https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/src/scaffolder/stages/prepare/github.ts
 
-### Registerinng your own Preparer
+### Registering your own Preparer
 
 You can register the preparer that you have created with the `PreparerBuilder`
 by using the `PreparerKey` from the Catalog, for example like this:
@@ -98,4 +98,4 @@ const preparers = new Preparers();
 preparers.register('gcs', new GoogleCloudStoragePreparer());
 ```
 
-And then pass this in to the `createRouter` function.
+And then pass this into the `createRouter` function.

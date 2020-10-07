@@ -62,4 +62,42 @@ describe('sanitizeDOM', () => {
       shadowDom.querySelector('#test-malicious-link')?.hasAttribute('onclick'),
     ).toBeFalsy();
   });
+
+  it('removes style tags', () => {
+    const html = `
+      <html>
+        <head>
+          <style>* {color: #f0f;}<style>
+        </head>
+        <body>
+        </body>
+      </html>
+    `;
+
+    const shadowDom = createTestShadowDom(html, {
+      preTransformers: [sanitizeDOM()],
+      postTransformers: [],
+    });
+
+    expect(shadowDom.querySelectorAll('style').length).toEqual(0);
+  });
+
+  it('does not remove link tags', () => {
+    const html = `
+      <html>
+        <head>
+          <link rel="stylesheet" href="style.css">
+        </head>
+        <body>
+        </body>
+      </html>
+    `;
+
+    const shadowDom = createTestShadowDom(html, {
+      preTransformers: [sanitizeDOM()],
+      postTransformers: [],
+    });
+
+    expect(shadowDom.querySelectorAll('link').length).toEqual(1);
+  });
 });

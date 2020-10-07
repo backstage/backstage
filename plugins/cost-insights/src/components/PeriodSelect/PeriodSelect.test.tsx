@@ -1,0 +1,84 @@
+/*
+ * Copyright 2020 Spotify AB
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import React from 'react';
+import { getByRole, waitFor } from '@testing-library/react';
+import UserEvent from '@testing-library/user-event';
+import PeriodSelect, { DEFAULT_OPTIONS as options } from './PeriodSelect';
+import { Duration, getDefaultPageFilters, Group } from '../../types';
+
+import { renderInTestApp } from '@backstage/test-utils';
+
+const DefaultPageFilters = getDefaultPageFilters([{ id: 'tools' }] as Group[]);
+
+Date.now = jest.fn(() => new Date(Date.parse('2020-05-01')).valueOf());
+
+describe('<PeriodSelect />', () => {
+  it('Renders without exploding', async () => {
+    const rendered = await renderInTestApp(
+      <PeriodSelect
+        duration={DefaultPageFilters.duration}
+        onSelect={jest.fn()}
+      />,
+    );
+    expect(rendered.getByTestId('period-select')).toBeInTheDocument();
+  });
+
+  it('Should display all costGrowth period options', async () => {
+    const rendered = await renderInTestApp(
+      <PeriodSelect
+        duration={DefaultPageFilters.duration}
+        onSelect={jest.fn()}
+      />,
+    );
+    const periodSelectContainer = rendered.getByTestId('period-select');
+    const button = getByRole(periodSelectContainer, 'button');
+    UserEvent.click(button);
+    await waitFor(() => rendered.getByText('Past 60 Days'));
+    options.forEach(option =>
+      expect(
+        rendered.getByTestId(`period-select-option-${option.value}`),
+      ).toBeInTheDocument(),
+    );
+  });
+
+  describe.each`
+    duration
+    ${Duration.P1M}
+    ${Duration.P3M}
+    ${Duration.P90D}
+    ${Duration.P30D}
+  `('Should select the correct duration', ({ duration }) => {
+    it(`Should select ${duration}`, async () => {
+      const mockOnSelect = jest.fn();
+      const mockAggregation =
+        DefaultPageFilters.duration === duration
+          ? Duration.P1M
+          : DefaultPageFilters.duration;
+
+      const rendered = await renderInTestApp(
+        <PeriodSelect duration={mockAggregation} onSelect={mockOnSelect} />,
+      );
+      const periodSelect = rendered.getByTestId('period-select');
+      const button = getByRole(periodSelect, 'button');
+
+      UserEvent.click(button);
+      await waitFor(() => rendered.getByText('Past 60 Days'));
+      UserEvent.click(rendered.getByTestId(`period-select-option-${duration}`));
+      expect(mockOnSelect).toHaveBeenLastCalledWith(duration);
+    });
+  });
+});

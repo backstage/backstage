@@ -14,19 +14,10 @@
  * limitations under the License.
  */
 
-import type { Entity } from '@backstage/catalog-model';
+import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import type { DbEntitiesSearchRow } from './types';
 
-// Search entries that start with these prefixes, also get a shorthand without
-// that prefix
-const SHORTHAND_KEY_PREFIXES = [
-  'metadata.',
-  'metadata.labels.',
-  'metadata.annotations.',
-  'spec.',
-];
-
-// These are exluded in the generic loop, either because they do not make sense
+// These are excluded in the generic loop, either because they do not make sense
 // to index, or because they are special-case always inserted whether they are
 // null or not
 const SPECIAL_KEYS = [
@@ -42,7 +33,7 @@ function toValue(current: any): string | null {
     return null;
   }
 
-  return String(current);
+  return String(current).toLowerCase();
 }
 
 // Helper for iterating through a nested structure and outputting a list of
@@ -106,7 +97,12 @@ export function visitEntityPart(
 
   // object
   for (const [key, value] of Object.entries(current)) {
-    visitEntityPart(entityId, path ? `${path}.${key}` : key, value, output);
+    visitEntityPart(
+      entityId,
+      (path ? `${path}.${key}` : key).toLowerCase(),
+      value,
+      output,
+    );
   }
 }
 
@@ -141,17 +137,18 @@ export function buildEntitySearch(
     },
   ];
 
+  // Namespace not specified has the default value "default", so we want to
+  // match on that as well
+  if (!entity.metadata.namespace) {
+    result.push({
+      entity_id: entityId,
+      key: 'metadata.namespace',
+      value: toValue(ENTITY_DEFAULT_NAMESPACE),
+    });
+  }
+
   // Visit the entire structure recursively
   visitEntityPart(entityId, '', entity, result);
-
-  // Generate shorthands for fields directly under some common collections
-  for (const row of result.slice()) {
-    for (const stripPrefix of SHORTHAND_KEY_PREFIXES) {
-      if (row.key.startsWith(stripPrefix)) {
-        result.push({ ...row, key: row.key.substr(stripPrefix.length) });
-      }
-    }
-  }
 
   return result;
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   LinearProgress,
@@ -45,15 +45,19 @@ export const JobStatusModal = ({
   const job = useJobPolling(jobId);
   const jobStatus = job?.status ?? '';
 
+  const [dialogTitle, setDialogTitle] = useState('Creating component...');
+
   useEffect(() => {
-    if (jobStatus === 'COMPLETED') onComplete(job!);
-  }, [jobStatus, onComplete]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (jobStatus === 'COMPLETED') {
+      setDialogTitle('Successfully created component');
+      onComplete(job);
+    } else if (jobStatus === 'FAILED')
+      setDialogTitle('Failed to create component');
+  }, [jobStatus, onComplete, setDialogTitle]);
 
   return (
     <Dialog open onClose={onClose} fullWidth>
-      <DialogTitle id="responsive-dialog-title">
-        Creating Component...
-      </DialogTitle>
+      <DialogTitle id="responsive-dialog-title">{dialogTitle}</DialogTitle>
       <DialogContent>
         {!job ? (
           <LinearProgress />

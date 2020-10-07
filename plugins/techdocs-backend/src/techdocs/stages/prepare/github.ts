@@ -20,7 +20,7 @@ import { PreparerBase } from './types';
 import parseGitUrl from 'git-url-parse';
 import {
   parseReferenceAnnotation,
-  checkoutGithubRepository,
+  checkoutGitRepository,
 } from '../../../helpers';
 
 import { Logger } from 'winston';
@@ -43,7 +43,7 @@ export class GithubPreparer implements PreparerBase {
     }
 
     try {
-      const repoPath = await checkoutGithubRepository(target, this.logger);
+      const repoPath = await checkoutGitRepository(target, this.logger);
 
       const parsedGitLocation = parseGitUrl(target);
       return path.join(repoPath, parsedGitLocation.filepath);

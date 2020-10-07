@@ -15,7 +15,7 @@
  */
 import { DirectoryPreparer } from './dir';
 import { getVoidLogger } from '@backstage/backend-common';
-import { checkoutGithubRepository } from '../../../helpers';
+import { checkoutGitRepository } from '../../../helpers';
 
 function normalizePath(path: string) {
   return path
@@ -26,9 +26,7 @@ function normalizePath(path: string) {
 
 jest.mock('../../../helpers', () => ({
   ...jest.requireActual<{}>('../../../helpers'),
-  checkoutGithubRepository: jest.fn(
-    () => '/tmp/backstage-repo/org/name/branch/',
-  ),
+  checkoutGitRepository: jest.fn(() => '/tmp/backstage-repo/org/name/branch/'),
 }));
 
 const logger = getVoidLogger();
@@ -87,6 +85,6 @@ describe('directory preparer', () => {
     expect(normalizePath(await directoryPreparer.prepare(mockEntity))).toEqual(
       '/tmp/backstage-repo/org/name/branch/docs',
     );
-    expect(checkoutGithubRepository).toHaveBeenCalledTimes(1);
+    expect(checkoutGitRepository).toHaveBeenCalledTimes(1);
   });
 });

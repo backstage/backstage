@@ -22,6 +22,7 @@ import {
   LocalPublish,
   TechdocsGenerator,
   GithubPreparer,
+  GitlabPreparer,
 } from '@backstage/plugin-techdocs-backend';
 import { PluginEnvironment } from '../types';
 import Docker from 'dockerode';
@@ -29,6 +30,7 @@ import Docker from 'dockerode';
 export default async function createPlugin({
   logger,
   config,
+  discovery,
 }: PluginEnvironment) {
   const generators = new Generators();
   const techdocsGenerator = new TechdocsGenerator(logger, config);
@@ -36,9 +38,11 @@ export default async function createPlugin({
 
   const preparers = new Preparers();
   const githubPreparer = new GithubPreparer(logger);
+  const gitlabPreparer = new GitlabPreparer(logger);
   const directoryPreparer = new DirectoryPreparer(logger);
   preparers.register('dir', directoryPreparer);
   preparers.register('github', githubPreparer);
+  preparers.register('gitlab', gitlabPreparer);
 
   const publisher = new LocalPublish(logger);
 
@@ -51,5 +55,6 @@ export default async function createPlugin({
     dockerClient,
     logger,
     config,
+    discovery,
   });
 }

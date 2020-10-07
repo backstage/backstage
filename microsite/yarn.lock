@@ -959,6 +959,11 @@
   resolved "https://registry.npmjs.org/@sindresorhus/is/-/is-0.7.0.tgz#9a06f4f137ee84d7df0460c1fdb1135ffa6c50fd"
   integrity sha512-ONhaKPIufzzrlNbqtWFFd+jlnemX6lJAgq9ZeiZtS7I1PIf/la7CW4m83rTXRnVnsMbW2k56pGYu7AUFJD9Pow==
 
+"@spotify/prettier-config@^8.0.0":
+  version "8.0.0"
+  resolved "https://registry.npmjs.org/@spotify/prettier-config/-/prettier-config-8.0.0.tgz#8b6c2bd579ddc54887155a0721fe04e96c89f7f2"
+  integrity sha512-so8w32ZV42CHWxOEXcBtbNO/hLXFrQNXVmhfzhUI6dVB9cq2xjRaiqu8GjFj8LvKbWpPj+S+KwTIS4aDVWqrFQ==
+
 "@types/cheerio@^0.22.8":
   version "0.22.21"
   resolved "https://registry.npmjs.org/@types/cheerio/-/cheerio-0.22.21.tgz#5e37887de309ba11b2e19a6e14cad7874b31a8a3"
@@ -2228,10 +2233,10 @@ dir-glob@2.0.0:
     arrify "^1.0.1"
     path-type "^3.0.0"
 
-docusaurus@^2.0.0-alpha.64:
-  version "2.0.0-alpha.64"
-  resolved "https://registry.yarnpkg.com/docusaurus/-/docusaurus-2.0.0-alpha.64.tgz#7833960e9d338403894a27b79058aa4076a676d3"
-  integrity sha512-ARCx0GwAvc5qx7AHvRVZidZuoDTfaaGXzgmkU23NahU6jzO/aK2Q1bH8IKNEQ5C2JuDerQ/hHDh80N20ijk82g==
+docusaurus@^2.0.0-alpha.65:
+  version "2.0.0-alpha.65"
+  resolved "https://registry.yarnpkg.com/docusaurus/-/docusaurus-2.0.0-alpha.65.tgz#e2b84985529deb79797aff52aa39ffbe03cd8a20"
+  integrity sha512-OEnKbXLPy3EpbQA/Dj0kakB6fg/Qni1LORTIero+5Q5G0QT5OH4FAbBQOy3L1qQH0S5Bv18zESxX9Nvclg20ag==
   dependencies:
     "@babel/core" "^7.9.0"
     "@babel/plugin-proposal-class-properties" "^7.8.3"
@@ -5198,6 +5203,11 @@ prepend-http@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/prepend-http/-/prepend-http-2.0.0.tgz#e92434bfa5ea8c19f41cdfd401d741a3c819d897"
   integrity sha1-6SQ0v6XqjBn0HN/UAddBo8gZ2Jc=
+
+prettier@^2.0.5:
+  version "2.1.2"
+  resolved "https://registry.npmjs.org/prettier/-/prettier-2.1.2.tgz#3050700dae2e4c8b67c4c3f666cdb8af405e1ce5"
+  integrity sha512-16c7K+x4qVlJg9rEbXl7HEGmQyZlG4R9AgP+oHKRMsMsuk8s+ATStlf1NpDqyBI1HpVyfjLOeMhH2LvuNvV5Vg==
 
 prismjs@^1.17.1:
   version "1.21.0"

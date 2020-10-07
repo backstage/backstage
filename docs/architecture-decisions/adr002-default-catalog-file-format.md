@@ -22,7 +22,7 @@ This ADR describes the default format of these descriptor files.
 
 ### Inspiration
 
-Internally at Spotify, a home grown software catalog system is used heavily and
+Internally at Spotify, a homegrown software catalog system is used heavily and
 forms a core part of Backstage and other important pieces of the infrastructure.
 The user experience, learnings and certain pieces of metadata from that catalog
 are being carried over to the open source effort.
@@ -40,7 +40,7 @@ triggers from the version control system, etc.
 
 Each file describes one or more entities in accordance with the
 [Backstage System Model](https://github.com/spotify/backstage/issues/390). All
-of these entities have a common stucture and nomenclature, and they are stored
+of these entities have a common structure and nomenclature, and they are stored
 in the software catalog from which they then can be queried.
 
 Entities have distinct names, and they may reference each other by those names.

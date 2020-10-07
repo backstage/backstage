@@ -20,16 +20,19 @@ import {
   FilePreparer,
   GithubPreparer,
   GitlabPreparer,
+  AzurePreparer,
   Preparers,
   Publishers,
   GithubPublisher,
   GitlabPublisher,
+  AzurePublisher,
   CreateReactAppTemplater,
   Templaters,
-  RepoVisilityOptions,
+  RepoVisibilityOptions,
 } from '@backstage/plugin-scaffolder-backend';
 import { Octokit } from '@octokit/rest';
 import { Gitlab } from '@gitbeaker/node';
+import { getPersonalAccessTokenHandler, WebApi } from 'azure-devops-node-api';
 import type { PluginEnvironment } from '../types';
 import Docker from 'dockerode';
 
@@ -46,12 +49,14 @@ export default async function createPlugin({
   const filePreparer = new FilePreparer();
   const githubPreparer = new GithubPreparer();
   const gitlabPreparer = new GitlabPreparer(config);
+  const azurePreparer = new AzurePreparer(config);
   const preparers = new Preparers();
 
   preparers.register('file', filePreparer);
   preparers.register('github', githubPreparer);
   preparers.register('gitlab', gitlabPreparer);
   preparers.register('gitlab/api', gitlabPreparer);
+  preparers.register('azure/api', azurePreparer);
 
   const publishers = new Publishers();
 
@@ -61,7 +66,7 @@ export default async function createPlugin({
     try {
       const repoVisibility = githubConfig.getString(
         'visibility',
-      ) as RepoVisilityOptions;
+      ) as RepoVisibilityOptions;
 
       const githubToken = githubConfig.getString('token');
       const githubClient = new Octokit({ auth: githubToken });
@@ -99,6 +104,32 @@ export default async function createPlugin({
       publishers.register('gitlab/api', gitLabPublisher);
     } catch (e) {
       const providerName = 'gitlab';
+      if (process.env.NODE_ENV !== 'development') {
+        throw new Error(
+          `Failed to initialize ${providerName} scaffolding provider, ${e.message}`,
+        );
+      }
+
+      logger.warn(
+        `Skipping ${providerName} scaffolding provider, ${e.message}`,
+      );
+    }
+  }
+
+  const azureConfig = config.getOptionalConfig('scaffolder.azure');
+  if (azureConfig) {
+    try {
+      const baseUrl = azureConfig.getString('baseUrl');
+      const azureToken = azureConfig.getConfig('api').getString('token');
+
+      const authHandler = getPersonalAccessTokenHandler(azureToken);
+      const webApi = new WebApi(baseUrl, authHandler);
+      const azureClient = await webApi.getGitApi();
+
+      const azurePublisher = new AzurePublisher(azureClient, azureToken);
+      publishers.register('azure/api', azurePublisher);
+    } catch (e) {
+      const providerName = 'azure';
       if (process.env.NODE_ENV !== 'development') {
         throw new Error(
           `Failed to initialize ${providerName} scaffolding provider, ${e.message}`,

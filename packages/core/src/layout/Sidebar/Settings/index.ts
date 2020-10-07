@@ -15,6 +15,4 @@
  */
 
 export { ProviderSettingsItem } from './ProviderSettingsItem';
-export { OAuthProviderSettings } from './OAuthProviderSettings';
-export { OIDCProviderSettings } from './OIDCProviderSettings';
 export { SidebarUserSettings } from './UserSettings';

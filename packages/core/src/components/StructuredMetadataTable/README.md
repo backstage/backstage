@@ -23,7 +23,7 @@ The component itself only handles the display area, so you can use standard JS t
 
 This will step through each of the keys and based on their types display them in a logical way.
 
-### Primatives
+### Primitives
 
 Any non complex value will be displayed using `{value}` which will just output the value as text.
 

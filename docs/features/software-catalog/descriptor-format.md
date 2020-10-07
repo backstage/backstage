@@ -22,6 +22,8 @@ humans. However, the structure and semantics is the same in both cases.
 - [Kind: Component](#kind-component)
 - [Kind: Template](#kind-template)
 - [Kind: API](#kind-api)
+- [Kind: Group](#kind-group)
+- [Kind: User](#kind-user)
 
 ## Overall Shape Of An Entity
 
@@ -571,3 +573,167 @@ group of people in an organizational structure.
 
 The definition of the API, based on the format defined by `spec.type`. This
 field is required.
+
+## Kind: Group
+
+Describes the following entity kind:
+
+| Field        | Value                   |
+| ------------ | ----------------------- |
+| `apiVersion` | `backstage.io/v1alpha1` |
+| `kind`       | `Group`                 |
+
+A group describes an organizational entity, such as for example a team, a
+business unit, or a loose collection of people in an interest group. Members of
+these groups are modeled in the catalog as kind [`User`](#kind-user).
+
+Descriptor files for this kind may look as follows.
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: infrastructure
+  description: The infra business unit
+spec:
+  type: business-unit
+  parent: ops
+  ancestors: [ops, global-synergies, acme-corp]
+  children: [backstage, other]
+  descendants: [backstage, other, team-a, team-b, team-c, team-d]
+```
+
+In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)
+shape, this kind has the following structure.
+
+### `apiVersion` and `kind` [required]
+
+Exactly equal to `backstage.io/v1alpha1` and `Group`, respectively.
+
+### `spec.type` [required]
+
+The type of group as a string, e.g. `team`. There is currently no enforced set
+of values for this field, so it is left up to the adopting organization to
+choose a nomenclature that matches their org hierarchy.
+
+Some common values for this field could be:
+
+- `team`
+- `business-unit`
+- `product-area`
+- `root` - as a common virtual root of the hierarchy, if desired
+
+### `spec.parent` [optional]
+
+The immediate parent group in the hierarchy, if any. Not all groups must have a
+parent; the catalog supports multi-root hierarchies. Groups may however not have
+more than one parent.
+
+This field is an
+[entity reference](https://backstage.io/docs/features/software-catalog/references),
+with the default kind `Group` and the default namespace equal to the same
+namespace as the user. Only `Group` entities may be referenced. Most commonly,
+this field points to a group in the same namespace, so in those cases it is
+sufficient to enter only the `metadata.name` field of that group.
+
+### `spec.ancestors` [required]
+
+The recursive list of parents up the hierarchy, by stepping through parents one
+by one. The list must be present, but may be empty if `parent` is not present.
+The first entry in the list is equal to `parent`, and then the following ones
+are progressively farther up the hierarchy.
+
+The entries of this array are
+[entity references](https://backstage.io/docs/features/software-catalog/references),
+with the default kind `Group` and the default namespace equal to the same
+namespace as the user. Only `Group` entities may be referenced. Most commonly,
+these entries point to groups in the same namespace, so in those cases it is
+sufficient to enter only the `metadata.name` field of those groups.
+
+### `spec.children` [required]
+
+The immediate child groups of this group in the hierarchy (whose `parent` field
+points to this group). The list must be present, but may be empty if there are
+no child groups. The items are not guaranteed to be ordered in any particular
+way.
+
+The entries of this array are
+[entity references](https://backstage.io/docs/features/software-catalog/references),
+with the default kind `Group` and the default namespace equal to the same
+namespace as the user. Only `Group` entities may be referenced. Most commonly,
+these entries point to groups in the same namespace, so in those cases it is
+sufficient to enter only the `metadata.name` field of those groups.
+
+### `spec.descendants` [required]
+
+The immediate and recursive child groups of this group in the hierarchy
+(children, and children's children, etc.). The list must be present, but may be
+empty if there are no child groups. The items are not guaranteed to be ordered
+in any particular way.
+
+The entries of this array are
+[entity references](https://backstage.io/docs/features/software-catalog/references),
+with the default kind `Group` and the default namespace equal to the same
+namespace as the user. Only `Group` entities may be referenced. Most commonly,
+these entries point to groups in the same namespace, so in those cases it is
+sufficient to enter only the `metadata.name` field of those groups.
+
+## Kind: User
+
+Describes the following entity kind:
+
+| Field        | Value                   |
+| ------------ | ----------------------- |
+| `apiVersion` | `backstage.io/v1alpha1` |
+| `kind`       | `User`                  |
+
+A user describes a person, such as an employee, a contractor, or similar. Users
+belong to [`Group`](#kind-group) entities in the catalog.
+
+These catalog user entries are connected to the way that authentication within
+the Backstage ecosystem works. See the [auth](https://backstage.io/docs/auth)
+section of the docs for a discussion of these concepts.
+
+Descriptor files for this kind may look as follows.
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: jdoe
+spec:
+  profile:
+    displayName: Jenny Doe
+    email: jenny-doe@example.com
+    picture: https://example.com/staff/jenny-with-party-hat.jpeg
+  memberOf: [team-b, employees]
+```
+
+In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)
+shape, this kind has the following structure.
+
+### `apiVersion` and `kind` [required]
+
+Exactly equal to `backstage.io/v1alpha1` and `User`, respectively.
+
+### `spec.profile` [optional]
+
+Optional profile information about the user, mainly for display purposes. All
+fields of this structure are also optional. The email would be a primary email
+of some form, that the user may wish to be used for contacting them. The picture
+is expected to be a URL pointing to an image that's representative of the user,
+and that a browser could fetch and render on a profile page or similar.
+
+### `spec.memberOf` [required]
+
+The list of groups that the user is a direct member of (i.e., no transitive
+memberships are listed here). The list must be present, but may be empty if the
+user is not member of any groups. The items are not guaranteed to be ordered in
+any particular way.
+
+The entries of this array are
+[entity references](https://backstage.io/docs/features/software-catalog/references),
+with the default kind `Group` and the default namespace equal to the same
+namespace as the user. Only `Group` entities may be referenced. Most commonly,
+these entries point to groups in the same namespace, so in those cases it is
+sufficient to enter only the `metadata.name` field of those groups.

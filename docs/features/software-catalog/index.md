@@ -84,13 +84,13 @@ registered in the catalog.
 ### Static catalog configuration
 
 In addition to manually registering components, it is also possible to register
-components though [static configuration](../../conf/index.md). For example, the
+components through [static configuration](../../conf/index.md). For example, the
 above example can be added using the following configuration:
 
 ```yaml
 catalog:
   locations:
-    - type: github
+    - type: url
       target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
 ```
 

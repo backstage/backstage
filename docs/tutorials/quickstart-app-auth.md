@@ -11,10 +11,11 @@ title: Monorepo App Setup With Authentication
 > own environment. It starts with a skeleton install and verifying of the
 > monorepo's functionality. Next, GitHub authentication is added and tested.
 >
-> This document assumes you have NodeJS 12 active along with Yarn. Please note,
-> that at the time of this writing, the current version is 0.1.1-alpha.21. This
-> guide can still be used with future versions, just, verify as you go. If you
-> run into issues, you can compare your setup with mine here >
+> This document assumes you have NodeJS 12 active along with Yarn and Python.
+> Please note, that at the time of this writing, the current version is
+> 0.1.1-alpha.21. This guide can still be used with future versions, just,
+> verify as you go. If you run into issues, you can compare your setup with mine
+> here >
 > [simple-backstage-app](https://github.com/johnson-jesse/simple-backstage-app).
 
 # The Skeleton Application
@@ -71,15 +72,12 @@ auth:
     github:
       development:
         clientId:
-          $secret:
-            env: AUTH_GITHUB_CLIENT_ID
+          $env: AUTH_GITHUB_CLIENT_ID
         clientSecret:
-          $secret:
-            env: AUTH_GITHUB_CLIENT_SECRET
+          $env: AUTH_GITHUB_CLIENT_SECRET
         ## uncomment the following three lines if using enterprise
         # enterpriseInstanceUrl:
-        #  $secret:
-        #    env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
+        #  $env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
 ```
 
 2. Set environment variables in whatever fashion is easiest for you. I chose to
@@ -115,7 +113,7 @@ export AUTH_GITHUB_CLIENT_SECRET=xxx
 > Log into http://github.com
 > Navigate to (Settings > Developer Settings > OAuth Apps > New OAuth App)[https://github.com/settings/applications/new]
 > Set Homepage URL = http://localhost:3000
-> Set Callback URL = http://localhost:7000/auth/github
+> Set Callback URL = http://localhost:7000/api/auth/github
 > Click [Register application]
 > On the next page, copy and paste your new Client ID and Client Secret to the environment variables above, `AUTH_GITHUB_CLIENT_ID` & `AUTH_GITHUB_CLIENT_SECRET`
 > Don't forget to `source` that profile file again if necessary.
@@ -155,42 +153,11 @@ const app = createApp({
 });
 ```
 
-6. Open and change _root > packages > app > src >_ `apis.ts` as follows
+7. Start the backend and frontend as before
 
-```ts
-// Add the following imports to the existing list from core
-import { githubAuthApiRef, GithubAuth } from '@backstage/core';
-```
-
-7. In the same file, change the builder block for oauthRequestApiRef as follows
-
-_from:_
-
-```ts
-builder.add(oauthRequestApiRef, new OAuthRequestManager());
-```
-
-_to:_
-
-```ts
-const oauthRequestApi = builder.add(
-  oauthRequestApiRef,
-  new OAuthRequestManager(),
-);
-
-builder.add(
-  githubAuthApiRef,
-  GithubAuth.create({
-    discoveryApi,
-    oauthRequestApi,
-  }),
-);
-```
-
-> Start the backend and frontend as before. When the browser loads, you should
-> be presented with a login page for GitHub. Login as usual with your GitHub
-> account. If this is your first time, you will be asked to authorize and then
-> are redirected to the catalog page if all is well.
+When the browser loads, you should be presented with a login page for GitHub.
+Login as usual with your GitHub account. If this is your first time, you will be
+asked to authorize and then are redirected to the catalog page if all is well.
 
 # Where to go from here
 

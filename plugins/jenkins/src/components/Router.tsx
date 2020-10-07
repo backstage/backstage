@@ -23,8 +23,7 @@ import { WarningPanel } from '@backstage/core';
 import { CITable } from './BuildsPage/lib/CITable';
 
 export const isPluginApplicableToEntity = (entity: Entity) =>
-  Boolean(entity.metadata.annotations?.[JENKINS_ANNOTATION]) &&
-  entity.metadata.annotations?.[JENKINS_ANNOTATION] !== '';
+  Boolean(entity.metadata.annotations?.[JENKINS_ANNOTATION]);
 
 export const Router = ({ entity }: { entity: Entity }) => {
   return !isPluginApplicableToEntity(entity) ? (

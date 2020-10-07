@@ -18,8 +18,10 @@ import { InputError } from '@backstage/backend-common';
 import {
   Entity,
   entityHasChanges,
+  getEntityName,
   Location,
   LocationSpec,
+  serializeEntityRef,
 } from '@backstage/catalog-model';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from 'winston';
@@ -158,30 +160,23 @@ export class HigherOrderOperations implements HigherOrderOperation {
       );
     }
 
+    this.logger.info(
+      `Read ${readerOutput.entities.length} entities from location ${location.type} ${location.target}`,
+    );
+
+    const startTimestamp = process.hrtime();
     for (const item of readerOutput.entities) {
       const { entity } = item;
 
-      this.logger.debug(
-        `Read entity kind="${entity.kind}" name="${
-          entity.metadata.name
-        }" namespace="${entity.metadata.namespace || ''}"`,
-      );
-
       try {
         const previous = await this.entitiesCatalog.entityByName(
-          entity.kind,
-          entity.metadata.namespace,
-          entity.metadata.name,
+          getEntityName(entity),
         );
 
         if (!previous) {
-          this.logger.debug(`No such entity found, adding`);
           await this.entitiesCatalog.addOrUpdateEntity(entity, location.id);
         } else if (entityHasChanges(previous, entity)) {
-          this.logger.debug(`Different from existing entity, updating`);
           await this.entitiesCatalog.addOrUpdateEntity(entity, location.id);
-        } else {
-          this.logger.debug(`Equal to existing entity, skipping update`);
         }
 
         await this.locationsCatalog.logUpdateSuccess(
@@ -189,10 +184,8 @@ export class HigherOrderOperations implements HigherOrderOperation {
           entity.metadata.name,
         );
       } catch (error) {
-        this.logger.debug(
-          `Failed refresh of entity kind="${entity.kind}" name="${
-            entity.metadata.name
-          }" namespace="${entity.metadata.namespace || ''}", ${error}`,
+        this.logger.info(
+          `Failed refresh of entity ${serializeEntityRef(entity)}, ${error}`,
         );
 
         await this.locationsCatalog.logUpdateFailure(
@@ -202,5 +195,11 @@ export class HigherOrderOperations implements HigherOrderOperation {
         );
       }
     }
+
+    const delta = process.hrtime(startTimestamp);
+    const durationMs = ((delta[0] * 1e9 + delta[1]) / 1e6).toFixed(1);
+    this.logger.info(
+      `Wrote ${readerOutput.entities.length} entities from location ${location.type} ${location.target} in ${durationMs} seconds`,
+    );
   }
 }
