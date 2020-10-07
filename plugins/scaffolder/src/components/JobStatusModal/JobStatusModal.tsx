@@ -53,7 +53,7 @@ export const JobStatusModal = ({
       onComplete(job!);
     } else if (jobStatus === 'FAILED')
       setDialogTitle('Failed to create component');
-  }, [jobStatus, onComplete, setDialogTitle]);
+  }, [jobStatus, onComplete, setDialogTitle]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Dialog open onClose={onClose} fullWidth>
