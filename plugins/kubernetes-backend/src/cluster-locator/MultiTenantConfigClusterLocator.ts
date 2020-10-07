@@ -28,12 +28,15 @@ export class MultiTenantConfigClusterLocator
   }
 
   static fromConfig(config: Config[]): MultiTenantConfigClusterLocator {
+    // TODO: Add validation that authProvider is required and serviceAccountToken
+    // is required if authProvider is serviceAccount
     return new MultiTenantConfigClusterLocator(
       config.map(c => {
         return {
           name: c.getString('name'),
           url: c.getString('url'),
           serviceAccountToken: c.getOptionalString('serviceAccountToken'),
+          authProvider: c.getString('authProvider'),
         };
       }),
     );

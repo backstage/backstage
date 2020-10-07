@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@backstage/catalog-model": "^0.1.1-alpha.24",
+    "@backstage/config": "^0.1.1-alpha.24",
     "@backstage/core": "^0.1.1-alpha.24",
     "@backstage/plugin-kubernetes-backend": "^0.1.1-alpha.24",
     "@backstage/theme": "^0.1.1-alpha.24",

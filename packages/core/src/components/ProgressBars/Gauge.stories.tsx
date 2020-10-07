@@ -15,41 +15,41 @@
  */
 
 import React from 'react';
-import { GaugeProgress } from './GaugeProgress';
+import { Gauge } from './Gauge';
 
 const containerStyle = { width: 300 };
 
 export default {
-  title: 'GaugeProgress',
-  component: GaugeProgress,
+  title: 'Gauge',
+  component: Gauge,
 };
 
 export const Default = () => (
   <div style={containerStyle}>
-    <GaugeProgress value={0.8} />
+    <Gauge value={0.8} />
   </div>
 );
 
 export const MediumProgress = () => (
   <div style={containerStyle}>
-    <GaugeProgress value={0.5} />
+    <Gauge value={0.5} />
   </div>
 );
 
 export const LowProgress = () => (
   <div style={containerStyle}>
-    <GaugeProgress value={0.2} />
+    <Gauge value={0.2} />
   </div>
 );
 
 export const InverseLowProgress = () => (
   <div style={containerStyle}>
-    <GaugeProgress value={0.2} inverse />
+    <Gauge value={0.2} inverse />
   </div>
 );
 
 export const AbsoluteProgress = () => (
   <div style={containerStyle}>
-    <GaugeProgress value={89.2} fractional={false} unit="m/s" />
+    <Gauge value={89.2} fractional={false} unit="m/s" />
   </div>
 );

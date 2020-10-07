@@ -57,3 +57,66 @@ Then configure the lighthouse service url in your [`app-config.yaml`](https://gi
 lighthouse:
   baseUrl: http://your-service-url
 ```
+
+### Integration with the Catalog
+
+The lighthouse plugin can be integrated into the catalog so that lighthouse audit information relating to a component
+can be displayed within that component's entity page. In order to link an Entity to its lighthouse audits the entity
+must be annotated as follows:
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  # ...
+  annotations:
+    # ...
+    lighthouse.com/website-url: # A single website url e.g. https://backstage.io/
+```
+
+> NOTE: The lighthouse plugin only supports one website url per component at this time.
+
+Add a lighthouse tab to the EntityPage:
+
+```tsx
+// packages/app/src/components/catalog/EntityPage.tsx
+import { EmbeddedRouter as LighthouseRouter } from '@backstage/plugin-lighthouse';
+
+// ...
+const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
+  <EntityPageLayout>
+    // ...
+    <EntityPageLayout.Content
+      path="/lighthouse"
+      title="Lighthouse"
+      element={<LighthouseRouter entity={entity} />}
+    />
+  </EntityPageLayout>
+);
+```
+
+> NOTE: The embedded router renders page content without a header section allowing it to be rendered within a
+> catalog plugin page.
+
+Add a Lighthouse card to the overview tab on the EntityPage:
+
+```tsx
+// packages/app/src/components/catalog/EntityPage.tsx
+import {
+  LastLighthouseAuditCard,
+  isPluginApplicableToEntity as isLighthouseAvailable,
+} from '@backstage/plugin-lighthouse';
+
+// ...
+
+const OverviewContent = ({ entity }: { entity: Entity }) => (
+  <Grid container spacing={3}>
+    // ...
+    {isLighthouseAvailable(entity) && (
+      <Grid item sm={4}>
+        <LastLighthouseAuditCard />
+      </Grid>
+    )}
+  </Grid>
+);
+```

@@ -66,7 +66,11 @@ export const TechDocsPageHeader = ({
         <HeaderLabel
           label=""
           value={
-            <a href={locationMetadata.target} target="_blank">
+            <a
+              href={locationMetadata.target}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <GitHubIcon style={{ marginTop: '-25px', fill: '#fff' }} />
             </a>
           }

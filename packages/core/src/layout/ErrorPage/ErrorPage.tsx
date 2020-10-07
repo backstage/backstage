@@ -65,7 +65,12 @@ export const ErrorPage = ({
             Go back
           </Link>
           ... or if you think this is a bug, please file an{' '}
-          <Link href="https://github.com/spotify/backstage/issues">issue.</Link>
+          <Link
+            href="https://github.com/spotify/backstage/issues"
+            rel="noopener noreferrer"
+          >
+            issue.
+          </Link>
         </Typography>
       </Grid>
     </Grid>
