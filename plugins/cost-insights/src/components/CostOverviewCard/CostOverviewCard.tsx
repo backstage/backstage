@@ -19,10 +19,8 @@ import { Box, Card, CardContent, Divider } from '@material-ui/core';
 import CostOverviewChart from '../CostOverviewChart';
 import CostOverviewChartLegend from '../CostOverviewChartLegend';
 import CostOverviewHeader from './CostOverviewHeader';
-import CostOverviewFooter from './CostOverviewFooter';
 import MetricSelect from '../MetricSelect';
 import PeriodSelect from '../PeriodSelect';
-import ProjectSelect from '../ProjectSelect';
 import { useScroll, useFilters, useConfig } from '../../hooks';
 import { mapFiltersToProps } from './selector';
 import { DefaultNavigation } from '../../utils/navigation';
@@ -45,7 +43,6 @@ const CostOverviewCard = ({
   change,
   aggregation,
   trendline,
-  projects,
 }: CostOverviewCardProps) => {
   const { metrics } = useConfig();
   const { ScrollAnchor } = useScroll(DefaultNavigation.CostOverviewCard);
@@ -73,18 +70,13 @@ const CostOverviewCard = ({
             trendline={trendline}
           />
         </Box>
-        <CostOverviewFooter>
-          <ProjectSelect
-            project={filters.project}
-            projects={projects}
-            onSelect={setProject}
-          />
+        <Box display="flex" justifyContent="flex-end" alignItems="center">
           <MetricSelect
             metric={metric}
             metrics={metrics}
             onSelect={setMetric}
           />
-        </CostOverviewFooter>
+        </Box>
       </CardContent>
     </Card>
   );
