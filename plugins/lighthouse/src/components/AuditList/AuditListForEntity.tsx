@@ -13,8 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
+import { AuditListTable } from './AuditListTable';
+import { Progress } from '@backstage/core';
+import { useWebsiteForEntity } from '../../hooks/useWebsiteForEntity';
 
-export { plugin } from './plugin';
-export { Router, isPluginApplicableToEntity, EmbeddedRouter } from './Router';
-export * from './api';
-export * from './components/Cards';
+export const AuditListForEntity = () => {
+  const { value, loading, error } = useWebsiteForEntity();
+  if (loading) {
+    return <Progress />;
+  }
+  if (error || !value) {
+    return null;
+  }
+
+  return <AuditListTable data-test-id="AuditListTable" items={[value]} />;
+};
