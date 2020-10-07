@@ -42,7 +42,7 @@ spec:
 
 {{/* Route lighthouse through a different host */}}
 {{- if not ( eq $frontendUrl.host $lighthouseUrl.host ) }}
-   - host: {{ $lighthouseUrl.host }}
+    - host: {{ $lighthouseUrl.host }}
       http:
         paths:
           - path: {{ $lighthouseUrl.path | default "/" }}
