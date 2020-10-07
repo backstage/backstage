@@ -1,3 +1,4 @@
+// @ts-check
 /*
  * Copyright 2020 Spotify AB
  *
@@ -14,5 +15,8 @@
  * limitations under the License.
  */
 
-// This file is shared between frontend and backend plugins
+/**
+ * Annotation to define on the entity to enable the plugin
+ * @type {string}
+ */
 module.exports.GITHUB_ACTIONS_ANNOTATION = 'github.com/project-slug';
