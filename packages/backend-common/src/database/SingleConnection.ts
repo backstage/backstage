@@ -22,11 +22,10 @@ import { PluginDatabaseManager } from './types';
 /**
  * Implements a Database Manager which will automatically create new databases
  * for plugins when requested. All requested databases are created with the
- * credentials provided.
+ * credentials provided; if the database already exists no attempt to create
+ * the database will be made.
  */
 export class SingleConnectionDatabaseManager {
-  private readonly config: Config;
-
   /**
    * Creates a new SingleConnectionDatabaseManager instance by reading from the `backend`
    * config section, specifically the `.database` key for discovering the management
@@ -40,17 +39,7 @@ export class SingleConnectionDatabaseManager {
     );
   }
 
-  private constructor(config: Config) {
-    this.config = config;
-  }
-
-  private getDatabaseConfig(): Config {
-    return this.config;
-  }
-
-  private getAdminConfig(): Config {
-    return this.config;
-  }
+  private constructor(private readonly config: Config) {}
 
   /**
    * Generates a PluginDatabaseManager for consumption by plugins.
@@ -68,7 +57,7 @@ export class SingleConnectionDatabaseManager {
   }
 
   private async getDatabase(pluginId: string): Promise<Knex> {
-    const config = this.getDatabaseConfig();
+    const config = this.config;
     const overrides = SingleConnectionDatabaseManager.getDatabaseOverrides(
       pluginId,
     );
@@ -87,7 +76,7 @@ export class SingleConnectionDatabaseManager {
   }
 
   private async ensureDatabase(database: string) {
-    const config = this.getAdminConfig();
+    const config = this.config;
     await ensureDatabaseExists(config, database);
   }
 }
