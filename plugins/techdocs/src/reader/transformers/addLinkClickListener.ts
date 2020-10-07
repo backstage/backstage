@@ -29,7 +29,8 @@ export const addLinkClickListener = ({
         const target = e.target as HTMLAnchorElement;
         const href = target?.getAttribute('href');
         if (!href) return;
-        if (!href.match(/^https?:\/\//i)) {
+
+        if (href.startsWith(window.location.origin)) {
           e.preventDefault();
           onClick(e, target.getAttribute('href')!);
         }
