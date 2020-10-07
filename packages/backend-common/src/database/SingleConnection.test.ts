@@ -47,6 +47,8 @@ describe('SingleConnectionDatabaseManager', () => {
   // This is similar to the ts-jest `mocked` helper.
   const mocked = (f: Function) => f as jest.Mock;
 
+  afterEach(() => jest.resetAllMocks());
+
   describe('SingleConnectionDatabaseManager.fromConfig', () => {
     it('accesses the backend.database key', () => {
       const getConfig = jest.fn();
@@ -66,9 +68,9 @@ describe('SingleConnectionDatabaseManager', () => {
       const pluginId = 'test1';
       await manager.forPlugin(pluginId).getClient();
 
-      expect(mocked(createDatabaseClient).mock.calls).toHaveLength(1);
-      const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-1);
+      expect(mocked(createDatabaseClient)).toHaveBeenCalledTimes(1);
 
+      const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-1);
       const callArgs = mockCalls[0];
       expect(callArgs[0].get()).toEqual(defaultConfigOptions.backend.database);
       expect(callArgs[1].connection.database).toEqual(
@@ -82,9 +84,9 @@ describe('SingleConnectionDatabaseManager', () => {
       await manager.forPlugin(plugin1Id).getClient();
       await manager.forPlugin(plugin2Id).getClient();
 
-      expect(mocked(createDatabaseClient).mock.calls).toHaveLength(2);
-      const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-2);
+      expect(mocked(createDatabaseClient)).toHaveBeenCalledTimes(2);
 
+      const mockCalls = mocked(createDatabaseClient).mock.calls;
       const plugin1CallArgs = mockCalls[0];
       const plugin2CallArgs = mockCalls[1];
       expect(plugin1CallArgs[1].connection.database).not.toEqual(
