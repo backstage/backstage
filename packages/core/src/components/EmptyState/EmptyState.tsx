@@ -29,10 +29,6 @@ const useStyles = makeStyles(theme => ({
   imageContainer: {
     position: 'relative',
   },
-  backgroundImage: {
-    position: 'absolute',
-    width: '100%',
-  },
 }));
 
 type Props = {
