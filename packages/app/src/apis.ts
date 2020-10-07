@@ -16,11 +16,8 @@
 
 import {
   errorApiRef,
-  discoveryApiRef,
-  UrlPatternDiscovery,
   githubAuthApiRef,
   createApiFactory,
-  configApiRef,
 } from '@backstage/core';
 
 import {
@@ -32,21 +29,16 @@ import {
   TravisCIApi,
   travisCIApiRef,
 } from '@roadiehq/backstage-plugin-travis-ci';
+
 import {
   GithubPullRequestsClient,
   githubPullRequestsApiRef,
 } from '@roadiehq/backstage-plugin-github-pull-requests';
 
+import { costInsightsApiRef } from '@backstage/plugin-cost-insights';
+import { ExampleCostInsightsClient } from './plugins/cost-insights';
+
 export const apis = [
-  // TODO(Rugvip): migrate to use /api
-  createApiFactory({
-    api: discoveryApiRef,
-    deps: { configApi: configApiRef },
-    factory: ({ configApi }) =>
-      UrlPatternDiscovery.compile(
-        `${configApi.getString('backend.baseUrl')}/{{ pluginId }}`,
-      ),
-  }),
   createApiFactory({
     api: graphQlBrowseApiRef,
     deps: { errorApi: errorApiRef, githubAuthApi: githubAuthApiRef },
@@ -65,6 +57,8 @@ export const apis = [
         }),
       ]),
   }),
+
+  createApiFactory(costInsightsApiRef, new ExampleCostInsightsClient()),
 
   // TODO: move to plugins
   createApiFactory(travisCIApiRef, new TravisCIApi()),

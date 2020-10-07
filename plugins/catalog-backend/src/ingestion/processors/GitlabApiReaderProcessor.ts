@@ -20,6 +20,11 @@ import * as result from './results';
 import { LocationProcessor, LocationProcessorEmit } from './types';
 import { Config } from '@backstage/config';
 
+// ***********************************************************************
+// * NOTE: This has been replaced by packages/backend-common/src/reading *
+// * Don't implement new functionality here as this file will be removed *
+// ***********************************************************************
+
 export class GitlabApiReaderProcessor implements LocationProcessor {
   private privateToken: string;
 
@@ -82,10 +87,6 @@ export class GitlabApiReaderProcessor implements LocationProcessor {
       const url = new URL(target);
 
       const branchAndfilePath = url.pathname.split('/-/blob/')[1];
-
-      if (!branchAndfilePath.match(/\.ya?ml$/)) {
-        throw new Error('GitLab url does not end in .ya?ml');
-      }
 
       const [branch, ...filePath] = branchAndfilePath.split('/');
 

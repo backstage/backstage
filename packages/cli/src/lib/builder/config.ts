@@ -22,13 +22,13 @@ import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import postcss from 'rollup-plugin-postcss';
 import esbuild from 'rollup-plugin-esbuild';
-import imageFiles from 'rollup-plugin-image-files';
 import svgr from '@svgr/rollup';
 import dts from 'rollup-plugin-dts';
 import json from '@rollup/plugin-json';
 import yaml from '@rollup/plugin-yaml';
 import { RollupOptions, OutputOptions } from 'rollup';
 
+import { forwardFileImports } from './plugins';
 import { BuildOptions, Output } from './types';
 import { paths } from '../paths';
 import { svgrTemplate } from '../svgrTemplate';
@@ -107,7 +107,7 @@ export const makeConfigs = async (
           exclude: [/\/[^/]+\.(?:stories|test)\.[^/]+$/],
         }),
         postcss(),
-        imageFiles({
+        forwardFileImports({
           exclude: /\.icon\.svg$/,
           include: [/\.svg$/, /\.png$/, /\.gif$/, /\.jpg$/, /\.jpeg$/],
         }),

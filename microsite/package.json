@@ -7,13 +7,17 @@
     "examples": "docusaurus-examples",
     "start": "docusaurus-start",
     "build": "docusaurus-build",
+    "prettier:check": "prettier --check .",
     "publish-gh-pages": "docusaurus-publish",
     "write-translations": "docusaurus-write-translations",
     "version": "docusaurus-version",
     "rename-version": "docusaurus-rename-version"
   },
   "devDependencies": {
-    "docusaurus": "^2.0.0-alpha.64",
-    "js-yaml": "^3.14.0"
-  }
+    "@spotify/prettier-config": "^8.0.0",
+    "docusaurus": "^2.0.0-alpha.65",
+    "js-yaml": "^3.14.0",
+    "prettier": "^2.0.5"
+  },
+  "prettier": "@spotify/prettier-config"
 }

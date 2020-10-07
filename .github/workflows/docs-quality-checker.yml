@@ -1,0 +1,18 @@
+name: Check Markdown files quality
+
+on:
+  pull_request:
+    branches: [master]
+    paths:
+      - '**.md'
+
+jobs:
+  check-all-files:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: documentation quality check
+        uses: errata-ai/vale-action@v1.3.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

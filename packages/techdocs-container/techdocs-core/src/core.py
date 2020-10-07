@@ -14,7 +14,7 @@
  * limitations under the License.
 """
 
-from mkdocs.plugins import BasePlugin, PluginCollection
+from mkdocs.plugins import BasePlugin
 from mkdocs.theme import Theme
 from mkdocs.contrib.search import SearchPlugin
 from mkdocs_monorepo_plugin.plugin import MonorepoPlugin
@@ -54,25 +54,11 @@ class TechDocsCore(BasePlugin):
 
         # Markdown Extensions
         config["markdown_extensions"].append("admonition")
-        config["markdown_extensions"].append("abbr")
-        config["markdown_extensions"].append("attr_list")
-        config["markdown_extensions"].append("def_list")
-        config["markdown_extensions"].append("codehilite")
-        config["mdx_configs"]["codehilite"] = {
-            "linenums": True,
-            "guess_lang": False,
-            "pygments_style": "friendly",
-        }
         config["markdown_extensions"].append("toc")
         config["mdx_configs"]["toc"] = {
             "permalink": True,
         }
-        config["markdown_extensions"].append("footnotes")
-        config["markdown_extensions"].append("markdown.extensions.tables")
-        config["markdown_extensions"].append("pymdownx.betterem")
-        config["mdx_configs"]["pymdownx.betterem"] = {
-            "smart_enable": "all",
-        }
+
         config["markdown_extensions"].append("pymdownx.caret")
         config["markdown_extensions"].append("pymdownx.critic")
         config["markdown_extensions"].append("pymdownx.details")
@@ -83,6 +69,18 @@ class TechDocsCore(BasePlugin):
         config["markdown_extensions"].append("pymdownx.mark")
         config["markdown_extensions"].append("pymdownx.smartsymbols")
         config["markdown_extensions"].append("pymdownx.superfences")
+        config["mdx_configs"]["pymdownx.superfences"] = {
+            "legacy_tab_classes": True,
+        }
+        config["markdown_extensions"].append("pymdownx.highlight")
+        config["mdx_configs"]["pymdownx.highlight"] = {
+            "linenums": True,
+        }
+        config["markdown_extensions"].append("pymdownx.extra")
+        config["mdx_configs"]["pymdownx.betterem"] = {
+            "smart_enable": "all",
+        }
+        config["markdown_extensions"].append("pymdownx.tabbed")
         config["markdown_extensions"].append("pymdownx.tasklist")
         config["mdx_configs"]["pymdownx.tasklist"] = {
             "custom_checkbox": True,

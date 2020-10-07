@@ -95,3 +95,39 @@ function requirePgConnectionString() {
     throw new Error(`${message}\n${e.message}`);
   }
 }
+
+/**
+ * Creates the missing Postgres database if it does not exist
+ *
+ * @param dbConfig The database config
+ * @param databases The name of the databases to create
+ */
+export async function ensurePgDatabaseExists(
+  dbConfig: Config,
+  ...databases: Array<string>
+) {
+  const admin = createPgDatabaseClient(dbConfig, {
+    connection: {
+      database: 'postgres',
+    },
+  });
+
+  try {
+    const ensureDatabase = async (database: string) => {
+      const result = await admin
+        .from('pg_database')
+        .where('datname', database)
+        .count<Record<string, { count: string }>>();
+
+      if (parseInt(result[0].count, 10) > 0) {
+        return;
+      }
+
+      await admin.raw(`CREATE DATABASE ??`, [database]);
+    };
+
+    await Promise.all(databases.map(ensureDatabase));
+  } finally {
+    await admin.destroy();
+  }
+}

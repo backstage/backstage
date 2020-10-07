@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.1.1-alpha.22",
+  "version": "0.1.1-alpha.24",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -28,9 +28,9 @@
     "backstage-cli": "bin/backstage-cli"
   },
   "dependencies": {
-    "@backstage/cli-common": "^0.1.1-alpha.22",
-    "@backstage/config": "^0.1.1-alpha.22",
-    "@backstage/config-loader": "^0.1.1-alpha.22",
+    "@backstage/cli-common": "^0.1.1-alpha.24",
+    "@backstage/config": "^0.1.1-alpha.24",
+    "@backstage/config-loader": "^0.1.1-alpha.24",
     "@hot-loader/react-dom": "^16.13.0",
     "@lerna/package-graph": "^3.18.5",
     "@lerna/project": "^3.18.0",
@@ -54,7 +54,7 @@
     "css-loader": "^3.5.3",
     "dashify": "^2.0.0",
     "diff": "^4.0.2",
-    "esbuild": "0.6.3",
+    "esbuild": "^0.7.7",
     "eslint": "^7.1.0",
     "eslint-formatter-friendly": "^7.0.0",
     "eslint-plugin-import": "^2.20.2",
@@ -78,10 +78,10 @@
     "rollup": "2.23.x",
     "rollup-plugin-dts": "1.4.11",
     "rollup-plugin-esbuild": "^2.0.0",
-    "rollup-plugin-image-files": "^1.4.2",
     "rollup-plugin-peer-deps-external": "^2.2.2",
     "rollup-plugin-postcss": "^3.1.1",
-    "rollup-plugin-typescript2": "^0.26.0",
+    "rollup-plugin-typescript2": "^0.27.3",
+    "rollup-pluginutils": "^2.8.2",
     "start-server-webpack-plugin": "^2.2.5",
     "style-loader": "^1.2.1",
     "sucrase": "^3.14.1",
@@ -91,7 +91,7 @@
     "typescript": "^3.9.3",
     "url-loader": "^4.1.0",
     "webpack": "^4.41.6",
-    "webpack-dev-server": "^3.10.3",
+    "webpack-dev-server": "^3.11.0",
     "webpack-node-externals": "^2.5.0",
     "yaml": "^1.10.0",
     "yml-loader": "^2.1.0",
@@ -112,8 +112,9 @@
     "@types/rollup-plugin-postcss": "^2.0.0",
     "@types/tar": "^4.0.3",
     "@types/webpack": "^4.41.7",
-    "@types/webpack-dev-server": "^3.10.0",
+    "@types/webpack-dev-server": "^3.11.0",
     "del": "^5.1.0",
+    "mock-fs": "^4.13.0",
     "nodemon": "^2.0.2",
     "ts-node": "^8.6.2"
   },

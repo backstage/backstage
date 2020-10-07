@@ -18,7 +18,7 @@ import {
   createPlugin,
   createRouteRef,
   createApiFactory,
-  configApiRef,
+  discoveryApiRef,
 } from '@backstage/core';
 import { jenkinsApiRef, JenkinsApi } from './api';
 
@@ -37,11 +37,8 @@ export const plugin = createPlugin({
   apis: [
     createApiFactory({
       api: jenkinsApiRef,
-      deps: { configApi: configApiRef },
-      factory: ({ configApi }) =>
-        new JenkinsApi(
-          `${configApi.getString('backend.baseUrl')}/proxy/jenkins/api`,
-        ),
+      deps: { discoveryApi: discoveryApiRef },
+      factory: ({ discoveryApi }) => new JenkinsApi({ discoveryApi }),
     }),
   ],
 });

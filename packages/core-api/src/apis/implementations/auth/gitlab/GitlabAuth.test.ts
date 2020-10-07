@@ -39,12 +39,12 @@ describe('GitlabAuth', () => {
     ],
     ['read_repository sudo', ['read_repository', 'sudo']],
   ])(`should normalize scopes correctly - %p`, (scope, scopes) => {
-    const googleAuth = GitlabAuth.create({
+    const gitlabAuth = GitlabAuth.create({
       oauthRequestApi: new MockOAuthApi(),
       discoveryApi: UrlPatternDiscovery.compile('http://example.com'),
     });
 
-    googleAuth.getAccessToken(scope);
+    gitlabAuth.getAccessToken(scope);
     expect(getSession).toHaveBeenCalledWith({ scopes: new Set(scopes) });
   });
 });

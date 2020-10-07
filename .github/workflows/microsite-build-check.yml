@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [12.x]
+        node-version: [12.x, 14.x]
 
     env:
       CI: true
@@ -31,6 +31,10 @@ jobs:
         # smaller, which make Windows builds a lot faster for the rest of the project.
       - name: yarn install
         run: yarn install --frozen-lockfile
+        working-directory: microsite
+
+      - name: prettier
+        run: yarn prettier:check
         working-directory: microsite
 
       - name: build microsite

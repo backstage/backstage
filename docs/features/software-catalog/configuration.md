@@ -11,36 +11,50 @@ tasks, such as reading raw entity data from a remote source, parsing it,
 transforming it, and validating it. These processors are configured under the
 `catalog.processors` key.
 
-### Processor: github
+### Processor: url
 
-The `github` processor is responsible for fetching entity data from files on
-GitHub or GitHub Enterprise. The configuration for this processor lives under
-`catalog.processors.github`. Example:
+The `url` processor is responsible for fetching entity data from files in any
+external provider like GitHub, GitLab, Bitbucket, etc. The configuration of this
+processor lives under the top-level `integrations` key, as it is used by other
+parts of Backstage too.
 
 ```yaml
-catalog:
-  processors:
-    github:
-      providers:
-        - target: https://github.com
-          token:
-            $secret:
-              env: GITHUB_PRIVATE_TOKEN
-        - target: https://ghe.example.net
-          apiBaseUrl: https://ghe.example.net/api/v3
-          rawBaseUrl: https://ghe.example.net/raw
-          token:
-            $secret:
-              env: GHE_PRIVATE_TOKEN
+integrations:
+  github:
+    - host: github.com
+      token:
+        $env: GITHUB_TOKEN
+    - host: ghe.example.net
+      apiBaseUrl: https://ghe.example.net/api/v3
+      rawBaseUrl: https://ghe.example.net/raw
+      token:
+        $env: GHE_TOKEN
+  gitlab:
+    - host: gitlab.com
+      token:
+        $env: GITLAB_TOKEN
+  bitbucket:
+    - host: bitbucket.org
+      username:
+        $env: BITBUCKET_USERNAME
+      appPassword:
+        $env: BITBUCKET_APP_PASSWORD
+  azure:
+    - host: dev.azure.com
+      token:
+        $env: AZURE_TOKEN
 ```
 
-The main subkey is `providers`, where you can list the various GitHub compatible
-providers you want to be able to fetch data from. Each entry is a structure with
-up to four elements:
+Each key under `integrations` is a separate configuration for each external
+provider. The providers each have their own configuration, so let's look at the
+GitHub section as an example.
 
-- `target` (required): The string prefix of the location target that you want to
-  match on, with no trailing slash. For GitHub, it should be exactly
-  `https://github.com`.
+Directly under the `github` key is a list of provider configurations, where you
+can list the various GitHub compatible providers you want to be able to fetch
+data from. Each entry is a structure with up to four elements:
+
+- `host` (optional): The host of the location target that you want to match on.
+  The default host is `github.com`.
 - `token` (optional): An authentication token as expected by GitHub. If
   supplied, it will be passed along with all calls to this provider, both API
   and raw. If it is not supplied, anonymous access will be used.
@@ -74,7 +88,7 @@ the catalog under the `catalog.locations` key, for example:
 ```yaml
 catalog:
   locations:
-    - type: github
+    - type: url
       target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
 ```
 
@@ -97,7 +111,7 @@ catalog:
     - allow: [Component, API, Location, Template]
 
   locations:
-    - type: github
+    - type: url
       target: https://github.com/org/example/blob/master/org-data.yaml
       rules:
         - allow: [Group]

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Entity } from '@backstage/catalog-model';
+import { ENTITY_DEFAULT_NAMESPACE, Entity } from '@backstage/catalog-model';
 import { buildEntitySearch, visitEntityPart } from './search';
 import type { DbEntitiesSearchRow } from './types';
 
@@ -95,6 +95,16 @@ describe('search', () => {
         { entity_id: 'eid', key: 'root.list.a', value: '2' },
       ]);
     });
+
+    it('emits lowercase version of keys and values', () => {
+      const input = { theRoot: { listItems: [{ a: 'One' }, { a: 2 }] } };
+      const output: DbEntitiesSearchRow[] = [];
+      visitEntityPart('eid', '', input, output);
+      expect(output).toEqual([
+        { entity_id: 'eid', key: 'theroot.listitems.a', value: 'one' },
+        { entity_id: 'eid', key: 'theroot.listitems.a', value: '2' },
+      ]);
+    });
   });
 
   describe('buildEntitySearch', () => {
@@ -108,47 +118,14 @@ describe('search', () => {
         { entity_id: 'eid', key: 'metadata.name', value: 'n' },
         { entity_id: 'eid', key: 'metadata.namespace', value: null },
         { entity_id: 'eid', key: 'metadata.uid', value: null },
-        { entity_id: 'eid', key: 'apiVersion', value: 'a' },
+        {
+          entity_id: 'eid',
+          key: 'metadata.namespace',
+          value: ENTITY_DEFAULT_NAMESPACE,
+        },
+        { entity_id: 'eid', key: 'apiversion', value: 'a' },
         { entity_id: 'eid', key: 'kind', value: 'b' },
-        { entity_id: 'eid', key: 'name', value: 'n' },
-        { entity_id: 'eid', key: 'namespace', value: null },
-        { entity_id: 'eid', key: 'uid', value: null },
       ]);
-    });
-
-    it('adds prefix-stripped versions', () => {
-      const input: Entity = {
-        apiVersion: 'a',
-        kind: 'b',
-        metadata: {
-          name: 'name',
-          labels: {
-            lbl: 'lbl',
-          },
-          annotations: {
-            ann: 'ann',
-          },
-        },
-        spec: {
-          sub: {
-            spc: 'spc',
-          },
-        },
-      };
-      expect(buildEntitySearch('eid', input)).toStrictEqual(
-        expect.arrayContaining([
-          { entity_id: 'eid', key: 'metadata.name', value: 'name' },
-          { entity_id: 'eid', key: 'name', value: 'name' },
-          { entity_id: 'eid', key: 'metadata.labels.lbl', value: 'lbl' },
-          { entity_id: 'eid', key: 'labels.lbl', value: 'lbl' },
-          { entity_id: 'eid', key: 'lbl', value: 'lbl' },
-          { entity_id: 'eid', key: 'metadata.annotations.ann', value: 'ann' },
-          { entity_id: 'eid', key: 'annotations.ann', value: 'ann' },
-          { entity_id: 'eid', key: 'ann', value: 'ann' },
-          { entity_id: 'eid', key: 'spec.sub.spc', value: 'spc' },
-          { entity_id: 'eid', key: 'sub.spc', value: 'spc' },
-        ]),
-      );
     });
   });
 });
