@@ -18,7 +18,7 @@ import React from 'react';
 import { Chip } from '@material-ui/core';
 
 export default {
-  title: 'Chip',
+  title: 'Data Display/Chip',
   component: Chip,
 };
 

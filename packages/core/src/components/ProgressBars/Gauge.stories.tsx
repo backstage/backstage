@@ -20,7 +20,7 @@ import { Gauge } from './Gauge';
 const containerStyle = { width: 300 };
 
 export default {
-  title: 'Gauge',
+  title: 'Feedback/Gauge',
   component: Gauge,
 };
 

@@ -33,7 +33,7 @@ import { Settings } from './Settings';
 import { SettingsPage } from './SettingsPage';
 
 export default {
-  title: 'Settings',
+  title: 'Plugins/user-settings/Settings',
   component: Settings,
   decorators: [
     (storyFn: () => JSX.Element) => (

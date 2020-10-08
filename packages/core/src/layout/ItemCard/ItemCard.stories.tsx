@@ -18,7 +18,7 @@ import { ItemCard } from '.';
 import { Grid } from '@material-ui/core';
 
 export default {
-  title: 'Item Card',
+  title: 'Layout/Item Card',
   component: ItemCard,
 };
 

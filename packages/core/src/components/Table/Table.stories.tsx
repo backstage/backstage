@@ -18,7 +18,7 @@ import React from 'react';
 import { Table, SubvalueCell, TableColumn } from './';
 
 export default {
-  title: 'Table',
+  title: 'Data Display/Table',
   component: Table,
 };
 
