@@ -50,7 +50,6 @@
     "@types/react": "^16.9",
     "@types/swagger-ui-react": "^3.23.3",
     "msw": "^0.21.2",
-    "node-fetch": "^2.6.1",
     "cross-fetch": "^3.0.6"
   },
   "files": [
