@@ -44,7 +44,7 @@ import MTable, {
   MTableToolbar,
   Options,
 } from 'material-table';
-import React, { forwardRef, useState } from 'react';
+import React, { forwardRef, useCallback, useEffect, useState } from 'react';
 import { Filters, SelectedFilters } from './Filters';
 
 const tableIcons = {
@@ -206,6 +206,7 @@ export function Table<T extends object = {}>({
   const [filtersOpen, toggleFilters] = useState(false);
   const [selectedFiltersLength, setSelectedFiltersLength] = useState(0);
   const [tableData, setTableData] = useState(data as any[]);
+  const [selectedFilters, setSelectedFilters] = useState<SelectedFilters>();
 
   const MTColumns = convertColumns(columns, theme);
 
@@ -215,13 +216,21 @@ export function Table<T extends object = {}>({
     },
   };
 
-  const getFieldByTitle = (titleValue: string | keyof T) =>
-    columns.find(el => el.title === titleValue)?.field;
+  const getFieldByTitle = useCallback(
+    (titleValue: string | keyof T) =>
+      columns.find(el => el.title === titleValue)?.field,
+    [columns],
+  );
 
-  const onChangeFilters = (selectedFilters: SelectedFilters) => {
+  useEffect(() => {
+    if (!selectedFilters) {
+      setTableData(data as any[]);
+      return;
+    }
+
     const selectedFiltersArray = Object.values(selectedFilters);
     if (selectedFiltersArray.flat().length) {
-      const newData = (props.data as any[]).filter(
+      const newData = (data as any[]).filter(
         el =>
           !!Object.entries(selectedFilters)
             .filter(([, value]) => !!value.length)
@@ -234,10 +243,10 @@ export function Table<T extends object = {}>({
       );
       setTableData(newData);
     } else {
-      setTableData(props.data as any[]);
+      setTableData(data as any[]);
     }
     setSelectedFiltersLength(selectedFiltersArray.flat().length);
-  };
+  }, [data, selectedFilters, getFieldByTitle]);
 
   const constructFilters = (filterConfig: TableFilter[], dataValue: any[]) => {
     const extractColumnData = (column: string | keyof T) =>
@@ -269,8 +278,8 @@ export function Table<T extends object = {}>({
     <div className={tableClasses.root}>
       {filtersOpen && filters?.length && (
         <Filters
-          filters={constructFilters(filters, props.data as any[])}
-          onChangeFilters={onChangeFilters}
+          filters={constructFilters(filters, data as any[])}
+          onChangeFilters={setSelectedFilters}
         />
       )}
       <MTable<T>
