@@ -73,10 +73,10 @@ export const RecentWorkflowRunsCard = ({
     />
   ) : (
     <InfoCard
-      className={variant === 'grid-item' ? 'height100' : ''}
       title="Recent Workflow Runs"
       subheader={branch ? `Branch: ${branch}` : 'All Branches'}
       noPadding
+      variant={variant === 'grid-item' ? 'height100' : ''}
     >
       <Table
         isLoading={loading}

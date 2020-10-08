@@ -26,8 +26,7 @@ import {
   makeStyles,
   Typography,
 } from '@material-ui/core';
-import DocsIcon from '@material-ui/icons/Description';
-import EditIcon from '@material-ui/icons/Edit';
+import DocsIcon from '@material-ui/icons/Description';import EditIcon from '@material-ui/icons/Edit';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import React from 'react';
 import { IconLinkVertical } from './IconLinkVertical';
@@ -58,6 +57,15 @@ const useStyles = makeStyles(theme => ({
   description: {
     wordBreak: 'break-word',
   },
+  gridItemCard: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: 'calc(100% - 10px)', // for pages without content header
+    marginBottom: '10px',
+  },
+  gridItemCardContent: {
+    flex: 1,
+  },
 }));
 
 const iconMap: Record<string, React.ReactNode> = {
@@ -82,14 +90,15 @@ function getCodeLinkInfo(entity: Entity): CodeLinkInfo {
 
 type AboutCardProps = {
   entity: Entity;
+  variant?: string;
 };
 
-export function AboutCard({ entity }: AboutCardProps) {
+export function AboutCard({ entity, variant }: AboutCardProps) {
   const classes = useStyles();
   const codeLink = getCodeLinkInfo(entity);
 
   return (
-    <Card>
+    <Card className={variant === 'grid-item' ? classes.gridItemCard : ''}>
       <CardHeader
         title="About"
         action={
@@ -114,7 +123,9 @@ export function AboutCard({ entity }: AboutCardProps) {
         }
       />
       <Divider />
-      <CardContent>
+      <CardContent
+        className={variant === 'grid-item' ? classes.gridItemCardContent : ''}
+      >
         <Grid container>
           <AboutField label="Description" gridSizes={{ xs: 12 }}>
             <Typography

@@ -61,12 +61,21 @@ const WidgetContent = ({
   );
 };
 
-export const LatestRunCard = ({ branch = 'master' }: { branch: string }) => {
+export const LatestRunCard = ({
+  branch = 'master',
+  variant,
+}: {
+  branch: string;
+  variant?: string;
+}) => {
   const { owner, repo } = useProjectSlugFromEntity();
   const [{ builds, loading }] = useBuilds(owner, repo, branch);
   const lastRun = builds ?? {};
   return (
-    <InfoCard title={`Last ${branch} build`}>
+    <InfoCard
+      title={`Last ${branch} build`}
+      variant={variant === 'grid-item' ? 'height100' : ''}
+    >
       <WidgetContent loading={loading} branch={branch} lastRun={lastRun} />
     </InfoCard>
   );

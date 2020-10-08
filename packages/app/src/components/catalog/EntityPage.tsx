@@ -105,11 +105,11 @@ const RecentCICDRunsSwitcher = ({ entity }: { entity: Entity }) => {
   let content: ReactNode;
   switch (true) {
     case isJenkinsAvailable(entity):
-      content = <JenkinsLatestRunCard branch="master" />;
+      content = <JenkinsLatestRunCard branch="master" variant="grid-item" />;
       break;
     case isGitHubActionsAvailable(entity):
       content = (
-        <RecentWorkflowRunsCard entity={entity} limit={3} variant="grit-item" />
+        <RecentWorkflowRunsCard entity={entity} limit={4} variant="grid-item" />
       );
       break;
     case isTravisCIAvailable(entity):
@@ -131,7 +131,7 @@ const RecentCICDRunsSwitcher = ({ entity }: { entity: Entity }) => {
 const OverviewContent = ({ entity }: { entity: Entity }) => (
   <Grid container spacing={3} alignItems="stretch">
     <Grid item md={6}>
-      <AboutCard entity={entity} />
+      <AboutCard entity={entity} variant="grid-item" />
     </Grid>
     <RecentCICDRunsSwitcher entity={entity} />
     {isGitHubAvailable(entity) && (
@@ -147,7 +147,7 @@ const OverviewContent = ({ entity }: { entity: Entity }) => (
     )}
     {isLighthouseAvailable(entity) && (
       <Grid item sm={4}>
-        <LastLighthouseAuditCard />
+        <LastLighthouseAuditCard variant="grid-item" />
       </Grid>
     )}
     {isPullRequestsAvailable(entity) && (
