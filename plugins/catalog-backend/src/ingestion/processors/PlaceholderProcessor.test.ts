@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import {
   jsonPlaceholderResolver,
   PlaceholderProcessor,
   PlaceholderResolver,
   ResolverParams,
+  ResolverRead,
   yamlPlaceholderResolver,
 } from './PlaceholderProcessor';
-import { LocationProcessorEmit, LocationProcessorRead } from './types';
 
 describe('PlaceholderProcessor', () => {
-  const emit: LocationProcessorEmit = jest.fn();
-  const read: jest.MockedFunction<LocationProcessorRead> = jest.fn();
+  const read: jest.MockedFunction<ResolverRead> = jest.fn();
+  const reader: UrlReader = { read };
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -39,10 +39,13 @@ describe('PlaceholderProcessor', () => {
       metadata: { name: 'n' },
     };
     const processor = new PlaceholderProcessor({
-      foo: async () => 'replaced',
+      resolvers: {
+        foo: async () => 'replaced',
+      },
+      reader,
     });
     await expect(
-      processor.processEntity(input, { type: 't', target: 'l' }, emit, read),
+      processor.processEntity(input, { type: 't', target: 'l' }),
     ).resolves.toBe(input);
   });
 
@@ -51,7 +54,10 @@ describe('PlaceholderProcessor', () => {
       value!.toString().toUpperCase(),
     );
     const processor = new PlaceholderProcessor({
-      upper: upperResolver,
+      resolvers: {
+        upper: upperResolver,
+      },
+      reader,
     });
 
     await expect(
@@ -63,8 +69,6 @@ describe('PlaceholderProcessor', () => {
           spec: { a: [{ b: { $upper: 'text' } }] },
         },
         { type: 'fake', target: 'http://example.com' },
-        emit,
-        read,
       ),
     ).resolves.toEqual({
       apiVersion: 'a',
@@ -73,20 +77,23 @@ describe('PlaceholderProcessor', () => {
       spec: { a: [{ b: 'TEXT' }] },
     });
 
-    expect(emit).not.toBeCalled();
     expect(read).not.toBeCalled();
-    expect(upperResolver).toBeCalledWith({
-      key: 'upper',
-      value: 'text',
-      location: { type: 'fake', target: 'http://example.com' },
-      read,
-    });
+    expect(upperResolver).toBeCalledWith(
+      expect.objectContaining({
+        key: 'upper',
+        value: 'text',
+        baseUrl: 'http://example.com',
+      }),
+    );
   });
 
   it('rejects multiple placeholders', async () => {
     const processor = new PlaceholderProcessor({
-      foo: jest.fn(),
-      bar: jest.fn(),
+      resolvers: {
+        foo: jest.fn(),
+        bar: jest.fn(),
+      },
+      reader,
     });
 
     await expect(
@@ -97,20 +104,20 @@ describe('PlaceholderProcessor', () => {
           metadata: { name: 'n', x: { $foo: 'a', $bar: 'b' } },
         },
         { type: 'a', target: 'b' },
-        emit,
-        read,
       ),
     ).rejects.toThrow(
       'Placeholders have to be on the form of a single $-prefixed key in an object',
     );
 
-    expect(emit).not.toBeCalled();
     expect(read).not.toBeCalled();
   });
 
   it('rejects unknown placeholders', async () => {
     const processor = new PlaceholderProcessor({
-      bar: jest.fn(),
+      resolvers: {
+        bar: jest.fn(),
+      },
+      reader,
     });
 
     await expect(
@@ -121,18 +128,15 @@ describe('PlaceholderProcessor', () => {
           metadata: { name: 'n', x: { $foo: 'a' } },
         },
         { type: 'a', target: 'b' },
-        emit,
-        read,
       ),
     ).rejects.toThrow('Encountered unknown placeholder $foo');
 
-    expect(emit).not.toBeCalled();
     expect(read).not.toBeCalled();
   });
 
   it('has builtin text support', async () => {
     read.mockResolvedValue(Buffer.from('TEXT', 'utf-8'));
-    const processor = PlaceholderProcessor.default();
+    const processor = PlaceholderProcessor.default({ reader });
 
     await expect(
       processor.processEntity(
@@ -146,8 +150,6 @@ describe('PlaceholderProcessor', () => {
           type: 'github',
           target: 'https://github.com/spotify/backstage/a/b/catalog-info.yaml',
         },
-        emit,
-        read,
       ),
     ).resolves.toEqual({
       apiVersion: 'a',
@@ -156,18 +158,16 @@ describe('PlaceholderProcessor', () => {
       spec: { data: 'TEXT' },
     });
 
-    expect(emit).not.toBeCalled();
-    expect(read).toBeCalledWith({
-      type: 'github',
-      target: 'https://github.com/spotify/backstage/a/file.txt',
-    });
+    expect(read).toBeCalledWith(
+      'https://github.com/spotify/backstage/a/file.txt',
+    );
   });
 
   it('has builtin json support', async () => {
     read.mockResolvedValue(
       Buffer.from(JSON.stringify({ a: ['b', 7] }), 'utf-8'),
     );
-    const processor = PlaceholderProcessor.default();
+    const processor = PlaceholderProcessor.default({ reader });
 
     await expect(
       processor.processEntity(
@@ -181,8 +181,6 @@ describe('PlaceholderProcessor', () => {
           type: 'github',
           target: 'https://github.com/spotify/backstage/a/b/catalog-info.yaml',
         },
-        emit,
-        read,
       ),
     ).resolves.toEqual({
       apiVersion: 'a',
@@ -191,16 +189,14 @@ describe('PlaceholderProcessor', () => {
       spec: { data: { a: ['b', 7] } },
     });
 
-    expect(emit).not.toBeCalled();
-    expect(read).toBeCalledWith({
-      type: 'github',
-      target: 'https://github.com/spotify/backstage/a/b/file.json',
-    });
+    expect(read).toBeCalledWith(
+      'https://github.com/spotify/backstage/a/b/file.json',
+    );
   });
 
   it('has builtin yaml support', async () => {
     read.mockResolvedValue(Buffer.from('foo:\n  - bar: 7', 'utf-8'));
-    const processor = PlaceholderProcessor.default();
+    const processor = PlaceholderProcessor.default({ reader });
 
     await expect(
       processor.processEntity(
@@ -214,8 +210,6 @@ describe('PlaceholderProcessor', () => {
           type: 'github',
           target: 'https://github.com/spotify/backstage/a/b/catalog-info.yaml',
         },
-        emit,
-        read,
       ),
     ).resolves.toEqual({
       apiVersion: 'a',
@@ -224,16 +218,14 @@ describe('PlaceholderProcessor', () => {
       spec: { data: { foo: [{ bar: 7 }] } },
     });
 
-    expect(emit).not.toBeCalled();
-    expect(read).toBeCalledWith({
-      type: 'github',
-      target: 'https://github.com/spotify/backstage/a/file.yaml',
-    });
+    expect(read).toBeCalledWith(
+      'https://github.com/spotify/backstage/a/file.yaml',
+    );
   });
 
   it('resolves absolute path for absolute location', async () => {
     read.mockResolvedValue(Buffer.from('TEXT', 'utf-8'));
-    const processor = PlaceholderProcessor.default();
+    const processor = PlaceholderProcessor.default({ reader });
 
     await expect(
       processor.processEntity(
@@ -251,8 +243,6 @@ describe('PlaceholderProcessor', () => {
           type: 'github',
           target: 'https://github.com/spotify/backstage/a/b/catalog-info.yaml',
         },
-        emit,
-        read,
       ),
     ).resolves.toEqual({
       apiVersion: 'a',
@@ -261,16 +251,14 @@ describe('PlaceholderProcessor', () => {
       spec: { data: 'TEXT' },
     });
 
-    expect(emit).not.toBeCalled();
-    expect(read).toBeCalledWith({
-      type: 'github',
-      target: 'https://github.com/spotify/backstage/catalog-info.yaml',
-    });
+    expect(read).toBeCalledWith(
+      'https://github.com/spotify/backstage/catalog-info.yaml',
+    );
   });
 
   it('resolves absolute path for relative file location', async () => {
     read.mockResolvedValue(Buffer.from('TEXT', 'utf-8'));
-    const processor = PlaceholderProcessor.default();
+    const processor = PlaceholderProcessor.default({ reader });
 
     await expect(
       processor.processEntity(
@@ -288,8 +276,6 @@ describe('PlaceholderProcessor', () => {
           type: 'github',
           target: './a/b/catalog-info.yaml',
         },
-        emit,
-        read,
       ),
     ).resolves.toEqual({
       apiVersion: 'a',
@@ -298,11 +284,9 @@ describe('PlaceholderProcessor', () => {
       spec: { data: 'TEXT' },
     });
 
-    expect(emit).not.toBeCalled();
-    expect(read).toBeCalledWith({
-      type: 'github',
-      target: 'https://github.com/spotify/backstage/catalog-info.yaml',
-    });
+    expect(read).toBeCalledWith(
+      'https://github.com/spotify/backstage/catalog-info.yaml',
+    );
   });
 
   it('not resolves relative file path for relative file location', async () => {
@@ -310,7 +294,7 @@ describe('PlaceholderProcessor', () => {
     // traversel attacks. If we want to implement this, we need to have additional
     // security measures in place!
     read.mockResolvedValue(Buffer.from('TEXT', 'utf-8'));
-    const processor = PlaceholderProcessor.default();
+    const processor = PlaceholderProcessor.default({ reader });
 
     await expect(
       processor.processEntity(
@@ -328,27 +312,21 @@ describe('PlaceholderProcessor', () => {
           type: 'github',
           target: './a/b/catalog-info.yaml',
         },
-        emit,
-        read,
       ),
     ).rejects.toThrow(
       'Placeholder $text could not form an URL out of ./a/b/catalog-info.yaml and ../c/catalog-info.yaml',
     );
 
-    expect(emit).not.toBeCalled();
     expect(read).not.toBeCalled();
   });
 });
 
 describe('yamlPlaceholderResolver', () => {
-  const read: jest.MockedFunction<LocationProcessorRead> = jest.fn();
+  const read: jest.MockedFunction<ResolverRead> = jest.fn();
   const params: ResolverParams = {
     key: 'a',
     value: './file.yaml',
-    location: {
-      type: 'github',
-      target: 'https://github.com/spotify/backstage/a/b/catalog-info.yaml',
-    },
+    baseUrl: 'https://github.com/spotify/backstage/a/b/catalog-info.yaml',
     read,
   };
 
@@ -388,14 +366,11 @@ describe('yamlPlaceholderResolver', () => {
 });
 
 describe('jsonPlaceholderResolver', () => {
-  const read: jest.MockedFunction<LocationProcessorRead> = jest.fn();
+  const read: jest.MockedFunction<ResolverRead> = jest.fn();
   const params: ResolverParams = {
     key: 'a',
     value: './file.json',
-    location: {
-      type: 'github',
-      target: 'https://github.com/spotify/backstage/a/b/catalog-info.yaml',
-    },
+    baseUrl: 'https://github.com/spotify/backstage/a/b/catalog-info.yaml',
     read,
   };
 

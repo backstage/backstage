@@ -125,7 +125,7 @@ export class LocationReaders implements LocationReader {
       LdapOrgReaderProcessor.fromConfig(config, { logger }),
       new UrlReaderProcessor(options),
       new YamlProcessor(),
-      PlaceholderProcessor.default(),
+      PlaceholderProcessor.default({ reader: options.reader }),
       new CodeOwnersProcessor(),
       new ApiDefinitionAtLocationProcessor(),
       new EntityPolicyProcessor(entityPolicy),
