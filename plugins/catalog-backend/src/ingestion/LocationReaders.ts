@@ -26,7 +26,6 @@ import { Config, ConfigReader } from '@backstage/config';
 import { Logger } from 'winston';
 import { CatalogRulesEnforcer } from './CatalogRules';
 import { AnnotateLocationEntityProcessor } from './processors/AnnotateLocationEntityProcessor';
-import { ApiDefinitionAtLocationProcessor } from './processors/ApiDefinitionAtLocationProcessor';
 import { AzureApiReaderProcessor } from './processors/AzureApiReaderProcessor';
 import { BitbucketApiReaderProcessor } from './processors/BitbucketApiReaderProcessor';
 import { CodeOwnersProcessor } from './processors/CodeOwnersProcessor';
@@ -127,7 +126,6 @@ export class LocationReaders implements LocationReader {
       new YamlProcessor(),
       PlaceholderProcessor.default({ reader: options.reader }),
       new CodeOwnersProcessor(),
-      new ApiDefinitionAtLocationProcessor(),
       new EntityPolicyProcessor(entityPolicy),
       new LocationRefProcessor(),
       new AnnotateLocationEntityProcessor(),
