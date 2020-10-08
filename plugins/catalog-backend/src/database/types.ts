@@ -19,10 +19,6 @@ import type { Entity, EntityName, Location } from '@backstage/catalog-model';
 export type DbEntitiesRow = {
   id: string;
   location_id: string | null;
-  api_version: string;
-  kind: string;
-  name: string | null;
-  namespace: string | null;
   etag: string;
   generation: number;
   full_name: string;
