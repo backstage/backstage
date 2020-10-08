@@ -197,7 +197,7 @@ export class HigherOrderOperations implements HigherOrderOperation {
     }
 
     const delta = process.hrtime(startTimestamp);
-    const durationMs = ((delta[0] * 1e9 + delta[1]) / 1e6).toFixed(1);
+    const durationMs = ((delta[0] * 1e9 + delta[1]) / 1e9).toFixed(1);
     this.logger.info(
       `Wrote ${readerOutput.entities.length} entities from location ${location.type} ${location.target} in ${durationMs} seconds`,
     );
