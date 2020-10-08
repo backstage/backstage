@@ -1,2 +1,2 @@
 import '@testing-library/jest-dom';
-global.fetch = require('node-fetch');
+import 'cross-fetch/register'
