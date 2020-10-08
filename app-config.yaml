@@ -67,21 +67,21 @@ integrations:
   github:
     - host: github.com
       token:
-        $env: GITHUB_PRIVATE_TOKEN
+        $env: GITHUB_TOKEN
     ### Example for how to add your GitHub Enterprise instance using the API:
     # - host: ghe.example.net
     #   apiBaseUrl: https://ghe.example.net/api/v3
     #   token:
-    #     $env: GHE_PRIVATE_TOKEN
+    #     $env: GHE_TOKEN
     ### Example for how to add your GitHub Enterprise instance using raw HTTP fetches (token is optional):
     # - host: ghe.example.net
     #   rawBaseUrl: https://ghe.example.net/raw
     #   token:
-    #     $env: GHE_PRIVATE_TOKEN
+    #     $env: GHE_TOKEN
   gitlab:
     - host: gitlab.com
       token:
-        $env: GITLAB_PRIVATE_TOKEN
+        $env: GITLAB_TOKEN
   bitbucket:
     - host: bitbucket.org
       username:
@@ -91,7 +91,7 @@ integrations:
   azure:
     - host: dev.azure.com
       token:
-        $env: AZURE_PRIVATE_TOKEN
+        $env: AZURE_TOKEN
 
 catalog:
   rules:
@@ -102,12 +102,12 @@ catalog:
       providers:
         - target: https://github.com
           token:
-            $env: GITHUB_PRIVATE_TOKEN
+            $env: GITHUB_TOKEN
         #### Example for how to add your GitHub Enterprise instance using the API:
         # - target: https://ghe.example.net
         #   apiBaseUrl: https://ghe.example.net/api/v3
         #   token:
-        #     $env: GHE_PRIVATE_TOKEN
+        #     $env: GHE_TOKEN
     ldapOrg:
       ### Example for how to add your enterprise LDAP server
       # providers:
@@ -146,18 +146,18 @@ catalog:
 scaffolder:
   github:
     token:
-      $env: GITHUB_ACCESS_TOKEN
+      $env: GITHUB_TOKEN
     visibility: public # or 'internal' or 'private'
   gitlab:
     api:
       baseUrl: https://gitlab.com
       token:
-        $env: GITLAB_ACCESS_TOKEN
+        $env: GITLAB_TOKEN
   azure:
     baseUrl: https://dev.azure.com/{your-organization}
     api:
       token:
-        $env: AZURE_PRIVATE_TOKEN
+        $env: AZURE_TOKEN
 
 auth:
   providers:
