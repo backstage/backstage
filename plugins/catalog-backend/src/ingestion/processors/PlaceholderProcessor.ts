@@ -14,49 +14,49 @@
  * limitations under the License.
  */
 
+import { UrlReader } from '@backstage/backend-common';
 import { Entity, LocationSpec } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/config';
 import yaml from 'yaml';
-import {
-  LocationProcessor,
-  LocationProcessorEmit,
-  LocationProcessorRead,
-} from './types';
+import { LocationProcessor } from './types';
+
+export type ResolverRead = (url: string) => Promise<Buffer>;
 
 export type ResolverParams = {
   key: string;
   value: JsonValue;
-  location: LocationSpec;
-  read: LocationProcessorRead;
+  baseUrl: string;
+  read: ResolverRead;
 };
 
 export type PlaceholderResolver = (
   params: ResolverParams,
 ) => Promise<JsonValue>;
 
+type Options = {
+  resolvers: Record<string, PlaceholderResolver>;
+  reader: UrlReader;
+};
+
 /**
  * Traverses raw entity JSON looking for occurrences of $-prefixed placeholders
  * that it then fills in with actual data.
  */
 export class PlaceholderProcessor implements LocationProcessor {
-  static default() {
+  static default({ reader }: { reader: UrlReader }) {
     return new PlaceholderProcessor({
-      json: jsonPlaceholderResolver,
-      yaml: yamlPlaceholderResolver,
-      text: textPlaceholderResolver,
+      resolvers: {
+        json: jsonPlaceholderResolver,
+        yaml: yamlPlaceholderResolver,
+        text: textPlaceholderResolver,
+      },
+      reader,
     });
   }
 
-  constructor(
-    private readonly resolvers: Record<string, PlaceholderResolver>,
-  ) {}
+  constructor(private readonly options: Options) {}
 
-  async processEntity(
-    entity: Entity,
-    location: LocationSpec,
-    _emit: LocationProcessorEmit,
-    read: LocationProcessorRead,
-  ): Promise<Entity> {
+  async processEntity(entity: Entity, location: LocationSpec): Promise<Entity> {
     const process = async (data: any): Promise<[any, boolean]> => {
       if (!data || !(data instanceof Object)) {
         // Scalars can't have placeholders
@@ -90,7 +90,7 @@ export class PlaceholderProcessor implements LocationProcessor {
       }
 
       const resolverKey = keys[0].substr(1);
-      const resolver = this.resolvers[resolverKey];
+      const resolver = this.options.resolvers[resolverKey];
       if (!resolver) {
         throw new Error(`Encountered unknown placeholder \$${resolverKey}`);
       }
@@ -99,8 +99,8 @@ export class PlaceholderProcessor implements LocationProcessor {
         await resolver({
           key: resolverKey,
           value: data[keys[0]],
-          location,
-          read,
+          baseUrl: location.target,
+          read: this.options.reader.read.bind(this.options.reader),
         }),
         true,
       ];
@@ -171,10 +171,10 @@ export async function textPlaceholderResolver(
  */
 
 async function readTextLocation(params: ResolverParams): Promise<string> {
-  const newLocation = relativeLocation(params);
+  const newUrl = relativeUrl(params);
 
   try {
-    const data = await params.read(newLocation);
+    const data = await params.read(newUrl);
     return data.toString('utf-8');
   } catch (e) {
     throw new Error(
@@ -183,11 +183,7 @@ async function readTextLocation(params: ResolverParams): Promise<string> {
   }
 }
 
-function relativeLocation({
-  key,
-  value,
-  location,
-}: ResolverParams): LocationSpec {
+function relativeUrl({ key, value, baseUrl }: ResolverParams): string {
   if (typeof value !== 'string') {
     throw new Error(
       `Placeholder \$${key} expected a string value parameter, in the form of an absolute URL or a relative path`,
@@ -197,7 +193,7 @@ function relativeLocation({
   let url: URL;
   try {
     // The two-value form of the URL constructor handles relative paths for us
-    url = new URL(value, location.target);
+    url = new URL(value, baseUrl);
   } catch {
     try {
       // Check whether value is a valid absolute URL on it's own, if not fail.
@@ -208,13 +204,10 @@ function relativeLocation({
       // path traversal attacks and access to any file on the host system. Implementing this
       // would require additional security measures.
       throw new Error(
-        `Placeholder \$${key} could not form an URL out of ${location.target} and ${value}`,
+        `Placeholder \$${key} could not form an URL out of ${baseUrl} and ${value}`,
       );
     }
   }
 
-  return {
-    type: location.type,
-    target: url.toString(),
-  };
+  return url.toString();
 }
