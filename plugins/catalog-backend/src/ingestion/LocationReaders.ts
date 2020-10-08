@@ -251,12 +251,7 @@ export class LocationReaders implements LocationReader {
     for (const processor of this.processors) {
       if (processor.processEntity) {
         try {
-          current = await processor.processEntity(
-            current,
-            item.location,
-            emit,
-            this.readLocation.bind(this),
-          );
+          current = await processor.processEntity(current, item.location, emit);
         } catch (e) {
           // Construct the name carefully, if we got validation errors we do
           // not want to crash here due to missing metadata or so
@@ -293,41 +288,5 @@ export class LocationReaders implements LocationReader {
         }
       }
     }
-  }
-
-  private async readLocation(location: LocationSpec): Promise<Buffer> {
-    let data: Buffer | undefined = undefined;
-    let error: Error | undefined = undefined;
-
-    await this.handleLocation(
-      {
-        type: 'location',
-        location,
-        optional: false,
-      },
-      output => {
-        if (output.type === 'error' && !error) {
-          error = output.error;
-        } else if (output.type === 'data') {
-          if (data) {
-            if (!error) {
-              error = new Error(
-                'More than one piece of data loaded unexpectedly',
-              );
-            }
-          } else {
-            data = output.data;
-          }
-        }
-      },
-    );
-
-    if (error) {
-      throw error;
-    } else if (!data) {
-      throw new Error('No data loaded');
-    }
-
-    return data;
   }
 }
