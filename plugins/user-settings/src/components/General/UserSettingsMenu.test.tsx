@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-export { Sidebar } from './Bar';
-export { SidebarPage, SidebarPinStateContext } from './Page';
-export type { SidebarPinStateContextType } from './Page';
-export {
-  SidebarDivider,
-  SidebarItem,
-  SidebarSearchField,
-  SidebarSpace,
-  SidebarSpacer,
-} from './Items';
-export { IntroCard, SidebarIntro } from './Intro';
-export {
-  SIDEBAR_INTRO_LOCAL_STORAGE,
-  SidebarContext,
-  sidebarConfig,
-} from './config';
-export type { SidebarContextType } from './config';
+import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
+import { fireEvent } from '@testing-library/react';
+import React from 'react';
+import { UserSettingsMenu } from './UserSettingsMenu';
+
+describe('<UserSettingsMenu />', () => {
+  it('displays a menu button with a sign-out option', async () => {
+    const rendered = await renderWithEffects(
+      wrapInTestApp(<UserSettingsMenu />),
+    );
+
+    const menuButton = rendered.getByLabelText('more');
+    fireEvent.click(menuButton);
+
+    expect(rendered.getByText('Sign Out')).toBeInTheDocument();
+  });
+});

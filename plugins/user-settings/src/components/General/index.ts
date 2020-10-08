@@ -13,14 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { List, ListSubheader } from '@material-ui/core';
-import { SidebarThemeToggle } from './ThemeToggle';
-import { SidebarPinButton } from './PinButton';
 
-export const AppSettingsList = () => (
-  <List dense subheader={<ListSubheader>App Settings</ListSubheader>}>
-    <SidebarThemeToggle />
-    <SidebarPinButton />
-  </List>
-);
+export { General } from './General';
+export { SignInAvatar } from './SignInAvatar';

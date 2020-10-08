@@ -13,8 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React, { FC, useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import {
+  ApiRef,
+  SessionApi,
+  useApi,
+  IconComponent,
+  SessionState,
+} from '@backstage/core';
 import {
   ListItem,
   ListItemIcon,
@@ -24,25 +30,20 @@ import {
 } from '@material-ui/core';
 import PowerButton from '@material-ui/icons/PowerSettingsNew';
 import { ToggleButton } from '@material-ui/lab';
-import {
-  ApiRef,
-  SessionApi,
-  useApi,
-  IconComponent,
-  SessionState,
-} from '@backstage/core-api';
 
-type OAuthProviderSidebarProps = {
+type Props = {
   title: string;
+  description: string;
   icon: IconComponent;
   apiRef: ApiRef<SessionApi>;
 };
 
-export const ProviderSettingsItem: FC<OAuthProviderSidebarProps> = ({
+export const ProviderSettingsItem = ({
   title,
+  description,
   icon: Icon,
   apiRef,
-}) => {
+}: Props) => {
   const api = useApi(apiRef);
   const [signedIn, setSignedIn] = useState(false);
 
@@ -68,22 +69,30 @@ export const ProviderSettingsItem: FC<OAuthProviderSidebarProps> = ({
       <ListItemIcon>
         <Icon />
       </ListItemIcon>
-      <ListItemText primary={title} />
-      <ListItemSecondaryAction>
-        <ToggleButton
-          size="small"
-          value={title}
-          selected={signedIn}
-          onChange={() => (signedIn ? api.signOut() : api.signIn())}
-        >
-          <Tooltip
-            placement="top"
-            arrow
-            title={signedIn ? `Sign out from ${title}` : `Sign in to ${title}`}
-          >
-            <PowerButton />
+      <ListItemText
+        primary={title}
+        secondary={
+          <Tooltip placement="top" arrow title={description}>
+            <span>{description}</span>
           </Tooltip>
-        </ToggleButton>
+        }
+        secondaryTypographyProps={{ noWrap: true, style: { width: '80%' } }}
+      />
+      <ListItemSecondaryAction>
+        <Tooltip
+          placement="top"
+          arrow
+          title={signedIn ? `Sign out from ${title}` : `Sign in to ${title}`}
+        >
+          <ToggleButton
+            size="small"
+            value={title}
+            selected={signedIn}
+            onChange={() => (signedIn ? api.signOut() : api.signIn())}
+          >
+            <PowerButton color={signedIn ? 'primary' : undefined} />
+          </ToggleButton>
+        </Tooltip>
       </ListItemSecondaryAction>
     </ListItem>
   );

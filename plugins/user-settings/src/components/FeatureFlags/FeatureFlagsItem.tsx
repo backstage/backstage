@@ -16,11 +16,6 @@
 
 import React from 'react';
 import {
-  FeatureFlagName,
-  useApi,
-  featureFlagsApiRef,
-} from '@backstage/core-api';
-import {
   ListItem,
   ListItemSecondaryAction,
   ListItemText,
@@ -28,46 +23,31 @@ import {
 } from '@material-ui/core';
 import CheckIcon from '@material-ui/icons/CheckCircle';
 import { ToggleButton } from '@material-ui/lab';
-
-export type Item = {
-  name: FeatureFlagName;
-  pluginId: string;
-};
+import { FeatureFlagsRegistryItem } from '@backstage/core';
 
 type Props = {
-  featureFlag: Item;
+  flag: FeatureFlagsRegistryItem;
+  enabled: boolean;
+  toggleHandler: Function;
 };
 
-export const FlagItem = ({ featureFlag }: Props) => {
-  const api = useApi(featureFlagsApiRef);
-
-  const [enabled, setEnabled] = React.useState(
-    Boolean(api.getFlags().get(featureFlag.name)),
-  );
-
-  const toggleFlag = () => {
-    const newState = api.getFlags().toggle(featureFlag.name);
-    setEnabled(Boolean(newState));
-  };
-
-  return (
-    <ListItem>
-      <ListItemText
-        primary={featureFlag.name}
-        secondary={`Registered in ${featureFlag.pluginId} plugin`}
-      />
-      <ListItemSecondaryAction>
+export const FlagItem = ({ flag, enabled, toggleHandler }: Props) => (
+  <ListItem>
+    <ListItemText
+      primary={flag.name}
+      secondary={`Registered in ${flag.pluginId} plugin`}
+    />
+    <ListItemSecondaryAction>
+      <Tooltip placement="top" arrow title={enabled ? 'Disable' : 'Enable'}>
         <ToggleButton
           size="small"
           value="flag"
           selected={enabled}
-          onChange={toggleFlag}
+          onChange={() => toggleHandler(flag.name)}
         >
-          <Tooltip placement="top" arrow title={enabled ? 'Disable' : 'Enable'}>
-            <CheckIcon />
-          </Tooltip>
+          <CheckIcon color={enabled ? 'primary' : undefined} />
         </ToggleButton>
-      </ListItemSecondaryAction>
-    </ListItem>
-  );
-};
+      </Tooltip>
+    </ListItemSecondaryAction>
+  </ListItem>
+);

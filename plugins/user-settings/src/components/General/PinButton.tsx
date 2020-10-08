@@ -24,21 +24,16 @@ import {
 import LockIcon from '@material-ui/icons/Lock';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import { ToggleButton } from '@material-ui/lab';
-import { SidebarPinStateContext } from '../Page';
+import { SidebarPinStateContext } from '@backstage/core';
 
-export const SidebarPinButton = () => {
+type PinIconProps = { isPinned: boolean };
+
+const PinIcon = ({ isPinned }: PinIconProps) =>
+  isPinned ? <LockIcon color="primary" /> : <LockOpenIcon />;
+
+export const PinButton = () => {
   const { isPinned, toggleSidebarPinState } = useContext(
     SidebarPinStateContext,
-  );
-
-  const PinIcon = () => (
-    <Tooltip
-      placement="top"
-      arrow
-      title={`${isPinned ? 'Unpin' : 'Pin'} Sidebar`}
-    >
-      {isPinned ? <LockIcon /> : <LockOpenIcon />}
-    </Tooltip>
   );
 
   return (
@@ -48,16 +43,22 @@ export const SidebarPinButton = () => {
         secondary="Prevent the sidebar from collapsing"
       />
       <ListItemSecondaryAction>
-        <ToggleButton
-          size="small"
-          value="pin"
-          selected={isPinned}
-          onChange={() => {
-            toggleSidebarPinState();
-          }}
+        <Tooltip
+          placement="top"
+          arrow
+          title={`${isPinned ? 'Unpin' : 'Pin'} Sidebar`}
         >
-          <PinIcon />
-        </ToggleButton>
+          <ToggleButton
+            size="small"
+            value="pin"
+            selected={isPinned}
+            onChange={() => {
+              toggleSidebarPinState();
+            }}
+          >
+            <PinIcon isPinned={isPinned} />
+          </ToggleButton>
+        </Tooltip>
       </ListItemSecondaryAction>
     </ListItem>
   );

@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-export { Sidebar } from './Bar';
-export { SidebarPage, SidebarPinStateContext } from './Page';
-export type { SidebarPinStateContextType } from './Page';
-export {
-  SidebarDivider,
-  SidebarItem,
-  SidebarSearchField,
-  SidebarSpace,
-  SidebarSpacer,
-} from './Items';
-export { IntroCard, SidebarIntro } from './Intro';
-export {
-  SIDEBAR_INTRO_LOCAL_STORAGE,
-  SidebarContext,
-  sidebarConfig,
-} from './config';
-export type { SidebarContextType } from './config';
+import React from 'react';
+import { SidebarItem } from '@backstage/core';
+import { SignInAvatar } from './General';
+import { useUserProfile } from './useUserProfileInfo';
+import { settingsRouteRef } from '../plugin';
+
+export const Settings = () => {
+  const { displayName } = useUserProfile();
+  const SidebarAvatar = () => <SignInAvatar />;
+
+  return (
+    <SidebarItem
+      text={displayName}
+      to={settingsRouteRef.path}
+      icon={SidebarAvatar}
+    />
+  );
+};

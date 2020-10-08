@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { cloneElement } from 'react';
 import { useObservable } from 'react-use';
-import LightIcon from '@material-ui/icons/WbSunny';
-import DarkIcon from '@material-ui/icons/Brightness2';
 import AutoIcon from '@material-ui/icons/BrightnessAuto';
-import { appThemeApiRef, useApi } from '@backstage/core-api';
+import { appThemeApiRef, useApi } from '@backstage/core';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import {
@@ -29,7 +27,43 @@ import {
   Tooltip,
 } from '@material-ui/core';
 
-export const SidebarThemeToggle = () => {
+type ThemeIconProps = {
+  id: string;
+  activeId: string | undefined;
+  icon: JSX.Element | undefined;
+};
+
+const ThemeIcon = ({ id, activeId, icon }: ThemeIconProps) =>
+  icon ? (
+    cloneElement(icon, {
+      color: activeId === id ? 'primary' : undefined,
+    })
+  ) : (
+    <AutoIcon color={activeId === id ? 'primary' : undefined} />
+  );
+
+type TooltipToggleButtonProps = {
+  children: JSX.Element;
+  title: string;
+  value: string;
+};
+
+// ToggleButtonGroup uses React.children.map instead of context
+// so wrapping with Tooltip breaks ToggleButton functionality.
+const TooltipToggleButton = ({
+  children,
+  title,
+  value,
+  ...props
+}: TooltipToggleButtonProps) => (
+  <Tooltip placement="top" arrow title={title}>
+    <ToggleButton value={value} {...props}>
+      {children}
+    </ToggleButton>
+  </Tooltip>
+);
+
+export const ThemeToggle = () => {
   const appThemeApi = useApi(appThemeApiRef);
   const themeId = useObservable(
     appThemeApi.activeThemeId$(),
@@ -37,11 +71,6 @@ export const SidebarThemeToggle = () => {
   );
 
   const themeIds = appThemeApi.getInstalledThemes();
-  // TODO(marcuseide): can these be put on the theme itself?
-  const themeIcons = {
-    dark: <DarkIcon />,
-    light: <LightIcon />,
-  };
 
   const handleSetTheme = (
     _event: React.MouseEvent<HTMLElement>,
@@ -64,22 +93,24 @@ export const SidebarThemeToggle = () => {
           value={themeId ?? 'auto'}
           onChange={handleSetTheme}
         >
-          {themeIds.map(theme => (
-            <ToggleButton key={theme.id} value={theme.variant}>
-              <Tooltip
-                placement="top"
-                arrow
-                title={`Select ${theme.variant} theme`}
+          {themeIds.map(theme => {
+            const themeIcon = themeIds.find(t => t.id === theme.id)?.icon;
+
+            return (
+              <TooltipToggleButton
+                key={theme.id}
+                title={`Select ${theme.title}`}
+                value={theme.variant}
               >
-                {themeIcons[theme.variant]}
-              </Tooltip>
+                <ThemeIcon id={theme.id} icon={themeIcon} activeId={themeId} />
+              </TooltipToggleButton>
+            );
+          })}
+          <Tooltip placement="top" arrow title="Select auto theme">
+            <ToggleButton value="auto">
+              <AutoIcon color={themeId === undefined ? 'primary' : undefined} />
             </ToggleButton>
-          ))}
-          <ToggleButton value="auto">
-            <Tooltip placement="top" arrow title="Select auto theme">
-              <AutoIcon />
-            </Tooltip>
-          </ToggleButton>
+          </Tooltip>
         </ToggleButtonGroup>
       </ListItemSecondaryAction>
     </ListItem>

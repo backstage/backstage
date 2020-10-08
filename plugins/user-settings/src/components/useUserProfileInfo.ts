@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-export { Sidebar } from './Bar';
-export { SidebarPage, SidebarPinStateContext } from './Page';
-export type { SidebarPinStateContextType } from './Page';
-export {
-  SidebarDivider,
-  SidebarItem,
-  SidebarSearchField,
-  SidebarSpace,
-  SidebarSpacer,
-} from './Items';
-export { IntroCard, SidebarIntro } from './Intro';
-export {
-  SIDEBAR_INTRO_LOCAL_STORAGE,
-  SidebarContext,
-  sidebarConfig,
-} from './config';
-export type { SidebarContextType } from './config';
+import { useApi, identityApiRef } from '@backstage/core';
+
+export const useUserProfile = () => {
+  const identityApi = useApi(identityApiRef);
+  const userId = identityApi.getUserId();
+  const profile = identityApi.getProfile();
+  const displayName = profile.displayName ?? userId;
+
+  return { profile, displayName };
+};

@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { identityApiRef, useApi } from '@backstage/core-api';
+import { identityApiRef, useApi } from '@backstage/core';
 import { IconButton, ListItemIcon, Menu, MenuItem } from '@material-ui/core';
 import SignOutIcon from '@material-ui/icons/MeetingRoom';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -39,7 +39,7 @@ export const UserSettingsMenu = () => {
 
   return (
     <>
-      <IconButton onClick={handleOpen}>
+      <IconButton aria-label="more" onClick={handleOpen}>
         <MoreVertIcon />
       </IconButton>
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>

@@ -30,12 +30,12 @@ import {
   SignInPageProps,
 } from './types';
 import { BackstagePlugin } from '../plugin';
-import { FeatureFlagsRegistryItem } from './FeatureFlags';
 import {
   featureFlagsApiRef,
   AppThemeApi,
   ConfigApi,
   identityApiRef,
+  FeatureFlagsRegistryItem,
 } from '../apis/definitions';
 import { AppThemeProvider } from './AppThemeProvider';
 

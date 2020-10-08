@@ -13,14 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createDevApp } from '@backstage/dev-utils';
+import { plugin } from '../src/plugin';
 
-import { useApi, identityApiRef } from '@backstage/core-api';
-
-export const useUserProfile = () => {
-  const identityApi = useApi(identityApiRef);
-  const userId = identityApi.getUserId();
-  const profile = identityApi.getProfile();
-  const displayName = profile.displayName ?? userId;
-
-  return { profile, displayName };
-};
+createDevApp().registerPlugin(plugin).render();

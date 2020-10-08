@@ -13,20 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React from 'react';
-import List from '@material-ui/core/List';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import { FlagItem, Item } from './FeatureFlagsItem';
-
-type Props = {
-  featureFlags: Item[];
-};
-
-export const FeatureFlagsList = ({ featureFlags }: Props) => (
-  <List dense subheader={<ListSubheader>Feature Flags</ListSubheader>}>
-    {featureFlags.map(featureFlag => (
-      <FlagItem key={featureFlag.name} featureFlag={featureFlag} />
-    ))}
-  </List>
-);
+export { plugin } from './plugin';
+export { Settings } from './components/Settings';
+export { SettingsPage as Router } from './components/SettingsPage';

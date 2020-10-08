@@ -22,14 +22,10 @@ import {
   SidebarDivider,
   SidebarSearchField,
   SidebarSpace,
-  SidebarUserSettings,
-  ProviderSettingsItem,
 } from '.';
 import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import Star from '@material-ui/icons/Star';
 import { MemoryRouter } from 'react-router-dom';
-import { githubAuthApiRef } from '@backstage/core-api';
 
 export default {
   title: 'Sidebar',
@@ -48,7 +44,6 @@ const handleSearch = (input: string) => {
 
 export const SampleSidebar = () => (
   <Sidebar>
-    {/* <SidebarLogo /> */}
     <SidebarSearchField onSearch={handleSearch} />
     <SidebarDivider />
     <SidebarItem icon={HomeOutlinedIcon} to="#" text="Home" />
@@ -57,15 +52,5 @@ export const SampleSidebar = () => (
     <SidebarDivider />
     <SidebarIntro />
     <SidebarSpace />
-    <SidebarDivider />
-    <SidebarUserSettings
-      providerSettings={
-        <ProviderSettingsItem
-          title="Github"
-          apiRef={githubAuthApiRef}
-          icon={Star}
-        />
-      }
-    />
   </Sidebar>
 );
