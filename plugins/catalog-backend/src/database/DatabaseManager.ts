@@ -19,6 +19,7 @@ import Knex from 'knex';
 import { Logger } from 'winston';
 import { CommonDatabase } from './CommonDatabase';
 import { Database } from './types';
+import { v4 as uuidv4 } from 'uuid';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-catalog-backend',
@@ -60,17 +61,40 @@ export class DatabaseManager {
   }
 
   public static async createTestDatabase(): Promise<Database> {
-    const knex = Knex({
+    const config: Knex.Config<any> = {
+      /*
+      client: 'pg',
+      connection: {
+        host: 'localhost',
+        user: 'postgres',
+        password: 'postgres',
+      },
+      */
       client: 'sqlite3',
       connection: ':memory:',
       useNullAsDefault: true,
-    });
+    };
+
+    let knex = Knex(config);
+    if (typeof config.connection !== 'string') {
+      const tempDbName = `d${uuidv4().replace(/-/g, '')}`;
+      await knex.raw(`CREATE DATABASE ${tempDbName};`);
+      knex = Knex({
+        ...config,
+        connection: {
+          ...config.connection,
+          database: tempDbName,
+        },
+      });
+    }
+
     knex.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
       resource.run('PRAGMA foreign_keys = ON', () => {});
     });
     await knex.migrate.latest({
       directory: migrationsDir,
     });
+
     const { logger } = defaultOptions;
     return new CommonDatabase(knex, logger);
   }
