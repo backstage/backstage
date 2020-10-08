@@ -125,7 +125,7 @@ export class LocationReaders implements LocationReader {
       new UrlReaderProcessor(options),
       new YamlProcessor(),
       PlaceholderProcessor.default({ reader: options.reader }),
-      new CodeOwnersProcessor(),
+      new CodeOwnersProcessor({ reader: options.reader }),
       new EntityPolicyProcessor(entityPolicy),
       new LocationRefProcessor(),
       new AnnotateLocationEntityProcessor(),
