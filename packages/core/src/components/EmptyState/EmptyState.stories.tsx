@@ -20,7 +20,7 @@ import { Button } from '@material-ui/core';
 import { MissingAnnotationEmptyState } from './MissingAnnotationEmptyState';
 
 export default {
-  title: 'EmptyState',
+  title: 'Feedback/EmptyState',
   component: EmptyState,
 };
 

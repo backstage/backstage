@@ -28,7 +28,7 @@ import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { MemoryRouter } from 'react-router-dom';
 
 export default {
-  title: 'Sidebar',
+  title: 'Layout/Sidebar',
   component: Sidebar,
   decorators: [
     (storyFn: () => JSX.Element) => (

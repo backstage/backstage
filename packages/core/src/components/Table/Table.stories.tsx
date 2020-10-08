@@ -19,7 +19,7 @@ import { Table, SubvalueCell, TableColumn } from './';
 import { TableFilter } from './Table';
 
 export default {
-  title: 'Table',
+  title: 'Data Display/Table',
   component: Table,
 };
 
