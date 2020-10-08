@@ -21,18 +21,22 @@ import {
   loadBackendConfig,
   SingleHostDiscovery,
 } from '@backstage/backend-common';
-import createProxyMiddleware, {
-  Config as ProxyMiddlewareConfig,
-  Proxy,
+import {
+  createProxyMiddleware,
+  Options as ProxyMiddlewareOptions,
+  RequestHandler,
 } from 'http-proxy-middleware';
+import * as express from 'express';
 import * as http from 'http';
 
 jest.mock('http-proxy-middleware', () => {
-  return jest.fn().mockImplementation(
-    (): Proxy => {
-      return () => undefined;
-    },
-  );
+  return {
+    createProxyMiddleware: jest.fn().mockImplementation(
+      (): RequestHandler => {
+        return () => undefined;
+      },
+    ),
+  };
 });
 
 const mockCreateProxyMiddleware = createProxyMiddleware as jest.MockedFunction<
@@ -66,8 +70,8 @@ describe('buildMiddleware', () => {
     expect(createProxyMiddleware).toHaveBeenCalledTimes(1);
 
     const [filter, fullConfig] = mockCreateProxyMiddleware.mock.calls[0] as [
-      (pathname: string, req: Partial<http.IncomingMessage>) => boolean,
-      ProxyMiddlewareConfig,
+      (pathname: string, req: Partial<express.Request>) => boolean,
+      ProxyMiddlewareOptions,
     ];
     expect(filter('', { method: 'GET' })).toBe(true);
     expect(filter('', { method: 'POST' })).toBe(true);
@@ -89,8 +93,8 @@ describe('buildMiddleware', () => {
     expect(createProxyMiddleware).toHaveBeenCalledTimes(1);
 
     const [filter, fullConfig] = mockCreateProxyMiddleware.mock.calls[0] as [
-      (pathname: string, req: Partial<http.IncomingMessage>) => boolean,
-      ProxyMiddlewareConfig,
+      (pathname: string, req: Partial<express.Request>) => boolean,
+      ProxyMiddlewareOptions,
     ];
     expect(filter('', { method: 'GET' })).toBe(true);
     expect(filter('', { method: 'POST' })).toBe(false);
@@ -111,7 +115,7 @@ describe('buildMiddleware', () => {
     expect(createProxyMiddleware).toHaveBeenCalledTimes(1);
 
     const config = mockCreateProxyMiddleware.mock
-      .calls[0][1] as ProxyMiddlewareConfig;
+      .calls[0][1] as ProxyMiddlewareOptions;
 
     const testClientRequest = {
       getHeaderNames: () => [
@@ -136,8 +140,8 @@ describe('buildMiddleware', () => {
 
     config.onProxyReq!(
       testClientRequest as http.ClientRequest,
-      {} as http.IncomingMessage,
-      {} as http.ServerResponse,
+      {} as express.Request,
+      {} as express.Response,
     );
 
     expect(testClientRequest.removeHeader).toHaveBeenCalledTimes(1);
@@ -155,7 +159,7 @@ describe('buildMiddleware', () => {
     expect(createProxyMiddleware).toHaveBeenCalledTimes(1);
 
     const config = mockCreateProxyMiddleware.mock
-      .calls[0][1] as ProxyMiddlewareConfig;
+      .calls[0][1] as ProxyMiddlewareOptions;
 
     const testClientRequest = {
       getHeaderNames: () => ['authorization', 'Cookie'],
@@ -164,8 +168,8 @@ describe('buildMiddleware', () => {
 
     config.onProxyReq!(
       testClientRequest as http.ClientRequest,
-      {} as http.IncomingMessage,
-      {} as http.ServerResponse,
+      {} as express.Request,
+      {} as express.Response,
     );
 
     expect(testClientRequest.removeHeader).toHaveBeenCalledTimes(1);
@@ -181,7 +185,7 @@ describe('buildMiddleware', () => {
     expect(createProxyMiddleware).toHaveBeenCalledTimes(1);
 
     const config = mockCreateProxyMiddleware.mock
-      .calls[0][1] as ProxyMiddlewareConfig;
+      .calls[0][1] as ProxyMiddlewareOptions;
 
     const testClientRequest = {
       getHeaderNames: () => ['authorization', 'Cookie', 'X-Auth-Request-User'],
@@ -190,8 +194,8 @@ describe('buildMiddleware', () => {
 
     config.onProxyReq!(
       testClientRequest as http.ClientRequest,
-      {} as http.IncomingMessage,
-      {} as http.ServerResponse,
+      {} as express.Request,
+      {} as express.Response,
     );
 
     expect(testClientRequest.removeHeader).toHaveBeenCalledTimes(1);

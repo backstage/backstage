@@ -17,9 +17,10 @@
 import { Config } from '@backstage/config';
 import express from 'express';
 import Router from 'express-promise-router';
-import createProxyMiddleware, {
-  Config as ProxyMiddlewareConfig,
-  Proxy,
+import {
+  createProxyMiddleware,
+  Options as ProxyMiddlewareOptions,
+  RequestHandler,
 } from 'http-proxy-middleware';
 import { Logger } from 'winston';
 import http from 'http';
@@ -52,7 +53,7 @@ export interface RouterOptions {
   discovery: PluginEndpointDiscovery;
 }
 
-export interface ProxyConfig extends ProxyMiddlewareConfig {
+export interface ProxyConfig extends ProxyMiddlewareOptions {
   allowedMethods?: string[];
   allowedHeaders?: string[];
 }
@@ -64,7 +65,7 @@ export function buildMiddleware(
   logger: Logger,
   route: string,
   config: string | ProxyConfig,
-): Proxy {
+): RequestHandler {
   const fullConfig =
     typeof config === 'string' ? { target: config } : { ...config };
 
