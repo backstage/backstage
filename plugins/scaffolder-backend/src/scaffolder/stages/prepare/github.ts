@@ -24,9 +24,9 @@ import GitUriParser from 'git-url-parse';
 import { Clone, Cred } from 'nodegit';
 
 export class GithubPreparer implements PreparerBase {
-  token: string;
+  token?: string;
 
-  constructor(params: { token: string }) {
+  constructor(params: { token?: string } = {}) {
     this.token = params.token;
   }
 
@@ -52,15 +52,19 @@ export class GithubPreparer implements PreparerBase {
       template.spec.path ?? '.',
     );
 
-    await Clone.clone(repositoryCheckoutUrl, tempDir, {
-      fetchOpts: {
-        callbacks: {
-          credentials() {
-            return Cred.userpassPlaintextNew(token, 'x-oauth-basic');
+    const cloneOptions = token
+      ? {
+          fetchOpts: {
+            callbacks: {
+              credentials() {
+                return Cred.userpassPlaintextNew(token, 'x-oauth-basic');
+              },
+            },
           },
-        },
-      },
-    });
+        }
+      : {};
+
+    await Clone.clone(repositoryCheckoutUrl, tempDir, cloneOptions);
 
     return path.resolve(tempDir, templateDirectory);
   }
