@@ -16,6 +16,7 @@
 
 import React from 'react';
 import { Table, SubvalueCell, TableColumn } from './';
+import { TableFilter } from './Table';
 
 export default {
   title: 'Table',
@@ -216,6 +217,56 @@ export const DenseTable = () => {
         data={testData10}
         columns={columns}
         title="Backstage Table"
+      />
+    </div>
+  );
+};
+
+export const FilterTable = () => {
+  const columns: TableColumn[] = [
+    {
+      title: 'Column 1',
+      field: 'col1',
+      highlight: true,
+    },
+    {
+      title: 'Column 2',
+      field: 'col2',
+    },
+    {
+      title: 'Numeric value',
+      field: 'number',
+      type: 'numeric',
+    },
+    {
+      title: 'A Date',
+      field: 'date',
+      type: 'date',
+    },
+  ];
+
+  const filters: TableFilter[] = [
+    {
+      column: 'Column 1',
+      type: 'select',
+    },
+    {
+      column: 'Column 2',
+      type: 'multiple-select',
+    },
+    {
+      column: 'Numeric value',
+      type: 'checkbox-tree',
+    },
+  ];
+
+  return (
+    <div style={containerStyle}>
+      <Table
+        options={{ paging: false, padding: 'dense' }}
+        data={testData10}
+        columns={columns}
+        filters={filters}
       />
     </div>
   );

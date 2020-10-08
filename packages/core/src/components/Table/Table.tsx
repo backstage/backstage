@@ -15,7 +15,12 @@
  */
 
 import { BackstageTheme } from '@backstage/theme';
-import { makeStyles, Typography, useTheme } from '@material-ui/core';
+import {
+  makeStyles,
+  Typography,
+  useTheme,
+  IconButton,
+} from '@material-ui/core';
 // Material-table is not using the standard icons available in in material-ui. https://github.com/mbrn/material-table/issues/51
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowUpward from '@material-ui/icons/ArrowUpward';
@@ -39,7 +44,8 @@ import MTable, {
   MTableToolbar,
   Options,
 } from 'material-table';
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useState } from 'react';
+import { Filters, SelectedFilters } from './Filters';
 
 const tableIcons = {
   Add: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
@@ -121,6 +127,26 @@ const useToolbarStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
+const useFilterStyles = makeStyles<BackstageTheme>(() => ({
+  root: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  title: {
+    fontWeight: 'bold',
+    fontSize: 18,
+    whiteSpace: 'nowrap',
+  },
+}));
+
+const useTableStyles = makeStyles<BackstageTheme>(() => ({
+  root: {
+    display: 'flex',
+    alignItems: 'start',
+  },
+}));
+
 function convertColumns<T extends object>(
   columns: TableColumn<T>[],
   theme: BackstageTheme,
@@ -148,10 +174,16 @@ export interface TableColumn<T extends object = {}> extends Column<T> {
   width?: string;
 }
 
+export type TableFilter = {
+  column: string;
+  type: 'select' | 'multiple-select' | 'checkbox-tree';
+};
+
 export interface TableProps<T extends object = {}>
   extends MaterialTableProps<T> {
   columns: TableColumn<T>[];
   subtitle?: string;
+  filters?: TableFilter[];
 }
 
 export function Table<T extends object = {}>({
@@ -159,11 +191,21 @@ export function Table<T extends object = {}>({
   options,
   title,
   subtitle,
+  filters,
   ...props
 }: TableProps<T>) {
   const headerClasses = useHeaderStyles();
   const toolbarClasses = useToolbarStyles();
+  const tableClasses = useTableStyles();
+  const filtersClasses = useFilterStyles();
+
+  const { data, ...propsWithoutData } = props;
+
   const theme = useTheme<BackstageTheme>();
+
+  const [filtersOpen, toggleFilters] = useState(false);
+  const [selectedFiltersLength, setSelectedFiltersLength] = useState(0);
+  const [tableData, setTableData] = useState(data as any[]);
 
   const MTColumns = convertColumns(columns, theme);
 
@@ -173,30 +215,106 @@ export function Table<T extends object = {}>({
     },
   };
 
+  const getFieldByTitle = (titleValue: string | keyof T) =>
+    columns.find(el => el.title === titleValue)?.field;
+
+  const onChangeFilters = (selectedFilters: SelectedFilters) => {
+    const selectedFiltersArray = Object.values(selectedFilters);
+    if (selectedFiltersArray.flat().length) {
+      const newData = (props.data as any[]).filter(
+        el =>
+          !!Object.entries(selectedFilters)
+            .filter(([, value]) => !!value.length)
+            .every(([key, value]) => {
+              if (Array.isArray(value)) {
+                return value.includes(el[getFieldByTitle(key)]);
+              }
+              return el[getFieldByTitle(key)] === value;
+            }),
+      );
+      setTableData(newData);
+    } else {
+      setTableData(props.data as any[]);
+    }
+    setSelectedFiltersLength(selectedFiltersArray.flat().length);
+  };
+
+  const constructFilters = (filterConfig: TableFilter[], dataValue: any[]) => {
+    const extractColumnData = (column: string | keyof T) =>
+      dataValue.map(el => ({ label: el[column], options: [] }));
+
+    return filterConfig.map(filter => ({
+      type: filter.type,
+      element:
+        filter.type === 'checkbox-tree'
+          ? {
+              label: filter.column,
+              subCategories: extractColumnData(
+                getFieldByTitle(filter.column) || '',
+              ),
+            }
+          : {
+              placeholder: 'All results',
+              label: filter.column,
+              multiple: filter.type === 'multiple-select',
+              items: dataValue.map(el => ({
+                label: el[getFieldByTitle(filter.column) || ''],
+                value: el[getFieldByTitle(filter.column) || ''],
+              })),
+            },
+    }));
+  };
+
   return (
-    <MTable<T>
-      components={{
-        Header: headerProps => (
-          <MTableHeader classes={headerClasses} {...headerProps} />
-        ),
-        Toolbar: toolbarProps => (
-          <MTableToolbar classes={toolbarClasses} {...toolbarProps} />
-        ),
-      }}
-      options={{ ...defaultOptions, ...options }}
-      columns={MTColumns}
-      icons={tableIcons}
-      title={
-        <>
-          <Typography variant="h5">{title}</Typography>
-          {subtitle && (
-            <Typography color="textSecondary" variant="body1">
-              {subtitle}
-            </Typography>
-          )}
-        </>
-      }
-      {...props}
-    />
+    <div className={tableClasses.root}>
+      {filtersOpen && filters?.length && (
+        <Filters
+          filters={constructFilters(filters, props.data as any[])}
+          onChangeFilters={onChangeFilters}
+        />
+      )}
+      <MTable<T>
+        components={{
+          Header: headerProps => (
+            <MTableHeader classes={headerClasses} {...headerProps} />
+          ),
+          Toolbar: toolbarProps =>
+            filters?.length ? (
+              <div className={filtersClasses.root}>
+                <div className={filtersClasses.root}>
+                  <IconButton
+                    onClick={() => toggleFilters(el => !el)}
+                    aria-label="filter list"
+                  >
+                    <FilterList />
+                  </IconButton>
+                  <Typography className={filtersClasses.title}>
+                    Filters ({selectedFiltersLength})
+                  </Typography>
+                </div>
+                <MTableToolbar classes={toolbarClasses} {...toolbarProps} />
+              </div>
+            ) : (
+              <MTableToolbar classes={toolbarClasses} {...toolbarProps} />
+            ),
+        }}
+        options={{ ...defaultOptions, ...options }}
+        columns={MTColumns}
+        icons={tableIcons}
+        title={
+          <>
+            <Typography variant="h5">{title}</Typography>
+            {subtitle && (
+              <Typography color="textSecondary" variant="body1">
+                {subtitle}
+              </Typography>
+            )}
+          </>
+        }
+        data={tableData}
+        style={{ width: '100%' }}
+        {...propsWithoutData}
+      />
+    </div>
   );
 }
