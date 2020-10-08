@@ -93,7 +93,6 @@ export const TemplatePage = () => {
     setFormState({ ...formState, ...e.formData });
 
   const [jobId, setJobId] = useState<string | null>(null);
-  const handleClose = () => setJobId(null);
 
   const handleCreate = async () => {
     try {
@@ -161,7 +160,6 @@ export const TemplatePage = () => {
           <JobStatusModal
             onComplete={handleCreateComplete}
             jobId={jobId}
-            onClose={handleClose}
             entity={entity}
           />
         )}
