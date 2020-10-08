@@ -27,6 +27,7 @@
     "@types/express": "^4.17.6",
     "codeowners-utils": "^1.0.2",
     "core-js": "^3.6.5",
+    "cross-fetch": "^3.0.6",
     "express": "^4.17.1",
     "express-promise-router": "^3.0.3",
     "fs-extra": "^9.0.0",
@@ -34,7 +35,6 @@
     "knex": "^0.21.1",
     "ldapjs": "^2.2.0",
     "lodash": "^4.17.15",
-    "cross-fetch": "^3.0.6",
     "morgan": "^1.10.0",
     "sqlite3": "^5.0.0",
     "uuid": "^8.0.0",
@@ -45,6 +45,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.24",
+    "@backstage/test-utils": "^0.1.1-alpha.24",
     "@types/core-js": "^2.5.4",
     "@types/git-url-parse": "^9.0.0",
     "@types/ldapjs": "^1.0.9",
@@ -52,9 +53,8 @@
     "@types/supertest": "^2.0.8",
     "@types/uuid": "^8.0.0",
     "@types/yup": "^0.28.2",
-    "@backstage/test-utils": "^0.1.1-alpha.24",
-    "supertest": "^4.0.2",
-    "msw": "^0.21.2"
+    "msw": "^0.21.2",
+    "supertest": "^4.0.2"
   },
   "files": [
     "dist",

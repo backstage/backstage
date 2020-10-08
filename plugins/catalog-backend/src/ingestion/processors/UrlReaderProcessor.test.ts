@@ -22,6 +22,7 @@ import {
 } from './types';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
+import { msw } from '@backstage/test-utils';
 import { getVoidLogger, UrlReaders } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 
@@ -29,10 +30,7 @@ describe('UrlReaderProcessor', () => {
   const mockApiOrigin = 'http://localhost:23000';
   const server = setupServer();
 
-  beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
-  afterEach(() => server.resetHandlers());
-  afterAll(() => server.close());
-
+  msw.setupDefaultHandlers(server);
   it('should load from url', async () => {
     const logger = getVoidLogger();
     const reader = UrlReaders.default({ logger, config: new ConfigReader({}) });
