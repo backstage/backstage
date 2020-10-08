@@ -48,7 +48,7 @@ export const rootRouteRef = createRouteRef({
 });
 
 export const rootDocsRouteRef = createRouteRef({
-  path: ':entityId/*',
+  path: ':namespace/:kind/:name/*',
   title: 'Docs',
 });
 
