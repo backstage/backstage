@@ -46,9 +46,7 @@
     "@types/jest": "^26.0.7",
     "@types/node": "^12.0.0",
     "@types/react-lazylog": "^4.5.0",
-    "jest-fetch-mock": "^3.0.3",
     "msw": "^0.21.2",
-    "node-fetch": "^2.6.1",
     "cross-fetch": "^3.0.6"
   },
   "files": [
