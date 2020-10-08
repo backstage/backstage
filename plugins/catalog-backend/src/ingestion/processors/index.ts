@@ -20,7 +20,6 @@ export { results };
 export * from './types';
 
 export { AnnotateLocationEntityProcessor } from './AnnotateLocationEntityProcessor';
-export { ApiDefinitionAtLocationProcessor } from './ApiDefinitionAtLocationProcessor';
 export { AzureApiReaderProcessor } from './AzureApiReaderProcessor';
 export { BitbucketApiReaderProcessor } from './BitbucketApiReaderProcessor';
 export { CodeOwnersProcessor } from './CodeOwnersProcessor';
