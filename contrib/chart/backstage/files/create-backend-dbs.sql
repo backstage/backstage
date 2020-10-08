@@ -2,7 +2,6 @@
 {{ $lighthouseDb := .Values.lighthouse.database.connection.database }}
 {{ $user := .Values.global.postgresql.postgresqlUsername }}
 
-create database {{ $backendDb }};
 grant all privileges on database {{ $backendDb }} to {{ $user }};
 
 create database backstage_plugin_auth;
