@@ -232,13 +232,13 @@ instance:
 scaffolder:
   github:
     token:
-      $env: GITHUB_ACCESS_TOKEN
+      $env: GITHUB_TOKEN
     visibility: public # or 'internal' or 'private'
   gitlab:
     api:
       baseUrl: https://gitlab.com
       token:
-        $env: SCAFFOLDER_GITLAB_PRIVATE_TOKEN
+        $env: GITLAB_TOKEN
 ```
 
 #### Azure DevOps
@@ -255,7 +255,7 @@ scaffolder:
     baseUrl: https://dev.azure.com/{your-organization}
     api:
       token:
-        $env: AZURE_PRIVATE_TOKEN
+        $env: AZURE_TOKEN
 ```
 
 ### Running the Backend
@@ -265,7 +265,7 @@ backend with the new configuration:
 
 ```bash
 cd packages/backend
-GITHUB_ACCESS_TOKEN=<token> yarn start
+GITHUB_TOKEN=<token> yarn start
 ```
 
 If you've also set up the frontend plugin, so you should be ready to go browse

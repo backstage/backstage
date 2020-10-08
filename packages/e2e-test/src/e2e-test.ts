@@ -285,7 +285,7 @@ async function testAppServe(pluginName: string, appDir: string) {
     cwd: appDir,
     env: {
       ...process.env,
-      GITHUB_ACCESS_TOKEN: 'abc',
+      GITHUB_TOKEN: 'abc',
     },
   });
   Browser.localhost('localhost', 3000);
@@ -368,7 +368,7 @@ async function testBackendStart(appDir: string, isPostgres: boolean) {
     cwd: appDir,
     env: {
       ...process.env,
-      GITHUB_ACCESS_TOKEN: 'abc',
+      GITHUB_TOKEN: 'abc',
     },
   });
 

@@ -55,7 +55,7 @@ auth:
 scaffolder:
   github:
     token:
-      $env: GITHUB_ACCESS_TOKEN
+      $env: GITHUB_TOKEN
     visibility: public # or 'internal' or 'private'
 
 catalog:
@@ -66,12 +66,12 @@ catalog:
       providers:
         - target: https://github.com
           token:
-            $env: GITHUB_PRIVATE_TOKEN
+            $env: GITHUB_TOKEN
         # Example for how to add your GitHub Enterprise instance:
         # - target: https://ghe.example.net
         #   apiBaseUrl: https://ghe.example.net/api/v3
         #   token:
-        #     $env: GHE_PRIVATE_TOKEN
+        #     $env: GHE_TOKEN
   locations:
     # Backstage example components
     - type: url

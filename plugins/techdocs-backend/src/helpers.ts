@@ -126,9 +126,7 @@ export const checkoutGitRepository = async (
     process.env.GITLAB_PRIVATE_TOKEN_USER ||
     '';
   const token =
-    process.env.GITHUB_PRIVATE_TOKEN ||
-    process.env.GITLAB_PRIVATE_TOKEN_USER ||
-    '';
+    process.env.GITHUB_TOKEN || process.env.GITLAB_PRIVATE_TOKEN_USER || '';
 
   if (fs.existsSync(repositoryTmpPath)) {
     try {
