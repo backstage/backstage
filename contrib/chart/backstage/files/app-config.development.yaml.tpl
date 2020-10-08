@@ -35,12 +35,16 @@ catalog:
   locations: []
 {{- end }}
 
-sentry:
-  organization: {{ .Values.appConfig.sentry.organization | quote }}
+auth:
+  providers:
+    microsoft: null
 
 scaffolder:
-  azure:
-    baseUrl: https://dev.azure.com/some-org
+  azure: null
+
+
+sentry:
+  organization: {{ .Values.appConfig.sentry.organization | quote }}
 
 techdocs:
   generators:

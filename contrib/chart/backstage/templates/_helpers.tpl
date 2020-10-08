@@ -282,5 +282,5 @@ Postgres password for lighthouse
 app-config file name
 */}}
 {{- define "backstage.appConfigFilename" -}}
-{{- "app-config.local.yaml" -}}
+{{- "app-config.development.yaml" -}}
 {{- end -}}
