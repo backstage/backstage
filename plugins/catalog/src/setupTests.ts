@@ -14,5 +14,7 @@
  * limitations under the License.
  */
 
+import fetch from 'node-fetch';
 import '@testing-library/jest-dom';
-import 'whatwg-fetch';
+
+global.fetch = fetch as any;
