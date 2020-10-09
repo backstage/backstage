@@ -17,12 +17,12 @@
 import { ConflictError } from '@backstage/backend-common';
 import type { Entity, Location } from '@backstage/catalog-model';
 import { DatabaseManager } from './DatabaseManager';
-import { Database, DatabaseLocationUpdateLogStatus } from './types';
 import type {
   DbEntityRequest,
   DbEntityResponse,
   DbLocationsRowWithStatus,
 } from './types';
+import { Database, DatabaseLocationUpdateLogStatus } from './types';
 
 const bootstrapLocation = {
   id: expect.any(String),
@@ -135,43 +135,12 @@ describe('CommonDatabase', () => {
     await expect(db.location(location.id)).rejects.toThrow(/Found no location/);
   });
 
-  describe('addEntity', () => {
-    it('happy path: adds entity to empty database', async () => {
-      const added = await db.transaction(tx => db.addEntity(tx, entityRequest));
-      expect(added).toStrictEqual(entityResponse);
-      expect(added.entity.metadata.generation).toBe(1);
-    });
-
-    it('rejects adding the same-named entity twice', async () => {
-      await db.transaction(tx => db.addEntity(tx, entityRequest));
-      await expect(
-        db.transaction(tx => db.addEntity(tx, entityRequest)),
-      ).rejects.toThrow(ConflictError);
-    });
-
-    it('rejects adding the almost-same-namespace entity twice', async () => {
-      entityRequest.entity.metadata.namespace = undefined;
-      await db.transaction(tx => db.addEntity(tx, entityRequest));
-      entityRequest.entity.metadata.namespace = '';
-      await expect(
-        db.transaction(tx => db.addEntity(tx, entityRequest)),
-      ).rejects.toThrow(ConflictError);
-    });
-
-    it('accepts adding the same-named entity twice if on different namespaces', async () => {
-      entityRequest.entity.metadata.namespace = 'namespace1';
-      await db.transaction(tx => db.addEntity(tx, entityRequest));
-      entityRequest.entity.metadata.namespace = 'namespace2';
-      await expect(
-        db.transaction(tx => db.addEntity(tx, entityRequest)),
-      ).resolves.toBeDefined();
-    });
-  });
-
   describe('addEntities', () => {
     it('happy path: adds entities to empty database', async () => {
-      await db.transaction(tx => db.addEntities(tx, [entityRequest]));
-      expect(true).toBeTruthy();
+      const result = await db.transaction(tx =>
+        db.addEntities(tx, [entityRequest]),
+      );
+      expect(result).toEqual([entityResponse]);
     });
 
     it('rejects adding the same-named entity twice', async () => {
@@ -237,7 +206,28 @@ describe('CommonDatabase', () => {
       ];
       await expect(
         db.transaction(tx => db.addEntities(tx, req)),
-      ).resolves.toBeUndefined();
+      ).resolves.toEqual([
+        {
+          entity: expect.objectContaining({
+            metadata: expect.objectContaining({
+              namespace: 'ns1',
+              uid: expect.any(String),
+              etag: expect.any(String),
+              generation: expect.any(Number),
+            }),
+          }),
+        },
+        {
+          entity: expect.objectContaining({
+            metadata: expect.objectContaining({
+              namespace: 'ns2',
+              uid: expect.any(String),
+              etag: expect.any(String),
+              generation: expect.any(Number),
+            }),
+          }),
+        },
+      ]);
     });
   });
 
@@ -289,7 +279,9 @@ describe('CommonDatabase', () => {
 
   describe('updateEntity', () => {
     it('can read and no-op-update an entity', async () => {
-      const added = await db.transaction(tx => db.addEntity(tx, entityRequest));
+      const [added] = await db.transaction(tx =>
+        db.addEntities(tx, [entityRequest]),
+      );
       const updated = await db.transaction(tx =>
         db.updateEntity(tx, { entity: added.entity }),
       );
@@ -306,7 +298,9 @@ describe('CommonDatabase', () => {
     });
 
     it('can update name if uid matches', async () => {
-      const added = await db.transaction(tx => db.addEntity(tx, entityRequest));
+      const [added] = await db.transaction(tx =>
+        db.addEntities(tx, [entityRequest]),
+      );
       added.entity.metadata.name! = 'new!';
       const updated = await db.transaction(tx =>
         db.updateEntity(tx, { entity: added.entity }),
@@ -315,7 +309,9 @@ describe('CommonDatabase', () => {
     });
 
     it('fails to update an entity if etag does not match', async () => {
-      const added = await db.transaction(tx => db.addEntity(tx, entityRequest));
+      const [added] = await db.transaction(tx =>
+        db.addEntities(tx, [entityRequest]),
+      );
       await expect(
         db.transaction(tx =>
           db.updateEntity(tx, { entity: added.entity }, 'garbage'),
@@ -324,7 +320,9 @@ describe('CommonDatabase', () => {
     });
 
     it('fails to update an entity if generation does not match', async () => {
-      const added = await db.transaction(tx => db.addEntity(tx, entityRequest));
+      const [added] = await db.transaction(tx =>
+        db.addEntities(tx, [entityRequest]),
+      );
       await expect(
         db.transaction(tx =>
           db.updateEntity(tx, { entity: added.entity }, undefined, 1e20),
@@ -347,8 +345,7 @@ describe('CommonDatabase', () => {
         spec: { c: null },
       };
       await db.transaction(async tx => {
-        await db.addEntity(tx, { entity: e1 });
-        await db.addEntity(tx, { entity: e2 });
+        await db.addEntities(tx, [{ entity: e1 }, { entity: e2 }]);
       });
       const result = await db.transaction(async tx => db.entities(tx, []));
       expect(result.length).toEqual(2);
@@ -384,9 +381,10 @@ describe('CommonDatabase', () => {
       ];
 
       await db.transaction(async tx => {
-        for (const entity of entities) {
-          await db.addEntity(tx, { entity });
-        }
+        await db.addEntities(
+          tx,
+          entities.map(entity => ({ entity })),
+        );
       });
 
       await expect(
@@ -422,9 +420,10 @@ describe('CommonDatabase', () => {
       ];
 
       await db.transaction(async tx => {
-        for (const entity of entities) {
-          await db.addEntity(tx, { entity });
-        }
+        await db.addEntities(
+          tx,
+          entities.map(entity => ({ entity })),
+        );
       });
 
       const rows = await db.transaction(async tx =>
@@ -471,9 +470,10 @@ describe('CommonDatabase', () => {
       ];
 
       await db.transaction(async tx => {
-        for (const entity of entities) {
-          await db.addEntity(tx, { entity });
-        }
+        await db.addEntities(
+          tx,
+          entities.map(entity => ({ entity })),
+        );
       });
 
       const rows = await db.transaction(async tx =>
@@ -519,9 +519,10 @@ describe('CommonDatabase', () => {
       ];
 
       await db.transaction(async tx => {
-        for (const entity of entities) {
-          await db.addEntity(tx, { entity });
-        }
+        await db.addEntities(
+          tx,
+          entities.map(entity => ({ entity })),
+        );
       });
 
       const e1 = await db.transaction(async tx =>
