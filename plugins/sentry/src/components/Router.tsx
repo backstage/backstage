@@ -16,7 +16,7 @@
 import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { Routes, Route } from 'react-router';
-import { WarningPanel } from '@backstage/core';
+import { MissingAnnotationEmptyState } from '@backstage/core';
 import { SentryPluginWidget } from './SentryPluginWidget/SentryPluginWidget';
 
 const SENTRY_ANNOTATION = 'sentry.io/project-slug';
@@ -25,11 +25,7 @@ export const Router = ({ entity }: { entity: Entity }) => {
   const projectId = entity.metadata.annotations?.[SENTRY_ANNOTATION];
 
   if (!projectId) {
-    return (
-      <WarningPanel title="Sentry plugin:">
-        <pre>{SENTRY_ANNOTATION}</pre> annotation is missing on the entity.
-      </WarningPanel>
-    );
+    return <MissingAnnotationEmptyState annotation={SENTRY_ANNOTATION} />;
   }
 
   return (
