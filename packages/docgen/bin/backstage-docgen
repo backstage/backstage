@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+/* eslint-disable no-restricted-syntax */
 const path = require('path');
 
 // Figure out whether we're running inside the backstage repo or as an installed dependency
