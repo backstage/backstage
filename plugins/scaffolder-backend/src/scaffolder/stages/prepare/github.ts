@@ -64,7 +64,22 @@ export class GithubPreparer implements PreparerBase {
         }
       : {};
 
-    await Clone.clone(repositoryCheckoutUrl, tempDir, cloneOptions);
+    const repository = await Clone.clone(
+      repositoryCheckoutUrl,
+      tempDir,
+      cloneOptions,
+    );
+    const currentBranch = await repository.getCurrentBranch();
+
+    const references = await repository.getReferences();
+
+    const target = references.find(
+      reference => reference.shorthand() === `origin/${parsedGitLocation.ref}`,
+    );
+
+    if (target && currentBranch !== target) {
+      await repository.checkoutBranch(target);
+    }
 
     return path.resolve(tempDir, templateDirectory);
   }
