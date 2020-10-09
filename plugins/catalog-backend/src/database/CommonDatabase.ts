@@ -109,9 +109,10 @@ export class CommonDatabase implements Database {
   async addEntities(
     txOpaque: unknown,
     request: DbEntityRequest[],
-  ): Promise<void> {
+  ): Promise<DbEntityResponse[]> {
     const tx = txOpaque as Knex.Transaction<any, any>;
 
+    const result: DbEntityResponse[] = [];
     const entityRows: DbEntitiesRow[] = [];
     const searchRows: DbEntitiesSearchRow[] = [];
 
@@ -134,6 +135,7 @@ export class CommonDatabase implements Database {
         },
       };
 
+      result.push({ entity: newEntity, locationId });
       entityRows.push(this.toEntityRow(locationId, newEntity));
       searchRows.push(...buildEntitySearch(newEntity.metadata.uid, newEntity));
     }
@@ -146,6 +148,8 @@ export class CommonDatabase implements Database {
       )
       .del();
     await tx.batchInsert('entities_search', searchRows, BATCH_SIZE);
+
+    return result;
   }
 
   async updateEntity(
@@ -315,7 +319,7 @@ export class CommonDatabase implements Database {
     return this.toEntityResponse(rows[0]);
   }
 
-  async removeEntity(txOpaque: unknown, uid: string): Promise<void> {
+  async removeEntityByUid(txOpaque: unknown, uid: string): Promise<void> {
     const tx = txOpaque as Knex.Transaction<any, any>;
 
     const result = await tx<DbEntitiesRow>('entities').where({ id: uid }).del();

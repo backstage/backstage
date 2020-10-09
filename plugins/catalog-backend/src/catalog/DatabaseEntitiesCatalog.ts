@@ -72,7 +72,10 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
           existing.entity.metadata.generation,
         );
       } else {
-        response = await this.database.addEntity(tx, { locationId, entity });
+        const added = await this.database.addEntities(tx, [
+          { locationId, entity },
+        ]);
+        response = added[0];
       }
 
       return response.entity;
@@ -105,7 +108,10 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
           ])
         : [entityResponse];
       for (const dbResponse of colocatedEntities) {
-        await this.database.removeEntity(tx, dbResponse?.entity.metadata.uid!);
+        await this.database.removeEntityByUid(
+          tx,
+          dbResponse?.entity.metadata.uid!,
+        );
       }
 
       if (entityResponse.locationId) {
