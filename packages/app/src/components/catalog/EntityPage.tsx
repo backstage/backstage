@@ -40,6 +40,11 @@ import { Router as ApiDocsRouter } from '@backstage/plugin-api-docs';
 import { Router as SentryRouter } from '@backstage/plugin-sentry';
 import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
 import { Router as KubernetesRouter } from '@backstage/plugin-kubernetes';
+import {
+  Router as CodeInsightsRouter,
+  ReadMeCard,
+  ContributorsCard,
+} from '@roadiehq/backstage-plugin-code-insights';
 import React, { ReactNode } from 'react';
 import {
   AboutCard,
@@ -114,6 +119,12 @@ const OverviewContent = ({ entity }: { entity: Entity }) => (
     <Grid item md={6}>
       <AboutCard entity={entity} />
     </Grid>
+    <Grid item md={6}>
+      <ContributorsCard entity={entity} />
+    </Grid>
+    <Grid item md={6}>
+      <ReadMeCard entity={entity} maxHeight={350} />
+    </Grid>
     <RecentCICDRunsSwitcher entity={entity} />
   </Grid>
 );
@@ -149,6 +160,11 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
       path="/kubernetes/*"
       title="Kubernetes"
       element={<KubernetesRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/code-insights"
+      title="Code Insights"
+      element={<CodeInsightsRouter entity={entity} />}
     />
   </EntityPageLayout>
 );
