@@ -187,10 +187,8 @@ const CostInsightsPage = () => {
       flexDirection="row"
       justifyContent="space-between"
     >
-      <Box minHeight={40} width="75%">
-        <Typography variant="h4" style={{ paddingTop: 10 }}>
-          Cost Overview
-        </Typography>
+      <Box minHeight={40} width="75%" pt={2}>
+        <Typography variant="h4">Cost Overview</Typography>
       </Box>
       <Box minHeight={40} maxHeight={60} display="flex">
         {!!flags.get('cost-insights-currencies') && (
