@@ -48,6 +48,7 @@
     "@testing-library/user-event": "^12.0.7",
     "@types/jest": "^26.0.7",
     "@types/node": "^12.0.0",
+    "@types/react": "^16.9",
     "@types/recharts": "^1.8.14",
     "jest-fetch-mock": "^3.0.3",
     "msw": "^0.20.5",
