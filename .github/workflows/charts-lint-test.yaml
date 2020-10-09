@@ -18,15 +18,3 @@ jobs:
         with:
           command: lint
           config: ct.yaml
-
-      - name: Create kind cluster
-        uses: helm/kind-action@v1.0.0
-        # Only build a kind cluster if there are chart changes to test.
-        if: steps.lint.outputs.changed == 'true'
-
-      - name: Install charts
-        uses: helm/chart-testing-action@v1.1.0
-        if: steps.lint.outputs.changed == 'true'
-        with:
-          command: install
-          config: ct.yaml
