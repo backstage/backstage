@@ -13,9 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { DirectoryPreparer } from './dir';
-export { GithubPreparer } from './github';
-export { GitlabPreparer } from './gitlab';
-export { AzurePreparer } from './azure';
-export { Preparers } from './preparers';
-export type { PreparerBuilder, PreparerBase } from './types';
+
+// @ts-check
+
+/**
+ * @param {import('knex')} knex
+ */
+exports.up = async function up(knex) {
+  await knex.schema.alterTable('entities_search', table => {
+    table.index(['key'], 'entities_search_key');
+    table.index(['value'], 'entities_search_value');
+  });
+};
+
+/**
+ * @param {import('knex')} knex
+ */
+exports.down = async function down(knex) {
+  await knex.schema.alterTable('entities_search', table => {
+    table.dropIndex('', 'entities_search_key');
+    table.dropIndex('', 'entities_search_value');
+  });
+};

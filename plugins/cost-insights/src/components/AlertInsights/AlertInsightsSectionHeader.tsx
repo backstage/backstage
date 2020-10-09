@@ -15,26 +15,22 @@
  */
 
 import React from 'react';
-import { Avatar, Box, Typography, Grid } from '@material-ui/core';
-import { Alert } from '../../types';
-import { getAlertNavigation } from '../../utils/alerts';
+import { Avatar, Box, Grid, Typography } from '@material-ui/core';
 import { useAlertInsightsSectionStyles as useStyles } from '../../utils/styles';
 import { useScroll } from '../../hooks';
 
 type AlertInsightsSectionHeaderProps = {
-  alert: Alert;
   number: number;
   title: string;
   subtitle: string;
 };
 
 const AlertInsightsSectionHeader = ({
-  alert,
   number,
   title,
   subtitle,
 }: AlertInsightsSectionHeaderProps) => {
-  const { ScrollAnchor } = useScroll(getAlertNavigation(alert, number));
+  const { ScrollAnchor } = useScroll(`alert-${number}`);
   const classes = useStyles();
   return (
     <Box position="relative" mb={3} textAlign="left">

@@ -96,7 +96,7 @@ async function getConfig() {
     // Default behaviour is to not apply transforms for node_modules, but we still want
     // to apply the esm-transformer to .esm.js files, since that's what we use in backstage packages.
     transformIgnorePatterns: [
-      `/node_modules/${transformModulePattern}(?:(?!\\.esm).)*\\.(?:js|json)$`,
+      `/node_modules/${transformModulePattern}.*\\.(?:(?<!esm\\.)js|json)$`,
     ],
   };
 

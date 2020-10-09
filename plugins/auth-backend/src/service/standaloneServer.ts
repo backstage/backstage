@@ -53,7 +53,11 @@ export async function startStandaloneServer(
   const router = await createRouter({
     logger,
     config,
-    database,
+    database: {
+      async getClient() {
+        return database;
+      },
+    },
     discovery,
   });
 

@@ -61,6 +61,16 @@ function getGitlabApiUrl(url: string): URL {
   );
 }
 
+function getAzureApiUrl(url: string): URL {
+  const { protocol, resource, organization, owner, name } = parseGitUrl(url);
+  const apiRepoPath = '_apis/git/repositories';
+  const apiVersion = 'api-version=6.0';
+
+  return new URL(
+    `${protocol}://${resource}/${organization}/${owner}/${apiRepoPath}/${name}?${apiVersion}`,
+  );
+}
+
 function getGithubRequestOptions(config: Config): RequestInit {
   const headers: HeadersInit = {
     Accept: 'application/vnd.github.v3.raw',
@@ -97,6 +107,26 @@ function getGitlabRequestOptions(config: Config): RequestInit {
   return {
     headers,
   };
+}
+
+function getAzureRequestOptions(config: Config): RequestInit {
+  const headers: HeadersInit = {};
+
+  const token =
+    config.getOptionalString('catalog.processors.azureApi.privateToken') ??
+    process.env.AZURE_TOKEN;
+
+  if (token !== '') {
+    headers.Authorization = `Basic ${Buffer.from(`:${token}`, 'utf8').toString(
+      'base64',
+    )}`;
+  }
+
+  const requestOptions: RequestInit = {
+    headers,
+  };
+
+  return requestOptions;
 }
 
 async function getGithubDefaultBranch(
@@ -159,6 +189,42 @@ async function getGitlabDefaultBranch(
   }
 }
 
+async function getAzureDefaultBranch(
+  repositoryUrl: string,
+  config: Config,
+): Promise<string> {
+  const path = getAzureApiUrl(repositoryUrl).toString();
+
+  const options = getAzureRequestOptions(config);
+
+  try {
+    const urlResponse = await fetch(path, options);
+    if (!urlResponse.ok) {
+      throw new Error(
+        `Failed to load url: ${urlResponse.status} ${urlResponse.statusText}. Make sure you have permission to repository: ${repositoryUrl}`,
+      );
+    }
+    const urlResult = await urlResponse.json();
+
+    const idResponse = await fetch(urlResult.url, options);
+    if (!idResponse.ok) {
+      throw new Error(
+        `Failed to load url: ${idResponse.status} ${idResponse.statusText}. Make sure you have permission to repository: ${urlResult.repository.url}`,
+      );
+    }
+    const idResult = await idResponse.json();
+    const name = idResult.defaultBranch;
+
+    if (!name) {
+      throw new Error('Not found Azure DevOps default branch');
+    }
+
+    return name;
+  } catch (error) {
+    throw new Error(`Failed to get Azure DevOps default branch: ${error}`);
+  }
+}
+
 export const getDefaultBranch = async (
   repositoryUrl: string,
 ): Promise<string> => {
@@ -166,6 +232,7 @@ export const getDefaultBranch = async (
   const typeMapping = [
     { url: /github*/g, type: 'github' },
     { url: /gitlab*/g, type: 'gitlab' },
+    { url: /azure*/g, type: 'azure/api' },
   ];
 
   const type = typeMapping.filter(item => item.url.test(repositoryUrl))[0]
@@ -177,6 +244,8 @@ export const getDefaultBranch = async (
         return await getGithubDefaultBranch(repositoryUrl, config);
       case 'gitlab':
         return await getGitlabDefaultBranch(repositoryUrl, config);
+      case 'azure/api':
+        return await getAzureDefaultBranch(repositoryUrl, config);
 
       default:
         throw new Error('Failed to get repository type');

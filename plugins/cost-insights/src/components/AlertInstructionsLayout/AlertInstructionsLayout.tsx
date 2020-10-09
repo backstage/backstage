@@ -19,6 +19,7 @@ import { Box, Button, Container, makeStyles } from '@material-ui/core';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { Header, Page, pageTheme } from '@backstage/core';
 import { CostInsightsThemeProvider } from '../CostInsightsPage/CostInsightsThemeProvider';
+import { ConfigProvider, CurrencyProvider } from '../../hooks';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -39,21 +40,29 @@ const AlertInstructionsLayout = ({
   const classes = useStyles();
   return (
     <CostInsightsThemeProvider>
-      <Page theme={pageTheme.tool}>
-        <Header title="Cost Insights" pageTitleOverride={title} type="Tool" />
-        <Container maxWidth="md" disableGutters className={classes.root}>
-          <Box mb={3}>
-            <Button
-              variant="outlined"
-              startIcon={<ChevronLeftIcon />}
-              href="/cost-insights"
-            >
-              Back to Cost Insights
-            </Button>
-          </Box>
-          {children}
-        </Container>
-      </Page>
+      <ConfigProvider>
+        <CurrencyProvider>
+          <Page theme={pageTheme.tool}>
+            <Header
+              title="Cost Insights"
+              pageTitleOverride={title}
+              type="Tool"
+            />
+            <Container maxWidth="md" disableGutters className={classes.root}>
+              <Box mb={3}>
+                <Button
+                  variant="outlined"
+                  startIcon={<ChevronLeftIcon />}
+                  href="/cost-insights"
+                >
+                  Back to Cost Insights
+                </Button>
+              </Box>
+              {children}
+            </Container>
+          </Page>
+        </CurrencyProvider>
+      </ConfigProvider>
     </CostInsightsThemeProvider>
   );
 };

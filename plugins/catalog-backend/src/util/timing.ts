@@ -13,24 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { Box } from '@material-ui/core';
 
-type CostOverviewFooterProps = {
-  children?: React.ReactNode;
-};
-
-const CostOverviewFooter = ({ children }: CostOverviewFooterProps) => (
-  <Box
-    display="flex"
-    flexDirection="row"
-    justifyContent="space-between"
-    alignItems="center"
-  >
-    {React.Children.map(children, child => (
-      <Box marginY={1}>{child}</Box>
-    ))}
-  </Box>
-);
-
-export default CostOverviewFooter;
+/**
+ * Returns a string with the elapsed time since the start of an operation,
+ * with some human friendly precision, e.g. "133ms" or "14.5s".
+ *
+ * @param startTimestamp The timestamp (from process.hrtime()) at the start ot
+ *                       the operation
+ */
+export function durationText(startTimestamp: [number, number]): string {
+  const delta = process.hrtime(startTimestamp);
+  const seconds = delta[0] + delta[1] / 1e9;
+  if (seconds > 1) {
+    return `${seconds.toFixed(1)}s`;
+  }
+  return `${(seconds * 1000).toFixed(0)}ms`;
+}

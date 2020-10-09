@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { DirectoryPreparer } from './dir';
-export { GithubPreparer } from './github';
-export { GitlabPreparer } from './gitlab';
-export { AzurePreparer } from './azure';
-export { Preparers } from './preparers';
-export type { PreparerBuilder, PreparerBase } from './types';
+
+export { default as BarChart } from './BarChart';
+export { default as LegendItem } from './LegendItem';

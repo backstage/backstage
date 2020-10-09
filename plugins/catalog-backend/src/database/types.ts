@@ -89,13 +89,15 @@ export type Database = {
   transaction<T>(fn: (tx: unknown) => Promise<T>): Promise<T>;
 
   /**
-   * Adds a new entity to the catalog.
+   * Adds a set of new entities to the catalog.
    *
    * @param tx An ongoing transaction
-   * @param request The entity being added
-   * @returns The added entity, with uid, etag and generation set
+   * @param request The entities being added
    */
-  addEntity(tx: unknown, request: DbEntityRequest): Promise<DbEntityResponse>;
+  addEntities(
+    tx: unknown,
+    request: DbEntityRequest[],
+  ): Promise<DbEntityResponse[]>;
 
   /**
    * Updates an existing entity in the catalog.
@@ -132,7 +134,7 @@ export type Database = {
 
   entityByUid(tx: unknown, uid: string): Promise<DbEntityResponse | undefined>;
 
-  removeEntity(tx: unknown, uid: string): Promise<void>;
+  removeEntityByUid(tx: unknown, uid: string): Promise<void>;
 
   addLocation(location: Location): Promise<DbLocationsRow>;
 

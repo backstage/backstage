@@ -53,7 +53,7 @@ describe('local publisher', () => {
 
     const resultDir = path.resolve(
       __dirname,
-      `../../../../static/docs/${mockEntity.kind}/default/${mockEntity.metadata.name}`,
+      `../../../../static/docs/default/${mockEntity.kind}/${mockEntity.metadata.name}`,
     );
 
     expect(fs.existsSync(resultDir)).toBeTruthy();

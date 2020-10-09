@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 import { MapLoadingToProps } from '../../hooks';
-import { getResetState, DefaultLoadingAction } from '../../types';
+import {
+  getResetState,
+  DefaultLoadingAction,
+  getResetStateWithoutInitial,
+} from '../../types';
 
 type CostInsightsPageLoadingProps = {
   loadingActions: Array<string>;
@@ -23,6 +27,7 @@ type CostInsightsPageLoadingProps = {
   dispatchInitial: (isLoading: boolean) => void;
   dispatchInsights: (isLoading: boolean) => void;
   dispatchNone: (loadingActions: string[]) => void;
+  dispatchReset: (loadingActions: string[]) => void;
 };
 
 export const mapLoadingToProps: MapLoadingToProps<CostInsightsPageLoadingProps> = ({
@@ -39,4 +44,6 @@ export const mapLoadingToProps: MapLoadingToProps<CostInsightsPageLoadingProps> 
     dispatch({ [DefaultLoadingAction.CostInsightsPage]: isLoading }),
   dispatchNone: (loadingActions: string[]) =>
     dispatch(getResetState(loadingActions)),
+  dispatchReset: (loadingActions: string[]) =>
+    dispatch(getResetStateWithoutInitial(loadingActions)),
 });

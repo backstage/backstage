@@ -13,9 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { DirectoryPreparer } from './dir';
-export { GithubPreparer } from './github';
-export { GitlabPreparer } from './gitlab';
-export { AzurePreparer } from './azure';
-export { Preparers } from './preparers';
-export type { PreparerBuilder, PreparerBase } from './types';
+
+import knex from 'knex';
+
+/**
+ * The PluginDatabaseManager manages access to databases that Plugins get.
+ */
+export interface PluginDatabaseManager {
+  /**
+   * getClient provides backend plugins database connections for itself.
+   *
+   * The purpose of this method is to allow plugins to get isolated data
+   * stores so that plugins are discouraged from database integration.
+   */
+  getClient(): Promise<knex>;
+}

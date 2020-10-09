@@ -24,12 +24,12 @@ describe('DatabaseEntitiesCatalog', () => {
   beforeAll(() => {
     db = {
       transaction: jest.fn(),
-      addEntity: jest.fn(),
+      addEntities: jest.fn(),
       updateEntity: jest.fn(),
       entities: jest.fn(),
       entityByName: jest.fn(),
       entityByUid: jest.fn(),
-      removeEntity: jest.fn(),
+      removeEntityByUid: jest.fn(),
       addLocation: jest.fn(),
       removeLocation: jest.fn(),
       location: jest.fn(),
@@ -56,7 +56,7 @@ describe('DatabaseEntitiesCatalog', () => {
       };
 
       db.entities.mockResolvedValue([]);
-      db.addEntity.mockResolvedValue({ entity });
+      db.addEntities.mockResolvedValue([{ entity }]);
 
       const catalog = new DatabaseEntitiesCatalog(db);
       const result = await catalog.addOrUpdateEntity(entity);
@@ -67,7 +67,7 @@ describe('DatabaseEntitiesCatalog', () => {
         namespace: 'd',
         name: 'c',
       });
-      expect(db.addEntity).toHaveBeenCalledTimes(1);
+      expect(db.addEntities).toHaveBeenCalledTimes(1);
       expect(result).toBe(entity);
     });
 

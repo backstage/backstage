@@ -27,9 +27,14 @@ import {
   exclusiveEndDateOf,
   Group,
   inclusiveStartDateOf,
+  Maybe,
   ProductCost,
   Project,
+  ProjectGrowthAlert,
+  ProjectGrowthData,
   Trendline,
+  UnlabeledDataflowAlert,
+  UnlabeledDataflowData,
 } from '@backstage/plugin-cost-insights';
 
 function durationOf(intervals: string): Duration {
@@ -159,9 +164,38 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
     product: string,
     group: string,
     duration: Duration,
+    project: Maybe<string>,
   ): Promise<ProductCost> {
+    const projectProductInsights = await this.request(
+      { product, group, duration, project },
+      {
+        aggregation: [80_000, 110_000],
+        change: {
+          ratio: 0.375,
+          amount: 30_000,
+        },
+        entities: [
+          {
+            id: null, // entities with null ids will be appear as "Unlabeled" in product panels
+            aggregation: [45_000, 50_000],
+          },
+          {
+            id: 'entity-a',
+            aggregation: [15_000, 20_000],
+          },
+          {
+            id: 'entity-b',
+            aggregation: [20_000, 30_000],
+          },
+          {
+            id: 'entity-e',
+            aggregation: [0, 10_000],
+          },
+        ],
+      },
+    );
     const productInsights: ProductCost = await this.request(
-      { product, group, duration },
+      { product, group, duration, project },
       {
         aggregation: [200_000, 250_000],
         change: {
@@ -209,36 +243,48 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
       },
     );
 
-    return productInsights;
+    return project ? projectProductInsights : productInsights;
   }
 
   async getAlerts(group: string): Promise<Alert[]> {
-    const alerts: Alert[] = await this.request({ group }, [
-      {
-        id: 'projectGrowth',
-        project: 'example-project',
-        periodStart: 'Q1 2020',
-        periodEnd: 'Q2 2020',
-        aggregation: [60_000, 120_000],
-        change: {
-          ratio: 1,
-          amount: 60000,
-        },
-        products: [
-          {
-            id: 'Compute Engine',
-            aggregation: [58_000, 118_000],
-          },
-          {
-            id: 'Cloud Dataflow',
-            aggregation: [1200, 1500],
-          },
-          {
-            id: 'Cloud Storage',
-            aggregation: [800, 500],
-          },
-        ],
+    const projectGrowthData: ProjectGrowthData = {
+      project: 'example-project',
+      periodStart: 'Q2 2020',
+      periodEnd: 'Q3 2020',
+      aggregation: [60_000, 120_000],
+      change: {
+        ratio: 1,
+        amount: 60000,
       },
+      products: [
+        { id: 'Compute Engine', aggregation: [58_000, 118_000] },
+        { id: 'Cloud Dataflow', aggregation: [1200, 1500] },
+        { id: 'Cloud Storage', aggregation: [800, 500] },
+      ],
+    };
+
+    const unlabeledDataflowData: UnlabeledDataflowData = {
+      periodStart: '2020-09-01',
+      periodEnd: '2020-09-30',
+      labeledCost: 6_200,
+      unlabeledCost: 7_000,
+      projects: [
+        {
+          id: 'example-project-1',
+          unlabeledCost: 5_000,
+          labeledCost: 3_000,
+        },
+        {
+          id: 'example-project-2',
+          unlabeledCost: 2_000,
+          labeledCost: 3_200,
+        },
+      ],
+    };
+
+    const alerts: Alert[] = await this.request({ group }, [
+      new ProjectGrowthAlert(projectGrowthData),
+      new UnlabeledDataflowAlert(unlabeledDataflowData),
     ]);
 
     return alerts;

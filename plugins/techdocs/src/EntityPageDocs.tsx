@@ -23,7 +23,7 @@ export const EntityPageDocs = ({ entity }: { entity: Entity }) => {
     <Reader
       entityId={{
         kind: entity.kind,
-        namespace: entity.metadata.namespace,
+        namespace: entity.metadata.namespace ?? 'default',
         name: entity.metadata.name,
       }}
     />

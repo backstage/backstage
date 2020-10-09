@@ -18,6 +18,18 @@ import { mergeDatabaseConfig } from './config';
 
 describe('config', () => {
   describe(mergeDatabaseConfig, () => {
+    it('does not mutate the input object', () => {
+      const input = {
+        original: 'key',
+      };
+      const override = {
+        added: 'value',
+      };
+
+      mergeDatabaseConfig(input, override);
+      expect(input).not.toHaveProperty('added');
+    });
+
     it('does not require overrides', () => {
       expect(
         mergeDatabaseConfig({

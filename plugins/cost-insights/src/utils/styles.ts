@@ -385,6 +385,7 @@ export const useSelectStyles = makeStyles<BackstageTheme>(
       select: {
         minWidth: 200,
         textAlign: 'start',
+        backgroundColor: theme.palette.background.paper,
       },
       menuItem: {
         minWidth: 200,

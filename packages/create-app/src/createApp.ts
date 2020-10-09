@@ -74,7 +74,6 @@ async function buildApp(appDir: string) {
 
   await runCmd('yarn install');
   await runCmd('yarn tsc');
-  await runCmd('yarn build');
 }
 
 async function moveApp(tempDir: string, destination: string, id: string) {
