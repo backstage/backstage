@@ -8967,7 +8967,7 @@ cross-env@^7.0.0:
   dependencies:
     cross-spawn "^7.0.1"
 
-cross-fetch@3.0.6, cross-fetch@^3.0.4, cross-fetch@^3.0.5:
+cross-fetch@3.0.6, cross-fetch@^3.0.4, cross-fetch@^3.0.5, cross-fetch@^3.0.6:
   version "3.0.6"
   resolved "https://registry.npmjs.org/cross-fetch/-/cross-fetch-3.0.6.tgz#3a4040bc8941e653e0e9cf17f29ebcd177d3365c"
   integrity sha512-KBPUbqgFjzWlVcURG+Svp9TlhA5uliYtiNx/0r8nv0pdypeQCRJ9IaSIc3q/x3q8t3F75cHuwxVql1HFGHCNJQ==
@@ -16308,6 +16308,24 @@ msw@^0.20.5:
     statuses "^2.0.0"
     yargs "^15.4.1"
 
+msw@^0.21.2:
+  version "0.21.2"
+  resolved "https://registry.npmjs.org/msw/-/msw-0.21.2.tgz#74ed10b8eb224325652a3c3812b5460dac297bd8"
+  integrity sha512-XOJehxtJThNFdMJdVjxDAbZ8KuC3UltOlO5nQDks0Q1yzSUqqKcVUjbKrH7T+K2hckBr0KEY2fwJHv21R4BV2A==
+  dependencies:
+    "@open-draft/until" "^1.0.3"
+    "@types/cookie" "^0.4.0"
+    chalk "^4.1.0"
+    chokidar "^3.4.2"
+    cookie "^0.4.1"
+    graphql "^15.3.0"
+    headers-utils "^1.2.0"
+    node-fetch "^2.6.1"
+    node-match-path "^0.4.4"
+    node-request-interceptor "^0.5.1"
+    statuses "^2.0.0"
+    yargs "^16.0.3"
+
 multicast-dns-service-types@^1.1.0:
   version "1.1.0"
   resolved "https://registry.npmjs.org/multicast-dns-service-types/-/multicast-dns-service-types-1.1.0.tgz#899f11d9686e5e05cb91b35d5f0e63b773cfc901"
@@ -16631,6 +16649,15 @@ node-request-interceptor@^0.3.5:
   version "0.3.5"
   resolved "https://registry.npmjs.org/node-request-interceptor/-/node-request-interceptor-0.3.5.tgz#4b26159617829c9a70643012c0fdc3ae4c78ae43"
   integrity sha512-lBwA3v00hxCW2xhhZHZ1ab5JMHoAnzgtbeaUXqTufRh7mpAG93ZOChj0btMDB1VZd+CKhCbtigsxCjmerKa2+w==
+  dependencies:
+    "@open-draft/until" "^1.0.3"
+    debug "^4.1.1"
+    headers-utils "^1.2.0"
+
+node-request-interceptor@^0.5.1:
+  version "0.5.1"
+  resolved "https://registry.npmjs.org/node-request-interceptor/-/node-request-interceptor-0.5.1.tgz#b4757a033bde4412d9ffc4503804abb28ed962d2"
+  integrity sha512-ex5mlI5nGokxocomS2Rj2r1aspmt7qZoI8OvKLt24ylp1bYCzGQ+0XD911guCNDb/kKLMIGC67HHyeFrJCz7jA==
   dependencies:
     "@open-draft/until" "^1.0.3"
     debug "^4.1.1"
