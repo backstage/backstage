@@ -15,7 +15,7 @@
  */
 /* eslint-disable no-restricted-imports */
 
-import moment from 'moment';
+import dayjs from 'dayjs';
 import regression, { DataPoint } from 'regression';
 import {
   Alert,
@@ -42,17 +42,17 @@ function aggregationFor(
   duration: Duration,
   baseline: number,
 ): DateAggregation[] {
-  const days = moment(exclusiveEndDateOf(duration)).diff(
+  const days = dayjs(exclusiveEndDateOf(duration)).diff(
     inclusiveStartDateOf(duration),
-    'days',
+    'day',
   );
 
   return [...Array(days).keys()].reduce(
     (values: DateAggregation[], i: number): DateAggregation[] => {
       const last = values.length ? values[values.length - 1].amount : baseline;
       values.push({
-        date: moment(inclusiveStartDateOf(duration))
-          .add(i, 'days')
+        date: dayjs(inclusiveStartDateOf(duration))
+          .add(i, 'day')
           .format('YYYY-MM-DD'),
         amount: last + (baseline / 20) * (Math.random() * 2 - 1),
       });
