@@ -34,6 +34,7 @@
     "git-url-parse": "^11.2.0",
     "knex": "^0.21.1",
     "nodegit": "^0.27.0",
+    "cross-fetch": "^3.0.6",
     "winston": "^3.2.1"
   },
   "devDependencies": {

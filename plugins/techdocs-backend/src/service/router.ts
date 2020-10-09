@@ -17,7 +17,7 @@ import { Logger } from 'winston';
 import Router from 'express-promise-router';
 import express from 'express';
 import Knex from 'knex';
-import fetch from 'node-fetch';
+import fetch from 'cross-fetch';
 import { Config } from '@backstage/config';
 import Docker from 'dockerode';
 import {

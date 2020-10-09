@@ -65,7 +65,6 @@
     "@types/compression": "^1.7.0",
     "@types/http-errors": "^1.6.3",
     "@types/morgan": "^1.9.0",
-    "@types/node-fetch": "^2.5.7",
     "@types/stoppable": "^1.1.0",
     "@types/supertest": "^2.0.8",
     "@types/webpack-env": "^1.15.2",
