@@ -16,7 +16,7 @@
 /* eslint-disable no-restricted-imports */
 
 import moment from 'moment';
-import regression from 'regression';
+import regression, { DataPoint } from 'regression';
 import {
   Alert,
   ChangeStatistic,
@@ -63,7 +63,10 @@ function aggregationFor(
 }
 
 function trendlineOf(aggregation: DateAggregation[]): Trendline {
-  const data = [...aggregation.map(a => [Date.parse(a.date) / 1000, a.amount])];
+  const data: ReadonlyArray<DataPoint> = aggregation.map(a => [
+    Date.parse(a.date) / 1000,
+    a.amount,
+  ]);
   const result = regression.linear(data, { precision: 5 });
   return {
     slope: result.equation[0],
