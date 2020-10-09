@@ -25,6 +25,7 @@ describe('DatabaseEntitiesCatalog', () => {
     db = {
       transaction: jest.fn(),
       addEntity: jest.fn(),
+      addEntities: jest.fn(),
       updateEntity: jest.fn(),
       entities: jest.fn(),
       entityByName: jest.fn(),

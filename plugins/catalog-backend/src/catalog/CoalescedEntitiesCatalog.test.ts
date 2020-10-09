@@ -37,6 +37,7 @@ describe('CoalescedEntitiesCatalog', () => {
     entityByUid: jest.fn(),
     entityByName: jest.fn(),
     addOrUpdateEntity: jest.fn(),
+    addEntities: jest.fn(),
     removeEntityByUid: jest.fn(),
   };
 
@@ -45,6 +46,7 @@ describe('CoalescedEntitiesCatalog', () => {
     entityByUid: jest.fn(),
     entityByName: jest.fn(),
     addOrUpdateEntity: jest.fn(),
+    addEntities: jest.fn(),
     removeEntityByUid: jest.fn(),
   };
 

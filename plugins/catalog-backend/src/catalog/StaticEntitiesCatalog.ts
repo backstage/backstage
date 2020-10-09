@@ -50,6 +50,10 @@ export class StaticEntitiesCatalog implements EntitiesCatalog {
     throw new Error('Not supported');
   }
 
+  async addEntities(): Promise<void> {
+    throw new Error('Not supported');
+  }
+
   async removeEntityByUid(): Promise<void> {
     throw new Error('Not supported');
   }

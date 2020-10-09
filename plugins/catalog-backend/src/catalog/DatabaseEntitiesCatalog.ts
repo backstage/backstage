@@ -79,6 +79,15 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
     });
   }
 
+  async addEntities(entities: Entity[], locationId?: string): Promise<void> {
+    await this.database.transaction(async tx => {
+      await this.database.addEntities(
+        tx,
+        entities.map(entity => ({ locationId, entity })),
+      );
+    });
+  }
+
   async removeEntityByUid(uid: string): Promise<void> {
     return await this.database.transaction(async tx => {
       const entityResponse = await this.database.entityByUid(tx, uid);

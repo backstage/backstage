@@ -98,6 +98,14 @@ export type Database = {
   addEntity(tx: unknown, request: DbEntityRequest): Promise<DbEntityResponse>;
 
   /**
+   * Adds a set of new entities to the catalog.
+   *
+   * @param tx An ongoing transaction
+   * @param request The entities being added
+   */
+  addEntities(tx: unknown, request: DbEntityRequest[]): Promise<void>;
+
+  /**
    * Updates an existing entity in the catalog.
    *
    * The given entity must contain an uid to identify an already stored entity
