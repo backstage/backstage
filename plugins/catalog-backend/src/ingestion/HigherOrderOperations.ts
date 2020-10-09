@@ -24,6 +24,7 @@ import {
   serializeEntityRef,
 } from '@backstage/catalog-model';
 import { chunk, groupBy } from 'lodash';
+import limiterFactory from 'p-limit';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from 'winston';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
@@ -49,6 +50,9 @@ const BATCH_SIZE = 100;
 // the form of conflicts where we compete with other writes. Each batch gets
 // this many attempts at being written before giving up.
 const BATCH_ATTEMPTS = 3;
+
+// The number of batches that may be ongoing at the same time.
+const BATCH_CONCURRENCY = 3;
 
 /**
  * Placeholder for operations that span several catalogs and/or stretches out
@@ -213,6 +217,9 @@ export class HigherOrderOperations implements HigherOrderOperation {
       return `${name.kind}:${name.namespace}`.toLowerCase();
     });
 
+    const limiter = limiterFactory(BATCH_CONCURRENCY);
+    const tasks: Promise<void>[] = [];
+
     for (const groupEntities of Object.values(entitiesByKindAndNamespace)) {
       const { kind, namespace } = getEntityName(groupEntities[0]);
 
@@ -220,32 +227,41 @@ export class HigherOrderOperations implements HigherOrderOperation {
       // sources produce tens of thousands of entities, and those are too large
       // batch sizes to reasonably send to the database)
       for (const batch of chunk(groupEntities, BATCH_SIZE)) {
-        const first = serializeEntityRef(batch[0]);
-        const last = serializeEntityRef(batch[batch.length - 1]);
-        this.logger.debug(
-          `Considering batch ${first}-${last} (${batch.length} entries)`,
-        );
+        tasks.push(
+          limiter(async () => {
+            const first = serializeEntityRef(batch[0]);
+            const last = serializeEntityRef(batch[batch.length - 1]);
+            this.logger.debug(
+              `Considering batch ${first}-${last} (${batch.length} entries)`,
+            );
 
-        // Retry the batch write a few times to deal with contention
-        const context = { kind, namespace, location };
-        for (let attempt = 1; attempt <= BATCH_ATTEMPTS; ++attempt) {
-          try {
-            const { toAdd, toUpdate } = await this.analyzeBatch(batch, context);
-            if (toAdd.length) await this.batchAdd(toAdd, context);
-            if (toUpdate.length) await this.batchUpdate(toUpdate, context);
-            break;
-          } catch (e) {
-            if (e instanceof ConflictError && attempt < BATCH_ATTEMPTS) {
-              this.logger.warn(
-                `Failed to write batch at attempt ${attempt}/${BATCH_ATTEMPTS}, ${e}`,
-              );
-            } else {
-              throw e;
+            // Retry the batch write a few times to deal with contention
+            const context = { kind, namespace, location };
+            for (let attempt = 1; attempt <= BATCH_ATTEMPTS; ++attempt) {
+              try {
+                const { toAdd, toUpdate } = await this.analyzeBatch(
+                  batch,
+                  context,
+                );
+                if (toAdd.length) await this.batchAdd(toAdd, context);
+                if (toUpdate.length) await this.batchUpdate(toUpdate, context);
+                break;
+              } catch (e) {
+                if (e instanceof ConflictError && attempt < BATCH_ATTEMPTS) {
+                  this.logger.warn(
+                    `Failed to write batch at attempt ${attempt}/${BATCH_ATTEMPTS}, ${e}`,
+                  );
+                } else {
+                  throw e;
+                }
+              }
             }
-          }
-        }
+          }),
+        );
       }
     }
+
+    await Promise.all(tasks);
   }
 
   // Given a batch of entities that were just read from a location, take them
