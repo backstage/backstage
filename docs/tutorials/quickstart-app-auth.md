@@ -72,15 +72,12 @@ auth:
     github:
       development:
         clientId:
-          $secret:
-            env: AUTH_GITHUB_CLIENT_ID
+          $env: AUTH_GITHUB_CLIENT_ID
         clientSecret:
-          $secret:
-            env: AUTH_GITHUB_CLIENT_SECRET
+          $env: AUTH_GITHUB_CLIENT_SECRET
         ## uncomment the following three lines if using enterprise
         # enterpriseInstanceUrl:
-        #  $secret:
-        #    env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
+        #  $env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
 ```
 
 2. Set environment variables in whatever fashion is easiest for you. I chose to

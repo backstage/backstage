@@ -124,7 +124,7 @@ describe('CommonDatabase', () => {
         {
           ...output,
           status: DatabaseLocationUpdateLogStatus.FAIL,
-          timestamp: expect.any(String),
+          timestamp: expect.anything(),
         },
       ]),
     );
@@ -144,24 +144,6 @@ describe('CommonDatabase', () => {
 
     it('rejects adding the same-named entity twice', async () => {
       await db.transaction(tx => db.addEntity(tx, entityRequest));
-      await expect(
-        db.transaction(tx => db.addEntity(tx, entityRequest)),
-      ).rejects.toThrow(ConflictError);
-    });
-
-    it('rejects adding the almost-same-kind entity twice', async () => {
-      entityRequest.entity.kind = 'some-kind';
-      await db.transaction(tx => db.addEntity(tx, entityRequest));
-      entityRequest.entity.kind = 'SomeKind';
-      await expect(
-        db.transaction(tx => db.addEntity(tx, entityRequest)),
-      ).rejects.toThrow(ConflictError);
-    });
-
-    it('rejects adding the almost-same-named entity twice', async () => {
-      entityRequest.entity.metadata.name = 'some-name';
-      await db.transaction(tx => db.addEntity(tx, entityRequest));
-      entityRequest.entity.metadata.name = 'SomeName';
       await expect(
         db.transaction(tx => db.addEntity(tx, entityRequest)),
       ).rejects.toThrow(ConflictError);
@@ -209,24 +191,26 @@ describe('CommonDatabase', () => {
       const result = await db.locationHistory(
         'dd12620d-0436-422f-93bd-929aa0788123',
       );
-      expect(result).toEqual([
-        {
-          created_at: expect.anything(),
-          entity_name: null,
-          id: expect.anything(),
-          location_id: 'dd12620d-0436-422f-93bd-929aa0788123',
-          message: null,
-          status: DatabaseLocationUpdateLogStatus.SUCCESS,
-        },
-        {
-          created_at: expect.anything(),
-          entity_name: null,
-          id: expect.anything(),
-          location_id: 'dd12620d-0436-422f-93bd-929aa0788123',
-          message: 'Something went wrong',
-          status: DatabaseLocationUpdateLogStatus.FAIL,
-        },
-      ]);
+      expect(result).toEqual(
+        expect.arrayContaining([
+          {
+            created_at: expect.anything(),
+            entity_name: null,
+            id: expect.anything(),
+            location_id: 'dd12620d-0436-422f-93bd-929aa0788123',
+            message: null,
+            status: DatabaseLocationUpdateLogStatus.SUCCESS,
+          },
+          {
+            created_at: expect.anything(),
+            entity_name: null,
+            id: expect.anything(),
+            location_id: 'dd12620d-0436-422f-93bd-929aa0788123',
+            message: 'Something went wrong',
+            status: DatabaseLocationUpdateLogStatus.FAIL,
+          },
+        ]),
+      );
     });
   });
 

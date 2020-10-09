@@ -74,11 +74,11 @@ export class CatalogRulesEnforcer {
    *   - allow: [Component, API]
    *
    *   locations:
-   *   - type: github
+   *   - type: url
    *     target: https://github.com/org/repo/blob/master/users.yaml
    *     rules:
    *       - allow: [User, Group]
-   *   - type: github
+   *   - type: url
    *     target: https://github.com/org/repo/blob/master/systems.yaml
    *     rules:
    *       - allow: [System]

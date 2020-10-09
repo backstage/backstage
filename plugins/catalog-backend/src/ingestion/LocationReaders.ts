@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
+import { getVoidLogger, UrlReader } from '@backstage/backend-common';
 import {
   Entity,
   EntityPolicies,
@@ -26,18 +26,18 @@ import { Config, ConfigReader } from '@backstage/config';
 import { Logger } from 'winston';
 import { CatalogRulesEnforcer } from './CatalogRules';
 import { AnnotateLocationEntityProcessor } from './processors/AnnotateLocationEntityProcessor';
-import { ApiDefinitionAtLocationProcessor } from './processors/ApiDefinitionAtLocationProcessor';
 import { AzureApiReaderProcessor } from './processors/AzureApiReaderProcessor';
 import { BitbucketApiReaderProcessor } from './processors/BitbucketApiReaderProcessor';
+import { CodeOwnersProcessor } from './processors/CodeOwnersProcessor';
 import { EntityPolicyProcessor } from './processors/EntityPolicyProcessor';
 import { FileReaderProcessor } from './processors/FileReaderProcessor';
 import { GithubOrgReaderProcessor } from './processors/GithubOrgReaderProcessor';
 import { GithubReaderProcessor } from './processors/GithubReaderProcessor';
 import { GitlabApiReaderProcessor } from './processors/GitlabApiReaderProcessor';
 import { GitlabReaderProcessor } from './processors/GitlabReaderProcessor';
+import { LdapOrgReaderProcessor } from './processors/LdapOrgReaderProcessor';
 import { LocationRefProcessor } from './processors/LocationEntityProcessor';
 import { PlaceholderProcessor } from './processors/PlaceholderProcessor';
-import { CodeOwnersProcessor } from './processors/CodeOwnersProcessor';
 import * as result from './processors/results';
 import { StaticLocationProcessor } from './processors/StaticLocationProcessor';
 import {
@@ -57,6 +57,7 @@ import { LocationReader, ReadLocationResult } from './types';
 const MAX_DEPTH = 10;
 
 type Options = {
+  reader: UrlReader;
   logger?: Logger;
   config?: Config;
   processors?: LocationProcessor[];
@@ -72,6 +73,7 @@ export class LocationReaders implements LocationReader {
 
   static defaultProcessors(options: {
     logger: Logger;
+    reader: UrlReader;
     config?: Config;
     entityPolicy?: EntityPolicy;
   }): LocationProcessor[] {
@@ -80,20 +82,50 @@ export class LocationReaders implements LocationReader {
       config = new ConfigReader({}, 'missing-config'),
       entityPolicy = new EntityPolicies(),
     } = options;
+
+    // TODO(Rugvip): These are added for backwards compatibility if config exists
+    //   The idea is to have everyone migrate from using the old processors to the new
+    //   integration config driven UrlReaders. In an upcoming release we can then completely
+    //   remove support for the old processors, but still keep handling the deprecated location
+    //   types for a while, but with a warning.
+    const oldProcessors = [];
+    const pc = config.getOptionalConfig('catalog.processors');
+    if (pc?.has('github')) {
+      logger.warn(
+        `Using deprecated configuration for catalog.processors.github, move to using integrations.github instead`,
+      );
+      oldProcessors.push(GithubReaderProcessor.fromConfig(config, logger));
+    }
+    if (pc?.has('gitlabApi')) {
+      logger.warn(
+        `Using deprecated configuration for catalog.processors.gitlabApi, move to using integrations.gitlab instead`,
+      );
+      oldProcessors.push(new GitlabApiReaderProcessor(config));
+      oldProcessors.push(new GitlabReaderProcessor());
+    }
+    if (pc?.has('bitbucketApi')) {
+      logger.warn(
+        `Using deprecated configuration for catalog.processors.bitbucketApi, move to using integrations.bitbucket instead`,
+      );
+      oldProcessors.push(new BitbucketApiReaderProcessor(config));
+    }
+    if (pc?.has('azureApi')) {
+      logger.warn(
+        `Using deprecated configuration for catalog.processors.azureApi, move to using integrations.azure instead`,
+      );
+      oldProcessors.push(new AzureApiReaderProcessor(config));
+    }
+
     return [
       StaticLocationProcessor.fromConfig(config),
       new FileReaderProcessor(),
-      GithubReaderProcessor.fromConfig(config, logger),
-      new GitlabApiReaderProcessor(config),
-      new GitlabReaderProcessor(),
-      new BitbucketApiReaderProcessor(config),
-      new AzureApiReaderProcessor(config),
-      GithubOrgReaderProcessor.fromConfig(config),
-      new UrlReaderProcessor(),
+      ...oldProcessors,
+      GithubOrgReaderProcessor.fromConfig(config, { logger }),
+      LdapOrgReaderProcessor.fromConfig(config, { logger }),
+      new UrlReaderProcessor(options),
       new YamlProcessor(),
-      PlaceholderProcessor.default(),
-      new CodeOwnersProcessor(),
-      new ApiDefinitionAtLocationProcessor(),
+      PlaceholderProcessor.default({ reader: options.reader }),
+      new CodeOwnersProcessor({ reader: options.reader }),
       new EntityPolicyProcessor(entityPolicy),
       new LocationRefProcessor(),
       new AnnotateLocationEntityProcessor(),
@@ -103,7 +135,8 @@ export class LocationReaders implements LocationReader {
   constructor({
     logger = getVoidLogger(),
     config,
-    processors = LocationReaders.defaultProcessors({ logger, config }),
+    reader,
+    processors = LocationReaders.defaultProcessors({ logger, reader, config }),
   }: Options) {
     this.logger = logger;
     this.processors = processors;
@@ -166,10 +199,6 @@ export class LocationReaders implements LocationReader {
     item: LocationProcessorLocationResult,
     emit: LocationProcessorEmit,
   ) {
-    this.logger.debug(
-      `Reading location ${item.location.type} ${item.location.target} optional=${item.optional}`,
-    );
-
     for (const processor of this.processors) {
       if (processor.readLocation) {
         try {
@@ -195,10 +224,6 @@ export class LocationReaders implements LocationReader {
     item: LocationProcessorDataResult,
     emit: LocationProcessorEmit,
   ) {
-    this.logger.debug(
-      `Parsing data from location ${item.location.type} ${item.location.target} (${item.data.byteLength} bytes)`,
-    );
-
     for (const processor of this.processors) {
       if (processor.parseData) {
         try {
@@ -221,21 +246,12 @@ export class LocationReaders implements LocationReader {
     item: LocationProcessorEntityResult,
     emit: LocationProcessorEmit,
   ): Promise<Entity> {
-    this.logger.debug(
-      `Got entity at location ${item.location.type} ${item.location.target}, ${item.entity.apiVersion} ${item.entity.kind}`,
-    );
-
     let current = item.entity;
 
     for (const processor of this.processors) {
       if (processor.processEntity) {
         try {
-          current = await processor.processEntity(
-            current,
-            item.location,
-            emit,
-            this.readLocation.bind(this),
-          );
+          current = await processor.processEntity(current, item.location, emit);
         } catch (e) {
           // Construct the name carefully, if we got validation errors we do
           // not want to crash here due to missing metadata or so
@@ -272,41 +288,5 @@ export class LocationReaders implements LocationReader {
         }
       }
     }
-  }
-
-  private async readLocation(location: LocationSpec): Promise<Buffer> {
-    let data: Buffer | undefined = undefined;
-    let error: Error | undefined = undefined;
-
-    await this.handleLocation(
-      {
-        type: 'location',
-        location,
-        optional: false,
-      },
-      output => {
-        if (output.type === 'error' && !error) {
-          error = output.error;
-        } else if (output.type === 'data') {
-          if (data) {
-            if (!error) {
-              error = new Error(
-                'More than one piece of data loaded unexpectedly',
-              );
-            }
-          } else {
-            data = output.data;
-          }
-        }
-      },
-    );
-
-    if (error) {
-      throw error;
-    } else if (!data) {
-      throw new Error('No data loaded');
-    }
-
-    return data;
   }
 }

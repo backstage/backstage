@@ -76,7 +76,7 @@ describe('ErrorPanel', () => {
     expect(getByText('Cluster: THIS_CLUSTER')).toBeInTheDocument();
     expect(
       getByText(
-        "Error fetching Kubernetes resource: 'some/resource', error: SYSTEM_ERROR",
+        "Error fetching Kubernetes resource: 'some/resource', error: SYSTEM_ERROR, status code: 500",
       ),
     ).toBeInTheDocument();
   });

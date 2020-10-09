@@ -1,5 +1,5 @@
 .PluginCard {
-  background-color: #272822;
+  background-color: #282828;
   height: 100%;
   padding: 16px;
   display: flex;
@@ -53,13 +53,12 @@
 .ButtonFilled {
   padding: 4px 8px;
   border-radius: 4px;
-  background-color: #36baa2;
-  color: white;
+  color: #69ddc7;
   margin-top: 36px;
 }
 
 .ButtonFilled:hover {
-  border: 1px solid #36baa2;
+  border: 1px solid #69ddc7;
   background-color: transparent;
 }
 
@@ -67,8 +66,8 @@
   font-size: small;
   border-radius: 16px;
   padding: 2px 8px;
-  border: 1px solid #36baa2;
-  color: #36baa2;
+  border: 1px solid #69ddc7;
+  color: #69ddc7;
 }
 
 .PluginCardLink {
@@ -112,5 +111,5 @@
 }
 
 #add-plugin-card {
-  border: 1px solid #36baa2;
+  border: 1px solid #69ddc7;
 }

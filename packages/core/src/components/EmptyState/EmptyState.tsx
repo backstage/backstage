@@ -22,7 +22,7 @@ import Background from './assets/Background.svg';
 const useStyles = makeStyles(theme => ({
   root: {
     backgroundColor: theme.palette.background.default,
-    padding: theme.spacing(10, 0, 0, 0),
+    padding: theme.spacing(2, 0, 0, 0),
   },
   action: {
     marginTop: theme.spacing(2),
@@ -56,7 +56,7 @@ export const EmptyState = ({ title, description, missing, action }: Props) => {
     >
       <Grid item container direction="column" xs={12} md={6}>
         <Grid item>
-          <Typography variant="h3">{title}</Typography>
+          <Typography variant="h5">{title}</Typography>
         </Grid>
         <Grid item>
           <Typography variant="body1">{description}</Typography>

@@ -15,6 +15,7 @@
  */
 
 import { ENTITY_DEFAULT_NAMESPACE } from './constants';
+import { Entity } from './Entity';
 import { parseEntityName, parseEntityRef, serializeEntityRef } from './ref';
 
 describe('ref', () => {
@@ -331,6 +332,26 @@ describe('ref', () => {
       expect(serializeEntityRef({ namespace: 'b', name: 'c' })).toEqual('b/c');
       expect(serializeEntityRef({ kind: 'a', name: 'c' })).toEqual('a:c');
       expect(serializeEntityRef({ name: 'c' })).toEqual('c');
+    });
+
+    it('handles entities', () => {
+      const entityWithNamespace: Entity = {
+        apiVersion: 'a',
+        kind: 'b',
+        metadata: {
+          name: 'c',
+          namespace: 'd',
+        },
+      };
+      const entityWithoutNamespace: Entity = {
+        apiVersion: 'a',
+        kind: 'b',
+        metadata: {
+          name: 'c',
+        },
+      };
+      expect(serializeEntityRef(entityWithNamespace)).toEqual('b:d/c');
+      expect(serializeEntityRef(entityWithoutNamespace)).toEqual('b:c');
     });
 
     it('picks the least complex form', () => {

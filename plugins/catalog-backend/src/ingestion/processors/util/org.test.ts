@@ -14,17 +14,8 @@
  * limitations under the License.
  */
 
-import { GroupEntity, UserEntity } from '@backstage/catalog-model';
+import { GroupEntity } from '@backstage/catalog-model';
 import { buildOrgHierarchy } from './org';
-
-function u(name: string): UserEntity {
-  return {
-    apiVersion: 'backstage.io/v1alpha1',
-    kind: 'User',
-    metadata: { name },
-    spec: { memberOf: [] },
-  };
-}
 
 function g(
   name: string,
@@ -40,26 +31,12 @@ function g(
 }
 
 describe('buildOrgHierarchy', () => {
-  it('puts users in the respective groups', () => {
-    const a = g('a', undefined, []);
-    const b = g('b', undefined, []);
-    const x = u('x');
-    const y = u('y');
-    const groupMemberUsers: Map<string, string[]> = new Map([
-      ['a', ['x', 'y']],
-      ['b', ['y']],
-    ]);
-    buildOrgHierarchy([a, b], [x, y], groupMemberUsers);
-    expect(x.spec.memberOf).toEqual(['a']);
-    expect(y.spec.memberOf).toEqual(['a', 'b']);
-  });
-
   it('adds groups to their parent.children', () => {
     const a = g('a', undefined, []);
     const b = g('b', 'a', []);
     const c = g('c', 'b', []);
     const d = g('d', 'a', []);
-    buildOrgHierarchy([a, b, c, d], [], new Map());
+    buildOrgHierarchy([a, b, c, d]);
     expect(a.spec.children).toEqual(expect.arrayContaining(['b', 'd']));
     expect(b.spec.children).toEqual(expect.arrayContaining(['c']));
     expect(c.spec.children).toEqual([]);
@@ -71,7 +48,7 @@ describe('buildOrgHierarchy', () => {
     const b = g('b', 'a', []);
     const c = g('c', 'b', []);
     const d = g('d', 'a', []);
-    buildOrgHierarchy([a, b, c, d], [], new Map());
+    buildOrgHierarchy([a, b, c, d]);
     expect(a.spec.descendants).toEqual(expect.arrayContaining(['b', 'c', 'd']));
     expect(b.spec.descendants).toEqual(expect.arrayContaining(['c']));
     expect(c.spec.descendants).toEqual([]);
@@ -83,7 +60,7 @@ describe('buildOrgHierarchy', () => {
     const b = g('b', 'a', []);
     const c = g('c', 'b', []);
     const d = g('d', 'a', []);
-    buildOrgHierarchy([a, b, c, d], [], new Map());
+    buildOrgHierarchy([a, b, c, d]);
     expect(a.spec.ancestors).toEqual([]);
     expect(b.spec.ancestors).toEqual(expect.arrayContaining(['a']));
     expect(c.spec.ancestors).toEqual(expect.arrayContaining(['a', 'b']));

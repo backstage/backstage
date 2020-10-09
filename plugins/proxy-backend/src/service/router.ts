@@ -25,6 +25,27 @@ import { Logger } from 'winston';
 import http from 'http';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 
+// A list of headers that are always forwarded to the proxy targets.
+const safeForwardHeaders = [
+  // https://fetch.spec.whatwg.org/#cors-safelisted-request-header
+  'cache-control',
+  'content-language',
+  'content-length',
+  'content-type',
+  'expires',
+  'last-modified',
+  'pragma',
+
+  // host is overridden by default. if changeOrigin is configured to false,
+  // we assume this is a intentional and should also be forwarded.
+  'host',
+
+  // other headers that we assume to be ok
+  'accept',
+  'accept-language',
+  'user-agent',
+];
+
 export interface RouterOptions {
   logger: Logger;
   config: Config;
@@ -33,11 +54,12 @@ export interface RouterOptions {
 
 export interface ProxyConfig extends ProxyMiddlewareConfig {
   allowedMethods?: string[];
+  allowedHeaders?: string[];
 }
 
 // Creates a proxy middleware, possibly with defaults added on top of the
 // given config.
-function buildMiddleware(
+export function buildMiddleware(
   pathPrefix: string,
   logger: Logger,
   route: string,
@@ -66,6 +88,30 @@ function buildMiddleware(
   // Only permit the allowed HTTP methods if configured
   const filter = (_pathname: string, req: http.IncomingMessage): boolean => {
     return fullConfig?.allowedMethods?.includes(req.method!) ?? true;
+  };
+
+  // Only forward the allowed HTTP headers to not forward unwanted secret headers
+  const headerAllowList = new Set<string>(
+    [
+      // allow all safe headers
+      ...safeForwardHeaders,
+
+      // allow all headers that are set by the proxy
+      ...((fullConfig.headers && Object.keys(fullConfig.headers)) || []),
+
+      // allow all configured headers
+      ...(fullConfig.allowedHeaders || []),
+    ].map(h => h.toLocaleLowerCase()),
+  );
+
+  fullConfig.onProxyReq = (proxyReq: http.ClientRequest) => {
+    const headerNames = proxyReq.getHeaderNames();
+
+    headerNames.forEach(h => {
+      if (!headerAllowList.has(h.toLocaleLowerCase())) {
+        proxyReq.removeHeader(h);
+      }
+    });
   };
 
   return createProxyMiddleware(filter, fullConfig);

@@ -90,18 +90,17 @@ order:
 
 ## Secrets
 
-Secrets are supported via a special `$secret` key, which in turn provides a
-number of different ways to read in secrets. To load a configuration value as a
-secret, supply an object with a single `$secret` key, and within that supply an
-object that describes how the secret is loaded. For example, the following will
-read the config key `backend.mySecretKey` from the environment variable
-`MY_SECRET_KEY`:
+Secrets are supported via a special secret keys that are prefixed with `$`,
+which in turn provides a number of different ways to read in secrets. To load a
+configuration value as a secret, supply an object with one of the special secret
+keys, for example `$env` or `$file`. A full list of supported secret keys can be
+found below. For example, the following will read the config key
+`backend.mySecretKey` from the environment variable `MY_SECRET_KEY`:
 
 ```yaml
 backend:
   mySecretKey:
-    $secret:
-      env: MY_SECRET_KEY
+    $env: MY_SECRET_KEY
 ```
 
 With the above configuration, calling `config.getString('backend.mySecretKey')`
@@ -123,8 +122,7 @@ This reads a secret from an environment variable. For example, the following
 config loads the secret from the `MY_SECRET` env var.
 
 ```yaml
-$secret:
-  env: MY_SECRET
+$env: MY_SECRET
 ```
 
 ### File Secrets
@@ -135,22 +133,19 @@ following reads the contents of `my-secret.txt` relative to the config file
 itself:
 
 ```yaml
-$secret:
-  file: ./my-secret.txt
+$file: ./my-secret.txt
 ```
 
 ### Data File Secrets
 
 This reads secrets from a path within a JSON-like data file. The file path
-behaves similar to file secrets, but in addition a `path` is used to point to a
-specific value inside the file. Supported file extensions are `.json`, `.yaml`,
-and `.yml`. For example, the following would read out `my-secret-key` from
-`my-secrets.json`:
+behaves similar to file secrets, but with the addition of a url fragment that is
+used to point to a specific value inside the file. Supported file extensions are
+`.json`, `.yaml`, and `.yml`. For example, the following would read out
+`my-secret-key` from `my-secrets.json`:
 
 ```yaml
-$secret:
-  data: ./my-secrets.json
-  path: deployment.key
+$data: ./my-secrets.json#deployment.key
 
 # my-secrets.json
 {

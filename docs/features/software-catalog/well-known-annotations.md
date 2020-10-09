@@ -41,27 +41,6 @@ expecting a two-item array out of it. The format of the target part is
 type-dependent and could conceivably even be an empty string, but the separator
 colon is always present.
 
-### backstage.io/definition-at-location
-
-```yaml
-# Example
-apiVersion: backstage.io/v1alpha1
-kind: API
-metadata:
-  name: petstore
-  annotations:
-    backstage.io/definition-at-location: 'url:https://petstore.swagger.io/v2/swagger.json'
-spec:
-  type: openapi
-```
-
-This annotation allows to fetch an API definition from another location, instead
-of wrapping the API definition inside the definition field. This allows to
-easily consume existing API definition. The definition is fetched during
-ingestion by a processor and included in the entity. It is updated on every
-refresh. The annotation contains a location reference string that contains the
-location processor type and the target.
-
 ### backstage.io/techdocs-ref
 
 ```yaml
@@ -179,6 +158,21 @@ fallback (`rollbar.organization` followed by `organization.name`).
 Specifying this annotation may enable Rollbar related features in Backstage for
 that entity.
 
+### backstage.io/ldap-rdn, backstage.io/ldap-uuid, backstage.io/ldap-dn
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    backstage.io/ldap-rdn: my-team
+    backstage.io/ldap-uuid: c57e8ba2-6cc4-1039-9ebc-d5f241a7ca21
+    backstage.io/ldap-dn: cn=my-team,ou=access,ou=groups,ou=spotify,dc=spotify,dc=net
+```
+
+The value of these annotations are the corresponding attributes that were found
+when ingestion the entity from LDAP. Not all of them may be present, depending
+on what attributes that the server presented at ingestion time.
+
 ## Deprecated Annotations
 
 The following annotations are deprecated, and only listed here to aid in
@@ -189,6 +183,25 @@ migrating away from them.
 This annotation was used for a while to enable the GitHub Actions feature. This
 is now instead using the [github.com/project-slug](#github-com-project-slug)
 annotation, with the same value format.
+
+### backstage.io/definition-at-location
+
+This annotation allowed to load the API definition from another location. Now
+placeholders can be used instead:
+
+```
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: petstore
+  description: The Petstore API
+spec:
+  type: openapi
+  lifecycle: production
+  owner: petstore@example.com
+  definition:
+    $text: https://petstore.swagger.io/v2/swagger.json
+```
 
 ## Links
 

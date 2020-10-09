@@ -69,7 +69,7 @@ function getGithubRequestOptions(config: Config): RequestInit {
   const token =
     config.getOptionalString('catalog.processors.github.privateToken') ??
     config.getOptionalString('catalog.processors.githubApi.privateToken') ??
-    process.env.GITHUB_PRIVATE_TOKEN;
+    process.env.GITHUB_TOKEN;
 
   if (token) {
     headers.Authorization = `token ${token}`;
@@ -88,7 +88,7 @@ function getGitlabRequestOptions(config: Config): RequestInit {
   const token =
     config.getOptionalString('catalog.processors.gitlab.privateToken') ??
     config.getOptionalString('catalog.processors.gitlabApi.privateToken') ??
-    process.env.GITLAB_ACCESS_TOKEN;
+    process.env.GITLAB_TOKEN;
 
   if (token) {
     headers['PRIVATE-TOKEN'] = token;

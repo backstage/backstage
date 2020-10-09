@@ -54,7 +54,7 @@ describe('<TechDocsPageHeader />', () => {
         ),
       );
       expect(rendered.container.innerHTML).toContain('header');
-      expect(rendered.getByText('test-site-name')).toBeDefined();
+      expect(rendered.getAllByText('test-site-name')).toHaveLength(2);
       expect(rendered.getByText('test-site-desc')).toBeDefined();
     });
   });
