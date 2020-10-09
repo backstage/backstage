@@ -39,7 +39,6 @@
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.24",
     "@types/supertest": "^2.0.8",
-    "jest-fetch-mock": "^3.0.3",
     "supertest": "^4.0.2"
   },
   "files": [
