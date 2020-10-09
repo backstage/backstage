@@ -78,7 +78,7 @@ export class GithubPreparer implements PreparerBase {
     );
 
     if (target && currentBranch !== target) {
-      await repository.checkoutBranch(target);
+      await repository.checkoutRef(target);
     }
 
     return path.resolve(tempDir, templateDirectory);
