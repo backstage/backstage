@@ -54,11 +54,13 @@ export async function createRouter(
       })
       .get('/entities/by-uid/:uid', async (req, res) => {
         const { uid } = req.params;
-        const entity = await entitiesCatalog.entityByUid(uid);
-        if (!entity) {
+        const entities = await entitiesCatalog.entities([
+          { key: 'metadata.uid', values: [uid] },
+        ]);
+        if (!entities.length) {
           res.status(404).send(`No entity with uid ${uid}`);
         }
-        res.status(200).send(entity);
+        res.status(200).send(entities[0]);
       })
       .delete('/entities/by-uid/:uid', async (req, res) => {
         const { uid } = req.params;
@@ -67,19 +69,19 @@ export async function createRouter(
       })
       .get('/entities/by-name/:kind/:namespace/:name', async (req, res) => {
         const { kind, namespace, name } = req.params;
-        const entity = await entitiesCatalog.entityByName({
-          kind,
-          namespace,
-          name,
-        });
-        if (!entity) {
+        const entities = await entitiesCatalog.entities([
+          { key: 'kind', values: [kind] },
+          { key: 'metadata.namespace', values: [namespace] },
+          { key: 'metadata.name', values: [name] },
+        ]);
+        if (!entities.length) {
           res
             .status(404)
             .send(
               `No entity with kind ${kind} namespace ${namespace} name ${name}`,
             );
         }
-        res.status(200).send(entity);
+        res.status(200).send(entities[0]);
       });
   }
 

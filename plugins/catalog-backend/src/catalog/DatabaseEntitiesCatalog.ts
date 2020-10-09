@@ -15,13 +15,12 @@
  */
 
 import { NotFoundError } from '@backstage/backend-common';
+import type { Entity } from '@backstage/catalog-model';
 import {
-  EntityName,
   generateUpdatedEntity,
   getEntityName,
   LOCATION_ANNOTATION,
 } from '@backstage/catalog-model';
-import type { Entity } from '@backstage/catalog-model';
 import type { Database, DbEntityResponse, EntityFilters } from '../database';
 import type { EntitiesCatalog } from './types';
 
@@ -33,20 +32,6 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
       this.database.entities(tx, filters),
     );
     return items.map(i => i.entity);
-  }
-
-  async entityByUid(uid: string): Promise<Entity | undefined> {
-    const response = await this.database.transaction(tx =>
-      this.database.entityByUid(tx, uid),
-    );
-    return response?.entity;
-  }
-
-  async entityByName(name: EntityName): Promise<Entity | undefined> {
-    const response = await this.database.transaction(tx =>
-      this.database.entityByName(tx, name),
-    );
-    return response?.entity;
   }
 
   async addOrUpdateEntity(

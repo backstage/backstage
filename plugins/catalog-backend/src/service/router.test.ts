@@ -32,8 +32,6 @@ describe('createRouter', () => {
   beforeAll(async () => {
     entitiesCatalog = {
       entities: jest.fn(),
-      entityByUid: jest.fn(),
-      entityByName: jest.fn(),
       addOrUpdateEntity: jest.fn(),
       addEntities: jest.fn(),
       removeEntityByUid: jest.fn(),
@@ -100,23 +98,27 @@ describe('createRouter', () => {
           name: 'c',
         },
       };
-      entitiesCatalog.entityByUid.mockResolvedValue(entity);
+      entitiesCatalog.entities.mockResolvedValue([entity]);
 
       const response = await request(app).get('/entities/by-uid/zzz');
 
-      expect(entitiesCatalog.entityByUid).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.entityByUid).toHaveBeenCalledWith('zzz');
+      expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.entities).toHaveBeenCalledWith([
+        { key: 'metadata.uid', values: ['zzz'] },
+      ]);
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(expect.objectContaining(entity));
     });
 
     it('responds with a 404 for missing entities', async () => {
-      entitiesCatalog.entityByUid.mockResolvedValue(undefined);
+      entitiesCatalog.entities.mockResolvedValue([]);
 
       const response = await request(app).get('/entities/by-uid/zzz');
 
-      expect(entitiesCatalog.entityByUid).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.entityByUid).toHaveBeenCalledWith('zzz');
+      expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.entities).toHaveBeenCalledWith([
+        { key: 'metadata.uid', values: ['zzz'] },
+      ]);
       expect(response.status).toEqual(404);
       expect(response.text).toMatch(/uid/);
     });
@@ -132,31 +134,31 @@ describe('createRouter', () => {
           namespace: 'ns',
         },
       };
-      entitiesCatalog.entityByName.mockResolvedValue(entity);
+      entitiesCatalog.entities.mockResolvedValue([entity]);
 
       const response = await request(app).get('/entities/by-name/k/ns/n');
 
-      expect(entitiesCatalog.entityByName).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.entityByName).toHaveBeenCalledWith({
-        kind: 'k',
-        namespace: 'ns',
-        name: 'n',
-      });
+      expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.entities).toHaveBeenCalledWith([
+        { key: 'kind', values: ['k'] },
+        { key: 'metadata.namespace', values: ['ns'] },
+        { key: 'metadata.name', values: ['n'] },
+      ]);
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(expect.objectContaining(entity));
     });
 
     it('responds with a 404 for missing entities', async () => {
-      entitiesCatalog.entityByName.mockResolvedValue(undefined);
+      entitiesCatalog.entities.mockResolvedValue([]);
 
       const response = await request(app).get('/entities/by-name/b/d/c');
 
-      expect(entitiesCatalog.entityByName).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.entityByName).toHaveBeenCalledWith({
-        kind: 'b',
-        namespace: 'd',
-        name: 'c',
-      });
+      expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.entities).toHaveBeenCalledWith([
+        { key: 'kind', values: ['b'] },
+        { key: 'metadata.namespace', values: ['d'] },
+        { key: 'metadata.name', values: ['c'] },
+      ]);
       expect(response.status).toEqual(404);
       expect(response.text).toMatch(/name/);
     });
