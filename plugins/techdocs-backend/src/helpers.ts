@@ -130,7 +130,7 @@ export const checkoutGitRepository = async (
   const token =
     process.env.GITHUB_TOKEN ||
     process.env.GITLAB_PRIVATE_TOKEN_USER ||
-    process.env.AZURE_PRIVATE_TOKEN ||
+    process.env.AZURE_TOKEN ||
     '';
 
   if (fs.existsSync(repositoryTmpPath)) {

@@ -114,7 +114,7 @@ function getAzureRequestOptions(config: Config): RequestInit {
 
   const token =
     config.getOptionalString('catalog.processors.azureApi.privateToken') ??
-    process.env.AZURE_PRIVATE_TOKEN;
+    process.env.AZURE_TOKEN;
 
   if (token !== '') {
     headers.Authorization = `Basic ${Buffer.from(`:${token}`, 'utf8').toString(
