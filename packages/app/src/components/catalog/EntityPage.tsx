@@ -108,7 +108,9 @@ const RecentCICDRunsSwitcher = ({ entity }: { entity: Entity }) => {
       content = <JenkinsLatestRunCard branch="master" />;
       break;
     case isGitHubActionsAvailable(entity):
-      content = <RecentWorkflowRunsCard entity={entity} />;
+      content = (
+        <RecentWorkflowRunsCard entity={entity} limit={3} variant="grit-item" />
+      );
       break;
     case isTravisCIAvailable(entity):
       content = <RecentTravisCIBuildsWidget entity={entity} />;
@@ -127,7 +129,7 @@ const RecentCICDRunsSwitcher = ({ entity }: { entity: Entity }) => {
 };
 
 const OverviewContent = ({ entity }: { entity: Entity }) => (
-  <Grid container spacing={3}>
+  <Grid container spacing={3} alignItems="stretch">
     <Grid item md={6}>
       <AboutCard entity={entity} />
     </Grid>
