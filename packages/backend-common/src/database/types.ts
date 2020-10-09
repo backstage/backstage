@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-import { merge } from 'lodash';
+import knex from 'knex';
 
 /**
- * Merges database objects together
- *
- * @param config The base config. The input is not modified
- * @param overrides Any additional overrides
+ * The PluginDatabaseManager manages access to databases that Plugins get.
  */
-export function mergeDatabaseConfig(config: any, ...overrides: any[]) {
-  return merge({}, config, ...overrides);
+export interface PluginDatabaseManager {
+  /**
+   * getClient provides backend plugins database connections for itself.
+   *
+   * The purpose of this method is to allow plugins to get isolated data
+   * stores so that plugins are discouraged from database integration.
+   */
+  getClient(): Promise<knex>;
 }
