@@ -54,9 +54,9 @@ export async function createRouter(
       })
       .get('/entities/by-uid/:uid', async (req, res) => {
         const { uid } = req.params;
-        const entities = await entitiesCatalog.entities([
-          { key: 'metadata.uid', values: [uid] },
-        ]);
+        const entities = await entitiesCatalog.entities({
+          'metadata.uid': uid,
+        });
         if (!entities.length) {
           res.status(404).send(`No entity with uid ${uid}`);
         }
@@ -69,11 +69,11 @@ export async function createRouter(
       })
       .get('/entities/by-name/:kind/:namespace/:name', async (req, res) => {
         const { kind, namespace, name } = req.params;
-        const entities = await entitiesCatalog.entities([
-          { key: 'kind', values: [kind] },
-          { key: 'metadata.namespace', values: [namespace] },
-          { key: 'metadata.name', values: [name] },
-        ]);
+        const entities = await entitiesCatalog.entities({
+          kind: kind,
+          'metadata.namespace': namespace,
+          'metadata.name': name,
+        });
         if (!entities.length) {
           res
             .status(404)
@@ -123,7 +123,7 @@ export async function createRouter(
 function translateQueryToEntityFilters(
   request: express.Request,
 ): EntityFilters {
-  const filters: EntityFilters = [];
+  const filters: EntityFilters = {};
 
   for (const [key, valueOrValues] of Object.entries(request.query)) {
     const values = Array.isArray(valueOrValues)
@@ -134,10 +134,13 @@ function translateQueryToEntityFilters(
       throw new InputError('Complex query parameters are not supported');
     }
 
-    filters.push({
-      key,
-      values: values.map(v => v || null) as string[],
-    });
+    // This one always emits arrays
+    let matchers = filters[key] as (string | null)[];
+    if (!matchers) {
+      matchers = [];
+      filters[key] = matchers;
+    }
+    matchers.push(...(values.map(v => v || null) as (string | null)[]));
   }
 
   return filters;

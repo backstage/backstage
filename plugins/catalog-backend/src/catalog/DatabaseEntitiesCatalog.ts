@@ -85,12 +85,9 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
       const location =
         entityResponse.entity.metadata.annotations?.[LOCATION_ANNOTATION];
       const colocatedEntities = location
-        ? await this.database.entities(tx, [
-            {
-              key: `metadata.annotations.${LOCATION_ANNOTATION}`,
-              values: [location],
-            },
-          ])
+        ? await this.database.entities(tx, {
+            [`metadata.annotations.${LOCATION_ANNOTATION}`]: location,
+          })
         : [entityResponse];
       for (const dbResponse of colocatedEntities) {
         await this.database.removeEntityByUid(

@@ -24,8 +24,11 @@ describe('search', () => {
       const output = traverse(input);
       expect(output).toEqual([
         { key: 'a', value: 'b' },
+        { key: 'a.b', value: true },
         { key: 'a', value: 'c' },
+        { key: 'a.c', value: true },
         { key: 'a', value: 'd' },
+        { key: 'a.d', value: true },
       ]);
     });
 

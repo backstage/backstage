@@ -219,61 +219,64 @@ export class CommonDatabase implements Database {
 
     let entitiesQuery = tx<DbEntitiesRow>('entities');
 
-    for (const filter of filters || []) {
-      const key = filter.key.toLowerCase().replace(/[*]/g, '%');
-      const keyOp = filter.key.includes('*') ? 'like' : '=';
+    if (filters && Object.keys(filters).length) {
+      for (const [matchKey, matchVal] of Object.entries(filters)) {
+        const key = matchKey.toLowerCase().replace(/[*]/g, '%');
+        const keyOp = key.includes('*') ? 'like' : '=';
+        const values = Array.isArray(matchVal) ? matchVal : [matchVal];
 
-      let matchNulls = false;
-      const matchIn: string[] = [];
-      const matchLike: string[] = [];
+        let matchNulls = false;
+        const matchIn: string[] = [];
+        const matchLike: string[] = [];
 
-      for (const value of filter.values) {
-        if (!value) {
-          matchNulls = true;
-        } else if (value.includes('*')) {
-          matchLike.push(value.toLowerCase().replace(/[*]/g, '%'));
-        } else {
-          matchIn.push(value.toLowerCase());
+        for (const value of values) {
+          if (!value) {
+            matchNulls = true;
+          } else if (value.includes('*')) {
+            matchLike.push(value.toLowerCase().replace(/[*]/g, '%'));
+          } else {
+            matchIn.push(value.toLowerCase());
+          }
         }
-      }
 
-      // NOTE(freben): This used to be a set of OUTER JOIN, which may seem to
-      // make a lot of sense. However, it had abysmal performance on sqlite
-      // when datasets grew large, so we're using IN instead.
-      const matchQuery = tx<DbEntitiesSearchRow>('entities_search')
-        .select('entity_id')
-        .where(function keyFilter() {
-          this.andWhere('key', keyOp, key);
-          this.andWhere(function valueFilter() {
-            if (matchIn.length === 1) {
-              this.orWhere({ value: matchIn[0] });
-            } else if (matchIn.length > 1) {
-              this.orWhereIn('value', matchIn);
-            }
-            if (matchLike.length) {
-              for (const x of matchLike) {
-                this.orWhere('value', 'like', tx.raw('?', [x]));
+        // NOTE(freben): This used to be a set of OUTER JOIN, which may seem to
+        // make a lot of sense. However, it had abysmal performance on sqlite
+        // when datasets grew large, so we're using IN instead.
+        const matchQuery = tx<DbEntitiesSearchRow>('entities_search')
+          .select('entity_id')
+          .where(function keyFilter() {
+            this.andWhere('key', keyOp, key);
+            this.andWhere(function valueFilter() {
+              if (matchIn.length === 1) {
+                this.orWhere({ value: matchIn[0] });
+              } else if (matchIn.length > 1) {
+                this.orWhereIn('value', matchIn);
               }
-            }
-            if (matchNulls) {
-              // Match explicit nulls, and then handle absence separately below
-              this.orWhereNull('value');
-            }
+              if (matchLike.length) {
+                for (const x of matchLike) {
+                  this.orWhere('value', 'like', tx.raw('?', [x]));
+                }
+              }
+              if (matchNulls) {
+                // Match explicit nulls, and then handle absence separately below
+                this.orWhereNull('value');
+              }
+            });
           });
-        });
 
-      // Handle absence as nulls as well
-      entitiesQuery = entitiesQuery.andWhere(function match() {
-        this.whereIn('id', matchQuery);
-        if (matchNulls) {
-          this.orWhereNotIn(
-            'id',
-            tx<DbEntitiesSearchRow>('entities_search')
-              .select('entity_id')
-              .where('key', keyOp, key),
-          );
-        }
-      });
+        // Handle absence as nulls as well
+        entitiesQuery = entitiesQuery.andWhere(function match() {
+          this.whereIn('id', matchQuery);
+          if (matchNulls) {
+            this.orWhereNotIn(
+              'id',
+              tx<DbEntitiesSearchRow>('entities_search')
+                .select('entity_id')
+                .where('key', keyOp, key),
+            );
+          }
+        });
+      }
     }
 
     const rows = await entitiesQuery

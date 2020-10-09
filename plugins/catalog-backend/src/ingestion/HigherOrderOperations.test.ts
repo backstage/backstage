@@ -204,14 +204,11 @@ describe('HigherOrderOperations', () => {
         target: 'thing',
       });
       expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.entities).toHaveBeenNthCalledWith(
-        1,
-        expect.arrayContaining([
-          { key: 'kind', values: ['Component'] },
-          { key: 'metadata.namespace', values: [ENTITY_DEFAULT_NAMESPACE] },
-          { key: 'metadata.name', values: ['c1'] },
-        ]),
-      );
+      expect(entitiesCatalog.entities).toHaveBeenNthCalledWith(1, {
+        kind: 'Component',
+        'metadata.namespace': ENTITY_DEFAULT_NAMESPACE,
+        'metadata.name': ['c1'],
+      });
       expect(entitiesCatalog.addEntities).toHaveBeenCalledTimes(1);
       expect(entitiesCatalog.addEntities).toHaveBeenNthCalledWith(
         1,
