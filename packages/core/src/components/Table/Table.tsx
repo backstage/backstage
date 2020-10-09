@@ -45,7 +45,9 @@ import MTable, {
   Options,
 } from 'material-table';
 import React, { forwardRef, useCallback, useEffect, useState } from 'react';
-import { Filters, SelectedFilters } from './Filters';
+import { CheckboxTreeProps } from '../CheckboxTree/CheckboxTree';
+import { SelectProps } from '../Select/Select';
+import { Filter, Filters, SelectedFilters, Without } from './Filters';
 
 const tableIcons = {
   Add: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
@@ -100,6 +102,23 @@ const tableIcons = {
     <ViewColumn {...props} ref={ref} />
   )),
 };
+
+// TODO: Material table might already have such a function internally that we can use?
+function extractValueByField(data: any, field: string): any | undefined {
+  const path = field.split('.');
+  let value = data[path[0]];
+
+  for (let i = 1; i < path.length; ++i) {
+    if (value === undefined) {
+      return value;
+    }
+
+    const f = path[i];
+    value = value[f];
+  }
+
+  return value;
+}
 
 const useHeaderStyles = makeStyles<BackstageTheme>(theme => ({
   header: {
@@ -234,11 +253,21 @@ export function Table<T extends object = {}>({
         el =>
           !!Object.entries(selectedFilters)
             .filter(([, value]) => !!value.length)
-            .every(([key, value]) => {
-              if (Array.isArray(value)) {
-                return value.includes(el[getFieldByTitle(key)]);
+            .every(([key, filterValue]) => {
+              const fieldValue = extractValueByField(
+                el,
+                getFieldByTitle(key) as string,
+              );
+
+              if (Array.isArray(fieldValue) && Array.isArray(filterValue)) {
+                return fieldValue.some(v => filterValue.includes(v));
+              } else if (Array.isArray(fieldValue)) {
+                return fieldValue.includes(filterValue);
+              } else if (Array.isArray(filterValue)) {
+                return filterValue.includes(fieldValue);
               }
-              return el[getFieldByTitle(key)] === value;
+
+              return fieldValue === filterValue;
             }),
       );
       setTableData(newData);
@@ -248,29 +277,61 @@ export function Table<T extends object = {}>({
     setSelectedFiltersLength(selectedFiltersArray.flat().length);
   }, [data, selectedFilters, getFieldByTitle]);
 
-  const constructFilters = (filterConfig: TableFilter[], dataValue: any[]) => {
-    const extractColumnData = (column: string | keyof T) =>
-      dataValue.map(el => ({ label: el[column], options: [] }));
+  const constructFilters = (
+    filterConfig: TableFilter[],
+    dataValue: any[],
+  ): Filter[] => {
+    const extractDistinctValues = (field: string | keyof T): Set<any> => {
+      const distinctValues = new Set<any>();
+      const addValue = (value: any) => {
+        if (value !== undefined && value !== null) {
+          distinctValues.add(value);
+        }
+      };
+
+      dataValue.forEach(el => {
+        const value = extractValueByField(el, getFieldByTitle(field) as string);
+
+        if (Array.isArray(value)) {
+          (value as []).forEach(addValue);
+        } else {
+          addValue(value);
+        }
+      });
+
+      return distinctValues;
+    };
+
+    const constructCheckboxTree = (
+      filter: TableFilter,
+    ): Without<CheckboxTreeProps, 'onChange'> => ({
+      label: filter.column,
+      subCategories: [...extractDistinctValues(filter.column)].map(v => ({
+        label: v,
+        options: [],
+      })),
+    });
+
+    const constructSelect = (
+      filter: TableFilter,
+    ): Without<SelectProps, 'onChange'> => {
+      return {
+        placeholder: 'All results',
+        label: filter.column,
+        multiple: filter.type === 'multiple-select',
+        items: [...extractDistinctValues(filter.column)].map(value => ({
+          label: value,
+          value,
+        })),
+      };
+    };
 
     return filterConfig.map(filter => ({
       type: filter.type,
       element:
         filter.type === 'checkbox-tree'
-          ? {
-              label: filter.column,
-              subCategories: extractColumnData(
-                getFieldByTitle(filter.column) || '',
-              ),
-            }
-          : {
-              placeholder: 'All results',
-              label: filter.column,
-              multiple: filter.type === 'multiple-select',
-              items: dataValue.map(el => ({
-                label: el[getFieldByTitle(filter.column) || ''],
-                value: el[getFieldByTitle(filter.column) || ''],
-              })),
-            },
+          ? constructCheckboxTree(filter)
+          : constructSelect(filter),
     }));
   };
 
