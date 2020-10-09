@@ -61,7 +61,7 @@ const CostOverviewCard = ({
         </CostOverviewHeader>
         <Divider />
         <Box marginY={1} display="flex" flexDirection="column">
-          <CostOverviewChartLegend change={change} title={name} />
+          <CostOverviewChartLegend change={change} title={`${name} Trend`} />
           <CostOverviewChart
             responsive
             metric={metric}
