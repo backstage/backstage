@@ -141,6 +141,7 @@ Raghunandan
 rankdir
 readme
 Readme
+Recharts
 Redash
 replicasets
 repo

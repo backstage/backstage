@@ -19,11 +19,11 @@ import { Box } from '@material-ui/core';
 import { InfoCard } from '@backstage/core';
 import ResourceGrowthBarChart from '../ResourceGrowthBarChart';
 import ResourceGrowthBarChartLegend from '../ResourceGrowthBarChartLegend';
-import { Duration, ProjectGrowthAlert } from '../../types';
+import { Duration, ProjectGrowthData } from '../../types';
 import { pluralOf } from '../../utils/grammar';
 
 type ProjectGrowthAlertProps = {
-  alert: ProjectGrowthAlert;
+  alert: ProjectGrowthData;
 };
 
 const ProjectGrowthAlertCard = ({ alert }: ProjectGrowthAlertProps) => {

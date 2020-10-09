@@ -14,7 +14,5 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
-export * from './api';
-export * from './components';
-export * from './types';
+export { default as BarChart } from './BarChart';
+export { default as LegendItem } from './LegendItem';

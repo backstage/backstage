@@ -15,17 +15,16 @@
  */
 
 import {
-  AlertType,
-  Entity,
-  ProjectGrowthAlert,
-  Product,
-  UnlabeledDataflowAlert,
-  UnlabeledDataflowAlertProject,
-  getDefaultState,
   DefaultLoadingAction,
   Duration,
-  ProductCost,
+  Entity,
   findAlways,
+  getDefaultState,
+  Product,
+  ProductCost,
+  ProjectGrowthData,
+  UnlabeledDataflowAlertProject,
+  UnlabeledDataflowData,
 } from '../types';
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/core';
@@ -73,11 +72,10 @@ export const createMockProductCost = (
   return { ...defaultProduct };
 };
 
-export const createMockProjectGrowthAlert = (
-  callback?: mockAlertRenderer<ProjectGrowthAlert>,
-): ProjectGrowthAlert => {
-  const defaultAlert: ProjectGrowthAlert = {
-    id: AlertType.ProjectGrowth,
+export const createMockProjectGrowthData = (
+  callback?: mockAlertRenderer<ProjectGrowthData>,
+): ProjectGrowthData => {
+  const data: ProjectGrowthData = {
     project: 'test-project-growth-alert',
     periodStart: '2019-10-01',
     periodEnd: '2020-03-31',
@@ -90,17 +88,16 @@ export const createMockProjectGrowthAlert = (
   };
 
   if (typeof callback === 'function') {
-    return callback({ ...defaultAlert });
+    return callback({ ...data });
   }
 
-  return { ...defaultAlert };
+  return { ...data };
 };
 
-export const createMockUnlabeledDataflowAlert = (
-  callback?: mockAlertRenderer<UnlabeledDataflowAlert>,
-): UnlabeledDataflowAlert => {
-  const defaultAlert: UnlabeledDataflowAlert = {
-    id: AlertType.UnlabeledDataflow,
+export const createMockUnlabeledDataflowData = (
+  callback?: mockAlertRenderer<UnlabeledDataflowData>,
+): UnlabeledDataflowData => {
+  const data: UnlabeledDataflowData = {
     periodStart: '2020-05-01',
     periodEnd: '2020-06-1',
     projects: [],
@@ -109,10 +106,10 @@ export const createMockUnlabeledDataflowAlert = (
   };
 
   if (typeof callback === 'function') {
-    return callback({ ...defaultAlert });
+    return callback({ ...data });
   }
 
-  return { ...defaultAlert };
+  return { ...data };
 };
 
 export const createMockUnlabeledDataflowAlertProject = (
