@@ -33,13 +33,11 @@
     "fs-extra": "^9.0.1",
     "git-url-parse": "^11.2.0",
     "knex": "^0.21.1",
-    "node-fetch": "^2.6.0",
     "nodegit": "^0.27.0",
     "winston": "^3.2.1"
   },
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.24",
-    "@types/node-fetch": "^2.5.7",
     "supertest": "^4.0.2"
   },
   "files": [
