@@ -27,6 +27,7 @@ import {
   ProjectGrowthData,
   UnlabeledDataflowAlert,
   UnlabeledDataflowData,
+  Maybe,
 } from '@backstage/plugin-cost-insights';
 
 export class ExampleCostInsightsClient implements CostInsightsApi {
@@ -126,9 +127,38 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
     product: string,
     group: string,
     duration: Duration,
+    project: Maybe<string>,
   ): Promise<ProductCost> {
+    const projectProductInsights = await this.request(
+      { product, group, duration, project },
+      {
+        aggregation: [80_000, 110_000],
+        change: {
+          ratio: 0.375,
+          amount: 30_000,
+        },
+        entities: [
+          {
+            id: null, // entities with null ids will be appear as "Unlabeled" in product panels
+            aggregation: [45_000, 50_000],
+          },
+          {
+            id: 'entity-a',
+            aggregation: [15_000, 20_000],
+          },
+          {
+            id: 'entity-b',
+            aggregation: [20_000, 30_000],
+          },
+          {
+            id: 'entity-e',
+            aggregation: [0, 10_000],
+          },
+        ],
+      },
+    );
     const productInsights: ProductCost = await this.request(
-      { product, group, duration },
+      { product, group, duration, project },
       {
         aggregation: [200_000, 250_000],
         change: {
@@ -176,7 +206,7 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
       },
     );
 
-    return productInsights;
+    return project ? projectProductInsights : productInsights;
   }
 
   async getAlerts(group: string): Promise<Alert[]> {
