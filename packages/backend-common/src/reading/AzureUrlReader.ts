@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import fetch, { RequestInit, HeadersInit, Response } from 'node-fetch';
+import fetch from 'cross-fetch';
 import { Config } from '@backstage/config';
 import { NotFoundError } from '../errors';
 import { ReaderFactory, UrlReader } from './types';
@@ -76,7 +76,7 @@ export class AzureUrlReader implements UrlReader {
 
     // for private repos when PAT is not valid, Azure API returns a http status code 203 with sign in page html
     if (response.ok && response.status !== 203) {
-      return response.buffer();
+      return Buffer.from(await response.text());
     }
 
     const message = `${url} could not be read as ${builtUrl}, ${response.status} ${response.statusText}`;
