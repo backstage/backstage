@@ -19849,7 +19849,7 @@ regjsparser@^0.6.4:
 
 regression@^2.0.1:
   version "2.0.1"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/regression/-/regression-2.0.1.tgz#8d29c3e8224a10850c35e337e85a8b2fac3b0c87"
+  resolved "https://registry.npmjs.org/regression/-/regression-2.0.1.tgz#8d29c3e8224a10850c35e337e85a8b2fac3b0c87"
   integrity sha1-jSnD6CJKEIUMNeM36FqLL6w7DIc=
 
 relateurl@^0.2.7:
