@@ -78,8 +78,10 @@ export class CookieCutter implements TemplaterBase {
       });
     }
 
+    const [generated] = await fs.readdir(resultDir);
+
     return {
-      resultDir: path.resolve(resultDir, options.values.component_id as string),
+      resultDir: path.resolve(resultDir, generated),
     };
   }
 }
