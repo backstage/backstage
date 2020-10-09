@@ -25,7 +25,7 @@ type AlertActionCardList = {
 const AlertActionCardList: FC<AlertActionCardList> = ({ alerts }) => (
   <Paper>
     {alerts.map((alert, index) => (
-      <Fragment key={`${alert.id}-${index}`}>
+      <Fragment key={`alert-${index}`}>
         <AlertActionCard alert={alert} number={index + 1} />
         {index < alerts.length - 1 && <Divider variant="fullWidth" />}
       </Fragment>

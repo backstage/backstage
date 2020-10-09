@@ -43,6 +43,7 @@ describe('MultiTenantConfigClusterLocator', () => {
           {
             name: 'cluster1',
             url: 'http://localhost:8080',
+            authProvider: 'serviceAccount',
           },
         ],
       },
@@ -60,6 +61,7 @@ describe('MultiTenantConfigClusterLocator', () => {
         name: 'cluster1',
         serviceAccountToken: undefined,
         url: 'http://localhost:8080',
+        authProvider: 'serviceAccount',
       },
     ]);
   });
@@ -70,13 +72,14 @@ describe('MultiTenantConfigClusterLocator', () => {
         clusters: [
           {
             name: 'cluster1',
-            serviceAccountToken: undefined,
+            serviceAccountToken: 'token',
             url: 'http://localhost:8080',
+            authProvider: 'serviceAccount',
           },
           {
             name: 'cluster2',
-            serviceAccountToken: undefined,
             url: 'http://localhost:8081',
+            authProvider: 'google',
           },
         ],
       },
@@ -92,13 +95,15 @@ describe('MultiTenantConfigClusterLocator', () => {
     expect(result).toStrictEqual([
       {
         name: 'cluster1',
-        serviceAccountToken: undefined,
+        serviceAccountToken: 'token',
         url: 'http://localhost:8080',
+        authProvider: 'serviceAccount',
       },
       {
         name: 'cluster2',
         serviceAccountToken: undefined,
         url: 'http://localhost:8081',
+        authProvider: 'google',
       },
     ]);
   });

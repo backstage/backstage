@@ -51,9 +51,7 @@ export class TechDocsApi implements TechDocs {
   async getMetadata(metadataType: string, entityId: ParsedEntityId) {
     const { kind, namespace, name } = entityId;
 
-    const requestUrl = `${this.apiOrigin}/metadata/${metadataType}/${kind}/${
-      namespace ? namespace : 'default'
-    }/${name}`;
+    const requestUrl = `${this.apiOrigin}/metadata/${metadataType}/${namespace}/${kind}/${name}`;
 
     const request = await fetch(`${requestUrl}`);
     const res = await request.json();
@@ -72,9 +70,7 @@ export class TechDocsStorageApi implements TechDocsStorage {
   async getEntityDocs(entityId: ParsedEntityId, path: string) {
     const { kind, namespace, name } = entityId;
 
-    const url = `${this.apiOrigin}/docs/${kind}/${
-      namespace ? namespace : 'default'
-    }/${name}/${path}`;
+    const url = `${this.apiOrigin}/docs/${namespace}/${kind}/${name}/${path}`;
 
     const request = await fetch(
       `${url.endsWith('/') ? url : `${url}/`}index.html`,
@@ -96,9 +92,7 @@ export class TechDocsStorageApi implements TechDocsStorage {
 
     return new URL(
       oldBaseUrl,
-      `${this.apiOrigin}/docs/${kind}/${
-        namespace ? namespace : 'default'
-      }/${name}/${path}`,
+      `${this.apiOrigin}/docs/${namespace}/${kind}/${name}/${path}`,
     ).toString();
   }
 }

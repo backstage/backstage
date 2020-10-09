@@ -76,6 +76,7 @@ export const getLocationForEntity = (
   switch (type) {
     case 'github':
     case 'gitlab':
+    case 'azure/api':
       return { type, target };
     case 'dir':
       if (path.isAbsolute(target)) return { type, target };
@@ -124,10 +125,12 @@ export const checkoutGitRepository = async (
   const user =
     process.env.GITHUB_PRIVATE_TOKEN_USER ||
     process.env.GITLAB_PRIVATE_TOKEN_USER ||
+    process.env.AZURE_PRIVATE_TOKEN_USER ||
     '';
   const token =
-    process.env.GITHUB_PRIVATE_TOKEN ||
+    process.env.GITHUB_TOKEN ||
     process.env.GITLAB_PRIVATE_TOKEN_USER ||
+    process.env.AZURE_TOKEN ||
     '';
 
   if (fs.existsSync(repositoryTmpPath)) {

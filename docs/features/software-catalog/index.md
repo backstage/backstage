@@ -90,7 +90,7 @@ above example can be added using the following configuration:
 ```yaml
 catalog:
   locations:
-    - type: github
+    - type: url
       target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
 ```
 

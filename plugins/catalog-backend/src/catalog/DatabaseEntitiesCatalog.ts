@@ -72,10 +72,22 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
           existing.entity.metadata.generation,
         );
       } else {
-        response = await this.database.addEntity(tx, { locationId, entity });
+        const added = await this.database.addEntities(tx, [
+          { locationId, entity },
+        ]);
+        response = added[0];
       }
 
       return response.entity;
+    });
+  }
+
+  async addEntities(entities: Entity[], locationId?: string): Promise<void> {
+    await this.database.transaction(async tx => {
+      await this.database.addEntities(
+        tx,
+        entities.map(entity => ({ locationId, entity })),
+      );
     });
   }
 
@@ -90,13 +102,16 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
       const colocatedEntities = location
         ? await this.database.entities(tx, [
             {
-              key: LOCATION_ANNOTATION,
+              key: `metadata.annotations.${LOCATION_ANNOTATION}`,
               values: [location],
             },
           ])
         : [entityResponse];
       for (const dbResponse of colocatedEntities) {
-        await this.database.removeEntity(tx, dbResponse?.entity.metadata.uid!);
+        await this.database.removeEntityByUid(
+          tx,
+          dbResponse?.entity.metadata.uid!,
+        );
       }
 
       if (entityResponse.locationId) {

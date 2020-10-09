@@ -21,13 +21,11 @@ import {
 } from '@backstage/backend-common';
 import {
   Entity,
-  EntityMeta,
   EntityName,
   ENTITY_DEFAULT_NAMESPACE,
   ENTITY_META_GENERATED_FIELDS,
   generateEntityEtag,
   generateEntityUid,
-  getEntityName,
   Location,
 } from '@backstage/catalog-model';
 import Knex from 'knex';
@@ -47,13 +45,18 @@ import type {
   EntityFilters,
 } from './types';
 
+// The number of items that are sent per batch to the database layer, when
+// doing .batchInsert calls to knex. This needs to be low enough to not cause
+// errors in the underlying engine due to exceeding query limits, but large
+// enough to get the speed benefits.
+const BATCH_SIZE = 50;
+
 /**
  * The core database implementation.
  */
 export class CommonDatabase implements Database {
   constructor(
     private readonly database: Knex,
-    private readonly normalize: (value: string) => string,
     private readonly logger: Logger,
   ) {}
 
@@ -88,8 +91,6 @@ export class CommonDatabase implements Database {
       throw new InputError('May not specify generation for new entities');
     }
 
-    await this.ensureNoSimilarNames(tx, request.entity);
-
     const newEntity = lodash.cloneDeep(request.entity);
     newEntity.metadata = {
       ...newEntity.metadata,
@@ -103,6 +104,52 @@ export class CommonDatabase implements Database {
     await this.updateEntitiesSearch(tx, newRow.id, newEntity);
 
     return { locationId: request.locationId, entity: newEntity };
+  }
+
+  async addEntities(
+    txOpaque: unknown,
+    request: DbEntityRequest[],
+  ): Promise<DbEntityResponse[]> {
+    const tx = txOpaque as Knex.Transaction<any, any>;
+
+    const result: DbEntityResponse[] = [];
+    const entityRows: DbEntitiesRow[] = [];
+    const searchRows: DbEntitiesSearchRow[] = [];
+
+    for (const { entity, locationId } of request) {
+      if (entity.metadata.uid !== undefined) {
+        throw new InputError('May not specify uid for new entities');
+      } else if (entity.metadata.etag !== undefined) {
+        throw new InputError('May not specify etag for new entities');
+      } else if (entity.metadata.generation !== undefined) {
+        throw new InputError('May not specify generation for new entities');
+      }
+
+      const newEntity = {
+        ...entity,
+        metadata: {
+          ...entity.metadata,
+          uid: generateEntityUid(),
+          etag: generateEntityEtag(),
+          generation: 1,
+        },
+      };
+
+      result.push({ entity: newEntity, locationId });
+      entityRows.push(this.toEntityRow(locationId, newEntity));
+      searchRows.push(...buildEntitySearch(newEntity.metadata.uid, newEntity));
+    }
+
+    await tx.batchInsert('entities', entityRows, BATCH_SIZE);
+    await tx<DbEntitiesSearchRow>('entities_search')
+      .whereIn(
+        'entity_id',
+        entityRows.map(r => r.id),
+      )
+      .del();
+    await tx.batchInsert('entities_search', searchRows, BATCH_SIZE);
+
+    return result;
   }
 
   async updateEntity(
@@ -147,8 +194,6 @@ export class CommonDatabase implements Database {
       }
     }
 
-    await this.ensureNoSimilarNames(tx, request.entity);
-
     // Store the updated entity; select on the old etag to ensure that we do
     // not lose to another writer
     const newRow = this.toEntityRow(request.locationId, request.entity);
@@ -172,10 +217,10 @@ export class CommonDatabase implements Database {
   ): Promise<DbEntityResponse[]> {
     const tx = txOpaque as Knex.Transaction<any, any>;
 
-    let builder = tx<DbEntitiesRow>('entities');
-    for (const [indexU, filter] of (filters ?? []).entries()) {
-      const index = Number(indexU);
-      const key = filter.key.toLowerCase().replace('*', '%');
+    let entitiesQuery = tx<DbEntitiesRow>('entities');
+
+    for (const filter of filters || []) {
+      const key = filter.key.toLowerCase().replace(/[*]/g, '%');
       const keyOp = filter.key.includes('*') ? 'like' : '=';
 
       let matchNulls = false;
@@ -186,38 +231,54 @@ export class CommonDatabase implements Database {
         if (!value) {
           matchNulls = true;
         } else if (value.includes('*')) {
-          matchLike.push(value.toLowerCase().replace('*', '%'));
+          matchLike.push(value.toLowerCase().replace(/[*]/g, '%'));
         } else {
           matchIn.push(value.toLowerCase());
         }
       }
 
-      builder = builder
-        .leftOuterJoin(`entities_search as t${index}`, function joins() {
-          this.on('entities.id', '=', `t${index}.entity_id`);
-          this.andOn(`t${index}.key`, keyOp, tx.raw('?', [key]));
-        })
-        .where(function rules() {
-          if (matchIn.length) {
-            this.orWhereIn(`t${index}.value`, matchIn);
-          }
-          if (matchLike.length) {
-            for (const x of matchLike) {
-              this.orWhere(`t${index}.value`, 'like', tx.raw('?', [x]));
+      // NOTE(freben): This used to be a set of OUTER JOIN, which may seem to
+      // make a lot of sense. However, it had abysmal performance on sqlite
+      // when datasets grew large, so we're using IN instead.
+      const matchQuery = tx<DbEntitiesSearchRow>('entities_search')
+        .select('entity_id')
+        .where(function keyFilter() {
+          this.andWhere('key', keyOp, key);
+          this.andWhere(function valueFilter() {
+            if (matchIn.length === 1) {
+              this.orWhere({ value: matchIn[0] });
+            } else if (matchIn.length > 1) {
+              this.orWhereIn('value', matchIn);
             }
-          }
-          if (matchNulls) {
-            this.orWhereNull(`t${index}.value`);
-          }
+            if (matchLike.length) {
+              for (const x of matchLike) {
+                this.orWhere('value', 'like', tx.raw('?', [x]));
+              }
+            }
+            if (matchNulls) {
+              // Match explicit nulls, and then handle absence separately below
+              this.orWhereNull('value');
+            }
+          });
         });
+
+      // Handle absence as nulls as well
+      entitiesQuery = entitiesQuery.andWhere(function match() {
+        this.whereIn('id', matchQuery);
+        if (matchNulls) {
+          this.orWhereNotIn(
+            'id',
+            tx<DbEntitiesSearchRow>('entities_search')
+              .select('entity_id')
+              .where('key', keyOp, key),
+          );
+        }
+      });
     }
 
-    const rows = await builder
+    const rows = await entitiesQuery
       .select('entities.*')
-      .orderBy('kind', 'asc')
-      .orderBy('namespace', 'asc')
-      .orderBy('name', 'asc')
-      .groupBy('id');
+      .orderBy('full_name', 'asc');
 
     return rows.map(row => this.toEntityResponse(row));
   }
@@ -229,12 +290,9 @@ export class CommonDatabase implements Database {
     const tx = txOpaque as Knex.Transaction<any, any>;
 
     const rows = await tx<DbEntitiesRow>('entities')
-      .whereRaw(
-        tx.raw(
-          'LOWER(kind) = LOWER(?) AND LOWER(namespace) = LOWER(?) AND LOWER(name) = LOWER(?)',
-          [name.kind, name.namespace, name.name],
-        ),
-      )
+      .where({
+        full_name: `${name.kind}:${name.namespace}/${name.name}`.toLowerCase(),
+      })
       .select();
 
     if (rows.length !== 1) {
@@ -261,7 +319,7 @@ export class CommonDatabase implements Database {
     return this.toEntityResponse(rows[0]);
   }
 
-  async removeEntity(txOpaque: unknown, uid: string): Promise<void> {
+  async removeEntityByUid(txOpaque: unknown, uid: string): Promise<void> {
     const tx = txOpaque as Knex.Transaction<any, any>;
 
     const result = await tx<DbEntitiesRow>('entities').where({ id: uid }).del();
@@ -385,88 +443,36 @@ export class CommonDatabase implements Database {
     }
   }
 
-  private async ensureNoSimilarNames(
-    tx: Knex.Transaction<any, any>,
-    data: Entity,
-  ): Promise<void> {
-    const {
-      kind: newKind,
-      namespace: newNamespace,
-      name: newName,
-    } = getEntityName(data);
-    const newKindNorm = this.normalize(newKind);
-    const newNamespaceNorm = this.normalize(newNamespace);
-    const newNameNorm = this.normalize(newName);
-
-    for (const item of await this.entities(tx)) {
-      if (data.metadata.uid === item.entity.metadata.uid) {
-        continue;
-      }
-
-      const {
-        kind: oldKind,
-        namespace: oldNamespace,
-        name: oldName,
-      } = getEntityName(item.entity);
-      const oldKindNorm = this.normalize(oldKind);
-      const oldNamespaceNorm = this.normalize(oldNamespace);
-      const oldNameNorm = this.normalize(oldName);
-
-      if (
-        oldKindNorm === newKindNorm &&
-        oldNamespaceNorm === newNamespaceNorm &&
-        oldNameNorm === newNameNorm
-      ) {
-        // Only throw if things were actually different - for completely equal
-        // things, we let the database handle the conflict
-        if (
-          oldKind !== newKind ||
-          oldNamespace !== newNamespace ||
-          oldName !== newName
-        ) {
-          const message = `Kind, namespace, name are too similar to an existing entity`;
-          throw new ConflictError(message);
-        }
-      }
-    }
-  }
-
   private toEntityRow(
     locationId: string | undefined,
     entity: Entity,
   ): DbEntitiesRow {
+    const lowerKind = entity.kind.toLowerCase();
+    const lowerNamespace = (
+      entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE
+    ).toLowerCase();
+    const lowerName = entity.metadata.name.toLowerCase();
+
+    const data = {
+      ...entity,
+      metadata: lodash.omit(entity.metadata, ...ENTITY_META_GENERATED_FIELDS),
+    };
+
     return {
       id: entity.metadata.uid!,
       location_id: locationId || null,
       etag: entity.metadata.etag!,
       generation: entity.metadata.generation!,
-      api_version: entity.apiVersion,
-      kind: entity.kind,
-      name: entity.metadata.name,
-      namespace: entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE,
-      metadata: JSON.stringify(
-        lodash.omit(entity.metadata, ...ENTITY_META_GENERATED_FIELDS),
-      ),
-      spec: entity.spec ? JSON.stringify(entity.spec) : null,
+      full_name: `${lowerKind}:${lowerNamespace}/${lowerName}`,
+      data: JSON.stringify(data),
     };
   }
 
   private toEntityResponse(row: DbEntitiesRow): DbEntityResponse {
-    const entity: Entity = {
-      apiVersion: row.api_version,
-      kind: row.kind,
-      metadata: {
-        ...(JSON.parse(row.metadata) as EntityMeta),
-        uid: row.id,
-        etag: row.etag,
-        generation: Number(row.generation), // cast because of sqlite
-      },
-    };
-
-    if (row.spec) {
-      const spec = JSON.parse(row.spec);
-      entity.spec = spec;
-    }
+    const entity = JSON.parse(row.data) as Entity;
+    entity.metadata.uid = row.id;
+    entity.metadata.etag = row.etag;
+    entity.metadata.generation = Number(row.generation); // cast due to sqlite
 
     return {
       locationId: row.location_id || undefined,

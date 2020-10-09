@@ -74,6 +74,7 @@ app.
 ```
 app
 ├── app-config.yaml
+├── catalog-info.yaml
 ├── lerna.json
 ├── package.json
 └── packages
@@ -83,6 +84,9 @@ app
 
 - **app-config.yaml**: Main configuration file for the app. See
   [Configuration](https://backstage.io/docs/conf/) for more information.
+- **catalog-info.yaml**: Catalog Entities descriptors. See
+  [Descriptor Format of Catalog Entities](https://backstage.io/docs/features/software-catalog/descriptor-format)
+  to get started.
 - **lerna.json**: Contains information about workspaces and other lerna
   configuration needed for the monorepo setup.
 - **package.json**: Root package.json for the project. _Note: Be sure that you

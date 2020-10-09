@@ -53,7 +53,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const CreateAudit: FC<{}> = () => {
+export const CreateAuditContent: FC<{}> = () => {
   const errorApi = useApi(errorApiRef);
   const lighthouseApi = useApi(lighthouseApiRef);
   const classes = useStyles();
@@ -94,88 +94,91 @@ const CreateAudit: FC<{}> = () => {
   ]);
 
   return (
-    <Page theme={pageTheme.tool}>
-      <Header
-        title="Lighthouse"
-        subtitle="Website audits powered by Lighthouse"
+    <>
+      <ContentHeader
+        title="Trigger a new audit"
+        description="Submitting this form will immediately trigger and store a new Lighthouse audit. Trigger audits to track your website's accessibility, performance, SEO, and best practices over time."
       >
-        <HeaderLabel label="Owner" value="Spotify" />
-        <HeaderLabel label="Lifecycle" value="Alpha" />
-      </Header>
-      <Content>
-        <ContentHeader
-          title="Trigger a new audit"
-          description="Submitting this form will immediately trigger and store a new Lighthouse audit. Trigger audits to track your website's accessibility, performance, SEO, and best practices over time."
-        >
-          <LighthouseSupportButton />
-        </ContentHeader>
-        <Grid container direction="column">
-          <Grid item xs={12} sm={6}>
-            <InfoCard>
-              <form
-                onSubmit={ev => {
-                  ev.preventDefault();
-                  triggerAudit();
-                }}
-              >
-                <List>
-                  <ListItem>
-                    <TextField
-                      name="lighthouse-create-audit-url-tf"
-                      className={classes.input}
-                      label="URL"
-                      placeholder="https://spotify.com"
-                      helperText="The target URL for Lighthouse to use."
-                      required
-                      disabled={submitting}
-                      onChange={ev => setUrl(ev.target.value)}
-                      value={url}
-                      inputProps={{ 'aria-label': 'URL' }}
-                    />
-                  </ListItem>
-                  <ListItem>
-                    <TextField
-                      name="lighthouse-create-audit-emulated-form-factor-tf"
-                      className={classes.input}
-                      label="Emulated Form Factor"
-                      helperText="Device to simulate when auditing"
-                      select
-                      required
-                      disabled={submitting}
-                      onChange={ev => setEmulatedFormFactor(ev.target.value)}
-                      value={emulatedFormFactor}
-                      inputProps={{ 'aria-label': 'Emulated form factor' }}
-                    >
-                      <MenuItem value="mobile">Mobile</MenuItem>
-                      <MenuItem value="desktop">Desktop</MenuItem>
-                    </TextField>
-                  </ListItem>
-                  <ListItem className={classes.buttonList}>
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      onClick={() => navigate('..')}
-                      disabled={submitting}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      type="submit"
-                      disabled={submitting}
-                    >
-                      Create Audit
-                    </Button>
-                  </ListItem>
-                </List>
-              </form>
-            </InfoCard>
-          </Grid>
+        <LighthouseSupportButton />
+      </ContentHeader>
+      <Grid container direction="column">
+        <Grid item xs={12} sm={6}>
+          <InfoCard>
+            <form
+              onSubmit={ev => {
+                ev.preventDefault();
+                triggerAudit();
+              }}
+            >
+              <List>
+                <ListItem>
+                  <TextField
+                    name="lighthouse-create-audit-url-tf"
+                    className={classes.input}
+                    label="URL"
+                    placeholder="https://spotify.com"
+                    helperText="The target URL for Lighthouse to use."
+                    required
+                    disabled={submitting}
+                    onChange={ev => setUrl(ev.target.value)}
+                    value={url}
+                    inputProps={{ 'aria-label': 'URL' }}
+                  />
+                </ListItem>
+                <ListItem>
+                  <TextField
+                    name="lighthouse-create-audit-emulated-form-factor-tf"
+                    className={classes.input}
+                    label="Emulated Form Factor"
+                    helperText="Device to simulate when auditing"
+                    select
+                    required
+                    disabled={submitting}
+                    onChange={ev => setEmulatedFormFactor(ev.target.value)}
+                    value={emulatedFormFactor}
+                    inputProps={{ 'aria-label': 'Emulated form factor' }}
+                  >
+                    <MenuItem value="mobile">Mobile</MenuItem>
+                    <MenuItem value="desktop">Desktop</MenuItem>
+                  </TextField>
+                </ListItem>
+                <ListItem className={classes.buttonList}>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={() => navigate('..')}
+                    disabled={submitting}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                    disabled={submitting}
+                  >
+                    Create Audit
+                  </Button>
+                </ListItem>
+              </List>
+            </form>
+          </InfoCard>
         </Grid>
-      </Content>
-    </Page>
+      </Grid>
+    </>
   );
 };
+
+const CreateAudit = () => (
+  <Page theme={pageTheme.tool}>
+    <Header title="Lighthouse" subtitle="Website audits powered by Lighthouse">
+      <HeaderLabel label="Owner" value="Spotify" />
+      <HeaderLabel label="Lifecycle" value="Alpha" />
+    </Header>
+    <Content>
+      <CreateAuditContent />
+    </Content>
+  </Page>
+);
 
 export default CreateAudit;

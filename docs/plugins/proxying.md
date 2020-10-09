@@ -41,8 +41,7 @@ proxy:
     target: http://larger.example.com:8080/svc.v1
     headers:
       Authorization:
-        $secret:
-          env: EXAMPLE_AUTH_HEADER
+        $env: EXAMPLE_AUTH_HEADER
 ```
 
 Each key under the proxy configuration entry is a route to match, below the
@@ -57,6 +56,15 @@ format accepted by
 is also possible to limit the forwarded HTTP methods with the configuration
 `allowedMethods`, for example `allowedMethods: ['GET']` to enforce read-only
 access.
+
+By default, the proxy will only forward safe HTTP request headers to the target.
+Those are based on the headers that are considered safe for CORS and includes
+headers like `content-type` or `last-modified`, as well as all headers that are
+set by the proxy. If the proxy should forward other headers like
+`authorization`, this must be enabled by the `allowedHeaders` config, for
+example `allowedHeaders: ['Authorization']`. This should help to not
+accidentally forward confidential headers (`cookie`, `X-Auth-Request-User`) to
+third-parties.
 
 If the value is a string, it is assumed to correspond to:
 

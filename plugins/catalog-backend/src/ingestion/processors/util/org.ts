@@ -14,28 +14,10 @@
  * limitations under the License.
  */
 
-import { GroupEntity, UserEntity } from '@backstage/catalog-model';
+import { GroupEntity } from '@backstage/catalog-model';
 
-export function buildOrgHierarchy(
-  groups: GroupEntity[],
-  users: UserEntity[],
-  groupMemberUsers: Map<string, string[]>,
-) {
+export function buildOrgHierarchy(groups: GroupEntity[]) {
   const groupsByName = new Map(groups.map(g => [g.metadata.name, g]));
-  const usersByName = new Map(users.map(u => [u.metadata.name, u]));
-
-  //
-  // Make sure that u.memberOf contain all g
-  //
-
-  for (const [groupName, userNames] of groupMemberUsers.entries()) {
-    for (const userName of userNames) {
-      const user = usersByName.get(userName);
-      if (user && !user.spec.memberOf.includes(groupName)) {
-        user.spec.memberOf.push(groupName);
-      }
-    }
-  }
 
   //
   // Make sure that g.parent.children contain g

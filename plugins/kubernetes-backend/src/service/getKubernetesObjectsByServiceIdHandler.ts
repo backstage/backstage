@@ -16,17 +16,22 @@
 
 import { Logger } from 'winston';
 import {
+  AuthRequestBody,
+  ClusterDetails,
   KubernetesClusterLocator,
   KubernetesFetcher,
   KubernetesObjectTypes,
   ObjectsByServiceIdResponse,
-} from '..';
+} from '../types/types';
+import { KubernetesAuthTranslator } from '../kubernetes-auth-translator/types';
+import { KubernetesAuthTranslatorGenerator } from '../kubernetes-auth-translator/KubernetesAuthTranslatorGenerator';
 
 export type GetKubernetesObjectsByServiceIdHandler = (
   serviceId: string,
   fetcher: KubernetesFetcher,
   clusterLocator: KubernetesClusterLocator,
   logger: Logger,
+  requestBody: AuthRequestBody,
   objectsToFetch?: Set<KubernetesObjectTypes>,
 ) => Promise<ObjectsByServiceIdResponse>;
 
@@ -46,18 +51,35 @@ export const handleGetKubernetesObjectsByServiceId: GetKubernetesObjectsByServic
   fetcher,
   clusterLocator,
   logger,
+  requestBody,
   objectsToFetch = DEFAULT_OBJECTS,
 ) => {
-  const clusterDetails = await clusterLocator.getClusterByServiceId(serviceId);
+  const clusterDetails: ClusterDetails[] = await clusterLocator.getClusterByServiceId(
+    serviceId,
+  );
+
+  // Execute all of these async actions simultaneously/without blocking sequentially as no common object is modified by them
+  const promises: Promise<ClusterDetails>[] = clusterDetails.map(cd => {
+    const kubernetesAuthTranslator: KubernetesAuthTranslator = KubernetesAuthTranslatorGenerator.getKubernetesAuthTranslatorInstance(
+      cd.authProvider,
+    );
+    return kubernetesAuthTranslator.decorateClusterDetailsWithAuth(
+      cd,
+      requestBody,
+    );
+  });
+  const clusterDetailsDecoratedForAuth: ClusterDetails[] = await Promise.all(
+    promises,
+  );
 
   logger.info(
-    `serviceId=${serviceId} clusterDetails=[${clusterDetails
+    `serviceId=${serviceId} clusterDetails=[${clusterDetailsDecoratedForAuth
       .map(c => c.name)
       .join(', ')}]`,
   );
 
   return Promise.all(
-    clusterDetails.map(cd => {
+    clusterDetailsDecoratedForAuth.map(cd => {
       return fetcher
         .fetchObjectsByServiceId(serviceId, cd, objectsToFetch)
         .then(result => {

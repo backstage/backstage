@@ -5,6 +5,7 @@ module.exports = {
   stories: [
     '../../core/src/layout/**/*.stories.tsx',
     '../../core/src/components/**/*.stories.tsx',
+    '../../../plugins/**/src/**/*.stories.tsx',
   ],
   addons: [
     '@storybook/addon-actions',

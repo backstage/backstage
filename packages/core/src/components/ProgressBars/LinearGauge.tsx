@@ -19,7 +19,7 @@ import { Tooltip, useTheme } from '@material-ui/core';
 // @ts-ignore
 import { Line } from 'rc-progress';
 import { BackstageTheme } from '@backstage/theme';
-import { getProgressColor } from './GaugeProgress';
+import { getProgressColor } from './Gauge';
 
 type Props = {
   /**

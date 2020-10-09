@@ -58,7 +58,6 @@ export type LocationProcessor = {
     entity: Entity,
     location: LocationSpec,
     emit: LocationProcessorEmit,
-    read: LocationProcessorRead,
   ): Promise<Entity>;
 
   /**
@@ -109,5 +108,3 @@ export type LocationProcessorResult =
   | LocationProcessorDataResult
   | LocationProcessorEntityResult
   | LocationProcessorErrorResult;
-
-export type LocationProcessorRead = (location: LocationSpec) => Promise<Buffer>;

@@ -19,3 +19,13 @@ docker run -w /content -v $(pwd)/mock-docs:/content -p 8000:8000 -it mkdocs:loca
 ```
 
 Then open up `http://localhost:8000` on your local machine.
+
+## Publishing
+
+This container is published on DockerHub - https://hub.docker.com/r/spotify/techdocs
+
+The publishing is configured by [Automated Builds](https://hub.docker.com/repository/docker/spotify/techdocs/builds/edit) feature on Docker Hub which is triggered from GitHub (on new commits and releases). @spotify/techdocs-core team has access to the settings.
+
+The `latest` tag on Docker Hub points to the recent commits in the `master` branch. The [version tags](https://hub.docker.com/r/spotify/techdocs/tags) (e.g. v0.1.1-alpha.24) point to the GitHub tags created from [releases](https://github.com/spotify/backstage/releases) of this GitHub repository.
+
+Note: We recommend using a specific version of the container instead of `latest` release for stability and avoiding unexpected changes.

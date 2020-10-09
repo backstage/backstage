@@ -13,11 +13,14 @@ import { useHotCleanup } from '@backstage/backend-common';
 export default async function createPlugin({
   logger,
   config,
+  reader,
   database,
 }: PluginEnvironment) {
-  const locationReader = new LocationReaders({ logger, config });
+  const locationReader = new LocationReaders({ logger, reader, config });
 
-  const db = await DatabaseManager.createDatabase(database, { logger });
+  const db = await DatabaseManager.createDatabase(await database.getClient(),
+    { logger },
+  );
   const entitiesCatalog = new DatabaseEntitiesCatalog(db);
   const locationsCatalog = new DatabaseLocationsCatalog(db);
   const higherOrderOperation = new HigherOrderOperations(
