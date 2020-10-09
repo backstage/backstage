@@ -19,7 +19,7 @@ import { HeaderLabel } from '../HeaderLabel';
 import { Page, pageTheme } from '../Page';
 
 export default {
-  title: 'Header',
+  title: 'Layout/Header',
   component: Header,
 };
 

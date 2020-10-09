@@ -20,11 +20,7 @@ import path from 'path';
 import HTTPServer from './lib/httpServer';
 import openBrowser from 'react-dev-utils/openBrowser';
 
-const run = (
-  workingDirectory: string,
-  name: string,
-  args: string[] = [],
-): ChildProcess => {
+const run = (name: string, args: string[] = []): ChildProcess => {
   const [stdin, stdout, stderr] = [
     'inherit' as const,
     'pipe' as const,
@@ -32,7 +28,6 @@ const run = (
   ];
 
   const childProcess = spawn(name, args, {
-    cwd: workingDirectory,
     stdio: [stdin, stdout, stderr],
     shell: true,
     env: {
@@ -59,13 +54,13 @@ const runMkdocsServer = (options?: {
   const devAddr = options?.devAddr ?? '0.0.0.0:8000';
 
   return new Promise(resolve => {
-    const childProcess = run(process.env.PWD!, 'docker', [
+    const childProcess = run('docker', [
       'run',
       '-it',
       '-w',
       '/content',
       '-v',
-      '$(pwd):/content',
+      `${process.cwd()}:/content`,
       '-p',
       '8000:8000',
       'spotify/techdocs',

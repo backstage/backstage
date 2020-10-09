@@ -78,7 +78,7 @@ export async function createRouter({
     }
   });
 
-  router.get('/metadata/entity/:kind/:namespace/:name', async (req, res) => {
+  router.get('/metadata/entity/:namespace/:kind/:name', async (req, res) => {
     const baseUrl = config.getString('backend.baseUrl');
     const { kind, namespace, name } = req.params;
 
@@ -101,7 +101,7 @@ export async function createRouter({
     }
   });
 
-  router.get('/docs/:kind/:namespace/:name/*', async (req, res) => {
+  router.get('/docs/:namespace/:kind/:name/*', async (req, res) => {
     const storageUrl = config.getString('techdocs.storageUrl');
 
     const { kind, namespace, name } = req.params;

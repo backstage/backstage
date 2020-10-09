@@ -27,8 +27,14 @@ import {
 export interface ClusterDetails {
   name: string;
   url: string;
-  // TODO this will eventually be configured by the auth translation work
-  serviceAccountToken: string | undefined;
+  authProvider: string;
+  serviceAccountToken?: string | undefined;
+}
+
+export interface AuthRequestBody {
+  auth?: {
+    google?: string;
+  };
 }
 
 export interface ClusterObjects {

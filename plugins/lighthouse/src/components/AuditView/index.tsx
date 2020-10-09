@@ -124,7 +124,7 @@ const AuditView: FC<{ audit?: Audit }> = ({ audit }: { audit?: Audit }) => {
   );
 };
 
-const ConnectedAuditView: FC<{}> = () => {
+export const AuditViewContent: FC<{}> = () => {
   const lighthouseApi = useApi(lighthouseApiRef);
   const params = useParams() as { id: string };
   const classes = useStyles();
@@ -173,32 +173,35 @@ const ConnectedAuditView: FC<{}> = () => {
   }
 
   return (
-    <Page theme={pageTheme.tool}>
-      <Header
-        title="Lighthouse"
-        subtitle="Website audits powered by Lighthouse"
+    <>
+      <ContentHeader
+        title={value?.url || 'Audit'}
+        description="See a history of all Lighthouse audits for your website run through Backstage."
       >
-        <HeaderLabel label="Owner" value="Spotify" />
-        <HeaderLabel label="Lifecycle" value="Alpha" />
-      </Header>
-      <Content stretch>
-        <ContentHeader
-          title={value?.url || 'Audit'}
-          description="See a history of all Lighthouse audits for your website run through Backstage."
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => navigate(`../../${createAuditButtonUrl}`)}
         >
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => navigate(`../../${createAuditButtonUrl}`)}
-          >
-            Create New Audit
-          </Button>
-          <LighthouseSupportButton />
-        </ContentHeader>
-        {content}
-      </Content>
-    </Page>
+          Create New Audit
+        </Button>
+        <LighthouseSupportButton />
+      </ContentHeader>
+      {content}
+    </>
   );
 };
+
+const ConnectedAuditView = () => (
+  <Page theme={pageTheme.tool}>
+    <Header title="Lighthouse" subtitle="Website audits powered by Lighthouse">
+      <HeaderLabel label="Owner" value="Spotify" />
+      <HeaderLabel label="Lifecycle" value="Alpha" />
+    </Header>
+    <Content stretch>
+      <AuditViewContent />
+    </Content>
+  </Page>
+);
 
 export default ConnectedAuditView;

@@ -27,7 +27,7 @@ type Props = {
 
 const useStyles = makeStyles({
   generalImg: {
-    width: '75%',
+    width: '95%',
     zIndex: 2,
     position: 'absolute',
     left: '50%',

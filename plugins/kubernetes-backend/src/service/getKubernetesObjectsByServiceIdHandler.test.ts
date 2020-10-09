@@ -74,6 +74,7 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
       Promise.resolve([
         {
           name: 'test-cluster',
+          authProvider: 'serviceAccount',
         },
       ]),
     );
@@ -89,6 +90,7 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
         getClusterByServiceId,
       },
       getVoidLogger(),
+      {},
     );
 
     expect(getClusterByServiceId.mock.calls.length).toBe(1);
@@ -142,9 +144,11 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
       Promise.resolve([
         {
           name: 'test-cluster',
+          authProvider: 'serviceAccount',
         },
         {
           name: 'other-cluster',
+          authProvider: 'google',
         },
       ]),
     );
@@ -160,6 +164,11 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
         getClusterByServiceId,
       },
       getVoidLogger(),
+      {
+        auth: {
+          google: 'google_token_123',
+        },
+      },
     );
 
     expect(getClusterByServiceId.mock.calls.length).toBe(1);

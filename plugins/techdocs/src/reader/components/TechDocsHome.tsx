@@ -84,9 +84,9 @@ export const TechDocsHome = () => {
                     onClick={() =>
                       navigate(
                         generatePath(rootDocsRouteRef.path, {
-                          entityId: `${entity.kind}:${
-                            entity.metadata.namespace ?? ''
-                          }:${entity.metadata.name}`,
+                          namespace: entity.metadata.namespace ?? 'default',
+                          kind: entity.kind,
+                          name: entity.metadata.name,
                         }),
                       )
                     }

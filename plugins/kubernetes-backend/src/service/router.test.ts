@@ -54,8 +54,8 @@ describe('router', () => {
     jest.resetAllMocks();
   });
 
-  describe('GET /services/:serviceId', () => {
-    it('happy path: lists kubernetes objects', async () => {
+  describe('post /services/:serviceId', () => {
+    it('happy path: lists kubernetes objects without auth in request body', async () => {
       const result = {
         clusterOne: {
           pods: [
@@ -69,7 +69,34 @@ describe('router', () => {
       } as any;
       handleGetByServiceId.mockReturnValueOnce(Promise.resolve(result));
 
-      const response = await request(app).get('/services/test-service');
+      const response = await request(app).post('/services/test-service');
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual(result);
+    });
+
+    it('happy path: lists kubernetes objects with auth in request body', async () => {
+      const result = {
+        clusterOne: {
+          pods: [
+            {
+              metadata: {
+                name: 'pod1',
+              },
+            },
+          ],
+        },
+      } as any;
+      handleGetByServiceId.mockReturnValueOnce(Promise.resolve(result));
+
+      const response = await request(app)
+        .post('/services/test-service')
+        .send({
+          auth: {
+            google: 'google_token_123',
+          },
+        })
+        .set('Content-Type', 'application/json');
 
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(result);
@@ -78,7 +105,7 @@ describe('router', () => {
     it('internal error: lists kubernetes objects', async () => {
       handleGetByServiceId.mockRejectedValue(Error('some internal error'));
 
-      const response = await request(app).get('/services/test-service');
+      const response = await request(app).post('/services/test-service');
 
       expect(response.status).toEqual(500);
       expect(response.body).toEqual({ error: 'some internal error' });

@@ -49,6 +49,11 @@ import {
 import { Entity } from '@backstage/catalog-model';
 import { Button, Grid } from '@material-ui/core';
 import { EmptyState } from '@backstage/core';
+import {
+  EmbeddedRouter as LighthouseRouter,
+  LastLighthouseAuditCard,
+  isPluginApplicableToEntity as isLighthouseAvailable,
+} from '@backstage/plugin-lighthouse/';
 
 const CICDSwitcher = ({ entity }: { entity: Entity }) => {
   // This component is just an example of how you can implement your company's logic in entity page.
@@ -115,6 +120,11 @@ const OverviewContent = ({ entity }: { entity: Entity }) => (
       <AboutCard entity={entity} />
     </Grid>
     <RecentCICDRunsSwitcher entity={entity} />
+    {isLighthouseAvailable(entity) && (
+      <Grid item sm={4}>
+        <LastLighthouseAuditCard />
+      </Grid>
+    )}
   </Grid>
 );
 
@@ -164,6 +174,11 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
       path="/ci-cd/*"
       title="CI/CD"
       element={<CICDSwitcher entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/lighthouse/*"
+      title="Lighthouse"
+      element={<LighthouseRouter entity={entity} />}
     />
     <EntityPageLayout.Content
       path="/sentry"

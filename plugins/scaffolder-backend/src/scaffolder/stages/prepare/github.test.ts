@@ -90,7 +90,6 @@ describe('GitHubPreparer', () => {
       {},
     );
   });
-
   it('return the temp directory with the path to the folder if it is specified', async () => {
     const preparer = new GithubPreparer();
     mockEntity.spec.path = './template/test/1/2/3';
@@ -98,6 +97,22 @@ describe('GitHubPreparer', () => {
 
     expect(response.split('\\').join('/')).toMatch(
       /\/template\/test\/1\/2\/3$/,
+    );
+  });
+  it('calls the clone command with the token when provided', async () => {
+    const preparer = new GithubPreparer({ token: 'abc' });
+    await preparer.prepare(mockEntity);
+    expect(mocks.Clone.clone).toHaveBeenNthCalledWith(
+      1,
+      'https://github.com/benjdlambert/backstage-graphql-template',
+      expect.any(String),
+      {
+        fetchOpts: {
+          callbacks: {
+            credentials: expect.any(Function),
+          },
+        },
+      },
     );
   });
 });

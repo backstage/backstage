@@ -15,11 +15,18 @@
  */
 
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import { rootRouteRef, viewAuditRouteRef, createAuditRouteRef } from './plugin';
+import { Route, Routes } from 'react-router-dom';
+import { createAuditRouteRef, rootRouteRef, viewAuditRouteRef } from './plugin';
 import AuditList from './components/AuditList';
-import AuditView from './components/AuditView';
-import CreateAudit from './components/CreateAudit';
+import AuditView, { AuditViewContent } from './components/AuditView';
+import CreateAudit, { CreateAuditContent } from './components/CreateAudit';
+import { Entity } from '@backstage/catalog-model';
+import { LIGHTHOUSE_WEBSITE_URL_ANNOTATION } from '../constants';
+import { AuditListForEntity } from './components/AuditList/AuditListForEntity';
+import { EmptyState } from '@backstage/core';
+
+export const isPluginApplicableToEntity = (entity: Entity) =>
+  Boolean(entity.metadata.annotations?.[LIGHTHOUSE_WEBSITE_URL_ANNOTATION]);
 
 export const Router = () => (
   <Routes>
@@ -28,3 +35,24 @@ export const Router = () => (
     <Route path={`/${createAuditRouteRef.path}`} element={<CreateAudit />} />
   </Routes>
 );
+
+export const EmbeddedRouter = ({ entity }: { entity: Entity }) =>
+  !isPluginApplicableToEntity(entity) ? (
+    <EmptyState
+      missing="field"
+      title="Your plugin is missing an annotation"
+      description={`Please add the ${LIGHTHOUSE_WEBSITE_URL_ANNOTATION} annotation`}
+    />
+  ) : (
+    <Routes>
+      <Route path={`/${rootRouteRef.path}`} element={<AuditListForEntity />} />
+      <Route
+        path={`/${viewAuditRouteRef.path}`}
+        element={<AuditViewContent />}
+      />
+      <Route
+        path={`/${createAuditRouteRef.path}`}
+        element={<CreateAuditContent />}
+      />
+    </Routes>
+  );

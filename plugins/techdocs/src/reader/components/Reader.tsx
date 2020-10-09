@@ -116,6 +116,7 @@ export const Reader = ({ entityId, onReady }: Props) => {
         return dom;
       },
       addLinkClickListener({
+        baseUrl: window.location.origin,
         onClick: (_: MouseEvent, url: string) => {
           const parsedUrl = new URL(url);
           navigate(`${parsedUrl.pathname}${parsedUrl.hash}`);
