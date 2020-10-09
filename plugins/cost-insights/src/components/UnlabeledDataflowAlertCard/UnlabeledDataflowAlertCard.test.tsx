@@ -17,23 +17,23 @@
 import React from 'react';
 import UnlabeledDataflowAlertCard from './UnlabeledDataflowAlertCard';
 import {
-  createMockUnlabeledDataflowAlert,
+  createMockUnlabeledDataflowData,
   createMockUnlabeledDataflowAlertProject,
 } from '../../utils/mockData';
 import { renderInTestApp } from '@backstage/test-utils';
 
-const MockUnlabeledDataflowAlertMultipleProjects = createMockUnlabeledDataflowAlert(
-  alert => ({
-    ...alert,
+const MockUnlabeledDataflowAlertMultipleProjects = createMockUnlabeledDataflowData(
+  data => ({
+    ...data,
     projects: [...Array(10)].map(() =>
       createMockUnlabeledDataflowAlertProject(),
     ),
   }),
 );
 
-const MockUnlabeledDataflowAlertSingleProject = createMockUnlabeledDataflowAlert(
-  alert => ({
-    ...alert,
+const MockUnlabeledDataflowAlertSingleProject = createMockUnlabeledDataflowData(
+  data => ({
+    ...data,
     projects: [...Array(1)].map(() =>
       createMockUnlabeledDataflowAlertProject(),
     ),

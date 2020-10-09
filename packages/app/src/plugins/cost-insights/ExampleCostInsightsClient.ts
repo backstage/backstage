@@ -16,13 +16,17 @@
 /* eslint-disable no-restricted-imports */
 
 import {
-  CostInsightsApi,
   Alert,
   Cost,
+  CostInsightsApi,
   Duration,
-  Project,
-  ProductCost,
   Group,
+  ProductCost,
+  Project,
+  ProjectGrowthAlert,
+  ProjectGrowthData,
+  UnlabeledDataflowAlert,
+  UnlabeledDataflowData,
   Maybe,
 } from '@backstage/plugin-cost-insights';
 
@@ -206,32 +210,44 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
   }
 
   async getAlerts(group: string): Promise<Alert[]> {
-    const alerts: Alert[] = await this.request({ group }, [
-      {
-        id: 'projectGrowth',
-        project: 'example-project',
-        periodStart: 'Q1 2020',
-        periodEnd: 'Q2 2020',
-        aggregation: [60_000, 120_000],
-        change: {
-          ratio: 1,
-          amount: 60000,
-        },
-        products: [
-          {
-            id: 'Compute Engine',
-            aggregation: [58_000, 118_000],
-          },
-          {
-            id: 'Cloud Dataflow',
-            aggregation: [1200, 1500],
-          },
-          {
-            id: 'Cloud Storage',
-            aggregation: [800, 500],
-          },
-        ],
+    const projectGrowthData: ProjectGrowthData = {
+      project: 'example-project',
+      periodStart: 'Q2 2020',
+      periodEnd: 'Q3 2020',
+      aggregation: [60_000, 120_000],
+      change: {
+        ratio: 1,
+        amount: 60000,
       },
+      products: [
+        { id: 'Compute Engine', aggregation: [58_000, 118_000] },
+        { id: 'Cloud Dataflow', aggregation: [1200, 1500] },
+        { id: 'Cloud Storage', aggregation: [800, 500] },
+      ],
+    };
+
+    const unlabeledDataflowData: UnlabeledDataflowData = {
+      periodStart: '2020-09-01',
+      periodEnd: '2020-09-30',
+      labeledCost: 6_200,
+      unlabeledCost: 7_000,
+      projects: [
+        {
+          id: 'example-project-1',
+          unlabeledCost: 5_000,
+          labeledCost: 3_000,
+        },
+        {
+          id: 'example-project-2',
+          unlabeledCost: 2_000,
+          labeledCost: 3_200,
+        },
+      ],
+    };
+
+    const alerts: Alert[] = await this.request({ group }, [
+      new ProjectGrowthAlert(projectGrowthData),
+      new UnlabeledDataflowAlert(unlabeledDataflowData),
     ]);
 
     return alerts;

@@ -37,7 +37,7 @@ const metadata = {
 };
 
 export default {
-  title: 'Structured Metadata Table',
+  title: 'Data Display/Structured Metadata Table',
   component: StructuredMetadataTable,
 };
 

@@ -74,7 +74,6 @@ async function buildApp(appDir: string) {
 
   await runCmd('yarn install');
   await runCmd('yarn tsc');
-  await runCmd('yarn build');
 }
 
 async function moveApp(tempDir: string, destination: string, id: string) {
@@ -146,6 +145,10 @@ export default async (cmd: Command): Promise<void> => {
     Task.log();
     Task.log(
       chalk.green(`🥇  Successfully created ${chalk.cyan(answers.name)}`),
+    );
+    Task.log();
+    Task.log(
+      'See https://backstage.io/docs/tutorials/quickstart-app-auth to know more about enabling auth providers',
     );
     Task.log();
     Task.exit();

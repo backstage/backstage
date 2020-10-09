@@ -26,7 +26,6 @@ import { Config, ConfigReader } from '@backstage/config';
 import { Logger } from 'winston';
 import { CatalogRulesEnforcer } from './CatalogRules';
 import { AnnotateLocationEntityProcessor } from './processors/AnnotateLocationEntityProcessor';
-import { ApiDefinitionAtLocationProcessor } from './processors/ApiDefinitionAtLocationProcessor';
 import { AzureApiReaderProcessor } from './processors/AzureApiReaderProcessor';
 import { BitbucketApiReaderProcessor } from './processors/BitbucketApiReaderProcessor';
 import { CodeOwnersProcessor } from './processors/CodeOwnersProcessor';
@@ -125,9 +124,8 @@ export class LocationReaders implements LocationReader {
       LdapOrgReaderProcessor.fromConfig(config, { logger }),
       new UrlReaderProcessor(options),
       new YamlProcessor(),
-      PlaceholderProcessor.default(),
-      new CodeOwnersProcessor(),
-      new ApiDefinitionAtLocationProcessor(),
+      PlaceholderProcessor.default({ reader: options.reader }),
+      new CodeOwnersProcessor({ reader: options.reader }),
       new EntityPolicyProcessor(entityPolicy),
       new LocationRefProcessor(),
       new AnnotateLocationEntityProcessor(),
@@ -253,12 +251,7 @@ export class LocationReaders implements LocationReader {
     for (const processor of this.processors) {
       if (processor.processEntity) {
         try {
-          current = await processor.processEntity(
-            current,
-            item.location,
-            emit,
-            this.readLocation.bind(this),
-          );
+          current = await processor.processEntity(current, item.location, emit);
         } catch (e) {
           // Construct the name carefully, if we got validation errors we do
           // not want to crash here due to missing metadata or so
@@ -295,41 +288,5 @@ export class LocationReaders implements LocationReader {
         }
       }
     }
-  }
-
-  private async readLocation(location: LocationSpec): Promise<Buffer> {
-    let data: Buffer | undefined = undefined;
-    let error: Error | undefined = undefined;
-
-    await this.handleLocation(
-      {
-        type: 'location',
-        location,
-        optional: false,
-      },
-      output => {
-        if (output.type === 'error' && !error) {
-          error = output.error;
-        } else if (output.type === 'data') {
-          if (data) {
-            if (!error) {
-              error = new Error(
-                'More than one piece of data loaded unexpectedly',
-              );
-            }
-          } else {
-            data = output.data;
-          }
-        }
-      },
-    );
-
-    if (error) {
-      throw error;
-    } else if (!data) {
-      throw new Error('No data loaded');
-    }
-
-    return data;
   }
 }

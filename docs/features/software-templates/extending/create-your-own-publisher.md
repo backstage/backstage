@@ -34,7 +34,7 @@ import { Octokit } from '@octokit/rest';
 import type { PluginEnvironment } from '../types';
 
 export default async function createPlugin({ logger }: PluginEnvironment) {
-  const githubClient = new Octokit({ auth: process.env.GITHUB_ACCESS_TOKEN });
+  const githubClient = new Octokit({ auth: process.env.GITHUB_TOKEN });
   const publisher = new GithubPublisher({ client: githubClient });
 
   return await createRouter({

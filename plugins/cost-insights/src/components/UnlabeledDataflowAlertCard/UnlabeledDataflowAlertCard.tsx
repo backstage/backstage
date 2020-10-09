@@ -19,11 +19,11 @@ import { Box } from '@material-ui/core';
 import { InfoCard } from '@backstage/core';
 import UnlabeledDataflowBarChart from '../UnlabeledDataflowBarChart';
 import UnlabeledDataflowBarChartLegend from '../UnlabeledDataflowBarChartLegend';
-import { UnlabeledDataflowAlert } from '../../types';
+import { UnlabeledDataflowData } from '../../types';
 import { pluralOf } from '../../utils/grammar';
 
 type UnlabeledDataflowAlertProps = {
-  alert: UnlabeledDataflowAlert;
+  alert: UnlabeledDataflowData;
 };
 
 const UnlabeledDataflowAlertCard = ({ alert }: UnlabeledDataflowAlertProps) => {

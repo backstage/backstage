@@ -19,15 +19,10 @@ import type { Entity, EntityName, Location } from '@backstage/catalog-model';
 export type DbEntitiesRow = {
   id: string;
   location_id: string | null;
-  api_version: string;
-  kind: string;
-  name: string | null;
-  namespace: string | null;
   etag: string;
   generation: number;
   full_name: string;
-  metadata: string;
-  spec: string | null;
+  data: string;
 };
 
 export type DbEntityRequest = {
@@ -94,13 +89,15 @@ export type Database = {
   transaction<T>(fn: (tx: unknown) => Promise<T>): Promise<T>;
 
   /**
-   * Adds a new entity to the catalog.
+   * Adds a set of new entities to the catalog.
    *
    * @param tx An ongoing transaction
-   * @param request The entity being added
-   * @returns The added entity, with uid, etag and generation set
+   * @param request The entities being added
    */
-  addEntity(tx: unknown, request: DbEntityRequest): Promise<DbEntityResponse>;
+  addEntities(
+    tx: unknown,
+    request: DbEntityRequest[],
+  ): Promise<DbEntityResponse[]>;
 
   /**
    * Updates an existing entity in the catalog.
@@ -137,7 +134,7 @@ export type Database = {
 
   entityByUid(tx: unknown, uid: string): Promise<DbEntityResponse | undefined>;
 
-  removeEntity(tx: unknown, uid: string): Promise<void>;
+  removeEntityByUid(tx: unknown, uid: string): Promise<void>;
 
   addLocation(location: Location): Promise<DbLocationsRow>;
 

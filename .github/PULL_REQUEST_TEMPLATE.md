@@ -13,3 +13,4 @@
 - [ ] Prettier run on changed files
 - [ ] Tests added for new functionality
 - [ ] Regression tests added for bug fixes
+- [ ] Added a changeset ([more info](https://github.com/spotify/backstage/blob/master/CONTRIBUTING.md#creating-changesets))

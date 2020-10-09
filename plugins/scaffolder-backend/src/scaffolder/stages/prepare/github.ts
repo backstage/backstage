@@ -21,11 +21,18 @@ import { parseLocationAnnotation } from '../helpers';
 import { InputError } from '@backstage/backend-common';
 import { PreparerBase } from './types';
 import GitUriParser from 'git-url-parse';
-import { Clone } from 'nodegit';
+import { Clone, Cred } from 'nodegit';
 
 export class GithubPreparer implements PreparerBase {
+  token?: string;
+
+  constructor(params: { token?: string } = {}) {
+    this.token = params.token;
+  }
+
   async prepare(template: TemplateEntityV1alpha1): Promise<string> {
     const { protocol, location } = parseLocationAnnotation(template);
+    const { token } = this;
 
     if (protocol !== 'github') {
       throw new InputError(
@@ -45,9 +52,19 @@ export class GithubPreparer implements PreparerBase {
       template.spec.path ?? '.',
     );
 
-    await Clone.clone(repositoryCheckoutUrl, tempDir, {
-      // TODO(blam): Maybe need some auth here?
-    });
+    const cloneOptions = token
+      ? {
+          fetchOpts: {
+            callbacks: {
+              credentials() {
+                return Cred.userpassPlaintextNew(token, 'x-oauth-basic');
+              },
+            },
+          },
+        }
+      : {};
+
+    await Clone.clone(repositoryCheckoutUrl, tempDir, cloneOptions);
 
     return path.resolve(tempDir, templateDirectory);
   }
