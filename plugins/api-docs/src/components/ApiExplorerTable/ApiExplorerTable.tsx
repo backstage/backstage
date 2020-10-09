@@ -15,7 +15,7 @@
  */
 
 import { ApiEntityV1alpha1, Entity } from '@backstage/catalog-model';
-import { Table, TableColumn, useApi } from '@backstage/core';
+import { Table, TableFilter, TableColumn, useApi } from '@backstage/core';
 import { Chip, Link } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React from 'react';
