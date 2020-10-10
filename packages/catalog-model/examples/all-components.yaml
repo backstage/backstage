@@ -14,3 +14,4 @@ spec:
     - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/playback-lib-component.yaml
     - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/www-artist-component.yaml
     - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/shuffle-api-component.yaml
+    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/wayback-component.yaml

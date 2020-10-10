@@ -1,0 +1,14 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: wayback-service
+  description: Wayback Machine Service
+  tags:
+    - java
+  annotations:
+    github.com/project-slug: internetarchive/wayback
+    backstage.io/api-definition-openapi: https://github.com/APIs-guru/openapi-directory/blob/master/APIs/archive.org/wayback/1.0.0/openapi.yaml
+spec:
+  type: service
+  lifecycle: production
+  owner: internetarchive@example.com
