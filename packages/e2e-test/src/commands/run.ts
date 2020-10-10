@@ -24,16 +24,15 @@ import Browser from 'zombie';
 import {
   spawnPiped,
   runPlain,
-  handleError,
   waitForPageWithText,
   waitFor,
   waitForExit,
   print,
-} from './helpers';
+} from '../lib/helpers';
 import pgtools from 'pgtools';
 import { findPaths } from '@backstage/cli-common';
 
-/* eslint-disable-next-line no-restricted-syntax */
+// eslint-disable-next-line no-restricted-syntax
 const paths = findPaths(__dirname);
 
 const templatePackagePaths = [
@@ -42,7 +41,7 @@ const templatePackagePaths = [
   'packages/create-app/templates/default-app/packages/backend/package.json.hbs',
 ];
 
-async function main() {
+export async function run() {
   const rootDir = await fs.mkdtemp(resolvePath(os.tmpdir(), 'backstage-e2e-'));
   print(`CLI E2E test root: ${rootDir}\n`);
 
@@ -413,16 +412,3 @@ async function testBackendStart(appDir: string, isPostgres: boolean) {
     print('Backend startup test finished successfully');
   }
 }
-
-process.on('unhandledRejection', (error: Error) => {
-  // Try to avoid exiting if the unhandled error is coming from jsdom, i.e. zombie.
-  // Those are typically errors on the page that should be benign, at least in the
-  // context of this test. We have other ways of asserting that the page is being
-  // rendered correctly.
-  if (error?.stack?.includes('node_modules/jsdom/lib')) {
-    console.log(`Ignored error inside jsdom, ${error}`);
-  } else {
-    handleError(error);
-  }
-});
-main().catch(handleError);
