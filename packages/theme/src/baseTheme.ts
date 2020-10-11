@@ -19,12 +19,12 @@ import { darken, lighten } from '@material-ui/core/styles/colorManipulator';
 import { Overrides } from '@material-ui/core/styles/overrides';
 
 import {
-  BackstagePageTheme,
-  BackstagePageThemeOptions,
   BackstageTheme,
   BackstageThemeOptions,
   SimpleThemeOptions,
 } from './types';
+
+import { pageTheme } from './pageTheme';
 
 const DEFAULT_FONT_FAMILY =
   '"Helvetica Neue", Helvetica, Roboto, Arial, sans-serif';
@@ -32,7 +32,15 @@ const DEFAULT_FONT_FAMILY =
 export function createThemeOptions(
   options: SimpleThemeOptions,
 ): BackstageThemeOptions {
-  const { palette, fontFamily = DEFAULT_FONT_FAMILY } = options;
+  const {
+    palette,
+    fontFamily = DEFAULT_FONT_FAMILY,
+    defaultPageTheme,
+  } = options;
+
+  if (!pageTheme[defaultPageTheme]) {
+    throw new Error(`${defaultPageTheme} is not defined in pageTheme.`);
+  }
 
   return {
     palette,
@@ -70,6 +78,9 @@ export function createThemeOptions(
         marginBottom: 10,
       },
     },
+    page: pageTheme[defaultPageTheme],
+    getPageTheme: ({ themeId }) =>
+      pageTheme[themeId] ?? pageTheme[defaultPageTheme],
   };
 }
 
@@ -243,16 +254,4 @@ export function createTheme(options: SimpleThemeOptions): BackstageTheme {
   const overrides = createThemeOverrides(baseTheme);
   const theme = { ...baseTheme, overrides };
   return theme;
-}
-
-export function createPageTheme(
-  options: BackstagePageThemeOptions,
-): BackstagePageTheme {
-  const baseTheme = createTheme(options);
-  const pageTheme = options.pageTheme;
-
-  return {
-    pageTheme,
-    baseTheme,
-  };
 }

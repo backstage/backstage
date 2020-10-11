@@ -72,12 +72,20 @@ type PaletteAdditions = {
 export type BackstagePalette = Palette & PaletteAdditions;
 export type BackstagePaletteOptions = PaletteOptions & PaletteAdditions;
 
+export type pageThemeOptions = {
+  themeId: string;
+};
+
 export interface BackstageTheme extends Theme {
   palette: BackstagePalette;
+  page: PageTheme;
+  getPageTheme: ({ themeId }: pageThemeOptions) => PageTheme;
 }
 
 export interface BackstageThemeOptions extends ThemeOptions {
   palette: BackstagePaletteOptions;
+  page: PageTheme;
+  getPageTheme: ({ themeId }: pageThemeOptions) => PageTheme;
 }
 
 /**
@@ -85,6 +93,7 @@ export interface BackstageThemeOptions extends ThemeOptions {
  */
 export type SimpleThemeOptions = {
   palette: BackstagePaletteOptions;
+  defaultPageTheme: string;
   fontFamily?: string;
 };
 
@@ -93,18 +102,3 @@ export type PageTheme = {
   shape: string;
   backgroundImage: string;
 };
-
-export type BackstagePage = Record<string, PageTheme>;
-
-export interface BackstagePageThemeOptions extends SimpleThemeOptions {
-  pageTheme: BackstagePage;
-}
-
-export interface BackstagePageTheme {
-  pageTheme: BackstagePage;
-  baseTheme: BackstageTheme;
-}
-
-export interface BackstagePageThemeConsumer extends BackstageTheme {
-  pageTheme: PageTheme;
-}
