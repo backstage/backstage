@@ -17,19 +17,18 @@
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import AlertActionCard from './AlertActionCard';
-import { AlertType, ProjectGrowthAlert } from '../../types';
-import { getAlertText } from '../../utils/alerts';
+import { ProjectGrowthAlert, ProjectGrowthData } from '../../types';
 import { MockScrollProvider } from '../../utils/tests';
 
-const alert = {
-  id: AlertType.ProjectGrowth,
+const data: ProjectGrowthData = {
   aggregation: [500000.8, 970502.8],
   project: 'test-project',
   periodStart: '2019-10-01',
   periodEnd: '2020-03-31',
   change: { ratio: 120, amount: 120000 },
   products: [],
-} as ProjectGrowthAlert;
+};
+const alert = new ProjectGrowthAlert(data);
 
 describe('<AlertActionCard/>', () => {
   it('Renders an alert', async () => {
@@ -40,11 +39,7 @@ describe('<AlertActionCard/>', () => {
     );
 
     expect(rendered.getByText('1')).toBeInTheDocument();
-    const text = getAlertText(alert);
-    expect(text).toBeDefined();
-    if (text) {
-      expect(rendered.getByText(text.title)).toBeInTheDocument();
-      expect(rendered.getByText(text.subtitle)).toBeInTheDocument();
-    }
+    expect(rendered.getByText(alert.title)).toBeInTheDocument();
+    expect(rendered.getByText(alert.subtitle)).toBeInTheDocument();
   });
 });

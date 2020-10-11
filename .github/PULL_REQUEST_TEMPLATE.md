@@ -5,12 +5,9 @@
 
 #### :heavy_check_mark: Checklist
 
-<!--- Put an `x` in all the boxes that apply: -->
+<!--- Please include the following in your Pull Request when applicable: -->
 
-- [ ] All tests are passing `yarn test`
+- [ ] A changeset describing the change and affected packages. ([more info](https://github.com/spotify/backstage/blob/master/CONTRIBUTING.md#creating-changesets))
+- [ ] Added or updated documentation
+- [ ] Tests for new functionality and regression tests for bug fixes
 - [ ] Screenshots attached (for UI changes)
-- [ ] Relevant documentation updated
-- [ ] Prettier run on changed files
-- [ ] Tests added for new functionality
-- [ ] Regression tests added for bug fixes
-- [ ] Added a changeset ([more info](https://github.com/spotify/backstage/blob/master/CONTRIBUTING.md#creating-changesets))

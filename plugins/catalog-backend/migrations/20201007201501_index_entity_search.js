@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /*
  * Copyright 2020 Spotify AB
  *
@@ -15,22 +14,24 @@
  * limitations under the License.
  */
 
-/* eslint-disable no-restricted-syntax */
-const path = require('path');
+// @ts-check
 
-// Figure out whether we're running inside the backstage repo or as an installed dependency
-const isLocal = require('fs').existsSync(path.resolve(__dirname, '../src'));
-
-if (!isLocal || process.env.BACKSTAGE_E2E_CLI_TEST) {
-  require('..');
-} else {
-  require('ts-node').register({
-    transpileOnly: true,
-    project: path.resolve(__dirname, '../../../tsconfig.json'),
-    compilerOptions: {
-      module: 'CommonJS',
-    },
+/**
+ * @param {import('knex')} knex
+ */
+exports.up = async function up(knex) {
+  await knex.schema.alterTable('entities_search', table => {
+    table.index(['key'], 'entities_search_key');
+    table.index(['value'], 'entities_search_value');
   });
+};
 
-  require('../src');
-}
+/**
+ * @param {import('knex')} knex
+ */
+exports.down = async function down(knex) {
+  await knex.schema.alterTable('entities_search', table => {
+    table.dropIndex('', 'entities_search_key');
+    table.dropIndex('', 'entities_search_value');
+  });
+};

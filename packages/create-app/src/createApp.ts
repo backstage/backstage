@@ -74,7 +74,6 @@ async function buildApp(appDir: string) {
 
   await runCmd('yarn install');
   await runCmd('yarn tsc');
-  await runCmd('yarn build');
 }
 
 async function moveApp(tempDir: string, destination: string, id: string) {
@@ -88,6 +87,7 @@ async function moveApp(tempDir: string, destination: string, id: string) {
 }
 
 export default async (cmd: Command): Promise<void> => {
+  /* eslint-disable-next-line no-restricted-syntax */
   const paths = findPaths(__dirname);
 
   const questions: Question[] = [

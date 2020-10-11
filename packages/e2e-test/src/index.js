@@ -16,6 +16,7 @@
 
 require('ts-node').register({
   transpileOnly: true,
+  /* eslint-disable-next-line no-restricted-syntax */
   project: require('path').resolve(__dirname, '../../../tsconfig.json'),
   compilerOptions: {
     module: 'CommonJS',
