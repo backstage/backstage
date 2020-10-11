@@ -1,6 +1,6 @@
-import { customPageTheme } from '@backstage/theme';
+import { BackstageTheme } from '@backstage/theme';
 import React, { FC } from 'react';
-import { Typography, Grid } from '@material-ui/core';
+import { Typography, Grid, useTheme } from '@material-ui/core';
 import {
   InfoCard,
   Header,
@@ -13,7 +13,7 @@ import {
 import ExampleFetchComponent from '../ExampleFetchComponent';
 
 const ExampleComponent: FC<{}> = () => (
-  <Page pageTheme={customPageTheme.pageTheme.tool}>
+  <Page theme={backstageTheme.getPageTheme({ themeId: 'tool' })}>
     <Header title="Welcome to {{ id }}!" subtitle="Optional subtitle">
       <HeaderLabel label="Owner" value="Team X" />
       <HeaderLabel label="Lifecycle" value="Alpha" />
