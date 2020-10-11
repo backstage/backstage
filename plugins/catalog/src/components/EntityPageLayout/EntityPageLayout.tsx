@@ -27,11 +27,6 @@ import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEnti
 import { Alert } from '@material-ui/lab';
 import { Tabbed } from './Tabbed';
 
-// const getPageTheme = (entity?: Entity): PageTheme => {
-//   const themeKey = entity?.spec?.type?.toString() ?? 'home';
-//   return customPageTheme.pageTheme[themeKey] ?? customPageTheme.pageTheme.home;
-// };
-
 const EntityPageTitle = ({
   entity,
   title,
