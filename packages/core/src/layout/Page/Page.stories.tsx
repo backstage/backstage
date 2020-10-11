@@ -15,7 +15,7 @@
  */
 
 import React, { useState } from 'react';
-import { customPageTheme } from '@backstage/theme';
+import { pageTheme } from '@backstage/theme';
 import {
   Header,
   Page,
@@ -196,7 +196,7 @@ export const PluginWithData = () => {
   const [selectedTab, setSelectedTab] = useState<number>(2);
   return (
     <div style={{ border: '1px solid #ddd' }}>
-      <Page pageTheme={customPageTheme.pageTheme.tool}>
+      <Page theme={pageTheme.tool}>
         <ExampleHeader />
         <HeaderTabs
           selectedIndex={selectedTab}
@@ -218,7 +218,7 @@ export const PluginWithData = () => {
 export const PluginWithTable = () => {
   return (
     <div style={{ border: '1px solid #ddd' }}>
-      <Page pageTheme={customPageTheme.pageTheme.tool}>
+      <Page theme={pageTheme.tool}>
         <ExampleHeader />
         <Content>
           <ExampleContentHeader />

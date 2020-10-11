@@ -15,7 +15,7 @@
  */
 
 import React, { FC } from 'react';
-import { customPageTheme, PageTheme } from '@backstage/theme';
+import { PageTheme } from '@backstage/theme';
 import { makeStyles, ThemeProvider } from '@material-ui/core';
 
 const useStyles = makeStyles(() => ({
@@ -30,16 +30,13 @@ const useStyles = makeStyles(() => ({
 }));
 
 type Props = {
-  pageTheme?: PageTheme;
+  theme: PageTheme;
 };
 
-export const Page: FC<Props> = ({
-  pageTheme = customPageTheme.pageTheme.home,
-  children,
-}) => {
+export const Page: FC<Props> = ({ theme, children }) => {
   const classes = useStyles();
   return (
-    <ThemeProvider theme={{ pageTheme, ...customPageTheme.baseTheme }}>
+    <ThemeProvider theme={baseTheme => ({ ...baseTheme, page: theme })}>
       <div className={classes.root}>{children}</div>
     </ThemeProvider>
   );
