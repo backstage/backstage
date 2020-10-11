@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { customPageTheme } from '@backstage/theme';
+import { BackstageTheme } from '@backstage/theme';
 import React from 'react';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles, useTheme } from '@material-ui/core';
 import { Header, Page } from '@backstage/core';
 import { Group } from '../../types';
 import CostInsightsTabs from '../CostInsightsTabs';
@@ -39,9 +39,14 @@ type CostInsightsLayoutProps = {
 };
 
 const CostInsightsLayout = ({ groups, children }: CostInsightsLayoutProps) => {
+  const backstageTheme = useTheme<BackstageTheme>();
   const classes = useStyles();
   return (
-    <Page pageTheme={customPageTheme.pageTheme.tool}>
+    <Page
+      theme={backstageTheme.getPageTheme({
+        themeId: 'tool',
+      })}
+    >
       <Header
         style={{ boxShadow: 'none' }}
         title="Cost Insights"

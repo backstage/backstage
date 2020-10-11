@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { customPageTheme } from '@backstage/theme';
+import { BackstageTheme } from '@backstage/theme';
 import React, { ReactElement, useEffect, useState } from 'react';
-import { Grid, TabProps } from '@material-ui/core';
+import { Grid, TabProps, useTheme } from '@material-ui/core';
 import {
   CardTab,
   Content,
@@ -98,6 +98,7 @@ const groupResponses = (fetchResponse: FetchResponse[]) => {
 type KubernetesContentProps = { entity: Entity; children?: React.ReactNode };
 
 export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
+  const backstageTheme = useTheme<BackstageTheme>();
   const kubernetesApi = useApi(kubernetesApiRef);
 
   const [kubernetesObjects, setKubernetesObjects] = useState<
@@ -120,7 +121,11 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
     kubernetesObjects?.items.filter(r => r.errors.length > 0) ?? [];
 
   return (
-    <Page pageTheme={customPageTheme.pageTheme.tool}>
+    <Page
+      theme={backstageTheme.getPageTheme({
+        themeId: 'tool',
+      })}
+    >
       <Content>
         <Grid container spacing={3} direction="column">
           {kubernetesObjects === undefined && error === undefined && (

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { customPageTheme } from '@backstage/theme';
+import { BackstageTheme } from '@backstage/theme';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import {
@@ -24,6 +24,7 @@ import {
   ListItem,
   ListItemText,
   Link,
+  useTheme,
 } from '@material-ui/core';
 import {
   Content,
@@ -39,12 +40,17 @@ import {
 } from '@backstage/core';
 
 const WelcomePage = () => {
+  const backstageTheme = useTheme<BackstageTheme>();
   const appTitle =
     useApi(configApiRef).getOptionalString('app.title') ?? 'Backstage';
   const profile = { givenName: '' };
 
   return (
-    <Page pageTheme={customPageTheme.pageTheme.home}>
+    <Page
+      theme={backstageTheme.getPageTheme({
+        themeId: 'home',
+      })}
+    >
       <Header
         title={`Welcome ${profile.givenName || `to ${appTitle}`}`}
         subtitle="Let's start building a better developer experience"

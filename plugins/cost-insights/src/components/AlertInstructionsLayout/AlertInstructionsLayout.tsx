@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-import { customPageTheme } from '@backstage/theme';
+import { BackstageTheme } from '@backstage/theme';
 import React, { ReactNode } from 'react';
-import { Box, Button, Container, makeStyles } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  Container,
+  makeStyles,
+  useTheme,
+} from '@material-ui/core';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { Header, Page } from '@backstage/core';
 import { CostInsightsThemeProvider } from '../CostInsightsPage/CostInsightsThemeProvider';
@@ -37,10 +43,15 @@ const AlertInstructionsLayout = ({
   title,
   children,
 }: AlertInstructionsLayoutProps) => {
+  const backstageTheme = useTheme<BackstageTheme>();
   const classes = useStyles();
   return (
     <CostInsightsThemeProvider>
-      <Page pageTheme={customPageTheme.pageTheme.tool}>
+      <Page
+        theme={backstageTheme.getPageTheme({
+          themeId: 'tool',
+        })}
+      >
         <Header title="Cost Insights" pageTitleOverride={title} type="Tool" />
         <Container maxWidth="md" disableGutters className={classes.root}>
           <Box mb={3}>

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { customPageTheme } from '@backstage/theme';
+import { BackstageTheme } from '@backstage/theme';
 import {
   Content,
   ContentHeader,
@@ -27,7 +27,7 @@ import {
   StructuredMetadataTable,
   SupportButton,
 } from '@backstage/core';
-import { Button, Grid, TextField } from '@material-ui/core';
+import { Button, Grid, TextField, useTheme } from '@material-ui/core';
 import React, { useState } from 'react';
 
 export const Project = () => {
@@ -112,8 +112,14 @@ const labels = (
 );
 
 export const NewProjectPage = () => {
+  const backstageTheme = useTheme<BackstageTheme>();
+
   return (
-    <Page pageTheme={customPageTheme.pageTheme.service}>
+    <Page
+      theme={backstageTheme.getPageTheme({
+        themeId: 'service',
+      })}
+    >
       <Header title="New GCP Project" type="tool">
         {labels}
       </Header>

@@ -23,9 +23,9 @@ import {
   Progress,
   useApi,
 } from '@backstage/core';
-import { customPageTheme, PageTheme } from '@backstage/theme';
+import { BackstageTheme } from '@backstage/theme';
 import { catalogApiRef } from '@backstage/plugin-catalog';
-import { Box } from '@material-ui/core';
+import { Box, useTheme } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -53,12 +53,6 @@ function headerProps(
   };
 }
 
-// REUSABLE IN plugins/catalog/src/components/EntityPageLayout/EntityPageLayout.tsx
-export const getPageTheme = (entity?: Entity): PageTheme => {
-  const themeKey = entity?.spec?.type?.toString() ?? 'home';
-  return customPageTheme.pageTheme[themeKey] ?? customPageTheme.pageTheme.home;
-};
-
 type EntityPageTitleProps = {
   title: string;
   entity: Entity | undefined;
@@ -71,6 +65,7 @@ const EntityPageTitle = ({ title }: EntityPageTitleProps) => (
 );
 
 export const ApiEntityPage = () => {
+  const backstageTheme = useTheme<BackstageTheme>();
   const { optionalNamespaceAndName } = useParams() as {
     optionalNamespaceAndName: string;
   };
@@ -107,7 +102,11 @@ export const ApiEntityPage = () => {
   );
 
   return (
-    <Page pageTheme={getPageTheme(entity)}>
+    <Page
+      theme={backstageTheme.getPageTheme({
+        themeId: entity?.spec?.type?.toString() ?? 'home',
+      })}
+    >
       <Header
         title={<EntityPageTitle title={headerTitle} entity={entity} />}
         pageTitleOverride={headerTitle}

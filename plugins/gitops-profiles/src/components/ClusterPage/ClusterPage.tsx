@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { customPageTheme } from '@backstage/theme';
+import { BackstageTheme } from '@backstage/theme';
 import React, { FC, useEffect, useState } from 'react';
 import {
   Content,
@@ -26,12 +26,13 @@ import {
   githubAuthApiRef,
 } from '@backstage/core';
 
-import { Link } from '@material-ui/core';
+import { Link, useTheme } from '@material-ui/core';
 import { useParams } from 'react-router-dom';
 import { gitOpsApiRef, Status } from '../../api';
 import { transformRunStatus } from '../ProfileCatalog';
 
 const ClusterPage: FC<{}> = () => {
+  const backstageTheme = useTheme<BackstageTheme>();
   const params = useParams() as { owner: string; repo: string };
 
   const [pollingLog, setPollingLog] = useState(true);
@@ -84,7 +85,11 @@ const ClusterPage: FC<{}> = () => {
   }, [pollingLog, api, params, githubAuth, githubAccessToken, githubUsername]);
 
   return (
-    <Page pageTheme={customPageTheme.pageTheme.home}>
+    <Page
+      theme={backstageTheme.getPageTheme({
+        themeId: 'home',
+      })}
+    >
       <Header title={`Cluster ${params.owner}/${params.repo}`}>
         <HeaderLabel label="Welcome" value={githubUsername} />
       </Header>

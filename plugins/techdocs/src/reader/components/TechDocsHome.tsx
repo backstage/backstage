@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { customPageTheme } from '@backstage/theme';
+import { BackstageTheme } from '@backstage/theme';
 import React from 'react';
 import { useAsync } from 'react-use';
 import { useNavigate, generatePath } from 'react-router-dom';
-import { Grid } from '@material-ui/core';
+import { Grid, useTheme } from '@material-ui/core';
 import {
   ItemCard,
   Progress,
@@ -31,6 +31,7 @@ import { catalogApiRef } from '@backstage/plugin-catalog';
 import { rootDocsRouteRef } from '../../plugin';
 
 export const TechDocsHome = () => {
+  const backstageTheme = useTheme<BackstageTheme>();
   const catalogApi = useApi(catalogApiRef);
   const navigate = useNavigate();
 
@@ -43,7 +44,11 @@ export const TechDocsHome = () => {
 
   if (loading) {
     return (
-      <Page pageTheme={customPageTheme.pageTheme.documentation}>
+      <Page
+        theme={backstageTheme.getPageTheme({
+          themeId: 'documentation',
+        })}
+      >
         <Header
           title="Documentation"
           subtitle="Documentation available in Backstage"
@@ -57,7 +62,11 @@ export const TechDocsHome = () => {
 
   if (error) {
     return (
-      <Page pageTheme={customPageTheme.pageTheme.documentation}>
+      <Page
+        theme={backstageTheme.getPageTheme({
+          themeId: 'documentation',
+        })}
+      >
         <Header
           title="Documentation"
           subtitle="Documentation available in Backstage"
@@ -70,7 +79,11 @@ export const TechDocsHome = () => {
   }
 
   return (
-    <Page pageTheme={customPageTheme.pageTheme.documentation}>
+    <Page
+      theme={backstageTheme.getPageTheme({
+        themeId: 'documentation',
+      })}
+    >
       <Header
         title="Documentation"
         subtitle="Documentation available in Backstage"

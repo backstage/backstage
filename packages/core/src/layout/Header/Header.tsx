@@ -17,11 +17,7 @@
 import React, { ReactNode, CSSProperties, FC } from 'react';
 import { Helmet } from 'react-helmet';
 import { Typography, Tooltip, makeStyles, useTheme } from '@material-ui/core';
-import {
-  BackstageTheme,
-  BackstagePageThemeConsumer,
-  customPageTheme,
-} from '@backstage/theme';
+import { BackstageTheme } from '@backstage/theme';
 
 const useStyles = makeStyles<BackstageTheme, { backgroundImage: string }>(
   theme => ({
@@ -165,11 +161,9 @@ export const Header: FC<Props> = ({
   type,
   typeLink,
 }) => {
-  const theme = useTheme<BackstagePageThemeConsumer>();
+  const backstageTheme = useTheme<BackstageTheme>();
   const classes = useStyles({
-    backgroundImage:
-      theme.pageTheme?.backgroundImage ??
-      customPageTheme.pageTheme.home.backgroundImage,
+    backgroundImage: backstageTheme.page.backgroundImage,
   });
   const documentTitle = pageTitleOverride || title;
   const pageTitle = title || pageTitleOverride;

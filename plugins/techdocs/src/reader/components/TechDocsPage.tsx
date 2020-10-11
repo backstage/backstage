@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { customPageTheme } from '@backstage/theme';
+import { BackstageTheme } from '@backstage/theme';
+import { useTheme } from '@material-ui/core';
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Content, Page, useApi } from '@backstage/core';
@@ -24,6 +25,7 @@ import { TechDocsPageHeader } from './TechDocsPageHeader';
 import { techdocsApiRef } from '../../api';
 
 export const TechDocsPage = () => {
+  const backstageTheme = useTheme<BackstageTheme>();
   const [documentReady, setDocumentReady] = useState<boolean>(false);
   const { entityId } = useParams();
   const [kind, namespace, name] = entityId.split(':');
@@ -47,7 +49,11 @@ export const TechDocsPage = () => {
   };
 
   return (
-    <Page pageTheme={customPageTheme.pageTheme.documentation}>
+    <Page
+      theme={backstageTheme.getPageTheme({
+        themeId: 'documentation',
+      })}
+    >
       <TechDocsPageHeader
         metadataRequest={{
           mkdocs: mkdocsMetadataRequest,

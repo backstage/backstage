@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { customPageTheme } from '@backstage/theme';
+import { BackstageTheme } from '@backstage/theme';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import {
   Content,
@@ -25,7 +25,7 @@ import {
   useApi,
 } from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog';
-import { LinearProgress } from '@material-ui/core';
+import { LinearProgress, useTheme } from '@material-ui/core';
 import { IChangeEvent } from '@rjsf/core';
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -80,6 +80,7 @@ const REPO_FORMAT = {
 };
 
 export const TemplatePage = () => {
+  const backstageTheme = useTheme<BackstageTheme>();
   const errorApi = useApi(errorApiRef);
   const catalogApi = useApi(catalogApiRef);
   const scaffolderApi = useApi(scaffolderApiRef);
@@ -145,7 +146,7 @@ export const TemplatePage = () => {
   }
 
   return (
-    <Page pageTheme={customPageTheme.pageTheme.home}>
+    <Page theme={backstageTheme.getPageTheme({ themeId: 'home' })}>
       <Header
         pageTitleOverride="Create a new component"
         title={

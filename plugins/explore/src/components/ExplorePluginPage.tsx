@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { makeStyles, Typography } from '@material-ui/core';
+import { makeStyles, Typography, useTheme } from '@material-ui/core';
 import {
   Content,
   ContentHeader,
@@ -24,7 +24,7 @@ import {
   SupportButton,
 } from '@backstage/core';
 import ExploreCard, { CardData } from './ExploreCard';
-import { customPageTheme, BackstageTheme } from '@backstage/theme';
+import { BackstageTheme } from '@backstage/theme';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   container: {
@@ -115,8 +115,14 @@ const toolsCards = [
 
 export const ExplorePluginPage = () => {
   const classes = useStyles();
+  const backstageTheme = useTheme<BackstageTheme>();
+
   return (
-    <Page pageTheme={customPageTheme.pageTheme.home}>
+    <Page
+      theme={backstageTheme.getPageTheme({
+        themeId: 'home',
+      })}
+    >
       <Header
         title="Explore"
         subtitle="Tools and services available in Backstage"

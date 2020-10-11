@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { customPageTheme } from '@backstage/theme';
+import { BackstageTheme } from '@backstage/theme';
 import React, { useState } from 'react';
-import { Grid, makeStyles } from '@material-ui/core';
+import { Grid, makeStyles, useTheme } from '@material-ui/core';
 import {
   InfoCard,
   Page,
@@ -61,6 +61,7 @@ export const RegisterComponentPage = ({
 }: {
   catalogRouteRef: RouteRef;
 }) => {
+  const backstageTheme = useTheme<BackstageTheme>();
   const classes = useStyles();
   const catalogApi = useApi(catalogApiRef);
   const [formState, setFormState] = useState<ValuesOf<typeof FormStates>>(
@@ -113,7 +114,11 @@ export const RegisterComponentPage = ({
   };
 
   return (
-    <Page pageTheme={customPageTheme.pageTheme.home}>
+    <Page
+      theme={backstageTheme.getPageTheme({
+        themeId: 'home',
+      })}
+    >
       <Header title="Register existing component" />
       <Content>
         <ContentHeader title="Start tracking your component in Backstage">

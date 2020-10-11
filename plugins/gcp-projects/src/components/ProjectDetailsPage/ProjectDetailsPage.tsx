@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { customPageTheme } from '@backstage/theme';
+import { BackstageTheme } from '@backstage/theme';
 import {
   Content,
   ContentHeader,
@@ -36,6 +36,7 @@ import {
   TableRow,
   Theme,
   Typography,
+  useTheme,
 } from '@material-ui/core';
 import React from 'react';
 import { useAsync } from 'react-use';
@@ -147,8 +148,13 @@ const labels = (
 );
 
 export const ProjectDetailsPage = () => {
+  const backstageTheme = useTheme<BackstageTheme>();
   return (
-    <Page pageTheme={customPageTheme.pageTheme.service}>
+    <Page
+      theme={backstageTheme.getPageTheme({
+        themeId: 'service',
+      })}
+    >
       <Header title="GCP Project Details" type="other">
         {labels}
       </Header>

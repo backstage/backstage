@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { customPageTheme } from '@backstage/theme';
+import { BackstageTheme } from '@backstage/theme';
 import React, { FC, useState } from 'react';
-import { Grid } from '@material-ui/core';
+import { Grid, useTheme } from '@material-ui/core';
 import {
   Header,
   Page,
@@ -28,12 +28,17 @@ import { SentryPluginWidget } from '../SentryPluginWidget/SentryPluginWidget';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 
 const SentryPluginPage: FC<{}> = () => {
+  const backstageTheme = useTheme<BackstageTheme>();
   const [statsFor, setStatsFor] = useState<'12h' | '24h'>('12h');
   const toggleStatsFor = () => setStatsFor(statsFor === '12h' ? '12h' : '24h');
   const sentryProjectId = 'sample-sentry-project-id';
 
   return (
-    <Page pageTheme={customPageTheme.pageTheme.tool}>
+    <Page
+      theme={backstageTheme.getPageTheme({
+        themeId: 'tool',
+      })}
+    >
       <Header title="Sentry" />
       <Content>
         <ContentHeader title="Issue on Sentry">

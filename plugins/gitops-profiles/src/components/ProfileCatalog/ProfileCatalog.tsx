@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { customPageTheme } from '@backstage/theme';
+import { BackstageTheme } from '@backstage/theme';
 import React, { FC, useEffect, useState } from 'react';
 import {
   Header,
@@ -37,7 +37,7 @@ import {
   useApi,
   githubAuthApiRef,
 } from '@backstage/core';
-import { TextField, List, ListItem, Link } from '@material-ui/core';
+import { TextField, List, ListItem, Link, useTheme } from '@material-ui/core';
 
 import ClusterTemplateCardList from '../ClusterTemplateCardList';
 import ProfileCardList from '../ProfileCardList';
@@ -81,6 +81,8 @@ export const transformRunStatus = (x: Status[]) => {
 };
 
 const ProfileCatalog: FC<{}> = () => {
+  const backstageTheme = useTheme<BackstageTheme>();
+
   // TODO: get data from REST API
   const [clusterTemplates] = React.useState([
     {
@@ -259,7 +261,11 @@ const ProfileCatalog: FC<{}> = () => {
   ];
 
   return (
-    <Page pageTheme={customPageTheme.pageTheme.tool}>
+    <Page
+      theme={backstageTheme.getPageTheme({
+        themeId: 'tool',
+      })}
+    >
       <Header
         title="Create GitOps-managed Cluster"
         subtitle="Kubernetes cluster with ready-to-use profiles"

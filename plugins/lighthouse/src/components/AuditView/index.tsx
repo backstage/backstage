@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { customPageTheme } from '@backstage/theme';
+import { BackstageTheme } from '@backstage/theme';
 import React, { useState, useEffect, ReactNode, FC } from 'react';
 import {
   Link,
@@ -31,6 +31,7 @@ import {
   Button,
   ListItemIcon,
   ListItemText,
+  useTheme,
 } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import {
@@ -125,6 +126,7 @@ const AuditView: FC<{ audit?: Audit }> = ({ audit }: { audit?: Audit }) => {
 };
 
 const ConnectedAuditView: FC<{}> = () => {
+  const backstageTheme = useTheme<BackstageTheme>();
   const lighthouseApi = useApi(lighthouseApiRef);
   const params = useParams() as { id: string };
   const classes = useStyles();
@@ -173,7 +175,11 @@ const ConnectedAuditView: FC<{}> = () => {
   }
 
   return (
-    <Page pageTheme={customPageTheme.pageTheme.tool}>
+    <Page
+      theme={backstageTheme.getPageTheme({
+        themeId: 'tool',
+      })}
+    >
       <Header
         title="Lighthouse"
         subtitle="Website audits powered by Lighthouse"

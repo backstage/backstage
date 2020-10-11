@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { customPageTheme } from '@backstage/theme';
+import { BackstageTheme } from '@backstage/theme';
 import React, { FC } from 'react';
-import { Grid } from '@material-ui/core';
+import { Grid, useTheme } from '@material-ui/core';
 import {
   Header,
   Page,
@@ -27,24 +27,30 @@ import {
 } from '@backstage/core';
 import NewRelicFetchComponent from '../NewRelicFetchComponent';
 
-const NewRelicComponent: FC<{}> = () => (
-  <Page pageTheme={customPageTheme.pageTheme.tool}>
-    <Header title="New Relic">
-      <HeaderLabel label="Owner" value="Engineering" />
-    </Header>
-    <Content>
-      <ContentHeader title="New Relic">
-        <SupportButton>
-          New Relic Application Performance Monitoring
-        </SupportButton>
-      </ContentHeader>
-      <Grid container spacing={3} direction="column">
-        <Grid item>
-          <NewRelicFetchComponent />
+const NewRelicComponent: FC<{}> = () => {
+  const backstageTheme = useTheme<BackstageTheme>();
+  return (
+    <Page
+      theme={backstageTheme.getPageTheme({
+        themeId: 'tool',
+      })}
+    >
+      <Header title="New Relic">
+        <HeaderLabel label="Owner" value="Engineering" />
+      </Header>
+      <Content>
+        <ContentHeader title="New Relic">
+          <SupportButton>
+            New Relic Application Performance Monitoring
+          </SupportButton>
+        </ContentHeader>
+        <Grid container spacing={3} direction="column">
+          <Grid item>
+            <NewRelicFetchComponent />
+          </Grid>
         </Grid>
-      </Grid>
-    </Content>
-  </Page>
-);
-
+      </Content>
+    </Page>
+  );
+};
 export default NewRelicComponent;
