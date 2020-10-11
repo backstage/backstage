@@ -36,7 +36,7 @@ import {
 import { Box, Typography, Link, Chip, Grid } from '@material-ui/core';
 
 export default {
-  title: 'Layout/Example Plugin',
+  title: 'Plugins/Examples',
   component: Page,
 };
 
