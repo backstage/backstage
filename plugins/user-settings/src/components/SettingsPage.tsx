@@ -15,7 +15,9 @@
  */
 
 import React, { useState } from 'react';
-import { Content, Header, HeaderTabs, Page, pageTheme } from '@backstage/core';
+import { Content, Header, HeaderTabs, Page } from '@backstage/core';
+import { BackstageTheme } from '@backstage/theme';
+import { useTheme } from '@material-ui/core';
 import { General } from './General';
 import { AuthProviders } from './AuthProviders';
 import { FeatureFlags } from './FeatureFlags';
@@ -25,6 +27,7 @@ type Props = {
 };
 
 export const SettingsPage = ({ providerSettings }: Props) => {
+  const backstageTheme = useTheme<BackstageTheme>();
   const [activeTab, setActiveTab] = useState<number>(0);
   const onTabChange = (index: number) => {
     setActiveTab(index);
@@ -43,7 +46,11 @@ export const SettingsPage = ({ providerSettings }: Props) => {
   ];
 
   return (
-    <Page theme={pageTheme.home}>
+    <Page
+      theme={backstageTheme.getPageTheme({
+        themeId: 'home',
+      })}
+    >
       <Header title="Settings" />
       <HeaderTabs tabs={tabs} onChange={onTabChange} />
       <Content>{content[activeTab]}</Content>
