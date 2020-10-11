@@ -55,8 +55,7 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
 rollbar:
   organization: spotify
   accountToken:
-    $secret:
-      env: ROLLBAR_ACCOUNT_TOKEN
+    $env: ROLLBAR_ACCOUNT_TOKEN
 ```
 
 7. Annotate entities with the rollbar project slug

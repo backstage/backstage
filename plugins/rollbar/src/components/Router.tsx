@@ -17,7 +17,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router';
 import { Entity } from '@backstage/catalog-model';
-import { WarningPanel } from '@backstage/core';
+import { MissingAnnotationEmptyState } from '@backstage/core';
 import { catalogRouteRef } from '../routes';
 import { ROLLBAR_ANNOTATION } from '../constants';
 import { EntityPageRollbar } from './EntityPageRollbar/EntityPageRollbar';
@@ -31,9 +31,7 @@ type Props = {
 
 export const Router = ({ entity }: Props) =>
   !isPluginApplicableToEntity(entity) ? (
-    <WarningPanel title="Rollbar plugin:">
-      <pre>{ROLLBAR_ANNOTATION}</pre> annotation is missing on the entity.
-    </WarningPanel>
+    <MissingAnnotationEmptyState annotation={ROLLBAR_ANNOTATION} />
   ) : (
     <Routes>
       <Route

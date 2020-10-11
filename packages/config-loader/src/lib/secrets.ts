@@ -38,9 +38,8 @@ type EnvSecret = {
 type DataSecret = {
   // Path to the data secret file, relative to the config file.
   data: string;
-  // The path to the value inside the data file.
-  // Either a '.' separated list, or an array of path segments.
-  path: string | string[];
+  // The path to the value inside the data file, each element separated by '.'.
+  path?: string;
 };
 
 type Secret = FileSecret | EnvSecret | DataSecret;
@@ -55,12 +54,6 @@ const secretLoaderSchemas = {
   }),
   data: yup.object({
     data: yup.string().required(),
-    path: yup.lazy(value => {
-      if (typeof value === 'string') {
-        return yup.string().required();
-      }
-      return yup.array().of(yup.string().required()).required();
-    }),
   }),
 };
 
@@ -111,24 +104,30 @@ export async function readSecret(
     return ctx.env[secret.env];
   }
   if ('data' in secret) {
-    const ext = extname(secret.data);
+    const url =
+      'path' in secret ? `${secret.data}#${secret.path}` : secret.data;
+    const [filePath, dataPath] = url.split(/#(.*)/);
+    if (!dataPath) {
+      throw new Error(
+        `Invalid format for data secret value, must be of the form <filepath>#<datapath>, got '${url}'`,
+      );
+    }
+
+    const ext = extname(filePath);
     const parser = dataSecretParser[ext];
     if (!parser) {
       throw new Error(`No data secret parser available for extension ${ext}`);
     }
 
-    const content = await ctx.readFile(secret.data);
+    const content = await ctx.readFile(filePath);
 
-    const { path } = secret;
-    const parts = typeof path === 'string' ? path.split('.') : path;
+    const parts = dataPath.split('.');
 
     let value: JsonValue | undefined = await parser(content);
     for (const [index, part] of parts.entries()) {
       if (!isObject(value)) {
         const errPath = parts.slice(0, index).join('.');
-        throw new Error(
-          `Value is not an object at ${errPath} in ${secret.data}`,
-        );
+        throw new Error(`Value is not an object at ${errPath} in ${filePath}`);
       }
       value = value[part];
     }

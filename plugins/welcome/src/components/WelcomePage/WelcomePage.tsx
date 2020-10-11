@@ -75,7 +75,10 @@ const WelcomePage = () => {
                   the project and we have already begun work on various aspects
                   of these phases. The best way to keep track of the progress is
                   through the&nbsp;
-                  <Link href="https://github.com/spotify/backstage/milestones">
+                  <Link
+                    href="https://github.com/spotify/backstage/milestones"
+                    rel="noopener noreferrer"
+                  >
                     Milestones
                   </Link>
                   .
@@ -119,7 +122,10 @@ const WelcomePage = () => {
               </Typography>
               <Typography variant="body1" paragraph>
                 We suggest you either check out the documentation for{' '}
-                <Link href="https://github.com/spotify/backstage/blob/master/docs/plugins/create-a-plugin.md">
+                <Link
+                  href="https://github.com/spotify/backstage/blob/master/docs/plugins/create-a-plugin.md"
+                  rel="noopener noreferrer"
+                >
                   creating a plugin
                 </Link>{' '}
                 or have a look in the code for the{' '}
@@ -127,7 +133,10 @@ const WelcomePage = () => {
                   existing plugins
                 </Link>{' '}
                 in the directory{' '}
-                <Link href="https://github.com/spotify/backstage/tree/master/plugins">
+                <Link
+                  href="https://github.com/spotify/backstage/tree/master/plugins"
+                  rel="noopener noreferrer"
+                >
                   <code>plugins/</code>
                 </Link>
                 .
@@ -141,7 +150,10 @@ const WelcomePage = () => {
                   <Link href="https://backstage.io">backstage.io</Link>
                 </ListItem>
                 <ListItem>
-                  <Link href="https://github.com/spotify/backstage/blob/master/docs/plugins/create-a-plugin.md">
+                  <Link
+                    href="https://github.com/spotify/backstage/blob/master/docs/plugins/create-a-plugin.md"
+                    rel="noopener noreferrer"
+                  >
                     Create a plugin
                   </Link>
                 </ListItem>

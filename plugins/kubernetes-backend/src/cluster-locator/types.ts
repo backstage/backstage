@@ -15,3 +15,4 @@
  */
 
 export type ClusterLocatorMethod = 'configMultiTenant' | 'http';
+export type AuthProviderType = 'google' | 'serviceAccount';

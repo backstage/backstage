@@ -125,8 +125,7 @@ const AuditView: FC<{ audit?: Audit }> = ({ audit }: { audit?: Audit }) => {
   );
 };
 
-const ConnectedAuditView: FC<{}> = () => {
-  const backstageTheme = useTheme<BackstageTheme>();
+export const AuditViewContent: FC<{}> = () => {
   const lighthouseApi = useApi(lighthouseApiRef);
   const params = useParams() as { id: string };
   const classes = useStyles();
@@ -175,6 +174,28 @@ const ConnectedAuditView: FC<{}> = () => {
   }
 
   return (
+    <>
+      <ContentHeader
+        title={value?.url || 'Audit'}
+        description="See a history of all Lighthouse audits for your website run through Backstage."
+      >
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => navigate(`../../${createAuditButtonUrl}`)}
+        >
+          Create New Audit
+        </Button>
+        <LighthouseSupportButton />
+      </ContentHeader>
+      {content}
+    </>
+  );
+};
+
+const ConnectedAuditView = () => {
+  const backstageTheme = useTheme<BackstageTheme>();
+  return (
     <Page
       theme={backstageTheme.getPageTheme({
         themeId: 'tool',
@@ -188,23 +209,9 @@ const ConnectedAuditView: FC<{}> = () => {
         <HeaderLabel label="Lifecycle" value="Alpha" />
       </Header>
       <Content stretch>
-        <ContentHeader
-          title={value?.url || 'Audit'}
-          description="See a history of all Lighthouse audits for your website run through Backstage."
-        >
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => navigate(`../../${createAuditButtonUrl}`)}
-          >
-            Create New Audit
-          </Button>
-          <LighthouseSupportButton />
-        </ContentHeader>
-        {content}
+        <AuditViewContent />
       </Content>
     </Page>
   );
 };
-
 export default ConnectedAuditView;

@@ -87,6 +87,7 @@ export function useWorkflowRuns({
                 },
               },
               status: run.status,
+              conclusion: run.conclusion,
               url: run.url,
               githubUrl: run.html_url,
             }));

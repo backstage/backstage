@@ -39,7 +39,7 @@ const ProductInsightsCard = ({ product }: ProductInsightsCardProps) => {
   const [resource, setResource] = useState<Maybe<ProductCost>>(null);
   const [error, setError] = useState<Maybe<Error>>(null);
 
-  const { group, product: productFilter, setProduct } = useFilters(
+  const { group, product: productFilter, setProduct, project } = useFilters(
     mapFiltersToProps(product.kind),
   );
   const { loadingProduct, dispatchLoading } = useLoading(
@@ -68,6 +68,7 @@ const ProductInsightsCard = ({ product }: ProductInsightsCardProps) => {
             product.kind,
             group!,
             productFilter!.duration,
+            project,
           );
           setResource(p);
         } catch (e) {
@@ -87,6 +88,7 @@ const ProductInsightsCard = ({ product }: ProductInsightsCardProps) => {
     productFilter,
     group,
     product.kind,
+    project,
   ]);
 
   const onPeriodSelect = (duration: Duration) => {

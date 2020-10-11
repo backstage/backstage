@@ -19,7 +19,6 @@ export type Validators = {
   isValidKind(value: any): boolean;
   isValidEntityName(value: any): boolean;
   isValidNamespace(value: any): boolean;
-  normalizeEntityName(value: string): string;
   isValidLabelKey(value: any): boolean;
   isValidLabelValue(value: any): boolean;
   isValidAnnotationKey(value: any): boolean;

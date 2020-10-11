@@ -209,6 +209,7 @@ export async function createBackendConfig(
     ],
     target: 'node' as const,
     node: {
+      /* eslint-disable-next-line no-restricted-syntax */
       __dirname: true,
       __filename: true,
       global: true,

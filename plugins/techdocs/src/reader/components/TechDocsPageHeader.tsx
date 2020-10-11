@@ -48,12 +48,14 @@ export const TechDocsPageHeader = ({
     spec: { owner, lifecycle },
   } = entityMetadataValues || { spec: {} };
 
+  const componentLink = `/catalog/${kind}/${name}`;
+
   const labels = (
     <>
       <HeaderLabel
         label="Component"
         value={
-          <Link style={{ color: '#fff' }} to={`/catalog/${kind}/${name}`}>
+          <Link style={{ color: '#fff' }} to={componentLink}>
             {name}
           </Link>
         }
@@ -66,7 +68,11 @@ export const TechDocsPageHeader = ({
         <HeaderLabel
           label=""
           value={
-            <a href={locationMetadata.target} target="_blank">
+            <a
+              href={locationMetadata.target}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <GitHubIcon style={{ marginTop: '-25px', fill: '#fff' }} />
             </a>
           }
@@ -81,6 +87,8 @@ export const TechDocsPageHeader = ({
       subtitle={
         siteDescription && siteDescription !== 'None' ? siteDescription : ''
       }
+      type={name}
+      typeLink={componentLink}
     >
       {labels}
     </Header>

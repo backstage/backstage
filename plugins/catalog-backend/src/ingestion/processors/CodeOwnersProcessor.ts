@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
+import { UrlReader } from '@backstage/backend-common';
 import { Entity, LocationSpec } from '@backstage/catalog-model';
-import {
-  LocationProcessor,
-  LocationProcessorEmit,
-  LocationProcessorRead,
-} from './types';
+import { LocationProcessor } from './types';
 import * as codeowners from 'codeowners-utils';
 import { CodeOwnersEntry } from 'codeowners-utils';
 import parseGitUri from 'git-url-parse';
@@ -37,13 +34,14 @@ const ALLOWED_LOCATION_TYPES = [
   'gitlab/api',
 ];
 
+type Options = {
+  reader: UrlReader;
+};
+
 export class CodeOwnersProcessor implements LocationProcessor {
-  async processEntity(
-    entity: Entity,
-    location: LocationSpec,
-    _emit: LocationProcessorEmit,
-    read: LocationProcessorRead,
-  ): Promise<Entity> {
+  constructor(private readonly options: Options) {}
+
+  async processEntity(entity: Entity, location: LocationSpec): Promise<Entity> {
     // Only continue if the owner is not set
     if (
       !entity ||
@@ -54,7 +52,7 @@ export class CodeOwnersProcessor implements LocationProcessor {
       return entity;
     }
 
-    const owner = await resolveCodeOwner(location, read);
+    const owner = await resolveCodeOwner(location, this.options.reader);
 
     return {
       ...entity,
@@ -65,9 +63,9 @@ export class CodeOwnersProcessor implements LocationProcessor {
 
 export async function resolveCodeOwner(
   location: LocationSpec,
-  read: LocationProcessorRead,
+  reader: UrlReader,
 ): Promise<string | undefined> {
-  const ownersText = await findRawCodeOwners(location, read);
+  const ownersText = await findRawCodeOwners(location, reader);
 
   if (!ownersText) {
     throw Error(`Unable to find codeowners file for: ${location.target}`);
@@ -80,15 +78,14 @@ export async function resolveCodeOwner(
 
 export async function findRawCodeOwners(
   location: LocationSpec,
-  read: LocationProcessorRead,
+  reader: UrlReader,
 ): Promise<string | undefined> {
   const readOwnerLocation = async (basePath: string): Promise<string> => {
-    const ownerLocation = buildCodeOwnerLocation(
-      location,
+    const ownerUrl = buildCodeOwnerUrl(
+      location.target,
       `${basePath}/CODEOWNERS`,
     );
-
-    const data = await read(ownerLocation);
+    const data = await reader.read(ownerUrl);
     return data.toString();
   };
 
@@ -99,6 +96,13 @@ export async function findRawCodeOwners(
     readOwnerLocation(''),
     readOwnerLocation('/docs'),
   ]);
+}
+
+export function buildCodeOwnerUrl(
+  basePath: string,
+  codeOwnersPath: string,
+): string {
+  return buildUrl({ ...parseGitUri(basePath), codeOwnersPath });
 }
 
 export function parseCodeOwners(ownersText: string) {
@@ -126,15 +130,6 @@ export function normalizeCodeOwner(owner: string) {
   }
 
   return owner;
-}
-
-export function buildCodeOwnerLocation(
-  location: LocationSpec,
-  codeOwnersPath: string,
-): LocationSpec {
-  const { type, target } = location;
-
-  return { type, target: buildUrl({ ...parseGitUri(target), codeOwnersPath }) };
 }
 
 export function buildUrl({

@@ -9,7 +9,7 @@ At Spotify, we find that cloud costs are optimized organically when:
 - The data is shown in software terms familiar to them.
 - Alerts and recommendations are targeted and actionable.
 
-Cost Insights shows trends over time, at the granularity of your software deployments - rather than the cloud provider's concepts. It can be used to troubleshoot cost anomalies, and promote cost-saving infrastructure migrations.
+Cost Insights shows trends over time, at the granularity of Backstage catalog entities - rather than the cloud provider's concepts. It can be used to troubleshoot cost anomalies, and promote cost-saving infrastructure migrations.
 
 ## Install
 
@@ -104,3 +104,11 @@ costInsights:
     metricC:
       name: Metric C
 ```
+
+## Alerts
+
+The CostInsightsApi `getAlerts` method may return any type of alert or recommendation (called collectively "Action Items" in Cost Insights) that implements the [Alert type](https://github.com/spotify/backstage/blob/master/plugins/cost-insights/src/types/Alert.tsx). This allows you to deliver any alerts or recommendations specific to your infrastructure or company migrations.
+
+The Alert type includes an `element` field to supply the JSX Element that will be rendered in the Cost Insights "Action Items" section; we recommend using Backstage's [InfoCard](https://backstage.io/storybook/?path=/story/layout-information-card--default) and [Recharts](http://recharts.org/en-US/) to show actionable visualizations.
+
+The Alert `url` should link to documentation or instructions for resolving the alert.

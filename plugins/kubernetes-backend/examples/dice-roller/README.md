@@ -1,6 +1,6 @@
 # Dice roller
 
-An app to roll dice (it doesn't actually do that).
+This can be used to run the kubernetes plugin locally against a mock service.
 
 # Viewing in local Minikube running Backstage locally
 
@@ -23,22 +23,24 @@ An app to roll dice (it doesn't actually do that).
 6. Register existing component in Backstage
    - https://github.com/mclarke47/dice-roller/blob/master/catalog-info.yaml
 
-Update `app-config.yaml` as follows.
+Update `app-config.development.yaml` as follows.
 
 ```yaml
----
 kubernetes:
   clusterLocatorMethod: 'configMultiTenant'
   clusters:
     - url: <KUBERNETES MASTER BASE URL FROM STEP 2>
       name: minikube
       serviceAccountToken: <TOKEN FROM STEP 4>
+      authProvider: 'serviceAccount'
 ```
 
 ### Getting the service account token
 
+Mac copy to clipboard:
+
 ```
-kubectl get secret DICE_ROLLER_TOKEN_NAME -o=json | jq -r '.data["token"]' | base64 --decode | pbcopy
+kubectl get secret $(kubectl get sa dice-roller -o=json | jq -r .secrets[0].name) -o=json | jq -r '.data["token"]' | base64 --decode | pbcopy
 ```
 
-Paste into `app-config.yaml` `kubernetes.clusters[].serviceAccountToken`
+Paste into `app-config.development.yaml` `kubernetes.clusters[0].serviceAccountToken`

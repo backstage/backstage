@@ -33,6 +33,7 @@ import {
 import pgtools from 'pgtools';
 import { findPaths } from '@backstage/cli-common';
 
+/* eslint-disable-next-line no-restricted-syntax */
 const paths = findPaths(__dirname);
 
 const templatePackagePaths = [
@@ -285,7 +286,7 @@ async function testAppServe(pluginName: string, appDir: string) {
     cwd: appDir,
     env: {
       ...process.env,
-      GITHUB_ACCESS_TOKEN: 'abc',
+      GITHUB_TOKEN: 'abc',
     },
   });
   Browser.localhost('localhost', 3000);
@@ -328,8 +329,8 @@ async function testAppServe(pluginName: string, appDir: string) {
   }
 }
 
-/** Creates PG databases (drops if exists before) */
-async function createDB(database: string) {
+/** Drops PG databases */
+async function dropDB(database: string) {
   const config = {
     host: process.env.POSTGRES_HOST,
     port: process.env.POSTGRES_PORT,
@@ -342,7 +343,6 @@ async function createDB(database: string) {
   } catch (_) {
     /* do nothing*/
   }
-  return pgtools.createdb(config, database);
 }
 
 /**
@@ -350,7 +350,7 @@ async function createDB(database: string) {
  */
 async function testBackendStart(appDir: string, isPostgres: boolean) {
   if (isPostgres) {
-    print('Creating DBs');
+    print('Dropping old DBs');
     await Promise.all(
       [
         'catalog',
@@ -359,7 +359,7 @@ async function testBackendStart(appDir: string, isPostgres: boolean) {
         'identity',
         'proxy',
         'techdocs',
-      ].map(name => createDB(`backstage_plugin_${name}`)),
+      ].map(name => dropDB(`backstage_plugin_${name}`)),
     );
     print('Created DBs');
   }
@@ -368,7 +368,7 @@ async function testBackendStart(appDir: string, isPostgres: boolean) {
     cwd: appDir,
     env: {
       ...process.env,
-      GITHUB_ACCESS_TOKEN: 'abc',
+      GITHUB_TOKEN: 'abc',
     },
   });
 

@@ -27,8 +27,7 @@ import { techdocsApiRef } from '../../api';
 export const TechDocsPage = () => {
   const backstageTheme = useTheme<BackstageTheme>();
   const [documentReady, setDocumentReady] = useState<boolean>(false);
-  const { entityId } = useParams();
-  const [kind, namespace, name] = entityId.split(':');
+  const { namespace, kind, name } = useParams();
 
   const techDocsApi = useApi(techdocsApiRef);
 

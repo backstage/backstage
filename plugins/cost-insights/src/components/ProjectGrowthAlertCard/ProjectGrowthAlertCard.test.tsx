@@ -17,7 +17,7 @@
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import ProjectGrowthAlertCard from './ProjectGrowthAlertCard';
-import { createMockProjectGrowthAlert } from '../../utils/mockData';
+import { createMockProjectGrowthData } from '../../utils/mockData';
 import { MockCurrencyProvider, MockConfigProvider } from '../../utils/tests';
 import { AlertCost, defaultCurrencies, findAlways } from '../../types';
 
@@ -29,8 +29,8 @@ const MockAlertCosts: AlertCost[] = [
   { id: 'test-id-2', aggregation: [235, 400] },
 ];
 
-const MockProjectGrowthAlert = createMockProjectGrowthAlert(alert => ({
-  ...alert,
+const MockProjectGrowthAlert = createMockProjectGrowthData(data => ({
+  ...data,
   project: MockProject,
   products: MockAlertCosts,
 }));

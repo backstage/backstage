@@ -20,7 +20,7 @@ import { TrendLine } from './TrendLine';
 import { InfoCard } from '../../layout/InfoCard';
 
 export default {
-  title: 'TrendLine',
+  title: 'Data Display/TrendLine',
   component: TrendLine,
 };
 

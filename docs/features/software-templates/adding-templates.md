@@ -66,7 +66,7 @@ for example
 ```yaml
 catalog:
   locations:
-    - type: github
+    - type: url
       target: https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml
       rules:
         - allow: [Template]

@@ -20,6 +20,11 @@ import * as result from './results';
 import { LocationProcessor, LocationProcessorEmit } from './types';
 import { Config } from '@backstage/config';
 
+// ***********************************************************************
+// * NOTE: This has been replaced by packages/backend-common/src/reading *
+// * Don't implement new functionality here as this file will be removed *
+// ***********************************************************************
+
 export class AzureApiReaderProcessor implements LocationProcessor {
   private privateToken: string;
 

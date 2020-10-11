@@ -20,7 +20,7 @@ import { HeaderLabel } from '../HeaderLabel';
 import { Page } from '../Page';
 
 export default {
-  title: 'Header',
+  title: 'Layout/Header',
   component: Header,
 };
 

@@ -15,15 +15,83 @@
  */
 /* eslint-disable no-restricted-imports */
 
+import dayjs from 'dayjs';
+import regression, { DataPoint } from 'regression';
 import {
-  CostInsightsApi,
   Alert,
+  ChangeStatistic,
   Cost,
+  CostInsightsApi,
+  DateAggregation,
   Duration,
-  Project,
-  ProductCost,
+  exclusiveEndDateOf,
   Group,
+  inclusiveStartDateOf,
+  Maybe,
+  ProductCost,
+  Project,
+  ProjectGrowthAlert,
+  ProjectGrowthData,
+  Trendline,
+  UnlabeledDataflowAlert,
+  UnlabeledDataflowData,
 } from '@backstage/plugin-cost-insights';
+
+function durationOf(intervals: string): Duration {
+  const match = intervals.match(/\/(?<duration>P\d+[DM])\//);
+  const { duration } = match!.groups!;
+  return duration as Duration;
+}
+
+function aggregationFor(
+  duration: Duration,
+  baseline: number,
+): DateAggregation[] {
+  const days = dayjs(exclusiveEndDateOf(duration)).diff(
+    inclusiveStartDateOf(duration),
+    'day',
+  );
+
+  return [...Array(days).keys()].reduce(
+    (values: DateAggregation[], i: number): DateAggregation[] => {
+      const last = values.length ? values[values.length - 1].amount : baseline;
+      values.push({
+        date: dayjs(inclusiveStartDateOf(duration))
+          .add(i, 'day')
+          .format('YYYY-MM-DD'),
+        amount: last + (baseline / 20) * (Math.random() * 2 - 1),
+      });
+      return values;
+    },
+    [],
+  );
+}
+
+function trendlineOf(aggregation: DateAggregation[]): Trendline {
+  const data: ReadonlyArray<DataPoint> = aggregation.map(a => [
+    Date.parse(a.date) / 1000,
+    a.amount,
+  ]);
+  const result = regression.linear(data, { precision: 5 });
+  return {
+    slope: result.equation[0],
+    intercept: result.equation[1],
+  };
+}
+
+function changeOf(aggregation: DateAggregation[]): ChangeStatistic {
+  const half = Math.ceil(aggregation.length / 2);
+  const before = aggregation
+    .slice(0, half)
+    .reduce((sum, a) => sum + a.amount, 0);
+  const after = aggregation
+    .slice(half, aggregation.length)
+    .reduce((sum, a) => sum + a.amount, 0);
+  return {
+    ratio: (after - before) / before,
+    amount: after - before,
+  };
+}
 
 export class ExampleCostInsightsClient implements CostInsightsApi {
   private request(_: any, res: any): Promise<any> {
@@ -53,30 +121,17 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
     metric: string | null,
     intervals: string,
   ): Promise<Cost> {
+    const aggregation = aggregationFor(
+      durationOf(intervals),
+      metric ? 0.3 : 8_000,
+    );
     const groupDailyCost: Cost = await this.request(
       { group, metric, intervals },
       {
         id: metric, // costs with null ids will appear as "All Projects" in Cost Overview panel
-        aggregation: [
-          { date: '2020-08-01', amount: 75_000 / (metric ? 200_000 : 1) },
-          { date: '2020-08-02', amount: 120_000 / (metric ? 200_000 : 1) },
-          { date: '2020-08-03', amount: 110_000 / (metric ? 200_000 : 1) },
-          { date: '2020-08-04', amount: 90_000 / (metric ? 200_000 : 1) },
-          { date: '2020-08-05', amount: 80_000 / (metric ? 200_000 : 1) },
-          { date: '2020-08-06', amount: 85_000 / (metric ? 200_000 : 1) },
-          { date: '2020-08-07', amount: 82_500 / (metric ? 200_000 : 1) },
-          { date: '2020-08-08', amount: 100_000 / (metric ? 200_000 : 1) },
-          { date: '2020-08-09', amount: 130_000 / (metric ? 200_000 : 1) },
-          { date: '2020-08-10', amount: 140_000 / (metric ? 200_000 : 1) },
-        ],
-        change: {
-          ratio: 0.86,
-          amount: 65_000,
-        },
-        trendline: {
-          slope: 0,
-          intercept: 90_000,
-        },
+        aggregation: aggregation,
+        change: changeOf(aggregation),
+        trendline: trendlineOf(aggregation),
       },
     );
 
@@ -88,30 +143,17 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
     metric: string | null,
     intervals: string,
   ): Promise<Cost> {
+    const aggregation = aggregationFor(
+      durationOf(intervals),
+      metric ? 0.1 : 1_500,
+    );
     const projectDailyCost: Cost = await this.request(
       { project, metric, intervals },
       {
         id: 'project-a',
-        aggregation: [
-          { date: '2020-08-01', amount: 1000 },
-          { date: '2020-08-02', amount: 2000 },
-          { date: '2020-08-03', amount: 3000 },
-          { date: '2020-08-04', amount: 4000 },
-          { date: '2020-08-05', amount: 5000 },
-          { date: '2020-08-06', amount: 6000 },
-          { date: '2020-08-07', amount: 7000 },
-          { date: '2020-08-08', amount: 8000 },
-          { date: '2020-08-09', amount: 9000 },
-          { date: '2020-08-10', amount: 10_000 },
-        ],
-        change: {
-          ratio: 0.5,
-          amount: 10000,
-        },
-        trendline: {
-          slope: 0,
-          intercept: 0,
-        },
+        aggregation: aggregation,
+        change: changeOf(aggregation),
+        trendline: trendlineOf(aggregation),
       },
     );
 
@@ -122,9 +164,38 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
     product: string,
     group: string,
     duration: Duration,
+    project: Maybe<string>,
   ): Promise<ProductCost> {
+    const projectProductInsights = await this.request(
+      { product, group, duration, project },
+      {
+        aggregation: [80_000, 110_000],
+        change: {
+          ratio: 0.375,
+          amount: 30_000,
+        },
+        entities: [
+          {
+            id: null, // entities with null ids will be appear as "Unlabeled" in product panels
+            aggregation: [45_000, 50_000],
+          },
+          {
+            id: 'entity-a',
+            aggregation: [15_000, 20_000],
+          },
+          {
+            id: 'entity-b',
+            aggregation: [20_000, 30_000],
+          },
+          {
+            id: 'entity-e',
+            aggregation: [0, 10_000],
+          },
+        ],
+      },
+    );
     const productInsights: ProductCost = await this.request(
-      { product, group, duration },
+      { product, group, duration, project },
       {
         aggregation: [200_000, 250_000],
         change: {
@@ -134,7 +205,7 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
         entities: [
           {
             id: null, // entities with null ids will be appear as "Unlabeled" in product panels
-            aggregation: [45_000, 50_000],
+            aggregation: [15_000, 30_000],
           },
           {
             id: 'entity-a',
@@ -172,36 +243,48 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
       },
     );
 
-    return productInsights;
+    return project ? projectProductInsights : productInsights;
   }
 
   async getAlerts(group: string): Promise<Alert[]> {
-    const alerts: Alert[] = await this.request({ group }, [
-      {
-        id: 'projectGrowth',
-        project: 'example-project',
-        periodStart: 'Q1 2020',
-        periodEnd: 'Q2 2020',
-        aggregation: [60_000, 120_000],
-        change: {
-          ratio: 1,
-          amount: 60000,
-        },
-        products: [
-          {
-            id: 'Compute Engine',
-            aggregation: [58_000, 118_000],
-          },
-          {
-            id: 'Cloud Dataflow',
-            aggregation: [1200, 1500],
-          },
-          {
-            id: 'Cloud Storage',
-            aggregation: [800, 500],
-          },
-        ],
+    const projectGrowthData: ProjectGrowthData = {
+      project: 'example-project',
+      periodStart: 'Q2 2020',
+      periodEnd: 'Q3 2020',
+      aggregation: [60_000, 120_000],
+      change: {
+        ratio: 1,
+        amount: 60000,
       },
+      products: [
+        { id: 'Compute Engine', aggregation: [58_000, 118_000] },
+        { id: 'Cloud Dataflow', aggregation: [1200, 1500] },
+        { id: 'Cloud Storage', aggregation: [800, 500] },
+      ],
+    };
+
+    const unlabeledDataflowData: UnlabeledDataflowData = {
+      periodStart: '2020-09-01',
+      periodEnd: '2020-09-30',
+      labeledCost: 6_200,
+      unlabeledCost: 7_000,
+      projects: [
+        {
+          id: 'example-project-1',
+          unlabeledCost: 5_000,
+          labeledCost: 3_000,
+        },
+        {
+          id: 'example-project-2',
+          unlabeledCost: 2_000,
+          labeledCost: 3_200,
+        },
+      ],
+    };
+
+    const alerts: Alert[] = await this.request({ group }, [
+      new ProjectGrowthAlert(projectGrowthData),
+      new UnlabeledDataflowAlert(unlabeledDataflowData),
     ]);
 
     return alerts;

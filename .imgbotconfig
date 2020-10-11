@@ -1,0 +1,5 @@
+{
+  "ignoredFiles": [
+    "docs/assets/**/*.svg"
+  ]
+}
