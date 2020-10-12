@@ -123,7 +123,7 @@ export async function createRouter(
 function translateQueryToEntityFilters(
   request: express.Request,
 ): EntityFilters {
-  const filters: EntityFilters = {};
+  const filters: Record<string, (string | null)[]> = {};
 
   for (const [key, valueOrValues] of Object.entries(request.query)) {
     const values = Array.isArray(valueOrValues)
@@ -134,12 +134,7 @@ function translateQueryToEntityFilters(
       throw new InputError('Complex query parameters are not supported');
     }
 
-    // This one always emits arrays
-    let matchers = filters[key] as (string | null)[];
-    if (!matchers) {
-      matchers = [];
-      filters[key] = matchers;
-    }
+    const matchers = key in filters ? filters[key] : (filters[key] = []);
     matchers.push(...(values.map(v => v || null) as (string | null)[]));
   }
 
