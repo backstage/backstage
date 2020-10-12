@@ -224,12 +224,11 @@ export default async (cmd: Command) => {
   }
 
   const answers: Answers = await inquirer.prompt(questions);
-  const pluginName = cmd.scope
-    ? `@${cmd.scope.replace(/^@/, '')}/plugin-${answers.id}`
-    : `plugin-${answers.id}`;
+  const pluginId = cmd.backend ? `${answers.id}-backend` : answers.id;
 
-  const name = cmd.backend ? `${pluginName}-backend` : pluginName;
-
+  const name = cmd.scope
+    ? `@${cmd.scope.replace(/^@/, '')}/plugin-${pluginId}`
+    : `plugin-${pluginId}`;
   const npmRegistry = cmd.npmRegistry && cmd.scope ? cmd.npmRegistry : '';
   const privatePackage = cmd.private === false ? false : true;
   const isMonoRepo = await fs.pathExists(paths.resolveTargetRoot('lerna.json'));
@@ -239,10 +238,10 @@ export default async (cmd: Command) => {
       ? 'templates/default-backend-plugin'
       : 'templates/default-plugin',
   );
-  const tempDir = resolvePath(os.tmpdir(), answers.id);
+  const tempDir = resolvePath(os.tmpdir(), pluginId);
   const pluginDir = isMonoRepo
-    ? paths.resolveTargetRoot('plugins', answers.id)
-    : paths.resolveTargetRoot(answers.id);
+    ? paths.resolveTargetRoot('plugins', pluginId)
+    : paths.resolveTargetRoot(pluginId);
   const ownerIds = parseOwnerIds(answers.owner);
   const { version } = isMonoRepo
     ? await fs.readJson(paths.resolveTargetRoot('lerna.json'))
@@ -270,7 +269,7 @@ export default async (cmd: Command) => {
     });
 
     Task.section('Moving to final location');
-    await movePlugin(tempDir, pluginDir, answers.id);
+    await movePlugin(tempDir, pluginDir, pluginId);
 
     Task.section('Building the plugin');
     await buildPlugin(pluginDir);
@@ -280,13 +279,13 @@ export default async (cmd: Command) => {
       await addPluginDependencyToApp(paths.targetRoot, name, version);
 
       Task.section('Import plugin in app');
-      await addPluginToApp(paths.targetRoot, answers.id, name);
+      await addPluginToApp(paths.targetRoot, pluginId, name);
     }
 
     if (ownerIds && ownerIds.length) {
       await addCodeownersEntry(
         codeownersPath!,
-        `/plugins/${answers.id}`,
+        `/plugins/${pluginId}`,
         ownerIds,
       );
     }
