@@ -118,15 +118,18 @@ type SAMLProviderOptions = {
 };
 
 export const createSamlProvider: AuthProviderFactory = ({
+  globalConfig,
   config,
   tokenIssuer,
 }) => {
+  const url = new URL(globalConfig.baseUrl);
+  const providerId = 'saml';
   const entryPoint = config.getString('entryPoint');
   const issuer = config.getString('issuer');
   const opts = {
     entryPoint,
     issuer,
-    path: '/auth/saml/handler/frame',
+    path: `${url.pathname}/${providerId}/handler/frame`,
     tokenIssuer,
   };
 
