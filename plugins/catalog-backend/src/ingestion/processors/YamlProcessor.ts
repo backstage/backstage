@@ -20,6 +20,11 @@ import yaml from 'yaml';
 import * as result from './results';
 import { LocationProcessor, LocationProcessorEmit } from './types';
 
+/**
+ * Handles incoming raw data buffers, and if they have a yaml extension,
+ * attempts to parse them into structured data and emitting them as un-
+ * validated entities.
+ */
 export class YamlProcessor implements LocationProcessor {
   async parseData(
     data: Buffer,

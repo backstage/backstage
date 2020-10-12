@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-export * from './catalog';
-export * from './database';
-export * from './ingestion';
-export * from './service';
-export * from './util';
+export { CatalogBuilder } from './CatalogBuilder';
+export { createRouter } from './router';
+export type { RouterOptions } from './router';
