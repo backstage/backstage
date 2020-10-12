@@ -15,7 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { AzurePreparer } from './azure';
+import { CommonGitPreparer } from './commonGit';
 import { checkoutGitRepository } from '../../../helpers';
 
 function normalizePath(path: string) {
@@ -45,19 +45,19 @@ const createMockEntity = (annotations = {}) => {
 
 const logger = getVoidLogger();
 
-describe('Azure DevOps preparer', () => {
-  it('should prepare temp docs path from Azure DevOps repo', async () => {
-    const preparer = new AzurePreparer(logger);
+describe('github preparer', () => {
+  it('should prepare temp docs path from github repo', async () => {
+    const preparer = new CommonGitPreparer(logger);
 
     const mockEntity = createMockEntity({
       'backstage.io/techdocs-ref':
-        'azure/api:https://dev.azure.com/backstage-org/backstage-project/_git/template-repo?path=%2Ftemplate.yaml',
+        'github:https://github.com/spotify/backstage/blob/master/plugins/techdocs-backend/examples/documented-component',
     });
 
     const tempDocsPath = await preparer.prepare(mockEntity);
     expect(checkoutGitRepository).toHaveBeenCalledTimes(1);
     expect(normalizePath(tempDocsPath)).toEqual(
-      '/tmp/backstage-repo/org/name/branch/template.yaml',
+      '/tmp/backstage-repo/org/name/branch/plugins/techdocs-backend/examples/documented-component',
     );
   });
 });
