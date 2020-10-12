@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(2, 2, 6),
     backgroundImage: (props: { backgroundImage: string }) =>
       props.backgroundImage,
-    backgroundPosition: '0 center',
+    backgroundPosition: 0,
   },
   content: {
     padding: theme.spacing(2),
