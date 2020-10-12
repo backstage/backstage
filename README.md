@@ -24,9 +24,7 @@ Out of the box, Backstage includes:
 - [Backstage TechDocs](https://backstage.io/docs/features/techdocs/techdocs-overview) for making it easy to create, maintain, find, and use technical documentation, using a "docs like code" approach
 - Plus, a growing ecosystem of [open source plugins](https://github.com/spotify/backstage/tree/master/plugins) that further expand Backstage’s customizability and functionality
 
-For more information go to [backstage.io](https://backstage.io) or join our [Discord chatroom](https://discord.gg/EBHEGzX).
-
-🎉 Backstage is a CNCF Sandbox project. Read the announcement [here](https://backstage.io/blog/2020/09/23/backstage-cncf-sandbox).
+Backstage was created by Spotify but is now hosted by the [Cloud Native Computing Foundation (CNCF)](https://www.cncf.io) as a Sandbox level project. Read the announcement [here](https://backstage.io/blog/2020/09/23/backstage-cncf-sandbox).
 
 ## Project roadmap
 
@@ -58,6 +56,6 @@ Check out [the documentation](https://backstage.io/docs/getting-started) on how 
 
 ## License
 
-Copyright 2020 Spotify AB.
+Copyright 2020 © Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage
 
 Licensed under the Apache License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0
