@@ -60,7 +60,7 @@ const CHECKBOX_TREE_ITEMS = [
 ];
 
 export default {
-  title: 'CheckboxTree',
+  title: 'Inputs/CheckboxTree',
   component: CheckboxTree,
 };
 

@@ -48,7 +48,7 @@ const ProjectSelect = ({ project, projects, onSelect }: ProjectSelectProps) => {
     <Select
       className={classes.select}
       variant="outlined"
-      value={project}
+      value={project || 'all'}
       renderValue={renderValue}
       onChange={handleOnChange}
       data-testid="project-filter-select"

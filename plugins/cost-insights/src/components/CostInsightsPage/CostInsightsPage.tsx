@@ -15,7 +15,7 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { Box, Container, Divider, Grid } from '@material-ui/core';
+import { Box, Container, Divider, Grid, Typography } from '@material-ui/core';
 import { Progress, useApi, featureFlagsApiRef } from '@backstage/core';
 import { default as MaterialAlert } from '@material-ui/lab/Alert';
 import { costInsightsApiRef } from '../../api';
@@ -41,6 +41,7 @@ import {
 } from '../../hooks';
 import { Alert, Cost, intervalsOf, Maybe, Project } from '../../types';
 import { mapLoadingToProps } from './selector';
+import ProjectSelect from '../ProjectSelect';
 
 const CostInsightsPage = () => {
   const flags = useApi(featureFlagsApiRef).getFlags();
@@ -55,7 +56,7 @@ const CostInsightsPage = () => {
   const [alerts, setAlerts] = useState<Maybe<Alert[]>>(null);
   const [error, setError] = useState<Maybe<Error>>(null);
 
-  const { pageFilters } = useFilters(p => p);
+  const { pageFilters, setPageFilters } = useFilters(p => p);
   const {
     loadingActions,
     loadingGroups,
@@ -63,6 +64,7 @@ const CostInsightsPage = () => {
     dispatchInitial,
     dispatchInsights,
     dispatchNone,
+    dispatchReset,
   } = useLoading(mapLoadingToProps);
 
   /* eslint-disable react-hooks/exhaustive-deps */
@@ -75,7 +77,14 @@ const CostInsightsPage = () => {
   const dispatchLoadingInitial = useCallback(dispatchInitial, []);
   const dispatchLoadingInsights = useCallback(dispatchInsights, []);
   const dispatchLoadingNone = useCallback(dispatchNone, []);
+  const dispatchLoadingReset = useCallback(dispatchReset, []);
   /* eslint-enable react-hooks/exhaustive-deps */
+
+  const setProject = (project: Maybe<string>) =>
+    setPageFilters({
+      ...pageFilters,
+      project: project === 'all' ? null : project,
+    });
 
   useEffect(() => {
     async function getInsights() {
@@ -165,6 +174,41 @@ const CostInsightsPage = () => {
     );
   }
 
+  const onProjectSelect = (project: Maybe<string>) => {
+    setProject(project);
+    dispatchLoadingReset(loadingActions);
+  };
+
+  const CostOverviewBanner = () => (
+    <Box
+      px={3}
+      marginTop={10}
+      display="flex"
+      flexDirection="row"
+      justifyContent="space-between"
+    >
+      <Box minHeight={40} width="75%" pt={2}>
+        <Typography variant="h4">Cost Overview</Typography>
+      </Box>
+      <Box minHeight={40} maxHeight={60} display="flex">
+        {!!flags.get('cost-insights-currencies') && (
+          <Box mr={1}>
+            <CurrencySelect
+              currency={currency}
+              currencies={currencies}
+              onSelect={setCurrency}
+            />
+          </Box>
+        )}
+        <ProjectSelect
+          project={pageFilters.project}
+          projects={projects || []}
+          onSelect={onProjectSelect}
+        />
+      </Box>
+    </Box>
+  );
+
   return (
     <CostInsightsLayout groups={groups}>
       <Grid container wrap="nowrap">
@@ -180,15 +224,6 @@ const CostInsightsPage = () => {
             justifyContent="flex-end"
             mb={2}
           >
-            {!!flags.get('cost-insights-currencies') && (
-              <Box mr={1}>
-                <CurrencySelect
-                  currency={currency}
-                  currencies={currencies}
-                  onSelect={setCurrency}
-                />
-              </Box>
-            )}
             <CopyUrlToClipboard />
             <CostInsightsSupportButton />
           </Box>
@@ -212,6 +247,9 @@ const CostInsightsPage = () => {
                   <Divider />
                 </>
               )}
+              <Grid item xs>
+                <CostOverviewBanner />
+              </Grid>
               <Grid item xs>
                 <Box px={3} py={6}>
                   {!!dailyCost.aggregation.length && (

@@ -101,6 +101,7 @@ const main = (argv: string[]) => {
 
       // Local Backstage Preview
       const techdocsPreviewBundlePath = path.join(
+        /* eslint-disable-next-line no-restricted-syntax */
         __dirname,
         '..',
         'dist',

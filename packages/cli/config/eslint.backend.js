@@ -67,6 +67,11 @@ module.exports = {
         selector:
           'ImportDeclaration[source.value="winston"] ImportDefaultSpecifier',
       },
+      {
+        message:
+          "`__dirname` doesn't refer to the same dir in production builds, try `resolvePackagePath()` from `@backstage/backend-common` instead.",
+        selector: 'Identifier[name="__dirname"]',
+      },
     ],
   },
   overrides: [
