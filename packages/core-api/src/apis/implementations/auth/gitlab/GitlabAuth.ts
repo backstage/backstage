@@ -27,6 +27,7 @@ type CreateOptions = {
   discoveryApi: DiscoveryApi;
   oauthRequestApi: OAuthRequestApi;
 
+  defaultScopes?: string[];
   environment?: string;
   provider?: AuthProvider & { id: string };
 };
@@ -43,13 +44,14 @@ class GitlabAuth {
     environment = 'development',
     provider = DEFAULT_PROVIDER,
     oauthRequestApi,
+    defaultScopes = ['read_user'],
   }: CreateOptions): typeof gitlabAuthApiRef.T {
     return OAuth2.create({
       discoveryApi,
       oauthRequestApi,
       provider,
       environment,
-      defaultScopes: ['read_user'],
+      defaultScopes,
     });
   }
 }

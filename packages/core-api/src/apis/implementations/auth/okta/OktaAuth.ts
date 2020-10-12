@@ -27,6 +27,7 @@ type CreateOptions = {
   discoveryApi: DiscoveryApi;
   oauthRequestApi: OAuthRequestApi;
 
+  defaultScopes?: string[];
   environment?: string;
   provider?: AuthProvider & { id: string };
 };
@@ -55,13 +56,14 @@ class OktaAuth {
     environment = 'development',
     provider = DEFAULT_PROVIDER,
     oauthRequestApi,
+    defaultScopes = ['openid', 'email', 'profile', 'offline_access'],
   }: CreateOptions): typeof oktaAuthApiRef.T {
     return OAuth2.create({
       discoveryApi,
       oauthRequestApi,
       provider,
       environment,
-      defaultScopes: ['openid', 'email', 'profile', 'offline_access'],
+      defaultScopes,
       scopeTransform(scopes) {
         return scopes.map(scope => {
           if (OKTA_OIDC_SCOPES.has(scope)) {

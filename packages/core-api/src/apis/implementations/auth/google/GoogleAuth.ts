@@ -27,6 +27,7 @@ type CreateOptions = {
   discoveryApi: DiscoveryApi;
   oauthRequestApi: OAuthRequestApi;
 
+  defaultScopes?: string[];
   environment?: string;
   provider?: AuthProvider & { id: string };
 };
@@ -37,25 +38,26 @@ const DEFAULT_PROVIDER = {
   icon: GoogleIcon,
 };
 
+const SCOPE_PREFIX = 'https://www.googleapis.com/auth/';
+
 class GoogleAuth {
   static create({
     discoveryApi,
     oauthRequestApi,
     environment = 'development',
     provider = DEFAULT_PROVIDER,
+    defaultScopes = [
+      'openid',
+      `${SCOPE_PREFIX}userinfo.email`,
+      `${SCOPE_PREFIX}userinfo.profile`,
+    ],
   }: CreateOptions): typeof googleAuthApiRef.T {
-    const SCOPE_PREFIX = 'https://www.googleapis.com/auth/';
-
     return OAuth2.create({
       discoveryApi,
       oauthRequestApi,
       provider,
       environment,
-      defaultScopes: [
-        'openid',
-        `${SCOPE_PREFIX}userinfo.email`,
-        `${SCOPE_PREFIX}userinfo.profile`,
-      ],
+      defaultScopes,
       scopeTransform(scopes: string[]) {
         return scopes.map(scope => {
           if (scope === 'openid') {

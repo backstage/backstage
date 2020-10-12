@@ -28,6 +28,7 @@ type CreateOptions = {
   discoveryApi: DiscoveryApi;
   oauthRequestApi: OAuthRequestApi;
 
+  defaultScopes?: string[];
   environment?: string;
   provider?: AuthProvider & { id: string };
 };
@@ -44,19 +45,20 @@ class MicrosoftAuth {
     provider = DEFAULT_PROVIDER,
     oauthRequestApi,
     discoveryApi,
+    defaultScopes = [
+      'openid',
+      'offline_access',
+      'profile',
+      'email',
+      'User.Read',
+    ],
   }: CreateOptions): typeof microsoftAuthApiRef.T {
     return OAuth2.create({
       discoveryApi,
       oauthRequestApi,
       provider,
       environment,
-      defaultScopes: [
-        'openid',
-        'offline_access',
-        'profile',
-        'email',
-        'User.Read',
-      ],
+      defaultScopes,
     });
   }
 }
