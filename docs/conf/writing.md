@@ -65,9 +65,10 @@ All `app-config.yaml` files inside the monorepo root and package root are
 considered, as are files with additional `local` and environment affixes such as
 `development`, for example `app-config.local.yaml`,
 `app-config.production.yaml`, and `app-config.development.local.yaml`. Which
-environment config files are loaded is determined by the `NODE_ENV` environment
-variable. Local configuration files are always loaded, but are meant for local
-development overrides and should typically be `.gitignore`'d.
+environment config files are loaded is determined by the `APP_ENV` environment
+variable, or `NODE_ENV` if it is not set. Local configuration files are always
+loaded, but are meant for local development overrides and should typically be
+`.gitignore`'d.
 
 All loaded configuration files are merged together using the following rules:
 

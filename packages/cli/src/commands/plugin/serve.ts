@@ -22,7 +22,7 @@ import { serveBundle } from '../../lib/bundler';
 
 export default async (cmd: Command) => {
   const appConfigs = await loadConfig({
-    env: process.env.NODE_ENV ?? 'development',
+    env: process.env.APP_ENV ?? process.env.NODE_ENV ?? 'development',
     rootPaths: [paths.targetRoot, paths.targetDir],
   });
   const waitForExit = await serveBundle({

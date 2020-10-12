@@ -24,7 +24,7 @@ export async function loadBackendConfig() {
   /* eslint-disable-next-line no-restricted-syntax */
   const paths = findPaths(__dirname);
   const configs = await loadConfig({
-    env: process.env.NODE_ENV ?? 'development',
+    env: process.env.APP_ENV ?? process.env.NODE_ENV ?? 'development',
     rootPaths: [paths.targetRoot, paths.targetDir],
     shouldReadSecrets: true,
   });
