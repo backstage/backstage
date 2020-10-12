@@ -241,5 +241,5 @@ auth:
   # This is a 'Personal Access Token'
   circleciAuthToken: r
   # Used by the scaffolder to create GitHub repos. Must have 'repo' scope.
-  githubAccessToken: g
-  gitlabAccessToken: g
+  githubToken: g
+  gitlabToken: g
