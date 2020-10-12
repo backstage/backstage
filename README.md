@@ -4,7 +4,7 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![CNCF Status](https://img.shields.io/badge/cncf%20status-sandbox-blue.svg)](https://www.cncf.io/projects)
-![](https://github.com/spotify/backstage/workflows/Frontend%20CI/badge.svg)
+[![Main CI Build](https://github.com/spotify/backstage/workflows/Main%20Master%20Build/badge.svg)](https://github.com/spotify/backstage/actions?query=workflow%3A%22Main+Master+Build%22)
 [![Discord](https://img.shields.io/discord/687207715902193673)](https://discord.gg/EBHEGzX)
 ![Code style](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)
 [![Codecov](https://img.shields.io/codecov/c/github/spotify/backstage)](https://codecov.io/gh/spotify/backstage)
