@@ -41,10 +41,12 @@ import { Router as SentryRouter } from '@backstage/plugin-sentry';
 import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
 import { Router as KubernetesRouter } from '@backstage/plugin-kubernetes';
 import {
-  Router as CodeInsightsRouter,
+  Router as GitHubInsightsRouter,
+  isPluginApplicableToEntity as isGitHubAvailable,
   ReadMeCard,
-  ContributorsCard,
-} from '@roadiehq/backstage-plugin-code-insights';
+  LanguagesCard,
+  ReleasesCard,
+} from '@roadiehq/backstage-plugin-github-insights';
 import React, { ReactNode } from 'react';
 import {
   AboutCard,
@@ -124,13 +126,18 @@ const OverviewContent = ({ entity }: { entity: Entity }) => (
     <Grid item md={6}>
       <AboutCard entity={entity} />
     </Grid>
-    <Grid item md={6}>
-      <ContributorsCard entity={entity} />
-    </Grid>
-    <Grid item md={6}>
-      <ReadMeCard entity={entity} maxHeight={350} />
-    </Grid>
     <RecentCICDRunsSwitcher entity={entity} />
+    {isGitHubAvailable(entity) && (
+      <>
+        <Grid item md={6}>
+          <LanguagesCard entity={entity} />
+          <ReleasesCard entity={entity} />
+        </Grid>
+        <Grid item md={6}>
+          <ReadMeCard entity={entity} maxHeight={350} />
+        </Grid>
+      </>
+    )}
     {isLighthouseAvailable(entity) && (
       <Grid item sm={4}>
         <LastLighthouseAuditCard />
@@ -174,7 +181,7 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
     <EntityPageLayout.Content
       path="/code-insights"
       title="Code Insights"
-      element={<CodeInsightsRouter entity={entity} />}
+      element={<GitHubInsightsRouter entity={entity} />}
     />
   </EntityPageLayout>
 );
@@ -211,6 +218,11 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
       title="Kubernetes"
       element={<KubernetesRouter entity={entity} />}
     />
+    <EntityPageLayout.Content
+      path="/code-insights"
+      title="Code Insights"
+      element={<GitHubInsightsRouter entity={entity} />}
+    />
   </EntityPageLayout>
 );
 const DefaultEntityPage = ({ entity }: { entity: Entity }) => (
@@ -226,6 +238,7 @@ const DefaultEntityPage = ({ entity }: { entity: Entity }) => (
       element={<DocsRouter entity={entity} />}
     />
   </EntityPageLayout>
+  
 );
 
 export const EntityPage = () => {
