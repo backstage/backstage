@@ -16,21 +16,8 @@
 
 import Auth0Icon from '@material-ui/icons/AcUnit';
 import { auth0AuthApiRef } from '../../../definitions/auth';
-import {
-  OAuthRequestApi,
-  AuthProvider,
-  DiscoveryApi,
-} from '../../../definitions';
 import { OAuth2 } from '../oauth2';
-
-type CreateOptions = {
-  discoveryApi: DiscoveryApi;
-  oauthRequestApi: OAuthRequestApi;
-
-  defaultScopes?: string[];
-  environment?: string;
-  provider?: AuthProvider & { id: string };
-};
+import { OAuthApiCreateOptions } from '../types';
 
 const DEFAULT_PROVIDER = {
   id: 'auth0',
@@ -45,7 +32,7 @@ class Auth0Auth {
     provider = DEFAULT_PROVIDER,
     oauthRequestApi,
     defaultScopes = ['openid', `email`, `profile`],
-  }: CreateOptions): typeof auth0AuthApiRef.T {
+  }: OAuthApiCreateOptions): typeof auth0AuthApiRef.T {
     return OAuth2.create({
       discoveryApi,
       oauthRequestApi,

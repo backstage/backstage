@@ -16,21 +16,8 @@
 
 import OktaIcon from '@material-ui/icons/AcUnit';
 import { oktaAuthApiRef } from '../../../definitions/auth';
-import {
-  OAuthRequestApi,
-  AuthProvider,
-  DiscoveryApi,
-} from '../../../definitions';
 import { OAuth2 } from '../oauth2';
-
-type CreateOptions = {
-  discoveryApi: DiscoveryApi;
-  oauthRequestApi: OAuthRequestApi;
-
-  defaultScopes?: string[];
-  environment?: string;
-  provider?: AuthProvider & { id: string };
-};
+import { OAuthApiCreateOptions } from '../types';
 
 const DEFAULT_PROVIDER = {
   id: 'okta',
@@ -57,7 +44,7 @@ class OktaAuth {
     provider = DEFAULT_PROVIDER,
     oauthRequestApi,
     defaultScopes = ['openid', 'email', 'profile', 'offline_access'],
-  }: CreateOptions): typeof oktaAuthApiRef.T {
+  }: OAuthApiCreateOptions): typeof oktaAuthApiRef.T {
     return OAuth2.create({
       discoveryApi,
       oauthRequestApi,

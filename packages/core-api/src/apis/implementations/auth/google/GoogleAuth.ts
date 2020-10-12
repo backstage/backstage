@@ -16,21 +16,8 @@
 
 import GoogleIcon from '@material-ui/icons/AcUnit';
 import { googleAuthApiRef } from '../../../definitions/auth';
-import {
-  OAuthRequestApi,
-  AuthProvider,
-  DiscoveryApi,
-} from '../../../definitions';
 import { OAuth2 } from '../oauth2';
-
-type CreateOptions = {
-  discoveryApi: DiscoveryApi;
-  oauthRequestApi: OAuthRequestApi;
-
-  defaultScopes?: string[];
-  environment?: string;
-  provider?: AuthProvider & { id: string };
-};
+import { OAuthApiCreateOptions } from '../types';
 
 const DEFAULT_PROVIDER = {
   id: 'google',
@@ -51,7 +38,7 @@ class GoogleAuth {
       `${SCOPE_PREFIX}userinfo.email`,
       `${SCOPE_PREFIX}userinfo.profile`,
     ],
-  }: CreateOptions): typeof googleAuthApiRef.T {
+  }: OAuthApiCreateOptions): typeof googleAuthApiRef.T {
     return OAuth2.create({
       discoveryApi,
       oauthRequestApi,

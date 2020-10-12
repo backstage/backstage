@@ -16,22 +16,8 @@
 
 import MicrosoftIcon from '@material-ui/icons/AcUnit';
 import { microsoftAuthApiRef } from '../../../definitions/auth';
-
-import {
-  OAuthRequestApi,
-  AuthProvider,
-  DiscoveryApi,
-} from '../../../definitions';
 import { OAuth2 } from '../oauth2';
-
-type CreateOptions = {
-  discoveryApi: DiscoveryApi;
-  oauthRequestApi: OAuthRequestApi;
-
-  defaultScopes?: string[];
-  environment?: string;
-  provider?: AuthProvider & { id: string };
-};
+import { OAuthApiCreateOptions } from '../types';
 
 const DEFAULT_PROVIDER = {
   id: 'microsoft',
@@ -52,7 +38,7 @@ class MicrosoftAuth {
       'email',
       'User.Read',
     ],
-  }: CreateOptions): typeof microsoftAuthApiRef.T {
+  }: OAuthApiCreateOptions): typeof microsoftAuthApiRef.T {
     return OAuth2.create({
       discoveryApi,
       oauthRequestApi,
