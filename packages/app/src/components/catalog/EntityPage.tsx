@@ -238,7 +238,6 @@ const DefaultEntityPage = ({ entity }: { entity: Entity }) => (
       element={<DocsRouter entity={entity} />}
     />
   </EntityPageLayout>
-  
 );
 
 export const EntityPage = () => {
