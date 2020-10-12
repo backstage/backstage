@@ -78,7 +78,7 @@ export class CookieCutter implements TemplaterBase {
       });
     }
 
-    const [generated] = await fs.readdir(resultDir);
+    const [generated = ''] = await fs.readdir(resultDir);
 
     return {
       resultDir: path.resolve(resultDir, generated),
