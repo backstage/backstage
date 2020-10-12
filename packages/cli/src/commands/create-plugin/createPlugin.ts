@@ -224,9 +224,12 @@ export default async (cmd: Command) => {
   }
 
   const answers: Answers = await inquirer.prompt(questions);
-  const name = cmd.scope
+  const pluginName = cmd.scope
     ? `@${cmd.scope.replace(/^@/, '')}/plugin-${answers.id}`
     : `plugin-${answers.id}`;
+
+  const name = cmd.backend ? `${pluginName}-backend` : pluginName;
+
   const npmRegistry = cmd.npmRegistry && cmd.scope ? cmd.npmRegistry : '';
   const privatePackage = cmd.private === false ? false : true;
   const isMonoRepo = await fs.pathExists(paths.resolveTargetRoot('lerna.json'));
