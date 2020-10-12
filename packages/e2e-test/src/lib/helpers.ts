@@ -42,7 +42,7 @@ export function spawnPiped(cmd: string[], options?: SpawnOptions) {
     shell: true,
     ...options,
   });
-  child.on('error', handleError);
+  child.on('error', exitWithError);
 
   const logPrefix = cmd.map(s => s.replace(/.+\//, '')).join(' ');
   child.stdout?.on(
@@ -75,7 +75,7 @@ export async function runPlain(cmd: string[], options?: SpawnOptions) {
   }
 }
 
-export function handleError(err: Error & { code?: unknown }) {
+export function exitWithError(err: Error & { code?: unknown }) {
   process.stdout.write(`${err.name}: ${err.stack || err.message}\n`);
 
   if (typeof err.code === 'number') {

@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-require('ts-node').register({
-  transpileOnly: true,
-  /* eslint-disable-next-line no-restricted-syntax */
-  project: require('path').resolve(__dirname, '../../../tsconfig.json'),
-  compilerOptions: {
-    module: 'CommonJS',
-  },
-});
+import { CommanderStatic } from 'commander';
+import { run } from './run';
 
-require('./e2e-test');
+export function registerCommands(program: CommanderStatic) {
+  program.command('run').description('Run e2e tests').action(run);
+}
