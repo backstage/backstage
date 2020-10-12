@@ -45,7 +45,7 @@ const createMockEntity = (annotations = {}) => {
 
 const logger = getVoidLogger();
 
-describe('github preparer', () => {
+describe('commonGit preparer', () => {
   it('should prepare temp docs path from github repo', async () => {
     const preparer = new CommonGitPreparer(logger);
 
@@ -58,6 +58,36 @@ describe('github preparer', () => {
     expect(checkoutGitRepository).toHaveBeenCalledTimes(1);
     expect(normalizePath(tempDocsPath)).toEqual(
       '/tmp/backstage-repo/org/name/branch/plugins/techdocs-backend/examples/documented-component',
+    );
+  });
+
+  it('should prepare temp docs path from gitlab repo', async () => {
+    const preparer = new CommonGitPreparer(logger);
+
+    const mockEntity = createMockEntity({
+      'backstage.io/techdocs-ref':
+        'gitlab:https://gitlab.com/xesjkeee/go-logger/blob/master/catalog-info.yaml',
+    });
+
+    const tempDocsPath = await preparer.prepare(mockEntity);
+    expect(checkoutGitRepository).toHaveBeenCalledTimes(2);
+    expect(normalizePath(tempDocsPath)).toEqual(
+      '/tmp/backstage-repo/org/name/branch/catalog-info.yaml',
+    );
+  });
+
+  it('should prepare temp docs path from azure repo', async () => {
+    const preparer = new CommonGitPreparer(logger);
+
+    const mockEntity = createMockEntity({
+      'backstage.io/techdocs-ref':
+        'azure/api:https://dev.azure.com/backstage-org/backstage-project/_git/template-repo?path=%2Ftemplate.yaml',
+    });
+
+    const tempDocsPath = await preparer.prepare(mockEntity);
+    expect(checkoutGitRepository).toHaveBeenCalledTimes(3);
+    expect(normalizePath(tempDocsPath)).toEqual(
+      '/tmp/backstage-repo/org/name/branch/template.yaml',
     );
   });
 });
