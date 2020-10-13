@@ -22,7 +22,8 @@ import { stringify as stringifyYaml } from 'yaml';
 
 export default async (cmd: Command) => {
   const appConfigs = await loadConfig({
-    env: cmd.env ?? process.env.NODE_ENV ?? 'development',
+    env:
+      cmd.env ?? process.env.APP_ENV ?? process.env.NODE_ENV ?? 'development',
     shouldReadSecrets: cmd.withSecrets ?? false,
     rootPaths: [paths.targetRoot, paths.targetDir],
   });

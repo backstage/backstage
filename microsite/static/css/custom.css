@@ -1084,3 +1084,10 @@ code {
   margin-bottom: 40px;
   margin-top: 20px;
 }
+
+.nav-footer .copyright {
+  width: 600px;
+  color: #fff;
+  margin: auto;
+  font-size: 10pt;
+}

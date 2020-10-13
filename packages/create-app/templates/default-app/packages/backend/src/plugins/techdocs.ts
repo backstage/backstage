@@ -1,7 +1,7 @@
 import {
   createRouter,
   DirectoryPreparer,
-  GithubPreparer,
+  CommonGitPreparer,
   Preparers,
   Generators,
   LocalPublish,
@@ -22,10 +22,11 @@ export default async function createPlugin({
 
   const preparers = new Preparers();
   const directoryPreparer = new DirectoryPreparer(logger);
-  const githubPreparer = new GithubPreparer(logger);
+  const commonGitPreparer = new CommonGitPreparer(logger);
 
   preparers.register('dir', directoryPreparer);
-  preparers.register('github', githubPreparer);
+  preparers.register('github', commonGitPreparer);
+  preparers.register('gitlab', commonGitPreparer);
 
   const publisher = new LocalPublish(logger);
 
