@@ -242,7 +242,7 @@ costInsights:
     DAU:
       name: Daily Active Users
     MSC:
-      name: Monthly Active Subscribers
+      name: Monthly Subscribers
 homepage:
   clocks:
     - label: UTC
