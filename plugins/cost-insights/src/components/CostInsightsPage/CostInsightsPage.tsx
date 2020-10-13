@@ -39,7 +39,14 @@ import {
   useCurrency,
   useConfig,
 } from '../../hooks';
-import { Alert, Cost, intervalsOf, Maybe, Project } from '../../types';
+import {
+  Alert,
+  Cost,
+  intervalsOf,
+  Maybe,
+  MetricData,
+  Project,
+} from '../../types';
 import { mapLoadingToProps } from './selector';
 import ProjectSelect from '../ProjectSelect';
 
@@ -48,15 +55,17 @@ const CostInsightsPage = () => {
   // There is not currently a UI to set feature flags
   // flags.set('cost-insights-currencies', FeatureFlagState.On);
   const client = useApi(costInsightsApiRef);
-  const { currencies } = useConfig();
+  const config = useConfig();
   const groups = useGroups();
   const [currency, setCurrency] = useCurrency();
   const [projects, setProjects] = useState<Maybe<Project[]>>(null);
   const [dailyCost, setDailyCost] = useState<Maybe<Cost>>(null);
+  const [metricData, setMetricData] = useState<Maybe<MetricData>>(null);
   const [alerts, setAlerts] = useState<Maybe<Alert[]>>(null);
   const [error, setError] = useState<Maybe<Error>>(null);
 
   const { pageFilters, setPageFilters } = useFilters(p => p);
+
   const {
     loadingActions,
     loadingGroups,
@@ -94,26 +103,32 @@ const CostInsightsPage = () => {
           dispatchLoadingInsights(true);
           const [
             fetchedProjects,
-            fetchedCosts,
             fetchedAlerts,
+            fetchedMetricData,
+            fetchedCosts,
           ] = await Promise.all([
             client.getGroupProjects(pageFilters.group),
+            client.getAlerts(pageFilters.group),
+            pageFilters.metric
+              ? client.getMetricData(
+                  pageFilters.metric,
+                  intervalsOf(pageFilters.duration),
+                )
+              : null,
             pageFilters.project
               ? client.getProjectDailyCost(
                   pageFilters.project,
-                  pageFilters.metric,
                   intervalsOf(pageFilters.duration),
                 )
               : client.getGroupDailyCost(
                   pageFilters.group,
-                  pageFilters.metric,
                   intervalsOf(pageFilters.duration),
                 ),
-            client.getAlerts(pageFilters.group),
           ]);
           setProjects(fetchedProjects);
-          setDailyCost(fetchedCosts);
           setAlerts(fetchedAlerts);
+          setMetricData(fetchedMetricData);
+          setDailyCost(fetchedCosts);
         } else {
           dispatchLoadingNone(loadingActions);
         }
@@ -133,11 +148,11 @@ const CostInsightsPage = () => {
   }, [
     client,
     pageFilters,
+    loadingActions,
     loadingGroups,
     dispatchLoadingInsights,
     dispatchLoadingInitial,
     dispatchLoadingNone,
-    loadingActions,
   ]);
 
   if (loadingInitial) {
@@ -166,7 +181,6 @@ const CostInsightsPage = () => {
       </CostInsightsLayout>
     );
   }
-
   // These should be defined, alerts can be an empty array but that's truthy
   if (!dailyCost || !alerts) {
     return (
@@ -195,7 +209,7 @@ const CostInsightsPage = () => {
           <Box mr={1}>
             <CurrencySelect
               currency={currency}
-              currencies={currencies}
+              currencies={config.currencies}
               onSelect={setCurrency}
             />
           </Box>
@@ -253,12 +267,7 @@ const CostInsightsPage = () => {
               <Grid item xs>
                 <Box px={3} py={6}>
                   {!!dailyCost.aggregation.length && (
-                    <CostOverviewCard
-                      change={dailyCost.change}
-                      aggregation={dailyCost.aggregation}
-                      trendline={dailyCost.trendline}
-                      projects={projects || []}
-                    />
+                    <CostOverviewCard data={[dailyCost, metricData]} />
                   )}
                   <WhyCostsMatter />
                 </Box>

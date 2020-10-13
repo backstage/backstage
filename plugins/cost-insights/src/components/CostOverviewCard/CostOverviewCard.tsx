@@ -15,42 +15,41 @@
  */
 
 import React from 'react';
-import { Box, Card, CardContent, Divider } from '@material-ui/core';
-import CostOverviewChart from '../CostOverviewChart';
-import CostOverviewChartLegend from '../CostOverviewChartLegend';
+import { Box, Card, CardContent, Divider, useTheme } from '@material-ui/core';
+import CostGrowth from '../CostGrowth';
+import CostOverviewChart from './CostOverviewChart';
 import CostOverviewHeader from './CostOverviewHeader';
+import LegendItem from '../LegendItem';
 import MetricSelect from '../MetricSelect';
 import PeriodSelect from '../PeriodSelect';
 import { useScroll, useFilters, useConfig } from '../../hooks';
 import { mapFiltersToProps } from './selector';
 import { DefaultNavigation } from '../../utils/navigation';
+import { formatPercent } from '../../utils/formatters';
 import {
-  ChangeStatistic,
-  DateAggregation,
-  Project,
-  Trendline,
+  Cost,
+  CostInsightsTheme,
+  MetricData,
   findAlways,
+  getComparedChange,
 } from '../../types';
 
-type CostOverviewCardProps = {
-  change: ChangeStatistic;
-  aggregation: Array<DateAggregation>;
-  trendline: Trendline;
-  projects: Array<Project>;
+export type CostOverviewCardProps = {
+  data: [Cost, MetricData | null];
 };
 
-const CostOverviewCard = ({
-  change,
-  aggregation,
-  trendline,
-}: CostOverviewCardProps) => {
-  const { metrics } = useConfig();
+const CostOverviewCard = ({ data }: CostOverviewCardProps) => {
+  const theme = useTheme<CostInsightsTheme>();
+  const config = useConfig();
   const { ScrollAnchor } = useScroll(DefaultNavigation.CostOverviewCard);
-  const { setDuration, setProject, metric, setMetric, ...filters } = useFilters(
+  const { setDuration, setProject, setMetric, ...filters } = useFilters(
     mapFiltersToProps,
   );
 
-  const { name } = findAlways(metrics, m => m.kind === metric);
+  // There should always be a daily cost metric but a comparison metric is optional.
+  const dailyCost = findAlways(config.metrics, m => m.kind === null);
+  const metric = config.metrics.find(m => m.kind === filters.metric);
+  const comparedChange = data[1] ? getComparedChange(data[0], data[1]) : null;
 
   return (
     <Card style={{ position: 'relative' }}>
@@ -60,22 +59,53 @@ const CostOverviewCard = ({
           <PeriodSelect duration={filters.duration} onSelect={setDuration} />
         </CostOverviewHeader>
         <Divider />
-        <Box marginY={1} display="flex" flexDirection="column">
-          <CostOverviewChartLegend change={change} title={`${name} Trend`} />
+        <Box my={1} display="flex" flexDirection="column">
+          <Box display="flex" flexDirection="row">
+            <Box mr={2}>
+              <LegendItem
+                title={dailyCost.name}
+                markerColor={theme.palette.blue}
+              >
+                {formatPercent(data[0].change.ratio)}
+              </LegendItem>
+            </Box>
+            {metric && metric.kind && data[1] && comparedChange && (
+              <>
+                <Box mr={2}>
+                  <LegendItem
+                    title={metric.name}
+                    markerColor={theme.palette.magenta}
+                  >
+                    {formatPercent(data[1].change.ratio)}
+                  </LegendItem>
+                </Box>
+                <LegendItem
+                  title={
+                    comparedChange.amount <= 0 ? 'Your Savings' : 'Your Excess'
+                  }
+                >
+                  <CostGrowth
+                    change={comparedChange}
+                    duration={filters.duration}
+                  />
+                </LegendItem>
+              </>
+            )}
+          </Box>
           <CostOverviewChart
-            responsive
-            metric={metric}
-            tooltip={name}
-            aggregation={aggregation}
-            trendline={trendline}
+            data={data}
+            name={dailyCost.name}
+            compare={metric}
           />
         </Box>
         <Box display="flex" justifyContent="flex-end" alignItems="center">
-          <MetricSelect
-            metric={metric}
-            metrics={metrics}
-            onSelect={setMetric}
-          />
+          {config.metrics.length > 1 && (
+            <MetricSelect
+              metric={filters.metric}
+              metrics={config.metrics}
+              onSelect={setMetric}
+            />
+          )}
         </Box>
       </CardContent>
     </Card>

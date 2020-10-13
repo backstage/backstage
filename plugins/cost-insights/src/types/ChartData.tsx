@@ -14,4 +14,9 @@
  * limitations under the License.
  */
 
-export { default } from './CostOverviewChartLegend';
+export type ChartData = {
+  date: number;
+  trend: number;
+  dailyCost: number;
+  [key: string]: number;
+};

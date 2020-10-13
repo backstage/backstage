@@ -42,6 +42,9 @@ export const NULL_METRIC_NAME = 'Daily Cost';
  *       name: Product B
  *       icon: data
  *   metrics:
+ *     dailyCost:
+ *       name: Daily Cost
+ *       compare: metricA
  *     metricA:
  *       name: Metric A
  *     metricB:
@@ -89,6 +92,7 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
         return metrics.keys().map(key => ({
           kind: key === NULL_METRIC ? null : key,
           name: metrics.getString(`${key}.name`),
+          compare: metrics.getOptionalString(`${key}.compare`),
         }));
       }
 
@@ -115,23 +119,14 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
       const engineerCost = getEngineerCost();
       const icons = getIcons();
 
-      if (metrics.find((m: Metric) => m.kind === null)) {
-        setConfig(prevState => ({
-          ...prevState,
-          metrics,
-          products,
-          engineerCost,
-          icons,
-        }));
-      } else {
-        setConfig(prevState => ({
-          ...prevState,
-          metrics: [...prevState.metrics, ...metrics],
-          products,
-          engineerCost,
-          icons,
-        }));
-      }
+      setConfig(prevState => ({
+        ...prevState,
+        metrics,
+        products,
+        engineerCost,
+        icons,
+      }));
+
       setLoading(false);
     }
 

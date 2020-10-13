@@ -16,6 +16,7 @@
 
 export * from './Alert';
 export * from './ChangeStatistic';
+export * from './ChartData';
 export * from './Cost';
 export * from './DateAggregation';
 export * from './Duration';

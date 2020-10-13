@@ -237,9 +237,12 @@ costInsights:
       icon: search
   metrics:
     dailyCost:
-      name: Your Company's Daily Cost
+      name: Pied Piper's Daily Cost
+      compare: DAU
     DAU:
-      name: Cost Per DAU
+      name: Daily Active Users
+    MSC:
+      name: Monthly Active Subscribers
 homepage:
   clocks:
     - label: UTC
