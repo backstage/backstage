@@ -1,7 +1,7 @@
-site_name: {{cookiecutter.component_id}}
-site_description: {{cookiecutter.description}}
+site_name: {{cookiecutter.component_id | jsonify}}
+site_description: {{cookiecutter.description | jsonify}}
 
-nav: 
+nav:
   - Introduction: index.md
 
 plugins:
