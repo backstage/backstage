@@ -42,7 +42,7 @@ setup for free.
 Prerequisities:
 
 - An existing component
-  [registered in backstage](../software-catalog/software-catalog-overview#adding-components-to-the-catalog)
+  [registered in backstage](../software-catalog/index.md#adding-components-to-the-catalog)
   (e.g. via a `catalog-info.yaml` file).
 
 Create an `mkdocs.yml` file in the root of your repository with the following
