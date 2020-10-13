@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
+import {
+  loadBackendConfig,
+  SingleHostDiscovery,
+} from '@backstage/backend-common';
+import { JsonValue, ConfigReader } from '@backstage/config';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { JsonValue } from '@backstage/config';
 import Docker from 'dockerode';
 import express from 'express';
 import Router from 'express-promise-router';
@@ -28,6 +32,7 @@ import {
   TemplaterBuilder,
   PublisherBuilder,
 } from '../scaffolder';
+import { CatalogEntityClient } from '../lib/catalog';
 import { validate, ValidatorResult } from 'jsonschema';
 
 export interface RouterOptions {
@@ -56,6 +61,10 @@ export async function createRouter(
   const logger = parentLogger.child({ plugin: 'scaffolder' });
   const jobProcessor = new JobProcessor();
 
+  const config = ConfigReader.fromConfigs(await loadBackendConfig());
+  const discovery = SingleHostDiscovery.fromConfig(config);
+  const entityClient = new CatalogEntityClient({ discovery });
+
   router
     .get('/v1/job/:jobId', ({ params }, res) => {
       const job = jobProcessor.get(params.jobId);
@@ -81,14 +90,24 @@ export async function createRouter(
       });
     })
     .post('/v1/jobs', async (req, res) => {
-      const template: TemplateEntityV1alpha1 = req.body.template;
+      const templateName: string = req.body.templateName;
       const values: RequiredTemplateValues & Record<string, JsonValue> =
         req.body.values;
+
+      let template: TemplateEntityV1alpha1;
+      try {
+        template = await entityClient.findTemplate(templateName);
+      } catch (e) {
+        // help me here
+        res.status(400).json({ errors: e });
+        return;
+      }
 
       const validationResult: ValidatorResult = validate(
         values,
         template.spec.schema,
       );
+
       if (!validationResult.valid) {
         res.status(400).json({ errors: validationResult.errors });
         return;
