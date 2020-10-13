@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
+import React from 'react';
 import { useAsync } from 'react-use';
 import { useParams } from 'react-router-dom';
 import { mlFlowClient } from '../../index';
@@ -36,7 +36,7 @@ import {
 import { Chip, Grid } from '@material-ui/core';
 import MetricsGraph from './MetricsGraph';
 
-const RunPage: FC<{}> = _ => {
+const RunPage = () => {
   const { runId } = useParams();
 
   const { value, loading } = useAsync(async (): Promise<Run> => {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { InfoCard, Table, TableColumn } from '@backstage/core';
 import { Grid, Select, MenuItem } from '@material-ui/core';
 import { mlFlowClient } from '../../index';
@@ -22,7 +22,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
 
 type MetricsGraphProps = { runId: string; metrics: Metric[] };
 
-const MetricsGraph: FC<MetricsGraphProps> = ({ runId, metrics }) => {
+const MetricsGraph = ({ runId, metrics }: MetricsGraphProps) => {
   const [selectedMetric, setSelectedMetric] = useState<string>(
     metrics.length > 0 ? metrics[0].key : '',
   );

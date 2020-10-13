@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
+import React from 'react';
 import { StructuredMetadataTable, InfoCard } from '@backstage/core';
 import { Experiment } from '../../MLFlowClient';
 
@@ -22,10 +22,10 @@ type ExperimentInfoCardProps = {
   numberOfRuns?: number;
 };
 
-const ExperimentInfoCard: FC<ExperimentInfoCardProps> = ({
+const ExperimentInfoCard = ({
   experiment,
   numberOfRuns,
-}) => {
+}: ExperimentInfoCardProps) => {
   return (
     <>
       <InfoCard title="Experiment details">

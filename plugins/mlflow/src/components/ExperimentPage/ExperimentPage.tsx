@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
+import React from 'react';
 import { useAsync } from 'react-use';
 import { useParams } from 'react-router-dom';
 import { Grid } from '@material-ui/core';
@@ -32,7 +32,7 @@ import { Experiment, Run } from '../../MLFlowClient';
 import RunTable from '../ExperimentPage/RunTable';
 import ExperimentInfoCard from './ExperimentInfoCard';
 
-const ExperimentPage: FC<{}> = _ => {
+const ExperimentPage = () => {
   const { experimentId } = useParams();
 
   // Load runs for the experiment

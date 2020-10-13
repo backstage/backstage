@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
+import React from 'react';
 import { Grid } from '@material-ui/core';
 import {
   Header,
@@ -32,7 +32,7 @@ import { useAsync } from 'react-use';
 import ExperimentTable from './ExperimentTable';
 import RunTable from '../ExperimentPage/RunTable';
 
-const MLFlowHomePage: FC<{}> = () => {
+const MLFlowHomePage = () => {
   const { value, loading } = useAsync(async (): Promise<Experiment[]> => {
     return mlFlowClient.listExperiments();
   }, []);
@@ -67,7 +67,9 @@ const MLFlowHomePage: FC<{}> = () => {
 
 export default MLFlowHomePage;
 
-const RunsForExperiment: FC<{ experiment: Experiment }> = ({ experiment }) => {
+type RunsForExperimentProps = { experiment: Experiment };
+
+const RunsForExperiment = ({ experiment }: RunsForExperimentProps) => {
   const { value, loading } = useAsync(async (): Promise<Run[]> => {
     return mlFlowClient.searchRuns([experiment.experiment_id]);
   }, []);

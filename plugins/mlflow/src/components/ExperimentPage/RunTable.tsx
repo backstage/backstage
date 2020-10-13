@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC, useState } from 'react';
+import React, { useState } from 'react';
 import {
   StatusError,
   StatusAborted,
@@ -37,7 +37,7 @@ type RunTableProps = {
   runs: Run[];
 };
 
-const RunTable: FC<RunTableProps> = ({ runs }) => {
+const RunTable = ({ runs }: RunTableProps) => {
   const [evaluationSetsToFilter, setEvaluationSetsToFilter] = useState<
     Set<string>
   >(new Set());

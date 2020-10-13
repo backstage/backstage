@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
+import React from 'react';
 import { Table, TableColumn, Link } from '@backstage/core';
 import { Experiment } from '../../MLFlowClient/MLFlowTypes';
 
-const ExperimentTable: FC<{ experiments: Experiment[] }> = ({
-  experiments,
-}) => {
+type ExperimentTableProps = { experiments: Experiment[] };
+const ExperimentTable = ({ experiments }: ExperimentTableProps) => {
   const columns: TableColumn[] = [
     { title: 'Name', field: 'name' },
     { title: 'Created', field: 'creation_time' },
