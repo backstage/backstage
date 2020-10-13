@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export { Table } from './Table';
-export type { TableColumn, TableProps } from './Table';
 export { SubvalueCell } from './SubvalueCell';
+export { Table } from './Table';
+export type { TableColumn, TableFilter, TableProps } from './Table';

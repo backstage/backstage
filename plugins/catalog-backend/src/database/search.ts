@@ -28,16 +28,18 @@ const SPECIAL_KEYS = [
   'metadata.generation',
 ];
 
-function toValue(current: any): string | null {
-  if (current === undefined || current === null) {
-    return null;
-  }
+// The maximum length allowed for search values. These columns are indexed, and
+// database engines do not like to index on massive values. For example,
+// postgres will balk after 8191 byte line sizes.
+const MAX_VALUE_LENGTH = 200;
 
-  return String(current).toLowerCase();
-}
+type Kv = {
+  key: string;
+  value: any;
+};
 
-// Helper for iterating through a nested structure and outputting a list of
-// path->value entries.
+// Helper for traversing through a nested structure and outputting a list of
+// path->value entries of the leaves.
 //
 // For example, this yaml structure
 //
@@ -53,57 +55,77 @@ function toValue(current: any): string | null {
 //
 // will result in
 //
-// "a", "1"
+// "a", 1
 // "b.c", null
 // "b.e": "f"
 // "b.e": "g"
-// "h.i": "1"
+// "h.i": 1
 // "h.j": "k"
-// "h.i": "2"
+// "h.i": 2
 // "h.j": "l"
-export function visitEntityPart(
-  entityId: string,
-  path: string,
-  current: any,
-  output: DbEntitiesSearchRow[],
-) {
-  // ignored
-  if (SPECIAL_KEYS.includes(path)) {
-    return;
-  }
+export function traverse(root: any): Kv[] {
+  const output: Kv[] = [];
 
-  // empty or scalar
-  if (
-    current === undefined ||
-    current === null ||
-    ['string', 'number', 'boolean'].includes(typeof current)
-  ) {
-    output.push({ entity_id: entityId, key: path, value: toValue(current) });
-    return;
-  }
-
-  // unknown
-  if (typeof current !== 'object') {
-    return;
-  }
-
-  // array
-  if (Array.isArray(current)) {
-    for (const item of current) {
-      visitEntityPart(entityId, path, item, output);
+  function visit(path: string, current: any) {
+    if (SPECIAL_KEYS.includes(path)) {
+      return;
     }
-    return;
+
+    // empty or scalar
+    if (
+      current === undefined ||
+      current === null ||
+      ['string', 'number', 'boolean'].includes(typeof current)
+    ) {
+      output.push({ key: path, value: current });
+      return;
+    }
+
+    // unknown
+    if (typeof current !== 'object') {
+      return;
+    }
+
+    // array
+    if (Array.isArray(current)) {
+      for (const item of current) {
+        // keep the same path as currently
+        visit(path, item);
+      }
+      return;
+    }
+
+    // object
+    for (const [key, value] of Object.entries(current)) {
+      visit(path ? `${path}.${key}` : key, value);
+    }
   }
 
-  // object
-  for (const [key, value] of Object.entries(current)) {
-    visitEntityPart(
-      entityId,
-      (path ? `${path}.${key}` : key).toLowerCase(),
-      value,
-      output,
-    );
+  visit('', root);
+
+  return output;
+}
+
+// Translates a number of raw data rows to search table rows
+export function mapToRows(
+  input: Kv[],
+  entityId: string,
+): DbEntitiesSearchRow[] {
+  const result: DbEntitiesSearchRow[] = [];
+
+  for (let { key, value } of input) {
+    key = key.toLowerCase();
+    if (value === undefined || value === null) {
+      result.push({ entity_id: entityId, key, value: null });
+    } else {
+      value = String(value).toLowerCase();
+      if (value.length <= MAX_VALUE_LENGTH) {
+        result.push({ entity_id: entityId, key, value });
+      }
+    }
   }
+
+  return result;
 }
 
 /**
@@ -117,38 +139,20 @@ export function buildEntitySearch(
   entityId: string,
   entity: Entity,
 ): DbEntitiesSearchRow[] {
+  // Visit the entire structure recursively
+  const raw = traverse(entity);
+
   // Start with some special keys that are always present because you want to
   // be able to easily search for null specifically
-  const result: DbEntitiesSearchRow[] = [
-    {
-      entity_id: entityId,
-      key: 'metadata.name',
-      value: toValue(entity.metadata.name),
-    },
-    {
-      entity_id: entityId,
-      key: 'metadata.namespace',
-      value: toValue(entity.metadata.namespace),
-    },
-    {
-      entity_id: entityId,
-      key: 'metadata.uid',
-      value: toValue(entity.metadata.uid),
-    },
-  ];
+  raw.push({ key: 'metadata.name', value: entity.metadata.name });
+  raw.push({ key: 'metadata.namespace', value: entity.metadata.namespace });
+  raw.push({ key: 'metadata.uid', value: entity.metadata.uid });
 
   // Namespace not specified has the default value "default", so we want to
   // match on that as well
   if (!entity.metadata.namespace) {
-    result.push({
-      entity_id: entityId,
-      key: 'metadata.namespace',
-      value: toValue(ENTITY_DEFAULT_NAMESPACE),
-    });
+    raw.push({ key: 'metadata.namespace', value: ENTITY_DEFAULT_NAMESPACE });
   }
 
-  // Visit the entire structure recursively
-  visitEntityPart(entityId, '', entity, result);
-
-  return result;
+  return mapToRows(raw, entityId);
 }

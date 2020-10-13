@@ -53,7 +53,6 @@ describe('ApiCatalogTable component', () => {
       wrapInTestApp(
         <ApiProvider apis={apiRegistry}>
           <ApiExplorerTable
-            titlePreamble="APIs"
             entities={[]}
             loading={false}
             error={{ code: 'error' }}
@@ -71,15 +70,10 @@ describe('ApiCatalogTable component', () => {
     const rendered = render(
       wrapInTestApp(
         <ApiProvider apis={apiRegistry}>
-          <ApiExplorerTable
-            titlePreamble="APIs"
-            entities={entites}
-            loading={false}
-          />
+          <ApiExplorerTable entities={entites} loading={false} />
         </ApiProvider>,
       ),
     );
-    expect(rendered.getByText(/APIs \(3\)/)).toBeInTheDocument();
     expect(rendered.getByText(/api1/)).toBeInTheDocument();
     expect(rendered.getByText(/api2/)).toBeInTheDocument();
     expect(rendered.getByText(/api3/)).toBeInTheDocument();
