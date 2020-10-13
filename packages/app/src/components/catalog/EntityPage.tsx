@@ -62,6 +62,7 @@ import {
   isPluginApplicableToEntity as isLighthouseAvailable,
 } from '@backstage/plugin-lighthouse/';
 import {
+  Router as PullRequestsRouter,
   isPluginApplicableToEntity as isPullRequestsAvailable,
   PullRequestsStatsCard,
 } from '@roadiehq/backstage-plugin-github-pull-requests';
@@ -188,6 +189,11 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
       element={<KubernetesRouter entity={entity} />}
     />
     <EntityPageLayout.Content
+      path="/pull-requests"
+      title="Pull Requests"
+      element={<PullRequestsRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
       path="/code-insights"
       title="Code Insights"
       element={<GitHubInsightsRouter entity={entity} />}
@@ -226,6 +232,11 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
       path="/kubernetes/*"
       title="Kubernetes"
       element={<KubernetesRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/pull-requests"
+      title="Pull Requests"
+      element={<PullRequestsRouter entity={entity} />}
     />
     <EntityPageLayout.Content
       path="/code-insights"

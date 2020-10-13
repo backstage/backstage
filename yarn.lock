@@ -3668,15 +3668,15 @@
     react-router "^6.0.0-beta.0"
     react-use "^15.3.3"
 
-"@roadiehq/backstage-plugin-github-pull-requests@^0.4.3":
-  version "0.4.3"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-pull-requests/-/backstage-plugin-github-pull-requests-0.4.3.tgz#720fd3c53ae8e61d8cfc727cda47e236af442b02"
-  integrity sha512-IJGMys5FJ512sitaMwWgACll3ZTuE3nZUX05MNXly/WXty6VBcfboiPbSB6IzLAEWMmvYlV1YUwwL7hAl/62GQ==
+"@roadiehq/backstage-plugin-github-pull-requests@^0.5.1":
+  version "0.5.1"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-pull-requests/-/backstage-plugin-github-pull-requests-0.5.1.tgz#a0e3ef97de20fe87e55a26f0198d4ff80b6ecd8c"
+  integrity sha512-0Btg4jn7SWAp/0A7+xCuHxD4LKPoE3LSEkjMvLmWk/AIIvNA6uSWXeAv1nJZSe4JBV0Qzt+r+TS+hCcFR+vcMg==
   dependencies:
-    "@backstage/catalog-model" "^0.1.1-alpha.23"
-    "@backstage/core" "^0.1.1-alpha.23"
-    "@backstage/plugin-catalog" "^0.1.1-alpha.23"
-    "@backstage/theme" "^0.1.1-alpha.23"
+    "@backstage/catalog-model" "^0.1.1-alpha.24"
+    "@backstage/core" "^0.1.1-alpha.24"
+    "@backstage/plugin-catalog" "^0.1.1-alpha.24"
+    "@backstage/theme" "^0.1.1-alpha.24"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "^4.0.0-alpha.56"
