@@ -35,6 +35,7 @@ import {
 } from '@backstage/core';
 import { Chip, Grid } from '@material-ui/core';
 import MetricsGraph from './MetricsGraph';
+import NotesBox from './NotesBox';
 
 const RunPage = () => {
   const { runId } = useParams();
@@ -98,9 +99,7 @@ const RunPage = () => {
             </InfoCard>
           </Grid>
           <Grid item xs={12} md={6}>
-            <InfoCard title="Run Notes" subheader="TODO: make editable">
-              {noteText && <pre>{noteText}</pre>}
-            </InfoCard>
+            <NotesBox runId={run.info.run_id} noteText={noteText} />
           </Grid>
           <Grid item xs={12} md={4}>
             <Table
