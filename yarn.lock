@@ -3650,6 +3650,24 @@
   resolved "https://registry.npmjs.org/@rjsf/material-ui/-/material-ui-2.3.0.tgz#a051eb4db2ad778e39933a31ba806f415dd3ba90"
   integrity sha512-v/xZ4Xk18ZgBARcCe99IDqdO97GU0UC784gG8PhGGFDdy5Rbdy7ixTjHkGYttkr43PB7SX6ttohNhkKSW4nATQ==
 
+"@roadiehq/backstage-plugin-github-insights@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-insights/-/backstage-plugin-github-insights-0.2.2.tgz#1647aec22f1f8bc40268f075ae307abf660ae75c"
+  integrity sha512-m4j1kUmoj+ZCRyaisXVBkLW9kaI/OGMq8xzthm4adOb12mS0s2p2P9AMa4T+bRyLgHpQ0vB75qhw4p6sHJAvWA==
+  dependencies:
+    "@backstage/catalog-model" "^0.1.1-alpha.24"
+    "@backstage/core" "^0.1.1-alpha.24"
+    "@backstage/theme" "^0.1.1-alpha.24"
+    "@material-ui/core" "^4.11.0"
+    "@material-ui/icons" "^4.9.1"
+    "@material-ui/lab" "4.0.0-alpha.45"
+    history "^5.0.0"
+    react "^16.13.1"
+    react-dom "^16.13.1"
+    react-markdown "^4.3.1"
+    react-router "^6.0.0-beta.0"
+    react-use "^15.3.3"
+
 "@roadiehq/backstage-plugin-github-pull-requests@^0.4.3":
   version "0.4.3"
   resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-pull-requests/-/backstage-plugin-github-pull-requests-0.4.3.tgz#720fd3c53ae8e61d8cfc727cda47e236af442b02"
@@ -19374,7 +19392,7 @@ react-router@5.2.0:
     tiny-invariant "^1.0.2"
     tiny-warning "^1.0.0"
 
-react-router@6.0.0-beta.0:
+react-router@6.0.0-beta.0, react-router@^6.0.0-beta.0:
   version "6.0.0-beta.0"
   resolved "https://registry.npmjs.org/react-router/-/react-router-6.0.0-beta.0.tgz#3e11f39b6ded4412c2fed9e4f989dd4c8156724d"
   integrity sha512-VgMdfpVcmFQki/LZuLh8E/MNACekDetz4xqft+a6fBZvvJnVqKbLqebF7hyoawGrV1HcO5tVaUang2Og4W2j1Q==
