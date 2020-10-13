@@ -61,6 +61,10 @@ import {
   LastLighthouseAuditCard,
   isPluginApplicableToEntity as isLighthouseAvailable,
 } from '@backstage/plugin-lighthouse/';
+import {
+  isPluginApplicableToEntity as isPullRequestsAvailable,
+  PullRequestsStatsCard,
+} from '@roadiehq/backstage-plugin-github-pull-requests';
 
 const CICDSwitcher = ({ entity }: { entity: Entity }) => {
   // This component is just an example of how you can implement your company's logic in entity page.
@@ -141,6 +145,11 @@ const OverviewContent = ({ entity }: { entity: Entity }) => (
     {isLighthouseAvailable(entity) && (
       <Grid item sm={4}>
         <LastLighthouseAuditCard />
+      </Grid>
+    )}
+    {isPullRequestsAvailable(entity) && (
+      <Grid item sm={4}>
+        <PullRequestsStatsCard entity={entity} />
       </Grid>
     )}
   </Grid>
