@@ -59,6 +59,14 @@ export class MLFlowClient {
       .catch(_ => []);
   }
 
+  setTag(runId: string, key: string, value: string) {
+    return this.makePostRequest('runs/set-tag', {
+      runId: runId,
+      key: key,
+      value: value,
+    });
+  }
+
   private makePostRequest(route: string, data: object) {
     return fetch(`${this.apiHost}/${route}`, {
       method: 'POST',
