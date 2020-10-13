@@ -266,9 +266,11 @@ async function createPlugin(
     await waitForExit(child);
 
     const canonicalName = options.includes('--backend')
-      ? `${pluginName}-backend}`
+      ? `${pluginName}-backend`
       : pluginName;
+
     const pluginDir = resolvePath(appDir, 'plugins', canonicalName);
+
     for (const cmd of [['tsc'], ['lint'], ['test', '--no-watch']]) {
       print(`Running 'yarn ${cmd.join(' ')}' in newly created plugin`);
       await runPlain(['yarn', ...cmd], { cwd: pluginDir });
