@@ -46,6 +46,8 @@ type PaletteAdditions = {
   navigation: {
     background: string;
     indicator: string;
+    color: string;
+    selectedColor: string;
   };
   tabbar: {
     indicator: string;
