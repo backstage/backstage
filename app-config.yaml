@@ -34,6 +34,8 @@ proxy:
         $env: TRAVISCI_AUTH_TOKEN
       travis-api-version: 3
 
+  '/mlflow': http://localhost:5000
+
 organization:
   name: Spotify
 

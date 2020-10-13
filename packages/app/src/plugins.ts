@@ -37,3 +37,4 @@ export { plugin as Kubernetes } from '@backstage/plugin-kubernetes';
 export { plugin as Cloudbuild } from '@backstage/plugin-cloudbuild';
 export { plugin as CostInsights } from '@backstage/plugin-cost-insights';
 export { plugin as UserSettings } from '@backstage/plugin-user-settings';
+export { plugin as Mlflow } from '@backstage/plugin-mlflow';
