@@ -78,6 +78,8 @@ export class CookieCutter implements TemplaterBase {
       });
     }
 
+    // if cookiecutter was successful, resultDir will contain
+    // exactly one directory.
     const [generated] = await fs.readdir(resultDir);
 
     if (generated === undefined) {
