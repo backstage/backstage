@@ -119,13 +119,23 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
       const engineerCost = getEngineerCost();
       const icons = getIcons();
 
-      setConfig(prevState => ({
-        ...prevState,
-        metrics,
-        products,
-        engineerCost,
-        icons,
-      }));
+      if (metrics.find((m: Metric) => m.kind === null)) {
+        setConfig(prevState => ({
+          ...prevState,
+          metrics,
+          products,
+          engineerCost,
+          icons,
+        }));
+      } else {
+        setConfig(prevState => ({
+          ...prevState,
+          metrics: [...prevState.metrics, ...metrics],
+          products,
+          engineerCost,
+          icons,
+        }));
+      }
 
       setLoading(false);
     }
