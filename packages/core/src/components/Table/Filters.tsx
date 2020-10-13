@@ -50,7 +50,7 @@ const useSubvalueCellStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-type Without<T, K> = Pick<T, Exclude<keyof T, K>>;
+export type Without<T, K> = Pick<T, Exclude<keyof T, K>>;
 
 export type Filter = {
   type: 'select' | 'checkbox-tree' | 'multiple-select';

@@ -14,25 +14,23 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import {
+  Checkbox,
+  Chip,
+  ClickAwayListener,
+  FormControl,
+  InputBase,
+  MenuItem,
+  Select,
+  Typography,
+} from '@material-ui/core';
 import {
   createStyles,
   makeStyles,
-  withStyles,
   Theme,
+  withStyles,
 } from '@material-ui/core/styles';
-
-import {
-  FormControl,
-  Select,
-  MenuItem,
-  InputBase,
-  Chip,
-  Typography,
-  Checkbox,
-  ClickAwayListener,
-} from '@material-ui/core';
-
+import React, { useEffect, useState } from 'react';
 import ClosedDropdown from './static/ClosedDropdown';
 import OpenedDropdown from './static/OpenedDropdown';
 
@@ -111,7 +109,7 @@ export const SelectComponent = (props: SelectProps) => {
   const [value, setValue] = useState<any[] | string | number>(
     multiple ? [] : '',
   );
-  const [canOpen, setCanOpen] = React.useState(false);
+  const [isOpen, setOpen] = useState(false);
 
   useEffect(() => {
     setValue(multiple ? [] : '');
@@ -122,19 +120,17 @@ export const SelectComponent = (props: SelectProps) => {
     onChange(event.target.value);
   };
 
-  const selectHandleOnOpen = () => {
-    setCanOpen(previous => {
-      if (multiple) {
+  const handleClick = (event: React.ChangeEvent<any>) => {
+    setOpen(previous => {
+      if (multiple && !(event.target instanceof HTMLElement)) {
         return true;
       }
       return !previous;
     });
   };
 
-  const handleClickAway = (event: React.ChangeEvent<any>) => {
-    if (event.target.id !== 'menu-item') {
-      setCanOpen(false);
-    }
+  const handleClickAway = () => {
+    setOpen(false);
   };
 
   const handleDelete = (selectedValue: string | number) => () => {
@@ -154,8 +150,8 @@ export const SelectComponent = (props: SelectProps) => {
             displayEmpty
             multiple={multiple}
             onChange={handleChange}
-            onClick={selectHandleOnOpen}
-            open={canOpen}
+            onClick={handleClick}
+            open={isOpen}
             input={<BootstrapInput />}
             renderValue={selected =>
               multiple && (value as any[]).length !== 0 ? (
@@ -181,7 +177,7 @@ export const SelectComponent = (props: SelectProps) => {
               )
             }
             IconComponent={() =>
-              !canOpen ? <ClosedDropdown /> : <OpenedDropdown />
+              !isOpen ? <ClosedDropdown /> : <OpenedDropdown />
             }
             MenuProps={{
               anchorOrigin: {
@@ -200,7 +196,7 @@ export const SelectComponent = (props: SelectProps) => {
             )}
             {items &&
               items.map(item => (
-                <MenuItem id="menu-item" key={item.value} value={item.value}>
+                <MenuItem key={item.value} value={item.value}>
                   {multiple && (
                     <Checkbox
                       color="primary"

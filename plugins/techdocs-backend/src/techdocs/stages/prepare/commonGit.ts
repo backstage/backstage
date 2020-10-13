@@ -15,7 +15,6 @@
  */
 import path from 'path';
 import { Entity } from '@backstage/catalog-model';
-import { InputError } from '@backstage/backend-common';
 import { PreparerBase } from './types';
 import parseGitUrl from 'git-url-parse';
 import {
@@ -25,7 +24,7 @@ import {
 
 import { Logger } from 'winston';
 
-export class AzurePreparer implements PreparerBase {
+export class CommonGitPreparer implements PreparerBase {
   private readonly logger: Logger;
 
   constructor(logger: Logger) {
@@ -33,14 +32,10 @@ export class AzurePreparer implements PreparerBase {
   }
 
   async prepare(entity: Entity): Promise<string> {
-    const { type, target } = parseReferenceAnnotation(
+    const { target } = parseReferenceAnnotation(
       'backstage.io/techdocs-ref',
       entity,
     );
-
-    if (type !== 'azure/api') {
-      throw new InputError(`Wrong target type: ${type}, should be 'azure/api'`);
-    }
 
     try {
       const repoPath = await checkoutGitRepository(target, this.logger);
