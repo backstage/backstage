@@ -21,16 +21,14 @@ import { BuildWithStepsPage } from './BuildWithStepsPage/';
 import { BuildsPage } from './BuildsPage';
 import { CIRCLECI_ANNOTATION } from '../constants';
 import { Entity } from '@backstage/catalog-model';
-import { WarningPanel } from '@backstage/core';
+import { MissingAnnotationEmptyState } from '@backstage/core';
 
 export const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[CIRCLECI_ANNOTATION]);
 
 export const Router = ({ entity }: { entity: Entity }) =>
   !isPluginApplicableToEntity(entity) ? (
-    <WarningPanel title="CircleCI plugin:">
-      <pre>{CIRCLECI_ANNOTATION}</pre> annotation is missing on the entity.
-    </WarningPanel>
+    <MissingAnnotationEmptyState annotation={CIRCLECI_ANNOTATION} />
   ) : (
     <Routes>
       <Route path={`/${circleCIRouteRef.path}`} element={<BuildsPage />} />

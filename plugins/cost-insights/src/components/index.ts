@@ -14,12 +14,5 @@
  * limitations under the License.
  */
 
-require('ts-node').register({
-  transpileOnly: true,
-  project: require('path').resolve(__dirname, '../../../tsconfig.json'),
-  compilerOptions: {
-    module: 'CommonJS',
-  },
-});
-
-require('./e2e-test');
+export { default as BarChart } from './BarChart';
+export { default as LegendItem } from './LegendItem';

@@ -76,19 +76,6 @@ const VARIANT_STYLES = {
       height: 'calc(100% - 10px)', // for pages without content header
       marginBottom: '10px',
     },
-    contentheader: {
-      height: 'calc(100% - 40px)', // for pages with content header
-    },
-    contentheadertabs: {
-      height: 'calc(100% - 97px)', // for pages with content header and tabs (Tingle)
-    },
-    noShrink: {
-      flexShrink: 0,
-    },
-    minheight300: {
-      minHeight: 300,
-      overflow: 'initial',
-    },
   },
   cardContent: {
     fullHeight: {
@@ -96,10 +83,6 @@ const VARIANT_STYLES = {
     },
     height100: {
       flex: 1,
-    },
-    contentRow: {
-      display: 'flex',
-      flexDirection: 'row',
     },
   },
 };
@@ -120,10 +103,6 @@ const VARIANT_STYLES = {
  * Display the card full height suitable for DataGrid:
  *
  *   <InfoCard variant="height100">...</InfoCard>
- *
- * Variants can be combined in a whitespace delimited list like so:
- *
- *   <InfoCard variant="noShrink">...</InfoCard>
  */
 type Props = {
   title?: ReactNode;

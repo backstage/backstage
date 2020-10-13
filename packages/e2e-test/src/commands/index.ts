@@ -13,24 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { Box } from '@material-ui/core';
 
-type CostOverviewFooterProps = {
-  children?: React.ReactNode;
-};
+import { CommanderStatic } from 'commander';
+import { run } from './run';
 
-const CostOverviewFooter = ({ children }: CostOverviewFooterProps) => (
-  <Box
-    display="flex"
-    flexDirection="row"
-    justifyContent="space-between"
-    alignItems="center"
-  >
-    {React.Children.map(children, child => (
-      <Box marginY={1}>{child}</Box>
-    ))}
-  </Box>
-);
-
-export default CostOverviewFooter;
+export function registerCommands(program: CommanderStatic) {
+  program.command('run').description('Run e2e tests').action(run);
+}

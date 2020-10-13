@@ -87,6 +87,7 @@ async function moveApp(tempDir: string, destination: string, id: string) {
 }
 
 export default async (cmd: Command): Promise<void> => {
+  /* eslint-disable-next-line no-restricted-syntax */
   const paths = findPaths(__dirname);
 
   const questions: Question[] = [

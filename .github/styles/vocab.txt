@@ -141,6 +141,7 @@ Raghunandan
 rankdir
 readme
 Readme
+Recharts
 Redash
 replicasets
 repo
@@ -204,3 +205,5 @@ cloudbuild
 Grafana
 Iain
 Snyk
+www
+WWW

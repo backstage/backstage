@@ -40,6 +40,13 @@ import { Router as ApiDocsRouter } from '@backstage/plugin-api-docs';
 import { Router as SentryRouter } from '@backstage/plugin-sentry';
 import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
 import { Router as KubernetesRouter } from '@backstage/plugin-kubernetes';
+import {
+  Router as GitHubInsightsRouter,
+  isPluginApplicableToEntity as isGitHubAvailable,
+  ReadMeCard,
+  LanguagesCard,
+  ReleasesCard,
+} from '@roadiehq/backstage-plugin-github-insights';
 import React, { ReactNode } from 'react';
 import {
   AboutCard,
@@ -120,6 +127,17 @@ const OverviewContent = ({ entity }: { entity: Entity }) => (
       <AboutCard entity={entity} />
     </Grid>
     <RecentCICDRunsSwitcher entity={entity} />
+    {isGitHubAvailable(entity) && (
+      <>
+        <Grid item md={6}>
+          <LanguagesCard entity={entity} />
+          <ReleasesCard entity={entity} />
+        </Grid>
+        <Grid item md={6}>
+          <ReadMeCard entity={entity} maxHeight={350} />
+        </Grid>
+      </>
+    )}
     {isLighthouseAvailable(entity) && (
       <Grid item sm={4}>
         <LastLighthouseAuditCard />
@@ -160,6 +178,11 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
       title="Kubernetes"
       element={<KubernetesRouter entity={entity} />}
     />
+    <EntityPageLayout.Content
+      path="/code-insights"
+      title="Code Insights"
+      element={<GitHubInsightsRouter entity={entity} />}
+    />
   </EntityPageLayout>
 );
 
@@ -194,6 +217,11 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
       path="/kubernetes/*"
       title="Kubernetes"
       element={<KubernetesRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/code-insights"
+      title="Code Insights"
+      element={<GitHubInsightsRouter entity={entity} />}
     />
   </EntityPageLayout>
 );
