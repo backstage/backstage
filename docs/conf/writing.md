@@ -86,8 +86,8 @@ order:
   priority, followed by files.
 - Files inside package directories have higher priority than those in the root
   directory.
-- Files with environment affixes have higher priority than ones without.
 - Files with the `local` affix have higher priority than ones without.
+- Files with environment affixes have higher priority than ones without.
 
 ## Secrets
 

@@ -30,8 +30,8 @@ type ResolveOptions = {
  * For each root directory, search for the default app-config.yaml, along with suffixed
  * APP_ENV and local variants, e.g. app-config.production.yaml or app-config.development.local.yaml
  *
- * The priority order of config loaded through suffixes is `env > local > none`, meaning that
- * for example app-config.development.yaml has higher priority than `app-config.local.yaml`.
+ * The priority order of config loaded through suffixes is `local > env > none`, meaning that
+ * for example app-config.local.yaml has higher priority than `app-config.development.yaml`.
  *
  */
 export async function resolveStaticConfig(
@@ -39,8 +39,8 @@ export async function resolveStaticConfig(
 ): Promise<string[]> {
   const filePaths = [
     `app-config.yaml`,
-    `app-config.local.yaml`,
     `app-config.${options.env}.yaml`,
+    `app-config.local.yaml`,
     `app-config.${options.env}.local.yaml`,
   ];
 

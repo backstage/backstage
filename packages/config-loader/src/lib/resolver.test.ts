@@ -91,8 +91,8 @@ describe('resolveStaticConfig', () => {
       '/repo/app-config.yaml',
       '/repo/app-config.local.yaml',
       '/repo/app-config.development.local.yaml',
-      '/repo/packages/a/app-config.local.yaml',
       '/repo/packages/a/app-config.development.yaml',
+      '/repo/packages/a/app-config.local.yaml',
     ]);
   });
 
@@ -111,8 +111,8 @@ describe('resolveStaticConfig', () => {
 
     expect(normalizePaths(resolved)).toEqual([
       '/repo/app-config.yaml',
-      '/repo/app-config.local.yaml',
       '/repo/app-config.production.yaml',
+      '/repo/app-config.local.yaml',
       '/repo/app-config.production.local.yaml',
     ]);
   });
