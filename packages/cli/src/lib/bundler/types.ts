@@ -16,6 +16,7 @@
 
 import { AppConfig, Config } from '@backstage/config';
 import { BundlingPathsOptions } from './paths';
+import { ParallelOption } from '../parallel';
 
 export type BundlingOptions = {
   checksEnabled: boolean;
@@ -23,6 +24,7 @@ export type BundlingOptions = {
   config: Config;
   appConfigs: AppConfig[];
   baseUrl: URL;
+  parallel?: ParallelOption;
 };
 
 export type BackendBundlingOptions = Omit<BundlingOptions, 'baseUrl'> & {
@@ -37,6 +39,7 @@ export type ServeOptions = BundlingPathsOptions & {
 
 export type BuildOptions = BundlingPathsOptions & {
   statsJsonEnabled: boolean;
+  parallel?: ParallelOption;
   config: Config;
   appConfigs: AppConfig[];
 };
