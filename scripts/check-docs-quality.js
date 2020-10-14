@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /*
  * Copyright 2020 Spotify AB
  *
@@ -15,11 +14,8 @@
  * limitations under the License.
  */
 const { execSync, spawnSync } = require('child_process');
-const path = require('path');
 // eslint-disable-next-line import/no-extraneous-dependencies
 const commandExists = require('command-exists');
-
-const listFilesTrackedByGit = 'git ls-files';
 
 const inheritStdIo = {
   stdio: 'inherit',
@@ -27,55 +23,62 @@ const inheritStdIo = {
 
 const LINT_SKIPPED_MESSAGE =
   'Skipping documentation quality check (vale not found). Install vale linter (https://docs.errata.ai/vale/install) to enable.\n';
-const ERROR_MESSAGE =
-  'Language linter (vale) generated errors. Please check the errors and review any markdown files that you changed.\n';
+const ERROR_MESSAGE = `Language linter (vale) generated errors. Please check the errors and review any markdown files that you changed.
+  Possibly update .github/styles/vocab.txt to add new valid words.\n`;
+
+// Note: Make sure the script is run as `node check-docs-quality.js [FILES]` instead of `./check-docs-quality.js [FILES]`
+// If the script receives arguments (file paths), the script is run exclusively on them. (e.g. when run via pre-commit hook)
+const getFilesToLint = () => {
+  // Files have been provided as arguments
+  if (process.argv.length > 2) {
+    return process.argv.slice(2);
+  }
+
+  let command = `git ls-files | ./node_modules/.bin/shx grep ".md"`;
+  if (process.platform === 'win32') {
+    command = `git ls-files | .\\node_modules\\.bin\\shx grep ".md"`;
+  }
+
+  return execSync(command, {
+    stdio: ['ignore', 'pipe', 'inherit'],
+  })
+    .toString()
+    .split('\n');
+};
 
 // Proceed with the script only if Vale linter is installed. Limit the friction and surprises caused by the script.
 commandExists('vale')
   .catch(() => {
     console.log(LINT_SKIPPED_MESSAGE);
-    process.exit(0);
+    // process.exit(0);
+    process.exit(1);
   })
   .then(() => {
+    const filesToLint = getFilesToLint();
+    console.log('files to lint');
+    console.log(filesToLint);
+
     // xargs is not supported by shx.
     if (process.platform === 'win32') {
-      const validMDFilesCommand = `${listFilesTrackedByGit} | .\\node_modules\\.bin\\shx grep ".md"`;
       try {
-        // get list of all md files except in directories of gitignore.
-        let filesToLint = execSync(validMDFilesCommand, {
-          stdio: ['ignore', 'pipe', 'inherit'],
-        });
-
-        // set all file(s) path as absolute path
-        filesToLint = filesToLint
-          .toString()
-          .split('\n')
-          .map(filepath =>
-            filepath ? path.join(process.cwd(), filepath) : null,
-          )
-          .filter(Boolean);
-
         const output = spawnSync('vale', filesToLint, inheritStdIo);
 
         // if the command does not succeed
         if (output.status !== 0) {
           // if it contains system level error. [in this case vale does not exist]
           if (output.error) {
-            console.error(ERROR_MESSAGE);
+            console.log(ERROR_MESSAGE);
           }
           process.exit(1);
         }
       } catch (e) {
-        console.error(e.message);
+        console.log(e.message);
         process.exit(1);
       }
     } else {
-      const validMDFilesCommand = `${listFilesTrackedByGit} | ./node_modules/.bin/shx grep ".md"`;
-      // use xargs
-      try {
-        execSync(`${validMDFilesCommand} | xargs vale`, inheritStdIo);
-      } catch (e) {
-        console.error(ERROR_MESSAGE);
+      const output = spawnSync('vale', filesToLint, inheritStdIo);
+      if (output.status !== 0) {
+        console.log(ERROR_MESSAGE);
         process.exit(1);
       }
     }
