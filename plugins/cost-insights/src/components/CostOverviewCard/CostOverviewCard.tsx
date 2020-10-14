@@ -82,7 +82,7 @@ const CostOverviewCard = ({
         <CostOverviewChart
           responsive
           metric={filters.metric}
-          tooltip={`Daily Cost per ${metric.name}`}
+          tooltip={metric.kind ? `Daily Cost per ${metric.name}` : metric.name}
           aggregation={aggregation}
           trendline={trendline}
         />
