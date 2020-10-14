@@ -81,7 +81,7 @@ const CostOverviewCard = ({ data }: CostOverviewCardProps) => {
                 </Box>
                 <LegendItem
                   title={
-                    comparedChange.amount <= 0 ? 'Your Savings' : 'Your Excess'
+                    comparedChange.ratio <= 0 ? 'Your Savings' : 'Your Excess'
                   }
                 >
                   <CostGrowth
