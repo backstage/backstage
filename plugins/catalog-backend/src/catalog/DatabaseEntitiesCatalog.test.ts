@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
+import { getVoidLogger } from '@backstage/backend-common';
 import type { Entity } from '@backstage/catalog-model';
-import type { Database } from '../database';
+import { Database, DatabaseManager } from '../database';
 import { DatabaseEntitiesCatalog } from './DatabaseEntitiesCatalog';
 
 describe('DatabaseEntitiesCatalog', () => {
@@ -58,7 +59,7 @@ describe('DatabaseEntitiesCatalog', () => {
       db.entities.mockResolvedValue([]);
       db.addEntities.mockResolvedValue([{ entity }]);
 
-      const catalog = new DatabaseEntitiesCatalog(db);
+      const catalog = new DatabaseEntitiesCatalog(db, getVoidLogger());
       const result = await catalog.addOrUpdateEntity(entity);
 
       expect(db.entityByName).toHaveBeenCalledTimes(1);
@@ -97,7 +98,7 @@ describe('DatabaseEntitiesCatalog', () => {
       });
       db.updateEntity.mockResolvedValue({ entity });
 
-      const catalog = new DatabaseEntitiesCatalog(db);
+      const catalog = new DatabaseEntitiesCatalog(db, getVoidLogger());
       const result = await catalog.addOrUpdateEntity(entity);
 
       expect(db.entities).toHaveBeenCalledTimes(0);
@@ -149,7 +150,7 @@ describe('DatabaseEntitiesCatalog', () => {
       db.entityByName.mockResolvedValue({ entity: existing });
       db.updateEntity.mockResolvedValue({ entity: existing });
 
-      const catalog = new DatabaseEntitiesCatalog(db);
+      const catalog = new DatabaseEntitiesCatalog(db, getVoidLogger());
       const result = await catalog.addOrUpdateEntity(added);
 
       expect(db.entityByName).toHaveBeenCalledTimes(1);
@@ -178,6 +179,40 @@ describe('DatabaseEntitiesCatalog', () => {
         1,
       );
       expect(result).toEqual(existing);
+    });
+  });
+
+  describe('batchAddOrUpdateEntities', () => {
+    it('both adds and updates', async () => {
+      const catalog = new DatabaseEntitiesCatalog(
+        await DatabaseManager.createTestDatabase(),
+        getVoidLogger(),
+      );
+      const entities: Entity[] = [];
+      for (let i = 0; i < 500; ++i) {
+        entities.push({
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: `n${i}` },
+        });
+      }
+
+      await catalog.batchAddOrUpdateEntities(entities);
+      const afterFirst = await catalog.entities();
+      expect(afterFirst.length).toBe(500);
+
+      entities[40].metadata.op = 'changed';
+      entities.push({
+        apiVersion: 'a',
+        kind: 'k',
+        metadata: { name: `n500`, op: 'added' },
+      });
+
+      await catalog.batchAddOrUpdateEntities(entities);
+      const afterSecond = await catalog.entities();
+      expect(afterSecond.length).toBe(501);
+      expect(afterSecond.find(e => e.metadata.op === 'changed')).toBeDefined();
+      expect(afterSecond.find(e => e.metadata.op === 'added')).toBeDefined();
     });
   });
 });
