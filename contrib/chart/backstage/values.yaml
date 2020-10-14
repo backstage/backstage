@@ -243,3 +243,4 @@ auth:
   # Used by the scaffolder to create GitHub repos. Must have 'repo' scope.
   githubToken: g
   gitlabToken: g
+  newRelicRestApiKey: r
