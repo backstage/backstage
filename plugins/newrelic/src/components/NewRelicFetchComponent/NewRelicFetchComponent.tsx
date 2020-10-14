@@ -107,10 +107,15 @@ const NewRelicFetchComponent: FC<{}> = () => {
   const configApi = useApi(configApiRef);
   const apiBaseUrl = configApi.getString('newrelic.api.baseUrl');
   const apiKey = configApi.getString('newrelic.api.key');
+  const apiKeyIsSet = apiKey && apiKey !== 'NEW_RELIC_REST_API_KEY';
 
   const { value, loading, error } = useAsync(async (): Promise<
     NewRelicApplication[]
   > => {
+    if (!apiKeyIsSet) {
+      return [];
+    }
+
     const response = await fetch(`${apiBaseUrl}/applications.json`, {
       headers: {
         'X-Api-Key': apiKey,
@@ -126,6 +131,12 @@ const NewRelicFetchComponent: FC<{}> = () => {
     return <Progress />;
   } else if (error) {
     return <Alert severity="error">{error.message}</Alert>;
+  } else if (!apiKeyIsSet) {
+    return (
+      <Alert severity="error">
+        No REST API Key configured. Check your app-config.yaml.
+      </Alert>
+    );
   }
 
   return <NewRelicAPMTable applications={value || []} />;
