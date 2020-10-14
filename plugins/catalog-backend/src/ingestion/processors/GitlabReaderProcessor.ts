@@ -189,11 +189,11 @@ export function readConfig(config: Config, logger: Logger): ProviderConfig[] {
  * A processor that adds the ability to read files from GitLab v4 APIs, such as
  * the one exposed by GitLab itself.
  */
-export class GitLabReaderProcessor implements LocationProcessor {
+export class GitlabReaderProcessor implements LocationProcessor {
   private providers: ProviderConfig[];
 
   static fromConfig(config: Config, logger: Logger) {
-    return new GitLabReaderProcessor(readConfig(config, logger));
+    return new GitlabReaderProcessor(readConfig(config, logger));
   }
 
   constructor(providers: ProviderConfig[]) {

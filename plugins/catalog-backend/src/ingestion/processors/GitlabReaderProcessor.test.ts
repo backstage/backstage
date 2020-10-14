@@ -22,7 +22,7 @@ import {
   getApiUrl,
   getRawRequestOptions,
   getRawUrl,
-  GitLabReaderProcessor,
+  GitlabReaderProcessor,
   ProviderConfig,
   readConfig,
 } from './GitlabReaderProcessor';
@@ -291,7 +291,7 @@ describe('GitlabReaderProcessor', () => {
 
   describe('implementation', () => {
     it('rejects unknown types', async () => {
-      const processor = new GitLabReaderProcessor([
+      const processor = new GitlabReaderProcessor([
         {
           target: 'https://gitlab.com',
           apiBaseUrl: 'https://gitlab.com/api/v4',
@@ -307,7 +307,7 @@ describe('GitlabReaderProcessor', () => {
     });
 
     it('rejects unknown targets', async () => {
-      const processor = new GitLabReaderProcessor([
+      const processor = new GitlabReaderProcessor([
         {
           target: 'https://gitlab.com',
           apiBaseUrl: 'https://gitlab.com/api/v4',

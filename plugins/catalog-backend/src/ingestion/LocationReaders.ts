@@ -33,7 +33,7 @@ import { EntityPolicyProcessor } from './processors/EntityPolicyProcessor';
 import { FileReaderProcessor } from './processors/FileReaderProcessor';
 import { GithubOrgReaderProcessor } from './processors/GithubOrgReaderProcessor';
 import { GithubReaderProcessor } from './processors/GithubReaderProcessor';
-import { GitLabReaderProcessor } from './processors/GitlabReaderProcessor';
+import { GitlabReaderProcessor } from './processors/GitlabReaderProcessor';
 import { GitlabApiReaderProcessor } from './processors/GitlabApiReaderProcessor';
 import { LdapOrgReaderProcessor } from './processors/LdapOrgReaderProcessor';
 import { LocationRefProcessor } from './processors/LocationEntityProcessor';
@@ -119,7 +119,7 @@ export class LocationReaders implements LocationReader {
       StaticLocationProcessor.fromConfig(config),
       new FileReaderProcessor(),
       GithubReaderProcessor.fromConfig(config, logger),
-      GitLabReaderProcessor.fromConfig(config, logger),
+      GitlabReaderProcessor.fromConfig(config, logger),
       new BitbucketApiReaderProcessor(config),
       new AzureApiReaderProcessor(config),
       GithubOrgReaderProcessor.fromConfig(config, { logger }),
