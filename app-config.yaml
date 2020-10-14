@@ -238,6 +238,7 @@ costInsights:
   metrics:
     dailyCost:
       name: Your Company's Daily Cost
+      compare: DAU
     DAU:
       name: Cost Per DAU
 homepage:
