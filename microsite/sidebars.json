@@ -163,7 +163,7 @@
       "architecture-decisions/adrs-adr009"
     ],
     "Contribute": ["../CONTRIBUTING"],
-    "Support": ["overview/support"],
+    "Support": ["support/support", "support/project-structure"],
     "FAQ": ["FAQ"]
   }
 }
