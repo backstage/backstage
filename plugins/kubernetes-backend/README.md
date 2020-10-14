@@ -8,21 +8,33 @@ It responds to Kubernetes requests from the frontend.
 
 ## Configuration
 
-### clusterLocatorMethod
+### serviceLocatorMethod
 
 This configures how to determine which clusters a component is running in.
 
-Currently, the only valid locator method is:
+Currently, the only valid serviceLocatorMethod is:
 
-#### configMultiTenant
+#### multiTenant
 
 This configuration assumes that all components run on all the provided clusters.
+
+### clusterLocatorMethods
+
+This is used to determine where to retrieve cluster configuration from.
+
+Currently, the only valid serviceLocatorMethod is:
+
+#### config
+
+This clusterLocatorMethod will read cluster information in from config
 
 Example:
 
 ```yaml
 kubernetes:
-  clusterLocatorMethod: 'configMultiTenant'
+  serviceLocatorMethod: 'multiTenant'
+  clusterLocatorMethods:
+    - 'config'
   clusters:
     - url: http://127.0.0.1:9999
       name: minikube
@@ -35,7 +47,7 @@ kubernetes:
 
 ##### clusters
 
-Used by the `configMultiTenant` `clusterLocatorMethod` to construct Kubernetes clients.
+Used by the `config` `clusterLocatorMethods` to construct Kubernetes clients.
 
 ###### url
 

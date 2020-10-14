@@ -60,7 +60,9 @@ lighthouse:
   baseUrl: http://localhost:3003
 
 kubernetes:
-  clusterLocatorMethod: 'configMultiTenant'
+  serviceLocatorMethod: 'multiTenant'
+  clusterLocatorMethods:
+    - 'config'
   clusters: []
 
 integrations:
