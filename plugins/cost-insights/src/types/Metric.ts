@@ -19,4 +19,5 @@ import { Maybe } from './Maybe';
 export type Metric = {
   kind: Maybe<string>;
   name: string;
+  compare?: string;
 };

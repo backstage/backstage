@@ -89,6 +89,7 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
         return metrics.keys().map(key => ({
           kind: key === NULL_METRIC ? null : key,
           name: metrics.getString(`${key}.name`),
+          compare: metrics.getOptionalString(`${key}.compare`),
         }));
       }
 

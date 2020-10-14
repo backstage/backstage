@@ -15,17 +15,20 @@
  */
 
 import React from 'react';
-import { Box, Card, CardContent, Divider } from '@material-ui/core';
+import { Box, Card, CardContent, Divider, useTheme } from '@material-ui/core';
+import CostGrowth from '../CostGrowth';
 import CostOverviewChart from '../CostOverviewChart';
-import CostOverviewChartLegend from '../CostOverviewChartLegend';
 import CostOverviewHeader from './CostOverviewHeader';
+import LegendItem from '../LegendItem';
 import MetricSelect from '../MetricSelect';
 import PeriodSelect from '../PeriodSelect';
 import { useScroll, useFilters, useConfig } from '../../hooks';
 import { mapFiltersToProps } from './selector';
 import { DefaultNavigation } from '../../utils/navigation';
+import { formatPercent } from '../../utils/formatters';
 import {
   ChangeStatistic,
+  CostInsightsTheme,
   DateAggregation,
   Project,
   Trendline,
@@ -44,13 +47,14 @@ const CostOverviewCard = ({
   aggregation,
   trendline,
 }: CostOverviewCardProps) => {
-  const { metrics } = useConfig();
+  const theme = useTheme<CostInsightsTheme>();
+  const config = useConfig();
   const { ScrollAnchor } = useScroll(DefaultNavigation.CostOverviewCard);
-  const { setDuration, setProject, metric, setMetric, ...filters } = useFilters(
+  const { setDuration, setProject, setMetric, ...filters } = useFilters(
     mapFiltersToProps,
   );
 
-  const { name } = findAlways(metrics, m => m.kind === metric);
+  const metric = findAlways(config.metrics, m => m.kind === filters.metric);
 
   return (
     <Card style={{ position: 'relative' }}>
@@ -60,22 +64,36 @@ const CostOverviewCard = ({
           <PeriodSelect duration={filters.duration} onSelect={setDuration} />
         </CostOverviewHeader>
         <Divider />
-        <Box marginY={1} display="flex" flexDirection="column">
-          <CostOverviewChartLegend change={change} title={`${name} Trend`} />
-          <CostOverviewChart
-            responsive
-            metric={metric}
-            tooltip={name}
-            aggregation={aggregation}
-            trendline={trendline}
-          />
+        <Box my={1} display="flex" flexDirection="row">
+          <Box mr={2}>
+            <LegendItem
+              title={`${metric.name} Trend`}
+              markerColor={theme.palette.blue}
+            >
+              {formatPercent(change.ratio)}
+            </LegendItem>
+          </Box>
+          <LegendItem
+            title={`Your ${change.ratio <= 0 ? 'Savings' : 'Excess'}`}
+          >
+            <CostGrowth change={change} duration={filters.duration} />
+          </LegendItem>
         </Box>
+        <CostOverviewChart
+          responsive
+          metric={filters.metric}
+          tooltip={`Daily Cost per ${metric.name}`}
+          aggregation={aggregation}
+          trendline={trendline}
+        />
         <Box display="flex" justifyContent="flex-end" alignItems="center">
-          <MetricSelect
-            metric={metric}
-            metrics={metrics}
-            onSelect={setMetric}
-          />
+          {config.metrics.length > 1 && (
+            <MetricSelect
+              metric={filters.metric}
+              metrics={config.metrics}
+              onSelect={setMetric}
+            />
+          )}
         </Box>
       </CardContent>
     </Card>
