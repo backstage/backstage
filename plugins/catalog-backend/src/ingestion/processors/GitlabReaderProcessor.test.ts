@@ -27,7 +27,7 @@ import {
   readConfig,
 } from './GitlabReaderProcessor';
 
-describe('GithubReaderProcessor', () => {
+describe('GitlabReaderProcessor', () => {
   describe('getApiRequestOptions', () => {
     it('sets the correct API version', () => {
       const config: ProviderConfig = { target: '', apiBaseUrl: '' };
@@ -98,6 +98,23 @@ describe('GithubReaderProcessor', () => {
       );
     });
 
+    it('happy path for gitlab with extra /-/ in path', () => {
+      const config: ProviderConfig = {
+        target: 'https://gitlab.com',
+        apiBaseUrl: 'https://gitlab.com/api/v4',
+      };
+      expect(
+        getApiUrl(
+          'https://gitlab.com/a/b/-/blob/branchname/path/to/c.yaml',
+          config,
+        ),
+      ).toEqual(
+        new URL(
+          'https://gitlab.com/api/v4/projects/a/b/repository/files/path/to/c.yaml/raw?ref=branchname',
+        ),
+      );
+    });
+
     it('happy path for self hosted', () => {
       const config: ProviderConfig = {
         target: 'https://git.mycompany.net',
@@ -106,6 +123,23 @@ describe('GithubReaderProcessor', () => {
       expect(
         getApiUrl(
           'https://git.mycompany.net/a/b/blob/branchname/path/to/c.yaml',
+          config,
+        ),
+      ).toEqual(
+        new URL(
+          'https://git.mycompany.net/api/v4/projects/a/b/repository/files/path/to/c.yaml/raw?ref=branchname',
+        ),
+      );
+    });
+
+    it('happy path for self hosted with extra /-/ in path', () => {
+      const config: ProviderConfig = {
+        target: 'https://git.mycompany.net',
+        apiBaseUrl: 'https://git.mycompany.net/api/v4',
+      };
+      expect(
+        getApiUrl(
+          'https://git.mycompany.net/a/b/-/blob/branchname/path/to/c.yaml',
           config,
         ),
       ).toEqual(
@@ -137,6 +171,21 @@ describe('GithubReaderProcessor', () => {
       );
     });
 
+    it('happy path for gitlab with extra /-/ in path', () => {
+      const config: ProviderConfig = {
+        target: 'https://gitlab.com',
+        rawBaseUrl: 'https://gitlab.com',
+      };
+      expect(
+        getRawUrl(
+          'https://gitlab.com/a/b/-/blob/branchname/path/to/c.yaml',
+          config,
+        ),
+      ).toEqual(
+        new URL('https://gitlab.com/a/b/raw/branchname/path/to/c.yaml'),
+      );
+    });
+
     it('happy path for self hosted', () => {
       const config: ProviderConfig = {
         target: 'https://git.mycompany.net',
@@ -145,6 +194,21 @@ describe('GithubReaderProcessor', () => {
       expect(
         getRawUrl(
           'https://git.mycompany.net/a/b/blob/branchname/path/to/c.yaml',
+          config,
+        ),
+      ).toEqual(
+        new URL('https://git.mycompany.net/a/b/raw/branchname/path/to/c.yaml'),
+      );
+    });
+
+    it('happy path for self hosted with extra /-/ in path', () => {
+      const config: ProviderConfig = {
+        target: 'https://git.mycompany.net',
+        rawBaseUrl: 'https://git.mycompany.net',
+      };
+      expect(
+        getRawUrl(
+          'https://git.mycompany.net/a/b/-/blob/branchname/path/to/c.yaml',
           config,
         ),
       ).toEqual(

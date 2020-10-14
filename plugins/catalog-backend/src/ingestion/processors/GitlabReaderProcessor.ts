@@ -93,17 +93,7 @@ export function getRawRequestOptions(provider: ProviderConfig): RequestInit {
 // to:   https://gitlab.com/api/v4/projects/a/b/repository/files/path/to/c.yaml/raw?ref=branchname
 export function getApiUrl(target: string, provider: ProviderConfig): URL {
   try {
-    const { owner, name, ref, filepathtype, filepath } = parseGitUri(target);
-
-    if (
-      !owner ||
-      !name ||
-      !ref ||
-      (filepathtype !== 'blob' && filepathtype !== 'raw') ||
-      !filepath?.match(/\.ya?ml$/)
-    ) {
-      throw new Error('Wrong URL or invalid file path');
-    }
+    const { owner, name, ref, filepath } = parseGitUri(target);
 
     const pathWithoutSlash = filepath.replace(/^\//, '');
     return new URL(
@@ -121,17 +111,8 @@ export function getApiUrl(target: string, provider: ProviderConfig): URL {
 // to:   https://gitlab.com/a/b/raw/branchname/c.yaml
 export function getRawUrl(target: string, provider: ProviderConfig): URL {
   try {
-    const { owner, name, ref, filepathtype, filepath } = parseGitUri(target);
+    const { owner, name, ref, filepath } = parseGitUri(target);
 
-    if (
-      !owner ||
-      !name ||
-      !ref ||
-      (filepathtype !== 'blob' && filepathtype !== 'raw') ||
-      !filepath?.match(/\.ya?ml$/)
-    ) {
-      throw new Error('Wrong URL or invalid file path');
-    }
     const pathWithoutSlash = filepath.replace(/^\//, '');
     return new URL(
       `${provider.rawBaseUrl}/${owner}/${name}/-/raw/${ref}/${pathWithoutSlash}`,
@@ -145,7 +126,7 @@ export function readConfig(config: Config, logger: Logger): ProviderConfig[] {
   const providers: ProviderConfig[] = [];
 
   // TODO(freben): Deprecate the old config root entirely in a later release
-  if (config.has('catalog.processors.gitLab')) {
+  if (config.has('catalog.processors.gitlabApi')) {
     logger.warn(
       'The catalog.processors.gitlabApi configuration key has been deprecated, please use catalog.processors.gitlab instead',
     );
@@ -251,7 +232,6 @@ export class GitLabReaderProcessor implements LocationProcessor {
 
       if (response.ok) {
         const data = await response.buffer();
-        console.log(data);
         emit(result.data(location, data));
       } else {
         const message = `${location.target} could not be read as ${url}, ${response.status} ${response.statusText}`;

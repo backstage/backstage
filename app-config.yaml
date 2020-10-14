@@ -8,27 +8,27 @@ backend:
     port: 7000
   database:
     client: sqlite3
-    connection: ':memory:'
+    connection: ":memory:"
   csp:
-    connect-src: ["'self'", 'https:']
+    connect-src: ["'self'", "https:"]
 
 # See README.md in the proxy-backend plugin for information on the configuration format
 proxy:
-  '/circleci/api':
+  "/circleci/api":
     target: https://circleci.com/api/v1.1
     headers:
       Circle-Token:
         $secret:
           env: CIRCLECI_AUTH_TOKEN
 
-  '/jenkins/api':
+  "/jenkins/api":
     target: http://localhost:8080
     headers:
       Authorization:
         $secret:
           env: JENKINS_BASIC_AUTH_HEADER
 
-  '/travisci/api':
+  "/travisci/api":
     target: https://api.travis-ci.com
     changeOrigin: true
     headers:
@@ -44,7 +44,7 @@ techdocs:
   storageUrl: http://localhost:7000/api/techdocs/static/docs
   requestUrl: http://localhost:7000/api/techdocs
   generators:
-    techdocs: 'docker'
+    techdocs: "docker"
 
 sentry:
   organization: spotify
@@ -57,14 +57,14 @@ rollbar:
 
 newrelic:
   api:
-    baseUrl: 'https://api.newrelic.com/v2'
+    baseUrl: "https://api.newrelic.com/v2"
     key: NEW_RELIC_REST_API_KEY
 
 lighthouse:
   baseUrl: http://localhost:3003
 
 kubernetes:
-  clusterLocatorMethod: 'configMultiTenant'
+  clusterLocatorMethod: "configMultiTenant"
   clusters: []
 
 catalog:
@@ -111,7 +111,6 @@ catalog:
     gitlab:
       providers:
         - target: https://gitlab.com
-          rawBaseUrl: https://gitlab.com
           token:
             $secret:
               env: GITLAB_PRIVATE_TOKEN
@@ -189,8 +188,8 @@ auth:
           $secret:
             env: GITLAB_BASE_URL
     saml:
-      entryPoint: 'http://localhost:7001/'
-      issuer: 'passport-saml'
+      entryPoint: "http://localhost:7001/"
+      issuer: "passport-saml"
     okta:
       development:
         clientId:
@@ -263,8 +262,8 @@ homepage:
     - label: UTC
       timzone: UTC
     - label: NYC
-      timezone: 'America/New_York'
+      timezone: "America/New_York"
     - label: STO
-      timezone: 'Europe/Stockholm'
+      timezone: "Europe/Stockholm"
     - label: TYO
-      timezone: 'Asia/Tokyo'
+      timezone: "Asia/Tokyo"
