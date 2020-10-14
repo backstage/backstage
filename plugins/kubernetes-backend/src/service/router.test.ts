@@ -36,7 +36,7 @@ describe('router', () => {
     };
 
     kubernetesClusterLocator = {
-      getClusterByServiceId: jest.fn(),
+      getClustersByServiceId: jest.fn(),
     };
 
     handleGetByServiceId = jest.fn();
