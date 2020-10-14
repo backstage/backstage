@@ -40,10 +40,13 @@ class AllEntityPolicies implements EntityPolicy {
   async enforce(entity: Entity): Promise<Entity> {
     let result = entity;
     for (const policy of this.policies) {
-      const output = await policy.enforce(entity);
-      if (output) {
-        result = output;
+      const output = await policy.enforce(result);
+      if (!output) {
+        throw new Error(
+          `Policy ${policy.constructor.name} did not return a result`,
+        );
       }
+      result = output;
     }
     return result;
   }
@@ -54,10 +57,10 @@ class AllEntityPolicies implements EntityPolicy {
 class AnyEntityPolicy implements EntityPolicy {
   constructor(private readonly policies: EntityPolicy[]) {}
 
-  async enforce(entity: Entity): Promise<Entity | undefined> {
+  async enforce(entity: Entity): Promise<Entity> {
     for (const policy of this.policies) {
       const output = await policy.enforce(entity);
-      if (output !== null) {
+      if (output) {
         return output;
       }
     }

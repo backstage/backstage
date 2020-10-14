@@ -62,7 +62,7 @@ Referenced by: [sessionState\$](#sessionstate).
 
 ### Observer
 
-This file contains non-react related core types used throught Backstage.
+This file contains non-react related core types used through Backstage.
 
 Observer interface for consuming an Observer, see TC39.
 

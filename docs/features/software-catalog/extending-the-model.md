@@ -16,11 +16,9 @@ Backstage natively supports tracking of the following component
 ![](../../assets/software-catalog/bsc-extend.png)
 
 Since these types are likely not the only kind of software you will want to
-track in Backstage, it is possible to
-
-It is possible to add your own software types that fit your organization's data
-model. Inside Spotify our model has grown significantly over the years, and now
-includes ML models, Apps, data pipelines and many more.
+track in Backstage, it is possible to add your own software types that fit your
+organization's data model. Inside Spotify our model has grown significantly over
+the years, and now includes ML models, Apps, data pipelines and many more.
 
 ## Adding a new type
 

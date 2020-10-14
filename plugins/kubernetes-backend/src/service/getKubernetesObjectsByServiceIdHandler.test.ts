@@ -22,7 +22,7 @@ const TEST_SERVICE_ID = 'my-service';
 
 const fetchObjectsByServiceId = jest.fn();
 
-const getClusterByServiceId = jest.fn();
+const getClustersByServiceId = jest.fn();
 
 const mockFetch = (mock: jest.Mock) => {
   mock.mockImplementation((serviceId: string, clusterDetails: ClusterDetails) =>
@@ -70,10 +70,11 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
   });
 
   it('retrieve objects for one cluster', async () => {
-    getClusterByServiceId.mockImplementation(() =>
+    getClustersByServiceId.mockImplementation(() =>
       Promise.resolve([
         {
           name: 'test-cluster',
+          authProvider: 'serviceAccount',
         },
       ]),
     );
@@ -86,12 +87,13 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
         fetchObjectsByServiceId,
       },
       {
-        getClusterByServiceId,
+        getClustersByServiceId,
       },
       getVoidLogger(),
+      {},
     );
 
-    expect(getClusterByServiceId.mock.calls.length).toBe(1);
+    expect(getClustersByServiceId.mock.calls.length).toBe(1);
     expect(fetchObjectsByServiceId.mock.calls.length).toBe(1);
     expect(result).toStrictEqual({
       items: [
@@ -138,13 +140,15 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
   });
 
   it('retrieve objects for two clusters', async () => {
-    getClusterByServiceId.mockImplementation(() =>
+    getClustersByServiceId.mockImplementation(() =>
       Promise.resolve([
         {
           name: 'test-cluster',
+          authProvider: 'serviceAccount',
         },
         {
           name: 'other-cluster',
+          authProvider: 'google',
         },
       ]),
     );
@@ -157,12 +161,17 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
         fetchObjectsByServiceId,
       },
       {
-        getClusterByServiceId,
+        getClustersByServiceId,
       },
       getVoidLogger(),
+      {
+        auth: {
+          google: 'google_token_123',
+        },
+      },
     );
 
-    expect(getClusterByServiceId.mock.calls.length).toBe(1);
+    expect(getClustersByServiceId.mock.calls.length).toBe(1);
     expect(fetchObjectsByServiceId.mock.calls.length).toBe(2);
     expect(result).toStrictEqual({
       items: [

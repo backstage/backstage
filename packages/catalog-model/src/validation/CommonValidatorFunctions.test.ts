@@ -161,18 +161,4 @@ describe('CommonValidatorFunctions', () => {
   ])(`isValidDnsLabel %p ? %p`, (value, result) => {
     expect(CommonValidatorFunctions.isValidDnsLabel(value)).toBe(result);
   });
-
-  it.each([
-    ['', ''],
-    ['a', 'a'],
-    ['a-b', 'ab'],
-    ['-a-b', 'ab'],
-    ['a_b', 'ab'],
-    [`${'a'.repeat(6000)}`, `${'a'.repeat(6000)}`],
-    ['_:;>!"#€', ''],
-  ])(`normalizeToLowercaseAlphanum %p ? %p`, (value, result) => {
-    expect(CommonValidatorFunctions.normalizeToLowercaseAlphanum(value)).toBe(
-      result,
-    );
-  });
 });

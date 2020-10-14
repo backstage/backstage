@@ -58,4 +58,11 @@ describe('<Header/>', () => {
     );
     rendered.getByText('tool');
   });
+
+  it('should have breadcrumb rendered', () => {
+    const rendered = render(
+      wrapInTestApp(<Header title="Title" type="tool" typeLink="/tool" />),
+    );
+    rendered.getAllByText('Title');
+  });
 });

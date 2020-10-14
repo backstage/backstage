@@ -18,20 +18,19 @@ import React from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { InfoCard } from '@backstage/core';
 import AlertInstructionsLayout from '../AlertInstructionsLayout';
-import ProjectGrowthAlertCard from '../ProjectGrowthAlertCard';
 import {
-  AlertType,
+  Alert,
   Duration,
   Entity,
   Product,
   ProjectGrowthAlert,
+  ProjectGrowthData,
 } from '../../types';
 import ResourceGrowthBarChartLegend from '../ResourceGrowthBarChartLegend';
 import ResourceGrowthBarChart from '../ResourceGrowthBarChart';
 
 const ProjectGrowthInstructionsPage = () => {
-  const projectGrowthAlert: ProjectGrowthAlert = {
-    id: AlertType.ProjectGrowth,
+  const alertData: ProjectGrowthData = {
     project: 'example-project',
     periodStart: 'Q1 2020',
     periodEnd: 'Q2 2020',
@@ -55,6 +54,7 @@ const ProjectGrowthInstructionsPage = () => {
       },
     ],
   };
+  const projectGrowthAlert: Alert = new ProjectGrowthAlert(alertData);
 
   const product: Product = {
     kind: 'ComputeEngine',
@@ -135,7 +135,7 @@ const ProjectGrowthInstructionsPage = () => {
           comparison of cloud products over the examined time period:
         </Typography>
         <Box mt={2} mb={2}>
-          <ProjectGrowthAlertCard alert={projectGrowthAlert} />
+          {projectGrowthAlert.element}
         </Box>
         <Typography paragraph>
           This allows you to quickly see which cloud products contributed to the

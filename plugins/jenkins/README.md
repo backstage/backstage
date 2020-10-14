@@ -30,10 +30,7 @@ proxy:
     changeOrigin: true
     headers:
       Authorization:
-        $secret:
-          env: JENKINS_BASIC_AUTH_HEADER
-    pathRewrite:
-      '^/api/proxy/jenkins/api/': '/'
+        $env: JENKINS_BASIC_AUTH_HEADER
 ```
 
 4. Add an environment variable which contains the Jenkins credentials, (note: use an API token not your password)

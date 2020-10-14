@@ -20,7 +20,7 @@ import { Grid, Typography } from '@material-ui/core';
 const linkInfo = { title: 'Go to XYZ Location', link: '#' };
 
 export default {
-  title: 'Information Card',
+  title: 'Layout/Information Card',
   component: InfoCard,
 };
 

@@ -106,7 +106,10 @@ const StepView = ({ step }: { step: Step }) => {
         />
       </TableCell>
       <TableCell>
-        <WorkflowRunStatus status={step.status.toUpperCase()} />
+        <WorkflowRunStatus
+          status={step.status.toUpperCase()}
+          conclusion={step.conclusion.toUpperCase()}
+        />
       </TableCell>
     </TableRow>
   );
@@ -204,7 +207,10 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
                 <Typography noWrap>Status</Typography>
               </TableCell>
               <TableCell>
-                <WorkflowRunStatus status={details.value?.status} />
+                <WorkflowRunStatus
+                  status={details.value?.status}
+                  conclusion={details.value?.conclusion}
+                />
               </TableCell>
             </TableRow>
             <TableRow>

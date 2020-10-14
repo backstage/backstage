@@ -166,7 +166,7 @@ because it fulfills all the principles above:
 ✓ **Fulfills Input/Output Principle**: Verifies the output changes when the
 input changes
 
-✓ **Fufills Blackbox Principle**: Does not verify _how_ the `<Loading />`
+✓ **Fulfills Blackbox Principle**: Does not verify _how_ the `<Loading />`
 component is mounted, just that it is mounted in response to the input.
 
 ✓ **Fulfills Scalability Principle**: If we decide to refactor the entire way

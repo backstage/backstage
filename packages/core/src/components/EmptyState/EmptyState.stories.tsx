@@ -17,9 +17,10 @@
 import React from 'react';
 import { EmptyState } from './EmptyState';
 import { Button } from '@material-ui/core';
+import { MissingAnnotationEmptyState } from './MissingAnnotationEmptyState';
 
 export default {
-  title: 'EmptyState',
+  title: 'Feedback/EmptyState',
   component: EmptyState,
 };
 
@@ -27,15 +28,11 @@ const containerStyle = { width: '100%', height: '100vh' };
 
 export const MissingAnnotation = () => (
   <div style={containerStyle}>
-    <EmptyState
-      missing="field"
-      title="Your plugin is missing an annotation"
-      description="Add a description here."
-    />
+    <MissingAnnotationEmptyState annotation="backstage.io/example" />
   </div>
 );
 
-export const NoInformation = () => (
+export const Info = () => (
   <div style={containerStyle}>
     <EmptyState
       missing="info"
@@ -45,7 +42,7 @@ export const NoInformation = () => (
   </div>
 );
 
-export const CreateComponent = () => (
+export const Content = () => (
   <div style={containerStyle}>
     <EmptyState
       missing="content"
@@ -55,7 +52,7 @@ export const CreateComponent = () => (
   </div>
 );
 
-export const NoBuild = () => (
+export const Data = () => (
   <div style={containerStyle}>
     <EmptyState
       missing="data"

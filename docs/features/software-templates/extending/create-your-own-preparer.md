@@ -88,7 +88,7 @@ Some good examples exist here:
 - https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/src/scaffolder/stages/prepare/file.ts
 - https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/src/scaffolder/stages/prepare/github.ts
 
-### Registerinng your own Preparer
+### Registering your own Preparer
 
 You can register the preparer that you have created with the `PreparerBuilder`
 by using the `PreparerKey` from the Catalog, for example like this:

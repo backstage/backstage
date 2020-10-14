@@ -64,6 +64,8 @@ export const lightTheme = createTheme({
     navigation: {
       background: '#171717',
       indicator: '#9BF0E1',
+      color: '#b5b5b5',
+      selectedColor: '#FFF',
     },
     pinSidebarButton: {
       icon: '#181818',
@@ -107,8 +109,8 @@ export const darkTheme = createTheme({
     },
     border: '#E6E6E6',
     textContrast: '#FFFFFF',
-    textVerySubtle: '#ececec',
-    textSubtle: '#EEEEEE',
+    textVerySubtle: '#727272',
+    textSubtle: '#CCCCCC',
     highlight: '#FFFBCC',
     errorBackground: '#FFEBEE',
     warningBackground: '#F59B23',
@@ -122,6 +124,8 @@ export const darkTheme = createTheme({
     navigation: {
       background: '#424242',
       indicator: '#9BF0E1',
+      color: '#b5b5b5',
+      selectedColor: '#FFF',
     },
     pinSidebarButton: {
       icon: '#404040',

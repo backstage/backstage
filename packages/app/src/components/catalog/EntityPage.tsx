@@ -40,6 +40,13 @@ import { Router as ApiDocsRouter } from '@backstage/plugin-api-docs';
 import { Router as SentryRouter } from '@backstage/plugin-sentry';
 import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
 import { Router as KubernetesRouter } from '@backstage/plugin-kubernetes';
+import {
+  Router as GitHubInsightsRouter,
+  isPluginApplicableToEntity as isGitHubAvailable,
+  ReadMeCard,
+  LanguagesCard,
+  ReleasesCard,
+} from '@roadiehq/backstage-plugin-github-insights';
 import React, { ReactNode } from 'react';
 import {
   AboutCard,
@@ -47,8 +54,18 @@ import {
   useEntity,
 } from '@backstage/plugin-catalog';
 import { Entity } from '@backstage/catalog-model';
-import { Grid } from '@material-ui/core';
-import { WarningPanel } from '@backstage/core';
+import { Button, Grid } from '@material-ui/core';
+import { EmptyState } from '@backstage/core';
+import {
+  EmbeddedRouter as LighthouseRouter,
+  LastLighthouseAuditCard,
+  isPluginApplicableToEntity as isLighthouseAvailable,
+} from '@backstage/plugin-lighthouse/';
+import {
+  Router as PullRequestsRouter,
+  isPluginApplicableToEntity as isPullRequestsAvailable,
+  PullRequestsStatsCard,
+} from '@roadiehq/backstage-plugin-github-pull-requests';
 
 const CICDSwitcher = ({ entity }: { entity: Entity }) => {
   // This component is just an example of how you can implement your company's logic in entity page.
@@ -66,10 +83,20 @@ const CICDSwitcher = ({ entity }: { entity: Entity }) => {
       return <TravisCIRouter entity={entity} />;
     default:
       return (
-        <WarningPanel title="CI/CD switcher:">
-          No CI/CD is available for this entity. Check corresponding
-          annotations!
-        </WarningPanel>
+        <EmptyState
+          title="No CI/CD available for this entity"
+          missing="info"
+          description="You need to add an annotation to your component if you want to enable CI/CD for it. You can read more about annotations in Backstage by clicking the button below."
+          action={
+            <Button
+              variant="contained"
+              color="primary"
+              href="https://backstage.io/docs/features/software-catalog/well-known-annotations"
+            >
+              Read more
+            </Button>
+          }
+        />
       );
   }
 };
@@ -105,6 +132,27 @@ const OverviewContent = ({ entity }: { entity: Entity }) => (
       <AboutCard entity={entity} />
     </Grid>
     <RecentCICDRunsSwitcher entity={entity} />
+    {isGitHubAvailable(entity) && (
+      <>
+        <Grid item md={6}>
+          <LanguagesCard entity={entity} />
+          <ReleasesCard entity={entity} />
+        </Grid>
+        <Grid item md={6}>
+          <ReadMeCard entity={entity} maxHeight={350} />
+        </Grid>
+      </>
+    )}
+    {isLighthouseAvailable(entity) && (
+      <Grid item sm={4}>
+        <LastLighthouseAuditCard />
+      </Grid>
+    )}
+    {isPullRequestsAvailable(entity) && (
+      <Grid item sm={4}>
+        <PullRequestsStatsCard entity={entity} />
+      </Grid>
+    )}
   </Grid>
 );
 
@@ -140,6 +188,16 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
       title="Kubernetes"
       element={<KubernetesRouter entity={entity} />}
     />
+    <EntityPageLayout.Content
+      path="/pull-requests"
+      title="Pull Requests"
+      element={<PullRequestsRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/code-insights"
+      title="Code Insights"
+      element={<GitHubInsightsRouter entity={entity} />}
+    />
   </EntityPageLayout>
 );
 
@@ -156,6 +214,11 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
       element={<CICDSwitcher entity={entity} />}
     />
     <EntityPageLayout.Content
+      path="/lighthouse/*"
+      title="Lighthouse"
+      element={<LighthouseRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
       path="/sentry"
       title="Sentry"
       element={<SentryRouter entity={entity} />}
@@ -169,6 +232,16 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
       path="/kubernetes/*"
       title="Kubernetes"
       element={<KubernetesRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/pull-requests"
+      title="Pull Requests"
+      element={<PullRequestsRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/code-insights"
+      title="Code Insights"
+      element={<GitHubInsightsRouter entity={entity} />}
     />
   </EntityPageLayout>
 );

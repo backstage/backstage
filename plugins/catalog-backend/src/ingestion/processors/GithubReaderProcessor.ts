@@ -22,6 +22,11 @@ import { Logger } from 'winston';
 import * as result from './results';
 import { LocationProcessor, LocationProcessorEmit } from './types';
 
+// ***********************************************************************
+// * NOTE: This has been replaced by packages/backend-common/src/reading *
+// * Don't implement new functionality here as this file will be removed *
+// ***********************************************************************
+
 /**
  * The configuration parameters for a single GitHub API provider.
  */

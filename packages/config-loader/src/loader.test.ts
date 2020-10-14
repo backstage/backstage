@@ -24,8 +24,7 @@ describe('loadConfig', () => {
         app:
           title: Example App
           sessionKey:
-            $secret:
-              file: secrets/session-key.txt
+            $file: secrets/session-key.txt
       `,
       '/root/app-config.development.yaml': `
         app:

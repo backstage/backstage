@@ -66,12 +66,6 @@ guidelines to get started.
   The platform APIs and features are stable and can be depended on for
   production use. After this plugins will require little to no maintenance.
 
-- **Backstage Design System** - By providing design guidelines for common plugin
-  layouts together, rich set of reusable UI components
-  ([Storybook](https://backstage.io/storybook)) and Figma design resources. The
-  Design System will make it easy to design and build plugins that are
-  consistent across the platform -- supporting both developers and designers.
-
 - Further improvements to platform documentation
 
 ### Plugins
@@ -115,6 +109,7 @@ Chances are that someone will jump in and help build it.
 
 ### Completed milestones ✅
 
+- [Backstage Design System 💅](https://backstage.io/blog/2020/09/30/backstage-design-system)
 - [Cost Insights plugin 💸](https://engineering.atspotify.com/2020/09/29/managing-clouds-from-the-ground-up-cost-engineering-at-spotify/)
 - [Donate Backstage to the CNCF 🎉](https://backstage.io/blog/2020/09/23/backstage-cncf-sandbox)
 - [TechDocs v1](https://backstage.io/blog/2020/09/08/announcing-tech-docs)

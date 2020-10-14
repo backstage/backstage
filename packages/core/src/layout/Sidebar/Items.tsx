@@ -40,7 +40,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => {
 
   return {
     root: {
-      color: '#b5b5b5',
+      color: theme.palette.navigation.color,
       display: 'flex',
       flexFlow: 'row nowrap',
       alignItems: 'center',
@@ -96,7 +96,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => {
     selected: {
       '&$root': {
         borderLeft: `solid ${selectedIndicatorWidth}px ${theme.palette.navigation.indicator}`,
-        color: '#ffffff',
+        color: theme.palette.navigation.selectedColor,
       },
       '&$closed': {
         width: drawerWidthClosed - selectedIndicatorWidth,

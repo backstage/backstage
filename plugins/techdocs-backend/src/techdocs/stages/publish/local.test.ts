@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/* eslint-disable no-restricted-syntax */
 import fs from 'fs-extra';
 import path from 'path';
 import { getVoidLogger } from '@backstage/backend-common';
@@ -53,7 +55,7 @@ describe('local publisher', () => {
 
     const resultDir = path.resolve(
       __dirname,
-      `../../../../static/docs/${mockEntity.kind}/default/${mockEntity.metadata.name}`,
+      `../../../../static/docs/default/${mockEntity.kind}/${mockEntity.metadata.name}`,
     );
 
     expect(fs.existsSync(resultDir)).toBeTruthy();

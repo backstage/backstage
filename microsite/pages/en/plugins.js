@@ -29,7 +29,7 @@ const Plugins = () => (
   <main className="MainContent">
     <div className="PluginPageLayout">
       <div className="PluginPageHeader">
-        <h2>Plugin marketplace</h2>
+        <h2>Plugin Marketplace</h2>
         <p>
           Open source plugins that you can add to your Backstage deployment.
           Learn how to build a <a href="/docs/plugins">plugin</a>.
@@ -39,7 +39,7 @@ const Plugins = () => (
             className="PluginAddNewButton ButtonFilled"
             href={addPluginDocsLink}
           >
-            <b>Add to marketplace</b>
+            <b>Add to Marketplace</b>
           </a>
         </span>
       </div>
@@ -93,7 +93,7 @@ const Plugins = () => (
               }}
             >
               <a className="ButtonFilled" href={addPluginDocsLink}>
-                <b>Add to marketplace</b>
+                <b>Add to Marketplace</b>
               </a>
             </p>
           </div>

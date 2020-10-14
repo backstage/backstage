@@ -15,7 +15,15 @@
  */
 
 import { createApiRef } from '@backstage/core';
-import { Alert, Cost, Duration, Group, Project, ProductCost } from '../types';
+import {
+  Alert,
+  Cost,
+  Duration,
+  Group,
+  Project,
+  ProductCost,
+  Maybe,
+} from '../types';
 
 export type CostInsightsApi = {
   /**
@@ -87,6 +95,9 @@ export type CostInsightsApi = {
    * in this product. The type of entity depends on the product - it may be deployed services,
    * storage buckets, managed database instances, etc.
    *
+   * If project is supplied, this should only return product costs for the given billing entity
+   * (project in GCP).
+   *
    * The time period is supplied as a Duration rather than intervals, since this is always expected
    * to return data for two bucketed time period (e.g. month vs month, or quarter vs quarter).
    *
@@ -94,11 +105,13 @@ export type CostInsightsApi = {
    * @param group
    * @param duration A time duration, such as P1M. See the Duration type for a detailed explanation
    *    of how the durations are interpreted in Cost Insights.
+   * @param project (optional) The project id from getGroupProjects or query parameters
    */
   getProductInsights(
     product: string,
     group: string,
     duration: Duration,
+    project: Maybe<string>,
   ): Promise<ProductCost>;
 
   /**

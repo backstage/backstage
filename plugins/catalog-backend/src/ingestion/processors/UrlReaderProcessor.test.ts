@@ -22,6 +22,8 @@ import {
 } from './types';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
+import { getVoidLogger, UrlReaders } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
 
 describe('UrlReaderProcessor', () => {
   const mockApiOrigin = 'http://localhost:23000';
@@ -32,7 +34,9 @@ describe('UrlReaderProcessor', () => {
   afterAll(() => server.close());
 
   it('should load from url', async () => {
-    const processor = new UrlReaderProcessor();
+    const logger = getVoidLogger();
+    const reader = UrlReaders.default({ logger, config: new ConfigReader({}) });
+    const processor = new UrlReaderProcessor({ reader, logger });
     const spec = {
       type: 'url',
       target: `${mockApiOrigin}/component.yaml`,
@@ -54,7 +58,9 @@ describe('UrlReaderProcessor', () => {
   });
 
   it('should fail load from url with error', async () => {
-    const processor = new UrlReaderProcessor();
+    const logger = getVoidLogger();
+    const reader = UrlReaders.default({ logger, config: new ConfigReader({}) });
+    const processor = new UrlReaderProcessor({ reader, logger });
     const spec = {
       type: 'url',
       target: `${mockApiOrigin}/component-notfound.yaml`,
@@ -74,7 +80,7 @@ describe('UrlReaderProcessor', () => {
     expect(generated.location).toBe(spec);
     expect(generated.error.name).toBe('NotFoundError');
     expect(generated.error.message).toBe(
-      `${mockApiOrigin}/component-notfound.yaml could not be read, 404 Not Found`,
+      `Unable to read url, NotFoundError: could not read ${mockApiOrigin}/component-notfound.yaml, 404 Not Found`,
     );
   });
 });
