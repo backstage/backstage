@@ -122,7 +122,7 @@ export class LocationReaders implements LocationReader {
       GitLabReaderProcessor.fromConfig(config, logger),
       new BitbucketApiReaderProcessor(config),
       new AzureApiReaderProcessor(config),
-      GithubOrgReaderProcessor.fromConfig(config, {logger}),
+      GithubOrgReaderProcessor.fromConfig(config, { logger }),
       new UrlReaderProcessor(options),
       ...oldProcessors,
       GithubOrgReaderProcessor.fromConfig(config, { logger }),
