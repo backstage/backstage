@@ -63,7 +63,7 @@ const CostOverviewCard = ({ data }: CostOverviewCardProps) => {
           <Box display="flex" flexDirection="row">
             <Box mr={2}>
               <LegendItem
-                title={dailyCost.name}
+                title={`${dailyCost.name} Trend`}
                 markerColor={theme.palette.blue}
               >
                 {formatPercent(data[0].change.ratio)}
