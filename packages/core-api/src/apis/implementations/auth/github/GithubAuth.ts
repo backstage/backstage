@@ -41,6 +41,7 @@ type CreateOptions = {
   discoveryApi: DiscoveryApi;
   oauthRequestApi: OAuthRequestApi;
 
+  defaultScopes?: string[];
   environment?: string;
   provider?: AuthProvider & { id: string };
 };
@@ -67,6 +68,7 @@ class GithubAuth implements OAuthApi, SessionApi {
     environment = 'development',
     provider = DEFAULT_PROVIDER,
     oauthRequestApi,
+    defaultScopes = ['read:user'],
   }: CreateOptions) {
     const connector = new DefaultAuthConnector({
       discoveryApi,
@@ -89,7 +91,7 @@ class GithubAuth implements OAuthApi, SessionApi {
 
     const sessionManager = new StaticAuthSessionManager({
       connector,
-      defaultScopes: new Set(['read:user']),
+      defaultScopes: new Set(defaultScopes),
       sessionScopes: (session: GithubSession) => session.providerInfo.scopes,
     });
 
