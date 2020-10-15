@@ -84,10 +84,20 @@ export class NewRelicClient implements NewRelicApi {
   async getApplications(): Promise<NewRelicApplications> {
     const url = await this.getApiUrl('apm', 'applications.json');
     const response = await fetch(url);
-    const responseJson = await response.json();
+    let responseJson;
+
+    try {
+      responseJson = await response.json();
+    } catch (e) {
+      responseJson = { applications: [] };
+    }
 
     if (response.status !== 200) {
-      throw new Error(responseJson?.error?.title || response.statusText);
+      throw new Error(
+        `Error communicating with New Relic: ${
+          responseJson?.error?.title || response.statusText
+        }`,
+      );
     }
 
     return responseJson;
