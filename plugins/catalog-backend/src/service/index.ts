@@ -14,14 +14,6 @@
  * limitations under the License.
  */
 
-export type Validators = {
-  isValidApiVersion(value: unknown): boolean;
-  isValidKind(value: unknown): boolean;
-  isValidEntityName(value: unknown): boolean;
-  isValidNamespace(value: unknown): boolean;
-  isValidLabelKey(value: unknown): boolean;
-  isValidLabelValue(value: unknown): boolean;
-  isValidAnnotationKey(value: unknown): boolean;
-  isValidAnnotationValue(value: unknown): boolean;
-  isValidTag(value: unknown): boolean;
-};
+export { CatalogBuilder } from './CatalogBuilder';
+export { createRouter } from './router';
+export type { RouterOptions } from './router';
