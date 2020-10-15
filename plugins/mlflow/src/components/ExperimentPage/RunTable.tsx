@@ -30,6 +30,7 @@ import {
   RunStatus,
   Metric,
   EVALUATION_SET_TAG,
+  tagToString,
 } from '../../MLFlowClient';
 import { Chip, Button } from '@material-ui/core';
 
@@ -182,8 +183,4 @@ function makeStatus(status: RunStatus) {
       // This shouldn't happen because the match is exhaustive.
       return <StatusPending />;
   }
-}
-
-function tagToString(runTag: RunTag): string {
-  return `${runTag.key}:${runTag.value}`;
 }

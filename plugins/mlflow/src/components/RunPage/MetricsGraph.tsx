@@ -15,7 +15,7 @@
  */
 import React, { useState, useEffect } from 'react';
 import { InfoCard, Table, TableColumn } from '@backstage/core';
-import { Grid, Select, MenuItem } from '@material-ui/core';
+import { Select, MenuItem } from '@material-ui/core';
 import { mlFlowClient } from '../../index';
 import { Metric } from '../../MLFlowClient';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
@@ -37,11 +37,9 @@ const MetricsGraph = ({ runId, metrics }: MetricsGraphProps) => {
 
   if (metrics.length === 0) {
     return (
-      <Grid item xs={12} md={6}>
-        <InfoCard title="Run Metrics">
-          There aren't any metrics associated with this run.
-        </InfoCard>
-      </Grid>
+      <InfoCard title="Run Metrics">
+        There aren't any metrics associated with this run.
+      </InfoCard>
     );
   }
 
@@ -59,45 +57,43 @@ const MetricsGraph = ({ runId, metrics }: MetricsGraphProps) => {
   ];
 
   return (
-    <Grid item xs={12} md={8}>
-      <InfoCard>
-        <Table
-          title="Run Metrics"
-          options={{ search: false, paging: false }}
-          columns={paramColumns}
-          data={metrics}
-        />
-        Choose a metric:{' '}
-        <Select
-          variant="outlined"
-          value={selectedMetric}
-          onChange={e => updateMetric(e.target.value as string)}
-        >
-          {metrics.map(metric => {
-            return (
-              <MenuItem key={metric.key} value={metric.key}>
-                {metric.key}
-              </MenuItem>
-            );
-          })}
-        </Select>
-        <Select
-          variant="outlined"
-          value={xAxis}
-          onChange={e => updateXAxis(e.target.value as string)}
-        >
-          <MenuItem value="step">Step</MenuItem>
-          <MenuItem value="timestamp">Time (wall)</MenuItem>
-          {/* <MenuItem value="relative">Time (relative)</MenuItem> */}
-        </Select>
-        <LineChart width={800} height={400} data={metricHistory}>
-          <Line type="monotone" dataKey="value" stroke="#8884d8" />
-          <CartesianGrid stroke="#ccc" />
-          <XAxis dataKey={xAxis} />
-          <YAxis />
-        </LineChart>
-      </InfoCard>
-    </Grid>
+    <InfoCard>
+      <Table
+        title="Run Metrics"
+        options={{ search: false, paging: false }}
+        columns={paramColumns}
+        data={metrics}
+      />
+      Choose a metric:{' '}
+      <Select
+        variant="outlined"
+        value={selectedMetric}
+        onChange={e => updateMetric(e.target.value as string)}
+      >
+        {metrics.map(metric => {
+          return (
+            <MenuItem key={metric.key} value={metric.key}>
+              {metric.key}
+            </MenuItem>
+          );
+        })}
+      </Select>
+      <Select
+        variant="outlined"
+        value={xAxis}
+        onChange={e => updateXAxis(e.target.value as string)}
+      >
+        <MenuItem value="step">Step</MenuItem>
+        <MenuItem value="timestamp">Time (wall)</MenuItem>
+        {/* <MenuItem value="relative">Time (relative)</MenuItem> */}
+      </Select>
+      <LineChart width={800} height={400} data={metricHistory}>
+        <Line type="monotone" dataKey="value" stroke="#8884d8" />
+        <CartesianGrid stroke="#ccc" />
+        <XAxis dataKey={xAxis} />
+        <YAxis />
+      </LineChart>
+    </InfoCard>
   );
 };
 

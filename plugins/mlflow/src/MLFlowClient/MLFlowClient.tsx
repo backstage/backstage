@@ -61,10 +61,14 @@ export class MLFlowClient {
 
   setTag(runId: string, key: string, value: string) {
     return this.makePostRequest('runs/set-tag', {
-      runId: runId,
+      run_id: runId,
       key: key,
       value: value,
     });
+  }
+
+  deleteTag(runId: string, key: string) {
+    return this.makePostRequest('runs/delete-tag', { run_id: runId, key: key });
   }
 
   private makePostRequest(route: string, data: object) {

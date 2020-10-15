@@ -17,7 +17,7 @@ import React from 'react';
 import { useAsync } from 'react-use';
 import { useParams } from 'react-router-dom';
 import { mlFlowClient } from '../../index';
-import { Run, RunTag } from '../../MLFlowClient';
+import { Run } from '../../MLFlowClient';
 import {
   Page,
   pageTheme,
@@ -33,9 +33,9 @@ import {
   Progress,
   StructuredMetadataTable,
 } from '@backstage/core';
-import { Chip, Grid } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import MetricsGraph from './MetricsGraph';
-import NotesBox from './NotesBox';
+import RunTags from './RunTags';
 
 const RunPage = () => {
   const { runId } = useParams();
@@ -79,6 +79,7 @@ const RunPage = () => {
     endTime: run.info.end_time,
     source: source ? source.value : '',
     executionEnvironment: environment ? environment.value : '',
+    runNotes: noteText,
   };
 
   return (
@@ -95,31 +96,26 @@ const RunPage = () => {
           <Grid item xs={12} md={6}>
             <InfoCard title="Run Details">
               <StructuredMetadataTable metadata={metadataInfo} />
-              {getTags(run.data.tags)}
             </InfoCard>
           </Grid>
           <Grid item xs={12} md={6}>
-            <NotesBox runId={run.info.run_id} noteText={noteText} />
+            <InfoCard title="Parameters and Tags">
+              <RunTags runId={run.info.run_id} tags={run.data.tags} />
+
+              <Table
+                options={{ search: false, paging: false }}
+                columns={paramColumns}
+                data={run.data.params}
+              />
+            </InfoCard>
           </Grid>
-          <Grid item xs={12} md={4}>
-            <Table
-              title="Parameters"
-              options={{ search: false, paging: false }}
-              columns={paramColumns}
-              data={run.data.params}
-            />
+          <Grid item xs={12}>
+            <MetricsGraph runId={run.info.run_id} metrics={run.data.metrics} />
           </Grid>
-          <MetricsGraph runId={run.info.run_id} metrics={run.data.metrics} />
         </Grid>
       </Content>
     </Page>
   );
 };
-
-function getTags(tags: RunTag[]) {
-  return tags
-    .filter(tag => !tag.key.startsWith('mlflow.'))
-    .map((tag, i) => <Chip key={i} label={`${tag.key} : ${tag.value}`} />);
-}
 
 export default RunPage;

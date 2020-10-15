@@ -16,3 +16,16 @@
 
 export * from './MLFlowTypes';
 export * from './MLFlowClient';
+import { RunTag } from './MLFlowTypes';
+
+export function tagToString(runTag: RunTag): string {
+  return `${runTag.key}:${runTag.value}`;
+}
+
+export function stringToTag(tagString: string): RunTag | undefined {
+  const [key, value] = tagString.split(':');
+  if (key && value) {
+    return { key: key, value: value };
+  }
+  return undefined;
+}
