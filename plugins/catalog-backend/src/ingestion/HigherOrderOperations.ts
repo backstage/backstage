@@ -277,12 +277,11 @@ export class HigherOrderOperations implements HigherOrderOperation {
   }> {
     const markTimestamp = process.hrtime();
 
-    const names = newEntities.map(e => e.metadata.name);
-    const oldEntities = await this.entitiesCatalog.entities([
-      { key: 'kind', values: [kind] },
-      { key: 'metadata.namespace', values: [namespace] },
-      { key: 'metadata.name', values: names },
-    ]);
+    const oldEntities = await this.entitiesCatalog.entities({
+      kind: kind,
+      'metadata.namespace': namespace,
+      'metadata.name': newEntities.map(e => e.metadata.name),
+    });
 
     const oldEntitiesByName = new Map(
       oldEntities.map(e => [e.metadata.name, e]),

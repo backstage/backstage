@@ -35,7 +35,7 @@ const MAX_VALUE_LENGTH = 200;
 
 type Kv = {
   key: string;
-  value: any;
+  value: unknown;
 };
 
 // Helper for traversing through a nested structure and outputting a list of
@@ -58,15 +58,17 @@ type Kv = {
 // "a", 1
 // "b.c", null
 // "b.e": "f"
+// "b.e.f": true
 // "b.e": "g"
+// "b.e.g": true
 // "h.i": 1
 // "h.j": "k"
 // "h.i": 2
 // "h.j": "l"
-export function traverse(root: any): Kv[] {
+export function traverse(root: unknown): Kv[] {
   const output: Kv[] = [];
 
-  function visit(path: string, current: any) {
+  function visit(path: string, current: unknown) {
     if (SPECIAL_KEYS.includes(path)) {
       return;
     }
@@ -89,14 +91,29 @@ export function traverse(root: any): Kv[] {
     // array
     if (Array.isArray(current)) {
       for (const item of current) {
-        // keep the same path as currently
+        // NOTE(freben): The reason that these are output in two different ways,
+        // is to support use cases where you want to express that MORE than one
+        // tag is present in a list. Since the EntityFilters structure is a
+        // record, you can't have several entries of the same key. Therefore
+        // you will have to match on
+        //
+        // { "a.b": ["true"], "a.c": ["true"] }
+        //
+        // rather than
+        //
+        // { "a": ["b", "c"] }
+        //
+        // because the latter means EITHER b or c has to be present.
         visit(path, item);
+        if (typeof item === 'string') {
+          output.push({ key: `${path}.${item}`, value: true });
+        }
       }
       return;
     }
 
     // object
-    for (const [key, value] of Object.entries(current)) {
+    for (const [key, value] of Object.entries(current!)) {
       visit(path ? `${path}.${key}` : key, value);
     }
   }
@@ -113,12 +130,12 @@ export function mapToRows(
 ): DbEntitiesSearchRow[] {
   const result: DbEntitiesSearchRow[] = [];
 
-  for (let { key, value } of input) {
-    key = key.toLowerCase();
-    if (value === undefined || value === null) {
+  for (const { key: rawKey, value: rawValue } of input) {
+    const key = rawKey.toLowerCase();
+    if (rawValue === undefined || rawValue === null) {
       result.push({ entity_id: entityId, key, value: null });
     } else {
-      value = String(value).toLowerCase();
+      const value = String(rawValue).toLowerCase();
       if (value.length <= MAX_VALUE_LENGTH) {
         result.push({ entity_id: entityId, key, value });
       }
