@@ -108,14 +108,16 @@ export function getApiUrl(target: string, provider: ProviderConfig): URL {
 
 // Converts for example
 // from: https://gitlab.com/a/b/blob/branchname/c.yaml
-// to:   https://gitlab.com/a/b/raw/branchname/c.yaml
+// to:   https://gitlab.com/api/v4/projects/a/b/repository/files/path/to/c.yaml/raw?ref=branchname
 export function getRawUrl(target: string, provider: ProviderConfig): URL {
   try {
     const { owner, name, ref, filepath } = parseGitUri(target);
 
     const pathWithoutSlash = filepath.replace(/^\//, '');
     return new URL(
-      `${provider.rawBaseUrl}/${owner}/${name}/-/raw/${ref}/${pathWithoutSlash}`,
+      `${provider.rawBaseUrl}/api/v4/projects/${encodeURIComponent(
+        `${owner}/${name}`,
+      )}/repository/files/${pathWithoutSlash}/raw?ref=${ref}`,
     );
   } catch (e) {
     throw new Error(`Incorrect URL: ${target}, ${e}`);

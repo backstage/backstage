@@ -167,7 +167,9 @@ describe('GitlabReaderProcessor', () => {
           config,
         ),
       ).toEqual(
-        new URL('https://gitlab.com/a/b/raw/branchname/path/to/c.yaml'),
+        new URL(
+          'https://gitlab.com/api/v4/projects/a/b/repository/files/path/to/c.yaml/raw?ref=branchname',
+        ),
       );
     });
 
@@ -182,7 +184,9 @@ describe('GitlabReaderProcessor', () => {
           config,
         ),
       ).toEqual(
-        new URL('https://gitlab.com/a/b/raw/branchname/path/to/c.yaml'),
+        new URL(
+          'https://gitlab.com/api/v4/projects/a/b/repository/files/path/to/c.yaml/raw?ref=branchname',
+        ),
       );
     });
 
@@ -197,7 +201,9 @@ describe('GitlabReaderProcessor', () => {
           config,
         ),
       ).toEqual(
-        new URL('https://git.mycompany.net/a/b/raw/branchname/path/to/c.yaml'),
+        new URL(
+          'https://git.mycompany.net/api/v4/projects/a/b/repository/files/path/to/c.yaml/raw?ref=branchname',
+        ),
       );
     });
 
@@ -212,7 +218,9 @@ describe('GitlabReaderProcessor', () => {
           config,
         ),
       ).toEqual(
-        new URL('https://git.mycompany.net/a/b/raw/branchname/path/to/c.yaml'),
+        new URL(
+          'https://git.mycompany.net/api/v4/projects/a/b/repository/files/path/to/c.yaml/raw?ref=branchname',
+        ),
       );
     });
   });
