@@ -18,9 +18,9 @@ import { getVoidLogger, UrlReader } from '@backstage/backend-common';
 import { Entity, LocationSpec } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { DatabaseManager } from '../database';
-import { LocationProcessorEmit } from '../ingestion';
-import { CatalogBuilder, CatalogEnvironment } from './CatalogBuilder';
+import { CatalogProcessorEmit } from '../ingestion';
 import * as result from '../ingestion/processors/results';
+import { CatalogBuilder, CatalogEnvironment } from './CatalogBuilder';
 
 describe('CatalogBuilder', () => {
   const db = DatabaseManager.createTestDatabaseConnection();
@@ -54,7 +54,7 @@ describe('CatalogBuilder', () => {
           async readLocation(
             location: LocationSpec,
             _optional: boolean,
-            emit: LocationProcessorEmit,
+            emit: CatalogProcessorEmit,
           ) {
             expect(location.type).toBe('test');
             emit(result.data(location, await reader.read('ignored')));
@@ -67,7 +67,7 @@ describe('CatalogBuilder', () => {
           async parseData(
             data: Buffer,
             location: LocationSpec,
-            emit: LocationProcessorEmit,
+            emit: CatalogProcessorEmit,
           ) {
             expect(data.toString()).toEqual('junk');
             emit(

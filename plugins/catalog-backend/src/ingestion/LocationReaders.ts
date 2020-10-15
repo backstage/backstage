@@ -25,13 +25,13 @@ import { Logger } from 'winston';
 import { CatalogRulesEnforcer } from './CatalogRules';
 import * as result from './processors/results';
 import {
-  LocationProcessor,
-  LocationProcessorDataResult,
-  LocationProcessorEmit,
-  LocationProcessorEntityResult,
-  LocationProcessorErrorResult,
-  LocationProcessorLocationResult,
-  LocationProcessorResult,
+  CatalogProcessor,
+  CatalogProcessorDataResult,
+  CatalogProcessorEmit,
+  CatalogProcessorEntityResult,
+  CatalogProcessorErrorResult,
+  CatalogProcessorLocationResult,
+  CatalogProcessorResult,
 } from './processors/types';
 import { LocationReader, ReadLocationResult } from './types';
 
@@ -42,7 +42,7 @@ type Options = {
   reader: UrlReader;
   logger: Logger;
   config: Config;
-  processors: LocationProcessor[];
+  processors: CatalogProcessor[];
   rulesEnforcer: CatalogRulesEnforcer;
 };
 
@@ -60,11 +60,11 @@ export class LocationReaders implements LocationReader {
     const { rulesEnforcer, logger } = this.options;
 
     const output: ReadLocationResult = { entities: [], errors: [] };
-    let items: LocationProcessorResult[] = [result.location(location, false)];
+    let items: CatalogProcessorResult[] = [result.location(location, false)];
 
     for (let depth = 0; depth < MAX_DEPTH; ++depth) {
-      const newItems: LocationProcessorResult[] = [];
-      const emit: LocationProcessorEmit = i => newItems.push(i);
+      const newItems: CatalogProcessorResult[] = [];
+      const emit: CatalogProcessorEmit = i => newItems.push(i);
 
       for (const item of items) {
         if (item.type === 'location') {
@@ -109,8 +109,8 @@ export class LocationReaders implements LocationReader {
   }
 
   private async handleLocation(
-    item: LocationProcessorLocationResult,
-    emit: LocationProcessorEmit,
+    item: CatalogProcessorLocationResult,
+    emit: CatalogProcessorEmit,
   ) {
     const { processors, logger } = this.options;
 
@@ -136,8 +136,8 @@ export class LocationReaders implements LocationReader {
   }
 
   private async handleData(
-    item: LocationProcessorDataResult,
-    emit: LocationProcessorEmit,
+    item: CatalogProcessorDataResult,
+    emit: CatalogProcessorEmit,
   ) {
     const { processors, logger } = this.options;
 
@@ -160,8 +160,8 @@ export class LocationReaders implements LocationReader {
   }
 
   private async handleEntity(
-    item: LocationProcessorEntityResult,
-    emit: LocationProcessorEmit,
+    item: CatalogProcessorEntityResult,
+    emit: CatalogProcessorEmit,
   ): Promise<Entity> {
     const { processors, logger } = this.options;
 
@@ -189,8 +189,8 @@ export class LocationReaders implements LocationReader {
   }
 
   private async handleError(
-    item: LocationProcessorErrorResult,
-    emit: LocationProcessorEmit,
+    item: CatalogProcessorErrorResult,
+    emit: CatalogProcessorEmit,
   ) {
     const { processors, logger } = this.options;
 

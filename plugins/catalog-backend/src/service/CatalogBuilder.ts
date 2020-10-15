@@ -46,6 +46,7 @@ import {
   AnnotateLocationEntityProcessor,
   AzureApiReaderProcessor,
   BitbucketApiReaderProcessor,
+  CatalogProcessor,
   CodeOwnersProcessor,
   EntityPolicyProcessor,
   FileReaderProcessor,
@@ -55,7 +56,6 @@ import {
   GitlabReaderProcessor,
   HigherOrderOperation,
   HigherOrderOperations,
-  LocationProcessor,
   LocationReaders,
   LocationRefProcessor,
   PlaceholderProcessor,
@@ -121,13 +121,13 @@ export class CatalogBuilder {
   private entityPoliciesReplace: boolean;
   private entityKinds: EntityPolicy[];
   private entityKindsReplace: boolean;
-  private readerProcessors: LocationProcessor[];
+  private readerProcessors: CatalogProcessor[];
   private readerProcessorsReplace: boolean;
-  private parserProcessors: LocationProcessor[];
+  private parserProcessors: CatalogProcessor[];
   private parserProcessorsReplace: boolean;
-  private preProcessors: LocationProcessor[];
+  private preProcessors: CatalogProcessor[];
   private preProcessorsReplace: boolean;
-  private postProcessors: LocationProcessor[];
+  private postProcessors: CatalogProcessor[];
   private postProcessorsReplace: boolean;
   private placeholderResolvers: Record<string, PlaceholderResolver>;
   private fieldFormatValidators: Partial<Validators>;
@@ -219,7 +219,7 @@ export class CatalogBuilder {
    *
    * @param processors One or more processors
    */
-  addReaderProcessor(...processors: LocationProcessor[]): CatalogBuilder {
+  addReaderProcessor(...processors: CatalogProcessor[]): CatalogBuilder {
     this.readerProcessors.push(...processors);
     return this;
   }
@@ -234,7 +234,7 @@ export class CatalogBuilder {
    *
    * @param processors One or more processors
    */
-  replaceReaderProcessors(processors: LocationProcessor[]): CatalogBuilder {
+  replaceReaderProcessors(processors: CatalogProcessor[]): CatalogBuilder {
     this.readerProcessors = [...processors];
     this.readerProcessorsReplace = true;
     return this;
@@ -247,7 +247,7 @@ export class CatalogBuilder {
    *
    * @param processors One or more processors
    */
-  addParserProcessor(...processors: LocationProcessor[]): CatalogBuilder {
+  addParserProcessor(...processors: CatalogProcessor[]): CatalogBuilder {
     this.parserProcessors.push(...processors);
     return this;
   }
@@ -262,7 +262,7 @@ export class CatalogBuilder {
    *
    * @param processors One or more processors
    */
-  replaceParserProcessors(processors: LocationProcessor[]): CatalogBuilder {
+  replaceParserProcessors(processors: CatalogProcessor[]): CatalogBuilder {
     this.parserProcessors = [...processors];
     this.parserProcessorsReplace = true;
     return this;
@@ -274,7 +274,7 @@ export class CatalogBuilder {
    *
    * @param processors One or more processors
    */
-  addPreProcessor(...processors: LocationProcessor[]): CatalogBuilder {
+  addPreProcessor(...processors: CatalogProcessor[]): CatalogBuilder {
     this.preProcessors.push(...processors);
     return this;
   }
@@ -288,7 +288,7 @@ export class CatalogBuilder {
    *
    * @param processors One or more processors
    */
-  replacePreProcessors(processors: LocationProcessor[]): CatalogBuilder {
+  replacePreProcessors(processors: CatalogProcessor[]): CatalogBuilder {
     this.preProcessors = [...processors];
     this.preProcessorsReplace = true;
     return this;
@@ -300,7 +300,7 @@ export class CatalogBuilder {
    *
    * @param processors One or more processors
    */
-  addPostProcessor(...processors: LocationProcessor[]): CatalogBuilder {
+  addPostProcessor(...processors: CatalogProcessor[]): CatalogBuilder {
     this.postProcessors.push(...processors);
     return this;
   }
@@ -314,7 +314,7 @@ export class CatalogBuilder {
    *
    * @param processors One or more processors
    */
-  replacePostProcessors(processors: LocationProcessor[]): CatalogBuilder {
+  replacePostProcessors(processors: CatalogProcessor[]): CatalogBuilder {
     this.postProcessors = [...processors];
     this.postProcessorsReplace = true;
     return this;
@@ -418,7 +418,7 @@ export class CatalogBuilder {
     ]);
   }
 
-  private buildProcessors(entityPolicy: EntityPolicy): LocationProcessor[] {
+  private buildProcessors(entityPolicy: EntityPolicy): CatalogProcessor[] {
     const { config, reader } = this.env;
 
     const placeholderResolvers = lodash.merge(
@@ -441,7 +441,7 @@ export class CatalogBuilder {
     ];
   }
 
-  private buildReaderProcessors(): LocationProcessor[] {
+  private buildReaderProcessors(): CatalogProcessor[] {
     const { config, logger, reader } = this.env;
 
     if (this.readerProcessorsReplace) {
@@ -491,7 +491,7 @@ export class CatalogBuilder {
     ];
   }
 
-  private buildParserProcessors(): LocationProcessor[] {
+  private buildParserProcessors(): CatalogProcessor[] {
     if (this.parserProcessorsReplace) {
       return this.parserProcessors;
     }
@@ -499,7 +499,7 @@ export class CatalogBuilder {
     return [new YamlProcessor(), ...this.parserProcessors];
   }
 
-  private buildPreProcessors(): LocationProcessor[] {
+  private buildPreProcessors(): CatalogProcessor[] {
     const { reader } = this.env;
 
     if (this.preProcessorsReplace) {
@@ -509,7 +509,7 @@ export class CatalogBuilder {
     return [new CodeOwnersProcessor({ reader }), ...this.preProcessors];
   }
 
-  private buildPostProcessors(): LocationProcessor[] {
+  private buildPostProcessors(): CatalogProcessor[] {
     if (this.postProcessorsReplace) {
       return this.postProcessors;
     }
