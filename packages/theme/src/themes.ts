@@ -15,6 +15,7 @@
  */
 
 import { createTheme } from './baseTheme';
+import { pageTheme } from './pageTheme';
 import { yellow } from '@material-ui/core/colors';
 
 export const lightTheme = createTheme({
@@ -74,6 +75,7 @@ export const lightTheme = createTheme({
     },
   },
   defaultPageTheme: 'home',
+  pageTheme,
 });
 
 export const darkTheme = createTheme({
@@ -133,4 +135,5 @@ export const darkTheme = createTheme({
     },
   },
   defaultPageTheme: 'home',
+  pageTheme,
 });

@@ -24,8 +24,6 @@ import {
   SimpleThemeOptions,
 } from './types';
 
-import { pageTheme } from './pageTheme';
-
 const DEFAULT_FONT_FAMILY =
   '"Helvetica Neue", Helvetica, Roboto, Arial, sans-serif';
 
@@ -36,6 +34,7 @@ export function createThemeOptions(
     palette,
     fontFamily = DEFAULT_FONT_FAMILY,
     defaultPageTheme,
+    pageTheme,
   } = options;
 
   if (!pageTheme[defaultPageTheme]) {

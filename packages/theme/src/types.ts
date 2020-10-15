@@ -94,6 +94,7 @@ export interface BackstageThemeOptions extends ThemeOptions {
 export type SimpleThemeOptions = {
   palette: BackstagePaletteOptions;
   defaultPageTheme: string;
+  pageTheme: Record<string, PageTheme>;
   fontFamily?: string;
 };
 
