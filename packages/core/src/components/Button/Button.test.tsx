@@ -34,7 +34,9 @@ describe('<Button />', () => {
     );
 
     expect(() => getByText(testString)).toThrow();
-    await act(async () => fireEvent.click(getByText(buttonLabel)));
+    await act(async () => {
+      fireEvent.click(getByText(buttonLabel));
+    });
     expect(getByText(testString)).toBeInTheDocument();
   });
 });
