@@ -3,14 +3,12 @@
 ExampleComponent.tsx reference
 
 ```tsx
-import { BackstageTheme } from '@backstage/theme';
 import React, { FC } from 'react';
-import { Typography, Grid, useTheme } from '@material-ui/core';
+import { Typography, Grid } from '@material-ui/core';
 import {
   InfoCard,
   Header,
   Page,
-  pageTheme,
   Content,
   ContentHeader,
   HeaderLabel,
@@ -21,13 +19,12 @@ import { useApi } from '@backstage/core-api';
 import ExampleFetchComponent from '../ExampleFetchComponent';
 
 const ExampleComponent: FC<{}> = () => {
-  const backstageTheme = useTheme<BackstageTheme>();
   const identityApi = useApi(identityApiRef);
   const userId = identityApi.getUserId();
   const profile = identityApi.getProfile();
 
   return (
-    <Page theme={backstageTheme.getPageTheme({ themeId: 'tool' })}>
+    <Page themeId="tool">
       <Header
         title="Welcome to github-playground!"
         subtitle="Optional subtitle"
