@@ -113,6 +113,19 @@ export default async (cmd: Command): Promise<void> => {
       // @ts-ignore
       choices: ['PostgreSQL', 'SQLite'],
     },
+    {
+      type: 'input',
+      name: 'org',
+      message: chalk.blue(
+        'Please enter the name of your organization [required]',
+      ),
+      validate: (value: any) => {
+        if (!value) {
+          return chalk.red('Please enter a name for your organization');
+        }
+        return true;
+      },
+    },
   ];
   const answers: Answers = await inquirer.prompt(questions);
   answers.dbTypePG = answers.dbType === 'PostgreSQL';
