@@ -3650,10 +3650,10 @@
   resolved "https://registry.npmjs.org/@rjsf/material-ui/-/material-ui-2.3.0.tgz#a051eb4db2ad778e39933a31ba806f415dd3ba90"
   integrity sha512-v/xZ4Xk18ZgBARcCe99IDqdO97GU0UC784gG8PhGGFDdy5Rbdy7ixTjHkGYttkr43PB7SX6ttohNhkKSW4nATQ==
 
-"@roadiehq/backstage-plugin-github-insights@^0.2.2":
-  version "0.2.2"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-insights/-/backstage-plugin-github-insights-0.2.2.tgz#1647aec22f1f8bc40268f075ae307abf660ae75c"
-  integrity sha512-m4j1kUmoj+ZCRyaisXVBkLW9kaI/OGMq8xzthm4adOb12mS0s2p2P9AMa4T+bRyLgHpQ0vB75qhw4p6sHJAvWA==
+"@roadiehq/backstage-plugin-github-insights@^0.2.6":
+  version "0.2.6"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-insights/-/backstage-plugin-github-insights-0.2.6.tgz#7c854cc6b107ff30b0f03b1a5e1ca5e04723dd99"
+  integrity sha512-d3CmA2B0iOB2jKFK3z4q1ehl9nCfh2yrCb6byOvsIyV2xlm3cnt3Uq5hLlQekTYLWRvBWw2ULQVC8+wk2Uq6gg==
   dependencies:
     "@backstage/catalog-model" "^0.1.1-alpha.24"
     "@backstage/core" "^0.1.1-alpha.24"
@@ -3661,6 +3661,8 @@
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "4.0.0-alpha.45"
+    "@octokit/rest" "^18.0.0"
+    "@octokit/types" "^5.0.1"
     history "^5.0.0"
     react "^16.13.1"
     react-dom "^16.13.1"
