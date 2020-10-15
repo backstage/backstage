@@ -21,7 +21,10 @@ import {
   SignInPage,
   createRouteRef,
 } from '@backstage/core';
-import React, { FC } from 'react';
+import { HotKeys } from 'react-hotkeys';
+import { Dialog, DialogTitle, TextField } from '@material-ui/core';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import React, { FC, useState } from 'react';
 import Root from './components/Root';
 import * as plugins from './plugins';
 import { apis } from './apis';
@@ -34,8 +37,7 @@ import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
 import { Router as LighthouseRouter } from '@backstage/plugin-lighthouse';
 import { Router as RegisterComponentRouter } from '@backstage/plugin-register-component';
 import { Router as SettingsRouter } from '@backstage/plugin-user-settings';
-import { Route, Routes, Navigate } from 'react-router';
-
+import { Route, Routes, Navigate, useNavigate } from 'react-router';
 import { EntityPage } from './components/catalog/EntityPage';
 
 const app = createApp({
@@ -87,16 +89,100 @@ const AppRoutes = () => (
   </Routes>
 );
 
-const App: FC<{}> = () => (
-  <AppProvider>
-    <AlertDisplay />
-    <OAuthRequestDialog />
-    <AppRouter>
-      <Root>
-        <AppRoutes />
-      </Root>
-    </AppRouter>
-  </AppProvider>
-);
+const keyMap = {
+  SHOW_QUICK_JUMP: 'command+/',
+  HIDE_QUICK_JUMP: ['escape', 'enter', 'command+?'],
+};
+
+const quickJumpPaths = [
+  { label: '/' },
+  { label: '/Component/playback-order' },
+  { label: '/Component/searcher' },
+  { label: '/Component/shuffle-api' },
+];
+
+const QuickJump = (props: { onClose: Function; open: boolean }) => {
+  const { onClose, open } = props;
+  const navigate = useNavigate();
+  const handleClose = () => {
+    onClose();
+  };
+
+  const [text, setText] = useState<string>('');
+
+  return (
+    <Dialog
+      onClose={handleClose}
+      aria-labelledby="simple-dialog-title"
+      open={open}
+    >
+      <DialogTitle id="simple-dialog-title">Set backup account</DialogTitle>
+      <form
+        onSubmit={e => {
+          if (text) {
+            navigate(`/catalog/${text}`);
+            onClose();
+          }
+          e.preventDefault();
+        }}
+      >
+        <Autocomplete
+          id="combo-box-demo"
+          options={quickJumpPaths}
+          getOptionLabel={option => option.label ?? ''}
+          style={{ width: 300 }}
+          value={{ label: text }}
+          onChange={(e, v) => {
+            setText(v?.label ?? '');
+          }}
+          openOnFocus
+          renderInput={params => (
+            <TextField
+              {...params}
+              // eslint-disable-next-line
+              autoFocus
+              variant="outlined"
+              InputProps={{
+                inputRef: params.InputProps.ref,
+                ...params.inputProps,
+              }}
+            />
+          )}
+        />
+      </form>
+    </Dialog>
+  );
+};
+
+const App: FC<{}> = () => {
+  const [open, setOpen] = useState(false);
+  const showQuickJump = React.useCallback(() => {
+    setOpen(true);
+  }, []);
+  const hideQuickJump = React.useCallback(() => {
+    setOpen(false);
+  }, []);
+
+  const handlers = {
+    SHOW_QUICK_JUMP: showQuickJump,
+    HIDE_QUICK_JUMP: hideQuickJump,
+  };
+  return (
+    <HotKeys keyMap={keyMap}>
+      <HotKeys handlers={handlers}>
+        <AppProvider>
+          <AlertDisplay />
+          <OAuthRequestDialog />
+          <AppRouter>
+            <QuickJump open={open} onClose={hideQuickJump} />
+            <Root>
+              <AppRoutes />
+            </Root>
+          </AppRouter>
+        </AppProvider>
+      </HotKeys>
+    </HotKeys>
+  );
+};
 
 export default hot(App);

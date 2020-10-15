@@ -72,5 +72,6 @@
     "transformModules": [
       "@kyma-project/asyncapi-react"
     ]
-  }
+  },
+  "dependencies": {}
 }
