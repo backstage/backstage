@@ -145,18 +145,16 @@ const labels = (
   </>
 );
 
-export const ProjectDetailsPage = () => {
-  return (
-    <Page themeId="service">
-      <Header title="GCP Project Details" type="other">
-        {labels}
-      </Header>
-      <Content>
-        <ContentHeader title="">
-          <SupportButton>Support Button</SupportButton>
-        </ContentHeader>
-        <DetailsPage />
-      </Content>
-    </Page>
-  );
-};
+export const ProjectDetailsPage = () => (
+  <Page themeId="service">
+    <Header title="GCP Project Details" type="other">
+      {labels}
+    </Header>
+    <Content>
+      <ContentHeader title="">
+        <SupportButton>Support Button</SupportButton>
+      </ContentHeader>
+      <DetailsPage />
+    </Content>
+  </Page>
+);

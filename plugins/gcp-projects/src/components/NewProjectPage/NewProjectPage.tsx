@@ -110,20 +110,18 @@ const labels = (
   </>
 );
 
-export const NewProjectPage = () => {
-  return (
-    <Page themeId="service">
-      <Header title="New GCP Project" type="tool">
-        {labels}
-      </Header>
-      <Content>
-        <ContentHeader title="">
-          <SupportButton>
-            This plugin allows you to view and interact with your gcp projects.
-          </SupportButton>
-        </ContentHeader>
-        <Project />
-      </Content>
-    </Page>
-  );
-};
+export const NewProjectPage = () => (
+  <Page themeId="service">
+    <Header title="New GCP Project" type="tool">
+      {labels}
+    </Header>
+    <Content>
+      <ContentHeader title="">
+        <SupportButton>
+          This plugin allows you to view and interact with your gcp projects.
+        </SupportButton>
+      </ContentHeader>
+      <Project />
+    </Content>
+  </Page>
+);

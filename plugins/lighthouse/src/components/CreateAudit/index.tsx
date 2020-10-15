@@ -168,21 +168,16 @@ export const CreateAuditContent: FC<{}> = () => {
   );
 };
 
-const CreateAudit = () => {
-  return (
-    <Page themeId="tool">
-      <Header
-        title="Lighthouse"
-        subtitle="Website audits powered by Lighthouse"
-      >
-        <HeaderLabel label="Owner" value="Spotify" />
-        <HeaderLabel label="Lifecycle" value="Alpha" />
-      </Header>
-      <Content>
-        <CreateAuditContent />
-      </Content>
-    </Page>
-  );
-};
+const CreateAudit = () => (
+  <Page themeId="tool">
+    <Header title="Lighthouse" subtitle="Website audits powered by Lighthouse">
+      <HeaderLabel label="Owner" value="Spotify" />
+      <HeaderLabel label="Lifecycle" value="Alpha" />
+    </Header>
+    <Content>
+      <CreateAuditContent />
+    </Content>
+  </Page>
+);
 
 export default CreateAudit;

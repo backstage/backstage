@@ -191,20 +191,16 @@ export const AuditViewContent: FC<{}> = () => {
   );
 };
 
-const ConnectedAuditView = () => {
-  return (
-    <Page themeId="tool">
-      <Header
-        title="Lighthouse"
-        subtitle="Website audits powered by Lighthouse"
-      >
-        <HeaderLabel label="Owner" value="Spotify" />
-        <HeaderLabel label="Lifecycle" value="Alpha" />
-      </Header>
-      <Content stretch>
-        <AuditViewContent />
-      </Content>
-    </Page>
-  );
-};
+const ConnectedAuditView = () => (
+  <Page themeId="tool">
+    <Header title="Lighthouse" subtitle="Website audits powered by Lighthouse">
+      <HeaderLabel label="Owner" value="Spotify" />
+      <HeaderLabel label="Lifecycle" value="Alpha" />
+    </Header>
+    <Content stretch>
+      <AuditViewContent />
+    </Content>
+  </Page>
+);
+
 export default ConnectedAuditView;

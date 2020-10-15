@@ -26,25 +26,24 @@ import {
 } from '@backstage/core';
 import NewRelicFetchComponent from '../NewRelicFetchComponent';
 
-const NewRelicComponent: FC<{}> = () => {
-  return (
-    <Page themeId="tool">
-      <Header title="New Relic">
-        <HeaderLabel label="Owner" value="Engineering" />
-      </Header>
-      <Content>
-        <ContentHeader title="New Relic">
-          <SupportButton>
-            New Relic Application Performance Monitoring
-          </SupportButton>
-        </ContentHeader>
-        <Grid container spacing={3} direction="column">
-          <Grid item>
-            <NewRelicFetchComponent />
-          </Grid>
+const NewRelicComponent: FC<{}> = () => (
+  <Page themeId="tool">
+    <Header title="New Relic">
+      <HeaderLabel label="Owner" value="Engineering" />
+    </Header>
+    <Content>
+      <ContentHeader title="New Relic">
+        <SupportButton>
+          New Relic Application Performance Monitoring
+        </SupportButton>
+      </ContentHeader>
+      <Grid container spacing={3} direction="column">
+        <Grid item>
+          <NewRelicFetchComponent />
         </Grid>
-      </Content>
-    </Page>
-  );
-};
+      </Grid>
+    </Content>
+  </Page>
+);
+
 export default NewRelicComponent;

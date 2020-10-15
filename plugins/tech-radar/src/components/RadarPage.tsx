@@ -38,30 +38,29 @@ export const RadarPage = ({
   subtitle,
   pageTitle,
   ...props
-}: TechRadarPageProps): JSX.Element => {
-  return (
-    <Page themeId="tool">
-      <Header title={title} subtitle={subtitle}>
-        <HeaderLabel label="Owner" value="Spotify" />
-        <HeaderLabel label="Lifecycle" value="Beta" />
-      </Header>
-      <Content>
-        <ContentHeader title={pageTitle}>
-          <SupportButton>
-            This is used for visualizing the official guidelines of different
-            areas of software development such as languages, frameworks,
-            infrastructure and processes.
-          </SupportButton>
-        </ContentHeader>
-        <Grid container spacing={3} direction="row">
-          <Grid item xs={12} sm={6} md={4}>
-            <RadarComponent {...props} />
-          </Grid>
+}: TechRadarPageProps): JSX.Element => (
+  <Page themeId="tool">
+    <Header title={title} subtitle={subtitle}>
+      <HeaderLabel label="Owner" value="Spotify" />
+      <HeaderLabel label="Lifecycle" value="Beta" />
+    </Header>
+    <Content>
+      <ContentHeader title={pageTitle}>
+        <SupportButton>
+          This is used for visualizing the official guidelines of different
+          areas of software development such as languages, frameworks,
+          infrastructure and processes.
+        </SupportButton>
+      </ContentHeader>
+      <Grid container spacing={3} direction="row">
+        <Grid item xs={12} sm={6} md={4}>
+          <RadarComponent {...props} />
         </Grid>
-      </Content>
-    </Page>
-  );
-};
+      </Grid>
+    </Content>
+  </Page>
+);
+
 RadarPage.defaultProps = {
   title: 'Tech Radar',
   subtitle: 'Pick the recommended technologies for your projects',
