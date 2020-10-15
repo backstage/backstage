@@ -72,20 +72,20 @@ type PaletteAdditions = {
 export type BackstagePalette = Palette & PaletteAdditions;
 export type BackstagePaletteOptions = PaletteOptions & PaletteAdditions;
 
-export type pageThemeOptions = {
+export type PageThemeSelector = {
   themeId: string;
 };
 
 export interface BackstageTheme extends Theme {
   palette: BackstagePalette;
   page: PageTheme;
-  getPageTheme: ({ themeId }: pageThemeOptions) => PageTheme;
+  getPageTheme: ({ themeId }: PageThemeSelector) => PageTheme;
 }
 
 export interface BackstageThemeOptions extends ThemeOptions {
   palette: BackstagePaletteOptions;
   page: PageTheme;
-  getPageTheme: ({ themeId }: pageThemeOptions) => PageTheme;
+  getPageTheme: ({ themeId }: PageThemeSelector) => PageTheme;
 }
 
 /**
