@@ -61,6 +61,10 @@ ingress:
   annotations:
     kubernetes.io/ingress.class: nginx
 
+issuer:
+  email:
+  clusterIssuer: 'letsencrypt-staging'
+
 global:
   postgresql:
     postgresqlUsername: backend-user
