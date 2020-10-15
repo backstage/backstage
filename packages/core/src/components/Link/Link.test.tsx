@@ -34,7 +34,9 @@ describe('<Link />', () => {
       ),
     );
     expect(() => getByText(testString)).toThrow();
-    await act(async () => fireEvent.click(getByText(linkText)));
+    await act(async () => {
+      fireEvent.click(getByText(linkText));
+    });
     expect(getByText(testString)).toBeInTheDocument();
   });
 });
