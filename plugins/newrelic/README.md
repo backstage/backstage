@@ -29,7 +29,7 @@ While working locally, you may wish to hard-code your API key in your
 ```yaml
 # app-config.local.yaml
 proxy:
-  'newrelic/apm/api':
+  '/newrelic/apm/api':
     headers:
       X-Api-Key: NRRA-YourActualApiKey
 ```
