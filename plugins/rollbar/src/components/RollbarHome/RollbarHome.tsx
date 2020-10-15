@@ -14,23 +14,16 @@
  * limitations under the License.
  */
 
-import { BackstageTheme } from '@backstage/theme';
-import { useTheme } from '@material-ui/core';
 import React from 'react';
 import { Content, Header, Page } from '@backstage/core';
 import { RollbarProjectTable } from '../RollbarProjectTable/RollbarProjectTable';
 import { useRollbarEntities } from '../../hooks/useRollbarEntities';
 
 export const RollbarHome = () => {
-  const backstageTheme = useTheme<BackstageTheme>();
   const { entities, loading, error } = useRollbarEntities();
 
   return (
-    <Page
-      theme={backstageTheme.getPageTheme({
-        themeId: 'tool',
-      })}
-    >
+    <Page themeId="tool">
       <Header
         title="Rollbar"
         subtitle="Real-time error tracking & debugging tools for developers"

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BackstageTheme } from '@backstage/theme';
 import React, { useState, useCallback, FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -24,7 +23,6 @@ import {
   ListItem,
   MenuItem,
   TextField,
-  useTheme,
 } from '@material-ui/core';
 import {
   errorApiRef,
@@ -171,13 +169,8 @@ export const CreateAuditContent: FC<{}> = () => {
 };
 
 const CreateAudit = () => {
-  const backstageTheme = useTheme<BackstageTheme>();
   return (
-    <Page
-      theme={backstageTheme.getPageTheme({
-        themeId: 'tool',
-      })}
-    >
+    <Page themeId="tool">
       <Header
         title="Lighthouse"
         subtitle="Website audits powered by Lighthouse"

@@ -15,8 +15,6 @@
  */
 
 import { Header, Page } from '@backstage/core';
-import { BackstageTheme } from '@backstage/theme';
-import { useTheme } from '@material-ui/core';
 import React from 'react';
 
 type Props = {
@@ -24,14 +22,8 @@ type Props = {
 };
 
 export const ApiExplorerLayout = ({ children }: Props) => {
-  const backstageTheme = useTheme<BackstageTheme>();
-
   return (
-    <Page
-      theme={backstageTheme.getPageTheme({
-        themeId: 'home',
-      })}
-    >
+    <Page themeId="home">
       <Header
         title="APIs"
         subtitle="Backstage API Explorer"

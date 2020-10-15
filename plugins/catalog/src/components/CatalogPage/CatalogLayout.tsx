@@ -21,8 +21,6 @@ import {
   Page,
   useApi,
 } from '@backstage/core';
-import { BackstageTheme } from '@backstage/theme';
-import { useTheme } from '@material-ui/core';
 import React from 'react';
 import { getTimeBasedGreeting } from './utils/timeUtil';
 
@@ -31,13 +29,12 @@ type Props = {
 };
 
 const CatalogLayout = ({ children }: Props) => {
-  const backstageTheme = useTheme<BackstageTheme>();
   const greeting = getTimeBasedGreeting();
   const profile = useApi(identityApiRef).getProfile();
   const userId = useApi(identityApiRef).getUserId();
 
   return (
-    <Page theme={backstageTheme.getPageTheme({ themeId: 'home' })}>
+    <Page themeId="home">
       <Header
         title={`${greeting.greeting}, ${profile.displayName || userId}!`}
         subtitle="Backstage Service Catalog"

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { BackstageTheme } from '@backstage/theme';
 import React, { FC, useState } from 'react';
 import {
   Content,
@@ -29,13 +28,12 @@ import {
 } from '@backstage/core';
 
 import ClusterTable from '../ClusterTable/ClusterTable';
-import { Button, useTheme } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 import { useAsync } from 'react-use';
 import { gitOpsApiRef } from '../../api';
 import { Alert } from '@material-ui/lab';
 
 const ClusterList: FC<{}> = () => {
-  const backstageTheme = useTheme<BackstageTheme>();
   const api = useApi(gitOpsApiRef);
   const githubAuth = useApi(githubAuthApiRef);
   const [githubUsername, setGithubUsername] = useState(String);
@@ -92,11 +90,7 @@ const ClusterList: FC<{}> = () => {
   }
 
   return (
-    <Page
-      theme={backstageTheme.getPageTheme({
-        themeId: 'home',
-      })}
-    >
+    <Page themeId="home">
       <Header title="GitOps-managed Clusters">
         <HeaderLabel label="Welcome" value={githubUsername} />
       </Header>

@@ -14,23 +14,16 @@
  * limitations under the License.
  */
 
-import { BackstageTheme } from '@backstage/theme';
-import { useTheme } from '@material-ui/core';
 import React from 'react';
 import { Content, Header, HeaderLabel, Page } from '@backstage/core';
 import { useCatalogEntity } from '../../hooks/useCatalogEntity';
 import { RollbarProject } from '../RollbarProject/RollbarProject';
 
 export const RollbarProjectPage = () => {
-  const backstageTheme = useTheme<BackstageTheme>();
   const { entity } = useCatalogEntity();
 
   return (
-    <Page
-      theme={backstageTheme.getPageTheme({
-        themeId: 'tool',
-      })}
-    >
+    <Page themeId="tool">
       <Header title={entity?.metadata?.name} subtitle="Rollbar Project">
         <HeaderLabel label="Owner" value={entity?.spec?.owner} />
         <HeaderLabel label="Lifecycle" value={entity?.spec?.lifecycle} />

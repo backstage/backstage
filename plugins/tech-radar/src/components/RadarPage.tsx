@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { BackstageTheme } from '@backstage/theme';
 import React from 'react';
-import { Grid, useTheme } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import {
   Content,
   ContentHeader,
@@ -40,13 +39,8 @@ export const RadarPage = ({
   pageTitle,
   ...props
 }: TechRadarPageProps): JSX.Element => {
-  const backstageTheme = useTheme<BackstageTheme>();
   return (
-    <Page
-      theme={backstageTheme.getPageTheme({
-        themeId: 'tool',
-      })}
-    >
+    <Page themeId="tool">
       <Header title={title} subtitle={subtitle}>
         <HeaderLabel label="Owner" value="Spotify" />
         <HeaderLabel label="Lifecycle" value="Beta" />

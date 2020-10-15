@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BackstageTheme } from '@backstage/theme';
 import React, { useState, useEffect, ReactNode, FC } from 'react';
 import {
   Link,
@@ -31,7 +30,6 @@ import {
   Button,
   ListItemIcon,
   ListItemText,
-  useTheme,
 } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import {
@@ -194,13 +192,8 @@ export const AuditViewContent: FC<{}> = () => {
 };
 
 const ConnectedAuditView = () => {
-  const backstageTheme = useTheme<BackstageTheme>();
   return (
-    <Page
-      theme={backstageTheme.getPageTheme({
-        themeId: 'tool',
-      })}
-    >
+    <Page themeId="tool">
       <Header
         title="Lighthouse"
         subtitle="Website audits powered by Lighthouse"

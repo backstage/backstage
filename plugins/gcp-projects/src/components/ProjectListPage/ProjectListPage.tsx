@@ -15,7 +15,6 @@
  */
 
 //  NEEDS WORK
-import { BackstageTheme } from '@backstage/theme';
 import {
   Content,
   ContentHeader,
@@ -38,7 +37,6 @@ import {
   TableRow,
   Tooltip,
   Typography,
-  useTheme,
 } from '@material-ui/core';
 import React from 'react';
 import { useAsync } from 'react-use';
@@ -135,14 +133,8 @@ const PageContents = () => {
 };
 
 export const ProjectListPage = () => {
-  const backstageTheme = useTheme<BackstageTheme>();
-
   return (
-    <Page
-      theme={backstageTheme.getPageTheme({
-        themeId: 'service',
-      })}
-    >
+    <Page themeId="service">
       <Header title="GCP Projects" type="tool">
         {labels}
       </Header>

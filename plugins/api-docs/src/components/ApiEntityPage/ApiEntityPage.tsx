@@ -23,9 +23,8 @@ import {
   Progress,
   useApi,
 } from '@backstage/core';
-import { BackstageTheme } from '@backstage/theme';
 import { catalogApiRef } from '@backstage/plugin-catalog';
-import { Box, useTheme } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -65,7 +64,6 @@ const EntityPageTitle = ({ title }: EntityPageTitleProps) => (
 );
 
 export const ApiEntityPage = () => {
-  const backstageTheme = useTheme<BackstageTheme>();
   const { optionalNamespaceAndName } = useParams() as {
     optionalNamespaceAndName: string;
   };
@@ -102,11 +100,7 @@ export const ApiEntityPage = () => {
   );
 
   return (
-    <Page
-      theme={backstageTheme.getPageTheme({
-        themeId: entity?.spec?.type?.toString() ?? 'home',
-      })}
-    >
+    <Page themeId={entity?.spec?.type?.toString() ?? 'home'}>
       <Header
         title={<EntityPageTitle title={headerTitle} entity={entity} />}
         pageTitleOverride={headerTitle}

@@ -19,8 +19,7 @@ import { Page } from '../Page';
 import { Header } from '../Header';
 import { Content } from '../Content/Content';
 import { ContentHeader } from '../ContentHeader/ContentHeader';
-import { BackstageTheme } from '@backstage/theme';
-import { Grid, useTheme } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import { SignInPageProps, useApi, configApiRef } from '@backstage/core-api';
 import { useSignInProviders, getSignInProviders } from './providers';
 import { IdentityProviders } from './types';
@@ -39,7 +38,6 @@ export const SignInPage: FC<Props> = ({
   title,
   align = 'left',
 }) => {
-  const backstageTheme = useTheme<BackstageTheme>();
   const configApi = useApi(configApiRef);
   const classes = useStyles();
 
@@ -54,7 +52,7 @@ export const SignInPage: FC<Props> = ({
   }
 
   return (
-    <Page theme={backstageTheme.getPageTheme({ themeId: 'home' })}>
+    <Page themeId="home">
       <Header title={configApi.getString('app.title')} />
       <Content>
         {title && <ContentHeader title={title} textAlign={align} />}

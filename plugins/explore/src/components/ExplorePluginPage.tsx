@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { makeStyles, Typography, useTheme } from '@material-ui/core';
+import { makeStyles, Typography } from '@material-ui/core';
 import {
   Content,
   ContentHeader,
@@ -115,14 +115,9 @@ const toolsCards = [
 
 export const ExplorePluginPage = () => {
   const classes = useStyles();
-  const backstageTheme = useTheme<BackstageTheme>();
 
   return (
-    <Page
-      theme={backstageTheme.getPageTheme({
-        themeId: 'home',
-      })}
-    >
+    <Page themeId="home">
       <Header
         title="Explore"
         subtitle="Tools and services available in Backstage"

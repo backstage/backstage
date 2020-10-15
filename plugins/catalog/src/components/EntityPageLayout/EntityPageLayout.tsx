@@ -18,10 +18,9 @@ import { useParams, useNavigate } from 'react-router';
 
 import { EntityContext } from '../../hooks/useEntity';
 import { Page, Header, HeaderLabel, Content, Progress } from '@backstage/core';
-import { BackstageTheme } from '@backstage/theme';
 import { Entity } from '@backstage/catalog-model';
 import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
-import { Box, useTheme } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
 import { Alert } from '@material-ui/lab';
@@ -64,7 +63,6 @@ export const EntityPageLayout = ({
 }: {
   children?: React.ReactNode;
 }) => {
-  const backstageTheme = useTheme<BackstageTheme>();
   const { optionalNamespaceAndName, kind } = useParams() as {
     optionalNamespaceAndName: string;
     kind: string;
@@ -89,11 +87,7 @@ export const EntityPageLayout = ({
   const showRemovalDialog = () => setConfirmationDialogOpen(true);
 
   return (
-    <Page
-      theme={backstageTheme.getPageTheme({
-        themeId: entity?.spec?.type?.toString() ?? 'home',
-      })}
-    >
+    <Page themeId={entity?.spec?.type?.toString() ?? 'home'}>
       <Header
         title={<EntityPageTitle title={headerTitle} entity={entity!} />}
         pageTitleOverride={headerTitle}

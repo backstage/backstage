@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { BackstageTheme } from '@backstage/theme';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import {
   Content,
@@ -29,7 +28,7 @@ import {
   WarningPanel,
 } from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog';
-import { Button, Grid, Link, Typography, useTheme } from '@material-ui/core';
+import { Button, Grid, Link, Typography } from '@material-ui/core';
 import React, { useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import useStaleWhileRevalidate from 'swr';
@@ -49,7 +48,6 @@ const getTemplateCardProps = (
 };
 
 export const ScaffolderPage = () => {
-  const backstageTheme = useTheme<BackstageTheme>();
   const catalogApi = useApi(catalogApiRef);
   const errorApi = useApi(errorApiRef);
 
@@ -67,7 +65,7 @@ export const ScaffolderPage = () => {
   }, [error, errorApi]);
 
   return (
-    <Page theme={backstageTheme.getPageTheme({ themeId: 'home' })}>
+    <Page themeId="home">
       <Header
         pageTitleOverride="Create a New Component"
         title={
