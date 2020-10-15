@@ -1,0 +1,230 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: emojivoto
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: emoji
+  namespace: emojivoto
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: voting
+  namespace: emojivoto
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: web
+  namespace: emojivoto
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: emoji-svc
+  namespace: emojivoto
+  labels:
+    backstage.io/kubernetes-id: emoji
+spec:
+  ports:
+    - name: grpc
+      port: 8080
+      targetPort: 8080
+    - name: prom
+      port: 8801
+      targetPort: 8801
+  selector:
+    app: emoji-svc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: voting-svc
+  namespace: emojivoto
+  labels:
+    backstage.io/kubernetes-id: vote-bot
+spec:
+  ports:
+    - name: grpc
+      port: 8080
+      targetPort: 8080
+    - name: prom
+      port: 8801
+      targetPort: 8801
+  selector:
+    app: voting-svc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-svc
+  namespace: emojivoto
+  labels:
+    backstage.io/kubernetes-id: web
+spec:
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+  selector:
+    app: web-svc
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: emoji
+    app.kubernetes.io/part-of: emojivoto
+    app.kubernetes.io/version: v10
+    backstage.io/kubernetes-id: emoji
+  name: emoji
+  namespace: emojivoto
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: emoji-svc
+      version: v10
+  template:
+    metadata:
+      labels:
+        app: emoji-svc
+        version: v10
+    spec:
+      containers:
+        - env:
+            - name: GRPC_PORT
+              value: '8080'
+            - name: PROM_PORT
+              value: '8801'
+          image: buoyantio/emojivoto-emoji-svc:v10
+          name: emoji-svc
+          ports:
+            - containerPort: 8080
+              name: grpc
+            - containerPort: 8801
+              name: prom
+          resources:
+            requests:
+              cpu: 100m
+      serviceAccountName: emoji
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: vote-bot
+    app.kubernetes.io/part-of: emojivoto
+    app.kubernetes.io/version: v10
+    backstage.io/kubernetes-id: vote-bot
+  name: vote-bot
+  namespace: emojivoto
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vote-bot
+      version: v10
+  template:
+    metadata:
+      labels:
+        app: vote-bot
+        version: v10
+    spec:
+      containers:
+        - command:
+            - emojivoto-vote-bot
+          env:
+            - name: WEB_HOST
+              value: web-svc.emojivoto:80
+          image: buoyantio/emojivoto-web:v10
+          name: vote-bot
+          resources:
+            requests:
+              cpu: 10m
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: voting
+    app.kubernetes.io/part-of: emojivoto
+    app.kubernetes.io/version: v10
+    backstage.io/kubernetes-id: voting
+  name: voting
+  namespace: emojivoto
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: voting-svc
+      version: v10
+  template:
+    metadata:
+      labels:
+        app: voting-svc
+        version: v10
+    spec:
+      containers:
+        - env:
+            - name: GRPC_PORT
+              value: '8080'
+            - name: PROM_PORT
+              value: '8801'
+          image: buoyantio/emojivoto-voting-svc:v10
+          name: voting-svc
+          ports:
+            - containerPort: 8080
+              name: grpc
+            - containerPort: 8801
+              name: prom
+          resources:
+            requests:
+              cpu: 100m
+      serviceAccountName: voting
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: web
+    app.kubernetes.io/part-of: emojivoto
+    app.kubernetes.io/version: v10
+    backstage.io/kubernetes-id: web
+  name: web
+  namespace: emojivoto
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-svc
+      version: v10
+  template:
+    metadata:
+      labels:
+        app: web-svc
+        version: v10
+    spec:
+      containers:
+        - env:
+            - name: WEB_PORT
+              value: '8080'
+            - name: EMOJISVC_HOST
+              value: emoji-svc.emojivoto:8080
+            - name: VOTINGSVC_HOST
+              value: voting-svc.emojivoto:8080
+            - name: INDEX_BUNDLE
+              value: dist/index_bundle.js
+          image: buoyantio/emojivoto-web:v10
+          name: web-svc
+          ports:
+            - containerPort: 8080
+              name: http
+          resources:
+            requests:
+              cpu: 100m
+      serviceAccountName: web

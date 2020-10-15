@@ -1,0 +1,51 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: web
+  description: The web frontend from the emoji service
+  namespace: emojivoto
+  annotations:
+    backstage.io/kubernetes-id: web
+spec:
+  type: website
+  lifecycle: production
+  owner: guest
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: vote-bot
+  description: Vote bot to generate traffic
+  namespace: emojivoto
+  annotations:
+    backstage.io/kubernetes-id: vote-bot
+spec:
+  type: service
+  lifecycle: production
+  owner: guest
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: voting-svc
+  description: the voting service
+  namespace: emojivoto
+  annotations:
+    backstage.io/kubernetes-id: voting
+spec:
+  type: service
+  lifecycle: production
+  owner: guest
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: emoji
+  description: The emoji service
+  namespace: emojivoto
+  annotations:
+    backstage.io/kubernetes-id: emoji
+spec:
+  type: service
+  lifecycle: production
+  owner: guest
