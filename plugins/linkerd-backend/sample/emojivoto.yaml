@@ -27,7 +27,7 @@ spec:
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: voting-svc
+  name: voting
   description: the voting service
   namespace: emojivoto
   annotations:
@@ -41,7 +41,7 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: emoji
-  description: The emoji service
+  description: The emoji service which returns an emoji
   namespace: emojivoto
   annotations:
     backstage.io/kubernetes-id: emoji

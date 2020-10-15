@@ -94,6 +94,7 @@ spec:
       labels:
         app: emoji-svc
         version: v10
+        backstage.io/kubernetes-id: emoji
     spec:
       containers:
         - env:
@@ -134,6 +135,7 @@ spec:
       labels:
         app: vote-bot
         version: v10
+        backstage.io/kubernetes-id: vote-bot
     spec:
       containers:
         - command:
@@ -168,6 +170,7 @@ spec:
       labels:
         app: voting-svc
         version: v10
+        backstage.io/kubernetes-id: voting
     spec:
       containers:
         - env:
@@ -208,6 +211,7 @@ spec:
       labels:
         app: web-svc
         version: v10
+        backstage.io/kubernetes-id: web
     spec:
       containers:
         - env:
