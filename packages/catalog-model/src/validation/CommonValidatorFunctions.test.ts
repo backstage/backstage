@@ -113,7 +113,7 @@ describe('CommonValidatorFunctions', () => {
     [{}, true],
     [{ a: 1 }, true],
     [{ a: undefined }, false],
-  ] as [any, boolean][])(`isJsonSafe %p ? %p`, (value, result) => {
+  ] as [unknown, boolean][])(`isJsonSafe %p ? %p`, (value, result) => {
     expect(CommonValidatorFunctions.isJsonSafe(value)).toBe(result);
   });
 

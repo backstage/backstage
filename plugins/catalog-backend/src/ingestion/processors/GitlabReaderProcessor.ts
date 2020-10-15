@@ -15,222 +15,29 @@
  */
 
 import { LocationSpec } from '@backstage/catalog-model';
-import { Config } from '@backstage/config';
-import parseGitUri from 'git-url-parse';
-import fetch, { HeadersInit, RequestInit } from 'node-fetch';
-import { Logger } from 'winston';
+import fetch from 'node-fetch';
 import * as result from './results';
-import { LocationProcessor, LocationProcessorEmit } from './types';
+import { CatalogProcessor, CatalogProcessorEmit } from './types';
 
-/**
- * The configuration parameters for a single GitLab API provider.
- */
-export type ProviderConfig = {
-  /**
-   * The prefix of the target that this matches on, e.g. "https://gitlab.com",
-   * with no trailing slash.
-   */
-  target: string;
+// ***********************************************************************
+// * NOTE: This has been replaced by packages/backend-common/src/reading *
+// * Don't implement new functionality here as this file will be removed *
+// ***********************************************************************
 
-  /**
-   * The base URL of the API of this provider, e.g. "https://gitlab.com/api/v4",
-   * with no trailing slash.
-   *
-   * May be omitted specifically for GitLab; then it will be deduced.
-   *
-   * The API will always be preferred if both its base URL and a token are
-   * present.
-   */
-  apiBaseUrl?: string;
-
-  /**
-   * The base URL of the raw fetch endpoint of this provider, e.g.
-   * "https://gitlab.com", with no trailing slash.
-   *
-   * May be omitted specifically for GitLab; then it will be deduced.
-   *
-   * The API will always be preferred if both its base URL and a token are
-   * present.
-   */
-  rawBaseUrl?: string;
-
-  /**
-   * The authorization token to use for requests to this provider.
-   *
-   * If no token is specified, anonymous access is used.
-   */
-  token?: string;
-};
-
-export function getApiRequestOptions(provider: ProviderConfig): RequestInit {
-  const headers: HeadersInit = {
-    Accept: 'application/json',
-  };
-
-  if (provider.token) {
-    headers['PRIVATE-TOKEN'] = provider.token;
-  }
-
-  return {
-    headers,
-  };
-}
-
-export function getRawRequestOptions(provider: ProviderConfig): RequestInit {
-  const headers: HeadersInit = {};
-
-  if (provider.token) {
-    headers['PRIVATE-TOKEN'] = provider.token;
-  }
-
-  return {
-    headers,
-  };
-}
-
-// Converts for example
-// from: https://gitlab.com/a/b/blob/branchname/path/to/c.yaml
-// to:   https://gitlab.com/api/v4/projects/a/b/repository/files/path/to/c.yaml/raw?ref=branchname
-export function getApiUrl(target: string, provider: ProviderConfig): URL {
-  try {
-    const { owner, name, ref, filepath } = parseGitUri(target);
-
-    const pathWithoutSlash = filepath.replace(/^\//, '');
-    return new URL(
-      `${provider.apiBaseUrl}/projects/${encodeURIComponent(
-        `${owner}/${name}`,
-      )}/repository/files/${pathWithoutSlash}/raw?ref=${ref}`,
-    );
-  } catch (e) {
-    throw new Error(`Incorrect URL: ${target}, ${e}`);
-  }
-}
-
-// Converts for example
-// from: https://gitlab.com/a/b/blob/branchname/c.yaml
-// to:   https://gitlab.com/api/v4/projects/a/b/repository/files/path/to/c.yaml/raw?ref=branchname
-export function getRawUrl(target: string, provider: ProviderConfig): URL {
-  try {
-    const { owner, name, ref, filepath } = parseGitUri(target);
-
-    const pathWithoutSlash = filepath.replace(/^\//, '');
-    return new URL(
-      `${provider.rawBaseUrl}/api/v4/projects/${encodeURIComponent(
-        `${owner}/${name}`,
-      )}/repository/files/${pathWithoutSlash}/raw?ref=${ref}`,
-    );
-  } catch (e) {
-    throw new Error(`Incorrect URL: ${target}, ${e}`);
-  }
-}
-
-export function readConfig(config: Config, logger: Logger): ProviderConfig[] {
-  const providers: ProviderConfig[] = [];
-
-  // TODO(freben): Deprecate the old config root entirely in a later release
-  if (config.has('catalog.processors.gitlabApi')) {
-    logger.warn(
-      'The catalog.processors.gitlabApi configuration key has been deprecated, please use catalog.processors.gitlab instead',
-    );
-  }
-
-  // In a previous version of the configuration, we only supported gitlab,
-  // and the "privateToken" key held the token to use for it. The new
-  // configuration method is to use the "providers" key instead.
-  const providerConfigs =
-    config.getOptionalConfigArray('catalog.processors.gitlab.providers') ??
-    config.getOptionalConfigArray('catalog.processors.gitlabApi.providers') ??
-    [];
-  const legacyToken =
-    config.getOptionalString('catalog.processors.gitlab.privateToken') ??
-    config.getOptionalString('catalog.processors.gitlabApi.privateToken');
-
-  // First read all the explicit providers
-  for (const providerConfig of providerConfigs) {
-    const target = providerConfig.getString('target').replace(/\/+$/, '');
-    let apiBaseUrl = providerConfig.getOptionalString('apiBaseUrl');
-    let rawBaseUrl = providerConfig.getOptionalString('rawBaseUrl');
-    const token = providerConfig.getOptionalString('token');
-
-    if (apiBaseUrl) {
-      apiBaseUrl = apiBaseUrl.replace(/\/+$/, '');
-    } else if (target === 'https://gitlab.com') {
-      apiBaseUrl = 'https://gitlab.com/api/v4';
-    }
-
-    if (rawBaseUrl) {
-      rawBaseUrl = rawBaseUrl.replace(/\/+$/, '');
-    } else if (target === 'https://gitlab.com') {
-      rawBaseUrl = 'https://gitlab.com';
-    }
-
-    if (!apiBaseUrl && !rawBaseUrl) {
-      throw new Error(
-        `Provider at ${target} must configure an explicit apiBaseUrl or rawBaseUrl`,
-      );
-    }
-
-    providers.push({ target, apiBaseUrl, rawBaseUrl, token });
-  }
-
-  // If no explicit gitlab.com provider was added, put one in the list as
-  // a convenience
-  if (!providers.some(p => p.target === 'https://gitlab.com')) {
-    providers.push({
-      target: 'https://gitlab.com',
-      apiBaseUrl: 'https://gitlab.com/api/v4',
-      rawBaseUrl: 'https://gitlab.com',
-      token: legacyToken,
-    });
-  }
-
-  return providers;
-}
-
-/**
- * A processor that adds the ability to read files from GitLab v4 APIs, such as
- * the one exposed by GitLab itself.
- */
-export class GitlabReaderProcessor implements LocationProcessor {
-  private providers: ProviderConfig[];
-
-  static fromConfig(config: Config, logger: Logger) {
-    return new GitlabReaderProcessor(readConfig(config, logger));
-  }
-
-  constructor(providers: ProviderConfig[]) {
-    this.providers = providers;
-  }
-
+export class GitlabReaderProcessor implements CatalogProcessor {
   async readLocation(
     location: LocationSpec,
     optional: boolean,
-    emit: LocationProcessorEmit,
+    emit: CatalogProcessorEmit,
   ): Promise<boolean> {
-    // The gitlab/api type is for backward compatibility
-    if (location.type !== 'gitlab' && location.type !== 'gitlab/api') {
+    if (location.type !== 'gitlab') {
       return false;
     }
 
-    const provider = this.providers.find(p =>
-      location.target.startsWith(`${p.target}/`),
-    );
-    if (!provider) {
-      throw new Error(
-        `There is no GitLab provider that matches ${location.target}. Please add a configuration entry for it under catalog.processors.gitlab.providers.`,
-      );
-    }
-
     try {
-      const useApi =
-        provider.apiBaseUrl && (provider.token || !provider.rawBaseUrl);
-      const url = useApi
-        ? getApiUrl(location.target, provider)
-        : getRawUrl(location.target, provider);
-      const options = useApi
-        ? getApiRequestOptions(provider)
-        : getRawRequestOptions(provider);
-      const response = await fetch(url.toString(), options);
+      const url = this.buildRawUrl(location.target);
+
+      const response = await fetch(url.toString());
 
       if (response.ok) {
         const data = await response.buffer();
@@ -239,10 +46,10 @@ export class GitlabReaderProcessor implements LocationProcessor {
         const message = `${location.target} could not be read as ${url}, ${response.status} ${response.statusText}`;
         if (response.status === 404) {
           if (!optional) {
-            emit(result.notFoundError(location, message));
+            throw result.notFoundError(location, message);
           }
         } else {
-          emit(result.generalError(location, message));
+          throw result.generalError(location, message);
         }
       }
     } catch (e) {
@@ -251,5 +58,37 @@ export class GitlabReaderProcessor implements LocationProcessor {
     }
 
     return true;
+  }
+
+  // Converts
+  // from: https://gitlab.example.com/a/b/blob/master/c.yaml
+  // to:   https://gitlab.example.com/a/b/raw/master/c.yaml
+  private buildRawUrl(target: string): URL {
+    try {
+      const url = new URL(target);
+
+      const [empty, userOrOrg, repoName, , ...restOfPath] = url.pathname
+        .split('/')
+        // for the common case https://gitlab.example.com/a/b/-/blob/master/c.yaml
+        .filter(path => path !== '-');
+
+      if (
+        empty !== '' ||
+        userOrOrg === '' ||
+        repoName === '' ||
+        !restOfPath.join('/').match(/\.yaml$/)
+      ) {
+        throw new Error('Wrong GitLab URL');
+      }
+
+      // Replace 'blob' with 'raw'
+      url.pathname = [empty, userOrOrg, repoName, 'raw', ...restOfPath].join(
+        '/',
+      );
+
+      return url;
+    } catch (e) {
+      throw new Error(`Incorrect url: ${target}, ${e}`);
+    }
   }
 }
