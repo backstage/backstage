@@ -370,7 +370,7 @@ export class CatalogBuilder {
       { logger },
     );
 
-    const entitiesCatalog = new DatabaseEntitiesCatalog(db);
+    const entitiesCatalog = new DatabaseEntitiesCatalog(db, this.env.logger);
     const locationsCatalog = new DatabaseLocationsCatalog(db);
     const higherOrderOperation = new HigherOrderOperations(
       entitiesCatalog,

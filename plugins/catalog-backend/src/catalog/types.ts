@@ -26,6 +26,17 @@ export type EntitiesCatalog = {
   addOrUpdateEntity(entity: Entity, locationId?: string): Promise<Entity>;
   addEntities(entities: Entity[], locationId?: string): Promise<void>;
   removeEntityByUid(uid: string): Promise<void>;
+
+  /**
+   * Writes a number of entities efficiently to storage.
+   *
+   * @param entities Some entities
+   * @param locationId The location that they all belong to
+   */
+  batchAddOrUpdateEntities(
+    entities: Entity[],
+    locationId?: string,
+  ): Promise<void>;
 };
 
 //
