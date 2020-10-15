@@ -23,6 +23,7 @@ import {
   BackstageThemeOptions,
   SimpleThemeOptions,
 } from './types';
+import { pageTheme as defaultPageThemes } from './pageTheme';
 
 const DEFAULT_FONT_FAMILY =
   '"Helvetica Neue", Helvetica, Roboto, Arial, sans-serif';
@@ -34,7 +35,7 @@ export function createThemeOptions(
     palette,
     fontFamily = DEFAULT_FONT_FAMILY,
     defaultPageTheme,
-    pageTheme,
+    pageTheme = defaultPageThemes,
   } = options;
 
   if (!pageTheme[defaultPageTheme]) {
