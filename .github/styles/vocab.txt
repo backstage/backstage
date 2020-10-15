@@ -196,6 +196,7 @@ validators
 Voi
 Wealthsimple
 Weaveworks
+Webpack
 xyz
 yaml
 Zalando
