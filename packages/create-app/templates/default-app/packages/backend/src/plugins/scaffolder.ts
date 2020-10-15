@@ -48,8 +48,8 @@ export default async function createPlugin({
       ) as RepoVisibilityOptions;
 
       const githubToken = githubConfig.getString('token');
-      const githubBaseUrl = githubConfig.getString('baseUrl');
-      const githubClient = new Octokit({ auth: githubToken, baseUrl: githubBaseUrl });
+      const githubHost = githubConfig.getOptionalString('host');
+      const githubClient = new Octokit({ auth: githubToken, baseUrl: githubHost });
       const githubPublisher = new GithubPublisher({
         client: githubClient,
         token: githubToken,
