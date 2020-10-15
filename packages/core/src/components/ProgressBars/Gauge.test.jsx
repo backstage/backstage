@@ -17,7 +17,12 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
+<<<<<<< HEAD:packages/core/src/components/ProgressBars/Gauge.test.jsx
 import { Gauge, getProgressColor } from './Gauge';
+=======
+import { GaugeProgress, getProgressColor } from './GaugeProgress';
+import * as theme from '@backstage/theme';
+>>>>>>> change test file to tsx:packages/core/src/components/ProgressBars/GaugeProgress.test.tsx
 
 describe('<Gauge />', () => {
   it('renders without exploding', () => {
@@ -50,17 +55,20 @@ describe('<Gauge />', () => {
   const ok = '#111';
   const warning = '#222';
   const error = '#333';
-  const palette = { status: { ok, warning, error } };
+  const palette = {
+    ...theme.lightTheme.palette,
+    status: { ...theme.lightTheme.palette.status, ok, warning, error },
+  };
 
   it('colors the progress correctly', () => {
-    expect(getProgressColor(palette)).toBe('#ddd');
+    expect(getProgressColor(palette, 'Not a Number')).toBe('#ddd');
     expect(getProgressColor(palette, 10)).toBe(error);
     expect(getProgressColor(palette, 50)).toBe(warning);
     expect(getProgressColor(palette, 90)).toBe(ok);
   });
 
   it('colors the inverse progress correctly', () => {
-    expect(getProgressColor(palette)).toBe('#ddd');
+    expect(getProgressColor(palette, 'Not a Number')).toBe('#ddd');
     expect(getProgressColor(palette, 10, true)).toBe(ok);
     expect(getProgressColor(palette, 50, true)).toBe(warning);
     expect(getProgressColor(palette, 90, true)).toBe(error);
