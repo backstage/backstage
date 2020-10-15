@@ -68,7 +68,11 @@ type Options = {
   proxyPathBase?: string;
 };
 
-export class NewRelicApi {
+export interface NewRelicApi {
+  getApplications(): Promise<NewRelicApplications>;
+}
+
+export class NewRelicClient implements NewRelicApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly proxyPathBase: string;
 

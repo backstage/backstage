@@ -20,7 +20,7 @@ import {
   createRouteRef,
   discoveryApiRef,
 } from '@backstage/core';
-import { NewRelicApi, newRelicApiRef } from './api';
+import { NewRelicClient, newRelicApiRef } from './api';
 import NewRelicComponent from './components/NewRelicComponent';
 
 export const rootRouteRef = createRouteRef({
@@ -34,7 +34,7 @@ export const plugin = createPlugin({
     createApiFactory({
       api: newRelicApiRef,
       deps: { discoveryApi: discoveryApiRef },
-      factory: ({ discoveryApi }) => new NewRelicApi({ discoveryApi }),
+      factory: ({ discoveryApi }) => new NewRelicClient({ discoveryApi }),
     }),
   ],
   register({ router }) {
