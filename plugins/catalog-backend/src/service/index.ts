@@ -14,5 +14,6 @@
  * limitations under the License.
  */
 
-export type ClusterLocatorMethod = 'configMultiTenant' | 'http';
-export type AuthProviderType = 'google' | 'serviceAccount';
+export { CatalogBuilder } from './CatalogBuilder';
+export { createRouter } from './router';
+export type { RouterOptions } from './router';

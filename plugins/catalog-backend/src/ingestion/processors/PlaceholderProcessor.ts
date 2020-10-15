@@ -43,17 +43,6 @@ type Options = {
  * that it then fills in with actual data.
  */
 export class PlaceholderProcessor implements LocationProcessor {
-  static default({ reader }: { reader: UrlReader }) {
-    return new PlaceholderProcessor({
-      resolvers: {
-        json: jsonPlaceholderResolver,
-        yaml: yamlPlaceholderResolver,
-        text: textPlaceholderResolver,
-      },
-      reader,
-    });
-  }
-
   constructor(private readonly options: Options) {}
 
   async processEntity(entity: Entity, location: LocationSpec): Promise<Entity> {

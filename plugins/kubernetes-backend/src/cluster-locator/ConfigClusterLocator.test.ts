@@ -15,10 +15,10 @@
  */
 
 import '@backstage/backend-common';
-import { MultiTenantConfigClusterLocator } from './MultiTenantConfigClusterLocator';
 import { ConfigReader, Config } from '@backstage/config';
+import { ConfigClusterLocator } from './ConfigClusterLocator';
 
-describe('MultiTenantConfigClusterLocator', () => {
+describe('ConfigClusterLocator', () => {
   it('empty clusters returns empty cluster details', async () => {
     const config: Config = new ConfigReader(
       {
@@ -27,11 +27,11 @@ describe('MultiTenantConfigClusterLocator', () => {
       'ctx',
     );
 
-    const sut = MultiTenantConfigClusterLocator.fromConfig(
+    const sut = ConfigClusterLocator.fromConfig(
       config.getConfigArray('clusters'),
     );
 
-    const result = await sut.getClusterByServiceId('ignored');
+    const result = await sut.getClusters();
 
     expect(result).toStrictEqual([]);
   });
@@ -50,11 +50,11 @@ describe('MultiTenantConfigClusterLocator', () => {
       'ctx',
     );
 
-    const sut = MultiTenantConfigClusterLocator.fromConfig(
+    const sut = ConfigClusterLocator.fromConfig(
       config.getConfigArray('clusters'),
     );
 
-    const result = await sut.getClusterByServiceId('ignored');
+    const result = await sut.getClusters();
 
     expect(result).toStrictEqual([
       {
@@ -86,11 +86,11 @@ describe('MultiTenantConfigClusterLocator', () => {
       'ctx',
     );
 
-    const sut = MultiTenantConfigClusterLocator.fromConfig(
+    const sut = ConfigClusterLocator.fromConfig(
       config.getConfigArray('clusters'),
     );
 
-    const result = await sut.getClusterByServiceId('ignored');
+    const result = await sut.getClusters();
 
     expect(result).toStrictEqual([
       {

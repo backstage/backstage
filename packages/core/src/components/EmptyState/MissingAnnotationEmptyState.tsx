@@ -48,11 +48,17 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
 
 export const MissingAnnotationEmptyState = ({ annotation }: Props) => {
   const classes = useStyles();
+  const description = (
+    <Typography>
+      The <code>{annotation}</code> annotation is missing. You need to add the
+      annotation to your component if you want to enable this tool.
+    </Typography>
+  );
   return (
     <EmptyState
       missing="field"
       title="Missing Annotation"
-      description={`The "${annotation}" annotation is missing. You need to add the annotation to your component if you want to enable this tool for it.`}
+      description={description}
       action={
         <>
           <Typography variant="body1">

@@ -18,8 +18,7 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
-import { ClusterLocatorMethod } from '../cluster-locator/types';
-import { MultiTenantConfigClusterLocator } from '../cluster-locator/MultiTenantConfigClusterLocator';
+import { MultiTenantServiceLocator } from '../service-locator/MultiTenantServiceLocator';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 import { KubernetesClientProvider } from './KubernetesClientProvider';
 import {
@@ -28,30 +27,35 @@ import {
 } from './getKubernetesObjectsByServiceIdHandler';
 import {
   AuthRequestBody,
-  KubernetesClusterLocator,
+  KubernetesServiceLocator,
   KubernetesFetcher,
-} from '../types/types';
+  ServiceLocatorMethod,
+  ClusterLocatorMethod,
+  ClusterDetails,
+} from '..';
+import { getCombinedClusterDetails } from '../cluster-locator';
 
 export interface RouterOptions {
   logger: Logger;
   config: Config;
 }
 
-const getClusterLocator = (config: Config): KubernetesClusterLocator => {
-  const clusterLocatorMethod = config.getString(
-    'kubernetes.clusterLocatorMethod',
-  ) as ClusterLocatorMethod;
+const getServiceLocator = (
+  config: Config,
+  clusterDetails: ClusterDetails[],
+): KubernetesServiceLocator => {
+  const serviceLocatorMethod = config.getString(
+    'kubernetes.serviceLocatorMethod',
+  ) as ServiceLocatorMethod;
 
-  switch (clusterLocatorMethod) {
-    case 'configMultiTenant':
-      return MultiTenantConfigClusterLocator.fromConfig(
-        config.getConfigArray('kubernetes.clusters'),
-      );
+  switch (serviceLocatorMethod) {
+    case 'multiTenant':
+      return new MultiTenantServiceLocator(clusterDetails);
     case 'http':
       throw new Error('not implemented');
     default:
       throw new Error(
-        `Unsupported kubernetes.clusterLocatorMethod "${clusterLocatorMethod}"`,
+        `Unsupported kubernetes.clusterLocatorMethod "${serviceLocatorMethod}"`,
       );
   }
 };
@@ -59,13 +63,12 @@ const getClusterLocator = (config: Config): KubernetesClusterLocator => {
 export const makeRouter = (
   logger: Logger,
   fetcher: KubernetesFetcher,
-  clusterLocator: KubernetesClusterLocator,
+  serviceLocator: KubernetesServiceLocator,
   handleGetByServiceId: GetKubernetesObjectsByServiceIdHandler,
 ): express.Router => {
   const router = Router();
   router.use(express.json());
 
-  // TODO error handling
   router.post('/services/:serviceId', async (req, res) => {
     const serviceId = req.params.serviceId;
     const requestBody: AuthRequestBody = req.body;
@@ -73,7 +76,7 @@ export const makeRouter = (
       const response = await handleGetByServiceId(
         serviceId,
         fetcher,
-        clusterLocator,
+        serviceLocator,
         logger,
         requestBody,
       );
@@ -96,17 +99,26 @@ export async function createRouter(
 
   logger.info('Initializing Kubernetes backend');
 
-  const clusterLocator = getClusterLocator(options.config);
-
   const fetcher = new KubernetesClientBasedFetcher({
     kubernetesClientProvider: new KubernetesClientProvider(),
     logger,
   });
 
+  const clusterLocatorMethods = options.config.getStringArray(
+    'kubernetes.clusterLocatorMethods',
+  ) as ClusterLocatorMethod[];
+
+  const clusterDetails = await getCombinedClusterDetails(
+    clusterLocatorMethods,
+    options.config,
+  );
+
+  const serviceLocator = getServiceLocator(options.config, clusterDetails);
+
   return makeRouter(
     logger,
     fetcher,
-    clusterLocator,
+    serviceLocator,
     handleGetKubernetesObjectsByServiceId,
   );
 }

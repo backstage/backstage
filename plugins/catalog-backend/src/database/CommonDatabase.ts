@@ -219,15 +219,16 @@ export class CommonDatabase implements Database {
 
     let entitiesQuery = tx<DbEntitiesRow>('entities');
 
-    for (const filter of filters || []) {
-      const key = filter.key.toLowerCase().replace(/[*]/g, '%');
-      const keyOp = filter.key.includes('*') ? 'like' : '=';
+    for (const [matchKey, matchVal] of Object.entries(filters ?? {})) {
+      const key = matchKey.toLowerCase().replace(/[*]/g, '%');
+      const keyOp = key.includes('%') ? 'like' : '=';
+      const values = Array.isArray(matchVal) ? matchVal : [matchVal];
 
       let matchNulls = false;
       const matchIn: string[] = [];
       const matchLike: string[] = [];
 
-      for (const value of filter.values) {
+      for (const value of values) {
         if (!value) {
           matchNulls = true;
         } else if (value.includes('*')) {
