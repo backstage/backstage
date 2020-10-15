@@ -15,6 +15,7 @@
  */
 
 import {
+  configApiRef,
   Header,
   HomepageTimer,
   identityApiRef,
@@ -33,12 +34,13 @@ const CatalogLayout = ({ children }: Props) => {
   const greeting = getTimeBasedGreeting();
   const profile = useApi(identityApiRef).getProfile();
   const userId = useApi(identityApiRef).getUserId();
+  const orgName = useApi(configApiRef).getOptionalString('organization.name');
 
   return (
     <Page theme={pageTheme.home}>
       <Header
         title={`${greeting.greeting}, ${profile.displayName || userId}!`}
-        subtitle="Backstage Service Catalog"
+        subtitle={`${orgName || 'Backstage'} Service Catalog`}
         tooltip={greeting.language}
         pageTitleOverride="Home"
       >
