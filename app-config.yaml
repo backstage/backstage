@@ -240,10 +240,11 @@ costInsights:
       name: Big Query
       icon: search
   metrics:
-    dailyCost:
-      name: Your Company's Daily Cost
     DAU:
-      name: Cost Per DAU
+      name: Daily Active Users
+      default: true
+    MSC:
+      name: Monthly Subscribers
 homepage:
   clocks:
     - label: UTC

@@ -16,29 +16,24 @@
 import React from 'react';
 import moment from 'moment';
 import { TooltipPayload, TooltipProps } from 'recharts';
-import Tooltip from '../../components/Tooltip';
+import Tooltip, { TooltipItemProps } from '../../components/Tooltip';
 import { DEFAULT_DATE_FORMAT } from '../../types';
-import { formatGraphValue } from '../../utils/graphs';
 
-type CostOverviewTooltipProps = TooltipProps & {
-  metric: string;
-  name: string;
+export type CostOverviewTooltipProps = TooltipProps & {
+  dataKeys: Array<string>;
+  format: (payload: TooltipPayload) => TooltipItemProps;
 };
 
 const CostOverviewTooltip = ({
   label,
   payload,
-  metric,
-  name,
+  dataKeys,
+  format,
 }: CostOverviewTooltipProps) => {
   const tooltipLabel = moment(label).format(DEFAULT_DATE_FORMAT);
   const items = payload
-    ?.filter(data => data.name === metric)
-    .map((data: TooltipPayload) => ({
-      label: name,
-      value: formatGraphValue(data.value as number),
-      fill: data.fill as string,
-    }));
+    ?.filter((p: TooltipPayload) => dataKeys.includes(p.dataKey as string))
+    .map(p => format(p));
   return <Tooltip label={tooltipLabel} items={items} />;
 };
 

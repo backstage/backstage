@@ -14,23 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  currencyFormatter,
-  dateFormatter,
-  lengthyCurrencyFormatter,
-} from './formatters';
-
-export function formatGraphValue(value: number, format?: string) {
-  if (format === 'number') {
-    return value.toLocaleString();
-  }
-
-  if (value < 1) {
-    return lengthyCurrencyFormatter.format(value);
-  }
-
-  return currencyFormatter.format(value);
-}
-
-export const overviewGraphTickFormatter = (millis: string | number) =>
-  typeof millis === 'number' ? dateFormatter.format(millis) : millis;
+export type ChartData = {
+  date: number;
+  trend: number;
+  dailyCost: number;
+  [key: string]: number;
+};

@@ -79,9 +79,9 @@ costInsights:
 
 ### Metrics (Optional)
 
-In the `Cost Overview` panel, users can choose from a dropdown of business metrics to see costs as they relate to a metric, such as daily active users. Metrics must be defined as keys on the `metrics` field. A user-friendly name is **required**. Metrics will be provided to the `getDailyCost` and `getProjectCosts` API methods via the `metric` parameter.
+In the `Cost Overview` panel, users can choose from a dropdown of business metrics to see costs as they relate to a metric, such as daily active users. Metrics must be defined as keys on the `metrics` field. A user-friendly name is **required**. Metrics will be provided to the `getDailyMetricData` API method via the `metric` parameter.
 
-**Note:** Cost Insights displays daily cost without a metric by default. The dropdown text for this default can be overridden by assigning it a value on the `dailyCost` field.
+An optional `default` field can be set to `true` to set the default comparison metric to daily cost in the Cost Overview panel.
 
 ```yaml
 ## ./app-config.yaml
@@ -95,10 +95,9 @@ costInsights:
       name: Some Other Cloud Product
       icon: data
   metrics:
-    dailyCost:
-      name: Earth Rotation
     metricA:
       name: Metric A ## required
+      default: true
     metricB:
       name: Metric B
     metricC:

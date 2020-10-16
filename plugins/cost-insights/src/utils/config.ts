@@ -14,4 +14,13 @@
  * limitations under the License.
  */
 
-export { default } from './CostOverviewChartLegend';
+import { Metric } from '../types';
+
+export function validateMetrics(metrics: Metric[]) {
+  const defaults = metrics.filter(metric => metric.default);
+  if (defaults.length > 1) {
+    throw new Error(
+      `Only one default metric can be set at a time. Found ${defaults.length}`,
+    );
+  }
+}
