@@ -1,0 +1,32 @@
+apiVersion: backstage.io/v1alpha1
+kind: Template
+metadata:
+  # unique name per namespace for the template
+  name: mlflow-experiment-template
+  # title of the template
+  title: MLFlow Experiment Template
+  # a description of the template
+  description:
+    Registers an Experiment in MLFlow with Backstage.
+  # some tags to display in the frontend
+  tags:
+    - machine-learning
+    - mlflow
+spec:
+  owner: adam.laiacano@gmail.com
+  # which templater key to use in the templaters builder
+  templater: cookiecutter
+  # what does this template create
+  type: other
+  # if the template is not in the current directory where this definition is kept then specify
+  path: '.'
+  # the schema for the form which is displayed in the frontend.
+  # should follow JSON schema for forms: https://jsonforms.io/
+  schema:
+    required:
+      - experiment_id
+    properties:
+      experiment_id:
+        title: Experiment ID
+        type: string
+        description: ID of the experiment registered with MLFlow

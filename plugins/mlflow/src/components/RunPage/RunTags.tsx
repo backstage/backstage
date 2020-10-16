@@ -77,7 +77,7 @@ const RunTags = ({ runId, tags }: RunTagsProps) => {
       {open && (
         <NewTagForm
           handleSubmit={handleNewTagSubmit}
-          handleCancel={_ => setOpen(false)}
+          handleCancel={(_: any) => setOpen(false)}
         />
       )}
     </>

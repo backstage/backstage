@@ -35,6 +35,7 @@ import { Grid } from '@material-ui/core';
 import MetricsGraph from './MetricsGraph';
 import RunMetadata from './RunMetadata';
 import RunTags from './RunTags';
+import RunArtifacts from './RunArtifacts';
 
 const RunPage = () => {
   const { runId } = useParams();
@@ -82,6 +83,9 @@ const RunPage = () => {
           </Grid>
           <Grid item xs={12}>
             <MetricsGraph runId={run.info.run_id} metrics={run.data.metrics} />
+          </Grid>
+          <Grid item xs={12}>
+            <RunArtifacts runId={run.info.run_id} />
           </Grid>
         </Grid>
       </Content>

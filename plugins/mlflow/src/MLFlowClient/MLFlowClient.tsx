@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Experiment, Run, Metric } from './MLFlowTypes';
+import { ArtifactList, Experiment, Metric, Run } from './MLFlowTypes';
 
 export class MLFlowClient {
   readonly apiHost: string;
@@ -24,7 +24,7 @@ export class MLFlowClient {
   }
 
   listExperiments(): Promise<Experiment[]> {
-    return this.makeGetRequest('/experiments/list')
+    return this.makeGetRequest('experiments/list')
       .then(resp => {
         return resp.experiments;
       })
@@ -37,8 +37,16 @@ export class MLFlowClient {
       .catch(_ => undefined);
   }
 
+  setExperimentTag(experimentId: string, key: String, value: String) {
+    return this.makePostRequest('experiments/set-experiment-tag', {
+      experiment_id: experimentId,
+      key: key,
+      value: value,
+    });
+  }
+
   getRun(runId: string): Promise<Run> {
-    return this.makeGetRequest(`/runs/get?run_id=${runId}`)
+    return this.makeGetRequest(`runs/get?run_id=${runId}`)
       .then(resp => resp.run)
       .catch(_ => undefined);
   }
@@ -69,6 +77,18 @@ export class MLFlowClient {
 
   deleteTag(runId: string, key: string) {
     return this.makePostRequest('runs/delete-tag', { run_id: runId, key: key });
+  }
+
+  listArtifacts(
+    runId: string,
+    path?: string,
+    pageToken?: string,
+  ): Promise<ArtifactList> {
+    const pathArg = path ? `&path=${path}` : '';
+    const pageTokenArg = pageToken ? `&page_token=${pageToken}` : '';
+    return this.makeGetRequest(
+      `artifacts/list?run_id=${runId}${pathArg}${pageTokenArg}`,
+    );
   }
 
   private makePostRequest(route: string, data: object) {

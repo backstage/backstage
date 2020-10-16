@@ -89,3 +89,17 @@ export type Run = {
   info: RunInfo;
   data: RunData;
 };
+
+// https://www.mlflow.org/docs/latest/rest-api.html#mlflowfileinfo
+export type FileInfo = {
+  path: string;
+  is_dir: boolean;
+  file_size?: number;
+};
+
+// https://www.mlflow.org/docs/latest/rest-api.html#list-artifacts
+export type ArtifactList = {
+  root_uri: string;
+  files: FileInfo[];
+  next_page_token?: string;
+};
