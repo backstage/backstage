@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Grid } from '@material-ui/core';
+import { Grid, makeStyles } from '@material-ui/core';
 import {
   Content,
   ContentHeader,
@@ -26,6 +26,12 @@ import {
 } from '@backstage/core';
 import RadarComponent from '../components/RadarComponent';
 import { TechRadarComponentProps } from '../api';
+
+const useStyles = makeStyles(() => ({
+  overflowXScroll: {
+    overflowX: 'scroll',
+  },
+}));
 
 export type TechRadarPageProps = TechRadarComponentProps & {
   title?: string;
@@ -38,28 +44,31 @@ export const RadarPage = ({
   subtitle,
   pageTitle,
   ...props
-}: TechRadarPageProps): JSX.Element => (
-  <Page themeId="tool">
-    <Header title={title} subtitle={subtitle}>
-      <HeaderLabel label="Owner" value="Spotify" />
-      <HeaderLabel label="Lifecycle" value="Beta" />
-    </Header>
-    <Content>
-      <ContentHeader title={pageTitle}>
-        <SupportButton>
-          This is used for visualizing the official guidelines of different
-          areas of software development such as languages, frameworks,
-          infrastructure and processes.
-        </SupportButton>
-      </ContentHeader>
-      <Grid container spacing={3} direction="row">
-        <Grid item xs={12} sm={6} md={4}>
-          <RadarComponent {...props} />
+}: TechRadarPageProps): JSX.Element => {
+  const classes = useStyles();
+  return (
+    <Page themeId="tool">
+      <Header title={title} subtitle={subtitle}>
+        <HeaderLabel label="Owner" value="Spotify" />
+        <HeaderLabel label="Lifecycle" value="Beta" />
+      </Header>
+      <Content className={classes.overflowXScroll}>
+        <ContentHeader title={pageTitle}>
+          <SupportButton>
+            This is used for visualizing the official guidelines of different
+            areas of software development such as languages, frameworks,
+            infrastructure and processes.
+          </SupportButton>
+        </ContentHeader>
+        <Grid container spacing={3} direction="row">
+          <Grid item xs={12} sm={6} md={4}>
+            <RadarComponent {...props} />
+          </Grid>
         </Grid>
-      </Grid>
-    </Content>
-  </Page>
-);
+      </Content>
+    </Page>
+  );
+};
 
 RadarPage.defaultProps = {
   title: 'Tech Radar',
