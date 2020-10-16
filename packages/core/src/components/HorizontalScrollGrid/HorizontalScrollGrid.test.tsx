@@ -48,6 +48,8 @@ describe('<HorizontalScrollGrid />', () => {
   });
 
   it('should show scroll buttons', async () => {
+    const originalPrototype = HTMLElement.prototype;
+
     Object.defineProperties(HTMLElement.prototype, {
       scrollLeft: {
         configurable: true,
@@ -64,13 +66,13 @@ describe('<HorizontalScrollGrid />', () => {
     });
 
     let lastScroll = 0;
-    HTMLElement.prototype.scrollBy = ({ left }) => {
-      lastScroll = left;
+    HTMLElement.prototype.scrollBy = ({ left }: ScrollToOptions): void => {
+      lastScroll = left || 0;
     };
 
     const rendered = await renderWithEffects(
       wrapInTestApp(
-        <HorizontalScrollGrid style={{ maxWidth: 300 }}>
+        <HorizontalScrollGrid>
           <Grid item style={{ minWidth: 200 }}>
             item1
           </Grid>
@@ -89,9 +91,21 @@ describe('<HorizontalScrollGrid />', () => {
     fireEvent.click(rendered.getByTitle('Scroll Left'));
     expect(lastScroll).toBeLessThan(0);
 
-    delete HTMLElement.prototype.scrollLeft;
-    delete HTMLElement.prototype.offsetWidth;
-    delete HTMLElement.prototype.scrollWidth;
-    delete HTMLElement.prototype.scrollBy;
+    // reset to original values
+    Object.defineProperties(HTMLElement.prototype, {
+      scrollLeft: {
+        configurable: true,
+        value: originalPrototype.scrollLeft,
+      },
+      offsetWidth: {
+        configurable: true,
+        value: originalPrototype.offsetWidth,
+      },
+      scrollWidth: {
+        configurable: true,
+        value: originalPrototype.scrollWidth,
+      },
+    });
+    HTMLElement.prototype.scrollBy = originalPrototype.scrollBy;
   });
 });
