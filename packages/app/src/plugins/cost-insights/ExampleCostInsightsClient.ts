@@ -117,7 +117,10 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
     return projects;
   }
 
-  async getMetricData(metric: string, intervals: string): Promise<MetricData> {
+  async getDailyMetricData(
+    metric: string,
+    intervals: string,
+  ): Promise<MetricData> {
     const aggregation = aggregationFor(
       durationOf(intervals),
       100_000,

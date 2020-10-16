@@ -111,7 +111,7 @@ const CostInsightsPage = () => {
             client.getGroupProjects(pageFilters.group),
             client.getAlerts(pageFilters.group),
             pageFilters.metric
-              ? client.getMetricData(pageFilters.metric, intervals)
+              ? client.getDailyMetricData(pageFilters.metric, intervals)
               : null,
             pageFilters.project
               ? client.getProjectDailyCost(pageFilters.project, intervals)

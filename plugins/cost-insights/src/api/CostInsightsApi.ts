@@ -87,7 +87,7 @@ export type CostInsightsApi = {
    * @param intervals An ISO 8601 repeating interval string, such as R2/P1M/2020-09-01
    *   https://en.wikipedia.org/wiki/ISO_8601#Repeating_intervals
    */
-  getMetricData(metric: string, intervals: string): Promise<MetricData>;
+  getDailyMetricData(metric: string, intervals: string): Promise<MetricData>;
 
   /**
    * Get cost aggregations for a particular cloud product and interval timeframe. This includes
