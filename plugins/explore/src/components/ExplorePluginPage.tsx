@@ -21,7 +21,6 @@ import {
   ContentHeader,
   Header,
   Page,
-  pageTheme,
   SupportButton,
 } from '@backstage/core';
 import ExploreCard, { CardData } from './ExploreCard';
@@ -116,8 +115,9 @@ const toolsCards = [
 
 export const ExplorePluginPage = () => {
   const classes = useStyles();
+
   return (
-    <Page theme={pageTheme.home}>
+    <Page themeId="home">
       <Header
         title="Explore"
         subtitle="Tools and services available in Backstage"

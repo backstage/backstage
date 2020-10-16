@@ -15,6 +15,7 @@
  */
 
 import { createTheme } from './baseTheme';
+import { pageTheme } from './pageTheme';
 import { yellow } from '@material-ui/core/colors';
 
 export const lightTheme = createTheme({
@@ -75,6 +76,8 @@ export const lightTheme = createTheme({
       indicator: '#9BF0E1',
     },
   },
+  defaultPageTheme: 'home',
+  pageTheme,
 });
 
 export const darkTheme = createTheme({
@@ -135,4 +138,6 @@ export const darkTheme = createTheme({
       indicator: '#9BF0E1',
     },
   },
+  defaultPageTheme: 'home',
+  pageTheme,
 });

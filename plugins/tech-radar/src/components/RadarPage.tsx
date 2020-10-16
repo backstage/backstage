@@ -23,7 +23,6 @@ import {
   Header,
   HeaderLabel,
   SupportButton,
-  pageTheme,
 } from '@backstage/core';
 import RadarComponent from '../components/RadarComponent';
 import { TechRadarComponentProps } from '../api';
@@ -40,7 +39,7 @@ export const RadarPage = ({
   pageTitle,
   ...props
 }: TechRadarPageProps): JSX.Element => (
-  <Page theme={pageTheme.tool}>
+  <Page themeId="tool">
     <Header title={title} subtitle={subtitle}>
       <HeaderLabel label="Owner" value="Spotify" />
       <HeaderLabel label="Lifecycle" value="Beta" />

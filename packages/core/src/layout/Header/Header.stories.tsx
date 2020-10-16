@@ -16,7 +16,7 @@
 import React from 'react';
 import { Header } from '.';
 import { HeaderLabel } from '../HeaderLabel';
-import { Page, pageTheme } from '../Page';
+import { Page } from '../Page';
 
 export default {
   title: 'Layout/Header',
@@ -32,7 +32,7 @@ const labels = (
 );
 
 export const Home = () => (
-  <Page theme={pageTheme.home}>
+  <Page themeId="home">
     <Header title="Start/Home Page" type="home">
       {labels}
     </Header>
@@ -46,7 +46,7 @@ export const HomeWithSubtitle = () => (
 );
 
 export const Tool = () => (
-  <Page theme={pageTheme.tool}>
+  <Page themeId="tool">
     <Header title="Stand-alone tool" type="tool">
       {labels}
     </Header>
@@ -54,7 +54,7 @@ export const Tool = () => (
 );
 
 export const Service = () => (
-  <Page theme={pageTheme.service}>
+  <Page themeId="service">
     <Header title="Service component page" type="service">
       {labels}
     </Header>
@@ -62,7 +62,7 @@ export const Service = () => (
 );
 
 export const Website = () => (
-  <Page theme={pageTheme.website}>
+  <Page themeId="website">
     <Header title="Website component page" type="website">
       {labels}
     </Header>
@@ -70,7 +70,7 @@ export const Website = () => (
 );
 
 export const Library = () => (
-  <Page theme={pageTheme.library}>
+  <Page themeId="library">
     <Header title="Library component page" type="library">
       {labels}
     </Header>
@@ -78,7 +78,7 @@ export const Library = () => (
 );
 
 export const App = () => (
-  <Page theme={pageTheme.app}>
+  <Page themeId="app">
     <Header title="App component page" type="app">
       {labels}
     </Header>
@@ -86,7 +86,7 @@ export const App = () => (
 );
 
 export const Documentation = () => (
-  <Page theme={pageTheme.documentation}>
+  <Page themeId="documentation">
     <Header title="Documentation component page" type="documentation">
       {labels}
     </Header>
@@ -94,7 +94,7 @@ export const Documentation = () => (
 );
 
 export const Other = () => (
-  <Page theme={pageTheme.other}>
+  <Page themeId="other">
     <Header title="Other/generic component page" type="other">
       {labels}
     </Header>

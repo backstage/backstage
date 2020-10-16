@@ -30,7 +30,6 @@ import {
   Header,
   HomepageTimer,
   Page,
-  pageTheme,
   ContentHeader,
   SupportButton,
   WarningPanel,
@@ -44,7 +43,7 @@ const WelcomePage = () => {
   const profile = { givenName: '' };
 
   return (
-    <Page theme={pageTheme.home}>
+    <Page themeId="home">
       <Header
         title={`Welcome ${profile.givenName || `to ${appTitle}`}`}
         subtitle="Let's start building a better developer experience"
