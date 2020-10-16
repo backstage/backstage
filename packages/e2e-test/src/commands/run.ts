@@ -301,11 +301,7 @@ async function testAppServe(pluginName: string, appDir: string) {
       try {
         const browser = new Browser();
 
-        await waitForPageWithText(
-          browser,
-          '/',
-          'Acme Corporation Service Catalog',
-        );
+        await waitForPageWithText(browser, '/', 'My Company Service Catalog');
         await waitForPageWithText(
           browser,
           `/${pluginName}`,

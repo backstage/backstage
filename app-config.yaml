@@ -41,7 +41,7 @@ proxy:
         $env: NEW_RELIC_REST_API_KEY
 
 organization:
-  name: Spotify
+  name: My Company
 
 techdocs:
   storageUrl: http://localhost:7000/api/techdocs/static/docs
@@ -50,10 +50,10 @@ techdocs:
     techdocs: 'docker'
 
 sentry:
-  organization: spotify
+  organization: my-company
 
 rollbar:
-  organization: spotify
+  organization: my-company
   accountToken:
     $env: ROLLBAR_ACCOUNT_TOKEN
 
