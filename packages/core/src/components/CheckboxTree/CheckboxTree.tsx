@@ -97,11 +97,14 @@ type Option = {
   isChecked?: boolean;
 };
 
+type Selection = { category?: string; selecetedChilds?: string[] }[];
+
 export type CheckboxTreeProps = {
   subCategories: SubCategory[];
   label: string;
   triggerReset?: boolean;
-  onChange: (arg: { category?: string; selecetedChilds?: string[] }[]) => any;
+  selected?: Selection;
+  onChange: (arg: Selection) => any;
 };
 
 /* REDUCER */
@@ -119,6 +122,7 @@ type Action =
       type: 'updateCategories';
       payload: IndexedObject<SubCategoryWithIndexedOptions>;
     }
+  | { type: 'updateSelected'; payload: Selection }
   | { type: 'triggerReset' };
 
 const reducer = (
@@ -178,6 +182,22 @@ const reducer = (
         }
       });
     }
+    case 'updateSelected': {
+      return produce(state, newState => {
+        for (const category in newState) {
+          const selection = action.payload.find(s => s.category === category);
+
+          if (selection) {
+            newState[category].isChecked = true;
+
+            for (const option in newState[category].options) {
+              newState[category].options[option].isChecked =
+                selection.selecetedChilds?.includes(option) || false;
+            }
+          }
+        }
+      });
+    }
     default:
       return state;
   }
@@ -215,6 +235,7 @@ function usePrevious<T>(value?: T): T | undefined {
 export const CheckboxTree = ({
   subCategories,
   label,
+  selected,
   onChange,
   triggerReset,
 }: CheckboxTreeProps) => {
@@ -243,6 +264,12 @@ export const CheckboxTree = ({
   useEffect(() => {
     dispatch({ type: 'triggerReset' });
   }, [triggerReset]);
+
+  useEffect(() => {
+    if (selected) {
+      dispatch({ type: 'updateSelected', payload: selected });
+    }
+  }, [selected]);
 
   useEffect(() => {
     if (!isEqual(subCategories, previousSubCategories)) {
