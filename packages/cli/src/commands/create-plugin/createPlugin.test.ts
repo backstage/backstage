@@ -16,11 +16,25 @@
 
 import fs from 'fs-extra';
 import path from 'path';
+import mockFs from 'mock-fs';
 import os from 'os';
 import del from 'del';
 import { createTemporaryPluginFolder, movePlugin } from './createPlugin';
 
 describe('createPlugin', () => {
+  beforeEach(() => {
+    mockFs({
+      '/testPluginMock': {},
+      'test-temp': {
+        plugins: {
+          testPluginMock: {},
+        },
+      },
+    });
+  });
+  afterEach(() => {
+    mockFs.restore();
+  });
   describe('createPluginFolder', () => {
     it('should create a temporary plugin directory in the correct place', async () => {
       const id = 'testPlugin';
@@ -35,35 +49,22 @@ describe('createPlugin', () => {
     });
 
     it('should not create a temporary plugin directory if it already exists', async () => {
-      const id = 'testPlugin';
-      const tempDir = path.join(os.tmpdir(), id);
-      try {
-        await createTemporaryPluginFolder(tempDir);
-        await expect(fs.pathExists(tempDir)).resolves.toBe(true);
-        await expect(createTemporaryPluginFolder(tempDir)).rejects.toThrow(
-          /Failed to create temporary plugin directory/,
-        );
-      } finally {
-        await del(tempDir, { force: true });
-      }
+      const id = '/testPluginMock';
+      await expect(createTemporaryPluginFolder(id)).rejects.toThrow(
+        /Failed to create temporary plugin directory/,
+      );
     });
   });
 
   describe('movePlugin', () => {
     it('should move the temporary plugin directory to its final place', async () => {
-      const id = 'testPlugin';
-      const tempDir = path.join(os.tmpdir(), id);
-      const rootDir = await fs.mkdtemp(path.join(os.tmpdir(), 'test-'));
-      const pluginDir = path.join(rootDir, 'plugins', id);
-      try {
-        await createTemporaryPluginFolder(tempDir);
-        await movePlugin(tempDir, pluginDir, id);
-        await expect(fs.pathExists(pluginDir)).resolves.toBe(true);
-        expect(pluginDir).toMatch(path.join('', 'plugins', id));
-      } finally {
-        await del(tempDir, { force: true });
-        await del(rootDir, { force: true });
-      }
+      const id = 'testPluginMock';
+      const tempDir = `/${id}`;
+      const pluginDir = `/test-temp/plugins/${id}`;
+
+      await movePlugin(tempDir, pluginDir, id);
+      await expect(fs.pathExists(pluginDir)).resolves.toBe(true);
+      expect(pluginDir).toMatch(path.join('', 'plugins', id));
     });
   });
 });
