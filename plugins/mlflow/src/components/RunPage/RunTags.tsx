@@ -27,27 +27,6 @@ import {
 import { RunTag } from '../../MLFlowClient';
 import { mlFlowClient } from '../../index';
 
-const [top, left] = [50, 50];
-const useStyles = makeStyles<Theme>(() => ({
-  button: {
-    order: -1,
-    marginRight: 0,
-    marginLeft: '-20px',
-  },
-  modal: {
-    top: `${top}%`,
-    left: `${left}%`,
-    display: 'flex',
-    alignItems: 'center',
-    width: '550px',
-    height: '250px',
-    justifyContent: 'center',
-    margin: 'auto',
-    border: '1px solid',
-    backgroundColor: '#FFFFFF',
-  },
-}));
-
 type RunTagsProps = {
   runId: string;
   tags: RunTag[];
@@ -62,7 +41,7 @@ const RunTags = ({ runId, tags }: RunTagsProps) => {
       key={-1}
       label="+"
       onClick={() => {
-        setOpen(true);
+        setOpen(!open);
       }}
     />
   );
@@ -95,14 +74,12 @@ const RunTags = ({ runId, tags }: RunTagsProps) => {
   return (
     <>
       {tagChips}
-      <Modal
-        open={open}
-        onClose={() => setOpen(false)}
-        aria-labelledby="new tag form"
-        aria-describedby="new tag form"
-      >
-        <NewTagForm handleSubmit={handleNewTagSubmit} />
-      </Modal>
+      {open && (
+        <NewTagForm
+          handleSubmit={handleNewTagSubmit}
+          handleCancel={_ => setOpen(false)}
+        />
+      )}
     </>
   );
 };
@@ -111,14 +88,14 @@ export default RunTags;
 
 type NewTagFormProps = {
   handleSubmit: Function;
+  handleCancel: Function;
 };
 
-const NewTagForm = ({ handleSubmit }: NewTagFormProps) => {
-  const classes = useStyles();
+const NewTagForm = ({ handleSubmit, handleCancel }: NewTagFormProps) => {
   const [tagKey, setTagKey] = useState<string>('');
   const [tagValue, setTagValue] = useState<string>('');
   return (
-    <div className={classes.modal}>
+    <div>
       <form
         onSubmit={ev => {
           ev.preventDefault();
@@ -146,13 +123,11 @@ const NewTagForm = ({ handleSubmit }: NewTagFormProps) => {
           </FormControl>
 
           <FormControl>
-            <Button
-              type="submit"
-              className={classes.button}
-              color="primary"
-              variant="contained"
-            >
+            <Button type="submit" color="primary" variant="contained">
               Create Tag
+            </Button>
+            <Button onClick={handleCancel} color="primary" variant="contained">
+              Cancel
             </Button>
           </FormControl>
         </FormGroup>

@@ -21,7 +21,6 @@ import { Run } from '../../MLFlowClient';
 import {
   Page,
   pageTheme,
-  Link,
   Header,
   HeaderLabel,
   Content,
@@ -31,10 +30,10 @@ import {
   Table,
   TableColumn,
   Progress,
-  StructuredMetadataTable,
 } from '@backstage/core';
 import { Grid } from '@material-ui/core';
 import MetricsGraph from './MetricsGraph';
+import RunMetadata from './RunMetadata';
 import RunTags from './RunTags';
 
 const RunPage = () => {
@@ -52,35 +51,10 @@ const RunPage = () => {
   }
 
   const run: Run = value;
-
-  const noteText: string | undefined = run.data.tags.find(
-    tag => tag.key === 'mlflow.note.content',
-  )?.value;
-
-  const source = run.data.tags.find(tag => tag.key === 'mlflow.source.name');
-  const environment = run.data.tags.find(
-    tag => tag.key === 'mlflow.source.type',
-  );
-
   const paramColumns: TableColumn[] = [
     { title: 'Key', field: 'key' },
     { title: 'Value', field: 'value' },
   ];
-
-  const metadataInfo = {
-    experiment: (
-      <Link to={`/mlflow/experiment/${run.info.experiment_id}`}>
-        {run.info.experiment_id}
-      </Link>
-    ),
-    status: run.info.status,
-    submittedBy: run.info.user_id,
-    startTime: run.info.start_time,
-    endTime: run.info.end_time,
-    source: source ? source.value : '',
-    executionEnvironment: environment ? environment.value : '',
-    runNotes: noteText,
-  };
 
   return (
     <Page theme={pageTheme.tool}>
@@ -94,14 +68,11 @@ const RunPage = () => {
         </ContentHeader>
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
-            <InfoCard title="Run Details">
-              <StructuredMetadataTable metadata={metadataInfo} />
-            </InfoCard>
+            <RunMetadata run={run} />
           </Grid>
           <Grid item xs={12} md={6}>
             <InfoCard title="Parameters and Tags">
               <RunTags runId={run.info.run_id} tags={run.data.tags} />
-
               <Table
                 options={{ search: false, paging: false }}
                 columns={paramColumns}
