@@ -44,6 +44,7 @@ import sentry from './plugins/sentry';
 import proxy from './plugins/proxy';
 import techdocs from './plugins/techdocs';
 import graphql from './plugins/graphql';
+import linkerd, { createWebSocketPlugin } from './plugins/linkerd';
 import app from './plugins/app';
 import { PluginEnvironment } from './types';
 
@@ -77,6 +78,7 @@ async function main() {
   const sentryEnv = useHotMemoize(module, () => createEnv('sentry'));
   const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
   const kubernetesEnv = useHotMemoize(module, () => createEnv('kubernetes'));
+  const linkerdEnv = useHotMemoize(module, () => createEnv('linkerd'));
   const graphqlEnv = useHotMemoize(module, () => createEnv('graphql'));
   const appEnv = useHotMemoize(module, () => createEnv('app'));
 
@@ -89,11 +91,13 @@ async function main() {
   apiRouter.use('/techdocs', await techdocs(techdocsEnv));
   apiRouter.use('/kubernetes', await kubernetes(kubernetesEnv));
   apiRouter.use('/proxy', await proxy(proxyEnv));
+  apiRouter.use('/linkerd', await linkerd(linkerdEnv));
   apiRouter.use('/graphql', await graphql(graphqlEnv));
   apiRouter.use(notFoundHandler());
 
   const service = createServiceBuilder(module)
     .loadConfig(configReader)
+    .addWebSocket('/api/linkerd/ws', await createWebSocketPlugin(linkerdEnv))
     .addRouter('', await healthcheck(healthcheckEnv))
     .addRouter('/api', apiRouter)
     .addRouter('', await app(appEnv));

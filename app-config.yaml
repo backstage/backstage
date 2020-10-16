@@ -63,8 +63,11 @@ kubernetes:
   serviceLocatorMethod: multiTenant
   clusterLocatorMethods:
     - config
-  clusters: []
-
+  clusters:
+    - url: 'https://127.0.0.1:59436'
+      name: kind
+      authProvider: serviceAccount
+      serviceAccountToken: eyJhbGciOiJSUzI1NiIsImtpZCI6ImNIYWRJaEc4cGFSZnRiN3JFUDFoNTVwNEtvUHN6QTFPbjlmem9TYW0zM2cifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImxpbmtlcmQtYmFja2VuZC10b2tlbi01Mjk3ZiIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50Lm5hbWUiOiJsaW5rZXJkLWJhY2tlbmQiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiJkMjQ0MmZhZS1mNzhhLTQ3MmUtYjkxMi02NjM3MDZmMzE2MjMiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6ZGVmYXVsdDpsaW5rZXJkLWJhY2tlbmQifQ.AmJAr_UhCuwop7V-ZB4z1BPzk7ta4GMitfFTInQfKN1dJ5Avc4rp8u-cIqbfhef_26b8UzkeU8RwCYvwSJ6K7aZ1jhW4cd_swqfn-boVZayufd8nV0GRWLPzw7Vm98Jvru4Zw-FJ330ESB38pV6bFPbtxxgXIBYmgalMKBdCYVo9Mkgvj6Dun1N2nf2ee4yjKwVRv02myRsJwhswYwnez0tZRX0scBIPz0PwBmsbiqkxImhjJrBkajVesGBK2hDyPaLQvDL_EfbRCRh1FW0W4iFEyM1jz__z0aOkGtsHWhPtS6hSuUYoG8b3v1MWvJS7N59CBMf8gwl5qD5WMxKLew
 integrations:
   github:
     - host: github.com
@@ -129,21 +132,25 @@ catalog:
       #         filter: (&(objectClass=some-group-class)(!(groupType=email)))
 
   locations:
-    # Backstage example components
-    - type: url
-      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
-    # Example component for github-actions
-    - type: url
-      target: https://github.com/spotify/backstage/blob/master/plugins/github-actions/examples/sample.yaml
-    # Example component for techdocs
-    - type: url
-      target: https://github.com/spotify/backstage/blob/master/plugins/techdocs-backend/examples/documented-component/documented-component.yaml
-    # Backstage example APIs
-    - type: url
-      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
-    # Backstage example templates
-    - type: url
-      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/all-templates.yaml
+    # # Backstage example components
+    # - type: url
+    #   target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
+    # # Example component for github-actions
+    # - type: url
+    #   target: https://github.com/spotify/backstage/blob/master/plugins/github-actions/examples/sample.yaml
+    # # Example component for techdocs
+    # - type: url
+    #   target: https://github.com/spotify/backstage/blob/master/plugins/techdocs-backend/examples/documented-component/documented-component.yaml
+    # # Backstage example APIs
+    # - type: url
+    #   target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
+    # # Backstage example templates
+    # - type: url
+    #   target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/all-templates.yaml
+
+    # EmojiVoto
+    - type: file
+      target: /Users/blam/dev/spotify/backstage/plugins/linkerd-backend/sample/emojivoto.yaml
 
 scaffolder:
   github:

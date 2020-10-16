@@ -20,6 +20,7 @@ import { Router, RequestHandler } from 'express';
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { HttpsSettings } from './lib/config';
+import { Server as WebSocketServer } from 'ws';
 
 export type ServiceBuilder = {
   /**
@@ -84,6 +85,13 @@ export type ServiceBuilder = {
    * @param router An express router
    */
   addRouter(root: string, router: Router | RequestHandler): ServiceBuilder;
+
+  /**
+   * Adds a router (similar to the express .use call) to the service.
+   * @param root The root URL to bind to (e.g. "/api/function1")
+   * @param server A WS Server
+   */
+  addWebSocket(root: string, server: WebSocketServer): ServiceBuilder;
 
   /**
    * Starts the server using the given settings.

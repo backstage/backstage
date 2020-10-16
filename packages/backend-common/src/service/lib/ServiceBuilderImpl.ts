@@ -20,6 +20,7 @@ import cors from 'cors';
 import express, { Router } from 'express';
 import helmet from 'helmet';
 import * as http from 'http';
+import url from 'url';
 import stoppable from 'stoppable';
 import { Logger } from 'winston';
 import { useHotCleanup } from '../../hot';
@@ -40,6 +41,7 @@ import {
 } from './config';
 import { createHttpServer, createHttpsServer } from './hostFactory';
 import { metricsHandler } from './metrics';
+import { Server as WebSocketServer } from 'ws';
 
 export const DEFAULT_PORT = 7000;
 // '' is express default, which listens to all interfaces
@@ -67,13 +69,13 @@ export class ServiceBuilderImpl implements ServiceBuilder {
   private cspOptions: CspOptions | undefined;
   private httpsSettings: HttpsSettings | undefined;
   private enableMetrics: boolean = true;
-  private routers: [string, Router][];
+  private routers: [string, Router][] = [];
+  private webSockets: [string, WebSocketServer][] = [];
   // Reference to the module where builder is created - needed for hot module
   // reloading
   private module: NodeModule;
 
   constructor(moduleRef: NodeModule) {
-    this.routers = [];
     this.module = moduleRef;
   }
 
@@ -147,6 +149,11 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     return this;
   }
 
+  addWebSocket(path: string, server: WebSocketServer): ServiceBuilder {
+    this.webSockets.push([path, server]);
+    return this;
+  }
+
   start(): Promise<http.Server> {
     const app = express();
     const {
@@ -191,6 +198,20 @@ export class ServiceBuilderImpl implements ServiceBuilder {
       const server: http.Server = httpsSettings
         ? createHttpsServer(app, httpsSettings, logger)
         : createHttpServer(app, logger);
+
+      if (this.webSockets.length) {
+        server.on('upgrade', (request, socket, head) => {
+          const { pathname } = url.parse(request.url);
+          for (let i = 0; i < this.webSockets.length; i++) {
+            const [path, wss] = this.webSockets[i];
+            if (pathname === path) {
+              wss.handleUpgrade(request, socket, head, ws => {
+                wss.emit('connection', ws, request);
+              });
+            }
+          }
+        });
+      }
 
       const stoppableServer = stoppable(
         server.listen(port, host, () => {

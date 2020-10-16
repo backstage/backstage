@@ -21,13 +21,14 @@ import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 import fetch from 'cross-fetch';
 import WebSocket from 'isomorphic-ws';
+import { Server } from 'ws';
 
 export interface RouterOptions {
   logger: Logger;
   config: Config;
 }
 
-// TODO - Need to work out better authentication using the CA of the k8s api cluster
+// TODO - Need to work out better authentication using the CA of the k8s api cluster :')
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
 
 export async function createRouter(
@@ -57,19 +58,19 @@ export async function createRouter(
     { headers: { Authorization }, rejectUnauthorized: false },
   );
 
-  Socket.onmessage = console.warn;
-  Socket.onclose = console.warn;
-  Socket.onopen = () => {
-    Socket.send(
-      JSON.stringify({
-        id: 'top-web',
-        resource: 'deployment/emoji',
-        namespace: 'emojivoto',
-        maxRps: 0,
-      }),
-    );
-  };
-  Socket.onerror = console.warn;
+  // Socket.onmessage = console.warn;
+  // Socket.onclose = console.warn;
+  // Socket.onopen = () => {
+  //   Socket.send(
+  //     JSON.stringify({
+  //       id: 'top-web',
+  //       resource: 'deployment/emoji',
+  //       namespace: 'emojivoto',
+  //       maxRps: 0,
+  //     }),
+  //   );
+  // };
+  // Socket.onerror = console.warn;
 
   router.get(
     '/deployment/:namespace/:deployment',
@@ -88,5 +89,15 @@ export async function createRouter(
     response.send({ status: 'ok' });
   });
   router.use(errorHandler());
+
   return router;
+}
+
+export async function createWebSockets(options: RouterOptions) {
+  console.warn('here');
+  const server = new Server({ noServer: true });
+
+  server.on('connection', () => console.warn('connected to me!'));
+
+  return server;
 }

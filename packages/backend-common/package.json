@@ -49,7 +49,8 @@
     "prom-client": "^12.0.0",
     "selfsigned": "^1.10.7",
     "stoppable": "^1.1.0",
-    "winston": "^3.2.1"
+    "winston": "^3.2.1",
+    "ws": "^7.3.1"
   },
   "peerDependencies": {
     "pg-connection-string": "^2.3.0"
@@ -68,6 +69,7 @@
     "@types/stoppable": "^1.1.0",
     "@types/supertest": "^2.0.8",
     "@types/webpack-env": "^1.15.2",
+    "@types/ws": "^7.2.7",
     "@types/yaml": "^1.9.7",
     "get-port": "^5.1.1",
     "http-errors": "^1.7.3",

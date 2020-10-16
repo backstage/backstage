@@ -40,6 +40,7 @@ import { Router as ApiDocsRouter } from '@backstage/plugin-api-docs';
 import { Router as SentryRouter } from '@backstage/plugin-sentry';
 import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
 import { Router as KubernetesRouter } from '@backstage/plugin-kubernetes';
+import { Router as LinkerdRouter } from '@backstage/plugin-linkerd';
 import {
   Router as GitHubInsightsRouter,
   isPluginApplicableToEntity as isGitHubAvailable,
@@ -189,6 +190,11 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
       element={<KubernetesRouter entity={entity} />}
     />
     <EntityPageLayout.Content
+      path="/linkerd/*"
+      title="Linkerd"
+      element={<LinkerdRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
       path="/pull-requests"
       title="Pull Requests"
       element={<PullRequestsRouter entity={entity} />}
@@ -232,6 +238,11 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
       path="/kubernetes/*"
       title="Kubernetes"
       element={<KubernetesRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/linkerd/*"
+      title="Linkerd"
+      element={<LinkerdRouter entity={entity} />}
     />
     <EntityPageLayout.Content
       path="/pull-requests"
