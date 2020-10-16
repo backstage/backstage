@@ -98,7 +98,7 @@ export function AboutCard({ entity, variant }: AboutCardProps) {
   const codeLink = getCodeLinkInfo(entity);
 
   return (
-    <Card className={variant === 'grid-item' ? classes.gridItemCard : ''}>
+    <Card className={variant === 'gridItem' ? classes.gridItemCard : ''}>
       <CardHeader
         title="About"
         action={
@@ -124,7 +124,7 @@ export function AboutCard({ entity, variant }: AboutCardProps) {
       />
       <Divider />
       <CardContent
-        className={variant === 'grid-item' ? classes.gridItemCardContent : ''}
+        className={variant === 'gridItem' ? classes.gridItemCardContent : ''}
       >
         <Grid container>
           <AboutField label="Description" gridSizes={{ xs: 12 }}>

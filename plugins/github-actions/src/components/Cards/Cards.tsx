@@ -123,10 +123,7 @@ export const LatestWorkflowsForBranchCard = ({
   branch = 'master',
   variant,
 }: Props) => (
-  <InfoCard
-    title={`Last ${branch} build`}
-    variant={variant === 'grid-item' ? 'height100' : ''}
-  >
+  <InfoCard title={`Last ${branch} build`} variant={variant}>
     <WorkflowRunsTable branch={branch} entity={entity} />
   </InfoCard>
 );

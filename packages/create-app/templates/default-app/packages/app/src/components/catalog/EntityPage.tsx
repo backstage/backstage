@@ -55,7 +55,7 @@ const CICDSwitcher = ({ entity }: { entity: Entity }) => {
 const OverviewContent = ({ entity }: { entity: Entity }) => (
   <Grid container spacing={3} alignItems="stretch">
     <Grid item>
-      <AboutCard entity={entity} variant="grid-item" />
+      <AboutCard entity={entity} variant="gridItem" />
     </Grid>
   </Grid>
 );

@@ -72,10 +72,7 @@ export const LatestRunCard = ({
   const [{ builds, loading }] = useBuilds(owner, repo, branch);
   const lastRun = builds ?? {};
   return (
-    <InfoCard
-      title={`Last ${branch} build`}
-      variant={variant === 'grid-item' ? 'height100' : ''}
-    >
+    <InfoCard title={`Last ${branch} build`} variant={variant}>
       <WidgetContent loading={loading} branch={branch} lastRun={lastRun} />
     </InfoCard>
   );

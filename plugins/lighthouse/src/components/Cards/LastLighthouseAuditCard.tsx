@@ -107,10 +107,7 @@ export const LastLighthouseAuditCard: FC<{
     );
   }
   return (
-    <InfoCard
-      title="Lighthouse Audit"
-      variant={variant === 'grid-item' ? 'height100' : ''}
-    >
+    <InfoCard title="Lighthouse Audit" variant={variant}>
       {content}
     </InfoCard>
   );

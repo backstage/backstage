@@ -76,7 +76,7 @@ export const RecentWorkflowRunsCard = ({
       title="Recent Workflow Runs"
       subheader={branch ? `Branch: ${branch}` : 'All Branches'}
       noPadding
-      variant={variant === 'grid-item' ? 'height100' : ''}
+      variant={variant}
     >
       <Table
         isLoading={loading}
