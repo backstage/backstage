@@ -18,7 +18,14 @@ import { InfoCard, Table, TableColumn } from '@backstage/core';
 import { Select, MenuItem } from '@material-ui/core';
 import { mlFlowClient } from '../../index';
 import { Metric } from '../../MLFlowClient';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+} from 'recharts';
 
 type MetricsGraphProps = { runId: string; metrics: Metric[] };
 
@@ -89,6 +96,7 @@ const MetricsGraph = ({ runId, metrics }: MetricsGraphProps) => {
       </Select>
       <LineChart width={800} height={400} data={metricHistory}>
         <Line type="monotone" dataKey="value" stroke="#8884d8" />
+        <Tooltip />
         <CartesianGrid stroke="#ccc" />
         <XAxis dataKey={xAxis} />
         <YAxis />

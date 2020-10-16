@@ -48,6 +48,13 @@ function getNoteText(tags: RunTag[]): string {
 const RunMetadata = ({ run }: RunMetadataProps) => {
   const [open, setOpen] = useState<boolean>(false);
   const [noteText, setNoteText] = useState<string>(getNoteText(run.data.tags));
+  const [experimentName, setExperimentName] = useState<string>();
+
+  // Turn the experiment_id into a name
+  mlFlowClient
+    .getExperiment(run.info.experiment_id)
+    .then(exp => setExperimentName(exp.name))
+    .catch(_ => setExperimentName(`ID: ${run.info.experiment_id}`));
 
   const noteElement: JSX.Element = (
     <div>
@@ -75,7 +82,7 @@ const RunMetadata = ({ run }: RunMetadataProps) => {
   const metadataInfo = {
     experiment: (
       <Link to={`/mlflow/experiment/${run.info.experiment_id}`}>
-        {run.info.experiment_id}
+        {experimentName}
       </Link>
     ),
     status: run.info.status,
