@@ -79,7 +79,7 @@ costInsights:
 
 ### Metrics (Optional)
 
-In the `Cost Overview` panel, users can choose from a dropdown of business metrics to see costs as they relate to a metric, such as daily active users. Metrics must be defined as keys on the `metrics` field. A user-friendly name is **required**. Metrics will be provided to the `getMetricData` API method via the `metric` parameter.
+In the `Cost Overview` panel, users can choose from a dropdown of business metrics to see costs as they relate to a metric, such as daily active users. Metrics must be defined as keys on the `metrics` field. A user-friendly name is **required**. Metrics will be provided to the `getDailyMetricData` API method via the `metric` parameter.
 
 An optional `default` field can be set to `true` to set the default comparison metric to daily cost in the Cost Overview panel.
 
