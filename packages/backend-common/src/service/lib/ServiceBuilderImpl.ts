@@ -202,14 +202,18 @@ export class ServiceBuilderImpl implements ServiceBuilder {
       if (this.webSockets.length) {
         server.on('upgrade', (request, socket, head) => {
           const { pathname } = url.parse(request.url);
+
           for (let i = 0; i < this.webSockets.length; i++) {
             const [path, wss] = this.webSockets[i];
             if (pathname === path) {
               wss.handleUpgrade(request, socket, head, ws => {
                 wss.emit('connection', ws, request);
               });
+              return;
             }
           }
+
+          socket.destroy();
         });
       }
 
