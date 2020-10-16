@@ -22,6 +22,7 @@ import { Config } from '@backstage/config';
  */
 export type UrlReader = {
   read(url: string): Promise<Buffer>;
+  readTree(url: string): Promise<string>;
 };
 
 export type UrlReaderPredicateTuple = {

@@ -21,7 +21,7 @@ import NodeGit, { Clone, Repository } from 'nodegit';
 import fs from 'fs-extra';
 import { getDefaultBranch } from './default-branch';
 import { Entity } from '@backstage/catalog-model';
-import { InputError } from '@backstage/backend-common';
+import { InputError, UrlReader } from '@backstage/backend-common';
 import { RemoteProtocol } from './techdocs/stages/prepare/types';
 import { Logger } from 'winston';
 
@@ -175,4 +175,40 @@ export const getLastCommitTimestamp = async (
   const commit = await repository.getReferenceCommit('HEAD');
 
   return commit.date().getTime();
+};
+
+const createFileFromBuffer = (filePath: string, content: Buffer): Promise<Error | undefined> => {
+  return new Promise((resolve, reject) => {
+    fs.mkdirSync(path.join(filePath, '../'), { recursive: true });
+    fs.writeFile(filePath, content.toString(), (error) => {
+      if (error) reject(error);
+
+      resolve();
+    });
+  });
+};
+
+export const getDocFilesFromRepository = async (reader: UrlReader, entity: Entity, logger: Logger): Promise<any> => {
+  /* const { type, target } = parseReferenceAnnotation(
+    'backstage.io/techdocs-ref',
+    entity,
+  );*/
+
+  // Current documented-component available in github points to the github: type. Using this for testing atm. 
+  const target = "https://github.com/spotify/backstage/blob/master/plugins/techdocs-backend/examples/documented-component/mkdocs.yml";
+  const { filepath } = parseGitUrl(target);
+  
+  const mkdocsFile = await reader.read(target);
+  const docFiles = await reader.readTree(new URL('./docs', target).toString())
+
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'techdocs-'));
+  
+  await Promise.all(
+    [
+      createFileFromBuffer(`${tmpDir}/${filepath}`, mkdocsFile),
+      ...docFiles.map((file) => createFileFromBuffer(`${tmpDir}/${file.path}`, file.content))
+    ]
+  );
+
+  return `${tmpDir}/${path.join(filepath, '../')}`;
 };

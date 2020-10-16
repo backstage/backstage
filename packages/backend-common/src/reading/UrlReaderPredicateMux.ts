@@ -53,6 +53,22 @@ export class UrlReaderPredicateMux implements UrlReader {
     throw new Error(`No reader found that could handle '${url}'`);
   }
 
+  readTree(url: string): Promise<string> {
+    const parsed = new URL(url);
+
+    for (const { predicate, reader } of this.readers) {
+      if (predicate(parsed)) {
+        return reader.readTree(url);
+      }
+    }
+
+    if (this.fallback) {
+      return this.fallback.readTree(url);
+    }
+
+    throw new Error(`No reader found that could handle '${url}'`);
+  }
+
   toString() {
     return `predicateMux{readers=${this.readers
       .map(t => t.reader)

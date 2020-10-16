@@ -4,7 +4,7 @@ metadata:
   name: documented-component
   description: A Service with TechDocs documentation
   annotations:
-    backstage.io/techdocs-ref: 'github:https://github.com/spotify/backstage/blob/master/plugins/techdocs-backend/examples/documented-component'
+    backstage.io/techdocs-ref: 'url:https://github.com/spotify/backstage/blob/master/plugins/techdocs-backend/examples/documented-component/mkdocs.yml'
 spec:
   type: service
   lifecycle: experimental

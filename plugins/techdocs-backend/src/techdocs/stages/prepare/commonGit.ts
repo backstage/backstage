@@ -19,29 +19,27 @@ import { PreparerBase } from './types';
 import parseGitUrl from 'git-url-parse';
 import {
   parseReferenceAnnotation,
-  checkoutGitRepository,
+  getDocFilesFromRepository,
 } from '../../../helpers';
 
 import { Logger } from 'winston';
+import { UrlReader } from '@backstage/backend-common';
 
 export class CommonGitPreparer implements PreparerBase {
   private readonly logger: Logger;
+  private readonly reader: UrlReader;
 
-  constructor(logger: Logger) {
+  constructor(reader: UrlReader, logger: Logger) {
     this.logger = logger;
+    this.reader = reader;
   }
 
   async prepare(entity: Entity): Promise<string> {
-    const { target } = parseReferenceAnnotation(
-      'backstage.io/techdocs-ref',
-      entity,
-    );
-
     try {
-      const repoPath = await checkoutGitRepository(target, this.logger);
-      const parsedGitLocation = parseGitUrl(target);
+      //const repoPath = await checkoutGitRepository(target, this.logger);
+      const repoPath = getDocFilesFromRepository(this.reader, entity, this.logger)
 
-      return path.join(repoPath, parsedGitLocation.filepath);
+      return repoPath;
     } catch (error) {
       this.logger.debug(`Repo checkout failed with error ${error.message}`);
       throw error;

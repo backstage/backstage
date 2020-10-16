@@ -30,13 +30,14 @@ export default async function createPlugin({
   logger,
   config,
   discovery,
+  reader,
 }: PluginEnvironment) {
   const generators = new Generators();
   const techdocsGenerator = new TechdocsGenerator(logger, config);
   generators.register('techdocs', techdocsGenerator);
 
   const preparers = new Preparers();
-  const commonGitPreparer = new CommonGitPreparer(logger);
+  const commonGitPreparer = new CommonGitPreparer(reader, logger);
 
   const directoryPreparer = new DirectoryPreparer(logger);
   preparers.register('dir', directoryPreparer);

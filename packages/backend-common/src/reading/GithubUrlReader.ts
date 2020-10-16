@@ -59,6 +59,19 @@ export type ProviderConfig = {
   token?: string;
 };
 
+type GitHubTree = {
+  sha: string;
+  url: string;
+  tree: Array<{
+    path: string;
+    mode: string;
+    type: 'tree' | 'blob';
+    sha: string;
+    size: number;
+    url: string;
+  }>;
+};
+
 export function getApiRequestOptions(provider: ProviderConfig): RequestInit {
   const headers: HeadersInit = {
     Accept: 'application/vnd.github.v3.raw',
@@ -227,6 +240,66 @@ export class GithubUrlReader implements UrlReader {
       throw new NotFoundError(message);
     }
     throw new Error(message);
+  }
+
+  private async getRepoFileTree(
+    target: string,
+    provider: ProviderConfig,
+  ): Promise<GitHubTree> {
+    const { owner, name, ref } = parseGitUri(target);
+
+    const options = getApiRequestOptions(this.config);
+
+    const repoInfoResponse = await fetch(
+      new URL(
+        `${provider.apiBaseUrl}/repos/${owner}/${name}/branches/${ref}`,
+      ).toString(),
+      options,
+    );
+
+    const repoInfo = await repoInfoResponse.json();
+
+    const treeRequest = await fetch(
+      new URL(
+        `${provider.apiBaseUrl}/repos/${owner}/${name}/git/trees/${repoInfo.commit.sha}?recursive=true`,
+      ).toString(),
+      options,
+    );
+
+    return await treeRequest.json();
+  }
+
+  async readTree(url: string): Promise<Promise<any>[]> {
+    const {
+      filepath,
+      protocol,
+      source,
+      name,
+      owner,
+      ref,
+    } = parseGitUri(url);
+
+    const fileTree = await this.getRepoFileTree(url, this.config);
+
+    const filesMetadata = fileTree.tree.filter(file => {
+      return file.type === 'blob' && file.path.startsWith(`${filepath}/`);
+    });
+
+    const fetchedFiles = filesMetadata.map(fileMetadata => {
+      return new Promise((resolve, reject) => {
+        this.read(`${protocol}://${source}/${owner}/${name}/blob/${ref}/${fileMetadata.path}`).then((file) => {
+          resolve({
+            path: fileMetadata.path,
+            content: file,
+          })
+        })
+        .catch((err) => {
+          reject(err);
+        })
+      });
+    })
+
+    return await Promise.all(fetchedFiles);
   }
 
   toString() {
