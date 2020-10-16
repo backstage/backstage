@@ -52,7 +52,9 @@ export function useQueryParams<T>(): [T, SetQueryParams<T>] {
           );
         }
       }, 100)(q),
-    [location, navigate],
+    // We don't have to add location and navigate to the deps here
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
   );
 
   useEffect(() => {

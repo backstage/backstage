@@ -15,7 +15,14 @@
  */
 
 import { ApiEntityV1alpha1, Entity } from '@backstage/catalog-model';
-import { Table, TableFilter, TableColumn, useApi } from '@backstage/core';
+import {
+  Table,
+  TableColumn,
+  TableFilter,
+  TableState,
+  useApi,
+  useQueryParams,
+} from '@backstage/core';
 import { Chip, Link } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React from 'react';
@@ -120,6 +127,8 @@ export const ApiExplorerTable = ({
   loading,
   error,
 }: ExplorerTableProps) => {
+  const [queryParams, setQueryParams] = useQueryParams<TableState>();
+
   if (error) {
     return (
       <div>
@@ -142,6 +151,8 @@ export const ApiExplorerTable = ({
       }}
       data={entities}
       filters={filters}
+      initialState={queryParams}
+      onStateChange={setQueryParams}
     />
   );
 };
