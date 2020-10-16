@@ -17,16 +17,10 @@
 import { Metric } from '../types';
 
 export function validateMetrics(metrics: Metric[]) {
-  let defaultMetric = null;
-  for (const metric of metrics) {
-    if (metric.default) {
-      if (defaultMetric) {
-        throw new Error(
-          `Cannot set default for multiple metrics: Received: ${defaultMetric.kind} and ${metric.kind}`,
-        );
-      } else {
-        defaultMetric = metric;
-      }
-    }
+  const defaults = metrics.filter(metric => metric.default);
+  if (defaults.length > 1) {
+    throw new Error(
+      `Only one default metric can be set at a time. Found ${defaults.length}`,
+    );
   }
 }
