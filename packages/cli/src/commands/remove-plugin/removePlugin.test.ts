@@ -32,7 +32,6 @@ import {
   removePluginFromCodeOwners,
 } from './removePlugin';
 
-// Some constant variables
 const BACKSTAGE = `@backstage`;
 const testPluginName = 'yarn-test-package';
 const testPluginPackage = `${BACKSTAGE}/plugin-${testPluginName}`;
@@ -68,8 +67,8 @@ const createTestPluginFile = async (
     .split('-')
     .map(name => capitalize(name))
     .join('');
-  const exportStatement = `export { default as ${pluginNameCapitalized}} from @backstage/plugin-${testPluginName}`;
-  addExportStatement(testFilePath, exportStatement);
+  const exportStatement = `export { plugin as ${pluginNameCapitalized}} from @backstage/plugin-${testPluginName}`;
+  await addExportStatement(testFilePath, exportStatement);
 };
 
 const mkTestPluginDir = (testDirPath: string) => {
@@ -78,15 +77,21 @@ const mkTestPluginDir = (testDirPath: string) => {
     fse.createFileSync(path.join(testDirPath, `testFile${i}.ts`));
 };
 
-beforeAll(() => {
-  // Create temporary directory for all tests
-  createTemporaryPluginFolder(tempDir);
-});
-
 describe('removePlugin', () => {
+  beforeAll(() => {
+    // Create temporary directory for all tests
+    createTemporaryPluginFolder(tempDir);
+  });
+
+  afterAll(() => {
+    // Remove temporary directory
+    fse.removeSync(tempDir);
+  });
+
   describe('Remove Plugin Dependencies', () => {
     const appPath = paths.resolveTargetRoot('packages', 'app');
     const githubDir = paths.resolveTargetRoot('.github');
+
     it('removes plugin references from /packages/app/package.json', async () => {
       // Set up test
       const packageFilePath = path.join(appPath, 'package.json');
@@ -105,7 +110,8 @@ describe('removePlugin', () => {
         fse.removeSync(testFilePath);
       }
     });
-    it('removes plugin exports from /packages/app/src/packacge.json', async () => {
+
+    it('removes plugin exports from /packages/app/src/package.json', async () => {
       const testFilePath = path.join(tempDir, 'test.ts');
       const pluginsFilePaths = path.join(appPath, 'src', 'plugins.ts');
       createTestPluginFile(testFilePath, pluginsFilePaths);
@@ -122,6 +128,7 @@ describe('removePlugin', () => {
         fse.removeSync(testFilePath);
       }
     });
+
     it('removes codeOwners references', async () => {
       const testFilePath = path.join(tempDir, 'test');
       const codeownersPath = path.join(githubDir, 'CODEOWNERS');
@@ -144,12 +151,14 @@ describe('removePlugin', () => {
       }
     });
   });
+
   describe('Remove files', () => {
     const testDirPath = path.join(
       paths.resolveTargetRoot(),
       'plugins',
       testPluginName,
     );
+
     describe('Removes Plugin Directory', () => {
       it('removes plugin directory from /plugins', async () => {
         try {
@@ -162,6 +171,7 @@ describe('removePlugin', () => {
         }
       });
     });
+
     describe('Removes System Link', () => {
       it('removes system link from @backstage', async () => {
         const scopedDir = paths.resolveTargetRoot('node_modules', '@backstage');
@@ -182,9 +192,4 @@ describe('removePlugin', () => {
       });
     });
   });
-});
-
-afterAll(() => {
-  // Remove temporary directory
-  fse.removeSync(tempDir);
 });

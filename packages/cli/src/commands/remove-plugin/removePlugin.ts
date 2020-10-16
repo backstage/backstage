@@ -20,7 +20,6 @@ import inquirer, { Answers, Question } from 'inquirer';
 import { getCodeownersFilePath } from '../../lib/codeowners';
 import { paths } from '../../lib/paths';
 import { Task } from '../../lib/tasks';
-// import os from 'os';
 
 const BACKSTAGE = '@backstage';
 
