@@ -236,11 +236,9 @@ costInsights:
       name: Big Query
       icon: search
   metrics:
-    dailyCost:
-      name: Pied Piper's Daily Cost
-      compare: DAU
     DAU:
       name: Daily Active Users
+      default: true
     MSC:
       name: Monthly Subscribers
 homepage:

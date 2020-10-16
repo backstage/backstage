@@ -15,6 +15,7 @@
  */
 
 import { Cost } from './Cost';
+import { MetricData } from './MetricData';
 import { aggregationSort } from '../utils/sort';
 
 export interface ChangeStatistic {
@@ -51,9 +52,12 @@ export function growthOf(amount: number, ratio: number) {
 }
 
 // Used by <CostOverviewCard /> for displaying engineer totals
-export function getComparedChange(a: Cost, b: Cost): ChangeStatistic {
-  const ratio = a.change.ratio - b.change.ratio;
-  const amount = a.aggregation.slice().sort(aggregationSort)[0].amount;
+export function getComparedChange(
+  dailyCost: Cost,
+  metricData: MetricData,
+): ChangeStatistic {
+  const ratio = dailyCost.change.ratio - metricData.change.ratio;
+  const amount = dailyCost.aggregation.slice().sort(aggregationSort)[0].amount;
   return {
     ratio: ratio,
     amount: amount * ratio,

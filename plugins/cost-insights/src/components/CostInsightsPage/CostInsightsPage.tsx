@@ -101,34 +101,26 @@ const CostInsightsPage = () => {
       try {
         if (pageFilters.group) {
           dispatchLoadingInsights(true);
+          const intervals = intervalsOf(pageFilters.duration);
           const [
             fetchedProjects,
             fetchedAlerts,
             fetchedMetricData,
-            fetchedCosts,
+            fetchedDailyCost,
           ] = await Promise.all([
             client.getGroupProjects(pageFilters.group),
             client.getAlerts(pageFilters.group),
             pageFilters.metric
-              ? client.getMetricData(
-                  pageFilters.metric,
-                  intervalsOf(pageFilters.duration),
-                )
+              ? client.getMetricData(pageFilters.metric, intervals)
               : null,
             pageFilters.project
-              ? client.getProjectDailyCost(
-                  pageFilters.project,
-                  intervalsOf(pageFilters.duration),
-                )
-              : client.getGroupDailyCost(
-                  pageFilters.group,
-                  intervalsOf(pageFilters.duration),
-                ),
+              ? client.getProjectDailyCost(pageFilters.project, intervals)
+              : client.getGroupDailyCost(pageFilters.group, intervals),
           ]);
           setProjects(fetchedProjects);
           setAlerts(fetchedAlerts);
           setMetricData(fetchedMetricData);
-          setDailyCost(fetchedCosts);
+          setDailyCost(fetchedDailyCost);
         } else {
           dispatchLoadingNone(loadingActions);
         }
@@ -267,7 +259,10 @@ const CostInsightsPage = () => {
               <Grid item xs>
                 <Box px={3} py={6}>
                   {!!dailyCost.aggregation.length && (
-                    <CostOverviewCard data={[dailyCost, metricData]} />
+                    <CostOverviewCard
+                      dailyCostData={dailyCost}
+                      metricData={metricData}
+                    />
                   )}
                   <WhyCostsMatter />
                 </Box>

@@ -87,7 +87,7 @@ export type CostInsightsApi = {
    * @param intervals An ISO 8601 repeating interval string, such as R2/P1M/2020-09-01
    *   https://en.wikipedia.org/wiki/ISO_8601#Repeating_intervals
    */
-  getMetricData(metric: string | null, intervals: string): Promise<MetricData>;
+  getMetricData(metric: string, intervals: string): Promise<MetricData>;
 
   /**
    * Get cost aggregations for a particular cloud product and interval timeframe. This includes
@@ -104,10 +104,9 @@ export type CostInsightsApi = {
    * @param product The product from the cost-insights configuration in app-config.yaml
    * @param group
    * @param duration A time duration, such as P1M. See the Duration type for a detailed explanation
-   *    of how the durations are interpreted in Cost Insights.
+   * of how the durations are interpreted in Cost Insights.
    * @param project (optional) The project id from getGroupProjects or query parameters
    */
-
   getProductInsights(
     product: string,
     group: string,

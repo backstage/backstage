@@ -16,7 +16,6 @@
 import React from 'react';
 import { useTheme } from '@material-ui/core';
 import {
-  AxisDomain,
   ComposedChart,
   XAxis,
   YAxis,
@@ -30,6 +29,7 @@ import {
 import {
   ChartData,
   Cost,
+  Maybe,
   Metric,
   MetricData,
   CostInsightsTheme,
@@ -40,71 +40,69 @@ import {
 } from '../../utils/graphs';
 import CostOverviewTooltip from './CostOverviewTooltip';
 import { TooltipItemProps } from '../Tooltip';
-import { NULL_METRIC } from '../../hooks/useConfig';
 import { useCostOverviewStyles as useStyles } from '../../utils/styles';
 import { groupByDate, toDataMax, trendFrom } from '../../utils/charts';
 import { aggregationSort } from '../../utils/sort';
 
 type CostOverviewChartProps = {
-  data: [Cost, MetricData | null];
-  name: string;
-  compare?: Metric;
+  metric: Maybe<Metric>;
+  metricData: Maybe<MetricData>;
+  dailyCostData: Cost;
   responsive?: boolean;
 };
 
 const CostOverviewChart = ({
-  data,
-  name,
-  compare,
+  dailyCostData,
+  metric,
+  metricData,
   responsive = true,
 }: CostOverviewChartProps) => {
   const theme = useTheme<CostInsightsTheme>();
   const styles = useStyles(theme);
 
-  const { dailyCost, metric } = {
+  const data = {
     dailyCost: {
-      id: NULL_METRIC,
-      name: name,
-      format: 'number',
-      data: data[0],
+      dataKey: 'dailyCost',
+      name: `Daily Cost`,
+      format: 'currency',
+      data: dailyCostData,
     },
     metric: {
-      id: compare?.kind ?? 'Unknown',
-      name: compare?.name ?? 'Unknown',
-      format: data[1]?.format ?? 'number',
-      data: data[1],
+      dataKey: metric?.kind ?? 'Unknown',
+      name: metric?.name ?? 'Unknown',
+      format: metricData?.format ?? 'number',
+      data: metricData,
     },
   };
 
-  const metricsByDate = metric.data
-    ? metric.data.aggregation.reduce(groupByDate, {})
+  const metricsByDate = data.metric.data
+    ? data.metric.data.aggregation.reduce(groupByDate, {})
     : {};
 
-  const chartData: ChartData[] = dailyCost
-    .data!.aggregation.slice()
+  const chartData: ChartData[] = data.dailyCost.data.aggregation
+    .slice()
     .sort(aggregationSort)
     .map(entry => ({
       date: Date.parse(entry.date),
-      trend: trendFrom(dailyCost.data!.trendline, Date.parse(entry.date)),
+      trend: trendFrom(data.dailyCost.data.trendline, Date.parse(entry.date)),
       dailyCost: entry.amount,
-      ...(metric && metric.data
-        ? { [metric.id]: metricsByDate[`${entry.date}`] }
+      ...(metric && data.metric.data
+        ? { [data.metric.dataKey]: metricsByDate[`${entry.date}`] }
         : {}),
     }));
 
-  const metricDataMax: AxisDomain = metric
-    ? toDataMax(metric.id, chartData)
-    : 'dataMax';
-
   function tooltipFormatter(payload: TooltipPayload): TooltipItemProps {
     return {
-      label: payload.dataKey === dailyCost.id ? dailyCost.name : metric.name,
+      label:
+        payload.dataKey === data.dailyCost.dataKey
+          ? data.dailyCost.name
+          : data.metric.name,
       value:
-        payload.dataKey === dailyCost.id
-          ? formatGraphValue(payload.value as number, dailyCost.format)
-          : formatGraphValue(payload.value as number, metric.format),
+        payload.dataKey === data.dailyCost.dataKey
+          ? formatGraphValue(payload.value as number, data.dailyCost.format)
+          : formatGraphValue(payload.value as number, data.metric.format),
       fill:
-        payload.dataKey === dailyCost.id
+        payload.dataKey === data.dailyCost.dataKey
           ? theme.palette.blue
           : theme.palette.magenta,
     };
@@ -131,23 +129,23 @@ const CostOverviewChart = ({
           tick={{ fill: styles.axis.fill }}
           tickFormatter={formatGraphValue}
           width={styles.yAxis.width}
-          yAxisId={dailyCost.id}
+          yAxisId={data.dailyCost.dataKey}
         />
         {metric && (
           <YAxis
             hide
-            domain={[() => 0, metricDataMax]}
+            domain={[() => 0, toDataMax(data.metric.dataKey, chartData)]}
             width={styles.yAxis.width}
-            yAxisId={metric.id}
+            yAxisId={data.metric.dataKey}
           />
         )}
         <Area
-          dataKey={dailyCost.id}
+          dataKey={data.dailyCost.dataKey}
           isAnimationActive={false}
           fill={theme.palette.blue}
           fillOpacity={0.4}
           stroke="none"
-          yAxisId={dailyCost.id}
+          yAxisId={data.dailyCost.dataKey}
         />
         <Line
           activeDot={false}
@@ -157,24 +155,23 @@ const CostOverviewChart = ({
           label={false}
           strokeWidth={2}
           stroke={theme.palette.blue}
-          yAxisId={dailyCost.id}
+          yAxisId={data.dailyCost.dataKey}
         />
         {metric && (
           <Line
-            activeDot={false}
-            dataKey={metric.id}
+            dataKey={data.metric.dataKey}
             dot={false}
             isAnimationActive={false}
             label={false}
             strokeWidth={2}
             stroke={theme.palette.magenta}
-            yAxisId={metric.id}
+            yAxisId={data.metric.dataKey}
           />
         )}
         <Tooltip
           content={
             <CostOverviewTooltip
-              dataKeys={[dailyCost.id, metric.id]}
+              dataKeys={[data.dailyCost.dataKey, data.metric.dataKey]}
               format={tooltipFormatter}
             />
           }

@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-export * from './Alert';
-export * from './ChangeStatistic';
-export * from './ChartData';
-export * from './Cost';
-export * from './DateAggregation';
-export * from './Duration';
-export * from './Currency';
-export * from './Entity';
-export * from './Icon';
-export * from './Filters';
-export * from './Group';
-export * from './Loading';
-export * from './Maybe';
-export * from './MetricData';
-export * from './Metric';
-export * from './Product';
-export * from './Project';
-export * from './Theme';
-export * from './Trendline';
+import { Metric } from '../types';
+
+export function validateMetrics(metrics: Metric[]) {
+  let defaultMetric = null;
+  for (const metric of metrics) {
+    if (metric.default) {
+      if (defaultMetric) {
+        throw new Error(
+          `Cannot set default for multiple metrics: Received: ${defaultMetric.kind} and ${metric.kind}`,
+        );
+      } else {
+        defaultMetric = metric;
+      }
+    }
+  }
+}

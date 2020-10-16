@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import { Maybe } from '../types';
-
 export type Metric = {
-  kind: Maybe<string>;
+  kind: string;
   name: string;
-  compare?: string;
+  default: boolean;
 };

@@ -24,7 +24,3 @@ export interface Cost {
   change: ChangeStatistic;
   trendline: Trendline;
 }
-
-export interface MetricData extends Cost {
-  format: 'number' | 'currency';
-}

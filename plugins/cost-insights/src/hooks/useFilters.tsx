@@ -75,9 +75,8 @@ export const FilterProvider = ({ children }: FilterProviderProps) => {
   const queryParams = useQueryParams();
   const qsRef = useRef('');
   const groups = useGroups();
-  const { products } = useConfig();
 
-  const defaultProductFilters = products.map(product => ({
+  const defaultProductFilters = config.products.map(product => ({
     productType: product.kind,
     duration: Duration.P1M,
   }));
@@ -103,8 +102,8 @@ export const FilterProvider = ({ children }: FilterProviderProps) => {
   // TODO: Figure out why pageFilters doesn't get updated by the above when groups are loaded.
   useEffect(() => {
     const initialState = getInitialPageState(groups, queryParams.pageFilters);
-    const compared = config.metrics.find(m => m.kind === null)?.compare;
-    setPageFilters({ ...initialState, metric: compared || null });
+    const defaultMetric = config.metrics.find(m => m.default);
+    setPageFilters({ ...initialState, metric: defaultMetric?.kind ?? null });
   }, [groups]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {

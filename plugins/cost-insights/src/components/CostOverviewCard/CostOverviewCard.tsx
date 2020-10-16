@@ -35,10 +35,14 @@ import {
 } from '../../types';
 
 export type CostOverviewCardProps = {
-  data: [Cost, MetricData | null];
+  dailyCostData: Cost;
+  metricData: MetricData | null;
 };
 
-const CostOverviewCard = ({ data }: CostOverviewCardProps) => {
+const CostOverviewCard = ({
+  dailyCostData,
+  metricData,
+}: CostOverviewCardProps) => {
   const theme = useTheme<CostInsightsTheme>();
   const config = useConfig();
   const { ScrollAnchor } = useScroll(DefaultNavigation.CostOverviewCard);
@@ -46,10 +50,12 @@ const CostOverviewCard = ({ data }: CostOverviewCardProps) => {
     mapFiltersToProps,
   );
 
-  // There should always be a daily cost metric but a comparison metric is optional.
-  const dailyCost = findAlways(config.metrics, m => m.kind === null);
-  const metric = config.metrics.find(m => m.kind === filters.metric);
-  const comparedChange = data[1] ? getComparedChange(data[0], data[1]) : null;
+  const metric = filters.metric
+    ? findAlways(config.metrics, m => m.kind === filters.metric)
+    : null;
+  const comparedChange = metricData
+    ? getComparedChange(dailyCostData, metricData)
+    : null;
 
   return (
     <Card style={{ position: 'relative' }}>
@@ -62,21 +68,18 @@ const CostOverviewCard = ({ data }: CostOverviewCardProps) => {
         <Box my={1} display="flex" flexDirection="column">
           <Box display="flex" flexDirection="row">
             <Box mr={2}>
-              <LegendItem
-                title={`${dailyCost.name} Trend`}
-                markerColor={theme.palette.blue}
-              >
-                {formatPercent(data[0].change.ratio)}
+              <LegendItem title="Cost Trend" markerColor={theme.palette.blue}>
+                {formatPercent(dailyCostData.change.ratio)}
               </LegendItem>
             </Box>
-            {metric && metric.kind && data[1] && comparedChange && (
+            {metric && metricData && comparedChange && (
               <>
                 <Box mr={2}>
                   <LegendItem
-                    title={metric.name}
+                    title={`${metric.name} Trend`}
                     markerColor={theme.palette.magenta}
                   >
-                    {formatPercent(data[1].change.ratio)}
+                    {formatPercent(metricData.change.ratio)}
                   </LegendItem>
                 </Box>
                 <LegendItem
@@ -93,9 +96,9 @@ const CostOverviewCard = ({ data }: CostOverviewCardProps) => {
             )}
           </Box>
           <CostOverviewChart
-            data={data}
-            name={dailyCost.name}
-            compare={metric}
+            dailyCostData={dailyCostData}
+            metric={metric}
+            metricData={metricData}
           />
         </Box>
         <Box display="flex" justifyContent="flex-end" alignItems="center">
