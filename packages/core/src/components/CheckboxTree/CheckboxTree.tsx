@@ -28,7 +28,8 @@ import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import produce from 'immer';
 import { isEqual } from 'lodash';
-import React, { useEffect, useReducer, useRef } from 'react';
+import React, { useEffect, useReducer } from 'react';
+import { usePrevious } from 'react-use';
 
 type IndexedObject<T> = {
   [key: string]: T;
@@ -223,14 +224,6 @@ const indexer = (
       [el.label]: { ...el, isChecked: el.isChecked || false },
     };
   }, {});
-
-function usePrevious<T>(value?: T): T | undefined {
-  const ref = useRef<T>();
-  useEffect(() => {
-    ref.current = value;
-  });
-  return ref.current;
-}
 
 export const CheckboxTree = ({
   subCategories,

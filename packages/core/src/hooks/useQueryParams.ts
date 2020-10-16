@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { debounce } from 'lodash';
 import qs from 'qs';
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useDebounce } from 'react-use';
 
 function stringify(queryParams: any): string {
   // Even though these setting don't look nice (e.g. escaped brackets), we should keep
@@ -42,26 +42,17 @@ export function useQueryParams<T>(): [T, SetQueryParams<T>] {
   const location = useLocation();
   const [queryParams, setQueryParams] = useState(parse(location.search));
 
-  const updateQueryString = useCallback(
-    (q: string) =>
-      debounce(queryString => {
-        if (location.search !== queryString) {
-          navigate(
-            { ...location, search: `?${queryString}` },
-            { replace: true },
-          );
-        }
-      }, 100)(q),
-    // We don't have to add location and navigate to the deps here
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+  useDebounce(
+    () => {
+      const queryString = stringify(queryParams);
+
+      if (location.search !== queryString) {
+        navigate({ ...location, search: `?${queryString}` }, { replace: true });
+      }
+    },
+    100,
+    [queryParams],
   );
-
-  useEffect(() => {
-    const queryString = stringify(queryParams);
-
-    updateQueryString(queryString);
-  }, [queryParams, updateQueryString]);
 
   return [queryParams, setQueryParams];
 }
