@@ -31,7 +31,13 @@ describe('<StructuredMetadataTable />', () => {
 
   describe('Item Mappings', () => {
     it('Iterates over and displays every field in the map', () => {
-      const metadata = { field1: 'one', field2: 'two', field3: 'three' };
+      const metadata: {
+        [prop: string]: string;
+      } = {
+        field1: 'one',
+        field2: 'two',
+        field3: 'three',
+      };
       const { getByText } = render(
         <StructuredMetadataTable metadata={metadata} />,
       );
@@ -42,8 +48,10 @@ describe('<StructuredMetadataTable />', () => {
       });
     });
 
-    it('Supports primative value fields', () => {
-      const metadata = { strField: 'my field', intField: 1 };
+    it('Supports primitive value fields', () => {
+      const metadata: {
+        [prop: string]: string | number;
+      } = { strField: 'my field', intField: 1 };
       const { getByText } = render(
         <StructuredMetadataTable metadata={metadata} />,
       );
@@ -79,7 +87,9 @@ describe('<StructuredMetadataTable />', () => {
     });
 
     it('Supports object elements', () => {
-      const metadata = { config: { a: 1, b: 2 } };
+      const metadata: { [prop: string]: { [prop: string]: number } } = {
+        config: { a: 1, b: 2 },
+      };
       const { getByText } = render(
         <StructuredMetadataTable metadata={metadata} />,
       );
