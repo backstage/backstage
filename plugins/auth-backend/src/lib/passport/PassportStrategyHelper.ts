@@ -28,6 +28,7 @@ export type PassportDoneCallback<Res, Private = never> = (
 export const makeProfileInfo = (
   profile: passport.Profile,
   idToken?: string,
+  customAttributes?: string[],
 ): ProfileInfo => {
   const { displayName } = profile;
 
@@ -55,6 +56,26 @@ export const makeProfileInfo = (
     } catch (e) {
       throw new Error(`Failed to parse id token and get profile info, ${e}`);
     }
+  }
+
+  const customObjects: any[] = [];
+  if (customAttributes && idToken) {
+    try {
+      const decoded: Record<string, string> = jwtDecoder(idToken);
+      customAttributes.forEach(att => {
+        if (decoded[att]) {
+          customObjects.push({ [att]: decoded[att] });
+        }
+      });
+    } catch (e) {
+      throw new Error(`Failed to parse id token and get profile info, ${e}`);
+    }
+    return {
+      email,
+      picture,
+      displayName,
+      customObjects,
+    };
   }
 
   return {

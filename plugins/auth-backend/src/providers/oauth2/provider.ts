@@ -44,6 +44,7 @@ type PrivateInfo = {
 export type OAuth2AuthProviderOptions = OAuthProviderOptions & {
   authorizationUrl: string;
   tokenUrl: string;
+  customAttributes: string[];
 };
 
 export class OAuth2AuthProvider implements OAuthHandlers {
@@ -66,7 +67,11 @@ export class OAuth2AuthProvider implements OAuthHandlers {
         rawProfile: passport.Profile,
         done: PassportDoneCallback<OAuthResponse, PrivateInfo>,
       ) => {
-        const profile = makeProfileInfo(rawProfile, params.id_token);
+        const profile = makeProfileInfo(
+          rawProfile,
+          params.id_token,
+          options.customAttributes,
+        );
 
         done(
           undefined,
@@ -168,6 +173,8 @@ export const createOAuth2Provider: AuthProviderFactory = ({
     const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
     const authorizationUrl = envConfig.getString('authorizationUrl');
     const tokenUrl = envConfig.getString('tokenUrl');
+    const disableRefresh = envConfig.getBoolean('disableRefresh');
+    const customAttributes = envConfig.getStringArray('customAttributes');
 
     const provider = new OAuth2AuthProvider({
       clientId,
@@ -175,10 +182,11 @@ export const createOAuth2Provider: AuthProviderFactory = ({
       callbackUrl,
       authorizationUrl,
       tokenUrl,
+      customAttributes,
     });
 
     return OAuthAdapter.fromConfig(globalConfig, provider, {
-      disableRefresh: false,
+      disableRefresh: disableRefresh,
       providerId,
       tokenIssuer,
     });

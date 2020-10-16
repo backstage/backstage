@@ -161,4 +161,8 @@ export type ProfileInfo = {
    * signed in user.
    */
   picture?: string;
+  /**
+   * Contains any custom objects that are pulled in from the id token
+   */
+  customObjects?: any[];
 };
