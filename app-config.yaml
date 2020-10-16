@@ -148,6 +148,7 @@ catalog:
 
 scaffolder:
   github:
+    host: https://github.com
     token:
       $env: GITHUB_TOKEN
     visibility: public # or 'internal' or 'private'
