@@ -31,19 +31,22 @@ export interface RouterOptions {
 // TODO - Need to work out better authentication using the CA of the k8s api cluster :')
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
 
-export async function createRouter(
-  options: RouterOptions,
-): Promise<express.Router> {
-  const { logger } = options;
-  const router = Router();
-
+const getCluster = options => {
   const cluster = (options.config.getConfigArray(
     'kubernetes.clusters',
   ) as any)[0].data;
 
   const baseUrl = cluster.url;
   const Authorization = `Bearer ${cluster.serviceAccountToken}`;
+  return { Authorization, baseUrl };
+};
+export async function createRouter(
+  options: RouterOptions,
+): Promise<express.Router> {
+  const { logger } = options;
+  const router = Router();
 
+  const { Authorization, baseUrl } = getCluster(options);
   const makeRequest = (url: string) => {
     const k8sProxyUrl = `/api/v1/namespaces/linkerd/services/linkerd-web:8084/proxy${url}`;
 
@@ -51,26 +54,6 @@ export async function createRouter(
       headers: { Authorization },
     }).then(r => r.json());
   };
-
-  const Socket = new WebSocket(
-    'wss://127.0.0.1:59436/api/v1/namespaces/linkerd/services/linkerd-web:8084/proxy/api/tap',
-    [],
-    { headers: { Authorization }, rejectUnauthorized: false },
-  );
-
-  // Socket.onmessage = console.warn;
-  // Socket.onclose = console.warn;
-  // Socket.onopen = () => {
-  //   Socket.send(
-  //     JSON.stringify({
-  //       id: 'top-web',
-  //       resource: 'deployment/emoji',
-  //       namespace: 'emojivoto',
-  //       maxRps: 0,
-  //     }),
-  //   );
-  // };
-  // Socket.onerror = console.warn;
 
   router.get(
     '/deployment/:namespace/:deployment',
@@ -94,10 +77,32 @@ export async function createRouter(
 }
 
 export async function createWebSockets(options: RouterOptions) {
-  console.warn('here');
   const server = new Server({ noServer: true });
+  const { Authorization } = getCluster(options);
 
-  server.on('connection', () => console.warn('connected to me!'));
+  server.on('error', options.logger.error);
+
+  server.on('connection', socket => {
+    const linkerdConnection = new WebSocket(
+      'wss://127.0.0.1:59436/api/v1/namespaces/linkerd/services/linkerd-web:8084/proxy/api/tap',
+      [],
+      { headers: { Authorization } },
+    );
+
+    socket.on('message', data => {
+      const { resource, namespace } = JSON.parse(data.toString());
+      linkerdConnection.on('message', message => socket.send(message));
+      linkerdConnection.send(
+        JSON.stringify({
+          id: 'top-web',
+          resource: `deployment/${resource}`,
+          namespace,
+          maxRps: 0,
+        }),
+      );
+    });
+    socket.on('close', () => linkerdConnection.close());
+  });
 
   return server;
 }

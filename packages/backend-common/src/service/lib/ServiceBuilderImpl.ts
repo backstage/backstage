@@ -209,8 +209,8 @@ export class ServiceBuilderImpl implements ServiceBuilder {
               wss.handleUpgrade(request, socket, head, ws => {
                 wss.emit('connection', ws, request);
               });
-              return;
             }
+            return;
           }
 
           socket.destroy();
