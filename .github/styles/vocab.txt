@@ -105,6 +105,7 @@ Monorepo
 monorepos
 msw
 namespace
+namespaces
 Namespaces
 neuro
 newrelic
