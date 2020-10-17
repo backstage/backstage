@@ -20,8 +20,7 @@ const useStyles = makeStyles(theme => ({
   header: {
     color: theme.palette.common.white,
     padding: theme.spacing(2, 2, 6),
-    backgroundImage:
-      'linear-gradient(-137deg, rgb(25, 230, 140) 0%, rgb(29, 127, 110) 100%)',
+    backgroundImage: 'linear-gradient(-137deg,  #4BB8A5 0%,  #187656 100%)',
   },
   content: {
     padding: theme.spacing(2),
