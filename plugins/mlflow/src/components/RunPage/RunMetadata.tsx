@@ -80,11 +80,7 @@ const RunMetadata = ({ run }: RunMetadataProps) => {
   );
 
   const metadataInfo = {
-    experiment: (
-      <Link to={`/mlflow/experiment/${run.info.experiment_id}`}>
-        {experimentName}
-      </Link>
-    ),
+    experimentName: experimentName,
     status: run.info.status,
     submittedBy: run.info.user_id,
     startTime: run.info.start_time,

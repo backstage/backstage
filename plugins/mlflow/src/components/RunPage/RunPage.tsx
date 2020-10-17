@@ -37,7 +37,7 @@ import RunMetadata from './RunMetadata';
 import RunTags from './RunTags';
 import RunArtifacts from './RunArtifacts';
 
-const RunPage = () => {
+export const RunPage = () => {
   const { runId } = useParams();
 
   const { value, loading } = useAsync(async (): Promise<Run> => {
@@ -58,39 +58,26 @@ const RunPage = () => {
   ];
 
   return (
-    <Page theme={pageTheme.tool}>
-      <Header title="MLFlow Run" subtitle="Extremely WIP">
-        <HeaderLabel label="Owner" value="@laiacano" />
-        <HeaderLabel label="Lifecycle" value="Alpha" />
-      </Header>
-      <Content>
-        <ContentHeader title={`Info for Run ${run.info.run_id}`}>
-          <SupportButton>A description of your plugin goes here.</SupportButton>
-        </ContentHeader>
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            <RunMetadata run={run} />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <InfoCard title="Parameters and Tags">
-              <RunTags runId={run.info.run_id} tags={run.data.tags} />
-              <Table
-                options={{ search: false, paging: false }}
-                columns={paramColumns}
-                data={run.data.params}
-              />
-            </InfoCard>
-          </Grid>
-          <Grid item xs={12}>
-            <MetricsGraph runId={run.info.run_id} metrics={run.data.metrics} />
-          </Grid>
-          <Grid item xs={12}>
-            <RunArtifacts runId={run.info.run_id} />
-          </Grid>
-        </Grid>
-      </Content>
-    </Page>
+    <Grid container spacing={3}>
+      <Grid item xs={12} md={6}>
+        <RunMetadata run={run} />
+      </Grid>
+      <Grid item xs={12} md={6}>
+        <InfoCard title="Parameters and Tags">
+          <RunTags runId={run.info.run_id} tags={run.data.tags} />
+          <Table
+            options={{ search: false, paging: false }}
+            columns={paramColumns}
+            data={run.data.params}
+          />
+        </InfoCard>
+      </Grid>
+      <Grid item xs={12}>
+        <MetricsGraph runId={run.info.run_id} metrics={run.data.metrics} />
+      </Grid>
+      <Grid item xs={12}>
+        <RunArtifacts runId={run.info.run_id} />
+      </Grid>
+    </Grid>
   );
 };
-
-export default RunPage;

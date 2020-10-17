@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import React, { useState } from 'react';
+import { useAsync } from 'react-use';
 import {
   StatusError,
   StatusAborted,
@@ -23,7 +24,9 @@ import {
   Table,
   TableColumn,
   Link,
+  Progress,
 } from '@backstage/core';
+import { mlFlowClient } from '../../index';
 import {
   Run,
   RunTag,
@@ -34,11 +37,25 @@ import {
 } from '../../MLFlowClient';
 import { Chip, Button } from '@material-ui/core';
 
+export const RunTablePage = ({ experimentId }: { experimentId: string }) => {
+  const { value, loading } = useAsync(async (): Promise<Run[]> => {
+    return mlFlowClient.searchRuns([experimentId]);
+  }, []);
+  if (loading) {
+    return <Progress />;
+  }
+  return value ? (
+    <RunTable runs={value} />
+  ) : (
+    <div>No Runs Found for {experimentId}</div>
+  );
+};
+
 type RunTableProps = {
   runs: Run[];
 };
 
-const RunTable = ({ runs }: RunTableProps) => {
+export const RunTable = ({ runs }: RunTableProps) => {
   const [evaluationSetsToFilter, setEvaluationSetsToFilter] = useState<
     Set<string>
   >(new Set());
@@ -110,9 +127,7 @@ const RunTable = ({ runs }: RunTableProps) => {
       // build all of the rest of the colums and add in the metrics at the end.
       return {
         status: makeStatus(run.info.status),
-        run_id: (
-          <Link to={`/mlflow/run/${run.info.run_id}`}>{run.info.run_id}</Link>
-        ),
+        run_id: <Link to={`${run.info.run_id}`}>{run.info.run_id}</Link>,
         start_time: new Date(run.info.start_time * 1).toLocaleString(),
         lifecycle_stage: run.info.lifecycle_stage,
         tags: run.data.tags
@@ -165,7 +180,6 @@ const RunTable = ({ runs }: RunTableProps) => {
     </>
   );
 };
-export default RunTable;
 
 function makeStatus(status: RunStatus) {
   switch (status) {

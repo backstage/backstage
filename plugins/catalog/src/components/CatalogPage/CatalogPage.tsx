@@ -105,6 +105,10 @@ const CatalogPageContents = () => {
         label: 'Documentation',
       },
       {
+        id: 'mlflow',
+        label: 'MLFlow Experiments',
+      },
+      {
         id: 'other',
         label: 'Other',
       },

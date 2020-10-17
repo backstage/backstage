@@ -15,26 +15,23 @@
  */
 import React from 'react';
 import { useAsync } from 'react-use';
-import { useParams } from 'react-router-dom';
 import { Grid } from '@material-ui/core';
-import {
-  Header,
-  Page,
-  pageTheme,
-  Content,
-  ContentHeader,
-  HeaderLabel,
-  SupportButton,
-  Progress,
-} from '@backstage/core';
+import { Progress } from '@backstage/core';
+import { Entity } from '@backstage/catalog-model';
+import { AboutCard } from '@backstage/plugin-catalog';
 import { mlFlowClient } from '../../index';
 import { Experiment, Run } from '../../MLFlowClient';
-import RunTable from '../ExperimentPage/RunTable';
 import ExperimentInfoCard from './ExperimentInfoCard';
 
-const ExperimentPage = () => {
-  const { experimentId } = useParams();
+type ExperimentPageProps = {
+  experimentId: string;
+  entity: Entity;
+};
 
+export const ExperimentPage = ({
+  experimentId,
+  entity,
+}: ExperimentPageProps) => {
   // Load runs for the experiment
   const experimentInfo = useAsync(async (): Promise<Experiment> => {
     return mlFlowClient.getExperiment(experimentId);
@@ -49,33 +46,18 @@ const ExperimentPage = () => {
   }
 
   return (
-    <Page theme={pageTheme.tool}>
-      <Header title="MLFlow Experiment" subtitle="Extremely WIP">
-        <HeaderLabel label="Owner" value="@laiacano" />
-        <HeaderLabel label="Lifecycle" value="Alpha" />
-      </Header>
-      <Content>
-        <ContentHeader
-          title={experimentInfo.value ? experimentInfo.value.name : ''}
-        >
-          <SupportButton>A description of your plugin goes here.</SupportButton>
-        </ContentHeader>
-        <Grid container direction="column">
-          <Grid item>
-            {experimentInfo.value && (
-              <ExperimentInfoCard
-                experiment={experimentInfo.value}
-                numberOfRuns={(runsInfo.value || []).length}
-              />
-            )}
-          </Grid>
-          <Grid item>
-            <RunTable runs={runsInfo.value || []} />
-          </Grid>
-        </Grid>
-      </Content>
-    </Page>
+    <Grid container spacing={3}>
+      <Grid item md={6}>
+        <AboutCard entity={entity} />
+      </Grid>
+      <Grid item md={6}>
+        {experimentInfo.value && (
+          <ExperimentInfoCard
+            experiment={experimentInfo.value}
+            numberOfRuns={(runsInfo.value || []).length}
+          />
+        )}
+      </Grid>
+    </Grid>
   );
 };
-
-export default ExperimentPage;

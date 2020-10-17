@@ -40,6 +40,10 @@ import { Router as ApiDocsRouter } from '@backstage/plugin-api-docs';
 import { Router as SentryRouter } from '@backstage/plugin-sentry';
 import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
 import { Router as KubernetesRouter } from '@backstage/plugin-kubernetes';
+import {
+  ExperimentOverviewRouter,
+  RunTableRouter,
+} from '@backstage/plugin-mlflow';
 import React, { ReactNode } from 'react';
 import {
   AboutCard,
@@ -197,6 +201,22 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
     />
   </EntityPageLayout>
 );
+
+const MLFlowEntityPage = ({ entity }: { entity: Entity }) => (
+  <EntityPageLayout>
+    <EntityPageLayout.Content
+      path="/"
+      title="Overview"
+      element={<ExperimentOverviewRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/runs/*"
+      title="Latest Runs"
+      element={<RunTableRouter entity={entity} />}
+    />
+  </EntityPageLayout>
+);
+
 const DefaultEntityPage = ({ entity }: { entity: Entity }) => (
   <EntityPageLayout>
     <EntityPageLayout.Content
@@ -219,6 +239,8 @@ export const EntityPage = () => {
       return <ServiceEntityPage entity={entity} />;
     case 'website':
       return <WebsiteEntityPage entity={entity} />;
+    case 'mlflow':
+      return <MLFlowEntityPage entity={entity} />;
     default:
       return <DefaultEntityPage entity={entity} />;
   }

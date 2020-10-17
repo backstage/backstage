@@ -30,9 +30,9 @@ import { mlFlowClient } from '../../index';
 import { Experiment, Run } from '../../MLFlowClient';
 import { useAsync } from 'react-use';
 import ExperimentTable from './ExperimentTable';
-import RunTable from '../ExperimentPage/RunTable';
+import { RunTable } from '../ExperimentPage/RunTable';
 
-const MLFlowHomePage = () => {
+export const MLFlowHomePage = () => {
   const { value, loading } = useAsync(async (): Promise<Experiment[]> => {
     return mlFlowClient.listExperiments();
   }, []);
@@ -64,8 +64,6 @@ const MLFlowHomePage = () => {
     </Page>
   );
 };
-
-export default MLFlowHomePage;
 
 type RunsForExperimentProps = { experiment: Experiment };
 

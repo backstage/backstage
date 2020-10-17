@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import { createPlugin, createRouteRef } from '@backstage/core';
-import MLFlowHomePage from './components/MLFLowHomePage';
-import ExperimentPage from './components/ExperimentPage';
-import RunPage from './components/RunPage';
+import { MLFlowHomePage } from './components/MLFlowHomePage';
+import { ExperimentPage } from './components/ExperimentPage';
+import { RunPage } from './components/RunPage';
 
 export const rootRouteRef = createRouteRef({
   path: '/mlflow',

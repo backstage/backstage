@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export { default } from './ExperimentPage';
+export { ExperimentPage } from './ExperimentPage';
+export { RunTablePage, RunTable } from './RunTable';
