@@ -17,7 +17,7 @@
 import { mergeDatabaseConfig } from './config';
 
 describe('config', () => {
-  describe(mergeDatabaseConfig, () => {
+  describe('mergeDatabaseConfig', () => {
     it('does not mutate the input object', () => {
       const input = {
         original: 'key',

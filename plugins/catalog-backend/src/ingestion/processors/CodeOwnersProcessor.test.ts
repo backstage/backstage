@@ -27,7 +27,7 @@ import {
   resolveCodeOwner,
 } from './CodeOwnersProcessor';
 
-describe(CodeOwnersProcessor, () => {
+describe('CodeOwnersProcessor', () => {
   const mockUrl = ({ basePath = '' } = {}): string =>
     `https://github.com/spotify/backstage/blob/master/${basePath}catalog-info.yaml`;
   const mockLocation = ({
@@ -79,7 +79,7 @@ describe(CodeOwnersProcessor, () => {
     return data;
   };
 
-  describe(buildUrl, () => {
+  describe('buildUrl', () => {
     it.each([['azure.com'], ['dev.azure.com']])(
       'should throw not implemented error',
       source => {
@@ -99,7 +99,7 @@ describe(CodeOwnersProcessor, () => {
     });
   });
 
-  describe(buildCodeOwnerUrl, () => {
+  describe('buildCodeOwnerUrl', () => {
     it('should build a location spec to the codeowners', () => {
       expect(buildCodeOwnerUrl(mockUrl(), '/docs/CODEOWNERS')).toEqual(
         'https://github.com/spotify/backstage/blob/master/docs/CODEOWNERS',
@@ -116,13 +116,13 @@ describe(CodeOwnersProcessor, () => {
     });
   });
 
-  describe(parseCodeOwners, () => {
+  describe('parseCodeOwners', () => {
     it('should parse the codeowners file', () => {
       expect(parseCodeOwners(mockCodeOwnersText())).toEqual(mockCodeOwners());
     });
   });
 
-  describe(normalizeCodeOwner, () => {
+  describe('normalizeCodeOwner', () => {
     it('should remove org from org/team format', () => {
       expect(normalizeCodeOwner('@acme/foo')).toBe('foo');
     });
@@ -139,13 +139,13 @@ describe(CodeOwnersProcessor, () => {
     );
   });
 
-  describe(findPrimaryCodeOwner, () => {
+  describe('findPrimaryCodeOwner', () => {
     it('should return the primary owner', () => {
       expect(findPrimaryCodeOwner(mockCodeOwners())).toBe('backstage-core');
     });
   });
 
-  describe(findRawCodeOwners, () => {
+  describe('findRawCodeOwners', () => {
     it('should return found codeowner', async () => {
       const ownersText = mockCodeOwnersText();
       const read = jest
@@ -184,7 +184,7 @@ describe(CodeOwnersProcessor, () => {
     });
   });
 
-  describe(resolveCodeOwner, () => {
+  describe('resolveCodeOwner', () => {
     it('should return found codeowner', async () => {
       const read = jest
         .fn()
@@ -207,7 +207,7 @@ describe(CodeOwnersProcessor, () => {
     });
   });
 
-  describe(CodeOwnersProcessor, () => {
+  describe('CodeOwnersProcessor', () => {
     const setupTest = ({ kind = 'Component', spec = {} } = {}) => {
       const entity = { kind, spec };
       const read = jest
