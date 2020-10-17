@@ -1,6 +1,7 @@
 app:
   title: Backstage Example App
   baseUrl: http://localhost:7000
+  googleAnalyticsTrackingId: # UA-000000-0
 
 backend:
   baseUrl: http://localhost:7000
