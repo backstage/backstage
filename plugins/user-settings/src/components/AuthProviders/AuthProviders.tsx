@@ -37,7 +37,7 @@ export const AuthProviders = ({ providerSettings }: Props) => {
   }
 
   return (
-    <InfoCard>
+    <InfoCard title="Available Providers">
       <List dense>{providers}</List>
     </InfoCard>
   );
