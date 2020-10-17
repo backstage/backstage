@@ -118,7 +118,7 @@ const AuditList: FC<{}> = () => {
         </ContentHeader>
         <Grid container spacing={3} direction="column">
           <Grid item>
-            <InfoCard>{content}</InfoCard>
+            <InfoCard noPadding>{content}</InfoCard>
           </Grid>
         </Grid>
       </Content>
