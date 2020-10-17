@@ -22,10 +22,10 @@ import { ThemeToggle } from './ThemeToggle';
 
 export const General = () => (
   <Grid container direction="row" spacing={3}>
-    <Grid item sm={6}>
+    <Grid item sm={12} md={6}>
       <Profile />
     </Grid>
-    <Grid item sm={6}>
+    <Grid item sm={12} md={6}>
       <InfoCard title="Appearance">
         <List dense>
           <ThemeToggle />
