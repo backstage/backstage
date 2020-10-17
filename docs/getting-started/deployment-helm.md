@@ -2,17 +2,18 @@
 id: deployment-helm
 title: Helm
 description: Documentation on Kubernetes and Helm Deployment
+sidebar_label: Kubernetes and Helm
 ---
 
 # Helm charts
 
-An example Backstage app can be deployed in Kubernetes using the [Backstage Helm
-charts][backstage-helm-charts]
+An example Backstage app can be deployed in Kubernetes using the
+[Backstage Helm charts](https://github.com/spotify/backstage/tree/master/contrib/chart/backstage)
 
 First, choose a DNS name where backstage will be hosted create a yaml file for
 your custom configuration.
 
-```
+```yaml
 appConfig:
   app:
     baseUrl: https://backstage.mydomain.com
@@ -26,7 +27,6 @@ appConfig:
   techdocs:
     storageUrl: https://backstage.mydomain.com/api/techdocs/static/docs
     requestUrl: https://backstage.mydomain.com/api/techdocs
-
 ```
 
 Then use it to run:
@@ -61,9 +61,4 @@ backstage-ingress   *       123.1.2.3       80      17m
 > **NOTE**: this is not a production ready deployment.
 
 For more information on how to customize the deployment check the
-[README][charts-readme].
-
-[backstage-helm-charts]:
-  (https://github.com/spotify/backstage/tree/master/contrib/chart/backstage)
-[charts-readme]:
-  (https://github.com/spotify/backstage/tree/master/contrib/chart/backstage/README.md)
+[README](https://github.com/spotify/backstage/tree/master/contrib/chart/backstage/README.md).

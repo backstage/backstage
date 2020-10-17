@@ -68,6 +68,7 @@ graphviz
 Hackathons
 haproxy
 heroku
+Heroku
 horizontalpodautoscalers
 Hostname
 http
