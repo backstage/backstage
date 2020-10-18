@@ -32,6 +32,8 @@ import GitHubIcon from '@material-ui/icons/GitHub';
 import { IconLinkVertical } from './IconLinkVertical';
 import EditIcon from '@material-ui/icons/Edit';
 import DocsIcon from '@material-ui/icons/Description';
+import { findLocationForEntityMeta } from '../../data/utils';
+import { createEditLink } from '../createEditLink'
 
 const useStyles = makeStyles(theme => ({
   links: {
@@ -68,15 +70,10 @@ const iconMap: Record<string, React.ReactNode> = {
 type CodeLinkInfo = { icon?: React.ReactNode; href?: string };
 
 function getCodeLinkInfo(entity: Entity): CodeLinkInfo {
-  const location =
-    entity?.metadata?.annotations?.['backstage.io/managed-by-location'];
-
+  const location = findLocationForEntityMeta(entity?.metadata);
   if (location) {
-    // split by first `:`
-    // e.g. "github:https://github.com/spotify/backstage/blob/master/software.yaml"
-    const [type, target] = location.split(/:(.+)/);
-
-    return { icon: iconMap[type], href: target };
+    const type = location.type
+    return { icon: iconMap[type], href: createEditLink(location) };
   }
   return {};
 }
@@ -94,7 +91,13 @@ export function AboutCard({ entity }: AboutCardProps) {
       <CardHeader
         title="About"
         action={
-          <IconButton href={codeLink.href || '#'} aria-label="Edit">
+          <IconButton 
+            // href={codeLink.href || '#'} 
+            aria-label="Edit"
+            onClick={() => {
+              window.open((codeLink.href || '#'), '_blank');
+            }}
+          >
             <EditIcon />
           </IconButton>
         }

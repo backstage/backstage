@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity, LocationSpec } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { Table, TableColumn, TableProps } from '@backstage/core';
 import { Chip, Link } from '@material-ui/core';
 import Edit from '@material-ui/icons/Edit';
@@ -24,6 +24,7 @@ import { generatePath, Link as RouterLink } from 'react-router-dom';
 import { findLocationForEntityMeta } from '../../data/utils';
 import { useStarredEntities } from '../../hooks/useStarredEntites';
 import { entityRoute } from '../../routes';
+import { createEditLink } from '../createEditLink'
 import {
   favouriteEntityIcon,
   favouriteEntityTooltip,
@@ -120,14 +121,6 @@ export const CatalogTable = ({
       };
     },
     (rowData: Entity) => {
-      const createEditLink = (location: LocationSpec): string => {
-        switch (location.type) {
-          case 'github':
-            return location.target.replace('/blob/', '/edit/');
-          default:
-            return location.target;
-        }
-      };
       const location = findLocationForEntityMeta(rowData.metadata);
       return {
         icon: () => <Edit fontSize="small" />,
