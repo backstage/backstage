@@ -48,12 +48,12 @@ describe('<CodeSnippet />', () => {
   });
 
   it('renders with line numbers', () => {
-    const { queryByText } = render(
+    const { getByText } = render(
       wrapInTestApp(<CodeSnippet {...minProps} showLineNumbers />),
     );
-    expect(queryByText(/1/)).toBeInTheDocument();
-    expect(queryByText(/2/)).toBeInTheDocument();
-    expect(queryByText(/3/)).toBeInTheDocument();
+    expect(getByText(/1/)).toBeInTheDocument();
+    expect(getByText(/2/)).toBeInTheDocument();
+    expect(getByText(/3/)).toBeInTheDocument();
   });
 
   it('copy code using button', async () => {
