@@ -28,4 +28,3 @@ export const createEditLink = (location: LocationSpec): string => {
         return location.target;
     }
   };
-  
