@@ -15,28 +15,27 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 import { Lifecycle } from './Lifecycle';
 
 describe('<Lifecycle />', () => {
   it('renders Alpha with shorthand', async () => {
-    const { getByText } = render(wrapInTestApp(<Lifecycle alpha shorthand />));
+    const { getByText } = await renderInTestApp(<Lifecycle alpha shorthand />);
     expect(getByText('α')).toBeInTheDocument();
   });
 
   it('renders Alpha without shorthand', async () => {
-    const { getByText } = render(wrapInTestApp(<Lifecycle alpha />));
+    const { getByText } = await renderInTestApp(<Lifecycle alpha />);
     expect(getByText('Alpha')).toBeInTheDocument();
   });
 
   it('renders Beta with shorthand', async () => {
-    const { getByText } = render(wrapInTestApp(<Lifecycle shorthand />));
+    const { getByText } = await renderInTestApp(<Lifecycle shorthand />);
     expect(getByText('β')).toBeInTheDocument();
   });
 
   it('renders Beta without shorthand', async () => {
-    const { getByText } = render(wrapInTestApp(<Lifecycle />));
+    const { getByText } = await renderInTestApp(<Lifecycle />);
     expect(getByText('Beta')).toBeInTheDocument();
   });
 });

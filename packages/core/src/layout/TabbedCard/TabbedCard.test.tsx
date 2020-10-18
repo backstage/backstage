@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, wrapInTestApp } from '@backstage/test-utils';
 import { TabbedCard, CardTab } from '.';
 
 const minProps = {
@@ -28,38 +28,32 @@ const minProps = {
 };
 
 describe('<TabbedCard />', () => {
-  it('renders without exploding', () => {
-    const rendered = render(
-      wrapInTestApp(
-        <TabbedCard title={minProps.title}>
-          <CardTab label="Test 1">Test Content</CardTab>
-          <CardTab label="Test 2">Test Content</CardTab>
-        </TabbedCard>,
-      ),
+  it('renders without exploding', async () => {
+    const rendered = await renderInTestApp(
+      <TabbedCard title={minProps.title}>
+        <CardTab label="Test 1">Test Content</CardTab>
+        <CardTab label="Test 2">Test Content</CardTab>
+      </TabbedCard>,
     );
     expect(rendered.getByText('Some title')).toBeInTheDocument();
   });
 
-  it('renders a deepLink when prop is set', () => {
-    const rendered = render(
-      wrapInTestApp(
-        <TabbedCard deepLink={minProps.deepLink}>
-          <CardTab label="Test 1">Test Content</CardTab>
-          <CardTab label="Test 2">Test Content</CardTab>
-        </TabbedCard>,
-      ),
+  it('renders a deepLink when prop is set', async () => {
+    const rendered = await renderInTestApp(
+      <TabbedCard deepLink={minProps.deepLink}>
+        <CardTab label="Test 1">Test Content</CardTab>
+        <CardTab label="Test 2">Test Content</CardTab>
+      </TabbedCard>,
     );
     expect(rendered.getByText('A deepLink title')).toBeInTheDocument();
   });
 
-  it('switches tabs when clicking', () => {
-    const rendered = render(
-      wrapInTestApp(
-        <TabbedCard>
-          <CardTab label="Test 1">Test Content 1</CardTab>
-          <CardTab label="Test 2">Test Content 2</CardTab>
-        </TabbedCard>,
-      ),
+  it('switches tabs when clicking', async () => {
+    const rendered = await renderInTestApp(
+      <TabbedCard>
+        <CardTab label="Test 1">Test Content 1</CardTab>
+        <CardTab label="Test 2">Test Content 2</CardTab>
+      </TabbedCard>,
     );
     expect(rendered.getByText('Test Content 1')).toBeInTheDocument();
 
