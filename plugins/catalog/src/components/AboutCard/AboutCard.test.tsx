@@ -44,7 +44,7 @@ describe('<AboutCard />', () => {
     );
     expect(getByText('View Source').closest('a')).toHaveAttribute(
       'edithref',
-      'https://github.com/spotify/backstage/edit/master/software.yaml'
+      'https://github.com/spotify/backstage/edit/master/software.yaml',
     );
   });
 });
