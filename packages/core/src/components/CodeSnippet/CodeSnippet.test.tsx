@@ -20,10 +20,10 @@ import { wrapInTestApp } from '@backstage/test-utils';
 
 import { CodeSnippet } from './CodeSnippet';
 
-const JAVASCRIPT = `const greeting = "Hello";
-const world = "World";
-
-const greet = person => gretting + " " + person + "!";
+const JAVASCRIPT = `
+  const greeting = "Hello";
+  const world = "World";
+  const greet = person => gretting + " " + person + "!";
 `;
 
 const minProps = {
@@ -58,10 +58,10 @@ describe('<CodeSnippet />', () => {
 
   it('copy code using button', async () => {
     document.execCommand = jest.fn();
-    const rendered = render(
+    const { getByTitle } = render(
       wrapInTestApp(<CodeSnippet {...minProps} showCopyCodeButton />),
     );
-    const button = rendered.getByTitle('Text copied to clipboard');
+    const button = getByTitle('Text copied to clipboard');
     fireEvent.click(button);
     expect(document.execCommand).toHaveBeenCalled();
   });
