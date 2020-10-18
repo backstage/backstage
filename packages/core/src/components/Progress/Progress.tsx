@@ -28,6 +28,6 @@ export const Progress: FC<LinearProgressProps> = props => {
   return isVisible ? (
     <LinearProgress {...props} data-testid="progress" />
   ) : (
-    <div style={{ display: 'none' }} data-testid="progress" />
+    <div style={{ display: 'none' }} />
   );
 };
