@@ -16,7 +16,7 @@
 
 import { IconComponent } from '../../icons';
 import { Observable } from '../../types';
-import { createApiRef } from '../ApiRef';
+import { createApiRef } from '../system';
 
 /**
  * Information about the auth provider that we're requesting a login towards.

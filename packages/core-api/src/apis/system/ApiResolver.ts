@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { ApiRef } from './ApiRef';
 import {
+  ApiRef,
   ApiHolder,
   ApiFactoryHolder,
   AnyApiRef,

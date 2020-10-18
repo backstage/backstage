@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '../ApiRef';
+import { createApiRef } from '../system';
 import { UserFlags, FeatureFlagsRegistry } from '../../app/FeatureFlags';
 import { FeatureFlagName } from '../../plugin';
 

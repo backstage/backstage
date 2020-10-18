@@ -15,12 +15,12 @@
  */
 
 import {
+  ApiRef,
   ApiFactoryHolder,
   ApiFactory,
   AnyApiRef,
   AnyApiFactory,
 } from './types';
-import { ApiRef } from './ApiRef';
 
 type ApiFactoryScope =
   | 'default' // Default factories registered by core and plugins

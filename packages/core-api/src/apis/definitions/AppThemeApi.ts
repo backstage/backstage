@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '../ApiRef';
+import { createApiRef } from '../system';
 import { BackstageTheme } from '@backstage/theme';
 import { Observable } from '../../types';
 import { SvgIconProps } from '@material-ui/core';

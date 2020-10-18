@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '../ApiRef';
-import { Observable } from '../..';
+import { createApiRef } from '../system';
+import { Observable } from '../../types';
 
 /**
  * This file contains declarations for common interfaces of auth-related APIs.

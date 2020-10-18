@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createApiRef } from '../ApiRef';
+import { createApiRef } from '../system';
 
 /**
  * The discovery API is used to provide a mechanism for plugins to
