@@ -46,15 +46,33 @@ export type CatalogProcessor = {
   ): Promise<boolean>;
 
   /**
-   * Processes an emitted entity, e.g. by validating or modifying it.
+   * Pre-processes an emitted entity, after it has been emitted but before it
+   * has been validated.
    *
-   * @param entity The entity to process
+   * This type of processing usually involves enriching the entity with
+   * additional data, and the input entity may actually still be incomplete
+   * when the processor is invoked.
+   *
+   * @param entity The (possibly partial) entity to process
    * @param location The location that the entity came from
-   * @param read Reads the contents of a location
    * @param emit A sink for auxiliary items resulting from the processing
    * @returns The same entity or a modified version of it
    */
-  processEntity?(
+  preProcessEntity?(
+    entity: Entity,
+    location: LocationSpec,
+    emit: CatalogProcessorEmit,
+  ): Promise<Entity>;
+
+  /**
+   * Post-processes an emitted entity, after it has been validated.
+   *
+   * @param entity The entity to process
+   * @param location The location that the entity came from
+   * @param emit A sink for auxiliary items resulting from the processing
+   * @returns The same entity or a modified version of it
+   */
+  postProcessEntity?(
     entity: Entity,
     location: LocationSpec,
     emit: CatalogProcessorEmit,

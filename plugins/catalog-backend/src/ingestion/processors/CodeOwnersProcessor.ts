@@ -40,7 +40,10 @@ type Options = {
 export class CodeOwnersProcessor implements CatalogProcessor {
   constructor(private readonly options: Options) {}
 
-  async processEntity(entity: Entity, location: LocationSpec): Promise<Entity> {
+  async preProcessEntity(
+    entity: Entity,
+    location: LocationSpec,
+  ): Promise<Entity> {
     // Only continue if the owner is not set
     if (
       !entity ||
