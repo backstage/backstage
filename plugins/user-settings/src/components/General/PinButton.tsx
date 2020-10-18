@@ -46,6 +46,7 @@ export const PinButton = () => {
             checked={isPinned}
             onChange={() => toggleSidebarPinState()}
             name="pin"
+            data-test-id="pin"
           />
         </Tooltip>
       </ListItemSecondaryAction>

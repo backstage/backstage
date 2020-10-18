@@ -32,10 +32,9 @@ describe('<PinButton />', () => {
         </SidebarPinStateContext.Provider>,
       ),
     );
-
     expect(rendered.getByText('Pin Sidebar')).toBeInTheDocument();
 
-    const pinButton = rendered.getByTitle('Pin Sidebar');
+    const pinButton = rendered.getByTestId('pin');
     fireEvent.click(pinButton);
     expect(mockToggleFn).toHaveBeenCalled();
   });
