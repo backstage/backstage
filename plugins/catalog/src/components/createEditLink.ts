@@ -43,9 +43,9 @@ export const createEditLink = (location: LocationSpec): string => {
  * @returns string representing type of icon to be used
  */
 export const determineUrlType = (url: string): string => {
-  if (url.includes('github.com')) {
+  if (url.includes('https://github.com')) {
     return 'github';
-  } else if (url.includes('bitbucket.com')) {
+  } else if (url.includes('https://bitbucket.com')) {
     return 'bitbucket';
   }
   return 'url';
