@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import { LocationSpec } from "@backstage/catalog-model";
+import { LocationSpec } from '@backstage/catalog-model';
 
 /**
  * Creates the edit link for components yaml file
  */
 
 export const createEditLink = (location: LocationSpec): string => {
-    switch (location.type) {
-      case 'github':
-        return location.target.replace('/blob/', '/edit/');
-      default:
-        return location.target;
-    }
-  };
+  switch (location.type) {
+    case 'github':
+      return location.target.replace('/blob/', '/edit/');
+    default:
+      return location.target;
+  }
+};

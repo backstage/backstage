@@ -24,7 +24,7 @@ import { generatePath, Link as RouterLink } from 'react-router-dom';
 import { findLocationForEntityMeta } from '../../data/utils';
 import { useStarredEntities } from '../../hooks/useStarredEntites';
 import { entityRoute } from '../../routes';
-import { createEditLink } from '../createEditLink'
+import { createEditLink } from '../createEditLink';
 import {
   favouriteEntityIcon,
   favouriteEntityTooltip,

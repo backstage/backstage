@@ -33,7 +33,7 @@ import { IconLinkVertical } from './IconLinkVertical';
 import EditIcon from '@material-ui/icons/Edit';
 import DocsIcon from '@material-ui/icons/Description';
 import { findLocationForEntityMeta } from '../../data/utils';
-import { createEditLink } from '../createEditLink'
+import { createEditLink } from '../createEditLink';
 
 const useStyles = makeStyles(theme => ({
   links: {
@@ -72,7 +72,7 @@ type CodeLinkInfo = { icon?: React.ReactNode; href?: string };
 function getCodeLinkInfo(entity: Entity): CodeLinkInfo {
   const location = findLocationForEntityMeta(entity?.metadata);
   if (location) {
-    const type = location.type
+    const type = location.type;
     return { icon: iconMap[type], href: createEditLink(location) };
   }
   return {};
@@ -91,11 +91,11 @@ export function AboutCard({ entity }: AboutCardProps) {
       <CardHeader
         title="About"
         action={
-          <IconButton 
-            // href={codeLink.href || '#'} 
+          <IconButton
+            // href={codeLink.href || '#'}
             aria-label="Edit"
             onClick={() => {
-              window.open((codeLink.href || '#'), '_blank');
+              window.open(codeLink.href || '#', '_blank');
             }}
           >
             <EditIcon />
