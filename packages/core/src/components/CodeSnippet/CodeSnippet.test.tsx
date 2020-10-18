@@ -51,9 +51,9 @@ describe('<CodeSnippet />', () => {
     const { getByText } = render(
       wrapInTestApp(<CodeSnippet {...minProps} showLineNumbers />),
     );
-    expect(getByText(/1/)).toBeInTheDocument();
-    expect(getByText(/2/)).toBeInTheDocument();
-    expect(getByText(/3/)).toBeInTheDocument();
+    expect(getByText('1')).toBeInTheDocument();
+    expect(getByText('2')).toBeInTheDocument();
+    expect(getByText('3')).toBeInTheDocument();
   });
 
   it('copy code using button', async () => {
