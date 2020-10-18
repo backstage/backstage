@@ -51,10 +51,12 @@ export class MLFlowClient {
       .catch(_ => undefined);
   }
 
-  searchRuns(experimentIds: string[]): Promise<Run[]> {
-    return this.makePostRequest(`runs/search`, {
-      experiment_ids: experimentIds,
-    })
+  searchRuns(experimentIds: string[], filterString?: string): Promise<Run[]> {
+    let postData: any = { experiment_ids: experimentIds };
+    if (filterString) {
+      postData = { filter: filterString, ...postData };
+    }
+    return this.makePostRequest(`runs/search`, postData)
       .then(resp => resp.runs)
       .catch(_ => []);
   }

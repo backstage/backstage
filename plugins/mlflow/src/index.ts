@@ -16,7 +16,8 @@
 
 export { plugin } from './plugin';
 export { ExperimentOverviewRouter, RunTableRouter } from './components/Router';
-export { ExperimentPage, RunTablePage } from './components/ExperimentPage';
+export { ExperimentPage } from './components/ExperimentPage';
+export { RunTablePage } from './components/RunTablePage';
 import { MLFlowClient } from './MLFlowClient';
 
 export const mlFlowClient: MLFlowClient = new MLFlowClient(

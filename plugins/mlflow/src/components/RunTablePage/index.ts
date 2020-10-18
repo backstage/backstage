@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export { ExperimentPage } from './ExperimentPage';
-export { RunTable } from './RunTable';
+export { RunTablePage } from './RunTablePage';

@@ -17,7 +17,8 @@ import React from 'react';
 import { Route, Routes } from 'react-router';
 import { Entity } from '@backstage/catalog-model';
 import { WarningPanel } from '@backstage/core';
-import { ExperimentPage, RunTablePage } from './ExperimentPage';
+import { ExperimentPage } from './ExperimentPage';
+import { RunTablePage } from './RunTablePage';
 import { RunPage } from './RunPage';
 
 const MLFLOW_ANNOTATION = 'mlflow.org/experiment';

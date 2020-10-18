@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import React, { useState } from 'react';
-import { useAsync } from 'react-use';
 import {
   StatusError,
   StatusAborted,
@@ -24,9 +23,7 @@ import {
   Table,
   TableColumn,
   Link,
-  Progress,
 } from '@backstage/core';
-import { mlFlowClient } from '../../index';
 import {
   Run,
   RunTag,
@@ -36,20 +33,6 @@ import {
   tagToString,
 } from '../../MLFlowClient';
 import { Chip, Button } from '@material-ui/core';
-
-export const RunTablePage = ({ experimentId }: { experimentId: string }) => {
-  const { value, loading } = useAsync(async (): Promise<Run[]> => {
-    return mlFlowClient.searchRuns([experimentId]);
-  }, []);
-  if (loading) {
-    return <Progress />;
-  }
-  return value ? (
-    <RunTable runs={value} />
-  ) : (
-    <div>No Runs Found for {experimentId}</div>
-  );
-};
 
 type RunTableProps = {
   runs: Run[];
