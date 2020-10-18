@@ -28,7 +28,7 @@ export const createEditLink = (location: LocationSpec): string => {
     case 'github':
       return location.target.replace('/blob/', '/edit/');
     case 'url':
-      if (location.target.includes('github.com')) {
+      if (location.target.includes('https://github.com')) {
         return location.target.replace('/blob/', '/edit/');
       }
       return location.target;
