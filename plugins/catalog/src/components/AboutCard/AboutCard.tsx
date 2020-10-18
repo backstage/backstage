@@ -26,7 +26,8 @@ import {
   makeStyles,
   Typography,
 } from '@material-ui/core';
-import DocsIcon from '@material-ui/icons/Description';import EditIcon from '@material-ui/icons/Edit';
+import DocsIcon from '@material-ui/icons/Description';
+import EditIcon from '@material-ui/icons/Edit';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import React from 'react';
 import { IconLinkVertical } from './IconLinkVertical';
