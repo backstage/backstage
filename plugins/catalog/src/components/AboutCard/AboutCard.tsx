@@ -33,7 +33,7 @@ import { IconLinkVertical } from './IconLinkVertical';
 import EditIcon from '@material-ui/icons/Edit';
 import DocsIcon from '@material-ui/icons/Description';
 import { findLocationForEntityMeta } from '../../data/utils';
-import { createEditLink } from '../createEditLink';
+import { createEditLink, determineUrlType } from '../createEditLink';
 
 const useStyles = makeStyles(theme => ({
   links: {
@@ -67,13 +67,13 @@ const iconMap: Record<string, React.ReactNode> = {
   github: <GitHubIcon />,
 };
 
-type CodeLinkInfo = { icon?: React.ReactNode; href?: string };
+type CodeLinkInfo = { icon?: React.ReactNode; edithref?: string;  href?: string;};
 
 function getCodeLinkInfo(entity: Entity): CodeLinkInfo {
   const location = findLocationForEntityMeta(entity?.metadata);
   if (location) {
-    const type = location.type;
-    return { icon: iconMap[type], href: createEditLink(location) };
+    const type = location.type === 'url' ? determineUrlType(location.target) : location.type;
+    return { icon: iconMap[type], edithref: createEditLink(location), href: location.target };
   }
   return {};
 }
@@ -92,10 +92,9 @@ export function AboutCard({ entity }: AboutCardProps) {
         title="About"
         action={
           <IconButton
-            // href={codeLink.href || '#'}
             aria-label="Edit"
             onClick={() => {
-              window.open(codeLink.href || '#', '_blank');
+              window.open(codeLink.edithref || '#', '_blank');
             }}
           >
             <EditIcon />
