@@ -67,13 +67,24 @@ const iconMap: Record<string, React.ReactNode> = {
   github: <GitHubIcon />,
 };
 
-type CodeLinkInfo = { icon?: React.ReactNode; edithref?: string;  href?: string;};
+type CodeLinkInfo = {
+  icon?: React.ReactNode;
+  edithref?: string;
+  href?: string;
+};
 
 function getCodeLinkInfo(entity: Entity): CodeLinkInfo {
   const location = findLocationForEntityMeta(entity?.metadata);
   if (location) {
-    const type = location.type === 'url' ? determineUrlType(location.target) : location.type;
-    return { icon: iconMap[type], edithref: createEditLink(location), href: location.target };
+    const type =
+      location.type === 'url'
+        ? determineUrlType(location.target)
+        : location.type;
+    return {
+      icon: iconMap[type],
+      edithref: createEditLink(location),
+      href: location.target,
+    };
   }
   return {};
 }

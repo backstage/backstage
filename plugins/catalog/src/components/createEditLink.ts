@@ -19,7 +19,7 @@ import { LocationSpec } from '@backstage/catalog-model';
 /**
  * Creates the edit link for components yaml file
  * @see LocationSpec
- * @param location The LocationSpec being used to determine entity SCM location 
+ * @param location The LocationSpec being used to determine entity SCM location
  * @returns string representing the edit location based on SCM path
  */
 
@@ -28,7 +28,7 @@ export const createEditLink = (location: LocationSpec): string => {
     case 'github':
       return location.target.replace('/blob/', '/edit/');
     case 'url':
-      if(location.target.includes('github.com')){
+      if (location.target.includes('github.com')) {
         return location.target.replace('/blob/', '/edit/');
       }
       return location.target;
@@ -39,16 +39,14 @@ export const createEditLink = (location: LocationSpec): string => {
 
 /**
  * Determines type based on passed in url. This is used to set the icon associated with the type of entity
- * @param url 
+ * @param url
  * @returns string representing type of icon to be used
  */
 export const determineUrlType = (url: string): string => {
-  if(url.includes('github.com')){
-    return 'github'
+  if (url.includes('github.com')) {
+    return 'github';
+  } else if (url.includes('bitbucket.com')) {
+    return 'bitbucket';
   }
-  else if(url.includes('bitbucket.com')){
-    return 'bitbucket'
-  }
-  return 'url'
-}
-
+  return 'url';
+};
