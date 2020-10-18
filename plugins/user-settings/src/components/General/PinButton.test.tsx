@@ -35,7 +35,7 @@ describe('<PinButton />', () => {
     expect(rendered.getByText('Pin Sidebar')).toBeInTheDocument();
 
     const pinButton = rendered.getByTestId('pin');
-    fireEvent.click(pinButton);
+    fireEvent.change(pinButton);
     expect(mockToggleFn).toHaveBeenCalled();
   });
 });

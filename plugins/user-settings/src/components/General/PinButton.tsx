@@ -47,6 +47,7 @@ export const PinButton = () => {
             onChange={() => toggleSidebarPinState()}
             name="pin"
             data-test-id="pin"
+            inputProps={{ 'aria-label': 'Pin Sidebar Switch' }}
           />
         </Tooltip>
       </ListItemSecondaryAction>
