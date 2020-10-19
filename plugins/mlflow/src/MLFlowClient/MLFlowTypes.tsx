@@ -68,7 +68,7 @@ export type RunTag = {
 export type Metric = {
   key: string;
   value: number;
-  timestamp: number;
+  timestamp: string;
   step: number;
 };
 

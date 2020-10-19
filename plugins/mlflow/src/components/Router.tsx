@@ -20,6 +20,7 @@ import { WarningPanel } from '@backstage/core';
 import { ExperimentPage } from './ExperimentPage';
 import { RunTablePage } from './RunTablePage';
 import { RunPage } from './RunPage';
+import { RunTrendPage } from './RunComparisonPage';
 
 const MLFLOW_ANNOTATION = 'mlflow.org/experiment';
 export const isPluginApplicableToEntity = (entity: Entity) =>
@@ -69,6 +70,25 @@ export const RunTableRouter = ({ entity }: { entity: Entity }) => {
         }
       />
       <Route path="/:runId" element={<RunPage />} />
+    </Routes>
+  );
+};
+
+export const RunTrendRouter = ({ entity }: { entity: Entity }) => {
+  return !isPluginApplicableToEntity(entity) ? (
+    warningDisplay
+  ) : (
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <RunTrendPage
+            experimentId={
+              entity.metadata.annotations?.[MLFLOW_ANNOTATION] || '-1'
+            }
+          />
+        }
+      />
     </Routes>
   );
 };

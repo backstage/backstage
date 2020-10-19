@@ -43,6 +43,7 @@ import { Router as KubernetesRouter } from '@backstage/plugin-kubernetes';
 import {
   ExperimentOverviewRouter,
   RunTableRouter,
+  RunTrendRouter,
 } from '@backstage/plugin-mlflow';
 import React, { ReactNode } from 'react';
 import {
@@ -213,6 +214,11 @@ const MLFlowEntityPage = ({ entity }: { entity: Entity }) => (
       path="/runs/*"
       title="Latest Runs"
       element={<RunTableRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/trend/*"
+      title="Metrics Trends"
+      element={<RunTrendRouter entity={entity} />}
     />
   </EntityPageLayout>
 );

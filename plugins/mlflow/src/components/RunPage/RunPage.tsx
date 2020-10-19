@@ -18,19 +18,7 @@ import { useAsync } from 'react-use';
 import { useParams } from 'react-router-dom';
 import { mlFlowClient } from '../../index';
 import { Run } from '../../MLFlowClient';
-import {
-  Page,
-  pageTheme,
-  Header,
-  HeaderLabel,
-  Content,
-  ContentHeader,
-  SupportButton,
-  InfoCard,
-  Table,
-  TableColumn,
-  Progress,
-} from '@backstage/core';
+import { InfoCard, Table, TableColumn, Progress } from '@backstage/core';
 import { Grid } from '@material-ui/core';
 import MetricsGraph from './MetricsGraph';
 import RunMetadata from './RunMetadata';

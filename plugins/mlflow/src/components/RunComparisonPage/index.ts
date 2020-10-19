@@ -14,16 +14,4 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
-export { ExperimentPage } from './components/ExperimentPage';
-export { RunTablePage } from './components/RunTablePage';
-export {
-  ExperimentOverviewRouter,
-  RunTableRouter,
-  RunTrendRouter,
-} from './components/Router';
-import { MLFlowClient } from './MLFlowClient';
-
-export const mlFlowClient: MLFlowClient = new MLFlowClient(
-  'http://localhost:7000/api/proxy/mlflow/api/2.0/mlflow',
-);
+export { RunTrendPage } from './RunTrend';
