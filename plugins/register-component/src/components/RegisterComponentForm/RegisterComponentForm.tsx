@@ -19,15 +19,12 @@ import {
   Button,
   FormControl,
   FormHelperText,
-  InputLabel,
   LinearProgress,
-  MenuItem,
-  Select,
   TextField,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { ComponentIdValidators } from '../../util/validate';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
@@ -50,7 +47,7 @@ export type Props = {
 };
 
 export const RegisterComponentForm = ({ onSubmit, submitting }: Props) => {
-  const { control, register, handleSubmit, errors, formState } = useForm({
+  const { register, handleSubmit, errors, formState } = useForm({
     mode: 'onChange',
   });
   const classes = useStyles();
@@ -91,29 +88,6 @@ export const RegisterComponentForm = ({ onSubmit, submitting }: Props) => {
         )}
       </FormControl>
 
-      <FormControl variant="outlined" className={classes.select}>
-        <InputLabel id="scmLabel">Host type</InputLabel>
-        <Controller
-          control={control}
-          name="scmType"
-          defaultValue="AUTO"
-          render={({ onChange, onBlur, value }) => (
-            <Select
-              labelId="scmLabel"
-              id="scmSelect"
-              label="scmLabel"
-              value={value}
-              onChange={onChange}
-              onBlur={onBlur}
-            >
-              <MenuItem value="AUTO">Auto-detect</MenuItem>
-              <MenuItem value="gitlab">GitLab</MenuItem>
-              <MenuItem value="bitbucket/api">Bitbucket</MenuItem>
-              <MenuItem value="azure/api">Azure</MenuItem>
-            </Select>
-          )}
-        />
-      </FormControl>
       <Button
         variant="contained"
         color="primary"
