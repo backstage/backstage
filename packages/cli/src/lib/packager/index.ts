@@ -20,10 +20,11 @@ import {
   resolve as resolvePath,
   relative as relativePath,
 } from 'path';
+import { tmpdir } from 'os';
+import tar, { CreateOptions } from 'tar';
 import { paths } from '../paths';
 import { run } from '../run';
-import tar, { CreateOptions } from 'tar';
-import { tmpdir } from 'os';
+import { ParallelOption } from '../parallel';
 
 type LernaPackage = {
   name: string;
@@ -59,6 +60,11 @@ type Options = {
   buildDependencies?: boolean;
 
   /**
+   * Enable (true/false) or control amount of (number) parallelism in some build steps.
+   */
+  parallel?: ParallelOption;
+
+  /**
    * If set, creates a skeleton tarball that contains all package.json files
    * with the same structure as the workspace dir.
    */
@@ -85,7 +91,12 @@ export async function createDistWorkspace(
 
   if (options.buildDependencies) {
     const scopeArgs = targets.flatMap(target => ['--scope', target.name]);
-    await run('yarn', ['lerna', 'run', ...scopeArgs, 'build'], {
+    const lernaArgs =
+      options.parallel && Number.isInteger(options.parallel)
+        ? ['--concurrency', options.parallel.toString()]
+        : [];
+
+    await run('yarn', ['lerna', ...lernaArgs, 'run', ...scopeArgs, 'build'], {
       cwd: paths.targetRoot,
     });
   }

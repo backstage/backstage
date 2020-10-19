@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '../ApiRef';
+import { ApiRef, createApiRef } from '../system';
 import { BackstageTheme } from '@backstage/theme';
 import { Observable } from '../../types';
 import { SvgIconProps } from '@material-ui/core';
@@ -77,7 +77,7 @@ export type AppThemeApi = {
   setActiveThemeId(themeId?: string): void;
 };
 
-export const appThemeApiRef = createApiRef<AppThemeApi>({
+export const appThemeApiRef: ApiRef<AppThemeApi> = createApiRef({
   id: 'core.apptheme',
   description: 'API Used to configure the app theme, and enumerate options',
 });

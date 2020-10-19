@@ -18,7 +18,7 @@ import { UrlReader } from '@backstage/backend-common';
 import { Entity, LocationSpec } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/config';
 import yaml from 'yaml';
-import { LocationProcessor } from './types';
+import { CatalogProcessor } from './types';
 
 export type ResolverRead = (url: string) => Promise<Buffer>;
 
@@ -42,18 +42,7 @@ type Options = {
  * Traverses raw entity JSON looking for occurrences of $-prefixed placeholders
  * that it then fills in with actual data.
  */
-export class PlaceholderProcessor implements LocationProcessor {
-  static default({ reader }: { reader: UrlReader }) {
-    return new PlaceholderProcessor({
-      resolvers: {
-        json: jsonPlaceholderResolver,
-        yaml: yamlPlaceholderResolver,
-        text: textPlaceholderResolver,
-      },
-      reader,
-    });
-  }
-
+export class PlaceholderProcessor implements CatalogProcessor {
   constructor(private readonly options: Options) {}
 
   async processEntity(entity: Entity, location: LocationSpec): Promise<Entity> {

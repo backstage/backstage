@@ -15,17 +15,18 @@
  */
 
 import { LocationSpec } from '@backstage/catalog-model';
+
+import { Config } from '@backstage/config';
 import fetch from 'cross-fetch';
 import * as result from './results';
-import { LocationProcessor, LocationProcessorEmit } from './types';
-import { Config } from '@backstage/config';
+import { CatalogProcessor, CatalogProcessorEmit } from './types';
 
 // ***********************************************************************
 // * NOTE: This has been replaced by packages/backend-common/src/reading *
 // * Don't implement new functionality here as this file will be removed *
 // ***********************************************************************
 
-export class AzureApiReaderProcessor implements LocationProcessor {
+export class AzureApiReaderProcessor implements CatalogProcessor {
   private privateToken: string;
 
   constructor(config: Config) {
@@ -52,7 +53,7 @@ export class AzureApiReaderProcessor implements LocationProcessor {
   async readLocation(
     location: LocationSpec,
     optional: boolean,
-    emit: LocationProcessorEmit,
+    emit: CatalogProcessorEmit,
   ): Promise<boolean> {
     if (location.type !== 'azure/api') {
       return false;

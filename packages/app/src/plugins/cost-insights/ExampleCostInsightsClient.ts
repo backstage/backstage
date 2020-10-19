@@ -28,6 +28,7 @@ import {
   Group,
   inclusiveStartDateOf,
   Maybe,
+  MetricData,
   ProductCost,
   Project,
   ProjectGrowthAlert,
@@ -116,19 +117,33 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
     return projects;
   }
 
-  async getGroupDailyCost(
-    group: string,
-    metric: string | null,
+  async getDailyMetricData(
+    metric: string,
     intervals: string,
-  ): Promise<Cost> {
+  ): Promise<MetricData> {
     const aggregation = aggregationFor(
       durationOf(intervals),
-      metric ? 0.3 : 8_000,
-    );
-    const groupDailyCost: Cost = await this.request(
-      { group, metric, intervals },
+      100_000,
+    ).map(entry => ({ ...entry, amount: Math.round(entry.amount) }));
+
+    const cost: MetricData = await this.request(
+      { metric, intervals },
       {
-        id: metric, // costs with null ids will appear as "All Projects" in Cost Overview panel
+        format: 'number',
+        aggregation: aggregation,
+        change: changeOf(aggregation),
+        trendline: trendlineOf(aggregation),
+      },
+    );
+
+    return cost;
+  }
+
+  async getGroupDailyCost(group: string, intervals: string): Promise<Cost> {
+    const aggregation = aggregationFor(durationOf(intervals), 8_000);
+    const groupDailyCost: Cost = await this.request(
+      { group, intervals },
+      {
         aggregation: aggregation,
         change: changeOf(aggregation),
         trendline: trendlineOf(aggregation),
@@ -138,17 +153,10 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
     return groupDailyCost;
   }
 
-  async getProjectDailyCost(
-    project: string,
-    metric: string | null,
-    intervals: string,
-  ): Promise<Cost> {
-    const aggregation = aggregationFor(
-      durationOf(intervals),
-      metric ? 0.1 : 1_500,
-    );
+  async getProjectDailyCost(project: string, intervals: string): Promise<Cost> {
+    const aggregation = aggregationFor(durationOf(intervals), 1_500);
     const projectDailyCost: Cost = await this.request(
-      { project, metric, intervals },
+      { project, intervals },
       {
         id: 'project-a',
         aggregation: aggregation,

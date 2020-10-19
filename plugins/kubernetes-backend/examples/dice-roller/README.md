@@ -27,7 +27,9 @@ Update `app-config.development.yaml` as follows.
 
 ```yaml
 kubernetes:
-  clusterLocatorMethod: 'configMultiTenant'
+  serviceLocatorMethod: 'multiTenant'
+  clusterLocatorMethods:
+    - 'config'
   clusters:
     - url: <KUBERNETES MASTER BASE URL FROM STEP 2>
       name: minikube

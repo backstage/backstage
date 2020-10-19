@@ -96,7 +96,11 @@ export const defaultApis = [
       oauthRequestApi: oauthRequestApiRef,
     },
     factory: ({ discoveryApi, oauthRequestApi }) =>
-      GithubAuth.create({ discoveryApi, oauthRequestApi }),
+      GithubAuth.create({
+        discoveryApi,
+        oauthRequestApi,
+        defaultScopes: ['read:user'],
+      }),
   }),
   createApiFactory({
     api: oktaAuthApiRef,

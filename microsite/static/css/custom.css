@@ -1088,6 +1088,13 @@ code {
 .nav-footer .copyright {
   width: 600px;
   color: #fff;
-  margin: auto;
+  margin: 0 auto;
   font-size: 10pt;
+}
+
+@media only screen and (max-width: 485px) {
+  .nav-footer .copyright {
+    width: auto;
+    margin: 0 1.5em;
+  }
 }

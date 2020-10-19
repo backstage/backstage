@@ -14,6 +14,9 @@ natively. In the API request/response cycle, a JSON representation is used,
 while the descriptor files are on YAML format to be more easily maintainable by
 humans. However, the structure and semantics is the same in both cases.
 
+Although it's possible to name catalog entity descriptor files however you wish,
+we recommend that you name them `catalog-info.yaml`.
+
 ## Contents
 
 - [Overall Shape Of An Entity](#overall-shape-of-an-entity)

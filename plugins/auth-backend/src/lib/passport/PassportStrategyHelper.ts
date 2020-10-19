@@ -18,6 +18,7 @@ import express from 'express';
 import passport from 'passport';
 import jwtDecoder from 'jwt-decode';
 import { ProfileInfo, RedirectInfo } from '../../providers/types';
+import { InternalOAuthError } from 'passport-oauth2';
 
 export type PassportDoneCallback<Res, Private = never> = (
   err?: Error,
@@ -95,8 +96,22 @@ export const executeFrameHandlerStrategy = async <T, PrivateInfo = never>(
       ) => {
         reject(new Error(`Authentication rejected, ${info.message ?? ''}`));
       };
-      strategy.error = (error: Error) => {
-        reject(new Error(`Authentication failed, ${error}`));
+      strategy.error = (error: InternalOAuthError) => {
+        let message = `Authentication failed, ${error.message}`;
+
+        if (error.oauthError?.data) {
+          try {
+            const errorData = JSON.parse(error.oauthError.data);
+
+            if (errorData.message) {
+              message += ` - ${errorData.message}`;
+            }
+          } catch (parseError) {
+            message += ` - ${error.oauthError}`;
+          }
+        }
+
+        reject(new Error(message));
       };
       strategy.redirect = () => {
         reject(new Error('Unexpected redirect'));

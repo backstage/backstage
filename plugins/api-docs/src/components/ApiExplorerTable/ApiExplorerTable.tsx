@@ -15,7 +15,7 @@
  */
 
 import { ApiEntityV1alpha1, Entity } from '@backstage/catalog-model';
-import { Table, TableColumn, useApi } from '@backstage/core';
+import { Table, TableFilter, TableColumn, useApi } from '@backstage/core';
 import { Chip, Link } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React from 'react';
@@ -90,9 +90,27 @@ const columns: TableColumn<Entity>[] = [
   },
 ];
 
+const filters: TableFilter[] = [
+  {
+    column: 'Owner',
+    type: 'select',
+  },
+  {
+    column: 'Type',
+    type: 'multiple-select',
+  },
+  {
+    column: 'Lifecycle',
+    type: 'multiple-select',
+  },
+  {
+    column: 'Tags',
+    type: 'checkbox-tree',
+  },
+];
+
 type ExplorerTableProps = {
   entities: Entity[];
-  titlePreamble: string;
   loading: boolean;
   error?: any;
 };
@@ -101,7 +119,6 @@ export const ApiExplorerTable = ({
   entities,
   loading,
   error,
-  titlePreamble,
 }: ExplorerTableProps) => {
   if (error) {
     return (
@@ -114,7 +131,7 @@ export const ApiExplorerTable = ({
   }
 
   return (
-    <Table<Entity>
+    <Table
       isLoading={loading}
       columns={columns}
       options={{
@@ -123,8 +140,8 @@ export const ApiExplorerTable = ({
         loadingType: 'linear',
         showEmptyDataSourceMessage: !loading,
       }}
-      title={`${titlePreamble} (${(entities && entities.length) || 0})`}
       data={entities}
+      filters={filters}
     />
   );
 };

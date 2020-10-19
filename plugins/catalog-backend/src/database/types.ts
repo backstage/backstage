@@ -67,11 +67,27 @@ export type DatabaseLocationUpdateLogEvent = {
   message?: string;
 };
 
-export type EntityFilter = {
-  key: string;
-  values: (string | null)[];
-};
-export type EntityFilters = EntityFilter[];
+/**
+ * Filter matcher for a single entity field.
+ *
+ * Can be either null or a string, or an array of those. Null and the empty
+ * string are treated equally, and match both a present field with a null or
+ * empty value, as well as an absent field.
+ *
+ * A filter may contain asterisks (*) that are treated as wildcards for zero
+ * or more arbitrary characters.
+ */
+export type EntityFilter = null | string | (null | string)[];
+
+/**
+ * A set of filter matchers used for filtering entities.
+ *
+ * The keys are full dot-separated paths into the structure of an entity, for
+ * example "metadata.name". You can also address any item in an array the same
+ * way, e.g. "a.b.c": "x" works if b is an array of objects that have a c field
+ * and any of those have the value x.
+ */
+export type EntityFilters = Record<string, EntityFilter>;
 
 /**
  * An abstraction on top of the underlying database, wrapping the basic CRUD

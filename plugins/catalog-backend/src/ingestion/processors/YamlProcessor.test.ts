@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { YamlProcessor } from './YamlProcessor';
 import { Entity } from '@backstage/catalog-model';
-import yaml from 'yaml';
 import { TextEncoder } from 'util';
+import yaml from 'yaml';
 import {
-  LocationProcessorEntityResult,
-  LocationProcessorErrorResult,
+  CatalogProcessorEntityResult,
+  CatalogProcessorErrorResult,
 } from './types';
+import { YamlProcessor } from './YamlProcessor';
 
 describe('YamlProcessor', () => {
   const processor = new YamlProcessor();
@@ -82,7 +82,7 @@ describe('YamlProcessor', () => {
 
     expect(await processor.parseData(buffer, locationSpec, emit)).toBe(true);
 
-    const e = emit.mock.calls[0][0] as LocationProcessorEntityResult;
+    const e = emit.mock.calls[0][0] as CatalogProcessorEntityResult;
     expect(e.type).toBe('entity');
     expect(e.location).toBe(locationSpec);
     expect(e.entity).toEqual(entity);
@@ -114,12 +114,12 @@ describe('YamlProcessor', () => {
 
     expect(await processor.parseData(buffer, locationSpec, emit)).toBe(true);
 
-    const eComponent = emit.mock.calls[0][0] as LocationProcessorEntityResult;
+    const eComponent = emit.mock.calls[0][0] as CatalogProcessorEntityResult;
     expect(eComponent.type).toBe('entity');
     expect(eComponent.location).toBe(locationSpec);
     expect(eComponent.entity).toEqual(entityComponent);
 
-    const eApi = emit.mock.calls[1][0] as LocationProcessorEntityResult;
+    const eApi = emit.mock.calls[1][0] as CatalogProcessorEntityResult;
     expect(eApi.type).toBe('entity');
     expect(eApi.location).toBe(locationSpec);
     expect(eApi.entity).toEqual(entityApi);
@@ -131,7 +131,7 @@ describe('YamlProcessor', () => {
 
     expect(await processor.parseData(buffer, locationSpec, emit)).toBe(true);
 
-    const e = emit.mock.calls[0][0] as LocationProcessorErrorResult;
+    const e = emit.mock.calls[0][0] as CatalogProcessorErrorResult;
     expect(e.error.message).toMatch(/^YAML error, /);
     expect(e.type).toBe('error');
     expect(e.location).toBe(locationSpec);
@@ -143,7 +143,7 @@ describe('YamlProcessor', () => {
 
     expect(await processor.parseData(buffer, locationSpec, emit)).toBe(true);
 
-    const e = emit.mock.calls[0][0] as LocationProcessorErrorResult;
+    const e = emit.mock.calls[0][0] as CatalogProcessorErrorResult;
     expect(e.error.message).toMatch(/^Expected object at root, got /);
     expect(e.type).toBe('error');
     expect(e.location).toBe(locationSpec);

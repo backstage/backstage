@@ -40,6 +40,7 @@ const mockMetrics: Metric[] = [
   {
     kind: 'some-metric',
     name: 'Some Metric',
+    default: false,
   },
 ];
 

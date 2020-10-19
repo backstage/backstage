@@ -58,7 +58,7 @@ const secretLoaderSchemas = {
 };
 
 // The top-level secret schema, which figures out what type of secret it is.
-const secretSchema = yup.lazy<object>(value => {
+const secretSchema = yup.lazy<object | undefined>(value => {
   if (typeof value !== 'object' || value === null) {
     return yup.object().required().label('secret');
   }

@@ -347,7 +347,7 @@ describe('CommonDatabase', () => {
       await db.transaction(async tx => {
         await db.addEntities(tx, [{ entity: e1 }, { entity: e2 }]);
       });
-      const result = await db.transaction(async tx => db.entities(tx, []));
+      const result = await db.transaction(async tx => db.entities(tx, {}));
       expect(result.length).toEqual(2);
       expect(result).toEqual(
         expect.arrayContaining([
@@ -389,10 +389,7 @@ describe('CommonDatabase', () => {
 
       await expect(
         db.transaction(async tx =>
-          db.entities(tx, [
-            { key: 'kind', values: ['k2'] },
-            { key: 'spec.c', values: ['some'] },
-          ]),
+          db.entities(tx, { kind: 'k2', 'spec.c': 'some' }),
         ),
       ).resolves.toEqual([
         {
@@ -427,10 +424,7 @@ describe('CommonDatabase', () => {
       });
 
       const rows = await db.transaction(async tx =>
-        db.entities(tx, [
-          { key: 'apiVersion', values: ['a'] },
-          { key: 'spec.c', values: [null, 'some'] },
-        ]),
+        db.entities(tx, { apiVersion: 'a', 'spec.c': [null, 'some'] }),
       );
 
       expect(rows.length).toEqual(3);
@@ -477,10 +471,7 @@ describe('CommonDatabase', () => {
       });
 
       const rows = await db.transaction(async tx =>
-        db.entities(tx, [
-          { key: 'ApiVersioN', values: ['A'] },
-          { key: 'spEc.C', values: [null, 'some'] },
-        ]),
+        db.entities(tx, { ApiVersioN: 'A', 'spEc.C': [null, 'some'] }),
       );
 
       expect(rows.length).toEqual(3);

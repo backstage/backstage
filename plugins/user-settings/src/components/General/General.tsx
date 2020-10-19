@@ -21,12 +21,12 @@ import { Profile } from './Profile';
 import { ThemeToggle } from './ThemeToggle';
 
 export const General = () => (
-  <Grid container spacing={3}>
-    <Grid item md={12}>
+  <Grid container direction="row" spacing={3}>
+    <Grid item sm={12} md={6}>
       <Profile />
     </Grid>
-    <Grid item md={12}>
-      <InfoCard>
+    <Grid item sm={12} md={6}>
+      <InfoCard title="Appearance">
         <List dense>
           <ThemeToggle />
           <PinButton />

@@ -16,14 +16,13 @@
 
 import { UrlReader } from '@backstage/backend-common';
 import { Entity, LocationSpec } from '@backstage/catalog-model';
-import { LocationProcessor } from './types';
 import * as codeowners from 'codeowners-utils';
 import { CodeOwnersEntry } from 'codeowners-utils';
-import parseGitUri from 'git-url-parse';
-import { filter, head, get, pipe, reverse } from 'lodash/fp';
-
 // NOTE: This can be removed when ES2021 is implemented
 import 'core-js/features/promise';
+import parseGitUri from 'git-url-parse';
+import { filter, get, head, pipe, reverse } from 'lodash/fp';
+import { CatalogProcessor } from './types';
 
 const ALLOWED_LOCATION_TYPES = [
   'azure/api',
@@ -38,7 +37,7 @@ type Options = {
   reader: UrlReader;
 };
 
-export class CodeOwnersProcessor implements LocationProcessor {
+export class CodeOwnersProcessor implements CatalogProcessor {
   constructor(private readonly options: Options) {}
 
   async processEntity(entity: Entity, location: LocationSpec): Promise<Entity> {

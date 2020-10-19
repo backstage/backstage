@@ -19,6 +19,7 @@ import { loadConfig } from '@backstage/config-loader';
 import { ConfigReader } from '@backstage/config';
 import { paths } from '../../lib/paths';
 import { buildBundle } from '../../lib/bundler';
+import { parseParallel, PARALLEL_ENV_VAR } from '../../lib/parallel';
 
 export default async (cmd: Command) => {
   const appConfigs = await loadConfig({
@@ -27,6 +28,7 @@ export default async (cmd: Command) => {
   });
   await buildBundle({
     entry: 'src/index',
+    parallel: parseParallel(process.env[PARALLEL_ENV_VAR]),
     statsJsonEnabled: cmd.stats,
     config: ConfigReader.fromConfigs(appConfigs),
     appConfigs,

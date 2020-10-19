@@ -24,7 +24,6 @@ import {
   useApi,
   Content,
   Page,
-  pageTheme,
   Header,
 } from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog';
@@ -43,7 +42,7 @@ export const TechDocsHome = () => {
 
   if (loading) {
     return (
-      <Page theme={pageTheme.documentation}>
+      <Page themeId="documentation">
         <Header
           title="Documentation"
           subtitle="Documentation available in Backstage"
@@ -57,7 +56,7 @@ export const TechDocsHome = () => {
 
   if (error) {
     return (
-      <Page theme={pageTheme.documentation}>
+      <Page themeId="documentation">
         <Header
           title="Documentation"
           subtitle="Documentation available in Backstage"
@@ -70,7 +69,7 @@ export const TechDocsHome = () => {
   }
 
   return (
-    <Page theme={pageTheme.documentation}>
+    <Page themeId="documentation">
       <Header
         title="Documentation"
         subtitle="Documentation available in Backstage"

@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import { Cost } from './Cost';
+import { MetricData } from './MetricData';
+import { aggregationSort } from '../utils/sort';
+
 export interface ChangeStatistic {
   // The ratio of change from one duration to another, expressed as: (newSum - oldSum) / oldSum
   ratio: number;
@@ -45,4 +49,17 @@ export function growthOf(amount: number, ratio: number) {
   }
 
   return Growth.Negligible;
+}
+
+// Used by <CostOverviewCard /> for displaying engineer totals
+export function getComparedChange(
+  dailyCost: Cost,
+  metricData: MetricData,
+): ChangeStatistic {
+  const ratio = dailyCost.change.ratio - metricData.change.ratio;
+  const amount = dailyCost.aggregation.slice().sort(aggregationSort)[0].amount;
+  return {
+    ratio: ratio,
+    amount: amount * ratio,
+  };
 }

@@ -61,6 +61,11 @@ import {
   LastLighthouseAuditCard,
   isPluginApplicableToEntity as isLighthouseAvailable,
 } from '@backstage/plugin-lighthouse/';
+import {
+  Router as PullRequestsRouter,
+  isPluginApplicableToEntity as isPullRequestsAvailable,
+  PullRequestsStatsCard,
+} from '@roadiehq/backstage-plugin-github-pull-requests';
 
 const CICDSwitcher = ({ entity }: { entity: Entity }) => {
   // This component is just an example of how you can implement your company's logic in entity page.
@@ -143,6 +148,11 @@ const OverviewContent = ({ entity }: { entity: Entity }) => (
         <LastLighthouseAuditCard />
       </Grid>
     )}
+    {isPullRequestsAvailable(entity) && (
+      <Grid item sm={4}>
+        <PullRequestsStatsCard entity={entity} />
+      </Grid>
+    )}
   </Grid>
 );
 
@@ -177,6 +187,11 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
       path="/kubernetes/*"
       title="Kubernetes"
       element={<KubernetesRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/pull-requests"
+      title="Pull Requests"
+      element={<PullRequestsRouter entity={entity} />}
     />
     <EntityPageLayout.Content
       path="/code-insights"
@@ -217,6 +232,11 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
       path="/kubernetes/*"
       title="Kubernetes"
       element={<KubernetesRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/pull-requests"
+      title="Pull Requests"
+      element={<PullRequestsRouter entity={entity} />}
     />
     <EntityPageLayout.Content
       path="/code-insights"

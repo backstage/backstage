@@ -76,7 +76,9 @@ describe('GitHubPreparer', () => {
       1,
       'https://github.com/benjdlambert/backstage-graphql-template',
       expect.any(String),
-      {},
+      {
+        checkoutBranch: 'master',
+      },
     );
   });
   it('calls the clone command with the correct arguments for a repository when no path is provided', async () => {
@@ -87,7 +89,9 @@ describe('GitHubPreparer', () => {
       1,
       'https://github.com/benjdlambert/backstage-graphql-template',
       expect.any(String),
-      {},
+      {
+        checkoutBranch: 'master',
+      },
     );
   });
   it('return the temp directory with the path to the folder if it is specified', async () => {
@@ -107,6 +111,7 @@ describe('GitHubPreparer', () => {
       'https://github.com/benjdlambert/backstage-graphql-template',
       expect.any(String),
       {
+        checkoutBranch: 'master',
         fetchOpts: {
           callbacks: {
             credentials: expect.any(Function),

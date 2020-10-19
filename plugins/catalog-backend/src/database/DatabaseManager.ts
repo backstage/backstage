@@ -46,21 +46,31 @@ export class DatabaseManager {
     return new CommonDatabase(knex, logger);
   }
 
-  public static async createInMemoryDatabase(
-    options: Partial<CreateDatabaseOptions> = {},
-  ): Promise<Database> {
+  public static async createInMemoryDatabase(): Promise<Database> {
+    const knex = await this.createInMemoryDatabaseConnection();
+    return await this.createDatabase(knex);
+  }
+
+  public static async createInMemoryDatabaseConnection(): Promise<Knex> {
     const knex = Knex({
       client: 'sqlite3',
       connection: ':memory:',
       useNullAsDefault: true,
     });
+
     knex.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
       resource.run('PRAGMA foreign_keys = ON', () => {});
     });
-    return DatabaseManager.createDatabase(knex, options);
+
+    return knex;
   }
 
   public static async createTestDatabase(): Promise<Database> {
+    const knex = await this.createTestDatabaseConnection();
+    return await this.createDatabase(knex);
+  }
+
+  public static async createTestDatabaseConnection(): Promise<Knex> {
     const config: Knex.Config<any> = {
       /*
       client: 'pg',
@@ -91,11 +101,7 @@ export class DatabaseManager {
     knex.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
       resource.run('PRAGMA foreign_keys = ON', () => {});
     });
-    await knex.migrate.latest({
-      directory: migrationsDir,
-    });
 
-    const { logger } = defaultOptions;
-    return new CommonDatabase(knex, logger);
+    return knex;
   }
 }

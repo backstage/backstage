@@ -67,7 +67,7 @@ const columns = [
 
 export const Default = () => (
   <div style={containerStyle}>
-    <InfoCard title="Trends over time">
+    <InfoCard title="Trends over time" noPadding>
       <Table
         options={{
           search: false,
