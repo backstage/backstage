@@ -85,7 +85,7 @@
     "recursive-readdir": "^2.2.2",
     "replace-in-file": "^6.0.0",
     "rollup": "2.23.x",
-    "rollup-plugin-dts": "1.4.11",
+    "rollup-plugin-dts": "1.4.13",
     "rollup-plugin-esbuild": "^2.0.0",
     "rollup-plugin-peer-deps-external": "^2.2.2",
     "rollup-plugin-postcss": "^3.1.1",
