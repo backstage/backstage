@@ -34,14 +34,8 @@ describe('<PinButton />', () => {
     );
     expect(rendered.getByText('Pin Sidebar')).toBeInTheDocument();
 
-    /*
-    const pinButton = rendered.getByTestId('pin');
-    fireEvent.change(pinButton);
-    */
-
     const pinButton = rendered.getByLabelText('Pin Sidebar Switch');
     fireEvent.click(pinButton);
-
     expect(mockToggleFn).toHaveBeenCalled();
   });
 });
