@@ -26,7 +26,6 @@ import {
   locationEntityV1alpha1Policy,
   makeValidator,
   NoForeignRootFieldsEntityPolicy,
-  ReservedFieldsEntityPolicy,
   SchemaValidEntityPolicy,
   templateEntityV1alpha1Policy,
   userEntityV1alpha1Policy,
@@ -396,7 +395,6 @@ export class CatalogBuilder {
           new FieldFormatEntityPolicy(
             makeValidator(this.fieldFormatValidators),
           ),
-          new ReservedFieldsEntityPolicy(),
           ...this.entityPolicies,
         ];
 
