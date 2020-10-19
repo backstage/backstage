@@ -44,7 +44,7 @@ const Plugins = () => (
         </span>
       </div>
       <BulletLine style={{ width: '100% ' }} />
-      <Container wrapped className="grid">
+      <Container wrapped className="PluginGrid">
         {pluginMetadata.map(
           ({
             iconUrl,

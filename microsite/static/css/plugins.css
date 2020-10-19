@@ -6,7 +6,7 @@
   flex-direction: column;
 }
 
-.grid {
+.PluginGrid {
   display: grid;
   grid-gap: 1rem;
   grid-template-columns: repeat(4, 1fr);
@@ -15,14 +15,20 @@
 }
 
 @media (max-width: 1200px) {
-  .grid {
+  .PluginGrid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
 @media only screen and (max-width: 815px) {
-  .grid {
+  .PluginGrid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media only screen and (max-width: 485px) {
+  .PluginGrid {
+    grid-template-columns: 1fr;
   }
 }
 
