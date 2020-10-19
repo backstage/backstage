@@ -102,12 +102,20 @@ export const ThemeToggle = () => {
                 title={`Select ${theme.title}`}
                 value={theme.variant}
               >
-                <ThemeIcon id={theme.id} icon={themeIcon} activeId={themeId} />
+                <>
+                  {theme.variant}&nbsp;
+                  <ThemeIcon
+                    id={theme.id}
+                    icon={themeIcon}
+                    activeId={themeId}
+                  />
+                </>
               </TooltipToggleButton>
             );
           })}
           <Tooltip placement="top" arrow title="Select auto theme">
-            <ToggleButton value="auto">
+            <ToggleButton value="auto" selected={themeId === undefined}>
+              Auto&nbsp;
               <AutoIcon color={themeId === undefined ? 'primary' : undefined} />
             </ToggleButton>
           </Tooltip>

@@ -22,14 +22,13 @@ import {
   SessionState,
 } from '@backstage/core';
 import {
+  Button,
   ListItem,
   ListItemIcon,
   ListItemSecondaryAction,
   ListItemText,
   Tooltip,
 } from '@material-ui/core';
-import PowerButton from '@material-ui/icons/PowerSettingsNew';
-import { ToggleButton } from '@material-ui/lab';
 
 type Props = {
   title: string;
@@ -84,14 +83,13 @@ export const ProviderSettingsItem = ({
           arrow
           title={signedIn ? `Sign out from ${title}` : `Sign in to ${title}`}
         >
-          <ToggleButton
-            size="small"
-            value={title}
-            selected={signedIn}
-            onChange={() => (signedIn ? api.signOut() : api.signIn())}
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={() => (signedIn ? api.signOut() : api.signIn())}
           >
-            <PowerButton color={signedIn ? 'primary' : undefined} />
-          </ToggleButton>
+            {signedIn ? `Sign out` : `Sign in`}
+          </Button>
         </Tooltip>
       </ListItemSecondaryAction>
     </ListItem>
