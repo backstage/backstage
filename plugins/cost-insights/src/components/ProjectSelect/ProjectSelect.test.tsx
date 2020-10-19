@@ -59,10 +59,9 @@ describe('<ProjectSelect />', () => {
     const button = getByRole(projectSelectContainer, 'button');
     UserEvent.click(button);
     await waitFor(() => rendered.getByTestId('option-all'));
-    mockProjects.forEach(
-      project =>
-        project.id &&
-        expect(rendered.getByText(project.id)).toBeInTheDocument(),
+
+    mockProjects.forEach(project =>
+      expect(rendered.getByText(project.id)).toBeInTheDocument(),
     );
   });
 });

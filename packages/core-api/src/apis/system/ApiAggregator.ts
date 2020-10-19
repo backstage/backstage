@@ -14,6 +14,26 @@
  * limitations under the License.
  */
 
-export * from './system';
-export * from './definitions';
-export * from './implementations';
+import { ApiRef, ApiHolder } from './types';
+
+/**
+ * An ApiHolder that queries multiple other holders from for
+ * an Api implementation, returning the first one encountered..
+ */
+export class ApiAggregator implements ApiHolder {
+  private readonly holders: ApiHolder[];
+
+  constructor(...holders: ApiHolder[]) {
+    this.holders = holders;
+  }
+
+  get<T>(apiRef: ApiRef<T>): T | undefined {
+    for (const holder of this.holders) {
+      const api = holder.get(apiRef);
+      if (api) {
+        return api;
+      }
+    }
+    return undefined;
+  }
+}

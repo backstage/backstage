@@ -54,8 +54,7 @@ import {
 } from '../apis';
 import { useAsync } from 'react-use';
 import { AppIdentity } from './AppIdentity';
-import { ApiFactoryRegistry } from '../apis/ApiFactoryRegistry';
-import { ApiResolver } from '../apis/ApiResolver';
+import { ApiResolver, ApiFactoryRegistry } from '../apis/system';
 
 type FullAppOptions = {
   apis: Iterable<AnyApiFactory>;

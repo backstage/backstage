@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { ApiRef } from './ApiRef';
+export type ApiRef<T> = {
+  id: string;
+  description: string;
+  T: T;
+};
 
 export type AnyApiRef = ApiRef<unknown>;
 

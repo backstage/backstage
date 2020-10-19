@@ -16,8 +16,7 @@
 
 import React, { FC, createContext, useContext, ReactNode } from 'react';
 import PropTypes from 'prop-types';
-import { ApiRef } from './ApiRef';
-import { ApiHolder, TypesToApiRefs } from './types';
+import { ApiRef, ApiHolder, TypesToApiRefs } from './types';
 import { ApiAggregator } from './ApiAggregator';
 
 type ApiProviderProps = {

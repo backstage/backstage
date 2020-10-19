@@ -163,7 +163,7 @@ describe('AuditView', () => {
   });
 
   describe('when the request for the website by id is pending', () => {
-    it('it shows the loading', async () => {
+    it('shows the loading', async () => {
       mockFetch.mockImplementationOnce(() => new Promise(() => {}));
       const rendered = render(
         wrapInTestApp(
@@ -177,7 +177,7 @@ describe('AuditView', () => {
   });
 
   describe('when the request for the website by id fails', () => {
-    it('it shows an error', async () => {
+    it('shows an error', async () => {
       mockFetch.mockRejectOnce(new Error('failed to fetch'));
       const rendered = render(
         wrapInTestApp(

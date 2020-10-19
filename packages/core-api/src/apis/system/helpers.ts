@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { ApiFactory, TypesToApiRefs } from './types';
-import { ApiRef } from './ApiRef';
+import { ApiRef, ApiFactory, TypesToApiRefs } from './types';
 
 /**
  * Used to infer types for a standalone ApiFactory that isn't immediately passed

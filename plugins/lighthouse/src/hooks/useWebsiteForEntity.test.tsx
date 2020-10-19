@@ -75,7 +75,7 @@ describe('useWebsiteForEntity', () => {
     (mockLighthouseApi.getWebsiteByUrl as jest.Mock).mockResolvedValue(website);
   });
 
-  it('returns the lighthouse information for the website url in annotations ', async () => {
+  it('returns the lighthouse information for the website url in annotations', async () => {
     const { result, waitForNextUpdate } = subject();
     await waitForNextUpdate();
     expect(result.current?.value).toBe(website);

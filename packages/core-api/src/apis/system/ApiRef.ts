@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
+import type { ApiRef } from './types';
+
 export type ApiRefConfig = {
   id: string;
   description: string;
-};
-
-export type ApiRef<T> = {
-  id: string;
-  description: string;
-  T: T;
 };
 
 class ApiRefImpl<T> implements ApiRef<T> {

@@ -30,7 +30,7 @@ describe('RegisterComponentForm', () => {
     expect(screen.getByText('Submit').closest('button')).toBeDisabled();
   });
 
-  it('should enable a submit button when the target url is set ', async () => {
+  it('should enable a submit button when the target url is set', async () => {
     render(<RegisterComponentForm onSubmit={jest.fn()} />);
 
     await act(async () => {
