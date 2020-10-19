@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-import React, { FC, useState, useEffect } from 'react';
-import { LinearProgress, LinearProgressProps } from '@material-ui/core';
+import React from 'react';
+import { renderInTestApp } from '@backstage/test-utils';
+import { act } from 'react-dom/test-utils';
 
-export const Progress: FC<LinearProgressProps> = props => {
-  const [isVisible, setIsVisible] = useState(false);
+import { Progress } from './Progress';
 
-  useEffect(() => {
-    const handle = setTimeout(() => setIsVisible(true), 250);
-    return () => clearTimeout(handle);
-  }, []);
-
-  return isVisible ? (
-    <LinearProgress {...props} data-testid="progress" />
-  ) : (
-    <div style={{ display: 'none' }} />
-  );
-};
+describe('<Progress />', () => {
+  it('renders without exploding', async () => {
+    jest.useFakeTimers();
+    const { getByTestId, queryByTestId } = await renderInTestApp(<Progress />);
+    expect(queryByTestId('progress')).not.toBeInTheDocument();
+    act(() => {
+      jest.advanceTimersByTime(250);
+    });
+    expect(getByTestId('progress')).toBeInTheDocument();
+    jest.useRealTimers();
+  });
+});
