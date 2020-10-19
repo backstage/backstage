@@ -56,6 +56,12 @@
   right: 0px;
 }
 
+@media only screen and (max-width: 485px) {
+  .PluginAddNewButton {
+    bottom: -4px;
+  }
+}
+
 .ButtonFilled {
   padding: 4px 8px;
   border-radius: 4px;
