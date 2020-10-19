@@ -20371,10 +20371,10 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^3.0.0"
     inherits "^2.0.1"
 
-rollup-plugin-dts@1.4.11:
-  version "1.4.11"
-  resolved "https://registry.npmjs.org/rollup-plugin-dts/-/rollup-plugin-dts-1.4.11.tgz#aedf0b7bb91d51e20b755e2c18e840edfc7af7a1"
-  integrity sha512-yiScAMKgwH77b44a/IFGgjLsmwSlNfQhEM+eCb2uMrupQMPE1n/12wrnT431+v1u6wYMF1XuHqldh+v/7mTvYA==
+rollup-plugin-dts@1.4.13:
+  version "1.4.13"
+  resolved "https://registry.npmjs.org/rollup-plugin-dts/-/rollup-plugin-dts-1.4.13.tgz#4f086e84f4fdcc1f49160799ebc66f6b09db292b"
+  integrity sha512-7mxoQ6PcmCkBE5ZhrjGDL4k42XLy8BkSqpiRi1MipwiGs+7lwi4mQkp2afX+OzzLjJp/TGM8llfe8uayIUhPEw==
   optionalDependencies:
     "@babel/code-frame" "^7.10.4"
 
