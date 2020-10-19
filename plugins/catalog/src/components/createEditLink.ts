@@ -16,6 +16,13 @@
 
 import { LocationSpec } from '@backstage/catalog-model';
 
+const determineBitBucketBranch = (url: string): string => {
+  const delimiter = '/';
+  const start = 6;
+  const result = url?.split(delimiter).slice(start)[0];
+  return result;
+};
+
 /**
  * Creates the edit link for components yaml file
  * @see LocationSpec
@@ -26,10 +33,22 @@ import { LocationSpec } from '@backstage/catalog-model';
 export const createEditLink = (location: LocationSpec): string => {
   switch (location.type) {
     case 'github':
+    case 'gitlab':
       return location.target.replace('/blob/', '/edit/');
+    case 'bitbucket':
+      return location.target.concat(
+        `?mode=edit&spa=0&at=${determineBitBucketBranch(location.target)}`,
+      );
     case 'url':
-      if (location.target.includes('https://github.com')) {
+      if (
+        location.target.includes('https://github.com') ||
+        location.target.includes('https://gitlab.com/')
+      ) {
         return location.target.replace('/blob/', '/edit/');
+      } else if (location.target.includes('https://bitbucket.org')) {
+        return location.target.concat(
+          `?mode=edit&spa=0&at=${determineBitBucketBranch(location.target)}`,
+        );
       }
       return location.target;
     default:
@@ -43,10 +62,12 @@ export const createEditLink = (location: LocationSpec): string => {
  * @returns string representing type of icon to be used
  */
 export const determineUrlType = (url: string): string => {
-  if (url.includes('https://github.com')) {
+  if (url.includes('https://github.com/')) {
     return 'github';
-  } else if (url.includes('https://bitbucket.com')) {
+  } else if (url.includes('https://bitbucket.org/')) {
     return 'bitbucket';
+  } else if (url.includes('https://gitlab.com/')) {
+    return 'gitlab';
   }
   return 'url';
 };
