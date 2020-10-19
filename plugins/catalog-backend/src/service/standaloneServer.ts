@@ -20,7 +20,6 @@ import {
   UrlReaders,
   useHotMemoize,
 } from '@backstage/backend-common';
-import { ConfigReader } from '@backstage/config';
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { DatabaseManager } from '../database';
@@ -37,7 +36,7 @@ export async function startStandaloneServer(
   options: ServerOptions,
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'catalog-backend' });
-  const config = ConfigReader.fromConfigs(await loadBackendConfig());
+  const config = await loadBackendConfig({ logger });
   const reader = UrlReaders.default({ logger, config });
   const db = useHotMemoize(module, () =>
     DatabaseManager.createInMemoryDatabaseConnection(),

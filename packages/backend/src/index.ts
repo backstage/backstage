@@ -33,7 +33,7 @@ import {
   SingleHostDiscovery,
   UrlReaders,
 } from '@backstage/backend-common';
-import { ConfigReader } from '@backstage/config';
+import { Config } from '@backstage/config';
 import healthcheck from './plugins/healthcheck';
 import auth from './plugins/auth';
 import catalog from './plugins/catalog';
@@ -47,7 +47,7 @@ import graphql from './plugins/graphql';
 import app from './plugins/app';
 import { PluginEnvironment } from './types';
 
-function makeCreateEnv(config: ConfigReader) {
+function makeCreateEnv(config: Config) {
   const root = getRootLogger();
   const reader = UrlReaders.default({ logger: root, config });
   const discovery = SingleHostDiscovery.fromConfig(config);
@@ -64,9 +64,8 @@ function makeCreateEnv(config: ConfigReader) {
 }
 
 async function main() {
-  const configs = await loadBackendConfig();
-  const configReader = ConfigReader.fromConfigs(configs);
-  const createEnv = makeCreateEnv(configReader);
+  const config = await loadBackendConfig({ logger: getRootLogger() });
+  const createEnv = makeCreateEnv(config);
 
   const healthcheckEnv = useHotMemoize(module, () => createEnv('healthcheck'));
   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
@@ -93,7 +92,7 @@ async function main() {
   apiRouter.use(notFoundHandler());
 
   const service = createServiceBuilder(module)
-    .loadConfig(configReader)
+    .loadConfig(config)
     .addRouter('', await healthcheck(healthcheckEnv))
     .addRouter('/api', apiRouter)
     .addRouter('', await app(appEnv));

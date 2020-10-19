@@ -28,6 +28,10 @@ export default async (cmd: Command) => {
     rootPaths: [paths.targetRoot, paths.targetDir],
   });
 
+  console.log(
+    `Loaded config from ${appConfigs.map(c => c.context).join(', ')}`,
+  );
+
   const flatConfig = ConfigReader.fromConfigs(appConfigs).get();
 
   if (cmd.format === 'json') {
