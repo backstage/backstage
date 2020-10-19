@@ -40,7 +40,7 @@ describe('<GaugeCard />', () => {
   });
 
   it('handles invalid numbers', () => {
-    const badProps = { title: 'Tingle upgrade', progress: 'hejjo' };
+    const badProps = { title: 'Tingle upgrade', progress: 'hejjo' } as any;
     const { getByText } = render(wrapInTestApp(<GaugeCard {...badProps} />));
     expect(getByText(/N\/A.*/)).toBeInTheDocument();
   });

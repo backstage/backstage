@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { render } from '@testing-library/react';
-
-import { StructuredMetadataTable } from './StructuredMetadataTable';
 import { startCase } from 'lodash';
+import React from 'react';
+import { StructuredMetadataTable } from './StructuredMetadataTable';
 
 describe('<StructuredMetadataTable />', () => {
   it('renders without exploding', () => {
@@ -31,40 +30,34 @@ describe('<StructuredMetadataTable />', () => {
 
   describe('Item Mappings', () => {
     it('Iterates over and displays every field in the map', () => {
-      const metadata: {
-        [prop: string]: string;
-      } = {
+      const metadata = {
         field1: 'one',
         field2: 'two',
         field3: 'three',
-      };
+      } as const;
       const { getByText } = render(
         <StructuredMetadataTable metadata={metadata} />,
       );
-      const keys = Object.keys(metadata);
-      keys.forEach(value => {
-        expect(getByText(startCase(value))).toBeInTheDocument();
-        expect(getByText(metadata[value])).toBeInTheDocument();
-      });
+      for (const [key, value] of Object.entries(metadata)) {
+        expect(getByText(startCase(key))).toBeInTheDocument();
+        expect(getByText(value)).toBeInTheDocument();
+      }
     });
 
     it('Supports primitive value fields', () => {
-      const metadata: {
-        [prop: string]: string | number;
-      } = { strField: 'my field', intField: 1 };
+      const metadata = { strField: 'my field', intField: 1 } as const;
       const { getByText } = render(
         <StructuredMetadataTable metadata={metadata} />,
       );
 
-      const keys = Object.keys(metadata);
-      keys.forEach(value => {
-        expect(getByText(startCase(value))).toBeInTheDocument();
-        expect(getByText(metadata[value].toString())).toBeInTheDocument();
-      });
+      for (const [key, value] of Object.entries(metadata)) {
+        expect(getByText(startCase(key))).toBeInTheDocument();
+        expect(getByText(value.toString())).toBeInTheDocument();
+      }
     });
 
     it('Supports array fields', () => {
-      const metadata = { arrayField: ['arrVal1', 'arrVal2'] };
+      const metadata = { arrayField: ['arrVal1', 'arrVal2'] } as const;
       const { getByText } = render(
         <StructuredMetadataTable metadata={metadata} />,
       );
@@ -87,22 +80,19 @@ describe('<StructuredMetadataTable />', () => {
     });
 
     it('Supports object elements', () => {
-      const metadata: { [prop: string]: { [prop: string]: number } } = {
+      const metadata = {
         config: { a: 1, b: 2 },
-      };
+      } as const;
       const { getByText } = render(
         <StructuredMetadataTable metadata={metadata} />,
       );
 
-      const keys = Object.keys(metadata.config);
-      keys.forEach(value => {
+      for (const [key, value] of Object.entries(metadata.config)) {
+        expect(getByText(startCase(key), { exact: false })).toBeInTheDocument();
         expect(
-          getByText(startCase(value), { exact: false }),
+          getByText(value.toString(), { exact: false }),
         ).toBeInTheDocument();
-        expect(
-          getByText(metadata.config[value].toString(), { exact: false }),
-        ).toBeInTheDocument();
-      });
+      }
     });
   });
 });
