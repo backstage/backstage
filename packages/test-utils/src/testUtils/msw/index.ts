@@ -13,8 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 export const msw = {
-  setupDefaultHandlers: (worker: any) => {
+  setupDefaultHandlers: (worker: {
+    listen: (t: any) => void;
+    close: () => void;
+    resetHandlers: () => void;
+  }) => {
     beforeAll(() => worker.listen({ onUnhandledRequest: 'error' }));
     afterAll(() => worker.close());
     afterEach(() => worker.resetHandlers());
