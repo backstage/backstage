@@ -46,7 +46,7 @@ describe('PlaceholderProcessor', () => {
       reader,
     });
     await expect(
-      processor.processEntity(input, { type: 't', target: 'l' }),
+      processor.preProcessEntity(input, { type: 't', target: 'l' }),
     ).resolves.toBe(input);
   });
 
@@ -62,7 +62,7 @@ describe('PlaceholderProcessor', () => {
     });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',
@@ -98,7 +98,7 @@ describe('PlaceholderProcessor', () => {
     });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',
@@ -122,7 +122,7 @@ describe('PlaceholderProcessor', () => {
     });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',
@@ -143,7 +143,7 @@ describe('PlaceholderProcessor', () => {
     });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',
@@ -177,7 +177,7 @@ describe('PlaceholderProcessor', () => {
     });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',
@@ -209,7 +209,7 @@ describe('PlaceholderProcessor', () => {
     });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',
@@ -241,7 +241,7 @@ describe('PlaceholderProcessor', () => {
     });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',
@@ -277,7 +277,7 @@ describe('PlaceholderProcessor', () => {
     });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',
@@ -316,7 +316,7 @@ describe('PlaceholderProcessor', () => {
     });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',

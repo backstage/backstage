@@ -15,31 +15,30 @@
  */
 
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
-import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
+import { fireEvent } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 import { HorizontalScrollGrid } from './HorizontalScrollGrid';
 import { Grid } from '@material-ui/core';
 
 describe('<HorizontalScrollGrid />', () => {
   beforeEach(() => {
     jest.spyOn(window.performance, 'now').mockReturnValue(5);
-    jest
-      .spyOn(window, 'requestAnimationFrame')
-      .mockImplementation(cb => cb(20));
+    jest.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => {
+      cb(20);
+      return 1;
+    });
   });
 
   afterEach(() => {
     jest.restoreAllMocks();
   });
 
-  it('renders without exploding', () => {
-    const rendered = render(
-      wrapInTestApp(
-        <HorizontalScrollGrid>
-          <Grid item>item1</Grid>
-          <Grid item>item2</Grid>
-        </HorizontalScrollGrid>,
-      ),
+  it('renders without exploding', async () => {
+    const rendered = await renderInTestApp(
+      <HorizontalScrollGrid>
+        <Grid item>item1</Grid>
+        <Grid item>item2</Grid>
+      </HorizontalScrollGrid>,
     );
     rendered.getByText('item1');
     rendered.getByText('item2');
@@ -48,37 +47,31 @@ describe('<HorizontalScrollGrid />', () => {
   });
 
   it('should show scroll buttons', async () => {
-    Object.defineProperties(HTMLElement.prototype, {
-      scrollLeft: {
-        configurable: true,
-        value: 5,
-      },
-      offsetWidth: {
-        configurable: true,
-        value: 10,
-      },
-      scrollWidth: {
-        configurable: true,
-        value: 20,
-      },
-    });
+    jest
+      .spyOn(HTMLElement.prototype, 'scrollLeft', 'get')
+      .mockImplementation(() => 5);
+    jest
+      .spyOn(HTMLElement.prototype, 'offsetWidth', 'get')
+      .mockImplementation(() => 10);
+    jest
+      .spyOn(HTMLElement.prototype, 'scrollWidth', 'get')
+      .mockImplementation(() => 20);
 
     let lastScroll = 0;
-    HTMLElement.prototype.scrollBy = ({ left }) => {
-      lastScroll = left;
-    };
+    const scrollBy = HTMLElement.prototype.scrollBy;
+    HTMLElement.prototype.scrollBy = (({ left }: ScrollToOptions): void => {
+      lastScroll = left || 0;
+    }) as any;
 
-    const rendered = await renderWithEffects(
-      wrapInTestApp(
-        <HorizontalScrollGrid style={{ maxWidth: 300 }}>
-          <Grid item style={{ minWidth: 200 }}>
-            item1
-          </Grid>
-          <Grid item style={{ minWidth: 200 }}>
-            item2
-          </Grid>
-        </HorizontalScrollGrid>,
-      ),
+    const rendered = await renderInTestApp(
+      <HorizontalScrollGrid>
+        <Grid item style={{ minWidth: 200 }}>
+          item1
+        </Grid>
+        <Grid item style={{ minWidth: 200 }}>
+          item2
+        </Grid>
+      </HorizontalScrollGrid>,
     );
 
     rendered.getByTitle('Scroll Left');
@@ -89,9 +82,6 @@ describe('<HorizontalScrollGrid />', () => {
     fireEvent.click(rendered.getByTitle('Scroll Left'));
     expect(lastScroll).toBeLessThan(0);
 
-    delete HTMLElement.prototype.scrollLeft;
-    delete HTMLElement.prototype.offsetWidth;
-    delete HTMLElement.prototype.scrollWidth;
-    delete HTMLElement.prototype.scrollBy;
+    HTMLElement.prototype.scrollBy = scrollBy;
   });
 });

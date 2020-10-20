@@ -49,49 +49,6 @@ describe('CatalogBuilder', () => {
     reader.read.mockResolvedValue(Buffer.from('junk'));
 
     const builder = new CatalogBuilder(env)
-      .replaceReaderProcessors([
-        {
-          async readLocation(
-            location: LocationSpec,
-            _optional: boolean,
-            emit: CatalogProcessorEmit,
-          ) {
-            expect(location.type).toBe('test');
-            emit(result.data(location, await reader.read('ignored')));
-            return true;
-          },
-        },
-      ])
-      .replaceParserProcessors([
-        {
-          async parseData(
-            data: Buffer,
-            location: LocationSpec,
-            emit: CatalogProcessorEmit,
-          ) {
-            expect(data.toString()).toEqual('junk');
-            emit(
-              result.entity(location, {
-                apiVersion: 'av',
-                kind: 'Component',
-                metadata: { name: 'n' },
-              }),
-            );
-            return true;
-          },
-        },
-      ])
-      .replacePreProcessors([
-        {
-          async processEntity(entity: Entity) {
-            expect(entity.apiVersion).toBe('av');
-            return {
-              ...entity,
-              metadata: { ...entity.metadata, namespace: 'ns' },
-            };
-          },
-        },
-      ])
       .replaceEntityPolicies([
         {
           async enforce(entity: Entity) {
@@ -108,9 +65,51 @@ describe('CatalogBuilder', () => {
           },
         },
       ])
-      .replacePostProcessors([
+      .setPlaceholderResolver('t', async ({ value }) => {
+        expect(value).toBe('tt');
+        return 'tt2';
+      })
+      .setFieldFormatValidators({
+        isValidEntityName: n => {
+          expect(n).toBe('n');
+          return true;
+        },
+      })
+      .replaceProcessors([
         {
-          async processEntity(entity: Entity) {
+          async readLocation(
+            location: LocationSpec,
+            _optional: boolean,
+            emit: CatalogProcessorEmit,
+          ) {
+            expect(location.type).toBe('test');
+            emit(result.data(location, await reader.read('ignored')));
+            return true;
+          },
+          async parseData(
+            data: Buffer,
+            location: LocationSpec,
+            emit: CatalogProcessorEmit,
+          ) {
+            expect(data.toString()).toEqual('junk');
+            emit(
+              result.entity(location, {
+                apiVersion: 'av',
+                kind: 'Component',
+                metadata: { name: 'n', replaced: { $t: 'tt' } },
+              }),
+            );
+            return true;
+          },
+          async preProcessEntity(entity: Entity) {
+            expect(entity.apiVersion).toBe('av');
+            return {
+              ...entity,
+              metadata: { ...entity.metadata, namespace: 'ns' },
+            };
+          },
+          async postProcessEntity(entity: Entity) {
+            expect(entity.metadata.namespace).toBe('ns');
             return {
               ...entity,
               metadata: { ...entity.metadata, post: 'p' },
@@ -124,6 +123,7 @@ describe('CatalogBuilder', () => {
       type: 'test',
       target: '',
     });
+    expect.assertions(8);
     expect(added.entities).toEqual([
       {
         apiVersion: 'av',
@@ -132,6 +132,7 @@ describe('CatalogBuilder', () => {
           name: 'n',
           namespace: 'ns',
           post: 'p',
+          replaced: 'tt2',
         }),
       },
     ]);

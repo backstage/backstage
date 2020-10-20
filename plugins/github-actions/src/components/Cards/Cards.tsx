@@ -81,10 +81,9 @@ const WidgetContent = ({
 export const LatestWorkflowRunCard = ({
   entity,
   branch = 'master',
-}: {
-  entity: Entity;
-  branch: string;
-}) => {
+  // Display the card full height suitable for
+  variant,
+}: Props) => {
   const errorApi = useApi(errorApiRef);
   const [owner, repo] = (
     entity?.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION] ?? '/'
@@ -102,7 +101,7 @@ export const LatestWorkflowRunCard = ({
   }, [error, errorApi]);
 
   return (
-    <InfoCard title={`Last ${branch} build`}>
+    <InfoCard title={`Last ${branch} build`} variant={variant}>
       <WidgetContent
         error={error}
         loading={loading}
@@ -113,14 +112,18 @@ export const LatestWorkflowRunCard = ({
   );
 };
 
+type Props = {
+  entity: Entity;
+  branch: string;
+  variant?: string;
+};
+
 export const LatestWorkflowsForBranchCard = ({
   entity,
   branch = 'master',
-}: {
-  entity: Entity;
-  branch: string;
-}) => (
-  <InfoCard title={`Last ${branch} build`}>
+  variant,
+}: Props) => (
+  <InfoCard title={`Last ${branch} build`} variant={variant}>
     <WorkflowRunsTable branch={branch} entity={entity} />
   </InfoCard>
 );

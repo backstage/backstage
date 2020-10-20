@@ -14,24 +14,23 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import {
-  Grid,
-  Typography,
-  makeStyles,
-  Chip,
-  IconButton,
   Card,
   CardContent,
   CardHeader,
+  Chip,
   Divider,
+  Grid,
+  IconButton,
+  makeStyles,
+  Typography,
 } from '@material-ui/core';
-import { Entity } from '@backstage/catalog-model';
-
-import GitHubIcon from '@material-ui/icons/GitHub';
-import { IconLinkVertical } from './IconLinkVertical';
-import EditIcon from '@material-ui/icons/Edit';
 import DocsIcon from '@material-ui/icons/Description';
+import EditIcon from '@material-ui/icons/Edit';
+import GitHubIcon from '@material-ui/icons/GitHub';
+import React from 'react';
+import { IconLinkVertical } from './IconLinkVertical';
 
 const useStyles = makeStyles(theme => ({
   links: {
@@ -59,6 +58,15 @@ const useStyles = makeStyles(theme => ({
   description: {
     wordBreak: 'break-word',
   },
+  gridItemCard: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: 'calc(100% - 10px)', // for pages without content header
+    marginBottom: '10px',
+  },
+  gridItemCardContent: {
+    flex: 1,
+  },
 }));
 
 const iconMap: Record<string, React.ReactNode> = {
@@ -83,14 +91,15 @@ function getCodeLinkInfo(entity: Entity): CodeLinkInfo {
 
 type AboutCardProps = {
   entity: Entity;
+  variant?: string;
 };
 
-export function AboutCard({ entity }: AboutCardProps) {
+export function AboutCard({ entity, variant }: AboutCardProps) {
   const classes = useStyles();
   const codeLink = getCodeLinkInfo(entity);
 
   return (
-    <Card>
+    <Card className={variant === 'gridItem' ? classes.gridItemCard : ''}>
       <CardHeader
         title="About"
         action={
@@ -107,15 +116,17 @@ export function AboutCard({ entity }: AboutCardProps) {
               }
               label="View Techdocs"
               icon={<DocsIcon />}
-              href={`/docs/${entity.kind}:${entity.metadata.namespace ?? ''}:${
-                entity.metadata.name
-              }`}
+              href={`/docs/${
+                entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE
+              }/${entity.kind}/${entity.metadata.name}`}
             />
           </nav>
         }
       />
       <Divider />
-      <CardContent>
+      <CardContent
+        className={variant === 'gridItem' ? classes.gridItemCardContent : ''}
+      >
         <Grid container>
           <AboutField label="Description" gridSizes={{ xs: 12 }}>
             <Typography
