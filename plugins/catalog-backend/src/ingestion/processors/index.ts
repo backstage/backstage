@@ -23,7 +23,6 @@ export { AnnotateLocationEntityProcessor } from './AnnotateLocationEntityProcess
 export { AzureApiReaderProcessor } from './AzureApiReaderProcessor';
 export { BitbucketApiReaderProcessor } from './BitbucketApiReaderProcessor';
 export { CodeOwnersProcessor } from './CodeOwnersProcessor';
-export { EntityPolicyProcessor } from './EntityPolicyProcessor';
 export { FileReaderProcessor } from './FileReaderProcessor';
 export { GithubOrgReaderProcessor } from './GithubOrgReaderProcessor';
 export { GithubReaderProcessor } from './GithubReaderProcessor';

@@ -19,7 +19,7 @@ import * as result from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
 
 export class LocationRefProcessor implements CatalogProcessor {
-  async processEntity(
+  async postProcessEntity(
     entity: Entity,
     _location: LocationSpec,
     emit: CatalogProcessorEmit,
