@@ -66,6 +66,10 @@ import {
   isPluginApplicableToEntity as isPullRequestsAvailable,
   PullRequestsStatsCard,
 } from '@roadiehq/backstage-plugin-github-pull-requests';
+import {
+  isPluginApplicableToEntity as isPagerDutyAvailable,
+  PagerDutyServiceCard,
+} from '@backstage/plugin-pagerduty';
 
 const CICDSwitcher = ({ entity }: { entity: Entity }) => {
   // This component is just an example of how you can implement your company's logic in entity page.
@@ -131,6 +135,11 @@ const OverviewContent = ({ entity }: { entity: Entity }) => (
     <Grid item md={6}>
       <AboutCard entity={entity} />
     </Grid>
+    {isPagerDutyAvailable(entity) && (
+      <Grid item md={4}>
+        <PagerDutyServiceCard entity={entity} />
+      </Grid>
+    )}
     <RecentCICDRunsSwitcher entity={entity} />
     {isGitHubAvailable(entity) && (
       <>
