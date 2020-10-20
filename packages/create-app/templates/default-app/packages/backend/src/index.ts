@@ -42,7 +42,7 @@ function makeCreateEnv(config: Config) {
 }
 
 async function main() {
-  const config = await loadBackendConfig({logger: getRootLogger()});
+  const config = await loadBackendConfig({logger: getRootLogger(), configPaths: []});
   const createEnv = makeCreateEnv(config);
 
   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));

@@ -231,7 +231,10 @@ export const getDefaultBranch = async (
   repositoryUrl: string,
 ): Promise<string> => {
   // TODO(Rugvip): Config should not be loaded here, pass it in instead
-  const config = await loadBackendConfig({ logger: getRootLogger() });
+  const config = await loadBackendConfig({
+    logger: getRootLogger(),
+    argv: process.argv,
+  });
   const type = getGitRepoType(repositoryUrl);
 
   try {

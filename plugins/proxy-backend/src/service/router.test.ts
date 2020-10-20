@@ -41,7 +41,7 @@ const mockCreateProxyMiddleware = createProxyMiddleware as jest.MockedFunction<
 describe('createRouter', () => {
   it('works', async () => {
     const logger = winston.createLogger();
-    const config = await loadBackendConfig({ logger });
+    const config = await loadBackendConfig({ logger, argv: [] });
     const discovery = SingleHostDiscovery.fromConfig(config);
     const router = await createRouter({
       config,
