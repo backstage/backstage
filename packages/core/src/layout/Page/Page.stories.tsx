@@ -118,14 +118,14 @@ const DataGrid = () => (
         justify="space-between"
         direction="row"
       >
-        <Grid item xs={6}>
+        <Grid item xs={12} md={6}>
           <GaugeCard
             title="GKE Usage Score"
             subheader="This should be above 75%"
             progress={0.87}
           />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12} md={6}>
           <GaugeCard
             title="Deployment Score"
             subheader="This should be above 40%"
