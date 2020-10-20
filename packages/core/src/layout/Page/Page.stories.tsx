@@ -174,7 +174,7 @@ const DataGrid = () => (
 );
 
 const ExampleHeader = () => (
-  <Header title="Example" subtitle="This an example plugin">
+  <Header title="Example" subtitle="This is an example plugin">
     <HeaderLabel label="Owner" value="Owner" />
     <HeaderLabel label="Lifecycle" value="Lifecycle" />
   </Header>
