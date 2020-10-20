@@ -14,34 +14,21 @@
  * limitations under the License.
  */
 
-export type Step = {
-  name: string;
-  status: string;
-  conclusion?: string;
-  number: number; // starts from 1
-  started_at: string;
-  completed_at: string;
-};
+import React from 'react';
+import { renderInTestApp } from '@backstage/test-utils';
+import { act } from 'react-dom/test-utils';
 
-export type Job = {
-  html_url: string;
-  status: string;
-  conclusion: string;
-  started_at: string;
-  completed_at: string;
-  id: string;
-  name: string;
-  steps: Step[];
-};
+import { Progress } from './Progress';
 
-export type Jobs = {
-  total_count: number;
-  jobs: Job[];
-};
-
-export enum BuildStatus {
-  'success',
-  'failure',
-  'pending',
-  'running',
-}
+describe('<Progress />', () => {
+  it('renders without exploding', async () => {
+    jest.useFakeTimers();
+    const { getByTestId, queryByTestId } = await renderInTestApp(<Progress />);
+    expect(queryByTestId('progress')).not.toBeInTheDocument();
+    act(() => {
+      jest.advanceTimersByTime(250);
+    });
+    expect(getByTestId('progress')).toBeInTheDocument();
+    jest.useRealTimers();
+  });
+});

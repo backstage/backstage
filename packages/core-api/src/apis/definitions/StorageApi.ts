@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '../ApiRef';
+import { ApiRef, createApiRef } from '../system';
 import { Observable } from '../../types';
 import { ErrorApi } from './ErrorApi';
 
@@ -65,7 +65,7 @@ export interface StorageApi {
   observe$<T>(key: string): Observable<StorageValueChange<T>>;
 }
 
-export const storageApiRef = createApiRef<StorageApi>({
+export const storageApiRef: ApiRef<StorageApi> = createApiRef({
   id: 'core.storage',
   description: 'Provides the ability to store data which is unique to the user',
 });

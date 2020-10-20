@@ -19,7 +19,10 @@ import lodash from 'lodash';
 import { CatalogProcessor } from './types';
 
 export class AnnotateLocationEntityProcessor implements CatalogProcessor {
-  async processEntity(entity: Entity, location: LocationSpec): Promise<Entity> {
+  async preProcessEntity(
+    entity: Entity,
+    location: LocationSpec,
+  ): Promise<Entity> {
     return lodash.merge(
       {
         metadata: {

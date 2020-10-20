@@ -14,21 +14,10 @@
  * limitations under the License.
  */
 
-import { Entity, EntityPolicy } from '@backstage/catalog-model';
-import { CatalogProcessor } from './types';
-
-export class EntityPolicyProcessor implements CatalogProcessor {
-  private readonly policy: EntityPolicy;
-
-  constructor(policy: EntityPolicy) {
-    this.policy = policy;
-  }
-
-  async processEntity(entity: Entity): Promise<Entity> {
-    const output = await this.policy.enforce(entity);
-    if (!output) {
-      throw new Error(`Entity did not match any known schema`);
-    }
-    return output;
-  }
-}
+export { ApiProvider, useApi, useApiHolder } from './ApiProvider';
+export { ApiRegistry } from './ApiRegistry';
+export { ApiResolver } from './ApiResolver';
+export { ApiFactoryRegistry } from './ApiFactoryRegistry';
+export { createApiRef } from './ApiRef';
+export * from './types';
+export * from './helpers';

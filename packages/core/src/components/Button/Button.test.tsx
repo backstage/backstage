@@ -15,26 +15,28 @@
  */
 
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, act } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
-import { Link } from './Link';
+import { Button } from './Button';
 import { Route, Routes } from 'react-router';
-import { act } from 'react-dom/test-utils';
 
-describe('<Link />', () => {
+describe('<Button />', () => {
   it('navigates using react-router', async () => {
     const testString = 'This is test string';
-    const linkText = 'Navigate!';
+    const buttonLabel = 'Navigate!';
     const { getByText } = render(
       wrapInTestApp(
         <Routes>
-          <Link to="/test">{linkText}</Link>
           <Route path="/test" element={<p>{testString}</p>} />
+          <Button to="/test">{buttonLabel}</Button>
         </Routes>,
       ),
     );
+
     expect(() => getByText(testString)).toThrow();
-    await act(async () => fireEvent.click(getByText(linkText)));
+    await act(async () => {
+      fireEvent.click(getByText(buttonLabel));
+    });
     expect(getByText(testString)).toBeInTheDocument();
   });
 });

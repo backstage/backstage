@@ -1,5 +1,11 @@
-.idea/
+# macOS
 .DS_Store
+
+# IntelliJ
+.idea/
+*.iml
+
+# Visual Studio Code
 .vscode/
 .vsls.json
 
