@@ -16,13 +16,13 @@
 
 import { Entity, LocationEntity, LocationSpec } from '@backstage/catalog-model';
 import * as result from './results';
-import { LocationProcessor, LocationProcessorEmit } from './types';
+import { CatalogProcessor, CatalogProcessorEmit } from './types';
 
-export class LocationRefProcessor implements LocationProcessor {
+export class LocationRefProcessor implements CatalogProcessor {
   async processEntity(
     entity: Entity,
     _location: LocationSpec,
-    emit: LocationProcessorEmit,
+    emit: CatalogProcessorEmit,
   ): Promise<Entity> {
     if (entity.kind === 'Location') {
       const location = entity as LocationEntity;

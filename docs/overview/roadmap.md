@@ -47,40 +47,29 @@ guidelines to get started.
 
 ### Ongoing work 🚧
 
-- **[Plugins for managing micro services end-2-end](https://github.com/spotify/backstage/milestone/14)** -
+- **[Plugins for managing micro services end-2-end](https://github.com/spotify/backstage/milestone/14)**
   Out of the box Backstage will ship with a set of plugins (Overview, CI, API
   and Docs) that will demonstrate how a user can manage a micro service and
   follow a change all the way out in production. Completing this work will make
   it much easier to see how a plugin can be built that integrates with the
   Backstage Service Catalog.
 
-- **[Kubernetes support](https://github.com/spotify/backstage/milestone/20)** -
-  Native support for Kubernetes, making it easier for developers to see and
-  manage their services running in k8s.
-
-- **[Helm charts](https://github.com/spotify/backstage/issues/2540)** - Provide
-  Helm charts for easy deployments of Backstage and its subsystems on
-  Kubernetes.
+- **[Users and teams](https://github.com/spotify/backstage/issues/1807)**
+  Ownership is a central concept in Backstage. It should be easy to import your
+  existing organizational data, such as users and groups/teams, into Backstage.
+  A user the logs into Backstage should see software components owned by the
+  team(s) they are in.
 
 - **[Backstage platform is stable](https://github.com/spotify/backstage/milestone/19)** -
   The platform APIs and features are stable and can be depended on for
   production use. After this plugins will require little to no maintenance.
 
-- Further improvements to platform documentation
+* **[Improved Kubernetes plugin](https://github.com/spotify/backstage/issues/2857)** -
+  Native support for Kubernetes, making it easier for developers to see and
+  manage their services running in k8s.
 
-### Plugins
-
-Building and maintaining [plugins](https://backstage.io/plugins) is the work of
-the entire Backstage community.
-
-A list of plugins that are in development is
-[available here](https://github.com/spotify/backstage/issues?q=is%3Aissue+is%3Aopen+label%3Aplugin+sort%3Areactions-%2B1-desc).
-We strongly recommend to upvote 👍 plugins you are interested in. This helps us
-and the community prioritize what plugins to build.
-
-Are you missing a plugin for your favorite tool? Please
-[suggest a new one](https://github.com/spotify/backstage/issues/new?labels=plugin&template=plugin_template.md&title=%5BPlugin%5D+THE+PLUGIN+NAME).
-Chances are that someone will jump in and help build it.
+- Further improvements to platform documentation. Examples include a Golden Path
+  for plugin development.
 
 ### Future work 🔮
 
@@ -107,8 +96,24 @@ Chances are that someone will jump in and help build it.
   query. Plugins can easily query this API as well as extend the model where
   needed.
 
+### Plugins
+
+Building and maintaining [plugins](https://backstage.io/plugins) is the work of
+the entire Backstage community.
+
+A list of plugins that are in development is
+[available here](https://github.com/spotify/backstage/issues?q=is%3Aissue+is%3Aopen+label%3Aplugin+sort%3Areactions-%2B1-desc).
+We strongly recommend to upvote 👍 plugins you are interested in. This helps us
+and the community prioritize what plugins to build.
+
+Are you missing a plugin for your favorite tool? Please
+[suggest a new one](https://github.com/spotify/backstage/issues/new?labels=plugin&template=plugin_template.md&title=%5BPlugin%5D+THE+PLUGIN+NAME).
+Chances are that someone will jump in and help build it.
+
 ### Completed milestones ✅
 
+- [Kubernetes plugin - v1](https://github.com/spotify/backstage/tree/master/plugins/kubernetes)
+- [Helm charts](https://github.com/spotify/backstage/tree/master/contrib/chart/backstage)
 - [Backstage Design System 💅](https://backstage.io/blog/2020/09/30/backstage-design-system)
 - [Cost Insights plugin 💸](https://engineering.atspotify.com/2020/09/29/managing-clouds-from-the-ground-up-cost-engineering-at-spotify/)
 - [Donate Backstage to the CNCF 🎉](https://backstage.io/blog/2020/09/23/backstage-cncf-sandbox)

@@ -23,7 +23,7 @@ describe('<MetricSelect />', () => {
   it('should display a metric', async () => {
     const mockProps: MetricSelectProps = {
       metric: 'test',
-      metrics: [{ kind: 'test', name: 'some-name' }],
+      metrics: [{ kind: 'test', name: 'some-name', default: false }],
       onSelect: jest.fn(),
     };
     const { getByText } = await renderInTestApp(
@@ -32,25 +32,12 @@ describe('<MetricSelect />', () => {
     expect(getByText(/some-name/)).toBeInTheDocument();
   });
 
-  it('should display a null metric', async () => {
-    const mockProps: MetricSelectProps = {
-      metric: null,
-      metrics: [{ kind: null, name: 'billie-nullish' }],
-      onSelect: jest.fn(),
-    };
-    const { getByText } = await renderInTestApp(
-      <MetricSelect {...mockProps} />,
-    );
-    expect(getByText(/billie-nullish/)).toBeInTheDocument();
-  });
-
   it('should display all metrics', async () => {
     const mockProps: MetricSelectProps = {
       metric: null,
       metrics: [
-        { kind: null, name: 'billie-nullish' },
-        { kind: 'MAU1M', name: 'Cost Per Million MAU' },
-        { kind: 'my-cool-metric', name: 'metric-mcmetric-face' },
+        { kind: 'DAU', name: 'Daily Active Users', default: true },
+        { kind: 'MSC', name: 'Monthly Subscribers', default: false },
       ],
       onSelect: jest.fn(),
     };
@@ -61,11 +48,10 @@ describe('<MetricSelect />', () => {
 
     UserEvent.click(button);
 
-    await waitFor(() => getAllByText(/billie-nullish/));
+    await waitFor(() => getAllByText(/None/));
 
     // The active metric should display in the popver list and in the input
-    expect(getAllByText(/billie-nullish/).length).toBe(2);
-    expect(getByText(/Cost Per Million MAU/)).toBeInTheDocument();
-    expect(getByText(/metric-mcmetric-face/)).toBeInTheDocument();
+    expect(getByText(/Daily Active Users/)).toBeInTheDocument();
+    expect(getByText(/Monthly Subscribers/)).toBeInTheDocument();
   });
 });

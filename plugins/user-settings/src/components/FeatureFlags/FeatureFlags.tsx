@@ -62,7 +62,7 @@ export const FeatureFlags = () => {
   }
 
   return (
-    <InfoCard>
+    <InfoCard title="Feature Flags">
       <List dense>
         {featureFlags.map(featureFlag => {
           const enabled = Boolean(state[featureFlag.name]);

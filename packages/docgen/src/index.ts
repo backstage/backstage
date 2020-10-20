@@ -49,10 +49,6 @@ const main = (argv: string[]) => {
     process.exit(1);
   });
 
-  if (!process.argv.slice(2).length) {
-    program.outputHelp(chalk.yellow);
-  }
-
   program.parse(argv);
 };
 

@@ -16,6 +16,7 @@
 
 export * from './Alert';
 export * from './ChangeStatistic';
+export * from './ChartData';
 export * from './Cost';
 export * from './DateAggregation';
 export * from './Duration';
@@ -26,6 +27,7 @@ export * from './Filters';
 export * from './Group';
 export * from './Loading';
 export * from './Maybe';
+export * from './MetricData';
 export * from './Metric';
 export * from './Product';
 export * from './Project';

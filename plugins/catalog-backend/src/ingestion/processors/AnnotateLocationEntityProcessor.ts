@@ -16,9 +16,9 @@
 
 import { Entity, LocationSpec } from '@backstage/catalog-model';
 import lodash from 'lodash';
-import { LocationProcessor } from './types';
+import { CatalogProcessor } from './types';
 
-export class AnnotateLocationEntityProcessor implements LocationProcessor {
+export class AnnotateLocationEntityProcessor implements CatalogProcessor {
   async processEntity(entity: Entity, location: LocationSpec): Promise<Entity> {
     return lodash.merge(
       {

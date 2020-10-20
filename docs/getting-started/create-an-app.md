@@ -124,3 +124,21 @@ the root directory:
 ```bash
 yarn workspace backend start
 ```
+
+### Troubleshooting
+
+#### Cannot find module
+
+You may encounter an error similar to below:
+
+```
+internal/modules/cjs/loader.js:968
+  throw err;
+  ^
+
+Error: Cannot find module '../build/Debug/nodegit.node'
+```
+
+This can occur if an npm dependency is not completely installed. Because some
+dependencies run a post-install script, ensure that both your npm and yarn
+configs have the `ignore-scripts` flag set to `false`.

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { ApiRef } from './ApiRef';
-import { ApiHolder } from './types';
+import { ApiRef, ApiHolder } from './types';
 
 type ApiImpl<T = unknown> = readonly [ApiRef<T>, T];
 

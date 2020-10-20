@@ -15,9 +15,9 @@
  */
 
 import { Entity, EntityPolicy } from '@backstage/catalog-model';
-import { LocationProcessor } from './types';
+import { CatalogProcessor } from './types';
 
-export class EntityPolicyProcessor implements LocationProcessor {
+export class EntityPolicyProcessor implements CatalogProcessor {
   private readonly policy: EntityPolicy;
 
   constructor(policy: EntityPolicy) {

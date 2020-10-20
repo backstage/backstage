@@ -79,12 +79,14 @@ describe('<BarChart />', () => {
   it('Should display only 6 resources by default, sorted by cost', async () => {
     const rendered = await renderWithProps({} as BarChartProps);
 
-    MockResources.sort(resourceSort).forEach((resource, index) => {
-      if (index < 6) {
-        expect(rendered.getByText(resource.name!)).toBeInTheDocument();
-      } else {
-        expect(rendered.queryByText(resource.name!)).not.toBeInTheDocument();
-      }
+    const sorted = MockResources.sort(resourceSort);
+
+    expect(sorted.length).toBe(10);
+    sorted.slice(0, 6).forEach(resource => {
+      expect(rendered.getByText(resource.name!)).toBeInTheDocument();
+    });
+    sorted.slice(6).forEach(resource => {
+      expect(rendered.queryByText(resource.name!)).not.toBeInTheDocument();
     });
   });
 

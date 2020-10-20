@@ -28,11 +28,7 @@
     "techdocs-cli": "bin/techdocs-cli"
   },
   "devDependencies": {
-    "@spotify/eslint-config": "^7.0.0",
-    "@spotify/prettier-config": "^7.0.0",
-    "@types/serve-handler": "^6.1.0",
-    "eslint": "^7.1.0",
-    "eslint-plugin-import": "^2.22.0"
+    "@types/serve-handler": "^6.1.0"
   },
   "files": [
     "bin",

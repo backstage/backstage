@@ -16,7 +16,7 @@
 
 import { Entity, LocationSpec } from '@backstage/catalog-model';
 
-export type LocationProcessor = {
+export type CatalogProcessor = {
   /**
    * Reads the contents of a location.
    *
@@ -28,7 +28,7 @@ export type LocationProcessor = {
   readLocation?(
     location: LocationSpec,
     optional: boolean,
-    emit: LocationProcessorEmit,
+    emit: CatalogProcessorEmit,
   ): Promise<boolean>;
 
   /**
@@ -42,7 +42,7 @@ export type LocationProcessor = {
   parseData?(
     data: Buffer,
     location: LocationSpec,
-    emit: LocationProcessorEmit,
+    emit: CatalogProcessorEmit,
   ): Promise<boolean>;
 
   /**
@@ -57,7 +57,7 @@ export type LocationProcessor = {
   processEntity?(
     entity: Entity,
     location: LocationSpec,
-    emit: LocationProcessorEmit,
+    emit: CatalogProcessorEmit,
   ): Promise<Entity>;
 
   /**
@@ -71,40 +71,38 @@ export type LocationProcessor = {
   handleError?(
     error: Error,
     location: LocationSpec,
-    emit: LocationProcessorEmit,
+    emit: CatalogProcessorEmit,
   ): Promise<void>;
 };
 
-export type LocationProcessorEmit = (
-  generated: LocationProcessorResult,
-) => void;
+export type CatalogProcessorEmit = (generated: CatalogProcessorResult) => void;
 
-export type LocationProcessorLocationResult = {
+export type CatalogProcessorLocationResult = {
   type: 'location';
   location: LocationSpec;
   optional: boolean;
 };
 
-export type LocationProcessorDataResult = {
+export type CatalogProcessorDataResult = {
   type: 'data';
   data: Buffer;
   location: LocationSpec;
 };
 
-export type LocationProcessorEntityResult = {
+export type CatalogProcessorEntityResult = {
   type: 'entity';
   entity: Entity;
   location: LocationSpec;
 };
 
-export type LocationProcessorErrorResult = {
+export type CatalogProcessorErrorResult = {
   type: 'error';
   error: Error;
   location: LocationSpec;
 };
 
-export type LocationProcessorResult =
-  | LocationProcessorLocationResult
-  | LocationProcessorDataResult
-  | LocationProcessorEntityResult
-  | LocationProcessorErrorResult;
+export type CatalogProcessorResult =
+  | CatalogProcessorLocationResult
+  | CatalogProcessorDataResult
+  | CatalogProcessorEntityResult
+  | CatalogProcessorErrorResult;
