@@ -553,6 +553,24 @@ describe('CommonDatabase', () => {
       };
     }
 
+    it('should not allow setting relations on nonexistent entities', async () => {
+      await expect(
+        db.transaction(async tx => {
+          await db.setRelations(tx, 'nonexistent', [
+            makeRelation('a:b/c', 'rel1', 'x:y/z'),
+          ]);
+        }),
+      ).rejects.toThrow(/constraint failed/);
+    });
+
+    it('should allow setting relations on nonexistent entities without any relations', async () => {
+      await expect(
+        db.transaction(async tx => {
+          await db.setRelations(tx, 'nonexistent', []);
+        }),
+      ).resolves.toBeUndefined();
+    });
+
     it('adds multiple relations for entities', async () => {
       const entity1 = {
         apiVersion: 'v1',
@@ -579,9 +597,11 @@ describe('CommonDatabase', () => {
         makeRelation('a:b/c', 'rel4', 'x:y/z'),
         makeRelation('a:b/c', 'rel5', 'x:y/z'),
         makeRelation('x:y/z', 'rel6', 'a:b/c'),
+        // relations don't have to reference the originating entity, so this should be fine, but not show up
+        makeRelation('g:h/i', 'rel8', 'd:e/f'),
       ];
 
-      await db.transaction(async tx => {
+      const { id2: secondEntityId } = await db.transaction(async tx => {
         const [{ entity: e1 }, { entity: e2 }] = await db.addEntities(tx, [
           { entity: entity1 },
           { entity: entity2 },
@@ -633,6 +653,30 @@ describe('CommonDatabase', () => {
             {
               type: 'rel6',
               target: { kind: 'a', namespace: 'b', name: 'c' },
+            },
+          ],
+        },
+      ]);
+
+      await db.transaction(tx => db.removeEntityByUid(tx, secondEntityId));
+
+      const res2 = await db.transaction(tx => db.entities(tx));
+      expect(
+        res2.map(r => ({
+          name: r.entity.metadata.name,
+          relations: r.entity.relations,
+        })),
+      ).toEqual([
+        {
+          name: 'c',
+          relations: [
+            {
+              type: 'rel1',
+              target: { kind: 'x', namespace: 'y', name: 'z' },
+            },
+            {
+              type: 'rel2',
+              target: { kind: 'x', namespace: 'y', name: 'z' },
             },
           ],
         },

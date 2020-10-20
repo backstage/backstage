@@ -50,5 +50,5 @@ exports.up = async function up(knex) {
  * @param {import('knex')} knex
  */
 exports.down = async function down(knex) {
-  return knex.schema.dropTable('entities_relations');
+  await knex.schema.dropTable('entities_relations');
 };

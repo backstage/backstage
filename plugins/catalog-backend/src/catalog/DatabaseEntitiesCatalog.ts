@@ -192,13 +192,13 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
     await Promise.all(tasks);
   }
 
-  // Set the relations on the entity using the DB layer
+  // Set the relations originating from an entity using the DB layer
   async setRelations(
-    entityUid: string,
+    originatingEntityId: string,
     relations: EntityRelationSpec[],
   ): Promise<void> {
     return await this.database.transaction(tx =>
-      this.database.setRelations(tx, entityUid, relations),
+      this.database.setRelations(tx, originatingEntityId, relations),
     );
   }
 
