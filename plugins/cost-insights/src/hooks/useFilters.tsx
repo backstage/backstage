@@ -23,7 +23,7 @@ import React, {
   useState,
 } from 'react';
 import { Alert } from '@material-ui/lab';
-import { Group, Maybe, PageFilters, ProductFilters } from '../types';
+import { Maybe, PageFilters, ProductFilters } from '../types';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   stringify,
