@@ -15,22 +15,21 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 
 import { WarningPanel } from './WarningPanel';
 
 const minProps = { title: 'Mock title', message: 'Some more info' };
 
 describe('<WarningPanel />', () => {
-  it('renders without exploding', () => {
-    const { getByText } = render(wrapInTestApp(<WarningPanel {...minProps} />));
+  it('renders without exploding', async () => {
+    const { getByText } = await renderInTestApp(<WarningPanel {...minProps} />);
     expect(getByText('Mock title')).toBeInTheDocument();
   });
 
-  it('renders message and children', () => {
-    const { getByText } = render(
-      wrapInTestApp(<WarningPanel {...minProps}>children</WarningPanel>),
+  it('renders message and children', async () => {
+    const { getByText } = await renderInTestApp(
+      <WarningPanel {...minProps}>children</WarningPanel>,
     );
     expect(getByText('Some more info')).toBeInTheDocument();
     expect(getByText('children')).toBeInTheDocument();

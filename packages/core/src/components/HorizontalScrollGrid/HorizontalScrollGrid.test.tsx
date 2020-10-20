@@ -15,8 +15,8 @@
  */
 
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
-import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
+import { fireEvent } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 import { HorizontalScrollGrid } from './HorizontalScrollGrid';
 import { Grid } from '@material-ui/core';
 
@@ -33,14 +33,12 @@ describe('<HorizontalScrollGrid />', () => {
     jest.restoreAllMocks();
   });
 
-  it('renders without exploding', () => {
-    const rendered = render(
-      wrapInTestApp(
-        <HorizontalScrollGrid>
-          <Grid item>item1</Grid>
-          <Grid item>item2</Grid>
-        </HorizontalScrollGrid>,
-      ),
+  it('renders without exploding', async () => {
+    const rendered = await renderInTestApp(
+      <HorizontalScrollGrid>
+        <Grid item>item1</Grid>
+        <Grid item>item2</Grid>
+      </HorizontalScrollGrid>,
     );
     rendered.getByText('item1');
     rendered.getByText('item2');
@@ -65,17 +63,15 @@ describe('<HorizontalScrollGrid />', () => {
       lastScroll = left || 0;
     }) as any;
 
-    const rendered = await renderWithEffects(
-      wrapInTestApp(
-        <HorizontalScrollGrid>
-          <Grid item style={{ minWidth: 200 }}>
-            item1
-          </Grid>
-          <Grid item style={{ minWidth: 200 }}>
-            item2
-          </Grid>
-        </HorizontalScrollGrid>,
-      ),
+    const rendered = await renderInTestApp(
+      <HorizontalScrollGrid>
+        <Grid item style={{ minWidth: 200 }}>
+          item1
+        </Grid>
+        <Grid item style={{ minWidth: 200 }}>
+          item2
+        </Grid>
+      </HorizontalScrollGrid>,
     );
 
     rendered.getByTitle('Scroll Left');

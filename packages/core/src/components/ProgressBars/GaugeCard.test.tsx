@@ -15,33 +15,32 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 
 import { GaugeCard } from './GaugeCard';
 
 const minProps = { title: 'Tingle upgrade', progress: 0.12 };
 
 describe('<GaugeCard />', () => {
-  it('renders without exploding', () => {
-    const { getByText } = render(wrapInTestApp(<GaugeCard {...minProps} />));
+  it('renders without exploding', async () => {
+    const { getByText } = await renderInTestApp(<GaugeCard {...minProps} />);
     expect(getByText(/Tingle.*/)).toBeInTheDocument();
   });
 
-  it('renders progress and title', () => {
-    const { getByText } = render(wrapInTestApp(<GaugeCard {...minProps} />));
+  it('renders progress and title', async () => {
+    const { getByText } = await renderInTestApp(<GaugeCard {...minProps} />);
     expect(getByText(/Tingle.*/)).toBeInTheDocument();
     expect(getByText(/12%.*/)).toBeInTheDocument();
   });
 
-  it('does not render deepLink', () => {
-    const { queryByText } = render(wrapInTestApp(<GaugeCard {...minProps} />));
+  it('does not render deepLink', async () => {
+    const { queryByText } = await renderInTestApp(<GaugeCard {...minProps} />);
     expect(queryByText('View more')).not.toBeInTheDocument();
   });
 
-  it('handles invalid numbers', () => {
+  it('handles invalid numbers', async () => {
     const badProps = { title: 'Tingle upgrade', progress: 'hejjo' } as any;
-    const { getByText } = render(wrapInTestApp(<GaugeCard {...badProps} />));
+    const { getByText } = await renderInTestApp(<GaugeCard {...badProps} />);
     expect(getByText(/N\/A.*/)).toBeInTheDocument();
   });
 });
