@@ -18,6 +18,7 @@ import { UrlReader } from '@backstage/backend-common';
 import {
   Entity,
   EntityPolicy,
+  EntityRelationSpec,
   ENTITY_DEFAULT_NAMESPACE,
   LocationSpec,
 } from '@backstage/catalog-model';
@@ -64,7 +65,6 @@ export class LocationReaders implements LocationReader {
     const output: ReadLocationResult = {
       entities: [],
       errors: [],
-      relations: [],
     };
     let items: CatalogProcessorResult[] = [result.location(location, false)];
 
@@ -79,11 +79,21 @@ export class LocationReaders implements LocationReader {
           await this.handleData(item, emit);
         } else if (item.type === 'entity') {
           if (rulesEnforcer.isAllowed(item.entity, item.location)) {
-            const entity = await this.handleEntity(item, emit);
+            const relations = Array<EntityRelationSpec>();
+
+            const entity = await this.handleEntity(item, emitResult => {
+              if (emitResult.type === 'relation') {
+                relations.push(emitResult.relation);
+                return;
+              }
+              emit(emitResult);
+            });
+
             if (entity) {
               output.entities.push({
                 entity,
                 location: item.location,
+                relations,
               });
             }
           } else {
@@ -99,10 +109,6 @@ export class LocationReaders implements LocationReader {
           output.errors.push({
             location: item.location,
             error: item.error,
-          });
-        } else if (item.type === 'relation') {
-          output.relations.push({
-            relation: item.relation,
           });
         }
       }
@@ -126,11 +132,23 @@ export class LocationReaders implements LocationReader {
   ) {
     const { processors, logger } = this.options;
 
+    const validatedEmit: CatalogProcessorEmit = emitResult => {
+      if (emitResult.type === 'relation') {
+        throw new Error('readLocation may not emit entity relations');
+      }
+
+      emit(emitResult);
+    };
+
     for (const processor of processors) {
       if (processor.readLocation) {
         try {
           if (
-            await processor.readLocation(item.location, item.optional, emit)
+            await processor.readLocation(
+              item.location,
+              item.optional,
+              validatedEmit,
+            )
           ) {
             return;
           }
@@ -153,10 +171,20 @@ export class LocationReaders implements LocationReader {
   ) {
     const { processors, logger } = this.options;
 
+    const validatedEmit: CatalogProcessorEmit = emitResult => {
+      if (emitResult.type === 'relation') {
+        throw new Error('parseData may not emit entity relations');
+      }
+
+      emit(emitResult);
+    };
+
     for (const processor of processors) {
       if (processor.parseData) {
         try {
-          if (await processor.parseData(item.data, item.location, emit)) {
+          if (
+            await processor.parseData(item.data, item.location, validatedEmit)
+          ) {
             return;
           }
         } catch (e) {
@@ -250,10 +278,18 @@ export class LocationReaders implements LocationReader {
       `Encountered error at location ${item.location.type} ${item.location.target}, ${item.error}`,
     );
 
+    const validatedEmit: CatalogProcessorEmit = emitResult => {
+      if (emitResult.type === 'relation') {
+        throw new Error('handleError may not emit entity relations');
+      }
+
+      emit(emitResult);
+    };
+
     for (const processor of processors) {
       if (processor.handleError) {
         try {
-          await processor.handleError(item.error, item.location, emit);
+          await processor.handleError(item.error, item.location, validatedEmit);
         } catch (e) {
           const message = `Processor ${processor.constructor.name} threw an error while handling another error at ${item.location.type} ${item.location.target}, ${e}`;
           emit(result.generalError(item.location, message));

@@ -52,13 +52,13 @@ export type LocationReader = {
 
 export type ReadLocationResult = {
   entities: ReadLocationEntity[];
-  relations: { relation: EntityRelationSpec }[];
   errors: ReadLocationError[];
 };
 
 export type ReadLocationEntity = {
   location: LocationSpec;
   entity: Entity;
+  relations: EntityRelationSpec[];
 };
 
 export type ReadLocationError = {

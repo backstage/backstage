@@ -21,10 +21,17 @@ import type { EntityFilters } from '../database';
 // Entities
 //
 
+export type EntityMutationRequest = {
+  entity: Entity;
+  relations: EntityRelationSpec[];
+};
+
+export type EntityMutationResponse = {
+  entityId: string;
+};
+
 export type EntitiesCatalog = {
   entities(filters?: EntityFilters): Promise<Entity[]>;
-  addOrUpdateEntity(entity: Entity, locationId?: string): Promise<Entity>;
-  addEntities(entities: Entity[], locationId?: string): Promise<void>;
   removeEntityByUid(uid: string): Promise<void>;
 
   /**
@@ -34,15 +41,9 @@ export type EntitiesCatalog = {
    * @param locationId The location that they all belong to
    */
   batchAddOrUpdateEntities(
-    entities: Entity[],
+    entities: EntityMutationRequest[],
     locationId?: string,
-  ): Promise<void>;
-
-  // Same as the DB layer
-  setRelations(
-    entityUid: string,
-    relations: EntityRelationSpec[],
-  ): Promise<void>;
+  ): Promise<EntityMutationResponse[]>;
 };
 
 //

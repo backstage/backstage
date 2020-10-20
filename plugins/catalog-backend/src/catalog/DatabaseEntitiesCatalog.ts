@@ -29,7 +29,11 @@ import limiterFactory from 'p-limit';
 import { Logger } from 'winston';
 import type { Database, DbEntityResponse, EntityFilters } from '../database';
 import { durationText } from '../util/timing';
-import type { EntitiesCatalog } from './types';
+import type {
+  EntitiesCatalog,
+  EntityMutationRequest,
+  EntityMutationResponse,
+} from './types';
 
 type BatchContext = {
   kind: string;
@@ -63,7 +67,7 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
     return items.map(i => i.entity);
   }
 
-  async addOrUpdateEntity(
+  private async addOrUpdateEntity(
     entity: Entity,
     locationId?: string,
   ): Promise<Entity> {
@@ -93,15 +97,6 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
       }
 
       return response.entity;
-    });
-  }
-
-  async addEntities(entities: Entity[], locationId?: string): Promise<void> {
-    await this.database.transaction(async tx => {
-      await this.database.addEntities(
-        tx,
-        entities.map(entity => ({ locationId, entity })),
-      );
     });
   }
 
@@ -138,27 +133,31 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
    * @param entities Some entities
    * @param locationId The location that they all belong to
    */
-  async batchAddOrUpdateEntities(entities: Entity[], locationId?: string) {
+  async batchAddOrUpdateEntities(
+    requests: EntityMutationRequest[],
+    locationId?: string,
+  ): Promise<EntityMutationResponse[]> {
     // Group the entities by unique kind+namespace combinations
-    const entitiesByKindAndNamespace = groupBy(entities, entity => {
+    const entitiesByKindAndNamespace = groupBy(requests, ({ entity }) => {
       const name = getEntityName(entity);
       return `${name.kind}:${name.namespace}`.toLowerCase();
     });
 
     const limiter = limiterFactory(BATCH_CONCURRENCY);
-    const tasks: Promise<void>[] = [];
+    const tasks: Promise<EntityMutationResponse[]>[] = [];
 
-    for (const groupEntities of Object.values(entitiesByKindAndNamespace)) {
-      const { kind, namespace } = getEntityName(groupEntities[0]);
+    for (const groupRequests of Object.values(entitiesByKindAndNamespace)) {
+      const { kind, namespace } = getEntityName(groupRequests[0].entity);
 
       // Go through the new entities in reasonable chunk sizes (sometimes,
       // sources produce tens of thousands of entities, and those are too large
       // batch sizes to reasonably send to the database)
-      for (const batch of chunk(groupEntities, BATCH_SIZE)) {
+      for (const batch of chunk(groupRequests, BATCH_SIZE)) {
         tasks.push(
           limiter(async () => {
-            const first = serializeEntityRef(batch[0]);
-            const last = serializeEntityRef(batch[batch.length - 1]);
+            const first = serializeEntityRef(batch[0].entity);
+            const last = serializeEntityRef(batch[batch.length - 1].entity);
+            const modifiedEntityIds: EntityMutationResponse[] = [];
             this.logger.debug(
               `Considering batch ${first}-${last} (${batch.length} entries)`,
             );
@@ -171,8 +170,16 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
                   batch,
                   context,
                 );
-                if (toAdd.length) await this.batchAdd(toAdd, context);
-                if (toUpdate.length) await this.batchUpdate(toUpdate, context);
+                if (toAdd.length) {
+                  modifiedEntityIds.push(
+                    ...(await this.batchAdd(toAdd, context)),
+                  );
+                }
+                if (toUpdate.length) {
+                  modifiedEntityIds.push(
+                    ...(await this.batchUpdate(toUpdate, context)),
+                  );
+                }
                 break;
               } catch (e) {
                 if (e instanceof ConflictError && attempt < BATCH_ATTEMPTS) {
@@ -184,16 +191,18 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
                 }
               }
             }
+
+            return modifiedEntityIds;
           }),
         );
       }
     }
 
-    await Promise.all(tasks);
+    return (await Promise.all(tasks)).flat();
   }
 
   // Set the relations originating from an entity using the DB layer
-  async setRelations(
+  private async setRelations(
     originatingEntityId: string,
     relations: EntityRelationSpec[],
   ): Promise<void> {
@@ -207,15 +216,15 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
   // produce the list of entities to be added, and the list of entities to be
   // updated
   private async analyzeBatch(
-    newEntities: Entity[],
+    requests: EntityMutationRequest[],
     { kind, namespace }: BatchContext,
   ): Promise<{
-    toAdd: Entity[];
-    toUpdate: Entity[];
+    toAdd: EntityMutationRequest[];
+    toUpdate: EntityMutationRequest[];
   }> {
     const markTimestamp = process.hrtime();
 
-    const names = newEntities.map(e => e.metadata.name);
+    const names = requests.map(({ entity }) => entity.metadata.name);
     const oldEntities = await this.entities({
       kind: kind,
       'metadata.namespace': namespace,
@@ -226,18 +235,19 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
       oldEntities.map(e => [e.metadata.name, e]),
     );
 
-    const toAdd: Entity[] = [];
-    const toUpdate: Entity[] = [];
+    const toAdd: EntityMutationRequest[] = [];
+    const toUpdate: EntityMutationRequest[] = [];
 
-    for (const newEntity of newEntities) {
+    for (const request of requests) {
+      const newEntity = request.entity;
       const oldEntity = oldEntitiesByName.get(newEntity.metadata.name);
       if (!oldEntity) {
-        toAdd.push(newEntity);
+        toAdd.push(request);
       } else if (entityHasChanges(oldEntity, newEntity)) {
         // TODO(freben): This currently uses addOrUpdateEntity under the hood,
         // but should probably calculate the end result entity right here
         // instead and call a dedicated batch update database method instead
-        toUpdate.push(newEntity);
+        toUpdate.push(request);
       }
     }
 
@@ -252,28 +262,55 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
 
   // Efficiently adds the given entities to storage, under the assumption that
   // they do not conflict with any existing entities
-  private async batchAdd(entities: Entity[], { locationId }: BatchContext) {
+  private async batchAdd(
+    requests: EntityMutationRequest[],
+    { locationId }: BatchContext,
+  ): Promise<EntityMutationResponse[]> {
     const markTimestamp = process.hrtime();
 
-    await this.addEntities(entities, locationId);
+    const res = await this.database.transaction(
+      async tx =>
+        await this.database.addEntities(
+          tx,
+          requests.map(({ entity }) => ({ locationId, entity })),
+        ),
+    );
+
+    const entityIds = res.map(({ entity }) => ({
+      entityId: entity.metadata.uid!,
+    }));
+
+    for (const [index, { entityId }] of entityIds.entries()) {
+      await this.setRelations(entityId, requests[index].relations);
+    }
 
     this.logger.debug(
-      `Added ${entities.length} entities in ${durationText(markTimestamp)}`,
+      `Added ${requests.length} entities in ${durationText(markTimestamp)}`,
     );
+
+    return entityIds;
   }
 
   // Efficiently updates the given entities into storage, under the assumption
   // that there already exist entities with the same names
-  private async batchUpdate(entities: Entity[], { locationId }: BatchContext) {
+  private async batchUpdate(
+    requests: EntityMutationRequest[],
+    { locationId }: BatchContext,
+  ): Promise<EntityMutationResponse[]> {
     const markTimestamp = process.hrtime();
-
+    const responseIds: EntityMutationResponse[] = [];
     // TODO(freben): Still not batched
-    for (const entity of entities) {
-      await this.addOrUpdateEntity(entity, locationId);
+    for (const entity of requests) {
+      const res = await this.addOrUpdateEntity(entity.entity, locationId);
+      const entityId = res.metadata.uid!;
+      responseIds.push({ entityId });
+      await this.setRelations(entityId, entity.relations);
     }
 
     this.logger.debug(
-      `Updated ${entities.length} entities in ${durationText(markTimestamp)}`,
+      `Updated ${requests.length} entities in ${durationText(markTimestamp)}`,
     );
+
+    return responseIds;
   }
 }

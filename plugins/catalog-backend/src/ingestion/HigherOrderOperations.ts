@@ -15,7 +15,7 @@
  */
 
 import { InputError } from '@backstage/backend-common';
-import { Entity, Location, LocationSpec } from '@backstage/catalog-model';
+import { Location, LocationSpec } from '@backstage/catalog-model';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from 'winston';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
@@ -94,16 +94,16 @@ export class HigherOrderOperations implements HigherOrderOperation {
     if (!previousLocation) {
       await this.locationsCatalog.addLocation(location);
     }
-    const outputEntities: Entity[] = [];
-    for (const entity of readerOutput.entities) {
-      const out = await this.entitiesCatalog.addOrUpdateEntity(
-        entity.entity,
-        location.id,
-      );
-      outputEntities.push(out);
-    }
+    const writtenEntities = await this.entitiesCatalog.batchAddOrUpdateEntities(
+      readerOutput.entities,
+      location.id,
+    );
 
-    return { location, entities: outputEntities };
+    const entities = await this.entitiesCatalog.entities({
+      'metadata.uid': writtenEntities.map(e => e.entityId),
+    });
+
+    return { location, entities };
   }
 
   /**
@@ -166,7 +166,7 @@ export class HigherOrderOperations implements HigherOrderOperation {
 
     try {
       await this.entitiesCatalog.batchAddOrUpdateEntities(
-        readerOutput.entities.map(e => e.entity),
+        readerOutput.entities,
         location.id,
       );
     } catch (e) {

@@ -31,10 +31,7 @@ describe('HigherOrderOperations', () => {
   beforeAll(() => {
     entitiesCatalog = {
       entities: jest.fn(),
-      addOrUpdateEntity: jest.fn(),
-      addEntities: jest.fn(),
       removeEntityByUid: jest.fn(),
-      setRelations: jest.fn(),
       batchAddOrUpdateEntities: jest.fn(),
     };
     locationsCatalog = {
@@ -72,7 +69,6 @@ describe('HigherOrderOperations', () => {
       locationReader.read.mockResolvedValue({
         entities: [],
         errors: [],
-        relations: [],
       });
 
       const result = await higherOrderOperation.addLocation(spec);
@@ -116,7 +112,6 @@ describe('HigherOrderOperations', () => {
       locationReader.read.mockResolvedValue({
         entities: [],
         errors: [],
-        relations: [],
       });
 
       const result = await higherOrderOperation.addLocation(spec);
@@ -144,9 +139,8 @@ describe('HigherOrderOperations', () => {
 
       locationsCatalog.locations.mockResolvedValue([]);
       locationReader.read.mockResolvedValue({
-        entities: [{ entity, location }],
+        entities: [{ entity, location, relations: [] }],
         errors: [{ error: new Error('abcd'), location }],
-        relations: [],
       });
 
       await expect(higherOrderOperation.addLocation(spec)).rejects.toThrow(
@@ -193,9 +187,8 @@ describe('HigherOrderOperations', () => {
         { currentStatus: locationStatus, data: location },
       ]);
       locationReader.read.mockResolvedValue({
-        entities: [{ entity: desc, location }],
+        entities: [{ entity: desc, location, relations: [] }],
         errors: [],
-        relations: [],
       });
       entitiesCatalog.batchAddOrUpdateEntities.mockResolvedValue(undefined);
 
@@ -239,9 +232,8 @@ describe('HigherOrderOperations', () => {
         { currentStatus: locationStatus, data: location },
       ]);
       locationReader.read.mockResolvedValue({
-        entities: [{ entity: desc, location }],
+        entities: [{ entity: desc, location, relations: [] }],
         errors: [],
-        relations: [],
       });
       entitiesCatalog.entities.mockResolvedValue([]);
       entitiesCatalog.addEntities.mockResolvedValue(undefined);

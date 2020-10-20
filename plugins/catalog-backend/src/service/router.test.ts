@@ -32,10 +32,7 @@ describe('createRouter', () => {
   beforeAll(async () => {
     entitiesCatalog = {
       entities: jest.fn(),
-      addOrUpdateEntity: jest.fn(),
-      addEntities: jest.fn(),
       removeEntityByUid: jest.fn(),
-      setRelations: jest.fn(),
       batchAddOrUpdateEntities: jest.fn(),
     };
     locationsCatalog = {

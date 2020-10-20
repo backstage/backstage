@@ -49,8 +49,13 @@ export async function createRouter(
       })
       .post('/entities', async (req, res) => {
         const body = await requireRequestBody(req);
-        const result = await entitiesCatalog.addOrUpdateEntity(body as Entity);
-        res.status(200).send(result);
+        const [result] = await entitiesCatalog.batchAddOrUpdateEntities([
+          { entity: body as Entity, relations: [] },
+        ]);
+        const entity = await entitiesCatalog.entities({
+          'metadata.uid': result.entityId,
+        });
+        res.status(200).send(entity);
       })
       .get('/entities/by-uid/:uid', async (req, res) => {
         const { uid } = req.params;

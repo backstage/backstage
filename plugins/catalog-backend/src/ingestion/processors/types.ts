@@ -120,6 +120,7 @@ export type CatalogProcessorEntityResult = {
 export type CatalogProcessorRelationResult = {
   type: 'relation';
   relation: EntityRelationSpec;
+  entityRef?: string;
 };
 
 export type CatalogProcessorErrorResult = {
