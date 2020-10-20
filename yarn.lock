@@ -3628,10 +3628,10 @@
     prop-types "^15.6.1"
     react-lifecycles-compat "^3.0.4"
 
-"@rjsf/core@^2.1.0":
-  version "2.3.0"
-  resolved "https://registry.npmjs.org/@rjsf/core/-/core-2.3.0.tgz#334c73d2262ef1a8cda477e238067af7336c5599"
-  integrity sha512-OZKYHt9tjKhzOH4CvsPiCwepuIacqI++cNmnL2fsxh1IF+uEWGlo3NLDWhhSaBbOv9jps6a5YQcLbLtjNuSwug==
+"@rjsf/core@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.npmjs.org/@rjsf/core/-/core-2.4.0.tgz#c50bcff0d8178948ce08123177399d8816d51929"
+  integrity sha512-8zlydBkGldOxGXFEwNGFa1gzTxpcxaYn7ofegcu8XHJ7IKMCfpnU3ABg+H3eml1KZCX3FODmj1tHFJKuTmfynw==
   dependencies:
     "@babel/runtime-corejs2" "^7.8.7"
     "@types/json-schema" "^7.0.4"
@@ -3645,10 +3645,10 @@
     react-is "^16.9.0"
     shortid "^2.2.14"
 
-"@rjsf/material-ui@^2.1.0":
-  version "2.3.0"
-  resolved "https://registry.npmjs.org/@rjsf/material-ui/-/material-ui-2.3.0.tgz#a051eb4db2ad778e39933a31ba806f415dd3ba90"
-  integrity sha512-v/xZ4Xk18ZgBARcCe99IDqdO97GU0UC784gG8PhGGFDdy5Rbdy7ixTjHkGYttkr43PB7SX6ttohNhkKSW4nATQ==
+"@rjsf/material-ui@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.npmjs.org/@rjsf/material-ui/-/material-ui-2.4.0.tgz#1b5859298bf3f61137d7b05084f058a775d6fd73"
+  integrity sha512-U8F/suzg4MuV+8mK1/ufs0Y6c3O8hc1wnuD2IKoOVJvegGfz5JCafyoyGAW6iyuT1DZBMPzVWEqfiuYPmoE7pw==
 
 "@roadiehq/backstage-plugin-github-insights@^0.2.7":
   version "0.2.7"
