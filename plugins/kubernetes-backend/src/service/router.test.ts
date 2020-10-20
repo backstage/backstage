@@ -32,7 +32,7 @@ describe('router', () => {
 
   beforeAll(async () => {
     kubernetesFetcher = {
-      fetchObjectsByServiceId: jest.fn(),
+      fetchObjectsForService: jest.fn(),
     };
 
     kubernetesServiceLocator = {

@@ -22,9 +22,9 @@ import { MultiTenantServiceLocator } from '../service-locator/MultiTenantService
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 import { KubernetesClientProvider } from './KubernetesClientProvider';
 import {
-  GetKubernetesObjectsByServiceIdHandler,
-  handleGetKubernetesObjectsByServiceId,
-} from './getKubernetesObjectsByServiceIdHandler';
+  GetKubernetesObjectsForServiceHandler,
+  handleGetKubernetesObjectsForService,
+} from './getKubernetesObjectsForServiceHandler';
 import {
   AuthRequestBody,
   KubernetesServiceLocator,
@@ -64,13 +64,14 @@ export const makeRouter = (
   logger: Logger,
   fetcher: KubernetesFetcher,
   serviceLocator: KubernetesServiceLocator,
-  handleGetByServiceId: GetKubernetesObjectsByServiceIdHandler,
+  handleGetByServiceId: GetKubernetesObjectsForServiceHandler,
 ): express.Router => {
   const router = Router();
   router.use(express.json());
 
   router.post('/services/:serviceId', async (req, res) => {
     const serviceId = req.params.serviceId;
+    const labelSelector = req.query.labelSelector;
     const requestBody: AuthRequestBody = req.body;
     try {
       const response = await handleGetByServiceId(
@@ -79,6 +80,7 @@ export const makeRouter = (
         serviceLocator,
         logger,
         requestBody,
+        labelSelector,
       );
       res.send(response);
     } catch (e) {
@@ -119,6 +121,6 @@ export async function createRouter(
     logger,
     fetcher,
     serviceLocator,
-    handleGetKubernetesObjectsByServiceId,
+    handleGetKubernetesObjectsForService,
   );
 }

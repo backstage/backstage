@@ -105,15 +105,19 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     this.logger = logger;
   }
 
-  fetchObjectsByServiceId(
+  fetchObjectsForService(
     serviceId: string,
     clusterDetails: ClusterDetails,
     objectTypesToFetch: Set<KubernetesObjectTypes>,
+    labelSelector: string,
   ): Promise<FetchResponseWrapper> {
     const fetchResults = Array.from(objectTypesToFetch).map(type => {
-      return this.fetchByObjectType(serviceId, clusterDetails, type).catch(
-        captureKubernetesErrorsRethrowOthers,
-      );
+      return this.fetchByObjectType(
+        serviceId,
+        clusterDetails,
+        type,
+        labelSelector,
+      ).catch(captureKubernetesErrorsRethrowOthers);
     });
 
     return Promise.all(fetchResults).then(fetchResultsToResponseWrapper);
@@ -124,42 +128,53 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     serviceId: string,
     clusterDetails: ClusterDetails,
     type: KubernetesObjectTypes,
+    labelSelector: string,
   ): Promise<FetchResponse> {
     switch (type) {
       case 'pods':
-        return this.fetchPodsByServiceId(serviceId, clusterDetails).then(r => ({
+        return this.fetchPodsForService(
+          serviceId,
+          clusterDetails,
+          labelSelector,
+        ).then(r => ({
           type: type,
           resources: r,
         }));
       case 'configmaps':
-        return this.fetchConfigMapsByServiceId(
+        return this.fetchConfigMapsForService(
           serviceId,
           clusterDetails,
+          labelSelector,
         ).then(r => ({ type: type, resources: r }));
       case 'deployments':
-        return this.fetchDeploymentsByServiceId(
+        return this.fetchDeploymentsForService(
           serviceId,
           clusterDetails,
+          labelSelector,
         ).then(r => ({ type: type, resources: r }));
       case 'replicasets':
-        return this.fetchReplicaSetsByServiceId(
+        return this.fetchReplicaSetsForService(
           serviceId,
           clusterDetails,
+          labelSelector,
         ).then(r => ({ type: type, resources: r }));
       case 'services':
-        return this.fetchServicesByServiceId(
+        return this.fetchServicesForService(
           serviceId,
           clusterDetails,
+          labelSelector,
         ).then(r => ({ type: type, resources: r }));
       case 'horizontalpodautoscalers':
-        return this.fetchHorizontalPodAutoscalersByServiceId(
+        return this.fetchHorizontalPodAutoscalersForService(
           serviceId,
           clusterDetails,
+          labelSelector,
         ).then(r => ({ type: type, resources: r }));
       case 'ingresses':
-        return this.fetchIngressesByServiceId(
+        return this.fetchIngressesForService(
           serviceId,
           clusterDetails,
+          labelSelector,
         ).then(r => ({ type: type, resources: r }));
       default:
         // unrecognised type
@@ -192,79 +207,60 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     });
   }
 
-  private fetchServicesByServiceId(
+  private fetchServicesForService(
     serviceId: string,
     clusterDetails: ClusterDetails,
+    labelSelector: string,
   ): Promise<Array<V1Service>> {
     return this.singleClusterFetch<V1Service>(clusterDetails, ({ core }) =>
-      core.listServiceForAllNamespaces(
-        false,
-        '',
-        '',
-        `backstage.io/kubernetes-id=${serviceId}`,
-      ),
+      core.listServiceForAllNamespaces(false, '', '', labelSelector),
     );
   }
 
-  private fetchPodsByServiceId(
+  private fetchPodsForService(
     serviceId: string,
     clusterDetails: ClusterDetails,
+    labelSelector: string,
   ): Promise<Array<V1Pod>> {
     return this.singleClusterFetch<V1Pod>(clusterDetails, ({ core }) =>
-      core.listPodForAllNamespaces(
-        false,
-        '',
-        '',
-        `backstage.io/kubernetes-id=${serviceId}`,
-      ),
+      core.listPodForAllNamespaces(false, '', '', labelSelector),
     );
   }
 
-  private fetchConfigMapsByServiceId(
+  private fetchConfigMapsForService(
     serviceId: string,
     clusterDetails: ClusterDetails,
+    labelSelector: string,
   ): Promise<Array<V1ConfigMap>> {
     return this.singleClusterFetch<V1Pod>(clusterDetails, ({ core }) =>
-      core.listConfigMapForAllNamespaces(
-        false,
-        '',
-        '',
-        `backstage.io/kubernetes-id=${serviceId}`,
-      ),
+      core.listConfigMapForAllNamespaces(false, '', '', labelSelector),
     );
   }
 
-  private fetchDeploymentsByServiceId(
+  private fetchDeploymentsForService(
     serviceId: string,
     clusterDetails: ClusterDetails,
+    labelSelector: string,
   ): Promise<Array<V1Deployment>> {
     return this.singleClusterFetch<V1Deployment>(clusterDetails, ({ apps }) =>
-      apps.listDeploymentForAllNamespaces(
-        false,
-        '',
-        '',
-        `backstage.io/kubernetes-id=${serviceId}`,
-      ),
+      apps.listDeploymentForAllNamespaces(false, '', '', labelSelector),
     );
   }
 
-  private fetchReplicaSetsByServiceId(
+  private fetchReplicaSetsForService(
     serviceId: string,
     clusterDetails: ClusterDetails,
+    labelSelector: string,
   ): Promise<Array<V1ReplicaSet>> {
     return this.singleClusterFetch<V1ReplicaSet>(clusterDetails, ({ apps }) =>
-      apps.listReplicaSetForAllNamespaces(
-        false,
-        '',
-        '',
-        `backstage.io/kubernetes-id=${serviceId}`,
-      ),
+      apps.listReplicaSetForAllNamespaces(false, '', '', labelSelector),
     );
   }
 
-  private fetchHorizontalPodAutoscalersByServiceId(
+  private fetchHorizontalPodAutoscalersForService(
     serviceId: string,
     clusterDetails: ClusterDetails,
+    labelSelector: string,
   ): Promise<Array<V1HorizontalPodAutoscaler>> {
     return this.singleClusterFetch<V1HorizontalPodAutoscaler>(
       clusterDetails,
@@ -273,14 +269,15 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
           false,
           '',
           '',
-          `backstage.io/kubernetes-id=${serviceId}`,
+          labelSelector,
         ),
     );
   }
 
-  private fetchIngressesByServiceId(
+  private fetchIngressesForService(
     serviceId: string,
     clusterDetails: ClusterDetails,
+    labelSelector: string,
   ): Promise<Array<ExtensionsV1beta1Ingress>> {
     return this.singleClusterFetch<ExtensionsV1beta1Ingress>(
       clusterDetails,
@@ -289,7 +286,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
           false,
           '',
           '',
-          `backstage.io/kubernetes-id=${serviceId}`,
+          labelSelector,
         ),
     );
   }

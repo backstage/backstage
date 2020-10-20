@@ -110,10 +110,11 @@ export interface IngressesFetchResponse {
 // Fetches information from a kubernetes cluster using the cluster details object
 // to target a specific cluster
 export interface KubernetesFetcher {
-  fetchObjectsByServiceId(
+  fetchObjectsForService(
     serviceId: string,
     clusterDetails: ClusterDetails,
     objectTypesToFetch: Set<KubernetesObjectTypes>,
+    labelSelector: string,
   ): Promise<FetchResponseWrapper>;
 }
 

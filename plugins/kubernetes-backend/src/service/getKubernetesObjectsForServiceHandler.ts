@@ -26,12 +26,13 @@ import {
 import { KubernetesAuthTranslator } from '../kubernetes-auth-translator/types';
 import { KubernetesAuthTranslatorGenerator } from '../kubernetes-auth-translator/KubernetesAuthTranslatorGenerator';
 
-export type GetKubernetesObjectsByServiceIdHandler = (
+export type GetKubernetesObjectsForServiceHandler = (
   serviceId: string,
   fetcher: KubernetesFetcher,
   serviceLocator: KubernetesServiceLocator,
   logger: Logger,
   requestBody: AuthRequestBody,
+  labelSelector: string,
   objectsToFetch?: Set<KubernetesObjectTypes>,
 ) => Promise<ObjectsByServiceIdResponse>;
 
@@ -46,12 +47,13 @@ const DEFAULT_OBJECTS = new Set<KubernetesObjectTypes>([
 ]);
 
 // Fans out the request to all clusters that the service lives in, aggregates their responses together
-export const handleGetKubernetesObjectsByServiceId: GetKubernetesObjectsByServiceIdHandler = async (
+export const handleGetKubernetesObjectsForService: GetKubernetesObjectsForServiceHandler = async (
   serviceId,
   fetcher,
   serviceLocator,
   logger,
   requestBody,
+  labelSelector: string,
   objectsToFetch = DEFAULT_OBJECTS,
 ) => {
   const clusterDetails: ClusterDetails[] = await serviceLocator.getClustersByServiceId(
@@ -81,7 +83,7 @@ export const handleGetKubernetesObjectsByServiceId: GetKubernetesObjectsByServic
   return Promise.all(
     clusterDetailsDecoratedForAuth.map(cd => {
       return fetcher
-        .fetchObjectsByServiceId(serviceId, cd, objectsToFetch)
+        .fetchObjectsForService(serviceId, cd, objectsToFetch, labelSelector)
         .then(result => {
           return {
             cluster: {

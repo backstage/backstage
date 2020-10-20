@@ -20,6 +20,7 @@ import {
   AuthRequestBody,
   ObjectsByServiceIdResponse,
 } from '@backstage/plugin-kubernetes-backend';
+import { V1LabelSelector } from '@kubernetes/client-node';
 
 export class KubernetesBackendClient implements KubernetesApi {
   private readonly discoveryApi: DiscoveryApi;
@@ -50,10 +51,23 @@ export class KubernetesBackendClient implements KubernetesApi {
     return await response.json();
   }
 
-  async getObjectsByServiceId(
+  private parseLabelSelector(params: V1LabelSelector): string {
+    // TODO: figure out how to convert the selector to the full query param from the yaml
+    //  (as shown here https://github.com/kubernetes/apimachinery/blob/master/pkg/labels/selector.go)
+    return Object.keys(params.matchLabels)
+      .map(key => `${key}=${params[key]}`)
+      .join(',');
+  }
+
+  async getObjectsByLabelSelector(
     serviceId: String,
+    labelSelector: V1LabelSelector,
     requestBody: AuthRequestBody,
   ): Promise<ObjectsByServiceIdResponse> {
-    return await this.getRequired(`/services/${serviceId}`, requestBody);
+    const labelSelectorQueryParams = this.parseLabelSelector(labelSelector);
+    return await this.getRequired(
+      `/services/${serviceId}?labelSelector=${labelSelectorQueryParams}`,
+      requestBody,
+    );
   }
 }

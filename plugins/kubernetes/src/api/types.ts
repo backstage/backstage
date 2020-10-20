@@ -19,6 +19,7 @@ import {
   AuthRequestBody,
   ObjectsByServiceIdResponse,
 } from '@backstage/plugin-kubernetes-backend';
+import { V1LabelSelector } from '@kubernetes/client-node';
 
 export const kubernetesApiRef = createApiRef<KubernetesApi>({
   id: 'plugin.kubernetes.service',
@@ -27,8 +28,9 @@ export const kubernetesApiRef = createApiRef<KubernetesApi>({
 });
 
 export interface KubernetesApi {
-  getObjectsByServiceId(
+  getObjectsByLabelSelector(
     serviceId: String,
+    labelSelector: V1LabelSelector,
     requestBody: AuthRequestBody,
   ): Promise<ObjectsByServiceIdResponse>;
 }

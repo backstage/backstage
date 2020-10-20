@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { handleGetKubernetesObjectsByServiceId } from './getKubernetesObjectsByServiceIdHandler';
+import { handleGetKubernetesObjectsForService } from './getKubernetesObjectsForServiceHandler';
 import { getVoidLogger } from '@backstage/backend-common';
 import { ClusterDetails } from '..';
 
@@ -81,10 +81,10 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
 
     mockFetch(fetchObjectsByServiceId);
 
-    const result = await handleGetKubernetesObjectsByServiceId(
+    const result = await handleGetKubernetesObjectsForService(
       TEST_SERVICE_ID,
       {
-        fetchObjectsByServiceId,
+        fetchObjectsForService: fetchObjectsByServiceId,
       },
       {
         getClustersByServiceId,
@@ -155,10 +155,10 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
 
     mockFetch(fetchObjectsByServiceId);
 
-    const result = await handleGetKubernetesObjectsByServiceId(
+    const result = await handleGetKubernetesObjectsForService(
       TEST_SERVICE_ID,
       {
-        fetchObjectsByServiceId,
+        fetchObjectsForService: fetchObjectsByServiceId,
       },
       {
         getClustersByServiceId,

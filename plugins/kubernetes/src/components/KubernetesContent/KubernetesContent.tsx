@@ -41,6 +41,7 @@ import {
   ExtensionsV1beta1Ingress,
   V1ConfigMap,
   V1HorizontalPodAutoscaler,
+  V1LabelSelector,
   V1Service,
 } from '@kubernetes/client-node';
 import { Services } from '../Services';
@@ -129,9 +130,27 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
         );
       }
 
+      // decide label selector to search by defaulting to this label
+      let labelSelector: V1LabelSelector = {
+        matchLabels: {
+          'backstage.io/kubernetes-id': entity.metadata.name,
+        },
+      };
+
+      if (
+        entity.spec.kubernetes &&
+        (entity.spec.kubernetes.selector as V1LabelSelector)
+      ) {
+        labelSelector = entity.spec.kubernetes.selector;
+      }
+
       // TODO: Add validation on contents/format of requestBody
       kubernetesApi
-        .getObjectsByServiceId(entity.metadata.name, requestBody)
+        .getObjectsByLabelSelector(
+          entity.metadata.name,
+          labelSelector,
+          requestBody,
+        )
         .then(result => {
           setKubernetesObjects(result);
         })

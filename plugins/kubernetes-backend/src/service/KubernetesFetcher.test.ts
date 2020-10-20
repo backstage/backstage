@@ -57,7 +57,7 @@ describe('KubernetesClientProvider', () => {
 
     clientMock.listServiceForAllNamespaces.mockRejectedValue(errorResponse);
 
-    const result = await sut.fetchObjectsByServiceId(
+    const result = await sut.fetchObjectsForService(
       'some-service',
       {
         name: 'cluster1',
@@ -120,7 +120,7 @@ describe('KubernetesClientProvider', () => {
       },
     });
 
-    const result = await sut.fetchObjectsByServiceId(
+    const result = await sut.fetchObjectsForService(
       'some-service',
       {
         name: 'cluster1',
@@ -169,7 +169,7 @@ describe('KubernetesClientProvider', () => {
   });
   it('should throw error on unknown type', () => {
     expect(() =>
-      sut.fetchObjectsByServiceId(
+      sut.fetchObjectsForService(
         'some-service',
         {
           name: 'cluster1',
