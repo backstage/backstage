@@ -166,7 +166,7 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
             const context = { kind, namespace, locationId };
             for (let attempt = 1; attempt <= BATCH_ATTEMPTS; ++attempt) {
               try {
-                const { toAdd, toUpdate } = await this.analyzeBatch(
+                const { toAdd, toUpdate, toIgnore } = await this.analyzeBatch(
                   batch,
                   context,
                 );
@@ -180,6 +180,14 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
                     ...(await this.batchUpdate(toUpdate, context)),
                   );
                 }
+                // TODO(Rugvip): We currently always update relations, but we
+                // likely want to figure out a way to avoid that
+                for (const { entity, relations } of toIgnore) {
+                  const entityId = entity.metadata.uid!;
+                  await this.setRelations(entityId, relations);
+                  modifiedEntityIds.push({ entityId });
+                }
+
                 break;
               } catch (e) {
                 if (e instanceof ConflictError && attempt < BATCH_ATTEMPTS) {
@@ -221,6 +229,7 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
   ): Promise<{
     toAdd: EntityMutationRequest[];
     toUpdate: EntityMutationRequest[];
+    toIgnore: EntityMutationRequest[];
   }> {
     const markTimestamp = process.hrtime();
 
@@ -237,6 +246,7 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
 
     const toAdd: EntityMutationRequest[] = [];
     const toUpdate: EntityMutationRequest[] = [];
+    const toIgnore: EntityMutationRequest[] = [];
 
     for (const request of requests) {
       const newEntity = request.entity;
@@ -248,6 +258,8 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
         // but should probably calculate the end result entity right here
         // instead and call a dedicated batch update database method instead
         toUpdate.push(request);
+      } else {
+        toIgnore.push(request);
       }
     }
 
@@ -257,7 +269,7 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
       } entities to update in ${durationText(markTimestamp)}`,
     );
 
-    return { toAdd, toUpdate };
+    return { toAdd, toUpdate, toIgnore };
   }
 
   // Efficiently adds the given entities to storage, under the assumption that

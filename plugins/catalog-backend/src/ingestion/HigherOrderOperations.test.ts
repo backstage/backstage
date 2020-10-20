@@ -83,7 +83,7 @@ describe('HigherOrderOperations', () => {
       expect(locationsCatalog.locations).toBeCalledTimes(1);
       expect(locationReader.read).toBeCalledTimes(1);
       expect(locationReader.read).toBeCalledWith({ type: 'a', target: 'b' });
-      expect(entitiesCatalog.addOrUpdateEntity).not.toBeCalled();
+      expect(entitiesCatalog.batchAddOrUpdateEntities).not.toBeCalled();
       expect(locationsCatalog.addLocation).toBeCalledTimes(1);
       expect(locationsCatalog.addLocation).toBeCalledWith(
         expect.objectContaining({
@@ -121,7 +121,7 @@ describe('HigherOrderOperations', () => {
       expect(locationsCatalog.locations).toBeCalledTimes(1);
       expect(locationReader.read).toBeCalledTimes(1);
       expect(locationReader.read).toBeCalledWith({ type: 'a', target: 'b' });
-      expect(entitiesCatalog.addOrUpdateEntity).not.toBeCalled();
+      expect(entitiesCatalog.batchAddOrUpdateEntities).not.toBeCalled();
       expect(locationsCatalog.addLocation).not.toBeCalled();
     });
 
@@ -147,7 +147,7 @@ describe('HigherOrderOperations', () => {
         /abcd/,
       );
       expect(locationsCatalog.locations).toBeCalledTimes(1);
-      expect(entitiesCatalog.addOrUpdateEntity).not.toBeCalled();
+      expect(entitiesCatalog.batchAddOrUpdateEntities).not.toBeCalled();
       expect(locationsCatalog.addLocation).not.toBeCalled();
     });
   });
@@ -162,7 +162,7 @@ describe('HigherOrderOperations', () => {
 
       expect(locationsCatalog.locations).toHaveBeenCalledTimes(1);
       expect(locationReader.read).not.toHaveBeenCalled();
-      expect(entitiesCatalog.addOrUpdateEntity).not.toHaveBeenCalled();
+      expect(entitiesCatalog.batchAddOrUpdateEntities).not.toHaveBeenCalled();
     });
 
     it('can update a single location where a matching entity did not exist', async () => {
@@ -182,6 +182,7 @@ describe('HigherOrderOperations', () => {
         metadata: { name: 'c1' },
         spec: { type: 'service' },
       };
+      const entityId = 'xyz123';
 
       locationsCatalog.locations.mockResolvedValue([
         { currentStatus: locationStatus, data: location },
@@ -190,7 +191,9 @@ describe('HigherOrderOperations', () => {
         entities: [{ entity: desc, location, relations: [] }],
         errors: [],
       });
-      entitiesCatalog.batchAddOrUpdateEntities.mockResolvedValue(undefined);
+      entitiesCatalog.batchAddOrUpdateEntities.mockResolvedValue([
+        { entityId },
+      ]);
 
       await expect(
         higherOrderOperation.refreshAllLocations(),
@@ -203,9 +206,13 @@ describe('HigherOrderOperations', () => {
         target: 'thing',
       });
       expect(entitiesCatalog.batchAddOrUpdateEntities).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.batchAddOrUpdateEntities).toHaveBeenNthCalledWith(
-        1,
-        [expect.objectContaining({ metadata: { name: 'c1' } })],
+      expect(entitiesCatalog.batchAddOrUpdateEntities).toHaveBeenCalledWith(
+        [
+          expect.objectContaining({
+            entity: expect.objectContaining({ metadata: { name: 'c1' } }),
+            relations: [],
+          }),
+        ],
         '123',
       );
     });
@@ -236,7 +243,7 @@ describe('HigherOrderOperations', () => {
         errors: [],
       });
       entitiesCatalog.entities.mockResolvedValue([]);
-      entitiesCatalog.addEntities.mockResolvedValue(undefined);
+      entitiesCatalog.batchAddOrUpdateEntities.mockResolvedValue([]);
 
       await expect(
         higherOrderOperation.refreshAllLocations(),

@@ -52,7 +52,7 @@ export async function createRouter(
         const [result] = await entitiesCatalog.batchAddOrUpdateEntities([
           { entity: body as Entity, relations: [] },
         ]);
-        const entity = await entitiesCatalog.entities({
+        const [entity] = await entitiesCatalog.entities({
           'metadata.uid': result.entityId,
         });
         res.status(200).send(entity);
