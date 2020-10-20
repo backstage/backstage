@@ -111,7 +111,9 @@ export async function createRouter({
 
     const catalogRes = await fetch(`${catalogUrl}/entities/by-name/${triple}`);
     if (!catalogRes.ok) {
-      catalogRes.body.pipe(res.status(catalogRes.status));
+      const catalogResText = await catalogRes.text();
+      res.status(catalogRes.status);
+      res.send(catalogResText);
       return;
     }
 
