@@ -30,7 +30,7 @@ import {
 import { Box, useTheme } from '@material-ui/core';
 import BarChartTick from './BarChartTick';
 import BarChartStepper from './BarChartStepper';
-import Tooltip, { TooltipItemProps } from '../Tooltip';
+import { Tooltip, TooltipItemProps } from '../Tooltip';
 
 import { currencyFormatter } from '../../utils/formatters';
 import {
