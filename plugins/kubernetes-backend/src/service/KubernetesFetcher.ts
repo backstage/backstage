@@ -113,7 +113,6 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
   ): Promise<FetchResponseWrapper> {
     const fetchResults = Array.from(objectTypesToFetch).map(type => {
       return this.fetchByObjectType(
-        serviceId,
         clusterDetails,
         type,
         labelSelector.length !== 0
@@ -127,54 +126,45 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
 
   // TODO could probably do with a tidy up
   private fetchByObjectType(
-    serviceId: string,
     clusterDetails: ClusterDetails,
     type: KubernetesObjectTypes,
     labelSelector: string,
   ): Promise<FetchResponse> {
     switch (type) {
       case 'pods':
-        return this.fetchPodsForService(
-          serviceId,
-          clusterDetails,
-          labelSelector,
-        ).then(r => ({
-          type: type,
-          resources: r,
-        }));
+        return this.fetchPodsForService(clusterDetails, labelSelector).then(
+          r => ({
+            type: type,
+            resources: r,
+          }),
+        );
       case 'configmaps':
         return this.fetchConfigMapsForService(
-          serviceId,
           clusterDetails,
           labelSelector,
         ).then(r => ({ type: type, resources: r }));
       case 'deployments':
         return this.fetchDeploymentsForService(
-          serviceId,
           clusterDetails,
           labelSelector,
         ).then(r => ({ type: type, resources: r }));
       case 'replicasets':
         return this.fetchReplicaSetsForService(
-          serviceId,
           clusterDetails,
           labelSelector,
         ).then(r => ({ type: type, resources: r }));
       case 'services':
         return this.fetchServicesForService(
-          serviceId,
           clusterDetails,
           labelSelector,
         ).then(r => ({ type: type, resources: r }));
       case 'horizontalpodautoscalers':
         return this.fetchHorizontalPodAutoscalersForService(
-          serviceId,
           clusterDetails,
           labelSelector,
         ).then(r => ({ type: type, resources: r }));
       case 'ingresses':
         return this.fetchIngressesForService(
-          serviceId,
           clusterDetails,
           labelSelector,
         ).then(r => ({ type: type, resources: r }));
@@ -210,7 +200,6 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
   }
 
   private fetchServicesForService(
-    serviceId: string,
     clusterDetails: ClusterDetails,
     labelSelector: string,
   ): Promise<Array<V1Service>> {
@@ -220,7 +209,6 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
   }
 
   private fetchPodsForService(
-    serviceId: string,
     clusterDetails: ClusterDetails,
     labelSelector: string,
   ): Promise<Array<V1Pod>> {
@@ -230,7 +218,6 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
   }
 
   private fetchConfigMapsForService(
-    serviceId: string,
     clusterDetails: ClusterDetails,
     labelSelector: string,
   ): Promise<Array<V1ConfigMap>> {
@@ -240,7 +227,6 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
   }
 
   private fetchDeploymentsForService(
-    serviceId: string,
     clusterDetails: ClusterDetails,
     labelSelector: string,
   ): Promise<Array<V1Deployment>> {
@@ -250,7 +236,6 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
   }
 
   private fetchReplicaSetsForService(
-    serviceId: string,
     clusterDetails: ClusterDetails,
     labelSelector: string,
   ): Promise<Array<V1ReplicaSet>> {
@@ -260,7 +245,6 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
   }
 
   private fetchHorizontalPodAutoscalersForService(
-    serviceId: string,
     clusterDetails: ClusterDetails,
     labelSelector: string,
   ): Promise<Array<V1HorizontalPodAutoscaler>> {
@@ -277,7 +261,6 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
   }
 
   private fetchIngressesForService(
-    serviceId: string,
     clusterDetails: ClusterDetails,
     labelSelector: string,
   ): Promise<Array<ExtensionsV1beta1Ingress>> {
