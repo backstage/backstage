@@ -17,9 +17,9 @@
 export type LocationSpec = {
   type: string;
   target: string;
-  // When using repo importer plugin, leocation is being created before the component yaml file is merged to the main branch.
+  // When using repo importer plugin, location is being created before the component yaml file is merged to the main branch.
   // This flag is then set to disable validation that prevents creation of location if target file does not yet exist.
-  pendingLocation?: true;
+  pendingLocation?: boolean;
 };
 
 export type Location = {

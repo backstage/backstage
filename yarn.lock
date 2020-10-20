@@ -3644,6 +3644,11 @@
     prop-types "^15.6.1"
     react-lifecycles-compat "^3.0.4"
 
+"@rehooks/local-storage@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.npmjs.org/@rehooks/local-storage/-/local-storage-2.4.0.tgz#fb884b2b657cad5f77aa6ab60bb3532f0e0725d2"
+  integrity sha512-LoXDbEHsuIckVgBsFAv8SuU/M7memjyfWut9Zf36TQXqqCHBRFv8bweg9PymQCa1aWIMjNrZQflFdo55FDlXYg==
+
 "@rjsf/core@^2.4.0":
   version "2.4.0"
   resolved "https://registry.npmjs.org/@rjsf/core/-/core-2.4.0.tgz#c50bcff0d8178948ce08123177399d8816d51929"
@@ -3684,51 +3689,6 @@
     react-dom "^16.13.1"
     react-markdown "^4.3.1"
     react-router "^6.0.0-beta.0"
-    react-use "^15.3.3"
-
-"@roadiehq/backstage-plugin-github-pull-requests@^0.5.2":
-  version "0.5.2"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-pull-requests/-/backstage-plugin-github-pull-requests-0.5.2.tgz#455355fe5cdcc43c22b80a8ef3697378084680a1"
-  integrity sha512-GM+nWQZ+aehMclN70Pp35UQe3I46SQCjWiGZ6/0TfDzrueHln39L2UspUj1L/713xDDtDK8ZnTJdFn/qKx7j4A==
-  dependencies:
-    "@backstage/catalog-model" "^0.1.1-alpha.25"
-    "@backstage/core" "^0.1.1-alpha.25"
-    "@backstage/plugin-catalog" "^0.1.1-alpha.25"
-    "@backstage/theme" "^0.1.1-alpha.25"
-    "@material-ui/core" "^4.11.0"
-    "@material-ui/icons" "^4.9.1"
-    "@material-ui/lab" "^4.0.0-alpha.56"
-    "@octokit/rest" "^18.0.0"
-    "@octokit/types" "^5.0.1"
-    "@types/react-dom" "^16.9.8"
-    history "^5.0.0"
-    moment "^2.27.0"
-    react "^16.13.1"
-    react-dom "^16.13.1"
-    react-router "6.0.0-beta.0"
-    react-use "^15.3.3"
-
-"@roadiehq/backstage-plugin-travis-ci@^0.2.3":
-  version "0.2.3"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-travis-ci/-/backstage-plugin-travis-ci-0.2.3.tgz#2d1c5a7ed3eab4fdcf95243b73dee44c0cff5a57"
-  integrity sha512-Xi8vZFbcm+D4ykyU3I9hImAd22F1v6M1F/H9CJanRHqj5esJxnuCS2+Kf+w09bwb9DuM8/c68PuMlf3PMIsOwg==
-  dependencies:
-    "@backstage/catalog-model" "^0.1.1-alpha.22"
-    "@backstage/core" "^0.1.1-alpha.22"
-    "@backstage/core-api" "^0.1.1-alpha.22"
-    "@backstage/plugin-catalog" "^0.1.1-alpha.22"
-    "@backstage/theme" "^0.1.1-alpha.22"
-    "@material-ui/core" "^4.9.1"
-    "@material-ui/icons" "^4.9.1"
-    "@material-ui/lab" "4.0.0-alpha.45"
-    date-fns "^2.15.0"
-    history "^5.0.0"
-    moment "^2.27.0"
-    react "^16.13.1"
-    react-dom "^16.13.1"
-    react-lazylog "^4.5.2"
-    react-router "6.0.0-beta.0"
-    react-router-dom "6.0.0-beta.0"
     react-use "^15.3.3"
 
 "@rollup/plugin-commonjs@^13.0.0":
