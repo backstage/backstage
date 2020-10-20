@@ -1528,15 +1528,6 @@ css    img    js          mkdocs   sitemap.xml
                 <a href="/about/release-notes/#maintenance-team">MkDocs Team</a
                 >.
               </div>
-
-              Made with
-              <a
-                href="https://squidfunk.github.io/mkdocs-material/"
-                target="_blank"
-                rel="noopener"
-              >
-                Material for MkDocs
-              </a>
             </div>
           </div>
         </div>
