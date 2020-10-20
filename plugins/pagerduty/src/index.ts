@@ -14,3 +14,7 @@
  * limitations under the License.
  */
 export { plugin } from './plugin';
+export {
+  isPluginApplicableToEntity,
+  PagerDutyServiceCard,
+} from './components/PagerDutyServiceCard';
