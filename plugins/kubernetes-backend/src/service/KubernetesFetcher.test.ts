@@ -66,6 +66,7 @@ describe('KubernetesClientProvider', () => {
         authProvider: 'serviceAccount',
       },
       new Set(['pods', 'services']),
+      '',
     );
 
     expect(result).toStrictEqual({
@@ -129,6 +130,7 @@ describe('KubernetesClientProvider', () => {
         authProvider: 'serviceAccount',
       },
       new Set(['pods', 'services']),
+      '',
     );
 
     expect(result).toStrictEqual({
@@ -178,6 +180,7 @@ describe('KubernetesClientProvider', () => {
           authProvider: 'serviceAccount',
         },
         new Set<any>(['foo']),
+        '',
       ),
     ).toThrow('unrecognised type=foo');
 
@@ -253,5 +256,47 @@ describe('KubernetesClientProvider', () => {
         statusCode: 900,
       },
     );
+  });
+  it('should always add a labelSelector query', async () => {
+    clientMock.listPodForAllNamespaces.mockResolvedValueOnce({
+      body: {
+        items: [
+          {
+            metadata: {
+              name: 'pod-name',
+            },
+          },
+        ],
+      },
+    });
+
+    clientMock.listServiceForAllNamespaces.mockResolvedValueOnce({
+      body: {
+        items: [
+          {
+            metadata: {
+              name: 'service-name',
+            },
+          },
+        ],
+      },
+    });
+
+    await sut.fetchObjectsForService(
+      'some-service',
+      {
+        name: 'cluster1',
+        url: 'http://localhost:9999',
+        serviceAccountToken: 'token',
+        authProvider: 'serviceAccount',
+      },
+      new Set(['pods', 'services']),
+      '',
+    );
+
+    const mockCall = clientMock.listPodForAllNamespaces.mock.calls[0];
+    const actualSelector = mockCall[mockCall.length - 1];
+    const expectedSelector = 'backstage.io/kubernetes-id=some-service';
+    expect(actualSelector).toBe(expectedSelector);
   });
 });

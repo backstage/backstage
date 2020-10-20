@@ -80,7 +80,7 @@ export const makeRouter = (
         serviceLocator,
         logger,
         requestBody,
-        labelSelector,
+        labelSelector ? labelSelector.toString() : '',
       );
       res.send(response);
     } catch (e) {

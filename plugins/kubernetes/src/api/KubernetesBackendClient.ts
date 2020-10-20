@@ -54,8 +54,9 @@ export class KubernetesBackendClient implements KubernetesApi {
   private parseLabelSelector(params: V1LabelSelector): string {
     // TODO: figure out how to convert the selector to the full query param from the yaml
     //  (as shown here https://github.com/kubernetes/apimachinery/blob/master/pkg/labels/selector.go)
-    return Object.keys(params.matchLabels)
-      .map(key => `${key}=${params[key]}`)
+    const { matchLabels } = params;
+    return Object.keys(matchLabels)
+      .map(key => `${key}=${matchLabels[key]}`)
       .join(',');
   }
 

@@ -20,7 +20,7 @@ import { ClusterDetails } from '..';
 
 const TEST_SERVICE_ID = 'my-service';
 
-const fetchObjectsByServiceId = jest.fn();
+const fetchObjectsForService = jest.fn();
 
 const getClustersByServiceId = jest.fn();
 
@@ -64,7 +64,7 @@ const mockFetch = (mock: jest.Mock) => {
   );
 };
 
-describe('handleGetKubernetesObjectsByServiceId', () => {
+describe('handleGetKubernetesObjectsForService', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
@@ -79,22 +79,23 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
       ]),
     );
 
-    mockFetch(fetchObjectsByServiceId);
+    mockFetch(fetchObjectsForService);
 
     const result = await handleGetKubernetesObjectsForService(
       TEST_SERVICE_ID,
       {
-        fetchObjectsForService: fetchObjectsByServiceId,
+        fetchObjectsForService: fetchObjectsForService,
       },
       {
         getClustersByServiceId,
       },
       getVoidLogger(),
       {},
+      '',
     );
 
     expect(getClustersByServiceId.mock.calls.length).toBe(1);
-    expect(fetchObjectsByServiceId.mock.calls.length).toBe(1);
+    expect(fetchObjectsForService.mock.calls.length).toBe(1);
     expect(result).toStrictEqual({
       items: [
         {
@@ -153,12 +154,12 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
       ]),
     );
 
-    mockFetch(fetchObjectsByServiceId);
+    mockFetch(fetchObjectsForService);
 
     const result = await handleGetKubernetesObjectsForService(
       TEST_SERVICE_ID,
       {
-        fetchObjectsForService: fetchObjectsByServiceId,
+        fetchObjectsForService: fetchObjectsForService,
       },
       {
         getClustersByServiceId,
@@ -169,10 +170,11 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
           google: 'google_token_123',
         },
       },
+      '',
     );
 
     expect(getClustersByServiceId.mock.calls.length).toBe(1);
-    expect(fetchObjectsByServiceId.mock.calls.length).toBe(2);
+    expect(fetchObjectsForService.mock.calls.length).toBe(2);
     expect(result).toStrictEqual({
       items: [
         {

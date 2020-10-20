@@ -116,7 +116,9 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
         serviceId,
         clusterDetails,
         type,
-        labelSelector,
+        labelSelector.length !== 0
+          ? labelSelector
+          : `backstage.io/kubernetes-id=${serviceId}`,
       ).catch(captureKubernetesErrorsRethrowOthers);
     });
 
