@@ -15,17 +15,17 @@
  */
 
 import { LocationSpec } from '@backstage/catalog-model';
-import fetch, { RequestInit, HeadersInit } from 'node-fetch';
-import * as result from './results';
-import { LocationProcessor, LocationProcessorEmit } from './types';
 import { Config } from '@backstage/config';
+import fetch, { HeadersInit, RequestInit } from 'node-fetch';
+import * as result from './results';
+import { CatalogProcessor, CatalogProcessorEmit } from './types';
 
 // ***********************************************************************
 // * NOTE: This has been replaced by packages/backend-common/src/reading *
 // * Don't implement new functionality here as this file will be removed *
 // ***********************************************************************
 
-export class GitlabApiReaderProcessor implements LocationProcessor {
+export class GitlabApiReaderProcessor implements CatalogProcessor {
   private privateToken: string;
 
   constructor(config: Config) {
@@ -50,7 +50,7 @@ export class GitlabApiReaderProcessor implements LocationProcessor {
   async readLocation(
     location: LocationSpec,
     optional: boolean,
-    emit: LocationProcessorEmit,
+    emit: CatalogProcessorEmit,
   ): Promise<boolean> {
     if (location.type !== 'gitlab/api') {
       return false;

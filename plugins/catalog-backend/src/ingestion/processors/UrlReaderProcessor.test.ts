@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { UrlReaderProcessor } from './UrlReaderProcessor';
-import {
-  LocationProcessorDataResult,
-  LocationProcessorResult,
-  LocationProcessorErrorResult,
-} from './types';
-import { setupServer } from 'msw/node';
-import { rest } from 'msw';
 import { getVoidLogger, UrlReaders } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
+import {
+  CatalogProcessorDataResult,
+  CatalogProcessorErrorResult,
+  CatalogProcessorResult,
+} from './types';
+import { UrlReaderProcessor } from './UrlReaderProcessor';
 
 describe('UrlReaderProcessor', () => {
   const mockApiOrigin = 'http://localhost:23000';
@@ -48,9 +48,9 @@ describe('UrlReaderProcessor', () => {
       ),
     );
 
-    const generated = (await new Promise<LocationProcessorResult>(emit =>
+    const generated = (await new Promise<CatalogProcessorResult>(emit =>
       processor.readLocation(spec, false, emit),
-    )) as LocationProcessorDataResult;
+    )) as CatalogProcessorDataResult;
 
     expect(generated.type).toBe('data');
     expect(generated.location).toBe(spec);
@@ -72,9 +72,9 @@ describe('UrlReaderProcessor', () => {
       }),
     );
 
-    const generated = (await new Promise<LocationProcessorResult>(emit =>
+    const generated = (await new Promise<CatalogProcessorResult>(emit =>
       processor.readLocation(spec, false, emit),
-    )) as LocationProcessorErrorResult;
+    )) as CatalogProcessorErrorResult;
 
     expect(generated.type).toBe('error');
     expect(generated.location).toBe(spec);

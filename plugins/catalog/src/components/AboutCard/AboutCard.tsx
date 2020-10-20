@@ -14,24 +14,23 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import {
-  Grid,
-  Typography,
-  makeStyles,
-  Chip,
-  IconButton,
   Card,
   CardContent,
   CardHeader,
+  Chip,
   Divider,
+  Grid,
+  IconButton,
+  makeStyles,
+  Typography,
 } from '@material-ui/core';
-import { Entity } from '@backstage/catalog-model';
-
-import GitHubIcon from '@material-ui/icons/GitHub';
-import { IconLinkVertical } from './IconLinkVertical';
-import EditIcon from '@material-ui/icons/Edit';
 import DocsIcon from '@material-ui/icons/Description';
+import EditIcon from '@material-ui/icons/Edit';
+import GitHubIcon from '@material-ui/icons/GitHub';
+import React from 'react';
+import { IconLinkVertical } from './IconLinkVertical';
 
 const useStyles = makeStyles(theme => ({
   links: {
@@ -107,9 +106,9 @@ export function AboutCard({ entity }: AboutCardProps) {
               }
               label="View Techdocs"
               icon={<DocsIcon />}
-              href={`/docs/${entity.kind}:${entity.metadata.namespace ?? ''}:${
-                entity.metadata.name
-              }`}
+              href={`/docs/${
+                entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE
+              }/${entity.kind}/${entity.metadata.name}`}
             />
           </nav>
         }

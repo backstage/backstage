@@ -26,7 +26,7 @@ describe('database connection', () => {
       },
     ]);
 
-  describe(createDatabaseClient, () => {
+  describe('createDatabaseClient', () => {
     it('returns a postgres connection', () => {
       expect(
         createDatabaseClient(

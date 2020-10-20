@@ -4,7 +4,6 @@ import {
   InfoCard,
   Header,
   Page,
-  pageTheme,
   Content,
   ContentHeader,
   HeaderLabel,
@@ -13,7 +12,7 @@ import {
 import ExampleFetchComponent from '../ExampleFetchComponent';
 
 const ExampleComponent: FC<{}> = () => (
-  <Page theme={pageTheme.tool}>
+  <Page themeId="tool">
     <Header title="Welcome to {{ id }}!" subtitle="Optional subtitle">
       <HeaderLabel label="Owner" value="Team X" />
       <HeaderLabel label="Lifecycle" value="Alpha" />
@@ -37,5 +36,5 @@ const ExampleComponent: FC<{}> = () => (
     </Content>
   </Page>
 );
-
+  
 export default ExampleComponent;

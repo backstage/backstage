@@ -18,13 +18,18 @@ import { Entity, LocationSpec } from '@backstage/catalog-model';
 import lodash from 'lodash';
 import yaml from 'yaml';
 import * as result from './results';
-import { LocationProcessor, LocationProcessorEmit } from './types';
+import { CatalogProcessor, CatalogProcessorEmit } from './types';
 
-export class YamlProcessor implements LocationProcessor {
+/**
+ * Handles incoming raw data buffers, and if they have a yaml extension,
+ * attempts to parse them into structured data and emitting them as un-
+ * validated entities.
+ */
+export class YamlProcessor implements CatalogProcessor {
   async parseData(
     data: Buffer,
     location: LocationSpec,
-    emit: LocationProcessorEmit,
+    emit: CatalogProcessorEmit,
   ): Promise<boolean> {
     if (!location.target.match(/\.ya?ml/)) {
       return false;

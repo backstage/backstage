@@ -15,17 +15,11 @@
  */
 
 import { InputError } from '@backstage/backend-common';
-import {
-  Entity,
-  entityHasChanges,
-  getEntityName,
-  Location,
-  LocationSpec,
-  serializeEntityRef,
-} from '@backstage/catalog-model';
+import { Entity, Location, LocationSpec } from '@backstage/catalog-model';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from 'winston';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
+import { durationText } from '../util/timing';
 import {
   AddLocationResult,
   HigherOrderOperation,
@@ -88,7 +82,7 @@ export class HigherOrderOperations implements HigherOrderOperation {
     if (readerOutput.errors.length) {
       const item = readerOutput.errors[0];
       throw new InputError(
-        `Failed to read location ${item.location.type} ${item.location.target}, ${item.error}`,
+        `Failed to read location ${item.location.type}:${item.location.target}, ${item.error}`,
       );
     }
 
@@ -121,85 +115,84 @@ export class HigherOrderOperations implements HigherOrderOperation {
    * without changes.
    */
   async refreshAllLocations(): Promise<void> {
-    const startTimestamp = new Date().valueOf();
+    const startTimestamp = process.hrtime();
     this.logger.info('Beginning locations refresh');
 
     const locations = await this.locationsCatalog.locations();
     this.logger.info(`Visiting ${locations.length} locations`);
 
     for (const { data: location } of locations) {
-      this.logger.debug(
-        `Refreshing location id="${location.id}" type="${location.type}" target="${location.target}"`,
+      this.logger.info(
+        `Refreshing location ${location.type}:${location.target}`,
       );
       try {
         await this.refreshSingleLocation(location);
         await this.locationsCatalog.logUpdateSuccess(location.id, undefined);
       } catch (e) {
-        this.logger.debug(
-          `Failed to refresh location id="${location.id}" type="${location.type}" target="${location.target}", ${e}`,
+        this.logger.warn(
+          `Failed to refresh location ${location.type}:${location.target}, ${e}`,
         );
         await this.locationsCatalog.logUpdateFailure(location.id, e);
       }
     }
 
-    const endTimestamp = new Date().valueOf();
-    const duration = ((endTimestamp - startTimestamp) / 1000).toFixed(1);
-    this.logger.debug(`Completed locations refresh in ${duration} seconds`);
+    this.logger.info(
+      `Completed locations refresh in ${durationText(startTimestamp)}`,
+    );
   }
 
   // Performs a full refresh of a single location
   private async refreshSingleLocation(location: Location) {
+    let startTimestamp = process.hrtime();
+
     const readerOutput = await this.locationReader.read({
       type: location.type,
       target: location.target,
     });
 
     for (const item of readerOutput.errors) {
-      this.logger.debug(
-        `Failed item in location type="${item.location.type}" target="${item.location.target}", ${item.error}`,
+      this.logger.warn(
+        `Failed item in location ${item.location.type}:${item.location.target}, ${item.error}`,
       );
     }
 
     this.logger.info(
-      `Read ${readerOutput.entities.length} entities from location ${location.type} ${location.target}`,
+      `Read ${readerOutput.entities.length} entities from location ${
+        location.type
+      }:${location.target} in ${durationText(startTimestamp)}`,
     );
 
-    const startTimestamp = process.hrtime();
-    for (const item of readerOutput.entities) {
-      const { entity } = item;
+    startTimestamp = process.hrtime();
 
-      try {
-        const previous = await this.entitiesCatalog.entityByName(
-          getEntityName(entity),
-        );
-
-        if (!previous) {
-          await this.entitiesCatalog.addOrUpdateEntity(entity, location.id);
-        } else if (entityHasChanges(previous, entity)) {
-          await this.entitiesCatalog.addOrUpdateEntity(entity, location.id);
-        }
-
-        await this.locationsCatalog.logUpdateSuccess(
-          location.id,
-          entity.metadata.name,
-        );
-      } catch (error) {
-        this.logger.info(
-          `Failed refresh of entity ${serializeEntityRef(entity)}, ${error}`,
-        );
-
+    try {
+      await this.entitiesCatalog.batchAddOrUpdateEntities(
+        readerOutput.entities.map(e => e.entity),
+        location.id,
+      );
+    } catch (e) {
+      for (const entity of readerOutput.entities) {
         await this.locationsCatalog.logUpdateFailure(
           location.id,
-          error,
-          entity.metadata.name,
+          e,
+          entity.entity.metadata.name,
         );
       }
+      throw e;
     }
 
-    const delta = process.hrtime(startTimestamp);
-    const durationMs = ((delta[0] * 1e9 + delta[1]) / 1e6).toFixed(1);
+    this.logger.info(`Posting update success markers`);
+
+    for (const entity of readerOutput.entities) {
+      await this.locationsCatalog.logUpdateSuccess(
+        location.id,
+        entity.entity.metadata.name,
+      );
+    }
+
     this.logger.info(
-      `Wrote ${readerOutput.entities.length} entities from location ${location.type} ${location.target} in ${durationMs} seconds`,
+      `Wrote ${readerOutput.entities.length} entities from location ${
+        location.type
+      }:${location.target} in ${durationText(startTimestamp)}`,
     );
   }
 }

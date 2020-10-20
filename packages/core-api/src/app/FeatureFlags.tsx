@@ -15,7 +15,11 @@
  */
 
 import { FeatureFlagName } from '../plugin/types';
-import { FeatureFlagState, FeatureFlagsApi } from '../apis/definitions';
+import {
+  FeatureFlagState,
+  FeatureFlagsApi,
+  FeatureFlagsRegistryItem,
+} from '../apis/definitions';
 
 /**
  * Helper method for validating compatibility and flag name.
@@ -129,10 +133,6 @@ export class UserFlags extends Map<FeatureFlagName, FeatureFlagState> {
  * This acts as a holding data structure for feature flags
  * that plugins wish to register for use in Backstage.
  */
-export interface FeatureFlagsRegistryItem {
-  pluginId: string;
-  name: FeatureFlagName;
-}
 
 export class FeatureFlagsRegistry extends Array<FeatureFlagsRegistryItem> {
   static from(entries: FeatureFlagsRegistryItem[]) {

@@ -47,13 +47,12 @@ export default async function createPlugin({
   templaters.register('cra', craTemplater);
 
   const filePreparer = new FilePreparer();
-  const githubPreparer = new GithubPreparer();
+
   const gitlabPreparer = new GitlabPreparer(config);
   const azurePreparer = new AzurePreparer(config);
   const preparers = new Preparers();
 
   preparers.register('file', filePreparer);
-  preparers.register('github', githubPreparer);
   preparers.register('gitlab', gitlabPreparer);
   preparers.register('gitlab/api', gitlabPreparer);
   preparers.register('azure/api', azurePreparer);
@@ -69,12 +68,21 @@ export default async function createPlugin({
       ) as RepoVisibilityOptions;
 
       const githubToken = githubConfig.getString('token');
-      const githubClient = new Octokit({ auth: githubToken });
+      const githubHost =
+        githubConfig.getOptionalString('host') ?? 'https://github.com';
+      const githubClient = new Octokit({
+        auth: githubToken,
+        baseUrl: githubHost,
+      });
       const githubPublisher = new GithubPublisher({
         client: githubClient,
         token: githubToken,
         repoVisibility,
       });
+
+      const githubPreparer = new GithubPreparer({ token: githubToken });
+
+      preparers.register('github', githubPreparer);
       publishers.register('file', githubPublisher);
       publishers.register('github', githubPublisher);
     } catch (e) {

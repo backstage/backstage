@@ -54,11 +54,13 @@ export async function createRouter(
       })
       .get('/entities/by-uid/:uid', async (req, res) => {
         const { uid } = req.params;
-        const entity = await entitiesCatalog.entityByUid(uid);
-        if (!entity) {
+        const entities = await entitiesCatalog.entities({
+          'metadata.uid': uid,
+        });
+        if (!entities.length) {
           res.status(404).send(`No entity with uid ${uid}`);
         }
-        res.status(200).send(entity);
+        res.status(200).send(entities[0]);
       })
       .delete('/entities/by-uid/:uid', async (req, res) => {
         const { uid } = req.params;
@@ -67,19 +69,19 @@ export async function createRouter(
       })
       .get('/entities/by-name/:kind/:namespace/:name', async (req, res) => {
         const { kind, namespace, name } = req.params;
-        const entity = await entitiesCatalog.entityByName({
-          kind,
-          namespace,
-          name,
+        const entities = await entitiesCatalog.entities({
+          kind: kind,
+          'metadata.namespace': namespace,
+          'metadata.name': name,
         });
-        if (!entity) {
+        if (!entities.length) {
           res
             .status(404)
             .send(
               `No entity with kind ${kind} namespace ${namespace} name ${name}`,
             );
         }
-        res.status(200).send(entity);
+        res.status(200).send(entities[0]);
       });
   }
 
@@ -121,7 +123,7 @@ export async function createRouter(
 function translateQueryToEntityFilters(
   request: express.Request,
 ): EntityFilters {
-  const filters: EntityFilters = [];
+  const filters: Record<string, (string | null)[]> = {};
 
   for (const [key, valueOrValues] of Object.entries(request.query)) {
     const values = Array.isArray(valueOrValues)
@@ -132,10 +134,8 @@ function translateQueryToEntityFilters(
       throw new InputError('Complex query parameters are not supported');
     }
 
-    filters.push({
-      key,
-      values: values.map(v => v || null) as string[],
-    });
+    const matchers = key in filters ? filters[key] : (filters[key] = []);
+    matchers.push(...(values.map(v => v || null) as (string | null)[]));
   }
 
   return filters;

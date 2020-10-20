@@ -1,6 +1,7 @@
 app:
   title: Backstage Example App
   baseUrl: http://localhost:7000
+  googleAnalyticsTrackingId: # UA-000000-0
 
 backend:
   baseUrl: http://localhost:7000
@@ -34,8 +35,14 @@ proxy:
         $env: TRAVISCI_AUTH_TOKEN
       travis-api-version: 3
 
+  '/newrelic/apm/api':
+    target: https://api.newrelic.com/v2
+    headers:
+      X-Api-Key:
+        $env: NEW_RELIC_REST_API_KEY
+
 organization:
-  name: Spotify
+  name: My Company
 
 techdocs:
   storageUrl: http://localhost:7000/api/techdocs/static/docs
@@ -44,44 +51,41 @@ techdocs:
     techdocs: 'docker'
 
 sentry:
-  organization: spotify
+  organization: my-company
 
 rollbar:
-  organization: spotify
+  organization: my-company
   accountToken:
     $env: ROLLBAR_ACCOUNT_TOKEN
-
-newrelic:
-  api:
-    baseUrl: 'https://api.newrelic.com/v2'
-    key: NEW_RELIC_REST_API_KEY
 
 lighthouse:
   baseUrl: http://localhost:3003
 
 kubernetes:
-  clusterLocatorMethod: 'configMultiTenant'
+  serviceLocatorMethod: 'multiTenant'
+  clusterLocatorMethods:
+    - 'config'
   clusters: []
 
 integrations:
   github:
     - host: github.com
       token:
-        $env: GITHUB_PRIVATE_TOKEN
+        $env: GITHUB_TOKEN
     ### Example for how to add your GitHub Enterprise instance using the API:
     # - host: ghe.example.net
     #   apiBaseUrl: https://ghe.example.net/api/v3
     #   token:
-    #     $env: GHE_PRIVATE_TOKEN
+    #     $env: GHE_TOKEN
     ### Example for how to add your GitHub Enterprise instance using raw HTTP fetches (token is optional):
     # - host: ghe.example.net
     #   rawBaseUrl: https://ghe.example.net/raw
     #   token:
-    #     $env: GHE_PRIVATE_TOKEN
+    #     $env: GHE_TOKEN
   gitlab:
     - host: gitlab.com
       token:
-        $env: GITLAB_PRIVATE_TOKEN
+        $env: GITLAB_TOKEN
   bitbucket:
     - host: bitbucket.org
       username:
@@ -91,7 +95,7 @@ integrations:
   azure:
     - host: dev.azure.com
       token:
-        $env: AZURE_PRIVATE_TOKEN
+        $env: AZURE_TOKEN
 
 catalog:
   rules:
@@ -102,12 +106,12 @@ catalog:
       providers:
         - target: https://github.com
           token:
-            $env: GITHUB_PRIVATE_TOKEN
+            $env: GITHUB_TOKEN
         #### Example for how to add your GitHub Enterprise instance using the API:
         # - target: https://ghe.example.net
         #   apiBaseUrl: https://ghe.example.net/api/v3
         #   token:
-        #     $env: GHE_PRIVATE_TOKEN
+        #     $env: GHE_TOKEN
     ldapOrg:
       ### Example for how to add your enterprise LDAP server
       # providers:
@@ -145,19 +149,20 @@ catalog:
 
 scaffolder:
   github:
+    host: https://github.com
     token:
-      $env: GITHUB_ACCESS_TOKEN
+      $env: GITHUB_TOKEN
     visibility: public # or 'internal' or 'private'
   gitlab:
     api:
       baseUrl: https://gitlab.com
       token:
-        $env: GITLAB_ACCESS_TOKEN
+        $env: GITLAB_TOKEN
   azure:
     baseUrl: https://dev.azure.com/{your-organization}
     api:
       token:
-        $env: AZURE_PRIVATE_TOKEN
+        $env: AZURE_TOKEN
 
 auth:
   providers:
@@ -236,10 +241,11 @@ costInsights:
       name: Big Query
       icon: search
   metrics:
-    dailyCost:
-      name: Your Company's Daily Cost
     DAU:
-      name: Cost Per DAU
+      name: Daily Active Users
+      default: true
+    MSC:
+      name: Monthly Subscribers
 homepage:
   clocks:
     - label: UTC

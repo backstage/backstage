@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-cost-insights",
-  "version": "0.1.1-alpha.24",
+  "version": "0.1.1-alpha.25",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -21,14 +21,16 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/config": "^0.1.1-alpha.24",
-    "@backstage/core": "^0.1.1-alpha.24",
-    "@backstage/test-utils": "^0.1.1-alpha.24",
-    "@backstage/theme": "^0.1.1-alpha.24",
+    "@backstage/config": "^0.1.1-alpha.25",
+    "@backstage/core": "^0.1.1-alpha.25",
+    "@backstage/test-utils": "^0.1.1-alpha.25",
+    "@backstage/theme": "^0.1.1-alpha.25",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
     "@material-ui/styles": "^4.9.6",
+    "@types/react": "^16.9",
+    "@types/recharts": "^1.8.14",
     "canvas": "^2.6.1",
     "classnames": "^2.2.6",
     "history": "^5.0.0",
@@ -41,14 +43,13 @@
     "recharts": "^1.8.5"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.24",
-    "@backstage/dev-utils": "^0.1.1-alpha.24",
+    "@backstage/cli": "^0.1.1-alpha.25",
+    "@backstage/dev-utils": "^0.1.1-alpha.25",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^10.4.1",
     "@testing-library/user-event": "^12.0.7",
     "@types/jest": "^26.0.7",
     "@types/node": "^12.0.0",
-    "@types/recharts": "^1.8.14",
     "jest-fetch-mock": "^3.0.3",
     "msw": "^0.20.5",
     "node-fetch": "^2.6.1"

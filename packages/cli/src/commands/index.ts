@@ -133,7 +133,7 @@ export function registerCommands(program: CommanderStatic) {
     .option('--with-secrets', 'Include secrets in the printed configuration')
     .option(
       '--env <env>',
-      'The environment to print configuration for [NODE_ENV or development]',
+      'The environment to print configuration for [APP_ENV or NODE_ENV or development]',
     )
     .option(
       '--format <format>',

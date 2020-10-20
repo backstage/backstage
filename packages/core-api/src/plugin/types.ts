@@ -16,7 +16,7 @@
 
 import { ComponentType } from 'react';
 import { RouteRef } from '../routing';
-import { AnyApiFactory } from '../apis';
+import { AnyApiFactory } from '../apis/system';
 
 export type RouteOptions = {
   // Whether the route path must match exactly, defaults to true.

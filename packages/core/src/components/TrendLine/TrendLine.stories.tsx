@@ -20,7 +20,7 @@ import { TrendLine } from './TrendLine';
 import { InfoCard } from '../../layout/InfoCard';
 
 export default {
-  title: 'TrendLine',
+  title: 'Data Display/TrendLine',
   component: TrendLine,
 };
 
@@ -67,7 +67,7 @@ const columns = [
 
 export const Default = () => (
   <div style={containerStyle}>
-    <InfoCard title="Trends over time">
+    <InfoCard title="Trends over time" noPadding>
       <Table
         options={{
           search: false,

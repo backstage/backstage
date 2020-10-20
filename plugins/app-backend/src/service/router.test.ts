@@ -25,6 +25,7 @@ import { createRouter } from './router';
 jest.mock('../lib/config', () => ({ injectEnvConfig: jest.fn() }));
 
 global.__non_webpack_require__ = {
+  /* eslint-disable-next-line no-restricted-syntax */
   resolve: () => resolvePath(__dirname, '__fixtures__/app-dir/package.json'),
 };
 

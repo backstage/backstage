@@ -5,6 +5,8 @@ metadata:
   description: SWAPI GraphQL Schema
 spec:
   type: graphql
+  lifecycle: production
+  owner: yoda@dagobah.space
   definition: |
     schema {
       query: Root

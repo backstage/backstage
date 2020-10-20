@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createApiRef } from '../ApiRef';
+import { ApiRef, createApiRef } from '../system';
 import { Config } from '@backstage/config';
 
 // Using interface to make the ConfigApi name show up in docs
 export type ConfigApi = Config;
 
-export const configApiRef = createApiRef<ConfigApi>({
+export const configApiRef: ApiRef<ConfigApi> = createApiRef({
   id: 'core.config',
   description: 'Used to access runtime configuration',
 });

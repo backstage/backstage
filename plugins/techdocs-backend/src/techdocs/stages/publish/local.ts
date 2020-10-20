@@ -42,8 +42,8 @@ export class LocalPublish implements PublisherBase {
     const publishDir = resolvePackagePath(
       '@backstage/plugin-techdocs-backend',
       'static/docs',
-      entity.kind,
       entityNamespace,
+      entity.kind,
       entity.metadata.name,
     );
 

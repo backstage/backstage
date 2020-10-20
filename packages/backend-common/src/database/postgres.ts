@@ -57,7 +57,7 @@ export function buildPgDatabaseConfig(
  * Gets the postgres connection config
  *
  * @param dbConfig The database config
- * @param parseConnectionString Flag to explictly control connection string parsing
+ * @param parseConnectionString Flag to explicitly control connection string parsing
  */
 export function getPgConnectionConfig(
   dbConfig: Config,
