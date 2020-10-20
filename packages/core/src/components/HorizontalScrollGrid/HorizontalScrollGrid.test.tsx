@@ -23,9 +23,10 @@ import { Grid } from '@material-ui/core';
 describe('<HorizontalScrollGrid />', () => {
   beforeEach(() => {
     jest.spyOn(window.performance, 'now').mockReturnValue(5);
-    jest
-      .spyOn(window, 'requestAnimationFrame')
-      .mockImplementation(cb => cb(20));
+    jest.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => {
+      cb(20);
+      return 1;
+    });
   });
 
   afterEach(() => {
@@ -48,29 +49,25 @@ describe('<HorizontalScrollGrid />', () => {
   });
 
   it('should show scroll buttons', async () => {
-    Object.defineProperties(HTMLElement.prototype, {
-      scrollLeft: {
-        configurable: true,
-        value: 5,
-      },
-      offsetWidth: {
-        configurable: true,
-        value: 10,
-      },
-      scrollWidth: {
-        configurable: true,
-        value: 20,
-      },
-    });
+    jest
+      .spyOn(HTMLElement.prototype, 'scrollLeft', 'get')
+      .mockImplementation(() => 5);
+    jest
+      .spyOn(HTMLElement.prototype, 'offsetWidth', 'get')
+      .mockImplementation(() => 10);
+    jest
+      .spyOn(HTMLElement.prototype, 'scrollWidth', 'get')
+      .mockImplementation(() => 20);
 
     let lastScroll = 0;
-    HTMLElement.prototype.scrollBy = ({ left }) => {
-      lastScroll = left;
-    };
+    const scrollBy = HTMLElement.prototype.scrollBy;
+    HTMLElement.prototype.scrollBy = (({ left }: ScrollToOptions): void => {
+      lastScroll = left || 0;
+    }) as any;
 
     const rendered = await renderWithEffects(
       wrapInTestApp(
-        <HorizontalScrollGrid style={{ maxWidth: 300 }}>
+        <HorizontalScrollGrid>
           <Grid item style={{ minWidth: 200 }}>
             item1
           </Grid>
@@ -89,9 +86,6 @@ describe('<HorizontalScrollGrid />', () => {
     fireEvent.click(rendered.getByTitle('Scroll Left'));
     expect(lastScroll).toBeLessThan(0);
 
-    delete HTMLElement.prototype.scrollLeft;
-    delete HTMLElement.prototype.offsetWidth;
-    delete HTMLElement.prototype.scrollWidth;
-    delete HTMLElement.prototype.scrollBy;
+    HTMLElement.prototype.scrollBy = scrollBy;
   });
 });
