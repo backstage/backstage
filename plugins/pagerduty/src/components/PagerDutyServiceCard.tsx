@@ -22,7 +22,7 @@ import { EscalationPolicy } from './Escalation';
 import { PagerDutyData } from './types';
 import { TriggerButton } from './TriggerButton';
 
-const PAGERDUTY_INTEGRATION_KEY = 'pagerduty.com/integration-key';
+export const PAGERDUTY_INTEGRATION_KEY = 'pagerduty.com/integration-key';
 
 export const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[PAGERDUTY_INTEGRATION_KEY]);
@@ -76,7 +76,7 @@ export const PagerDutyServiceCard = ({ entity }: Props) => {
     link: homepageUrl,
   };
 
-  return isPluginApplicableToEntity(entity) ? (
+  return !isPluginApplicableToEntity(entity) ? (
     <MissingAnnotationEmptyState annotation={PAGERDUTY_INTEGRATION_KEY} />
   ) : (
     <InfoCard title="PagerDuty" deepLink={link}>

@@ -23,11 +23,10 @@ import {
   DialogActions,
   Button,
   DialogContent,
-  FormControl,
-  FormHelperText,
 } from '@material-ui/core';
 import { Progress, useApi, alertApiRef, identityApiRef } from '@backstage/core';
 import { useAsyncFn } from 'react-use';
+import { triggerPagerDutyAlarm } from '../api/pagerDutyClient';
 
 const useStyles = makeStyles({
   warningText: {
@@ -54,16 +53,16 @@ export const TriggerDialog = ({ name, integrationKey, onClose }: Props) => {
     setDescription(event.target.value);
   };
 
-  const promiseFunc = () =>
-    new Promise((resolve, reject) => {
-      setTimeout(() => {
-        reject('Inside test await');
-      }, 1000);
-    });
-
-  const [{ value, loading, error }, triggerAlarm] = useAsyncFn(async () => {
-    return await promiseFunc();
-  });
+  const [{ value, loading, error }, triggerAlarm] = useAsyncFn(
+    async (desc: string) => {
+      return await triggerPagerDutyAlarm(
+        integrationKey,
+        window.location.toString(),
+        desc,
+        userId,
+      );
+    },
+  );
 
   useEffect(() => {
     if (value) {
@@ -75,14 +74,14 @@ export const TriggerDialog = ({ name, integrationKey, onClose }: Props) => {
 
     if (error) {
       alertApi.post({
-        message: `Failed to trigger alarm, ${error.message}`,
+        message: `Failed to trigger alarm. ${error.message}`,
         severity: 'error',
       });
     }
-  }, [value, error]);
+  }, [value, error, alertApi, onClose, userId]);
 
   return (
-    <Dialog maxWidth="sm" open={true} onClose={onClose} fullWidth={true}>
+    <Dialog maxWidth="sm" open onClose={onClose} fullWidth>
       <DialogTitle>
         This action will send PagerDuty alarms and notifications to on-call
         people responsible for {name}.
@@ -117,7 +116,7 @@ export const TriggerDialog = ({ name, integrationKey, onClose }: Props) => {
           id="trigger"
           color="secondary"
           disabled={!description || loading}
-          onClick={triggerAlarm}
+          onClick={() => triggerAlarm(description)}
         >
           Trigger
         </Button>

@@ -29,7 +29,7 @@ import {
 import UserIcon from '@material-ui/icons/Person';
 import EmailIcon from '@material-ui/icons/Email';
 import { StatusWarning } from '@backstage/core';
-import Pagerduty from './pd.svg';
+import Pagerduty from '../assets/pd.svg';
 import { PagerDutyUserData } from './types';
 
 const useStyles = makeStyles({

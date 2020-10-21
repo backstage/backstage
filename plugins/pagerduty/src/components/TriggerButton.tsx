@@ -18,6 +18,7 @@ import React, { useState } from 'react';
 import { Button } from '@material-ui/core';
 import { TriggerDialog } from './TriggerDialog';
 import { Entity } from '@backstage/catalog-model';
+import { PAGERDUTY_INTEGRATION_KEY } from './PagerDutyServiceCard';
 
 type Props = {
   entity: Entity;
@@ -29,21 +30,6 @@ export const TriggerButton = ({ entity }: Props) => {
   const handleDialog = () => {
     setShowDialog(!showDialog);
   };
-
-  // const onTriggerAlarm = async (description: string) => {
-  //   try {
-  //     //TODO: call method from pagerduty client
-  //     alertApi.post({
-  //       message: `Alarm successfully triggered by ${userId}`,
-  //     });
-  //   } catch (error) {
-  //     alertApi.post({
-  //       message: `Failed to trigger alarm, ${error.message}`,
-  //       severity: 'error',
-  //     });
-  //     throw error;
-  //   }
-  // };
 
   return (
     <>
@@ -58,8 +44,9 @@ export const TriggerButton = ({ entity }: Props) => {
       {showDialog && (
         <TriggerDialog
           name={entity.metadata.name}
-          integrationKey="someKey"
-          // onTrigger={onTriggerAlarm}
+          integrationKey={
+            entity.metadata.annotations![PAGERDUTY_INTEGRATION_KEY]
+          }
           onClose={handleDialog}
         />
       )}

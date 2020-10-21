@@ -27,7 +27,7 @@ import {
   ListSubheader,
 } from '@material-ui/core';
 import { StatusError, StatusWarning, StatusOK } from '@backstage/core';
-import Pagerduty from './pd.svg';
+import Pagerduty from '../assets/pd.svg';
 import moment from 'moment';
 
 const useStyles = makeStyles({
