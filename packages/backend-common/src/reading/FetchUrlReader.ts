@@ -31,7 +31,7 @@ export class FetchUrlReader implements UrlReader {
     }
 
     if (response.ok) {
-      return Buffer.from('');
+      return Buffer.from(await response.text());
     }
 
     const message = `could not read ${url}, ${response.status} ${response.statusText}`;
