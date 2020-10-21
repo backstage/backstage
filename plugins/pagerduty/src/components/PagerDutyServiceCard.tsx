@@ -16,10 +16,11 @@
 import React from 'react';
 import { InfoCard, MissingAnnotationEmptyState } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
-import { Grid, Button } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import { Incidents } from './Incidents';
 import { EscalationPolicy } from './Escalation';
 import { PagerDutyData } from './types';
+import { TriggerButton } from './TriggerButton';
 
 const PAGERDUTY_INTEGRATION_KEY = 'pagerduty.com/integration-key';
 
@@ -64,19 +65,25 @@ export const PagerDutyServiceCard = ({ entity }: Props) => {
     ],
   };
 
-  const { activeIncidents, escalationPolicy } = mockData.pagerDutyServices[0];
+  const {
+    activeIncidents,
+    escalationPolicy,
+    homepageUrl,
+  } = mockData.pagerDutyServices[0];
+
+  const link = {
+    title: 'View in PagerDuty',
+    link: homepageUrl,
+  };
 
   return isPluginApplicableToEntity(entity) ? (
     <MissingAnnotationEmptyState annotation={PAGERDUTY_INTEGRATION_KEY} />
   ) : (
-    <InfoCard title="PagerDuty">
+    <InfoCard title="PagerDuty" deepLink={link}>
       <Incidents incidents={activeIncidents} />
       <EscalationPolicy escalation={escalationPolicy} />
       <Grid container item xs={12} justify="flex-end">
-        {/* <TriggerButton component={entity} /> */}
-        <Button variant="contained" color="primary">
-          Trigger Alarm
-        </Button>
+        <TriggerButton entity={entity} />
       </Grid>
     </InfoCard>
   );
