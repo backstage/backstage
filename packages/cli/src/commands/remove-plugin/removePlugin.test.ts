@@ -114,7 +114,7 @@ describe('removePlugin', () => {
     it('removes plugin exports from /packages/app/src/package.json', async () => {
       const testFilePath = path.join(tempDir, 'test.ts');
       const pluginsFilePaths = path.join(appPath, 'src', 'plugins.ts');
-      createTestPluginFile(testFilePath, pluginsFilePaths);
+      await createTestPluginFile(testFilePath, pluginsFilePaths);
       try {
         await removeReferencesFromPluginsFile(testFilePath, testPluginName);
         const testFileContent = removeEmptyLines(
