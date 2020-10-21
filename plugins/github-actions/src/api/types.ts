@@ -17,7 +17,7 @@
 export type Step = {
   name: string;
   status: string;
-  conclusion: string;
+  conclusion?: string;
   number: number; // starts from 1
   started_at: string;
   completed_at: string;

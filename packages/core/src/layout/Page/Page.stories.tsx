@@ -118,14 +118,14 @@ const DataGrid = () => (
         justify="space-between"
         direction="row"
       >
-        <Grid item xs={6}>
+        <Grid item xs={12} md={6}>
           <GaugeCard
             title="GKE Usage Score"
             subheader="This should be above 75%"
             progress={0.87}
           />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12} md={6}>
           <GaugeCard
             title="Deployment Score"
             subheader="This should be above 40%"
@@ -174,7 +174,7 @@ const DataGrid = () => (
 );
 
 const ExampleHeader = () => (
-  <Header title="Example" subtitle="This an example plugin">
+  <Header title="Example" subtitle="This is an example plugin">
     <HeaderLabel label="Owner" value="Owner" />
     <HeaderLabel label="Lifecycle" value="Lifecycle" />
   </Header>

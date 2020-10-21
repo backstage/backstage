@@ -224,7 +224,7 @@ describe('CodeOwnersProcessor', () => {
         spec: { owner: '@acme/foo-team' },
       });
 
-      const result = await processor.processEntity(
+      const result = await processor.preProcessEntity(
         entity as any,
         mockLocation(),
       );
@@ -235,7 +235,7 @@ describe('CodeOwnersProcessor', () => {
     it('should ignore url locations', async () => {
       const { entity, processor } = setupTest();
 
-      const result = await processor.processEntity(
+      const result = await processor.preProcessEntity(
         entity as any,
         mockLocation({ type: 'url' }),
       );
@@ -246,7 +246,7 @@ describe('CodeOwnersProcessor', () => {
     it('should ignore invalid kinds', async () => {
       const { entity, processor } = setupTest({ kind: 'Group' });
 
-      const result = await processor.processEntity(
+      const result = await processor.preProcessEntity(
         entity as any,
         mockLocation(),
       );
@@ -257,7 +257,7 @@ describe('CodeOwnersProcessor', () => {
     it('should set owner from codeowner', async () => {
       const { entity, processor } = setupTest();
 
-      const result = await processor.processEntity(
+      const result = await processor.preProcessEntity(
         entity as any,
         mockLocation(),
       );

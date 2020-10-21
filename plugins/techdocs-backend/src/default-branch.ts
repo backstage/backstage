@@ -42,9 +42,11 @@ interface IGitlabBranch {
   };
 }
 
-function getGithubApiUrl(url: string): URL {
+function getGithubApiUrl(config: Config, url: string): URL {
   const { protocol, owner, name } = parseGitUrl(url);
-  const apiBaseUrl = 'api.github.com';
+  const apiBaseUrl =
+    config.getOptionalString('integrations.github.apiBaseUrl') ||
+    'api.github.com';
   const apiRepos = 'repos';
 
   return new URL(`${protocol}://${apiBaseUrl}/${apiRepos}/${owner}/${name}`);
@@ -133,7 +135,7 @@ async function getGithubDefaultBranch(
   repositoryUrl: string,
   config: Config,
 ): Promise<string> {
-  const path = getGithubApiUrl(repositoryUrl).toString();
+  const path = getGithubApiUrl(config, repositoryUrl).toString();
   const options = getGithubRequestOptions(config);
 
   try {

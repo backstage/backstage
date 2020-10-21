@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, Location } from '@backstage/catalog-model';
+import { Entity, Location, EntityRelationSpec } from '@backstage/catalog-model';
 import type { EntityFilters } from '../database';
 
 //
@@ -36,6 +36,12 @@ export type EntitiesCatalog = {
   batchAddOrUpdateEntities(
     entities: Entity[],
     locationId?: string,
+  ): Promise<void>;
+
+  // Same as the DB layer
+  setRelations(
+    entityUid: string,
+    relations: EntityRelationSpec[],
   ): Promise<void>;
 };
 

@@ -17,6 +17,7 @@
 import { UrlReader } from '@backstage/backend-common';
 import {
   Entity,
+  EntityPolicy,
   ENTITY_DEFAULT_NAMESPACE,
   LocationSpec,
 } from '@backstage/catalog-model';
@@ -44,6 +45,7 @@ type Options = {
   config: Config;
   processors: CatalogProcessor[];
   rulesEnforcer: CatalogRulesEnforcer;
+  policy: EntityPolicy;
 };
 
 /**
@@ -74,10 +76,12 @@ export class LocationReaders implements LocationReader {
         } else if (item.type === 'entity') {
           if (rulesEnforcer.isAllowed(item.entity, item.location)) {
             const entity = await this.handleEntity(item, emit);
-            output.entities.push({
-              entity,
-              location: item.location,
-            });
+            if (entity) {
+              output.entities.push({
+                entity,
+                location: item.location,
+              });
+            }
           } else {
             output.errors.push({
               location: item.location,
@@ -162,25 +166,65 @@ export class LocationReaders implements LocationReader {
   private async handleEntity(
     item: CatalogProcessorEntityResult,
     emit: CatalogProcessorEmit,
-  ): Promise<Entity> {
+  ): Promise<Entity | undefined> {
     const { processors, logger } = this.options;
 
     let current = item.entity;
 
+    // Construct the name carefully, this happens before validation below
+    // so we do not want to crash here due to missing metadata or so
+    const kind = current.kind || '';
+    const namespace = !current.metadata
+      ? ''
+      : current.metadata.namespace ?? ENTITY_DEFAULT_NAMESPACE;
+    const name = !current.metadata ? '' : current.metadata.name;
+
     for (const processor of processors) {
-      if (processor.processEntity) {
+      if (processor.preProcessEntity) {
         try {
-          current = await processor.processEntity(current, item.location, emit);
+          current = await processor.preProcessEntity(
+            current,
+            item.location,
+            emit,
+          );
         } catch (e) {
-          // Construct the name carefully, if we got validation errors we do
-          // not want to crash here due to missing metadata or so
-          const namespace = !current.metadata
-            ? ''
-            : current.metadata.namespace ?? ENTITY_DEFAULT_NAMESPACE;
-          const name = !current.metadata ? '' : current.metadata.name;
-          const message = `Processor ${processor.constructor.name} threw an error while processing entity ${current.kind}:${namespace}/${name} at ${item.location.type} ${item.location.target}, ${e}`;
+          const message = `Processor ${processor.constructor.name} threw an error while preprocessing entity ${kind}:${namespace}/${name} at ${item.location.type} ${item.location.target}, ${e}`;
           emit(result.generalError(item.location, message));
           logger.warn(message);
+          return undefined;
+        }
+      }
+    }
+
+    try {
+      const next = await this.options.policy.enforce(current);
+      if (!next) {
+        const message = `Policy unexpectedly returned no data while analyzing entity ${kind}:${namespace}/${name} at ${item.location.type} ${item.location.target}`;
+        emit(result.generalError(item.location, message));
+        logger.warn(message);
+        return undefined;
+      }
+      current = next;
+    } catch (e) {
+      const message = `Policy check failed while analyzing entity ${kind}:${namespace}/${name} at ${item.location.type} ${item.location.target}, ${e}`;
+      emit(result.inputError(item.location, message));
+      logger.warn(message);
+      return undefined;
+    }
+
+    for (const processor of processors) {
+      if (processor.postProcessEntity) {
+        try {
+          current = await processor.postProcessEntity(
+            current,
+            item.location,
+            emit,
+          );
+        } catch (e) {
+          const message = `Processor ${processor.constructor.name} threw an error while postprocessing entity ${kind}:${namespace}/${name} at ${item.location.type} ${item.location.target}, ${e}`;
+          emit(result.generalError(item.location, message));
+          logger.warn(message);
+          return undefined;
         }
       }
     }

@@ -3628,10 +3628,10 @@
     prop-types "^15.6.1"
     react-lifecycles-compat "^3.0.4"
 
-"@rjsf/core@^2.1.0":
-  version "2.3.0"
-  resolved "https://registry.npmjs.org/@rjsf/core/-/core-2.3.0.tgz#334c73d2262ef1a8cda477e238067af7336c5599"
-  integrity sha512-OZKYHt9tjKhzOH4CvsPiCwepuIacqI++cNmnL2fsxh1IF+uEWGlo3NLDWhhSaBbOv9jps6a5YQcLbLtjNuSwug==
+"@rjsf/core@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.npmjs.org/@rjsf/core/-/core-2.4.0.tgz#c50bcff0d8178948ce08123177399d8816d51929"
+  integrity sha512-8zlydBkGldOxGXFEwNGFa1gzTxpcxaYn7ofegcu8XHJ7IKMCfpnU3ABg+H3eml1KZCX3FODmj1tHFJKuTmfynw==
   dependencies:
     "@babel/runtime-corejs2" "^7.8.7"
     "@types/json-schema" "^7.0.4"
@@ -3645,10 +3645,10 @@
     react-is "^16.9.0"
     shortid "^2.2.14"
 
-"@rjsf/material-ui@^2.1.0":
-  version "2.3.0"
-  resolved "https://registry.npmjs.org/@rjsf/material-ui/-/material-ui-2.3.0.tgz#a051eb4db2ad778e39933a31ba806f415dd3ba90"
-  integrity sha512-v/xZ4Xk18ZgBARcCe99IDqdO97GU0UC784gG8PhGGFDdy5Rbdy7ixTjHkGYttkr43PB7SX6ttohNhkKSW4nATQ==
+"@rjsf/material-ui@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.npmjs.org/@rjsf/material-ui/-/material-ui-2.4.0.tgz#1b5859298bf3f61137d7b05084f058a775d6fd73"
+  integrity sha512-U8F/suzg4MuV+8mK1/ufs0Y6c3O8hc1wnuD2IKoOVJvegGfz5JCafyoyGAW6iyuT1DZBMPzVWEqfiuYPmoE7pw==
 
 "@roadiehq/backstage-plugin-github-insights@^0.2.7":
   version "0.2.7"
@@ -3670,15 +3670,15 @@
     react-router "^6.0.0-beta.0"
     react-use "^15.3.3"
 
-"@roadiehq/backstage-plugin-github-pull-requests@^0.5.1":
-  version "0.5.1"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-pull-requests/-/backstage-plugin-github-pull-requests-0.5.1.tgz#a0e3ef97de20fe87e55a26f0198d4ff80b6ecd8c"
-  integrity sha512-0Btg4jn7SWAp/0A7+xCuHxD4LKPoE3LSEkjMvLmWk/AIIvNA6uSWXeAv1nJZSe4JBV0Qzt+r+TS+hCcFR+vcMg==
+"@roadiehq/backstage-plugin-github-pull-requests@^0.5.2":
+  version "0.5.2"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-pull-requests/-/backstage-plugin-github-pull-requests-0.5.2.tgz#455355fe5cdcc43c22b80a8ef3697378084680a1"
+  integrity sha512-GM+nWQZ+aehMclN70Pp35UQe3I46SQCjWiGZ6/0TfDzrueHln39L2UspUj1L/713xDDtDK8ZnTJdFn/qKx7j4A==
   dependencies:
-    "@backstage/catalog-model" "^0.1.1-alpha.24"
-    "@backstage/core" "^0.1.1-alpha.24"
-    "@backstage/plugin-catalog" "^0.1.1-alpha.24"
-    "@backstage/theme" "^0.1.1-alpha.24"
+    "@backstage/catalog-model" "^0.1.1-alpha.25"
+    "@backstage/core" "^0.1.1-alpha.25"
+    "@backstage/plugin-catalog" "^0.1.1-alpha.25"
+    "@backstage/theme" "^0.1.1-alpha.25"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "^4.0.0-alpha.56"
@@ -17001,9 +17001,9 @@ object-keys@^1.0.11, object-keys@^1.0.12, object-keys@^1.1.1:
   integrity sha512-NuAESUOUMrlIXOfHKzD6bpPu3tYt3xvjNdRIQ+FeT0lNb4K8WR70CaDxhuNguS2XG+GjkyMwOzsN5ZktImfhLA==
 
 object-path@^0.11.4:
-  version "0.11.4"
-  resolved "https://registry.npmjs.org/object-path/-/object-path-0.11.4.tgz#370ae752fbf37de3ea70a861c23bba8915691949"
-  integrity sha1-NwrnUvvzfePqcKhhwju6iRVpGUk=
+  version "0.11.5"
+  resolved "https://registry.yarnpkg.com/object-path/-/object-path-0.11.5.tgz#d4e3cf19601a5140a55a16ad712019a9c50b577a"
+  integrity sha512-jgSbThcoR/s+XumvGMTMf81QVBmah+/Q7K7YduKeKVWL7N111unR2d6pZZarSk6kY/caeNxUDyxOvMWyzoU2eg==
 
 object-visit@^1.0.0:
   version "1.0.1"
