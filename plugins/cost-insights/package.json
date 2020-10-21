@@ -40,7 +40,8 @@
     "react-dom": "^16.13.1",
     "react-router-dom": "6.0.0-beta.0",
     "react-use": "^15.3.3",
-    "recharts": "^1.8.5"
+    "recharts": "^1.8.5",
+    "yup": "^0.29.3"
   },
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.25",
@@ -50,6 +51,7 @@
     "@testing-library/user-event": "^12.0.7",
     "@types/jest": "^26.0.7",
     "@types/node": "^12.0.0",
+    "@types/yup": "^0.29.8",
     "jest-fetch-mock": "^3.0.3",
     "msw": "^0.20.5",
     "node-fetch": "^2.6.1"

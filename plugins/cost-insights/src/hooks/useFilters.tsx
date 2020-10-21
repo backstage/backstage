@@ -16,114 +16,98 @@
 
 import React, {
   Dispatch,
-  ReactNode,
+  PropsWithChildren,
   SetStateAction,
   useContext,
   useEffect,
-  useRef,
   useState,
 } from 'react';
-import {
-  getDefaultPageFilters,
-  PageFilters,
-  ProductFilters,
-  Duration,
-  Group,
-} from '../types';
+import { Alert } from '@material-ui/lab';
+import { Maybe, PageFilters, ProductFilters } from '../types';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useQueryParams } from './useQueryParams';
-import { stringify } from '../utils/history';
+import {
+  stringify,
+  validate,
+  getInitialPageState,
+  getInitialProductState,
+} from '../utils/history';
 import { useGroups } from './useGroups';
 import { useConfig } from './useConfig';
-
-const getInitialPageState = (
-  groups: Group[],
-  queryParams?: Partial<PageFilters>,
-) => {
-  // The group is written initially to queryParams as null, since user groups are asynchronously
-  // loaded. We preserve nulls in queryParams for other parameters where null is meaningful; for
-  // group, avoid overwriting the default with null after groups are loaded.
-  const { group, ...otherParams } = queryParams || {};
-  return {
-    ...getDefaultPageFilters(groups),
-    ...otherParams,
-    ...(group ? { group: group } : {}),
-  };
-};
 
 export type FilterContextProps = {
   pageFilters: PageFilters;
   productFilters: ProductFilters;
-  setPageFilters: Dispatch<SetStateAction<PageFilters>>;
-  setProductFilters: Dispatch<SetStateAction<ProductFilters>>;
+  setPageFilters: Dispatch<SetStateAction<Maybe<PageFilters>>>;
+  setProductFilters: Dispatch<SetStateAction<Maybe<ProductFilters>>>;
 };
 
 export type MapFiltersToProps<T> = (props: FilterContextProps) => T;
-
-export type FilterProviderProps = {
-  children: ReactNode;
-};
 
 export const FilterContext = React.createContext<
   FilterContextProps | undefined
 >(undefined);
 
-export const FilterProvider = ({ children }: FilterProviderProps) => {
+export const FilterProvider = ({ children }: PropsWithChildren<{}>) => {
   const config = useConfig();
   const navigate = useNavigate();
   const location = useLocation();
-  const queryParams = useQueryParams();
-  const qsRef = useRef('');
   const groups = useGroups();
-
-  const defaultProductFilters = config.products.map(product => ({
-    productType: product.kind,
-    duration: Duration.P1M,
-  }));
-
-  const getInitialProductState = (productFilters?: ProductFilters) => {
-    if (!productFilters) return defaultProductFilters;
-    return defaultProductFilters.map(product => {
-      return (
-        productFilters.find(
-          param => param.productType === product.productType,
-        ) || product
-      );
-    });
-  };
-
-  const [productFilters, setProductFilters] = useState(
-    getInitialProductState(queryParams.productFilters),
-  );
-  const [pageFilters, setPageFilters] = useState(
-    getInitialPageState(groups, queryParams.pageFilters),
+  const [error, setError] = useState<Maybe<Error>>(null);
+  const [pageFilters, setPageFilters] = useState<Maybe<PageFilters>>(null);
+  const [productFilters, setProductFilters] = useState<Maybe<ProductFilters>>(
+    null,
   );
 
-  // TODO: Figure out why pageFilters doesn't get updated by the above when groups are loaded.
   useEffect(() => {
-    const initialState = getInitialPageState(groups, queryParams.pageFilters);
-    const defaultMetric = config.metrics.find(m => m.default);
-    setPageFilters({ ...initialState, metric: defaultMetric?.kind ?? null });
+    async function setPageFiltersFromLocation() {
+      try {
+        // strip extraneous parameters, validate and transform
+        const queryParams = await validate(location.search);
+        const defaultMetric = config.metrics.find(m => m.default)?.kind ?? null;
+
+        // Group or project parameters should override defaults
+        const initialPageState = getInitialPageState(groups, queryParams);
+        const initialProductState = getInitialProductState(config);
+
+        setProductFilters(initialProductState);
+        setPageFilters({ ...initialPageState, metric: defaultMetric });
+      } catch (e) {
+        setError(e);
+      }
+    }
+
+    setPageFiltersFromLocation();
   }, [groups]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    const queryString = stringify({ ...pageFilters, products: productFilters });
-    if (queryString === qsRef.current) return;
-    qsRef.current = queryString;
-    // TODO Remove workaround once issue is resolved in react-router
-    // (https://github.com/ReactTraining/react-router/issues/7496)
-    // navigate({ ...location, search: queryString });
-    navigate({ ...location, search: `?${queryString}` });
-  }, [pageFilters, productFilters]); // eslint-disable-line react-hooks/exhaustive-deps
+    function setLocationFromPageFilters(filters: PageFilters) {
+      const queryString = stringify({
+        group: filters.group,
+        ...(filters.project ? { project: filters.project } : {}),
+      });
+      // TODO Remove workaround once issue is resolved in react-router
+      // (https://github.com/ReactTraining/react-router/issues/7496)
+      // navigate({ ...location, search: queryString });
+      navigate({ ...location, search: `?${queryString}` });
+    }
+
+    if (pageFilters) {
+      setLocationFromPageFilters(pageFilters);
+    }
+  }, [pageFilters]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (error) {
+    return <Alert severity="error">{error.message}</Alert>;
+  }
+
+  // Wait for filters to load
+  if (!pageFilters || !productFilters) {
+    return null;
+  }
 
   return (
     <FilterContext.Provider
-      value={{
-        pageFilters: pageFilters,
-        productFilters: productFilters,
-        setPageFilters: setPageFilters,
-        setProductFilters: setProductFilters,
-      }}
+      value={{ pageFilters, productFilters, setPageFilters, setProductFilters }}
     >
       {children}
     </FilterContext.Provider>
@@ -132,17 +116,7 @@ export const FilterProvider = ({ children }: FilterProviderProps) => {
 
 export function useFilters<T>(mapFiltersToProps: MapFiltersToProps<T>): T {
   const context = useContext(FilterContext);
-
-  if (!context) {
-    assertNever();
-  }
-
-  return mapFiltersToProps({
-    pageFilters: context.pageFilters,
-    productFilters: context.productFilters,
-    setPageFilters: context.setPageFilters,
-    setProductFilters: context.setProductFilters,
-  });
+  return context ? mapFiltersToProps(context) : assertNever();
 }
 
 function assertNever(): never {
