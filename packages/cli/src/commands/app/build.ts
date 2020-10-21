@@ -26,6 +26,11 @@ export default async (cmd: Command) => {
     env: process.env.APP_ENV ?? process.env.NODE_ENV ?? 'production',
     rootPaths: [paths.targetRoot, paths.targetDir],
   });
+
+  console.log(
+    `Loaded config from ${appConfigs.map(c => c.context).join(', ')}`,
+  );
+
   await buildBundle({
     entry: 'src/index',
     parallel: parseParallel(process.env[PARALLEL_ENV_VAR]),

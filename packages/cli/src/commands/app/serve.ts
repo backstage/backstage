@@ -25,6 +25,11 @@ export default async (cmd: Command) => {
     env: process.env.APP_ENV ?? process.env.NODE_ENV ?? 'development',
     rootPaths: [paths.targetRoot, paths.targetDir],
   });
+
+  console.log(
+    `Loaded config from ${appConfigs.map(c => c.context).join(', ')}`,
+  );
+
   const waitForExit = await serveBundle({
     entry: 'src/index',
     checksEnabled: cmd.check,
