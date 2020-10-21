@@ -28,7 +28,7 @@ exports.up = async function up(knex) {
       .inTable('entities')
       .onDelete('CASCADE')
       .notNullable()
-      .comment('The originating entity of the relation');
+      .comment('The entity that provided the relation');
     table
       .string('source_full_name')
       .notNullable()
