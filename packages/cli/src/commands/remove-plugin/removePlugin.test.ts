@@ -91,7 +91,7 @@ const createTestPluginFile = async (
     .map(name => capitalize(name))
     .join('');
   const exportStatement = `export { default as ${pluginNameCapitalized}} from @backstage/plugin-${testPluginName}`;
-  addExportStatement(`${tempDir}/${testFilePath}`, exportStatement);
+  await addExportStatement(path.join(tempDir, testFilePath), exportStatement);
 };
 
 const mkTestPluginDir = (testDirPath: string) => {
@@ -130,7 +130,7 @@ describe('removePlugin', () => {
 
     it('removes plugin references from /packages/app/package.json', async () => {
       // Set up test
-      const packageFilePath = `${tempDir}/package.json`;
+      const packageFilePath = path.join(tempDir, 'package.json');
       const testFilePath = 'test.json';
       createTestPackageFile(testFilePath, packageFilePath);
       await removeReferencesFromAppPackage(
@@ -148,7 +148,7 @@ describe('removePlugin', () => {
     });
     it('removes plugin exports from /packages/app/src/packacge.json', async () => {
       const testFilePath = 'test.ts';
-      const pluginsFilePaths = `${tempDir}/src/plugin.ts`;
+      const pluginsFilePaths = path.join(tempDir, 'src/plugin.ts');
       createTestPluginFile(testFilePath, pluginsFilePaths);
       await removeReferencesFromPluginsFile(
         path.join(tempDir, testFilePath),
