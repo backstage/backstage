@@ -52,7 +52,7 @@ import {
   GithubReaderProcessor,
   GitlabApiReaderProcessor,
   GitlabReaderProcessor,
-  GroupPopulatorProcessor,
+  OwnerRelationProcessor,
   HigherOrderOperation,
   HigherOrderOperations,
   LocationReaders,
@@ -335,7 +335,7 @@ export class CatalogBuilder {
           new YamlProcessor(),
           new CodeOwnersProcessor({ reader }),
           new LocationRefProcessor(),
-          new GroupPopulatorProcessor(),
+          new OwnerRelationProcessor(),
           new AnnotateLocationEntityProcessor(),
         ];
 

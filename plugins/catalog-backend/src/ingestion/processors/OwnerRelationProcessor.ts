@@ -17,64 +17,59 @@
 import {
   Entity,
   ENTITY_DEFAULT_NAMESPACE,
-  GroupEntity,
   LocationSpec,
+  parseEntityRef,
+  ApiEntityV1alpha1,
+  ComponentEntityV1alpha1,
+  RELATION_OWNED_BY,
+  RELATION_OWNER_OF,
 } from '@backstage/catalog-model';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
 import * as result from './results';
 
-export class GroupPopulatorProcessor implements CatalogProcessor {
+const includedKinds = new Set(['api', 'component']);
+
+export class OwnerRelationProcessor implements CatalogProcessor {
   async postProcessEntity(
     entity: Entity,
     _location: LocationSpec,
     emit: CatalogProcessorEmit,
   ): Promise<Entity> {
-    if (entity.kind.toLowerCase() !== 'group') {
+    if (!includedKinds.has(entity.kind.toLowerCase())) {
       return entity;
     }
-    const spec = entity.spec as GroupEntity['spec'];
+    const apiOrComponentEntity = entity as
+      | ApiEntityV1alpha1
+      | ComponentEntityV1alpha1;
 
-    const { parent, children } = spec;
-    const self = {
-      kind: entity.kind,
-      name: entity.metadata.name,
-      namespace: entity.metadata.namespace ?? ENTITY_DEFAULT_NAMESPACE,
-    };
+    const owner = apiOrComponentEntity.spec?.owner;
+    if (owner) {
+      const namespace = entity.metadata.namespace ?? ENTITY_DEFAULT_NAMESPACE;
 
-    if (parent) {
+      const selfRef = {
+        kind: entity.kind,
+        name: entity.metadata.name,
+        namespace,
+      };
+      const ownerRef = parseEntityRef(owner, {
+        defaultKind: 'group',
+        defaultNamespace: namespace,
+      });
+
       emit(
         result.relation({
-          type: 'parent',
-          source: self,
-          target: { ...self, name: parent },
+          type: RELATION_OWNED_BY,
+          source: selfRef,
+          target: ownerRef,
         }),
       );
       emit(
         result.relation({
-          type: 'child',
-          source: { ...self, name: parent },
-          target: self,
+          type: RELATION_OWNER_OF,
+          source: ownerRef,
+          target: selfRef,
         }),
       );
-    }
-
-    if (children) {
-      for (const child of children) {
-        emit(
-          result.relation({
-            type: 'child',
-            source: self,
-            target: { ...self, name: child },
-          }),
-        );
-        emit(
-          result.relation({
-            type: 'parent',
-            source: { ...self, name: child },
-            target: self,
-          }),
-        );
-      }
     }
 
     return entity;
