@@ -123,6 +123,10 @@ describe('CodeOwnersProcessor', () => {
   });
 
   describe('normalizeCodeOwner', () => {
+    it('should remove the @ symbol', () => {
+      expect(normalizeCodeOwner('@yoda')).toBe('yoda');
+    });
+
     it('should remove org from org/team format', () => {
       expect(normalizeCodeOwner('@acme/foo')).toBe('foo');
     });
