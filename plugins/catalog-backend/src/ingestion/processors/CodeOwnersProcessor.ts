@@ -127,6 +127,8 @@ export function findPrimaryCodeOwner(
 export function normalizeCodeOwner(owner: string) {
   if (owner.match(/^@.*\/.*/)) {
     return owner.split('/')[1];
+  } else if (owner.match(/^@.*/)) {
+    return owner.substring(1);
   } else if (owner.match(/^.*@.*\..*$/)) {
     return owner.split('@')[0];
   }
