@@ -47,7 +47,8 @@
     "@types/node": "^12.0.0",
     "@types/react-lazylog": "^4.5.0",
     "msw": "^0.21.2",
-    "cross-fetch": "^3.0.6"
+    "cross-fetch": "^3.0.6",
+    "@backstage/test-utils": "^0.1.1-alpha.25"
   },
   "files": [
     "dist"

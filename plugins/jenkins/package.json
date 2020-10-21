@@ -45,7 +45,8 @@
     "@types/node": "^12.0.0",
     "@types/testing-library__jest-dom": "^5.9.1",
     "msw": "^0.21.2",
-    "cross-fetch": "^3.0.6"
+    "cross-fetch": "^3.0.6",
+    "@backstage/test-utils": "^0.1.1-alpha.25"
   },
   "files": [
     "dist"
