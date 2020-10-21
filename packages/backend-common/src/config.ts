@@ -32,7 +32,7 @@ type Options = {
  */
 export async function loadBackendConfig(options: Options): Promise<Config> {
   const args = parseArgs(options.argv);
-  const configOpts: string[] = args.config ?? [];
+  const configOpts: string[] = [args.config ?? []].flat();
 
   /* eslint-disable-next-line no-restricted-syntax */
   const paths = findPaths(__dirname);
