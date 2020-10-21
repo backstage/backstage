@@ -45,7 +45,7 @@ interface IGitlabBranch {
 function getGithubApiUrl(config: Config, url: string): URL {
   const { protocol, owner, name } = parseGitUrl(url);
   const apiBaseUrl =
-    config.getOptionalString('catalog.processors.github.apiBaseUrl') ||
+    config.getOptionalString('integrations.github.apiBaseUrl') ||
     'api.github.com';
   const apiRepos = 'repos';
 
