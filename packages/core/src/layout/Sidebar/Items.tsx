@@ -31,6 +31,7 @@ import React, {
   useState,
   KeyboardEventHandler,
   forwardRef,
+  ReactNode,
 } from 'react';
 import { NavLink } from 'react-router-dom';
 import { sidebarConfig, SidebarContext } from './config';
@@ -121,6 +122,7 @@ type SidebarItemProps = {
   to?: string;
   hasNotifications?: boolean;
   onClick?: () => void;
+  children?: ReactNode;
 };
 
 export const SidebarItem = forwardRef<any, SidebarItemProps>(
