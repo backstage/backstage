@@ -273,7 +273,7 @@ describe('DatabaseEntitiesCatalog', () => {
         getVoidLogger(),
       );
       const entities: EntityMutationRequest[] = [];
-      for (let i = 0; i < 500; ++i) {
+      for (let i = 0; i < 200; ++i) {
         entities.push({
           entity: {
             apiVersion: 'a',
@@ -286,23 +286,23 @@ describe('DatabaseEntitiesCatalog', () => {
 
       await catalog.batchAddOrUpdateEntities(entities);
       const afterFirst = await catalog.entities();
-      expect(afterFirst.length).toBe(500);
+      expect(afterFirst.length).toBe(200);
 
       entities[40].entity.metadata.op = 'changed';
       entities.push({
         entity: {
           apiVersion: 'a',
           kind: 'k',
-          metadata: { name: `n500`, op: 'added' },
+          metadata: { name: `n200`, op: 'added' },
         },
         relations: [],
       });
 
       await catalog.batchAddOrUpdateEntities(entities);
       const afterSecond = await catalog.entities();
-      expect(afterSecond.length).toBe(501);
+      expect(afterSecond.length).toBe(201);
       expect(afterSecond.find(e => e.metadata.op === 'changed')).toBeDefined();
       expect(afterSecond.find(e => e.metadata.op === 'added')).toBeDefined();
-    });
+    }, 10000);
   });
 });
