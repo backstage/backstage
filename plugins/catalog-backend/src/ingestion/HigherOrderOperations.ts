@@ -17,6 +17,7 @@
 import { Location, LocationSpec } from '@backstage/catalog-model';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from 'winston';
+import { Database } from '../database';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
 import { durationText } from '../util/timing';
 import {
@@ -33,22 +34,13 @@ import {
  * database more directly.
  */
 export class HigherOrderOperations implements HigherOrderOperation {
-  private readonly entitiesCatalog: EntitiesCatalog;
-  private readonly locationsCatalog: LocationsCatalog;
-  private readonly locationReader: LocationReader;
-  private readonly logger: Logger;
-
   constructor(
-    entitiesCatalog: EntitiesCatalog,
-    locationsCatalog: LocationsCatalog,
-    locationReader: LocationReader,
-    logger: Logger,
-  ) {
-    this.entitiesCatalog = entitiesCatalog;
-    this.locationsCatalog = locationsCatalog;
-    this.locationReader = locationReader;
-    this.logger = logger;
-  }
+    private readonly entitiesCatalog: EntitiesCatalog,
+    private readonly locationsCatalog: LocationsCatalog,
+    private readonly locationReader: LocationReader,
+    private readonly database: Database,
+    private readonly logger: Logger,
+  ) {}
 
   /**
    * Adds a single location to the catalog.
@@ -62,7 +54,12 @@ export class HigherOrderOperations implements HigherOrderOperation {
    *
    * @param spec The location to add
    */
-  async addLocation(spec: LocationSpec): Promise<AddLocationResult> {
+  async addLocation(
+    spec: LocationSpec,
+    options?: { dryRun?: boolean },
+  ): Promise<AddLocationResult> {
+    const dryRun = options?.dryRun || false;
+
     // Attempt to find a previous location matching the spec
     const previousLocations = await this.locationsCatalog.locations();
     const previousLocation = previousLocations.find(
@@ -88,21 +85,36 @@ export class HigherOrderOperations implements HigherOrderOperation {
     // in the entities list. But we aren't sure what to do about those yet.
 
     // Write
-    if (!previousLocation) {
-      await this.locationsCatalog.addLocation(location);
-    }
-    if (readerOutput.entities.length === 0) {
-      return { location, entities: [] };
-    }
+    const entities = await this.database.transaction(async tx => {
+      if (!previousLocation) {
+        await this.locationsCatalog.addLocation(location, { tx });
+      }
+      if (readerOutput.entities.length === 0) {
+        return { location, entities: [] };
+      }
 
-    const writtenEntities = await this.entitiesCatalog.batchAddOrUpdateEntities(
-      readerOutput.entities,
-      location.id,
-    );
+      const writtenEntities = await this.entitiesCatalog.batchAddOrUpdateEntities(
+        readerOutput.entities,
+        {
+          locationId: location.id,
+          tx,
+        },
+      );
 
-    const entities = await this.entitiesCatalog.entities([
-      { 'metadata.uid': writtenEntities.map(e => e.entityId) },
-    ]);
+      const outputEntities = await this.entitiesCatalog.entities(
+        [{ 'metadata.uid': writtenEntities.map(e => e.entityId) }],
+        { tx },
+      );
+
+      if (dryRun) {
+        // If this is only a dry run, cancel the database transaction even if it was successful.
+        await tx.rollback();
+
+        this.logger.debug(`Perfomed successful dry run of adding a location`);
+      }
+
+      return outputEntities;
+    });
 
     return { location, entities };
   }
@@ -168,7 +180,7 @@ export class HigherOrderOperations implements HigherOrderOperation {
     try {
       await this.entitiesCatalog.batchAddOrUpdateEntities(
         readerOutput.entities,
-        location.id,
+        { locationId: location.id },
       );
     } catch (e) {
       for (const entity of readerOutput.entities) {

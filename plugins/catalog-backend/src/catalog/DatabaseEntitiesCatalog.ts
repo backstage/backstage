@@ -27,7 +27,12 @@ import {
 import { chunk, groupBy } from 'lodash';
 import limiterFactory from 'p-limit';
 import { Logger } from 'winston';
-import type { Database, DbEntityResponse, EntityFilters } from '../database';
+import type {
+  Database,
+  DbEntityResponse,
+  EntityFilters,
+  Transaction,
+} from '../database';
 import { durationText } from '../util/timing';
 import type {
   EntitiesCatalog,
@@ -60,7 +65,14 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
     private readonly logger: Logger,
   ) {}
 
-  async entities(filters?: EntityFilters[]): Promise<Entity[]> {
+  async entities(options?: {
+    filters?: EntityFilters[];
+    tx?: Transaction;
+  }): Promise<Entity[]> {
+    const filters = options?.filters;
+
+    // TODO: Support with and without transaction!
+
     const items = await this.database.transaction(tx =>
       this.database.entities(tx, filters),
     );
@@ -135,8 +147,10 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
    */
   async batchAddOrUpdateEntities(
     requests: EntityUpsertRequest[],
-    locationId?: string,
+    options?: { locationId?: string; tx?: Transaction },
   ): Promise<EntityUpsertResponse[]> {
+    // TODO: How to work with the transaction here?
+
     // Group the entities by unique kind+namespace combinations
     const entitiesByKindAndNamespace = groupBy(requests, ({ entity }) => {
       const name = getEntityName(entity);
@@ -163,7 +177,11 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
             );
 
             // Retry the batch write a few times to deal with contention
-            const context = { kind, namespace, locationId };
+            const context = {
+              kind,
+              namespace,
+              locationId: options?.locationId,
+            };
             for (let attempt = 1; attempt <= BATCH_ATTEMPTS; ++attempt) {
               try {
                 const { toAdd, toUpdate, toIgnore } = await this.analyzeBatch(
@@ -234,13 +252,15 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
     const markTimestamp = process.hrtime();
 
     const names = requests.map(({ entity }) => entity.metadata.name);
-    const oldEntities = await this.entities([
-      {
-        kind: kind,
-        'metadata.namespace': namespace,
-        'metadata.name': names,
-      },
-    ]);
+    const oldEntities = await this.entities({
+      filters: [
+        {
+          kind: kind,
+          'metadata.namespace': namespace,
+          'metadata.name': names,
+        },
+      ],
+    });
 
     const oldEntitiesByName = new Map(
       oldEntities.map(e => [e.metadata.name, e]),

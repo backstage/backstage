@@ -46,6 +46,7 @@ import {
   DbLocationsRow,
   DbLocationsRowWithStatus,
   EntityFilters,
+  Transaction,
 } from './types';
 
 // The number of items that are sent per batch to the database layer, when
@@ -63,9 +64,23 @@ export class CommonDatabase implements Database {
     private readonly logger: Logger,
   ) {}
 
-  async transaction<T>(fn: (tx: unknown) => Promise<T>): Promise<T> {
+  async transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T> {
     try {
-      return await this.database.transaction<T>(fn);
+      let result: T | undefined = undefined;
+
+      await this.database.transaction(
+        async tx => {
+          // We can't return here, as knex swallows the return type in case the transaction is rolled back:
+          // https://github.com/knex/knex/blob/e37aeaa31c8ef9c1b07d2e4d3ec6607e557d800d/lib/transaction.js#L136
+          result = await fn(tx);
+        },
+        {
+          // If we explicitly trigger a rollback, don't fail.
+          doNotRejectOnRollback: true,
+        },
+      );
+
+      return result!;
     } catch (e) {
       this.logger.debug(`Error during transaction, ${e}`);
 
@@ -81,7 +96,7 @@ export class CommonDatabase implements Database {
   }
 
   async addEntity(
-    txOpaque: unknown,
+    txOpaque: Transaction,
     request: DbEntityRequest,
   ): Promise<DbEntityResponse> {
     const tx = txOpaque as Knex.Transaction<any, any>;
@@ -110,7 +125,7 @@ export class CommonDatabase implements Database {
   }
 
   async addEntities(
-    txOpaque: unknown,
+    txOpaque: Transaction,
     request: DbEntityRequest[],
   ): Promise<DbEntityResponse[]> {
     const tx = txOpaque as Knex.Transaction<any, any>;
@@ -158,7 +173,7 @@ export class CommonDatabase implements Database {
   }
 
   async updateEntity(
-    txOpaque: unknown,
+    txOpaque: Transaction,
     request: DbEntityRequest,
     matchingEtag?: string,
     matchingGeneration?: number,
@@ -217,7 +232,7 @@ export class CommonDatabase implements Database {
   }
 
   async entities(
-    txOpaque: unknown,
+    txOpaque: Transaction,
     filters?: EntityFilters[],
   ): Promise<DbEntityResponse[]> {
     const tx = txOpaque as Knex.Transaction<any, any>;
@@ -295,7 +310,7 @@ export class CommonDatabase implements Database {
   }
 
   async entityByName(
-    txOpaque: unknown,
+    txOpaque: Transaction,
     name: EntityName,
   ): Promise<DbEntityResponse | undefined> {
     const tx = txOpaque as Knex.Transaction<any, any>;
@@ -314,7 +329,7 @@ export class CommonDatabase implements Database {
   }
 
   async entityByUid(
-    txOpaque: unknown,
+    txOpaque: Transaction,
     uid: string,
   ): Promise<DbEntityResponse | undefined> {
     const tx = txOpaque as Knex.Transaction<any, any>;
@@ -330,7 +345,7 @@ export class CommonDatabase implements Database {
     return this.toEntityResponse(tx, rows[0]);
   }
 
-  async removeEntityByUid(txOpaque: unknown, uid: string): Promise<void> {
+  async removeEntityByUid(txOpaque: Transaction, uid: string): Promise<void> {
     const tx = txOpaque as Knex.Transaction<any, any>;
 
     const result = await tx<DbEntitiesRow>('entities').where({ id: uid }).del();
@@ -341,7 +356,7 @@ export class CommonDatabase implements Database {
   }
 
   async setRelations(
-    txOpaque: unknown,
+    txOpaque: Transaction,
     originatingEntityId: string,
     relations: EntityRelationSpec[],
   ): Promise<void> {
@@ -368,19 +383,22 @@ export class CommonDatabase implements Database {
     await tx.batchInsert('entities_relations', relationsRows, BATCH_SIZE);
   }
 
-  async addLocation(location: Location): Promise<DbLocationsRow> {
-    return await this.database.transaction<DbLocationsRow>(async tx => {
-      const row: DbLocationsRow = {
-        id: location.id,
-        type: location.type,
-        target: location.target,
-      };
-      await tx<DbLocationsRow>('locations').insert(row);
-      return row;
-    });
+  async addLocation(
+    txOpaque: Transaction,
+    location: Location,
+  ): Promise<DbLocationsRow> {
+    const tx = txOpaque as Knex.Transaction<any, any>;
+
+    const row: DbLocationsRow = {
+      id: location.id,
+      type: location.type,
+      target: location.target,
+    };
+    await tx<DbLocationsRow>('locations').insert(row);
+    return row;
   }
 
-  async removeLocation(txOpaque: unknown, id: string): Promise<void> {
+  async removeLocation(txOpaque: Transaction, id: string): Promise<void> {
     const tx = txOpaque as Knex.Transaction<any, any>;
 
     await tx<DbEntitiesRow>('entities')

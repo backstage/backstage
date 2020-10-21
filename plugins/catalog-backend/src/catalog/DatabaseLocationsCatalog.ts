@@ -15,7 +15,7 @@
  */
 
 import { Location } from '@backstage/catalog-model';
-import type { Database } from '../database';
+import type { Database, Transaction } from '../database';
 import {
   DatabaseLocationUpdateLogEvent,
   DatabaseLocationUpdateLogStatus,
@@ -25,9 +25,19 @@ import { LocationResponse, LocationsCatalog } from './types';
 export class DatabaseLocationsCatalog implements LocationsCatalog {
   constructor(private readonly database: Database) {}
 
-  async addLocation(location: Location): Promise<Location> {
-    const added = await this.database.addLocation(location);
-    return added;
+  async addLocation(
+    location: Location,
+    options?: { tx?: Transaction },
+  ): Promise<Location> {
+    const transaction = options?.tx;
+
+    if (transaction) {
+      return await this.database.addLocation(transaction, location);
+    }
+
+    return await this.database.transaction(
+      async tx => await this.database.addLocation(tx, location),
+    );
   }
 
   async removeLocation(id: string): Promise<void> {
