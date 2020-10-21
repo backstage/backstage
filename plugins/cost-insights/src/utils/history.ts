@@ -54,5 +54,5 @@ export const getInitialPageState = (
 export const getInitialProductState = (config: ConfigContextProps) =>
   config.products.map(product => ({
     productType: product.kind,
-    duration: Duration.P1M,
+    duration: Duration.P30D,
   }));
