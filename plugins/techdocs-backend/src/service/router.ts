@@ -134,16 +134,6 @@ export async function createRouter({
     res.redirect(`${storageUrl}${req.path.replace('/docs', '')}`);
   });
 
-  router.get("/test", async (req, res) => {
-    const fileTree = await reader.readTree("https://github.com/spotify/backstage/tree/master/docs");
-
-    await Promise.all(fileTree);
-
-    console.log(fileTree);
-    // reader.readTree("https://github.com/spotify/backstage");
-    res.send("test")
-  });
-
   if (publisher instanceof LocalPublish) {
     router.use('/static/docs', express.static(staticDocsDir));
   }

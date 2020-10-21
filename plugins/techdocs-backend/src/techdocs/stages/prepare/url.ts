@@ -13,37 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import path from 'path';
 import { Entity } from '@backstage/catalog-model';
 import { PreparerBase } from './types';
-import parseGitUrl from 'git-url-parse';
-import {
-  parseReferenceAnnotation,
-  checkoutGitRepository,
-} from '../../../helpers';
+import { getDocFilesFromRepository } from '../../../helpers';
 
 import { Logger } from 'winston';
+import { UrlReader } from '@backstage/backend-common';
 
-export class CommonGitPreparer implements PreparerBase {
+export class UrlPreparer implements PreparerBase {
   private readonly logger: Logger;
+  private readonly reader: UrlReader;
 
-  constructor(logger: Logger) {
+  constructor(reader: UrlReader, logger: Logger) {
     this.logger = logger;
+    this.reader = reader;
   }
 
   async prepare(entity: Entity): Promise<string> {
-    const { target } = parseReferenceAnnotation(
-      'backstage.io/techdocs-ref',
-      entity,
-    );
-
     try {
-      const repoPath = await checkoutGitRepository(target, this.logger);
-      const parsedGitLocation = parseGitUrl(target);
-
-      return path.join(repoPath, parsedGitLocation.filepath);
+      return getDocFilesFromRepository(this.reader, entity, this.logger);
     } catch (error) {
-      this.logger.debug(`Repo checkout failed with error ${error.message}`);
+      this.logger.debug(
+        `Unable to fetch files for building docs ${error.message}`,
+      );
       throw error;
     }
   }
