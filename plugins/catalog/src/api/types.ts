@@ -43,6 +43,7 @@ export interface CatalogApi {
 export type AddLocationRequest = {
   type?: string;
   target: string;
+  dryRun?: boolean;
 };
 
 export type AddLocationResponse = {

@@ -29,7 +29,7 @@ import {
   List,
   ListItem,
 } from '@material-ui/core';
-import React from 'react';
+import React, { useState } from 'react';
 import { generatePath, resolvePath } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -37,6 +37,7 @@ type Props = {
   onClose: () => void;
   classes?: Record<string, string>;
   entities: Entity[];
+  dryRun?: boolean;
   catalogRouteRef: RouteRef;
 };
 
@@ -64,49 +65,71 @@ export const RegisterComponentResultDialog = ({
   onClose,
   classes,
   entities,
+  dryRun,
   catalogRouteRef,
-}: Props) => (
-  <Dialog open onClose={onClose} classes={classes}>
-    <DialogTitle>Registration Result</DialogTitle>
-    <DialogContent>
-      <DialogContentText>
-        The following entities have been successfully created:
-      </DialogContentText>
-      <List>
-        {entities.map((entity: any, index: number) => {
-          const entityPath = getEntityCatalogPath({ entity, catalogRouteRef });
-          return (
-            <React.Fragment
-              key={`${entity.metadata.namespace}-${entity.metadata.name}`}
-            >
-              <ListItem>
-                <StructuredMetadataTable
-                  dense
-                  metadata={{
-                    name: entity.metadata.name,
-                    type: entity.spec.type,
-                    link: (
-                      <Link component={RouterLink} to={entityPath}>
-                        {entityPath}
-                      </Link>
-                    ),
-                  }}
-                />
-              </ListItem>
-              {index < entities.length - 1 && <Divider component="li" />}
-            </React.Fragment>
-          );
-        })}
-      </List>
-    </DialogContent>
-    <DialogActions>
-      <Button
-        component={RouterLink}
-        to={`/${catalogRouteRef.path}`}
-        color="default"
-      >
-        To Catalog
-      </Button>
-    </DialogActions>
-  </Dialog>
-);
+}: Props) => {
+  const [open, setOpen] = useState(true);
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  return (
+    <Dialog open={open} onClose={onClose} classes={classes}>
+      <DialogTitle>
+        {dryRun ? 'Validation Result' : 'Registration Result'}
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          {dryRun
+            ? 'The following entities would be created:'
+            : 'The following entities have been successfully created:'}
+        </DialogContentText>
+        <List>
+          {entities.map((entity: any, index: number) => {
+            const entityPath = getEntityCatalogPath({
+              entity,
+              catalogRouteRef,
+            });
+            return (
+              <React.Fragment
+                key={`${entity.metadata.namespace}-${entity.metadata.name}`}
+              >
+                <ListItem>
+                  <StructuredMetadataTable
+                    dense
+                    metadata={{
+                      name: entity.metadata.name,
+                      type: entity.spec.type,
+                      link: (
+                        <Link component={RouterLink} to={entityPath}>
+                          {entityPath}
+                        </Link>
+                      ),
+                    }}
+                  />
+                </ListItem>
+                {index < entities.length - 1 && <Divider component="li" />}
+              </React.Fragment>
+            );
+          })}
+        </List>
+      </DialogContent>
+      <DialogActions>
+        {dryRun && (
+          <Button onClick={handleClose} color="default">
+            Close
+          </Button>
+        )}
+        {!dryRun && (
+          <Button
+            component={RouterLink}
+            to={`/${catalogRouteRef.path}`}
+            color="default"
+          >
+            To Catalog
+          </Button>
+        )}
+      </DialogActions>
+    </Dialog>
+  );
+};

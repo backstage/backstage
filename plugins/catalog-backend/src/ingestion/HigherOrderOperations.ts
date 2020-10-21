@@ -90,21 +90,18 @@ export class HigherOrderOperations implements HigherOrderOperation {
         await this.locationsCatalog.addLocation(location, { tx });
       }
       if (readerOutput.entities.length === 0) {
-        return { location, entities: [] };
+        return [];
       }
 
       const writtenEntities = await this.entitiesCatalog.batchAddOrUpdateEntities(
         readerOutput.entities,
-        {
-          locationId: location.id,
-          tx,
-        },
+        { locationId: location.id, tx },
       );
 
-      const outputEntities = await this.entitiesCatalog.entities(
-        [{ 'metadata.uid': writtenEntities.map(e => e.entityId) }],
-        { tx },
-      );
+      const outputEntities = await this.entitiesCatalog.entities({
+        filters: [{ 'metadata.uid': writtenEntities.map(e => e.entityId) }],
+        tx,
+      });
 
       if (dryRun) {
         // If this is only a dry run, cancel the database transaction even if it was successful.

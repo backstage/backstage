@@ -70,46 +70,44 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
     tx?: Transaction;
   }): Promise<Entity[]> {
     const filters = options?.filters;
-
-    // TODO: Support with and without transaction!
-
-    const items = await this.database.transaction(tx =>
-      this.database.entities(tx, filters),
-    );
+    const items = options?.tx
+      ? await this.database.entities(options?.tx, filters)
+      : await this.database.transaction(tx =>
+          this.database.entities(tx, filters),
+        );
     return items.map(i => i.entity);
   }
 
   private async addOrUpdateEntity(
     entity: Entity,
+    tx: Transaction,
     locationId?: string,
   ): Promise<Entity> {
-    return await this.database.transaction(async tx => {
-      // Find a matching (by uid, or by compound name, depending on the given
-      // entity) existing entity, to know whether to update or add
-      const existing = entity.metadata.uid
-        ? await this.database.entityByUid(tx, entity.metadata.uid)
-        : await this.database.entityByName(tx, getEntityName(entity));
+    // Find a matching (by uid, or by compound name, depending on the given
+    // entity) existing entity, to know whether to update or add
+    const existing = entity.metadata.uid
+      ? await this.database.entityByUid(tx, entity.metadata.uid)
+      : await this.database.entityByName(tx, getEntityName(entity));
 
-      // If it's an update, run the algorithm for annotation merging, updating
-      // etag/generation, etc.
-      let response: DbEntityResponse;
-      if (existing) {
-        const updated = generateUpdatedEntity(existing.entity, entity);
-        response = await this.database.updateEntity(
-          tx,
-          { locationId, entity: updated },
-          existing.entity.metadata.etag,
-          existing.entity.metadata.generation,
-        );
-      } else {
-        const added = await this.database.addEntities(tx, [
-          { locationId, entity },
-        ]);
-        response = added[0];
-      }
+    // If it's an update, run the algorithm for annotation merging, updating
+    // etag/generation, etc.
+    let response: DbEntityResponse;
+    if (existing) {
+      const updated = generateUpdatedEntity(existing.entity, entity);
+      response = await this.database.updateEntity(
+        tx,
+        { locationId, entity: updated },
+        existing.entity.metadata.etag,
+        existing.entity.metadata.generation,
+      );
+    } else {
+      const added = await this.database.addEntities(tx, [
+        { locationId, entity },
+      ]);
+      response = added[0];
+    }
 
-      return response.entity;
-    });
+    return response.entity;
   }
 
   async removeEntityByUid(uid: string): Promise<void> {
@@ -143,14 +141,41 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
    * Writes a number of entities efficiently to storage.
    *
    * @param entities Some entities
-   * @param locationId The location that they all belong to
+   * @param options.locationId The location that they all belong to
+   * @param options.tx A database transaction to execute the queries in
    */
   async batchAddOrUpdateEntities(
     requests: EntityUpsertRequest[],
-    options?: { locationId?: string; tx?: Transaction },
+    options?: {
+      locationId?: string;
+      tx?: Transaction;
+    },
   ): Promise<EntityUpsertResponse[]> {
-    // TODO: How to work with the transaction here?
+    const locationId = options?.locationId;
 
+    if (options?.tx) {
+      return this.batchAddOrUpdateEntitiesInTransaction(
+        requests,
+        options.tx,
+        locationId,
+      );
+    }
+
+    return await this.database.transaction(
+      async tx =>
+        await this.batchAddOrUpdateEntitiesInTransaction(
+          requests,
+          tx,
+          locationId,
+        ),
+    );
+  }
+
+  private async batchAddOrUpdateEntitiesInTransaction(
+    requests: EntityUpsertRequest[],
+    tx: Transaction,
+    locationId?: string,
+  ): Promise<EntityUpsertResponse[]> {
     // Group the entities by unique kind+namespace combinations
     const entitiesByKindAndNamespace = groupBy(requests, ({ entity }) => {
       const name = getEntityName(entity);
@@ -180,29 +205,30 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
             const context = {
               kind,
               namespace,
-              locationId: options?.locationId,
+              locationId,
             };
             for (let attempt = 1; attempt <= BATCH_ATTEMPTS; ++attempt) {
               try {
                 const { toAdd, toUpdate, toIgnore } = await this.analyzeBatch(
                   batch,
                   context,
+                  tx,
                 );
                 if (toAdd.length) {
                   modifiedEntityIds.push(
-                    ...(await this.batchAdd(toAdd, context)),
+                    ...(await this.batchAdd(toAdd, context, tx)),
                   );
                 }
                 if (toUpdate.length) {
                   modifiedEntityIds.push(
-                    ...(await this.batchUpdate(toUpdate, context)),
+                    ...(await this.batchUpdate(toUpdate, context, tx)),
                   );
                 }
                 // TODO(Rugvip): We currently always update relations, but we
                 // likely want to figure out a way to avoid that
                 for (const { entity, relations } of toIgnore) {
                   const entityId = entity.metadata.uid!;
-                  await this.setRelations(entityId, relations);
+                  await this.setRelations(entityId, relations, tx);
                   modifiedEntityIds.push({ entityId });
                 }
 
@@ -231,10 +257,9 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
   private async setRelations(
     originatingEntityId: string,
     relations: EntityRelationSpec[],
+    tx: Transaction,
   ): Promise<void> {
-    return await this.database.transaction(tx =>
-      this.database.setRelations(tx, originatingEntityId, relations),
-    );
+    await this.database.setRelations(tx, originatingEntityId, relations);
   }
 
   // Given a batch of entities that were just read from a location, take them
@@ -244,6 +269,7 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
   private async analyzeBatch(
     requests: EntityUpsertRequest[],
     { kind, namespace }: BatchContext,
+    tx: Transaction,
   ): Promise<{
     toAdd: EntityUpsertRequest[];
     toUpdate: EntityUpsertRequest[];
@@ -260,6 +286,7 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
           'metadata.name': names,
         },
       ],
+      tx,
     });
 
     const oldEntitiesByName = new Map(
@@ -299,15 +326,13 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
   private async batchAdd(
     requests: EntityUpsertRequest[],
     { locationId }: BatchContext,
+    tx: Transaction,
   ): Promise<EntityUpsertResponse[]> {
     const markTimestamp = process.hrtime();
 
-    const res = await this.database.transaction(
-      async tx =>
-        await this.database.addEntities(
-          tx,
-          requests.map(({ entity }) => ({ locationId, entity })),
-        ),
+    const res = await this.database.addEntities(
+      tx,
+      requests.map(({ entity }) => ({ locationId, entity })),
     );
 
     const entityIds = res.map(({ entity }) => ({
@@ -315,7 +340,7 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
     }));
 
     for (const [index, { entityId }] of entityIds.entries()) {
-      await this.setRelations(entityId, requests[index].relations);
+      await this.setRelations(entityId, requests[index].relations, tx);
     }
 
     this.logger.debug(
@@ -330,15 +355,16 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
   private async batchUpdate(
     requests: EntityUpsertRequest[],
     { locationId }: BatchContext,
+    tx: Transaction,
   ): Promise<EntityUpsertResponse[]> {
     const markTimestamp = process.hrtime();
     const responseIds: EntityUpsertResponse[] = [];
     // TODO(freben): Still not batched
     for (const entity of requests) {
-      const res = await this.addOrUpdateEntity(entity.entity, locationId);
+      const res = await this.addOrUpdateEntity(entity.entity, tx, locationId);
       const entityId = res.metadata.uid!;
       responseIds.push({ entityId });
-      await this.setRelations(entityId, entity.relations);
+      await this.setRelations(entityId, entity.relations, tx);
     }
 
     this.logger.debug(

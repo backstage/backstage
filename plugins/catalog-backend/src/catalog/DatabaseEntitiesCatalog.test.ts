@@ -95,25 +95,33 @@ describe('DatabaseEntitiesCatalog', () => {
           namespace: 'd',
         },
       };
-
       const existingTransaction: jest.Mocked<Transaction> = {
         rollback: jest.fn(),
       };
 
       db.entities.mockResolvedValue([]);
-      db.addEntities.mockResolvedValue([{ entity }]);
+      db.addEntities.mockResolvedValue([
+        { entity: { ...entity, metadata: { ...entity.metadata, uid: 'u' } } },
+      ]);
 
       const catalog = new DatabaseEntitiesCatalog(db, getVoidLogger());
-      const result = await catalog.addOrUpdateEntity(entity, {
-        tx: existingTransaction,
-      });
-
-      expect(db.addEntities).toHaveBeenCalledTimes(1);
-      expect(db.addEntities).toHaveBeenCalledWith(
-        existingTransaction,
-        expect.anything(),
+      const result = await catalog.batchAddOrUpdateEntities(
+        [{ entity, relations: [] }],
+        { tx: existingTransaction },
       );
-      expect(result).toBe(entity);
+
+      expect(db.entities).toHaveBeenCalledTimes(1);
+      expect(db.entities).toHaveBeenCalledWith(expect.anything(), [
+        {
+          kind: 'b',
+          'metadata.namespace': 'd',
+          'metadata.name': ['c'],
+        },
+      ]);
+      expect(db.setRelations).toHaveBeenCalledTimes(1);
+      expect(db.setRelations).toHaveBeenCalledWith(expect.anything(), 'u', []);
+      expect(db.addEntities).toHaveBeenCalledTimes(1);
+      expect(result).toEqual([{ entityId: 'u' }]);
     });
 
     it('updates when given uid', async () => {

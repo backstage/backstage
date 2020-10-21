@@ -23,8 +23,6 @@ import { LocationResponse } from '../catalog/types';
 import { HigherOrderOperation } from '../ingestion/types';
 import { createRouter } from './router';
 
-// TODO: ...
-
 describe('createRouter', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
   let locationsCatalog: jest.Mocked<LocationsCatalog>;
