@@ -33,7 +33,7 @@ describe('templatingTask', () => {
 
     mockFs({
       [tmplDir]: {
-        'sub': {
+        sub: {
           'version.txt.hbs': 'version: {{version}}',
         },
         'test.txt': 'testing',
