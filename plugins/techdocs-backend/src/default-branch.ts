@@ -15,8 +15,8 @@
  */
 import fetch, { RequestInit } from 'node-fetch';
 import parseGitUrl from 'git-url-parse';
-import { ConfigReader, Config } from '@backstage/config';
-import { loadBackendConfig } from '@backstage/backend-common';
+import { Config } from '@backstage/config';
+import { getRootLogger, loadBackendConfig } from '@backstage/backend-common';
 
 interface IGitlabBranch {
   name: string;
@@ -230,7 +230,8 @@ async function getAzureDefaultBranch(
 export const getDefaultBranch = async (
   repositoryUrl: string,
 ): Promise<string> => {
-  const config = ConfigReader.fromConfigs(await loadBackendConfig());
+  // TODO(Rugvip): Config should not be loaded here, pass it in instead
+  const config = await loadBackendConfig({ logger: getRootLogger() });
   const typeMapping = [
     { url: /github*/g, type: 'github' },
     { url: /gitlab*/g, type: 'gitlab' },

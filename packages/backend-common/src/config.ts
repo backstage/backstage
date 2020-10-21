@@ -15,12 +15,18 @@
  */
 
 import { findPaths } from '@backstage/cli-common';
+import { Config, ConfigReader } from '@backstage/config';
 import { loadConfig } from '@backstage/config-loader';
+import { Logger } from 'winston';
+
+type Options = {
+  logger: Logger;
+};
 
 /**
  * Load configuration for a Backend
  */
-export async function loadBackendConfig() {
+export async function loadBackendConfig(options: Options): Promise<Config> {
   /* eslint-disable-next-line no-restricted-syntax */
   const paths = findPaths(__dirname);
   const configs = await loadConfig({
@@ -28,5 +34,10 @@ export async function loadBackendConfig() {
     rootPaths: [paths.targetRoot, paths.targetDir],
     shouldReadSecrets: true,
   });
-  return configs;
+
+  options.logger.info(
+    `Loaded config from ${configs.map(c => c.context).join(', ')}`,
+  );
+
+  return ConfigReader.fromConfigs(configs);
 }

@@ -17,7 +17,6 @@
 import Knex from 'knex';
 import { Server } from 'http';
 import { Logger } from 'winston';
-import { ConfigReader } from '@backstage/config';
 import { createRouter } from './router';
 import {
   createServiceBuilder,
@@ -34,7 +33,7 @@ export async function startStandaloneServer(
   options: ServerOptions,
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'auth-backend' });
-  const config = ConfigReader.fromConfigs(await loadBackendConfig());
+  const config = await loadBackendConfig({ logger });
   const discovery = SingleHostDiscovery.fromConfig(config);
 
   const database = useHotMemoize(module, () => {
