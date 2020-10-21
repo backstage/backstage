@@ -18,7 +18,7 @@ import { useParams, useNavigate } from 'react-router';
 
 import { EntityContext } from '../../hooks/useEntity';
 import { Page, Header, HeaderLabel, Content, Progress } from '@backstage/core';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
 import { Box } from '@material-ui/core';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
@@ -46,7 +46,11 @@ function headerProps(
   entity: Entity | undefined,
 ): { headerTitle: string; headerType: string } {
   return {
-    headerTitle: `${name}${namespace ? ` in ${namespace}` : ''}`,
+    headerTitle: `${name}${
+      namespace && namespace !== ENTITY_DEFAULT_NAMESPACE
+        ? ` in ${namespace}`
+        : ''
+    }`,
     headerType: (() => {
       let t = kind.toLowerCase();
       if (entity && entity.spec && 'type' in entity.spec) {
