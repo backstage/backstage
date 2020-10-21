@@ -27,6 +27,7 @@ import * as plugins from './plugins';
 import { apis } from './apis';
 import { hot } from 'react-hot-loader/root';
 import { providers } from './identityProviders';
+import { Router as CatalogImportRouter } from '@roadiehq/backstage-plugin-catalog-import';
 import { Router as CatalogRouter } from '@backstage/plugin-catalog';
 import { Router as DocsRouter } from '@backstage/plugin-techdocs';
 import { Router as GraphiQLRouter } from '@backstage/plugin-graphiql';
@@ -83,6 +84,7 @@ const AppRoutes = () => (
       element={<RegisterComponentRouter catalogRouteRef={catalogRouteRef} />}
     />
     <Route path="/settings" element={<SettingsRouter />} />
+    <Route path="/github-importer/*" element={<CatalogImportRouter />} />
     {...deprecatedAppRoutes}
   </Routes>
 );
