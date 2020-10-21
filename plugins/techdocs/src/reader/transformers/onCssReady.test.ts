@@ -25,14 +25,20 @@ import { onCssReady } from '../transformers';
 const docStorageUrl: string =
   'https://techdocs-mock-sites.storage.googleapis.com';
 
-jest.useFakeTimers();
-
 const fixture = `
   <link rel="stylesheet" href="${docStorageUrl}/test.css" />
   <link rel="stylesheet" href="http://example.com/test.css" />
 `;
 
 describe('onCssReady', () => {
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
   beforeEach(() => {
     mockStylesheetEventListener(100);
   });
