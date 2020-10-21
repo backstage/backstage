@@ -25,7 +25,14 @@ import { BackstageTheme } from '@backstage/theme';
 import { IconComponent } from '@backstage/core-api';
 import SearchIcon from '@material-ui/icons/Search';
 import clsx from 'clsx';
-import React, { FC, useContext, useState, KeyboardEventHandler } from 'react';
+import React, {
+  FC,
+  useContext,
+  useState,
+  KeyboardEventHandler,
+  forwardRef,
+  ReactNode,
+} from 'react';
 import { NavLink } from 'react-router-dom';
 import { sidebarConfig, SidebarContext } from './config';
 
@@ -115,74 +122,93 @@ type SidebarItemProps = {
   to?: string;
   hasNotifications?: boolean;
   onClick?: () => void;
+  children?: ReactNode;
 };
 
-export const SidebarItem: FC<SidebarItemProps> = ({
-  icon: Icon,
-  text,
-  to,
-  hasNotifications = false,
-  onClick,
-  children,
-}) => {
-  const classes = useStyles();
-  // XXX (@koroeskohr): unsure this is optimal. But I just really didn't want to have the item component
-  // depend on the current location, and at least have it being optionally forced to selected.
-  // Still waiting on a Q answered to fine tune the implementation
-  const { isOpen } = useContext(SidebarContext);
+export const SidebarItem = forwardRef<any, SidebarItemProps>(
+  (
+    { icon: Icon, text, to, hasNotifications = false, onClick, children },
+    ref,
+  ) => {
+    const classes = useStyles();
+    // XXX (@koroeskohr): unsure this is optimal. But I just really didn't want to have the item component
+    // depend on the current location, and at least have it being optionally forced to selected.
+    // Still waiting on a Q answered to fine tune the implementation
+    const { isOpen } = useContext(SidebarContext);
 
-  const itemIcon = (
-    <Badge
-      color="secondary"
-      variant="dot"
-      overlap="circle"
-      invisible={!hasNotifications}
-    >
-      <Icon fontSize="small" className={classes.icon} />
-    </Badge>
-  );
+    const itemIcon = (
+      <Badge
+        color="secondary"
+        variant="dot"
+        overlap="circle"
+        invisible={!hasNotifications}
+      >
+        <Icon fontSize="small" className={classes.icon} />
+      </Badge>
+    );
 
-  const childProps = {
-    onClick,
-    className: clsx(classes.root, isOpen ? classes.open : classes.closed),
-  };
+    const childProps = {
+      onClick,
+      className: clsx(classes.root, isOpen ? classes.open : classes.closed),
+    };
 
-  if (!isOpen) {
+    if (!isOpen) {
+      if (to === undefined) {
+        return (
+          <div {...childProps} ref={ref}>
+            {itemIcon}
+          </div>
+        );
+      }
+
+      return (
+        <NavLink
+          {...childProps}
+          activeClassName={classes.selected}
+          to={to}
+          end
+          ref={ref}
+        >
+          {itemIcon}
+        </NavLink>
+      );
+    }
+
+    const content = (
+      <>
+        <div data-testid="login-button" className={classes.iconContainer}>
+          {itemIcon}
+        </div>
+        {text && (
+          <Typography variant="subtitle2" className={classes.label}>
+            {text}
+          </Typography>
+        )}
+        <div className={classes.secondaryAction}>{children}</div>
+      </>
+    );
+
     if (to === undefined) {
-      return <div {...childProps}>{itemIcon}</div>;
+      return (
+        <div {...childProps} ref={ref}>
+          {content}
+        </div>
+      );
     }
 
     return (
-      <NavLink {...childProps} activeClassName={classes.selected} to={to} end>
-        {itemIcon}
+      <NavLink
+        {...childProps}
+        activeClassName={classes.selected}
+        to={to}
+        end
+        ref={ref}
+      >
+        {content}
       </NavLink>
     );
-  }
-
-  const content = (
-    <>
-      <div data-testid="login-button" className={classes.iconContainer}>
-        {itemIcon}
-      </div>
-      {text && (
-        <Typography variant="subtitle2" className={classes.label}>
-          {text}
-        </Typography>
-      )}
-      <div className={classes.secondaryAction}>{children}</div>
-    </>
-  );
-
-  if (to === undefined) {
-    return <div {...childProps}>{content}</div>;
-  }
-
-  return (
-    <NavLink {...childProps} activeClassName={classes.selected} to={to} end>
-      {content}
-    </NavLink>
-  );
-};
+  },
+);
 
 type SidebarSearchFieldProps = {
   onSearch: (input: string) => void;
