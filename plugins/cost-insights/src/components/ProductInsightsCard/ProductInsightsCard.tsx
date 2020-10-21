@@ -51,7 +51,7 @@ const ProductInsightsCard = ({ product }: ProductInsightsCardProps) => {
   const dispatchLoadingProduct = useCallback(dispatchLoading, [product.kind]);
 
   const amount = resource?.entities?.length || 0;
-  const hasCostsWithinTimeframe = resource?.change && amount;
+  const hasCostsWithinTimeframe = resource?.change && !!amount;
 
   const subheader = amount
     ? `${amount} ${pluralOf(amount, 'entity', 'entities')}, sorted by cost`
