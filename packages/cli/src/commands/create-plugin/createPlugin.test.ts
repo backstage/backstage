@@ -22,17 +22,7 @@ import del from 'del';
 import { createTemporaryPluginFolder, movePlugin } from './createPlugin';
 
 describe('createPlugin', () => {
-  beforeEach(() => {
-    mockFs({
-      '/testPluginMock': {},
-      'test-temp': {
-        plugins: {
-          testPluginMock: {},
-        },
-      },
-    });
-  });
-  afterEach(() => {
+  afterAll(() => {
     mockFs.restore();
   });
   describe('createPluginFolder', () => {
@@ -49,7 +39,12 @@ describe('createPlugin', () => {
     });
 
     it('should not create a temporary plugin directory if it already exists', async () => {
-      const id = '/testPluginMock';
+      const id = 'testPluginMock';
+
+      mockFs({
+        [id]: {},
+      });
+
       await expect(createTemporaryPluginFolder(id)).rejects.toThrow(
         /Failed to create temporary plugin directory/,
       );
@@ -59,8 +54,17 @@ describe('createPlugin', () => {
   describe('movePlugin', () => {
     it('should move the temporary plugin directory to its final place', async () => {
       const id = 'testPluginMock';
-      const tempDir = `/${id}`;
+      const tempDir = id;
       const pluginDir = `/test-temp/plugins/${id}`;
+
+      mockFs({
+        [id]: {},
+        'test-temp': {
+          plugins: {
+            testPluginMock: {},
+          },
+        },
+      });
 
       await movePlugin(tempDir, pluginDir, id);
       await expect(fs.pathExists(pluginDir)).resolves.toBe(true);
