@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import fetch, { RequestInit, HeadersInit, Response } from 'node-fetch';
+import fetch from 'cross-fetch';
 import { Config } from '@backstage/config';
 import { ReaderFactory, UrlReader } from './types';
 import { NotFoundError } from '../errors';
@@ -84,7 +84,7 @@ export class BitbucketUrlReader implements UrlReader {
     }
 
     if (response.ok) {
-      return response.buffer();
+      return Buffer.from(await response.text());
     }
 
     const message = `${url} could not be read as ${builtUrl}, ${response.status} ${response.statusText}`;

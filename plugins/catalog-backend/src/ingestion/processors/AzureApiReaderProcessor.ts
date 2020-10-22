@@ -15,8 +15,9 @@
  */
 
 import { LocationSpec } from '@backstage/catalog-model';
+
 import { Config } from '@backstage/config';
-import fetch, { HeadersInit, RequestInit } from 'node-fetch';
+import fetch from 'cross-fetch';
 import * as result from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
 
@@ -44,11 +45,9 @@ export class AzureApiReaderProcessor implements CatalogProcessor {
       ).toString('base64')}`;
     }
 
-    const requestOptions: RequestInit = {
+    return {
       headers,
     };
-
-    return requestOptions;
   }
 
   async readLocation(
@@ -67,7 +66,7 @@ export class AzureApiReaderProcessor implements CatalogProcessor {
 
       // for private repos when PAT is not valid, Azure API returns a http status code 203 with sign in page html
       if (response.ok && response.status !== 203) {
-        const data = await response.buffer();
+        const data = Buffer.from(await response.text());
         emit(result.data(location, data));
       } else {
         const message = `${location.target} could not be read as ${url}, ${response.status} ${response.statusText}`;

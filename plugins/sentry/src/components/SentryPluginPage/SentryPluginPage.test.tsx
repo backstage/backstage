@@ -16,10 +16,13 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import mockFetch from 'jest-fetch-mock';
 import SentryPluginPage from './SentryPluginPage';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
+import { msw } from '@backstage/test-utils';
+import { setupServer } from 'msw/node';
+import { rest } from 'msw';
+
 import {
   ApiProvider,
   ApiRegistry,
@@ -31,8 +34,11 @@ const errorApi = { post: () => {} };
 const ConfigApi = { getString: () => 'test' };
 
 describe('SentryPluginPage', () => {
+  const server = setupServer();
+  msw.setupDefaultHandlers(server);
+
   it('should render header and time switched', () => {
-    mockFetch.mockResponse('{}');
+    server.use(rest.get('/', (_req, res, ctx) => res(ctx.json({}))));
     const rendered = render(
       <ApiProvider
         apis={ApiRegistry.from([

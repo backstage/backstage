@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import fetch, { RequestInit } from 'node-fetch';
+import fetch from 'cross-fetch';
 import parseGitUrl from 'git-url-parse';
 import { Config } from '@backstage/config';
 import { getRootLogger, loadBackendConfig } from '@backstage/backend-common';

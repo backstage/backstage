@@ -15,8 +15,8 @@
  */
 
 import { LocationSpec } from '@backstage/catalog-model';
+import fetch from 'cross-fetch';
 import { Config } from '@backstage/config';
-import fetch, { HeadersInit, RequestInit } from 'node-fetch';
 import * as result from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
 
@@ -61,8 +61,8 @@ export class GitlabApiReaderProcessor implements CatalogProcessor {
       const url = this.buildRawUrl(location.target, projectID);
       const response = await fetch(url.toString(), this.getRequestOptions());
       if (response.ok) {
-        const data = await response.buffer();
-        emit(result.data(location, data));
+        const data = await response.text();
+        emit(result.data(location, Buffer.from(data)));
       } else {
         const message = `${location.target} could not be read as ${url}, ${response.status} ${response.statusText}`;
         if (response.status === 404) {
