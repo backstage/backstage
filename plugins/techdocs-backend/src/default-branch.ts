@@ -51,8 +51,14 @@ interface IGitlabBranch {
 
 function getGithubApiUrl(config: Config, url: string): URL {
   const { protocol, owner, name } = parseGitUrl(url);
+  const providerConfigs =
+    config.getOptionalConfigArray('integrations.github') ?? [];
+
+  // TODO: Maybe we need to filter by host in the array, not sure about GHE
+  const targetProviderConfig = providerConfigs[0];
+
   const apiBaseUrl =
-    config.getOptionalString('integrations.github.apiBaseUrl') ||
+    targetProviderConfig?.getOptionalString('integrations.github.apiBaseUrl') ??
     'api.github.com';
   const apiRepos = 'repos';
 
