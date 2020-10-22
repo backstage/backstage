@@ -36,7 +36,7 @@ export async function startStandaloneServer(
   options: ServerOptions,
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'catalog-backend' });
-  const config = await loadBackendConfig({ logger });
+  const config = await loadBackendConfig({ logger, argv: process.argv });
   const reader = UrlReaders.default({ logger, config });
   const db = useHotMemoize(module, () =>
     DatabaseManager.createInMemoryDatabaseConnection(),

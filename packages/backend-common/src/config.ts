@@ -14,24 +14,32 @@
  * limitations under the License.
  */
 
+import { resolve as resolvePath } from 'path';
+import parseArgs from 'minimist';
+import { Logger } from 'winston';
 import { findPaths } from '@backstage/cli-common';
 import { Config, ConfigReader } from '@backstage/config';
 import { loadConfig } from '@backstage/config-loader';
-import { Logger } from 'winston';
 
 type Options = {
   logger: Logger;
+  // process.argv or any other overrides
+  argv: string[];
 };
 
 /**
  * Load configuration for a Backend
  */
 export async function loadBackendConfig(options: Options): Promise<Config> {
+  const args = parseArgs(options.argv);
+  const configOpts: string[] = [args.config ?? []].flat();
+
   /* eslint-disable-next-line no-restricted-syntax */
   const paths = findPaths(__dirname);
   const configs = await loadConfig({
     env: process.env.APP_ENV ?? process.env.NODE_ENV ?? 'development',
-    rootPaths: [paths.targetRoot, paths.targetDir],
+    configRoot: paths.targetRoot,
+    configPaths: configOpts.map(opt => resolvePath(opt)),
     shouldReadSecrets: true,
   });
 

@@ -32,7 +32,7 @@ export async function startStandaloneServer(
   options: ServerOptions,
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'rollbar-backend' });
-  const config = await loadBackendConfig({ logger });
+  const config = await loadBackendConfig({ logger, argv: process.argv });
 
   logger.debug('Creating application...');
 

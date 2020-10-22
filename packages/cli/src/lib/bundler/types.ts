@@ -27,10 +27,6 @@ export type BundlingOptions = {
   parallel?: ParallelOption;
 };
 
-export type BackendBundlingOptions = Omit<BundlingOptions, 'baseUrl'> & {
-  inspectEnabled: boolean;
-};
-
 export type ServeOptions = BundlingPathsOptions & {
   checksEnabled: boolean;
   config: Config;
@@ -42,4 +38,16 @@ export type BuildOptions = BundlingPathsOptions & {
   parallel?: ParallelOption;
   config: Config;
   appConfigs: AppConfig[];
+};
+
+export type BackendBundlingOptions = {
+  checksEnabled: boolean;
+  isDev: boolean;
+  parallel?: ParallelOption;
+  inspectEnabled: boolean;
+};
+
+export type BackendServeOptions = BundlingPathsOptions & {
+  checksEnabled: boolean;
+  inspectEnabled: boolean;
 };

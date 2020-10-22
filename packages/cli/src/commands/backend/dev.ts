@@ -14,28 +14,14 @@
  * limitations under the License.
  */
 
-import { ConfigReader } from '@backstage/config';
-import { loadConfig } from '@backstage/config-loader';
 import { Command } from 'commander';
-import { paths } from '../../lib/paths';
 import { serveBackend } from '../../lib/bundler/backend';
 
 export default async (cmd: Command) => {
-  const appConfigs = await loadConfig({
-    env: process.env.APP_ENV ?? process.env.NODE_ENV ?? 'development',
-    rootPaths: [paths.targetRoot, paths.targetDir],
-  });
-
-  console.log(
-    `Loaded config from ${appConfigs.map(c => c.context).join(', ')}`,
-  );
-
   const waitForExit = await serveBackend({
     entry: 'src/index',
     checksEnabled: cmd.check,
     inspectEnabled: cmd.inspect,
-    config: ConfigReader.fromConfigs(appConfigs),
-    appConfigs,
   });
 
   await waitForExit();
