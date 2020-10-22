@@ -26,6 +26,7 @@ import {
   makeStyles,
   Typography,
 } from '@material-ui/core';
+import BrightnessAutoIcon from '@material-ui/icons/BrightnessAuto';
 import DocsIcon from '@material-ui/icons/Description';
 import EditIcon from '@material-ui/icons/Edit';
 import GitHubIcon from '@material-ui/icons/GitHub';
@@ -119,6 +120,14 @@ export function AboutCard({ entity, variant }: AboutCardProps) {
               href={`/docs/${
                 entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE
               }/${entity.kind}/${entity.metadata.name}`}
+            />
+            <IconLinkVertical
+              disabled={!entity.spec?.implementsApis}
+              label="View API"
+              icon={<BrightnessAutoIcon />}
+              href={`./${
+                entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE
+              }:${entity.metadata.name}/api`}
             />
           </nav>
         }
