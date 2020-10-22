@@ -125,9 +125,7 @@ export function AboutCard({ entity, variant }: AboutCardProps) {
               disabled={!entity.spec?.implementsApis}
               label="View API"
               icon={<BrightnessAutoIcon />}
-              href={`./${
-                entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE
-              }:${entity.metadata.name}/api`}
+              href="api"
             />
           </nav>
         }
