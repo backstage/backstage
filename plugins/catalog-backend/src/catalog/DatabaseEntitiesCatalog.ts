@@ -15,13 +15,14 @@
  */
 
 import { ConflictError, NotFoundError } from '@backstage/backend-common';
-import type { Entity } from '@backstage/catalog-model';
 import {
   entityHasChanges,
   generateUpdatedEntity,
   getEntityName,
   LOCATION_ANNOTATION,
   serializeEntityRef,
+  Entity,
+  EntityRelationSpec,
 } from '@backstage/catalog-model';
 import { chunk, groupBy } from 'lodash';
 import limiterFactory from 'p-limit';
@@ -189,6 +190,16 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
     }
 
     await Promise.all(tasks);
+  }
+
+  // Set the relations originating from an entity using the DB layer
+  async setRelations(
+    originatingEntityId: string,
+    relations: EntityRelationSpec[],
+  ): Promise<void> {
+    return await this.database.transaction(tx =>
+      this.database.setRelations(tx, originatingEntityId, relations),
+    );
   }
 
   // Given a batch of entities that were just read from a location, take them

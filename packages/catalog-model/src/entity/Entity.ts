@@ -15,6 +15,7 @@
  */
 
 import { JsonObject } from '@backstage/config';
+import { EntityName } from '../types';
 
 /**
  * The format envelope that's common to all versions/kinds of entity.
@@ -42,6 +43,11 @@ export type Entity = {
    * The specification data describing the entity itself.
    */
   spec?: JsonObject;
+
+  /**
+   * The relations that this entity has with other entities.
+   */
+  relations?: EntityRelation[];
 };
 
 /**
@@ -119,4 +125,38 @@ export type EntityMeta = JsonObject & {
    * various ways.
    */
   tags?: string[];
+};
+
+/**
+ * A relation of a specific type to another entity in the catalog.
+ */
+export type EntityRelation = {
+  /**
+   * The type of the relation.
+   */
+  type: string;
+
+  /**
+   * The target entity of this relation.
+   */
+  target: EntityName;
+};
+
+/**
+ * Holds the relationship data for entities
+ */
+export type EntityRelationSpec = {
+  /**
+   * The source entity of this relation.
+   */
+  source: EntityName;
+  /**
+   * The type of the relation.
+   */
+  type: string;
+
+  /**
+   * The target entity of this relation.
+   */
+  target: EntityName;
 };
