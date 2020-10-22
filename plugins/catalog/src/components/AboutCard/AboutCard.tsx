@@ -26,7 +26,7 @@ import {
   makeStyles,
   Typography,
 } from '@material-ui/core';
-import BrightnessAutoIcon from '@material-ui/icons/BrightnessAuto';
+import ExtensionIcon from '@material-ui/icons/Extension';
 import DocsIcon from '@material-ui/icons/Description';
 import EditIcon from '@material-ui/icons/Edit';
 import GitHubIcon from '@material-ui/icons/GitHub';
@@ -124,7 +124,7 @@ export function AboutCard({ entity, variant }: AboutCardProps) {
             <IconLinkVertical
               disabled={!entity.spec?.implementsApis}
               label="View API"
-              icon={<BrightnessAutoIcon />}
+              icon={<ExtensionIcon />}
               href="api"
             />
           </nav>
