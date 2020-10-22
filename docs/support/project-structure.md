@@ -228,9 +228,6 @@ future.
 - [`app-config.yaml`](https://github.com/spotify/backstage/tree/master/app-config.yaml) -
   Configuration for the app, both frontend and backend
 
-- [`app-config.development.yaml`](https://github.com/spotify/backstage/tree/master/app-config.development.yaml) -
-  Used for overriding configuration when developing locally.
-
 - [`catalog-info.yaml`](https://github.com/spotify/backstage/tree/master/catalog-info.yaml) -
   Description of Backstage in the Backstage Entity format.
 
