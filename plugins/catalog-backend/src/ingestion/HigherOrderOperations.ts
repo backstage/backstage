@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, Location, LocationSpec } from '@backstage/catalog-model';
+import { Location, LocationSpec } from '@backstage/catalog-model';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from 'winston';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
@@ -78,7 +78,7 @@ export class HigherOrderOperations implements HigherOrderOperation {
 
     // Read the location fully, bailing on any errors
     const readerOutput = await this.locationReader.read(spec);
-    if (readerOutput.errors.length) {
+    if (!(spec.presence === 'optional') && readerOutput.errors.length) {
       const item = readerOutput.errors[0];
       throw item.error;
     }
@@ -91,16 +91,20 @@ export class HigherOrderOperations implements HigherOrderOperation {
     if (!previousLocation) {
       await this.locationsCatalog.addLocation(location);
     }
-    const outputEntities: Entity[] = [];
-    for (const entity of readerOutput.entities) {
-      const out = await this.entitiesCatalog.addOrUpdateEntity(
-        entity.entity,
-        location.id,
-      );
-      outputEntities.push(out);
+    if (readerOutput.entities.length === 0) {
+      return { location, entities: [] };
     }
 
-    return { location, entities: outputEntities };
+    const writtenEntities = await this.entitiesCatalog.batchAddOrUpdateEntities(
+      readerOutput.entities,
+      location.id,
+    );
+
+    const entities = await this.entitiesCatalog.entities({
+      'metadata.uid': writtenEntities.map(e => e.entityId),
+    });
+
+    return { location, entities };
   }
 
   /**
@@ -163,7 +167,7 @@ export class HigherOrderOperations implements HigherOrderOperation {
 
     try {
       await this.entitiesCatalog.batchAddOrUpdateEntities(
-        readerOutput.entities.map(e => e.entity),
+        readerOutput.entities,
         location.id,
       );
     } catch (e) {

@@ -16,13 +16,11 @@
 import { CatalogClient } from './client';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
+import { msw } from '@backstage/test-utils';
 
 describe('Catalog GraphQL Module', () => {
   const worker = setupServer();
-
-  beforeAll(() => worker.listen({ onUnhandledRequest: 'error' }));
-  afterAll(() => worker.close());
-  afterEach(() => worker.resetHandlers());
+  msw.setupDefaultHandlers(worker);
 
   const baseUrl = 'http://localhost:1234';
 

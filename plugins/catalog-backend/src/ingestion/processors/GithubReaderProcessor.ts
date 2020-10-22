@@ -17,7 +17,7 @@
 import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import parseGitUri from 'git-url-parse';
-import fetch, { HeadersInit, RequestInit } from 'node-fetch';
+import fetch from 'cross-fetch';
 import { Logger } from 'winston';
 import * as result from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
@@ -252,8 +252,8 @@ export class GithubReaderProcessor implements CatalogProcessor {
       const response = await fetch(url.toString(), options);
 
       if (response.ok) {
-        const data = await response.buffer();
-        emit(result.data(location, data));
+        const data = await response.text();
+        emit(result.data(location, Buffer.from(data)));
       } else {
         const message = `${location.target} could not be read as ${url}, ${response.status} ${response.statusText}`;
         if (response.status === 404) {

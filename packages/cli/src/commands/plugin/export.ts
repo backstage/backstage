@@ -15,25 +15,13 @@
  */
 
 import { Command } from 'commander';
-import { loadConfig } from '@backstage/config-loader';
-import { ConfigReader } from '@backstage/config';
-import { paths } from '../../lib/paths';
 import { buildBundle } from '../../lib/bundler';
+import { loadCliConfig } from '../../lib/config';
 
 export default async (cmd: Command) => {
-  const appConfigs = await loadConfig({
-    env: process.env.APP_ENV ?? process.env.NODE_ENV ?? 'production',
-    rootPaths: [paths.targetRoot, paths.targetDir],
-  });
-
-  console.log(
-    `Loaded config from ${appConfigs.map(c => c.context).join(', ')}`,
-  );
-
   await buildBundle({
     entry: 'dev/index',
     statsJsonEnabled: cmd.stats,
-    config: ConfigReader.fromConfigs(appConfigs),
-    appConfigs,
+    ...(await loadCliConfig(cmd.config)),
   });
 };

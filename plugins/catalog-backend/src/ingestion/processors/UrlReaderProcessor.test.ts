@@ -14,25 +14,23 @@
  * limitations under the License.
  */
 
+import { UrlReaderProcessor } from './UrlReaderProcessor';
 import { getVoidLogger, UrlReaders } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
+import { msw } from '@backstage/test-utils';
 import {
   CatalogProcessorDataResult,
   CatalogProcessorErrorResult,
   CatalogProcessorResult,
 } from './types';
-import { UrlReaderProcessor } from './UrlReaderProcessor';
 
 describe('UrlReaderProcessor', () => {
   const mockApiOrigin = 'http://localhost:23000';
   const server = setupServer();
 
-  beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
-  afterEach(() => server.resetHandlers());
-  afterAll(() => server.close());
-
+  msw.setupDefaultHandlers(server);
   it('should load from url', async () => {
     const logger = getVoidLogger();
     const reader = UrlReaders.default({ logger, config: new ConfigReader({}) });

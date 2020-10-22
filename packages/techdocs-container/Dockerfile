@@ -17,7 +17,7 @@ FROM python:3.8-alpine
 
 RUN apk update && apk --no-cache add gcc musl-dev openjdk11-jdk curl graphviz ttf-dejavu fontconfig
 
-RUN curl -L http://sourceforge.net/projects/plantuml/files/plantuml.1.2020.16.jar/download > /opt/plantuml.jar
+RUN curl -o plantuml.jar -L http://sourceforge.net/projects/plantuml/files/plantuml.1.2020.16.jar/download && echo "c789ace48347c43073232b1458badc5810c01fe8  plantuml.jar" | sha1sum -c - && mv plantuml.jar /opt/plantuml.jar
 RUN pip install --upgrade pip && pip install mkdocs-techdocs-core==0.0.8
 
 # Create script to call plantuml.jar from a location in path

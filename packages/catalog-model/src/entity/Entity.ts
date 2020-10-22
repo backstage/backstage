@@ -143,13 +143,14 @@ export type EntityRelation = {
 };
 
 /**
- * Holds the relationship data for entities
+ * Holds the relation data for entities.
  */
 export type EntityRelationSpec = {
   /**
    * The source entity of this relation.
    */
   source: EntityName;
+
   /**
    * The type of the relation.
    */

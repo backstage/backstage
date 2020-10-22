@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import fetch, { RequestInit } from 'node-fetch';
+import fetch from 'cross-fetch';
 import parseGitUrl from 'git-url-parse';
 import { Config } from '@backstage/config';
 import { getRootLogger, loadBackendConfig } from '@backstage/backend-common';
@@ -51,8 +51,14 @@ interface IGitlabBranch {
 
 function getGithubApiUrl(config: Config, url: string): URL {
   const { protocol, owner, name } = parseGitUrl(url);
+  const providerConfigs =
+    config.getOptionalConfigArray('integrations.github') ?? [];
+
+  // TODO: Maybe we need to filter by host in the array, not sure about GHE
+  const targetProviderConfig = providerConfigs[0];
+
   const apiBaseUrl =
-    config.getOptionalString('integrations.github.apiBaseUrl') ||
+    targetProviderConfig?.getOptionalString('integrations.github.apiBaseUrl') ??
     'api.github.com';
   const apiRepos = 'repos';
 
@@ -231,7 +237,10 @@ export const getDefaultBranch = async (
   repositoryUrl: string,
 ): Promise<string> => {
   // TODO(Rugvip): Config should not be loaded here, pass it in instead
-  const config = await loadBackendConfig({ logger: getRootLogger() });
+  const config = await loadBackendConfig({
+    logger: getRootLogger(),
+    argv: process.argv,
+  });
   const type = getGitRepoType(repositoryUrl);
 
   try {

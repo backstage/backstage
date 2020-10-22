@@ -109,9 +109,15 @@ export class CatalogClient implements CatalogApi {
 
     const { location, entities } = await response.json();
 
-    if (!location || entities.length === 0)
+    if (!location) {
       throw new Error(`Location wasn't added: ${target}`);
+    }
 
+    if (entities.length === 0) {
+      throw new Error(
+        `Location was added but has no entities specified yet: ${target}`,
+      );
+    }
     return {
       location,
       entities,
