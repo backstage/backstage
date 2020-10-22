@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: acme-corp
+  description: A collection of all Backstage example Groups
+spec:
+  type: github
+  targets:
+    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/acme/org.yaml
