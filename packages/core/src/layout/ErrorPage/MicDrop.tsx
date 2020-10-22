@@ -18,14 +18,21 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core';
 import MicDropSvgUrl from './mic-drop.svg';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   micDrop: {
     maxWidth: '60%',
-    bottom: 10,
-    right: 10,
+    bottom: 16,
+    right: 16,
     position: 'absolute',
+    [theme.breakpoints.down('xs')]: {
+      maxWidth: '96%',
+      bottom: 'unset',
+      right: 'unset',
+      position: 'relative',
+      margin: `${theme.spacing(10)}px auto ${theme.spacing(4)}px`,
+    },
   },
-});
+}));
 
 export const MicDrop = () => {
   const classes = useStyles();
