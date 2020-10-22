@@ -15,7 +15,12 @@
  */
 
 import { EntityPolicy } from '../../types';
-import { makeValidator, Validators } from '../../validation';
+import {
+  CommonValidatorFunctions,
+  KubernetesValidatorFunctions,
+  makeValidator,
+  Validators,
+} from '../../validation';
 import { Entity } from '../Entity';
 
 /**
@@ -51,7 +56,11 @@ export class FieldFormatEntityPolicy implements EntityPolicy {
 
       if (!isValid) {
         let expectation;
-        switch (validator.name) {
+        switch (
+          validator.name as
+            | keyof typeof KubernetesValidatorFunctions
+            | keyof typeof CommonValidatorFunctions
+        ) {
           case 'isValidLabelValue':
           case 'isValidObjectName':
             expectation =
@@ -65,7 +74,7 @@ export class FieldFormatEntityPolicy implements EntityPolicy {
           case 'isValidNamespace':
           case 'isValidDnsLabel':
             expectation =
-              'a string that is sequences of [a-zA-Z0-9] seperated by [-], at most 63 characters in total';
+              'a string that is sequences of [a-zA-Z0-9] separated by [-], at most 63 characters in total';
             break;
           case 'isValidAnnotationValue':
             expectation = 'a string';
