@@ -20,22 +20,17 @@ import { Progress } from '@backstage/core';
 import { Run } from '../../MLFlowClient';
 import { mlFlowClient } from '../../index';
 import { RunTable } from '../ExperimentPage/RunTable';
+import { RunTrend } from './RunTrend';
 
-export const RunTablePage2 = ({ experimentId }: { experimentId: string }) => {
-  const { value, loading } = useAsync(async (): Promise<Run[]> => {
-    return mlFlowClient.searchRuns([experimentId]);
-  }, []);
-  if (loading) {
-    return <Progress />;
-  }
-  return value ? (
-    <RunTable runs={value} />
-  ) : (
-    <div>No Runs Found for {experimentId}</div>
-  );
+type RunTablePageProps = {
+  experimentId: string;
+  showTrend: boolean;
 };
 
-export const RunTablePage = ({ experimentId }: { experimentId: string }) => {
+export const RunTablePage = ({
+  experimentId,
+  showTrend,
+}: RunTablePageProps) => {
   const [searchQueryBox, setSearchQueryBox] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>();
 
@@ -57,46 +52,47 @@ export const RunTablePage = ({ experimentId }: { experimentId: string }) => {
   }
 
   return (
-    <>
-      <Grid container spacing={3} direction="column">
-        <Grid item>
-          <Grid container direction="row" spacing={3} alignItems="center">
-            <Grid item xs={12} md={9}>
-              <FormControl fullWidth>
-                <TextField
-                  label="Custom MLFlow search query"
-                  helperText="Filters in the table below operate on the results of this query"
-                  name="query-input"
-                  value={searchQueryBox}
-                  variant="outlined"
-                  onChange={e => setSearchQueryBox(e.target.value)}
-                />
-              </FormControl>
-            </Grid>
-            <Grid item xs={6} md={1}>
-              <Button
-                variant="contained"
-                type="submit"
-                color="primary"
-                onClick={handleSearchSubmit}
-              >
-                Search
-              </Button>
-            </Grid>
-            <Grid item xs={6} md={2}>
-              <Button
-                variant="contained"
-                type="submit"
-                color="primary"
-                onClick={handleClearSearchSubmit}
-              >
-                Clear Search
-              </Button>
-            </Grid>
+    <Grid container spacing={3} direction="column">
+      <Grid item>
+        <Grid container direction="row" spacing={3} alignItems="center">
+          <Grid item xs={12} md={9}>
+            <FormControl fullWidth>
+              <TextField
+                label="Custom MLFlow search query"
+                helperText="Filters in the table below operate on the results of this query"
+                name="query-input"
+                value={searchQueryBox}
+                variant="outlined"
+                onChange={e => setSearchQueryBox(e.target.value)}
+              />
+            </FormControl>
+          </Grid>
+          <Grid item xs={6} md={1}>
+            <Button
+              variant="contained"
+              type="submit"
+              color="primary"
+              onClick={handleSearchSubmit}
+            >
+              Search
+            </Button>
+          </Grid>
+          <Grid item xs={6} md={2}>
+            <Button
+              variant="contained"
+              type="submit"
+              color="primary"
+              onClick={handleClearSearchSubmit}
+            >
+              Clear Search
+            </Button>
           </Grid>
         </Grid>
-        <Grid item>{runs && <RunTable runs={runs} />}</Grid>
       </Grid>
-    </>
+      <Grid item>
+        {runs &&
+          (showTrend ? <RunTrend runs={runs} /> : <RunTable runs={runs} />)}
+      </Grid>
+    </Grid>
   );
 };
