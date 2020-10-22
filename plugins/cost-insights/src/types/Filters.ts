@@ -27,8 +27,6 @@ export interface PageFilters {
 
 export type ProductFilters = Array<ProductPeriod>;
 
-export type QueryParams = PageFilters & { products: ProductFilters };
-
 export interface ProductPeriod {
   duration: Duration;
   productType: string;

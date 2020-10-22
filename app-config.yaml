@@ -146,6 +146,9 @@ catalog:
     # Backstage example templates
     - type: url
       target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/all-templates.yaml
+    # Backstage example groups and users
+    - type: url
+      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/acme-corp.yaml
 
 scaffolder:
   github:

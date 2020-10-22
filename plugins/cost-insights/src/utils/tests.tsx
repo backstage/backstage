@@ -16,6 +16,7 @@
 import React, { Dispatch, ReactNode, SetStateAction } from 'react';
 import {
   getDefaultPageFilters,
+  Maybe,
   PageFilters,
   ProductFilters,
   Group,
@@ -29,8 +30,8 @@ import { MockProductFilters } from './mockData';
 export const MockGroups: Group[] = [{ id: 'tech' }, { id: 'mock-group' }];
 
 type MockFilterProviderProps = {
-  setPageFilters: Dispatch<SetStateAction<PageFilters>>;
-  setProductFilters: Dispatch<SetStateAction<ProductFilters>>;
+  setPageFilters: Dispatch<SetStateAction<Maybe<PageFilters>>>;
+  setProductFilters: Dispatch<SetStateAction<Maybe<ProductFilters>>>;
   children: ReactNode;
 };
 
