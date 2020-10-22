@@ -15,7 +15,11 @@
  */
 
 import { InputError, NotFoundError } from '@backstage/backend-common';
-import { Entity, LocationSpec } from '@backstage/catalog-model';
+import {
+  Entity,
+  EntityRelationSpec,
+  LocationSpec,
+} from '@backstage/catalog-model';
 import { CatalogProcessorResult } from './types';
 
 export function notFoundError(
@@ -66,4 +70,8 @@ export function entity(
   newEntity: Entity,
 ): CatalogProcessorResult {
   return { type: 'entity', location: atLocation, entity: newEntity };
+}
+
+export function relation(spec: EntityRelationSpec): CatalogProcessorResult {
+  return { type: 'relation', relation: spec };
 }
