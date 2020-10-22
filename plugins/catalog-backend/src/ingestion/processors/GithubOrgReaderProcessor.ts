@@ -19,14 +19,14 @@ import { Config } from '@backstage/config';
 import { graphql } from '@octokit/graphql';
 import { Logger } from 'winston';
 import * as results from './results';
-import { LocationProcessor, LocationProcessorEmit } from './types';
+import { CatalogProcessor, CatalogProcessorEmit } from './types';
 import { getOrganizationTeams, getOrganizationUsers } from './util/github';
 import { buildOrgHierarchy } from './util/org';
 
 /**
  * Extracts teams and users out of a GitHub org.
  */
-export class GithubOrgReaderProcessor implements LocationProcessor {
+export class GithubOrgReaderProcessor implements CatalogProcessor {
   private readonly providers: ProviderConfig[];
   private readonly logger: Logger;
 
@@ -45,7 +45,7 @@ export class GithubOrgReaderProcessor implements LocationProcessor {
   async readLocation(
     location: LocationSpec,
     _optional: boolean,
-    emit: LocationProcessorEmit,
+    emit: CatalogProcessorEmit,
   ): Promise<boolean> {
     if (location.type !== 'github-org') {
       return false;

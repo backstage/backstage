@@ -17,7 +17,7 @@ import {
   SingleHostDiscovery,
   UrlReaders,
 } from '@backstage/backend-common';
-import { ConfigReader } from '@backstage/config';
+import { Config } from '@backstage/config';
 import auth from './plugins/auth';
 import catalog from './plugins/catalog';
 import scaffolder from './plugins/scaffolder';
@@ -25,7 +25,7 @@ import proxy from './plugins/proxy';
 import techdocs from './plugins/techdocs';
 import { PluginEnvironment } from './types';
 
-function makeCreateEnv(config: ConfigReader) {
+function makeCreateEnv(config: Config) {
   const root = getRootLogger();
   const reader = UrlReaders.default({ logger: root, config });
   const discovery = SingleHostDiscovery.fromConfig(config);
@@ -42,9 +42,8 @@ function makeCreateEnv(config: ConfigReader) {
 }
 
 async function main() {
-  const configs = await loadBackendConfig();
-  const configReader = ConfigReader.fromConfigs(configs);
-  const createEnv = makeCreateEnv(configReader);
+  const config = await loadBackendConfig({logger: getRootLogger()});
+  const createEnv = makeCreateEnv(config);
 
   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
   const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
@@ -61,7 +60,7 @@ async function main() {
   apiRouter.use(notFoundHandler());
 
   const service = createServiceBuilder(module)
-    .loadConfig(configReader)
+    .loadConfig(config)
     .addRouter('/api', apiRouter)
 
   await service.start().catch(err => {

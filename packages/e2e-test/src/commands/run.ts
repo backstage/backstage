@@ -16,7 +16,7 @@
 
 import os from 'os';
 import fs from 'fs-extra';
-import fetch from 'node-fetch';
+import fetch from 'cross-fetch';
 import handlebars from 'handlebars';
 import killTree from 'tree-kill';
 import { resolve as resolvePath, join as joinPath } from 'path';
@@ -301,7 +301,7 @@ async function testAppServe(pluginName: string, appDir: string) {
       try {
         const browser = new Browser();
 
-        await waitForPageWithText(browser, '/', 'Backstage Service Catalog');
+        await waitForPageWithText(browser, '/', 'My Company Service Catalog');
         await waitForPageWithText(
           browser,
           `/${pluginName}`,

@@ -22,12 +22,10 @@ export interface PageFilters {
   group: Maybe<string>;
   project: Maybe<string>;
   duration: Duration;
-  metric: Maybe<string>;
+  metric: string | null;
 }
 
 export type ProductFilters = Array<ProductPeriod>;
-
-export type QueryParams = PageFilters & { products: ProductFilters };
 
 export interface ProductPeriod {
   duration: Duration;

@@ -20,7 +20,6 @@ import inquirer, { Answers, Question } from 'inquirer';
 import { getCodeownersFilePath } from '../../lib/codeowners';
 import { paths } from '../../lib/paths';
 import { Task } from '../../lib/tasks';
-// import os from 'os';
 
 const BACKSTAGE = '@backstage';
 
@@ -63,7 +62,7 @@ export const removePluginDirectory = async (destination: string) => {
 
 export const removeSymLink = async (destination: string) => {
   await Task.forItem('removing', 'symbolic link', async () => {
-    const symLinkExists = fse.pathExists(destination);
+    const symLinkExists = await fse.pathExists(destination);
     if (symLinkExists) {
       try {
         await fse.remove(destination);
@@ -190,7 +189,7 @@ export default async () => {
           return chalk.red('Please enter an ID for the plugin');
         } else if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(value)) {
           return chalk.red(
-            'Plugin IDs must be kehbab-cased and contain only letters, digits and dashes.',
+            'Plugin IDs must be kebab-cased and contain only letters, digits and dashes.',
           );
         }
         return true;

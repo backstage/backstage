@@ -93,6 +93,11 @@ describe('LocationV1alpha1Policy', () => {
     await expect(policy.enforce(entity)).resolves.toBe(entity);
   });
 
+  it('accepts empty targets', async () => {
+    (entity as any).spec.targets = [];
+    await expect(policy.enforce(entity)).resolves.toBe(entity);
+  });
+
   it('rejects wrong targets', async () => {
     (entity as any).spec.targets = 7;
     await expect(policy.enforce(entity)).rejects.toThrow(/targets/);

@@ -17,10 +17,10 @@
 import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import parseGitUri from 'git-url-parse';
-import fetch, { HeadersInit, RequestInit } from 'node-fetch';
+import fetch from 'cross-fetch';
 import { Logger } from 'winston';
 import * as result from './results';
-import { LocationProcessor, LocationProcessorEmit } from './types';
+import { CatalogProcessor, CatalogProcessorEmit } from './types';
 
 // ***********************************************************************
 // * NOTE: This has been replaced by packages/backend-common/src/reading *
@@ -210,7 +210,7 @@ export function readConfig(config: Config, logger: Logger): ProviderConfig[] {
  * A processor that adds the ability to read files from GitHub v3 APIs, such as
  * the one exposed by GitHub itself.
  */
-export class GithubReaderProcessor implements LocationProcessor {
+export class GithubReaderProcessor implements CatalogProcessor {
   private providers: ProviderConfig[];
 
   static fromConfig(config: Config, logger: Logger) {
@@ -224,7 +224,7 @@ export class GithubReaderProcessor implements LocationProcessor {
   async readLocation(
     location: LocationSpec,
     optional: boolean,
-    emit: LocationProcessorEmit,
+    emit: CatalogProcessorEmit,
   ): Promise<boolean> {
     // The github/api type is for backward compatibility
     if (location.type !== 'github' && location.type !== 'github/api') {
@@ -252,8 +252,8 @@ export class GithubReaderProcessor implements LocationProcessor {
       const response = await fetch(url.toString(), options);
 
       if (response.ok) {
-        const data = await response.buffer();
-        emit(result.data(location, data));
+        const data = await response.text();
+        emit(result.data(location, Buffer.from(data)));
       } else {
         const message = `${location.target} could not be read as ${url}, ${response.status} ${response.statusText}`;
         if (response.status === 404) {

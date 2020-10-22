@@ -17,7 +17,7 @@ import { Logger } from 'winston';
 import Router from 'express-promise-router';
 import express from 'express';
 import Knex from 'knex';
-import fetch from 'node-fetch';
+import fetch from 'cross-fetch';
 import { Config } from '@backstage/config';
 import Docker from 'dockerode';
 import {
@@ -111,7 +111,9 @@ export async function createRouter({
 
     const catalogRes = await fetch(`${catalogUrl}/entities/by-name/${triple}`);
     if (!catalogRes.ok) {
-      catalogRes.body.pipe(res.status(catalogRes.status));
+      const catalogResText = await catalogRes.text();
+      res.status(catalogRes.status);
+      res.send(catalogResText);
       return;
     }
 

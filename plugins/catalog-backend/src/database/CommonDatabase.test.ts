@@ -15,7 +15,7 @@
  */
 
 import { ConflictError } from '@backstage/backend-common';
-import type { Entity, Location } from '@backstage/catalog-model';
+import { Entity, Location, parseEntityRef } from '@backstage/catalog-model';
 import { DatabaseManager } from './DatabaseManager';
 import type {
   DbEntityRequest,
@@ -491,6 +491,196 @@ describe('CommonDatabase', () => {
           },
         ]),
       );
+    });
+  });
+
+  describe('setRelations', () => {
+    it('adds a relation for an entity', async () => {
+      const mockRelations = [
+        {
+          source: {
+            kind: entityRequest.entity.kind,
+            namespace: entityRequest.entity.metadata.namespace!,
+            name: entityRequest.entity.metadata.name,
+          },
+          target: {
+            kind: 'component',
+            namespace: 'asd',
+            name: 'bleb',
+          },
+          type: 'child',
+        },
+      ];
+
+      const entityId = await db.transaction(async tx => {
+        const [{ entity }] = await db.addEntities(tx, [entityRequest]);
+
+        await db.setRelations(tx, entity?.metadata?.uid!, mockRelations);
+        return entity.metadata.uid;
+      });
+
+      const returnedEntity1 = await db.transaction(tx =>
+        db.entityByUid(tx, entityId!),
+      );
+      expect(returnedEntity1?.entity.relations).toEqual([
+        { target: mockRelations[0].target, type: 'child' },
+      ]);
+
+      const returnedEntity2 = await db.transaction(tx =>
+        db.entityByName(tx, mockRelations[0].source),
+      );
+      expect(returnedEntity2?.entity.relations).toEqual([
+        { target: mockRelations[0].target, type: 'child' },
+      ]);
+
+      const [returnedEntity3] = await db.transaction(tx => db.entities(tx));
+      expect(returnedEntity3?.entity.relations).toEqual([
+        { target: mockRelations[0].target, type: 'child' },
+      ]);
+    });
+
+    function makeRelation(source: string, type: string, target: string) {
+      return {
+        source: parseEntityRef(source, {
+          defaultKind: 'x',
+          defaultNamespace: 'x',
+        }),
+        type,
+        target: parseEntityRef(target, {
+          defaultKind: 'x',
+          defaultNamespace: 'x',
+        }),
+      };
+    }
+
+    it('should not allow setting relations on nonexistent entities', async () => {
+      await expect(
+        db.transaction(async tx => {
+          await db.setRelations(tx, 'nonexistent', [
+            makeRelation('a:b/c', 'rel1', 'x:y/z'),
+          ]);
+        }),
+      ).rejects.toThrow(/constraint failed/);
+    });
+
+    it('should allow setting relations on nonexistent entities without any relations', async () => {
+      await expect(
+        db.transaction(async tx => {
+          await db.setRelations(tx, 'nonexistent', []);
+        }),
+      ).resolves.toBeUndefined();
+    });
+
+    it('adds multiple relations for entities', async () => {
+      const entity1 = {
+        apiVersion: 'v1',
+        kind: 'a',
+        metadata: {
+          name: 'c',
+          namespace: 'b',
+        },
+      };
+      const entity2 = {
+        apiVersion: 'v1',
+        kind: 'x',
+        metadata: {
+          name: 'z',
+          namespace: 'y',
+        },
+      };
+      const fromEntity1 = [
+        makeRelation('a:b/c', 'rel1', 'x:y/z'),
+        makeRelation('x:y/z', 'rel2', 'a:b/c'),
+        makeRelation('a:b/c', 'rel2', 'x:y/z'),
+      ];
+      const fromEntity2 = [
+        makeRelation('a:b/c', 'rel4', 'x:y/z'),
+        makeRelation('a:b/c', 'rel5', 'x:y/z'),
+        makeRelation('x:y/z', 'rel6', 'a:b/c'),
+        // relations don't have to reference the originating entity, so this should be fine, but not show up
+        makeRelation('g:h/i', 'rel8', 'd:e/f'),
+      ];
+
+      const { id2: secondEntityId } = await db.transaction(async tx => {
+        const [{ entity: e1 }, { entity: e2 }] = await db.addEntities(tx, [
+          { entity: entity1 },
+          { entity: entity2 },
+        ]);
+        const id1 = e1?.metadata?.uid!;
+        const id2 = e2?.metadata?.uid!;
+
+        await db.setRelations(tx, id1, fromEntity1);
+        await db.setRelations(tx, id2, fromEntity2);
+
+        return { id1, id2 };
+      });
+
+      const res = await db.transaction(tx => db.entities(tx));
+      expect(
+        res.map(r => ({
+          name: r.entity.metadata.name,
+          relations: r.entity.relations,
+        })),
+      ).toEqual([
+        {
+          name: 'c',
+          relations: [
+            {
+              type: 'rel1',
+              target: { kind: 'x', namespace: 'y', name: 'z' },
+            },
+            {
+              type: 'rel2',
+              target: { kind: 'x', namespace: 'y', name: 'z' },
+            },
+            {
+              type: 'rel4',
+              target: { kind: 'x', namespace: 'y', name: 'z' },
+            },
+            {
+              type: 'rel5',
+              target: { kind: 'x', namespace: 'y', name: 'z' },
+            },
+          ],
+        },
+        {
+          name: 'z',
+          relations: [
+            {
+              type: 'rel2',
+              target: { kind: 'a', namespace: 'b', name: 'c' },
+            },
+            {
+              type: 'rel6',
+              target: { kind: 'a', namespace: 'b', name: 'c' },
+            },
+          ],
+        },
+      ]);
+
+      await db.transaction(tx => db.removeEntityByUid(tx, secondEntityId));
+
+      const res2 = await db.transaction(tx => db.entities(tx));
+      expect(
+        res2.map(r => ({
+          name: r.entity.metadata.name,
+          relations: r.entity.relations,
+        })),
+      ).toEqual([
+        {
+          name: 'c',
+          relations: [
+            {
+              type: 'rel1',
+              target: { kind: 'x', namespace: 'y', name: 'z' },
+            },
+            {
+              type: 'rel2',
+              target: { kind: 'x', namespace: 'y', name: 'z' },
+            },
+          ],
+        },
+      ]);
     });
   });
 

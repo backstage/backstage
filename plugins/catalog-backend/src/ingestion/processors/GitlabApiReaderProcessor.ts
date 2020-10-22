@@ -15,17 +15,17 @@
  */
 
 import { LocationSpec } from '@backstage/catalog-model';
-import fetch, { RequestInit, HeadersInit } from 'node-fetch';
-import * as result from './results';
-import { LocationProcessor, LocationProcessorEmit } from './types';
+import fetch from 'cross-fetch';
 import { Config } from '@backstage/config';
+import * as result from './results';
+import { CatalogProcessor, CatalogProcessorEmit } from './types';
 
 // ***********************************************************************
 // * NOTE: This has been replaced by packages/backend-common/src/reading *
 // * Don't implement new functionality here as this file will be removed *
 // ***********************************************************************
 
-export class GitlabApiReaderProcessor implements LocationProcessor {
+export class GitlabApiReaderProcessor implements CatalogProcessor {
   private privateToken: string;
 
   constructor(config: Config) {
@@ -50,7 +50,7 @@ export class GitlabApiReaderProcessor implements LocationProcessor {
   async readLocation(
     location: LocationSpec,
     optional: boolean,
-    emit: LocationProcessorEmit,
+    emit: CatalogProcessorEmit,
   ): Promise<boolean> {
     if (location.type !== 'gitlab/api') {
       return false;
@@ -61,8 +61,8 @@ export class GitlabApiReaderProcessor implements LocationProcessor {
       const url = this.buildRawUrl(location.target, projectID);
       const response = await fetch(url.toString(), this.getRequestOptions());
       if (response.ok) {
-        const data = await response.buffer();
-        emit(result.data(location, data));
+        const data = await response.text();
+        emit(result.data(location, Buffer.from(data)));
       } else {
         const message = `${location.target} could not be read as ${url}, ${response.status} ${response.statusText}`;
         if (response.status === 404) {

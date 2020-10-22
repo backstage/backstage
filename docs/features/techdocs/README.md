@@ -82,7 +82,9 @@ for companies to adopt. This involves (something like) the following work items.
 - “Solidify” work and “Mkdocs stabilization” work that has come out of our Q3
   end-to-end work.
 - Improve/simplify the get up and running process.
-- Introduce doc template Software Templates.
+- Introduce new documentation templates.
+- Extend the already existing docs-template to have options of different
+  documentation types.
 - Enable companies to choose their own storage (S3 for example).
 - Enable companies to choose their own source code hosting provider (GitHub,
   GitLab, and so).

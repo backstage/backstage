@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
+import { Command } from 'commander';
 import fs from 'fs-extra';
 import { join as joinPath, relative as relativePath } from 'path';
 import { createDistWorkspace } from '../../lib/packager';
 import { paths } from '../../lib/paths';
 import { run } from '../../lib/run';
-import { Command } from 'commander';
+import { parseParallel, PARALLEL_ENV_VAR } from '../../lib/parallel';
 
 const PKG_PATH = 'package.json';
 
@@ -41,6 +42,7 @@ export default async (cmd: Command) => {
       ...appConfigs,
       { src: paths.resolveTarget('Dockerfile'), dest: 'Dockerfile' },
     ],
+    parallel: parseParallel(process.env[PARALLEL_ENV_VAR]),
     skeleton: 'skeleton.tar',
   });
   console.log(`Dist workspace ready at ${tempDistWorkspace}`);

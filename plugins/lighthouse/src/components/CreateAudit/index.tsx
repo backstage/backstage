@@ -30,7 +30,6 @@ import {
   InfoCard,
   Header,
   Page,
-  pageTheme,
   Content,
   ContentHeader,
   HeaderLabel,
@@ -170,7 +169,7 @@ export const CreateAuditContent: FC<{}> = () => {
 };
 
 const CreateAudit = () => (
-  <Page theme={pageTheme.tool}>
+  <Page themeId="tool">
     <Header title="Lighthouse" subtitle="Website audits powered by Lighthouse">
       <HeaderLabel label="Owner" value="Spotify" />
       <HeaderLabel label="Lifecycle" value="Alpha" />

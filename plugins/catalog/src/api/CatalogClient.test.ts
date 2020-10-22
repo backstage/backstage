@@ -19,17 +19,16 @@ import { setupServer } from 'msw/node';
 import { CatalogClient } from './CatalogClient';
 import { Entity } from '@backstage/catalog-model';
 import { UrlPatternDiscovery } from '@backstage/core';
+import { msw } from '@backstage/test-utils';
 
 const server = setupServer();
 const mockBaseUrl = 'http://backstage:9191/i-am-a-mock-base';
 const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);
 
 describe('CatalogClient', () => {
-  beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
-  afterEach(() => server.resetHandlers());
-  afterAll(() => server.close());
-
   let client = new CatalogClient({ discoveryApi });
+
+  msw.setupDefaultHandlers(server);
 
   beforeEach(() => {
     client = new CatalogClient({ discoveryApi });

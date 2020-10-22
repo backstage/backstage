@@ -19,10 +19,9 @@ import {
   ListItem,
   ListItemSecondaryAction,
   ListItemText,
+  Switch,
   Tooltip,
 } from '@material-ui/core';
-import CheckIcon from '@material-ui/icons/CheckCircle';
-import { ToggleButton } from '@material-ui/lab';
 import { FeatureFlagsRegistryItem } from '@backstage/core';
 
 type Props = {
@@ -39,14 +38,12 @@ export const FlagItem = ({ flag, enabled, toggleHandler }: Props) => (
     />
     <ListItemSecondaryAction>
       <Tooltip placement="top" arrow title={enabled ? 'Disable' : 'Enable'}>
-        <ToggleButton
-          size="small"
-          value="flag"
-          selected={enabled}
+        <Switch
+          color="primary"
+          checked={enabled}
           onChange={() => toggleHandler(flag.name)}
-        >
-          <CheckIcon color={enabled ? 'primary' : undefined} />
-        </ToggleButton>
+          name={flag.name}
+        />
       </Tooltip>
     </ListItemSecondaryAction>
   </ListItem>

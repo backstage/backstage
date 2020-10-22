@@ -1,6 +1,7 @@
 app:
   title: Backstage Example App
   baseUrl: http://localhost:7000
+  googleAnalyticsTrackingId: # UA-000000-0
 
 backend:
   baseUrl: http://localhost:7000
@@ -34,8 +35,14 @@ proxy:
         $env: TRAVISCI_AUTH_TOKEN
       travis-api-version: 3
 
+  '/newrelic/apm/api':
+    target: https://api.newrelic.com/v2
+    headers:
+      X-Api-Key:
+        $env: NEW_RELIC_REST_API_KEY
+
 organization:
-  name: Spotify
+  name: My Company
 
 techdocs:
   storageUrl: http://localhost:7000/api/techdocs/static/docs
@@ -44,17 +51,12 @@ techdocs:
     techdocs: 'docker'
 
 sentry:
-  organization: spotify
+  organization: my-company
 
 rollbar:
-  organization: spotify
+  organization: my-company
   accountToken:
     $env: ROLLBAR_ACCOUNT_TOKEN
-
-newrelic:
-  api:
-    baseUrl: 'https://api.newrelic.com/v2'
-    key: NEW_RELIC_REST_API_KEY
 
 lighthouse:
   baseUrl: http://localhost:3003
@@ -132,28 +134,31 @@ catalog:
       #         filter: (&(objectClass=some-group-class)(!(groupType=email)))
 
   locations:
-    # # Backstage example components
-    # - type: url
-    #   target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
-    # # Example component for github-actions
-    # - type: url
-    #   target: https://github.com/spotify/backstage/blob/master/plugins/github-actions/examples/sample.yaml
-    # # Example component for techdocs
-    # - type: url
-    #   target: https://github.com/spotify/backstage/blob/master/plugins/techdocs-backend/examples/documented-component/documented-component.yaml
-    # # Backstage example APIs
-    # - type: url
-    #   target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
-    # # Backstage example templates
-    # - type: url
-    #   target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/all-templates.yaml
-
-    # EmojiVoto
+    # Backstage example components
+    - type: url
+      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
+    # Example component for github-actions
+    - type: url
+      target: https://github.com/spotify/backstage/blob/master/plugins/github-actions/examples/sample.yaml
+    # Example component for techdocs
+    - type: url
+      target: https://github.com/spotify/backstage/blob/master/plugins/techdocs-backend/examples/documented-component/documented-component.yaml
+    # Backstage example APIs
+    - type: url
+      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
+    # Backstage example templates
+    - type: url
+      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/all-templates.yaml
+    # Backstage example groups and users
+    - type: url
+      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/acme-corp.yaml
+    # Emojivoto
     - type: file
       target: /Users/blam/dev/spotify/backstage/plugins/linkerd-backend/sample/emojivoto.yaml
 
 scaffolder:
   github:
+    host: https://github.com
     token:
       $env: GITHUB_TOKEN
     visibility: public # or 'internal' or 'private'
@@ -245,10 +250,11 @@ costInsights:
       name: Big Query
       icon: search
   metrics:
-    dailyCost:
-      name: Your Company's Daily Cost
     DAU:
-      name: Cost Per DAU
+      name: Daily Active Users
+      default: true
+    MSC:
+      name: Monthly Subscribers
 homepage:
   clocks:
     - label: UTC

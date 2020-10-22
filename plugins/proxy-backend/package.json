@@ -26,21 +26,18 @@
     "express-promise-router": "^3.0.3",
     "http-proxy-middleware": "^0.19.1",
     "morgan": "^1.10.0",
-    "node-fetch": "^2.6.0",
     "uuid": "^8.0.0",
     "winston": "^3.2.1",
     "yaml": "^1.9.2",
     "yn": "^4.0.0",
-    "yup": "^0.29.1"
+    "yup": "^0.29.3"
   },
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.25",
     "@types/http-proxy-middleware": "^0.19.3",
-    "@types/node-fetch": "^2.5.7",
     "@types/supertest": "^2.0.8",
     "@types/uuid": "^8.0.0",
-    "@types/yup": "^0.28.2",
-    "jest-fetch-mock": "^3.0.3",
+    "@types/yup": "^0.29.8",
     "supertest": "^4.0.2"
   },
   "files": [

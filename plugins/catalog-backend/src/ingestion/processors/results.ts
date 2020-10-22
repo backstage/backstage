@@ -16,12 +16,12 @@
 
 import { InputError, NotFoundError } from '@backstage/backend-common';
 import { Entity, LocationSpec } from '@backstage/catalog-model';
-import { LocationProcessorResult } from './types';
+import { CatalogProcessorResult } from './types';
 
 export function notFoundError(
   atLocation: LocationSpec,
   message: string,
-): LocationProcessorResult {
+): CatalogProcessorResult {
   return {
     type: 'error',
     location: atLocation,
@@ -32,7 +32,7 @@ export function notFoundError(
 export function inputError(
   atLocation: LocationSpec,
   message: string,
-): LocationProcessorResult {
+): CatalogProcessorResult {
   return {
     type: 'error',
     location: atLocation,
@@ -43,27 +43,27 @@ export function inputError(
 export function generalError(
   atLocation: LocationSpec,
   message: string,
-): LocationProcessorResult {
+): CatalogProcessorResult {
   return { type: 'error', location: atLocation, error: new Error(message) };
 }
 
 export function data(
   atLocation: LocationSpec,
   newData: Buffer,
-): LocationProcessorResult {
+): CatalogProcessorResult {
   return { type: 'data', location: atLocation, data: newData };
 }
 
 export function location(
   newLocation: LocationSpec,
   optional: boolean,
-): LocationProcessorResult {
+): CatalogProcessorResult {
   return { type: 'location', location: newLocation, optional };
 }
 
 export function entity(
   atLocation: LocationSpec,
   newEntity: Entity,
-): LocationProcessorResult {
+): CatalogProcessorResult {
   return { type: 'entity', location: atLocation, entity: newEntity };
 }

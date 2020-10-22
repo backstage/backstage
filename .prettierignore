@@ -6,3 +6,4 @@ coverage
 templates
 plugins/scaffolder-backend/sample-templates
 .vscode
+dist-types

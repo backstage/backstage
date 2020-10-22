@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import type { Entity, EntityName, Location } from '@backstage/catalog-model';
+import type {
+  Entity,
+  EntityName,
+  Location,
+  EntityRelationSpec,
+} from '@backstage/catalog-model';
 
 export type DbEntitiesRow = {
   id: string;
@@ -33,6 +38,13 @@ export type DbEntityRequest = {
 export type DbEntityResponse = {
   locationId?: string;
   entity: Entity;
+};
+
+export type DbEntitiesRelationsRow = {
+  originating_entity_id: string;
+  source_full_name: string;
+  type: string;
+  target_full_name: string;
 };
 
 export type DbEntitiesSearchRow = {
@@ -151,6 +163,18 @@ export type Database = {
   entityByUid(tx: unknown, uid: string): Promise<DbEntityResponse | undefined>;
 
   removeEntityByUid(tx: unknown, uid: string): Promise<void>;
+
+  /**
+   * Remove current relations for the entity and replace them with the new relations array
+   * @param tx An ongoing transaction
+   * @param entityUid the entity uid
+   * @param relations the relationships to be set
+   */
+  setRelations(
+    tx: unknown,
+    entityUid: string,
+    relations: EntityRelationSpec[],
+  ): Promise<void>;
 
   addLocation(location: Location): Promise<DbLocationsRow>;
 

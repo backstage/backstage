@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, useContext, useEffect, useState } from 'react';
+import React, {
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
+import { Alert } from '@material-ui/lab';
 import { useApi, identityApiRef } from '@backstage/core';
 import { costInsightsApiRef } from '../api';
 import { MapLoadingToProps, useLoading } from './useLoading';
-import { DefaultLoadingAction, Group } from '../types';
+import { DefaultLoadingAction, Group, Maybe } from '../types';
 
 type GroupsProviderLoadingProps = {
   dispatchLoadingGroups: (isLoading: boolean) => void;
@@ -35,32 +41,40 @@ type GroupsContextProps = {
   groups: Group[];
 };
 
-export type GroupsProviderProps = {
-  children: ReactNode;
-};
+export const GroupsContext = React.createContext<
+  GroupsContextProps | undefined
+>(undefined);
 
-export const GroupsContext = React.createContext<GroupsContextProps>({
-  groups: [],
-});
-
-export const GroupsProvider = ({ children }: GroupsProviderProps) => {
+export const GroupsProvider = ({ children }: PropsWithChildren<{}>) => {
   const userId = useApi(identityApiRef).getUserId();
   const client = useApi(costInsightsApiRef);
+  const [error, setError] = useState<Maybe<Error>>(null);
   const { dispatchLoadingGroups } = useLoading(mapLoadingToProps);
 
-  const [groups, setGroups] = useState<Group[]>([]);
+  const [groups, setGroups] = useState<Maybe<Group[]>>(null);
 
   useEffect(() => {
     dispatchLoadingGroups(true);
 
     async function getUserGroups() {
-      const g = await client.getUserGroups(userId);
-      setGroups(g);
-      dispatchLoadingGroups(false);
+      try {
+        const g = await client.getUserGroups(userId);
+        setGroups(g);
+      } catch (e) {
+        setError(e);
+      } finally {
+        dispatchLoadingGroups(false);
+      }
     }
 
     getUserGroups();
   }, [userId, client]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (error) {
+    return <Alert severity="error">{error.message}</Alert>;
+  }
+
+  if (!groups) return null;
 
   return (
     <GroupsContext.Provider value={{ groups: groups }}>
@@ -70,13 +84,8 @@ export const GroupsProvider = ({ children }: GroupsProviderProps) => {
 };
 
 export function useGroups(): Group[] {
-  const { groups } = useContext(GroupsContext);
-
-  if (!groups) {
-    assertNever();
-  }
-
-  return groups;
+  const context = useContext(GroupsContext);
+  return context ? context.groups : assertNever();
 }
 
 function assertNever(): never {

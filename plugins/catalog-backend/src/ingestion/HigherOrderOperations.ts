@@ -79,7 +79,7 @@ export class HigherOrderOperations implements HigherOrderOperation {
 
     // Read the location fully, bailing on any errors
     const readerOutput = await this.locationReader.read(spec);
-    if (readerOutput.errors.length) {
+    if (!(spec.presence === 'optional') && readerOutput.errors.length) {
       const item = readerOutput.errors[0];
       throw new InputError(
         `Failed to read location ${item.location.type}:${item.location.target}, ${item.error}`,

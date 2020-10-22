@@ -26,6 +26,10 @@ export default async (cmd: Command) => {
     rootPaths: [paths.targetRoot, paths.targetDir],
   });
 
+  console.log(
+    `Loaded config from ${appConfigs.map(c => c.context).join(', ')}`,
+  );
+
   const waitForExit = await serveBackend({
     entry: 'src/index',
     checksEnabled: cmd.check,
