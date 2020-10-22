@@ -28,16 +28,15 @@ spec:
           image: example-backend:latest
           imagePullPolicy: Never
 
+          command: [node, packages/backend]
+          args: [--config, app-config.yaml, --config, k8s-config.yaml]
+
           env:
             # We set this to development to make the backend start with incomplete configuration. In a production
             # deployment you will want to make sure that you have a full configuration, and remove any plugins that
             # you are not using.
             - name: NODE_ENV
               value: development
-
-              # This makes us load in `app-config.production.yaml` if there is one.
-            - name: APP_ENV
-              value: production
 
               # This makes it possible for the app to reach the backend when serving through `kubectl proxy`
               # If you expose the service using for example an ingress controller, you should
@@ -54,8 +53,8 @@ spec:
 
           volumeMounts:
             - name: config-volume
-              mountPath: /usr/src/app/app-config.local.yaml
-              subPath: app-config.local.yaml
+              mountPath: /usr/src/app/k8s-config.yaml
+              subPath: k8s-config.yaml
 
           resources:
             limits:
@@ -77,7 +76,7 @@ spec:
             name: backstage-config
             items:
               - key: app-config
-                path: app-config.local.yaml
+                path: k8s-config.yaml
 ---
 apiVersion: v1
 kind: ConfigMap
