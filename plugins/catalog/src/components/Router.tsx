@@ -31,7 +31,7 @@ const DefaultEntityPage = () => (
       title="Overview"
       element={
         <Content>
-          <Typography variant="h2">This is default entity page. </Typography>
+          <Typography variant="h2">This is the default entity page.</Typography>
           <Typography variant="body1">
             To override this component with your custom implementation, read
             docs on{' '}
@@ -62,9 +62,9 @@ export const Router = ({
   EntityPage?: ComponentType;
 }) => (
   <Routes>
-    <Route path={`/${rootRoute.path}`} element={<CatalogPage />} />
+    <Route path={`${rootRoute.path}`} element={<CatalogPage />} />
     <Route
-      path={`/${entityRoute.path}`}
+      path={`${entityRoute.path}`}
       element={
         <EntityProvider>
           <EntityPageSwitch EntityPage={EntityPage} />
