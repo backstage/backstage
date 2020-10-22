@@ -36,5 +36,11 @@ const useStyles = makeStyles(theme => ({
 
 export const MicDrop = () => {
   const classes = useStyles();
-  return <img src={MicDropSvgUrl} className={classes.micDrop} alt="" />;
+  return (
+    <img
+      src={MicDropSvgUrl}
+      className={classes.micDrop}
+      alt="Girl dropping mic from her hands"
+    />
+  );
 };
