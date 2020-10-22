@@ -17,6 +17,13 @@ import fetch, { RequestInit } from 'node-fetch';
 import parseGitUrl from 'git-url-parse';
 import { Config } from '@backstage/config';
 import { getRootLogger, loadBackendConfig } from '@backstage/backend-common';
+import {
+  getAzureHostToken,
+  getGitHost,
+  getGithubHostToken,
+  getGitlabHostToken,
+  getGitRepoType,
+} from './git-auth';
 
 interface IGitlabBranch {
   name: string;
@@ -73,15 +80,12 @@ function getAzureApiUrl(url: string): URL {
   );
 }
 
-function getGithubRequestOptions(config: Config): RequestInit {
+function getGithubRequestOptions(config: Config, host: string): RequestInit {
   const headers: HeadersInit = {
     Accept: 'application/vnd.github.v3.raw',
   };
 
-  const token =
-    config.getOptionalString('catalog.processors.github.privateToken') ??
-    config.getOptionalString('catalog.processors.githubApi.privateToken') ??
-    process.env.GITHUB_TOKEN;
+  const token = getGithubHostToken(config, host);
 
   if (token) {
     headers.Authorization = `token ${token}`;
@@ -92,16 +96,12 @@ function getGithubRequestOptions(config: Config): RequestInit {
   };
 }
 
-function getGitlabRequestOptions(config: Config): RequestInit {
+function getGitlabRequestOptions(config: Config, host: string): RequestInit {
   const headers: HeadersInit = {
     'PRIVATE-TOKEN': '',
   };
 
-  const token =
-    config.getOptionalString('catalog.processors.gitlab.privateToken') ??
-    config.getOptionalString('catalog.processors.gitlabApi.privateToken') ??
-    process.env.GITLAB_TOKEN;
-
+  const token = getGitlabHostToken(config, host);
   if (token) {
     headers['PRIVATE-TOKEN'] = token;
   }
@@ -111,12 +111,10 @@ function getGitlabRequestOptions(config: Config): RequestInit {
   };
 }
 
-function getAzureRequestOptions(config: Config): RequestInit {
+function getAzureRequestOptions(config: Config, host: string): RequestInit {
   const headers: HeadersInit = {};
 
-  const token =
-    config.getOptionalString('catalog.processors.azureApi.privateToken') ??
-    process.env.AZURE_TOKEN;
+  const token = getAzureHostToken(config, host);
 
   if (token !== '') {
     headers.Authorization = `Basic ${Buffer.from(`:${token}`, 'utf8').toString(
@@ -136,7 +134,8 @@ async function getGithubDefaultBranch(
   config: Config,
 ): Promise<string> {
   const path = getGithubApiUrl(config, repositoryUrl).toString();
-  const options = getGithubRequestOptions(config);
+  const host = getGitHost(repositoryUrl);
+  const options = getGithubRequestOptions(config, host);
 
   try {
     const raw = await fetch(path, options);
@@ -165,7 +164,8 @@ async function getGitlabDefaultBranch(
 ): Promise<string> {
   const path = getGitlabApiUrl(repositoryUrl).toString();
 
-  const options = getGitlabRequestOptions(config);
+  const gitlabHost = getGitHost(repositoryUrl);
+  const options = getGitlabRequestOptions(config, gitlabHost);
 
   try {
     const raw = await fetch(path, options);
@@ -196,8 +196,8 @@ async function getAzureDefaultBranch(
   config: Config,
 ): Promise<string> {
   const path = getAzureApiUrl(repositoryUrl).toString();
-
-  const options = getAzureRequestOptions(config);
+  const host = getGitHost(repositoryUrl);
+  const options = getAzureRequestOptions(config, host);
 
   try {
     const urlResponse = await fetch(path, options);
@@ -232,14 +232,7 @@ export const getDefaultBranch = async (
 ): Promise<string> => {
   // TODO(Rugvip): Config should not be loaded here, pass it in instead
   const config = await loadBackendConfig({ logger: getRootLogger() });
-  const typeMapping = [
-    { url: /github*/g, type: 'github' },
-    { url: /gitlab*/g, type: 'gitlab' },
-    { url: /azure*/g, type: 'azure/api' },
-  ];
-
-  const type = typeMapping.filter(item => item.url.test(repositoryUrl))[0]
-    ?.type;
+  const type = getGitRepoType(repositoryUrl);
 
   try {
     switch (type) {
