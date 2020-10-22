@@ -145,7 +145,7 @@ export const checkoutGitRepository = async (
 
   if (token) {
     const type = getGitRepoType(repoUrl);
-    const auth = type === 'github' ? `${token}` : `:${token}`;
+    const auth = type === 'github' ? `${token}:x-oauth-basic` : `:${token}`;
     parsedGitLocation.token = auth;
   }
 
