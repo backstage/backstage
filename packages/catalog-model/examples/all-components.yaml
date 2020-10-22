@@ -7,6 +7,7 @@ spec:
   type: github
   targets:
     - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/components/artist-lookup-component.yaml
+    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/components/petstore-component.yaml
     - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/components/playback-order-component.yaml
     - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/components/podcast-api-component.yaml
     - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/components/queue-proxy-component.yaml
