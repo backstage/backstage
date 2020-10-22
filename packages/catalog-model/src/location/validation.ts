@@ -21,7 +21,7 @@ export const locationSpecSchema = yup
   .object<LocationSpec>({
     type: yup.string().required(),
     target: yup.string().required(),
-    pendingLocation: yup.bool().notRequired(),
+    presence: yup.string(),
   })
   .noUnknown()
   .required();
