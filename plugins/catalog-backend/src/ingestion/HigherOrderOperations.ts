@@ -103,10 +103,6 @@ export class HigherOrderOperations implements HigherOrderOperation {
       location.id,
     );
 
-    if (writtenEntities.length === 0) {
-      return { location, entities: [] };
-    }
-
     const entities = await this.entitiesCatalog.entities({
       'metadata.uid': writtenEntities.map(e => e.entityId),
     });

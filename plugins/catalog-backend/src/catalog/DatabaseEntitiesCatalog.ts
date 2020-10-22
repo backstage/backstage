@@ -31,8 +31,8 @@ import type { Database, DbEntityResponse, EntityFilters } from '../database';
 import { durationText } from '../util/timing';
 import type {
   EntitiesCatalog,
-  EntityMutationRequest,
-  EntityMutationResponse,
+  EntityUpsertRequest,
+  EntityUpsertResponse,
 } from './types';
 
 type BatchContext = {
@@ -134,9 +134,9 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
    * @param locationId The location that they all belong to
    */
   async batchAddOrUpdateEntities(
-    requests: EntityMutationRequest[],
+    requests: EntityUpsertRequest[],
     locationId?: string,
-  ): Promise<EntityMutationResponse[]> {
+  ): Promise<EntityUpsertResponse[]> {
     // Group the entities by unique kind+namespace combinations
     const entitiesByKindAndNamespace = groupBy(requests, ({ entity }) => {
       const name = getEntityName(entity);
@@ -144,7 +144,7 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
     });
 
     const limiter = limiterFactory(BATCH_CONCURRENCY);
-    const tasks: Promise<EntityMutationResponse[]>[] = [];
+    const tasks: Promise<EntityUpsertResponse[]>[] = [];
 
     for (const groupRequests of Object.values(entitiesByKindAndNamespace)) {
       const { kind, namespace } = getEntityName(groupRequests[0].entity);
@@ -157,7 +157,7 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
           limiter(async () => {
             const first = serializeEntityRef(batch[0].entity);
             const last = serializeEntityRef(batch[batch.length - 1].entity);
-            const modifiedEntityIds: EntityMutationResponse[] = [];
+            const modifiedEntityIds: EntityUpsertResponse[] = [];
             this.logger.debug(
               `Considering batch ${first}-${last} (${batch.length} entries)`,
             );
@@ -224,12 +224,12 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
   // produce the list of entities to be added, and the list of entities to be
   // updated
   private async analyzeBatch(
-    requests: EntityMutationRequest[],
+    requests: EntityUpsertRequest[],
     { kind, namespace }: BatchContext,
   ): Promise<{
-    toAdd: EntityMutationRequest[];
-    toUpdate: EntityMutationRequest[];
-    toIgnore: EntityMutationRequest[];
+    toAdd: EntityUpsertRequest[];
+    toUpdate: EntityUpsertRequest[];
+    toIgnore: EntityUpsertRequest[];
   }> {
     const markTimestamp = process.hrtime();
 
@@ -244,9 +244,9 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
       oldEntities.map(e => [e.metadata.name, e]),
     );
 
-    const toAdd: EntityMutationRequest[] = [];
-    const toUpdate: EntityMutationRequest[] = [];
-    const toIgnore: EntityMutationRequest[] = [];
+    const toAdd: EntityUpsertRequest[] = [];
+    const toUpdate: EntityUpsertRequest[] = [];
+    const toIgnore: EntityUpsertRequest[] = [];
 
     for (const request of requests) {
       const newEntity = request.entity;
@@ -275,9 +275,9 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
   // Efficiently adds the given entities to storage, under the assumption that
   // they do not conflict with any existing entities
   private async batchAdd(
-    requests: EntityMutationRequest[],
+    requests: EntityUpsertRequest[],
     { locationId }: BatchContext,
-  ): Promise<EntityMutationResponse[]> {
+  ): Promise<EntityUpsertResponse[]> {
     const markTimestamp = process.hrtime();
 
     const res = await this.database.transaction(
@@ -306,11 +306,11 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
   // Efficiently updates the given entities into storage, under the assumption
   // that there already exist entities with the same names
   private async batchUpdate(
-    requests: EntityMutationRequest[],
+    requests: EntityUpsertRequest[],
     { locationId }: BatchContext,
-  ): Promise<EntityMutationResponse[]> {
+  ): Promise<EntityUpsertResponse[]> {
     const markTimestamp = process.hrtime();
-    const responseIds: EntityMutationResponse[] = [];
+    const responseIds: EntityUpsertResponse[] = [];
     // TODO(freben): Still not batched
     for (const entity of requests) {
       const res = await this.addOrUpdateEntity(entity.entity, locationId);

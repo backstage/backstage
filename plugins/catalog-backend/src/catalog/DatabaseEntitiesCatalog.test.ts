@@ -18,7 +18,7 @@ import { getVoidLogger } from '@backstage/backend-common';
 import type { Entity } from '@backstage/catalog-model';
 import { Database, DatabaseManager } from '../database';
 import { DatabaseEntitiesCatalog } from './DatabaseEntitiesCatalog';
-import { EntityMutationRequest } from './types';
+import { EntityUpsertRequest } from './types';
 
 describe('DatabaseEntitiesCatalog', () => {
   let db: jest.Mocked<Database>;
@@ -272,8 +272,8 @@ describe('DatabaseEntitiesCatalog', () => {
         await DatabaseManager.createTestDatabase(),
         getVoidLogger(),
       );
-      const entities: EntityMutationRequest[] = [];
-      for (let i = 0; i < 200; ++i) {
+      const entities: EntityUpsertRequest[] = [];
+      for (let i = 0; i < 300; ++i) {
         entities.push({
           entity: {
             apiVersion: 'a',
@@ -286,21 +286,21 @@ describe('DatabaseEntitiesCatalog', () => {
 
       await catalog.batchAddOrUpdateEntities(entities);
       const afterFirst = await catalog.entities();
-      expect(afterFirst.length).toBe(200);
+      expect(afterFirst.length).toBe(300);
 
       entities[40].entity.metadata.op = 'changed';
       entities.push({
         entity: {
           apiVersion: 'a',
           kind: 'k',
-          metadata: { name: `n200`, op: 'added' },
+          metadata: { name: `n300`, op: 'added' },
         },
         relations: [],
       });
 
       await catalog.batchAddOrUpdateEntities(entities);
       const afterSecond = await catalog.entities();
-      expect(afterSecond.length).toBe(201);
+      expect(afterSecond.length).toBe(301);
       expect(afterSecond.find(e => e.metadata.op === 'changed')).toBeDefined();
       expect(afterSecond.find(e => e.metadata.op === 'added')).toBeDefined();
     }, 10000);

@@ -21,12 +21,12 @@ import type { EntityFilters } from '../database';
 // Entities
 //
 
-export type EntityMutationRequest = {
+export type EntityUpsertRequest = {
   entity: Entity;
   relations: EntityRelationSpec[];
 };
 
-export type EntityMutationResponse = {
+export type EntityUpsertResponse = {
   entityId: string;
 };
 
@@ -41,9 +41,9 @@ export type EntitiesCatalog = {
    * @param locationId The location that they all belong to
    */
   batchAddOrUpdateEntities(
-    entities: EntityMutationRequest[],
+    entities: EntityUpsertRequest[],
     locationId?: string,
-  ): Promise<EntityMutationResponse[]>;
+  ): Promise<EntityUpsertResponse[]>;
 };
 
 //

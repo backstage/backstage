@@ -23,6 +23,7 @@ import {
   ComponentEntityV1alpha1,
   RELATION_OWNED_BY,
   RELATION_OWNER_OF,
+  getEntityName,
 } from '@backstage/catalog-model';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
 import * as result from './results';
@@ -46,11 +47,7 @@ export class OwnerRelationProcessor implements CatalogProcessor {
     if (owner) {
       const namespace = entity.metadata.namespace ?? ENTITY_DEFAULT_NAMESPACE;
 
-      const selfRef = {
-        kind: entity.kind,
-        name: entity.metadata.name,
-        namespace,
-      };
+      const selfRef = getEntityName(entity);
       const ownerRef = parseEntityRef(owner, {
         defaultKind: 'group',
         defaultNamespace: namespace,
@@ -58,15 +55,15 @@ export class OwnerRelationProcessor implements CatalogProcessor {
 
       emit(
         result.relation({
-          type: RELATION_OWNED_BY,
           source: selfRef,
+          type: RELATION_OWNED_BY,
           target: ownerRef,
         }),
       );
       emit(
         result.relation({
-          type: RELATION_OWNER_OF,
           source: ownerRef,
+          type: RELATION_OWNER_OF,
           target: selfRef,
         }),
       );
