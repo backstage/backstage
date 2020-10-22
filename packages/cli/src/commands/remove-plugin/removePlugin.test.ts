@@ -16,6 +16,7 @@
 
 import fse from 'fs-extra';
 import path from 'path';
+import mockFs from 'mock-fs';
 import { paths } from '../../lib/paths';
 import { addExportStatement, capitalize } from '../create-plugin/createPlugin';
 import { addCodeownersEntry } from '../../lib/codeowners';
@@ -26,8 +27,6 @@ import {
   removeSymLink,
   removePluginFromCodeOwners,
 } from './removePlugin';
-
-const mockFs = require('mock-fs');
 
 const BACKSTAGE = `@backstage`;
 const testPluginName = 'yarn-test-package';
@@ -213,19 +212,22 @@ describe('removePlugin', () => {
       it('removes system link from @backstage', async () => {
         const symLink = `plugin-${testPluginName}`;
         const testSymLinkPath = `/node_modules/@backstage/${symLink}`;
-
-        mkTestPluginDir(testDirPath);
+        const mockedTestDirPath = path.join('/plugins', testPluginName);
 
         mockFs({
+          '/plugins': {
+            [testPluginName]: {},
+          },
           '/node_modules': {
             '@backstage': {
               [symLink]: mockFs.symlink({
-                path: testDirPath,
+                path: mockedTestDirPath,
               }),
             },
           },
         });
 
+        expect(fse.existsSync(testSymLinkPath)).toBeTruthy();
         await removeSymLink(testSymLinkPath);
         expect(fse.existsSync(testSymLinkPath)).toBeFalsy();
       });
