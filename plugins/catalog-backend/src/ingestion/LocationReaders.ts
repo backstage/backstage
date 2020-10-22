@@ -189,7 +189,7 @@ export class LocationReaders implements LocationReader {
           );
         } catch (e) {
           const message = `Processor ${processor.constructor.name} threw an error while preprocessing entity ${kind}:${namespace}/${name} at ${item.location.type} ${item.location.target}, ${e}`;
-          emit(result.generalError(item.location, message));
+          emit(result.generalError(item.location, e.message));
           logger.warn(message);
           return undefined;
         }
@@ -207,7 +207,7 @@ export class LocationReaders implements LocationReader {
       current = next;
     } catch (e) {
       const message = `Policy check failed while analyzing entity ${kind}:${namespace}/${name} at ${item.location.type} ${item.location.target}, ${e}`;
-      emit(result.inputError(item.location, message));
+      emit(result.inputError(item.location, e.message));
       logger.warn(message);
       return undefined;
     }
