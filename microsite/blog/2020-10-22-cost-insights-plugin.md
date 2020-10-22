@@ -46,7 +46,7 @@ _(Note: Screens are examples; they do not show real data.)_
 
 ### Tie spending to specific products and resources
 
-The more detailed the cost data, the more relevant, actionable, and helpful it is. Unlike the default accounting tools provided by most cloud platforms, Cost Insights can attribute costs to specific products and resources being used by your team. For example, here we see a breakdown of data processing costs by individual pipelines — letting you target your cost optimizations with unprecedented specificity, if necessary.
+The more detailed the cost data, the more relevant, actionable, and helpful it is. Cost Insights allows you to attribute costs to products and resources in a way that makes sense to your engineers. For example, here we see a breakdown of data processing costs by individual pipelines. This allows your team to target optimizations more precisely.
 
 ![Data Processing costs by pipeline](assets/20-10-22/cost-insights-3-data.png)
 _(Note: Screens are examples; they do not show real data.)_
