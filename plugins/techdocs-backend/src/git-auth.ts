@@ -93,7 +93,11 @@ export function getAzureHostToken(
 export const getTokenForGitRepo = async (
   repositoryUrl: string,
 ): Promise<string | undefined> => {
-  const config = await loadBackendConfig({ logger: getRootLogger() });
+  // TODO(Rugvip): Config should not be loaded here, pass it in instead
+  const config = await loadBackendConfig({
+    logger: getRootLogger(),
+    argv: process.argv,
+  });
 
   const host = getGitHost(repositoryUrl);
   const type = getGitRepoType(repositoryUrl);
