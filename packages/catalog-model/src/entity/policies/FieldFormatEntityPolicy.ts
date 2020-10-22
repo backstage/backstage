@@ -53,6 +53,7 @@ export class FieldFormatEntityPolicy implements EntityPolicy {
         let expectation;
         switch (validator.name) {
           case 'isValidLabelValue':
+          case 'isValidObjectName':
             expectation =
               'a string that is sequences of [a-zA-Z0-9] separated by any of [-_.], at most 63 characters in total';
             break;
@@ -61,12 +62,17 @@ export class FieldFormatEntityPolicy implements EntityPolicy {
           case 'isValidAnnotationKey':
             expectation = 'a valid prefix and/or suffix';
             break;
+          case 'isValidNamespace':
+          case 'isValidDnsLabel':
+            expectation =
+              'a string that is sequences of [a-zA-Z0-9] seperated by [-], at most 63 characters in total';
+            break;
           case 'isValidAnnotationValue':
             expectation = 'a string';
             break;
-          case 'isValidNamespace':
+          case 'isValidKind':
             expectation =
-              'a string that is sequences of [a-zA-Z0-9] seperated by [-], at most 63 characters in total';
+              'a string that is a sequence of [a-zA-Z][a-z0-9A-Z], at most 63 characters in total';
             break;
           default:
             expectation = undefined;
