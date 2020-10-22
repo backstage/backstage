@@ -55,7 +55,7 @@ export const ErrorPage = ({
   const navigate = useNavigate();
 
   return (
-    <Grid className={classes.container}>
+    <Grid container spacing={0} className={classes.container}>
       <MicDrop />
       <Grid item xs={12} sm={8} md={4}>
         <Typography variant="body1" className={classes.subtitle}>
