@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 import React from 'react';
-import { InfoCard, MissingAnnotationEmptyState } from '@backstage/core';
+import {
+  InfoCard,
+  MissingAnnotationEmptyState,
+  useApi,
+  configApiRef,
+} from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
 import { Grid } from '@material-ui/core';
 import { Incidents } from './Incidents';
 import { EscalationPolicy } from './Escalation';
 import { PagerDutyData } from './types';
 import { TriggerButton } from './TriggerButton';
+import { useAsync } from 'react-use';
+import { getServices } from '../api/pagerDutyClient';
 
 export const PAGERDUTY_INTEGRATION_KEY = 'pagerduty.com/integration-key';
 
@@ -32,6 +39,20 @@ type Props = {
 };
 
 export const PagerDutyServiceCard = ({ entity }: Props) => {
+  const configApi = useApi(configApiRef);
+  const pagerDutyToken =
+    configApi.getOptionalString('pagerduty.api_token') ?? undefined;
+
+  console.log({ pagerDutyToken });
+  const { value, loading, error } = useAsync(async () => {
+    return await getServices(
+      pagerDutyToken!,
+      entity.metadata.annotations![PAGERDUTY_INTEGRATION_KEY],
+    );
+  });
+  if (value) console.log(value);
+  if (error) throw new Error(`Error in getting services, ${error}`);
+
   // TODO: fetch this data
   const mockData: PagerDutyData = {
     pagerDutyServices: [
@@ -85,6 +106,7 @@ export const PagerDutyServiceCard = ({ entity }: Props) => {
       <Grid container item xs={12} justify="flex-end">
         <TriggerButton entity={entity} />
       </Grid>
+      {/* todo show something when we dont have token */}
     </InfoCard>
   );
 };
