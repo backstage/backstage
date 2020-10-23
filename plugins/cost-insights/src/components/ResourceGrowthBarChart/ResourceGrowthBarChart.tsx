@@ -16,41 +16,33 @@
 
 import React from 'react';
 import { TooltipPayload } from 'recharts';
+import { currencyFormatter } from '../../utils/formatters';
 import {
-  currencyFormatter,
-  dateRegex,
-  formatDuration,
-} from '../../utils/formatters';
-import {
+  AlertCost,
   BarChartData,
   CostInsightsTheme,
   DataKey,
-  Duration,
   Entity,
-  inclusiveEndDateOf,
-  inclusiveStartDateOf,
   Maybe,
   ResourceData,
-  AlertCost,
 } from '../../types';
 import BarChart from '../BarChart';
 import { TooltipItemProps } from '../Tooltip';
 import { useTheme } from '@material-ui/core';
 
 export type ResourceGrowthBarChartProps = {
-  duration: Duration;
   resources: Array<Entity | AlertCost>;
+  previousName: string;
+  currentName: string;
 };
 
 const ResourceGrowthBarChart = ({
-  duration,
   resources,
+  previousName,
+  currentName,
 }: ResourceGrowthBarChartProps) => {
   const theme = useTheme<CostInsightsTheme>();
   const getTooltipItem = (payload: TooltipPayload): Maybe<TooltipItemProps> => {
-    const label = dateRegex.test(payload.name)
-      ? formatDuration(payload.name, duration)
-      : payload.name;
     const value =
       typeof payload.value === 'number'
         ? currencyFormatter.format(payload.value)
@@ -61,7 +53,7 @@ const ResourceGrowthBarChart = ({
       case DataKey.Current:
       case DataKey.Previous:
         return {
-          label: label,
+          label: payload.name,
           value: value,
           fill: fill,
         };
@@ -73,8 +65,8 @@ const ResourceGrowthBarChart = ({
   const barChartData: BarChartData = {
     previousFill: theme.palette.lightBlue,
     currentFill: theme.palette.darkBlue,
-    previousName: inclusiveStartDateOf(duration),
-    currentName: inclusiveEndDateOf(duration),
+    previousName: previousName,
+    currentName: currentName,
   };
 
   const resourceData: ResourceData[] = resources.map(resource => {

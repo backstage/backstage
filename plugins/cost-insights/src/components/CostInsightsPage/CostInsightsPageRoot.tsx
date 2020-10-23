@@ -22,6 +22,7 @@ import { GroupsProvider } from '../../hooks/useGroups';
 import { CurrencyProvider } from '../../hooks/useCurrency';
 import { ScrollProvider } from '../../hooks/useScroll';
 import { ConfigProvider } from '../../hooks/useConfig';
+import { BillingDateProvider } from '../../hooks/useLastCompleteBillingDate';
 import { CostInsightsThemeProvider } from './CostInsightsThemeProvider';
 
 const CostInsightsPageRoot = () => (
@@ -29,13 +30,15 @@ const CostInsightsPageRoot = () => (
     <ConfigProvider>
       <LoadingProvider>
         <GroupsProvider>
-          <FilterProvider>
-            <ScrollProvider>
-              <CurrencyProvider>
-                <CostInsightsPage />
-              </CurrencyProvider>
-            </ScrollProvider>
-          </FilterProvider>
+          <BillingDateProvider>
+            <FilterProvider>
+              <ScrollProvider>
+                <CurrencyProvider>
+                  <CostInsightsPage />
+                </CurrencyProvider>
+              </ScrollProvider>
+            </FilterProvider>
+          </BillingDateProvider>
         </GroupsProvider>
       </LoadingProvider>
     </ConfigProvider>

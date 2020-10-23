@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { Box } from '@material-ui/core';
 import { useBarChartLabelStyles } from '../../utils/styles';
 
@@ -23,10 +23,15 @@ type BarChartLabel = {
   y: number;
   height: number;
   width: number;
-  children?: React.ReactNode;
 };
 
-const BarChartLabel = ({ x, y, height, width, children }: BarChartLabel) => {
+const BarChartLabel = ({
+  x,
+  y,
+  height,
+  width,
+  children,
+}: PropsWithChildren<BarChartLabel>) => {
   const classes = useBarChartLabelStyles();
   const translateX = width * -0.5;
   const childArray = React.Children.toArray(children);

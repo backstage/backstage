@@ -30,7 +30,7 @@ type GroupsProviderLoadingProps = {
   dispatchLoadingGroups: (isLoading: boolean) => void;
 };
 
-export const mapLoadingToProps: MapLoadingToProps<GroupsProviderLoadingProps> = ({
+const mapLoadingToProps: MapLoadingToProps<GroupsProviderLoadingProps> = ({
   dispatch,
 }) => ({
   dispatchLoadingGroups: (isLoading: boolean) =>

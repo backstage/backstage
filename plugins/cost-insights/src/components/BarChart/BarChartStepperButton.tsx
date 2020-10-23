@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-import React, { forwardRef, Ref } from 'react';
+import React, { forwardRef, PropsWithChildren, Ref } from 'react';
 import { ButtonBase, ButtonBaseProps } from '@material-ui/core';
 import { useBarChartStepperButtonStyles as useStyles } from '../../utils/styles';
 
 interface BarChartStepperButtonProps extends ButtonBaseProps {
   name: string;
-  children?: React.ReactNode;
 }
 
 const BarChartStepperButton = forwardRef(
   (
-    { name, children, ...buttonBaseProps }: BarChartStepperButtonProps,
+    {
+      name,
+      children,
+      ...buttonBaseProps
+    }: PropsWithChildren<BarChartStepperButtonProps>,
     ref: Ref<HTMLButtonElement>,
   ) => {
     const classes = useStyles();
