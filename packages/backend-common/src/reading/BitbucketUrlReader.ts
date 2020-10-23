@@ -43,17 +43,6 @@ export type ProviderConfig = {
   apiBaseUrl?: string;
 
   /**
-   * The base URL of the raw fetch endpoint of this provider, e.g.
-   * "https://api.bitbucket.org/2.0", with no trailing slash.
-   *
-   * May be omitted specifically for Bitbucket Cloud; then it will be deduced.
-   *
-   * The API will always be preferred if both its base URL and a token are
-   * present.
-   */
-  rawBaseUrl?: string;
-
-  /**
    * The authorization token to use for requests to a Bitbucket Server provider.
    *
    * See https://confluence.atlassian.com/bitbucketserver/personal-access-tokens-939515499.html
@@ -78,22 +67,6 @@ export type ProviderConfig = {
 export function getApiRequestOptions(provider: ProviderConfig): RequestInit {
   const headers: HeadersInit = {};
 
-  if (provider.token) {
-    headers.Authorization = `Bearer ${provider.token}`;
-  } else if (provider.username && provider.appPassword) {
-    headers.Authorization = `Basic ${Buffer.from(
-      `${provider.username}:${provider.appPassword}`,
-      'utf8',
-    ).toString('base64')}`;
-  }
-
-  return {
-    headers,
-  };
-}
-
-export function getRawRequestOptions(provider: ProviderConfig): RequestInit {
-  const headers: HeadersInit = {};
   if (provider.token) {
     headers.Authorization = `Bearer ${provider.token}`;
   } else if (provider.username && provider.appPassword) {
@@ -142,41 +115,6 @@ export function getApiUrl(target: string, provider: ProviderConfig): URL {
   }
 }
 
-// Converts for example
-// from: https://bitbucket.org/orgname/reponame/src/master/file.yaml
-// to:   https://api.bitbucket.org/2.0/repositories/orgname/reponame/src/master/file.yaml
-export function getRawUrl(target: string, provider: ProviderConfig): URL {
-  try {
-    const { owner, name, ref, filepathtype, filepath } = parseGitUri(target);
-
-    if (
-      !owner ||
-      !name ||
-      (filepathtype !== 'browse' &&
-        filepathtype !== 'raw' &&
-        filepathtype !== 'src')
-    ) {
-      throw new Error('Invalid Bitbucket URL or file path');
-    }
-
-    const pathWithoutSlash = filepath.replace(/^\//, '');
-
-    if (provider.host === 'bitbucket.org') {
-      if (!ref) {
-        throw new Error('Invalid Bitbucket URL or file path');
-      }
-      return new URL(
-        `${provider.rawBaseUrl}/repositories/${owner}/${name}/src/${ref}/${pathWithoutSlash}`,
-      );
-    }
-    return new URL(
-      `${provider.rawBaseUrl}/projects/${owner}/repos/${name}/raw/${pathWithoutSlash}?at=${ref}`,
-    );
-  } catch (e) {
-    throw new Error(`Incorrect URL: ${target}, ${e}`);
-  }
-}
-
 export function readConfig(config: Config): ProviderConfig[] {
   const providers: ProviderConfig[] = [];
 
@@ -187,10 +125,9 @@ export function readConfig(config: Config): ProviderConfig[] {
   for (const providerConfig of providerConfigs) {
     const host = providerConfig.getOptionalString('host') ?? 'bitbucket.org';
     let apiBaseUrl = providerConfig.getOptionalString('apiBaseUrl');
-    let rawBaseUrl = providerConfig.getOptionalString('rawBaseUrl');
     const token = providerConfig.getOptionalString('token');
     const username = providerConfig.getOptionalString('username');
-    const password = providerConfig.getOptionalString('appPassword');
+    const appPassword = providerConfig.getOptionalString('appPassword');
 
     if (apiBaseUrl) {
       apiBaseUrl = apiBaseUrl.replace(/\/+$/, '');
@@ -198,30 +135,23 @@ export function readConfig(config: Config): ProviderConfig[] {
       apiBaseUrl = DEFAULT_BASE_URL;
     }
 
-    if (rawBaseUrl) {
-      rawBaseUrl = rawBaseUrl.replace(/\/+$/, '');
-    } else if (host === 'bitbucket.org') {
-      rawBaseUrl = DEFAULT_BASE_URL;
-    }
-
-    if (!apiBaseUrl && !rawBaseUrl) {
+    if (!apiBaseUrl) {
       throw new Error(
-        `Bitbucket integration for '${host}' must configure an explicit apiBaseUrl and rawBaseUrl`,
+        `Bitbucket integration for '${host}' must configure an explicit apiBaseUrl`,
       );
     }
-    if (!token && username && !password) {
+    if (!token && username && !appPassword) {
       throw new Error(
-        `Bitbucket integration for '${host}' has configured a username but is missing a required password.`,
+        `Bitbucket integration for '${host}' has configured a username but is missing a required appPassword.`,
       );
     }
 
     providers.push({
       host,
       apiBaseUrl,
-      rawBaseUrl,
       token,
       username,
-      appPassword: password,
+      appPassword,
     });
   }
 
@@ -231,7 +161,6 @@ export function readConfig(config: Config): ProviderConfig[] {
     providers.push({
       host: 'bitbucket.org',
       apiBaseUrl: DEFAULT_BASE_URL,
-      rawBaseUrl: DEFAULT_BASE_URL,
     });
   }
 
@@ -258,14 +187,9 @@ export class BitbucketUrlReader implements UrlReader {
   }
 
   async read(url: string): Promise<Buffer> {
-    const useApi =
-      this.config.apiBaseUrl && (this.config.token || !this.config.rawBaseUrl);
-    const bitbucketUrl = useApi
-      ? getApiUrl(url, this.config)
-      : getRawUrl(url, this.config);
-    const options = useApi
-      ? getApiRequestOptions(this.config)
-      : getRawRequestOptions(this.config);
+    const bitbucketUrl = getApiUrl(url, this.config);
+
+    const options = getApiRequestOptions(this.config);
 
     let response: Response;
     try {

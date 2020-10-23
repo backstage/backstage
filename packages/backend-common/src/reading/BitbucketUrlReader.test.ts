@@ -19,8 +19,6 @@ import {
   BitbucketUrlReader,
   getApiRequestOptions,
   getApiUrl,
-  getRawRequestOptions,
-  getRawUrl,
   ProviderConfig,
   readConfig,
 } from './BitbucketUrlReader';
@@ -67,47 +65,6 @@ describe('BitbucketUrlReader', () => {
     });
   });
 
-  describe('getRawRequestOptions', () => {
-    it('inserts a token when needed', () => {
-      const withToken: ProviderConfig = {
-        host: '',
-        apiBaseUrl: '',
-        token: 'A',
-      };
-      const withoutToken: ProviderConfig = {
-        host: '',
-        apiBaseUrl: '',
-      };
-      expect(
-        (getRawRequestOptions(withToken).headers as any).Authorization,
-      ).toEqual('Bearer A');
-      expect(
-        (getRawRequestOptions(withoutToken).headers as any).Authorization,
-      ).toBeUndefined();
-    });
-
-    it('insert basic auth when needed', () => {
-      const withUsernameAndPassword: ProviderConfig = {
-        host: '',
-        apiBaseUrl: '',
-        username: 'some-user',
-        appPassword: 'my-secret',
-      };
-      const withoutUsernameAndPassword: ProviderConfig = {
-        host: '',
-        apiBaseUrl: '',
-      };
-      expect(
-        (getRawRequestOptions(withUsernameAndPassword).headers as any)
-          .Authorization,
-      ).toEqual('Basic c29tZS11c2VyOm15LXNlY3JldA==');
-      expect(
-        (getRawRequestOptions(withoutUsernameAndPassword).headers as any)
-          .Authorization,
-      ).toBeUndefined();
-    });
-  });
-
   describe('getApiUrl', () => {
     it('rejects targets that do not look like URLs', () => {
       const config: ProviderConfig = { host: '', apiBaseUrl: '' };
@@ -147,47 +104,6 @@ describe('BitbucketUrlReader', () => {
     });
   });
 
-  describe('getRawUrl', () => {
-    it('rejects targets that do not look like URLs', () => {
-      const config: ProviderConfig = { host: '', apiBaseUrl: '' };
-      expect(() => getRawUrl('a/b', config)).toThrow(/Incorrect URL: a\/b/);
-    });
-
-    it('happy path for Bitbucket Cloud', () => {
-      const config: ProviderConfig = {
-        host: 'bitbucket.org',
-        rawBaseUrl: 'https://api.bitbucket.org/2.0',
-      };
-      expect(
-        getRawUrl(
-          'https://bitbucket.org/org-name/repo-name/src/master/templates/my-template.yaml',
-          config,
-        ),
-      ).toEqual(
-        new URL(
-          'https://api.bitbucket.org/2.0/repositories/org-name/repo-name/src/master/templates/my-template.yaml',
-        ),
-      );
-    });
-
-    it('happy path for Bitbucket Server', () => {
-      const config: ProviderConfig = {
-        host: 'bitbucket.mycompany.net',
-        rawBaseUrl: 'https://api.bitbucket.org/2.0',
-      };
-      expect(
-        getRawUrl(
-          'https://bitbucket.mycompany.net/projects/a/repos/b/browse/path/to/c.yaml',
-          config,
-        ),
-      ).toEqual(
-        new URL(
-          'https://bitbucket.mycompany.net/rest/api/1.0/projects/a/repos/b/raw/path/to/c.yaml',
-        ),
-      );
-    });
-  });
-
   describe('readConfig', () => {
     function config(
       providers: {
@@ -214,7 +130,6 @@ describe('BitbucketUrlReader', () => {
         {
           host: 'bitbucket.org',
           apiBaseUrl: 'https://api.bitbucket.org/2.0',
-          rawBaseUrl: 'https://api.bitbucket.org/2.0',
         },
       ]);
     });
@@ -225,7 +140,6 @@ describe('BitbucketUrlReader', () => {
         {
           host: 'bitbucket.org',
           apiBaseUrl: 'https://api.bitbucket.org/2.0',
-          rawBaseUrl: 'https://api.bitbucket.org/2.0',
         },
       ]);
     });
@@ -234,7 +148,7 @@ describe('BitbucketUrlReader', () => {
       expect(() =>
         readConfig(config([{ host: 'bitbucket.mycompany.net' }])),
       ).toThrow(
-        "Bitbucket integration for 'bitbucket.mycompany.net' must configure an explicit apiBaseUrl and rawBaseUrl",
+        "Bitbucket integration for 'bitbucket.mycompany.net' must configure an explicit apiBaseUrl",
       );
     });
 
