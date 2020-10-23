@@ -48,8 +48,7 @@ export const RadarPage = ({
   const classes = useStyles();
   return (
     <Page themeId="tool">
-      <Header title={title} subtitle={subtitle}>
-      </Header>
+      <Header title={title} subtitle={subtitle} />
       <Content className={classes.overflowXScroll}>
         <ContentHeader title={pageTitle}>
           <SupportButton>
