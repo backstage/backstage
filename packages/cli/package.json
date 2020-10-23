@@ -36,7 +36,7 @@
     "@lerna/project": "^3.18.0",
     "@rollup/plugin-commonjs": "^13.0.0",
     "@rollup/plugin-json": "^4.0.2",
-    "@rollup/plugin-node-resolve": "^8.1.0",
+    "@rollup/plugin-node-resolve": "^9.0.0",
     "@rollup/plugin-yaml": "^2.1.1",
     "@spotify/eslint-config-base": "^8.0.0",
     "@spotify/eslint-config-react": "^8.0.0",
