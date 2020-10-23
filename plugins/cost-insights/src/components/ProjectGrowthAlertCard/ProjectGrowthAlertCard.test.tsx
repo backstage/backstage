@@ -62,12 +62,9 @@ describe('<ProjectGrowthAlertCard />', () => {
     );
     expect(rendered.getByText(title)).toBeInTheDocument();
     expect(rendered.getByText(subheader)).toBeInTheDocument();
-    expect(
-      rendered.getByText(MockProjectGrowthAlert.periodStart),
-    ).toBeInTheDocument();
-    expect(
-      rendered.getByText(MockProjectGrowthAlert.periodEnd),
-    ).toBeInTheDocument();
+    // ISO 8601 quarter format (YYYY-QX) should be transformed to QX YYYY
+    expect(rendered.getByText('Q4 2019')).toBeInTheDocument();
+    expect(rendered.getByText('Q1 2020')).toBeInTheDocument();
   });
 
   it('renders the correct title and subheader for a single service', async () => {

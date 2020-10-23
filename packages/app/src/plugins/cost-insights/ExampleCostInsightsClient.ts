@@ -278,8 +278,8 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
   async getAlerts(group: string): Promise<Alert[]> {
     const projectGrowthData: ProjectGrowthData = {
       project: 'example-project',
-      periodStart: 'Q2 2020',
-      periodEnd: 'Q3 2020',
+      periodStart: '2020-Q2',
+      periodEnd: '2020-Q3',
       aggregation: [60_000, 120_000],
       change: {
         ratio: 1,
