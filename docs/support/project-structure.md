@@ -131,7 +131,7 @@ are separated out into their own folder, see further down.
   need to rely on one package.
 
 * [`core-api/`](https://github.com/spotify/backstage/tree/master/packages/core-api) -
-  This package contains pis and definitions of such. It is it's own package
+  This package contains APIs and definitions of such. It is it's own package
   because we needed to split our `test-utils` package. It's an implementation
   detail that we try to hide from our users, and no one should have to depend on
   it directly.
