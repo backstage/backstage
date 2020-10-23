@@ -31,12 +31,16 @@ describe('templatingTask', () => {
     // Temporary dest dir to write the template to
     const destDir = 'test-dest';
 
+    // Files content
+    const testFileContent = 'testing';
+    const testVersionFileContent = 'version: {{version}}';
+
     mockFs({
       [tmplDir]: {
         sub: {
-          'version.txt.hbs': 'version: {{version}}',
+          'version.txt.hbs': testVersionFileContent,
         },
-        'test.txt': 'testing',
+        'test.txt': testFileContent,
       },
       [destDir]: {},
     });
@@ -47,7 +51,7 @@ describe('templatingTask', () => {
 
     await expect(
       fs.readFile(resolvePath(destDir, 'test.txt'), 'utf8'),
-    ).resolves.toBe('testing');
+    ).resolves.toBe(testFileContent);
     await expect(
       fs.readFile(resolvePath(destDir, 'sub/version.txt'), 'utf8'),
     ).resolves.toBe('version: 0.0.0');
