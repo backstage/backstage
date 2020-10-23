@@ -22,8 +22,53 @@ the years, and now includes ML models, Apps, data pipelines and many more.
 
 ## Adding a new type
 
-TODO: Describe what changes are needed to add a new type that shows up in the
-catalog.
+To add a new type to the catalog, you need to:
+
+1. Modify the component interface
+2. Set the new type in your component (e.g., modify your `catalog-info.yaml`)
+
+For example, to add a new type of iOS Application, first modify the `const tabs`
+variable in `plugins/catalog/src/components/CatalogPage/CatalogPage.tsx` like
+so:
+
+```js
+const tabs = useMemo<LabeledComponentType[]>(
+    () => [
+      {
+        id: 'service',
+        label: 'Services',
+      },
+      {
+        id: 'website',
+        label: 'Websites',
+      },
+      {
+        id: 'library',
+        label: 'Libraries',
+      },
+      {
+        id: 'documentation',
+        label: 'Documentation',
+      },
+      {
+        id: 'other',
+        label: 'Other',
+      },
+      {
+        id: 'ios',
+        label: 'iOS Applications'
+      },
+    ],
+    [],
+  );
+```
+
+Then in your `catalog-info.yaml`, you will define your type:
+
+```yaml
+spec:
+  type: ios
+```
 
 ## The Other type
 
