@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import fetch from 'node-fetch';
+import fetch from 'cross-fetch';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import {
   ConflictError,

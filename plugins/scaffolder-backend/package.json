@@ -45,7 +45,7 @@
     "uuid": "^8.2.0",
     "winston": "^3.2.1",
     "yaml": "^1.10.0",
-    "node-fetch": "^2.6.1"
+    "cross-fetch": "^3.0.6"
   },
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.25",
