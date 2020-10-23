@@ -78,8 +78,8 @@ export const createMockProjectGrowthData = (
 ): ProjectGrowthData => {
   const data: ProjectGrowthData = {
     project: 'test-project-growth-alert',
-    periodStart: '2019-10-01',
-    periodEnd: '2020-03-31',
+    periodStart: 'Q4 2019',
+    periodEnd: 'Q1 2020',
     aggregation: [670532.1, 970502.8],
     change: {
       ratio: 0.5,

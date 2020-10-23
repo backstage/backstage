@@ -62,6 +62,12 @@ describe('<ProjectGrowthAlertCard />', () => {
     );
     expect(rendered.getByText(title)).toBeInTheDocument();
     expect(rendered.getByText(subheader)).toBeInTheDocument();
+    expect(
+      rendered.getByText(MockProjectGrowthAlert.periodStart),
+    ).toBeInTheDocument();
+    expect(
+      rendered.getByText(MockProjectGrowthAlert.periodEnd),
+    ).toBeInTheDocument();
   });
 
   it('renders the correct title and subheader for a single service', async () => {

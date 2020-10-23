@@ -73,6 +73,7 @@ const CostInsightsPage = () => {
   const {
     loadingActions,
     loadingGroups,
+    loadingBillingDate,
     loadingInitial,
     dispatchInitial,
     dispatchInsights,
@@ -140,8 +141,8 @@ const CostInsightsPage = () => {
       }
     }
 
-    // Wait for user groups to finish loading
-    if (!loadingGroups) {
+    // Wait for metadata to finish loading
+    if (!(loadingGroups && loadingBillingDate)) {
       getInsights();
     }
   }, [
@@ -149,6 +150,7 @@ const CostInsightsPage = () => {
     pageFilters,
     loadingActions,
     loadingGroups,
+    loadingBillingDate,
     dispatchLoadingInsights,
     dispatchLoadingInitial,
     dispatchLoadingNone,
