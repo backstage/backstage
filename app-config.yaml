@@ -155,6 +155,7 @@ catalog:
       target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/acme-corp.yaml
 
 scaffolder:
+  # workingDirectory: /tmp # Use this to configure a working direcotry for the scaffolder, defaults to the OS temp-dir
   github:
     token:
       $env: GITHUB_TOKEN

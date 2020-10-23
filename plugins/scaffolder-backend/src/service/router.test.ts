@@ -15,6 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import request from 'supertest';
 import { createRouter } from './router';
@@ -32,6 +33,7 @@ describe('createRouter', () => {
       preparers: new Preparers(),
       templaters: new Templaters(),
       publishers: new Publishers(),
+      config: ConfigReader.fromConfigs([]),
       dockerClient: new Docker(),
     });
     app = express().use(router);

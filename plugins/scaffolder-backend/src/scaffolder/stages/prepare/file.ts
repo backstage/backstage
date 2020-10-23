@@ -15,15 +15,18 @@
  */
 import fs from 'fs-extra';
 import path from 'path';
-import os from 'os';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { parseLocationAnnotation } from '../helpers';
 import { InputError } from '@backstage/backend-common';
 import { PreparerBase } from './types';
 
 export class FilePreparer implements PreparerBase {
-  async prepare(template: TemplateEntityV1alpha1): Promise<string> {
+  async prepare(
+    template: TemplateEntityV1alpha1,
+    opts: { workingDirectory: string },
+  ): Promise<string> {
     const { protocol, location } = parseLocationAnnotation(template);
+    const { workingDirectory } = opts;
 
     if (protocol !== 'file') {
       throw new InputError(
@@ -33,7 +36,7 @@ export class FilePreparer implements PreparerBase {
     const templateId = template.metadata.name;
 
     const tempDir = await fs.promises.mkdtemp(
-      path.join(os.tmpdir(), templateId),
+      path.join(workingDirectory, templateId),
     );
 
     const parentDirectory = path.resolve(

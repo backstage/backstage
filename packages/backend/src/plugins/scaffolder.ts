@@ -45,6 +45,7 @@ export default async function createPlugin({
     templaters,
     publishers,
     logger,
+    config,
     dockerClient,
   });
 }

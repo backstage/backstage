@@ -15,7 +15,6 @@
  */
 import fs from 'fs-extra';
 import path from 'path';
-import os from 'os';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { parseLocationAnnotation } from '../helpers';
 import { InputError } from '@backstage/backend-common';
@@ -33,8 +32,12 @@ export class GitlabPreparer implements PreparerBase {
       '';
   }
 
-  async prepare(template: TemplateEntityV1alpha1): Promise<string> {
+  async prepare(
+    template: TemplateEntityV1alpha1,
+    opts: { workingDirectory: string },
+  ): Promise<string> {
     const { protocol, location } = parseLocationAnnotation(template);
+    const { workingDirectory } = opts;
 
     if (!['gitlab', 'gitlab/api', 'url'].includes(protocol)) {
       throw new InputError(
@@ -45,9 +48,8 @@ export class GitlabPreparer implements PreparerBase {
 
     const parsedGitLocation = GitUriParser(location);
     const repositoryCheckoutUrl = parsedGitLocation.toString('https');
-
     const tempDir = await fs.promises.mkdtemp(
-      path.join(os.tmpdir(), templateId),
+      path.join(workingDirectory, templateId),
     );
 
     const templateDirectory = path.join(

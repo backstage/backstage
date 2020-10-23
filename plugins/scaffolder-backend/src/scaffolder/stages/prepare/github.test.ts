@@ -19,6 +19,11 @@ const mocks = {
   CheckoutOptions: jest.fn(() => {}),
 };
 jest.doMock('nodegit', () => mocks);
+jest.doMock('fs-extra', () => ({
+  promises: {
+    mkdtemp: jest.fn(dir => `${dir}-static`),
+  },
+}));
 
 import { GithubPreparer } from './github';
 import {
@@ -71,7 +76,7 @@ describe('GitHubPreparer', () => {
   });
   it('calls the clone command with the correct arguments for a repository', async () => {
     const preparer = new GithubPreparer();
-    await preparer.prepare(mockEntity);
+    await preparer.prepare(mockEntity, { workingDirectory: '/workDir' });
     expect(mocks.Clone.clone).toHaveBeenNthCalledWith(
       1,
       'https://github.com/benjdlambert/backstage-graphql-template',
@@ -84,7 +89,7 @@ describe('GitHubPreparer', () => {
   it('calls the clone command with the correct arguments for a repository when no path is provided', async () => {
     const preparer = new GithubPreparer();
     delete mockEntity.spec.path;
-    await preparer.prepare(mockEntity);
+    await preparer.prepare(mockEntity, { workingDirectory: '/workDir' });
     expect(mocks.Clone.clone).toHaveBeenNthCalledWith(
       1,
       'https://github.com/benjdlambert/backstage-graphql-template',
@@ -97,15 +102,18 @@ describe('GitHubPreparer', () => {
   it('return the temp directory with the path to the folder if it is specified', async () => {
     const preparer = new GithubPreparer();
     mockEntity.spec.path = './template/test/1/2/3';
-    const response = await preparer.prepare(mockEntity);
+    const response = await preparer.prepare(mockEntity, {
+      workingDirectory: '/workDir',
+    });
 
-    expect(response.split('\\').join('/')).toMatch(
-      /\/template\/test\/1\/2\/3$/,
+    expect(response).toBe(
+      `/workDir/graphql-starter-static/template/test/1/2/3`,
     );
   });
+
   it('calls the clone command with the token when provided', async () => {
     const preparer = new GithubPreparer({ token: 'abc' });
-    await preparer.prepare(mockEntity);
+    await preparer.prepare(mockEntity, { workingDirectory: '/workDir' });
     expect(mocks.Clone.clone).toHaveBeenNthCalledWith(
       1,
       'https://github.com/benjdlambert/backstage-graphql-template',
