@@ -49,8 +49,6 @@ export const RadarPage = ({
   return (
     <Page themeId="tool">
       <Header title={title} subtitle={subtitle}>
-        <HeaderLabel label="Owner" value="Spotify" />
-        <HeaderLabel label="Lifecycle" value="Beta" />
       </Header>
       <Content className={classes.overflowXScroll}>
         <ContentHeader title={pageTitle}>
