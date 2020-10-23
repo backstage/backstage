@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { InputError } from '@backstage/backend-common';
 import { Location, LocationSpec } from '@backstage/catalog-model';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from 'winston';
@@ -81,9 +80,7 @@ export class HigherOrderOperations implements HigherOrderOperation {
     const readerOutput = await this.locationReader.read(spec);
     if (!(spec.presence === 'optional') && readerOutput.errors.length) {
       const item = readerOutput.errors[0];
-      throw new InputError(
-        `Failed to read location ${item.location.type}:${item.location.target}, ${item.error}`,
-      );
+      throw item.error;
     }
 
     // TODO(freben): At this point, we could detect orphaned entities, by way
