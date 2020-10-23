@@ -211,22 +211,16 @@ docs on creating private GitHub access tokens is available
 Note that the need for private GitHub access tokens will be replaced with GitHub
 Apps integration further down the line.
 
-#### Github
+#### GitHub
 
-The Github access token is retrieved from environment variables via the config.
+The GitHub access token is retrieved from environment variables via the config.
 The config file needs to specify what environment variable the token is
 retrieved from. Your config should have the following objects.
 
 You can configure who can see the new repositories that the scaffolder creates
 by specifying `visibility` option. Valid options are `public`, `private` and
-`internal`. `internal` options is for GitHub Enterprise clients, which means
-public within the organization.
-
-#### Gitlab
-
-For Gitlab, we currently support the configuration of the GitLab publisher and
-allows to configure the private access token and the base URL of a GitLab
-instance:
+`internal`. The `internal` option is for GitHub Enterprise clients, which means
+public within the enterprise.
 
 ```yaml
 scaffolder:
@@ -234,6 +228,16 @@ scaffolder:
     token:
       $env: GITHUB_TOKEN
     visibility: public # or 'internal' or 'private'
+```
+
+#### GitLab
+
+For GitLab, we currently support the configuration of the GitLab publisher and
+allows to configure the private access token and the base URL of a GitLab
+instance:
+
+```yaml
+scaffolder:
   gitlab:
     api:
       baseUrl: https://gitlab.com
