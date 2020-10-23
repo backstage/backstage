@@ -24,8 +24,14 @@ the years, and now includes ML models, Apps, data pipelines and many more.
 
 To add a new type to the catalog, you need to:
 
-1. Modify the component interface
+1. Modify the tabs in the component page
 2. Set the new type in your component (e.g., modify your `catalog-info.yaml`)
+
+You can also optionally modify the page to display different information when
+the component is displayed (see
+[`EntityPage.tsx`](https://github.com/spotify/backstage/blob/master/packages/app/src/components/catalog/EntityPage.tsx)),
+but this example will use the `DefaultEntityPage` with the Overview and Docs
+tabs.
 
 For example, to add a new type of iOS Application, first modify the `const tabs`
 variable in `plugins/catalog/src/components/CatalogPage/CatalogPage.tsx` like
