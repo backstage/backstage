@@ -20,6 +20,7 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import fetch from 'node-fetch';
+import { Response } from 'express';
 
 const router = Router();
 const API_URL = 'https://api.pagerduty.com';
@@ -38,19 +39,21 @@ type Options = {
 async function request(
   url: string,
   options: any, // Options,
-): Promise<Response | Error> {
+): Promise<PagerDutyResponse> {
   // TODO: handle errors better
-  const response = await fetch(url, options);
+  try {
+    const response = await fetch(url, options);
 
-  if (!response.ok) {
-    const payload = await response.json();
-    const errors = payload.errors.map((error: string) => error).join(' ');
-    const message = `Request failed with ${response.status}, ${errors}`;
-
-    throw new Error(message);
+    if (!response.ok) {
+      const payload = await response.json();
+      const errors = payload.errors.map((error: string) => error).join(' ');
+      const message = `Request failed with ${response.status}, ${errors}`;
+      throw new Error(message);
+    }
+    return await response.json();
+  } catch (error) {
+    throw new Error(error);
   }
-
-  return await response.json();
 }
 
 async function services(token?: string) {
@@ -58,6 +61,7 @@ async function services(token?: string) {
   if (!token) {
     return 'Missing Token';
   }
+
   const options = {
     method: 'GET',
     headers: {
@@ -66,25 +70,38 @@ async function services(token?: string) {
       'Content-Type': 'application/json',
     },
   };
+
   let offset = 0;
   // TODO: Create type for this data
-  const data: any = [];
+  const data: PagerDutyService[] = [];
 
-  async function fetchData() {
-    const result: any = await request(
+  async function getData() {
+    const result = await request(
       `${API_URL}/services?offset=${offset}`,
       options,
     );
-    data.push(...result.services);
+
+    data.push(
+      ...result.services.map(service => ({
+        id: service.id,
+        name: service.name,
+        homepageUrl: service.html_url,
+      })),
+    );
 
     // TODO: remove offset when we are done
-    if (offset < 4 && result.more) {
+    if (offset < 2 && result.more) {
       ++offset;
-      await fetchData();
+      await getData();
     }
   }
 
-  await fetchData();
+  try {
+    await getData();
+  } catch (error) {
+    throw new Error(error);
+  }
+
   return data;
 }
 
@@ -93,6 +110,19 @@ export interface RouterOptions {
   config: Config;
 }
 
+type PagerDutyService = {
+  // activeIncidents: any[];
+  // escalationPolicy: any[];
+  id: string;
+  name: string;
+  homepageUrl: string;
+};
+
+type PagerDutyResponse = {
+  services: any[];
+  more: boolean;
+};
+
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
@@ -100,14 +130,21 @@ export async function createRouter(
   const token = config.getOptionalString('pagerduty.api_token') ?? undefined;
 
   let cachedData: any = [];
+  let errorMessage: string;
 
   let cancel = false;
   const intervalId = setInterval(async () => {
     if (!cancel) {
       cancel = true;
-      const result = await services(token);
-      cachedData = result;
-      cancel = false;
+      try {
+        logger.info('Fetching data from PagerDuty API');
+        cachedData = await services(token);
+      } catch (error) {
+        logger.error(`Failed to fetch data, ${error.message}`);
+        errorMessage = error.message;
+      } finally {
+        cancel = false;
+      }
     }
   }, 10000);
 
@@ -115,17 +152,18 @@ export async function createRouter(
 
   router.use(express.json());
 
-  router.get('/services', async (_, response) => {
-    logger.info('pinged');
-
-    response.send({ services: cachedData, size: cachedData.length });
-  });
-
-  router.get('/health', (_, response) => {
-    logger.info('PONG!');
-    response.send({ status: 'ok' });
-  });
+  router.get(
+    '/services',
+    async (_, response: Response<any | { error: string }>) => {
+      if (errorMessage) {
+        response.status(500).send({ error: errorMessage });
+      } else {
+        response.send({ services: cachedData });
+      }
+    },
+  );
 
   router.use(errorHandler());
+
   return router;
 }

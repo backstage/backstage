@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-const API_URL = 'https://api.pagerduty.com';
 const EVENTS_API_URL = 'https://events.pagerduty.com/v2';
 
 type Options = {
@@ -42,25 +41,6 @@ const request = async (
   }
 
   return await response.json();
-};
-
-export const getServices = async (token: string, integrationKey: string) => {
-  const options = {
-    method: 'GET',
-    headers: {
-      Authorization: `Token token=${token}`,
-      Accept: 'application/vnd.pagerduty+json;version=2',
-      'Content-Type': 'application/json',
-    },
-    // query: {
-    //   query: encodeURIComponent(`key:${integrationKey}`),
-    // },
-  };
-
-  return request(
-    `${API_URL}/services/?query=key%253A238b701cc9d048f0bdd828355178eafe`,
-    options,
-  );
 };
 
 export function triggerPagerDutyAlarm(

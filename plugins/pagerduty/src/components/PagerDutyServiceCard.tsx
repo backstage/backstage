@@ -27,7 +27,6 @@ import { EscalationPolicy } from './Escalation';
 import { PagerDutyData } from './types';
 import { TriggerButton } from './TriggerButton';
 import { useAsync } from 'react-use';
-import { getServices } from '../api/pagerDutyClient';
 
 export const PAGERDUTY_INTEGRATION_KEY = 'pagerduty.com/integration-key';
 
@@ -40,15 +39,12 @@ type Props = {
 
 export const PagerDutyServiceCard = ({ entity }: Props) => {
   const configApi = useApi(configApiRef);
-  const pagerDutyToken =
-    configApi.getOptionalString('pagerduty.api_token') ?? undefined;
 
-  console.log({ pagerDutyToken });
   const { value, loading, error } = useAsync(async () => {
-    return await getServices(
-      pagerDutyToken!,
-      entity.metadata.annotations![PAGERDUTY_INTEGRATION_KEY],
+    const response = await fetch(
+      `${configApi.getString('backend.baseUrl')}/api/pagerduty/services`,
     );
+    return await response.json();
   });
   if (value) console.log(value);
   if (error) throw new Error(`Error in getting services, ${error}`);
