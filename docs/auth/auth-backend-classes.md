@@ -20,7 +20,7 @@ Each of these methods is hosted at an endpoint `/auth/[provider]/method`, where
 ```
 
 For more information on how these methods are used and for which purpose, refer
-to the documentation [here](oauth.md).
+to the [OAuth documentation](oauth.md).
 
 For details on the parameters, input and output conditions for each method,
 refer to the type documentation under
@@ -38,7 +38,7 @@ Currently OAuth is assumed to be the de facto authentication mechanism for
 Backstage based applications.
 
 Backstage comes with a "batteries-included" set of supported commonly used OAuth
-providers: Okta, Github, Google, Gitlab, and a generic OAuth2 provider.
+providers: Okta, GitHub, Google, GitLab, and a generic OAuth2 provider.
 
 All of these use the authorization flow of OAuth2 to implement authentication.
 
