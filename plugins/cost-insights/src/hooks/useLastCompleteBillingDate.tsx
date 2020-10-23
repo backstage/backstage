@@ -20,6 +20,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
+import * as yup from 'yup';
 import { Alert } from '@material-ui/lab';
 import { useApi } from '@backstage/core';
 import { costInsightsApiRef } from '../api';
@@ -45,12 +46,19 @@ export const BillingDateContext = React.createContext<
   BillingDateContextProps | undefined
 >(undefined);
 
+export const dateRegex: RegExp = /^\d{4}-\d{2}-\d{2}$/;
+const dateFormatSchema = yup.string().matches(dateRegex, {
+  message:
+    'Unsupported billing date format: ${value}. Date should be in YYYY-MM-DD format.',
+  excludeEmptyString: true,
+});
+
 export const BillingDateProvider = ({ children }: PropsWithChildren<{}>) => {
   const client = useApi(costInsightsApiRef);
   const [error, setError] = useState<Maybe<Error>>(null);
   const { dispatchLoadingBillingDate } = useLoading(mapLoadingToProps);
 
-  const [lastCompleteBillingDate, setlastCompleteBillingDate] = useState<
+  const [lastCompleteBillingDate, setLastCompeteBillingDate] = useState<
     Maybe<string>
   >(null);
 
@@ -60,7 +68,8 @@ export const BillingDateProvider = ({ children }: PropsWithChildren<{}>) => {
     async function getLastCompleteBillingDate() {
       try {
         const d = await client.getLastCompleteBillingDate();
-        setlastCompleteBillingDate(d);
+        const validDate = await dateFormatSchema.validate(d);
+        if (validDate) setLastCompeteBillingDate(validDate);
       } catch (e) {
         setError(e);
       } finally {

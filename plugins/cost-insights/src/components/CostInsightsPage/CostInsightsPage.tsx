@@ -15,17 +15,8 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-  Box,
-  Container,
-  createStyles,
-  Divider,
-  Grid,
-  makeStyles,
-  Typography,
-} from '@material-ui/core';
+import { Box, Container, Divider, Grid, Typography } from '@material-ui/core';
 import { featureFlagsApiRef, Progress, useApi } from '@backstage/core';
-import { BackstageTheme } from '@backstage/theme';
 import { default as MaterialAlert } from '@material-ui/lab/Alert';
 import { costInsightsApiRef } from '../../api';
 import AlertActionCardList from '../AlertActionCardList';
@@ -59,17 +50,10 @@ import {
 } from '../../types';
 import { mapLoadingToProps } from './selector';
 import ProjectSelect from '../ProjectSelect';
-
-const useTextStyles = makeStyles<BackstageTheme>((theme: BackstageTheme) =>
-  createStyles({
-    root: {
-      color: theme.palette.textSubtle,
-    },
-  }),
-);
+import { useSubtleTypographyStyles } from '../../utils/styles';
 
 const CostInsightsPage = () => {
-  const classes = useTextStyles();
+  const classes = useSubtleTypographyStyles();
   const flags = useApi(featureFlagsApiRef).getFlags();
   // There is not currently a UI to set feature flags
   // flags.set('cost-insights-currencies', FeatureFlagState.On);
