@@ -48,7 +48,7 @@ management. [[live demo](https://backstage-demo.roadie.io/)]
 ![UI with different components highlighted](../assets/architecture-overview/core-vs-plugin-components-highlighted.png)
 
 Each plugin typically makes itself available in the UI on a dedicated URL. For
-example, the lighthouse plugin is registered with the UI on `/lighthouse`.
+example, the Lighthouse plugin is registered with the UI on `/lighthouse`.
 [[live demo](https://backstage-demo.roadie.io/lighthouse)]
 
 ![The lighthouse plugin UI](../assets/architecture-overview/lighthouse-plugin.png)
@@ -76,7 +76,7 @@ Plugins can be enabled, and passed configuration in `apis.ts`. For example,
 [here](https://github.com/spotify/backstage/blob/master/packages/app/src/apis.ts)
 is that file in the Backstage sample app.
 
-This is how the lighthouse plugin would be enabled in a typical Backstage
+This is how the Lighthouse plugin would be enabled in a typical Backstage
 application:
 
 ```tsx
@@ -108,7 +108,7 @@ Architecturally, plugins can take three forms:
 #### Standalone plugins
 
 Standalone plugins run entirely in the browser.
-[The tech radar plugin](https://backstage-demo.roadie.io/tech-radar), for
+[The Tech Radar plugin](https://backstage-demo.roadie.io/tech-radar), for
 example, simply renders hard-coded information. It doesn't make any API requests
 to other services.
 
@@ -124,9 +124,9 @@ simple.
 Service backed plugins make API requests to a service which is within the
 purview of the organisation running Backstage.
 
-The lighthouse plugin, for example, makes requests to the
+The Lighthouse plugin, for example, makes requests to the
 [lighthouse-audit-service](https://github.com/spotify/lighthouse-audit-service).
-The lighthouse-audit-service is a microservice which runs a copy of Google's
+The `lighthouse-audit-service` is a microservice which runs a copy of Google's
 [Lighthouse library](https://github.com/GoogleChrome/lighthouse/) and stores the
 results in a PostgreSQL database.
 
@@ -144,11 +144,11 @@ Third-party backed plugins are similar to service backed plugins. The main
 difference is that the service which backs the plugin is hosted outside of the
 ecosystem of the company hosting Backstage.
 
-The Circle CI plugin is an example of a third-party backed plugin. Circle CI is
-a SaaS service which can be used without any knowledge of Backstage. It has an
-API which a Backstage plugin consumes to display content.
+The CircleCI plugin is an example of a third-party backed plugin. CircleCI is a
+SaaS service which can be used without any knowledge of Backstage. It has an API
+which a Backstage plugin consumes to display content.
 
-Requests which go to Circle CI from the users browser are passed through a proxy
+Requests which go to CircleCI from the users browser are passed through a proxy
 service that Backstage provides. Without this, the requests would be blocked by
 Cross Origin Resource Sharing policies which prevent a browser page served at
 [https://example.com](https://example.com) from serving resources hosted at
@@ -180,7 +180,7 @@ separate docker images.
 
 1. The frontend container
 2. The backend container
-3. The lighthouse audit service container
+3. The Lighthouse audit service container
 
 ![Boxes around the architecture to indicate how it is containerised](../assets/architecture-overview/containerised.png)
 
@@ -204,7 +204,7 @@ yarn run docker-build
 This will create a container called `example-backend`.
 
 The lighthouse-audit-service container is already publicly available in Docker
-Hub and can be downloaded and ran with
+Hub and can be downloaded and run with
 
 ```bash
 docker run spotify/lighthouse-audit-service:latest
