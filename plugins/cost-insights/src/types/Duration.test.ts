@@ -16,7 +16,7 @@
 
 import { Duration, inclusiveEndDateOf, inclusiveStartDateOf } from './Duration';
 
-Date.now = jest.fn(() => new Date(Date.parse('2020-06-05')).valueOf());
+const lastCompleteBillingDate = '2020-06-05';
 
 describe.each`
   duration         | startDate       | endDate
@@ -26,7 +26,9 @@ describe.each`
   ${Duration.P3M}  | ${'2019-10-01'} | ${'2020-03-31'}
 `('Calculates interval dates correctly', ({ duration, startDate, endDate }) => {
   it(`Calculates dates correctly for ${duration}`, () => {
-    expect(inclusiveStartDateOf(duration)).toBe(startDate);
-    expect(inclusiveEndDateOf(duration)).toBe(endDate);
+    expect(inclusiveStartDateOf(duration, lastCompleteBillingDate)).toBe(
+      startDate,
+    );
+    expect(inclusiveEndDateOf(duration, lastCompleteBillingDate)).toBe(endDate);
   });
 });

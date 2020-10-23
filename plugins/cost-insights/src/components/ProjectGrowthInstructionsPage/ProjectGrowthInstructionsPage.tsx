@@ -160,14 +160,17 @@ const ProjectGrowthInstructionsPage = () => {
                 <ResourceGrowthBarChartLegend
                   duration={Duration.P3M}
                   change={{ ratio: 3, amount: 40000 }}
+                  previousName="Q2 2020"
+                  currentName="Q3 2020"
                   costStart={20000}
                   costEnd={60000}
                 />
               </Box>
               <Box paddingY={1}>
                 <ResourceGrowthBarChart
-                  duration={Duration.P3M}
                   resources={entities}
+                  previousName="Q2 2020"
+                  currentName="Q3 2020"
                 />
               </Box>
             </Box>

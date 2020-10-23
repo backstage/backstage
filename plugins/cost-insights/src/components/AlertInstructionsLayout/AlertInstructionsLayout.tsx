@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
+import React, { PropsWithChildren } from 'react';
 import { Box, Button, Container, makeStyles } from '@material-ui/core';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { Header, Page } from '@backstage/core';
@@ -30,13 +30,12 @@ const useStyles = makeStyles(theme => ({
 
 type AlertInstructionsLayoutProps = {
   title: string;
-  children: ReactNode;
 };
 
 const AlertInstructionsLayout = ({
   title,
   children,
-}: AlertInstructionsLayoutProps) => {
+}: PropsWithChildren<AlertInstructionsLayoutProps>) => {
   const classes = useStyles();
   return (
     <CostInsightsThemeProvider>

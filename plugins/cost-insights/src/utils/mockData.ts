@@ -22,6 +22,7 @@ import {
   getDefaultState,
   Product,
   ProductCost,
+  ProductFilters,
   ProjectGrowthData,
   UnlabeledDataflowAlertProject,
   UnlabeledDataflowData,
@@ -135,7 +136,7 @@ export const MockProductTypes: Record<string, string> = {
   'cloud-pub-sub': 'Cloud Pub/Sub',
 };
 
-export const MockProductFilters = Object.keys(
+export const MockProductFilters: ProductFilters = Object.keys(
   MockProductTypes,
 ).map(productType => ({ duration: Duration.P1M, productType }));
 

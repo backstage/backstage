@@ -21,3 +21,4 @@ export * from './useCurrency';
 export * from './useGroups';
 export * from './useLoading';
 export * from './useScroll';
+export * from './useLastCompleteBillingDate';

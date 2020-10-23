@@ -21,6 +21,7 @@ import ResourceGrowthBarChart from '../ResourceGrowthBarChart';
 import ResourceGrowthBarChartLegend from '../ResourceGrowthBarChartLegend';
 import { Duration, ProjectGrowthData } from '../../types';
 import { pluralOf } from '../../utils/grammar';
+import { formatPeriod } from '../../utils/formatters';
 
 type ProjectGrowthAlertProps = {
   alert: ProjectGrowthData;
@@ -33,6 +34,8 @@ const ProjectGrowthAlertCard = ({ alert }: ProjectGrowthAlertProps) => {
     ${alert.products.length} ${pluralOf(alert.products.length, 'product')}${
     alert.products.length > 1 ? ', sorted by cost' : ''
   }`;
+  const previousName = formatPeriod(Duration.P3M, alert.periodStart, false);
+  const currentName = formatPeriod(Duration.P3M, alert.periodEnd, true);
 
   return (
     <InfoCard
@@ -44,13 +47,16 @@ const ProjectGrowthAlertCard = ({ alert }: ProjectGrowthAlertProps) => {
           <ResourceGrowthBarChartLegend
             change={alert.change}
             duration={Duration.P3M}
+            previousName={previousName}
+            currentName={currentName}
             costStart={costStart}
             costEnd={costEnd}
           />
         </Box>
         <ResourceGrowthBarChart
           resources={alert.products}
-          duration={Duration.P3M}
+          previousName={previousName}
+          currentName={currentName}
         />
       </Box>
     </InfoCard>

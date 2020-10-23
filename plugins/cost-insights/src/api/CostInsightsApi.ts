@@ -28,6 +28,13 @@ import {
 
 export type CostInsightsApi = {
   /**
+   * Get the most current date for which billing data is complete, in YYYY-MM-DD format. This helps
+   * define the intervals used in other API methods to avoid showing incomplete cost. The costs for
+   * today, for example, will not be complete. This ideally comes from the cloud provider.
+   */
+  getLastCompleteBillingDate(): Promise<string>;
+
+  /**
    * Get a list of groups the given user belongs to. These may be LDAP groups or similar
    * organizational groups. Cost Insights is designed to show costs based on group membership;
    * if a user has multiple groups, they are able to switch between groups to see costs for each.
