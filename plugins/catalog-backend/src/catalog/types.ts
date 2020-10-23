@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, Location, EntityRelationSpec } from '@backstage/catalog-model';
+import { Entity, EntityRelationSpec, Location } from '@backstage/catalog-model';
 import type { EntityFilters } from '../database';
 
 //
@@ -31,7 +31,7 @@ export type EntityUpsertResponse = {
 };
 
 export type EntitiesCatalog = {
-  entities(filters?: EntityFilters): Promise<Entity[]>;
+  entities(filters?: EntityFilters[]): Promise<Entity[]>;
   removeEntityByUid(uid: string): Promise<void>;
 
   /**
