@@ -25,6 +25,8 @@
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
+    "@backstage/plugin-catalog": "^0.1.1-alpha.25",
+    "react-router-dom": "6.0.0-beta.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-use": "^15.3.3"

@@ -13,19 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { render } from '@testing-library/react';
-import SearchPage from './SearchPage';
-import { ThemeProvider } from '@material-ui/core';
-import { lightTheme } from '@backstage/theme';
 
-describe('SearchPage', () => {
-  it('should render', () => {
-    const rendered = render(
-      <ThemeProvider theme={lightTheme}>
-        <SearchPage />
-      </ThemeProvider>,
-    );
-    expect(rendered.getByText('Welcome to search!')).toBeInTheDocument();
-  });
-});
+export { default } from './SearchResult';

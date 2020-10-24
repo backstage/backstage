@@ -13,28 +13,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { Typography } from '@material-ui/core';
-import {
-  Header,
-  Page,
-  Content,
-  ContentHeader,
-  SupportButton,
-} from '@backstage/core';
+import React, { useState } from 'react';
 
-const SearchPage = () => (
-  <Page themeId="home">
-    <Header title="Welcome to search!" subtitle="Optional subtitle" />
-    <Content>
-      <ContentHeader title="Search">
-        <SupportButton>A description of your plugin goes here.</SupportButton>
-      </ContentHeader>
-      <Typography />
-      hello search page
-      <Typography />
-    </Content>
-  </Page>
-);
+import { Header, Content, Page } from '@backstage/core';
+import { useParams } from 'react-router-dom';
+import { Grid } from '@material-ui/core';
+import SearchBar from '../SearchBar';
+import SearchResult from '../SearchResult';
+
+const SearchPage = () => {
+  const { query } = useParams();
+  const [currentTarget, setCurrentTarget] = useState('');
+
+  const handleSearchInput = (event: any) => {
+    setCurrentTarget(event.target.value);
+  };
+
+  const handleSearch = async (event: Event) => {
+    event.preventDefault();
+  };
+
+  const handleClearSearchBar = () => {
+    setCurrentTarget('');
+  };
+
+  return (
+    <Page themeId="home">
+      <Header title="Search" />
+      <Content>
+        <Grid container direction="row">
+          <Grid item sm={12}>
+            <SearchBar
+              handleSearch={handleSearch}
+              handleSearchInput={handleSearchInput}
+              handleClearSearchBar={handleClearSearchBar}
+              currentTarget={currentTarget}
+            />
+          </Grid>
+          <Grid item sm={12}>
+            <SearchResult currentTarget={currentTarget.toLowerCase()} />
+          </Grid>
+        </Grid>
+      </Content>
+    </Page>
+  );
+};
 
 export default SearchPage;
