@@ -12242,13 +12242,6 @@ git-url-parse@^11.1.2:
   dependencies:
     git-up "^4.0.0"
 
-git-url-parse@^11.3.0:
-  version "11.3.0"
-  resolved "https://registry.npmjs.org/git-url-parse/-/git-url-parse-11.3.0.tgz#1515b4574c4eb2efda7d25cc50b29ce8beaefaae"
-  integrity sha512-i3XNa8IKmqnUqWBcdWBjOcnyZYfN3C1WRvnKI6ouFWwsXCZEnlgbwbm55ZpJ3OJMhfEP/ryFhqW8bBhej3C5Ug==
-  dependencies:
-    git-up "^4.0.0"
-
 git-url-parse@^11.4.0:
   version "11.4.0"
   resolved "https://registry.npmjs.org/git-url-parse/-/git-url-parse-11.4.0.tgz#f2bb1f2b00f05552540e95a62e31399a639a6aa6"
