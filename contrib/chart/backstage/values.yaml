@@ -249,3 +249,4 @@ auth:
   githubToken: g
   gitlabToken: g
   newRelicRestApiKey: r
+  travisciAuthToken: fake-travis-ci-auth-token
