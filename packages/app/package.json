@@ -25,6 +25,7 @@
     "@backstage/plugin-rollbar": "^0.2.1",
     "@backstage/plugin-scaffolder": "^0.3.0",
     "@backstage/plugin-sentry": "^0.2.1",
+    "@backstage/plugin-search": "^0.2.0",
     "@backstage/plugin-tech-radar": "^0.3.0",
     "@backstage/plugin-techdocs": "^0.2.1",
     "@backstage/plugin-user-settings": "^0.2.1",
