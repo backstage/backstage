@@ -63,6 +63,19 @@ proxy:
 5. Get and provide `CIRCLECI_AUTH_TOKEN` as env variable (https://circleci.com/docs/api/#add-an-api-token)
 6. Add `circleci.com/project-slug` annotation to your component-info.yaml file in format <git-provider>/<owner>/<project> (https://backstage.io/docs/architecture-decisions/adrs-adr002#format)
 
+```
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  # ...
+  annotations:
+    # This also supports bitbucket/xxx/yyy
+    circleci.com/project-slug: github/my-org/my-repo
+spec:
+  type: service
+  # ...
+```
+
 ## Features
 
 - List top 50 builds for a project
