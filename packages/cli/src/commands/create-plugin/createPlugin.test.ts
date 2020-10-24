@@ -57,7 +57,7 @@ describe('createPlugin', () => {
         [id]: {},
       });
       const tempDir = id;
-      const pluginDir = `/test-temp/plugins/${id}`;
+      const pluginDir = path.join('test-temp', 'plugins', id);
 
       await movePlugin(tempDir, pluginDir, id);
       await expect(fs.pathExists(pluginDir)).resolves.toBe(true);

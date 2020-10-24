@@ -51,7 +51,7 @@ const createTestPackageFile = async (testFilePath: string) => {
   };
 
   mockFs({
-    '/packages': {
+    packages: {
       app: {
         'package.json': `${JSON.stringify(packageFileContent, null, 2)}\n`,
       },
@@ -72,7 +72,7 @@ const createTestPluginFile = async (
       [testFileName]: `${pluginsFileContent}\n`,
       [pluginsFileName]: `${pluginsFileContent}\n`,
     },
-    '/packages': {
+    packages: {
       app: {
         src: {
           'plugin.ts': `${pluginsFileContent}\n`,
@@ -90,15 +90,13 @@ const createTestPluginFile = async (
 };
 
 const mkTestPluginDir = (testDirPath: string) => {
-  const dirPath = `/${testDirPath}`;
-
-  const pluginFiles: { [index: number]: string } = {};
+  const pluginFiles: { [index: string]: string } = {};
   for (let i = 0; i < 50; i++) {
-    pluginFiles[i] = '';
+    pluginFiles[`testFile${i}.ts`] = '';
   }
 
   mockFs({
-    [dirPath]: pluginFiles,
+    [testDirPath]: pluginFiles,
   });
 };
 
@@ -133,7 +131,7 @@ describe('removePlugin', () => {
       );
 
       const mockedPackageFileContent = removeEmptyLines(
-        fse.readFileSync('/packages/app/package.json', 'utf8'),
+        fse.readFileSync(path.join('packages', 'app', 'package.json'), 'utf8'),
       );
       expect(testFileContent).toBe(mockedPackageFileContent);
     });
@@ -150,7 +148,7 @@ describe('removePlugin', () => {
       );
       const mockedPluginsFileContent = removeEmptyLines(
         fse.readFileSync(
-          path.join('/packages', 'app', 'src', pluginsFileName),
+          path.join('packages', 'app', 'src', pluginsFileName),
           'utf8',
         ),
       );
@@ -161,13 +159,13 @@ describe('removePlugin', () => {
       const testFileName = 'test';
       const testFilePath = path.join(tempDir, testFileName);
 
-      const mockedCodeownersPath = '/.github/CODEOWNERS';
+      const mockedCodeownersPath = path.join('.github', 'CODEOWNERS');
 
       mockFs({
         [tempDir]: {
           [testFileName]: '',
         },
-        '/.github': {
+        '.github': {
           CODEOWNERS: codeownersFileContent,
         },
       });
@@ -178,10 +176,11 @@ describe('removePlugin', () => {
       const codeOwnersFileContent = removeEmptyLines(
         fse.readFileSync(mockedCodeownersPath, 'utf8'),
       );
-      await addCodeownersEntry(testFilePath!, `/plugins/${testPluginName}`, [
-        '@thisIsAtestTeam',
-        'test@gmail.com',
-      ]);
+      await addCodeownersEntry(
+        testFilePath!,
+        path.join('plugins', testPluginName),
+        ['@thisIsAtestTeam', 'test@gmail.com'],
+      );
       await removePluginFromCodeOwners(testFilePath, testPluginName);
       expect(testFileContent).toBe(codeOwnersFileContent);
     });
@@ -206,8 +205,13 @@ describe('removePlugin', () => {
     describe('Removes System Link', () => {
       it('removes system link from @backstage', async () => {
         const symLink = `plugin-${testPluginName}`;
-        const testSymLinkPath = `/node_modules/@backstage/${symLink}`;
-        const mockedTestDirPath = path.join('/plugins', testPluginName);
+        const testSymLinkPath = path.join(
+          '/',
+          'node_modules',
+          '@backstage',
+          symLink,
+        );
+        const mockedTestDirPath = path.join('/', 'plugins', testPluginName);
 
         mockFs({
           '/plugins': {
