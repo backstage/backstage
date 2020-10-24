@@ -27,20 +27,15 @@ const mockProjects = [
   { id: 'project3' },
 ];
 
-const mockSetPageFilters = jest.fn();
-
 describe('<ProjectSelect />', () => {
   let Component: React.ReactNode;
   beforeEach(() => {
     Component = () => (
-      <MockFilterProvider
-        setPageFilters={mockSetPageFilters}
-        setProductFilters={jest.fn()}
-      >
+      <MockFilterProvider>
         <ProjectSelect
           project="all"
           projects={mockProjects}
-          onSelect={mockSetPageFilters}
+          onSelect={jest.fn()}
         />
       </MockFilterProvider>
     );

@@ -16,11 +16,10 @@
 
 import React from 'react';
 import { getByRole, waitFor } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 import UserEvent from '@testing-library/user-event';
 import PeriodSelect, { getDefaultOptions } from './PeriodSelect';
 import { Duration, getDefaultPageFilters, Group } from '../../types';
-
-import { renderInTestApp } from '@backstage/test-utils';
 import { MockBillingDateProvider } from '../../utils/tests';
 
 const DefaultPageFilters = getDefaultPageFilters([{ id: 'tools' }] as Group[]);

@@ -37,7 +37,7 @@ const mapLoadingToProps: MapLoadingToProps<GroupsProviderLoadingProps> = ({
     dispatch({ [DefaultLoadingAction.UserGroups]: isLoading }),
 });
 
-type GroupsContextProps = {
+export type GroupsContextProps = {
   groups: Group[];
 };
 
