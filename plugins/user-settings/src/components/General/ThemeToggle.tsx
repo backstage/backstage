@@ -25,6 +25,7 @@ import {
   ListItemText,
   ListItemSecondaryAction,
   Tooltip,
+  makeStyles,
 } from '@material-ui/core';
 
 type ThemeIconProps = {
@@ -48,6 +49,29 @@ type TooltipToggleButtonProps = {
   value: string;
 };
 
+const useStyles = makeStyles(theme => ({
+  list: {
+    [theme.breakpoints.down('xs')]: {
+      padding: `0 0 12px`,
+    },
+  },
+  listItemText: {
+    [theme.breakpoints.down('xs')]: {
+      paddingRight: 0,
+      paddingLeft: 0,
+    },
+  },
+  listItemSecondaryAction: {
+    [theme.breakpoints.down('xs')]: {
+      width: '100%',
+      top: 'auto',
+      right: 'auto',
+      position: 'relative',
+      transform: 'unset',
+    },
+  },
+}));
+
 // ToggleButtonGroup uses React.children.map instead of context
 // so wrapping with Tooltip breaks ToggleButton functionality.
 const TooltipToggleButton = ({
@@ -64,6 +88,7 @@ const TooltipToggleButton = ({
 );
 
 export const ThemeToggle = () => {
+  const classes = useStyles();
   const appThemeApi = useApi(appThemeApiRef);
   const themeId = useObservable(
     appThemeApi.activeThemeId$(),
@@ -84,9 +109,13 @@ export const ThemeToggle = () => {
   };
 
   return (
-    <ListItem>
-      <ListItemText primary="Theme" secondary="Change the theme mode" />
-      <ListItemSecondaryAction>
+    <ListItem className={classes.list}>
+      <ListItemText
+        className={classes.listItemText}
+        primary="Theme"
+        secondary="Change the theme mode"
+      />
+      <ListItemSecondaryAction className={classes.listItemSecondaryAction}>
         <ToggleButtonGroup
           exclusive
           size="small"
@@ -95,7 +124,6 @@ export const ThemeToggle = () => {
         >
           {themeIds.map(theme => {
             const themeIcon = themeIds.find(t => t.id === theme.id)?.icon;
-
             return (
               <TooltipToggleButton
                 key={theme.id}
