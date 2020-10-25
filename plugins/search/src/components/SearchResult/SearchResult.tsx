@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAsync } from 'react-use';
 
-import { Typography, Grid, Divider } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, Typography, Grid, Divider } from '@material-ui/core';
 import { Table, TableColumn } from '@backstage/core';
-import Filters from '../Filters';
+import { FilterButton, Filters } from '../Filters';
+
 import SearchApi from '../../apis';
 
 const useStyles = makeStyles(() => ({
@@ -40,19 +40,30 @@ const useStyles = makeStyles(() => ({
 }));
 
 type SearchResultProps = {
-  currentTarget?: String;
+  currentTarget?: string;
 };
 
-const TableHeader = ({ searchTerm, numberOfResults }) => {
-  const classes = useStyles();
+type TableHeaderProps = {
+  searchTerm?: string;
+  numberOfSelectedFilters: number;
+  numberOfResults: number;
+  handleToggleFilters: () => any;
+};
 
-  const handleToggleFilters = () => {
-    console.log('toggle');
-  };
+const TableHeader = ({
+  searchTerm,
+  numberOfSelectedFilters,
+  numberOfResults,
+  handleToggleFilters,
+}: TableHeaderProps) => {
+  const classes = useStyles();
 
   return (
     <div className={classes.tableHeader}>
-      <Filters handleToggleFilters={handleToggleFilters} />
+      <FilterButton
+        numberOfSelectedFilters={numberOfSelectedFilters}
+        handleToggleFilters={handleToggleFilters}
+      />
       <Divider className={classes.divider} orientation="vertical" />
       <Grid item sm={12}>
         {searchTerm ? (
@@ -68,20 +79,46 @@ const TableHeader = ({ searchTerm, numberOfResults }) => {
     </div>
   );
 };
+
 const SearchResult = ({ currentTarget }: SearchResultProps) => {
+  const [showFilters, toggleFilters] = useState(false);
+  const [filters, setFilters] = useState<Array<string>>([]);
+  const [filteredResults, setFilteredResults] = useState<Array<object>>([]);
+
   const searchApi = new SearchApi();
 
   const { loading, error, value: results } = useAsync(() => {
     return searchApi.getSearchData();
   }, []);
 
+  useEffect(() => {
+    if (results) {
+      setFilteredResults(
+        results
+          .filter((result: any) =>
+            filters.length > 0
+              ? filters.includes(result.kind) ||
+                filters.includes(result.lifecycle)
+              : results,
+          )
+          .filter(
+            (result: any) =>
+              result.name?.toLowerCase().includes(currentTarget) ||
+              result.description?.toLowerCase().includes(currentTarget),
+          ),
+      );
+    }
+  }, [filters, currentTarget, results]);
+
   if (loading || error || !results) return null;
 
-  const filteredResults = results.filter(
-    (result: any) =>
-      result.name?.toLowerCase().includes(currentTarget) ||
-      result.description?.toLowerCase().includes(currentTarget),
-  );
+  const updateSelectedFilters = (filter: string | Array<null>) => {
+    if (filter instanceof Array || filter === 'All') {
+      return setFilters([]);
+    }
+
+    return setFilters(prevFilters => [...prevFilters, filter]);
+  };
 
   const columns: TableColumn[] = [
     {
@@ -109,17 +146,31 @@ const SearchResult = ({ currentTarget }: SearchResultProps) => {
 
   return (
     <>
-      <Table
-        options={{ paging: true, search: false }}
-        data={filteredResults}
-        columns={columns}
-        title={
-          <TableHeader
-            searchTerm={currentTarget}
-            numberOfResults={filteredResults.length}
+      <Grid container>
+        {showFilters && (
+          <Grid item sm={3}>
+            <Filters
+              filters={filters}
+              updateSelectedFilters={updateSelectedFilters}
+            />
+          </Grid>
+        )}
+        <Grid item sm={showFilters ? 9 : 12}>
+          <Table
+            options={{ paging: true, search: false }}
+            data={filteredResults}
+            columns={columns}
+            title={
+              <TableHeader
+                searchTerm={currentTarget}
+                numberOfResults={filteredResults.length}
+                numberOfSelectedFilters={filters.length}
+                handleToggleFilters={() => toggleFilters(!showFilters)}
+              />
+            }
           />
-        }
-      />
+        </Grid>
+      </Grid>
     </>
   );
 };

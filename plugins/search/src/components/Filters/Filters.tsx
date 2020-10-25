@@ -15,35 +15,99 @@
  */
 
 import React from 'react';
-import FilterListIcon from '@material-ui/icons/FilterList';
-import { makeStyles, IconButton, Typography } from '@material-ui/core';
+import {
+  makeStyles,
+  Typography,
+  Divider,
+  Card,
+  CardHeader,
+  Button,
+  CardContent,
+  TextField,
+  Checkbox,
+  FormControlLabel,
+  MenuItem,
+} from '@material-ui/core';
 
 const useStyles = makeStyles({
   filters: {
-    width: '250px',
-    display: 'flex',
+    background: 'transparent',
+    boxShadow: '0px 0px 0px 0px',
   },
-  icon: {
-    marginTop: '-10px',
+  dropdown: {
+    width: '100%',
   },
 });
 
-const Filters = ({ handleToggleFilters }) => {
-  const classes = useStyles();
-
-  const numberOfFilters = 0;
-  return (
-    <div className={classes.filters}>
-      <IconButton
-        className={classes.icon}
-        aria-label="settings"
-        onClick={handleToggleFilters}
-      >
-        <FilterListIcon />
-      </IconButton>
-      <Typography variant="h6">Filters ({numberOfFilters})</Typography>
-    </div>
-  );
+type FiltersProps = {
+  filters: any;
+  updateSelectedFilters: (filter: string | Array<null>) => void;
 };
 
-export default Filters;
+export const Filters = ({ filters, updateSelectedFilters }: FiltersProps) => {
+  const classes = useStyles();
+
+  const filter1 = ['All', 'API', 'Component', 'Location', 'Template'];
+  const filter2 = ['deprecated', 'recommended', 'experimental', 'production'];
+
+  return (
+    <Card className={classes.filters}>
+      <CardHeader
+        title={<Typography variant="h6">Filters</Typography>}
+        action={
+          <Button color="primary" onClick={() => updateSelectedFilters([])}>
+            CLEAR ALL
+          </Button>
+        }
+      />
+      <Divider />
+      <CardContent>
+        <Typography variant="subtitle2">Kind</Typography>
+        <TextField
+          id="outlined-select-entity-kind"
+          select
+          onChange={e =>
+            updateSelectedFilters(
+              filters.includes(e?.target?.value)
+                ? filters.filter(f => f !== e?.target?.value)
+                : e?.target?.value,
+            )
+          }
+          variant="outlined"
+          className={classes.dropdown}
+        >
+          {filter1.map(filter => (
+            <MenuItem key={filter} value={filter}>
+              {filter}
+            </MenuItem>
+          ))}
+        </TextField>
+      </CardContent>
+      <CardContent>
+        <Typography variant="subtitle2">Lifecycle</Typography>
+        {filter2.map(filter => (
+          <FormControlLabel
+            key={filter}
+            control={
+              <Checkbox
+                color="primary"
+                checked={filters.includes(filter)}
+                tabIndex={-1}
+                value={filter}
+                name={filter}
+                onClick={() =>
+                  updateSelectedFilters(
+                    filters.includes(filter)
+                      ? filters.filter(f => f !== filter)
+                      : filter,
+                  )
+                }
+              />
+            }
+            label={filter}
+          />
+        ))}
+      </CardContent>
+    </Card>
+  );
+};

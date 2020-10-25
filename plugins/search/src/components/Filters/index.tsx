@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export { default } from './Filters';
+export * from './FilterButton';
+export * from './Filters';
