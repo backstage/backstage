@@ -71,7 +71,7 @@ const SearchBar = ({
       </IconButton>
       <InputBase
         className={classes.input}
-        placeholder="Search in backstage"
+        placeholder="Search in Backstage"
         value={currentTarget}
         onChange={event => handleSearchInput(event)}
         inputProps={{ 'aria-label': 'search backstage' }}

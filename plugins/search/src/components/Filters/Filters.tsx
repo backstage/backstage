@@ -23,7 +23,7 @@ import {
   CardHeader,
   Button,
   CardContent,
-  TextField,
+  Select,
   Checkbox,
   FormControlLabel,
   MenuItem,
@@ -41,12 +41,20 @@ const useStyles = makeStyles({
 
 type FiltersProps = {
   filters: any;
-  updateSelectedFilters: (filter: string | Array<null>) => void;
+  resetFilters: () => void;
+  updateSelected: (filter: string) => void;
+  updateChecked: (filter: string) => void;
 };
 
-export const Filters = ({ filters, updateSelectedFilters }: FiltersProps) => {
+export const Filters = ({
+  filters,
+  resetFilters,
+  updateSelected,
+  updateChecked,
+}: FiltersProps) => {
   const classes = useStyles();
 
+  // TODO: move mocked filters out of filters component to make it more generic
   const filter1 = ['All', 'API', 'Component', 'Location', 'Template'];
   const filter2 = ['deprecated', 'recommended', 'experimental', 'production'];
 
@@ -55,7 +63,7 @@ export const Filters = ({ filters, updateSelectedFilters }: FiltersProps) => {
       <CardHeader
         title={<Typography variant="h6">Filters</Typography>}
         action={
-          <Button color="primary" onClick={() => updateSelectedFilters([])}>
+          <Button color="primary" onClick={() => resetFilters()}>
             CLEAR ALL
           </Button>
         }
@@ -63,25 +71,26 @@ export const Filters = ({ filters, updateSelectedFilters }: FiltersProps) => {
       <Divider />
       <CardContent>
         <Typography variant="subtitle2">Kind</Typography>
-        <TextField
-          id="outlined-select-entity-kind"
-          select
-          onChange={e =>
-            updateSelectedFilters(
-              filters.includes(e?.target?.value)
-                ? filters.filter(f => f !== e?.target?.value)
-                : e?.target?.value,
-            )
+        <Select
+          id="outlined-select"
+          onChange={(e: React.ChangeEvent<any>) =>
+            updateSelected(e?.target?.value)
           }
           variant="outlined"
           className={classes.dropdown}
+          value={filters.selected}
         >
           {filter1.map(filter => (
-            <MenuItem key={filter} value={filter}>
+            <MenuItem
+              selected={filter === 'All'}
+              dense
+              key={filter}
+              value={filter}
+            >
               {filter}
             </MenuItem>
           ))}
-        </TextField>
+        </Select>
       </CardContent>
       <CardContent>
         <Typography variant="subtitle2">Lifecycle</Typography>
@@ -91,17 +100,11 @@ export const Filters = ({ filters, updateSelectedFilters }: FiltersProps) => {
             control={
               <Checkbox
                 color="primary"
-                checked={filters.includes(filter)}
+                checked={filters.checked.includes(filter)}
                 tabIndex={-1}
                 value={filter}
                 name={filter}
-                onClick={() =>
-                  updateSelectedFilters(
-                    filters.includes(filter)
-                      ? filters.filter(f => f !== filter)
-                      : filter,
-                  )
-                }
+                onClick={() => updateChecked(filter)}
               />
             }
             label={filter}

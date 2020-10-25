@@ -50,6 +50,36 @@ type TableHeaderProps = {
   handleToggleFilters: () => any;
 };
 
+type Filters = {
+  selected: string;
+  checked: Array<string | null>;
+};
+
+// TODO: move out column to make the search result component more generic
+const columns: TableColumn[] = [
+  {
+    title: 'Component Id',
+    field: 'name',
+    highlight: true,
+  },
+  {
+    title: 'Description',
+    field: 'description',
+  },
+  {
+    title: 'Owner',
+    field: 'owner',
+  },
+  {
+    title: 'Kind',
+    field: 'kind',
+  },
+  {
+    title: 'LifeCycle',
+    field: 'lifecycle',
+  },
+];
+
 const TableHeader = ({
   searchTerm,
   numberOfSelectedFilters,
@@ -82,7 +112,11 @@ const TableHeader = ({
 
 const SearchResult = ({ currentTarget }: SearchResultProps) => {
   const [showFilters, toggleFilters] = useState(false);
-  const [filters, setFilters] = useState<Array<string>>([]);
+  const [filters, setFilters] = useState<Filters>({
+    selected: 'All',
+    checked: [],
+  });
+
   const [filteredResults, setFilteredResults] = useState<Array<object>>([]);
 
   const searchApi = new SearchApi();
@@ -93,56 +127,70 @@ const SearchResult = ({ currentTarget }: SearchResultProps) => {
 
   useEffect(() => {
     if (results) {
-      setFilteredResults(
-        results
-          .filter((result: any) =>
-            filters.length > 0
-              ? filters.includes(result.kind) ||
-                filters.includes(result.lifecycle)
-              : results,
-          )
-          .filter(
-            (result: any) =>
-              result.name?.toLowerCase().includes(currentTarget) ||
-              result.description?.toLowerCase().includes(currentTarget),
-          ),
-      );
+      let withFilters = results;
+
+      // apply filters
+
+      // filter on selected
+      if (filters.selected !== 'All') {
+        withFilters = results.filter((result: any) =>
+          filters.selected.includes(result.kind),
+        );
+      }
+
+      // filter on checked
+      if (filters.checked.length > 0) {
+        withFilters = withFilters.filter((result: any) =>
+          filters.checked.includes(result.lifecycle),
+        );
+      }
+
+      // filter on searchTerm
+      if (currentTarget) {
+        withFilters = withFilters.filter(
+          (result: any) =>
+            result.name?.toLowerCase().includes(currentTarget) ||
+            result.description?.toLowerCase().includes(currentTarget),
+        );
+      }
+
+      setFilteredResults(withFilters);
     }
   }, [filters, currentTarget, results]);
 
   if (loading || error || !results) return null;
 
-  const updateSelectedFilters = (filter: string | Array<null>) => {
-    if (filter instanceof Array || filter === 'All') {
-      return setFilters([]);
-    }
-
-    return setFilters(prevFilters => [...prevFilters, filter]);
+  const resetFilters = () => {
+    setFilters({
+      selected: 'All',
+      checked: [],
+    });
   };
 
-  const columns: TableColumn[] = [
-    {
-      title: 'Component Id',
-      field: 'name',
-      highlight: true,
-    },
-    {
-      title: 'Description',
-      field: 'description',
-    },
-    {
-      title: 'Owner',
-      field: 'owner',
-    },
-    {
-      title: 'Kind',
-      field: 'kind',
-    },
-    {
-      title: 'LifeCycle',
-      field: 'lifecycle',
-    },
-  ];
+  const updateSelected = (filter: string) => {
+    setFilters(prevState => ({
+      ...prevState,
+      selected: filter,
+    }));
+  };
+
+  const updateChecked = (filter: string) => {
+    if (filters.checked.includes(filter)) {
+      const index = filters.checked.indexOf(filter);
+      filters.checked.splice(index);
+
+      setFilters(prevState => ({
+        ...prevState,
+        checked: filters.checked,
+      }));
+      return;
+    }
+
+    setFilters(prevState => ({
+      ...prevState,
+      checked: [...prevState.checked, filter],
+    }));
+  };
 
   return (
     <>
@@ -151,7 +199,9 @@ const SearchResult = ({ currentTarget }: SearchResultProps) => {
           <Grid item sm={3}>
             <Filters
               filters={filters}
-              updateSelectedFilters={updateSelectedFilters}
+              resetFilters={resetFilters}
+              updateSelected={updateSelected}
+              updateChecked={updateChecked}
             />
           </Grid>
         )}
@@ -164,7 +214,9 @@ const SearchResult = ({ currentTarget }: SearchResultProps) => {
               <TableHeader
                 searchTerm={currentTarget}
                 numberOfResults={filteredResults.length}
-                numberOfSelectedFilters={filters.length}
+                numberOfSelectedFilters={
+                  (filters.selected !== 'All' ? 1 : 0) + filters.checked.length
+                }
                 handleToggleFilters={() => toggleFilters(!showFilters)}
               />
             }
