@@ -14,22 +14,14 @@
  * limitations under the License.
  */
 
-import { useLocation } from 'react-router-dom';
-import { Location } from 'history';
-import { PageFilters, ProductFilters } from '../types';
-import { parse } from '../utils/history';
-
-export type FilterParams = {
-  pageFilters?: Partial<PageFilters>;
-  productFilters?: ProductFilters;
+export const msw = {
+  setupDefaultHandlers: (worker: {
+    listen: (t: any) => void;
+    close: () => void;
+    resetHandlers: () => void;
+  }) => {
+    beforeAll(() => worker.listen({ onUnhandledRequest: 'error' }));
+    afterAll(() => worker.close());
+    afterEach(() => worker.resetHandlers());
+  },
 };
-
-export function useQueryParams(): FilterParams {
-  const location: Location = useLocation();
-  const { products: productFilters, ...pageFilters } = parse(location.search);
-
-  return {
-    productFilters: productFilters,
-    pageFilters: pageFilters,
-  };
-}

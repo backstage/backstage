@@ -128,12 +128,16 @@ describe('CatalogBuilder', () => {
       {
         apiVersion: 'av',
         kind: 'Component',
-        metadata: expect.objectContaining({
+        metadata: {
           name: 'n',
           namespace: 'ns',
           post: 'p',
           replaced: 'tt2',
-        }),
+          uid: expect.any(String),
+          etag: expect.any(String),
+          generation: expect.any(Number),
+        },
+        relations: [],
       },
     ]);
   });

@@ -14,17 +14,24 @@
  * limitations under the License.
  */
 
-import { Entity, Location } from '@backstage/catalog-model';
+import { Entity, Location, EntityRelationSpec } from '@backstage/catalog-model';
 import type { EntityFilters } from '../database';
 
 //
 // Entities
 //
 
+export type EntityUpsertRequest = {
+  entity: Entity;
+  relations: EntityRelationSpec[];
+};
+
+export type EntityUpsertResponse = {
+  entityId: string;
+};
+
 export type EntitiesCatalog = {
   entities(filters?: EntityFilters): Promise<Entity[]>;
-  addOrUpdateEntity(entity: Entity, locationId?: string): Promise<Entity>;
-  addEntities(entities: Entity[], locationId?: string): Promise<void>;
   removeEntityByUid(uid: string): Promise<void>;
 
   /**
@@ -34,9 +41,9 @@ export type EntitiesCatalog = {
    * @param locationId The location that they all belong to
    */
   batchAddOrUpdateEntities(
-    entities: Entity[],
+    entities: EntityUpsertRequest[],
     locationId?: string,
-  ): Promise<void>;
+  ): Promise<EntityUpsertResponse[]>;
 };
 
 //

@@ -32,8 +32,6 @@ describe('createRouter', () => {
   beforeAll(async () => {
     entitiesCatalog = {
       entities: jest.fn(),
-      addOrUpdateEntity: jest.fn(),
-      addEntities: jest.fn(),
       removeEntityByUid: jest.fn(),
       batchAddOrUpdateEntities: jest.fn(),
     };
@@ -172,7 +170,7 @@ describe('createRouter', () => {
         .set('Content-Type', 'application/json')
         .send();
 
-      expect(entitiesCatalog.addOrUpdateEntity).not.toHaveBeenCalled();
+      expect(entitiesCatalog.batchAddOrUpdateEntities).not.toHaveBeenCalled();
       expect(response.status).toEqual(400);
       expect(response.text).toMatch(/body/);
     });
@@ -187,18 +185,24 @@ describe('createRouter', () => {
         },
       };
 
-      entitiesCatalog.addOrUpdateEntity.mockResolvedValue(entity);
+      entitiesCatalog.batchAddOrUpdateEntities.mockResolvedValue([
+        { entityId: 'u' },
+      ]);
+      entitiesCatalog.entities.mockResolvedValue([entity]);
 
       const response = await request(app)
         .post('/entities')
         .send(entity)
         .set('Content-Type', 'application/json');
 
-      expect(entitiesCatalog.addOrUpdateEntity).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.addOrUpdateEntity).toHaveBeenNthCalledWith(
-        1,
-        entity,
-      );
+      expect(entitiesCatalog.batchAddOrUpdateEntities).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.batchAddOrUpdateEntities).toHaveBeenCalledWith([
+        { entity, relations: [] },
+      ]);
+      expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.entities).toHaveBeenCalledWith({
+        'metadata.uid': 'u',
+      });
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(entity);
     });

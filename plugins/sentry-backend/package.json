@@ -34,8 +34,7 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.25",
-    "jest-fetch-mock": "^3.0.3"
+    "@backstage/cli": "^0.1.1-alpha.25"
   },
   "files": [
     "dist"

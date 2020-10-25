@@ -13,38 +13,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { Dispatch, ReactNode, SetStateAction } from 'react';
+import React, { Dispatch, PropsWithChildren, SetStateAction } from 'react';
 import {
+  Duration,
   getDefaultPageFilters,
+  Group,
+  Maybe,
   PageFilters,
   ProductFilters,
-  Group,
+  ProductPeriod,
 } from '../types';
 import { FilterContext } from '../hooks/useFilters';
 import { ConfigContext, ConfigContextProps } from '../hooks/useConfig';
 import { CurrencyContext, CurrencyContextProps } from '../hooks/useCurrency';
-import { ScrollContext, ScrollProviderProps } from '../hooks/useScroll';
+import { ScrollContext } from '../hooks/useScroll';
+import {
+  BillingDateContext,
+  BillingDateContextProps,
+} from '../hooks/useLastCompleteBillingDate';
 import { MockProductFilters } from './mockData';
 
 export const MockGroups: Group[] = [{ id: 'tech' }, { id: 'mock-group' }];
 
 type MockFilterProviderProps = {
-  setPageFilters: Dispatch<SetStateAction<PageFilters>>;
-  setProductFilters: Dispatch<SetStateAction<ProductFilters>>;
-  children: ReactNode;
+  setPageFilters: Dispatch<SetStateAction<Maybe<PageFilters>>>;
+  setProductFilters: Dispatch<SetStateAction<Maybe<ProductFilters>>>;
+  duration?: Duration;
 };
 
 export const MockFilterProvider = ({
   setPageFilters,
   setProductFilters,
   children,
-}: MockFilterProviderProps) => {
+  duration = Duration.P1M,
+}: PropsWithChildren<MockFilterProviderProps>) => {
   const pageFilters = getDefaultPageFilters(MockGroups);
   return (
     <FilterContext.Provider
       value={{
         pageFilters: pageFilters,
-        productFilters: MockProductFilters,
+        productFilters: MockProductFilters.map((period: ProductPeriod) => ({
+          ...period,
+          duration: duration,
+        })),
         setPageFilters: setPageFilters,
         setProductFilters: setProductFilters,
       }}
@@ -61,7 +72,7 @@ export const MockConfigProvider = ({
   engineerCost,
   currencies,
   children,
-}: ConfigContextProps & { children: React.ReactNode }) => (
+}: PropsWithChildren<ConfigContextProps>) => (
   <ConfigContext.Provider
     value={{ metrics, products, icons, engineerCost, currencies }}
   >
@@ -73,13 +84,24 @@ export const MockCurrencyProvider = ({
   currency,
   setCurrency,
   children,
-}: CurrencyContextProps & { children: React.ReactNode }) => (
+}: PropsWithChildren<CurrencyContextProps>) => (
   <CurrencyContext.Provider value={{ currency, setCurrency }}>
     {children}
   </CurrencyContext.Provider>
 );
 
-export const MockScrollProvider = ({ children }: ScrollProviderProps) => (
+export const MockBillingDateProvider = ({
+  lastCompleteBillingDate,
+  children,
+}: PropsWithChildren<BillingDateContextProps>) => (
+  <BillingDateContext.Provider
+    value={{ lastCompleteBillingDate: lastCompleteBillingDate }}
+  >
+    {children}
+  </BillingDateContext.Provider>
+);
+
+export const MockScrollProvider = ({ children }: PropsWithChildren<{}>) => (
   <ScrollContext.Provider value={{ scrollTo: null, setScrollTo: jest.fn() }}>
     {children}
   </ScrollContext.Provider>

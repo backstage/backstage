@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
+import {
+  Entity,
+  ENTITY_DEFAULT_NAMESPACE,
+  RELATION_OWNED_BY,
+  serializeEntityRef,
+} from '@backstage/catalog-model';
 import {
   Card,
   CardContent,
@@ -26,6 +31,7 @@ import {
   makeStyles,
   Typography,
 } from '@material-ui/core';
+import ExtensionIcon from '@material-ui/icons/Extension';
 import DocsIcon from '@material-ui/icons/Description';
 import EditIcon from '@material-ui/icons/Edit';
 import GitHubIcon from '@material-ui/icons/GitHub';
@@ -120,6 +126,12 @@ export function AboutCard({ entity, variant }: AboutCardProps) {
                 entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE
               }/${entity.kind}/${entity.metadata.name}`}
             />
+            <IconLinkVertical
+              disabled={!entity.spec?.implementsApis}
+              label="View API"
+              icon={<ExtensionIcon />}
+              href="api"
+            />
           </nav>
         }
       />
@@ -139,7 +151,20 @@ export function AboutCard({ entity, variant }: AboutCardProps) {
           </AboutField>
           <AboutField
             label="Owner"
-            value={entity?.spec?.owner as string}
+            value={entity?.relations
+              ?.filter(r => r.type === RELATION_OWNED_BY)
+              .map(({ target: { kind, name, namespace } }) =>
+                // TODO(Rugvip): we want to provide some utils for this
+                serializeEntityRef({
+                  kind,
+                  name,
+                  namespace:
+                    namespace === ENTITY_DEFAULT_NAMESPACE
+                      ? undefined
+                      : namespace,
+                }),
+              )
+              .join(', ')}
             gridSizes={{ xs: 12, sm: 6, lg: 4 }}
           />
           <AboutField

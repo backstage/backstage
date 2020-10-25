@@ -87,26 +87,33 @@ export function formatPercent(n: number): string {
   return `${(n * 100).toFixed(0)}%`;
 }
 
-export const formatLastTwoLookaheadQuarters = () => {
-  const start = moment(inclusiveStartDateOf(Duration.P3M)).format('[Q]Q YYYY');
-  const end = moment(inclusiveEndDateOf(Duration.P3M)).format('[Q]Q YYYY');
+export function formatLastTwoLookaheadQuarters(endDate: string) {
+  const start = moment(inclusiveStartDateOf(Duration.P3M, endDate)).format(
+    '[Q]Q YYYY',
+  );
+  const end = moment(inclusiveEndDateOf(Duration.P3M, endDate)).format(
+    '[Q]Q YYYY',
+  );
   return `${start} vs ${end}`;
-};
+}
 
-export const formatLastTwoMonths = () => {
-  const start = moment(inclusiveStartDateOf(Duration.P1M)).utc().format('MMMM');
-  const end = moment(inclusiveEndDateOf(Duration.P1M)).utc().format('MMMM');
+export function formatLastTwoMonths(endDate: string) {
+  const start = moment(inclusiveStartDateOf(Duration.P1M, endDate))
+    .utc()
+    .format('MMMM');
+  const end = moment(inclusiveEndDateOf(Duration.P1M, endDate))
+    .utc()
+    .format('MMMM');
   return `${start} vs ${end}`;
-};
+}
 
-export const dateRegex: RegExp = /^\d{4}-\d{2}-\d{2}$/;
-
-export const formatRelativeDuration = (
-  date: string,
+const formatRelativePeriod = (
   duration: Duration,
+  date: string,
+  isEndDate: boolean,
 ): string => {
-  const periodStart = inclusiveStartDateOf(duration);
-  const periodEnd = inclusiveEndDateOf(duration);
+  const periodStart = isEndDate ? inclusiveStartDateOf(duration, date) : date;
+  const periodEnd = isEndDate ? date : inclusiveEndDateOf(duration, date);
   const days = moment.duration(duration).asDays();
   if (![periodStart, periodEnd].includes(date)) {
     throw new Error(`Invalid relative date ${date} for duration ${duration}`);
@@ -114,13 +121,25 @@ export const formatRelativeDuration = (
   return date === periodStart ? `First ${days} Days` : `Last ${days} Days`;
 };
 
-export function formatDuration(date: string, duration: Duration) {
+export function formatPeriod(
+  duration: Duration,
+  date: string,
+  isEndDate: boolean,
+) {
   switch (duration) {
     case Duration.P1M:
-      return monthOf(date);
+      return monthOf(
+        isEndDate
+          ? inclusiveEndDateOf(duration, date)
+          : inclusiveStartDateOf(duration, date),
+      );
     case Duration.P3M:
-      return quarterOf(date);
+      return quarterOf(
+        isEndDate
+          ? inclusiveEndDateOf(duration, date)
+          : inclusiveStartDateOf(duration, date),
+      );
     default:
-      return formatRelativeDuration(date, duration);
+      return formatRelativePeriod(duration, date, isEndDate);
   }
 }

@@ -16,7 +16,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { Box, Container, Divider, Grid, Typography } from '@material-ui/core';
-import { Progress, useApi, featureFlagsApiRef } from '@backstage/core';
+import { featureFlagsApiRef, Progress, useApi } from '@backstage/core';
 import { default as MaterialAlert } from '@material-ui/lab/Alert';
 import { costInsightsApiRef } from '../../api';
 import AlertActionCardList from '../AlertActionCardList';
@@ -33,11 +33,12 @@ import CostOverviewCard from '../CostOverviewCard';
 import ProductInsights from '../ProductInsights';
 import CostInsightsSupportButton from '../CostInsightsSupportButton';
 import {
-  useLoading,
+  useConfig,
+  useCurrency,
   useFilters,
   useGroups,
-  useCurrency,
-  useConfig,
+  useLastCompleteBillingDate,
+  useLoading,
 } from '../../hooks';
 import {
   Alert,
@@ -49,14 +50,17 @@ import {
 } from '../../types';
 import { mapLoadingToProps } from './selector';
 import ProjectSelect from '../ProjectSelect';
+import { useSubtleTypographyStyles } from '../../utils/styles';
 
 const CostInsightsPage = () => {
+  const classes = useSubtleTypographyStyles();
   const flags = useApi(featureFlagsApiRef).getFlags();
   // There is not currently a UI to set feature flags
   // flags.set('cost-insights-currencies', FeatureFlagState.On);
   const client = useApi(costInsightsApiRef);
   const config = useConfig();
   const groups = useGroups();
+  const lastCompleteBillingDate = useLastCompleteBillingDate();
   const [currency, setCurrency] = useCurrency();
   const [projects, setProjects] = useState<Maybe<Project[]>>(null);
   const [dailyCost, setDailyCost] = useState<Maybe<Cost>>(null);
@@ -69,6 +73,7 @@ const CostInsightsPage = () => {
   const {
     loadingActions,
     loadingGroups,
+    loadingBillingDate,
     loadingInitial,
     dispatchInitial,
     dispatchInsights,
@@ -101,7 +106,10 @@ const CostInsightsPage = () => {
       try {
         if (pageFilters.group) {
           dispatchLoadingInsights(true);
-          const intervals = intervalsOf(pageFilters.duration);
+          const intervals = intervalsOf(
+            pageFilters.duration,
+            lastCompleteBillingDate,
+          );
           const [
             fetchedProjects,
             fetchedAlerts,
@@ -133,8 +141,8 @@ const CostInsightsPage = () => {
       }
     }
 
-    // Wait for user groups to finish loading
-    if (!loadingGroups) {
+    // Wait for metadata to finish loading
+    if (!(loadingGroups && loadingBillingDate)) {
       getInsights();
     }
   }, [
@@ -142,9 +150,11 @@ const CostInsightsPage = () => {
     pageFilters,
     loadingActions,
     loadingGroups,
+    loadingBillingDate,
     dispatchLoadingInsights,
     dispatchLoadingInitial,
     dispatchLoadingNone,
+    lastCompleteBillingDate,
   ]);
 
   if (loadingInitial) {
@@ -195,6 +205,9 @@ const CostInsightsPage = () => {
     >
       <Box minHeight={40} width="75%" pt={2}>
         <Typography variant="h4">Cost Overview</Typography>
+        <Typography classes={classes}>
+          Billing data as of {lastCompleteBillingDate}
+        </Typography>
       </Box>
       <Box minHeight={40} maxHeight={60} display="flex">
         {!!flags.get('cost-insights-currencies') && (

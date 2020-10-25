@@ -15,15 +15,15 @@
  */
 
 import React, {
-  ReactNode,
   createContext,
+  PropsWithChildren,
   useContext,
   useEffect,
   useState,
 } from 'react';
-import { useApi, configApiRef } from '@backstage/core';
+import { configApiRef, useApi } from '@backstage/core';
 import { Config as BackstageConfig } from '@backstage/config';
-import { Currency, defaultCurrencies, Product, Icon, Metric } from '../types';
+import { Currency, defaultCurrencies, Icon, Metric, Product } from '../types';
 import { getIcon } from '../utils/navigation';
 import { validateMetrics } from '../utils/config';
 
@@ -67,7 +67,7 @@ const defaultState: ConfigContextProps = {
   currencies: defaultCurrencies,
 };
 
-export const ConfigProvider = ({ children }: { children: ReactNode }) => {
+export const ConfigProvider = ({ children }: PropsWithChildren<{}>) => {
   const c: BackstageConfig = useApi(configApiRef);
   const [config, setConfig] = useState(defaultState);
   const [loading, setLoading] = useState(true);

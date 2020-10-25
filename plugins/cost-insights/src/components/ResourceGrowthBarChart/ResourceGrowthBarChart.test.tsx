@@ -16,7 +16,6 @@
 
 import React from 'react';
 import ResourceGrowthBarChart from './ResourceGrowthBarChart';
-import { Duration } from '../../types';
 import { renderInTestApp } from '@backstage/test-utils';
 import { createMockEntity } from '../../utils/mockData';
 
@@ -32,8 +31,9 @@ describe('<ResourceGrowthBarChart/>', () => {
   it('Pre-renders without exploding', async () => {
     const rendered = await renderInTestApp(
       <ResourceGrowthBarChart
-        duration={Duration.P1M}
         resources={MockResources}
+        previousName="Q2 2020"
+        currentName="Q3 2020"
       />,
     );
     expect(rendered.queryByTestId('bar-chart-wrapper')).toBeInTheDocument();

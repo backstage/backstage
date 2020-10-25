@@ -179,7 +179,7 @@ const onSave = async () => {
 ```
 
 Now it's much simpler for users to change the theme tune, as they no longer need
-to go look up a track ID and edit a yaml file. Instead, they can now stay inside
+to go look up a track ID and edit a YAML file. Instead, they can now stay inside
 Backstage and search for the track and request the change from there. In
 addition, the requested change can be reviewed by the regular process of each
 organization.

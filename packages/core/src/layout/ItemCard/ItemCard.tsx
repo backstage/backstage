@@ -61,8 +61,8 @@ export const ItemCard: FC<ItemCardProps> = ({
         <Typography variant="h6">{title}</Typography>
       </div>
       <div className={classes.content}>
-        {tags?.map(tag => (
-          <Chip label={tag} key={tag} />
+        {tags?.map((tag, i) => (
+          <Chip label={tag} key={`tag-${i}`} />
         ))}
         <Typography variant="body2" paragraph className={classes.description}>
           {description}

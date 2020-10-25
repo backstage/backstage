@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { makeStyles } from '@material-ui/core';
 import { Header, Page } from '@backstage/core';
 import { Group } from '../../types';
@@ -34,10 +34,12 @@ const useStyles = makeStyles(theme => ({
 type CostInsightsLayoutProps = {
   title?: string;
   groups: Group[];
-  children?: React.ReactNode;
 };
 
-const CostInsightsLayout = ({ groups, children }: CostInsightsLayoutProps) => {
+const CostInsightsLayout = ({
+  groups,
+  children,
+}: PropsWithChildren<CostInsightsLayoutProps>) => {
   const classes = useStyles();
   return (
     <Page themeId="tool">

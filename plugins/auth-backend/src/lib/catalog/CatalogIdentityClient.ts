@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import fetch from 'node-fetch';
+import fetch from 'cross-fetch';
 import { UserEntity } from '@backstage/catalog-model';
 import {
   ConflictError,

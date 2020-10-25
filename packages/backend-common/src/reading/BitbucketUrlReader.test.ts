@@ -19,14 +19,14 @@ import { setupServer } from 'msw/node';
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '../logging';
 import { BitbucketUrlReader } from './BitbucketUrlReader';
+import { msw } from '@backstage/test-utils';
 
 const logger = getVoidLogger();
 
 describe('BitbucketUrlReader', () => {
   const worker = setupServer();
 
-  beforeAll(() => worker.listen({ onUnhandledRequest: 'error' }));
-  afterAll(() => worker.close());
+  msw.setupDefaultHandlers(worker);
 
   beforeEach(() => {
     worker.use(
@@ -41,7 +41,6 @@ describe('BitbucketUrlReader', () => {
       ),
     );
   });
-  afterEach(() => worker.resetHandlers());
 
   const createConfig = (username?: string, appPassword?: string) =>
     new ConfigReader(

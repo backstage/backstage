@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { Entity, LocationSpec } from '@backstage/catalog-model';
+import {
+  Entity,
+  EntityRelationSpec,
+  LocationSpec,
+} from '@backstage/catalog-model';
 
 export type CatalogProcessor = {
   /**
@@ -113,6 +117,12 @@ export type CatalogProcessorEntityResult = {
   location: LocationSpec;
 };
 
+export type CatalogProcessorRelationResult = {
+  type: 'relation';
+  relation: EntityRelationSpec;
+  entityRef?: string;
+};
+
 export type CatalogProcessorErrorResult = {
   type: 'error';
   error: Error;
@@ -123,4 +133,5 @@ export type CatalogProcessorResult =
   | CatalogProcessorLocationResult
   | CatalogProcessorDataResult
   | CatalogProcessorEntityResult
+  | CatalogProcessorRelationResult
   | CatalogProcessorErrorResult;

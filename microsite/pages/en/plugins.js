@@ -16,9 +16,8 @@ const {
 const pluginsDirectory = require('path').join(process.cwd(), 'data/plugins');
 const pluginMetadata = fs
   .readdirSync(pluginsDirectory)
-  .map(file =>
-    yaml.safeLoad(fs.readFileSync(`./data/plugins/${file}`, 'utf8')),
-  );
+  .map(file => yaml.safeLoad(fs.readFileSync(`./data/plugins/${file}`, 'utf8')))
+  .sort((a, b) => a.title.toLowerCase().localeCompare(b.title.toLowerCase()));
 const truncate = text =>
   text.length > 170 ? text.substr(0, 170) + '...' : text;
 

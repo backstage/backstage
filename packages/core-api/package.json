@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "@backstage/config": "^0.1.1-alpha.25",
+    "@backstage/test-utils": "^0.1.1-alpha.25",
     "@backstage/theme": "^0.1.1-alpha.25",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
@@ -49,7 +50,8 @@
     "@types/jest": "^26.0.7",
     "@types/node": "^12.0.0",
     "@types/zen-observable": "^0.8.0",
-    "jest-fetch-mock": "^3.0.3"
+    "cross-fetch": "^3.0.6",
+    "msw": "^0.21.3"
   },
   "files": [
     "dist"

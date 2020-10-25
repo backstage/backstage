@@ -27,15 +27,18 @@ import {
   generateEntityEtag,
   generateEntityUid,
   Location,
+  EntityRelationSpec,
+  parseEntityName,
 } from '@backstage/catalog-model';
 import Knex from 'knex';
 import lodash from 'lodash';
 import type { Logger } from 'winston';
 import { buildEntitySearch } from './search';
-import type {
+import {
   Database,
   DatabaseLocationUpdateLogEvent,
   DatabaseLocationUpdateLogStatus,
+  DbEntitiesRelationsRow,
   DbEntitiesRow,
   DbEntitiesSearchRow,
   DbEntityRequest,
@@ -123,6 +126,8 @@ export class CommonDatabase implements Database {
         throw new InputError('May not specify etag for new entities');
       } else if (entity.metadata.generation !== undefined) {
         throw new InputError('May not specify generation for new entities');
+      } else if (entity.relations !== undefined) {
+        throw new InputError('May not specify relations for new entities');
       }
 
       const newEntity = {
@@ -281,7 +286,7 @@ export class CommonDatabase implements Database {
       .select('entities.*')
       .orderBy('full_name', 'asc');
 
-    return rows.map(row => this.toEntityResponse(row));
+    return Promise.all(rows.map(row => this.toEntityResponse(tx, row)));
   }
 
   async entityByName(
@@ -300,7 +305,7 @@ export class CommonDatabase implements Database {
       return undefined;
     }
 
-    return this.toEntityResponse(rows[0]);
+    return this.toEntityResponse(tx, rows[0]);
   }
 
   async entityByUid(
@@ -317,7 +322,7 @@ export class CommonDatabase implements Database {
       return undefined;
     }
 
-    return this.toEntityResponse(rows[0]);
+    return this.toEntityResponse(tx, rows[0]);
   }
 
   async removeEntityByUid(txOpaque: unknown, uid: string): Promise<void> {
@@ -328,6 +333,34 @@ export class CommonDatabase implements Database {
     if (!result) {
       throw new NotFoundError(`Found no entity with ID ${uid}`);
     }
+  }
+
+  async setRelations(
+    txOpaque: unknown,
+    originatingEntityId: string,
+    relations: EntityRelationSpec[],
+  ): Promise<void> {
+    const tx = txOpaque as Knex.Transaction<any, any>;
+
+    // remove all relations that exist for the originating entity id.
+    await tx<DbEntitiesRelationsRow>('entities_relations')
+      .where({ originating_entity_id: originatingEntityId })
+      .del();
+
+    const serializeName = (e: EntityName) =>
+      `${e.kind}:${e.namespace}/${e.name}`.toLowerCase();
+
+    const relationsRows: DbEntitiesRelationsRow[] = relations.map(
+      ({ source, target, type }) => ({
+        originating_entity_id: originatingEntityId,
+        source_full_name: serializeName(source),
+        target_full_name: serializeName(target),
+        type,
+      }),
+    );
+
+    // TODO(blam): translate constraint failures to sane NotFoundError instead
+    await tx.batchInsert('entities_relations', relationsRows, BATCH_SIZE);
   }
 
   async addLocation(location: Location): Promise<DbLocationsRow> {
@@ -469,11 +502,26 @@ export class CommonDatabase implements Database {
     };
   }
 
-  private toEntityResponse(row: DbEntitiesRow): DbEntityResponse {
+  private async toEntityResponse(
+    tx: Knex.Transaction<any, any>,
+    row: DbEntitiesRow,
+  ): Promise<DbEntityResponse> {
     const entity = JSON.parse(row.data) as Entity;
     entity.metadata.uid = row.id;
     entity.metadata.etag = row.etag;
     entity.metadata.generation = Number(row.generation); // cast due to sqlite
+
+    // TODO(Rugvip): This is here because it's simple for now, but we likely
+    //               need to refactor this to be more efficient or introduce pagination.
+    const relations = await tx<DbEntitiesRelationsRow>('entities_relations')
+      .where({ source_full_name: row.full_name })
+      .orderBy(['type', 'target_full_name'])
+      .select();
+
+    entity.relations = relations.map(r => ({
+      target: parseEntityName(r.target_full_name),
+      type: r.type,
+    }));
 
     return {
       locationId: row.location_id || undefined,
