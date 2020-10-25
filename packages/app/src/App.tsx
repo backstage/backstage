@@ -84,7 +84,7 @@ const AppRoutes = () => (
       element={<RegisterComponentRouter catalogRouteRef={catalogRouteRef} />}
     />
     <Route path="/settings" element={<SettingsRouter />} />
-    <Route path="/github-importer/*" element={<CatalogImportRouter />} />
+    <Route path="/import-catalog/*" element={<CatalogImportRouter />} />
     {...deprecatedAppRoutes}
   </Routes>
 );

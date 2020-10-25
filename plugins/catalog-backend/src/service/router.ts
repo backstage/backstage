@@ -15,27 +15,33 @@
  */
 
 import { errorHandler, InputError } from '@backstage/backend-common';
-import { locationSpecSchema } from '@backstage/catalog-model';
+import { locationSpecSchema, repoPathSchema } from '@backstage/catalog-model';
 import type { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
 import { EntityFilters } from '../database';
-import { HigherOrderOperation } from '../ingestion/types';
+import { ConfigGenerator, HigherOrderOperation } from '../ingestion/types';
 import { requireRequestBody, validateRequestBody } from './util';
 
 export interface RouterOptions {
   entitiesCatalog?: EntitiesCatalog;
   locationsCatalog?: LocationsCatalog;
   higherOrderOperation?: HigherOrderOperation;
+  configGenerator?: ConfigGenerator;
   logger: Logger;
 }
 
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { entitiesCatalog, locationsCatalog, higherOrderOperation } = options;
+  const {
+    entitiesCatalog,
+    locationsCatalog,
+    higherOrderOperation,
+    configGenerator,
+  } = options;
 
   const router = Router();
   router.use(express.json());
@@ -119,6 +125,14 @@ export async function createRouter(
         await locationsCatalog.removeLocation(id);
         res.status(204).send();
       });
+  }
+
+  if (configGenerator) {
+    router.post('/generate-config', async (req, res) => {
+      const input = await validateRequestBody(req, repoPathSchema);
+      const output = await configGenerator.generateConfig(input.repoPath);
+      res.status(201).send(output);
+    });
   }
 
   router.use(errorHandler());

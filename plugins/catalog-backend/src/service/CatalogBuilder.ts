@@ -64,12 +64,14 @@ import {
   YamlProcessor,
 } from '../ingestion';
 import { CatalogRulesEnforcer } from '../ingestion/CatalogRules';
+import { ConfigGeneratorClient } from '../ingestion/ConfigGenerator';
 import { LdapOrgReaderProcessor } from '../ingestion/processors/LdapOrgReaderProcessor';
 import {
   jsonPlaceholderResolver,
   textPlaceholderResolver,
   yamlPlaceholderResolver,
 } from '../ingestion/processors/PlaceholderProcessor';
+import { ConfigGenerator } from '../ingestion/types';
 
 export type CatalogEnvironment = {
   logger: Logger;
@@ -249,6 +251,7 @@ export class CatalogBuilder {
     entitiesCatalog: EntitiesCatalog;
     locationsCatalog: LocationsCatalog;
     higherOrderOperation: HigherOrderOperation;
+    configGenerator: ConfigGenerator;
   }> {
     const { config, database, logger } = this.env;
 
@@ -276,11 +279,13 @@ export class CatalogBuilder {
       locationReader,
       logger,
     );
+    const configGenerator = new ConfigGeneratorClient(logger);
 
     return {
       entitiesCatalog,
       locationsCatalog,
       higherOrderOperation,
+      configGenerator,
     };
   }
 

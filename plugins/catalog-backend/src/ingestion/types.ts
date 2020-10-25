@@ -65,3 +65,11 @@ export type ReadLocationError = {
   location: LocationSpec;
   error: Error;
 };
+
+//
+// ConfigGenerator
+//
+
+export type ConfigGenerator = {
+  generateConfig(repoPath: string): Promise<Entity[]>;
+};

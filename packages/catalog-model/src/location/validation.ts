@@ -34,3 +34,10 @@ export const locationSchema = yup
   })
   .noUnknown()
   .required();
+
+export const repoPathSchema = yup
+  .object<{ repoPath: string }>({
+    repoPath: yup.string().required(),
+  })
+  .noUnknown()
+  .required();
