@@ -239,7 +239,7 @@ hits merge.
 # 8. Attack of the Clones
 
 Sam just released v1.8.4 of the plugin, and at this point it's so popular that a
-couple of other plugins has started depending on the `sam.wise/spotify-track-id`
+couple of other plugins have started depending on the `sam.wise/spotify-track-id`
 annotation. One such plugin being the `spotify-album-art` plugin that can
 display the album art of the theme tune as the background of the entity header.
 Sam thinks it's all pretty cool, but doesn't like that the annotation that was
