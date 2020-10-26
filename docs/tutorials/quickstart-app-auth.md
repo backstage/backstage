@@ -7,7 +7,7 @@ title: Monorepo App Setup With Authentication
 
 <br />
 
-> This document takes you through setting up a backstage app that runs in your
+> This document takes you through setting up a Backstage app that runs in your
 > own environment. It starts with a skeleton install and verifying of the
 > monorepo's functionality. Next, GitHub authentication is added and tested.
 >
