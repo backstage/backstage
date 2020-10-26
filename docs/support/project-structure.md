@@ -44,7 +44,7 @@ the code.
   where we keep all of our documentation Markdown files. These ends up on
   http://backstage.io/docs. Just keep in mind that changes to the
   [`sidebars.json`](https://github.com/spotify/backstage/blob/master/microsite/sidebars.json)
-  file also needs to be updated.
+  file may be needed as sections are added/removed.
 
 - [`.editorconfig`](https://github.com/spotify/backstage/tree/master/.editorconfig) -
   A configuration file used by most common code editors.
