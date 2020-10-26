@@ -18,7 +18,7 @@ import type { Transformer } from './index';
 
 export const simplifyMkdocsFooter = (): Transformer => {
   return dom => {
-    // Remove the header
+    // Remove mkdocs copyright
     dom.querySelector('.md-footer-copyright')?.remove();
 
     return dom;
