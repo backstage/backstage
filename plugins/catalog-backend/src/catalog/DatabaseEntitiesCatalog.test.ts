@@ -69,11 +69,13 @@ describe('DatabaseEntitiesCatalog', () => {
       ]);
 
       expect(db.entities).toHaveBeenCalledTimes(1);
-      expect(db.entities).toHaveBeenCalledWith(expect.anything(), {
-        kind: 'b',
-        'metadata.namespace': 'd',
-        'metadata.name': ['c'],
-      });
+      expect(db.entities).toHaveBeenCalledWith(expect.anything(), [
+        {
+          kind: 'b',
+          'metadata.namespace': 'd',
+          'metadata.name': ['c'],
+        },
+      ]);
       expect(db.setRelations).toHaveBeenCalledTimes(1);
       expect(db.setRelations).toHaveBeenCalledWith(expect.anything(), 'u', []);
       expect(db.addEntities).toHaveBeenCalledTimes(1);
@@ -120,11 +122,13 @@ describe('DatabaseEntitiesCatalog', () => {
       ]);
 
       expect(db.entities).toHaveBeenCalledTimes(1);
-      expect(db.entities).toHaveBeenCalledWith(expect.anything(), {
-        kind: 'b',
-        'metadata.namespace': 'd',
-        'metadata.name': ['c'],
-      });
+      expect(db.entities).toHaveBeenCalledWith(expect.anything(), [
+        {
+          kind: 'b',
+          'metadata.namespace': 'd',
+          'metadata.name': ['c'],
+        },
+      ]);
       expect(db.entityByName).not.toHaveBeenCalled();
       expect(db.entityByUid).toHaveBeenCalledTimes(1);
       expect(db.entityByUid).toHaveBeenCalledWith(expect.anything(), 'u');
@@ -194,11 +198,13 @@ describe('DatabaseEntitiesCatalog', () => {
       ]);
 
       expect(db.entities).toHaveBeenCalledTimes(1);
-      expect(db.entities).toHaveBeenCalledWith(expect.anything(), {
-        kind: 'b',
-        'metadata.namespace': 'd',
-        'metadata.name': ['c'],
-      });
+      expect(db.entities).toHaveBeenCalledWith(expect.anything(), [
+        {
+          kind: 'b',
+          'metadata.namespace': 'd',
+          'metadata.name': ['c'],
+        },
+      ]);
       expect(db.entityByName).toHaveBeenCalledTimes(1);
       expect(db.entityByName).toHaveBeenCalledWith(expect.anything(), {
         kind: 'b',
@@ -254,11 +260,13 @@ describe('DatabaseEntitiesCatalog', () => {
       ]);
 
       expect(db.entities).toHaveBeenCalledTimes(1);
-      expect(db.entities).toHaveBeenCalledWith(expect.anything(), {
-        kind: 'b',
-        'metadata.namespace': 'd',
-        'metadata.name': ['c'],
-      });
+      expect(db.entities).toHaveBeenCalledWith(expect.anything(), [
+        {
+          kind: 'b',
+          'metadata.namespace': 'd',
+          'metadata.name': ['c'],
+        },
+      ]);
       expect(db.entityByName).not.toHaveBeenCalled();
       expect(db.entityByUid).not.toHaveBeenCalled();
       expect(db.updateEntity).not.toHaveBeenCalled();

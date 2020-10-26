@@ -60,7 +60,7 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
     private readonly logger: Logger,
   ) {}
 
-  async entities(filters?: EntityFilters): Promise<Entity[]> {
+  async entities(filters?: EntityFilters[]): Promise<Entity[]> {
     const items = await this.database.transaction(tx =>
       this.database.entities(tx, filters),
     );
@@ -109,9 +109,9 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
       const location =
         entityResponse.entity.metadata.annotations?.[LOCATION_ANNOTATION];
       const colocatedEntities = location
-        ? await this.database.entities(tx, {
-            [`metadata.annotations.${LOCATION_ANNOTATION}`]: location,
-          })
+        ? await this.database.entities(tx, [
+            { [`metadata.annotations.${LOCATION_ANNOTATION}`]: location },
+          ])
         : [entityResponse];
       for (const dbResponse of colocatedEntities) {
         await this.database.removeEntityByUid(
@@ -234,11 +234,13 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
     const markTimestamp = process.hrtime();
 
     const names = requests.map(({ entity }) => entity.metadata.name);
-    const oldEntities = await this.entities({
-      kind: kind,
-      'metadata.namespace': namespace,
-      'metadata.name': names,
-    });
+    const oldEntities = await this.entities([
+      {
+        kind: kind,
+        'metadata.namespace': namespace,
+        'metadata.name': names,
+      },
+    ]);
 
     const oldEntitiesByName = new Map(
       oldEntities.map(e => [e.metadata.name, e]),
