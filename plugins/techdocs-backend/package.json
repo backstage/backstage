@@ -30,7 +30,7 @@
     "express": "^4.17.1",
     "express-promise-router": "^3.0.3",
     "fs-extra": "^9.0.1",
-    "git-url-parse": "^11.3.0",
+    "git-url-parse": "^11.4.0",
     "knex": "^0.21.1",
     "nodegit": "^0.27.0",
     "cross-fetch": "^3.0.6",
