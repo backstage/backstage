@@ -76,7 +76,7 @@ export class Publishers implements PublisherBuilder {
 
         const githubToken = githubConfig.getString('token');
         const githubHost =
-          githubConfig.getOptionalString('host') ?? 'https://github.com';
+          githubConfig.getOptionalString('host') ?? 'https://api.github.com';
         const githubClient = new Octokit({
           auth: githubToken,
           baseUrl: githubHost,
