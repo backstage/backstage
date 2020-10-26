@@ -56,7 +56,6 @@ import {
   PlaceholderResolver,
   StaticLocationProcessor,
   UrlReaderProcessor,
-  YamlProcessor,
 } from '../ingestion';
 import { CatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { LdapOrgReaderProcessor } from '../ingestion/processors/LdapOrgReaderProcessor';
@@ -329,7 +328,6 @@ export class CatalogBuilder {
           GithubOrgReaderProcessor.fromConfig(config, { logger }),
           LdapOrgReaderProcessor.fromConfig(config, { logger }),
           new UrlReaderProcessor({ reader, logger }),
-          new YamlProcessor(),
           new CodeOwnersProcessor({ reader }),
           new LocationRefProcessor(),
           new OwnerRelationProcessor(),
