@@ -19,7 +19,7 @@ import { Box, Typography, Grid } from '@material-ui/core';
 import { ProductInsightsCard } from '../ProductInsightsCard';
 import { useConfig } from '../../hooks';
 
-export const ProductInsights = ({ }) => {
+export const ProductInsights = ({}) => {
   const config = useConfig();
   return (
     <>

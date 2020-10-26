@@ -26,25 +26,25 @@ export const CostOverviewHeader = ({
   subtitle,
   children,
 }: PropsWithChildren<CostOverviewHeaderProps>) => (
-    <Box
-      marginY={1}
-      display="flex"
-      flexDirection="row"
-      justifyContent="space-between"
-      alignItems="center"
-    >
-      <Box minHeight={40} paddingRight={5}>
-        <Typography variant="h5" gutterBottom>
-          {title}
+  <Box
+    marginY={1}
+    display="flex"
+    flexDirection="row"
+    justifyContent="space-between"
+    alignItems="center"
+  >
+    <Box minHeight={40} paddingRight={5}>
+      <Typography variant="h5" gutterBottom>
+        {title}
+      </Typography>
+      {!!subtitle && (
+        <Typography variant="subtitle2" color="textSecondary" component="div">
+          {subtitle}
         </Typography>
-        {!!subtitle && (
-          <Typography variant="subtitle2" color="textSecondary" component="div">
-            {subtitle}
-          </Typography>
-        )}
-      </Box>
-      <Box minHeight={40} maxHeight={60} display="flex">
-        {children}
-      </Box>
+      )}
     </Box>
-  );
+    <Box minHeight={40} maxHeight={60} display="flex">
+      {children}
+    </Box>
+  </Box>
+);

@@ -44,7 +44,7 @@ describe('<UnlabeledDataflowAlertCard />', () => {
   it('renders the correct subheader for multiple projects', async () => {
     const subheader = new RegExp(
       `Showing costs from ${MockUnlabeledDataflowAlertMultipleProjects.projects.length} ` +
-      'projects with unlabeled Dataflow jobs in the last 30 days.',
+        'projects with unlabeled Dataflow jobs in the last 30 days.',
     );
     const rendered = await renderInTestApp(
       <UnlabeledDataflowAlertCard

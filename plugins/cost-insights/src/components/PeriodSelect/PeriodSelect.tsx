@@ -58,7 +58,11 @@ type PeriodSelectProps = {
   options?: PeriodOption[];
 };
 
-export const PeriodSelect = ({ duration, onSelect, options }: PeriodSelectProps) => {
+export const PeriodSelect = ({
+  duration,
+  onSelect,
+  options,
+}: PeriodSelectProps) => {
   const classes = useStyles();
   const lastCompleteBillingDate = useLastCompleteBillingDate();
   const optionsOrDefault =

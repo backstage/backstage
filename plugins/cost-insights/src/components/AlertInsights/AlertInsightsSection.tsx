@@ -23,7 +23,10 @@ type AlertInsightsSectionProps = {
   number: number;
 };
 
-export const AlertInsightsSection = ({ alert, number }: AlertInsightsSectionProps) => {
+export const AlertInsightsSection = ({
+  alert,
+  number,
+}: AlertInsightsSectionProps) => {
   return (
     <Box display="flex" flexDirection="column">
       <AlertInsightsSectionHeader

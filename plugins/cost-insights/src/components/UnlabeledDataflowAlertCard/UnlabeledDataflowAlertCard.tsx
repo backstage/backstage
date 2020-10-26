@@ -26,7 +26,9 @@ type UnlabeledDataflowAlertProps = {
   alert: UnlabeledDataflowData;
 };
 
-export const UnlabeledDataflowAlertCard = ({ alert }: UnlabeledDataflowAlertProps) => {
+export const UnlabeledDataflowAlertCard = ({
+  alert,
+}: UnlabeledDataflowAlertProps) => {
   const projects = pluralOf(alert.projects.length, 'project');
   const subheader = `
     Showing costs from ${alert.projects.length} ${projects} with unlabeled Dataflow jobs in the last 30 days.

@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
-export { CostInsightsHeader, CostInsightsHeaderNoGroups } from './CostInsightsHeader';
+export {
+  CostInsightsHeader,
+  CostInsightsHeaderNoGroups,
+} from './CostInsightsHeader';

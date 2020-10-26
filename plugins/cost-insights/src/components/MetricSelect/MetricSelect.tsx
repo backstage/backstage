@@ -25,7 +25,11 @@ export type MetricSelectProps = {
   onSelect: (metric: Maybe<string>) => void;
 };
 
-export const MetricSelect = ({ metric, metrics, onSelect }: MetricSelectProps) => {
+export const MetricSelect = ({
+  metric,
+  metrics,
+  onSelect,
+}: MetricSelectProps) => {
   const classes = useStyles();
 
   function onChange(e: React.ChangeEvent<{ value: unknown }>) {

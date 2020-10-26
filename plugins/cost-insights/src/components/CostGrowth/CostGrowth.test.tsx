@@ -41,10 +41,10 @@ const MockContext = ({
   currency: Currency;
   engineerCost: number;
 }>) => (
-    <MockConfigProvider engineerCost={engineerCost}>
-      <MockCurrencyProvider currency={currency}>{children}</MockCurrencyProvider>
-    </MockConfigProvider>
-  );
+  <MockConfigProvider engineerCost={engineerCost}>
+    <MockCurrencyProvider currency={currency}>{children}</MockCurrencyProvider>
+  </MockConfigProvider>
+);
 
 describe.each`
   engineerCost | ratio           | amount     | expected
