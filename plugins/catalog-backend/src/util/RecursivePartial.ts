@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import { errorString } from './util';
-
-describe('errorString', () => {
-  it('formats', () => {
-    const e = { code: 1, name: 'n', message: 'm' };
-    expect(errorString(e)).toEqual('1 n: m');
-  });
-});
+/**
+ * Makes all keys of an entire hierarchy optional.
+ */
+export type RecursivePartial<T> = {
+  [P in keyof T]?: T[P] extends (infer U)[]
+    ? RecursivePartial<U>[]
+    : T[P] extends object
+    ? RecursivePartial<T[P]>
+    : T[P];
+};

@@ -45,7 +45,7 @@ import {
   DbEntityResponse,
   DbLocationsRow,
   DbLocationsRowWithStatus,
-  EntityFilters,
+  EntityFilter,
   Transaction,
 } from './types';
 
@@ -233,71 +233,36 @@ export class CommonDatabase implements Database {
 
   async entities(
     txOpaque: Transaction,
-    filters?: EntityFilters[],
+    filter?: EntityFilter,
   ): Promise<DbEntityResponse[]> {
     const tx = txOpaque as Knex.Transaction<any, any>;
 
     let entitiesQuery = tx<DbEntitiesRow>('entities');
 
-    for (const singleFilter of filters ?? []) {
+    for (const singleFilter of filter?.anyOf ?? []) {
       entitiesQuery = entitiesQuery.orWhere(function singleFilterFn() {
-        for (const [matchKey, matchVal] of Object.entries(singleFilter)) {
-          const key = matchKey.toLowerCase().replace(/[*]/g, '%');
-          const keyOp = key.includes('%') ? 'like' : '=';
-          const values = Array.isArray(matchVal) ? matchVal : [matchVal];
-
-          let matchNulls = false;
-          const matchIn: string[] = [];
-          const matchLike: string[] = [];
-
-          for (const value of values) {
-            if (!value) {
-              matchNulls = true;
-            } else if (value.includes('*')) {
-              matchLike.push(value.toLowerCase().replace(/[*]/g, '%'));
-            } else {
-              matchIn.push(value.toLowerCase());
-            }
-          }
-
+        for (const { key, matchValueIn } of singleFilter.allOf) {
           // NOTE(freben): This used to be a set of OUTER JOIN, which may seem to
           // make a lot of sense. However, it had abysmal performance on sqlite
           // when datasets grew large, so we're using IN instead.
           const matchQuery = tx<DbEntitiesSearchRow>('entities_search')
             .select('entity_id')
             .where(function keyFilter() {
-              this.andWhere('key', keyOp, key);
-              this.andWhere(function valueFilter() {
-                if (matchIn.length === 1) {
-                  this.orWhere({ value: matchIn[0] });
-                } else if (matchIn.length > 1) {
-                  this.orWhereIn('value', matchIn);
+              this.andWhere({ key: key.toLowerCase() });
+              if (matchValueIn) {
+                if (matchValueIn.length === 1) {
+                  this.andWhere({ value: matchValueIn[0].toLowerCase() });
+                } else if (matchValueIn.length > 1) {
+                  this.andWhere(
+                    'value',
+                    'in',
+                    matchValueIn.map(v => v.toLowerCase()),
+                  );
                 }
-                if (matchLike.length) {
-                  for (const x of matchLike) {
-                    this.orWhere('value', 'like', tx.raw('?', [x]));
-                  }
-                }
-                if (matchNulls) {
-                  // Match explicit nulls, and then handle absence separately
-                  // below
-                  this.orWhereNull('value');
-                }
-              });
+              }
             });
 
-          // Handle absence as nulls as well
-          this.andWhere(function match() {
-            this.whereIn('id', matchQuery);
-            if (matchNulls) {
-              this.orWhereNotIn(
-                'id',
-                tx<DbEntitiesSearchRow>('entities_search')
-                  .select('entity_id')
-                  .where('key', keyOp, key),
-              );
-            }
-          });
+          this.andWhere('id', 'in', matchQuery);
         }
       });
     }
