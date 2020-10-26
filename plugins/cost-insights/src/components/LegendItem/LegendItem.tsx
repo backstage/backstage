@@ -20,7 +20,7 @@ import LensIcon from '@material-ui/icons/Lens';
 import HelpOutlineOutlinedIcon from '@material-ui/icons/HelpOutlineOutlined';
 import { useCostGrowthLegendStyles } from '../../utils/styles';
 
-type LegendItemProps = {
+export type LegendItemProps = {
   title: string;
   tooltipText?: string;
   markerColor?: string;

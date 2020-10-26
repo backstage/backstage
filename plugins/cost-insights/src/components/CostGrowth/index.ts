@@ -15,3 +15,4 @@
  */
 
 export { CostGrowth } from './CostGrowth';
+export type { CostGrowthProps } from './CostGrowth';
