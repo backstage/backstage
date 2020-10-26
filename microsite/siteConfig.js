@@ -60,7 +60,7 @@ const siteConfig = {
   /* path to images for header/footer */
   // headerIcon: "img/android-chrome-192x192.png",
   footerIcon: 'img/android-chrome-192x192.png',
-  favicon: 'img/favicon.svg',
+  favicon: 'img/favicon.ico',
 
   /* Colors for website */
   colors: {
