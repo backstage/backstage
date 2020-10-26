@@ -285,7 +285,7 @@ jest.mock('./MyApi'); // Instruct Jest to swap all future imports of './MyApi.js
 
 import MyApi from './MyApi'; // Will actually return the contents of the file in the __mocks__ folder now
 
-it ('loads data', (done) => {
+it('loads data', done => {
   MyApi.fetchSomethingFromServer().then(result => {
     expect(result).toBe('some result object simulating server data here');
     done();

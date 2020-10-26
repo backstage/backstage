@@ -10,8 +10,8 @@ sidebar_label: Kubernetes and Helm
 An example Backstage app can be deployed in Kubernetes using the
 [Backstage Helm charts](https://github.com/spotify/backstage/tree/master/contrib/chart/backstage).
 
-First, choose a DNS name where Backstage will be hosted, and create a YAML file for
-your custom configuration.
+First, choose a DNS name where Backstage will be hosted, and create a YAML file
+for your custom configuration.
 
 ```yaml
 appConfig:

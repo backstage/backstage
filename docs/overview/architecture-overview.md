@@ -158,19 +158,19 @@ https://circleci.com.
 
 ## Databases
 
-As we have seen, both the `lighthouse-audit-service` and `catalog-backend` require a
-database to work with.
+As we have seen, both the `lighthouse-audit-service` and `catalog-backend`
+require a database to work with.
 
-At the time of writing, the `lighthouse-audit-service` requires PostgreSQL to work
-with. The service catalog backend uses an in-memory Sqlite3 instance. This is a
-development-oriented setup and there are plans to support other databases in the
-future.
+At the time of writing, the `lighthouse-audit-service` requires PostgreSQL to
+work with. The service catalog backend uses an in-memory Sqlite3 instance. This
+is a development-oriented setup and there are plans to support other databases
+in the future.
 
 To learn more about the future of databases and Backstage, see the following
 GitHub issues.
 
-* [Knex + Plugins (Multiple vs Single Database) · Issue #1598 · spotify/backstage](https://github.com/spotify/backstage/issues/1598)
-* [Update migrations to support postgres by dariddler · Pull Request #1527 · spotify/backstage](https://github.com/spotify/backstage/pull/1527#discussion_r450374145)
+- [Knex + Plugins (Multiple vs Single Database) · Issue #1598 · spotify/backstage](https://github.com/spotify/backstage/issues/1598)
+- [Update migrations to support postgres by dariddler · Pull Request #1527 · spotify/backstage](https://github.com/spotify/backstage/pull/1527#discussion_r450374145)
 
 ## Containerization
 
