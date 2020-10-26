@@ -23,7 +23,7 @@ Then open http://localhost/ on your browser.
 Deploying to Heroku is relatively easy following these steps.
 
 First, make sure you have the
-[heroku CLI installed](https://devcenter.heroku.com/articles/heroku-cli) and log
+[Heroku CLI installed](https://devcenter.heroku.com/articles/heroku-cli) and log
 into it as well as login into Heroku's
 [container registry](https://devcenter.heroku.com/articles/container-registry-and-runtime).
 
@@ -32,7 +32,7 @@ $ heroku login
 $ heroku container:login
 ```
 
-You _might_ also need to set your Heroku app's stack to `container`
+You _might_ also need to set your Heroku app's stack to `container`.
 
 ```bash
 $ heroku stack:set container -a <your-app>
