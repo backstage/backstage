@@ -35,9 +35,9 @@ export class AzurePreparer implements PreparerBase {
   async prepare(template: TemplateEntityV1alpha1): Promise<string> {
     const { protocol, location } = parseLocationAnnotation(template);
 
-    if (protocol !== 'azure/api') {
+    if (!['azure/api', 'url'].includes(protocol)) {
       throw new InputError(
-        `Wrong location protocol: ${protocol}, should be 'azure/api'`,
+        `Wrong location protocol: ${protocol}, should be 'url'`,
       );
     }
     const templateId = template.metadata.name;

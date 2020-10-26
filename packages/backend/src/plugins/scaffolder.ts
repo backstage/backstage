@@ -17,10 +17,6 @@
 import {
   CookieCutter,
   createRouter,
-  FilePreparer,
-  GithubPreparer,
-  GitlabPreparer,
-  AzurePreparer,
   Preparers,
   Publishers,
   GithubPublisher,
@@ -46,16 +42,7 @@ export default async function createPlugin({
   templaters.register('cookiecutter', cookiecutterTemplater);
   templaters.register('cra', craTemplater);
 
-  const filePreparer = new FilePreparer();
-
-  const gitlabPreparer = new GitlabPreparer(config);
-  const azurePreparer = new AzurePreparer(config);
-  const preparers = new Preparers();
-
-  preparers.register('file', filePreparer);
-  preparers.register('gitlab', gitlabPreparer);
-  preparers.register('gitlab/api', gitlabPreparer);
-  preparers.register('azure/api', azurePreparer);
+  const preparers = await Preparers.fromConfig(config, { logger });
 
   const publishers = new Publishers();
 
@@ -80,9 +67,6 @@ export default async function createPlugin({
         repoVisibility,
       });
 
-      const githubPreparer = new GithubPreparer({ token: githubToken });
-
-      preparers.register('github', githubPreparer);
       publishers.register('file', githubPublisher);
       publishers.register('github', githubPublisher);
     } catch (e) {

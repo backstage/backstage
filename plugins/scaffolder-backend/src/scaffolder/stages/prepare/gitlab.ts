@@ -36,9 +36,9 @@ export class GitlabPreparer implements PreparerBase {
   async prepare(template: TemplateEntityV1alpha1): Promise<string> {
     const { protocol, location } = parseLocationAnnotation(template);
 
-    if (['gitlab', 'gitlab/api'].indexOf(protocol) < 0) {
+    if (!['gitlab', 'gitlab/api', 'url'].includes(protocol)) {
       throw new InputError(
-        `Wrong location protocol: ${protocol}, should be 'gitlab' or 'gitlab/api'`,
+        `Wrong location protocol: ${protocol}, should be 'url'`,
       );
     }
     const templateId = template.metadata.name;
