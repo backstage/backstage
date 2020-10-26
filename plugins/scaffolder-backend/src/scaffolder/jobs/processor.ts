@@ -118,8 +118,8 @@ export class JobProcessor implements Processor {
           stage.status = 'COMPLETED';
         } catch (error) {
           // Log to the current stage the error that occured and fail the stage.
-          logger.error(`Stage failed with error: ${error.message}`);
           stage.status = 'FAILED';
+          logger.error(`Stage failed with error: ${error.message}`);
 
           // Throw the error so the job can be failed too.
           throw error;

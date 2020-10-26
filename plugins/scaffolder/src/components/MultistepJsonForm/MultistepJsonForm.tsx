@@ -25,7 +25,7 @@ import {
   Stepper,
   Typography,
 } from '@material-ui/core';
-import { FormProps, IChangeEvent, withTheme } from '@rjsf/core';
+import { AjvError, FormProps, IChangeEvent, withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
 import React, { useState } from 'react';
 
@@ -63,6 +63,15 @@ export const MultistepJsonForm = ({
     setActiveStep(Math.min(activeStep + 1, steps.length));
   const handleBack = () => setActiveStep(Math.max(activeStep - 1, 0));
 
+  const transformErrors = (errors: AjvError[]) =>
+    errors.map(error => {
+      if (error.name === 'pattern') {
+        error.message = 'does not match the required pattern';
+        error.stack = `${error.property} ${error.message}, see its description`;
+      }
+      return error;
+    });
+
   return (
     <>
       <Stepper activeStep={activeStep} orientation="vertical">
@@ -75,6 +84,7 @@ export const MultistepJsonForm = ({
                 formData={formData}
                 onChange={onChange}
                 schema={schema as FormProps<any>['schema']}
+                transformErrors={transformErrors}
                 onSubmit={e => {
                   if (e.errors.length === 0) handleNext();
                 }}
