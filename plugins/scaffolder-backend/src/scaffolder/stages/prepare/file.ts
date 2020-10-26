@@ -24,10 +24,10 @@ import { PreparerBase } from './types';
 export class FilePreparer implements PreparerBase {
   async prepare(
     template: TemplateEntityV1alpha1,
-    opts: { workingDirectory?: string },
+    opts?: { workingDirectory?: string },
   ): Promise<string> {
     const { protocol, location } = parseLocationAnnotation(template);
-    const workingDirectory = opts.workingDirectory ?? os.tmpdir();
+    const workingDirectory = opts?.workingDirectory ?? os.tmpdir();
 
     if (protocol !== 'file') {
       throw new InputError(

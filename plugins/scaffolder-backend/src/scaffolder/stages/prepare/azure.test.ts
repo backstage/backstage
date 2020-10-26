@@ -78,7 +78,7 @@ describe('AzurePreparer', () => {
 
   it('calls the clone command with the correct arguments for a repository', async () => {
     const preparer = new AzurePreparer(ConfigReader.fromConfigs([]));
-    await preparer.prepare(mockEntity, { workingDirectory: '/workDir' });
+    await preparer.prepare(mockEntity);
     expect(mocks.Clone.clone).toHaveBeenNthCalledWith(
       1,
       'https://dev.azure.com/backstage-org/backstage-project/_git/template-repo',
@@ -104,7 +104,7 @@ describe('AzurePreparer', () => {
         },
       ]),
     );
-    await preparer.prepare(mockEntity, { workingDirectory: '/workDir' });
+    await preparer.prepare(mockEntity);
     expect(mocks.Clone.clone).toHaveBeenNthCalledWith(
       1,
       'https://dev.azure.com/backstage-org/backstage-project/_git/template-repo',
@@ -122,7 +122,7 @@ describe('AzurePreparer', () => {
   it('calls the clone command with the correct arguments for a repository when no path is provided', async () => {
     const preparer = new AzurePreparer(ConfigReader.fromConfigs([]));
     delete mockEntity.spec.path;
-    await preparer.prepare(mockEntity, { workingDirectory: '/workDir' });
+    await preparer.prepare(mockEntity);
     expect(mocks.Clone.clone).toHaveBeenNthCalledWith(
       1,
       'https://dev.azure.com/backstage-org/backstage-project/_git/template-repo',
@@ -134,7 +134,7 @@ describe('AzurePreparer', () => {
   it('return the temp directory with the path to the folder if it is specified', async () => {
     const preparer = new AzurePreparer(ConfigReader.fromConfigs([]));
     mockEntity.spec.path = './template/test/1/2/3';
-    const response = await preparer.prepare(mockEntity, {});
+    const response = await preparer.prepare(mockEntity);
 
     expect(response.split('\\').join('/')).toMatch(
       /\/template\/test\/1\/2\/3$/,

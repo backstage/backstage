@@ -16,7 +16,6 @@
 
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { Config, JsonValue } from '@backstage/config';
-import os from 'os';
 import fs from 'fs-extra';
 import Docker from 'dockerode';
 import express from 'express';
