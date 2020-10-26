@@ -211,6 +211,29 @@ export class LocationReaders implements LocationReader {
       return undefined;
     }
 
+    let handled = false;
+    for (const processor of processors) {
+      if (processor.validateEntityKind) {
+        try {
+          handled = await processor.validateEntityKind(current);
+          if (handled) {
+            break;
+          }
+        } catch (e) {
+          const message = `Processor ${processor.constructor.name} threw an error while validating the entity ${kind}:${namespace}/${name} at ${item.location.type} ${item.location.target}, ${e}`;
+          emit(result.inputError(item.location, message));
+          logger.warn(message);
+          return undefined;
+        }
+      }
+    }
+    if (!handled) {
+      const message = `No processor recognized the entity ${kind}:${namespace}/${name} at ${item.location.type} ${item.location.target}`;
+      emit(result.inputError(item.location, message));
+      logger.warn(message);
+      return undefined;
+    }
+
     for (const processor of processors) {
       if (processor.postProcessEntity) {
         try {

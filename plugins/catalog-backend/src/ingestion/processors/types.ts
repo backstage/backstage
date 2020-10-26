@@ -55,6 +55,19 @@ export type CatalogProcessor = {
   ): Promise<Entity>;
 
   /**
+   * Validates the entity as a known entity kind, after it has been pre-
+   * processed and has passed through basic overall validation.
+   *
+   * @param entity The entity to validate
+   * @returns Resolves to true, if the entity was of a kind that was known and
+   *   handled by this processor, and was found to be valid. Resolves to false,
+   *   if the entity was not of a kind that was known by this processor.
+   *   Rejects to an Error describing the problem, if the entity was of a kind
+   *   that was known by this processor and was not valid.
+   */
+  validateEntityKind?(entity: Entity): Promise<boolean>;
+
+  /**
    * Post-processes an emitted entity, after it has been validated.
    *
    * @param entity The entity to process
