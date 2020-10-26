@@ -15,50 +15,27 @@
  */
 
 import React from 'react';
+import { renderInTestApp } from '@backstage/test-utils';
 import ProductInsightsCard from './ProductInsightsCard';
+import { CostInsightsApi } from '../../api';
 import {
   createMockEntity,
   createMockProductCost,
+  mockDefaultLoadingState,
   MockComputeEngine,
-  mockDefaultState,
+  MockProductFilters,
 } from '../../utils/mockData';
 import {
-  ApiProvider,
-  ApiRegistry,
-  IdentityApi,
-  identityApiRef,
-} from '@backstage/core';
-import { CostInsightsApi, costInsightsApiRef } from '../../api';
-import { renderInTestApp } from '@backstage/test-utils';
-import { GroupsContext } from '../../hooks/useGroups';
-import { LoadingContext } from '../../hooks/useLoading';
-import {
-  defaultCurrencies,
-  Duration,
-  findAlways,
-  Product,
-  ProductCost,
-} from '../../types';
-import {
+  MockCostInsightsApiProvider,
   MockBillingDateProvider,
   MockConfigProvider,
   MockCurrencyProvider,
   MockFilterProvider,
+  MockGroupsProvider,
   MockScrollProvider,
+  MockLoadingProvider,
 } from '../../utils/tests';
-
-const mockLoadingDispatch = jest.fn();
-const mockSetPageFilters = jest.fn();
-const mockSetProductFilters = jest.fn();
-const mockSetCurrency = jest.fn();
-const engineers = findAlways(defaultCurrencies, c => c.kind === null);
-
-const identityApi: Partial<IdentityApi> = {
-  getProfile: () => ({
-    email: 'test-email@example.com',
-    displayName: 'User 1',
-  }),
-};
+import { Duration, Product, ProductCost, ProductPeriod } from '../../types';
 
 const costInsightsApi = (
   productCost: ProductCost,
@@ -66,13 +43,6 @@ const costInsightsApi = (
   getProductInsights: () =>
     Promise.resolve(productCost) as Promise<ProductCost>,
 });
-
-const getApis = (productCost: ProductCost) => {
-  return ApiRegistry.from([
-    [identityApiRef, identityApi],
-    [costInsightsApiRef, costInsightsApi(productCost)],
-  ]);
-};
 
 const mockProductCost = createMockProductCost(() => ({
   entities: [],
@@ -89,42 +59,28 @@ const renderProductInsightsCardInTestApp = async (
   duration: Duration,
 ) =>
   await renderInTestApp(
-    <ApiProvider apis={getApis(productCost)}>
-      <MockConfigProvider
-        metrics={[]}
-        products={[]}
-        icons={[]}
-        engineerCost={0}
-        currencies={[]}
-      >
-        <LoadingContext.Provider
-          value={{
-            state: mockDefaultState,
-            actions: [],
-            dispatch: mockLoadingDispatch,
-          }}
-        >
-          <GroupsContext.Provider value={{ groups: [{ id: 'test-group' }] }}>
-            <MockBillingDateProvider lastCompleteBillingDate="2020-10-01">
+    <MockCostInsightsApiProvider costInsightsApi={costInsightsApi(productCost)}>
+      <MockConfigProvider>
+        <MockLoadingProvider state={mockDefaultLoadingState}>
+          <MockGroupsProvider>
+            <MockBillingDateProvider>
               <MockFilterProvider
-                setPageFilters={mockSetPageFilters}
-                setProductFilters={mockSetProductFilters}
-                duration={duration}
+                productFilters={MockProductFilters.map((p: ProductPeriod) => ({
+                  ...p,
+                  duration: duration,
+                }))}
               >
                 <MockScrollProvider>
-                  <MockCurrencyProvider
-                    currency={engineers}
-                    setCurrency={mockSetCurrency}
-                  >
+                  <MockCurrencyProvider>
                     <ProductInsightsCard product={product} />
                   </MockCurrencyProvider>
                 </MockScrollProvider>
               </MockFilterProvider>
             </MockBillingDateProvider>
-          </GroupsContext.Provider>
-        </LoadingContext.Provider>
+          </MockGroupsProvider>
+        </MockLoadingProvider>
       </MockConfigProvider>
-    </ApiProvider>,
+    </MockCostInsightsApiProvider>,
   );
 
 describe('<ProductInsightsCard/>', () => {

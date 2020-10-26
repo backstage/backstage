@@ -46,15 +46,9 @@ describe('<ProjectGrowthAlertCard />', () => {
     );
     const title = new RegExp(`Project growth for ${MockProject}`);
     const rendered = await renderInTestApp(
-      <MockConfigProvider
-        metrics={[]}
-        products={[]}
-        icons={[]}
-        engineerCost={200_000}
-        currencies={[]}
-      >
+      <MockConfigProvider engineerCost={200_000}>
         <MockBillingDateProvider lastCompleteBillingDate="2020-10-01">
-          <MockCurrencyProvider currency={engineers} setCurrency={jest.fn()}>
+          <MockCurrencyProvider currency={engineers}>
             <ProjectGrowthAlertCard alert={MockProjectGrowthAlert} />,
           </MockCurrencyProvider>
         </MockBillingDateProvider>
@@ -71,13 +65,7 @@ describe('<ProjectGrowthAlertCard />', () => {
     const subheader = new RegExp('1 product');
     const title = new RegExp(`Project growth for ${MockProject}`);
     const rendered = await renderInTestApp(
-      <MockConfigProvider
-        metrics={[]}
-        products={[]}
-        icons={[]}
-        engineerCost={200_000}
-        currencies={[]}
-      >
+      <MockConfigProvider engineerCost={200_000}>
         <MockBillingDateProvider lastCompleteBillingDate="2020-10-01">
           <MockCurrencyProvider currency={engineers} setCurrency={jest.fn()}>
             <ProjectGrowthAlertCard
