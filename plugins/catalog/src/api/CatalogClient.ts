@@ -68,17 +68,13 @@ export class CatalogClient implements CatalogApi {
   ): Promise<Entity[]> {
     let path = `/entities`;
     if (filter) {
-      const params = new URLSearchParams();
+      const parts: string[] = [];
       for (const [key, value] of Object.entries(filter)) {
-        if (Array.isArray(value)) {
-          for (const v of value) {
-            params.append(key, v);
-          }
-        } else {
-          params.append(key, value);
+        for (const v of [value].flat()) {
+          parts.push(`${encodeURIComponent(key)}=${encodeURIComponent(v)}`);
         }
       }
-      path += `?${params.toString()}`;
+      path += `?filter=${parts.join(',')}`;
     }
 
     return await this.getRequired(path);
