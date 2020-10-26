@@ -44,8 +44,10 @@ const useTemplate = (
     `templates/${templateName}`,
     async () =>
       catalogApi.getEntities({
-        kind: 'Template',
-        'metadata.name': templateName,
+        filter: {
+          kind: 'Template',
+          'metadata.name': templateName,
+        },
       }) as Promise<TemplateEntityV1alpha1[]>,
   );
   return { template: data?.[0], loading: !error && !data, error };

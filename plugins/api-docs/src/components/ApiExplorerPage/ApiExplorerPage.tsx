@@ -26,7 +26,7 @@ import { ApiExplorerLayout } from './ApiExplorerLayout';
 export const ApiExplorerPage = () => {
   const catalogApi = useApi(catalogApiRef);
   const { loading, error, value: matchingEntities } = useAsync(() => {
-    return catalogApi.getEntities({ kind: 'API' });
+    return catalogApi.getEntities({ filter: { kind: 'API' }});
   }, [catalogApi]);
 
   return (

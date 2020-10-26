@@ -54,7 +54,7 @@ export const ScaffolderPage = () => {
   const { data: templates, isValidating, error } = useStaleWhileRevalidate(
     'templates/all',
     async () =>
-      catalogApi.getEntities({ kind: 'Template' }) as Promise<
+      catalogApi.getEntities({ filter: {kind: 'Template' }}) as Promise<
         TemplateEntityV1alpha1[]
       >,
   );

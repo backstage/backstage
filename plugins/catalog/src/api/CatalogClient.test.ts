@@ -77,9 +77,11 @@ describe('CatalogClient', () => {
       );
 
       const entities = await client.getEntities({
-        a: '1',
-        b: ['2', '3'],
-        ö: '=',
+        filter: {
+          a: '1',
+          b: ['2', '3'],
+          ö: '=',
+        },
       });
 
       expect(entities).toEqual([]);

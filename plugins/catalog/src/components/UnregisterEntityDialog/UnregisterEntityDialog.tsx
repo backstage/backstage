@@ -45,7 +45,7 @@ function useColocatedEntities(entity: Entity): AsyncState<Entity[]> {
   return useAsync(async () => {
     const myLocation = entity.metadata.annotations?.[LOCATION_ANNOTATION];
     return myLocation
-      ? await catalogApi.getEntities({ [LOCATION_ANNOTATION]: myLocation })
+      ? await catalogApi.getEntities({ filter: {[LOCATION_ANNOTATION]: myLocation }})
       : [];
   }, [catalogApi, entity]);
 }

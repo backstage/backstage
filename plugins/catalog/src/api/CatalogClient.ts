@@ -63,17 +63,21 @@ export class CatalogClient implements CatalogApi {
     return await this.getOptional(`/locations/${id}`);
   }
 
-  async getEntities(
-    filter?: Record<string, string | string[]>,
-  ): Promise<Entity[]> {
+  async getEntities(opts?: {
+    filter?: Record<string, string | string[]>;
+  }): Promise<Entity[]> {
+    // todo(blam): maybe we should move this to return a URL instead
+    // and use URLSearchParams rather than building a string for stricter
+    // types and cleaner code?
     let path = `/entities`;
-    if (filter) {
+    if (opts?.filter) {
       const parts: string[] = [];
-      for (const [key, value] of Object.entries(filter)) {
+      for (const [key, value] of Object.entries(opts.filter)) {
         for (const v of [value].flat()) {
           parts.push(`${encodeURIComponent(key)}=${encodeURIComponent(v)}`);
         }
       }
+
       path += `?filter=${parts.join(',')}`;
     }
 
