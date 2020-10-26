@@ -39,6 +39,17 @@ backend:
         #  $file: <file-path>/ca/server.crt
   {{/if}}
 
+integrations:
+  github:
+    - host: github.com
+      token:
+        $env: GITHUB_TOKEN
+    ### Example for how to add your GitHub Enterprise instance using the API:
+    # - host: ghe.example.net
+    #   apiBaseUrl: https://ghe.example.net/api/v3
+    #   token:
+    #     $env: GHE_TOKEN
+
 proxy:
   '/test':
     target: 'https://example.com'
@@ -66,17 +77,6 @@ scaffolder:
 catalog:
   rules:
     - allow: [Component, API, Group, User, Template, Location]
-  processors:
-    github:
-      providers:
-        - target: https://github.com
-          token:
-            $env: GITHUB_TOKEN
-        # Example for how to add your GitHub Enterprise instance:
-        # - target: https://ghe.example.net
-        #   apiBaseUrl: https://ghe.example.net/api/v3
-        #   token:
-        #     $env: GHE_TOKEN
   locations:
     # Backstage example components
     - type: url
