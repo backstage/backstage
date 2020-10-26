@@ -19,7 +19,7 @@ import {
   Duration,
   Entity,
   findAlways,
-  getDefaultState,
+  getDefaultState as getDefaultLoadingState,
   Product,
   ProductCost,
   ProductFilters,
@@ -154,7 +154,9 @@ export const MockLoadingActions = ([
   DefaultLoadingAction.CostInsightsPage,
 ] as string[]).concat(MockProducts.map(product => product.kind));
 
-export const mockDefaultState = getDefaultState(MockLoadingActions);
+export const mockDefaultLoadingState = getDefaultLoadingState(
+  MockLoadingActions,
+);
 
 export const MockComputeEngine = findAlways(
   MockProducts,

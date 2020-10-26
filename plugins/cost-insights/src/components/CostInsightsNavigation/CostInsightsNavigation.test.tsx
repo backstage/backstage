@@ -18,7 +18,7 @@ import React from 'react';
 import { default as HappyFace } from '@material-ui/icons/SentimentSatisfiedAlt';
 import { renderInTestApp } from '@backstage/test-utils';
 import CostInsightsNavigation from './CostInsightsNavigation';
-import { defaultCurrencies, Metric, Product, Icon } from '../../types';
+import { Product, Icon } from '../../types';
 import { MockConfigProvider, MockScrollProvider } from '../../utils/tests';
 import { getDefaultNavigationItems } from '../../utils/navigation';
 
@@ -36,23 +36,9 @@ const mockProducts: Product[] = [
   },
 ];
 
-const mockMetrics: Metric[] = [
-  {
-    kind: 'some-metric',
-    name: 'Some Metric',
-    default: false,
-  },
-];
-
 const renderWrapped = (children: React.ReactNode) =>
   renderInTestApp(
-    <MockConfigProvider
-      metrics={mockMetrics}
-      products={mockProducts}
-      icons={mockIcons}
-      engineerCost={20_000}
-      currencies={defaultCurrencies}
-    >
+    <MockConfigProvider products={mockProducts} icons={mockIcons}>
       <MockScrollProvider>{children}</MockScrollProvider>
     </MockConfigProvider>,
   );
