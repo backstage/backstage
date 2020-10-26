@@ -25,7 +25,6 @@ jest.doMock('fs-extra', () => ({
   },
 }));
 
-import os from 'os';
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
@@ -114,7 +113,7 @@ describe('createRouter - working directory', () => {
     });
   });
 
-  it('should default to OS temp-dir when no working directory is configured', async () => {
+  it('should not pass along anything when no working directory is configured', async () => {
     const router = await createRouter({
       logger: getVoidLogger(),
       preparers: mockPreparers,
@@ -132,7 +131,6 @@ describe('createRouter - working directory', () => {
 
     expect(mockPrepare).toBeCalledWith(expect.anything(), {
       logger: expect.anything(),
-      workingDirectory: os.tmpdir(),
     });
   });
 });

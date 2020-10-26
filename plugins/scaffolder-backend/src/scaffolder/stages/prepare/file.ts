@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import os from 'os';
 import fs from 'fs-extra';
 import path from 'path';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
@@ -23,10 +24,10 @@ import { PreparerBase } from './types';
 export class FilePreparer implements PreparerBase {
   async prepare(
     template: TemplateEntityV1alpha1,
-    opts: { workingDirectory: string },
+    opts: { workingDirectory?: string },
   ): Promise<string> {
     const { protocol, location } = parseLocationAnnotation(template);
-    const { workingDirectory } = opts;
+    const workingDirectory = opts.workingDirectory ?? os.tmpdir();
 
     if (protocol !== 'file') {
       throw new InputError(

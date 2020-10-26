@@ -60,22 +60,24 @@ export async function createRouter(
   const logger = parentLogger.child({ plugin: 'scaffolder' });
   const jobProcessor = new JobProcessor();
 
-  const workingDirectory =
-    config.getOptionalString('backend.workingDirectory') ?? os.tmpdir();
-  try {
-    // Check if working directory exists and is writable
-    await fs.promises.access(
-      workingDirectory,
-      fs.constants.F_OK | fs.constants.W_OK,
-    );
-    logger.info(`using working directory: ${workingDirectory}`);
-  } catch (err) {
-    logger.error(
-      `working directory ${workingDirectory} ${
-        err.code === 'ENOENT' ? 'does not exist' : 'is not writable'
-      }`,
-    );
-    throw err;
+  let workingDirectory: string;
+  if (config.has('backend.workingDirectory')) {
+    workingDirectory = config.getString('backend.workingDirectory');
+    try {
+      // Check if working directory exists and is writable
+      await fs.promises.access(
+        workingDirectory,
+        fs.constants.F_OK | fs.constants.W_OK,
+      );
+      logger.info(`using working directory: ${workingDirectory}`);
+    } catch (err) {
+      logger.error(
+        `working directory ${workingDirectory} ${
+          err.code === 'ENOENT' ? 'does not exist' : 'is not writable'
+        }`,
+      );
+      throw err;
+    }
   }
 
   router

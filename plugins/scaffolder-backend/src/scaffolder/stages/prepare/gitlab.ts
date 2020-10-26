@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import os from 'os';
 import fs from 'fs-extra';
 import path from 'path';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
@@ -34,10 +35,10 @@ export class GitlabPreparer implements PreparerBase {
 
   async prepare(
     template: TemplateEntityV1alpha1,
-    opts: { workingDirectory: string },
+    opts: { workingDirectory?: string },
   ): Promise<string> {
     const { protocol, location } = parseLocationAnnotation(template);
-    const { workingDirectory } = opts;
+    const workingDirectory = opts.workingDirectory ?? os.tmpdir();
 
     if (!['gitlab', 'gitlab/api', 'url'].includes(protocol)) {
       throw new InputError(

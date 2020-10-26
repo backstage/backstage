@@ -99,7 +99,18 @@ describe('GitHubPreparer', () => {
       },
     );
   });
+
   it('return the temp directory with the path to the folder if it is specified', async () => {
+    const preparer = new GithubPreparer();
+    mockEntity.spec.path = './template/test/1/2/3';
+    const response = await preparer.prepare(mockEntity, {});
+
+    expect(response.split('\\').join('/')).toMatch(
+      /\/template\/test\/1\/2\/3$/,
+    );
+  });
+
+  it('return the working directory with the path to the folder if it is specified', async () => {
     const preparer = new GithubPreparer();
     mockEntity.spec.path = './template/test/1/2/3';
     const response = await preparer.prepare(mockEntity, {
@@ -107,7 +118,7 @@ describe('GitHubPreparer', () => {
     });
 
     expect(response).toBe(
-      `/workDir/graphql-starter-static/template/test/1/2/3`,
+      '/workDir/graphql-starter-static/template/test/1/2/3',
     );
   });
 
