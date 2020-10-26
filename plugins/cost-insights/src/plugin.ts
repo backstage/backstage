@@ -42,6 +42,6 @@ export const pluginConfig: PluginConfig = {
     router.addRoute(unlabeledDataflowAlertRef, LabelDataflowInstructionsPage);
     featureFlags.register('cost-insights-currencies');
   },
-}
+};
 
 export const plugin = createPlugin(pluginConfig);

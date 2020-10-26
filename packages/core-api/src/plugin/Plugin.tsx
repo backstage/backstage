@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-import {
-  PluginConfig,
-  PluginOutput,
-  BackstagePlugin,
-} from './types';
+import { PluginConfig, PluginOutput, BackstagePlugin } from './types';
 import { validateBrowserCompat, validateFlagName } from '../app/FeatureFlags';
 import { AnyApiFactory } from '../apis';
 
 export class PluginImpl {
   private storedOutput?: PluginOutput[];
 
-  constructor(private readonly config: PluginConfig) { }
+  constructor(private readonly config: PluginConfig) {}
 
   getId(): string {
     return this.config.id;

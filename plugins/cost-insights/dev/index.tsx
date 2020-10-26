@@ -25,9 +25,9 @@ const devPlugin = createPlugin({
     createApiFactory({
       api: costInsightsApiRef,
       deps: {},
-      factory: () => new ExampleCostInsightsClient()
-    })
-  ]
+      factory: () => new ExampleCostInsightsClient(),
+    }),
+  ],
 });
 
 createDevApp().registerPlugin(devPlugin).render();
