@@ -24,7 +24,7 @@ different ways.
 ## Overview
 
 The following diagram shows how Backstage might look when deployed inside a
-company which uses the Tech Radar plugin, the Lighthouse plugin, the Circle CI
+company which uses the Tech Radar plugin, the Lighthouse plugin, the CircleCI
 plugin and the service catalog.
 
 There are 3 main components in this architecture:
@@ -53,9 +53,9 @@ example, the Lighthouse plugin is registered with the UI on `/lighthouse`.
 
 ![The lighthouse plugin UI](../assets/architecture-overview/lighthouse-plugin.png)
 
-The Circle CI plugin is available on `/circleci`.
+The CircleCI plugin is available on `/circleci`.
 
-![Circle CI Plugin UI](../assets/architecture-overview/circle-ci.png)
+![CircleCI Plugin UI](../assets/architecture-overview/circle-ci.png)
 
 ## Plugins and plugin backends
 
@@ -154,29 +154,28 @@ Cross Origin Resource Sharing policies which prevent a browser page served at
 [https://example.com](https://example.com) from serving resources hosted at
 https://circleci.com.
 
-![CircleCi plugin talking to proxy talking to SaaS Circle CI](../assets/architecture-overview/circle-ci-plugin-architecture.png)
+![CircleCI plugin talking to proxy talking to SaaS Circle CI](../assets/architecture-overview/circle-ci-plugin-architecture.png)
 
 ## Databases
 
-As we have seen, both the lighthouse-audit-service and catalog-backend require a
+As we have seen, both the `lighthouse-audit-service` and `catalog-backend` require a
 database to work with.
 
-At the time of writing, the lighthouse-audit-service requires PostgreSQL to work
+At the time of writing, the `lighthouse-audit-service` requires PostgreSQL to work
 with. The service catalog backend uses an in-memory Sqlite3 instance. This is a
-development oriented setup and there are plans to support other databases in the
+development-oriented setup and there are plans to support other databases in the
 future.
 
-To learn more about the future of databases and Backstage, see the following two
+To learn more about the future of databases and Backstage, see the following
 GitHub issues.
 
-[Knex + Plugins (Multiple vs Single Database) · Issue #1598 · spotify/backstage](https://github.com/spotify/backstage/issues/1598)
-
-[Update migrations to support postgres by dariddler · Pull Request #1527 · spotify/backstage](https://github.com/spotify/backstage/pull/1527#discussion_r450374145)
+* [Knex + Plugins (Multiple vs Single Database) · Issue #1598 · spotify/backstage](https://github.com/spotify/backstage/issues/1598)
+* [Update migrations to support postgres by dariddler · Pull Request #1527 · spotify/backstage](https://github.com/spotify/backstage/pull/1527#discussion_r450374145)
 
 ## Containerization
 
 The example Backstage architecture shown above would Dockerize into three
-separate docker images.
+separate Docker images.
 
 1. The frontend container
 2. The backend container
