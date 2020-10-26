@@ -54,7 +54,7 @@ describe('createRouter - working directory', () => {
   const workDirConfig = (path: string) => ({
     context: '',
     data: {
-      scaffolder: {
+      backend: {
         workingDirectory: path,
       },
     },

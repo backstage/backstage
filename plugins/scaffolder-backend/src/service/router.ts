@@ -61,7 +61,7 @@ export async function createRouter(
   const jobProcessor = new JobProcessor();
 
   const workingDirectory =
-    config.getOptionalString('scaffolder.workingDirectory') ?? os.tmpdir();
+    config.getOptionalString('backend.workingDirectory') ?? os.tmpdir();
   try {
     // Check if working directory exists and is writable
     await fs.promises.access(
