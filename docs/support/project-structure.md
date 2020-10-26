@@ -41,10 +41,10 @@ the code.
   appreciate contributions in here and encourage them being kept up to date.
 
 - [`docs/`](https://github.com/spotify/backstage/tree/master/docs) - This is
-  where we keep all of our documentation markdown files. These ends up on
-  http://backstage.io/docs. Just keep in mind that changes to
-  [this](https://github.com/spotify/backstage/blob/master/microsite/sidebars.json)
-  file also needs to be updated.
+  where we keep all of our documentation Markdown files. These ends up on
+  http://backstage.io/docs. Just keep in mind that changes to the
+  [`sidebars.json`](https://github.com/spotify/backstage/blob/master/microsite/sidebars.json)
+  file may be needed as sections are added/removed.
 
 - [`.editorconfig`](https://github.com/spotify/backstage/tree/master/.editorconfig) -
   A configuration file used by most common code editors.
@@ -111,13 +111,13 @@ are separated out into their own folder, see further down.
   We also want as few dependencies as possible to reduce download time when
   running the cli which is another reason this is a separate package.
 
-* [`config/`](https://github.com/spotify/backstage/tree/master/packages/config) -
+- [`config/`](https://github.com/spotify/backstage/tree/master/packages/config) -
   The way we read configuration data. This package can take a bunch of config
   objects and merge them together.
   [app-config.yaml](https://github.com/spotify/backstage/blob/master/app-config.yaml)
   is an example of an config object.
 
-* [`config-loader/`](https://github.com/spotify/backstage/tree/master/packages/config-loader) -
+- [`config-loader/`](https://github.com/spotify/backstage/tree/master/packages/config-loader) -
   This package is used to read config objects. It does not know how to merge,
   but only reads files and passes them on to the config. As this part is only
   used by the backend, we chose to separate `config` and `config-loader` into
@@ -130,21 +130,21 @@ are separated out into their own folder, see further down.
   Apart from that it re-exports everything from [`core-api`] so that users only
   need to rely on one package.
 
-* [`core-api/`](https://github.com/spotify/backstage/tree/master/packages/core-api) -
+- [`core-api/`](https://github.com/spotify/backstage/tree/master/packages/core-api) -
   This package contains APIs and definitions of such. It is it's own package
   because we needed to split our `test-utils` package. It's an implementation
   detail that we try to hide from our users, and no one should have to depend on
   it directly.
 
-* [`test-utils/`](https://github.com/spotify/backstage/tree/master/packages/test-utils) -
+- [`test-utils/`](https://github.com/spotify/backstage/tree/master/packages/test-utils) -
   This package contains specific testing facilities used when testing
   `core-api`.
 
-* [`test-utils-core/`](https://github.com/spotify/backstage/tree/master/packages/test-utils-core) -
+- [`test-utils-core/`](https://github.com/spotify/backstage/tree/master/packages/test-utils-core) -
   This package contains more general purpose testing facilities for testing a
   Backstage App.
 
-* [`create-app/`](https://github.com/spotify/backstage/tree/master/packages/create-app) -
+- [`create-app/`](https://github.com/spotify/backstage/tree/master/packages/create-app) -
   An CLI to specifically scaffold a new Backstage App. It does so by using a
   [template](https://github.com/spotify/backstage/tree/master/packages/create-app/templates/default-app).
 
@@ -152,32 +152,32 @@ are separated out into their own folder, see further down.
   Helps you setup a plugin for isolated development so that it can be served
   separately.
 
-* [`docgen/`](https://github.com/spotify/backstage/tree/master/packages/docgen) -
+- [`docgen/`](https://github.com/spotify/backstage/tree/master/packages/docgen) -
   Uses the
   [Typescript Compiler API](https://github.com/Microsoft/TypeScript/wiki/Using-the-Compiler-API)
   to read out definitions and generate documentation for it.
 
-* [`e2e-test/`](https://github.com/spotify/backstage/tree/master/packages/e2e-test) -
+- [`e2e-test/`](https://github.com/spotify/backstage/tree/master/packages/e2e-test) -
   Another CLI that can be run to try out what would happen if you built all the
   packages, publish them, created a new app, and the run it. CI uses this for
   e2e-tests.
 
-* [`storybook/`](https://github.com/spotify/backstage/tree/master/packages/storybook) -
+- [`storybook/`](https://github.com/spotify/backstage/tree/master/packages/storybook) -
   This folder contains only the storybook config. Stories are within the core
   package. The Backstage Storybook is found
   [here](https://backstage.io/storybook)
 
-* [`techdocs-cli/`](https://github.com/spotify/backstage/tree/master/packages/techdocs-cli) -
+- [`techdocs-cli/`](https://github.com/spotify/backstage/tree/master/packages/techdocs-cli) -
   Used for verifying TechDocs locally.
 
-* [`techdocs-container/`](https://github.com/spotify/backstage/tree/master/packages/techdocs-container) -
+- [`techdocs-container/`](https://github.com/spotify/backstage/tree/master/packages/techdocs-container) -
   Used by the `techdocs-cli`
 
-* [`test-utils-core/`](https://github.com/spotify/backstage/tree/master/packages/test-utils-core)
+- [`test-utils-core/`](https://github.com/spotify/backstage/tree/master/packages/test-utils-core)
 
-* [`test-utils/`](https://github.com/spotify/backstage/tree/master/packages/test-utils)
+- [`test-utils/`](https://github.com/spotify/backstage/tree/master/packages/test-utils)
 
-* [`theme/`](https://github.com/spotify/backstage/tree/master/packages/theme) -
+- [`theme/`](https://github.com/spotify/backstage/tree/master/packages/theme) -
   Holds the Backstage Theme.
 
 ### `plugins/`
