@@ -35,8 +35,7 @@ import {
   githubPullRequestsApiRef,
 } from '@roadiehq/backstage-plugin-github-pull-requests';
 
-import { costInsightsApiRef } from '@backstage/plugin-cost-insights';
-import { ExampleCostInsightsClient } from './plugins/cost-insights';
+import { costInsightsApiRef, ExampleCostInsightsClient } from '@backstage/plugin-cost-insights';
 
 export const apis = [
   createApiFactory({
