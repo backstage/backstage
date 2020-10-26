@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import ResourceGrowthBarChart from './ResourceGrowthBarChart';
+import { ResourceGrowthBarChart } from './ResourceGrowthBarChart';
 import { renderInTestApp } from '@backstage/test-utils';
 import { createMockEntity } from '../../utils/mockData';
 

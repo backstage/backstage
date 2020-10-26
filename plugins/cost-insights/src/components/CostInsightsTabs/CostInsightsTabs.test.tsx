@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import CostInsightsTabs from './CostInsightsTabs';
+import { CostInsightsTabs } from './CostInsightsTabs';
 import UserEvent from '@testing-library/user-event';
 import { Group } from '../../types';
 import { MockFilterProvider, MockLoadingProvider } from '../../utils/tests';

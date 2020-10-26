@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import UnlabeledDataflowBarChartLegend from './UnlabeledDataflowBarChartLegend';
+import { UnlabeledDataflowBarChartLegend } from './UnlabeledDataflowBarChartLegend';
 import { renderInTestApp } from '@backstage/test-utils';
 
 describe('<UnlabeledDataflowBarChartLegend />', () => {

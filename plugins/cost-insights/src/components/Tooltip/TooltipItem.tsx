@@ -25,7 +25,7 @@ export type TooltipItemProps = {
   fill: string;
 };
 
-const TooltipItem = ({ fill, label, value }: TooltipItemProps) => {
+export const TooltipItem = ({ fill, label, value }: TooltipItemProps) => {
   const classes = useStyles();
   const style = { fill: fill };
   return (
@@ -45,5 +45,3 @@ const TooltipItem = ({ fill, label, value }: TooltipItemProps) => {
     </Box>
   );
 };
-
-export default TooltipItem;

@@ -17,7 +17,7 @@
 import React from 'react';
 import { TooltipPayload } from 'recharts';
 import { fireEvent } from '@testing-library/react';
-import BarChart, { BarChartProps } from './BarChart';
+import { BarChart, BarChartProps } from './BarChart';
 import { BarChartData, ResourceData } from '../../types';
 import { createMockEntity } from '../../utils/mockData';
 import { resourceSort } from '../../utils/sort';

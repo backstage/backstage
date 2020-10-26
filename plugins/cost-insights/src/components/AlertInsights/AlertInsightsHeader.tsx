@@ -25,7 +25,7 @@ type AlertInsightsHeaderProps = {
   subtitle: string;
 };
 
-const AlertInsightsHeader = ({ title, subtitle }: AlertInsightsHeaderProps) => {
+export const AlertInsightsHeader = ({ title, subtitle }: AlertInsightsHeaderProps) => {
   const classes = useStyles();
   const { ScrollAnchor } = useScroll(DefaultNavigation.AlertInsightsHeader);
   return (
@@ -43,5 +43,3 @@ const AlertInsightsHeader = ({ title, subtitle }: AlertInsightsHeaderProps) => {
     </Box>
   );
 };
-
-export default AlertInsightsHeader;

@@ -15,9 +15,9 @@
  */
 
 import { createPlugin, createRouteRef } from '@backstage/core';
-import CostInsightsPage from './components/CostInsightsPage';
-import ProjectGrowthInstructionsPage from './components/ProjectGrowthInstructionsPage';
-import LabelDataflowInstructionsPage from './components/LabelDataflowInstructionsPage';
+import { CostInsightsPage } from './components/CostInsightsPage';
+import { ProjectGrowthInstructionsPage } from './components/ProjectGrowthInstructionsPage';
+import { LabelDataflowInstructionsPage } from './components/LabelDataflowInstructionsPage';
 
 export const rootRouteRef = createRouteRef({
   path: '/cost-insights',

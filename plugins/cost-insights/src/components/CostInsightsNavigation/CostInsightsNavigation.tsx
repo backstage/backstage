@@ -36,7 +36,7 @@ type CostInsightsNavigationProps = {
   alerts: number;
 };
 
-const CostInsightsNavigation = ({ alerts }: CostInsightsNavigationProps) => {
+export const CostInsightsNavigation = ({ alerts }: CostInsightsNavigationProps) => {
   const classes = useNavigationStyles();
   const { products, icons } = useConfig();
 
@@ -64,10 +64,10 @@ const CostInsightsNavigation = ({ alerts }: CostInsightsNavigationProps) => {
                 })}
               </Badge>
             ) : (
-              React.cloneElement(item.icon, {
-                className: classes.navigationIcon,
-              })
-            )
+                React.cloneElement(item.icon, {
+                  className: classes.navigationIcon,
+                })
+              )
           }
           title={item.title}
         />
@@ -93,5 +93,3 @@ const NavigationMenuItem = ({ navigation, icon, title }: NavigationItem) => {
     </MenuItem>
   );
 };
-
-export default CostInsightsNavigation;

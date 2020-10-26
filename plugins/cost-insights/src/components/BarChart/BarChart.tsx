@@ -28,8 +28,8 @@ import {
   TooltipPayload,
 } from 'recharts';
 import { Box, useTheme } from '@material-ui/core';
-import BarChartTick from './BarChartTick';
-import BarChartStepper from './BarChartStepper';
+import { BarChartTick } from './BarChartTick';
+import { BarChartStepper } from './BarChartStepper';
 import { Tooltip, TooltipItemProps } from '../Tooltip';
 
 import { currencyFormatter } from '../../utils/formatters';
@@ -52,7 +52,7 @@ export type BarChartProps = {
   resources: ResourceData[];
 };
 
-const BarChart = ({
+export const BarChart = ({
   responsive = true,
   displayAmount = 6,
   barChartData,
@@ -171,5 +171,3 @@ const BarChart = ({
     </Box>
   );
 };
-
-export default BarChart;

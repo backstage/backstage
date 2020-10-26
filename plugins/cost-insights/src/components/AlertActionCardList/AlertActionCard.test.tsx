@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
-import AlertActionCard from './AlertActionCard';
+import { AlertActionCard } from './AlertActionCard';
 import { ProjectGrowthAlert, ProjectGrowthData } from '../../types';
 import { MockScrollProvider } from '../../utils/tests';
 

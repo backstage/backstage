@@ -26,7 +26,7 @@ type LegendItemProps = {
   markerColor?: string;
 };
 
-const LegendItem = ({
+export const LegendItem = ({
   title,
   tooltipText,
   markerColor,
@@ -73,5 +73,3 @@ const LegendItem = ({
     </Box>
   );
 };
-
-export default LegendItem;

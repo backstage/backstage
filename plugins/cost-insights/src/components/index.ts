@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export { default as BarChart } from './BarChart';
-export { default as CostGrowth } from './CostGrowth';
-export { default as LegendItem } from './LegendItem';
+export { BarChart } from './BarChart';
+export { CostGrowth } from './CostGrowth';
+export { LegendItem } from './LegendItem';
 export * from './Tooltip';

@@ -16,7 +16,7 @@
 
 import React, { PropsWithChildren } from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
-import CostGrowth from './CostGrowth';
+import { CostGrowth } from './CostGrowth';
 import {
   defaultCurrencies,
   Currency,
@@ -41,10 +41,10 @@ const MockContext = ({
   currency: Currency;
   engineerCost: number;
 }>) => (
-  <MockConfigProvider engineerCost={engineerCost}>
-    <MockCurrencyProvider currency={currency}>{children}</MockCurrencyProvider>
-  </MockConfigProvider>
-);
+    <MockConfigProvider engineerCost={engineerCost}>
+      <MockCurrencyProvider currency={currency}>{children}</MockCurrencyProvider>
+    </MockConfigProvider>
+  );
 
 describe.each`
   engineerCost | ratio           | amount     | expected

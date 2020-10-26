@@ -24,7 +24,7 @@ export type BarChartSteps = {
   onClick: (index: number) => void;
 };
 
-const BarChartSteps = ({ steps, activeStep, onClick }: BarChartSteps) => {
+export const BarChartSteps = ({ steps, activeStep, onClick }: BarChartSteps) => {
   const classes = useStyles();
   const handleOnClick = (index: number) => (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -39,14 +39,11 @@ const BarChartSteps = ({ steps, activeStep, onClick }: BarChartSteps) => {
         <ButtonBase key={index} centerRipple onClick={handleOnClick(index)}>
           <div
             data-testid="bar-chart-step"
-            className={`${classes.step} ${
-              index === activeStep ? classes.stepActive : ''
-            }`}
+            className={`${classes.step} ${index === activeStep ? classes.stepActive : ''
+              }`}
           />
         </ButtonBase>
       ))}
     </div>
   );
 };
-
-export default BarChartSteps;
