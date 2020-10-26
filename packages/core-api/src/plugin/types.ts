@@ -73,3 +73,35 @@ export type BackstagePlugin = {
   output(): PluginOutput[];
   getApis(): Iterable<AnyApiFactory>;
 };
+
+export type PluginConfig = {
+  id: string;
+  apis?: Iterable<AnyApiFactory>;
+  register?(hooks: PluginHooks): void;
+};
+
+export type PluginHooks = {
+  router: RouterHooks;
+  featureFlags: FeatureFlagsHooks;
+};
+
+export type RouterHooks = {
+  addRoute(
+    target: RouteRef,
+    Component: ComponentType<any>,
+    options?: RouteOptions,
+  ): void;
+
+  /**
+   * @deprecated See the `addRoute` method
+   */
+  registerRoute(
+    path: RoutePath,
+    Component: ComponentType<any>,
+    options?: RouteOptions,
+  ): void;
+};
+
+export type FeatureFlagsHooks = {
+  register(name: FeatureFlagName): void;
+};
