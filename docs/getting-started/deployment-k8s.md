@@ -4,7 +4,7 @@ title: Kubernetes
 description: Documentation on Kubernetes and K8s Deployment
 ---
 
-Backstage itself provides tooling up to the point of building docker images.
+Backstage itself provides tooling up to the point of building Docker images.
 Beyond that point we do not have an opinionated way to deploy Backstage within
 Kubernetes, as each cluster has its own unique set of tooling and patterns.
 
