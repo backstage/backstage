@@ -23,11 +23,13 @@ import {
   Cost,
   CostInsightsApi,
   DateAggregation,
+  DEFAULT_DATE_FORMAT,
   Duration,
   exclusiveEndDateOf,
   Group,
   inclusiveStartDateOf,
   Maybe,
+  MetricData,
   ProductCost,
   Project,
   ProjectGrowthAlert,
@@ -37,18 +39,32 @@ import {
   UnlabeledDataflowData,
 } from '@backstage/plugin-cost-insights';
 
-function durationOf(intervals: string): Duration {
-  const match = intervals.match(/\/(?<duration>P\d+[DM])\//);
-  const { duration } = match!.groups!;
-  return duration as Duration;
+type IntervalFields = {
+  duration: Duration;
+  endDate: string;
+};
+
+function parseIntervals(intervals: string): IntervalFields {
+  const match = intervals.match(
+    /\/(?<duration>P\d+[DM])\/(?<date>\d{4}-\d{2}-\d{2})/,
+  );
+  if (Object.keys(match?.groups || {}).length !== 2) {
+    throw new Error(`Invalid intervals: ${intervals}`);
+  }
+  const { duration, date } = match!.groups!;
+  return {
+    duration: duration as Duration,
+    endDate: date,
+  };
 }
 
 function aggregationFor(
-  duration: Duration,
+  intervals: string,
   baseline: number,
 ): DateAggregation[] {
-  const days = dayjs(exclusiveEndDateOf(duration)).diff(
-    inclusiveStartDateOf(duration),
+  const { duration, endDate } = parseIntervals(intervals);
+  const days = dayjs(exclusiveEndDateOf(duration, endDate)).diff(
+    inclusiveStartDateOf(duration, endDate),
     'day',
   );
 
@@ -56,10 +72,10 @@ function aggregationFor(
     (values: DateAggregation[], i: number): DateAggregation[] => {
       const last = values.length ? values[values.length - 1].amount : baseline;
       values.push({
-        date: dayjs(inclusiveStartDateOf(duration))
+        date: dayjs(inclusiveStartDateOf(duration, endDate))
           .add(i, 'day')
-          .format('YYYY-MM-DD'),
-        amount: last + (baseline / 20) * (Math.random() * 2 - 1),
+          .format(DEFAULT_DATE_FORMAT),
+        amount: Math.max(0, last + (baseline / 20) * (Math.random() * 2 - 1)),
       });
       return values;
     },
@@ -98,6 +114,12 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
     return new Promise(resolve => setTimeout(resolve, 0, res));
   }
 
+  getLastCompleteBillingDate(): Promise<string> {
+    return Promise.resolve(
+      dayjs().subtract(1, 'day').format(DEFAULT_DATE_FORMAT),
+    );
+  }
+
   async getUserGroups(userId: string): Promise<Group[]> {
     const groups: Group[] = await this.request({ userId }, [
       { id: 'pied-piper' },
@@ -116,19 +138,33 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
     return projects;
   }
 
-  async getGroupDailyCost(
-    group: string,
-    metric: string | null,
+  async getDailyMetricData(
+    metric: string,
     intervals: string,
-  ): Promise<Cost> {
-    const aggregation = aggregationFor(
-      durationOf(intervals),
-      metric ? 0.3 : 8_000,
-    );
-    const groupDailyCost: Cost = await this.request(
-      { group, metric, intervals },
+  ): Promise<MetricData> {
+    const aggregation = aggregationFor(intervals, 100_000).map(entry => ({
+      ...entry,
+      amount: Math.round(entry.amount),
+    }));
+
+    const cost: MetricData = await this.request(
+      { metric, intervals },
       {
-        id: metric, // costs with null ids will appear as "All Projects" in Cost Overview panel
+        format: 'number',
+        aggregation: aggregation,
+        change: changeOf(aggregation),
+        trendline: trendlineOf(aggregation),
+      },
+    );
+
+    return cost;
+  }
+
+  async getGroupDailyCost(group: string, intervals: string): Promise<Cost> {
+    const aggregation = aggregationFor(intervals, 8_000);
+    const groupDailyCost: Cost = await this.request(
+      { group, intervals },
+      {
         aggregation: aggregation,
         change: changeOf(aggregation),
         trendline: trendlineOf(aggregation),
@@ -138,17 +174,10 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
     return groupDailyCost;
   }
 
-  async getProjectDailyCost(
-    project: string,
-    metric: string | null,
-    intervals: string,
-  ): Promise<Cost> {
-    const aggregation = aggregationFor(
-      durationOf(intervals),
-      metric ? 0.1 : 1_500,
-    );
+  async getProjectDailyCost(project: string, intervals: string): Promise<Cost> {
+    const aggregation = aggregationFor(intervals, 1_500);
     const projectDailyCost: Cost = await this.request(
-      { project, metric, intervals },
+      { project, intervals },
       {
         id: 'project-a',
         aggregation: aggregation,
@@ -249,8 +278,8 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
   async getAlerts(group: string): Promise<Alert[]> {
     const projectGrowthData: ProjectGrowthData = {
       project: 'example-project',
-      periodStart: 'Q2 2020',
-      periodEnd: 'Q3 2020',
+      periodStart: '2020-Q2',
+      periodEnd: '2020-Q3',
       aggregation: [60_000, 120_000],
       change: {
         ratio: 1,

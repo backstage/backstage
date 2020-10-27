@@ -61,6 +61,11 @@ import {
   LastLighthouseAuditCard,
   isPluginApplicableToEntity as isLighthouseAvailable,
 } from '@backstage/plugin-lighthouse/';
+import {
+  Router as PullRequestsRouter,
+  isPluginApplicableToEntity as isPullRequestsAvailable,
+  PullRequestsStatsCard,
+} from '@roadiehq/backstage-plugin-github-pull-requests';
 
 const CICDSwitcher = ({ entity }: { entity: Entity }) => {
   // This component is just an example of how you can implement your company's logic in entity page.
@@ -100,10 +105,12 @@ const RecentCICDRunsSwitcher = ({ entity }: { entity: Entity }) => {
   let content: ReactNode;
   switch (true) {
     case isJenkinsAvailable(entity):
-      content = <JenkinsLatestRunCard branch="master" />;
+      content = <JenkinsLatestRunCard branch="master" variant="gridItem" />;
       break;
     case isGitHubActionsAvailable(entity):
-      content = <RecentWorkflowRunsCard entity={entity} />;
+      content = (
+        <RecentWorkflowRunsCard entity={entity} limit={4} variant="gridItem" />
+      );
       break;
     case isTravisCIAvailable(entity):
       content = <RecentTravisCIBuildsWidget entity={entity} />;
@@ -122,9 +129,9 @@ const RecentCICDRunsSwitcher = ({ entity }: { entity: Entity }) => {
 };
 
 const OverviewContent = ({ entity }: { entity: Entity }) => (
-  <Grid container spacing={3}>
+  <Grid container spacing={3} alignItems="stretch">
     <Grid item md={6}>
-      <AboutCard entity={entity} />
+      <AboutCard entity={entity} variant="gridItem" />
     </Grid>
     <RecentCICDRunsSwitcher entity={entity} />
     {isGitHubAvailable(entity) && (
@@ -140,7 +147,12 @@ const OverviewContent = ({ entity }: { entity: Entity }) => (
     )}
     {isLighthouseAvailable(entity) && (
       <Grid item sm={4}>
-        <LastLighthouseAuditCard />
+        <LastLighthouseAuditCard variant="gridItem" />
+      </Grid>
+    )}
+    {isPullRequestsAvailable(entity) && (
+      <Grid item sm={4}>
+        <PullRequestsStatsCard entity={entity} />
       </Grid>
     )}
   </Grid>
@@ -177,6 +189,11 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
       path="/kubernetes/*"
       title="Kubernetes"
       element={<KubernetesRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/pull-requests"
+      title="Pull Requests"
+      element={<PullRequestsRouter entity={entity} />}
     />
     <EntityPageLayout.Content
       path="/code-insights"
@@ -217,6 +234,11 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
       path="/kubernetes/*"
       title="Kubernetes"
       element={<KubernetesRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/pull-requests"
+      title="Pull Requests"
+      element={<PullRequestsRouter entity={entity} />}
     />
     <EntityPageLayout.Content
       path="/code-insights"

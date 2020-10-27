@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import moment from 'moment';
 import { Box } from '@material-ui/core';
 import { InfoCard } from '@backstage/core';
 import ResourceGrowthBarChart from '../ResourceGrowthBarChart';
@@ -33,6 +34,10 @@ const ProjectGrowthAlertCard = ({ alert }: ProjectGrowthAlertProps) => {
     ${alert.products.length} ${pluralOf(alert.products.length, 'product')}${
     alert.products.length > 1 ? ', sorted by cost' : ''
   }`;
+  const previousName = moment(alert.periodStart, 'YYYY-[Q]Q').format(
+    '[Q]Q YYYY',
+  );
+  const currentName = moment(alert.periodEnd, 'YYYY-[Q]Q').format('[Q]Q YYYY');
 
   return (
     <InfoCard
@@ -44,13 +49,16 @@ const ProjectGrowthAlertCard = ({ alert }: ProjectGrowthAlertProps) => {
           <ResourceGrowthBarChartLegend
             change={alert.change}
             duration={Duration.P3M}
+            previousName={previousName}
+            currentName={currentName}
             costStart={costStart}
             costEnd={costEnd}
           />
         </Box>
         <ResourceGrowthBarChart
           resources={alert.products}
-          duration={Duration.P3M}
+          previousName={previousName}
+          currentName={currentName}
         />
       </Box>
     </InfoCard>

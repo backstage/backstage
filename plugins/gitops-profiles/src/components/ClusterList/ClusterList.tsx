@@ -21,7 +21,6 @@ import {
   Header,
   SupportButton,
   Page,
-  pageTheme,
   Progress,
   HeaderLabel,
   useApi,
@@ -91,7 +90,7 @@ const ClusterList: FC<{}> = () => {
   }
 
   return (
-    <Page theme={pageTheme.home}>
+    <Page themeId="home">
       <Header title="GitOps-managed Clusters">
         <HeaderLabel label="Welcome" value={githubUsername} />
       </Header>

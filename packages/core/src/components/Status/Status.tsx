@@ -65,20 +65,34 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
 
 export const StatusOK: FC<{}> = props => {
   const classes = useStyles(props);
-  return <span className={classNames(classes.status, classes.ok)} {...props} />;
+  return (
+    <span
+      className={classNames(classes.status, classes.ok)}
+      aria-label="Status ok"
+      {...props}
+    />
+  );
 };
 
 export const StatusWarning: FC<{}> = props => {
   const classes = useStyles(props);
   return (
-    <span className={classNames(classes.status, classes.warning)} {...props} />
+    <span
+      className={classNames(classes.status, classes.warning)}
+      aria-label="Status warning"
+      {...props}
+    />
   );
 };
 
 export const StatusError: FC<{}> = props => {
   const classes = useStyles(props);
   return (
-    <span className={classNames(classes.status, classes.error)} {...props} />
+    <span
+      className={classNames(classes.status, classes.error)}
+      aria-label="Status error"
+      {...props}
+    />
   );
 };
 

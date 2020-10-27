@@ -15,10 +15,9 @@
  */
 
 import React from 'react';
-import { Select, MenuItem } from '@material-ui/core';
-import { Maybe, Metric, findAlways } from '../../types';
+import { InputLabel, FormControl, Select, MenuItem } from '@material-ui/core';
+import { Maybe, Metric } from '../../types';
 import { useSelectStyles as useStyles } from '../../utils/styles';
-import { NULL_METRIC } from '../../hooks/useConfig';
 
 export type MetricSelectProps = {
   metric: Maybe<string>;
@@ -29,38 +28,37 @@ export type MetricSelectProps = {
 const MetricSelect = ({ metric, metrics, onSelect }: MetricSelectProps) => {
   const classes = useStyles();
 
-  const handleOnChange = (e: React.ChangeEvent<{ value: unknown }>) => {
-    if (e.target.value === NULL_METRIC) {
+  function onChange(e: React.ChangeEvent<{ value: unknown }>) {
+    if (e.target.value === 'none') {
       onSelect(null);
     } else {
       onSelect(e.target.value as string);
     }
-  };
-
-  const renderValue = (value: unknown) => {
-    const kind = (value === NULL_METRIC ? null : value) as Maybe<string>;
-    const { name } = findAlways(metrics, m => m.kind === kind);
-    return <b>{name}</b>;
-  };
+  }
 
   return (
-    <Select
-      className={classes.select}
-      variant="outlined"
-      value={metric || NULL_METRIC}
-      renderValue={renderValue}
-      onChange={handleOnChange}
-    >
-      {metrics.map((m: Metric) => (
-        <MenuItem
-          className={classes.menuItem}
-          key={m.kind || NULL_METRIC}
-          value={m.kind || NULL_METRIC}
-        >
-          {m.name}
+    <FormControl variant="outlined">
+      <InputLabel shrink id="metric-select-label">
+        Compare to:
+      </InputLabel>
+      <Select
+        id="metric-select"
+        labelId="metric-select-label"
+        labelWidth={100}
+        className={classes.select}
+        value={metric ?? 'none'}
+        onChange={onChange}
+      >
+        <MenuItem className={classes.menuItem} key="none" value="none">
+          <em>None</em>
         </MenuItem>
-      ))}
-    </Select>
+        {metrics.map((m: Metric) => (
+          <MenuItem className={classes.menuItem} key={m.kind} value={m.kind}>
+            <b>{m.name}</b>
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
   );
 };
 

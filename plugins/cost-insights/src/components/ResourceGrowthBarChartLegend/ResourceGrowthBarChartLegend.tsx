@@ -18,18 +18,14 @@ import React from 'react';
 import { Box, useTheme } from '@material-ui/core';
 import LegendItem from '../LegendItem';
 import CostGrowth from '../CostGrowth';
-import { currencyFormatter, formatDuration } from '../../utils/formatters';
-import {
-  ChangeStatistic,
-  CostInsightsTheme,
-  Duration,
-  inclusiveEndDateOf,
-  inclusiveStartDateOf,
-} from '../../types';
+import { currencyFormatter } from '../../utils/formatters';
+import { ChangeStatistic, CostInsightsTheme, Duration } from '../../types';
 
 export type ResourceGrowthBarChartLegendProps = {
   change: ChangeStatistic;
   duration: Duration;
+  previousName: string;
+  currentName: string;
   costStart: number;
   costEnd: number;
 };
@@ -37,28 +33,22 @@ export type ResourceGrowthBarChartLegendProps = {
 const ResourceGrowthBarChartLegend = ({
   change,
   duration,
+  previousName,
+  currentName,
   costStart,
   costEnd,
 }: ResourceGrowthBarChartLegendProps) => {
   const theme = useTheme<CostInsightsTheme>();
 
-  const startOf = inclusiveStartDateOf(duration);
-  const endOf = inclusiveEndDateOf(duration);
-  const periodStartTitle = formatDuration(startOf, duration);
-  const periodEndTitle = formatDuration(endOf, duration);
-
   return (
     <Box display="flex" flexDirection="row">
       <Box marginRight={2}>
-        <LegendItem
-          title={periodStartTitle}
-          markerColor={theme.palette.lightBlue}
-        >
+        <LegendItem title={previousName} markerColor={theme.palette.lightBlue}>
           {currencyFormatter.format(costStart)}
         </LegendItem>
       </Box>
       <Box marginRight={2}>
-        <LegendItem title={periodEndTitle} markerColor={theme.palette.darkBlue}>
+        <LegendItem title={currentName} markerColor={theme.palette.darkBlue}>
           {currencyFormatter.format(costEnd)}
         </LegendItem>
       </Box>

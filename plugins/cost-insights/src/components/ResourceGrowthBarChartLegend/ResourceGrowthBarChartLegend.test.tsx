@@ -14,31 +14,17 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
+import React, { PropsWithChildren } from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import ResourceGrowthBarChartLegend from './ResourceGrowthBarChartLegend';
-import { Currency, defaultCurrencies, Duration, findAlways } from '../../types';
+import { defaultCurrencies, Duration, findAlways } from '../../types';
 import { MockConfigProvider, MockCurrencyProvider } from '../../utils/tests';
 
 const engineers = findAlways(defaultCurrencies, c => c.kind === null);
 
-const MockContext = ({
-  children,
-  currency,
-}: {
-  children: ReactNode;
-  currency: Currency;
-}) => (
-  <MockConfigProvider
-    engineerCost={200_000}
-    currencies={[]}
-    metrics={[]}
-    products={[]}
-    icons={[]}
-  >
-    <MockCurrencyProvider currency={currency} setCurrency={jest.fn()}>
-      {children}
-    </MockCurrencyProvider>
+const MockContext = ({ children }: PropsWithChildren<{}>) => (
+  <MockConfigProvider engineerCost={200_000}>
+    <MockCurrencyProvider currency={engineers}>{children}</MockCurrencyProvider>
   </MockConfigProvider>
 );
 
@@ -52,10 +38,12 @@ describe('<ResourceGrowthBarChartLegend />', () => {
     ({ ratio, amount, costText, engineerTest }) => {
       it(`Should display the correct cost and engineer text for ${ratio} percent change`, async () => {
         const rendered = await renderInTestApp(
-          <MockContext currency={engineers}>
+          <MockContext>
             <ResourceGrowthBarChartLegend
               duration={Duration.P3M}
               change={{ ratio, amount }}
+              previousName="Q2 2020"
+              currentName="Q3 2020"
               costStart={1000}
               costEnd={5000}
             />
@@ -63,30 +51,6 @@ describe('<ResourceGrowthBarChartLegend />', () => {
         );
         expect(rendered.getByText(costText)).toBeInTheDocument();
         expect(rendered.queryByText(engineerTest)).toBeInTheDocument();
-      });
-    },
-  );
-
-  describe.each`
-    duration         | periodStartText    | periodEndText
-    ${Duration.P30D} | ${'First 30 Days'} | ${'Last 30 Days'}
-    ${Duration.P90D} | ${'First 90 Days'} | ${'Last 90 Days'}
-  `(
-    'Should display the correct relative time',
-    ({ duration, periodStartText, periodEndText }) => {
-      it(`Should display the correct relative time for ${duration}`, async () => {
-        const rendered = await renderInTestApp(
-          <MockContext currency={engineers}>
-            <ResourceGrowthBarChartLegend
-              change={{ ratio: -2.5, amount: 100_000 }}
-              duration={duration}
-              costStart={1000}
-              costEnd={5000}
-            />
-          </MockContext>,
-        );
-        expect(rendered.getByText(periodStartText)).toBeInTheDocument();
-        expect(rendered.getByText(periodEndText)).toBeInTheDocument();
       });
     },
   );

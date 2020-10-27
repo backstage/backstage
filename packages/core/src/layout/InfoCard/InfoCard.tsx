@@ -70,6 +70,15 @@ const VARIANT_STYLES = {
       flexDirection: 'column',
       height: '100%',
     },
+    gridItem: {
+      display: 'flex',
+      flexDirection: 'column',
+      height: 'calc(100% - 10px)', // for pages without content header
+      marginBottom: '10px',
+    },
+    /**
+     * @deprecated This variant is replaced by 'gridItem'.
+     */
     height100: {
       display: 'flex',
       flexDirection: 'column',
@@ -81,7 +90,13 @@ const VARIANT_STYLES = {
     fullHeight: {
       flex: 1,
     },
+    /**
+     * @deprecated This variant is replaced by 'gridItem'.
+     */
     height100: {
+      flex: 1,
+    },
+    gridItem: {
       flex: 1,
     },
   },
@@ -100,9 +115,10 @@ const VARIANT_STYLES = {
  * By default the InfoCard has no custom layout of its children, but is treated as a block element. A
  * couple common variants are provided and can be specified via the variant property:
  *
- * Display the card full height suitable for DataGrid:
+ * When the InfoCard is displayed as a grid item within a grid, you may want items to have the same height for all items.
+ * Set to the 'gridItem' variant to display the InfoCard with full height suitable for Grid:
  *
- *   <InfoCard variant="height100">...</InfoCard>
+ *   <InfoCard variant="gridItem">...</InfoCard>
  */
 type Props = {
   title?: ReactNode;
@@ -142,17 +158,21 @@ export const InfoCard = ({
   noPadding,
 }: Props): JSX.Element => {
   const classes = useStyles();
-
   /**
    * If variant is specified, we build up styles for that particular variant for both
    * the Card and the CardContent (since these need to be synced)
    */
   let calculatedStyle = {};
   let calculatedCardStyle = {};
-
   if (variant) {
     const variants = variant.split(/[\s]+/g);
     variants.forEach(name => {
+      if (name === 'height100') {
+        // eslint-disable-next-line no-console
+        console.warn(
+          "Variant 'height100' of InfoCard is deprecated. Use variant 'gridItem' instead.",
+        );
+      }
       calculatedStyle = {
         ...calculatedStyle,
         ...VARIANT_STYLES.card[name as keyof typeof VARIANT_STYLES['card']],

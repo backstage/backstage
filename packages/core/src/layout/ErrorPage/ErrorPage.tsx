@@ -30,9 +30,16 @@ interface IErrorPageProps {
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   container: {
     padding: theme.spacing(8),
+    [theme.breakpoints.down('xs')]: {
+      padding: theme.spacing(2),
+    },
   },
   title: {
     paddingBottom: theme.spacing(5),
+    [theme.breakpoints.down('xs')]: {
+      paddingBottom: theme.spacing(4),
+      fontSize: 32,
+    },
   },
   subtitle: {
     color: theme.palette.textSubtle,
@@ -48,9 +55,9 @@ export const ErrorPage = ({
   const navigate = useNavigate();
 
   return (
-    <Grid container className={classes.container}>
+    <Grid container spacing={0} className={classes.container}>
       <MicDrop />
-      <Grid item xs={12} sm={4}>
+      <Grid item xs={12} sm={8} md={4}>
         <Typography variant="body1" className={classes.subtitle}>
           ERROR {status}: {statusMessage}
         </Typography>

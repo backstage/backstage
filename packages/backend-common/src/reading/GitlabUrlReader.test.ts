@@ -19,14 +19,14 @@ import { setupServer } from 'msw/node';
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '../logging';
 import { GitlabUrlReader } from './GitlabUrlReader';
+import { msw } from '@backstage/test-utils';
 
 const logger = getVoidLogger();
 
 describe('GitlabUrlReader', () => {
   const worker = setupServer();
 
-  beforeAll(() => worker.listen({ onUnhandledRequest: 'error' }));
-  afterAll(() => worker.close());
+  msw.setupDefaultHandlers(worker);
 
   beforeEach(() => {
     worker.use(
@@ -44,7 +44,6 @@ describe('GitlabUrlReader', () => {
       ),
     );
   });
-  afterEach(() => worker.resetHandlers());
 
   const createConfig = (token?: string) =>
     new ConfigReader(

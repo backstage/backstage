@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { Box, Typography, Tooltip } from '@material-ui/core';
 import LensIcon from '@material-ui/icons/Lens';
 import HelpOutlineOutlinedIcon from '@material-ui/icons/HelpOutlineOutlined';
@@ -24,7 +24,6 @@ type LegendItemProps = {
   title: string;
   tooltipText?: string;
   markerColor?: string;
-  children?: React.ReactNode;
 };
 
 const LegendItem = ({
@@ -32,7 +31,7 @@ const LegendItem = ({
   tooltipText,
   markerColor,
   children,
-}: LegendItemProps) => {
+}: PropsWithChildren<LegendItemProps>) => {
   const classes = useCostGrowthLegendStyles();
   return (
     <Box display="flex" flexDirection="column">

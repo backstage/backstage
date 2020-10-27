@@ -19,12 +19,20 @@ This section will guide you through:
 
 ## Create a basic documentation setup
 
+If you have an existing repository that you'd like to add documentation to, skip
+to the
+[Manually add documentation setup](#manually-add-documentation-setup-to-already-existing-repository)
+section below. Otherwise, continue reading to start a documentation repo from
+scratch.
+
 ### Use the documentation template
 
 Your working Backstage instance should by default have a documentation template
 added. If not, follow these
 [instructions](../software-templates/installation.md#adding-templates) to add
-the documentation template.
+the documentation template. The template creates a component with only TechDocs
+configuration and default markdown files as below mentioned in manual
+documentation setup, and is otherwise empty.
 
 ![Documentation Template](../../assets/techdocs/documentation-template.png)
 
@@ -35,9 +43,11 @@ setup for free.
 
 Prerequisities:
 
-- `catalog-info.yml` file registered to Backstage.
+- An existing component
+  [registered in backstage](../software-catalog/index.md#adding-components-to-the-catalog)
+  (e.g. via a `catalog-info.yaml` file).
 
-Create a `mkdocs.yml` file in the root of the repository with the following
+Create an `mkdocs.yml` file in the root of your repository with the following
 content:
 
 ```yaml
@@ -50,8 +60,8 @@ plugins:
   - techdocs-core
 ```
 
-Update your `catalog-info.yaml` file in the root of the repository with the
-following content:
+Update your component's entity description by adding the following lines to its
+`catalog-info.yaml` in the root of its repository:
 
 ```yaml
 metadata:
@@ -59,7 +69,7 @@ metadata:
     backstage.io/techdocs-ref: dir:./
 ```
 
-Create a `/docs` folder in the root of the project with at least a `index.md`
+Create a `/docs` folder in the root of the project with at least an `index.md`
 file. _(If you add more markdown files, make sure to update the nav in the
 mkdocs.yml file to get a proper navigation for your documentation.)_
 

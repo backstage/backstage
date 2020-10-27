@@ -21,7 +21,7 @@ import { parseLocationAnnotation } from '../helpers';
 import { InputError } from '@backstage/backend-common';
 import { PreparerBase } from './types';
 import GitUriParser from 'git-url-parse';
-import { Clone, Cred } from 'nodegit';
+import { Clone, CloneOptions, Cred } from 'nodegit';
 
 export class GithubPreparer implements PreparerBase {
   token?: string;
@@ -52,17 +52,22 @@ export class GithubPreparer implements PreparerBase {
       template.spec.path ?? '.',
     );
 
-    const cloneOptions = token
-      ? {
-          fetchOpts: {
-            callbacks: {
-              credentials() {
-                return Cred.userpassPlaintextNew(token, 'x-oauth-basic');
-              },
+    let cloneOptions: CloneOptions = {
+      checkoutBranch: parsedGitLocation.ref,
+    };
+
+    if (token) {
+      cloneOptions = {
+        ...cloneOptions,
+        fetchOpts: {
+          callbacks: {
+            credentials() {
+              return Cred.userpassPlaintextNew(token, 'x-oauth-basic');
             },
           },
-        }
-      : {};
+        },
+      };
+    }
 
     await Clone.clone(repositoryCheckoutUrl, tempDir, cloneOptions);
 

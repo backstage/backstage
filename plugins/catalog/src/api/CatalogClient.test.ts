@@ -19,23 +19,22 @@ import { setupServer } from 'msw/node';
 import { CatalogClient } from './CatalogClient';
 import { Entity } from '@backstage/catalog-model';
 import { UrlPatternDiscovery } from '@backstage/core';
+import { msw } from '@backstage/test-utils';
 
 const server = setupServer();
 const mockBaseUrl = 'http://backstage:9191/i-am-a-mock-base';
 const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);
 
 describe('CatalogClient', () => {
-  beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
-  afterEach(() => server.resetHandlers());
-  afterAll(() => server.close());
-
   let client = new CatalogClient({ discoveryApi });
+
+  msw.setupDefaultHandlers(server);
 
   beforeEach(() => {
     client = new CatalogClient({ discoveryApi });
   });
 
-  describe('getEntiies', () => {
+  describe('getEntities', () => {
     const defaultResponse: Entity[] = [
       {
         apiVersion: '1',
@@ -72,9 +71,7 @@ describe('CatalogClient', () => {
       expect.assertions(2);
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
-          expect(req.url.searchParams.toString()).toBe(
-            'a=1&b=2&b=3&%C3%B6=%3D',
-          );
+          expect(req.url.search).toBe('?filter=a=1,b=2,b=3,%C3%B6=%3D');
           return res(ctx.json([]));
         }),
       );

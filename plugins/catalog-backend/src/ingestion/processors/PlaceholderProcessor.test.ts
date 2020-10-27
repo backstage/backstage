@@ -21,6 +21,7 @@ import {
   PlaceholderResolver,
   ResolverParams,
   ResolverRead,
+  textPlaceholderResolver,
   yamlPlaceholderResolver,
 } from './PlaceholderProcessor';
 
@@ -45,7 +46,7 @@ describe('PlaceholderProcessor', () => {
       reader,
     });
     await expect(
-      processor.processEntity(input, { type: 't', target: 'l' }),
+      processor.preProcessEntity(input, { type: 't', target: 'l' }),
     ).resolves.toBe(input);
   });
 
@@ -61,7 +62,7 @@ describe('PlaceholderProcessor', () => {
     });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',
@@ -97,7 +98,7 @@ describe('PlaceholderProcessor', () => {
     });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',
@@ -121,7 +122,7 @@ describe('PlaceholderProcessor', () => {
     });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',
@@ -134,12 +135,15 @@ describe('PlaceholderProcessor', () => {
     expect(read).not.toBeCalled();
   });
 
-  it('has builtin text support', async () => {
+  it('works with the text resolver', async () => {
     read.mockResolvedValue(Buffer.from('TEXT', 'utf-8'));
-    const processor = PlaceholderProcessor.default({ reader });
+    const processor = new PlaceholderProcessor({
+      resolvers: { text: textPlaceholderResolver },
+      reader,
+    });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',
@@ -163,14 +167,17 @@ describe('PlaceholderProcessor', () => {
     );
   });
 
-  it('has builtin json support', async () => {
+  it('works with the json resolver', async () => {
     read.mockResolvedValue(
       Buffer.from(JSON.stringify({ a: ['b', 7] }), 'utf-8'),
     );
-    const processor = PlaceholderProcessor.default({ reader });
+    const processor = new PlaceholderProcessor({
+      resolvers: { json: jsonPlaceholderResolver },
+      reader,
+    });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',
@@ -194,12 +201,15 @@ describe('PlaceholderProcessor', () => {
     );
   });
 
-  it('has builtin yaml support', async () => {
+  it('works with the yaml resolver', async () => {
     read.mockResolvedValue(Buffer.from('foo:\n  - bar: 7', 'utf-8'));
-    const processor = PlaceholderProcessor.default({ reader });
+    const processor = new PlaceholderProcessor({
+      resolvers: { yaml: yamlPlaceholderResolver },
+      reader,
+    });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',
@@ -225,10 +235,13 @@ describe('PlaceholderProcessor', () => {
 
   it('resolves absolute path for absolute location', async () => {
     read.mockResolvedValue(Buffer.from('TEXT', 'utf-8'));
-    const processor = PlaceholderProcessor.default({ reader });
+    const processor = new PlaceholderProcessor({
+      resolvers: { text: textPlaceholderResolver },
+      reader,
+    });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',
@@ -258,10 +271,13 @@ describe('PlaceholderProcessor', () => {
 
   it('resolves absolute path for relative file location', async () => {
     read.mockResolvedValue(Buffer.from('TEXT', 'utf-8'));
-    const processor = PlaceholderProcessor.default({ reader });
+    const processor = new PlaceholderProcessor({
+      resolvers: { text: textPlaceholderResolver },
+      reader,
+    });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',
@@ -291,13 +307,16 @@ describe('PlaceholderProcessor', () => {
 
   it('not resolves relative file path for relative file location', async () => {
     // We explicitly don't support this case, as it would allow for file system
-    // traversel attacks. If we want to implement this, we need to have additional
+    // traversal attacks. If we want to implement this, we need to have additional
     // security measures in place!
     read.mockResolvedValue(Buffer.from('TEXT', 'utf-8'));
-    const processor = PlaceholderProcessor.default({ reader });
+    const processor = new PlaceholderProcessor({
+      resolvers: { text: textPlaceholderResolver },
+      reader,
+    });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',

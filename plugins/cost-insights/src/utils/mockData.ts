@@ -19,9 +19,10 @@ import {
   Duration,
   Entity,
   findAlways,
-  getDefaultState,
+  getDefaultState as getDefaultLoadingState,
   Product,
   ProductCost,
+  ProductFilters,
   ProjectGrowthData,
   UnlabeledDataflowAlertProject,
   UnlabeledDataflowData,
@@ -77,8 +78,8 @@ export const createMockProjectGrowthData = (
 ): ProjectGrowthData => {
   const data: ProjectGrowthData = {
     project: 'test-project-growth-alert',
-    periodStart: '2019-10-01',
-    periodEnd: '2020-03-31',
+    periodStart: '2019-Q4',
+    periodEnd: '2020-Q1',
     aggregation: [670532.1, 970502.8],
     change: {
       ratio: 0.5,
@@ -135,7 +136,7 @@ export const MockProductTypes: Record<string, string> = {
   'cloud-pub-sub': 'Cloud Pub/Sub',
 };
 
-export const MockProductFilters = Object.keys(
+export const MockProductFilters: ProductFilters = Object.keys(
   MockProductTypes,
 ).map(productType => ({ duration: Duration.P1M, productType }));
 
@@ -153,7 +154,9 @@ export const MockLoadingActions = ([
   DefaultLoadingAction.CostInsightsPage,
 ] as string[]).concat(MockProducts.map(product => product.kind));
 
-export const mockDefaultState = getDefaultState(MockLoadingActions);
+export const mockDefaultLoadingState = getDefaultLoadingState(
+  MockLoadingActions,
+);
 
 export const MockComputeEngine = findAlways(
   MockProducts,

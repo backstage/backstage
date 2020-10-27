@@ -21,6 +21,7 @@ import { setupServer } from 'msw/node';
 import { ConfigReader } from '@backstage/config';
 import { ReaderEntity } from '../service/client';
 import { createLogger } from 'winston';
+import { msw } from '@backstage/test-utils';
 import { gql } from 'apollo-server';
 
 describe('Catalog Module', () => {
@@ -37,9 +38,7 @@ describe('Catalog Module', () => {
     },
   ]);
 
-  beforeAll(() => worker.listen({ onUnhandledRequest: 'error' }));
-  afterAll(() => worker.close());
-  afterEach(() => worker.resetHandlers());
+  msw.setupDefaultHandlers(worker);
 
   describe('Default Entity', () => {
     beforeEach(() => {

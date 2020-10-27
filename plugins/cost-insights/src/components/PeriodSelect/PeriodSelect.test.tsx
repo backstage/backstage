@@ -16,33 +16,41 @@
 
 import React from 'react';
 import { getByRole, waitFor } from '@testing-library/react';
-import UserEvent from '@testing-library/user-event';
-import PeriodSelect, { DEFAULT_OPTIONS as options } from './PeriodSelect';
-import { Duration, getDefaultPageFilters, Group } from '../../types';
-
 import { renderInTestApp } from '@backstage/test-utils';
+import UserEvent from '@testing-library/user-event';
+import PeriodSelect, { getDefaultOptions } from './PeriodSelect';
+import { Duration, getDefaultPageFilters, Group } from '../../types';
+import { MockBillingDateProvider } from '../../utils/tests';
 
 const DefaultPageFilters = getDefaultPageFilters([{ id: 'tools' }] as Group[]);
-
-Date.now = jest.fn(() => new Date(Date.parse('2020-05-01')).valueOf());
+const lastCompleteBillingDate = '2020-05-01';
+const options = getDefaultOptions(lastCompleteBillingDate);
 
 describe('<PeriodSelect />', () => {
   it('Renders without exploding', async () => {
     const rendered = await renderInTestApp(
-      <PeriodSelect
-        duration={DefaultPageFilters.duration}
-        onSelect={jest.fn()}
-      />,
+      <MockBillingDateProvider
+        lastCompleteBillingDate={lastCompleteBillingDate}
+      >
+        <PeriodSelect
+          duration={DefaultPageFilters.duration}
+          onSelect={jest.fn()}
+        />
+      </MockBillingDateProvider>,
     );
     expect(rendered.getByTestId('period-select')).toBeInTheDocument();
   });
 
   it('Should display all costGrowth period options', async () => {
     const rendered = await renderInTestApp(
-      <PeriodSelect
-        duration={DefaultPageFilters.duration}
-        onSelect={jest.fn()}
-      />,
+      <MockBillingDateProvider
+        lastCompleteBillingDate={lastCompleteBillingDate}
+      >
+        <PeriodSelect
+          duration={DefaultPageFilters.duration}
+          onSelect={jest.fn()}
+        />
+      </MockBillingDateProvider>,
     );
     const periodSelectContainer = rendered.getByTestId('period-select');
     const button = getByRole(periodSelectContainer, 'button');
@@ -70,7 +78,11 @@ describe('<PeriodSelect />', () => {
           : DefaultPageFilters.duration;
 
       const rendered = await renderInTestApp(
-        <PeriodSelect duration={mockAggregation} onSelect={mockOnSelect} />,
+        <MockBillingDateProvider
+          lastCompleteBillingDate={lastCompleteBillingDate}
+        >
+          <PeriodSelect duration={mockAggregation} onSelect={mockOnSelect} />,
+        </MockBillingDateProvider>,
       );
       const periodSelect = rendered.getByTestId('period-select');
       const button = getByRole(periodSelect, 'button');

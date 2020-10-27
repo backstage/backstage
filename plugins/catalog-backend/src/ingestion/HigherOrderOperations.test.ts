@@ -15,12 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import {
-  Entity,
-  ENTITY_DEFAULT_NAMESPACE,
-  Location,
-  LocationSpec,
-} from '@backstage/catalog-model';
+import { Entity, Location, LocationSpec } from '@backstage/catalog-model';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
 import { LocationUpdateStatus } from '../catalog/types';
 import { DatabaseLocationUpdateLogStatus } from '../database/types';
@@ -36,11 +31,8 @@ describe('HigherOrderOperations', () => {
   beforeAll(() => {
     entitiesCatalog = {
       entities: jest.fn(),
-      entityByUid: jest.fn(),
-      entityByName: jest.fn(),
-      addOrUpdateEntity: jest.fn(),
-      addEntities: jest.fn(),
       removeEntityByUid: jest.fn(),
+      batchAddOrUpdateEntities: jest.fn(),
     };
     locationsCatalog = {
       addLocation: jest.fn(),
@@ -74,7 +66,10 @@ describe('HigherOrderOperations', () => {
       };
       locationsCatalog.addLocation.mockImplementation(x => Promise.resolve(x));
       locationsCatalog.locations.mockResolvedValue([]);
-      locationReader.read.mockResolvedValue({ entities: [], errors: [] });
+      locationReader.read.mockResolvedValue({
+        entities: [],
+        errors: [],
+      });
 
       const result = await higherOrderOperation.addLocation(spec);
 
@@ -88,7 +83,7 @@ describe('HigherOrderOperations', () => {
       expect(locationsCatalog.locations).toBeCalledTimes(1);
       expect(locationReader.read).toBeCalledTimes(1);
       expect(locationReader.read).toBeCalledWith({ type: 'a', target: 'b' });
-      expect(entitiesCatalog.addOrUpdateEntity).not.toBeCalled();
+      expect(entitiesCatalog.batchAddOrUpdateEntities).not.toBeCalled();
       expect(locationsCatalog.addLocation).toBeCalledTimes(1);
       expect(locationsCatalog.addLocation).toBeCalledWith(
         expect.objectContaining({
@@ -114,7 +109,10 @@ describe('HigherOrderOperations', () => {
           data: location,
         },
       ]);
-      locationReader.read.mockResolvedValue({ entities: [], errors: [] });
+      locationReader.read.mockResolvedValue({
+        entities: [],
+        errors: [],
+      });
 
       const result = await higherOrderOperation.addLocation(spec);
 
@@ -123,7 +121,7 @@ describe('HigherOrderOperations', () => {
       expect(locationsCatalog.locations).toBeCalledTimes(1);
       expect(locationReader.read).toBeCalledTimes(1);
       expect(locationReader.read).toBeCalledWith({ type: 'a', target: 'b' });
-      expect(entitiesCatalog.addOrUpdateEntity).not.toBeCalled();
+      expect(entitiesCatalog.batchAddOrUpdateEntities).not.toBeCalled();
       expect(locationsCatalog.addLocation).not.toBeCalled();
     });
 
@@ -141,7 +139,7 @@ describe('HigherOrderOperations', () => {
 
       locationsCatalog.locations.mockResolvedValue([]);
       locationReader.read.mockResolvedValue({
-        entities: [{ entity, location }],
+        entities: [{ entity, location, relations: [] }],
         errors: [{ error: new Error('abcd'), location }],
       });
 
@@ -149,7 +147,7 @@ describe('HigherOrderOperations', () => {
         /abcd/,
       );
       expect(locationsCatalog.locations).toBeCalledTimes(1);
-      expect(entitiesCatalog.addOrUpdateEntity).not.toBeCalled();
+      expect(entitiesCatalog.batchAddOrUpdateEntities).not.toBeCalled();
       expect(locationsCatalog.addLocation).not.toBeCalled();
     });
   });
@@ -164,7 +162,7 @@ describe('HigherOrderOperations', () => {
 
       expect(locationsCatalog.locations).toHaveBeenCalledTimes(1);
       expect(locationReader.read).not.toHaveBeenCalled();
-      expect(entitiesCatalog.addOrUpdateEntity).not.toHaveBeenCalled();
+      expect(entitiesCatalog.batchAddOrUpdateEntities).not.toHaveBeenCalled();
     });
 
     it('can update a single location where a matching entity did not exist', async () => {
@@ -184,16 +182,18 @@ describe('HigherOrderOperations', () => {
         metadata: { name: 'c1' },
         spec: { type: 'service' },
       };
+      const entityId = 'xyz123';
 
       locationsCatalog.locations.mockResolvedValue([
         { currentStatus: locationStatus, data: location },
       ]);
       locationReader.read.mockResolvedValue({
-        entities: [{ entity: desc, location }],
+        entities: [{ entity: desc, location, relations: [] }],
         errors: [],
       });
-      entitiesCatalog.entities.mockResolvedValue([]);
-      entitiesCatalog.addEntities.mockResolvedValue(undefined);
+      entitiesCatalog.batchAddOrUpdateEntities.mockResolvedValue([
+        { entityId },
+      ]);
 
       await expect(
         higherOrderOperation.refreshAllLocations(),
@@ -205,19 +205,14 @@ describe('HigherOrderOperations', () => {
         type: 'some',
         target: 'thing',
       });
-      expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.entities).toHaveBeenNthCalledWith(
-        1,
-        expect.arrayContaining([
-          { key: 'kind', values: ['Component'] },
-          { key: 'metadata.namespace', values: [ENTITY_DEFAULT_NAMESPACE] },
-          { key: 'metadata.name', values: ['c1'] },
-        ]),
-      );
-      expect(entitiesCatalog.addEntities).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.addEntities).toHaveBeenNthCalledWith(
-        1,
-        [expect.objectContaining({ metadata: { name: 'c1' } })],
+      expect(entitiesCatalog.batchAddOrUpdateEntities).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.batchAddOrUpdateEntities).toHaveBeenCalledWith(
+        [
+          expect.objectContaining({
+            entity: expect.objectContaining({ metadata: { name: 'c1' } }),
+            relations: [],
+          }),
+        ],
         '123',
       );
     });
@@ -244,11 +239,11 @@ describe('HigherOrderOperations', () => {
         { currentStatus: locationStatus, data: location },
       ]);
       locationReader.read.mockResolvedValue({
-        entities: [{ entity: desc, location }],
+        entities: [{ entity: desc, location, relations: [] }],
         errors: [],
       });
       entitiesCatalog.entities.mockResolvedValue([]);
-      entitiesCatalog.addEntities.mockResolvedValue(undefined);
+      entitiesCatalog.batchAddOrUpdateEntities.mockResolvedValue([]);
 
       await expect(
         higherOrderOperation.refreshAllLocations(),

@@ -111,6 +111,9 @@ export async function createConfig(
         app: {
           title: options.config.getString('app.title'),
           baseUrl: validBaseUrl.href,
+          googleAnalyticsTrackingId: options.config.getOptionalString(
+            'app.googleAnalyticsTrackingId',
+          ),
         },
       },
     }),

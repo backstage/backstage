@@ -15,17 +15,18 @@
  */
 
 import { LocationSpec } from '@backstage/catalog-model';
-import fetch, { RequestInit, HeadersInit } from 'node-fetch';
-import * as result from './results';
-import { LocationProcessor, LocationProcessorEmit } from './types';
+
 import { Config } from '@backstage/config';
+import fetch from 'cross-fetch';
+import * as result from './results';
+import { CatalogProcessor, CatalogProcessorEmit } from './types';
 
 // ***********************************************************************
 // * NOTE: This has been replaced by packages/backend-common/src/reading *
 // * Don't implement new functionality here as this file will be removed *
 // ***********************************************************************
 
-export class AzureApiReaderProcessor implements LocationProcessor {
+export class AzureApiReaderProcessor implements CatalogProcessor {
   private privateToken: string;
 
   constructor(config: Config) {
@@ -44,17 +45,15 @@ export class AzureApiReaderProcessor implements LocationProcessor {
       ).toString('base64')}`;
     }
 
-    const requestOptions: RequestInit = {
+    return {
       headers,
     };
-
-    return requestOptions;
   }
 
   async readLocation(
     location: LocationSpec,
     optional: boolean,
-    emit: LocationProcessorEmit,
+    emit: CatalogProcessorEmit,
   ): Promise<boolean> {
     if (location.type !== 'azure/api') {
       return false;
@@ -67,7 +66,7 @@ export class AzureApiReaderProcessor implements LocationProcessor {
 
       // for private repos when PAT is not valid, Azure API returns a http status code 203 with sign in page html
       if (response.ok && response.status !== 203) {
-        const data = await response.buffer();
+        const data = Buffer.from(await response.text());
         emit(result.data(location, data));
       } else {
         const message = `${location.target} could not be read as ${url}, ${response.status} ${response.statusText}`;

@@ -19,7 +19,7 @@ import express from 'express';
 import request from 'supertest';
 import { makeRouter } from './router';
 import {
-  KubernetesClusterLocator,
+  KubernetesServiceLocator,
   KubernetesFetcher,
   ObjectsByServiceIdResponse,
 } from '..';
@@ -27,7 +27,7 @@ import {
 describe('router', () => {
   let app: express.Express;
   let kubernetesFetcher: jest.Mocked<KubernetesFetcher>;
-  let kubernetesClusterLocator: jest.Mocked<KubernetesClusterLocator>;
+  let kubernetesServiceLocator: jest.Mocked<KubernetesServiceLocator>;
   let handleGetByServiceId: jest.Mock<Promise<ObjectsByServiceIdResponse>>;
 
   beforeAll(async () => {
@@ -35,8 +35,8 @@ describe('router', () => {
       fetchObjectsByServiceId: jest.fn(),
     };
 
-    kubernetesClusterLocator = {
-      getClusterByServiceId: jest.fn(),
+    kubernetesServiceLocator = {
+      getClustersByServiceId: jest.fn(),
     };
 
     handleGetByServiceId = jest.fn();
@@ -44,7 +44,7 @@ describe('router', () => {
     const router = makeRouter(
       getVoidLogger(),
       kubernetesFetcher,
-      kubernetesClusterLocator,
+      kubernetesServiceLocator,
       handleGetByServiceId as any,
     );
     app = express().use(router);

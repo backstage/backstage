@@ -16,7 +16,7 @@
 
 import os from 'os';
 import fs from 'fs-extra';
-import fetch from 'node-fetch';
+import fetch from 'cross-fetch';
 import handlebars from 'handlebars';
 import killTree from 'tree-kill';
 import { resolve as resolvePath, join as joinPath } from 'path';
@@ -56,7 +56,7 @@ export async function run() {
   const pluginName = await createPlugin('test-plugin', appDir);
 
   print('Creating a Backstage Backend Plugin');
-  await createPlugin('test-backend-plugin', appDir, ['--backend']);
+  await createPlugin('test-plugin', appDir, ['--backend']);
 
   print('Starting the app');
   await testAppServe(pluginName, appDir);
@@ -265,13 +265,18 @@ async function createPlugin(
     print('Waiting for plugin create script to be done');
     await waitForExit(child);
 
-    const pluginDir = resolvePath(appDir, 'plugins', pluginName);
+    const canonicalName = options.includes('--backend')
+      ? `${pluginName}-backend`
+      : pluginName;
+
+    const pluginDir = resolvePath(appDir, 'plugins', canonicalName);
+
     for (const cmd of [['tsc'], ['lint'], ['test', '--no-watch']]) {
       print(`Running 'yarn ${cmd.join(' ')}' in newly created plugin`);
       await runPlain(['yarn', ...cmd], { cwd: pluginDir });
     }
 
-    return pluginName;
+    return canonicalName;
   } finally {
     child.kill();
   }
@@ -296,7 +301,7 @@ async function testAppServe(pluginName: string, appDir: string) {
       try {
         const browser = new Browser();
 
-        await waitForPageWithText(browser, '/', 'Backstage Service Catalog');
+        await waitForPageWithText(browser, '/', 'My Company Service Catalog');
         await waitForPageWithText(
           browser,
           `/${pluginName}`,

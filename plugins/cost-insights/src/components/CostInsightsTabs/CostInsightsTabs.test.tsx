@@ -17,14 +17,11 @@
 import React from 'react';
 import CostInsightsTabs from './CostInsightsTabs';
 import UserEvent from '@testing-library/user-event';
-import { Group, defaultCurrencies } from '../../types';
-import { MockFilterProvider, MockConfigProvider } from '../../utils/tests';
-import { LoadingContext } from '../../hooks/useLoading';
+import { Group } from '../../types';
+import { MockFilterProvider, MockLoadingProvider } from '../../utils/tests';
 import { renderInTestApp } from '@backstage/test-utils';
-import { mockDefaultState } from '../../utils/mockData';
 
 const mockSetPageFilters = jest.fn();
-const mockLoadingDispatch = jest.fn();
 
 const mockGroups: Group[] = [
   {
@@ -41,28 +38,9 @@ const mockGroups: Group[] = [
 describe('<CostInsightsTabs />', () => {
   const renderWrapped = (children: React.ReactNode) =>
     renderInTestApp(
-      <MockConfigProvider
-        products={[]}
-        metrics={[]}
-        icons={[]}
-        engineerCost={200_000}
-        currencies={defaultCurrencies}
-      >
-        <MockFilterProvider
-          setPageFilters={mockSetPageFilters}
-          setProductFilters={jest.fn()}
-        >
-          <LoadingContext.Provider
-            value={{
-              state: mockDefaultState,
-              dispatch: mockLoadingDispatch,
-              actions: [],
-            }}
-          >
-            {children}
-          </LoadingContext.Provider>
-        </MockFilterProvider>
-      </MockConfigProvider>,
+      <MockFilterProvider setPageFilters={mockSetPageFilters}>
+        <MockLoadingProvider>{children}</MockLoadingProvider>
+      </MockFilterProvider>,
     );
 
   it('Does NOT display the tabs bar if owner belongs to less than two GROUPS', async () => {

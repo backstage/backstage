@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, CSSProperties, FC, useContext } from 'react';
+import React, { ReactNode, CSSProperties, FC } from 'react';
 import { Helmet } from 'react-helmet';
 import {
   Link,
@@ -25,73 +25,70 @@ import {
 } from '@material-ui/core';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { BackstageTheme } from '@backstage/theme';
-import { PageThemeContext } from '../Page/Page';
 
-const useStyles = makeStyles<BackstageTheme, { backgroundImage: string }>(
-  theme => ({
-    header: {
-      gridArea: 'pageHeader',
-      padding: theme.spacing(3),
-      minHeight: 118,
-      width: '100%',
-      boxShadow: '0 0 8px 3px rgba(20, 20, 20, 0.3)',
-      position: 'relative',
-      zIndex: 100,
-      display: 'flex',
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      justifyContent: 'flex-end',
-      alignItems: 'center',
-      backgroundImage: props => props.backgroundImage,
-      backgroundPosition: 'center',
-      backgroundSize: 'cover',
-    },
-    leftItemsBox: {
-      flex: '1 1 auto',
-    },
-    rightItemsBox: {
-      flex: '0 1 auto',
-      display: 'flex',
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      alignItems: 'center',
-      marginRight: theme.spacing(1),
-    },
-    title: {
-      color: theme.palette.bursts.fontColor,
-      lineHeight: '1.0em',
-      wordBreak: 'break-all',
-      fontSize: 'calc(24px + 6 * ((100vw - 320px) / 680))',
-      marginBottom: theme.spacing(1),
-    },
-    subtitle: {
-      color: 'rgba(255, 255, 255, 0.8)',
-      lineHeight: '1.0em',
-    },
-    type: {
-      textTransform: 'uppercase',
-      fontSize: 11,
-      opacity: 0.8,
-      marginBottom: theme.spacing(1),
-      color: theme.palette.bursts.fontColor,
-    },
-    breadcrumb: {
-      fontSize: 'calc(15px + 1 * ((100vw - 320px) / 680))',
-      color: theme.palette.bursts.fontColor,
-    },
-    breadcrumbType: {
-      fontSize: 'inherit',
-      opacity: 0.7,
-      marginRight: -theme.spacing(0.3),
-      marginBottom: theme.spacing(0.3),
-    },
-    breadcrumbTitle: {
-      fontSize: 'inherit',
-      marginLeft: -theme.spacing(0.3),
-      marginBottom: theme.spacing(0.3),
-    },
-  }),
-);
+const useStyles = makeStyles<BackstageTheme>(theme => ({
+  header: {
+    gridArea: 'pageHeader',
+    padding: theme.spacing(3),
+    minHeight: 118,
+    width: '100%',
+    boxShadow: '0 0 8px 3px rgba(20, 20, 20, 0.3)',
+    position: 'relative',
+    zIndex: 100,
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    backgroundImage: theme.page.backgroundImage,
+    backgroundPosition: 'center',
+    backgroundSize: 'cover',
+  },
+  leftItemsBox: {
+    flex: '1 1 auto',
+  },
+  rightItemsBox: {
+    flex: '0 1 auto',
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    marginRight: theme.spacing(1),
+  },
+  title: {
+    color: theme.palette.bursts.fontColor,
+    lineHeight: '1.0em',
+    wordBreak: 'break-all',
+    fontSize: 'calc(24px + 6 * ((100vw - 320px) / 680))',
+    marginBottom: theme.spacing(1),
+  },
+  subtitle: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    lineHeight: '1.0em',
+  },
+  type: {
+    textTransform: 'uppercase',
+    fontSize: 11,
+    opacity: 0.8,
+    marginBottom: theme.spacing(1),
+    color: theme.palette.bursts.fontColor,
+  },
+  breadcrumb: {
+    fontSize: 'calc(15px + 1 * ((100vw - 320px) / 680))',
+    color: theme.palette.bursts.fontColor,
+  },
+  breadcrumbType: {
+    fontSize: 'inherit',
+    opacity: 0.7,
+    marginRight: -theme.spacing(0.3),
+    marginBottom: theme.spacing(0.3),
+  },
+  breadcrumbTitle: {
+    fontSize: 'inherit',
+    marginLeft: -theme.spacing(0.3),
+    marginBottom: theme.spacing(0.3),
+  },
+}));
 
 type HeaderStyles = ReturnType<typeof useStyles>;
 
@@ -200,8 +197,7 @@ export const Header: FC<Props> = ({
   type,
   typeLink,
 }) => {
-  const theme = useContext(PageThemeContext);
-  const classes = useStyles({ backgroundImage: theme.backgroundImage });
+  const classes = useStyles();
   const documentTitle = pageTitleOverride || title;
   const pageTitle = title || pageTitleOverride;
   const titleTemplate = `${documentTitle} | %s | Backstage`;

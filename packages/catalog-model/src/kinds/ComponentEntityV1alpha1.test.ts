@@ -101,4 +101,24 @@ describe('ComponentV1alpha1Policy', () => {
     (entity as any).spec.owner = '';
     await expect(policy.enforce(entity)).rejects.toThrow(/owner/);
   });
+
+  it('accepts missing implementsApis', async () => {
+    delete (entity as any).spec.implementsApis;
+    await expect(policy.enforce(entity)).resolves.toBe(entity);
+  });
+
+  it('rejects empty implementsApis', async () => {
+    (entity as any).spec.implementsApis = [''];
+    await expect(policy.enforce(entity)).rejects.toThrow(/implementsApis/);
+  });
+
+  it('rejects undefined implementsApis', async () => {
+    (entity as any).spec.implementsApis = [undefined];
+    await expect(policy.enforce(entity)).rejects.toThrow(/implementsApis/);
+  });
+
+  it('accepts no implementsApis', async () => {
+    (entity as any).spec.implementsApis = [];
+    await expect(policy.enforce(entity)).resolves.toBe(entity);
+  });
 });

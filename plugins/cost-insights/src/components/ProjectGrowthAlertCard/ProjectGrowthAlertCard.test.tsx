@@ -18,7 +18,11 @@ import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import ProjectGrowthAlertCard from './ProjectGrowthAlertCard';
 import { createMockProjectGrowthData } from '../../utils/mockData';
-import { MockCurrencyProvider, MockConfigProvider } from '../../utils/tests';
+import {
+  MockCurrencyProvider,
+  MockConfigProvider,
+  MockBillingDateProvider,
+} from '../../utils/tests';
 import { AlertCost, defaultCurrencies, findAlways } from '../../types';
 
 const engineers = findAlways(defaultCurrencies, c => c.kind === null);
@@ -42,41 +46,36 @@ describe('<ProjectGrowthAlertCard />', () => {
     );
     const title = new RegExp(`Project growth for ${MockProject}`);
     const rendered = await renderInTestApp(
-      <MockConfigProvider
-        metrics={[]}
-        products={[]}
-        icons={[]}
-        engineerCost={200_000}
-        currencies={[]}
-      >
-        <MockCurrencyProvider currency={engineers} setCurrency={jest.fn()}>
-          <ProjectGrowthAlertCard alert={MockProjectGrowthAlert} />,
-        </MockCurrencyProvider>
+      <MockConfigProvider engineerCost={200_000}>
+        <MockBillingDateProvider lastCompleteBillingDate="2020-10-01">
+          <MockCurrencyProvider currency={engineers}>
+            <ProjectGrowthAlertCard alert={MockProjectGrowthAlert} />,
+          </MockCurrencyProvider>
+        </MockBillingDateProvider>
       </MockConfigProvider>,
     );
     expect(rendered.getByText(title)).toBeInTheDocument();
     expect(rendered.getByText(subheader)).toBeInTheDocument();
+    // ISO 8601 quarter format (YYYY-QX) should be transformed to QX YYYY
+    expect(rendered.getByText('Q4 2019')).toBeInTheDocument();
+    expect(rendered.getByText('Q1 2020')).toBeInTheDocument();
   });
 
   it('renders the correct title and subheader for a single service', async () => {
     const subheader = new RegExp('1 product');
     const title = new RegExp(`Project growth for ${MockProject}`);
     const rendered = await renderInTestApp(
-      <MockConfigProvider
-        metrics={[]}
-        products={[]}
-        icons={[]}
-        engineerCost={200_000}
-        currencies={[]}
-      >
-        <MockCurrencyProvider currency={engineers} setCurrency={jest.fn()}>
-          <ProjectGrowthAlertCard
-            alert={{
-              ...MockProjectGrowthAlert,
-              products: [{ id: 'test-alert-id', aggregation: [0, 100] }],
-            }}
-          />
-        </MockCurrencyProvider>
+      <MockConfigProvider engineerCost={200_000}>
+        <MockBillingDateProvider lastCompleteBillingDate="2020-10-01">
+          <MockCurrencyProvider currency={engineers} setCurrency={jest.fn()}>
+            <ProjectGrowthAlertCard
+              alert={{
+                ...MockProjectGrowthAlert,
+                products: [{ id: 'test-alert-id', aggregation: [0, 100] }],
+              }}
+            />
+          </MockCurrencyProvider>
+        </MockBillingDateProvider>
       </MockConfigProvider>,
     );
     expect(rendered.getByText(title)).toBeInTheDocument();

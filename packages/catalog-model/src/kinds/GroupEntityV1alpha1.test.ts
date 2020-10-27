@@ -90,9 +90,14 @@ describe('GroupV1alpha1Policy', () => {
     await expect(policy.enforce(entity)).rejects.toThrow(/ancestor/);
   });
 
-  it('accepts empty ancestors', async () => {
+  it('rejects empty ancestors', async () => {
     (entity as any).spec.ancestors = [''];
-    await expect(policy.enforce(entity)).resolves.toBe(entity);
+    await expect(policy.enforce(entity)).rejects.toThrow(/ancestor/);
+  });
+
+  it('rejects undefined ancestors', async () => {
+    (entity as any).spec.ancestors = [undefined];
+    await expect(policy.enforce(entity)).rejects.toThrow(/ancestor/);
   });
 
   it('accepts no ancestors', async () => {
@@ -105,9 +110,14 @@ describe('GroupV1alpha1Policy', () => {
     await expect(policy.enforce(entity)).rejects.toThrow(/children/);
   });
 
-  it('accepts empty children', async () => {
+  it('rejects empty children', async () => {
     (entity as any).spec.children = [''];
-    await expect(policy.enforce(entity)).resolves.toBe(entity);
+    await expect(policy.enforce(entity)).rejects.toThrow(/children/);
+  });
+
+  it('rejects undefined children', async () => {
+    (entity as any).spec.children = [undefined];
+    await expect(policy.enforce(entity)).rejects.toThrow(/children/);
   });
 
   it('accepts no children', async () => {
@@ -120,9 +130,14 @@ describe('GroupV1alpha1Policy', () => {
     await expect(policy.enforce(entity)).rejects.toThrow(/descendants/);
   });
 
-  it('accepts empty descendants', async () => {
+  it('rejects empty descendants', async () => {
     (entity as any).spec.descendants = [''];
-    await expect(policy.enforce(entity)).resolves.toBe(entity);
+    await expect(policy.enforce(entity)).rejects.toThrow(/descendants/);
+  });
+
+  it('rejects undefined descendants', async () => {
+    (entity as any).spec.descendants = [undefined];
+    await expect(policy.enforce(entity)).rejects.toThrow(/descendants/);
   });
 
   it('accepts no descendants', async () => {

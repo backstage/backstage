@@ -78,7 +78,41 @@ const Background = props => {
         </Block.Container>
       </Block>
 
-      <Block className="stripe-bottom bg-black-grey">
+      <Block className="stripe bg-black-grey">
+        <Block.Container style={{ justifyContent: 'flex-start' }}>
+          <Block.TextBox>
+            <Block.Title>Control cloud costs</Block.Title>
+            <Block.Paragraph>
+              How do you control cloud costs while maintaining the speed and
+              independence of your development teams? With the{' '}
+              <a href="https://backstage.io/plugins">Cost Insights plugin</a>{' '}
+              for Backstage, managing cloud costs becomes just another part of
+              an engineer’s daily development process. They get a clear view of
+              their spending — and can decide for themselves how they want to
+              optimize it. Learn more about the{' '}
+              <a href="https://backstage.io/blog/2020/10/22/cost-insights-plugin">
+                Cost Insights plugin
+              </a>
+              .
+            </Block.Paragraph>
+            <Block.LinkButton href="https://youtu.be/YLAd5hdXR_Q">
+              Watch now
+            </Block.LinkButton>
+          </Block.TextBox>
+          <Block.MediaFrame>
+            <iframe
+              width="560"
+              height="315"
+              src="https://www.youtube.com/embed/YLAd5hdXR_Q"
+              frameborder="0"
+              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+            ></iframe>
+          </Block.MediaFrame>
+        </Block.Container>
+      </Block>
+
+      <Block className="stripe bg-black">
         <Block.Container style={{ justifyContent: 'flex-start' }}>
           <Block.TextBox>
             <Block.Title id="techdocs-demo">
@@ -96,7 +130,7 @@ const Background = props => {
               </a>
               .
             </Block.Paragraph>
-            <Block.LinkButton href={'https://youtu.be/mOLCgdPw1iA'}>
+            <Block.LinkButton href="https://youtu.be/mOLCgdPw1iA">
               Watch now
             </Block.LinkButton>
           </Block.TextBox>

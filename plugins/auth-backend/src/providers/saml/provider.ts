@@ -41,8 +41,10 @@ type SamlInfo = {
 export class SamlAuthProvider implements AuthProviderRouteHandlers {
   private readonly strategy: SamlStrategy;
   private readonly tokenIssuer: TokenIssuer;
+  private readonly appUrl: string;
 
   constructor(options: SAMLProviderOptions) {
+    this.appUrl = options.appUrl;
     this.tokenIssuer = options.tokenIssuer;
     this.strategy = new SamlStrategy({ ...options }, ((
       profile: SamlProfile,
@@ -82,7 +84,7 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
         claims: { sub: id },
       });
 
-      return postMessageResponse(res, 'http://localhost:3000', {
+      return postMessageResponse(res, this.appUrl, {
         type: 'authorization_response',
         response: {
           providerInfo: {},
@@ -91,7 +93,7 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
         },
       });
     } catch (error) {
-      return postMessageResponse(res, 'http://localhost:3000', {
+      return postMessageResponse(res, this.appUrl, {
         type: 'authorization_response',
         error: {
           name: error.name,
@@ -115,6 +117,7 @@ type SAMLProviderOptions = {
   issuer: string;
   path: string;
   tokenIssuer: TokenIssuer;
+  appUrl: string;
 };
 
 export const createSamlProvider: AuthProviderFactory = ({
@@ -131,6 +134,7 @@ export const createSamlProvider: AuthProviderFactory = ({
     issuer,
     path: `${url.pathname}/${providerId}/handler/frame`,
     tokenIssuer,
+    appUrl: globalConfig.appUrl,
   };
 
   return new SamlAuthProvider(opts);
