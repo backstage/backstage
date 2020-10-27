@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { TooltipPayload } from 'recharts';
-import BarChart from '../BarChart';
+import { BarChart } from '../BarChart';
 import { TooltipItemProps } from '../Tooltip';
 import {
   BarChartData,
@@ -69,5 +69,3 @@ export const UnlabeledDataflowBarChart = ({
     />
   );
 };
-
-export default UnlabeledDataflowBarChart;

@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import CostInsightsPage from './CostInsightsPage';
+import { CostInsightsPage } from './CostInsightsPage';
 import { FilterProvider } from '../../hooks/useFilters';
 import { LoadingProvider } from '../../hooks/useLoading';
 import { GroupsProvider } from '../../hooks/useGroups';
@@ -25,7 +25,7 @@ import { ConfigProvider } from '../../hooks/useConfig';
 import { BillingDateProvider } from '../../hooks/useLastCompleteBillingDate';
 import { CostInsightsThemeProvider } from './CostInsightsThemeProvider';
 
-const CostInsightsPageRoot = () => (
+export const CostInsightsPageRoot = () => (
   <CostInsightsThemeProvider>
     <ConfigProvider>
       <LoadingProvider>
@@ -44,5 +44,3 @@ const CostInsightsPageRoot = () => (
     </ConfigProvider>
   </CostInsightsThemeProvider>
 );
-
-export default CostInsightsPageRoot;

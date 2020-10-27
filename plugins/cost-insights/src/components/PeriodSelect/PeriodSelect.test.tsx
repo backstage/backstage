@@ -18,7 +18,7 @@ import React from 'react';
 import { getByRole, waitFor } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import UserEvent from '@testing-library/user-event';
-import PeriodSelect, { getDefaultOptions } from './PeriodSelect';
+import { PeriodSelect, getDefaultOptions } from './PeriodSelect';
 import { Duration, getDefaultPageFilters, Group } from '../../types';
 import { MockBillingDateProvider } from '../../utils/tests';
 

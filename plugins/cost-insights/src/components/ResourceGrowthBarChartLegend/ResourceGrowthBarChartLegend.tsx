@@ -16,8 +16,8 @@
 
 import React from 'react';
 import { Box, useTheme } from '@material-ui/core';
-import LegendItem from '../LegendItem';
-import CostGrowth from '../CostGrowth';
+import { LegendItem } from '../LegendItem';
+import { CostGrowth } from '../CostGrowth';
 import { currencyFormatter } from '../../utils/formatters';
 import { ChangeStatistic, CostInsightsTheme, Duration } from '../../types';
 
@@ -30,7 +30,7 @@ export type ResourceGrowthBarChartLegendProps = {
   costEnd: number;
 };
 
-const ResourceGrowthBarChartLegend = ({
+export const ResourceGrowthBarChartLegend = ({
   change,
   duration,
   previousName,
@@ -58,5 +58,3 @@ const ResourceGrowthBarChartLegend = ({
     </Box>
   );
 };
-
-export default ResourceGrowthBarChartLegend;

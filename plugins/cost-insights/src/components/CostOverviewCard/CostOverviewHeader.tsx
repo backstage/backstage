@@ -21,7 +21,7 @@ type CostOverviewHeaderProps = {
   subtitle?: string;
 };
 
-const CostOverviewHeader = ({
+export const CostOverviewHeader = ({
   title,
   subtitle,
   children,
@@ -48,5 +48,3 @@ const CostOverviewHeader = ({
     </Box>
   </Box>
 );
-
-export default CostOverviewHeader;

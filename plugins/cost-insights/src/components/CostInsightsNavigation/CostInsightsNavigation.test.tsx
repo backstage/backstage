@@ -17,7 +17,7 @@
 import React from 'react';
 import { default as HappyFace } from '@material-ui/icons/SentimentSatisfiedAlt';
 import { renderInTestApp } from '@backstage/test-utils';
-import CostInsightsNavigation from './CostInsightsNavigation';
+import { CostInsightsNavigation } from './CostInsightsNavigation';
 import { Product, Icon } from '../../types';
 import { MockConfigProvider, MockScrollProvider } from '../../utils/tests';
 import { getDefaultNavigationItems } from '../../utils/navigation';

@@ -16,7 +16,7 @@
 
 import React, { PropsWithChildren } from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
-import ResourceGrowthBarChartLegend from './ResourceGrowthBarChartLegend';
+import { ResourceGrowthBarChartLegend } from './ResourceGrowthBarChartLegend';
 import { defaultCurrencies, Duration, findAlways } from '../../types';
 import { MockConfigProvider, MockCurrencyProvider } from '../../utils/tests';
 

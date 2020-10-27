@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
-import ProjectGrowthAlertCard from './ProjectGrowthAlertCard';
+import { ProjectGrowthAlertCard } from './ProjectGrowthAlertCard';
 import { createMockProjectGrowthData } from '../../utils/mockData';
 import {
   MockCurrencyProvider,

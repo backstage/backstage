@@ -17,8 +17,8 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
 import { InfoCard } from '@backstage/core';
-import UnlabeledDataflowBarChart from '../UnlabeledDataflowBarChart';
-import UnlabeledDataflowBarChartLegend from '../UnlabeledDataflowBarChartLegend';
+import { UnlabeledDataflowBarChart } from './UnlabeledDataflowBarChart';
+import { UnlabeledDataflowBarChartLegend } from './UnlabeledDataflowBarChartLegend';
 import { UnlabeledDataflowData } from '../../types';
 import { pluralOf } from '../../utils/grammar';
 
@@ -26,7 +26,9 @@ type UnlabeledDataflowAlertProps = {
   alert: UnlabeledDataflowData;
 };
 
-const UnlabeledDataflowAlertCard = ({ alert }: UnlabeledDataflowAlertProps) => {
+export const UnlabeledDataflowAlertCard = ({
+  alert,
+}: UnlabeledDataflowAlertProps) => {
   const projects = pluralOf(alert.projects.length, 'project');
   const subheader = `
     Showing costs from ${alert.projects.length} ${projects} with unlabeled Dataflow jobs in the last 30 days.
@@ -47,5 +49,3 @@ const UnlabeledDataflowAlertCard = ({ alert }: UnlabeledDataflowAlertProps) => {
     </InfoCard>
   );
 };
-
-export default UnlabeledDataflowAlertCard;

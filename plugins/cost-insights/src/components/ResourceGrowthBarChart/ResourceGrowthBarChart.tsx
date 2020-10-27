@@ -26,7 +26,7 @@ import {
   Maybe,
   ResourceData,
 } from '../../types';
-import BarChart from '../BarChart';
+import { BarChart } from '../BarChart';
 import { TooltipItemProps } from '../Tooltip';
 import { useTheme } from '@material-ui/core';
 
@@ -36,7 +36,7 @@ export type ResourceGrowthBarChartProps = {
   currentName: string;
 };
 
-const ResourceGrowthBarChart = ({
+export const ResourceGrowthBarChart = ({
   resources,
   previousName,
   currentName,
@@ -85,5 +85,3 @@ const ResourceGrowthBarChart = ({
     />
   );
 };
-
-export default ResourceGrowthBarChart;

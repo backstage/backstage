@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { Box, useTheme } from '@material-ui/core';
-import LegendItem from '../LegendItem';
+import { LegendItem } from '../LegendItem';
 import { currencyFormatter } from '../../utils/formatters';
 import { CostInsightsTheme } from '../../types';
 
@@ -25,7 +25,7 @@ type UnlabeledDataflowBarChartLegendProps = {
   unlabeledCost: number;
 };
 
-const UnlabeledDataflowBarChartLegend = ({
+export const UnlabeledDataflowBarChartLegend = ({
   unlabeledCost,
   labeledCost,
 }: UnlabeledDataflowBarChartLegendProps) => {
@@ -55,5 +55,3 @@ const UnlabeledDataflowBarChartLegend = ({
     </Box>
   );
 };
-
-export default UnlabeledDataflowBarChartLegend;

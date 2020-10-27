@@ -32,7 +32,7 @@ type AlertInstructionsLayoutProps = {
   title: string;
 };
 
-const AlertInstructionsLayout = ({
+export const AlertInstructionsLayout = ({
   title,
   children,
 }: PropsWithChildren<AlertInstructionsLayoutProps>) => {
@@ -65,5 +65,3 @@ const AlertInstructionsLayout = ({
     </CostInsightsThemeProvider>
   );
 };
-
-export default AlertInstructionsLayout;

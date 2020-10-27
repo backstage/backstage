@@ -25,7 +25,7 @@ type BarChartLabel = {
   width: number;
 };
 
-const BarChartLabel = ({
+export const BarChartLabel = ({
   x,
   y,
   height,
@@ -52,5 +52,3 @@ const BarChartLabel = ({
     </foreignObject>
   );
 };
-
-export default BarChartLabel;
