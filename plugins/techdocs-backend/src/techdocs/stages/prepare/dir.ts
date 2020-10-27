@@ -38,7 +38,7 @@ export class DirectoryPreparer implements PreparerBase {
     );
 
     this.logger.debug(
-      `[TechDocs] Building docs for entity with type 'dir' and managed-by-location '${type}'`,
+      `Building docs for entity with type 'dir' and managed-by-location '${type}'`,
     );
     switch (type) {
       case 'github':
