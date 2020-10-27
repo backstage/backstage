@@ -36,5 +36,11 @@ const useStyles = makeStyles(theme => ({
 
 export const Illo = () => {
   const classes = useStyles();
-  return <img src={IlloSvgUrl} className={classes.illo} alt="" />;
+  return (
+    <img
+      src={IlloSvgUrl}
+      className={classes.illo}
+      alt="Illustration on entity not found page"
+    />
+  );
 };
