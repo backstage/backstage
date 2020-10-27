@@ -39,7 +39,7 @@ import { version as devUtils } from '@backstage/dev-utils/package.json';
 import { version as testUtils } from '@backstage/test-utils/package.json';
 import { version as theme } from '@backstage/theme/package.json';
 
-export const versions: { [name: string]: string } = {
+export const packageVersions = {
   '@backstage/backend-common': backendCommon,
   '@backstage/cli': cli,
   '@backstage/config': config,

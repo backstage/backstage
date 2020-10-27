@@ -28,7 +28,7 @@ import {
   getCodeownersFilePath,
 } from '../../lib/codeowners';
 import { paths } from '../../lib/paths';
-import { versions } from '../../lib/version';
+import { packageVersions } from '../../lib/version';
 import { Task, templatingTask } from '../../lib/tasks';
 
 const exec = promisify(execCb);
@@ -269,7 +269,7 @@ export default async (cmd: Command) => {
         privatePackage,
         npmRegistry,
       },
-      versions,
+      packageVersions,
     );
 
     Task.section('Moving to final location');

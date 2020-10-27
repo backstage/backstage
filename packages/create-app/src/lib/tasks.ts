@@ -20,6 +20,7 @@ import handlebars from 'handlebars';
 import ora from 'ora';
 import { basename, dirname } from 'path';
 import recursive from 'recursive-readdir';
+import { packageVersions } from './versions';
 
 const TASK_NAME_MAX_LENGTH = 14;
 
@@ -68,7 +69,6 @@ export async function templatingTask(
   templateDir: string,
   destinationDir: string,
   context: any,
-  versions: { [name: string]: string },
 ) {
   const files = await recursive(templateDir).catch(error => {
     throw new Error(`Failed to read template directory: ${error.message}`);
@@ -88,9 +88,9 @@ export async function templatingTask(
           { name: basename(destination), ...context },
           {
             helpers: {
-              version(name: string) {
-                if (versions[name]) {
-                  return versions[name];
+              version(name: keyof typeof packageVersions) {
+                if (name in packageVersions) {
+                  return packageVersions[name];
                 }
                 throw new Error(`No version available for package ${name}`);
               },

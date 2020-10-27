@@ -50,7 +50,7 @@ describe('templatingTask', () => {
       tmplDir,
       destDir,
       {
-        version: '0.0.0',
+        pluginVersion: '0.0.0',
       },
       { 'mock-pkg': '0.1.2' },
     );

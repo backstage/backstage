@@ -54,7 +54,7 @@ import { version as pluginUserSettings } from '@backstage/plugin-user-settings/p
 import { version as testUtils } from '@backstage/test-utils/package.json';
 import { version as theme } from '@backstage/theme/package.json';
 
-export const versions = {
+export const packageVersions = {
   '@backstage/backend-common': backendCommon,
   '@backstage/catalog-model': catalogModel,
   '@backstage/cli': cli,
