@@ -321,24 +321,30 @@ export class CatalogBuilder {
       ...this.placeholderResolvers,
     };
 
-    const processors = this.processorsReplace
-      ? this.processors
-      : [
-          new FileReaderProcessor(),
-          GithubOrgReaderProcessor.fromConfig(config, { logger }),
-          LdapOrgReaderProcessor.fromConfig(config, { logger }),
-          new UrlReaderProcessor({ reader, logger }),
-          new CodeOwnersProcessor({ reader }),
-          new LocationRefProcessor(),
-          new OwnerRelationProcessor(),
-          new AnnotateLocationEntityProcessor(),
-        ];
-
-    return [
+    // These are always there no matter what
+    const processors: CatalogProcessor[] = [
       StaticLocationProcessor.fromConfig(config),
       new PlaceholderProcessor({ resolvers: placeholderResolvers, reader }),
-      ...processors,
     ];
+
+    // These are only added unless the user replaced them all
+    if (!this.processorsReplace) {
+      processors.push(
+        new FileReaderProcessor(),
+        GithubOrgReaderProcessor.fromConfig(config, { logger }),
+        LdapOrgReaderProcessor.fromConfig(config, { logger }),
+        new UrlReaderProcessor({ reader, logger }),
+        new CodeOwnersProcessor({ reader }),
+        new LocationRefProcessor(),
+        new OwnerRelationProcessor(),
+        new AnnotateLocationEntityProcessor(),
+      );
+    }
+
+    // Add the ones (if any) that the user added
+    processors.push(...this.processors);
+
+    return processors;
   }
 
   // TODO(Rugvip): These old processors are removed, for a while we'll be throwing
