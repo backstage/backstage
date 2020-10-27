@@ -16,13 +16,11 @@
 import React, { useState } from 'react';
 
 import { Header, Content, Page } from '@backstage/core';
-import { useParams } from 'react-router-dom';
 import { Grid } from '@material-ui/core';
 import SearchBar from '../SearchBar';
 import SearchResult from '../SearchResult';
 
 const SearchPage = () => {
-  const { query } = useParams();
   const [currentTarget, setCurrentTarget] = useState('');
 
   const handleSearchInput = (event: any) => {
