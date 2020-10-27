@@ -25,16 +25,6 @@ import {
   GraphQLEndpoints,
 } from '@backstage/plugin-graphiql';
 
-import {
-  TravisCIApi,
-  travisCIApiRef,
-} from '@roadiehq/backstage-plugin-travis-ci';
-
-import {
-  GithubPullRequestsClient,
-  githubPullRequestsApiRef,
-} from '@roadiehq/backstage-plugin-github-pull-requests';
-
 import { costInsightsApiRef } from '@backstage/plugin-cost-insights';
 import { ExampleCostInsightsClient } from './plugins/cost-insights';
 
@@ -59,8 +49,4 @@ export const apis = [
   }),
 
   createApiFactory(costInsightsApiRef, new ExampleCostInsightsClient()),
-
-  // TODO: move to plugins
-  createApiFactory(travisCIApiRef, new TravisCIApi()),
-  createApiFactory(githubPullRequestsApiRef, new GithubPullRequestsClient()),
 ];
