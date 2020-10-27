@@ -42,9 +42,16 @@ import ProxyAgent from 'proxy-agent';
 import http from 'http';
 import https from 'https';
 
+/*
+  Something to note here, this might need different configuration depending on your own setup.
+  If you only have an http_proxy then you'll need to set that as both the http and https globalAgent instead.
+*/
 if (process.env.HTTP_PROXY) {
   http.globalAgent = new ProxyAgent(process.env.HTTP_PROXY);
-  https.globalAgent = new ProxyAgent(process.env.HTTP_PROXY);
+}
+
+if (process.env.HTTPS_PROXY) {
+  https.globalAgent = new ProxyAgent(process.env.HTTPS_PROXY);
 }
 ```
 
