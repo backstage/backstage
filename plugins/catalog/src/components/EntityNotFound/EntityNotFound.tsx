@@ -25,12 +25,21 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   container: {
     paddingTop: theme.spacing(24),
     paddingLeft: theme.spacing(8),
+    [theme.breakpoints.down('xs')]: {
+      padding: theme.spacing(2),
+    },
   },
   title: {
     paddingBottom: theme.spacing(2),
+    [theme.breakpoints.down('xs')]: {
+      fontSize: 32,
+    },
   },
   body: {
     paddingBottom: theme.spacing(6),
+    [theme.breakpoints.down('xs')]: {
+      paddingBottom: theme.spacing(5),
+    },
   },
 }));
 
@@ -38,7 +47,7 @@ export const EntityNotFound = () => {
   const classes = useStyles();
 
   return (
-    <Grid container className={classes.container}>
+    <Grid container spacing={0} className={classes.container}>
       <Illo />
       <Grid item xs={12} sm={6}>
         <Typography variant="h2" className={classes.title}>

@@ -13,21 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React from 'react';
-import { makeStyles } from '@material-ui/core';
-import IlloSvgUrl from './illo.svg';
-
-const useStyles = makeStyles({
-  illo: {
-    maxWidth: '60%',
-    top: 100,
-    right: 20,
-    position: 'absolute',
-  },
-});
-
-export const Illo = () => {
-  const classes = useStyles();
-  return <img src={IlloSvgUrl} className={classes.illo} alt="" />;
-};
+export { Illo } from './Illo';
