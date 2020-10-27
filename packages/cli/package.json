@@ -108,6 +108,13 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
+    "@backstage/backend-common": "^0.1.1-alpha.25",
+    "@backstage/cli": "^0.1.1-alpha.25",
+    "@backstage/config": "^0.1.1-alpha.25",
+    "@backstage/core": "^0.1.1-alpha.25",
+    "@backstage/dev-utils": "^0.1.1-alpha.25",
+    "@backstage/test-utils": "^0.1.1-alpha.25",
+    "@backstage/theme": "^0.1.1-alpha.25",
     "@types/diff": "^4.0.2",
     "@types/fs-extra": "^9.0.1",
     "@types/html-webpack-plugin": "^3.2.2",

@@ -17,6 +17,38 @@
 import fs from 'fs-extra';
 import { paths } from './paths';
 
+/* eslint-disable import/no-extraneous-dependencies,monorepo/no-internal-import */
+/*
+This is a list of all packages used by the templates. If dependencies are added or removed,
+this list should be updated as well.
+
+The list, and the accompanying devDependencies entries, are here to ensure correct versioning
+and bumping of this package. Without this list the version would not be bumped unless we
+manually trigger a release.
+
+This does not create an actual dependency on these packages and does not bring in any code.
+Rollup will extract the value of the version field in each package at build time without
+leaving any imports in place.
+*/
+
+import { version as backendCommon } from '@backstage/backend-common/package.json';
+import { version as cli } from '@backstage/cli/package.json';
+import { version as config } from '@backstage/config/package.json';
+import { version as core } from '@backstage/core/package.json';
+import { version as devUtils } from '@backstage/dev-utils/package.json';
+import { version as testUtils } from '@backstage/test-utils/package.json';
+import { version as theme } from '@backstage/theme/package.json';
+
+export const versions: { [name: string]: string } = {
+  '@backstage/backend-common': backendCommon,
+  '@backstage/cli': cli,
+  '@backstage/config': config,
+  '@backstage/core': core,
+  '@backstage/dev-utils': devUtils,
+  '@backstage/test-utils': testUtils,
+  '@backstage/theme': theme,
+};
+
 export function findVersion() {
   const pkgContent = fs.readFileSync(paths.resolveOwn('package.json'), 'utf8');
   return JSON.parse(pkgContent).version;

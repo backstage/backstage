@@ -28,8 +28,8 @@ import {
   getCodeownersFilePath,
 } from '../../lib/codeowners';
 import { paths } from '../../lib/paths';
+import { versions } from '../../lib/version';
 import { Task, templatingTask } from '../../lib/tasks';
-import { version as backstageVersion } from '../../lib/version';
 
 const exec = promisify(execCb);
 
@@ -243,7 +243,7 @@ export default async (cmd: Command) => {
     ? paths.resolveTargetRoot('plugins', pluginId)
     : paths.resolveTargetRoot(pluginId);
   const ownerIds = parseOwnerIds(answers.owner);
-  const { version } = isMonoRepo
+  const { version: pluginVersion } = isMonoRepo
     ? await fs.readJson(paths.resolveTargetRoot('lerna.json'))
     : { version: '0.1.0' };
 
@@ -259,14 +259,18 @@ export default async (cmd: Command) => {
 
     Task.section('Preparing files');
 
-    await templatingTask(templateDir, tempDir, {
-      ...answers,
-      version,
-      backstageVersion,
-      name,
-      privatePackage,
-      npmRegistry,
-    });
+    await templatingTask(
+      templateDir,
+      tempDir,
+      {
+        ...answers,
+        pluginVersion,
+        name,
+        privatePackage,
+        npmRegistry,
+      },
+      versions,
+    );
 
     Task.section('Moving to final location');
     await movePlugin(tempDir, pluginDir, pluginId);
@@ -276,7 +280,7 @@ export default async (cmd: Command) => {
 
     if ((await fs.pathExists(appPackage)) && !cmd.backend) {
       Task.section('Adding plugin as dependency in app');
-      await addPluginDependencyToApp(paths.targetRoot, name, version);
+      await addPluginDependencyToApp(paths.targetRoot, name, pluginVersion);
 
       Task.section('Import plugin in app');
       await addPluginToApp(paths.targetRoot, pluginId, name);

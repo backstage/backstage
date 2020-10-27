@@ -24,6 +24,7 @@ import handlebars from 'handlebars';
 import recursiveReadDir from 'recursive-readdir';
 import { paths } from '../paths';
 import { FileDiff } from './types';
+import { versions } from '../../lib/version';
 
 export type TemplatedFile = {
   path: string;
@@ -40,7 +41,16 @@ async function readTemplateFile(
     return contents;
   }
 
-  return handlebars.compile(contents)(templateVars);
+  return handlebars.compile(contents)(templateVars, {
+    helpers: {
+      version(name: string) {
+        if (versions[name]) {
+          return versions[name];
+        }
+        throw new Error(`No version available for package ${name}`);
+      },
+    },
+  });
 }
 
 async function readTemplate(

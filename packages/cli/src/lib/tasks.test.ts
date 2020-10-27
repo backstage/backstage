@@ -33,7 +33,8 @@ describe('templatingTask', () => {
 
     // Files content
     const testFileContent = 'testing';
-    const testVersionFileContent = 'version: {{version}}';
+    const testVersionFileContent =
+      "version: {{pluginVersion}} {{version 'mock-pkg'}}";
 
     mockFs({
       [tmplDir]: {
@@ -45,15 +46,20 @@ describe('templatingTask', () => {
       [destDir]: {},
     });
 
-    await templatingTask(tmplDir, destDir, {
-      version: '0.0.0',
-    });
+    await templatingTask(
+      tmplDir,
+      destDir,
+      {
+        version: '0.0.0',
+      },
+      { 'mock-pkg': '0.1.2' },
+    );
 
     await expect(
       fs.readFile(resolvePath(destDir, 'test.txt'), 'utf8'),
     ).resolves.toBe(testFileContent);
     await expect(
       fs.readFile(resolvePath(destDir, 'sub/version.txt'), 'utf8'),
-    ).resolves.toBe('version: 0.0.0');
+    ).resolves.toBe('version: 0.0.0 0.1.2');
   });
 });
