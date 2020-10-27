@@ -47,10 +47,9 @@ export class Publishers implements PublisherBuilder {
     if (!publisher) {
       if ((protocol as string) === 'url') {
         const type = this.typeDetector?.(location);
-        const publisher2 =
-          type && this.publisherMap.get(type as RemoteProtocol);
-        if (publisher2) {
-          return publisher2;
+        const detected = type && this.publisherMap.get(type as RemoteProtocol);
+        if (detected) {
+          return detected;
         }
         throw new Error(`No preparer integration found for url "${location}"`);
       }

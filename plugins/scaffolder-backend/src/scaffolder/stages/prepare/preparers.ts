@@ -46,9 +46,9 @@ export class Preparers implements PreparerBuilder {
     if (!preparer) {
       if ((protocol as string) === 'url') {
         const type = this.typeDetector?.(location);
-        const preparer2 = type && this.preparerMap.get(type as RemoteProtocol);
-        if (preparer2) {
-          return preparer2;
+        const detected = type && this.preparerMap.get(type as RemoteProtocol);
+        if (detected) {
+          return detected;
         }
         throw new Error(`No preparer integration found for url "${location}"`);
       }
