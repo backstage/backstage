@@ -33,6 +33,7 @@
     "@types/recharts": "^1.8.14",
     "canvas": "^2.6.1",
     "classnames": "^2.2.6",
+    "dayjs": "^1.9.4",
     "history": "^5.0.0",
     "moment": "^2.27.0",
     "qs": "^6.9.4",
@@ -41,6 +42,7 @@
     "react-router-dom": "6.0.0-beta.0",
     "react-use": "^15.3.3",
     "recharts": "^1.8.5",
+    "regression": "^2.0.1",
     "yup": "^0.29.3"
   },
   "devDependencies": {
@@ -53,6 +55,7 @@
     "@types/jest": "^26.0.7",
     "@types/node": "^12.0.0",
     "@types/recharts": "^1.8.14",
+    "@types/regression": "^2.0.0",
     "@types/yup": "^0.29.8",
     "cross-fetch": "^3.0.6",
     "msw": "^0.21.2"

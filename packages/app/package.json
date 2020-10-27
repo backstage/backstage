@@ -37,7 +37,6 @@
     "@roadiehq/backstage-plugin-github-insights": "^0.2.7",
     "@roadiehq/backstage-plugin-github-pull-requests": "^0.5.2",
     "@roadiehq/backstage-plugin-travis-ci": "^0.2.5",
-    "dayjs": "^1.9.1",
     "history": "^5.0.0",
     "prop-types": "^15.7.2",
     "react": "^16.12.0",
@@ -46,7 +45,6 @@
     "react-router": "6.0.0-beta.0",
     "react-router-dom": "6.0.0-beta.0",
     "react-use": "^15.3.3",
-    "regression": "^2.0.1",
     "zen-observable": "^0.8.15"
   },
   "devDependencies": {
@@ -58,7 +56,6 @@
     "@types/jquery": "^3.3.34",
     "@types/node": "^12.0.0",
     "@types/react-dom": "^16.9.8",
-    "@types/regression": "^2.0.0",
     "@types/zen-observable": "^0.8.0",
     "cross-env": "^7.0.0",
     "cypress": "^4.2.0",

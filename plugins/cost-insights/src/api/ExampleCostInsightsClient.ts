@@ -17,11 +17,11 @@
 
 import dayjs from 'dayjs';
 import regression, { DataPoint } from 'regression';
+import { CostInsightsApi } from './CostInsightsApi';
 import {
   Alert,
   ChangeStatistic,
   Cost,
-  CostInsightsApi,
   DateAggregation,
   DEFAULT_DATE_FORMAT,
   Duration,
@@ -37,7 +37,7 @@ import {
   Trendline,
   UnlabeledDataflowAlert,
   UnlabeledDataflowData,
-} from '@backstage/plugin-cost-insights';
+} from '../types';
 
 type IntervalFields = {
   duration: Duration;
