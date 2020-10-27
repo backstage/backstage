@@ -41,16 +41,12 @@ const fileHandlers = [
     handler: handlers.packageJson,
   },
   {
-    patterns: ['tsconfig.json'],
-    handler: handlers.exactMatch,
-  },
-  {
     // make sure files in 1st level of src/ and dev/ exist
     patterns: ['.eslintrc.js', /^(src|dev)\/[^/]+$/],
     handler: handlers.exists,
   },
   {
-    patterns: ['README.md', /^src\//],
+    patterns: ['README.md', 'tsconfig.json', /^src\//],
     handler: handlers.skip,
   },
 ];

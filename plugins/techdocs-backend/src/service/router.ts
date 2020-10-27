@@ -71,9 +71,7 @@ export async function createRouter({
       const mkDocsMetadata = await (await fetch(metadataURL)).json();
       res.send(mkDocsMetadata);
     } catch (err) {
-      logger.info(
-        `[TechDocs] Unable to get metadata for ${path} with error ${err}`,
-      );
+      logger.info(`Unable to get metadata for ${path} with error ${err}`);
       throw new Error(`Unable to get metadata for ${path} with error ${err}`);
     }
   });
@@ -93,7 +91,7 @@ export async function createRouter({
       res.send({ ...entity, locationMetadata });
     } catch (err) {
       logger.info(
-        `[TechDocs] Unable to get metadata for ${kind}/${namespace}/${name} with error ${err}`,
+        `Unable to get metadata for ${kind}/${namespace}/${name} with error ${err}`,
       );
       throw new Error(
         `Unable to get metadata for ${kind}/${namespace}/${name} with error ${err}`,

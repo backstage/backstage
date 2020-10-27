@@ -21,7 +21,7 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { msw } from '@backstage/test-utils';
 import {
-  CatalogProcessorDataResult,
+  CatalogProcessorEntityResult,
   CatalogProcessorErrorResult,
   CatalogProcessorResult,
 } from './types';
@@ -42,17 +42,17 @@ describe('UrlReaderProcessor', () => {
 
     server.use(
       rest.get(`${mockApiOrigin}/component.yaml`, (_, res, ctx) =>
-        res(ctx.body('Hello')),
+        res(ctx.json({ mock: 'entity' })),
       ),
     );
 
     const generated = (await new Promise<CatalogProcessorResult>(emit =>
       processor.readLocation(spec, false, emit),
-    )) as CatalogProcessorDataResult;
+    )) as CatalogProcessorEntityResult;
 
-    expect(generated.type).toBe('data');
+    expect(generated.type).toBe('entity');
     expect(generated.location).toBe(spec);
-    expect(generated.data.toString('utf8')).toBe('Hello');
+    expect(generated.entity).toEqual({ mock: 'entity' });
   });
 
   it('should fail load from url with error', async () => {

@@ -20,18 +20,12 @@ export { results };
 export * from './types';
 
 export { AnnotateLocationEntityProcessor } from './AnnotateLocationEntityProcessor';
-export { AzureApiReaderProcessor } from './AzureApiReaderProcessor';
-export { BitbucketApiReaderProcessor } from './BitbucketApiReaderProcessor';
 export { CodeOwnersProcessor } from './CodeOwnersProcessor';
 export { FileReaderProcessor } from './FileReaderProcessor';
 export { GithubOrgReaderProcessor } from './GithubOrgReaderProcessor';
-export { GithubReaderProcessor } from './GithubReaderProcessor';
-export { GitlabApiReaderProcessor } from './GitlabApiReaderProcessor';
-export { GitlabReaderProcessor } from './GitlabReaderProcessor';
 export { OwnerRelationProcessor } from './OwnerRelationProcessor';
 export { LocationRefProcessor } from './LocationEntityProcessor';
 export { PlaceholderProcessor } from './PlaceholderProcessor';
 export type { PlaceholderResolver } from './PlaceholderProcessor';
 export { StaticLocationProcessor } from './StaticLocationProcessor';
 export { UrlReaderProcessor } from './UrlReaderProcessor';
-export { YamlProcessor } from './YamlProcessor';

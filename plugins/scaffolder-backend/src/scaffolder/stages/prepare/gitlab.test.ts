@@ -18,6 +18,11 @@ const mocks = {
   CheckoutOptions: jest.fn(() => {}),
 };
 jest.doMock('nodegit', () => mocks);
+jest.doMock('fs-extra', () => ({
+  promises: {
+    mkdtemp: jest.fn(dir => `${dir}-static`),
+  },
+}));
 
 import { GitlabPreparer } from './gitlab';
 import {
@@ -137,6 +142,18 @@ describe('GitLabPreparer', () => {
 
       expect(response.split('\\').join('/')).toMatch(
         /\/template\/test\/1\/2\/3$/,
+      );
+    });
+
+    it('return the working directory with the path to the folder if it is specified', async () => {
+      const preparer = new GitlabPreparer(ConfigReader.fromConfigs([]));
+      mockEntity.spec.path = './template/test/1/2/3';
+      const response = await preparer.prepare(mockEntity, {
+        workingDirectory: '/workDir',
+      });
+
+      expect(response).toBe(
+        '/workDir/graphql-starter-static/template/test/1/2/3',
       );
     });
   });
