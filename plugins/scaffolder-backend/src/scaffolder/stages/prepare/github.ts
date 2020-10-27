@@ -34,9 +34,9 @@ export class GithubPreparer implements PreparerBase {
     const { protocol, location } = parseLocationAnnotation(template);
     const { token } = this;
 
-    if (protocol !== 'github') {
+    if (!['github', 'url'].includes(protocol)) {
       throw new InputError(
-        `Wrong location protocol: ${protocol}, should be 'github'`,
+        `Wrong location protocol: ${protocol}, should be 'url'`,
       );
     }
     const templateId = template.metadata.name;
