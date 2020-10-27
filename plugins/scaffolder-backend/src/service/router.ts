@@ -17,8 +17,9 @@
 import {
   loadBackendConfig,
   SingleHostDiscovery,
+  getRootLogger,
 } from '@backstage/backend-common';
-import { JsonValue, ConfigReader } from '@backstage/config';
+import { JsonValue } from '@backstage/config';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import Docker from 'dockerode';
 import express from 'express';
@@ -61,7 +62,10 @@ export async function createRouter(
   const logger = parentLogger.child({ plugin: 'scaffolder' });
   const jobProcessor = new JobProcessor();
 
-  const config = ConfigReader.fromConfigs(await loadBackendConfig());
+  const config = await loadBackendConfig({
+    argv: process.argv,
+    logger: getRootLogger(),
+  });
   const discovery = SingleHostDiscovery.fromConfig(config);
   const entityClient = new CatalogEntityClient({ discovery });
 
