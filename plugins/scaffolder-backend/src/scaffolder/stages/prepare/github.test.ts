@@ -19,6 +19,11 @@ const mocks = {
   CheckoutOptions: jest.fn(() => {}),
 };
 jest.doMock('nodegit', () => mocks);
+jest.doMock('fs-extra', () => ({
+  promises: {
+    mkdtemp: jest.fn(dir => `${dir}-static`),
+  },
+}));
 
 import { GithubPreparer } from './github';
 import {
@@ -94,6 +99,7 @@ describe('GitHubPreparer', () => {
       },
     );
   });
+
   it('return the temp directory with the path to the folder if it is specified', async () => {
     const preparer = new GithubPreparer();
     mockEntity.spec.path = './template/test/1/2/3';
@@ -103,6 +109,19 @@ describe('GitHubPreparer', () => {
       /\/template\/test\/1\/2\/3$/,
     );
   });
+
+  it('return the working directory with the path to the folder if it is specified', async () => {
+    const preparer = new GithubPreparer();
+    mockEntity.spec.path = './template/test/1/2/3';
+    const response = await preparer.prepare(mockEntity, {
+      workingDirectory: '/workDir',
+    });
+
+    expect(response).toBe(
+      '/workDir/graphql-starter-static/template/test/1/2/3',
+    );
+  });
+
   it('calls the clone command with the token when provided', async () => {
     const preparer = new GithubPreparer({ token: 'abc' });
     await preparer.prepare(mockEntity);

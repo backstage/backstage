@@ -83,15 +83,6 @@ describe('CatalogBuilder', () => {
             emit: CatalogProcessorEmit,
           ) {
             expect(location.type).toBe('test');
-            emit(result.data(location, await reader.read('ignored')));
-            return true;
-          },
-          async parseData(
-            data: Buffer,
-            location: LocationSpec,
-            emit: CatalogProcessorEmit,
-          ) {
-            expect(data.toString()).toEqual('junk');
             emit(
               result.entity(location, {
                 apiVersion: 'av',
@@ -123,7 +114,7 @@ describe('CatalogBuilder', () => {
       type: 'test',
       target: '',
     });
-    expect.assertions(8);
+    expect.assertions(7);
     expect(added.entities).toEqual([
       {
         apiVersion: 'av',

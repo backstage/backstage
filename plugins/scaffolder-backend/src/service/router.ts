@@ -15,7 +15,8 @@
  */
 
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { JsonValue } from '@backstage/config';
+import { Config, JsonValue } from '@backstage/config';
+import fs from 'fs-extra';
 import Docker from 'dockerode';
 import express from 'express';
 import Router from 'express-promise-router';
@@ -36,6 +37,7 @@ export interface RouterOptions {
   publishers: PublisherBuilder;
 
   logger: Logger;
+  config: Config;
   dockerClient: Docker;
 }
 
@@ -50,11 +52,32 @@ export async function createRouter(
     templaters,
     publishers,
     logger: parentLogger,
+    config,
     dockerClient,
   } = options;
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
   const jobProcessor = new JobProcessor();
+
+  let workingDirectory: string;
+  if (config.has('backend.workingDirectory')) {
+    workingDirectory = config.getString('backend.workingDirectory');
+    try {
+      // Check if working directory exists and is writable
+      await fs.promises.access(
+        workingDirectory,
+        fs.constants.F_OK | fs.constants.W_OK,
+      );
+      logger.info(`using working directory: ${workingDirectory}`);
+    } catch (err) {
+      logger.error(
+        `working directory ${workingDirectory} ${
+          err.code === 'ENOENT' ? 'does not exist' : 'is not writable'
+        }`,
+      );
+      throw err;
+    }
+  }
 
   router
     .get('/v1/job/:jobId', ({ params }, res) => {
@@ -104,6 +127,7 @@ export async function createRouter(
               const preparer = preparers.get(ctx.entity);
               const skeletonDir = await preparer.prepare(ctx.entity, {
                 logger: ctx.logger,
+                workingDirectory,
               });
               return { skeletonDir };
             },

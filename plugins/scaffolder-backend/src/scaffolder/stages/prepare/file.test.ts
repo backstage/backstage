@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import os from 'os';
 import fs from 'fs-extra';
 import YAML from 'yaml';
 import { FilePreparer } from './file';
@@ -42,7 +43,9 @@ const setupTest = async (fixturePath: string) => {
   };
 
   const filePreparer = new FilePreparer();
-  const resultDir = await filePreparer.prepare(template);
+  const resultDir = await filePreparer.prepare(template, {
+    workingDirectory: os.tmpdir(),
+  });
 
   return { filePreparer, template, resultDir };
 };

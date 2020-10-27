@@ -25,7 +25,7 @@ export type PreparerBase = {
    */
   prepare(
     template: TemplateEntityV1alpha1,
-    opts: { logger: Logger },
+    opts?: { logger: Logger; workingDirectory?: string },
   ): Promise<string>;
 };
 
