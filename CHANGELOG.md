@@ -6,6 +6,10 @@ If you encounter issues while upgrading to a newer version, don't hesitate to re
 
 ## Next Release
 
+> Collect changes for the next release below
+
+## v0.1.1-alpha.26
+
 ### @backstage/cli
 
 - Configuration files are no longer selected through `APP_ENV` or `NODE_ENV`. The default configuration files are `app-config.yaml` and, fix it exists, `app-config.local.yaml` in the repo root. To load a different set of files, use `--config <path>` arguments.
@@ -15,8 +19,6 @@ If you encounter issues while upgrading to a newer version, don't hesitate to re
 - Configuration files are no longer selected through `APP_ENV` or `NODE_ENV`. The default configuration files are `app-config.yaml` and, fix it exists, `app-config.local.yaml` in the repo root. To load a different set of files, use `--config <path>` arguments.
 
 ## v0.1.1-alpha.25
-
-> Collect changes for the next release below
 
 ### @backstage/cli
 
