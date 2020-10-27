@@ -14,22 +14,10 @@
  * limitations under the License.
  */
 
-import { InputError } from '@backstage/backend-common';
-import { Entity, Location, LocationSpec } from '@backstage/catalog-model';
-import { v4 as uuidv4 } from 'uuid';
+import { Entity } from '@backstage/catalog-model';
 import { Logger } from 'winston';
-import { EntitiesCatalog, LocationsCatalog } from '../catalog';
-import { EntityUpsertResponse } from '../catalog/types';
-import { durationText } from '../util/timing';
-import { AddLocationResult, ConfigGenerator, LocationReader } from './types';
+import { ConfigGenerator } from './types';
 
-/**
- * Placeholder for operations that span several catalogs and/or stretches out
- * in time.
- *
- * TODO(freben): Find a better home for these, possibly refactoring to use the
- * database more directly.
- */
 export class ConfigGeneratorClient implements ConfigGenerator {
   logger: Logger;
 
