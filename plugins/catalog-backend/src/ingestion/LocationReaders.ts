@@ -28,7 +28,6 @@ import { CatalogRulesEnforcer } from './CatalogRules';
 import * as result from './processors/results';
 import {
   CatalogProcessor,
-  CatalogProcessorDataResult,
   CatalogProcessorEmit,
   CatalogProcessorEntityResult,
   CatalogProcessorErrorResult,
@@ -75,8 +74,6 @@ export class LocationReaders implements LocationReader {
       for (const item of items) {
         if (item.type === 'location') {
           await this.handleLocation(item, emit);
-        } else if (item.type === 'data') {
-          await this.handleData(item, emit);
         } else if (item.type === 'entity') {
           if (rulesEnforcer.isAllowed(item.entity, item.location)) {
             const relations = Array<EntityRelationSpec>();
@@ -163,40 +160,6 @@ export class LocationReaders implements LocationReader {
     const message = `No processor was able to read location ${item.location.type} ${item.location.target}`;
     emit(result.inputError(item.location, message));
     logger.warn(message);
-  }
-
-  private async handleData(
-    item: CatalogProcessorDataResult,
-    emit: CatalogProcessorEmit,
-  ) {
-    const { processors, logger } = this.options;
-
-    const validatedEmit: CatalogProcessorEmit = emitResult => {
-      if (emitResult.type === 'relation') {
-        throw new Error('parseData may not emit entity relations');
-      }
-
-      emit(emitResult);
-    };
-
-    for (const processor of processors) {
-      if (processor.parseData) {
-        try {
-          if (
-            await processor.parseData(item.data, item.location, validatedEmit)
-          ) {
-            return;
-          }
-        } catch (e) {
-          const message = `Processor ${processor.constructor.name} threw an error while parsing ${item.location.type} ${item.location.target}, ${e}`;
-          emit(result.generalError(item.location, message));
-          logger.warn(message);
-        }
-      }
-    }
-
-    const message = `No processor was able to parse location ${item.location.type} ${item.location.target}`;
-    emit(result.inputError(item.location, message));
   }
 
   private async handleEntity(

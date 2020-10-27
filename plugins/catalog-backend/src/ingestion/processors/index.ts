@@ -29,4 +29,3 @@ export { PlaceholderProcessor } from './PlaceholderProcessor';
 export type { PlaceholderResolver } from './PlaceholderProcessor';
 export { StaticLocationProcessor } from './StaticLocationProcessor';
 export { UrlReaderProcessor } from './UrlReaderProcessor';
-export { YamlProcessor } from './YamlProcessor';
