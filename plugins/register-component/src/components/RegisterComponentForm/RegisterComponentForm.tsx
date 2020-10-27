@@ -107,9 +107,10 @@ export const RegisterComponentForm = ({ onSubmit, submitting }: Props) => {
               onBlur={onBlur}
             >
               <MenuItem value="AUTO">Auto-detect</MenuItem>
-              <MenuItem value="gitlab">GitLab</MenuItem>
-              <MenuItem value="bitbucket/api">Bitbucket</MenuItem>
               <MenuItem value="azure/api">Azure</MenuItem>
+              <MenuItem value="bitbucket/api">Bitbucket</MenuItem>
+              <MenuItem value="github">GitHub</MenuItem>
+              <MenuItem value="gitlab">GitLab</MenuItem>
             </Select>
           )}
         />
