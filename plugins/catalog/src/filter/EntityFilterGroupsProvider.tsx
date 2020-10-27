@@ -47,7 +47,7 @@ export const EntityFilterGroupsProvider = ({
 function useProvideEntityFilters(): FilterGroupsContext {
   const catalogApi = useApi(catalogApiRef);
   const [{ value: entities, error }, doReload] = useAsyncFn(() =>
-    catalogApi.getEntities({ filter: { kind: 'Component' }}),
+    catalogApi.getEntities({ filter: { kind: 'Component' } }),
   );
 
   const filterGroups = useRef<{
