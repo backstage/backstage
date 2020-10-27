@@ -18,14 +18,21 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core';
 import IlloSvgUrl from './illo.svg';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   illo: {
     maxWidth: '60%',
     top: 100,
     right: 20,
     position: 'absolute',
+    [theme.breakpoints.down('xs')]: {
+      maxWidth: '96%',
+      position: 'relative',
+      top: 'unset',
+      right: 'unset',
+      margin: `${theme.spacing(10)}px auto ${theme.spacing(4)}px`,
+    },
   },
-});
+}));
 
 export const Illo = () => {
   const classes = useStyles();
