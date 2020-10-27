@@ -18,7 +18,11 @@ import { Config } from '@backstage/config';
 import parseGitUri from 'git-url-parse';
 import fetch, { HeadersInit, RequestInit, Response } from 'node-fetch';
 import { NotFoundError } from '../errors';
-import { ReaderFactory, UrlReader } from './types';
+import { ReaderFactory, ReadTreeResponse, UrlReader, File } from './types';
+import tar from 'tar';
+import fs from 'fs';
+import { entityRoute } from '@backstage/plugin-catalog';
+import concatStream from 'concat-stream';
 
 /**
  * The configuration parameters for a single GitHub API provider.
@@ -242,64 +246,74 @@ export class GithubUrlReader implements UrlReader {
     throw new Error(message);
   }
 
-  private async getRepoFileTree(
-    target: string,
-    provider: ProviderConfig,
-  ): Promise<GitHubTree> {
-    const { owner, name, ref } = parseGitUri(target);
-
-    const options = getApiRequestOptions(this.config);
-
-    const repoInfoResponse = await fetch(
+  private async getRepositoryArchive(
+    repoUrl: string,
+    branchName: string,
+  ): Promise<Response> {
+    return fetch(
       new URL(
-        `${provider.apiBaseUrl}/repos/${owner}/${name}/branches/${ref}`,
+        `${repoUrl}/archive/${branchName}.tar.gz`,
       ).toString(),
-      options,
     );
-
-    const repoInfo = await repoInfoResponse.json();
-
-    const treeRequest = await fetch(
-      new URL(
-        `${provider.apiBaseUrl}/repos/${owner}/${name}/git/trees/${repoInfo.commit.sha}?recursive=true`,
-      ).toString(),
-      options,
-    );
-
-    return await treeRequest.json();
   }
 
-  async readTree(url: string): Promise<Promise<any>[]> {
-    const {
-      filepath,
-      protocol,
-      source,
-      name,
-      owner,
-      ref,
-    } = parseGitUri(url);
-
-    const fileTree = await this.getRepoFileTree(url, this.config);
-
-    const filesMetadata = fileTree.tree.filter(file => {
-      return file.type === 'blob' && file.path.startsWith(`${filepath}/`);
-    });
-
-    const fetchedFiles = filesMetadata.map(fileMetadata => {
-      return new Promise((resolve, reject) => {
-        this.read(`${protocol}://${source}/${owner}/${name}/blob/${ref}/${fileMetadata.path}`).then((file) => {
-          resolve({
-            path: fileMetadata.path,
-            content: file,
-          })
-        })
-        .catch((err) => {
-          reject(err);
-        })
+  private writeBufferToFile(filePath: string, content: Buffer): Promise<Error | undefined> {
+    return new Promise((resolve, reject) => {
+      fs.mkdirSync(path.join(filePath, '../'), { recursive: true });
+      fs.writeFile(filePath, content.toString(), (error) => {
+        if (error) reject(error);
+  
+        resolve();
       });
-    })
+    });
+  };
+  
 
-    return await Promise.all(fetchedFiles);
+  async readTree(repoUrl: string, branchName: string, paths: Array<string>): Promise<ReadTreeResponse> {
+    const { name: repoName } = parseGitUri(repoUrl);
+
+    const repoArchive = await this.getRepositoryArchive(repoUrl, branchName);
+
+    const files: File[] = [];
+    return new Promise((resolve, reject) => {
+      const parser = new (tar.Parse as any)({
+        filter: (path: string) => !!paths.filter(file => {
+          return path.startsWith(`${repoName}-${branchName}/${file}`);
+        }).length,
+        onentry: (entry: tar.ReadEntry) => {
+          if (entry.type === 'Directory') {
+            entry.resume();
+            return;
+          }
+
+          const contentPromise: Promise<Buffer> = new Promise((res, rej) => {entry.pipe(concatStream(res))});
+
+          files.push({
+            path: entry.path,
+            content: () => contentPromise,
+          });
+
+          entry.resume();
+        }
+      });
+
+      repoArchive
+        .body
+        .pipe(parser)
+        .on('finish', () => {
+          resolve({
+            files: () => {
+              return files;
+            },
+            archive: () => {
+              
+            },
+            dir: (outDir: string | undefined) => {
+              
+            }
+          })
+        });
+    });
   }
 
   toString() {

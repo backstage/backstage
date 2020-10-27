@@ -15,6 +15,8 @@
  */
 
 import { ConfigReader } from '@backstage/config';
+import { setupServer } from 'msw/node';
+import { rest } from 'msw';
 import {
   getApiRequestOptions,
   getApiUrl,
@@ -24,6 +26,8 @@ import {
   ProviderConfig,
   readConfig,
 } from './GithubUrlReader';
+import fs from 'fs';
+import path from 'path';
 
 describe('GithubUrlReader', () => {
   describe('getApiRequestOptions', () => {
@@ -228,6 +232,47 @@ describe('GithubUrlReader', () => {
       ).rejects.toThrow(
         'Incorrect URL: https://not.github.com/apa, Error: Invalid GitHub URL or file path',
       );
+    });
+  });
+
+  describe('readTree', () => {
+    it('downloads a repo archive', async () => {
+      const worker = setupServer();
+
+      const repoBuffer = fs.readFileSync(path.resolve(__dirname, 'test-data','repo.tar.gz'));
+
+      worker.use(
+        rest.get('https://github.com/spotify/mock/archive/repo.tar.gz', (req, res, ctx) =>
+          res(
+            ctx.status(200),
+            ctx.set('Content-Type', 'application/x-gzip'),
+            ctx.body(repoBuffer)
+          ),
+        ),
+      );
+      worker.listen({ onUnhandledRequest: 'error' })
+  
+
+      const processor = new GithubUrlReader({
+        host: 'github.com',
+      });
+
+      const response = await processor.readTree(
+        'https://github.com/spotify/mock',
+        'repo',
+        [
+          'mkdocs.yml',
+          'docs'
+        ]
+      );
+      
+      const files = response.files();
+
+      const mkDocsFile = await files[0].content();
+      const indexMarkdownFile = await files[1].content();
+
+      expect(mkDocsFile.toString()).toBe('site_name: Test\n');
+      expect(indexMarkdownFile.toString()).toBe('# Test\n');
     });
   });
 });

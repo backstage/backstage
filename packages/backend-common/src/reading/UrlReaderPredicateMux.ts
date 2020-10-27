@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { UrlReader, UrlReaderPredicateTuple } from './types';
+import { ReadTreeResponse, UrlReader, UrlReaderPredicateTuple } from './types';
 
 type Options = {
   // UrlReader to fall back to if no other reader is matched
@@ -53,7 +53,7 @@ export class UrlReaderPredicateMux implements UrlReader {
     throw new Error(`No reader found that could handle '${url}'`);
   }
 
-  readTree(url: string): Promise<string> {
+  readTree(url: string): Promise<ReadTreeResponse> {
     const parsed = new URL(url);
 
     for (const { predicate, reader } of this.readers) {

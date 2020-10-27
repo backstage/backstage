@@ -177,17 +177,6 @@ export const getLastCommitTimestamp = async (
   return commit.date().getTime();
 };
 
-const createFileFromBuffer = (filePath: string, content: Buffer): Promise<Error | undefined> => {
-  return new Promise((resolve, reject) => {
-    fs.mkdirSync(path.join(filePath, '../'), { recursive: true });
-    fs.writeFile(filePath, content.toString(), (error) => {
-      if (error) reject(error);
-
-      resolve();
-    });
-  });
-};
-
 export const getDocFilesFromRepository = async (reader: UrlReader, entity: Entity, logger: Logger): Promise<any> => {
   /* const { type, target } = parseReferenceAnnotation(
     'backstage.io/techdocs-ref',
