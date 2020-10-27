@@ -19,7 +19,7 @@ import path from 'path';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { parseLocationAnnotation } from '../helpers';
 import { InputError } from '@backstage/backend-common';
-import { PreparerBase } from './types';
+import { PreparerBase, PreparerOptions } from './types';
 import GitUriParser from 'git-url-parse';
 import { Clone, Cred } from 'nodegit';
 import { Config } from '@backstage/config';
@@ -34,7 +34,7 @@ export class AzurePreparer implements PreparerBase {
 
   async prepare(
     template: TemplateEntityV1alpha1,
-    opts?: { workingDirectory?: string },
+    opts: PreparerOptions,
   ): Promise<string> {
     const { protocol, location } = parseLocationAnnotation(template);
     const workingDirectory = opts?.workingDirectory ?? os.tmpdir();

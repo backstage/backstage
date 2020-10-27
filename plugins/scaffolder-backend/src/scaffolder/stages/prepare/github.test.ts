@@ -30,6 +30,7 @@ import {
   TemplateEntityV1alpha1,
   LOCATION_ANNOTATION,
 } from '@backstage/catalog-model';
+import { getVoidLogger } from '@backstage/backend-common';
 
 describe('GitHubPreparer', () => {
   let mockEntity: TemplateEntityV1alpha1;
@@ -76,7 +77,7 @@ describe('GitHubPreparer', () => {
   });
   it('calls the clone command with the correct arguments for a repository', async () => {
     const preparer = new GithubPreparer();
-    await preparer.prepare(mockEntity);
+    await preparer.prepare(mockEntity, { logger: getVoidLogger() });
     expect(mocks.Clone.clone).toHaveBeenNthCalledWith(
       1,
       'https://github.com/benjdlambert/backstage-graphql-template',
@@ -89,7 +90,7 @@ describe('GitHubPreparer', () => {
   it('calls the clone command with the correct arguments for a repository when no path is provided', async () => {
     const preparer = new GithubPreparer();
     delete mockEntity.spec.path;
-    await preparer.prepare(mockEntity);
+    await preparer.prepare(mockEntity, { logger: getVoidLogger() });
     expect(mocks.Clone.clone).toHaveBeenNthCalledWith(
       1,
       'https://github.com/benjdlambert/backstage-graphql-template',
@@ -103,7 +104,9 @@ describe('GitHubPreparer', () => {
   it('return the temp directory with the path to the folder if it is specified', async () => {
     const preparer = new GithubPreparer();
     mockEntity.spec.path = './template/test/1/2/3';
-    const response = await preparer.prepare(mockEntity);
+    const response = await preparer.prepare(mockEntity, {
+      logger: getVoidLogger(),
+    });
 
     expect(response.split('\\').join('/')).toMatch(
       /\/template\/test\/1\/2\/3$/,
@@ -114,6 +117,7 @@ describe('GitHubPreparer', () => {
     const preparer = new GithubPreparer();
     mockEntity.spec.path = './template/test/1/2/3';
     const response = await preparer.prepare(mockEntity, {
+      logger: getVoidLogger(),
       workingDirectory: '/workDir',
     });
 
@@ -124,7 +128,7 @@ describe('GitHubPreparer', () => {
 
   it('calls the clone command with the token when provided', async () => {
     const preparer = new GithubPreparer({ token: 'abc' });
-    await preparer.prepare(mockEntity);
+    await preparer.prepare(mockEntity, { logger: getVoidLogger() });
     expect(mocks.Clone.clone).toHaveBeenNthCalledWith(
       1,
       'https://github.com/benjdlambert/backstage-graphql-template',
