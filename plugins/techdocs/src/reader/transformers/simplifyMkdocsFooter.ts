@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
-export * from './api';
-export * from './components';
-export { useCurrency } from './hooks';
-export * from './types';
-export * from './utils/tests';
+import type { Transformer } from './index';
+
+export const simplifyMkdocsFooter = (): Transformer => {
+  return dom => {
+    // Remove mkdocs copyright
+    dom.querySelector('.md-footer-copyright')?.remove();
+
+    return dom;
+  };
+};

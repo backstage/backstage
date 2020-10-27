@@ -15,5 +15,6 @@
  */
 
 export { default as BarChart } from './BarChart';
+export { default as CostGrowth } from './CostGrowth';
 export { default as LegendItem } from './LegendItem';
 export * from './Tooltip';

@@ -42,12 +42,23 @@ import LighthouseSupportButton from '../SupportButton';
 const useStyles = makeStyles(theme => ({
   input: {
     minWidth: 300,
+    [theme.breakpoints.down('xs')]: {
+      minWidth: '100%',
+    },
   },
   buttonList: {
     marginLeft: theme.spacing(-1),
     marginRight: theme.spacing(-1),
     '& > *': {
       margin: theme.spacing(1),
+    },
+    [theme.breakpoints.down('xs')]: {
+      marginLeft: 0,
+      marginRight: 0,
+      flexDirection: 'column',
+      '& > *': {
+        width: '100%',
+      },
     },
   },
 }));

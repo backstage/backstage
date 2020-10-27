@@ -76,15 +76,19 @@ describe('createRouter', () => {
     });
 
     it('parses single and multiple request parameters and passes them down', async () => {
-      const response = await request(app).get('/entities?a=1&a=&a=3&b=4&c=');
+      const response = await request(app).get(
+        '/entities?filter=a=1,a=,a=3,b=4&filter=c=',
+      );
 
       expect(response.status).toEqual(200);
       expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.entities).toHaveBeenCalledWith({
-        a: ['1', null, '3'],
-        b: ['4'],
-        c: [null],
-      });
+      expect(entitiesCatalog.entities).toHaveBeenCalledWith([
+        {
+          a: ['1', null, '3'],
+          b: ['4'],
+        },
+        { c: [null] },
+      ]);
     });
   });
 
@@ -102,9 +106,9 @@ describe('createRouter', () => {
       const response = await request(app).get('/entities/by-uid/zzz');
 
       expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.entities).toHaveBeenCalledWith({
-        'metadata.uid': 'zzz',
-      });
+      expect(entitiesCatalog.entities).toHaveBeenCalledWith([
+        { 'metadata.uid': 'zzz' },
+      ]);
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(expect.objectContaining(entity));
     });
@@ -115,9 +119,9 @@ describe('createRouter', () => {
       const response = await request(app).get('/entities/by-uid/zzz');
 
       expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.entities).toHaveBeenCalledWith({
-        'metadata.uid': 'zzz',
-      });
+      expect(entitiesCatalog.entities).toHaveBeenCalledWith([
+        { 'metadata.uid': 'zzz' },
+      ]);
       expect(response.status).toEqual(404);
       expect(response.text).toMatch(/uid/);
     });
@@ -138,11 +142,13 @@ describe('createRouter', () => {
       const response = await request(app).get('/entities/by-name/k/ns/n');
 
       expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.entities).toHaveBeenCalledWith({
-        kind: 'k',
-        'metadata.namespace': 'ns',
-        'metadata.name': 'n',
-      });
+      expect(entitiesCatalog.entities).toHaveBeenCalledWith([
+        {
+          kind: 'k',
+          'metadata.namespace': 'ns',
+          'metadata.name': 'n',
+        },
+      ]);
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(expect.objectContaining(entity));
     });
@@ -153,11 +159,13 @@ describe('createRouter', () => {
       const response = await request(app).get('/entities/by-name/b/d/c');
 
       expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.entities).toHaveBeenCalledWith({
-        kind: 'b',
-        'metadata.namespace': 'd',
-        'metadata.name': 'c',
-      });
+      expect(entitiesCatalog.entities).toHaveBeenCalledWith([
+        {
+          kind: 'b',
+          'metadata.namespace': 'd',
+          'metadata.name': 'c',
+        },
+      ]);
       expect(response.status).toEqual(404);
       expect(response.text).toMatch(/name/);
     });
@@ -200,9 +208,9 @@ describe('createRouter', () => {
         { entity, relations: [] },
       ]);
       expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.entities).toHaveBeenCalledWith({
-        'metadata.uid': 'u',
-      });
+      expect(entitiesCatalog.entities).toHaveBeenCalledWith([
+        { 'metadata.uid': 'u' },
+      ]);
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(entity);
     });

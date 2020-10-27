@@ -34,7 +34,7 @@ describe('CatalogClient', () => {
     client = new CatalogClient({ discoveryApi });
   });
 
-  describe('getEntiies', () => {
+  describe('getEntities', () => {
     const defaultResponse: Entity[] = [
       {
         apiVersion: '1',
@@ -71,9 +71,7 @@ describe('CatalogClient', () => {
       expect.assertions(2);
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
-          expect(req.url.searchParams.toString()).toBe(
-            'a=1&b=2&b=3&%C3%B6=%3D',
-          );
+          expect(req.url.search).toBe('?filter=a=1,b=2,b=3,%C3%B6=%3D');
           return res(ctx.json([]));
         }),
       );

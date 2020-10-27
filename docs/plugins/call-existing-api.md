@@ -88,7 +88,7 @@ The proxy is powered by the `http-proxy-middleware` package. See
 [Proxying](proxying.md) for a full description of its configuration options.
 
 Internally at Spotify, the proxy option has been the overwhelmingly most popular
-choice for plugin makers. Since we have DNS based service discovery in place and
+choice for plugin makers. Since we have DNS-based service discovery in place and
 a microservices framework that made it trivial to expose plain HTTP, it has been
 a matter of just adding a few lines of Backstage config to get the benefit of
 being easily and robustly reachable from users' web browsers as well.

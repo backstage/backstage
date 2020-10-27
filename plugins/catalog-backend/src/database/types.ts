@@ -153,7 +153,7 @@ export type Database = {
     matchingGeneration?: number,
   ): Promise<DbEntityResponse>;
 
-  entities(tx: unknown, filters?: EntityFilters): Promise<DbEntityResponse[]>;
+  entities(tx: unknown, filters?: EntityFilters[]): Promise<DbEntityResponse[]>;
 
   entityByName(
     tx: unknown,

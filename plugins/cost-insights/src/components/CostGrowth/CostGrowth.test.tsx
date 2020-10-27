@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
+import React, { PropsWithChildren } from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import CostGrowth from './CostGrowth';
 import {
@@ -37,21 +37,12 @@ const MockContext = ({
   children,
   currency,
   engineerCost,
-}: {
-  children: ReactNode;
+}: PropsWithChildren<{
   currency: Currency;
   engineerCost: number;
-}) => (
-  <MockConfigProvider
-    engineerCost={engineerCost}
-    currencies={defaultCurrencies}
-    metrics={[]}
-    products={[]}
-    icons={[]}
-  >
-    <MockCurrencyProvider currency={currency} setCurrency={jest.fn()}>
-      {children}
-    </MockCurrencyProvider>
+}>) => (
+  <MockConfigProvider engineerCost={engineerCost}>
+    <MockCurrencyProvider currency={currency}>{children}</MockCurrencyProvider>
   </MockConfigProvider>
 );
 

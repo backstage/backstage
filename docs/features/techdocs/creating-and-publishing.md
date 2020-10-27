@@ -30,7 +30,9 @@ scratch.
 Your working Backstage instance should by default have a documentation template
 added. If not, follow these
 [instructions](../software-templates/installation.md#adding-templates) to add
-the documentation template.
+the documentation template. The template creates a component with only TechDocs
+configuration and default markdown files as below mentioned in manual
+documentation setup, and is otherwise empty.
 
 ![Documentation Template](../../assets/techdocs/documentation-template.png)
 
