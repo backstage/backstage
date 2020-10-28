@@ -141,11 +141,11 @@ describe('FeatureFlags', () => {
 
     it('should return an empty list', () => {
       featureFlags = new FeatureFlagsImpl();
-      expect(featureFlags.getRegisteredFlags().toObject()).toEqual([]);
+      expect(featureFlags.getRegisteredFlags()).toEqual([]);
     });
 
     it('should return an valid list', () => {
-      expect(featureFlags.getRegisteredFlags().toObject()).toMatchObject([
+      expect(featureFlags.getRegisteredFlags()).toEqual([
         { name: 'registered-flag-1', pluginId: 'plugin-one' },
         { name: 'registered-flag-2', pluginId: 'plugin-one' },
         { name: 'registered-flag-3', pluginId: 'plugin-two' },
@@ -179,7 +179,7 @@ describe('FeatureFlags', () => {
         pluginId: 'plugin-three',
       });
 
-      expect(flags.toObject()).toMatchObject([
+      expect(flags).toEqual([
         { name: 'registered-flag-1', pluginId: 'plugin-one' },
         { name: 'registered-flag-2', pluginId: 'plugin-one' },
         { name: 'registered-flag-3', pluginId: 'plugin-two' },

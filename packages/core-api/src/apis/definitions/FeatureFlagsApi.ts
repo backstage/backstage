@@ -15,7 +15,7 @@
  */
 
 import { ApiRef, createApiRef } from '../system';
-import { UserFlags, FeatureFlagsRegistry } from '../../app/FeatureFlags';
+import { UserFlags } from '../../app/FeatureFlags';
 
 /**
  * The feature flags API is used to toggle functionality to users across plugins and Backstage.
@@ -47,14 +47,14 @@ export interface FeatureFlagsApi {
   registerFlag(flag: FeatureFlag): void;
 
   /**
+   * Get a list of all registered flags.
+   */
+  getRegisteredFlags(): FeatureFlag[];
+
+  /**
    * Get a list of all feature flags from the current user.
    */
   getFlags(): UserFlags;
-
-  /**
-   * Get a list of all registered flags.
-   */
-  getRegisteredFlags(): FeatureFlagsRegistry;
 }
 
 export const featureFlagsApiRef: ApiRef<FeatureFlagsApi> = createApiRef({
