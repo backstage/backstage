@@ -14,32 +14,36 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
 import { Logger } from 'winston';
-import { ConfigGenerator } from './types';
+import {
+  AnalyzeLocationRequest,
+  AnalyzeLocationResponse,
+  LocationAnalyzer,
+} from './types';
 
-export class ConfigGeneratorClient implements ConfigGenerator {
-  logger: Logger;
+export class LocationAnalyzerClient implements LocationAnalyzer {
+  private readonly logger: Logger;
 
   constructor(logger: Logger) {
     this.logger = logger;
   }
-  async generateConfig(repoPath: string): Promise<Entity[]> {
-    const [ownerName, repoName] = [
-      repoPath.split('/')[0],
-      repoPath.split('/')[1],
-    ];
-    const config = {
+  async generateConfig(
+    request: AnalyzeLocationRequest,
+  ): Promise<AnalyzeLocationResponse> {
+    const [ownerName, repoName] = request.location.target.split('/').slice(-2);
+    const entity = {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'Component',
       metadata: {
         name: repoName,
-        description: '',
-        annotations: { 'github.com/project-slug': repoPath },
+        annotations: { 'github.com/project-slug': `${ownerName}/${repoName}` },
       },
       spec: { type: 'service', owner: ownerName, lifecycle: 'experimental' },
     };
 
-    return [config];
+    return {
+      existingEntityFiles: [],
+      generateEntities: [{ entity, fields: [] }],
+    };
   }
 }

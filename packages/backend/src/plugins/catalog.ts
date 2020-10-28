@@ -28,7 +28,7 @@ export default async function createPlugin(env: PluginEnvironment) {
     entitiesCatalog,
     locationsCatalog,
     higherOrderOperation,
-    configGenerator,
+    locationAnalyzer,
   } = await builder.build();
 
   useHotCleanup(
@@ -40,7 +40,7 @@ export default async function createPlugin(env: PluginEnvironment) {
     entitiesCatalog,
     locationsCatalog,
     higherOrderOperation,
-    configGenerator,
+    locationAnalyzer,
     logger: env.logger,
   });
 }

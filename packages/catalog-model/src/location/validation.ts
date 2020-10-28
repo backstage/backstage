@@ -35,9 +35,9 @@ export const locationSchema = yup
   .noUnknown()
   .required();
 
-export const repoPathSchema = yup
-  .object<{ repoPath: string }>({
-    repoPath: yup.string().required(),
+export const analyzeLocationSchema = yup
+  .object<{ location: LocationSpec }>({
+    location: locationSpecSchema,
   })
   .noUnknown()
   .required();

@@ -15,13 +15,16 @@
  */
 
 import { errorHandler } from '@backstage/backend-common';
-import { locationSpecSchema, repoPathSchema } from '@backstage/catalog-model';
+import {
+  locationSpecSchema,
+  analyzeLocationSchema,
+} from '@backstage/catalog-model';
 import type { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
-import { ConfigGenerator, HigherOrderOperation } from '../ingestion/types';
+import { LocationAnalyzer, HigherOrderOperation } from '../ingestion/types';
 import {
   translateQueryToEntityFilters,
   translateQueryToFieldMapper,
@@ -32,7 +35,7 @@ export interface RouterOptions {
   entitiesCatalog?: EntitiesCatalog;
   locationsCatalog?: LocationsCatalog;
   higherOrderOperation?: HigherOrderOperation;
-  configGenerator?: ConfigGenerator;
+  locationAnalyzer?: LocationAnalyzer;
   logger: Logger;
 }
 
@@ -43,7 +46,7 @@ export async function createRouter(
     entitiesCatalog,
     locationsCatalog,
     higherOrderOperation,
-    configGenerator,
+    locationAnalyzer: locationAnalyzer,
   } = options;
 
   const router = Router();
@@ -135,10 +138,10 @@ export async function createRouter(
       });
   }
 
-  if (configGenerator) {
-    router.post('/generate-config', async (req, res) => {
-      const input = await validateRequestBody(req, repoPathSchema);
-      const output = await configGenerator.generateConfig(input.repoPath);
+  if (locationAnalyzer) {
+    router.post('/analyze-location', async (req, res) => {
+      const input = await validateRequestBody(req, analyzeLocationSchema);
+      const output = await locationAnalyzer.generateConfig(input);
       res.status(201).send(output);
     });
   }

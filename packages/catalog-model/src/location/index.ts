@@ -18,6 +18,6 @@ export type { Location, LocationSpec } from './types';
 export {
   locationSchema,
   locationSpecSchema,
-  repoPathSchema,
+  analyzeLocationSchema,
 } from './validation';
 export { LOCATION_ANNOTATION } from './annotation';
