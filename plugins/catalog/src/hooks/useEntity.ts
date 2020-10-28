@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useEffect, createContext, useContext } from 'react';
-import { useNavigate, useParams } from 'react-router';
-import { useApi, errorApiRef } from '@backstage/core';
-import { catalogApiRef } from '../api/types';
-import { useAsync } from 'react-use';
 import { Entity } from '@backstage/catalog-model';
+import { errorApiRef, useApi } from '@backstage/core';
+import { createContext, useContext, useEffect } from 'react';
+import { useNavigate } from 'react-router';
+import { useAsync } from 'react-use';
+import { catalogApiRef } from '../api/types';
+import { useEntityCompoundName } from '../components/useEntityCompoundName';
 
 type EntityLoadingStatus = {
   entity?: Entity;
@@ -33,8 +34,7 @@ export const EntityContext = createContext<EntityLoadingStatus>({
 });
 
 export const useEntityFromUrl = (): EntityLoadingStatus => {
-  const { optionalNamespaceAndName, kind } = useParams();
-  const [name, namespace] = optionalNamespaceAndName.split(':').reverse();
+  const { kind, namespace, name } = useEntityCompoundName();
   const navigate = useNavigate();
   const errorApi = useApi(errorApiRef);
   const catalogApi = useApi(catalogApiRef);

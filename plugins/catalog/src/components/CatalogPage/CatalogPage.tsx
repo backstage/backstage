@@ -31,7 +31,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { catalogApiRef } from '../../api/types';
 import { EntityFilterGroupsProvider, useFilteredEntities } from '../../filter';
-import { useStarredEntities } from '../../hooks/useStarredEntites';
+import { useStarredEntities } from '../../hooks/useStarredEntities';
 import { ButtonGroup, CatalogFilter } from '../CatalogFilter/CatalogFilter';
 import { CatalogTable } from '../CatalogTable/CatalogTable';
 import { ResultsFilter } from '../ResultsFilter/ResultsFilter';
