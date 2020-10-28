@@ -3801,10 +3801,17 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
+<<<<<<< HEAD
 "@spotify/eslint-config-base@^8.1.0":
   version "9.0.0"
   resolved "https://registry.npmjs.org/@spotify/eslint-config-base/-/eslint-config-base-9.0.0.tgz#e122b2e6d1a11750170badc5be6774ded95953d2"
   integrity sha512-LNGY6bBM0IlosvMIx9Ic5gqatpa5LPvrJhN4RnrUnP9oaXNLgPTKDE89p3eC5Tnh78ADdX4HD+rbHDSyP2tBgg==
+=======
+"@spotify/eslint-config-base@^8.0.0":
+  version "8.0.0"
+  resolved "https://registry.npmjs.org/@spotify/eslint-config-base/-/eslint-config-base-8.0.0.tgz#c3d10d8a05ad9129d579952cb80063e4c4fa216e"
+  integrity sha512-07Fo+KoTMl4AaZJPD6deFnYmG634wzgeqfFcWdFlIrOLAasvWSH8Lp6ZE9cJBKuffOAy8kuEE1SwFo34+5X8bQ==
+>>>>>>> 88203b2fdd686da88b4d9f5ebe3564be90bcdd37
 
 "@spotify/eslint-config-oss@^1.0.1":
   version "1.0.2"
