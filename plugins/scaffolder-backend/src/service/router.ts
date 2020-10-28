@@ -115,10 +115,8 @@ export async function createRouter(
       let template: TemplateEntityV1alpha1;
       try {
         template = await entityClient.findTemplate(templateName);
-      } catch (e) {
-        // help me here
-        res.status(400).json({ errors: e });
-        return;
+      } catch (err) {
+        throw err;
       }
 
       const validationResult: ValidatorResult = validate(
