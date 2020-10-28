@@ -26,6 +26,8 @@ import { costInsightsApiRef } from '../api';
 import { MapLoadingToProps, useLoading } from './useLoading';
 import { DefaultLoadingAction, Group, Maybe } from '../types';
 
+console.log(DefaultLoadingAction)
+
 type GroupsProviderLoadingProps = {
   dispatchLoadingGroups: (isLoading: boolean) => void;
 };
