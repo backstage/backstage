@@ -16,7 +16,6 @@
 
 import React, { useCallback, useState } from 'react';
 import {
-  FeatureFlagName,
   featureFlagsApiRef,
   FeatureFlagsRegistryItem,
   FeatureFlagState,
@@ -37,15 +36,15 @@ export const FeatureFlags = () => {
       result[featureFlag.name] = state;
       return result;
     },
-    {} as Record<FeatureFlagName, FeatureFlagState>,
+    {} as Record<string, FeatureFlagState>,
   );
 
-  const [state, setState] = useState<Record<FeatureFlagName, FeatureFlagState>>(
+  const [state, setState] = useState<Record<string, FeatureFlagState>>(
     initialFlagState,
   );
 
   const toggleFlag = useCallback(
-    (flagName: FeatureFlagName) => {
+    (flagName: string) => {
       const newState = featureFlagsApi.getFlags().toggle(flagName);
 
       setState(prevState => ({

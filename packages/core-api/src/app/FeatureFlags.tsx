@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { FeatureFlagName } from '../plugin/types';
 import {
   FeatureFlagState,
   FeatureFlagsApi,
@@ -32,7 +31,7 @@ export function validateBrowserCompat(): void {
   }
 }
 
-export function validateFlagName(name: FeatureFlagName): void {
+export function validateFlagName(name: string): void {
   if (name.length < 3) {
     throw new Error(
       `The '${name}' feature flag must have a minimum length of three characters.`,
@@ -60,7 +59,7 @@ export function validateFlagName(name: FeatureFlagName): void {
  * can use this to retrieve, add, edit, delete, clear and save the user's
  * feature flags to the local browser for persisted storage.
  */
-export class UserFlags extends Map<FeatureFlagName, FeatureFlagState> {
+export class UserFlags extends Map<string, FeatureFlagState> {
   static load(): UserFlags {
     validateBrowserCompat();
 
@@ -73,18 +72,18 @@ export class UserFlags extends Map<FeatureFlagName, FeatureFlagState> {
     }
   }
 
-  get(name: FeatureFlagName): FeatureFlagState {
+  get(name: string): FeatureFlagState {
     return super.get(name) || FeatureFlagState.Off;
   }
 
-  set(name: FeatureFlagName, state: FeatureFlagState): this {
+  set(name: string, state: FeatureFlagState): this {
     validateFlagName(name);
     const output = super.set(name, state);
     this.save();
     return output;
   }
 
-  toggle(name: FeatureFlagName): FeatureFlagState {
+  toggle(name: string): FeatureFlagState {
     if (super.get(name) === FeatureFlagState.On) {
       super.set(name, FeatureFlagState.Off);
     } else {
@@ -93,7 +92,7 @@ export class UserFlags extends Map<FeatureFlagName, FeatureFlagState> {
     return super.get(name) || FeatureFlagState.Off;
   }
 
-  delete(name: FeatureFlagName): boolean {
+  delete(name: string): boolean {
     const output = super.delete(name);
     this.save();
     return output;

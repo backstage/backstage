@@ -10,7 +10,7 @@ can use this to split out logic in your code for manual A/B testing, etc.
 
 ```typescript
 export type FeatureFlagsHooks = {
-  register(name: FeatureFlagName): void;
+  register(name: string): void;
 };
 ```
 

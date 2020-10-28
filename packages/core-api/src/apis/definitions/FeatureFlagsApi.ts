@@ -16,7 +16,6 @@
 
 import { ApiRef, createApiRef } from '../system';
 import { UserFlags, FeatureFlagsRegistry } from '../../app/FeatureFlags';
-import { FeatureFlagName } from '../../plugin';
 
 /**
  * The feature flags API is used to toggle functionality to users across plugins and Backstage.
@@ -54,7 +53,7 @@ export interface FeatureFlagsApi {
 
 export interface FeatureFlagsRegistryItem {
   pluginId: string;
-  name: FeatureFlagName;
+  name: string;
 }
 
 export const featureFlagsApiRef: ApiRef<FeatureFlagsApi> = createApiRef({

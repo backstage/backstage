@@ -54,11 +54,9 @@ export type LegacyRedirectRouteOutput = {
   options?: RouteOptions;
 };
 
-export type FeatureFlagName = string;
-
 export type FeatureFlagOutput = {
   type: 'feature-flag';
-  name: FeatureFlagName;
+  name: string;
 };
 
 export type PluginOutput =
@@ -103,5 +101,5 @@ export type RouterHooks = {
 };
 
 export type FeatureFlagsHooks = {
-  register(name: FeatureFlagName): void;
+  register(name: string): void;
 };
