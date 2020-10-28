@@ -22,6 +22,7 @@ spec:
       component_id:
         title: Name
         type: string
+        pattern: ^[a-z0-9]+(-[a-z0-9]+)*$
         description: Unique name of the component. Lowercase, URL-safe characters only.
       description:
         title: Description

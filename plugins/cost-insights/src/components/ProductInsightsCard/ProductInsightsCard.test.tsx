@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
-import ProductInsightsCard from './ProductInsightsCard';
+import { ProductInsightsCard } from './ProductInsightsCard';
 import { CostInsightsApi } from '../../api';
 import {
   createMockEntity,

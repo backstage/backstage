@@ -51,13 +51,6 @@ export function generalError(
   return { type: 'error', location: atLocation, error: new Error(message) };
 }
 
-export function data(
-  atLocation: LocationSpec,
-  newData: Buffer,
-): CatalogProcessorResult {
-  return { type: 'data', location: atLocation, data: newData };
-}
-
 export function location(
   newLocation: LocationSpec,
   optional: boolean,

@@ -17,7 +17,7 @@
 import React from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { InfoCard } from '@backstage/core';
-import AlertInstructionsLayout from '../AlertInstructionsLayout';
+import { AlertInstructionsLayout } from '../AlertInstructionsLayout';
 import {
   Alert,
   Duration,
@@ -26,10 +26,10 @@ import {
   ProjectGrowthAlert,
   ProjectGrowthData,
 } from '../../types';
-import ResourceGrowthBarChartLegend from '../ResourceGrowthBarChartLegend';
-import ResourceGrowthBarChart from '../ResourceGrowthBarChart';
+import { ResourceGrowthBarChartLegend } from '../ResourceGrowthBarChartLegend';
+import { ResourceGrowthBarChart } from '../ResourceGrowthBarChart';
 
-const ProjectGrowthInstructionsPage = () => {
+export const ProjectGrowthInstructionsPage = () => {
   const alertData: ProjectGrowthData = {
     project: 'example-project',
     periodStart: 'Q1 2020',
@@ -211,5 +211,3 @@ const ProjectGrowthInstructionsPage = () => {
     </AlertInstructionsLayout>
   );
 };
-
-export default ProjectGrowthInstructionsPage;

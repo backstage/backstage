@@ -82,6 +82,10 @@ Extensions:
 
 ## Changelog
 
+### 0.0.10
+
+- Pin Markdown version to fix issue with Graphviz
+
 ### 0.0.9
 
 - Change development status to 3 - Alpha

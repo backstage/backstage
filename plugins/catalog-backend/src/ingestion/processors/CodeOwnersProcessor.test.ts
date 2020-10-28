@@ -180,10 +180,12 @@ describe('CodeOwnersProcessor', () => {
 
       const result = await findRawCodeOwners(mockLocation(), reader);
 
-      expect(read.mock.calls.length).toBe(3);
-      expect(read.mock.calls[0]).toEqual([mockReadUrl('.github/')]);
-      expect(read.mock.calls[1]).toEqual([mockReadUrl('')]);
-      expect(read.mock.calls[2]).toEqual([mockReadUrl('docs/')]);
+      expect(read.mock.calls.length).toBe(5);
+      expect(read.mock.calls[0]).toEqual([mockReadUrl('')]);
+      expect(read.mock.calls[1]).toEqual([mockReadUrl('docs/')]);
+      expect(read.mock.calls[2]).toEqual([mockReadUrl('.bitbucket/')]);
+      expect(read.mock.calls[3]).toEqual([mockReadUrl('.github/')]);
+      expect(read.mock.calls[4]).toEqual([mockReadUrl('.gitlab/')]);
       expect(result).toEqual(ownersText);
     });
   });
@@ -236,7 +238,7 @@ describe('CodeOwnersProcessor', () => {
       expect(result).toEqual(entity);
     });
 
-    it('should ignore url locations', async () => {
+    it('should handle url locations', async () => {
       const { entity, processor } = setupTest();
 
       const result = await processor.preProcessEntity(
@@ -244,7 +246,10 @@ describe('CodeOwnersProcessor', () => {
         mockLocation({ type: 'url' }),
       );
 
-      expect(result).toEqual(entity);
+      expect(result).toEqual({
+        ...entity,
+        spec: { owner: 'backstage-core' },
+      });
     });
 
     it('should ignore invalid kinds', async () => {

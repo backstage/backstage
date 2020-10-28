@@ -16,12 +16,11 @@
 
 import React from 'react';
 import { Box, Typography, Grid } from '@material-ui/core';
-import ProductInsightsCard from '../ProductInsightsCard';
+import { ProductInsightsCard } from '../ProductInsightsCard';
 import { useConfig } from '../../hooks';
 
-const ProductInsights = ({}) => {
-  const { products } = useConfig();
-
+export const ProductInsights = ({}) => {
+  const config = useConfig();
   return (
     <>
       <Box mt={0} mb={5} textAlign="center">
@@ -30,7 +29,7 @@ const ProductInsights = ({}) => {
         </Typography>
       </Box>
       <Grid container direction="column">
-        {products.map(product => (
+        {config.products.map(product => (
           <Grid item key={product.kind} style={{ position: 'relative' }}>
             <ProductInsightsCard product={product} />
           </Grid>
@@ -39,5 +38,3 @@ const ProductInsights = ({}) => {
     </>
   );
 };
-
-export default ProductInsights;

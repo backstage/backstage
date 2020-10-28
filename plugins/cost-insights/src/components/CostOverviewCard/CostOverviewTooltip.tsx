@@ -24,7 +24,7 @@ export type CostOverviewTooltipProps = TooltipProps & {
   format: (payload: TooltipPayload) => TooltipItemProps;
 };
 
-const CostOverviewTooltip = ({
+export const CostOverviewTooltip = ({
   label,
   payload,
   dataKeys,
@@ -36,5 +36,3 @@ const CostOverviewTooltip = ({
     .map(p => format(p));
   return <Tooltip label={tooltipLabel} items={items} />;
 };
-
-export default CostOverviewTooltip;

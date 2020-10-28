@@ -26,7 +26,7 @@ export type CostInsightsTabsProps = {
   groups: Group[];
 };
 
-const CostInsightsTabs = ({ groups }: CostInsightsTabsProps) => {
+export const CostInsightsTabs = ({ groups }: CostInsightsTabsProps) => {
   const classes = useStyles();
   const [index] = useState(0); // index is fixed for now until other tabs are added
   const [groupMenuEl, setGroupMenuEl] = useState<Element | null>(null);
@@ -107,5 +107,3 @@ const CostInsightsTabs = ({ groups }: CostInsightsTabsProps) => {
     </>
   );
 };
-
-export default CostInsightsTabs;

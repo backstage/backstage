@@ -16,7 +16,7 @@
 
 import React, { PropsWithChildren } from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
-import CostGrowth from './CostGrowth';
+import { CostGrowth } from './CostGrowth';
 import {
   defaultCurrencies,
   Currency,

@@ -18,8 +18,8 @@ import React from 'react';
 import moment from 'moment';
 import { Box } from '@material-ui/core';
 import { InfoCard } from '@backstage/core';
-import ResourceGrowthBarChart from '../ResourceGrowthBarChart';
-import ResourceGrowthBarChartLegend from '../ResourceGrowthBarChartLegend';
+import { ResourceGrowthBarChart } from '../ResourceGrowthBarChart';
+import { ResourceGrowthBarChartLegend } from '../ResourceGrowthBarChartLegend';
 import { Duration, ProjectGrowthData } from '../../types';
 import { pluralOf } from '../../utils/grammar';
 
@@ -27,7 +27,7 @@ type ProjectGrowthAlertProps = {
   alert: ProjectGrowthData;
 };
 
-const ProjectGrowthAlertCard = ({ alert }: ProjectGrowthAlertProps) => {
+export const ProjectGrowthAlertCard = ({ alert }: ProjectGrowthAlertProps) => {
   const [costStart, costEnd] = alert.aggregation;
 
   const subheader = `
@@ -64,5 +64,3 @@ const ProjectGrowthAlertCard = ({ alert }: ProjectGrowthAlertProps) => {
     </InfoCard>
   );
 };
-
-export default ProjectGrowthAlertCard;

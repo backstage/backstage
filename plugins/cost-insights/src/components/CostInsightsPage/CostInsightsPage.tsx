@@ -19,19 +19,20 @@ import { Box, Container, Divider, Grid, Typography } from '@material-ui/core';
 import { featureFlagsApiRef, Progress, useApi } from '@backstage/core';
 import { default as MaterialAlert } from '@material-ui/lab/Alert';
 import { costInsightsApiRef } from '../../api';
-import AlertActionCardList from '../AlertActionCardList';
-import AlertInsights from '../AlertInsights';
-import CostInsightsLayout from '../CostInsightsLayout';
-import CopyUrlToClipboard from '../CopyUrlToClipboard';
-import CurrencySelect from '../CurrencySelect';
-import WhyCostsMatter from '../WhyCostsMatter';
-import CostInsightsHeader, {
+import { AlertActionCardList } from '../AlertActionCardList';
+import { AlertInsights } from '../AlertInsights';
+import { CostInsightsLayout } from '../CostInsightsLayout';
+import { CopyUrlToClipboard } from '../CopyUrlToClipboard';
+import { CurrencySelect } from '../CurrencySelect';
+import { WhyCostsMatter } from '../WhyCostsMatter';
+import {
+  CostInsightsHeader,
   CostInsightsHeaderNoGroups,
 } from '../CostInsightsHeader';
-import CostInsightsNavigation from '../CostInsightsNavigation';
-import CostOverviewCard from '../CostOverviewCard';
-import ProductInsights from '../ProductInsights';
-import CostInsightsSupportButton from '../CostInsightsSupportButton';
+import { CostInsightsNavigation } from '../CostInsightsNavigation';
+import { CostOverviewCard } from '../CostOverviewCard';
+import { ProductInsights } from '../ProductInsights';
+import { CostInsightsSupportButton } from '../CostInsightsSupportButton';
 import {
   useConfig,
   useCurrency,
@@ -49,10 +50,10 @@ import {
   Project,
 } from '../../types';
 import { mapLoadingToProps } from './selector';
-import ProjectSelect from '../ProjectSelect';
+import { ProjectSelect } from '../ProjectSelect';
 import { useSubtleTypographyStyles } from '../../utils/styles';
 
-const CostInsightsPage = () => {
+export const CostInsightsPage = () => {
   const classes = useSubtleTypographyStyles();
   const flags = useApi(featureFlagsApiRef).getFlags();
   // There is not currently a UI to set feature flags
@@ -300,5 +301,3 @@ const CostInsightsPage = () => {
     </CostInsightsLayout>
   );
 };
-
-export default CostInsightsPage;

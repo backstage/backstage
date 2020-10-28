@@ -111,44 +111,8 @@ export default async function createPlugin({
   templaters.register('cookiecutter', cookiecutterTemplater);
   templaters.register('cra', craTemplater);
 
-  const filePreparer = new FilePreparer();
-  const githubPreparer = new GithubPreparer();
-  const gitlabPreparer = new GitlabPreparer(config);
-  const preparers = new Preparers();
-
-  preparers.register('file', filePreparer);
-  preparers.register('github', githubPreparer);
-  preparers.register('gitlab', gitlabPreparer);
-  preparers.register('gitlab/api', gitlabPreparer);
-
-  const publishers = new Publishers();
-
-  const githubToken = config.getString('scaffolder.github.token');
-  const repoVisibility = config.getString(
-    'scaffolder.github.visibility',
-  ) as RepoVisibilityOptions;
-
-  const githubClient = new Octokit({ auth: githubToken });
-  const githubPublisher = new GithubPublisher({
-    client: githubClient,
-    token: githubToken,
-    repoVisibility,
-  });
-  publishers.register('file', githubPublisher);
-  publishers.register('github', githubPublisher);
-
-  const gitLabConfig = config.getOptionalConfig('scaffolder.gitlab.api');
-
-  if (gitLabConfig) {
-    const gitLabToken = gitLabConfig.getString('token');
-    const gitLabClient = new Gitlab({
-      host: gitLabConfig.getOptionalString('baseUrl'),
-      token: gitLabToken,
-    });
-    const gitLabPublisher = new GitlabPublisher(gitLabClient, gitLabToken);
-    publishers.register('gitlab', gitLabPublisher);
-    publishers.register('gitlab/api', gitLabPublisher);
-  }
+  const preparers = await Preparers.fromConfig(config, { logger });
+  const publishers = await Publishers.fromConfig(config, { logger });
 
   const dockerClient = new Docker();
   return await createRouter({
