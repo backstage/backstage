@@ -16,8 +16,9 @@
 
 import qs from 'qs';
 import * as yup from 'yup';
-import { Group, PageFilters, getDefaultPageFilters } from '../types';
+import { Group, PageFilters } from '../types';
 import { Duration } from '../utils/duration';
+import { getDefaultPageFilters } from '../utils/filters';
 import { ConfigContextProps } from '../hooks/useConfig';
 
 const schema = yup

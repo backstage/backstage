@@ -23,7 +23,7 @@ import Search from '@material-ui/icons/Search';
 import CloudQueue from '@material-ui/icons/CloudQueue';
 import School from '@material-ui/icons/School';
 import ViewHeadline from '@material-ui/icons/ViewHeadline';
-import { IconType } from '../types';
+import { IconType } from '../utils/icon';
 
 export enum DefaultNavigation {
   CostOverviewCard = 'cost-overview-card',

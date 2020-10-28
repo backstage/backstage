@@ -19,9 +19,10 @@ import { getByRole, waitFor } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import UserEvent from '@testing-library/user-event';
 import { PeriodSelect, getDefaultOptions } from './PeriodSelect';
-import { getDefaultPageFilters, Group } from '../../types';
+import { getDefaultPageFilters } from '../../utils/filters';
 import { Duration } from '../../utils/duration';
 import { MockBillingDateProvider } from '../../utils/tests';
+import { Group } from '../../types';
 
 const DefaultPageFilters = getDefaultPageFilters([{ id: 'tools' }] as Group[]);
 const lastCompleteBillingDate = '2020-05-01';

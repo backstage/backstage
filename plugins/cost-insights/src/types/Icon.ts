@@ -18,12 +18,3 @@ export type Icon = {
   kind: string;
   component: JSX.Element;
 };
-
-export enum IconType {
-  Compute = 'compute',
-  Data = 'data',
-  Database = 'database',
-  Storage = 'storage',
-  Search = 'search',
-  ML = 'ml',
-}

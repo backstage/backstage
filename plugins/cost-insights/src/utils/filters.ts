@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-import { Maybe } from './Maybe';
-import { Duration } from '../utils/duration';
+import { Group, PageFilters } from '../types';
+import { Duration } from './duration';
 
-export interface PageFilters {
-  group: Maybe<string>;
-  project: Maybe<string>;
-  duration: Duration;
-  metric: string | null;
-}
-
-export type ProductFilters = Array<ProductPeriod>;
-
-export interface ProductPeriod {
-  duration: Duration;
-  productType: string;
+export function getDefaultPageFilters(groups: Group[]): PageFilters {
+  return {
+    group: groups.length ? groups[0].id : null,
+    project: null,
+    duration: Duration.P90D,
+    metric: null,
+  };
 }

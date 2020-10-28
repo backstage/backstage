@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-import { Maybe } from './Maybe';
-import { Duration } from '../utils/duration';
-
-export interface PageFilters {
-  group: Maybe<string>;
-  project: Maybe<string>;
-  duration: Duration;
-  metric: string | null;
-}
-
-export type ProductFilters = Array<ProductPeriod>;
-
-export interface ProductPeriod {
-  duration: Duration;
-  productType: string;
+export enum IconType {
+  Compute = 'compute',
+  Data = 'data',
+  Database = 'database',
+  Storage = 'storage',
+  Search = 'search',
+  ML = 'ml',
 }
