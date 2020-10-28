@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
 import {
-  translateQueryToEntityFilters,
   translateFilterQueryEntryToEntityFilters,
+  translateQueryToEntityFilters,
+  translateQueryToFieldMapper,
 } from './filterQuery';
 
 describe('translateQueryToEntityFilters', () => {
@@ -71,5 +73,53 @@ describe('translateFilterQueryEntryToEntityFilters', () => {
   it('treats empty value as null/absence', () => {
     const result = translateFilterQueryEntryToEntityFilters('a=,b=2');
     expect(result).toEqual({ a: [null], b: ['2'] });
+  });
+});
+
+describe('translateQueryToFieldMapper', () => {
+  const entity: Entity = {
+    apiVersion: 'av',
+    kind: 'k',
+    metadata: {
+      name: 'n',
+      tags: ['t1', 't2'],
+    },
+    spec: {
+      type: 't',
+    },
+  };
+
+  it('passes through when no fields given', () => {
+    expect(translateQueryToFieldMapper({})(entity)).toBe(entity);
+    expect(translateQueryToFieldMapper({ fields: [] })(entity)).toBe(entity);
+    expect(translateQueryToFieldMapper({ fields: [''] })(entity)).toBe(entity);
+    expect(translateQueryToFieldMapper({ fields: [','] })(entity)).toBe(entity);
+  });
+
+  it('rejects attempts at array filtering', () => {
+    expect(() =>
+      translateQueryToFieldMapper({ fields: 'metadata.tags[0]' })(entity),
+    ).toThrow(/array/i);
+  });
+
+  it('accepts both strings and arrays of strings as input', () => {
+    expect(translateQueryToFieldMapper({ fields: 'kind' })(entity)).toEqual({
+      kind: 'k',
+    });
+    expect(translateQueryToFieldMapper({ fields: ['kind'] })(entity)).toEqual({
+      kind: 'k',
+    });
+    expect(
+      translateQueryToFieldMapper({ fields: ['kind', 'apiVersion'] })(entity),
+    ).toEqual({ apiVersion: 'av', kind: 'k' });
+  });
+
+  it('supports sub-selection properly', () => {
+    expect(
+      translateQueryToFieldMapper({ fields: 'kind,metadata.name' })(entity),
+    ).toEqual({ kind: 'k', metadata: { name: 'n' } });
+    expect(
+      translateQueryToFieldMapper({ fields: 'metadata' })(entity),
+    ).toEqual({ metadata: { name: 'n', tags: ['t1', 't2'] } });
   });
 });
