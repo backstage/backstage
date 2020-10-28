@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line monorepo/no-internal-import
-import '@backstage/cli/asset-types';
+import '@backstage/cli/asset-types/asset-types';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';

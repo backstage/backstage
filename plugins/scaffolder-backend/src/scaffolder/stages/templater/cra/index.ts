@@ -19,8 +19,8 @@ import { TemplaterBase, TemplaterRunOptions } from '..';
 import path from 'path';
 import { TemplaterRunResult } from '../types';
 import * as yaml from 'yaml';
-// eslint-disable-next-line monorepo/no-internal-import
 import { GITHUB_ACTIONS_ANNOTATION } from '@backstage/plugin-github-actions/universal';
+import { resolvePackagePath } from '@backstage/backend-common';
 
 export class CreateReactAppTemplater implements TemplaterBase {
   public async run(options: TemplaterRunOptions): Promise<TemplaterRunResult> {
@@ -61,7 +61,9 @@ export class CreateReactAppTemplater implements TemplaterBase {
       await fs.promises.mkdir(`${finalDir}/.github`);
       await fs.promises.mkdir(`${finalDir}/.github/workflows`);
       await fs.promises.copyFile(
-        `${__dirname}/templates/.github/workflows/main.yml`,
+        `${resolvePackagePath(
+          '@backstage/plugin-scaffolder-backend',
+        )}/templates/.github/workflows/main.yml`,
         `${finalDir}/.github/workflows/main.yml`,
       );
 

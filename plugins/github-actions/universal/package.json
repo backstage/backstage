@@ -1,5 +1,0 @@
-{
-  "main": "index.js",
-  "module": "index.js",
-  "description": "Provides code that can be shared between frontend- and backend-oriented packages"
-}
