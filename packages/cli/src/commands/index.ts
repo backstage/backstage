@@ -18,16 +18,25 @@ import { CommanderStatic } from 'commander';
 import { exitWithError } from '../lib/errors';
 
 export function registerCommands(program: CommanderStatic) {
+  const configOption = [
+    '--config <path>',
+    'Config files to load instead of app-config.yaml',
+    (opt: string, opts: string[]) => [...opts, opt],
+    Array<string>(),
+  ] as const;
+
   program
     .command('app:build')
     .description('Build an app for a production release')
     .option('--stats', 'Write bundle stats to output directory')
+    .option(...configOption)
     .action(lazy(() => import('./app/build').then(m => m.default)));
 
   program
     .command('app:serve')
     .description('Serve an app for local development')
     .option('--check', 'Enable type checking and linting')
+    .option(...configOption)
     .action(lazy(() => import('./app/serve').then(m => m.default)));
 
   program
@@ -50,6 +59,8 @@ export function registerCommands(program: CommanderStatic) {
     .description('Start local development server with HMR for the backend')
     .option('--check', 'Enable type checking and linting')
     .option('--inspect', 'Enable debugger')
+    // We don't actually use the config in the CLI, just pass them on to the NodeJS process
+    .option(...configOption)
     .action(lazy(() => import('./backend/dev').then(m => m.default)));
 
   program
@@ -89,12 +100,14 @@ export function registerCommands(program: CommanderStatic) {
     .command('plugin:serve')
     .description('Serves the dev/ folder of a plugin')
     .option('--check', 'Enable type checking and linting')
+    .option(...configOption)
     .action(lazy(() => import('./plugin/serve').then(m => m.default)));
 
   program
     .command('plugin:export')
     .description('Exports the dev/ folder of a plugin')
     .option('--stats', 'Write bundle stats to output directory')
+    .option(...configOption)
     .action(lazy(() => import('./plugin/export').then(m => m.default)));
 
   program
@@ -132,13 +145,10 @@ export function registerCommands(program: CommanderStatic) {
     .command('config:print')
     .option('--with-secrets', 'Include secrets in the printed configuration')
     .option(
-      '--env <env>',
-      'The environment to print configuration for [NODE_ENV or development]',
-    )
-    .option(
       '--format <format>',
       'Format to print the configuration in, either json or yaml [yaml]',
     )
+    .option(...configOption)
     .description('Print the app configuration for the current package')
     .action(lazy(() => import('./config/print').then(m => m.default)));
 

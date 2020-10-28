@@ -22,7 +22,6 @@ import {
   Header,
   Lifecycle,
   Page,
-  pageTheme,
   Progress,
   SupportButton,
   useApi,
@@ -66,7 +65,7 @@ export const ScaffolderPage = () => {
   }, [error, errorApi]);
 
   return (
-    <Page theme={pageTheme.home}>
+    <Page themeId="home">
       <Header
         pageTitleOverride="Create a New Component"
         title={

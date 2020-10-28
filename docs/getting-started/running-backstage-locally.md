@@ -8,7 +8,7 @@ description: Documentation on How to run Backstage Locally
 
 - Node.js
 
-First make sure you are using NodeJS with an Active LTS Release, currently v12.
+First make sure you are using Node.js with an Active LTS Release, currently v12.
 This is made easy with a version manager such as
 [nvm](https://github.com/nvm-sh/nvm) which allows for version switching.
 
@@ -23,10 +23,10 @@ node --version
 > v12.18.3
 ```
 
-- yarn
+- Yarn
 
 Please refer to the
-[installation instructions for yarn](https://classic.yarnpkg.com/en/docs/install/).
+[installation instructions for Yarn](https://classic.yarnpkg.com/en/docs/install/).
 
 - Docker
 

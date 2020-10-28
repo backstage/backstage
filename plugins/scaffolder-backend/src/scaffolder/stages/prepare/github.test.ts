@@ -19,6 +19,11 @@ const mocks = {
   CheckoutOptions: jest.fn(() => {}),
 };
 jest.doMock('nodegit', () => mocks);
+jest.doMock('fs-extra', () => ({
+  promises: {
+    mkdtemp: jest.fn(dir => `${dir}-static`),
+  },
+}));
 
 import { GithubPreparer } from './github';
 import {
@@ -76,7 +81,9 @@ describe('GitHubPreparer', () => {
       1,
       'https://github.com/benjdlambert/backstage-graphql-template',
       expect.any(String),
-      {},
+      {
+        checkoutBranch: 'master',
+      },
     );
   });
   it('calls the clone command with the correct arguments for a repository when no path is provided', async () => {
@@ -87,7 +94,9 @@ describe('GitHubPreparer', () => {
       1,
       'https://github.com/benjdlambert/backstage-graphql-template',
       expect.any(String),
-      {},
+      {
+        checkoutBranch: 'master',
+      },
     );
   });
 
@@ -98,6 +107,36 @@ describe('GitHubPreparer', () => {
 
     expect(response.split('\\').join('/')).toMatch(
       /\/template\/test\/1\/2\/3$/,
+    );
+  });
+
+  it('return the working directory with the path to the folder if it is specified', async () => {
+    const preparer = new GithubPreparer();
+    mockEntity.spec.path = './template/test/1/2/3';
+    const response = await preparer.prepare(mockEntity, {
+      workingDirectory: '/workDir',
+    });
+
+    expect(response).toBe(
+      '/workDir/graphql-starter-static/template/test/1/2/3',
+    );
+  });
+
+  it('calls the clone command with the token when provided', async () => {
+    const preparer = new GithubPreparer({ token: 'abc' });
+    await preparer.prepare(mockEntity);
+    expect(mocks.Clone.clone).toHaveBeenNthCalledWith(
+      1,
+      'https://github.com/benjdlambert/backstage-graphql-template',
+      expect.any(String),
+      {
+        checkoutBranch: 'master',
+        fetchOpts: {
+          callbacks: {
+            credentials: expect.any(Function),
+          },
+        },
+      },
     );
   });
 });

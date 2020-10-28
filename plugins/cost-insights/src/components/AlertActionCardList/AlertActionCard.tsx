@@ -17,10 +17,9 @@ import React from 'react';
 import { Avatar, Card, CardHeader } from '@material-ui/core';
 import { useScroll } from '../../hooks';
 import { Alert } from '../../types';
-import { getAlertText, getAlertNavigation } from '../../utils/alerts';
 import {
-  useAlertActionCardStyles as useStyles,
   useAlertActionCardHeader as useHeaderStyles,
+  useAlertActionCardStyles as useStyles,
 } from '../../utils/styles';
 
 type AlertActionCardProps = {
@@ -28,10 +27,9 @@ type AlertActionCardProps = {
   number: number;
 };
 
-const AlertActionCard = ({ alert, number }: AlertActionCardProps) => {
-  const { scrollIntoView } = useScroll(getAlertNavigation(alert, number));
+export const AlertActionCard = ({ alert, number }: AlertActionCardProps) => {
+  const { scrollIntoView } = useScroll(`alert-${number}`);
   const headerClasses = useHeaderStyles();
-  const text = getAlertText(alert);
   const classes = useStyles();
 
   return (
@@ -39,11 +37,9 @@ const AlertActionCard = ({ alert, number }: AlertActionCardProps) => {
       <CardHeader
         classes={headerClasses}
         avatar={<Avatar className={classes.avatar}>{number}</Avatar>}
-        title={text?.title}
-        subheader={text?.subtitle}
+        title={alert.title}
+        subheader={alert.subtitle}
       />
     </Card>
   );
 };
-
-export default AlertActionCard;

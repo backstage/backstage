@@ -15,52 +15,10 @@
  */
 
 import React, { FC } from 'react';
-import {
-  configApiRef,
-  Progress,
-  Table,
-  TableColumn,
-  useApi,
-} from '@backstage/core';
+import { Progress, Table, TableColumn, useApi } from '@backstage/core';
 import Alert from '@material-ui/lab/Alert';
 import { useAsync } from 'react-use';
-
-type NewRelicApplication = {
-  id: number;
-  application_summary: NewRelicApplicationSummary;
-  name: string;
-  language: string;
-  health_status: string;
-  reporting: boolean;
-  settings: NewRelicApplicationSettings;
-  links?: NewRelicApplicationLinks;
-};
-
-type NewRelicApplicationSummary = {
-  apdex_score: number;
-  error_rate: number;
-  host_count: number;
-  instance_count: number;
-  response_time: number;
-  throughput: number;
-};
-
-type NewRelicApplicationSettings = {
-  app_apdex_threshold: number;
-  end_user_apdex_threshold: number;
-  enable_real_user_monitoring: boolean;
-  use_server_side_config: boolean;
-};
-
-type NewRelicApplicationLinks = {
-  application_instances: Array<any>;
-  servers: Array<any>;
-  application_hosts: Array<any>;
-};
-
-type NewRelicApplications = {
-  applications: NewRelicApplication[];
-};
+import { newRelicApiRef, NewRelicApplications } from '../../api';
 
 export const NewRelicAPMTable: FC<NewRelicApplications> = ({
   applications,
@@ -73,7 +31,7 @@ export const NewRelicAPMTable: FC<NewRelicApplications> = ({
     { title: 'Instance Count', field: 'instanceCount' },
     { title: 'Apdex', field: 'apdexScore' },
   ];
-  const data = applications.map((app: NewRelicApplication) => {
+  const data = applications.map(app => {
     const { name, application_summary: applicationSummary } = app;
     const {
       response_time: responseTime,
@@ -104,20 +62,11 @@ export const NewRelicAPMTable: FC<NewRelicApplications> = ({
 };
 
 const NewRelicFetchComponent: FC<{}> = () => {
-  const configApi = useApi(configApiRef);
-  const apiBaseUrl = configApi.getString('newrelic.api.baseUrl');
-  const apiKey = configApi.getString('newrelic.api.key');
+  const api = useApi(newRelicApiRef);
 
-  const { value, loading, error } = useAsync(async (): Promise<
-    NewRelicApplication[]
-  > => {
-    const response = await fetch(`${apiBaseUrl}/applications.json`, {
-      headers: {
-        'X-Api-Key': apiKey,
-      },
-    });
-    const data: NewRelicApplications = await response.json();
-    return data.applications.filter((application: NewRelicApplication) => {
+  const { value, loading, error } = useAsync(async () => {
+    const data = await api.getApplications();
+    return data.applications.filter(application => {
       return application.hasOwnProperty('application_summary');
     });
   }, []);

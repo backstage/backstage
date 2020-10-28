@@ -87,7 +87,7 @@ We use [changesets](https://github.com/atlassian/changesets) to help us prepare 
 1. Run `yarn changeset`
 2. Select which packages you want to include a changeset for
 3. Select impact of change that you're introducing (minor, major or patch)
-4. Add generated changset to Git
+4. Add generated changeset to Git
 5. Push the commit with your changeset to the branch associated with your PR
 6. Accept our gratitude for making the release process easier on the maintainer
 

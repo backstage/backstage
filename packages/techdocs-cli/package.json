@@ -1,7 +1,7 @@
 {
   "name": "@techdocs/cli",
   "description": "CLI for running TechDocs locally.",
-  "version": "0.1.1-alpha.24",
+  "version": "0.1.1-alpha.26",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -28,11 +28,7 @@
     "techdocs-cli": "bin/techdocs-cli"
   },
   "devDependencies": {
-    "@spotify/eslint-config": "^7.0.0",
-    "@spotify/prettier-config": "^7.0.0",
-    "@types/serve-handler": "^6.1.0",
-    "eslint": "^7.1.0",
-    "eslint-plugin-import": "^2.22.0"
+    "@types/serve-handler": "^6.1.0"
   },
   "files": [
     "bin",
@@ -44,7 +40,7 @@
     "ext": "ts"
   },
   "dependencies": {
-    "@backstage/cli": "^0.1.1-alpha.24",
+    "@backstage/cli": "^0.1.1-alpha.26",
     "commander": "^6.1.0",
     "fs-extra": "^9.0.1",
     "http-proxy": "^1.18.1",

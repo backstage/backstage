@@ -44,3 +44,4 @@ export type {
   UserEntityV1alpha1 as UserEntity,
   UserEntityV1alpha1,
 } from './UserEntityV1alpha1';
+export * from './relations';

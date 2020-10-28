@@ -18,6 +18,7 @@ export * from './addBaseUrl';
 export * from './rewriteDocLinks';
 export * from './addLinkClickListener';
 export * from './removeMkdocsHeader';
+export * from './simplifyMkdocsFooter';
 export * from './modifyCss';
 export * from './onCssReady';
 export * from './sanitizeDOM';

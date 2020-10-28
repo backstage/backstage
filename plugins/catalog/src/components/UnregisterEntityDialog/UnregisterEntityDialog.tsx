@@ -85,7 +85,7 @@ export const UnregisterEntityDialog: FC<Props> = ({
             {error.toString()}
           </Alert>
         ) : null}
-        {entities ? (
+        {entities?.length ? (
           <>
             <DialogContentText>
               This action will unregister the following entities:
@@ -107,11 +107,11 @@ export const UnregisterEntityDialog: FC<Props> = ({
                 </li>
               </ul>
             </Typography>
-            <DialogContentText>
-              To undo, just re-register the entity in Backstage.
-            </DialogContentText>
           </>
         ) : null}
+        <DialogContentText>
+          To undo, just re-register the entity in Backstage.
+        </DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="primary">

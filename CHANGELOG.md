@@ -8,6 +8,26 @@ If you encounter issues while upgrading to a newer version, don't hesitate to re
 
 > Collect changes for the next release below
 
+## v0.1.1-alpha.26
+
+### @backstage/cli
+
+- Configuration files are no longer selected through `APP_ENV` or `NODE_ENV`. The default configuration files are `app-config.yaml` and, fix it exists, `app-config.local.yaml` in the repo root. To load a different set of files, use `--config <path>` arguments.
+
+### @backstage/backend-common
+
+- Configuration files are no longer selected through `APP_ENV` or `NODE_ENV`. The default configuration files are `app-config.yaml` and, fix it exists, `app-config.local.yaml` in the repo root. To load a different set of files, use `--config <path>` arguments.
+
+## v0.1.1-alpha.25
+
+### @backstage/cli
+
+- The recommended way to set the configuration environment is now to use `APP_ENV` instead of `NODE_ENV`.
+
+### Backend (example-backend, or backends created with @backstage/create-app)
+
+- A plugin database manager has been created, and plugins can now accept that interface as an argument during initialisation. Notably, the `auth` plugin has a [`createRouter` signature change](./plugins/auth-backend/src/service/router.ts). See [packages/backend/src/index.ts](./packages/backend/src/index.ts) on how to set it up. [#2697](https://github.com/spotify/backstage/pull/2697)
+
 ## v0.1.1-alpha.24
 
 ### Backend (example-backend, or backends created with @backstage/create-app)

@@ -15,13 +15,13 @@
  */
 
 export type Validators = {
-  isValidApiVersion(value: any): boolean;
-  isValidKind(value: any): boolean;
-  isValidEntityName(value: any): boolean;
-  isValidNamespace(value: any): boolean;
-  isValidLabelKey(value: any): boolean;
-  isValidLabelValue(value: any): boolean;
-  isValidAnnotationKey(value: any): boolean;
-  isValidAnnotationValue(value: any): boolean;
-  isValidTag(value: any): boolean;
+  isValidApiVersion(value: unknown): boolean;
+  isValidKind(value: unknown): boolean;
+  isValidEntityName(value: unknown): boolean;
+  isValidNamespace(value: unknown): boolean;
+  isValidLabelKey(value: unknown): boolean;
+  isValidLabelValue(value: unknown): boolean;
+  isValidAnnotationKey(value: unknown): boolean;
+  isValidAnnotationValue(value: unknown): boolean;
+  isValidTag(value: unknown): boolean;
 };

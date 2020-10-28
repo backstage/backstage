@@ -38,11 +38,12 @@ export class DirectoryPreparer implements PreparerBase {
     );
 
     this.logger.debug(
-      `[TechDocs] Building docs for entity with type 'dir' and managed-by-location '${type}'`,
+      `Building docs for entity with type 'dir' and managed-by-location '${type}'`,
     );
     switch (type) {
       case 'github':
-      case 'gitlab': {
+      case 'gitlab':
+      case 'azure/api': {
         const parsedGitLocation = parseGitUrl(target);
         const repoLocation = await checkoutGitRepository(target, this.logger);
 

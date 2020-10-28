@@ -40,4 +40,4 @@ We are really excited to see all the amazing plugins that have already been buil
 
 What plugins would you like to see in the Plugin Marketplace? [Tell us](https://github.com/spotify/backstage/issues/new?labels=plugin&template=plugin_template.md&title=%5BPlugin%5D+THE+PLUGIN+NAME)!
 
-_Special shout-out to community member [Iain Billett](https://github.com/iain-b) from Roadie for helping build and contribute the [Plugin Marketplace page](https://backstage.io/plugins) (as his first PR no less!)._
+_Special shout-out to community member [Iain Billett](https://github.com/iain-b) from [Roadie](https://roadie.io) for helping build and contribute the [Plugin Marketplace page](https://backstage.io/plugins) (as his first PR no less!)._

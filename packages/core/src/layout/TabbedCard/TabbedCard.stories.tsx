@@ -20,7 +20,7 @@ import { Grid } from '@material-ui/core';
 const cardContentStyle = { height: 200, width: 500 };
 
 export default {
-  title: 'Tabbed Card',
+  title: 'Layout/Tabbed Card',
   component: TabbedCard,
   decorators: [
     (storyFn: () => JSX.Element) => (

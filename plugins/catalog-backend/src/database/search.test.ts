@@ -14,51 +14,39 @@
  * limitations under the License.
  */
 
-import { ENTITY_DEFAULT_NAMESPACE, Entity } from '@backstage/catalog-model';
-import { buildEntitySearch, visitEntityPart } from './search';
-import type { DbEntitiesSearchRow } from './types';
+import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
+import { buildEntitySearch, mapToRows, traverse } from './search';
 
 describe('search', () => {
-  describe('visitEntityPart', () => {
+  describe('traverse', () => {
     it('expands lists of strings to several rows', () => {
       const input = { a: ['b', 'c', 'd'] };
-      const output: DbEntitiesSearchRow[] = [];
-      visitEntityPart('eid', '', input, output);
+      const output = traverse(input);
       expect(output).toEqual([
-        { entity_id: 'eid', key: 'a', value: 'b' },
-        { entity_id: 'eid', key: 'a', value: 'c' },
-        { entity_id: 'eid', key: 'a', value: 'd' },
+        { key: 'a', value: 'b' },
+        { key: 'a.b', value: true },
+        { key: 'a', value: 'c' },
+        { key: 'a.c', value: true },
+        { key: 'a', value: 'd' },
+        { key: 'a.d', value: true },
       ]);
     });
 
     it('expands objects', () => {
       const input = { a: { b: { c: 'd' }, e: 'f' } };
-      const output: DbEntitiesSearchRow[] = [];
-      visitEntityPart('eid', '', input, output);
+      const output = traverse(input);
       expect(output).toEqual([
-        { entity_id: 'eid', key: 'a.b.c', value: 'd' },
-        { entity_id: 'eid', key: 'a.e', value: 'f' },
+        { key: 'a.b.c', value: 'd' },
+        { key: 'a.e', value: 'f' },
       ]);
     });
 
-    it('converts base types to strings or null', () => {
-      const input = {
-        a: true,
-        b: false,
-        c: 7,
-        d: 'string',
-        e: null,
-        f: undefined,
-      };
-      const output: DbEntitiesSearchRow[] = [];
-      visitEntityPart('eid', '', input, output);
+    it('expands list of objects', () => {
+      const input = { root: { list: [{ a: 1 }, { a: 2 }] } };
+      const output = traverse(input);
       expect(output).toEqual([
-        { entity_id: 'eid', key: 'a', value: 'true' },
-        { entity_id: 'eid', key: 'b', value: 'false' },
-        { entity_id: 'eid', key: 'c', value: '7' },
-        { entity_id: 'eid', key: 'd', value: 'string' },
-        { entity_id: 'eid', key: 'e', value: null },
-        { entity_id: 'eid', key: 'f', value: null },
+        { key: 'root.list.a', value: 1 },
+        { key: 'root.list.a', value: 2 },
       ]);
     });
 
@@ -76,34 +64,47 @@ describe('search', () => {
         },
         d: 'd',
       };
-      const output: DbEntitiesSearchRow[] = [];
-      visitEntityPart('eid', '', input, output);
+      const output = traverse(input);
       expect(output).toEqual([
-        { entity_id: 'eid', key: 'a', value: 'a' },
-        { entity_id: 'eid', key: 'metadata.b', value: 'b' },
-        { entity_id: 'eid', key: 'metadata.c', value: 'c' },
-        { entity_id: 'eid', key: 'd', value: 'd' },
+        { key: 'a', value: 'a' },
+        { key: 'metadata.b', value: 'b' },
+        { key: 'metadata.c', value: 'c' },
+        { key: 'd', value: 'd' },
       ]);
     });
+  });
 
-    it('expands list of objects', () => {
-      const input = { root: { list: [{ a: 1 }, { a: 2 }] } };
-      const output: DbEntitiesSearchRow[] = [];
-      visitEntityPart('eid', '', input, output);
+  describe('mapToRows', () => {
+    it('converts base types to strings or null', () => {
+      const input = [
+        { key: 'a', value: true },
+        { key: 'b', value: false },
+        { key: 'c', value: 7 },
+        { key: 'd', value: 'string' },
+        { key: 'e', value: null },
+        { key: 'f', value: undefined },
+      ];
+      const output = mapToRows(input, 'eid');
       expect(output).toEqual([
-        { entity_id: 'eid', key: 'root.list.a', value: '1' },
-        { entity_id: 'eid', key: 'root.list.a', value: '2' },
+        { entity_id: 'eid', key: 'a', value: 'true' },
+        { entity_id: 'eid', key: 'b', value: 'false' },
+        { entity_id: 'eid', key: 'c', value: '7' },
+        { entity_id: 'eid', key: 'd', value: 'string' },
+        { entity_id: 'eid', key: 'e', value: null },
+        { entity_id: 'eid', key: 'f', value: null },
       ]);
     });
 
     it('emits lowercase version of keys and values', () => {
-      const input = { theRoot: { listItems: [{ a: 'One' }, { a: 2 }] } };
-      const output: DbEntitiesSearchRow[] = [];
-      visitEntityPart('eid', '', input, output);
-      expect(output).toEqual([
-        { entity_id: 'eid', key: 'theroot.listitems.a', value: 'one' },
-        { entity_id: 'eid', key: 'theroot.listitems.a', value: '2' },
-      ]);
+      const input = [{ key: 'fOo', value: 'BaR' }];
+      const output = mapToRows(input, 'eid');
+      expect(output).toEqual([{ entity_id: 'eid', key: 'foo', value: 'bar' }]);
+    });
+
+    it('skips very large values', () => {
+      const input = [{ key: 'foo', value: 'a'.repeat(10000) }];
+      const output = mapToRows(input, 'eid');
+      expect(output).toEqual([]);
     });
   });
 
@@ -115,6 +116,8 @@ describe('search', () => {
         metadata: { name: 'n' },
       };
       expect(buildEntitySearch('eid', input)).toEqual([
+        { entity_id: 'eid', key: 'apiversion', value: 'a' },
+        { entity_id: 'eid', key: 'kind', value: 'b' },
         { entity_id: 'eid', key: 'metadata.name', value: 'n' },
         { entity_id: 'eid', key: 'metadata.namespace', value: null },
         { entity_id: 'eid', key: 'metadata.uid', value: null },
@@ -123,8 +126,6 @@ describe('search', () => {
           key: 'metadata.namespace',
           value: ENTITY_DEFAULT_NAMESPACE,
         },
-        { entity_id: 'eid', key: 'apiversion', value: 'a' },
-        { entity_id: 'eid', key: 'kind', value: 'b' },
       ]);
     });
   });

@@ -17,7 +17,7 @@ import { Logger } from 'winston';
 import Router from 'express-promise-router';
 import express from 'express';
 import Knex from 'knex';
-import fetch from 'node-fetch';
+import fetch from 'cross-fetch';
 import { Config } from '@backstage/config';
 import Docker from 'dockerode';
 import {
@@ -71,14 +71,12 @@ export async function createRouter({
       const mkDocsMetadata = await (await fetch(metadataURL)).json();
       res.send(mkDocsMetadata);
     } catch (err) {
-      logger.info(
-        `[TechDocs] Unable to get metadata for ${path} with error ${err}`,
-      );
+      logger.info(`Unable to get metadata for ${path} with error ${err}`);
       throw new Error(`Unable to get metadata for ${path} with error ${err}`);
     }
   });
 
-  router.get('/metadata/entity/:kind/:namespace/:name', async (req, res) => {
+  router.get('/metadata/entity/:namespace/:kind/:name', async (req, res) => {
     const baseUrl = config.getString('backend.baseUrl');
     const { kind, namespace, name } = req.params;
 
@@ -93,7 +91,7 @@ export async function createRouter({
       res.send({ ...entity, locationMetadata });
     } catch (err) {
       logger.info(
-        `[TechDocs] Unable to get metadata for ${kind}/${namespace}/${name} with error ${err}`,
+        `Unable to get metadata for ${kind}/${namespace}/${name} with error ${err}`,
       );
       throw new Error(
         `Unable to get metadata for ${kind}/${namespace}/${name} with error ${err}`,
@@ -101,7 +99,7 @@ export async function createRouter({
     }
   });
 
-  router.get('/docs/:kind/:namespace/:name/*', async (req, res) => {
+  router.get('/docs/:namespace/:kind/:name/*', async (req, res) => {
     const storageUrl = config.getString('techdocs.storageUrl');
 
     const { kind, namespace, name } = req.params;
@@ -111,7 +109,9 @@ export async function createRouter({
 
     const catalogRes = await fetch(`${catalogUrl}/entities/by-name/${triple}`);
     if (!catalogRes.ok) {
-      catalogRes.body.pipe(res.status(catalogRes.status));
+      const catalogResText = await catalogRes.text();
+      res.status(catalogRes.status);
+      res.send(catalogResText);
       return;
     }
 

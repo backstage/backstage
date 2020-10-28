@@ -18,6 +18,7 @@ export type Loading = Record<string, boolean>;
 
 export enum DefaultLoadingAction {
   UserGroups = 'user-groups',
+  LastCompleteBillingDate = 'billing-date',
   CostInsightsInitial = 'cost-insights-initial',
   CostInsightsPage = 'cost-insights-page',
 }

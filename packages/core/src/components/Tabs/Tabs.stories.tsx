@@ -19,7 +19,7 @@ import { Tabs } from './Tabs';
 import AccessAlarmIcon from '@material-ui/icons/AccessAlarm';
 
 export default {
-  title: 'Tabs',
+  title: 'Navigation/Tabs',
   component: Tabs,
 };
 

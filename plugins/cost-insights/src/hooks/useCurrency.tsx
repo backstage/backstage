@@ -16,9 +16,9 @@
 import React, {
   Dispatch,
   SetStateAction,
-  ReactNode,
   useState,
   useContext,
+  PropsWithChildren,
 } from 'react';
 import { Currency, defaultCurrencies, findAlways } from '../types';
 
@@ -27,15 +27,11 @@ export type CurrencyContextProps = {
   setCurrency: Dispatch<SetStateAction<Currency>>;
 };
 
-export type CurrencyProviderProps = {
-  children: ReactNode;
-};
-
 export const CurrencyContext = React.createContext<
   CurrencyContextProps | undefined
 >(undefined);
 
-export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
+export const CurrencyProvider = ({ children }: PropsWithChildren<{}>) => {
   const engineers = findAlways(defaultCurrencies, c => c.kind === null);
   const [currency, setCurrency] = useState<Currency>(engineers);
   return (

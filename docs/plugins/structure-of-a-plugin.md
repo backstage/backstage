@@ -73,7 +73,7 @@ export const plugin = createPlugin({
 ```
 
 This is where the plugin is created and where it hooks into the app by declaring
-what component should be shown on what url. See reference docs for
+what component should be shown on what URL. See reference docs for
 [createPlugin](../reference/createPlugin.md) or
 [router](../reference/createPlugin-router.md).
 
@@ -101,11 +101,11 @@ Backstage CLI.
 
 ## Talking to the outside world
 
-If your plugin needs to communicate with services outside the backstage
+If your plugin needs to communicate with services outside the Backstage
 environment you will probably face challenges like CORS policies and/or
 backend-side authorization. To smooth this process out you can use proxy -
-either the one you already have (like nginx/haproxy/etc) or the proxy-backend
-plugin that we provide for the backstage backend.
+either the one you already have (like Nginx, HAProxy, etc.) or the proxy-backend
+plugin that we provide for the Backstage backend.
 [Read more](https://github.com/spotify/backstage/blob/master/plugins/proxy-backend/README.md)
 
 [Back to Getting Started](../README.md)

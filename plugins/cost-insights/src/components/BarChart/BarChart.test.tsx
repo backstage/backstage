@@ -17,7 +17,7 @@
 import React from 'react';
 import { TooltipPayload } from 'recharts';
 import { fireEvent } from '@testing-library/react';
-import BarChart, { BarChartProps } from './BarChart';
+import { BarChart, BarChartProps } from './BarChart';
 import { BarChartData, ResourceData } from '../../types';
 import { createMockEntity } from '../../utils/mockData';
 import { resourceSort } from '../../utils/sort';
@@ -79,12 +79,14 @@ describe('<BarChart />', () => {
   it('Should display only 6 resources by default, sorted by cost', async () => {
     const rendered = await renderWithProps({} as BarChartProps);
 
-    MockResources.sort(resourceSort).forEach((resource, index) => {
-      if (index < 6) {
-        expect(rendered.getByText(resource.name!)).toBeInTheDocument();
-      } else {
-        expect(rendered.queryByText(resource.name!)).not.toBeInTheDocument();
-      }
+    const sorted = MockResources.sort(resourceSort);
+
+    expect(sorted.length).toBe(10);
+    sorted.slice(0, 6).forEach(resource => {
+      expect(rendered.getByText(resource.name!)).toBeInTheDocument();
+    });
+    sorted.slice(6).forEach(resource => {
+      expect(rendered.queryByText(resource.name!)).not.toBeInTheDocument();
     });
   });
 

@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import type { Entity, EntityName, Location } from '@backstage/catalog-model';
+import type {
+  Entity,
+  EntityName,
+  Location,
+  EntityRelationSpec,
+} from '@backstage/catalog-model';
 
 export type DbEntitiesRow = {
   id: string;
   location_id: string | null;
-  api_version: string;
-  kind: string;
-  name: string | null;
-  namespace: string | null;
   etag: string;
   generation: number;
   full_name: string;
-  metadata: string;
-  spec: string | null;
+  data: string;
 };
 
 export type DbEntityRequest = {
@@ -38,6 +38,13 @@ export type DbEntityRequest = {
 export type DbEntityResponse = {
   locationId?: string;
   entity: Entity;
+};
+
+export type DbEntitiesRelationsRow = {
+  originating_entity_id: string;
+  source_full_name: string;
+  type: string;
+  target_full_name: string;
 };
 
 export type DbEntitiesSearchRow = {
@@ -72,11 +79,27 @@ export type DatabaseLocationUpdateLogEvent = {
   message?: string;
 };
 
-export type EntityFilter = {
-  key: string;
-  values: (string | null)[];
-};
-export type EntityFilters = EntityFilter[];
+/**
+ * Filter matcher for a single entity field.
+ *
+ * Can be either null or a string, or an array of those. Null and the empty
+ * string are treated equally, and match both a present field with a null or
+ * empty value, as well as an absent field.
+ *
+ * A filter may contain asterisks (*) that are treated as wildcards for zero
+ * or more arbitrary characters.
+ */
+export type EntityFilter = null | string | (null | string)[];
+
+/**
+ * A set of filter matchers used for filtering entities.
+ *
+ * The keys are full dot-separated paths into the structure of an entity, for
+ * example "metadata.name". You can also address any item in an array the same
+ * way, e.g. "a.b.c": "x" works if b is an array of objects that have a c field
+ * and any of those have the value x.
+ */
+export type EntityFilters = Record<string, EntityFilter>;
 
 /**
  * An abstraction on top of the underlying database, wrapping the basic CRUD
@@ -94,13 +117,15 @@ export type Database = {
   transaction<T>(fn: (tx: unknown) => Promise<T>): Promise<T>;
 
   /**
-   * Adds a new entity to the catalog.
+   * Adds a set of new entities to the catalog.
    *
    * @param tx An ongoing transaction
-   * @param request The entity being added
-   * @returns The added entity, with uid, etag and generation set
+   * @param request The entities being added
    */
-  addEntity(tx: unknown, request: DbEntityRequest): Promise<DbEntityResponse>;
+  addEntities(
+    tx: unknown,
+    request: DbEntityRequest[],
+  ): Promise<DbEntityResponse[]>;
 
   /**
    * Updates an existing entity in the catalog.
@@ -128,7 +153,7 @@ export type Database = {
     matchingGeneration?: number,
   ): Promise<DbEntityResponse>;
 
-  entities(tx: unknown, filters?: EntityFilters): Promise<DbEntityResponse[]>;
+  entities(tx: unknown, filters?: EntityFilters[]): Promise<DbEntityResponse[]>;
 
   entityByName(
     tx: unknown,
@@ -137,7 +162,19 @@ export type Database = {
 
   entityByUid(tx: unknown, uid: string): Promise<DbEntityResponse | undefined>;
 
-  removeEntity(tx: unknown, uid: string): Promise<void>;
+  removeEntityByUid(tx: unknown, uid: string): Promise<void>;
+
+  /**
+   * Remove current relations for the entity and replace them with the new relations array
+   * @param tx An ongoing transaction
+   * @param entityUid the entity uid
+   * @param relations the relationships to be set
+   */
+  setRelations(
+    tx: unknown,
+    entityUid: string,
+    relations: EntityRelationSpec[],
+  ): Promise<void>;
 
   addLocation(location: Location): Promise<DbLocationsRow>;
 

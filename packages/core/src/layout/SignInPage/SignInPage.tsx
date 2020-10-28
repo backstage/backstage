@@ -52,7 +52,7 @@ export const SignInPage: FC<Props> = ({
   }
 
   return (
-    <Page>
+    <Page themeId="home">
       <Header title={configApi.getString('app.title')} />
       <Content>
         {title && <ContentHeader title={title} textAlign={align} />}

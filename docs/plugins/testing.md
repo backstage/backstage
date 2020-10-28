@@ -248,15 +248,15 @@ Testing an API involves verifying four things:
 
 ### Mocking API Calls
 
-[Mocking in jest](https://facebook.github.io/jest/docs/en/mock-functions.html)
+[Mocking in Jest](https://facebook.github.io/jest/docs/en/mock-functions.html)
 involves wrapping existing functions (like an API call function) with an
 alternative.
 
 For example:
 
-**./Api.js**
+**`./MyApi.js`**
 
-```
+```js
 export {
   fetchSomethingFromServer: () => {
     // Live production call to a URI. Must be avoided during testing!
@@ -265,9 +265,9 @@ export {
 };
 ```
 
-**./\_\_mocks\_\_/Api.js**
+**`./\_\_mocks\_\_/MyApi.js`**
 
-```
+```js
 export {
   fetchSomethingFromServer: () => {
     // Simulate a production call, but avoid jest and just use a promise
@@ -276,16 +276,16 @@ export {
 }
 ```
 
-**./Api.test.js**
+**`./MyApi.test.js`**
 
-```
+```js
 /* eslint-disable import/first */
 
 jest.mock('./MyApi'); // Instruct Jest to swap all future imports of './MyApi.js' to './__mocks__/MyApi.js'
 
 import MyApi from './MyApi'; // Will actually return the contents of the file in the __mocks__ folder now
 
-it ('loads data', (done) => {
+it('loads data', done => {
   MyApi.fetchSomethingFromServer().then(result => {
     expect(result).toBe('some result object simulating server data here');
     done();

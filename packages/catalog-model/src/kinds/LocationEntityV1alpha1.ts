@@ -28,7 +28,7 @@ const schema = yup.object<Partial<LocationEntityV1alpha1>>({
     .object({
       type: yup.string().required().min(1),
       target: yup.string().notRequired().min(1),
-      targets: yup.array(yup.string()).notRequired(),
+      targets: yup.array(yup.string().required()).notRequired(),
     })
     .required(),
 });
