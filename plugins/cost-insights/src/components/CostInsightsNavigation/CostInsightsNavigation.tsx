@@ -66,10 +66,10 @@ export const CostInsightsNavigation = ({
                 })}
               </Badge>
             ) : (
-                React.cloneElement(item.icon, {
-                  className: classes.navigationIcon,
-                })
-              )
+              React.cloneElement(item.icon, {
+                className: classes.navigationIcon,
+              })
+            )
           }
           title={item.title}
         />

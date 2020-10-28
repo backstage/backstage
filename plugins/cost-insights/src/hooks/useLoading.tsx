@@ -68,7 +68,7 @@ export const LoadingProvider = ({ children }: PropsWithChildren<{}>) => {
       // Initial page loading is handled by progress bar
       setBackdropVisible(
         !state[DefaultLoadingAction.CostInsightsInitial] &&
-        Object.values(state).some(l => l),
+          Object.values(state).some(l => l),
       );
     }
     displayLoadingBackdrop();

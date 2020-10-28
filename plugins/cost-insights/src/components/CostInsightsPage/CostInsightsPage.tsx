@@ -41,13 +41,7 @@ import {
   useLastCompleteBillingDate,
   useLoading,
 } from '../../hooks';
-import {
-  Alert,
-  Cost,
-  Maybe,
-  MetricData,
-  Project,
-} from '../../types';
+import { Alert, Cost, Maybe, MetricData, Project } from '../../types';
 import { mapLoadingToProps } from './selector';
 import { ProjectSelect } from '../ProjectSelect';
 import { intervalsOf } from '../../utils/duration';

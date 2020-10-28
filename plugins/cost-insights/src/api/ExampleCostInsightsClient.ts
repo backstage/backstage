@@ -34,7 +34,12 @@ import {
   UnlabeledDataflowAlert,
   UnlabeledDataflowData,
 } from '../types';
-import { DEFAULT_DATE_FORMAT, Duration, exclusiveEndDateOf, inclusiveStartDateOf } from '../utils/duration';
+import {
+  DEFAULT_DATE_FORMAT,
+  Duration,
+  exclusiveEndDateOf,
+  inclusiveStartDateOf,
+} from '../utils/duration';
 
 type IntervalFields = {
   duration: Duration;
