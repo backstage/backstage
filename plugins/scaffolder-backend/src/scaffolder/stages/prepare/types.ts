@@ -17,6 +17,11 @@ import type { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { Logger } from 'winston';
 import { RemoteProtocol } from '../types';
 
+export type PreparerOptions = {
+  logger: Logger;
+  workingDirectory?: string;
+};
+
 export type PreparerBase = {
   /**
    * Given an Entity definition from the Service Catalog, go and prepare a directory
@@ -25,7 +30,7 @@ export type PreparerBase = {
    */
   prepare(
     template: TemplateEntityV1alpha1,
-    opts?: { logger: Logger; workingDirectory?: string },
+    opts: PreparerOptions,
   ): Promise<string>;
 };
 
