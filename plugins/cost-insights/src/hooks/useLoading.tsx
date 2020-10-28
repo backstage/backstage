@@ -26,12 +26,12 @@ import React, {
   useState,
 } from 'react';
 import { Backdrop, CircularProgress } from '@material-ui/core';
+import { Loading } from '../types';
 import {
   DefaultLoadingAction,
   getDefaultState,
   getLoadingActions,
-  Loading,
-} from '../types';
+} from '../utils/loading';
 import { useBackdropStyles as useStyles } from '../utils/styles';
 import { useConfig } from './useConfig';
 
@@ -68,7 +68,7 @@ export const LoadingProvider = ({ children }: PropsWithChildren<{}>) => {
       // Initial page loading is handled by progress bar
       setBackdropVisible(
         !state[DefaultLoadingAction.CostInsightsInitial] &&
-          Object.values(state).some(l => l),
+        Object.values(state).some(l => l),
       );
     }
     displayLoadingBackdrop();

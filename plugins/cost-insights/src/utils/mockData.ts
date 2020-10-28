@@ -15,11 +15,9 @@
  */
 
 import {
-  DefaultLoadingAction,
   Duration,
   Entity,
   findAlways,
-  getDefaultState as getDefaultLoadingState,
   Product,
   ProductCost,
   ProductFilters,
@@ -27,6 +25,10 @@ import {
   UnlabeledDataflowAlertProject,
   UnlabeledDataflowData,
 } from '../types';
+import {
+  DefaultLoadingAction,
+  getDefaultState as getDefaultLoadingState,
+} from '../utils/loading';
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/core';
 
