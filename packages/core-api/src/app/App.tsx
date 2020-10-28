@@ -30,12 +30,12 @@ import {
   SignInPageProps,
 } from './types';
 import { BackstagePlugin } from '../plugin';
-import { FeatureFlagsRegistryItem } from './FeatureFlags';
 import {
   featureFlagsApiRef,
   AppThemeApi,
   ConfigApi,
   identityApiRef,
+  FeatureFlagsRegistryItem,
 } from '../apis/definitions';
 import { AppThemeProvider } from './AppThemeProvider';
 
@@ -54,8 +54,7 @@ import {
 } from '../apis';
 import { useAsync } from 'react-use';
 import { AppIdentity } from './AppIdentity';
-import { ApiFactoryRegistry } from '../apis/ApiFactoryRegistry';
-import { ApiResolver } from '../apis/ApiResolver';
+import { ApiResolver, ApiFactoryRegistry } from '../apis/system';
 
 type FullAppOptions = {
   apis: Iterable<AnyApiFactory>;

@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import os from 'os';
 import fs from 'fs-extra';
 import path from 'path';
-import os from 'os';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { parseLocationAnnotation } from '../helpers';
 import { InputError } from '@backstage/backend-common';
@@ -32,28 +32,28 @@ export class AzurePreparer implements PreparerBase {
       config.getOptionalString('scaffolder.azure.api.token') ?? '';
   }
 
-  async prepare(template: TemplateEntityV1alpha1): Promise<string> {
+  async prepare(
+    template: TemplateEntityV1alpha1,
+    opts?: { workingDirectory?: string },
+  ): Promise<string> {
     const { protocol, location } = parseLocationAnnotation(template);
+    const workingDirectory = opts?.workingDirectory ?? os.tmpdir();
 
-    if (protocol !== 'azure/api') {
+    if (!['azure/api', 'url'].includes(protocol)) {
       throw new InputError(
-        `Wrong location protocol: ${protocol}, should be 'azure/api'`,
+        `Wrong location protocol: ${protocol}, should be 'url'`,
       );
     }
     const templateId = template.metadata.name;
 
-    const url = new URL(location); // Need to extract filepath from search parameter
     const parsedGitLocation = GitUriParser(location);
     const repositoryCheckoutUrl = parsedGitLocation.toString('https');
-
     const tempDir = await fs.promises.mkdtemp(
-      path.join(os.tmpdir(), templateId),
+      path.join(workingDirectory, templateId),
     );
 
     const templateDirectory = path.join(
-      `${path
-        .dirname(url.searchParams.get('path') || '')
-        .replace(/^\/+/g, '')}`, // Strip leading slash
+      `${path.dirname(parsedGitLocation.filepath)}`,
       template.spec.path ?? '.',
     );
 

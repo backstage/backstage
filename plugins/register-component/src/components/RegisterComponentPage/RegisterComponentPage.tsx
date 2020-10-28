@@ -19,7 +19,6 @@ import { Grid, makeStyles } from '@material-ui/core';
 import {
   InfoCard,
   Page,
-  pageTheme,
   Content,
   useApi,
   errorApiRef,
@@ -113,7 +112,7 @@ export const RegisterComponentPage = ({
   };
 
   return (
-    <Page theme={pageTheme.home}>
+    <Page themeId="home">
       <Header title="Register existing component" />
       <Content>
         <ContentHeader title="Start tracking your component in Backstage">

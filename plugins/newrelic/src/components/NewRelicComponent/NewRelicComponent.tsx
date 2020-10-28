@@ -19,7 +19,6 @@ import { Grid } from '@material-ui/core';
 import {
   Header,
   Page,
-  pageTheme,
   Content,
   ContentHeader,
   HeaderLabel,
@@ -28,7 +27,7 @@ import {
 import NewRelicFetchComponent from '../NewRelicFetchComponent';
 
 const NewRelicComponent: FC<{}> = () => (
-  <Page theme={pageTheme.tool}>
+  <Page themeId="tool">
     <Header title="New Relic">
       <HeaderLabel label="Owner" value="Engineering" />
     </Header>

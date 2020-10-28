@@ -16,7 +16,7 @@
 
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Content, Page, pageTheme, useApi } from '@backstage/core';
+import { Content, Page, useApi } from '@backstage/core';
 import { Reader } from './Reader';
 import { useAsync } from 'react-use';
 import { TechDocsPageHeader } from './TechDocsPageHeader';
@@ -24,8 +24,7 @@ import { techdocsApiRef } from '../../api';
 
 export const TechDocsPage = () => {
   const [documentReady, setDocumentReady] = useState<boolean>(false);
-  const { entityId } = useParams();
-  const [kind, namespace, name] = entityId.split(':');
+  const { namespace, kind, name } = useParams();
 
   const techDocsApi = useApi(techdocsApiRef);
 
@@ -46,7 +45,7 @@ export const TechDocsPage = () => {
   };
 
   return (
-    <Page theme={pageTheme.documentation}>
+    <Page themeId="documentation">
       <TechDocsPageHeader
         metadataRequest={{
           mkdocs: mkdocsMetadataRequest,

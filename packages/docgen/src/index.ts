@@ -21,6 +21,7 @@ import fs from 'fs-extra';
 import { generate } from './generate';
 
 const main = (argv: string[]) => {
+  /* eslint-disable-next-line no-restricted-syntax */
   const pkgJson = fs.readJsonSync(resolvePath(__dirname, '../package.json'));
   program.name('docgen').version(pkgJson.version);
 
@@ -47,10 +48,6 @@ const main = (argv: string[]) => {
     console.log();
     process.exit(1);
   });
-
-  if (!process.argv.slice(2).length) {
-    program.outputHelp(chalk.yellow);
-  }
 
   program.parse(argv);
 };

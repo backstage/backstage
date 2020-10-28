@@ -20,8 +20,6 @@ import {
   errorApiRef,
   Header,
   Page,
-  pageTheme,
-  PageTheme,
   Progress,
   useApi,
 } from '@backstage/core';
@@ -53,11 +51,6 @@ function headerProps(
     })(),
   };
 }
-
-export const getPageTheme = (entity?: Entity): PageTheme => {
-  const themeKey = entity?.spec?.type?.toString() ?? 'home';
-  return pageTheme[themeKey] ?? pageTheme.home;
-};
 
 type EntityPageTitleProps = {
   title: string;
@@ -107,7 +100,7 @@ export const ApiEntityPage = () => {
   );
 
   return (
-    <Page theme={getPageTheme(entity)}>
+    <Page themeId={entity?.spec?.type?.toString() ?? 'home'}>
       <Header
         title={<EntityPageTitle title={headerTitle} entity={entity} />}
         pageTitleOverride={headerTitle}

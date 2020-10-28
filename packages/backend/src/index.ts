@@ -24,17 +24,16 @@
 
 import Router from 'express-promise-router';
 import {
-  ensureDatabaseExists,
-  createDatabaseClient,
   createServiceBuilder,
   loadBackendConfig,
   getRootLogger,
   useHotMemoize,
   notFoundHandler,
+  SingleConnectionDatabaseManager,
   SingleHostDiscovery,
   UrlReaders,
 } from '@backstage/backend-common';
-import { ConfigReader, AppConfig } from '@backstage/config';
+import { Config } from '@backstage/config';
 import healthcheck from './plugins/healthcheck';
 import auth from './plugins/auth';
 import catalog from './plugins/catalog';
@@ -48,37 +47,28 @@ import graphql from './plugins/graphql';
 import app from './plugins/app';
 import { PluginEnvironment } from './types';
 
-function makeCreateEnv(loadedConfigs: AppConfig[]) {
-  const config = ConfigReader.fromConfigs(loadedConfigs);
+function makeCreateEnv(config: Config) {
   const root = getRootLogger();
   const reader = UrlReaders.default({ logger: root, config });
   const discovery = SingleHostDiscovery.fromConfig(config);
 
   root.info(`Created UrlReader ${reader}`);
 
+  const databaseManager = SingleConnectionDatabaseManager.fromConfig(config);
+
   return (plugin: string): PluginEnvironment => {
     const logger = root.child({ type: 'plugin', plugin });
-    const database = createDatabaseClient(
-      config.getConfig('backend.database'),
-      {
-        connection: {
-          database: `backstage_plugin_${plugin}`,
-        },
-      },
-    );
+    const database = databaseManager.forPlugin(plugin);
     return { logger, database, config, reader, discovery };
   };
 }
 
 async function main() {
-  const configs = await loadBackendConfig();
-  const configReader = ConfigReader.fromConfigs(configs);
-  const createEnv = makeCreateEnv(configs);
-  await ensureDatabaseExists(
-    configReader.getConfig('backend.database'),
-    'backstage_plugin_catalog',
-    'backstage_plugin_auth',
-  );
+  const config = await loadBackendConfig({
+    argv: process.argv,
+    logger: getRootLogger(),
+  });
+  const createEnv = makeCreateEnv(config);
 
   const healthcheckEnv = useHotMemoize(module, () => createEnv('healthcheck'));
   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
@@ -105,7 +95,7 @@ async function main() {
   apiRouter.use(notFoundHandler());
 
   const service = createServiceBuilder(module)
-    .loadConfig(configReader)
+    .loadConfig(config)
     .addRouter('', await healthcheck(healthcheckEnv))
     .addRouter('/api', apiRouter)
     .addRouter('', await app(appEnv));

@@ -15,12 +15,12 @@
  */
 import React, {
   Dispatch,
-  ReactNode,
   SetStateAction,
   useState,
   useContext,
   useEffect,
   useRef,
+  PropsWithChildren,
 } from 'react';
 import { CSSProperties } from '@material-ui/styles';
 import { Maybe } from '../types';
@@ -30,10 +30,6 @@ export type ScrollTo = Maybe<string>;
 export type ScrollContextProps = {
   scrollTo: ScrollTo;
   setScrollTo: Dispatch<SetStateAction<ScrollTo>>;
-};
-
-export type ScrollProviderProps = {
-  children: ReactNode;
 };
 
 export type ScrollUtils = {
@@ -96,7 +92,7 @@ export const ScrollAnchor = ({
   return <div ref={divRef} style={styles} data-testid={`scroll-test-${id}`} />;
 };
 
-export const ScrollProvider = ({ children }: ScrollProviderProps) => {
+export const ScrollProvider = ({ children }: PropsWithChildren<{}>) => {
   const [scrollTo, setScrollTo] = useState<ScrollTo>(null);
 
   return (

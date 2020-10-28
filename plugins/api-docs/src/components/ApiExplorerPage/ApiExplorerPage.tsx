@@ -44,7 +44,6 @@ export const ApiExplorerPage = () => {
           <SupportButton>All your APIs</SupportButton>
         </ContentHeader>
         <ApiExplorerTable
-          titlePreamble="APIs"
           entities={matchingEntities!}
           loading={loading}
           error={error}

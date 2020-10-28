@@ -17,7 +17,7 @@
 import React from 'react';
 import { getByRole, waitFor } from '@testing-library/react';
 import UserEvent from '@testing-library/user-event';
-import ProjectSelect from './ProjectSelect';
+import { ProjectSelect } from './ProjectSelect';
 import { MockFilterProvider } from '../../utils/tests';
 import { renderInTestApp } from '@backstage/test-utils';
 
@@ -27,20 +27,15 @@ const mockProjects = [
   { id: 'project3' },
 ];
 
-const mockSetPageFilters = jest.fn();
-
 describe('<ProjectSelect />', () => {
   let Component: React.ReactNode;
   beforeEach(() => {
     Component = () => (
-      <MockFilterProvider
-        setPageFilters={mockSetPageFilters}
-        setProductFilters={jest.fn()}
-      >
+      <MockFilterProvider>
         <ProjectSelect
           project="all"
           projects={mockProjects}
-          onSelect={mockSetPageFilters}
+          onSelect={jest.fn()}
         />
       </MockFilterProvider>
     );
@@ -59,10 +54,9 @@ describe('<ProjectSelect />', () => {
     const button = getByRole(projectSelectContainer, 'button');
     UserEvent.click(button);
     await waitFor(() => rendered.getByTestId('option-all'));
-    mockProjects.forEach(
-      project =>
-        project.id &&
-        expect(rendered.getByText(project.id)).toBeInTheDocument(),
+
+    mockProjects.forEach(project =>
+      expect(rendered.getByText(project.id)).toBeInTheDocument(),
     );
   });
 });

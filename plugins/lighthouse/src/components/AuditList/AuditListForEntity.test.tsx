@@ -22,7 +22,6 @@ import {
   LighthouseRestApi,
   WebsiteListResponse,
 } from '../../api';
-import mockFetch from 'jest-fetch-mock';
 
 import * as data from '../../__fixtures__/website-list-response.json';
 import { EntityContext } from '@backstage/plugin-catalog';
@@ -53,7 +52,7 @@ describe('<AuditListTableForEntity />', () => {
       [lighthouseApiRef, new LighthouseRestApi('http://lighthouse')],
       [errorApiRef, mockErrorApi],
     ]);
-    mockFetch.mockResponse(JSON.stringify(entityWebsite));
+
     (useWebsiteForEntity as jest.Mock).mockReturnValue({
       value: entityWebsite,
       loading: false,

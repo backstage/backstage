@@ -20,10 +20,15 @@ import {
   lengthyCurrencyFormatter,
 } from './formatters';
 
-export function formatGraphValue(value: number) {
+export function formatGraphValue(value: number, format?: string) {
+  if (format === 'number') {
+    return value.toLocaleString();
+  }
+
   if (value < 1) {
     return lengthyCurrencyFormatter.format(value);
   }
+
   return currencyFormatter.format(value);
 }
 

@@ -64,6 +64,7 @@ export const makeConfigs = async (
         entryFileNames: 'index.cjs.js',
         chunkFileNames: 'cjs/[name]-[hash].js',
         format: 'commonjs',
+        sourcemap: true,
       });
     }
     if (options.outputs.has(Output.esm)) {
@@ -72,6 +73,7 @@ export const makeConfigs = async (
         entryFileNames: 'index.esm.js',
         chunkFileNames: 'esm/[name]-[hash].js',
         format: 'module',
+        sourcemap: true,
       });
       // Assume we're building for the browser if ESM output is included
       mainFields.unshift('browser');

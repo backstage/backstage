@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
-import Tooltip from './Tooltip';
+import { Tooltip } from './Tooltip';
 import { CostInsightsThemeProvider } from '../CostInsightsPage/CostInsightsThemeProvider';
 
 const mockTooltipItems = [

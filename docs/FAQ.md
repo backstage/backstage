@@ -178,8 +178,7 @@ Spotify will maintain the open source core, but we envision different parts of
 the project being maintained by various companies and contributors. We also
 envision a large, diverse ecosystem of open source plugins, which would be
 maintained by their original authors/contributors or by the community. When it
-comes to
-[deployment](https://github.com/spotify/backstage/blob/master/DEPLOYMENT.md),
+comes to [deployment](https://backstage.io/docs/getting-started/deployment-k8s),
 the system integrator (typically, the infrastructure team in your organization)
 maintains Backstage in your own environment.
 
@@ -187,7 +186,7 @@ maintains Backstage in your own environment.
 
 No, this is not a service offering. We build the piece of software, and someone
 in your infrastructure team is responsible for
-[deploying](https://github.com/spotify/backstage/blob/master/DEPLOYMENT.md) and
+[deploying](https://backstage.io/docs/getting-started/deployment-k8s) and
 maintaining it.
 
 ### How secure is Backstage?
@@ -230,8 +229,3 @@ write an open source plugin for Backstage, like this
 See all the ways you can
 [contribute here](https://github.com/spotify/backstage/blob/master/CONTRIBUTING.md).
 We'd love to have you as part of the community.
-
-### Can I join the Backstage team?
-
-If you're interested in being part of the Backstage team, reach out to
-[fossopportunities@spotify.com](mailto:fossopportunities@spotify.com)

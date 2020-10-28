@@ -68,6 +68,7 @@ graphviz
 Hackathons
 haproxy
 heroku
+Heroku
 horizontalpodautoscalers
 Hostname
 http
@@ -105,6 +106,7 @@ Monorepo
 monorepos
 msw
 namespace
+namespaces
 Namespaces
 neuro
 newrelic
@@ -141,6 +143,7 @@ Raghunandan
 rankdir
 readme
 Readme
+Recharts
 Redash
 replicasets
 repo
@@ -195,6 +198,7 @@ validators
 Voi
 Wealthsimple
 Weaveworks
+Webpack
 xyz
 yaml
 Zalando
@@ -204,3 +208,5 @@ cloudbuild
 Grafana
 Iain
 Snyk
+www
+WWW

@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import BarChartLabel from './BarChartLabel';
+import { BarChartLabel } from './BarChartLabel';
 
 type BarChartTickProps = {
   x: number;
@@ -44,5 +44,3 @@ export const BarChartTick = ({
     </BarChartLabel>
   );
 };
-
-export default BarChartTick;

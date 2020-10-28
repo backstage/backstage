@@ -35,11 +35,13 @@ const schema = yup.object<Partial<UserEntityV1alpha1>>({
         .notRequired(),
       // Use this manual test because yup .required() requires at least one
       // element and there is no simple workaround -_-
-      memberOf: yup.array(yup.string()).test({
+      // the cast is there to convince typescript that the array itself is
+      // required without using .required()
+      memberOf: yup.array(yup.string().required()).test({
         name: 'isDefined',
         message: 'memberOf must be defined',
         test: v => Boolean(v),
-      }),
+      }) as yup.ArraySchema<string, object>,
     })
     .required(),
 });

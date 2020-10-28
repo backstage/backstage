@@ -17,20 +17,17 @@
 import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { Route, Routes } from 'react-router';
-import { WarningPanel } from '@backstage/core';
 import { catalogRoute } from '../routes';
 import { EntityPageApi } from './EntityPageApi';
+import { MissingImplementsApisEmptyState } from './MissingImplementsApisEmptyState';
 
 const isPluginApplicableToEntity = (entity: Entity) => {
   return ((entity.spec?.implementsApis as string[]) || []).length > 0;
 };
 
 export const Router = ({ entity }: { entity: Entity }) =>
-  // TODO(shmidt-i): move warning to a separate standardized component
   !isPluginApplicableToEntity(entity) ? (
-    <WarningPanel title="API Docs plugin:">
-      The entity doesn't implement any APIs.
-    </WarningPanel>
+    <MissingImplementsApisEmptyState />
   ) : (
     <Routes>
       <Route

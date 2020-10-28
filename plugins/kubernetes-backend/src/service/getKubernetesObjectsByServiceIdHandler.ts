@@ -18,7 +18,7 @@ import { Logger } from 'winston';
 import {
   AuthRequestBody,
   ClusterDetails,
-  KubernetesClusterLocator,
+  KubernetesServiceLocator,
   KubernetesFetcher,
   KubernetesObjectTypes,
   ObjectsByServiceIdResponse,
@@ -29,7 +29,7 @@ import { KubernetesAuthTranslatorGenerator } from '../kubernetes-auth-translator
 export type GetKubernetesObjectsByServiceIdHandler = (
   serviceId: string,
   fetcher: KubernetesFetcher,
-  clusterLocator: KubernetesClusterLocator,
+  serviceLocator: KubernetesServiceLocator,
   logger: Logger,
   requestBody: AuthRequestBody,
   objectsToFetch?: Set<KubernetesObjectTypes>,
@@ -49,12 +49,12 @@ const DEFAULT_OBJECTS = new Set<KubernetesObjectTypes>([
 export const handleGetKubernetesObjectsByServiceId: GetKubernetesObjectsByServiceIdHandler = async (
   serviceId,
   fetcher,
-  clusterLocator,
+  serviceLocator,
   logger,
   requestBody,
   objectsToFetch = DEFAULT_OBJECTS,
 ) => {
-  const clusterDetails: ClusterDetails[] = await clusterLocator.getClusterByServiceId(
+  const clusterDetails: ClusterDetails[] = await serviceLocator.getClustersByServiceId(
     serviceId,
   );
 

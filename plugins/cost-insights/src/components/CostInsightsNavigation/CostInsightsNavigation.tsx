@@ -36,7 +36,9 @@ type CostInsightsNavigationProps = {
   alerts: number;
 };
 
-const CostInsightsNavigation = ({ alerts }: CostInsightsNavigationProps) => {
+export const CostInsightsNavigation = ({
+  alerts,
+}: CostInsightsNavigationProps) => {
   const classes = useNavigationStyles();
   const { products, icons } = useConfig();
 
@@ -93,5 +95,3 @@ const NavigationMenuItem = ({ navigation, icon, title }: NavigationItem) => {
     </MenuItem>
   );
 };
-
-export default CostInsightsNavigation;

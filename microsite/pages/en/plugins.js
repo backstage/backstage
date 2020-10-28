@@ -16,9 +16,8 @@ const {
 const pluginsDirectory = require('path').join(process.cwd(), 'data/plugins');
 const pluginMetadata = fs
   .readdirSync(pluginsDirectory)
-  .map(file =>
-    yaml.safeLoad(fs.readFileSync(`./data/plugins/${file}`, 'utf8')),
-  );
+  .map(file => yaml.safeLoad(fs.readFileSync(`./data/plugins/${file}`, 'utf8')))
+  .sort((a, b) => a.title.toLowerCase().localeCompare(b.title.toLowerCase()));
 const truncate = text =>
   text.length > 170 ? text.substr(0, 170) + '...' : text;
 
@@ -44,7 +43,7 @@ const Plugins = () => (
         </span>
       </div>
       <BulletLine style={{ width: '100% ' }} />
-      <Container wrapped className="grid">
+      <Container wrapped className="PluginGrid">
         {pluginMetadata.map(
           ({
             iconUrl,
@@ -57,26 +56,25 @@ const Plugins = () => (
           }) => (
             <div className="PluginCard">
               <div className="PluginCardHeader">
-                <img src={iconUrl || defaultIconUrl} alt={title} />
-                <h2 className="PluginCardTitle">{title}</h2>
-                <p className="Author">
-                  by <a href={authorUrl}>{author}</a>
-                </p>
-                <span className="ChipOutlined">{category}</span>
+                <div className="PluginCardImage">
+                  <img src={iconUrl || defaultIconUrl} alt={title} />
+                </div>
+                <div className="PluginCardInfo">
+                  <h3 className="PluginCardTitle">{title}</h3>
+                  <p className="PluginCardAuthor">
+                    by <a href={authorUrl}>{author}</a>
+                  </p>
+                  <span className="PluginCardChipOutlined">{category}</span>
+                </div>
               </div>
               <div className="PluginCardBody">
                 <p>{truncate(description)}</p>
               </div>
-              <Container className="PluginCardFooter">
-                <span>
-                  <a
-                    className="PluginCardLink ButtonFilled"
-                    href={documentation}
-                  >
-                    Explore
-                  </a>
-                </span>
-              </Container>
+              <div className="PluginCardFooter">
+                <a className="ButtonFilled" href={documentation}>
+                  Explore
+                </a>
+              </div>
             </div>
           ),
         )}

@@ -30,4 +30,4 @@ export type PreparerBuilder = {
   get(entity: Entity): PreparerBase;
 };
 
-export type RemoteProtocol = 'dir' | 'github' | 'gitlab' | 'file';
+export type RemoteProtocol = 'dir' | 'github' | 'gitlab' | 'file' | 'azure/api';
