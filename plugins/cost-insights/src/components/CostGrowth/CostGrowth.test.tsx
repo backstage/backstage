@@ -17,11 +17,8 @@
 import React, { PropsWithChildren } from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { CostGrowth } from './CostGrowth';
-import {
-  Currency,
-  Duration,
-  findAlways,
-} from '../../types';
+import { Currency, Duration } from '../../types';
+import { findAlways } from '../../utils/assert';
 import { MockConfigProvider, MockCurrencyProvider } from '../../utils/tests';
 import { defaultCurrencies, CurrencyType } from '../../utils/currency';
 

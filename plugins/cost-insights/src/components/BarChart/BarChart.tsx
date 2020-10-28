@@ -36,11 +36,11 @@ import { currencyFormatter } from '../../utils/formatters';
 import {
   BarChartData,
   Maybe,
-  notEmpty,
   ResourceData,
   DataKey,
   CostInsightsTheme,
 } from '../../types';
+import { notEmpty } from '../../utils/assert';
 import { useBarChartStyles } from '../../utils/styles';
 import { resourceSort } from '../../utils/sort';
 

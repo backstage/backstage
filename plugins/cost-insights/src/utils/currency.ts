@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { assertNever, Currency, Duration } from '../types';
+import { Currency, Duration } from '../types';
+import { assertNever } from '../utils/assert';
 
 export enum CurrencyType {
   USD = 'USD',

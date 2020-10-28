@@ -20,7 +20,8 @@ import React, {
   useContext,
   PropsWithChildren,
 } from 'react';
-import { Currency, findAlways } from '../types';
+import { Currency } from '../types';
+import { findAlways } from '../utils/assert';
 import { defaultCurrencies } from '../utils/currency';
 
 export type CurrencyContextProps = {

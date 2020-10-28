@@ -25,7 +25,7 @@ import {
 } from '@material-ui/core';
 import { useNavigationStyles } from '../../utils/styles';
 import { useConfig, useScroll } from '../../hooks';
-import { findAlways } from '../../types';
+import { findAlways } from '../../utils/assert';
 import {
   DefaultNavigation,
   NavigationItem,
@@ -66,10 +66,10 @@ export const CostInsightsNavigation = ({
                 })}
               </Badge>
             ) : (
-              React.cloneElement(item.icon, {
-                className: classes.navigationIcon,
-              })
-            )
+                React.cloneElement(item.icon, {
+                  className: classes.navigationIcon,
+                })
+              )
           }
           title={item.title}
         />

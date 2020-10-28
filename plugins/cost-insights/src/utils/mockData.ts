@@ -17,7 +17,6 @@
 import {
   Duration,
   Entity,
-  findAlways,
   Product,
   ProductCost,
   ProductFilters,
@@ -29,6 +28,7 @@ import {
   DefaultLoadingAction,
   getDefaultState as getDefaultLoadingState,
 } from '../utils/loading';
+import { findAlways } from '../utils/assert';
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/core';
 

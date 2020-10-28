@@ -13,33 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 export type Maybe<T> = T | null;
-
-export function notEmpty<TValue>(
-  value: TValue | null | undefined,
-): value is TValue {
-  return value !== null && value !== undefined;
-}
-
-// Utility for exhaustiveness checking in switch statements
-export function assertNever(x: never): never {
-  throw new Error(`Exhaustiveness check failed: ${x}`);
-}
-
-export function assertAlways<T>(argument: T | undefined): T {
-  if (argument === undefined) {
-    throw new TypeError(
-      'Expected to always find a value but received undefined',
-    );
-  }
-  return argument;
-}
-
-// Utility for working with static lists; asserts a value will always be found or
-// throws an error
-export function findAlways<T>(
-  collection: T[],
-  callback: (el: T) => boolean,
-): T {
-  return assertAlways(collection.find(callback));
-}

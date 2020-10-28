@@ -15,7 +15,7 @@
  */
 
 import moment from 'moment';
-import { assertNever } from './Maybe';
+import { assertNever } from '../utils/assert';
 
 /**
  * Time periods for cost comparison; slight abuse of ISO 8601 periods. We take P1M and P3M to mean

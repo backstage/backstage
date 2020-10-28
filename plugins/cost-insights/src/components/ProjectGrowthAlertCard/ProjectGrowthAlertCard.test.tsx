@@ -23,8 +23,9 @@ import {
   MockConfigProvider,
   MockBillingDateProvider,
 } from '../../utils/tests';
-import { AlertCost, findAlways } from '../../types';
+import { AlertCost } from '../../types';
 import { defaultCurrencies } from '../../utils/currency';
+import { findAlways } from '../../utils/assert';
 
 const engineers = findAlways(defaultCurrencies, c => c.kind === null);
 

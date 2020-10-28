@@ -16,7 +16,9 @@
 
 import React from 'react';
 import { MenuItem, Select, SelectProps } from '@material-ui/core';
-import { Currency, CurrencyType, findAlways } from '../../types';
+import { Currency } from '../../types';
+import { CurrencyType } from '../../utils/currency';
+import { findAlways } from '../../utils/assert';
 import { useSelectStyles as useStyles } from '../../utils/styles';
 
 const NULL_VALUE = 'engineers';

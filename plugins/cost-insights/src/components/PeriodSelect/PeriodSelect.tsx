@@ -20,7 +20,8 @@ import {
   formatLastTwoLookaheadQuarters,
   formatLastTwoMonths,
 } from '../../utils/formatters';
-import { Duration, findAlways } from '../../types';
+import { Duration } from '../../types';
+import { findAlways } from '../../utils/assert';
 import { useSelectStyles as useStyles } from '../../utils/styles';
 import { useLastCompleteBillingDate } from '../../hooks';
 
