@@ -25,18 +25,16 @@ export const Settings = () => {
   const { displayName } = useUserProfile();
   const SidebarAvatar = () => <SignInAvatar />;
 
-  return (
-    [
-      <SidebarItem
-        text="Settings"
-        to={settingsRouteRef.path}
-        icon={SettingsIcon}
-      />,
-      <SidebarItem
-        text={displayName}
-        to={settingsRouteRef.path}
-        icon={SidebarAvatar}
-      />
-    ]
-  );
+  return [
+    <SidebarItem
+      text="Settings"
+      to={settingsRouteRef.path}
+      icon={SettingsIcon}
+    />,
+    <SidebarItem
+      text={displayName}
+      to={settingsRouteRef.path}
+      icon={SidebarAvatar}
+    />,
+  ];
 };
