@@ -41,6 +41,7 @@ setup(
         "markdown_inline_graphviz_extension==1.1",
         "pygments==2.6.1",
         "pymdown-extensions==7.1",
+        "Markdown==3.2.2",
     ],
     classifiers=[
         "Development Status :: 3 - Alpha",
