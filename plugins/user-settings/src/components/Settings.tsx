@@ -16,6 +16,7 @@
 
 import React from 'react';
 import { SidebarItem } from '@backstage/core';
+import SettingsIcon from '@material-ui/icons/Settings';
 import { SignInAvatar } from './General';
 import { useUserProfile } from './useUserProfileInfo';
 import { settingsRouteRef } from '../plugin';
@@ -25,10 +26,17 @@ export const Settings = () => {
   const SidebarAvatar = () => <SignInAvatar />;
 
   return (
-    <SidebarItem
-      text={displayName}
-      to={settingsRouteRef.path}
-      icon={SidebarAvatar}
-    />
+    [
+      <SidebarItem
+        text="Settings"
+        to={settingsRouteRef.path}
+        icon={SettingsIcon}
+      />,
+      <SidebarItem
+        text={displayName}
+        to={settingsRouteRef.path}
+        icon={SidebarAvatar}
+      />
+    ]
   );
 };
