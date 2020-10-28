@@ -19,7 +19,7 @@ are then harvested and visualized in Backstage.
 
 ## How it works
 
-Backstage and the Backstage Service Catalog makes it easy for one team to manage
+Backstage and the Backstage Service Catalog make it easy for one team to manage
 10 services — and makes it possible for your company to manage thousands of
 them.
 

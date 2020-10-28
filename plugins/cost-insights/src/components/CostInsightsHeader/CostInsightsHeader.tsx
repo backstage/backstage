@@ -31,7 +31,7 @@ type CostInsightsHeaderProps = {
   alerts: number;
 };
 
-const CostInsightsHeader = (props: CostInsightsHeaderProps) => {
+export const CostInsightsHeader = (props: CostInsightsHeaderProps) => {
   if (!props.hasCostData) {
     return <CostInsightsHeaderNoData {...props} />;
   }
@@ -132,5 +132,3 @@ export const CostInsightsHeaderNoGroups = () => {
     </>
   );
 };
-
-export default CostInsightsHeader;

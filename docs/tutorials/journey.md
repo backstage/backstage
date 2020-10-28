@@ -179,7 +179,7 @@ const onSave = async () => {
 ```
 
 Now it's much simpler for users to change the theme tune, as they no longer need
-to go look up a track ID and edit a yaml file. Instead, they can now stay inside
+to go look up a track ID and edit a YAML file. Instead, they can now stay inside
 Backstage and search for the track and request the change from there. In
 addition, the requested change can be reviewed by the regular process of each
 organization.
@@ -239,12 +239,12 @@ hits merge.
 # 8. Attack of the Clones
 
 Sam just released v1.8.4 of the plugin, and at this point it's so popular that a
-couple of other plugins has started depending on the `sam.wise/spotify-track-id`
-annotation. One such plugin being the `spotify-album-art` plugin that can
-display the album art of the theme tune as the background of the entity header.
-Sam thinks it's all pretty cool, but doesn't like that the annotation that was
-once an internal concern of the plugin is now becoming a standard in the
-community.
+couple of other plugins have started depending on the
+`sam.wise/spotify-track-id` annotation. One such plugin being the
+`spotify-album-art` plugin that can display the album art of the theme tune as
+the background of the entity header. Sam thinks it's all pretty cool, but
+doesn't like that the annotation that was once an internal concern of the plugin
+is now becoming a standard in the community.
 
 In order to standardize the annotation in Backstage, Sam submits a Pull Request
 to the Backstage Core repo. The request suggests a new well-known metadata

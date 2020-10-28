@@ -155,7 +155,8 @@ export const CatalogTable = ({
       isLoading={loading}
       columns={columns}
       options={{
-        paging: false,
+        paging: true,
+        pageSize: 10,
         actionsColumnIndex: -1,
         loadingType: 'linear',
         showEmptyDataSourceMessage: !loading,

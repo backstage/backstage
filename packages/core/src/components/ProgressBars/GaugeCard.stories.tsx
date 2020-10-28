@@ -21,7 +21,7 @@ import { Grid } from '@material-ui/core';
 const linkInfo = { title: 'Go to XYZ Location', link: '#' };
 
 export default {
-  title: 'Progress Card',
+  title: 'Data Display/Progress Card',
   component: GaugeCard,
 };
 

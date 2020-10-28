@@ -22,7 +22,6 @@ import {
   configApiRef,
   Content,
   Page,
-  pageTheme,
   Progress,
   TabbedCard,
   useApi,
@@ -148,7 +147,7 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
     kubernetesObjects?.items.filter(r => r.errors.length > 0) ?? [];
 
   return (
-    <Page theme={pageTheme.tool}>
+    <Page themeId="tool">
       <Content>
         <Grid container spacing={3} direction="column">
           {kubernetesObjects === undefined && error === undefined && (

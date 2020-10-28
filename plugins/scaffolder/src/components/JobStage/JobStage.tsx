@@ -125,7 +125,9 @@ export const JobStage = ({ endedAt, startedAt, name, log, status }: Props) => {
       </AccordionSummary>
       <AccordionDetails className={classes.accordionDetails}>
         {log.length === 0 ? (
-          <Box px={4}>No logs available for this step</Box>
+          <Box px={9} pb={2} width="100%">
+            No logs available for this step
+          </Box>
         ) : (
           <Suspense fallback={<LinearProgress />}>
             <div style={{ height: '20vh', width: '100%' }}>

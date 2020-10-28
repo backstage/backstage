@@ -32,7 +32,7 @@ describe('sqlite3', () => {
       },
     ]);
 
-  describe(buildSqliteDatabaseConfig, () => {
+  describe('buildSqliteDatabaseConfig', () => {
     it('buidls a string connection', () => {
       expect(buildSqliteDatabaseConfig(createConfig(':memory:'))).toEqual({
         client: 'sqlite3',
@@ -72,7 +72,7 @@ describe('sqlite3', () => {
     });
   });
 
-  describe(createSqliteDatabaseClient, () => {
+  describe('createSqliteDatabaseClient', () => {
     it('creates an in memory knex instance', () => {
       expect(
         createSqliteDatabaseClient(

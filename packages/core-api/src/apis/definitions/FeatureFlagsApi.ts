@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '../ApiRef';
-import {
-  UserFlags,
-  FeatureFlagsRegistry,
-  FeatureFlagsRegistryItem,
-} from '../../app/FeatureFlags';
+import { ApiRef, createApiRef } from '../system';
+import { UserFlags, FeatureFlagsRegistry } from '../../app/FeatureFlags';
+import { FeatureFlagName } from '../../plugin';
 
 /**
  * The feature flags API is used to toggle functionality to users across plugins and Backstage.
@@ -55,7 +52,12 @@ export interface FeatureFlagsApi {
   getRegisteredFlags(): FeatureFlagsRegistry;
 }
 
-export const featureFlagsApiRef = createApiRef<FeatureFlagsApi>({
+export interface FeatureFlagsRegistryItem {
+  pluginId: string;
+  name: FeatureFlagName;
+}
+
+export const featureFlagsApiRef: ApiRef<FeatureFlagsApi> = createApiRef({
   id: 'core.featureflags',
   description: 'Used to toggle functionality in features across Backstage',
 });

@@ -15,20 +15,15 @@
  */
 
 import { Command } from 'commander';
-import { loadConfig } from '@backstage/config-loader';
-import { ConfigReader } from '@backstage/config';
-import { paths } from '../../lib/paths';
 import { buildBundle } from '../../lib/bundler';
+import { parseParallel, PARALLEL_ENV_VAR } from '../../lib/parallel';
+import { loadCliConfig } from '../../lib/config';
 
 export default async (cmd: Command) => {
-  const appConfigs = await loadConfig({
-    env: process.env.NODE_ENV ?? 'production',
-    rootPaths: [paths.targetRoot, paths.targetDir],
-  });
   await buildBundle({
     entry: 'src/index',
+    parallel: parseParallel(process.env[PARALLEL_ENV_VAR]),
     statsJsonEnabled: cmd.stats,
-    config: ConfigReader.fromConfigs(appConfigs),
-    appConfigs,
+    ...(await loadCliConfig(cmd.config)),
   });
 };

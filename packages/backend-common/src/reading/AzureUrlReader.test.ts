@@ -19,14 +19,13 @@ import { setupServer } from 'msw/node';
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '../logging';
 import { AzureUrlReader } from './AzureUrlReader';
+import { msw } from '@backstage/test-utils';
 
 const logger = getVoidLogger();
 
 describe('AzureUrlReader', () => {
   const worker = setupServer();
-
-  beforeAll(() => worker.listen({ onUnhandledRequest: 'error' }));
-  afterAll(() => worker.close());
+  msw.setupDefaultHandlers(worker);
 
   beforeEach(() => {
     worker.use(
@@ -41,7 +40,6 @@ describe('AzureUrlReader', () => {
       ),
     );
   });
-  afterEach(() => worker.resetHandlers());
 
   const createConfig = (token?: string) =>
     new ConfigReader(

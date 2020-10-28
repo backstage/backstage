@@ -13,8 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Button, pageTheme } from '@backstage/core';
-import { Card, Chip, makeStyles, Typography } from '@material-ui/core';
+import { Button } from '@backstage/core';
+import { BackstageTheme, pageTheme } from '@backstage/theme';
+import {
+  Card,
+  Chip,
+  makeStyles,
+  Typography,
+  useTheme,
+} from '@material-ui/core';
 import React from 'react';
 import { generatePath } from 'react-router-dom';
 import { templateRoute } from '../../routes';
@@ -25,6 +32,7 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(2, 2, 6),
     backgroundImage: (props: { backgroundImage: string }) =>
       props.backgroundImage,
+    backgroundPosition: 0,
   },
   content: {
     padding: theme.spacing(2),
@@ -55,7 +63,10 @@ export const TemplateCard = ({
   type,
   name,
 }: TemplateCardProps) => {
-  const theme = pageTheme[type] ?? pageTheme.other;
+  const backstageTheme = useTheme<BackstageTheme>();
+
+  const themeId = pageTheme[type] ? type : 'other';
+  const theme = backstageTheme.getPageTheme({ themeId });
   const classes = useStyles({ backgroundImage: theme.backgroundImage });
   const href = generatePath(templateRoute.path, { templateName: name });
 

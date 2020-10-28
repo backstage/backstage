@@ -97,7 +97,7 @@ jobs:
         if: ${{ steps.yarn-lock.outcome == 'failure' }}
         run: |
           yarn lerna -- run test -- --coverage
-          bash <(curl -s https://codecov.io/bash)
+          bash <(curl -s https://codecov.io/bash) -N $(git rev-parse FETCH_HEAD)
 
       - name: verify plugin template
         run: yarn lerna -- run diff -- --check

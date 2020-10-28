@@ -35,7 +35,7 @@ export type CostGrowthProps = {
   duration: Duration;
 };
 
-const CostGrowth = ({ change, duration }: CostGrowthProps) => {
+export const CostGrowth = ({ change, duration }: CostGrowthProps) => {
   const styles = useStyles();
   const { engineerCost } = useConfig();
   const [currency] = useCurrency();
@@ -70,5 +70,3 @@ const CostGrowth = ({ change, duration }: CostGrowthProps) => {
 
   return <span className={classes}>{cost}</span>;
 };
-
-export default CostGrowth;

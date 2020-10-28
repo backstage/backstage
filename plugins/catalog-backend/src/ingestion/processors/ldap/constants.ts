@@ -21,7 +21,7 @@
  * The RDN is the name of the leftmost attribute that identifies the item; for
  * example, for an item with the fully qualified DN
  * uid=john,ou=people,ou=spotify,dc=spotify,dc=net the generated entity would
- * have this attribute, with the value "john".
+ * have this annotation, with the value "john".
  */
 export const LDAP_RDN_ANNOTATION = 'backstage.io/ldap-rdn';
 
@@ -31,7 +31,7 @@ export const LDAP_RDN_ANNOTATION = 'backstage.io/ldap-rdn';
  *
  * The DN is the fully qualified name that identifies the item; for example,
  * for an item with the DN uid=john,ou=people,ou=spotify,dc=spotify,dc=net the
- * generated entity would have this attribute, with that full string as its
+ * generated entity would have this annotation, with that full string as its
  * value.
  */
 export const LDAP_DN_ANNOTATION = 'backstage.io/ldap-dn';
@@ -42,7 +42,7 @@ export const LDAP_DN_ANNOTATION = 'backstage.io/ldap-dn';
  *
  * The UUID is the globally unique ID that identifies the item; for example,
  * for an item with the UUID 76ef928a-b251-1037-9840-d78227f36a7e, the
- * generated entity would have this attribute, with that full string as its
+ * generated entity would have this annotation, with that full string as its
  * value.
  */
 export const LDAP_UUID_ANNOTATION = 'backstage.io/ldap-uuid';

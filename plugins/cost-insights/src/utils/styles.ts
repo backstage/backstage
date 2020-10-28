@@ -385,6 +385,7 @@ export const useSelectStyles = makeStyles<BackstageTheme>(
       select: {
         minWidth: 200,
         textAlign: 'start',
+        backgroundColor: theme.palette.background.paper,
       },
       menuItem: {
         minWidth: 200,
@@ -450,6 +451,15 @@ export const useBackdropStyles = makeStyles<BackstageTheme>(
     createStyles({
       root: {
         zIndex: theme.zIndex.modal,
+      },
+    }),
+);
+
+export const useSubtleTypographyStyles = makeStyles<BackstageTheme>(
+  (theme: BackstageTheme) =>
+    createStyles({
+      root: {
+        color: theme.palette.textSubtle,
       },
     }),
 );

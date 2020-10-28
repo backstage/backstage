@@ -1,5 +1,5 @@
 ---
-id: software-catalog-configuration
+id: configuration
 title: Catalog Configuration
 description: Documentation on Software Catalog Configuration
 ---

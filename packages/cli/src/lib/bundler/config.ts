@@ -111,6 +111,9 @@ export async function createConfig(
         app: {
           title: options.config.getString('app.title'),
           baseUrl: validBaseUrl.href,
+          googleAnalyticsTrackingId: options.config.getOptionalString(
+            'app.googleAnalyticsTrackingId',
+          ),
         },
       },
     }),
@@ -209,6 +212,7 @@ export async function createBackendConfig(
     ],
     target: 'node' as const,
     node: {
+      /* eslint-disable-next-line no-restricted-syntax */
       __dirname: true,
       __filename: true,
       global: true,

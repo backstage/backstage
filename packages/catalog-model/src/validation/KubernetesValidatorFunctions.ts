@@ -25,7 +25,7 @@ import { CommonValidatorFunctions } from './CommonValidatorFunctions';
  * @see https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/#syntax-and-character-set
  */
 export class KubernetesValidatorFunctions {
-  static isValidApiVersion(value: any): boolean {
+  static isValidApiVersion(value: unknown): boolean {
     return CommonValidatorFunctions.isValidPrefixAndOrSuffix(
       value,
       '/',
@@ -34,7 +34,7 @@ export class KubernetesValidatorFunctions {
     );
   }
 
-  static isValidKind(value: any): boolean {
+  static isValidKind(value: unknown): boolean {
     return (
       typeof value === 'string' &&
       value.length >= 1 &&
@@ -43,7 +43,7 @@ export class KubernetesValidatorFunctions {
     );
   }
 
-  static isValidObjectName(value: any): boolean {
+  static isValidObjectName(value: unknown): boolean {
     return (
       typeof value === 'string' &&
       value.length >= 1 &&
@@ -52,11 +52,11 @@ export class KubernetesValidatorFunctions {
     );
   }
 
-  static isValidNamespace(value: any): boolean {
+  static isValidNamespace(value: unknown): boolean {
     return CommonValidatorFunctions.isValidDnsLabel(value);
   }
 
-  static isValidLabelKey(value: any): boolean {
+  static isValidLabelKey(value: unknown): boolean {
     return CommonValidatorFunctions.isValidPrefixAndOrSuffix(
       value,
       '/',
@@ -65,13 +65,13 @@ export class KubernetesValidatorFunctions {
     );
   }
 
-  static isValidLabelValue(value: any): boolean {
+  static isValidLabelValue(value: unknown): boolean {
     return (
       value === '' || KubernetesValidatorFunctions.isValidObjectName(value)
     );
   }
 
-  static isValidAnnotationKey(value: any): boolean {
+  static isValidAnnotationKey(value: unknown): boolean {
     return CommonValidatorFunctions.isValidPrefixAndOrSuffix(
       value,
       '/',
@@ -80,7 +80,7 @@ export class KubernetesValidatorFunctions {
     );
   }
 
-  static isValidAnnotationValue(value: any): boolean {
+  static isValidAnnotationValue(value: unknown): boolean {
     return typeof value === 'string';
   }
 }

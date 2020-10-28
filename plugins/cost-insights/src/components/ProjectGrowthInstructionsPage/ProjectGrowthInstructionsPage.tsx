@@ -17,21 +17,20 @@
 import React from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { InfoCard } from '@backstage/core';
-import AlertInstructionsLayout from '../AlertInstructionsLayout';
-import ProjectGrowthAlertCard from '../ProjectGrowthAlertCard';
+import { AlertInstructionsLayout } from '../AlertInstructionsLayout';
 import {
-  AlertType,
+  Alert,
   Duration,
   Entity,
   Product,
   ProjectGrowthAlert,
+  ProjectGrowthData,
 } from '../../types';
-import ResourceGrowthBarChartLegend from '../ResourceGrowthBarChartLegend';
-import ResourceGrowthBarChart from '../ResourceGrowthBarChart';
+import { ResourceGrowthBarChartLegend } from '../ResourceGrowthBarChartLegend';
+import { ResourceGrowthBarChart } from '../ResourceGrowthBarChart';
 
-const ProjectGrowthInstructionsPage = () => {
-  const projectGrowthAlert: ProjectGrowthAlert = {
-    id: AlertType.ProjectGrowth,
+export const ProjectGrowthInstructionsPage = () => {
+  const alertData: ProjectGrowthData = {
     project: 'example-project',
     periodStart: 'Q1 2020',
     periodEnd: 'Q2 2020',
@@ -55,6 +54,7 @@ const ProjectGrowthInstructionsPage = () => {
       },
     ],
   };
+  const projectGrowthAlert: Alert = new ProjectGrowthAlert(alertData);
 
   const product: Product = {
     kind: 'ComputeEngine',
@@ -135,7 +135,7 @@ const ProjectGrowthInstructionsPage = () => {
           comparison of cloud products over the examined time period:
         </Typography>
         <Box mt={2} mb={2}>
-          <ProjectGrowthAlertCard alert={projectGrowthAlert} />
+          {projectGrowthAlert.element}
         </Box>
         <Typography paragraph>
           This allows you to quickly see which cloud products contributed to the
@@ -160,14 +160,17 @@ const ProjectGrowthInstructionsPage = () => {
                 <ResourceGrowthBarChartLegend
                   duration={Duration.P3M}
                   change={{ ratio: 3, amount: 40000 }}
+                  previousName="Q2 2020"
+                  currentName="Q3 2020"
                   costStart={20000}
                   costEnd={60000}
                 />
               </Box>
               <Box paddingY={1}>
                 <ResourceGrowthBarChart
-                  duration={Duration.P3M}
                   resources={entities}
+                  previousName="Q2 2020"
+                  currentName="Q3 2020"
                 />
               </Box>
             </Box>
@@ -208,5 +211,3 @@ const ProjectGrowthInstructionsPage = () => {
     </AlertInstructionsLayout>
   );
 };
-
-export default ProjectGrowthInstructionsPage;
