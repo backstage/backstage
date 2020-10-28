@@ -108,12 +108,12 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/backend-common": "^0.1.1-alpha.25",
-    "@backstage/config": "^0.1.1-alpha.25",
-    "@backstage/core": "^0.1.1-alpha.25",
-    "@backstage/dev-utils": "^0.1.1-alpha.25",
-    "@backstage/test-utils": "^0.1.1-alpha.25",
-    "@backstage/theme": "^0.1.1-alpha.25",
+    "@backstage/backend-common": "^0.1.1-alpha.26",
+    "@backstage/config": "^0.1.1-alpha.26",
+    "@backstage/core": "^0.1.1-alpha.26",
+    "@backstage/dev-utils": "^0.1.1-alpha.26",
+    "@backstage/test-utils": "^0.1.1-alpha.26",
+    "@backstage/theme": "^0.1.1-alpha.26",
     "@types/diff": "^4.0.2",
     "@types/fs-extra": "^9.0.1",
     "@types/html-webpack-plugin": "^3.2.2",
