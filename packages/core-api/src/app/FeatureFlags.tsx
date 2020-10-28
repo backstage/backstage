@@ -18,18 +18,8 @@ import {
   FeatureFlagState,
   FeatureFlagsApi,
   FeatureFlag,
+  FeatureFlagsSaveOptions,
 } from '../apis/definitions';
-
-/**
- * Helper method for validating compatibility and flag name.
- */
-export function validateBrowserCompat(): void {
-  if (!('localStorage' in window)) {
-    throw new Error(
-      'Feature Flags are not supported on browsers without the Local Storage API',
-    );
-  }
-}
 
 export function validateFlagName(name: string): void {
   if (name.length < 3) {
@@ -53,85 +43,11 @@ export function validateFlagName(name: string): void {
 }
 
 /**
- * The UserFlags class.
- *
- * This acts as a data structure for the user's feature flags. You
- * can use this to retrieve, add, edit, delete, clear and save the user's
- * feature flags to the local browser for persisted storage.
- */
-export class UserFlags extends Map<string, FeatureFlagState> {
-  static load(): UserFlags {
-    validateBrowserCompat();
-
-    try {
-      const jsonString = window.localStorage.getItem('featureFlags') as string;
-      const json = JSON.parse(jsonString);
-      return new this(Object.entries(json));
-    } catch (err) {
-      return new this([]);
-    }
-  }
-
-  get(name: string): FeatureFlagState {
-    return super.get(name) || FeatureFlagState.Off;
-  }
-
-  set(name: string, state: FeatureFlagState): this {
-    validateFlagName(name);
-    const output = super.set(name, state);
-    this.save();
-    return output;
-  }
-
-  toggle(name: string): FeatureFlagState {
-    if (super.get(name) === FeatureFlagState.On) {
-      super.set(name, FeatureFlagState.Off);
-    } else {
-      super.set(name, FeatureFlagState.On);
-    }
-    return super.get(name) || FeatureFlagState.Off;
-  }
-
-  delete(name: string): boolean {
-    const output = super.delete(name);
-    this.save();
-    return output;
-  }
-
-  clear(): void {
-    super.clear();
-    this.save();
-  }
-
-  save(): void {
-    window.localStorage.setItem(
-      'featureFlags',
-      JSON.stringify(this.toObject()),
-    );
-  }
-
-  toObject() {
-    return Array.from(this.entries()).reduce(
-      (obj, [key, value]) => ({ ...obj, [key]: value }),
-      {},
-    );
-  }
-
-  toJSON() {
-    return JSON.stringify(this.toObject());
-  }
-
-  toString() {
-    return this.toJSON();
-  }
-}
-
-/**
  * Create the FeatureFlags implementation based on the API.
  */
-export class FeatureFlags implements FeatureFlagsApi {
+export class LocalStorageFeatureFlags implements FeatureFlagsApi {
   private registeredFeatureFlags: FeatureFlag[] = [];
-  private userFlags: UserFlags | undefined;
+  private flags?: Map<string, FeatureFlagState>;
 
   registerFlag(flag: FeatureFlag) {
     validateFlagName(flag.name);
@@ -142,8 +58,52 @@ export class FeatureFlags implements FeatureFlagsApi {
     return this.registeredFeatureFlags.slice();
   }
 
-  getFlags(): UserFlags {
-    if (!this.userFlags) this.userFlags = UserFlags.load();
-    return this.userFlags;
+  isActive(name: string): boolean {
+    if (!this.flags) {
+      this.flags = this.load();
+    }
+    return this.flags.get(name) === FeatureFlagState.Active;
+  }
+
+  save(options: FeatureFlagsSaveOptions): void {
+    if (!this.flags) {
+      this.flags = this.load();
+    }
+    if (!options.merge) {
+      this.flags.clear();
+    }
+    for (const [name, state] of Object.entries(options.states)) {
+      this.flags.set(name, state);
+    }
+
+    const enabled = Array.from(this.flags.entries()).filter(
+      ([, state]) => state === FeatureFlagState.Active,
+    );
+    window.localStorage.setItem(
+      'featureFlags',
+      JSON.stringify(Object.fromEntries(enabled)),
+    );
+  }
+
+  private load(): Map<string, FeatureFlagState> {
+    try {
+      const jsonStr = window.localStorage.getItem('featureFlags');
+      if (!jsonStr) {
+        return new Map();
+      }
+      const json = JSON.parse(jsonStr) as unknown;
+      if (typeof json !== 'object' || json === null || Array.isArray(json)) {
+        return new Map();
+      }
+
+      const entries = Object.entries(json).filter(([name, value]) => {
+        validateFlagName(name);
+        return value === FeatureFlagState.Active;
+      });
+
+      return new Map(entries);
+    } catch {
+      return new Map();
+    }
   }
 }

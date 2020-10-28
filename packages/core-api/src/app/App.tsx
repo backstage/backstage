@@ -54,7 +54,7 @@ import {
 import { useAsync } from 'react-use';
 import { AppIdentity } from './AppIdentity';
 import { ApiResolver, ApiFactoryRegistry } from '../apis/system';
-import { FeatureFlags } from './FeatureFlags';
+import { LocalStorageFeatureFlags } from './FeatureFlags';
 
 type FullAppOptions = {
   apis: Iterable<AnyApiFactory>;
@@ -320,7 +320,7 @@ export class PrivateAppImpl implements BackstageApp {
     registry.register('default', {
       api: featureFlagsApiRef,
       deps: {},
-      factory: () => new FeatureFlags(),
+      factory: () => new LocalStorageFeatureFlags(),
     });
     for (const factory of this.defaultApis) {
       registry.register('default', factory);
