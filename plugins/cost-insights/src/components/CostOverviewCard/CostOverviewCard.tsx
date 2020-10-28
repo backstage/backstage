@@ -27,12 +27,8 @@ import { mapFiltersToProps } from './selector';
 import { DefaultNavigation } from '../../utils/navigation';
 import { formatPercent } from '../../utils/formatters';
 import { findAlways } from '../../utils/assert';
-import {
-  Cost,
-  CostInsightsTheme,
-  MetricData,
-  getComparedChange,
-} from '../../types';
+import { getComparedChange } from '../../utils/change';
+import { Cost, CostInsightsTheme, MetricData } from '../../types';
 
 export type CostOverviewCardProps = {
   dailyCostData: Cost;

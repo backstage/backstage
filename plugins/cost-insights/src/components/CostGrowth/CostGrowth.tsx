@@ -16,15 +16,9 @@
 
 import React from 'react';
 import classnames from 'classnames';
-import {
-  ChangeStatistic,
-  CurrencyType,
-  Duration,
-  EngineerThreshold,
-  Growth,
-  growthOf,
-  rateOf,
-} from '../../types';
+import { ChangeStatistic, Duration } from '../../types';
+import { rateOf, CurrencyType } from '../../utils/currency';
+import { growthOf, GrowthType, EngineerThreshold } from '../../utils/change';
 import { useCostGrowthStyles as useStyles } from '../../utils/styles';
 import { formatPercent, formatCurrency } from '../../utils/formatters';
 import { indefiniteArticleOf } from '../../utils/grammar';
@@ -51,8 +45,8 @@ export const CostGrowth = ({ change, duration }: CostGrowthProps) => {
   // Determine if growth is significant enough to highlight
   const growth = growthOf(engineers, change.ratio);
   const classes = classnames({
-    [styles.excess]: growth === Growth.Excess,
-    [styles.savings]: growth === Growth.Savings,
+    [styles.excess]: growth === GrowthType.Excess,
+    [styles.savings]: growth === GrowthType.Savings,
   });
 
   const percent = formatPercent(ratio);
