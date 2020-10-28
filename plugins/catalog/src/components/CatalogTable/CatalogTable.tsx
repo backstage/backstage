@@ -22,8 +22,8 @@ import { Alert } from '@material-ui/lab';
 import React from 'react';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
 import { findLocationForEntityMeta } from '../../data/utils';
-import { useStarredEntities } from '../../hooks/useStarredEntites';
-import { entityRoute } from '../../routes';
+import { useStarredEntities } from '../../hooks/useStarredEntities';
+import { entityRoute, entityRouteParams } from '../../routes';
 import {
   favouriteEntityIcon,
   favouriteEntityTooltip,
@@ -38,13 +38,7 @@ const columns: TableColumn<Entity>[] = [
       <Link
         component={RouterLink}
         to={generatePath(entityRoute.path, {
-          optionalNamespaceAndName: [
-            entity.metadata.namespace,
-            entity.metadata.name,
-          ]
-            .filter(Boolean)
-            .join(':'),
-          kind: entity.kind,
+          ...entityRouteParams(entity),
           selectedTabId: 'overview',
         })}
       >
