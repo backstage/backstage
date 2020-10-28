@@ -82,20 +82,9 @@ export const RegisterComponentPage = ({
 
   const handleSubmit = async (formData: Record<string, string>) => {
     setFormState(FormStates.Submitting);
-    const { scmType, componentLocation: target } = formData;
+    const { entityLocation: target } = formData;
     try {
-      const typeMapping = [
-        { url: /^https:\/\/gitlab\.com\/.*/, type: 'gitlab/api' },
-        { url: /^https:\/\/bitbucket\.org\/.*/, type: 'bitbucket/api' },
-        { url: /^https:\/\/dev\.azure\.com\/.*/, type: 'azure/api' },
-        { url: /.*/, type: 'github' },
-      ];
-
-      const type =
-        scmType === 'AUTO'
-          ? typeMapping.filter(item => item.url.test(target))[0].type
-          : scmType;
-      const data = await catalogApi.addLocation(type, target);
+      const data = await catalogApi.addLocation({ target });
 
       if (!isMounted()) return;
 

@@ -76,7 +76,7 @@ const CatalogPageContents = () => {
       const root = configApi.getConfig('catalog.exampleEntityLocations');
       for (const type of root.keys()) {
         for (const target of root.getStringArray(type)) {
-          promises.push(catalogApi.addLocation(type, target));
+          promises.push(catalogApi.addLocation({ target }));
         }
       }
       await Promise.all(promises);
