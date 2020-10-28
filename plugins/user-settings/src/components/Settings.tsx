@@ -20,11 +20,11 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import { settingsRouteRef } from '../plugin';
 
 export const Settings = () => {
-  return [
+  return (
     <SidebarItem
       text="Settings"
       to={settingsRouteRef.path}
       icon={SettingsIcon}
-    />,
-  ];
+    />
+  );
 };
