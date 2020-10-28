@@ -76,6 +76,7 @@ describe('createRouter', () => {
     });
 
     it('parses single and multiple request parameters and passes them down', async () => {
+      entitiesCatalog.entities.mockResolvedValueOnce([]);
       const response = await request(app).get(
         '/entities?filter=a=1,a=,a=3,b=4&filter=c=',
       );

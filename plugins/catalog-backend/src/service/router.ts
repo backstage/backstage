@@ -22,7 +22,10 @@ import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
 import { HigherOrderOperation } from '../ingestion/types';
-import { translateQueryToEntityFilters } from './filterQuery';
+import {
+  translateQueryToEntityFilters,
+  translateQueryToFieldMapper,
+} from './filterQuery';
 import { requireRequestBody, validateRequestBody } from './util';
 
 export interface RouterOptions {
@@ -44,8 +47,9 @@ export async function createRouter(
     router
       .get('/entities', async (req, res) => {
         const filters = translateQueryToEntityFilters(req.query);
+        const fieldMapper = translateQueryToFieldMapper(req.query);
         const entities = await entitiesCatalog.entities(filters);
-        res.status(200).send(entities);
+        res.status(200).send(entities.map(fieldMapper));
       })
       .post('/entities', async (req, res) => {
         const body = await requireRequestBody(req);

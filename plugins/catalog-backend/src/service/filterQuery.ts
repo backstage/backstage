@@ -15,7 +15,10 @@
  */
 
 import { InputError } from '@backstage/backend-common';
+import { Entity } from '@backstage/catalog-model';
+import lodash from 'lodash';
 import { EntityFilters } from '../database';
+import { RecursivePartial } from '../ingestion/processors/ldap/util';
 
 export function translateQueryToEntityFilters(
   query: Record<string, any>,
@@ -69,4 +72,51 @@ export function translateFilterQueryEntryToEntityFilters(
   }
 
   return filters;
+}
+
+type FieldMapper = (entity: Entity) => Entity;
+
+export function translateQueryToFieldMapper(
+  query: Record<string, any>,
+): FieldMapper {
+  if (!query.fields) {
+    return x => x;
+  }
+
+  const fieldsStrings = [query.fields].flat() as string[];
+
+  if (fieldsStrings.some(s => typeof s !== 'string')) {
+    throw new InputError(
+      'Only string type fields query parameters are supported',
+    );
+  }
+
+  const fields = fieldsStrings
+    .map(s => s.split(','))
+    .flat()
+    .map(s => s.trim())
+    .filter(Boolean);
+
+  if (!fields.length) {
+    return x => x;
+  }
+
+  if (fields.some(f => f.includes('['))) {
+    throw new InputError(
+      'Array type fields query parameters are not supported',
+    );
+  }
+
+  return input => {
+    const output: RecursivePartial<Entity> = {};
+
+    for (const field of fields) {
+      const value = lodash.get(input, field);
+      if (value !== undefined) {
+        lodash.set(output, field, value);
+      }
+    }
+
+    return output as Entity;
+  };
 }
