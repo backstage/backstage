@@ -16,7 +16,7 @@
 
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import { relative as relativePath, join as joinPath } from 'path';
+import { relative as relativePath } from 'path';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
@@ -85,13 +85,13 @@ export const makeConfigs = async (
     // to be bridge between
     // frontend- and backend-
     // plugins' code
-    const UNIVERSAL_FOLDER = 'universal';
-    const universalPath = paths.resolveTarget(UNIVERSAL_FOLDER);
+    const UNIVERSAL_FILE = 'universal.js';
+    const universalPath = paths.resolveTarget(UNIVERSAL_FILE);
     const universalFileExists = fs.existsSync(universalPath);
 
     if (universalFileExists) {
-      mainFields.push(UNIVERSAL_FOLDER);
-      commonjsInclude.push(joinPath(UNIVERSAL_FOLDER, '*.js'));
+      mainFields.push(UNIVERSAL_FILE);
+      commonjsInclude.push(UNIVERSAL_FILE);
     }
 
     configs.push({
