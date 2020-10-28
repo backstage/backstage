@@ -19,4 +19,5 @@ export * from './api';
 export * from './components';
 export { useCurrency } from './hooks';
 export * from './types';
+export { Duration } from './utils/duration';
 export * from './utils/tests';

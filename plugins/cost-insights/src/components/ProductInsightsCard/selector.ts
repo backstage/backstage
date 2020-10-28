@@ -16,7 +16,8 @@
 
 import { MapFiltersToProps } from '../../hooks/useFilters';
 import { MapLoadingToProps } from '../../hooks/useLoading';
-import { Duration, PageFilters, ProductPeriod } from '../../types';
+import { PageFilters, ProductPeriod } from '../../types';
+import { Duration } from '../../utils/duration';
 import { findAlways } from '../../utils/assert';
 
 type ProductInsightsCardFilterProps = PageFilters & {

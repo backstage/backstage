@@ -19,7 +19,7 @@ import {
   Duration,
   inclusiveEndDateOf,
   inclusiveStartDateOf,
-} from '../types/Duration';
+} from '../utils/duration';
 import { pluralOf } from '../utils/grammar';
 
 export type Period = {

@@ -19,7 +19,8 @@ import { getByRole, waitFor } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import UserEvent from '@testing-library/user-event';
 import { PeriodSelect, getDefaultOptions } from './PeriodSelect';
-import { Duration, getDefaultPageFilters, Group } from '../../types';
+import { getDefaultPageFilters, Group } from '../../types';
+import { Duration } from '../../utils/duration';
 import { MockBillingDateProvider } from '../../utils/tests';
 
 const DefaultPageFilters = getDefaultPageFilters([{ id: 'tools' }] as Group[]);

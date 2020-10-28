@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Duration, inclusiveEndDateOf, inclusiveStartDateOf } from './Duration';
+import { Duration, inclusiveEndDateOf, inclusiveStartDateOf } from './duration';
 
 const lastCompleteBillingDate = '2020-06-05';
 

@@ -23,11 +23,7 @@ import {
   ChangeStatistic,
   Cost,
   DateAggregation,
-  DEFAULT_DATE_FORMAT,
-  Duration,
-  exclusiveEndDateOf,
   Group,
-  inclusiveStartDateOf,
   Maybe,
   MetricData,
   ProductCost,
@@ -38,6 +34,7 @@ import {
   UnlabeledDataflowAlert,
   UnlabeledDataflowData,
 } from '../types';
+import { DEFAULT_DATE_FORMAT, Duration, exclusiveEndDateOf, inclusiveStartDateOf } from '../utils/duration';
 
 type IntervalFields = {
   duration: Duration;

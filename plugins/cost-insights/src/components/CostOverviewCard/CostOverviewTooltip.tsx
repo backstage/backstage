@@ -17,7 +17,7 @@ import React from 'react';
 import moment from 'moment';
 import { TooltipPayload, TooltipProps } from 'recharts';
 import { Tooltip, TooltipItemProps } from '../../components/Tooltip';
-import { DEFAULT_DATE_FORMAT } from '../../types';
+import { DEFAULT_DATE_FORMAT } from '../../utils/duration';
 
 export type CostOverviewTooltipProps = TooltipProps & {
   dataKeys: Array<string>;

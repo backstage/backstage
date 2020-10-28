@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
+import { Config } from '@backstage/config';
+import { ConfigApi } from '@backstage/core';
 import {
-  Duration,
   Entity,
   Product,
   ProductCost,
@@ -29,8 +30,7 @@ import {
   getDefaultState as getDefaultLoadingState,
 } from '../utils/loading';
 import { findAlways } from '../utils/assert';
-import { Config } from '@backstage/config';
-import { ConfigApi } from '@backstage/core';
+import { Duration } from '../utils/duration';
 
 type mockAlertRenderer<T> = (alert: T) => T;
 type mockEntityRenderer<T> = (entity: T) => T;

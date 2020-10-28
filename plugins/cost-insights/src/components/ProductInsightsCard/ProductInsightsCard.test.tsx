@@ -35,7 +35,8 @@ import {
   MockScrollProvider,
   MockLoadingProvider,
 } from '../../utils/tests';
-import { Duration, Product, ProductCost, ProductPeriod } from '../../types';
+import { Duration } from '../../utils/duration';
+import { Product, ProductCost, ProductPeriod } from '../../types';
 
 const costInsightsApi = (
   productCost: ProductCost,

@@ -28,9 +28,10 @@ import {
   useLoading,
   useScroll,
 } from '../../hooks';
+import { Duration } from '../../utils/duration';
 import { useProductInsightsCardStyles as useStyles } from '../../utils/styles';
 import { mapFiltersToProps, mapLoadingToProps } from './selector';
-import { Duration, Maybe, Product, ProductCost } from '../../types';
+import { Maybe, Product, ProductCost } from '../../types';
 import { pluralOf } from '../../utils/grammar';
 import { formatPeriod } from '../../utils/formatters';
 

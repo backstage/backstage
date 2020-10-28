@@ -20,7 +20,8 @@ import { Box } from '@material-ui/core';
 import { InfoCard } from '@backstage/core';
 import { ResourceGrowthBarChart } from '../ResourceGrowthBarChart';
 import { ResourceGrowthBarChartLegend } from '../ResourceGrowthBarChartLegend';
-import { Duration, ProjectGrowthData } from '../../types';
+import { ProjectGrowthData } from '../../types';
+import { Duration } from '../../utils/duration';
 import { pluralOf } from '../../utils/grammar';
 
 type ProjectGrowthAlertProps = {
@@ -31,9 +32,8 @@ export const ProjectGrowthAlertCard = ({ alert }: ProjectGrowthAlertProps) => {
   const [costStart, costEnd] = alert.aggregation;
 
   const subheader = `
-    ${alert.products.length} ${pluralOf(alert.products.length, 'product')}${
-    alert.products.length > 1 ? ', sorted by cost' : ''
-  }`;
+    ${alert.products.length} ${pluralOf(alert.products.length, 'product')}${alert.products.length > 1 ? ', sorted by cost' : ''
+    }`;
   const previousName = moment(alert.periodStart, 'YYYY-[Q]Q').format(
     '[Q]Q YYYY',
   );
