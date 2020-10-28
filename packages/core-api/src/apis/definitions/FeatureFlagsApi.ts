@@ -34,11 +34,17 @@ export enum FeatureFlagState {
   On = 1,
 }
 
+export interface FeatureFlag {
+  name: string;
+  pluginId: string;
+}
+
 export interface FeatureFlagsApi {
   /**
-   * Store a list of registered feature flags.
+   * Registers a new feature flag. Once a feature flag has been registered it
+   * can be toggled by users, and read back to enable or disable features.
    */
-  registeredFeatureFlags: FeatureFlagsRegistryItem[];
+  registerFlag(flag: FeatureFlag): void;
 
   /**
    * Get a list of all feature flags from the current user.
@@ -49,11 +55,6 @@ export interface FeatureFlagsApi {
    * Get a list of all registered flags.
    */
   getRegisteredFlags(): FeatureFlagsRegistry;
-}
-
-export interface FeatureFlagsRegistryItem {
-  pluginId: string;
-  name: string;
 }
 
 export const featureFlagsApiRef: ApiRef<FeatureFlagsApi> = createApiRef({

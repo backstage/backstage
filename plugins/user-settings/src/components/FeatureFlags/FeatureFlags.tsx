@@ -17,7 +17,7 @@
 import React, { useCallback, useState } from 'react';
 import {
   featureFlagsApiRef,
-  FeatureFlagsRegistryItem,
+  FeatureFlag,
   FeatureFlagState,
   InfoCard,
   useApi,
@@ -30,7 +30,7 @@ export const FeatureFlags = () => {
   const featureFlagsApi = useApi(featureFlagsApiRef);
   const featureFlags = featureFlagsApi.getRegisteredFlags();
   const initialFlagState = featureFlags.reduce(
-    (result, featureFlag: FeatureFlagsRegistryItem) => {
+    (result, featureFlag: FeatureFlag) => {
       const state = featureFlagsApi.getFlags().get(featureFlag.name);
 
       result[featureFlag.name] = state;

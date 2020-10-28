@@ -125,15 +125,22 @@ describe('FeatureFlags', () => {
 
     beforeEach(() => {
       featureFlags = new FeatureFlagsImpl();
-      featureFlags.registeredFeatureFlags = [
-        { name: 'registered-flag-1', pluginId: 'plugin-one' },
-        { name: 'registered-flag-2', pluginId: 'plugin-one' },
-        { name: 'registered-flag-3', pluginId: 'plugin-two' },
-      ];
+      featureFlags.registerFlag({
+        name: 'registered-flag-1',
+        pluginId: 'plugin-one',
+      });
+      featureFlags.registerFlag({
+        name: 'registered-flag-2',
+        pluginId: 'plugin-one',
+      });
+      featureFlags.registerFlag({
+        name: 'registered-flag-3',
+        pluginId: 'plugin-two',
+      });
     });
 
     it('should return an empty list', () => {
-      featureFlags.registeredFeatureFlags = [];
+      featureFlags = new FeatureFlagsImpl();
       expect(featureFlags.getRegisteredFlags().toObject()).toEqual([]);
     });
 
@@ -203,9 +210,8 @@ describe('FeatureFlags', () => {
     });
 
     it('throws an error if length is less than three characters', () => {
-      const flags = featureFlags.getRegisteredFlags();
       expect(() =>
-        flags.push({
+        featureFlags.registerFlag({
           name: 'ab',
           pluginId: 'plugin-three',
         }),
@@ -213,9 +219,8 @@ describe('FeatureFlags', () => {
     });
 
     it('throws an error if length is greater than 150 characters', () => {
-      const flags = featureFlags.getRegisteredFlags();
       expect(() =>
-        flags.push({
+        featureFlags.registerFlag({
           name:
             'loremipsumdolorsitametconsecteturadipiscingelitnuncvitaeportaexaullamcorperturpismaurisutmattisnequemorbisediaculisauguevivamuspulvinarcursuseratblandithendreritquisqueuttinciduntmagnavestibulumblanditaugueat',
           pluginId: 'plugin-three',
@@ -224,9 +229,8 @@ describe('FeatureFlags', () => {
     });
 
     it('throws an error if name does not start with a lowercase letter', () => {
-      const flags = featureFlags.getRegisteredFlags();
       expect(() =>
-        flags.push({
+        featureFlags.registerFlag({
           name: '123456789',
           pluginId: 'plugin-three',
         }),
@@ -234,9 +238,8 @@ describe('FeatureFlags', () => {
     });
 
     it('throws an error if name contains characters other than lowercase letters, numbers and hyphens', () => {
-      const flags = featureFlags.getRegisteredFlags();
       expect(() =>
-        flags.push({
+        featureFlags.registerFlag({
           name: 'Invalid_Feature_Flag',
           pluginId: 'plugin-three',
         }),

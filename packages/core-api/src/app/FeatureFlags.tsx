@@ -17,7 +17,7 @@
 import {
   FeatureFlagState,
   FeatureFlagsApi,
-  FeatureFlagsRegistryItem,
+  FeatureFlag,
 } from '../apis/definitions';
 
 /**
@@ -133,23 +133,20 @@ export class UserFlags extends Map<string, FeatureFlagState> {
  * that plugins wish to register for use in Backstage.
  */
 
-export class FeatureFlagsRegistry extends Array<FeatureFlagsRegistryItem> {
-  static from(entries: FeatureFlagsRegistryItem[]) {
+export class FeatureFlagsRegistry extends Array<FeatureFlag> {
+  static from(entries: FeatureFlag[]) {
     Array.from(entries).forEach(entry => validateFlagName(entry.name));
     return new FeatureFlagsRegistry(...entries);
   }
 
-  push(...entries: FeatureFlagsRegistryItem[]): number {
+  push(...entries: FeatureFlag[]): number {
     Array.from(entries).forEach(entry => validateFlagName(entry.name));
     return super.push(...entries);
   }
 
   concat(
-    ...entries: (
-      | FeatureFlagsRegistryItem
-      | ConcatArray<FeatureFlagsRegistryItem>
-    )[]
-  ): FeatureFlagsRegistryItem[] {
+    ...entries: (FeatureFlag | ConcatArray<FeatureFlag>)[]
+  ): FeatureFlag[] {
     const _concat = super.concat(...entries);
     Array.from(_concat).forEach(entry => validateFlagName(entry.name));
     return _concat;
@@ -172,8 +169,13 @@ export class FeatureFlagsRegistry extends Array<FeatureFlagsRegistryItem> {
  * Create the FeatureFlags implementation based on the API.
  */
 export class FeatureFlags implements FeatureFlagsApi {
-  public registeredFeatureFlags: FeatureFlagsRegistryItem[] = [];
+  private registeredFeatureFlags: FeatureFlag[] = [];
   private userFlags: UserFlags | undefined;
+
+  registerFlag(flag: FeatureFlag) {
+    validateFlagName(flag.name);
+    this.registeredFeatureFlags.push(flag);
+  }
 
   getFlags(): UserFlags {
     if (!this.userFlags) this.userFlags = UserFlags.load();
