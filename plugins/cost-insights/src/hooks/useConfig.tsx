@@ -109,11 +109,16 @@ export const ConfigProvider = ({ children }: PropsWithChildren<{}>) => {
       return c.getNumber('costInsights.engineerCost');
     }
 
+    function getCurrencies(): Currency[] {
+      return defaultCurrencies;
+    }
+
     function getConfig() {
       const products = getProducts();
       const metrics = getMetrics();
       const engineerCost = getEngineerCost();
       const icons = getIcons();
+      const currencies = getCurrencies();
 
       validateMetrics(metrics);
 
@@ -123,6 +128,7 @@ export const ConfigProvider = ({ children }: PropsWithChildren<{}>) => {
         products,
         engineerCost,
         icons,
+        currencies,
       }));
 
       setLoading(false);
