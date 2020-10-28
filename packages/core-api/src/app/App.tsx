@@ -50,11 +50,11 @@ import {
   useApi,
   AnyApiFactory,
   ApiHolder,
+  LocalStorageFeatureFlags,
 } from '../apis';
 import { useAsync } from 'react-use';
 import { AppIdentity } from './AppIdentity';
 import { ApiResolver, ApiFactoryRegistry } from '../apis/system';
-import { LocalStorageFeatureFlags } from './FeatureFlags';
 
 type FullAppOptions = {
   apis: Iterable<AnyApiFactory>;

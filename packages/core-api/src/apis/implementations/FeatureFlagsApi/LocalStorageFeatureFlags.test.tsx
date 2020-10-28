@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { LocalStorageFeatureFlags } from './FeatureFlags';
-import { FeatureFlagState, FeatureFlagsApi } from '../apis/definitions';
+import { LocalStorageFeatureFlags } from './LocalStorageFeatureFlags';
+import { FeatureFlagState, FeatureFlagsApi } from '../../definitions';
 
 describe('FeatureFlags', () => {
   beforeEach(() => {

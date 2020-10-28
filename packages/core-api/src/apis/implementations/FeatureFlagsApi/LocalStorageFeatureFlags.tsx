@@ -19,7 +19,7 @@ import {
   FeatureFlagsApi,
   FeatureFlag,
   FeatureFlagsSaveOptions,
-} from '../apis/definitions';
+} from '../../definitions';
 
 export function validateFlagName(name: string): void {
   if (name.length < 3) {
