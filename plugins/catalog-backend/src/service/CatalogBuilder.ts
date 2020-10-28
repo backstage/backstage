@@ -16,19 +16,13 @@
 
 import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
 import {
-  apiEntityV1alpha1Policy,
-  componentEntityV1alpha1Policy,
   DefaultNamespaceEntityPolicy,
   EntityPolicies,
   EntityPolicy,
   FieldFormatEntityPolicy,
-  groupEntityV1alpha1Policy,
-  locationEntityV1alpha1Policy,
   makeValidator,
   NoForeignRootFieldsEntityPolicy,
   SchemaValidEntityPolicy,
-  templateEntityV1alpha1Policy,
-  userEntityV1alpha1Policy,
   Validators,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
@@ -47,17 +41,18 @@ import {
   CodeOwnersProcessor,
   FileReaderProcessor,
   GithubOrgReaderProcessor,
-  OwnerRelationProcessor,
   HigherOrderOperation,
   HigherOrderOperations,
   LocationReaders,
   LocationRefProcessor,
+  OwnerRelationProcessor,
   PlaceholderProcessor,
   PlaceholderResolver,
   StaticLocationProcessor,
   UrlReaderProcessor,
 } from '../ingestion';
 import { CatalogRulesEnforcer } from '../ingestion/CatalogRules';
+import { BuiltinKindsEntityProcessor } from '../ingestion/processors/BuiltinKindsEntityProcessor';
 import { LdapOrgReaderProcessor } from '../ingestion/processors/LdapOrgReaderProcessor';
 import {
   jsonPlaceholderResolver,
@@ -81,11 +76,6 @@ export type CatalogEnvironment = {
  *   after the processors' pre-processing steps. All policies are given the
  *   chance to inspect the entity, and all of them have to pass in order for
  *   the entity to be considered valid from an overall point of view.
- * - Entity kinds can be added or replaced. These are the second line of
- *   validation that is applied after the entity policies, which adds
- *   additional kind-specific validation (usually based on a schema). Only one
- *   of the entity kinds has to accept the entity, but if none of them do, the
- *   entity is rejected as a whole.
  * - Placeholder resolvers can be replaced or added. These run on the raw
  *   structured data between the parsing and pre-processing steps, to replace
  *   dollar-prefixed entries with their actual values (like $file).
@@ -93,15 +83,13 @@ export type CatalogEnvironment = {
  *   individual core fields such as metadata.name, to ensure that they adhere
  *   to certain rules.
  * - Processors can be added or replaced. These implement the functionality of
- *   reading, parsing and processing the entity data before it is persisted in
- *   the catalog.
+ *   reading, parsing, validating, and processing the entity data before it is
+ *   persisted in the catalog.
  */
 export class CatalogBuilder {
   private readonly env: CatalogEnvironment;
   private entityPolicies: EntityPolicy[];
   private entityPoliciesReplace: boolean;
-  private entityKinds: EntityPolicy[];
-  private entityKindsReplace: boolean;
   private placeholderResolvers: Record<string, PlaceholderResolver>;
   private fieldFormatValidators: Partial<Validators>;
   private processors: CatalogProcessor[];
@@ -111,8 +99,6 @@ export class CatalogBuilder {
     this.env = env;
     this.entityPolicies = [];
     this.entityPoliciesReplace = false;
-    this.entityKinds = [];
-    this.entityKindsReplace = false;
     this.placeholderResolvers = {};
     this.fieldFormatValidators = {};
     this.processors = [];
@@ -151,33 +137,6 @@ export class CatalogBuilder {
   replaceEntityPolicies(policies: EntityPolicy[]): CatalogBuilder {
     this.entityPolicies = [...policies];
     this.entityPoliciesReplace = true;
-    return this;
-  }
-
-  /**
-   * Adds entity kinds that are used to validate a certain apiVersion/kind. One
-   * of the entity kind policies must match a given entity for it to be
-   * considered valid.
-   *
-   * @param policies One or more policies
-   */
-  addEntityKind(...policies: EntityPolicy[]): CatalogBuilder {
-    this.entityKinds.push(...policies);
-    return this;
-  }
-
-  /**
-   * Sets what entity policies that are used to validate a certain apiVersion/
-   * kind. One of the entity kind policies must match a given entity for it to
-   * be considered valid.
-   *
-   * This function replaces the default set of kinds; use with care.
-   *
-   * @param policies One or more policies
-   */
-  replaceEntityKinds(policies: EntityPolicy[]): CatalogBuilder {
-    this.entityKinds = [...policies];
-    this.entityKindsReplace = true;
     return this;
   }
 
@@ -291,22 +250,7 @@ export class CatalogBuilder {
           ...this.entityPolicies,
         ];
 
-    const entityKinds: EntityPolicy[] = this.entityKindsReplace
-      ? this.entityKinds
-      : [
-          componentEntityV1alpha1Policy,
-          groupEntityV1alpha1Policy,
-          userEntityV1alpha1Policy,
-          locationEntityV1alpha1Policy,
-          templateEntityV1alpha1Policy,
-          apiEntityV1alpha1Policy,
-          ...this.entityKinds,
-        ];
-
-    return EntityPolicies.allOf([
-      EntityPolicies.allOf(entityPolicies),
-      EntityPolicies.oneOf(entityKinds),
-    ]);
+    return EntityPolicies.allOf(entityPolicies);
   }
 
   private buildProcessors(): CatalogProcessor[] {
@@ -325,6 +269,7 @@ export class CatalogBuilder {
     const processors: CatalogProcessor[] = [
       StaticLocationProcessor.fromConfig(config),
       new PlaceholderProcessor({ resolvers: placeholderResolvers, reader }),
+      new BuiltinKindsEntityProcessor(),
     ];
 
     // These are only added unless the user replaced them all
