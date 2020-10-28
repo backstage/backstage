@@ -38,11 +38,7 @@
     "@rollup/plugin-json": "^4.0.2",
     "@rollup/plugin-node-resolve": "^9.0.0",
     "@rollup/plugin-yaml": "^2.1.1",
-<<<<<<< HEAD
-    "@spotify/eslint-config-base": "^9.0.0",
-=======
     "@spotify/eslint-config-base": "^8.0.0",
->>>>>>> 88203b2fdd686da88b4d9f5ebe3564be90bcdd37
     "@spotify/eslint-config-react": "^8.0.0",
     "@spotify/eslint-config-typescript": "^8.0.0",
     "@sucrase/webpack-loader": "^2.0.0",
@@ -67,15 +63,11 @@
     "eslint-config-prettier": "^6.0.0",
     "eslint-formatter-friendly": "^7.0.0",
     "eslint-plugin-import": "^2.20.2",
-<<<<<<< HEAD
     "eslint-plugin-jest": "^24.1.0",
     "eslint-plugin-jsx-a11y": "^6.2.1",
     "eslint-plugin-monorepo": "^0.3.1",
     "eslint-plugin-react": "^7.12.4",
     "eslint-plugin-react-hooks": "^4.0.0",
-=======
-    "eslint-plugin-monorepo": "^0.3.1",
->>>>>>> 88203b2fdd686da88b4d9f5ebe3564be90bcdd37
     "fork-ts-checker-webpack-plugin": "^4.0.5",
     "fs-extra": "^9.0.0",
     "handlebars": "^4.7.3",
