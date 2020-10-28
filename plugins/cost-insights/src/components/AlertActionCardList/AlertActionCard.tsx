@@ -27,7 +27,7 @@ type AlertActionCardProps = {
   number: number;
 };
 
-const AlertActionCard = ({ alert, number }: AlertActionCardProps) => {
+export const AlertActionCard = ({ alert, number }: AlertActionCardProps) => {
   const { scrollIntoView } = useScroll(`alert-${number}`);
   const headerClasses = useHeaderStyles();
   const classes = useStyles();
@@ -43,5 +43,3 @@ const AlertActionCard = ({ alert, number }: AlertActionCardProps) => {
     </Card>
   );
 };
-
-export default AlertActionCard;

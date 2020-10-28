@@ -24,7 +24,11 @@ export type BarChartSteps = {
   onClick: (index: number) => void;
 };
 
-const BarChartSteps = ({ steps, activeStep, onClick }: BarChartSteps) => {
+export const BarChartSteps = ({
+  steps,
+  activeStep,
+  onClick,
+}: BarChartSteps) => {
   const classes = useStyles();
   const handleOnClick = (index: number) => (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -48,5 +52,3 @@ const BarChartSteps = ({ steps, activeStep, onClick }: BarChartSteps) => {
     </div>
   );
 };
-
-export default BarChartSteps;

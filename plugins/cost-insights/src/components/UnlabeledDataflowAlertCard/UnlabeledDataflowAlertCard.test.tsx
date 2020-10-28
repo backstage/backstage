@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import UnlabeledDataflowAlertCard from './UnlabeledDataflowAlertCard';
+import { UnlabeledDataflowAlertCard } from './UnlabeledDataflowAlertCard';
 import {
   createMockUnlabeledDataflowData,
   createMockUnlabeledDataflowAlertProject,

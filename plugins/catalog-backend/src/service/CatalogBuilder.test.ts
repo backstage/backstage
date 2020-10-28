@@ -15,24 +15,43 @@
  */
 
 import { getVoidLogger, UrlReader } from '@backstage/backend-common';
-import { Entity, LocationSpec } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
+import Knex from 'knex';
+import yaml from 'yaml';
 import { DatabaseManager } from '../database';
-import { CatalogProcessorEmit } from '../ingestion';
 import * as result from '../ingestion/processors/results';
 import { CatalogBuilder, CatalogEnvironment } from './CatalogBuilder';
 
+const dummyEntity = {
+  apiVersion: 'backstage.io/v1alpha1',
+  kind: 'Component',
+  metadata: {
+    name: 'n',
+  },
+  spec: {
+    type: 't',
+    owner: 'o',
+    lifecycle: 'l',
+  },
+};
+
+const dummyEntityYaml = yaml.stringify(dummyEntity);
+
 describe('CatalogBuilder', () => {
-  const db = DatabaseManager.createTestDatabaseConnection();
+  let db: Knex<any, unknown[]>;
   const reader: jest.Mocked<UrlReader> = { read: jest.fn() };
   const env: CatalogEnvironment = {
     logger: getVoidLogger(),
-    database: { getClient: () => db },
+    database: { getClient: async () => db },
     config: ConfigReader.fromConfigs([]),
     reader,
   };
 
-  afterEach(() => jest.resetAllMocks());
+  beforeEach(async () => {
+    db = await DatabaseManager.createTestDatabaseConnection();
+    jest.resetAllMocks();
+  });
 
   it('works with no changes', async () => {
     const builder = new CatalogBuilder(env);
@@ -46,7 +65,7 @@ describe('CatalogBuilder', () => {
   });
 
   it('works with everything replaced', async () => {
-    reader.read.mockResolvedValue(Buffer.from('junk'));
+    reader.read.mockResolvedValueOnce(Buffer.from('junk'));
 
     const builder = new CatalogBuilder(env)
       .replaceEntityPolicies([
@@ -77,21 +96,8 @@ describe('CatalogBuilder', () => {
       })
       .replaceProcessors([
         {
-          async readLocation(
-            location: LocationSpec,
-            _optional: boolean,
-            emit: CatalogProcessorEmit,
-          ) {
+          async readLocation(location, _optional, emit) {
             expect(location.type).toBe('test');
-            emit(result.data(location, await reader.read('ignored')));
-            return true;
-          },
-          async parseData(
-            data: Buffer,
-            location: LocationSpec,
-            emit: CatalogProcessorEmit,
-          ) {
-            expect(data.toString()).toEqual('junk');
             emit(
               result.entity(location, {
                 apiVersion: 'av',
@@ -101,14 +107,14 @@ describe('CatalogBuilder', () => {
             );
             return true;
           },
-          async preProcessEntity(entity: Entity) {
+          async preProcessEntity(entity) {
             expect(entity.apiVersion).toBe('av');
             return {
               ...entity,
               metadata: { ...entity.metadata, namespace: 'ns' },
             };
           },
-          async postProcessEntity(entity: Entity) {
+          async postProcessEntity(entity) {
             expect(entity.metadata.namespace).toBe('ns');
             return {
               ...entity,
@@ -123,7 +129,7 @@ describe('CatalogBuilder', () => {
       type: 'test',
       target: '',
     });
-    expect.assertions(8);
+    expect.assertions(7);
     expect(added.entities).toEqual([
       {
         apiVersion: 'av',
@@ -139,6 +145,67 @@ describe('CatalogBuilder', () => {
         },
         relations: [],
       },
+    ]);
+  });
+
+  it('addProcessor works', async () => {
+    reader.read.mockResolvedValueOnce(Buffer.from(dummyEntityYaml));
+
+    const builder = new CatalogBuilder(env);
+    builder.addProcessor({
+      async preProcessEntity(e) {
+        return { ...e, metadata: { ...e.metadata, foo: 7 } };
+      },
+    });
+
+    const { entitiesCatalog, higherOrderOperation } = await builder.build();
+    await higherOrderOperation.addLocation({
+      type: 'github',
+      target: 'https://github.com/a/b/x.yaml',
+    });
+    const entities = await entitiesCatalog.entities();
+
+    expect(entities).toEqual([
+      expect.objectContaining({
+        metadata: expect.objectContaining({
+          foo: 7,
+        }),
+      }),
+    ]);
+  });
+
+  it('replaceProcessors works', async () => {
+    reader.read.mockResolvedValueOnce(Buffer.from(dummyEntityYaml));
+
+    const builder = new CatalogBuilder(env);
+    builder.replaceProcessors([
+      {
+        async readLocation(location, _optional, emit) {
+          expect(location.type).toBe('x');
+          emit(result.entity(location, dummyEntity));
+          return true;
+        },
+        async preProcessEntity(e) {
+          expect(e.metadata.name).toBe('n');
+          return { ...e, metadata: { ...e.metadata, foo: 7 } };
+        },
+      },
+    ]);
+
+    const { entitiesCatalog, higherOrderOperation } = await builder.build();
+    await higherOrderOperation.addLocation({
+      type: 'x',
+      target: 'y',
+    });
+    const entities = await entitiesCatalog.entities();
+
+    expect.assertions(3);
+    expect(entities).toEqual([
+      expect.objectContaining({
+        metadata: expect.objectContaining({
+          foo: 7,
+        }),
+      }),
     ]);
   });
 });

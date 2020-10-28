@@ -38,7 +38,7 @@ import {
   overviewGraphTickFormatter,
   formatGraphValue,
 } from '../../utils/graphs';
-import CostOverviewTooltip from './CostOverviewTooltip';
+import { CostOverviewTooltip } from './CostOverviewTooltip';
 import { TooltipItemProps } from '../Tooltip';
 import { useCostOverviewStyles as useStyles } from '../../utils/styles';
 import { groupByDate, toDataMax, trendFrom } from '../../utils/charts';
@@ -51,7 +51,7 @@ type CostOverviewChartProps = {
   responsive?: boolean;
 };
 
-const CostOverviewChart = ({
+export const CostOverviewChart = ({
   dailyCostData,
   metric,
   metricData,
@@ -181,5 +181,3 @@ const CostOverviewChart = ({
     </ResponsiveContainer>
   );
 };
-
-export default CostOverviewChart;

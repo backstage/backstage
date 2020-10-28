@@ -17,8 +17,8 @@
 import React from 'react';
 import { ChangeStatistic } from './ChangeStatistic';
 import { Maybe } from './Maybe';
-import UnlabeledDataflowAlertCard from '../components/UnlabeledDataflowAlertCard';
-import ProjectGrowthAlertCard from '../components/ProjectGrowthAlertCard';
+import { UnlabeledDataflowAlertCard } from '../components/UnlabeledDataflowAlertCard';
+import { ProjectGrowthAlertCard } from '../components/ProjectGrowthAlertCard';
 
 /**
  * Generic alert type with required fields for display. The `element` field will be rendered in

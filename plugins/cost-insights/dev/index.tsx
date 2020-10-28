@@ -13,8 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { createDevApp } from '@backstage/dev-utils';
-import { plugin } from '../src/plugin';
+import { createPlugin, createApiFactory } from '@backstage/core';
+import { ExampleCostInsightsClient } from '../src/api';
+import { costInsightsApiRef } from '../src';
+import { pluginConfig } from '../src/plugin';
 
-createDevApp().registerPlugin(plugin).render();
+const devPlugin = createPlugin({
+  ...pluginConfig,
+  apis: [
+    createApiFactory({
+      api: costInsightsApiRef,
+      deps: {},
+      factory: () => new ExampleCostInsightsClient(),
+    }),
+  ],
+});
+
+createDevApp().registerPlugin(devPlugin).render();

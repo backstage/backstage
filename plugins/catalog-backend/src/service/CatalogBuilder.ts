@@ -43,15 +43,10 @@ import {
 import { DatabaseManager } from '../database';
 import {
   AnnotateLocationEntityProcessor,
-  AzureApiReaderProcessor,
-  BitbucketApiReaderProcessor,
   CatalogProcessor,
   CodeOwnersProcessor,
   FileReaderProcessor,
   GithubOrgReaderProcessor,
-  GithubReaderProcessor,
-  GitlabApiReaderProcessor,
-  GitlabReaderProcessor,
   OwnerRelationProcessor,
   HigherOrderOperation,
   HigherOrderOperations,
@@ -61,7 +56,6 @@ import {
   PlaceholderResolver,
   StaticLocationProcessor,
   UrlReaderProcessor,
-  YamlProcessor,
 } from '../ingestion';
 import { CatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { LdapOrgReaderProcessor } from '../ingestion/processors/LdapOrgReaderProcessor';
@@ -318,6 +312,8 @@ export class CatalogBuilder {
   private buildProcessors(): CatalogProcessor[] {
     const { config, logger, reader } = this.env;
 
+    this.checkDeprecatedReaderProcessors();
+
     const placeholderResolvers: Record<string, PlaceholderResolver> = {
       json: jsonPlaceholderResolver,
       yaml: yamlPlaceholderResolver,
@@ -325,65 +321,55 @@ export class CatalogBuilder {
       ...this.placeholderResolvers,
     };
 
-    const processors = this.processorsReplace
-      ? this.processors
-      : [
-          new FileReaderProcessor(),
-          GithubOrgReaderProcessor.fromConfig(config, { logger }),
-          LdapOrgReaderProcessor.fromConfig(config, { logger }),
-          new UrlReaderProcessor({ reader, logger }),
-          new YamlProcessor(),
-          new CodeOwnersProcessor({ reader }),
-          new LocationRefProcessor(),
-          new OwnerRelationProcessor(),
-          new AnnotateLocationEntityProcessor(),
-        ];
-
-    return [
+    // These are always there no matter what
+    const processors: CatalogProcessor[] = [
       StaticLocationProcessor.fromConfig(config),
       new PlaceholderProcessor({ resolvers: placeholderResolvers, reader }),
-      ...this.buildDeprecatedReaderProcessors(),
-      ...processors,
     ];
+
+    // These are only added unless the user replaced them all
+    if (!this.processorsReplace) {
+      processors.push(
+        new FileReaderProcessor(),
+        GithubOrgReaderProcessor.fromConfig(config, { logger }),
+        LdapOrgReaderProcessor.fromConfig(config, { logger }),
+        new UrlReaderProcessor({ reader, logger }),
+        new CodeOwnersProcessor({ reader }),
+        new LocationRefProcessor(),
+        new OwnerRelationProcessor(),
+        new AnnotateLocationEntityProcessor(),
+      );
+    }
+
+    // Add the ones (if any) that the user added
+    processors.push(...this.processors);
+
+    return processors;
   }
 
-  // TODO(Rugvip): These are added for backwards compatibility if config exists
-  //   The idea is to have everyone migrate from using the old processors to
-  //   the new integration config driven UrlReaders. In an upcoming release we
-  //   can then completely remove support for the old processors, but still
-  //   keep handling the deprecated location types for a while, but with a
-  //   warning.
-  private buildDeprecatedReaderProcessors(): CatalogProcessor[] {
-    const { config, logger } = this.env;
-
-    const result = [];
-    const pc = config.getOptionalConfig('catalog.processors');
+  // TODO(Rugvip): These old processors are removed, for a while we'll be throwing
+  //               errors here to make sure people know where to move the config
+  private checkDeprecatedReaderProcessors() {
+    const pc = this.env.config.getOptionalConfig('catalog.processors');
     if (pc?.has('github')) {
-      logger.warn(
+      throw new Error(
         `Using deprecated configuration for catalog.processors.github, move to using integrations.github instead`,
       );
-      result.push(GithubReaderProcessor.fromConfig(config, logger));
     }
     if (pc?.has('gitlabApi')) {
-      logger.warn(
+      throw new Error(
         `Using deprecated configuration for catalog.processors.gitlabApi, move to using integrations.gitlab instead`,
       );
-      result.push(new GitlabApiReaderProcessor(config));
-      result.push(new GitlabReaderProcessor());
     }
     if (pc?.has('bitbucketApi')) {
-      logger.warn(
+      throw new Error(
         `Using deprecated configuration for catalog.processors.bitbucketApi, move to using integrations.bitbucket instead`,
       );
-      result.push(new BitbucketApiReaderProcessor(config));
     }
     if (pc?.has('azureApi')) {
-      logger.warn(
+      throw new Error(
         `Using deprecated configuration for catalog.processors.azureApi, move to using integrations.azure instead`,
       );
-      result.push(new AzureApiReaderProcessor(config));
     }
-
-    return result;
   }
 }

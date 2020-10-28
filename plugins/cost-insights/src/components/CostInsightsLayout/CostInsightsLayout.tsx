@@ -17,7 +17,7 @@ import React, { PropsWithChildren } from 'react';
 import { makeStyles } from '@material-ui/core';
 import { Header, Page } from '@backstage/core';
 import { Group } from '../../types';
-import CostInsightsTabs from '../CostInsightsTabs';
+import { CostInsightsTabs } from '../CostInsightsTabs';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -36,7 +36,7 @@ type CostInsightsLayoutProps = {
   groups: Group[];
 };
 
-const CostInsightsLayout = ({
+export const CostInsightsLayout = ({
   groups,
   children,
 }: PropsWithChildren<CostInsightsLayoutProps>) => {
@@ -56,5 +56,3 @@ const CostInsightsLayout = ({
     </Page>
   );
 };
-
-export default CostInsightsLayout;

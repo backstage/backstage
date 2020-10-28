@@ -14,7 +14,19 @@
  * limitations under the License.
  */
 
+const mockAccess = jest.fn();
+jest.doMock('fs-extra', () => ({
+  promises: {
+    access: mockAccess,
+  },
+  constants: {
+    F_OK: 0,
+    W_OK: 1,
+  },
+}));
+
 import { getVoidLogger } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import request from 'supertest';
 import { createRouter } from './router';
@@ -22,6 +34,106 @@ import { Templaters, Preparers, Publishers } from '../scaffolder';
 import Docker from 'dockerode';
 
 jest.mock('dockerode');
+
+describe('createRouter - working directory', () => {
+  const mockPrepare = jest.fn();
+  const mockPreparers = new Preparers();
+
+  beforeAll(() => {
+    const mockPreparer = {
+      prepare: mockPrepare,
+    };
+    mockPreparers.register('azure/api', mockPreparer);
+  });
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
+  const workDirConfig = (path: string) => ({
+    context: '',
+    data: {
+      backend: {
+        workingDirectory: path,
+      },
+    },
+  });
+
+  const template = {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Template',
+    metadata: {
+      annotations: {
+        'backstage.io/managed-by-location': 'azure/api:dev.azure.com',
+      },
+    },
+    spec: {
+      owner: 'template@backstage.io',
+      path: '.',
+      schema: {},
+    },
+  };
+
+  it('should throw an error when working directory does not exist or is not writable', async () => {
+    mockAccess.mockImplementation(() => {
+      throw new Error('access error');
+    });
+
+    await expect(
+      createRouter({
+        logger: getVoidLogger(),
+        preparers: new Preparers(),
+        templaters: new Templaters(),
+        publishers: new Publishers(),
+        config: ConfigReader.fromConfigs([workDirConfig('/path')]),
+        dockerClient: new Docker(),
+      }),
+    ).rejects.toThrow('access error');
+  });
+
+  it('should use the working directory when configured', async () => {
+    const router = await createRouter({
+      logger: getVoidLogger(),
+      preparers: mockPreparers,
+      templaters: new Templaters(),
+      publishers: new Publishers(),
+      config: ConfigReader.fromConfigs([workDirConfig('/path')]),
+      dockerClient: new Docker(),
+    });
+
+    const app = express().use(router);
+    await request(app).post('/v1/jobs').send({
+      template,
+      values: {},
+    });
+
+    expect(mockPrepare).toBeCalledWith(expect.anything(), {
+      logger: expect.anything(),
+      workingDirectory: '/path',
+    });
+  });
+
+  it('should not pass along anything when no working directory is configured', async () => {
+    const router = await createRouter({
+      logger: getVoidLogger(),
+      preparers: mockPreparers,
+      templaters: new Templaters(),
+      publishers: new Publishers(),
+      config: ConfigReader.fromConfigs([]),
+      dockerClient: new Docker(),
+    });
+
+    const app = express().use(router);
+    await request(app).post('/v1/jobs').send({
+      template,
+      values: {},
+    });
+
+    expect(mockPrepare).toBeCalledWith(expect.anything(), {
+      logger: expect.anything(),
+    });
+  });
+});
 
 describe('createRouter', () => {
   let app: express.Express;
@@ -32,6 +144,7 @@ describe('createRouter', () => {
       preparers: new Preparers(),
       templaters: new Templaters(),
       publishers: new Publishers(),
+      config: ConfigReader.fromConfigs([]),
       dockerClient: new Docker(),
     });
     app = express().use(router);

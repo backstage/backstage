@@ -27,7 +27,7 @@ type CurrencySelectProps = {
   onSelect: (currency: Currency) => void;
 };
 
-const CurrencySelect = ({
+export const CurrencySelect = ({
   currency,
   currencies,
   onSelect,
@@ -71,5 +71,3 @@ const CurrencySelect = ({
     </Select>
   );
 };
-
-export default CurrencySelect;

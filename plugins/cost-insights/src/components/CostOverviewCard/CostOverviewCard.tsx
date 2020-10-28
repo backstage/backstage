@@ -16,12 +16,12 @@
 
 import React from 'react';
 import { Box, Card, CardContent, Divider, useTheme } from '@material-ui/core';
-import CostGrowth from '../CostGrowth';
-import CostOverviewChart from './CostOverviewChart';
-import CostOverviewHeader from './CostOverviewHeader';
-import LegendItem from '../LegendItem';
-import MetricSelect from '../MetricSelect';
-import PeriodSelect from '../PeriodSelect';
+import { CostGrowth } from '../CostGrowth';
+import { CostOverviewChart } from './CostOverviewChart';
+import { CostOverviewHeader } from './CostOverviewHeader';
+import { LegendItem } from '../LegendItem';
+import { MetricSelect } from '../MetricSelect';
+import { PeriodSelect } from '../PeriodSelect';
 import { useScroll, useFilters, useConfig } from '../../hooks';
 import { mapFiltersToProps } from './selector';
 import { DefaultNavigation } from '../../utils/navigation';
@@ -39,7 +39,7 @@ export type CostOverviewCardProps = {
   metricData: MetricData | null;
 };
 
-const CostOverviewCard = ({
+export const CostOverviewCard = ({
   dailyCostData,
   metricData,
 }: CostOverviewCardProps) => {
@@ -114,5 +114,3 @@ const CostOverviewCard = ({
     </Card>
   );
 };
-
-export default CostOverviewCard;

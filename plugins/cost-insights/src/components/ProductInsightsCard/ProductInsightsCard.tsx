@@ -19,9 +19,9 @@ import { InfoCard, useApi } from '@backstage/core';
 import { Box } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import { costInsightsApiRef } from '../../api';
-import PeriodSelect from '../PeriodSelect';
-import ResourceGrowthBarChart from '../ResourceGrowthBarChart';
-import ResourceGrowthBarChartLegend from '../ResourceGrowthBarChartLegend';
+import { PeriodSelect } from '../PeriodSelect';
+import { ResourceGrowthBarChart } from '../ResourceGrowthBarChart';
+import { ResourceGrowthBarChartLegend } from '../ResourceGrowthBarChartLegend';
 import {
   useFilters,
   useLastCompleteBillingDate,
@@ -38,7 +38,7 @@ type ProductInsightsCardProps = {
   product: Product;
 };
 
-const ProductInsightsCard = ({ product }: ProductInsightsCardProps) => {
+export const ProductInsightsCard = ({ product }: ProductInsightsCardProps) => {
   const client = useApi(costInsightsApiRef);
   const classes = useStyles();
   const { ScrollAnchor } = useScroll(product.kind);
@@ -166,5 +166,3 @@ const ProductInsightsCard = ({ product }: ProductInsightsCardProps) => {
     </InfoCard>
   );
 };
-
-export default ProductInsightsCard;

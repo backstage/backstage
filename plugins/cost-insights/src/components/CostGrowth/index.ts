@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export { default } from './CostGrowth';
+export { CostGrowth } from './CostGrowth';
+export type { CostGrowthProps } from './CostGrowth';

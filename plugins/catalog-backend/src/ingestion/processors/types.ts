@@ -36,20 +36,6 @@ export type CatalogProcessor = {
   ): Promise<boolean>;
 
   /**
-   * Parses a raw data buffer that was read from a location.
-   *
-   * @param data The data to parse
-   * @param location The location that the data came from
-   * @param emit A sink for items resulting from the parsing
-   * @returns True if handled by this processor, false otherwise
-   */
-  parseData?(
-    data: Buffer,
-    location: LocationSpec,
-    emit: CatalogProcessorEmit,
-  ): Promise<boolean>;
-
-  /**
    * Pre-processes an emitted entity, after it has been emitted but before it
    * has been validated.
    *
@@ -105,12 +91,6 @@ export type CatalogProcessorLocationResult = {
   optional: boolean;
 };
 
-export type CatalogProcessorDataResult = {
-  type: 'data';
-  data: Buffer;
-  location: LocationSpec;
-};
-
 export type CatalogProcessorEntityResult = {
   type: 'entity';
   entity: Entity;
@@ -131,7 +111,6 @@ export type CatalogProcessorErrorResult = {
 
 export type CatalogProcessorResult =
   | CatalogProcessorLocationResult
-  | CatalogProcessorDataResult
   | CatalogProcessorEntityResult
   | CatalogProcessorRelationResult
   | CatalogProcessorErrorResult;

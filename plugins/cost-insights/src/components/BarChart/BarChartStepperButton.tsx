@@ -22,7 +22,7 @@ interface BarChartStepperButtonProps extends ButtonBaseProps {
   name: string;
 }
 
-const BarChartStepperButton = forwardRef(
+export const BarChartStepperButton = forwardRef(
   (
     {
       name,
@@ -45,5 +45,3 @@ const BarChartStepperButton = forwardRef(
     );
   },
 );
-
-export default BarChartStepperButton;

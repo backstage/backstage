@@ -15,14 +15,14 @@
  */
 import React, { FC, Fragment } from 'react';
 import { Paper, Divider } from '@material-ui/core';
-import AlertActionCard from './AlertActionCard';
+import { AlertActionCard } from './AlertActionCard';
 import { Alert } from '../../types';
 
 type AlertActionCardList = {
   alerts: Array<Alert>;
 };
 
-const AlertActionCardList: FC<AlertActionCardList> = ({ alerts }) => (
+export const AlertActionCardList: FC<AlertActionCardList> = ({ alerts }) => (
   <Paper>
     {alerts.map((alert, index) => (
       <Fragment key={`alert-${index}`}>
@@ -32,5 +32,3 @@ const AlertActionCardList: FC<AlertActionCardList> = ({ alerts }) => (
     ))}
   </Paper>
 );
-
-export default AlertActionCardList;
