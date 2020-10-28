@@ -1,0 +1,1 @@
+export { createOneLoginProvider } from './provider';
