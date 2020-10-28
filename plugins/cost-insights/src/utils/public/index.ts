@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
-export * from './api';
-export * from './components';
-export { useCurrency } from './hooks';
-export * from './types';
-export * from './utils/public';
+export * from '../tests';
+export { Duration } from '../duration';
+export { CurrencyType } from '../currency';
+export { IconType } from '../icon';
