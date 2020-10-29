@@ -33,7 +33,10 @@ import {
   Trendline,
   UnlabeledDataflowData,
 } from '../src/types';
-import { ProjectGrowthAlert, UnlabeledDataflowAlert } from '../src/utils/alerts';
+import {
+  ProjectGrowthAlert,
+  UnlabeledDataflowAlert,
+} from '../src/utils/alerts';
 import {
   DEFAULT_DATE_FORMAT,
   exclusiveEndDateOf,
