@@ -98,7 +98,7 @@ type Option = {
   isChecked?: boolean;
 };
 
-type Selection = { category?: string; selecetedChilds?: string[] }[];
+type Selection = { category?: string; selecetedChildren?: string[] }[];
 
 export type CheckboxTreeProps = {
   subCategories: SubCategory[];
@@ -193,7 +193,7 @@ const reducer = (
 
             for (const option in newState[category].options) {
               newState[category].options[option].isChecked =
-                selection.selecetedChilds?.includes(option) || false;
+                selection.selecetedChildren?.includes(option) || false;
             }
           }
         }
@@ -246,7 +246,7 @@ export const CheckboxTree = ({
   useEffect(() => {
     const values = Object.values(state).map(category => ({
       category: category.isChecked ? category.label : undefined,
-      selectedChilds: Object.values(category.options)
+      selecetedChildren: Object.values(category.options)
         .filter(option => option.isChecked)
         .map(option => option.label),
     }));
