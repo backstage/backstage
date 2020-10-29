@@ -256,8 +256,8 @@ component, like `java` or `go`.
 
 This field is optional, and currently has no special semantics.
 
-Each tag must be sequences of `[a-zA-Z0-9]` separated by `-`, at most 63
-characters in total.
+Each tag must be sequences of `[a-z0-9]` separated by `-`, at most 63 characters
+in total.
 
 ## Kind: Component
 
@@ -418,7 +418,7 @@ of the `metadata.name` field.
 ### `metadata.tags` [optional]
 
 A list of strings that can be associated with the template, e.g.
-`['Recommended', 'React']`.
+`['recommended', 'react']`.
 
 This list will also be used in the frontend to display to the user so you can
 potentially search and group templates by these tags.
