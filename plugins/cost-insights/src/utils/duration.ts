@@ -15,10 +15,8 @@
  */
 
 import moment from 'moment';
-import { Duration } from '../types';
+import { Duration, DEFAULT_DATE_FORMAT } from '../types';
 import { assertNever } from './assert';
-
-export const DEFAULT_DATE_FORMAT = 'YYYY-MM-DD';
 
 /**
  * Derive the start date of a given period, assuming two repeating intervals.

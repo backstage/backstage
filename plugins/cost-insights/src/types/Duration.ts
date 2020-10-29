@@ -26,3 +26,5 @@ export enum Duration {
   P1M = 'P1M',
   P3M = 'P3M',
 }
+
+export const DEFAULT_DATE_FORMAT = 'YYYY-MM-DD';
