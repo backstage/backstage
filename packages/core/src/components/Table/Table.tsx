@@ -49,7 +49,6 @@ import React, {
   forwardRef,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -204,6 +203,12 @@ function removeDefaultValues(state: any, defaultState: any): any {
   });
 }
 
+const defaultInitialState = {
+  search: '',
+  filtersOpen: false,
+  filters: {},
+};
+
 export interface TableColumn<T extends object = {}> extends Column<T> {
   highlight?: boolean;
   width?: string;
@@ -248,14 +253,6 @@ export function Table<T extends object = {}>({
 
   const theme = useTheme<BackstageTheme>();
 
-  const defaultInitialState = useMemo<TableState>(
-    () => ({
-      search: '',
-      filtersOpen: false,
-      filters: {},
-    }),
-    [],
-  );
   const calculatedInitialState = { ...defaultInitialState, ...initialState };
 
   const [filtersOpen, toggleFilters] = useState(
@@ -291,13 +288,7 @@ export function Table<T extends object = {}>({
 
       onStateChange(state);
     }
-  }, [
-    search,
-    filtersOpen,
-    selectedFilters,
-    defaultInitialState,
-    onStateChange,
-  ]);
+  }, [search, filtersOpen, selectedFilters, onStateChange]);
 
   const defaultOptions: Options<T> = {
     headerStyle: {
@@ -410,7 +401,7 @@ export function Table<T extends object = {}>({
     }));
   };
 
-  const toolbar = useCallback(
+  const Toolbar = useCallback(
     toolbarProps => {
       const onSearchChanged = (searchText: string) => {
         toolbarProps.onSearchChanged(searchText);
@@ -475,7 +466,7 @@ export function Table<T extends object = {}>({
           Header: headerProps => (
             <MTableHeader classes={headerClasses} {...headerProps} />
           ),
-          Toolbar: toolbar,
+          Toolbar,
         }}
         options={{ ...defaultOptions, ...options }}
         columns={MTColumns}
