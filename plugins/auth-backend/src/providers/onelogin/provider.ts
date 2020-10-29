@@ -27,8 +27,8 @@ type PrivateInfo = {
 };
 
 export type OneLoginProviderOptions = OAuthProviderOptions & {
-  issuer: string
-}
+  issuer: string;
+};
 
 export class OneLoginProvider implements OAuthHandlers {
   private readonly _strategy: any;
@@ -131,7 +131,6 @@ export class OneLoginProvider implements OAuthHandlers {
     return { ...response, backstageIdentity: { id } };
   }
 }
-
 
 export const createOneLoginProvider: AuthProviderFactory = ({
   globalConfig,
