@@ -23,20 +23,22 @@ import {
   ChangeStatistic,
   Cost,
   DateAggregation,
+  Duration,
   Group,
   Maybe,
   MetricData,
   ProductCost,
   Project,
-  ProjectGrowthAlert,
   ProjectGrowthData,
   Trendline,
-  UnlabeledDataflowAlert,
   UnlabeledDataflowData,
 } from '../types';
 import {
+  ProjectGrowthAlert,
+  UnlabeledDataflowAlert
+} from '../utils/alerts';
+import {
   DEFAULT_DATE_FORMAT,
-  Duration,
   exclusiveEndDateOf,
   inclusiveStartDateOf,
 } from '../utils/duration';

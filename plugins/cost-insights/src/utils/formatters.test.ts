@@ -19,7 +19,7 @@ import {
   lengthyCurrencyFormatter,
   quarterOf,
 } from './formatters';
-import { Duration } from '../utils/duration';
+import { Duration } from '../types';
 
 Date.now = jest.fn(() => new Date(Date.parse('2019-12-07')).valueOf());
 

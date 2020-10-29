@@ -15,8 +15,8 @@
  */
 
 import moment from 'moment';
+import { Duration } from '../types';
 import {
-  Duration,
   inclusiveEndDateOf,
   inclusiveStartDateOf,
 } from '../utils/duration';

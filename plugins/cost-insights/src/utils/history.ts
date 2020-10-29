@@ -16,8 +16,7 @@
 
 import qs from 'qs';
 import * as yup from 'yup';
-import { Group, PageFilters } from '../types';
-import { Duration } from '../utils/duration';
+import { Duration, Group, PageFilters } from '../types';
 import { getDefaultPageFilters } from '../utils/filters';
 import { ConfigContextProps } from '../hooks/useConfig';
 

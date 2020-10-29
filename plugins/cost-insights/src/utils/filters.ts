@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { Group, PageFilters } from '../types';
-import { Duration } from './duration';
+import { Duration, Group, PageFilters } from '../types';
 
 export function getDefaultPageFilters(groups: Group[]): PageFilters {
   return {

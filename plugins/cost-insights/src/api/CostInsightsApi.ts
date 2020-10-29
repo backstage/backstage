@@ -18,13 +18,13 @@ import { createApiRef } from '@backstage/core';
 import {
   Alert,
   Cost,
+  Duration,
   Group,
   Project,
   ProductCost,
   Maybe,
   MetricData,
 } from '../types';
-import { Duration } from '../utils/duration';
 
 export type CostInsightsApi = {
   /**

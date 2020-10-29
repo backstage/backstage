@@ -16,8 +16,7 @@
 
 import React from 'react';
 import { MenuItem, Select, SelectProps } from '@material-ui/core';
-import { Currency } from '../../types';
-import { CurrencyType } from '../../utils/currency';
+import { Currency, CurrencyType } from '../../types';
 import { findAlways } from '../../utils/assert';
 import { useSelectStyles as useStyles } from '../../utils/styles';
 

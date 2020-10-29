@@ -16,9 +16,8 @@
 
 import React from 'react';
 import classnames from 'classnames';
-import { ChangeStatistic } from '../../types';
-import { rateOf, CurrencyType } from '../../utils/currency';
-import { Duration } from '../../utils/duration';
+import { ChangeStatistic, CurrencyType, Duration } from '../../types';
+import { rateOf } from '../../utils/currency';
 import { growthOf, GrowthType, EngineerThreshold } from '../../utils/change';
 import { useCostGrowthStyles as useStyles } from '../../utils/styles';
 import { formatPercent, formatCurrency } from '../../utils/formatters';

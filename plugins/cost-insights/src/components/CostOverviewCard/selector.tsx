@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Maybe, PageFilters } from '../../types';
-import { Duration } from '../../utils/duration';
+import { Duration, Maybe, PageFilters } from '../../types';
 import { MapFiltersToProps } from '../../hooks/useFilters';
 
 type CostOverviewFilterProps = PageFilters & {

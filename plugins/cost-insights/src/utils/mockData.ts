@@ -17,6 +17,7 @@
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/core';
 import {
+  Duration,
   Entity,
   Product,
   ProductCost,
@@ -30,7 +31,6 @@ import {
   getDefaultState as getDefaultLoadingState,
 } from '../utils/loading';
 import { findAlways } from '../utils/assert';
-import { Duration } from '../utils/duration';
 
 type mockAlertRenderer<T> = (alert: T) => T;
 type mockEntityRenderer<T> = (entity: T) => T;

@@ -32,8 +32,7 @@ import {
   BillingDateContextProps,
 } from '../hooks/useLastCompleteBillingDate';
 import { ScrollContext, ScrollContextProps } from '../hooks/useScroll';
-import { Duration } from '../utils/duration';
-import { Group } from '../types';
+import { Group, Duration } from '../types';
 
 /* 
   Mock Providers and types are exposed publicly to allow users to test custom implementations

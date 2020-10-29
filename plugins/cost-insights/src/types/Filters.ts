@@ -15,7 +15,7 @@
  */
 
 import { Maybe } from './Maybe';
-import { Duration } from '../utils/duration';
+import { Duration } from './Duration';
 
 export interface PageFilters {
   group: Maybe<string>;

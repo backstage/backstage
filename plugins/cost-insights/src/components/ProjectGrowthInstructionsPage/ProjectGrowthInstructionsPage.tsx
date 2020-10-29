@@ -18,14 +18,14 @@ import React from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { InfoCard } from '@backstage/core';
 import { AlertInstructionsLayout } from '../AlertInstructionsLayout';
-import { Duration } from '../../utils/duration';
 import {
   Alert,
+  Duration,
   Entity,
   Product,
-  ProjectGrowthAlert,
   ProjectGrowthData,
 } from '../../types';
+import { ProjectGrowthAlert } from '../../utils/alerts';
 import { ResourceGrowthBarChartLegend } from '../ResourceGrowthBarChartLegend';
 import { ResourceGrowthBarChart } from '../ResourceGrowthBarChart';
 

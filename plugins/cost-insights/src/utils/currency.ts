@@ -13,16 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Currency } from '../types';
-import { Duration } from '../utils/duration';
+import { Currency, CurrencyType, Duration } from '../types';
 import { assertNever } from '../utils/assert';
-
-export enum CurrencyType {
-  USD = 'USD',
-  CarbonOffsetTons = 'CARBON_OFFSET_TONS',
-  Beers = 'BEERS',
-  IceCream = 'PINTS_OF_ICE_CREAM',
-}
 
 export const rateOf = (cost: number, duration: Duration) => {
   switch (duration) {

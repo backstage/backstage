@@ -15,20 +15,8 @@
  */
 
 import moment from 'moment';
-import { assertNever } from '../utils/assert';
-
-/**
- * Time periods for cost comparison; slight abuse of ISO 8601 periods. We take P1M and P3M to mean
- * 'last completed [month|quarter]', and P30D/P90D to be '[month|quarter] relative to today'. So if
- * it's September 15, P1M represents costs for the month of August and P30D represents August 16 -
- * September 15.
- */
-export enum Duration {
-  P30D = 'P30D',
-  P90D = 'P90D',
-  P1M = 'P1M',
-  P3M = 'P3M',
-}
+import { Duration } from '../types';
+import { assertNever } from './assert';
 
 export const DEFAULT_DATE_FORMAT = 'YYYY-MM-DD';
 

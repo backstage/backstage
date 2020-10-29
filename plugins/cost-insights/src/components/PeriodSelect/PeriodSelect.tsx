@@ -16,11 +16,11 @@
 
 import React from 'react';
 import { MenuItem, Select, SelectProps } from '@material-ui/core';
+import { Duration } from '../../types';
 import {
   formatLastTwoLookaheadQuarters,
   formatLastTwoMonths,
 } from '../../utils/formatters';
-import { Duration } from '../../utils/duration';
 import { findAlways } from '../../utils/assert';
 import { useSelectStyles as useStyles } from '../../utils/styles';
 import { useLastCompleteBillingDate } from '../../hooks';

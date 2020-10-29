@@ -17,11 +17,10 @@
 import React, { PropsWithChildren } from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { CostGrowth } from './CostGrowth';
-import { Currency } from '../../types';
-import { Duration } from '../../utils/duration';
+import { Currency, CurrencyType, Duration } from '../../types';
 import { findAlways } from '../../utils/assert';
 import { MockConfigProvider, MockCurrencyProvider } from '../../utils/tests';
-import { defaultCurrencies, CurrencyType } from '../../utils/currency';
+import { defaultCurrencies } from '../../utils/currency';
 
 const engineers = findAlways(defaultCurrencies, c => c.kind === null);
 const usd = findAlways(defaultCurrencies, c => c.kind === CurrencyType.USD);
@@ -38,10 +37,10 @@ const MockContext = ({
   currency: Currency;
   engineerCost: number;
 }>) => (
-  <MockConfigProvider engineerCost={engineerCost}>
-    <MockCurrencyProvider currency={currency}>{children}</MockCurrencyProvider>
-  </MockConfigProvider>
-);
+    <MockConfigProvider engineerCost={engineerCost}>
+      <MockCurrencyProvider currency={currency}>{children}</MockCurrencyProvider>
+    </MockConfigProvider>
+  );
 
 describe.each`
   engineerCost | ratio           | amount     | expected
