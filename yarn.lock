@@ -17915,6 +17915,15 @@ passport-okta-oauth@^0.0.1:
     pkginfo "0.2.x"
     uid2 "0.0.3"
 
+passport-onelogin-oauth@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.npmjs.org/passport-onelogin-oauth/-/passport-onelogin-oauth-0.0.1.tgz#6e991ac6720783fdd80d4caa08c36cc71ef19962"
+  integrity sha512-EXFBqlJdHf5AX4QaiZsLfhgQUOR6z3zGA5479SUJF4I4rnAt7yasZEbs27pg8MRiQh/uLZEWLGMoVXr6LHV9mQ==
+  dependencies:
+    passport-oauth "1.0.0"
+    pkginfo "0.2.x"
+    uid2 "0.0.3"
+
 passport-saml@^1.3.3:
   version "1.3.3"
   resolved "https://registry.npmjs.org/passport-saml/-/passport-saml-1.3.3.tgz#cbea1a2b21ff32b3bc4bfd84dc39c3a370df9935"
