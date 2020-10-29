@@ -18,8 +18,8 @@ import React, { useEffect, useState } from 'react';
 import { Paper, Slide } from '@material-ui/core';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import BarChartStepperButton from './BarChartStepperButton';
-import BarChartSteps from './BarChartSteps';
+import { BarChartStepperButton } from './BarChartStepperButton';
+import { BarChartSteps } from './BarChartSteps';
 import { useBarChartStepperStyles } from '../../utils/styles';
 
 type BarChartStepperProps = {
@@ -28,7 +28,7 @@ type BarChartStepperProps = {
   onChange: (activeStep: number) => void;
 };
 
-const BarChartStepper = ({
+export const BarChartStepper = ({
   steps,
   disableScroll,
   onChange,
@@ -111,5 +111,3 @@ const BarChartStepper = ({
     </Paper>
   );
 };
-
-export default BarChartStepper;

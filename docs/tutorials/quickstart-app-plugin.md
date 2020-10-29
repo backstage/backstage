@@ -20,7 +20,7 @@ title: Adding Custom Plugin to Existing Monorepo App
 > functionality, extend the Sidebar to make our life easy. Finally, we add
 > custom code to display GitHub repository information.
 >
-> This document assumes you have NodeJS 12 active along with Yarn and Python.
+> This document assumes you have Node.js 12 active along with Yarn and Python.
 > Please note, that at the time of this writing, the current version is
 > 0.1.1-alpha.21. This guide can still be used with future versions, just,
 > verify as you go. If you run into issues, you can compare your setup with mine
@@ -161,7 +161,7 @@ export default ExampleFetchComponent;
 
 # The Graph Model
 
-GitHub has a graphql API available for interacting. Let's start by adding our
+GitHub has a GraphQL API available for interacting. Let's start by adding our
 basic repository query
 
 1. Add the query const statement outside ExampleFetchComponent

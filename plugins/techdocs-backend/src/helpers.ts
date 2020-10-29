@@ -20,6 +20,7 @@ import parseGitUrl from 'git-url-parse';
 import NodeGit, { Clone, Repository } from 'nodegit';
 import fs from 'fs-extra';
 import { getDefaultBranch } from './default-branch';
+import { getGitRepoType, getTokenForGitRepo } from './git-auth';
 import { Entity } from '@backstage/catalog-model';
 import { InputError } from '@backstage/backend-common';
 import { RemoteProtocol } from './techdocs/stages/prepare/types';
@@ -120,18 +121,7 @@ export const checkoutGitRepository = async (
 ): Promise<string> => {
   const parsedGitLocation = parseGitUrl(repoUrl);
   const repositoryTmpPath = await getGitRepositoryTempFolder(repoUrl);
-
-  // TODO: Should propably not be hardcoded names of env variables, but seems too hard to access config down here
-  const user =
-    process.env.GITHUB_PRIVATE_TOKEN_USER ||
-    process.env.GITLAB_PRIVATE_TOKEN_USER ||
-    process.env.AZURE_PRIVATE_TOKEN_USER ||
-    '';
-  const token =
-    process.env.GITHUB_TOKEN ||
-    process.env.GITLAB_PRIVATE_TOKEN_USER ||
-    process.env.AZURE_TOKEN ||
-    '';
+  const token = await getTokenForGitRepo(repoUrl);
 
   if (fs.existsSync(repositoryTmpPath)) {
     try {
@@ -153,8 +143,10 @@ export const checkoutGitRepository = async (
     }
   }
 
-  if (user && token) {
-    parsedGitLocation.token = `${user}:${token}`;
+  if (token) {
+    const type = getGitRepoType(repoUrl);
+    const auth = type === 'github' ? `${token}:x-oauth-basic` : `:${token}`;
+    parsedGitLocation.token = auth;
   }
 
   const repositoryCheckoutUrl = parsedGitLocation.toString('https');

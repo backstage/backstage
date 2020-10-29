@@ -18,9 +18,9 @@ import { errorApiRef, useApi } from '@backstage/core-api';
 import { GITHUB_ACTIONS_ANNOTATION } from '../useProjectName';
 import { useWorkflowRuns } from '../useWorkflowRuns';
 import React, { useEffect } from 'react';
-import { EmptyState, Table } from '@backstage/core';
+import { EmptyState, InfoCard, Table } from '@backstage/core';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
-import { Button, Card, Link, TableContainer } from '@material-ui/core';
+import { Button, Link } from '@material-ui/core';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
 
 const firstLine = (message: string): string => message.split('\n')[0];
@@ -30,6 +30,7 @@ export type Props = {
   branch?: string;
   dense?: boolean;
   limit?: number;
+  variant?: string;
 };
 
 export const RecentWorkflowRunsCard = ({
@@ -37,6 +38,7 @@ export const RecentWorkflowRunsCard = ({
   branch,
   dense = false,
   limit = 5,
+  variant,
 }: Props) => {
   const errorApi = useApi(errorApiRef);
   const [owner, repo] = (
@@ -70,15 +72,19 @@ export const RecentWorkflowRunsCard = ({
       }
     />
   ) : (
-    <TableContainer component={Card}>
+    <InfoCard
+      title="Recent Workflow Runs"
+      subheader={branch ? `Branch: ${branch}` : 'All Branches'}
+      noPadding
+      variant={variant}
+    >
       <Table
-        title="Recent Workflow Runs"
-        subtitle={branch ? `Branch: ${branch}` : 'All Branches'}
         isLoading={loading}
         options={{
           search: false,
           paging: false,
           padding: dense ? 'dense' : 'default',
+          toolbar: false,
         }}
         columns={[
           {
@@ -98,6 +104,6 @@ export const RecentWorkflowRunsCard = ({
         ]}
         data={runs}
       />
-    </TableContainer>
+    </InfoCard>
   );
 };

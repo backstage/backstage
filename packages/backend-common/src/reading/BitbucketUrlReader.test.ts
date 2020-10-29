@@ -14,140 +14,167 @@
  * limitations under the License.
  */
 
-import { rest } from 'msw';
-import { setupServer } from 'msw/node';
 import { ConfigReader } from '@backstage/config';
-import { getVoidLogger } from '../logging';
-import { BitbucketUrlReader } from './BitbucketUrlReader';
-
-const logger = getVoidLogger();
+import {
+  BitbucketUrlReader,
+  getApiRequestOptions,
+  getApiUrl,
+  ProviderConfig,
+  readConfig,
+} from './BitbucketUrlReader';
 
 describe('BitbucketUrlReader', () => {
-  const worker = setupServer();
+  describe('getApiRequestOptions', () => {
+    it('inserts a token when needed', () => {
+      const withToken: ProviderConfig = {
+        host: '',
+        apiBaseUrl: '',
+        token: 'A',
+      };
+      const withoutToken: ProviderConfig = {
+        host: '',
+        apiBaseUrl: '',
+      };
+      expect(
+        (getApiRequestOptions(withToken).headers as any).Authorization,
+      ).toEqual('Bearer A');
+      expect(
+        (getApiRequestOptions(withoutToken).headers as any).Authorization,
+      ).toBeUndefined();
+    });
 
-  beforeAll(() => worker.listen({ onUnhandledRequest: 'error' }));
-  afterAll(() => worker.close());
+    it('insert basic auth when needed', () => {
+      const withUsernameAndPassword: ProviderConfig = {
+        host: '',
+        apiBaseUrl: '',
+        username: 'some-user',
+        appPassword: 'my-secret',
+      };
+      const withoutUsernameAndPassword: ProviderConfig = {
+        host: '',
+        apiBaseUrl: '',
+      };
+      expect(
+        (getApiRequestOptions(withUsernameAndPassword).headers as any)
+          .Authorization,
+      ).toEqual('Basic c29tZS11c2VyOm15LXNlY3JldA==');
+      expect(
+        (getApiRequestOptions(withoutUsernameAndPassword).headers as any)
+          .Authorization,
+      ).toBeUndefined();
+    });
+  });
 
-  beforeEach(() => {
-    worker.use(
-      rest.get('*', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.json({
-            url: req.url.toString(),
-            headers: req.headers.getAllHeaders(),
-          }),
+  describe('getApiUrl', () => {
+    it('rejects targets that do not look like URLs', () => {
+      const config: ProviderConfig = { host: '', apiBaseUrl: '' };
+      expect(() => getApiUrl('a/b', config)).toThrow(/Incorrect URL: a\/b/);
+    });
+    it('happy path for Bitbucket Cloud', () => {
+      const config: ProviderConfig = {
+        host: 'bitbucket.org',
+        apiBaseUrl: 'https://api.bitbucket.org/2.0',
+      };
+      expect(
+        getApiUrl(
+          'https://bitbucket.org/org-name/repo-name/src/master/templates/my-template.yaml',
+          config,
         ),
-      ),
-    );
-  });
-  afterEach(() => worker.resetHandlers());
-
-  const createConfig = (username?: string, appPassword?: string) =>
-    new ConfigReader(
-      {
-        integrations: {
-          bitbucket: [
-            {
-              host: 'bitbucket.org',
-              username: username,
-              appPassword: appPassword,
-            },
-          ],
-        },
-      },
-      'test-config',
-    );
-
-  it.each([
-    {
-      url:
-        'https://bitbucket.org/org-name/repo-name/src/master/templates/my-template.yaml',
-      config: createConfig(),
-      response: expect.objectContaining({
-        url:
+      ).toEqual(
+        new URL(
           'https://api.bitbucket.org/2.0/repositories/org-name/repo-name/src/master/templates/my-template.yaml',
-      }),
-    },
-    {
-      url:
-        'https://bitbucket.org/org-name/repo-name/src/master/templates/my-template.yaml',
-      config: createConfig('some-user', 'my-secret'),
-      response: expect.objectContaining({
-        headers: expect.objectContaining({
-          authorization: 'Basic c29tZS11c2VyOm15LXNlY3JldA==',
-        }),
-      }),
-    },
-    {
-      url:
-        'https://bitbucket.org/org-name/repo-name/src/master/templates/my-template.yaml',
-      config: createConfig(),
-      response: expect.objectContaining({
-        headers: expect.not.objectContaining({
-          authorization: expect.anything(),
-        }),
-      }),
-    },
-    {
-      url:
-        'https://bitbucket.org/org-name/repo-name/src/master/templates/my-template.yaml',
-      config: createConfig(undefined, 'only-password-provided'),
-      response: expect.objectContaining({
-        headers: expect.not.objectContaining({
-          authorization: expect.anything(),
-        }),
-      }),
-    },
-  ])('should handle happy path %#', async ({ url, config, response }) => {
-    const [{ reader }] = BitbucketUrlReader.factory({ config, logger });
-
-    const data = await reader.read(url);
-    const res = await JSON.parse(data.toString('utf-8'));
-    expect(res).toEqual(response);
+        ),
+      );
+    });
+    it('happy path for Bitbucket Server', () => {
+      const config: ProviderConfig = {
+        host: 'bitbucket.mycompany.net',
+        apiBaseUrl: 'https://bitbucket.mycompany.net/rest/api/1.0',
+      };
+      expect(
+        getApiUrl(
+          'https://bitbucket.mycompany.net/projects/a/repos/b/browse/path/to/c.yaml',
+          config,
+        ),
+      ).toEqual(
+        new URL(
+          'https://bitbucket.mycompany.net/rest/api/1.0/projects/a/repos/b/raw/path/to/c.yaml',
+        ),
+      );
+    });
   });
 
-  it.each([
-    {
-      url: 'https://api.com/a/b/blob/master/path/to/c.yaml',
-      config: createConfig(),
-      error:
-        'Incorrect url: https://api.com/a/b/blob/master/path/to/c.yaml, Error: Wrong Bitbucket URL or Invalid file path',
-    },
-    {
-      url: 'com/a/b/blob/master/path/to/c.yaml',
-      config: createConfig(),
-      error:
-        'Incorrect url: com/a/b/blob/master/path/to/c.yaml, TypeError: Invalid URL: com/a/b/blob/master/path/to/c.yaml',
-    },
-    {
-      url: '',
-      config: createConfig('', ''),
-      error:
-        "Invalid type in config for key 'integrations.bitbucket[0].username' in 'test-config', got empty-string, wanted string",
-    },
-    {
-      url: '',
-      config: createConfig('only-user-provided', ''),
-      error:
-        "Invalid type in config for key 'integrations.bitbucket[0].appPassword' in 'test-config', got empty-string, wanted string",
-    },
-    {
-      url: '',
-      config: createConfig('', 'only-password-provided'),
-      error:
-        "Invalid type in config for key 'integrations.bitbucket[0].username' in 'test-config', got empty-string, wanted string",
-    },
-    {
-      url: '',
-      config: createConfig('only-user-provided', undefined),
-      error:
-        "Missing required config value at 'integrations.bitbucket[0].appPassword'",
-    },
-  ])('should handle error path %#', async ({ url, config, error }) => {
-    await expect(async () => {
-      const [{ reader }] = BitbucketUrlReader.factory({ config, logger });
-      await reader.read(url);
-    }).rejects.toThrow(error);
+  describe('readConfig', () => {
+    function config(
+      providers: {
+        host: string;
+        apiBaseUrl?: string;
+        token?: string;
+        username?: string;
+        password?: string;
+      }[],
+    ) {
+      return ConfigReader.fromConfigs([
+        {
+          context: '',
+          data: {
+            integrations: { bitbucket: providers },
+          },
+        },
+      ]);
+    }
+
+    it('adds a default Bitbucket Cloud entry when missing', () => {
+      const output = readConfig(config([]));
+      expect(output).toEqual([
+        {
+          host: 'bitbucket.org',
+          apiBaseUrl: 'https://api.bitbucket.org/2.0',
+        },
+      ]);
+    });
+
+    it('injects the correct Bitbucket Cloud API base URL when missing', () => {
+      const output = readConfig(config([{ host: 'bitbucket.org' }]));
+      expect(output).toEqual([
+        {
+          host: 'bitbucket.org',
+          apiBaseUrl: 'https://api.bitbucket.org/2.0',
+        },
+      ]);
+    });
+
+    it('rejects custom targets with no base URLs', () => {
+      expect(() =>
+        readConfig(config([{ host: 'bitbucket.mycompany.net' }])),
+      ).toThrow(
+        "Bitbucket integration for 'bitbucket.mycompany.net' must configure an explicit apiBaseUrl",
+      );
+    });
+
+    it('rejects funky configs', () => {
+      expect(() => readConfig(config([{ host: 7 } as any]))).toThrow(/host/);
+      expect(() => readConfig(config([{ token: 7 } as any]))).toThrow(/token/);
+      expect(() =>
+        readConfig(config([{ host: 'bitbucket.org', apiBaseUrl: 7 } as any])),
+      ).toThrow(/apiBaseUrl/);
+      expect(() =>
+        readConfig(config([{ host: 'bitbucket.org', token: 7 } as any])),
+      ).toThrow(/token/);
+    });
+  });
+
+  describe('implementation', () => {
+    it('rejects unknown targets', async () => {
+      const processor = new BitbucketUrlReader({
+        host: 'bitbucket.org',
+        apiBaseUrl: 'https://api.bitbucket.org/2.0',
+      });
+      await expect(
+        processor.read('https://not.bitbucket.com/apa'),
+      ).rejects.toThrow(
+        'Incorrect URL: https://not.bitbucket.com/apa, Error: Invalid Bitbucket URL or file path',
+      );
+    });
   });
 });

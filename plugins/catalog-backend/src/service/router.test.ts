@@ -32,8 +32,6 @@ describe('createRouter', () => {
   beforeAll(async () => {
     entitiesCatalog = {
       entities: jest.fn(),
-      addOrUpdateEntity: jest.fn(),
-      addEntities: jest.fn(),
       removeEntityByUid: jest.fn(),
       batchAddOrUpdateEntities: jest.fn(),
     };
@@ -78,15 +76,20 @@ describe('createRouter', () => {
     });
 
     it('parses single and multiple request parameters and passes them down', async () => {
-      const response = await request(app).get('/entities?a=1&a=&a=3&b=4&c=');
+      entitiesCatalog.entities.mockResolvedValueOnce([]);
+      const response = await request(app).get(
+        '/entities?filter=a=1,a=,a=3,b=4&filter=c=',
+      );
 
       expect(response.status).toEqual(200);
       expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.entities).toHaveBeenCalledWith({
-        a: ['1', null, '3'],
-        b: ['4'],
-        c: [null],
-      });
+      expect(entitiesCatalog.entities).toHaveBeenCalledWith([
+        {
+          a: ['1', null, '3'],
+          b: ['4'],
+        },
+        { c: [null] },
+      ]);
     });
   });
 
@@ -104,9 +107,9 @@ describe('createRouter', () => {
       const response = await request(app).get('/entities/by-uid/zzz');
 
       expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.entities).toHaveBeenCalledWith({
-        'metadata.uid': 'zzz',
-      });
+      expect(entitiesCatalog.entities).toHaveBeenCalledWith([
+        { 'metadata.uid': 'zzz' },
+      ]);
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(expect.objectContaining(entity));
     });
@@ -117,9 +120,9 @@ describe('createRouter', () => {
       const response = await request(app).get('/entities/by-uid/zzz');
 
       expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.entities).toHaveBeenCalledWith({
-        'metadata.uid': 'zzz',
-      });
+      expect(entitiesCatalog.entities).toHaveBeenCalledWith([
+        { 'metadata.uid': 'zzz' },
+      ]);
       expect(response.status).toEqual(404);
       expect(response.text).toMatch(/uid/);
     });
@@ -140,11 +143,13 @@ describe('createRouter', () => {
       const response = await request(app).get('/entities/by-name/k/ns/n');
 
       expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.entities).toHaveBeenCalledWith({
-        kind: 'k',
-        'metadata.namespace': 'ns',
-        'metadata.name': 'n',
-      });
+      expect(entitiesCatalog.entities).toHaveBeenCalledWith([
+        {
+          kind: 'k',
+          'metadata.namespace': 'ns',
+          'metadata.name': 'n',
+        },
+      ]);
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(expect.objectContaining(entity));
     });
@@ -155,11 +160,13 @@ describe('createRouter', () => {
       const response = await request(app).get('/entities/by-name/b/d/c');
 
       expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.entities).toHaveBeenCalledWith({
-        kind: 'b',
-        'metadata.namespace': 'd',
-        'metadata.name': 'c',
-      });
+      expect(entitiesCatalog.entities).toHaveBeenCalledWith([
+        {
+          kind: 'b',
+          'metadata.namespace': 'd',
+          'metadata.name': 'c',
+        },
+      ]);
       expect(response.status).toEqual(404);
       expect(response.text).toMatch(/name/);
     });
@@ -172,7 +179,7 @@ describe('createRouter', () => {
         .set('Content-Type', 'application/json')
         .send();
 
-      expect(entitiesCatalog.addOrUpdateEntity).not.toHaveBeenCalled();
+      expect(entitiesCatalog.batchAddOrUpdateEntities).not.toHaveBeenCalled();
       expect(response.status).toEqual(400);
       expect(response.text).toMatch(/body/);
     });
@@ -187,18 +194,24 @@ describe('createRouter', () => {
         },
       };
 
-      entitiesCatalog.addOrUpdateEntity.mockResolvedValue(entity);
+      entitiesCatalog.batchAddOrUpdateEntities.mockResolvedValue([
+        { entityId: 'u' },
+      ]);
+      entitiesCatalog.entities.mockResolvedValue([entity]);
 
       const response = await request(app)
         .post('/entities')
         .send(entity)
         .set('Content-Type', 'application/json');
 
-      expect(entitiesCatalog.addOrUpdateEntity).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.addOrUpdateEntity).toHaveBeenNthCalledWith(
-        1,
-        entity,
-      );
+      expect(entitiesCatalog.batchAddOrUpdateEntities).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.batchAddOrUpdateEntities).toHaveBeenCalledWith([
+        { entity, relations: [] },
+      ]);
+      expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.entities).toHaveBeenCalledWith([
+        { 'metadata.uid': 'u' },
+      ]);
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(entity);
     });

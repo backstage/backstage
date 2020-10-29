@@ -88,9 +88,10 @@ const LighthouseAuditSummary: FC<{ audit: Audit; dense?: boolean }> = ({
   return <StructuredMetadataTable metadata={tableData} dense={dense} />;
 };
 
-export const LastLighthouseAuditCard: FC<{ dense?: boolean }> = ({
-  dense = false,
-}) => {
+export const LastLighthouseAuditCard: FC<{
+  dense?: boolean;
+  variant?: string;
+}> = ({ dense = false, variant }) => {
   const { value: website, loading, error } = useWebsiteForEntity();
 
   let content;
@@ -105,5 +106,9 @@ export const LastLighthouseAuditCard: FC<{ dense?: boolean }> = ({
       <LighthouseAuditSummary audit={website.lastAudit} dense={dense} />
     );
   }
-  return <InfoCard title="Lighthouse Audit">{content}</InfoCard>;
+  return (
+    <InfoCard title="Lighthouse Audit" variant={variant}>
+      {content}
+    </InfoCard>
+  );
 };

@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { Box, Button } from '@material-ui/core';
-import AlertInsightsSectionHeader from './AlertInsightsSectionHeader';
+import { AlertInsightsSectionHeader } from './AlertInsightsSectionHeader';
 import { Alert } from '../../types';
 
 type AlertInsightsSectionProps = {
@@ -23,7 +23,10 @@ type AlertInsightsSectionProps = {
   number: number;
 };
 
-const AlertInsightsSection = ({ alert, number }: AlertInsightsSectionProps) => {
+export const AlertInsightsSection = ({
+  alert,
+  number,
+}: AlertInsightsSectionProps) => {
   return (
     <Box display="flex" flexDirection="column">
       <AlertInsightsSectionHeader
@@ -41,5 +44,3 @@ const AlertInsightsSection = ({ alert, number }: AlertInsightsSectionProps) => {
     </Box>
   );
 };
-
-export default AlertInsightsSection;

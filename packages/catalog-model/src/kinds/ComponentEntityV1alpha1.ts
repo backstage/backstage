@@ -16,7 +16,7 @@
 
 import * as yup from 'yup';
 import type { Entity } from '../entity/Entity';
-import { schemaPolicy } from './util';
+import { schemaValidator } from './util';
 
 const API_VERSION = ['backstage.io/v1alpha1', 'backstage.io/v1beta1'] as const;
 const KIND = 'Component' as const;
@@ -29,7 +29,7 @@ const schema = yup.object<Partial<ComponentEntityV1alpha1>>({
       type: yup.string().required().min(1),
       lifecycle: yup.string().required().min(1),
       owner: yup.string().required().min(1),
-      implementsApis: yup.array(yup.string()).notRequired(),
+      implementsApis: yup.array(yup.string().required()).notRequired(),
     })
     .required(),
 });
@@ -45,7 +45,7 @@ export interface ComponentEntityV1alpha1 extends Entity {
   };
 }
 
-export const componentEntityV1alpha1Policy = schemaPolicy(
+export const componentEntityV1alpha1Validator = schemaValidator(
   KIND,
   API_VERSION,
   schema,

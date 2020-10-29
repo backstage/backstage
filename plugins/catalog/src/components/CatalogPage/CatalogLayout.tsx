@@ -20,7 +20,6 @@ import {
   HomepageTimer,
   identityApiRef,
   Page,
-  pageTheme,
   useApi,
 } from '@backstage/core';
 import React from 'react';
@@ -37,7 +36,7 @@ const CatalogLayout = ({ children }: Props) => {
   const orgName = useApi(configApiRef).getOptionalString('organization.name');
 
   return (
-    <Page theme={pageTheme.home}>
+    <Page themeId="home">
       <Header
         title={`${greeting.greeting}, ${profile.displayName || userId}!`}
         subtitle={`${orgName || 'Backstage'} Service Catalog`}

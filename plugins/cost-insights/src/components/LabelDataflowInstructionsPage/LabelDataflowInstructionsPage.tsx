@@ -17,9 +17,9 @@
 import React from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { CodeSnippet } from '@backstage/core';
-import AlertInstructionsLayout from '../AlertInstructionsLayout';
+import { AlertInstructionsLayout } from '../AlertInstructionsLayout';
 
-const LabelDataflowInstructionsPage = () => {
+export const LabelDataflowInstructionsPage = () => {
   return (
     <AlertInstructionsLayout title="Investigating Growth">
       <Typography variant="h1">Labeling Dataflow Jobs</Typography>
@@ -92,5 +92,3 @@ sc.optionsAs[DataflowPipelineOptions].setLabels(Map("job-id" -> "my-dataflow-job
     </AlertInstructionsLayout>
   );
 };
-
-export default LabelDataflowInstructionsPage;

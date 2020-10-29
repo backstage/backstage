@@ -23,6 +23,7 @@ import {
   BackstageThemeOptions,
   SimpleThemeOptions,
 } from './types';
+import { pageTheme as defaultPageThemes } from './pageTheme';
 
 const DEFAULT_FONT_FAMILY =
   '"Helvetica Neue", Helvetica, Roboto, Arial, sans-serif';
@@ -30,7 +31,16 @@ const DEFAULT_FONT_FAMILY =
 export function createThemeOptions(
   options: SimpleThemeOptions,
 ): BackstageThemeOptions {
-  const { palette, fontFamily = DEFAULT_FONT_FAMILY } = options;
+  const {
+    palette,
+    fontFamily = DEFAULT_FONT_FAMILY,
+    defaultPageTheme,
+    pageTheme = defaultPageThemes,
+  } = options;
+
+  if (!pageTheme[defaultPageTheme]) {
+    throw new Error(`${defaultPageTheme} is not defined in pageTheme.`);
+  }
 
   return {
     palette,
@@ -68,6 +78,9 @@ export function createThemeOptions(
         marginBottom: 10,
       },
     },
+    page: pageTheme[defaultPageTheme],
+    getPageTheme: ({ themeId }) =>
+      pageTheme[themeId] ?? pageTheme[defaultPageTheme],
   };
 }
 

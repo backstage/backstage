@@ -23,6 +23,7 @@ import {
 type CostInsightsPageLoadingProps = {
   loadingActions: Array<string>;
   loadingGroups: boolean;
+  loadingBillingDate: boolean;
   loadingInitial: boolean;
   dispatchInitial: (isLoading: boolean) => void;
   dispatchInsights: (isLoading: boolean) => void;
@@ -37,6 +38,7 @@ export const mapLoadingToProps: MapLoadingToProps<CostInsightsPageLoadingProps> 
 }) => ({
   loadingActions: actions,
   loadingGroups: state[DefaultLoadingAction.UserGroups],
+  loadingBillingDate: state[DefaultLoadingAction.LastCompleteBillingDate],
   loadingInitial: state[DefaultLoadingAction.CostInsightsInitial],
   dispatchInitial: (isLoading: boolean) =>
     dispatch({ [DefaultLoadingAction.CostInsightsInitial]: isLoading }),

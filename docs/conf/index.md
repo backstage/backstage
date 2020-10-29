@@ -15,11 +15,11 @@ allowing for customization.
 
 ## Supplying Configuration
 
-Configuration is stored in `app-config.yaml` files, with support for suffixes
-such as `app-config.production.yaml` to override values for specific
-environments. The configuration files themselves contain plain YAML, but with
-support for loading in secrets from various sources using for example `$env` and
-`$file` keys.
+Configuration is stored in YAML files where the defaults are `app-config.yaml`
+and `app-config.local.yaml` for local overrides. Other sets of files can by
+loaded by passing `--config <path>` flags. The configuration files themselves
+contain plain YAML, but with support for loading in secrets from various sources
+using for example `$env` and `$file` keys.
 
 It is also possible to supply configuration through environment variables, for
 example `APP_CONFIG_app_baseUrl=https://staging.example.com`. However these

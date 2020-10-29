@@ -17,4 +17,6 @@
 export { plugin } from './plugin';
 export * from './api';
 export * from './components';
+export { useCurrency } from './hooks';
 export * from './types';
+export * from './utils/tests';

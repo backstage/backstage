@@ -19,23 +19,30 @@ import { InfoCard, useApi } from '@backstage/core';
 import { Box } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import { costInsightsApiRef } from '../../api';
-import PeriodSelect from '../PeriodSelect';
-import ResourceGrowthBarChart from '../ResourceGrowthBarChart';
-import ResourceGrowthBarChartLegend from '../ResourceGrowthBarChartLegend';
-import { useFilters, useLoading, useScroll } from '../../hooks';
+import { PeriodSelect } from '../PeriodSelect';
+import { ResourceGrowthBarChart } from '../ResourceGrowthBarChart';
+import { ResourceGrowthBarChartLegend } from '../ResourceGrowthBarChartLegend';
+import {
+  useFilters,
+  useLastCompleteBillingDate,
+  useLoading,
+  useScroll,
+} from '../../hooks';
 import { useProductInsightsCardStyles as useStyles } from '../../utils/styles';
 import { mapFiltersToProps, mapLoadingToProps } from './selector';
 import { Duration, Maybe, Product, ProductCost } from '../../types';
 import { pluralOf } from '../../utils/grammar';
+import { formatPeriod } from '../../utils/formatters';
 
 type ProductInsightsCardProps = {
   product: Product;
 };
 
-const ProductInsightsCard = ({ product }: ProductInsightsCardProps) => {
+export const ProductInsightsCard = ({ product }: ProductInsightsCardProps) => {
   const client = useApi(costInsightsApiRef);
   const classes = useStyles();
   const { ScrollAnchor } = useScroll(product.kind);
+  const lastCompleteBillingDate = useLastCompleteBillingDate();
   const [resource, setResource] = useState<Maybe<ProductCost>>(null);
   const [error, setError] = useState<Maybe<Error>>(null);
 
@@ -51,7 +58,18 @@ const ProductInsightsCard = ({ product }: ProductInsightsCardProps) => {
   const dispatchLoadingProduct = useCallback(dispatchLoading, [product.kind]);
 
   const amount = resource?.entities?.length || 0;
-  const hasCostsWithinTimeframe = resource?.change && amount;
+  const hasCostsWithinTimeframe = resource?.change && !!amount;
+
+  const previousName = formatPeriod(
+    productFilter.duration,
+    lastCompleteBillingDate,
+    false,
+  );
+  const currentName = formatPeriod(
+    productFilter.duration,
+    lastCompleteBillingDate,
+    true,
+  );
 
   const subheader = amount
     ? `${amount} ${pluralOf(amount, 'entity', 'entities')}, sorted by cost`
@@ -131,12 +149,15 @@ const ProductInsightsCard = ({ product }: ProductInsightsCardProps) => {
               <ResourceGrowthBarChartLegend
                 duration={productFilter.duration}
                 change={resource.change!}
+                previousName={previousName}
+                currentName={currentName}
                 costStart={costStart}
                 costEnd={costEnd}
               />
             </Box>
             <ResourceGrowthBarChart
-              duration={productFilter.duration}
+              previousName={previousName}
+              currentName={currentName}
               resources={resource.entities || []}
             />
           </Box>
@@ -145,5 +166,3 @@ const ProductInsightsCard = ({ product }: ProductInsightsCardProps) => {
     </InfoCard>
   );
 };
-
-export default ProductInsightsCard;

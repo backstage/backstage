@@ -454,3 +454,12 @@ export const useBackdropStyles = makeStyles<BackstageTheme>(
       },
     }),
 );
+
+export const useSubtleTypographyStyles = makeStyles<BackstageTheme>(
+  (theme: BackstageTheme) =>
+    createStyles({
+      root: {
+        color: theme.palette.textSubtle,
+      },
+    }),
+);

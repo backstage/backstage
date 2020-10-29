@@ -23,9 +23,17 @@ import {
   Project,
   ProductCost,
   Maybe,
+  MetricData,
 } from '../types';
 
 export type CostInsightsApi = {
+  /**
+   * Get the most current date for which billing data is complete, in YYYY-MM-DD format. This helps
+   * define the intervals used in other API methods to avoid showing incomplete cost. The costs for
+   * today, for example, will not be complete. This ideally comes from the cloud provider.
+   */
+  getLastCompleteBillingDate(): Promise<string>;
+
   /**
    * Get a list of groups the given user belongs to. These may be LDAP groups or similar
    * organizational groups. Cost Insights is designed to show costs based on group membership;
@@ -54,16 +62,10 @@ export type CostInsightsApi = {
    * reduction) and compare it to metrics important to the business.
    *
    * @param group The group id from getUserGroups or query parameters
-   * @param metric A metric from the cost-insights configuration in app-config.yaml. The backend
-   *   should divide the actual daily cost by the corresponding metric for the same date.
    * @param intervals An ISO 8601 repeating interval string, such as R2/P1M/2020-09-01
    *   https://en.wikipedia.org/wiki/ISO_8601#Repeating_intervals
    */
-  getGroupDailyCost(
-    group: string,
-    metric: string | null,
-    intervals: string,
-  ): Promise<Cost>;
+  getGroupDailyCost(group: string, intervals: string): Promise<Cost>;
 
   /**
    * Get daily cost aggregations for a given billing entity (project in GCP, AWS has a similar
@@ -78,16 +80,21 @@ export type CostInsightsApi = {
    * (or reduction) and compare it to metrics important to the business.
    *
    * @param project The project id from getGroupProjects or query parameters
-   * @param metric A metric from the cost-insights configuration in app-config.yaml. The backend
-   *   should divide the actual daily cost by the corresponding metric for the same date.
    * @param intervals An ISO 8601 repeating interval string, such as R2/P1M/2020-09-01
    *   https://en.wikipedia.org/wiki/ISO_8601#Repeating_intervals
    */
-  getProjectDailyCost(
-    project: string,
-    metric: string | null,
-    intervals: string,
-  ): Promise<Cost>;
+  getProjectDailyCost(project: string, intervals: string): Promise<Cost>;
+
+  /**
+   * Get aggregations for a particular metric and interval timeframe. Teams
+   * can see metrics important to their business in comparison to the growth
+   * (or reduction) of a project or group's daily costs.
+   *
+   * @param metric A metric from the cost-insights configuration in app-config.yaml.
+   * @param intervals An ISO 8601 repeating interval string, such as R2/P1M/2020-09-01
+   *   https://en.wikipedia.org/wiki/ISO_8601#Repeating_intervals
+   */
+  getDailyMetricData(metric: string, intervals: string): Promise<MetricData>;
 
   /**
    * Get cost aggregations for a particular cloud product and interval timeframe. This includes
@@ -104,7 +111,7 @@ export type CostInsightsApi = {
    * @param product The product from the cost-insights configuration in app-config.yaml
    * @param group
    * @param duration A time duration, such as P1M. See the Duration type for a detailed explanation
-   *    of how the durations are interpreted in Cost Insights.
+   * of how the durations are interpreted in Cost Insights.
    * @param project (optional) The project id from getGroupProjects or query parameters
    */
   getProductInsights(

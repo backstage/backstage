@@ -68,6 +68,7 @@ graphviz
 Hackathons
 haproxy
 heroku
+Heroku
 horizontalpodautoscalers
 Hostname
 http
@@ -105,6 +106,7 @@ Monorepo
 monorepos
 msw
 namespace
+namespaces
 Namespaces
 neuro
 newrelic

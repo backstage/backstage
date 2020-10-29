@@ -17,7 +17,7 @@
 import { isParallelDefault, parseParallel } from './parallel';
 
 describe('parallel', () => {
-  describe(parseParallel, () => {
+  describe('parseParallel', () => {
     it('coerces "false" string to boolean', () => {
       expect(parseParallel('false')).toBeFalsy();
     });
@@ -44,7 +44,7 @@ describe('parallel', () => {
     });
   });
 
-  describe(isParallelDefault, () => {
+  describe('isParallelDefault', () => {
     it('returns true if default value', () => {
       expect(isParallelDefault(undefined)).toBeTruthy();
       expect(isParallelDefault(true)).toBeTruthy();

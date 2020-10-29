@@ -1,0 +1,9 @@
+---
+title: Security Insights
+author: roadie.io
+authorUrl: https://roadie.io/
+category: Security
+description: View Security Insights for your components in Backstage.
+documentation: https://roadie.io/backstage/plugins/security-insights
+iconUrl: https://roadie.io/static/7f13bb8d861d8dedc5112fb939d215f9/351f2/GitHub-Mark-Light-120px-plus.png
+npmPackageName: '@roadiehq/backstage-plugin-security-insights'

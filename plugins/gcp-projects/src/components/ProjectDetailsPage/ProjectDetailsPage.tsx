@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import {
   Content,
   ContentHeader,
   Header,
   HeaderLabel,
   Page,
-  pageTheme,
   SupportButton,
   useApi,
   WarningPanel,
@@ -147,18 +145,16 @@ const labels = (
   </>
 );
 
-export const ProjectDetailsPage = () => {
-  return (
-    <Page theme={pageTheme.service}>
-      <Header title="GCP Project Details" type="other">
-        {labels}
-      </Header>
-      <Content>
-        <ContentHeader title="">
-          <SupportButton>Support Button</SupportButton>
-        </ContentHeader>
-        <DetailsPage />
-      </Content>
-    </Page>
-  );
-};
+export const ProjectDetailsPage = () => (
+  <Page themeId="service">
+    <Header title="GCP Project Details" type="other">
+      {labels}
+    </Header>
+    <Content>
+      <ContentHeader title="">
+        <SupportButton>Support Button</SupportButton>
+      </ContentHeader>
+      <DetailsPage />
+    </Content>
+  </Page>
+);

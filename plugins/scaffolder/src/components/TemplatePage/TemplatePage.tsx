@@ -22,7 +22,6 @@ import {
   Lifecycle,
   Page,
   useApi,
-  pageTheme,
 } from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog';
 import { LinearProgress } from '@material-ui/core';
@@ -145,7 +144,7 @@ export const TemplatePage = () => {
   }
 
   return (
-    <Page theme={pageTheme.home}>
+    <Page themeId="home">
       <Header
         pageTitleOverride="Create a new component"
         title={
