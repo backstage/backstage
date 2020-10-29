@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { SingleHostDiscovery } from '@backstage/backend-common';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { Config, JsonValue } from '@backstage/config';
 import fs from 'fs-extra';
@@ -41,6 +40,7 @@ export interface RouterOptions {
   logger: Logger;
   config: Config;
   dockerClient: Docker;
+  entityClient: CatalogEntityClient;
 }
 
 export async function createRouter(
@@ -56,13 +56,12 @@ export async function createRouter(
     logger: parentLogger,
     config,
     dockerClient,
+    entityClient,
   } = options;
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
   const jobProcessor = new JobProcessor();
 
-  const discovery = SingleHostDiscovery.fromConfig(config);
-  const entityClient = new CatalogEntityClient({ discovery });
   let workingDirectory: string;
   if (config.has('backend.workingDirectory')) {
     workingDirectory = config.getString('backend.workingDirectory');
