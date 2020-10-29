@@ -17,38 +17,13 @@
 import fs from 'fs-extra';
 import path from 'path';
 import mockFs from 'mock-fs';
-import os from 'os';
-import del from 'del';
-import { createTemporaryPluginFolder, movePlugin } from './createPlugin';
+import { movePlugin } from './createPlugin';
 
 const id = 'testPluginMock';
 
 describe('createPlugin', () => {
   afterAll(() => {
     mockFs.restore();
-  });
-
-  describe('createPluginFolder', () => {
-    it('should create a temporary plugin directory in the correct place', async () => {
-      const tempDir = path.join(os.tmpdir(), id);
-      try {
-        await createTemporaryPluginFolder(tempDir);
-        await expect(fs.pathExists(tempDir)).resolves.toBe(true);
-        expect(tempDir).toMatch(id);
-      } finally {
-        await del(tempDir, { force: true });
-      }
-    });
-
-    it('should not create a temporary plugin directory if it already exists', async () => {
-      mockFs({
-        [id]: {},
-      });
-
-      await expect(createTemporaryPluginFolder(id)).rejects.toThrow(
-        /Failed to create temporary plugin directory/,
-      );
-    });
   });
 
   describe('movePlugin', () => {
