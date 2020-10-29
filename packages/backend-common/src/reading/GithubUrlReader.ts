@@ -252,26 +252,28 @@ export class GithubUrlReader implements UrlReader {
     repoUrl: string,
     branchName: string,
   ): Promise<Response> {
-    return fetch(
-      new URL(
-        `${repoUrl}/archive/${branchName}.tar.gz`,
-      ).toString(),
-    );
+    return fetch(new URL(`${repoUrl}/archive/${branchName}.tar.gz`).toString());
   }
 
-  private writeBufferToFile(filePath: string, content: Buffer): Promise<Error | undefined> {
+  private writeBufferToFile(
+    filePath: string,
+    content: Buffer,
+  ): Promise<Error | undefined> {
     return new Promise((resolve, reject) => {
       fs.mkdirSync(path.join(filePath, '../'), { recursive: true });
-      fs.writeFile(filePath, content.toString(), (error) => {
+      fs.writeFile(filePath, content.toString(), error => {
         if (error) reject(error);
-  
+
         resolve();
       });
     });
-  };
-  
+  }
 
-  async readTree(repoUrl: string, branchName: string, paths: Array<string>): Promise<ReadTreeResponse> {
+  async readTree(
+    repoUrl: string,
+    branchName: string,
+    paths: Array<string>,
+  ): Promise<ReadTreeResponse> {
     const { name: repoName } = parseGitUri(repoUrl);
 
     const repoArchive = await this.getRepositoryArchive(repoUrl, branchName);
@@ -279,16 +281,19 @@ export class GithubUrlReader implements UrlReader {
     const files: File[] = [];
     return new Promise((resolve, reject) => {
       const parser = new (tar.Parse as any)({
-        filter: (path: string) => !!paths.filter(file => {
-          return path.startsWith(`${repoName}-${branchName}/${file}`);
-        }).length,
+        filter: (path: string) =>
+          !!paths.filter(file => {
+            return path.startsWith(`${repoName}-${branchName}/${file}`);
+          }).length,
         onentry: (entry: tar.ReadEntry) => {
           if (entry.type === 'Directory') {
             entry.resume();
             return;
           }
 
-          const contentPromise: Promise<Buffer> = new Promise((res, rej) => {entry.pipe(concatStream(res))});
+          const contentPromise: Promise<Buffer> = new Promise((res, rej) => {
+            entry.pipe(concatStream(res));
+          });
 
           files.push({
             path: entry.path,
@@ -296,36 +301,38 @@ export class GithubUrlReader implements UrlReader {
           });
 
           entry.resume();
-        }
+        },
       });
 
-      repoArchive
-        .body
-        .pipe(parser)
-        .on('finish', () => {
-          resolve({
-            files: () => {
-              return files;
-            },
-            archive: () => {
-              
-            },
-            dir: (outDir: string | undefined) => {
-              const targetDirectory = outDir || fs.mkdtempSync(path.join(os.tmpdir(), 'backstage-'));
+      repoArchive.body.pipe(parser).on('finish', () => {
+        resolve({
+          files: () => {
+            return files;
+          },
+          archive: () => {},
+          dir: (outDir: string | undefined) => {
+            const targetDirectory =
+              outDir || fs.mkdtempSync(path.join(os.tmpdir(), 'backstage-'));
 
-              return new Promise((res, rej) => {
-                Promise.all(files.map(async file => {
-                  return this.writeBufferToFile(`${targetDirectory}/${file.path}`, await file.content());
-                })).then(() => {
+            return new Promise((res, rej) => {
+              Promise.all(
+                files.map(async file => {
+                  return this.writeBufferToFile(
+                    `${targetDirectory}/${file.path}`,
+                    await file.content(),
+                  );
+                }),
+              )
+                .then(() => {
                   res(targetDirectory);
                 })
                 .catch(err => {
                   rej(err);
                 });
-              });
-            }
-          })
+            });
+          },
         });
+      });
     });
   }
 
