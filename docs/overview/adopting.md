@@ -42,7 +42,7 @@ infra/platform teams and end-users:
 ![pop](../assets/pop.png)
 
 While anyone at your company can contribute to the platform, the vast majority
-of work will be done by teams that also has internal engineers as their
+of work will be done by teams that also have internal engineers as their
 customers. The central team should treat these _contributing teams_ as customers
 of the platform as well.
 
@@ -51,9 +51,9 @@ customers. This is done primarily by building [plugins](../plugins/index.md).
 Contributing teams should themselves treat their plugins as, or part of, the
 products they maintain.
 
-> Case study: Inside Spotify we have a team that owns our CI platform. They
-> don't only maintain the pipelines and build servers, but also expose their
-> product in Backstage through a plugin. Since they also
+> Case study: Inside Spotify we have a team that owns our CI platform. They not
+> only maintain the pipelines and build servers, but also expose their product
+> in Backstage through a plugin. Since they also
 > [maintain their own API](../plugins/call-existing-api.md), they can improve
 > their product by iterating on API and UI in lockstep. Because the plugin
 > follows our [platform design guidelines](../dls/design.md) their customers get
@@ -123,14 +123,14 @@ successful impact on your software development process:
   engineer is someone that is able to contribute to different domains of
   engineering. Teams with T-shaped people have fewer bottlenecks and can
   therefore deliver more consistently. Backstage makes it easier to be T-shaped
-  since tools and infrastructure is consistent between domains, and information
+  since tools and infrastructure are consistent between domains, and information
   is available centrally.
 
 - **eNPS** Surveys asking about how productive people feel, how easy it is to
   find information and overall satisfaction with internal tools.
 
 - **Fragmentation** _(Experimental)_ Backstage
-  [Software Templates](../features/software-templates/index.md) helps drive
+  [Software Templates](../features/software-templates/index.md) help drive
   standardization in your software ecosystem. By measuring the variance in
   technology between different software components it is possible to get a sense
   of the overall fragmentation in your ecosystem. Examples could include:

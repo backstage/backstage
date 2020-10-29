@@ -39,7 +39,7 @@ this.
 
 ![The architecture of a basic Backstage application](../assets/architecture-overview/backstage-typical-architecture.png)
 
-## The UI
+## User Interface
 
 The UI is a thin, client-side wrapper around a set of plugins. It provides some
 core UI components and libraries for shared activities such as config
