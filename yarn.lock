@@ -5152,6 +5152,13 @@
   dependencies:
     "@types/node" "*"
 
+"@types/klaw-sync@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.npmjs.org/@types/klaw-sync/-/klaw-sync-6.0.0.tgz#ff0b36601efaaa109d513c4ced109311fd06ba36"
+  integrity sha512-Ibfb2jgpjYUxnl7RSVvUzOrv/vhkTVKEfPwQf9ZlDDsSyWVDp/2JtTBxO4eRrKBYtxc3cZQabdR38i8R0o1uww==
+  dependencies:
+    "@types/node" "*"
+
 "@types/koa-compose@*":
   version "3.2.5"
   resolved "https://registry.npmjs.org/@types/koa-compose/-/koa-compose-3.2.5.tgz#85eb2e80ac50be95f37ccf8c407c09bbe3468e9d"
@@ -5231,6 +5238,13 @@
   version "4.10.0"
   resolved "https://registry.npmjs.org/@types/mock-fs/-/mock-fs-4.10.0.tgz#460061b186993d76856f669d5317cda8a007c24b"
   integrity sha512-FQ5alSzmHMmliqcL36JqIA4Yyn9jyJKvRSGV3mvPh108VFatX7naJDzSG4fnFQNZFq9dIx0Dzoe6ddflMB2Xkg==
+  dependencies:
+    "@types/node" "*"
+
+"@types/mock-fs@^4.13.0":
+  version "4.13.0"
+  resolved "https://registry.npmjs.org/@types/mock-fs/-/mock-fs-4.13.0.tgz#b8b01cd2db588668b2532ecd21b1babd3fffb2c0"
+  integrity sha512-FUqxhURwqFtFBCuUj3uQMp7rPSQs//b3O9XecAVxhqS9y4/W8SIJEZFq2mmpnFVZBXwR/2OyPLE97CpyYiB8Mw==
   dependencies:
     "@types/node" "*"
 
@@ -14968,6 +14982,13 @@ kind-of@^6.0.0, kind-of@^6.0.2:
   version "6.0.3"
   resolved "https://registry.npmjs.org/kind-of/-/kind-of-6.0.3.tgz#07c05034a6c349fa06e24fa35aa76db4580ce4dd"
   integrity sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==
+
+klaw-sync@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.npmjs.org/klaw-sync/-/klaw-sync-6.0.0.tgz#1fd2cfd56ebb6250181114f0a581167099c2b28c"
+  integrity sha512-nIeuVSzdCCs6TDPTqI8w1Yre34sSq7AkZ4B3sfOBbI2CgVSB4Du4aLQijFU2+lhAFCwt9+42Hel6lQNIv6AntQ==
+  dependencies:
+    graceful-fs "^4.1.11"
 
 klaw@^1.0.0:
   version "1.3.1"

@@ -23,6 +23,8 @@ import tar from 'tar';
 import fs from 'fs';
 import { entityRoute } from '@backstage/plugin-catalog';
 import concatStream from 'concat-stream';
+import path from 'path';
+import os from 'os';
 
 /**
  * The configuration parameters for a single GitHub API provider.
@@ -309,7 +311,18 @@ export class GithubUrlReader implements UrlReader {
               
             },
             dir: (outDir: string | undefined) => {
-              
+              const targetDirectory = outDir || fs.mkdtempSync(path.join(os.tmpdir(), 'backstage-'));
+
+              return new Promise((res, rej) => {
+                Promise.all(files.map(async file => {
+                  return this.writeBufferToFile(`${targetDirectory}/${file.path}`, await file.content());
+                })).then(() => {
+                  res(targetDirectory);
+                })
+                .catch(err => {
+                  rej(err);
+                });
+              });
             }
           })
         });

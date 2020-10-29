@@ -28,6 +28,8 @@ import {
 } from './GithubUrlReader';
 import fs from 'fs';
 import path from 'path';
+import mockfs from 'mock-fs';
+import klawSync from 'klaw-sync';
 
 describe('GithubUrlReader', () => {
   describe('getApiRequestOptions', () => {
@@ -236,22 +238,25 @@ describe('GithubUrlReader', () => {
   });
 
   describe('readTree', () => {
-    it('downloads a repo archive', async () => {
+    it('returns the files from a archive', async () => {
       const worker = setupServer();
 
-      const repoBuffer = fs.readFileSync(path.resolve(__dirname, 'test-data','repo.tar.gz'));
+      const repoBuffer = fs.readFileSync(
+        path.resolve(__dirname, 'test-data', 'repo.tar.gz'),
+      );
 
       worker.use(
-        rest.get('https://github.com/spotify/mock/archive/repo.tar.gz', (req, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/x-gzip'),
-            ctx.body(repoBuffer)
-          ),
+        rest.get(
+          'https://github.com/spotify/mock/archive/repo.tar.gz',
+          (req, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/x-gzip'),
+              ctx.body(repoBuffer),
+            ),
         ),
       );
-      worker.listen({ onUnhandledRequest: 'error' })
-  
+      worker.listen({ onUnhandledRequest: 'error' });
 
       const processor = new GithubUrlReader({
         host: 'github.com',
@@ -260,12 +265,9 @@ describe('GithubUrlReader', () => {
       const response = await processor.readTree(
         'https://github.com/spotify/mock',
         'repo',
-        [
-          'mkdocs.yml',
-          'docs'
-        ]
+        ['mkdocs.yml', 'docs'],
       );
-      
+
       const files = response.files();
 
       const mkDocsFile = await files[0].content();
@@ -273,6 +275,47 @@ describe('GithubUrlReader', () => {
 
       expect(mkDocsFile.toString()).toBe('site_name: Test\n');
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
+    });
+
+    it('returns a folder path from a archive', async () => {
+      const worker = setupServer();
+
+      const repoBuffer = fs.readFileSync(
+        path.resolve(__dirname, 'test-data', 'repo.tar.gz'),
+      );
+
+      worker.use(
+        rest.get(
+          'https://github.com/spotify/mock/archive/repo.tar.gz',
+          (req, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/x-gzip'),
+              ctx.body(repoBuffer),
+            ),
+        ),
+      );
+      worker.listen({ onUnhandledRequest: 'error' });
+
+      const processor = new GithubUrlReader({
+        host: 'github.com',
+      });
+
+      const response = await processor.readTree(
+        'https://github.com/spotify/mock',
+        'repo',
+        ['mkdocs.yml', 'docs'],
+      );
+
+      mockfs();
+      const directory = await response.dir('/tmp/fs');
+
+      const writtenToDirectory = fs.existsSync(directory);
+      const paths = klawSync(directory);
+      mockfs.restore();
+
+      expect(writtenToDirectory).toBe(true);
+      expect(paths.map(p=> p.path).sort()).toEqual(['/tmp/fs/mock-repo', '/tmp/fs/mock-repo/docs', '/tmp/fs/mock-repo/docs/index.md', '/tmp/fs/mock-repo/mkdocs.yml'].sort());
     });
   });
 });
