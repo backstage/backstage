@@ -65,7 +65,7 @@ type EProps = {
 
 const Error = ({ slackChannel }: EProps) => {
   return (
-    <div>
+    <div role="alert">
       Something went wrong here.{' '}
       {slackChannel && <>Please contact {slackChannel} for help.</>}
     </div>
