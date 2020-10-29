@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { Config, JsonValue } from '@backstage/config';
 import fs from 'fs-extra';
 import Docker from 'dockerode';
@@ -111,12 +110,7 @@ export async function createRouter(
       const values: RequiredTemplateValues & Record<string, JsonValue> =
         req.body.values;
 
-      let template: TemplateEntityV1alpha1;
-      try {
-        template = await entityClient.findTemplate(templateName);
-      } catch (err) {
-        throw err;
-      }
+      const template = await entityClient.findTemplate(templateName);
 
       const validationResult: ValidatorResult = validate(
         values,
