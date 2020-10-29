@@ -315,7 +315,14 @@ describe('GithubUrlReader', () => {
       mockfs.restore();
 
       expect(writtenToDirectory).toBe(true);
-      expect(paths.map(p=> p.path).sort()).toEqual(['/tmp/fs/mock-repo', '/tmp/fs/mock-repo/docs', '/tmp/fs/mock-repo/docs/index.md', '/tmp/fs/mock-repo/mkdocs.yml'].sort());
+      expect(paths.map(p => p.path).sort()).toEqual(
+        [
+          '/tmp/fs/mock-repo',
+          '/tmp/fs/mock-repo/docs',
+          '/tmp/fs/mock-repo/docs/index.md',
+          '/tmp/fs/mock-repo/mkdocs.yml',
+        ].sort(),
+      );
     });
   });
 });
