@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-import { Cost, ChangeStatistic, MetricData } from '../types';
+import {
+  Cost,
+  ChangeStatistic,
+  ChangeThreshold,
+  EngineerThreshold,
+  GrowthType,
+  MetricData,
+} from '../types';
 import { aggregationSort } from '../utils/sort';
-
-export const EngineerThreshold = 0.5;
-
-export enum ChangeThreshold {
-  upper = 0.05,
-  lower = -0.05,
-}
-
-export enum GrowthType {
-  Negligible,
-  Savings,
-  Excess,
-}
 
 // Used by <CostGrowth /> for displaying status colors
 export function growthOf(amount: number, ratio: number) {

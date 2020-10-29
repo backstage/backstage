@@ -23,6 +23,7 @@ import {
   ChangeStatistic,
   Cost,
   DateAggregation,
+  DEFAULT_DATE_FORMAT,
   Duration,
   Group,
   Maybe,
@@ -38,7 +39,6 @@ import {
   UnlabeledDataflowAlert,
 } from '../src/utils/alerts';
 import {
-  DEFAULT_DATE_FORMAT,
   exclusiveEndDateOf,
   inclusiveStartDateOf,
 } from '../src/utils/duration';
