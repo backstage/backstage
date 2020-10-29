@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export { useApp } from './AppContext';
-export * from './types';
+export { LocalStorageFeatureFlags } from './LocalStorageFeatureFlags';

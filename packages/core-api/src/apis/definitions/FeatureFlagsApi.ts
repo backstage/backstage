@@ -15,8 +15,6 @@
  */
 
 import { ApiRef, createApiRef } from '../system';
-import { UserFlags, FeatureFlagsRegistry } from '../../app/FeatureFlags';
-import { FeatureFlagName } from '../../plugin';
 
 /**
  * The feature flags API is used to toggle functionality to users across plugins and Backstage.
@@ -30,31 +28,56 @@ import { FeatureFlagName } from '../../plugin';
  * to enable and disable feature flags, this API acts as another way to enable/disable.
  */
 
+export type FeatureFlag = {
+  name: string;
+  pluginId: string;
+};
+
 export enum FeatureFlagState {
-  Off = 0,
-  On = 1,
+  None = 0,
+  Active = 1,
 }
+
+/**
+ * Options to use when saving feature flags.
+ */
+export type FeatureFlagsSaveOptions = {
+  /**
+   * The new feature flag states to save.
+   */
+  states: Record<string, FeatureFlagState>;
+
+  /**
+   * Whether the saves states should be merged into the existing ones, or replace them.
+   *
+   * Defaults to false.
+   */
+  merge?: boolean;
+};
+
+export type UserFlags = {};
 
 export interface FeatureFlagsApi {
   /**
-   * Store a list of registered feature flags.
+   * Registers a new feature flag. Once a feature flag has been registered it
+   * can be toggled by users, and read back to enable or disable features.
    */
-  registeredFeatureFlags: FeatureFlagsRegistryItem[];
-
-  /**
-   * Get a list of all feature flags from the current user.
-   */
-  getFlags(): UserFlags;
+  registerFlag(flag: FeatureFlag): void;
 
   /**
    * Get a list of all registered flags.
    */
-  getRegisteredFlags(): FeatureFlagsRegistry;
-}
+  getRegisteredFlags(): FeatureFlag[];
 
-export interface FeatureFlagsRegistryItem {
-  pluginId: string;
-  name: FeatureFlagName;
+  /**
+   * Whether the feature flag with the given name is currently activated for the user.
+   */
+  isActive(name: string): boolean;
+
+  /**
+   * Save the user's choice of feature flag states.
+   */
+  save(options: FeatureFlagsSaveOptions): void;
 }
 
 export const featureFlagsApiRef: ApiRef<FeatureFlagsApi> = createApiRef({

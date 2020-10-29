@@ -15,7 +15,6 @@
  */
 
 import { PluginConfig, PluginOutput, BackstagePlugin } from './types';
-import { validateBrowserCompat, validateFlagName } from '../app/FeatureFlags';
 import { AnyApiFactory } from '../apis';
 
 export class PluginImpl {
@@ -57,8 +56,6 @@ export class PluginImpl {
       },
       featureFlags: {
         register(name) {
-          validateBrowserCompat();
-          validateFlagName(name);
           outputs.push({ type: 'feature-flag', name });
         },
       },

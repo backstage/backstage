@@ -14,70 +14,52 @@
  * limitations under the License.
  */
 
-import { FeatureFlags as FeatureFlagsImpl } from './FeatureFlags';
-import { FeatureFlagState, FeatureFlagsApi } from '../apis/definitions';
+import { LocalStorageFeatureFlags } from './LocalStorageFeatureFlags';
+import { FeatureFlagState, FeatureFlagsApi } from '../../definitions';
 
 describe('FeatureFlags', () => {
   beforeEach(() => {
     window.localStorage.clear();
   });
 
-  describe('#getFlags', () => {
+  describe('getFlags', () => {
     let featureFlags: FeatureFlagsApi;
 
     beforeEach(() => {
-      featureFlags = new FeatureFlagsImpl();
+      featureFlags = new LocalStorageFeatureFlags();
     });
 
     it('returns no flags', () => {
-      expect(featureFlags.getFlags().toObject()).toMatchObject({});
+      expect(featureFlags.getRegisteredFlags()).toEqual([]);
     });
 
-    it('returns the correct flags', () => {
+    it('loads flags from local storage', () => {
       window.localStorage.setItem(
         'featureFlags',
         JSON.stringify({
           'feature-flag-one': 1,
           'feature-flag-two': 1,
           'feature-flag-three': 0,
+          'feature-flag-four': 2,
+          'feature-flag-five': 'not-valid',
         }),
       );
 
-      featureFlags = new FeatureFlagsImpl();
-      expect(featureFlags.getFlags().toObject()).toMatchObject({
-        'feature-flag-one': FeatureFlagState.On,
-        'feature-flag-two': FeatureFlagState.On,
-        'feature-flag-three': FeatureFlagState.Off,
-      });
-    });
-
-    it('gets the correct values', () => {
-      window.localStorage.setItem(
-        'featureFlags',
-        JSON.stringify({
-          'feature-flag-one': 1,
-          'feature-flag-two': 0,
-        }),
-      );
-
-      featureFlags = new FeatureFlagsImpl();
-
-      expect(featureFlags.getFlags().get('feature-flag-one')).toEqual(
-        FeatureFlagState.On,
-      );
-      expect(featureFlags.getFlags().get('feature-flag-two')).toEqual(
-        FeatureFlagState.Off,
-      );
-      expect(featureFlags.getFlags().get('feature-flag-three')).toEqual(
-        FeatureFlagState.Off,
-      );
+      expect(featureFlags.isActive('feature-flag-one')).toBe(true);
+      expect(featureFlags.isActive('feature-flag-two')).toBe(true);
+      expect(featureFlags.isActive('feature-flag-three')).toBe(false);
+      expect(featureFlags.isActive('feature-flag-four')).toBe(false);
+      expect(featureFlags.isActive('feature-flag-five')).toBe(false);
     });
 
     it('sets the correct values', () => {
-      const flags = featureFlags.getFlags();
-      flags.set('feature-flag-zero', FeatureFlagState.On);
+      featureFlags.save({
+        states: {
+          'feature-flag-zero': FeatureFlagState.Active,
+        },
+      });
 
-      expect(flags.get('feature-flag-zero')).toEqual(FeatureFlagState.On);
+      expect(featureFlags.isActive('feature-flag-zero')).toBe(true);
       expect(window.localStorage.getItem('featureFlags')).toEqual(
         '{"feature-flag-zero":1}',
       );
@@ -89,16 +71,20 @@ describe('FeatureFlags', () => {
         JSON.stringify({
           'feature-flag-one': 1,
           'feature-flag-two': 0,
+          'feature-flag-tree': 1,
+          'feature-flag-four': 0,
         }),
       );
 
-      featureFlags = new FeatureFlagsImpl();
-      const flags = featureFlags.getFlags();
-      flags.delete('feature-flag-one');
+      featureFlags.save({
+        states: {
+          'feature-flag-one': FeatureFlagState.None,
+          'feature-flag-two': FeatureFlagState.Active,
+        },
+      });
 
-      expect(flags.get('feature-flag-one')).toEqual(FeatureFlagState.Off);
       expect(window.localStorage.getItem('featureFlags')).toEqual(
-        '{"feature-flag-two":0}',
+        '{"feature-flag-two":1}',
       );
     });
 
@@ -112,33 +98,65 @@ describe('FeatureFlags', () => {
         }),
       );
 
-      const flags = featureFlags.getFlags();
-      flags.clear();
+      expect(featureFlags.isActive('feature-flag-one')).toBe(true);
+      expect(featureFlags.isActive('feature-flag-two')).toBe(true);
+      expect(featureFlags.isActive('feature-flag-three')).toBe(false);
 
-      expect(flags.toObject()).toEqual({});
+      featureFlags.save({ states: {} });
+
+      expect(featureFlags.isActive('feature-flag-one')).toBe(false);
+      expect(featureFlags.isActive('feature-flag-two')).toBe(false);
+      expect(featureFlags.isActive('feature-flag-three')).toBe(false);
+
       expect(window.localStorage.getItem('featureFlags')).toEqual('{}');
     });
   });
 
-  describe('#getRegisteredFlags', () => {
+  describe('getRegisteredFlags', () => {
     let featureFlags: FeatureFlagsApi;
 
     beforeEach(() => {
-      featureFlags = new FeatureFlagsImpl();
-      featureFlags.registeredFeatureFlags = [
-        { name: 'registered-flag-1', pluginId: 'plugin-one' },
-        { name: 'registered-flag-2', pluginId: 'plugin-one' },
-        { name: 'registered-flag-3', pluginId: 'plugin-two' },
-      ];
+      featureFlags = new LocalStorageFeatureFlags();
+      featureFlags.registerFlag({
+        name: 'registered-flag-1',
+        pluginId: 'plugin-one',
+      });
+      featureFlags.registerFlag({
+        name: 'registered-flag-2',
+        pluginId: 'plugin-one',
+      });
+      featureFlags.registerFlag({
+        name: 'registered-flag-3',
+        pluginId: 'plugin-two',
+      });
     });
 
     it('should return an empty list', () => {
-      featureFlags.registeredFeatureFlags = [];
-      expect(featureFlags.getRegisteredFlags().toObject()).toEqual([]);
+      featureFlags = new LocalStorageFeatureFlags();
+      expect(featureFlags.getRegisteredFlags()).toEqual([]);
     });
 
     it('should return an valid list', () => {
-      expect(featureFlags.getRegisteredFlags().toObject()).toMatchObject([
+      expect(featureFlags.getRegisteredFlags()).toEqual([
+        { name: 'registered-flag-1', pluginId: 'plugin-one' },
+        { name: 'registered-flag-2', pluginId: 'plugin-one' },
+        { name: 'registered-flag-3', pluginId: 'plugin-two' },
+      ]);
+    });
+
+    it('should provide a copy of the list of flags', () => {
+      const flags = featureFlags.getRegisteredFlags();
+      expect(flags).toEqual([
+        { name: 'registered-flag-1', pluginId: 'plugin-one' },
+        { name: 'registered-flag-2', pluginId: 'plugin-one' },
+        { name: 'registered-flag-3', pluginId: 'plugin-two' },
+      ]);
+      flags.splice(2, 1);
+      expect(flags).toEqual([
+        { name: 'registered-flag-1', pluginId: 'plugin-one' },
+        { name: 'registered-flag-2', pluginId: 'plugin-one' },
+      ]);
+      expect(featureFlags.getRegisteredFlags()).toEqual([
         { name: 'registered-flag-1', pluginId: 'plugin-one' },
         { name: 'registered-flag-2', pluginId: 'plugin-one' },
         { name: 'registered-flag-3', pluginId: 'plugin-two' },
@@ -164,48 +182,9 @@ describe('FeatureFlags', () => {
       });
     });
 
-    it('should append the correct value', () => {
-      const flags = featureFlags.getRegisteredFlags();
-
-      flags.push({
-        name: 'registered-flag-4',
-        pluginId: 'plugin-three',
-      });
-
-      expect(flags.toObject()).toMatchObject([
-        { name: 'registered-flag-1', pluginId: 'plugin-one' },
-        { name: 'registered-flag-2', pluginId: 'plugin-one' },
-        { name: 'registered-flag-3', pluginId: 'plugin-two' },
-        { name: 'registered-flag-4', pluginId: 'plugin-three' },
-      ]);
-    });
-
-    it('should concat the correct values', () => {
-      const flags = featureFlags.getRegisteredFlags();
-      const concatValues = flags.concat([
-        {
-          name: 'registered-flag-4',
-          pluginId: 'plugin-three',
-        },
-        {
-          name: 'registered-flag-5',
-          pluginId: 'plugin-four',
-        },
-      ]);
-
-      expect(concatValues).toMatchObject([
-        { name: 'registered-flag-1', pluginId: 'plugin-one' },
-        { name: 'registered-flag-2', pluginId: 'plugin-one' },
-        { name: 'registered-flag-3', pluginId: 'plugin-two' },
-        { name: 'registered-flag-4', pluginId: 'plugin-three' },
-        { name: 'registered-flag-5', pluginId: 'plugin-four' },
-      ]);
-    });
-
     it('throws an error if length is less than three characters', () => {
-      const flags = featureFlags.getRegisteredFlags();
       expect(() =>
-        flags.push({
+        featureFlags.registerFlag({
           name: 'ab',
           pluginId: 'plugin-three',
         }),
@@ -213,9 +192,8 @@ describe('FeatureFlags', () => {
     });
 
     it('throws an error if length is greater than 150 characters', () => {
-      const flags = featureFlags.getRegisteredFlags();
       expect(() =>
-        flags.push({
+        featureFlags.registerFlag({
           name:
             'loremipsumdolorsitametconsecteturadipiscingelitnuncvitaeportaexaullamcorperturpismaurisutmattisnequemorbisediaculisauguevivamuspulvinarcursuseratblandithendreritquisqueuttinciduntmagnavestibulumblanditaugueat',
           pluginId: 'plugin-three',
@@ -224,9 +202,8 @@ describe('FeatureFlags', () => {
     });
 
     it('throws an error if name does not start with a lowercase letter', () => {
-      const flags = featureFlags.getRegisteredFlags();
       expect(() =>
-        flags.push({
+        featureFlags.registerFlag({
           name: '123456789',
           pluginId: 'plugin-three',
         }),
@@ -234,9 +211,8 @@ describe('FeatureFlags', () => {
     });
 
     it('throws an error if name contains characters other than lowercase letters, numbers and hyphens', () => {
-      const flags = featureFlags.getRegisteredFlags();
       expect(() =>
-        flags.push({
+        featureFlags.registerFlag({
           name: 'Invalid_Feature_Flag',
           pluginId: 'plugin-three',
         }),
