@@ -17,7 +17,7 @@
 
 import dayjs from 'dayjs';
 import regression, { DataPoint } from 'regression';
-import { CostInsightsApi } from './api';
+import { CostInsightsApi } from '../src/api';
 import {
   Alert,
   ChangeStatistic,
@@ -32,13 +32,13 @@ import {
   ProjectGrowthData,
   Trendline,
   UnlabeledDataflowData,
-} from './types';
-import { ProjectGrowthAlert, UnlabeledDataflowAlert } from './utils/alerts';
+} from '../src/types';
+import { ProjectGrowthAlert, UnlabeledDataflowAlert } from '../src/utils/alerts';
 import {
   DEFAULT_DATE_FORMAT,
   exclusiveEndDateOf,
   inclusiveStartDateOf,
-} from './utils/duration';
+} from '../src/utils/duration';
 
 type IntervalFields = {
   duration: Duration;

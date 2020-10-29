@@ -15,7 +15,7 @@
  */
 
 export { plugin } from './plugin';
-export * from './ExampleCostInsightsClient';
+export * from './client';
 export * from './api';
 export * from './components';
 export { useCurrency } from './hooks';
