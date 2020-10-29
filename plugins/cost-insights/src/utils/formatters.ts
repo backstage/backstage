@@ -16,10 +16,7 @@
 
 import moment from 'moment';
 import { Duration } from '../types';
-import {
-  inclusiveEndDateOf,
-  inclusiveStartDateOf,
-} from '../utils/duration';
+import { inclusiveEndDateOf, inclusiveStartDateOf } from '../utils/duration';
 import { pluralOf } from '../utils/grammar';
 
 export type Period = {
