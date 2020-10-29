@@ -73,7 +73,6 @@ export class OneLoginProvider implements OAuthHandlers {
               idToken: params.id_token,
               accessToken,
               scope: params.scope,
-              //scope: 'profile',
               expiresInSeconds: params.expires_in,
             },
             profile,
