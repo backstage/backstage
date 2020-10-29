@@ -20,3 +20,16 @@ export interface ChangeStatistic {
   // The actual USD change between time periods (can be negative if costs decreased)
   amount: number;
 }
+
+export const EngineerThreshold = 0.5;
+
+export enum ChangeThreshold {
+  upper = 0.05,
+  lower = -0.05,
+}
+
+export enum GrowthType {
+  Negligible,
+  Savings,
+  Excess,
+}
