@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type {
+import {
   Entity,
   EntityRelationSpec,
   Location,
@@ -68,7 +68,7 @@ export type ReadLocationError = {
 };
 
 //
-// ConfigGenerator
+// LocationAnalyzer
 //
 
 export type LocationAnalyzer = {

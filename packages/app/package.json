@@ -22,6 +22,7 @@
     "@backstage/plugin-lighthouse": "^0.1.1-alpha.26",
     "@backstage/plugin-newrelic": "^0.1.1-alpha.26",
     "@backstage/plugin-register-component": "^0.1.1-alpha.26",
+    "@backstage/plugin-import-component": "^0.1.1-alpha.26",
     "@backstage/plugin-rollbar": "^0.1.1-alpha.26",
     "@backstage/plugin-scaffolder": "^0.1.1-alpha.26",
     "@backstage/plugin-sentry": "^0.1.1-alpha.26",

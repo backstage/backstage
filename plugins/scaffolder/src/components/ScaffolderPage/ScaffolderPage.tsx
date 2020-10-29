@@ -81,6 +81,15 @@ export const ScaffolderPage = () => {
             variant="contained"
             color="primary"
             component={RouterLink}
+            to="/import-component"
+            style={{ marginRight: '8px' }}
+          >
+            Import Repository
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            component={RouterLink}
             to="/register-component"
           >
             Register Existing Component

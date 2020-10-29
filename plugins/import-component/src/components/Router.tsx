@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Route, Routes } from 'react-router';
+import { Route, Routes } from 'react-router-dom';
 import { ImportComponentPage } from './ImportComponentPage';
 
 // As we don't know which path the catalog's router mounted on

@@ -41,6 +41,7 @@ export class LocationAnalyzerClient implements LocationAnalyzer {
       spec: { type: 'service', owner: ownerName, lifecycle: 'experimental' },
     };
 
+    this.logger.silly(`entity created for ${request.location.target}`);
     return {
       existingEntityFiles: [],
       generateEntities: [{ entity, fields: [] }],
