@@ -19,7 +19,7 @@ import { Box, useTheme } from '@material-ui/core';
 import { LegendItem } from '../LegendItem';
 import { CostGrowth } from '../CostGrowth';
 import { currencyFormatter } from '../../utils/formatters';
-import { ChangeStatistic, Duration, CostInsightsTheme } from '../../types';
+import { ChangeStatistic, CostInsightsTheme, Duration } from '../../types';
 
 export type ResourceGrowthBarChartLegendProps = {
   change: ChangeStatistic;
