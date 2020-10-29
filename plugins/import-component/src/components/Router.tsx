@@ -13,8 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
+import { Route, Routes } from 'react-router';
+import { ImportComponentPage } from './ImportComponentPage';
 
-export { HigherOrderOperations } from './HigherOrderOperations';
-export { LocationReaders } from './LocationReaders';
-export * from './types';
-export * from './processors';
+// As we don't know which path the catalog's router mounted on
+// We need to inject this from the app
+export const Router = () => (
+  <Routes>
+    <Route element={<ImportComponentPage />} />
+  </Routes>
+);

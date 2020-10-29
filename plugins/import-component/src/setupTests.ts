@@ -14,7 +14,4 @@
  * limitations under the License.
  */
 
-export { HigherOrderOperations } from './HigherOrderOperations';
-export { LocationReaders } from './LocationReaders';
-export * from './types';
-export * from './processors';
+import '@testing-library/jest-dom';

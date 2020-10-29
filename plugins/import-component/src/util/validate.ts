@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-export { HigherOrderOperations } from './HigherOrderOperations';
-export { LocationReaders } from './LocationReaders';
-export * from './types';
-export * from './processors';
+export const ComponentIdValidators = {
+  httpsValidator: (value: any) =>
+    (typeof value === 'string' && value.match(/^https:\/\//) !== null) ||
+    'Must start with https://.',
+};
