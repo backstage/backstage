@@ -15,13 +15,7 @@
  */
 
 import { LocationSpec } from '@backstage/catalog-model';
-
-const determineBitBucketBranch = (url: string): string => {
-  const delimiter = '/';
-  const start = 6;
-  const result = url?.split(delimiter).slice(start)[0];
-  return result;
-};
+import gitUrlParse from 'git-url-parse';
 
 /**
  * Creates the edit link for components yaml file
@@ -30,29 +24,37 @@ const determineBitBucketBranch = (url: string): string => {
  * @returns string representing the edit location based on SCM path
  */
 
-export const createEditLink = (location: LocationSpec): string => {
-  switch (location.type) {
-    case 'github':
-    case 'gitlab':
-      return location.target.replace('/blob/', '/edit/');
-    case 'bitbucket':
-      return location.target.concat(
-        `?mode=edit&spa=0&at=${determineBitBucketBranch(location.target)}`,
-      );
-    case 'url':
-      if (
-        location.target.includes('https://github.com') ||
-        location.target.includes('https://gitlab.com/')
-      ) {
+export const createEditLink = (location: LocationSpec): string | undefined => {
+  try {
+    const urlData = gitUrlParse(location.target);
+    const url = new URL(location.target);
+    switch (location.type) {
+      case 'github':
+      case 'gitlab':
         return location.target.replace('/blob/', '/edit/');
-      } else if (location.target.includes('https://bitbucket.org')) {
-        return location.target.concat(
-          `?mode=edit&spa=0&at=${determineBitBucketBranch(location.target)}`,
-        );
-      }
-      return location.target;
-    default:
-      return location.target;
+      case 'bitbucket':
+        url.searchParams.set('mode', 'edit');
+        url.searchParams.set('spa', '0');
+        url.searchParams.set('at', urlData.ref);
+        return url.toString();
+      case 'url':
+        if (
+          urlData.source === 'github.com' ||
+          urlData.source === 'gitlab.com/'
+        ) {
+          return location.target.replace('/blob/', '/edit/');
+        } else if (urlData.source === 'bitbucket.org') {
+          url.searchParams.set('mode', 'edit');
+          url.searchParams.set('spa', '0');
+          url.searchParams.set('at', urlData.ref);
+          return url.toString();
+        }
+        return location.target;
+      default:
+        return location.target;
+    }
+  } catch {
+    return undefined;
   }
 };
 
@@ -62,11 +64,13 @@ export const createEditLink = (location: LocationSpec): string => {
  * @returns string representing type of icon to be used
  */
 export const determineUrlType = (url: string): string => {
-  if (url.includes('https://github.com/')) {
+  const urlData = gitUrlParse(url);
+
+  if (urlData.source === 'github.com') {
     return 'github';
-  } else if (url.includes('https://bitbucket.org/')) {
+  } else if (urlData.source === 'bitbucket.org') {
     return 'bitbucket';
-  } else if (url.includes('https://gitlab.com/')) {
+  } else if (urlData.source === 'gitlab.com') {
     return 'gitlab';
   }
   return 'url';
