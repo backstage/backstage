@@ -29,7 +29,7 @@ A new maintainer must be proposed by an existing maintainer by opening an issue 
 
 - nominee's first and last name,
 - nominee's email address and GitHub user name,
-- an explanation of why the nominee should be a committer,
+- an explanation of why the nominee should be a maintainer,
 - a list of links to non-trivial pull requests (top 10) authored by the nominee.
 
 Maintainers can be removed by a 2/3 majority vote.
