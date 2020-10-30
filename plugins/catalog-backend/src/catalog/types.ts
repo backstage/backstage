@@ -15,7 +15,7 @@
  */
 
 import { Entity, EntityRelationSpec, Location } from '@backstage/catalog-model';
-import type { EntityFilters, Transaction } from '../database';
+import type { EntityFilters } from '../database';
 
 //
 // Entities
@@ -28,13 +28,11 @@ export type EntityUpsertRequest = {
 
 export type EntityUpsertResponse = {
   entityId: string;
+  entity?: Entity;
 };
 
 export type EntitiesCatalog = {
-  entities(options?: {
-    filters?: EntityFilters[];
-    tx?: Transaction;
-  }): Promise<Entity[]>;
+  entities(filters?: EntityFilters[]): Promise<Entity[]>;
   removeEntityByUid(uid: string): Promise<void>;
 
   /**
@@ -46,8 +44,9 @@ export type EntitiesCatalog = {
   batchAddOrUpdateEntities(
     entities: EntityUpsertRequest[],
     options?: {
-      tx?: Transaction;
       locationId?: string;
+      dryRun?: boolean;
+      outputEntities?: boolean;
     },
   ): Promise<EntityUpsertResponse[]>;
 };
@@ -76,10 +75,7 @@ export type LocationResponse = {
 };
 
 export type LocationsCatalog = {
-  addLocation(
-    location: Location,
-    options?: { tx?: Transaction },
-  ): Promise<Location>;
+  addLocation(location: Location): Promise<Location>;
   removeLocation(id: string): Promise<void>;
   locations(): Promise<LocationResponse[]>;
   location(id: string): Promise<LocationResponse>;

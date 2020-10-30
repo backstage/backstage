@@ -49,7 +49,7 @@ export async function createRouter(
       .get('/entities', async (req, res) => {
         const filters = translateQueryToEntityFilters(req.query);
         const fieldMapper = translateQueryToFieldMapper(req.query);
-        const entities = await entitiesCatalog.entities({ filters });
+        const entities = await entitiesCatalog.entities(filters);
         res.status(200).send(entities.map(fieldMapper));
       })
       .post('/entities', async (req, res) => {
@@ -57,20 +57,18 @@ export async function createRouter(
         const [result] = await entitiesCatalog.batchAddOrUpdateEntities([
           { entity: body as Entity, relations: [] },
         ]);
-        const [entity] = await entitiesCatalog.entities({
-          filters: [{ 'metadata.uid': result.entityId }],
-        });
+        const [entity] = await entitiesCatalog.entities([
+          { 'metadata.uid': result.entityId },
+        ]);
         res.status(200).send(entity);
       })
       .get('/entities/by-uid/:uid', async (req, res) => {
         const { uid } = req.params;
-        const entities = await entitiesCatalog.entities({
-          filters: [
-            {
-              'metadata.uid': uid,
-            },
-          ],
-        });
+        const entities = await entitiesCatalog.entities([
+          {
+            'metadata.uid': uid,
+          },
+        ]);
         if (!entities.length) {
           res.status(404).send(`No entity with uid ${uid}`);
         }
@@ -83,15 +81,13 @@ export async function createRouter(
       })
       .get('/entities/by-name/:kind/:namespace/:name', async (req, res) => {
         const { kind, namespace, name } = req.params;
-        const entities = await entitiesCatalog.entities({
-          filters: [
-            {
-              kind: kind,
-              'metadata.namespace': namespace,
-              'metadata.name': name,
-            },
-          ],
-        });
+        const entities = await entitiesCatalog.entities([
+          {
+            kind: kind,
+            'metadata.namespace': namespace,
+            'metadata.name': name,
+          },
+        ]);
         if (!entities.length) {
           res
             .status(404)

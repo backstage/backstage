@@ -227,7 +227,6 @@ export class CatalogBuilder {
       entitiesCatalog,
       locationsCatalog,
       locationReader,
-      db,
       logger,
     );
 

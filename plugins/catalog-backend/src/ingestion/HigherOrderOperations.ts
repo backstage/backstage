@@ -17,7 +17,6 @@
 import { Location, LocationSpec } from '@backstage/catalog-model';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from 'winston';
-import { Database } from '../database';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
 import { durationText } from '../util/timing';
 import {
@@ -38,7 +37,6 @@ export class HigherOrderOperations implements HigherOrderOperation {
     private readonly entitiesCatalog: EntitiesCatalog,
     private readonly locationsCatalog: LocationsCatalog,
     private readonly locationReader: LocationReader,
-    private readonly database: Database,
     private readonly logger: Logger,
   ) {}
 
@@ -85,33 +83,25 @@ export class HigherOrderOperations implements HigherOrderOperation {
     // in the entities list. But we aren't sure what to do about those yet.
 
     // Write
-    const entities = await this.database.transaction(async tx => {
-      if (!previousLocation) {
-        await this.locationsCatalog.addLocation(location, { tx });
-      }
-      if (readerOutput.entities.length === 0) {
-        return [];
-      }
+    if (!previousLocation && !dryRun) {
+      // TODO: We do not include location operations in the dryRun. We might perform
+      // this operation as a seperate dry run.
+      await this.locationsCatalog.addLocation(location);
+    }
+    if (readerOutput.entities.length === 0) {
+      return { location, entities: [] };
+    }
 
-      const writtenEntities = await this.entitiesCatalog.batchAddOrUpdateEntities(
-        readerOutput.entities,
-        { locationId: location.id, tx },
-      );
+    const writtenEntities = await this.entitiesCatalog.batchAddOrUpdateEntities(
+      readerOutput.entities,
+      {
+        locationId: dryRun ? undefined : location.id,
+        dryRun,
+        outputEntities: true,
+      },
+    );
 
-      const outputEntities = await this.entitiesCatalog.entities({
-        filters: [{ 'metadata.uid': writtenEntities.map(e => e.entityId) }],
-        tx,
-      });
-
-      if (dryRun) {
-        // If this is only a dry run, cancel the database transaction even if it was successful.
-        await tx.rollback();
-
-        this.logger.debug(`Perfomed successful dry run of adding a location`);
-      }
-
-      return outputEntities;
-    });
+    const entities = writtenEntities.map(e => e.entity!);
 
     return { location, entities };
   }

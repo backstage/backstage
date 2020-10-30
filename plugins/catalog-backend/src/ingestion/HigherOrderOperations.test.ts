@@ -18,11 +18,7 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { Entity, Location, LocationSpec } from '@backstage/catalog-model';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
 import { LocationUpdateStatus } from '../catalog/types';
-import {
-  Database,
-  DatabaseLocationUpdateLogStatus,
-  Transaction,
-} from '../database/types';
+import { DatabaseLocationUpdateLogStatus } from '../database/types';
 import { HigherOrderOperations } from './HigherOrderOperations';
 import { LocationReader } from './types';
 
@@ -30,8 +26,6 @@ describe('HigherOrderOperations', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
   let locationsCatalog: jest.Mocked<LocationsCatalog>;
   let locationReader: jest.Mocked<LocationReader>;
-  let transaction: jest.Mocked<Transaction>;
-  let database: jest.Mocked<Database>;
   let higherOrderOperation: HigherOrderOperations;
 
   beforeAll(() => {
@@ -52,37 +46,16 @@ describe('HigherOrderOperations', () => {
     locationReader = {
       read: jest.fn(),
     };
-    transaction = {
-      rollback: jest.fn(),
-    };
-    database = {
-      transaction: jest.fn(),
-      addEntities: jest.fn(),
-      updateEntity: jest.fn(),
-      entities: jest.fn(),
-      entityByName: jest.fn(),
-      entityByUid: jest.fn(),
-      removeEntityByUid: jest.fn(),
-      setRelations: jest.fn(),
-      addLocation: jest.fn(),
-      removeLocation: jest.fn(),
-      location: jest.fn(),
-      locations: jest.fn(),
-      locationHistory: jest.fn(),
-      addLocationUpdateLogEvent: jest.fn(),
-    };
     higherOrderOperation = new HigherOrderOperations(
       entitiesCatalog,
       locationsCatalog,
       locationReader,
-      database,
       getVoidLogger(),
     );
   });
 
   beforeEach(() => {
     jest.resetAllMocks();
-    database.transaction.mockImplementation(async f => f(transaction));
   });
 
   describe('addLocation', () => {
@@ -117,9 +90,7 @@ describe('HigherOrderOperations', () => {
           id: expect.anything(),
           ...spec,
         }),
-        { tx: transaction },
       );
-      expect(transaction.rollback).not.toBeCalled();
     });
 
     it('insert the location and its entities', async () => {
@@ -139,9 +110,10 @@ describe('HigherOrderOperations', () => {
       entitiesCatalog.batchAddOrUpdateEntities.mockResolvedValue([
         {
           entityId: 'id',
+          entity,
         },
       ]);
-      entitiesCatalog.entities.mockResolvedValue([entity]);
+
       locationReader.read.mockResolvedValue({
         entities: [
           {
@@ -169,13 +141,18 @@ describe('HigherOrderOperations', () => {
           id: expect.anything(),
           ...spec,
         }),
-        { tx: transaction },
       );
       expect(locationReader.read).toBeCalledTimes(1);
       expect(locationReader.read).toBeCalledWith({ type: 'a', target: 'b' });
-      expect(entitiesCatalog.entities).toBeCalledTimes(1);
       expect(entitiesCatalog.batchAddOrUpdateEntities).toBeCalledTimes(1);
-      expect(transaction.rollback).not.toBeCalled();
+      expect(entitiesCatalog.batchAddOrUpdateEntities).toBeCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          locationId: expect.anything(),
+          dryRun: false,
+          outputEntities: true,
+        }),
+      );
     });
 
     it('reuses the location if a match already existed', async () => {
@@ -208,7 +185,6 @@ describe('HigherOrderOperations', () => {
       expect(locationReader.read).toBeCalledWith({ type: 'a', target: 'b' });
       expect(entitiesCatalog.batchAddOrUpdateEntities).not.toBeCalled();
       expect(locationsCatalog.addLocation).not.toBeCalled();
-      expect(transaction.rollback).not.toBeCalled();
     });
 
     it('rejects the whole operation if any entity could not be read', async () => {
@@ -235,7 +211,6 @@ describe('HigherOrderOperations', () => {
       expect(locationsCatalog.locations).toBeCalledTimes(1);
       expect(entitiesCatalog.batchAddOrUpdateEntities).not.toBeCalled();
       expect(locationsCatalog.addLocation).not.toBeCalled();
-      expect(transaction.rollback).not.toBeCalled();
     });
 
     it('rollback everything after a dry run', async () => {
@@ -249,15 +224,14 @@ describe('HigherOrderOperations', () => {
         kind: 'b',
         metadata: { name: 'n' },
       };
-      locationsCatalog.addLocation.mockImplementation(x => Promise.resolve(x));
       locationsCatalog.locations.mockResolvedValue([]);
       locationsCatalog.locations.mockResolvedValue([]);
       entitiesCatalog.batchAddOrUpdateEntities.mockResolvedValue([
         {
           entityId: 'id',
+          entity,
         },
       ]);
-      entitiesCatalog.entities.mockResolvedValue([entity]);
       locationReader.read.mockResolvedValue({
         entities: [
           {
@@ -281,19 +255,16 @@ describe('HigherOrderOperations', () => {
       );
       expect(result.entities).toEqual([entity]);
       expect(locationsCatalog.locations).toBeCalledTimes(1);
-      expect(locationsCatalog.addLocation).toBeCalledTimes(1);
-      expect(locationsCatalog.addLocation).toBeCalledWith(
-        expect.objectContaining({
-          id: expect.anything(),
-          ...spec,
-        }),
-        { tx: transaction },
-      );
       expect(locationReader.read).toBeCalledTimes(1);
       expect(locationReader.read).toBeCalledWith({ type: 'a', target: 'b' });
-      expect(entitiesCatalog.entities).toBeCalledTimes(1);
       expect(entitiesCatalog.batchAddOrUpdateEntities).toBeCalledTimes(1);
-      expect(transaction.rollback).toBeCalled();
+      expect(entitiesCatalog.batchAddOrUpdateEntities).toBeCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          dryRun: true,
+          outputEntities: true,
+        }),
+      );
     });
   });
 
