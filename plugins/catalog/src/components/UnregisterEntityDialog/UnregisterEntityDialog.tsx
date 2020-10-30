@@ -101,7 +101,7 @@ export const UnregisterEntityDialog: FC<Props> = ({
               That are located at the following location:
             </DialogContentText>
             <Typography component="div">
-              <ul>
+              <ul style={{ wordBreak: 'break-word' }}>
                 <li>
                   {entities[0]?.metadata.annotations?.[LOCATION_ANNOTATION]}
                 </li>
