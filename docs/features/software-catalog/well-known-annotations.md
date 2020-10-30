@@ -173,6 +173,22 @@ The value of these annotations are the corresponding attributes that were found
 when ingestion the entity from LDAP. Not all of them may be present, depending
 on what attributes that the server presented at ingestion time.
 
+### sonarqube.org/project-key
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    sonarqube.org/project-key: pump-station
+```
+
+The value of this annotation is the project key of a
+[SonarQube](https://sonarqube.org) or [SonarCloud](https://sonarcloud.io)
+project within your organization.
+
+Specifying this annotation may enable SonarQube related features in Backstage
+for that entity.
+
 ## Deprecated Annotations
 
 The following annotations are deprecated, and only listed here to aid in
