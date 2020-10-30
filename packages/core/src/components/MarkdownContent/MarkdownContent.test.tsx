@@ -40,4 +40,17 @@ describe('<MarkdownContent />', () => {
       rendered.getByText('https://example.com', { selector: 'a' }),
     ).toBeInTheDocument();
   });
+
+  it('render MarkdownContent component with CodeSnippet for code blocks', async () => {
+    const rendered = await renderWithEffects(
+      wrapInTestApp(<MarkdownContent content="    jest(test: string);" />),
+    );
+    const fp1 = rendered.getByText('jest', { selector: 'span' });
+    expect(fp1).toBeInTheDocument();
+    expect(fp1.className).toEqual('hljs-function');
+    const fp2 = rendered.getByText('(test: string)', { selector: 'span' });
+    expect(fp2).toBeInTheDocument();
+    expect(fp2.className).toEqual('hljs-function');
+    expect(rendered.getByText(';', { selector: 'span' })).toBeInTheDocument();
+  });
 });

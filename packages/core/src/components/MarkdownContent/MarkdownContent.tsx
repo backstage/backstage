@@ -19,6 +19,7 @@ import ReactMarkdown from 'react-markdown';
 import gfm from 'remark-gfm';
 import React from 'react';
 import { BackstageTheme } from '@backstage/theme';
+import { CodeSnippet } from '../CodeSnippet';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   markdown: {
@@ -49,15 +50,6 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
       backgroundColor: theme.palette.background.default,
     },
 
-    '& pre': {
-      padding: '16px',
-      overflow: 'auto',
-      fontSize: '85%',
-      lineHeight: 1.45,
-      backgroundColor: theme.palette.code.background,
-      borderRadius: '6px',
-      color: theme.palette.code.text,
-    },
     '& a': {
       color: theme.palette.link,
     },
@@ -75,6 +67,12 @@ type Props = {
   enableGfm?: boolean;
 };
 
+const renderers = {
+  code: ({ language, value }: { language: string; value: string }) => {
+    return <CodeSnippet language={language} text={value} />;
+  },
+};
+
 export const MarkdownContent = ({ content, enableGfm = false }: Props) => {
   const classes = useStyles();
   return (
@@ -82,6 +80,7 @@ export const MarkdownContent = ({ content, enableGfm = false }: Props) => {
       plugins={enableGfm ? [gfm] : []}
       className={classes.markdown}
       children={content}
+      renderers={renderers}
     />
   );
 };
