@@ -75,27 +75,30 @@ export const RegisterComponentPage = ({
       location: Location;
     } | null;
     error: null | Error;
+    dryRun: boolean;
   }>({
     data: null,
     error: null,
+    dryRun: false,
   });
 
   const handleSubmit = async (formData: Record<string, string>) => {
     setFormState(FormStates.Submitting);
-    const { entityLocation: target } = formData;
+    const { entityLocation: target, mode } = formData;
+    const dryRun = mode === 'validate';
     try {
-      const data = await catalogApi.addLocation({ target });
+      const data = await catalogApi.addLocation({ target, dryRun });
 
       if (!isMounted()) return;
 
-      setResult({ error: null, data });
+      setResult({ error: null, data, dryRun });
       setFormState(FormStates.Success);
     } catch (e) {
       errorApi.post(e);
 
       if (!isMounted()) return;
 
-      setResult({ error: e, data: null });
+      setResult({ error: e, data: null, dryRun });
       setFormState(FormStates.Idle);
     }
   };
@@ -124,6 +127,7 @@ export const RegisterComponentPage = ({
       {formState === FormStates.Success && (
         <RegisterComponentResultDialog
           entities={result.data!.entities}
+          dryRun={result.dryRun}
           onClose={() => setFormState(FormStates.Idle)}
           classes={{ paper: classes.dialogPaper }}
           catalogRouteRef={catalogRouteRef}

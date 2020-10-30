@@ -91,7 +91,7 @@ describe('CommonDatabase', () => {
       timestamp: null,
     };
 
-    await db.addLocation(input);
+    await db.transaction(async tx => await db.addLocation(tx, input));
 
     const locations = await db.locations();
     expect(locations).toEqual(
@@ -238,7 +238,8 @@ describe('CommonDatabase', () => {
         type: 'a',
         target: 'b',
       };
-      await db.addLocation(location);
+
+      await db.transaction(async tx => await db.addLocation(tx, location));
 
       await db.addLocationUpdateLogEvent(
         'dd12620d-0436-422f-93bd-929aa0788123',

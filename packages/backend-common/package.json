@@ -43,7 +43,7 @@
     "express-promise-router": "^3.0.3",
     "git-url-parse": "^11.4.0",
     "helmet": "^4.0.0",
-    "knex": "^0.21.1",
+    "knex": "^0.21.6",
     "lodash": "^4.17.15",
     "logform": "^2.1.1",
     "minimist": "^1.2.5",

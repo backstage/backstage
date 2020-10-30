@@ -33,8 +33,11 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
     display: 'flex',
     flexFlow: 'column nowrap',
   },
-  submit: {
-    marginTop: theme.spacing(1),
+  buttonSpacing: {
+    marginLeft: theme.spacing(1),
+  },
+  buttons: {
+    marginTop: theme.spacing(2),
   },
   select: {
     minWidth: 120,
@@ -54,12 +57,21 @@ export const RegisterComponentForm = ({ onSubmit, submitting }: Props) => {
   const hasErrors = !!errors.entityLocation;
   const dirty = formState?.isDirty;
 
+  const onSubmitValidate = handleSubmit(data => {
+    data.mode = 'validate';
+    onSubmit(data);
+  });
+
+  const onSubmitRegister = handleSubmit(data => {
+    data.mode = 'register';
+    onSubmit(data);
+  });
+
   return submitting ? (
     <LinearProgress data-testid="loading-progress" />
   ) : (
     <form
       autoComplete="off"
-      onSubmit={handleSubmit(onSubmit)}
       className={classes.form}
       data-testid="register-form"
     >
@@ -87,15 +99,27 @@ export const RegisterComponentForm = ({ onSubmit, submitting }: Props) => {
         )}
       </FormControl>
 
-      <Button
-        variant="contained"
-        color="primary"
-        type="submit"
-        disabled={!dirty || hasErrors}
-        className={classes.submit}
-      >
-        Submit
-      </Button>
+      <div className={classes.buttons}>
+        <Button
+          variant="outlined"
+          color="primary"
+          type="submit"
+          disabled={!dirty || hasErrors}
+          onClick={onSubmitValidate}
+        >
+          Validate
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          type="submit"
+          className={classes.buttonSpacing}
+          disabled={!dirty || hasErrors}
+          onClick={onSubmitRegister}
+        >
+          Register
+        </Button>
+      </div>
     </form>
   );
 };

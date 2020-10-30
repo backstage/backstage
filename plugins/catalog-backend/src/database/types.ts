@@ -102,6 +102,13 @@ export type EntityFilter = null | string | (null | string)[];
 export type EntityFilters = Record<string, EntityFilter>;
 
 /**
+ * An abstraction for transactions of the underlying database technology.
+ */
+export type Transaction = {
+  rollback(): Promise<void>;
+};
+
+/**
  * An abstraction on top of the underlying database, wrapping the basic CRUD
  * needs.
  */
@@ -114,7 +121,7 @@ export type Database = {
    *
    * @param fn The callback that implements the transaction
    */
-  transaction<T>(fn: (tx: unknown) => Promise<T>): Promise<T>;
+  transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T>;
 
   /**
    * Adds a set of new entities to the catalog.
@@ -123,7 +130,7 @@ export type Database = {
    * @param request The entities being added
    */
   addEntities(
-    tx: unknown,
+    tx: Transaction,
     request: DbEntityRequest[],
   ): Promise<DbEntityResponse[]>;
 
@@ -147,22 +154,28 @@ export type Database = {
    * @returns The updated entity
    */
   updateEntity(
-    tx: unknown,
+    tx: Transaction,
     request: DbEntityRequest,
     matchingEtag?: string,
     matchingGeneration?: number,
   ): Promise<DbEntityResponse>;
 
-  entities(tx: unknown, filters?: EntityFilters[]): Promise<DbEntityResponse[]>;
+  entities(
+    tx: Transaction,
+    filters?: EntityFilters[],
+  ): Promise<DbEntityResponse[]>;
 
   entityByName(
-    tx: unknown,
+    tx: Transaction,
     name: EntityName,
   ): Promise<DbEntityResponse | undefined>;
 
-  entityByUid(tx: unknown, uid: string): Promise<DbEntityResponse | undefined>;
+  entityByUid(
+    tx: Transaction,
+    uid: string,
+  ): Promise<DbEntityResponse | undefined>;
 
-  removeEntityByUid(tx: unknown, uid: string): Promise<void>;
+  removeEntityByUid(tx: Transaction, uid: string): Promise<void>;
 
   /**
    * Remove current relations for the entity and replace them with the new relations array
@@ -171,14 +184,14 @@ export type Database = {
    * @param relations the relationships to be set
    */
   setRelations(
-    tx: unknown,
+    tx: Transaction,
     entityUid: string,
     relations: EntityRelationSpec[],
   ): Promise<void>;
 
-  addLocation(location: Location): Promise<DbLocationsRow>;
+  addLocation(tx: Transaction, location: Location): Promise<DbLocationsRow>;
 
-  removeLocation(tx: unknown, id: string): Promise<void>;
+  removeLocation(tx: Transaction, id: string): Promise<void>;
 
   location(id: string): Promise<DbLocationsRowWithStatus>;
 

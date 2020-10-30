@@ -32,7 +32,7 @@
     "express-promise-router": "^3.0.3",
     "fs-extra": "^9.0.0",
     "git-url-parse": "^11.4.0",
-    "knex": "^0.21.1",
+    "knex": "^0.21.6",
     "ldapjs": "^2.2.0",
     "lodash": "^4.17.15",
     "morgan": "^1.10.0",

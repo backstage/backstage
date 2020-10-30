@@ -28,6 +28,7 @@ export type EntityUpsertRequest = {
 
 export type EntityUpsertResponse = {
   entityId: string;
+  entity?: Entity;
 };
 
 export type EntitiesCatalog = {
@@ -42,7 +43,11 @@ export type EntitiesCatalog = {
    */
   batchAddOrUpdateEntities(
     entities: EntityUpsertRequest[],
-    locationId?: string,
+    options?: {
+      locationId?: string;
+      dryRun?: boolean;
+      outputEntities?: boolean;
+    },
   ): Promise<EntityUpsertResponse[]>;
 };
 
