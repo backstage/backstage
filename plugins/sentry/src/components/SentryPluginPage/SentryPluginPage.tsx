@@ -22,6 +22,8 @@ import {
   Content,
   ContentHeader,
   SupportButton,
+  useApi,
+  configApiRef,
 } from '@backstage/core';
 import { SentryPluginWidget } from '../SentryPluginWidget/SentryPluginWidget';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
@@ -29,7 +31,8 @@ import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 const SentryPluginPage: FC<{}> = () => {
   const [statsFor, setStatsFor] = useState<'12h' | '24h'>('12h');
   const toggleStatsFor = () => setStatsFor(statsFor === '12h' ? '12h' : '24h');
-  const sentryProjectId = 'sample-sentry-project-id';
+  const configApi = useApi(configApiRef);
+  const sentryProjectId = configApi.getString('sentry.project.id');
 
   return (
     <Page themeId="tool">
