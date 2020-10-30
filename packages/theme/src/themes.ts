@@ -48,6 +48,10 @@ export const lightTheme = createTheme({
       text: '#FFFFFF',
       link: '#000000',
     },
+    code: {
+      background: '#333333',
+      text: '#FFFFFF',
+    },
     border: '#E6E6E6',
     textContrast: '#000000',
     textVerySubtle: '#DDD',
@@ -109,6 +113,10 @@ export const darkTheme = createTheme({
       error: '#E22134',
       text: '#FFFFFF',
       link: '#000000',
+    },
+    code: {
+      background: '#F8F8F8',
+      text: '#333333',
     },
     border: '#E6E6E6',
     textContrast: '#FFFFFF',

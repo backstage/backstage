@@ -69,6 +69,10 @@ type PaletteAdditions = {
     text: string;
     link: string;
   };
+  code: {
+    background: string;
+    text: string;
+  };
 };
 
 export type BackstagePalette = Palette & PaletteAdditions;
