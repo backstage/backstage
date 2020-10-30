@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
 /*
  * Copyright 2020 Spotify AB
  *
@@ -31,6 +33,7 @@ import moment from 'moment';
 import React, { Suspense, useEffect, useState } from 'react';
 import { Job } from '../../types';
 
+const LogModal = React.lazy(() => import('./LogModal'));
 const LazyLog = React.lazy(() => import('react-lazylog/build/LazyLog'));
 moment.relativeTimeThreshold('ss', 0);
 
@@ -99,6 +102,9 @@ export const JobStage = ({ endedAt, startedAt, name, log, status }: Props) => {
           .humanize()
       : null;
 
+  const [logsFullScreen, setLogsFullScreen] = useState(false);
+  const toggleLogsFullScreen = () => setLogsFullScreen(!logsFullScreen);
+
   return (
     <Accordion
       TransitionProps={{ unmountOnExit: true }}
@@ -130,7 +136,15 @@ export const JobStage = ({ endedAt, startedAt, name, log, status }: Props) => {
           </Box>
         ) : (
           <Suspense fallback={<LinearProgress />}>
-            <div style={{ height: '20vh', width: '100%' }}>
+            <LogModal
+              open={logsFullScreen}
+              onClose={toggleLogsFullScreen}
+              log={log}
+            />
+            <div
+              style={{ height: '20vh', width: '100%' }}
+              onClick={toggleLogsFullScreen}
+            >
               <LazyLog text={log.join('\n')} extraLines={1} follow />
             </div>
           </Suspense>
