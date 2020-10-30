@@ -18,4 +18,4 @@ Teams and individuals that maintain a plugin (or another non-core module of the 
 People that have made significant contributions to the project and earned write access:
 
 - Andrew Thauer - Wealthsimple (GitHub: @andrewthauer)
-- Oliver Sand - SDA-SE (GitHub: @Fox32)
+- Oliver Sand - SDA SE (GitHub: @Fox32)
