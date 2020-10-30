@@ -16,7 +16,8 @@
 
 import { MapFiltersToProps } from '../../hooks/useFilters';
 import { MapLoadingToProps } from '../../hooks/useLoading';
-import { Group, PageFilters, getResetStateWithoutInitial } from '../../types';
+import { Group, PageFilters } from '../../types';
+import { getResetStateWithoutInitial } from '../../utils/loading';
 
 type CostInsightsTabsFilterProps = PageFilters & {
   setGroup: (group: Group) => void;

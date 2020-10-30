@@ -23,9 +23,10 @@ import React, {
 } from 'react';
 import { configApiRef, useApi } from '@backstage/core';
 import { Config as BackstageConfig } from '@backstage/config';
-import { Currency, defaultCurrencies, Icon, Metric, Product } from '../types';
+import { Currency, Icon, Metric, Product } from '../types';
 import { getIcon } from '../utils/navigation';
 import { validateMetrics } from '../utils/config';
+import { defaultCurrencies } from '../utils/currency';
 
 /*
  * Config schema 2020-10-15
