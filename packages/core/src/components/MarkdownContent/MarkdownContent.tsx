@@ -18,35 +18,48 @@ import { makeStyles } from '@material-ui/core';
 import ReactMarkdown from 'react-markdown';
 import gfm from 'remark-gfm';
 import React from 'react';
+import { BackstageTheme } from '@backstage/theme';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles<BackstageTheme>(theme => ({
   markdown: {
     '& table': {
       borderCollapse: 'collapse',
-      border: '1px solid #dfe2e5',
-      color: 'rgb(36, 41, 46)',
+      border: `1px solid ${theme.palette.border}`,
     },
     '& th, & td': {
-      border: '1px solid #dfe2e5',
+      border: `1px solid ${theme.palette.border}`,
       padding: theme.spacing(1),
     },
+    '& td': {
+      wordBreak: 'break-word',
+      overflow: 'hidden',
+      verticalAlign: 'middle',
+      lineHeight: '1',
+      margin: 0,
+      padding: theme.spacing(3, 2, 3, 2.5),
+      borderBottom: 0,
+    },
+    '& th': {
+      backgroundColor: theme.palette.background.paper,
+    },
     '& tr': {
-      backgroundColor: '#fff',
+      backgroundColor: theme.palette.background.paper,
     },
-    '& tr:nth-child(2n)': {
-      backgroundColor: '#f6f8fa',
+    '& tr:nth-child(odd)': {
+      backgroundColor: theme.palette.background.default,
     },
+
     '& pre': {
       padding: '16px',
       overflow: 'auto',
       fontSize: '85%',
       lineHeight: 1.45,
-      backgroundColor: '#f6f8fa',
+      backgroundColor: theme.palette.code.background,
       borderRadius: '6px',
-      color: 'rgba(0, 0, 0, 0.87)',
+      color: theme.palette.code.text,
     },
     '& a': {
-      color: '#2E77D0',
+      color: theme.palette.link,
     },
     '& img': {
       maxWidth: '100%',
