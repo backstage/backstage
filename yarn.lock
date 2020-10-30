@@ -3829,10 +3829,10 @@
   dependencies:
     eslint-plugin-notice "^0.9.10"
 
-"@spotify/eslint-config-react@^8.0.0":
-  version "8.0.2"
-  resolved "https://registry.npmjs.org/@spotify/eslint-config-react/-/eslint-config-react-8.0.2.tgz#91af3c58b22d49a96795336ed66927e722cda430"
-  integrity sha512-V0gzO/jWmjhODLINAfeunHj+OBdj/cQeVDw+92ZUlkonAg6BZLjX6Vy8jeIUFjfgmVOtI9eKbcApxaurj1jN6g==
+"@spotify/eslint-config-react@^9.0.0":
+  version "9.0.0"
+  resolved "https://registry.npmjs.org/@spotify/eslint-config-react/-/eslint-config-react-9.0.0.tgz#9c032e257090a5b3f5b08b28c1311485bf0fbae3"
+  integrity sha512-3w+cmbUljBLxZGLk4dn1oJD8v4uxW7bKackkcpZhac6VkQmg01EDN04Bx9qmbNe5S/2uHwrOJGcWlge5R8Ml1Q==
 
 "@spotify/eslint-config-typescript@^8.0.0":
   version "8.1.1"
