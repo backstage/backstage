@@ -25,7 +25,7 @@ To become a maintainer you need to demonstrate the following:
 
 ## Changes in Maintainership
 
-A new maintainer must be proposed by an existing maintainer by opening an issue (with title `Maintainer Nomination`) to the Backstage GitUub repository (https://github.com/backstage/backstage) containing the following information:
+A new maintainer must be proposed by an existing maintainer by opening an issue (with title `Maintainer Nomination`) to the Backstage GitHub repository (https://github.com/backstage/backstage) containing the following information:
 
 - nominee's first and last name,
 - nominee's email address and GitHub user name,
