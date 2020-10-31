@@ -52,27 +52,38 @@ export AUTH_GITHUB_ENTERPRISE_INSTANCE_URL=https://x
 
 ### Gitlab
 
-#### Creating a Gitlab Enterprise OAuth application
+#### Creating a GitLab OAuth application
 
-Follow this link, substituting `gitlab.example.com` for your Gitlab enterprise domain, https://gitlab.example.com/profile/applications
+Follow this link, [Add new application](https://gitlab.com/-/profile/applications).
 
 1. Set Application Name to `backstage-dev` or something along those lines.
 1. The Authorization Callback URL should match the redirect URI set in Backstage.
    1. Set this to `http://localhost:7000/api/auth/gitlab/handler/frame` for local development.
    1. Set this to `http://{APP_FQDN}:{APP_BACKEND_PORT}/api/auth/gitlab/handler/frame` for non-local deployments.
-   1. Select the checked scopes from this list:
-      - [ ] `api` Grants complete read/write access to the API, including all groups and projects.
+   1. Select the following scopes from the list:
       - [x] `read_user` Grants read-only access to the authenticated user's profile through the /user API endpoint, which includes username, public email, and full name. Also grants access to read-only API endpoints under /users.
       - [x] `read_repository` Grants read-only access to repositories on private projects using Git-over-HTTP (not using the API).
       - [x] `write_repository` Grants read-write access to repositories on private projects using Git-over-HTTP (not using the API).
-      - [ ] `sudo` Grants permission to perform API actions as any user in the system, when authenticated as an admin user.
       - [x] `openid` Grants permission to authenticate with GitLab using OpenID Connect. Also gives read-only access to the user's profile and group memberships.
       - [x] `profile` Grants read-only access to the user's profile data using OpenID Connect.
       - [x] `email` Grants read-only access to the user's primary email address using OpenID Connect.
 
 ```bash
-export GITLAB_BASE_URL=https://gitlab.example.com # for GitLab Enterprise. default is https://gitlab.com
+export GITLAB_BASE_URL=https://gitlab.com
 export AUTH_GITLAB_CLIENT_ID=x  # Gitlab calls this the Application ID
+export AUTH_GITLAB_CLIENT_SECRET=x
+```
+
+#### Creating a GitLab Enterprise OAuth application
+
+If you have GitLab Enterprise, perform the steps above, replacing `gitlab.example.com` in the following
+with the domain of your GitLab Enterprise host:
+
+Create new application at: `https://gitlab.example.com/profile/applications`.
+
+```bash
+export GITLAB_BASE_URL=https://gitlab.example.com
+export AUTH_GITLAB_CLIENT_ID=x  # GitLab calls this the Application ID
 export AUTH_GITLAB_CLIENT_SECRET=x
 ```
 
