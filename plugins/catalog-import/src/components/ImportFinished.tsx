@@ -27,16 +27,9 @@ import { Alert } from '@material-ui/lab';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {
-      width: '100%',
-    },
     heading: {
       fontSize: theme.typography.pxToRem(15),
       fontWeight: theme.typography.fontWeightRegular,
-    },
-    linkList: {
-      display: 'flex',
-      flexDirection: 'column',
     },
   }),
 );

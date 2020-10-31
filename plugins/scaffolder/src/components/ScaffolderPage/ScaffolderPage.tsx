@@ -81,7 +81,7 @@ export const ScaffolderPage = () => {
             variant="contained"
             color="primary"
             component={RouterLink}
-            to="/import-component"
+            to="/catalog-import"
             style={{ marginRight: '8px' }}
           >
             Import Repository

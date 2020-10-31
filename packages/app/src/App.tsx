@@ -68,6 +68,7 @@ const catalogRouteRef = createRouteRef({
 const AppRoutes = () => (
   <Routes>
     <Navigate key="/" to="/catalog" />
+    <Route path="/catalog-import/*" element={<ImportComponentRouter />} />
     <Route
       path={`${catalogRouteRef.path}/*`}
       element={<CatalogRouter EntityPage={EntityPage} />}
@@ -83,7 +84,6 @@ const AppRoutes = () => (
       path="/register-component"
       element={<RegisterComponentRouter catalogRouteRef={catalogRouteRef} />}
     />
-    <Route path="/import-component/*" element={<ImportComponentRouter />} />
     <Route path="/settings" element={<SettingsRouter />} />
     {...deprecatedAppRoutes}
   </Routes>

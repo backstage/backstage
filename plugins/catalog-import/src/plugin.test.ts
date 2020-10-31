@@ -16,7 +16,7 @@
 
 import { plugin } from './plugin';
 
-describe('import-component', () => {
+describe('catalog-import', () => {
   it('should export plugin', () => {
     expect(plugin).toBeDefined();
   });

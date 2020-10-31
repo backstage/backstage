@@ -24,19 +24,23 @@ import {
   SupportButton,
   ContentHeader,
 } from '@backstage/core';
-import { RegisterComponentForm } from '../ImportComponentForm';
-import { Entity } from '@backstage/catalog-model';
+import { RegisterComponentForm } from './ImportComponentForm';
 import ImportStepper from './ImportStepper';
 import ComponentConfigDisplay from './ComponentConfigDisplay';
 import { ImportFinished } from './ImportFinished';
-import { RecursivePartial } from '../../util/types';
+import { PartialEntity } from '../util/types';
+
+export type ConfigSpec = {
+  repo: string;
+  config: PartialEntity[];
+};
 
 export const ImportComponentPage = () => {
   const [activeStep, setActiveStep] = useState(0);
-  const [configFile, setConfigFile] = useState<{
-    repo: string;
-    config: RecursivePartial<Entity>[];
-  }>({ repo: '', config: [] });
+  const [configFile, setConfigFile] = useState<ConfigSpec>({
+    repo: '',
+    config: [],
+  });
   const [PRLink, setPRLink] = useState<string>('');
   const nextStep = (options?: { reset: boolean }) => {
     setActiveStep(step => (options?.reset ? 0 : step + 1));

@@ -13,28 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * Copyright 2020 Roadie AB
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 import { Octokit } from '@octokit/rest';
-import { Entity } from '@backstage/catalog-model';
 import { DiscoveryApi } from '@backstage/core';
 import { CatalogImportApi } from './CatalogImportApi';
 import { AnalyzeLocationResponse } from '@backstage/plugin-catalog-backend';
-import { RecursivePartial } from '../util/types';
+import { PartialEntity } from '../util/types';
 
 export const API_BASE_URL = '/api/catalog/locations';
 
@@ -49,7 +33,7 @@ export class CatalogImportClient implements CatalogImportApi {
     repo,
   }: {
     repo: string;
-  }): Promise<RecursivePartial<Entity>[]> {
+  }): Promise<PartialEntity[]> {
     const response = await fetch(
       `${await this.discoveryApi.getBaseUrl('catalog')}/analyze-location`,
       {
@@ -117,7 +101,7 @@ export class CatalogImportClient implements CatalogImportApi {
     await octo.repos.createOrUpdateFileContents({
       owner,
       repo,
-      path: 'backstage.yaml',
+      path: 'catalog-info.yaml',
       message: 'Add backstage.yaml config file',
       content: btoa(fileContent),
       branch: 'backstage-integration',
@@ -125,7 +109,7 @@ export class CatalogImportClient implements CatalogImportApi {
     const pullRequestRespone = await octo.pulls.create({
       owner,
       repo,
-      title: 'Add backstage.yaml config file',
+      title: 'Add catalog-info.yaml config file',
       head: 'backstage-integration',
       base: 'master',
     });

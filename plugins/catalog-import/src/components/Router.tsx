@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { ImportComponentPage } from './ImportComponentPage';
 
-// As we don't know which path the catalog's router mounted on
-// We need to inject this from the app
 export const Router = () => (
   <Routes>
     <Route element={<ImportComponentPage />} />

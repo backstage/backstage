@@ -14,25 +14,21 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
 import { errorApiRef, useApi } from '@backstage/core';
 import { BackstageTheme } from '@backstage/theme';
 import {
   Button,
   FormControl,
   FormHelperText,
-  InputLabel,
-  MenuItem,
-  Select,
   TextField,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { useMountedState } from 'react-use';
-import { RecursivePartial } from '../../util/types';
-import { ComponentIdValidators } from '../../util/validate';
-import { useGithubRepos } from '../ImportComponentPage/useGithubRepos';
+import { ComponentIdValidators } from '../util/validate';
+import { useGithubRepos } from '../util/useGithubRepos';
+import { ConfigSpec } from './ImportComponentPage';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   form: {
@@ -43,21 +39,15 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   submit: {
     marginTop: theme.spacing(1),
   },
-  select: {
-    minWidth: 120,
-  },
 }));
 
 type Props = {
   nextStep: () => void;
-  saveConfig: (configFile: {
-    repo: string;
-    config: RecursivePartial<Entity>[];
-  }) => void;
+  saveConfig: (configFile: ConfigSpec) => void;
 };
 
 export const RegisterComponentForm = ({ nextStep, saveConfig }: Props) => {
-  const { control, register, handleSubmit, errors, formState } = useForm({
+  const { register, handleSubmit, errors, formState } = useForm({
     mode: 'onChange',
   });
   const classes = useStyles();
@@ -71,22 +61,9 @@ export const RegisterComponentForm = ({ nextStep, saveConfig }: Props) => {
   const onSubmit = async (formData: Record<string, string>) => {
     const { componentLocation: target } = formData;
     try {
-      // const typeMapping = [
-      //   { url: /^https:\/\/gitlab\.com\/.*/, type: 'gitlab/api' },
-      //   { url: /^https:\/\/bitbucket\.org\/.*/, type: 'bitbucket/api' },
-      //   { url: /^https:\/\/dev\.azure\.com\/.*/, type: 'azure/api' },
-      //   { url: /.*/, type: 'github' },
-      // ];
-
-      // const type =
-      //   scmType === 'AUTO'
-      //     ? typeMapping.filter(item => item.url.test(target))[0].type
-      //     : scmType;
-
       if (!isMounted()) return;
 
       const repo = target.split('/').slice(-2).join('/');
-
       const config = await generateEntityDefinitions(repo);
       saveConfig({
         repo,
@@ -103,20 +80,18 @@ export const RegisterComponentForm = ({ nextStep, saveConfig }: Props) => {
       autoComplete="off"
       onSubmit={handleSubmit(onSubmit)}
       className={classes.form}
-      data-testid="register-form"
     >
       <FormControl>
         <TextField
           id="registerComponentInput"
           variant="outlined"
           label="Repository URL"
-          data-testid="componentLocationInput"
           error={hasErrors}
           placeholder="https://github.com/spotify/backstage"
           name="componentLocation"
           required
           margin="normal"
-          helperText="Enter the full path to the repository in GitHub, GitLab, Bitbucket or Azure to start tracking your component."
+          helperText="Enter the full path to the repository in GitHub to start tracking your component."
           inputRef={register({
             required: true,
             validate: ComponentIdValidators,
@@ -130,29 +105,6 @@ export const RegisterComponentForm = ({ nextStep, saveConfig }: Props) => {
         )}
       </FormControl>
 
-      <FormControl variant="outlined" className={classes.select}>
-        <InputLabel id="scmLabel">Host type</InputLabel>
-        <Controller
-          control={control}
-          name="scmType"
-          defaultValue="AUTO"
-          render={({ onChange, onBlur, value }) => (
-            <Select
-              labelId="scmLabel"
-              id="scmSelect"
-              label="scmLabel"
-              value={value}
-              onChange={onChange}
-              onBlur={onBlur}
-            >
-              <MenuItem value="AUTO">Auto-detect</MenuItem>
-              <MenuItem value="gitlab">GitLab</MenuItem>
-              <MenuItem value="bitbucket/api">Bitbucket</MenuItem>
-              <MenuItem value="azure/api">Azure</MenuItem>
-            </Select>
-          )}
-        />
-      </FormControl>
       <Button
         variant="contained"
         color="primary"

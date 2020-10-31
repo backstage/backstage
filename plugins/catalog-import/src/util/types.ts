@@ -1,3 +1,5 @@
+import { Entity } from '@backstage/catalog-model';
+
 /*
  * Copyright 2020 Spotify AB
  *
@@ -20,3 +22,5 @@ export type RecursivePartial<T> = {
     ? RecursivePartial<T[P]>
     : T[P];
 };
+
+export type PartialEntity = RecursivePartial<Entity>;
