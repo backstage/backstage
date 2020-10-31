@@ -85,10 +85,7 @@ export const RegisterComponentForm = ({ nextStep, saveConfig }: Props) => {
 
       if (!isMounted()) return;
 
-      const repo = target
-        .split('/')
-        .slice(-2)
-        .join('/');
+      const repo = target.split('/').slice(-2).join('/');
 
       const config = await generateEntityDefinitions(repo);
       saveConfig({
