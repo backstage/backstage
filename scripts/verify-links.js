@@ -15,35 +15,38 @@
  * limitations under the License.
  */
 
+/* eslint-disable import/no-extraneous-dependencies */
+
 const { resolve: resolvePath, join: joinPath, dirname } = require('path');
 const fs = require('fs-extra');
 const recursive = require('recursive-readdir');
 
 const projectRoot = resolvePath(__dirname, '..');
 
-async function verifyUrl(basePath, url, docPages) {
+async function verifyUrl(basePath, absUrl, docPages) {
   // Avoid having absolute URL links within docs/, so that links work on the site
   if (
-    url.match(
+    absUrl.match(
       /https:\/\/github.com\/spotify\/backstage\/(tree|blob)\/master\/docs\//,
     ) &&
     basePath.match(/^(?:docs|microsite)\//)
   ) {
-    return { url, basePath, problem: 'github' };
+    return { url: absUrl, basePath, problem: 'github' };
   }
 
-  url = url.replace(/#.*$/, '');
-  url = url.replace(
-    /https:\/\/github.com\/spotify\/backstage\/(tree|blob)\/master/,
-    '',
-  );
+  const url = absUrl
+    .replace(/#.*$/, '')
+    .replace(
+      /https:\/\/github.com\/spotify\/backstage\/(tree|blob)\/master/,
+      '',
+    );
   if (!url) {
-    return;
+    return undefined;
   }
 
   // Only verify existence of local files for now, so skip anything with a schema
   if (url.match(/[a-z]+:/)) {
-    return;
+    return undefined;
   }
 
   let path = '';
@@ -55,7 +58,7 @@ async function verifyUrl(basePath, url, docPages) {
       }
       if (basePath.startsWith('microsite/')) {
         if (docPages.has(url)) {
-          return;
+          return undefined;
         }
         return { url, basePath, problem: 'doc-missing' };
       }
@@ -63,7 +66,7 @@ async function verifyUrl(basePath, url, docPages) {
 
     const staticPath = resolvePath(projectRoot, 'microsite/static', `.${url}`);
     if (await fs.pathExists(staticPath)) {
-      return;
+      return undefined;
     }
 
     path = resolvePath(projectRoot, `.${url}`);
@@ -76,7 +79,7 @@ async function verifyUrl(basePath, url, docPages) {
     return { url, basePath, problem: 'missing' };
   }
 
-  return;
+  return undefined;
 }
 
 async function verifyFile(filePath, docPages) {
