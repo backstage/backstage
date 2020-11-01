@@ -45,7 +45,15 @@ export class CatalogImportClient implements CatalogImportApi {
           location: { type: 'github', target: repo },
         }),
       },
-    );
+    ).catch(e => {
+      throw new Error(`Failed to generate entity definitions, ${e.message}`);
+    });
+    if (!response.ok) {
+      throw new Error(
+        `Failed to generate entity definitions. Received http response ${response.status}: ${response.statusText}`,
+      );
+    }
+
     const payload = (await response.json()) as AnalyzeLocationResponse;
     return payload.generateEntities.map(x => x.entity);
   }
@@ -54,22 +62,28 @@ export class CatalogImportClient implements CatalogImportApi {
     owner,
     repo,
   }: {
-    token: string;
     owner: string;
     repo: string;
-  }): Promise<{ errorMessage: string | null }> {
-    await fetch(`${await this.discoveryApi.getBaseUrl('catalog')}/locations`, {
-      headers: {
-        'Content-Type': 'application/json',
+  }): Promise<void> {
+    const response = await fetch(
+      `${await this.discoveryApi.getBaseUrl('catalog')}/locations`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+        body: JSON.stringify({
+          type: 'github',
+          target: `https://github.com/${owner}/${repo}/blob/master/catalog-info.yaml`,
+          presence: 'optional',
+        }),
       },
-      method: 'POST',
-      body: JSON.stringify({
-        type: 'github',
-        target: `https://github.com/${owner}/${repo}/blob/master/catalog-info.yaml`,
-        presence: 'optional',
-      }),
-    });
-    return { errorMessage: null };
+    );
+    if (!response.ok) {
+      throw new Error(
+        `Received http response ${response.status}: ${response.statusText}`,
+      );
+    }
   }
 
   async submitPRToRepo({
@@ -82,38 +96,93 @@ export class CatalogImportClient implements CatalogImportApi {
     owner: string;
     repo: string;
     fileContent: string;
-  }): Promise<{ errorMessage: string | null; link: string }> {
+  }): Promise<{ link: string }> {
     const octo = new Octokit({
       auth: token,
     });
 
-    const parentRef = await octo.git.getRef({
-      owner,
-      repo,
-      ref: 'heads/master',
-    });
-    await octo.git.createRef({
-      owner,
-      repo,
-      ref: 'refs/heads/backstage-integration',
-      sha: parentRef.data.object.sha,
-    });
-    await octo.repos.createOrUpdateFileContents({
-      owner,
-      repo,
-      path: 'catalog-info.yaml',
-      message: 'Add backstage.yaml config file',
-      content: btoa(fileContent),
-      branch: 'backstage-integration',
-    });
-    const pullRequestRespone = await octo.pulls.create({
-      owner,
-      repo,
-      title: 'Add catalog-info.yaml config file',
-      head: 'backstage-integration',
-      base: 'master',
-    });
+    const branchName = 'backstage-integration';
+    const fileName = 'catalog-info.yaml';
 
-    return { errorMessage: null, link: pullRequestRespone.data.html_url };
+    const repoData = await octo.repos
+      .get({
+        owner,
+        repo,
+      })
+      .catch(e => {
+        throw new Error(formatHttpErrorMessage("Couldn't fetch repo data", e));
+      });
+
+    const parentRef = await octo.git
+      .getRef({
+        owner,
+        repo,
+        ref: `heads/${repoData.data.default_branch}`,
+      })
+      .catch(e => {
+        throw new Error(
+          formatHttpErrorMessage("Couldn't fetch default branch data", e),
+        );
+      });
+
+    await octo.git
+      .createRef({
+        owner,
+        repo,
+        ref: `refs/heads/${branchName}`,
+        sha: parentRef.data.object.sha,
+      })
+      .catch(e => {
+        throw new Error(
+          formatHttpErrorMessage(
+            `Couldn't create a new branch with name '${branchName}'`,
+            e,
+          ),
+        );
+      });
+
+    await octo.repos
+      .createOrUpdateFileContents({
+        owner,
+        repo,
+        path: fileName,
+        message: `Add ${fileName} config file`,
+        content: btoa(fileContent),
+        branch: branchName,
+      })
+      .catch(e => {
+        throw new Error(
+          formatHttpErrorMessage(
+            `Couldn't create a commit with ${fileName} file added`,
+            e,
+          ),
+        );
+      });
+
+    const pullRequestRespone = await octo.pulls
+      .create({
+        owner,
+        repo,
+        title: `Add ${fileName} config file`,
+        head: branchName,
+        base: repoData.data.default_branch,
+      })
+      .catch(e => {
+        throw new Error(
+          formatHttpErrorMessage(
+            `Couldn't create a pull request for ${branchName} branch`,
+            e,
+          ),
+        );
+      });
+
+    return { link: pullRequestRespone.data.html_url };
   }
+}
+
+function formatHttpErrorMessage(
+  message: string,
+  error: { status: number; message: string },
+) {
+  return `${message}, received http response status code ${error.status}: ${error.message}`;
 }

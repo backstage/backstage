@@ -1,5 +1,3 @@
-import { Entity } from '@backstage/catalog-model';
-
 /*
  * Copyright 2020 Spotify AB
  *
@@ -15,6 +13,9 @@ import { Entity } from '@backstage/catalog-model';
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { Entity } from '@backstage/catalog-model';
+
 export type RecursivePartial<T> = {
   [P in keyof T]?: T[P] extends (infer U)[]
     ? RecursivePartial<U>[]

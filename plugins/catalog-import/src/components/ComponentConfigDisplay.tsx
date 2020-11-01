@@ -19,6 +19,7 @@ import { Button, CircularProgress, Grid, Tooltip } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import { useGithubRepos } from '../util/useGithubRepos';
 import { ConfigSpec } from './ImportComponentPage';
+import { errorApiRef, useApi } from '@backstage/core';
 
 type Props = {
   nextStep: () => void;
@@ -32,14 +33,20 @@ const ComponentConfigDisplay: React.FC<Props> = ({
   savePRLink,
 }) => {
   const [submitting, setSubmitting] = useState(false);
+  const errorApi = useApi(errorApiRef);
   const { submitPRToRepo } = useGithubRepos();
   const onNext = useCallback(async () => {
-    setSubmitting(true);
-    const result = await submitPRToRepo(configFile);
-    savePRLink(result.link);
-    setSubmitting(false);
-    nextStep();
-  }, [submitPRToRepo, configFile, nextStep, savePRLink]);
+    try {
+      setSubmitting(true);
+      const result = await submitPRToRepo(configFile);
+      savePRLink(result.link);
+      setSubmitting(false);
+      nextStep();
+    } catch (e) {
+      setSubmitting(false);
+      errorApi.post(e);
+    }
+  }, [submitPRToRepo, configFile, nextStep, savePRLink, errorApi]);
 
   return (
     <Grid container direction="column" spacing={1}>

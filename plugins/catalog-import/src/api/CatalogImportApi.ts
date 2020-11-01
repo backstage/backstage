@@ -28,12 +28,11 @@ export interface CatalogImportApi {
     owner: string;
     repo: string;
     fileContent: string;
-  }): Promise<{ errorMessage: string | null; link: string }>;
+  }): Promise<{ link: string }>;
   createRepositoryLocation(options: {
-    token: string;
     owner: string;
     repo: string;
-  }): Promise<{ errorMessage: string | null }>;
+  }): Promise<void>;
   generateEntityDefinitions(options: {
     repo: string;
   }): Promise<PartialEntity[]>;

@@ -30,20 +30,27 @@ export function useGithubRepos() {
       selectedRepo.repo.split('/')[0],
       selectedRepo.repo.split('/')[1],
     ];
-    const submitPRResponse = await api.submitPRToRepo({
-      token,
-      owner: ownerName,
-      repo: repoName,
-      fileContent: selectedRepo.config
-        .map(entity => `---\n${YAML.stringify(entity)}`)
-        .join('\n'),
-    });
+    const submitPRResponse = await api
+      .submitPRToRepo({
+        token,
+        owner: ownerName,
+        repo: repoName,
+        fileContent: selectedRepo.config
+          .map(entity => `---\n${YAML.stringify(entity)}`)
+          .join('\n'),
+      })
+      .catch(e => {
+        throw new Error(`Failed to submit PR to repo:\n${e.message}`);
+      });
 
-    await api.createRepositoryLocation({
-      token,
-      owner: selectedRepo.repo.split('/')[0],
-      repo: selectedRepo.repo.split('/')[1],
-    });
+    await api
+      .createRepositoryLocation({
+        owner: selectedRepo.repo.split('/')[0],
+        repo: selectedRepo.repo.split('/')[1],
+      })
+      .catch(e => {
+        throw new Error(`Failed to create repository location:\n${e.message}`);
+      });
 
     return submitPRResponse;
   };
