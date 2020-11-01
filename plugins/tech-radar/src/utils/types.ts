@@ -69,6 +69,14 @@ export type Entry = {
   // How this entry has recently moved; -1 for "down", +1 for "up", 0 for not moved
   moved?: MovedState;
   active?: boolean;
+  history?: Array<EntryHistory>;
+};
+
+export type EntryHistory = {
+  date: Date;
+  ring: Ring;
+  description?: string;
+  moved?: MovedState;
 };
 
 // The same as Entry except quadrant/ring are declared by their string ID instead of being the actual objects

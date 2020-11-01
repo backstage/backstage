@@ -34,11 +34,17 @@ export interface RadarQuadrant {
 export interface RadarEntry {
   key: string; // react key
   id: string;
-  moved: MovedState;
-  quadrant: RadarQuadrant;
-  ring: RadarRing;
+  quadrant: string;
   title: string;
   url: string;
+  history: Array<RadarEntryHistory>;
+}
+
+export interface RadarEntryHistory {
+  date: Date;
+  ring: string;
+  description?: string;
+  moved?: MovedState;
 }
 
 /**
