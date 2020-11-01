@@ -67,7 +67,7 @@ jobs:
         continue-on-error: true
 
       - name: verify doc links
-        run: node docs/verify-links.js
+        run: node scripts/verify-links.js
 
       - name: prettier
         run: yarn prettier:check
