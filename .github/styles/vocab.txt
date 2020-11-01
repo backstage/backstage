@@ -91,6 +91,7 @@ learnings
 lerna
 Lerna
 magiclink
+Maintainership
 mailto
 Malus
 md

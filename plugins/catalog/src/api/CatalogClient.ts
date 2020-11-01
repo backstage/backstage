@@ -19,7 +19,12 @@ import {
   Location,
   LOCATION_ANNOTATION,
 } from '@backstage/catalog-model';
-import { CatalogApi, EntityCompoundName } from './types';
+import {
+  AddLocationRequest,
+  AddLocationResponse,
+  CatalogApi,
+  EntityCompoundName,
+} from './types';
 import { DiscoveryApi } from '@backstage/core';
 
 export class CatalogClient implements CatalogApi {
@@ -87,9 +92,15 @@ export class CatalogClient implements CatalogApi {
     return this.getOptional(`/entities/by-name/${kind}/${namespace}/${name}`);
   }
 
-  async addLocation(type: string, target: string) {
+  async addLocation({
+    type = 'url',
+    target,
+    dryRun,
+  }: AddLocationRequest): Promise<AddLocationResponse> {
     const response = await fetch(
-      `${await this.discoveryApi.getBaseUrl('catalog')}/locations`,
+      `${await this.discoveryApi.getBaseUrl('catalog')}/locations${
+        dryRun ? '?dryRun=true' : ''
+      }`,
       {
         headers: {
           'Content-Type': 'application/json',

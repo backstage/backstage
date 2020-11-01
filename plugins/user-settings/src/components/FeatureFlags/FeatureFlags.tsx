@@ -16,9 +16,7 @@
 
 import React, { useCallback, useState } from 'react';
 import {
-  FeatureFlagName,
   featureFlagsApiRef,
-  FeatureFlagsRegistryItem,
   FeatureFlagState,
   InfoCard,
   useApi,
@@ -30,29 +28,28 @@ import { FlagItem } from './FeatureFlagsItem';
 export const FeatureFlags = () => {
   const featureFlagsApi = useApi(featureFlagsApiRef);
   const featureFlags = featureFlagsApi.getRegisteredFlags();
-  const initialFlagState = featureFlags.reduce(
-    (result, featureFlag: FeatureFlagsRegistryItem) => {
-      const state = featureFlagsApi.getFlags().get(featureFlag.name);
 
-      result[featureFlag.name] = state;
-      return result;
-    },
-    {} as Record<FeatureFlagName, FeatureFlagState>,
+  const initialFlagState = Object.fromEntries(
+    featureFlags.map(({ name }) => [name, featureFlagsApi.isActive(name)]),
   );
 
-  const [state, setState] = useState<Record<FeatureFlagName, FeatureFlagState>>(
-    initialFlagState,
-  );
+  const [state, setState] = useState<Record<string, boolean>>(initialFlagState);
 
   const toggleFlag = useCallback(
-    (flagName: FeatureFlagName) => {
-      const newState = featureFlagsApi.getFlags().toggle(flagName);
+    (flagName: string) => {
+      const newState = featureFlagsApi.isActive(flagName)
+        ? FeatureFlagState.None
+        : FeatureFlagState.Active;
+
+      featureFlagsApi.save({
+        states: { [flagName]: newState },
+        merge: true,
+      });
 
       setState(prevState => ({
         ...prevState,
-        [flagName]: newState,
+        [flagName]: newState === FeatureFlagState.Active,
       }));
-      featureFlagsApi.getFlags().save();
     },
     [featureFlagsApi],
   );

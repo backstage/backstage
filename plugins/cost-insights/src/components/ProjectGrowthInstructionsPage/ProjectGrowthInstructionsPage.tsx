@@ -23,9 +23,9 @@ import {
   Duration,
   Entity,
   Product,
-  ProjectGrowthAlert,
   ProjectGrowthData,
 } from '../../types';
+import { ProjectGrowthAlert } from '../../utils/alerts';
 import { ResourceGrowthBarChartLegend } from '../ResourceGrowthBarChartLegend';
 import { ResourceGrowthBarChart } from '../ResourceGrowthBarChart';
 

@@ -41,23 +41,15 @@ import {
   useLastCompleteBillingDate,
   useLoading,
 } from '../../hooks';
-import {
-  Alert,
-  Cost,
-  intervalsOf,
-  Maybe,
-  MetricData,
-  Project,
-} from '../../types';
+import { Alert, Cost, Maybe, MetricData, Project } from '../../types';
 import { mapLoadingToProps } from './selector';
 import { ProjectSelect } from '../ProjectSelect';
+import { intervalsOf } from '../../utils/duration';
 import { useSubtleTypographyStyles } from '../../utils/styles';
 
 export const CostInsightsPage = () => {
   const classes = useSubtleTypographyStyles();
-  const flags = useApi(featureFlagsApiRef).getFlags();
-  // There is not currently a UI to set feature flags
-  // flags.set('cost-insights-currencies', FeatureFlagState.On);
+  const featureFlags = useApi(featureFlagsApiRef);
   const client = useApi(costInsightsApiRef);
   const config = useConfig();
   const groups = useGroups();
@@ -211,7 +203,7 @@ export const CostInsightsPage = () => {
         </Typography>
       </Box>
       <Box minHeight={40} maxHeight={60} display="flex">
-        {!!flags.get('cost-insights-currencies') && (
+        {featureFlags.isActive('cost-insights-currencies') && (
           <Box mr={1}>
             <CurrencySelect
               currency={currency}

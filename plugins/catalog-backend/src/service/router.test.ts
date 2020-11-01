@@ -285,7 +285,36 @@ describe('createRouter', () => {
       const response = await request(app).post('/locations').send(spec);
 
       expect(higherOrderOperation.addLocation).toHaveBeenCalledTimes(1);
-      expect(higherOrderOperation.addLocation).toHaveBeenCalledWith(spec);
+      expect(higherOrderOperation.addLocation).toHaveBeenCalledWith(spec, {
+        dryRun: false,
+      });
+      expect(response.status).toEqual(201);
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          location: { id: 'a', ...spec },
+        }),
+      );
+    });
+
+    it('supports dry run', async () => {
+      const spec: LocationSpec = {
+        type: 'b',
+        target: 'c',
+      };
+
+      higherOrderOperation.addLocation.mockResolvedValue({
+        location: { id: 'a', ...spec },
+        entities: [],
+      });
+
+      const response = await request(app)
+        .post('/locations?dryRun=true')
+        .send(spec);
+
+      expect(higherOrderOperation.addLocation).toHaveBeenCalledTimes(1);
+      expect(higherOrderOperation.addLocation).toHaveBeenCalledWith(spec, {
+        dryRun: true,
+      });
       expect(response.status).toEqual(201);
       expect(response.body).toEqual(
         expect.objectContaining({

@@ -20,8 +20,6 @@ import {
   AlertApiForwarder,
   ErrorApiForwarder,
   ErrorAlerter,
-  featureFlagsApiRef,
-  FeatureFlags,
   discoveryApiRef,
   GoogleAuth,
   GithubAuth,
@@ -69,7 +67,6 @@ export const defaultApis = [
     deps: { errorApi: errorApiRef },
     factory: ({ errorApi }) => WebStorage.create({ errorApi }),
   }),
-  createApiFactory(featureFlagsApiRef, new FeatureFlags()),
   createApiFactory(oauthRequestApiRef, new OAuthRequestManager()),
   createApiFactory({
     api: googleAuthApiRef,

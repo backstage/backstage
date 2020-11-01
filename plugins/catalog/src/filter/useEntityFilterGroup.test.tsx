@@ -30,7 +30,7 @@ describe('useEntityFilterGroup', () => {
   beforeEach(() => {
     catalogApi = {
       /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-      addLocation: jest.fn((_a, _b) => new Promise(() => {})),
+      addLocation: jest.fn(_a => new Promise(() => {})),
       getEntities: jest.fn(),
       getLocationByEntity: jest.fn(),
       getLocationById: jest.fn(),

@@ -33,22 +33,12 @@ import {
  * database more directly.
  */
 export class HigherOrderOperations implements HigherOrderOperation {
-  private readonly entitiesCatalog: EntitiesCatalog;
-  private readonly locationsCatalog: LocationsCatalog;
-  private readonly locationReader: LocationReader;
-  private readonly logger: Logger;
-
   constructor(
-    entitiesCatalog: EntitiesCatalog,
-    locationsCatalog: LocationsCatalog,
-    locationReader: LocationReader,
-    logger: Logger,
-  ) {
-    this.entitiesCatalog = entitiesCatalog;
-    this.locationsCatalog = locationsCatalog;
-    this.locationReader = locationReader;
-    this.logger = logger;
-  }
+    private readonly entitiesCatalog: EntitiesCatalog,
+    private readonly locationsCatalog: LocationsCatalog,
+    private readonly locationReader: LocationReader,
+    private readonly logger: Logger,
+  ) {}
 
   /**
    * Adds a single location to the catalog.
@@ -62,7 +52,12 @@ export class HigherOrderOperations implements HigherOrderOperation {
    *
    * @param spec The location to add
    */
-  async addLocation(spec: LocationSpec): Promise<AddLocationResult> {
+  async addLocation(
+    spec: LocationSpec,
+    options?: { dryRun?: boolean },
+  ): Promise<AddLocationResult> {
+    const dryRun = options?.dryRun || false;
+
     // Attempt to find a previous location matching the spec
     const previousLocations = await this.locationsCatalog.locations();
     const previousLocation = previousLocations.find(
@@ -88,7 +83,9 @@ export class HigherOrderOperations implements HigherOrderOperation {
     // in the entities list. But we aren't sure what to do about those yet.
 
     // Write
-    if (!previousLocation) {
+    if (!previousLocation && !dryRun) {
+      // TODO: We do not include location operations in the dryRun. We might perform
+      // this operation as a seperate dry run.
       await this.locationsCatalog.addLocation(location);
     }
     if (readerOutput.entities.length === 0) {
@@ -97,12 +94,14 @@ export class HigherOrderOperations implements HigherOrderOperation {
 
     const writtenEntities = await this.entitiesCatalog.batchAddOrUpdateEntities(
       readerOutput.entities,
-      location.id,
+      {
+        locationId: dryRun ? undefined : location.id,
+        dryRun,
+        outputEntities: true,
+      },
     );
 
-    const entities = await this.entitiesCatalog.entities([
-      { 'metadata.uid': writtenEntities.map(e => e.entityId) },
-    ]);
+    const entities = writtenEntities.map(e => e.entity!);
 
     return { location, entities };
   }
@@ -168,7 +167,7 @@ export class HigherOrderOperations implements HigherOrderOperation {
     try {
       await this.entitiesCatalog.batchAddOrUpdateEntities(
         readerOutput.entities,
-        location.id,
+        { locationId: location.id },
       );
     } catch (e) {
       for (const entity of readerOutput.entities) {

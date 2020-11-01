@@ -121,8 +121,8 @@ describe('GitHubPreparer', () => {
       workingDirectory: '/workDir',
     });
 
-    expect(response).toBe(
-      '/workDir/graphql-starter-static/template/test/1/2/3',
+    expect(response.split('\\').join('/')).toMatch(
+      /\/workDir\/graphql-starter-static\/template\/test\/1\/2\/3$/,
     );
   });
 

@@ -23,6 +23,7 @@ import type { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
+import yn from 'yn';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
 import { LocationAnalyzer, HigherOrderOperation } from '../ingestion/types';
 import {
@@ -110,7 +111,8 @@ export async function createRouter(
   if (higherOrderOperation) {
     router.post('/locations', async (req, res) => {
       const input = await validateRequestBody(req, locationSpecSchema);
-      const output = await higherOrderOperation.addLocation(input);
+      const dryRun = yn(req.query.dryRun, { default: false });
+      const output = await higherOrderOperation.addLocation(input, { dryRun });
       res.status(201).send(output);
     });
   }

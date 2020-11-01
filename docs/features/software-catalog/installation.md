@@ -122,6 +122,7 @@ export default async function createPlugin({
     entitiesCatalog,
     locationsCatalog,
     locationReader,
+    db,
     logger,
   );
 
