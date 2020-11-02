@@ -99,9 +99,10 @@ issues in GitHub with ‘design’ and/or ‘storybook’ - so feel free to brow
 tackle the tasks that interest you. If you have any questions regarding an
 issue, you can ask them in the comments section of the issue or on
 [Discord](https://discord.gg/EBHEGzX). We absolutely adore our external
-contributors and will send you virtual semlas for your contributions!
+contributors and will send you virtual
+[semlas](https://en.wikipedia.org/wiki/Semla) for your contributions!
 
-### Request a component.
+### Request a component
 
 Create an issue (label it design and assign it to katz95) or send us a message
 on [Discord](https://discord.gg/EBHEGzX) (_#design_ channel) with details of
@@ -135,5 +136,3 @@ contributing to Backstage as a designer is easy. From styling guidelines to UX
 principles to Figma documents, we’ll make sure you’re equipped to chip in on
 this project. We’re excited to work with you! In the meantime, we’d love to hear
 from you on [Discord](https://discord.gg/EBHEGzX).
-
-[Back to Docs](../README.md)
