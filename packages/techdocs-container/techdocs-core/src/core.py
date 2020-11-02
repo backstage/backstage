@@ -31,7 +31,7 @@ class TechDocsCore(BasePlugin):
         )
 
         mdx_configs_override = {}
-        if "mdx_configs" in config.keys():
+        if "mdx_configs" in config:
             mdx_configs_override = config["mdx_configs"].copy()
 
         # Theme
@@ -52,10 +52,10 @@ class TechDocsCore(BasePlugin):
         config["plugins"]["monorepo"] = monorepo_plugin
 
         # Markdown Extensions
-        if "markdown_extensions" not in config.keys():
+        if "markdown_extensions" not in config:
             config["markdown_extensions"] = []
 
-        if "mdx_configs" not in config.keys():
+        if "mdx_configs" not in config:
             config["mdx_configs"] = {}
 
         config["markdown_extensions"].append("admonition")
