@@ -1,17 +1,18 @@
 import React from 'react';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import Layout from '@theme/Layout';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-import {Block, ActionBlock, Breakpoint, BulletLine} from '../components/components';
-import Layout from "@theme/Layout";
+import {
+  Block,
+  ActionBlock,
+  Breakpoint,
+  BulletLine,
+} from '../components/components';
 
 function Home() {
-  const context = useDocusaurusContext();
-  const {siteConfig = {}} = context;
-  console.log(useBaseUrl);
   return (
     <Layout>
-       <main className="MainContent">
+      <main className="MainContent">
         <Block small className="bg-black-grey stripe-bottom">
           <Block.Container>
             <Block.TextBox>
@@ -85,7 +86,9 @@ function Home() {
               {' '}
               <img
                 className="Block__GIF"
-                src={useBaseUrl('animations/backstage-service-catalog-icon-1.gif')}
+                src={useBaseUrl(
+                  'animations/backstage-service-catalog-icon-1.gif',
+                )}
               />
               <Block.Subtitle>
                 Backstage Service Catalog{' '}
@@ -133,7 +136,9 @@ function Home() {
             <Block.Image
               wide
               style={{
-                background: `url(${useBaseUrl('img/components-with-filter.png')})`,
+                background: `url(${useBaseUrl(
+                  'img/components-with-filter.png',
+                )})`,
                 backgroundSize: '594px 435.5px',
                 width: '594px',
                 height: '435.5px',
@@ -189,7 +194,9 @@ function Home() {
             <Block.TextBox wide>
               <img
                 className="Block__GIF"
-                src={useBaseUrl('animations/backstage-software-templates-icon-5.gif')}
+                src={useBaseUrl(
+                  'animations/backstage-software-templates-icon-5.gif',
+                )}
               />
               <Block.Subtitle>
                 Backstage Software Templates{' '}
@@ -464,7 +471,11 @@ function Home() {
                 Cloud Native Computing Foundation
               </a>{' '}
               sandbox project
-              <img className="cncf-logo" src={useBaseUrl('/static/img/cncf-white.svg')} alt="CNCF"/>
+              <img
+                className="cncf-logo"
+                src={useBaseUrl('/static/img/cncf-white.svg')}
+                alt="CNCF"
+              />
             </Block.SmallTitle>
           </Block.Container>
         </Block>

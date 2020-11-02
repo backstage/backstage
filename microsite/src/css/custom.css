@@ -70,7 +70,7 @@ h4,
 h5,
 h6 {
   font-family: Helvetica Neue, sans-serif;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 /* body elements  */
@@ -109,8 +109,8 @@ td {
 
 /* Navbar */
 .navbar {
-  background: linear-gradient(90deg,#000 -3.07%,#3d3d3d);
-  box-shadow: 3px 3px 8px rgba(38,38,38,.25);
+  background: linear-gradient(90deg, #000 -3.07%, #3d3d3d);
+  box-shadow: 3px 3px 8px rgba(38, 38, 38, 0.25);
   height: 66px;
 }
 
@@ -198,7 +198,7 @@ td {
 
 /* content */
 .postContainer blockquote {
-  color: #FFFFFF;
+  color: #ffffff;
   background-color: #0e0e0e;
   border: none;
   font-size: 120%;
@@ -1001,9 +1001,6 @@ code {
   margin-bottom: 40px;
   margin-top: 20px;
 }
-
-
-
 
 .PluginCard {
   background-color: #282828;

@@ -1,28 +1,13 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
+import React from 'react';
+import Layout from '@theme/Layout';
+import { Block, BulletLine } from '../components/components';
 
-// const fs = require('fs');
-// const yaml = require('js-yaml');
-import React from "react";
-import { Block, BulletLine } from "../components/components";
-import Layout from "@theme/Layout";
-
-import pluginMetadata from "../../pluginsData";
-
-// const pluginsDirectory = require('path').join(process.cwd(), 'data/plugins');
-// const pluginMetadata = fs
-//   .readdirSync(pluginsDirectory)
-//   .map(file => yaml.safeLoad(fs.readFileSync(`./data/plugins/${file}`, 'utf8')))
-//   .sort((a, b) => a.title.toLowerCase().localeCompare(b.title.toLowerCase()));
+import pluginMetadata from '../../pluginsData';
 const truncate = text =>
   text.length > 170 ? text.substr(0, 170) + '...' : text;
 
-const addPluginDocsLink = "/docs/plugins/add-to-marketplace";
-const defaultIconUrl = "img/logo-gradient-on-dark.svg";
+const addPluginDocsLink = '/docs/plugins/add-to-marketplace';
+const defaultIconUrl = 'img/logo-gradient-on-dark.svg';
 
 const Plugins = () => (
   <Layout>
@@ -43,7 +28,7 @@ const Plugins = () => (
             </a>
           </span>
         </div>
-        <BulletLine style={{ width: "100% " }} />
+        <BulletLine style={{ width: '100% ' }} />
         <Block.Container wrapped className="PluginGrid">
           {pluginMetadata.map(
             ({
@@ -77,7 +62,7 @@ const Plugins = () => (
                   </a>
                 </div>
               </div>
-            )
+            ),
           )}
           <div className="PluginCard" id="add-plugin-card">
             <div className="PluginCardBody">
@@ -87,8 +72,8 @@ const Plugins = () => (
               </p>
               <p
                 style={{
-                  marginTop: "20px",
-                  textAlign: "center",
+                  marginTop: '20px',
+                  textAlign: 'center',
                 }}
               >
                 <a className="ButtonFilled" href={addPluginDocsLink}>
@@ -98,14 +83,14 @@ const Plugins = () => (
             </div>
             <Block.Container className="PluginCardFooter">
               <p>
-                See what plugins are already{" "}
+                See what plugins are already{' '}
                 <a href="https://github.com/spotify/backstage/issues?q=is%3Aissue+is%3Aopen+label%3Aplugin+sort%3Areactions-%2B1-desc">
                   in progress
-                </a>{" "}
-                and 👍. Missing a plugin for your favorite tool? Please{" "}
+                </a>{' '}
+                and 👍. Missing a plugin for your favorite tool? Please{' '}
                 <a href="https://github.com/spotify/backstage/issues/new?labels=plugin&template=plugin_template.md&title=%5BPlugin%5D+THE+PLUGIN+NAME">
                   suggest
-                </a>{" "}
+                </a>{' '}
                 a new one.
               </p>
             </Block.Container>

@@ -5,21 +5,21 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import React from "react";
-import { Block } from "../components/components";
-import useBaseUrl from "@docusaurus/useBaseUrl";
-import Layout from "@theme/Layout";
+import React from 'react';
+import { Block } from '../components/components';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import Layout from '@theme/Layout';
 
 const Demos = () => {
   return (
     <Layout>
       <main className="MainContent">
         <Block small className="stripe-bottom bg-black-grey">
-          <Block.Container style={{ justifyContent: "flex-start" }}>
+          <Block.Container style={{ justifyContent: 'flex-start' }}>
             <Block.TextBox>
               <Block.Title>See us in action.</Block.Title>
               <Block.Paragraph>
-                To illustrate the potential of Backstage, we’re showing you{" "}
+                To illustrate the potential of Backstage, we’re showing you{' '}
                 <a href="https://labs.spotify.com/2020/04/21/how-we-use-backstage-at-spotify/">
                   how we use it here at Spotify
                 </a>
@@ -28,7 +28,7 @@ const Demos = () => {
                 Backstage to build the developer portal you want — integrating
                 the tools that you use in your own infrastructure ecosystem. (Or
                 get started by building an open source plugin for Backstage that
-                everyone can use, like our{" "}
+                everyone can use, like our{' '}
                 <a href="https://backstage.io/blog/2020/04/06/lighthouse-plugin">
                   Lighthouse Plugin
                 </a>
@@ -40,14 +40,14 @@ const Demos = () => {
                 x={-7}
                 y={-12}
                 width={120}
-                src={useBaseUrl("img/demo-illustration.svg")}
+                src={useBaseUrl('img/demo-illustration.svg')}
               />
             </Block.Graphics>
           </Block.Container>
         </Block>
 
         <Block small className="stripe bg-black">
-          <Block.Container style={{ justifyContent: "flex-start" }}>
+          <Block.Container style={{ justifyContent: 'flex-start' }}>
             <Block.TextBox>
               <Block.Title>Introduction to Backstage</Block.Title>
               <Block.Paragraph>
@@ -60,7 +60,7 @@ const Demos = () => {
                 we use it here at Spotify.
               </Block.Paragraph>
               <Block.LinkButton
-                href={"https://www.youtube.com/watch?v=1XtJ5FAOjPk"}
+                href={'https://www.youtube.com/watch?v=1XtJ5FAOjPk'}
               >
                 Watch now
               </Block.LinkButton>
@@ -79,17 +79,17 @@ const Demos = () => {
         </Block>
 
         <Block className="stripe bg-black-grey">
-          <Block.Container style={{ justifyContent: "flex-start" }}>
+          <Block.Container style={{ justifyContent: 'flex-start' }}>
             <Block.TextBox>
               <Block.Title>Control cloud costs</Block.Title>
               <Block.Paragraph>
                 How do you control cloud costs while maintaining the speed and
-                independence of your development teams? With the{" "}
-                <a href="https://backstage.io/plugins">Cost Insights plugin</a>{" "}
+                independence of your development teams? With the{' '}
+                <a href="https://backstage.io/plugins">Cost Insights plugin</a>{' '}
                 for Backstage, managing cloud costs becomes just another part of
                 an engineer’s daily development process. They get a clear view
                 of their spending — and can decide for themselves how they want
-                to optimize it. Learn more about the{" "}
+                to optimize it. Learn more about the{' '}
                 <a href="https://backstage.io/blog/2020/10/22/cost-insights-plugin">
                   Cost Insights plugin
                 </a>
@@ -113,7 +113,7 @@ const Demos = () => {
         </Block>
 
         <Block className="stripe bg-black">
-          <Block.Container style={{ justifyContent: "flex-start" }}>
+          <Block.Container style={{ justifyContent: 'flex-start' }}>
             <Block.TextBox>
               <Block.Title id="techdocs-demo">
                 Make documentation easy
@@ -125,7 +125,7 @@ const Demos = () => {
                 alongside your code. This makes documentation easier to create,
                 maintain, find — and, you know, actually use. This demo video
                 showcases Spotify’s internal version of TechDocs. Learn more
-                about{" "}
+                about{' '}
                 <a href="https://backstage.io/blog/2020/09/08/announcing-tech-docs">
                   TechDocs
                 </a>
@@ -149,7 +149,7 @@ const Demos = () => {
         </Block>
 
         <Block small className="bg-black-grey">
-          <Block.Container style={{ justifyContent: "flex-start" }}>
+          <Block.Container style={{ justifyContent: 'flex-start' }}>
             <Block.TextBox>
               <Block.Title>Manage your tech health</Block.Title>
               <Block.Paragraph>
@@ -165,7 +165,7 @@ const Demos = () => {
 
               <Block.LinkButton
                 href={
-                  "https://www.youtube.com/watch?v=K3xz6VAbgH8&list=PLf1KFlSkDLIBtMGwRDfaVlKMqTMrjD2yO&index=6"
+                  'https://www.youtube.com/watch?v=K3xz6VAbgH8&list=PLf1KFlSkDLIBtMGwRDfaVlKMqTMrjD2yO&index=6'
                 }
               >
                 Watch now
@@ -185,7 +185,7 @@ const Demos = () => {
         </Block>
 
         <Block small className="stripe bg-black">
-          <Block.Container style={{ justifyContent: "flex-start" }}>
+          <Block.Container style={{ justifyContent: 'flex-start' }}>
             <Block.TextBox>
               <Block.Title>Create a microservice</Block.Title>
               <Block.Paragraph>
@@ -199,7 +199,7 @@ const Demos = () => {
               </Block.Paragraph>
 
               <Block.LinkButton
-                href={"https://www.youtube.com/watch?v=U1iwe3L5pzc"}
+                href={'https://www.youtube.com/watch?v=U1iwe3L5pzc'}
               >
                 Watch now
               </Block.LinkButton>
@@ -218,7 +218,7 @@ const Demos = () => {
         </Block>
 
         <Block small className="bg-black-grey">
-          <Block.Container style={{ justifyContent: "flex-start" }}>
+          <Block.Container style={{ justifyContent: 'flex-start' }}>
             <Block.TextBox>
               <Block.Title>Search all your services</Block.Title>
               <Block.Paragraph>
@@ -233,7 +233,7 @@ const Demos = () => {
                 its current owner — all with one search.
               </Block.Paragraph>
               <Block.LinkButton
-                href={"https://www.youtube.com/watch?v=vcDL9tOv7Eo"}
+                href={'https://www.youtube.com/watch?v=vcDL9tOv7Eo'}
               >
                 Watch now
               </Block.LinkButton>
@@ -252,7 +252,7 @@ const Demos = () => {
         </Block>
 
         <Block className="stripe bg-black">
-          <Block.Container style={{ justifyContent: "flex-start" }}>
+          <Block.Container style={{ justifyContent: 'flex-start' }}>
             <Block.TextBox>
               <Block.Title>Manage data pipelines</Block.Title>
               <Block.Paragraph>
@@ -263,7 +263,7 @@ const Demos = () => {
                 alerts — are integrated into one simple interface.
               </Block.Paragraph>
               <Block.LinkButton
-                href={"https://www.youtube.com/watch?v=rH46MLNZIPM "}
+                href={'https://www.youtube.com/watch?v=rH46MLNZIPM '}
               >
                 Watch now
               </Block.LinkButton>
