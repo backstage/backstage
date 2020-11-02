@@ -1,8 +1,7 @@
 ---
 id: call-existing-api
 title: Call Existing API
-description: Describes the various options that Backstage frontend plugins have,
-in communicating with service APIs that already exist: ""
+description: Describes the various options that Backstage frontend plugins have, in communicating with service APIs that already exist
 ---
 
 This article describes the various options that Backstage frontend plugins have,

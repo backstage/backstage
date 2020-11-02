@@ -4,8 +4,6 @@ title: Utility APIs
 description: Backstage Utility APIs
 ---
 
-import useBaseUrl from '@docusaurus/useBaseUrl';
-
 ## Introduction
 
 Backstage Plugins strive to be self-contained, with as much functionality as
