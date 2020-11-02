@@ -37,12 +37,3 @@ class TestTechDocsCoreConfig(unittest.TestCase):
         self.assertTrue("toc"  in final_config["mdx_configs"])
         self.assertTrue("permalink"  in final_config["mdx_configs"]["toc"])
         self.assertFalse(final_config["mdx_configs"]["toc"]["permalink"])
-
-    def test_add_user_config_to_default_config(self):
-        self.mkdocs_yaml_config["markdown_extension"] = []
-        self.mkdocs_yaml_config["mdx_configs"] = {}
-        self.mkdocs_yaml_config["markdown_extension"].append(["abc"])
-        self.mkdocs_yaml_config["mdx_configs"]["abc"] = {"testkey": "testvalue"}
-        final_config = self.techdocscore.on_config(self.mkdocs_yaml_config)
-        self.assertTrue("abc"  in final_config["mdx_configs"])
-        self.assertTrue("testkey"  in final_config["mdx_configs"]["abc"])

@@ -95,7 +95,7 @@ class TechDocsCore(BasePlugin):
         config["markdown_extensions"].append("markdown_inline_graphviz")
         config["markdown_extensions"].append("plantuml_markdown")
 
-        # merge or add config supplied by user in the mkdocs.yml
+        # merge config supplied by user in the mkdocs.yml
         mdx_configs_keys = config["mdx_configs"].keys()
         mdx_configs_override_keys = mdx_configs_override.keys()
         for key in mdx_configs_override_keys:
@@ -103,9 +103,5 @@ class TechDocsCore(BasePlugin):
                 default_config = config["mdx_configs"][key]
                 override_config = mdx_configs_override[key]
                 default_config.update(override_config)
-                config["mdx_configs"][key] = default_config
-            else:
-                config["mdx_configs"].append(key)
-                config["mdx_configs"][key] = mdx_configs_override[key]
 
         return config
