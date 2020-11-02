@@ -232,6 +232,14 @@ auth:
           $env: AUTH_MICROSOFT_CLIENT_SECRET
         tenantId:
           $env: AUTH_MICROSOFT_TENANT_ID
+    onelogin:
+      development:
+        clientId:
+          $env: AUTH_ONELOGIN_CLIENT_ID
+        clientSecret:
+          $env: AUTH_ONELOGIN_CLIENT_SECRET
+        issuer:
+          $env: AUTH_ONELOGIN_ISSUER
 costInsights:
   engineerCost: 200000
   products:
