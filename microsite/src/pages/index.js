@@ -1,94 +1,473 @@
 import React from 'react';
-import clsx from 'clsx';
-import Layout from '@theme/Layout';
-import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import useBaseUrl from '@docusaurus/useBaseUrl';
-import styles from './styles.module.css';
 
-const features = [
-  {
-    title: 'Easy to Use',
-    imageUrl: 'img/undraw_docusaurus_mountain.svg',
-    description: (
-      <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
-      </>
-    ),
-  },
-  {
-    title: 'Focus on What Matters',
-    imageUrl: 'img/undraw_docusaurus_tree.svg',
-    description: (
-      <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
-      </>
-    ),
-  },
-  {
-    title: 'Powered by React',
-    imageUrl: 'img/undraw_docusaurus_react.svg',
-    description: (
-      <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
-      </>
-    ),
-  },
-];
-
-function Feature({imageUrl, title, description}) {
-  const imgUrl = useBaseUrl(imageUrl);
-  return (
-    <div className={clsx('col col--4', styles.feature)}>
-      {imgUrl && (
-        <div className="text--center">
-          <img className={styles.featureImage} src={imgUrl} alt={title} />
-        </div>
-      )}
-      <h3>{title}</h3>
-      <p>{description}</p>
-    </div>
-  );
-}
+import {Block, ActionBlock, Breakpoint, BulletLine} from '../components/components';
+import Layout from "@theme/Layout";
 
 function Home() {
   const context = useDocusaurusContext();
   const {siteConfig = {}} = context;
+  console.log(useBaseUrl);
   return (
-    <Layout
-      title={`Hello from ${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />">
-      <header className={clsx('hero hero--primary', styles.heroBanner)}>
-        <div className="container">
-          <h1 className="hero__title">{siteConfig.title}</h1>
-          <p className="hero__subtitle">{siteConfig.tagline}</p>
-          <div className={styles.buttons}>
-            <Link
-              className={clsx(
-                'button button--outline button--secondary button--lg',
-                styles.getStarted,
-              )}
-              to={useBaseUrl('docs/')}>
-              Get Started
-            </Link>
-          </div>
-        </div>
-      </header>
-      <main>
-        {features && features.length > 0 && (
-          <section className={styles.features}>
-            <div className="container">
-              <div className="row">
-                {features.map((props, idx) => (
-                  <Feature key={idx} {...props} />
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
+    <Layout>
+       <main className="MainContent">
+        <Block small className="bg-black-grey stripe-bottom">
+          <Block.Container>
+            <Block.TextBox>
+              <Block.Title main>
+                An open platform for building developer portals
+              </Block.Title>
+              <Block.Paragraph>
+                Powered by a centralized service catalog, Backstage restores
+                order to your infrastructure. So your product teams can ship
+                high-quality code quickly — without compromising autonomy.
+              </Block.Paragraph>
+              <Block.LinkButton
+                href={'https://github.com/spotify/backstage#getting-started'}
+              >
+                GitHub
+              </Block.LinkButton>
+            </Block.TextBox>
+            <Block.Graphics>
+              <Block.Graphic
+                x={-12.5}
+                y={16}
+                width={120}
+                src={useBaseUrl('img/laptop.svg')}
+              />
+              <Block.Graphic
+                x={5.8}
+                y={20}
+                width={88}
+                src={useBaseUrl('animations/backstage-logos-hero-8.gif')}
+              />
+            </Block.Graphics>
+          </Block.Container>
+        </Block>
+
+        <Block small className="stripe-top bg-black">
+          <Block.Container wrapped>
+            <Block.TextBox>
+              <img
+                className="Block__GIF"
+                src={useBaseUrl('animations/backstage-speed-paradox-7.gif')}
+              />
+              <Block.SmallTitle small>The Speed Paradox</Block.SmallTitle>
+              <Block.Paragraph>
+                At Spotify, we’ve always believed in the speed and ingenuity
+                that comes from having autonomous development teams. But as we
+                learned firsthand, the faster you grow, the more fragmented and
+                complex your software ecosystem becomes. And then everything
+                slows down again.
+              </Block.Paragraph>
+            </Block.TextBox>
+            <Block.TextBox>
+              <img
+                className="Block__GIF"
+                src={useBaseUrl('animations/backstage-standards-paradox-4.gif')}
+              />
+              <Block.SmallTitle small>The Standards Paradox</Block.SmallTitle>
+              <Block.Paragraph>
+                By centralizing services and standardizing your tooling,
+                Backstage streamlines your development environment from end to
+                end. Instead of restricting autonomy, standardization frees your
+                engineers from infrastructure complexity. So you can return to
+                building and scaling, quickly and safely.
+              </Block.Paragraph>
+            </Block.TextBox>
+          </Block.Container>
+        </Block>
+
+        <Block className="stripe-top bg-teal-top-right" wrapped>
+          <Block.Container wrapped>
+            <Block.TextBox wide>
+              {' '}
+              <img
+                className="Block__GIF"
+                src={useBaseUrl('animations/backstage-service-catalog-icon-1.gif')}
+              />
+              <Block.Subtitle>
+                Backstage Service Catalog{' '}
+                <a
+                  title="Submit feedback for this feature. Click to learn more about this release."
+                  href="https://backstage.io/blog/2020/06/22/backstage-service-catalog-alpha"
+                >
+                  (alpha)
+                </a>
+              </Block.Subtitle>
+              <Block.Title half>
+                Build an ecosystem, not a wilderness
+              </Block.Title>
+            </Block.TextBox>
+            <Breakpoint
+              narrow={
+                <Block.Graphics padding={5}>
+                  <Block.Graphic
+                    y={-8}
+                    width={100}
+                    src={useBaseUrl('img/components-with-filter-small.png')}
+                  />
+                </Block.Graphics>
+              }
+            />
+            <Block.TextBox small>
+              <BulletLine />
+              <Block.SmallTitle small>
+                Manage all your software, all in one place{' '}
+              </Block.SmallTitle>
+              <Block.Paragraph>
+                Backstage makes it easy for one team to manage 10 services — and
+                makes it possible for your company to manage thousands of them
+              </Block.Paragraph>
+            </Block.TextBox>
+            <Block.TextBox small>
+              <BulletLine />
+              <Block.SmallTitle small>A uniform overview</Block.SmallTitle>
+              <Block.Paragraph>
+                Every team can see all the services they own and related
+                resources (deployments, data pipelines, pull request status,
+                etc.)
+              </Block.Paragraph>
+            </Block.TextBox>
+            <Block.Image
+              wide
+              style={{
+                background: `url(${useBaseUrl('img/components-with-filter.png')})`,
+                backgroundSize: '594px 435.5px',
+                width: '594px',
+                height: '435.5px',
+                margin: '-380px 105px 0 10px',
+              }}
+            />
+            <Block.TextBox small>
+              <BulletLine />
+              <Block.SmallTitle small>Metadata on tap</Block.SmallTitle>
+              <Block.Paragraph>
+                All that information can be shared with plugins inside Backstage
+                to enable other management features, like resource monitoring
+                and testing
+              </Block.Paragraph>
+            </Block.TextBox>
+
+            <Block.TextBox small>
+              <BulletLine />
+              <Block.SmallTitle small>Not just services</Block.SmallTitle>
+              <Block.Paragraph>
+                Libraries, websites, ML models — you name it, Backstage knows
+                all about it, including who owns it, dependencies, and more
+              </Block.Paragraph>
+            </Block.TextBox>
+
+            <Block.TextBox small>
+              <BulletLine />
+              <Block.SmallTitle small>
+                Discoverability & accountability
+              </Block.SmallTitle>
+              <Block.Paragraph>
+                No more orphan software hiding in the dark corners of your tech
+                stack
+              </Block.Paragraph>
+            </Block.TextBox>
+            <Block.TextBox small></Block.TextBox>
+          </Block.Container>
+        </Block>
+
+        <ActionBlock className="stripe bg-teal">
+          <ActionBlock.Title>
+            Learn more about the service catalog
+          </ActionBlock.Title>
+          <ActionBlock.Link
+            href={`https://backstage.io/blog/2020/06/22/backstage-service-catalog-alpha`}
+          >
+            Read
+          </ActionBlock.Link>
+        </ActionBlock>
+
+        <Block className="stripe-top bg-teal-bottom" wrapped>
+          <Block.Container wrapped>
+            <Block.TextBox wide>
+              <img
+                className="Block__GIF"
+                src={useBaseUrl('animations/backstage-software-templates-icon-5.gif')}
+              />
+              <Block.Subtitle>
+                Backstage Software Templates{' '}
+                <a
+                  title="Submit feedback for this feature. Click to learn more about this release."
+                  href="https://backstage.io/blog/2020/08/05/announcing-backstage-software-templates"
+                >
+                  (alpha)
+                </a>
+              </Block.Subtitle>
+              <Block.Title small>Standards can set you free</Block.Title>
+            </Block.TextBox>
+            <Breakpoint
+              narrow={
+                <Block.Graphics padding={20}>
+                  <Block.Graphic
+                    y={-38}
+                    width={100}
+                    src={useBaseUrl('img/service-cards.png')}
+                  />
+                </Block.Graphics>
+              }
+            />
+            <Block.TextBox small>
+              <BulletLine />
+              <Block.SmallTitle small>
+                Like automated getting started guides
+              </Block.SmallTitle>
+              <Block.Paragraph>
+                Using templates, engineers can spin up a new microservice with
+                your organization’s best practices built-in, right from the
+                start
+              </Block.Paragraph>
+            </Block.TextBox>
+
+            <Block.TextBox small>
+              <BulletLine />
+              <Block.SmallTitle small>Push-button deployment</Block.SmallTitle>
+              <Block.Paragraph>
+                Click a button to create a Spring Boot project with your repo
+                automatically configured on GitHub and your CI already running
+                the first build
+              </Block.Paragraph>
+            </Block.TextBox>
+
+            <Block.TextBox small>
+              <BulletLine />
+              <Block.SmallTitle small>Built to your standards</Block.SmallTitle>
+              <Block.Paragraph>
+                Go instead of Java? CircleCI instead of Jenkins? Serverless
+                instead of Kubernetes? GCP instead of AWS? Customize your
+                recipes with your best practices baked-in
+              </Block.Paragraph>
+            </Block.TextBox>
+
+            <Block.TextBox small>
+              <BulletLine />
+              <Block.SmallTitle small>
+                Golden Paths pave the way
+              </Block.SmallTitle>
+              <Block.Paragraph>
+                When the right way is also the easiest way, engineers get up and
+                running faster — and more safely
+              </Block.Paragraph>
+            </Block.TextBox>
+            <Breakpoint
+              wide={
+                <Block.Graphics>
+                  <Block.Graphic
+                    x={-50}
+                    y={-2}
+                    width={200}
+                    src={useBaseUrl('img/cards.png')}
+                  />
+                </Block.Graphics>
+              }
+            />
+          </Block.Container>
+        </Block>
+
+        <ActionBlock className="stripe bg-teal">
+          <ActionBlock.Title>
+            Build your own software templates
+          </ActionBlock.Title>
+          <ActionBlock.Link
+            href={`https://github.com/spotify/backstage/blob/master/docs/features/software-templates/extending/index.md`}
+          >
+            Contribute
+          </ActionBlock.Link>
+        </ActionBlock>
+
+        <Block className="stripe-top bg-teal-bottom" wrapped>
+          <Block.Container wrapped>
+            <Block.TextBox wide>
+              <img
+                className="Block__GIF"
+                src={useBaseUrl('animations/backstage-techdocs-icon-1.gif')}
+              />
+
+              <Block.Subtitle>Backstage TechDocs</Block.Subtitle>
+              <Block.Title small>Docs like code</Block.Title>
+            </Block.TextBox>
+            <Breakpoint
+              narrow={
+                <React.Fragment>
+                  <Block.Graphics padding={26}>
+                    <Block.Graphic
+                      x={-1.4}
+                      y={-45}
+                      width={107}
+                      src={useBaseUrl('img/techdocs-static-mobile.png')}
+                    />
+                  </Block.Graphics>
+                </React.Fragment>
+              }
+            />
+            <Block.TextBox small>
+              <BulletLine />
+              <Block.SmallTitle small>Free documentation</Block.SmallTitle>
+              <Block.Paragraph>
+                Whenever you use a Backstage Software Template, your project
+                automatically gets a TechDocs site, for free
+              </Block.Paragraph>
+            </Block.TextBox>
+
+            <Block.TextBox small>
+              <BulletLine />
+              <Block.SmallTitle small>Easy to write</Block.SmallTitle>
+              <Block.Paragraph>
+                With our docs-like-code approach, engineers write their
+                documentation in Markdown files right alongside their code
+              </Block.Paragraph>
+            </Block.TextBox>
+
+            <Block.TextBox small>
+              <BulletLine />
+              <Block.SmallTitle small>Easy to maintain</Block.SmallTitle>
+              <Block.Paragraph>
+                Updating code? Update your documentation while you’re there —
+                with docs and code in the same place, it becomes a natural part
+                of your workstream
+              </Block.Paragraph>
+            </Block.TextBox>
+
+            <Block.TextBox small>
+              <BulletLine />
+              <Block.SmallTitle small>Easy to find and use</Block.SmallTitle>
+              <Block.Paragraph>
+                Since all your documentation is in Backstage, finding any
+                TechDoc is just a search query away
+              </Block.Paragraph>
+            </Block.TextBox>
+            <Breakpoint
+              wide={
+                <Block.Graphics padding={0}>
+                  <Block.Graphic
+                    x={-55}
+                    y={-5}
+                    width={210}
+                    src={useBaseUrl('img/techdocs-web.png')}
+                  />
+                  <Block.Graphic
+                    x={-55}
+                    y={-5}
+                    width={210}
+                    src={useBaseUrl('img/techdocs2.gif')}
+                  />
+                </Block.Graphics>
+              }
+            />
+          </Block.Container>
+        </Block>
+
+        <ActionBlock className="stripe bg-teal">
+          <ActionBlock.Title>Learn more about TechDocs</ActionBlock.Title>
+          <ActionBlock.Link
+            href={`https://backstage.io/docs/features/techdocs/techdocs-overview`}
+          >
+            Docs
+          </ActionBlock.Link>
+        </ActionBlock>
+
+        <Block className="stripe-top bg-teal-bottom" wrapped>
+          <Block.Container wrapped>
+            <Block.TextBox wide>
+              <img
+                className="Block__GIF"
+                src={useBaseUrl('animations/backstage-plugin-icon-2.gif')}
+              />
+
+              <Block.Subtitle>Customize Backstage with plugins</Block.Subtitle>
+              <Block.Title small>
+                An app store for your infrastructure
+              </Block.Title>
+            </Block.TextBox>
+            <Breakpoint
+              narrow={
+                <Block.Graphics padding={10}>
+                  <Block.Graphic
+                    y={-20}
+                    width={100}
+                    src={useBaseUrl('img/plugins.png')}
+                  />
+                </Block.Graphics>
+              }
+            />
+            <Block.TextBox small>
+              <BulletLine />
+              <Block.SmallTitle small>Add functionality</Block.SmallTitle>
+              <Block.Paragraph>
+                Want scalable website testing? Add the{' '}
+                <a href="https://backstage.io/blog/2020/04/06/lighthouse-plugin">
+                  Lighthouse
+                </a>{' '}
+                plugin. Wondering about recommended frameworks? Add the{' '}
+                <a href="https://backstage.io/blog/2020/05/14/tech-radar-plugin">
+                  Tech Radar
+                </a>{' '}
+                plugin.{' '}
+              </Block.Paragraph>
+            </Block.TextBox>
+
+            <Block.TextBox small>
+              <BulletLine />
+              <Block.SmallTitle small>BYO Plugins</Block.SmallTitle>
+              <Block.Paragraph>
+                If you don’t see the plugin you need, it’s simple to build your
+                own
+              </Block.Paragraph>
+            </Block.TextBox>
+
+            <Block.TextBox small>
+              <BulletLine />
+              <Block.SmallTitle small>
+                Integrate your own custom tooling
+              </Block.SmallTitle>
+              <Block.Paragraph>
+                Building internal plugins lets you tailor your version of
+                Backstage to be a perfect fit for your infrastructure
+              </Block.Paragraph>
+            </Block.TextBox>
+
+            <Block.TextBox small>
+              <BulletLine />
+              <Block.SmallTitle small>
+                Share with the community
+              </Block.SmallTitle>
+              <Block.Paragraph>
+                Building <a href="/plugins">open source plugins</a> contributes
+                to the entire Backstage ecosystem, which benefits everyone
+              </Block.Paragraph>
+            </Block.TextBox>
+
+            <Breakpoint
+              wide={<img src={useBaseUrl('img/cards-plugins.png')} />}
+            />
+          </Block.Container>
+        </Block>
+
+        <ActionBlock className="stripe-top bg-teal">
+          <ActionBlock.Title>Build a plugin</ActionBlock.Title>
+          <ActionBlock.Link href="/docs/plugins/create-a-plugin">
+            Contribute
+          </ActionBlock.Link>
+        </ActionBlock>
+
+        <Block small className="bg-black-grey cncf-block">
+          <Block.Container center>
+            <Block.SmallTitle small>
+              Backstage is a{' '}
+              <a href="https://www.cncf.io">
+                Cloud Native Computing Foundation
+              </a>{' '}
+              sandbox project
+              <img className="cncf-logo" src={useBaseUrl('/static/img/cncf-white.svg')} alt="CNCF"/>
+            </Block.SmallTitle>
+          </Block.Container>
+        </Block>
       </main>
     </Layout>
   );
