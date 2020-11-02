@@ -13,4 +13,4 @@ Markdown==3.2.2
 # The linter using for Python
 # Note: This requires Python 3.6+ to run, but can format Python 2 code too.
 # https://github.com/psf/black
-black==20.8b1
+black==19.10b0
