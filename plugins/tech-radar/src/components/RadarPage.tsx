@@ -21,7 +21,6 @@ import {
   ContentHeader,
   Page,
   Header,
-  HeaderLabel,
   SupportButton,
 } from '@backstage/core';
 import RadarComponent from '../components/RadarComponent';
