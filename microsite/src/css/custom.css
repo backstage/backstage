@@ -121,7 +121,26 @@ td {
 
 .navbar__logo {
   width: 180px;
-  height: 40px;
+  height: auto;
+}
+
+@media only screen and (max-width: 485px) {
+  .navbar__logo {
+    width: 150px;
+  }
+
+  .navbar__brand,
+  .navbar__brand img {
+    margin-right: 0;
+  }
+
+  .navbar__items.navbar__items--right {
+    justify-content: flex-end;
+  }
+
+  .navbar__items.navbar__items--right > button {
+    margin-left: 0;
+  }
 }
 
 .navbar__items {
