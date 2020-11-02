@@ -36,7 +36,10 @@ class TechDocsCore(BasePlugin):
 
         # Theme
         config["theme"] = Theme(
-            name="material", static_templates=["techdocs_metadata.json",],
+            name="material",
+            static_templates=[
+                "techdocs_metadata.json",
+            ],
         )
         config["theme"].dirs.append(tempfile.gettempdir())
 
