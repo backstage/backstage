@@ -264,14 +264,9 @@ release of Sam's plugin specifies a dependency on Backstage with a minimum
 version set to the same release as the one were the annotation was added to the
 core schema.
 
-<details>
-  <summary></summary>
-
 # 9. Revenge of the Sam
 
 Sam, now in full control of all theme tunes in Backstage, releases v2.0.1, which
 switches all tracks to 4uLU6hMCjMI75M1A2tKUQC. Sam wanted to do something more
 nefarious, but since Backstage sandboxes sensitive actions and is mostly
 read-only with strict CSP, Sam's hands were tied.
-
-</details>
