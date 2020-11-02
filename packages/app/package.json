@@ -36,7 +36,7 @@
     "@octokit/rest": "^18.0.0",
     "@roadiehq/backstage-plugin-github-insights": "^0.2.10",
     "@roadiehq/backstage-plugin-github-pull-requests": "^0.6.0",
-    "@roadiehq/backstage-plugin-travis-ci": "^0.2.5",
+    "@roadiehq/backstage-plugin-travis-ci": "^0.2.6",
     "history": "^5.0.0",
     "prop-types": "^15.7.2",
     "react": "^16.12.0",
