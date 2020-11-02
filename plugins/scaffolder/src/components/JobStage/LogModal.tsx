@@ -20,6 +20,7 @@ import {
   DialogContent,
   IconButton,
 } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import Close from '@material-ui/icons/Close';
 import LazyLog from 'react-lazylog/build/LazyLog';
 
@@ -29,20 +30,39 @@ type Props = {
   onClose(): void;
 };
 
-export const LogModal: React.FC<Props> = ({ log, open = false, onClose }) => (
-  <Dialog open={open} onClose={onClose} fullScreen>
-    <DialogTitle id="responsive-dialog-title">
-      Logs
-      <IconButton onClick={onClose}>
-        <Close />
-      </IconButton>
-    </DialogTitle>
-    <DialogContent>
-      <div style={{ height: '100%', width: '100%' }}>
-        <LazyLog text={log.join('\n')} extraLines={1} follow />
-      </div>
-    </DialogContent>
-  </Dialog>
-);
+const useStyles = makeStyles(theme => ({
+  header: {
+    width: '100%',
+    padding: theme.spacing(1, 4),
+  },
+  closeIcon: {
+    float: 'right',
+    padding: theme.spacing(0.5, 0),
+  },
+  logs: {
+    boxShadow: '-3px -1px 7px 0px rgba(50, 50, 50, 0.59)',
+    height: '100%',
+    width: '100%',
+  },
+}));
 
+export const LogModal: React.FC<Props> = ({ log, open = false, onClose }) => {
+  const classes = useStyles();
+
+  return (
+    <Dialog open={open} onClose={onClose} fullScreen>
+      <DialogTitle id="responsive-dialog-title" className={classes.header}>
+        Logs
+        <IconButton onClick={onClose} className={classes.closeIcon}>
+          <Close />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent>
+        <div className={classes.logs}>
+          <LazyLog text={log.join('\n')} extraLines={1} follow />
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
 export default LogModal;

@@ -145,7 +145,11 @@ export const JobStage = ({ endedAt, startedAt, name, log, status }: Props) => {
               style={{ height: '20vh', width: '100%' }}
               onClick={toggleLogsFullScreen}
             >
-              <LazyLog text={log.join('\n')} extraLines={1} follow />
+              <LazyLog
+                text={`${log.join('\n')}\nclick to view logs in full screen.`}
+                extraLines={1}
+                follow
+              />
             </div>
           </Suspense>
         )}
