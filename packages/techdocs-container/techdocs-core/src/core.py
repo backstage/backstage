@@ -30,6 +30,10 @@ class TechDocsCore(BasePlugin):
             '{\n  "site_name": "{{ config.site_name }}",\n  "site_description": "{{ config.site_description }}"\n}'
         )
 
+        mdx_configs_override = {}
+        if "mdx_configs" in config.keys():
+            mdx_configs_override = config["mdx_configs"].copy()
+
         # Theme
         config["theme"] = Theme(
             name="material", static_templates=["techdocs_metadata.json",],
@@ -44,15 +48,16 @@ class TechDocsCore(BasePlugin):
 
         monorepo_plugin = MonorepoPlugin()
         monorepo_plugin.load_config({})
-
         config["plugins"]["search"] = search_plugin
         config["plugins"]["monorepo"] = monorepo_plugin
 
-        search_plugin = SearchPlugin()
-        search_plugin.load_config({})
-        config["plugins"]["search"] = search_plugin
-
         # Markdown Extensions
+        if "markdown_extensions" not in config.keys():
+            config["markdown_extensions"] = []
+
+        if "mdx_configs" not in config.keys():
+            config["mdx_configs"] = {}
+
         config["markdown_extensions"].append("admonition")
         config["markdown_extensions"].append("toc")
         config["mdx_configs"]["toc"] = {
@@ -89,5 +94,18 @@ class TechDocsCore(BasePlugin):
 
         config["markdown_extensions"].append("markdown_inline_graphviz")
         config["markdown_extensions"].append("plantuml_markdown")
+
+        # merge or add config supplied by user in the mkdocs.yml
+        mdx_configs_keys = config["mdx_configs"].keys()
+        mdx_configs_override_keys = mdx_configs_override.keys()
+        for key in mdx_configs_override_keys:
+            if key in mdx_configs_keys:
+                default_config = config["mdx_configs"][key]
+                override_config = mdx_configs_override[key]
+                default_config.update(override_config)
+                config["mdx_configs"][key] = default_config
+            else:
+                config["mdx_configs"].append(key)
+                config["mdx_configs"][key] = mdx_configs_override[key]
 
         return config
