@@ -96,10 +96,8 @@ class TechDocsCore(BasePlugin):
         config["markdown_extensions"].append("plantuml_markdown")
 
         # merge config supplied by user in the mkdocs.yml
-        mdx_configs_keys = config["mdx_configs"].keys()
-        mdx_configs_override_keys = mdx_configs_override.keys()
-        for key in mdx_configs_override_keys:
-            if key in mdx_configs_keys:
+        for key in mdx_configs_override:
+            if key in config["mdx_configs"]:
                 default_config = config["mdx_configs"][key]
                 override_config = mdx_configs_override[key]
                 default_config.update(override_config)
