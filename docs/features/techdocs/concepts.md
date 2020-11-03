@@ -14,7 +14,7 @@ The TechDocs Core Plugin is an [MkDocs](https://www.mkdocs.org/) plugin created
 as a wrapper around multiple MkDocs plugins and Python Markdown extensions to
 standardize the configuration of MkDocs used for TechDocs.
 
-[TechDocs Core](https://github.com/backstage/backstage/blob/master/packages/techdocs-container/techdocs-core/README.md)
+[TechDocs Core](https://github.com/backstage/mkdocs-techdocs-core)
 
 ### TechDocs container
 
