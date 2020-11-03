@@ -1,7 +1,7 @@
 {
   "name": "@techdocs/cli",
   "description": "CLI for running TechDocs locally.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -40,7 +40,7 @@
     "ext": "ts"
   },
   "dependencies": {
-    "@backstage/cli": "^0.1.1",
+    "@backstage/cli": "^0.2.0",
     "commander": "^6.1.0",
     "fs-extra": "^9.0.1",
     "http-proxy": "^1.18.1",
