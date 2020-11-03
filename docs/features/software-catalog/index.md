@@ -62,11 +62,11 @@ Users can register new components by going to `/create` and clicking the
 Backstage expects the full URL to the YAML in your source control. Example:
 
 ```bash
-https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
+https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
 ```
 
 _More examples can be found
-[here](https://github.com/spotify/backstage/tree/master/packages/catalog-model/examples)._
+[here](https://github.com/backstage/backstage/tree/master/packages/catalog-model/examples)._
 
 ![](../../assets/software-catalog/bsc-register-2.png)
 
@@ -91,7 +91,7 @@ above example can be added using the following configuration:
 catalog:
   locations:
     - type: url
-      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
 ```
 
 More information about catalog configuration can be found
@@ -135,7 +135,7 @@ in the catalog.
 ![tools](https://backstage.io/blog/assets/20-05-20/tabs.png)
 
 The Backstage platform can be customized by incorporating
-[existing open source plugins](https://github.com/spotify/backstage/tree/master/plugins),
+[existing open source plugins](https://github.com/backstage/backstage/tree/master/plugins),
 or by [building your own](../../plugins/index.md).
 
 ## Links

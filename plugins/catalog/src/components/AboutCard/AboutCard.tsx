@@ -87,7 +87,7 @@ function getCodeLinkInfo(entity: Entity): CodeLinkInfo {
 
   if (location) {
     // split by first `:`
-    // e.g. "github:https://github.com/spotify/backstage/blob/master/software.yaml"
+    // e.g. "github:https://github.com/backstage/backstage/blob/master/software.yaml"
     const [type, target] = location.split(/:(.+)/);
 
     return { icon: iconMap[type], href: target };

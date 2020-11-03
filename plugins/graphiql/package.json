@@ -8,10 +8,10 @@
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
-  "homepage": "https://github.com/spotify/backstage/tree/master/plugins/graphiql#readme",
+  "homepage": "https://github.com/backstage/backstage/tree/master/plugins/graphiql#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/spotify/backstage",
+    "url": "https://github.com/backstage/backstage",
     "directory": "plugins/graphiql"
   },
   "keywords": [

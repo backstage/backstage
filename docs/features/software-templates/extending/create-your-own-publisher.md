@@ -22,7 +22,7 @@ This publisher is passed through to the `createRouter` function of the
 supported, but PR's are always welcome.
 
 An full example backend can be found
-[here](https://github.com/spotify/backstage/blob/d91c10f654475a60829fa33a5c81018e517a319a/packages/backend/src/plugins/scaffolder.ts),
+[here](https://github.com/backstage/backstage/blob/d91c10f654475a60829fa33a5c81018e517a319a/packages/backend/src/plugins/scaffolder.ts),
 but it looks something like the following
 
 ```ts
@@ -82,7 +82,7 @@ Now it's up to you to implement the `publish` function and return
 
 Some good examples exist here:
 
-- https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/src/scaffolder/stages/publish/github.ts
+- https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/src/scaffolder/stages/publish/github.ts
 
 ### Registering your own Publisher
 

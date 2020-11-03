@@ -6,7 +6,7 @@
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
-    "url": "https://github.com/spotify/backstage",
+    "url": "https://github.com/backstage/backstage",
     "directory": "packages/docgen"
   },
   "keywords": [

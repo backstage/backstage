@@ -36,7 +36,7 @@ appConfig:
 Then use it to run:
 
 ```
-git clone https://github.com/spotify/backstage.git
+git clone https://github.com/backstage/backstage.git
 cd contrib/chart/backstage
 helm dependency update
 helm install -f backstage-mydomain.yaml backstage .
