@@ -42,10 +42,12 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
   private readonly strategy: SamlStrategy;
   private readonly tokenIssuer: TokenIssuer;
   private readonly appUrl: string;
+  private readonly origin: string;
 
   constructor(options: SAMLProviderOptions) {
     this.appUrl = options.appUrl;
     this.tokenIssuer = options.tokenIssuer;
+    this.origin = options.origin;
     this.strategy = new SamlStrategy({ ...options }, ((
       profile: SamlProfile,
       done: PassportDoneCallback<SamlInfo>,
@@ -84,7 +86,7 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
         claims: { sub: id },
       });
 
-      return postMessageResponse(res, this.appUrl, {
+      return postMessageResponse(res, this.origin, {
         type: 'authorization_response',
         response: {
           providerInfo: {},
@@ -93,7 +95,7 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
         },
       });
     } catch (error) {
-      return postMessageResponse(res, this.appUrl, {
+      return postMessageResponse(res, this.origin, {
         type: 'authorization_response',
         error: {
           name: error.name,
@@ -118,6 +120,7 @@ type SAMLProviderOptions = {
   path: string;
   tokenIssuer: TokenIssuer;
   appUrl: string;
+  origin: string;
 };
 
 export const createSamlProvider: AuthProviderFactory = ({
@@ -129,12 +132,14 @@ export const createSamlProvider: AuthProviderFactory = ({
   const providerId = 'saml';
   const entryPoint = config.getString('entryPoint');
   const issuer = config.getString('issuer');
+  const origin = config.getString('origin');
   const opts = {
     entryPoint,
     issuer,
     path: `${url.pathname}/${providerId}/handler/frame`,
     tokenIssuer,
     appUrl: globalConfig.appUrl,
+    origin: origin ? origin : globalConfig.appUrl,
   };
 
   return new SamlAuthProvider(opts);
