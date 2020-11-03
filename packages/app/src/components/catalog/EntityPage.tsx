@@ -135,11 +135,11 @@ const OverviewContent = ({ entity }: { entity: Entity }) => (
     <Grid item md={6}>
       <AboutCard entity={entity} />
     </Grid>
-    {/* {isPagerDutyAvailable(entity) && ( */}
-    <Grid item md={6}>
-      <PagerDutyServiceCard entity={entity} />
-    </Grid>
-    {/* )} */}
+    {isPagerDutyAvailable(entity) && (
+      <Grid item md={6}>
+        <PagerDutyServiceCard entity={entity} />
+      </Grid>
+    )}
     <RecentCICDRunsSwitcher entity={entity} />
     {isGitHubAvailable(entity) && (
       <>

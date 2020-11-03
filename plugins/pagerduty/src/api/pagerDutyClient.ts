@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+const API_URL = 'https://api.pagerduty.com';
 const EVENTS_API_URL = 'https://events.pagerduty.com/v2';
 
 type Options = {
@@ -41,6 +42,49 @@ const request = async (
   }
 
   return await response.json();
+};
+
+const getByUrl = async (url: string, token: string) => {
+  const options = {
+    method: 'GET',
+    headers: {
+      Authorization: `Token token=${token}`,
+      Accept: 'application/vnd.pagerduty+json;version=2',
+      'Content-Type': 'application/json',
+    },
+  };
+  return await request(url, options);
+};
+
+export const getServiceByIntegrationKey = async (
+  integrationKey: string,
+  token: string,
+) => {
+  const response = await getByUrl(
+    `${API_URL}/services?include[]=integrations&include[]=escalation_policies&query=${integrationKey}`,
+    token,
+  );
+  if (response.services.length > 1) {
+    throw new Error('More than one service in response');
+  }
+  return response.services[0];
+};
+
+export const getIncidentsByServiceId = async (
+  serviceId: string,
+  token: string,
+) => {
+  return await getByUrl(
+    `${API_URL}/incidents?service_ids[]=${serviceId}`,
+    token,
+  );
+};
+
+export const getOncallByPolicyId = async (policyId: string, token: string) => {
+  return await getByUrl(
+    `${API_URL}/oncalls?include[]=users&escalation_policy_ids[]=${policyId}`,
+    token,
+  );
 };
 
 export function triggerPagerDutyAlarm(

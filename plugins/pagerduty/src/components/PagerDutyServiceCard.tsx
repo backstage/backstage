@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 import React from 'react';
-import {
-  InfoCard,
-  MissingAnnotationEmptyState,
-  useApi,
-  configApiRef,
-} from '@backstage/core';
+import { InfoCard, useApi, configApiRef } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
-import { Grid } from '@material-ui/core';
+import { Grid, LinearProgress } from '@material-ui/core';
 import { Incidents } from './Incidents';
 import { EscalationPolicy } from './Escalation';
-import { PagerDutyData } from './types';
 import { TriggerButton } from './TriggerButton';
 import { useAsync } from 'react-use';
+import {
+  getServiceByIntegrationKey,
+  getIncidentsByServiceId,
+  getOncallByPolicyId,
+} from '../api/pagerDutyClient';
 
 export const PAGERDUTY_INTEGRATION_KEY = 'pagerduty.com/integration-key';
 
@@ -40,65 +39,63 @@ type Props = {
 export const PagerDutyServiceCard = ({ entity }: Props) => {
   const configApi = useApi(configApiRef);
 
-  const { value, loading, error } = useAsync(async () => {
-    const response = await fetch(
-      `${configApi.getString('backend.baseUrl')}/api/pagerduty/services`,
-    );
-    return await response.json();
-  });
-  if (value) console.log(value);
-  if (error) throw new Error(`Error in getting services, ${error}`);
+  // TODO: handle missing token
+  const token = configApi.getOptionalString('pagerduty.api.token') ?? undefined;
+  console.log({ token });
 
-  // TODO: fetch this data
-  const mockData: PagerDutyData = {
-    pagerDutyServices: [
-      {
-        activeIncidents: [
-          {
-            id: 'id',
-            title: 'something happened',
-            status: 'triggered',
-            createdAt: '2020:01:01',
-            homepageUrl: 'url',
-            assignees: [
-              {
-                name: 'name',
-              },
-            ],
-          },
-        ],
-        escalationPolicy: [
-          {
-            email: 'user@example.com',
-            name: 'Name',
-            homepageUrl: 'https://spotify.pagerduty.com/users/FOO',
-            id: 'user id',
-          },
-        ],
-        id: 'id',
-        name: 'name',
-        homepageUrl: 'https://spotify.pagety.com/service-directory/BAR',
-      },
-    ],
-  };
+  const { value, loading, error } = useAsync(async () => {
+    const integrationKey = entity.metadata.annotations![
+      PAGERDUTY_INTEGRATION_KEY
+    ];
+
+    const service = await getServiceByIntegrationKey(integrationKey, token);
+    const incidents = await getIncidentsByServiceId(
+      (service as any).id /*// TODO: fix type */,
+      token,
+    );
+    const oncalls = await getOncallByPolicyId(
+      (service as any).escalation_policy.id, // TODO: fix type
+      token,
+    );
+
+    return {
+      pagerDutyServices: [
+        {
+          activeIncidents: incidents,
+          escalationPolicy: oncalls,
+          id: service.id,
+          name: service.name,
+          homepageUrl: service.html_url,
+        },
+      ],
+    };
+  });
+
+  if (error) {
+    // TODO: use the errorApi
+    console.log(error);
+    throw new Error(`Error in getting data: ${error.message}`);
+  }
+
+  if (loading) {
+    return <LinearProgress />;
+  }
 
   const {
     activeIncidents,
     escalationPolicy,
     homepageUrl,
-  } = mockData.pagerDutyServices[0];
+  } = value!.pagerDutyServices[0]!;
 
   const link = {
     title: 'View in PagerDuty',
     link: homepageUrl,
   };
 
-  return !isPluginApplicableToEntity(entity) ? (
-    <MissingAnnotationEmptyState annotation={PAGERDUTY_INTEGRATION_KEY} />
-  ) : (
+  return (
     <InfoCard title="PagerDuty" deepLink={link}>
-      <Incidents incidents={activeIncidents} />
-      <EscalationPolicy escalation={escalationPolicy} />
+      <Incidents incidents={activeIncidents.incidents} />
+      <EscalationPolicy escalation={escalationPolicy.oncalls} />
       <Grid container item xs={12} justify="flex-end">
         <TriggerButton entity={entity} />
       </Grid>

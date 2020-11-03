@@ -102,8 +102,8 @@ type EscalationPolicyProps = {
 export const EscalationPolicy = ({ escalation }: EscalationPolicyProps) => (
   <List dense subheader={<ListSubheader>Escalation Policy</ListSubheader>}>
     {escalation.length ? (
-      escalation.map((user, index) => (
-        <EscalationUser key={user.id + index} user={user} />
+      escalation.map((item, index) => (
+        <EscalationUser key={item.user.id + index} user={item.user} />
       ))
     ) : (
       <EscalationUsersEmptyState />

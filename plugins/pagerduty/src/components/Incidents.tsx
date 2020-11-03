@@ -80,8 +80,9 @@ const IncidentList = ({ incidents }: IncidentListProps) => {
         primary={incident.title}
         secondary={
           <span style={{ wordBreak: 'break-all', whiteSpace: 'normal' }}>
-            Created {moment(incident.createdAt).fromNow()}, assigned to{' '}
-            {(incident.assignees.length && incident.assignees[0].name) ||
+            Created {moment(incident.created_at).fromNow()}, assigned to{' '}
+            {(incident?.assignments[0]?.assignee?.summary &&
+              incident.assignments[0].assignee.summary) ||
               'nobody'}
           </span>
         }
