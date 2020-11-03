@@ -75,7 +75,7 @@ that entity.
 # Example:
 metadata:
   annotations:
-    github.com/project-slug: spotify/backstage
+    github.com/project-slug: backstage/backstage
 ```
 
 The value of this annotation is the so-called slug that identifies a project on
@@ -93,7 +93,7 @@ that entity.
 # Example:
 metadata:
   annotations:
-    github.com/team-slug: spotify/backstage-core
+    github.com/team-slug: backstage/maintainers
 ```
 
 The value of this annotation is the so-called slug that identifies a team on
@@ -146,7 +146,7 @@ that entity.
 # Example:
 metadata:
   annotations:
-    rollbar.com/project-slug: spotify/pump-station
+    rollbar.com/project-slug: backstage/pump-station
 ```
 
 The value of this annotation is the so-called slug (or alternatively, the ID) of

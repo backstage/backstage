@@ -24,7 +24,7 @@ Then open up `http://localhost:8000` on your local machine.
 
 This container is published on DockerHub - https://hub.docker.com/r/spotify/techdocs
 
-The publishing is configured by [Automated Builds](https://hub.docker.com/repository/docker/spotify/techdocs/builds/edit) feature on Docker Hub which is triggered from GitHub (on new commits and releases). @spotify/techdocs-core team has access to the settings.
+The publishing is configured by [Automated Builds](https://hub.docker.com/repository/docker/spotify/techdocs/builds/edit) feature on Docker Hub which is triggered from GitHub (on new commits and releases). @backstage/techdocs-core team has access to the settings.
 
 The `latest` tag on Docker Hub points to the recent commits in the `master` branch. The [version tags](https://hub.docker.com/r/spotify/techdocs/tags) (e.g. v0.1.1-alpha.24) point to the GitHub tags created from [releases](https://github.com/backstage/backstage/releases) of this GitHub repository.
 

@@ -1,6 +1,6 @@
 apiVersion: v2
 name: backstage
-description: A Helm chart for Spotify Backstage
+description: A Helm chart for Backstage
 type: application
 
 # This is the chart version. This version number should be incremented each time you make changes

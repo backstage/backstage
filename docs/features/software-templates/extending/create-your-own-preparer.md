@@ -15,7 +15,7 @@ location protocols:
 - `github://`
 
 These two are added to the `PreparersBuilder` and then passed into the
-`createRouter` function of the `@spotify/plugin-scaffolder-backend`.
+`createRouter` function of the `@backstage/plugin-scaffolder-backend`.
 
 A full example backend can be found in
 [`scaffolder.ts`](https://github.com/backstage/backstage/blob/d91c10f654475a60829fa33a5c81018e517a319a/packages/backend/src/plugins/scaffolder.ts),
