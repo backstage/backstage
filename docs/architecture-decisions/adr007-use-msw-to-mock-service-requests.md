@@ -41,7 +41,7 @@ worker.start();
 ```
 
 and in a more real life scenario, taken from
-[CatalogClient.test.ts](https://github.com/spotify/backstage/blob/f3245c4f8f0b6b2625c4a6d5d50161b612fb4757/plugins/catalog/src/api/CatalogClient.test.ts)
+[CatalogClient.test.ts](https://github.com/backstage/backstage/blob/f3245c4f8f0b6b2625c4a6d5d50161b612fb4757/plugins/catalog/src/api/CatalogClient.test.ts)
 
 ```ts
 beforeEach(() => {

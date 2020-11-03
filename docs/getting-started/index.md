@@ -44,7 +44,7 @@ look something like this. You can read more about this process in
 ### Contributing to Backstage
 
 You can read more in our
-[CONTRIBUTING](https://github.com/spotify/backstage/blob/master/CONTRIBUTING.md)
+[CONTRIBUTING](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md)
 guide, which can help you get setup with a Backstage development environment.
 
 ### Next steps

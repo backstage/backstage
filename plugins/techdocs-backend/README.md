@@ -33,7 +33,7 @@ Currently the build process of techdocs-backend is split up in these three stage
 - Generators
 - Publishers
 
-Preparers read your entity data and creates a working directory with your documentation source code. For example if you have set your `backstage.io/techdocs-ref` to `github:https://github.com/spotify/backstage.git` it will clone that repository to a temp folder and pass that on to the generator.
+Preparers read your entity data and creates a working directory with your documentation source code. For example if you have set your `backstage.io/techdocs-ref` to `github:https://github.com/backstage/backstage.git` it will clone that repository to a temp folder and pass that on to the generator.
 
 Generators takes the prepared source and runs the `techdocs-container` on it. It then passes on the output folder of that build to the publisher.
 
@@ -43,5 +43,5 @@ Any of these can be extended. If we want to publish to a external static file se
 
 ## Links
 
-- [Frontend part of the plugin](https://github.com/spotify/backstage/tree/master/plugins/techdocs)
+- [Frontend part of the plugin](https://github.com/backstage/backstage/tree/master/plugins/techdocs)
 - [The Backstage homepage](https://backstage.io)

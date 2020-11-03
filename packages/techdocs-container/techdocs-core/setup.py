@@ -28,7 +28,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     keywords="mkdocs",
-    url="https://github.com/spotify/backstage",
+    url="https://github.com/backstage/backstage",
     author="TechDocs Core",
     author_email="pulp-fiction@spotify.com",
     license="Apache-2.0",

@@ -23,7 +23,7 @@ use.
 # Example:
 metadata:
   annotations:
-    backstage.io/managed-by-location: github:http://github.com/spotify/backstage/catalog-info.yaml
+    backstage.io/managed-by-location: github:http://github.com/backstage/backstage/catalog-info.yaml
 ```
 
 The value of this annotation is a so called location reference string, that
@@ -47,7 +47,7 @@ colon is always present.
 # Example:
 metadata:
   annotations:
-    backstage.io/techdocs-ref: github:https://github.com/spotify/backstage.git
+    backstage.io/techdocs-ref: github:https://github.com/backstage/backstage.git
 ```
 
 The value of this annotation is a location reference string (see above). If this

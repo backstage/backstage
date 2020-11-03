@@ -63,17 +63,17 @@ Each plugin is a client side application which mounts itself on the UI. Plugins
 are written in TypeScript or JavaScript. They each live in their own directory
 in `backstage/plugins`. For example, the source code for the lighthouse plugin
 is available at
-[backstage/plugins/lighthouse](https://github.com/spotify/backstage/tree/master/plugins/lighthouse).
+[backstage/plugins/lighthouse](https://github.com/backstage/backstage/tree/master/plugins/lighthouse).
 
 ### Installing plugins
 
 Plugins are typically loaded by the UI in your Backstage applications
 `plugins.ts` file. For example,
-[here](https://github.com/spotify/backstage/blob/master/packages/app/src/plugins.ts)
+[here](https://github.com/backstage/backstage/blob/master/packages/app/src/plugins.ts)
 is that file in the Backstage sample app.
 
 Plugins can be enabled, and passed configuration in `apis.ts`. For example,
-[here](https://github.com/spotify/backstage/blob/master/packages/app/src/apis.ts)
+[here](https://github.com/backstage/backstage/blob/master/packages/app/src/apis.ts)
 is that file in the Backstage sample app.
 
 This is how the Lighthouse plugin would be enabled in a typical Backstage
@@ -169,8 +169,8 @@ in the future.
 To learn more about the future of databases and Backstage, see the following
 GitHub issues.
 
-- [Knex + Plugins (Multiple vs Single Database) · Issue #1598 · spotify/backstage](https://github.com/spotify/backstage/issues/1598)
-- [Update migrations to support postgres by dariddler · Pull Request #1527 · spotify/backstage](https://github.com/spotify/backstage/pull/1527#discussion_r450374145)
+- [Knex + Plugins (Multiple vs Single Database) · Issue #1598 · spotify/backstage](https://github.com/backstage/backstage/issues/1598)
+- [Update migrations to support postgres by dariddler · Pull Request #1527 · spotify/backstage](https://github.com/backstage/backstage/pull/1527#discussion_r450374145)
 
 ## Containerization
 
