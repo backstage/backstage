@@ -28,7 +28,8 @@
     "prettier:check": "prettier --check .",
     "lerna": "lerna",
     "storybook": "yarn workspace storybook start",
-    "build-storybook": "yarn workspace storybook build-storybook"
+    "build-storybook": "yarn workspace storybook build-storybook",
+    "version": "changeset version && yarn prettier --write '{packages,plugins}/*/{package.json,CHANGELOG.md}'"
   },
   "workspaces": {
     "packages": [
