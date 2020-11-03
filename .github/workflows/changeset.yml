@@ -17,6 +17,6 @@ jobs:
         uses: changesets/action@master
         with:
           # Calls out to `changeset version`, but also runs prettier
-          version: yarn version
+          version: yarn release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
