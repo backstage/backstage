@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.1.1-alpha.26",
+  "version": "0.1.1",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -28,9 +28,9 @@
     "backstage-cli": "bin/backstage-cli"
   },
   "dependencies": {
-    "@backstage/cli-common": "^0.1.1-alpha.26",
-    "@backstage/config": "^0.1.1-alpha.26",
-    "@backstage/config-loader": "^0.1.1-alpha.26",
+    "@backstage/cli-common": "^0.1.1",
+    "@backstage/config": "^0.1.1",
+    "@backstage/config-loader": "^0.1.1",
     "@hot-loader/react-dom": "^16.13.0",
     "@lerna/package-graph": "^3.18.5",
     "@lerna/project": "^3.18.0",
@@ -108,12 +108,12 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/backend-common": "^0.1.1-alpha.26",
-    "@backstage/config": "^0.1.1-alpha.26",
-    "@backstage/core": "^0.1.1-alpha.26",
-    "@backstage/dev-utils": "^0.1.1-alpha.26",
-    "@backstage/test-utils": "^0.1.1-alpha.26",
-    "@backstage/theme": "^0.1.1-alpha.26",
+    "@backstage/backend-common": "^0.1.1",
+    "@backstage/config": "^0.1.1",
+    "@backstage/core": "^0.1.1",
+    "@backstage/dev-utils": "^0.1.1",
+    "@backstage/test-utils": "^0.1.1",
+    "@backstage/theme": "^0.1.1",
     "@types/diff": "^4.0.2",
     "@types/fs-extra": "^9.0.1",
     "@types/html-webpack-plugin": "^3.2.2",
