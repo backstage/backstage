@@ -82,6 +82,10 @@ Extensions:
 
 ## Changelog
 
+### 0.0.11
+
+- Any MkDocs plugin configurations from mkdocs.yml will now work and override the default configuration. See https://github.com/spotify/backstage/issues/3017
+
 ### 0.0.10
 
 - Pin Markdown version to fix issue with Graphviz
