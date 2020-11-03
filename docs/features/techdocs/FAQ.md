@@ -23,8 +23,7 @@ is using the MkDocs
 
 #### What is the mkdocs-techdocs-core plugin?
 
-The
-[mkdocs-techdocs-core](https://github.com/backstage/backstage/blob/master/packages/techdocs-container/techdocs-core/README.md)
+The [mkdocs-techdocs-core](https://github.com/backstage/mkdocs-techdocs-core)
 package is a MkDocs Plugin that works like a wrapper around multiple MkDocs
 plugins (e.g.
 [MkDocs Monorepo Plugin](https://github.com/spotify/mkdocs-monorepo-plugin)) as
