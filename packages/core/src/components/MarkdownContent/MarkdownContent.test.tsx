@@ -19,7 +19,7 @@ import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import { MarkdownContent } from './MarkdownContent';
 
 describe('<MarkdownContent />', () => {
-  it('render MarkdownContent component with common mark', async () => {
+  it('render MarkdownContent component', async () => {
     const rendered = await renderWithEffects(
       wrapInTestApp(
         <MarkdownContent content={'# H1\n' + '## H2\n' + '### H3'} />,
@@ -30,14 +30,23 @@ describe('<MarkdownContent />', () => {
     expect(rendered.getByText('H3', { selector: 'h3' })).toBeInTheDocument();
   });
 
-  it('render MarkdownContent component with common mark github flavored', async () => {
+  it('render MarkdownContent component with GitHub flavored Markdown dialect', async () => {
     const rendered = await renderWithEffects(
-      wrapInTestApp(
-        <MarkdownContent content="https://example.com" enableGfm />,
-      ),
+      wrapInTestApp(<MarkdownContent content="https://example.com" />),
     );
     expect(
       rendered.getByText('https://example.com', { selector: 'a' }),
+    ).toBeInTheDocument();
+  });
+
+  it('Render MarkdownContent component with common mark dialect', async () => {
+    const rendered = await renderWithEffects(
+      wrapInTestApp(
+        <MarkdownContent content="https://example.com" dialect="common-mark" />,
+      ),
+    );
+    expect(
+      rendered.getByText('https://example.com', { selector: 'p' }),
     ).toBeInTheDocument();
   });
 

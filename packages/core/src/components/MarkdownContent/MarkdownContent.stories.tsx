@@ -112,9 +112,9 @@ const markdown =
   'Pedis hic, est bis quod, adhaeret et reditum. Fixa sic vel pugnare **forte est**\n' +
   'parte in quaerite generisque repugnat; de quod, creatos.';
 export const MarkdownContentCommonMark = () => (
-  <MarkdownContent content={markdown} />
+  <MarkdownContent content={markdown} dialect="common-mark" />
 );
 
 export const MarkdownContentGithubFlavoredCommonMark = () => (
-  <MarkdownContent content={markdownGithubFlavored} enableGfm />
+  <MarkdownContent content={markdownGithubFlavored} dialect="gfm" />
 );

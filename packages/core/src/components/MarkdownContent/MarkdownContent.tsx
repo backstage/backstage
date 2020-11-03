@@ -59,12 +59,9 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-/**
- * MarkdownContent. Renders markdown (CommonMark, optionally with [GFM](https://github.com/remarkjs/remark-gfm)) to formatted HTML.
- */
 type Props = {
   content: string;
-  enableGfm?: boolean;
+  dialect?: 'gfm' | 'common-mark';
 };
 
 const renderers = {
@@ -73,11 +70,17 @@ const renderers = {
   },
 };
 
-export const MarkdownContent = ({ content, enableGfm = false }: Props) => {
+/**
+ * MarkdownContent
+ * --
+ * Renders markdown with the default dialect [gfm - GitHub flavored Markdown](https://github.github.com/gfm/) to backstage theme styled HTML.
+ * If you just want to render to plain [CommonMark](https://commonmark.org/), set the dialect to `'common-mark'`
+ */
+export const MarkdownContent = ({ content, dialect = 'gfm' }: Props) => {
   const classes = useStyles();
   return (
     <ReactMarkdown
-      plugins={enableGfm ? [gfm] : []}
+      plugins={dialect === 'gfm' ? [gfm] : []}
       className={classes.markdown}
       children={content}
       renderers={renderers}
