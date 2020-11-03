@@ -160,7 +160,8 @@ const app = createApp({
 ```
 
 A common pattern is to export a list of all APIs from `apis.ts`, next to
-`App.tsx`. See the [example app in this repo](../../packages/app/src/apis.ts)
+`App.tsx`. See the
+[example app in this repo](https://github.com/backstage/backstage/blob/master/packages/app/src/apis.ts)
 for an example.
 
 ## Custom implementations of Utility APIs
