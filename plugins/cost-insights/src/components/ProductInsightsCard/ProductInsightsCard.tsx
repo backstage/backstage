@@ -82,12 +82,13 @@ export const ProductInsightsCard = ({ product }: ProductInsightsCardProps) => {
     async function load() {
       if (loadingProduct) {
         try {
-          const p: ProductCost = await client.getProductInsights(
-            product.kind,
-            group!,
-            productFilter!.duration,
+          const p: ProductCost = await client.getProductInsights({
+            product: product.kind,
+            group: group!,
+            duration: productFilter!.duration,
+            lastCompleteBillingDate,
             project,
-          );
+          });
           setResource(p);
         } catch (e) {
           setError(e);
@@ -107,6 +108,7 @@ export const ProductInsightsCard = ({ product }: ProductInsightsCardProps) => {
     group,
     product.kind,
     project,
+    lastCompleteBillingDate,
   ]);
 
   const onPeriodSelect = (duration: Duration) => {
