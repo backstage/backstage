@@ -169,8 +169,8 @@ in the future.
 To learn more about the future of databases and Backstage, see the following
 GitHub issues.
 
-- [Knex + Plugins (Multiple vs Single Database) · Issue #1598 · spotify/backstage](https://github.com/backstage/backstage/issues/1598)
-- [Update migrations to support postgres by dariddler · Pull Request #1527 · spotify/backstage](https://github.com/backstage/backstage/pull/1527#discussion_r450374145)
+- [Knex + Plugins (Multiple vs Single Database) · Issue #1598 · backstage/backstage](https://github.com/backstage/backstage/issues/1598)
+- [Update migrations to support postgres by dariddler · Pull Request #1527 · backstage/backstage](https://github.com/backstage/backstage/pull/1527#discussion_r450374145)
 
 ## Containerization
 

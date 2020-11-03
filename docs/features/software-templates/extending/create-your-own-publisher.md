@@ -18,7 +18,7 @@ Currently we provide the following `publishers`:
 - `github`
 
 This publisher is passed through to the `createRouter` function of the
-`@spotify/plugin-scaffolder-backend`. Currently, only one publisher is
+`@backstage/plugin-scaffolder-backend`. Currently, only one publisher is
 supported, but PR's are always welcome.
 
 An full example backend can be found

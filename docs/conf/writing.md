@@ -19,7 +19,7 @@ backend:
   baseUrl: http://localhost:7000
 
 organization:
-  name: Spotify
+  name: CNCF
 
 proxy:
   /my/api:

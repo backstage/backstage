@@ -90,6 +90,6 @@ metadata:
     sonarqube.org/project-key: YOUR_PROJECT_KEY
 spec:
   type: library
-  owner: Spotify
+  owner: CNCF
   lifecycle: experimental
 ```

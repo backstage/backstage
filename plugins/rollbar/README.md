@@ -53,7 +53,7 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
 ```yaml
 # app.config.yaml
 rollbar:
-  organization: spotify
+  organization: organization-name
   accountToken:
     $env: ROLLBAR_ACCOUNT_TOKEN
 ```

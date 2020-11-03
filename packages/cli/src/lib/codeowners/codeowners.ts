@@ -20,7 +20,7 @@ import path from 'path';
 const TEAM_ID_RE = /^@[-\w]+\/[-\w]+$/;
 const USER_ID_RE = /^@[-\w]+$/;
 const EMAIL_RE = /^[^@]+@[-.\w]+\.[-\w]+$/i;
-const DEFAULT_OWNER = '@spotify/backstage-core';
+const DEFAULT_OWNER = '@backstage/maintainers';
 
 type CodeownersEntry = {
   ownedPath: string;
