@@ -31,14 +31,3 @@ jobs:
         with:
           path: packages/techdocs-container
           push: false
-
-      # Lint Python code for techdocs-core package
-      - name: Prepare Python environment
-        run: |
-          python3 -m pip install --index-url https://pypi.org/simple/ setuptools
-          python3 -m pip install --upgrade pip
-          python3 -m pip install --index-url https://pypi.org/simple/ -r $TECHDOCS_CORE_PATH/requirements.txt
-
-      - name: Lint techdocs-core package
-        run: |
-          python3 -m black --check $TECHDOCS_CORE_PATH/src
