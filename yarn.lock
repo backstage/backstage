@@ -1772,6 +1772,16 @@
     li "^1.3.0"
     xcase "^2.0.1"
 
+"@gitbeaker/core@^25.2.0":
+  version "25.2.0"
+  resolved "https://registry.npmjs.org/@gitbeaker/core/-/core-25.2.0.tgz#c2f46b65ed88aebfa69afd2e58dbf4ebe2efb2c7"
+  integrity sha512-dhCvZItI8FIzHtJ9EySQ43GmNg3j39MxDGMCpDHn+Qb1o54QS+J6XPVQrMRmJioZIyj+WZQPX/IP+/mRkx8vhg==
+  dependencies:
+    "@gitbeaker/requester-utils" "^25.2.0"
+    form-data "^3.0.0"
+    li "^1.3.0"
+    xcase "^2.0.1"
+
 "@gitbeaker/node@^23.5.0":
   version "23.5.0"
   resolved "https://registry.npmjs.org/@gitbeaker/node/-/node-23.5.0.tgz#0243be78aad148e7d6b5d79b7acc340748b5fa94"
@@ -1788,6 +1798,15 @@
   integrity sha512-MdmInOO4unkApvtbv6PnIpDYXosgZgClSOqbxF5S4aJRCZVTJ6oPjMoNP8luhyT9xQeknpKxn9Iv8psEh7IC1Q==
   dependencies:
     query-string "^6.12.1"
+    xcase "^2.0.1"
+
+"@gitbeaker/requester-utils@^25.2.0":
+  version "25.2.0"
+  resolved "https://registry.npmjs.org/@gitbeaker/requester-utils/-/requester-utils-25.2.0.tgz#f71c44e0073617877f9875dd00c4ae0d74897b09"
+  integrity sha512-pjuFIVlbxSTPdN+zFT/LBP4ym8k0OBYwUpc5WkzoOtvdTGuDX05r8ufnV07kibLDJkwDmjwnH4Hsc66yevSQTw==
+  dependencies:
+    form-data "^3.0.0"
+    query-string "^6.13.3"
     xcase "^2.0.1"
 
 "@graphql-codegen/cli@^1.17.7":
@@ -19224,6 +19243,15 @@ query-string@^6.12.1:
   version "6.13.1"
   resolved "https://registry.npmjs.org/query-string/-/query-string-6.13.1.tgz#d913ccfce3b4b3a713989fe6d39466d92e71ccad"
   integrity sha512-RfoButmcK+yCta1+FuU8REvisx1oEzhMKwhLUNcepQTPGcNMp1sIqjnfCtfnvGSQZQEhaBHvccujtWoUV3TTbA==
+  dependencies:
+    decode-uri-component "^0.2.0"
+    split-on-first "^1.0.0"
+    strict-uri-encode "^2.0.0"
+
+query-string@^6.13.3:
+  version "6.13.6"
+  resolved "https://registry.npmjs.org/query-string/-/query-string-6.13.6.tgz#e5ac7c74f2a5da43fbca0b883b4f0bafba439966"
+  integrity sha512-/WWZ7d9na6s2wMEGdVCVgKWE9Rt7nYyNIf7k8xmHXcesPMlEzicWo3lbYwHyA4wBktI2KrXxxZeACLbE84hvSQ==
   dependencies:
     decode-uri-component "^0.2.0"
     split-on-first "^1.0.0"
