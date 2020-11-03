@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
+import { Content } from '@backstage/core';
+import { Link, Typography } from '@material-ui/core';
 import React, { ComponentType } from 'react';
+import { Navigate, Route, Routes, useParams } from 'react-router';
+import { useEntity } from '../hooks/useEntity';
+import { entityRoute, rootRoute } from '../routes';
 import { CatalogPage } from './CatalogPage';
 import { EntityNotFound } from './EntityNotFound';
 import { EntityPageLayout } from './EntityPageLayout';
-import { Route, Routes } from 'react-router';
-import { entityRoute, rootRoute } from '../routes';
-import { Content } from '@backstage/core';
-import { Typography, Link } from '@material-ui/core';
 import { EntityProvider } from './EntityProvider';
-import { useEntity } from '../hooks/useEntity';
 
 const DefaultEntityPage = () => (
   <EntityPageLayout>
@@ -56,6 +57,18 @@ const EntityPageSwitch = ({ EntityPage }: { EntityPage: ComponentType }) => {
   return <EntityPage />;
 };
 
+const OldEntityRouteRedirect = () => {
+  const { optionalNamespaceAndName, '*': rest } = useParams() as any;
+  const [name, namespace] = optionalNamespaceAndName.split(':').reverse();
+  const namespaceLower = namespace?.toLowerCase() ?? ENTITY_DEFAULT_NAMESPACE;
+  const restWithSlash = rest ? `/${rest}` : '';
+  return (
+    <Navigate
+      to={`../../${namespaceLower}/component/${name}${restWithSlash}`}
+    />
+  );
+};
+
 export const Router = ({
   EntityPage = DefaultEntityPage,
 }: {
@@ -70,6 +83,10 @@ export const Router = ({
           <EntityPageSwitch EntityPage={EntityPage} />
         </EntityProvider>
       }
+    />
+    <Route
+      path="Component/:optionalNamespaceAndName/*"
+      element={<OldEntityRouteRedirect />}
     />
   </Routes>
 );

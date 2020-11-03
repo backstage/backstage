@@ -1,5 +1,5 @@
 name: Automatically add new TechDocs Issues and PRs to the GitHub project board
-# Development of TechDocs in Backstage is managed by this Kanban board - https://github.com/spotify/backstage/projects/5
+# Development of TechDocs in Backstage is managed by this Kanban board - https://github.com/backstage/backstage/projects/5
 # New issues with TechDocs in their title or docs-like-code label will be added to the board.
 
 on:
@@ -23,7 +23,7 @@ jobs:
           contains(github.event.issue.title, 'techdocs') ||
           contains(github.event.issue.title, 'Techdocs')
         with:
-          project: 'https://github.com/spotify/backstage/projects/5'
+          project: 'https://github.com/backstage/backstage/projects/5'
           column_name: 'Incoming'
 
       - name: Assign new issue to Incoming based on its label.
@@ -31,7 +31,7 @@ jobs:
         if: |
           contains(github.event.issue.labels.*.name, 'docs-like-code')
         with:
-          project: 'https://github.com/spotify/backstage/projects/5'
+          project: 'https://github.com/backstage/backstage/projects/5'
           column_name: 'Incoming'
 
       - name: Assign new PR to Incoming based on its title.
@@ -41,7 +41,7 @@ jobs:
           contains(github.event.pull_request.title, 'techdocs') ||
           contains(github.event.pull_request.title, 'Techdocs')
         with:
-          project: 'https://github.com/spotify/backstage/projects/5'
+          project: 'https://github.com/backstage/backstage/projects/5'
           column_name: 'Incoming'
 
       - name: Assign new PR to Incoming based on its label.
@@ -49,5 +49,5 @@ jobs:
         if: |
           contains(github.event.pull_request.labels.*.name, 'docs-like-code')
         with:
-          project: 'https://github.com/spotify/backstage/projects/5'
+          project: 'https://github.com/backstage/backstage/projects/5'
           column_name: 'Incoming'

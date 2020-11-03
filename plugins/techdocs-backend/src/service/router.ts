@@ -62,7 +62,13 @@ export async function createRouter({
   const router = Router();
 
   router.get('/metadata/mkdocs/*', async (req, res) => {
-    const storageUrl = config.getString('techdocs.storageUrl');
+    let storageUrl = config.getString('techdocs.storageUrl');
+    if (publisher instanceof LocalPublish) {
+      storageUrl = new URL(
+        new URL(storageUrl).pathname,
+        await discovery.getBaseUrl('techdocs'),
+      ).toString();
+    }
     const { '0': path } = req.params;
 
     const metadataURL = `${storageUrl}/${path}/techdocs_metadata.json`;
@@ -71,21 +77,20 @@ export async function createRouter({
       const mkDocsMetadata = await (await fetch(metadataURL)).json();
       res.send(mkDocsMetadata);
     } catch (err) {
-      logger.info(
-        `[TechDocs] Unable to get metadata for ${path} with error ${err}`,
-      );
+      logger.info(`Unable to get metadata for ${path} with error ${err}`);
       throw new Error(`Unable to get metadata for ${path} with error ${err}`);
     }
   });
 
   router.get('/metadata/entity/:namespace/:kind/:name', async (req, res) => {
-    const baseUrl = config.getString('backend.baseUrl');
+    const catalogUrl = await discovery.getBaseUrl('catalog');
+
     const { kind, namespace, name } = req.params;
 
     try {
       const entity = (await (
         await fetch(
-          `${baseUrl}/api/catalog/entities/by-name/${kind}/${namespace}/${name}`,
+          `${catalogUrl}/entities/by-name/${kind}/${namespace}/${name}`,
         )
       ).json()) as Entity;
 
@@ -93,7 +98,7 @@ export async function createRouter({
       res.send({ ...entity, locationMetadata });
     } catch (err) {
       logger.info(
-        `[TechDocs] Unable to get metadata for ${kind}/${namespace}/${name} with error ${err}`,
+        `Unable to get metadata for ${kind}/${namespace}/${name} with error ${err}`,
       );
       throw new Error(
         `Unable to get metadata for ${kind}/${namespace}/${name} with error ${err}`,

@@ -17,14 +17,13 @@ This page answers frequently asked questions about [TechDocs](README.md).
 
 TechDocs is using [MkDocs](https://www.mkdocs.org/) to build project
 documentation under the hood. Documentation built with the
-[techdocs-container](https://github.com/spotify/backstage/blob/master/packages/techdocs-container/README.md)
+[techdocs-container](https://github.com/backstage/backstage/blob/master/packages/techdocs-container/README.md)
 is using the MkDocs
 [Material Theme](https://github.com/squidfunk/mkdocs-material).
 
 #### What is the mkdocs-techdocs-core plugin?
 
-The
-[mkdocs-techdocs-core](https://github.com/spotify/backstage/blob/master/packages/techdocs-container/techdocs-core/README.md)
+The [mkdocs-techdocs-core](https://github.com/backstage/mkdocs-techdocs-core)
 package is a MkDocs Plugin that works like a wrapper around multiple MkDocs
 plugins (e.g.
 [MkDocs Monorepo Plugin](https://github.com/spotify/mkdocs-monorepo-plugin)) as

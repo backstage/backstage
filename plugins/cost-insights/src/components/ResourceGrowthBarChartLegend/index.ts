@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { default } from './ResourceGrowthBarChartLegend';
+export { ResourceGrowthBarChartLegend } from './ResourceGrowthBarChartLegend';

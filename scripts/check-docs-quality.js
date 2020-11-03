@@ -44,7 +44,10 @@ const getFilesToLint = () => {
     stdio: ['ignore', 'pipe', 'inherit'],
   })
     .toString()
-    .split('\n');
+    .split('\n')
+    .filter(function (el) {
+      return el !== '';
+    });
 };
 
 // Proceed with the script only if Vale linter is installed. Limit the friction and surprises caused by the script.

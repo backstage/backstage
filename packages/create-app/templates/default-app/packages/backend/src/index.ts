@@ -42,7 +42,10 @@ function makeCreateEnv(config: Config) {
 }
 
 async function main() {
-  const config = await loadBackendConfig({logger: getRootLogger()});
+  const config = await loadBackendConfig({
+    argv: process.argv,
+    logger: getRootLogger(),
+  });
   const createEnv = makeCreateEnv(config);
 
   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
@@ -52,16 +55,16 @@ async function main() {
   const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
 
   const apiRouter = Router();
-  apiRouter.use('/catalog', await catalog(catalogEnv))
-  apiRouter.use('/scaffolder', await scaffolder(scaffolderEnv))
-  apiRouter.use('/auth', await auth(authEnv))
-  apiRouter.use('/techdocs', await techdocs(techdocsEnv))
-  apiRouter.use('/proxy', await proxy(proxyEnv))
+  apiRouter.use('/catalog', await catalog(catalogEnv));
+  apiRouter.use('/scaffolder', await scaffolder(scaffolderEnv));
+  apiRouter.use('/auth', await auth(authEnv));
+  apiRouter.use('/techdocs', await techdocs(techdocsEnv));
+  apiRouter.use('/proxy', await proxy(proxyEnv));
   apiRouter.use(notFoundHandler());
 
   const service = createServiceBuilder(module)
     .loadConfig(config)
-    .addRouter('/api', apiRouter)
+    .addRouter('/api', apiRouter);
 
   await service.start().catch(err => {
     console.log(err);

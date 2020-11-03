@@ -320,3 +320,14 @@ export const samlAuthApiRef: ApiRef<
   id: 'core.auth.saml',
   description: 'Example of how to use SAML custom provider',
 });
+
+export const oneloginAuthApiRef: ApiRef<
+  OAuthApi &
+    OpenIdConnectApi &
+    ProfileInfoApi &
+    BackstageIdentityApi &
+    SessionApi
+> = createApiRef({
+  id: 'core.auth.onelogin',
+  description: 'Provides authentication towards OneLogin APIs and identities',
+});

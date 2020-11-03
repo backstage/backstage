@@ -35,7 +35,6 @@ import {
   AppThemeApi,
   ConfigApi,
   identityApiRef,
-  FeatureFlagsRegistryItem,
 } from '../apis/definitions';
 import { AppThemeProvider } from './AppThemeProvider';
 
@@ -51,6 +50,7 @@ import {
   useApi,
   AnyApiFactory,
   ApiHolder,
+  LocalStorageFeatureFlags,
 } from '../apis';
 import { useAsync } from 'react-use';
 import { AppIdentity } from './AppIdentity';
@@ -135,7 +135,8 @@ export class PrivateAppImpl implements BackstageApp {
 
   getRoutes(): JSX.Element[] {
     const routes = new Array<JSX.Element>();
-    const registeredFeatureFlags = new Array<FeatureFlagsRegistryItem>();
+
+    const featureFlagsApi = this.getApiHolder().get(featureFlagsApiRef)!;
 
     const { NotFoundErrorPage } = this.components;
 
@@ -171,9 +172,9 @@ export class PrivateAppImpl implements BackstageApp {
             break;
           }
           case 'feature-flag': {
-            registeredFeatureFlags.push({
-              pluginId: plugin.getId(),
+            featureFlagsApi.registerFlag({
               name: output.name,
+              pluginId: plugin.getId(),
             });
             break;
           }
@@ -181,11 +182,6 @@ export class PrivateAppImpl implements BackstageApp {
             break;
         }
       }
-    }
-
-    const featureFlags = this.getApiHolder().get(featureFlagsApiRef);
-    if (featureFlags) {
-      featureFlags.registeredFeatureFlags = registeredFeatureFlags;
     }
 
     routes.push(<Route path="/*" element={<NotFoundErrorPage />} />);
@@ -319,6 +315,13 @@ export class PrivateAppImpl implements BackstageApp {
       factory: () => this.identityApi,
     });
 
+    // It's possible to replace the feature flag API, but since we must have at least
+    // one implementation we add it here directly instead of through the defaultApis.
+    registry.register('default', {
+      api: featureFlagsApiRef,
+      deps: {},
+      factory: () => new LocalStorageFeatureFlags(),
+    });
     for (const factory of this.defaultApis) {
       registry.register('default', factory);
     }

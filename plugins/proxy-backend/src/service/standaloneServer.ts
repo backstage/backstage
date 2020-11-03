@@ -36,7 +36,7 @@ export async function startStandaloneServer(
 
   logger.debug('Creating application...');
 
-  const config = await loadBackendConfig({ logger });
+  const config = await loadBackendConfig({ logger, argv: process.argv });
   const discovery = SingleHostDiscovery.fromConfig(config);
   const router = await createRouter({
     config,

@@ -21,11 +21,11 @@ But this is just one way to do it. Today we’re most excited for what the open 
 
 ## Okay, let’s start collaborating
 
-If you go to [GitHub](https://github.com/spotify/backstage/tree/master/plugins) now, you’ll find everything you need to start collaborating with us to build out the docs-like-code Backstage plugin — we’ll call it TechDocs in the open as well.
+If you go to [GitHub](https://github.com/backstage/backstage/tree/master/plugins) now, you’ll find everything you need to start collaborating with us to build out the docs-like-code Backstage plugin — we’ll call it TechDocs in the open as well.
 
-You’ll find the code in [techdocs](https://github.com/spotify/backstage/tree/master/plugins/techdocs) (frontend) and [techdocs-backend](https://github.com/spotify/backstage/tree/master/plugins/techdocs-backend). (There are also two separate packages [techdocs-cli](https://github.com/spotify/backstage/tree/master/packages/techdocs-cli) and [techdocs-container](https://github.com/spotify/backstage/tree/master/packages/techdocs-container).)
+You’ll find the code in [techdocs](https://github.com/backstage/backstage/tree/master/plugins/techdocs) (frontend) and [techdocs-backend](https://github.com/backstage/backstage/tree/master/plugins/techdocs-backend). (There are also two separate packages [techdocs-cli](https://github.com/backstage/backstage/tree/master/packages/techdocs-cli) and [techdocs-container](https://github.com/backstage/backstage/tree/master/packages/techdocs-container).)
 
-You’ll find issues to work on in the [issues queue](https://github.com/spotify/backstage/issues?q=is%3Aissue+is%3Aopen+label%3A%22docs-like-code%22+label%3A%22help+wanted%22), typically starting with TechDocs: and labeled with docs-like-code, some labeled good first issue. Feel free to add your own issues, of course.
+You’ll find issues to work on in the [issues queue](https://github.com/backstage/backstage/issues?q=is%3Aissue+is%3Aopen+label%3A%22docs-like-code%22+label%3A%22help+wanted%22), typically starting with TechDocs: and labeled with docs-like-code, some labeled good first issue. Feel free to add your own issues, of course.
 
 ![available-templates](assets/announcing-techdocs/github-issues.png)
 

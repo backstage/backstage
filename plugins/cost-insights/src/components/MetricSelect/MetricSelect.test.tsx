@@ -16,7 +16,7 @@
 import React from 'react';
 import { waitFor } from '@testing-library/react';
 import UserEvent from '@testing-library/user-event';
-import MetricSelect, { MetricSelectProps } from './MetricSelect';
+import { MetricSelect, MetricSelectProps } from './MetricSelect';
 import { renderInTestApp } from '@backstage/test-utils';
 
 describe('<MetricSelect />', () => {

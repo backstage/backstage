@@ -20,8 +20,6 @@ import {
   AlertApiForwarder,
   ErrorApiForwarder,
   ErrorAlerter,
-  featureFlagsApiRef,
-  FeatureFlags,
   discoveryApiRef,
   GoogleAuth,
   GithubAuth,
@@ -46,6 +44,8 @@ import {
   UrlPatternDiscovery,
   samlAuthApiRef,
   SamlAuth,
+  oneloginAuthApiRef,
+  OneLoginAuth,
 } from '@backstage/core-api';
 
 export const defaultApis = [
@@ -69,7 +69,6 @@ export const defaultApis = [
     deps: { errorApi: errorApiRef },
     factory: ({ errorApi }) => WebStorage.create({ errorApi }),
   }),
-  createApiFactory(featureFlagsApiRef, new FeatureFlags()),
   createApiFactory(oauthRequestApiRef, new OAuthRequestManager()),
   createApiFactory({
     api: googleAuthApiRef,
@@ -144,5 +143,14 @@ export const defaultApis = [
       discoveryApi: discoveryApiRef,
     },
     factory: ({ discoveryApi }) => SamlAuth.create({ discoveryApi }),
+  }),
+  createApiFactory({
+    api: oneloginAuthApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      oauthRequestApi: oauthRequestApiRef,
+    },
+    factory: ({ discoveryApi, oauthRequestApi }) =>
+      OneLoginAuth.create({ discoveryApi, oauthRequestApi }),
   }),
 ];

@@ -24,20 +24,21 @@ import { Alert } from '@material-ui/lab';
 import { useApi, identityApiRef } from '@backstage/core';
 import { costInsightsApiRef } from '../api';
 import { MapLoadingToProps, useLoading } from './useLoading';
-import { DefaultLoadingAction, Group, Maybe } from '../types';
+import { Group, Maybe } from '../types';
+import { DefaultLoadingAction } from '../utils/loading';
 
 type GroupsProviderLoadingProps = {
   dispatchLoadingGroups: (isLoading: boolean) => void;
 };
 
-export const mapLoadingToProps: MapLoadingToProps<GroupsProviderLoadingProps> = ({
+const mapLoadingToProps: MapLoadingToProps<GroupsProviderLoadingProps> = ({
   dispatch,
 }) => ({
   dispatchLoadingGroups: (isLoading: boolean) =>
     dispatch({ [DefaultLoadingAction.UserGroups]: isLoading }),
 });
 
-type GroupsContextProps = {
+export type GroupsContextProps = {
   groups: Group[];
 };
 

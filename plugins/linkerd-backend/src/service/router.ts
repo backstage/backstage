@@ -48,7 +48,7 @@ export async function createRouter(
 
   const { Authorization, baseUrl } = getCluster(options);
   const makeRequest = (url: string) => {
-    const k8sProxyUrl = `/api/v1/namespaces/linkerd/services/linkerd-web:8084/proxy${url}`;
+    const k8sProxyUrl = `api/v1/namespaces/linkerd/services/linkerd-web:8084/proxy${url}`;
 
     return fetch(`${baseUrl}${k8sProxyUrl}`, {
       headers: { Authorization },

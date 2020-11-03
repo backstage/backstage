@@ -23,7 +23,7 @@ use.
 # Example:
 metadata:
   annotations:
-    backstage.io/managed-by-location: github:http://github.com/spotify/backstage/catalog-info.yaml
+    backstage.io/managed-by-location: github:http://github.com/backstage/backstage/catalog-info.yaml
 ```
 
 The value of this annotation is a so called location reference string, that
@@ -47,7 +47,7 @@ colon is always present.
 # Example:
 metadata:
   annotations:
-    backstage.io/techdocs-ref: github:https://github.com/spotify/backstage.git
+    backstage.io/techdocs-ref: github:https://github.com/backstage/backstage.git
 ```
 
 The value of this annotation is a location reference string (see above). If this
@@ -75,7 +75,7 @@ that entity.
 # Example:
 metadata:
   annotations:
-    github.com/project-slug: spotify/backstage
+    github.com/project-slug: backstage/backstage
 ```
 
 The value of this annotation is the so-called slug that identifies a project on
@@ -93,7 +93,7 @@ that entity.
 # Example:
 metadata:
   annotations:
-    github.com/team-slug: spotify/backstage-core
+    github.com/team-slug: backstage/maintainers
 ```
 
 The value of this annotation is the so-called slug that identifies a team on
@@ -146,7 +146,7 @@ that entity.
 # Example:
 metadata:
   annotations:
-    rollbar.com/project-slug: spotify/pump-station
+    rollbar.com/project-slug: backstage/pump-station
 ```
 
 The value of this annotation is the so-called slug (or alternatively, the ID) of
@@ -172,6 +172,22 @@ metadata:
 The value of these annotations are the corresponding attributes that were found
 when ingestion the entity from LDAP. Not all of them may be present, depending
 on what attributes that the server presented at ingestion time.
+
+### sonarqube.org/project-key
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    sonarqube.org/project-key: pump-station
+```
+
+The value of this annotation is the project key of a
+[SonarQube](https://sonarqube.org) or [SonarCloud](https://sonarcloud.io)
+project within your organization.
+
+Specifying this annotation may enable SonarQube related features in Backstage
+for that entity.
 
 ## Deprecated Annotations
 

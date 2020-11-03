@@ -54,11 +54,9 @@ export type LegacyRedirectRouteOutput = {
   options?: RouteOptions;
 };
 
-export type FeatureFlagName = string;
-
 export type FeatureFlagOutput = {
   type: 'feature-flag';
-  name: FeatureFlagName;
+  name: string;
 };
 
 export type PluginOutput =
@@ -72,4 +70,36 @@ export type BackstagePlugin = {
   getId(): string;
   output(): PluginOutput[];
   getApis(): Iterable<AnyApiFactory>;
+};
+
+export type PluginConfig = {
+  id: string;
+  apis?: Iterable<AnyApiFactory>;
+  register?(hooks: PluginHooks): void;
+};
+
+export type PluginHooks = {
+  router: RouterHooks;
+  featureFlags: FeatureFlagsHooks;
+};
+
+export type RouterHooks = {
+  addRoute(
+    target: RouteRef,
+    Component: ComponentType<any>,
+    options?: RouteOptions,
+  ): void;
+
+  /**
+   * @deprecated See the `addRoute` method
+   */
+  registerRoute(
+    path: RoutePath,
+    Component: ComponentType<any>,
+    options?: RouteOptions,
+  ): void;
+};
+
+export type FeatureFlagsHooks = {
+  register(name: string): void;
 };

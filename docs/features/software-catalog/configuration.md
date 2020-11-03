@@ -89,7 +89,7 @@ the catalog under the `catalog.locations` key, for example:
 catalog:
   locations:
     - type: url
-      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
 ```
 
 The locations added through static configuration can not be removed through the

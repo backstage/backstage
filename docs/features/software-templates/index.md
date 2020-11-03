@@ -39,17 +39,17 @@ internally.
 ![Enter some variables](../../assets/software-templates/template-picked.png)
 
 After filling in these variables, you'll get some more fields to fill out which
-are required for backstage usage: the owner, (which is a `user` in the backstage
+are required for backstage usage: the owner (which is a `user` in the backstage
 system), the `storePath` (which right now must be a GitHub Organisation or
-GitHub user), a non-existing github repository name in the format
-`organisation/reponame`, and a GitHub team or user account which should be
+GitHub user and a non-existing GitHub repository name in the format
+`organisation/reponame`), and a GitHub team or user account which should be
 granted admin access to the repository.
 
 ![Enter backstage vars](../../assets/software-templates/template-picked-2.png)
 
 ### Run!
 
-Once you've entered values and confirmed, you'll then get a modal with live
+Once you've entered values and confirmed, you'll then get a popup box with live
 progress of what is currently happening with the creation of your template.
 
 ![Templating Running](../../assets/software-templates/running.png)
@@ -70,6 +70,6 @@ you to the registered component in the catalog:
 
 ![Catalog](../../assets/software-templates/go-to-catalog.png)
 
-And then you'll also be able to see it in the Catalog View table
+And then you'll also be able to see it in the Catalog View table:
 
 ![Catalog](../../assets/software-templates/added-to-the-catalog-list.png)

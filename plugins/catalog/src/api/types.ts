@@ -35,10 +35,16 @@ export interface CatalogApi {
     compoundName: EntityCompoundName,
   ): Promise<Entity | undefined>;
   getEntities(filter?: Record<string, string | string[]>): Promise<Entity[]>;
-  addLocation(type: string, target: string): Promise<AddLocationResponse>;
+  addLocation(location: AddLocationRequest): Promise<AddLocationResponse>;
   getLocationByEntity(entity: Entity): Promise<Location | undefined>;
   removeEntityByUid(uid: string): Promise<void>;
 }
+
+export type AddLocationRequest = {
+  type?: string;
+  target: string;
+  dryRun?: boolean;
+};
 
 export type AddLocationResponse = {
   location: Location;

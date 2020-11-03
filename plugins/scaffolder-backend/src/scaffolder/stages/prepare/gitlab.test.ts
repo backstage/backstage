@@ -18,6 +18,11 @@ const mocks = {
   CheckoutOptions: jest.fn(() => {}),
 };
 jest.doMock('nodegit', () => mocks);
+jest.doMock('fs-extra', () => ({
+  promises: {
+    mkdtemp: jest.fn(dir => `${dir}-static`),
+  },
+}));
 
 import { GitlabPreparer } from './gitlab';
 import {
@@ -25,6 +30,7 @@ import {
   LOCATION_ANNOTATION,
 } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
+import { getVoidLogger } from '@backstage/backend-common';
 
 const mockEntityWithProtocol = (protocol: string): TemplateEntityV1alpha1 => ({
   apiVersion: 'backstage.io/v1alpha1',
@@ -74,7 +80,7 @@ describe('GitLabPreparer', () => {
     it(`calls the clone command with the correct arguments for a repository using the ${protocol} protocol`, async () => {
       const preparer = new GitlabPreparer(ConfigReader.fromConfigs([]));
       mockEntity = mockEntityWithProtocol(protocol);
-      await preparer.prepare(mockEntity);
+      await preparer.prepare(mockEntity, { logger: getVoidLogger() });
       expect(mocks.Clone.clone).toHaveBeenNthCalledWith(
         1,
         'https://gitlab.com/benjdlambert/backstage-graphql-template',
@@ -101,7 +107,7 @@ describe('GitLabPreparer', () => {
         ]),
       );
       mockEntity = mockEntityWithProtocol(protocol);
-      await preparer.prepare(mockEntity);
+      await preparer.prepare(mockEntity, { logger: getVoidLogger() });
       expect(mocks.Clone.clone).toHaveBeenNthCalledWith(
         1,
         'https://gitlab.com/benjdlambert/backstage-graphql-template',
@@ -120,7 +126,7 @@ describe('GitLabPreparer', () => {
       const preparer = new GitlabPreparer(ConfigReader.fromConfigs([]));
       mockEntity = mockEntityWithProtocol(protocol);
       delete mockEntity.spec.path;
-      await preparer.prepare(mockEntity);
+      await preparer.prepare(mockEntity, { logger: getVoidLogger() });
       expect(mocks.Clone.clone).toHaveBeenNthCalledWith(
         1,
         'https://gitlab.com/benjdlambert/backstage-graphql-template',
@@ -133,10 +139,25 @@ describe('GitLabPreparer', () => {
       const preparer = new GitlabPreparer(ConfigReader.fromConfigs([]));
       mockEntity = mockEntityWithProtocol(protocol);
       mockEntity.spec.path = './template/test/1/2/3';
-      const response = await preparer.prepare(mockEntity);
+      const response = await preparer.prepare(mockEntity, {
+        logger: getVoidLogger(),
+      });
 
       expect(response.split('\\').join('/')).toMatch(
         /\/template\/test\/1\/2\/3$/,
+      );
+    });
+
+    it('return the working directory with the path to the folder if it is specified', async () => {
+      const preparer = new GitlabPreparer(ConfigReader.fromConfigs([]));
+      mockEntity.spec.path = './template/test/1/2/3';
+      const response = await preparer.prepare(mockEntity, {
+        logger: getVoidLogger(),
+        workingDirectory: '/workDir',
+      });
+
+      expect(response.split('\\').join('/')).toMatch(
+        /\/workDir\/graphql-starter-static\/template\/test\/1\/2\/3$/,
       );
     });
   });

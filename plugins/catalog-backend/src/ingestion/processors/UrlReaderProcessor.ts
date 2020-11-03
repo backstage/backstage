@@ -19,6 +19,7 @@ import { LocationSpec } from '@backstage/catalog-model';
 import { Logger } from 'winston';
 import * as result from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
+import { parseEntityYaml } from './util/parse';
 
 // TODO(Rugvip): Added for backwards compatibility when moving to UrlReader, this
 // can be removed in a bit
@@ -55,7 +56,10 @@ export class UrlReaderProcessor implements CatalogProcessor {
 
     try {
       const data = await this.options.reader.read(location.target);
-      emit(result.data(location, data));
+
+      for (const parseResult of parseEntityYaml(data, location)) {
+        emit(parseResult);
+      }
     } catch (error) {
       const message = `Unable to read ${location.type}, ${error}`;
 

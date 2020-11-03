@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export { default as Tooltip } from './Tooltip';
+export { Tooltip } from './Tooltip';
 export type { TooltipProps } from './Tooltip';
-export { default as TooltipItem } from './TooltipItem';
+export { TooltipItem } from './TooltipItem';
 export type { TooltipItemProps } from './TooltipItem';
