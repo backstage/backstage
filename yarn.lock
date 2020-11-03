@@ -3812,10 +3812,10 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@spotify/eslint-config-base@^8.0.0":
-  version "8.0.0"
-  resolved "https://registry.npmjs.org/@spotify/eslint-config-base/-/eslint-config-base-8.0.0.tgz#c3d10d8a05ad9129d579952cb80063e4c4fa216e"
-  integrity sha512-07Fo+KoTMl4AaZJPD6deFnYmG634wzgeqfFcWdFlIrOLAasvWSH8Lp6ZE9cJBKuffOAy8kuEE1SwFo34+5X8bQ==
+"@spotify/eslint-config-base@^9.0.0":
+  version "9.0.0"
+  resolved "https://registry.npmjs.org/@spotify/eslint-config-base/-/eslint-config-base-9.0.0.tgz#e122b2e6d1a11750170badc5be6774ded95953d2"
+  integrity sha512-LNGY6bBM0IlosvMIx9Ic5gqatpa5LPvrJhN4RnrUnP9oaXNLgPTKDE89p3eC5Tnh78ADdX4HD+rbHDSyP2tBgg==
 
 "@spotify/eslint-config-oss@^1.0.1":
   version "1.0.2"
@@ -3824,15 +3824,15 @@
   dependencies:
     eslint-plugin-notice "^0.9.10"
 
-"@spotify/eslint-config-react@^8.0.0":
-  version "8.0.2"
-  resolved "https://registry.npmjs.org/@spotify/eslint-config-react/-/eslint-config-react-8.0.2.tgz#91af3c58b22d49a96795336ed66927e722cda430"
-  integrity sha512-V0gzO/jWmjhODLINAfeunHj+OBdj/cQeVDw+92ZUlkonAg6BZLjX6Vy8jeIUFjfgmVOtI9eKbcApxaurj1jN6g==
+"@spotify/eslint-config-react@^9.0.0":
+  version "9.0.0"
+  resolved "https://registry.npmjs.org/@spotify/eslint-config-react/-/eslint-config-react-9.0.0.tgz#9c032e257090a5b3f5b08b28c1311485bf0fbae3"
+  integrity sha512-3w+cmbUljBLxZGLk4dn1oJD8v4uxW7bKackkcpZhac6VkQmg01EDN04Bx9qmbNe5S/2uHwrOJGcWlge5R8Ml1Q==
 
-"@spotify/eslint-config-typescript@^8.0.0":
-  version "8.1.1"
-  resolved "https://registry.npmjs.org/@spotify/eslint-config-typescript/-/eslint-config-typescript-8.1.1.tgz#a8c6f74ef9445fe740008ae3a26003a2eef78f93"
-  integrity sha512-0NkE6ZiSRf9IBWwCxzn/l7UdwcL/KZsbzjjOSweafyYueajEn+eIpKjOgDGUL/ebxSrOtjEp+YeFc4lSPkP0qg==
+"@spotify/eslint-config-typescript@^9.0.0":
+  version "9.0.0"
+  resolved "https://registry.npmjs.org/@spotify/eslint-config-typescript/-/eslint-config-typescript-9.0.0.tgz#be68cfaf212599f0bfeb6536c7c58ec05d2b6fba"
+  integrity sha512-ZsXTwMA68ZCz943U4N8XwprdWcc7ErOO/IW8PewLK5lycCZtLnmRkOvAbae7O5qNJPD8b/l0iUMTLaZuwjXWwg==
 
 "@spotify/prettier-config@^8.0.0":
   version "8.0.0"
