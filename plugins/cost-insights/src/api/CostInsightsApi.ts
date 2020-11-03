@@ -112,12 +112,14 @@ export type CostInsightsApi = {
    * @param group
    * @param duration A time duration, such as P1M. See the Duration type for a detailed explanation
    * of how the durations are interpreted in Cost Insights.
+   * @param lastBillingDate The most current date for which billing data is complete, in YYYY-MM-DD format.
    * @param project (optional) The project id from getGroupProjects or query parameters
    */
   getProductInsights(
     product: string,
     group: string,
     duration: Duration,
+    lastBillingDate: string,
     project: Maybe<string>,
   ): Promise<ProductCost>;
 

@@ -86,6 +86,7 @@ export const ProductInsightsCard = ({ product }: ProductInsightsCardProps) => {
             product.kind,
             group!,
             productFilter!.duration,
+            lastCompleteBillingDate,
             project,
           );
           setResource(p);
@@ -107,6 +108,7 @@ export const ProductInsightsCard = ({ product }: ProductInsightsCardProps) => {
     group,
     product.kind,
     project,
+    lastCompleteBillingDate,
   ]);
 
   const onPeriodSelect = (duration: Duration) => {

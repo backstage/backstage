@@ -197,10 +197,11 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
     product: string,
     group: string,
     duration: Duration,
+    lastBillingDate: string,
     project: Maybe<string>,
   ): Promise<ProductCost> {
     const projectProductInsights = await this.request(
-      { product, group, duration, project },
+      { product, group, duration, lastBillingDate, project },
       {
         aggregation: [80_000, 110_000],
         change: {
