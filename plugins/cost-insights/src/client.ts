@@ -17,7 +17,7 @@
 
 import dayjs from 'dayjs';
 import regression, { DataPoint } from 'regression';
-import { CostInsightsApi } from '../src/api';
+import { CostInsightsApi, ProductInsightsOptions } from '../src/api';
 import {
   Alert,
   ChangeStatistic,
@@ -26,7 +26,6 @@ import {
   DEFAULT_DATE_FORMAT,
   Duration,
   Group,
-  Maybe,
   MetricData,
   ProductCost,
   Project,
@@ -194,42 +193,35 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
   }
 
   async getProductInsights(
-    product: string,
-    group: string,
-    duration: Duration,
-    lastBillingDate: string,
-    project: Maybe<string>,
+    productInsightsOptions: ProductInsightsOptions,
   ): Promise<ProductCost> {
-    const projectProductInsights = await this.request(
-      { product, group, duration, lastBillingDate, project },
-      {
-        aggregation: [80_000, 110_000],
-        change: {
-          ratio: 0.375,
-          amount: 30_000,
-        },
-        entities: [
-          {
-            id: null, // entities with null ids will be appear as "Unlabeled" in product panels
-            aggregation: [45_000, 50_000],
-          },
-          {
-            id: 'entity-a',
-            aggregation: [15_000, 20_000],
-          },
-          {
-            id: 'entity-b',
-            aggregation: [20_000, 30_000],
-          },
-          {
-            id: 'entity-e',
-            aggregation: [0, 10_000],
-          },
-        ],
+    const projectProductInsights = await this.request(productInsightsOptions, {
+      aggregation: [80_000, 110_000],
+      change: {
+        ratio: 0.375,
+        amount: 30_000,
       },
-    );
+      entities: [
+        {
+          id: null, // entities with null ids will be appear as "Unlabeled" in product panels
+          aggregation: [45_000, 50_000],
+        },
+        {
+          id: 'entity-a',
+          aggregation: [15_000, 20_000],
+        },
+        {
+          id: 'entity-b',
+          aggregation: [20_000, 30_000],
+        },
+        {
+          id: 'entity-e',
+          aggregation: [0, 10_000],
+        },
+      ],
+    });
     const productInsights: ProductCost = await this.request(
-      { product, group, duration, project },
+      productInsightsOptions,
       {
         aggregation: [200_000, 250_000],
         change: {
@@ -277,7 +269,9 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
       },
     );
 
-    return project ? projectProductInsights : productInsights;
+    return productInsightsOptions.project
+      ? projectProductInsights
+      : productInsights;
   }
 
   async getAlerts(group: string): Promise<Alert[]> {
