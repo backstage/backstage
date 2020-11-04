@@ -253,7 +253,7 @@ costInsights:
       name: Cloud Storage
       icon: storage
     bigQuery:
-      name: Big Query
+      name: BigQuery
       icon: search
   metrics:
     DAU:
