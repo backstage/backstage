@@ -26,6 +26,7 @@ import {
   DependencyEdge,
 } from './types';
 import { ARROW_MARKER_ID, EDGE_TEST_ID, LABEL_TEST_ID } from './constants';
+import DefaultLabel from './DefaultLabel';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   path: {
@@ -43,10 +44,6 @@ export type EdgeComponentProps<T = any> = {
   render?: RenderLabelFunction;
   setEdge: (id: dagre.Edge, edge: DependencyEdge) => dagre.graphlib.Graph<{}>;
 };
-
-function DefaultLabel({ edge: { label } }: RenderLabelProps) {
-  return <text textAnchor="middle">{label}</text>;
-}
 
 const renderDefault = (props: RenderLabelProps) => <DefaultLabel {...props} />;
 
