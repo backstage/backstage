@@ -13,7 +13,7 @@ yarn install
 
 yarn docker-build
 
-kubectl apply -f contrib/kubernetes/plain_single_backend_deplyoment/deployment.yaml
+kubectl apply -f contrib/kubernetes/plain_single_backend_deployment/deployment.yaml
 ```
 
 You can use the following commands to monitor the deployment:
