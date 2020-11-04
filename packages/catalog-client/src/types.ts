@@ -14,26 +14,11 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core';
-import { Entity, Location } from '@backstage/catalog-model';
-
-export const catalogApiRef = createApiRef<CatalogApi>({
-  id: 'plugin.catalog.service',
-  description:
-    'Used by the Catalog plugin to make requests to accompanying backend',
-});
-
-export type EntityCompoundName = {
-  kind: string;
-  namespace?: string;
-  name: string;
-};
+import { Entity, EntityName, Location } from '@backstage/catalog-model';
 
 export interface CatalogApi {
   getLocationById(id: String): Promise<Location | undefined>;
-  getEntityByName(
-    compoundName: EntityCompoundName,
-  ): Promise<Entity | undefined>;
+  getEntityByName(name: EntityName): Promise<Entity | undefined>;
   getEntities(filter?: Record<string, string | string[]>): Promise<Entity[]>;
   addLocation(location: AddLocationRequest): Promise<AddLocationResponse>;
   getLocationByEntity(entity: Entity): Promise<Location | undefined>;
@@ -49,4 +34,11 @@ export type AddLocationRequest = {
 export type AddLocationResponse = {
   location: Location;
   entities: Entity[];
+};
+
+/**
+ * This is a copy of the core DiscoveryApi, to avoid importing core.
+ */
+export type DiscoveryApi = {
+  getBaseUrl(pluginId: string): Promise<string>;
 };

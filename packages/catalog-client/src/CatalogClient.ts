@@ -16,16 +16,17 @@
 
 import {
   Entity,
+  EntityName,
   Location,
   LOCATION_ANNOTATION,
 } from '@backstage/catalog-model';
+import fetch from 'cross-fetch';
 import {
   AddLocationRequest,
   AddLocationResponse,
   CatalogApi,
-  EntityCompoundName,
+  DiscoveryApi,
 } from './types';
-import { DiscoveryApi } from '@backstage/core';
 
 export class CatalogClient implements CatalogApi {
   private readonly discoveryApi: DiscoveryApi;
@@ -85,9 +86,7 @@ export class CatalogClient implements CatalogApi {
     return await this.getRequired(path);
   }
 
-  async getEntityByName(
-    compoundName: EntityCompoundName,
-  ): Promise<Entity | undefined> {
+  async getEntityByName(compoundName: EntityName): Promise<Entity | undefined> {
     const { kind, namespace = 'default', name } = compoundName;
     return this.getOptional(`/entities/by-name/${kind}/${namespace}/${name}`);
   }

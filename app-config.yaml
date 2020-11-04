@@ -16,7 +16,7 @@ backend:
     credentials: true
   csp:
     connect-src: ["'self'", 'http:', 'https:']
-  # workingDirectory: /tmp # Use this to configure a working direcotry for the scaffolder, defaults to the OS temp-dir
+  # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
 
 # See README.md in the proxy-backend plugin for information on the configuration format
 proxy:
