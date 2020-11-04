@@ -3703,10 +3703,10 @@
     react-router "6.0.0-beta.0"
     react-use "^15.3.3"
 
-"@roadiehq/backstage-plugin-travis-ci@^0.2.5":
-  version "0.2.5"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-travis-ci/-/backstage-plugin-travis-ci-0.2.5.tgz#588cd8b4a4dd4bd426c0012f8d35eae4504b55f4"
-  integrity sha512-4aJizmvIeunpl8D/YDvzagNzikPU51DSZFz1tN0XCwRR+buTPknV141qsKP+yxUbs6nx3Xuh+T/vNkb9lk6FlA==
+"@roadiehq/backstage-plugin-travis-ci@^0.2.6":
+  version "0.2.6"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-travis-ci/-/backstage-plugin-travis-ci-0.2.6.tgz#c253d4009b7150faa285786df7104f04cf99d4c2"
+  integrity sha512-Zs7mPmJifz08vNsS4zDzupexCEKAxPtqT4Vh8DhFJrphsiYwSIdPjW5JWif/XQIx0025Ew/RwuyMtwz2V/iWZg==
   dependencies:
     "@backstage/catalog-model" "^0.1.1-alpha.24"
     "@backstage/core" "^0.1.1-alpha.24"
