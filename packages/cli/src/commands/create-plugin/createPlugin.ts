@@ -146,7 +146,7 @@ async function buildPlugin(pluginFolder: string) {
       await exec(command).catch(error => {
         process.stdout.write(error.stderr);
         process.stdout.write(error.stdout);
-        throw new Error(`Could not execute command ${chalk.cyan(command)}`);
+        Task.error(`Warning: Could not execute command ${chalk.cyan(command)}`);
       });
     });
   }
