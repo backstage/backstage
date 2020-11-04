@@ -109,8 +109,8 @@ migrate Spotify's existing TechDocs features to open source.
 | ------------------------------------------- | -------------------------------------------------------- |
 | Frontend                                    | [`@backstage/plugin-techdocs`][techdocs/frontend]        |
 | Backend                                     | [`@backstage/plugin-techdocs-backend`][techdocs/backend] |
-| Docker Container (for generating doc sites) | [`packages/techdocs-container`][techdocs/container]      |
-| CLI (for local development)                 | [`packages/techdocs-cli`][techdocs/cli]                  |
+| Docker Container (for generating doc sites) | [`techdocs-container`][techdocs/container]               |
+| CLI (for local development)                 | [`@techdocs/cli`][techdocs/cli]                          |
 
 [getting started]: getting-started.md
 [concepts]: concepts.md
@@ -120,7 +120,5 @@ migrate Spotify's existing TechDocs features to open source.
   https://github.com/backstage/backstage/blob/master/plugins/techdocs
 [techdocs/backend]:
   https://github.com/backstage/backstage/blob/master/plugins/techdocs-backend
-[techdocs/container]:
-  https://github.com/backstage/backstage/blob/master/packages/techdocs-container
-[techdocs/cli]:
-  https://github.com/backstage/backstage/blob/master/packages/techdocs-cli
+[techdocs/container]: https://github.com/backstage/techdocs-container
+[techdocs/cli]: https://github.com/backstage/techdocs-cli

@@ -23,7 +23,7 @@ The TechDocs container is a Docker container available at
 pages, including stylesheets and scripts from Python flavored Markdown, through
 MkDocs.
 
-[TechDocs Container](https://github.com/backstage/backstage/blob/master/packages/techdocs-container/README.md)
+[TechDocs Container](https://github.com/backstage/techdocs-container)
 
 ### TechDocs publisher
 

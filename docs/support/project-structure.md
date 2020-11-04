@@ -171,7 +171,7 @@ are separated out into their own folder, see further down.
 - [`techdocs-cli/`](https://github.com/backstage/backstage/tree/master/packages/techdocs-cli) -
   Used for verifying TechDocs locally.
 
-- [`techdocs-container/`](https://github.com/backstage/backstage/tree/master/packages/techdocs-container) -
+- [`techdocs-container/`](https://github.com/backstage/techdocs-container) -
   Used by the `techdocs-cli`
 
 - [`test-utils-core/`](https://github.com/backstage/backstage/tree/master/packages/test-utils-core)
