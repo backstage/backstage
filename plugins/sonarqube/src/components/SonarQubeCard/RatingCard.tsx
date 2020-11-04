@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Grid, Typography } from '@material-ui/core';
+import { Grid, Typography, Link } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { ReactNode } from 'react';
 
@@ -50,29 +50,33 @@ export const RatingCard = ({
   rightSlot,
   title,
   titleIcon,
+  link,
 }: {
   leftSlot: ReactNode;
   rightSlot: ReactNode;
   title: string;
   titleIcon?: ReactNode;
+  link: string;
 }) => {
   const classes = useStyles();
 
   return (
-    <Grid item className={classes.root}>
-      <Grid item className={classes.upper}>
-        <Grid item className={classes.left}>
-          {leftSlot}
+    <Link href={link} color="inherit" underline="none">
+      <Grid item className={classes.root}>
+        <Grid item className={classes.upper}>
+          <Grid item className={classes.left}>
+            {leftSlot}
+          </Grid>
+          <Grid item className={classes.right}>
+            {rightSlot}
+          </Grid>
         </Grid>
-        <Grid item className={classes.right}>
-          {rightSlot}
+        <Grid item className={classes.cardTitle}>
+          <Typography variant="body1" className={classes.wrapIcon}>
+            {titleIcon} {title}
+          </Typography>
         </Grid>
       </Grid>
-      <Grid item className={classes.cardTitle}>
-        <Typography variant="body1" className={classes.wrapIcon}>
-          {titleIcon} {title}
-        </Typography>
-      </Grid>
-    </Grid>
+    </Link>
   );
 };

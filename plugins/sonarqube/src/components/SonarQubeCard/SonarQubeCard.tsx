@@ -187,29 +187,34 @@ export const SonarQubeCard = ({
               <RatingCard
                 titleIcon={<BugReport />}
                 title="Bugs"
+                link={value.getIssuesUrl('BUG')}
                 leftSlot={<Value value={value.metrics.bugs} />}
                 rightSlot={<Rating rating={value.metrics.reliability_rating} />}
               />
               <RatingCard
                 titleIcon={<LockOpen />}
                 title="Vulnerabilities"
+                link={value.getIssuesUrl('VULNERABILITY')}
                 leftSlot={<Value value={value.metrics.vulnerabilities} />}
                 rightSlot={<Rating rating={value.metrics.security_rating} />}
               />
               <RatingCard
                 titleIcon={<SentimentVeryDissatisfied />}
                 title="Code Smells"
+                link={value.getIssuesUrl('CODE_SMELL')}
                 leftSlot={<Value value={value.metrics.code_smells} />}
                 rightSlot={<Rating rating={value.metrics.sqale_rating} />}
               />
               <div style={{ width: '100%' }} />
               <RatingCard
+                link={value.getComponentMeasuresUrl('COVERAGE')}
                 title="Coverage"
                 leftSlot={<Percentage value={value.metrics.coverage} />}
                 rightSlot={<Value value={`${value.metrics.coverage}%`} />}
               />
               <RatingCard
                 title="Duplications"
+                link={value.getComponentMeasuresUrl('DUPLICATED_LINES_DENSITY')}
                 leftSlot={<Rating rating={duplicationRating} hideValue />}
                 rightSlot={
                   <Value value={`${value.metrics.duplicated_lines_density}%`} />
