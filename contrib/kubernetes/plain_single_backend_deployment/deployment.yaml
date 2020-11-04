@@ -38,12 +38,12 @@ spec:
             - name: NODE_ENV
               value: development
 
-              # This makes it possible for the app to reach the backend when serving through `kubectl proxy`
-              # If you expose the service using for example an ingress controller, you should
-              # switch this out or remove it.
-              #
-              # Note that we're not setting app.baseUrl here, as setting the base path is not working at the moment.
-              # Further work is needed around the routing in the frontend or react-router before we can support that.
+            # This makes it possible for the app to reach the backend when serving through `kubectl proxy`
+            # If you expose the service using for example an ingress controller, you should
+            # switch this out or remove it.
+            #
+            # Note that we're not setting app.baseUrl here, as setting the base path is not working at the moment.
+            # Further work is needed around the routing in the frontend or react-router before we can support that.
             - name: APP_CONFIG_backend_baseUrl
               value: http://localhost:8001/api/v1/namespaces/backstage/services/backstage-backend:http/proxy
 
