@@ -3666,10 +3666,10 @@
   resolved "https://registry.npmjs.org/@rjsf/material-ui/-/material-ui-2.4.0.tgz#1b5859298bf3f61137d7b05084f058a775d6fd73"
   integrity sha512-U8F/suzg4MuV+8mK1/ufs0Y6c3O8hc1wnuD2IKoOVJvegGfz5JCafyoyGAW6iyuT1DZBMPzVWEqfiuYPmoE7pw==
 
-"@roadiehq/backstage-plugin-github-insights@^0.2.10":
-  version "0.2.10"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-insights/-/backstage-plugin-github-insights-0.2.10.tgz#f58298486183e2af36b2c292d6145f2a35eb6fdb"
-  integrity sha512-vmIbjehJpoXjuLNX5cYbZTG6U0tHVQWrGUA5fYWQtAIVC0cmwbkuvW8WoNymAietGmlshm+0rV6MK0/vd2iu4A==
+"@roadiehq/backstage-plugin-github-insights@^0.2.11":
+  version "0.2.11"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-insights/-/backstage-plugin-github-insights-0.2.11.tgz#2d915c144faf94130a6ca16debd62cf8d2d4692e"
+  integrity sha512-fTOEuHD36ncNVBJorqYIOk7hlIhNU8K++B6yOaqLEAgGqFyPexRgBcUpP1QHEayj4jw2S9WLQFJOaoAXBNJGtg==
   dependencies:
     "@backstage/catalog-model" "^0.1.1-alpha.25"
     "@backstage/core" "^0.1.1-alpha.25"
