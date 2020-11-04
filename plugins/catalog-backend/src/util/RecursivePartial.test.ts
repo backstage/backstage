@@ -14,11 +14,18 @@
  * limitations under the License.
  */
 
-import { errorString } from './util';
+import { RecursivePartial } from './RecursivePartial';
 
-describe('errorString', () => {
-  it('formats', () => {
-    const e = { code: 1, name: 'n', message: 'm' };
-    expect(errorString(e)).toEqual('1 n: m');
+describe('RecursivePartial', () => {
+  it('is recursive', () => {
+    type X = {
+      required: {
+        required: string;
+      };
+    };
+    const x: RecursivePartial<X> = {
+      required: {},
+    };
+    expect(x).toEqual({ required: {} });
   });
 });
