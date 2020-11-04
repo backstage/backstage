@@ -15,9 +15,16 @@
  */
 
 import React from 'react';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import DefaultNode from './DefaultNode';
 import { RenderNodeFunction, RenderNodeProps, GraphNode } from './types';
 import { NODE_TEST_ID } from './constants';
+
+const useStyles = makeStyles(theme => ({
+  node: {
+    transition: `${theme.transitions.duration.shortest}ms`,
+  },
+}));
 
 export type NodeComponentProps<T = any> = {
   node: GraphNode<T>;
@@ -29,6 +36,7 @@ const renderDefault = (props: RenderNodeProps) => <DefaultNode {...props} />;
 
 function Node({ render = renderDefault, setNode, node }: NodeComponentProps) {
   const { width, height, x = 0, y = 0, ...nodeProps } = node;
+  const classes = useStyles();
   const nodeRef = React.useRef<SVGGElement | null>(null);
 
   React.useLayoutEffect(() => {
@@ -55,6 +63,7 @@ function Node({ render = renderDefault, setNode, node }: NodeComponentProps) {
     <g
       ref={nodeRef}
       data-testid={NODE_TEST_ID}
+      className={classes.node}
       transform={`translate(${x - width / 2},${y - height / 2})`}
     >
       {render({ node: nodeProps })}

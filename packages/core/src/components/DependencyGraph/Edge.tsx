@@ -17,7 +17,7 @@
 import React from 'react';
 import * as d3Shape from 'd3-shape';
 import isFinite from 'lodash/isFinite';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import { BackstageTheme } from '@backstage/theme';
 import {
   GraphEdge,
@@ -33,6 +33,10 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
     strokeWidth: 2,
     stroke: theme.palette.textSubtle,
     fill: 'none',
+    transition: `${theme.transitions.duration.shortest}ms`,
+  },
+  label: {
+    transition: `${theme.transitions.duration.shortest}ms`,
   },
 }));
 
@@ -107,6 +111,7 @@ function Edge({
         <g
           ref={labelRef}
           data-testid={LABEL_TEST_ID}
+          className={classes.label}
           transform={`translate(${x},${y})`}
         >
           {render({ edge: labelProps })}
