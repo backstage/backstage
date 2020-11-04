@@ -40,7 +40,8 @@ describe('<DependencyGraph />', () => {
     const { getByText, queryAllByTestId, findAllByTestId } = render(
       <DependencyGraph nodes={nodes} edges={edges} />,
     );
-    await findAllByTestId(NODE_TEST_ID);
+    const renderedNodes = await findAllByTestId(NODE_TEST_ID);
+    expect(renderedNodes).toHaveLength(3);
     expect(getByText(nodes[0].id)).toBeInTheDocument();
     expect(getByText(nodes[1].id)).toBeInTheDocument();
     expect(getByText(nodes[2].id)).toBeInTheDocument();
@@ -56,8 +57,8 @@ describe('<DependencyGraph />', () => {
     const { getByText, getAllByTestId, findAllByTestId } = render(
       <DependencyGraph nodes={nodes} edges={labeledEdges} />,
     );
-    await findAllByTestId(EDGE_TEST_ID);
-    expect(getAllByTestId(EDGE_TEST_ID)).toHaveLength(2);
+    const renderedEdges = await findAllByTestId(EDGE_TEST_ID);
+    expect(renderedEdges).toHaveLength(2);
     expect(getAllByTestId(LABEL_TEST_ID)).toHaveLength(2);
     expect(getByText(labeledEdges[0].label)).toBeInTheDocument();
     expect(getByText(labeledEdges[1].label)).toBeInTheDocument();
@@ -69,7 +70,7 @@ describe('<DependencyGraph />', () => {
     const renderNode = (props: RenderNodeProps) => (
       <g>
         <text>{props.node.id}</text>
-        <circle data-testid={CUSTOM_TEST_ID} height="100" width="100" />
+        <circle data-testid={CUSTOM_TEST_ID} r={100} />
       </g>
     );
     const { getByText, findByTestId, container } = render(
@@ -78,7 +79,7 @@ describe('<DependencyGraph />', () => {
     const node = await findByTestId(CUSTOM_TEST_ID);
     expect(node).toBeInTheDocument();
     expect(container.querySelector('circle')).toBeInTheDocument();
-    expect(getByText('a')).toBeInTheDocument();
+    expect(getByText(singleNode[0].id)).toBeInTheDocument();
   });
 
   it('renders labels according to renderLabel prop', async () => {
@@ -87,7 +88,7 @@ describe('<DependencyGraph />', () => {
     const renderLabel = (props: RenderLabelProps) => (
       <g>
         <text>{props.edge.label}</text>
-        <circle data-testid={CUSTOM_TEST_ID} height="100" width="100" />
+        <circle data-testid={CUSTOM_TEST_ID} r={100} />
       </g>
     );
     const { getByText, findByTestId, container } = render(
@@ -100,6 +101,6 @@ describe('<DependencyGraph />', () => {
     const node = await findByTestId(CUSTOM_TEST_ID);
     expect(node).toBeInTheDocument();
     expect(container.querySelector('circle')).toBeInTheDocument();
-    expect(getByText('a')).toBeInTheDocument();
+    expect(getByText(labeledEdge[0].label)).toBeInTheDocument();
   });
 });
