@@ -24,6 +24,7 @@ export default {
 };
 
 const containerStyle = { width: '100%' };
+const graphStyle = { border: '1px solid grey' };
 
 const exampleNodes = [
   { id: 'source' },
@@ -40,7 +41,13 @@ const exampleEdges = [
 
 export const Default = () => (
   <div style={containerStyle}>
-    <DependencyGraph nodes={exampleNodes} edges={exampleEdges} />
+    <DependencyGraph
+      nodes={exampleNodes}
+      edges={exampleEdges}
+      style={graphStyle}
+      marginX={50}
+      marginY={50}
+    />
   </div>
 );
 
@@ -50,6 +57,9 @@ export const BottomToTop = () => (
       nodes={exampleNodes}
       edges={exampleEdges}
       direction={Direction.BOTTOM_TOP}
+      style={graphStyle}
+      marginX={50}
+      marginY={50}
     />
   </div>
 );
@@ -60,6 +70,9 @@ export const LeftToRight = () => (
       nodes={exampleNodes}
       edges={exampleEdges}
       direction={Direction.LEFT_RIGHT}
+      style={graphStyle}
+      marginX={50}
+      marginY={50}
     />
   </div>
 );
@@ -70,6 +83,9 @@ export const RightToLeft = () => (
       nodes={exampleNodes}
       edges={exampleEdges}
       direction={Direction.RIGHT_LEFT}
+      style={graphStyle}
+      marginX={50}
+      marginY={50}
     />
   </div>
 );
@@ -82,6 +98,9 @@ export const WithLabels = () => {
         nodes={exampleNodes}
         edges={edges}
         direction={Direction.LEFT_RIGHT}
+        style={graphStyle}
+        marginX={50}
+        marginY={50}
       />
     </div>
   );
@@ -99,6 +118,9 @@ export const CustomNodes = () => {
       <DependencyGraph
         nodes={nodes}
         edges={exampleEdges}
+        style={graphStyle}
+        marginX={50}
+        marginY={50}
         renderNode={props => (
           <g>
             <rect width={200} height={100} rx={20} fill={props.node.color} />
@@ -139,6 +161,9 @@ export const CustomLabels = () => {
         nodes={exampleNodes}
         edges={edges}
         labelPosition={LabelPosition.CENTER}
+        style={graphStyle}
+        marginX={50}
+        marginY={50}
         renderLabel={props => (
           <g>
             <circle r={25} fill={props.edge.color} />
