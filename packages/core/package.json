@@ -48,11 +48,13 @@
     "react-dom": "^16.12.0",
     "react-helmet": "6.1.0",
     "react-hook-form": "^6.6.0",
+    "react-markdown": "^5.0.2",
     "react-router": "6.0.0-beta.0",
     "react-router-dom": "6.0.0-beta.0",
     "react-sparklines": "^1.7.0",
     "react-syntax-highlighter": "^13.5.1",
-    "react-use": "^15.3.3"
+    "react-use": "^15.3.3",
+    "remark-gfm": "^1.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.2.0",
