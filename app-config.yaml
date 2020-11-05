@@ -49,7 +49,7 @@ proxy:
   '/buildkite/api':
     target: https://api.buildkite.com/v2/
     headers:
-      Authorization: 
+      Authorization:
         $env: BUILDKITE_TOKEN
 
 organization:
