@@ -45,8 +45,8 @@ export type DependencyGraphProps = React.SVGProps<SVGSVGElement> & {
   nodeMargin?: number;
   edgeMargin?: number;
   rankMargin?: number;
-  marginX?: number;
-  marginY?: number;
+  paddingX?: number;
+  paddingY?: number;
   acyclicer?: 'greedy';
   ranker?: Ranker;
   labelPosition?: LabelPosition;
@@ -69,8 +69,8 @@ export function DependencyGraph({
   nodeMargin = 50,
   edgeMargin = 10,
   rankMargin = 50,
-  marginX = 0,
-  marginY = 0,
+  paddingX = 0,
+  paddingY = 0,
   acyclicer,
   ranker = Ranker.NETWORK_SIMPLEX,
   labelPosition = LabelPosition.RIGHT,
@@ -222,8 +222,8 @@ export function DependencyGraph({
       nodesep: nodeMargin,
       edgesep: edgeMargin,
       ranksep: rankMargin,
-      marginx: marginX,
-      marginy: marginY,
+      marginx: paddingX,
+      marginy: paddingY,
       acyclicer,
       ranker,
     });
@@ -237,8 +237,8 @@ export function DependencyGraph({
     align,
     direction,
     edgeMargin,
-    marginX,
-    marginY,
+    paddingX,
+    paddingY,
     nodeMargin,
     rankMargin,
     ranker,
