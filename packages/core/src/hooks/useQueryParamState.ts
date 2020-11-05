@@ -35,24 +35,50 @@ function parse(queryString: string): any {
   });
 }
 
+function extractState(queryString: string, stateName: string): any | undefined {
+  const queryParams = parse(queryString);
+
+  return queryParams[stateName];
+}
+
+function joinQueryString(
+  queryString: string,
+  stateName: string,
+  state: any,
+): string {
+  const queryParams = {
+    ...parse(queryString),
+    [stateName]: state,
+  };
+  return stringify(queryParams);
+}
+
 type SetQueryParams<T> = (params: T) => void;
 
-export function useQueryParams<T>(): [T, SetQueryParams<T>] {
+export function useQueryParamState<T>(
+  stateName: string,
+): [T | undefined, SetQueryParams<T>] {
   const navigate = useNavigate();
   const location = useLocation();
-  const [queryParams, setQueryParams] = useState(parse(location.search));
+  const [queryParamState, setQueryParamState] = useState<T>(
+    extractState(location.search, stateName),
+  );
 
   useDebounce(
     () => {
-      const queryString = stringify(queryParams);
+      const queryString = joinQueryString(
+        location.search,
+        stateName,
+        queryParamState,
+      );
 
       if (location.search !== queryString) {
         navigate({ ...location, search: `?${queryString}` }, { replace: true });
       }
     },
     100,
-    [queryParams],
+    [queryParamState],
   );
 
-  return [queryParams, setQueryParams];
+  return [queryParamState, setQueryParamState];
 }

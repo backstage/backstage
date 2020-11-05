@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { useQueryParams } from './useQueryParams';
+export { useQueryParamState } from './useQueryParamState';

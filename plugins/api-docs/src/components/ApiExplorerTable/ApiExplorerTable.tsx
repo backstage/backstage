@@ -21,7 +21,7 @@ import {
   TableFilter,
   TableState,
   useApi,
-  useQueryParams,
+  useQueryParamState,
 } from '@backstage/core';
 import { Chip, Link } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
@@ -127,7 +127,9 @@ export const ApiExplorerTable = ({
   loading,
   error,
 }: ExplorerTableProps) => {
-  const [queryParams, setQueryParams] = useQueryParams<TableState>();
+  const [queryParamState, setQueryParamState] = useQueryParamState<TableState>(
+    'apiTable',
+  );
 
   if (error) {
     return (
@@ -151,8 +153,8 @@ export const ApiExplorerTable = ({
       }}
       data={entities}
       filters={filters}
-      initialState={queryParams}
-      onStateChange={setQueryParams}
+      initialState={queryParamState}
+      onStateChange={setQueryParamState}
     />
   );
 };
