@@ -1289,153 +1289,6 @@
     lodash "^4.17.19"
     to-fast-properties "^2.0.0"
 
-"@backstage/catalog-model@^0.1.1-alpha.24":
-  version "0.2.0"
-  dependencies:
-    "@backstage/config" "^0.1.1"
-    "@types/json-schema" "^7.0.5"
-    "@types/yup" "^0.29.8"
-    json-schema "^0.2.5"
-    lodash "^4.17.15"
-    uuid "^8.0.0"
-    yup "^0.29.3"
-
-"@backstage/catalog-model@^0.1.1-alpha.25":
-  version "0.2.0"
-  dependencies:
-    "@backstage/config" "^0.1.1"
-    "@types/json-schema" "^7.0.5"
-    "@types/yup" "^0.29.8"
-    json-schema "^0.2.5"
-    lodash "^4.17.15"
-    uuid "^8.0.0"
-    yup "^0.29.3"
-
-"@backstage/core-api@^0.1.1-alpha.24":
-  version "0.2.0"
-  dependencies:
-    "@backstage/config" "^0.1.1"
-    "@backstage/test-utils" "^0.1.2"
-    "@backstage/theme" "^0.2.0"
-    "@material-ui/core" "^4.11.0"
-    "@material-ui/icons" "^4.9.1"
-    "@types/react" "^16.9"
-    prop-types "^15.7.2"
-    react "^16.12.0"
-    react-router-dom "6.0.0-beta.0"
-    react-use "^15.3.3"
-    zen-observable "^0.8.15"
-
-"@backstage/core@^0.1.1-alpha.24":
-  version "0.2.0"
-  dependencies:
-    "@backstage/config" "^0.1.1"
-    "@backstage/core-api" "^0.2.0"
-    "@backstage/theme" "^0.2.0"
-    "@material-ui/core" "^4.11.0"
-    "@material-ui/icons" "^4.9.1"
-    "@material-ui/lab" "4.0.0-alpha.45"
-    "@types/react" "^16.9"
-    "@types/react-sparklines" "^1.7.0"
-    classnames "^2.2.6"
-    clsx "^1.1.0"
-    immer "^7.0.9"
-    lodash "^4.17.15"
-    material-table "^1.69.1"
-    prop-types "^15.7.2"
-    rc-progress "^3.0.0"
-    react "^16.12.0"
-    react-dom "^16.12.0"
-    react-helmet "6.1.0"
-    react-hook-form "^6.6.0"
-    react-router "6.0.0-beta.0"
-    react-router-dom "6.0.0-beta.0"
-    react-sparklines "^1.7.0"
-    react-syntax-highlighter "^13.5.1"
-    react-use "^15.3.3"
-
-"@backstage/core@^0.1.1-alpha.25":
-  version "0.2.0"
-  dependencies:
-    "@backstage/config" "^0.1.1"
-    "@backstage/core-api" "^0.2.0"
-    "@backstage/theme" "^0.2.0"
-    "@material-ui/core" "^4.11.0"
-    "@material-ui/icons" "^4.9.1"
-    "@material-ui/lab" "4.0.0-alpha.45"
-    "@types/react" "^16.9"
-    "@types/react-sparklines" "^1.7.0"
-    classnames "^2.2.6"
-    clsx "^1.1.0"
-    immer "^7.0.9"
-    lodash "^4.17.15"
-    material-table "^1.69.1"
-    prop-types "^15.7.2"
-    rc-progress "^3.0.0"
-    react "^16.12.0"
-    react-dom "^16.12.0"
-    react-helmet "6.1.0"
-    react-hook-form "^6.6.0"
-    react-router "6.0.0-beta.0"
-    react-router-dom "6.0.0-beta.0"
-    react-sparklines "^1.7.0"
-    react-syntax-highlighter "^13.5.1"
-    react-use "^15.3.3"
-
-"@backstage/plugin-catalog@^0.1.1-alpha.24":
-  version "0.2.0"
-  dependencies:
-    "@backstage/catalog-model" "^0.2.0"
-    "@backstage/core" "^0.2.0"
-    "@backstage/plugin-scaffolder" "^0.2.0"
-    "@backstage/plugin-techdocs" "^0.2.0"
-    "@backstage/theme" "^0.2.0"
-    "@material-ui/core" "^4.11.0"
-    "@material-ui/icons" "^4.9.1"
-    "@material-ui/lab" "4.0.0-alpha.45"
-    "@types/react" "^16.9"
-    classnames "^2.2.6"
-    moment "^2.26.0"
-    react "^16.13.1"
-    react-dom "^16.13.1"
-    react-helmet "6.1.0"
-    react-router "6.0.0-beta.0"
-    react-router-dom "6.0.0-beta.0"
-    react-use "^15.3.3"
-    swr "^0.3.0"
-
-"@backstage/plugin-catalog@^0.1.1-alpha.25":
-  version "0.2.0"
-  dependencies:
-    "@backstage/catalog-model" "^0.2.0"
-    "@backstage/core" "^0.2.0"
-    "@backstage/plugin-scaffolder" "^0.2.0"
-    "@backstage/plugin-techdocs" "^0.2.0"
-    "@backstage/theme" "^0.2.0"
-    "@material-ui/core" "^4.11.0"
-    "@material-ui/icons" "^4.9.1"
-    "@material-ui/lab" "4.0.0-alpha.45"
-    "@types/react" "^16.9"
-    classnames "^2.2.6"
-    moment "^2.26.0"
-    react "^16.13.1"
-    react-dom "^16.13.1"
-    react-helmet "6.1.0"
-    react-router "6.0.0-beta.0"
-    react-router-dom "6.0.0-beta.0"
-    react-use "^15.3.3"
-    swr "^0.3.0"
-
-"@backstage/theme@^0.1.1-alpha.24":
-  version "0.2.0"
-  dependencies:
-    "@material-ui/core" "^4.11.0"
-
-"@backstage/theme@^0.1.1-alpha.25":
-  version "0.2.0"
-  dependencies:
-    "@material-ui/core" "^4.11.0"
-
 "@bcoe/v8-coverage@^0.2.3":
   version "0.2.3"
   resolved "https://registry.npmjs.org/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
@@ -3797,14 +3650,14 @@
   resolved "https://registry.npmjs.org/@rjsf/material-ui/-/material-ui-2.4.0.tgz#1b5859298bf3f61137d7b05084f058a775d6fd73"
   integrity sha512-U8F/suzg4MuV+8mK1/ufs0Y6c3O8hc1wnuD2IKoOVJvegGfz5JCafyoyGAW6iyuT1DZBMPzVWEqfiuYPmoE7pw==
 
-"@roadiehq/backstage-plugin-github-insights@^0.2.10":
-  version "0.2.10"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-insights/-/backstage-plugin-github-insights-0.2.10.tgz#f58298486183e2af36b2c292d6145f2a35eb6fdb"
-  integrity sha512-vmIbjehJpoXjuLNX5cYbZTG6U0tHVQWrGUA5fYWQtAIVC0cmwbkuvW8WoNymAietGmlshm+0rV6MK0/vd2iu4A==
+"@roadiehq/backstage-plugin-github-insights@^0.2.12":
+  version "0.2.12"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-insights/-/backstage-plugin-github-insights-0.2.12.tgz#aeda6306769f376cf6b5b9d74268b060a0f4e764"
+  integrity sha512-f9g5ajVWQkywoYo0zDUZV3g0SPxOTi3MvMuhUvgaZ/XKJr9mBZTe5qHnEYBSHOCB88l0Y2g0qHNdbjXhbFpokQ==
   dependencies:
-    "@backstage/catalog-model" "^0.1.1-alpha.25"
-    "@backstage/core" "^0.1.1-alpha.25"
-    "@backstage/theme" "^0.1.1-alpha.25"
+    "@backstage/catalog-model" "^0.2.0"
+    "@backstage/core" "^0.2.0"
+    "@backstage/theme" "^0.2.0"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "4.0.0-alpha.45"
@@ -3818,15 +3671,15 @@
     react-use "^15.3.3"
     remark-gfm "^1.0.0"
 
-"@roadiehq/backstage-plugin-github-pull-requests@^0.6.0":
-  version "0.6.0"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-pull-requests/-/backstage-plugin-github-pull-requests-0.6.0.tgz#5d39eb237aa39b76bb7e5e867355abeccac7e5ff"
-  integrity sha512-cwTofvhSzb3FyyJ/HRixPkn9Ayg3x4tv6FlHSswlMEDx8EJv0hmfNXVps2QAG/82JgACTxmXKNQRnPQ0+TLiOw==
+"@roadiehq/backstage-plugin-github-pull-requests@^0.6.1":
+  version "0.6.1"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-pull-requests/-/backstage-plugin-github-pull-requests-0.6.1.tgz#bce3ce93af7b2f6c38d4665c8a0d8a6b2eaa4212"
+  integrity sha512-3r0BBV6kRlbrlfVA/G7Tc0xbw9A+9roihspCaV/yhhqXgk/ik5v6ftEautlx45+gKaFMp+jgmfKHqFgOdSyhZw==
   dependencies:
-    "@backstage/catalog-model" "^0.1.1-alpha.25"
-    "@backstage/core" "^0.1.1-alpha.25"
-    "@backstage/plugin-catalog" "^0.1.1-alpha.25"
-    "@backstage/theme" "^0.1.1-alpha.25"
+    "@backstage/catalog-model" "^0.2.0"
+    "@backstage/core" "^0.2.0"
+    "@backstage/plugin-catalog" "^0.2.0"
+    "@backstage/theme" "^0.2.0"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "^4.0.0-alpha.56"
@@ -3840,16 +3693,16 @@
     react-router "6.0.0-beta.0"
     react-use "^15.3.3"
 
-"@roadiehq/backstage-plugin-travis-ci@^0.2.6":
-  version "0.2.6"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-travis-ci/-/backstage-plugin-travis-ci-0.2.6.tgz#c253d4009b7150faa285786df7104f04cf99d4c2"
-  integrity sha512-Zs7mPmJifz08vNsS4zDzupexCEKAxPtqT4Vh8DhFJrphsiYwSIdPjW5JWif/XQIx0025Ew/RwuyMtwz2V/iWZg==
+"@roadiehq/backstage-plugin-travis-ci@^0.2.7":
+  version "0.2.7"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-travis-ci/-/backstage-plugin-travis-ci-0.2.7.tgz#bc7968b461016b2710794d10766266de9ab4f759"
+  integrity sha512-uXF5t2uZqd9TNGFSMYlyk6NAweVb5KLlM4GMiltattzxRWiqbCp5VumubrLTTsA8dvsWCrXWfhe95MStcUnl+A==
   dependencies:
-    "@backstage/catalog-model" "^0.1.1-alpha.24"
-    "@backstage/core" "^0.1.1-alpha.24"
-    "@backstage/core-api" "^0.1.1-alpha.24"
-    "@backstage/plugin-catalog" "^0.1.1-alpha.24"
-    "@backstage/theme" "^0.1.1-alpha.24"
+    "@backstage/catalog-model" "^0.2.0"
+    "@backstage/core" "^0.2.0"
+    "@backstage/core-api" "^0.2.0"
+    "@backstage/plugin-catalog" "^0.2.0"
+    "@backstage/theme" "^0.2.0"
     "@material-ui/core" "^4.9.1"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "4.0.0-alpha.45"
