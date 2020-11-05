@@ -13,7 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export * from './scaffolder';
-export * from './service/router';
-export * from './lib/catalog';
+export { CatalogEntityClient } from './CatalogEntityClient';
