@@ -31,7 +31,7 @@
     "@backstage/plugin-scaffolder-backend": "^0.2.0",
     "@backstage/plugin-sentry-backend": "^0.1.2",
     "@backstage/plugin-techdocs-backend": "^0.2.0",
-    "@gitbeaker/node": "^23.5.0",
+    "@gitbeaker/node": "^25.2.0",
     "@octokit/rest": "^18.0.0",
     "azure-devops-node-api": "^10.1.1",
     "dockerode": "^3.2.0",
