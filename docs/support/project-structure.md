@@ -168,12 +168,6 @@ are separated out into their own folder, see further down.
   package. The Backstage Storybook is found
   [here](https://backstage.io/storybook)
 
-- [`techdocs-cli/`](https://github.com/backstage/backstage/tree/master/packages/techdocs-cli) -
-  Used for verifying TechDocs locally.
-
-- [`techdocs-container/`](https://github.com/backstage/backstage/tree/master/packages/techdocs-container) -
-  Used by the `techdocs-cli`
-
 - [`test-utils-core/`](https://github.com/backstage/backstage/tree/master/packages/test-utils-core)
 
 - [`test-utils/`](https://github.com/backstage/backstage/tree/master/packages/test-utils)

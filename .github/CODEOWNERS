@@ -11,6 +11,5 @@
 /plugins/techdocs                           @backstage/techdocs-core
 /plugins/techdocs-backend                   @backstage/techdocs-core
 /packages/techdocs-cli                      @backstage/techdocs-core
-/packages/techdocs-container                @backstage/techdocs-core
 /.github/workflows/techdocs.yml             @backstage/techdocs-core
 /.changeset/cost-insights-*                 @backstage/silver-lining
