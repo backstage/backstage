@@ -1348,11 +1348,13 @@
     react-dom "^16.12.0"
     react-helmet "6.1.0"
     react-hook-form "^6.6.0"
+    react-markdown "^5.0.2"
     react-router "6.0.0-beta.0"
     react-router-dom "6.0.0-beta.0"
     react-sparklines "^1.7.0"
     react-syntax-highlighter "^13.5.1"
     react-use "^15.3.3"
+    remark-gfm "^1.0.0"
 
 "@backstage/core@^0.1.1-alpha.25":
   version "0.2.0"
@@ -1376,15 +1378,18 @@
     react-dom "^16.12.0"
     react-helmet "6.1.0"
     react-hook-form "^6.6.0"
+    react-markdown "^5.0.2"
     react-router "6.0.0-beta.0"
     react-router-dom "6.0.0-beta.0"
     react-sparklines "^1.7.0"
     react-syntax-highlighter "^13.5.1"
     react-use "^15.3.3"
+    remark-gfm "^1.0.0"
 
 "@backstage/plugin-catalog@^0.1.1-alpha.24":
   version "0.2.0"
   dependencies:
+    "@backstage/catalog-client" "^0.2.0"
     "@backstage/catalog-model" "^0.2.0"
     "@backstage/core" "^0.2.0"
     "@backstage/plugin-scaffolder" "^0.2.0"
@@ -1407,6 +1412,7 @@
 "@backstage/plugin-catalog@^0.1.1-alpha.25":
   version "0.2.0"
   dependencies:
+    "@backstage/catalog-client" "^0.2.0"
     "@backstage/catalog-model" "^0.2.0"
     "@backstage/core" "^0.2.0"
     "@backstage/plugin-scaffolder" "^0.2.0"
@@ -3796,6 +3802,25 @@
   version "2.4.0"
   resolved "https://registry.npmjs.org/@rjsf/material-ui/-/material-ui-2.4.0.tgz#1b5859298bf3f61137d7b05084f058a775d6fd73"
   integrity sha512-U8F/suzg4MuV+8mK1/ufs0Y6c3O8hc1wnuD2IKoOVJvegGfz5JCafyoyGAW6iyuT1DZBMPzVWEqfiuYPmoE7pw==
+
+"@roadiehq/backstage-plugin-buildkite@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-buildkite/-/backstage-plugin-buildkite-0.1.1.tgz#1f3eff33ba9ce326ecee8e1b571b51b5d5f67561"
+  integrity sha512-1NprhHfEulYqMo76+irys5p1HNW9tO+FLc7Ts9+M/b+QnEiXe3mumjCCGiIH6AkRUCw1xAtWSqDSSn5PUsZ3yQ==
+  dependencies:
+    "@backstage/catalog-model" "^0.2.0"
+    "@backstage/core" "^0.2.0"
+    "@backstage/plugin-catalog" "^0.2.0"
+    "@material-ui/core" "^4.11.0"
+    "@material-ui/icons" "^4.9.1"
+    "@material-ui/lab" "4.0.0-alpha.45"
+    moment "^2.27.0"
+    react "^16.13.1"
+    react-dom "^16.13.1"
+    react-lazylog "^4.5.2"
+    react-router "6.0.0-beta.0"
+    react-router-dom "6.0.0-beta.0"
+    react-use "^15.3.3"
 
 "@roadiehq/backstage-plugin-github-insights@^0.2.10":
   version "0.2.10"
