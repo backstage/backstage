@@ -148,7 +148,7 @@ The CircleCI plugin is an example of a third-party backed plugin. CircleCI is a
 SaaS service which can be used without any knowledge of Backstage. It has an API
 which a Backstage plugin consumes to display content.
 
-Requests which go to CircleCI from the users browser are passed through a proxy
+Requests going to CircleCI from the user's browser are passed through a proxy
 service that Backstage provides. Without this, the requests would be blocked by
 Cross Origin Resource Sharing policies which prevent a browser page served at
 [https://example.com](https://example.com) from serving resources hosted at
@@ -161,16 +161,18 @@ https://circleci.com.
 As we have seen, both the `lighthouse-audit-service` and `catalog-backend`
 require a database to work with.
 
-At the time of writing, the `lighthouse-audit-service` requires PostgreSQL to
-work with. The service catalog backend uses an in-memory Sqlite3 instance. This
-is a development-oriented setup and there are plans to support other databases
-in the future.
+The Backstage backend and its builtin plugins are based on the
+[Knex](http://knexjs.org/) library, and set up a separate logical database per
+plugin. This gives great isolation and lets them perform migrations and evolve
+separate from each other.
 
-To learn more about the future of databases and Backstage, see the following
-GitHub issues.
-
-- [Knex + Plugins (Multiple vs Single Database) · Issue #1598 · backstage/backstage](https://github.com/backstage/backstage/issues/1598)
-- [Update migrations to support postgres by dariddler · Pull Request #1527 · backstage/backstage](https://github.com/backstage/backstage/pull/1527#discussion_r450374145)
+The Knex library supports a multitude of databases, but Backstage is at the time
+of writing tested primarily against two of them: SQLite, which is mainly used as
+an in-memory mock/test database, and PostgreSQL, which is the preferred
+production database. Other databases such as the MySQL variants are reported to
+work but
+[aren't tested as fully](https://github.com/backstage/backstage/issues/2460)
+yet.
 
 ## Containerization
 
