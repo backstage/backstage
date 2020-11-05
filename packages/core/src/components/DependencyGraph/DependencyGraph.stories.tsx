@@ -45,8 +45,8 @@ export const Default = () => (
       nodes={exampleNodes}
       edges={exampleEdges}
       style={graphStyle}
-      marginX={50}
-      marginY={50}
+      paddingX={50}
+      paddingY={50}
     />
   </div>
 );
@@ -58,8 +58,8 @@ export const BottomToTop = () => (
       edges={exampleEdges}
       direction={Direction.BOTTOM_TOP}
       style={graphStyle}
-      marginX={50}
-      marginY={50}
+      paddingX={50}
+      paddingY={50}
     />
   </div>
 );
@@ -71,8 +71,8 @@ export const LeftToRight = () => (
       edges={exampleEdges}
       direction={Direction.LEFT_RIGHT}
       style={graphStyle}
-      marginX={50}
-      marginY={50}
+      paddingX={50}
+      paddingY={50}
     />
   </div>
 );
@@ -84,8 +84,8 @@ export const RightToLeft = () => (
       edges={exampleEdges}
       direction={Direction.RIGHT_LEFT}
       style={graphStyle}
-      marginX={50}
-      marginY={50}
+      paddingX={50}
+      paddingY={50}
     />
   </div>
 );
@@ -99,8 +99,8 @@ export const WithLabels = () => {
         edges={edges}
         direction={Direction.LEFT_RIGHT}
         style={graphStyle}
-        marginX={50}
-        marginY={50}
+        paddingX={50}
+        paddingY={50}
       />
     </div>
   );
@@ -119,8 +119,8 @@ export const CustomNodes = () => {
         nodes={nodes}
         edges={exampleEdges}
         style={graphStyle}
-        marginX={50}
-        marginY={50}
+        paddingX={50}
+        paddingY={50}
         renderNode={props => (
           <g>
             <rect width={200} height={100} rx={20} fill={props.node.color} />
@@ -162,8 +162,8 @@ export const CustomLabels = () => {
         edges={edges}
         labelPosition={LabelPosition.CENTER}
         style={graphStyle}
-        marginX={50}
-        marginY={50}
+        paddingX={50}
+        paddingY={50}
         renderLabel={props => (
           <g>
             <circle r={25} fill={props.edge.color} />
