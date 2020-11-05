@@ -13,7 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createPlugin, createRouteRef } from '@backstage/core';
+import {
+  createApiFactory,
+  createPlugin,
+  createRouteRef,
+  configApiRef,
+} from '@backstage/core';
+import { pagerDutyApiRef, PagerDutyClientApi } from './api/pagerDutyClient';
 
 export const rootRouteRef = createRouteRef({
   path: '/pagerduty',
@@ -22,4 +28,14 @@ export const rootRouteRef = createRouteRef({
 
 export const plugin = createPlugin({
   id: 'pagerduty',
+  apis: [
+    createApiFactory({
+      api: pagerDutyApiRef,
+      deps: { configApi: configApiRef },
+      factory: ({ configApi }) =>
+        new PagerDutyClientApi({
+          token: configApi.getOptionalString('pagerduty.api.token'),
+        }),
+    }),
+  ],
 });

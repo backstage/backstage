@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 import React from 'react';
-import { InfoCard, useApi, configApiRef } from '@backstage/core';
+import { InfoCard, useApi } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
 import { Grid, LinearProgress } from '@material-ui/core';
 import { Incidents } from './Incidents';
 import { EscalationPolicy } from './Escalation';
 import { TriggerButton } from './TriggerButton';
 import { useAsync } from 'react-use';
-import {
-  getServiceByIntegrationKey,
-  getIncidentsByServiceId,
-  getOncallByPolicyId,
-} from '../api/pagerDutyClient';
+import { Alert } from '@material-ui/lab';
+import { pagerDutyApiRef } from '../api/pagerDutyClient';
 
 export const PAGERDUTY_INTEGRATION_KEY = 'pagerduty.com/integration-key';
 
@@ -37,65 +34,52 @@ type Props = {
 };
 
 export const PagerDutyServiceCard = ({ entity }: Props) => {
-  const configApi = useApi(configApiRef);
-
-  // TODO: handle missing token
-  const token = configApi.getOptionalString('pagerduty.api.token') ?? undefined;
-  console.log({ token });
+  const api = useApi(pagerDutyApiRef);
 
   const { value, loading, error } = useAsync(async () => {
     const integrationKey = entity.metadata.annotations![
       PAGERDUTY_INTEGRATION_KEY
     ];
 
-    const service = await getServiceByIntegrationKey(integrationKey, token);
-    const incidents = await getIncidentsByServiceId(
-      (service as any).id /*// TODO: fix type */,
-      token,
-    );
-    const oncalls = await getOncallByPolicyId(
-      (service as any).escalation_policy.id, // TODO: fix type
-      token,
-    );
+    const services = await api.getServiceByIntegrationKey(integrationKey);
+    // TODO check services length
+    const service = services[0];
+
+    const incidents = await api.getIncidentsByServiceId(service.id);
+    const oncalls = await api.getOncallByPolicyId(service.escalation_policy.id);
 
     return {
-      pagerDutyServices: [
-        {
-          activeIncidents: incidents,
-          escalationPolicy: oncalls,
-          id: service.id,
-          name: service.name,
-          homepageUrl: service.html_url,
-        },
-      ],
+      incidents,
+      oncalls,
+      id: service.id,
+      name: service.name,
+      homepageUrl: service.html_url,
     };
   });
 
   if (error) {
-    // TODO: use the errorApi
-    console.log(error);
-    throw new Error(`Error in getting data: ${error.message}`);
+    return (
+      <div>
+        <Alert severity="error">
+          Error encountered while fetching information. {error.message}
+        </Alert>
+      </div>
+    );
   }
 
   if (loading) {
     return <LinearProgress />;
   }
 
-  const {
-    activeIncidents,
-    escalationPolicy,
-    homepageUrl,
-  } = value!.pagerDutyServices[0]!;
-
   const link = {
     title: 'View in PagerDuty',
-    link: homepageUrl,
+    link: value!.homepageUrl,
   };
 
   return (
     <InfoCard title="PagerDuty" deepLink={link}>
-      <Incidents incidents={activeIncidents.incidents} />
-      <EscalationPolicy escalation={escalationPolicy.oncalls} />
+      <Incidents incidents={value!.incidents} />
+      <EscalationPolicy escalation={value!.oncalls} />
       <Grid container item xs={12} justify="flex-end">
         <TriggerButton entity={entity} />
       </Grid>

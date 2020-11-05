@@ -114,7 +114,9 @@ type IncidentsProps = {
 export const Incidents = ({ incidents }: IncidentsProps) => (
   <List dense subheader={<ListSubheader>Incidents</ListSubheader>}>
     {incidents.length ? (
-      incidents.map(incident => <IncidentListItem incident={incident} />)
+      incidents.map((incident, index) => (
+        <IncidentListItem key={incident.id + index} incident={incident} />
+      ))
     ) : (
       <IncidentsEmptyState />
     )}

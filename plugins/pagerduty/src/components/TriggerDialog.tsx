@@ -26,7 +26,7 @@ import {
 } from '@material-ui/core';
 import { Progress, useApi, alertApiRef, identityApiRef } from '@backstage/core';
 import { useAsyncFn } from 'react-use';
-import { triggerPagerDutyAlarm } from '../api/pagerDutyClient';
+import { pagerDutyApiRef } from '../api/pagerDutyClient';
 
 const useStyles = makeStyles({
   warningText: {
@@ -48,6 +48,7 @@ export const TriggerDialog = ({ name, integrationKey, onClose }: Props) => {
   const alertApi = useApi(alertApiRef);
   const identityApi = useApi(identityApiRef);
   const userId = identityApi.getUserId();
+  const api = useApi(pagerDutyApiRef);
 
   const descriptionChanged = (event: any) => {
     setDescription(event.target.value);
@@ -55,7 +56,7 @@ export const TriggerDialog = ({ name, integrationKey, onClose }: Props) => {
 
   const [{ value, loading, error }, triggerAlarm] = useAsyncFn(
     async (desc: string) => {
-      return await triggerPagerDutyAlarm(
+      return await api.triggerPagerDutyAlarm(
         integrationKey,
         window.location.toString(),
         desc,
