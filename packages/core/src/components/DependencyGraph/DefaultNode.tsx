@@ -52,9 +52,9 @@ export function DefaultNode({ node: { id } }: RenderNodeProps) {
     }
   }, [width, height]);
 
-  const padding = 20;
-  const paddedWidth = width + padding;
-  const paddedHeight = height + padding;
+  const padding = 10;
+  const paddedWidth = width + padding * 2;
+  const paddedHeight = height + padding * 2;
 
   return (
     <g>
