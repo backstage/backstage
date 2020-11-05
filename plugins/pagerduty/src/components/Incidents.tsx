@@ -29,6 +29,7 @@ import {
 import { StatusError, StatusWarning, StatusOK } from '@backstage/core';
 import Pagerduty from '../assets/pd.svg';
 import moment from 'moment';
+import { Incident } from '../components/types';
 
 const useStyles = makeStyles({
   denseListIcon: {
@@ -57,13 +58,13 @@ const IncidentsEmptyState = () => {
   );
 };
 
-type IncidentListProps = {
-  incidents: any;
+type IncidentListItemProps = {
+  incident: Incident;
 };
 
-const IncidentList = ({ incidents }: IncidentListProps) => {
+const IncidentListItem = ({ incident }: IncidentListItemProps) => {
   const classes = useStyles();
-  return incidents.map((incident: any) => (
+  return (
     <ListItem key={incident.id}>
       <ListItemIcon>
         <Tooltip title={incident.status} placement="top">
@@ -103,17 +104,17 @@ const IncidentList = ({ incidents }: IncidentListProps) => {
         </Tooltip>
       </ListItemSecondaryAction>
     </ListItem>
-  ));
+  );
 };
 
 type IncidentsProps = {
-  incidents: Array<any>;
+  incidents: Incident[];
 };
 
 export const Incidents = ({ incidents }: IncidentsProps) => (
   <List dense subheader={<ListSubheader>Incidents</ListSubheader>}>
     {incidents.length ? (
-      <IncidentList incidents={incidents} />
+      incidents.map(incident => <IncidentListItem incident={incident} />)
     ) : (
       <IncidentsEmptyState />
     )}

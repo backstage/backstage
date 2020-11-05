@@ -30,7 +30,7 @@ import UserIcon from '@material-ui/icons/Person';
 import EmailIcon from '@material-ui/icons/Email';
 import { StatusWarning } from '@backstage/core';
 import Pagerduty from '../assets/pd.svg';
-import { PagerDutyUserData } from './types';
+import { Oncall, PagerDutyEscalationPolicy } from './types';
 
 const useStyles = makeStyles({
   denseListIcon: {
@@ -45,11 +45,7 @@ const useStyles = makeStyles({
   },
 });
 
-type EscalationUserProps = {
-  user: PagerDutyUserData;
-};
-
-const EscalationUser = ({ user }: EscalationUserProps) => {
+const EscalationUser = ({ user }: PagerDutyEscalationPolicy) => {
   const classes = useStyles();
   return (
     <ListItem>
@@ -65,7 +61,7 @@ const EscalationUser = ({ user }: EscalationUserProps) => {
         </Tooltip>
         <Tooltip title="View in PagerDuty" placement="left">
           <IconButton
-            href={user.homepageUrl}
+            href={user.html_url}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -96,7 +92,7 @@ const EscalationUsersEmptyState = () => {
 };
 
 type EscalationPolicyProps = {
-  escalation: PagerDutyUserData[];
+  escalation: Oncall[];
 };
 
 export const EscalationPolicy = ({ escalation }: EscalationPolicyProps) => (
