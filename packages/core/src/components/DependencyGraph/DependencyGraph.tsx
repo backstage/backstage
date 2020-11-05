@@ -21,7 +21,6 @@ import useTheme from '@material-ui/core/styles/useTheme';
 import dagre from 'dagre';
 import debounce from 'lodash/debounce';
 import { BackstageTheme } from '@backstage/theme';
-import Node from './Node';
 import {
   DependencyEdge,
   DependencyNode,
@@ -34,7 +33,8 @@ import {
   GraphNode,
   LabelPosition,
 } from './types';
-import Edge from './Edge';
+import { Node } from './Node';
+import { Edge } from './Edge';
 import { ARROW_MARKER_ID } from './constants';
 
 export type DependencyGraphProps = React.SVGProps<SVGSVGElement> & {
@@ -60,7 +60,7 @@ export type DependencyGraphProps = React.SVGProps<SVGSVGElement> & {
 
 const WORKSPACE_ID = 'workspace';
 
-function DependencyGraph({
+export function DependencyGraph({
   edges,
   nodes,
   renderNode,
@@ -322,5 +322,3 @@ function DependencyGraph({
     </svg>
   );
 }
-
-export default DependencyGraph;

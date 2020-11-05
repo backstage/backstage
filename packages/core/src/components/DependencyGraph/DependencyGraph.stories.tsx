@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import DependencyGraph from './DependencyGraph';
+import { DependencyGraph } from './DependencyGraph';
 import { Direction, LabelPosition } from './types';
 
 export default {

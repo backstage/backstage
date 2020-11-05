@@ -26,7 +26,7 @@ import {
   DependencyEdge,
 } from './types';
 import { ARROW_MARKER_ID, EDGE_TEST_ID, LABEL_TEST_ID } from './constants';
-import DefaultLabel from './DefaultLabel';
+import { DefaultLabel } from './DefaultLabel';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   path: {
@@ -57,7 +57,7 @@ const createPath = d3Shape
   .y(d => d.y)
   .curve(d3Shape.curveMonotoneX);
 
-function Edge({
+export function Edge({
   render = renderDefault,
   setEdge,
   id,
@@ -120,5 +120,3 @@ function Edge({
     </>
   );
 }
-
-export default Edge;

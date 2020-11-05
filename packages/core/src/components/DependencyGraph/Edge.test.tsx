@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import Edge from './Edge';
+import { Edge } from './Edge';
 import { RenderLabelProps } from './types';
 
 const fromNode = 'node';

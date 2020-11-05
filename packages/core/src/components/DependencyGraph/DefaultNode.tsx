@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
   },
 }));
 
-export default function DefaultNode({ node: { id } }: RenderNodeProps) {
+export function DefaultNode({ node: { id } }: RenderNodeProps) {
   const classes = useStyles();
   const [width, setWidth] = React.useState(0);
   const [height, setHeight] = React.useState(0);

@@ -16,7 +16,7 @@
 
 import React from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import DefaultNode from './DefaultNode';
+import { DefaultNode } from './DefaultNode';
 import { RenderNodeFunction, RenderNodeProps, GraphNode } from './types';
 import { NODE_TEST_ID } from './constants';
 
@@ -34,7 +34,11 @@ export type NodeComponentProps<T = any> = {
 
 const renderDefault = (props: RenderNodeProps) => <DefaultNode {...props} />;
 
-function Node({ render = renderDefault, setNode, node }: NodeComponentProps) {
+export function Node({
+  render = renderDefault,
+  setNode,
+  node,
+}: NodeComponentProps) {
   const { width, height, x = 0, y = 0, ...nodeProps } = node;
   const classes = useStyles();
   const nodeRef = React.useRef<SVGGElement | null>(null);
@@ -70,5 +74,3 @@ function Node({ render = renderDefault, setNode, node }: NodeComponentProps) {
     </g>
   );
 }
-
-export default Node;

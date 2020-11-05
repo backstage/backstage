@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import { BackstageTheme } from '@backstage/theme';
 import { RenderLabelProps } from './types';
 
@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
   },
 }));
 
-function DefaultLabel({ edge: { label } }: RenderLabelProps) {
+export function DefaultLabel({ edge: { label } }: RenderLabelProps) {
   const classes = useStyles();
   return (
     <text className={classes.text} textAnchor="middle">
@@ -33,4 +33,3 @@ function DefaultLabel({ edge: { label } }: RenderLabelProps) {
     </text>
   );
 }
-export default DefaultLabel;

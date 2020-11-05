@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { default } from './DependencyGraph';
-export * from './types';
+export { DependencyGraph } from './DependencyGraph';
+export * as DependencyGraphTypes from './types';

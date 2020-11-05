@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import DependencyGraph from './DependencyGraph';
+import { DependencyGraph } from './DependencyGraph';
 import { RenderLabelProps, RenderNodeProps } from './types';
 import { EDGE_TEST_ID, LABEL_TEST_ID, NODE_TEST_ID } from './constants';
 

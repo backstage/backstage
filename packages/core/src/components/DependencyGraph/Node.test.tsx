@@ -17,7 +17,7 @@
 import React from 'react';
 import dagre from 'dagre';
 import { render } from '@testing-library/react';
-import Node from './Node';
+import { Node } from './Node';
 import { RenderNodeProps } from './types';
 
 const node = { id: 'abc' };
