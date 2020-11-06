@@ -80,7 +80,6 @@
     "get-port": "^5.1.1",
     "http-errors": "^1.7.3",
     "jest": "^26.0.1",
-    "jest-fetch-mock": "^3.0.3",
     "mock-fs": "^4.13.0",
     "msw": "^0.21.2",
     "recursive-readdir": "^2.2.2",
