@@ -22,23 +22,9 @@ const minProps = {
   title: 'A deepLink title',
   link: '/mocked',
 };
-
-const internalLinkProps = {
-  title: 'A deepLink internal',
-  link: '/mocked',
-  internal: true,
-};
-
 describe('<BottomLink />', () => {
   it('renders without exploding', async () => {
     const rendered = await renderInTestApp(<BottomLink {...minProps} />);
     expect(rendered.getByText('A deepLink title')).toBeInTheDocument();
-  });
-
-  it('renders with backstage Link', async () => {
-    const rendered = await renderInTestApp(
-      <BottomLink {...internalLinkProps} />,
-    );
-    expect(rendered.getByText('A deepLink internal')).toBeInTheDocument();
   });
 });

@@ -26,11 +26,12 @@ type Props = ComponentProps<typeof MaterialLink> &
  * Makes the Link to utilise react-router
  */
 export const Link = React.forwardRef<any, Props>((props, ref) => {
-  const to = props.to.toString();
-  const external = /^https?:\/\//.test(to);
-  return !external ? (
-    <MaterialLink ref={ref} component={RouterLink} {...props} />
+  const to = String(props.to);
+  return /^https?:\/\//.test(to) ? (
+    // External links
+    <MaterialLink ref={ref} href={to} {...props} />
   ) : (
-    <MaterialLink href={to} {...props} />
+    // Interact with React Router for internal links
+    <MaterialLink ref={ref} component={RouterLink} {...props} />
   );
 });
