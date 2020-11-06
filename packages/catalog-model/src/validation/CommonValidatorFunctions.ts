@@ -31,7 +31,7 @@ export class CommonValidatorFunctions {
    * @param isValidSuffix Checks that the part after the separator (or the entire value if there is no separator) is valid
    */
   static isValidPrefixAndOrSuffix(
-    value: any,
+    value: unknown,
     separator: string,
     isValidPrefix: (value: string) => boolean,
     isValidSuffix: (value: string) => boolean,
@@ -55,7 +55,7 @@ export class CommonValidatorFunctions {
    *
    * @param value The value to check
    */
-  static isJsonSafe(value: any): boolean {
+  static isJsonSafe(value: unknown): boolean {
     try {
       return lodash.isEqual(value, JSON.parse(JSON.stringify(value)));
     } catch {
@@ -69,7 +69,7 @@ export class CommonValidatorFunctions {
    * @param value The value to check
    * @see https://tools.ietf.org/html/rfc1123
    */
-  static isValidDnsSubdomain(value: any): boolean {
+  static isValidDnsSubdomain(value: unknown): boolean {
     return (
       typeof value === 'string' &&
       value.length >= 1 &&
@@ -84,7 +84,7 @@ export class CommonValidatorFunctions {
    * @param value The value to check
    * @see https://tools.ietf.org/html/rfc1123
    */
-  static isValidDnsLabel(value: any): boolean {
+  static isValidDnsLabel(value: unknown): boolean {
     return (
       typeof value === 'string' &&
       value.length >= 1 &&

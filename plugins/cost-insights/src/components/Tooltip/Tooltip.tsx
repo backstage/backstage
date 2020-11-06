@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { Box, Typography } from '@material-ui/core';
-import TooltipItem, { TooltipItemProps } from './TooltipItem';
+import { TooltipItem, TooltipItemProps } from './TooltipItem';
 import { useTooltipStyles } from '../../utils/styles';
 
 export type TooltipProps = {
@@ -24,7 +24,7 @@ export type TooltipProps = {
   items?: Array<TooltipItemProps>;
 };
 
-const Tooltip = ({ label, items }: TooltipProps) => {
+export const Tooltip = ({ label, items }: TooltipProps) => {
   const classes = useTooltipStyles();
   return (
     <Box
@@ -50,5 +50,3 @@ const Tooltip = ({ label, items }: TooltipProps) => {
     </Box>
   );
 };
-
-export default Tooltip;

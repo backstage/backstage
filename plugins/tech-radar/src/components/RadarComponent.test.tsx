@@ -19,6 +19,7 @@ import { render, waitForElement } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
 import { ApiRegistry, ApiProvider, errorApiRef } from '@backstage/core';
+import { act } from 'react-dom/test-utils';
 import { withLogCollector } from '@backstage/test-utils';
 
 import GetBBoxPolyfill from '../utils/polyfills/getBBox';
@@ -34,8 +35,9 @@ describe('RadarComponent', () => {
   });
 
   it('should render a progress bar', async () => {
-    const errorApi = { post: () => {} };
+    jest.useFakeTimers();
 
+    const errorApi = { post: () => {} };
     const { getByTestId, queryByTestId } = render(
       <ThemeProvider theme={lightTheme}>
         <ApiProvider apis={ApiRegistry.from([[errorApiRef, errorApi]])}>
@@ -48,9 +50,13 @@ describe('RadarComponent', () => {
       </ThemeProvider>,
     );
 
+    act(() => {
+      jest.advanceTimersByTime(250);
+    });
     expect(getByTestId('progress')).toBeInTheDocument();
 
     await waitForElement(() => queryByTestId('tech-radar-svg'));
+    jest.useRealTimers();
   });
 
   it('should call the errorApi if load fails', async () => {

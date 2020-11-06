@@ -12,7 +12,7 @@ This both applies to objects given to and returned from the software catalog
 API, as well as to the descriptor files that the software catalog can ingest
 natively. In the API request/response cycle, a JSON representation is used,
 while the descriptor files are on YAML format to be more easily maintainable by
-humans. However, the structure and semantics is the same in both cases.
+humans. However, the structure and semantics are the same in both cases.
 
 Although it's possible to name catalog entity descriptor files however you wish,
 we recommend that you name them `catalog-info.yaml`.
@@ -113,7 +113,7 @@ data.
 Backstage specific entities have an `apiVersion` that is prefixed with
 `backstage.io/`, to distinguish them from other types of object that share the
 same type of structure. This may be relevant when co-hosting these
-specifications with e.g. kubernetes object manifests, or when an organization
+specifications with e.g. Kubernetes object manifests, or when an organization
 adds their own specific kinds of entity to the catalog.
 
 Early versions of the catalog will be using alpha/beta versions, e.g.
@@ -256,8 +256,8 @@ component, like `java` or `go`.
 
 This field is optional, and currently has no special semantics.
 
-Each tag must be sequences of `[a-zA-Z0-9]` separated by `-`, at most 63
-characters in total.
+Each tag must be sequences of `[a-z0-9]` separated by `-`, at most 63 characters
+in total.
 
 ## Kind: Component
 
@@ -418,7 +418,7 @@ of the `metadata.name` field.
 ### `metadata.tags` [optional]
 
 A list of strings that can be associated with the template, e.g.
-`['Recommended', 'React']`.
+`['recommended', 'react']`.
 
 This list will also be used in the frontend to display to the user so you can
 potentially search and group templates by these tags.

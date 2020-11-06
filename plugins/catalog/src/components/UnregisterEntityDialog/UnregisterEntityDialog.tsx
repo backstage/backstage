@@ -15,7 +15,7 @@
  */
 
 import { Entity, LOCATION_ANNOTATION } from '@backstage/catalog-model';
-import { Progress, useApi, alertApiRef } from '@backstage/core';
+import { alertApiRef, Progress, useApi } from '@backstage/core';
 import {
   Button,
   Dialog,
@@ -31,7 +31,7 @@ import Alert from '@material-ui/lab/Alert';
 import React, { FC } from 'react';
 import { useAsync } from 'react-use';
 import { AsyncState } from 'react-use/lib/useAsync';
-import { catalogApiRef } from '../../api/types';
+import { catalogApiRef } from '../../plugin';
 
 type Props = {
   open: boolean;
@@ -85,7 +85,7 @@ export const UnregisterEntityDialog: FC<Props> = ({
             {error.toString()}
           </Alert>
         ) : null}
-        {entities ? (
+        {entities?.length ? (
           <>
             <DialogContentText>
               This action will unregister the following entities:
@@ -101,17 +101,17 @@ export const UnregisterEntityDialog: FC<Props> = ({
               That are located at the following location:
             </DialogContentText>
             <Typography component="div">
-              <ul>
+              <ul style={{ wordBreak: 'break-word' }}>
                 <li>
                   {entities[0]?.metadata.annotations?.[LOCATION_ANNOTATION]}
                 </li>
               </ul>
             </Typography>
-            <DialogContentText>
-              To undo, just re-register the entity in Backstage.
-            </DialogContentText>
           </>
         ) : null}
+        <DialogContentText>
+          To undo, just re-register the entity in Backstage.
+        </DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="primary">

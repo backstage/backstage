@@ -62,12 +62,14 @@ Firekube
 Fredrik
 github
 Github
+gitlab
 Gitlab
 graphql
 graphviz
 Hackathons
 haproxy
 heroku
+Heroku
 horizontalpodautoscalers
 Hostname
 http
@@ -90,6 +92,7 @@ learnings
 lerna
 Lerna
 magiclink
+Maintainership
 mailto
 Malus
 md
@@ -105,6 +108,7 @@ Monorepo
 monorepos
 msw
 namespace
+namespaces
 Namespaces
 neuro
 newrelic
@@ -196,6 +200,7 @@ validators
 Voi
 Wealthsimple
 Weaveworks
+Webpack
 xyz
 yaml
 Zalando

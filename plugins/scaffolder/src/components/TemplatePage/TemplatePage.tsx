@@ -22,7 +22,6 @@ import {
   Lifecycle,
   Page,
   useApi,
-  pageTheme,
 } from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog';
 import { LinearProgress } from '@material-ui/core';
@@ -97,7 +96,7 @@ export const TemplatePage = () => {
 
   const handleCreate = async () => {
     try {
-      const job = await scaffolderApi.scaffold(template!, formState);
+      const job = await scaffolderApi.scaffold(templateName, formState);
       setJobId(job);
     } catch (e) {
       errorApi.post(e);
@@ -109,12 +108,15 @@ export const TemplatePage = () => {
   );
 
   const handleCreateComplete = async (job: Job) => {
-    const componentYaml = job.metadata.remoteUrl?.replace(
+    const target = job.metadata.remoteUrl?.replace(
       /\.git$/,
+      // TODO(Rugvip): This is not the location we want. As part of scaffodler v2 we
+      //               want this to be more flexible, but before that we might want
+      //               to update all templates to use catalog-info.yaml instead.
       '/blob/master/component-info.yaml',
     );
 
-    if (!componentYaml) {
+    if (!target) {
       errorApi.post(
         new Error(
           `Failed to find component-info.yaml file in ${job.metadata.remoteUrl}.`,
@@ -125,7 +127,7 @@ export const TemplatePage = () => {
 
     const {
       entities: [createdEntity],
-    } = await catalogApi.addLocation('github', componentYaml);
+    } = await catalogApi.addLocation({ target });
 
     setEntity((createdEntity as any) as TemplateEntityV1alpha1);
   };
@@ -145,7 +147,7 @@ export const TemplatePage = () => {
   }
 
   return (
-    <Page theme={pageTheme.home}>
+    <Page themeId="home">
       <Header
         pageTitleOverride="Create a new component"
         title={

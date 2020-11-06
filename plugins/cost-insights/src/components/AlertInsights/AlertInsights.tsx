@@ -16,8 +16,8 @@
 
 import React from 'react';
 import { Grid } from '@material-ui/core';
-import AlertInsightsSection from './AlertInsightsSection';
-import AlertInsightsHeader from './AlertInsightsHeader';
+import { AlertInsightsSection } from './AlertInsightsSection';
+import { AlertInsightsHeader } from './AlertInsightsHeader';
 import { Alert } from '../../types';
 
 const title = "Your team's action items";
@@ -28,7 +28,7 @@ type AlertInsightsProps = {
   alerts: Array<Alert>;
 };
 
-const AlertInsights = ({ alerts }: AlertInsightsProps) => (
+export const AlertInsights = ({ alerts }: AlertInsightsProps) => (
   <Grid container direction="column" spacing={2}>
     <Grid item>
       <AlertInsightsHeader title={title} subtitle={subtitle} />
@@ -42,5 +42,3 @@ const AlertInsights = ({ alerts }: AlertInsightsProps) => (
     </Grid>
   </Grid>
 );
-
-export default AlertInsights;

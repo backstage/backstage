@@ -66,22 +66,16 @@ export class DocsBuilder {
   }
 
   public async build() {
-    this.logger.info(
-      `[TechDocs] Running preparer on entity ${getEntityId(this.entity)}`,
-    );
+    this.logger.info(`Running preparer on entity ${getEntityId(this.entity)}`);
     const preparedDir = await this.preparer.prepare(this.entity);
 
-    this.logger.info(
-      `[TechDocs] Running generator on entity ${getEntityId(this.entity)}`,
-    );
+    this.logger.info(`Running generator on entity ${getEntityId(this.entity)}`);
     const { resultDir } = await this.generator.run({
       directory: preparedDir,
       dockerClient: this.dockerClient,
     });
 
-    this.logger.info(
-      `[TechDocs] Running publisher on entity ${getEntityId(this.entity)}`,
-    );
+    this.logger.info(`Running publisher on entity ${getEntityId(this.entity)}`);
     await this.publisher.publish({
       entity: this.entity,
       directory: resultDir,
@@ -117,16 +111,14 @@ export class DocsBuilder {
       // Check if documentation source is newer than what we have
       if (storageTimeStamp && storageTimeStamp >= lastCommit) {
         this.logger.debug(
-          `[TechDocs] Docs for entity ${getEntityId(
-            this.entity,
-          )} is up to date.`,
+          `Docs for entity ${getEntityId(this.entity)} is up to date.`,
         );
         return true;
       }
     }
 
     this.logger.debug(
-      `[TechDocs] Docs for entity ${getEntityId(this.entity)} was outdated.`,
+      `Docs for entity ${getEntityId(this.entity)} was outdated.`,
     );
     return false;
   }

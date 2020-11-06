@@ -17,7 +17,7 @@ const siteConfig = {
   url: 'https://backstage.io', // Your website URL
   cname: 'backstage.io',
   baseUrl: '/', // Base URL for your project */
-  editUrl: 'https://github.com/spotify/backstage/edit/master/docs/',
+  editUrl: 'https://github.com/backstage/backstage/edit/master/docs/',
 
   // Used for publishing and more
   projectName: 'backstage',
@@ -30,7 +30,7 @@ const siteConfig = {
   // For no header links in the top nav bar -> headerLinks: [],
   headerLinks: [
     {
-      href: 'https://github.com/spotify/backstage',
+      href: 'https://github.com/backstage/backstage',
       label: 'GitHub',
     },
     {
@@ -60,7 +60,7 @@ const siteConfig = {
   /* path to images for header/footer */
   // headerIcon: "img/android-chrome-192x192.png",
   footerIcon: 'img/android-chrome-192x192.png',
-  favicon: 'img/favicon.svg',
+  favicon: 'img/favicon.ico',
 
   /* Colors for website */
   colors: {
@@ -111,7 +111,7 @@ const siteConfig = {
 
   // You may provide arbitrary config keys to be used as needed by your
   // template. For example, if you need your repo's URL...
-  repoUrl: 'https://github.com/spotify/backstage',
+  repoUrl: 'https://github.com/backstage/backstage',
   twitterUsername: 'SpotifyEng',
 
   stylesheets: [

@@ -15,7 +15,7 @@
  */
 
 import React, { useState } from 'react';
-import { Content, Header, HeaderTabs, Page, pageTheme } from '@backstage/core';
+import { Content, Header, HeaderTabs, Page } from '@backstage/core';
 import { General } from './General';
 import { AuthProviders } from './AuthProviders';
 import { FeatureFlags } from './FeatureFlags';
@@ -43,7 +43,7 @@ export const SettingsPage = ({ providerSettings }: Props) => {
   ];
 
   return (
-    <Page theme={pageTheme.home}>
+    <Page themeId="home">
       <Header title="Settings" />
       <HeaderTabs tabs={tabs} onChange={onTabChange} />
       <Content>{content[activeTab]}</Content>

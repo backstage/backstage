@@ -30,6 +30,7 @@ import transformer, {
   rewriteDocLinks,
   addLinkClickListener,
   removeMkdocsHeader,
+  simplifyMkdocsFooter,
   modifyCss,
   onCssReady,
   sanitizeDOM,
@@ -81,6 +82,7 @@ export const Reader = ({ entityId, onReady }: Props) => {
         },
       }),
       removeMkdocsHeader(),
+      simplifyMkdocsFooter(),
       injectCss({
         css: `
         body {

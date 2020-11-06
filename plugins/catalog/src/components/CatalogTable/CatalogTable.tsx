@@ -22,8 +22,8 @@ import { Alert } from '@material-ui/lab';
 import React from 'react';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
 import { findLocationForEntityMeta } from '../../data/utils';
-import { useStarredEntities } from '../../hooks/useStarredEntites';
-import { entityRoute } from '../../routes';
+import { useStarredEntities } from '../../hooks/useStarredEntities';
+import { entityRoute, entityRouteParams } from '../../routes';
 import {
   favouriteEntityIcon,
   favouriteEntityTooltip,
@@ -38,13 +38,7 @@ const columns: TableColumn<Entity>[] = [
       <Link
         component={RouterLink}
         to={generatePath(entityRoute.path, {
-          optionalNamespaceAndName: [
-            entity.metadata.namespace,
-            entity.metadata.name,
-          ]
-            .filter(Boolean)
-            .join(':'),
-          kind: entity.kind,
+          ...entityRouteParams(entity),
           selectedTabId: 'overview',
         })}
       >
@@ -74,7 +68,13 @@ const columns: TableColumn<Entity>[] = [
       <>
         {entity.metadata.tags &&
           entity.metadata.tags.map(t => (
-            <Chip key={t} label={t} style={{ marginBottom: '0px' }} />
+            <Chip
+              key={t}
+              label={t}
+              size="small"
+              variant="outlined"
+              style={{ marginBottom: '0px' }}
+            />
           ))}
       </>
     ),
@@ -155,10 +155,13 @@ export const CatalogTable = ({
       isLoading={loading}
       columns={columns}
       options={{
-        paging: false,
+        paging: true,
+        pageSize: 20,
         actionsColumnIndex: -1,
         loadingType: 'linear',
         showEmptyDataSourceMessage: !loading,
+        padding: 'dense',
+        pageSizeOptions: [20, 50, 100],
       }}
       title={`${titlePreamble} (${(entities && entities.length) || 0})`}
       data={entities}

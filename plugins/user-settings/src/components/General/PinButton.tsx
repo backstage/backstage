@@ -19,17 +19,10 @@ import {
   ListItem,
   ListItemSecondaryAction,
   ListItemText,
+  Switch,
   Tooltip,
 } from '@material-ui/core';
-import LockIcon from '@material-ui/icons/Lock';
-import LockOpenIcon from '@material-ui/icons/LockOpen';
-import { ToggleButton } from '@material-ui/lab';
 import { SidebarPinStateContext } from '@backstage/core';
-
-type PinIconProps = { isPinned: boolean };
-
-const PinIcon = ({ isPinned }: PinIconProps) =>
-  isPinned ? <LockIcon color="primary" /> : <LockOpenIcon />;
 
 export const PinButton = () => {
   const { isPinned, toggleSidebarPinState } = useContext(
@@ -48,16 +41,13 @@ export const PinButton = () => {
           arrow
           title={`${isPinned ? 'Unpin' : 'Pin'} Sidebar`}
         >
-          <ToggleButton
-            size="small"
-            value="pin"
-            selected={isPinned}
-            onChange={() => {
-              toggleSidebarPinState();
-            }}
-          >
-            <PinIcon isPinned={isPinned} />
-          </ToggleButton>
+          <Switch
+            color="primary"
+            checked={isPinned}
+            onChange={() => toggleSidebarPinState()}
+            name="pin"
+            inputProps={{ 'aria-label': 'Pin Sidebar Switch' }}
+          />
         </Tooltip>
       </ListItemSecondaryAction>
     </ListItem>

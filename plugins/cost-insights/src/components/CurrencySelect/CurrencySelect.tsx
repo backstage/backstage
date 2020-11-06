@@ -16,7 +16,8 @@
 
 import React from 'react';
 import { MenuItem, Select, SelectProps } from '@material-ui/core';
-import { Currency, CurrencyType, findAlways } from '../../types';
+import { Currency, CurrencyType } from '../../types';
+import { findAlways } from '../../utils/assert';
 import { useSelectStyles as useStyles } from '../../utils/styles';
 
 const NULL_VALUE = 'engineers';
@@ -27,7 +28,7 @@ type CurrencySelectProps = {
   onSelect: (currency: Currency) => void;
 };
 
-const CurrencySelect = ({
+export const CurrencySelect = ({
   currency,
   currencies,
   onSelect,
@@ -71,5 +72,3 @@ const CurrencySelect = ({
     </Select>
   );
 };
-
-export default CurrencySelect;

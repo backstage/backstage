@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ConfigReader } from '@backstage/config';
+import { Config } from '@backstage/config';
 import compression from 'compression';
 import cors from 'cors';
 import express, { Router } from 'express';
@@ -77,7 +77,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     this.module = moduleRef;
   }
 
-  loadConfig(config: ConfigReader): ServiceBuilder {
+  loadConfig(config: Config): ServiceBuilder {
     const backendConfig = config.getOptionalConfig('backend');
     if (!backendConfig) {
       return this;

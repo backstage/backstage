@@ -16,7 +16,7 @@
 
 import * as yup from 'yup';
 import type { Entity } from '../entity/Entity';
-import { schemaPolicy } from './util';
+import { schemaValidator } from './util';
 
 const API_VERSION = ['backstage.io/v1alpha1', 'backstage.io/v1beta1'] as const;
 const KIND = 'Group' as const;
@@ -30,21 +30,23 @@ const schema = yup.object<Partial<GroupEntityV1alpha1>>({
       parent: yup.string().notRequired().min(1),
       // Use these manual tests because yup .required() requires at least
       // one element and there is no simple workaround -_-
-      ancestors: yup.array(yup.string()).test({
+      // the cast is there to convince typescript that the array itself is
+      // required without using .required()
+      ancestors: yup.array(yup.string().required()).test({
         name: 'isDefined',
         message: 'ancestors must be defined',
         test: v => Boolean(v),
-      }),
-      children: yup.array(yup.string()).test({
+      }) as yup.ArraySchema<string, object>,
+      children: yup.array(yup.string().required()).test({
         name: 'isDefined',
         message: 'children must be defined',
         test: v => Boolean(v),
-      }),
-      descendants: yup.array(yup.string()).test({
+      }) as yup.ArraySchema<string, object>,
+      descendants: yup.array(yup.string().required()).test({
         name: 'isDefined',
         message: 'descendants must be defined',
         test: v => Boolean(v),
-      }),
+      }) as yup.ArraySchema<string, object>,
     })
     .required(),
 });
@@ -61,7 +63,7 @@ export interface GroupEntityV1alpha1 extends Entity {
   };
 }
 
-export const groupEntityV1alpha1Policy = schemaPolicy(
+export const groupEntityV1alpha1Validator = schemaValidator(
   KIND,
   API_VERSION,
   schema,

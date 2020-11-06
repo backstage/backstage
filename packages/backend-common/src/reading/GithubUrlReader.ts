@@ -16,7 +16,7 @@
 
 import { Config } from '@backstage/config';
 import parseGitUri from 'git-url-parse';
-import fetch, { HeadersInit, RequestInit, Response } from 'node-fetch';
+import fetch from 'cross-fetch';
 import { NotFoundError } from '../errors';
 import { ReaderFactory, ReadTreeResponse, UrlReader, File } from './types';
 import tar from 'tar';
@@ -238,7 +238,7 @@ export class GithubUrlReader implements UrlReader {
     }
 
     if (response.ok) {
-      return response.buffer();
+      return Buffer.from(await response.text());
     }
 
     const message = `${url} could not be read as ${ghUrl}, ${response.status} ${response.statusText}`;

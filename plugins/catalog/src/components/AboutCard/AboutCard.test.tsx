@@ -27,7 +27,7 @@ describe('<AboutCard />', () => {
         name: 'software',
         annotations: {
           'backstage.io/managed-by-location':
-            'github:https://github.com/spotify/backstage/blob/master/software.yaml',
+            'github:https://github.com/backstage/backstage/blob/master/software.yaml',
         },
       },
       spec: {
@@ -40,7 +40,7 @@ describe('<AboutCard />', () => {
     expect(getByText('service')).toBeInTheDocument();
     expect(getByText('View Source').closest('a')).toHaveAttribute(
       'href',
-      'https://github.com/spotify/backstage/blob/master/software.yaml',
+      'https://github.com/backstage/backstage/blob/master/software.yaml',
     );
   });
 });

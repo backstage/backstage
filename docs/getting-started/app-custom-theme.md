@@ -37,7 +37,7 @@ in combination with
 [createMuiTheme](https://material-ui.com/customization/theming/#createmuitheme-options-args-theme)
 from [@material-ui/core](https://www.npmjs.com/package/@material-ui/core). See
 the
-[@backstage/theme source](https://github.com/spotify/backstage/tree/master/packages/theme/src)
+[@backstage/theme source](https://github.com/backstage/backstage/tree/master/packages/theme/src)
 and the implementation of the `createTheme` function for how this is done.
 
 You can also create a theme from scratch that matches the `BackstageTheme` type

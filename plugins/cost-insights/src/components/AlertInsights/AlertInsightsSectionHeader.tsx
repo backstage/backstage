@@ -25,7 +25,7 @@ type AlertInsightsSectionHeaderProps = {
   subtitle: string;
 };
 
-const AlertInsightsSectionHeader = ({
+export const AlertInsightsSectionHeader = ({
   number,
   title,
   subtitle,
@@ -47,5 +47,3 @@ const AlertInsightsSectionHeader = ({
     </Box>
   );
 };
-
-export default AlertInsightsSectionHeader;

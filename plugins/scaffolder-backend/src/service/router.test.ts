@@ -14,7 +14,19 @@
  * limitations under the License.
  */
 
+const mockAccess = jest.fn();
+jest.doMock('fs-extra', () => ({
+  promises: {
+    access: mockAccess,
+  },
+  constants: {
+    F_OK: 0,
+    W_OK: 1,
+  },
+}));
+
 import { getVoidLogger } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import request from 'supertest';
 import { createRouter } from './router';
@@ -23,8 +35,154 @@ import Docker from 'dockerode';
 
 jest.mock('dockerode');
 
+const generateEntityClient: any = (template: any) => ({
+  findTemplate: () => Promise.resolve(template),
+});
+
+describe('createRouter - working directory', () => {
+  const mockPrepare = jest.fn();
+  const mockPreparers = new Preparers();
+
+  beforeAll(() => {
+    const mockPreparer = {
+      prepare: mockPrepare,
+    };
+    mockPreparers.register('azure/api', mockPreparer);
+  });
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
+  const workDirConfig = (path: string) => ({
+    context: '',
+    data: {
+      backend: {
+        workingDirectory: path,
+      },
+    },
+  });
+
+  const template = {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Template',
+    metadata: {
+      annotations: {
+        'backstage.io/managed-by-location': 'azure/api:dev.azure.com',
+      },
+    },
+    spec: {
+      owner: 'template@backstage.io',
+      path: '.',
+      schema: {},
+    },
+  };
+
+  const mockedEntityClient = generateEntityClient(template);
+
+  it('should throw an error when working directory does not exist or is not writable', async () => {
+    mockAccess.mockImplementation(() => {
+      throw new Error('access error');
+    });
+
+    await expect(
+      createRouter({
+        logger: getVoidLogger(),
+        preparers: new Preparers(),
+        templaters: new Templaters(),
+        publishers: new Publishers(),
+        config: ConfigReader.fromConfigs([workDirConfig('/path')]),
+        dockerClient: new Docker(),
+        entityClient: mockedEntityClient,
+      }),
+    ).rejects.toThrow('access error');
+  });
+
+  it('should use the working directory when configured', async () => {
+    const router = await createRouter({
+      logger: getVoidLogger(),
+      preparers: mockPreparers,
+      templaters: new Templaters(),
+      publishers: new Publishers(),
+      config: ConfigReader.fromConfigs([workDirConfig('/path')]),
+      dockerClient: new Docker(),
+      entityClient: mockedEntityClient,
+    });
+
+    const app = express().use(router);
+    await request(app).post('/v1/jobs').send({
+      templateName: '',
+      values: {},
+    });
+
+    expect(mockPrepare).toBeCalledWith(expect.anything(), {
+      logger: expect.anything(),
+      workingDirectory: '/path',
+    });
+  });
+
+  it('should not pass along anything when no working directory is configured', async () => {
+    const router = await createRouter({
+      logger: getVoidLogger(),
+      preparers: mockPreparers,
+      templaters: new Templaters(),
+      publishers: new Publishers(),
+      config: ConfigReader.fromConfigs([]),
+      dockerClient: new Docker(),
+      entityClient: mockedEntityClient,
+    });
+
+    const app = express().use(router);
+    await request(app).post('/v1/jobs').send({
+      templateName: '',
+      values: {},
+    });
+
+    expect(mockPrepare).toBeCalledWith(expect.anything(), {
+      logger: expect.anything(),
+    });
+  });
+});
+
 describe('createRouter', () => {
   let app: express.Express;
+  const template = {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Template',
+    metadata: {
+      description: 'Create a new CRA website project',
+      name: 'create-react-app-template',
+      tags: ['experimental', 'react', 'cra'],
+      title: 'Create React App Template',
+    },
+    spec: {
+      owner: 'web@example.com',
+      path: '.',
+      schema: {
+        properties: {
+          component_id: {
+            description: 'Unique name of the component',
+            title: 'Name',
+            type: 'string',
+          },
+          description: {
+            description: 'Description of the component',
+            title: 'Description',
+            type: 'string',
+          },
+          use_typescript: {
+            default: true,
+            description: 'Include typescript',
+            title: 'Use Typescript',
+            type: 'boolean',
+          },
+        },
+        required: ['component_id', 'use_typescript'],
+      },
+      templater: 'cra',
+      type: 'website',
+    },
+  };
 
   beforeAll(async () => {
     const router = await createRouter({
@@ -32,7 +190,9 @@ describe('createRouter', () => {
       preparers: new Preparers(),
       templaters: new Templaters(),
       publishers: new Publishers(),
+      config: ConfigReader.fromConfigs([]),
       dockerClient: new Docker(),
+      entityClient: generateEntityClient(template),
     });
     app = express().use(router);
   });
@@ -42,47 +202,9 @@ describe('createRouter', () => {
   });
 
   describe('POST /v1/jobs', () => {
-    const template = {
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'Template',
-      metadata: {
-        description: 'Create a new CRA website project',
-        name: 'create-react-app-template',
-        tags: ['experimental', 'react', 'cra'],
-        title: 'Create React App Template',
-      },
-      spec: {
-        owner: 'web@example.com',
-        path: '.',
-        schema: {
-          properties: {
-            component_id: {
-              description: 'Unique name of the component',
-              title: 'Name',
-              type: 'string',
-            },
-            description: {
-              description: 'Description of the component',
-              title: 'Description',
-              type: 'string',
-            },
-            use_typescript: {
-              default: true,
-              description: 'Include typescript',
-              title: 'Use Typescript',
-              type: 'boolean',
-            },
-          },
-          required: ['component_id', 'use_typescript'],
-        },
-        templater: 'cra',
-        type: 'website',
-      },
-    };
-
     it('rejects template values which do not match the template schema definition', async () => {
       const response = await request(app).post('/v1/jobs').send({
-        template,
+        templateName: '',
         values: {},
       });
 

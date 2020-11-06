@@ -67,6 +67,13 @@ export const defaultConfigLoader: AppConfigLoader = async (
     }
   }
 
+  const windowAppConfig = (window as any).__APP_CONFIG__;
+  if (windowAppConfig) {
+    configs.push({
+      context: 'window',
+      data: windowAppConfig,
+    });
+  }
   return configs;
 };
 

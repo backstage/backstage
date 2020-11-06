@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TechDocsHome } from './TechDocsHome';
-import React from 'react';
-import { render } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
-import { ApiRegistry, ApiProvider } from '@backstage/core-api';
 
-import { catalogApiRef, CatalogApi } from '@backstage/plugin-catalog';
 import { Entity } from '@backstage/catalog-model';
+import { ApiProvider, ApiRegistry } from '@backstage/core-api';
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog';
+import { wrapInTestApp } from '@backstage/test-utils';
+import { render } from '@testing-library/react';
+import React from 'react';
+import { TechDocsHome } from './TechDocsHome';
 
 describe('TechDocs Home', () => {
   const catalogApi: Partial<CatalogApi> = {

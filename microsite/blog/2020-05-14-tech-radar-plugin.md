@@ -34,11 +34,11 @@ To learn about how you can bring the Tech Radar to your Backstage installation, 
 
 I want to thank both the Backstage team and Spotify. Firstly, I’ve been working with our internal version of Backstage for over a year, and the developer experience since open sourcing has been even more of a joy to work with. Secondly, the 10% hack time that Spotify generously provides to all engineers enabled me to open source the Tech Radar plugin.
 
-Since open sourcing it, the community has shown great interest in yet another powerful use case of Backstage. There was also an enthusiastic open source contributor who volunteered to migrate the plugin to TypeScript and React Hooks [in just 29 minutes](https://github.com/spotify/backstage/issues/661) of opening the issue!
+Since open sourcing it, the community has shown great interest in yet another powerful use case of Backstage. There was also an enthusiastic open source contributor who volunteered to migrate the plugin to TypeScript and React Hooks [in just 29 minutes](https://github.com/backstage/backstage/issues/661) of opening the issue!
 
 I can’t wait to see how others benefit from the Tech Radar in their organizations!
 
 [lighthouse website audits]: https://backstage.io/blog/2020/04/06/lighthouse-plugin
-[tech radar plugin]: https://github.com/spotify/backstage/tree/master/plugins/tech-radar
+[tech radar plugin]: https://github.com/backstage/backstage/tree/master/plugins/tech-radar
 [thoughtworks]: https://www.thoughtworks.com/radar
 [zalando]: https://opensource.zalando.com/tech-radar/

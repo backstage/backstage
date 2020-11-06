@@ -15,22 +15,21 @@
  */
 
 import React, {
-  ReactNode,
   createContext,
+  PropsWithChildren,
   useContext,
   useEffect,
   useState,
 } from 'react';
-import { useApi, configApiRef } from '@backstage/core';
+import { configApiRef, useApi } from '@backstage/core';
 import { Config as BackstageConfig } from '@backstage/config';
-import { Currency, defaultCurrencies, Product, Icon, Metric } from '../types';
+import { Currency, Icon, Metric, Product } from '../types';
 import { getIcon } from '../utils/navigation';
-
-export const NULL_METRIC = 'dailyCost';
-export const NULL_METRIC_NAME = 'Daily Cost';
+import { validateMetrics } from '../utils/config';
+import { defaultCurrencies } from '../utils/currency';
 
 /*
- * Config schema 2020-09-28
+ * Config schema 2020-10-15
  *
  * costInsights:
  *   engineerCost: 200000
@@ -44,6 +43,7 @@ export const NULL_METRIC_NAME = 'Daily Cost';
  *   metrics:
  *     metricA:
  *       name: Metric A
+ *       default: true
  *     metricB:
  *       name: Metric B
  */
@@ -61,14 +61,14 @@ export const ConfigContext = createContext<ConfigContextProps | undefined>(
 );
 
 const defaultState: ConfigContextProps = {
-  metrics: [{ kind: null, name: NULL_METRIC_NAME }],
+  metrics: [],
   products: [],
   icons: [],
   engineerCost: 0,
   currencies: defaultCurrencies,
 };
 
-export const ConfigProvider = ({ children }: { children: ReactNode }) => {
+export const ConfigProvider = ({ children }: PropsWithChildren<{}>) => {
   const c: BackstageConfig = useApi(configApiRef);
   const [config, setConfig] = useState(defaultState);
   const [loading, setLoading] = useState(true);
@@ -87,8 +87,9 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
       const metrics = c.getOptionalConfig('costInsights.metrics');
       if (metrics) {
         return metrics.keys().map(key => ({
-          kind: key === NULL_METRIC ? null : key,
+          kind: key,
           name: metrics.getString(`${key}.name`),
+          default: metrics.getOptionalBoolean(`${key}.default`) ?? false,
         }));
       }
 
@@ -115,23 +116,16 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
       const engineerCost = getEngineerCost();
       const icons = getIcons();
 
-      if (metrics.find((m: Metric) => m.kind === null)) {
-        setConfig(prevState => ({
-          ...prevState,
-          metrics,
-          products,
-          engineerCost,
-          icons,
-        }));
-      } else {
-        setConfig(prevState => ({
-          ...prevState,
-          metrics: [...prevState.metrics, ...metrics],
-          products,
-          engineerCost,
-          icons,
-        }));
-      }
+      validateMetrics(metrics);
+
+      setConfig(prevState => ({
+        ...prevState,
+        metrics,
+        products,
+        engineerCost,
+        icons,
+      }));
+
       setLoading(false);
     }
 
@@ -149,12 +143,7 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
 
 export function useConfig(): ConfigContextProps {
   const config = useContext(ConfigContext);
-
-  if (!config) {
-    assertNever();
-  }
-
-  return config;
+  return config ? config : assertNever();
 }
 
 function assertNever(): never {

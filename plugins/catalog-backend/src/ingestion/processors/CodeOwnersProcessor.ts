@@ -16,16 +16,16 @@
 
 import { UrlReader } from '@backstage/backend-common';
 import { Entity, LocationSpec } from '@backstage/catalog-model';
-import { LocationProcessor } from './types';
 import * as codeowners from 'codeowners-utils';
 import { CodeOwnersEntry } from 'codeowners-utils';
-import parseGitUri from 'git-url-parse';
-import { filter, head, get, pipe, reverse } from 'lodash/fp';
-
 // NOTE: This can be removed when ES2021 is implemented
 import 'core-js/features/promise';
+import parseGitUri from 'git-url-parse';
+import { filter, get, head, pipe, reverse } from 'lodash/fp';
+import { CatalogProcessor } from './types';
 
 const ALLOWED_LOCATION_TYPES = [
+  'url',
   'azure/api',
   'bitbucket/api',
   'github',
@@ -34,14 +34,22 @@ const ALLOWED_LOCATION_TYPES = [
   'gitlab/api',
 ];
 
+// TODO(Rugvip): We want to properly detect out repo provider, but for now it's
+//               best to wait for GitHub Apps to be properly introduced and see
+//               what kind of APIs that integrations will expose.
+const KNOWN_LOCATIONS = ['', '/docs', '/.bitbucket', '/.github', '/.gitlab'];
+
 type Options = {
   reader: UrlReader;
 };
 
-export class CodeOwnersProcessor implements LocationProcessor {
+export class CodeOwnersProcessor implements CatalogProcessor {
   constructor(private readonly options: Options) {}
 
-  async processEntity(entity: Entity, location: LocationSpec): Promise<Entity> {
+  async preProcessEntity(
+    entity: Entity,
+    location: LocationSpec,
+  ): Promise<Entity> {
     // Only continue if the owner is not set
     if (
       !entity ||
@@ -89,13 +97,7 @@ export async function findRawCodeOwners(
     return data.toString();
   };
 
-  const gitProvider = location.type.split('/')[0];
-
-  return Promise.any([
-    readOwnerLocation(`/.${gitProvider}`),
-    readOwnerLocation(''),
-    readOwnerLocation('/docs'),
-  ]);
+  return Promise.any(KNOWN_LOCATIONS.map(readOwnerLocation));
 }
 
 export function buildCodeOwnerUrl(
@@ -125,6 +127,8 @@ export function findPrimaryCodeOwner(
 export function normalizeCodeOwner(owner: string) {
   if (owner.match(/^@.*\/.*/)) {
     return owner.split('/')[1];
+  } else if (owner.match(/^@.*/)) {
+    return owner.substring(1);
   } else if (owner.match(/^.*@.*\..*$/)) {
     return owner.split('@')[0];
   }

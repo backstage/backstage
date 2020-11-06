@@ -36,7 +36,7 @@ appConfig:
 Then use it to run:
 
 ```
-git clone https://github.com/spotify/backstage.git
+git clone https://github.com/backstage/backstage.git
 cd contrib/chart/backstage
 helm dependency update
 helm install -f backstage-mydomain.yaml backstage .
@@ -62,12 +62,29 @@ backstage-ingress   *       123.1.2.3       80      17m
 
 > **NOTE**: this is not a production ready deployment.
 
-## Caveats
-
-The current implementation does not generate certificates for the ingress which means the browser will alert that the
-site is insecure and using self-signed certificates.
-
 ## Customization
+
+### Issue certificates
+
+These charts can install or reuse a `clusterIssuer` to generate certificates for the backstage `ingress`. To do that:
+
+1. [Install][install-cert-manager] or make sure [cert-manager][cert-manager] is installed in the cluster.
+2. Enable the issuer in the charts. This will first check if there is a `letsencrypt` issuer already deployed in your
+   cluster and deploy one if it doesn't exist.
+
+To enable it you need to provide a valid email address in the chart's values:
+
+```
+issuer:
+  email: me@example.com
+  clusterIssuer: "letsencrypt-prod"
+```
+
+By default, the charts use `letsencrypt-staging` so in the above example we instruct helm to use the production issuer
+instead.
+
+[cert-manager]: https://cert-manager.io/docs/
+[install-cert-manager]: https://cert-manager.io/docs/installation/kubernetes/#installing-with-helm
 
 ### Custom PostgreSQL instance
 
@@ -108,11 +125,13 @@ lighthouse:
 
 ```
 
-For the CA, create a `configMap` named `<helm_release_name>-postgres-ca` with a file called `ca.crt`:
+For the CA, create a `configMap` named `<release name>-<chart name>-postgres-ca` with a file called `ca.crt`:
 
 ```
-kubectl create configmap my-backstage --from-file=ca.crt"
+kubectl create configmap my-company-backstage-postgres-ca --from-file=ca.crt"
 ```
+
+> Where the release name contains the chart name "backstage" then only the release name will be used.
 
 Now install the helm chart:
 
@@ -138,8 +157,24 @@ backend:
 
 lighthouse:
   image:
-    repository: <image-name
+    repository: <image-name>
     tag: <image-tag>
+```
+
+### Use a private docker repo
+
+Create a docker-registry secret
+
+```
+kubectl create secret docker-registry <docker_registry_secret_name> # args
+```
+
+> For private images on docker hub --docker-server can be set to docker.io
+
+Reference the secret in your chart values
+
+```yaml
+dockerRegistrySecretName: <docker_registry_secret_name>
 ```
 
 ### Different namespace

@@ -1,4 +1,3 @@
-import fetch from 'node-fetch';
 /*
  * Copyright 2020 Spotify AB
  *
@@ -14,6 +13,8 @@ import fetch from 'node-fetch';
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import fetch from 'cross-fetch';
 
 export class TechDocsMetadata {
   private async getMetadataFile(docsUrl: String) {

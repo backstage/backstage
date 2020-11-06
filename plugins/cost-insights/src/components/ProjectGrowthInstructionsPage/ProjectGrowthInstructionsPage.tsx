@@ -17,19 +17,19 @@
 import React from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { InfoCard } from '@backstage/core';
-import AlertInstructionsLayout from '../AlertInstructionsLayout';
+import { AlertInstructionsLayout } from '../AlertInstructionsLayout';
 import {
   Alert,
   Duration,
   Entity,
   Product,
-  ProjectGrowthAlert,
   ProjectGrowthData,
 } from '../../types';
-import ResourceGrowthBarChartLegend from '../ResourceGrowthBarChartLegend';
-import ResourceGrowthBarChart from '../ResourceGrowthBarChart';
+import { ProjectGrowthAlert } from '../../utils/alerts';
+import { ResourceGrowthBarChartLegend } from '../ResourceGrowthBarChartLegend';
+import { ResourceGrowthBarChart } from '../ResourceGrowthBarChart';
 
-const ProjectGrowthInstructionsPage = () => {
+export const ProjectGrowthInstructionsPage = () => {
   const alertData: ProjectGrowthData = {
     project: 'example-project',
     periodStart: 'Q1 2020',
@@ -160,14 +160,17 @@ const ProjectGrowthInstructionsPage = () => {
                 <ResourceGrowthBarChartLegend
                   duration={Duration.P3M}
                   change={{ ratio: 3, amount: 40000 }}
+                  previousName="Q2 2020"
+                  currentName="Q3 2020"
                   costStart={20000}
                   costEnd={60000}
                 />
               </Box>
               <Box paddingY={1}>
                 <ResourceGrowthBarChart
-                  duration={Duration.P3M}
                   resources={entities}
+                  previousName="Q2 2020"
+                  currentName="Q3 2020"
                 />
               </Box>
             </Box>
@@ -208,5 +211,3 @@ const ProjectGrowthInstructionsPage = () => {
     </AlertInstructionsLayout>
   );
 };
-
-export default ProjectGrowthInstructionsPage;

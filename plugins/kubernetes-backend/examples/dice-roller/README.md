@@ -23,11 +23,13 @@ This can be used to run the kubernetes plugin locally against a mock service.
 6. Register existing component in Backstage
    - https://github.com/mclarke47/dice-roller/blob/master/catalog-info.yaml
 
-Update `app-config.development.yaml` as follows.
+Add or update `app-config.local.yaml` with the following:
 
 ```yaml
 kubernetes:
-  clusterLocatorMethod: 'configMultiTenant'
+  serviceLocatorMethod: 'multiTenant'
+  clusterLocatorMethods:
+    - 'config'
   clusters:
     - url: <KUBERNETES MASTER BASE URL FROM STEP 2>
       name: minikube
@@ -43,4 +45,4 @@ Mac copy to clipboard:
 kubectl get secret $(kubectl get sa dice-roller -o=json | jq -r .secrets[0].name) -o=json | jq -r '.data["token"]' | base64 --decode | pbcopy
 ```
 
-Paste into `app-config.development.yaml` `kubernetes.clusters[0].serviceAccountToken`
+Paste into `app-config.local.yaml` `kubernetes.clusters[0].serviceAccountToken`

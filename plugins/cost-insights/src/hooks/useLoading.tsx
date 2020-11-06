@@ -15,10 +15,10 @@
  */
 
 import React, {
-  Dispatch,
-  ReactNode,
-  SetStateAction,
   createContext,
+  Dispatch,
+  PropsWithChildren,
+  SetStateAction,
   useContext,
   useEffect,
   useMemo,
@@ -26,12 +26,12 @@ import React, {
   useState,
 } from 'react';
 import { Backdrop, CircularProgress } from '@material-ui/core';
+import { Loading } from '../types';
 import {
-  Loading,
-  getDefaultState,
   DefaultLoadingAction,
+  getDefaultState,
   getLoadingActions,
-} from '../types';
+} from '../utils/loading';
 import { useBackdropStyles as useStyles } from '../utils/styles';
 import { useConfig } from './useConfig';
 
@@ -39,10 +39,6 @@ export type LoadingContextProps = {
   state: Loading;
   dispatch: Dispatch<Partial<SetStateAction<Loading>>>;
   actions: Array<string>;
-};
-
-export type LoadingProviderProps = {
-  children: ReactNode;
 };
 
 export type MapLoadingToProps<T> = (props: LoadingContextProps) => T;
@@ -58,7 +54,7 @@ function reducer(prevState: Loading, action: Partial<Loading>): Loading {
   } as Record<string, boolean>;
 }
 
-export const LoadingProvider = ({ children }: LoadingProviderProps) => {
+export const LoadingProvider = ({ children }: PropsWithChildren<{}>) => {
   const classes = useStyles();
   const { products } = useConfig();
   const actions = useMemo(() => getLoadingActions(products.map(p => p.kind)), [
