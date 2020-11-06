@@ -297,7 +297,9 @@ export class GithubUrlReader implements UrlReader {
             return files;
           },
           archive: () => {
-            return new Promise(resolve => resolve(Buffer.from("Archive is not yet implemented")));
+            return new Promise(resolve =>
+              resolve(Buffer.from('Archive is not yet implemented')),
+            );
           },
           dir: (outDir: string | undefined) => {
             const targetDirectory =

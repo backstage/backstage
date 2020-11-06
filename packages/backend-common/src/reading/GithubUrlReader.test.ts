@@ -33,7 +33,11 @@ import { resolvePackagePath } from '../';
 import recursive from 'recursive-readdir';
 
 describe('GithubUrlReader', () => {
-  const dirname = resolvePackagePath('@backstage/backend-common', 'src', 'reading')
+  const dirname = resolvePackagePath(
+    '@backstage/backend-common',
+    'src',
+    'reading',
+  );
 
   describe('getApiRequestOptions', () => {
     it('sets the correct API version', () => {
