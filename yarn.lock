@@ -3650,10 +3650,10 @@
   resolved "https://registry.npmjs.org/@rjsf/material-ui/-/material-ui-2.4.0.tgz#1b5859298bf3f61137d7b05084f058a775d6fd73"
   integrity sha512-U8F/suzg4MuV+8mK1/ufs0Y6c3O8hc1wnuD2IKoOVJvegGfz5JCafyoyGAW6iyuT1DZBMPzVWEqfiuYPmoE7pw==
 
-"@roadiehq/backstage-plugin-buildkite@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-buildkite/-/backstage-plugin-buildkite-0.1.1.tgz#1f3eff33ba9ce326ecee8e1b571b51b5d5f67561"
-  integrity sha512-1NprhHfEulYqMo76+irys5p1HNW9tO+FLc7Ts9+M/b+QnEiXe3mumjCCGiIH6AkRUCw1xAtWSqDSSn5PUsZ3yQ==
+"@roadiehq/backstage-plugin-buildkite@^0.1.2":
+  version "0.1.2"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-buildkite/-/backstage-plugin-buildkite-0.1.2.tgz#2f2b414acc18ed7820abc6fb0c042f00c31d7c9a"
+  integrity sha512-NO1ogAK6lfh/YUmftqbYn6pkUmMJXk9cfda0YDnG23XlcKIst1d3xO5FggozVtU5IZiJDxxwxOOo4ylhBWrGeQ==
   dependencies:
     "@backstage/catalog-model" "^0.2.0"
     "@backstage/core" "^0.2.0"
