@@ -25,7 +25,6 @@ const mockErrorApi: jest.Mocked<typeof errorApiRef.T> = {
   error$: jest.fn(),
 };
 
-
 describe('EntityPage Test', () => {
   const entity = {
     apiVersion: 'v1',
@@ -61,6 +60,5 @@ describe('EntityPage Test', () => {
       );
       expect(renderedComponent.getByText(/exampleProject\/examplePipeline/)).toBeInTheDocument();
     });
-
   })
 });
