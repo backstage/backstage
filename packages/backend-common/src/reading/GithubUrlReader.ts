@@ -21,7 +21,6 @@ import { NotFoundError } from '../errors';
 import { ReaderFactory, ReadTreeResponse, UrlReader, File } from './types';
 import tar from 'tar';
 import fs from 'fs';
-import { entityRoute } from '@backstage/plugin-catalog';
 import concatStream from 'concat-stream';
 import path from 'path';
 import os from 'os';
@@ -63,19 +62,6 @@ export type ProviderConfig = {
    * If no token is specified, anonymous access is used.
    */
   token?: string;
-};
-
-type GitHubTree = {
-  sha: string;
-  url: string;
-  tree: Array<{
-    path: string;
-    mode: string;
-    type: 'tree' | 'blob';
-    sha: string;
-    size: number;
-    url: string;
-  }>;
 };
 
 export function getApiRequestOptions(provider: ProviderConfig): RequestInit {
@@ -279,7 +265,7 @@ export class GithubUrlReader implements UrlReader {
     const repoArchive = await this.getRepositoryArchive(repoUrl, branchName);
 
     const files: File[] = [];
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       const parser = new (tar.Parse as any)({
         filter: (path: string) =>
           !!paths.filter(file => {
@@ -291,7 +277,7 @@ export class GithubUrlReader implements UrlReader {
             return;
           }
 
-          const contentPromise: Promise<Buffer> = new Promise((res, rej) => {
+          const contentPromise: Promise<Buffer> = new Promise(res => {
             entry.pipe(concatStream(res));
           });
 
@@ -304,7 +290,7 @@ export class GithubUrlReader implements UrlReader {
         },
       });
 
-      repoArchive.body.pipe(parser).on('finish', () => {
+      repoArchive.body?.pipe(parser).on('finish', () => {
         resolve({
           files: () => {
             return files;
@@ -324,7 +310,7 @@ export class GithubUrlReader implements UrlReader {
                 }),
               )
                 .then(() => {
-                  res(targetDirectory);
+                  res(`${targetDirectory}/${repoName}-${branchName}`);
                 })
                 .catch(err => {
                   rej(err);

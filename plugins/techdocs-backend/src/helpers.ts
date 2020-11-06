@@ -78,6 +78,7 @@ export const getLocationForEntity = (
     case 'github':
     case 'gitlab':
     case 'azure/api':
+    case 'url':
       return { type, target };
     case 'dir':
       if (path.isAbsolute(target)) return { type, target };
@@ -170,26 +171,23 @@ export const getLastCommitTimestamp = async (
 };
 
 export const getDocFilesFromRepository = async (reader: UrlReader, entity: Entity, logger: Logger): Promise<any> => {
-  /* const { type, target } = parseReferenceAnnotation(
+  const { type, target } = parseReferenceAnnotation(
     'backstage.io/techdocs-ref',
     entity,
-  );*/
-
-  // Current documented-component available in github points to the github: type. Using this for testing atm. 
-  const target = "https://github.com/spotify/backstage/blob/master/plugins/techdocs-backend/examples/documented-component/mkdocs.yml";
-  const { filepath } = parseGitUrl(target);
-  
-  const mkdocsFile = await reader.read(target);
-  const docFiles = await reader.readTree(new URL('./docs', target).toString())
-
-  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'techdocs-'));
-  
-  await Promise.all(
-    [
-      createFileFromBuffer(`${tmpDir}/${filepath}`, mkdocsFile),
-      ...docFiles.map((file) => createFileFromBuffer(`${tmpDir}/${file.path}`, file.content))
-    ]
   );
 
-  return `${tmpDir}/${path.join(filepath, '../')}`;
+  const { ref, filepath: mkdocsPath } = parseGitUrl(target);
+  
+  const docsRootPath = path.join(mkdocsPath, '../');
+  const docsFolderPath = path.join(docsRootPath, 'docs');
+
+  const readTreeResponse = await reader.readTree(
+    parseGitUrl(target).toString(),
+    ref,
+    [mkdocsPath, docsFolderPath],
+  );
+
+  const tmpDir = await readTreeResponse.dir();
+  console.log(tmpDir);
+  return `${tmpDir}/${docsRootPath === './' ? '' : docsRootPath}`;
 };

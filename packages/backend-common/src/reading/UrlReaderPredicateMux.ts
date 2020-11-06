@@ -53,20 +53,26 @@ export class UrlReaderPredicateMux implements UrlReader {
     throw new Error(`No reader found that could handle '${url}'`);
   }
 
-  readTree(url: string): Promise<ReadTreeResponse> {
-    const parsed = new URL(url);
+  readTree(
+    repoUrl: string,
+    branchName: string,
+    paths: Array<string>,
+  ): Promise<ReadTreeResponse> {
+    const parsed = new URL(repoUrl);
 
     for (const { predicate, reader } of this.readers) {
       if (predicate(parsed)) {
-        return reader.readTree(url);
+        if (reader.readTree) return reader.readTree(repoUrl, branchName, paths);
+        throw new Error(`Trying to call readTree on UrlReader which does not support the feature.`)
       }
     }
 
     if (this.fallback) {
-      return this.fallback.readTree(url);
+      if (this.fallback.readTree) return this.fallback.readTree(repoUrl, branchName, paths);
+      throw new Error(`Trying to call readTree on UrlReader which does not support the feature.`)
     }
 
-    throw new Error(`No reader found that could handle '${url}'`);
+    throw new Error(`No reader found that could handle '${repoUrl}'`);
   }
 
   toString() {

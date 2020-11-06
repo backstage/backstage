@@ -66,11 +66,12 @@
   "devDependencies": {
     "@backstage/cli": "^0.2.0",
     "@types/compression": "^1.7.0",
+    "@types/concat-stream": "^1.6.0",
     "@types/http-errors": "^1.6.3",
-    "@types/klaw-sync": "^6.0.0",
-    "@types/mock-fs": "^4.13.0",
     "@types/minimist": "^1.2.0",
+    "@types/mock-fs": "^4.13.0",
     "@types/morgan": "^1.9.0",
+    "@types/recursive-readdir": "^2.2.0",
     "@types/stoppable": "^1.1.0",
     "@types/supertest": "^2.0.8",
     "@types/tar": "^4.0.3",
@@ -80,9 +81,9 @@
     "http-errors": "^1.7.3",
     "jest": "^26.0.1",
     "jest-fetch-mock": "^3.0.3",
-    "klaw-sync": "^6.0.0",
     "mock-fs": "^4.13.0",
     "msw": "^0.21.2",
+    "recursive-readdir": "^2.2.2",
     "supertest": "^4.0.2"
   },
   "files": [

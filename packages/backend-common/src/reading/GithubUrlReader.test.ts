@@ -29,9 +29,12 @@ import {
 import fs from 'fs';
 import path from 'path';
 import mockfs from 'mock-fs';
-import klawSync from 'klaw-sync';
+import { resolvePackagePath } from '../';
+import recursive from 'recursive-readdir';
 
 describe('GithubUrlReader', () => {
+  const dirname = resolvePackagePath('@backstage/backend-common', 'src', 'reading')
+
   describe('getApiRequestOptions', () => {
     it('sets the correct API version', () => {
       const config: ProviderConfig = { host: '', apiBaseUrl: '' };
@@ -242,13 +245,13 @@ describe('GithubUrlReader', () => {
       const worker = setupServer();
 
       const repoBuffer = fs.readFileSync(
-        path.resolve(__dirname, 'test-data', 'repo.tar.gz'),
+        path.resolve(dirname, 'test-data', 'repo.tar.gz'),
       );
 
       worker.use(
         rest.get(
           'https://github.com/spotify/mock/archive/repo.tar.gz',
-          (req, res, ctx) =>
+          (_, res, ctx) =>
             res(
               ctx.status(200),
               ctx.set('Content-Type', 'application/x-gzip'),
@@ -281,13 +284,13 @@ describe('GithubUrlReader', () => {
       const worker = setupServer();
 
       const repoBuffer = fs.readFileSync(
-        path.resolve(__dirname, 'test-data', 'repo.tar.gz'),
+        path.resolve(dirname, 'test-data', 'repo.tar.gz'),
       );
 
       worker.use(
         rest.get(
           'https://github.com/spotify/mock/archive/repo.tar.gz',
-          (req, res, ctx) =>
+          (_, res, ctx) =>
             res(
               ctx.status(200),
               ctx.set('Content-Type', 'application/x-gzip'),
@@ -311,14 +314,12 @@ describe('GithubUrlReader', () => {
       const directory = await response.dir('/tmp/fs');
 
       const writtenToDirectory = fs.existsSync(directory);
-      const paths = klawSync(directory);
+      const paths = await recursive(directory);
       mockfs.restore();
 
       expect(writtenToDirectory).toBe(true);
-      expect(paths.map(p => p.path).sort()).toEqual(
+      expect(paths.sort()).toEqual(
         [
-          '/tmp/fs/mock-repo',
-          '/tmp/fs/mock-repo/docs',
           '/tmp/fs/mock-repo/docs/index.md',
           '/tmp/fs/mock-repo/mkdocs.yml',
         ].sort(),
