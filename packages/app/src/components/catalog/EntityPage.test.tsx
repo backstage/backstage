@@ -16,8 +16,11 @@
 import React from 'react';
 import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core-api';
 import { CICDSwitcher } from './EntityPage';
-import { UrlPatternDiscovery, } from '@backstage/core';
-import { buildKiteApiRef, BuildKiteApi } from '@roadiehq/backstage-plugin-buildkite';
+import { UrlPatternDiscovery } from '@backstage/core';
+import {
+  buildKiteApiRef,
+  BuildKiteApi,
+} from '@roadiehq/backstage-plugin-buildkite';
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 
 const mockErrorApi: jest.Mocked<typeof errorApiRef.T> = {
@@ -32,7 +35,7 @@ describe('EntityPage Test', () => {
     metadata: {
       name: 'ExampleComponent',
       annotations: {
-        'buildkite.com/project-slug': 'exampleProject/examplePipeline'
+        'buildkite.com/project-slug': 'exampleProject/examplePipeline',
       },
     },
     spec: {
@@ -45,7 +48,7 @@ describe('EntityPage Test', () => {
   const discoveryApi = UrlPatternDiscovery.compile('http://exampleapi.com');
 
   const apis = ApiRegistry.from([
-    [buildKiteApiRef, new BuildKiteApi({discoveryApi})],
+    [buildKiteApiRef, new BuildKiteApi({ discoveryApi })],
     [errorApiRef, mockErrorApi],
   ]);
 
@@ -54,11 +57,13 @@ describe('EntityPage Test', () => {
       const renderedComponent = await renderWithEffects(
         wrapInTestApp(
           <ApiProvider apis={apis}>
-            <CICDSwitcher entity={ entity } />
-          </ApiProvider>
+            <CICDSwitcher entity={entity} />
+          </ApiProvider>,
         ),
       );
-      expect(renderedComponent.getByText(/exampleProject\/examplePipeline/)).toBeInTheDocument();
+      expect(
+        renderedComponent.getByText(/exampleProject\/examplePipeline/),
+      ).toBeInTheDocument();
     });
-  })
+  });
 });
