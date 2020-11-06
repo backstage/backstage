@@ -18,6 +18,7 @@ export * from './AlertDisplay';
 export * from './Button';
 export * from './CodeSnippet';
 export * from './CopyTextButton';
+export * from './DependencyGraph';
 export * from './DismissableBanner';
 export * from './FeatureDiscovery';
 export * from './HorizontalScrollGrid';
