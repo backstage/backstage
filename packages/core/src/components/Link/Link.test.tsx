@@ -34,9 +34,43 @@ describe('<Link />', () => {
       ),
     );
     expect(() => getByText(testString)).toThrow();
+    expect(getByText(linkText, { selector: 'a' })).not.toHaveAttribute(
+      'to',
+      'test',
+    );
     await act(async () => {
       fireEvent.click(getByText(linkText));
     });
     expect(getByText(testString)).toBeInTheDocument();
+  });
+
+  it('navigates external href with external https link', async () => {
+    const linkText = 'Navigate!';
+    const { getByText } = render(
+      <Link to="https://backstage.io">{linkText}</Link>,
+    );
+    expect(getByText(linkText, { selector: 'a' })).toHaveAttribute(
+      'href',
+      'https://backstage.io',
+    );
+    expect(getByText(linkText, { selector: 'a' })).toHaveAttribute(
+      'to',
+      'https://backstage.io',
+    );
+  });
+
+  it('navigates external href with external http link', async () => {
+    const linkText = 'Navigate!';
+    const { getByText } = render(
+      <Link to="http://backstage.io">{linkText}</Link>,
+    );
+    expect(getByText(linkText, { selector: 'a' })).toHaveAttribute(
+      'href',
+      'http://backstage.io',
+    );
+    expect(getByText(linkText, { selector: 'a' })).toHaveAttribute(
+      'to',
+      'http://backstage.io',
+    );
   });
 });

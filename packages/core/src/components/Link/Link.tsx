@@ -25,6 +25,12 @@ type Props = ComponentProps<typeof MaterialLink> &
  * Thin wrapper on top of material-ui's Link component
  * Makes the Link to utilise react-router
  */
-export const Link = React.forwardRef<any, Props>((props, ref) => (
-  <MaterialLink ref={ref} component={RouterLink} {...props} />
-));
+export const Link = React.forwardRef<any, Props>((props, ref) => {
+  const to = props.to.toString();
+  const external = /^https?:\/\//.test(to);
+  return !external ? (
+    <MaterialLink ref={ref} component={RouterLink} {...props} />
+  ) : (
+    <MaterialLink href={to} {...props} />
+  );
+});

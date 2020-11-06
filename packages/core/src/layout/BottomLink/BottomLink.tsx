@@ -16,7 +16,7 @@
 
 import React, { FC } from 'react';
 import {
-  Link,
+  Link as ExternalLink,
   ListItem,
   ListItemIcon,
   Divider,
@@ -26,6 +26,7 @@ import {
 import ArrowIcon from '@material-ui/icons/ArrowForward';
 import { BackstageTheme } from '@backstage/theme';
 import Box from '@material-ui/core/Box';
+import { Link as InternalLink } from '../../components/Link';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
@@ -43,28 +44,49 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
 
 export type BottomLinkProps = {
   link: string;
+  internal?: boolean;
   title: string;
   onClick?: (event: React.MouseEvent<HTMLAnchorElement>) => void;
 };
 
-export const BottomLink: FC<BottomLinkProps> = ({ link, title, onClick }) => {
+export const BottomLink: FC<BottomLinkProps> = ({
+  link,
+  title,
+  onClick,
+  internal = false,
+}) => {
   const classes = useStyles();
 
+  const bottomLinkChildren = (
+    <ListItem className={classes.root}>
+      <ListItemText>
+        <Box className={classes.boxTitle} fontWeight="fontWeightBold" m={1}>
+          {title}
+        </Box>
+      </ListItemText>
+      <ListItemIcon>
+        <ArrowIcon className={classes.arrow} />
+      </ListItemIcon>
+    </ListItem>
+  );
   return (
     <div>
       <Divider />
-      <Link href={link} onClick={onClick} underline="none">
-        <ListItem className={classes.root}>
-          <ListItemText>
-            <Box className={classes.boxTitle} fontWeight="fontWeightBold" m={1}>
-              {title}
-            </Box>
-          </ListItemText>
-          <ListItemIcon>
-            <ArrowIcon className={classes.arrow} />
-          </ListItemIcon>
-        </ListItem>
-      </Link>
+      {!internal ? (
+        <ExternalLink
+          href={link}
+          onClick={onClick}
+          underline="none"
+          children={bottomLinkChildren}
+        />
+      ) : (
+        <InternalLink
+          to={link}
+          onClick={onClick}
+          underline="none"
+          children={bottomLinkChildren}
+        />
+      )}
     </div>
   );
 };
