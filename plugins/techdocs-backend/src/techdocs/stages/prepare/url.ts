@@ -31,7 +31,7 @@ export class UrlPreparer implements PreparerBase {
 
   async prepare(entity: Entity): Promise<string> {
     try {
-      return getDocFilesFromRepository(this.reader, entity, this.logger);
+      return getDocFilesFromRepository(this.reader, entity);
     } catch (error) {
       this.logger.debug(
         `Unable to fetch files for building docs ${error.message}`,

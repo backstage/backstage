@@ -290,12 +290,15 @@ export class GithubUrlReader implements UrlReader {
         },
       });
 
+      // @ts-ignore Typescript doesn't consider .pipe a method on ReadableStream. Don't know why.
       repoArchive.body?.pipe(parser).on('finish', () => {
         resolve({
           files: () => {
             return files;
           },
-          archive: () => {},
+          archive: () => {
+            return new Promise(resolve => resolve(Buffer.from("Archive is not yet implemented")));
+          },
           dir: (outDir: string | undefined) => {
             const targetDirectory =
               outDir || fs.mkdtempSync(path.join(os.tmpdir(), 'backstage-'));

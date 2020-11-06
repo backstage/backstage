@@ -29,7 +29,6 @@ import {
 import {
   PluginEndpointDiscovery,
   resolvePackagePath,
-  UrlReader,
 } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { DocsBuilder } from './helpers';

@@ -170,8 +170,8 @@ export const getLastCommitTimestamp = async (
   return commit.date().getTime();
 };
 
-export const getDocFilesFromRepository = async (reader: UrlReader, entity: Entity, logger: Logger): Promise<any> => {
-  const { type, target } = parseReferenceAnnotation(
+export const getDocFilesFromRepository = async (reader: UrlReader, entity: Entity): Promise<any> => {
+  const { target } = parseReferenceAnnotation(
     'backstage.io/techdocs-ref',
     entity,
   );
@@ -181,13 +181,17 @@ export const getDocFilesFromRepository = async (reader: UrlReader, entity: Entit
   const docsRootPath = path.join(mkdocsPath, '../');
   const docsFolderPath = path.join(docsRootPath, 'docs');
 
-  const readTreeResponse = await reader.readTree(
-    parseGitUrl(target).toString(),
-    ref,
-    [mkdocsPath, docsFolderPath],
-  );
+  if (reader.readTree) {
+    const readTreeResponse = await reader.readTree(
+      parseGitUrl(target).toString(),
+      ref,
+      [mkdocsPath, docsFolderPath],
+    );
+  
+    const tmpDir = await readTreeResponse.dir();
+  
+    return `${tmpDir}/${docsRootPath === './' ? '' : docsRootPath}`;
+  }
 
-  const tmpDir = await readTreeResponse.dir();
-  console.log(tmpDir);
-  return `${tmpDir}/${docsRootPath === './' ? '' : docsRootPath}`;
+  throw new Error(`No readTree method available on the UrlReader for ${target}`);
 };
