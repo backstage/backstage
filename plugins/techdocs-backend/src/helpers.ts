@@ -170,14 +170,17 @@ export const getLastCommitTimestamp = async (
   return commit.date().getTime();
 };
 
-export const getDocFilesFromRepository = async (reader: UrlReader, entity: Entity): Promise<any> => {
+export const getDocFilesFromRepository = async (
+  reader: UrlReader,
+  entity: Entity,
+): Promise<any> => {
   const { target } = parseReferenceAnnotation(
     'backstage.io/techdocs-ref',
     entity,
   );
 
   const { ref, filepath: mkdocsPath } = parseGitUrl(target);
-  
+
   const docsRootPath = path.join(mkdocsPath, '../');
   const docsFolderPath = path.join(docsRootPath, 'docs');
 
@@ -187,11 +190,13 @@ export const getDocFilesFromRepository = async (reader: UrlReader, entity: Entit
       ref,
       [mkdocsPath, docsFolderPath],
     );
-  
+
     const tmpDir = await readTreeResponse.dir();
-  
+
     return `${tmpDir}/${docsRootPath === './' ? '' : docsRootPath}`;
   }
 
-  throw new Error(`No readTree method available on the UrlReader for ${target}`);
+  throw new Error(
+    `No readTree method available on the UrlReader for ${target}`,
+  );
 };
