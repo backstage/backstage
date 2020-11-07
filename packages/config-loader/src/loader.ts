@@ -17,7 +17,7 @@
 import fs from 'fs-extra';
 import { resolve as resolvePath, dirname, isAbsolute } from 'path';
 import { AppConfig, JsonObject } from '@backstage/config';
-import { readConfigFile, readEnvConfig, readSecret } from './lib';
+import { readConfigFile, readEnvConfig, readSecret, loadSchema } from './lib';
 
 export type LoadConfigOptions = {
   // The root directory of the config loading context. Used to find default configs.
@@ -71,12 +71,16 @@ class Context {
   }
 }
 
+type LoadedConfig = AppConfig[];
+
 export async function loadConfig(
   options: LoadConfigOptions,
-): Promise<AppConfig[]> {
+): Promise<LoadedConfig> {
   const configs = [];
   const { configRoot } = options;
   const configPaths = options.configPaths.slice();
+
+  const schema = await loadSchema({ dependencies: ['example-backend'] });
 
   // If no paths are provided, we default to reading
   // `app-config.yaml` and, if it exists, `app-config.local.yaml`
@@ -126,5 +130,5 @@ export async function loadConfig(
 
   configs.push(...readEnvConfig(process.env));
 
-  return configs;
+  return schema.load(configs);
 }

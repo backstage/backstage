@@ -30,8 +30,14 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
+    "@backstage/cli-common": "^0.1.1",
     "@backstage/config": "^0.1.1",
+    "@types/json-schema": "^7.0.6",
+    "@types/json-schema-merge-allof": "^0.6.0",
+    "ajv": "^7.0.0-beta.2",
     "fs-extra": "^9.0.0",
+    "json-schema": "^0.2.5",
+    "json-schema-merge-allof": "^0.7.0",
     "yaml": "^1.9.2",
     "yup": "^0.29.3"
   },
