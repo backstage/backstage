@@ -44,7 +44,7 @@ describe('<AboutCard /> GitHub', () => {
     );
     expect(getByText('View Source').closest('a')).toHaveAttribute(
       'edithref',
-      'https://github.com/spotify/backstage/edit/master/software.yaml',
+      'https://github.com/backstage/backstage/edit/master/software.yaml',
     );
   });
 });
@@ -58,7 +58,7 @@ describe('<AboutCard /> GitLab', () => {
         name: 'software',
         annotations: {
           'backstage.io/managed-by-location':
-            'gitlab:https://gitlab.com/Spotify/backstage/-/blob/master/software.yaml',
+            'gitlab:https://gitlab.com/backstage/backstage/-/blob/master/software.yaml',
         },
       },
       spec: {
@@ -71,11 +71,11 @@ describe('<AboutCard /> GitLab', () => {
     expect(getByText('service')).toBeInTheDocument();
     expect(getByText('View Source').closest('a')).toHaveAttribute(
       'href',
-      'https://gitlab.com/Spotify/backstage/-/blob/master/software.yaml',
+      'https://gitlab.com/backstage/backstage/-/blob/master/software.yaml',
     );
     expect(getByText('View Source').closest('a')).toHaveAttribute(
       'edithref',
-      'https://gitlab.com/Spotify/backstage/-/edit/master/software.yaml',
+      'https://gitlab.com/backstage/backstage/-/edit/master/software.yaml',
     );
   });
 });
@@ -89,7 +89,7 @@ describe('<AboutCard /> BitBucket', () => {
         name: 'software',
         annotations: {
           'backstage.io/managed-by-location':
-            'bitbucket:https://bitbucket.org/Spotify/backstage/src/master/software.yaml',
+            'bitbucket:https://bitbucket.org/backstage/backstage/src/master/software.yaml',
         },
       },
       spec: {
@@ -102,11 +102,11 @@ describe('<AboutCard /> BitBucket', () => {
     expect(getByText('service')).toBeInTheDocument();
     expect(getByText('View Source').closest('a')).toHaveAttribute(
       'href',
-      'https://bitbucket.org/Spotify/backstage/src/master/software.yaml',
+      'https://bitbucket.org/backstage/backstage/src/master/software.yaml',
     );
     expect(getByText('View Source').closest('a')).toHaveAttribute(
       'edithref',
-      'https://bitbucket.org/Spotify/backstage/src/master/software.yaml?mode=edit&spa=0&at=master',
+      'https://bitbucket.org/backstage/backstage/src/master/software.yaml?mode=edit&spa=0&at=master',
     );
   });
 });
