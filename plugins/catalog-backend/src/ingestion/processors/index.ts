@@ -19,6 +19,8 @@ import * as results from './results';
 export { results };
 export * from './types';
 
+export { parseEntityYaml } from './util/parse';
+
 export { AnnotateLocationEntityProcessor } from './AnnotateLocationEntityProcessor';
 export { CodeOwnersProcessor } from './CodeOwnersProcessor';
 export { FileReaderProcessor } from './FileReaderProcessor';

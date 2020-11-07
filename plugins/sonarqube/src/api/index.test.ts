@@ -114,22 +114,29 @@ describe('SonarQubeApi', () => {
     const client = new SonarQubeApi({ discoveryApi });
 
     const summary = await client.getFindingSummary('our-service');
-
-    expect(summary).toEqual({
-      lastAnalysis: '2020-01-01T00:00:00Z',
-      metrics: {
-        alert_status: 'OK',
-        bugs: '2',
-        reliability_rating: '3.0',
-        vulnerabilities: '4',
-        security_rating: '1.0',
-        code_smells: '100',
-        sqale_rating: '2.0',
-        coverage: '55.5',
-        duplicated_lines_density: '1.0',
-      },
-      projectUrl: 'https://sonarcloud.io/dashboard?id=our-service',
-    } as FindingSummary);
+    expect(summary).toEqual(
+      expect.objectContaining({
+        lastAnalysis: '2020-01-01T00:00:00Z',
+        metrics: {
+          alert_status: 'OK',
+          bugs: '2',
+          reliability_rating: '3.0',
+          vulnerabilities: '4',
+          security_rating: '1.0',
+          code_smells: '100',
+          sqale_rating: '2.0',
+          coverage: '55.5',
+          duplicated_lines_density: '1.0',
+        },
+        projectUrl: 'https://sonarcloud.io/dashboard?id=our-service',
+      }),
+    );
+    expect(summary?.getIssuesUrl('CODE_SMELL')).toEqual(
+      'https://sonarcloud.io/project/issues?id=our-service&types=CODE_SMELL&resolved=false',
+    );
+    expect(summary?.getComponentMeasuresUrl('COVERAGE')).toEqual(
+      'https://sonarcloud.io/component_measures?id=our-service&metric=coverage&resolved=false&view=list',
+    );
   });
 
   it('should report finding summary (custom baseUrl)', async () => {
@@ -142,20 +149,28 @@ describe('SonarQubeApi', () => {
 
     const summary = await client.getFindingSummary('our-service');
 
-    expect(summary).toEqual({
-      lastAnalysis: '2020-01-01T00:00:00Z',
-      metrics: {
-        alert_status: 'OK',
-        bugs: '2',
-        reliability_rating: '3.0',
-        vulnerabilities: '4',
-        security_rating: '1.0',
-        code_smells: '100',
-        sqale_rating: '2.0',
-        coverage: '55.5',
-        duplicated_lines_density: '1.0',
-      },
-      projectUrl: 'http://a.instance.local/dashboard?id=our-service',
-    } as FindingSummary);
+    expect(summary).toEqual(
+      expect.objectContaining({
+        lastAnalysis: '2020-01-01T00:00:00Z',
+        metrics: {
+          alert_status: 'OK',
+          bugs: '2',
+          reliability_rating: '3.0',
+          vulnerabilities: '4',
+          security_rating: '1.0',
+          code_smells: '100',
+          sqale_rating: '2.0',
+          coverage: '55.5',
+          duplicated_lines_density: '1.0',
+        },
+        projectUrl: 'http://a.instance.local/dashboard?id=our-service',
+      }) as FindingSummary,
+    );
+    expect(summary?.getIssuesUrl('CODE_SMELL')).toEqual(
+      'http://a.instance.local/project/issues?id=our-service&types=CODE_SMELL&resolved=false',
+    );
+    expect(summary?.getComponentMeasuresUrl('COVERAGE')).toEqual(
+      'http://a.instance.local/component_measures?id=our-service&metric=coverage&resolved=false&view=list',
+    );
   });
 });

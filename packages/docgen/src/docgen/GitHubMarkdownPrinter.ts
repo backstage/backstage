@@ -20,7 +20,7 @@ import { MarkdownPrinter, TypeLink } from './types';
 import { execSync } from 'child_process';
 
 // TODO(Rugvip): provide through options?
-const GH_BASE_URL = 'https://github.com/spotify/backstage';
+const GH_BASE_URL = 'https://github.com/backstage/backstage';
 
 const COMMIT_SHA =
   process.env.COMMIT_SHA ||

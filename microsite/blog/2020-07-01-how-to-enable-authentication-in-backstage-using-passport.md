@@ -21,7 +21,7 @@ Passport has allowed us to leverage an existing open-source authentication frame
 
 ![auth-landing-page](assets/20-07-01/auth-sidebar.png)
 
-First, check out the provided Google and GitHub implementations! [Spin up a local copy of Backstage](https://backstage.io/blog/2020/04/30/how-to-quickly-set-up-backstage) along with our example-backend. You can find more documentation on setting up the example backend [here](https://github.com/spotify/backstage/tree/master/packages/backend), but be sure to include the relevant client IDs and secrets when running `yarn start`:
+First, check out the provided Google and GitHub implementations! [Spin up a local copy of Backstage](https://backstage.io/blog/2020/04/30/how-to-quickly-set-up-backstage) along with our example-backend. You can find more documentation on setting up the example backend [here](https://github.com/backstage/backstage/tree/master/packages/backend), but be sure to include the relevant client IDs and secrets when running `yarn start`:
 
 ```
 AUTH_GOOGLE_CLIENT_ID=x AUTH_GOOGLE_CLIENT_SECRET=x AUTH_GITHUB_CLIENT_ID=x AUTH_GITHUB_CLIENT_SECRET=x SENTRY_TOKEN=x LOG_LEVEL=debug yarn start
@@ -39,8 +39,8 @@ Getting started is really straightforward, and can be broadly broken down into f
 4. Add the provider to the backend.
 5. Add a frontend Auth Utility API.
 
-For full details, take a look at our [“Adding authentication providers” documentation](/docs/auth/add-auth-provider.md) and at the [excellent documentation](http://www.passportjs.org/docs/) provided by Passport.
+For full details, take a look at our [“Adding authentication providers” documentation](/docs/auth/add-auth-provider) and at the [excellent documentation](http://www.passportjs.org/docs/) provided by Passport.
 
 ## Interested in contributing to the next steps for authentication?
 
-We’ve already seen both GitLab and Okta contributions from the community — and we’re thinking about a few more providers we’d like to add to Backstage, too. You can find those, and other authentication-related issues, in our repository by filtering with the [auth label](https://github.com/spotify/backstage/issues?q=is%3Aissue+is%3Aopen+label%3Aauth).
+We’ve already seen both GitLab and Okta contributions from the community — and we’re thinking about a few more providers we’d like to add to Backstage, too. You can find those, and other authentication-related issues, in our repository by filtering with the [auth label](https://github.com/backstage/backstage/issues?q=is%3Aissue+is%3Aopen+label%3Aauth).

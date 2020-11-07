@@ -41,6 +41,10 @@ module.exports = {
   },
   ignorePatterns: ['.eslintrc.js', '**/dist/**', '**/dist-types/**'],
   rules: {
+    // TODO(Rugvip): We need to bump @typescript-eslint to v4 to enable these
+    '@typescript-eslint/no-shadow': 0,
+    '@typescript-eslint/no-redeclare': 0,
+
     'import/newline-after-import': 'error',
     'import/no-duplicates': 'warn',
     'import/no-extraneous-dependencies': [

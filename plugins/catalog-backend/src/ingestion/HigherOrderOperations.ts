@@ -18,7 +18,7 @@ import { Location, LocationSpec } from '@backstage/catalog-model';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from 'winston';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
-import { durationText } from '../util/timing';
+import { durationText } from '../util';
 import {
   AddLocationResult,
   HigherOrderOperation,

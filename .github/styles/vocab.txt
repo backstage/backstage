@@ -62,6 +62,7 @@ Firekube
 Fredrik
 github
 Github
+gitlab
 Gitlab
 graphql
 graphviz

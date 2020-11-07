@@ -6,4 +6,4 @@ metadata:
 spec:
   type: github
   targets:
-    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/acme/org.yaml
+    - https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme/org.yaml

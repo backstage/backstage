@@ -16,13 +16,13 @@
 
 import { ConflictError, NotFoundError } from '@backstage/backend-common';
 import {
+  Entity,
   entityHasChanges,
+  EntityRelationSpec,
   generateUpdatedEntity,
   getEntityName,
   LOCATION_ANNOTATION,
   serializeEntityRef,
-  Entity,
-  EntityRelationSpec,
 } from '@backstage/catalog-model';
 import { chunk, groupBy } from 'lodash';
 import limiterFactory from 'p-limit';
@@ -30,9 +30,10 @@ import { Logger } from 'winston';
 import type {
   Database,
   DbEntityResponse,
-  EntityFilters,
+  EntityFilter,
   Transaction,
 } from '../database';
+import { EntityFilters } from '../service/EntityFilters';
 import { durationText } from '../util/timing';
 import type {
   EntitiesCatalog,
@@ -65,9 +66,9 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
     private readonly logger: Logger,
   ) {}
 
-  async entities(filters?: EntityFilters[]): Promise<Entity[]> {
+  async entities(filter?: EntityFilter): Promise<Entity[]> {
     const items = await this.database.transaction(tx =>
-      this.database.entities(tx, filters),
+      this.database.entities(tx, filter),
     );
     return items.map(i => i.entity);
   }
@@ -113,9 +114,12 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
       const location =
         entityResponse.entity.metadata.annotations?.[LOCATION_ANNOTATION];
       const colocatedEntities = location
-        ? await this.database.entities(tx, [
-            { [`metadata.annotations.${LOCATION_ANNOTATION}`]: location },
-          ])
+        ? await this.database.entities(
+            tx,
+            EntityFilters.ofMatchers({
+              [`metadata.annotations.${LOCATION_ANNOTATION}`]: location,
+            }),
+          )
         : [entityResponse];
       for (const dbResponse of colocatedEntities) {
         await this.database.removeEntityByUid(
@@ -219,9 +223,12 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
               }
 
               if (options?.outputEntities) {
-                const writtenEntities = await this.database.entities(tx, [
-                  { 'metadata.uid': modifiedEntityIds.map(e => e.entityId) },
-                ]);
+                const writtenEntities = await this.database.entities(
+                  tx,
+                  EntityFilters.ofMatchers({
+                    'metadata.uid': modifiedEntityIds.map(e => e.entityId),
+                  }),
+                );
 
                 modifiedEntityIds = writtenEntities.map(e => ({
                   entityId: e.entity.metadata.uid!,
@@ -241,7 +248,7 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
         // If this is only a dry run, cancel the database transaction even if it was successful.
         await tx.rollback();
 
-        this.logger.debug(`Perfomed successful dry run of adding entities`);
+        this.logger.debug(`Performed successful dry run of adding entities`);
       }
 
       return entityUpserts;
@@ -273,13 +280,14 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
     const markTimestamp = process.hrtime();
 
     const names = requests.map(({ entity }) => entity.metadata.name);
-    const oldEntities = await this.database.entities(tx, [
-      {
+    const oldEntities = await this.database.entities(
+      tx,
+      EntityFilters.ofMatchers({
         kind: kind,
         'metadata.namespace': namespace,
         'metadata.name': names,
-      },
-    ]);
+      }),
+    );
 
     const oldEntitiesByName = new Map(
       oldEntities.map(e => [e.entity.metadata.name, e.entity]),

@@ -41,7 +41,7 @@ class Footer extends React.Component {
           <div>
             <h5>Community</h5>
             <a href="https://discord.gg/MUpMjP2">Support chatroom</a>
-            <a href="https://github.com/spotify/backstage/blob/master/CONTRIBUTING.md">
+            <a href="https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md">
               Contributing
             </a>
             <a href="https://mailchi.mp/spotify/backstage-community">
@@ -59,7 +59,7 @@ class Footer extends React.Component {
               className="github-button"
               href={this.props.config.repoUrl}
               data-icon="octicon-star"
-              data-count-href="/spotify/backstage/stargazers"
+              data-count-href="/backstage/backstage/stargazers"
               data-show-count="true"
               data-count-aria-label="# stargazers on GitHub"
               aria-label="Star this project on GitHub"

@@ -6,8 +6,8 @@ metadata:
 spec:
   type: github
   targets:
-    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/apis/hello-world-api.yaml
-    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/apis/petstore-api.yaml
-    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/apis/spotify-api.yaml
-    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/apis/streetlights-api.yaml
-    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/apis/swapi-graphql.yaml
+    - https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/apis/hello-world-api.yaml
+    - https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/apis/petstore-api.yaml
+    - https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/apis/spotify-api.yaml
+    - https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/apis/streetlights-api.yaml
+    - https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/apis/swapi-graphql.yaml

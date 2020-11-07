@@ -51,7 +51,7 @@ describe('commonGit preparer', () => {
 
     const mockEntity = createMockEntity({
       'backstage.io/techdocs-ref':
-        'github:https://github.com/spotify/backstage/blob/master/plugins/techdocs-backend/examples/documented-component',
+        'github:https://github.com/backstage/backstage/blob/master/plugins/techdocs-backend/examples/documented-component',
     });
 
     const tempDocsPath = await preparer.prepare(mockEntity);

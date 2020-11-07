@@ -96,7 +96,7 @@ export const TemplatePage = () => {
 
   const handleCreate = async () => {
     try {
-      const job = await scaffolderApi.scaffold(template!, formState);
+      const job = await scaffolderApi.scaffold(templateName, formState);
       setJobId(job);
     } catch (e) {
       errorApi.post(e);

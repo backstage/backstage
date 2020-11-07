@@ -30,7 +30,7 @@ Out of the box, Backstage includes:
   code" approach
 
 - Plus, a growing ecosystem of
-  [open source plugins](https://github.com/spotify/backstage/tree/master/plugins)
+  [open source plugins](https://github.com/backstage/backstage/tree/master/plugins)
   that further expand Backstage’s customizability and functionality
 
 ## Backstage and the CNCF

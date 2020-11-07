@@ -36,7 +36,7 @@ appConfig:
 Then use it to run:
 
 ```
-git clone https://github.com/spotify/backstage.git
+git clone https://github.com/backstage/backstage.git
 cd contrib/chart/backstage
 helm dependency update
 helm install -f backstage-mydomain.yaml backstage .
@@ -125,11 +125,13 @@ lighthouse:
 
 ```
 
-For the CA, create a `configMap` named `<helm_release_name>-postgres-ca` with a file called `ca.crt`:
+For the CA, create a `configMap` named `<release name>-<chart name>-postgres-ca` with a file called `ca.crt`:
 
 ```
-kubectl create configmap my-backstage --from-file=ca.crt"
+kubectl create configmap my-company-backstage-postgres-ca --from-file=ca.crt"
 ```
+
+> Where the release name contains the chart name "backstage" then only the release name will be used.
 
 Now install the helm chart:
 
@@ -155,8 +157,24 @@ backend:
 
 lighthouse:
   image:
-    repository: <image-name
+    repository: <image-name>
     tag: <image-tag>
+```
+
+### Use a private docker repo
+
+Create a docker-registry secret
+
+```
+kubectl create secret docker-registry <docker_registry_secret_name> # args
+```
+
+> For private images on docker hub --docker-server can be set to docker.io
+
+Reference the secret in your chart values
+
+```yaml
+dockerRegistrySecretName: <docker_registry_secret_name>
 ```
 
 ### Different namespace

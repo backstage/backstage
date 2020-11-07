@@ -1,9 +1,0 @@
-site_name: 'mock-docs'
-site_description: 'mock-docs site description'
-
-nav:
-  - Home: index.md
-  - SubDocs: '!include ./sub-docs/mkdocs.yml'
-
-plugins:
-  - techdocs-core
