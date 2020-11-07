@@ -27,18 +27,12 @@ import {
   BackstageIdentityApi,
   SessionApi,
 } from '../../../definitions/auth';
-import { AuthProvider, DiscoveryApi } from '../../../definitions';
 import { SamlSession } from './types';
 import {
   AuthSessionStore,
   StaticAuthSessionManager,
 } from '../../../../lib/AuthSessionManager';
-
-type CreateOptions = {
-  discoveryApi: DiscoveryApi;
-  environment?: string;
-  provider?: AuthProvider & { id: string };
-};
+import { AuthApiCreateOptions } from '../types';
 
 export type SamlAuthResponse = {
   profile: ProfileInfo;
@@ -56,7 +50,7 @@ class SamlAuth implements ProfileInfoApi, BackstageIdentityApi, SessionApi {
     discoveryApi,
     environment = 'development',
     provider = DEFAULT_PROVIDER,
-  }: CreateOptions) {
+  }: AuthApiCreateOptions) {
     const connector = new DirectAuthConnector<SamlSession>({
       discoveryApi,
       environment,

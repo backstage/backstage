@@ -15,8 +15,8 @@
  */
 import { createDevApp } from '@backstage/dev-utils';
 import { createPlugin, createApiFactory } from '@backstage/core';
-import { ExampleCostInsightsClient } from '../src/api';
-import { costInsightsApiRef } from '../src';
+import { costInsightsApiRef } from '../src/api';
+import { ExampleCostInsightsClient } from '../src/client';
 import { pluginConfig } from '../src/plugin';
 
 const devPlugin = createPlugin({

@@ -93,6 +93,68 @@ describe('HigherOrderOperations', () => {
       );
     });
 
+    it('insert the location and its entities', async () => {
+      const spec = {
+        type: 'a',
+        target: 'b',
+      };
+      const location: LocationSpec = { type: '', target: '' };
+      const entity: Entity = {
+        apiVersion: 'a',
+        kind: 'b',
+        metadata: { name: 'n' },
+      };
+      locationsCatalog.addLocation.mockImplementation(x => Promise.resolve(x));
+      locationsCatalog.locations.mockResolvedValue([]);
+      locationsCatalog.locations.mockResolvedValue([]);
+      entitiesCatalog.batchAddOrUpdateEntities.mockResolvedValue([
+        {
+          entityId: 'id',
+          entity,
+        },
+      ]);
+
+      locationReader.read.mockResolvedValue({
+        entities: [
+          {
+            location,
+            entity,
+            relations: [],
+          },
+        ],
+        errors: [],
+      });
+
+      const result = await higherOrderOperation.addLocation(spec);
+
+      expect(result.location).toEqual(
+        expect.objectContaining({
+          id: expect.anything(),
+          ...spec,
+        }),
+      );
+      expect(result.entities).toEqual([entity]);
+      expect(locationsCatalog.locations).toBeCalledTimes(1);
+      expect(locationsCatalog.addLocation).toBeCalledTimes(1);
+      expect(locationsCatalog.addLocation).toBeCalledWith(
+        expect.objectContaining({
+          id: expect.anything(),
+          ...spec,
+        }),
+      );
+      expect(locationReader.read).toBeCalledTimes(1);
+      expect(locationReader.read).toBeCalledWith({ type: 'a', target: 'b' });
+      expect(entitiesCatalog.batchAddOrUpdateEntities).toBeCalledTimes(1);
+      expect(entitiesCatalog.batchAddOrUpdateEntities).toBeCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          locationId: expect.anything(),
+          dryRun: false,
+          outputEntities: true,
+        }),
+      );
+    });
+
     it('reuses the location if a match already existed', async () => {
       const spec = {
         type: 'a',
@@ -149,6 +211,60 @@ describe('HigherOrderOperations', () => {
       expect(locationsCatalog.locations).toBeCalledTimes(1);
       expect(entitiesCatalog.batchAddOrUpdateEntities).not.toBeCalled();
       expect(locationsCatalog.addLocation).not.toBeCalled();
+    });
+
+    it('rollback everything after a dry run', async () => {
+      const spec = {
+        type: 'a',
+        target: 'b',
+      };
+      const location: LocationSpec = { type: '', target: '' };
+      const entity: Entity = {
+        apiVersion: 'a',
+        kind: 'b',
+        metadata: { name: 'n' },
+      };
+      locationsCatalog.locations.mockResolvedValue([]);
+      locationsCatalog.locations.mockResolvedValue([]);
+      entitiesCatalog.batchAddOrUpdateEntities.mockResolvedValue([
+        {
+          entityId: 'id',
+          entity,
+        },
+      ]);
+      locationReader.read.mockResolvedValue({
+        entities: [
+          {
+            location,
+            entity,
+            relations: [],
+          },
+        ],
+        errors: [],
+      });
+
+      const result = await higherOrderOperation.addLocation(spec, {
+        dryRun: true,
+      });
+
+      expect(result.location).toEqual(
+        expect.objectContaining({
+          id: expect.anything(),
+          ...spec,
+        }),
+      );
+      expect(result.entities).toEqual([entity]);
+      expect(locationsCatalog.locations).toBeCalledTimes(1);
+      expect(locationReader.read).toBeCalledTimes(1);
+      expect(locationReader.read).toBeCalledWith({ type: 'a', target: 'b' });
+      expect(entitiesCatalog.batchAddOrUpdateEntities).toBeCalledTimes(1);
+      expect(entitiesCatalog.batchAddOrUpdateEntities).toBeCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          dryRun: true,
+          outputEntities: true,
+        }),
+      );
     });
   });
 
@@ -213,7 +329,9 @@ describe('HigherOrderOperations', () => {
             relations: [],
           }),
         ],
-        '123',
+        {
+          locationId: '123',
+        },
       );
     });
 

@@ -7,7 +7,7 @@
 
 <!--- Please include the following in your Pull Request when applicable: -->
 
-- [ ] A changeset describing the change and affected packages. ([more info](https://github.com/spotify/backstage/blob/master/CONTRIBUTING.md#creating-changesets))
+- [ ] A changeset describing the change and affected packages. ([more info](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#creating-changesets))
 - [ ] Added or updated documentation
 - [ ] Tests for new functionality and regression tests for bug fixes
 - [ ] Screenshots attached (for UI changes)

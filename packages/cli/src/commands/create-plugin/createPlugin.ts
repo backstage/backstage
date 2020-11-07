@@ -19,7 +19,7 @@ import { promisify } from 'util';
 import chalk from 'chalk';
 import inquirer, { Answers, Question } from 'inquirer';
 import { exec as execCb } from 'child_process';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath, join as joinPath } from 'path';
 import os from 'os';
 import { Command } from 'commander';
 import {
@@ -41,18 +41,6 @@ async function checkExists(destination: string) {
       );
       throw new Error(
         `A plugin with the same name already exists: ${existing}\nPlease try again with a different plugin ID`,
-      );
-    }
-  });
-}
-
-export async function createTemporaryPluginFolder(tempDir: string) {
-  await Task.forItem('creating', 'temporary directory', async () => {
-    try {
-      await fs.mkdir(tempDir);
-    } catch (error) {
-      throw new Error(
-        `Failed to create temporary plugin directory: ${error.message}`,
       );
     }
   });
@@ -152,15 +140,21 @@ async function buildPlugin(pluginFolder: string) {
     'yarn build',
   ];
   for (const command of commands) {
-    await Task.forItem('executing', command, async () => {
-      process.chdir(pluginFolder);
-
-      await exec(command).catch(error => {
+    try {
+      await Task.forItem('executing', command, async () => {
+        process.chdir(pluginFolder);
+        await exec(command);
+      }).catch(error => {
         process.stdout.write(error.stderr);
         process.stdout.write(error.stdout);
-        throw new Error(`Could not execute command ${chalk.cyan(command)}`);
+        throw new Error(
+          `Warning: Could not execute command ${chalk.cyan(command)}`,
+        );
       });
-    });
+    } catch (error) {
+      Task.error(error.message);
+      break;
+    }
   }
 }
 
@@ -238,7 +232,6 @@ export default async (cmd: Command) => {
       ? 'templates/default-backend-plugin'
       : 'templates/default-plugin',
   );
-  const tempDir = resolvePath(os.tmpdir(), pluginId);
   const pluginDir = isMonoRepo
     ? paths.resolveTargetRoot('plugins', pluginId)
     : paths.resolveTargetRoot(pluginId);
@@ -250,13 +243,15 @@ export default async (cmd: Command) => {
   Task.log();
   Task.log('Creating the plugin...');
 
+  Task.section('Checking if the plugin ID is available');
+  await checkExists(pluginDir);
+
+  Task.section('Creating a temporary plugin directory');
+  const tempDir = await fs.mkdtemp(
+    joinPath(os.tmpdir(), `backstage-plugin-${pluginId}`),
+  );
+
   try {
-    Task.section('Checking if the plugin ID is available');
-    await checkExists(pluginDir);
-
-    Task.section('Creating a temporary plugin directory');
-    await createTemporaryPluginFolder(tempDir);
-
     Task.section('Preparing files');
 
     await templatingTask(

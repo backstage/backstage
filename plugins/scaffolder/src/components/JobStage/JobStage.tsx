@@ -73,6 +73,18 @@ const useStyles = makeStyles(theme => ({
       boxShadow: `inset 4px 0px 0px ${theme.palette.success.main}`,
     },
   },
+  jobStatusTitle: {
+    display: 'flex',
+    width: '100%',
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    [theme.breakpoints.down('xs')]: {
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+      justifyContent: 'flex-start',
+    },
+  },
 }));
 
 type Props = {
@@ -118,7 +130,7 @@ export const JobStage = ({ endedAt, startedAt, name, log, status }: Props) => {
           className: classes.button,
         }}
       >
-        <Typography variant="button">
+        <Typography variant="button" className={classes.jobStatusTitle}>
           {name} {timeElapsed && `(${timeElapsed})`}{' '}
           {startedAt && !endedAt && <CircularProgress size="1em" />}
         </Typography>

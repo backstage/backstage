@@ -81,8 +81,8 @@ Similar to how Backstage ties together all of Spotify’s infrastructure, our am
 
 ## What’s next?
 
-We are envisioning [three phases](https://github.com/spotify/backstage/milestones) of the project (so far), and we have already begun work on various aspects of these phases. The best way to track the work and see where you can jump in and help out is:
+We are envisioning [three phases](https://github.com/backstage/backstage/milestones) of the project (so far), and we have already begun work on various aspects of these phases. The best way to track the work and see where you can jump in and help out is:
 
-https://github.com/spotify/backstage/milestones
+https://github.com/backstage/backstage/milestones
 
 Want to discuss the project or need support? Join us on [Discord](https://discord.gg/MUpMjP2) or reach out on [alund@spotify.com](mailto:alund@spotify.com).

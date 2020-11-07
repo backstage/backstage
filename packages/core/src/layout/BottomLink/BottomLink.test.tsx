@@ -22,7 +22,6 @@ const minProps = {
   title: 'A deepLink title',
   link: '/mocked',
 };
-
 describe('<BottomLink />', () => {
   it('renders without exploding', async () => {
     const rendered = await renderInTestApp(<BottomLink {...minProps} />);

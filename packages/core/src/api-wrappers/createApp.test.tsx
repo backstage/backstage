@@ -18,10 +18,12 @@ import { defaultConfigLoader } from './createApp';
 
 (process as any).env = { NODE_ENV: 'test' };
 const anyEnv = process.env as any;
+const anyWindow = window as any;
 
 describe('defaultConfigLoader', () => {
   afterEach(() => {
     delete anyEnv.APP_CONFIG;
+    delete anyWindow.__APP_CONFIG__;
   });
 
   it('loads static config', async () => {
@@ -72,5 +74,21 @@ describe('defaultConfigLoader', () => {
     await expect((defaultConfigLoader as any)('}')).rejects.toThrow(
       'Failed to load runtime configuration, SyntaxError: Unexpected token } in JSON at position 0',
     );
+  });
+
+  it('loads config from window.__APP_CONFIG__', async () => {
+    anyEnv.APP_CONFIG = [
+      { data: { my: 'config' }, context: 'a' },
+      { data: { my: 'override-config' }, context: 'b' },
+    ];
+    const windowConfig = { app: { configKey: 'config-value' } };
+    anyWindow.__APP_CONFIG__ = windowConfig;
+
+    const configs = await defaultConfigLoader();
+
+    expect(configs).toEqual([
+      ...anyEnv.APP_CONFIG,
+      { context: 'window', data: windowConfig },
+    ]);
   });
 });

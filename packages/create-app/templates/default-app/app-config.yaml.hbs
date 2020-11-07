@@ -38,7 +38,7 @@ backend:
         #ca: # if you have a CA file and want to verify it you can uncomment this section
         #  $file: <file-path>/ca/server.crt
   {{/if}}
-  # workingDirectory: /tmp # Use this to configure a working direcotry for the scaffolder, defaults to the OS temp-dir
+  # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
 
 integrations:
   github:
@@ -81,23 +81,23 @@ catalog:
   locations:
     # Backstage example components
     - type: url
-      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
 
     # Backstage example APIs
     - type: url
-      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
 
     # Backstage example templates
     - type: github
-      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml
+      target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml
       rules:
         - allow: [Template]
     - type: github
-      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/springboot-grpc-template/template.yaml
+      target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/springboot-grpc-template/template.yaml
       rules:
         - allow: [Template]
     - type: github
-      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/create-react-app/template.yaml
+      target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/create-react-app/template.yaml
       rules:
         - allow: [Template]
     - type: github
@@ -105,6 +105,6 @@ catalog:
       rules:
         - allow: [Template]
     - type: github
-      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/docs-template/template.yaml
+      target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/docs-template/template.yaml
       rules:
         - allow: [Template]

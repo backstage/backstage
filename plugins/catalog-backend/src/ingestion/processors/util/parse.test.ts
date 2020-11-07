@@ -34,7 +34,7 @@ describe('parseEntityYaml', () => {
         name: backstage
         description: backstage.io
         annotations:
-          github.com/project-slug: 'spotify/backstage'
+          github.com/project-slug: 'backstage/backstage'
       spec:
         type: website
         lifecycle: production
@@ -54,7 +54,7 @@ describe('parseEntityYaml', () => {
           name: 'backstage',
           description: 'backstage.io',
           annotations: {
-            'github.com/project-slug': 'spotify/backstage',
+            'github.com/project-slug': 'backstage/backstage',
           },
         },
         spec: {

@@ -73,10 +73,10 @@ required.
 
 ### Disable Docker in Docker situation (Optional)
 
-The TechDocs backend plugin runs a docker container with mkdocs to generate the
-frontend of the docs from source files (Markdown). If you are deploying
-Backstage using Docker, this will mean that your Backstage Docker container will
-try to run another Docker container for TechDocs backend.
+The TechDocs backend plugin runs a docker container with mkdocs installed to
+generate the frontend of the docs from source files (Markdown). If you are
+deploying Backstage using Docker, this will mean that your Backstage Docker
+container will try to run another Docker container for TechDocs backend.
 
 To avoid this problem, we have a configuration available. You can set a value in
 your `app-config.yaml` that tells the techdocs generator if it should run the
@@ -90,10 +90,23 @@ techdocs:
 ```
 
 Setting `generators.techdocs` to `local` means you will have to make sure your
-environment is compatible with techdocs. You will have to install the
-`mkdocs-techdocs-container` and 'mkdocs' package from pip, as well as graphviz
-and plantuml from your package manager. This has only been tested with python
-3.7 and python 3.8.
+environment is compatible with techdocs.
+
+You will have to install the `mkdocs` and `mkdocs-techdocs-core` package from
+pip, as well as `graphviz` and `plantuml` from your OS package manager (e.g.
+apt). See our
+[Dockerfile](https://github.com/spotify/backstage/blob/master/packages/techdocs-container/Dockerfile)
+for the latest requirements. You should be trying to match your Dockerfile with
+this one.
+
+Note: We recommend Python version 3.7 or higher.
+
+Caveat: Please install the `mkdocs-techdocs-core` package after all other Python
+packages. The order is important to make sure we get correct version of some of
+the dependencies. For example, we want `Markdown` version to be
+[3.2.2](https://github.com/spotify/backstage/blob/f9f70c225548017b6a14daea75b00fbd399c11eb/packages/techdocs-container/techdocs-core/requirements.txt#L11).
+You can also explicitly install `Markdown==3.2.2` after installing all other
+Python packages.
 
 ## Run Backstage locally
 

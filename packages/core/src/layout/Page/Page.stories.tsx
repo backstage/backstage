@@ -185,7 +185,7 @@ const ExampleContentHeader = ({ selectedTab }: { selectedTab?: number }) => (
     title={selectedTab !== undefined ? tabs[selectedTab].label : 'Header'}
   >
     <SupportButton>
-      This Plugin is an example. This text could provide usefull information for
+      This Plugin is an example. This text could provide useful information for
       the user.
     </SupportButton>
   </ContentHeader>
