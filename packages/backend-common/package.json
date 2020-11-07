@@ -90,5 +90,6 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "configSchema": "config-schema.json"
 }

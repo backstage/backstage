@@ -66,5 +66,38 @@
   "files": [
     "dist",
     "migrations"
-  ]
+  ],
+  "configSchema": {
+    "$schema": "https://backstage.io/schema/config-v1",
+    "title": "@backstage/plugin-auth-backend",
+    "type": "object",
+    "properties": {
+      "auth": {
+        "type": "object",
+        "properties": {
+          "providers": {
+            "type": "object",
+            "properties": {
+              "google": {
+                "type": "object",
+                "visibility": "frontend",
+                "additionalProperties": {
+                  "type": "object",
+                  "properties": {
+                    "clientId": {
+                      "type": "string"
+                    },
+                    "clientSecret": {
+                      "type": "string",
+                      "visibility": "secret"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }

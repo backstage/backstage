@@ -80,5 +80,54 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "configSchema": {
+    "$schema": "https://backstage.io/schema/config-v1",
+    "title": "@backstage/core",
+    "type": "object",
+    "properties": {
+      "app": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "visibility": "frontend"
+          },
+          "baseUrl": {
+            "type": "string",
+            "visibility": "frontend"
+          }
+        },
+        "required": [
+          "title",
+          "baseUrl"
+        ]
+      },
+      "backend": {
+        "type": "object",
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "visibility": "frontend"
+          }
+        },
+        "required": [
+          "baseUrl"
+        ]
+      },
+      "organization": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "visibility": "frontend"
+          }
+        }
+      }
+    },
+    "required": [
+      "app",
+      "backend"
+    ]
+  }
 }

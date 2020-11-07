@@ -1,0 +1,80 @@
+{
+  "$schema": "https://backstage.io/schema/config-v1",
+  "title": "@backstage/backend-common",
+  "type": "object",
+  "properties": {
+    "integrations": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "github": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["host"],
+            "properties": {
+              "host": {
+                "type": "string"
+              },
+              "token": {
+                "type": "string",
+                "visibility": "secret"
+              }
+            }
+          }
+        },
+        "gitlab": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["host"],
+            "properties": {
+              "host": {
+                "type": "string"
+              },
+              "token": {
+                "type": "string",
+                "visibility": "secret"
+              }
+            }
+          }
+        },
+        "bitbucket": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["host"],
+            "properties": {
+              "host": {
+                "type": "string"
+              },
+              "username": {
+                "type": "string"
+              },
+              "appPassword": {
+                "type": "string",
+                "visibility": "secret"
+              }
+            }
+          }
+        },
+        "azure": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["host"],
+            "properties": {
+              "host": {
+                "type": "string"
+              },
+              "token": {
+                "type": "string",
+                "visibility": "secret"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
