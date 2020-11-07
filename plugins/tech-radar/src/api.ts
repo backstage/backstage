@@ -37,12 +37,12 @@ export interface RadarEntry {
   quadrant: string;
   title: string;
   url: string;
-  history: Array<RadarEntryHistory>;
+  timeline: Array<RadarEntrySnapshot>;
 }
 
-export interface RadarEntryHistory {
+export interface RadarEntrySnapshot {
   date: Date;
-  ring: string;
+  ringId: string;
   description?: string;
   moved?: MovedState;
 }

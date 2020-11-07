@@ -35,10 +35,10 @@ quadrants.push({ id: 'process', name: 'Process' });
 
 const entries = new Array<RadarEntry>();
 entries.push({
-  history: [
+  timeline: [
     {
       moved: 0,
-      ring: 'use',
+      ringId: 'use',
       date: new Date('2020-08-06'),
       description:
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua',
@@ -51,10 +51,10 @@ entries.push({
   quadrant: 'languages',
 });
 entries.push({
-  history: [
+  timeline: [
     {
       moved: 0,
-      ring: 'use',
+      ringId: 'use',
       date: new Date('2020-08-06'),
       description:
         'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat',
@@ -67,10 +67,10 @@ entries.push({
   quadrant: 'languages',
 });
 entries.push({
-  history: [
+  timeline: [
     {
       moved: 0,
-      ring: 'use',
+      ringId: 'use',
       date: new Date('2020-08-06'),
     },
   ],
@@ -81,10 +81,10 @@ entries.push({
   quadrant: 'frameworks',
 });
 entries.push({
-  history: [
+  timeline: [
     {
       moved: 0,
-      ring: 'use',
+      ringId: 'use',
       date: new Date('2020-08-06'),
     },
   ],
@@ -95,10 +95,10 @@ entries.push({
   quadrant: 'frameworks',
 });
 entries.push({
-  history: [
+  timeline: [
     {
       moved: 0,
-      ring: 'use',
+      ringId: 'use',
       date: new Date('2020-08-06'),
     },
   ],
@@ -109,10 +109,10 @@ entries.push({
   quadrant: 'process',
 });
 entries.push({
-  history: [
+  timeline: [
     {
       moved: 0,
-      ring: 'assess',
+      ringId: 'assess',
       date: new Date('2020-08-06'),
     },
   ],
@@ -123,10 +123,10 @@ entries.push({
   quadrant: 'process',
 });
 entries.push({
-  history: [
+  timeline: [
     {
       moved: 0,
-      ring: 'use',
+      ringId: 'use',
       date: new Date('2020-08-06'),
     },
   ],
@@ -137,9 +137,9 @@ entries.push({
   quadrant: 'process',
 });
 entries.push({
-  history: [
+  timeline: [
     {
-      ring: 'hold',
+      ringId: 'hold',
       date: new Date('2020-08-06'),
     },
   ],
@@ -150,9 +150,9 @@ entries.push({
   quadrant: 'process',
 });
 entries.push({
-  history: [
+  timeline: [
     {
-      ring: 'use',
+      ringId: 'use',
       date: new Date('2020-08-06'),
     },
   ],

@@ -69,10 +69,10 @@ export type Entry = {
   // How this entry has recently moved; -1 for "down", +1 for "up", 0 for not moved
   moved?: MovedState;
   active?: boolean;
-  history?: Array<EntryHistory>;
+  timeline?: Array<EntrySnapshot>;
 };
 
-export type EntryHistory = {
+export type EntrySnapshot = {
   date: Date;
   ring: Ring;
   description?: string;

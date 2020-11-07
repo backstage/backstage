@@ -56,11 +56,13 @@ const RadarComponent = (props: TechRadarComponentProps): JSX.Element => {
         id: entry.key,
         quadrant: loaderResponse!.quadrants.find(q => q.id === entry.quadrant)!,
         title: entry.title,
-        ring: loaderResponse!.rings.find(r => r.id === entry.history[0].ring)!,
-        history: entry.history.map(e => {
+        ring: loaderResponse!.rings.find(
+          r => r.id === entry.timeline[0].ringId,
+        )!,
+        history: entry.timeline.map(e => {
           return {
             date: e.date,
-            ring: loaderResponse!.rings.find(a => a.id === e.ring)!,
+            ring: loaderResponse!.rings.find(a => a.id === e.ringId)!,
             description: e.description,
             moved: e.moved,
           };
