@@ -18,14 +18,10 @@ import { loadConfig } from '@backstage/config-loader';
 import { ConfigReader } from '@backstage/config';
 import { paths } from './paths';
 
-export async function loadCliConfig(
-  configArgs: string[],
-  shouldReadSecrets: boolean = false,
-) {
+export async function loadCliConfig(configArgs: string[]) {
   const configPaths = configArgs.map(arg => paths.resolveTarget(arg));
 
   const appConfigs = await loadConfig({
-    shouldReadSecrets,
     env: process.env.APP_ENV ?? process.env.NODE_ENV ?? 'production',
     configRoot: paths.targetRoot,
     configPaths,
