@@ -26,7 +26,7 @@ import {
   TabbedCard,
   useApi,
 } from '@backstage/core';
-import { Entity } from '@backstage/catalog-model';
+import { ComponentEntityV1alpha1, Entity } from '@backstage/catalog-model';
 import { kubernetesApiRef } from '../../api/types';
 import {
   AuthRequestBody,
@@ -137,11 +137,13 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
         },
       };
 
+      const componentEntity = entity as ComponentEntityV1alpha1;
       if (
-        entity.spec.kubernetes &&
-        (entity.spec.kubernetes.selector as V1LabelSelector)
+        componentEntity.spec &&
+        componentEntity.spec.kubernetes &&
+        (componentEntity.spec.kubernetes.selector as V1LabelSelector)
       ) {
-        labelSelector = entity.spec.kubernetes.selector;
+        labelSelector = componentEntity.spec.kubernetes.selector;
       }
 
       // TODO: Add validation on contents/format of requestBody
