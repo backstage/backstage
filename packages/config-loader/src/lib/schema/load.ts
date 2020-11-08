@@ -30,14 +30,7 @@ type Options = {
 export async function loadConfigSchema(
   options: Options,
 ): Promise<ConfigSchema> {
-  const start = process.hrtime();
-
   const schemas = await collectConfigSchemas(options.dependencies[0]);
-
-  const [durS, durNs] = process.hrtime(start);
-  const dur = (durS + durNs / 10 ** 9).toFixed(3);
-  console.log(`DEBUG: collected config schemas in ${dur}s`);
-  console.log('DEBUG: schemas =', schemas);
 
   const validate = compileConfigSchemas(schemas);
 
@@ -58,7 +51,6 @@ export async function loadConfigSchema(
           data: filterByVisibility(data, visibilities, result.visibilityByPath),
         }));
       }
-      console.log('DEBUG: result.visibilityByPath =', result.visibilityByPath);
 
       return processedConfigs;
     },
