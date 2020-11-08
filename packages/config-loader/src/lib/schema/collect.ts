@@ -18,6 +18,11 @@ import fs from 'fs-extra';
 import { resolve as resolvePath, dirname } from 'path';
 import { ConfigSchemaPackageEntry } from './types';
 
+type Item = {
+  name: string;
+  parentPath?: string;
+};
+
 const req =
   typeof __non_webpack_require__ === 'undefined'
     ? require
@@ -27,55 +32,71 @@ const req =
  * This collects all known config schemas across all dependencies of the app.
  */
 export async function collectConfigSchemas(
-  name: string,
-  opts: unknown = {},
-  visited: Set<string> = new Set(),
-  schemas: ConfigSchemaPackageEntry[] = [],
+  packageNames: string[],
 ): Promise<ConfigSchemaPackageEntry[]> {
-  const pkgPath = req.resolve(`${name}/package.json`, opts);
-  if (visited.has(pkgPath)) {
-    return schemas;
-  }
-  visited.add(pkgPath);
-  const pkg = await fs.readJson(pkgPath);
-  const depNames = [
-    ...Object.keys(pkg.dependencies ?? {}),
-    ...Object.keys(pkg.peerDependencies ?? {}),
-  ];
+  const visitedPackages = new Set<string>();
+  const schemas = Array<ConfigSchemaPackageEntry>();
 
-  // TODO(Rugvip): Trying this out to avoid having to traverse the full dependency graph,
-  //               since that's pretty slow. We probably need a better way to determine when
-  //               we've left the Backstage ecosystem, but this will do for now.
-  const hasSchema = 'configSchema' in pkg;
-  const hasBackstageDep = depNames.some(_ => _.startsWith('@backstage/'));
-  if (!hasSchema && !hasBackstageDep) {
-    return schemas;
-  }
-  if (hasSchema) {
-    if (typeof pkg.configSchema === 'string') {
-      if (!pkg.configSchema.endsWith('.json')) {
-        throw new Error(
-          `Config schema files must be .json, got ${pkg.configSchema}`,
-        );
-      }
-      const value = await fs.readJson(
-        resolvePath(dirname(pkgPath), pkg.configSchema),
-      );
-      schemas.push({
-        value,
-        path: pkgPath,
-      });
-    } else {
-      schemas.push({
-        value: pkg.configSchema,
-        path: pkgPath,
-      });
+  async function process({ name, parentPath }: Item) {
+    // Ensures that we only process each package once. We don't bother with
+    // loading in schemas from duplicates of different versions, as that's not
+    // supported by Backstage right now anyway. We may want to change that in
+    // the future though, if it for example becomes possible to load in two
+    // different versions of e.g. @backstage/core at once.
+    if (visitedPackages.has(name)) {
+      return;
     }
+    visitedPackages.add(name);
+
+    const pkgPath = req.resolve(
+      `${name}/package.json`,
+      parentPath && {
+        paths: [parentPath],
+      },
+    );
+
+    const pkg = await fs.readJson(pkgPath);
+    const depNames = [
+      ...Object.keys(pkg.dependencies ?? {}),
+      ...Object.keys(pkg.peerDependencies ?? {}),
+    ];
+
+    // TODO(Rugvip): Trying this out to avoid having to traverse the full dependency graph,
+    //               since that's pretty slow. We probably need a better way to determine when
+    //               we've left the Backstage ecosystem, but this will do for now.
+    const hasSchema = 'configSchema' in pkg;
+    const hasBackstageDep = depNames.some(_ => _.startsWith('@backstage/'));
+    if (!hasSchema && !hasBackstageDep) {
+      return;
+    }
+    if (hasSchema) {
+      if (typeof pkg.configSchema === 'string') {
+        if (!pkg.configSchema.endsWith('.json')) {
+          throw new Error(
+            `Config schema files must be .json, got ${pkg.configSchema}`,
+          );
+        }
+        const value = await fs.readJson(
+          resolvePath(dirname(pkgPath), pkg.configSchema),
+        );
+        schemas.push({
+          value,
+          path: pkgPath,
+        });
+      } else {
+        schemas.push({
+          value: pkg.configSchema,
+          path: pkgPath,
+        });
+      }
+    }
+
+    await Promise.all(
+      depNames.map(name => process({ name, parentPath: pkgPath })),
+    );
   }
 
-  for (const depName of depNames) {
-    await collectConfigSchemas(depName, { paths: [pkgPath] }, visited, schemas);
-  }
+  await Promise.all(packageNames.map(name => process({ name })));
 
   return schemas;
 }

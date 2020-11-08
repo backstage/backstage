@@ -30,7 +30,7 @@ type Options = {
 export async function loadConfigSchema(
   options: Options,
 ): Promise<ConfigSchema> {
-  const schemas = await collectConfigSchemas(options.dependencies[0]);
+  const schemas = await collectConfigSchemas(options.dependencies);
 
   const validate = compileConfigSchemas(schemas);
 
