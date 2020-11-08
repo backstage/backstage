@@ -17,30 +17,75 @@
 import { AppConfig } from '@backstage/config';
 import { JSONSchema7 as JSONSchema } from 'json-schema';
 
+/**
+ * An sub-set of configuration schema.
+ */
 export type ConfigSchemaPackageEntry = {
+  /**
+   * The configuration schema itself, as JSONSchema draft-07
+   */
   value: JSONSchema;
+  /**
+   * The path that the configuration schema was discovered at.
+   */
   path: string;
 };
 
+/**
+ * A list of all possible configuration value visibilities.
+ */
 export const CONFIG_VISIBILITIES = ['frontend', 'backend', 'secret'] as const;
 
+/**
+ * A type representing the possible configuration value visibilities
+ */
 export type ConfigVisibility = typeof CONFIG_VISIBILITIES[number];
 
+/**
+ * The default configuration visibility if no other values is given.
+ */
 export const DEFAULT_CONFIG_VISIBILITY: ConfigVisibility = 'backend';
 
+/**
+ * An explanation of a configuration validation error.
+ */
 type ValidationError = string;
 
+/**
+ * The result of validating configuration data using a schema.
+ */
 type ValidationResult = {
+  /**
+   * Errors that where emitted during validation, if any.
+   */
   errors?: ValidationError[];
+  /**
+   * The configuration visibilities the where discovered during validation.
+   *
+   * The path in the key uses the form `/<key>/<sub-key>/<array-index>/<leaf-key>`
+   */
   visibilityByPath: Map<string, ConfigVisibility>;
 };
 
+/**
+ * A function used validate configuration data.
+ */
 export type ValidationFunc = (configs: AppConfig[]) => ValidationResult;
 
+/**
+ * Options used to process configuration data with a schema.
+ */
 type ConfigProcessingOptions = {
+  /**
+   * The visibilities that should be included in the output data.
+   * If omitted, the data will not be filtered by visibility.
+   */
   visibilities?: ConfigVisibility[];
 };
 
+/**
+ * A loaded configuration schema that is ready to process configuration data.
+ */
 export type ConfigSchema = {
   process(
     appConfigs: AppConfig[],

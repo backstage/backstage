@@ -25,9 +25,19 @@ import {
   ConfigVisibility,
 } from './types';
 
+/**
+ * This takes a collection of Backstage configuration schemas from various
+ * sources and compiles them down into a single schema validation function.
+ *
+ * It also handles the implementation of the custom "visibility" keyword used
+ * to specify the scope of different config paths.
+ */
 export function compileConfigSchemas(
   schemas: ConfigSchemaPackageEntry[],
 ): ValidationFunc {
+  // The ajv instance below is stateful and doesn't really allow for additional
+  // output during validation. We work around this by having this extra piece
+  // of state that we reset before each validation.
   const visibilityByPath = new Map<string, ConfigVisibility>();
 
   const ajv = new Ajv({
@@ -63,8 +73,13 @@ export function compileConfigSchemas(
   const merged = mergeAllOf(
     { allOf: schemas.map(_ => _.value) },
     {
+      // JSONSchema is typically subtractive, as in it always reduces the set of allowed
+      // inputs through constraints. This changes the object property merging to be additive
+      // rather than subtractive.
       ignoreAdditionalProperties: true,
       resolvers: {
+        // This ensures that the visibilities across different schemas are sound, and
+        // selects the most specific visibility for each path.
         visibility(values: string[], path: string[]) {
           const hasApp = values.some(_ => _ === 'frontend');
           const hasSecret = values.some(_ => _ === 'secret');
@@ -95,6 +110,7 @@ export function compileConfigSchemas(
 
     const valid = validate(config);
     if (!valid) {
+      // TODO(Rugvip): better messages here, with more context such as which file the error occurred in
       const errors = ajv.errorsText(validate.errors);
       return {
         errors: [errors],

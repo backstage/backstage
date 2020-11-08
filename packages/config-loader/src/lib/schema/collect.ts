@@ -23,6 +23,9 @@ const req =
     ? require
     : __non_webpack_require__;
 
+/**
+ * This collects all known config schemas across all dependencies of the app.
+ */
 export async function collectConfigSchemas(
   name: string,
   opts: unknown = {},

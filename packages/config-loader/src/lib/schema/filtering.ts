@@ -17,6 +17,10 @@
 import { JsonObject, JsonValue } from '@backstage/config';
 import { ConfigVisibility, DEFAULT_CONFIG_VISIBILITY } from './types';
 
+/**
+ * This filters data by visibility by discovering the visibility of each
+ * value, and then only keeping the ones that are specified in `includeVisibilities`.
+ */
 export function filterByVisibility(
   data: JsonObject,
   includeVisibilities: ConfigVisibility[],

@@ -24,6 +24,9 @@ type Options = {
   dependencies: string[];
 };
 
+/**
+ * Loads config schema for a Backstage instance.
+ */
 export async function loadConfigSchema(
   options: Options,
 ): Promise<ConfigSchema> {
