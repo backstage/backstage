@@ -17,4 +17,4 @@
 export { readConfigFile } from './reader';
 export { readEnvConfig } from './env';
 export { readSecret } from './secrets';
-export { loadSchema } from './schema';
+export { loadConfigSchema } from './schema';

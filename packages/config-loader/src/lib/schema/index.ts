@@ -14,6 +14,4 @@
  * limitations under the License.
  */
 
-export { readEnvConfig, loadConfigSchema } from './lib';
-export { loadConfig } from './loader';
-export type { LoadConfigOptions } from './loader';
+export { loadConfigSchema } from './load';
