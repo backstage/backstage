@@ -17,6 +17,7 @@
 import { AppConfig, Config } from '@backstage/config';
 import { BundlingPathsOptions } from './paths';
 import { ParallelOption } from '../parallel';
+import { ConfigSchema } from '@backstage/config-loader';
 
 export type BundlingOptions = {
   checksEnabled: boolean;
@@ -36,6 +37,7 @@ export type ServeOptions = BundlingPathsOptions & {
 export type BuildOptions = BundlingPathsOptions & {
   statsJsonEnabled: boolean;
   parallel?: ParallelOption;
+  schema?: ConfigSchema;
   frontendConfig: Config;
   frontendAppConfigs: AppConfig[];
 };
