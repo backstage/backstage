@@ -23,13 +23,12 @@ export function filterByVisibility(
   visibilityByPath: Map<string, ConfigVisibility>,
 ): JsonObject {
   function transform(jsonVal: JsonValue, path: string): JsonValue | undefined {
+    const isVisible = includeVisibilities.includes(
+      visibilityByPath.get(path) ?? DEFAULT_CONFIG_VISIBILITY,
+    );
+
     if (typeof jsonVal !== 'object') {
-      const visibility =
-        visibilityByPath.get(path) ?? DEFAULT_CONFIG_VISIBILITY;
-      if (includeVisibilities.includes(visibility)) {
-        return jsonVal;
-      }
-      return undefined;
+      return isVisible ? jsonVal : undefined;
     } else if (jsonVal === null) {
       return undefined;
     } else if (Array.isArray(jsonVal)) {
@@ -42,10 +41,14 @@ export function filterByVisibility(
         }
       }
 
-      return arr.length === 0 ? undefined : arr;
+      if (arr.length > 0 || isVisible) {
+        return arr;
+      }
+      return undefined;
     }
 
     const outObj: JsonObject = {};
+    let hasOutput = false;
 
     for (const [key, value] of Object.entries(jsonVal)) {
       if (value === undefined) {
@@ -54,10 +57,14 @@ export function filterByVisibility(
       const out = transform(value, `${path}/${key}`);
       if (out !== undefined) {
         outObj[key] = out;
+        hasOutput = true;
       }
     }
 
-    return Object.keys(outObj).length === 0 ? undefined : outObj;
+    if (hasOutput || isVisible) {
+      return outObj;
+    }
+    return undefined;
   }
 
   return (transform(data, '') as JsonObject) ?? {};
