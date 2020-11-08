@@ -40,7 +40,7 @@ export async function buildBundle(options: BuildOptions) {
     ...options,
     checksEnabled: false,
     isDev: false,
-    baseUrl: resolveBaseUrl(options.config),
+    baseUrl: resolveBaseUrl(options.frontendConfig),
   });
   const compiler = webpack(config);
 

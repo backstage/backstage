@@ -21,23 +21,23 @@ import { ParallelOption } from '../parallel';
 export type BundlingOptions = {
   checksEnabled: boolean;
   isDev: boolean;
-  config: Config;
-  appConfigs: AppConfig[];
+  frontendConfig: Config;
+  frontendAppConfigs: AppConfig[];
   baseUrl: URL;
   parallel?: ParallelOption;
 };
 
 export type ServeOptions = BundlingPathsOptions & {
   checksEnabled: boolean;
-  config: Config;
-  appConfigs: AppConfig[];
+  frontendConfig: Config;
+  frontendAppConfigs: AppConfig[];
 };
 
 export type BuildOptions = BundlingPathsOptions & {
   statsJsonEnabled: boolean;
   parallel?: ParallelOption;
-  config: Config;
-  appConfigs: AppConfig[];
+  frontendConfig: Config;
+  frontendAppConfigs: AppConfig[];
 };
 
 export type BackendBundlingOptions = {

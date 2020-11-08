@@ -74,11 +74,11 @@ export async function createConfig(
   paths: BundlingPaths,
   options: BundlingOptions,
 ): Promise<webpack.Configuration> {
-  const { checksEnabled, isDev } = options;
+  const { checksEnabled, isDev, frontendConfig } = options;
 
   const { plugins, loaders } = transforms(options);
 
-  const baseUrl = options.config.getString('app.baseUrl');
+  const baseUrl = frontendConfig.getString('app.baseUrl');
   const validBaseUrl = new URL(baseUrl);
 
   if (checksEnabled) {
@@ -99,7 +99,7 @@ export async function createConfig(
 
   plugins.push(
     new webpack.EnvironmentPlugin({
-      APP_CONFIG: options.appConfigs,
+      APP_CONFIG: options.frontendAppConfigs,
     }),
   );
 
@@ -109,9 +109,9 @@ export async function createConfig(
       templateParameters: {
         publicPath: validBaseUrl.pathname.replace(/\/$/, ''),
         app: {
-          title: options.config.getString('app.title'),
+          title: frontendConfig.getString('app.title'),
           baseUrl: validBaseUrl.href,
-          googleAnalyticsTrackingId: options.config.getOptionalString(
+          googleAnalyticsTrackingId: frontendConfig.getOptionalString(
             'app.googleAnalyticsTrackingId',
           ),
         },

@@ -136,6 +136,7 @@ export function registerCommands(program: CommanderStatic) {
 
   program
     .command('config:print')
+    .option('--frontend', 'Print only the frontend configuration')
     .option('--with-secrets', 'Include secrets in the printed configuration')
     .option(
       '--format <format>',

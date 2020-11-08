@@ -16,16 +16,43 @@
 
 import { Command } from 'commander';
 import { stringify as stringifyYaml } from 'yaml';
+import { ConfigReader } from '@backstage/config';
 import { loadCliConfig } from '../../lib/config';
+import cloneDeepWith from 'lodash/cloneDeepWith';
 
 export default async (cmd: Command) => {
-  const { config } = await loadCliConfig(cmd.config, cmd.withSecrets ?? false);
+  const { schema, appConfigs } = await loadCliConfig(cmd.config);
+  let data;
 
-  const flatConfig = config.get();
+  if (cmd.frontend) {
+    const frontendConfigs = schema.process(appConfigs, {
+      visibilities: ['frontend'],
+    });
+    data = ConfigReader.fromConfigs(frontendConfigs).get();
+  } else if (cmd.withSecrets) {
+    data = ConfigReader.fromConfigs(appConfigs).get();
+  } else {
+    let secretConfigs = schema.process(appConfigs, {
+      visibilities: ['secret'],
+    });
+
+    secretConfigs = secretConfigs.map(entry => ({
+      context: entry.context,
+      data: cloneDeepWith(entry.data, value => {
+        console.log('DEBUG: value =', value);
+        if (typeof value !== 'object') {
+          return '<secret>';
+        }
+        return undefined;
+      }),
+    }));
+
+    data = ConfigReader.fromConfigs(appConfigs.concat(secretConfigs)).get();
+  }
 
   if (cmd.format === 'json') {
-    process.stdout.write(`${JSON.stringify(flatConfig, null, 2)}\n`);
+    process.stdout.write(`${JSON.stringify(data, null, 2)}\n`);
   } else {
-    process.stdout.write(`${stringifyYaml(flatConfig)}\n`);
+    process.stdout.write(`${stringifyYaml(data)}\n`);
   }
 };

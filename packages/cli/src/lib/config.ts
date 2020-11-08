@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
-import { loadConfig } from '@backstage/config-loader';
+import { loadConfig, loadConfigSchema } from '@backstage/config-loader';
 import { ConfigReader } from '@backstage/config';
 import { paths } from './paths';
 
 export async function loadCliConfig(configArgs: string[]) {
   const configPaths = configArgs.map(arg => paths.resolveTarget(arg));
+
+  // Consider all packages in the monorepo when loading in config
+  const LernaProject = require('@lerna/project');
+  const project = new LernaProject(paths.targetDir);
+  const packages = await project.getPackages();
+  const localPackageNames = packages.map((p: any) => p.name);
+  const schema = await loadConfigSchema({
+    dependencies: localPackageNames,
+  });
 
   const appConfigs = await loadConfig({
     env: process.env.APP_ENV ?? process.env.NODE_ENV ?? 'production',
@@ -31,8 +40,15 @@ export async function loadCliConfig(configArgs: string[]) {
     `Loaded config from ${appConfigs.map(c => c.context).join(', ')}`,
   );
 
+  const frontendAppConfigs = schema.process(appConfigs, {
+    visibilities: ['frontend'],
+  });
+  const frontendConfig = ConfigReader.fromConfigs(frontendAppConfigs);
+
   return {
+    schema,
     appConfigs,
-    config: ConfigReader.fromConfigs(appConfigs),
+    frontendConfig,
+    frontendAppConfigs,
   };
 }
