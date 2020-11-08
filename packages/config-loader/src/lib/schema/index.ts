@@ -15,3 +15,4 @@
  */
 
 export { loadConfigSchema } from './load';
+export type { ConfigSchema } from './types';

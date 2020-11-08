@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { AppConfig } from '@backstage/config';
-import { JSONSchema7 as JSONSchema } from 'json-schema';
+import { AppConfig, JsonObject } from '@backstage/config';
 
 /**
  * An sub-set of configuration schema.
@@ -24,7 +23,7 @@ export type ConfigSchemaPackageEntry = {
   /**
    * The configuration schema itself, as JSONSchema draft-07
    */
-  value: JSONSchema;
+  value: JsonObject;
   /**
    * The path that the configuration schema was discovered at.
    */
@@ -91,4 +90,6 @@ export type ConfigSchema = {
     appConfigs: AppConfig[],
     options?: ConfigProcessingOptions,
   ): AppConfig[];
+
+  serialize(): JsonObject;
 };

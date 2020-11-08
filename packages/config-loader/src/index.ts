@@ -15,5 +15,6 @@
  */
 
 export { readEnvConfig, loadConfigSchema } from './lib';
+export type { ConfigSchema } from './lib';
 export { loadConfig } from './loader';
 export type { LoadConfigOptions } from './loader';

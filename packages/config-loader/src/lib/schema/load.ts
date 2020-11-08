@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-import { AppConfig } from '@backstage/config';
+import { AppConfig, JsonObject } from '@backstage/config';
 import { compileConfigSchemas } from './compile';
 import { collectConfigSchemas } from './collect';
 import { filterByVisibility } from './filtering';
-import { ConfigSchema } from './types';
+import { ConfigSchema, ConfigSchemaPackageEntry } from './types';
 
-type Options = {
-  dependencies: string[];
-};
+type Options =
+  | {
+      dependencies: string[];
+    }
+  | {
+      serialized: JsonObject;
+    };
 
 /**
  * Loads config schema for a Backstage instance.
@@ -30,7 +34,19 @@ type Options = {
 export async function loadConfigSchema(
   options: Options,
 ): Promise<ConfigSchema> {
-  const schemas = await collectConfigSchemas(options.dependencies);
+  let schemas: ConfigSchemaPackageEntry[];
+
+  if ('dependencies' in options) {
+    schemas = await collectConfigSchemas(options.dependencies);
+  } else {
+    const { serialized } = options;
+    if (serialized?.backstageConfigSchemaVersion !== 1) {
+      throw new Error(
+        'Serialized configuration schema is invalid or has an invalid version number',
+      );
+    }
+    schemas = serialized.schemas as ConfigSchemaPackageEntry[];
+  }
 
   const validate = compileConfigSchemas(schemas);
 
@@ -53,6 +69,12 @@ export async function loadConfigSchema(
       }
 
       return processedConfigs;
+    },
+    serialize(): JsonObject {
+      return {
+        schemas,
+        backstageConfigSchemaVersion: 1,
+      };
     },
   };
 }

@@ -15,7 +15,11 @@
  */
 
 import fs from 'fs-extra';
-import { resolve as resolvePath, dirname } from 'path';
+import {
+  resolve as resolvePath,
+  relative as relativePath,
+  dirname,
+} from 'path';
 import { ConfigSchemaPackageEntry } from './types';
 
 type Item = {
@@ -36,8 +40,9 @@ export async function collectConfigSchemas(
 ): Promise<ConfigSchemaPackageEntry[]> {
   const visitedPackages = new Set<string>();
   const schemas = Array<ConfigSchemaPackageEntry>();
+  const currentDir = process.cwd();
 
-  async function process({ name, parentPath }: Item) {
+  async function processItem({ name, parentPath }: Item) {
     // Ensures that we only process each package once. We don't bother with
     // loading in schemas from duplicates of different versions, as that's not
     // supported by Backstage right now anyway. We may want to change that in
@@ -81,22 +86,22 @@ export async function collectConfigSchemas(
         );
         schemas.push({
           value,
-          path: pkgPath,
+          path: relativePath(currentDir, pkgPath),
         });
       } else {
         schemas.push({
           value: pkg.configSchema,
-          path: pkgPath,
+          path: relativePath(currentDir, pkgPath),
         });
       }
     }
 
     await Promise.all(
-      depNames.map(name => process({ name, parentPath: pkgPath })),
+      depNames.map(name => processItem({ name, parentPath: pkgPath })),
     );
   }
 
-  await Promise.all(packageNames.map(name => process({ name })));
+  await Promise.all(packageNames.map(name => processItem({ name })));
 
   return schemas;
 }
