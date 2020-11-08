@@ -130,5 +130,5 @@ export async function loadConfig(
 
   configs.push(...readEnvConfig(process.env));
 
-  return schema.load(configs);
+  return schema.process(configs, { visibilities: ['frontend', 'secret'] });
 }

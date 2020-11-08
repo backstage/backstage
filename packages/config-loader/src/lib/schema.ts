@@ -19,14 +19,24 @@ import { resolve as resolvePath, dirname } from 'path';
 import Ajv from 'ajv';
 import { JSONSchema7 as JSONSchema } from 'json-schema';
 import mergeAllOf, { Resolvers } from 'json-schema-merge-allof';
-import { AppConfig, ConfigReader } from '@backstage/config';
+import {
+  AppConfig,
+  ConfigReader,
+  JsonObject,
+  JsonValue,
+} from '@backstage/config';
 
 const CONFIG_VISIBILITIES = ['frontend', 'backend', 'secret'] as const;
 
 type ConfigVisibility = typeof CONFIG_VISIBILITIES[number];
 
+const DEFAULT_CONFIG_VISIBILITY: ConfigVisibility = 'backend';
+
 type ConfigSchema = {
-  load(appConfigs: AppConfig[]): AppConfig[];
+  process(
+    appConfigs: AppConfig[],
+    options?: ConfigProcessingOptions,
+  ): AppConfig[];
 };
 
 type ConfigSchemaPackageEntry = {
@@ -42,10 +52,60 @@ type ValidationError = string;
 
 type ValidationResult = {
   errors?: ValidationError[];
-  visibilities: Map<string, ConfigVisibility>;
+  visibilityByPath: Map<string, ConfigVisibility>;
 };
 
 type ValidationFunc = (configs: AppConfig[]) => ValidationResult;
+
+type ConfigProcessingOptions = {
+  visibilities?: ConfigVisibility[];
+};
+
+export function filterByVisibility(
+  data: JsonObject,
+  includeVisibilities: ConfigVisibility[],
+  visibilityByPath: Map<string, ConfigVisibility>,
+): JsonObject {
+  function transform(jsonVal: JsonValue, path: string): JsonValue | undefined {
+    if (typeof jsonVal !== 'object') {
+      const visibility =
+        visibilityByPath.get(path) ?? DEFAULT_CONFIG_VISIBILITY;
+      if (includeVisibilities.includes(visibility)) {
+        return jsonVal;
+      }
+      return undefined;
+    } else if (jsonVal === null) {
+      return undefined;
+    } else if (Array.isArray(jsonVal)) {
+      const arr = new Array<JsonValue>();
+
+      for (const [index, value] of jsonVal.entries()) {
+        const out = transform(value, `${path}/${index}`);
+        if (out !== undefined) {
+          arr.push(out);
+        }
+      }
+
+      return arr.length === 0 ? undefined : arr;
+    }
+
+    const outObj: JsonObject = {};
+
+    for (const [key, value] of Object.entries(jsonVal)) {
+      if (value === undefined) {
+        continue;
+      }
+      const out = transform(value, `${path}/${key}`);
+      if (out !== undefined) {
+        outObj[key] = out;
+      }
+    }
+
+    return Object.keys(outObj).length === 0 ? undefined : outObj;
+  }
+
+  return (transform(data, '') as JsonObject) ?? {};
+}
 
 export async function loadSchema(options: Options): Promise<ConfigSchema> {
   const start = process.hrtime();
@@ -60,16 +120,28 @@ export async function loadSchema(options: Options): Promise<ConfigSchema> {
   const validate = compileConfigSchemas(schemas);
 
   return {
-    load(configs: AppConfig[]): AppConfig[] {
+    process(
+      configs: AppConfig[],
+      { visibilities }: ConfigProcessingOptions = {},
+    ): AppConfig[] {
       const result = validate(configs);
-      console.log('DEBUG: result =', result);
       if (result.errors) {
         throw new Error(
           `Config validation failed, ${result.errors.join('; ')}`,
         );
       }
 
-      return configs;
+      let processedConfigs = configs;
+
+      if (visibilities) {
+        processedConfigs = processedConfigs.map(({ data, context }) => ({
+          context,
+          data: filterByVisibility(data, visibilities, result.visibilityByPath),
+        }));
+      }
+      console.log('DEBUG: result.visibilityByPath =', result.visibilityByPath);
+
+      return processedConfigs;
     },
   };
 }
@@ -77,7 +149,7 @@ export async function loadSchema(options: Options): Promise<ConfigSchema> {
 function compileConfigSchemas(
   schemas: ConfigSchemaPackageEntry[],
 ): ValidationFunc {
-  const visibilities = new Map<string, ConfigVisibility>();
+  const visibilityByPath = new Map<string, ConfigVisibility>();
 
   const ajv = new Ajv({
     strict: true,
@@ -99,8 +171,8 @@ function compileConfigSchemas(
             if (!ctx) {
               return false;
             }
-            if (visibility === 'frontend') {
-              visibilities.set(ctx.dataPath, visibility);
+            if (visibility) {
+              visibilityByPath.set(ctx.dataPath, visibility);
             }
             return true;
           };
@@ -140,18 +212,19 @@ function compileConfigSchemas(
   return configs => {
     const config = ConfigReader.fromConfigs(configs).get();
 
-    visibilities.clear();
+    visibilityByPath.clear();
+
     const valid = validate(config);
     if (!valid) {
       const errors = ajv.errorsText(validate.errors);
       return {
         errors: [errors],
-        visibilities: new Map(),
+        visibilityByPath: new Map(),
       };
     }
 
     return {
-      visibilities: new Map(visibilities),
+      visibilityByPath: new Map(visibilityByPath),
     };
   };
 }
