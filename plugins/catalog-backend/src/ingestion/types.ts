@@ -121,9 +121,9 @@ type AnalyzeLocationEntityField = {
 
   // The outcome of the analysis for this particular field
   state:
-    | 'analysis_suggested_value'
-    | 'analysis_suggested_no_value'
-    | 'needs_user_input';
+    | 'analysisSuggestedValue'
+    | 'analysisSuggestedNoValue'
+    | 'needsUserInput';
 
   // If the analysis did suggest a value, this is where it would be. Not sure if we want
   // to limit this to strings or if we want it to be any JsonValue

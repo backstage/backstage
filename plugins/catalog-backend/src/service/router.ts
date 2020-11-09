@@ -47,7 +47,7 @@ export async function createRouter(
     entitiesCatalog,
     locationsCatalog,
     higherOrderOperation,
-    locationAnalyzer: locationAnalyzer,
+    locationAnalyzer,
   } = options;
 
   const router = Router();

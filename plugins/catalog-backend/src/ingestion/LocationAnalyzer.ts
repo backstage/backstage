@@ -15,6 +15,7 @@
  */
 
 import { Logger } from 'winston';
+import GitUriParser from 'git-url-parse';
 import {
   AnalyzeLocationRequest,
   AnalyzeLocationResponse,
@@ -30,18 +31,19 @@ export class LocationAnalyzerClient implements LocationAnalyzer {
   async generateConfig(
     request: AnalyzeLocationRequest,
   ): Promise<AnalyzeLocationResponse> {
-    const [ownerName, repoName] = request.location.target.split('/').slice(-2);
+    const { owner, name, source } = GitUriParser(request.location.target);
     const entity = {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'Component',
       metadata: {
-        name: repoName,
-        annotations: { 'github.com/project-slug': `${ownerName}/${repoName}` },
+        name: name,
+        // Probably won't handle properly self-hosted git providers with custom url
+        annotations: { [`${source}/project-slug`]: `${owner}/${name}` },
       },
-      spec: { type: 'service', owner: ownerName, lifecycle: 'experimental' },
+      spec: { type: 'other', owner: owner, lifecycle: 'unknown' },
     };
 
-    this.logger.silly(`entity created for ${request.location.target}`);
+    this.logger.debug(`entity created for ${request.location.target}`);
     return {
       existingEntityFiles: [],
       generateEntities: [{ entity, fields: [] }],
