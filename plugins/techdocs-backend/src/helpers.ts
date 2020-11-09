@@ -181,7 +181,7 @@ export const getDocFilesFromRepository = async (
 
   const { ref, filepath: mkdocsPath } = parseGitUrl(target);
 
-  const docsRootPath = path.join(mkdocsPath, '../');
+  const docsRootPath = path.dirname(mkdocsPath);
   const docsFolderPath = path.join(docsRootPath, 'docs');
 
   if (reader.readTree) {
@@ -193,7 +193,7 @@ export const getDocFilesFromRepository = async (
 
     const tmpDir = await readTreeResponse.dir();
 
-    return `${tmpDir}/${docsRootPath === './' ? '' : docsRootPath}`;
+    return `${tmpDir}/${docsRootPath}`;
   }
 
   throw new Error(
