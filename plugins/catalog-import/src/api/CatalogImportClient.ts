@@ -20,8 +20,6 @@ import { CatalogImportApi } from './CatalogImportApi';
 import { AnalyzeLocationResponse } from '@backstage/plugin-catalog-backend';
 import { PartialEntity } from '../util/types';
 
-export const API_BASE_URL = '/api/catalog/locations';
-
 export class CatalogImportClient implements CatalogImportApi {
   private readonly discoveryApi: DiscoveryApi;
 
@@ -59,11 +57,9 @@ export class CatalogImportClient implements CatalogImportApi {
   }
 
   async createRepositoryLocation({
-    owner,
-    repo,
+    location,
   }: {
-    owner: string;
-    repo: string;
+    location: string;
   }): Promise<void> {
     const response = await fetch(
       `${await this.discoveryApi.getBaseUrl('catalog')}/locations`,
@@ -74,7 +70,7 @@ export class CatalogImportClient implements CatalogImportApi {
         method: 'POST',
         body: JSON.stringify({
           type: 'github',
-          target: `https://github.com/${owner}/${repo}/blob/master/catalog-info.yaml`,
+          target: location,
           presence: 'optional',
         }),
       },
@@ -86,19 +82,19 @@ export class CatalogImportClient implements CatalogImportApi {
     }
   }
 
-  async submitPRToRepo({
-    token,
+  async submitPrToRepo({
+    oAuthToken,
     owner,
     repo,
     fileContent,
   }: {
-    token: string;
+    oAuthToken: string;
     owner: string;
     repo: string;
     fileContent: string;
-  }): Promise<{ link: string }> {
+  }): Promise<{ link: string; location: string }> {
     const octo = new Octokit({
-      auth: token,
+      auth: oAuthToken,
     });
 
     const branchName = 'backstage-integration';
@@ -176,7 +172,10 @@ export class CatalogImportClient implements CatalogImportApi {
         );
       });
 
-    return { link: pullRequestRespone.data.html_url };
+    return {
+      link: pullRequestRespone.data.html_url,
+      location: `https://github.com/${owner}/${repo}/blob/${repoData.data.default_branch}/${fileName}`,
+    };
   }
 }
 

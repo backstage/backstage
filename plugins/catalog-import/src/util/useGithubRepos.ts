@@ -23,16 +23,13 @@ export function useGithubRepos() {
   const api = useApi(catalogImportApiRef);
   const auth = useApi(githubAuthApiRef);
 
-  const submitPRToRepo = async (selectedRepo: ConfigSpec) => {
+  const submitPrToRepo = async (selectedRepo: ConfigSpec) => {
     const token = await auth.getAccessToken(['repo']);
 
-    const [ownerName, repoName] = [
-      selectedRepo.repo.split('/')[0],
-      selectedRepo.repo.split('/')[1],
-    ];
+    const [ownerName, repoName] = selectedRepo.repo.split('/').slice(-2);
     const submitPRResponse = await api
-      .submitPRToRepo({
-        token,
+      .submitPrToRepo({
+        oAuthToken: token,
         owner: ownerName,
         repo: repoName,
         fileContent: selectedRepo.config
@@ -45,8 +42,7 @@ export function useGithubRepos() {
 
     await api
       .createRepositoryLocation({
-        owner: selectedRepo.repo.split('/')[0],
-        repo: selectedRepo.repo.split('/')[1],
+        location: submitPRResponse.location,
       })
       .catch(e => {
         throw new Error(`Failed to create repository location:\n${e.message}`);
@@ -56,7 +52,7 @@ export function useGithubRepos() {
   };
 
   return {
-    submitPRToRepo,
+    submitPrToRepo,
     generateEntityDefinitions: (repo: string) =>
       api.generateEntityDefinitions({ repo }),
   };

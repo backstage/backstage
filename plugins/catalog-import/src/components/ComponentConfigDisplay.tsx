@@ -27,18 +27,18 @@ type Props = {
   savePRLink: (PRLink: string) => void;
 };
 
-const ComponentConfigDisplay: React.FC<Props> = ({
+const ComponentConfigDisplay = ({
   nextStep,
   configFile,
   savePRLink,
-}) => {
+}: Props) => {
   const [submitting, setSubmitting] = useState(false);
   const errorApi = useApi(errorApiRef);
-  const { submitPRToRepo } = useGithubRepos();
+  const { submitPrToRepo } = useGithubRepos();
   const onNext = useCallback(async () => {
     try {
       setSubmitting(true);
-      const result = await submitPRToRepo(configFile);
+      const result = await submitPrToRepo(configFile);
       savePRLink(result.link);
       setSubmitting(false);
       nextStep();
@@ -46,7 +46,7 @@ const ComponentConfigDisplay: React.FC<Props> = ({
       setSubmitting(false);
       errorApi.post(e);
     }
-  }, [submitPRToRepo, configFile, nextStep, savePRLink, errorApi]);
+  }, [submitPrToRepo, configFile, nextStep, savePRLink, errorApi]);
 
   return (
     <Grid container direction="column" spacing={1}>

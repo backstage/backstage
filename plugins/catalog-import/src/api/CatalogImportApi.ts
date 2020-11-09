@@ -23,16 +23,13 @@ export const catalogImportApiRef = createApiRef<CatalogImportApi>({
 });
 
 export interface CatalogImportApi {
-  submitPRToRepo(options: {
-    token: string;
+  submitPrToRepo(options: {
+    oAuthToken: string;
     owner: string;
     repo: string;
     fileContent: string;
-  }): Promise<{ link: string }>;
-  createRepositoryLocation(options: {
-    owner: string;
-    repo: string;
-  }): Promise<void>;
+  }): Promise<{ link: string; location: string }>;
+  createRepositoryLocation(options: { location: string }): Promise<void>;
   generateEntityDefinitions(options: {
     repo: string;
   }): Promise<PartialEntity[]>;

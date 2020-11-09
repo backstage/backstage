@@ -38,7 +38,7 @@ type Props = {
   PRLink: string;
 };
 
-export const ImportFinished: React.FC<Props> = ({ nextStep, PRLink }) => {
+export const ImportFinished = ({ nextStep, PRLink }: Props) => {
   const classes = useStyles();
   return (
     <Grid container direction="column" spacing={1}>
