@@ -16,6 +16,7 @@
 
 import { ConfigReader } from '@backstage/config';
 import { setupServer } from 'msw/node';
+import { msw } from '@backstage/test-utils';
 import { rest } from 'msw';
 import {
   getApiRequestOptions,
@@ -29,16 +30,9 @@ import {
 import fs from 'fs';
 import path from 'path';
 import mockfs from 'mock-fs';
-import { resolvePackagePath } from '../';
 import recursive from 'recursive-readdir';
 
 describe('GithubUrlReader', () => {
-  const dirname = resolvePackagePath(
-    '@backstage/backend-common',
-    'src',
-    'reading',
-  );
-
   describe('getApiRequestOptions', () => {
     it('sets the correct API version', () => {
       const config: ProviderConfig = { host: '', apiBaseUrl: '' };
@@ -245,13 +239,15 @@ describe('GithubUrlReader', () => {
   });
 
   describe('readTree', () => {
-    it('returns the files from a archive', async () => {
-      const worker = setupServer();
+    const worker = setupServer();
 
-      const repoBuffer = fs.readFileSync(
-        path.resolve(dirname, 'test-data', 'repo.tar.gz'),
-      );
+    msw.setupDefaultHandlers(worker);
 
+    const repoBuffer = fs.readFileSync(
+      path.resolve('src', 'reading', '__fixtures__', 'repo.tar.gz'),
+    );
+
+    beforeEach(() => {
       worker.use(
         rest.get(
           'https://github.com/spotify/mock/archive/repo.tar.gz',
@@ -263,8 +259,9 @@ describe('GithubUrlReader', () => {
             ),
         ),
       );
-      worker.listen({ onUnhandledRequest: 'error' });
+    });
 
+    it('returns the wanted files from an archive', async () => {
       const processor = new GithubUrlReader({
         host: 'github.com',
       });
@@ -284,26 +281,7 @@ describe('GithubUrlReader', () => {
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
     });
 
-    it('returns a folder path from a archive', async () => {
-      const worker = setupServer();
-
-      const repoBuffer = fs.readFileSync(
-        path.resolve(dirname, 'test-data', 'repo.tar.gz'),
-      );
-
-      worker.use(
-        rest.get(
-          'https://github.com/spotify/mock/archive/repo.tar.gz',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/x-gzip'),
-              ctx.body(repoBuffer),
-            ),
-        ),
-      );
-      worker.listen({ onUnhandledRequest: 'error' });
-
+    it('returns a folder path from an archive', async () => {
       const processor = new GithubUrlReader({
         host: 'github.com',
       });
@@ -328,6 +306,8 @@ describe('GithubUrlReader', () => {
           '/tmp/fs/mock-repo/mkdocs.yml',
         ].sort(),
       );
+
+      worker.resetHandlers();
     });
   });
 });

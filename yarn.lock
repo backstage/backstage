@@ -5116,6 +5116,13 @@
   dependencies:
     "@types/node" "*"
 
+"@types/fs-extra@^9.0.3":
+  version "9.0.3"
+  resolved "https://registry.npmjs.org/@types/fs-extra/-/fs-extra-9.0.3.tgz#9996e5cce993508c32325380b429f04a1327523e"
+  integrity sha512-NKdGoXLTFTRED3ENcfCsH8+ekV4gbsysanx2OPbstXVV6fZMgUCqTxubs6I9r7pbOJbFgVq1rpFtLURjKCZWUw==
+  dependencies:
+    "@types/node" "*"
+
 "@types/git-url-parse@^9.0.0":
   version "9.0.0"
   resolved "https://registry.npmjs.org/@types/git-url-parse/-/git-url-parse-9.0.0.tgz#aac1315a44fa4ed5a52c3820f6c3c2fb79cbd12d"

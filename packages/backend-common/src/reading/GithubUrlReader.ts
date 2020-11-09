@@ -20,7 +20,7 @@ import fetch from 'cross-fetch';
 import { NotFoundError } from '../errors';
 import { ReaderFactory, ReadTreeResponse, UrlReader, File } from './types';
 import tar from 'tar';
-import fs from 'fs';
+import fs from 'fs-extra';
 import concatStream from 'concat-stream';
 import path from 'path';
 import os from 'os';
@@ -241,18 +241,11 @@ export class GithubUrlReader implements UrlReader {
     return fetch(new URL(`${repoUrl}/archive/${branchName}.tar.gz`).toString());
   }
 
-  private writeBufferToFile(
+  private async writeBufferToFile(
     filePath: string,
     content: Buffer,
-  ): Promise<Error | undefined> {
-    return new Promise((resolve, reject) => {
-      fs.mkdirSync(path.join(filePath, '../'), { recursive: true });
-      fs.writeFile(filePath, content.toString(), error => {
-        if (error) reject(error);
-
-        resolve();
-      });
-    });
+  ): Promise<void> {
+      await fs.outputFile(filePath, content.toString());
   }
 
   async readTree(
