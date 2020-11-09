@@ -133,7 +133,7 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
 
       // TODO: Add validation on contents/format of requestBody
       kubernetesApi
-        .getObjectsByLabelSelector(requestBody)
+        .getObjectsByEntity(requestBody)
         .then(result => {
           setKubernetesObjects(result);
         })

@@ -27,7 +27,7 @@ export const kubernetesApiRef = createApiRef<KubernetesApi>({
 });
 
 export interface KubernetesApi {
-  getObjectsByLabelSelector(
+  getObjectsByEntity(
     requestBody: KubernetesRequestBody,
   ): Promise<ObjectsByEntityResponse>;
 }

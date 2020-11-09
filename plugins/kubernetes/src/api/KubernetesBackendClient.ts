@@ -50,7 +50,7 @@ export class KubernetesBackendClient implements KubernetesApi {
     return await response.json();
   }
 
-  async getObjectsByLabelSelector(
+  async getObjectsByEntity(
     requestBody: KubernetesRequestBody,
   ): Promise<ObjectsByEntityResponse> {
     return await this.getRequired(
