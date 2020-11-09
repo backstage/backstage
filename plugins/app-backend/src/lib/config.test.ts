@@ -17,7 +17,7 @@
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
 import { getVoidLogger } from '@backstage/backend-common';
-import { injectEnvConfig } from './config';
+import { injectConfig } from './config';
 
 jest.mock('fs-extra');
 
@@ -29,12 +29,12 @@ const readFileMock = (fsMock.readFile as unknown) as jest.MockedFunction<
 const MOCK_DIR = 'mock-dir';
 
 const baseOptions = {
-  env: {},
+  appConfigs: [],
   staticDir: MOCK_DIR,
   logger: getVoidLogger(),
 };
 
-describe('injectEnvConfig', () => {
+describe('injectConfig', () => {
   beforeEach(() => {
     fsMock.readdir.mockResolvedValue(['main.js']);
   });
@@ -44,7 +44,7 @@ describe('injectEnvConfig', () => {
   });
 
   it('should not inject without config', async () => {
-    await injectEnvConfig(baseOptions);
+    await injectConfig(baseOptions);
     expect(fsMock.readdir).toHaveBeenCalledTimes(0);
     expect(fsMock.readFile).toHaveBeenCalledTimes(0);
     expect(fsMock.writeFile).toHaveBeenCalledTimes(0);
@@ -64,7 +64,10 @@ describe('injectEnvConfig', () => {
       return 'NO_PLACEHOLDER_HERE';
     });
 
-    await injectEnvConfig({ ...baseOptions, env: { APP_CONFIG_x: '0' } });
+    await injectConfig({
+      ...baseOptions,
+      appConfigs: [{ data: { x: 0 }, context: 'test' }],
+    });
     expect(fsMock.readFile).toHaveBeenCalledTimes(2);
     expect(fsMock.readFile).toHaveBeenNthCalledWith(
       1,
@@ -96,11 +99,9 @@ describe('injectEnvConfig', () => {
       'JSON.parse("__APP_INJECTED_RUNTIME_CONFIG__")',
     );
 
-    await injectEnvConfig({
+    await injectConfig({
       ...baseOptions,
-      env: {
-        APP_CONFIG_x: '0',
-      },
+      appConfigs: [{ data: { x: 0 }, context: 'test' }],
     });
 
     expect(fsMock.writeFile).toHaveBeenCalledTimes(1);
@@ -115,12 +116,9 @@ describe('injectEnvConfig', () => {
 
     readFileMock.mockResolvedValue(fsMock.writeFile.mock.calls[0][1]);
 
-    await injectEnvConfig({
+    await injectConfig({
       ...baseOptions,
-      env: {
-        APP_CONFIG_x: '1',
-        APP_CONFIG_y: '2',
-      },
+      appConfigs: [{ data: { x: 1, y: 2 }, context: 'test' }],
     });
 
     expect(fsMock.writeFile).toHaveBeenCalledTimes(2);

@@ -16,10 +16,10 @@
 
 import { resolve as resolvePath } from 'path';
 import { getVoidLogger } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import Router from 'express-promise-router';
 import request from 'supertest';
-
 import { createRouter } from './router';
 
 jest.mock('../lib/config', () => ({ injectEnvConfig: jest.fn() }));
@@ -35,6 +35,7 @@ describe('createRouter', () => {
   beforeAll(async () => {
     const router = await createRouter({
       logger: getVoidLogger(),
+      config: new ConfigReader({}),
       appPackageName: 'example-app',
     });
     app = express().use(router);
@@ -76,6 +77,7 @@ describe('createRouter with static fallback handler', () => {
 
     const router = await createRouter({
       logger: getVoidLogger(),
+      config: new ConfigReader({}),
       appPackageName: 'example-app',
       staticFallbackHandler,
     });
