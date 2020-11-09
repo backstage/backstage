@@ -26,17 +26,17 @@ describe('getDocFilesFromRepository', () => {
       }
 
       async readTree(): Promise<ReadTreeResponse> {
-          return {
-              dir: async () => {
-                  return '/tmp/testfolder';
-              },
-              files: () => {
-                  return [];
-              },
-              archive: async () => {
-                return Buffer.from("");
-              }
-          }
+        return {
+          dir: async () => {
+            return '/tmp/testfolder';
+          },
+          files: () => {
+            return [];
+          },
+          archive: async () => {
+            return Buffer.from('');
+          },
+        };
       }
     }
 
@@ -59,7 +59,10 @@ describe('getDocFilesFromRepository', () => {
       },
     };
 
-    const output = await getDocFilesFromRepository(new MockUrlReader(), mockEntity);
+    const output = await getDocFilesFromRepository(
+      new MockUrlReader(),
+      mockEntity,
+    );
 
     expect(output).toBe('/tmp/testfolder/.');
   });
@@ -71,17 +74,17 @@ describe('getDocFilesFromRepository', () => {
       }
 
       async readTree(): Promise<ReadTreeResponse> {
-          return {
-              dir: async () => {
-                  return '/tmp/testfolder';
-              },
-              files: () => {
-                  return [];
-              },
-              archive: async () => {
-                return Buffer.from("");
-              }
-          }
+        return {
+          dir: async () => {
+            return '/tmp/testfolder';
+          },
+          files: () => {
+            return [];
+          },
+          archive: async () => {
+            return Buffer.from('');
+          },
+        };
       }
     }
 
@@ -104,7 +107,10 @@ describe('getDocFilesFromRepository', () => {
       },
     };
 
-    const output = await getDocFilesFromRepository(new MockUrlReader(), mockEntity);
+    const output = await getDocFilesFromRepository(
+      new MockUrlReader(),
+      mockEntity,
+    );
 
     expect(output).toBe('/tmp/testfolder/subfolder');
   });
