@@ -24,14 +24,18 @@ import {
 } from '../types';
 import { aggregationSort } from '../utils/sort';
 
-// Used by <CostGrowth /> for displaying status colors
-export function growthOf(amount: number, ratio: number) {
-  if (amount >= EngineerThreshold && ratio >= ChangeThreshold.upper) {
-    return GrowthType.Excess;
-  }
-
-  if (amount >= EngineerThreshold && ratio <= ChangeThreshold.lower) {
-    return GrowthType.Savings;
+// Used for displaying status colors
+export function growthOf(ratio: number, amount?: number) {
+  if (typeof amount === 'number') {
+    if (amount >= EngineerThreshold && ratio >= ChangeThreshold.upper) {
+      return GrowthType.Excess;
+    }
+    if (amount >= EngineerThreshold && ratio <= ChangeThreshold.lower) {
+      return GrowthType.Savings;
+    }
+  } else {
+    if (ratio >= ChangeThreshold.upper) return GrowthType.Excess;
+    if (ratio <= ChangeThreshold.lower) return GrowthType.Savings;
   }
 
   return GrowthType.Negligible;

@@ -16,10 +16,11 @@
 
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
-import { Tooltip } from './Tooltip';
+import { BarChartTooltip } from './BarChartTooltip';
+import { BarChartTooltipItem } from './BarChartTooltipItem';
 import { CostInsightsThemeProvider } from '../CostInsightsPage/CostInsightsThemeProvider';
 
-const mockTooltipItems = [
+const items = [
   {
     label: 'Cost',
     value: '$1,000,000',
@@ -32,22 +33,14 @@ const mockTooltipItems = [
   },
 ];
 
-describe('<Tooltip/>', () => {
-  it('renders without exploding', async () => {
-    const rendered = await renderInTestApp(
-      <CostInsightsThemeProvider>
-        <Tooltip label="05/16/2020" items={mockTooltipItems} />
-      </CostInsightsThemeProvider>,
-    );
-    expect(
-      rendered.container.querySelector('.tooltip-content'),
-    ).toBeInTheDocument();
-  });
+const tooltipItems = () =>
+  items.map(item => <BarChartTooltipItem key={item.label} item={item} />);
 
+describe('<BarChartTooltip/>', () => {
   it('formats label and tooltip item text correctly', async () => {
     const rendered = await renderInTestApp(
       <CostInsightsThemeProvider>
-        <Tooltip label="05/16/2020" items={mockTooltipItems} />
+        <BarChartTooltip title="05/16/2020">{tooltipItems}</BarChartTooltip>
       </CostInsightsThemeProvider>,
     );
     expect(rendered.getByText('05/16/2020')).toBeInTheDocument();

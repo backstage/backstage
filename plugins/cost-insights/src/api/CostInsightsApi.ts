@@ -19,9 +19,9 @@ import {
   Alert,
   Cost,
   Duration,
+  Entity,
   Group,
   Project,
-  ProductCost,
   Maybe,
   MetricData,
 } from '../types';
@@ -119,7 +119,7 @@ export type CostInsightsApi = {
     group: string,
     duration: Duration,
     project: Maybe<string>,
-  ): Promise<ProductCost>;
+  ): Promise<Entity>;
 
   /**
    * Get current cost alerts for a given group. These show up as Action Items for the group on the

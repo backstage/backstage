@@ -19,5 +19,6 @@ export const aggregationSort = (
   a: DateAggregation,
   b: DateAggregation,
 ): number => a.date.localeCompare(b.date);
+
 export const resourceSort = (a: ResourceData, b: ResourceData) =>
   b.previous + b.current - (a.previous + a.current);

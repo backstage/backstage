@@ -25,10 +25,10 @@ import {
   DateAggregation,
   DEFAULT_DATE_FORMAT,
   Duration,
+  Entity,
   Group,
   Maybe,
   MetricData,
-  ProductCost,
   Project,
   ProjectGrowthData,
   Trendline,
@@ -198,10 +198,11 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
     group: string,
     duration: Duration,
     project: Maybe<string>,
-  ): Promise<ProductCost> {
+  ): Promise<Entity> {
     const projectProductInsights = await this.request(
       { product, group, duration, project },
       {
+        id: 'project-product',
         aggregation: [80_000, 110_000],
         change: {
           ratio: 0.375,
@@ -211,25 +212,47 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
           {
             id: null, // entities with null ids will be appear as "Unlabeled" in product panels
             aggregation: [45_000, 50_000],
+            change: {
+              ratio: 0.111,
+              amount: 5_000,
+            },
+            entities: [],
           },
           {
             id: 'entity-a',
             aggregation: [15_000, 20_000],
+            change: {
+              ratio: 0.333,
+              amount: 5_000,
+            },
+            entities: [],
           },
           {
             id: 'entity-b',
             aggregation: [20_000, 30_000],
+            change: {
+              ratio: 0.5,
+              amount: 10_000,
+            },
+            entities: [],
           },
           {
-            id: 'entity-e',
+            id: 'entity-c',
             aggregation: [0, 10_000],
+            change: {
+              ratio: 10_000,
+              amount: 10_000,
+            },
+            entities: [],
           },
         ],
       },
     );
-    const productInsights: ProductCost = await this.request(
+
+    const productInsights: Entity = await this.request(
       { product, group, duration, project },
       {
+        id: 'product',
         aggregation: [200_000, 250_000],
         change: {
           ratio: 0.2,
@@ -238,39 +261,103 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
         entities: [
           {
             id: null, // entities with null ids will be appear as "Unlabeled" in product panels
-            aggregation: [15_000, 30_000],
+            aggregation: [36_000, 42_000],
+            change: {
+              ratio: 0.1666,
+              amount: 6_000,
+            },
+            entities: [],
           },
           {
             id: 'entity-a',
             aggregation: [15_000, 20_000],
+            change: {
+              ratio: -0.33333333,
+              amount: 5_000,
+            },
+            entities: [],
           },
           {
             id: 'entity-b',
             aggregation: [20_000, 30_000],
+            change: {
+              ratio: 0.5,
+              amount: 10_000,
+            },
+            entities: [],
           },
           {
             id: 'entity-c',
             aggregation: [18_000, 25_000],
+            change: {
+              ratio: 0.38,
+              amount: 7_000,
+            },
+            entities: [],
           },
           {
             id: 'entity-d',
-            aggregation: [36_000, 42_000],
+            aggregation: [15_000, 30_000],
+            change: {
+              ratio: 1,
+              amount: 15_000,
+            },
+            entities: [],
           },
           {
             id: 'entity-e',
             aggregation: [0, 10_000],
+            entities: [],
+            change: {
+              ratio: 10_000,
+              amount: 10_000,
+            },
           },
           {
             id: 'entity-f',
             aggregation: [17_000, 19_000],
+            change: {
+              ratio: 0.118,
+              amount: 2_000,
+            },
+            entities: [],
           },
           {
             id: 'entity-g',
-            aggregation: [49_000, 30_000],
-          },
-          {
-            id: 'entity-h',
-            aggregation: [0, 34_000],
+            aggregation: [80_000, 60_000],
+            change: {
+              ratio: -0.25,
+              amount: -20_000,
+            },
+            entities: [
+              {
+                id: 'vCPU Time Batch Belgium',
+                aggregation: [15_000, 15_000],
+                change: {
+                  ratio: 0,
+                  amount: 0,
+                },
+                entities: [],
+              },
+              {
+                id: 'RAM Time Belgium',
+                aggregation: [15_000, 30_000],
+                change: {
+                  ratio: 1,
+                  amount: 15_000,
+                },
+                entities: [],
+              },
+              {
+                id: 'Local Disk Time PD Standard Belgium',
+                aggregation: [50_000, 15_000],
+                change: {
+                  ratio: -0.7,
+                  amount: -35_000,
+                },
+                entities: [],
+              },
+            ],
           },
         ],
       },
