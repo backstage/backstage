@@ -35,11 +35,9 @@ export default async (cmd: Command) => {
     let secretConfigs = schema.process(appConfigs, {
       visibilities: ['secret'],
     });
-
     secretConfigs = secretConfigs.map(entry => ({
       context: entry.context,
       data: cloneDeepWith(entry.data, value => {
-        console.log('DEBUG: value =', value);
         if (typeof value !== 'object') {
           return '<secret>';
         }
