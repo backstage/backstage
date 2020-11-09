@@ -17,7 +17,6 @@
 import { handleGetKubernetesObjectsForService } from './getKubernetesObjectsForServiceHandler';
 import { getVoidLogger } from '@backstage/backend-common';
 import { ComponentEntityV1alpha1 } from '@backstage/catalog-model';
-import { ClusterDetails } from '..';
 
 const TEST_SERVICE_ID = 'my-service';
 
