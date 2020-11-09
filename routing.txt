@@ -1,0 +1,71 @@
+User stories:
+
+- As a Backstage integrator, I want to have a clear overview of the root routes of my Backstage app. (4)
+- As an internal plugin owner in Backstage, I want it to be simple to change the way my plugin is surfaced. (3)
+- As a Backstage integrator, I want to be able to customize entity pages. (5)
+- As a Backstage integrator, I want to populate the sidebar. (5)
+- As a Backstage plugin author, I want to be able to provide customization and integration points for my plugin. (5)
+
+Navigation Patterns:
+
+- Link from entity overview card into tab within the same plugin. (5)
+- Link to top-level tools/plugins. (?)
+- Link to top-level generic concepts like "monitoring". (?)
+- Link to entity page tools/plugins. (?)
+- Link to entity page generic concepts like "CI/CD". (?)
+- Link to entity of any kind. (5)
+
+Technical Requirements:
+
+- Lazy loading of React components (5)
+- Lazy loading of Utility APIs (4)
+- Error boundaries around plugins (5)
+- Plugin content wrapped in plugin context (3)
+- Runtime sitemap (1)
+
+Main contending ideas:
+
+- Standardize the routes of all open source plugins and core features
+- Use RouteRefs for navigation, allow pages to be registered at any route in the app
+
+# Backstage Route Registry
+
+## Root Routes
+
+### /catalog/
+
+### /docs
+
+### /graphiql
+
+### /lighthouse
+
+### /register-component
+
+### /settings
+
+### /tech-radar
+
+### /entity/:kind/:namespace/:name
+
+See [Entity Routes](#entity-routes)
+
+## Entity Routes
+
+Routes mounted under `/entity/:kind/:namespace/:name`
+
+### / - Overview
+
+### /ci-cd
+
+### /sentry
+
+### /monitoring
+
+### /kubernetes
+
+### /api
+
+### /docs
+
+### /code-insights

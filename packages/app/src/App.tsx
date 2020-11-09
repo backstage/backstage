@@ -1,3 +1,5 @@
+// @ts-nocheck
+/* eslint-disable react/jsx-no-undef */
 /*
  * Copyright 2020 Spotify AB
  *
@@ -53,6 +55,17 @@ const app = createApp({
       );
     },
   },
+  routeBindings: [
+    {
+      routeRef: graphiQLRouteRef,
+      path: '/graphiql-derp',
+    },
+    {
+      routeRef: cicdRouteRef,
+      component: () => <CiCdSwitcher />,
+      // path: '/cicd',
+    },
+  ],
 });
 
 const AppProvider = app.getProvider();
@@ -83,6 +96,175 @@ const AppRoutes = () => (
       element={<RegisterComponentRouter catalogRouteRef={catalogRouteRef} />}
     />
     <Route path="/settings" element={<SettingsRouter />} />
+    {...deprecatedAppRoutes}
+  </Routes>
+);
+
+const linkToGraphiQLPlugin = useLink(
+  entityRouteRef.link({
+    kind: 'component',
+    name: 'backstage',
+    namespace: 'default',
+  }),
+  buildsRouteRef.link(),
+);
+
+export const GraphiQLRouter = plugin.anchorComponent({
+  routeRef: graphiQLRouteRef,
+  component: GraphiQLRouter,
+});
+
+// in the catalog plug
+
+const CatalogPage = () => <div></div>;
+
+export const CatalogRoute = plugin.anchorComponent({
+  path: '/catalog',
+  component: CatalogPage,
+});
+
+const CatalogPluginPage = () => {
+  return (
+    <Route
+      path={`${catalogRouteRef.path}/*`}
+      element={<CatalogRouter EntityPage={EntityPage} />}
+    />
+  );
+};
+
+// not in the catalog plugin
+
+const StandardizedRoutingApp = () => (
+  <Routes>
+    <Plugin plugin={catalogPlugin} route="/catalog" />
+    <CatalogPluginPage EntityPage={EntityPage} />
+    <DocsPluginPage />
+    <TechRadarPluginPage width={1500} height={800} />
+    <GraphiQLPluginPage />
+    <LighthousePluginPage />
+    <RegisterComponentPluginPage catalogRouteRef={catalogRouteRef} />
+    <SettingsPluginPage />
+
+    <Navigate key="/" to="/catalog" />
+    {...deprecatedAppRoutes}
+  </Routes>
+);
+
+const RouteRefApp = () => (
+  <Routes>
+    <Plugin
+      path="/catalog"
+      plugin={catalogPlugin}
+      page={CatalogPluginPage}
+      EntityPage={EntityPage}
+    />
+    <Plugin path="/docs" plugin={DocsPluginPage} />
+    <Plugin
+      path="/tech-radar"
+      plugin={TechRadarPluginPage}
+      width={1500}
+      height={800}
+    />
+    <Plugin path="/graphiql" plugin={GraphiQLPluginPage} />
+    <Plugin path="/lighthouse" plugin={LighthousePluginPage} />
+    <Plugin
+      path="/register-component"
+      plugin={RegisterComponentPluginPage}
+      catalogRouteRef={catalogRouteRef}
+    />
+    <Plugin path="/settings" plugin={SettingsPluginPage} />
+
+
+
+    {/* /entities/:kind/:namespace/:name */}
+    <EntityRoute path="/entities">
+      <EntityFilter filter={isKind("component")}>
+
+        <EntityFilter filter={isType('service')}>
+          <EntityPageLayout>
+            <EntityTab path="/" title="Overview" element={<OverviewContent />} />
+            <EntityTab path="/ci-cd" title="CI/CD" element={<CICDSwitcher />} />
+            <EntityTab path="/sentry" title="Sentry" element={<SentryRouter />} />
+            <EntityTab path="/api" title="API" element={<ApiDocsRouter />} />
+            <EntityTab path="/docs" title="Docs" element={<DocsRouter />} />
+            <EntityTab path="/kubernetes" title="Kubernetes" element={<KubernetesRouter />} />
+            <EntityTab path="/pull-requests" title="Pull Requests" element={<PullRequestsRouter />} />
+            <EntityTab path="/code-insights" title="Code Insights" element={<GitHubInsightsRouter />} />
+          </EntityPageLayout>
+        </EntityFilter>
+
+        <EntityFilter filter={isType('website')}>
+          <EntityPageLayout>
+            <EntityTab path="/" title="Overview" element={<OverviewContent />} />
+            <EntityTab path="/ci-cd" title="CI/CD" element={<CICDSwitcher />} />
+            <EntityTab path="/sentry" title="Sentry" element={<SentryRouter />} />
+            <EntityTab path="/api" title="API" element={<ApiDocsRouter />} />
+            <EntityTab path="/docs" title="Docs" element={<DocsRouter />} />
+            <EntityTab path="/kubernetes" title="Kubernetes" element={<KubernetesRouter />} />
+            <EntityTab path="/pull-requests" title="Pull Requests" element={<PullRequestsRouter />} />
+            <EntityTab path="/code-insights" title="Code Insights" element={<GitHubInsightsRouter />} />
+          </EntityPageLayout>
+        </EntityFilter>
+
+        <EntityFilter filter={isType('service')}>
+        </EntityFilter>
+      <EntityFilter>
+
+      <EntityFilter filter={isKind("component")}>
+      </EntityFilter>
+      <EntityFilter kind="api">
+      <EntityFilter>
+
+      <EntityFilter kinds={["user", "group"]}>
+      <EntityFilter>
+
+      <EntityConditionalPage filter={isKind('component')}>
+      <EntityConditionalPage>
+    </EntityRoute>
+
+
+
+
+
+
+    <CatalogPluginPage path="/catalog" EntityPage={EntityPage} />
+    <CatalogPluginPage path="/api-docs" EntityPage={EntityPage} />
+    <DocsPluginPage path="/docs" />
+    <TechRadarPluginPage path="/tech-radar" width={1500} height={800} />
+    <GraphiQLPluginPage path="/graphiql" />
+    <LighthousePluginPage path="/lighthouse" />
+    <RegisterComponentPluginPage
+      path="/register-component"
+      catalogRouteRef={catalogRouteRef}
+    />
+    <Plugin path="/docs" plugin={DocsPluginPage} />
+    <Plugin
+      path="/tech-radar"
+      plugin={TechRadarPluginPage}
+      width={1500}
+      height={800}
+    />
+    <Plugin path="/graphiql" plugin={GraphiQLPluginPage} />
+    <Plugin path="/lighthouse" plugin={LighthousePluginPage} />
+    <Plugin
+      path="/register-component"
+      plugin={RegisterComponentPluginPage}
+      catalogRouteRef={catalogRouteRef}
+    />
+    <Plugin path="/settings" plugin={SettingsPluginPage} />
+
+    <CatalogPluginPage path="/catalog" EntityPage={EntityPage} />
+    <DocsPluginPage path="/docs" />
+    <TechRadarPluginPage path="/tech-radar" width={1500} height={800} />
+    <GraphiQLPluginPage path="/graphiql" />
+    <LighthousePluginPage path="/lighthouse" />
+    <RegisterComponentPluginPage
+      path="/register-component"
+      catalogRouteRef={catalogRouteRef}
+    />
+    <SettingsPluginPage path="/settings" />
+
+    <Navigate key="/" to="/catalog" />
     {...deprecatedAppRoutes}
   </Routes>
 );
