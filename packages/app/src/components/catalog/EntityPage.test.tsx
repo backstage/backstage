@@ -14,19 +14,13 @@
  * limitations under the License.
  */
 import React from 'react';
-import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core-api';
 import { CICDSwitcher } from './EntityPage';
-import { UrlPatternDiscovery } from '@backstage/core';
+import { UrlPatternDiscovery, ApiProvider, ApiRegistry } from '@backstage/core';
 import {
   buildKiteApiRef,
   BuildKiteApi,
 } from '@roadiehq/backstage-plugin-buildkite';
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
-
-const mockErrorApi: jest.Mocked<typeof errorApiRef.T> = {
-  post: jest.fn(),
-  error$: jest.fn(),
-};
 
 describe('EntityPage Test', () => {
   const entity = {
@@ -49,7 +43,6 @@ describe('EntityPage Test', () => {
 
   const apis = ApiRegistry.from([
     [buildKiteApiRef, new BuildKiteApi({ discoveryApi })],
-    [errorApiRef, mockErrorApi],
   ]);
 
   describe('CICDSwitcher Test', () => {

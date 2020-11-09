@@ -10,7 +10,6 @@
     "@backstage/plugin-api-docs": "^0.2.0",
     "@backstage/plugin-catalog": "^0.2.0",
     "@backstage/plugin-circleci": "^0.2.0",
-    "@backstage/core-api": "^0.2.0",
     "@backstage/plugin-cloudbuild": "^0.2.0",
     "@backstage/plugin-cost-insights": "^0.2.0",
     "@backstage/plugin-explore": "^0.2.0",
