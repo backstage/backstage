@@ -18,7 +18,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { AboutCard } from './AboutCard';
 
-describe('<AboutCard />', () => {
+describe('<AboutCard /> GitHub', () => {
   it('renders info and "view source" link', () => {
     const entity = {
       apiVersion: 'v1',
@@ -41,6 +41,72 @@ describe('<AboutCard />', () => {
     expect(getByText('View Source').closest('a')).toHaveAttribute(
       'href',
       'https://github.com/backstage/backstage/blob/master/software.yaml',
+    );
+    expect(getByText('View Source').closest('a')).toHaveAttribute(
+      'edithref',
+      'https://github.com/backstage/backstage/edit/master/software.yaml',
+    );
+  });
+});
+
+describe('<AboutCard /> GitLab', () => {
+  it('renders info and "view source" link', () => {
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+        annotations: {
+          'backstage.io/managed-by-location':
+            'gitlab:https://gitlab.com/backstage/backstage/-/blob/master/software.yaml',
+        },
+      },
+      spec: {
+        owner: 'guest',
+        type: 'service',
+        lifecycle: 'production',
+      },
+    };
+    const { getByText } = render(<AboutCard entity={entity} />);
+    expect(getByText('service')).toBeInTheDocument();
+    expect(getByText('View Source').closest('a')).toHaveAttribute(
+      'href',
+      'https://gitlab.com/backstage/backstage/-/blob/master/software.yaml',
+    );
+    expect(getByText('View Source').closest('a')).toHaveAttribute(
+      'edithref',
+      'https://gitlab.com/backstage/backstage/-/edit/master/software.yaml',
+    );
+  });
+});
+
+describe('<AboutCard /> BitBucket', () => {
+  it('renders info and "view source" link', () => {
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+        annotations: {
+          'backstage.io/managed-by-location':
+            'bitbucket:https://bitbucket.org/backstage/backstage/src/master/software.yaml',
+        },
+      },
+      spec: {
+        owner: 'guest',
+        type: 'service',
+        lifecycle: 'production',
+      },
+    };
+    const { getByText } = render(<AboutCard entity={entity} />);
+    expect(getByText('service')).toBeInTheDocument();
+    expect(getByText('View Source').closest('a')).toHaveAttribute(
+      'href',
+      'https://bitbucket.org/backstage/backstage/src/master/software.yaml',
+    );
+    expect(getByText('View Source').closest('a')).toHaveAttribute(
+      'edithref',
+      'https://bitbucket.org/backstage/backstage/src/master/software.yaml?mode=edit&spa=0&at=master',
     );
   });
 });
