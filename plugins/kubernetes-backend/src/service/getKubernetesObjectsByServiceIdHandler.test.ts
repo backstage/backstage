@@ -16,6 +16,7 @@
 
 import { handleGetKubernetesObjectsForService } from './getKubernetesObjectsForServiceHandler';
 import { getVoidLogger } from '@backstage/backend-common';
+import { ComponentEntityV1alpha1 } from '@backstage/catalog-model';
 import { ClusterDetails } from '..';
 
 const TEST_SERVICE_ID = 'my-service';
@@ -23,6 +24,26 @@ const TEST_SERVICE_ID = 'my-service';
 const fetchObjectsForService = jest.fn();
 
 const getClustersByServiceId = jest.fn();
+
+const goodEntity: ComponentEntityV1alpha1 = <ComponentEntityV1alpha1>{
+  apiVersion: 'backstage.io/v1beta1',
+  kind: 'Component',
+  metadata: {
+    name: 'test-component',
+  },
+  spec: {
+    type: 'service',
+    lifecycle: 'production',
+    owner: 'joe',
+    kubernetes: {
+      selector: {
+        matchLabels: {
+          'backstage.io/test-label': 'test-component',
+        },
+      },
+    },
+  },
+};
 
 const mockFetch = (mock: jest.Mock) => {
   mock.mockImplementation((serviceId: string, clusterDetails: ClusterDetails) =>
@@ -90,7 +111,7 @@ describe('handleGetKubernetesObjectsForService', () => {
         getClustersByServiceId,
       },
       getVoidLogger(),
-      {},
+      { entity: goodEntity },
     );
 
     expect(getClustersByServiceId.mock.calls.length).toBe(1);
@@ -165,11 +186,11 @@ describe('handleGetKubernetesObjectsForService', () => {
       },
       getVoidLogger(),
       {
+        entity: goodEntity,
         auth: {
           google: 'google_token_123',
         },
       },
-      '',
     );
 
     expect(getClustersByServiceId.mock.calls.length).toBe(1);
