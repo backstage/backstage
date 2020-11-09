@@ -14,17 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { renderInTestApp } from '@backstage/test-utils';
-import { BottomLink } from './BottomLink';
+import * as DependencyGraphTypes from './types';
 
-const minProps = {
-  title: 'A deepLink title',
-  link: '/mocked',
-};
-describe('<BottomLink />', () => {
-  it('renders without exploding', async () => {
-    const rendered = await renderInTestApp(<BottomLink {...minProps} />);
-    expect(rendered.getByText('A deepLink title')).toBeInTheDocument();
-  });
-});
+export { DependencyGraph } from './DependencyGraph';
+export { DependencyGraphTypes };

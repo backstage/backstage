@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 export { plugin } from './plugin';
-export { Settings } from './components/Settings';
-export { SettingsPage as Router } from './components/SettingsPage';
+export * from './components/';

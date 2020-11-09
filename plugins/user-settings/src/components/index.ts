@@ -13,18 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React from 'react';
-import { renderInTestApp } from '@backstage/test-utils';
-import { BottomLink } from './BottomLink';
-
-const minProps = {
-  title: 'A deepLink title',
-  link: '/mocked',
-};
-describe('<BottomLink />', () => {
-  it('renders without exploding', async () => {
-    const rendered = await renderInTestApp(<BottomLink {...minProps} />);
-    expect(rendered.getByText('A deepLink title')).toBeInTheDocument();
-  });
-});
+export { Settings } from './Settings';
+export { SettingsPage as Router } from './SettingsPage';
+export * from './AuthProviders';

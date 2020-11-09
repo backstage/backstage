@@ -14,17 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { renderInTestApp } from '@backstage/test-utils';
-import { BottomLink } from './BottomLink';
+export const ARROW_MARKER_ID = 'arrow-marker';
 
-const minProps = {
-  title: 'A deepLink title',
-  link: '/mocked',
-};
-describe('<BottomLink />', () => {
-  it('renders without exploding', async () => {
-    const rendered = await renderInTestApp(<BottomLink {...minProps} />);
-    expect(rendered.getByText('A deepLink title')).toBeInTheDocument();
-  });
-});
+export const NODE_TEST_ID = 'node';
+export const EDGE_TEST_ID = 'edge';
+export const LABEL_TEST_ID = 'label';

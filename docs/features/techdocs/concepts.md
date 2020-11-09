@@ -41,7 +41,7 @@ documentation for publishing. Currently it mostly acts as a wrapper around the
 TechDocs container and provides an easy-to-use interface for our docker
 container.
 
-[TechDocs CLI](https://github.com/backstage/backstage/blob/master/packages/techdocs-cli/README.md)
+[TechDocs CLI](https://github.com/backstage/techdocs-cli)
 
 ### TechDocs Reader
 
