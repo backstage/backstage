@@ -34,7 +34,7 @@ export type GetKubernetesObjectsForServiceHandler = (
   serviceLocator: KubernetesServiceLocator,
   logger: Logger,
   requestBody: KubernetesRequestBody,
-  objectsToFetch?: Set<KubernetesObjectTypes>,
+  objectTypesToFetch?: Set<KubernetesObjectTypes>,
 ) => Promise<ObjectsByEntityResponse>;
 
 const DEFAULT_OBJECTS = new Set<KubernetesObjectTypes>([

@@ -46,7 +46,7 @@ const goodEntity: ComponentEntityV1alpha1 = {
 };
 
 const mockFetch = (mock: jest.Mock) => {
-  mock.mockImplementation((serviceId: string, clusterDetails: ClusterDetails) =>
+  mock.mockImplementation((params: ObjectFetchParams) =>
     Promise.resolve({
       errors: [],
       responses: [
@@ -55,7 +55,7 @@ const mockFetch = (mock: jest.Mock) => {
           resources: [
             {
               metadata: {
-                name: `my-pods-${serviceId}-${clusterDetails.name}`,
+                name: `my-pods-${params.serviceId}-${params.clusterDetails.name}`,
               },
             },
           ],
@@ -65,7 +65,7 @@ const mockFetch = (mock: jest.Mock) => {
           resources: [
             {
               metadata: {
-                name: `my-configmaps-${serviceId}-${clusterDetails.name}`,
+                name: `my-configmaps-${params.serviceId}-${params.clusterDetails.name}`,
               },
             },
           ],
@@ -75,7 +75,7 @@ const mockFetch = (mock: jest.Mock) => {
           resources: [
             {
               metadata: {
-                name: `my-services-${serviceId}-${clusterDetails.name}`,
+                name: `my-services-${params.serviceId}-${params.clusterDetails.name}`,
               },
             },
           ],
