@@ -122,15 +122,15 @@ export const Filters = (props: Props) => {
                       .filter(
                         (checkboxFilter: any) =>
                           checkboxFilter.category ||
-                          checkboxFilter.selecetedChildren.length,
+                          checkboxFilter.selectedChildren.length,
                       )
                       .map((checkboxFilter: any) =>
                         checkboxFilter.category
                           ? [
-                              ...checkboxFilter.selecetedChildren,
+                              ...checkboxFilter.selectedChildren,
                               checkboxFilter.category,
                             ]
-                          : checkboxFilter.selecetedChildren,
+                          : checkboxFilter.selectedChildren,
                       )
                       .flat(),
                   })
