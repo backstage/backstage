@@ -20,7 +20,6 @@ import { Box, Typography } from '@material-ui/core';
 import { InfoCard } from '@backstage/core';
 import { AlertInstructionsLayout } from '../AlertInstructionsLayout';
 import { ProductInsightsChart } from '../ProductInsightsCard';
-import { MockBillingDateProvider } from '../../utils/tests';
 import {
   Alert,
   DEFAULT_DATE_FORMAT,
@@ -172,14 +171,13 @@ export const ProjectGrowthInstructionsPage = () => {
           ) that has grown in cost:
         </Typography>
         <Box mt={2} mb={2}>
-          <MockBillingDateProvider lastCompleteBillingDate={today}>
-            <InfoCard
-              title={product.name}
-              subheader="3 entities, sorted by cost"
-            >
-              <ProductInsightsChart duration={Duration.P3M} entity={entity} />
-            </InfoCard>
-          </MockBillingDateProvider>
+          <InfoCard title={product.name} subheader="3 entities, sorted by cost">
+            <ProductInsightsChart
+              billingDate={today}
+              duration={Duration.P3M}
+              entity={entity}
+            />
+          </InfoCard>
         </Box>
         <Typography paragraph>
           From here, you can dig into commit history or deployment logs to find

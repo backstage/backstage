@@ -40,10 +40,10 @@ about TechDocs and the philosophy in its
 | [TechDocs V.2 🔮⌛][v2] | Easy adoption of TechDocs (whatever environment you have) [See V.2 Use Cases.](#techdocs-v2)                                                                |
 | [TechDocs V.3 🔮⌛][v3] | Build a widget (plugin) framework so that contributors can easily contribute features to TechDocs - that others can use. [See V.3 Use Cases.](#techdocs-v3) |
 
-[v0]: https://github.com/spotify/backstage/milestone/15
-[v1]: https://github.com/spotify/backstage/milestone/16
-[v2]: https://github.com/spotify/backstage/milestone/22
-[v3]: https://github.com/spotify/backstage/milestone/17
+[v0]: https://github.com/backstage/backstage/milestone/15
+[v1]: https://github.com/backstage/backstage/milestone/16
+[v2]: https://github.com/backstage/backstage/milestone/22
+[v3]: https://github.com/backstage/backstage/milestone/17
 
 <!-- TODO: Add link to milestone for v3 -->
 
@@ -109,18 +109,16 @@ migrate Spotify's existing TechDocs features to open source.
 | ------------------------------------------- | -------------------------------------------------------- |
 | Frontend                                    | [`@backstage/plugin-techdocs`][techdocs/frontend]        |
 | Backend                                     | [`@backstage/plugin-techdocs-backend`][techdocs/backend] |
-| Docker Container (for generating doc sites) | [`packages/techdocs-container`][techdocs/container]      |
-| CLI (for local development)                 | [`packages/techdocs-cli`][techdocs/cli]                  |
+| Docker Container (for generating doc sites) | [`techdocs-container`][techdocs/container]               |
+| CLI (for local development)                 | [`@techdocs/cli`][techdocs/cli]                          |
 
 [getting started]: getting-started.md
 [concepts]: concepts.md
 [creating and publishing documentation]: creating-and-publishing.md
 [faq]: FAQ.md 'Frequently asked questions'
 [techdocs/frontend]:
-  https://github.com/spotify/backstage/blob/master/plugins/techdocs
+  https://github.com/backstage/backstage/blob/master/plugins/techdocs
 [techdocs/backend]:
-  https://github.com/spotify/backstage/blob/master/plugins/techdocs-backend
-[techdocs/container]:
-  https://github.com/spotify/backstage/blob/master/packages/techdocs-container
-[techdocs/cli]:
-  https://github.com/spotify/backstage/blob/master/packages/techdocs-cli
+  https://github.com/backstage/backstage/blob/master/plugins/techdocs-backend
+[techdocs/container]: https://github.com/backstage/techdocs-container
+[techdocs/cli]: https://github.com/backstage/techdocs-cli

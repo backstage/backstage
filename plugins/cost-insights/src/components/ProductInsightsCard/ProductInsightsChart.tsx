@@ -49,17 +49,18 @@ import {
 import { BarChartOptions, Duration, Entity, Maybe } from '../../types';
 
 export type ProductInsightsChartProps = {
+  billingDate: string;
   entity: Entity;
   duration: Duration;
 };
 
 export const ProductInsightsChart = ({
+  billingDate,
   entity,
   duration,
 }: ProductInsightsChartProps) => {
   const classes = useStyles();
   const layoutClasses = useLayoutStyles();
-  const lastCompleteBillingDate = useLastCompleteBillingDate();
   const [isOpen, setOpen] = useState(false);
   const [isClickable, setClickable] = useState(true);
   const [selectLabel, setSelected] = useState<Maybe<string>>(null);
@@ -71,8 +72,8 @@ export const ProductInsightsChart = ({
   const resources = entity.entities.map(resourceOf);
 
   const options: Partial<BarChartOptions> = {
-    previousName: formatPeriod(duration, lastCompleteBillingDate, false),
-    currentName: formatPeriod(duration, lastCompleteBillingDate, true),
+    previousName: formatPeriod(duration, billingDate, false),
+    currentName: formatPeriod(duration, billingDate, true),
   };
 
   useEffect(() => {

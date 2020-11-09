@@ -53,3 +53,5 @@ export interface Measure {
   value: string;
   component: string;
 }
+
+export type SonarUrlProcessorFunc = (identifier: string) => string;

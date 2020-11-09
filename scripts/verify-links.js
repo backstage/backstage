@@ -27,7 +27,7 @@ async function verifyUrl(basePath, absUrl, docPages) {
   // Avoid having absolute URL links within docs/, so that links work on the site
   if (
     absUrl.match(
-      /https:\/\/github.com\/spotify\/backstage\/(tree|blob)\/master\/docs\//,
+      /https:\/\/github.com\/backstage\/backstage\/(tree|blob)\/master\/docs\//,
     ) &&
     basePath.match(/^(?:docs|microsite)\//)
   ) {
@@ -37,7 +37,7 @@ async function verifyUrl(basePath, absUrl, docPages) {
   const url = absUrl
     .replace(/#.*$/, '')
     .replace(
-      /https:\/\/github.com\/spotify\/backstage\/(tree|blob)\/master/,
+      /https:\/\/github.com\/backstage\/backstage\/(tree|blob)\/master/,
       '',
     );
   if (!url) {

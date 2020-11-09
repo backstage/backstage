@@ -17,10 +17,16 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { InfoCard, useApi } from '@backstage/core';
 import Alert from '@material-ui/lab/Alert';
+import { Typography } from '@material-ui/core';
 import { costInsightsApiRef } from '../../api';
 import { ProductInsightsChart } from './ProductInsightsChart';
 import { PeriodSelect } from '../PeriodSelect';
-import { useFilters, useLoading, useScroll } from '../../hooks';
+import {
+  useFilters,
+  useLastCompleteBillingDate,
+  useLoading,
+  useScroll,
+} from '../../hooks';
 import { useProductInsightsCardStyles as useStyles } from '../../utils/styles';
 import { mapFiltersToProps, mapLoadingToProps } from './selector';
 import { Duration, Maybe, Product, Entity } from '../../types';
@@ -34,6 +40,7 @@ export const ProductInsightsCard = ({ product }: ProductInsightsCardProps) => {
   const client = useApi(costInsightsApiRef);
   const classes = useStyles();
   const { ScrollAnchor } = useScroll(product.kind);
+  const lastCompleteBillingDate = useLastCompleteBillingDate();
   const [entity, setEntity] = useState<Maybe<Entity>>(null);
   const [error, setError] = useState<Maybe<Error>>(null);
 
@@ -49,22 +56,23 @@ export const ProductInsightsCard = ({ product }: ProductInsightsCardProps) => {
   const dispatchLoadingProduct = useCallback(dispatchLoading, [product.kind]);
 
   const amount = entity?.entities?.length || 0;
-  const hasCostsWithinTimeframe = entity?.change && !!amount;
+  const hasCostsWithinTimeframe = !!(entity?.change && amount);
 
-  const subheader = amount
+  const subheader = hasCostsWithinTimeframe
     ? `${amount} ${pluralOf(amount, 'entity', 'entities')}, sorted by cost`
-    : `There are no ${product.name} costs within this timeframe for your team's projects.`;
+    : null;
 
   useEffect(() => {
     async function load() {
       if (loadingProduct) {
         try {
-          const e: Entity = await client.getProductInsights(
-            product.kind,
-            group!,
-            productFilter!.duration,
+          const e: Entity = await client.getProductInsights({
+            product: product.kind,
+            group: group!,
+            duration: productFilter!.duration,
+            lastCompleteBillingDate,
             project,
-          );
+          });
           setEntity(e);
         } catch (e) {
           setError(e);
@@ -84,6 +92,7 @@ export const ProductInsightsCard = ({ product }: ProductInsightsCardProps) => {
     group,
     product.kind,
     project,
+    lastCompleteBillingDate,
   ]);
 
   const onPeriodSelect = (duration: Duration) => {
@@ -119,11 +128,17 @@ export const ProductInsightsCard = ({ product }: ProductInsightsCardProps) => {
   return (
     <InfoCard title={product.name} subheader={subheader} {...infoCardProps}>
       <ScrollAnchor behavior="smooth" top={-12} />
-      {hasCostsWithinTimeframe && (
+      {hasCostsWithinTimeframe ? (
         <ProductInsightsChart
+          billingDate={lastCompleteBillingDate}
           duration={productFilter.duration}
           entity={entity}
         />
+      ) : (
+        <Typography>
+          There are no {product.name} costs within this timeframe for your
+          team's projects.
+        </Typography>
       )}
     </InfoCard>
   );

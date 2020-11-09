@@ -37,7 +37,10 @@ import {
   MetricData,
   CostInsightsTheme,
 } from '../../types';
-import { BarChartTooltip, BarChartTooltipItem } from '../BarChart';
+import {
+  BarChartTooltip as Tooltip,
+  BarChartTooltipItem as TooltipItem,
+} from '../BarChart';
 import {
   overviewGraphTickFormatter,
   formatGraphValue,
@@ -120,11 +123,11 @@ export const CostOverviewChart = ({
       }));
 
     return (
-      <BarChartTooltip title={title}>
+      <Tooltip title={title}>
         {items.map((item, index) => (
-          <BarChartTooltipItem key={`${item.label}-${index}`} item={item} />
+          <TooltipItem key={`${item.label}-${index}`} item={item} />
         ))}
-      </BarChartTooltip>
+      </Tooltip>
     );
   };
 

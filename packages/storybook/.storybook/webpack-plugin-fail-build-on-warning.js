@@ -16,7 +16,7 @@
 
 /**
  * When building storybook, we can have warnings which may cause issues in the future. One of the example case is
- * https://github.com/spotify/backstage/issues/718. To make sure new warnings are not introduced with new PRs, we
+ * https://github.com/backstage/backstage/issues/718. To make sure new warnings are not introduced with new PRs, we
  * want to fail CI builds if there are warnings when building storybook.
  *
  * This webpack plugin makes sure the CI builds fail on Webpack warnings. We also have an allowlist of warnings here

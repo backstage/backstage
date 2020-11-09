@@ -20,6 +20,10 @@ spec:
         component: frontend
 
     spec:
+      {{- if .Values.dockerRegistrySecretName }}
+      imagePullSecrets:
+        - name: {{ .Values.dockerRegistrySecretName }}
+      {{- end}}
       containers:
         - name: {{ .Chart.Name }}-frontend
           image: {{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}

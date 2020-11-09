@@ -22,7 +22,7 @@ during their entire life cycle.
 
 Each Utility API is tied to an `ApiRef` instance, which is a global singleton
 object without any additional state or functionality, its only purpose is to
-reference Utility APIs. `ApiRef`s are create using `createApiRef`, which is
+reference Utility APIs. `ApiRef`s are created using `createApiRef`, which is
 exported by `@backstage/core`. There are many
 [predefined Utility APIs](../reference/utility-apis/README.md) defined in
 `@backstage/core`, and they're all exported with a name of the pattern
@@ -160,7 +160,8 @@ const app = createApp({
 ```
 
 A common pattern is to export a list of all APIs from `apis.ts`, next to
-`App.tsx`. See the [example app in this repo](../../packages/app/src/apis.ts)
+`App.tsx`. See the
+[example app in this repo](https://github.com/backstage/backstage/blob/master/packages/app/src/apis.ts)
 for an example.
 
 ## Custom implementations of Utility APIs

@@ -68,7 +68,13 @@ const columns: TableColumn<Entity>[] = [
       <>
         {entity.metadata.tags &&
           entity.metadata.tags.map(t => (
-            <Chip key={t} label={t} style={{ marginBottom: '0px' }} />
+            <Chip
+              key={t}
+              label={t}
+              size="small"
+              variant="outlined"
+              style={{ marginBottom: '0px' }}
+            />
           ))}
       </>
     ),
@@ -150,10 +156,12 @@ export const CatalogTable = ({
       columns={columns}
       options={{
         paging: true,
-        pageSize: 10,
+        pageSize: 20,
         actionsColumnIndex: -1,
         loadingType: 'linear',
         showEmptyDataSourceMessage: !loading,
+        padding: 'dense',
+        pageSizeOptions: [20, 50, 100],
       }}
       title={`${titlePreamble} (${(entities && entities.length) || 0})`}
       data={entities}

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { FC } from 'react';
-import { Box, IconButton, Link, Typography } from '@material-ui/core';
+import { Box, IconButton, Link, Typography, Tooltip } from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
@@ -179,9 +179,11 @@ const generatedColumns: TableColumn[] = [
     title: 'Actions',
     sorting: false,
     render: (row: Partial<CITableBuildInfo>) => (
-      <IconButton onClick={row.onRestartClick}>
-        <RetryIcon />
-      </IconButton>
+      <Tooltip title="Rerun build">
+        <IconButton onClick={row.onRestartClick}>
+          <RetryIcon />
+        </IconButton>
+      </Tooltip>
     ),
     width: '10%',
   },

@@ -36,6 +36,6 @@ through plugins. Different plugins are used for managing different types of
 components.
 
 For example, the
-[Lighthouse plugin](https://github.com/spotify/backstage/tree/master/plugins/lighthouse)
+[Lighthouse plugin](https://github.com/backstage/backstage/tree/master/plugins/lighthouse)
 only makes sense for Websites. The more specific you can be in how you model
 your software, the easier it is to provide plugins that are contextual.
