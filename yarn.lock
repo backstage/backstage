@@ -3672,10 +3672,10 @@
     react-use "^15.3.3"
     remark-gfm "^1.0.0"
 
-"@roadiehq/backstage-plugin-github-pull-requests@^0.6.1":
-  version "0.6.1"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-pull-requests/-/backstage-plugin-github-pull-requests-0.6.1.tgz#bce3ce93af7b2f6c38d4665c8a0d8a6b2eaa4212"
-  integrity sha512-3r0BBV6kRlbrlfVA/G7Tc0xbw9A+9roihspCaV/yhhqXgk/ik5v6ftEautlx45+gKaFMp+jgmfKHqFgOdSyhZw==
+"@roadiehq/backstage-plugin-github-pull-requests@^0.6.2":
+  version "0.6.2"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-pull-requests/-/backstage-plugin-github-pull-requests-0.6.2.tgz#02f4a7a03e1a7dc24342ec695130017ce7d3ad8d"
+  integrity sha512-OdBWO6NdiBKlol1WlbFQGeHxV2C8wl8EiI2NgA15lozsqFA22kWis6Z16cAHe4ZdRCjihDmqINtAIJzeZZ1gOg==
   dependencies:
     "@backstage/catalog-model" "^0.2.0"
     "@backstage/core" "^0.2.0"
