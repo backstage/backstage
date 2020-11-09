@@ -41,7 +41,6 @@ import {
   ExtensionsV1beta1Ingress,
   V1ConfigMap,
   V1HorizontalPodAutoscaler,
-  V1LabelSelector,
   V1Service,
 } from '@kubernetes/client-node';
 import { Services } from '../Services';

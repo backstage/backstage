@@ -19,7 +19,6 @@ import {
   KubernetesRequestBody,
   ObjectsByEntityResponse,
 } from '@backstage/plugin-kubernetes-backend';
-import { V1LabelSelector } from '@kubernetes/client-node';
 
 export const kubernetesApiRef = createApiRef<KubernetesApi>({
   id: 'plugin.kubernetes.service',
