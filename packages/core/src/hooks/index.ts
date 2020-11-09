@@ -14,9 +14,4 @@
  * limitations under the License.
  */
 
-export * from '@backstage/core-api';
-
-export * from './api-wrappers';
-export * from './components';
-export * from './layout';
-export * from './hooks';
+export { useQueryParamState } from './useQueryParamState';
