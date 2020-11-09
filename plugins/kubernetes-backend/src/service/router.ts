@@ -26,7 +26,7 @@ import {
   handleGetKubernetesObjectsForService,
 } from './getKubernetesObjectsForServiceHandler';
 import {
-  AuthRequestBody,
+  KubernetesRequestBody,
   KubernetesServiceLocator,
   KubernetesFetcher,
   ServiceLocatorMethod,
@@ -64,23 +64,21 @@ export const makeRouter = (
   logger: Logger,
   fetcher: KubernetesFetcher,
   serviceLocator: KubernetesServiceLocator,
-  handleGetByServiceId: GetKubernetesObjectsForServiceHandler,
+  handleGetByEntity: GetKubernetesObjectsForServiceHandler,
 ): express.Router => {
   const router = Router();
   router.use(express.json());
 
   router.post('/services/:serviceId', async (req, res) => {
     const serviceId = req.params.serviceId;
-    const labelSelector = req.query.labelSelector;
-    const requestBody: AuthRequestBody = req.body;
+    const requestBody: KubernetesRequestBody = req.body;
     try {
-      const response = await handleGetByServiceId(
+      const response = await handleGetByEntity(
         serviceId,
         fetcher,
         serviceLocator,
         logger,
         requestBody,
-        labelSelector ? labelSelector.toString() : '',
       );
       res.send(response);
     } catch (e) {

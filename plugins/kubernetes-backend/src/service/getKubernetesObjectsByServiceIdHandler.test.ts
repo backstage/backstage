@@ -91,7 +91,6 @@ describe('handleGetKubernetesObjectsForService', () => {
       },
       getVoidLogger(),
       {},
-      '',
     );
 
     expect(getClustersByServiceId.mock.calls.length).toBe(1);
