@@ -22,7 +22,6 @@ import {
 } from 'recharts';
 import { Box, Typography } from '@material-ui/core';
 import { default as FullScreenIcon } from '@material-ui/icons/Fullscreen';
-import { useLastCompleteBillingDate } from '../../hooks';
 import { LegendItem } from '../LegendItem';
 import { ProductEntityDialog } from './ProductEntityDialog';
 import { CostGrowth, CostGrowthIndicator } from '../CostGrowth';
