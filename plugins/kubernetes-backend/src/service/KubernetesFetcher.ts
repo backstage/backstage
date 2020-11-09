@@ -38,6 +38,7 @@ import {
   FetchResponseWrapper,
   KubernetesFetchError,
   KubernetesErrorTypes,
+  ObjectFetchParams,
 } from '..';
 import lodash, { Dictionary } from 'lodash';
 
@@ -106,18 +107,14 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
   }
 
   fetchObjectsForService(
-    serviceId: string,
-    clusterDetails: ClusterDetails,
-    objectTypesToFetch: Set<KubernetesObjectTypes>,
-    labelSelector: string,
+    params: ObjectFetchParams,
   ): Promise<FetchResponseWrapper> {
-    const fetchResults = Array.from(objectTypesToFetch).map(type => {
+    const fetchResults = Array.from(params.objectTypesToFetch).map(type => {
       return this.fetchByObjectType(
-        clusterDetails,
+        params.clusterDetails,
         type,
-        labelSelector.length !== 0
-          ? labelSelector
-          : `backstage.io/kubernetes-id=${serviceId}`,
+        params.labelSelector ||
+          `backstage.io/kubernetes-id=${params.serviceId}`,
       ).catch(captureKubernetesErrorsRethrowOthers);
     });
 

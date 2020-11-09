@@ -25,7 +25,7 @@ const fetchObjectsForService = jest.fn();
 
 const getClustersByServiceId = jest.fn();
 
-const goodEntity: ComponentEntityV1alpha1 = <ComponentEntityV1alpha1>{
+const goodEntity: ComponentEntityV1alpha1 = {
   apiVersion: 'backstage.io/v1beta1',
   kind: 'Component',
   metadata: {

@@ -109,14 +109,18 @@ export interface IngressesFetchResponse {
   resources: Array<ExtensionsV1beta1Ingress>;
 }
 
+export interface ObjectFetchParams {
+  serviceId: string;
+  clusterDetails: ClusterDetails;
+  objectTypesToFetch: Set<KubernetesObjectTypes>;
+  labelSelector: string;
+}
+
 // Fetches information from a kubernetes cluster using the cluster details object
 // to target a specific cluster
 export interface KubernetesFetcher {
   fetchObjectsForService(
-    serviceId: string,
-    clusterDetails: ClusterDetails,
-    objectTypesToFetch: Set<KubernetesObjectTypes>,
-    labelSelector: string,
+    params: ObjectFetchParams,
   ): Promise<FetchResponseWrapper>;
 }
 

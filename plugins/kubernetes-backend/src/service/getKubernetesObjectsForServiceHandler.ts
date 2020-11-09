@@ -15,6 +15,7 @@
  */
 
 import { Logger } from 'winston';
+import { ComponentEntityV1alpha1 } from '@backstage/catalog-model';
 import {
   KubernetesRequestBody,
   ClusterDetails,
@@ -22,10 +23,10 @@ import {
   KubernetesFetcher,
   KubernetesObjectTypes,
   ObjectsByEntityResponse,
+  ObjectFetchParams,
 } from '../types/types';
 import { KubernetesAuthTranslator } from '../kubernetes-auth-translator/types';
 import { KubernetesAuthTranslatorGenerator } from '../kubernetes-auth-translator/KubernetesAuthTranslatorGenerator';
-import { ComponentEntityV1alpha1 } from '@backstage/catalog-model';
 
 export type GetKubernetesObjectsForServiceHandler = (
   serviceId: string,
@@ -47,18 +48,10 @@ const DEFAULT_OBJECTS = new Set<KubernetesObjectTypes>([
 ]);
 
 function parseLabelSelector(entity: ComponentEntityV1alpha1): string {
-  if (
-    entity &&
-    entity.spec &&
-    entity.spec.kubernetes &&
-    entity.spec.kubernetes.selector
-  ) {
+  const matchLabels = entity?.spec?.kubernetes?.selector?.matchLabels;
+  if (matchLabels) {
     // TODO: figure out how to convert the selector to the full query param from the yaml
     //  (as shown here https://github.com/kubernetes/apimachinery/blob/master/pkg/labels/selector.go)
-    const { matchLabels } = entity.spec.kubernetes.selector;
-    if (!matchLabels) {
-      return '';
-    }
     return Object.keys(matchLabels)
       .map(key => `${key}=${matchLabels[key.toString()]}`)
       .join(',');
@@ -73,7 +66,7 @@ export const handleGetKubernetesObjectsForService: GetKubernetesObjectsForServic
   serviceLocator,
   logger,
   requestBody,
-  objectsToFetch = DEFAULT_OBJECTS,
+  objectTypesToFetch = DEFAULT_OBJECTS,
 ) => {
   const clusterDetails: ClusterDetails[] = await serviceLocator.getClustersByServiceId(
     serviceId,
@@ -102,13 +95,18 @@ export const handleGetKubernetesObjectsForService: GetKubernetesObjectsForServic
   const labelSelector = parseLabelSelector(requestBody.entity);
 
   return Promise.all(
-    clusterDetailsDecoratedForAuth.map(cd => {
+    clusterDetailsDecoratedForAuth.map(clusterDetails => {
       return fetcher
-        .fetchObjectsForService(serviceId, cd, objectsToFetch, labelSelector)
+        .fetchObjectsForService(<ObjectFetchParams>{
+          serviceId,
+          clusterDetails,
+          objectTypesToFetch,
+          labelSelector,
+        })
         .then(result => {
           return {
             cluster: {
-              name: cd.name,
+              name: clusterDetails.name,
             },
             resources: result.responses,
             errors: result.errors,

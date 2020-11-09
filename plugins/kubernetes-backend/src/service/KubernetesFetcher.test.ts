@@ -16,6 +16,7 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
+import { ObjectFetchParams } from '..';
 
 describe('KubernetesClientProvider', () => {
   let clientMock: any;
@@ -57,17 +58,17 @@ describe('KubernetesClientProvider', () => {
 
     clientMock.listServiceForAllNamespaces.mockRejectedValue(errorResponse);
 
-    const result = await sut.fetchObjectsForService(
-      'some-service',
-      {
+    const result = await sut.fetchObjectsForService(<ObjectFetchParams>{
+      serviceId: 'some-service',
+      clusterDetails: {
         name: 'cluster1',
         url: 'http://localhost:9999',
         serviceAccountToken: 'token',
         authProvider: 'serviceAccount',
       },
-      new Set(['pods', 'services']),
-      '',
-    );
+      objectTypesToFetch: new Set(['pods', 'services']),
+      labelSelector: '',
+    });
 
     expect(result).toStrictEqual({
       errors: [expectedResult],
@@ -121,17 +122,17 @@ describe('KubernetesClientProvider', () => {
       },
     });
 
-    const result = await sut.fetchObjectsForService(
-      'some-service',
-      {
+    const result = await sut.fetchObjectsForService(<ObjectFetchParams>{
+      serviceId: 'some-service',
+      clusterDetails: {
         name: 'cluster1',
         url: 'http://localhost:9999',
         serviceAccountToken: 'token',
         authProvider: 'serviceAccount',
       },
-      new Set(['pods', 'services']),
-      '',
-    );
+      objectTypesToFetch: new Set(['pods', 'services']),
+      labelSelector: '',
+    });
 
     expect(result).toStrictEqual({
       errors: [],
@@ -171,17 +172,17 @@ describe('KubernetesClientProvider', () => {
   });
   it('should throw error on unknown type', () => {
     expect(() =>
-      sut.fetchObjectsForService(
-        'some-service',
-        {
+      sut.fetchObjectsForService(<ObjectFetchParams>{
+        serviceId: 'some-service',
+        clusterDetails: {
           name: 'cluster1',
           url: 'http://localhost:9999',
           serviceAccountToken: 'token',
           authProvider: 'serviceAccount',
         },
-        new Set<any>(['foo']),
-        '',
-      ),
+        objectTypesToFetch: new Set<any>(['foo']),
+        labelSelector: '',
+      }),
     ).toThrow('unrecognised type=foo');
 
     expect(clientMock.listPodForAllNamespaces.mock.calls.length).toBe(0);
@@ -282,17 +283,17 @@ describe('KubernetesClientProvider', () => {
       },
     });
 
-    await sut.fetchObjectsForService(
-      'some-service',
-      {
+    await sut.fetchObjectsForService(<ObjectFetchParams>{
+      serviceId: 'some-service',
+      clusterDetails: {
         name: 'cluster1',
         url: 'http://localhost:9999',
         serviceAccountToken: 'token',
         authProvider: 'serviceAccount',
       },
-      new Set(['pods', 'services']),
-      '',
-    );
+      objectTypesToFetch: new Set(['pods', 'services']),
+      labelSelector: '',
+    });
 
     const mockCall = clientMock.listPodForAllNamespaces.mock.calls[0];
     const actualSelector = mockCall[mockCall.length - 1];
