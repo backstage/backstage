@@ -98,7 +98,7 @@ export const CostOverviewCard = ({
           />
         </Box>
         <Box display="flex" justifyContent="flex-end" alignItems="center">
-          {config.metrics.length > 1 && (
+          {config.metrics.length && (
             <MetricSelect
               metric={filters.metric}
               metrics={config.metrics}
