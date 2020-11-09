@@ -41,33 +41,27 @@ export function compileConfigSchemas(
   const visibilityByPath = new Map<string, ConfigVisibility>();
 
   const ajv = new Ajv({
-    strict: true,
     allErrors: true,
-    defaultMeta: 'http://json-schema.org/draft-07/schema#',
     schemas: {
       'https://backstage.io/schema/config-v1': true,
     },
-    keywords: [
-      {
-        keyword: 'visibility',
-        schemaType: 'string',
-        metaSchema: {
-          type: 'string',
-          enum: CONFIG_VISIBILITIES,
-        },
-        compile(visibility: ConfigVisibility) {
-          return (_data, ctx) => {
-            if (!ctx) {
-              return false;
-            }
-            if (visibility) {
-              visibilityByPath.set(ctx.dataPath, visibility);
-            }
-            return true;
-          };
-        },
-      },
-    ],
+  }).addKeyword('visibility', {
+    type: 'string',
+    metaSchema: {
+      type: 'string',
+      enum: CONFIG_VISIBILITIES,
+    },
+    compile(visibility: ConfigVisibility) {
+      return (_data, dataPath) => {
+        if (!dataPath) {
+          return false;
+        }
+        if (visibility) {
+          visibilityByPath.set(dataPath, visibility);
+        }
+        return true;
+      };
+    },
   });
 
   const merged = mergeAllOf(
