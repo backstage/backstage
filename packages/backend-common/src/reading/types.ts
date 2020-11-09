@@ -22,6 +22,11 @@ import { Config } from '@backstage/config';
  */
 export type UrlReader = {
   read(url: string): Promise<Buffer>;
+  readTree?(
+    repoUrl: string,
+    branchName: string,
+    paths: Array<string>,
+  ): Promise<ReadTreeResponse>;
 };
 
 export type UrlReaderPredicateTuple = {
@@ -37,3 +42,14 @@ export type ReaderFactory = (options: {
   config: Config;
   logger: Logger;
 }) => UrlReaderPredicateTuple[];
+
+export type File = {
+  path: string;
+  content(): Promise<Buffer>;
+};
+
+export type ReadTreeResponse = {
+  files(): File[];
+  archive(): Promise<Buffer>;
+  dir(outDir?: string): Promise<string>;
+};

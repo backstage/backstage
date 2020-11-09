@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export type { UrlReader } from './types';
+export type { UrlReader, ReadTreeResponse } from './types';
 export { UrlReaders } from './UrlReaders';
 export { AzureUrlReader } from './AzureUrlReader';
 export { BitbucketUrlReader } from './BitbucketUrlReader';
