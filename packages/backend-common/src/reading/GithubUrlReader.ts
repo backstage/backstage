@@ -245,7 +245,7 @@ export class GithubUrlReader implements UrlReader {
     filePath: string,
     content: Buffer,
   ): Promise<void> {
-      await fs.outputFile(filePath, content.toString());
+    await fs.outputFile(filePath, content.toString());
   }
 
   async readTree(
