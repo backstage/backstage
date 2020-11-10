@@ -1,0 +1,124 @@
+/*
+ * Copyright 2020 Spotify AB
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import os from 'os';
+import tar, { Parse, ParseStream, ReadEntry } from 'tar';
+import path from 'path';
+import fs from 'fs-extra';
+import { Readable, pipeline as pipelineCb } from 'stream';
+import { promisify } from 'util';
+import concatStream from 'concat-stream';
+import { ReadTreeResponse, File } from '../types';
+
+// Tar types for `Parse` is not a proper constructor, but it should be
+const TarParseStream = (Parse as unknown) as { new (): ParseStream };
+
+const pipeline = promisify(pipelineCb);
+
+/**
+ * Wraps a tar archive stream into a tree response reader.
+ */
+export class ArchiveResponse implements ReadTreeResponse {
+  private read = false;
+
+  constructor(
+    private readonly stream: Readable,
+    private readonly subPath: string,
+    private readonly workDir: string = os.tmpdir(),
+  ) {}
+
+  // Make sure the input stream is only read once
+  private onlyOnce() {
+    if (this.read) {
+      throw new Error('Response has already been read');
+    }
+    this.read = true;
+  }
+
+  async files(): Promise<File[]> {
+    this.onlyOnce();
+
+    const files: File[] = [];
+    const parser = new TarParseStream();
+
+    parser.on('entry', (entry: ReadEntry & Readable) => {
+      if (entry.type === 'Directory') {
+        entry.resume();
+        return;
+      }
+
+      const contentPromise = new Promise<Buffer>(async resolve => {
+        await pipeline(entry, concatStream(resolve));
+      });
+
+      files.push({
+        path: entry.path,
+        content: () => contentPromise,
+      });
+
+      entry.resume();
+    });
+
+    await pipeline(this.stream, parser);
+
+    return files;
+  }
+
+  async archive(): Promise<Buffer> {
+    if (!this.subPath) {
+      this.onlyOnce();
+
+      return new Promise(resolve =>
+        pipeline(this.stream, concatStream(resolve)),
+      );
+    }
+
+    // TODO(Rugvip): method for repacking a tar with a subpath is to simply extract into a
+    //               tmp dir and recreate the archive. Would be nicer to stream things instead.
+    const tmpDir = await this.dir();
+
+    try {
+      return await new Promise(async resolve => {
+        await pipeline(
+          tar.create({ cwd: tmpDir }, ['.']),
+          concatStream(resolve),
+        );
+      });
+    } finally {
+      await fs.remove(tmpDir);
+    }
+  }
+
+  async dir(outDir?: string): Promise<string> {
+    this.onlyOnce();
+
+    const dir =
+      outDir ?? (await fs.mkdtemp(path.join(this.workDir, 'backstage-')));
+
+    const strip = this.subPath ? this.subPath.split('/').length : 0;
+
+    await pipeline(
+      this.stream,
+      tar.extract({
+        strip,
+        cwd: dir,
+        filter: path => path.startsWith(this.subPath),
+      }),
+    );
+
+    return dir;
+  }
+}
