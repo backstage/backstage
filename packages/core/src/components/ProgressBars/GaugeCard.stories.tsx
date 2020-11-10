@@ -14,11 +14,20 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { GaugeCard } from './GaugeCard';
 import { Grid } from '@material-ui/core';
+import { MemoryRouter } from 'react-router';
 
 const linkInfo = { title: 'Go to XYZ Location', link: '#' };
+
+const Wrapper = ({ children }: PropsWithChildren<{}>) => (
+  <MemoryRouter>
+    <Grid container spacing={2}>
+      {children}
+    </Grid>
+  </MemoryRouter>
+);
 
 export default {
   title: 'Data Display/Progress Card',
@@ -26,7 +35,7 @@ export default {
 };
 
 export const Default = () => (
-  <Grid container spacing={2}>
+  <Wrapper>
     <Grid item>
       <GaugeCard title="Progress" progress={0.3} />
     </Grid>
@@ -36,11 +45,11 @@ export const Default = () => (
     <Grid item>
       <GaugeCard title="Progress" progress={0.89} />
     </Grid>
-  </Grid>
+  </Wrapper>
 );
 
 export const Subhead = () => (
-  <Grid container spacing={2}>
+  <Wrapper>
     <Grid item>
       <GaugeCard title="Progress" subheader="With a subheader" progress={0.3} />
     </Grid>
@@ -58,11 +67,11 @@ export const Subhead = () => (
         progress={0.89}
       />
     </Grid>
-  </Grid>
+  </Wrapper>
 );
 
 export const LinkInFooter = () => (
-  <Grid container spacing={2}>
+  <Wrapper>
     <Grid item>
       <GaugeCard title="Progress" deepLink={linkInfo} progress={0.3} />
     </Grid>
@@ -72,5 +81,5 @@ export const LinkInFooter = () => (
     <Grid item>
       <GaugeCard title="Progress" deepLink={linkInfo} progress={0.89} />
     </Grid>
-  </Grid>
+  </Wrapper>
 );
