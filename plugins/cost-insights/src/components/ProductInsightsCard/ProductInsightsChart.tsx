@@ -144,7 +144,7 @@ export const ProductInsightsChart = ({
     const activeEntity = findAlways(entity.entities, e => e.id === id);
     const ratio = activeEntity.change.ratio;
     const skus = activeEntity.entities;
-    const subtitle = `${skus.length} ${pluralOf(skus.length, 'SKU', 'SKUs')}`;
+    const subtitle = `${skus.length} ${pluralOf(skus.length, 'SKU')}`;
 
     if (skus.length) {
       return (
@@ -179,14 +179,14 @@ export const ProductInsightsChart = ({
         topRight={
           <CostGrowthIndicator
             className={classes.indicator}
-            ratio={activeEntity.change.ratio}
+            ratio={ratio}
             formatter={formatPercent}
           />
         }
         content={
           id
             ? null
-            : `This service is generating costs that can't be attributed to any known entity.`
+            : "This product has costs that are not labeled and therefore can't be attributed to a specific entity."
         }
       >
         {items.map((item, index) => (

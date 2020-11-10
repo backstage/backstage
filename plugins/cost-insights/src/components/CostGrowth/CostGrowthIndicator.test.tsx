@@ -30,9 +30,7 @@ describe.each`
   ${ChangeThreshold.upper + 0.01} | ${EngineerThreshold}       | ${'excess'}
   ${ChangeThreshold.upper + 0.01} | ${EngineerThreshold + 0.1} | ${'excess'}
 `('growthOf', ({ ratio, amount, ariaLabel }) => {
-  it(`should display the correct indicator for ${
-    ariaLabel ? ariaLabel : 'negligible'
-  }`, async () => {
+  it(`should display the correct indicator for ${ariaLabel}`, async () => {
     const { getByLabelText } = await renderInTestApp(
       <CostGrowthIndicator ratio={ratio} amount={amount} />,
     );

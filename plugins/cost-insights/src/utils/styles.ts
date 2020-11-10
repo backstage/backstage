@@ -15,6 +15,7 @@
  */
 import {
   createStyles,
+  emphasize,
   darken,
   getLuminance,
   lighten,
@@ -400,9 +401,7 @@ export const useTooltipStyles = makeStyles<CostInsightsTheme>(
         fontSize: `.75rem`,
       },
       divider: {
-        /* TODO: tooltip divider color should be the inverse of theme. 
-        Dark mode should appear dark, light mode should appear light */
-        backgroundColor: darken(theme.palette.divider, 1),
+        backgroundColor: emphasize(theme.palette.divider, 1),
       },
       subtitle: {
         fontStyle: 'italic',

@@ -196,7 +196,7 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
     productInsightsOptions: ProductInsightsOptions,
   ): Promise<Entity> {
     const projectProductInsights = await this.request(productInsightsOptions, {
-      id: 'project-product',
+      id: productInsightsOptions.product,
       aggregation: [80_000, 110_000],
       change: {
         ratio: 0.375,
@@ -243,7 +243,7 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
     });
 
     const productInsights: Entity = await this.request(productInsightsOptions, {
-      id: 'product',
+      id: productInsightsOptions.product,
       aggregation: [200_000, 250_000],
       change: {
         ratio: 0.2,

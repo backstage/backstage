@@ -30,6 +30,8 @@ import {
 import { Box, useTheme } from '@material-ui/core';
 import { BarChartTick } from './BarChartTick';
 import { BarChartStepper } from './BarChartStepper';
+import { BarChartTooltip } from './BarChartTooltip';
+import { BarChartTooltipItem } from './BarChartTooltipItem';
 import { currencyFormatter } from '../../utils/formatters';
 import {
   BarChartData,
@@ -37,8 +39,27 @@ import {
   DataKey,
   CostInsightsTheme,
 } from '../../types';
+import { notEmpty } from '../../utils/assert';
 import { useBarChartStyles } from '../../utils/styles';
 import { resourceSort } from '../../utils/sort';
+import { isInvalid, titleOf, tooltipItemOf } from '../../utils/graphs';
+
+export const defaultTooltip: ContentRenderer<RechartsTooltipProps> = ({
+  label,
+  payload = [],
+}) => {
+  if (isInvalid({ label, payload })) return null;
+
+  const title = titleOf(label);
+  const items = payload.map(tooltipItemOf).filter(notEmpty);
+  return (
+    <BarChartTooltip title={title}>
+      {items.map((item, index) => (
+        <BarChartTooltipItem key={`${item.label}-${index}`} item={item} />
+      ))}
+    </BarChartTooltip>
+  );
+};
 
 export type BarChartProps = {
   resources: ResourceData[];
@@ -55,7 +76,7 @@ export const BarChart = ({
   responsive = true,
   displayAmount = 6,
   options = {},
-  tooltip,
+  tooltip = defaultTooltip,
   onClick,
   onMouseMove,
 }: BarChartProps) => {

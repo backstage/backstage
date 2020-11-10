@@ -20,7 +20,6 @@ import { Box } from '@material-ui/core';
 import { BarChart, BarChartLegend } from '../BarChart';
 import { LegendItem } from '../LegendItem';
 import { CostGrowth } from '../CostGrowth';
-import { renderDefaultTooltip } from '../BarChart/helpers';
 import { BarChartOptions, Duration, ProjectGrowthData } from '../../types';
 import { useBarChartLayoutStyles as useStyles } from '../../utils/styles';
 import { resourceOf } from '../../utils/graphs';
@@ -46,17 +45,11 @@ export const ProjectGrowthAlertChart = ({
   return (
     <Box className={classes.wrapper}>
       <BarChartLegend costStart={costStart} costEnd={costEnd} options={options}>
-        <LegendItem
-          title={`Cost ${alert.change.ratio <= 0 ? 'Savings' : 'Growth'}`}
-        >
+        <LegendItem title="Cost Growth">
           <CostGrowth change={alert.change} duration={Duration.P3M} />
         </LegendItem>
       </BarChartLegend>
-      <BarChart
-        resources={resourceData}
-        tooltip={renderDefaultTooltip}
-        options={options}
-      />
+      <BarChart resources={resourceData} options={options} />
     </Box>
   );
 };

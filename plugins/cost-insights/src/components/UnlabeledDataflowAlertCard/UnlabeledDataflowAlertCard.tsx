@@ -18,7 +18,6 @@ import React from 'react';
 import { InfoCard } from '@backstage/core';
 import { Box } from '@material-ui/core';
 import { BarChart, BarChartLegend } from '../BarChart';
-import { renderDefaultTooltip } from '../BarChart/helpers';
 import { UnlabeledDataflowData, ResourceData } from '../../types';
 import { pluralOf } from '../../utils/grammar';
 import { useBarChartLayoutStyles as useStyles } from '../../utils/styles';
@@ -54,11 +53,7 @@ export const UnlabeledDataflowAlertCard = ({
           costEnd={alert.unlabeledCost}
           options={options}
         />
-        <BarChart
-          resources={resources}
-          tooltip={renderDefaultTooltip}
-          options={options}
-        />
+        <BarChart resources={resources} options={options} />
       </Box>
     </InfoCard>
   );
