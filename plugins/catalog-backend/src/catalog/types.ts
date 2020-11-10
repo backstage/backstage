@@ -15,7 +15,7 @@
  */
 
 import { Entity, EntityRelationSpec, Location } from '@backstage/catalog-model';
-import type { EntityFilters } from '../database';
+import type { EntityFilter } from '../database';
 
 //
 // Entities
@@ -28,10 +28,11 @@ export type EntityUpsertRequest = {
 
 export type EntityUpsertResponse = {
   entityId: string;
+  entity?: Entity;
 };
 
 export type EntitiesCatalog = {
-  entities(filters?: EntityFilters[]): Promise<Entity[]>;
+  entities(filter?: EntityFilter): Promise<Entity[]>;
   removeEntityByUid(uid: string): Promise<void>;
 
   /**
@@ -42,7 +43,11 @@ export type EntitiesCatalog = {
    */
   batchAddOrUpdateEntities(
     entities: EntityUpsertRequest[],
-    locationId?: string,
+    options?: {
+      locationId?: string;
+      dryRun?: boolean;
+      outputEntities?: boolean;
+    },
   ): Promise<EntityUpsertResponse[]>;
 };
 

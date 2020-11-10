@@ -17,8 +17,10 @@
 import React, { PropsWithChildren } from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { ResourceGrowthBarChartLegend } from './ResourceGrowthBarChartLegend';
-import { defaultCurrencies, Duration, findAlways } from '../../types';
+import { defaultCurrencies } from '../../utils/currency';
+import { findAlways } from '../../utils/assert';
 import { MockConfigProvider, MockCurrencyProvider } from '../../utils/tests';
+import { Duration } from '../../types';
 
 const engineers = findAlways(defaultCurrencies, c => c.kind === null);
 

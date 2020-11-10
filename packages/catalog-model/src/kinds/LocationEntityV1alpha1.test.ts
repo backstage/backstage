@@ -16,10 +16,10 @@
 
 import {
   LocationEntityV1alpha1,
-  locationEntityV1alpha1Policy as policy,
+  locationEntityV1alpha1Validator as validator,
 } from './LocationEntityV1alpha1';
 
-describe('LocationV1alpha1Policy', () => {
+describe('LocationV1alpha1Validator', () => {
   let entity: LocationEntityV1alpha1;
 
   beforeEach(() => {
@@ -36,70 +36,70 @@ describe('LocationV1alpha1Policy', () => {
   });
 
   it('happy path: accepts valid data', async () => {
-    await expect(policy.enforce(entity)).resolves.toBe(entity);
+    await expect(validator.check(entity)).resolves.toBe(true);
   });
 
   it('silently accepts v1beta1 as well', async () => {
     (entity as any).apiVersion = 'backstage.io/v1beta1';
-    await expect(policy.enforce(entity)).resolves.toBe(entity);
+    await expect(validator.check(entity)).resolves.toBe(true);
   });
 
   it('ignores unknown apiVersion', async () => {
     (entity as any).apiVersion = 'backstage.io/v1beta0';
-    await expect(policy.enforce(entity)).resolves.toBeUndefined();
+    await expect(validator.check(entity)).resolves.toBe(false);
   });
 
   it('ignores unknown kind', async () => {
     (entity as any).kind = 'Wizard';
-    await expect(policy.enforce(entity)).resolves.toBeUndefined();
+    await expect(validator.check(entity)).resolves.toBe(false);
   });
 
   it('rejects missing type', async () => {
     delete (entity as any).spec.type;
-    await expect(policy.enforce(entity)).rejects.toThrow(/type/);
+    await expect(validator.check(entity)).rejects.toThrow(/type/);
   });
 
   it('rejects wrong type', async () => {
     (entity as any).spec.type = 7;
-    await expect(policy.enforce(entity)).rejects.toThrow(/type/);
+    await expect(validator.check(entity)).rejects.toThrow(/type/);
   });
 
   it('rejects empty type', async () => {
     (entity as any).spec.type = '';
-    await expect(policy.enforce(entity)).rejects.toThrow(/type/);
+    await expect(validator.check(entity)).rejects.toThrow(/type/);
   });
 
   it('accepts good target', async () => {
     (entity as any).spec.target =
-      'https://github.com/spotify/backstage/blob/master/plugins/catalog-backend/examples/artist-lookup-component.yaml';
-    await expect(policy.enforce(entity)).resolves.toBe(entity);
+      'https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/examples/artist-lookup-component.yaml';
+    await expect(validator.check(entity)).resolves.toBe(true);
   });
 
   it('rejects wrong target', async () => {
     (entity as any).spec.target = 7;
-    await expect(policy.enforce(entity)).rejects.toThrow(/target/);
+    await expect(validator.check(entity)).rejects.toThrow(/target/);
   });
 
   it('rejects empty target', async () => {
     (entity as any).spec.target = '';
-    await expect(policy.enforce(entity)).rejects.toThrow(/target/);
+    await expect(validator.check(entity)).rejects.toThrow(/target/);
   });
 
   it('accepts good targets', async () => {
     (entity as any).spec.targets = [
-      'https://github.com/spotify/backstage/blob/master/plugins/catalog-backend/examples/artist-lookup-component.yaml',
-      'https://github.com/spotify/backstage/blob/master/plugins/catalog-backend/examples/playback-order-component.yaml',
+      'https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/examples/artist-lookup-component.yaml',
+      'https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/examples/playback-order-component.yaml',
     ];
-    await expect(policy.enforce(entity)).resolves.toBe(entity);
+    await expect(validator.check(entity)).resolves.toBe(true);
   });
 
   it('accepts empty targets', async () => {
     (entity as any).spec.targets = [];
-    await expect(policy.enforce(entity)).resolves.toBe(entity);
+    await expect(validator.check(entity)).resolves.toBe(true);
   });
 
   it('rejects wrong targets', async () => {
     (entity as any).spec.targets = 7;
-    await expect(policy.enforce(entity)).rejects.toThrow(/targets/);
+    await expect(validator.check(entity)).rejects.toThrow(/targets/);
   });
 });

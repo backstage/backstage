@@ -84,6 +84,7 @@ export const TechDocsPageHeader = ({
   return (
     <Header
       title={siteName ? siteName : <CircularProgress />}
+      pageTitleOverride={siteName || name}
       subtitle={
         siteDescription && siteDescription !== 'None' ? siteDescription : ''
       }

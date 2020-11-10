@@ -22,7 +22,7 @@ import fs from 'fs-extra';
 import { getDefaultBranch } from './default-branch';
 import { getGitRepoType, getTokenForGitRepo } from './git-auth';
 import { Entity } from '@backstage/catalog-model';
-import { InputError } from '@backstage/backend-common';
+import { InputError, UrlReader } from '@backstage/backend-common';
 import { RemoteProtocol } from './techdocs/stages/prepare/types';
 import { Logger } from 'winston';
 
@@ -78,6 +78,7 @@ export const getLocationForEntity = (
     case 'github':
     case 'gitlab':
     case 'azure/api':
+    case 'url':
       return { type, target };
     case 'dir':
       if (path.isAbsolute(target)) return { type, target };
@@ -167,4 +168,35 @@ export const getLastCommitTimestamp = async (
   const commit = await repository.getReferenceCommit('HEAD');
 
   return commit.date().getTime();
+};
+
+export const getDocFilesFromRepository = async (
+  reader: UrlReader,
+  entity: Entity,
+): Promise<any> => {
+  const { target } = parseReferenceAnnotation(
+    'backstage.io/techdocs-ref',
+    entity,
+  );
+
+  const { ref, filepath: mkdocsPath } = parseGitUrl(target);
+
+  const docsRootPath = path.dirname(mkdocsPath);
+  const docsFolderPath = path.join(docsRootPath, 'docs');
+
+  if (reader.readTree) {
+    const readTreeResponse = await reader.readTree(
+      parseGitUrl(target).toString(),
+      ref,
+      [mkdocsPath, docsFolderPath],
+    );
+
+    const tmpDir = await readTreeResponse.dir();
+
+    return `${tmpDir}/${docsRootPath}`;
+  }
+
+  throw new Error(
+    `No readTree method available on the UrlReader for ${target}`,
+  );
 };

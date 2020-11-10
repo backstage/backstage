@@ -18,19 +18,19 @@ catalog:
   locations:
     # Backstage example components
     - type: github
-      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
     # Example component for github-actions
     - type: github
-      target: https://github.com/spotify/backstage/blob/master/plugins/github-actions/examples/sample.yaml
+      target: https://github.com/backstage/backstage/blob/master/plugins/github-actions/examples/sample.yaml
     # Example component for techdocs
     - type: github
-      target: https://github.com/spotify/backstage/blob/master/plugins/techdocs-backend/examples/documented-component/documented-component.yaml
+      target: https://github.com/backstage/backstage/blob/master/plugins/techdocs-backend/examples/documented-component/documented-component.yaml
     # Backstage example APIs
     - type: github
-      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
     # Backstage example templates
     - type: github
-      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/all-templates.yaml
+      target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/all-templates.yaml
 {{- else }}
   locations: []
 {{- end }}

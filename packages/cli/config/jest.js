@@ -77,14 +77,17 @@ async function getConfig() {
       '\\.(css|less|scss|sss|styl)$': require.resolve('jest-css-modules'),
     },
 
+    globals: {
+      'ts-jest': {
+        isolatedModules: true,
+      },
+    },
+
     // We build .esm.js files with plugin:build, so to be able to load these in tests they need to be transformed
     // TODO: jest is working on module support, it's possible that we can remove this in the future
     transform: {
       '\\.esm\\.js$': require.resolve('jest-esm-transformer'),
-      '\\.(js|jsx|ts|tsx)$': [
-        require.resolve('ts-jest'),
-        { isolatedModules: true },
-      ],
+      '\\.(js|jsx|ts|tsx)$': require.resolve('ts-jest'),
       '\\.(bmp|gif|jpg|jpeg|png|frag|xml|svg)$': require.resolve(
         './jestFileTransform.js',
       ),

@@ -16,7 +16,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { InfoCard, useApi } from '@backstage/core';
-import { Box } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import { costInsightsApiRef } from '../../api';
 import { PeriodSelect } from '../PeriodSelect';
@@ -58,7 +58,7 @@ export const ProductInsightsCard = ({ product }: ProductInsightsCardProps) => {
   const dispatchLoadingProduct = useCallback(dispatchLoading, [product.kind]);
 
   const amount = resource?.entities?.length || 0;
-  const hasCostsWithinTimeframe = resource?.change && !!amount;
+  const hasCostsWithinTimeframe = !!(resource?.change && amount);
 
   const previousName = formatPeriod(
     productFilter.duration,
@@ -71,9 +71,9 @@ export const ProductInsightsCard = ({ product }: ProductInsightsCardProps) => {
     true,
   );
 
-  const subheader = amount
+  const subheader = hasCostsWithinTimeframe
     ? `${amount} ${pluralOf(amount, 'entity', 'entities')}, sorted by cost`
-    : `There are no ${product.name} costs within this timeframe for your team's projects.`;
+    : null;
 
   const costStart = resource?.aggregation[0] || 0;
   const costEnd = resource?.aggregation[1] || 0;
@@ -82,12 +82,13 @@ export const ProductInsightsCard = ({ product }: ProductInsightsCardProps) => {
     async function load() {
       if (loadingProduct) {
         try {
-          const p: ProductCost = await client.getProductInsights(
-            product.kind,
-            group!,
-            productFilter!.duration,
+          const p: ProductCost = await client.getProductInsights({
+            product: product.kind,
+            group: group!,
+            duration: productFilter!.duration,
+            lastCompleteBillingDate,
             project,
-          );
+          });
           setResource(p);
         } catch (e) {
           setError(e);
@@ -107,6 +108,7 @@ export const ProductInsightsCard = ({ product }: ProductInsightsCardProps) => {
     group,
     product.kind,
     project,
+    lastCompleteBillingDate,
   ]);
 
   const onPeriodSelect = (duration: Duration) => {
@@ -142,26 +144,29 @@ export const ProductInsightsCard = ({ product }: ProductInsightsCardProps) => {
   return (
     <InfoCard title={product.name} subheader={subheader} {...infoCardProps}>
       <ScrollAnchor behavior="smooth" top={-12} />
-      {hasCostsWithinTimeframe && (
-        <>
-          <Box display="flex" flexDirection="column">
-            <Box pb={2}>
-              <ResourceGrowthBarChartLegend
-                duration={productFilter.duration}
-                change={resource.change!}
-                previousName={previousName}
-                currentName={currentName}
-                costStart={costStart}
-                costEnd={costEnd}
-              />
-            </Box>
-            <ResourceGrowthBarChart
+      {hasCostsWithinTimeframe ? (
+        <Box display="flex" flexDirection="column">
+          <Box pb={2}>
+            <ResourceGrowthBarChartLegend
+              duration={productFilter.duration}
+              change={resource.change!}
               previousName={previousName}
               currentName={currentName}
-              resources={resource.entities || []}
+              costStart={costStart}
+              costEnd={costEnd}
             />
           </Box>
-        </>
+          <ResourceGrowthBarChart
+            previousName={previousName}
+            currentName={currentName}
+            resources={resource.entities || []}
+          />
+        </Box>
+      ) : (
+        <Typography>
+          There are no {product.name} costs within this timeframe for your
+          team's projects.
+        </Typography>
       )}
     </InfoCard>
   );

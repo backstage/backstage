@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
+import { Config } from '@backstage/config';
+import { ConfigApi } from '@backstage/core';
 import {
-  DefaultLoadingAction,
   Duration,
   Entity,
-  findAlways,
-  getDefaultState as getDefaultLoadingState,
   Product,
   ProductCost,
   ProductFilters,
@@ -27,8 +26,11 @@ import {
   UnlabeledDataflowAlertProject,
   UnlabeledDataflowData,
 } from '../types';
-import { Config } from '@backstage/config';
-import { ConfigApi } from '@backstage/core';
+import {
+  DefaultLoadingAction,
+  getDefaultState as getDefaultLoadingState,
+} from '../utils/loading';
+import { findAlways } from '../utils/assert';
 
 type mockAlertRenderer<T> = (alert: T) => T;
 type mockEntityRenderer<T> = (entity: T) => T;

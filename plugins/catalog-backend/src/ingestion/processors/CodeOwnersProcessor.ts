@@ -25,6 +25,7 @@ import { filter, get, head, pipe, reverse } from 'lodash/fp';
 import { CatalogProcessor } from './types';
 
 const ALLOWED_LOCATION_TYPES = [
+  'url',
   'azure/api',
   'bitbucket/api',
   'github',
@@ -32,6 +33,11 @@ const ALLOWED_LOCATION_TYPES = [
   'gitlab',
   'gitlab/api',
 ];
+
+// TODO(Rugvip): We want to properly detect out repo provider, but for now it's
+//               best to wait for GitHub Apps to be properly introduced and see
+//               what kind of APIs that integrations will expose.
+const KNOWN_LOCATIONS = ['', '/docs', '/.bitbucket', '/.github', '/.gitlab'];
 
 type Options = {
   reader: UrlReader;
@@ -91,13 +97,7 @@ export async function findRawCodeOwners(
     return data.toString();
   };
 
-  const gitProvider = location.type.split('/')[0];
-
-  return Promise.any([
-    readOwnerLocation(`/.${gitProvider}`),
-    readOwnerLocation(''),
-    readOwnerLocation('/docs'),
-  ]);
+  return Promise.any(KNOWN_LOCATIONS.map(readOwnerLocation));
 }
 
 export function buildCodeOwnerUrl(

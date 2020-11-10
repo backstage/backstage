@@ -209,9 +209,12 @@ export function createThemeOverrides(theme: BackstageTheme): Overrides {
         // By default there's no margin, but it's usually wanted, so we add some trailing margin
         marginRight: theme.spacing(1),
         marginBottom: theme.spacing(1),
+        color: theme.palette.grey[900],
+      },
+      outlined: {
+        color: theme.palette.text.primary,
       },
       label: {
-        color: theme.palette.grey[900],
         lineHeight: `${theme.spacing(2.5)}px`,
         fontWeight: theme.typography.fontWeightMedium,
         fontSize: `${theme.spacing(1.75)}px`,

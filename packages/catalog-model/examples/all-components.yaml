@@ -6,12 +6,12 @@ metadata:
 spec:
   type: github
   targets:
-    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/components/artist-lookup-component.yaml
-    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/components/petstore-component.yaml
-    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/components/playback-order-component.yaml
-    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/components/podcast-api-component.yaml
-    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/components/queue-proxy-component.yaml
-    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/components/searcher-component.yaml
-    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/components/playback-lib-component.yaml
-    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/components/www-artist-component.yaml
-    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/components/shuffle-api-component.yaml
+    - https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/artist-lookup-component.yaml
+    - https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/petstore-component.yaml
+    - https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/playback-order-component.yaml
+    - https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/podcast-api-component.yaml
+    - https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/queue-proxy-component.yaml
+    - https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/searcher-component.yaml
+    - https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/playback-lib-component.yaml
+    - https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/www-artist-component.yaml
+    - https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/shuffle-api-component.yaml

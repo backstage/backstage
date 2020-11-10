@@ -15,6 +15,9 @@
  */
 
 import { ConfigReader } from '@backstage/config';
+import { setupServer } from 'msw/node';
+import { msw } from '@backstage/test-utils';
+import { rest } from 'msw';
 import {
   getApiRequestOptions,
   getApiUrl,
@@ -24,6 +27,10 @@ import {
   ProviderConfig,
   readConfig,
 } from './GithubUrlReader';
+import fs from 'fs';
+import path from 'path';
+import mockfs from 'mock-fs';
+import recursive from 'recursive-readdir';
 
 describe('GithubUrlReader', () => {
   describe('getApiRequestOptions', () => {
@@ -228,6 +235,79 @@ describe('GithubUrlReader', () => {
       ).rejects.toThrow(
         'Incorrect URL: https://not.github.com/apa, Error: Invalid GitHub URL or file path',
       );
+    });
+  });
+
+  describe('readTree', () => {
+    const worker = setupServer();
+
+    msw.setupDefaultHandlers(worker);
+
+    const repoBuffer = fs.readFileSync(
+      path.resolve('src', 'reading', '__fixtures__', 'repo.tar.gz'),
+    );
+
+    beforeEach(() => {
+      worker.use(
+        rest.get(
+          'https://github.com/spotify/mock/archive/repo.tar.gz',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/x-gzip'),
+              ctx.body(repoBuffer),
+            ),
+        ),
+      );
+    });
+
+    it('returns the wanted files from an archive', async () => {
+      const processor = new GithubUrlReader({
+        host: 'github.com',
+      });
+
+      const response = await processor.readTree(
+        'https://github.com/spotify/mock',
+        'repo',
+        ['mkdocs.yml', 'docs'],
+      );
+
+      const files = response.files();
+
+      const mkDocsFile = await files[0].content();
+      const indexMarkdownFile = await files[1].content();
+
+      expect(mkDocsFile.toString()).toBe('site_name: Test\n');
+      expect(indexMarkdownFile.toString()).toBe('# Test\n');
+    });
+
+    it('returns a folder path from an archive', async () => {
+      const processor = new GithubUrlReader({
+        host: 'github.com',
+      });
+
+      const response = await processor.readTree(
+        'https://github.com/spotify/mock',
+        'repo',
+        ['mkdocs.yml', 'docs'],
+      );
+
+      mockfs();
+      const directory = await response.dir('/tmp/fs');
+
+      const writtenToDirectory = fs.existsSync(directory);
+      const paths = await recursive(directory);
+      mockfs.restore();
+
+      expect(writtenToDirectory).toBe(true);
+      expect(paths.sort()).toEqual(
+        [
+          '/tmp/fs/mock-repo/docs/index.md',
+          '/tmp/fs/mock-repo/mkdocs.yml',
+        ].sort(),
+      );
+
+      worker.resetHandlers();
     });
   });
 });

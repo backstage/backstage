@@ -69,6 +69,7 @@ export async function templatingTask(
   templateDir: string,
   destinationDir: string,
   context: any,
+  versions: { [name: string]: string },
 ) {
   const files = await recursive(templateDir).catch(error => {
     throw new Error(`Failed to read template directory: ${error.message}`);
@@ -85,7 +86,19 @@ export async function templatingTask(
 
         const template = await fs.readFile(file);
         const compiled = handlebars.compile(template.toString());
-        const contents = compiled({ name: basename(destination), ...context });
+        const contents = compiled(
+          { name: basename(destination), ...context },
+          {
+            helpers: {
+              version(name: string) {
+                if (versions[name]) {
+                  return versions[name];
+                }
+                throw new Error(`No version available for package ${name}`);
+              },
+            },
+          },
+        );
 
         await fs.writeFile(destination, contents).catch(error => {
           throw new Error(

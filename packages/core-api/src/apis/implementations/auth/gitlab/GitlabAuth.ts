@@ -16,20 +16,8 @@
 
 import GitlabIcon from '@material-ui/icons/AcUnit';
 import { gitlabAuthApiRef } from '../../../definitions/auth';
-import {
-  OAuthRequestApi,
-  AuthProvider,
-  DiscoveryApi,
-} from '../../../definitions';
 import { OAuth2 } from '../oauth2';
-
-type CreateOptions = {
-  discoveryApi: DiscoveryApi;
-  oauthRequestApi: OAuthRequestApi;
-
-  environment?: string;
-  provider?: AuthProvider & { id: string };
-};
+import { OAuthApiCreateOptions } from '../types';
 
 const DEFAULT_PROVIDER = {
   id: 'gitlab',
@@ -43,13 +31,14 @@ class GitlabAuth {
     environment = 'development',
     provider = DEFAULT_PROVIDER,
     oauthRequestApi,
-  }: CreateOptions): typeof gitlabAuthApiRef.T {
+    defaultScopes = ['read_user'],
+  }: OAuthApiCreateOptions): typeof gitlabAuthApiRef.T {
     return OAuth2.create({
       discoveryApi,
       oauthRequestApi,
       provider,
       environment,
-      defaultScopes: ['read_user'],
+      defaultScopes,
     });
   }
 }

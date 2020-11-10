@@ -26,13 +26,9 @@ import { useScroll, useFilters, useConfig } from '../../hooks';
 import { mapFiltersToProps } from './selector';
 import { DefaultNavigation } from '../../utils/navigation';
 import { formatPercent } from '../../utils/formatters';
-import {
-  Cost,
-  CostInsightsTheme,
-  MetricData,
-  findAlways,
-  getComparedChange,
-} from '../../types';
+import { findAlways } from '../../utils/assert';
+import { getComparedChange } from '../../utils/change';
+import { Cost, CostInsightsTheme, MetricData } from '../../types';
 
 export type CostOverviewCardProps = {
   dailyCostData: Cost;

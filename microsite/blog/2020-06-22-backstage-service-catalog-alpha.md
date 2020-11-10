@@ -24,7 +24,7 @@ With these insights we decided to re-focus our efforts towards the most requeste
 
 ## What is the service catalog?
 
-The Backstage Service Catalog — actually, a software catalog, since it includes more than just services — is a centralized system that keeps track of ownership and metadata for all the software in your ecosystem (services, websites, libraries, data pipelines, etc). The catalog is built around the concept of [metadata yaml files](/docs/architecture-decisions/adr002-default-catalog-file-format.md#format) stored together with the code, which are then harvested and visualized in Backstage.
+The Backstage Service Catalog — actually, a software catalog, since it includes more than just services — is a centralized system that keeps track of ownership and metadata for all the software in your ecosystem (services, websites, libraries, data pipelines, etc). The catalog is built around the concept of [metadata yaml files](/docs/architecture-decisions/adrs-adr002) stored together with the code, which are then harvested and visualized in Backstage.
 
 This was our pitch for the virtues of a service catalog when we first [announced](https://backstage.io/blog/2020/05/22/phase-2-service-catalog) it as part of Phase 2:
 
@@ -40,7 +40,7 @@ You’ll be able to see many of these virtues in action with this alpha release 
 
 Alpha is our shorthand for "we don’t yet think Backstage is ready for production, but we’d love for you to test it and provide us with feedback". However, you should be able to try out the functionality of the service catalog:
 
-1. Register software components ([examples](https://github.com/spotify/backstage/tree/master/packages/catalog-model/examples))
+1. Register software components ([examples](https://github.com/backstage/backstage/tree/master/packages/catalog-model/examples))
 2. See all components represented in the catalog
 3. Search across all components
 4. Get an overview of the metadata of the components
@@ -49,6 +49,6 @@ Alpha is our shorthand for "we don’t yet think Backstage is ready for producti
 
 As with most alpha releases, you should expect things to change quite a lot until we reach the beta stage (we’re targeting the end of summer). There are obviously many things missing as well, but we wanted to start collecting feedback early and make it easier to see the end-to-end flow.
 
-If you have feedback or questions, please open a [GitHub issue](https://github.com/spotify/backstage/issues), ping us on [Discord chat](https://discord.gg/EBHEGzX) or send me an email at [alund@spotify.com](mailto:alund@spotify.com) 🙏
+If you have feedback or questions, please open a [GitHub issue](https://github.com/backstage/backstage/issues), ping us on [Discord chat](https://discord.gg/EBHEGzX) or send me an email at [alund@spotify.com](mailto:alund@spotify.com) 🙏
 
 To get regular product updates and news about the Backstage community, sign up for the [Backstage newsletter](https://mailchi.mp/spotify/backstage-community).

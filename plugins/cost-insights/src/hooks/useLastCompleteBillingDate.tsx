@@ -25,7 +25,8 @@ import { Alert } from '@material-ui/lab';
 import { useApi } from '@backstage/core';
 import { costInsightsApiRef } from '../api';
 import { MapLoadingToProps, useLoading } from './useLoading';
-import { DefaultLoadingAction, Maybe } from '../types';
+import { DefaultLoadingAction } from '../utils/loading';
+import { Maybe } from '../types';
 
 type BillingDateProviderLoadingProps = {
   dispatchLoadingBillingDate: (isLoading: boolean) => void;

@@ -94,30 +94,46 @@ type Item = {
   value: string | number;
 };
 
+type Selection = string | string[] | number | number[];
+
 export type SelectProps = {
   multiple?: boolean;
   items: Item[];
   label: string;
   placeholder?: string;
-  onChange: (arg: any) => any;
+  selected?: Selection;
+  onChange: (arg: Selection) => void;
   triggerReset?: boolean;
 };
 
-export const SelectComponent = (props: SelectProps) => {
-  const { multiple, items, label, placeholder, onChange } = props;
+export const SelectComponent = ({
+  multiple,
+  items,
+  label,
+  placeholder,
+  selected,
+  onChange,
+  triggerReset,
+}: SelectProps) => {
   const classes = useStyles();
-  const [value, setValue] = useState<any[] | string | number>(
-    multiple ? [] : '',
+  const [value, setValue] = useState<Selection>(
+    selected || (multiple ? [] : ''),
   );
   const [isOpen, setOpen] = useState(false);
 
   useEffect(() => {
     setValue(multiple ? [] : '');
-  }, [props.triggerReset, multiple]);
+  }, [triggerReset, multiple]);
+
+  useEffect(() => {
+    if (selected !== undefined) {
+      setValue(selected);
+    }
+  }, [selected]);
 
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setValue(event.target.value as any);
-    onChange(event.target.value);
+    setValue(event.target.value as Selection);
+    onChange(event.target.value as Selection);
   };
 
   const handleClick = (event: React.ChangeEvent<any>) => {
@@ -153,10 +169,10 @@ export const SelectComponent = (props: SelectProps) => {
             onClick={handleClick}
             open={isOpen}
             input={<BootstrapInput />}
-            renderValue={selected =>
+            renderValue={s =>
               multiple && (value as any[]).length !== 0 ? (
                 <div className={classes.chips}>
-                  {(selected as string[]).map(selectedValue => (
+                  {(s as string[]).map(selectedValue => (
                     <Chip
                       key={items.find(el => el.value === selectedValue)?.value}
                       label={
@@ -172,7 +188,7 @@ export const SelectComponent = (props: SelectProps) => {
                 <Typography>
                   {(value as any[]).length === 0
                     ? placeholder || ''
-                    : items.find(el => el.value === selected)?.label}
+                    : items.find(el => el.value === s)?.label}
                 </Typography>
               )
             }

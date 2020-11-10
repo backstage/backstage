@@ -16,20 +16,8 @@
 
 import GoogleIcon from '@material-ui/icons/AcUnit';
 import { googleAuthApiRef } from '../../../definitions/auth';
-import {
-  OAuthRequestApi,
-  AuthProvider,
-  DiscoveryApi,
-} from '../../../definitions';
 import { OAuth2 } from '../oauth2';
-
-type CreateOptions = {
-  discoveryApi: DiscoveryApi;
-  oauthRequestApi: OAuthRequestApi;
-
-  environment?: string;
-  provider?: AuthProvider & { id: string };
-};
+import { OAuthApiCreateOptions } from '../types';
 
 const DEFAULT_PROVIDER = {
   id: 'google',
@@ -37,25 +25,26 @@ const DEFAULT_PROVIDER = {
   icon: GoogleIcon,
 };
 
+const SCOPE_PREFIX = 'https://www.googleapis.com/auth/';
+
 class GoogleAuth {
   static create({
     discoveryApi,
     oauthRequestApi,
     environment = 'development',
     provider = DEFAULT_PROVIDER,
-  }: CreateOptions): typeof googleAuthApiRef.T {
-    const SCOPE_PREFIX = 'https://www.googleapis.com/auth/';
-
+    defaultScopes = [
+      'openid',
+      `${SCOPE_PREFIX}userinfo.email`,
+      `${SCOPE_PREFIX}userinfo.profile`,
+    ],
+  }: OAuthApiCreateOptions): typeof googleAuthApiRef.T {
     return OAuth2.create({
       discoveryApi,
       oauthRequestApi,
       provider,
       environment,
-      defaultScopes: [
-        'openid',
-        `${SCOPE_PREFIX}userinfo.email`,
-        `${SCOPE_PREFIX}userinfo.profile`,
-      ],
+      defaultScopes,
       scopeTransform(scopes: string[]) {
         return scopes.map(scope => {
           if (scope === 'openid') {

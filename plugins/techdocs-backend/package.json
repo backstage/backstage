@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-techdocs-backend",
-  "version": "0.1.1-alpha.26",
+  "version": "0.2.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -20,9 +20,9 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.1.1-alpha.26",
-    "@backstage/catalog-model": "^0.1.1-alpha.26",
-    "@backstage/config": "^0.1.1-alpha.26",
+    "@backstage/backend-common": "^0.2.0",
+    "@backstage/catalog-model": "^0.2.0",
+    "@backstage/config": "^0.1.1",
     "@types/dockerode": "^2.5.34",
     "@types/express": "^4.17.6",
     "command-exists-promise": "^2.0.2",
@@ -32,12 +32,12 @@
     "express-promise-router": "^3.0.3",
     "fs-extra": "^9.0.1",
     "git-url-parse": "^11.4.0",
-    "knex": "^0.21.1",
+    "knex": "^0.21.6",
     "nodegit": "^0.27.0",
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.26",
+    "@backstage/cli": "^0.2.0",
     "supertest": "^4.0.2"
   },
   "files": [

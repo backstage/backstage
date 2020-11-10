@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { UrlReader, UrlReaderPredicateTuple } from './types';
+import { ReadTreeResponse, UrlReader, UrlReaderPredicateTuple } from './types';
 
 type Options = {
   // UrlReader to fall back to if no other reader is matched
@@ -51,6 +51,33 @@ export class UrlReaderPredicateMux implements UrlReader {
     }
 
     throw new Error(`No reader found that could handle '${url}'`);
+  }
+
+  readTree(
+    repoUrl: string,
+    branchName: string,
+    paths: Array<string>,
+  ): Promise<ReadTreeResponse> {
+    const parsed = new URL(repoUrl);
+
+    for (const { predicate, reader } of this.readers) {
+      if (predicate(parsed)) {
+        if (reader.readTree) return reader.readTree(repoUrl, branchName, paths);
+        throw new Error(
+          `Trying to call readTree on UrlReader which does not support the feature.`,
+        );
+      }
+    }
+
+    if (this.fallback) {
+      if (this.fallback.readTree)
+        return this.fallback.readTree(repoUrl, branchName, paths);
+      throw new Error(
+        `Trying to call readTree on UrlReader which does not support the feature.`,
+      );
+    }
+
+    throw new Error(`No reader found that could handle '${repoUrl}'`);
   }
 
   toString() {

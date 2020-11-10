@@ -29,7 +29,7 @@ import {
 
 describe('CodeOwnersProcessor', () => {
   const mockUrl = ({ basePath = '' } = {}): string =>
-    `https://github.com/spotify/backstage/blob/master/${basePath}catalog-info.yaml`;
+    `https://github.com/backstage/backstage/blob/master/${basePath}catalog-info.yaml`;
   const mockLocation = ({
     basePath = '',
     type = 'github',
@@ -39,12 +39,12 @@ describe('CodeOwnersProcessor', () => {
   });
 
   const mockReadUrl = (basePath = '') =>
-    `https://github.com/spotify/backstage/blob/master/${basePath}CODEOWNERS`;
+    `https://github.com/backstage/backstage/blob/master/${basePath}CODEOWNERS`;
 
   const mockGitUri = (codeOwnersPath: string = '') => {
     return {
       source: 'github.com',
-      owner: 'spotify',
+      owner: 'backstage',
       name: 'backstage',
       codeOwnersPath,
     };
@@ -94,7 +94,7 @@ describe('CodeOwnersProcessor', () => {
           codeOwnersPath: '/.github/CODEOWNERS',
         }),
       ).toBe(
-        'https://github.com/spotify/backstage/blob/master/.github/CODEOWNERS',
+        'https://github.com/backstage/backstage/blob/master/.github/CODEOWNERS',
       );
     });
   });
@@ -102,7 +102,7 @@ describe('CodeOwnersProcessor', () => {
   describe('buildCodeOwnerUrl', () => {
     it('should build a location spec to the codeowners', () => {
       expect(buildCodeOwnerUrl(mockUrl(), '/docs/CODEOWNERS')).toEqual(
-        'https://github.com/spotify/backstage/blob/master/docs/CODEOWNERS',
+        'https://github.com/backstage/backstage/blob/master/docs/CODEOWNERS',
       );
     });
 
@@ -112,7 +112,9 @@ describe('CodeOwnersProcessor', () => {
           mockUrl({ basePath: 'packages/foo/' }),
           '/CODEOWNERS',
         ),
-      ).toEqual('https://github.com/spotify/backstage/blob/master/CODEOWNERS');
+      ).toEqual(
+        'https://github.com/backstage/backstage/blob/master/CODEOWNERS',
+      );
     });
   });
 
@@ -180,10 +182,12 @@ describe('CodeOwnersProcessor', () => {
 
       const result = await findRawCodeOwners(mockLocation(), reader);
 
-      expect(read.mock.calls.length).toBe(3);
-      expect(read.mock.calls[0]).toEqual([mockReadUrl('.github/')]);
-      expect(read.mock.calls[1]).toEqual([mockReadUrl('')]);
-      expect(read.mock.calls[2]).toEqual([mockReadUrl('docs/')]);
+      expect(read.mock.calls.length).toBe(5);
+      expect(read.mock.calls[0]).toEqual([mockReadUrl('')]);
+      expect(read.mock.calls[1]).toEqual([mockReadUrl('docs/')]);
+      expect(read.mock.calls[2]).toEqual([mockReadUrl('.bitbucket/')]);
+      expect(read.mock.calls[3]).toEqual([mockReadUrl('.github/')]);
+      expect(read.mock.calls[4]).toEqual([mockReadUrl('.gitlab/')]);
       expect(result).toEqual(ownersText);
     });
   });
@@ -236,7 +240,7 @@ describe('CodeOwnersProcessor', () => {
       expect(result).toEqual(entity);
     });
 
-    it('should ignore url locations', async () => {
+    it('should handle url locations', async () => {
       const { entity, processor } = setupTest();
 
       const result = await processor.preProcessEntity(
@@ -244,7 +248,10 @@ describe('CodeOwnersProcessor', () => {
         mockLocation({ type: 'url' }),
       );
 
-      expect(result).toEqual(entity);
+      expect(result).toEqual({
+        ...entity,
+        spec: { owner: 'backstage-core' },
+      });
     });
 
     it('should ignore invalid kinds', async () => {

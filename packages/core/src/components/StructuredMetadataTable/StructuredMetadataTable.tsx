@@ -78,7 +78,7 @@ function renderMap(
 }
 
 function toValue(
-  value: ReactElement | object | Array<any>,
+  value: ReactElement | object | Array<any> | boolean,
   options?: any,
   nested?: boolean,
 ) {
@@ -92,6 +92,10 @@ function toValue(
 
   if (Array.isArray(value)) {
     return renderList(value, nested);
+  }
+
+  if (typeof value === 'boolean') {
+    return <Fragment>{value ? '✅' : '❌'}</Fragment>;
   }
 
   return <Fragment>{value}</Fragment>;

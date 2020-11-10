@@ -22,10 +22,10 @@ import {
   Switch,
   Tooltip,
 } from '@material-ui/core';
-import { FeatureFlagsRegistryItem } from '@backstage/core';
+import { FeatureFlag } from '@backstage/core';
 
 type Props = {
-  flag: FeatureFlagsRegistryItem;
+  flag: FeatureFlag;
   enabled: boolean;
   toggleHandler: Function;
 };
