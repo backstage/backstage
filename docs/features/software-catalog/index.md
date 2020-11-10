@@ -62,7 +62,7 @@ Users can register new components by going to `/create` and clicking the
 Backstage expects the full URL to the YAML in your source control. Example:
 
 ```bash
-https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
+https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/artist-lookup-component.yaml
 ```
 
 _More examples can be found
@@ -91,7 +91,7 @@ above example can be added using the following configuration:
 catalog:
   locations:
     - type: url
-      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/artist-lookup-component.yaml
 ```
 
 More information about catalog configuration can be found
