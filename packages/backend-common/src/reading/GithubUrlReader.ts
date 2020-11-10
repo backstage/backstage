@@ -14,59 +14,25 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
-import parseGitUri from 'git-url-parse';
+import {
+  GitHubIntegrationConfig,
+  readGitHubIntegrationConfigs,
+} from '@backstage/integration';
 import fetch from 'cross-fetch';
+import parseGitUri from 'git-url-parse';
 import { Readable } from 'stream';
 import { InputError, NotFoundError } from '../errors';
+import { ReadTreeResponseFactory } from './tree';
 import {
   ReaderFactory,
+  ReadTreeOptions,
   ReadTreeResponse,
   UrlReader,
-  ReadTreeOptions,
 } from './types';
-import { ReadTreeResponseFactory } from './tree';
 
-/**
- * The configuration parameters for a single GitHub API provider.
- */
-export type ProviderConfig = {
-  /**
-   * The host of the target that this matches on, e.g. "github.com"
-   */
-  host: string;
-
-  /**
-   * The base URL of the API of this provider, e.g. "https://api.github.com",
-   * with no trailing slash.
-   *
-   * May be omitted specifically for GitHub; then it will be deduced.
-   *
-   * The API will always be preferred if both its base URL and a token are
-   * present.
-   */
-  apiBaseUrl?: string;
-
-  /**
-   * The base URL of the raw fetch endpoint of this provider, e.g.
-   * "https://raw.githubusercontent.com", with no trailing slash.
-   *
-   * May be omitted specifically for GitHub; then it will be deduced.
-   *
-   * The API will always be preferred if both its base URL and a token are
-   * present.
-   */
-  rawBaseUrl?: string;
-
-  /**
-   * The authorization token to use for requests to this provider.
-   *
-   * If no token is specified, anonymous access is used.
-   */
-  token?: string;
-};
-
-export function getApiRequestOptions(provider: ProviderConfig): RequestInit {
+export function getApiRequestOptions(
+  provider: GitHubIntegrationConfig,
+): RequestInit {
   const headers: HeadersInit = {
     Accept: 'application/vnd.github.v3.raw',
   };
@@ -80,7 +46,9 @@ export function getApiRequestOptions(provider: ProviderConfig): RequestInit {
   };
 }
 
-export function getRawRequestOptions(provider: ProviderConfig): RequestInit {
+export function getRawRequestOptions(
+  provider: GitHubIntegrationConfig,
+): RequestInit {
   const headers: HeadersInit = {};
 
   if (provider.token) {
@@ -95,7 +63,10 @@ export function getRawRequestOptions(provider: ProviderConfig): RequestInit {
 // Converts for example
 // from: https://github.com/a/b/blob/branchname/path/to/c.yaml
 // to:   https://api.github.com/repos/a/b/contents/path/to/c.yaml?ref=branchname
-export function getApiUrl(target: string, provider: ProviderConfig): URL {
+export function getApiUrl(
+  target: string,
+  provider: GitHubIntegrationConfig,
+): URL {
   try {
     const { owner, name, ref, filepathtype, filepath } = parseGitUri(target);
 
@@ -120,7 +91,10 @@ export function getApiUrl(target: string, provider: ProviderConfig): URL {
 // Converts for example
 // from: https://github.com/a/b/blob/branchname/c.yaml
 // to:   https://raw.githubusercontent.com/a/b/branchname/c.yaml
-export function getRawUrl(target: string, provider: ProviderConfig): URL {
+export function getRawUrl(
+  target: string,
+  provider: GitHubIntegrationConfig,
+): URL {
   try {
     const { owner, name, ref, filepathtype, filepath } = parseGitUri(target);
 
@@ -142,60 +116,16 @@ export function getRawUrl(target: string, provider: ProviderConfig): URL {
   }
 }
 
-export function readConfig(config: Config): ProviderConfig[] {
-  const providers: ProviderConfig[] = [];
-
-  const providerConfigs =
-    config.getOptionalConfigArray('integrations.github') ?? [];
-
-  // First read all the explicit providers
-  for (const providerConfig of providerConfigs) {
-    const host = providerConfig.getOptionalString('host') ?? 'github.com';
-    let apiBaseUrl = providerConfig.getOptionalString('apiBaseUrl');
-    let rawBaseUrl = providerConfig.getOptionalString('rawBaseUrl');
-    const token = providerConfig.getOptionalString('token');
-
-    if (apiBaseUrl) {
-      apiBaseUrl = apiBaseUrl.replace(/\/+$/, '');
-    } else if (host === 'github.com') {
-      apiBaseUrl = 'https://api.github.com';
-    }
-
-    if (rawBaseUrl) {
-      rawBaseUrl = rawBaseUrl.replace(/\/+$/, '');
-    } else if (host === 'github.com') {
-      rawBaseUrl = 'https://raw.githubusercontent.com';
-    }
-
-    if (!apiBaseUrl && !rawBaseUrl) {
-      throw new Error(
-        `GitHub integration for '${host}' must configure an explicit apiBaseUrl and rawBaseUrl`,
-      );
-    }
-
-    providers.push({ host, apiBaseUrl, rawBaseUrl, token });
-  }
-
-  // If no explicit github.com provider was added, put one in the list as
-  // a convenience
-  if (!providers.some(p => p.host === 'github.com')) {
-    providers.push({
-      host: 'github.com',
-      apiBaseUrl: 'https://api.github.com',
-      rawBaseUrl: 'https://raw.githubusercontent.com',
-    });
-  }
-
-  return providers;
-}
-
 /**
  * A processor that adds the ability to read files from GitHub v3 APIs, such as
  * the one exposed by GitHub itself.
  */
 export class GithubUrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
-    return readConfig(config).map(provider => {
+    const configs = readGitHubIntegrationConfigs(
+      config.getOptionalConfigArray('integrations.github') ?? [],
+    );
+    return configs.map(provider => {
       const reader = new GithubUrlReader(provider, { treeResponseFactory });
       const predicate = (url: URL) => url.host === provider.host;
       return { reader, predicate };
@@ -203,9 +133,15 @@ export class GithubUrlReader implements UrlReader {
   };
 
   constructor(
-    private readonly config: ProviderConfig,
+    private readonly config: GitHubIntegrationConfig,
     private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
-  ) {}
+  ) {
+    if (!config.apiBaseUrl && !config.rawBaseUrl) {
+      throw new Error(
+        `GitHub integration for '${config.host}' must configure an explicit apiBaseUrl and rawBaseUrl`,
+      );
+    }
+  }
 
   async read(url: string): Promise<Buffer> {
     const useApi =
