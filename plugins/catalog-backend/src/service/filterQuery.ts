@@ -15,58 +15,53 @@
  */
 
 import { InputError } from '@backstage/backend-common';
-import { EntityFilters } from '../database';
+import { Entity } from '@backstage/catalog-model';
+import lodash from 'lodash';
+import { RecursivePartial } from '../util';
 
-export function translateQueryToEntityFilters(
+type FieldMapper = (entity: Entity) => Entity;
+
+export function translateQueryToFieldMapper(
   query: Record<string, any>,
-): EntityFilters[] {
-  if (!query.filter) {
-    return [];
+): FieldMapper {
+  if (!query.fields) {
+    return x => x;
   }
 
-  const filterStrings = [query.filter].flat();
+  const fieldsStrings = [query.fields].flat() as string[];
 
-  if (filterStrings.some(s => typeof s !== 'string')) {
+  if (fieldsStrings.some(s => typeof s !== 'string')) {
     throw new InputError(
-      'Only string type filter query parameters are supported',
+      'Only string type fields query parameters are supported',
     );
   }
 
-  return filterStrings
-    .filter(Boolean)
-    .map(translateFilterQueryEntryToEntityFilters);
-}
-
-// Parses the value of a filter=a=1,b=2 type query param
-export function translateFilterQueryEntryToEntityFilters(
-  filterString: string,
-): EntityFilters {
-  const filters: Record<string, (string | null)[]> = {};
-
-  const addFilter = (key: string, value: string | null) => {
-    const matchers = key in filters ? filters[key] : (filters[key] = []);
-    matchers.push(value || null);
-  };
-
-  const statements = filterString
-    .split(',')
+  const fields = fieldsStrings
+    .map(s => s.split(','))
+    .flat()
     .map(s => s.trim())
     .filter(Boolean);
 
-  for (const statement of statements) {
-    const equalsIndex = statement.indexOf('=');
-    if (equalsIndex < 0) {
-      // Check presence, any value
-      addFilter(statement, '*');
-    } else {
-      const key = statement.substr(0, equalsIndex).trim();
-      const value = statement.substr(equalsIndex + 1).trim();
-      if (!key) {
-        throw new InputError('Malformed filter query');
-      }
-      addFilter(key, value);
-    }
+  if (!fields.length) {
+    return x => x;
   }
 
-  return filters;
+  if (fields.some(f => f.includes('['))) {
+    throw new InputError(
+      'Array type fields query parameters are not supported',
+    );
+  }
+
+  return input => {
+    const output: RecursivePartial<Entity> = {};
+
+    for (const field of fields) {
+      const value = lodash.get(input, field);
+      if (value !== undefined) {
+        lodash.set(output, field, value);
+      }
+    }
+
+    return output as Entity;
+  };
 }

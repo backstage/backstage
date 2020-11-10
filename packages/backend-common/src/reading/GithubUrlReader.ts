@@ -18,7 +18,12 @@ import { Config } from '@backstage/config';
 import parseGitUri from 'git-url-parse';
 import fetch from 'cross-fetch';
 import { NotFoundError } from '../errors';
-import { ReaderFactory, UrlReader } from './types';
+import { ReaderFactory, ReadTreeResponse, UrlReader, File } from './types';
+import tar from 'tar';
+import fs from 'fs-extra';
+import concatStream from 'concat-stream';
+import path from 'path';
+import os from 'os';
 
 /**
  * The configuration parameters for a single GitHub API provider.
@@ -227,6 +232,92 @@ export class GithubUrlReader implements UrlReader {
       throw new NotFoundError(message);
     }
     throw new Error(message);
+  }
+
+  private async getRepositoryArchive(
+    repoUrl: string,
+    branchName: string,
+  ): Promise<Response> {
+    return fetch(new URL(`${repoUrl}/archive/${branchName}.tar.gz`).toString());
+  }
+
+  private async writeBufferToFile(
+    filePath: string,
+    content: Buffer,
+  ): Promise<void> {
+    await fs.outputFile(filePath, content.toString());
+  }
+
+  async readTree(
+    repoUrl: string,
+    branchName: string,
+    paths: Array<string>,
+  ): Promise<ReadTreeResponse> {
+    const { name: repoName } = parseGitUri(repoUrl);
+
+    const repoArchive = await this.getRepositoryArchive(repoUrl, branchName);
+
+    const files: File[] = [];
+    return new Promise(resolve => {
+      const parser = new (tar.Parse as any)({
+        filter: (path: string) =>
+          !!paths.filter(file => {
+            return path.startsWith(`${repoName}-${branchName}/${file}`);
+          }).length,
+        onentry: (entry: tar.ReadEntry) => {
+          if (entry.type === 'Directory') {
+            entry.resume();
+            return;
+          }
+
+          const contentPromise: Promise<Buffer> = new Promise(res => {
+            entry.pipe(concatStream(res));
+          });
+
+          files.push({
+            path: entry.path,
+            content: () => contentPromise,
+          });
+
+          entry.resume();
+        },
+      });
+
+      // @ts-ignore Typescript doesn't consider .pipe a method on ReadableStream. Don't know why.
+      repoArchive.body?.pipe(parser).on('finish', () => {
+        resolve({
+          files: () => {
+            return files;
+          },
+          archive: () => {
+            return new Promise(resolve =>
+              resolve(Buffer.from('Archive is not yet implemented')),
+            );
+          },
+          dir: (outDir: string | undefined) => {
+            const targetDirectory =
+              outDir || fs.mkdtempSync(path.join(os.tmpdir(), 'backstage-'));
+
+            return new Promise((res, rej) => {
+              Promise.all(
+                files.map(async file => {
+                  return this.writeBufferToFile(
+                    `${targetDirectory}/${file.path}`,
+                    await file.content(),
+                  );
+                }),
+              )
+                .then(() => {
+                  res(`${targetDirectory}/${repoName}-${branchName}`);
+                })
+                .catch(err => {
+                  rej(err);
+                });
+            });
+          },
+        });
+      });
+    });
   }
 
   toString() {

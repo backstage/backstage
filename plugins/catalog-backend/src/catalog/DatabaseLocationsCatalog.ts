@@ -26,8 +26,9 @@ export class DatabaseLocationsCatalog implements LocationsCatalog {
   constructor(private readonly database: Database) {}
 
   async addLocation(location: Location): Promise<Location> {
-    const added = await this.database.addLocation(location);
-    return added;
+    return await this.database.transaction(
+      async tx => await this.database.addLocation(tx, location),
+    );
   }
 
   async removeLocation(id: string): Promise<void> {

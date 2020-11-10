@@ -22,6 +22,7 @@ import { createOktaProvider } from './okta';
 import { createSamlProvider } from './saml';
 import { createAuth0Provider } from './auth0';
 import { createMicrosoftProvider } from './microsoft';
+import { createOneLoginProvider } from './onelogin';
 import { AuthProviderFactory, AuthProviderFactoryOptions } from './types';
 
 const factories: { [providerId: string]: AuthProviderFactory } = {
@@ -33,6 +34,7 @@ const factories: { [providerId: string]: AuthProviderFactory } = {
   auth0: createAuth0Provider,
   microsoft: createMicrosoftProvider,
   oauth2: createOAuth2Provider,
+  onelogin: createOneLoginProvider,
 };
 
 export function createAuthProvider(

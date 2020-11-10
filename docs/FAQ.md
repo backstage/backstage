@@ -48,11 +48,11 @@ source candidates. (And we'll probably end up writing some brand new ones, too.)
 ### What's the roadmap for Backstage?
 
 We envision three phases, which you can learn about in
-[our project roadmap](https://github.com/spotify/backstage#project-roadmap).
+[our project roadmap](https://github.com/backstage/backstage#project-roadmap).
 Even though the open source version of Backstage is relatively new compared to
 our internal version, we have already begun work on various aspects of all three
 phases. Looking at the
-[milestones for active issues](https://github.com/spotify/backstage/milestones)
+[milestones for active issues](https://github.com/backstage/backstage/milestones)
 will also give you a sense of our progress.
 
 ### My company doesn't have thousands of developers or services. Is Backstage overkill?
@@ -87,8 +87,8 @@ well-known tech and a large flora of components.
 ### What technology does Backstage use?
 
 The codebase is a large-scale React application that uses TypeScript. For
-[Phase 2](https://github.com/spotify/backstage#project-roadmap), we plan to use
-Node.js and GraphQL.
+[Phase 2](https://github.com/backstage/backstage#project-roadmap), we plan to
+use Node.js and GraphQL.
 
 ### What is the end-to-end user flow? The happy path story.
 
@@ -116,7 +116,7 @@ components. Plugins can fetch data either from the backend or an API exposed
 through the proxy.
 
 Learn more about
-[the different components](https://github.com/spotify/backstage#overview) that
+[the different components](https://github.com/backstage/backstage#overview) that
 make up Backstage.
 
 ### Do I have to write plugins in TypeScript?
@@ -127,10 +127,10 @@ APIs in TypeScript, but aren't forcing it on individual plugins.
 ### How do I find out if a plugin already exists?
 
 Before you write a plugin,
-[search the plugin issues](https://github.com/spotify/backstage/issues?q=is%3Aissue+label%3Aplugin+)
+[search the plugin issues](https://github.com/backstage/backstage/issues?q=is%3Aissue+label%3Aplugin+)
 to see if it already exists or is in the works. If no one's thought of it yet,
 great! Open a new issue as
-[a plugin suggestion](https://github.com/spotify/backstage/issues/new/choose)
+[a plugin suggestion](https://github.com/backstage/backstage/issues/new/choose)
 and describe what your plugin will do. This will help coordinate our
 contributors' efforts and avoid duplicating existing functionality.
 
@@ -151,7 +151,7 @@ above)
 ### Are you planning to have plugins baked into the repo? Or should they be developed in separate repos?
 
 Contributors can add open source plugins to the plugins directory in
-[this monorepo](https://github.com/spotify/backstage). Integrators can then
+[this monorepo](https://github.com/backstage/backstage). Integrators can then
 configure which open source plugins are available to use in their instance of
 the app. Open source plugins are downloaded as npm packages published in the
 open source repository. While we encourage using the open source model, we know
@@ -166,7 +166,7 @@ We chose GitHub because it is the tool that we are most familiar with, so that
 will naturally lead to integrations for GitHub being developed at an early
 stage. Hosting this project on GitHub does not exclude integrations with
 alternatives, such as
-[GitLab](https://github.com/spotify/backstage/issues?q=is%3Aissue+is%3Aopen+GitLab)
+[GitLab](https://github.com/backstage/backstage/issues?q=is%3Aissue+is%3Aopen+GitLab)
 or Bitbucket. We believe that in time there will be plugins that will provide
 functionality for these tools as well. Hopefully, contributed by the community!
 Also note, implementations of Backstage can be hosted wherever you feel suits
@@ -215,17 +215,17 @@ data is shared with.
 Yes. The core frontend framework could be used for building any large-scale web
 application where (1) multiple teams are building separate parts of the app, and
 (2) you want the overall experience to be consistent. That being said, in
-[Phase 2](https://github.com/spotify/backstage#project-roadmap) of the project
+[Phase 2](https://github.com/backstage/backstage#project-roadmap) of the project
 we will add features that are needed for developer portals and systems for
 managing software ecosystems. Our ambition will be to keep Backstage modular.
 
 ### How can I get involved?
 
 Jump right in! Come help us fix some of the
-[early bugs and first issues](https://github.com/spotify/backstage/labels/good%20first%20issue)
-or reach [a new milestone](https://github.com/spotify/backstage/milestones). Or
-write an open source plugin for Backstage, like this
-[Lighthouse plugin](https://github.com/spotify/backstage/tree/master/plugins/lighthouse).
+[early bugs and first issues](https://github.com/backstage/backstage/labels/good%20first%20issue)
+or reach [a new milestone](https://github.com/backstage/backstage/milestones).
+Or write an open source plugin for Backstage, like this
+[Lighthouse plugin](https://github.com/backstage/backstage/tree/master/plugins/lighthouse).
 See all the ways you can
-[contribute here](https://github.com/spotify/backstage/blob/master/CONTRIBUTING.md).
+[contribute here](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md).
 We'd love to have you as part of the community.

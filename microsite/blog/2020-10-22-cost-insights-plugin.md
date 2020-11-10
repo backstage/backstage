@@ -4,7 +4,7 @@ author: Janisa Anandamohan
 authorURL: https://twitter.com/janisa_a
 ---
 
-How did Spotify save millions on cloud costs within a matter of months?? We made cost optimization just another part of the daily development process. Our newly open sourced [Cost Insights plugin](https://github.com/spotify/backstage/tree/master/plugins/cost-insights) makes a team’s cloud costs visible — and actionable — right inside Backstage. So engineers can see the impact of their cloud usage (down to a product and resource level) and make optimizations wherever and whenever it makes sense. By managing cloud costs from the ground up, you can make smarter decisions that let you continue to build and scale quickly, without wasting resources.
+How did Spotify save millions on cloud costs within a matter of months?? We made cost optimization just another part of the daily development process. Our newly open sourced [Cost Insights plugin](https://github.com/backstage/backstage/tree/master/plugins/cost-insights) makes a team’s cloud costs visible — and actionable — right inside Backstage. So engineers can see the impact of their cloud usage (down to a product and resource level) and make optimizations wherever and whenever it makes sense. By managing cloud costs from the ground up, you can make smarter decisions that let you continue to build and scale quickly, without wasting resources.
 
 <iframe width="780" height="440" src="https://www.youtube.com/embed/YLAd5hdXR_Q" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
@@ -59,7 +59,7 @@ Engineers can then determine for themselves if the time invested in an optimizat
 
 ## Getting started
 
-You can begin working with the Cost Insights plugin today on [GitHub](https://github.com/spotify/backstage/tree/master/plugins/cost-insights). We include an example client with static data in the expected format. The `CostInsightsApi` should talk with a cloud billing backend that aggregates billing data from your cloud provider.
+You can begin working with the Cost Insights plugin today on [GitHub](https://github.com/backstage/backstage/tree/master/plugins/cost-insights). We include an example client with static data in the expected format. The `CostInsightsApi` should talk with a cloud billing backend that aggregates billing data from your cloud provider.
 
 The current release of Cost Insights includes:
 
@@ -72,8 +72,8 @@ The current release of Cost Insights includes:
 
 Our hope is to help other companies translate their cloud cost in a relatable way for their engineers to better understand their impact and accurately identify their opportunities for optimizations.
 
-And if you’re interested in contributing to our outstanding issues, you can find them in the issues queue, filtered under the [‘cost-insights’ label](https://github.com/spotify/backstage/labels/cost-insights).
+And if you’re interested in contributing to our outstanding issues, you can find them in the issues queue, filtered under the [‘cost-insights’ label](https://github.com/backstage/backstage/labels/cost-insights).
 
 ## Ready for DevSecCostOpsPlus (and whatever’s next)
 
-There’s DevOps, there’s DevSecOps, and then there’s Backstage: one frontend for all your infrastructure. From building, testing, and deploying to monitoring and security — Backstage helps you manage your entire tech organization and provides a seamless developer experience for engineers, from end to end to end. And now that also extends to cost management for your cloud infrastructure and tooling. Happy building and [happy optimizing](https://github.com/spotify/backstage/tree/master/plugins/cost-insights).
+There’s DevOps, there’s DevSecOps, and then there’s Backstage: one frontend for all your infrastructure. From building, testing, and deploying to monitoring and security — Backstage helps you manage your entire tech organization and provides a seamless developer experience for engineers, from end to end to end. And now that also extends to cost management for your cloud infrastructure and tooling. Happy building and [happy optimizing](https://github.com/backstage/backstage/tree/master/plugins/cost-insights).

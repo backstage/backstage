@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.1.1-alpha.26",
+  "version": "0.2.0",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -9,7 +9,7 @@
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
-    "url": "https://github.com/spotify/backstage",
+    "url": "https://github.com/backstage/backstage",
     "directory": "packages/cli"
   },
   "keywords": [
@@ -28,9 +28,9 @@
     "backstage-cli": "bin/backstage-cli"
   },
   "dependencies": {
-    "@backstage/cli-common": "^0.1.1-alpha.26",
-    "@backstage/config": "^0.1.1-alpha.26",
-    "@backstage/config-loader": "^0.1.1-alpha.26",
+    "@backstage/cli-common": "^0.1.1",
+    "@backstage/config": "^0.1.1",
+    "@backstage/config-loader": "^0.2.0",
     "@hot-loader/react-dom": "^16.13.0",
     "@lerna/package-graph": "^3.18.5",
     "@lerna/project": "^3.18.0",
@@ -38,9 +38,9 @@
     "@rollup/plugin-json": "^4.0.2",
     "@rollup/plugin-node-resolve": "^9.0.0",
     "@rollup/plugin-yaml": "^2.1.1",
-    "@spotify/eslint-config-base": "^8.0.0",
-    "@spotify/eslint-config-react": "^8.0.0",
-    "@spotify/eslint-config-typescript": "^8.0.0",
+    "@spotify/eslint-config-base": "^9.0.0",
+    "@spotify/eslint-config-react": "^9.0.0",
+    "@spotify/eslint-config-typescript": "^9.0.0",
     "@sucrase/webpack-loader": "^2.0.0",
     "@svgr/plugin-jsx": "5.4.x",
     "@svgr/plugin-svgo": "5.4.x",
@@ -96,7 +96,7 @@
     "sucrase": "^3.16.0",
     "tar": "^6.0.1",
     "terser-webpack-plugin": "^1.4.3",
-    "ts-jest": "^26.0.0",
+    "ts-jest": "^26.4.3",
     "ts-loader": "^7.0.4",
     "typescript": "^4.0.3",
     "url-loader": "^4.1.0",
@@ -108,6 +108,12 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
+    "@backstage/backend-common": "^0.2.0",
+    "@backstage/config": "^0.1.1",
+    "@backstage/core": "^0.2.0",
+    "@backstage/dev-utils": "^0.1.2",
+    "@backstage/test-utils": "^0.1.2",
+    "@backstage/theme": "^0.2.0",
     "@types/diff": "^4.0.2",
     "@types/fs-extra": "^9.0.1",
     "@types/html-webpack-plugin": "^3.2.2",

@@ -1,7 +1,7 @@
 {
   "name": "@backstage/config",
   "description": "Config API used by Backstage core, backend, and CLI",
-  "version": "0.1.1-alpha.26",
+  "version": "0.1.1",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -12,7 +12,7 @@
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
-    "url": "https://github.com/spotify/backstage",
+    "url": "https://github.com/backstage/backstage",
     "directory": "packages/config"
   },
   "keywords": [

@@ -105,14 +105,14 @@ appConfig:
           rejectUnauthorized: false
           ca:
   sentry:
-    organization: spotify
+    organization: example-org-name
   techdocs:
     storageUrl: https://demo.example.com/api/techdocs/static/docs
     requestUrl: https://demo.example.com/api/techdocs
   lighthouse:
     baseUrl: https://demo.example.com/lighthouse-api
   rollbar:
-    organization: roadie
+    organization: example-org-name
 
   # Auth config has recently moved into the app config file in upstream Backstage. However,
   # most of this config simply mandates that items like the client id and client secret should

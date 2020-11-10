@@ -27,5 +27,5 @@ This will launch the full example backend, populated some example entities.
 
 ## Links
 
-- [Frontend part of the plugin](https://github.com/spotify/backstage/tree/master/plugins/catalog)
+- [Frontend part of the plugin](https://github.com/backstage/backstage/tree/master/plugins/catalog)
 - [The Backstage homepage](https://backstage.io)

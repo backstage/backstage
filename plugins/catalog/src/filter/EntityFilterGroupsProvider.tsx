@@ -18,7 +18,7 @@ import { Entity } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useAsyncFn } from 'react-use';
-import { catalogApiRef } from '../api/types';
+import { catalogApiRef } from '../plugin';
 import { filterGroupsContext, FilterGroupsContext } from './context';
 import {
   EntityFilterFn,

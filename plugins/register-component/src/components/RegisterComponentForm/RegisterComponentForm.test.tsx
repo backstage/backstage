@@ -20,17 +20,18 @@ import React from 'react';
 import { RegisterComponentForm } from './RegisterComponentForm';
 
 describe('RegisterComponentForm', () => {
-  it('should initially render a disabled button', async () => {
+  it('should initially render disabled buttons', async () => {
     render(<RegisterComponentForm onSubmit={jest.fn()} />);
 
     expect(
       await screen.findByText(/Enter the full path to the catalog-info.yaml/),
     ).toBeInTheDocument();
 
-    expect(screen.getByText('Submit').closest('button')).toBeDisabled();
+    expect(screen.getByText('Validate').closest('button')).toBeDisabled();
+    expect(screen.getByText('Register').closest('button')).toBeDisabled();
   });
 
-  it('should enable a submit button when the target url is set', async () => {
+  it('should enable the submit buttons when the target url is set', async () => {
     render(<RegisterComponentForm onSubmit={jest.fn()} />);
 
     await act(async () => {
@@ -40,7 +41,8 @@ describe('RegisterComponentForm', () => {
       );
     });
 
-    expect(screen.getByText('Submit').closest('button')).not.toBeDisabled();
+    expect(screen.getByText('Validate').closest('button')).not.toBeDisabled();
+    expect(screen.getByText('Register').closest('button')).not.toBeDisabled();
   });
 
   it('should show spinner while submitting', async () => {

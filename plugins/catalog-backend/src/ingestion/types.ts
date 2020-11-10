@@ -26,7 +26,10 @@ import type {
 //
 
 export type HigherOrderOperation = {
-  addLocation(spec: LocationSpec): Promise<AddLocationResult>;
+  addLocation(
+    spec: LocationSpec,
+    options?: { dryRun?: boolean },
+  ): Promise<AddLocationResult>;
   refreshAllLocations(): Promise<void>;
 };
 

@@ -11,5 +11,5 @@ The reason this package exists is to allow the Backstage core packages to use th
 
 ## Documentation
 
-- [Backstage Readme](https://github.com/spotify/backstage/blob/master/README.md)
-- [Backstage Documentation](https://github.com/spotify/backstage/blob/master/docs/README.md)
+- [Backstage Readme](https://github.com/backstage/backstage/blob/master/README.md)
+- [Backstage Documentation](https://github.com/backstage/backstage/blob/master/docs/README.md)

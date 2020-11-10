@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-import moment from 'moment';
-import { assertNever } from './Maybe';
-
 /**
  * Time periods for cost comparison; slight abuse of ISO 8601 periods. We take P1M and P3M to mean
  * 'last completed [month|quarter]', and P30D/P90D to be '[month|quarter] relative to today'. So if
@@ -31,72 +28,3 @@ export enum Duration {
 }
 
 export const DEFAULT_DATE_FORMAT = 'YYYY-MM-DD';
-
-/**
- * Derive the start date of a given period, assuming two repeating intervals.
- *
- * @param duration see comment on Duration enum
- * @param endDate from CostInsightsApi.getLastCompleteBillingDate
- */
-export function inclusiveStartDateOf(
-  duration: Duration,
-  endDate: string,
-): string {
-  switch (duration) {
-    case Duration.P30D:
-    case Duration.P90D:
-      return moment(endDate)
-        .utc()
-        .subtract(moment.duration(duration).add(moment.duration(duration)))
-        .format(DEFAULT_DATE_FORMAT);
-    case Duration.P1M:
-      return moment(endDate)
-        .utc()
-        .startOf('month')
-        .subtract(moment.duration(duration).add(moment.duration(duration)))
-        .format(DEFAULT_DATE_FORMAT);
-    case Duration.P3M:
-      return moment(endDate)
-        .utc()
-        .startOf('quarter')
-        .subtract(moment.duration(duration).add(moment.duration(duration)))
-        .format(DEFAULT_DATE_FORMAT);
-    default:
-      return assertNever(duration);
-  }
-}
-
-export function exclusiveEndDateOf(
-  duration: Duration,
-  endDate: string,
-): string {
-  switch (duration) {
-    case Duration.P30D:
-    case Duration.P90D:
-      return moment(endDate).utc().add(1, 'day').format(DEFAULT_DATE_FORMAT);
-    case Duration.P1M:
-      return moment(endDate).utc().startOf('month').format(DEFAULT_DATE_FORMAT);
-    case Duration.P3M:
-      return moment(endDate)
-        .utc()
-        .startOf('quarter')
-        .format(DEFAULT_DATE_FORMAT);
-    default:
-      return assertNever(duration);
-  }
-}
-
-export function inclusiveEndDateOf(
-  duration: Duration,
-  endDate: string,
-): string {
-  return moment(exclusiveEndDateOf(duration, endDate))
-    .utc()
-    .subtract(1, 'day')
-    .format(DEFAULT_DATE_FORMAT);
-}
-
-// https://en.wikipedia.org/wiki/ISO_8601#Repeating_intervals
-export function intervalsOf(duration: Duration, endDate: string) {
-  return `R2/${duration}/${exclusiveEndDateOf(duration, endDate)}`;
-}

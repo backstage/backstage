@@ -18,8 +18,8 @@ import { errorApiRef, useApi } from '@backstage/core';
 import { createContext, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useAsync } from 'react-use';
-import { catalogApiRef } from '../api/types';
 import { useEntityCompoundName } from '../components/useEntityCompoundName';
+import { catalogApiRef } from '../plugin';
 
 type EntityLoadingStatus = {
   entity?: Entity;

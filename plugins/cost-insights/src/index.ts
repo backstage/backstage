@@ -15,8 +15,11 @@
  */
 
 export { plugin } from './plugin';
+export * from './client';
 export * from './api';
 export * from './components';
 export { useCurrency } from './hooks';
 export * from './types';
 export * from './utils/tests';
+export * from './utils/duration';
+export * from './utils/alerts';

@@ -15,23 +15,23 @@
  */
 
 import * as yup from 'yup';
-import { Entity } from '../entity';
-import { EntityPolicy } from '../types';
+import { KindValidator } from './types';
 
-export function schemaPolicy(
+export function schemaValidator(
   kind: string,
   apiVersion: readonly string[],
   schema: yup.Schema<any>,
-): EntityPolicy {
+): KindValidator {
   return {
-    async enforce(envelope: Entity): Promise<Entity | undefined> {
+    async check(envelope) {
       if (
         kind !== envelope.kind ||
         !apiVersion.includes(envelope.apiVersion as any)
       ) {
-        return undefined;
+        return false;
       }
-      return await schema.validate(envelope, { strict: true });
+      await schema.validate(envelope, { strict: true });
+      return true;
     },
   };
 }

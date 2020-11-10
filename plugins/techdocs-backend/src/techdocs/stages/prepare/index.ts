@@ -15,5 +15,6 @@
  */
 export { DirectoryPreparer } from './dir';
 export { CommonGitPreparer } from './commonGit';
+export { UrlPreparer } from './url';
 export { Preparers } from './preparers';
 export type { PreparerBuilder, PreparerBase } from './types';

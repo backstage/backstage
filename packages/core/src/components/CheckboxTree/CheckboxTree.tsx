@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 /* eslint-disable guard-for-in */
-import React, { useEffect, useReducer } from 'react';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import {
+  Checkbox,
+  Collapse,
   List,
   ListItem,
   ListItemIcon,
-  Checkbox,
   ListItemText,
-  Collapse,
   Typography,
 } from '@material-ui/core';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import produce from 'immer';
+import { isEqual } from 'lodash';
+import React, { useEffect, useReducer } from 'react';
+import { usePrevious } from 'react-use';
 
 type IndexedObject<T> = {
   [key: string]: T;
@@ -96,11 +98,14 @@ type Option = {
   isChecked?: boolean;
 };
 
+type Selection = { category?: string; selectedChildren?: string[] }[];
+
 export type CheckboxTreeProps = {
   subCategories: SubCategory[];
   label: string;
   triggerReset?: boolean;
-  onChange: (arg: any) => any;
+  selected?: Selection;
+  onChange: (arg: Selection) => any;
 };
 
 /* REDUCER */
@@ -114,6 +119,11 @@ type Action =
   | { type: 'checkOption'; payload: checkOptionPayload }
   | { type: 'checkCategory'; payload: string }
   | { type: 'toggleCategory'; payload: string }
+  | {
+      type: 'updateCategories';
+      payload: IndexedObject<SubCategoryWithIndexedOptions>;
+    }
+  | { type: 'updateSelected'; payload: Selection }
   | { type: 'triggerReset' };
 
 const reducer = (
@@ -157,6 +167,38 @@ const reducer = (
         }
       });
     }
+    case 'updateCategories': {
+      return produce(state, newState => {
+        for (const category in newState) {
+          delete newState[category];
+        }
+
+        for (const category in action.payload) {
+          newState[category] = action.payload[category];
+
+          if (state[category]) {
+            newState[category].isChecked = state[category].isChecked;
+            newState[category].isOpen = state[category].isOpen;
+          }
+        }
+      });
+    }
+    case 'updateSelected': {
+      return produce(state, newState => {
+        for (const category in newState) {
+          const selection = action.payload.find(s => s.category === category);
+
+          if (selection) {
+            newState[category].isChecked = true;
+
+            for (const option in newState[category].options) {
+              newState[category].options[option].isChecked =
+                selection.selectedChildren?.includes(option) || false;
+            }
+          }
+        }
+      });
+    }
     default:
       return state;
   }
@@ -183,23 +225,30 @@ const indexer = (
     };
   }, {});
 
-export const CheckboxTree = (props: CheckboxTreeProps) => {
-  const { onChange } = props;
+export const CheckboxTree = ({
+  subCategories,
+  label,
+  selected,
+  onChange,
+  triggerReset,
+}: CheckboxTreeProps) => {
   const classes = useStyles();
 
-  const [state, dispatch] = useReducer(reducer, indexer(props.subCategories));
+  const [state, dispatch] = useReducer(reducer, indexer(subCategories));
 
   const handleOpen = (event: any, value: any) => {
     event.stopPropagation();
     dispatch({ type: 'toggleCategory', payload: value });
   };
 
+  const previousSubCategories = usePrevious(subCategories);
+
   useEffect(() => {
     const values = Object.values(state).map(category => ({
-      category: category.isChecked ? category.label : null,
-      selectedChilds: Object.values(category.options)
+      category: category.isChecked ? category.label : undefined,
+      selectedChildren: Object.values(category.options)
         .filter(option => option.isChecked)
-        .map(option => option.value),
+        .map(option => option.label),
     }));
     onChange(values);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -207,11 +256,26 @@ export const CheckboxTree = (props: CheckboxTreeProps) => {
 
   useEffect(() => {
     dispatch({ type: 'triggerReset' });
-  }, [props.triggerReset]);
+  }, [triggerReset]);
+
+  useEffect(() => {
+    if (selected) {
+      dispatch({ type: 'updateSelected', payload: selected });
+    }
+  }, [selected]);
+
+  useEffect(() => {
+    if (!isEqual(subCategories, previousSubCategories)) {
+      dispatch({
+        type: 'updateCategories',
+        payload: indexer(subCategories),
+      });
+    }
+  }, [subCategories, previousSubCategories]);
 
   return (
     <div>
-      <Typography variant="button">{props.label}</Typography>
+      <Typography variant="button">{label}</Typography>
       <List className={classes.root}>
         {Object.values(state).map(item => (
           <div key={item.label}>

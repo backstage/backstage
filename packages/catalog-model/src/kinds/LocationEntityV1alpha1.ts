@@ -16,7 +16,7 @@
 
 import * as yup from 'yup';
 import type { Entity } from '../entity/Entity';
-import { schemaPolicy } from './util';
+import { schemaValidator } from './util';
 
 const API_VERSION = ['backstage.io/v1alpha1', 'backstage.io/v1beta1'] as const;
 const KIND = 'Location' as const;
@@ -43,7 +43,7 @@ export interface LocationEntityV1alpha1 extends Entity {
   };
 }
 
-export const locationEntityV1alpha1Policy = schemaPolicy(
+export const locationEntityV1alpha1Validator = schemaValidator(
   KIND,
   API_VERSION,
   schema,

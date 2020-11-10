@@ -21,6 +21,10 @@ spec:
         component: lighthouse-audit-service
 
     spec:
+      {{- if .Values.dockerRegistrySecretName }}
+      imagePullSecrets:
+        - name: {{ .Values.dockerRegistrySecretName }}
+      {{- end}}
       containers:
         - name: lighthouse-audit-service
           image: {{ .Values.lighthouse.image.repository }}:{{ .Values.lighthouse.image.tag }}

@@ -51,12 +51,12 @@ describe('CookieCutter Templater', () => {
     return await fs.promises.mkdtemp(path.join(tempDir, 'temp'));
   };
 
-  it('should write a cookiecutter.json file with the values from the entitiy', async () => {
+  it('should write a cookiecutter.json file with the values from the entity', async () => {
     const tempdir = await mkTemp();
 
     const values = {
       owner: 'blobby',
-      storePath: 'spotify/end-repo',
+      storePath: 'backstage/end-repo',
       description: 'description',
       component_id: 'newthing',
     };
@@ -78,7 +78,7 @@ describe('CookieCutter Templater', () => {
 
     const values = {
       owner: 'blobby',
-      storePath: 'spotify/end-repo',
+      storePath: 'backstage/end-repo',
       component_id: 'something',
     };
 
@@ -96,7 +96,7 @@ describe('CookieCutter Templater', () => {
 
     const values = {
       owner: 'blobby',
-      storePath: 'spotify/end-repo',
+      storePath: 'backstage/end-repo',
     };
 
     await expect(
@@ -109,7 +109,7 @@ describe('CookieCutter Templater', () => {
 
     const values = {
       owner: 'blobby',
-      storePath: 'spotify/end-repo',
+      storePath: 'backstage/end-repo',
       component_id: 'newthing',
     };
 
@@ -137,7 +137,7 @@ describe('CookieCutter Templater', () => {
 
     const values = {
       owner: 'blobby',
-      storePath: 'spotify/end-repo',
+      storePath: 'backstage/end-repo',
       component_id: 'newthing',
     };
 
@@ -157,7 +157,7 @@ describe('CookieCutter Templater', () => {
 
     const values = {
       owner: 'blobby',
-      storePath: 'spotify/end-repo',
+      storePath: 'backstage/end-repo',
       component_id: 'newthing',
     };
 
@@ -203,7 +203,7 @@ describe('CookieCutter Templater', () => {
 
       const values = {
         owner: 'blobby',
-        storePath: 'spotify/end-repo',
+        storePath: 'backstage/end-repo',
         component_id: 'newthing',
       };
 
@@ -243,7 +243,7 @@ describe('CookieCutter Templater', () => {
           directory: tempdir,
           values: {
             owner: 'blobby',
-            storePath: 'spotify/end-repo',
+            storePath: 'backstage/end-repo',
           },
           logStream: stream,
           dockerClient: mockDocker,

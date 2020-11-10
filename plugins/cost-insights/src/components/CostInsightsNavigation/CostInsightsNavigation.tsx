@@ -25,7 +25,7 @@ import {
 } from '@material-ui/core';
 import { useNavigationStyles } from '../../utils/styles';
 import { useConfig, useScroll } from '../../hooks';
-import { findAlways } from '../../types';
+import { findAlways } from '../../utils/assert';
 import {
   DefaultNavigation,
   NavigationItem,

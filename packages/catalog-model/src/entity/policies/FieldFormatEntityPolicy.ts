@@ -74,7 +74,7 @@ export class FieldFormatEntityPolicy implements EntityPolicy {
           case 'isValidNamespace':
           case 'isValidDnsLabel':
             expectation =
-              'a string that is sequences of [a-zA-Z0-9] separated by [-], at most 63 characters in total';
+              'a string that is sequences of [a-z0-9] separated by [-], at most 63 characters in total';
             break;
           case 'isValidAnnotationValue':
             expectation = 'a string';
@@ -94,7 +94,7 @@ export class FieldFormatEntityPolicy implements EntityPolicy {
           : '';
 
         throw new Error(
-          `"${field}" is not valid;${message} To learn more about catalog file format, visit: https://github.com/spotify/backstage/blob/master/docs/architecture-decisions/adr002-default-catalog-file-format.md`,
+          `"${field}" is not valid;${message} To learn more about catalog file format, visit: https://github.com/backstage/backstage/blob/master/docs/architecture-decisions/adr002-default-catalog-file-format.md`,
         );
       }
     }
