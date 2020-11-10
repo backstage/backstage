@@ -1,13 +1,9 @@
-# search
+# Backstage Search
 
-Welcome to the search plugin!
+**This plugin is still under development.**
 
-_This plugin was created through the Backstage CLI_
+You can follow the progress under the Global search in Backstage [milestone](https://github.com/backstage/backstage/milestone/21) or reach out to us in the #search Discord channel.
 
 ## Getting started
 
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn start` in the root directory, and then navigating to [/search](http://localhost:3000/search).
-
-You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
-This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
-It is only meant for local development, and the setup for it can be found inside the [/dev](./dev) directory.
+Run `yarn start` in the root directory, and then navigate to [/search](http://localhost:3000/search)to check out the plugin.
