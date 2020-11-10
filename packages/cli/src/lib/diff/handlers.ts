@@ -61,7 +61,12 @@ class PackageJsonHandler {
       await this.syncField('main:src');
     }
     await this.syncField('types');
-    await this.syncField('files');
+
+    // shmidt-i: Skipping `files` for now,
+    // need more info how to handle
+    // and what to allow
+
+    // await this.syncField('files');
     await this.syncScripts();
     await this.syncPublishConfig();
     await this.syncDependencies('dependencies');
