@@ -90,7 +90,13 @@ const columns: TableColumn<Entity>[] = [
       <>
         {entity.metadata.tags &&
           entity.metadata.tags.map(t => (
-            <Chip key={t} label={t} style={{ marginBottom: '0px' }} />
+            <Chip
+              key={t}
+              label={t}
+              size="small"
+              variant="outlined"
+              style={{ marginBottom: '0px' }}
+            />
           ))}
       </>
     ),
@@ -149,6 +155,7 @@ export const ApiExplorerTable = ({
         paging: false,
         actionsColumnIndex: -1,
         loadingType: 'linear',
+        padding: 'dense',
         showEmptyDataSourceMessage: !loading,
       }}
       data={entities}
