@@ -19,15 +19,18 @@ import { Box, Typography } from '@material-ui/core';
 import LensIcon from '@material-ui/icons/Lens';
 import { useTooltipStyles as useStyles } from '../../utils/styles';
 
-export type TooltipItemProps = {
-  value: string;
-  label: string;
+export type TooltipItem = {
   fill: string;
+  label: string;
+  value: string;
 };
 
-export const TooltipItem = ({ fill, label, value }: TooltipItemProps) => {
+export type BarChartTooltipItemProps = {
+  item: TooltipItem;
+};
+
+export const BarChartTooltipItem = ({ item }: BarChartTooltipItemProps) => {
   const classes = useStyles();
-  const style = { fill: fill };
   return (
     <Box
       display="flex"
@@ -37,11 +40,11 @@ export const TooltipItem = ({ fill, label, value }: TooltipItemProps) => {
     >
       <Box display="flex" alignContent="center" marginRight=".5em">
         <Box display="flex" alignItems="center" marginRight=".5em">
-          <LensIcon className={classes.lensIcon} style={style} />
+          <LensIcon className={classes.lensIcon} style={{ fill: item.fill }} />
         </Box>
-        <Typography>{label}</Typography>
+        <Typography>{item.label}</Typography>
       </Box>
-      <Typography display="block">{value}</Typography>
+      <Typography display="block">{item.value}</Typography>
     </Box>
   );
 };

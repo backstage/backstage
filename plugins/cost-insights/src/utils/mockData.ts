@@ -20,7 +20,6 @@ import {
   Duration,
   Entity,
   Product,
-  ProductCost,
   ProductFilters,
   ProjectGrowthData,
   UnlabeledDataflowAlertProject,
@@ -41,6 +40,11 @@ export const createMockEntity = (
   const defaultEntity: Entity = {
     id: 'test-entity',
     aggregation: [100, 200],
+    entities: [],
+    change: {
+      ratio: 0,
+      amount: 0,
+    },
   };
 
   if (typeof callback === 'function') {
@@ -55,19 +59,6 @@ export const createMockProduct = (
   const defaultProduct: Product = {
     kind: 'compute-engine',
     name: 'Compute Engine',
-  };
-  if (typeof callback === 'function') {
-    return callback({ ...defaultProduct });
-  }
-  return { ...defaultProduct };
-};
-
-export const createMockProductCost = (
-  callback?: mockEntityRenderer<ProductCost>,
-): ProductCost => {
-  const defaultProduct: ProductCost = {
-    entities: [],
-    aggregation: [0, 0],
   };
   if (typeof callback === 'function') {
     return callback({ ...defaultProduct });

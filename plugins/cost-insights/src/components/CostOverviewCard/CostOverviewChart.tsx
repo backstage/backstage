@@ -14,32 +14,38 @@
  * limitations under the License.
  */
 import React from 'react';
+import moment from 'moment';
 import { useTheme } from '@material-ui/core';
 import {
   ComposedChart,
+  ContentRenderer,
+  TooltipProps,
   XAxis,
   YAxis,
-  Tooltip,
+  Tooltip as RechartsTooltip,
   CartesianGrid,
   Area,
   Line,
   ResponsiveContainer,
-  TooltipPayload,
 } from 'recharts';
 import {
   ChartData,
   Cost,
+  DEFAULT_DATE_FORMAT,
   Maybe,
   Metric,
   MetricData,
   CostInsightsTheme,
 } from '../../types';
 import {
+  BarChartTooltip as Tooltip,
+  BarChartTooltipItem as TooltipItem,
+} from '../BarChart';
+import {
   overviewGraphTickFormatter,
   formatGraphValue,
+  isInvalid,
 } from '../../utils/graphs';
-import { CostOverviewTooltip } from './CostOverviewTooltip';
-import { TooltipItemProps } from '../Tooltip';
 import { useCostOverviewStyles as useStyles } from '../../utils/styles';
 import { groupByDate, toDataMax, trendFrom } from '../../utils/charts';
 import { aggregationSort } from '../../utils/sort';
@@ -91,22 +97,39 @@ export const CostOverviewChart = ({
         : {}),
     }));
 
-  function tooltipFormatter(payload: TooltipPayload): TooltipItemProps {
-    return {
-      label:
-        payload.dataKey === data.dailyCost.dataKey
-          ? data.dailyCost.name
-          : data.metric.name,
-      value:
-        payload.dataKey === data.dailyCost.dataKey
-          ? formatGraphValue(payload.value as number, data.dailyCost.format)
-          : formatGraphValue(payload.value as number, data.metric.format),
-      fill:
-        payload.dataKey === data.dailyCost.dataKey
-          ? theme.palette.blue
-          : theme.palette.magenta,
-    };
-  }
+  const tooltipRenderer: ContentRenderer<TooltipProps> = ({
+    label,
+    payload = [],
+  }) => {
+    if (isInvalid({ label, payload })) return null;
+
+    const dataKeys = [data.dailyCost.dataKey, data.metric.dataKey];
+    const title = moment(label).format(DEFAULT_DATE_FORMAT);
+    const items = payload
+      .filter(p => dataKeys.includes(p.dataKey as string))
+      .map(p => ({
+        label:
+          p.dataKey === data.dailyCost.dataKey
+            ? data.dailyCost.name
+            : data.metric.name,
+        value:
+          p.dataKey === data.dailyCost.dataKey
+            ? formatGraphValue(p.value as number, data.dailyCost.format)
+            : formatGraphValue(p.value as number, data.metric.format),
+        fill:
+          p.dataKey === data.dailyCost.dataKey
+            ? theme.palette.blue
+            : theme.palette.magenta,
+      }));
+
+    return (
+      <Tooltip title={title}>
+        {items.map((item, index) => (
+          <TooltipItem key={`${item.label}-${index}`} item={item} />
+        ))}
+      </Tooltip>
+    );
+  };
 
   return (
     <ResponsiveContainer
@@ -168,15 +191,7 @@ export const CostOverviewChart = ({
             yAxisId={data.metric.dataKey}
           />
         )}
-        <Tooltip
-          content={
-            <CostOverviewTooltip
-              dataKeys={[data.dailyCost.dataKey, data.metric.dataKey]}
-              format={tooltipFormatter}
-            />
-          }
-          animationDuration={100}
-        />
+        <RechartsTooltip content={tooltipRenderer} animationDuration={100} />
       </ComposedChart>
     </ResponsiveContainer>
   );

@@ -14,47 +14,58 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { Box, useTheme } from '@material-ui/core';
 import { LegendItem } from '../LegendItem';
-import { CostGrowth } from '../CostGrowth';
 import { currencyFormatter } from '../../utils/formatters';
-import { ChangeStatistic, CostInsightsTheme, Duration } from '../../types';
+import { CostInsightsTheme } from '../../types';
+import { useBarChartLayoutStyles as useStyles } from '../../utils/styles';
 
-export type ResourceGrowthBarChartLegendProps = {
-  change: ChangeStatistic;
-  duration: Duration;
+type BarChartLegendOptions = {
   previousName: string;
+  previousFill: string;
   currentName: string;
-  costStart: number;
-  costEnd: number;
+  currentFill: string;
 };
 
-export const ResourceGrowthBarChartLegend = ({
-  change,
-  duration,
-  previousName,
-  currentName,
+export type BarChartLegendProps = {
+  costStart: number;
+  costEnd: number;
+  options?: Partial<BarChartLegendOptions>;
+};
+
+export const BarChartLegend = ({
   costStart,
   costEnd,
-}: ResourceGrowthBarChartLegendProps) => {
+  options = {},
+  children,
+}: PropsWithChildren<BarChartLegendProps>) => {
   const theme = useTheme<CostInsightsTheme>();
+  const classes = useStyles();
+
+  const data = Object.assign(
+    {
+      previousName: 'Previous',
+      previousFill: theme.palette.lightBlue,
+      currentName: 'Current',
+      currentFill: theme.palette.darkBlue,
+    },
+    options,
+  );
 
   return (
-    <Box display="flex" flexDirection="row">
+    <Box className={classes.legend} display="flex" flexDirection="row">
       <Box marginRight={2}>
-        <LegendItem title={previousName} markerColor={theme.palette.lightBlue}>
+        <LegendItem title={data.previousName} markerColor={data.previousFill}>
           {currencyFormatter.format(costStart)}
         </LegendItem>
       </Box>
       <Box marginRight={2}>
-        <LegendItem title={currentName} markerColor={theme.palette.darkBlue}>
+        <LegendItem title={data.currentName} markerColor={data.currentFill}>
           {currencyFormatter.format(costEnd)}
         </LegendItem>
       </Box>
-      <LegendItem title={`Cost ${change.ratio <= 0 ? 'Savings' : 'Growth'}`}>
-        <CostGrowth change={change} duration={duration} />
-      </LegendItem>
+      {children}
     </Box>
   );
 };

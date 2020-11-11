@@ -14,23 +14,16 @@
  * limitations under the License.
  */
 
-import {
-  currencyFormatter,
-  dateFormatter,
-  lengthyCurrencyFormatter,
-} from './formatters';
+import React from 'react';
+import { renderInTestApp } from '@backstage/test-utils';
+import { BarChartLegend } from './BarChartLegend';
 
-export function formatGraphValue(value: number, format?: string) {
-  if (format === 'number') {
-    return value.toLocaleString();
-  }
-
-  if (value < 1) {
-    return lengthyCurrencyFormatter.format(value);
-  }
-
-  return currencyFormatter.format(value);
-}
-
-export const overviewGraphTickFormatter = (millis: string | number) =>
-  typeof millis === 'number' ? dateFormatter.format(millis) : millis;
+describe('<BarChartLegend />', () => {
+  it(`Should display the correct cost start and end`, async () => {
+    const rendered = await renderInTestApp(
+      <BarChartLegend costStart={1000} costEnd={5000} />,
+    );
+    expect(rendered.getByText(/\$1,000/)).toBeInTheDocument();
+    expect(rendered.queryByText(/\$5,000/)).toBeInTheDocument();
+  });
+});
