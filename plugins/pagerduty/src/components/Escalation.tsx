@@ -25,11 +25,12 @@ import {
   ListItemText,
   makeStyles,
   IconButton,
+  Typography,
 } from '@material-ui/core';
-import UserIcon from '@material-ui/icons/Person';
+import Avatar from '@material-ui/core/Avatar';
 import EmailIcon from '@material-ui/icons/Email';
 import { StatusWarning } from '@backstage/core';
-import { Oncall } from './types';
+import { OnCall } from './types';
 import PagerdutyIcon from './Pd';
 
 const useStyles = makeStyles({
@@ -43,16 +44,26 @@ const useStyles = makeStyles({
   svgButtonImage: {
     height: '1em',
   },
+  listItemPrimary: {
+    fontWeight: 'bold',
+  },
 });
 
-const EscalationUser = ({ user }: Oncall) => {
+const EscalationUser = ({ user }: OnCall) => {
   const classes = useStyles();
   return (
     <ListItem>
       <ListItemIcon>
-        <UserIcon />
+        <Avatar alt="User" />
       </ListItemIcon>
-      <ListItemText primary={user.name} secondary={user.email} />
+      <ListItemText
+        primary={
+          <Typography className={classes.listItemPrimary}>
+            {user.name}
+          </Typography>
+        }
+        secondary={user.email}
+      />
       <ListItemSecondaryAction>
         <Tooltip title="Send e-mail to user" placement="left">
           <IconButton href={`mailto:${user.email}`}>
@@ -89,11 +100,11 @@ const EscalationUsersEmptyState = () => {
 };
 
 type EscalationPolicyProps = {
-  escalation: Oncall[];
+  escalation: OnCall[];
 };
 
 export const EscalationPolicy = ({ escalation }: EscalationPolicyProps) => (
-  <List dense subheader={<ListSubheader>Escalation Policy</ListSubheader>}>
+  <List dense subheader={<ListSubheader>ON CALL</ListSubheader>}>
     {escalation.length ? (
       escalation.map((item, index) => (
         <EscalationUser key={item.user.id + index} user={item.user} />

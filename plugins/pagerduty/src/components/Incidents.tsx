@@ -26,6 +26,7 @@ import {
   IconButton,
   ListSubheader,
   Link,
+  Typography,
 } from '@material-ui/core';
 import { StatusError, StatusWarning, StatusOK } from '@backstage/core';
 import moment from 'moment';
@@ -42,6 +43,12 @@ const useStyles = makeStyles({
   },
   svgButtonImage: {
     height: '1em',
+  },
+  listItemPrimary: {
+    fontWeight: 'bold',
+  },
+  listItemIcon: {
+    minWidth: '1em',
   },
 });
 
@@ -67,8 +74,8 @@ const IncidentListItem = ({ incident }: IncidentListItemProps) => {
   const classes = useStyles();
   const user = incident.assignments[0].assignee;
   return (
-    <ListItem key={incident.id}>
-      <ListItemIcon>
+    <ListItem dense key={incident.id}>
+      <ListItemIcon className={classes.listItemIcon}>
         <Tooltip title={incident.status} placement="top">
           <div className={classes.denseListIcon}>
             {incident.status === 'triggered' ? (
@@ -80,7 +87,11 @@ const IncidentListItem = ({ incident }: IncidentListItemProps) => {
         </Tooltip>
       </ListItemIcon>
       <ListItemText
-        primary={incident.title}
+        primary={
+          <Typography className={classes.listItemPrimary}>
+            {incident.title}
+          </Typography>
+        }
         secondary={
           <span style={{ wordBreak: 'break-all', whiteSpace: 'normal' }}>
             Created {moment(incident.created_at).fromNow()}, assigned to{' '}
@@ -112,7 +123,7 @@ type IncidentsProps = {
 };
 
 export const Incidents = ({ incidents }: IncidentsProps) => (
-  <List dense subheader={<ListSubheader>Incidents</ListSubheader>}>
+  <List dense subheader={<ListSubheader>INCIDENTS</ListSubheader>}>
     {incidents.length ? (
       incidents.map((incident, index) => (
         <IncidentListItem key={incident.id + index} incident={incident} />

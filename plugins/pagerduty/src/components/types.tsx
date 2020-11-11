@@ -32,7 +32,7 @@ export type Service = {
   name: string;
   html_url: string;
   integrationKey: string;
-  escalation_policy: Oncall;
+  escalation_policy: OnCall;
 };
 
 export type ResponseService = {
@@ -40,7 +40,7 @@ export type ResponseService = {
   more: boolean;
 };
 
-export type ResponseOncall = {
+export type ResponseOnCall = {
   id: string;
   name: string;
   email: string;
@@ -65,8 +65,8 @@ export type IncidentResponse = {
   incidents: Incident[];
 };
 
-export type OncallsResponse = {
-  oncalls: Oncall[];
+export type OnCallsResponse = {
+  onCalls: OnCall[];
 };
 
 export type User = {
@@ -77,6 +77,6 @@ export type User = {
   name: string;
 };
 
-export type Oncall = {
+export type OnCall = {
   user: User;
 };

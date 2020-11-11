@@ -22,8 +22,8 @@ import {
   PagerDutyClientConfig,
   ServicesResponse,
   IncidentResponse,
-  OncallsResponse,
-  Oncall,
+  OnCallsResponse,
+  OnCall,
 } from '../components/types';
 
 export const pagerDutyApiRef = createApiRef<PagerDutyClientApi>({
@@ -34,7 +34,7 @@ export const pagerDutyApiRef = createApiRef<PagerDutyClientApi>({
 interface PagerDutyClient {
   getServiceByIntegrationKey(integrationKey: string): Promise<Service[]>;
   getIncidentsByServiceId(serviceId: string): Promise<Incident[]>;
-  getOncallByPolicyId(policyId: string): Promise<Oncall[]>;
+  getOnCallByPolicyId(policyId: string): Promise<OnCall[]>;
 }
 
 export class PagerDutyClientApi implements PagerDutyClient {
@@ -67,16 +67,16 @@ export class PagerDutyClientApi implements PagerDutyClient {
     return incidents;
   }
 
-  async getOncallByPolicyId(policyId: string): Promise<Oncall[]> {
+  async getOnCallByPolicyId(policyId: string): Promise<OnCall[]> {
     if (!this.config?.token) {
       throw new Error('Missing token');
     }
 
     const params = `include[]=users&escalation_policy_ids[]=${policyId}`;
     const url = `${this.API_URL}/oncalls?${params}`;
-    const { oncalls } = await this.getByUrl<OncallsResponse>(url);
+    const { onCalls } = await this.getByUrl<OnCallsResponse>(url);
 
-    return oncalls;
+    return onCalls;
   }
 
   triggerPagerDutyAlarm(

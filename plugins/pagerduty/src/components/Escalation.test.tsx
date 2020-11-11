@@ -2,9 +2,9 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { EscalationPolicy } from './Escalation';
 import { wrapInTestApp } from '@backstage/test-utils';
-import { Oncall } from './types';
+import { OnCall } from './types';
 
-export const escalations: Oncall[] = [
+export const escalations: OnCall[] = [
   {
     user: {
       name: 'person1',

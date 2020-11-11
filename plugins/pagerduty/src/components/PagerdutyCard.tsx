@@ -10,7 +10,6 @@ import {
 import LinkIcon from '@material-ui/icons/Link';
 import ReportProblemIcon from '@material-ui/icons/ReportProblem';
 import classnames from 'classnames';
-import Pagerduty from '../assets/pd.svg';
 import PagerdutyIcon from './Pd';
 
 // TODO: create a general component to use it in pagerduty and aboutCard
@@ -100,15 +99,7 @@ export const PagerdutyCard = ({
         <VerticalIcon
           label={ViewPagerduty.title}
           href={ViewPagerduty.href}
-          icon={
-            // <LinkIcon />
-            // <img
-            //   src={Pagerduty}
-            //   alt="View in PagerDuty"
-            //   className={classes.svgButtonImage}
-            // />
-            <PagerdutyIcon viewBox="0 0 100 100" />
-          }
+          icon={<PagerdutyIcon viewBox="0 0 100 100" />}
         ></VerticalIcon>
         <VerticalIcon
           label={TriggerAlarm.title}

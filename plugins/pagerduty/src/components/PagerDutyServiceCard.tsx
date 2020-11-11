@@ -47,7 +47,7 @@ export const PagerDutyServiceCard = ({ entity }: Props) => {
     const service = services[0];
 
     const incidents = await api.getIncidentsByServiceId(service.id);
-    const oncalls = await api.getOncallByPolicyId(service.escalation_policy.id);
+    const oncalls = await api.getOnCallByPolicyId(service.escalation_policy.id);
 
     return {
       incidents,
