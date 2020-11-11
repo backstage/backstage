@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 import React from 'react';
-import { InfoCard, useApi } from '@backstage/core';
+import { useApi } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
-import { Grid, LinearProgress } from '@material-ui/core';
+import { LinearProgress } from '@material-ui/core';
 import { Incidents } from './Incidents';
 import { EscalationPolicy } from './Escalation';
 import { TriggerButton } from './TriggerButton';
 import { useAsync } from 'react-use';
 import { Alert } from '@material-ui/lab';
 import { pagerDutyApiRef } from '../api/pagerDutyClient';
+import { PagerdutyCard } from './PagerdutyCard';
 
 export const PAGERDUTY_INTEGRATION_KEY = 'pagerduty.com/integration-key';
 
@@ -71,19 +72,26 @@ export const PagerDutyServiceCard = ({ entity }: Props) => {
     return <LinearProgress />;
   }
 
-  const link = {
+  const pagerdutyLink = {
     title: 'View in PagerDuty',
-    link: value!.homepageUrl,
+    href: value!.homepageUrl,
+  };
+
+  const triggerAlarm = {
+    title: 'Trigger Alarm',
+    action: <TriggerButton entity={entity} />,
   };
 
   return (
-    <InfoCard title="PagerDuty" deepLink={link}>
-      <Incidents incidents={value!.incidents} />
-      <EscalationPolicy escalation={value!.oncalls} />
-      <Grid container item xs={12} justify="flex-end">
-        <TriggerButton entity={entity} />
-      </Grid>
-      {/* todo show something when we dont have token */}
-    </InfoCard>
+    <PagerdutyCard
+      title="Pagerduty"
+      subheader={{ ViewPagerduty: pagerdutyLink, TriggerAlarm: triggerAlarm }}
+      content={
+        <>
+          <Incidents incidents={value!.incidents} />
+          <EscalationPolicy escalation={value!.oncalls} />
+        </>
+      }
+    ></PagerdutyCard>
   );
 };

@@ -29,8 +29,8 @@ import {
 import UserIcon from '@material-ui/icons/Person';
 import EmailIcon from '@material-ui/icons/Email';
 import { StatusWarning } from '@backstage/core';
-import Pagerduty from '../assets/pd.svg';
-import { Oncall, PagerDutyEscalationPolicy } from './types';
+import { Oncall } from './types';
+import PagerdutyIcon from './Pd';
 
 const useStyles = makeStyles({
   denseListIcon: {
@@ -45,7 +45,7 @@ const useStyles = makeStyles({
   },
 });
 
-const EscalationUser = ({ user }: PagerDutyEscalationPolicy) => {
+const EscalationUser = ({ user }: Oncall) => {
   const classes = useStyles();
   return (
     <ListItem>
@@ -56,7 +56,7 @@ const EscalationUser = ({ user }: PagerDutyEscalationPolicy) => {
       <ListItemSecondaryAction>
         <Tooltip title="Send e-mail to user" placement="left">
           <IconButton href={`mailto:${user.email}`}>
-            <EmailIcon />
+            <EmailIcon color="primary" />
           </IconButton>
         </Tooltip>
         <Tooltip title="View in PagerDuty" placement="left">
@@ -64,12 +64,9 @@ const EscalationUser = ({ user }: PagerDutyEscalationPolicy) => {
             href={user.html_url}
             target="_blank"
             rel="noopener noreferrer"
+            color="primary"
           >
-            <img
-              src={Pagerduty}
-              alt="View in PagerDuty"
-              className={classes.svgButtonImage}
-            />
+            <PagerdutyIcon viewBox="0 0 100 100" />
           </IconButton>
         </Tooltip>
       </ListItemSecondaryAction>

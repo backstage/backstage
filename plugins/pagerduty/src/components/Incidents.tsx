@@ -25,11 +25,12 @@ import {
   makeStyles,
   IconButton,
   ListSubheader,
+  Link,
 } from '@material-ui/core';
 import { StatusError, StatusWarning, StatusOK } from '@backstage/core';
-import Pagerduty from '../assets/pd.svg';
 import moment from 'moment';
 import { Incident } from '../components/types';
+import PagerdutyIcon from './Pd';
 
 const useStyles = makeStyles({
   denseListIcon: {
@@ -64,6 +65,7 @@ type IncidentListItemProps = {
 
 const IncidentListItem = ({ incident }: IncidentListItemProps) => {
   const classes = useStyles();
+  const user = incident.assignments[0].assignee;
   return (
     <ListItem key={incident.id}>
       <ListItemIcon>
@@ -82,8 +84,9 @@ const IncidentListItem = ({ incident }: IncidentListItemProps) => {
         secondary={
           <span style={{ wordBreak: 'break-all', whiteSpace: 'normal' }}>
             Created {moment(incident.created_at).fromNow()}, assigned to{' '}
-            {(incident?.assignments[0]?.assignee?.summary &&
-              incident.assignments[0].assignee.summary) ||
+            {(incident?.assignments[0]?.assignee?.summary && (
+              <Link href={`mailto:${user.email}`}>{user.summary}</Link>
+            )) ||
               'nobody'}
           </span>
         }
@@ -91,15 +94,12 @@ const IncidentListItem = ({ incident }: IncidentListItemProps) => {
       <ListItemSecondaryAction>
         <Tooltip title="View in PagerDuty" placement="left">
           <IconButton
-            href={incident.homepageUrl}
+            href={user.html_url}
             target="_blank"
             rel="noopener noreferrer"
+            color="primary"
           >
-            <img
-              src={Pagerduty}
-              alt="View in PagerDuty"
-              className={classes.svgButtonImage}
-            />
+            <PagerdutyIcon viewBox="0 0 100 100" />
           </IconButton>
         </Tooltip>
       </ListItemSecondaryAction>

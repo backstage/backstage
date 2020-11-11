@@ -103,6 +103,7 @@ export const TriggerDialog = ({ name, integrationKey, onClose }: Props) => {
           the issue and reach out to you if necessary.
         </p>
         <TextField
+          inputProps={{ 'data-testid': 'trigger-input' }}
           id="description"
           multiline
           fullWidth
@@ -114,6 +115,7 @@ export const TriggerDialog = ({ name, integrationKey, onClose }: Props) => {
       </DialogContent>
       <DialogActions>
         <Button
+          data-testid="trigger-button"
           id="trigger"
           color="secondary"
           disabled={!description || loading}

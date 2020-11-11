@@ -32,7 +32,7 @@ export type Service = {
   name: string;
   html_url: string;
   integrationKey: string;
-  escalation_policy: PagerDutyEscalationPolicy;
+  escalation_policy: Oncall;
 };
 
 export type ResponseService = {
@@ -69,10 +69,6 @@ export type OncallsResponse = {
   oncalls: Oncall[];
 };
 
-export type PagerDutyEscalationPolicy = {
-  user: User;
-};
-
 export type User = {
   id: string;
   summary: string;
@@ -82,6 +78,5 @@ export type User = {
 };
 
 export type Oncall = {
-  escalation_policy: PagerDutyEscalationPolicy;
   user: User;
 };

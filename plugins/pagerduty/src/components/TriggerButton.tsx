@@ -15,10 +15,26 @@
  */
 
 import React, { useState } from 'react';
-import { Button } from '@material-ui/core';
+import { Button, makeStyles } from '@material-ui/core';
 import { TriggerDialog } from './TriggerDialog';
 import { Entity } from '@backstage/catalog-model';
 import { PAGERDUTY_INTEGRATION_KEY } from './PagerDutyServiceCard';
+
+const useStyles = makeStyles({
+  triggerAlarm: {
+    paddingTop: 0,
+    paddingBottom: 0,
+    fontSize: '0.7rem',
+    textTransform: 'uppercase',
+    fontWeight: 600,
+    letterSpacing: 1.2,
+    lineHeight: 1.1,
+    '&:hover, &:focus, &.focus': {
+      backgroundColor: 'transparent',
+      textDecoration: 'none',
+    },
+  },
+});
 
 type Props = {
   entity: Entity;
@@ -26,6 +42,7 @@ type Props = {
 
 export const TriggerButton = ({ entity }: Props) => {
   const [showDialog, setShowDialog] = useState<boolean>(false);
+  const classes = useStyles();
 
   const handleDialog = () => {
     setShowDialog(!showDialog);
@@ -34,12 +51,11 @@ export const TriggerButton = ({ entity }: Props) => {
   return (
     <>
       <Button
-        size="small"
-        variant="contained"
         color="secondary"
         onClick={handleDialog}
+        className={classes.triggerAlarm}
       >
-        Trigger alarm
+        Trigger Alarm
       </Button>
       {showDialog && (
         <TriggerDialog
