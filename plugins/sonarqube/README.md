@@ -77,7 +77,7 @@ sonarQube:
 
 5. Get and provide `SONARQUBE_AUTH_HEADER` as env variable (https://sonarcloud.io/account/security or https://docs.sonarqube.org/latest/user-guide/user-token/)
 
-6. Add the `sonarqube.org/project-key` annotation to your component-info.yaml file:
+6. Add the `sonarqube.org/project-key` annotation to your catalog-info.yaml file:
 
 ```yaml
 apiVersion: backstage.io/v1alpha1
