@@ -25,7 +25,7 @@ jobs:
           contains(github.event.issue.title, 'Techdocs')
         with:
           project: 'https://github.com/orgs/backstage/projects/1'
-          column_name: 'Incoming 📨'
+          column_name: 'Incoming'
 
       - name: Assign new issue to Incoming based on its label.
         uses: srggrs/assign-one-project-github-action@1.2.0
@@ -33,7 +33,7 @@ jobs:
           contains(github.event.issue.labels.*.name, 'docs-like-code')
         with:
           project: 'https://github.com/orgs/backstage/projects/1'
-          column_name: 'Incoming 📨'
+          column_name: 'Incoming'
 
       - name: Assign new PR to Incoming based on its title.
         uses: srggrs/assign-one-project-github-action@1.2.0
@@ -43,7 +43,7 @@ jobs:
           contains(github.event.pull_request.title, 'Techdocs')
         with:
           project: 'https://github.com/orgs/backstage/projects/1'
-          column_name: 'Incoming 📨'
+          column_name: 'Incoming'
 
       - name: Assign new PR to Incoming based on its label.
         uses: srggrs/assign-one-project-github-action@1.2.0
@@ -51,4 +51,4 @@ jobs:
           contains(github.event.pull_request.labels.*.name, 'docs-like-code')
         with:
           project: 'https://github.com/orgs/backstage/projects/1'
-          column_name: 'Incoming 📨'
+          column_name: 'Incoming'
