@@ -37,12 +37,8 @@ export const ImportFinished = ({ nextStep, PRLink, type }: Props) => {
       </Grid>
       <Grid item>
         {type === 'repo' ? (
-          <Link
-            component={RouterLink}
-            to={PRLink}
-            style={{ marginRight: '8px' }}
-          >
-            'View pull request on GitHub'
+          <Link href={PRLink} style={{ marginRight: '8px' }}>
+            View pull request on GitHub
           </Link>
         ) : null}
         <Button
