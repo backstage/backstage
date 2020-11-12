@@ -28,7 +28,7 @@ export type ReadTreeOptions = {
  */
 export type UrlReader = {
   read(url: string): Promise<Buffer>;
-  readTree?(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
+  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
 };
 
 export type UrlReaderPredicateTuple = {

@@ -179,13 +179,7 @@ export const getDocFilesFromRepository = async (
     entity,
   );
 
-  if (reader.readTree) {
-    const response = await reader.readTree(target);
+  const response = await reader.readTree(target);
 
-    return response.dir();
-  }
-
-  throw new Error(
-    `No readTree method available on the UrlReader for ${target}`,
-  );
+  return await response.dir();
 };

@@ -157,14 +157,14 @@ describe('CodeOwnersProcessor', () => {
       const read = jest
         .fn()
         .mockResolvedValue(mockReadResult({ data: ownersText }));
-      const reader = { read };
+      const reader = { read, readTree: jest.fn() };
       const result = await findRawCodeOwners(mockLocation(), reader);
       expect(result).toEqual(ownersText);
     });
 
     it('should raise error when no codeowner', async () => {
       const read = jest.fn().mockRejectedValue(mockReadResult());
-      const reader = { read };
+      const reader = { read, readTree: jest.fn() };
 
       await expect(
         findRawCodeOwners(mockLocation(), reader),
@@ -178,7 +178,7 @@ describe('CodeOwnersProcessor', () => {
         .mockImplementationOnce(() => mockReadResult({ error: 'foo' }))
         .mockImplementationOnce(() => mockReadResult({ error: 'bar' }))
         .mockResolvedValue(mockReadResult({ data: ownersText }));
-      const reader = { read };
+      const reader = { read, readTree: jest.fn() };
 
       const result = await findRawCodeOwners(mockLocation(), reader);
 
@@ -197,7 +197,7 @@ describe('CodeOwnersProcessor', () => {
       const read = jest
         .fn()
         .mockResolvedValue(mockReadResult({ data: mockCodeOwnersText() }));
-      const reader = { read };
+      const reader = { read, readTree: jest.fn() };
 
       const owner = await resolveCodeOwner(mockLocation(), reader);
       expect(owner).toBe('backstage-core');
@@ -207,7 +207,7 @@ describe('CodeOwnersProcessor', () => {
       const read = jest
         .fn()
         .mockImplementation(() => mockReadResult({ error: 'error: foo' }));
-      const reader = { read };
+      const reader = { read, readTree: jest.fn() };
 
       await expect(
         resolveCodeOwner(mockLocation(), reader),
@@ -221,7 +221,7 @@ describe('CodeOwnersProcessor', () => {
       const read = jest
         .fn()
         .mockResolvedValue(mockReadResult({ data: mockCodeOwnersText() }));
-      const reader = { read };
+      const reader = { read, readTree: jest.fn() };
       const processor = new CodeOwnersProcessor({ reader });
 
       return { entity, processor, read };
