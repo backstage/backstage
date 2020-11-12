@@ -26,7 +26,7 @@ export function useGithubRepos() {
   const submitPrToRepo = async (selectedRepo: ConfigSpec) => {
     const token = await auth.getAccessToken(['repo']);
 
-    const [ownerName, repoName] = selectedRepo.repo.split('/').slice(-2);
+    const [ownerName, repoName] = selectedRepo.location.split('/').slice(-2);
     const submitPRResponse = await api
       .submitPrToRepo({
         oAuthToken: token,
@@ -55,5 +55,7 @@ export function useGithubRepos() {
     submitPrToRepo,
     generateEntityDefinitions: (repo: string) =>
       api.generateEntityDefinitions({ repo }),
+    addLocation: (location: string) =>
+      api.createRepositoryLocation({ location }),
   };
 }

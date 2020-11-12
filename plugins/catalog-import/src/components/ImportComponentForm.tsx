@@ -26,9 +26,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useMountedState } from 'react-use';
+import parseGitUri from 'git-url-parse';
 import { ComponentIdValidators } from '../util/validate';
 import { useGithubRepos } from '../util/useGithubRepos';
 import { ConfigSpec } from './ImportComponentPage';
+import { catalogApiRef } from '@backstage/plugin-catalog';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   form: {
@@ -53,6 +55,7 @@ export const RegisterComponentForm = ({ nextStep, saveConfig }: Props) => {
   const classes = useStyles();
   const hasErrors = !!errors.componentLocation;
   const dirty = formState?.isDirty;
+  const catalogApi = useApi(catalogApiRef);
 
   const isMounted = useMountedState();
   const errorApi = useApi(errorApiRef);
@@ -62,12 +65,22 @@ export const RegisterComponentForm = ({ nextStep, saveConfig }: Props) => {
     const { componentLocation: target } = formData;
     try {
       if (!isMounted()) return;
+      const type = !parseGitUri(target).filepathtype ? 'repo' : 'file';
 
-      const config = await generateEntityDefinitions(target);
-      saveConfig({
-        repo: target,
-        config,
-      });
+      if (type === 'repo') {
+        saveConfig({
+          type,
+          location: target,
+          config: await generateEntityDefinitions(target),
+        });
+      } else {
+        const data = await catalogApi.addLocation({ target });
+        saveConfig({
+          type,
+          location: data.location.target,
+          config: data.entities,
+        });
+      }
       nextStep();
     } catch (e) {
       errorApi.post(e);
@@ -111,7 +124,7 @@ export const RegisterComponentForm = ({ nextStep, saveConfig }: Props) => {
         disabled={!dirty || hasErrors}
         className={classes.submit}
       >
-        Submit
+        Next
       </Button>
     </form>
   );

@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
+import { RouteRef } from '@backstage/core';
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { ImportComponentPage } from './ImportComponentPage';
 
-export const Router = () => (
+export const Router = ({ catalogRouteRef }: { catalogRouteRef: RouteRef }) => (
   <Routes>
-    <Route element={<ImportComponentPage />} />
+    <Route
+      element={<ImportComponentPage catalogRouteRef={catalogRouteRef} />}
+    />
   </Routes>
 );

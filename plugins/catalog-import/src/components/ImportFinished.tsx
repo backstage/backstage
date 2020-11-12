@@ -13,52 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import Button from '@material-ui/core/Button';
-import {
-  Grid,
-  Link,
-  Typography,
-  createStyles,
-  makeStyles,
-  Theme,
-} from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    heading: {
-      fontSize: theme.typography.pxToRem(15),
-      fontWeight: theme.typography.fontWeightRegular,
-    },
-  }),
-);
+import React from 'react';
+import { Alert } from '@material-ui/lab';
+import { Link as RouterLink } from 'react-router-dom';
+import { Button, Grid, Link } from '@material-ui/core';
+
 type Props = {
+  type: 'repo' | 'file';
   nextStep: (options?: { reset: boolean }) => void;
   PRLink: string;
 };
 
-export const ImportFinished = ({ nextStep, PRLink }: Props) => {
-  const classes = useStyles();
+export const ImportFinished = ({ nextStep, PRLink, type }: Props) => {
   return (
     <Grid container direction="column" spacing={1}>
       <Grid item>
         <Alert severity="success">
-          Pull requests have been successfully opened. You can start again to
-          import more repositories
+          {type === 'repo'
+            ? 'Pull requests have been successfully opened. You can start again to import more repositories'
+            : 'Entity added to catalog successfully'}
         </Alert>
       </Grid>
       <Grid item>
-        <Typography className={classes.heading}>Pull request link:</Typography>
-        <Link href={PRLink}>{PRLink}</Link>
-      </Grid>
-      <Grid item style={{ alignSelf: 'flex-end' }}>
+        {type === 'repo' ? (
+          <Link
+            component={RouterLink}
+            to={PRLink}
+            style={{ marginRight: '8px' }}
+          >
+            'View pull request on GitHub'
+          </Link>
+        ) : null}
         <Button
           variant="contained"
           color="primary"
           onClick={() => nextStep({ reset: true })}
         >
-          start again
+          Start again
         </Button>
       </Grid>
     </Grid>

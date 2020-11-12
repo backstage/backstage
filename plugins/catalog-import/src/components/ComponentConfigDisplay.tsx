@@ -15,57 +15,140 @@
  */
 
 import React, { useCallback, useState } from 'react';
-import { Button, CircularProgress, Grid, Tooltip } from '@material-ui/core';
-import Alert from '@material-ui/lab/Alert';
+import {
+  Button,
+  CircularProgress,
+  Grid,
+  Link,
+  List,
+  ListItem,
+  Typography,
+  Divider,
+} from '@material-ui/core';
 import { useGithubRepos } from '../util/useGithubRepos';
 import { ConfigSpec } from './ImportComponentPage';
-import { errorApiRef, useApi } from '@backstage/core';
+import {
+  errorApiRef,
+  RouteRef,
+  StructuredMetadataTable,
+  useApi,
+} from '@backstage/core';
+import parseGitUri from 'git-url-parse';
+import { PartialEntity } from '../util/types';
+import { generatePath, resolvePath } from 'react-router';
+import { entityRoute, entityRouteParams } from '@backstage/plugin-catalog';
+import { Entity } from '@backstage/catalog-model';
+import { Link as RouterLink } from 'react-router-dom';
+
+const getEntityCatalogPath = ({
+  entity,
+  catalogRouteRef,
+}: {
+  entity: PartialEntity;
+  catalogRouteRef: RouteRef;
+}) => {
+  const relativeEntityPathInsideCatalog = generatePath(
+    entityRoute.path,
+    entityRouteParams(entity as Entity),
+  );
+
+  const resolvedAbsolutePath = resolvePath(
+    relativeEntityPathInsideCatalog,
+    catalogRouteRef.path,
+  )?.pathname;
+
+  return resolvedAbsolutePath;
+};
 
 type Props = {
   nextStep: () => void;
   configFile: ConfigSpec;
   savePRLink: (PRLink: string) => void;
+  catalogRouteRef: RouteRef;
 };
 
 const ComponentConfigDisplay = ({
   nextStep,
   configFile,
   savePRLink,
+  catalogRouteRef,
 }: Props) => {
   const [submitting, setSubmitting] = useState(false);
   const errorApi = useApi(errorApiRef);
-  const { submitPrToRepo } = useGithubRepos();
+  const { submitPrToRepo, addLocation } = useGithubRepos();
   const onNext = useCallback(async () => {
     try {
       setSubmitting(true);
-      const result = await submitPrToRepo(configFile);
-      savePRLink(result.link);
-      setSubmitting(false);
-      nextStep();
+      if (!parseGitUri(configFile.location).filepathtype) {
+        const result = await submitPrToRepo(configFile);
+        savePRLink(result.link);
+        setSubmitting(false);
+        nextStep();
+      } else {
+        addLocation(configFile.location);
+        setSubmitting(false);
+        nextStep();
+      }
     } catch (e) {
       setSubmitting(false);
       errorApi.post(e);
     }
-  }, [submitPrToRepo, configFile, nextStep, savePRLink, errorApi]);
+  }, [submitPrToRepo, configFile, nextStep, savePRLink, errorApi, addLocation]);
 
   return (
     <Grid container direction="column" spacing={1}>
+      {!parseGitUri(configFile.location).filepathtype ? (
+        <Typography>
+          Following config object will be submitted in a pull request to the
+          repository{' '}
+          <Link href={configFile.location}>{configFile.location}</Link> and
+          added as a new location to the backend
+        </Typography>
+      ) : (
+        <Typography>
+          Following config object will be added as a new location to the backend{' '}
+          <Link href={configFile.location}>{configFile.location}</Link>
+        </Typography>
+      )}
+
       <Grid item>
-        <Alert severity="success">
-          config file has been generated. You can optionally edit it before
-          submitting Pull Request
-        </Alert>
+        {!parseGitUri(configFile.location).filepathtype ? (
+          <pre>{JSON.stringify(configFile.config, null, 2)}</pre>
+        ) : (
+          <List>
+            {configFile.config.map((entity: any, index: number) => {
+              const entityPath = getEntityCatalogPath({
+                entity,
+                catalogRouteRef,
+              });
+              return (
+                <React.Fragment
+                  key={`${entity.metadata.namespace}-${entity.metadata.name}`}
+                >
+                  <ListItem>
+                    <StructuredMetadataTable
+                      dense
+                      metadata={{
+                        name: entity.metadata.name,
+                        type: entity.spec.type,
+                        link: (
+                          <Link component={RouterLink} to={entityPath}>
+                            {entityPath}
+                          </Link>
+                        ),
+                      }}
+                    />
+                  </ListItem>
+                  {index < configFile.config.length - 1 && (
+                    <Divider component="li" />
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </List>
+        )}
       </Grid>
-      <Grid item container justify="flex-end" spacing={1}>
-        <Grid item>
-          <Tooltip title="Not available yet">
-            <span>
-              <Button variant="contained" disabled>
-                Show config objects
-              </Button>
-            </span>
-          </Tooltip>
-        </Grid>
+      <Grid item container spacing={1}>
         {submitting ? (
           <Grid item>
             <CircularProgress size="2rem" />

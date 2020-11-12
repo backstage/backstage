@@ -68,7 +68,10 @@ const catalogRouteRef = createRouteRef({
 const AppRoutes = () => (
   <Routes>
     <Navigate key="/" to="/catalog" />
-    <Route path="/catalog-import/*" element={<ImportComponentRouter />} />
+    <Route
+      path="/catalog-import"
+      element={<ImportComponentRouter catalogRouteRef={catalogRouteRef} />}
+    />
     <Route
       path={`${catalogRouteRef.path}/*`}
       element={<CatalogRouter EntityPage={EntityPage} />}

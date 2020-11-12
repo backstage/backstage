@@ -23,6 +23,7 @@ import {
   Header,
   SupportButton,
   ContentHeader,
+  RouteRef,
 } from '@backstage/core';
 import { RegisterComponentForm } from './ImportComponentForm';
 import ImportStepper from './ImportStepper';
@@ -31,29 +32,35 @@ import { ImportFinished } from './ImportFinished';
 import { PartialEntity } from '../util/types';
 
 export type ConfigSpec = {
-  repo: string;
+  type: 'repo' | 'file';
+  location: string;
   config: PartialEntity[];
 };
 
-export const ImportComponentPage = () => {
+export const ImportComponentPage = ({
+  catalogRouteRef,
+}: {
+  catalogRouteRef: RouteRef;
+}) => {
   const [activeStep, setActiveStep] = useState(0);
   const [configFile, setConfigFile] = useState<ConfigSpec>({
-    repo: '',
+    type: 'repo',
+    location: '',
     config: [],
   });
-  const [PRLink, setPRLink] = useState<string>('');
+  const [endLink, setEndLink] = useState<string>('');
   const nextStep = (options?: { reset: boolean }) => {
     setActiveStep(step => (options?.reset ? 0 : step + 1));
   };
 
   return (
     <Page themeId="home">
-      <Header title="Import repo" />
+      <Header title="Register an existing component" />
       <Content>
-        <ContentHeader title="Import your repository to Backstage">
+        <ContentHeader title="Start tracking your component on backstage">
           <SupportButton>
-            Generate a component definition file and automatically submit it as
-            a pull request. TODO: Add more information about what this is.
+            Start tracking your component in Backstage. TODO: Add more
+            information about what this is.
           </SupportButton>
         </ContentHeader>
         <Grid container spacing={3} direction="column">
@@ -62,7 +69,7 @@ export const ImportComponentPage = () => {
               <ImportStepper
                 steps={[
                   {
-                    step: 'Select GitHub repo and generate config files for it',
+                    step: 'Insert GitHub repo URL or Entity File URL',
                     content: (
                       <RegisterComponentForm
                         nextStep={nextStep}
@@ -71,19 +78,24 @@ export const ImportComponentPage = () => {
                     ),
                   },
                   {
-                    step: 'Review generated component config files',
+                    step: 'Review',
                     content: (
                       <ComponentConfigDisplay
                         nextStep={nextStep}
                         configFile={configFile}
-                        savePRLink={setPRLink}
+                        savePRLink={setEndLink}
+                        catalogRouteRef={catalogRouteRef}
                       />
                     ),
                   },
                   {
                     step: 'Finish',
                     content: (
-                      <ImportFinished nextStep={nextStep} PRLink={PRLink} />
+                      <ImportFinished
+                        nextStep={nextStep}
+                        PRLink={endLink}
+                        type={configFile.type}
+                      />
                     ),
                   },
                 ]}
