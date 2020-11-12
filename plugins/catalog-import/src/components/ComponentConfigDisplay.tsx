@@ -39,6 +39,7 @@ import { generatePath, resolvePath } from 'react-router';
 import { entityRoute, entityRouteParams } from '@backstage/plugin-catalog';
 import { Entity } from '@backstage/catalog-model';
 import { Link as RouterLink } from 'react-router-dom';
+import * as YAML from 'yaml';
 
 const getEntityCatalogPath = ({
   entity,
@@ -113,7 +114,7 @@ const ComponentConfigDisplay = ({
 
       <Grid item>
         {!parseGitUri(configFile.location).filepathtype ? (
-          <pre>{JSON.stringify(configFile.config, null, 2)}</pre>
+          <pre>{YAML.stringify(configFile.config)}</pre>
         ) : (
           <List>
             {configFile.config.map((entity: any, index: number) => {

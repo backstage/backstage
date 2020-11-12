@@ -16,7 +16,6 @@
 
 import React from 'react';
 import { Alert } from '@material-ui/lab';
-import { Link as RouterLink } from 'react-router-dom';
 import { Button, Grid, Link } from '@material-ui/core';
 
 type Props = {
@@ -46,7 +45,7 @@ export const ImportFinished = ({ nextStep, PRLink, type }: Props) => {
           color="primary"
           onClick={() => nextStep({ reset: true })}
         >
-          Start again
+          Register another
         </Button>
       </Grid>
     </Grid>
