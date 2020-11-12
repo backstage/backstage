@@ -16,6 +16,7 @@
 
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
+import { ReadTreeResponseFactory } from './tree';
 
 export type ReadTreeOptions = {
   /** A filter that can be used to select which files should be extracted. By default all files are extracted */
@@ -46,6 +47,7 @@ export type UrlReaderPredicateTuple = {
 export type ReaderFactory = (options: {
   config: Config;
   logger: Logger;
+  treeResponseFactory: ReadTreeResponseFactory;
 }) => UrlReaderPredicateTuple[];
 
 export type File = {
