@@ -21,7 +21,7 @@ import fs from 'fs-extra';
 import { Readable, pipeline as pipelineCb } from 'stream';
 import { promisify } from 'util';
 import concatStream from 'concat-stream';
-import { ReadTreeResponse, File } from '../types';
+import { ReadTreeResponse, File, ReadTreeResponseDirOptions } from '../types';
 
 // Tar types for `Parse` is not a proper constructor, but it should be
 const TarParseStream = (Parse as unknown) as { new (): ParseStream };
@@ -38,7 +38,17 @@ export class ArchiveResponse implements ReadTreeResponse {
     private readonly stream: Readable,
     private readonly subPath: string,
     private readonly workDir: string = os.tmpdir(),
-  ) {}
+    private readonly filter?: (path: string) => boolean,
+  ) {
+    if (subPath) {
+      if (!subPath.endsWith('/')) {
+        throw new TypeError('ArchiveResponse subPath must end with a /');
+      }
+      if (subPath.startsWith('/')) {
+        throw new TypeError('ArchiveResponse subPath must not start with a /');
+      }
+    }
+  }
 
   // Make sure the input stream is only read once
   private onlyOnce() {
@@ -60,14 +70,28 @@ export class ArchiveResponse implements ReadTreeResponse {
         return;
       }
 
-      const contentPromise = new Promise<Buffer>(async resolve => {
+      if (this.subPath) {
+        if (!entry.path.startsWith(this.subPath)) {
+          entry.resume();
+          return;
+        }
+      }
+
+      const path = this.subPath
+        ? entry.path.replace(this.subPath, '')
+        : entry.path;
+      if (this.filter) {
+        if (!this.filter(path)) {
+          entry.resume();
+          return;
+        }
+      }
+
+      const content = new Promise<Buffer>(async resolve => {
         await pipeline(entry, concatStream(resolve));
       });
 
-      files.push({
-        path: entry.path,
-        content: () => contentPromise,
-      });
+      files.push({ path, content: () => content });
 
       entry.resume();
     });
@@ -93,7 +117,7 @@ export class ArchiveResponse implements ReadTreeResponse {
     try {
       return await new Promise(async resolve => {
         await pipeline(
-          tar.create({ cwd: tmpDir }, ['.']),
+          tar.create({ cwd: tmpDir }, ['']),
           concatStream(resolve),
         );
       });
@@ -102,20 +126,30 @@ export class ArchiveResponse implements ReadTreeResponse {
     }
   }
 
-  async dir(outDir?: string): Promise<string> {
+  async dir(options?: ReadTreeResponseDirOptions): Promise<string> {
     this.onlyOnce();
 
     const dir =
-      outDir ?? (await fs.mkdtemp(path.join(this.workDir, 'backstage-')));
+      options?.targetDir ??
+      (await fs.mkdtemp(path.join(this.workDir, 'backstage-')));
 
-    const strip = this.subPath ? this.subPath.split('/').length : 0;
+    const strip = this.subPath ? this.subPath.split('/').length - 1 : 0;
 
     await pipeline(
       this.stream,
       tar.extract({
         strip,
         cwd: dir,
-        filter: path => path.startsWith(this.subPath),
+        filter: path => {
+          if (this.subPath && !path.startsWith(this.subPath)) {
+            return false;
+          }
+          if (this.filter) {
+            const innerPath = path.split('/').slice(strip).join('/');
+            return this.filter(innerPath);
+          }
+          return true;
+        },
       }),
     );
 

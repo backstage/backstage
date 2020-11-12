@@ -36,10 +36,51 @@ describe('ArchiveResponse', () => {
     mockFs.restore();
   });
 
+  it('should read files', async () => {
+    const stream = fs.createReadStream('/test-archive.tar.gz');
+
+    const res = new ArchiveResponse(stream, 'mock-repo/', '/tmp');
+    const files = await res.files();
+
+    expect(files).toEqual([
+      {
+        path: 'mkdocs.yml',
+        content: expect.any(Function),
+      },
+      {
+        path: 'docs/index.md',
+        content: expect.any(Function),
+      },
+    ]);
+    const contents = await Promise.all(files.map(f => f.content()));
+    expect(contents.map(c => c.toString('utf8').trim())).toEqual([
+      'site_name: Test',
+      '# Test',
+    ]);
+  });
+
+  it('should read files with filter', async () => {
+    const stream = fs.createReadStream('/test-archive.tar.gz');
+
+    const res = new ArchiveResponse(stream, 'mock-repo/', '/tmp', path =>
+      path.endsWith('.yml'),
+    );
+    const files = await res.files();
+
+    expect(files).toEqual([
+      {
+        path: 'mkdocs.yml',
+        content: expect.any(Function),
+      },
+    ]);
+    const content = await files[0].content();
+    expect(content.toString('utf8').trim()).toEqual('site_name: Test');
+  });
+
   it('should read as archive and files', async () => {
     const stream = fs.createReadStream('/test-archive.tar.gz');
 
-    const res = new ArchiveResponse(stream, 'mock-repo', '/tmp');
+    const res = new ArchiveResponse(stream, 'mock-repo/', '/tmp');
     const buffer = await res.archive();
 
     await expect(res.archive()).rejects.toThrow(
@@ -51,11 +92,11 @@ describe('ArchiveResponse', () => {
 
     expect(files).toEqual([
       {
-        path: './mkdocs.yml',
+        path: 'mkdocs.yml',
         content: expect.any(Function),
       },
       {
-        path: './docs/index.md',
+        path: 'docs/index.md',
         content: expect.any(Function),
       },
     ]);
@@ -83,11 +124,29 @@ describe('ArchiveResponse', () => {
   it('should extract archive into directory with a subpath', async () => {
     const stream = fs.createReadStream('/test-archive.tar.gz');
 
-    const res = new ArchiveResponse(stream, 'mock-repo/docs', '/tmp');
+    const res = new ArchiveResponse(stream, 'mock-repo/docs/', '/tmp');
     const dir = await res.dir();
 
+    expect(dir).toMatch(/^\/tmp\/.*$/);
     await expect(
       fs.readFile(resolvePath(dir, 'index.md'), 'utf8'),
     ).resolves.toBe('# Test\n');
+  });
+
+  it('should extract archive into directory with a subpath and filter', async () => {
+    const stream = fs.createReadStream('/test-archive.tar.gz');
+
+    const res = new ArchiveResponse(stream, 'mock-repo/', '/tmp', path =>
+      path.endsWith('.yml'),
+    );
+    const dir = await res.dir({ targetDir: '/tmp' });
+
+    expect(dir).toBe('/tmp');
+    await expect(fs.pathExists(resolvePath(dir, 'mkdocs.yml'))).resolves.toBe(
+      true,
+    );
+    await expect(
+      fs.pathExists(resolvePath(dir, 'docs/index.md')),
+    ).resolves.toBe(false);
   });
 });
