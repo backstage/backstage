@@ -1,5 +1,11 @@
 # @backstage/backend-common
 
+## 0.2.1
+
+### Patch Changes
+
+- 33b7300eb: Capture plugin name under the /api/ prefix for http metrics
+
 ## 0.2.0
 
 ### Minor Changes

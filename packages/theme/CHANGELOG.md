@@ -1,5 +1,11 @@
 # @backstage/theme
 
+## 0.2.1
+
+### Patch Changes
+
+- 4577e377b: Improve styling of outlined chips in dark mode.
+
 ## 0.2.0
 
 ### Minor Changes

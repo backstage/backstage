@@ -1,5 +1,53 @@
 # example-app
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies [7b37d65fd]
+- Updated dependencies [4aca74e08]
+- Updated dependencies [a41730c6e]
+- Updated dependencies [9a294574c]
+- Updated dependencies [0703edee0]
+- Updated dependencies [e8f69ba93]
+- Updated dependencies [0c0798f08]
+- Updated dependencies [5a2705de2]
+- Updated dependencies [0c0798f08]
+- Updated dependencies [84b654d5d]
+- Updated dependencies [0c0798f08]
+- Updated dependencies [199237d2f]
+- Updated dependencies [6627b626f]
+- Updated dependencies [3f05616bf]
+- Updated dependencies [803527bd3]
+- Updated dependencies [4577e377b]
+- Updated dependencies [2d0bd1be7]
+- Updated dependencies [59166e5ec]
+- Updated dependencies [a906f20e7]
+  - @backstage/core@0.3.0
+  - @backstage/plugin-jenkins@0.3.0
+  - @backstage/plugin-cost-insights@0.3.0
+  - @backstage/plugin-user-settings@0.2.1
+  - @backstage/plugin-api-docs@0.2.1
+  - @backstage/plugin-tech-radar@0.3.0
+  - @backstage/theme@0.2.1
+  - @backstage/plugin-catalog@0.2.1
+  - @backstage/plugin-scaffolder@0.3.0
+  - @backstage/plugin-circleci@0.2.1
+  - @backstage/plugin-cloudbuild@0.2.1
+  - @backstage/plugin-explore@0.2.1
+  - @backstage/plugin-gcp-projects@0.2.1
+  - @backstage/plugin-github-actions@0.2.1
+  - @backstage/plugin-gitops-profiles@0.2.1
+  - @backstage/plugin-graphiql@0.2.1
+  - @backstage/plugin-kubernetes@0.2.1
+  - @backstage/plugin-lighthouse@0.2.1
+  - @backstage/plugin-newrelic@0.2.1
+  - @backstage/plugin-register-component@0.2.1
+  - @backstage/plugin-rollbar@0.2.1
+  - @backstage/plugin-sentry@0.2.1
+  - @backstage/plugin-techdocs@0.2.1
+  - @backstage/plugin-welcome@0.2.1
+
 ## 0.2.0
 
 ### Minor Changes
