@@ -17,6 +17,11 @@
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 
+export type ReadTreeOptions = {
+  /** A filter that can be used to select which files should be extracted. By default all files are extracted */
+  filter?(path: string): boolean;
+};
+
 /**
  * A generic interface for fetching plain data from URLs.
  */
@@ -48,8 +53,13 @@ export type File = {
   content(): Promise<Buffer>;
 };
 
+export type ReadTreeResponseDirOptions = {
+  /** The directory to write files to. Defaults to the OS tmpdir or `backend.workingDirectory` if set in config */
+  targetDir?: string;
+};
+
 export type ReadTreeResponse = {
   files(): Promise<File[]>;
   archive(): Promise<Buffer>;
-  dir(outDir?: string): Promise<string>;
+  dir(options?: ReadTreeResponseDirOptions): Promise<string>;
 };

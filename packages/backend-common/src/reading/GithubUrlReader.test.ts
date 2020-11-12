@@ -293,7 +293,7 @@ describe('GithubUrlReader', () => {
       );
 
       mockfs();
-      const directory = await response.dir('/tmp/fs');
+      const directory = await response.dir({ targetDir: '/tmp/fs' });
 
       const writtenToDirectory = fs.existsSync(directory);
       const paths = await recursive(directory);

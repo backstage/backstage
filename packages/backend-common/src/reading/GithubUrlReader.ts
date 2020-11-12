@@ -18,7 +18,13 @@ import { Config } from '@backstage/config';
 import parseGitUri from 'git-url-parse';
 import fetch from 'cross-fetch';
 import { NotFoundError } from '../errors';
-import { ReaderFactory, ReadTreeResponse, UrlReader, File } from './types';
+import {
+  ReaderFactory,
+  ReadTreeResponse,
+  UrlReader,
+  File,
+  ReadTreeResponseDirOptions,
+} from './types';
 import tar from 'tar';
 import fs from 'fs-extra';
 import concatStream from 'concat-stream';
@@ -294,9 +300,10 @@ export class GithubUrlReader implements UrlReader {
               resolve(Buffer.from('Archive is not yet implemented')),
             );
           },
-          dir: (outDir: string | undefined) => {
+          dir: (options?: ReadTreeResponseDirOptions) => {
             const targetDirectory =
-              outDir || fs.mkdtempSync(path.join(os.tmpdir(), 'backstage-'));
+              options?.targetDir ||
+              fs.mkdtempSync(path.join(os.tmpdir(), 'backstage-'));
 
             return new Promise((res, rej) => {
               Promise.all(
