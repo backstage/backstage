@@ -1,5 +1,11 @@
 # @backstage/create-app
 
+## 0.2.1
+
+### Patch Changes
+
+- c56e28375: Fix missing api-docs plugin registration in app template
+
 ## 0.2.0
 
 ### Minor Changes

@@ -1,5 +1,40 @@
 # @backstage/core
 
+## 0.3.0
+
+### Minor Changes
+
+- 199237d2f: New DependencyGraph component added to core package.
+
+### Patch Changes
+
+- 7b37d65fd: Adds the MarkdownContent component to render and display Markdown content with the default
+  [GFM](https://github.github.com/gfm/) (Github flavored Markdown) dialect.
+
+  ```
+  <MarkdownContent content={markdownGithubFlavored} />
+  ```
+
+  To render the Markdown content with plain [CommonMark](https://commonmark.org/), set the dialect to `common-mark`
+
+  ```
+  <MarkdownContent content={markdown} dialect='common-mark />
+  ```
+
+- 4aca74e08: Extend default config loader to read config from the window object.
+
+  Config will be read from `window.__APP_CONFIG__` which should be an object.
+
+- e8f69ba93: - The BottomLink is now able to handle with internal routes.
+  - @backstage/core Link component detect whether it's an external link or not, and render accordingly
+- 0c0798f08: Extend the table to share its current filter state. The filter state can be used together with the new `useQueryParamState` hook to store the current filter state to the browser history and restore it after navigating to other routes.
+- 0c0798f08: Make the selected state of Select and CheckboxTree controllable from outside.
+- 6627b626f: Fix divider prop not respected on InfoCard
+- Updated dependencies [c5bab94ab]
+- Updated dependencies [4577e377b]
+  - @backstage/core-api@0.2.1
+  - @backstage/theme@0.2.1
+
 ## 0.2.0
 
 ### Minor Changes
