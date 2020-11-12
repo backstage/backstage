@@ -42,10 +42,12 @@ export class ArchiveResponse implements ReadTreeResponse {
   ) {
     if (subPath) {
       if (!subPath.endsWith('/')) {
-        throw new TypeError('ArchiveResponse subPath must end with a /');
+        this.subPath += '/';
       }
       if (subPath.startsWith('/')) {
-        throw new TypeError('ArchiveResponse subPath must not start with a /');
+        throw new TypeError(
+          `ArchiveResponse subPath must not start with a /, got '${subPath}'`,
+        );
       }
     }
   }

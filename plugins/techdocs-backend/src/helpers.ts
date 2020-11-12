@@ -179,21 +179,10 @@ export const getDocFilesFromRepository = async (
     entity,
   );
 
-  const { ref, filepath: mkdocsPath } = parseGitUrl(target);
-
-  const docsRootPath = path.dirname(mkdocsPath);
-  const docsFolderPath = path.join(docsRootPath, 'docs');
-
   if (reader.readTree) {
-    const readTreeResponse = await reader.readTree(
-      parseGitUrl(target).toString(),
-      ref,
-      [mkdocsPath, docsFolderPath],
-    );
+    const response = await reader.readTree(target);
 
-    const tmpDir = await readTreeResponse.dir();
-
-    return `${tmpDir}/${docsRootPath}`;
+    return response.dir();
   }
 
   throw new Error(

@@ -17,19 +17,15 @@
 import { Config } from '@backstage/config';
 import parseGitUri from 'git-url-parse';
 import fetch from 'cross-fetch';
-import { NotFoundError } from '../errors';
+import { Readable } from 'stream';
+import { InputError, NotFoundError } from '../errors';
 import {
   ReaderFactory,
   ReadTreeResponse,
   UrlReader,
-  File,
-  ReadTreeResponseDirOptions,
+  ReadTreeOptions,
 } from './types';
-import tar from 'tar';
-import fs from 'fs-extra';
-import concatStream from 'concat-stream';
-import path from 'path';
-import os from 'os';
+import { ReadTreeResponseFactory } from './tree';
 
 /**
  * The configuration parameters for a single GitHub API provider.
@@ -198,19 +194,18 @@ export function readConfig(config: Config): ProviderConfig[] {
  * the one exposed by GitHub itself.
  */
 export class GithubUrlReader implements UrlReader {
-  private config: ProviderConfig;
-
-  static factory: ReaderFactory = ({ config }) => {
+  static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     return readConfig(config).map(provider => {
-      const reader = new GithubUrlReader(provider);
+      const reader = new GithubUrlReader(provider, { treeResponseFactory });
       const predicate = (url: URL) => url.host === provider.host;
       return { reader, predicate };
     });
   };
 
-  constructor(config: ProviderConfig) {
-    this.config = config;
-  }
+  constructor(
+    private readonly config: ProviderConfig,
+    private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
+  ) {}
 
   async read(url: string): Promise<Buffer> {
     const useApi =
@@ -240,90 +235,48 @@ export class GithubUrlReader implements UrlReader {
     throw new Error(message);
   }
 
-  private async getRepositoryArchive(
-    repoUrl: string,
-    branchName: string,
-  ): Promise<Response> {
-    return fetch(new URL(`${repoUrl}/archive/${branchName}.tar.gz`).toString());
-  }
-
-  private async writeBufferToFile(
-    filePath: string,
-    content: Buffer,
-  ): Promise<void> {
-    await fs.outputFile(filePath, content.toString());
-  }
-
   async readTree(
-    repoUrl: string,
-    branchName: string,
-    paths: Array<string>,
+    url: string,
+    options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
-    const { name: repoName } = parseGitUri(repoUrl);
+    const {
+      name: repoName,
+      ref,
+      protocol,
+      source,
+      full_name,
+      filepath,
+    } = parseGitUri(url);
 
-    const repoArchive = await this.getRepositoryArchive(repoUrl, branchName);
+    if (!ref) {
+      // TODO(Rugvip): We should add support for defaulting to the default branch
+      throw new InputError(
+        'GitHub URL must contain branch to be able to fetch tree',
+      );
+    }
 
-    const files: File[] = [];
-    return new Promise(resolve => {
-      const parser = new (tar.Parse as any)({
-        filter: (path: string) =>
-          !!paths.filter(file => {
-            return path.startsWith(`${repoName}-${branchName}/${file}`);
-          }).length,
-        onentry: (entry: tar.ReadEntry) => {
-          if (entry.type === 'Directory') {
-            entry.resume();
-            return;
-          }
+    // TODO(Rugvip): use API to fetch URL instead
+    const response = await fetch(
+      new URL(
+        `${protocol}://${source}/${full_name}/archive/${ref}.tar.gz`,
+      ).toString(),
+    );
+    if (!response.ok) {
+      const message = `Failed to read tree from ${url}, ${response.status} ${response.statusText}`;
+      if (response.status === 404) {
+        throw new NotFoundError(message);
+      }
+      throw new Error(message);
+    }
 
-          const contentPromise: Promise<Buffer> = new Promise(res => {
-            entry.pipe(concatStream(res));
-          });
+    const path = `${repoName}-${ref}/${filepath}`;
 
-          files.push({
-            path: entry.path,
-            content: () => contentPromise,
-          });
-
-          entry.resume();
-        },
-      });
-
-      // @ts-ignore Typescript doesn't consider .pipe a method on ReadableStream. Don't know why.
-      repoArchive.body?.pipe(parser).on('finish', () => {
-        resolve({
-          files: async () => {
-            return files;
-          },
-          archive: () => {
-            return new Promise(resolve =>
-              resolve(Buffer.from('Archive is not yet implemented')),
-            );
-          },
-          dir: (options?: ReadTreeResponseDirOptions) => {
-            const targetDirectory =
-              options?.targetDir ||
-              fs.mkdtempSync(path.join(os.tmpdir(), 'backstage-'));
-
-            return new Promise((res, rej) => {
-              Promise.all(
-                files.map(async file => {
-                  return this.writeBufferToFile(
-                    `${targetDirectory}/${file.path}`,
-                    await file.content(),
-                  );
-                }),
-              )
-                .then(() => {
-                  res(`${targetDirectory}/${repoName}-${branchName}`);
-                })
-                .catch(err => {
-                  rej(err);
-                });
-            });
-          },
-        });
-      });
+    return this.deps.treeResponseFactory.fromArchive({
+      // TODO(Rugvip): Underlying implementation of fetch will be node-fetch, we probably want
+      //               to stick to using that in exclusively backend code.
+      stream: (response.body as unknown) as Readable,
+      path,
+      filter: options?.filter,
     });
   }
 

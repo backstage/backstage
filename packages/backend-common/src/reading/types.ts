@@ -28,11 +28,7 @@ export type ReadTreeOptions = {
  */
 export type UrlReader = {
   read(url: string): Promise<Buffer>;
-  readTree?(
-    repoUrl: string,
-    branchName: string,
-    paths: Array<string>,
-  ): Promise<ReadTreeResponse>;
+  readTree?(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
 };
 
 export type UrlReaderPredicateTuple = {

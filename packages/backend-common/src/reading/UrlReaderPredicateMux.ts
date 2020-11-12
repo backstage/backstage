@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { ReadTreeResponse, UrlReader, UrlReaderPredicateTuple } from './types';
+import {
+  ReadTreeOptions,
+  ReadTreeResponse,
+  UrlReader,
+  UrlReaderPredicateTuple,
+} from './types';
 
 type Options = {
   // UrlReader to fall back to if no other reader is matched
@@ -55,14 +60,13 @@ export class UrlReaderPredicateMux implements UrlReader {
 
   readTree(
     repoUrl: string,
-    branchName: string,
-    paths: Array<string>,
+    options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
     const parsed = new URL(repoUrl);
 
     for (const { predicate, reader } of this.readers) {
       if (predicate(parsed)) {
-        if (reader.readTree) return reader.readTree(repoUrl, branchName, paths);
+        if (reader.readTree) return reader.readTree(repoUrl, options);
         throw new Error(
           `Trying to call readTree on UrlReader which does not support the feature.`,
         );
@@ -71,7 +75,7 @@ export class UrlReaderPredicateMux implements UrlReader {
 
     if (this.fallback) {
       if (this.fallback.readTree)
-        return this.fallback.readTree(repoUrl, branchName, paths);
+        return this.fallback.readTree(repoUrl, options);
       throw new Error(
         `Trying to call readTree on UrlReader which does not support the feature.`,
       );
