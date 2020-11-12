@@ -30,7 +30,7 @@ describe('getDocFilesFromRepository', () => {
           dir: async () => {
             return '/tmp/testfolder';
           },
-          files: () => {
+          files: async () => {
             return [];
           },
           archive: async () => {
@@ -78,7 +78,7 @@ describe('getDocFilesFromRepository', () => {
           dir: async () => {
             return '/tmp/testfolder';
           },
-          files: () => {
+          files: async () => {
             return [];
           },
           archive: async () => {

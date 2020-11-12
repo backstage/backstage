@@ -272,7 +272,7 @@ describe('GithubUrlReader', () => {
         ['mkdocs.yml', 'docs'],
       );
 
-      const files = response.files();
+      const files = await response.files();
 
       const mkDocsFile = await files[0].content();
       const indexMarkdownFile = await files[1].content();

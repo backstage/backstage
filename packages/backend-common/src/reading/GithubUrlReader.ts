@@ -286,7 +286,7 @@ export class GithubUrlReader implements UrlReader {
       // @ts-ignore Typescript doesn't consider .pipe a method on ReadableStream. Don't know why.
       repoArchive.body?.pipe(parser).on('finish', () => {
         resolve({
-          files: () => {
+          files: async () => {
             return files;
           },
           archive: () => {

@@ -49,7 +49,7 @@ export type File = {
 };
 
 export type ReadTreeResponse = {
-  files(): File[];
+  files(): Promise<File[]>;
   archive(): Promise<Buffer>;
   dir(outDir?: string): Promise<string>;
 };
