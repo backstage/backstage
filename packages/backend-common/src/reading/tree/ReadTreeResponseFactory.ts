@@ -23,7 +23,7 @@ import { ArchiveResponse } from './ArchiveResponse';
 type FromArchiveOptions = {
   // A binary stream of a tar archive.
   stream: Readable;
-  // If set, root of the tree will be set to the given path. Should not have a trailing `/`.
+  // If set, the root of the tree will be set to the given directory path.
   path?: string;
   // Filter passed on from the ReadTreeOptions
   filter?: (path: string) => boolean;

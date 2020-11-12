@@ -19,7 +19,18 @@ import { Config } from '@backstage/config';
 import { ReadTreeResponseFactory } from './tree';
 
 export type ReadTreeOptions = {
-  /** A filter that can be used to select which files should be extracted. By default all files are extracted */
+  /**
+   * A filter that can be used to select which files should be included.
+   *
+   * The path passed to the filter function is the relative path from the URL
+   * that the file tree is fetched from, without any leading '/'.
+   *
+   * For example, given the URL https://github.com/my/repo/tree/master/my-dir, a file
+   * at https://github.com/my/repo/blob/master/my-dir/my-subdir/my-file.txt will
+   * be represented as my-subdir/my-file.txt
+   *
+   * If no filter is provided all files are extracted.
+   */
   filter?(path: string): boolean;
 };
 
@@ -46,7 +57,7 @@ export type ReaderFactory = (options: {
   treeResponseFactory: ReadTreeResponseFactory;
 }) => UrlReaderPredicateTuple[];
 
-export type File = {
+export type ReadTreeResponseFile = {
   path: string;
   content(): Promise<Buffer>;
 };
@@ -57,7 +68,7 @@ export type ReadTreeResponseDirOptions = {
 };
 
 export type ReadTreeResponse = {
-  files(): Promise<File[]>;
-  archive(): Promise<Buffer>;
+  files(): Promise<ReadTreeResponseFile[]>;
+  archive(): Promise<NodeJS.ReadableStream>;
   dir(options?: ReadTreeResponseDirOptions): Promise<string>;
 };

@@ -16,7 +16,6 @@
 
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
-import { Readable } from 'stream';
 import { resolve as resolvePath } from 'path';
 import { ArchiveResponse } from './ArchiveResponse';
 
@@ -87,7 +86,7 @@ describe('ArchiveResponse', () => {
       'Response has already been read',
     );
 
-    const res2 = new ArchiveResponse(Readable.from(buffer), '', '/tmp');
+    const res2 = new ArchiveResponse(buffer, '', '/tmp');
     const files = await res2.files();
 
     expect(files).toEqual([

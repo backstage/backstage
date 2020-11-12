@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-import os from 'os';
 import tar, { Parse, ParseStream, ReadEntry } from 'tar';
 import path from 'path';
 import fs from 'fs-extra';
 import { Readable, pipeline as pipelineCb } from 'stream';
 import { promisify } from 'util';
 import concatStream from 'concat-stream';
-import { ReadTreeResponse, File, ReadTreeResponseDirOptions } from '../types';
+import {
+  ReadTreeResponse,
+  ReadTreeResponseFile,
+  ReadTreeResponseDirOptions,
+} from '../types';
 
 // Tar types for `Parse` is not a proper constructor, but it should be
 const TarParseStream = (Parse as unknown) as { new (): ParseStream };
@@ -37,7 +40,7 @@ export class ArchiveResponse implements ReadTreeResponse {
   constructor(
     private readonly stream: Readable,
     private readonly subPath: string,
-    private readonly workDir: string = os.tmpdir(),
+    private readonly workDir: string,
     private readonly filter?: (path: string) => boolean,
   ) {
     if (subPath) {
@@ -60,10 +63,10 @@ export class ArchiveResponse implements ReadTreeResponse {
     this.read = true;
   }
 
-  async files(): Promise<File[]> {
+  async files(): Promise<ReadTreeResponseFile[]> {
     this.onlyOnce();
 
-    const files: File[] = [];
+    const files = Array<ReadTreeResponseFile>();
     const parser = new TarParseStream();
 
     parser.on('entry', (entry: ReadEntry & Readable) => {
@@ -79,9 +82,7 @@ export class ArchiveResponse implements ReadTreeResponse {
         }
       }
 
-      const path = this.subPath
-        ? entry.path.replace(this.subPath, '')
-        : entry.path;
+      const path = entry.path.slice(this.subPath.length);
       if (this.filter) {
         if (!this.filter(path)) {
           entry.resume();
@@ -103,13 +104,11 @@ export class ArchiveResponse implements ReadTreeResponse {
     return files;
   }
 
-  async archive(): Promise<Buffer> {
+  async archive(): Promise<Readable> {
     if (!this.subPath) {
       this.onlyOnce();
 
-      return new Promise(resolve =>
-        pipeline(this.stream, concatStream(resolve)),
-      );
+      return this.stream;
     }
 
     // TODO(Rugvip): method for repacking a tar with a subpath is to simply extract into a
@@ -117,12 +116,13 @@ export class ArchiveResponse implements ReadTreeResponse {
     const tmpDir = await this.dir();
 
     try {
-      return await new Promise(async resolve => {
+      const data = await new Promise<Buffer>(async resolve => {
         await pipeline(
           tar.create({ cwd: tmpDir }, ['']),
           concatStream(resolve),
         );
       });
+      return Readable.from(data);
     } finally {
       await fs.remove(tmpDir);
     }

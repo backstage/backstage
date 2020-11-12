@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Readable } from 'stream';
 import { getDocFilesFromRepository } from './helpers';
 import { UrlReader, ReadTreeResponse } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
@@ -34,7 +35,7 @@ describe('getDocFilesFromRepository', () => {
             return [];
           },
           archive: async () => {
-            return Buffer.from('');
+            return Readable.from('');
           },
         };
       }
