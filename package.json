@@ -36,6 +36,9 @@
       "plugins/*"
     ]
   },
+  "resolutions": {
+    "**/@roadiehq/backstage-plugin-*/@backstage/core": "0.3.0"
+  },
   "version": "1.0.0",
   "devDependencies": {
     "@changesets/cli": "^2.11.0",
