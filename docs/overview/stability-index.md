@@ -442,7 +442,7 @@ Stability: `0`
 
 ### [techdocs](https://github.com/backstage/backstage/tree/master/plugins/techdocs/)
 
-The frontend component of the TechDocs plugin, used to browser technical
+The frontend component of the TechDocs plugin, used to browse technical
 documentation of entities.
 
 Stability: `1`
