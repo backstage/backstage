@@ -36,7 +36,7 @@ type FiltersButtonProps = {
 export const FiltersButton = ({
   numberOfSelectedFilters,
   handleToggleFilters,
-}: FilterButtonProps) => {
+}: FiltersButtonProps) => {
   const classes = useStyles();
 
   return (
