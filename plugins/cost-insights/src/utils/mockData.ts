@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
+import regression, { DataPoint } from 'regression';
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/core';
 import {
+  ChangeStatistic,
   Duration,
   Entity,
   Product,
   ProductFilters,
   ProjectGrowthData,
+  Trendline,
   UnlabeledDataflowAlertProject,
   UnlabeledDataflowData,
+  DateAggregation,
 } from '../types';
 import {
   DefaultLoadingAction,
@@ -185,3 +189,29 @@ export const MockCostInsightsConfig: Partial<Config> = {
   getConfig: () => MockProductsConfig as Config,
   getOptionalConfig: () => MockMetricsConfig as Config,
 };
+
+export function trendlineOf(aggregation: DateAggregation[]): Trendline {
+  const data: ReadonlyArray<DataPoint> = aggregation.map(a => [
+    Date.parse(a.date) / 1000,
+    a.amount,
+  ]);
+  const result = regression.linear(data, { precision: 5 });
+  return {
+    slope: result.equation[0],
+    intercept: result.equation[1],
+  };
+}
+
+export function changeOf(aggregation: DateAggregation[]): ChangeStatistic {
+  const half = Math.ceil(aggregation.length / 2);
+  const before = aggregation
+    .slice(0, half)
+    .reduce((sum, a) => sum + a.amount, 0);
+  const after = aggregation
+    .slice(half, aggregation.length)
+    .reduce((sum, a) => sum + a.amount, 0);
+  return {
+    ratio: (after - before) / before,
+    amount: after - before,
+  };
+}
