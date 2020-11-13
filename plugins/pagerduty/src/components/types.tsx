@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 export type Incident = {
   id: string;
   title: string;
@@ -32,41 +33,14 @@ export type Service = {
   name: string;
   html_url: string;
   integrationKey: string;
-  escalation_policy: OnCall;
+  escalation_policy: {
+    id: string;
+    user: User;
+  };
 };
 
-export type ResponseService = {
-  services: Service[];
-  more: boolean;
-};
-
-export type ResponseOnCall = {
-  id: string;
-  name: string;
-  email: string;
-  homepageUrl: string;
-};
-
-export type Options = {
-  method: string;
-  headers: HeadersInit;
-  body?: BodyInit;
-};
-
-export type PagerDutyClientConfig = {
-  token?: string;
-};
-
-export type ServicesResponse = {
-  services: Service[];
-};
-
-export type IncidentResponse = {
-  incidents: Incident[];
-};
-
-export type OnCallsResponse = {
-  onCalls: OnCall[];
+export type OnCall = {
+  user: User;
 };
 
 export type User = {
@@ -77,6 +51,24 @@ export type User = {
   name: string;
 };
 
-export type OnCall = {
-  user: User;
+export type ClientApiConfig = {
+  token?: string;
+};
+
+export type ServicesResponse = {
+  services: Service[];
+};
+
+export type IncidentsResponse = {
+  incidents: Incident[];
+};
+
+export type OnCallsResponse = {
+  oncalls: OnCall[];
+};
+
+export type RequestOptions = {
+  method: string;
+  headers: HeadersInit;
+  body?: BodyInit;
 };

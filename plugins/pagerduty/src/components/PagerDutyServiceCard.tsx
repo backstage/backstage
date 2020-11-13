@@ -45,13 +45,13 @@ export const PagerDutyServiceCard = ({ entity }: Props) => {
     const services = await api.getServiceByIntegrationKey(integrationKey);
     // TODO check services length
     const service = services[0];
-
     const incidents = await api.getIncidentsByServiceId(service.id);
     const oncalls = await api.getOnCallByPolicyId(service.escalation_policy.id);
+    const users = oncalls.map(item => item.user);
 
     return {
       incidents,
-      oncalls,
+      users,
       id: service.id,
       name: service.name,
       homepageUrl: service.html_url,
@@ -89,9 +89,9 @@ export const PagerDutyServiceCard = ({ entity }: Props) => {
       content={
         <>
           <Incidents incidents={value!.incidents} />
-          <EscalationPolicy escalation={value!.oncalls} />
+          <EscalationPolicy users={value!.users} />
         </>
       }
-    ></PagerdutyCard>
+    />
   );
 };

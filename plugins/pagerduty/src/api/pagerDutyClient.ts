@@ -18,10 +18,10 @@ import { createApiRef } from '@backstage/core';
 import {
   Service,
   Incident,
-  Options,
-  PagerDutyClientConfig,
+  RequestOptions,
+  ClientApiConfig,
   ServicesResponse,
-  IncidentResponse,
+  IncidentsResponse,
   OnCallsResponse,
   OnCall,
 } from '../components/types';
@@ -41,7 +41,7 @@ export class PagerDutyClientApi implements PagerDutyClient {
   private API_URL = 'https://api.pagerduty.com';
   private EVENTS_API_URL = 'https://events.pagerduty.com/v2';
 
-  constructor(private readonly config?: PagerDutyClientConfig) {}
+  constructor(private readonly config?: ClientApiConfig) {}
 
   async getServiceByIntegrationKey(integrationKey: string): Promise<Service[]> {
     if (!this.config?.token) {
@@ -62,7 +62,7 @@ export class PagerDutyClientApi implements PagerDutyClient {
 
     const params = `service_ids[]=${serviceId}`;
     const url = `${this.API_URL}/incidents?${params}`;
-    const { incidents } = await this.getByUrl<IncidentResponse>(url);
+    const { incidents } = await this.getByUrl<IncidentsResponse>(url);
 
     return incidents;
   }
@@ -74,9 +74,9 @@ export class PagerDutyClientApi implements PagerDutyClient {
 
     const params = `include[]=users&escalation_policy_ids[]=${policyId}`;
     const url = `${this.API_URL}/oncalls?${params}`;
-    const { onCalls } = await this.getByUrl<OnCallsResponse>(url);
+    const { oncalls } = await this.getByUrl<OnCallsResponse>(url);
 
-    return onCalls;
+    return oncalls;
   }
 
   triggerPagerDutyAlarm(
@@ -127,7 +127,10 @@ export class PagerDutyClientApi implements PagerDutyClient {
     return response.json();
   }
 
-  private async request(url: string, options: Options): Promise<Response> {
+  private async request(
+    url: string,
+    options: RequestOptions,
+  ): Promise<Response> {
     try {
       const response = await fetch(url, options);
       if (!response.ok) {
