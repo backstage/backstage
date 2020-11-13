@@ -76,8 +76,13 @@ describe('getPreviousPeriodTotalCost', () => {
       change: changeOf(MockAggregatedDailyCosts),
       trendline: trendlineOf(MockAggregatedDailyCosts),
     };
+    const exclusiveEndDate = '2020-10-01';
     expect(
-      getPreviousPeriodTotalCost(mockGroupDailyCost, Duration.P1M),
+      getPreviousPeriodTotalCost(
+        mockGroupDailyCost,
+        Duration.P1M,
+        exclusiveEndDate,
+      ),
     ).toEqual(100_000);
   });
 });
