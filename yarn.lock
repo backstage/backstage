@@ -87,6 +87,24 @@
   resolved "https://registry.npmjs.org/@asyncapi/specs/-/specs-2.7.5.tgz#3a516d198fc41a1103695bd889fdd4fbbebe7f5d"
   integrity sha512-T1Ham9sqZKCtSowXRPaBCRy2oz3KHglqqrKiaO7lEudpP6lwH5SwXaq4qliyKzWaqd22srJHE4szdsorbFZKlw==
 
+"@azure/msal-common@^1.6.2":
+  version "1.6.2"
+  resolved "https://registry.npmjs.org/@azure/msal-common/-/msal-common-1.6.2.tgz#91f3732866d727e20f1e142e6e88a981268fbff2"
+  integrity sha512-GShzp1q7Ld8SwYiDEjQZ9PmFOY4x+2stE86maiguylE9/d/c2muqKjc8aepmEqyjbV7o/omDvEf2Sr9QcIqkSA==
+  dependencies:
+    debug "^4.1.1"
+
+"@azure/msal-node@^1.0.0-alpha.8":
+  version "1.0.0-alpha.12"
+  resolved "https://registry.npmjs.org/@azure/msal-node/-/msal-node-1.0.0-alpha.12.tgz#09d8d52f5cea90b133c3d48fe4ec477693040c91"
+  integrity sha512-uGLOJRWiEhfJIrTv/lwdm4RxQFm++00h83zNgDn0O3NkXlzAoCCq9QFYW84PjMR/Q2PUvVy7uW+6yKL/Nq3gBA==
+  dependencies:
+    "@azure/msal-common" "^1.6.2"
+    axios "^0.19.2"
+    debug "^4.1.1"
+    jsonwebtoken "^8.5.1"
+    uuid "^8.3.0"
+
 "@babel/code-frame@7.0.0":
   version "7.0.0"
   resolved "https://registry.npmjs.org/@babel/code-frame/-/code-frame-7.0.0.tgz#06e2ab19bdb535385559aabb5ba59729482800f8"
@@ -3371,6 +3389,11 @@
   version "1.5.9"
   resolved "https://registry.npmjs.org/@mdx-js/react/-/react-1.5.9.tgz#31873ab097fbe58c61c7585fc0be64e83182b6df"
   integrity sha512-rengdUSedIdIQbXPSeafItCacTYocARAjUA51b6R1KNHmz+59efz7UmyTKr73viJQZ98ouu7iRGmOTtjRrbbWA==
+
+"@microsoft/microsoft-graph-types@^1.25.0":
+  version "1.25.0"
+  resolved "https://registry.npmjs.org/@microsoft/microsoft-graph-types/-/microsoft-graph-types-1.25.0.tgz#1f543ebc029a115dd1d48a1ae99d7ddd5ee9af57"
+  integrity sha512-RsuA+ROaU3voWzG9TVBkRKxmLatteRGduFDi5p0k3FUHho49rm9SvrA7DUyYbSXLy2xXRx9AnjKM9klYBeKEiQ==
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"

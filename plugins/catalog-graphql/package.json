@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@backstage/backend-common": "^0.3.0",
-    "@backstage/catalog-model": "^0.2.0",
+    "@backstage/catalog-model": "^0.3.0",
     "@backstage/config": "^0.1.1",
     "@graphql-modules/core": "^0.7.17",
     "apollo-server": "^2.16.1",

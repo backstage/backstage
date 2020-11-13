@@ -190,8 +190,24 @@ metadata:
 ```
 
 The value of these annotations are the corresponding attributes that were found
-when ingestion the entity from LDAP. Not all of them may be present, depending
+when ingesting the entity from LDAP. Not all of them may be present, depending
 on what attributes that the server presented at ingestion time.
+
+### graph.microsoft.com/tenant-id, graph.microsoft.com/group-id, graph.microsoft.com/user-id
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    graph.microsoft.com/tenant-id: 6902611b-ffc1-463f-8af3-4d5285dc057b
+    graph.microsoft.com/group-id: c57e8ba2-6cc4-1039-9ebc-d5f241a7ca21
+    graph.microsoft.com/user-id: 2de244b5-104b-4e8f-a3b8-dce3c31e54b6
+```
+
+The value of these annotations are the corresponding attributes that were found
+when ingesting the entity from the Microsoft Graph API. Not all of them may be
+present, depending on what attributes that the server presented at ingestion
+time.
 
 ### sonarqube.org/project-key
 
