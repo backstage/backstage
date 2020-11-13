@@ -205,9 +205,11 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
                   // TODO(Rugvip): We currently always update relations, but we
                   // likely want to figure out a way to avoid that
                   for (const { entity, relations } of toIgnore) {
-                    const entityId = entity.metadata.uid!;
-                    await this.setRelations(entityId, relations, tx);
-                    modifiedEntityIds.push({ entityId });
+                    const entityId = entity.metadata.uid;
+                    if (entityId) {
+                      await this.setRelations(entityId, relations, tx);
+                      modifiedEntityIds.push({ entityId });
+                    }
                   }
 
                   break;
@@ -300,12 +302,22 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
     for (const request of requests) {
       const newEntity = request.entity;
       const oldEntity = oldEntitiesByName.get(newEntity.metadata.name);
+      const newLocation = newEntity.metadata.annotations?.[LOCATION_ANNOTATION];
+      const oldLocation =
+        oldEntity?.metadata.annotations?.[LOCATION_ANNOTATION];
       if (!oldEntity) {
         toAdd.push(request);
+      } else if (oldLocation !== newLocation) {
+        this.logger.warn(
+          `Rejecting write of entity ${serializeEntityRef(
+            newEntity,
+          )} from ${newLocation} because entity existed from ${oldLocation}`,
+        );
+        toIgnore.push(request);
       } else if (entityHasChanges(oldEntity, newEntity)) {
         // TODO(freben): This currently uses addOrUpdateEntity under the hood,
         // but should probably calculate the end result entity right here
-        // instead and call a dedicated batch update database method instead
+        // instead and call a dedicated batch update database method
         toUpdate.push(request);
       } else {
         toIgnore.push(request);
