@@ -18,7 +18,7 @@ import os from 'os';
 import { Readable } from 'stream';
 import { Config } from '@backstage/config';
 import { ReadTreeResponse } from '../types';
-import { ArchiveResponse } from './ArchiveResponse';
+import { TarArchiveResponse } from './TarArchiveResponse';
 
 type FromArchiveOptions = {
   // A binary stream of a tar archive.
@@ -40,7 +40,7 @@ export class ReadTreeResponseFactory {
   constructor(private readonly workDir: string) {}
 
   async fromArchive(options: FromArchiveOptions): Promise<ReadTreeResponse> {
-    return new ArchiveResponse(
+    return new TarArchiveResponse(
       options.stream,
       options.path ?? '',
       this.workDir,

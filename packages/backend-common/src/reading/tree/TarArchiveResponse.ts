@@ -34,7 +34,7 @@ const pipeline = promisify(pipelineCb);
 /**
  * Wraps a tar archive stream into a tree response reader.
  */
-export class ArchiveResponse implements ReadTreeResponse {
+export class TarArchiveResponse implements ReadTreeResponse {
   private read = false;
 
   constructor(
@@ -49,7 +49,7 @@ export class ArchiveResponse implements ReadTreeResponse {
       }
       if (subPath.startsWith('/')) {
         throw new TypeError(
-          `ArchiveResponse subPath must not start with a /, got '${subPath}'`,
+          `TarArchiveResponse subPath must not start with a /, got '${subPath}'`,
         );
       }
     }
