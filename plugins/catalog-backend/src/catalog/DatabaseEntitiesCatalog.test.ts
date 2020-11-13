@@ -15,7 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import type { Entity } from '@backstage/catalog-model';
+import { Entity, LOCATION_ANNOTATION } from '@backstage/catalog-model';
 import { Database, DatabaseManager, Transaction } from '../database';
 import { EntityFilters } from '../service/EntityFilters';
 import { DatabaseEntitiesCatalog } from './DatabaseEntitiesCatalog';
@@ -127,6 +127,9 @@ describe('DatabaseEntitiesCatalog', () => {
         metadata: {
           name: 'c',
           namespace: 'd',
+          annotations: {
+            [LOCATION_ANNOTATION]: 'mock',
+          },
         },
       };
       const dbEntity: Entity = {
@@ -135,7 +138,11 @@ describe('DatabaseEntitiesCatalog', () => {
         metadata: {
           name: 'c',
           namespace: 'd',
+          description: 'changes',
           uid: 'u',
+          annotations: {
+            [LOCATION_ANNOTATION]: 'mock',
+          },
         },
       };
       db.entities.mockResolvedValue([
