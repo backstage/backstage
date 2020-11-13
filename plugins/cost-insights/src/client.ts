@@ -42,7 +42,7 @@ type IntervalFields = {
   endDate: string;
 };
 
-export function parseIntervals(intervals: string): IntervalFields {
+function parseIntervals(intervals: string): IntervalFields {
   const match = intervals.match(
     /\/(?<duration>P\d+[DM])\/(?<date>\d{4}-\d{2}-\d{2})/,
   );
