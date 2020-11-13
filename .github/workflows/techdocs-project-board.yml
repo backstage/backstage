@@ -10,7 +10,7 @@ on:
     types: [opened, reopened, labeled, edited]
 
 env:
-  MY_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  MY_GITHUB_TOKEN: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
 
 jobs:
   assign_issue_or_pr_to_project:
