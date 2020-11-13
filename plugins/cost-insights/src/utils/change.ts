@@ -22,6 +22,7 @@ import {
   GrowthType,
   MetricData,
   Duration,
+  DEFAULT_DATE_FORMAT,
 } from '../types';
 import dayjs, { OpUnitType } from 'dayjs';
 import duration from 'dayjs/plugin/duration';
@@ -68,13 +69,17 @@ export function getComparedChange(
 export function getPreviousPeriodTotalCost(
   dailyCost: Cost,
   duration: Duration,
-  endDate: string,
+  inclusiveEndDate: string,
 ): number {
   const dayjsDuration = dayjs.duration(duration);
-  const startDate = inclusiveStartDateOf(duration, endDate);
+  const startDate = inclusiveStartDateOf(
+    duration,
+    dayjs(inclusiveEndDate).add(1, 'day').format(DEFAULT_DATE_FORMAT),
+  );
+  // dayjs doesn't allow adding an ISO 8601 period to dates.
   const [amount, type]: [number, OpUnitType] = dayjsDuration.days()
-    ? [dayjsDuration.days(), 'days' as OpUnitType]
-    : [dayjsDuration.months(), 'months' as OpUnitType];
+    ? [dayjsDuration.days(), 'day']
+    : [dayjsDuration.months(), 'month'];
   const nextPeriodStart = dayjs(startDate).add(amount, type);
 
   // Add up costs that incurred before the start of the next period.

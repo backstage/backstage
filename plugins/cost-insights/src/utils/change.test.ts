@@ -76,7 +76,7 @@ describe('getPreviousPeriodTotalCost', () => {
       change: changeOf(MockAggregatedDailyCosts),
       trendline: trendlineOf(MockAggregatedDailyCosts),
     };
-    const exclusiveEndDate = '2020-10-01';
+    const exclusiveEndDate = '2020-09-30';
     expect(
       getPreviousPeriodTotalCost(
         mockGroupDailyCost,
