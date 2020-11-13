@@ -21,8 +21,10 @@ import {
   EngineerThreshold,
   GrowthType,
   MetricData,
+  Duration,
 } from '../types';
 import { aggregationSort } from '../utils/sort';
+import moment from 'moment';
 
 // Used for displaying status colors
 export function growthOf(ratio: number, amount?: number) {
@@ -45,11 +47,29 @@ export function growthOf(ratio: number, amount?: number) {
 export function getComparedChange(
   dailyCost: Cost,
   metricData: MetricData,
+  duration: Duration,
 ): ChangeStatistic {
   const ratio = dailyCost.change.ratio - metricData.change.ratio;
-  const amount = dailyCost.aggregation.slice().sort(aggregationSort)[0].amount;
+  const previousPeriodTotal = getPreviousPeriodTotalCost(dailyCost, duration);
   return {
     ratio: ratio,
-    amount: amount * ratio,
+    amount: previousPeriodTotal * ratio,
   };
+}
+
+export function getPreviousPeriodTotalCost(
+  dailyCost: Cost,
+  duration: Duration,
+): number {
+  const costsByDate = dailyCost.aggregation.slice().sort(aggregationSort);
+  const nextPeriodStart = moment(costsByDate[0].date).add(
+    moment.duration(duration),
+  );
+
+  // Add up costs that incurred before the start of the next period.
+  return costsByDate.reduce((acc, costByDate) => {
+    return moment(costByDate.date).isBefore(nextPeriodStart)
+      ? acc + costByDate.amount
+      : acc;
+  }, 0);
 }
