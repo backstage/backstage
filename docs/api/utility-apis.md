@@ -11,7 +11,7 @@ possible residing within the plugin itself and its backend APIs. There will
 however always be a need for plugins to communicate outside of its boundaries,
 both with other plugins and the app itself.
 
-Backstage provides two primary methods for plugins to communication across their
+Backstage provides two primary methods for plugins to communicate across their
 boundaries in client-side code. The first one being the `createPlugin` API and
 the registration hooks passed to the `register` method, and the second one being
 Utility APIs. While the `createPlugin` API is focused on the initialization
@@ -195,8 +195,8 @@ interface for the API, and create an `ApiRef` using `createApiRef` exported from
 `@backstage/core`. Also be sure to provide at least one implementation of the
 API, and to declare a default factory for the API in `createPlugin`.
 
-Custom Utility APIs can be either public or private, which it is up to the
-plugin to choose. Private APIs do not expose an external API surface, and it's
+Custom Utility APIs can be either public or private, which is up to the plugin
+to choose. Private APIs do not expose an external API surface, and it's
 therefore possible to make breaking changes to the API without affecting other
 users of the plugin. If an API is made public however, it opens up for other
 plugins to make use of the API, and it also makes it possible for users for your
@@ -243,7 +243,7 @@ The figure below shows the relationship between
 The current method for connecting Utility API providers and consumers is via the
 React tree using an `ApiProvider`, which is added to the `AppProvider` of the
 `App`. In the future there may potentially be more ways to do this, in ways that
-are not tied to react. A design goal of the Utility APIs was to not have them
+are not tied to React. A design goal of the Utility APIs was to not have them
 directly tied to React.
 
 The indirection provided by Utility APIs also makes it straightforward to test
