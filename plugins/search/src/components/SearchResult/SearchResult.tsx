@@ -18,7 +18,7 @@ import { useAsync } from 'react-use';
 
 import { makeStyles, Typography, Grid, Divider } from '@material-ui/core';
 import { Table, TableColumn, useApi } from '@backstage/core';
-import { FilterButton, Filters } from '../Filters';
+import { FiltersButton, Filters } from '../Filters';
 import { catalogApiRef } from '@backstage/plugin-catalog';
 import SearchApi from '../../apis';
 
@@ -90,7 +90,7 @@ const TableHeader = ({
 
   return (
     <div className={classes.tableHeader}>
-      <FilterButton
+      <FiltersButton
         numberOfSelectedFilters={numberOfSelectedFilters}
         handleToggleFilters={handleToggleFilters}
       />

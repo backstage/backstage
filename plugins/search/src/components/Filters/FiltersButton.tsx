@@ -28,12 +28,12 @@ const useStyles = makeStyles({
   },
 });
 
-type FilterButtonProps = {
+type FiltersButtonProps = {
   numberOfSelectedFilters: number;
   handleToggleFilters: () => {};
 };
 
-export const FilterButton = ({
+export const FiltersButton = ({
   numberOfSelectedFilters,
   handleToggleFilters,
 }: FilterButtonProps) => {
