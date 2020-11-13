@@ -14,11 +14,18 @@
  * limitations under the License.
  */
 
+import { CatalogApi } from '@backstage/plugin-catalog';
+
 class SearchApi {
+  private catalogApi: CatalogApi;
+
+  constructor(catalogApi: CatalogApi) {
+    this.catalogApi = catalogApi;
+  }
+
   private async entities() {
-    const req = await fetch('http://localhost:7000/api/catalog/entities');
-    const res = await req.json();
-    return res.map((result: any) => ({
+    const entities = await this.catalogApi.getEntities();
+    return entities.map((result: any) => ({
       name: result.metadata.name,
       description: result.metadata.description,
       owner: result.spec.owner,

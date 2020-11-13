@@ -17,9 +17,9 @@ import React, { useState, useEffect } from 'react';
 import { useAsync } from 'react-use';
 
 import { makeStyles, Typography, Grid, Divider } from '@material-ui/core';
-import { Table, TableColumn } from '@backstage/core';
+import { Table, TableColumn, useApi } from '@backstage/core';
 import { FilterButton, Filters } from '../Filters';
-
+import { catalogApiRef } from '@backstage/plugin-catalog';
 import SearchApi from '../../apis';
 
 const useStyles = makeStyles(() => ({
@@ -111,6 +111,8 @@ const TableHeader = ({
 };
 
 const SearchResult = ({ currentTarget }: SearchResultProps) => {
+  const catalogApi = useApi(catalogApiRef);
+
   const [showFilters, toggleFilters] = useState(false);
   const [filters, setFilters] = useState<Filters>({
     selected: 'All',
@@ -119,7 +121,7 @@ const SearchResult = ({ currentTarget }: SearchResultProps) => {
 
   const [filteredResults, setFilteredResults] = useState<Array<object>>([]);
 
-  const searchApi = new SearchApi();
+  const searchApi = new SearchApi(catalogApi);
 
   const { loading, error, value: results } = useAsync(() => {
     return searchApi.getSearchData();
