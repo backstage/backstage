@@ -1,10 +1,25 @@
+/*
+ * Copyright 2020 Spotify AB
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import React from 'react';
 import { render } from '@testing-library/react';
 import { Incidents } from './Incidents';
 import { wrapInTestApp } from '@backstage/test-utils';
-import { Incident } from './types';
+import { Incident } from '../types';
 
-export const incidents: Incident[] = [
+const incidents: Incident[] = [
   {
     id: 'id1',
     status: 'triggered',
@@ -48,7 +63,9 @@ export const incidents: Incident[] = [
 describe('Incidents', () => {
   it('renders an empty state is there are no incidents', () => {
     const { getByText } = render(wrapInTestApp(<Incidents incidents={[]} />));
-    expect(getByText('No incidents')).toBeInTheDocument();
+    expect(
+      getByText('Nice! No incidents are assigned to you!'),
+    ).toBeInTheDocument();
   });
 
   it('renders all incidents', () => {

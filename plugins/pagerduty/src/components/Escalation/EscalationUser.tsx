@@ -16,8 +16,6 @@
 
 import React from 'react';
 import {
-  List,
-  ListSubheader,
   ListItem,
   ListItemIcon,
   ListItemSecondaryAction,
@@ -29,27 +27,16 @@ import {
 } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import EmailIcon from '@material-ui/icons/Email';
-import { StatusWarning } from '@backstage/core';
-import { OnCall } from './types';
-import PagerdutyIcon from './Pd';
+import PagerdutyIcon from '../Pd';
+import { User } from '../types';
 
 const useStyles = makeStyles({
-  denseListIcon: {
-    marginRight: 0,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  svgButtonImage: {
-    height: '1em',
-  },
   listItemPrimary: {
     fontWeight: 'bold',
   },
 });
 
-const EscalationUser = ({ user }: OnCall) => {
+export const EscalationUser = ({ user }: { user: User }) => {
   const classes = useStyles();
   return (
     <ListItem>
@@ -84,33 +71,3 @@ const EscalationUser = ({ user }: OnCall) => {
     </ListItem>
   );
 };
-
-const EscalationUsersEmptyState = () => {
-  const classes = useStyles();
-  return (
-    <ListItem>
-      <ListItemIcon>
-        <div className={classes.denseListIcon}>
-          <StatusWarning />
-        </div>
-      </ListItemIcon>
-      <ListItemText primary="Empty escalation policy" />
-    </ListItem>
-  );
-};
-
-type EscalationPolicyProps = {
-  escalation: OnCall[];
-};
-
-export const EscalationPolicy = ({ escalation }: EscalationPolicyProps) => (
-  <List dense subheader={<ListSubheader>ON CALL</ListSubheader>}>
-    {escalation.length ? (
-      escalation.map((item, index) => (
-        <EscalationUser key={item.user.id + index} user={item.user} />
-      ))
-    ) : (
-      <EscalationUsersEmptyState />
-    )}
-  </List>
-);

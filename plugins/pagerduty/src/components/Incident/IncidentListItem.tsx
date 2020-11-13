@@ -16,7 +16,6 @@
 
 import React from 'react';
 import {
-  List,
   ListItem,
   ListItemIcon,
   ListItemSecondaryAction,
@@ -24,14 +23,17 @@ import {
   ListItemText,
   makeStyles,
   IconButton,
-  ListSubheader,
   Link,
   Typography,
 } from '@material-ui/core';
-import { StatusError, StatusWarning, StatusOK } from '@backstage/core';
+import { StatusError, StatusWarning } from '@backstage/core';
 import moment from 'moment';
-import { Incident } from '../components/types';
-import PagerdutyIcon from './Pd';
+import { Incident } from '../types';
+import PagerdutyIcon from '../Pd';
+
+type IncidentListItemProps = {
+  incident: Incident;
+};
 
 const useStyles = makeStyles({
   denseListIcon: {
@@ -41,9 +43,6 @@ const useStyles = makeStyles({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  svgButtonImage: {
-    height: '1em',
-  },
   listItemPrimary: {
     fontWeight: 'bold',
   },
@@ -52,25 +51,7 @@ const useStyles = makeStyles({
   },
 });
 
-const IncidentsEmptyState = () => {
-  const classes = useStyles();
-  return (
-    <ListItem>
-      <ListItemIcon>
-        <div className={classes.denseListIcon}>
-          <StatusOK />
-        </div>
-      </ListItemIcon>
-      <ListItemText primary="No incidents" secondary="All clear!" />
-    </ListItem>
-  );
-};
-
-type IncidentListItemProps = {
-  incident: Incident;
-};
-
-const IncidentListItem = ({ incident }: IncidentListItemProps) => {
+export const IncidentListItem = ({ incident }: IncidentListItemProps) => {
   const classes = useStyles();
   const user = incident.assignments[0].assignee;
   return (
@@ -117,19 +98,3 @@ const IncidentListItem = ({ incident }: IncidentListItemProps) => {
     </ListItem>
   );
 };
-
-type IncidentsProps = {
-  incidents: Incident[];
-};
-
-export const Incidents = ({ incidents }: IncidentsProps) => (
-  <List dense subheader={<ListSubheader>INCIDENTS</ListSubheader>}>
-    {incidents.length ? (
-      incidents.map((incident, index) => (
-        <IncidentListItem key={incident.id + index} incident={incident} />
-      ))
-    ) : (
-      <IncidentsEmptyState />
-    )}
-  </List>
-);
