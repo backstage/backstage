@@ -18,7 +18,7 @@ import { Config } from '@backstage/config';
 import parseGitUri from 'git-url-parse';
 import fetch from 'cross-fetch';
 import { NotFoundError } from '../errors';
-import { ReaderFactory, UrlReader } from './types';
+import { ReaderFactory, ReadTreeResponse, UrlReader } from './types';
 
 const DEFAULT_BASE_URL = 'https://api.bitbucket.org/2.0';
 
@@ -207,6 +207,10 @@ export class BitbucketUrlReader implements UrlReader {
       throw new NotFoundError(message);
     }
     throw new Error(message);
+  }
+
+  readTree(): Promise<ReadTreeResponse> {
+    throw new Error('BitbucketUrlReader does not implement readTree');
   }
 
   toString() {

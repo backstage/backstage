@@ -17,7 +17,7 @@
 import fetch from 'cross-fetch';
 import { Config } from '@backstage/config';
 import { NotFoundError } from '../errors';
-import { ReaderFactory, UrlReader } from './types';
+import { ReaderFactory, ReadTreeResponse, UrlReader } from './types';
 
 type Options = {
   host: string;
@@ -85,6 +85,10 @@ export class GitlabUrlReader implements UrlReader {
       throw new NotFoundError(message);
     }
     throw new Error(message);
+  }
+
+  readTree(): Promise<ReadTreeResponse> {
+    throw new Error('GitlabUrlReader does not implement readTree');
   }
 
   // Converts

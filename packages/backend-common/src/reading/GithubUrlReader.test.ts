@@ -29,8 +29,11 @@ import {
 } from './GithubUrlReader';
 import fs from 'fs';
 import path from 'path';
-import mockfs from 'mock-fs';
-import recursive from 'recursive-readdir';
+import { ReadTreeResponseFactory } from './tree';
+
+const treeResponseFactory = ReadTreeResponseFactory.create({
+  config: new ConfigReader({}),
+});
 
 describe('GithubUrlReader', () => {
   describe('getApiRequestOptions', () => {
@@ -226,10 +229,13 @@ describe('GithubUrlReader', () => {
 
   describe('implementation', () => {
     it('rejects unknown targets', async () => {
-      const processor = new GithubUrlReader({
-        host: 'github.com',
-        apiBaseUrl: 'https://api.github.com',
-      });
+      const processor = new GithubUrlReader(
+        {
+          host: 'github.com',
+          apiBaseUrl: 'https://api.github.com',
+        },
+        { treeResponseFactory },
+      );
       await expect(
         processor.read('https://not.github.com/apa'),
       ).rejects.toThrow(
@@ -250,7 +256,7 @@ describe('GithubUrlReader', () => {
     beforeEach(() => {
       worker.use(
         rest.get(
-          'https://github.com/spotify/mock/archive/repo.tar.gz',
+          'https://github.com/backstage/mock/archive/repo.tar.gz',
           (_, res, ctx) =>
             res(
               ctx.status(200),
@@ -262,18 +268,20 @@ describe('GithubUrlReader', () => {
     });
 
     it('returns the wanted files from an archive', async () => {
-      const processor = new GithubUrlReader({
-        host: 'github.com',
-      });
-
-      const response = await processor.readTree(
-        'https://github.com/spotify/mock',
-        'repo',
-        ['mkdocs.yml', 'docs'],
+      const processor = new GithubUrlReader(
+        {
+          host: 'github.com',
+        },
+        { treeResponseFactory },
       );
 
-      const files = response.files();
+      const response = await processor.readTree(
+        'https://github.com/backstage/mock/tree/repo',
+      );
 
+      const files = await response.files();
+
+      expect(files.length).toBe(2);
       const mkDocsFile = await files[0].content();
       const indexMarkdownFile = await files[1].content();
 
@@ -281,33 +289,39 @@ describe('GithubUrlReader', () => {
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
     });
 
-    it('returns a folder path from an archive', async () => {
-      const processor = new GithubUrlReader({
-        host: 'github.com',
-      });
+    it('must specify a branch', async () => {
+      const processor = new GithubUrlReader(
+        {
+          host: 'github.com',
+        },
+        { treeResponseFactory },
+      );
+
+      await expect(
+        processor.readTree('https://github.com/backstage/mock'),
+      ).rejects.toThrow(
+        'GitHub URL must contain branch to be able to fetch tree',
+      );
+    });
+
+    it('returns the wanted files from an archive with a subpath', async () => {
+      const processor = new GithubUrlReader(
+        {
+          host: 'github.com',
+        },
+        { treeResponseFactory },
+      );
 
       const response = await processor.readTree(
-        'https://github.com/spotify/mock',
-        'repo',
-        ['mkdocs.yml', 'docs'],
+        'https://github.com/backstage/mock/tree/repo/docs',
       );
 
-      mockfs();
-      const directory = await response.dir('/tmp/fs');
+      const files = await response.files();
 
-      const writtenToDirectory = fs.existsSync(directory);
-      const paths = await recursive(directory);
-      mockfs.restore();
+      expect(files.length).toBe(1);
+      const indexMarkdownFile = await files[0].content();
 
-      expect(writtenToDirectory).toBe(true);
-      expect(paths.sort()).toEqual(
-        [
-          '/tmp/fs/mock-repo/docs/index.md',
-          '/tmp/fs/mock-repo/mkdocs.yml',
-        ].sort(),
-      );
-
-      worker.resetHandlers();
+      expect(indexMarkdownFile.toString()).toBe('# Test\n');
     });
   });
 });

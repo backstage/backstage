@@ -17,7 +17,7 @@
 import fetch from 'cross-fetch';
 import { Config } from '@backstage/config';
 import { NotFoundError } from '../errors';
-import { ReaderFactory, UrlReader } from './types';
+import { ReaderFactory, ReadTreeResponse, UrlReader } from './types';
 
 type Options = {
   // TODO: added here for future support, but we only allow dev.azure.com for now
@@ -84,6 +84,10 @@ export class AzureUrlReader implements UrlReader {
       throw new NotFoundError(message);
     }
     throw new Error(message);
+  }
+
+  readTree(): Promise<ReadTreeResponse> {
+    throw new Error('AzureUrlReader does not implement readTree');
   }
 
   // Converts
