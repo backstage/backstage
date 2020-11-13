@@ -23,10 +23,8 @@ import {
   MetricData,
   Duration,
 } from '../types';
-import { aggregationSort } from '../utils/sort';
-import moment from 'moment';
 import dayjs, { OpUnitType } from 'dayjs';
-import duration, { DurationInputType } from 'dayjs/plugin/duration';
+import duration from 'dayjs/plugin/duration';
 import { inclusiveStartDateOf } from './duration';
 
 dayjs.extend(duration);
