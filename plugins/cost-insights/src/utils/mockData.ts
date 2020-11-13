@@ -215,3 +215,250 @@ export function changeOf(aggregation: DateAggregation[]): ChangeStatistic {
     amount: after - before,
   };
 }
+
+export const MockAggregatedDailyCosts: DateAggregation[] = [
+  {
+    date: '2020-08-07',
+    amount: 3500,
+  },
+  {
+    date: '2020-08-06',
+    amount: 2500,
+  },
+  {
+    date: '2020-08-05',
+    amount: 1400,
+  },
+  {
+    date: '2020-08-04',
+    amount: 3800,
+  },
+  {
+    date: '2020-08-09',
+    amount: 1900,
+  },
+  {
+    date: '2020-08-08',
+    amount: 2400,
+  },
+  {
+    date: '2020-08-03',
+    amount: 4000,
+  },
+  {
+    date: '2020-08-02',
+    amount: 3700,
+  },
+  {
+    date: '2020-08-01',
+    amount: 2500,
+  },
+  {
+    date: '2020-08-18',
+    amount: 4300,
+  },
+  {
+    date: '2020-08-17',
+    amount: 1500,
+  },
+  {
+    date: '2020-08-16',
+    amount: 3600,
+  },
+  {
+    date: '2020-08-15',
+    amount: 2200,
+  },
+  {
+    date: '2020-08-19',
+    amount: 3900,
+  },
+  {
+    date: '2020-08-10',
+    amount: 4100,
+  },
+  {
+    date: '2020-08-14',
+    amount: 3600,
+  },
+  {
+    date: '2020-08-13',
+    amount: 2900,
+  },
+  {
+    date: '2020-08-12',
+    amount: 2700,
+  },
+  {
+    date: '2020-08-11',
+    amount: 5100,
+  },
+  {
+    date: '2020-09-19',
+    amount: 1200,
+  },
+  {
+    date: '2020-09-18',
+    amount: 6500,
+  },
+  {
+    date: '2020-09-17',
+    amount: 2500,
+  },
+  {
+    date: '2020-09-16',
+    amount: 1400,
+  },
+  {
+    date: '2020-09-11',
+    amount: 2300,
+  },
+  {
+    date: '2020-09-10',
+    amount: 1900,
+  },
+  {
+    date: '2020-09-15',
+    amount: 3100,
+  },
+  {
+    date: '2020-09-14',
+    amount: 4500,
+  },
+  {
+    date: '2020-09-13',
+    amount: 3300,
+  },
+  {
+    date: '2020-09-12',
+    amount: 2800,
+  },
+  {
+    date: '2020-09-29',
+    amount: 2600,
+  },
+  {
+    date: '2020-09-28',
+    amount: 4100,
+  },
+  {
+    date: '2020-09-27',
+    amount: 3800,
+  },
+  {
+    date: '2020-09-22',
+    amount: 3700,
+  },
+  {
+    date: '2020-09-21',
+    amount: 2700,
+  },
+  {
+    date: '2020-09-20',
+    amount: 2200,
+  },
+  {
+    date: '2020-09-26',
+    amount: 3300,
+  },
+  {
+    date: '2020-09-25',
+    amount: 4000,
+  },
+  {
+    date: '2020-09-24',
+    amount: 3800,
+  },
+  {
+    date: '2020-09-23',
+    amount: 4100,
+  },
+  {
+    date: '2020-08-29',
+    amount: 4400,
+  },
+  {
+    date: '2020-08-28',
+    amount: 5000,
+  },
+  {
+    date: '2020-08-27',
+    amount: 4900,
+  },
+  {
+    date: '2020-08-26',
+    amount: 4100,
+  },
+  {
+    date: '2020-08-21',
+    amount: 3700,
+  },
+  {
+    date: '2020-08-20',
+    amount: 2200,
+  },
+  {
+    date: '2020-08-25',
+    amount: 1700,
+  },
+  {
+    date: '2020-08-24',
+    amount: 2100,
+  },
+  {
+    date: '2020-08-23',
+    amount: 3100,
+  },
+  {
+    date: '2020-08-22',
+    amount: 1500,
+  },
+  {
+    date: '2020-09-08',
+    amount: 2900,
+  },
+  {
+    date: '2020-09-07',
+    amount: 4100,
+  },
+  {
+    date: '2020-09-06',
+    amount: 3600,
+  },
+  {
+    date: '2020-09-05',
+    amount: 3300,
+  },
+  {
+    date: '2020-09-09',
+    amount: 2800,
+  },
+  {
+    date: '2020-08-31',
+    amount: 3400,
+  },
+  {
+    date: '2020-08-30',
+    amount: 4300,
+  },
+  {
+    date: '2020-09-04',
+    amount: 6100,
+  },
+  {
+    date: '2020-09-03',
+    amount: 2500,
+  },
+  {
+    date: '2020-09-02',
+    amount: 4900,
+  },
+  {
+    date: '2020-09-01',
+    amount: 6100,
+  },
+  {
+    date: '2020-09-30',
+    amount: 5500,
+  },
+];

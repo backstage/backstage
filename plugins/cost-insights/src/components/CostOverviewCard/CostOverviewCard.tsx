@@ -50,7 +50,7 @@ export const CostOverviewCard = ({
     ? findAlways(config.metrics, m => m.kind === filters.metric)
     : null;
   const comparedChange = metricData
-    ? getComparedChange(dailyCostData, metricData)
+    ? getComparedChange(dailyCostData, metricData, filters.duration)
     : null;
 
   return (
