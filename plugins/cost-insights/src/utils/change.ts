@@ -25,6 +25,11 @@ import {
 } from '../types';
 import { aggregationSort } from '../utils/sort';
 import moment from 'moment';
+import dayjs, { OpUnitType } from 'dayjs';
+import duration, { DurationInputType } from 'dayjs/plugin/duration';
+import { inclusiveStartDateOf } from './duration';
+
+dayjs.extend(duration);
 
 // Used for displaying status colors
 export function growthOf(ratio: number, amount?: number) {
@@ -48,9 +53,14 @@ export function getComparedChange(
   dailyCost: Cost,
   metricData: MetricData,
   duration: Duration,
+  lastCompleteBillingDate: string, // YYYY-MM-DD,
 ): ChangeStatistic {
   const ratio = dailyCost.change.ratio - metricData.change.ratio;
-  const previousPeriodTotal = getPreviousPeriodTotalCost(dailyCost, duration);
+  const previousPeriodTotal = getPreviousPeriodTotalCost(
+    dailyCost,
+    duration,
+    lastCompleteBillingDate,
+  );
   return {
     ratio: ratio,
     amount: previousPeriodTotal * ratio,
@@ -60,15 +70,18 @@ export function getComparedChange(
 export function getPreviousPeriodTotalCost(
   dailyCost: Cost,
   duration: Duration,
+  endDate: string,
 ): number {
-  const costsByDate = dailyCost.aggregation.slice().sort(aggregationSort);
-  const nextPeriodStart = moment(costsByDate[0].date).add(
-    moment.duration(duration),
-  );
+  const dayjsDuration = dayjs.duration(duration);
+  const startDate = inclusiveStartDateOf(duration, endDate);
+  const [amount, type]: [number, OpUnitType] = dayjsDuration.days()
+    ? [dayjsDuration.days(), 'days' as OpUnitType]
+    : [dayjsDuration.months(), 'months' as OpUnitType];
+  const nextPeriodStart = dayjs(startDate).add(amount, type);
 
   // Add up costs that incurred before the start of the next period.
-  return costsByDate.reduce((acc, costByDate) => {
-    return moment(costByDate.date).isBefore(nextPeriodStart)
+  return dailyCost.aggregation.reduce((acc, costByDate) => {
+    return dayjs(costByDate.date).isBefore(nextPeriodStart)
       ? acc + costByDate.amount
       : acc;
   }, 0);
