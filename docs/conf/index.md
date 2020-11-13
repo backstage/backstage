@@ -28,8 +28,8 @@ development or small tweaks to be able to reuse deployment artifacts in
 different environments.
 
 The configuration is shared between the frontend and backend, meaning that
-values that are common between the two only needs to be defined once. Such as
-the `backend.baseUrl`.
+values that are common between the two only need to be defined once. Such as the
+`backend.baseUrl`.
 
 For more details, see [Writing Configuration](./writing.md).
 

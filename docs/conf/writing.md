@@ -74,7 +74,7 @@ Note that if any config flags are provided, the default `app-config.yaml` files
 are NOT loaded. To include them you need to explicitly include them with a flag,
 for example:
 
-```
+```shell
 yarn start --config ../../app-config.yaml --config ../../app-config.staging.yaml
 ```
 
@@ -99,8 +99,8 @@ order:
 
 ## Secrets
 
-Secrets are supported via a special secret keys that are prefixed with `$`,
-which in turn provides a number of different ways to read in secrets. To load a
+Secrets are supported via special secret keys that are prefixed with `$`, which
+in turn provide a number of different ways to read in secrets. To load a
 configuration value as a secret, supply an object with one of the special secret
 keys, for example `$env` or `$file`. A full list of supported secret keys can be
 found below. For example, the following will read the config key
@@ -155,8 +155,11 @@ used to point to a specific value inside the file. Supported file extensions are
 
 ```yaml
 $data: ./my-secrets.json#deployment.key
+```
 
-# my-secrets.json
+Example `my-secrets.json` file:
+
+```json
 {
   "deployment": {
     "key": "my-secret-key"
