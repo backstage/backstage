@@ -20,6 +20,7 @@ Changesets
 changset
 chanwit
 Chanwit
+circleci
 cisphobia
 cissexist
 classname
@@ -64,6 +65,7 @@ github
 Github
 gitlab
 Gitlab
+graphiql
 graphql
 graphviz
 Hackathons
@@ -80,6 +82,7 @@ inlinehilite
 interop
 javascript
 Javascript
+jenkins
 jq
 js
 json
@@ -164,9 +167,11 @@ scaffolded
 scaffolder
 Scaffolder
 semlas
+semver
 Serverless
 Sinon
 smartsymobls
+sonarqube
 sparklines
 Spotifiers
 spotify
@@ -190,6 +195,7 @@ theres
 toc
 tolerations
 Tolerations
+toolchain
 toolsets
 tooltip
 touchpoints
