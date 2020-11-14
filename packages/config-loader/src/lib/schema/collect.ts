@@ -53,12 +53,19 @@ export async function collectConfigSchemas(
     }
     visitedPackages.add(name);
 
-    const pkgPath = req.resolve(
-      `${name}/package.json`,
-      parentPath && {
-        paths: [parentPath],
-      },
-    );
+    let pkgPath: string;
+    try {
+      pkgPath = req.resolve(
+        `${name}/package.json`,
+        parentPath && {
+          paths: [parentPath],
+        },
+      );
+    } catch {
+      // We can somewhat safely ignore packages that don't export package.json,
+      // as they are likely not part of the Backstage ecosystem anyway.
+      return;
+    }
 
     const pkg = await fs.readJson(pkgPath);
     const depNames = [
