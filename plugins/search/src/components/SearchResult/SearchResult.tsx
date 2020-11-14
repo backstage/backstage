@@ -178,12 +178,9 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
 
   const updateChecked = (filter: string) => {
     if (filters.checked.includes(filter)) {
-      const index = filters.checked.indexOf(filter);
-      filters.checked.splice(index);
-
       setFilters(prevState => ({
         ...prevState,
-        checked: filters.checked,
+        checked: prevState.checked.filter(item => item !== filter),
       }));
       return;
     }
