@@ -20,19 +20,16 @@ import { Grid } from '@material-ui/core';
 import SearchBar from '../SearchBar';
 import SearchResult from '../SearchResult';
 
-const SearchPage = () => {
-  const [currentTarget, setCurrentTarget] = useState('');
+export const SearchPage = () => {
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const handleSearchInput = (event: any) => {
-    setCurrentTarget(event.target.value);
-  };
-
-  const handleSearch = async (event: Event) => {
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
+    setSearchQuery(event.target.value);
   };
 
   const handleClearSearchBar = () => {
-    setCurrentTarget('');
+    setSearchQuery('');
   };
 
   return (
@@ -43,18 +40,15 @@ const SearchPage = () => {
           <Grid item sm={12}>
             <SearchBar
               handleSearch={handleSearch}
-              handleSearchInput={handleSearchInput}
               handleClearSearchBar={handleClearSearchBar}
-              currentTarget={currentTarget}
+              searchQuery={searchQuery}
             />
           </Grid>
           <Grid item sm={12}>
-            <SearchResult currentTarget={currentTarget.toLowerCase()} />
+            <SearchResult searchQuery={searchQuery.toLowerCase()} />
           </Grid>
         </Grid>
       </Content>
     </Page>
   );
 };
-
-export default SearchPage;

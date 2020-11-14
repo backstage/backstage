@@ -33,15 +33,13 @@ const useStyles = makeStyles(() => ({
 }));
 
 type SearchBarProps = {
-  currentTarget: any;
-  handleSearchInput: any;
+  searchQuery: string;
   handleSearch: any;
   handleClearSearchBar: any;
 };
 
-const SearchBar = ({
-  currentTarget,
-  handleSearchInput,
+export const SearchBar = ({
+  searchQuery,
   handleSearch,
   handleClearSearchBar,
 }: SearchBarProps) => {
@@ -50,33 +48,22 @@ const SearchBar = ({
   return (
     <Paper
       component="form"
-      onSubmit={event => handleSearch(event)}
+      onSubmit={e => handleSearch(e)}
       className={classes.root}
     >
-      <IconButton
-        type="submit"
-        className={classes.iconButton}
-        aria-label="search"
-      >
+      <IconButton disabled type="submit" aria-label="search">
         <SearchIcon />
       </IconButton>
       <InputBase
         className={classes.input}
         placeholder="Search in Backstage"
-        value={currentTarget}
-        onChange={event => handleSearchInput(event)}
+        value={searchQuery}
+        onChange={e => handleSearch(e)}
         inputProps={{ 'aria-label': 'search backstage' }}
       />
-      <IconButton
-        type="submit"
-        className={classes.iconButton}
-        aria-label="search"
-        onClick={() => handleClearSearchBar()}
-      >
+      <IconButton aria-label="search" onClick={() => handleClearSearchBar()}>
         <ClearButton />
       </IconButton>
     </Paper>
   );
 };
-
-export default SearchBar;

@@ -39,11 +39,11 @@ const useStyles = makeStyles(theme => ({
 }));
 
 type SearchResultProps = {
-  currentTarget?: string;
+  searchQuery?: string;
 };
 
 type TableHeaderProps = {
-  searchTerm?: string;
+  searchQuery?: string;
   numberOfSelectedFilters: number;
   numberOfResults: number;
   handleToggleFilters: () => any;
@@ -80,7 +80,7 @@ const columns: TableColumn[] = [
 ];
 
 const TableHeader = ({
-  searchTerm,
+  searchQuery,
   numberOfSelectedFilters,
   numberOfResults,
   handleToggleFilters,
@@ -95,11 +95,11 @@ const TableHeader = ({
       />
       <Divider className={classes.divider} orientation="vertical" />
       <Grid item sm={12}>
-        {searchTerm ? (
+        {searchQuery ? (
           <Typography variant="h6">
             {`${numberOfResults} `}
             {numberOfResults > 1 ? `results for ` : `result for `}
-            <span className={classes.searchTerm}>"{searchTerm}"</span>{' '}
+            <span className={classes.searchTerm}>"{searchQuery}"</span>{' '}
           </Typography>
         ) : (
           <Typography variant="h6">{`${numberOfResults} results`}</Typography>
@@ -109,7 +109,7 @@ const TableHeader = ({
   );
 };
 
-const SearchResult = ({ currentTarget }: SearchResultProps) => {
+export const SearchResult = ({ searchQuery }: SearchResultProps) => {
   const catalogApi = useApi(catalogApiRef);
 
   const [showFilters, toggleFilters] = useState(false);
@@ -146,18 +146,18 @@ const SearchResult = ({ currentTarget }: SearchResultProps) => {
         );
       }
 
-      // filter on searchTerm
-      if (currentTarget) {
+      // filter on searchQuery
+      if (searchQuery) {
         withFilters = withFilters.filter(
           (result: any) =>
-            result.name?.toLowerCase().includes(currentTarget) ||
-            result.description?.toLowerCase().includes(currentTarget),
+            result.name?.toLowerCase().includes(searchQuery) ||
+            result.description?.toLowerCase().includes(searchQuery),
         );
       }
 
       setFilteredResults(withFilters);
     }
-  }, [filters, currentTarget, results]);
+  }, [filters, searchQuery, results]);
 
   if (loading || error || !results) return null;
 
@@ -213,7 +213,7 @@ const SearchResult = ({ currentTarget }: SearchResultProps) => {
             columns={columns}
             title={
               <TableHeader
-                searchTerm={currentTarget}
+                searchQuery={searchQuery}
                 numberOfResults={filteredResults.length}
                 numberOfSelectedFilters={
                   (filters.selected !== 'All' ? 1 : 0) + filters.checked.length
