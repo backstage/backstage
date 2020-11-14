@@ -44,8 +44,13 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+export type FiltersState = {
+  selected: string;
+  checked: Array<string>;
+};
+
 type FiltersProps = {
-  filters: any;
+  filters: FiltersState;
   resetFilters: () => void;
   updateSelected: (filter: string) => void;
   updateChecked: (filter: string) => void;

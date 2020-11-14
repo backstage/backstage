@@ -20,8 +20,8 @@ import { makeStyles, Typography, Grid, Divider } from '@material-ui/core';
 import { Table, TableColumn, useApi } from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog';
 
-import { FiltersButton, Filters } from '../Filters';
-import SearchApi from '../../apis';
+import { FiltersButton, Filters, FiltersState } from '../Filters';
+import SearchApi, { Result, SearchResults } from '../../apis';
 
 const useStyles = makeStyles(theme => ({
   searchTerm: {
@@ -47,7 +47,7 @@ type TableHeaderProps = {
   searchQuery?: string;
   numberOfSelectedFilters: number;
   numberOfResults: number;
-  handleToggleFilters: () => any;
+  handleToggleFilters: () => void;
 };
 
 type Filters = {
@@ -114,17 +114,17 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
   const catalogApi = useApi(catalogApiRef);
 
   const [showFilters, toggleFilters] = useState(false);
-  const [filters, setFilters] = useState<Filters>({
+  const [filters, setFilters] = useState<FiltersState>({
     selected: 'All',
     checked: [],
   });
 
-  const [filteredResults, setFilteredResults] = useState<Array<object>>([]);
+  const [filteredResults, setFilteredResults] = useState<SearchResults>([]);
 
   const searchApi = new SearchApi(catalogApi);
 
   const { loading, error, value: results } = useAsync(() => {
-    return searchApi.getSearchData();
+    return searchApi.getSearchResult();
   }, []);
 
   useEffect(() => {
@@ -135,14 +135,14 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
 
       // filter on selected
       if (filters.selected !== 'All') {
-        withFilters = results.filter((result: any) =>
+        withFilters = results.filter((result: Result) =>
           filters.selected.includes(result.kind),
         );
       }
 
       // filter on checked
       if (filters.checked.length > 0) {
-        withFilters = withFilters.filter((result: any) =>
+        withFilters = withFilters.filter((result: Result) =>
           filters.checked.includes(result.lifecycle),
         );
       }
@@ -150,7 +150,7 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
       // filter on searchQuery
       if (searchQuery) {
         withFilters = withFilters.filter(
-          (result: any) =>
+          (result: Result) =>
             result.name?.toLowerCase().includes(searchQuery) ||
             result.description?.toLowerCase().includes(searchQuery),
         );

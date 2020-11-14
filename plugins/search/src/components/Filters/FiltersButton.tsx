@@ -30,7 +30,7 @@ const useStyles = makeStyles(theme => ({
 
 type FiltersButtonProps = {
   numberOfSelectedFilters: number;
-  handleToggleFilters: () => {};
+  handleToggleFilters: () => void;
 };
 
 export const FiltersButton = ({

@@ -16,6 +16,16 @@
 
 import { CatalogApi } from '@backstage/plugin-catalog';
 
+export type Result = {
+  name: string;
+  description: string;
+  owner: string;
+  kind: string;
+  lifecycle: string;
+};
+
+export type SearchResults = Array<Result>;
+
 class SearchApi {
   private catalogApi: CatalogApi;
 
@@ -34,7 +44,7 @@ class SearchApi {
     }));
   }
 
-  public getSearchData() {
+  public getSearchResult(): Promise<SearchResults> {
     return this.entities();
   }
 }
