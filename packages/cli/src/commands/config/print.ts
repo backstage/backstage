@@ -16,37 +16,14 @@
 
 import { Command } from 'commander';
 import { stringify as stringifyYaml } from 'yaml';
-import { ConfigReader } from '@backstage/config';
+import { AppConfig, ConfigReader } from '@backstage/config';
 import { loadCliConfig } from '../../lib/config';
-import cloneDeepWith from 'lodash/cloneDeepWith';
+import { ConfigSchema, ConfigVisibility } from '@backstage/config-loader';
 
 export default async (cmd: Command) => {
   const { schema, appConfigs } = await loadCliConfig(cmd.config);
-  let data;
-
-  if (cmd.frontend) {
-    const frontendConfigs = schema.process(appConfigs, {
-      visiblity: ['frontend'],
-    });
-    data = ConfigReader.fromConfigs(frontendConfigs).get();
-  } else if (cmd.withSecrets) {
-    data = ConfigReader.fromConfigs(appConfigs).get();
-  } else {
-    let secretConfigs = schema.process(appConfigs, {
-      visiblity: ['secret'],
-    });
-    secretConfigs = secretConfigs.map(entry => ({
-      context: entry.context,
-      data: cloneDeepWith(entry.data, value => {
-        if (typeof value !== 'object') {
-          return '<secret>';
-        }
-        return undefined;
-      }),
-    }));
-
-    data = ConfigReader.fromConfigs(appConfigs.concat(secretConfigs)).get();
-  }
+  const visibility = getVisiblityOption(cmd);
+  const data = serializeConfigData(appConfigs, schema, visibility);
 
   if (cmd.format === 'json') {
     process.stdout.write(`${JSON.stringify(data, null, 2)}\n`);
@@ -54,3 +31,37 @@ export default async (cmd: Command) => {
     process.stdout.write(`${stringifyYaml(data)}\n`);
   }
 };
+
+function getVisiblityOption(cmd: Command): ConfigVisibility {
+  if (cmd.frontend && cmd.withSecrets) {
+    throw new Error('Not allowed to combine frontend and secret config');
+  }
+  if (cmd.frontend) {
+    return 'frontend';
+  } else if (cmd.withSecrets) {
+    return 'secret';
+  }
+  return 'backend';
+}
+
+function serializeConfigData(
+  appConfigs: AppConfig[],
+  schema: ConfigSchema,
+  visiblity: ConfigVisibility,
+) {
+  if (visiblity === 'frontend') {
+    const frontendConfigs = schema.process(appConfigs, {
+      visiblity: ['frontend'],
+    });
+    return ConfigReader.fromConfigs(frontendConfigs).get();
+  } else if (visiblity === 'secret') {
+    return ConfigReader.fromConfigs(appConfigs).get();
+  }
+
+  const sanitizedConfigs = schema.process(appConfigs, {
+    valueTransform: (value, { visibility }) =>
+      visibility === 'secret' ? '<secret>' : value,
+  });
+
+  return ConfigReader.fromConfigs(sanitizedConfigs).get();
+}
