@@ -38,14 +38,14 @@ export const SearchPage = () => {
       <Header title="Search" />
       <Content>
         <Grid container direction="row">
-          <Grid item sm={12}>
+          <Grid item xs={12}>
             <SearchBar
               handleSearch={handleSearch}
               handleClearSearchBar={handleClearSearchBar}
               searchQuery={searchQuery}
             />
           </Grid>
-          <Grid item sm={12}>
+          <Grid item xs={12}>
             <SearchResult searchQuery={searchQuery.toLowerCase()} />
           </Grid>
         </Grid>

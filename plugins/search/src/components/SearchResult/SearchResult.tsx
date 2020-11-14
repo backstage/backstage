@@ -95,7 +95,7 @@ const TableHeader = ({
         handleToggleFilters={handleToggleFilters}
       />
       <Divider className={classes.divider} orientation="vertical" />
-      <Grid item sm={12}>
+      <Grid item xs={12}>
         {searchQuery ? (
           <Typography variant="h6">
             {`${numberOfResults} `}
@@ -198,7 +198,7 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
     <>
       <Grid container>
         {showFilters && (
-          <Grid item sm={3}>
+          <Grid item xs={3}>
             <Filters
               filters={filters}
               resetFilters={resetFilters}
@@ -207,7 +207,7 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
             />
           </Grid>
         )}
-        <Grid item sm={showFilters ? 9 : 12}>
+        <Grid item xs={showFilters ? 9 : 12}>
           <Table
             options={{ paging: true, search: false }}
             data={filteredResults}
