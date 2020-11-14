@@ -26,14 +26,14 @@ export default async (cmd: Command) => {
 
   if (cmd.frontend) {
     const frontendConfigs = schema.process(appConfigs, {
-      visibilities: ['frontend'],
+      visiblity: ['frontend'],
     });
     data = ConfigReader.fromConfigs(frontendConfigs).get();
   } else if (cmd.withSecrets) {
     data = ConfigReader.fromConfigs(appConfigs).get();
   } else {
     let secretConfigs = schema.process(appConfigs, {
-      visibilities: ['secret'],
+      visiblity: ['secret'],
     });
     secretConfigs = secretConfigs.map(entry => ({
       context: entry.context,

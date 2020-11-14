@@ -79,7 +79,7 @@ type ConfigProcessingOptions = {
    * The visibilities that should be included in the output data.
    * If omitted, the data will not be filtered by visibility.
    */
-  visibilities?: ConfigVisibility[];
+  visiblity?: ConfigVisibility[];
 };
 
 /**

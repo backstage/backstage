@@ -51,7 +51,7 @@ export async function loadConfigSchema(
   const validate = compileConfigSchemas(schemas);
 
   return {
-    process(configs: AppConfig[], { visibilities } = {}): AppConfig[] {
+    process(configs: AppConfig[], { visiblity } = {}): AppConfig[] {
       const result = validate(configs);
       if (result.errors) {
         throw new Error(
@@ -61,10 +61,10 @@ export async function loadConfigSchema(
 
       let processedConfigs = configs;
 
-      if (visibilities) {
+      if (visiblity) {
         processedConfigs = processedConfigs.map(({ data, context }) => ({
           context,
-          data: filterByVisibility(data, visibilities, result.visibilityByPath),
+          data: filterByVisibility(data, visiblity, result.visibilityByPath),
         }));
       }
 
