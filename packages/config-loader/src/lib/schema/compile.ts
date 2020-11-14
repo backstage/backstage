@@ -75,15 +75,15 @@ export function compileConfigSchemas(
         // This ensures that the visibilities across different schemas are sound, and
         // selects the most specific visibility for each path.
         visibility(values: string[], path: string[]) {
-          const hasApp = values.some(_ => _ === 'frontend');
+          const hasFrontend = values.some(_ => _ === 'frontend');
           const hasSecret = values.some(_ => _ === 'secret');
-          if (hasApp && hasSecret) {
+          if (hasFrontend && hasSecret) {
             throw new Error(
               `Config schema visibility is both 'frontend' and 'secret' for ${path.join(
                 '/',
               )}`,
             );
-          } else if (hasApp) {
+          } else if (hasFrontend) {
             return 'frontend';
           } else if (hasSecret) {
             return 'secret';
