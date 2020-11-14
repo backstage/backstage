@@ -25,19 +25,24 @@ import {
   CardContent,
   Select,
   Checkbox,
-  FormControlLabel,
+  List,
+  ListItem,
+  ListItemText,
   MenuItem,
 } from '@material-ui/core';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   filters: {
     background: 'transparent',
     boxShadow: '0px 0px 0px 0px',
   },
+  checkbox: {
+    padding: theme.spacing(0, 1, 0, 1),
+  },
   dropdown: {
     width: '100%',
   },
-});
+}));
 
 type FiltersProps = {
   filters: any;
@@ -94,22 +99,28 @@ export const Filters = ({
       </CardContent>
       <CardContent>
         <Typography variant="subtitle2">Lifecycle</Typography>
-        {filter2.map(filter => (
-          <FormControlLabel
-            key={filter}
-            control={
+        <List disablePadding dense>
+          {filter2.map(filter => (
+            <ListItem
+              key={filter}
+              dense
+              button
+              onClick={() => updateChecked(filter)}
+            >
               <Checkbox
+                edge="start"
+                disableRipple
+                className={classes.checkbox}
                 color="primary"
                 checked={filters.checked.includes(filter)}
                 tabIndex={-1}
                 value={filter}
                 name={filter}
-                onClick={() => updateChecked(filter)}
               />
-            }
-            label={filter}
-          />
-        ))}
+              <ListItemText id={filter} primary={filter} />
+            </ListItem>
+          ))}
+        </List>
       </CardContent>
     </Card>
   );
