@@ -28,8 +28,8 @@ export function useRollbarEntities() {
     configApi.getString('organization.name');
 
   const { value, loading, error } = useAsync(async () => {
-    const entities = await catalogApi.getEntities();
-    return entities.filter(entity => {
+    const response = await catalogApi.getEntities();
+    return response.items.filter(entity => {
       return !!entity.metadata.annotations?.[ROLLBAR_ANNOTATION];
     });
   }, [catalogApi]);
