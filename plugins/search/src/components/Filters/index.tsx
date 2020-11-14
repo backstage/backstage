@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export * from './FiltersButton';
-export * from './Filters';
+export { FiltersButton } from './FiltersButton';
+export { Filters } from './Filters';

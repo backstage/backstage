@@ -17,8 +17,9 @@ import React, { useState } from 'react';
 
 import { Header, Content, Page } from '@backstage/core';
 import { Grid } from '@material-ui/core';
-import SearchBar from '../SearchBar';
-import SearchResult from '../SearchResult';
+
+import { SearchBar } from '../SearchBar';
+import { SearchResult } from '../SearchResult';
 
 export const SearchPage = () => {
   const [searchQuery, setSearchQuery] = useState('');

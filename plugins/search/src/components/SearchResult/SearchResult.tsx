@@ -18,8 +18,9 @@ import { useAsync } from 'react-use';
 
 import { makeStyles, Typography, Grid, Divider } from '@material-ui/core';
 import { Table, TableColumn, useApi } from '@backstage/core';
-import { FiltersButton, Filters } from '../Filters';
 import { catalogApiRef } from '@backstage/plugin-catalog';
+
+import { FiltersButton, Filters } from '../Filters';
 import SearchApi from '../../apis';
 
 const useStyles = makeStyles(theme => ({
@@ -227,5 +228,3 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
     </>
   );
 };
-
-export default SearchResult;
