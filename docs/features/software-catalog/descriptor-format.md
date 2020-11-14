@@ -299,7 +299,7 @@ The fields of a relation are:
 | Field      | Type   | Description                                                                      |
 | ---------- | ------ | -------------------------------------------------------------------------------- |
 | `target`   | Object | A complete [compound reference](references.md) to the other end of the relation. |
-| `type`     | String | The type of relation FROM us TO the target.                                      |
+| `type`     | String | The type of relation FROM a source entity TO the target entity.                  |
 | `metadata` | Object | Reserved for future use.                                                         |
 
 Entity descriptor YAML files are not supposed to contain this field. Instead,
