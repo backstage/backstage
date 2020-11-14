@@ -18,15 +18,15 @@ import React from 'react';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import { makeStyles, IconButton, Typography } from '@material-ui/core';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   filters: {
     width: '250px',
     display: 'flex',
   },
   icon: {
-    marginTop: '-10px',
+    margin: theme.spacing(-1, 0, 0, 0),
   },
-});
+}));
 
 type FiltersButtonProps = {
   numberOfSelectedFilters: number;

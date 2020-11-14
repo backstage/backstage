@@ -22,20 +22,19 @@ import { FiltersButton, Filters } from '../Filters';
 import { catalogApiRef } from '@backstage/plugin-catalog';
 import SearchApi from '../../apis';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles(theme => ({
   searchTerm: {
     background: '#eee',
-    padding: '0.2%',
     borderRadius: '10%',
   },
   tableHeader: {
-    marginTop: '10px',
+    margin: theme.spacing(1, 0, 0, 0),
     display: 'flex',
   },
   divider: {
     width: '1px',
-    margin: '0 20px',
-    padding: '15px 0',
+    margin: theme.spacing(0, 2),
+    padding: theme.spacing(2, 0),
   },
 }));
 
