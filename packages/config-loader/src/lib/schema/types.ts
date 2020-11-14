@@ -72,6 +72,14 @@ type ValidationResult = {
 export type ValidationFunc = (configs: AppConfig[]) => ValidationResult;
 
 /**
+ * A function used to transform primitive configuration values.
+ */
+export type TransformFunc<T extends number | string | boolean> = (
+  value: T,
+  context: { visibility: ConfigVisibility },
+) => T | undefined;
+
+/**
  * Options used to process configuration data with a schema.
  */
 type ConfigProcessingOptions = {
@@ -80,6 +88,14 @@ type ConfigProcessingOptions = {
    * If omitted, the data will not be filtered by visibility.
    */
   visiblity?: ConfigVisibility[];
+
+  /**
+   * A transform function that can be used to transform primitive configuration values
+   * during validation. The value returned from the transform function will be used
+   * instead of the original value. If the transform returns `undefined`, the value
+   * will be omitted.
+   */
+  valueTransform?: TransformFunc<any>;
 };
 
 /**

@@ -15,7 +15,11 @@
  */
 
 import { JsonObject, JsonValue } from '@backstage/config';
-import { ConfigVisibility, DEFAULT_CONFIG_VISIBILITY } from './types';
+import {
+  ConfigVisibility,
+  DEFAULT_CONFIG_VISIBILITY,
+  TransformFunc,
+} from './types';
 
 /**
  * This filters data by visibility by discovering the visibility of each
@@ -25,14 +29,20 @@ export function filterByVisibility(
   data: JsonObject,
   includeVisibilities: ConfigVisibility[],
   visibilityByPath: Map<string, ConfigVisibility>,
+  transformFunc?: TransformFunc<number | string | boolean>,
 ): JsonObject {
   function transform(jsonVal: JsonValue, path: string): JsonValue | undefined {
-    const isVisible = includeVisibilities.includes(
-      visibilityByPath.get(path) ?? DEFAULT_CONFIG_VISIBILITY,
-    );
+    const visibility = visibilityByPath.get(path) ?? DEFAULT_CONFIG_VISIBILITY;
+    const isVisible = includeVisibilities.includes(visibility);
 
     if (typeof jsonVal !== 'object') {
-      return isVisible ? jsonVal : undefined;
+      if (isVisible) {
+        if (transformFunc) {
+          return transformFunc(jsonVal, { visibility });
+        }
+        return jsonVal;
+      }
+      return undefined;
     } else if (jsonVal === null) {
       return undefined;
     } else if (Array.isArray(jsonVal)) {

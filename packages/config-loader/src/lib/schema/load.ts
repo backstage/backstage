@@ -18,7 +18,11 @@ import { AppConfig, JsonObject } from '@backstage/config';
 import { compileConfigSchemas } from './compile';
 import { collectConfigSchemas } from './collect';
 import { filterByVisibility } from './filtering';
-import { ConfigSchema, ConfigSchemaPackageEntry } from './types';
+import {
+  ConfigSchema,
+  ConfigSchemaPackageEntry,
+  CONFIG_VISIBILITIES,
+} from './types';
 
 type Options =
   | {
@@ -51,7 +55,10 @@ export async function loadConfigSchema(
   const validate = compileConfigSchemas(schemas);
 
   return {
-    process(configs: AppConfig[], { visiblity } = {}): AppConfig[] {
+    process(
+      configs: AppConfig[],
+      { visiblity, valueTransform } = {},
+    ): AppConfig[] {
       const result = validate(configs);
       if (result.errors) {
         throw new Error(
@@ -64,7 +71,22 @@ export async function loadConfigSchema(
       if (visiblity) {
         processedConfigs = processedConfigs.map(({ data, context }) => ({
           context,
-          data: filterByVisibility(data, visiblity, result.visibilityByPath),
+          data: filterByVisibility(
+            data,
+            visiblity,
+            result.visibilityByPath,
+            valueTransform,
+          ),
+        }));
+      } else if (valueTransform) {
+        processedConfigs = processedConfigs.map(({ data, context }) => ({
+          context,
+          data: filterByVisibility(
+            data,
+            Array.from(CONFIG_VISIBILITIES),
+            result.visibilityByPath,
+            valueTransform,
+          ),
         }));
       }
 
