@@ -104,10 +104,14 @@ export function compileConfigSchemas(
 
     const valid = validate(config);
     if (!valid) {
-      // TODO(Rugvip): better messages here, with more context such as which file the error occurred in
-      const errors = ajv.errorsText(validate.errors);
+      const errors = validate.errors ?? [];
       return {
-        errors: [errors],
+        errors: errors.map(({ dataPath, message, params }) => {
+          const paramStr = Object.entries(params)
+            .map(([name, value]) => `${name}=${value}`)
+            .join(' ');
+          return `Config ${message || ''} { ${paramStr} } at ${dataPath}`;
+        }),
         visibilityByPath: new Map(),
       };
     }

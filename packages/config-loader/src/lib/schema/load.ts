@@ -61,9 +61,11 @@ export async function loadConfigSchema(
     ): AppConfig[] {
       const result = validate(configs);
       if (result.errors) {
-        throw new Error(
+        const error = new Error(
           `Config validation failed, ${result.errors.join('; ')}`,
         );
+        (error as any).messages = result.errors;
+        throw error;
       }
 
       let processedConfigs = configs;

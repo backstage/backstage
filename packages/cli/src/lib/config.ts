@@ -40,15 +40,24 @@ export async function loadCliConfig(configArgs: string[]) {
     `Loaded config from ${appConfigs.map(c => c.context).join(', ')}`,
   );
 
-  const frontendAppConfigs = schema.process(appConfigs, {
-    visiblity: ['frontend'],
-  });
-  const frontendConfig = ConfigReader.fromConfigs(frontendAppConfigs);
+  try {
+    const frontendAppConfigs = schema.process(appConfigs, {
+      visiblity: ['frontend'],
+    });
+    const frontendConfig = ConfigReader.fromConfigs(frontendAppConfigs);
 
-  return {
-    schema,
-    appConfigs,
-    frontendConfig,
-    frontendAppConfigs,
-  };
+    return {
+      schema,
+      appConfigs,
+      frontendConfig,
+      frontendAppConfigs,
+    };
+  } catch (error) {
+    const maybeSchemaError = error as Error & { messages?: string[] };
+    if (maybeSchemaError.messages) {
+      const messages = maybeSchemaError.messages.join('\n  ');
+      throw new Error(`Configuration does not match schema\n\n  ${messages}`);
+    }
+    throw error;
+  }
 }
