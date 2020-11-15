@@ -84,9 +84,9 @@ export interface Config {
   };
 
   /** Configuration for integrations towards various external repository provider systems */
-  integrations: {
+  integrations?: {
     /** Integration configuration for Azure */
-    azure: {
+    azure?: {
       /** The hostname of the given Azure instance */
       host: string;
       /**
@@ -97,7 +97,7 @@ export interface Config {
     }[];
 
     /** Integration configuration for BitBucket */
-    bitbucket: {
+    bitbucket?: {
       /** The hostname of the given Bitbucket instance */
       host: string;
       /**
@@ -120,7 +120,7 @@ export interface Config {
     }[];
 
     /** Integration configuration for GitHub */
-    github: {
+    github?: {
       /** The hostname of the given GitHub instance */
       host: string;
       /**
@@ -135,7 +135,7 @@ export interface Config {
     }[];
 
     /** Integration configuration for GitLab */
-    gitlab: {
+    gitlab?: {
       /** The hostname of the given GitLab instance */
       host: string;
       /**
