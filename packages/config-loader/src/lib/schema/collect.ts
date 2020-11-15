@@ -21,6 +21,8 @@ import {
   dirname,
 } from 'path';
 import { ConfigSchemaPackageEntry } from './types';
+import { getProgramFromFiles, generateSchema } from 'typescript-json-schema';
+import { JsonObject } from '@backstage/config';
 
 type Item = {
   name: string;
@@ -40,6 +42,7 @@ export async function collectConfigSchemas(
 ): Promise<ConfigSchemaPackageEntry[]> {
   const visitedPackages = new Set<string>();
   const schemas = Array<ConfigSchemaPackageEntry>();
+  const tsSchemaPaths = Array<string>();
   const currentDir = process.cwd();
 
   async function processItem({ name, parentPath }: Item) {
@@ -83,18 +86,23 @@ export async function collectConfigSchemas(
     }
     if (hasSchema) {
       if (typeof pkg.configSchema === 'string') {
-        if (!pkg.configSchema.endsWith('.json')) {
+        const isJson = pkg.configSchema.endsWith('.json');
+        const isDts = pkg.configSchema.endsWith('.d.ts');
+        if (!isJson && !isDts) {
           throw new Error(
-            `Config schema files must be .json, got ${pkg.configSchema}`,
+            `Config schema files must be .json or .d.ts, got ${pkg.configSchema}`,
           );
         }
-        const value = await fs.readJson(
-          resolvePath(dirname(pkgPath), pkg.configSchema),
-        );
-        schemas.push({
-          value,
-          path: relativePath(currentDir, pkgPath),
-        });
+        if (isDts) {
+          tsSchemaPaths.push(resolvePath(dirname(pkgPath), pkg.configSchema));
+        } else {
+          const path = resolvePath(dirname(pkgPath), pkg.configSchema);
+          const value = await fs.readJson(path);
+          schemas.push({
+            value,
+            path: relativePath(currentDir, path),
+          });
+        }
       } else {
         schemas.push({
           value: pkg.configSchema,
@@ -110,5 +118,49 @@ export async function collectConfigSchemas(
 
   await Promise.all(packageNames.map(name => processItem({ name })));
 
-  return schemas;
+  const tsSchemas = compileTsSchemas(currentDir, tsSchemaPaths);
+
+  return schemas.concat(tsSchemas);
+}
+
+// This handles the support of TypeScript .d.ts config schema declarations.
+// We collect all typescript schema definition and compile them all in one go.
+// This is much faster than compiling them separately.
+function compileTsSchemas(currentDir: string, paths: string[]) {
+  if (paths.length === 0) {
+    return [];
+  }
+
+  const program = getProgramFromFiles(paths, {
+    incremental: false,
+    isolatedModules: true,
+    lib: ['ES5'], // Skipping most libs speeds processing up a lot, we just need the primitive types anyway
+    noEmit: true,
+    noResolve: true,
+    skipLibCheck: true, // Skipping lib checks speeds things up
+    skipDefaultLibCheck: true,
+    strict: true,
+    typeRoots: [], // Do not include any additional types
+    types: [],
+  });
+
+  const tsSchemas = paths.map(schemaFile => {
+    const value = generateSchema(
+      program,
+      // All schemas should export a `Config` symbol
+      'Config',
+      // This enables usage of @visibility is doc comments
+      { validationKeywords: ['visibility'] },
+      [schemaFile],
+    ) as JsonObject | null;
+
+    const path = relativePath(currentDir, schemaFile);
+
+    if (!value) {
+      throw new Error(`Invalid schema in ${path}, missing Config export`);
+    }
+    return { path, value };
+  });
+
+  return tsSchemas;
 }
