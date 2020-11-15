@@ -147,5 +147,31 @@
     "watch": "./src",
     "exec": "bin/backstage-cli",
     "ext": "ts"
+  },
+  "configSchema": {
+    "$schema": "https://backstage.io/schema/config-v1",
+    "title": "@backstage/cli",
+    "type": "object",
+    "properties": {
+      "app": {
+        "type": "object",
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "visibility": "frontend"
+          },
+          "title": {
+            "type": "string",
+            "visibility": "frontend"
+          },
+          "googleAnalyticsTrackingId": {
+            "type": "string",
+            "visibility": "frontend",
+            "description": "Tracking ID for Google Analytics",
+            "example": "UA-000000-0"
+          }
+        }
+      }
+    }
   }
 }
