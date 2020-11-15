@@ -46,7 +46,6 @@ export function compileConfigSchemas(
       'https://backstage.io/schema/config-v1': true,
     },
   }).addKeyword('visibility', {
-    type: 'string',
     metaSchema: {
       type: 'string',
       enum: CONFIG_VISIBILITIES,
