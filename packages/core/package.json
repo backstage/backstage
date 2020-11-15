@@ -79,55 +79,8 @@
     "@types/zen-observable": "^0.8.0"
   },
   "files": [
-    "dist"
+    "dist",
+    "config.d.ts"
   ],
-  "configSchema": {
-    "$schema": "https://backstage.io/schema/config-v1",
-    "title": "@backstage/core",
-    "type": "object",
-    "properties": {
-      "app": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string",
-            "visibility": "frontend"
-          },
-          "baseUrl": {
-            "type": "string",
-            "visibility": "frontend"
-          }
-        },
-        "required": [
-          "title",
-          "baseUrl"
-        ]
-      },
-      "backend": {
-        "type": "object",
-        "properties": {
-          "baseUrl": {
-            "type": "string",
-            "visibility": "frontend"
-          }
-        },
-        "required": [
-          "baseUrl"
-        ]
-      },
-      "organization": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "visibility": "frontend"
-          }
-        }
-      }
-    },
-    "required": [
-      "app",
-      "backend"
-    ]
-  }
+  "configSchema": "config.d.ts"
 }
