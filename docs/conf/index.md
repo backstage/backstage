@@ -33,6 +33,20 @@ values that are common between the two only need to be defined once. Such as the
 
 For more details, see [Writing Configuration](./writing.md).
 
+## Configuration Schema
+
+The configuration is validated using a JSON Schema definitions. Each plugin and
+package can provide pieces of the configuration schema, which is stitched
+together to form a complete schema during validation. The configuration schema
+is also used to select what configuration is available in the frontend using a
+custom `visibility` keyword, as configuration is by default only available in
+the backend.
+
+You can validate your configuration against the schema using
+`backstage-cli config:validate`, and define schema for your own plugin either
+using JSON Schema or TypeScript. For more information, see
+[Defining Configuration](./defining.md).
+
 ## Reading Configuration
 
 As a plugin developer, you likely end up wanting to define configuration that
@@ -49,5 +63,5 @@ More details are provided in dedicated sections of the documentation.
   plugin.
 - [Writing Configuration](./writing.md): How to provide configuration for your
   Backstage deployment.
-- [Defining Configuration](./defining.md): How to define configuration for users
-  of your plugin.
+- [Defining Configuration](./defining.md): How to define configuration schema
+  for users of your plugin or package.

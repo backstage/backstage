@@ -76,6 +76,7 @@ http
 https
 img
 incentivised
+inlined
 inlinehilite
 interop
 javascript
