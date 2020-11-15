@@ -15,7 +15,7 @@
  */
 
 export interface Config {
-  frontend: {
+  app: {
     baseUrl: string; // defined in core, but repeated here without doc
   };
 

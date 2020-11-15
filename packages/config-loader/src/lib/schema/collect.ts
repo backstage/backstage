@@ -150,7 +150,10 @@ function compileTsSchemas(currentDir: string, paths: string[]) {
       // All schemas should export a `Config` symbol
       'Config',
       // This enables usage of @visibility is doc comments
-      { validationKeywords: ['visibility'] },
+      {
+        required: true,
+        validationKeywords: ['visibility'],
+      },
       [schemaFile],
     ) as JsonObject | null;
 

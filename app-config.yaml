@@ -270,7 +270,7 @@ costInsights:
 homepage:
   clocks:
     - label: UTC
-      timzone: UTC
+      timezone: UTC
     - label: NYC
       timezone: 'America/New_York'
     - label: STO
