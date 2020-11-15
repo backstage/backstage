@@ -28,8 +28,7 @@ type InjectOptions = {
 };
 
 /**
- * Injects config from APP_CONFIG_ env vars, replacing existing
- * injected config if it has already been injected.
+ * Injects configs into the app bundle, replacing any existing injected config.
  */
 export async function injectConfig(options: InjectOptions) {
   const { staticDir, logger, appConfigs } = options;
@@ -73,6 +72,10 @@ type ReadOptions = {
   config: Config;
 };
 
+/**
+ * Read config from environment and process the backend config using the
+ * schema that is embedded in the frontend build.
+ */
 export async function readConfigs(options: ReadOptions): Promise<AppConfig[]> {
   const { env, appDistDir, config } = options;
 

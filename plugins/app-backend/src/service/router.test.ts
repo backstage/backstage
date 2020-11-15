@@ -22,7 +22,10 @@ import Router from 'express-promise-router';
 import request from 'supertest';
 import { createRouter } from './router';
 
-jest.mock('../lib/config', () => ({ injectEnvConfig: jest.fn() }));
+jest.mock('../lib/config', () => ({
+  injectConfig: jest.fn(),
+  readConfigs: jest.fn(),
+}));
 
 global.__non_webpack_require__ = {
   /* eslint-disable-next-line no-restricted-syntax */
