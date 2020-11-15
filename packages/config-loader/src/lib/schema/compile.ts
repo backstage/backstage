@@ -56,7 +56,11 @@ export function compileConfigSchemas(
           return false;
         }
         if (visibility) {
-          visibilityByPath.set(dataPath, visibility);
+          const normalizedPath = dataPath.replace(
+            /\['?(.*?)'?\]/g,
+            (_, segment) => `.${segment}`,
+          );
+          visibilityByPath.set(normalizedPath, visibility);
         }
         return true;
       };

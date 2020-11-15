@@ -49,7 +49,7 @@ export function filterByVisibility(
       const arr = new Array<JsonValue>();
 
       for (const [index, value] of jsonVal.entries()) {
-        const out = transform(value, `${path}[${index}]`);
+        const out = transform(value, `${path}.${index}`);
         if (out !== undefined) {
           arr.push(out);
         }
