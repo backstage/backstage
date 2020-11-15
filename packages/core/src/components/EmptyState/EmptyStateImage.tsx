@@ -54,6 +54,7 @@ export const EmptyStateImage = ({ missing }: Props) => {
           src={noInformation}
           alt="no Information"
           className={classes.generalImg}
+          data-testid="noInformation"
         />
       );
     case 'content':
@@ -62,11 +63,17 @@ export const EmptyStateImage = ({ missing }: Props) => {
           src={createComponent}
           alt="create Component"
           className={classes.generalImg}
+          data-testid="createComponent"
         />
       );
     case 'data':
       return (
-        <img src={noBuild} alt="no Build" className={classes.generalImg} />
+        <img
+          src={noBuild}
+          alt="no Build"
+          className={classes.generalImg}
+          data-testid="noBuild"
+        />
       );
     default:
       return null;
