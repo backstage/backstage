@@ -147,6 +147,14 @@ export function registerCommands(program: CommanderStatic) {
     .action(lazy(() => import('./config/print').then(m => m.default)));
 
   program
+    .command('config:validate')
+    .option(...configOption)
+    .description(
+      'Validate that the given configuration loads and matches schema',
+    )
+    .action(lazy(() => import('./config/validate').then(m => m.default)));
+
+  program
     .command('prepack')
     .description('Prepares a package for packaging before publishing')
     .action(lazy(() => import('./pack').then(m => m.pre)));
