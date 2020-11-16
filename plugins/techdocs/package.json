@@ -65,8 +65,14 @@
           "requestUrl": {
             "type": "string",
             "visibility": "frontend"
+          },
+          "storageUrl": {
+            "type": "string"
           }
-        }
+        },
+        "required": [
+          "requestUrl"
+        ]
       }
     }
   }
