@@ -16,11 +16,9 @@
 /* eslint-disable no-restricted-imports */
 
 import dayjs from 'dayjs';
-import regression, { DataPoint } from 'regression';
 import { CostInsightsApi, ProductInsightsOptions } from '../src/api';
 import {
   Alert,
-  ChangeStatistic,
   Cost,
   DateAggregation,
   DEFAULT_DATE_FORMAT,
@@ -30,17 +28,14 @@ import {
   MetricData,
   Project,
   ProjectGrowthData,
-  Trendline,
   UnlabeledDataflowData,
 } from '../src/types';
 import {
   ProjectGrowthAlert,
   UnlabeledDataflowAlert,
 } from '../src/utils/alerts';
-import {
-  exclusiveEndDateOf,
-  inclusiveStartDateOf,
-} from '../src/utils/duration';
+import { inclusiveStartDateOf } from '../src/utils/duration';
+import { trendlineOf, changeOf } from './utils/mockData';
 
 type IntervalFields = {
   duration: Duration;
@@ -66,7 +61,7 @@ function aggregationFor(
   baseline: number,
 ): DateAggregation[] {
   const { duration, endDate } = parseIntervals(intervals);
-  const days = dayjs(exclusiveEndDateOf(duration, endDate)).diff(
+  const days = dayjs(endDate).diff(
     inclusiveStartDateOf(duration, endDate),
     'day',
   );
@@ -84,32 +79,6 @@ function aggregationFor(
     },
     [],
   );
-}
-
-function trendlineOf(aggregation: DateAggregation[]): Trendline {
-  const data: ReadonlyArray<DataPoint> = aggregation.map(a => [
-    Date.parse(a.date) / 1000,
-    a.amount,
-  ]);
-  const result = regression.linear(data, { precision: 5 });
-  return {
-    slope: result.equation[0],
-    intercept: result.equation[1],
-  };
-}
-
-function changeOf(aggregation: DateAggregation[]): ChangeStatistic {
-  const half = Math.ceil(aggregation.length / 2);
-  const before = aggregation
-    .slice(0, half)
-    .reduce((sum, a) => sum + a.amount, 0);
-  const after = aggregation
-    .slice(half, aggregation.length)
-    .reduce((sum, a) => sum + a.amount, 0);
-  return {
-    ratio: (after - before) / before,
-    amount: after - before,
-  };
 }
 
 export class ExampleCostInsightsClient implements CostInsightsApi {
