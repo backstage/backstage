@@ -34,6 +34,6 @@ describe('<EmptyState />', () => {
       rendered.getByText('Your plugin is missing an annotation'),
     ).toBeInTheDocument();
     expect(rendered.getByLabelText('button')).toBeInTheDocument();
-    expect(rendered.getByTestId('missingAnnotation')).toBeInTheDocument();
+    expect(rendered.getByAltText('annotation is missing')).toBeInTheDocument();
   });
 });

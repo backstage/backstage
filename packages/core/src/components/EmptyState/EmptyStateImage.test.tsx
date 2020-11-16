@@ -20,30 +20,30 @@ import { EmptyStateImage } from './EmptyStateImage';
 
 describe('<EmptyStateImage />', () => {
   it('render EmptyStateImage component with missing field', async () => {
-    const rendered = await renderWithEffects(
+    const { getByAltText } = await renderWithEffects(
       wrapInTestApp(<EmptyStateImage missing="field" />),
     );
-    expect(rendered.getByTestId('missingAnnotation')).toBeInTheDocument();
+    expect(getByAltText('annotation is missing')).toBeInTheDocument();
   });
 
   it('render EmptyStateImage component with missing info', async () => {
-    const rendered = await renderWithEffects(
+    const { getByAltText } = await renderWithEffects(
       wrapInTestApp(<EmptyStateImage missing="info" />),
     );
-    expect(rendered.getByTestId('noInformation')).toBeInTheDocument();
+    expect(getByAltText('no Information')).toBeInTheDocument();
   });
 
   it('render EmptyStateImage component with missing content', async () => {
-    const rendered = await renderWithEffects(
+    const { getByAltText } = await renderWithEffects(
       wrapInTestApp(<EmptyStateImage missing="content" />),
     );
-    expect(rendered.getByTestId('createComponent')).toBeInTheDocument();
+    expect(getByAltText('create Component')).toBeInTheDocument();
   });
 
   it('render EmptyStateImage component with missing data', async () => {
-    const rendered = await renderWithEffects(
+    const { getByAltText } = await renderWithEffects(
       wrapInTestApp(<EmptyStateImage missing="data" />),
     );
-    expect(rendered.getByTestId('noBuild')).toBeInTheDocument();
+    expect(getByAltText('no Build')).toBeInTheDocument();
   });
 });

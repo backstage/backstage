@@ -136,7 +136,7 @@ describe('<FeatureCalloutCircular />', () => {
         () => UPDATED_BOUNDING_RECT,
       );
 
-      // Trigger the window resize event.
+      // Trigger the window scroll event.
       fireEvent(window, new Event('scroll'));
     });
 
