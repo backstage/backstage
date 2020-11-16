@@ -192,21 +192,24 @@ export const CostInsightsPage = () => {
       px={3}
       marginTop={10}
       display="flex"
-      flexDirection="row"
       justifyContent="space-between"
+      alignItems="center"
+      minHeight={40}
     >
-      <Box minHeight={40} width="75%" pt={2}>
+      <Box>
         <Typography variant="h4">Cost Overview</Typography>
         <Typography classes={classes}>
           Billing data as of {lastCompleteBillingDate}
         </Typography>
       </Box>
-      <Box minHeight={40} maxHeight={60} display="flex">
-        <CurrencySelect
-          currency={currency}
-          currencies={config.currencies}
-          onSelect={setCurrency}
-        />
+      <Box display="flex">
+        <Box mr={1}>
+          <CurrencySelect
+            currency={currency}
+            currencies={config.currencies}
+            onSelect={setCurrency}
+          />
+        </Box>
         <ProjectSelect
           project={pageFilters.project}
           projects={projects || []}
