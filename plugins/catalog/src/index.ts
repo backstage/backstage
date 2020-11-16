@@ -23,3 +23,4 @@ export { Router } from './components/Router';
 export { useEntity, EntityContext } from './hooks/useEntity';
 export { AboutCard } from './components/AboutCard';
 export { EntityPageLayout } from './components/EntityPageLayout';
+export { IconLinkVertical } from './components/AboutCard/IconLinkVertical';
