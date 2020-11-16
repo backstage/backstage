@@ -31,7 +31,6 @@
     "@backstage/plugin-scaffolder-backend": "^0.1.1-alpha.25",
     "@backstage/plugin-sentry-backend": "^0.1.1-alpha.25",
     "@backstage/plugin-techdocs-backend": "^0.1.1-alpha.25",
-    "@backstage/plugin-pagerduty-backend": "^0.1.1-alpha.25",
     "@gitbeaker/node": "^23.5.0",
     "@octokit/rest": "^18.0.0",
     "azure-devops-node-api": "^10.1.1",

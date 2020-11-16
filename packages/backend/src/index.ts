@@ -46,7 +46,6 @@ import techdocs from './plugins/techdocs';
 import graphql from './plugins/graphql';
 import app from './plugins/app';
 import { PluginEnvironment } from './types';
-import pagerduty from './plugins/pagerduty';
 
 function makeCreateEnv(config: ConfigReader) {
   const root = getRootLogger();
@@ -80,7 +79,6 @@ async function main() {
   const kubernetesEnv = useHotMemoize(module, () => createEnv('kubernetes'));
   const graphqlEnv = useHotMemoize(module, () => createEnv('graphql'));
   const appEnv = useHotMemoize(module, () => createEnv('app'));
-  const pagerdutyEnv = useHotMemoize(module, () => createEnv('pagerduty'));
 
   const apiRouter = Router();
   apiRouter.use('/catalog', await catalog(catalogEnv));
@@ -92,7 +90,6 @@ async function main() {
   apiRouter.use('/kubernetes', await kubernetes(kubernetesEnv));
   apiRouter.use('/proxy', await proxy(proxyEnv));
   apiRouter.use('/graphql', await graphql(graphqlEnv));
-  apiRouter.use('/pagerduty', await pagerduty(pagerdutyEnv));
   apiRouter.use(notFoundHandler());
 
   const service = createServiceBuilder(module)
