@@ -191,7 +191,7 @@ export const CostInsightsPage = () => {
   const CostOverviewBanner = () => (
     <Box
       px={3}
-      marginTop={10}
+      pt={6}
       display="flex"
       flexDirection="row"
       justifyContent="space-between"
