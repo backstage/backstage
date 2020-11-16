@@ -104,13 +104,6 @@ export function registerCommands(program: CommanderStatic) {
     .action(lazy(() => import('./plugin/serve').then(m => m.default)));
 
   program
-    .command('plugin:export')
-    .description('Exports the dev/ folder of a plugin')
-    .option('--stats', 'Write bundle stats to output directory')
-    .option(...configOption)
-    .action(lazy(() => import('./plugin/export').then(m => m.default)));
-
-  program
     .command('plugin:diff')
     .option('--check', 'Fail if changes are required')
     .option('--yes', 'Apply all changes')
