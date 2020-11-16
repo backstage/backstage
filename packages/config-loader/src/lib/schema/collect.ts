@@ -19,6 +19,7 @@ import {
   resolve as resolvePath,
   relative as relativePath,
   dirname,
+  sep,
 } from 'path';
 import { ConfigSchemaPackageEntry } from './types';
 import { getProgramFromFiles, generateSchema } from 'typescript-json-schema';
@@ -43,7 +44,7 @@ export async function collectConfigSchemas(
   const visitedPackages = new Set<string>();
   const schemas = Array<ConfigSchemaPackageEntry>();
   const tsSchemaPaths = Array<string>();
-  const currentDir = process.cwd();
+  const currentDir = await fs.realpath(process.cwd());
 
   async function processItem({ name, parentPath }: Item) {
     // Ensures that we only process each package once. We don't bother with
@@ -94,7 +95,12 @@ export async function collectConfigSchemas(
           );
         }
         if (isDts) {
-          tsSchemaPaths.push(resolvePath(dirname(pkgPath), pkg.configSchema));
+          tsSchemaPaths.push(
+            relativePath(
+              currentDir,
+              resolvePath(dirname(pkgPath), pkg.configSchema),
+            ),
+          );
         } else {
           const path = resolvePath(dirname(pkgPath), pkg.configSchema);
           const value = await fs.readJson(path);
@@ -118,7 +124,7 @@ export async function collectConfigSchemas(
 
   await Promise.all(packageNames.map(name => processItem({ name })));
 
-  const tsSchemas = compileTsSchemas(currentDir, tsSchemaPaths);
+  const tsSchemas = compileTsSchemas(tsSchemaPaths);
 
   return schemas.concat(tsSchemas);
 }
@@ -126,7 +132,7 @@ export async function collectConfigSchemas(
 // This handles the support of TypeScript .d.ts config schema declarations.
 // We collect all typescript schema definition and compile them all in one go.
 // This is much faster than compiling them separately.
-function compileTsSchemas(currentDir: string, paths: string[]) {
+function compileTsSchemas(paths: string[]) {
   if (paths.length === 0) {
     return [];
   }
@@ -144,7 +150,7 @@ function compileTsSchemas(currentDir: string, paths: string[]) {
     types: [],
   });
 
-  const tsSchemas = paths.map(schemaFile => {
+  const tsSchemas = paths.map(path => {
     const value = generateSchema(
       program,
       // All schemas should export a `Config` symbol
@@ -154,10 +160,8 @@ function compileTsSchemas(currentDir: string, paths: string[]) {
         required: true,
         validationKeywords: ['visibility'],
       },
-      [schemaFile],
+      [path.split(sep).join('/')], // Unix paths are expected for all OSes here
     ) as JsonObject | null;
-
-    const path = relativePath(currentDir, schemaFile);
 
     if (!value) {
       throw new Error(`Invalid schema in ${path}, missing Config export`);
