@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import fetch, { Response } from 'node-fetch';
+import fetch from 'cross-fetch';
 import { NotFoundError } from '../errors';
-import { UrlReader } from './types';
+import { ReadTreeResponse, UrlReader } from './types';
 
 /**
  * A UrlReader that does a plain fetch of the URL.
@@ -31,7 +31,7 @@ export class FetchUrlReader implements UrlReader {
     }
 
     if (response.ok) {
-      return response.buffer();
+      return Buffer.from(await response.text());
     }
 
     const message = `could not read ${url}, ${response.status} ${response.statusText}`;
@@ -39,6 +39,10 @@ export class FetchUrlReader implements UrlReader {
       throw new NotFoundError(message);
     }
     throw new Error(message);
+  }
+
+  readTree(): Promise<ReadTreeResponse> {
+    throw new Error('FetchUrlReader does not implement readTree');
   }
 
   toString() {

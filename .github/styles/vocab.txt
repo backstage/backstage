@@ -32,6 +32,7 @@ Codehilite
 codeowners
 config
 Config
+configmaps
 configs
 const
 cookiecutter
@@ -61,12 +62,15 @@ Firekube
 Fredrik
 github
 Github
+gitlab
 Gitlab
 graphql
 graphviz
 Hackathons
 haproxy
 heroku
+Heroku
+horizontalpodautoscalers
 Hostname
 http
 https
@@ -88,6 +92,7 @@ learnings
 lerna
 Lerna
 magiclink
+Maintainership
 mailto
 Malus
 md
@@ -103,6 +108,7 @@ Monorepo
 monorepos
 msw
 namespace
+namespaces
 Namespaces
 neuro
 newrelic
@@ -139,7 +145,9 @@ Raghunandan
 rankdir
 readme
 Readme
+Recharts
 Redash
+replicasets
 repo
 Repo
 repos
@@ -183,6 +191,7 @@ toc
 tolerations
 Tolerations
 toolsets
+tooltip
 touchpoints
 ui
 upvote
@@ -192,6 +201,7 @@ validators
 Voi
 Wealthsimple
 Weaveworks
+Webpack
 xyz
 yaml
 Zalando
@@ -201,3 +211,5 @@ cloudbuild
 Grafana
 Iain
 Snyk
+www
+WWW

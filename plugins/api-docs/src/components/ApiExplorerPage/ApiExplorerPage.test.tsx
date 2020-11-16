@@ -72,6 +72,6 @@ describe('ApiCatalogPage', () => {
   // https://github.com/mbrn/material-table/issues/1293
   it('should render', async () => {
     const { findByText } = renderWrapped(<ApiExplorerPage />);
-    expect(await findByText(/APIs \(2\)/)).toBeInTheDocument();
+    expect(await findByText(/Backstage API Explorer/)).toBeInTheDocument();
   });
 });

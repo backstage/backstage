@@ -13,7 +13,7 @@ need to run Backstage in your own environment.
 ## Create an app
 
 To create a Backstage app, you will need to have
-[NodeJS](https://nodejs.org/en/download/) Active LTS Release installed
+[Node.js](https://nodejs.org/en/download/) Active LTS Release installed
 (currently v12).
 
 Backstage provides a utility for creating new apps. It guides you through the
@@ -74,6 +74,7 @@ app.
 ```
 app
 ├── app-config.yaml
+├── catalog-info.yaml
 ├── lerna.json
 ├── package.json
 └── packages
@@ -83,6 +84,9 @@ app
 
 - **app-config.yaml**: Main configuration file for the app. See
   [Configuration](https://backstage.io/docs/conf/) for more information.
+- **catalog-info.yaml**: Catalog Entities descriptors. See
+  [Descriptor Format of Catalog Entities](https://backstage.io/docs/features/software-catalog/descriptor-format)
+  to get started.
 - **lerna.json**: Contains information about workspaces and other lerna
   configuration needed for the monorepo setup.
 - **package.json**: Root package.json for the project. _Note: Be sure that you
@@ -120,3 +124,21 @@ the root directory:
 ```bash
 yarn workspace backend start
 ```
+
+### Troubleshooting
+
+#### Cannot find module
+
+You may encounter an error similar to below:
+
+```
+internal/modules/cjs/loader.js:968
+  throw err;
+  ^
+
+Error: Cannot find module '../build/Debug/nodegit.node'
+```
+
+This can occur if an npm dependency is not completely installed. Because some
+dependencies run a post-install script, ensure that both your npm and yarn
+configs have the `ignore-scripts` flag set to `false`.

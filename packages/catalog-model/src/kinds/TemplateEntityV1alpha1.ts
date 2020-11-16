@@ -17,7 +17,7 @@
 import * as yup from 'yup';
 import type { Entity } from '../entity/Entity';
 import type { JSONSchema } from '../types';
-import { schemaPolicy } from './util';
+import { schemaValidator } from './util';
 
 const API_VERSION = ['backstage.io/v1alpha1', 'backstage.io/v1beta1'] as const;
 const KIND = 'Template' as const;
@@ -46,7 +46,7 @@ export interface TemplateEntityV1alpha1 extends Entity {
   };
 }
 
-export const templateEntityV1alpha1Policy = schemaPolicy(
+export const templateEntityV1alpha1Validator = schemaValidator(
   KIND,
   API_VERSION,
   schema,

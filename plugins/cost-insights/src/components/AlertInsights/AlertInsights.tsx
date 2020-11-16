@@ -16,10 +16,9 @@
 
 import React from 'react';
 import { Grid } from '@material-ui/core';
-import AlertInsightsSection from './AlertInsightsSection';
-import AlertInsightsHeader from './AlertInsightsHeader';
+import { AlertInsightsSection } from './AlertInsightsSection';
+import { AlertInsightsHeader } from './AlertInsightsHeader';
 import { Alert } from '../../types';
-import { renderAlert } from '../../utils/alerts';
 
 const title = "Your team's action items";
 const subtitle =
@@ -29,7 +28,7 @@ type AlertInsightsProps = {
   alerts: Array<Alert>;
 };
 
-const AlertInsights = ({ alerts }: AlertInsightsProps) => (
+export const AlertInsights = ({ alerts }: AlertInsightsProps) => (
   <Grid container direction="column" spacing={2}>
     <Grid item>
       <AlertInsightsHeader title={title} subtitle={subtitle} />
@@ -37,15 +36,9 @@ const AlertInsights = ({ alerts }: AlertInsightsProps) => (
     <Grid item container direction="column" spacing={4}>
       {alerts.map((alert, index) => (
         <Grid item key={`alert-card-${index}`}>
-          <AlertInsightsSection
-            alert={alert}
-            number={index + 1}
-            render={renderAlert}
-          />
+          <AlertInsightsSection alert={alert} number={index + 1} />
         </Grid>
       ))}
     </Grid>
   </Grid>
 );
-
-export default AlertInsights;

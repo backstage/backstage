@@ -40,6 +40,13 @@ import { Router as ApiDocsRouter } from '@backstage/plugin-api-docs';
 import { Router as SentryRouter } from '@backstage/plugin-sentry';
 import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
 import { Router as KubernetesRouter } from '@backstage/plugin-kubernetes';
+import {
+  Router as GitHubInsightsRouter,
+  isPluginApplicableToEntity as isGitHubAvailable,
+  ReadMeCard,
+  LanguagesCard,
+  ReleasesCard,
+} from '@roadiehq/backstage-plugin-github-insights';
 import React, { ReactNode } from 'react';
 import {
   AboutCard,
@@ -49,13 +56,29 @@ import {
 import { Entity } from '@backstage/catalog-model';
 import { Button, Grid } from '@material-ui/core';
 import { EmptyState } from '@backstage/core';
+import {
+  EmbeddedRouter as LighthouseRouter,
+  LastLighthouseAuditCard,
+  isPluginApplicableToEntity as isLighthouseAvailable,
+} from '@backstage/plugin-lighthouse/';
+import {
+  Router as PullRequestsRouter,
+  isPluginApplicableToEntity as isPullRequestsAvailable,
+  PullRequestsStatsCard,
+} from '@roadiehq/backstage-plugin-github-pull-requests';
+import {
+  Router as BuildKiteRouter,
+  isPluginApplicableToEntity as isBuildKiteAvailable,
+} from '@roadiehq/backstage-plugin-buildkite';
 
-const CICDSwitcher = ({ entity }: { entity: Entity }) => {
+export const CICDSwitcher = ({ entity }: { entity: Entity }) => {
   // This component is just an example of how you can implement your company's logic in entity page.
   // You can for example enforce that all components of type 'service' should use GitHubActions
   switch (true) {
     case isJenkinsAvailable(entity):
       return <JenkinsRouter entity={entity} />;
+    case isBuildKiteAvailable(entity):
+      return <BuildKiteRouter entity={entity} />;
     case isGitHubActionsAvailable(entity):
       return <GitHubActionsRouter entity={entity} />;
     case isCircleCIAvailable(entity):
@@ -88,10 +111,12 @@ const RecentCICDRunsSwitcher = ({ entity }: { entity: Entity }) => {
   let content: ReactNode;
   switch (true) {
     case isJenkinsAvailable(entity):
-      content = <JenkinsLatestRunCard branch="master" />;
+      content = <JenkinsLatestRunCard branch="master" variant="gridItem" />;
       break;
     case isGitHubActionsAvailable(entity):
-      content = <RecentWorkflowRunsCard entity={entity} />;
+      content = (
+        <RecentWorkflowRunsCard entity={entity} limit={4} variant="gridItem" />
+      );
       break;
     case isTravisCIAvailable(entity):
       content = <RecentTravisCIBuildsWidget entity={entity} />;
@@ -110,11 +135,32 @@ const RecentCICDRunsSwitcher = ({ entity }: { entity: Entity }) => {
 };
 
 const OverviewContent = ({ entity }: { entity: Entity }) => (
-  <Grid container spacing={3}>
+  <Grid container spacing={3} alignItems="stretch">
     <Grid item md={6}>
-      <AboutCard entity={entity} />
+      <AboutCard entity={entity} variant="gridItem" />
     </Grid>
     <RecentCICDRunsSwitcher entity={entity} />
+    {isGitHubAvailable(entity) && (
+      <>
+        <Grid item md={6}>
+          <LanguagesCard entity={entity} />
+          <ReleasesCard entity={entity} />
+        </Grid>
+        <Grid item md={6}>
+          <ReadMeCard entity={entity} maxHeight={350} />
+        </Grid>
+      </>
+    )}
+    {isLighthouseAvailable(entity) && (
+      <Grid item sm={4}>
+        <LastLighthouseAuditCard variant="gridItem" />
+      </Grid>
+    )}
+    {isPullRequestsAvailable(entity) && (
+      <Grid item sm={4}>
+        <PullRequestsStatsCard entity={entity} />
+      </Grid>
+    )}
   </Grid>
 );
 
@@ -150,6 +196,16 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
       title="Kubernetes"
       element={<KubernetesRouter entity={entity} />}
     />
+    <EntityPageLayout.Content
+      path="/pull-requests"
+      title="Pull Requests"
+      element={<PullRequestsRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/code-insights"
+      title="Code Insights"
+      element={<GitHubInsightsRouter entity={entity} />}
+    />
   </EntityPageLayout>
 );
 
@@ -166,6 +222,11 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
       element={<CICDSwitcher entity={entity} />}
     />
     <EntityPageLayout.Content
+      path="/lighthouse/*"
+      title="Lighthouse"
+      element={<LighthouseRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
       path="/sentry"
       title="Sentry"
       element={<SentryRouter entity={entity} />}
@@ -179,6 +240,16 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
       path="/kubernetes/*"
       title="Kubernetes"
       element={<KubernetesRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/pull-requests"
+      title="Pull Requests"
+      element={<PullRequestsRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/code-insights"
+      title="Code Insights"
+      element={<GitHubInsightsRouter entity={entity} />}
     />
   </EntityPageLayout>
 );

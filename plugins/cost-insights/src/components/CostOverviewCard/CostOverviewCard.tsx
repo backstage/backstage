@@ -15,45 +15,54 @@
  */
 
 import React from 'react';
-import { Box, Card, CardContent, Divider } from '@material-ui/core';
-import CostOverviewChart from '../CostOverviewChart';
-import CostOverviewChartLegend from '../CostOverviewChartLegend';
-import CostOverviewHeader from './CostOverviewHeader';
-import CostOverviewFooter from './CostOverviewFooter';
-import MetricSelect from '../MetricSelect';
-import PeriodSelect from '../PeriodSelect';
-import ProjectSelect from '../ProjectSelect';
-import { useScroll, useFilters, useConfig } from '../../hooks';
+import { Box, Card, CardContent, Divider, useTheme } from '@material-ui/core';
+import { CostGrowth } from '../CostGrowth';
+import { CostOverviewChart } from './CostOverviewChart';
+import { CostOverviewHeader } from './CostOverviewHeader';
+import { LegendItem } from '../LegendItem';
+import { MetricSelect } from '../MetricSelect';
+import { PeriodSelect } from '../PeriodSelect';
+import {
+  useScroll,
+  useFilters,
+  useConfig,
+  useLastCompleteBillingDate,
+} from '../../hooks';
 import { mapFiltersToProps } from './selector';
 import { DefaultNavigation } from '../../utils/navigation';
-import {
-  ChangeStatistic,
-  DateAggregation,
-  Project,
-  Trendline,
-  findAlways,
-} from '../../types';
+import { formatPercent } from '../../utils/formatters';
+import { findAlways } from '../../utils/assert';
+import { getComparedChange } from '../../utils/change';
+import { Cost, CostInsightsTheme, MetricData } from '../../types';
 
-type CostOverviewCardProps = {
-  change: ChangeStatistic;
-  aggregation: Array<DateAggregation>;
-  trendline: Trendline;
-  projects: Array<Project>;
+export type CostOverviewCardProps = {
+  dailyCostData: Cost;
+  metricData: MetricData | null;
 };
 
-const CostOverviewCard = ({
-  change,
-  aggregation,
-  trendline,
-  projects,
+export const CostOverviewCard = ({
+  dailyCostData,
+  metricData,
 }: CostOverviewCardProps) => {
-  const { metrics } = useConfig();
+  const theme = useTheme<CostInsightsTheme>();
+  const config = useConfig();
+  const lastCompleteBillingDate = useLastCompleteBillingDate();
   const { ScrollAnchor } = useScroll(DefaultNavigation.CostOverviewCard);
-  const { setDuration, setProject, metric, setMetric, ...filters } = useFilters(
+  const { setDuration, setProject, setMetric, ...filters } = useFilters(
     mapFiltersToProps,
   );
 
-  const { name } = findAlways(metrics, m => m.kind === metric);
+  const metric = filters.metric
+    ? findAlways(config.metrics, m => m.kind === filters.metric)
+    : null;
+  const comparedChange = metricData
+    ? getComparedChange(
+        dailyCostData,
+        metricData,
+        filters.duration,
+        lastCompleteBillingDate,
+      )
+    : null;
 
   return (
     <Card style={{ position: 'relative' }}>
@@ -63,31 +72,52 @@ const CostOverviewCard = ({
           <PeriodSelect duration={filters.duration} onSelect={setDuration} />
         </CostOverviewHeader>
         <Divider />
-        <Box marginY={1} display="flex" flexDirection="column">
-          <CostOverviewChartLegend change={change} title={name} />
+        <Box my={1} display="flex" flexDirection="column">
+          <Box display="flex" flexDirection="row">
+            <Box mr={2}>
+              <LegendItem title="Cost Trend" markerColor={theme.palette.blue}>
+                {formatPercent(dailyCostData.change.ratio)}
+              </LegendItem>
+            </Box>
+            {metric && metricData && comparedChange && (
+              <>
+                <Box mr={2}>
+                  <LegendItem
+                    title={`${metric.name} Trend`}
+                    markerColor={theme.palette.magenta}
+                  >
+                    {formatPercent(metricData.change.ratio)}
+                  </LegendItem>
+                </Box>
+                <LegendItem
+                  title={
+                    comparedChange.ratio <= 0 ? 'Your Savings' : 'Your Excess'
+                  }
+                >
+                  <CostGrowth
+                    change={comparedChange}
+                    duration={filters.duration}
+                  />
+                </LegendItem>
+              </>
+            )}
+          </Box>
           <CostOverviewChart
-            responsive
+            dailyCostData={dailyCostData}
             metric={metric}
-            tooltip={name}
-            aggregation={aggregation}
-            trendline={trendline}
+            metricData={metricData}
           />
         </Box>
-        <CostOverviewFooter>
-          <ProjectSelect
-            project={filters.project}
-            projects={projects}
-            onSelect={setProject}
-          />
-          <MetricSelect
-            metric={metric}
-            metrics={metrics}
-            onSelect={setMetric}
-          />
-        </CostOverviewFooter>
+        <Box display="flex" justifyContent="flex-end" alignItems="center">
+          {config.metrics.length && (
+            <MetricSelect
+              metric={filters.metric}
+              metrics={config.metrics}
+              onSelect={setMetric}
+            />
+          )}
+        </Box>
       </CardContent>
     </Card>
   );
 };
-
-export default CostOverviewCard;

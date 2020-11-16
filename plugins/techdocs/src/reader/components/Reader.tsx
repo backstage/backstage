@@ -30,6 +30,7 @@ import transformer, {
   rewriteDocLinks,
   addLinkClickListener,
   removeMkdocsHeader,
+  simplifyMkdocsFooter,
   modifyCss,
   onCssReady,
   sanitizeDOM,
@@ -81,6 +82,7 @@ export const Reader = ({ entityId, onReady }: Props) => {
         },
       }),
       removeMkdocsHeader(),
+      simplifyMkdocsFooter(),
       injectCss({
         css: `
         body {
@@ -116,6 +118,7 @@ export const Reader = ({ entityId, onReady }: Props) => {
         return dom;
       },
       addLinkClickListener({
+        baseUrl: window.location.origin,
         onClick: (_: MouseEvent, url: string) => {
           const parsedUrl = new URL(url);
           navigate(`${parsedUrl.pathname}${parsedUrl.hash}`);

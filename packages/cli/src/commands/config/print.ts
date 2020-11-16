@@ -15,19 +15,13 @@
  */
 
 import { Command } from 'commander';
-import { loadConfig } from '@backstage/config-loader';
-import { ConfigReader } from '@backstage/config';
-import { paths } from '../../lib/paths';
 import { stringify as stringifyYaml } from 'yaml';
+import { loadCliConfig } from '../../lib/config';
 
 export default async (cmd: Command) => {
-  const appConfigs = await loadConfig({
-    env: cmd.env ?? process.env.NODE_ENV ?? 'development',
-    shouldReadSecrets: cmd.withSecrets ?? false,
-    rootPaths: [paths.targetRoot, paths.targetDir],
-  });
+  const { config } = await loadCliConfig(cmd.config, cmd.withSecrets ?? false);
 
-  const flatConfig = ConfigReader.fromConfigs(appConfigs).get();
+  const flatConfig = config.get();
 
   if (cmd.format === 'json') {
     process.stdout.write(`${JSON.stringify(flatConfig, null, 2)}\n`);

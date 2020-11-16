@@ -9,7 +9,6 @@ import {
   InfoCard,
   Header,
   Page,
-  pageTheme,
   Content,
   ContentHeader,
   HeaderLabel,
@@ -25,7 +24,7 @@ const ExampleComponent: FC<{}> = () => {
   const profile = identityApi.getProfile();
 
   return (
-    <Page theme={pageTheme.tool}>
+    <Page themeId="tool">
       <Header
         title="Welcome to github-playground!"
         subtitle="Optional subtitle"

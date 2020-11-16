@@ -24,8 +24,7 @@ describe('loadConfig', () => {
         app:
           title: Example App
           sessionKey:
-            $secret:
-              file: secrets/session-key.txt
+            $file: secrets/session-key.txt
       `,
       '/root/app-config.development.yaml': `
         app:
@@ -39,10 +38,31 @@ describe('loadConfig', () => {
     mockFs.restore();
   });
 
+  it('load config from default path', async () => {
+    await expect(
+      loadConfig({
+        configRoot: '/root',
+        configPaths: [],
+        env: 'production',
+        shouldReadSecrets: false,
+      }),
+    ).resolves.toEqual([
+      {
+        context: 'app-config.yaml',
+        data: {
+          app: {
+            title: 'Example App',
+          },
+        },
+      },
+    ]);
+  });
+
   it('loads config without secrets', async () => {
     await expect(
       loadConfig({
-        rootPaths: ['/root'],
+        configRoot: '/root',
+        configPaths: ['/root/app-config.yaml'],
         env: 'production',
         shouldReadSecrets: false,
       }),
@@ -61,7 +81,8 @@ describe('loadConfig', () => {
   it('loads config with secrets', async () => {
     await expect(
       loadConfig({
-        rootPaths: ['/root'],
+        configRoot: '/root',
+        configPaths: ['/root/app-config.yaml'],
         env: 'production',
         shouldReadSecrets: true,
       }),
@@ -81,7 +102,11 @@ describe('loadConfig', () => {
   it('loads development config without secrets', async () => {
     await expect(
       loadConfig({
-        rootPaths: ['/root'],
+        configRoot: '/root',
+        configPaths: [
+          '/root/app-config.yaml',
+          '/root/app-config.development.yaml',
+        ],
         env: 'development',
         shouldReadSecrets: false,
       }),
@@ -106,7 +131,11 @@ describe('loadConfig', () => {
   it('loads development config with secrets', async () => {
     await expect(
       loadConfig({
-        rootPaths: ['/root'],
+        configRoot: '/root',
+        configPaths: [
+          '/root/app-config.yaml',
+          '/root/app-config.development.yaml',
+        ],
         env: 'development',
         shouldReadSecrets: true,
       }),

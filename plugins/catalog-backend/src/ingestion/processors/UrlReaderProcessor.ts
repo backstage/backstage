@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
 import { UrlReader } from '@backstage/backend-common';
 import { LocationSpec } from '@backstage/catalog-model';
+import { Logger } from 'winston';
 import * as result from './results';
-import { LocationProcessor, LocationProcessorEmit } from './types';
+import { CatalogProcessor, CatalogProcessorEmit } from './types';
+import { parseEntityYaml } from './util/parse';
 
 // TODO(Rugvip): Added for backwards compatibility when moving to UrlReader, this
 // can be removed in a bit
@@ -35,13 +36,13 @@ type Options = {
   logger: Logger;
 };
 
-export class UrlReaderProcessor implements LocationProcessor {
+export class UrlReaderProcessor implements CatalogProcessor {
   constructor(private readonly options: Options) {}
 
   async readLocation(
     location: LocationSpec,
     optional: boolean,
-    emit: LocationProcessorEmit,
+    emit: CatalogProcessorEmit,
   ): Promise<boolean> {
     if (deprecatedTypes.includes(location.type)) {
       // TODO(Rugvip): Let's not enable this warning yet, as we want to move over the example YAMLs
@@ -55,7 +56,10 @@ export class UrlReaderProcessor implements LocationProcessor {
 
     try {
       const data = await this.options.reader.read(location.target);
-      emit(result.data(location, data));
+
+      for (const parseResult of parseEntityYaml(data, location)) {
+        emit(parseResult);
+      }
     } catch (error) {
       const message = `Unable to read ${location.type}, ${error}`;
 

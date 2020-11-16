@@ -1,5 +1,5 @@
 ---
-id: software-catalog-configuration
+id: configuration
 title: Catalog Configuration
 description: Documentation on Software Catalog Configuration
 ---
@@ -23,32 +23,26 @@ integrations:
   github:
     - host: github.com
       token:
-        $secret:
-          env: GITHUB_TOKEN
+        $env: GITHUB_TOKEN
     - host: ghe.example.net
       apiBaseUrl: https://ghe.example.net/api/v3
       rawBaseUrl: https://ghe.example.net/raw
       token:
-        $secret:
-          env: GHE_TOKEN
+        $env: GHE_TOKEN
   gitlab:
     - host: gitlab.com
       token:
-        $secret:
-          env: GITLAB_TOKEN
+        $env: GITLAB_TOKEN
   bitbucket:
     - host: bitbucket.org
       username:
-        $secret:
-          env: BITBUCKET_USERNAME
+        $env: BITBUCKET_USERNAME
       appPassword:
-        $secret:
-          env: BITBUCKET_APP_PASSWORD
+        $env: BITBUCKET_APP_PASSWORD
   azure:
     - host: dev.azure.com
       token:
-        $secret:
-          env: AZURE_TOKEN
+        $env: AZURE_TOKEN
 ```
 
 Each key under `integrations` is a separate configuration for each external
@@ -95,7 +89,7 @@ the catalog under the `catalog.locations` key, for example:
 catalog:
   locations:
     - type: url
-      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
 ```
 
 The locations added through static configuration can not be removed through the

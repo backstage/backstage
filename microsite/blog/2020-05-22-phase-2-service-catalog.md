@@ -7,7 +7,7 @@ authorImageURL: https://pbs.twimg.com/profile_images/121166861/6919c047c0d0edaac
 
 **TL;DR** Thanks to the help from the Backstage community, we’ve made excellent progress and are now moving into Phase 2 of Backstage — building out a Service Catalog and the surrounding systems that will help unify the tools you use to manage your software.
 
-We released the open source version of Backstage a little less than two months ago, and have been thrilled to see so many people jumping in and contributing to the project in its early stages. We’re excited to see what the community can build together as we progress through [each phase of Backstage](https://github.com/spotify/backstage#project-roadmap).
+We released the open source version of Backstage a little less than two months ago, and have been thrilled to see so many people jumping in and contributing to the project in its early stages. We’re excited to see what the community can build together as we progress through [each phase of Backstage](https://github.com/backstage/backstage#project-roadmap).
 
 ![img](assets/20-05-20/Service_Catalog_MVP.png)
 
@@ -15,7 +15,7 @@ We released the open source version of Backstage a little less than two months a
 
 ## Progress so far
 
-Phase 1 was all about building an extensible frontend platform, enabling teams to start creating a single, consistent UI layer for your internal infrastructure and tools in the form of [plugins](https://github.com/spotify/backstage/labels/plugin). In fact, thanks to our amazing (30+) [contributors](https://github.com/spotify/backstage/graphs/contributors), we were able to complete most of Phase 1 earlier than expected. 🎉
+Phase 1 was all about building an extensible frontend platform, enabling teams to start creating a single, consistent UI layer for your internal infrastructure and tools in the form of [plugins](https://github.com/backstage/backstage/labels/plugin). In fact, thanks to our amazing (30+) [contributors](https://github.com/backstage/backstage/graphs/contributors), we were able to complete most of Phase 1 earlier than expected. 🎉
 
 Today, we are happy to announce that we are shifting our focus to Phase 2!
 
@@ -27,7 +27,7 @@ Quote from [Platform Nuts & Bolts: Extendable Data Models](https://www.kislayver
 
 Entities, or what we refer to as “components” in Backstage, represent all software, including services, websites, libraries, data pipelines, and so forth. The focus of Phase 2 will be on adding an entity model in Backstage that makes it easy for engineers to create and manage the software components they own.
 
-With the ability to create a plethora of components in Backstage, how does one keep track of all the software in the ecosystem? Therein lies the highlight feature of Phase 2: the [Service Catalog](https://github.com/spotify/backstage/milestone/4). The service catalog — or software catalog — is a centralized system that keeps track of ownership and metadata about all software in your ecosystem. The catalog is built around the concept of [metadata yaml files](/docs/architecture-decisions/adr002-default-catalog-file-format.md) stored together with the code, which are then harvested and visualized in Backstage.
+With the ability to create a plethora of components in Backstage, how does one keep track of all the software in the ecosystem? Therein lies the highlight feature of Phase 2: the [Service Catalog](https://github.com/backstage/backstage/milestone/4). The service catalog — or software catalog — is a centralized system that keeps track of ownership and metadata about all software in your ecosystem. The catalog is built around the concept of [metadata yaml files](/docs/architecture-decisions/adrs-adr002) stored together with the code, which are then harvested and visualized in Backstage.
 
 ![img](assets/20-05-20/Service_Catalog_MVP.png)
 
@@ -39,13 +39,13 @@ On top of that, we have found that the service catalog is a great way to organis
 
 ![img](assets/20-05-20/tabs.png)
 
-More concretely, having this structure in place will allow plugins such as [CircleCI](https://github.com/spotify/backstage/tree/master/plugins/circleci) to show only the builds for the specific service you are viewing, or a [Spinnaker](https://github.com/spotify/backstage/issues/631) plugin to show running deployments, or an Open API plugin to [show documentation](https://github.com/spotify/backstage/issues/627) for endpoints exposed by the service, or the [Lighthouse](https://github.com/spotify/backstage/tree/master/plugins/lighthouse) plugin to show audit reports for your website. You get the point.
+More concretely, having this structure in place will allow plugins such as [CircleCI](https://github.com/backstage/backstage/tree/master/plugins/circleci) to show only the builds for the specific service you are viewing, or a [Spinnaker](https://github.com/backstage/backstage/issues/631) plugin to show running deployments, or an Open API plugin to [show documentation](https://github.com/backstage/backstage/issues/627) for endpoints exposed by the service, or the [Lighthouse](https://github.com/backstage/backstage/tree/master/plugins/lighthouse) plugin to show audit reports for your website. You get the point.
 
 ## Timeline
 
 Our estimated timeline has us delivering these pieces in increments leading up to June 22. But with the support of the community we wouldn’t be surprised if things land earlier than that. 🙏
 
-If you are interested in joining us, check out our [Milestones](https://github.com/spotify/backstage/milestones) and connected Issues.
+If you are interested in joining us, check out our [Milestones](https://github.com/backstage/backstage/milestones) and connected Issues.
 
 ## Long-term vision
 

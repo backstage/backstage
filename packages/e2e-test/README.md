@@ -14,11 +14,11 @@ yarn tsc
 yarn build
 ```
 
-Once those tasks have completed, you can now run the test using `yarn start` inside this package.
+Once those tasks have completed, you can now run the test using `yarn e2e-test run`.
 
 If you make changes to other packages you will need to rerun `yarn tsc && yarn build`. Changes to this package do not require a rebuild.
 
 ## Documentation
 
-- [Backstage Readme](https://github.com/spotify/backstage/blob/master/README.md)
-- [Backstage Documentation](https://github.com/spotify/backstage/blob/master/docs/README.md)
+- [Backstage Readme](https://github.com/backstage/backstage/blob/master/README.md)
+- [Backstage Documentation](https://github.com/backstage/backstage/blob/master/docs/README.md)

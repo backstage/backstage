@@ -28,21 +28,8 @@ export enum ChangeThreshold {
   lower = -0.05,
 }
 
-export enum Growth {
+export enum GrowthType {
   Negligible,
   Savings,
   Excess,
-}
-
-// Used by <CostGrowth /> for displaying status colors
-export function growthOf(amount: number, ratio: number) {
-  if (amount >= EngineerThreshold && ratio >= ChangeThreshold.upper) {
-    return Growth.Excess;
-  }
-
-  if (amount >= EngineerThreshold && ratio <= ChangeThreshold.lower) {
-    return Growth.Savings;
-  }
-
-  return Growth.Negligible;
 }

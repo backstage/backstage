@@ -16,13 +16,9 @@
 
 import fse from 'fs-extra';
 import path from 'path';
-import os from 'os';
+import mockFs from 'mock-fs';
 import { paths } from '../../lib/paths';
-import {
-  addExportStatement,
-  capitalize,
-  createTemporaryPluginFolder,
-} from '../create-plugin/createPlugin';
+import { addExportStatement, capitalize } from '../create-plugin/createPlugin';
 import { addCodeownersEntry } from '../../lib/codeowners';
 import {
   removeReferencesFromAppPackage,
@@ -31,160 +27,209 @@ import {
   removeSymLink,
   removePluginFromCodeOwners,
 } from './removePlugin';
+import {
+  codeownersFileContent,
+  packageFileContent,
+  pluginsFileContent,
+} from './file-mocks';
 
-// Some constant variables
 const BACKSTAGE = `@backstage`;
 const testPluginName = 'yarn-test-package';
 const testPluginPackage = `${BACKSTAGE}/plugin-${testPluginName}`;
-const tempDir = path.join(os.tmpdir(), 'remove-plugin-test');
+const tempDir = '/remove-plugin-test';
 
 const removeEmptyLines = (file: string): string =>
   file.split(/\r?\n/).filter(Boolean).join('\n');
 
-const createTestPackageFile = async (
-  testFilePath: string,
-  packageFile: string,
-) => {
-  // Copy contents of package file for test
-  const packageFileContent = JSON.parse(fse.readFileSync(packageFile, 'utf8'));
+const createTestPackageFile = async (testFilePath: string) => {
+  const testFileContent = {
+    ...packageFileContent,
+    dependencies: {
+      ...packageFileContent.dependencies,
+      [testPluginPackage]: '0.1.0',
+    },
+  };
 
-  packageFileContent.dependencies[testPluginPackage] = '0.1.0';
-  fse.createFileSync(testFilePath);
-  fse.writeFileSync(
-    testFilePath,
-    `${JSON.stringify(packageFileContent, null, 2)}\n`,
-    'utf8',
-  );
+  mockFs({
+    packages: {
+      app: {
+        'package.json': `${JSON.stringify(packageFileContent, null, 2)}\n`,
+      },
+    },
+    [tempDir]: {
+      [testFilePath]: `${JSON.stringify(testFileContent, null, 2)}\n`,
+    },
+  });
   return;
 };
 
 const createTestPluginFile = async (
-  testFilePath: string,
-  pluginsFilePath: string,
+  testFileName: string,
+  pluginsFileName: string,
 ) => {
-  // Copy contents of package file for test
-  fse.copyFileSync(pluginsFilePath, testFilePath);
+  mockFs({
+    [tempDir]: {
+      [testFileName]: `${pluginsFileContent}\n`,
+      [pluginsFileName]: `${pluginsFileContent}\n`,
+    },
+    packages: {
+      app: {
+        src: {
+          'plugin.ts': `${pluginsFileContent}\n`,
+        },
+      },
+    },
+  });
+
   const pluginNameCapitalized = testPluginName
     .split('-')
     .map(name => capitalize(name))
     .join('');
-  const exportStatement = `export { default as ${pluginNameCapitalized}} from @backstage/plugin-${testPluginName}`;
-  addExportStatement(testFilePath, exportStatement);
+  const exportStatement = `export { plugin as ${pluginNameCapitalized}} from ${testPluginPackage}`;
+  await addExportStatement(path.join(tempDir, testFileName), exportStatement);
 };
 
 const mkTestPluginDir = (testDirPath: string) => {
-  fse.mkdirSync(testDirPath);
-  for (let i = 0; i < 50; i++)
-    fse.createFileSync(path.join(testDirPath, `testFile${i}.ts`));
+  const pluginFiles: { [index: string]: string } = {};
+  for (let i = 0; i < 50; i++) {
+    pluginFiles[`testFile${i}.ts`] = '';
+  }
+
+  mockFs({
+    [testDirPath]: pluginFiles,
+  });
 };
 
-beforeAll(() => {
-  // Create temporary directory for all tests
-  createTemporaryPluginFolder(tempDir);
-});
-
 describe('removePlugin', () => {
-  describe('Remove Plugin Dependencies', () => {
-    const appPath = paths.resolveTargetRoot('packages', 'app');
-    const githubDir = paths.resolveTargetRoot('.github');
-    it('removes plugin references from /packages/app/package.json', async () => {
-      // Set up test
-      const packageFilePath = path.join(appPath, 'package.json');
-      const testFilePath = path.join(tempDir, 'test.json');
-      createTestPackageFile(testFilePath, packageFilePath);
-      try {
-        await removeReferencesFromAppPackage(testFilePath, testPluginName);
-        const testFileContent = removeEmptyLines(
-          fse.readFileSync(testFilePath, 'utf8'),
-        );
-        const packageFileContent = removeEmptyLines(
-          fse.readFileSync(packageFilePath, 'utf8'),
-        );
-        expect(testFileContent).toBe(packageFileContent);
-      } finally {
-        fse.removeSync(testFilePath);
-      }
-    });
-    it('removes plugin exports from /packages/app/src/packacge.json', async () => {
-      const testFilePath = path.join(tempDir, 'test.ts');
-      const pluginsFilePaths = path.join(appPath, 'src', 'plugins.ts');
-      createTestPluginFile(testFilePath, pluginsFilePaths);
-      try {
-        await removeReferencesFromPluginsFile(testFilePath, testPluginName);
-        const testFileContent = removeEmptyLines(
-          fse.readFileSync(testFilePath, 'utf8'),
-        );
-        const pluginsFileContent = removeEmptyLines(
-          fse.readFileSync(pluginsFilePaths, 'utf8'),
-        );
-        expect(testFileContent).toBe(pluginsFileContent);
-      } finally {
-        fse.removeSync(testFilePath);
-      }
-    });
-    it('removes codeOwners references', async () => {
-      const testFilePath = path.join(tempDir, 'test');
-      const codeownersPath = path.join(githubDir, 'CODEOWNERS');
-      try {
-        fse.copySync(codeownersPath, testFilePath);
-        const testFileContent = removeEmptyLines(
-          fse.readFileSync(testFilePath, 'utf8'),
-        );
-        const codeOwnersFileContent = removeEmptyLines(
-          fse.readFileSync(codeownersPath, 'utf8'),
-        );
-        await addCodeownersEntry(testFilePath!, `/plugins/${testPluginName}`, [
-          '@thisIsAtestTeam',
-          'test@gmail.com',
-        ]);
-        await removePluginFromCodeOwners(testFilePath, testPluginName);
-        expect(testFileContent).toBe(codeOwnersFileContent);
-      } finally {
-        if (fse.existsSync(testFilePath)) fse.removeSync(testFilePath);
-      }
+  beforeAll(() => {
+    // Create temporary directory for all tests
+    mockFs({
+      [tempDir]: {
+        'package.json': packageFileContent,
+        src: {
+          'plugin.ts': pluginsFileContent,
+        },
+      },
     });
   });
+
+  afterAll(() => {
+    mockFs.restore();
+  });
+
+  describe('Remove Plugin Dependencies', () => {
+    it('removes plugin references from /packages/app/package.json', async () => {
+      // Set up test
+      const testFilePath = 'test.json';
+      createTestPackageFile(testFilePath);
+      await removeReferencesFromAppPackage(
+        path.join(tempDir, testFilePath),
+        testPluginName,
+      );
+      const testFileContent = removeEmptyLines(
+        fse.readFileSync(path.join(tempDir, testFilePath), 'utf8'),
+      );
+
+      const mockedPackageFileContent = removeEmptyLines(
+        fse.readFileSync(path.join('packages', 'app', 'package.json'), 'utf8'),
+      );
+      expect(testFileContent).toBe(mockedPackageFileContent);
+    });
+    it('removes plugin exports from /packages/app/src/package.json', async () => {
+      const testFileName = 'test.ts';
+      const pluginsFileName = 'plugin.ts';
+      createTestPluginFile(testFileName, pluginsFileName);
+      await removeReferencesFromPluginsFile(
+        path.join(tempDir, testFileName),
+        testPluginName,
+      );
+      const testFileContent = removeEmptyLines(
+        fse.readFileSync(path.join(tempDir, testFileName), 'utf8'),
+      );
+      const mockedPluginsFileContent = removeEmptyLines(
+        fse.readFileSync(
+          path.join('packages', 'app', 'src', pluginsFileName),
+          'utf8',
+        ),
+      );
+      expect(testFileContent).toBe(mockedPluginsFileContent);
+    });
+
+    it('removes codeOwners references', async () => {
+      const testFileName = 'test';
+      const testFilePath = path.join(tempDir, testFileName);
+
+      const mockedCodeownersPath = path.join('.github', 'CODEOWNERS');
+
+      mockFs({
+        [tempDir]: {
+          [testFileName]: '',
+        },
+        '.github': {
+          CODEOWNERS: codeownersFileContent,
+        },
+      });
+      fse.copySync(mockedCodeownersPath, testFilePath);
+      const testFileContent = removeEmptyLines(
+        fse.readFileSync(testFilePath, 'utf8'),
+      );
+      const codeOwnersFileContent = removeEmptyLines(
+        fse.readFileSync(mockedCodeownersPath, 'utf8'),
+      );
+      await addCodeownersEntry(
+        testFilePath!,
+        path.join('plugins', testPluginName),
+        ['@thisIsAtestTeam', 'test@gmail.com'],
+      );
+      await removePluginFromCodeOwners(testFilePath, testPluginName);
+      expect(testFileContent).toBe(codeOwnersFileContent);
+    });
+  });
+
   describe('Remove files', () => {
     const testDirPath = path.join(
       paths.resolveTargetRoot(),
       'plugins',
       testPluginName,
     );
+
     describe('Removes Plugin Directory', () => {
       it('removes plugin directory from /plugins', async () => {
-        try {
-          mkTestPluginDir(testDirPath);
-          expect(fse.existsSync(testDirPath)).toBeTruthy();
-          await removePluginDirectory(testDirPath);
-          expect(fse.existsSync(testDirPath)).toBeFalsy();
-        } finally {
-          if (fse.existsSync(testDirPath)) fse.removeSync(testDirPath);
-        }
+        mkTestPluginDir(testDirPath);
+        expect(fse.existsSync(testDirPath)).toBeTruthy();
+        await removePluginDirectory(testDirPath);
+        expect(fse.existsSync(testDirPath)).toBeFalsy();
       });
     });
+
     describe('Removes System Link', () => {
       it('removes system link from @backstage', async () => {
-        const scopedDir = paths.resolveTargetRoot('node_modules', '@backstage');
+        const symLink = `plugin-${testPluginName}`;
         const testSymLinkPath = path.join(
-          scopedDir,
-          `plugin-${testPluginName}`,
+          '/',
+          'node_modules',
+          '@backstage',
+          symLink,
         );
-        try {
-          mkTestPluginDir(testDirPath);
-          fse.ensureSymlinkSync(testSymLinkPath, testDirPath);
+        const mockedTestDirPath = path.join('/', 'plugins', testPluginName);
 
-          await removeSymLink(testSymLinkPath);
-          expect(fse.existsSync(testSymLinkPath)).toBeFalsy();
-        } finally {
-          if (fse.existsSync(testDirPath)) fse.removeSync(testDirPath);
-          if (fse.existsSync(testSymLinkPath)) fse.removeSync(testSymLinkPath);
-        }
+        mockFs({
+          '/plugins': {
+            [testPluginName]: {},
+          },
+          '/node_modules': {
+            '@backstage': {
+              [symLink]: mockFs.symlink({
+                path: mockedTestDirPath,
+              }),
+            },
+          },
+        });
+
+        expect(fse.existsSync(testSymLinkPath)).toBeTruthy();
+        await removeSymLink(testSymLinkPath);
+        expect(fse.existsSync(testSymLinkPath)).toBeFalsy();
       });
     });
   });
-});
-
-afterAll(() => {
-  // Remove temporary directory
-  fse.removeSync(tempDir);
 });

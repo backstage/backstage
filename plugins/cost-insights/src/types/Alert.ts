@@ -13,19 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { ChangeStatistic } from './ChangeStatistic';
 import { Maybe } from './Maybe';
 
-export type Alert = ProjectGrowthAlert | UnlabeledDataflowAlert;
-
-export interface AlertProps {
-  alert: Alert;
-}
-
-export enum AlertType {
-  ProjectGrowth = 'projectGrowth',
-  UnlabeledDataflow = 'unlabeledDataflow',
-}
+/**
+ * Generic alert type with required fields for display. The `element` field will be rendered in
+ * the Cost Insights "Action Items" section. This should use data fetched in the CostInsightsApi
+ * implementation to render an InfoCard or other visualization.
+ */
+export type Alert = {
+  title: string;
+  subtitle: string;
+  url: string;
+  buttonText?: string; // Default: View Instructions
+  element: JSX.Element;
+};
 
 export interface AlertCost {
   id: string;
@@ -38,12 +41,15 @@ export interface ResourceData {
   name: Maybe<string>;
 }
 
-export interface BarChartData {
+export interface BarChartOptions {
   previousFill: string;
   currentFill: string;
   previousName: string;
   currentName: string;
 }
+
+/** deprecated use BarChartOptions instead */
+export interface BarChartData extends BarChartOptions {}
 
 export enum DataKey {
   Previous = 'previous',
@@ -51,8 +57,7 @@ export enum DataKey {
   Name = 'name',
 }
 
-export interface ProjectGrowthAlert {
-  id: AlertType.ProjectGrowth;
+export interface ProjectGrowthData {
   project: string;
   periodStart: string;
   periodEnd: string;
@@ -61,8 +66,7 @@ export interface ProjectGrowthAlert {
   products: Array<AlertCost>;
 }
 
-export interface UnlabeledDataflowAlert {
-  id: AlertType.UnlabeledDataflow;
+export interface UnlabeledDataflowData {
   periodStart: string;
   periodEnd: string;
   projects: Array<UnlabeledDataflowAlertProject>;

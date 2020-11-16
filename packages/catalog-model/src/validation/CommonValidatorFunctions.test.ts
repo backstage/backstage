@@ -113,7 +113,7 @@ describe('CommonValidatorFunctions', () => {
     [{}, true],
     [{ a: 1 }, true],
     [{ a: undefined }, false],
-  ] as [any, boolean][])(`isJsonSafe %p ? %p`, (value, result) => {
+  ] as [unknown, boolean][])(`isJsonSafe %p ? %p`, (value, result) => {
     expect(CommonValidatorFunctions.isJsonSafe(value)).toBe(result);
   });
 
@@ -160,19 +160,5 @@ describe('CommonValidatorFunctions', () => {
     [`${'a'.repeat(64)}`, false],
   ])(`isValidDnsLabel %p ? %p`, (value, result) => {
     expect(CommonValidatorFunctions.isValidDnsLabel(value)).toBe(result);
-  });
-
-  it.each([
-    ['', ''],
-    ['a', 'a'],
-    ['a-b', 'ab'],
-    ['-a-b', 'ab'],
-    ['a_b', 'ab'],
-    [`${'a'.repeat(6000)}`, `${'a'.repeat(6000)}`],
-    ['_:;>!"#€', ''],
-  ])(`normalizeToLowercaseAlphanum %p ? %p`, (value, result) => {
-    expect(CommonValidatorFunctions.normalizeToLowercaseAlphanum(value)).toBe(
-      result,
-    );
   });
 });

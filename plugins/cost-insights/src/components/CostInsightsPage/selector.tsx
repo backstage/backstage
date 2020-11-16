@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 import { MapLoadingToProps } from '../../hooks';
-import { getResetState, DefaultLoadingAction } from '../../types';
+import {
+  getResetState,
+  DefaultLoadingAction,
+  getResetStateWithoutInitial,
+} from '../../utils/loading';
 
 type CostInsightsPageLoadingProps = {
   loadingActions: Array<string>;
   loadingGroups: boolean;
+  loadingBillingDate: boolean;
   loadingInitial: boolean;
   dispatchInitial: (isLoading: boolean) => void;
   dispatchInsights: (isLoading: boolean) => void;
   dispatchNone: (loadingActions: string[]) => void;
+  dispatchReset: (loadingActions: string[]) => void;
 };
 
 export const mapLoadingToProps: MapLoadingToProps<CostInsightsPageLoadingProps> = ({
@@ -32,6 +38,7 @@ export const mapLoadingToProps: MapLoadingToProps<CostInsightsPageLoadingProps> 
 }) => ({
   loadingActions: actions,
   loadingGroups: state[DefaultLoadingAction.UserGroups],
+  loadingBillingDate: state[DefaultLoadingAction.LastCompleteBillingDate],
   loadingInitial: state[DefaultLoadingAction.CostInsightsInitial],
   dispatchInitial: (isLoading: boolean) =>
     dispatch({ [DefaultLoadingAction.CostInsightsInitial]: isLoading }),
@@ -39,4 +46,6 @@ export const mapLoadingToProps: MapLoadingToProps<CostInsightsPageLoadingProps> 
     dispatch({ [DefaultLoadingAction.CostInsightsPage]: isLoading }),
   dispatchNone: (loadingActions: string[]) =>
     dispatch(getResetState(loadingActions)),
+  dispatchReset: (loadingActions: string[]) =>
+    dispatch(getResetStateWithoutInitial(loadingActions)),
 });

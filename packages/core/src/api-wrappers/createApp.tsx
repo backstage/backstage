@@ -22,7 +22,8 @@ import privateExports, {
   AppConfigLoader,
 } from '@backstage/core-api';
 import { BrowserRouter, MemoryRouter } from 'react-router-dom';
-
+import LightIcon from '@material-ui/icons/WbSunny';
+import DarkIcon from '@material-ui/icons/Brightness2';
 import { ErrorPage } from '../layout/ErrorPage';
 import { Progress } from '../components/Progress';
 import { defaultApis } from './defaultApis';
@@ -66,6 +67,13 @@ export const defaultConfigLoader: AppConfigLoader = async (
     }
   }
 
+  const windowAppConfig = (window as any).__APP_CONFIG__;
+  if (windowAppConfig) {
+    configs.push({
+      context: 'window',
+      data: windowAppConfig,
+    });
+  }
   return configs;
 };
 
@@ -110,12 +118,14 @@ export function createApp(options?: AppOptions) {
       title: 'Light Theme',
       variant: 'light',
       theme: lightTheme,
+      icon: <LightIcon />,
     },
     {
       id: 'dark',
       title: 'Dark Theme',
       variant: 'dark',
       theme: darkTheme,
+      icon: <DarkIcon />,
     },
   ];
   const configLoader = options?.configLoader ?? defaultConfigLoader;

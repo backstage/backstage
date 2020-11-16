@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '../ApiRef';
+import { ApiRef, createApiRef } from '../system';
 import { Observable } from '../../types';
 import { ErrorApi } from './ErrorApi';
 
@@ -52,7 +52,7 @@ export interface StorageApi {
   remove(key: string): Promise<void>;
 
   /**
-   * Save persistant data, and emit messages to anyone that is using observe$ for this key
+   * Save persistent data, and emit messages to anyone that is using observe$ for this key
    *
    * @param {String} key Unique key associated with the data.
    */
@@ -65,7 +65,7 @@ export interface StorageApi {
   observe$<T>(key: string): Observable<StorageValueChange<T>>;
 }
 
-export const storageApiRef = createApiRef<StorageApi>({
+export const storageApiRef: ApiRef<StorageApi> = createApiRef({
   id: 'core.storage',
   description: 'Provides the ability to store data which is unique to the user',
 });

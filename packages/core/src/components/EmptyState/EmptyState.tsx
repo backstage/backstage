@@ -17,7 +17,6 @@
 import React from 'react';
 import { makeStyles, Typography, Grid } from '@material-ui/core';
 import { EmptyStateImage } from './EmptyStateImage';
-import Background from './assets/Background.svg';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -30,15 +29,11 @@ const useStyles = makeStyles(theme => ({
   imageContainer: {
     position: 'relative',
   },
-  backgroundImage: {
-    position: 'absolute',
-    width: '100%',
-  },
 }));
 
 type Props = {
   title: string;
-  description?: string;
+  description?: string | JSX.Element;
   missing: 'field' | 'info' | 'content' | 'data';
   action?: JSX.Element;
 };
@@ -66,11 +61,6 @@ export const EmptyState = ({ title, description, missing, action }: Props) => {
         </Grid>
       </Grid>
       <Grid item xs={12} md={6} className={classes.imageContainer}>
-        <img
-          src={Background}
-          className={classes.backgroundImage}
-          alt="background"
-        />
         <EmptyStateImage missing={missing} />
       </Grid>
     </Grid>

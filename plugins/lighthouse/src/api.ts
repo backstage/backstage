@@ -104,6 +104,7 @@ export type LighthouseApi = {
   getWebsiteList: (listOptions: LASListRequest) => Promise<WebsiteListResponse>;
   getWebsiteForAuditId: (auditId: string) => Promise<Website>;
   triggerAudit: (payload: TriggerAuditPayload) => Promise<Audit>;
+  getWebsiteByUrl: (websiteUrl: string) => Promise<Website>;
 };
 
 export const lighthouseApiRef = createApiRef<LighthouseApi>({
@@ -149,5 +150,11 @@ export class LighthouseRestApi implements LighthouseApi {
         'Content-Type': 'application/json',
       },
     });
+  }
+
+  async getWebsiteByUrl(websiteUrl: string): Promise<Website> {
+    return this.fetch<Website>(
+      `/v1/websites/${encodeURIComponent(websiteUrl)}`,
+    );
   }
 }

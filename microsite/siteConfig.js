@@ -17,7 +17,7 @@ const siteConfig = {
   url: 'https://backstage.io', // Your website URL
   cname: 'backstage.io',
   baseUrl: '/', // Base URL for your project */
-  editUrl: 'https://github.com/spotify/backstage/edit/master/docs/',
+  editUrl: 'https://github.com/backstage/backstage/edit/master/docs/',
 
   // Used for publishing and more
   projectName: 'backstage',
@@ -30,7 +30,7 @@ const siteConfig = {
   // For no header links in the top nav bar -> headerLinks: [],
   headerLinks: [
     {
-      href: 'https://github.com/spotify/backstage',
+      href: 'https://github.com/backstage/backstage',
       label: 'GitHub',
     },
     {
@@ -60,7 +60,7 @@ const siteConfig = {
   /* path to images for header/footer */
   // headerIcon: "img/android-chrome-192x192.png",
   footerIcon: 'img/android-chrome-192x192.png',
-  favicon: 'img/favicon.svg',
+  favicon: 'img/favicon.ico',
 
   /* Colors for website */
   colors: {
@@ -78,7 +78,7 @@ const siteConfig = {
   },
 
   // This copyright info is used in /core/Footer.js and blog RSS/Atom feeds.
-  copyright: `Copyright © ${new Date().getFullYear()} Spotify AB`,
+  copyright: `Copyright © ${new Date().getFullYear()} Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage`,
 
   highlight: {
     // Highlight.js theme to use for syntax highlighting in code blocks.
@@ -111,7 +111,7 @@ const siteConfig = {
 
   // You may provide arbitrary config keys to be used as needed by your
   // template. For example, if you need your repo's URL...
-  repoUrl: 'https://github.com/spotify/backstage',
+  repoUrl: 'https://github.com/backstage/backstage',
   twitterUsername: 'SpotifyEng',
 
   stylesheets: [

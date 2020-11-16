@@ -14,49 +14,27 @@
  * limitations under the License.
  */
 
-import fetch, { RequestInit, HeadersInit, Response } from 'node-fetch';
-import { Config } from '@backstage/config';
+import {
+  AzureIntegrationConfig,
+  readAzureIntegrationConfigs,
+} from '@backstage/integration';
+import fetch from 'cross-fetch';
 import { NotFoundError } from '../errors';
-import { ReaderFactory, UrlReader } from './types';
-
-type Options = {
-  // TODO: added here for future support, but we only allow dev.azure.com for now
-  host: string;
-  token?: string;
-};
-
-function readConfig(config: Config): Options[] {
-  const optionsArr = Array<Options>();
-
-  const providerConfigs =
-    config.getOptionalConfigArray('integrations.azure') ?? [];
-
-  for (const providerConfig of providerConfigs) {
-    const host = providerConfig.getOptionalString('host') ?? 'dev.azure.com';
-    const token = providerConfig.getOptionalString('token');
-
-    optionsArr.push({ host, token });
-  }
-
-  // As a convenience we always make sure there's at least an unauthenticated
-  // reader for public azure repos.
-  if (!optionsArr.some(p => p.host === 'dev.azure.com')) {
-    optionsArr.push({ host: 'dev.azure.com' });
-  }
-
-  return optionsArr;
-}
+import { ReaderFactory, ReadTreeResponse, UrlReader } from './types';
 
 export class AzureUrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config }) => {
-    return readConfig(config).map(options => {
+    const configs = readAzureIntegrationConfigs(
+      config.getOptionalConfigArray('integrations.azure') ?? [],
+    );
+    return configs.map(options => {
       const reader = new AzureUrlReader(options);
       const predicate = (url: URL) => url.host === options.host;
       return { reader, predicate };
     });
   };
 
-  constructor(private readonly options: Options) {
+  constructor(private readonly options: AzureIntegrationConfig) {
     if (options.host !== 'dev.azure.com') {
       throw Error(
         `Azure integration currently only supports 'dev.azure.com', tried to use host '${options.host}'`,
@@ -76,7 +54,7 @@ export class AzureUrlReader implements UrlReader {
 
     // for private repos when PAT is not valid, Azure API returns a http status code 203 with sign in page html
     if (response.ok && response.status !== 203) {
-      return response.buffer();
+      return Buffer.from(await response.text());
     }
 
     const message = `${url} could not be read as ${builtUrl}, ${response.status} ${response.statusText}`;
@@ -84,6 +62,10 @@ export class AzureUrlReader implements UrlReader {
       throw new NotFoundError(message);
     }
     throw new Error(message);
+  }
+
+  readTree(): Promise<ReadTreeResponse> {
+    throw new Error('AzureUrlReader does not implement readTree');
   }
 
   // Converts

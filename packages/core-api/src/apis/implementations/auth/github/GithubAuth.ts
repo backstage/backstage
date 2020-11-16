@@ -25,25 +25,13 @@ import {
   BackstageIdentity,
   AuthRequestOptions,
 } from '../../../definitions/auth';
-import {
-  OAuthRequestApi,
-  AuthProvider,
-  DiscoveryApi,
-} from '../../../definitions';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import {
   AuthSessionStore,
   StaticAuthSessionManager,
 } from '../../../../lib/AuthSessionManager';
 import { Observable } from '../../../../types';
-
-type CreateOptions = {
-  discoveryApi: DiscoveryApi;
-  oauthRequestApi: OAuthRequestApi;
-
-  environment?: string;
-  provider?: AuthProvider & { id: string };
-};
+import { OAuthApiCreateOptions } from '../types';
 
 export type GithubAuthResponse = {
   providerInfo: {
@@ -67,7 +55,8 @@ class GithubAuth implements OAuthApi, SessionApi {
     environment = 'development',
     provider = DEFAULT_PROVIDER,
     oauthRequestApi,
-  }: CreateOptions) {
+    defaultScopes = ['read:user'],
+  }: OAuthApiCreateOptions) {
     const connector = new DefaultAuthConnector({
       discoveryApi,
       environment,
@@ -89,7 +78,7 @@ class GithubAuth implements OAuthApi, SessionApi {
 
     const sessionManager = new StaticAuthSessionManager({
       connector,
-      defaultScopes: new Set(['read:user']),
+      defaultScopes: new Set(defaultScopes),
       sessionScopes: (session: GithubSession) => session.providerInfo.scopes,
     });
 

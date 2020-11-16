@@ -3,7 +3,7 @@
 The following is a list of all Utility APIs defined by `@backstage/core`. They
 are available to use by plugins and components, and can be accessed using the
 `useApi` hook, also provided by `@backstage/core`. For more information, see
-https://github.com/spotify/backstage/blob/master/docs/api/utility-apis.md.
+https://github.com/backstage/backstage/blob/master/docs/api/utility-apis.md.
 
 ### alert
 
@@ -12,7 +12,7 @@ Used to report alerts and forward them to the app
 Implemented type: [AlertApi](./AlertApi.md)
 
 ApiRef:
-[alertApiRef](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/AlertApi.ts#L41)
+[alertApiRef](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/AlertApi.ts#L41)
 
 ### appTheme
 
@@ -21,7 +21,7 @@ API Used to configure the app theme, and enumerate options
 Implemented type: [AppThemeApi](./AppThemeApi.md)
 
 ApiRef:
-[appThemeApiRef](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/AppThemeApi.ts#L74)
+[appThemeApiRef](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/AppThemeApi.ts#L80)
 
 ### auth0Auth
 
@@ -32,7 +32,7 @@ Implemented types: [OpenIdConnectApi](./OpenIdConnectApi.md),
 [BackstageIdentityApi](./BackstageIdentityApi.md), [SessionApi](./SessionApi.md)
 
 ApiRef:
-[auth0AuthApiRef](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/auth.ts#L275)
+[auth0AuthApiRef](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/auth.ts#L275)
 
 ### config
 
@@ -41,7 +41,7 @@ Used to access runtime configuration
 Implemented type: [Config](./Config.md)
 
 ApiRef:
-[configApiRef](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/ConfigApi.ts#L22)
+[configApiRef](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/ConfigApi.ts#L22)
 
 ### discovery
 
@@ -50,7 +50,7 @@ Provides service discovery of backend plugins
 Implemented type: [DiscoveryApi](./DiscoveryApi.md)
 
 ApiRef:
-[discoveryApiRef](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/DiscoveryApi.ts#L44)
+[discoveryApiRef](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/DiscoveryApi.ts#L44)
 
 ### error
 
@@ -59,7 +59,7 @@ Used to report errors and forward them to the app
 Implemented type: [ErrorApi](./ErrorApi.md)
 
 ApiRef:
-[errorApiRef](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/ErrorApi.ts#L65)
+[errorApiRef](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/ErrorApi.ts#L65)
 
 ### featureFlags
 
@@ -68,7 +68,7 @@ Used to toggle functionality in features across Backstage
 Implemented type: [FeatureFlagsApi](./FeatureFlagsApi.md)
 
 ApiRef:
-[featureFlagsApiRef](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/FeatureFlagsApi.ts#L58)
+[featureFlagsApiRef](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/FeatureFlagsApi.ts#L83)
 
 ### githubAuth
 
@@ -79,7 +79,7 @@ Implemented types: [OAuthApi](./OAuthApi.md),
 [BackstageIdentityApi](./BackstageIdentityApi.md), [SessionApi](./SessionApi.md)
 
 ApiRef:
-[githubAuthApiRef](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/auth.ts#L232)
+[githubAuthApiRef](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/auth.ts#L232)
 
 ### gitlabAuth
 
@@ -90,7 +90,7 @@ Implemented types: [OAuthApi](./OAuthApi.md),
 [BackstageIdentityApi](./BackstageIdentityApi.md), [SessionApi](./SessionApi.md)
 
 ApiRef:
-[gitlabAuthApiRef](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/auth.ts#L262)
+[gitlabAuthApiRef](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/auth.ts#L262)
 
 ### googleAuth
 
@@ -102,7 +102,7 @@ Implemented types: [OAuthApi](./OAuthApi.md),
 [BackstageIdentityApi](./BackstageIdentityApi.md), [SessionApi](./SessionApi.md)
 
 ApiRef:
-[googleAuthApiRef](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/auth.ts#L215)
+[googleAuthApiRef](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/auth.ts#L215)
 
 ### identity
 
@@ -111,7 +111,7 @@ Provides access to the identity of the signed in user
 Implemented type: [IdentityApi](./IdentityApi.md)
 
 ApiRef:
-[identityApiRef](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/IdentityApi.ts#L54)
+[identityApiRef](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/IdentityApi.ts#L54)
 
 ### microsoftAuth
 
@@ -123,7 +123,7 @@ Implemented types: [OAuthApi](./OAuthApi.md),
 [BackstageIdentityApi](./BackstageIdentityApi.md), [SessionApi](./SessionApi.md)
 
 ApiRef:
-[microsoftAuthApiRef](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/auth.ts#L289)
+[microsoftAuthApiRef](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/auth.ts#L289)
 
 ### oauth2
 
@@ -135,7 +135,7 @@ Implemented types: [OAuthApi](./OAuthApi.md),
 [BackstageIdentityApi](./BackstageIdentityApi.md), [SessionApi](./SessionApi.md)
 
 ApiRef:
-[oauth2ApiRef](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/auth.ts#L303)
+[oauth2ApiRef](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/auth.ts#L303)
 
 ### oauthRequest
 
@@ -144,7 +144,7 @@ An API for implementing unified OAuth flows in Backstage
 Implemented type: [OAuthRequestApi](./OAuthRequestApi.md)
 
 ApiRef:
-[oauthRequestApiRef](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/OAuthRequestApi.ts#L130)
+[oauthRequestApiRef](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/OAuthRequestApi.ts#L130)
 
 ### oktaAuth
 
@@ -156,7 +156,17 @@ Implemented types: [OAuthApi](./OAuthApi.md),
 [BackstageIdentityApi](./BackstageIdentityApi.md), [SessionApi](./SessionApi.md)
 
 ApiRef:
-[oktaAuthApiRef](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/auth.ts#L245)
+[oktaAuthApiRef](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/auth.ts#L245)
+
+### samlAuth
+
+Example of how to use SAML custom provider
+
+Implemented types: [ProfileInfoApi](./ProfileInfoApi.md),
+[BackstageIdentityApi](./BackstageIdentityApi.md), [SessionApi](./SessionApi.md)
+
+ApiRef:
+[samlAuthApiRef](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/auth.ts#L317)
 
 ### storage
 
@@ -165,4 +175,4 @@ Provides the ability to store data which is unique to the user
 Implemented type: [StorageApi](./StorageApi.md)
 
 ApiRef:
-[storageApiRef](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/StorageApi.ts#L68)
+[storageApiRef](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/StorageApi.ts#L68)

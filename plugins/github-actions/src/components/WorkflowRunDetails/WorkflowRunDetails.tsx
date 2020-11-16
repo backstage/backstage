@@ -77,8 +77,9 @@ const JobsList = ({ jobs, entity }: { jobs?: Jobs; entity: Entity }) => {
     <Box>
       {jobs &&
         jobs.total_count > 0 &&
-        jobs.jobs.map((job: Job) => (
+        jobs.jobs.map(job => (
           <JobListItem
+            key={job.id}
             job={job}
             className={
               job.status !== 'success' ? classes.failed : classes.success
@@ -106,7 +107,10 @@ const StepView = ({ step }: { step: Step }) => {
         />
       </TableCell>
       <TableCell>
-        <WorkflowRunStatus status={step.status.toUpperCase()} />
+        <WorkflowRunStatus
+          status={step.status.toUpperCase()}
+          conclusion={step.conclusion?.toUpperCase()}
+        />
       </TableCell>
     </TableRow>
   );
@@ -139,8 +143,8 @@ const JobListItem = ({
       <AccordionDetails className={classes.accordionDetails}>
         <TableContainer>
           <Table>
-            {job.steps.map((step: Step) => (
-              <StepView step={step} />
+            {job.steps.map(step => (
+              <StepView key={step.number} step={step} />
             ))}
           </Table>
         </TableContainer>
@@ -204,7 +208,10 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
                 <Typography noWrap>Status</Typography>
               </TableCell>
               <TableCell>
-                <WorkflowRunStatus status={details.value?.status} />
+                <WorkflowRunStatus
+                  status={details.value?.status}
+                  conclusion={details.value?.conclusion}
+                />
               </TableCell>
             </TableRow>
             <TableRow>
