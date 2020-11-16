@@ -13,8 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { plugin } from './plugin';
-export {
-  isPluginApplicableToEntity,
-  PagerDutyCard,
-} from './components/PagerDutyCard';
+
+import { Incident, OnCall, Service } from '../components/types';
+
+export interface PagerDutyClient {
+  /**
+   * Fetches a list of services, filtered by the provided integration key.
+   *
+   */
+  getServiceByIntegrationKey(integrationKey: string): Promise<Service[]>;
+
+  /**
+   * Fetches a list of incidents a provided service has.
+   *
+   */
+  getIncidentsByServiceId(serviceId: string): Promise<Incident[]>;
+
+  /**
+   * Fetches the list of users in an escalation policy.
+   *
+   */
+  getOnCallByPolicyId(policyId: string): Promise<OnCall[]>;
+}

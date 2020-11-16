@@ -68,7 +68,7 @@ import {
 } from '@roadiehq/backstage-plugin-github-pull-requests';
 import {
   isPluginApplicableToEntity as isPagerDutyAvailable,
-  PagerDutyServiceCard,
+  PagerDutyCard,
 } from '@backstage/plugin-pagerduty';
 
 const CICDSwitcher = ({ entity }: { entity: Entity }) => {
@@ -137,7 +137,7 @@ const OverviewContent = ({ entity }: { entity: Entity }) => (
     </Grid>
     {isPagerDutyAvailable(entity) && (
       <Grid item md={6}>
-        <PagerDutyServiceCard entity={entity} />
+        <PagerDutyCard entity={entity} />
       </Grid>
     )}
     <RecentCICDRunsSwitcher entity={entity} />

@@ -25,55 +25,41 @@ import {
   OnCallsResponse,
   OnCall,
 } from '../components/types';
+import { PagerDutyClient } from './types';
+
+export class UnauthorizedError extends Error {
+  constructor() {
+    super();
+  }
+}
 
 export const pagerDutyApiRef = createApiRef<PagerDutyClientApi>({
   id: 'plugin.pagerduty.api',
   description: 'Used to fetch data from PagerDuty API',
 });
 
-interface PagerDutyClient {
-  getServiceByIntegrationKey(integrationKey: string): Promise<Service[]>;
-  getIncidentsByServiceId(serviceId: string): Promise<Incident[]>;
-  getOnCallByPolicyId(policyId: string): Promise<OnCall[]>;
-}
-
 export class PagerDutyClientApi implements PagerDutyClient {
-  private API_URL = 'https://api.pagerduty.com';
-  private EVENTS_API_URL = 'https://events.pagerduty.com/v2';
-
-  constructor(private readonly config?: ClientApiConfig) {}
+  constructor(private readonly config: ClientApiConfig) {}
 
   async getServiceByIntegrationKey(integrationKey: string): Promise<Service[]> {
-    if (!this.config?.token) {
-      throw new Error('Missing token');
-    }
-
     const params = `include[]=integrations&include[]=escalation_policies&query=${integrationKey}`;
-    const url = `${this.API_URL}/services?${params}`;
+    const url = `${this.config.api_url}/services?${params}`;
     const { services } = await this.getByUrl<ServicesResponse>(url);
 
     return services;
   }
 
   async getIncidentsByServiceId(serviceId: string): Promise<Incident[]> {
-    if (!this.config?.token) {
-      throw new Error('Missing token');
-    }
-
     const params = `service_ids[]=${serviceId}`;
-    const url = `${this.API_URL}/incidents?${params}`;
+    const url = `${this.config.api_url}/incidents?${params}`;
     const { incidents } = await this.getByUrl<IncidentsResponse>(url);
 
     return incidents;
   }
 
   async getOnCallByPolicyId(policyId: string): Promise<OnCall[]> {
-    if (!this.config?.token) {
-      throw new Error('Missing token');
-    }
-
     const params = `include[]=users&escalation_policy_ids[]=${policyId}`;
-    const url = `${this.API_URL}/oncalls?${params}`;
+    const url = `${this.config.api_url}/oncalls?${params}`;
     const { oncalls } = await this.getByUrl<OnCallsResponse>(url);
 
     return oncalls;
@@ -110,14 +96,13 @@ export class PagerDutyClientApi implements PagerDutyClient {
       body,
     };
 
-    return this.request(`${this.EVENTS_API_URL}/enqueue`, options);
+    return this.request(`${this.config.events_url}/enqueue`, options);
   }
 
   private async getByUrl<T>(url: string): Promise<T> {
     const options = {
       method: 'GET',
       headers: {
-        Authorization: `Token token=${this.config!.token}`,
         Accept: 'application/vnd.pagerduty+json;version=2',
         'Content-Type': 'application/json',
       },
@@ -131,17 +116,16 @@ export class PagerDutyClientApi implements PagerDutyClient {
     url: string,
     options: RequestOptions,
   ): Promise<Response> {
-    try {
-      const response = await fetch(url, options);
-      if (!response.ok) {
-        const payload = await response.json();
-        const errors = payload.errors.map((error: string) => error).join(' ');
-        const message = `Request failed with ${response.status}, ${errors}`;
-        throw new Error(message);
-      }
-      return response;
-    } catch (error) {
-      throw new Error(error);
+    const response = await fetch(url, options);
+    if (response.status === 401) {
+      throw new UnauthorizedError();
     }
+    if (!response.ok) {
+      const payload = await response.json();
+      const errors = payload.errors.map((error: string) => error).join(' ');
+      const message = `Request failed with ${response.status}, ${errors}`;
+      throw new Error(message);
+    }
+    return response;
   }
 }

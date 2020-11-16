@@ -19,7 +19,7 @@ import {
   createRouteRef,
   configApiRef,
 } from '@backstage/core';
-import { pagerDutyApiRef, PagerDutyClientApi } from './api/pagerDutyClient';
+import { pagerDutyApiRef, PagerDutyClientApi } from './api';
 
 export const rootRouteRef = createRouteRef({
   path: '/pagerduty',
@@ -34,7 +34,10 @@ export const plugin = createPlugin({
       deps: { configApi: configApiRef },
       factory: ({ configApi }) =>
         new PagerDutyClientApi({
-          token: configApi.getOptionalString('pagerduty.api.token'),
+          api_url: `${configApi.getString(
+            'backend.baseUrl',
+          )}/api/proxy/pagerduty`,
+          events_url: 'https://events.pagerduty.com/v2',
         }),
     }),
   ],
