@@ -21,6 +21,7 @@ import {
   MICROSOFT_GRAPH_TENANT_ID_ANNOTATION,
   MICROSOFT_GRAPH_USER_ID_ANNOTATION,
 } from './constants';
+import limiterFactory from 'p-limit';
 
 export function normalizeEntityName(name: string): string {
   return name
@@ -37,6 +38,7 @@ export async function readMicrosoftGraphUsers(
 }> {
   const entities: UserEntity[] = [];
   const picturePromises: Promise<void>[] = [];
+  const limiter = limiterFactory(10);
 
   for await (const user of client.getUsers({
     filter: options?.userFilter,
@@ -71,16 +73,16 @@ export async function readMicrosoftGraphUsers(
     };
 
     // Download the photos in parallel, otherwise it can take quite some time
-    const loadPhoto = async () => {
+    const loadPhoto = limiter(async () => {
       entity.spec.profile!.picture = await client.getUserPhotoWithSizeLimit(
         user.id!,
         // We are limiting the photo size, as users with full resolution photos
         // can make the Backstage API slow
         120,
       );
-    };
+    });
 
-    picturePromises.push(loadPhoto());
+    picturePromises.push(loadPhoto);
     entities.push(entity);
   }
 
@@ -140,6 +142,7 @@ export async function readMicrosoftGraphGroups(
 }> {
   const groups: GroupEntity[] = [];
   const groupMember: Map<string, Set<string>> = new Map();
+  const limiter = limiterFactory(10);
 
   const { rootGroup } = await readMicrosoftGraphOrganizations(client);
 
@@ -181,7 +184,7 @@ export async function readMicrosoftGraphGroups(
     const groupMembers = new Set<string>();
 
     // Download the members in parallel, otherwise it can take quite some time
-    const loadGroupMembers = async () => {
+    const loadGroupMembers = limiter(async () => {
       for await (const member of client.getGroupMembers(group.id!)) {
         if (
           !member.id ||
@@ -195,9 +198,9 @@ export async function readMicrosoftGraphGroups(
 
         groupMembers.add(member.id);
       }
-    };
+    });
 
-    groupMemberPromises.push(loadGroupMembers());
+    groupMemberPromises.push(loadGroupMembers);
     groupMember.set(group.id, groupMembers);
     groups.push(entity);
   }
