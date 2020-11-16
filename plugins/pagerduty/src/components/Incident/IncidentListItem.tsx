@@ -29,7 +29,7 @@ import {
 import { StatusError, StatusWarning } from '@backstage/core';
 import moment from 'moment';
 import { Incident } from '../types';
-import PagerdutyIcon from '../Pd';
+import PagerdutyIcon from '../PagerDutyIcon';
 
 type IncidentListItemProps = {
   incident: Incident;

@@ -51,10 +51,6 @@ export type User = {
   name: string;
 };
 
-export type ClientApiConfig = {
-  token?: string;
-};
-
 export type ServicesResponse = {
   services: Service[];
 };
@@ -71,4 +67,9 @@ export type RequestOptions = {
   method: string;
   headers: HeadersInit;
   body?: BodyInit;
+};
+
+export type ClientApiConfig = {
+  api_url: string;
+  events_url: string;
 };

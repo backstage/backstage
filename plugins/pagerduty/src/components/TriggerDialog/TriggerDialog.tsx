@@ -26,7 +26,7 @@ import {
 } from '@material-ui/core';
 import { Progress, useApi, alertApiRef, identityApiRef } from '@backstage/core';
 import { useAsyncFn } from 'react-use';
-import { pagerDutyApiRef } from '../api/pagerDutyClient';
+import { pagerDutyApiRef } from '../../api';
 
 const useStyles = makeStyles({
   warningText: {

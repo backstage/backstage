@@ -29,7 +29,6 @@ export const EscalationPolicy = ({ users }: EscalationPolicyProps) => (
     {users.length ? (
       users.map((user, index) => <EscalationUser key={index} user={user} />)
     ) : (
-      // TODO: how does it look if we used an EmptyState component here
       <EscalationUsersEmptyState />
     )}
   </List>

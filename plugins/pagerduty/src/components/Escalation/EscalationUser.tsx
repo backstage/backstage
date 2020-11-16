@@ -27,7 +27,7 @@ import {
 } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import EmailIcon from '@material-ui/icons/Email';
-import PagerdutyIcon from '../Pd';
+import PagerdutyIcon from '../PagerDutyIcon';
 import { User } from '../types';
 
 const useStyles = makeStyles({

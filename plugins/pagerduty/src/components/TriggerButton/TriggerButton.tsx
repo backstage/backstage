@@ -16,9 +16,9 @@
 
 import React, { useState } from 'react';
 import { Button, makeStyles } from '@material-ui/core';
-import { TriggerDialog } from './TriggerDialog';
+import { TriggerDialog } from '../TriggerDialog';
 import { Entity } from '@backstage/catalog-model';
-import { PAGERDUTY_INTEGRATION_KEY } from './PagerDutyServiceCard';
+import { PAGERDUTY_INTEGRATION_KEY } from '../PagerDutyCard';
 
 const useStyles = makeStyles({
   triggerAlarm: {

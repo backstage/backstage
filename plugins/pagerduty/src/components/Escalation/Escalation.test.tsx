@@ -37,7 +37,7 @@ describe('Escalation', () => {
     expect(getByText('Empty escalation policy')).toBeInTheDocument();
   });
 
-  it('render Escalation list', () => {
+  it('render escalation list', () => {
     const { getByText } = render(
       wrapInTestApp(<EscalationPolicy users={escalations} />),
     );

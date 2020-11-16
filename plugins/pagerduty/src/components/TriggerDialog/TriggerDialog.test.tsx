@@ -24,8 +24,8 @@ import {
   IdentityApi,
   identityApiRef,
 } from '@backstage/core';
-import { pagerDutyApiRef } from '../api/pagerDutyClient';
-import { TriggerButton } from './TriggerButton';
+import { pagerDutyApiRef } from '../../api';
+import { TriggerButton } from '../TriggerButton';
 import { Entity } from '@backstage/catalog-model';
 import { act } from 'react-dom/test-utils';
 
