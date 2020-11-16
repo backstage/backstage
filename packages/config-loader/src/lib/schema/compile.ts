@@ -55,7 +55,7 @@ export function compileConfigSchemas(
         if (!dataPath) {
           return false;
         }
-        if (visibility) {
+        if (visibility && visibility !== 'backend') {
           const normalizedPath = dataPath.replace(
             /\['?(.*?)'?\]/g,
             (_, segment) => `.${segment}`,
