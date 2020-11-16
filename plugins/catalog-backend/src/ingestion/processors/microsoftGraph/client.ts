@@ -44,7 +44,32 @@ export class MicrosoftGraphClient {
     private readonly pca: msal.ConfidentialClientApplication,
   ) {}
 
-  async api(path: string, query?: ODataQuery): Promise<Response> {
+  async *requestCollection<T>(
+    path: string,
+    query?: ODataQuery,
+  ): AsyncIterable<T> {
+    let response = await this.requestApi(path, query);
+
+    for (;;) {
+      if (response.status !== 200) {
+        await this.handleError(path, response);
+      }
+
+      const result = await response.json();
+      const elements: T[] = result.value;
+
+      yield* elements;
+
+      // Follow cursor to the next page if one is available
+      if (!result['@odata.nextLink']) {
+        return;
+      }
+
+      response = await this.requestRaw(result['@odata.nextLink']);
+    }
+  }
+
+  async requestApi(path: string, query?: ODataQuery): Promise<Response> {
     const queryString = qs.stringify(
       {
         $filter: query?.filter,
@@ -58,10 +83,10 @@ export class MicrosoftGraphClient {
       },
     );
 
-    return await this.request(`${this.baseUrl}/${path}${queryString}`);
+    return await this.requestRaw(`${this.baseUrl}/${path}${queryString}`);
   }
 
-  async request(url: string): Promise<Response> {
+  async requestRaw(url: string): Promise<Response> {
     // Make sure that we always have a valid access token (might be cached)
     const token = await this.pca.acquireTokenByClientCredential({
       scopes: ['https://graph.microsoft.com/.default'],
@@ -75,7 +100,7 @@ export class MicrosoftGraphClient {
   }
 
   async getUserProfile(userId: string): Promise<MicrosoftGraph.User> {
-    const response = await this.api(`users/${userId}`);
+    const response = await this.requestApi(`users/${userId}`);
 
     if (response.status !== 200) {
       await this.handleError('user profile', response);
@@ -88,7 +113,7 @@ export class MicrosoftGraphClient {
     userId: string,
     maxSize: number,
   ): Promise<string | undefined> {
-    const response = await this.api(`users/${userId}/photos`);
+    const response = await this.requestApi(`users/${userId}/photos`);
 
     if (response.status === 404) {
       return undefined;
@@ -124,7 +149,7 @@ export class MicrosoftGraphClient {
     const path = sizeId
       ? `users/${userId}/photos/${sizeId}/$value`
       : `users/${userId}/photo/$value`;
-    const response = await this.api(path);
+    const response = await this.requestApi(path);
 
     if (response.status === 404) {
       return undefined;
@@ -138,72 +163,19 @@ export class MicrosoftGraphClient {
   }
 
   async *getUsers(query?: ODataQuery): AsyncIterable<MicrosoftGraph.User> {
-    let response = await this.api(`users`, query);
-    for (;;) {
-      if (response.status !== 200) {
-        await this.handleError('users', response);
-      }
-
-      const result = await response.json();
-      const users: MicrosoftGraph.User[] = result.value;
-
-      yield* users;
-
-      // Follow cursor to the next page if one is available
-      if (!result['@odata.nextLink']) {
-        return;
-      }
-
-      response = await this.request(result['@odata.nextLink']);
-    }
+    yield* this.requestCollection<MicrosoftGraph.User>(`users`, query);
   }
 
   async *getGroups(query?: ODataQuery): AsyncIterable<MicrosoftGraph.Group> {
-    let response = await this.api(`groups`, query);
-
-    for (;;) {
-      if (response.status !== 200) {
-        await this.handleError('groups', response);
-      }
-
-      const result = await response.json();
-      const groups: MicrosoftGraph.Group[] = result.value;
-
-      yield* groups;
-
-      // Follow cursor to the next page if one is available
-      if (!result['@odata.nextLink']) {
-        return;
-      }
-
-      response = await this.request(result['@odata.nextLink']);
-    }
+    yield* this.requestCollection<MicrosoftGraph.Group>(`groups`, query);
   }
 
   async *getGroupMembers(groupId: string): AsyncIterable<GroupMember> {
-    let response = await this.api(`groups/${groupId}/members`);
-
-    for (;;) {
-      if (response.status !== 200) {
-        await this.handleError('group members', response);
-      }
-
-      const result = await response.json();
-      const groups: GroupMember[] = result.value;
-
-      yield* groups;
-
-      // Follow cursor to the next page if one is available
-      if (!result['@odata.nextLink']) {
-        return;
-      }
-
-      response = await this.request(result['@odata.nextLink']);
-    }
+    yield* this.requestCollection<GroupMember>(`groups/${groupId}/members`);
   }
 
   async getOrganization(): Promise<MicrosoftGraph.Organization[] | undefined> {
-    const response = await this.api(`organization`);
+    const response = await this.requestApi(`organization`);
 
     if (response.status !== 200) {
       await this.handleError('organization', response);
@@ -214,12 +186,12 @@ export class MicrosoftGraphClient {
     return result.value as MicrosoftGraph.Organization[];
   }
 
-  private async handleError(name: string, response: Response): Promise<void> {
+  private async handleError(path: string, response: Response): Promise<void> {
     const result = await response.json();
     const error = result.error as MicrosoftGraph.PublicError;
 
     throw new Error(
-      `Error while reading ${name} from Microsoft Graph: ${error.code} - ${error.message}`,
+      `Error while reading ${path} from Microsoft Graph: ${error.code} - ${error.message}`,
     );
   }
 }
