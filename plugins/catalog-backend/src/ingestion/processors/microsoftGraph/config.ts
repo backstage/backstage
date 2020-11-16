@@ -26,7 +26,9 @@ export type MicrosoftGraphProviderConfig = {
   groupFilter?: string;
 };
 
-export function readConfig(config: Config): MicrosoftGraphProviderConfig[] {
+export function readMicrosoftGraphConfig(
+  config: Config,
+): MicrosoftGraphProviderConfig[] {
   const providers: MicrosoftGraphProviderConfig[] = [];
   const providerConfigs = config.getOptionalConfigArray('providers') ?? [];
 

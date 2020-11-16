@@ -15,5 +15,5 @@
  */
 export { MicrosoftGraphClient } from './client';
 export type { MicrosoftGraphProviderConfig } from './config';
-export { readConfig } from './config';
+export { readMicrosoftGraphConfig } from './config';
 export { readMicrosoftGraphOrg } from './read';

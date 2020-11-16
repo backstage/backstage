@@ -14,4 +14,66 @@
  * limitations under the License.
  */
 
-// TODO: Add unit tests!
+import { ConfigReader } from '@backstage/config';
+import { readMicrosoftGraphConfig } from './config';
+
+describe('readMicrosoftGraphConfig', () => {
+  it('applies all of the defaults', () => {
+    const config = {
+      providers: [
+        {
+          target: 'target',
+          tenantId: 'tenantId',
+          clientId: 'clientId',
+          clientSecret: 'clientSecret',
+        },
+      ],
+    };
+    const actual = readMicrosoftGraphConfig(
+      ConfigReader.fromConfigs([{ context: '', data: config }]),
+    );
+    const expected = [
+      {
+        target: 'target',
+        tenantId: 'tenantId',
+        clientId: 'clientId',
+        clientSecret: 'clientSecret',
+        authority: 'https://login.microsoftonline.com',
+        userFilter: undefined,
+        groupFilter: undefined,
+      },
+    ];
+    expect(actual).toEqual(expected);
+  });
+
+  it('reads all the values', () => {
+    const config = {
+      providers: [
+        {
+          target: 'target',
+          tenantId: 'tenantId',
+          clientId: 'clientId',
+          clientSecret: 'clientSecret',
+          authority: 'https://login.example.com/',
+          userFilter: 'accountEnabled eq true',
+          groupFilter: 'securityEnabled eq false',
+        },
+      ],
+    };
+    const actual = readMicrosoftGraphConfig(
+      ConfigReader.fromConfigs([{ context: '', data: config }]),
+    );
+    const expected = [
+      {
+        target: 'target',
+        tenantId: 'tenantId',
+        clientId: 'clientId',
+        clientSecret: 'clientSecret',
+        authority: 'https://login.example.com',
+        userFilter: 'accountEnabled eq true',
+        groupFilter: 'securityEnabled eq false',
+      },
+    ];
+    expect(actual).toEqual(expected);
+  });
+});

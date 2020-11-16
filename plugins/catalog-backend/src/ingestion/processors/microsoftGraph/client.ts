@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-import { MicrosoftGraphProviderConfig } from './config';
 import * as msal from '@azure/msal-node';
-import fetch from 'cross-fetch';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
+import fetch from 'cross-fetch';
 import qs from 'qs';
+import { MicrosoftGraphProviderConfig } from './config';
 
-type ODataQuery = { filter?: string; expand?: string[]; select?: string[] };
+export type ODataQuery = {
+  filter?: string;
+  expand?: string[];
+  select?: string[];
+};
 
-type GroupMember =
+export type GroupMember =
   | (MicrosoftGraph.Group & { '@odata.type': '#microsoft.graph.user' })
   | (MicrosoftGraph.User & { '@odata.type': '#microsoft.graph.group' });
 
@@ -174,16 +178,16 @@ export class MicrosoftGraphClient {
     yield* this.requestCollection<GroupMember>(`groups/${groupId}/members`);
   }
 
-  async getOrganization(): Promise<MicrosoftGraph.Organization[] | undefined> {
-    const response = await this.requestApi(`organization`);
+  async getOrganization(
+    tenantId: string,
+  ): Promise<MicrosoftGraph.Organization> {
+    const response = await this.requestApi(`organization/${tenantId}`);
 
     if (response.status !== 200) {
-      await this.handleError('organization', response);
+      await this.handleError('organization/${tenantId}', response);
     }
 
-    const result = await response.json();
-
-    return result.value as MicrosoftGraph.Organization[];
+    return await response.json();
   }
 
   private async handleError(path: string, response: Response): Promise<void> {

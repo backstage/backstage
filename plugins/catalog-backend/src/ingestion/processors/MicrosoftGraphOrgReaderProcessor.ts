@@ -20,7 +20,7 @@ import { Logger } from 'winston';
 import {
   MicrosoftGraphClient,
   MicrosoftGraphProviderConfig,
-  readConfig,
+  readMicrosoftGraphConfig,
   readMicrosoftGraphOrg,
 } from './microsoftGraph';
 import * as results from './results';
@@ -37,7 +37,7 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
     const c = config.getOptionalConfig('catalog.processors.microsoftGraphOrg');
     return new MicrosoftGraphOrgReaderProcessor({
       ...options,
-      providers: c ? readConfig(c) : [],
+      providers: c ? readMicrosoftGraphConfig(c) : [],
     });
   }
 
@@ -73,10 +73,14 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
 
     // We create a client each time as we need one that matches the specific provider
     const client = MicrosoftGraphClient.create(provider);
-    const { users, groups } = await readMicrosoftGraphOrg(client, {
-      userFilter: provider.userFilter,
-      groupFilter: provider.groupFilter,
-    });
+    const { users, groups } = await readMicrosoftGraphOrg(
+      client,
+      provider.tenantId,
+      {
+        userFilter: provider.userFilter,
+        groupFilter: provider.groupFilter,
+      },
+    );
 
     const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);
     this.logger.debug(

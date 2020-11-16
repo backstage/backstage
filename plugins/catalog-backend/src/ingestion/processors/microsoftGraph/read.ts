@@ -42,7 +42,7 @@ export async function readMicrosoftGraphUsers(
 
   for await (const user of client.getUsers({
     filter: options?.userFilter,
-    select: ['id', 'displayName', 'mail', ''],
+    select: ['id', 'displayName', 'mail'],
   })) {
     if (!user.id || !user.displayName || !user.mail) {
       continue;
@@ -60,8 +60,8 @@ export async function readMicrosoftGraphUsers(
       },
       spec: {
         profile: {
-          displayName: user.displayName || undefined,
-          email: user.mail || undefined,
+          displayName: user.displayName!,
+          email: user.mail!,
 
           // TODO: Additional fields?
           // jobTitle: user.jobTitle || undefined,
@@ -92,48 +92,39 @@ export async function readMicrosoftGraphUsers(
   return { users: entities };
 }
 
-export async function readMicrosoftGraphOrganizations(
+export async function readMicrosoftGraphOrganization(
   client: MicrosoftGraphClient,
+  tenantId: string,
 ): Promise<{
-  rootGroup?: GroupEntity; // With all relations empty
+  rootGroup: GroupEntity; // With all relations empty
 }> {
-  const organizations = await client.getOrganization();
+  // For now we expect a single root orgranization
+  const organization = await client.getOrganization(tenantId);
+  const name = normalizeEntityName(organization.displayName!);
+  const rootGroup: GroupEntity = {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Group',
+    metadata: {
+      name: name,
+      description: organization.displayName!,
+      annotations: {
+        [MICROSOFT_GRAPH_TENANT_ID_ANNOTATION]: organization.id!,
+      },
+    },
+    spec: {
+      type: 'root',
+      ancestors: [],
+      children: [],
+      descendants: [],
+    },
+  };
 
-  if (organizations) {
-    for (const entry of organizations) {
-      if (!entry.id || !entry.displayName) {
-        continue;
-      }
-
-      // For now we expect a single root orgranization
-      const name = normalizeEntityName(entry.displayName);
-      const rootGroup: GroupEntity = {
-        apiVersion: 'backstage.io/v1alpha1',
-        kind: 'Group',
-        metadata: {
-          name: name,
-          description: entry.displayName,
-          annotations: {
-            [MICROSOFT_GRAPH_TENANT_ID_ANNOTATION]: entry.id,
-          },
-        },
-        spec: {
-          type: 'root',
-          ancestors: [],
-          children: [],
-          descendants: [],
-        },
-      };
-
-      return { rootGroup };
-    }
-  }
-
-  return {};
+  return { rootGroup };
 }
 
 export async function readMicrosoftGraphGroups(
   client: MicrosoftGraphClient,
+  tenantId: string,
   options?: { groupFilter?: string },
 ): Promise<{
   groups: GroupEntity[]; // With all relations empty
@@ -144,12 +135,9 @@ export async function readMicrosoftGraphGroups(
   const groupMember: Map<string, Set<string>> = new Map();
   const limiter = limiterFactory(10);
 
-  const { rootGroup } = await readMicrosoftGraphOrganizations(client);
-
-  if (rootGroup) {
-    groupMember.set(rootGroup.metadata.name, new Set<string>());
-    groups.push(rootGroup);
-  }
+  const { rootGroup } = await readMicrosoftGraphOrganization(client, tenantId);
+  groupMember.set(rootGroup.metadata.name, new Set<string>());
+  groups.push(rootGroup);
 
   const groupMemberPromises: Promise<void>[] = [];
 
@@ -268,6 +256,7 @@ export function resolveRelations(
 
 export async function readMicrosoftGraphOrg(
   client: MicrosoftGraphClient,
+  tenantId: string,
   options?: { userFilter?: string; groupFilter?: string },
 ): Promise<{ users: UserEntity[]; groups: GroupEntity[] }> {
   const { users } = await readMicrosoftGraphUsers(client, {
@@ -275,6 +264,7 @@ export async function readMicrosoftGraphOrg(
   });
   const { groups, rootGroup, groupMember } = await readMicrosoftGraphGroups(
     client,
+    tenantId,
     {
       groupFilter: options?.groupFilter,
     },
