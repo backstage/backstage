@@ -19,8 +19,12 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
+import * as k8s from '@kubernetes/client-node';
 import fetch from 'cross-fetch';
 import WebSocket from 'isomorphic-ws';
+import https from 'https';
+import * as ms from 'ms';
+import http from 'http';
 import { Server } from 'ws';
 
 export interface RouterOptions {
@@ -28,44 +32,113 @@ export interface RouterOptions {
   config: Config;
 }
 
-// TODO - Need to work out better authentication using the CA of the k8s api cluster :')
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
+export const buildRequestOptionsForUrl = (url: string): RequestInit & any => {
+  const parsed = new URL(url);
+  const request: any = {
+    headers: {
+      host: '127.0.0.1', // needs to be something that linkerd thinks is fine.
+    },
+  };
 
-const getCluster = options => {
-  const cluster = (options.config.getConfigArray(
-    'kubernetes.clusters',
-  ) as any)[0].data;
+  const kc = new k8s.KubeConfig();
+  kc.loadFromDefault();
+  kc.applyToRequest(request as Request);
 
-  const baseUrl = cluster.url;
-  const Authorization = `Bearer ${cluster.serviceAccountToken}`;
-  return { Authorization, baseUrl };
+  const agent = (() => {
+    const builder = {
+      ca: request.ca,
+      cert: request.cert,
+      key: request.key,
+    };
+
+    return parsed.protocol === 'https:'
+      ? new https.Agent(builder)
+      : new http.Agent();
+  })();
+
+  return {
+    ...request,
+    agent,
+  };
 };
+
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
+  const kc = new k8s.KubeConfig();
+  kc.loadFromDefault();
+  const baseUrl = kc.getCurrentCluster()?.server;
+  console.warn(baseUrl);
   const { logger } = options;
   const router = Router();
 
-  const { Authorization, baseUrl } = getCluster(options);
-  const makeRequest = (url: string) => {
-    const k8sProxyUrl = `api/v1/namespaces/linkerd/services/linkerd-web:8084/proxy${url}`;
-
-    return fetch(`${baseUrl}${k8sProxyUrl}`, {
-      headers: { Authorization },
-    }).then(r => r.json());
+  const makeRequest = async (url: string) => {
+    const k8sProxyUrl = `/api/v1/namespaces/linkerd/services/linkerd-web:8084/proxy${url}`;
+    const endpoint = `${baseUrl}${k8sProxyUrl}`;
+    const opts = buildRequestOptionsForUrl(endpoint);
+    return fetch(endpoint, opts).then(r => r.json());
   };
 
   router.get(
-    '/deployment/:namespace/:deployment',
-    async ({ params: { namespace, deployment } }, response) => {
+    '/namespace/:namespace/deployments',
+    async ({ params: { namespace } }, response) => {
       const podRequest = await makeRequest(`/api/pods?namespace=${namespace}`);
-      response.send(
-        podRequest.pods.filter(
-          p => p.deployment === `${namespace}/${deployment}`,
-        ),
-      );
+
+      response.send(podRequest.pods);
     },
   );
+  // TODO(blam): Get all stats for all namespaces
+  // router.get('/namespaces/stats');
+
+  // TODO(blam): Get all stats for everything in one namespace
+  router.get(
+    '/namespace/:namespace/stats',
+    async ({ params: { namespace } }, response) => {
+      const tpsRequest = await makeRequest(
+        `/api/tps-reports?resource_type=all&namespace=${namespace}&tcp_stats=true&window=30s`,
+      );
+
+      console.warn(JSON.stringify(tpsRequest, null, 2));
+      const final = tpsRequest.ok.statTables
+        .filter((table: any) => table.podGroup.rows.length)
+        .map((table: any) =>
+          table.podGroup.rows.reduce(
+            (prev: any[], current: any) => [...prev, current],
+            [],
+          ),
+        )
+        .flat()
+        .reduce((prev: any, current: any) => {
+          prev[current.resource.type] = prev[current.resource.type] || {};
+          prev[current.resource.type][current.resource.name] =
+            prev[current.resource.type][current.resource.name] || {};
+
+          const timeWindowSeconds = (ms(current.timeWindow || 0) /
+            1000) as number;
+          const successCount = parseInt(current.stats?.successCount, 10);
+          const failureCount = parseInt(current.stats?.failureCount, 10);
+          const totalRequests = successCount + failureCount;
+
+          const b7e = {
+            totalRequests,
+            rps: totalRequests / timeWindowSeconds,
+            successRate: (successCount / totalRequests) * 100,
+            failureRate: (failureCount / totalRequests) * 100,
+          };
+
+          prev[current.resource.type][current.resource.name] = {
+            ...current,
+            b7e,
+          };
+          return prev;
+        }, {});
+
+      response.send(final);
+    },
+  );
+
+  // TODO(blam): Get a breakdown for a deployment in a namespace
+  // router.get('/namespace/:namespace/deployment/:deployment/stats');
 
   router.get('/health', (_, response) => {
     logger.info('PONG!');
@@ -78,28 +151,39 @@ export async function createRouter(
 
 export async function createWebSockets(options: RouterOptions) {
   const server = new Server({ noServer: true });
-  const { Authorization } = getCluster(options);
 
+  const kc = new k8s.KubeConfig();
+  kc.loadFromDefault();
+  const baseUrl = kc.getCurrentCluster()?.server ?? '';
+  const fixed = baseUrl.replace(/^http/, 'ws');
+  const opts = buildRequestOptionsForUrl(baseUrl);
   server.on('error', options.logger.error);
 
   server.on('connection', socket => {
     const linkerdConnection = new WebSocket(
-      'wss://127.0.0.1:59436/api/v1/namespaces/linkerd/services/linkerd-web:8084/proxy/api/tap',
+      `${fixed}/api/v1/namespaces/linkerd/services/linkerd-web:8084/proxy/api/tap`,
       [],
-      { headers: { Authorization } },
+      opts,
     );
-
     socket.on('message', data => {
       const { resource, namespace } = JSON.parse(data.toString());
       linkerdConnection.on('message', message => socket.send(message));
+
+      console.warn(resource, namespace);
       linkerdConnection.send(
         JSON.stringify({
           id: 'top-web',
-          resource: `deployment/${resource}`,
+          resource: `${resource}`,
           namespace,
           maxRps: 0,
         }),
       );
+      // linkerdConnection.send({
+      //   id: 'top-web',
+      //   resource: 'deployment/emoji',
+      //   namespace: 'emojivoto',
+      //   maxRps: 0,
+      // });
     });
     socket.on('close', () => linkerdConnection.close());
   });
