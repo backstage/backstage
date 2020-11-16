@@ -151,17 +151,24 @@ function compileTsSchemas(paths: string[]) {
   });
 
   const tsSchemas = paths.map(path => {
-    const value = generateSchema(
-      program,
-      // All schemas should export a `Config` symbol
-      'Config',
-      // This enables usage of @visibility is doc comments
-      {
-        required: true,
-        validationKeywords: ['visibility'],
-      },
-      [path.split(sep).join('/')], // Unix paths are expected for all OSes here
-    ) as JsonObject | null;
+    let value;
+    try {
+      value = generateSchema(
+        program,
+        // All schemas should export a `Config` symbol
+        'Config',
+        // This enables usage of @visibility is doc comments
+        {
+          required: true,
+          validationKeywords: ['visibility'],
+        },
+        [path.split(sep).join('/')], // Unix paths are expected for all OSes here
+      ) as JsonObject | null;
+    } catch (error) {
+      if (error.message !== 'type Config not found') {
+        throw error;
+      }
+    }
 
     if (!value) {
       throw new Error(`Invalid schema in ${path}, missing Config export`);
