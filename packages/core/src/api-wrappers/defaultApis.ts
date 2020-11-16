@@ -46,6 +46,8 @@ import {
   SamlAuth,
   oneloginAuthApiRef,
   OneLoginAuth,
+  oidcApiRef,
+  OpenIdConnect,
 } from '@backstage/core-api';
 
 export const defaultApis = [
@@ -152,5 +154,14 @@ export const defaultApis = [
     },
     factory: ({ discoveryApi, oauthRequestApi }) =>
       OneLoginAuth.create({ discoveryApi, oauthRequestApi }),
+  }),
+  createApiFactory({
+    api: oidcApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      oauthRequestApi: oauthRequestApiRef,
+    },
+    factory: ({ discoveryApi, oauthRequestApi }) =>
+      OpenIdConnect.create({ discoveryApi, oauthRequestApi }),
   }),
 ];

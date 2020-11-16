@@ -27,6 +27,7 @@ import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { createOidcRouter, DatabaseKeyStore, TokenFactory } from '../identity';
 import { createAuthProvider } from '../providers';
+import session from 'express-session';
 
 export interface RouterOptions {
   logger: Logger;
@@ -59,7 +60,9 @@ export async function createRouter({
   });
   const catalogApi = new CatalogClient({ discoveryApi: discovery });
 
-  router.use(cookieParser());
+  const secret = 'backstage secret'; // TODO: Allow an override here
+  router.use(cookieParser(secret));
+  router.use(session({ secret }));
   router.use(express.urlencoded({ extended: false }));
   router.use(express.json());
 
