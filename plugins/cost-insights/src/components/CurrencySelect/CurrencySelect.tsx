@@ -57,6 +57,7 @@ export const CurrencySelect = ({
       onChange={handleOnChange}
       value={currency.kind || NULL_VALUE}
       renderValue={renderValue}
+      style={{ marginRight: '15px' }}
     >
       {currencies.map((c: Currency) => (
         <MenuItem
