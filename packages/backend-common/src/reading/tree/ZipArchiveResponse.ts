@@ -134,15 +134,15 @@ export class ZipArchiveResponse implements ReadTreeResponse {
       .pipe(unzipper.Parse())
       .on('entry', (entry: Entry) => {
         if (this.shouldBeIncluded(entry)) {
+          const entryPath = this.getPath(entry);
           if (entry.type === 'Directory') {
-            const directoryPath = this.getPath(entry);
-            if (directoryPath) {
-              fs.mkdirSync(path.join(dir, this.getPath(entry)));
+            if (entryPath) {
+              fs.mkdirSync(path.join(dir, entryPath));
             }
             entry.resume();
-            return;
+          } else {
+            entry.pipe(fs.createWriteStream(path.join(dir, entryPath)));
           }
-          entry.pipe(fs.createWriteStream(path.join(dir, this.getPath(entry))));
         } else {
           entry.autodrain();
         }
