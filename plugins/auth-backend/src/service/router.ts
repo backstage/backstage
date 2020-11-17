@@ -62,7 +62,7 @@ export async function createRouter({
 
   const secret = 'backstage secret'; // TODO: Allow an override here
   router.use(cookieParser(secret));
-  router.use(session({ secret }));
+  router.use(session({ secret, saveUninitialized: false }));
   router.use(express.urlencoded({ extended: false }));
   router.use(express.json());
 
