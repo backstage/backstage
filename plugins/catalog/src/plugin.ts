@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
+import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 import {
-  createPlugin,
   createApiFactory,
+  createApiRef,
+  createPlugin,
   discoveryApiRef,
 } from '@backstage/core';
-import { catalogApiRef } from './api/types';
-import { CatalogClient } from './api/CatalogClient';
+
+export const catalogApiRef = createApiRef<CatalogApi>({
+  id: 'plugin.catalog.service',
+  description:
+    'Used by the Catalog plugin to make requests to accompanying backend',
+});
 
 export const plugin = createPlugin({
   id: 'catalog',

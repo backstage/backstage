@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { createPlugin, createRouteRef } from '@backstage/core';
-import CostInsightsPage from './components/CostInsightsPage';
-import ProjectGrowthInstructionsPage from './components/ProjectGrowthInstructionsPage';
-import LabelDataflowInstructionsPage from './components/LabelDataflowInstructionsPage';
+import { createPlugin, createRouteRef, PluginConfig } from '@backstage/core';
+import { CostInsightsPage } from './components/CostInsightsPage';
+import { ProjectGrowthInstructionsPage } from './components/ProjectGrowthInstructionsPage';
+import { LabelDataflowInstructionsPage } from './components/LabelDataflowInstructionsPage';
 
 export const rootRouteRef = createRouteRef({
   path: '/cost-insights',
@@ -34,7 +34,7 @@ export const unlabeledDataflowAlertRef = createRouteRef({
   title: 'Labeling Dataflow Jobs',
 });
 
-export const plugin = createPlugin({
+export const pluginConfig: PluginConfig = {
   id: 'cost-insights',
   register({ router, featureFlags }) {
     router.addRoute(rootRouteRef, CostInsightsPage);
@@ -42,4 +42,6 @@ export const plugin = createPlugin({
     router.addRoute(unlabeledDataflowAlertRef, LabelDataflowInstructionsPage);
     featureFlags.register('cost-insights-currencies');
   },
-});
+};
+
+export const plugin = createPlugin(pluginConfig);

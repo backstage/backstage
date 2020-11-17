@@ -16,35 +16,37 @@
 
 import React from 'react';
 import { Box, Card, CardContent, Divider, useTheme } from '@material-ui/core';
-import CostGrowth from '../CostGrowth';
-import CostOverviewChart from './CostOverviewChart';
-import CostOverviewHeader from './CostOverviewHeader';
-import LegendItem from '../LegendItem';
-import MetricSelect from '../MetricSelect';
-import PeriodSelect from '../PeriodSelect';
-import { useScroll, useFilters, useConfig } from '../../hooks';
+import { CostGrowth } from '../CostGrowth';
+import { CostOverviewChart } from './CostOverviewChart';
+import { CostOverviewHeader } from './CostOverviewHeader';
+import { LegendItem } from '../LegendItem';
+import { MetricSelect } from '../MetricSelect';
+import { PeriodSelect } from '../PeriodSelect';
+import {
+  useScroll,
+  useFilters,
+  useConfig,
+  useLastCompleteBillingDate,
+} from '../../hooks';
 import { mapFiltersToProps } from './selector';
 import { DefaultNavigation } from '../../utils/navigation';
 import { formatPercent } from '../../utils/formatters';
-import {
-  Cost,
-  CostInsightsTheme,
-  MetricData,
-  findAlways,
-  getComparedChange,
-} from '../../types';
+import { findAlways } from '../../utils/assert';
+import { getComparedChange } from '../../utils/change';
+import { Cost, CostInsightsTheme, MetricData } from '../../types';
 
 export type CostOverviewCardProps = {
   dailyCostData: Cost;
   metricData: MetricData | null;
 };
 
-const CostOverviewCard = ({
+export const CostOverviewCard = ({
   dailyCostData,
   metricData,
 }: CostOverviewCardProps) => {
   const theme = useTheme<CostInsightsTheme>();
   const config = useConfig();
+  const lastCompleteBillingDate = useLastCompleteBillingDate();
   const { ScrollAnchor } = useScroll(DefaultNavigation.CostOverviewCard);
   const { setDuration, setProject, setMetric, ...filters } = useFilters(
     mapFiltersToProps,
@@ -54,7 +56,12 @@ const CostOverviewCard = ({
     ? findAlways(config.metrics, m => m.kind === filters.metric)
     : null;
   const comparedChange = metricData
-    ? getComparedChange(dailyCostData, metricData)
+    ? getComparedChange(
+        dailyCostData,
+        metricData,
+        filters.duration,
+        lastCompleteBillingDate,
+      )
     : null;
 
   return (
@@ -102,7 +109,7 @@ const CostOverviewCard = ({
           />
         </Box>
         <Box display="flex" justifyContent="flex-end" alignItems="center">
-          {config.metrics.length > 1 && (
+          {config.metrics.length && (
             <MetricSelect
               metric={filters.metric}
               metrics={config.metrics}
@@ -114,5 +121,3 @@ const CostOverviewCard = ({
     </Card>
   );
 };
-
-export default CostOverviewCard;

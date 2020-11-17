@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { renderHook, act } from '@testing-library/react-hooks';
-import { useStarredEntities } from './useStarredEntites';
+import { useStarredEntities } from './useStarredEntities';
 import {
   ApiProvider,
   ApiRegistry,

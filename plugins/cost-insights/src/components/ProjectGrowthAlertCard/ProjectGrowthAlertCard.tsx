@@ -15,20 +15,16 @@
  */
 
 import React from 'react';
-import { Box } from '@material-ui/core';
 import { InfoCard } from '@backstage/core';
-import ResourceGrowthBarChart from '../ResourceGrowthBarChart';
-import ResourceGrowthBarChartLegend from '../ResourceGrowthBarChartLegend';
-import { Duration, ProjectGrowthData } from '../../types';
+import { ProjectGrowthAlertChart } from './ProjectGrowthAlertChart';
+import { ProjectGrowthData } from '../../types';
 import { pluralOf } from '../../utils/grammar';
 
 type ProjectGrowthAlertProps = {
   alert: ProjectGrowthData;
 };
 
-const ProjectGrowthAlertCard = ({ alert }: ProjectGrowthAlertProps) => {
-  const [costStart, costEnd] = alert.aggregation;
-
+export const ProjectGrowthAlertCard = ({ alert }: ProjectGrowthAlertProps) => {
   const subheader = `
     ${alert.products.length} ${pluralOf(alert.products.length, 'product')}${
     alert.products.length > 1 ? ', sorted by cost' : ''
@@ -39,22 +35,7 @@ const ProjectGrowthAlertCard = ({ alert }: ProjectGrowthAlertProps) => {
       title={`Project growth for ${alert.project}`}
       subheader={subheader}
     >
-      <Box display="flex" flexDirection="column">
-        <Box pb={2}>
-          <ResourceGrowthBarChartLegend
-            change={alert.change}
-            duration={Duration.P3M}
-            costStart={costStart}
-            costEnd={costEnd}
-          />
-        </Box>
-        <ResourceGrowthBarChart
-          resources={alert.products}
-          duration={Duration.P3M}
-        />
-      </Box>
+      <ProjectGrowthAlertChart alert={alert} />
     </InfoCard>
   );
 };
-
-export default ProjectGrowthAlertCard;

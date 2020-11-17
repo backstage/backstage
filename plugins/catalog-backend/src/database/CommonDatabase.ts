@@ -22,27 +22,31 @@ import {
 import {
   Entity,
   EntityName,
+  EntityRelationSpec,
   ENTITY_DEFAULT_NAMESPACE,
   ENTITY_META_GENERATED_FIELDS,
   generateEntityEtag,
   generateEntityUid,
   Location,
+  parseEntityName,
 } from '@backstage/catalog-model';
 import Knex from 'knex';
 import lodash from 'lodash';
 import type { Logger } from 'winston';
 import { buildEntitySearch } from './search';
-import type {
+import {
   Database,
   DatabaseLocationUpdateLogEvent,
   DatabaseLocationUpdateLogStatus,
+  DbEntitiesRelationsRow,
   DbEntitiesRow,
   DbEntitiesSearchRow,
   DbEntityRequest,
   DbEntityResponse,
   DbLocationsRow,
   DbLocationsRowWithStatus,
-  EntityFilters,
+  EntityFilter,
+  Transaction,
 } from './types';
 
 // The number of items that are sent per batch to the database layer, when
@@ -60,9 +64,23 @@ export class CommonDatabase implements Database {
     private readonly logger: Logger,
   ) {}
 
-  async transaction<T>(fn: (tx: unknown) => Promise<T>): Promise<T> {
+  async transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T> {
     try {
-      return await this.database.transaction<T>(fn);
+      let result: T | undefined = undefined;
+
+      await this.database.transaction(
+        async tx => {
+          // We can't return here, as knex swallows the return type in case the transaction is rolled back:
+          // https://github.com/knex/knex/blob/e37aeaa31c8ef9c1b07d2e4d3ec6607e557d800d/lib/transaction.js#L136
+          result = await fn(tx);
+        },
+        {
+          // If we explicitly trigger a rollback, don't fail.
+          doNotRejectOnRollback: true,
+        },
+      );
+
+      return result!;
     } catch (e) {
       this.logger.debug(`Error during transaction, ${e}`);
 
@@ -78,7 +96,7 @@ export class CommonDatabase implements Database {
   }
 
   async addEntity(
-    txOpaque: unknown,
+    txOpaque: Transaction,
     request: DbEntityRequest,
   ): Promise<DbEntityResponse> {
     const tx = txOpaque as Knex.Transaction<any, any>;
@@ -107,7 +125,7 @@ export class CommonDatabase implements Database {
   }
 
   async addEntities(
-    txOpaque: unknown,
+    txOpaque: Transaction,
     request: DbEntityRequest[],
   ): Promise<DbEntityResponse[]> {
     const tx = txOpaque as Knex.Transaction<any, any>;
@@ -123,6 +141,8 @@ export class CommonDatabase implements Database {
         throw new InputError('May not specify etag for new entities');
       } else if (entity.metadata.generation !== undefined) {
         throw new InputError('May not specify generation for new entities');
+      } else if (entity.relations !== undefined) {
+        throw new InputError('May not specify relations for new entities');
       }
 
       const newEntity = {
@@ -153,7 +173,7 @@ export class CommonDatabase implements Database {
   }
 
   async updateEntity(
-    txOpaque: unknown,
+    txOpaque: Transaction,
     request: DbEntityRequest,
     matchingEtag?: string,
     matchingGeneration?: number,
@@ -212,67 +232,37 @@ export class CommonDatabase implements Database {
   }
 
   async entities(
-    txOpaque: unknown,
-    filters?: EntityFilters,
+    txOpaque: Transaction,
+    filter?: EntityFilter,
   ): Promise<DbEntityResponse[]> {
     const tx = txOpaque as Knex.Transaction<any, any>;
 
     let entitiesQuery = tx<DbEntitiesRow>('entities');
 
-    for (const [matchKey, matchVal] of Object.entries(filters ?? {})) {
-      const key = matchKey.toLowerCase().replace(/[*]/g, '%');
-      const keyOp = key.includes('%') ? 'like' : '=';
-      const values = Array.isArray(matchVal) ? matchVal : [matchVal];
-
-      let matchNulls = false;
-      const matchIn: string[] = [];
-      const matchLike: string[] = [];
-
-      for (const value of values) {
-        if (!value) {
-          matchNulls = true;
-        } else if (value.includes('*')) {
-          matchLike.push(value.toLowerCase().replace(/[*]/g, '%'));
-        } else {
-          matchIn.push(value.toLowerCase());
-        }
-      }
-
-      // NOTE(freben): This used to be a set of OUTER JOIN, which may seem to
-      // make a lot of sense. However, it had abysmal performance on sqlite
-      // when datasets grew large, so we're using IN instead.
-      const matchQuery = tx<DbEntitiesSearchRow>('entities_search')
-        .select('entity_id')
-        .where(function keyFilter() {
-          this.andWhere('key', keyOp, key);
-          this.andWhere(function valueFilter() {
-            if (matchIn.length === 1) {
-              this.orWhere({ value: matchIn[0] });
-            } else if (matchIn.length > 1) {
-              this.orWhereIn('value', matchIn);
-            }
-            if (matchLike.length) {
-              for (const x of matchLike) {
-                this.orWhere('value', 'like', tx.raw('?', [x]));
+    for (const singleFilter of filter?.anyOf ?? []) {
+      entitiesQuery = entitiesQuery.orWhere(function singleFilterFn() {
+        for (const { key, matchValueIn } of singleFilter.allOf) {
+          // NOTE(freben): This used to be a set of OUTER JOIN, which may seem to
+          // make a lot of sense. However, it had abysmal performance on sqlite
+          // when datasets grew large, so we're using IN instead.
+          const matchQuery = tx<DbEntitiesSearchRow>('entities_search')
+            .select('entity_id')
+            .where(function keyFilter() {
+              this.andWhere({ key: key.toLowerCase() });
+              if (matchValueIn) {
+                if (matchValueIn.length === 1) {
+                  this.andWhere({ value: matchValueIn[0].toLowerCase() });
+                } else if (matchValueIn.length > 1) {
+                  this.andWhere(
+                    'value',
+                    'in',
+                    matchValueIn.map(v => v.toLowerCase()),
+                  );
+                }
               }
-            }
-            if (matchNulls) {
-              // Match explicit nulls, and then handle absence separately below
-              this.orWhereNull('value');
-            }
-          });
-        });
+            });
 
-      // Handle absence as nulls as well
-      entitiesQuery = entitiesQuery.andWhere(function match() {
-        this.whereIn('id', matchQuery);
-        if (matchNulls) {
-          this.orWhereNotIn(
-            'id',
-            tx<DbEntitiesSearchRow>('entities_search')
-              .select('entity_id')
-              .where('key', keyOp, key),
-          );
+          this.andWhere('id', 'in', matchQuery);
         }
       });
     }
@@ -281,11 +271,11 @@ export class CommonDatabase implements Database {
       .select('entities.*')
       .orderBy('full_name', 'asc');
 
-    return rows.map(row => this.toEntityResponse(row));
+    return Promise.all(rows.map(row => this.toEntityResponse(tx, row)));
   }
 
   async entityByName(
-    txOpaque: unknown,
+    txOpaque: Transaction,
     name: EntityName,
   ): Promise<DbEntityResponse | undefined> {
     const tx = txOpaque as Knex.Transaction<any, any>;
@@ -300,11 +290,11 @@ export class CommonDatabase implements Database {
       return undefined;
     }
 
-    return this.toEntityResponse(rows[0]);
+    return this.toEntityResponse(tx, rows[0]);
   }
 
   async entityByUid(
-    txOpaque: unknown,
+    txOpaque: Transaction,
     uid: string,
   ): Promise<DbEntityResponse | undefined> {
     const tx = txOpaque as Knex.Transaction<any, any>;
@@ -317,10 +307,10 @@ export class CommonDatabase implements Database {
       return undefined;
     }
 
-    return this.toEntityResponse(rows[0]);
+    return this.toEntityResponse(tx, rows[0]);
   }
 
-  async removeEntityByUid(txOpaque: unknown, uid: string): Promise<void> {
+  async removeEntityByUid(txOpaque: Transaction, uid: string): Promise<void> {
     const tx = txOpaque as Knex.Transaction<any, any>;
 
     const result = await tx<DbEntitiesRow>('entities').where({ id: uid }).del();
@@ -330,19 +320,50 @@ export class CommonDatabase implements Database {
     }
   }
 
-  async addLocation(location: Location): Promise<DbLocationsRow> {
-    return await this.database.transaction<DbLocationsRow>(async tx => {
-      const row: DbLocationsRow = {
-        id: location.id,
-        type: location.type,
-        target: location.target,
-      };
-      await tx<DbLocationsRow>('locations').insert(row);
-      return row;
-    });
+  async setRelations(
+    txOpaque: Transaction,
+    originatingEntityId: string,
+    relations: EntityRelationSpec[],
+  ): Promise<void> {
+    const tx = txOpaque as Knex.Transaction<any, any>;
+
+    // remove all relations that exist for the originating entity id.
+    await tx<DbEntitiesRelationsRow>('entities_relations')
+      .where({ originating_entity_id: originatingEntityId })
+      .del();
+
+    const serializeName = (e: EntityName) =>
+      `${e.kind}:${e.namespace}/${e.name}`.toLowerCase();
+
+    const relationsRows: DbEntitiesRelationsRow[] = relations.map(
+      ({ source, target, type }) => ({
+        originating_entity_id: originatingEntityId,
+        source_full_name: serializeName(source),
+        target_full_name: serializeName(target),
+        type,
+      }),
+    );
+
+    // TODO(blam): translate constraint failures to sane NotFoundError instead
+    await tx.batchInsert('entities_relations', relationsRows, BATCH_SIZE);
   }
 
-  async removeLocation(txOpaque: unknown, id: string): Promise<void> {
+  async addLocation(
+    txOpaque: Transaction,
+    location: Location,
+  ): Promise<DbLocationsRow> {
+    const tx = txOpaque as Knex.Transaction<any, any>;
+
+    const row: DbLocationsRow = {
+      id: location.id,
+      type: location.type,
+      target: location.target,
+    };
+    await tx<DbLocationsRow>('locations').insert(row);
+    return row;
+  }
+
+  async removeLocation(txOpaque: Transaction, id: string): Promise<void> {
     const tx = txOpaque as Knex.Transaction<any, any>;
 
     await tx<DbEntitiesRow>('entities')
@@ -469,11 +490,26 @@ export class CommonDatabase implements Database {
     };
   }
 
-  private toEntityResponse(row: DbEntitiesRow): DbEntityResponse {
+  private async toEntityResponse(
+    tx: Knex.Transaction<any, any>,
+    row: DbEntitiesRow,
+  ): Promise<DbEntityResponse> {
     const entity = JSON.parse(row.data) as Entity;
     entity.metadata.uid = row.id;
     entity.metadata.etag = row.etag;
     entity.metadata.generation = Number(row.generation); // cast due to sqlite
+
+    // TODO(Rugvip): This is here because it's simple for now, but we likely
+    //               need to refactor this to be more efficient or introduce pagination.
+    const relations = await tx<DbEntitiesRelationsRow>('entities_relations')
+      .where({ source_full_name: row.full_name })
+      .orderBy(['type', 'target_full_name'])
+      .select();
+
+    entity.relations = relations.map(r => ({
+      target: parseEntityName(r.target_full_name),
+      type: r.type,
+    }));
 
     return {
       locationId: row.location_id || undefined,

@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import BarChartLabel from './BarChartLabel';
+import { BarChartLabel } from './BarChartLabel';
 
 type BarChartTickProps = {
   x: number;
@@ -26,6 +26,7 @@ type BarChartTickProps = {
     value: any;
   };
   visibleTicksCount: number;
+  details?: JSX.Element;
 };
 
 export const BarChartTick = ({
@@ -35,14 +36,19 @@ export const BarChartTick = ({
   width,
   payload,
   visibleTicksCount,
+  details,
 }: BarChartTickProps) => {
   const gutterWidth = 5;
   const labelWidth = width / visibleTicksCount - gutterWidth * 2;
   return (
-    <BarChartLabel x={x} y={y} height={height} width={labelWidth}>
+    <BarChartLabel
+      x={x}
+      y={y}
+      height={height}
+      width={labelWidth}
+      details={details}
+    >
       {!payload.value ? 'Unlabeled' : payload.value}
     </BarChartLabel>
   );
 };
-
-export default BarChartTick;

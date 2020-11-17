@@ -24,7 +24,11 @@ type ProjectSelectProps = {
   onSelect: (project: Maybe<string>) => void;
 };
 
-const ProjectSelect = ({ project, projects, onSelect }: ProjectSelectProps) => {
+export const ProjectSelect = ({
+  project,
+  projects,
+  onSelect,
+}: ProjectSelectProps) => {
   const classes = useStyles();
 
   const projectOptions = [{ id: 'all' } as Project, ...projects]
@@ -66,5 +70,3 @@ const ProjectSelect = ({ project, projects, onSelect }: ProjectSelectProps) => {
     </Select>
   );
 };
-
-export default ProjectSelect;

@@ -16,7 +16,7 @@
 
 import os from 'os';
 import fs from 'fs-extra';
-import fetch from 'node-fetch';
+import fetch from 'cross-fetch';
 import handlebars from 'handlebars';
 import killTree from 'tree-kill';
 import { resolve as resolvePath, join as joinPath } from 'path';
@@ -84,11 +84,23 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
     const path = paths.resolveOwnRoot(pkgJsonPath);
     const pkgTemplate = await fs.readFile(path, 'utf8');
     const { dependencies = {}, devDependencies = {} } = JSON.parse(
-      handlebars.compile(pkgTemplate)({
-        version: '0.0.0',
-        privatePackage: true,
-        scopeName: '@backstage',
-      }),
+      handlebars.compile(pkgTemplate)(
+        {
+          privatePackage: true,
+          scopeName: '@backstage',
+        },
+        {
+          helpers: {
+            version(name: string) {
+              const pkg = require(`${name}/package.json`);
+              if (!pkg) {
+                throw new Error(`No version available for package ${name}`);
+              }
+              return pkg.version;
+            },
+          },
+        },
+      ),
     );
 
     Array<string>()

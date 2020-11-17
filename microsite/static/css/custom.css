@@ -15,9 +15,6 @@ table tr:nth-child(2n) {
   background-color: #2b2b2b;
 }
 
-@media only screen and (min-device-width: 360px) and (max-device-width: 736px) {
-}
-
 @media only screen and (min-width: 1024px) and (max-width: 1500px) {
   /* Experience */
   .content-experience {
@@ -857,7 +854,6 @@ code {
   position: relative;
   padding-top: 75%;
   width: 100%;
-  /* border: 1px dotted #f00; */
 }
 
 .Block__Graphic {

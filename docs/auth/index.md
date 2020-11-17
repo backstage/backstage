@@ -58,7 +58,7 @@ token used to make authenticated calls within Backstage.
 The middleware that will be provided by `@backstage/backend-common` allows
 verification of Backstage ID tokens, and optionally loading additional
 information about the user. The progress is tracked in
-https://github.com/spotify/backstage/issues/1435.
+https://github.com/backstage/backstage/issues/1435.
 
 #### Identity for App Developers
 

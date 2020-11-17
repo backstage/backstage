@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { Entity, LocationSpec } from '@backstage/catalog-model';
+import {
+  Entity,
+  EntityRelationSpec,
+  LocationSpec,
+} from '@backstage/catalog-model';
 
 export type CatalogProcessor = {
   /**
@@ -32,29 +36,46 @@ export type CatalogProcessor = {
   ): Promise<boolean>;
 
   /**
-   * Parses a raw data buffer that was read from a location.
+   * Pre-processes an emitted entity, after it has been emitted but before it
+   * has been validated.
    *
-   * @param data The data to parse
-   * @param location The location that the data came from
-   * @param emit A sink for items resulting from the parsing
-   * @returns True if handled by this processor, false otherwise
-   */
-  parseData?(
-    data: Buffer,
-    location: LocationSpec,
-    emit: CatalogProcessorEmit,
-  ): Promise<boolean>;
-
-  /**
-   * Processes an emitted entity, e.g. by validating or modifying it.
+   * This type of processing usually involves enriching the entity with
+   * additional data, and the input entity may actually still be incomplete
+   * when the processor is invoked.
    *
-   * @param entity The entity to process
+   * @param entity The (possibly partial) entity to process
    * @param location The location that the entity came from
-   * @param read Reads the contents of a location
    * @param emit A sink for auxiliary items resulting from the processing
    * @returns The same entity or a modified version of it
    */
-  processEntity?(
+  preProcessEntity?(
+    entity: Entity,
+    location: LocationSpec,
+    emit: CatalogProcessorEmit,
+  ): Promise<Entity>;
+
+  /**
+   * Validates the entity as a known entity kind, after it has been pre-
+   * processed and has passed through basic overall validation.
+   *
+   * @param entity The entity to validate
+   * @returns Resolves to true, if the entity was of a kind that was known and
+   *   handled by this processor, and was found to be valid. Resolves to false,
+   *   if the entity was not of a kind that was known by this processor.
+   *   Rejects to an Error describing the problem, if the entity was of a kind
+   *   that was known by this processor and was not valid.
+   */
+  validateEntityKind?(entity: Entity): Promise<boolean>;
+
+  /**
+   * Post-processes an emitted entity, after it has been validated.
+   *
+   * @param entity The entity to process
+   * @param location The location that the entity came from
+   * @param emit A sink for auxiliary items resulting from the processing
+   * @returns The same entity or a modified version of it
+   */
+  postProcessEntity?(
     entity: Entity,
     location: LocationSpec,
     emit: CatalogProcessorEmit,
@@ -83,16 +104,16 @@ export type CatalogProcessorLocationResult = {
   optional: boolean;
 };
 
-export type CatalogProcessorDataResult = {
-  type: 'data';
-  data: Buffer;
-  location: LocationSpec;
-};
-
 export type CatalogProcessorEntityResult = {
   type: 'entity';
   entity: Entity;
   location: LocationSpec;
+};
+
+export type CatalogProcessorRelationResult = {
+  type: 'relation';
+  relation: EntityRelationSpec;
+  entityRef?: string;
 };
 
 export type CatalogProcessorErrorResult = {
@@ -103,6 +124,6 @@ export type CatalogProcessorErrorResult = {
 
 export type CatalogProcessorResult =
   | CatalogProcessorLocationResult
-  | CatalogProcessorDataResult
   | CatalogProcessorEntityResult
+  | CatalogProcessorRelationResult
   | CatalogProcessorErrorResult;

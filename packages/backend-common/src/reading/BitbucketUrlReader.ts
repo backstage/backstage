@@ -14,149 +14,140 @@
  * limitations under the License.
  */
 
-import fetch, { RequestInit, HeadersInit, Response } from 'node-fetch';
-import { Config } from '@backstage/config';
-import { ReaderFactory, UrlReader } from './types';
+import {
+  BitbucketIntegrationConfig,
+  readBitbucketIntegrationConfigs,
+} from '@backstage/integration';
+import fetch from 'cross-fetch';
+import parseGitUri from 'git-url-parse';
 import { NotFoundError } from '../errors';
+import { ReaderFactory, ReadTreeResponse, UrlReader } from './types';
 
-type Options = {
-  // TODO: added here for future support, but we only allow bitbucket.org for now
-  host: string;
-  auth?: {
-    username: string;
-    appPassword: string;
+export function getApiRequestOptions(
+  provider: BitbucketIntegrationConfig,
+): RequestInit {
+  const headers: HeadersInit = {};
+
+  if (provider.token) {
+    headers.Authorization = `Bearer ${provider.token}`;
+  } else if (provider.username && provider.appPassword) {
+    headers.Authorization = `Basic ${Buffer.from(
+      `${provider.username}:${provider.appPassword}`,
+      'utf8',
+    ).toString('base64')}`;
+  }
+
+  return {
+    headers,
   };
-};
-
-function readConfig(config: Config): Options[] {
-  const optionsArr = Array<Options>();
-
-  const providerConfigs =
-    config.getOptionalConfigArray('integrations.bitbucket') ?? [];
-
-  for (const providerConfig of providerConfigs) {
-    const host = providerConfig.getOptionalString('host') ?? 'bitbucket.org';
-
-    let auth;
-    if (providerConfig.has('username')) {
-      const username = providerConfig.getString('username');
-      const appPassword = providerConfig.getString('appPassword');
-      auth = { username, appPassword };
-    }
-
-    optionsArr.push({ host, auth });
-  }
-
-  // As a convenience we always make sure there's at least an unauthenticated
-  // reader for public bitbucket repos.
-  if (!optionsArr.some(p => p.host === 'bitbucket.org')) {
-    optionsArr.push({ host: 'bitbucket.org' });
-  }
-
-  return optionsArr;
 }
 
+// Converts for example
+// from: https://bitbucket.org/orgname/reponame/src/master/file.yaml
+// to:   https://api.bitbucket.org/2.0/repositories/orgname/reponame/src/master/file.yaml
+export function getApiUrl(
+  target: string,
+  provider: BitbucketIntegrationConfig,
+): URL {
+  try {
+    const { owner, name, ref, filepathtype, filepath } = parseGitUri(target);
+    if (
+      !owner ||
+      !name ||
+      (filepathtype !== 'browse' &&
+        filepathtype !== 'raw' &&
+        filepathtype !== 'src')
+    ) {
+      throw new Error('Invalid Bitbucket URL or file path');
+    }
+
+    const pathWithoutSlash = filepath.replace(/^\//, '');
+
+    if (provider.host === 'bitbucket.org') {
+      if (!ref) {
+        throw new Error('Invalid Bitbucket URL or file path');
+      }
+      return new URL(
+        `${provider.apiBaseUrl}/repositories/${owner}/${name}/src/${ref}/${pathWithoutSlash}`,
+      );
+    }
+    return new URL(
+      `${provider.apiBaseUrl}/projects/${owner}/repos/${name}/raw/${pathWithoutSlash}?at=${ref}`,
+    );
+  } catch (e) {
+    throw new Error(`Incorrect URL: ${target}, ${e}`);
+  }
+}
+
+/**
+ * A processor that adds the ability to read files from Bitbucket v1 and v2 APIs, such as
+ * the one exposed by Bitbucket Cloud itself.
+ */
 export class BitbucketUrlReader implements UrlReader {
+  private readonly config: BitbucketIntegrationConfig;
+
   static factory: ReaderFactory = ({ config }) => {
-    return readConfig(config).map(options => {
-      const reader = new BitbucketUrlReader(options);
-      const predicate = (url: URL) => url.host === options.host;
+    const configs = readBitbucketIntegrationConfigs(
+      config.getOptionalConfigArray('integrations.bitbucket') ?? [],
+    );
+    return configs.map(provider => {
+      const reader = new BitbucketUrlReader(provider);
+      const predicate = (url: URL) => url.host === provider.host;
       return { reader, predicate };
     });
   };
 
-  constructor(private readonly options: Options) {
-    if (options.host !== 'bitbucket.org') {
-      throw Error(
-        `Bitbucket integration currently only supports 'bitbucket.org', tried to use host '${options.host}'`,
+  constructor(config: BitbucketIntegrationConfig) {
+    const { host, apiBaseUrl, token, username, appPassword } = config;
+
+    if (!apiBaseUrl) {
+      throw new Error(
+        `Bitbucket integration for '${host}' must configure an explicit apiBaseUrl`,
       );
     }
+
+    if (!token && username && !appPassword) {
+      throw new Error(
+        `Bitbucket integration for '${host}' has configured a username but is missing a required appPassword.`,
+      );
+    }
+
+    this.config = config;
   }
 
   async read(url: string): Promise<Buffer> {
-    const builtUrl = this.buildRawUrl(url);
+    const bitbucketUrl = getApiUrl(url, this.config);
+
+    const options = getApiRequestOptions(this.config);
 
     let response: Response;
     try {
-      response = await fetch(builtUrl.toString(), this.getRequestOptions());
+      response = await fetch(bitbucketUrl.toString(), options);
     } catch (e) {
       throw new Error(`Unable to read ${url}, ${e}`);
     }
 
     if (response.ok) {
-      return response.buffer();
+      return Buffer.from(await response.text());
     }
 
-    const message = `${url} could not be read as ${builtUrl}, ${response.status} ${response.statusText}`;
+    const message = `${url} could not be read as ${bitbucketUrl}, ${response.status} ${response.statusText}`;
     if (response.status === 404) {
       throw new NotFoundError(message);
     }
     throw new Error(message);
   }
 
-  // Converts
-  // from: https://bitbucket.org/orgname/reponame/src/master/file.yaml
-  // to:   https://api.bitbucket.org/2.0/repositories/orgname/reponame/src/master/file.yaml
-  private buildRawUrl(target: string): URL {
-    try {
-      const url = new URL(target);
-
-      const [
-        empty,
-        userOrOrg,
-        repoName,
-        srcKeyword,
-        ref,
-        ...restOfPath
-      ] = url.pathname.split('/');
-
-      if (
-        url.hostname !== 'bitbucket.org' ||
-        empty !== '' ||
-        userOrOrg === '' ||
-        repoName === '' ||
-        srcKeyword !== 'src'
-      ) {
-        throw new Error('Wrong Bitbucket URL or Invalid file path');
-      }
-
-      // transform to api
-      url.pathname = [
-        empty,
-        '2.0',
-        'repositories',
-        userOrOrg,
-        repoName,
-        'src',
-        ref,
-        ...restOfPath,
-      ].join('/');
-      url.hostname = 'api.bitbucket.org';
-      url.protocol = 'https';
-
-      return url;
-    } catch (e) {
-      throw new Error(`Incorrect url: ${target}, ${e}`);
-    }
-  }
-
-  private getRequestOptions(): RequestInit {
-    const headers: HeadersInit = {};
-
-    if (this.options.auth) {
-      headers.Authorization = `Basic ${Buffer.from(
-        `${this.options.auth.username}:${this.options.auth.appPassword}`,
-        'utf8',
-      ).toString('base64')}`;
-    }
-
-    return {
-      headers,
-    };
+  readTree(): Promise<ReadTreeResponse> {
+    throw new Error('BitbucketUrlReader does not implement readTree');
   }
 
   toString() {
-    const { host, auth } = this.options;
-    return `bitbucket{host=${host},authed=${Boolean(auth)}}`;
+    const { host, token, username, appPassword } = this.config;
+    let authed = Boolean(token);
+    if (!authed) {
+      authed = Boolean(username && appPassword);
+    }
+    return `bitbucket{host=${host},authed=${authed}}`;
   }
 }

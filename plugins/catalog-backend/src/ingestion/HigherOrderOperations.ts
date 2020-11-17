@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { InputError } from '@backstage/backend-common';
-import { Entity, Location, LocationSpec } from '@backstage/catalog-model';
+import { Location, LocationSpec } from '@backstage/catalog-model';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from 'winston';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
-import { durationText } from '../util/timing';
+import { durationText } from '../util';
 import {
   AddLocationResult,
   HigherOrderOperation,
@@ -34,22 +33,12 @@ import {
  * database more directly.
  */
 export class HigherOrderOperations implements HigherOrderOperation {
-  private readonly entitiesCatalog: EntitiesCatalog;
-  private readonly locationsCatalog: LocationsCatalog;
-  private readonly locationReader: LocationReader;
-  private readonly logger: Logger;
-
   constructor(
-    entitiesCatalog: EntitiesCatalog,
-    locationsCatalog: LocationsCatalog,
-    locationReader: LocationReader,
-    logger: Logger,
-  ) {
-    this.entitiesCatalog = entitiesCatalog;
-    this.locationsCatalog = locationsCatalog;
-    this.locationReader = locationReader;
-    this.logger = logger;
-  }
+    private readonly entitiesCatalog: EntitiesCatalog,
+    private readonly locationsCatalog: LocationsCatalog,
+    private readonly locationReader: LocationReader,
+    private readonly logger: Logger,
+  ) {}
 
   /**
    * Adds a single location to the catalog.
@@ -63,7 +52,12 @@ export class HigherOrderOperations implements HigherOrderOperation {
    *
    * @param spec The location to add
    */
-  async addLocation(spec: LocationSpec): Promise<AddLocationResult> {
+  async addLocation(
+    spec: LocationSpec,
+    options?: { dryRun?: boolean },
+  ): Promise<AddLocationResult> {
+    const dryRun = options?.dryRun || false;
+
     // Attempt to find a previous location matching the spec
     const previousLocations = await this.locationsCatalog.locations();
     const previousLocation = previousLocations.find(
@@ -79,11 +73,9 @@ export class HigherOrderOperations implements HigherOrderOperation {
 
     // Read the location fully, bailing on any errors
     const readerOutput = await this.locationReader.read(spec);
-    if (readerOutput.errors.length) {
+    if (!(spec.presence === 'optional') && readerOutput.errors.length) {
       const item = readerOutput.errors[0];
-      throw new InputError(
-        `Failed to read location ${item.location.type}:${item.location.target}, ${item.error}`,
-      );
+      throw item.error;
     }
 
     // TODO(freben): At this point, we could detect orphaned entities, by way
@@ -91,19 +83,27 @@ export class HigherOrderOperations implements HigherOrderOperation {
     // in the entities list. But we aren't sure what to do about those yet.
 
     // Write
-    if (!previousLocation) {
+    if (!previousLocation && !dryRun) {
+      // TODO: We do not include location operations in the dryRun. We might perform
+      // this operation as a seperate dry run.
       await this.locationsCatalog.addLocation(location);
     }
-    const outputEntities: Entity[] = [];
-    for (const entity of readerOutput.entities) {
-      const out = await this.entitiesCatalog.addOrUpdateEntity(
-        entity.entity,
-        location.id,
-      );
-      outputEntities.push(out);
+    if (readerOutput.entities.length === 0) {
+      return { location, entities: [] };
     }
 
-    return { location, entities: outputEntities };
+    const writtenEntities = await this.entitiesCatalog.batchAddOrUpdateEntities(
+      readerOutput.entities,
+      {
+        locationId: dryRun ? undefined : location.id,
+        dryRun,
+        outputEntities: true,
+      },
+    );
+
+    const entities = writtenEntities.map(e => e.entity!);
+
+    return { location, entities };
   }
 
   /**
@@ -130,7 +130,7 @@ export class HigherOrderOperations implements HigherOrderOperation {
         await this.locationsCatalog.logUpdateSuccess(location.id, undefined);
       } catch (e) {
         this.logger.warn(
-          `Failed to refresh location ${location.type}:${location.target}, ${e}`,
+          `Failed to refresh location ${location.type}:${location.target}, ${e.stack}`,
         );
         await this.locationsCatalog.logUpdateFailure(location.id, e);
       }
@@ -152,7 +152,7 @@ export class HigherOrderOperations implements HigherOrderOperation {
 
     for (const item of readerOutput.errors) {
       this.logger.warn(
-        `Failed item in location ${item.location.type}:${item.location.target}, ${item.error}`,
+        `Failed item in location ${item.location.type}:${item.location.target}, ${item.error.stack}`,
       );
     }
 
@@ -166,8 +166,8 @@ export class HigherOrderOperations implements HigherOrderOperation {
 
     try {
       await this.entitiesCatalog.batchAddOrUpdateEntities(
-        readerOutput.entities.map(e => e.entity),
-        location.id,
+        readerOutput.entities,
+        { locationId: location.id },
       );
     } catch (e) {
       for (const entity of readerOutput.entities) {

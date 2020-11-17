@@ -27,7 +27,7 @@ import {
 
 describe('PlaceholderProcessor', () => {
   const read: jest.MockedFunction<ResolverRead> = jest.fn();
-  const reader: UrlReader = { read };
+  const reader: UrlReader = { read, readTree: jest.fn() };
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -46,7 +46,7 @@ describe('PlaceholderProcessor', () => {
       reader,
     });
     await expect(
-      processor.processEntity(input, { type: 't', target: 'l' }),
+      processor.preProcessEntity(input, { type: 't', target: 'l' }),
     ).resolves.toBe(input);
   });
 
@@ -62,7 +62,7 @@ describe('PlaceholderProcessor', () => {
     });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',
@@ -98,7 +98,7 @@ describe('PlaceholderProcessor', () => {
     });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',
@@ -122,7 +122,7 @@ describe('PlaceholderProcessor', () => {
     });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',
@@ -143,7 +143,7 @@ describe('PlaceholderProcessor', () => {
     });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',
@@ -152,7 +152,8 @@ describe('PlaceholderProcessor', () => {
         },
         {
           type: 'github',
-          target: 'https://github.com/spotify/backstage/a/b/catalog-info.yaml',
+          target:
+            'https://github.com/backstage/backstage/a/b/catalog-info.yaml',
         },
       ),
     ).resolves.toEqual({
@@ -163,7 +164,7 @@ describe('PlaceholderProcessor', () => {
     });
 
     expect(read).toBeCalledWith(
-      'https://github.com/spotify/backstage/a/file.txt',
+      'https://github.com/backstage/backstage/a/file.txt',
     );
   });
 
@@ -177,7 +178,7 @@ describe('PlaceholderProcessor', () => {
     });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',
@@ -186,7 +187,8 @@ describe('PlaceholderProcessor', () => {
         },
         {
           type: 'github',
-          target: 'https://github.com/spotify/backstage/a/b/catalog-info.yaml',
+          target:
+            'https://github.com/backstage/backstage/a/b/catalog-info.yaml',
         },
       ),
     ).resolves.toEqual({
@@ -197,7 +199,7 @@ describe('PlaceholderProcessor', () => {
     });
 
     expect(read).toBeCalledWith(
-      'https://github.com/spotify/backstage/a/b/file.json',
+      'https://github.com/backstage/backstage/a/b/file.json',
     );
   });
 
@@ -209,7 +211,7 @@ describe('PlaceholderProcessor', () => {
     });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',
@@ -218,7 +220,8 @@ describe('PlaceholderProcessor', () => {
         },
         {
           type: 'github',
-          target: 'https://github.com/spotify/backstage/a/b/catalog-info.yaml',
+          target:
+            'https://github.com/backstage/backstage/a/b/catalog-info.yaml',
         },
       ),
     ).resolves.toEqual({
@@ -229,7 +232,7 @@ describe('PlaceholderProcessor', () => {
     });
 
     expect(read).toBeCalledWith(
-      'https://github.com/spotify/backstage/a/file.yaml',
+      'https://github.com/backstage/backstage/a/file.yaml',
     );
   });
 
@@ -241,20 +244,21 @@ describe('PlaceholderProcessor', () => {
     });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',
           metadata: { name: 'n' },
           spec: {
             data: {
-              $text: 'https://github.com/spotify/backstage/catalog-info.yaml',
+              $text: 'https://github.com/backstage/backstage/catalog-info.yaml',
             },
           },
         },
         {
           type: 'github',
-          target: 'https://github.com/spotify/backstage/a/b/catalog-info.yaml',
+          target:
+            'https://github.com/backstage/backstage/a/b/catalog-info.yaml',
         },
       ),
     ).resolves.toEqual({
@@ -265,7 +269,7 @@ describe('PlaceholderProcessor', () => {
     });
 
     expect(read).toBeCalledWith(
-      'https://github.com/spotify/backstage/catalog-info.yaml',
+      'https://github.com/backstage/backstage/catalog-info.yaml',
     );
   });
 
@@ -277,14 +281,14 @@ describe('PlaceholderProcessor', () => {
     });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',
           metadata: { name: 'n' },
           spec: {
             data: {
-              $text: 'https://github.com/spotify/backstage/catalog-info.yaml',
+              $text: 'https://github.com/backstage/backstage/catalog-info.yaml',
             },
           },
         },
@@ -301,7 +305,7 @@ describe('PlaceholderProcessor', () => {
     });
 
     expect(read).toBeCalledWith(
-      'https://github.com/spotify/backstage/catalog-info.yaml',
+      'https://github.com/backstage/backstage/catalog-info.yaml',
     );
   });
 
@@ -316,7 +320,7 @@ describe('PlaceholderProcessor', () => {
     });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',
@@ -345,7 +349,7 @@ describe('yamlPlaceholderResolver', () => {
   const params: ResolverParams = {
     key: 'a',
     value: './file.yaml',
-    baseUrl: 'https://github.com/spotify/backstage/a/b/catalog-info.yaml',
+    baseUrl: 'https://github.com/backstage/backstage/a/b/catalog-info.yaml',
     read,
   };
 
@@ -389,7 +393,7 @@ describe('jsonPlaceholderResolver', () => {
   const params: ResolverParams = {
     key: 'a',
     value: './file.json',
-    baseUrl: 'https://github.com/spotify/backstage/a/b/catalog-info.yaml',
+    baseUrl: 'https://github.com/backstage/backstage/a/b/catalog-info.yaml',
     read,
   };
 

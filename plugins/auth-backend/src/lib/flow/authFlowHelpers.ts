@@ -18,37 +18,42 @@ import express from 'express';
 import crypto from 'crypto';
 import { WebMessageResponse } from './types';
 
+export const safelyEncodeURIComponent = (value: string) => {
+  // Note the g at the end of the regex; all occurrences of single quotes must
+  // be replaced, which encodeURIComponent does not do itself by default
+  return encodeURIComponent(value).replace(/'/g, '%27');
+};
+
 export const postMessageResponse = (
   res: express.Response,
   appOrigin: string,
   response: WebMessageResponse,
 ) => {
   const jsonData = JSON.stringify(response);
-  const base64Data = Buffer.from(jsonData, 'utf8').toString('base64');
+  const base64Data = safelyEncodeURIComponent(jsonData);
+  const base64Origin = safelyEncodeURIComponent(appOrigin);
 
-  res.setHeader('Content-Type', 'text/html');
-  res.setHeader('X-Frame-Options', 'sameorigin');
+  // NOTE: It is absolutely imperative that we use the safe encoder above, to
+  // be sure that the js code below does not allow the injection of malicious
+  // data.
 
   // TODO: Make target app origin configurable globally
   const script = `
-    (window.opener || window.parent).postMessage(JSON.parse(atob('${base64Data}')), '${appOrigin}')
-    window.close()
+    var json = decodeURIComponent('${base64Data}');
+    var origin = decodeURIComponent('${base64Origin}');
+    (window.opener || window.parent).postMessage(JSON.parse(json), origin);
+    window.close();
   `;
   const hash = crypto.createHash('sha256').update(script).digest('base64');
-  res.setHeader('Content-Security-Policy', `script-src 'sha256-${hash}'`);
 
-  res.end(`
-<html>
-<body>
-  <script>${script}</script>
-</body>
-</html>
-  `);
+  res.setHeader('Content-Type', 'text/html');
+  res.setHeader('X-Frame-Options', 'sameorigin');
+  res.setHeader('Content-Security-Policy', `script-src 'sha256-${hash}'`);
+  res.end(`<html><body><script>${script}</script></body></html>`);
 };
 
 export const ensuresXRequestedWith = (req: express.Request) => {
   const requiredHeader = req.header('X-Requested-With');
-
   if (!requiredHeader || requiredHeader !== 'XMLHttpRequest') {
     return false;
   }

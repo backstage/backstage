@@ -21,7 +21,7 @@ yarn add @backstage/plugin-cost-insights
 
 1. Configure `app-config.yaml`. See [Configuration](#configuration).
 
-2. Create a CostInsights client. Clients must implement the CostInsightsApi interface. See the [API file](https://github.com/spotify/backstage/blob/master/plugins/cost-insights/src/api/CostInsightsApi.ts) for required methods and documentation.
+2. Create a CostInsights client. Clients must implement the CostInsightsApi interface. See the [API file](https://github.com/backstage/backstage/blob/master/plugins/cost-insights/src/api/CostInsightsApi.ts) for required methods and documentation.
 
 ```ts
 // path/to/CostInsightsClient.ts
@@ -58,7 +58,7 @@ export { plugin as CostInsights } from '@backstage/plugin-cost-insights';
 
 Cost Insights has only two required configuration fields: a map of cloud `products` for showing cost breakdowns and `engineerCost` - the average yearly cost of an engineer including benefits. Products must be defined as keys on the `products` field.
 
-You can optionally supply a product `icon` to display in Cost Insights navigation. See the [type file](https://github.com/spotify/backstage/blob/master/plugins/cost-insights/src/types/Icon.ts) for supported types and Material UI icon [mappings](https://github.com/spotify/backstage/blob/master/plugins/cost-insights/src/utils/navigation.tsx).
+You can optionally supply a product `icon` to display in Cost Insights navigation. See the [type file](https://github.com/backstage/backstage/blob/master/plugins/cost-insights/src/types/Icon.ts) for supported types and Material UI icon [mappings](https://github.com/backstage/backstage/blob/master/plugins/cost-insights/src/utils/navigation.tsx).
 
 **Note:** Product keys should be unique and camelCased. Backstage does not support underscores in configuration keys.
 
@@ -106,7 +106,7 @@ costInsights:
 
 ## Alerts
 
-The CostInsightsApi `getAlerts` method may return any type of alert or recommendation (called collectively "Action Items" in Cost Insights) that implements the [Alert type](https://github.com/spotify/backstage/blob/master/plugins/cost-insights/src/types/Alert.tsx). This allows you to deliver any alerts or recommendations specific to your infrastructure or company migrations.
+The CostInsightsApi `getAlerts` method may return any type of alert or recommendation (called collectively "Action Items" in Cost Insights) that implements the [Alert type](https://github.com/backstage/backstage/blob/master/plugins/cost-insights/src/types/Alert.ts). This allows you to deliver any alerts or recommendations specific to your infrastructure or company migrations.
 
 The Alert type includes an `element` field to supply the JSX Element that will be rendered in the Cost Insights "Action Items" section; we recommend using Backstage's [InfoCard](https://backstage.io/storybook/?path=/story/layout-information-card--default) and [Recharts](http://recharts.org/en-US/) to show actionable visualizations.
 

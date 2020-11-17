@@ -182,7 +182,7 @@ export function readConfig(config: Config): ProviderConfig[] {
 export function parseUrl(urlString: string): { org: string } {
   const path = new URL(urlString).pathname.substr(1).split('/');
 
-  // /spotify
+  // /backstage
   if (path.length === 1 && path[0].length) {
     return { org: decodeURIComponent(path[0]) };
   }

@@ -15,13 +15,13 @@
  */
 
 import { ApiProvider, ApiRegistry, storageApiRef } from '@backstage/core';
+import { MockStorageApi } from '@backstage/test-utils';
 import { act, renderHook } from '@testing-library/react-hooks';
 import React from 'react';
-import { catalogApiRef } from '../api/types';
+import { catalogApiRef } from '../plugin';
 import { EntityFilterGroupsProvider } from './EntityFilterGroupsProvider';
-import { FilterGroupStatesReady, FilterGroup } from './types';
+import { FilterGroup, FilterGroupStatesReady } from './types';
 import { useEntityFilterGroup } from './useEntityFilterGroup';
-import { MockStorageApi } from '@backstage/test-utils';
 
 describe('useEntityFilterGroup', () => {
   let catalogApi: jest.Mocked<typeof catalogApiRef.T>;
@@ -30,7 +30,7 @@ describe('useEntityFilterGroup', () => {
   beforeEach(() => {
     catalogApi = {
       /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-      addLocation: jest.fn((_a, _b) => new Promise(() => {})),
+      addLocation: jest.fn(_a => new Promise(() => {})),
       getEntities: jest.fn(),
       getLocationByEntity: jest.fn(),
       getLocationById: jest.fn(),

@@ -45,7 +45,10 @@ type Options = {
 export class PlaceholderProcessor implements CatalogProcessor {
   constructor(private readonly options: Options) {}
 
-  async processEntity(entity: Entity, location: LocationSpec): Promise<Entity> {
+  async preProcessEntity(
+    entity: Entity,
+    location: LocationSpec,
+  ): Promise<Entity> {
     const process = async (data: any): Promise<[any, boolean]> => {
       if (!data || !(data instanceof Object)) {
         // Scalars can't have placeholders

@@ -19,14 +19,49 @@ import {
   Alert,
   Cost,
   Duration,
+  Entity,
   Group,
   Project,
-  ProductCost,
   Maybe,
   MetricData,
 } from '../types';
 
+export type ProductInsightsOptions = {
+  /**
+   * The product from the cost-insights configuration in app-config.yaml
+   */
+  product: string;
+
+  /**
+   * The group id from getUserGroups or query parameters
+   */
+  group: string;
+
+  /**
+   * A time duration, such as P1M. See the Duration type for a detailed explanation
+   * of how the durations are interpreted in Cost Insights.
+   */
+  duration: Duration;
+
+  /**
+   * The most current date for which billing data is complete, in YYYY-MM-DD format.
+   */
+  lastCompleteBillingDate: string;
+
+  /**
+   * (optional) The project id from getGroupProjects or query parameters
+   */
+  project: Maybe<string>;
+};
+
 export type CostInsightsApi = {
+  /**
+   * Get the most current date for which billing data is complete, in YYYY-MM-DD format. This helps
+   * define the intervals used in other API methods to avoid showing incomplete cost. The costs for
+   * today, for example, will not be complete. This ideally comes from the cloud provider.
+   */
+  getLastCompleteBillingDate(): Promise<string>;
+
   /**
    * Get a list of groups the given user belongs to. These may be LDAP groups or similar
    * organizational groups. Cost Insights is designed to show costs based on group membership;
@@ -101,19 +136,9 @@ export type CostInsightsApi = {
    * The time period is supplied as a Duration rather than intervals, since this is always expected
    * to return data for two bucketed time period (e.g. month vs month, or quarter vs quarter).
    *
-   * @param product The product from the cost-insights configuration in app-config.yaml
-   * @param group
-   * @param duration A time duration, such as P1M. See the Duration type for a detailed explanation
-   * of how the durations are interpreted in Cost Insights.
-   * @param project (optional) The project id from getGroupProjects or query parameters
+   * @param options Options to use when fetching insights for a particular cloud product and interval timeframe.
    */
-  getProductInsights(
-    product: string,
-    group: string,
-    duration: Duration,
-    project: Maybe<string>,
-  ): Promise<ProductCost>;
-
+  getProductInsights(options: ProductInsightsOptions): Promise<Entity>;
   /**
    * Get current cost alerts for a given group. These show up as Action Items for the group on the
    * Cost Insights page. Alerts may include cost-saving recommendations, such as infrastructure

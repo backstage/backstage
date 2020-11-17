@@ -17,6 +17,7 @@
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { SearchEntry } from 'ldapjs';
 import merge from 'lodash/merge';
+import { RecursivePartial } from '../../../util';
 import { LdapClient } from './client';
 import { GroupConfig, UserConfig } from './config';
 import {
@@ -25,7 +26,6 @@ import {
   LDAP_UUID_ANNOTATION,
 } from './constants';
 import { readLdapGroups, readLdapUsers, resolveRelations } from './read';
-import { RecursivePartial } from './util';
 
 function user(data: RecursivePartial<UserEntity>): UserEntity {
   return merge(

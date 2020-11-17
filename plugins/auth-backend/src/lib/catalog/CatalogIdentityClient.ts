@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import fetch from 'node-fetch';
-import { UserEntity } from '@backstage/catalog-model';
 import {
   ConflictError,
   NotFoundError,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
+import { UserEntity } from '@backstage/catalog-model';
+import fetch from 'cross-fetch';
 
 type UserQuery = {
   annotations: Record<string, string>;
@@ -42,15 +42,17 @@ export class CatalogIdentityClient {
    * Throws a NotFoundError or ConflictError if 0 or multiple users are found.
    */
   async findUser(query: UserQuery): Promise<UserEntity> {
-    const params = new URLSearchParams();
-    params.append('kind', 'User');
-
+    const conditions = ['kind=user'];
     for (const [key, value] of Object.entries(query.annotations)) {
-      params.append(`metadata.annotations.${key}`, value);
+      const uk = encodeURIComponent(key);
+      const uv = encodeURIComponent(value);
+      conditions.push(`metadata.annotations.${uk}=${uv}`);
     }
 
     const baseUrl = await this.discovery.getBaseUrl('catalog');
-    const response = await fetch(`${baseUrl}/entities?${params}`);
+    const response = await fetch(
+      `${baseUrl}/entities?filter=${conditions.join(',')}`,
+    );
 
     if (!response.ok) {
       const text = await response.text();

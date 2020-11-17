@@ -14,25 +14,23 @@
  * limitations under the License.
  */
 
+import { UrlReaderProcessor } from './UrlReaderProcessor';
 import { getVoidLogger, UrlReaders } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
+import { msw } from '@backstage/test-utils';
 import {
-  CatalogProcessorDataResult,
+  CatalogProcessorEntityResult,
   CatalogProcessorErrorResult,
   CatalogProcessorResult,
 } from './types';
-import { UrlReaderProcessor } from './UrlReaderProcessor';
 
 describe('UrlReaderProcessor', () => {
   const mockApiOrigin = 'http://localhost:23000';
   const server = setupServer();
 
-  beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
-  afterEach(() => server.resetHandlers());
-  afterAll(() => server.close());
-
+  msw.setupDefaultHandlers(server);
   it('should load from url', async () => {
     const logger = getVoidLogger();
     const reader = UrlReaders.default({ logger, config: new ConfigReader({}) });
@@ -44,17 +42,17 @@ describe('UrlReaderProcessor', () => {
 
     server.use(
       rest.get(`${mockApiOrigin}/component.yaml`, (_, res, ctx) =>
-        res(ctx.body('Hello')),
+        res(ctx.json({ mock: 'entity' })),
       ),
     );
 
     const generated = (await new Promise<CatalogProcessorResult>(emit =>
       processor.readLocation(spec, false, emit),
-    )) as CatalogProcessorDataResult;
+    )) as CatalogProcessorEntityResult;
 
-    expect(generated.type).toBe('data');
+    expect(generated.type).toBe('entity');
     expect(generated.location).toBe(spec);
-    expect(generated.data.toString('utf8')).toBe('Hello');
+    expect(generated.entity).toEqual({ mock: 'entity' });
   });
 
   it('should fail load from url with error', async () => {

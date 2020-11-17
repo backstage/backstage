@@ -17,10 +17,10 @@ Currently we provide the following templaters:
 - `cookiecutter`
 
 This templater is added to the `TemplaterBuilder` and then passed into the
-`createRouter` function of the `@spotify/plugin-scaffolder-backend`
+`createRouter` function of the `@backstage/plugin-scaffolder-backend`
 
 An full example backend can be found
-[here](https://github.com/spotify/backstage/blob/d91c10f654475a60829fa33a5c81018e517a319a/packages/backend/src/plugins/scaffolder.ts),
+[here](https://github.com/backstage/backstage/blob/d91c10f654475a60829fa33a5c81018e517a319a/packages/backend/src/plugins/scaffolder.ts),
 but it looks something like the following
 
 ```ts
@@ -96,7 +96,7 @@ Now it's up to you to implement the `run` function, and then return a
 
 Some good examples exist here:
 
-- https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/src/scaffolder/stages/templater/cookiecutter.ts
+- https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/src/scaffolder/stages/templater/cookiecutter.ts
 
 ### Registering your own Templater
 
