@@ -18,12 +18,15 @@ import { Logger } from 'winston';
 import { Entity } from '@backstage/catalog-model';
 import { PublisherBase } from './types';
 import { resolvePackagePath } from '@backstage/backend-common';
+import { Config } from '@backstage/config';
 
 export class LocalPublish implements PublisherBase {
   private readonly logger: Logger;
+  private readonly config: Config;
 
-  constructor(logger: Logger) {
+  constructor(logger: Logger, config: Config) {
     this.logger = logger;
+    this.config = config;
   }
 
   publish({
@@ -63,8 +66,9 @@ export class LocalPublish implements PublisherBase {
           reject(err);
         }
 
+        const backendBaseUrl = this.config.getString('backend.baseUrl');
         resolve({
-          remoteUrl: `http://localhost:7000/api/techdocs/static/docs/${entity.metadata.name}`,
+          remoteUrl: `${backendBaseUrl}/api/techdocs/static/docs/${entity.metadata.name}`,
         });
       });
     });
