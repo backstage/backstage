@@ -5,7 +5,7 @@ description: Documentation on Defining Configuration for your Plugin
 ---
 
 Configuration in Backstage is organized via a configuration schema, which in
-turn is defined using a super set of
+turn is defined using a superset of
 [JSON Schema Draft-07](https://json-schema.org/specification-links.html#draft-7).
 Each plugin or package within a Backstage app can contribute to the schema,
 which during validation is stitched together into a single schema.
@@ -17,13 +17,13 @@ part of the Backstage ecosystem, including transitive dependencies. The current
 definition of "part of the ecosystem" is that a package has at least one
 dependency in the `@backstage` namespace, but this is subject to change.
 
-Each package is search for schema at a single point of entry, a top-level
+Each package is searched for a schema at a single point of entry, a top-level
 `"configSchema"` field in `package.json`. The field can either contain an
 inlined JSON schema, or a relative path to a schema file. Supported schema file
 formats are `.json` or `.d.ts`.
 
-> When using a schema file, be sure to include the file in your `package.json` >
-> `"files"` field as well!
+> When defining a schema file, be sure to include the file in your
+> `package.json` > `"files"` field as well!
 
 TypeScript configuration schema files should export a single `Config` type, for
 example:
@@ -67,11 +67,11 @@ receive schema validation and autocompletion. For example:
 
 ## Visibility
 
-The `https://backstage.io/schema/config-v1` meta schema is a super set of JSON
+The `https://backstage.io/schema/config-v1` meta schema is a superset of JSON
 Schema Draft 07. The single addition is a custom `visibility` keyword, which is
 used to indicate whether the given config value should be visible in the
-frontend or not. The possible values are `frontend`, `backend`, `secret`, where
-`backend` is the default. A visibility of `secret` has the same scope at
+frontend or not. The possible values are `frontend`, `backend`, and `secret`,
+where `backend` is the default. A visibility of `secret` has the same scope at
 runtime, but it will be treated with more care in certain contexts, and defining
 both `frontend` and `secret` for the same value in two different schemas will
 result in an error during schema merging.
@@ -85,24 +85,24 @@ declare the visibility of a leaf node of `type: "string"`.
 
 ## Validation
 
-Schema can be validated using the `backstage-cli config:validate` command. If
+Schemas can be validated using the `backstage-cli config:validate` command. If
 you want to validate anything else than the default `app-config.yaml`, be sure
 to pass in all of the configuration files as `--config <path>` options as well.
 
-To validate and examine the frontend configuration, use can use the
+To validate and examine the frontend configuration, use the
 `backstage-cli config:print --frontend` command. Just like for validation you
 may need to pass in all files using one or multiple `--config <path>` options.
 
 ## Guidelines
 
-> Limit static configuration. The first question to ask is whether a particular
-> option actually needs to be static configuration, or if it might just as well
-> be a TypeScript API. In general options that you want to be able to change for
-> different deployment environments should be static configuration, while it
-> should otherwise be avoided.
+> Make limited use of static configuration. The first question to ask is whether
+> a particular option actually needs to be static configuration, or if it might
+> just as well be a TypeScript API. In general, options that you want to be able
+> to change for different deployment environments should be static
+> configuration, while it should otherwise be avoided.
 
 When defining configuration for your plugin, keep keys camelCased and stick to
-existing casing conventions such as `baseUrl`.
+existing casing conventions such as `baseUrl` rather than `baseURL`.
 
 It is also usually best to prefer objects over arrays, as it makes it possible
 to override individual values using separate files or environment variables.

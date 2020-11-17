@@ -21,8 +21,8 @@ export interface Config {
 
   backend: {
     baseUrl: string; // defined in core, but repeated here without doc
-    /** Address that the backend should listen to. */
 
+    /** Address that the backend should listen to. */
     listen:
       | string
       | {
@@ -86,7 +86,7 @@ export interface Config {
   /** Configuration for integrations towards various external repository provider systems */
   integrations?: {
     /** Integration configuration for Azure */
-    azure?: {
+    azure?: Array<{
       /** The hostname of the given Azure instance */
       host: string;
       /**
@@ -94,10 +94,10 @@ export interface Config {
        * @visibility secret
        */
       token?: string;
-    }[];
+    }>;
 
     /** Integration configuration for BitBucket */
-    bitbucket?: {
+    bitbucket?: Array<{
       /** The hostname of the given Bitbucket instance */
       host: string;
       /**
@@ -117,10 +117,10 @@ export interface Config {
        * @visibility secret
        */
       appPassword?: string;
-    }[];
+    }>;
 
     /** Integration configuration for GitHub */
-    github?: {
+    github?: Array<{
       /** The hostname of the given GitHub instance */
       host: string;
       /**
@@ -132,10 +132,10 @@ export interface Config {
       apiBaseUrl?: string;
       /** The base url for GitHub raw resources, for example https://raw.githubusercontent.com */
       rawBaseUrl?: string;
-    }[];
+    }>;
 
     /** Integration configuration for GitLab */
-    gitlab?: {
+    gitlab?: Array<{
       /** The hostname of the given GitLab instance */
       host: string;
       /**
@@ -143,6 +143,6 @@ export interface Config {
        * @visibility secret
        */
       token?: string;
-    }[];
+    }>;
   };
 }

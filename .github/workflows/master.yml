@@ -47,6 +47,9 @@ jobs:
         run: yarn install --frozen-lockfile
       # End of yarn setup
 
+      - name: validate config
+        run: yarn backstage-cli config:validate
+
       - name: lint
         run: yarn lerna -- run lint
 

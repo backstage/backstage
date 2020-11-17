@@ -21,11 +21,11 @@ import { AppConfig, JsonObject } from '@backstage/config';
  */
 export type ConfigSchemaPackageEntry = {
   /**
-   * The configuration schema itself, as JSONSchema draft-07
+   * The configuration schema itself.
    */
   value: JsonObject;
   /**
-   * The path that the configuration schema was discovered at.
+   * The relative path that the configuration schema was discovered at.
    */
   path: string;
 };
@@ -59,7 +59,7 @@ type ValidationResult = {
    */
   errors?: ValidationError[];
   /**
-   * The configuration visibilities the where discovered during validation.
+   * The configuration visibilities that were discovered during validation.
    *
    * The path in the key uses the form `/<key>/<sub-key>/<array-index>/<leaf-key>`
    */
