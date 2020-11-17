@@ -15,3 +15,4 @@
  */
 
 export { AboutCard } from './AboutCard';
+export { IconLinkVertical } from './IconLinkVertical';
