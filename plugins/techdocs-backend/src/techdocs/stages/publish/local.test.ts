@@ -18,6 +18,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 import { getVoidLogger } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
 import { LocalPublish } from './local';
 
 const createMockEntity = (annotations = {}) => {
@@ -37,7 +38,8 @@ const logger = getVoidLogger();
 
 describe('local publisher', () => {
   it('should publish generated documentation dir', async () => {
-    const publisher = new LocalPublish(logger);
+    const testConfig = ConfigReader.fromConfigs([{ context: '', data: {} }]);
+    const publisher = new LocalPublish(logger, testConfig);
 
     const mockEntity = createMockEntity();
 
