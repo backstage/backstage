@@ -16,21 +16,8 @@
 
 import GithubIcon from '@material-ui/icons/AcUnit';
 import { githubAuthApiRef } from '../../../definitions/auth';
-import {
-  OAuthRequestApi,
-  AuthProvider,
-  DiscoveryApi,
-} from '../../../definitions';
 import { OAuth2 } from '../oauth2';
-
-type CreateOptions = {
-  discoveryApi: DiscoveryApi;
-  oauthRequestApi: OAuthRequestApi;
-
-  defaultScopes?: string[];
-  environment?: string;
-  provider?: AuthProvider & { id: string };
-};
+import { OAuthApiCreateOptions } from '../types';
 
 const DEFAULT_PROVIDER = {
   id: 'github',
@@ -44,13 +31,14 @@ class GithubAuth {
     oauthRequestApi,
     environment = 'development',
     provider = DEFAULT_PROVIDER,
-  }: CreateOptions): typeof githubAuthApiRef.T {
+    defaultScopes = ['user', 'repo'],
+  }: OAuthApiCreateOptions): typeof githubAuthApiRef.T {
     return OAuth2.create({
       discoveryApi,
       oauthRequestApi,
       provider,
       environment,
-      defaultScopes: ['user', 'repo'],
+      defaultScopes,
       scopeTransform(scopes: string[]) {
         return scopes.map(scope => {
           return `${scope}`;
