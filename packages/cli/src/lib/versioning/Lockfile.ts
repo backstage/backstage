@@ -37,7 +37,7 @@ type LockfileQueryEntry = {
   version: string;
 };
 
-/** Entries that have an invalid version range, for example an NPM tag */
+/** Entries that have an invalid version range, for example an npm tag */
 type AnalyzeResultInvalidRange = {
   name: string;
   range: string;

@@ -124,7 +124,7 @@ service. The `@backstage/create-app` tool that is used to create your own
 Backstage app is similar to
 [`create-react-app`](https://github.com/facebook/create-react-app) in that it
 gives you a starting point. The code you get is meant to be evolved, and most of
-the functionality you get out of the box is brought in via NPM dependencies.
+the functionality you get out of the box is brought in via npm dependencies.
 Keeping your app up to date generally means keeping your dependencies up to
 date. The Backstage CLI provides a command to help you with that. Simply run
 `yarn backstage-cli versions:bump` at the root of your repo, and the latest

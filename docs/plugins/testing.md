@@ -234,7 +234,7 @@ This is especially true for edge cases!
 
 ## Non-React Classes
 
-Testing a Javascript object which is _not_ a React component follows a lot of
+Testing a JavaScript object which is _not_ a React component follows a lot of
 the same principles as testing objects in other languages.
 
 ### API Testing Principles
@@ -243,7 +243,7 @@ Testing an API involves verifying four things:
 
 1. Invalid inputs are caught before being sent to the server.
 2. Valid inputs translate into a valid browser request.
-3. Server response is translated into an expected Javascript object.
+3. Server response is translated into an expected JavaScript object.
 4. Server errors are handled gracefully.
 
 ### Mocking API Calls

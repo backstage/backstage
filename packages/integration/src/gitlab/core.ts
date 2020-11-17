@@ -130,7 +130,7 @@ export async function getProjectId(
   const url = new URL(target);
 
   if (!url.pathname.includes('/-/blob/')) {
-    throw new Error('Please provide full path to yaml file from Gitlab');
+    throw new Error('Please provide full path to yaml file from GitLab');
   }
 
   try {
