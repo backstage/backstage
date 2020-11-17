@@ -42,7 +42,8 @@
     "winston": "^3.2.1",
     "yaml": "^1.9.2",
     "yn": "^4.0.0",
-    "yup": "^0.29.3"
+    "yup": "^0.29.3",
+    "@octokit/auth-app": "^2.10.1"
   },
   "devDependencies": {
     "@backstage/cli": "^0.2.0",

@@ -15,32 +15,21 @@
  */
 
 import GithubIcon from '@material-ui/icons/AcUnit';
-import { DefaultAuthConnector } from '../../../../lib/AuthConnector';
-import { GithubSession } from './types';
+import { githubAuthApiRef } from '../../../definitions/auth';
 import {
-  OAuthApi,
-  SessionApi,
-  SessionState,
-  ProfileInfo,
-  BackstageIdentity,
-  AuthRequestOptions,
-} from '../../../definitions/auth';
-import { SessionManager } from '../../../../lib/AuthSessionManager/types';
-import {
-  AuthSessionStore,
-  StaticAuthSessionManager,
-} from '../../../../lib/AuthSessionManager';
-import { Observable } from '../../../../types';
-import { OAuthApiCreateOptions } from '../types';
+  OAuthRequestApi,
+  AuthProvider,
+  DiscoveryApi,
+} from '../../../definitions';
+import { OAuth2 } from '../oauth2';
 
-export type GithubAuthResponse = {
-  providerInfo: {
-    accessToken: string;
-    scope: string;
-    expiresInSeconds: number;
-  };
-  profile: ProfileInfo;
-  backstageIdentity: BackstageIdentity;
+type CreateOptions = {
+  discoveryApi: DiscoveryApi;
+  oauthRequestApi: OAuthRequestApi;
+
+  defaultScopes?: string[];
+  environment?: string;
+  provider?: AuthProvider & { id: string };
 };
 
 const DEFAULT_PROVIDER = {
@@ -49,92 +38,25 @@ const DEFAULT_PROVIDER = {
   icon: GithubIcon,
 };
 
-class GithubAuth implements OAuthApi, SessionApi {
+class GithubAuth {
   static create({
     discoveryApi,
+    oauthRequestApi,
     environment = 'development',
     provider = DEFAULT_PROVIDER,
-    oauthRequestApi,
-    defaultScopes = ['read:user'],
-  }: OAuthApiCreateOptions) {
-    const connector = new DefaultAuthConnector({
+  }: CreateOptions): typeof githubAuthApiRef.T {
+    return OAuth2.create({
       discoveryApi,
-      environment,
+      oauthRequestApi,
       provider,
-      oauthRequestApi: oauthRequestApi,
-      sessionTransform(res: GithubAuthResponse): GithubSession {
-        return {
-          ...res,
-          providerInfo: {
-            accessToken: res.providerInfo.accessToken,
-            scopes: GithubAuth.normalizeScope(res.providerInfo.scope),
-            expiresAt: new Date(
-              Date.now() + res.providerInfo.expiresInSeconds * 1000,
-            ),
-          },
-        };
+      environment,
+      defaultScopes: ['user', 'repo'],
+      scopeTransform(scopes: string[]) {
+        return scopes.map(scope => {
+          return `${scope}`;
+        });
       },
     });
-
-    const sessionManager = new StaticAuthSessionManager({
-      connector,
-      defaultScopes: new Set(defaultScopes),
-      sessionScopes: (session: GithubSession) => session.providerInfo.scopes,
-    });
-
-    const authSessionStore = new AuthSessionStore<GithubSession>({
-      manager: sessionManager,
-      storageKey: 'githubSession',
-      sessionScopes: (session: GithubSession) => session.providerInfo.scopes,
-    });
-
-    return new GithubAuth(authSessionStore);
-  }
-
-  constructor(private readonly sessionManager: SessionManager<GithubSession>) {}
-
-  async signIn() {
-    await this.getAccessToken();
-  }
-
-  async signOut() {
-    await this.sessionManager.removeSession();
-  }
-
-  sessionState$(): Observable<SessionState> {
-    return this.sessionManager.sessionState$();
-  }
-
-  async getAccessToken(scope?: string, options?: AuthRequestOptions) {
-    const session = await this.sessionManager.getSession({
-      ...options,
-      scopes: GithubAuth.normalizeScope(scope),
-    });
-    return session?.providerInfo.accessToken ?? '';
-  }
-
-  async getBackstageIdentity(
-    options: AuthRequestOptions = {},
-  ): Promise<BackstageIdentity | undefined> {
-    const session = await this.sessionManager.getSession(options);
-    return session?.backstageIdentity;
-  }
-
-  async getProfile(options: AuthRequestOptions = {}) {
-    const session = await this.sessionManager.getSession(options);
-    return session?.profile;
-  }
-
-  static normalizeScope(scope?: string): Set<string> {
-    if (!scope) {
-      return new Set();
-    }
-
-    const scopeList = Array.isArray(scope)
-      ? scope
-      : scope.split(/[\s|,]/).filter(Boolean);
-
-    return new Set(scopeList);
   }
 }
 export default GithubAuth;

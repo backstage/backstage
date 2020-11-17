@@ -24,6 +24,7 @@ import {
   HigherOrderOperation,
   LocationReader,
 } from './types';
+import { createAppAuth } from '@octokit/auth-app';
 
 /**
  * Placeholder for operations that span several catalogs and/or stretches out
@@ -141,13 +142,40 @@ export class HigherOrderOperations implements HigherOrderOperation {
     );
   }
 
+  // Gets an application token to refresh github locations
+  private async getToken(): Promise<string> {
+    if (process.env.AUTH_GITHUB_TOKEN) {
+      return process.env.AUTH_GITHUB_TOKEN;
+    }
+
+    const appId = process.env.GITHUB_APP_ID ?? '';
+    const privateKey = process.env.GITHUB_PRIVATE_KEY ?? '';
+    const installationId = process.env.GITHUB_INSTALLATION_ID ?? '';
+    const clientId = process.env.AUTH_GITHUB_CLIENT_ID ?? '';
+    const clientSecret = process.env.AUTH_GITHUB_CLIENT_SECRET ?? '';
+
+    const auth = createAppAuth({
+      appId: appId,
+      privateKey: privateKey,
+      installationId: installationId,
+      clientId: clientId,
+      clientSecret: clientSecret,
+    });
+
+    const appAuthentication = await auth({ type: 'installation' });
+
+    return appAuthentication.token;
+  }
+
   // Performs a full refresh of a single location
   private async refreshSingleLocation(location: Location) {
     let startTimestamp = process.hrtime();
+    const appToken = await this.getToken();
 
     const readerOutput = await this.locationReader.read({
       type: location.type,
       target: location.target,
+      token: appToken,
     });
 
     for (const item of readerOutput.errors) {

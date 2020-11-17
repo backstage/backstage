@@ -60,6 +60,8 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
       );
     }
 
+    provider.token = location.token;
+
     const { org } = parseUrl(location.target);
     const client = !provider.token
       ? graphql

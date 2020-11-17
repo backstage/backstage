@@ -29,6 +29,7 @@ export type AddLocationRequest = {
   type?: string;
   target: string;
   dryRun?: boolean;
+  token?: string;
 };
 
 export type AddLocationResponse = {

@@ -55,7 +55,10 @@ export class UrlReaderProcessor implements CatalogProcessor {
     }
 
     try {
-      const data = await this.options.reader.read(location.target);
+      const data = await this.options.reader.read(
+        location.target,
+        location.token,
+      );
 
       for (const parseResult of parseEntityYaml(data, location)) {
         emit(parseResult);

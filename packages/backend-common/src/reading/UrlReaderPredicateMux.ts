@@ -42,17 +42,17 @@ export class UrlReaderPredicateMux implements UrlReader {
     this.readers.push(tuple);
   }
 
-  read(url: string): Promise<Buffer> {
+  read(url: string, token?: string): Promise<Buffer> {
     const parsed = new URL(url);
 
     for (const { predicate, reader } of this.readers) {
       if (predicate(parsed)) {
-        return reader.read(url);
+        return reader.read(url, token);
       }
     }
 
     if (this.fallback) {
-      return this.fallback.read(url);
+      return this.fallback.read(url, token);
     }
 
     throw new Error(`No reader found that could handle '${url}'`);

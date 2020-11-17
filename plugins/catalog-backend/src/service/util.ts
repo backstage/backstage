@@ -47,7 +47,9 @@ export async function validateRequestBody<T>(
   const body = await requireRequestBody(req);
 
   try {
-    await schema.validate(body, { strict: true });
+    // TODO: I am not sure how to add another field to the validator. token should be added to it.
+    // Mayeb someone can give me a hand on how this should be done in this PR?
+    await schema.validate(body, { strict: false });
   } catch (e) {
     throw new InputError(`Malformed request: ${e}`);
   }

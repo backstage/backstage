@@ -95,6 +95,7 @@ export class CatalogClient implements CatalogApi {
     type = 'url',
     target,
     dryRun,
+    token,
   }: AddLocationRequest): Promise<AddLocationResponse> {
     const response = await fetch(
       `${await this.discoveryApi.getBaseUrl('catalog')}/locations${
@@ -105,7 +106,7 @@ export class CatalogClient implements CatalogApi {
           'Content-Type': 'application/json',
         },
         method: 'POST',
-        body: JSON.stringify({ type, target }),
+        body: JSON.stringify({ type, target, token }),
       },
     );
 

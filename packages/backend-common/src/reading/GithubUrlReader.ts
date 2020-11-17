@@ -32,6 +32,7 @@ import {
 
 export function getApiRequestOptions(
   provider: GitHubIntegrationConfig,
+  token?: string,
 ): RequestInit {
   const headers: HeadersInit = {
     Accept: 'application/vnd.github.v3.raw',
@@ -41,6 +42,10 @@ export function getApiRequestOptions(
     headers.Authorization = `token ${provider.token}`;
   }
 
+  if (token) {
+    headers.Authorization = `token ${token}`;
+  }
+
   return {
     headers,
   };
@@ -48,11 +53,16 @@ export function getApiRequestOptions(
 
 export function getRawRequestOptions(
   provider: GitHubIntegrationConfig,
+  token?: string,
 ): RequestInit {
   const headers: HeadersInit = {};
 
   if (provider.token) {
     headers.Authorization = `token ${provider.token}`;
+  }
+
+  if (token) {
+    headers.Authorization = `token ${token}`;
   }
 
   return {
@@ -143,15 +153,15 @@ export class GithubUrlReader implements UrlReader {
     }
   }
 
-  async read(url: string): Promise<Buffer> {
+  async read(url: string, token?: string): Promise<Buffer> {
     const useApi =
       this.config.apiBaseUrl && (this.config.token || !this.config.rawBaseUrl);
     const ghUrl = useApi
       ? getApiUrl(url, this.config)
       : getRawUrl(url, this.config);
     const options = useApi
-      ? getApiRequestOptions(this.config)
-      : getRawRequestOptions(this.config);
+      ? getApiRequestOptions(this.config, token)
+      : getRawRequestOptions(this.config, token);
 
     let response: Response;
     try {

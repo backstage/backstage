@@ -84,10 +84,10 @@ export const RegisterComponentPage = ({
 
   const handleSubmit = async (formData: Record<string, string>) => {
     setFormState(FormStates.Submitting);
-    const { entityLocation: target, mode } = formData;
+    const { entityLocation: target, mode, componentToken: token } = formData;
     const dryRun = mode === 'validate';
     try {
-      const data = await catalogApi.addLocation({ target, dryRun });
+      const data = await catalogApi.addLocation({ target, dryRun, token });
 
       if (!isMounted()) return;
 

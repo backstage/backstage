@@ -38,7 +38,7 @@ export type ReadTreeOptions = {
  * A generic interface for fetching plain data from URLs.
  */
 export type UrlReader = {
-  read(url: string): Promise<Buffer>;
+  read(url: string, token?: string): Promise<Buffer>;
   readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
 };
 
