@@ -144,8 +144,8 @@ export class HigherOrderOperations implements HigherOrderOperation {
 
   // Gets an application token to refresh github locations
   private async getToken(): Promise<string> {
-    if (process.env.AUTH_GITHUB_TOKEN) {
-      return process.env.AUTH_GITHUB_TOKEN;
+    if (process.env.GITHUB_TOKEN) {
+      return process.env.GITHUB_TOKEN;
     }
 
     const appId = process.env.GITHUB_APP_ID ?? '';
