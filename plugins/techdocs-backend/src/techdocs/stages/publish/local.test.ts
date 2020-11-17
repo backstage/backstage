@@ -17,7 +17,7 @@
 /* eslint-disable no-restricted-syntax */
 import fs from 'fs-extra';
 import path from 'path';
-import { getVoidLogger } from '@backstage/backend-common';
+import { getVoidLogger, SingleHostDiscovery } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { LocalPublish } from './local';
 
@@ -38,8 +38,21 @@ const logger = getVoidLogger();
 
 describe('local publisher', () => {
   it('should publish generated documentation dir', async () => {
-    const testConfig = ConfigReader.fromConfigs([{ context: '', data: {} }]);
-    const publisher = new LocalPublish(logger, testConfig);
+    const testConfig = ConfigReader.fromConfigs([
+      {
+        context: '',
+        data: {
+          backend: {
+            baseUrl: 'http://localhost:7000',
+            listen: {
+              port: 7000,
+            },
+          },
+        },
+      },
+    ]);
+    const testDiscovery = SingleHostDiscovery.fromConfig(testConfig);
+    const publisher = new LocalPublish(logger, testDiscovery);
 
     const mockEntity = createMockEntity();
 
