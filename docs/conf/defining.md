@@ -85,9 +85,9 @@ declare the visibility of a leaf node of `type: "string"`.
 
 ## Validation
 
-Schemas can be validated using the `backstage-cli config:validate` command. If
-you want to validate anything else than the default `app-config.yaml`, be sure
-to pass in all of the configuration files as `--config <path>` options as well.
+Schemas can be validated using the `backstage-cli config:check` command. If you
+want to validate anything else than the default `app-config.yaml`, be sure to
+pass in all of the configuration files as `--config <path>` options as well.
 
 To validate and examine the frontend configuration, use the
 `backstage-cli config:print --frontend` command. Just like for validation you

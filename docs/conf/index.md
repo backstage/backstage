@@ -43,7 +43,7 @@ custom `visibility` keyword, as configuration is by default only available in
 the backend.
 
 You can validate your configuration against the schema using
-`backstage-cli config:validate`, and define a schema for your own plugin either
+`backstage-cli config:check`, and define a schema for your own plugin either
 using JSON Schema or TypeScript. For more information, see
 [Defining Configuration](./defining.md).
 
