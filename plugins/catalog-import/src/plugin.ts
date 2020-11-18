@@ -19,6 +19,7 @@ import {
   createPlugin,
   createRouteRef,
   discoveryApiRef,
+  githubAuthApiRef,
 } from '@backstage/core';
 import { catalogImportApiRef } from './api/CatalogImportApi';
 import { CatalogImportClient } from './api/CatalogImportClient';
@@ -33,8 +34,9 @@ export const plugin = createPlugin({
   apis: [
     createApiFactory({
       api: catalogImportApiRef,
-      deps: { discoveryApi: discoveryApiRef },
-      factory: ({ discoveryApi }) => new CatalogImportClient({ discoveryApi }),
+      deps: { discoveryApi: discoveryApiRef, githubAuthApi: githubAuthApiRef },
+      factory: ({ discoveryApi, githubAuthApi }) =>
+        new CatalogImportClient({ discoveryApi, githubAuthApi }),
     }),
   ],
 });

@@ -24,7 +24,6 @@ export const catalogImportApiRef = createApiRef<CatalogImportApi>({
 
 export interface CatalogImportApi {
   submitPrToRepo(options: {
-    oAuthToken: string;
     owner: string;
     repo: string;
     fileContent: string;

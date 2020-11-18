@@ -15,16 +15,26 @@
  */
 
 import { Octokit } from '@octokit/rest';
-import { DiscoveryApi } from '@backstage/core';
+import {
+  DiscoveryApi,
+  githubAuthApiRef,
+  OAuthApi,
+  useApi,
+} from '@backstage/core';
 import { CatalogImportApi } from './CatalogImportApi';
 import { AnalyzeLocationResponse } from '@backstage/plugin-catalog-backend';
 import { PartialEntity } from '../util/types';
 
 export class CatalogImportClient implements CatalogImportApi {
   private readonly discoveryApi: DiscoveryApi;
+  private readonly githubAuthApi: OAuthApi;
 
-  constructor(options: { discoveryApi: DiscoveryApi }) {
+  constructor(options: {
+    discoveryApi: DiscoveryApi;
+    githubAuthApi: OAuthApi;
+  }) {
     this.discoveryApi = options.discoveryApi;
+    this.githubAuthApi = options.githubAuthApi;
   }
 
   async generateEntityDefinitions({
@@ -83,18 +93,18 @@ export class CatalogImportClient implements CatalogImportApi {
   }
 
   async submitPrToRepo({
-    oAuthToken,
     owner,
     repo,
     fileContent,
   }: {
-    oAuthToken: string;
     owner: string;
     repo: string;
     fileContent: string;
   }): Promise<{ link: string; location: string }> {
+    const token = await this.githubAuthApi.getAccessToken(['repo']);
+
     const octo = new Octokit({
-      auth: oAuthToken,
+      auth: token,
     });
 
     const branchName = 'backstage-integration';

@@ -15,21 +15,17 @@
  */
 
 import * as YAML from 'yaml';
-import { useApi, githubAuthApiRef } from '@backstage/core';
+import { useApi } from '@backstage/core';
 import { catalogImportApiRef } from '../api/CatalogImportApi';
 import { ConfigSpec } from '../components/ImportComponentPage';
 
 export function useGithubRepos() {
   const api = useApi(catalogImportApiRef);
-  const auth = useApi(githubAuthApiRef);
 
   const submitPrToRepo = async (selectedRepo: ConfigSpec) => {
-    const token = await auth.getAccessToken(['repo']);
-
     const [ownerName, repoName] = selectedRepo.location.split('/').slice(-2);
     const submitPRResponse = await api
       .submitPrToRepo({
-        oAuthToken: token,
         owner: ownerName,
         repo: repoName,
         fileContent: selectedRepo.config
