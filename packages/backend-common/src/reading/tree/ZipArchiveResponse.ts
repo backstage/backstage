@@ -132,18 +132,14 @@ export class ZipArchiveResponse implements ReadTreeResponse {
 
     await this.stream
       .pipe(unzipper.Parse())
-      .on('entry', (entry: Entry) => {
-        if (this.shouldBeIncluded(entry)) {
+      .on('entry', async (entry: Entry) => {
+        // Ignore directory entries since we handle that with the file entries
+        // as a zip can have files with directories without directory entries
+        if (entry.type === 'File' && this.shouldBeIncluded(entry)) {
           const entryPath = this.getPath(entry);
-          if (entry.type === 'Directory') {
-            // Ignore directory entries since we handle that with the file entries
-            // since a zip can have files with directories without directory entries
-            entry.resume();
-            return;
-          }
           const dirname = path.dirname(entryPath);
           if (dirname) {
-            fs.mkdirSync(path.join(dir, dirname), { recursive: true });
+            await fs.mkdirp(path.join(dir, dirname));
           }
           entry.pipe(fs.createWriteStream(path.join(dir, entryPath)));
         } else {
