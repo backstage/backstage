@@ -45,5 +45,24 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "configSchema": {
+    "$schema": "https://backstage.io/schema/config-v1",
+    "title": "@backstage/user-settings",
+    "type": "object",
+    "properties": {
+      "auth": {
+        "type": "object",
+        "properties": {
+          "providers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "visibility": "frontend"
+            }
+          }
+        }
+      }
+    }
+  }
 }

@@ -53,5 +53,27 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "configSchema": {
+    "$schema": "https://backstage.io/schema/config-v1",
+    "title": "@backstage/techdocs",
+    "type": "object",
+    "properties": {
+      "techdocs": {
+        "type": "object",
+        "properties": {
+          "requestUrl": {
+            "type": "string",
+            "visibility": "frontend"
+          },
+          "storageUrl": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "requestUrl"
+        ]
+      }
+    }
+  }
 }

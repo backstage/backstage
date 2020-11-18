@@ -15,13 +15,15 @@
  */
 
 import { resolve as resolvePath } from 'path';
-import { notFoundHandler, resolvePackagePath } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import { injectEnvConfig } from '../lib/config';
+import { notFoundHandler, resolvePackagePath } from '@backstage/backend-common';
+import { Config } from '@backstage/config';
+import { injectConfig, readConfigs } from '../lib/config';
 
 export interface RouterOptions {
+  config: Config;
   logger: Logger;
   appPackageName: string;
   staticFallbackHandler?: express.Handler;
@@ -30,22 +32,27 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const appDistDir = resolvePackagePath(options.appPackageName, 'dist');
-  options.logger.info(`Serving static app content from ${appDistDir}`);
+  const { config, logger, appPackageName, staticFallbackHandler } = options;
 
-  await injectEnvConfig({
+  const appDistDir = resolvePackagePath(appPackageName, 'dist');
+  logger.info(`Serving static app content from ${appDistDir}`);
+  const staticDir = resolvePath(appDistDir, 'static');
+
+  const appConfigs = await readConfigs({
+    config,
+    appDistDir,
     env: process.env,
-    logger: options.logger,
-    staticDir: resolvePath(appDistDir, 'static'),
   });
+
+  await injectConfig({ appConfigs, logger, staticDir });
 
   const router = Router();
 
   // Use a separate router for static content so that a fallback can be provided by backend
   const staticRouter = Router();
   staticRouter.use(express.static(resolvePath(appDistDir, 'static')));
-  if (options.staticFallbackHandler) {
-    staticRouter.use(options.staticFallbackHandler);
+  if (staticFallbackHandler) {
+    staticRouter.use(staticFallbackHandler);
   }
   staticRouter.use(notFoundHandler());
 

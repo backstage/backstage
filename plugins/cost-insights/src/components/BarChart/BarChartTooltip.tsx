@@ -35,7 +35,6 @@ export const BarChartTooltip = ({
   children,
 }: PropsWithChildren<BarChartTooltipProps>) => {
   const classes = useStyles();
-
   return (
     <Box className={classes.tooltip} display="flex" flexDirection="column">
       <Box
@@ -47,14 +46,16 @@ export const BarChartTooltip = ({
         pt={2}
       >
         <Box display="flex" flexDirection="column">
-          <Typography variant="h6">{title}</Typography>
+          <Typography className={classes.truncate} variant="h6">
+            {title}
+          </Typography>
           {subtitle && (
             <Typography className={classes.subtitle} variant="subtitle1">
               {subtitle}
             </Typography>
           )}
         </Box>
-        {topRight}
+        {topRight && <Box ml={1}>{topRight}</Box>}
       </Box>
       {content && (
         <Box px={2} pt={2}>

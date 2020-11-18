@@ -25,6 +25,7 @@
     "@backstage/plugin-rollbar": "^0.2.1",
     "@backstage/plugin-scaffolder": "^0.3.0",
     "@backstage/plugin-sentry": "^0.2.1",
+    "@backstage/plugin-search": "^0.2.0",
     "@backstage/plugin-tech-radar": "^0.3.0",
     "@backstage/plugin-techdocs": "^0.2.1",
     "@backstage/plugin-user-settings": "^0.2.1",
@@ -49,7 +50,7 @@
     "zen-observable": "^0.8.15"
   },
   "devDependencies": {
-    "@testing-library/cypress": "^6.0.0",
+    "@testing-library/cypress": "^7.0.1",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^10.4.1",
     "@testing-library/user-event": "^12.0.7",

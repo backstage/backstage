@@ -76,6 +76,7 @@
     "jest": "^26.0.1",
     "jest-css-modules": "^2.1.0",
     "jest-esm-transformer": "^1.0.0",
+    "lodash": "^4.17.19",
     "mini-css-extract-plugin": "^0.9.0",
     "ora": "^4.0.3",
     "raw-loader": "^4.0.1",
@@ -146,5 +147,47 @@
     "watch": "./src",
     "exec": "bin/backstage-cli",
     "ext": "ts"
+  },
+  "configSchema": {
+    "$schema": "https://backstage.io/schema/config-v1",
+    "title": "@backstage/cli",
+    "type": "object",
+    "properties": {
+      "app": {
+        "type": "object",
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "visibility": "frontend"
+          },
+          "title": {
+            "type": "string",
+            "visibility": "frontend"
+          },
+          "googleAnalyticsTrackingId": {
+            "type": "string",
+            "visibility": "frontend",
+            "description": "Tracking ID for Google Analytics",
+            "example": "UA-000000-0"
+          },
+          "listen": {
+            "type": "object",
+            "description": "Listening configuration for local development",
+            "properties": {
+              "host": {
+                "type": "number",
+                "visibility": "frontend",
+                "description": "The host that the frontend should be bound to. Only used for local development."
+              },
+              "post": {
+                "type": "number",
+                "visibility": "frontend",
+                "description": "The port that the frontend should be bound to. Only used for local development."
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }
