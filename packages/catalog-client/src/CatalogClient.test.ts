@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { CatalogClient } from './CatalogClient';
-import { Entity } from '@backstage/catalog-model';
-import { DiscoveryApi } from './types';
+import { CatalogListResponse, DiscoveryApi } from './types';
 
 const server = setupServer();
 const mockBaseUrl = 'http://backstage:9191/i-am-a-mock-base';
@@ -40,7 +40,7 @@ describe('CatalogClient', () => {
   });
 
   describe('getEntities', () => {
-    const defaultResponse: Entity[] = [
+    const defaultServiceResponse: Entity[] = [
       {
         apiVersion: '1',
         kind: 'Component',
@@ -58,22 +58,26 @@ describe('CatalogClient', () => {
         },
       },
     ];
+    const defaultResponse: CatalogListResponse<Entity> = {
+      items: defaultServiceResponse,
+    };
 
     beforeEach(() => {
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (_, res, ctx) => {
-          return res(ctx.json(defaultResponse));
+          return res(ctx.json(defaultServiceResponse));
         }),
       );
     });
 
     it('should entities from correct endpoint', async () => {
-      const entities = await client.getEntities();
-      expect(entities).toEqual(defaultResponse);
+      const response = await client.getEntities();
+      expect(response).toEqual(defaultResponse);
     });
 
     it('builds entity search filters properly', async () => {
       expect.assertions(2);
+
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
           expect(req.url.search).toBe('?filter=a=1,b=2,b=3,%C3%B6=%3D');
@@ -81,13 +85,32 @@ describe('CatalogClient', () => {
         }),
       );
 
-      const entities = await client.getEntities({
-        a: '1',
-        b: ['2', '3'],
-        ö: '=',
+      const response = await client.getEntities({
+        filter: {
+          a: '1',
+          b: ['2', '3'],
+          ö: '=',
+        },
       });
 
-      expect(entities).toEqual([]);
+      expect(response.items).toEqual([]);
+    });
+
+    it('builds entity field selectors properly', async () => {
+      expect.assertions(2);
+
+      server.use(
+        rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
+          expect(req.url.search).toBe('?fields=a.b,%C3%B6');
+          return res(ctx.json([]));
+        }),
+      );
+
+      const response = await client.getEntities({
+        fields: ['a.b', 'ö'],
+      });
+
+      expect(response.items).toEqual([]);
     });
   });
 });

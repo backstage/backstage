@@ -27,28 +27,26 @@ import { catalogApiRef } from '@backstage/plugin-catalog';
 import { LinearProgress } from '@material-ui/core';
 import { IChangeEvent } from '@rjsf/core';
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import useStaleWhileRevalidate from 'swr';
-import { scaffolderApiRef } from '../../api';
-import { JobStatusModal } from '../JobStatusModal';
-import { Job } from '../../types';
-import { MultistepJsonForm } from '../MultistepJsonForm';
 import { Navigate } from 'react-router';
+import { useParams } from 'react-router-dom';
+import { useAsync } from 'react-use';
+import { scaffolderApiRef } from '../../api';
 import { rootRoute } from '../../routes';
+import { Job } from '../../types';
+import { JobStatusModal } from '../JobStatusModal';
+import { MultistepJsonForm } from '../MultistepJsonForm';
 
 const useTemplate = (
   templateName: string,
   catalogApi: typeof catalogApiRef.T,
 ) => {
-  const { data, error } = useStaleWhileRevalidate(
-    `templates/${templateName}`,
-    async () =>
-      catalogApi.getEntities({
-        kind: 'Template',
-        'metadata.name': templateName,
-      }) as Promise<TemplateEntityV1alpha1[]>,
-  );
-  return { template: data?.[0], loading: !error && !data, error };
+  const { value, loading, error } = useAsync(async () => {
+    const response = await catalogApi.getEntities({
+      filter: { kind: 'Template', 'metadata.name': templateName },
+    });
+    return response.items as TemplateEntityV1alpha1[];
+  });
+  return { template: value?.[0], loading, error };
 };
 
 const OWNER_REPO_SCHEMA = {
@@ -110,7 +108,7 @@ export const TemplatePage = () => {
   const handleCreateComplete = async (job: Job) => {
     const target = job.metadata.remoteUrl?.replace(
       /\.git$/,
-      // TODO(Rugvip): This is not the location we want. As part of scaffodler v2 we
+      // TODO(Rugvip): This is not the location we want. As part of scaffolder v2 we
       //               want this to be more flexible, but before that we might want
       //               to update all templates to use catalog-info.yaml instead.
       '/blob/master/component-info.yaml',
