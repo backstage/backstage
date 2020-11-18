@@ -90,8 +90,10 @@ are separated out into their own folder, see further down.
   which contains helper middleware and other utils.
 
 - [`catalog-client`](https://github.com/backstage/backstage/tree/master/packages/catalog-client) -
-  A client to communicate with Backstage software catalog. Recommended for backend plugins, compatible
-  but not recommended for frontend plugins (use `@backstage/plugin-catalog` package instead).
+  An isomorphic client to interact with the Software Catalog. Backend plugins
+  can use the package directly. Frontend plugins can use the client by using
+  `@backstage/plugin-catalog` in combination with `useApi` and the
+  `catalogApiRef`.
 
 - [`catalog-model/`](https://github.com/backstage/backstage/tree/master/packages/catalog-model) -
   You can consider this to be a library for working with the catalog of sorts.
