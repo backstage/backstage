@@ -169,6 +169,22 @@
             "visibility": "frontend",
             "description": "Tracking ID for Google Analytics",
             "example": "UA-000000-0"
+          },
+          "listen": {
+            "type": "object",
+            "description": "Listening configuration for local development",
+            "properties": {
+              "host": {
+                "type": "number",
+                "visibility": "frontend",
+                "description": "The host that the frontend should be bound to. Only used for local development."
+              },
+              "post": {
+                "type": "number",
+                "visibility": "frontend",
+                "description": "The port that the frontend should be bound to. Only used for local development."
+              }
+            }
           }
         }
       }
