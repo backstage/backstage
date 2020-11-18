@@ -101,10 +101,10 @@ export class AzureUrlReader implements UrlReader {
     url: string,
     options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
-    const response = await fetch(getDownloadUrl(url).toString(), {
-      ...this.getRequestOptions(),
-      headers: { Accept: 'application/zip' },
-    });
+    const response = await fetch(
+      getDownloadUrl(url).toString(),
+      this.getRequestOptions({ Accept: 'application/zip' }),
+    );
     if (!response.ok) {
       const message = `Failed to read tree from ${url}, ${response.status} ${response.statusText}`;
       if (response.status === 404) {
@@ -178,8 +178,10 @@ export class AzureUrlReader implements UrlReader {
     }
   }
 
-  private getRequestOptions(): RequestInit {
-    const headers: HeadersInit = {};
+  private getRequestOptions(additionalHeaders?: {
+    [key: string]: string;
+  }): RequestInit {
+    const headers: HeadersInit = additionalHeaders ?? {};
 
     if (this.options.token) {
       headers.Authorization = `Basic ${Buffer.from(

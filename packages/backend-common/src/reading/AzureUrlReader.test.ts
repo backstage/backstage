@@ -192,7 +192,6 @@ describe('AzureUrlReader', () => {
       const result = getDownloadUrl(
         'https://dev.azure.com/organization/project/_git/repository?path=%2Fdocs',
       );
-      console.log(result.searchParams);
       expect(result.searchParams.get('scopePath')).toEqual('docs');
     });
   });
