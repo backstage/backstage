@@ -68,11 +68,16 @@ export class LocalPublish implements PublisherBase {
           reject(err);
         }
 
-        this.discovery.getBaseUrl('techdocs').then(techdocsApiUrl => {
-          resolve({
-            remoteUrl: `${techdocsApiUrl}/static/docs/${entity.metadata.name}`,
+        this.discovery
+          .getBaseUrl('techdocs')
+          .then(techdocsApiUrl => {
+            resolve({
+              remoteUrl: `${techdocsApiUrl}/static/docs/${entity.metadata.name}`,
+            });
+          })
+          .catch(reason => {
+            reject(reason);
           });
-        });
       });
     });
   }
