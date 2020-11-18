@@ -49,7 +49,7 @@ describe('useEntityFilterGroup', () => {
   });
 
   it('works for an empty set of filters', async () => {
-    catalogApi.getEntities.mockResolvedValue([]);
+    catalogApi.getEntities.mockResolvedValue({ items: [] });
     const group: FilterGroup = { filters: {} };
     const { result, waitFor } = renderHook(
       () => useEntityFilterGroup('g1', group),
@@ -60,13 +60,15 @@ describe('useEntityFilterGroup', () => {
   });
 
   it('works for a single group', async () => {
-    catalogApi.getEntities.mockResolvedValue([
-      {
-        apiVersion: 'backstage.io/v1alpha1',
-        kind: 'Component',
-        metadata: { name: 'n' },
-      },
-    ]);
+    catalogApi.getEntities.mockResolvedValue({
+      items: [
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: { name: 'n' },
+        },
+      ],
+    });
     const group: FilterGroup = {
       filters: {
         f1: e => e.metadata.name === 'n',

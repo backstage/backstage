@@ -9,5 +9,6 @@
 /plugins/cost-insights                      @backstage/silver-lining
 /plugins/cloudbuild                         @trivago/ebarrios
 /plugins/techdocs                           @backstage/techdocs-core
+/plugins/search                             @backstage/techdocs-core
 /plugins/techdocs-backend                   @backstage/techdocs-core
 /.changeset/cost-insights-*                 @backstage/silver-lining

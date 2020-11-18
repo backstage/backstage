@@ -52,5 +52,21 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "configSchema": {
+    "$schema": "https://backstage.io/schema/config-v1",
+    "title": "@backstage/lighthouse",
+    "type": "object",
+    "properties": {
+      "lighthouse": {
+        "type": "object",
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "visibility": "frontend"
+          }
+        }
+      }
+    }
+  }
 }

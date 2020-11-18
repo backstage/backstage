@@ -49,5 +49,21 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "configSchema": {
+    "$schema": "https://backstage.io/schema/config-v1",
+    "title": "@backstage/sentry",
+    "type": "object",
+    "properties": {
+      "sentry": {
+        "type": "object",
+        "properties": {
+          "organization": {
+            "type": "string",
+            "visibility": "frontend"
+          }
+        }
+      }
+    }
+  }
 }
