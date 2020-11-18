@@ -35,7 +35,7 @@ class SearchApi {
 
   private async entities() {
     const entities = await this.catalogApi.getEntities();
-    return entities.map((result: any) => ({
+    return entities.items.map((result: any) => ({
       name: result.metadata.name,
       description: result.metadata.description,
       owner: result.spec.owner,
