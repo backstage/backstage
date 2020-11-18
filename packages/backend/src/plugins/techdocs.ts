@@ -50,7 +50,7 @@ export default async function createPlugin({
   const urlPreparer = new UrlPreparer(reader, logger);
   preparers.register('url', urlPreparer);
 
-  const publisher = new LocalPublish(logger);
+  const publisher = new LocalPublish(logger, discovery);
 
   const dockerClient = new Docker();
 
