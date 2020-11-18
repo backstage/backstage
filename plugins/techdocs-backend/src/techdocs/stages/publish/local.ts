@@ -17,16 +17,18 @@ import fs from 'fs-extra';
 import { Logger } from 'winston';
 import { Entity } from '@backstage/catalog-model';
 import { PublisherBase } from './types';
-import { resolvePackagePath } from '@backstage/backend-common';
-import { DiscoveryApi } from '@backstage/core-api';
+import {
+  resolvePackagePath,
+  PluginEndpointDiscovery,
+} from '@backstage/backend-common';
 
 export class LocalPublish implements PublisherBase {
   private readonly logger: Logger;
-  private readonly discoveryApi: DiscoveryApi;
+  private readonly discovery: PluginEndpointDiscovery;
 
-  constructor(logger: Logger, discoveryApi: DiscoveryApi) {
+  constructor(logger: Logger, discovery: PluginEndpointDiscovery) {
     this.logger = logger;
-    this.discoveryApi = discoveryApi;
+    this.discovery = discovery;
   }
 
   publish({
@@ -66,7 +68,7 @@ export class LocalPublish implements PublisherBase {
           reject(err);
         }
 
-        this.discoveryApi.getBaseUrl('techdocs').then(techdocsApiUrl => {
+        this.discovery.getBaseUrl('techdocs').then(techdocsApiUrl => {
           resolve({
             remoteUrl: `${techdocsApiUrl}/static/docs/${entity.metadata.name}`,
           });

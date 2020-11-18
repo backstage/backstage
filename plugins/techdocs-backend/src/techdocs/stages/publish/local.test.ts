@@ -17,8 +17,10 @@
 /* eslint-disable no-restricted-syntax */
 import fs from 'fs-extra';
 import path from 'path';
-import { getVoidLogger, SingleHostDiscovery } from '@backstage/backend-common';
-import { ConfigReader } from '@backstage/config';
+import {
+  getVoidLogger,
+  PluginEndpointDiscovery,
+} from '@backstage/backend-common';
 import { LocalPublish } from './local';
 
 const createMockEntity = (annotations = {}) => {
@@ -38,20 +40,11 @@ const logger = getVoidLogger();
 
 describe('local publisher', () => {
   it('should publish generated documentation dir', async () => {
-    const testConfig = ConfigReader.fromConfigs([
-      {
-        context: '',
-        data: {
-          backend: {
-            baseUrl: 'http://localhost:7000',
-            listen: {
-              port: 7000,
-            },
-          },
-        },
-      },
-    ]);
-    const testDiscovery = SingleHostDiscovery.fromConfig(testConfig);
+    const testDiscovery: jest.Mocked<PluginEndpointDiscovery> = {
+      getBaseUrl: jest.fn().mockResolvedValueOnce('http://localhost:7000'),
+      getExternalBaseUrl: jest.fn(),
+    };
+
     const publisher = new LocalPublish(logger, testDiscovery);
 
     const mockEntity = createMockEntity();
