@@ -29,11 +29,18 @@ export type PublisherBase = {
    *             catalog, plus the values from the form and the directory that has
    *             been templated
    */
-  publish(opts: {
-    entity: TemplateEntityV1alpha1;
-    values: RequiredTemplateValues & Record<string, JsonValue>;
-    directory: string;
-  }): Promise<{ remoteUrl: string }>;
+  publish(opts: PublisherOptions): Promise<PublisherResult>;
+};
+
+export type PublisherOptions = {
+  entity: TemplateEntityV1alpha1;
+  values: RequiredTemplateValues & Record<string, JsonValue>;
+  directory: string;
+};
+
+export type PublisherResult = {
+  remoteUrl: string;
+  catalogInfoUrl?: string;
 };
 
 export type PublisherBuilder = {
