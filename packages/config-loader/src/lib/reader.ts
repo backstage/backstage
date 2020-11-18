@@ -37,10 +37,6 @@ export async function readConfigFile(
     obj: JsonValue,
     path: string,
   ): Promise<JsonValue | undefined> {
-    if (ctx.skip(path)) {
-      return undefined;
-    }
-
     if (typeof obj !== 'object') {
       return obj;
     } else if (obj === null) {

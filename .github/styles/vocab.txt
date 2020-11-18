@@ -76,6 +76,7 @@ http
 https
 img
 incentivised
+inlined
 inlinehilite
 interop
 javascript
@@ -176,6 +177,7 @@ src
 subkey
 superfences
 Superfences
+superset
 talkdesk
 Talkdesk
 tasklist

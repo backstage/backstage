@@ -14,16 +14,9 @@
  * limitations under the License.
  */
 
-import { createRouter } from '@backstage/plugin-app-backend';
-import { PluginEnvironment } from '../types';
+import { Command } from 'commander';
+import { loadCliConfig } from '../../lib/config';
 
-export default async function createPlugin({
-  logger,
-  config,
-}: PluginEnvironment) {
-  return await createRouter({
-    logger,
-    config,
-    appPackageName: 'example-app',
-  });
-}
+export default async (cmd: Command) => {
+  await loadCliConfig(cmd.config);
+};

@@ -23,12 +23,12 @@ import { ServeOptions } from './types';
 import { resolveBundlingPaths } from './paths';
 
 export async function serveBundle(options: ServeOptions) {
-  const url = resolveBaseUrl(options.config);
+  const url = resolveBaseUrl(options.frontendConfig);
 
   const host =
-    options.config.getOptionalString('app.listen.host') || url.hostname;
+    options.frontendConfig.getOptionalString('app.listen.host') || url.hostname;
   const port =
-    options.config.getOptionalNumber('app.listen.port') ||
+    options.frontendConfig.getOptionalNumber('app.listen.port') ||
     Number(url.port) ||
     (url.protocol === 'https:' ? 443 : 80);
 
