@@ -136,13 +136,16 @@ export class ZipArchiveResponse implements ReadTreeResponse {
         if (this.shouldBeIncluded(entry)) {
           const entryPath = this.getPath(entry);
           if (entry.type === 'Directory') {
-            if (entryPath) {
-              fs.mkdirSync(path.join(dir, entryPath));
-            }
+            // Ignore directory entries since we handle that with the file entries
+            // since a zip can have files with directories without directory entries
             entry.resume();
-          } else {
-            entry.pipe(fs.createWriteStream(path.join(dir, entryPath)));
+            return;
           }
+          const dirname = path.dirname(entryPath);
+          if (dirname) {
+            fs.mkdirSync(path.join(dir, dirname), { recursive: true });
+          }
+          entry.pipe(fs.createWriteStream(path.join(dir, entryPath)));
         } else {
           entry.autodrain();
         }
