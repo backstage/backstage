@@ -349,12 +349,15 @@ Stability: `0`
 ### [`kubernetes`](https://github.com/backstage/backstage/tree/master/plugins/kubernetes/)
 
 The frontend component of the Kubernetes plugin, used to browse and visualize
-Kubernetes resources. Stability: `1`.
+Kubernetes resources.
+
+Stability: `1`.
 
 ### [`kubernetes-backend`](https://github.com/backstage/backstage/tree/master/plugins/kubernetes-backend/)
 
 The backend component of the Kubernetes plugin, used to fetch Kubernetes
 resources from clusters and associate them with entities in the Catalog.
+
 Stability: `1`.
 
 ### [`lighthouse`](https://github.com/backstage/backstage/tree/master/plugins/lighthouse/)
@@ -367,7 +370,9 @@ Stability: `0`
 ### [`newrelic`](https://github.com/backstage/backstage/tree/master/plugins/newrelic/)
 
 Observability platform built to help engineers create and monitor their
-software. Stability: `0`
+software.
+
+Stability: `0`
 
 ### [`proxy-backend`](https://github.com/backstage/backstage/tree/master/plugins/proxy-backend/)
 
