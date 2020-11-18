@@ -122,6 +122,7 @@ export const ProductEntityDialog = ({
       title: <Typography className={firstColClasses}>SKU</Typography>,
       render: createRenderer('sku', classes),
       customSort: createSorter('sku'),
+      width: '33.33%',
     },
     {
       field: 'previous',
