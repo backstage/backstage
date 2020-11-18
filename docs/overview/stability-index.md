@@ -225,6 +225,10 @@ Many backend plugins are split into "REST API" and "TypeScript Interface"
 sections. The "TypeScript Interface" refers to the API used to integrate the
 plugin into the backend.
 
+Any plugin that is not listed below is untracked and can generally be considered
+unstable with a score of `0`. Open a Pull Request if you want your plugin to be
+added!
+
 ### [`api-docs`](https://github.com/backstage/backstage/tree/master/plugins/api-docs/)
 
 Components to discover and display API entities as an extension to the catalog
@@ -280,52 +284,12 @@ Provides the catalog schema and resolvers for the graphql backend.
 
 Stability: `0`. Under heavy development and subject to change.
 
-### [`circleci`](https://github.com/backstage/backstage/tree/master/plugins/circleci/)
-
-Automate your development process with CI hosted in the cloud or on a private
-server.
-
-Stability: `0`
-
-### [`cloudbuild`](https://github.com/backstage/backstage/tree/master/plugins/cloudbuild/)
-
-Visualize Google Cloud Build flows.
-
-Stability: `0`
-
-### [`cost-insights`](https://github.com/backstage/backstage/tree/master/plugins/cost-insights/)
-
-Visualize, understand and optimize your team's cloud costs.
-
-Stability: `0`
-
 ### [`explore`](https://github.com/backstage/backstage/tree/master/plugins/explore/)
 
 A frontend plugin that introduces the concept of exploring internal and external
 tooling in an organization.
 
 Stability: `0`. Only an example at the moment and not customizable.
-
-### [`gcp-projects`](https://github.com/backstage/backstage/tree/master/plugins/gcp-projects/)
-
-Create, list and manage your Google Cloud Projects.
-
-Stability: `0`
-
-### [`github-actions`](https://github.com/backstage/backstage/tree/master/plugins/github-actions/)
-
-GitHub Actions makes it easy to automate all your software workflows, now with
-world-class CI/CD. Build, test, and deploy your code right from GitHub.
-
-Stability: `0`
-
-### [`gitops-profiles`](https://github.com/backstage/backstage/tree/master/plugins/gitops-profiles/)
-
-A frontend plugin with a separate backend that can be used to provision EKS
-clusters.
-
-Stability: `0`. This is an early plugin that now has quite a lot of overlap with
-the scaffolder plugin.
 
 ### [`graphiql`](https://github.com/backstage/backstage/tree/master/plugins/graphiql/)
 
@@ -338,13 +302,6 @@ Stability: `1`
 A backend plugin that provides
 
 Stability: `0`. Under heavy development and subject to change.
-
-### [`jenkins`](https://github.com/backstage/backstage/tree/master/plugins/jenkins/)
-
-A plugin that visualizes Jenkins workflows for entities. Jenkins offers a simple
-way to set up a continuous integration and continuous delivery environment.
-
-Stability: `0`
 
 ### [`kubernetes`](https://github.com/backstage/backstage/tree/master/plugins/kubernetes/)
 
@@ -359,20 +316,6 @@ The backend component of the Kubernetes plugin, used to fetch Kubernetes
 resources from clusters and associate them with entities in the Catalog.
 
 Stability: `1`.
-
-### [`lighthouse`](https://github.com/backstage/backstage/tree/master/plugins/lighthouse/)
-
-Google's Lighthouse tool is a great resource for benchmarking and improving the
-accessibility, performance, SEO, and best practices of your website.
-
-Stability: `0`
-
-### [`newrelic`](https://github.com/backstage/backstage/tree/master/plugins/newrelic/)
-
-Observability platform built to help engineers create and monitor their
-software.
-
-Stability: `0`
 
 ### [`proxy-backend`](https://github.com/backstage/backstage/tree/master/plugins/proxy-backend/)
 
@@ -389,20 +332,6 @@ catalog.
 Stability: `0`. This plugin is likely to be replaced by a generic entity import
 plugin instead.
 
-### [`rollbar`](https://github.com/backstage/backstage/tree/master/plugins/rollbar/)
-
-The frontend component of the rollbar plugin, which can be used to view Rollbar
-errors for your services in Backstage.
-
-Stability: `0`
-
-### [`rollbar-backend`](https://github.com/backstage/backstage/tree/master/plugins/rollbar-backend/)
-
-The backend component of the rollbar plugin, which can be used to view Rollbar
-errors for your services in Backstage.
-
-Stability: `0`
-
 ### [`scaffolder`](https://github.com/backstage/backstage/tree/master/plugins/scaffolder/)
 
 The frontend scaffolder plugin where one can browse templates and initiate
@@ -417,26 +346,6 @@ the catalog.
 
 Stability: `1`. There is planned work to rework the scaffolder in
 https://github.com/backstage/backstage/issues/2771.
-
-### [`sentry`](https://github.com/backstage/backstage/tree/master/plugins/sentry/)
-
-The frontend component of the sentry plugin, which can be used to view Sentry
-issues in Backstage.
-
-Stability: `0`
-
-### [`sentry-backend`](https://github.com/backstage/backstage/tree/master/plugins/sentry-backend/)
-
-The backend component of the sentry plugin, which can be used to view Sentry
-issues in Backstage.
-
-Stability: `0`
-
-### [`sonarqube`](https://github.com/backstage/backstage/tree/master/plugins/sonarqube/)
-
-Components to display code quality metrics from SonarCloud and SonarQube.
-
-Stability: `0`
 
 ### [`tech-radar`](https://github.com/backstage/backstage/tree/master/plugins/tech-radar/)
 
@@ -457,7 +366,7 @@ Stability: `1`
 The backend component of the TechDocs plugin, used to transform and serve
 TechDocs.
 
-Stability: `1`
+Stability: `0`
 
 ### [`user-settings`](https://github.com/backstage/backstage/tree/master/plugins/user-settings/)
 
