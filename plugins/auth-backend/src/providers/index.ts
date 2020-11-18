@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export { createAuthProvider } from './factories';
+export { createAuthProvider, registerAuthProvider } from './factories';
+export * from './types';

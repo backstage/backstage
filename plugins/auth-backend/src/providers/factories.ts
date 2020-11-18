@@ -50,3 +50,14 @@ export function createAuthProvider(
 
   return factory(options);
 }
+
+export function registerAuthProvider(
+  providerId: string,
+  providerFactory: AuthProviderFactory
+) {
+  if(factories[providerId]) {
+    throw Error(`Factory function for ${providerId} already exists`);
+  } else {
+    factories[providerId] = providerFactory;
+  }
+}
