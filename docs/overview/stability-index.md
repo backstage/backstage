@@ -41,14 +41,14 @@ TL;DR:
 
 ### [`example-app`](https://github.com/backstage/backstage/tree/master/packages/app/)
 
-This is the `packages/app` package, and it's serves as an example as well as
+This is the `packages/app` package, and it serves as an example as well as
 utility for local development in the main Backstage repo.
 
 Stability: `N/A`
 
 ### [`example-backend`](https://github.com/backstage/backstage/tree/master/packages/backend/)
 
-This is the `packages/backend` package, and it's serves as an example as well as
+This is the `packages/backend` package, and it serves as an example as well as
 utility for local development in the main Backstage repo.
 
 Stability: `N/A`
