@@ -161,7 +161,7 @@ describe('AzureUrlReader', () => {
         {
           host: 'dev.azure.com',
         },
-        treeResponseFactory,
+        { treeResponseFactory },
       );
 
       const response = await processor.readTree(
@@ -180,7 +180,7 @@ describe('AzureUrlReader', () => {
   });
 
   describe('getDownloadUrl', () => {
-    it('add no scopePath if no path is specified', async () => {
+    it('do not add scopePath if no path is specified', async () => {
       const result = getDownloadUrl(
         'https://dev.azure.com/organization/project/_git/repository',
       );
@@ -188,10 +188,11 @@ describe('AzureUrlReader', () => {
       expect(result.searchParams.get('scopePath')).toBeNull();
     });
 
-    it('add the scopePath if a path is specified', async () => {
+    it('add scopePath if a path is specified', async () => {
       const result = getDownloadUrl(
         'https://dev.azure.com/organization/project/_git/repository?path=%2Fdocs',
       );
+      console.log(result.searchParams);
       expect(result.searchParams.get('scopePath')).toEqual('docs');
     });
   });

@@ -43,7 +43,9 @@ export function getDownloadUrl(url: string): URL {
   // scopePath will limit the downloaded content
   // /docs will only download the docs folder and everything below it
   // /docs/index.md will only download index.md but put it in the root of the archive
-  const scopePath = filepath ? `&scopePath=${filepath}` : '';
+  const scopePath = filepath
+    ? `&scopePath=${encodeURIComponent(filepath)}`
+    : '';
 
   return new URL(
     `${protocol}://${resource}/${organization}/${project}/_apis/git/repositories/${repoName}/items?recursionLevel=full&download=true&api-version=6.0${scopePath}`,
@@ -56,7 +58,7 @@ export class AzureUrlReader implements UrlReader {
       config.getOptionalConfigArray('integrations.azure') ?? [],
     );
     return configs.map(options => {
-      const reader = new AzureUrlReader(options, treeResponseFactory);
+      const reader = new AzureUrlReader(options, { treeResponseFactory });
       const predicate = (url: URL) => url.host === options.host;
       return { reader, predicate };
     });
@@ -64,7 +66,7 @@ export class AzureUrlReader implements UrlReader {
 
   constructor(
     private readonly options: AzureIntegrationConfig,
-    private readonly treeResponseFactory: ReadTreeResponseFactory,
+    private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
   ) {
     if (options.host !== 'dev.azure.com') {
       throw Error(
@@ -111,7 +113,7 @@ export class AzureUrlReader implements UrlReader {
       throw new Error(message);
     }
 
-    return this.treeResponseFactory.fromZipArchive({
+    return this.deps.treeResponseFactory.fromZipArchive({
       stream: (response.body as unknown) as Readable,
       filter: options?.filter,
     });
