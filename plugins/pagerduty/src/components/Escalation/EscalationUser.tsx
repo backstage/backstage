@@ -52,12 +52,12 @@ export const EscalationUser = ({ user }: { user: User }) => {
         secondary={user.email}
       />
       <ListItemSecondaryAction>
-        <Tooltip title="Send e-mail to user" placement="left">
+        <Tooltip title="Send e-mail to user" placement="top">
           <IconButton href={`mailto:${user.email}`}>
             <EmailIcon color="primary" />
           </IconButton>
         </Tooltip>
-        <Tooltip title="View in PagerDuty" placement="left">
+        <Tooltip title="View in PagerDuty" placement="top">
           <IconButton
             href={user.html_url}
             target="_blank"

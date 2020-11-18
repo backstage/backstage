@@ -27,13 +27,9 @@ import {
 } from '../components/types';
 import { PagerDutyClient } from './types';
 
-export class UnauthorizedError extends Error {
-  constructor() {
-    super();
-  }
-}
+export class UnauthorizedError extends Error {}
 
-export const pagerDutyApiRef = createApiRef<PagerDutyClientApi>({
+export const pagerDutyApiRef = createApiRef<PagerDutyClient>({
   id: 'plugin.pagerduty.api',
   description: 'Used to fetch data from PagerDuty API',
 });
@@ -65,7 +61,7 @@ export class PagerDutyClientApi implements PagerDutyClient {
     return oncalls;
   }
 
-  triggerPagerDutyAlarm(
+  triggerAlarm(
     integrationKey: string,
     source: string,
     description: string,

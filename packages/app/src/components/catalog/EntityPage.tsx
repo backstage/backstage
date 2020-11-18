@@ -70,7 +70,8 @@ import {
   isPluginApplicableToEntity as isPagerDutyAvailable,
   PagerDutyCard,
 } from '@backstage/plugin-pagerduty';
-import { Router as BuildKiteRouter,
+import {
+  Router as BuildKiteRouter,
   isPluginApplicableToEntity as isBuildKiteAvailable,
 } from '@roadiehq/backstage-plugin-buildkite';
 

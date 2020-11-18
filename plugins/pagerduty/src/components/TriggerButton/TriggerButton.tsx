@@ -28,7 +28,7 @@ const useStyles = makeStyles({
     textTransform: 'uppercase',
     fontWeight: 600,
     letterSpacing: 1.2,
-    lineHeight: 1.1,
+    lineHeight: 1.5,
     '&:hover, &:focus, &.focus': {
       backgroundColor: 'transparent',
       textDecoration: 'none',

@@ -84,7 +84,7 @@ export const IncidentListItem = ({ incident }: IncidentListItemProps) => {
         }
       />
       <ListItemSecondaryAction>
-        <Tooltip title="View in PagerDuty" placement="left">
+        <Tooltip title="View in PagerDuty" placement="top">
           <IconButton
             href={user.html_url}
             target="_blank"

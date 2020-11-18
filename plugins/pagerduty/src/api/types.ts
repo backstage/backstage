@@ -34,4 +34,14 @@ export interface PagerDutyClient {
    *
    */
   getOnCallByPolicyId(policyId: string): Promise<OnCall[]>;
+
+  /**
+   * Triggers an incident to whoever is on-call.
+   */
+  triggerAlarm(
+    integrationKey: string,
+    source: string,
+    description: string,
+    userName: string,
+  ): Promise<Response>;
 }

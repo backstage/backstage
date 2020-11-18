@@ -23,10 +23,19 @@ import {
   DialogActions,
   Button,
   DialogContent,
+  Typography,
+  CircularProgress,
 } from '@material-ui/core';
-import { Progress, useApi, alertApiRef, identityApiRef } from '@backstage/core';
+import {
+  Progress,
+  useApi,
+  alertApiRef,
+  identityApiRef,
+  WarningPanel,
+} from '@backstage/core';
 import { useAsyncFn } from 'react-use';
 import { pagerDutyApiRef } from '../../api';
+import { Alert, AlertTitle } from '@material-ui/lab';
 
 const useStyles = makeStyles({
   warningText: {
@@ -54,9 +63,9 @@ export const TriggerDialog = ({ name, integrationKey, onClose }: Props) => {
     setDescription(event.target.value);
   };
 
-  const [{ value, loading, error }, triggerAlarm] = useAsyncFn(
+  const [{ value, loading, error }, handleTriggerAlarm] = useAsyncFn(
     async (desc: string) => {
-      return await api.triggerPagerDutyAlarm(
+      return await api.triggerAlarm(
         integrationKey,
         window.location.toString(),
         desc,
@@ -82,34 +91,41 @@ export const TriggerDialog = ({ name, integrationKey, onClose }: Props) => {
   }, [value, error, alertApi, onClose, userId]);
 
   return (
-    <Dialog maxWidth="sm" open onClose={onClose} fullWidth>
+    <Dialog maxWidth="md" open onClose={onClose} fullWidth>
       <DialogTitle>
-        This action will send PagerDuty alarms and notifications to on-call
-        people responsible for {name}.
+        This action will trigger an incident for <strong>"{name}"</strong>.
       </DialogTitle>
       <DialogContent>
-        <p className={classes.warningText}>
-          Note: If the issue you are seeing does not need urgent attention,
-          please get in touch with the responsible team using their preferred
-          communications channel. For most views, you can find links to support
-          and information channels by clicking the support button in the top
-          right corner of the page. If the issue is urgent, please don't
-          hesitate to trigger the alert.
-        </p>
-        <p>
+        <Alert severity="info">
+          {/* <AlertTitle>"Note"</AlertTitle> */}
+          <Typography variant="body1" align="justify">
+            If the issue you are seeing does not need urgent attention, please
+            get in touch with the responsible team using their preferred
+            communications channel. You can find information about the owner of
+            this entity in the "About" card. If the issue is urgent, please
+            don't hesitate to trigger the alert.
+          </Typography>
+        </Alert>
+        <Typography
+          variant="body1"
+          style={{ marginTop: '1em' }}
+          gutterBottom
+          align="justify"
+        >
           Please describe the problem you want to report. Be as descriptive as
-          possible. Your Spotify username and a reference to the current page
-          will automatically be sent amended to the alarm so that we can debug
-          the issue and reach out to you if necessary.
-        </p>
+          possible. Your signed in user and a reference to the current page will
+          automatically be amended to the alarm so that the receiver can reach
+          out to you if necessary.
+        </Typography>
         <TextField
           inputProps={{ 'data-testid': 'trigger-input' }}
           id="description"
           multiline
           fullWidth
-          rows="6"
+          rows="4"
           margin="normal"
           label="Problem description"
+          variant="outlined"
           onChange={descriptionChanged}
         />
       </DialogContent>
@@ -119,15 +135,16 @@ export const TriggerDialog = ({ name, integrationKey, onClose }: Props) => {
           id="trigger"
           color="secondary"
           disabled={!description || loading}
-          onClick={() => triggerAlarm(description)}
+          variant="contained"
+          onClick={() => handleTriggerAlarm(description)}
+          endIcon={loading && <CircularProgress size={16} />}
         >
-          Trigger
+          Trigger Incident
         </Button>
-        <Button id="close" onClick={onClose}>
+        <Button id="close" color="primary" onClick={onClose}>
           Close
         </Button>
       </DialogActions>
-      {loading && <Progress />}
     </Dialog>
   );
 };
