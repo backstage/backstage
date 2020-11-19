@@ -18,6 +18,7 @@ import { CatalogApi } from '@backstage/plugin-catalog';
 
 export type Result = {
   name: string;
+  namespace: string;
   description: string;
   owner: string;
   kind: string;
@@ -37,6 +38,7 @@ class SearchApi {
     const entities = await this.catalogApi.getEntities();
     return entities.items.map((result: any) => ({
       name: result.metadata.name,
+      namespace: result.metadata.namespace,
       description: result.metadata.description,
       owner: result.spec.owner,
       kind: result.kind,

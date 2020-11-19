@@ -19,6 +19,7 @@ import { useAsync } from 'react-use';
 import { makeStyles, Typography, Grid, Divider } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import {
+  Link,
   EmptyState,
   Progress,
   Table,
@@ -68,6 +69,11 @@ const columns: TableColumn[] = [
     title: 'Component Id',
     field: 'name',
     highlight: true,
+    render: (entity: Partial<Result>) => (
+      <Link to={`/catalog/${entity.namespace}/${entity.kind}/${entity.name}`}>
+        {entity.name}
+      </Link>
+    ),
   },
   {
     title: 'Description',
