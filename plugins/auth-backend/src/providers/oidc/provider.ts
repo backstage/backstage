@@ -51,7 +51,7 @@ export type OidcAuthProviderOptions = OAuthProviderOptions & {
 };
 
 export class OidcAuthProvider implements OAuthHandlers {
-  private readonly _strategy: Promise<OidcStrategy<UserinfoResponse, Client>>;
+  readonly _strategy: Promise<OidcStrategy<UserinfoResponse, Client>>;
 
   constructor(options: OidcAuthProviderOptions) {
     this._strategy = this.setupStrategy(options);
