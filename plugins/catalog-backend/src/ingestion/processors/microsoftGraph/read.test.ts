@@ -14,13 +14,50 @@
  * limitations under the License.
  */
 
+import { GroupEntity, UserEntity } from '@backstage/catalog-model';
+import merge from 'lodash/merge';
+import { RecursivePartial } from '../../../util';
 import { GroupMember, MicrosoftGraphClient } from './client';
 import {
   normalizeEntityName,
   readMicrosoftGraphGroups,
   readMicrosoftGraphOrganization,
   readMicrosoftGraphUsers,
+  resolveRelations,
 } from './read';
+
+function user(data: RecursivePartial<UserEntity>): UserEntity {
+  return merge(
+    {},
+    {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'User',
+      metadata: { name: 'name' },
+      spec: { profile: {}, memberOf: [] },
+    } as UserEntity,
+    data,
+  );
+}
+
+function group(data: RecursivePartial<GroupEntity>): GroupEntity {
+  return merge(
+    {},
+    {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Group',
+      metadata: {
+        name: 'name',
+      },
+      spec: {
+        ancestors: [],
+        children: [],
+        descendants: [],
+        type: 'team',
+      },
+    } as GroupEntity,
+    data,
+  );
+}
 
 describe('read microsoft graph', () => {
   const client: jest.Mocked<MicrosoftGraphClient> = {
@@ -64,10 +101,8 @@ describe('read microsoft graph', () => {
         userFilter: 'accountEnabled eq true',
       });
 
-      expect(users).toStrictEqual([
-        {
-          apiVersion: 'backstage.io/v1alpha1',
-          kind: 'User',
+      expect(users).toEqual([
+        user({
           metadata: {
             annotations: {
               'graph.microsoft.com/user-id': 'userid',
@@ -75,14 +110,13 @@ describe('read microsoft graph', () => {
             name: 'user.name_example.com',
           },
           spec: {
-            memberOf: [],
             profile: {
               displayName: 'User Name',
               email: 'user.name@example.com',
               picture: 'data:image/jpeg;base64,...',
             },
           },
-        },
+        }),
       ]);
 
       expect(client.getUsers).toBeCalledTimes(1);
@@ -107,23 +141,20 @@ describe('read microsoft graph', () => {
         'tenantid',
       );
 
-      expect(rootGroup).toStrictEqual({
-        apiVersion: 'backstage.io/v1alpha1',
-        kind: 'Group',
-        metadata: {
-          annotations: {
-            'graph.microsoft.com/tenant-id': 'tenantid',
+      expect(rootGroup).toEqual(
+        group({
+          metadata: {
+            annotations: {
+              'graph.microsoft.com/tenant-id': 'tenantid',
+            },
+            name: 'organization_name',
+            description: 'Organization Name',
           },
-          name: 'organization_name',
-          description: 'Organization Name',
-        },
-        spec: {
-          ancestors: [],
-          children: [],
-          descendants: [],
-          type: 'root',
-        },
-      });
+          spec: {
+            type: 'root',
+          },
+        }),
+      );
 
       expect(client.getOrganization).toBeCalledTimes(1);
       expect(client.getOrganization).toBeCalledWith('tenantid');
@@ -157,17 +188,16 @@ describe('read microsoft graph', () => {
         displayName: 'Organization Name',
       });
 
-      const { groups, groupMember, rootGroup } = await readMicrosoftGraphGroups(
-        client,
-        'tenantid',
-        {
-          groupFilter: 'securityEnabled eq false',
-        },
-      );
+      const {
+        groups,
+        groupMember,
+        groupMemberOf,
+        rootGroup,
+      } = await readMicrosoftGraphGroups(client, 'tenantid', {
+        groupFilter: 'securityEnabled eq false',
+      });
 
-      const expectedRootGroup = {
-        apiVersion: 'backstage.io/v1alpha1',
-        kind: 'Group',
+      const expectedRootGroup = group({
         metadata: {
           annotations: {
             'graph.microsoft.com/tenant-id': 'tenantid',
@@ -176,17 +206,12 @@ describe('read microsoft graph', () => {
           description: 'Organization Name',
         },
         spec: {
-          ancestors: [],
-          children: [],
-          descendants: [],
           type: 'root',
         },
-      };
-      expect(groups).toStrictEqual([
+      });
+      expect(groups).toEqual([
         expectedRootGroup,
-        {
-          apiVersion: 'backstage.io/v1alpha1',
-          kind: 'Group',
+        group({
           metadata: {
             annotations: {
               'graph.microsoft.com/group-id': 'groupid',
@@ -195,17 +220,13 @@ describe('read microsoft graph', () => {
             description: 'Group Name',
           },
           spec: {
-            ancestors: [],
-            children: [],
-            descendants: [],
             type: 'team',
           },
-        },
+        }),
       ]);
-      expect(rootGroup).toStrictEqual(expectedRootGroup);
-      expect(groupMember.get('groupid')).toEqual(
-        new Set(['childgroupid', 'userid']),
-      );
+      expect(rootGroup).toEqual(expectedRootGroup);
+      expect(groupMember.get('groupid')).toEqual(new Set(['childgroupid']));
+      expect(groupMemberOf.get('userid')).toEqual(new Set(['groupid']));
       expect(groupMember.get('organization_name')).toEqual(new Set());
 
       expect(client.getGroups).toBeCalledTimes(1);
@@ -219,11 +240,100 @@ describe('read microsoft graph', () => {
   });
 
   describe('resolveRelations', () => {
-    // TODO: How much such we resolve? What kind of relations should be available?
-    // What about users that aren't part of any group? Should they at least be part of root?
-  });
+    it('should resolve relations', async () => {
+      const rootGroup = group({
+        metadata: {
+          annotations: {
+            'graph.microsoft.com/tenant-id': 'tenant-id-root',
+          },
+          name: 'root',
+        },
+        spec: {
+          type: 'root',
+        },
+      });
+      const groupA = group({
+        metadata: {
+          annotations: {
+            'graph.microsoft.com/group-id': 'group-id-a',
+          },
+          name: 'a',
+        },
+      });
+      const groupB = group({
+        metadata: {
+          annotations: {
+            'graph.microsoft.com/group-id': 'group-id-b',
+          },
+          name: 'b',
+        },
+      });
+      const groupC = group({
+        metadata: {
+          annotations: {
+            'graph.microsoft.com/group-id': 'group-id-c',
+          },
+          name: 'c',
+        },
+      });
+      const user1 = user({
+        metadata: {
+          annotations: {
+            'graph.microsoft.com/user-id': 'user-id-1',
+          },
+          name: 'user1',
+        },
+      });
+      const user2 = user({
+        metadata: {
+          annotations: {
+            'graph.microsoft.com/user-id': 'user-id-2',
+          },
+          name: 'user2',
+        },
+      });
+      const groups = [rootGroup, groupA, groupB, groupC];
+      const users = [user1, user2];
+      const groupMember = new Map<string, Set<string>>();
+      groupMember.set('group-id-b', new Set(['group-id-c']));
+      const groupMemberOf = new Map<string, Set<string>>();
+      groupMemberOf.set('user-id-1', new Set(['group-id-a']));
+      groupMemberOf.set('user-id-2', new Set(['group-id-c']));
 
-  describe('readMicrosoftGraphOrg', () => {
-    // TODO: Not sure if I want to test this
+      // We have a root groups
+      // We have three groups: a, b, c. c is child of b
+      // we have two users: u1, u2. u1 is member of a, u2 is member of c
+      resolveRelations(rootGroup, groups, users, groupMember, groupMemberOf);
+
+      expect(rootGroup.spec.parent).toBeUndefined();
+      expect(rootGroup.spec.ancestors).toEqual(expect.arrayContaining([]));
+      expect(rootGroup.spec.children).toEqual(
+        expect.arrayContaining(['a', 'b']),
+      );
+      expect(rootGroup.spec.descendants).toEqual(
+        expect.arrayContaining(['a', 'b', 'c']),
+      );
+
+      expect(groupA.spec.parent).toEqual('root');
+      expect(groupA.spec.ancestors).toEqual(expect.arrayContaining(['root']));
+      expect(groupA.spec.children).toEqual(expect.arrayContaining([]));
+      expect(groupA.spec.descendants).toEqual(expect.arrayContaining([]));
+
+      expect(groupB.spec.parent).toEqual('root');
+      expect(groupB.spec.ancestors).toEqual(expect.arrayContaining(['root']));
+      expect(groupB.spec.children).toEqual(expect.arrayContaining(['c']));
+      expect(groupB.spec.descendants).toEqual(expect.arrayContaining(['c']));
+
+      expect(groupC.spec.parent).toEqual('b');
+      expect(groupC.spec.ancestors).toEqual(
+        expect.arrayContaining(['root', 'b']),
+      );
+      expect(groupC.spec.children).toEqual(expect.arrayContaining([]));
+      expect(groupC.spec.descendants).toEqual(expect.arrayContaining([]));
+
+      expect(user1.spec.memberOf).toEqual(expect.arrayContaining(['a']));
+
+      expect(user2.spec.memberOf).toEqual(expect.arrayContaining(['b', 'c']));
+    });
   });
 });

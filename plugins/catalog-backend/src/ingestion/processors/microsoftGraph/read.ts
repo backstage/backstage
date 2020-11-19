@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
-import { buildOrgHierarchy } from '../util/org';
+import { buildMemberOf, buildOrgHierarchy } from '../util/org';
 import { MicrosoftGraphClient } from './client';
 import {
   MICROSOFT_GRAPH_GROUP_ID_ANNOTATION,
@@ -130,9 +130,11 @@ export async function readMicrosoftGraphGroups(
   groups: GroupEntity[]; // With all relations empty
   rootGroup: GroupEntity | undefined; // With all relations empty
   groupMember: Map<string, Set<string>>;
+  groupMemberOf: Map<string, Set<string>>;
 }> {
   const groups: GroupEntity[] = [];
   const groupMember: Map<string, Set<string>> = new Map();
+  const groupMemberOf: Map<string, Set<string>> = new Map();
   const limiter = limiterFactory(10);
 
   const { rootGroup } = await readMicrosoftGraphOrganization(client, tenantId);
@@ -169,27 +171,24 @@ export async function readMicrosoftGraphGroups(
       },
     };
 
-    const groupMembers = new Set<string>();
-
     // Download the members in parallel, otherwise it can take quite some time
     const loadGroupMembers = limiter(async () => {
       for await (const member of client.getGroupMembers(group.id!)) {
-        if (
-          !member.id ||
-          !(
-            member['@odata.type'] === '#microsoft.graph.user' ||
-            member['@odata.type'] === '#microsoft.graph.group'
-          )
-        ) {
+        if (!member.id) {
           continue;
         }
 
-        groupMembers.add(member.id);
+        if (member['@odata.type'] === '#microsoft.graph.user') {
+          ensureItem(groupMemberOf, member.id, group.id!);
+        }
+
+        if (member['@odata.type'] === '#microsoft.graph.group') {
+          ensureItem(groupMember, group.id!, member.id);
+        }
       }
     });
 
     groupMemberPromises.push(loadGroupMembers);
-    groupMember.set(group.id, groupMembers);
     groups.push(entity);
   }
 
@@ -200,6 +199,7 @@ export async function readMicrosoftGraphGroups(
     groups,
     rootGroup,
     groupMember,
+    groupMemberOf,
   };
 }
 
@@ -208,17 +208,11 @@ export function resolveRelations(
   groups: GroupEntity[],
   users: UserEntity[],
   groupMember: Map<string, Set<string>>,
+  groupMemberOf: Map<string, Set<string>>,
 ) {
   // Build reference lookup tables, we reference them by the id the the graph
-  const userMap: Map<string, UserEntity> = new Map(); // by uuid
-  const groupMap: Map<string, GroupEntity> = new Map(); // by uuid
+  const groupMap: Map<string, GroupEntity> = new Map(); // by group-id or tenant-id
 
-  for (const user of users) {
-    userMap.set(
-      user.metadata.annotations![MICROSOFT_GRAPH_USER_ID_ANNOTATION],
-      user,
-    );
-  }
   for (const group of groups) {
     if (group.metadata.annotations![MICROSOFT_GRAPH_GROUP_ID_ANNOTATION]) {
       groupMap.set(
@@ -234,24 +228,73 @@ export function resolveRelations(
     }
   }
 
-  // Make sure that every user is at least part of the rootGroup
-  if (rootGroup) {
-    const groupMembers = groupMember.get(
-      rootGroup.metadata.annotations![MICROSOFT_GRAPH_TENANT_ID_ANNOTATION],
-    );
+  // Resolve all member relationships into the reverse direction
+  const parentGroups = new Map<string, Set<string>>();
 
-    users.forEach(u =>
-      groupMembers?.add(
-        u.metadata.annotations![MICROSOFT_GRAPH_USER_ID_ANNOTATION],
-      ),
-    );
+  groupMember.forEach((members, groupId) =>
+    members.forEach(m => ensureItem(parentGroups, m, groupId)),
+  );
+
+  // Make sure every group (except root) has at least one parent. If the parent is missing, add the root.
+  if (rootGroup) {
+    const tenantId = rootGroup.metadata.annotations![
+      MICROSOFT_GRAPH_TENANT_ID_ANNOTATION
+    ];
+
+    groups.forEach(group => {
+      const groupId = group.metadata.annotations![
+        MICROSOFT_GRAPH_GROUP_ID_ANNOTATION
+      ];
+
+      if (!groupId) {
+        return;
+      }
+
+      if (retrieveItems(parentGroups, groupId).size === 0) {
+        ensureItem(parentGroups, groupId, tenantId);
+        ensureItem(groupMember, tenantId, groupId);
+      }
+    });
   }
 
-  // TODO: For every group, add the group members (users/groups might be missing!)
+  groups.forEach(group => {
+    const id =
+      group.metadata.annotations![MICROSOFT_GRAPH_GROUP_ID_ANNOTATION] ??
+      group.metadata.annotations![MICROSOFT_GRAPH_TENANT_ID_ANNOTATION];
 
-  // TODO: Also added to partent to every member
+    retrieveItems(groupMember, id).forEach(m => {
+      const childGroup = groupMap.get(m);
+      if (childGroup) {
+        group.spec.children.push(childGroup.metadata.name);
+      }
+    });
 
+    retrieveItems(parentGroups, id).forEach(p => {
+      const parentGroup = groupMap.get(p);
+      if (parentGroup) {
+        // TODO: Only having a single parent group might not match every companies model, but fine for now.
+        group.spec.parent = parentGroup.metadata.name;
+      }
+    });
+  });
+
+  // Make sure that all groups have proper ancestors and descendants
   buildOrgHierarchy(groups);
+
+  // Set relations for all users
+  users.forEach(user => {
+    const id = user.metadata.annotations![MICROSOFT_GRAPH_USER_ID_ANNOTATION];
+
+    retrieveItems(groupMemberOf, id).forEach(p => {
+      const parentGroup = groupMap.get(p);
+      if (parentGroup) {
+        user.spec.memberOf.push(parentGroup.metadata.name);
+      }
+    });
+  });
+
+  // Make sure all transitive memberships are available
+  buildMemberOf(groups, users);
 }
 
 export async function readMicrosoftGraphOrg(
@@ -262,17 +305,38 @@ export async function readMicrosoftGraphOrg(
   const { users } = await readMicrosoftGraphUsers(client, {
     userFilter: options?.userFilter,
   });
-  const { groups, rootGroup, groupMember } = await readMicrosoftGraphGroups(
-    client,
-    tenantId,
-    {
-      groupFilter: options?.groupFilter,
-    },
-  );
+  const {
+    groups,
+    rootGroup,
+    groupMember,
+    groupMemberOf,
+  } = await readMicrosoftGraphGroups(client, tenantId, {
+    groupFilter: options?.groupFilter,
+  });
 
-  resolveRelations(rootGroup, groups, users, groupMember);
+  resolveRelations(rootGroup, groups, users, groupMember, groupMemberOf);
   users.sort((a, b) => a.metadata.name.localeCompare(b.metadata.name));
   groups.sort((a, b) => a.metadata.name.localeCompare(b.metadata.name));
 
   return { users, groups };
+}
+
+function ensureItem(
+  target: Map<string, Set<string>>,
+  key: string,
+  value: string,
+) {
+  let set = target.get(key);
+  if (!set) {
+    set = new Set();
+    target.set(key, set);
+  }
+  set!.add(value);
+}
+
+function retrieveItems(
+  target: Map<string, Set<string>>,
+  key: string,
+): Set<string> {
+  return target.get(key) ?? new Set();
 }

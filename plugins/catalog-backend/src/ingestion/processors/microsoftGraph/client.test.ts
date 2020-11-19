@@ -54,7 +54,7 @@ describe('MicrosoftGraphClient', () => {
     const response = await client.requestRaw('https://other.example.com/');
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toStrictEqual({ value: 'example' });
+    expect(await response.json()).toEqual({ value: 'example' });
     expect(
       confidentialClientApplication.acquireTokenByClientCredential,
     ).toBeCalledTimes(1);
@@ -73,7 +73,7 @@ describe('MicrosoftGraphClient', () => {
     const response = await client.requestApi('users');
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toStrictEqual({ value: 'example' });
+    expect(await response.json()).toEqual({ value: 'example' });
   });
 
   it('should perform api request with filter, select and expand', async () => {
@@ -90,7 +90,7 @@ describe('MicrosoftGraphClient', () => {
     });
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toStrictEqual({
+    expect(await response.json()).toEqual({
       queryString:
         '?$filter=test%20eq%20true&$select=id,children&$expand=children',
     });
@@ -112,7 +112,7 @@ describe('MicrosoftGraphClient', () => {
       client.requestCollection<string>('users'),
     );
 
-    expect(values).toStrictEqual(['first']);
+    expect(values).toEqual(['first']);
   });
 
   it('should perform collection request for multiple pages', async () => {
@@ -137,7 +137,7 @@ describe('MicrosoftGraphClient', () => {
       client.requestCollection<string>('users'),
     );
 
-    expect(values).toStrictEqual(['first', 'second']);
+    expect(values).toEqual(['first', 'second']);
   });
 
   it('should load user profile', async () => {
@@ -154,7 +154,7 @@ describe('MicrosoftGraphClient', () => {
 
     const userProfile = await client.getUserProfile('user-id');
 
-    expect(userProfile).toStrictEqual({ surname: 'Example' });
+    expect(userProfile).toEqual({ surname: 'Example' });
   });
 
   it('should throw expection if load user profile fails', async () => {
@@ -196,7 +196,7 @@ describe('MicrosoftGraphClient', () => {
 
     const photo = await client.getUserPhotoWithSizeLimit('user-id', 120);
 
-    expect(photo).toStrictEqual('data:image/jpeg;base64,OTEx');
+    expect(photo).toEqual('data:image/jpeg;base64,OTEx');
   });
 
   it('should not fail if user has no profile photo', async () => {
@@ -220,7 +220,7 @@ describe('MicrosoftGraphClient', () => {
 
     const photo = await client.getUserPhoto('user-id');
 
-    expect(photo).toStrictEqual('data:image/jpeg;base64,OTEx');
+    expect(photo).toEqual('data:image/jpeg;base64,OTEx');
   });
 
   it('should load profile photo for size 120', async () => {
@@ -233,7 +233,7 @@ describe('MicrosoftGraphClient', () => {
 
     const photo = await client.getUserPhoto('user-id', '120');
 
-    expect(photo).toStrictEqual('data:image/jpeg;base64,OTEx');
+    expect(photo).toEqual('data:image/jpeg;base64,OTEx');
   });
 
   it('should load users', async () => {
@@ -250,7 +250,7 @@ describe('MicrosoftGraphClient', () => {
 
     const values = await collectAsyncIterable(client.getUsers());
 
-    expect(values).toStrictEqual([{ surname: 'Example' }]);
+    expect(values).toEqual([{ surname: 'Example' }]);
   });
 
   it('should load groups', async () => {
@@ -267,7 +267,7 @@ describe('MicrosoftGraphClient', () => {
 
     const values = await collectAsyncIterable(client.getGroups());
 
-    expect(values).toStrictEqual([{ displayName: 'Example' }]);
+    expect(values).toEqual([{ displayName: 'Example' }]);
   });
 
   it('should load group members', async () => {
@@ -289,7 +289,7 @@ describe('MicrosoftGraphClient', () => {
       client.getGroupMembers('group-id'),
     );
 
-    expect(values).toStrictEqual([
+    expect(values).toEqual([
       { '@odata.type': '#microsoft.graph.user' },
       { '@odata.type': '#microsoft.graph.group' },
     ]);
@@ -309,7 +309,7 @@ describe('MicrosoftGraphClient', () => {
 
     const organization = await client.getOrganization('tentant-id');
 
-    expect(organization).toStrictEqual({ displayName: 'Example' });
+    expect(organization).toEqual({ displayName: 'Example' });
   });
 });
 
