@@ -38,7 +38,7 @@ export type RunCommandOptions = {
 
 export type UserOptions = {
   User?: string;
-}
+};
 
 /**
  * Gets the templater key to use for templating from the entity

@@ -17,10 +17,9 @@ import Stream, { PassThrough } from 'stream';
 import os from 'os';
 import fs from 'fs';
 import Docker from 'dockerode';
-import { UserOptions, runDockerContainer} from './helpers';
+import { UserOptions, runDockerContainer } from './helpers';
 
 describe('helpers', () => {
-
   const mockDocker = new Docker() as jest.Mocked<Docker>;
 
   beforeEach(() => {
