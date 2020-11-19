@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { PublisherBase } from './types';
+import { PublisherBase, PublisherOptions, PublisherResult } from './types';
 import { GitApi } from 'azure-devops-node-api/GitApi';
 import { GitRepositoryCreateOptions } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import { pushToRemoteUserPass } from './helpers';
@@ -33,10 +33,7 @@ export class AzurePublisher implements PublisherBase {
   async publish({
     values,
     directory,
-  }: {
-    values: RequiredTemplateValues & Record<string, JsonValue>;
-    directory: string;
-  }): Promise<{ remoteUrl: string }> {
+  }: PublisherOptions): Promise<PublisherResult> {
     const remoteUrl = await this.createRemote(values);
     await pushToRemoteUserPass(directory, remoteUrl, 'notempty', this.token);
 

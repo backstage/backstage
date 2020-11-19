@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { PublisherBase } from './types';
+import { PublisherBase, PublisherOptions, PublisherResult } from './types';
 import { Gitlab } from '@gitbeaker/core';
 import { pushToRemoteUserPass } from './helpers';
 import { JsonValue } from '@backstage/config';
@@ -32,10 +32,7 @@ export class GitlabPublisher implements PublisherBase {
   async publish({
     values,
     directory,
-  }: {
-    values: RequiredTemplateValues & Record<string, JsonValue>;
-    directory: string;
-  }): Promise<{ remoteUrl: string }> {
+  }: PublisherOptions): Promise<PublisherResult> {
     const remoteUrl = await this.createRemote(values);
     await pushToRemoteUserPass(directory, remoteUrl, 'oauth2', this.token);
 

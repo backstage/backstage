@@ -33,7 +33,6 @@ export type PublisherBase = {
 };
 
 export type PublisherOptions = {
-  entity: TemplateEntityV1alpha1;
   values: RequiredTemplateValues & Record<string, JsonValue>;
   directory: string;
 };
