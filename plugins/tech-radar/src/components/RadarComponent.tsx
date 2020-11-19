@@ -20,6 +20,7 @@ import { useAsync } from 'react-use';
 import Radar from '../components/Radar';
 import { TechRadarComponentProps, TechRadarLoaderResponse } from '../api';
 import getSampleData from '../sampleData';
+import { Entry } from '../utils/types';
 
 const useTechRadarLoader = (props: TechRadarComponentProps) => {
   const errorApi = useApi<ErrorApi>(errorApiRef);
@@ -47,6 +48,29 @@ const useTechRadarLoader = (props: TechRadarComponentProps) => {
 const RadarComponent = (props: TechRadarComponentProps): JSX.Element => {
   const { loading, error, value: data } = useTechRadarLoader(props);
 
+  const mapToEntries = (
+    loaderResponse: TechRadarLoaderResponse | undefined,
+  ): Array<Entry> => {
+    return loaderResponse!.entries.map(entry => {
+      return {
+        id: entry.key,
+        quadrant: loaderResponse!.quadrants.find(q => q.id === entry.quadrant)!,
+        title: entry.title,
+        ring: loaderResponse!.rings.find(
+          r => r.id === entry.timeline[0].ringId,
+        )!,
+        history: entry.timeline.map(e => {
+          return {
+            date: e.date,
+            ring: loaderResponse!.rings.find(a => a.id === e.ringId)!,
+            description: e.description,
+            moved: e.moved,
+          };
+        }),
+      };
+    });
+  };
+
   return (
     <>
       {loading && <Progress />}
@@ -55,7 +79,7 @@ const RadarComponent = (props: TechRadarComponentProps): JSX.Element => {
           {...props}
           rings={data!.rings}
           quadrants={data!.quadrants}
-          entries={data!.entries}
+          entries={mapToEntries(data)}
         />
       )}
     </>

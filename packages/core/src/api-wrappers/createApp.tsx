@@ -61,12 +61,23 @@ export const defaultConfigLoader: AppConfigLoader = async (
   if (runtimeConfigJson !== '__app_injected_runtime_config__'.toUpperCase()) {
     try {
       const data = JSON.parse(runtimeConfigJson) as JsonObject;
-      configs.push({ data, context: 'env' });
+      if (Array.isArray(data)) {
+        configs.push(...data);
+      } else {
+        configs.push({ data, context: 'env' });
+      }
     } catch (error) {
       throw new Error(`Failed to load runtime configuration, ${error}`);
     }
   }
 
+  const windowAppConfig = (window as any).__APP_CONFIG__;
+  if (windowAppConfig) {
+    configs.push({
+      context: 'window',
+      data: windowAppConfig,
+    });
+  }
   return configs;
 };
 

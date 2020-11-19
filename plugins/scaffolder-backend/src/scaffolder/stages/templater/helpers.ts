@@ -36,6 +36,10 @@ export type RunCommandOptions = {
   logStream?: Writable;
 };
 
+export type UserOptions = {
+  User?: string;
+};
+
 /**
  * Gets the templater key to use for templating from the entity
  * @param entity Template entity
@@ -115,6 +119,16 @@ export const runDockerContainer = async ({
     });
   });
 
+  const userOptions: UserOptions = {};
+  if (process.getuid && process.getgid) {
+    // Files that are created inside the Docker container will be owned by
+    // root on the host system on non Mac systems, because of reasons. Mainly the fact that
+    // volume sharing is done using NFS on Mac and actual mounts in Linux world.
+    // So we set the user in the container as the same user and group id as the host.
+    // On Windows we don't have process.getuid nor process.getgid
+    userOptions.User = `${process.getuid()}:${process.getgid()}`;
+  }
+
   const [{ Error: error, StatusCode: statusCode }] = await dockerClient.run(
     imageName,
     args,
@@ -129,11 +143,7 @@ export const runDockerContainer = async ({
           `${await fs.promises.realpath(templateDir)}:/template`,
         ],
       },
-      // Files that are created inside the Docker container will be owned by
-      // root on the host system on non Mac systems, because of reasons. Mainly the fact that
-      // volume sharing is done using NFS on Mac and actual mounts in Linux world.
-      // So we set the user in the container as the same user and group id as the host.
-      User: `${process.getuid()}:${process.getgid()}`,
+      ...userOptions,
       // Set the home directory inside the container as something that applications can
       // write to, otherwise they will just flop and fail trying to write to /
       Env: ['HOME=/tmp'],

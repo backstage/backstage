@@ -23,7 +23,7 @@ _It's likely you will need to enable CORS when running lighthouse-audit-service.
 with the environment variable `LAS_CORS` set to `true`._
 
 When you have an instance running that Backstage can hook into, make sure to export the plugin in
-your app's [`plugins.ts`](https://github.com/spotify/backstage/blob/master/packages/app/src/plugins.ts)
+your app's [`plugins.ts`](https://github.com/backstage/backstage/blob/master/packages/app/src/plugins.ts)
 to enable the plugin:
 
 ```js
@@ -32,7 +32,7 @@ export LighthousePlugin;
 ```
 
 Then, you need to use the `lighthouseApiRef` exported from the plugin to initialize the Rest API in
-your [`apis.ts`](https://github.com/spotify/backstage/blob/master/packages/app/src/apis.ts).
+your [`apis.ts`](https://github.com/backstage/backstage/blob/master/packages/app/src/apis.ts).
 
 ```js
 import { ApiHolder, ApiRegistry } from '@backstage/core';
@@ -51,7 +51,7 @@ export const apis = (config: ConfigApi) => {
 }
 ```
 
-Then configure the lighthouse service url in your [`app-config.yaml`](https://github.com/spotify/backstage/blob/master/app-config.yaml).
+Then configure the lighthouse service url in your [`app-config.yaml`](https://github.com/backstage/backstage/blob/master/app-config.yaml).
 
 ```yaml
 lighthouse:

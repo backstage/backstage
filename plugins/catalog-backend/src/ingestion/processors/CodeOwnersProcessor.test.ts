@@ -29,7 +29,7 @@ import {
 
 describe('CodeOwnersProcessor', () => {
   const mockUrl = ({ basePath = '' } = {}): string =>
-    `https://github.com/spotify/backstage/blob/master/${basePath}catalog-info.yaml`;
+    `https://github.com/backstage/backstage/blob/master/${basePath}catalog-info.yaml`;
   const mockLocation = ({
     basePath = '',
     type = 'github',
@@ -39,12 +39,12 @@ describe('CodeOwnersProcessor', () => {
   });
 
   const mockReadUrl = (basePath = '') =>
-    `https://github.com/spotify/backstage/blob/master/${basePath}CODEOWNERS`;
+    `https://github.com/backstage/backstage/blob/master/${basePath}CODEOWNERS`;
 
   const mockGitUri = (codeOwnersPath: string = '') => {
     return {
       source: 'github.com',
-      owner: 'spotify',
+      owner: 'backstage',
       name: 'backstage',
       codeOwnersPath,
     };
@@ -94,7 +94,7 @@ describe('CodeOwnersProcessor', () => {
           codeOwnersPath: '/.github/CODEOWNERS',
         }),
       ).toBe(
-        'https://github.com/spotify/backstage/blob/master/.github/CODEOWNERS',
+        'https://github.com/backstage/backstage/blob/master/.github/CODEOWNERS',
       );
     });
   });
@@ -102,7 +102,7 @@ describe('CodeOwnersProcessor', () => {
   describe('buildCodeOwnerUrl', () => {
     it('should build a location spec to the codeowners', () => {
       expect(buildCodeOwnerUrl(mockUrl(), '/docs/CODEOWNERS')).toEqual(
-        'https://github.com/spotify/backstage/blob/master/docs/CODEOWNERS',
+        'https://github.com/backstage/backstage/blob/master/docs/CODEOWNERS',
       );
     });
 
@@ -112,7 +112,9 @@ describe('CodeOwnersProcessor', () => {
           mockUrl({ basePath: 'packages/foo/' }),
           '/CODEOWNERS',
         ),
-      ).toEqual('https://github.com/spotify/backstage/blob/master/CODEOWNERS');
+      ).toEqual(
+        'https://github.com/backstage/backstage/blob/master/CODEOWNERS',
+      );
     });
   });
 
@@ -155,14 +157,14 @@ describe('CodeOwnersProcessor', () => {
       const read = jest
         .fn()
         .mockResolvedValue(mockReadResult({ data: ownersText }));
-      const reader = { read };
+      const reader = { read, readTree: jest.fn() };
       const result = await findRawCodeOwners(mockLocation(), reader);
       expect(result).toEqual(ownersText);
     });
 
     it('should raise error when no codeowner', async () => {
       const read = jest.fn().mockRejectedValue(mockReadResult());
-      const reader = { read };
+      const reader = { read, readTree: jest.fn() };
 
       await expect(
         findRawCodeOwners(mockLocation(), reader),
@@ -176,7 +178,7 @@ describe('CodeOwnersProcessor', () => {
         .mockImplementationOnce(() => mockReadResult({ error: 'foo' }))
         .mockImplementationOnce(() => mockReadResult({ error: 'bar' }))
         .mockResolvedValue(mockReadResult({ data: ownersText }));
-      const reader = { read };
+      const reader = { read, readTree: jest.fn() };
 
       const result = await findRawCodeOwners(mockLocation(), reader);
 
@@ -195,7 +197,7 @@ describe('CodeOwnersProcessor', () => {
       const read = jest
         .fn()
         .mockResolvedValue(mockReadResult({ data: mockCodeOwnersText() }));
-      const reader = { read };
+      const reader = { read, readTree: jest.fn() };
 
       const owner = await resolveCodeOwner(mockLocation(), reader);
       expect(owner).toBe('backstage-core');
@@ -205,7 +207,7 @@ describe('CodeOwnersProcessor', () => {
       const read = jest
         .fn()
         .mockImplementation(() => mockReadResult({ error: 'error: foo' }));
-      const reader = { read };
+      const reader = { read, readTree: jest.fn() };
 
       await expect(
         resolveCodeOwner(mockLocation(), reader),
@@ -219,7 +221,7 @@ describe('CodeOwnersProcessor', () => {
       const read = jest
         .fn()
         .mockResolvedValue(mockReadResult({ data: mockCodeOwnersText() }));
-      const reader = { read };
+      const reader = { read, readTree: jest.fn() };
       const processor = new CodeOwnersProcessor({ reader });
 
       return { entity, processor, read };

@@ -51,6 +51,9 @@ const useStyles = makeStyles(theme => ({
     margin: 0,
     backgroundColor: theme.palette.success.main,
   },
+  badgeUnknown: {
+    backgroundColor: theme.palette.grey[500],
+  },
   header: {
     padding: theme.spacing(2, 2, 2, 2.5),
   },
@@ -104,17 +107,20 @@ export const SonarQubeCard = ({
         }
       : undefined;
 
-  const gatePassed = value && value.metrics.alert_status === 'OK';
-
   const classes = useStyles();
+  let gateLabel = 'Not computed';
+  let gateColor = classes.badgeUnknown;
+
+  if (value?.metrics.alert_status) {
+    const gatePassed = value.metrics.alert_status === 'OK';
+    gateLabel = gatePassed ? 'Gate passed' : 'Gate failed';
+    gateColor = gatePassed ? classes.badgeSuccess : classes.badgeError;
+  }
 
   const qualityBadge = !loading && value && (
     <Chip
-      label={gatePassed ? 'Gate Passed' : 'Gate Failed'}
-      classes={{
-        root: gatePassed ? classes.badgeSuccess : classes.badgeError,
-        label: classes.badgeLabel,
-      }}
+      label={gateLabel}
+      classes={{ root: gateColor, label: classes.badgeLabel }}
     />
   );
 
@@ -181,29 +187,34 @@ export const SonarQubeCard = ({
               <RatingCard
                 titleIcon={<BugReport />}
                 title="Bugs"
+                link={value.getIssuesUrl('BUG')}
                 leftSlot={<Value value={value.metrics.bugs} />}
                 rightSlot={<Rating rating={value.metrics.reliability_rating} />}
               />
               <RatingCard
                 titleIcon={<LockOpen />}
                 title="Vulnerabilities"
+                link={value.getIssuesUrl('VULNERABILITY')}
                 leftSlot={<Value value={value.metrics.vulnerabilities} />}
                 rightSlot={<Rating rating={value.metrics.security_rating} />}
               />
               <RatingCard
                 titleIcon={<SentimentVeryDissatisfied />}
                 title="Code Smells"
+                link={value.getIssuesUrl('CODE_SMELL')}
                 leftSlot={<Value value={value.metrics.code_smells} />}
                 rightSlot={<Rating rating={value.metrics.sqale_rating} />}
               />
               <div style={{ width: '100%' }} />
               <RatingCard
+                link={value.getComponentMeasuresUrl('COVERAGE')}
                 title="Coverage"
                 leftSlot={<Percentage value={value.metrics.coverage} />}
                 rightSlot={<Value value={`${value.metrics.coverage}%`} />}
               />
               <RatingCard
                 title="Duplications"
+                link={value.getComponentMeasuresUrl('DUPLICATED_LINES_DENSITY')}
                 leftSlot={<Rating rating={duplicationRating} hideValue />}
                 rightSlot={
                   <Value value={`${value.metrics.duplicated_lines_density}%`} />

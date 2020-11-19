@@ -22,7 +22,12 @@ import { CostOverviewHeader } from './CostOverviewHeader';
 import { LegendItem } from '../LegendItem';
 import { MetricSelect } from '../MetricSelect';
 import { PeriodSelect } from '../PeriodSelect';
-import { useScroll, useFilters, useConfig } from '../../hooks';
+import {
+  useScroll,
+  useFilters,
+  useConfig,
+  useLastCompleteBillingDate,
+} from '../../hooks';
 import { mapFiltersToProps } from './selector';
 import { DefaultNavigation } from '../../utils/navigation';
 import { formatPercent } from '../../utils/formatters';
@@ -41,6 +46,7 @@ export const CostOverviewCard = ({
 }: CostOverviewCardProps) => {
   const theme = useTheme<CostInsightsTheme>();
   const config = useConfig();
+  const lastCompleteBillingDate = useLastCompleteBillingDate();
   const { ScrollAnchor } = useScroll(DefaultNavigation.CostOverviewCard);
   const { setDuration, setProject, setMetric, ...filters } = useFilters(
     mapFiltersToProps,
@@ -50,7 +56,12 @@ export const CostOverviewCard = ({
     ? findAlways(config.metrics, m => m.kind === filters.metric)
     : null;
   const comparedChange = metricData
-    ? getComparedChange(dailyCostData, metricData)
+    ? getComparedChange(
+        dailyCostData,
+        metricData,
+        filters.duration,
+        lastCompleteBillingDate,
+      )
     : null;
 
   return (
@@ -98,7 +109,7 @@ export const CostOverviewCard = ({
           />
         </Box>
         <Box display="flex" justifyContent="flex-end" alignItems="center">
-          {config.metrics.length > 1 && (
+          {config.metrics.length && (
             <MetricSelect
               metric={filters.metric}
               metrics={config.metrics}

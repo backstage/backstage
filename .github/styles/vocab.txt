@@ -62,6 +62,7 @@ Firekube
 Fredrik
 github
 Github
+gitlab
 Gitlab
 graphql
 graphviz
@@ -75,6 +76,7 @@ http
 https
 img
 incentivised
+inlined
 inlinehilite
 interop
 javascript
@@ -175,6 +177,7 @@ src
 subkey
 superfences
 Superfences
+superset
 talkdesk
 Talkdesk
 tasklist
@@ -190,6 +193,8 @@ toc
 tolerations
 Tolerations
 toolsets
+tooltip
+tooltips
 touchpoints
 ui
 upvote

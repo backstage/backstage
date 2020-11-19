@@ -15,7 +15,7 @@
  */
 
 import { Entity, EntityRelationSpec, Location } from '@backstage/catalog-model';
-import type { EntityFilters } from '../database';
+import type { EntityFilter } from '../database';
 
 //
 // Entities
@@ -32,7 +32,7 @@ export type EntityUpsertResponse = {
 };
 
 export type EntitiesCatalog = {
-  entities(filters?: EntityFilters[]): Promise<Entity[]>;
+  entities(filter?: EntityFilter): Promise<Entity[]>;
   removeEntityByUid(uid: string): Promise<void>;
 
   /**

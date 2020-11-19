@@ -14,24 +14,22 @@
  * limitations under the License.
  */
 
-import { ConfigReader } from '@backstage/config';
+import { BitbucketIntegrationConfig } from '@backstage/integration';
 import {
   BitbucketUrlReader,
   getApiRequestOptions,
   getApiUrl,
-  ProviderConfig,
-  readConfig,
 } from './BitbucketUrlReader';
 
 describe('BitbucketUrlReader', () => {
   describe('getApiRequestOptions', () => {
     it('inserts a token when needed', () => {
-      const withToken: ProviderConfig = {
+      const withToken: BitbucketIntegrationConfig = {
         host: '',
         apiBaseUrl: '',
         token: 'A',
       };
-      const withoutToken: ProviderConfig = {
+      const withoutToken: BitbucketIntegrationConfig = {
         host: '',
         apiBaseUrl: '',
       };
@@ -44,13 +42,13 @@ describe('BitbucketUrlReader', () => {
     });
 
     it('insert basic auth when needed', () => {
-      const withUsernameAndPassword: ProviderConfig = {
+      const withUsernameAndPassword: BitbucketIntegrationConfig = {
         host: '',
         apiBaseUrl: '',
         username: 'some-user',
         appPassword: 'my-secret',
       };
-      const withoutUsernameAndPassword: ProviderConfig = {
+      const withoutUsernameAndPassword: BitbucketIntegrationConfig = {
         host: '',
         apiBaseUrl: '',
       };
@@ -67,11 +65,11 @@ describe('BitbucketUrlReader', () => {
 
   describe('getApiUrl', () => {
     it('rejects targets that do not look like URLs', () => {
-      const config: ProviderConfig = { host: '', apiBaseUrl: '' };
+      const config: BitbucketIntegrationConfig = { host: '', apiBaseUrl: '' };
       expect(() => getApiUrl('a/b', config)).toThrow(/Incorrect URL: a\/b/);
     });
     it('happy path for Bitbucket Cloud', () => {
-      const config: ProviderConfig = {
+      const config: BitbucketIntegrationConfig = {
         host: 'bitbucket.org',
         apiBaseUrl: 'https://api.bitbucket.org/2.0',
       };
@@ -87,7 +85,7 @@ describe('BitbucketUrlReader', () => {
       );
     });
     it('happy path for Bitbucket Server', () => {
-      const config: ProviderConfig = {
+      const config: BitbucketIntegrationConfig = {
         host: 'bitbucket.mycompany.net',
         apiBaseUrl: 'https://bitbucket.mycompany.net/rest/api/1.0',
       };
@@ -101,66 +99,6 @@ describe('BitbucketUrlReader', () => {
           'https://bitbucket.mycompany.net/rest/api/1.0/projects/a/repos/b/raw/path/to/c.yaml',
         ),
       );
-    });
-  });
-
-  describe('readConfig', () => {
-    function config(
-      providers: {
-        host: string;
-        apiBaseUrl?: string;
-        token?: string;
-        username?: string;
-        password?: string;
-      }[],
-    ) {
-      return ConfigReader.fromConfigs([
-        {
-          context: '',
-          data: {
-            integrations: { bitbucket: providers },
-          },
-        },
-      ]);
-    }
-
-    it('adds a default Bitbucket Cloud entry when missing', () => {
-      const output = readConfig(config([]));
-      expect(output).toEqual([
-        {
-          host: 'bitbucket.org',
-          apiBaseUrl: 'https://api.bitbucket.org/2.0',
-        },
-      ]);
-    });
-
-    it('injects the correct Bitbucket Cloud API base URL when missing', () => {
-      const output = readConfig(config([{ host: 'bitbucket.org' }]));
-      expect(output).toEqual([
-        {
-          host: 'bitbucket.org',
-          apiBaseUrl: 'https://api.bitbucket.org/2.0',
-        },
-      ]);
-    });
-
-    it('rejects custom targets with no base URLs', () => {
-      expect(() =>
-        readConfig(config([{ host: 'bitbucket.mycompany.net' }])),
-      ).toThrow(
-        "Bitbucket integration for 'bitbucket.mycompany.net' must configure an explicit apiBaseUrl",
-      );
-    });
-
-    it('rejects funky configs', () => {
-      expect(() => readConfig(config([{ host: 7 } as any]))).toThrow(/host/);
-      expect(() => readConfig(config([{ token: 7 } as any]))).toThrow(/token/);
-      expect(() =>
-        readConfig(config([{ host: 'bitbucket.org', apiBaseUrl: 7 } as any])),
-      ).toThrow(/apiBaseUrl/);
-      expect(() =>
-        readConfig(config([{ host: 'bitbucket.org', token: 7 } as any])),
-      ).toThrow(/token/);
     });
   });
 

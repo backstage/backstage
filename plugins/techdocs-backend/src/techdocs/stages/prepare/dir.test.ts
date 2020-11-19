@@ -78,7 +78,7 @@ describe('directory preparer', () => {
 
     const mockEntity = createMockEntity({
       'backstage.io/managed-by-location':
-        'github:https://github.com/spotify/backstage/blob/master/catalog-info.yaml',
+        'github:https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
       'backstage.io/techdocs-ref': 'dir:./docs',
     });
 

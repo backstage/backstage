@@ -16,7 +16,7 @@ backend:
     credentials: true
   csp:
     connect-src: ["'self'", 'http:', 'https:']
-  # workingDirectory: /tmp # Use this to configure a working direcotry for the scaffolder, defaults to the OS temp-dir
+  # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
 
 # See README.md in the proxy-backend plugin for information on the configuration format
 proxy:
@@ -45,6 +45,12 @@ proxy:
     headers:
       X-Api-Key:
         $env: NEW_RELIC_REST_API_KEY
+
+  '/buildkite/api':
+    target: https://api.buildkite.com/v2/
+    headers:
+      Authorization:
+        $env: BUILDKITE_TOKEN
 
 organization:
   name: My Company
@@ -138,22 +144,22 @@ catalog:
   locations:
     # Backstage example components
     - type: url
-      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
     # Example component for github-actions
     - type: url
-      target: https://github.com/spotify/backstage/blob/master/plugins/github-actions/examples/sample.yaml
+      target: https://github.com/backstage/backstage/blob/master/plugins/github-actions/examples/sample.yaml
     # Example component for techdocs
     - type: url
-      target: https://github.com/spotify/backstage/blob/master/plugins/techdocs-backend/examples/documented-component/documented-component.yaml
+      target: https://github.com/backstage/backstage/blob/master/plugins/techdocs-backend/examples/documented-component/documented-component.yaml
     # Backstage example APIs
     - type: url
-      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
     # Backstage example templates
     - type: url
-      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/all-templates.yaml
+      target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/all-templates.yaml
     # Backstage example groups and users
     - type: url
-      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/acme-corp.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme-corp.yaml
 
 scaffolder:
   github:
@@ -232,6 +238,14 @@ auth:
           $env: AUTH_MICROSOFT_CLIENT_SECRET
         tenantId:
           $env: AUTH_MICROSOFT_TENANT_ID
+    onelogin:
+      development:
+        clientId:
+          $env: AUTH_ONELOGIN_CLIENT_ID
+        clientSecret:
+          $env: AUTH_ONELOGIN_CLIENT_SECRET
+        issuer:
+          $env: AUTH_ONELOGIN_ISSUER
 costInsights:
   engineerCost: 200000
   products:
@@ -245,7 +259,7 @@ costInsights:
       name: Cloud Storage
       icon: storage
     bigQuery:
-      name: Big Query
+      name: BigQuery
       icon: search
   metrics:
     DAU:
@@ -256,7 +270,7 @@ costInsights:
 homepage:
   clocks:
     - label: UTC
-      timzone: UTC
+      timezone: UTC
     - label: NYC
       timezone: 'America/New_York'
     - label: STO

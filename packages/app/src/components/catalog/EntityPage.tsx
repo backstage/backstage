@@ -66,13 +66,19 @@ import {
   isPluginApplicableToEntity as isPullRequestsAvailable,
   PullRequestsStatsCard,
 } from '@roadiehq/backstage-plugin-github-pull-requests';
+import {
+  Router as BuildKiteRouter,
+  isPluginApplicableToEntity as isBuildKiteAvailable,
+} from '@roadiehq/backstage-plugin-buildkite';
 
-const CICDSwitcher = ({ entity }: { entity: Entity }) => {
+export const CICDSwitcher = ({ entity }: { entity: Entity }) => {
   // This component is just an example of how you can implement your company's logic in entity page.
   // You can for example enforce that all components of type 'service' should use GitHubActions
   switch (true) {
     case isJenkinsAvailable(entity):
       return <JenkinsRouter entity={entity} />;
+    case isBuildKiteAvailable(entity):
+      return <BuildKiteRouter entity={entity} />;
     case isGitHubActionsAvailable(entity):
       return <GitHubActionsRouter entity={entity} />;
     case isCircleCIAvailable(entity):

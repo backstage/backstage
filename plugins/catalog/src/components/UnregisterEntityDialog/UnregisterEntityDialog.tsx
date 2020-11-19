@@ -15,7 +15,7 @@
  */
 
 import { Entity, LOCATION_ANNOTATION } from '@backstage/catalog-model';
-import { Progress, useApi, alertApiRef } from '@backstage/core';
+import { alertApiRef, Progress, useApi } from '@backstage/core';
 import {
   Button,
   Dialog,
@@ -31,7 +31,7 @@ import Alert from '@material-ui/lab/Alert';
 import React, { FC } from 'react';
 import { useAsync } from 'react-use';
 import { AsyncState } from 'react-use/lib/useAsync';
-import { catalogApiRef } from '../../api/types';
+import { catalogApiRef } from '../../plugin';
 
 type Props = {
   open: boolean;
@@ -44,9 +44,13 @@ function useColocatedEntities(entity: Entity): AsyncState<Entity[]> {
   const catalogApi = useApi(catalogApiRef);
   return useAsync(async () => {
     const myLocation = entity.metadata.annotations?.[LOCATION_ANNOTATION];
-    return myLocation
-      ? await catalogApi.getEntities({ [LOCATION_ANNOTATION]: myLocation })
-      : [];
+    if (!myLocation) {
+      return [];
+    }
+    const response = await catalogApi.getEntities({
+      filter: { [LOCATION_ANNOTATION]: myLocation },
+    });
+    return response.items;
   }, [catalogApi, entity]);
 }
 

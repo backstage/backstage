@@ -49,7 +49,7 @@ export const CostGrowth = ({ change, duration }: CostGrowthProps) => {
   const converted = amount / (currency.rate ?? rate);
 
   // Determine if growth is significant enough to highlight
-  const growth = growthOf(engineers, change.ratio);
+  const growth = growthOf(change.ratio, engineers);
   const classes = classnames({
     [styles.excess]: growth === GrowthType.Excess,
     [styles.savings]: growth === GrowthType.Savings,

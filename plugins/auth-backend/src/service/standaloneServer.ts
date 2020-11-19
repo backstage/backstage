@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import Knex from 'knex';
-import { Server } from 'http';
-import { Logger } from 'winston';
-import { createRouter } from './router';
 import {
   createServiceBuilder,
-  useHotMemoize,
   loadBackendConfig,
   SingleHostDiscovery,
+  useHotMemoize,
 } from '@backstage/backend-common';
+import { Server } from 'http';
+import Knex from 'knex';
+import { Logger } from 'winston';
+import { createRouter } from './router';
 
 export interface ServerOptions {
   logger: Logger;

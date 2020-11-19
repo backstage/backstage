@@ -15,10 +15,10 @@ location protocols:
 - `github://`
 
 These two are added to the `PreparersBuilder` and then passed into the
-`createRouter` function of the `@spotify/plugin-scaffolder-backend`.
+`createRouter` function of the `@backstage/plugin-scaffolder-backend`.
 
 A full example backend can be found in
-[`scaffolder.ts`](https://github.com/spotify/backstage/blob/d91c10f654475a60829fa33a5c81018e517a319a/packages/backend/src/plugins/scaffolder.ts),
+[`scaffolder.ts`](https://github.com/backstage/backstage/blob/d91c10f654475a60829fa33a5c81018e517a319a/packages/backend/src/plugins/scaffolder.ts),
 but it looks something like the following
 
 ```ts
@@ -85,8 +85,8 @@ and put the contents into a temporary directory and return that directory path.
 
 Some good examples exist here:
 
-- https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/src/scaffolder/stages/prepare/file.ts
-- https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/src/scaffolder/stages/prepare/github.ts
+- https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/src/scaffolder/stages/prepare/file.ts
+- https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/src/scaffolder/stages/prepare/github.ts
 
 ### Registering your own Preparer
 

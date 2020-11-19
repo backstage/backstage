@@ -14,57 +14,18 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
-import parseGitUri from 'git-url-parse';
+import {
+  BitbucketIntegrationConfig,
+  readBitbucketIntegrationConfigs,
+} from '@backstage/integration';
 import fetch from 'cross-fetch';
+import parseGitUri from 'git-url-parse';
 import { NotFoundError } from '../errors';
-import { ReaderFactory, UrlReader } from './types';
+import { ReaderFactory, ReadTreeResponse, UrlReader } from './types';
 
-const DEFAULT_BASE_URL = 'https://api.bitbucket.org/2.0';
-
-/**
- * The configuration parameters for a single Bitbucket API provider.
- */
-export type ProviderConfig = {
-  /**
-   * The host of the target that this matches on, e.g. "bitbucket.com"
-   */
-  host: string;
-
-  /**
-   * The base URL of the API of this provider, e.g. "https://api.bitbucket.org/2.0",
-   * with no trailing slash.
-   *
-   * May be omitted specifically for Bitbucket Cloud; then it will be deduced.
-   *
-   * The API will always be preferred if both its base URL and a token are
-   * present.
-   */
-  apiBaseUrl?: string;
-
-  /**
-   * The authorization token to use for requests to a Bitbucket Server provider.
-   *
-   * See https://confluence.atlassian.com/bitbucketserver/personal-access-tokens-939515499.html
-   *
-   * If no token is specified, anonymous access is used.
-   */
-  token?: string;
-
-  /**
-   * The username to use for requests to Bitbucket Cloud (bitbucket.org).
-   */
-  username?: string;
-
-  /**
-   * Authentication with Bitbucket Cloud (bitbucket.org) is done using app passwords.
-   *
-   * See https://support.atlassian.com/bitbucket-cloud/docs/app-passwords/
-   */
-  appPassword?: string;
-};
-
-export function getApiRequestOptions(provider: ProviderConfig): RequestInit {
+export function getApiRequestOptions(
+  provider: BitbucketIntegrationConfig,
+): RequestInit {
   const headers: HeadersInit = {};
 
   if (provider.token) {
@@ -84,7 +45,10 @@ export function getApiRequestOptions(provider: ProviderConfig): RequestInit {
 // Converts for example
 // from: https://bitbucket.org/orgname/reponame/src/master/file.yaml
 // to:   https://api.bitbucket.org/2.0/repositories/orgname/reponame/src/master/file.yaml
-export function getApiUrl(target: string, provider: ProviderConfig): URL {
+export function getApiUrl(
+  target: string,
+  provider: BitbucketIntegrationConfig,
+): URL {
   try {
     const { owner, name, ref, filepathtype, filepath } = parseGitUri(target);
     if (
@@ -115,74 +79,39 @@ export function getApiUrl(target: string, provider: ProviderConfig): URL {
   }
 }
 
-export function readConfig(config: Config): ProviderConfig[] {
-  const providers: ProviderConfig[] = [];
-
-  const providerConfigs =
-    config.getOptionalConfigArray('integrations.bitbucket') ?? [];
-
-  // First read all the explicit providers
-  for (const providerConfig of providerConfigs) {
-    const host = providerConfig.getOptionalString('host') ?? 'bitbucket.org';
-    let apiBaseUrl = providerConfig.getOptionalString('apiBaseUrl');
-    const token = providerConfig.getOptionalString('token');
-    const username = providerConfig.getOptionalString('username');
-    const appPassword = providerConfig.getOptionalString('appPassword');
-
-    if (apiBaseUrl) {
-      apiBaseUrl = apiBaseUrl.replace(/\/+$/, '');
-    } else if (host === 'bitbucket.org') {
-      apiBaseUrl = DEFAULT_BASE_URL;
-    }
-
-    if (!apiBaseUrl) {
-      throw new Error(
-        `Bitbucket integration for '${host}' must configure an explicit apiBaseUrl`,
-      );
-    }
-    if (!token && username && !appPassword) {
-      throw new Error(
-        `Bitbucket integration for '${host}' has configured a username but is missing a required appPassword.`,
-      );
-    }
-
-    providers.push({
-      host,
-      apiBaseUrl,
-      token,
-      username,
-      appPassword,
-    });
-  }
-
-  // If no explicit bitbucket.org provider was added, put one in the list as
-  // a convenience
-  if (!providers.some(p => p.host === 'bitbucket.org')) {
-    providers.push({
-      host: 'bitbucket.org',
-      apiBaseUrl: DEFAULT_BASE_URL,
-    });
-  }
-
-  return providers;
-}
-
 /**
  * A processor that adds the ability to read files from Bitbucket v1 and v2 APIs, such as
  * the one exposed by Bitbucket Cloud itself.
  */
 export class BitbucketUrlReader implements UrlReader {
-  private config: ProviderConfig;
+  private readonly config: BitbucketIntegrationConfig;
 
   static factory: ReaderFactory = ({ config }) => {
-    return readConfig(config).map(provider => {
+    const configs = readBitbucketIntegrationConfigs(
+      config.getOptionalConfigArray('integrations.bitbucket') ?? [],
+    );
+    return configs.map(provider => {
       const reader = new BitbucketUrlReader(provider);
       const predicate = (url: URL) => url.host === provider.host;
       return { reader, predicate };
     });
   };
 
-  constructor(config: ProviderConfig) {
+  constructor(config: BitbucketIntegrationConfig) {
+    const { host, apiBaseUrl, token, username, appPassword } = config;
+
+    if (!apiBaseUrl) {
+      throw new Error(
+        `Bitbucket integration for '${host}' must configure an explicit apiBaseUrl`,
+      );
+    }
+
+    if (!token && username && !appPassword) {
+      throw new Error(
+        `Bitbucket integration for '${host}' has configured a username but is missing a required appPassword.`,
+      );
+    }
+
     this.config = config;
   }
 
@@ -207,6 +136,10 @@ export class BitbucketUrlReader implements UrlReader {
       throw new NotFoundError(message);
     }
     throw new Error(message);
+  }
+
+  readTree(): Promise<ReadTreeResponse> {
+    throw new Error('BitbucketUrlReader does not implement readTree');
   }
 
   toString() {

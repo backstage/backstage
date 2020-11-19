@@ -21,6 +21,7 @@ import { useConfig } from '../../hooks';
 
 export const ProductInsights = ({}) => {
   const config = useConfig();
+
   return (
     <>
       <Box mt={0} mb={5} textAlign="center">

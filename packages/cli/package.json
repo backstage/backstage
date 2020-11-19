@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.1.1-alpha.26",
+  "version": "0.2.0",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -9,7 +9,7 @@
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
-    "url": "https://github.com/spotify/backstage",
+    "url": "https://github.com/backstage/backstage",
     "directory": "packages/cli"
   },
   "keywords": [
@@ -28,9 +28,9 @@
     "backstage-cli": "bin/backstage-cli"
   },
   "dependencies": {
-    "@backstage/cli-common": "^0.1.1-alpha.26",
-    "@backstage/config": "^0.1.1-alpha.26",
-    "@backstage/config-loader": "^0.1.1-alpha.26",
+    "@backstage/cli-common": "^0.1.1",
+    "@backstage/config": "^0.1.1",
+    "@backstage/config-loader": "^0.2.0",
     "@hot-loader/react-dom": "^16.13.0",
     "@lerna/package-graph": "^3.18.5",
     "@lerna/project": "^3.18.0",
@@ -38,9 +38,9 @@
     "@rollup/plugin-json": "^4.0.2",
     "@rollup/plugin-node-resolve": "^9.0.0",
     "@rollup/plugin-yaml": "^2.1.1",
-    "@spotify/eslint-config-base": "^8.0.0",
-    "@spotify/eslint-config-react": "^8.0.0",
-    "@spotify/eslint-config-typescript": "^8.0.0",
+    "@spotify/eslint-config-base": "^9.0.0",
+    "@spotify/eslint-config-react": "^9.0.0",
+    "@spotify/eslint-config-typescript": "^9.0.0",
     "@sucrase/webpack-loader": "^2.0.0",
     "@svgr/plugin-jsx": "5.4.x",
     "@svgr/plugin-svgo": "5.4.x",
@@ -76,6 +76,7 @@
     "jest": "^26.0.1",
     "jest-css-modules": "^2.1.0",
     "jest-esm-transformer": "^1.0.0",
+    "lodash": "^4.17.19",
     "mini-css-extract-plugin": "^0.9.0",
     "ora": "^4.0.3",
     "raw-loader": "^4.0.1",
@@ -108,12 +109,12 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/backend-common": "^0.1.1-alpha.26",
-    "@backstage/config": "^0.1.1-alpha.26",
-    "@backstage/core": "^0.1.1-alpha.26",
-    "@backstage/dev-utils": "^0.1.1-alpha.26",
-    "@backstage/test-utils": "^0.1.1-alpha.26",
-    "@backstage/theme": "^0.1.1-alpha.26",
+    "@backstage/backend-common": "^0.2.1",
+    "@backstage/config": "^0.1.1",
+    "@backstage/core": "^0.3.0",
+    "@backstage/dev-utils": "^0.1.3",
+    "@backstage/test-utils": "^0.1.2",
+    "@backstage/theme": "^0.2.1",
     "@types/diff": "^4.0.2",
     "@types/fs-extra": "^9.0.1",
     "@types/html-webpack-plugin": "^3.2.2",
@@ -146,5 +147,47 @@
     "watch": "./src",
     "exec": "bin/backstage-cli",
     "ext": "ts"
+  },
+  "configSchema": {
+    "$schema": "https://backstage.io/schema/config-v1",
+    "title": "@backstage/cli",
+    "type": "object",
+    "properties": {
+      "app": {
+        "type": "object",
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "visibility": "frontend"
+          },
+          "title": {
+            "type": "string",
+            "visibility": "frontend"
+          },
+          "googleAnalyticsTrackingId": {
+            "type": "string",
+            "visibility": "frontend",
+            "description": "Tracking ID for Google Analytics",
+            "example": "UA-000000-0"
+          },
+          "listen": {
+            "type": "object",
+            "description": "Listening configuration for local development",
+            "properties": {
+              "host": {
+                "type": "number",
+                "visibility": "frontend",
+                "description": "The host that the frontend should be bound to. Only used for local development."
+              },
+              "post": {
+                "type": "number",
+                "visibility": "frontend",
+                "description": "The port that the frontend should be bound to. Only used for local development."
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }

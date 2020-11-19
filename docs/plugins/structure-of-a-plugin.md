@@ -106,6 +106,6 @@ environment you will probably face challenges like CORS policies and/or
 backend-side authorization. To smooth this process out you can use proxy -
 either the one you already have (like Nginx, HAProxy, etc.) or the proxy-backend
 plugin that we provide for the Backstage backend.
-[Read more](https://github.com/spotify/backstage/blob/master/plugins/proxy-backend/README.md)
+[Read more](https://github.com/backstage/backstage/blob/master/plugins/proxy-backend/README.md)
 
 [Back to Getting Started](../README.md)

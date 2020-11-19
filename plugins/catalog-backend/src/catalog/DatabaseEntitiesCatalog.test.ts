@@ -15,8 +15,9 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import type { Entity } from '@backstage/catalog-model';
+import { Entity, LOCATION_ANNOTATION } from '@backstage/catalog-model';
 import { Database, DatabaseManager, Transaction } from '../database';
+import { EntityFilters } from '../service/EntityFilters';
 import { DatabaseEntitiesCatalog } from './DatabaseEntitiesCatalog';
 import { EntityUpsertRequest } from './types';
 
@@ -73,13 +74,12 @@ describe('DatabaseEntitiesCatalog', () => {
       ]);
 
       expect(db.entities).toHaveBeenCalledTimes(1);
-      expect(db.entities).toHaveBeenCalledWith(expect.anything(), [
-        {
-          kind: 'b',
-          'metadata.namespace': 'd',
-          'metadata.name': ['c'],
-        },
-      ]);
+      expect(db.entities).toHaveBeenCalledWith(
+        expect.anything(),
+        EntityFilters.ofFilterString(
+          'kind=b,metadata.namespace=d,metadata.name=c',
+        ),
+      );
       expect(db.setRelations).toHaveBeenCalledTimes(1);
       expect(db.setRelations).toHaveBeenCalledWith(expect.anything(), 'u', []);
       expect(db.addEntities).toHaveBeenCalledTimes(1);
@@ -107,13 +107,12 @@ describe('DatabaseEntitiesCatalog', () => {
       );
 
       expect(db.entities).toHaveBeenCalledTimes(1);
-      expect(db.entities).toHaveBeenCalledWith(expect.anything(), [
-        {
-          kind: 'b',
-          'metadata.namespace': 'd',
-          'metadata.name': ['c'],
-        },
-      ]);
+      expect(db.entities).toHaveBeenCalledWith(
+        expect.anything(),
+        EntityFilters.ofFilterString(
+          'kind=b,metadata.namespace=d,metadata.name=c',
+        ),
+      );
       expect(db.setRelations).toHaveBeenCalledTimes(1);
       expect(db.setRelations).toHaveBeenCalledWith(expect.anything(), 'u', []);
       expect(db.addEntities).toHaveBeenCalledTimes(1);
@@ -128,6 +127,9 @@ describe('DatabaseEntitiesCatalog', () => {
         metadata: {
           name: 'c',
           namespace: 'd',
+          annotations: {
+            [LOCATION_ANNOTATION]: 'mock',
+          },
         },
       };
       const dbEntity: Entity = {
@@ -136,7 +138,11 @@ describe('DatabaseEntitiesCatalog', () => {
         metadata: {
           name: 'c',
           namespace: 'd',
+          description: 'changes',
           uid: 'u',
+          annotations: {
+            [LOCATION_ANNOTATION]: 'mock',
+          },
         },
       };
       db.entities.mockResolvedValue([
@@ -204,13 +210,12 @@ describe('DatabaseEntitiesCatalog', () => {
       ]);
 
       expect(db.entities).toHaveBeenCalledTimes(1);
-      expect(db.entities).toHaveBeenCalledWith(expect.anything(), [
-        {
-          kind: 'b',
-          'metadata.namespace': 'd',
-          'metadata.name': ['c'],
-        },
-      ]);
+      expect(db.entities).toHaveBeenCalledWith(
+        expect.anything(),
+        EntityFilters.ofFilterString(
+          'kind=b,metadata.namespace=d,metadata.name=c',
+        ),
+      );
       expect(db.entityByName).not.toHaveBeenCalled();
       expect(db.entityByUid).toHaveBeenCalledTimes(1);
       expect(db.entityByUid).toHaveBeenCalledWith(transaction, 'u');
@@ -280,13 +285,12 @@ describe('DatabaseEntitiesCatalog', () => {
       ]);
 
       expect(db.entities).toHaveBeenCalledTimes(1);
-      expect(db.entities).toHaveBeenCalledWith(expect.anything(), [
-        {
-          kind: 'b',
-          'metadata.namespace': 'd',
-          'metadata.name': ['c'],
-        },
-      ]);
+      expect(db.entities).toHaveBeenCalledWith(
+        expect.anything(),
+        EntityFilters.ofFilterString(
+          'kind=b,metadata.namespace=d,metadata.name=c',
+        ),
+      );
       expect(db.entityByName).toHaveBeenCalledTimes(1);
       expect(db.entityByName).toHaveBeenCalledWith(transaction, {
         kind: 'b',
@@ -342,13 +346,12 @@ describe('DatabaseEntitiesCatalog', () => {
       ]);
 
       expect(db.entities).toHaveBeenCalledTimes(1);
-      expect(db.entities).toHaveBeenCalledWith(expect.anything(), [
-        {
-          kind: 'b',
-          'metadata.namespace': 'd',
-          'metadata.name': ['c'],
-        },
-      ]);
+      expect(db.entities).toHaveBeenCalledWith(
+        expect.anything(),
+        EntityFilters.ofFilterString(
+          'kind=b,metadata.namespace=d,metadata.name=c',
+        ),
+      );
       expect(db.entityByName).not.toHaveBeenCalled();
       expect(db.entityByUid).not.toHaveBeenCalled();
       expect(db.updateEntity).not.toHaveBeenCalled();
