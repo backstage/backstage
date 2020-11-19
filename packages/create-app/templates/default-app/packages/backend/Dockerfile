@@ -13,4 +13,4 @@ RUN yarn install --frozen-lockfile --production
 # Do not use this Dockerfile outside of that command, as it will copy in the source code instead.
 COPY . .
 
-CMD ["node", "packages/backend"]
+CMD ["node", "packages/backend", "--config", "app-config.yaml", "--config", "app-config.production.yaml"]
