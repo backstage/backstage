@@ -66,7 +66,7 @@ type Filters = {
 // TODO: move out column to make the search result component more generic
 const columns: TableColumn[] = [
   {
-    title: 'Component Id',
+    title: 'Name',
     field: 'name',
     highlight: true,
     render: (entity: Partial<Result>) => (
