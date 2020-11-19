@@ -1,5 +1,16 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.3.1
+
+### Patch Changes
+
+- d33f5157c: Extracted pushToRemote function for reuse between publishers
+- Updated dependencies [1722cb53c]
+- Updated dependencies [1722cb53c]
+- Updated dependencies [7b37e6834]
+- Updated dependencies [8e2effb53]
+  - @backstage/backend-common@0.3.0
+
 ## 0.3.0
 
 ### Minor Changes

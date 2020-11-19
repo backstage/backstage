@@ -1,5 +1,30 @@
 # example-backend
 
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies [1722cb53c]
+- Updated dependencies [1722cb53c]
+- Updated dependencies [1722cb53c]
+- Updated dependencies [f531d307c]
+- Updated dependencies [3efd03c0e]
+- Updated dependencies [7b37e6834]
+- Updated dependencies [8e2effb53]
+- Updated dependencies [d33f5157c]
+  - @backstage/backend-common@0.3.0
+  - @backstage/plugin-app-backend@0.3.0
+  - @backstage/plugin-catalog-backend@0.2.1
+  - example-app@0.2.2
+  - @backstage/plugin-scaffolder-backend@0.3.1
+  - @backstage/plugin-auth-backend@0.2.2
+  - @backstage/plugin-graphql-backend@0.1.3
+  - @backstage/plugin-kubernetes-backend@0.1.3
+  - @backstage/plugin-proxy-backend@0.2.1
+  - @backstage/plugin-rollbar-backend@0.1.3
+  - @backstage/plugin-sentry-backend@0.1.3
+  - @backstage/plugin-techdocs-backend@0.2.1
+
 ## 0.2.1
 
 ### Patch Changes

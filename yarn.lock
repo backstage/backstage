@@ -1290,7 +1290,7 @@
     to-fast-properties "^2.0.0"
 
 "@backstage/core@^0.2.0":
-  version "0.3.0"
+  version "0.3.1"
   dependencies:
     "@backstage/config" "^0.1.1"
     "@backstage/core-api" "^0.2.1"
