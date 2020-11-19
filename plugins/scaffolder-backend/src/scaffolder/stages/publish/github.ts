@@ -54,8 +54,12 @@ export class GithubPublisher implements PublisherBase {
       this.token,
       'x-oauth-basic',
     );
+    const catalogInfoUrl = remoteUrl.replace(
+      /\.git$/,
+      '/blob/master/catalog-info.yaml',
+    );
 
-    return { remoteUrl };
+    return { remoteUrl, catalogInfoUrl };
   }
 
   private async createRemote(

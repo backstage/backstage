@@ -156,11 +156,11 @@ export async function createRouter(
             handler: async (ctx: StageContext<{ resultDir: string }>) => {
               const publisher = publishers.get(ctx.entity);
               ctx.logger.info('Will now store the template');
-              const { remoteUrl } = await publisher.publish({
+              const result = await publisher.publish({
                 values: ctx.values,
                 directory: ctx.resultDir,
               });
-              return { remoteUrl };
+              return result;
             },
           },
         ],

@@ -36,8 +36,9 @@ export class AzurePublisher implements PublisherBase {
   }: PublisherOptions): Promise<PublisherResult> {
     const remoteUrl = await this.createRemote(values);
     await pushToRemoteUserPass(directory, remoteUrl, 'notempty', this.token);
+    const catalogInfoUrl = `${remoteUrl}?path=%2Fcatalog-info.yaml`;
 
-    return { remoteUrl };
+    return { remoteUrl, catalogInfoUrl };
   }
 
   private async createRemote(
