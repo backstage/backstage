@@ -20,3 +20,7 @@ export * from './providers';
 // These funcs are used for sending a postMessage with the right
 // data types to the frontend after a login.
 export { ensuresXRequestedWith, postMessageResponse } from './lib/flow';
+export type { WebMessageResponse } from './lib/flow';
+
+// OAuth wrapper over a passport or a custom `startegy`.
+export type { OAuthHandlers, OAuthResponse } from './lib/oauth';
