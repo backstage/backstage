@@ -17,7 +17,14 @@ import React, { useState, useEffect } from 'react';
 import { useAsync } from 'react-use';
 
 import { makeStyles, Typography, Grid, Divider } from '@material-ui/core';
-import { Table, TableColumn, useApi } from '@backstage/core';
+import { Alert } from '@material-ui/lab';
+import {
+  EmptyState,
+  Progress,
+  Table,
+  TableColumn,
+  useApi,
+} from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog';
 
 import { FiltersButton, Filters, FiltersState } from '../Filters';
@@ -159,8 +166,19 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
       setFilteredResults(withFilters);
     }
   }, [filters, searchQuery, results]);
-
-  if (loading || error || !results) return null;
+  if (loading) {
+    return <Progress />;
+  }
+  if (error) {
+    return (
+      <Alert severity="error">
+        Error encountered while fetching search results. {error.toString()}
+      </Alert>
+    );
+  }
+  if (!results || results.length === 0) {
+    return <EmptyState missing="data" title="Sorry, no results were found" />;
+  }
 
   const resetFilters = () => {
     setFilters({
