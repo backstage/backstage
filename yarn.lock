@@ -3706,10 +3706,10 @@
     react-router-dom "6.0.0-beta.0"
     react-use "^15.3.3"
 
-"@roadiehq/backstage-plugin-github-insights@^0.2.12":
-  version "0.2.12"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-insights/-/backstage-plugin-github-insights-0.2.12.tgz#aeda6306769f376cf6b5b9d74268b060a0f4e764"
-  integrity sha512-f9g5ajVWQkywoYo0zDUZV3g0SPxOTi3MvMuhUvgaZ/XKJr9mBZTe5qHnEYBSHOCB88l0Y2g0qHNdbjXhbFpokQ==
+"@roadiehq/backstage-plugin-github-insights@^0.2.14":
+  version "0.2.14"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-insights/-/backstage-plugin-github-insights-0.2.14.tgz#2e4bf61495e650bb2b7a1711f97c9c4995215588"
+  integrity sha512-xhzHAmmTu7op1V7K3ytomGlmzHMs9jnb2Lc2YTrU3ame4WZcrrMCrqi8X9v8B8VHfwMBrwa55tyxRYObXrPr7A==
   dependencies:
     "@backstage/catalog-model" "^0.2.0"
     "@backstage/core" "^0.2.0"
@@ -3722,10 +3722,8 @@
     history "^5.0.0"
     react "^16.13.1"
     react-dom "^16.13.1"
-    react-markdown "^5.0.0"
     react-router "^6.0.0-beta.0"
     react-use "^15.3.3"
-    remark-gfm "^1.0.0"
 
 "@roadiehq/backstage-plugin-github-pull-requests@^0.6.2":
   version "0.6.2"
@@ -19761,7 +19759,7 @@ react-lifecycles-compat@^3.0.0, react-lifecycles-compat@^3.0.4:
   resolved "https://registry.npmjs.org/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
 
-react-markdown@^5.0.0, react-markdown@^5.0.2:
+react-markdown@^5.0.2:
   version "5.0.2"
   resolved "https://registry.npmjs.org/react-markdown/-/react-markdown-5.0.2.tgz#d15a8beb37b4ec34fc23dd892e7755eb7040b8db"
   integrity sha512-kmkB4JbV7LqkDAjvaKRKtodB3n3Id76/DalaDun1U8FuLB0SenPfvH+jAQ5Pcpo54cACRQc1LB1yXmuuuIVecw==
