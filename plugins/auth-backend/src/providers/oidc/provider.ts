@@ -46,9 +46,7 @@ type PrivateInfo = {
 };
 
 export type OidcAuthProviderOptions = OAuthProviderOptions & {
-  authorizationUrl: string;
-  tokenUrl: string;
-  adUrl: string;
+  metadataUrl: string;
   tokenSignedResponseAlg?: string;
 };
 
@@ -118,8 +116,7 @@ export class OidcAuthProvider implements OAuthHandlers {
   private async setupStrategy(
     options: OidcAuthProviderOptions,
   ): Promise<OidcStrategy<UserinfoResponse, Client>> {
-    const issuer = await Issuer.discover(options.adUrl);
-    // console.log('Discovered issuer %s %O', issuer.issuer, issuer.metadata);
+    const issuer = await Issuer.discover(options.metadataUrl);
     const client = new issuer.Client({
       client_id: options.clientId,
       client_secret: options.clientSecret,
@@ -191,9 +188,7 @@ export const createOidcProvider: AuthProviderFactory = ({
     const clientId = envConfig.getString('clientId');
     const clientSecret = envConfig.getString('clientSecret');
     const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
-    const authorizationUrl = envConfig.getString('authorizationUrl');
-    const adUrl = envConfig.getString('adUrl');
-    const tokenUrl = envConfig.getString('tokenUrl');
+    const metadataUrl = envConfig.getString('metadataUrl');
     const tokenSignedResponseAlg = envConfig.getString(
       'tokenSignedResponseAlg',
     );
@@ -202,10 +197,8 @@ export const createOidcProvider: AuthProviderFactory = ({
       clientId,
       clientSecret,
       callbackUrl,
-      authorizationUrl,
-      tokenUrl,
       tokenSignedResponseAlg,
-      adUrl,
+      metadataUrl,
     });
 
     return OAuthAdapter.fromConfig(globalConfig, provider, {

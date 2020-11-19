@@ -47,7 +47,6 @@ import {
   oneloginAuthApiRef,
   OneLoginAuth,
   oidcApiRef,
-  OpenIdConnect,
 } from '@backstage/core-api';
 
 export const defaultApis = [
@@ -162,6 +161,6 @@ export const defaultApis = [
       oauthRequestApi: oauthRequestApiRef,
     },
     factory: ({ discoveryApi, oauthRequestApi }) =>
-      OpenIdConnect.create({ discoveryApi, oauthRequestApi }),
+      OAuth2.create({ discoveryApi, oauthRequestApi }),
   }),
 ];

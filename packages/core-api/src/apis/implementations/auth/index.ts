@@ -23,4 +23,3 @@ export * from './saml';
 export * from './auth0';
 export * from './microsoft';
 export * from './onelogin';
-export * from './oidc';
