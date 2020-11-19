@@ -20,7 +20,7 @@ import {
   Location,
   LocationSpec,
 } from '@backstage/catalog-model';
-import { RecursivePartial } from './processors/ldap/util';
+import { RecursivePartial } from '../util/RecursivePartial';
 
 //
 // HigherOrderOperation

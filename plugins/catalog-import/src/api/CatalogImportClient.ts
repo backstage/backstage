@@ -15,12 +15,7 @@
  */
 
 import { Octokit } from '@octokit/rest';
-import {
-  DiscoveryApi,
-  githubAuthApiRef,
-  OAuthApi,
-  useApi,
-} from '@backstage/core';
+import { DiscoveryApi, OAuthApi } from '@backstage/core';
 import { CatalogImportApi } from './CatalogImportApi';
 import { AnalyzeLocationResponse } from '@backstage/plugin-catalog-backend';
 import { PartialEntity } from '../util/types';
