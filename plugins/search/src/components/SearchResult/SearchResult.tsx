@@ -177,7 +177,7 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
     );
   }
   if (!results || results.length === 0) {
-    return <EmptyState missing="info" title="Sorry, no results were found" />;
+    return <EmptyState missing="data" title="Sorry, no results were found" />;
   }
 
   const resetFilters = () => {
