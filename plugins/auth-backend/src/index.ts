@@ -15,3 +15,8 @@
  */
 
 export * from './service/router';
+export * from './providers';
+
+// These funcs are used for sending a postMessage with the right
+// data types to the frontend after a login.
+export { ensuresXRequestedWith, postMessageResponse } from './lib/flow';
