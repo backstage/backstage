@@ -18,11 +18,11 @@ import { CatalogApi } from '@backstage/plugin-catalog';
 
 export type Result = {
   name: string;
-  namespace: string;
   description: string;
   owner: string;
   kind: string;
   lifecycle: string;
+  url: string;
 };
 
 export type SearchResults = Array<Result>;
@@ -38,11 +38,13 @@ class SearchApi {
     const entities = await this.catalogApi.getEntities();
     return entities.items.map((result: any) => ({
       name: result.metadata.name,
-      namespace: result.metadata.namespace,
       description: result.metadata.description,
       owner: result.spec.owner,
       kind: result.kind,
       lifecycle: result.spec.lifecycle,
+      url: `/catalog/${result.metadata.namespace || 'default'}/${result.kind}/${
+        result.metadata.name
+      }`,
     }));
   }
 

@@ -69,10 +69,8 @@ const columns: TableColumn[] = [
     title: 'Name',
     field: 'name',
     highlight: true,
-    render: (entity: Partial<Result>) => (
-      <Link to={`/catalog/${entity.namespace}/${entity.kind}/${entity.name}`}>
-        {entity.name}
-      </Link>
+    render: (result: Partial<Result>) => (
+      <Link to={result.url || ''}>{result.name}</Link>
     ),
   },
   {
