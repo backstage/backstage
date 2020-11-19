@@ -194,6 +194,7 @@ tolerations
 Tolerations
 toolsets
 tooltip
+tooltips
 touchpoints
 ui
 upvote
