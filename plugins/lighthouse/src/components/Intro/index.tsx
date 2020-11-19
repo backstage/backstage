@@ -15,8 +15,7 @@
  */
 import React, { useState } from 'react';
 import { useLocalStorage } from 'react-use';
-import Markdown from 'react-markdown';
-import { ContentHeader, InfoCard } from '@backstage/core';
+import { ContentHeader, InfoCard, MarkdownContent } from '@backstage/core';
 import { makeStyles, Button, Grid, Tabs, Tab } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 
@@ -116,8 +115,8 @@ function GettingStartedCard() {
         </>
       }
     >
-      {value === 0 && <Markdown source={USE_CASES} />}
-      {value === 1 && <Markdown source={SETUP} />}
+      {value === 0 && <MarkdownContent content={USE_CASES} />}
+      {value === 1 && <MarkdownContent content={SETUP} />}
     </InfoCard>
   );
 }

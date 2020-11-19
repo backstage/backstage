@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog
 
+## 0.2.2
+
+### Patch Changes
+
+- 8b7737d0b: Add About Card tooltips
+- Updated dependencies [1722cb53c]
+- Updated dependencies [717e43de1]
+  - @backstage/core@0.3.1
+  - @backstage/plugin-techdocs@0.2.2
+  - @backstage/catalog-client@0.3.0
+
 ## 0.2.1
 
 ### Patch Changes
