@@ -21,7 +21,8 @@ import { parseLocationAnnotation } from '../helpers';
 import { InputError } from '@backstage/backend-common';
 import { PreparerBase, PreparerOptions } from './types';
 import GitUriParser from 'git-url-parse';
-import { Clone, CloneOptions, Cred } from 'nodegit';
+import git from 'isomorphic-git';
+import http from 'isomorphic-git/http/node';
 
 export class GithubPreparer implements PreparerBase {
   token?: string;
@@ -56,25 +57,36 @@ export class GithubPreparer implements PreparerBase {
       template.spec.path ?? '.',
     );
 
-    let cloneOptions: CloneOptions = {
-      checkoutBranch: parsedGitLocation.ref,
-    };
-
-    if (token) {
-      cloneOptions = {
-        ...cloneOptions,
-        fetchOpts: {
-          callbacks: {
-            credentials() {
-              return Cred.userpassPlaintextNew(token, 'x-oauth-basic');
-            },
-          },
+    console.warn(repositoryCheckoutUrl);
+    const finalplace = path.resolve(tempDir, templateDirectory);
+    try {
+      await git.clone({
+        fs: require('fs'),
+        http,
+        url: repositoryCheckoutUrl,
+        dir: finalplace,
+        // corsProxy: 'https://cors.isomorphic-git.org',
+        singleBranch: true,
+        // need this header
+        headers: {
+          'user-agent': 'git/@isomorphic-git/cors-proxy',
         },
-      };
+        depth: 1,
+      });
+      // onAuth: () => ({ username: token, password: 'x-oauth-basic' }),
+    } catch (ex) {
+      console.warn(ex.data.url);
+      console.warn({
+        fs: require('fs'),
+        http,
+        url: repositoryCheckoutUrl,
+        dir: templateDirectory,
+        depth: 1,
+        onAuth: () => ({ username: token, password: 'x-oauth-basic' }),
+      });
+      throw ex;
     }
 
-    await Clone.clone(repositoryCheckoutUrl, tempDir, cloneOptions);
-
-    return path.resolve(tempDir, templateDirectory);
+    return finalplace;
   }
 }
