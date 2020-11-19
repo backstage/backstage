@@ -79,6 +79,8 @@
     "@types/zen-observable": "^0.8.0"
   },
   "files": [
-    "dist"
-  ]
+    "dist",
+    "config.d.ts"
+  ],
+  "configSchema": "config.d.ts"
 }
