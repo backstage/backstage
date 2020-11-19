@@ -191,6 +191,8 @@ scaffolder:
         $env: AZURE_TOKEN
 
 auth:
+  session:
+    secret: yaml session secret
   providers:
     google:
       development:

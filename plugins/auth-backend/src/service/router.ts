@@ -60,7 +60,9 @@ export async function createRouter({
   });
   const catalogApi = new CatalogClient({ discoveryApi: discovery });
 
-  const secret = 'backstage secret'; // TODO: Allow an override here
+  const secret =
+    config.getOptionalString('auth.session.secret') ?? 'backstage secret';
+  console.log('using secret', secret);
   router.use(cookieParser(secret));
   router.use(session({ secret, saveUninitialized: false, resave: false }));
   router.use(express.urlencoded({ extended: false }));
