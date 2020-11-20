@@ -128,7 +128,7 @@ and the message
 
 Each OAuth external provider is supported by a corresponding `Passport`
 strategy. For a generic OAuth2 provider, passport has a `passport-oauth2`
-startegy. The strategy class handles the implementation details of working with
+strategy. The strategy class handles the implementation details of working with
 each provider.
 
 Each strategy is wrapped by a `OAuthHandlers` interface.
