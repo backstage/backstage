@@ -49,8 +49,14 @@ export type FiltersState = {
   checked: Array<string>;
 };
 
+export type FilterOptions = {
+  kind: Array<string>;
+  lifecycle: Array<string>;
+};
+
 type FiltersProps = {
   filters: FiltersState;
+  filterOptions: FilterOptions;
   resetFilters: () => void;
   updateSelected: (filter: string) => void;
   updateChecked: (filter: string) => void;
@@ -58,15 +64,12 @@ type FiltersProps = {
 
 export const Filters = ({
   filters,
+  filterOptions,
   resetFilters,
   updateSelected,
   updateChecked,
 }: FiltersProps) => {
   const classes = useStyles();
-
-  // TODO: move mocked filters out of filters component to make it more generic
-  const filter1 = ['All', 'API', 'Component', 'Location', 'Template'];
-  const filter2 = ['deprecated', 'recommended', 'experimental', 'production'];
 
   return (
     <Card className={classes.filters}>
@@ -90,7 +93,7 @@ export const Filters = ({
           className={classes.dropdown}
           value={filters.selected}
         >
-          {filter1.map(filter => (
+          {filterOptions.kind.map(filter => (
             <MenuItem
               selected={filter === 'All'}
               dense
@@ -105,7 +108,7 @@ export const Filters = ({
       <CardContent>
         <Typography variant="subtitle2">Lifecycle</Typography>
         <List disablePadding dense>
-          {filter2.map(filter => (
+          {filterOptions.lifecycle.map(filter => (
             <ListItem
               key={filter}
               dense

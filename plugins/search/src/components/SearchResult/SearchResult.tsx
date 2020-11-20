@@ -218,6 +218,19 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
     }));
   };
 
+  const filterOptions = results.reduce(
+    (acc, curr) => {
+      return {
+        kind: [...acc.kind, curr.kind],
+        lifecycle: [...acc.lifecycle, curr.lifecycle],
+      };
+    },
+    {
+      kind: [] as Array<string>,
+      lifecycle: [] as Array<string>,
+    },
+  );
+
   return (
     <>
       <Grid container>
@@ -225,6 +238,7 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
           <Grid item xs={3}>
             <Filters
               filters={filters}
+              filterOptions={filterOptions}
               resetFilters={resetFilters}
               updateSelected={updateSelected}
               updateChecked={updateChecked}
