@@ -14,24 +14,31 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
-  Grid,
-  Typography,
-  makeStyles,
-  Chip,
-  IconButton,
+  Entity,
+  ENTITY_DEFAULT_NAMESPACE,
+  RELATION_OWNED_BY,
+  serializeEntityRef,
+} from '@backstage/catalog-model';
+import {
   Card,
   CardContent,
   CardHeader,
+  Chip,
   Divider,
+  Grid,
+  IconButton,
+  makeStyles,
+  Typography,
 } from '@material-ui/core';
-import { Entity } from '@backstage/catalog-model';
-
-import GitHubIcon from '@material-ui/icons/GitHub';
-import { IconLinkVertical } from './IconLinkVertical';
-import EditIcon from '@material-ui/icons/Edit';
+import ExtensionIcon from '@material-ui/icons/Extension';
 import DocsIcon from '@material-ui/icons/Description';
+import EditIcon from '@material-ui/icons/Edit';
+import GitHubIcon from '@material-ui/icons/GitHub';
+import React from 'react';
+import { IconLinkVertical } from './IconLinkVertical';
+import { findLocationForEntityMeta } from '../../data/utils';
+import { createEditLink, determineUrlType } from '../createEditLink';
 
 const useStyles = makeStyles(theme => ({
   links: {
@@ -59,42 +66,64 @@ const useStyles = makeStyles(theme => ({
   description: {
     wordBreak: 'break-word',
   },
+  gridItemCard: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: 'calc(100% - 10px)', // for pages without content header
+    marginBottom: '10px',
+  },
+  gridItemCardContent: {
+    flex: 1,
+  },
 }));
 
 const iconMap: Record<string, React.ReactNode> = {
   github: <GitHubIcon />,
 };
 
-type CodeLinkInfo = { icon?: React.ReactNode; href?: string };
+type CodeLinkInfo = {
+  icon?: React.ReactNode;
+  edithref?: string;
+  href?: string;
+};
 
 function getCodeLinkInfo(entity: Entity): CodeLinkInfo {
-  const location =
-    entity?.metadata?.annotations?.['backstage.io/managed-by-location'];
-
+  const location = findLocationForEntityMeta(entity?.metadata);
   if (location) {
-    // split by first `:`
-    // e.g. "github:https://github.com/spotify/backstage/blob/master/software.yaml"
-    const [type, target] = location.split(/:(.+)/);
-
-    return { icon: iconMap[type], href: target };
+    const type =
+      location.type === 'url'
+        ? determineUrlType(location.target)
+        : location.type;
+    return {
+      icon: iconMap[type],
+      edithref: createEditLink(location),
+      href: location.target,
+    };
   }
   return {};
 }
 
 type AboutCardProps = {
   entity: Entity;
+  variant?: string;
 };
 
-export function AboutCard({ entity }: AboutCardProps) {
+export function AboutCard({ entity, variant }: AboutCardProps) {
   const classes = useStyles();
   const codeLink = getCodeLinkInfo(entity);
 
   return (
-    <Card>
+    <Card className={variant === 'gridItem' ? classes.gridItemCard : ''}>
       <CardHeader
         title="About"
         action={
-          <IconButton href={codeLink.href || '#'} aria-label="Edit">
+          <IconButton
+            aria-label="Edit"
+            title="Edit Metadata"
+            onClick={() => {
+              window.open(codeLink.edithref || '#', '_blank');
+            }}
+          >
             <EditIcon />
           </IconButton>
         }
@@ -105,17 +134,31 @@ export function AboutCard({ entity }: AboutCardProps) {
               disabled={
                 !entity.metadata.annotations?.['backstage.io/techdocs-ref']
               }
-              label="View Techdocs"
+              label="View TechDocs"
+              title={
+                !entity.metadata.annotations?.['backstage.io/techdocs-ref']
+                  ? 'No TechDocs available'
+                  : ''
+              }
               icon={<DocsIcon />}
-              href={`/docs/${entity.kind}:${entity.metadata.namespace ?? ''}:${
-                entity.metadata.name
-              }`}
+              href={`/docs/${
+                entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE
+              }/${entity.kind}/${entity.metadata.name}`}
+            />
+            <IconLinkVertical
+              disabled={!entity.spec?.implementsApis}
+              label="View API"
+              title={!entity.spec?.implementsApis ? 'No APIs available' : ''}
+              icon={<ExtensionIcon />}
+              href="api"
             />
           </nav>
         }
       />
       <Divider />
-      <CardContent>
+      <CardContent
+        className={variant === 'gridItem' ? classes.gridItemCardContent : ''}
+      >
         <Grid container>
           <AboutField label="Description" gridSizes={{ xs: 12 }}>
             <Typography
@@ -128,7 +171,20 @@ export function AboutCard({ entity }: AboutCardProps) {
           </AboutField>
           <AboutField
             label="Owner"
-            value={entity?.spec?.owner as string}
+            value={entity?.relations
+              ?.filter(r => r.type === RELATION_OWNED_BY)
+              .map(({ target: { kind, name, namespace } }) =>
+                // TODO(Rugvip): we want to provide some utils for this
+                serializeEntityRef({
+                  kind,
+                  name,
+                  namespace:
+                    namespace === ENTITY_DEFAULT_NAMESPACE
+                      ? undefined
+                      : namespace,
+                }),
+              )
+              .join(', ')}
             gridSizes={{ xs: 12, sm: 6, lg: 4 }}
           />
           <AboutField

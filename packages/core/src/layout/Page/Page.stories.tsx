@@ -14,29 +14,29 @@
  * limitations under the License.
  */
 
+import { Box, Chip, Grid, Link, Typography } from '@material-ui/core';
 import React, { useState } from 'react';
+import { MemoryRouter } from 'react-router';
 import {
-  Header,
-  Page,
-  HeaderLabel,
-  ContentHeader,
   Content,
-  pageTheme,
-  InfoCard,
+  ContentHeader,
+  Header,
+  HeaderLabel,
   HeaderTabs,
+  InfoCard,
+  Page,
 } from '../';
 import {
+  GaugeCard,
+  StatusOK,
   SupportButton,
   Table,
-  StatusOK,
   TableColumn,
-  GaugeCard,
   TrendLine,
 } from '../../components';
-import { Box, Typography, Link, Chip, Grid } from '@material-ui/core';
 
 export default {
-  title: 'Example Plugin',
+  title: 'Plugins/Examples',
   component: Page,
 };
 
@@ -119,14 +119,14 @@ const DataGrid = () => (
         justify="space-between"
         direction="row"
       >
-        <Grid item xs={6}>
+        <Grid item xs={12} md={6}>
           <GaugeCard
             title="GKE Usage Score"
             subheader="This should be above 75%"
             progress={0.87}
           />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12} md={6}>
           <GaugeCard
             title="Deployment Score"
             subheader="This should be above 40%"
@@ -175,7 +175,7 @@ const DataGrid = () => (
 );
 
 const ExampleHeader = () => (
-  <Header title="Example" subtitle="This an example plugin">
+  <Header title="Example" subtitle="This is an example plugin">
     <HeaderLabel label="Owner" value="Owner" />
     <HeaderLabel label="Lifecycle" value="Lifecycle" />
   </Header>
@@ -186,7 +186,7 @@ const ExampleContentHeader = ({ selectedTab }: { selectedTab?: number }) => (
     title={selectedTab !== undefined ? tabs[selectedTab].label : 'Header'}
   >
     <SupportButton>
-      This Plugin is an example. This text could provide usefull information for
+      This Plugin is an example. This text could provide useful information for
       the user.
     </SupportButton>
   </ContentHeader>
@@ -195,30 +195,32 @@ const ExampleContentHeader = ({ selectedTab }: { selectedTab?: number }) => (
 export const PluginWithData = () => {
   const [selectedTab, setSelectedTab] = useState<number>(2);
   return (
-    <div style={{ border: '1px solid #ddd' }}>
-      <Page theme={pageTheme.tool}>
-        <ExampleHeader />
-        <HeaderTabs
-          selectedIndex={selectedTab}
-          onChange={index => setSelectedTab(index)}
-          tabs={tabs.map(({ label }, index) => ({
-            id: index.toString(),
-            label,
-          }))}
-        />
-        <Content>
-          <ExampleContentHeader selectedTab={selectedTab} />
-          <DataGrid />
-        </Content>
-      </Page>
-    </div>
+    <MemoryRouter>
+      <div style={{ border: '1px solid #ddd' }}>
+        <Page themeId="tool">
+          <ExampleHeader />
+          <HeaderTabs
+            selectedIndex={selectedTab}
+            onChange={index => setSelectedTab(index)}
+            tabs={tabs.map(({ label }, index) => ({
+              id: index.toString(),
+              label,
+            }))}
+          />
+          <Content>
+            <ExampleContentHeader selectedTab={selectedTab} />
+            <DataGrid />
+          </Content>
+        </Page>
+      </div>
+    </MemoryRouter>
   );
 };
 
 export const PluginWithTable = () => {
   return (
     <div style={{ border: '1px solid #ddd' }}>
-      <Page theme={pageTheme.tool}>
+      <Page themeId="tool">
         <ExampleHeader />
         <Content>
           <ExampleContentHeader />

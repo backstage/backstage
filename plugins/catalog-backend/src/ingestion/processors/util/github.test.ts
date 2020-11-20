@@ -17,6 +17,7 @@
 import { graphql } from '@octokit/graphql';
 import { graphql as graphqlMsw } from 'msw';
 import { setupServer } from 'msw/node';
+import { msw } from '@backstage/test-utils';
 import {
   getOrganizationTeams,
   getOrganizationUsers,
@@ -26,9 +27,7 @@ import {
 
 describe('github', () => {
   const server = setupServer();
-  beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
-  afterEach(() => server.resetHandlers());
-  afterAll(() => server.close());
+  msw.setupDefaultHandlers(server);
 
   describe('getOrganizationUsers', () => {
     it('reads members', async () => {

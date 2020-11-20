@@ -37,6 +37,10 @@ module.exports = {
   },
   ignorePatterns: ['.eslintrc.js', '**/dist/**', '**/dist-types/**'],
   rules: {
+    // TODO(Rugvip): We need to bump @typescript-eslint to v4 to enable these
+    '@typescript-eslint/no-shadow': 0,
+    '@typescript-eslint/no-redeclare': 0,
+
     'no-console': 0, // Permitted in console programs
     'new-cap': ['error', { capIsNew: false }], // Because Express constructs things e.g. like 'const r = express.Router()'
     'import/newline-after-import': 'error',
@@ -66,6 +70,11 @@ module.exports = {
           'Default import from winston is not allowed, import `* as winston` instead.',
         selector:
           'ImportDeclaration[source.value="winston"] ImportDefaultSpecifier',
+      },
+      {
+        message:
+          "`__dirname` doesn't refer to the same dir in production builds, try `resolvePackagePath()` from `@backstage/backend-common` instead.",
+        selector: 'Identifier[name="__dirname"]',
       },
     ],
   },

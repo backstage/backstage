@@ -22,34 +22,31 @@ import {
   Lifecycle,
   Page,
   useApi,
-  pageTheme,
 } from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog';
 import { LinearProgress } from '@material-ui/core';
 import { IChangeEvent } from '@rjsf/core';
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import useStaleWhileRevalidate from 'swr';
-import { scaffolderApiRef } from '../../api';
-import { JobStatusModal } from '../JobStatusModal';
-import { Job } from '../../types';
-import { MultistepJsonForm } from '../MultistepJsonForm';
 import { Navigate } from 'react-router';
+import { useParams } from 'react-router-dom';
+import { useAsync } from 'react-use';
+import { scaffolderApiRef } from '../../api';
 import { rootRoute } from '../../routes';
+import { Job } from '../../types';
+import { JobStatusModal } from '../JobStatusModal';
+import { MultistepJsonForm } from '../MultistepJsonForm';
 
 const useTemplate = (
   templateName: string,
   catalogApi: typeof catalogApiRef.T,
 ) => {
-  const { data, error } = useStaleWhileRevalidate(
-    `templates/${templateName}`,
-    async () =>
-      catalogApi.getEntities({
-        kind: 'Template',
-        'metadata.name': templateName,
-      }) as Promise<TemplateEntityV1alpha1[]>,
-  );
-  return { template: data?.[0], loading: !error && !data, error };
+  const { value, loading, error } = useAsync(async () => {
+    const response = await catalogApi.getEntities({
+      filter: { kind: 'Template', 'metadata.name': templateName },
+    });
+    return response.items as TemplateEntityV1alpha1[];
+  });
+  return { template: value?.[0], loading, error };
 };
 
 const OWNER_REPO_SCHEMA = {
@@ -96,7 +93,7 @@ export const TemplatePage = () => {
 
   const handleCreate = async () => {
     try {
-      const job = await scaffolderApi.scaffold(template!, formState);
+      const job = await scaffolderApi.scaffold(templateName, formState);
       setJobId(job);
     } catch (e) {
       errorApi.post(e);
@@ -108,15 +105,10 @@ export const TemplatePage = () => {
   );
 
   const handleCreateComplete = async (job: Job) => {
-    const componentYaml = job.metadata.remoteUrl?.replace(
-      /\.git$/,
-      '/blob/master/component-info.yaml',
-    );
-
-    if (!componentYaml) {
+    if (!job.metadata.catalogInfoUrl) {
       errorApi.post(
         new Error(
-          `Failed to find component-info.yaml file in ${job.metadata.remoteUrl}.`,
+          `Failed to find catalog-info.yaml file in ${job.metadata.remoteUrl}.`,
         ),
       );
       return;
@@ -124,7 +116,7 @@ export const TemplatePage = () => {
 
     const {
       entities: [createdEntity],
-    } = await catalogApi.addLocation('github', componentYaml);
+    } = await catalogApi.addLocation({ target: job.metadata.catalogInfoUrl });
 
     setEntity((createdEntity as any) as TemplateEntityV1alpha1);
   };
@@ -144,7 +136,7 @@ export const TemplatePage = () => {
   }
 
   return (
-    <Page theme={pageTheme.home}>
+    <Page themeId="home">
       <Header
         pageTitleOverride="Create a new component"
         title={

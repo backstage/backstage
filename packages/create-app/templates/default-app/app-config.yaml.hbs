@@ -1,16 +1,20 @@
 app:
   title: Scaffolded Backstage App
-  baseUrl: http://localhost:7000
+  baseUrl: http://localhost:3000
 
 organization:
-  name: Acme Corporation
+  name: My Company
 
 backend:
   baseUrl: http://localhost:7000
   listen:
     port: 7000
   csp:
-    connect-src: ["'self'", 'https:']
+    connect-src: ["'self'", 'http:', 'https:']
+  cors:
+    origin: http://localhost:3000
+    methods: [GET, POST, PUT, DELETE]
+    credentials: true
   {{#if dbTypeSqlite}}
   database:
     client: sqlite3
@@ -34,6 +38,18 @@ backend:
         #ca: # if you have a CA file and want to verify it you can uncomment this section
         #  $file: <file-path>/ca/server.crt
   {{/if}}
+  # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
+
+integrations:
+  github:
+    - host: github.com
+      token:
+        $env: GITHUB_TOKEN
+    ### Example for how to add your GitHub Enterprise instance using the API:
+    # - host: ghe.example.net
+    #   apiBaseUrl: https://ghe.example.net/api/v3
+    #   token:
+    #     $env: GHE_TOKEN
 
 proxy:
   '/test':
@@ -42,7 +58,7 @@ proxy:
 
 techdocs:
   storageUrl: http://localhost:7000/api/techdocs/static/docs
-  requestUrl: http://localhost:7000/api/techdocs/docs
+  requestUrl: http://localhost:7000/api/techdocs
   generators:
     techdocs: 'docker'
 
@@ -50,55 +66,45 @@ lighthouse:
   baseUrl: http://localhost:3003
 
 auth:
+  # see https://backstage.io/docs/tutorials/quickstart-app-auth to know more about enabling auth providers
   providers: {}
 
 scaffolder:
   github:
     token:
-      $env: GITHUB_ACCESS_TOKEN
+      $env: GITHUB_TOKEN
     visibility: public # or 'internal' or 'private'
 
 catalog:
   rules:
     - allow: [Component, API, Group, User, Template, Location]
-  processors:
-    github:
-      providers:
-        - target: https://github.com
-          token:
-            $env: GITHUB_PRIVATE_TOKEN
-        # Example for how to add your GitHub Enterprise instance:
-        # - target: https://ghe.example.net
-        #   apiBaseUrl: https://ghe.example.net/api/v3
-        #   token:
-        #     $env: GHE_PRIVATE_TOKEN
   locations:
     # Backstage example components
     - type: url
-      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
 
     # Backstage example APIs
     - type: url
-      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
 
     # Backstage example templates
-    - type: url
-      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml
+    - type: github
+      target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml
       rules:
         - allow: [Template]
-    - type: url
-      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/springboot-grpc-template/template.yaml
+    - type: github
+      target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/springboot-grpc-template/template.yaml
       rules:
         - allow: [Template]
-    - type: url
-      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/create-react-app/template.yaml
+    - type: github
+      target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/create-react-app/template.yaml
       rules:
         - allow: [Template]
-    - type: url
+    - type: github
       target: https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml
       rules:
         - allow: [Template]
-    - type: url
-      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/docs-template/template.yaml
+    - type: github
+      target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/docs-template/template.yaml
       rules:
         - allow: [Template]

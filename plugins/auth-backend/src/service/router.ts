@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-import express from 'express';
-import Router from 'express-promise-router';
-import cookieParser from 'cookie-parser';
-import Knex from 'knex';
-import { Logger } from 'winston';
-import { createAuthProvider } from '../providers';
-import { Config } from '@backstage/config';
-import { DatabaseKeyStore, TokenFactory, createOidcRouter } from '../identity';
 import {
   NotFoundError,
+  PluginDatabaseManager,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
+import { CatalogClient } from '@backstage/catalog-client';
+import { Config } from '@backstage/config';
+import cookieParser from 'cookie-parser';
+import express from 'express';
+import Router from 'express-promise-router';
+import { Logger } from 'winston';
+import { createOidcRouter, DatabaseKeyStore, TokenFactory } from '../identity';
+import { createAuthProvider } from '../providers';
 
 export interface RouterOptions {
   logger: Logger;
-  database: Knex;
+  database: PluginDatabaseManager;
   config: Config;
   discovery: PluginEndpointDiscovery;
 }
@@ -47,13 +48,16 @@ export async function createRouter({
 
   const keyDurationSeconds = 3600;
 
-  const keyStore = await DatabaseKeyStore.create({ database });
+  const keyStore = await DatabaseKeyStore.create({
+    database: await database.getClient(),
+  });
   const tokenIssuer = new TokenFactory({
     issuer: authUrl,
     keyStore,
     keyDurationSeconds,
     logger: logger.child({ component: 'token-factory' }),
   });
+  const catalogApi = new CatalogClient({ discoveryApi: discovery });
 
   router.use(cookieParser());
   router.use(express.urlencoded({ extended: false }));
@@ -71,6 +75,7 @@ export async function createRouter({
         logger,
         tokenIssuer,
         discovery,
+        catalogApi,
       });
 
       const r = Router();

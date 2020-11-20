@@ -7,6 +7,7 @@
       "overview/vision",
       "overview/background",
       "overview/adopting",
+      "overview/stability-index",
       "overview/logos"
     ],
     "Getting Started": [
@@ -28,6 +29,7 @@
         "label": "Deployment",
         "ids": [
           "getting-started/deployment-k8s",
+          "getting-started/deployment-helm",
           "getting-started/deployment-other"
         ]
       }
@@ -44,6 +46,7 @@
           "features/software-catalog/descriptor-format",
           "features/software-catalog/references",
           "features/software-catalog/well-known-annotations",
+          "features/software-catalog/well-known-relations",
           "features/software-catalog/extending-the-model",
           "features/software-catalog/external-integrations",
           "features/software-catalog/software-catalog-api"
@@ -163,7 +166,7 @@
       "architecture-decisions/adrs-adr009"
     ],
     "Contribute": ["../CONTRIBUTING"],
-    "Support": ["overview/support"],
+    "Support": ["support/support", "support/project-structure"],
     "FAQ": ["FAQ"]
   }
 }

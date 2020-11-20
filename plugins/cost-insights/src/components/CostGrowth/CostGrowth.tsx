@@ -21,10 +21,10 @@ import {
   CurrencyType,
   Duration,
   EngineerThreshold,
-  Growth,
-  growthOf,
-  rateOf,
+  GrowthType,
 } from '../../types';
+import { rateOf } from '../../utils/currency';
+import { growthOf } from '../../utils/change';
 import { useCostGrowthStyles as useStyles } from '../../utils/styles';
 import { formatPercent, formatCurrency } from '../../utils/formatters';
 import { indefiniteArticleOf } from '../../utils/grammar';
@@ -35,7 +35,7 @@ export type CostGrowthProps = {
   duration: Duration;
 };
 
-const CostGrowth = ({ change, duration }: CostGrowthProps) => {
+export const CostGrowth = ({ change, duration }: CostGrowthProps) => {
   const styles = useStyles();
   const { engineerCost } = useConfig();
   const [currency] = useCurrency();
@@ -49,10 +49,10 @@ const CostGrowth = ({ change, duration }: CostGrowthProps) => {
   const converted = amount / (currency.rate ?? rate);
 
   // Determine if growth is significant enough to highlight
-  const growth = growthOf(engineers, change.ratio);
+  const growth = growthOf(change.ratio, engineers);
   const classes = classnames({
-    [styles.excess]: growth === Growth.Excess,
-    [styles.savings]: growth === Growth.Savings,
+    [styles.excess]: growth === GrowthType.Excess,
+    [styles.savings]: growth === GrowthType.Savings,
   });
 
   const percent = formatPercent(ratio);
@@ -70,5 +70,3 @@ const CostGrowth = ({ change, duration }: CostGrowthProps) => {
 
   return <span className={classes}>{cost}</span>;
 };
-
-export default CostGrowth;

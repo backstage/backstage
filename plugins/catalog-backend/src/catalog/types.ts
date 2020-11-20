@@ -14,19 +14,41 @@
  * limitations under the License.
  */
 
-import { Entity, EntityName, Location } from '@backstage/catalog-model';
-import type { EntityFilters } from '../database';
+import { Entity, EntityRelationSpec, Location } from '@backstage/catalog-model';
+import type { EntityFilter } from '../database';
 
 //
 // Entities
 //
 
+export type EntityUpsertRequest = {
+  entity: Entity;
+  relations: EntityRelationSpec[];
+};
+
+export type EntityUpsertResponse = {
+  entityId: string;
+  entity?: Entity;
+};
+
 export type EntitiesCatalog = {
-  entities(filters?: EntityFilters): Promise<Entity[]>;
-  entityByUid(uid: string): Promise<Entity | undefined>;
-  entityByName(name: EntityName): Promise<Entity | undefined>;
-  addOrUpdateEntity(entity: Entity, locationId?: string): Promise<Entity>;
+  entities(filter?: EntityFilter): Promise<Entity[]>;
   removeEntityByUid(uid: string): Promise<void>;
+
+  /**
+   * Writes a number of entities efficiently to storage.
+   *
+   * @param entities Some entities
+   * @param locationId The location that they all belong to
+   */
+  batchAddOrUpdateEntities(
+    entities: EntityUpsertRequest[],
+    options?: {
+      locationId?: string;
+      dryRun?: boolean;
+      outputEntities?: boolean;
+    },
+  ): Promise<EntityUpsertResponse[]>;
 };
 
 //

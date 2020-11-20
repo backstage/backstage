@@ -15,13 +15,13 @@
  */
 
 import { ApiProvider, ApiRegistry, storageApiRef } from '@backstage/core';
+import { MockStorageApi } from '@backstage/test-utils';
 import { act, renderHook } from '@testing-library/react-hooks';
 import React from 'react';
-import { catalogApiRef } from '../api/types';
+import { catalogApiRef } from '../plugin';
 import { EntityFilterGroupsProvider } from './EntityFilterGroupsProvider';
-import { FilterGroupStatesReady, FilterGroup } from './types';
+import { FilterGroup, FilterGroupStatesReady } from './types';
 import { useEntityFilterGroup } from './useEntityFilterGroup';
-import { MockStorageApi } from '@backstage/test-utils';
 
 describe('useEntityFilterGroup', () => {
   let catalogApi: jest.Mocked<typeof catalogApiRef.T>;
@@ -30,7 +30,7 @@ describe('useEntityFilterGroup', () => {
   beforeEach(() => {
     catalogApi = {
       /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-      addLocation: jest.fn((_a, _b) => new Promise(() => {})),
+      addLocation: jest.fn(_a => new Promise(() => {})),
       getEntities: jest.fn(),
       getLocationByEntity: jest.fn(),
       getLocationById: jest.fn(),
@@ -49,7 +49,7 @@ describe('useEntityFilterGroup', () => {
   });
 
   it('works for an empty set of filters', async () => {
-    catalogApi.getEntities.mockResolvedValue([]);
+    catalogApi.getEntities.mockResolvedValue({ items: [] });
     const group: FilterGroup = { filters: {} };
     const { result, waitFor } = renderHook(
       () => useEntityFilterGroup('g1', group),
@@ -60,13 +60,15 @@ describe('useEntityFilterGroup', () => {
   });
 
   it('works for a single group', async () => {
-    catalogApi.getEntities.mockResolvedValue([
-      {
-        apiVersion: 'backstage.io/v1alpha1',
-        kind: 'Component',
-        metadata: { name: 'n' },
-      },
-    ]);
+    catalogApi.getEntities.mockResolvedValue({
+      items: [
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: { name: 'n' },
+        },
+      ],
+    });
     const group: FilterGroup = {
       filters: {
         f1: e => e.metadata.name === 'n',

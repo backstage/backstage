@@ -118,8 +118,13 @@ export interface KubernetesFetcher {
 }
 
 // Used to locate which cluster(s) a service is running on
-export interface KubernetesClusterLocator {
-  getClusterByServiceId(serviceId: string): Promise<ClusterDetails[]>;
+export interface KubernetesServiceLocator {
+  getClustersByServiceId(serviceId: string): Promise<ClusterDetails[]>;
+}
+
+// Used to load cluster details from different sources
+export interface KubernetesClustersSupplier {
+  getClusters(): Promise<ClusterDetails[]>;
 }
 
 export type KubernetesErrorTypes =
@@ -132,3 +137,7 @@ export interface KubernetesFetchError {
   statusCode?: number;
   resourcePath?: string;
 }
+
+export type ServiceLocatorMethod = 'multiTenant' | 'http'; // TODO implement http
+export type ClusterLocatorMethod = 'config';
+export type AuthProviderType = 'google' | 'serviceAccount';

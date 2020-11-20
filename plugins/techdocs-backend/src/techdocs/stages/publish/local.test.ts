@@ -13,9 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/* eslint-disable no-restricted-syntax */
 import fs from 'fs-extra';
 import path from 'path';
-import { getVoidLogger } from '@backstage/backend-common';
+import {
+  getVoidLogger,
+  PluginEndpointDiscovery,
+} from '@backstage/backend-common';
 import { LocalPublish } from './local';
 
 const createMockEntity = (annotations = {}) => {
@@ -35,7 +40,12 @@ const logger = getVoidLogger();
 
 describe('local publisher', () => {
   it('should publish generated documentation dir', async () => {
-    const publisher = new LocalPublish(logger);
+    const testDiscovery: jest.Mocked<PluginEndpointDiscovery> = {
+      getBaseUrl: jest.fn().mockResolvedValueOnce('http://localhost:7000'),
+      getExternalBaseUrl: jest.fn(),
+    };
+
+    const publisher = new LocalPublish(logger, testDiscovery);
 
     const mockEntity = createMockEntity();
 
@@ -53,7 +63,7 @@ describe('local publisher', () => {
 
     const resultDir = path.resolve(
       __dirname,
-      `../../../../static/docs/${mockEntity.kind}/default/${mockEntity.metadata.name}`,
+      `../../../../static/docs/default/${mockEntity.kind}/${mockEntity.metadata.name}`,
     );
 
     expect(fs.existsSync(resultDir)).toBeTruthy();

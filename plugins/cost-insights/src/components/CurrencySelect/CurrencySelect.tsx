@@ -15,8 +15,15 @@
  */
 
 import React from 'react';
-import { MenuItem, Select, SelectProps } from '@material-ui/core';
-import { Currency, CurrencyType, findAlways } from '../../types';
+import {
+  InputLabel,
+  FormControl,
+  MenuItem,
+  Select,
+  SelectProps,
+} from '@material-ui/core';
+import { Currency, CurrencyType } from '../../types';
+import { findAlways } from '../../utils/assert';
 import { useSelectStyles as useStyles } from '../../utils/styles';
 
 const NULL_VALUE = 'engineers';
@@ -27,7 +34,7 @@ type CurrencySelectProps = {
   onSelect: (currency: Currency) => void;
 };
 
-const CurrencySelect = ({
+export const CurrencySelect = ({
   currency,
   currencies,
   onSelect,
@@ -50,26 +57,28 @@ const CurrencySelect = ({
   };
 
   return (
-    <Select
-      className={classes.select}
-      variant="outlined"
-      onChange={handleOnChange}
-      value={currency.kind || NULL_VALUE}
-      renderValue={renderValue}
-    >
-      {currencies.map((c: Currency) => (
-        <MenuItem
-          className={classes.menuItem}
-          key={c.kind || NULL_VALUE}
-          value={c.kind || NULL_VALUE}
-        >
-          <span role="img" aria-label={c.label}>
-            {c.label}
-          </span>
-        </MenuItem>
-      ))}
-    </Select>
+    <FormControl variant="outlined">
+      <InputLabel shrink>Convert to:</InputLabel>
+      <Select
+        className={classes.select}
+        variant="outlined"
+        labelWidth={100}
+        onChange={handleOnChange}
+        value={currency.kind || NULL_VALUE}
+        renderValue={renderValue}
+      >
+        {currencies.map((c: Currency) => (
+          <MenuItem
+            className={classes.menuItem}
+            key={c.kind || NULL_VALUE}
+            value={c.kind || NULL_VALUE}
+          >
+            <span role="img" aria-label={c.label}>
+              {c.label}
+            </span>
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
   );
 };
-
-export default CurrencySelect;

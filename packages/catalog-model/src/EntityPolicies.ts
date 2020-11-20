@@ -14,22 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  DefaultNamespaceEntityPolicy,
-  Entity,
-  FieldFormatEntityPolicy,
-  NoForeignRootFieldsEntityPolicy,
-  ReservedFieldsEntityPolicy,
-  SchemaValidEntityPolicy,
-} from './entity';
-import {
-  apiEntityV1alpha1Policy,
-  componentEntityV1alpha1Policy,
-  groupEntityV1alpha1Policy,
-  locationEntityV1alpha1Policy,
-  templateEntityV1alpha1Policy,
-  userEntityV1alpha1Policy,
-} from './kinds';
+import { Entity } from './entity';
 import { EntityPolicy } from './types';
 
 // Helper that requires that all of a set of policies can be successfully
@@ -40,10 +25,13 @@ class AllEntityPolicies implements EntityPolicy {
   async enforce(entity: Entity): Promise<Entity> {
     let result = entity;
     for (const policy of this.policies) {
-      const output = await policy.enforce(entity);
-      if (output) {
-        result = output;
+      const output = await policy.enforce(result);
+      if (!output) {
+        throw new Error(
+          `Policy ${policy.constructor.name} did not return a result`,
+        );
       }
+      result = output;
     }
     return result;
   }
@@ -54,10 +42,10 @@ class AllEntityPolicies implements EntityPolicy {
 class AnyEntityPolicy implements EntityPolicy {
   constructor(private readonly policies: EntityPolicy[]) {}
 
-  async enforce(entity: Entity): Promise<Entity | undefined> {
+  async enforce(entity: Entity): Promise<Entity> {
     for (const policy of this.policies) {
       const output = await policy.enforce(entity);
-      if (output !== null) {
+      if (output) {
         return output;
       }
     }
@@ -65,42 +53,11 @@ class AnyEntityPolicy implements EntityPolicy {
   }
 }
 
-export class EntityPolicies implements EntityPolicy {
-  private readonly policy: EntityPolicy;
-
-  static defaultPolicies(): EntityPolicy {
-    return EntityPolicies.allOf([
-      EntityPolicies.allOf([
-        new SchemaValidEntityPolicy(),
-        new DefaultNamespaceEntityPolicy(),
-        new NoForeignRootFieldsEntityPolicy(),
-        new FieldFormatEntityPolicy(),
-        new ReservedFieldsEntityPolicy(),
-      ]),
-      EntityPolicies.anyOf([
-        componentEntityV1alpha1Policy,
-        groupEntityV1alpha1Policy,
-        userEntityV1alpha1Policy,
-        locationEntityV1alpha1Policy,
-        templateEntityV1alpha1Policy,
-        apiEntityV1alpha1Policy,
-      ]),
-    ]);
-  }
-
-  static allOf(policies: EntityPolicy[]): EntityPolicy {
+export const EntityPolicies = {
+  allOf(policies: EntityPolicy[]) {
     return new AllEntityPolicies(policies);
-  }
-
-  static anyOf(policies: EntityPolicy[]): EntityPolicy {
+  },
+  oneOf(policies: EntityPolicy[]) {
     return new AnyEntityPolicy(policies);
-  }
-
-  constructor(policy: EntityPolicy = EntityPolicies.defaultPolicies()) {
-    this.policy = policy;
-  }
-
-  enforce(entity: Entity): Promise<Entity | undefined> {
-    return this.policy.enforce(entity);
-  }
-}
+  },
+};

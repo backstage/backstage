@@ -24,12 +24,12 @@ import {
   readLdapOrg,
 } from './ldap';
 import * as results from './results';
-import { LocationProcessor, LocationProcessorEmit } from './types';
+import { CatalogProcessor, CatalogProcessorEmit } from './types';
 
 /**
  * Extracts teams and users out of an LDAP server.
  */
-export class LdapOrgReaderProcessor implements LocationProcessor {
+export class LdapOrgReaderProcessor implements CatalogProcessor {
   private readonly providers: LdapProviderConfig[];
   private readonly logger: Logger;
 
@@ -49,7 +49,7 @@ export class LdapOrgReaderProcessor implements LocationProcessor {
   async readLocation(
     location: LocationSpec,
     _optional: boolean,
-    emit: LocationProcessorEmit,
+    emit: CatalogProcessorEmit,
   ): Promise<boolean> {
     if (location.type !== 'ldap-org') {
       return false;

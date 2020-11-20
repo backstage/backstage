@@ -13,11 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { parseLocationAnnotation } from './helpers';
+import {
+  makeDeprecatedLocationTypeDetector,
+  parseLocationAnnotation,
+} from './helpers';
 import {
   TemplateEntityV1alpha1,
   LOCATION_ANNOTATION,
 } from '@backstage/catalog-model';
+import { ConfigReader } from '@backstage/config';
 
 describe('Helpers', () => {
   describe('parseLocationAnnotation', () => {
@@ -251,6 +255,31 @@ describe('Helpers', () => {
         protocol: 'github',
         location: 'https://lol.com/:something/shello',
       });
+    });
+  });
+
+  describe('makeDeprecatedLocationTypeDetector', () => {
+    it('detects deprecated location types', () => {
+      const detector = makeDeprecatedLocationTypeDetector(
+        new ConfigReader({
+          integrations: {
+            github: [{ host: 'derp.com' }, { host: 'foo.com' }],
+            gitlab: [{ host: 'derp.org' }, { host: 'foo.org' }],
+            azure: [{ host: 'derp.net' }, { host: 'foo.net' }],
+          },
+        }),
+      );
+
+      expect(detector('http://lol:wut@derp.com/wat')).toBe('github');
+      expect(detector('https://foo.com/wat')).toBe('github');
+      expect(detector('http://derp.org:80/wat')).toBe('gitlab');
+      expect(detector('https://foo.org/wat')).toBe('gitlab');
+      expect(detector('http://not.derp.net')).toBe(undefined);
+      expect(detector('http://derp.net')).toBe('azure/api');
+      expect(detector('http://derp.net:8080/wat')).toBe('azure/api');
+      expect(detector('http://github.com')).toBe('github');
+      expect(detector('http://gitlab.com')).toBe('gitlab');
+      expect(detector('http://dev.azure.com')).toBe('azure/api');
     });
   });
 });

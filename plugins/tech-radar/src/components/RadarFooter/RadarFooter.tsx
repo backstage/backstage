@@ -15,19 +15,19 @@
  */
 
 import React from 'react';
-import { makeStyles, Theme } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 
 export type Props = {
   x: number;
   y: number;
 };
 
-const useStyles = makeStyles<Theme>(() => ({
+const useStyles = makeStyles(theme => ({
   text: {
     pointerEvents: 'none',
     userSelect: 'none',
     fontSize: '10px',
-    fill: '#000',
+    fill: theme.palette.text.secondary,
   },
 }));
 

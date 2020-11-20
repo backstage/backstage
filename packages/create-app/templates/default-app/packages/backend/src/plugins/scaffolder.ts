@@ -11,7 +11,9 @@ import {
   CreateReactAppTemplater,
   Templaters,
   RepoVisibilityOptions,
+  CatalogEntityClient,
 } from '@backstage/plugin-scaffolder-backend';
+import { SingleHostDiscovery } from '@backstage/backend-common';
 import { Octokit } from '@octokit/rest';
 import { Gitlab } from '@gitbeaker/node';
 import type { PluginEnvironment } from '../types';
@@ -48,7 +50,8 @@ export default async function createPlugin({
       ) as RepoVisibilityOptions;
 
       const githubToken = githubConfig.getString('token');
-      const githubClient = new Octokit({ auth: githubToken });
+      const githubHost = githubConfig.getOptionalString('host');
+      const githubClient = new Octokit({ auth: githubToken, baseUrl: githubHost });
       const githubPublisher = new GithubPublisher({
         client: githubClient,
         token: githubToken,
@@ -96,11 +99,17 @@ export default async function createPlugin({
   }
 
   const dockerClient = new Docker();
+
+  const discovery = SingleHostDiscovery.fromConfig(config);
+  const entityClient = new CatalogEntityClient({ discovery });
+
   return await createRouter({
     preparers,
     templaters,
     publishers,
     logger,
+    config,
     dockerClient,
+    entityClient,
   });
 }

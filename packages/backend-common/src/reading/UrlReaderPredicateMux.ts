@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { UrlReader, UrlReaderPredicateTuple } from './types';
+import {
+  ReadTreeOptions,
+  ReadTreeResponse,
+  UrlReader,
+  UrlReaderPredicateTuple,
+} from './types';
 
 type Options = {
   // UrlReader to fall back to if no other reader is matched
@@ -48,6 +53,22 @@ export class UrlReaderPredicateMux implements UrlReader {
 
     if (this.fallback) {
       return this.fallback.read(url);
+    }
+
+    throw new Error(`No reader found that could handle '${url}'`);
+  }
+
+  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse> {
+    const parsed = new URL(url);
+
+    for (const { predicate, reader } of this.readers) {
+      if (predicate(parsed)) {
+        return reader.readTree(url, options);
+      }
+    }
+
+    if (this.fallback) {
+      return this.fallback.readTree(url, options);
     }
 
     throw new Error(`No reader found that could handle '${url}'`);

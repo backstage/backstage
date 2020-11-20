@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { useAsync } from 'react-use';
-import { useNavigate, generatePath } from 'react-router-dom';
-import { Grid } from '@material-ui/core';
 import {
+  Content,
+  Header,
   ItemCard,
+  Page,
   Progress,
   useApi,
-  Content,
-  Page,
-  pageTheme,
-  Header,
 } from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog';
+import { Grid } from '@material-ui/core';
+import React from 'react';
+import { generatePath, useNavigate } from 'react-router-dom';
+import { useAsync } from 'react-use';
 import { rootDocsRouteRef } from '../../plugin';
 
 export const TechDocsHome = () => {
@@ -35,15 +34,15 @@ export const TechDocsHome = () => {
   const navigate = useNavigate();
 
   const { value, loading, error } = useAsync(async () => {
-    const entities = await catalogApi.getEntities();
-    return entities.filter(entity => {
+    const response = await catalogApi.getEntities();
+    return response.items.filter(entity => {
       return !!entity.metadata.annotations?.['backstage.io/techdocs-ref'];
     });
   });
 
   if (loading) {
     return (
-      <Page theme={pageTheme.documentation}>
+      <Page themeId="documentation">
         <Header
           title="Documentation"
           subtitle="Documentation available in Backstage"
@@ -57,7 +56,7 @@ export const TechDocsHome = () => {
 
   if (error) {
     return (
-      <Page theme={pageTheme.documentation}>
+      <Page themeId="documentation">
         <Header
           title="Documentation"
           subtitle="Documentation available in Backstage"
@@ -70,7 +69,7 @@ export const TechDocsHome = () => {
   }
 
   return (
-    <Page theme={pageTheme.documentation}>
+    <Page themeId="documentation">
       <Header
         title="Documentation"
         subtitle="Documentation available in Backstage"
@@ -84,9 +83,9 @@ export const TechDocsHome = () => {
                     onClick={() =>
                       navigate(
                         generatePath(rootDocsRouteRef.path, {
-                          entityId: `${entity.kind}:${
-                            entity.metadata.namespace ?? ''
-                          }:${entity.metadata.name}`,
+                          namespace: entity.metadata.namespace ?? 'default',
+                          kind: entity.kind,
+                          name: entity.metadata.name,
                         }),
                       )
                     }

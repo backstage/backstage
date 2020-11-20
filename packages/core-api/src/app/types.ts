@@ -112,11 +112,13 @@ export type AppOptions = {
    *   title: 'Light Theme',
    *   variant: 'light',
    *   theme: lightTheme,
+   *   icon: <LightIcon />,
    * }, {
    *   id: 'dark',
    *   title: 'Dark Theme',
    *   variant: 'dark',
    *   theme: darkTheme,
+   *   icon: <DarkIcon />,
    * }]
    * ```
    */

@@ -20,6 +20,7 @@ import handlebars from 'handlebars';
 import ora from 'ora';
 import { basename, dirname } from 'path';
 import recursive from 'recursive-readdir';
+import { paths } from './paths';
 
 const TASK_NAME_MAX_LENGTH = 14;
 
@@ -68,10 +69,12 @@ export async function templatingTask(
   templateDir: string,
   destinationDir: string,
   context: any,
+  versions: { [name: string]: string },
 ) {
   const files = await recursive(templateDir).catch(error => {
     throw new Error(`Failed to read template directory: ${error.message}`);
   });
+  const isMonoRepo = await fs.pathExists(paths.resolveTargetRoot('lerna.json'));
 
   for (const file of files) {
     const destinationFile = file.replace(templateDir, destinationDir);
@@ -83,7 +86,19 @@ export async function templatingTask(
 
         const template = await fs.readFile(file);
         const compiled = handlebars.compile(template.toString());
-        const contents = compiled({ name: basename(destination), ...context });
+        const contents = compiled(
+          { name: basename(destination), ...context },
+          {
+            helpers: {
+              version(name: string) {
+                if (versions[name]) {
+                  return versions[name];
+                }
+                throw new Error(`No version available for package ${name}`);
+              },
+            },
+          },
+        );
 
         await fs.writeFile(destination, contents).catch(error => {
           throw new Error(
@@ -92,6 +107,10 @@ export async function templatingTask(
         });
       });
     } else {
+      if (isMonoRepo && file.match('tsconfig.json')) {
+        continue;
+      }
+
       await Task.forItem('copying', basename(file), async () => {
         await fs.copyFile(file, destinationFile).catch(error => {
           const destination = destinationFile;

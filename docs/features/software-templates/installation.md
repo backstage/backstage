@@ -111,44 +111,8 @@ export default async function createPlugin({
   templaters.register('cookiecutter', cookiecutterTemplater);
   templaters.register('cra', craTemplater);
 
-  const filePreparer = new FilePreparer();
-  const githubPreparer = new GithubPreparer();
-  const gitlabPreparer = new GitlabPreparer(config);
-  const preparers = new Preparers();
-
-  preparers.register('file', filePreparer);
-  preparers.register('github', githubPreparer);
-  preparers.register('gitlab', gitlabPreparer);
-  preparers.register('gitlab/api', gitlabPreparer);
-
-  const publishers = new Publishers();
-
-  const githubToken = config.getString('scaffolder.github.token');
-  const repoVisibility = config.getString(
-    'scaffolder.github.visibility',
-  ) as RepoVisibilityOptions;
-
-  const githubClient = new Octokit({ auth: githubToken });
-  const githubPublisher = new GithubPublisher({
-    client: githubClient,
-    token: githubToken,
-    repoVisibility,
-  });
-  publishers.register('file', githubPublisher);
-  publishers.register('github', githubPublisher);
-
-  const gitLabConfig = config.getOptionalConfig('scaffolder.gitlab.api');
-
-  if (gitLabConfig) {
-    const gitLabToken = gitLabConfig.getString('token');
-    const gitLabClient = new Gitlab({
-      host: gitLabConfig.getOptionalString('baseUrl'),
-      token: gitLabToken,
-    });
-    const gitLabPublisher = new GitlabPublisher(gitLabClient, gitLabToken);
-    publishers.register('gitlab', gitLabPublisher);
-    publishers.register('gitlab/api', gitLabPublisher);
-  }
+  const preparers = await Preparers.fromConfig(config, { logger });
+  const publishers = await Publishers.fromConfig(config, { logger });
 
   const dockerClient = new Docker();
   return await createRouter({
@@ -192,11 +156,11 @@ catalog:
   locations:
     # Backstage Example Templates
     - type: url
-      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml
+      target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml
     - type: url
-      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/springboot-grpc-template/template.yaml
+      target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/springboot-grpc-template/template.yaml
     - type: url
-      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/create-react-app/template.yaml
+      target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/create-react-app/template.yaml
     - type: url
       target: https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml
 ```
@@ -211,34 +175,38 @@ docs on creating private GitHub access tokens is available
 Note that the need for private GitHub access tokens will be replaced with GitHub
 Apps integration further down the line.
 
-#### Github
+#### GitHub
 
-The Github access token is retrieved from environment variables via the config.
+The GitHub access token is retrieved from environment variables via the config.
 The config file needs to specify what environment variable the token is
 retrieved from. Your config should have the following objects.
 
 You can configure who can see the new repositories that the scaffolder creates
 by specifying `visibility` option. Valid options are `public`, `private` and
-`internal`. `internal` options is for GitHub Enterprise clients, which means
-public within the organization.
-
-#### Gitlab
-
-For Gitlab, we currently support the configuration of the GitLab publisher and
-allows to configure the private access token and the base URL of a GitLab
-instance:
+`internal`. The `internal` option is for GitHub Enterprise clients, which means
+public within the enterprise.
 
 ```yaml
 scaffolder:
   github:
     token:
-      $env: GITHUB_ACCESS_TOKEN
+      $env: GITHUB_TOKEN
     visibility: public # or 'internal' or 'private'
+```
+
+#### GitLab
+
+For GitLab, we currently support the configuration of the GitLab publisher and
+allows to configure the private access token and the base URL of a GitLab
+instance:
+
+```yaml
+scaffolder:
   gitlab:
     api:
       baseUrl: https://gitlab.com
       token:
-        $env: SCAFFOLDER_GITLAB_PRIVATE_TOKEN
+        $env: GITLAB_TOKEN
 ```
 
 #### Azure DevOps
@@ -255,7 +223,7 @@ scaffolder:
     baseUrl: https://dev.azure.com/{your-organization}
     api:
       token:
-        $env: AZURE_PRIVATE_TOKEN
+        $env: AZURE_TOKEN
 ```
 
 ### Running the Backend
@@ -265,7 +233,7 @@ backend with the new configuration:
 
 ```bash
 cd packages/backend
-GITHUB_ACCESS_TOKEN=<token> yarn start
+GITHUB_TOKEN=<token> yarn start
 ```
 
 If you've also set up the frontend plugin, so you should be ready to go browse

@@ -13,23 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import os from 'os';
 import fs from 'fs-extra';
 import path from 'path';
-import os from 'os';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { parseLocationAnnotation } from '../helpers';
 import { InputError } from '@backstage/backend-common';
-import { PreparerBase } from './types';
+import { PreparerBase, PreparerOptions } from './types';
 import GitUriParser from 'git-url-parse';
-import { Clone } from 'nodegit';
+import { Clone, CloneOptions, Cred } from 'nodegit';
 
 export class GithubPreparer implements PreparerBase {
-  async prepare(template: TemplateEntityV1alpha1): Promise<string> {
-    const { protocol, location } = parseLocationAnnotation(template);
+  token?: string;
 
-    if (protocol !== 'github') {
+  constructor(params: { token?: string } = {}) {
+    this.token = params.token;
+  }
+
+  async prepare(
+    template: TemplateEntityV1alpha1,
+    opts: PreparerOptions,
+  ): Promise<string> {
+    const { protocol, location } = parseLocationAnnotation(template);
+    const workingDirectory = opts?.workingDirectory ?? os.tmpdir();
+    const { token } = this;
+
+    if (!['github', 'url'].includes(protocol)) {
       throw new InputError(
-        `Wrong location protocol: ${protocol}, should be 'github'`,
+        `Wrong location protocol: ${protocol}, should be 'url'`,
       );
     }
     const templateId = template.metadata.name;
@@ -37,7 +48,7 @@ export class GithubPreparer implements PreparerBase {
     const parsedGitLocation = GitUriParser(location);
     const repositoryCheckoutUrl = parsedGitLocation.toString('https');
     const tempDir = await fs.promises.mkdtemp(
-      path.join(os.tmpdir(), templateId),
+      path.join(workingDirectory, templateId),
     );
 
     const templateDirectory = path.join(
@@ -45,9 +56,24 @@ export class GithubPreparer implements PreparerBase {
       template.spec.path ?? '.',
     );
 
-    await Clone.clone(repositoryCheckoutUrl, tempDir, {
-      // TODO(blam): Maybe need some auth here?
-    });
+    let cloneOptions: CloneOptions = {
+      checkoutBranch: parsedGitLocation.ref,
+    };
+
+    if (token) {
+      cloneOptions = {
+        ...cloneOptions,
+        fetchOpts: {
+          callbacks: {
+            credentials() {
+              return Cred.userpassPlaintextNew(token, 'x-oauth-basic');
+            },
+          },
+        },
+      };
+    }
+
+    await Clone.clone(repositoryCheckoutUrl, tempDir, cloneOptions);
 
     return path.resolve(tempDir, templateDirectory);
   }

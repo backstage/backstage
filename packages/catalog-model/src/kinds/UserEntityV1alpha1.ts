@@ -16,7 +16,7 @@
 
 import * as yup from 'yup';
 import type { Entity } from '../entity/Entity';
-import { schemaPolicy } from './util';
+import { schemaValidator } from './util';
 
 const API_VERSION = ['backstage.io/v1alpha1', 'backstage.io/v1beta1'] as const;
 const KIND = 'User' as const;
@@ -35,11 +35,13 @@ const schema = yup.object<Partial<UserEntityV1alpha1>>({
         .notRequired(),
       // Use this manual test because yup .required() requires at least one
       // element and there is no simple workaround -_-
-      memberOf: yup.array(yup.string()).test({
+      // the cast is there to convince typescript that the array itself is
+      // required without using .required()
+      memberOf: yup.array(yup.string().required()).test({
         name: 'isDefined',
         message: 'memberOf must be defined',
         test: v => Boolean(v),
-      }),
+      }) as yup.ArraySchema<string, object>,
     })
     .required(),
 });
@@ -57,4 +59,8 @@ export interface UserEntityV1alpha1 extends Entity {
   };
 }
 
-export const userEntityV1alpha1Policy = schemaPolicy(KIND, API_VERSION, schema);
+export const userEntityV1alpha1Validator = schemaValidator(
+  KIND,
+  API_VERSION,
+  schema,
+);

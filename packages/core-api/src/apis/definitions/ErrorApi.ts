@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '../ApiRef';
+import { ApiRef, createApiRef } from '../system';
 import { Observable } from '../../types';
 
 /**
@@ -62,7 +62,7 @@ export type ErrorApi = {
   error$(): Observable<{ error: Error; context?: ErrorContext }>;
 };
 
-export const errorApiRef = createApiRef<ErrorApi>({
+export const errorApiRef: ApiRef<ErrorApi> = createApiRef({
   id: 'core.error',
   description: 'Used to report errors and forward them to the app',
 });

@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import GitHubIcon from '@material-ui/icons/GitHub';
+import CodeIcon from '@material-ui/icons/Code';
 import { Header, HeaderLabel, Link } from '@backstage/core';
 import { CircularProgress } from '@material-ui/core';
 import { ParsedEntityId } from '../../types';
@@ -48,12 +48,14 @@ export const TechDocsPageHeader = ({
     spec: { owner, lifecycle },
   } = entityMetadataValues || { spec: {} };
 
+  const componentLink = `/catalog/${kind}/${name}`;
+
   const labels = (
     <>
       <HeaderLabel
         label="Component"
         value={
-          <Link style={{ color: '#fff' }} to={`/catalog/${kind}/${name}`}>
+          <Link style={{ color: '#fff' }} to={componentLink}>
             {name}
           </Link>
         }
@@ -71,7 +73,7 @@ export const TechDocsPageHeader = ({
               target="_blank"
               rel="noopener noreferrer"
             >
-              <GitHubIcon style={{ marginTop: '-25px', fill: '#fff' }} />
+              <CodeIcon style={{ marginTop: '-25px', fill: '#fff' }} />
             </a>
           }
         />
@@ -82,9 +84,12 @@ export const TechDocsPageHeader = ({
   return (
     <Header
       title={siteName ? siteName : <CircularProgress />}
+      pageTitleOverride={siteName || name}
       subtitle={
         siteDescription && siteDescription !== 'None' ? siteDescription : ''
       }
+      type={name}
+      typeLink={componentLink}
     >
       {labels}
     </Header>

@@ -15,39 +15,51 @@
  */
 
 import fs from 'fs-extra';
+import mockFs from 'mock-fs';
 import { resolve as resolvePath } from 'path';
-import os from 'os';
-import del from 'del';
 import { templatingTask } from './tasks';
 
 describe('templatingTask', () => {
+  afterEach(() => {
+    mockFs.restore();
+  });
+
   it('should template a directory with mix of regular files and templates', async () => {
-    // Set up a testing template directory
-    const tmplDir = await fs.mkdtemp(resolvePath(os.tmpdir(), 'test-'));
-    await fs.ensureDir(resolvePath(tmplDir, 'sub'));
-    await fs.writeFile(resolvePath(tmplDir, 'test.txt'), 'testing');
-    await fs.writeFile(
-      resolvePath(tmplDir, 'sub/version.txt.hbs'),
-      'version: {{version}}',
+    // Testing template directory
+    const tmplDir = 'test-tmpl';
+
+    // Temporary dest dir to write the template to
+    const destDir = 'test-dest';
+
+    // Files content
+    const testFileContent = 'testing';
+    const testVersionFileContent =
+      "version: {{pluginVersion}} {{version 'mock-pkg'}}";
+
+    mockFs({
+      [tmplDir]: {
+        sub: {
+          'version.txt.hbs': testVersionFileContent,
+        },
+        'test.txt': testFileContent,
+      },
+      [destDir]: {},
+    });
+
+    await templatingTask(
+      tmplDir,
+      destDir,
+      {
+        pluginVersion: '0.0.0',
+      },
+      { 'mock-pkg': '0.1.2' },
     );
 
-    // Set up a temporary dest dir to write the template to
-    const destDir = await fs.mkdtemp(resolvePath(os.tmpdir(), 'test-'));
-
-    try {
-      await templatingTask(tmplDir, destDir, {
-        version: '0.0.0',
-      });
-
-      await expect(
-        fs.readFile(resolvePath(destDir, 'test.txt'), 'utf8'),
-      ).resolves.toBe('testing');
-      await expect(
-        fs.readFile(resolvePath(destDir, 'sub/version.txt'), 'utf8'),
-      ).resolves.toBe('version: 0.0.0');
-    } finally {
-      await del(tmplDir, { force: true });
-      await del(destDir, { force: true });
-    }
+    await expect(
+      fs.readFile(resolvePath(destDir, 'test.txt'), 'utf8'),
+    ).resolves.toBe(testFileContent);
+    await expect(
+      fs.readFile(resolvePath(destDir, 'sub/version.txt'), 'utf8'),
+    ).resolves.toBe('version: 0.0.0 0.1.2');
   });
 });

@@ -16,7 +16,11 @@
 
 import { useAsyncRetry } from 'react-use';
 import { errorApiRef, useApi } from '@backstage/core';
-import { ApiEntity, ComponentEntity } from '@backstage/catalog-model';
+import {
+  ApiEntity,
+  ComponentEntity,
+  parseEntityName,
+} from '@backstage/catalog-model';
 import { catalogApiRef } from '@backstage/plugin-catalog';
 import { useComponentApiNames } from './useComponentApiNames';
 
@@ -43,10 +47,20 @@ export function useComponentApiEntities({
     await Promise.all(
       apiNames.map(async name => {
         try {
-          const api = (await catalogApi.getEntityByName({
-            kind: 'API',
-            name,
-          })) as ApiEntity | undefined;
+          const apiEntityName = parseEntityName(name, {
+            defaultNamespace: entity.metadata.namespace,
+            defaultKind: 'API',
+          });
+
+          if (apiEntityName.kind !== 'API') {
+            throw new Error(
+              `Referenced entity of kind "${apiEntityName.kind}" as an API`,
+            );
+          }
+
+          const api = (await catalogApi.getEntityByName(apiEntityName)) as
+            | ApiEntity
+            | undefined;
 
           if (api) {
             resultMap.set(api.metadata.name, api);

@@ -15,7 +15,14 @@
  */
 
 import { ApiEntityV1alpha1, Entity } from '@backstage/catalog-model';
-import { Table, TableColumn, useApi } from '@backstage/core';
+import {
+  Table,
+  TableColumn,
+  TableFilter,
+  TableState,
+  useApi,
+  useQueryParamState,
+} from '@backstage/core';
 import { Chip, Link } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React from 'react';
@@ -83,16 +90,40 @@ const columns: TableColumn<Entity>[] = [
       <>
         {entity.metadata.tags &&
           entity.metadata.tags.map(t => (
-            <Chip key={t} label={t} style={{ marginBottom: '0px' }} />
+            <Chip
+              key={t}
+              label={t}
+              size="small"
+              variant="outlined"
+              style={{ marginBottom: '0px' }}
+            />
           ))}
       </>
     ),
   },
 ];
 
+const filters: TableFilter[] = [
+  {
+    column: 'Owner',
+    type: 'select',
+  },
+  {
+    column: 'Type',
+    type: 'multiple-select',
+  },
+  {
+    column: 'Lifecycle',
+    type: 'multiple-select',
+  },
+  {
+    column: 'Tags',
+    type: 'checkbox-tree',
+  },
+];
+
 type ExplorerTableProps = {
   entities: Entity[];
-  titlePreamble: string;
   loading: boolean;
   error?: any;
 };
@@ -101,8 +132,11 @@ export const ApiExplorerTable = ({
   entities,
   loading,
   error,
-  titlePreamble,
 }: ExplorerTableProps) => {
+  const [queryParamState, setQueryParamState] = useQueryParamState<TableState>(
+    'apiTable',
+  );
+
   if (error) {
     return (
       <div>
@@ -114,17 +148,20 @@ export const ApiExplorerTable = ({
   }
 
   return (
-    <Table<Entity>
+    <Table
       isLoading={loading}
       columns={columns}
       options={{
         paging: false,
         actionsColumnIndex: -1,
         loadingType: 'linear',
+        padding: 'dense',
         showEmptyDataSourceMessage: !loading,
       }}
-      title={`${titlePreamble} (${(entities && entities.length) || 0})`}
       data={entities}
+      filters={filters}
+      initialState={queryParamState}
+      onStateChange={setQueryParamState}
     />
   );
 };

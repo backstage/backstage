@@ -1,6 +1,7 @@
 app:
   title: Backstage Example App
-  baseUrl: http://localhost:7000
+  baseUrl: http://localhost:3000
+  googleAnalyticsTrackingId: # UA-000000-0
 
 backend:
   baseUrl: http://localhost:7000
@@ -9,8 +10,13 @@ backend:
   database:
     client: sqlite3
     connection: ':memory:'
+  cors:
+    origin: http://localhost:3000
+    methods: [GET, POST, PUT, DELETE]
+    credentials: true
   csp:
-    connect-src: ["'self'", 'https:']
+    connect-src: ["'self'", 'http:', 'https:']
+  # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
 
 # See README.md in the proxy-backend plugin for information on the configuration format
 proxy:
@@ -34,8 +40,20 @@ proxy:
         $env: TRAVISCI_AUTH_TOKEN
       travis-api-version: 3
 
+  '/newrelic/apm/api':
+    target: https://api.newrelic.com/v2
+    headers:
+      X-Api-Key:
+        $env: NEW_RELIC_REST_API_KEY
+
+  '/buildkite/api':
+    target: https://api.buildkite.com/v2/
+    headers:
+      Authorization:
+        $env: BUILDKITE_TOKEN
+
 organization:
-  name: Spotify
+  name: My Company
 
 techdocs:
   storageUrl: http://localhost:7000/api/techdocs/static/docs
@@ -44,44 +62,41 @@ techdocs:
     techdocs: 'docker'
 
 sentry:
-  organization: spotify
+  organization: my-company
 
 rollbar:
-  organization: spotify
+  organization: my-company
   accountToken:
     $env: ROLLBAR_ACCOUNT_TOKEN
-
-newrelic:
-  api:
-    baseUrl: 'https://api.newrelic.com/v2'
-    key: NEW_RELIC_REST_API_KEY
 
 lighthouse:
   baseUrl: http://localhost:3003
 
 kubernetes:
-  clusterLocatorMethod: 'configMultiTenant'
+  serviceLocatorMethod: 'multiTenant'
+  clusterLocatorMethods:
+    - 'config'
   clusters: []
 
 integrations:
   github:
     - host: github.com
       token:
-        $env: GITHUB_PRIVATE_TOKEN
+        $env: GITHUB_TOKEN
     ### Example for how to add your GitHub Enterprise instance using the API:
     # - host: ghe.example.net
     #   apiBaseUrl: https://ghe.example.net/api/v3
     #   token:
-    #     $env: GHE_PRIVATE_TOKEN
+    #     $env: GHE_TOKEN
     ### Example for how to add your GitHub Enterprise instance using raw HTTP fetches (token is optional):
     # - host: ghe.example.net
     #   rawBaseUrl: https://ghe.example.net/raw
     #   token:
-    #     $env: GHE_PRIVATE_TOKEN
+    #     $env: GHE_TOKEN
   gitlab:
     - host: gitlab.com
       token:
-        $env: GITLAB_PRIVATE_TOKEN
+        $env: GITLAB_TOKEN
   bitbucket:
     - host: bitbucket.org
       username:
@@ -91,7 +106,7 @@ integrations:
   azure:
     - host: dev.azure.com
       token:
-        $env: AZURE_PRIVATE_TOKEN
+        $env: AZURE_TOKEN
 
 catalog:
   rules:
@@ -102,12 +117,12 @@ catalog:
       providers:
         - target: https://github.com
           token:
-            $env: GITHUB_PRIVATE_TOKEN
+            $env: GITHUB_TOKEN
         #### Example for how to add your GitHub Enterprise instance using the API:
         # - target: https://ghe.example.net
         #   apiBaseUrl: https://ghe.example.net/api/v3
         #   token:
-        #     $env: GHE_PRIVATE_TOKEN
+        #     $env: GHE_TOKEN
     ldapOrg:
       ### Example for how to add your enterprise LDAP server
       # providers:
@@ -129,35 +144,38 @@ catalog:
   locations:
     # Backstage example components
     - type: url
-      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
     # Example component for github-actions
     - type: url
-      target: https://github.com/spotify/backstage/blob/master/plugins/github-actions/examples/sample.yaml
+      target: https://github.com/backstage/backstage/blob/master/plugins/github-actions/examples/sample.yaml
     # Example component for techdocs
     - type: url
-      target: https://github.com/spotify/backstage/blob/master/plugins/techdocs-backend/examples/documented-component/documented-component.yaml
+      target: https://github.com/backstage/backstage/blob/master/plugins/techdocs-backend/examples/documented-component/documented-component.yaml
     # Backstage example APIs
     - type: url
-      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
     # Backstage example templates
     - type: url
-      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/all-templates.yaml
+      target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/all-templates.yaml
+    # Backstage example groups and users
+    - type: url
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme-corp.yaml
 
 scaffolder:
   github:
     token:
-      $env: GITHUB_ACCESS_TOKEN
+      $env: GITHUB_TOKEN
     visibility: public # or 'internal' or 'private'
   gitlab:
     api:
       baseUrl: https://gitlab.com
       token:
-        $env: GITLAB_ACCESS_TOKEN
+        $env: GITLAB_TOKEN
   azure:
     baseUrl: https://dev.azure.com/{your-organization}
     api:
       token:
-        $env: AZURE_PRIVATE_TOKEN
+        $env: AZURE_TOKEN
 
 auth:
   providers:
@@ -220,6 +238,14 @@ auth:
           $env: AUTH_MICROSOFT_CLIENT_SECRET
         tenantId:
           $env: AUTH_MICROSOFT_TENANT_ID
+    onelogin:
+      development:
+        clientId:
+          $env: AUTH_ONELOGIN_CLIENT_ID
+        clientSecret:
+          $env: AUTH_ONELOGIN_CLIENT_SECRET
+        issuer:
+          $env: AUTH_ONELOGIN_ISSUER
 costInsights:
   engineerCost: 200000
   products:
@@ -233,17 +259,18 @@ costInsights:
       name: Cloud Storage
       icon: storage
     bigQuery:
-      name: Big Query
+      name: BigQuery
       icon: search
   metrics:
-    dailyCost:
-      name: Your Company's Daily Cost
     DAU:
-      name: Cost Per DAU
+      name: Daily Active Users
+      default: true
+    MSC:
+      name: Monthly Subscribers
 homepage:
   clocks:
     - label: UTC
-      timzone: UTC
+      timezone: UTC
     - label: NYC
       timezone: 'America/New_York'
     - label: STO

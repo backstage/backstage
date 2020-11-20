@@ -18,13 +18,13 @@ import { ItemCard } from '.';
 import { Grid } from '@material-ui/core';
 
 export default {
-  title: 'Item Card',
+  title: 'Layout/Item Card',
   component: ItemCard,
 };
 
 export const Default = () => (
   <Grid container spacing={4}>
-    <Grid item xs={6} sm={4} md={2}>
+    <Grid item xs={12} md={3}>
       <ItemCard
         title="Item Card"
         description="This is the description of an Item Card"
@@ -33,7 +33,7 @@ export const Default = () => (
         onClick={() => {}}
       />
     </Grid>
-    <Grid item xs={6} sm={4} md={2}>
+    <Grid item xs={12} md={3}>
       <ItemCard
         title="Item Card"
         description="This is the description of an Item Card"
@@ -47,18 +47,18 @@ export const Default = () => (
 
 export const Tags = () => (
   <Grid container spacing={4}>
-    <Grid item xs={6} sm={4} md={2}>
+    <Grid item xs={12} md={3}>
       <ItemCard
         title="Item Card"
-        description="This is a Item Card"
-        tags={['one tag', 'two tag']}
+        description="This is the description of an Item Card with Tags"
+        tags={['one tag', 'one tag']}
         label="Button"
       />
     </Grid>
-    <Grid item xs={6} sm={4} md={2}>
+    <Grid item xs={12} md={3}>
       <ItemCard
         title="Item Card"
-        description="This is a Item Card"
+        description="This is the description of an Item Card with Tags"
         tags={['one tag', 'two tag']}
         label="Button"
       />

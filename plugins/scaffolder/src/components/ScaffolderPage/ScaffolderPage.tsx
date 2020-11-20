@@ -22,7 +22,6 @@ import {
   Header,
   Lifecycle,
   Page,
-  pageTheme,
   Progress,
   SupportButton,
   useApi,
@@ -54,10 +53,12 @@ export const ScaffolderPage = () => {
 
   const { data: templates, isValidating, error } = useStaleWhileRevalidate(
     'templates/all',
-    async () =>
-      catalogApi.getEntities({ kind: 'Template' }) as Promise<
-        TemplateEntityV1alpha1[]
-      >,
+    async () => {
+      const response = await catalogApi.getEntities({
+        filter: { kind: 'Template' },
+      });
+      return response.items as TemplateEntityV1alpha1[];
+    },
   );
 
   useEffect(() => {
@@ -66,7 +67,7 @@ export const ScaffolderPage = () => {
   }, [error, errorApi]);
 
   return (
-    <Page theme={pageTheme.home}>
+    <Page themeId="home">
       <Header
         pageTitleOverride="Create a New Component"
         title={

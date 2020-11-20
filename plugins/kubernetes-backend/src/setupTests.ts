@@ -14,6 +14,4 @@
  * limitations under the License.
  */
 
-require('jest-fetch-mock').enableMocks();
-
 export {};
