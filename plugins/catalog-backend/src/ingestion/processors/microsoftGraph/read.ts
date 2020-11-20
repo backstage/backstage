@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
+import limiterFactory from 'p-limit';
 import { buildMemberOf, buildOrgHierarchy } from '../util/org';
 import { MicrosoftGraphClient } from './client';
 import {
@@ -21,7 +22,6 @@ import {
   MICROSOFT_GRAPH_TENANT_ID_ANNOTATION,
   MICROSOFT_GRAPH_USER_ID_ANNOTATION,
 } from './constants';
-import limiterFactory from 'p-limit';
 
 export function normalizeEntityName(name: string): string {
   return name
@@ -98,7 +98,7 @@ export async function readMicrosoftGraphOrganization(
 ): Promise<{
   rootGroup: GroupEntity; // With all relations empty
 }> {
-  // For now we expect a single root orgranization
+  // For now we expect a single root organization
   const organization = await client.getOrganization(tenantId);
   const name = normalizeEntityName(organization.displayName!);
   const rootGroup: GroupEntity = {
@@ -113,9 +113,7 @@ export async function readMicrosoftGraphOrganization(
     },
     spec: {
       type: 'root',
-      ancestors: [],
       children: [],
-      descendants: [],
     },
   };
 
@@ -165,9 +163,7 @@ export async function readMicrosoftGraphGroups(
       spec: {
         type: 'team',
         // TODO: We could include a group email and picture
-        ancestors: [],
         children: [],
-        descendants: [],
       },
     };
 
@@ -278,7 +274,7 @@ export function resolveRelations(
     });
   });
 
-  // Make sure that all groups have proper ancestors and descendants
+  // Make sure that all groups have proper parents and children
   buildOrgHierarchy(groups);
 
   // Set relations for all users

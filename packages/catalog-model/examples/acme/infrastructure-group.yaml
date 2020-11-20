@@ -6,6 +6,4 @@ metadata:
 spec:
   type: department
   parent: acme-corp
-  ancestors: [acme-corp]
   children: [backstage, boxoffice]
-  descendants: [backstage, boxoffice, team-a, team-b, team-c, team-d]

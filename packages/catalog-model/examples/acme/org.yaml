@@ -5,10 +5,7 @@ metadata:
   description: The acme-corp organization
 spec:
   type: organization
-  ancestors: []
   children: [infrastructure]
-  descendants:
-    [infrastructure, backstage, boxoffice, team-a, team-b, team-c, team-d]
 ---
 apiVersion: backstage.io/v1alpha1
 kind: Location

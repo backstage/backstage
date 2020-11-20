@@ -23,34 +23,6 @@ import {
 import { BuiltinKindsEntityProcessor } from './BuiltinKindsEntityProcessor';
 
 describe('BuiltinKindsEntityProcessor', () => {
-  it('fills in fields for #3049', async () => {
-    const p = new BuiltinKindsEntityProcessor();
-    const result = await p.preProcessEntity({
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'Group',
-      metadata: {
-        name: 'n',
-      },
-      spec: {
-        type: 't',
-        children: [],
-      } as any,
-    });
-    expect(result).toEqual({
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'Group',
-      metadata: {
-        name: 'n',
-      },
-      spec: {
-        type: 't',
-        children: [],
-        ancestors: [],
-        descendants: [],
-      },
-    });
-  });
-
   describe('postProcessEntity', () => {
     const processor = new BuiltinKindsEntityProcessor();
     const location = { type: 'a', target: 'b' };
@@ -215,9 +187,7 @@ describe('BuiltinKindsEntityProcessor', () => {
         spec: {
           type: 't',
           parent: 'p',
-          ancestors: [],
           children: ['c'],
-          descendants: [],
         },
       };
 

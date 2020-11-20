@@ -26,7 +26,7 @@ function g(
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'Group',
     metadata: { name },
-    spec: { type: 'team', parent, children, ancestors: [], descendants: [] },
+    spec: { type: 'team', parent, children },
   };
 }
 
@@ -43,28 +43,16 @@ describe('buildOrgHierarchy', () => {
     expect(d.spec.children).toEqual([]);
   });
 
-  it('fills out descendants', () => {
-    const a = g('a', undefined, []);
-    const b = g('b', 'a', []);
-    const c = g('c', 'b', []);
-    const d = g('d', 'a', []);
+  it('sets parent of groups children', () => {
+    const a = g('a', undefined, ['b', 'd']);
+    const b = g('b', undefined, ['c']);
+    const c = g('c', undefined, []);
+    const d = g('d', undefined, []);
     buildOrgHierarchy([a, b, c, d]);
-    expect(a.spec.descendants).toEqual(expect.arrayContaining(['b', 'c', 'd']));
-    expect(b.spec.descendants).toEqual(expect.arrayContaining(['c']));
-    expect(c.spec.descendants).toEqual([]);
-    expect(d.spec.descendants).toEqual([]);
-  });
-
-  it('fills out ancestors', () => {
-    const a = g('a', undefined, []);
-    const b = g('b', 'a', []);
-    const c = g('c', 'b', []);
-    const d = g('d', 'a', []);
-    buildOrgHierarchy([a, b, c, d]);
-    expect(a.spec.ancestors).toEqual([]);
-    expect(b.spec.ancestors).toEqual(expect.arrayContaining(['a']));
-    expect(c.spec.ancestors).toEqual(expect.arrayContaining(['a', 'b']));
-    expect(d.spec.ancestors).toEqual(expect.arrayContaining(['a']));
+    expect(a.spec.parent).toBeUndefined();
+    expect(b.spec.parent).toBe('a');
+    expect(c.spec.parent).toBe('b');
+    expect(d.spec.parent).toBe('a');
   });
 });
 
@@ -76,7 +64,7 @@ describe('buildMemberOf', () => {
     const u: UserEntity = {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'User',
-      metadata: { name },
+      metadata: { name: 'n' },
       spec: { profile: {}, memberOf: ['c'] },
     };
 

@@ -53,25 +53,6 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
     userEntityV1alpha1Validator,
   ];
 
-  async preProcessEntity(entity: Entity): Promise<Entity> {
-    // NOTE(freben): Part of Group field deprecation on Nov 22nd, 2020. Fields
-    // scheduled for removal Dec 6th, 2020. This code can be deleted after that
-    // point. See https://github.com/backstage/backstage/issues/3049
-    if (
-      entity.apiVersion === 'backstage.io/v1alpha1' &&
-      entity.kind === 'Group' &&
-      entity.spec
-    ) {
-      if (!entity.spec.ancestors) {
-        entity.spec.ancestors = [];
-      }
-      if (!entity.spec.descendants) {
-        entity.spec.descendants = [];
-      }
-    }
-    return entity;
-  }
-
   async validateEntityKind(entity: Entity): Promise<boolean> {
     for (const validator of this.validators) {
       const result = await validator.check(entity);

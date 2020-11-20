@@ -47,7 +47,7 @@ function group(data: RecursivePartial<GroupEntity>): GroupEntity {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'Group',
       metadata: { name: 'name' },
-      spec: { type: 'type', ancestors: [], children: [], descendants: [] },
+      spec: { type: 'type', children: [] },
     } as GroupEntity,
     data,
   );
@@ -173,9 +173,7 @@ describe('readLdapGroups', () => {
         },
         spec: {
           type: 'type-value',
-          ancestors: [],
           children: [],
-          descendants: [],
         },
       }),
     ]);

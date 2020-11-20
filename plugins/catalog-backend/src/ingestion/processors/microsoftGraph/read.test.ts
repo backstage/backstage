@@ -49,9 +49,7 @@ function group(data: RecursivePartial<GroupEntity>): GroupEntity {
         name: 'name',
       },
       spec: {
-        ancestors: [],
         children: [],
-        descendants: [],
         type: 'team',
       },
     } as GroupEntity,
@@ -306,33 +304,20 @@ describe('read microsoft graph', () => {
       resolveRelations(rootGroup, groups, users, groupMember, groupMemberOf);
 
       expect(rootGroup.spec.parent).toBeUndefined();
-      expect(rootGroup.spec.ancestors).toEqual(expect.arrayContaining([]));
       expect(rootGroup.spec.children).toEqual(
         expect.arrayContaining(['a', 'b']),
       );
-      expect(rootGroup.spec.descendants).toEqual(
-        expect.arrayContaining(['a', 'b', 'c']),
-      );
 
       expect(groupA.spec.parent).toEqual('root');
-      expect(groupA.spec.ancestors).toEqual(expect.arrayContaining(['root']));
       expect(groupA.spec.children).toEqual(expect.arrayContaining([]));
-      expect(groupA.spec.descendants).toEqual(expect.arrayContaining([]));
 
       expect(groupB.spec.parent).toEqual('root');
-      expect(groupB.spec.ancestors).toEqual(expect.arrayContaining(['root']));
       expect(groupB.spec.children).toEqual(expect.arrayContaining(['c']));
-      expect(groupB.spec.descendants).toEqual(expect.arrayContaining(['c']));
 
       expect(groupC.spec.parent).toEqual('b');
-      expect(groupC.spec.ancestors).toEqual(
-        expect.arrayContaining(['root', 'b']),
-      );
       expect(groupC.spec.children).toEqual(expect.arrayContaining([]));
-      expect(groupC.spec.descendants).toEqual(expect.arrayContaining([]));
 
       expect(user1.spec.memberOf).toEqual(expect.arrayContaining(['a']));
-
       expect(user2.spec.memberOf).toEqual(expect.arrayContaining(['b', 'c']));
     });
   });
