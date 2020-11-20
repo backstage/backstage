@@ -5,5 +5,5 @@ authorUrl: https://roadie.io/
 category: Monitoring
 description: View Firebase Functions details for your service in Backstage.
 documentation: https://roadie.io/backstage/plugins/firebase-functions
-iconUrl: https://roadie.io/images/logos/github.png
+iconUrl: https://roadie.io/images/logos/firebase.png
 npmPackageName: '@roadiehq/backstage-plugin-firebase-functions'
