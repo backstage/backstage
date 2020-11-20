@@ -25,9 +25,9 @@ import {
   identityApiRef,
 } from '@backstage/core';
 import { pagerDutyApiRef } from '../../api';
-import { TriggerButton } from '../TriggerButton';
 import { Entity } from '@backstage/catalog-model';
 import { act } from 'react-dom/test-utils';
+import { TriggerDialog } from './TriggerDialog';
 
 describe('TriggerDialog', () => {
   const mockIdentityApi: Partial<IdentityApi> = {
@@ -36,7 +36,7 @@ describe('TriggerDialog', () => {
 
   const mockTriggerAlarmFn = jest.fn();
   const mockPagerDutyApi = {
-    triggerPagerDutyAlarm: mockTriggerAlarmFn,
+    triggerAlarm: mockTriggerAlarmFn,
   };
 
   const apis = ApiRegistry.from([
@@ -63,24 +63,25 @@ describe('TriggerDialog', () => {
       },
     };
 
-    const { getByText, getByRole, queryByRole, getByTestId } = render(
+    const { getByText, getByRole, getByTestId } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <TriggerButton entity={entity} />
+          <TriggerDialog
+            showDialog
+            handleDialog={() => {}}
+            name={entity.metadata.name}
+            integrationKey="abc123"
+            setShouldRefreshIncidents={() => {}}
+          />
         </ApiProvider>,
       ),
     );
-    expect(queryByRole('dialog')).toBeNull();
-    const alarmButton = getByText('Trigger Alarm');
-    fireEvent.click(alarmButton);
+
     expect(getByRole('dialog')).toBeInTheDocument();
     expect(
-      getByText(
-        'This action will send PagerDuty alarms and notifications to on-call people responsible for',
-        {
-          exact: false,
-        },
-      ),
+      getByText('This action will trigger an incident for ', {
+        exact: false,
+      }),
     ).toBeInTheDocument();
     const input = getByTestId('trigger-input');
     const description = 'Test Trigger Alarm';

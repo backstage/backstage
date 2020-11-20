@@ -14,34 +14,82 @@
  * limitations under the License.
  */
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { EscalationPolicy } from './EscalationPolicy';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { User } from '../types';
+import { ApiProvider, ApiRegistry } from '@backstage/core';
+import { pagerDutyApiRef } from '../../api';
 
-const escalations: User[] = [
-  {
-    name: 'person1',
-    id: 'p1',
-    summary: 'person1',
-    email: 'person1@example.com',
-    html_url: 'http://a.com/id1',
-  },
-];
+const mockPagerDutyApi = {
+  getOnCallByPolicyId: () => [],
+};
+const apis = ApiRegistry.from([[pagerDutyApiRef, mockPagerDutyApi]]);
 
 describe('Escalation', () => {
-  it('render emptyState', () => {
-    const { getByText } = render(
-      wrapInTestApp(<EscalationPolicy users={[]} />),
+  it('Handles an empty response', async () => {
+    mockPagerDutyApi.getOnCallByPolicyId = jest
+      .fn()
+      .mockImplementationOnce(async () => []);
+
+    const { getByText, queryByTestId } = render(
+      wrapInTestApp(
+        <ApiProvider apis={apis}>
+          <EscalationPolicy policyId="456" />
+        </ApiProvider>,
+      ),
     );
+    await waitFor(() => !queryByTestId('progress'));
+
     expect(getByText('Empty escalation policy')).toBeInTheDocument();
+    expect(mockPagerDutyApi.getOnCallByPolicyId).toHaveBeenCalledWith('456');
   });
 
-  it('render escalation list', () => {
-    const { getByText } = render(
-      wrapInTestApp(<EscalationPolicy users={escalations} />),
+  it('Render a list of users', async () => {
+    mockPagerDutyApi.getOnCallByPolicyId = jest
+      .fn()
+      .mockImplementationOnce(async () => [
+        {
+          user: {
+            name: 'person1',
+            id: 'p1',
+            summary: 'person1',
+            email: 'person1@example.com',
+            html_url: 'http://a.com/id1',
+          } as User,
+        },
+      ]);
+
+    const { getByText, queryByTestId } = render(
+      wrapInTestApp(
+        <ApiProvider apis={apis}>
+          <EscalationPolicy policyId="abc" />
+        </ApiProvider>,
+      ),
     );
+    await waitFor(() => !queryByTestId('progress'));
+
     expect(getByText('person1')).toBeInTheDocument();
     expect(getByText('person1@example.com')).toBeInTheDocument();
+    expect(mockPagerDutyApi.getOnCallByPolicyId).toHaveBeenCalledWith('abc');
+  });
+
+  it('Handles errors', async () => {
+    mockPagerDutyApi.getOnCallByPolicyId = jest
+      .fn()
+      .mockRejectedValueOnce(new Error('Error message'));
+
+    const { getByText, queryByTestId } = render(
+      wrapInTestApp(
+        <ApiProvider apis={apis}>
+          <EscalationPolicy policyId="abc" />
+        </ApiProvider>,
+      ),
+    );
+    await waitFor(() => !queryByTestId('progress'));
+
+    expect(
+      getByText('Error encountered while fetching information. Error message'),
+    ).toBeInTheDocument();
   });
 });
