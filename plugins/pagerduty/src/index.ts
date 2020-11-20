@@ -17,4 +17,9 @@ export { plugin } from './plugin';
 export {
   isPluginApplicableToEntity,
   PagerDutyCard,
-} from './components/PagerDutyCard';
+} from './components/PagerdutyCard';
+export {
+  PagerDutyClientApi,
+  pagerDutyApiRef,
+  UnauthorizedError,
+} from './api/client';

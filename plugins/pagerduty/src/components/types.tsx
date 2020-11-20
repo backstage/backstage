@@ -18,10 +18,10 @@ export type Incident = {
   id: string;
   title: string;
   status: string;
-  homepageUrl: string;
+  html_url: string;
   assignments: [
     {
-      assignee: User;
+      assignee: Assignee;
     },
   ];
   serviceId: string;
@@ -41,6 +41,12 @@ export type Service = {
 
 export type OnCall = {
   user: User;
+};
+
+export type Assignee = {
+  id: string;
+  summary: string;
+  html_url: string;
 };
 
 export type User = {

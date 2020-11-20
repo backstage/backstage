@@ -14,27 +14,58 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { List, ListSubheader } from '@material-ui/core';
-import { Incident } from '../types';
+import React, { useEffect } from 'react';
+import { List, ListSubheader, LinearProgress } from '@material-ui/core';
 import { IncidentListItem } from './IncidentListItem';
 import { IncidentsEmptyState } from './IncidentEmptyState';
+import { useAsyncFn } from 'react-use';
+import { pagerDutyApiRef } from '../../api';
+import { useApi } from '@backstage/core';
+import { Alert } from '@material-ui/lab';
 
-type IncidentsProps = {
-  incidents: Incident[];
+type Props = {
+  serviceId: string;
+  shouldRefreshIncidents: boolean;
+  setShouldRefreshIncidents: (shouldRefreshIncidents: boolean) => void;
 };
 
-export const Incidents = ({ incidents }: IncidentsProps) => (
-  <List
-    dense
-    subheader={<ListSubheader>{incidents.length && 'INCIDENTS'}</ListSubheader>}
-  >
-    {incidents.length ? (
-      incidents.map((incident, index) => (
+export const Incidents = ({
+  serviceId,
+  shouldRefreshIncidents,
+  setShouldRefreshIncidents,
+}: Props) => {
+  const api = useApi(pagerDutyApiRef);
+
+  const [{ value: incidents, loading, error }, getIncidents] = useAsyncFn(
+    async () => {
+      setShouldRefreshIncidents(false);
+      return await api.getIncidentsByServiceId(serviceId);
+    },
+  );
+
+  useEffect(() => {
+    getIncidents();
+  }, [shouldRefreshIncidents, getIncidents]);
+
+  if (error) {
+    return (
+      <Alert severity="error">
+        Error encountered while fetching information. {error.message}
+      </Alert>
+    );
+  }
+
+  if (loading) {
+    return <LinearProgress />;
+  }
+
+  return incidents?.length ? (
+    <List dense subheader={<ListSubheader>INCIDENTS</ListSubheader>}>
+      {incidents!.map((incident, index) => (
         <IncidentListItem key={incident.id + index} incident={incident} />
-      ))
-    ) : (
-      <IncidentsEmptyState />
-    )}
-  </List>
-);
+      ))}
+    </List>
+  ) : (
+    <IncidentsEmptyState />
+  );
+};

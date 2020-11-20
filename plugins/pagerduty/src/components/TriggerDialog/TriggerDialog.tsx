@@ -19,67 +19,61 @@ import {
   Dialog,
   DialogTitle,
   TextField,
-  makeStyles,
   DialogActions,
   Button,
   DialogContent,
   Typography,
   CircularProgress,
 } from '@material-ui/core';
-import {
-  Progress,
-  useApi,
-  alertApiRef,
-  identityApiRef,
-  WarningPanel,
-} from '@backstage/core';
+import { useApi, alertApiRef, identityApiRef } from '@backstage/core';
 import { useAsyncFn } from 'react-use';
 import { pagerDutyApiRef } from '../../api';
-import { Alert, AlertTitle } from '@material-ui/lab';
-
-const useStyles = makeStyles({
-  warningText: {
-    border: '1px solid rgba(245, 155, 35, 0.5)',
-    backgroundColor: 'rgba(245, 155, 35, 0.2)',
-    padding: '0.5em 1em',
-  },
-});
+import { Alert } from '@material-ui/lab';
 
 type Props = {
   name: string;
   integrationKey: string;
-  onClose: () => void;
+  showDialog: boolean;
+  handleDialog: () => void;
+  setShouldRefreshIncidents: (shouldRefreshIncidents: boolean) => void;
 };
 
-export const TriggerDialog = ({ name, integrationKey, onClose }: Props) => {
-  const classes = useStyles();
-  const [description, setDescription] = useState<string>('');
+export const TriggerDialog = ({
+  name,
+  integrationKey,
+  showDialog,
+  handleDialog,
+  setShouldRefreshIncidents,
+}: Props) => {
   const alertApi = useApi(alertApiRef);
   const identityApi = useApi(identityApiRef);
   const userId = identityApi.getUserId();
   const api = useApi(pagerDutyApiRef);
-
-  const descriptionChanged = (event: any) => {
-    setDescription(event.target.value);
-  };
+  const [description, setDescription] = useState<string>('');
 
   const [{ value, loading, error }, handleTriggerAlarm] = useAsyncFn(
-    async (desc: string) => {
-      return await api.triggerAlarm(
+    async (desc: string) =>
+      await api.triggerAlarm(
         integrationKey,
         window.location.toString(),
         desc,
         userId,
-      );
-    },
+      ),
   );
+
+  const descriptionChanged = (
+    event: React.ChangeEvent<HTMLTextAreaElement>,
+  ) => {
+    setDescription(event.target.value);
+  };
 
   useEffect(() => {
     if (value) {
       alertApi.post({
         message: `Alarm successfully triggered by ${userId}`,
       });
-      onClose();
+      setShouldRefreshIncidents(true);
+      handleDialog();
     }
 
     if (error) {
@@ -88,16 +82,19 @@ export const TriggerDialog = ({ name, integrationKey, onClose }: Props) => {
         severity: 'error',
       });
     }
-  }, [value, error, alertApi, onClose, userId]);
+  }, [value, error, alertApi, handleDialog, userId, setShouldRefreshIncidents]);
+
+  if (!showDialog) {
+    return null;
+  }
 
   return (
-    <Dialog maxWidth="md" open onClose={onClose} fullWidth>
+    <Dialog maxWidth="md" open onClose={handleDialog} fullWidth>
       <DialogTitle>
         This action will trigger an incident for <strong>"{name}"</strong>.
       </DialogTitle>
       <DialogContent>
         <Alert severity="info">
-          {/* <AlertTitle>"Note"</AlertTitle> */}
           <Typography variant="body1" align="justify">
             If the issue you are seeing does not need urgent attention, please
             get in touch with the responsible team using their preferred
@@ -141,7 +138,7 @@ export const TriggerDialog = ({ name, integrationKey, onClose }: Props) => {
         >
           Trigger Incident
         </Button>
-        <Button id="close" color="primary" onClick={onClose}>
+        <Button id="close" color="primary" onClick={handleDialog}>
           Close
         </Button>
       </DialogActions>

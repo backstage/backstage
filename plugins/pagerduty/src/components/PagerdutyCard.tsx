@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { useState } from 'react';
 import { useApi, EmptyState } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
 import {
+  Button,
   Card,
   CardContent,
   CardHeader,
@@ -26,13 +27,13 @@ import {
 } from '@material-ui/core';
 import { Incidents } from './Incident';
 import { EscalationPolicy } from './Escalation';
-import { TriggerButton } from './TriggerButton';
 import { useAsync } from 'react-use';
 import { Alert } from '@material-ui/lab';
 import { pagerDutyApiRef, UnauthorizedError } from '../api';
 import { IconLinkVertical } from '@backstage/plugin-catalog';
 import PagerDutyIcon from './PagerDutyIcon';
-import ReportProblemIcon from '@material-ui/icons/ReportProblem';
+import AlarmAddIcon from '@material-ui/icons/AlarmAdd';
+import { TriggerDialog } from './TriggerDialog';
 
 const useStyles = makeStyles(theme => ({
   links: {
@@ -41,6 +42,19 @@ const useStyles = makeStyles(theme => ({
     gridAutoFlow: 'column',
     gridAutoColumns: 'min-content',
     gridGap: theme.spacing(3),
+  },
+  triggerAlarm: {
+    paddingTop: 0,
+    paddingBottom: 0,
+    fontSize: '0.7rem',
+    textTransform: 'uppercase',
+    fontWeight: 600,
+    letterSpacing: 1.2,
+    lineHeight: 1.5,
+    '&:hover, &:focus, &.focus': {
+      backgroundColor: 'transparent',
+      textDecoration: 'none',
+    },
   },
 }));
 
@@ -56,27 +70,28 @@ type Props = {
 export const PagerDutyCard = ({ entity }: Props) => {
   const classes = useStyles();
   const api = useApi(pagerDutyApiRef);
+  const [showDialog, setShowDialog] = useState<boolean>(false);
+  const [shouldRefreshIncidents, setShouldRefreshIncidents] = useState<boolean>(
+    false,
+  );
+  const integrationKey = entity.metadata.annotations![
+    PAGERDUTY_INTEGRATION_KEY
+  ];
 
-  const { value, loading, error } = useAsync(async () => {
-    const integrationKey = entity.metadata.annotations![
-      PAGERDUTY_INTEGRATION_KEY
-    ];
-
+  const { value: service, loading, error } = useAsync(async () => {
     const services = await api.getServiceByIntegrationKey(integrationKey);
-    const incidents = await api.getIncidentsByServiceId(services[0].id);
-    const oncalls = await api.getOnCallByPolicyId(
-      services[0].escalation_policy.id,
-    );
-    const users = oncalls.map(oncall => oncall.user);
 
     return {
-      incidents,
-      users,
       id: services[0].id,
       name: services[0].name,
-      homepageUrl: services[0].html_url,
+      url: services[0].html_url,
+      policyId: services[0].escalation_policy.id,
     };
   });
+
+  const handleDialog = () => {
+    setShowDialog(!showDialog);
+  };
 
   if (error) {
     if (error instanceof UnauthorizedError) {
@@ -84,7 +99,16 @@ export const PagerDutyCard = ({ entity }: Props) => {
         <EmptyState
           missing="info"
           title="Missing or invalid PagerDuty Token"
-          description="The request to fetch data need a valid token. See README for more details."
+          description="The request to fetch data needs a valid token. See README for more details."
+          action={
+            <Button
+              color="primary"
+              variant="contained"
+              href="https://github.com/backstage/backstage/blob/master/plugins/pagerduty/README.md"
+            >
+              Read More
+            </Button>
+          }
         />
       );
     }
@@ -102,12 +126,21 @@ export const PagerDutyCard = ({ entity }: Props) => {
 
   const pagerdutyLink = {
     title: 'View in PagerDuty',
-    href: value!.homepageUrl,
+    href: service!.url,
   };
 
   const triggerAlarm = {
     title: 'Trigger Alarm',
-    action: <TriggerButton entity={entity} />,
+    action: (
+      <Button
+        data-testid="trigger-button"
+        color="secondary"
+        onClick={handleDialog}
+        className={classes.triggerAlarm}
+      >
+        Trigger Alarm
+      </Button>
+    ),
   };
 
   return (
@@ -123,7 +156,7 @@ export const PagerDutyCard = ({ entity }: Props) => {
             />
             <IconLinkVertical
               label={triggerAlarm.title}
-              icon={<ReportProblemIcon />}
+              icon={<AlarmAddIcon />}
               action={triggerAlarm.action}
             />
           </nav>
@@ -131,8 +164,19 @@ export const PagerDutyCard = ({ entity }: Props) => {
       />
       <Divider />
       <CardContent>
-        <Incidents incidents={value!.incidents} />
-        <EscalationPolicy users={value!.users} />
+        <Incidents
+          serviceId={service!.id}
+          shouldRefreshIncidents={shouldRefreshIncidents}
+          setShouldRefreshIncidents={setShouldRefreshIncidents}
+        />
+        <EscalationPolicy policyId={service!.policyId} />
+        <TriggerDialog
+          showDialog={showDialog}
+          handleDialog={handleDialog}
+          name={entity.metadata.name}
+          integrationKey={integrationKey}
+          setShouldRefreshIncidents={setShouldRefreshIncidents}
+        />
       </CardContent>
     </Card>
   );

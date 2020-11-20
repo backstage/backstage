@@ -31,10 +31,6 @@ import moment from 'moment';
 import { Incident } from '../types';
 import PagerdutyIcon from '../PagerDutyIcon';
 
-type IncidentListItemProps = {
-  incident: Incident;
-};
-
 const useStyles = makeStyles({
   denseListIcon: {
     marginRight: 0,
@@ -51,9 +47,15 @@ const useStyles = makeStyles({
   },
 });
 
-export const IncidentListItem = ({ incident }: IncidentListItemProps) => {
+type Props = {
+  incident: Incident;
+};
+
+export const IncidentListItem = ({ incident }: Props) => {
   const classes = useStyles();
-  const user = incident.assignments[0].assignee;
+  const user = incident.assignments[0]?.assignee;
+  const createdAt = moment(incident.created_at).fromNow();
+
   return (
     <ListItem dense key={incident.id}>
       <ListItemIcon className={classes.listItemIcon}>
@@ -68,25 +70,28 @@ export const IncidentListItem = ({ incident }: IncidentListItemProps) => {
         </Tooltip>
       </ListItemIcon>
       <ListItemText
-        primary={
-          <Typography className={classes.listItemPrimary}>
-            {incident.title}
-          </Typography>
-        }
+        primary={incident.title}
+        primaryTypographyProps={{
+          variant: 'body1',
+          className: classes.listItemPrimary,
+        }}
         secondary={
-          <span style={{ wordBreak: 'break-all', whiteSpace: 'normal' }}>
-            Created {moment(incident.created_at).fromNow()}, assigned to{' '}
-            {(incident?.assignments[0]?.assignee?.summary && (
-              <Link href={`mailto:${user.email}`}>{user.summary}</Link>
-            )) ||
-              'nobody'}
-          </span>
+          <Typography noWrap variant="body2" color="textSecondary">
+            Created {createdAt} and assigned to{' '}
+            <Link
+              href={user?.html_url ?? '#'}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {user?.summary ?? 'nobody'}
+            </Link>
+          </Typography>
         }
       />
       <ListItemSecondaryAction>
         <Tooltip title="View in PagerDuty" placement="top">
           <IconButton
-            href={user.html_url}
+            href={incident.html_url}
             target="_blank"
             rel="noopener noreferrer"
             color="primary"

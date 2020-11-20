@@ -15,21 +15,47 @@
  */
 
 import React from 'react';
-import { List, ListSubheader } from '@material-ui/core';
-import { User } from '../types';
+import { List, ListSubheader, LinearProgress } from '@material-ui/core';
 import { EscalationUsersEmptyState } from './EscalationUsersEmptyState';
 import { EscalationUser } from './EscalationUser';
+import { useAsync } from 'react-use';
+import { pagerDutyApiRef } from '../../api';
+import { useApi } from '@backstage/core';
+import { Alert } from '@material-ui/lab';
 
-type EscalationPolicyProps = {
-  users: User[];
+type Props = {
+  policyId: string;
 };
 
-export const EscalationPolicy = ({ users }: EscalationPolicyProps) => (
-  <List dense subheader={<ListSubheader>ON CALL</ListSubheader>}>
-    {users.length ? (
-      users.map((user, index) => <EscalationUser key={index} user={user} />)
-    ) : (
-      <EscalationUsersEmptyState />
-    )}
-  </List>
-);
+export const EscalationPolicy = ({ policyId }: Props) => {
+  const api = useApi(pagerDutyApiRef);
+
+  const { value: users, loading, error } = useAsync(async () => {
+    const oncalls = await api.getOnCallByPolicyId(policyId);
+    const users = oncalls.map(oncall => oncall.user);
+
+    return users;
+  });
+
+  if (error) {
+    return (
+      <Alert severity="error">
+        Error encountered while fetching information. {error.message}
+      </Alert>
+    );
+  }
+
+  if (loading) {
+    return <LinearProgress />;
+  }
+
+  return users!.length ? (
+    <List dense subheader={<ListSubheader>ON CALL</ListSubheader>}>
+      {users!.map((user, index) => (
+        <EscalationUser key={index} user={user} />
+      ))}
+    </List>
+  ) : (
+    <EscalationUsersEmptyState />
+  );
+};

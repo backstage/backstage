@@ -36,8 +36,13 @@ const useStyles = makeStyles({
   },
 });
 
-export const EscalationUser = ({ user }: { user: User }) => {
+type Props = {
+  user: User;
+};
+
+export const EscalationUser = ({ user }: Props) => {
   const classes = useStyles();
+
   return (
     <ListItem>
       <ListItemIcon>
