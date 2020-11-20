@@ -83,9 +83,15 @@ export function formatPercent(n: number): string {
   if (isNaN(n) || Math.abs(n) < 0.01) {
     return '0%';
   }
+
+  if (Math.abs(n) > 10) {
+    return `>1000%`;
+  }
+
   if (Math.abs(n) >= 1e19) {
     return '∞%';
   }
+
   return `${(n * 100).toFixed(0)}%`;
 }
 
