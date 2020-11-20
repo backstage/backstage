@@ -171,6 +171,7 @@ scaffolded
 scaffolder
 Scaffolder
 semlas
+semver
 Serverless
 Sinon
 smartsymobls
@@ -199,11 +200,13 @@ theres
 toc
 tolerations
 Tolerations
+toolchain
 toolsets
 tooltip
 tooltips
 touchpoints
 ui
+untracked
 upvote
 url
 utils
