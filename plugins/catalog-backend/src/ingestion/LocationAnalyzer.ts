@@ -22,13 +22,13 @@ import {
   LocationAnalyzer,
 } from './types';
 
-export class LocationAnalyzerClient implements LocationAnalyzer {
+export class RepoLocationAnalyzer implements LocationAnalyzer {
   private readonly logger: Logger;
 
   constructor(logger: Logger) {
     this.logger = logger;
   }
-  async generateConfig(
+  async analyzeLocation(
     request: AnalyzeLocationRequest,
   ): Promise<AnalyzeLocationResponse> {
     const { owner, name, source } = parseGitUri(request.location.target);
@@ -40,7 +40,7 @@ export class LocationAnalyzerClient implements LocationAnalyzer {
         // Probably won't handle properly self-hosted git providers with custom url
         annotations: { [`${source}/project-slug`]: `${owner}/${name}` },
       },
-      spec: { type: 'other', owner: owner, lifecycle: 'unknown' },
+      spec: { type: 'other', lifecycle: 'unknown' },
     };
 
     this.logger.debug(`entity created for ${request.location.target}`);

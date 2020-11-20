@@ -52,7 +52,7 @@ import {
   UrlReaderProcessor,
 } from '../ingestion';
 import { CatalogRulesEnforcer } from '../ingestion/CatalogRules';
-import { LocationAnalyzerClient } from '../ingestion/LocationAnalyzer';
+import { RepoLocationAnalyzer } from '../ingestion/LocationAnalyzer';
 import { BuiltinKindsEntityProcessor } from '../ingestion/processors/BuiltinKindsEntityProcessor';
 import { LdapOrgReaderProcessor } from '../ingestion/processors/LdapOrgReaderProcessor';
 import {
@@ -232,7 +232,7 @@ export class CatalogBuilder {
       locationReader,
       logger,
     );
-    const locationAnalyzer = new LocationAnalyzerClient(logger);
+    const locationAnalyzer = new RepoLocationAnalyzer(logger);
 
     return {
       entitiesCatalog,

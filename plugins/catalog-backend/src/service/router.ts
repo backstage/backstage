@@ -139,7 +139,7 @@ export async function createRouter(
   if (locationAnalyzer) {
     router.post('/analyze-location', async (req, res) => {
       const input = await validateRequestBody(req, analyzeLocationSchema);
-      const output = await locationAnalyzer.generateConfig(input);
+      const output = await locationAnalyzer.analyzeLocation(input);
       res.status(200).send(output);
     });
   }
