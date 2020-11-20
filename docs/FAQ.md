@@ -127,7 +127,7 @@ APIs in TypeScript, but aren't forcing it on individual plugins.
 You can browse and search for all available plugins in the
 [Plugin Marketplace](https://backstage.io/plugins).
 
-If you can't find it in the marketplace, before you write a plugin,
+If you can't find it in the marketplace, before you write a plugin
 [search the plugin issues](https://github.com/backstage/backstage/issues?q=is%3Aissue+label%3Aplugin+)
 to see if is in the works. If no one's thought of it yet, great! Open a new
 issue as
