@@ -18,8 +18,11 @@ import express from 'express';
 import { Session } from 'express-session';
 import nock from 'nock';
 import { ClientMetadata, IssuerMetadata } from 'openid-client';
-import { OidcAuthProvider } from './provider';
+import { createOidcProvider, OidcAuthProvider } from './provider';
 import { JWT, JWK } from 'jose';
+import { AuthProviderFactoryOptions } from '../types';
+import { Config } from '@backstage/config';
+import { OAuthAdapter } from '../../lib/oauth';
 
 const issuerMetadata = {
   issuer: 'https://oidc.test',
@@ -91,5 +94,22 @@ describe('OidcAuthProvider', () => {
     } as express.Request;
     await provider.handler(req);
     expect(scope.isDone()).toBeTruthy();
+  });
+
+  const options = {
+    globalConfig: {
+      appUrl: 'https://oidc.test',
+      baseUrl: 'https://oidc.test',
+    },
+    config: ({
+      keys: jest.fn(() => ['test']),
+      getConfig: jest.fn(() => ({ getString: () => '' })),
+    } as any) as Config,
+  } as AuthProviderFactoryOptions;
+
+  it('createOidcProvider', () => {
+    const provider = createOidcProvider(options) as OAuthAdapter;
+    console.log(provider);
+    expect(provider.start).toBeDefined();
   });
 });
