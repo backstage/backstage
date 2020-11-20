@@ -41,7 +41,7 @@ describe('Azure Publisher', () => {
   describe('publish: createRemoteInAzure', () => {
     it('should use azure-devops-node-api to create a repo in the given project', async () => {
       mockGitApi.createRepository.mockResolvedValue({
-        remoteUrl: 'mockclone',
+        remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
       } as { remoteUrl: string });
 
       const result = await publisher.publish({
@@ -52,7 +52,11 @@ describe('Azure Publisher', () => {
         directory: '/tmp/test',
       });
 
-      expect(result).toEqual({ remoteUrl: 'mockclone' });
+      expect(result).toEqual({
+        remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+        catalogInfoUrl:
+          'https://dev.azure.com/organization/project/_git/repo?path=%2Fcatalog-info.yaml',
+      });
       expect(mockGitApi.createRepository).toHaveBeenCalledWith(
         {
           name: 'repo',
@@ -61,7 +65,7 @@ describe('Azure Publisher', () => {
       );
       expect(pushToRemoteUserPass).toHaveBeenCalledWith(
         '/tmp/test',
-        'mockclone',
+        'https://dev.azure.com/organization/project/_git/repo',
         'notempty',
         'fake-token',
       );
