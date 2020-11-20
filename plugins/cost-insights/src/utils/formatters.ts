@@ -24,6 +24,11 @@ export type Period = {
   periodEnd: string;
 };
 
+export const costFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+});
+
 export const currencyFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
   currency: 'USD',

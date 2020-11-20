@@ -20,7 +20,7 @@ import { Table, TableColumn } from '@backstage/core';
 import { Dialog, IconButton, Typography } from '@material-ui/core';
 import { default as CloseButton } from '@material-ui/icons/Close';
 import { CostGrowthIndicator } from '../CostGrowth';
-import { currencyFormatter, formatPercent } from '../../utils/formatters';
+import { costFormatter, formatPercent } from '../../utils/formatters';
 import { useEntityDialogStyles as useStyles } from '../../utils/styles';
 import { BarChartOptions, Entity } from '../../types';
 
@@ -38,7 +38,7 @@ function createRenderer(col: keyof RowData, classes: Record<string, string>) {
       case 'current':
         return (
           <Typography className={rowStyles}>
-            {currencyFormatter.format(row[col])}
+            {costFormatter.format(row[col])}
           </Typography>
         );
       case 'ratio':
@@ -122,6 +122,7 @@ export const ProductEntityDialog = ({
       title: <Typography className={firstColClasses}>SKU</Typography>,
       render: createRenderer('sku', classes),
       customSort: createSorter('sku'),
+      width: '33.33%',
     },
     {
       field: 'previous',

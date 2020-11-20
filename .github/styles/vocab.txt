@@ -3,12 +3,14 @@ Apdex
 api
 Api
 apis
+andrewthauer
 args
 asciidoc
 async
 Avro
 backrub
 Balachandran
+benjdlambert
 Bigtable
 Blackbox
 bool
@@ -50,6 +52,7 @@ Dockerfile
 Dockerize
 dockerode
 Docusaurus
+dzolotusky
 eg
 Ek
 env
@@ -59,6 +62,7 @@ facto
 failover
 Figma
 Firekube
+freben
 Fredrik
 github
 Github
@@ -66,6 +70,7 @@ gitlab
 Gitlab
 graphql
 graphviz
+Gustavsson
 Hackathons
 haproxy
 heroku
@@ -159,6 +164,7 @@ Rollup
 Rosaceae
 rst
 rsync
+rugvip
 ruleset
 sam
 scaffolded
@@ -174,6 +180,7 @@ spotify
 Spotify
 squidfunk
 src
+stefanalund
 subkey
 superfences
 Superfences
@@ -209,6 +216,7 @@ xyz
 yaml
 Zalando
 Zhou
+Zolotusky
 Billett
 cloudbuild
 Grafana

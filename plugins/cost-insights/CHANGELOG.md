@@ -1,5 +1,22 @@
 # @backstage/plugin-cost-insights
 
+## 0.4.0
+
+### Minor Changes
+
+- 4040d4fcb: remove cost insights currency feature flag
+
+### Patch Changes
+
+- 1722cb53c: Added configuration schema
+- 17a9f48f6: remove excessive margin from cost overview banner
+- f360395d0: UI improvements: Increase width of first column in product entity dialog table
+  UI improvement: Display full cost amount in product entity dialog table
+- 259d848ee: Fix savings/excess display calculation
+- Updated dependencies [1722cb53c]
+  - @backstage/core@0.3.1
+  - @backstage/test-utils@0.1.3
+
 ## 0.3.0
 
 ### Minor Changes
