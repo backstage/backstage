@@ -314,7 +314,7 @@ export const oauth2ApiRef: ApiRef<
 /**
  * Provides authentication for custom OpenID Connect identity providers.
  */
-export const oidcApiRef: ApiRef<
+export const oidcAuthApiRef: ApiRef<
   OAuthApi &
     OpenIdConnectApi &
     ProfileInfoApi &

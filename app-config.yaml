@@ -239,8 +239,8 @@ auth:
           $env: AUTH_OAUTH2_TOKEN_URL
     oidc:
       development:
-        adUrl:
-          $env: AUTH_OIDC_AD_URL
+        metadataUrl:
+          $env: AUTH_OIDC_METADATA_URL
         clientId:
           $env: AUTH_OIDC_CLIENT_ID
         clientSecret:
