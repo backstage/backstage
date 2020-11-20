@@ -153,8 +153,9 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
 
       // filter on checked
       if (filters.checked.length > 0) {
-        withFilters = withFilters.filter((result: Result) =>
-          filters.checked.includes(result.lifecycle),
+        withFilters = withFilters.filter(
+          (result: Result) =>
+            result.lifecycle && filters.checked.includes(result.lifecycle),
         );
       }
 

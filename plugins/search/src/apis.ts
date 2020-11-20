@@ -20,9 +20,9 @@ import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 export type Result = {
   name: string;
   description: string;
-  owner: string;
+  owner: string | undefined;
   kind: string;
-  lifecycle: string;
+  lifecycle: string | undefined;
   url: string;
 };
 
@@ -40,16 +40,15 @@ class SearchApi {
     return entities.items.map((entity: Entity) => ({
       name: entity.metadata.name,
       description: entity.metadata.description || 'No description',
-      owner:
-        typeof entity.spec?.owner === 'string' ? entity.spec?.owner : 'unknown',
+      owner: typeof entity.spec?.owner ?? undefined,
       kind: entity.kind,
       lifecycle:
         typeof entity.spec?.lifecycle === 'string'
           ? entity.spec?.lifecycle
-          : 'unknown',
-      url: `/catalog/${entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE}/${
-        entity.kind
-      }/${entity.metadata.name}`,
+          : undefined,
+      url: `/catalog/${
+        entity.metadata.namespace?.toLowerCase() || ENTITY_DEFAULT_NAMESPACE
+      }/${entity.kind.toLowerCase()}/${entity.metadata.name}`,
     }));
   }
 
