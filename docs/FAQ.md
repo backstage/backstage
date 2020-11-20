@@ -48,8 +48,8 @@ source candidates. (And we'll probably end up writing some brand new ones, too.)
 ### What's the roadmap for Backstage?
 
 We envision three phases, which you can learn about in
-[our project roadmap](overview/roadmap). Even though the open source version of
-Backstage is relatively new compared to our internal version, we have already
+[our project roadmap](overview/roadmap.md). Even though the open source version
+of Backstage is relatively new compared to our internal version, we have already
 begun work on various aspects of all three phases. Looking at the
 [milestones for active issues](https://github.com/backstage/backstage/milestones)
 will also give you a sense of our progress.
@@ -114,7 +114,7 @@ type of content. Plugins all use a common set of platform APIs and reusable UI
 components. Plugins can fetch data either from the backend or an API exposed
 through the proxy.
 
-Learn more about [the different components](overview/what-is-backstage) that
+Learn more about [the different components](overview/what-is-backstage.md) that
 make up Backstage.
 
 ### Do I have to write plugins in TypeScript?
@@ -217,9 +217,9 @@ data is shared with.
 Yes. The core frontend framework could be used for building any large-scale web
 application where (1) multiple teams are building separate parts of the app, and
 (2) you want the overall experience to be consistent. That being said, in
-[Phase 2](overview/roadmap) of the project we will add features that are needed
-for developer portals and systems for managing software ecosystems. Our ambition
-will be to keep Backstage modular.
+[Phase 2](overview/roadmap.md) of the project we will add features that are
+needed for developer portals and systems for managing software ecosystems. Our
+ambition will be to keep Backstage modular.
 
 ### How can I get involved?
 
