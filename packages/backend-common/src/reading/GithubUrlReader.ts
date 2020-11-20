@@ -207,7 +207,7 @@ export class GithubUrlReader implements UrlReader {
 
     const path = `${repoName}-${ref}/${filepath}`;
 
-    return this.deps.treeResponseFactory.fromArchive({
+    return this.deps.treeResponseFactory.fromTarArchive({
       // TODO(Rugvip): Underlying implementation of fetch will be node-fetch, we probably want
       //               to stick to using that in exclusively backend code.
       stream: (response.body as unknown) as Readable,
