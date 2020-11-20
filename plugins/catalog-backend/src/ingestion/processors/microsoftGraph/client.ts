@@ -129,7 +129,7 @@ export class MicrosoftGraphClient {
     const photos = result.value as MicrosoftGraph.ProfilePhoto[];
     let selectedPhoto: MicrosoftGraph.ProfilePhoto | undefined = undefined;
 
-    // Find the biggest picture that is small than the max size
+    // Find the biggest picture that is smaller than the max size
     for (const p of photos) {
       if (
         !selectedPhoto ||

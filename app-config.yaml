@@ -143,8 +143,8 @@ catalog:
     microsoftGraphOrg:
       ### Example for how to add your Microsoft Graph tenant
       #providers:
-      #  - target: https://graph.microsoft.com/v1.0/
-      #    authority: https://login.microsoftonline.com/
+      #  - target: https://graph.microsoft.com/v1.0
+      #    authority: https://login.microsoftonline.com
       #    tenantId:
       #      $env: MICROSOFT_GRAPH_TENANT_ID
       #    clientId:
