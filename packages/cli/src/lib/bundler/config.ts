@@ -70,13 +70,27 @@ async function readBuildInfo() {
   };
 }
 
+async function loadLernaPackages(): Promise<
+  { name: string; location: string }[]
+> {
+  const LernaProject = require('@lerna/project');
+  const project = new LernaProject(cliPaths.targetDir);
+  return project.getPackages();
+}
+
 export async function createConfig(
   paths: BundlingPaths,
   options: BundlingOptions,
 ): Promise<webpack.Configuration> {
   const { checksEnabled, isDev, frontendConfig } = options;
 
-  const { plugins, loaders } = transforms(options);
+  const packages = await loadLernaPackages();
+  const { plugins, loaders } = transforms({
+    ...options,
+    externalTransforms: packages.map(({ name }) =>
+      cliPaths.resolveTargetRoot('node_modules', name),
+    ),
+  });
 
   const baseUrl = frontendConfig.getString('app.baseUrl');
   const validBaseUrl = new URL(baseUrl);
@@ -159,6 +173,10 @@ export async function createConfig(
       alias: {
         'react-dom': '@hot-loader/react-dom',
       },
+      // Enables proper resolution of packages when linking in external packages.
+      // Without this the packages would depend on dependencies in the node_modules
+      // of the external packages themselves, leading to module duplication
+      symlinks: false,
     },
     module: {
       rules: loaders,
@@ -181,16 +199,19 @@ export async function createBackendConfig(
 ): Promise<webpack.Configuration> {
   const { checksEnabled, isDev } = options;
 
-  const { loaders } = transforms(options);
-
   // Find all local monorepo packages and their node_modules, and mark them as external.
-  const LernaProject = require('@lerna/project');
-  const project = new LernaProject(cliPaths.targetDir);
-  const packages = await project.getPackages();
+  const packages = await await loadLernaPackages();
   const localPackageNames = packages.map((p: any) => p.name);
   const moduleDirs = packages.map((p: any) =>
     resolvePath(p.location, 'node_modules'),
   );
+
+  const { loaders } = transforms({
+    ...options,
+    externalTransforms: packages.map(({ name }) =>
+      cliPaths.resolveTargetRoot('node_modules', name),
+    ),
+  });
 
   return {
     mode: isDev ? 'development' : 'production',
@@ -240,6 +261,7 @@ export async function createBackendConfig(
       alias: {
         'react-dom': '@hot-loader/react-dom',
       },
+      symlinks: false, // See frontend config, added here for the same reason
     },
     module: {
       rules: loaders,
