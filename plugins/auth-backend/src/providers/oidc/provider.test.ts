@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
+import express from 'express';
+import { Session } from 'express-session';
 import nock from 'nock';
 import { ClientMetadata, IssuerMetadata } from 'openid-client';
 import { OidcAuthProvider } from './provider';
+import { JWT, JWK } from 'jose';
 
 const issuerMetadata = {
   issuer: 'https://oidc.test',
@@ -29,9 +32,9 @@ const issuerMetadata = {
   scopes_supported: ['openid'],
   claims_supported: ['email'],
   response_types_supported: ['code'],
-  id_token_signing_alg_values_supported: ['RS256', 'RS512'],
-  token_endpoint_auth_signing_alg_values_supported: ['RS256', 'RS512'],
-  request_object_signing_alg_values_supported: ['RS256', 'RS512'],
+  id_token_signing_alg_values_supported: ['RS256', 'RS512', 'HS256'],
+  token_endpoint_auth_signing_alg_values_supported: ['RS256', 'RS512', 'HS256'],
+  request_object_signing_alg_values_supported: ['RS256', 'RS512', 'HS256'],
 };
 
 const clientMetadata = {
@@ -39,10 +42,11 @@ const clientMetadata = {
   clientId: 'testclientid',
   clientSecret: 'testclientsecret',
   metadataUrl: 'https://oidc.test/.well-known/openid-configuration',
+  tokenSignedResponseAlg: 'none',
 };
 
 describe('OidcAuthProvider', () => {
-  it('hit the metadataurl', async () => {
+  it('hit the metadata url', async () => {
     const scope = nock('https://oidc.test')
       .get('/.well-known/openid-configuration')
       .reply(200, issuerMetadata);
@@ -56,5 +60,36 @@ describe('OidcAuthProvider', () => {
     const { _client, _issuer } = strategy;
     expect(_client.client_id).toBe(clientMetadata.clientId);
     expect(_issuer.token_endpoint).toBe(issuerMetadata.token_endpoint);
+  });
+
+  it('OidcAuthProvider#handler successfully invokes the oidc endpoints', async () => {
+    const jwt = {
+      sub: 'alice',
+      iss: 'https://oidc.test',
+      aud: clientMetadata.clientId,
+      exp: Date.now() + 10000,
+    };
+    const scope = nock('https://oidc.test')
+      .get('/.well-known/openid-configuration')
+      .reply(200, issuerMetadata)
+      .post('/as/token.oauth2')
+      .reply(200, {
+        id_token: JWT.sign(jwt, JWK.None),
+        access_token: 'test',
+        authorization_signed_response_alg: 'HS256',
+      })
+      .get('/idp/userinfo.openid')
+      .reply(200, {
+        sub: 'alice',
+        email: 'alice@oidc.test',
+      });
+    const provider = new OidcAuthProvider(clientMetadata);
+    const req = {
+      method: 'GET',
+      url: '/?code=test2',
+      session: ({ 'oidc:oidc.test': 'test' } as any) as Session,
+    } as express.Request;
+    await provider.handler(req);
+    expect(scope.isDone()).toBeTruthy();
   });
 });
