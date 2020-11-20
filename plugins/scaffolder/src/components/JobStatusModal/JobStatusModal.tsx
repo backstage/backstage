@@ -30,18 +30,12 @@ import { JobStage } from '../JobStage/JobStage';
 import { useJobPolling } from './useJobPolling';
 
 type Props = {
-  onClose: () => void;
   onComplete: (job: Job) => void;
   jobId: string;
   entity: TemplateEntityV1alpha1 | null;
 };
 
-export const JobStatusModal = ({
-  onClose,
-  jobId,
-  onComplete,
-  entity,
-}: Props) => {
+export const JobStatusModal = ({ jobId, onComplete, entity }: Props) => {
   const job = useJobPolling(jobId);
   const [dialogTitle, setDialogTitle] = useState('Creating component...');
 
@@ -54,7 +48,7 @@ export const JobStatusModal = ({
   }, [job, onComplete, setDialogTitle]);
 
   return (
-    <Dialog open onClose={onClose} fullWidth>
+    <Dialog open fullWidth>
       <DialogTitle id="responsive-dialog-title">{dialogTitle}</DialogTitle>
       <DialogContent>
         {!job ? (

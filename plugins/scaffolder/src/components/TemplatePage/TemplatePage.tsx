@@ -26,7 +26,7 @@ import {
 import { catalogApiRef } from '@backstage/plugin-catalog';
 import { LinearProgress } from '@material-ui/core';
 import { IChangeEvent } from '@rjsf/core';
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Navigate } from 'react-router';
 import { useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
@@ -86,11 +86,12 @@ export const TemplatePage = () => {
   const [formState, setFormState] = useState({});
 
   const handleFormReset = () => setFormState({});
-  const handleChange = (e: IChangeEvent) =>
-    setFormState({ ...formState, ...e.formData });
+  const handleChange = useCallback(
+    (e: IChangeEvent) => setFormState({ ...formState, ...e.formData }),
+    [setFormState, formState],
+  );
 
   const [jobId, setJobId] = useState<string | null>(null);
-  const handleClose = () => setJobId(null);
 
   const handleCreate = async () => {
     try {
@@ -106,18 +107,10 @@ export const TemplatePage = () => {
   );
 
   const handleCreateComplete = async (job: Job) => {
-    const target = job.metadata.remoteUrl?.replace(
-      /\.git$/,
-      // TODO(Rugvip): This is not the location we want. As part of scaffolder v2 we
-      //               want this to be more flexible, but before that we might want
-      //               to update all templates to use catalog-info.yaml instead.
-      '/blob/master/component-info.yaml',
-    );
-
-    if (!target) {
+    if (!job.metadata.catalogInfoUrl) {
       errorApi.post(
         new Error(
-          `Failed to find component-info.yaml file in ${job.metadata.remoteUrl}.`,
+          `Failed to find catalog-info.yaml file in ${job.metadata.remoteUrl}.`,
         ),
       );
       return;
@@ -125,7 +118,7 @@ export const TemplatePage = () => {
 
     const {
       entities: [createdEntity],
-    } = await catalogApi.addLocation({ target });
+    } = await catalogApi.addLocation({ target: job.metadata.catalogInfoUrl });
 
     setEntity((createdEntity as any) as TemplateEntityV1alpha1);
   };
@@ -161,7 +154,6 @@ export const TemplatePage = () => {
           <JobStatusModal
             onComplete={handleCreateComplete}
             jobId={jobId}
-            onClose={handleClose}
             entity={entity}
           />
         )}

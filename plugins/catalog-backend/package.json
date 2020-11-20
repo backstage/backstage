@@ -20,6 +20,7 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
+    "@azure/msal-node": "^1.0.0-alpha.8",
     "@backstage/backend-common": "^0.3.0",
     "@backstage/catalog-model": "^0.2.0",
     "@backstage/config": "^0.1.1",
@@ -37,6 +38,7 @@
     "lodash": "^4.17.15",
     "morgan": "^1.10.0",
     "p-limit": "^3.0.2",
+    "qs": "^6.9.4",
     "sqlite3": "^5.0.0",
     "uuid": "^8.0.0",
     "winston": "^3.2.1",

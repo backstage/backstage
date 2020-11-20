@@ -100,7 +100,9 @@ export const RegisterComponentResultDialog = ({
                     metadata={{
                       name: entity.metadata.name,
                       type: entity.spec.type,
-                      link: (
+                      link: dryRun ? (
+                        entityPath
+                      ) : (
                         <Link component={RouterLink} to={entityPath}>
                           {entityPath}
                         </Link>
