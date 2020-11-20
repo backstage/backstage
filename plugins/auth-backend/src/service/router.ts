@@ -28,6 +28,7 @@ import { Logger } from 'winston';
 import { createOidcRouter, DatabaseKeyStore, TokenFactory } from '../identity';
 import { createAuthProvider } from '../providers';
 import session from 'express-session';
+import passport from 'passport';
 
 export interface RouterOptions {
   logger: Logger;
@@ -60,11 +61,16 @@ export async function createRouter({
   });
   const catalogApi = new CatalogClient({ discoveryApi: discovery });
 
-  const secret =
-    config.getOptionalString('auth.session.secret') ?? 'backstage secret';
-  console.log('using secret', secret);
-  router.use(cookieParser(secret));
-  router.use(session({ secret, saveUninitialized: false, resave: false }));
+  const secret = config.getOptionalString('auth.session.secret');
+  if (secret) {
+    router.use(cookieParser(secret));
+    // TODO: Configure the server-side session storage.  The default MemoryStore is not designed for production
+    router.use(session({ secret, saveUninitialized: false, resave: false }));
+    router.use(passport.initialize());
+    router.use(passport.session());
+  } else {
+    router.use(cookieParser());
+  }
   router.use(express.urlencoded({ extended: false }));
   router.use(express.json());
 
