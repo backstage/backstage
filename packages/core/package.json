@@ -60,7 +60,8 @@
     "react-sparklines": "^1.7.0",
     "react-syntax-highlighter": "^13.5.1",
     "react-use": "^15.3.3",
-    "remark-gfm": "^1.0.0"
+    "remark-gfm": "^1.0.0",
+    "zen-observable": "^0.8.15"
   },
   "devDependencies": {
     "@backstage/cli": "^0.3.0",
