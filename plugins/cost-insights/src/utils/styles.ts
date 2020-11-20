@@ -386,6 +386,9 @@ export const useTooltipStyles = makeStyles<CostInsightsTheme>(
         boxShadow: theme.shadows[1],
         color: theme.palette.tooltip.color,
         fontSize: theme.typography.fontSize,
+        minWidth: 300,
+      },
+      maxWidth: {
         maxWidth: 300,
       },
       actions: {
