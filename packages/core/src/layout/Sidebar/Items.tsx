@@ -26,7 +26,6 @@ import { IconComponent } from '@backstage/core-api';
 import SearchIcon from '@material-ui/icons/Search';
 import clsx from 'clsx';
 import React, {
-  FC,
   useContext,
   useState,
   KeyboardEventHandler,
@@ -212,9 +211,10 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>(
 
 type SidebarSearchFieldProps = {
   onSearch: (input: string) => void;
+  to?: string;
 };
 
-export const SidebarSearchField: FC<SidebarSearchFieldProps> = props => {
+export const SidebarSearchField = (props: SidebarSearchFieldProps) => {
   const [input, setInput] = useState('');
   const classes = useStyles();
 
@@ -229,12 +229,18 @@ export const SidebarSearchField: FC<SidebarSearchFieldProps> = props => {
     setInput(ev.target.value);
   };
 
+  const handleClick = (ev: React.MouseEvent<HTMLInputElement>) => {
+    // Clicking into the search fields shouldn't navigate to the search page
+    ev.preventDefault();
+  };
+
   return (
     <div className={classes.searchRoot}>
-      <SidebarItem icon={SearchIcon}>
+      <SidebarItem icon={SearchIcon} to={props.to}>
         <TextField
           placeholder="Search"
           value={input}
+          onClick={handleClick}
           onChange={handleInput}
           onKeyDown={handleEnter}
           className={classes.searchContainer}
