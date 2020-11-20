@@ -15,7 +15,7 @@
  */
 import { Content, Header, Page, useQueryParamState } from '@backstage/core';
 import { Grid } from '@material-ui/core';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDebounce } from 'react-use';
 import { SearchBar } from '../SearchBar';
 import { SearchResult } from '../SearchResult';
@@ -28,6 +28,8 @@ export const SearchPage = () => {
     event.preventDefault();
     setSearchQuery(event.target.value);
   };
+
+  useEffect(() => setSearchQuery(queryString ?? ''), [queryString]);
 
   useDebounce(
     () => {
