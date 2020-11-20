@@ -18,3 +18,4 @@ export * from './Filters';
 export * from './SearchBar';
 export * from './SearchPage';
 export * from './SearchResult';
+export * from './SidebarSearch';
