@@ -15,6 +15,7 @@
  */
 
 import { CatalogApi } from '@backstage/plugin-catalog';
+import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 
 export type Result = {
   name: string;
@@ -36,15 +37,19 @@ class SearchApi {
 
   private async entities() {
     const entities = await this.catalogApi.getEntities();
-    return entities.items.map((result: any) => ({
-      name: result.metadata.name,
-      description: result.metadata.description,
-      owner: result.spec.owner,
-      kind: result.kind,
-      lifecycle: result.spec.lifecycle,
-      url: `/catalog/${result.metadata.namespace || 'default'}/${result.kind}/${
-        result.metadata.name
-      }`,
+    return entities.items.map((entity: Entity) => ({
+      name: entity.metadata.name,
+      description: entity.metadata.description || 'No description',
+      owner:
+        typeof entity.spec?.owner === 'string' ? entity.spec?.owner : 'unknown',
+      kind: entity.kind,
+      lifecycle:
+        typeof entity.spec?.lifecycle === 'string'
+          ? entity.spec?.lifecycle
+          : 'unknown',
+      url: `/catalog/${entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE}/${
+        entity.kind
+      }/${entity.metadata.name}`,
     }));
   }
 
