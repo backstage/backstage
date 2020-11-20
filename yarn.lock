@@ -1325,6 +1325,35 @@
     react-use "^15.3.3"
     remark-gfm "^1.0.0"
 
+"@backstage/plugin-catalog-backend@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.npmjs.org/@backstage/plugin-catalog-backend/-/plugin-catalog-backend-0.2.1.tgz#d63d1d145d97a5f1021c3e6c2ab680729be43e74"
+  integrity sha512-9OwM7JobjCvmNomsT2HbMyzgoWX+ztVGG4ebN3x/r75+sI55Dj3J29O9CRP7r86BIJ7bi1RWaLTycXX+CmuQ0Q==
+  dependencies:
+    "@backstage/backend-common" "^0.3.0"
+    "@backstage/catalog-model" "^0.2.0"
+    "@backstage/config" "^0.1.1"
+    "@octokit/graphql" "^4.5.6"
+    "@types/express" "^4.17.6"
+    codeowners-utils "^1.0.2"
+    core-js "^3.6.5"
+    cross-fetch "^3.0.6"
+    express "^4.17.1"
+    express-promise-router "^3.0.3"
+    fs-extra "^9.0.0"
+    git-url-parse "^11.4.0"
+    knex "^0.21.6"
+    ldapjs "^2.2.0"
+    lodash "^4.17.15"
+    morgan "^1.10.0"
+    p-limit "^3.0.2"
+    sqlite3 "^5.0.0"
+    uuid "^8.0.0"
+    winston "^3.2.1"
+    yaml "^1.9.2"
+    yn "^4.0.0"
+    yup "^0.29.3"
+
 "@bcoe/v8-coverage@^0.2.3":
   version "0.2.3"
   resolved "https://registry.npmjs.org/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
