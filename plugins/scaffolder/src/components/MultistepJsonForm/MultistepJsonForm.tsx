@@ -27,7 +27,7 @@ import {
 } from '@material-ui/core';
 import { FormProps, IChangeEvent, withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 const Form = withTheme(MuiTheme);
 type Step = {
@@ -54,7 +54,6 @@ export const MultistepJsonForm = ({
   onFinish,
 }: Props) => {
   const [activeStep, setActiveStep] = useState(0);
-  const [formDataEvent, setFormDataEvent] = useState({ formData: {} });
 
   const handleReset = () => {
     setActiveStep(0);
@@ -63,9 +62,7 @@ export const MultistepJsonForm = ({
   const handleNext = () =>
     setActiveStep(Math.min(activeStep + 1, steps.length));
   const handleBack = () => setActiveStep(Math.max(activeStep - 1, 0));
-  useEffect(() => {
-    onChange(formDataEvent as IChangeEvent);
-  }, [formDataEvent, onChange]);
+
   return (
     <>
       <Stepper activeStep={activeStep} orientation="vertical">
@@ -77,7 +74,7 @@ export const MultistepJsonForm = ({
                 key={label}
                 noHtml5Validate
                 formData={formData}
-                onChange={e => setFormDataEvent(e)}
+                onChange={onChange}
                 schema={schema as FormProps<any>['schema']}
                 onSubmit={e => {
                   if (e.errors.length === 0) handleNext();
