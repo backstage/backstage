@@ -220,10 +220,13 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
 
   const filterOptions = results.reduce(
     (acc, curr) => {
-      return {
-        kind: [...acc.kind, curr.kind],
-        lifecycle: [...acc.lifecycle, curr.lifecycle],
-      };
+      if (curr.kind && acc.kind.indexOf(curr.kind) < 0) {
+        acc.kind.push(curr.kind);
+      }
+      if (curr.lifecycle && acc.lifecycle.indexOf(curr.lifecycle) < 0) {
+        acc.lifecycle.push(curr.lifecycle);
+      }
+      return acc;
     },
     {
       kind: [] as Array<string>,

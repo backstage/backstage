@@ -82,54 +82,58 @@ export const Filters = ({
         }
       />
       <Divider />
-      <CardContent>
-        <Typography variant="subtitle2">Kind</Typography>
-        <Select
-          id="outlined-select"
-          onChange={(e: React.ChangeEvent<any>) =>
-            updateSelected(e?.target?.value)
-          }
-          variant="outlined"
-          className={classes.dropdown}
-          value={filters.selected}
-        >
-          {filterOptions.kind.map(filter => (
-            <MenuItem
-              selected={filter === 'All'}
-              dense
-              key={filter}
-              value={filter}
-            >
-              {filter}
-            </MenuItem>
-          ))}
-        </Select>
-      </CardContent>
-      <CardContent>
-        <Typography variant="subtitle2">Lifecycle</Typography>
-        <List disablePadding dense>
-          {filterOptions.lifecycle.map(filter => (
-            <ListItem
-              key={filter}
-              dense
-              button
-              onClick={() => updateChecked(filter)}
-            >
-              <Checkbox
-                edge="start"
-                disableRipple
-                className={classes.checkbox}
-                color="primary"
-                checked={filters.checked.includes(filter)}
-                tabIndex={-1}
+      {filterOptions.lifecycle.length > 0 && (
+        <CardContent>
+          <Typography variant="subtitle2">Kind</Typography>
+          <Select
+            id="outlined-select"
+            onChange={(e: React.ChangeEvent<any>) =>
+              updateSelected(e?.target?.value)
+            }
+            variant="outlined"
+            className={classes.dropdown}
+            value={filters.selected}
+          >
+            {filterOptions.kind.map(filter => (
+              <MenuItem
+                selected={filter === 'All'}
+                dense
+                key={filter}
                 value={filter}
-                name={filter}
-              />
-              <ListItemText id={filter} primary={filter} />
-            </ListItem>
-          ))}
-        </List>
-      </CardContent>
+              >
+                {filter}
+              </MenuItem>
+            ))}
+          </Select>
+        </CardContent>
+      )}
+      {filterOptions.lifecycle.length > 0 && (
+        <CardContent>
+          <Typography variant="subtitle2">Lifecycle</Typography>
+          <List disablePadding dense>
+            {filterOptions.lifecycle.map(filter => (
+              <ListItem
+                key={filter}
+                dense
+                button
+                onClick={() => updateChecked(filter)}
+              >
+                <Checkbox
+                  edge="start"
+                  disableRipple
+                  className={classes.checkbox}
+                  color="primary"
+                  checked={filters.checked.includes(filter)}
+                  tabIndex={-1}
+                  value={filter}
+                  name={filter}
+                />
+                <ListItemText id={filter} primary={filter} />
+              </ListItem>
+            ))}
+          </List>
+        </CardContent>
+      )}
     </Card>
   );
 };
