@@ -159,6 +159,9 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
         withFilters = withFilters.filter(
           (result: Result) =>
             result.name?.toLowerCase().includes(searchQuery) ||
+            result.name
+              ?.toLowerCase()
+              .includes(searchQuery.split(' ').join('-')) ||
             result.description?.toLowerCase().includes(searchQuery),
         );
       }
