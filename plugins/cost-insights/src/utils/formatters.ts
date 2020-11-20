@@ -88,10 +88,6 @@ export function formatPercent(n: number): string {
     return `>1000%`;
   }
 
-  if (Math.abs(n) >= 1e19) {
-    return '∞%';
-  }
-
   return `${(n * 100).toFixed(0)}%`;
 }
 
