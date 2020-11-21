@@ -79,10 +79,10 @@ export const CICDSwitcher = ({ entity }: { entity: Entity }) => {
       return <JenkinsRouter entity={entity} />;
     case isBuildkiteAvailable(entity):
       return <BuildkiteRouter entity={entity} />;
-    case isGitHubActionsAvailable(entity):
-      return <GitHubActionsRouter entity={entity} />;
     case isCircleCIAvailable(entity):
       return <CircleCIRouter entity={entity} />;
+    case isGitHubActionsAvailable(entity):
+      return <GitHubActionsRouter entity={entity} />;
     case isCloudbuildAvailable(entity):
       return <CloudbuildRouter entity={entity} />;
     case isTravisCIAvailable(entity):
