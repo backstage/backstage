@@ -26,7 +26,7 @@ import {
 import { catalogApiRef } from '@backstage/plugin-catalog';
 import { LinearProgress } from '@material-ui/core';
 import { IChangeEvent } from '@rjsf/core';
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Navigate } from 'react-router';
 import { useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
@@ -86,11 +86,12 @@ export const TemplatePage = () => {
   const [formState, setFormState] = useState({});
 
   const handleFormReset = () => setFormState({});
-  const handleChange = (e: IChangeEvent) =>
-    setFormState({ ...formState, ...e.formData });
+  const handleChange = useCallback(
+    (e: IChangeEvent) => setFormState({ ...formState, ...e.formData }),
+    [setFormState, formState],
+  );
 
   const [jobId, setJobId] = useState<string | null>(null);
-  const handleClose = () => setJobId(null);
 
   const handleCreate = async () => {
     try {
@@ -153,7 +154,6 @@ export const TemplatePage = () => {
           <JobStatusModal
             onComplete={handleCreateComplete}
             jobId={jobId}
-            onClose={handleClose}
             entity={entity}
           />
         )}

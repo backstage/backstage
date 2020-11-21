@@ -41,7 +41,6 @@ describe('MicrosoftGraphClient', () => {
 
   afterEach(() => {
     jest.resetAllMocks();
-    worker.resetHandlers();
   });
 
   it('should perform raw request', async () => {

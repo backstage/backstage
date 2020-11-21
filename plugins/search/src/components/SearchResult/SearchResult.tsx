@@ -31,8 +31,9 @@ import { FiltersButton, Filters, FiltersState } from '../Filters';
 import SearchApi, { Result, SearchResults } from '../../apis';
 
 const useStyles = makeStyles(theme => ({
-  searchTerm: {
-    background: '#eee',
+  searchQuery: {
+    color: theme.palette.text.primary,
+    background: theme.palette.background.default,
     borderRadius: '10%',
   },
   tableHeader: {
@@ -107,7 +108,7 @@ const TableHeader = ({
           <Typography variant="h6">
             {`${numberOfResults} `}
             {numberOfResults > 1 ? `results for ` : `result for `}
-            <span className={classes.searchTerm}>"{searchQuery}"</span>{' '}
+            <span className={classes.searchQuery}>"{searchQuery}"</span>{' '}
           </Typography>
         ) : (
           <Typography variant="h6">{`${numberOfResults} results`}</Typography>
@@ -159,6 +160,9 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
         withFilters = withFilters.filter(
           (result: Result) =>
             result.name?.toLowerCase().includes(searchQuery) ||
+            result.name
+              ?.toLowerCase()
+              .includes(searchQuery.split(' ').join('-')) ||
             result.description?.toLowerCase().includes(searchQuery),
         );
       }
