@@ -160,9 +160,9 @@ export function registerCommands(program: CommanderStatic) {
     .action(lazy(() => import('./versions/bump').then(m => m.default)));
 
   program
-    .command('versions:lint')
+    .command('versions:check')
     .option('--fix', 'Fix any auto-fixable versioning problems')
-    .description('Lint Backstage package versioning')
+    .description('Check Backstage package versioning')
     .action(lazy(() => import('./versions/lint').then(m => m.default)));
 
   program
