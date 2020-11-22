@@ -55,6 +55,10 @@ contains more information about the required fields.
 Once we have a `template.yaml` ready, we can then add it to the service catalog
 for use by the scaffolder.
 
+_NOTE_: When the `publish` step is completed, it is currently assumed by the
+scaffolder that the final repository should contain a `catalog-info.yaml` in
+order to register this with the Catalog in Backstage.
+
 Currently the catalog supports loading definitions from GitHub + Local Files. To
 load from other places, not only will there need to be another preparer, but the
 support to load the location will also need to be added to the Catalog.
