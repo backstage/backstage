@@ -69,7 +69,7 @@ export class CreateReactAppTemplater implements TemplaterBase {
     );
 
     await fs.promises.writeFile(
-      `${finalDir}/component-info.yaml`,
+      `${finalDir}/catalog-info.yaml`,
       yaml.stringify(componentInfo),
     );
 
