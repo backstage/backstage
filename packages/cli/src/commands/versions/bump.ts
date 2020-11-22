@@ -145,7 +145,7 @@ async function workerThreads<T>(
   const queue = Array.from(items);
 
   async function pop() {
-    const item = queue.pop()!;
+    const item = queue.pop();
     if (!item) {
       return;
     }

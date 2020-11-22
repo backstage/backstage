@@ -51,7 +51,7 @@ type AnalyzeResultNewVersion = {
   newVersion: string;
 };
 
-/** Entries that {would need a dependency update in package.json to be deduplicated */
+/** Entries that would need a dependency update in package.json to be deduplicated */
 type AnalyzeResultNewRange = {
   name: string;
   oldRange: string;
@@ -118,13 +118,13 @@ export class Lockfile {
         continue;
       }
 
-      // Get rid of an signal any invalid ranges upfront
+      // Get rid of and signal any invalid ranges upfront
       const invalid = allEntries.filter(e => !semver.validRange(e.range));
       result.invalidRanges.push(
         ...invalid.map(({ range }) => ({ name, range })),
       );
 
-      // Grab all valid entries, if there isn't at least 2 different valid ones we're done
+      // Grab all valid entries, if there aren't at least 2 different valid ones we're done
       const entries = allEntries.filter(e => semver.validRange(e.range));
       if (entries.length < 2) {
         continue;
@@ -163,7 +163,7 @@ export class Lockfile {
         acceptedVersions.add(acceptedVersion);
       }
 
-      // If all ranges where able to accept the same version, we're done
+      // If all ranges were able to accept the same version, we're done
       if (acceptedVersions.size === 1) {
         continue;
       }
@@ -229,7 +229,7 @@ export class Lockfile {
       }
       this.data[query] = matchingEntry[1];
 
-      // Update out internal data structure
+      // Update our internal data structure
       const entry = this.packages.get(name)?.find(e => e.range === range);
       if (!entry) {
         throw new Error(`No entry data for ${query}`);

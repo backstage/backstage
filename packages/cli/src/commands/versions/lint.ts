@@ -97,7 +97,7 @@ export default async (cmd: Command) => {
   }
 };
 
-function logArray<T>(arr: T[], header: string, each: (item: T) => void) {
+function logArray<T>(arr: T[], header: string, each: (item: T) => string) {
   if (arr.length === 0) {
     return;
   }
