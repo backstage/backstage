@@ -28,7 +28,7 @@ import { Job } from '../../types';
 import { JobStage } from '../JobStage/JobStage';
 
 type Props = {
-  job: Job;
+  job: Job | null;
   toCatalogLink?: string;
 };
 
@@ -47,6 +47,9 @@ export const JobStatusModal = ({ job, toCatalogLink }: Props) => {
   };
 
   const onClose = useCallback(() => {
+    if (!job) {
+      return;
+    }
     if (job.status === 'COMPLETED' || job.status === 'FAILED') {
       setOpen(false);
     }
