@@ -155,6 +155,12 @@ export function registerCommands(program: CommanderStatic) {
     .action(lazy(() => import('./config/validate').then(m => m.default)));
 
   program
+    .command('versions:lint')
+    .option('--fix', 'Fix any auto-fixable versioning problems')
+    .description('Lint Backstage package versioning')
+    .action(lazy(() => import('./versions/lint').then(m => m.default)));
+
+  program
     .command('prepack')
     .description('Prepares a package for packaging before publishing')
     .action(lazy(() => import('./pack').then(m => m.pre)));
