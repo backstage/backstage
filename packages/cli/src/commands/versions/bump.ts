@@ -157,6 +157,6 @@ async function workerThreads<T>(
   return Promise.all(
     Array(count)
       .fill(0)
-      .map(pop),
+      .map(() => pop()),
   );
 }
