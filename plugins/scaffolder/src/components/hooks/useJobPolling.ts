@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Job } from '../../types';
 import { useApi } from '@backstage/core';
 import { scaffolderApiRef } from '../../api';
