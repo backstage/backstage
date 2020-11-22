@@ -155,6 +155,11 @@ export function registerCommands(program: CommanderStatic) {
     .action(lazy(() => import('./config/validate').then(m => m.default)));
 
   program
+    .command('versions:bump')
+    .description('Bump Backstage packages to the latest versions')
+    .action(lazy(() => import('./versions/bump').then(m => m.default)));
+
+  program
     .command('versions:lint')
     .option('--fix', 'Fix any auto-fixable versioning problems')
     .description('Lint Backstage package versioning')
