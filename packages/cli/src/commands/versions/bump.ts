@@ -150,8 +150,7 @@ export default async () => {
   console.log();
 
   // Finally we make sure the new lockfile doesn't have any duplicates
-  const lockfilePath = paths.resolveTargetRoot('yarn.lock');
-  const lockfile = await Lockfile.load(lockfilePath);
+  const lockfile = await Lockfile.load(paths.resolveTargetRoot('yarn.lock'));
   const result = lockfile.analyze({
     filter: name => dependencyMap.has(name),
   });
@@ -160,7 +159,7 @@ export default async () => {
     console.log();
     console.log('Removing duplicate dependencies from yarn.lock');
     lockfile.replaceVersions(result.newVersions);
-    await fs.writeFile(lockfilePath, lockfile.toString(), 'utf8');
+    await lockfile.save();
 
     console.log(
       "Running 'yarn install' to remove duplicates from node_modules",
@@ -195,5 +194,9 @@ async function workerThreads<T>(
     await pop();
   }
 
-  return Promise.all(Array(count).fill(0).map(pop));
+  return Promise.all(
+    Array(count)
+      .fill(0)
+      .map(pop),
+  );
 }

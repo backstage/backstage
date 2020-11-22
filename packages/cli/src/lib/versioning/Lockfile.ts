@@ -91,10 +91,11 @@ export class Lockfile {
       queries.push({ range, version: value.version });
     }
 
-    return new Lockfile(packages, data);
+    return new Lockfile(path, packages, data);
   }
 
-  constructor(
+  private constructor(
+    private readonly path: string,
     private readonly packages: Map<string, LockfileQueryEntry[]>,
     private readonly data: LockfileData,
   ) {}
@@ -240,6 +241,10 @@ export class Lockfile {
       }
       entry.version = newVersion;
     }
+  }
+
+  async save() {
+    await fs.writeFile(this.path, this.toString(), 'utf8');
   }
 
   toString() {

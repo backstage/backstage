@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import fs from 'fs-extra';
 import mockFs from 'mock-fs';
 import { Lockfile } from './Lockfile';
 
@@ -84,7 +85,7 @@ describe('Lockfile', () => {
     expect(lockfile.toString()).toBe(mockA);
   });
 
-  it('should deduplicate mockA', async () => {
+  it('should deduplicate and save mockA', async () => {
     mockFs({
       '/yarn.lock': mockA,
     });
@@ -107,6 +108,10 @@ describe('Lockfile', () => {
     expect(lockfile.toString()).toBe(mockA);
     lockfile.replaceVersions(result.newVersions);
     expect(lockfile.toString()).toBe(mockADedup);
+
+    await expect(fs.readFile('/yarn.lock', 'utf8')).resolves.toBe(mockA);
+    await expect(lockfile.save()).resolves.toBeUndefined();
+    await expect(fs.readFile('/yarn.lock', 'utf8')).resolves.toBe(mockADedup);
   });
 
   it('should deduplicate mockB', async () => {

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
 import { Command } from 'commander';
 import { Lockfile } from '../../lib/versioning';
 import { paths } from '../../lib/paths';
@@ -35,8 +34,7 @@ export default async (cmd: Command) => {
 
   let success = true;
 
-  const lockfilePath = paths.resolveTargetRoot('yarn.lock');
-  const lockfile = await Lockfile.load(lockfilePath);
+  const lockfile = await Lockfile.load(paths.resolveTargetRoot('yarn.lock'));
   const result = lockfile.analyze({
     filter: name => INCLUDED.some(pattern => pattern.test(name)),
   });
@@ -49,8 +47,7 @@ export default async (cmd: Command) => {
 
   if (fix) {
     lockfile.replaceVersions(result.newVersions);
-
-    await fs.writeFile(lockfilePath, lockfile.toString(), 'utf8');
+    await lockfile.save();
   } else {
     const [
       newVersionsForbidden,
