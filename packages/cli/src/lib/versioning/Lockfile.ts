@@ -167,9 +167,15 @@ export class Lockfile {
         continue;
       }
 
-      // Find the max version and range that we may want bump older packages to
+      // Find the max version that we may want bump older packages to
       const maxVersion = Array.from(acceptedVersions).sort(semver.rcompare)[0];
-      const maxEntry = entries.find(e => semver.satisfies(maxVersion, e.range));
+      // Find all existing ranges that satisfy the new max version, and pick the one that
+      // results in the highest minimum allowed version, usually being the more specific one
+      const maxEntry = entries
+        .filter(e => semver.satisfies(maxVersion, e.range))
+        .map(e => ({ e, min: semver.minVersion(e.range) }))
+        .filter(p => p.min)
+        .sort((a, b) => semver.rcompare(a.min!, b.min!))[0]?.e;
       if (!maxEntry) {
         throw new Error(
           `No entry found that satisfies max version '${maxVersion}'`,

@@ -122,7 +122,7 @@ describe('Lockfile', () => {
         {
           name: '@s/a',
           oldRange: '^1',
-          newRange: '*',
+          newRange: '^2.0.x',
           oldVersion: '1.0.1',
           newVersion: '2.0.0',
         },
