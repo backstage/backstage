@@ -15,3 +15,4 @@
  */
 
 export { Lockfile } from './Lockfile';
+export { fetchPackageInfo, mapDependencies } from './packages';

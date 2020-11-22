@@ -17,11 +17,13 @@
 import fs from 'fs-extra';
 import semver from 'semver';
 import { resolve as resolvePath } from 'path';
-import { run, runPlain } from '../../lib/run';
+import { run } from '../../lib/run';
 import { paths } from '../../lib/paths';
-import { Lockfile } from '../../lib/versioning';
-
-const PREFIX = '@backstage';
+import {
+  mapDependencies,
+  fetchPackageInfo,
+  Lockfile,
+} from '../../lib/versioning';
 
 const DEP_TYPES = [
   'dependencies',
@@ -30,20 +32,6 @@ const DEP_TYPES = [
   'optionalDependencies',
 ];
 
-// Package data as returned by `yarn info`
-type YarnInfoInspectData = {
-  name: string;
-  'dist-tags': { latest: string };
-  versions: string[];
-  time: { [version: string]: string };
-};
-
-// Possible `yarn info` output
-type YarnInfo = {
-  type: 'inspect';
-  data: YarnInfoInspectData | { type: string; data: unknown };
-};
-
 type PkgVersionInfo = {
   range: string;
   name: string;
@@ -51,43 +39,15 @@ type PkgVersionInfo = {
 };
 
 export default async () => {
-  const LernaProject = require('@lerna/project');
-  const project = new LernaProject(paths.targetDir);
-  const packages = await project.getPackages();
-
   // First we discover all Backstage dependencies within our own repo
-  const dependencyMap = new Map<string, PkgVersionInfo[]>();
-  for (const pkg of packages) {
-    const deps = DEP_TYPES.flatMap(
-      t => Object.entries(pkg.get(t) ?? {}) as [string, string][],
-    );
-
-    for (const [name, range] of deps) {
-      if (name.startsWith(PREFIX)) {
-        dependencyMap.set(
-          name,
-          (dependencyMap.get(name) ?? []).concat({
-            range,
-            name: pkg.name,
-            location: pkg.location,
-          }),
-        );
-      }
-    }
-  }
+  const dependencyMap = await mapDependencies();
 
   // Next check with the package registry what the latest version of all of those dependencies are
   const targetVersions = new Map<string, string>();
   await workerThreads(16, dependencyMap.keys(), async name => {
     console.log(`Checking for updates of ${name}`);
-    const output = await runPlain('yarn', 'info', '--json', name);
-    const info = JSON.parse(output) as YarnInfo;
-    if (info.type !== 'inspect') {
-      throw new Error(`Received unknown yarn info for ${name}, ${output}`);
-    }
-
-    const data = info.data as YarnInfoInspectData;
-    const latest = data['dist-tags'].latest;
+    const info = await fetchPackageInfo(name);
+    const latest = info['dist-tags'].latest;
     if (!latest) {
       throw new Error(`No latest version found for ${name}`);
     }
