@@ -19,6 +19,7 @@ import { useAsync } from 'react-use';
 import { makeStyles, Typography, Grid, Divider } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import {
+  Link,
   EmptyState,
   Progress,
   Table,
@@ -66,9 +67,12 @@ type Filters = {
 // TODO: move out column to make the search result component more generic
 const columns: TableColumn[] = [
   {
-    title: 'Component Id',
+    title: 'Name',
     field: 'name',
     highlight: true,
+    render: (result: Partial<Result>) => (
+      <Link to={result.url || ''}>{result.name}</Link>
+    ),
   },
   {
     title: 'Description',
@@ -150,8 +154,9 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
 
       // filter on checked
       if (filters.checked.length > 0) {
-        withFilters = withFilters.filter((result: Result) =>
-          filters.checked.includes(result.lifecycle),
+        withFilters = withFilters.filter(
+          (result: Result) =>
+            result.lifecycle && filters.checked.includes(result.lifecycle),
         );
       }
 
