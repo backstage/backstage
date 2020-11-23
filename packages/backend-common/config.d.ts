@@ -87,7 +87,10 @@ export interface Config {
   integrations?: {
     /** Integration configuration for Azure */
     azure?: Array<{
-      /** The hostname of the given Azure instance */
+      /**
+       * The hostname of the given Azure instance
+       * @visibility frontend
+       */
       host: string;
       /**
        * Token used to authenticate requests.
@@ -98,14 +101,20 @@ export interface Config {
 
     /** Integration configuration for BitBucket */
     bitbucket?: Array<{
-      /** The hostname of the given Bitbucket instance */
+      /**
+       * The hostname of the given Bitbucket instance
+       * @visibility frontend
+       */
       host: string;
       /**
        * Token used to authenticate requests.
        * @visibility secret
        */
       token?: string;
-      /** The base url for the BitBucket API, for example https://api.bitbucket.org/2.0 */
+      /**
+       * The base url for the BitBucket API, for example https://api.bitbucket.org/2.0
+       * @visibility frontend
+       */
       apiBaseUrl?: string;
       /**
        * The username to use for authenticated requests.
@@ -121,22 +130,34 @@ export interface Config {
 
     /** Integration configuration for GitHub */
     github?: Array<{
-      /** The hostname of the given GitHub instance */
+      /**
+       * The hostname of the given GitHub instance
+       * @visibility frontend
+       */
       host: string;
       /**
        * Token used to authenticate requests.
        * @visibility secret
        */
       token?: string;
-      /** The base url for the GitHub API, for example https://api.github.com */
+      /**
+       * The base url for the GitHub API, for example https://api.github.com
+       * @visibility frontend
+       */
       apiBaseUrl?: string;
-      /** The base url for GitHub raw resources, for example https://raw.githubusercontent.com */
+      /**
+       * The base url for GitHub raw resources, for example https://raw.githubusercontent.com
+       * @visibility frontend
+       */
       rawBaseUrl?: string;
     }>;
 
     /** Integration configuration for GitLab */
     gitlab?: Array<{
-      /** The hostname of the given GitLab instance */
+      /**
+       * The hostname of the given GitLab instance
+       * @visibility frontend
+       */
       host: string;
       /**
        * Token used to authenticate requests.
