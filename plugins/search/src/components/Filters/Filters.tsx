@@ -82,7 +82,14 @@ export const Filters = ({
         }
       />
       <Divider />
-      {filterOptions.lifecycle.length > 0 && (
+      {filterOptions.kind.length === 0 && filterOptions.lifecycle.length === 0 && (
+        <CardContent>
+          <Typography variant="subtitle2">
+            Filters cannot be applied to available results
+          </Typography>
+        </CardContent>
+      )}
+      {filterOptions.kind.length > 0 && (
         <CardContent>
           <Typography variant="subtitle2">Kind</Typography>
           <Select
