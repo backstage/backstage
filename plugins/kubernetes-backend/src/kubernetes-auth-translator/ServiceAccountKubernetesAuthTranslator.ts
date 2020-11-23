@@ -15,7 +15,7 @@
  */
 
 import { KubernetesAuthTranslator } from './types';
-import { AuthRequestBody, ClusterDetails } from '../types/types';
+import { KubernetesRequestBody, ClusterDetails } from '../types/types';
 
 export class ServiceAccountKubernetesAuthTranslator
   implements KubernetesAuthTranslator {
@@ -23,7 +23,7 @@ export class ServiceAccountKubernetesAuthTranslator
     clusterDetails: ClusterDetails,
     // To ignore TS6133 linting error where it detects 'requestBody' is declared but its value is never read.
     // @ts-ignore-start
-    requestBody: AuthRequestBody, // eslint-disable-line @typescript-eslint/no-unused-vars
+    requestBody: KubernetesRequestBody, // eslint-disable-line @typescript-eslint/no-unused-vars
     // @ts-ignore-end
   ): Promise<ClusterDetails> {
     return clusterDetails;

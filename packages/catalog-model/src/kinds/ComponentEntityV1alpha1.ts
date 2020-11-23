@@ -30,6 +30,15 @@ const schema = yup.object<Partial<ComponentEntityV1alpha1>>({
       lifecycle: yup.string().required().min(1),
       owner: yup.string().required().min(1),
       implementsApis: yup.array(yup.string().required()).notRequired(),
+      kubernetes: yup
+        .object<any>({
+          selector: yup
+            .object<any>({
+              matchLabels: yup.object<any>().required(),
+            })
+            .required(),
+        })
+        .notRequired(),
     })
     .required(),
 });
@@ -42,6 +51,13 @@ export interface ComponentEntityV1alpha1 extends Entity {
     lifecycle: string;
     owner: string;
     implementsApis?: string[];
+    kubernetes?: {
+      selector: {
+        matchLabels: {
+          [key: string]: string;
+        };
+      };
+    };
   };
 }
 
