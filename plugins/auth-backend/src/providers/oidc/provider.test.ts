@@ -54,7 +54,7 @@ describe('OidcAuthProvider', () => {
       .get('/.well-known/openid-configuration')
       .reply(200, issuerMetadata);
     const provider = new OidcAuthProvider(clientMetadata);
-    const { strategy } = ((await provider._implementation) as any) as {
+    const { strategy } = ((await (provider as any).implementation) as any) as {
       strategy: {
         _client: ClientMetadata;
         _issuer: IssuerMetadata;

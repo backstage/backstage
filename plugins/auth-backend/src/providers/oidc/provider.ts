@@ -54,14 +54,14 @@ export type OidcAuthProviderOptions = OAuthProviderOptions & {
 };
 
 export class OidcAuthProvider implements OAuthHandlers {
-  readonly _implementation: Promise<OidcImpl>;
+  private readonly implementation: Promise<OidcImpl>;
 
   constructor(options: OidcAuthProviderOptions) {
-    this._implementation = this.setupStrategy(options);
+    this.implementation = this.setupStrategy(options);
   }
 
   async start(req: OAuthStartRequest): Promise<RedirectInfo> {
-    const { strategy } = await this._implementation;
+    const { strategy } = await this.implementation;
     return await executeRedirectStrategy(req, strategy, {
       accessType: 'offline',
       prompt: 'none',
@@ -73,7 +73,7 @@ export class OidcAuthProvider implements OAuthHandlers {
   async handler(
     req: express.Request,
   ): Promise<{ response: OAuthResponse; refreshToken: string }> {
-    const { strategy } = await this._implementation;
+    const { strategy } = await this.implementation;
     const { response, privateInfo } = await executeFrameHandlerStrategy<
       OAuthResponse,
       PrivateInfo
@@ -86,7 +86,7 @@ export class OidcAuthProvider implements OAuthHandlers {
   }
 
   async refresh(req: OAuthRefreshRequest): Promise<OAuthResponse> {
-    const { client } = await this._implementation;
+    const { client } = await this.implementation;
     const tokenset = await client.refresh(req.refreshToken);
     if (!tokenset.access_token) {
       throw new Error('Refresh failed');
