@@ -51,22 +51,8 @@
     "msw": "^0.21.2"
   },
   "files": [
-    "dist"
+    "dist",
+    "config.d.ts"
   ],
-  "configSchema": {
-    "$schema": "https://backstage.io/schema/config-v1",
-    "title": "@backstage/rollbar",
-    "type": "object",
-    "properties": {
-      "rollbar": {
-        "type": "object",
-        "properties": {
-          "organization": {
-            "type": "string",
-            "visibility": "frontend"
-          }
-        }
-      }
-    }
-  }
+  "configSchema": "config.d.ts"
 }
