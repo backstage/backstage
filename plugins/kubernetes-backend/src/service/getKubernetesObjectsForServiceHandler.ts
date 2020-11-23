@@ -97,12 +97,12 @@ export const handleGetKubernetesObjectsForService: GetKubernetesObjectsForServic
   return Promise.all(
     clusterDetailsDecoratedForAuth.map(clusterDetails => {
       return fetcher
-        .fetchObjectsForService(<ObjectFetchParams>{
+        .fetchObjectsForService({
           serviceId,
           clusterDetails,
           objectTypesToFetch,
           labelSelector,
-        })
+        } as ObjectFetchParams)
         .then(result => {
           return {
             cluster: {
