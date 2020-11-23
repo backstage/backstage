@@ -61,7 +61,7 @@ proxy:
 ```
 
 5. Get and provide `CIRCLECI_AUTH_TOKEN` as env variable (https://circleci.com/docs/api/#add-an-api-token)
-6. Add `circleci.com/project-slug` annotation to your component-info.yaml file in format <git-provider>/<owner>/<project> (https://backstage.io/docs/architecture-decisions/adrs-adr002#format)
+6. Add `circleci.com/project-slug` annotation to your catalog-info.yaml file in format <git-provider>/<owner>/<project> (https://backstage.io/docs/architecture-decisions/adrs-adr002#format)
 
 ```yaml
 apiVersion: backstage.io/v1alpha1

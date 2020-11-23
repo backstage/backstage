@@ -43,7 +43,7 @@ software catalog API.
   "kind": "Component",
   "metadata": {
     "annotations": {
-      "backstage.io/managed-by-location": "file:/tmp/component-info.yaml",
+      "backstage.io/managed-by-location": "file:/tmp/catalog-info.yaml",
       "example.com/service-discovery": "artistweb",
       "circleci.com/project-slug": "github/example-org/artist-website"
     },
