@@ -97,6 +97,7 @@ export async function createRouter({
       }
 
       const provider = providerFactory({
+        providerId,
         globalConfig: { baseUrl: authUrl, appUrl },
         config: providersConfig.getConfig(providerId),
         logger,

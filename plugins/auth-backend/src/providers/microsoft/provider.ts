@@ -206,13 +206,12 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
 }
 
 export const createMicrosoftProvider: AuthProviderFactory = ({
+  providerId,
   globalConfig,
   config,
   tokenIssuer,
 }) =>
   OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-    const providerId = 'microsoft';
-
     const clientId = envConfig.getString('clientId');
     const clientSecret = envConfig.getString('clientSecret');
     const tenantID = envConfig.getString('tenantId');

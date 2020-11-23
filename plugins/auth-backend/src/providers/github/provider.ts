@@ -137,12 +137,12 @@ export class GithubAuthProvider implements OAuthHandlers {
 }
 
 export const createGithubProvider: AuthProviderFactory = ({
+  providerId,
   globalConfig,
   config,
   tokenIssuer,
 }) =>
   OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-    const providerId = 'github';
     const clientId = envConfig.getString('clientId');
     const clientSecret = envConfig.getString('clientSecret');
     const enterpriseInstanceUrl = envConfig.getOptionalString(
