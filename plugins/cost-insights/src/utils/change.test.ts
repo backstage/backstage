@@ -79,7 +79,7 @@ describe('getPreviousPeriodTotalCost', () => {
     const exclusiveEndDate = '2020-09-30';
     expect(
       getPreviousPeriodTotalCost(
-        mockGroupDailyCost,
+        mockGroupDailyCost.aggregation,
         Duration.P1M,
         exclusiveEndDate,
       ),
