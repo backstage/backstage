@@ -40,7 +40,7 @@ type PkgVersionInfo = {
 
 export default async () => {
   // First we discover all Backstage dependencies within our own repo
-  const dependencyMap = await mapDependencies();
+  const dependencyMap = await mapDependencies(paths.targetDir);
 
   // Next check with the package registry what the latest version of all of those dependencies are
   const targetVersions = new Map<string, string>();

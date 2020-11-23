@@ -15,7 +15,6 @@
  */
 
 import { runPlain } from '../../lib/run';
-import { paths } from '../../lib/paths';
 
 const PREFIX = '@backstage';
 
@@ -59,11 +58,11 @@ export async function fetchPackageInfo(
 }
 
 /** Map all dependencies in the repo as dependency => dependents */
-export async function mapDependencies(): Promise<
-  Map<string, PkgVersionInfo[]>
-> {
+export async function mapDependencies(
+  targetDir: string,
+): Promise<Map<string, PkgVersionInfo[]>> {
   const LernaProject = require('@lerna/project');
-  const project = new LernaProject(paths.targetDir);
+  const project = new LernaProject(targetDir);
   const packages = await project.getPackages();
 
   const dependencyMap = new Map<string, PkgVersionInfo[]>();

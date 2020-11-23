@@ -75,7 +75,7 @@ describe('mapDependencies', () => {
     const oldDir = paths.targetDir;
     paths.targetDir = '/';
 
-    const dependencyMap = await mapDependencies();
+    const dependencyMap = await mapDependencies(paths.targetDir);
     expect(Array.from(dependencyMap)).toEqual([
       [
         '@backstage/core',
