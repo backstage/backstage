@@ -2,8 +2,8 @@
 id: descriptor-format
 title: Descriptor Format of Catalog Entities
 sidebar_label: YAML File Format
-description: Documentation on Descriptor Format of Catalog Entities which
-describes the default data shape and semantics of catalog entities
+# prettier-ignore
+description: Documentation on Descriptor Format of Catalog Entities which describes the default data shape and semantics of catalog entities
 ---
 
 This section describes the default data shape and semantics of catalog entities.
@@ -22,11 +22,15 @@ we recommend that you name them `catalog-info.yaml`.
 - [Overall Shape Of An Entity](#overall-shape-of-an-entity)
 - [Common to All Kinds: The Envelope](#common-to-all-kinds-the-envelope)
 - [Common to All Kinds: The Metadata](#common-to-all-kinds-the-metadata)
+- [Common to All Kinds: Relations](#common-to-all-kinds-relations)
 - [Kind: Component](#kind-component)
 - [Kind: Template](#kind-template)
 - [Kind: API](#kind-api)
 - [Kind: Group](#kind-group)
 - [Kind: User](#kind-user)
+- [Kind: Resource](#kind-resource)
+- [Kind: System](#kind-system)
+- [Kind: Domain](#kind-domain)
 
 ## Overall Shape Of An Entity
 
@@ -258,6 +262,61 @@ This field is optional, and currently has no special semantics.
 
 Each tag must be sequences of `[a-z0-9]` separated by `-`, at most 63 characters
 in total.
+
+## Common to All Kinds: Relations
+
+The `relations` root field is a read-only list of relations, between the current
+entity and other entities, described in the
+[well-known relations section](well-known-relations.md). Relations are commonly
+two-way, so that there's a pair of relation types each describing one direction
+of the relation.
+
+A relation as part of a single entity that's read out of the API may look as
+follows.
+
+```js
+{
+  // ...
+  "relations": [
+    {
+      "target": {
+        "kind": "group",
+        "namespace": "default",
+        "name": "dev.infra"
+      },
+      "type": "ownedBy"
+    }
+  ],
+  "spec": {
+    "owner": "dev.infra",
+    // ...
+  }
+}
+```
+
+The fields of a relation are:
+
+| Field      | Type   | Description                                                                      |
+| ---------- | ------ | -------------------------------------------------------------------------------- |
+| `target`   | Object | A complete [compound reference](references.md) to the other end of the relation. |
+| `type`     | String | The type of relation FROM a source entity TO the target entity.                  |
+| `metadata` | Object | Reserved for future use.                                                         |
+
+Entity descriptor YAML files are not supposed to contain this field. Instead,
+catalog processors analyze the entity descriptor data and its surroundings, and
+deduce relations that are then attached onto the entity as read from the
+catalog.
+
+Where relations are produced, they are to be considered the authoritative source
+for that piece of data. In the example above, a plugin would do better to
+consume the relation rather than `spec.owner` for deducing the owner of the
+entity, because it may even be the case that the owner isn't taken from the YAML
+at all - it could be taken from a CODEOWNERS file nearby instead for example.
+Also, the `spec.owner` is on a shortened form and may have semantics associated
+with it (such as the default kind being `Group` if not specified).
+
+See the [well-known relations section](well-known-relations.md) for a list of
+well-known / common relations and their semantics.
 
 ## Kind: Component
 
@@ -740,3 +799,15 @@ with the default kind `Group` and the default namespace equal to the same
 namespace as the user. Only `Group` entities may be referenced. Most commonly,
 these entries point to groups in the same namespace, so in those cases it is
 sufficient to enter only the `metadata.name` field of those groups.
+
+## Kind: Resource
+
+This kind is not yet defined, but is reserved [for future use](system-model.md).
+
+## Kind: System
+
+This kind is not yet defined, but is reserved [for future use](system-model.md).
+
+## Kind: Domain
+
+This kind is not yet defined, but is reserved [for future use](system-model.md).

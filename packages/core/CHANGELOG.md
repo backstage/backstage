@@ -1,5 +1,11 @@
 # @backstage/core
 
+## 0.3.1
+
+### Patch Changes
+
+- 1722cb53c: Added configuration schema
+
 ## 0.3.0
 
 ### Minor Changes

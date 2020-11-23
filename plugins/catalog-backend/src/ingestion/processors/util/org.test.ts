@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { GroupEntity } from '@backstage/catalog-model';
-import { buildOrgHierarchy } from './org';
+import { GroupEntity, UserEntity } from '@backstage/catalog-model';
+import { buildMemberOf, buildOrgHierarchy } from './org';
 
 function g(
   name: string,
@@ -65,5 +65,24 @@ describe('buildOrgHierarchy', () => {
     expect(b.spec.ancestors).toEqual(expect.arrayContaining(['a']));
     expect(c.spec.ancestors).toEqual(expect.arrayContaining(['a', 'b']));
     expect(d.spec.ancestors).toEqual(expect.arrayContaining(['a']));
+  });
+});
+
+describe('buildMemberOf', () => {
+  it('fills indirect member of groups', () => {
+    const a = g('a', undefined, []);
+    const b = g('b', 'a', []);
+    const c = g('c', 'b', []);
+    const u: UserEntity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'User',
+      metadata: { name },
+      spec: { profile: {}, memberOf: ['c'] },
+    };
+
+    const groups = [a, b, c];
+    buildOrgHierarchy(groups);
+    buildMemberOf(groups, [u]);
+    expect(u.spec.memberOf).toEqual(expect.arrayContaining(['a', 'b', 'c']));
   });
 });

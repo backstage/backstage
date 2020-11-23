@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-import { growthOf } from './change';
-import { GrowthType, ChangeThreshold, EngineerThreshold } from '../types';
+import { growthOf, getPreviousPeriodTotalCost } from './change';
+import {
+  GrowthType,
+  ChangeThreshold,
+  EngineerThreshold,
+  Duration,
+  Cost,
+} from '../types';
+import { MockAggregatedDailyCosts, trendlineOf, changeOf } from './mockData';
 
 const GrowthMap = {
   [GrowthType.Negligible]: 'negligible growth',
@@ -60,3 +67,22 @@ describe.each`
     });
   },
 );
+
+describe('getPreviousPeriodTotalCost', () => {
+  it('Correctly returns the total cost for the previous period given daily costs', () => {
+    const mockGroupDailyCost: Cost = {
+      id: 'test-group',
+      aggregation: MockAggregatedDailyCosts,
+      change: changeOf(MockAggregatedDailyCosts),
+      trendline: trendlineOf(MockAggregatedDailyCosts),
+    };
+    const exclusiveEndDate = '2020-09-30';
+    expect(
+      getPreviousPeriodTotalCost(
+        mockGroupDailyCost,
+        Duration.P1M,
+        exclusiveEndDate,
+      ),
+    ).toEqual(100_000);
+  });
+});

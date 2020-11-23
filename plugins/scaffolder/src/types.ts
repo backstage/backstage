@@ -19,6 +19,7 @@ export type Job = {
     entity: any;
     values: any;
     remoteUrl?: string;
+    catalogInfoUrl?: string;
   };
   status: 'PENDING' | 'STARTED' | 'COMPLETED' | 'FAILED';
   stages: Stage[];

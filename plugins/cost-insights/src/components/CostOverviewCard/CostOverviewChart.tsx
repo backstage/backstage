@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import React from 'react';
-import moment from 'moment';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import { useTheme } from '@material-ui/core';
 import {
   ComposedChart,
@@ -49,6 +50,8 @@ import {
 import { useCostOverviewStyles as useStyles } from '../../utils/styles';
 import { groupByDate, toDataMax, trendFrom } from '../../utils/charts';
 import { aggregationSort } from '../../utils/sort';
+
+dayjs.extend(utc);
 
 type CostOverviewChartProps = {
   metric: Maybe<Metric>;
@@ -104,7 +107,7 @@ export const CostOverviewChart = ({
     if (isInvalid({ label, payload })) return null;
 
     const dataKeys = [data.dailyCost.dataKey, data.metric.dataKey];
-    const title = moment(label).format(DEFAULT_DATE_FORMAT);
+    const title = dayjs(label).utc().format(DEFAULT_DATE_FORMAT);
     const items = payload
       .filter(p => dataKeys.includes(p.dataKey as string))
       .map(p => ({

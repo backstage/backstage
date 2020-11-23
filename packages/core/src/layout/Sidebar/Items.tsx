@@ -221,6 +221,7 @@ export const SidebarSearchField: FC<SidebarSearchFieldProps> = props => {
   const handleEnter: KeyboardEventHandler = ev => {
     if (ev.key === 'Enter') {
       props.onSearch(input);
+      setInput('');
     }
   };
 
@@ -233,6 +234,7 @@ export const SidebarSearchField: FC<SidebarSearchFieldProps> = props => {
       <SidebarItem icon={SearchIcon}>
         <TextField
           placeholder="Search"
+          value={input}
           onChange={handleInput}
           onKeyDown={handleEnter}
           className={classes.searchContainer}

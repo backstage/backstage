@@ -34,37 +34,39 @@ import { CatalogPage } from './CatalogPage';
 describe('CatalogPage', () => {
   const catalogApi: Partial<CatalogApi> = {
     getEntities: () =>
-      Promise.resolve([
-        {
-          apiVersion: 'backstage.io/v1alpha1',
-          kind: 'Component',
-          metadata: {
-            name: 'Entity1',
+      Promise.resolve({
+        items: [
+          {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Component',
+            metadata: {
+              name: 'Entity1',
+            },
+            spec: {
+              owner: 'tools@example.com',
+              type: 'service',
+            },
           },
-          spec: {
-            owner: 'tools@example.com',
-            type: 'service',
+          {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Component',
+            metadata: {
+              name: 'Entity2',
+            },
+            spec: {
+              owner: 'not-tools@example.com',
+              type: 'service',
+            },
           },
-        },
-        {
-          apiVersion: 'backstage.io/v1alpha1',
-          kind: 'Component',
-          metadata: {
-            name: 'Entity2',
-          },
-          spec: {
-            owner: 'not-tools@example.com',
-            type: 'service',
-          },
-        },
-      ] as Entity[]),
+        ] as Entity[],
+      }),
     getLocationByEntity: () =>
       Promise.resolve({ id: 'id', type: 'github', target: 'url' }),
   };
   const testProfile: Partial<ProfileInfo> = {
     displayName: 'Display Name',
   };
-  const indentityApi: Partial<IdentityApi> = {
+  const identityApi: Partial<IdentityApi> = {
     getUserId: () => 'tools@example.com',
     getProfile: () => testProfile,
   };
@@ -75,7 +77,7 @@ describe('CatalogPage', () => {
         <ApiProvider
           apis={ApiRegistry.from([
             [catalogApiRef, catalogApi],
-            [identityApiRef, indentityApi],
+            [identityApiRef, identityApi],
             [storageApiRef, MockStorageApi.create()],
           ])}
         >

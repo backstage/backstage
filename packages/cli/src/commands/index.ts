@@ -104,13 +104,6 @@ export function registerCommands(program: CommanderStatic) {
     .action(lazy(() => import('./plugin/serve').then(m => m.default)));
 
   program
-    .command('plugin:export')
-    .description('Exports the dev/ folder of a plugin')
-    .option('--stats', 'Write bundle stats to output directory')
-    .option(...configOption)
-    .action(lazy(() => import('./plugin/export').then(m => m.default)));
-
-  program
     .command('plugin:diff')
     .option('--check', 'Fail if changes are required')
     .option('--yes', 'Apply all changes')
@@ -143,6 +136,7 @@ export function registerCommands(program: CommanderStatic) {
 
   program
     .command('config:print')
+    .option('--frontend', 'Print only the frontend configuration')
     .option('--with-secrets', 'Include secrets in the printed configuration')
     .option(
       '--format <format>',
@@ -151,6 +145,14 @@ export function registerCommands(program: CommanderStatic) {
     .option(...configOption)
     .description('Print the app configuration for the current package')
     .action(lazy(() => import('./config/print').then(m => m.default)));
+
+  program
+    .command('config:check')
+    .option(...configOption)
+    .description(
+      'Validate that the given configuration loads and matches schema',
+    )
+    .action(lazy(() => import('./config/validate').then(m => m.default)));
 
   program
     .command('prepack')

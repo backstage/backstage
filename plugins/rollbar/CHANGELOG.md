@@ -1,5 +1,15 @@
 # @backstage/plugin-rollbar
 
+## 0.2.2
+
+### Patch Changes
+
+- 1722cb53c: Added configuration schema
+- Updated dependencies [1722cb53c]
+- Updated dependencies [8b7737d0b]
+  - @backstage/core@0.3.1
+  - @backstage/plugin-catalog@0.2.2
+
 ## 0.2.1
 
 ### Patch Changes

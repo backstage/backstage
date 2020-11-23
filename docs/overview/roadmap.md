@@ -39,7 +39,7 @@ If you have questions about the roadmap or want to provide feedback, we would
 love to hear from you! Please create an
 [Issue](https://github.com/backstage/backstage/issues/new/choose), ping us on
 [Discord](https://discord.gg/EBHEGzX) or reach out directly at
-[alund@spotify.com](mailto:alund@spotify.com).
+[backstage-interest@spotify.com](mailto:backstage-interest@spotify.com).
 
 Want to help out? Awesome ❤️ Head over to
 [CONTRIBUTING](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md)

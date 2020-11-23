@@ -28,7 +28,6 @@ export type SkipFunc = (path: string) => boolean;
  */
 export type ReaderContext = {
   env: { [name in string]?: string };
-  skip: SkipFunc;
   readFile: ReadFileFunc;
   readSecret: ReadSecretFunc;
 };

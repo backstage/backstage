@@ -67,8 +67,8 @@ import {
   PullRequestsStatsCard,
 } from '@roadiehq/backstage-plugin-github-pull-requests';
 import {
-  Router as BuildKiteRouter,
-  isPluginApplicableToEntity as isBuildKiteAvailable,
+  Router as BuildkiteRouter,
+  isPluginApplicableToEntity as isBuildkiteAvailable,
 } from '@roadiehq/backstage-plugin-buildkite';
 
 export const CICDSwitcher = ({ entity }: { entity: Entity }) => {
@@ -77,8 +77,8 @@ export const CICDSwitcher = ({ entity }: { entity: Entity }) => {
   switch (true) {
     case isJenkinsAvailable(entity):
       return <JenkinsRouter entity={entity} />;
-    case isBuildKiteAvailable(entity):
-      return <BuildKiteRouter entity={entity} />;
+    case isBuildkiteAvailable(entity):
+      return <BuildkiteRouter entity={entity} />;
     case isGitHubActionsAvailable(entity):
       return <GitHubActionsRouter entity={entity} />;
     case isCircleCIAvailable(entity):

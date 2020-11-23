@@ -386,7 +386,10 @@ export const useTooltipStyles = makeStyles<CostInsightsTheme>(
         boxShadow: theme.shadows[1],
         color: theme.palette.tooltip.color,
         fontSize: theme.typography.fontSize,
-        width: 250,
+        minWidth: 300,
+      },
+      maxWidth: {
+        maxWidth: 300,
       },
       actions: {
         padding: theme.spacing(2),
@@ -402,6 +405,12 @@ export const useTooltipStyles = makeStyles<CostInsightsTheme>(
       },
       divider: {
         backgroundColor: emphasize(theme.palette.divider, 1),
+      },
+      truncate: {
+        maxWidth: 200,
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
       },
       subtitle: {
         fontStyle: 'italic',
