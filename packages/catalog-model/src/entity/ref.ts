@@ -86,6 +86,14 @@ export function parseEntityName(
  */
 export function parseEntityRef(
   ref: EntityRef,
+  context?: { defaultKind: string; defaultNamespace: string },
+): {
+  kind: string;
+  namespace: string;
+  name: string;
+};
+export function parseEntityRef(
+  ref: EntityRef,
   context?: { defaultKind: string },
 ): {
   kind: string;
@@ -97,14 +105,6 @@ export function parseEntityRef(
   context?: { defaultNamespace: string },
 ): {
   kind?: string;
-  namespace: string;
-  name: string;
-};
-export function parseEntityRef(
-  ref: EntityRef,
-  context?: { defaultKind: string; defaultNamespace: string },
-): {
-  kind: string;
   namespace: string;
   name: string;
 };
