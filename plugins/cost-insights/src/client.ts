@@ -35,7 +35,7 @@ import {
   UnlabeledDataflowAlert,
 } from '../src/utils/alerts';
 import { inclusiveStartDateOf } from '../src/utils/duration';
-import { trendlineOf, changeOf } from './utils/mockData';
+import { trendlineOf, changeOf, getGroupedProducts } from './utils/mockData';
 
 type IntervalFields = {
   duration: Duration;
@@ -56,7 +56,7 @@ function parseIntervals(intervals: string): IntervalFields {
   };
 }
 
-function aggregationFor(
+export function aggregationFor(
   intervals: string,
   baseline: number,
 ): DateAggregation[] {
@@ -140,6 +140,7 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
         aggregation: aggregation,
         change: changeOf(aggregation),
         trendline: trendlineOf(aggregation),
+        groupedCosts: getGroupedProducts(intervals),
       },
     );
 
@@ -155,6 +156,7 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
         aggregation: aggregation,
         change: changeOf(aggregation),
         trendline: trendlineOf(aggregation),
+        groupedCosts: getGroupedProducts(intervals),
       },
     );
 
