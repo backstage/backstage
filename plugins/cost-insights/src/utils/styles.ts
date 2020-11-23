@@ -24,6 +24,19 @@ import {
 import { BackstageTheme } from '@backstage/theme';
 import { CostInsightsTheme, CostInsightsThemeOptions } from '../types';
 
+export const DataVizColors = [
+  '#509BF5',
+  '#FF6437',
+  '#4B917D',
+  '#F573A0',
+  '#F59B23',
+  '#B49BC8',
+  '#C39687',
+  '#A0C3D2',
+  '#FFC864',
+  '#BABABA',
+];
+
 export const costInsightsLightTheme = {
   palette: {
     blue: '#509AF5',
@@ -86,6 +99,19 @@ export const useCostOverviewStyles = (theme: CostInsightsTheme) => ({
     width: 75,
   },
 });
+
+export const useOverviewTabsStyles = makeStyles<CostInsightsTheme>(
+  (theme: CostInsightsTheme) => ({
+    default: {
+      padding: theme.spacing(2, 2),
+      fontWeight: 'bold',
+      color: theme.palette.text.secondary,
+    },
+    selected: {
+      color: theme.palette.text.primary,
+    },
+  }),
+);
 
 export const useBarChartStyles = (theme: CostInsightsTheme) => ({
   axis: {
