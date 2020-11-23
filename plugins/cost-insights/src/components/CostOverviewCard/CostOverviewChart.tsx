@@ -93,7 +93,7 @@ export const CostOverviewChart = ({
     .sort(aggregationSort)
     .map(entry => ({
       date: Date.parse(entry.date),
-      trend: trendFrom(data.dailyCost.data.trendline, Date.parse(entry.date)),
+      trend: trendFrom(data.dailyCost.data.trendline!, Date.parse(entry.date)),
       dailyCost: entry.amount,
       ...(metric && data.metric.data
         ? { [data.metric.dataKey]: metricsByDate[`${entry.date}`] }
