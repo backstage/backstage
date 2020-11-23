@@ -592,6 +592,9 @@ The current set of well-known and common values for this field is:
   [OpenAPI](https://swagger.io/specification/) version 2 or version 3 spec.
 - `asyncapi` - An API definition based on the
   [AsyncAPI](https://www.asyncapi.com/docs/specifications/latest/) spec.
+- `graphql` - An API definition based on
+  [GraphQL schemas](https://spec.graphql.org/) for consuming
+  [GraphQL](https://graphql.org/) based APIs.
 - `grpc` - An API definition based on
   [Protocol Buffers](https://developers.google.com/protocol-buffers) to use with
   [gRPC](https://grpc.io/).
