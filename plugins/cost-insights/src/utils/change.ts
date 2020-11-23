@@ -23,6 +23,7 @@ import {
   MetricData,
   Duration,
   DEFAULT_DATE_FORMAT,
+  DateAggregation,
 } from '../types';
 import dayjs, { OpUnitType } from 'dayjs';
 import duration from 'dayjs/plugin/duration';
@@ -54,9 +55,9 @@ export function getComparedChange(
   duration: Duration,
   lastCompleteBillingDate: string, // YYYY-MM-DD,
 ): ChangeStatistic {
-  const ratio = dailyCost.change.ratio - metricData.change.ratio;
+  const ratio = dailyCost.change!.ratio - metricData.change.ratio;
   const previousPeriodTotal = getPreviousPeriodTotalCost(
-    dailyCost,
+    dailyCost.aggregation,
     duration,
     lastCompleteBillingDate,
   );
@@ -67,7 +68,7 @@ export function getComparedChange(
 }
 
 export function getPreviousPeriodTotalCost(
-  dailyCost: Cost,
+  aggregation: DateAggregation[],
   duration: Duration,
   inclusiveEndDate: string,
 ): number {
@@ -83,7 +84,7 @@ export function getPreviousPeriodTotalCost(
   const nextPeriodStart = dayjs(startDate).add(amount, type);
 
   // Add up costs that incurred before the start of the next period.
-  return dailyCost.aggregation.reduce((acc, costByDate) => {
+  return aggregation.reduce((acc, costByDate) => {
     return dayjs(costByDate.date).isBefore(nextPeriodStart)
       ? acc + costByDate.amount
       : acc;
