@@ -62,7 +62,7 @@ const getEntityCatalogPath = ({
 };
 
 type Props = {
-  nextStep: () => void;
+  nextStep: (options?: { reset: boolean }) => void;
   configFile: ConfigSpec;
   savePRLink: (PRLink: string) => void;
   catalogRouteRef: RouteRef;
@@ -74,6 +74,7 @@ const ComponentConfigDisplay = ({
   savePRLink,
   catalogRouteRef,
 }: Props) => {
+  const [errorOccured, setErrorOccured] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const errorApi = useApi(errorApiRef);
   const { submitPrToRepo, addLocation } = useGithubRepos();
@@ -91,6 +92,7 @@ const ComponentConfigDisplay = ({
         nextStep();
       }
     } catch (e) {
+      setErrorOccured(true);
       setSubmitting(false);
       errorApi.post(e);
     }
@@ -102,13 +104,25 @@ const ComponentConfigDisplay = ({
         <Typography>
           Following config object will be submitted in a pull request to the
           repository{' '}
-          <Link href={configFile.location}>{configFile.location}</Link> and
-          added as a new location to the backend
+          <Link
+            href={configFile.location}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {configFile.location}
+          </Link>{' '}
+          and added as a new location to the backend
         </Typography>
       ) : (
         <Typography>
           Following config object will be added as a new location to the backend{' '}
-          <Link href={configFile.location}>{configFile.location}</Link>
+          <Link
+            href={configFile.location}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {configFile.location}
+          </Link>
         </Typography>
       )}
 
@@ -164,6 +178,16 @@ const ComponentConfigDisplay = ({
           >
             Next
           </Button>
+          {errorOccured ? (
+            <Button
+              style={{ marginLeft: '8px' }}
+              variant="outlined"
+              color="primary"
+              onClick={() => nextStep({ reset: true })}
+            >
+              Start again
+            </Button>
+          ) : null}
         </Grid>
       </Grid>
     </Grid>

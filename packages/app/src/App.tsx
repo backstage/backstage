@@ -69,7 +69,7 @@ const AppRoutes = () => (
   <Routes>
     <Navigate key="/" to="/catalog" />
     <Route
-      path="/catalog-import"
+      path="/catalog-import/*"
       element={<ImportComponentRouter catalogRouteRef={catalogRouteRef} />}
     />
     <Route

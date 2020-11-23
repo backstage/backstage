@@ -36,7 +36,12 @@ export const ImportFinished = ({ nextStep, PRLink, type }: Props) => {
       </Grid>
       <Grid item>
         {type === 'repo' ? (
-          <Link href={PRLink} style={{ marginRight: '8px' }}>
+          <Link
+            href={PRLink}
+            style={{ marginRight: '8px' }}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             View pull request on GitHub
           </Link>
         ) : null}
