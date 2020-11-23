@@ -19,7 +19,7 @@ import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 
 export type Result = {
   name: string;
-  description: string;
+  description: string | undefined;
   owner: string | undefined;
   kind: string;
   lifecycle: string | undefined;
@@ -39,8 +39,9 @@ class SearchApi {
     const entities = await this.catalogApi.getEntities();
     return entities.items.map((entity: Entity) => ({
       name: entity.metadata.name,
-      description: entity.metadata.description || 'No description',
-      owner: typeof entity.spec?.owner ?? undefined,
+      description: entity.metadata.description,
+      owner:
+        typeof entity.spec?.owner === 'string' ? entity.spec?.owner : undefined,
       kind: entity.kind,
       lifecycle:
         typeof entity.spec?.lifecycle === 'string'
