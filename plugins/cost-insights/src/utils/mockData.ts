@@ -34,6 +34,7 @@ import {
   getDefaultState as getDefaultLoadingState,
 } from '../utils/loading';
 import { findAlways } from '../utils/assert';
+import { aggregationFor } from '../client';
 
 type mockAlertRenderer<T> = (alert: T) => T;
 type mockEntityRenderer<T> = (entity: T) => T;
@@ -460,5 +461,40 @@ export const MockAggregatedDailyCosts: DateAggregation[] = [
   {
     date: '2020-09-30',
     amount: 5500,
+  },
+];
+
+export const getGroupedProducts = (intervals: string) => [
+  {
+    id: 'Cloud Dataflow',
+    aggregation: aggregationFor(intervals, 1_000),
+  },
+  {
+    id: 'Compute Engine',
+    aggregation: aggregationFor(intervals, 100),
+  },
+  {
+    id: 'Cloud Storage',
+    aggregation: aggregationFor(intervals, 500),
+  },
+  {
+    id: 'BigQuery',
+    aggregation: aggregationFor(intervals, 2_000),
+  },
+  {
+    id: 'Cloud SQL',
+    aggregation: aggregationFor(intervals, 10),
+  },
+  {
+    id: 'Cloud Spanner',
+    aggregation: aggregationFor(intervals, 50),
+  },
+  {
+    id: 'Cloud Pub/Sub',
+    aggregation: aggregationFor(intervals, 30),
+  },
+  {
+    id: 'Cloud Bigtable',
+    aggregation: aggregationFor(intervals, 250),
   },
 ];
