@@ -204,6 +204,7 @@ auth:
     saml:
       entryPoint: 'http://localhost:7001/'
       issuer: 'passport-saml'
+      origin: 'http://localhost:3000'
     okta:
       development:
         clientId:
