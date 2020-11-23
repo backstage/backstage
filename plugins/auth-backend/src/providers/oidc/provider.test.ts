@@ -22,7 +22,7 @@ import { createOidcProvider, OidcAuthProvider } from './provider';
 import { JWT, JWK } from 'jose';
 import { AuthProviderFactoryOptions } from '../types';
 import { Config } from '@backstage/config';
-import { OAuthAdapter, OAuthStartRequest } from '../../lib/oauth';
+import { OAuthAdapter } from '../../lib/oauth';
 
 const issuerMetadata = {
   issuer: 'https://oidc.test',
