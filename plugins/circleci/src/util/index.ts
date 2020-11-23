@@ -13,26 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { CITable } from '../CITable';
-import { useBuilds } from '../../../../state';
 
-export const Builds = () => {
-  const [
-    { total, loading, value, projectName, page, pageSize },
-    { setPage, retry, setPageSize },
-  ] = useBuilds();
-  return (
-    <CITable
-      total={total}
-      loading={loading}
-      retry={retry}
-      builds={value ?? []}
-      projectName={projectName}
-      page={page}
-      onChangePage={setPage}
-      pageSize={pageSize}
-      onChangePageSize={setPageSize}
-    />
-  );
-};
+export * from './time';
