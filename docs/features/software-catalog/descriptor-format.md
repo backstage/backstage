@@ -98,7 +98,7 @@ See below for details about these fields.
 The descriptor format supports substitutions using `$text`, `$json`, and
 `$yaml`.
 
-Placeholders like `$json: https://example.com/entity.json` are substituded by
+Placeholders like `$json: https://example.com/entity.json` are substituted by
 the content of the referenced file. Files can be referenced from any configured
 integration similar to locations by passing an absolute URL. It's also possible
 to reference relative files like `./referenced.yaml` from the same location.
