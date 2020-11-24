@@ -22,19 +22,19 @@ import {
   createMockEntity,
   mockDefaultLoadingState,
   MockComputeEngine,
-  MockProductFilters,
 } from '../../utils/mockData';
 import {
-  MockCostInsightsApiProvider,
-  MockBillingDateProvider,
   MockConfigProvider,
+  MockCostInsightsApiProvider,
   MockCurrencyProvider,
-  MockFilterProvider,
-  MockGroupsProvider,
+  MockBillingDateProvider,
   MockScrollProvider,
   MockLoadingProvider,
 } from '../../utils/tests';
-import { Duration, Entity, Product, ProductPeriod } from '../../types';
+import { Duration, Entity, Product } from '../../types';
+
+// suppress recharts componentDidUpdate warnings
+jest.spyOn(console, 'warn').mockImplementation(() => {});
 
 const costInsightsApi = (entity: Entity): Partial<CostInsightsApi> => ({
   getProductInsights: () => Promise.resolve(entity),
@@ -53,29 +53,25 @@ const mockProductCost = createMockEntity(() => ({
 const renderProductInsightsCardInTestApp = async (
   entity: Entity,
   product: Product,
-  duration: Duration,
+  duration = Duration.P30D,
+  onSelectAsync = jest.fn(() => Promise.resolve(mockProductCost)),
 ) =>
   await renderInTestApp(
     <MockCostInsightsApiProvider costInsightsApi={costInsightsApi(entity)}>
       <MockConfigProvider>
-        <MockLoadingProvider state={mockDefaultLoadingState}>
-          <MockGroupsProvider>
+        <MockCurrencyProvider>
+          <MockLoadingProvider state={mockDefaultLoadingState}>
             <MockBillingDateProvider>
-              <MockFilterProvider
-                productFilters={MockProductFilters.map((p: ProductPeriod) => ({
-                  ...p,
-                  duration: duration,
-                }))}
-              >
-                <MockScrollProvider>
-                  <MockCurrencyProvider>
-                    <ProductInsightsCard product={product} />
-                  </MockCurrencyProvider>
-                </MockScrollProvider>
-              </MockFilterProvider>
+              <MockScrollProvider>
+                <ProductInsightsCard
+                  product={product}
+                  initialState={{ entity, duration }}
+                  onSelectAsync={onSelectAsync}
+                />
+              </MockScrollProvider>
             </MockBillingDateProvider>
-          </MockGroupsProvider>
-        </MockLoadingProvider>
+          </MockLoadingProvider>
+        </MockCurrencyProvider>
       </MockConfigProvider>
     </MockCostInsightsApiProvider>,
   );
@@ -100,7 +96,6 @@ describe('<ProductInsightsCard/>', () => {
     const rendered = await renderProductInsightsCardInTestApp(
       entity,
       MockComputeEngine,
-      Duration.P1M,
     );
     const subheader = 'entities, sorted by cost';
     const subheaderRgx = new RegExp(`${entity.entities.length} ${subheader}`);

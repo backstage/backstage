@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { Box, Typography, Grid } from '@material-ui/core';
-import { ProductInsightsCard } from '../ProductInsightsCard';
+import { ProductInsightsCardList } from '../ProductInsightsCard';
 import { useConfig } from '../../hooks';
 
 export const ProductInsights = ({}) => {
@@ -30,11 +30,7 @@ export const ProductInsights = ({}) => {
         </Typography>
       </Box>
       <Grid container direction="column">
-        {config.products.map(product => (
-          <Grid item key={product.kind} style={{ position: 'relative' }}>
-            <ProductInsightsCard product={product} />
-          </Grid>
-        ))}
+        <ProductInsightsCardList products={config.products} />
       </Grid>
     </>
   );

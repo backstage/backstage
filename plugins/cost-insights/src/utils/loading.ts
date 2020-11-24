@@ -21,11 +21,13 @@ export enum DefaultLoadingAction {
   LastCompleteBillingDate = 'billing-date',
   CostInsightsInitial = 'cost-insights-initial',
   CostInsightsPage = 'cost-insights-page',
+  CostInsightsProducts = 'cost-insights-products',
 }
 
 export const INITIAL_LOADING_ACTIONS = [
   DefaultLoadingAction.UserGroups,
   DefaultLoadingAction.CostInsightsInitial,
+  DefaultLoadingAction.CostInsightsProducts,
 ];
 
 export const getDefaultState = (loadingActions: string[]): Loading => {
@@ -54,11 +56,3 @@ export const getResetStateWithoutInitial = (
     return { ...defaultState, [action]: loadingActionState };
   }, {});
 };
-
-export function getLoadingActions(products: string[]): string[] {
-  return ([
-    DefaultLoadingAction.UserGroups,
-    DefaultLoadingAction.CostInsightsInitial,
-    DefaultLoadingAction.CostInsightsPage,
-  ] as string[]).concat(products);
-}

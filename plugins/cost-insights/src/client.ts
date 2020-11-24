@@ -332,14 +332,14 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
       project: 'example-project',
       periodStart: '2020-Q2',
       periodEnd: '2020-Q3',
-      aggregation: [60_000, 120_000],
+      aggregation: [100, 120_000],
       change: {
-        ratio: 1,
+        ratio: 10.123123,
         amount: 60000,
       },
       products: [
         { id: 'Compute Engine', aggregation: [58_000, 118_000] },
-        { id: 'Cloud Dataflow', aggregation: [1200, 1500] },
+        { id: 'Cloud Dataflow', aggregation: [0, 15_000] },
         { id: 'Cloud Storage', aggregation: [800, 500] },
       ],
     };
