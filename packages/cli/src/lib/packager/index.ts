@@ -24,7 +24,15 @@ import { tmpdir } from 'os';
 import tar, { CreateOptions } from 'tar';
 import { paths } from '../paths';
 import { run } from '../run';
+import { packageVersions } from '../version';
 import { ParallelOption } from '../parallel';
+
+// These packages aren't safe to pack in parallel since the CLI depends on them
+const UNSAFE_PACKAGES = [
+  ...Object.keys(packageVersions),
+  '@backstage/cli-common',
+  '@backstage/config-loader',
+];
 
 type LernaPackage = {
   name: string;
@@ -135,51 +143,68 @@ async function moveToDistWorkspace(
   workspaceDir: string,
   localPackages: LernaPackage[],
 ): Promise<void> {
+  async function pack(target: LernaPackage, archive: string) {
+    console.log(`Repacking ${target.name} into dist workspace`);
+    const archivePath = resolvePath(workspaceDir, archive);
+
+    await run('yarn', ['pack', '--filename', archivePath], {
+      cwd: target.location,
+    });
+    // TODO(Rugvip): yarn pack doesn't call postpack, once the bug is fixed this can be removed
+    if (target.scripts.postpack) {
+      await run('yarn', ['postpack'], { cwd: target.location });
+    }
+
+    const outputDir = relativePath(paths.targetRoot, target.location);
+    const absoluteOutputPath = resolvePath(workspaceDir, outputDir);
+    await fs.ensureDir(absoluteOutputPath);
+
+    await tar.extract({
+      file: archivePath,
+      cwd: absoluteOutputPath,
+      strip: 1,
+    });
+    await fs.remove(archivePath);
+
+    // We remove the dependencies from package.json of packages that are marked
+    // as bundled, so that yarn doesn't try to install them.
+    if (target.get('bundled')) {
+      const pkgJson = await fs.readJson(
+        resolvePath(absoluteOutputPath, 'package.json'),
+      );
+      delete pkgJson.dependencies;
+      delete pkgJson.devDependencies;
+      delete pkgJson.peerDependencies;
+      delete pkgJson.optionalDependencies;
+
+      await fs.writeJson(
+        resolvePath(absoluteOutputPath, 'package.json'),
+        pkgJson,
+        {
+          spaces: 2,
+        },
+      );
+    }
+  }
+
+  const unsafePackages = localPackages.filter(p =>
+    UNSAFE_PACKAGES.includes(p.name),
+  );
+  const safePackages = localPackages.filter(
+    p => !UNSAFE_PACKAGES.includes(p.name),
+  );
+
+  // The unsafe package are packed first one by one in order to avoid race conditions
+  // where the CLI is being executed with broken dependencies.
+  for (const target of unsafePackages) {
+    await pack(target, `temp-package.tgz`);
+  }
+
+  // Repacking in parallel is much faster and safe for all packages outside of the Backstage repo
   await Promise.all(
-    localPackages.map(async (target, index) => {
-      console.log(`Repacking ${target.name} into dist workspace`);
-      const archive = `temp-package-${index}.tgz`;
-      const archivePath = resolvePath(workspaceDir, archive);
-
-      await run('yarn', ['pack', '--filename', archivePath], {
-        cwd: target.location,
-      });
-      // TODO(Rugvip): yarn pack doesn't call postpack, once the bug is fixed this can be removed
-      if (target.scripts.postpack) {
-        await run('yarn', ['postpack'], { cwd: target.location });
-      }
-
-      const outputDir = relativePath(paths.targetRoot, target.location);
-      const absoluteOutputPath = resolvePath(workspaceDir, outputDir);
-      await fs.ensureDir(absoluteOutputPath);
-
-      await tar.extract({
-        file: archivePath,
-        cwd: absoluteOutputPath,
-        strip: 1,
-      });
-      await fs.remove(archivePath);
-
-      // We remove the dependencies from package.json of packages that are marked
-      // as bundled, so that yarn doesn't try to install them.
-      if (target.get('bundled')) {
-        const pkgJson = await fs.readJson(
-          resolvePath(absoluteOutputPath, 'package.json'),
-        );
-        delete pkgJson.dependencies;
-        delete pkgJson.devDependencies;
-        delete pkgJson.peerDependencies;
-        delete pkgJson.optionalDependencies;
-
-        await fs.writeJson(
-          resolvePath(absoluteOutputPath, 'package.json'),
-          pkgJson,
-          {
-            spaces: 2,
-          },
-        );
-      }
-    }),
+    safePackages.map(async (target, index) =>
+      pack(target, `temp-package-${index}.tgz`),
+    ),
   );
 }
 

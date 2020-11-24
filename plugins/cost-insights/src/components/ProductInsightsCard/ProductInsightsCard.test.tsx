@@ -20,7 +20,6 @@ import { ProductInsightsCard } from './ProductInsightsCard';
 import { CostInsightsApi } from '../../api';
 import {
   createMockEntity,
-  createMockProductCost,
   mockDefaultLoadingState,
   MockComputeEngine,
   MockProductFilters,
@@ -35,16 +34,14 @@ import {
   MockScrollProvider,
   MockLoadingProvider,
 } from '../../utils/tests';
-import { Duration, Product, ProductCost, ProductPeriod } from '../../types';
+import { Duration, Entity, Product, ProductPeriod } from '../../types';
 
-const costInsightsApi = (
-  productCost: ProductCost,
-): Partial<CostInsightsApi> => ({
-  getProductInsights: () =>
-    Promise.resolve(productCost) as Promise<ProductCost>,
+const costInsightsApi = (entity: Entity): Partial<CostInsightsApi> => ({
+  getProductInsights: () => Promise.resolve(entity),
 });
 
-const mockProductCost = createMockProductCost(() => ({
+const mockProductCost = createMockEntity(() => ({
+  id: 'test-id',
   entities: [],
   aggregation: [3000, 4000],
   change: {
@@ -54,12 +51,12 @@ const mockProductCost = createMockProductCost(() => ({
 }));
 
 const renderProductInsightsCardInTestApp = async (
-  productCost: ProductCost,
+  entity: Entity,
   product: Product,
   duration: Duration,
 ) =>
   await renderInTestApp(
-    <MockCostInsightsApiProvider costInsightsApi={costInsightsApi(productCost)}>
+    <MockCostInsightsApiProvider costInsightsApi={costInsightsApi(entity)}>
       <MockConfigProvider>
         <MockLoadingProvider state={mockDefaultLoadingState}>
           <MockGroupsProvider>
@@ -96,27 +93,30 @@ describe('<ProductInsightsCard/>', () => {
   });
 
   it('Should render the right subheader for products with cost data', async () => {
-    const productCost = {
+    const entity = {
       ...mockProductCost,
       entities: [...Array(1000)].map(createMockEntity),
     };
     const rendered = await renderProductInsightsCardInTestApp(
-      productCost,
+      entity,
       MockComputeEngine,
       Duration.P1M,
     );
     const subheader = 'entities, sorted by cost';
-    const subheaderRgx = new RegExp(
-      `${productCost.entities.length} ${subheader}`,
-    );
+    const subheaderRgx = new RegExp(`${entity.entities.length} ${subheader}`);
     expect(rendered.getByText(subheaderRgx)).toBeInTheDocument();
   });
 
   it('Should render the right subheader if there is no cost data or change data', async () => {
-    const productCost = { entities: [], aggregation: [0, 0] } as ProductCost;
+    const entity: Entity = {
+      id: 'test-id',
+      entities: [],
+      aggregation: [0, 0],
+      change: { ratio: 0, amount: 0 },
+    };
     const subheader = `There are no ${MockComputeEngine.name} costs within this timeframe for your team's projects.`;
     const rendered = await renderProductInsightsCardInTestApp(
-      productCost,
+      entity,
       MockComputeEngine,
       Duration.P1M,
     );
@@ -138,12 +138,12 @@ describe('<ProductInsightsCard/>', () => {
     'Should display the correct relative time',
     ({ duration, periodStartText, periodEndText }) => {
       it(`Should display the correct relative time for ${duration}`, async () => {
-        const productCost = {
+        const entity = {
           ...mockProductCost,
           entities: [...Array(3)].map(createMockEntity),
         };
         const rendered = await renderProductInsightsCardInTestApp(
-          productCost,
+          entity,
           MockComputeEngine,
           duration,
         );

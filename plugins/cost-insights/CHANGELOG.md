@@ -1,5 +1,47 @@
 # @backstage/plugin-cost-insights
 
+## 0.4.0
+
+### Minor Changes
+
+- 4040d4fcb: remove cost insights currency feature flag
+
+### Patch Changes
+
+- 1722cb53c: Added configuration schema
+- 17a9f48f6: remove excessive margin from cost overview banner
+- f360395d0: UI improvements: Increase width of first column in product entity dialog table
+  UI improvement: Display full cost amount in product entity dialog table
+- 259d848ee: Fix savings/excess display calculation
+- Updated dependencies [1722cb53c]
+  - @backstage/core@0.3.1
+  - @backstage/test-utils@0.1.3
+
+## 0.3.0
+
+### Minor Changes
+
+- 0703edee0: rename: Tooltip -> BarChartTooltip
+  rename: TooltipItem -> BarChartTooltipItem
+  Deprecate BarChartData in favor of BarChartOptions
+  Export BarChartLegend component
+  Update BarChart props to accept options prop
+  Deprecate ProductCost type in favor of Entity. Update CostInsightsApi
+
+### Patch Changes
+
+- 9a294574c: Fix styling issue on Cost Insights product panels with no cost
+- Updated dependencies [7b37d65fd]
+- Updated dependencies [4aca74e08]
+- Updated dependencies [e8f69ba93]
+- Updated dependencies [0c0798f08]
+- Updated dependencies [0c0798f08]
+- Updated dependencies [199237d2f]
+- Updated dependencies [6627b626f]
+- Updated dependencies [4577e377b]
+  - @backstage/core@0.3.0
+  - @backstage/theme@0.2.1
+
 ## 0.2.0
 
 ### Minor Changes

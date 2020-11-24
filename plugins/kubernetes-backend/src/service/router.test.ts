@@ -21,18 +21,18 @@ import { makeRouter } from './router';
 import {
   KubernetesServiceLocator,
   KubernetesFetcher,
-  ObjectsByServiceIdResponse,
+  ObjectsByEntityResponse,
 } from '..';
 
 describe('router', () => {
   let app: express.Express;
   let kubernetesFetcher: jest.Mocked<KubernetesFetcher>;
   let kubernetesServiceLocator: jest.Mocked<KubernetesServiceLocator>;
-  let handleGetByServiceId: jest.Mock<Promise<ObjectsByServiceIdResponse>>;
+  let handleGetByServiceId: jest.Mock<Promise<ObjectsByEntityResponse>>;
 
   beforeAll(async () => {
     kubernetesFetcher = {
-      fetchObjectsByServiceId: jest.fn(),
+      fetchObjectsForService: jest.fn(),
     };
 
     kubernetesServiceLocator = {

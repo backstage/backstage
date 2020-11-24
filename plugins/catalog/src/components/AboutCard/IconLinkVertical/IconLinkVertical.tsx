@@ -23,6 +23,7 @@ export type IconLinkVerticalProps = {
   icon?: React.ReactNode;
   href?: string;
   disabled?: boolean;
+  title?: string;
   label: string;
 };
 
@@ -57,6 +58,7 @@ export function IconLinkVertical({
       <Link
         className={classnames(classes.link, classes.disabled)}
         underline="none"
+        title={props.title}
         {...props}
       >
         {icon}

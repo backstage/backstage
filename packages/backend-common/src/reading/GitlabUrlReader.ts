@@ -14,48 +14,27 @@
  * limitations under the License.
  */
 
+import {
+  GitLabIntegrationConfig,
+  readGitLabIntegrationConfigs,
+} from '@backstage/integration';
 import fetch from 'cross-fetch';
-import { Config } from '@backstage/config';
 import { NotFoundError } from '../errors';
-import { ReaderFactory, UrlReader } from './types';
-
-type Options = {
-  host: string;
-  token?: string;
-};
-
-function readConfig(config: Config): Options[] {
-  const optionsArr = Array<Options>();
-
-  const providerConfigs =
-    config.getOptionalConfigArray('integrations.gitlab') ?? [];
-
-  for (const providerConfig of providerConfigs) {
-    const host = providerConfig.getOptionalString('host') ?? 'gitlab.com';
-    const token = providerConfig.getOptionalString('token');
-
-    optionsArr.push({ host, token });
-  }
-
-  // As a convenience we always make sure there's at least an unauthenticated
-  // reader for public gitlab repos.
-  if (!optionsArr.some(p => p.host === 'gitlab.com')) {
-    optionsArr.push({ host: 'gitlab.com' });
-  }
-
-  return optionsArr;
-}
+import { ReaderFactory, ReadTreeResponse, UrlReader } from './types';
 
 export class GitlabUrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config }) => {
-    return readConfig(config).map(options => {
+    const configs = readGitLabIntegrationConfigs(
+      config.getOptionalConfigArray('integrations.gitlab') ?? [],
+    );
+    return configs.map(options => {
       const reader = new GitlabUrlReader(options);
       const predicate = (url: URL) => url.host === options.host;
       return { reader, predicate };
     });
   };
 
-  constructor(private readonly options: Options) {}
+  constructor(private readonly options: GitLabIntegrationConfig) {}
 
   async read(url: string): Promise<Buffer> {
     // TODO(Rugvip): merged the old GitlabReaderProcessor in here and used
@@ -85,6 +64,10 @@ export class GitlabUrlReader implements UrlReader {
       throw new NotFoundError(message);
     }
     throw new Error(message);
+  }
+
+  readTree(): Promise<ReadTreeResponse> {
+    throw new Error('GitlabUrlReader does not implement readTree');
   }
 
   // Converts
@@ -129,9 +112,9 @@ export class GitlabUrlReader implements UrlReader {
     try {
       const url = new URL(target);
 
-      const branchAndfilePath = url.pathname.split('/-/blob/')[1];
+      const branchAndFilePath = url.pathname.split('/-/blob/')[1];
 
-      const [branch, ...filePath] = branchAndfilePath.split('/');
+      const [branch, ...filePath] = branchAndFilePath.split('/');
 
       url.pathname = [
         '/api/v4/projects',

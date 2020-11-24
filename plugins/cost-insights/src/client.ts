@@ -16,31 +16,26 @@
 /* eslint-disable no-restricted-imports */
 
 import dayjs from 'dayjs';
-import regression, { DataPoint } from 'regression';
 import { CostInsightsApi, ProductInsightsOptions } from '../src/api';
 import {
   Alert,
-  ChangeStatistic,
   Cost,
   DateAggregation,
   DEFAULT_DATE_FORMAT,
   Duration,
+  Entity,
   Group,
   MetricData,
-  ProductCost,
   Project,
   ProjectGrowthData,
-  Trendline,
   UnlabeledDataflowData,
 } from '../src/types';
 import {
   ProjectGrowthAlert,
   UnlabeledDataflowAlert,
 } from '../src/utils/alerts';
-import {
-  exclusiveEndDateOf,
-  inclusiveStartDateOf,
-} from '../src/utils/duration';
+import { inclusiveStartDateOf } from '../src/utils/duration';
+import { trendlineOf, changeOf } from './utils/mockData';
 
 type IntervalFields = {
   duration: Duration;
@@ -66,7 +61,7 @@ function aggregationFor(
   baseline: number,
 ): DateAggregation[] {
   const { duration, endDate } = parseIntervals(intervals);
-  const days = dayjs(exclusiveEndDateOf(duration, endDate)).diff(
+  const days = dayjs(endDate).diff(
     inclusiveStartDateOf(duration, endDate),
     'day',
   );
@@ -84,32 +79,6 @@ function aggregationFor(
     },
     [],
   );
-}
-
-function trendlineOf(aggregation: DateAggregation[]): Trendline {
-  const data: ReadonlyArray<DataPoint> = aggregation.map(a => [
-    Date.parse(a.date) / 1000,
-    a.amount,
-  ]);
-  const result = regression.linear(data, { precision: 5 });
-  return {
-    slope: result.equation[0],
-    intercept: result.equation[1],
-  };
-}
-
-function changeOf(aggregation: DateAggregation[]): ChangeStatistic {
-  const half = Math.ceil(aggregation.length / 2);
-  const before = aggregation
-    .slice(0, half)
-    .reduce((sum, a) => sum + a.amount, 0);
-  const after = aggregation
-    .slice(half, aggregation.length)
-    .reduce((sum, a) => sum + a.amount, 0);
-  return {
-    ratio: (after - before) / before,
-    amount: after - before,
-  };
 }
 
 export class ExampleCostInsightsClient implements CostInsightsApi {
@@ -194,8 +163,9 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
 
   async getProductInsights(
     productInsightsOptions: ProductInsightsOptions,
-  ): Promise<ProductCost> {
+  ): Promise<Entity> {
     const projectProductInsights = await this.request(productInsightsOptions, {
+      id: productInsightsOptions.product,
       aggregation: [80_000, 110_000],
       change: {
         ratio: 0.375,
@@ -205,69 +175,152 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
         {
           id: null, // entities with null ids will be appear as "Unlabeled" in product panels
           aggregation: [45_000, 50_000],
+          change: {
+            ratio: 0.111,
+            amount: 5_000,
+          },
+          entities: [],
         },
         {
           id: 'entity-a',
           aggregation: [15_000, 20_000],
+          change: {
+            ratio: 0.333,
+            amount: 5_000,
+          },
+          entities: [],
         },
         {
           id: 'entity-b',
           aggregation: [20_000, 30_000],
+          change: {
+            ratio: 0.5,
+            amount: 10_000,
+          },
+          entities: [],
+        },
+        {
+          id: 'entity-c',
+          aggregation: [0, 10_000],
+          change: {
+            ratio: 10_000,
+            amount: 10_000,
+          },
+          entities: [],
+        },
+      ],
+    });
+
+    const productInsights: Entity = await this.request(productInsightsOptions, {
+      id: productInsightsOptions.product,
+      aggregation: [200_000, 250_000],
+      change: {
+        ratio: 0.2,
+        amount: 50_000,
+      },
+      entities: [
+        {
+          id: null, // entities with null ids will be appear as "Unlabeled" in product panels
+          aggregation: [36_000, 42_000],
+          change: {
+            ratio: 0.1666,
+            amount: 6_000,
+          },
+          entities: [],
+        },
+        {
+          id: 'entity-a',
+          aggregation: [15_000, 20_000],
+          change: {
+            ratio: -0.33333333,
+            amount: 5_000,
+          },
+          entities: [],
+        },
+        {
+          id: 'entity-b',
+          aggregation: [20_000, 30_000],
+          change: {
+            ratio: 0.5,
+            amount: 10_000,
+          },
+          entities: [],
+        },
+        {
+          id: 'entity-c',
+          aggregation: [18_000, 25_000],
+          change: {
+            ratio: 0.38,
+            amount: 7_000,
+          },
+          entities: [],
+        },
+        {
+          id: 'entity-d',
+          aggregation: [15_000, 30_000],
+          change: {
+            ratio: 1,
+            amount: 15_000,
+          },
+          entities: [],
         },
         {
           id: 'entity-e',
           aggregation: [0, 10_000],
+          entities: [],
+          change: {
+            ratio: 10_000,
+            amount: 10_000,
+          },
+        },
+        {
+          id: 'entity-f',
+          aggregation: [17_000, 19_000],
+          change: {
+            ratio: 0.118,
+            amount: 2_000,
+          },
+          entities: [],
+        },
+        {
+          id: 'entity-g',
+          aggregation: [80_000, 60_000],
+          change: {
+            ratio: -0.25,
+            amount: -20_000,
+          },
+          entities: [
+            {
+              id: 'vCPU Time Batch Belgium',
+              aggregation: [15_000, 15_000],
+              change: {
+                ratio: 0,
+                amount: 0,
+              },
+              entities: [],
+            },
+            {
+              id: 'RAM Time Belgium',
+              aggregation: [15_000, 30_000],
+              change: {
+                ratio: 1,
+                amount: 15_000,
+              },
+              entities: [],
+            },
+            {
+              id: 'Local Disk Time PD Standard Belgium',
+              aggregation: [50_000, 15_000],
+              change: {
+                ratio: -0.7,
+                amount: -35_000,
+              },
+              entities: [],
+            },
+          ],
         },
       ],
     });
-    const productInsights: ProductCost = await this.request(
-      productInsightsOptions,
-      {
-        aggregation: [200_000, 250_000],
-        change: {
-          ratio: 0.2,
-          amount: 50_000,
-        },
-        entities: [
-          {
-            id: null, // entities with null ids will be appear as "Unlabeled" in product panels
-            aggregation: [15_000, 30_000],
-          },
-          {
-            id: 'entity-a',
-            aggregation: [15_000, 20_000],
-          },
-          {
-            id: 'entity-b',
-            aggregation: [20_000, 30_000],
-          },
-          {
-            id: 'entity-c',
-            aggregation: [18_000, 25_000],
-          },
-          {
-            id: 'entity-d',
-            aggregation: [36_000, 42_000],
-          },
-          {
-            id: 'entity-e',
-            aggregation: [0, 10_000],
-          },
-          {
-            id: 'entity-f',
-            aggregation: [17_000, 19_000],
-          },
-          {
-            id: 'entity-g',
-            aggregation: [49_000, 30_000],
-          },
-          {
-            id: 'entity-h',
-            aggregation: [0, 34_000],
-          },
-        ],
-      },
-    );
 
     return productInsightsOptions.project
       ? projectProductInsights

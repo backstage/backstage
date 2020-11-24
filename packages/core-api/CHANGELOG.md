@@ -1,5 +1,38 @@
 # @backstage/core-api
 
+## 0.2.1
+
+### Patch Changes
+
+- c5bab94ab: Updated the AuthApi `.create` methods to configure the default scope of the corresponding Auth Api. As a result the
+  default scope is configurable when overwriting the Core Api in the app.
+
+  ```
+  GithubAuth.create({
+    discoveryApi,
+    oauthRequestApi,
+    defaultScopes: ['read:user', 'repo'],
+  }),
+  ```
+
+  Replaced redundant CreateOptions of each Auth Api with the OAuthApiCreateOptions type.
+
+  ```
+  export type OAuthApiCreateOptions = AuthApiCreateOptions & {
+    oauthRequestApi: OAuthRequestApi;
+    defaultScopes?: string[];
+  };
+
+  export type AuthApiCreateOptions = {
+    discoveryApi: DiscoveryApi;
+    environment?: string;
+    provider?: AuthProvider & { id: string };
+  };
+  ```
+
+- Updated dependencies [4577e377b]
+  - @backstage/theme@0.2.1
+
 ## 0.2.0
 
 ### Minor Changes

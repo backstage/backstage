@@ -20,8 +20,13 @@ import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '../logging';
 import { GitlabUrlReader } from './GitlabUrlReader';
 import { msw } from '@backstage/test-utils';
+import { ReadTreeResponseFactory } from './tree';
 
 const logger = getVoidLogger();
+
+const treeResponseFactory = ReadTreeResponseFactory.create({
+  config: new ConfigReader({}),
+});
 
 describe('GitlabUrlReader', () => {
   const worker = setupServer();
@@ -98,7 +103,11 @@ describe('GitlabUrlReader', () => {
       }),
     },
   ])('should handle happy path %#', async ({ url, config, response }) => {
-    const [{ reader }] = GitlabUrlReader.factory({ config, logger });
+    const [{ reader }] = GitlabUrlReader.factory({
+      config,
+      logger,
+      treeResponseFactory,
+    });
 
     const data = await reader.read(url);
     const res = await JSON.parse(data.toString('utf-8'));
@@ -114,7 +123,11 @@ describe('GitlabUrlReader', () => {
     },
   ])('should handle error path %#', async ({ url, config, error }) => {
     await expect(async () => {
-      const [{ reader }] = GitlabUrlReader.factory({ config, logger });
+      const [{ reader }] = GitlabUrlReader.factory({
+        config,
+        logger,
+        treeResponseFactory,
+      });
       await reader.read(url);
     }).rejects.toThrow(error);
   });

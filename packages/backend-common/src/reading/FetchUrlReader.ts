@@ -16,7 +16,7 @@
 
 import fetch from 'cross-fetch';
 import { NotFoundError } from '../errors';
-import { UrlReader } from './types';
+import { ReadTreeResponse, UrlReader } from './types';
 
 /**
  * A UrlReader that does a plain fetch of the URL.
@@ -39,6 +39,10 @@ export class FetchUrlReader implements UrlReader {
       throw new NotFoundError(message);
     }
     throw new Error(message);
+  }
+
+  readTree(): Promise<ReadTreeResponse> {
+    throw new Error('FetchUrlReader does not implement readTree');
   }
 
   toString() {

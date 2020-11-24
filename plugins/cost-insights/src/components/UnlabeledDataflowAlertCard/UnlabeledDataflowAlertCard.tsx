@@ -15,12 +15,12 @@
  */
 
 import React from 'react';
-import { Box } from '@material-ui/core';
 import { InfoCard } from '@backstage/core';
-import { UnlabeledDataflowBarChart } from './UnlabeledDataflowBarChart';
-import { UnlabeledDataflowBarChartLegend } from './UnlabeledDataflowBarChartLegend';
-import { UnlabeledDataflowData } from '../../types';
+import { Box } from '@material-ui/core';
+import { BarChart, BarChartLegend } from '../BarChart';
+import { UnlabeledDataflowData, ResourceData } from '../../types';
 import { pluralOf } from '../../utils/grammar';
+import { useBarChartLayoutStyles as useStyles } from '../../utils/styles';
 
 type UnlabeledDataflowAlertProps = {
   alert: UnlabeledDataflowData;
@@ -29,22 +29,31 @@ type UnlabeledDataflowAlertProps = {
 export const UnlabeledDataflowAlertCard = ({
   alert,
 }: UnlabeledDataflowAlertProps) => {
+  const classes = useStyles();
   const projects = pluralOf(alert.projects.length, 'project');
   const subheader = `
     Showing costs from ${alert.projects.length} ${projects} with unlabeled Dataflow jobs in the last 30 days.
   `;
+  const options = {
+    previousName: 'Unlabeled Cost',
+    currentName: 'Labeled Cost',
+  };
+
+  const resources: ResourceData[] = alert.projects.map(project => ({
+    name: project.id,
+    previous: project.unlabeledCost,
+    current: project.labeledCost,
+  }));
+
   return (
     <InfoCard title="Label Dataflow" subheader={subheader}>
-      <Box display="flex" flexDirection="column">
-        <Box paddingY={1}>
-          <UnlabeledDataflowBarChartLegend
-            unlabeledCost={alert.unlabeledCost}
-            labeledCost={alert.labeledCost}
-          />
-        </Box>
-        <Box paddingY={1}>
-          <UnlabeledDataflowBarChart projects={alert.projects} />
-        </Box>
+      <Box className={classes.wrapper}>
+        <BarChartLegend
+          costStart={alert.labeledCost}
+          costEnd={alert.unlabeledCost}
+          options={options}
+        />
+        <BarChart resources={resources} options={options} />
       </Box>
     </InfoCard>
   );

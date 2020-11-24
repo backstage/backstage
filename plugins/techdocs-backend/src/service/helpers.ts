@@ -103,7 +103,7 @@ export class DocsBuilder {
     const { type, target } = getLocationForEntity(this.entity);
 
     // Unless docs are stored locally
-    const nonAgeCheckTypes = ['dir', 'file'];
+    const nonAgeCheckTypes = ['dir', 'file', 'url'];
     if (!nonAgeCheckTypes.includes(type)) {
       const lastCommit = await getLastCommitTimestamp(target, this.logger);
       const storageTimeStamp = buildMetadataStorage.getTimestamp();

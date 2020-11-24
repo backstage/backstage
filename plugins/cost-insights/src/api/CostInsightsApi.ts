@@ -19,9 +19,9 @@ import {
   Alert,
   Cost,
   Duration,
+  Entity,
   Group,
   Project,
-  ProductCost,
   Maybe,
   MetricData,
 } from '../types';
@@ -138,7 +138,7 @@ export type CostInsightsApi = {
    *
    * @param options Options to use when fetching insights for a particular cloud product and interval timeframe.
    */
-  getProductInsights(options: ProductInsightsOptions): Promise<ProductCost>;
+  getProductInsights(options: ProductInsightsOptions): Promise<Entity>;
   /**
    * Get current cost alerts for a given group. These show up as Action Items for the group on the
    * Cost Insights page. Alerts may include cost-saving recommendations, such as infrastructure

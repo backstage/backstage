@@ -26,13 +26,13 @@ import {
   TabbedCard,
   useApi,
 } from '@backstage/core';
-import { Entity } from '@backstage/catalog-model';
+import { ComponentEntityV1alpha1, Entity } from '@backstage/catalog-model';
 import { kubernetesApiRef } from '../../api/types';
 import {
-  AuthRequestBody,
+  KubernetesRequestBody,
   ClusterObjects,
   FetchResponse,
-  ObjectsByServiceIdResponse,
+  ObjectsByEntityResponse,
 } from '@backstage/plugin-kubernetes-backend';
 import { kubernetesAuthProvidersApiRef } from '../../kubernetes-auth-provider/types';
 import { DeploymentTables } from '../DeploymentTables';
@@ -104,7 +104,7 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
   const kubernetesApi = useApi(kubernetesApiRef);
 
   const [kubernetesObjects, setKubernetesObjects] = useState<
-    ObjectsByServiceIdResponse | undefined
+    ObjectsByEntityResponse | undefined
   >(undefined);
   const [error, setError] = useState<string | undefined>(undefined);
 
@@ -120,7 +120,9 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
   useEffect(() => {
     (async () => {
       // For each auth type, invoke decorateRequestBodyForAuth on corresponding KubernetesAuthProvider
-      let requestBody: AuthRequestBody = {};
+      let requestBody: KubernetesRequestBody = {
+        entity: entity as ComponentEntityV1alpha1,
+      };
       for (const authProviderStr of authProviders) {
         // Multiple asyncs done sequentially instead of all at once to prevent same requestBody from being modified simultaneously
         requestBody = await kubernetesAuthProvidersApi.decorateRequestBodyForAuth(
@@ -131,7 +133,7 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
 
       // TODO: Add validation on contents/format of requestBody
       kubernetesApi
-        .getObjectsByServiceId(entity.metadata.name, requestBody)
+        .getObjectsByEntity(requestBody)
         .then(result => {
           setKubernetesObjects(result);
         })

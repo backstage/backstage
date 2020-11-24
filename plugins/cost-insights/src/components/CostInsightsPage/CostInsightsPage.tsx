@@ -16,7 +16,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { Box, Container, Divider, Grid, Typography } from '@material-ui/core';
-import { featureFlagsApiRef, Progress, useApi } from '@backstage/core';
+import { Progress, useApi } from '@backstage/core';
 import { default as MaterialAlert } from '@material-ui/lab/Alert';
 import { costInsightsApiRef } from '../../api';
 import { AlertActionCardList } from '../AlertActionCardList';
@@ -49,7 +49,6 @@ import { useSubtleTypographyStyles } from '../../utils/styles';
 
 export const CostInsightsPage = () => {
   const classes = useSubtleTypographyStyles();
-  const featureFlags = useApi(featureFlagsApiRef);
   const client = useApi(costInsightsApiRef);
   const config = useConfig();
   const groups = useGroups();
@@ -191,27 +190,26 @@ export const CostInsightsPage = () => {
   const CostOverviewBanner = () => (
     <Box
       px={3}
-      marginTop={10}
+      pt={6}
       display="flex"
-      flexDirection="row"
       justifyContent="space-between"
+      alignItems="center"
+      minHeight={40}
     >
-      <Box minHeight={40} width="75%" pt={2}>
+      <Box>
         <Typography variant="h4">Cost Overview</Typography>
         <Typography classes={classes}>
           Billing data as of {lastCompleteBillingDate}
         </Typography>
       </Box>
-      <Box minHeight={40} maxHeight={60} display="flex">
-        {featureFlags.isActive('cost-insights-currencies') && (
-          <Box mr={1}>
-            <CurrencySelect
-              currency={currency}
-              currencies={config.currencies}
-              onSelect={setCurrency}
-            />
-          </Box>
-        )}
+      <Box display="flex">
+        <Box mr={1}>
+          <CurrencySelect
+            currency={currency}
+            currencies={config.currencies}
+            onSelect={setCurrency}
+          />
+        </Box>
         <ProjectSelect
           project={pageFilters.project}
           projects={projects || []}

@@ -1,5 +1,26 @@
 # @backstage/plugin-auth-backend
 
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies [1722cb53c]
+- Updated dependencies [1722cb53c]
+- Updated dependencies [7b37e6834]
+- Updated dependencies [8e2effb53]
+- Updated dependencies [717e43de1]
+  - @backstage/backend-common@0.3.0
+  - @backstage/catalog-client@0.3.0
+
+## 0.2.1
+
+### Patch Changes
+
+- 752808090: Handle non-7-bit safe characters in the posted message data
+- 462876399: Encode the OAuth state parameter using URL safe chars only, so that providers have an easier time forming the callback URL.
+- Updated dependencies [33b7300eb]
+  - @backstage/backend-common@0.2.1
+
 ## 0.2.0
 
 ### Minor Changes

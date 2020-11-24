@@ -16,10 +16,10 @@
 
 import { BackstageTheme } from '@backstage/theme';
 import {
+  IconButton,
   makeStyles,
   Typography,
   useTheme,
-  IconButton,
 } from '@material-ui/core';
 // Material-table is not using the standard icons available in in material-ui. https://github.com/mbrn/material-table/issues/51
 import AddBox from '@material-ui/icons/AddBox';
@@ -37,6 +37,7 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
+import { isEqual, transform } from 'lodash';
 import MTable, {
   Column,
   MaterialTableProps,
@@ -44,7 +45,13 @@ import MTable, {
   MTableToolbar,
   Options,
 } from 'material-table';
-import React, { forwardRef, useCallback, useEffect, useState } from 'react';
+import React, {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { CheckboxTreeProps } from '../CheckboxTree/CheckboxTree';
 import { SelectProps } from '../Select/Select';
 import { Filter, Filters, SelectedFilters, Without } from './Filters';
@@ -188,6 +195,20 @@ function convertColumns<T extends object>(
   });
 }
 
+function removeDefaultValues(state: any, defaultState: any): any {
+  return transform(state, (result, value, key) => {
+    if (!isEqual(value, defaultState[key])) {
+      result[key] = value;
+    }
+  });
+}
+
+const defaultInitialState = {
+  search: '',
+  filtersOpen: false,
+  filters: {},
+};
+
 export interface TableColumn<T extends object = {}> extends Column<T> {
   highlight?: boolean;
   width?: string;
@@ -198,11 +219,19 @@ export type TableFilter = {
   type: 'select' | 'multiple-select' | 'checkbox-tree';
 };
 
+export type TableState = {
+  search?: string;
+  filtersOpen?: boolean;
+  filters?: SelectedFilters;
+};
+
 export interface TableProps<T extends object = {}>
   extends MaterialTableProps<T> {
   columns: TableColumn<T>[];
   subtitle?: string;
   filters?: TableFilter[];
+  initialState?: TableState;
+  onStateChange?: (state: TableState) => any;
 }
 
 export function Table<T extends object = {}>({
@@ -211,6 +240,8 @@ export function Table<T extends object = {}>({
   title,
   subtitle,
   filters,
+  initialState,
+  onStateChange,
   ...props
 }: TableProps<T>) {
   const headerClasses = useHeaderStyles();
@@ -222,12 +253,42 @@ export function Table<T extends object = {}>({
 
   const theme = useTheme<BackstageTheme>();
 
-  const [filtersOpen, toggleFilters] = useState(false);
+  const calculatedInitialState = { ...defaultInitialState, ...initialState };
+
+  const [filtersOpen, toggleFilters] = useState(
+    calculatedInitialState.filtersOpen,
+  );
   const [selectedFiltersLength, setSelectedFiltersLength] = useState(0);
   const [tableData, setTableData] = useState(data as any[]);
-  const [selectedFilters, setSelectedFilters] = useState<SelectedFilters>();
+  const [selectedFilters, setSelectedFilters] = useState(
+    calculatedInitialState.filters,
+  );
 
   const MTColumns = convertColumns(columns, theme);
+
+  const [search, setSearch] = useState(calculatedInitialState.search);
+  const toolbarRef = useRef<any>();
+
+  useEffect(() => {
+    if (toolbarRef.current) {
+      toolbarRef.current.onSearchChange(search);
+    }
+  }, [search, toolbarRef]);
+
+  useEffect(() => {
+    if (onStateChange) {
+      const state = removeDefaultValues(
+        {
+          search,
+          filtersOpen,
+          filters: selectedFilters,
+        },
+        defaultInitialState,
+      );
+
+      onStateChange(state);
+    }
+  }, [search, filtersOpen, selectedFilters, onStateChange]);
 
   const defaultOptions: Options<T> = {
     headerStyle: {
@@ -248,7 +309,7 @@ export function Table<T extends object = {}>({
     }
 
     const selectedFiltersArray = Object.values(selectedFilters);
-    if (selectedFiltersArray.flat().length) {
+    if (data && selectedFiltersArray.flat().length) {
       const newData = (data as any[]).filter(
         el =>
           !!Object.entries(selectedFilters)
@@ -279,7 +340,7 @@ export function Table<T extends object = {}>({
 
   const constructFilters = (
     filterConfig: TableFilter[],
-    dataValue: any[],
+    dataValue: any[] | undefined,
   ): Filter[] => {
     const extractDistinctValues = (field: string | keyof T): Set<any> => {
       const distinctValues = new Set<any>();
@@ -289,15 +350,20 @@ export function Table<T extends object = {}>({
         }
       };
 
-      dataValue.forEach(el => {
-        const value = extractValueByField(el, getFieldByTitle(field) as string);
+      if (dataValue) {
+        dataValue.forEach(el => {
+          const value = extractValueByField(
+            el,
+            getFieldByTitle(field) as string,
+          );
 
-        if (Array.isArray(value)) {
-          (value as []).forEach(addValue);
-        } else {
-          addValue(value);
-        }
-      });
+          if (Array.isArray(value)) {
+            (value as []).forEach(addValue);
+          } else {
+            addValue(value);
+          }
+        });
+      }
 
       return distinctValues;
     };
@@ -335,11 +401,63 @@ export function Table<T extends object = {}>({
     }));
   };
 
+  const Toolbar = useCallback(
+    toolbarProps => {
+      const onSearchChanged = (searchText: string) => {
+        toolbarProps.onSearchChanged(searchText);
+        setSearch(searchText);
+      };
+
+      if (filters?.length) {
+        return (
+          <div className={filtersClasses.root}>
+            <div className={filtersClasses.root}>
+              <IconButton
+                onClick={() => toggleFilters(el => !el)}
+                aria-label="filter list"
+              >
+                <FilterList />
+              </IconButton>
+              <Typography className={filtersClasses.title}>
+                Filters ({selectedFiltersLength})
+              </Typography>
+            </div>
+            <MTableToolbar
+              classes={toolbarClasses}
+              {...toolbarProps}
+              ref={toolbarRef}
+              onSearchChanged={onSearchChanged}
+            />
+          </div>
+        );
+      }
+
+      return (
+        <MTableToolbar
+          classes={toolbarClasses}
+          {...toolbarProps}
+          ref={toolbarRef}
+          onSearchChanged={onSearchChanged}
+        />
+      );
+    },
+    [
+      filters?.length,
+      selectedFiltersLength,
+      toggleFilters,
+      toolbarClasses,
+      filtersClasses,
+      setSearch,
+      toolbarRef,
+    ],
+  );
+
   return (
     <div className={tableClasses.root}>
-      {filtersOpen && filters?.length && (
+      {filtersOpen && data && filters?.length && (
         <Filters
           filters={constructFilters(filters, data as any[])}
+          selectedFilters={selectedFilters}
           onChangeFilters={setSelectedFilters}
         />
       )}
@@ -348,25 +466,7 @@ export function Table<T extends object = {}>({
           Header: headerProps => (
             <MTableHeader classes={headerClasses} {...headerProps} />
           ),
-          Toolbar: toolbarProps =>
-            filters?.length ? (
-              <div className={filtersClasses.root}>
-                <div className={filtersClasses.root}>
-                  <IconButton
-                    onClick={() => toggleFilters(el => !el)}
-                    aria-label="filter list"
-                  >
-                    <FilterList />
-                  </IconButton>
-                  <Typography className={filtersClasses.title}>
-                    Filters ({selectedFiltersLength})
-                  </Typography>
-                </div>
-                <MTableToolbar classes={toolbarClasses} {...toolbarProps} />
-              </div>
-            ) : (
-              <MTableToolbar classes={toolbarClasses} {...toolbarProps} />
-            ),
+          Toolbar,
         }}
         options={{ ...defaultOptions, ...options }}
         columns={MTColumns}
