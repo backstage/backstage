@@ -160,6 +160,11 @@ catalog:
     # Backstage example groups and users
     - type: url
       target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme-corp.yaml
+    # My own things.
+    - type: url
+      target: https://github.com/hooloovooo/fast-test-component/blob/master/component-info.yaml
+    - type: url
+      target: https://github.com/hooloovooo/some-docs-site/blob/master/component-info.yaml
 
 scaffolder:
   github:

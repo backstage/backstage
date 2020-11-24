@@ -38,6 +38,7 @@ import healthcheck from './plugins/healthcheck';
 import auth from './plugins/auth';
 import catalog from './plugins/catalog';
 import kubernetes from './plugins/kubernetes';
+import rocdocs from './plugins/rocdocs';
 import rollbar from './plugins/rollbar';
 import scaffolder from './plugins/scaffolder';
 import sentry from './plugins/sentry';
@@ -75,6 +76,7 @@ async function main() {
   const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
   const authEnv = useHotMemoize(module, () => createEnv('auth'));
   const proxyEnv = useHotMemoize(module, () => createEnv('proxy'));
+  const rocdocsEnv = useHotMemoize(module, () => createEnv('rocdocs'));
   const rollbarEnv = useHotMemoize(module, () => createEnv('rollbar'));
   const sentryEnv = useHotMemoize(module, () => createEnv('sentry'));
   const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
@@ -92,6 +94,7 @@ async function main() {
   apiRouter.use('/kubernetes', await kubernetes(kubernetesEnv));
   apiRouter.use('/proxy', await proxy(proxyEnv));
   apiRouter.use('/graphql', await graphql(graphqlEnv));
+  apiRouter.use('/rocdocs', await rocdocs(rocdocsEnv));
   apiRouter.use(notFoundHandler());
 
   const service = createServiceBuilder(module)

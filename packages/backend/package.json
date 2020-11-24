@@ -27,6 +27,7 @@
     "@backstage/plugin-graphql-backend": "^0.1.2",
     "@backstage/plugin-kubernetes-backend": "^0.1.2",
     "@backstage/plugin-proxy-backend": "^0.2.0",
+    "@backstage/plugin-rocdocs-backend": "^0.2.0",
     "@backstage/plugin-rollbar-backend": "^0.1.2",
     "@backstage/plugin-scaffolder-backend": "^0.3.0",
     "@backstage/plugin-sentry-backend": "^0.1.2",
