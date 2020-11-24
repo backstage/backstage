@@ -21,11 +21,12 @@ import { currencyFormatter } from '../../utils/formatters';
 import { CostInsightsTheme } from '../../types';
 import { useBarChartLayoutStyles as useStyles } from '../../utils/styles';
 
-type BarChartLegendOptions = {
+export type BarChartLegendOptions = {
   previousName: string;
   previousFill: string;
   currentName: string;
   currentFill: string;
+  hideMarker?: boolean;
 };
 
 export type BarChartLegendProps = {
@@ -56,12 +57,18 @@ export const BarChartLegend = ({
   return (
     <Box className={classes.legend} display="flex" flexDirection="row">
       <Box marginRight={2}>
-        <LegendItem title={data.previousName} markerColor={data.previousFill}>
+        <LegendItem
+          title={data.previousName}
+          markerColor={options.hideMarker ? undefined : data.previousFill}
+        >
           {currencyFormatter.format(costStart)}
         </LegendItem>
       </Box>
       <Box marginRight={2}>
-        <LegendItem title={data.currentName} markerColor={data.currentFill}>
+        <LegendItem
+          title={data.currentName}
+          markerColor={options.hideMarker ? undefined : data.currentFill}
+        >
           {currencyFormatter.format(costEnd)}
         </LegendItem>
       </Box>
