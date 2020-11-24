@@ -103,9 +103,10 @@ export const useCostOverviewStyles = (theme: CostInsightsTheme) => ({
 export const useOverviewTabsStyles = makeStyles<CostInsightsTheme>(
   (theme: CostInsightsTheme) => ({
     default: {
-      padding: theme.spacing(2, 2),
-      fontWeight: 'bold',
+      padding: theme.spacing(2),
+      fontWeight: theme.typography.fontWeightBold,
       color: theme.palette.text.secondary,
+      textTransform: 'uppercase',
     },
     selected: {
       color: theme.palette.text.primary,
