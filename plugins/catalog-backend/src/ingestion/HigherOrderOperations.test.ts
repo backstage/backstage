@@ -282,6 +282,7 @@ describe('HigherOrderOperations', () => {
     });
 
     it('can update a single location where a matching entity did not exist', async () => {
+      process.env.GITHUB_TOKEN = 'mockToken';
       const locationStatus: LocationUpdateStatus = {
         message: '',
         status: DatabaseLocationUpdateLogStatus.SUCCESS,
@@ -320,6 +321,7 @@ describe('HigherOrderOperations', () => {
       expect(locationReader.read).toHaveBeenNthCalledWith(1, {
         type: 'some',
         target: 'thing',
+        token: 'mockToken',
       });
       expect(entitiesCatalog.batchAddOrUpdateEntities).toHaveBeenCalledTimes(1);
       expect(entitiesCatalog.batchAddOrUpdateEntities).toHaveBeenCalledWith(
