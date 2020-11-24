@@ -42,7 +42,7 @@ describe('<TechDocsPageHeader />', () => {
                   },
                 },
               },
-              mkdocs: {
+              techdocs: {
                 loading: false,
                 value: {
                   site_name: 'test-site-name',
@@ -73,7 +73,7 @@ describe('<TechDocsPageHeader />', () => {
               entity: {
                 loading: false,
               },
-              mkdocs: {
+              techdocs: {
                 loading: false,
               },
             }}

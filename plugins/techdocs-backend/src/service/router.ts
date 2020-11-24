@@ -61,7 +61,7 @@ export async function createRouter({
 }: RouterOptions): Promise<express.Router> {
   const router = Router();
 
-  router.get('/metadata/mkdocs/*', async (req, res) => {
+  router.get('/metadata/techdocs/*', async (req, res) => {
     let storageUrl = config.getString('techdocs.storageUrl');
     if (publisher instanceof LocalPublish) {
       storageUrl = new URL(
@@ -74,8 +74,8 @@ export async function createRouter({
     const metadataURL = `${storageUrl}/${path}/techdocs_metadata.json`;
 
     try {
-      const mkDocsMetadata = await (await fetch(metadataURL)).json();
-      res.send(mkDocsMetadata);
+      const techdocsMetadata = await (await fetch(metadataURL)).json();
+      res.send(techdocsMetadata);
     } catch (err) {
       logger.info(`Unable to get metadata for ${path} with error ${err}`);
       throw new Error(`Unable to get metadata for ${path} with error ${err}`);
