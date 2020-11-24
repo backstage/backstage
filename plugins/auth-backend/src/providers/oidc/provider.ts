@@ -97,7 +97,8 @@ export class OidcAuthProvider implements OAuthHandlers {
       providerInfo: {
         accessToken: tokenset.access_token,
         refreshToken: tokenset.refresh_token,
-        expiresInSeconds: tokenset.expires_at,
+        expiresInSeconds: tokenset.expires_in,
+        idToken: tokenset.id_token,
         scope: tokenset.scope || '',
       },
       profile,
