@@ -32,6 +32,7 @@ import { Cost, DEFAULT_DATE_FORMAT, CostInsightsTheme } from '../../types';
 import {
   BarChartTooltip as Tooltip,
   BarChartTooltipItem as TooltipItem,
+  BarChartLegend,
 } from '../BarChart';
 import {
   overviewGraphTickFormatter,
@@ -45,68 +46,100 @@ import {
 import { useFilters, useLastCompleteBillingDate } from '../../hooks';
 import { mapFiltersToProps } from './selector';
 import { getPreviousPeriodTotalCost } from '../../utils/change';
-import { LegendItem } from '../LegendItem';
-import { currencyFormatter } from '../../utils/formatters';
+import { formatPeriod } from '../../utils/formatters';
 import { aggregationSum } from '../../utils/sum';
+import { BarChartLegendOptions } from '../BarChart/BarChartLegend';
 
 dayjs.extend(utc);
 
-export type CostOverviewByProductProps = {
-  dailyCostData: Cost;
+export type CostOverviewByProductChartProps = {
+  costsByProduct: Cost[];
 };
 
-const LOW_COST_THRESHOLD = 0.01;
+const LOW_COST_THRESHOLD = 0.1;
 
-export const CostOverviewByProduct = ({
-  dailyCostData,
-}: CostOverviewByProductProps) => {
+export const CostOverviewByProductChart = ({
+  costsByProduct,
+}: CostOverviewByProductChartProps) => {
   const theme = useTheme<CostInsightsTheme>();
   const styles = useStyles(theme);
   const lastCompleteBillingDate = useLastCompleteBillingDate();
   const { duration } = useFilters(mapFiltersToProps);
-  const groupedCosts = dailyCostData.groupedCosts;
 
-  if (!groupedCosts) {
+  if (!costsByProduct) {
     return null;
   }
 
-  const flattenedAggregation = groupedCosts
+  const flattenedAggregation = costsByProduct
     .map(cost => cost.aggregation)
     .flat();
-  const totalCost = flattenedAggregation.reduce(
-    (acc, agg) => acc + agg.amount,
-    0,
-  );
 
-  const productsByDate = groupedCosts.reduce((prodByDate, group) => {
-    const product = group.id;
-    group.aggregation.forEach(curAggregation => {
-      const productCostsForDate = prodByDate[curAggregation.date] || {};
-      // Group products with less than 10% of the total cost into "Other" category
-      if (aggregationSum(group.aggregation) < totalCost * LOW_COST_THRESHOLD) {
-        prodByDate[curAggregation.date] = {
-          ...productCostsForDate,
-          Other:
-            (prodByDate[curAggregation.date].Other || 0) +
-            curAggregation.amount,
-        };
-      } else {
-        prodByDate[curAggregation.date] = {
-          ...productCostsForDate,
-          [product]: curAggregation.amount,
-        };
-      }
+  const totalCost = aggregationSum(flattenedAggregation);
+
+  const previousPeriodTotal = getPreviousPeriodTotalCost(
+    flattenedAggregation,
+    duration,
+    lastCompleteBillingDate,
+  );
+  const currentPeriodTotal = totalCost - previousPeriodTotal;
+  const productsByDate = costsByProduct.reduce((prodByDate, product) => {
+    const productTotal = aggregationSum(product.aggregation);
+    // Group products with less than 10% of the total cost into "Other" category
+    // when there we have >= 5 products.
+    const isOtherProduct =
+      costsByProduct.length >= 5 &&
+      productTotal < totalCost * LOW_COST_THRESHOLD;
+    const productName = isOtherProduct ? 'Other' : product.id;
+    const updatedProdByDate = { ...prodByDate };
+
+    product.aggregation.forEach(curAggregation => {
+      const productCostsForDate = updatedProdByDate[curAggregation.date] || {};
+
+      updatedProdByDate[curAggregation.date] = {
+        ...productCostsForDate,
+        [productName]:
+          (productCostsForDate[productName] || 0) + curAggregation.amount,
+      };
     });
 
-    return prodByDate;
+    return updatedProdByDate;
   }, {} as Record<string, Record<string, number>>);
 
-  const chartData: any[] = Object.keys(productsByDate).map(date => {
-    return {
-      ...productsByDate[date],
-      date: Date.parse(date),
-    };
-  });
+  const chartData: Record<string, number>[] = Object.keys(productsByDate).map(
+    date => {
+      return {
+        ...productsByDate[date],
+        date: Date.parse(date),
+      };
+    },
+  );
+
+  const renderAreas = () => {
+    const productGroupNames = new Set(
+      Object.values(productsByDate)
+        .map(d => Object.keys(d))
+        .flat(),
+    );
+    const sortedProducts = costsByProduct
+      // Check that product is a separate group and hasn't been added to 'Other'
+      .filter(
+        product => product.id !== 'Other' && productGroupNames.has(product.id),
+      )
+      .sort(
+        (a, b) => aggregationSum(a.aggregation) - aggregationSum(b.aggregation),
+      )
+      .map(product => product.id);
+    // Keep 'Other' category at the bottom of the stack
+    return ['Other', ...sortedProducts].map((product, i) => (
+      <Area
+        dataKey={product}
+        stackId="1"
+        fillOpacity="1"
+        stroke={DataVizColors[i]}
+        fill={DataVizColors[i]}
+      />
+    ));
+  };
 
   const tooltipRenderer: ContentRenderer<TooltipProps> = ({
     label,
@@ -130,53 +163,24 @@ export const CostOverviewByProduct = ({
     );
   };
 
-  const previousPeriodTotal = getPreviousPeriodTotalCost(
-    flattenedAggregation,
-    duration,
-    lastCompleteBillingDate,
-  );
-  const currentPeriodTotal = totalCost - previousPeriodTotal;
-
-  const renderAreas = () => {
-    const highCostGroups = groupedCosts.filter(
-      group =>
-        aggregationSum(group.aggregation) >= totalCost * LOW_COST_THRESHOLD,
-    );
-    const sortedCostGroups = highCostGroups
-      .sort(
-        (a, b) => aggregationSum(a.aggregation) - aggregationSum(b.aggregation),
-      )
-      .map(group => group.id);
-    // Keep 'Other' category at the bottom of the stack
-    return ['Other', ...sortedCostGroups].map((group, i) => (
-      <Area
-        dataKey={group}
-        stackId="1"
-        fillOpacity="1"
-        stroke={DataVizColors[i]}
-        fill={DataVizColors[i]}
-      />
-    ));
+  const options: Partial<BarChartLegendOptions> = {
+    previousName: formatPeriod(duration, lastCompleteBillingDate, false),
+    currentName: formatPeriod(duration, lastCompleteBillingDate, true),
+    hideMarker: true,
   };
 
   return (
     <Box display="flex" flexDirection="column">
       <Box display="flex" flexDirection="row">
-        <Box mr={3}>
-          <LegendItem title="Previous Period">
-            {currencyFormatter.format(previousPeriodTotal)}
-          </LegendItem>
-        </Box>
-        <Box>
-          <LegendItem title="Current Period">
-            {currencyFormatter.format(currentPeriodTotal)}
-          </LegendItem>
-        </Box>
+        <BarChartLegend
+          costStart={previousPeriodTotal}
+          costEnd={currentPeriodTotal}
+          options={options}
+        />
       </Box>
       <ResponsiveContainer
         width={styles.container.width}
         height={styles.container.height}
-        className="cost-overview-chart"
       >
         <AreaChart
           data={chartData}
@@ -203,7 +207,6 @@ export const CostOverviewByProduct = ({
           />
           {renderAreas()}
           <RechartsTooltip content={tooltipRenderer} animationDuration={100} />
-          <RechartsTooltip />
         </AreaChart>
       </ResponsiveContainer>
     </Box>
