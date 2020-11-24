@@ -99,7 +99,7 @@ export class TechDocsStorageApi implements TechDocsStorage {
       // path is empty for the home page of an entity's docs site
       if (!path) {
         errorMessage +=
-          'This could because there is no index.md file in the root of docs directory of this repository.';
+          'This could be because there is no index.md file in the root of the docs directory of this repository.';
       }
       throw new Error(errorMessage);
     }
