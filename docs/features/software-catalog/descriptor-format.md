@@ -102,17 +102,19 @@ Placeholders like `$json: https://example.com/entity.json` are substituted by
 the content of the referenced file. Files can be referenced from any configured
 integration similar to locations by passing an absolute URL. It's also possible
 to reference relative files like `./referenced.yaml` from the same location.
-There are three different types of placeholders:
+Relative references are handled relative to the folder of the
+`catalog-info.yaml` that contains the placeholder. There are three different
+types of placeholders:
 
-- `$text`: Interprets the content of the referenced file as plain text and embed
-  it as a string.
-- `$json`: Interprets the content of the referenced file as JSON and embed the
+- `$text`: Interprets the contents of the referenced file as plain text and
+  embeds it as a string.
+- `$json`: Interprets the contents of the referenced file as JSON and embeds the
   parsed structure.
-- `$yaml`: Interprets the content of the referenced file as YAML and embed the
+- `$yaml`: Interprets the contents of the referenced file as YAML and embeds the
   parsed structure.
 
 For example, this can be used to load the definition of an API entity from a web
-server and embed it into the entity:
+server and embed it as a string in the field `spec.definition`:
 
 ```yaml
 apiVersion: backstage.io/v1alpha1
