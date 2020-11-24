@@ -9,6 +9,8 @@ The SonarQube Plugin displays code statistics from [SonarCloud](https://sonarclo
 1. Install the SonarQube Plugin:
 
 ```bash
+# packages/app
+
 yarn add @backstage/plugin-sonarqube
 ```
 
@@ -43,7 +45,7 @@ const OverviewContent = ({ entity }: { entity: Entity }) => (
 **SonarCloud**
 
 ```yaml
-// app-config.yaml
+# app-config.yaml
 
 proxy:
   '/sonarqube':
@@ -59,7 +61,7 @@ proxy:
 **SonarQube**
 
 ```yaml
-// app-config.yaml
+# app-config.yaml
 
 proxy:
   '/sonarqube':
@@ -77,7 +79,7 @@ sonarQube:
 
 5. Get and provide `SONARQUBE_AUTH_HEADER` as env variable (https://sonarcloud.io/account/security or https://docs.sonarqube.org/latest/user-guide/user-token/)
 
-6. Add the `sonarqube.org/project-key` annotation to your component-info.yaml file:
+6. Add the `sonarqube.org/project-key` annotation to your catalog-info.yaml file:
 
 ```yaml
 apiVersion: backstage.io/v1alpha1

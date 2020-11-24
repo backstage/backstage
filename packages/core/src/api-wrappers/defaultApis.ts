@@ -46,7 +46,10 @@ import {
   SamlAuth,
   oneloginAuthApiRef,
   OneLoginAuth,
+  oidcAuthApiRef,
 } from '@backstage/core-api';
+
+import OAuth2Icon from '@material-ui/icons/AcUnit';
 
 export const defaultApis = [
   createApiFactory({
@@ -152,5 +155,22 @@ export const defaultApis = [
     },
     factory: ({ discoveryApi, oauthRequestApi }) =>
       OneLoginAuth.create({ discoveryApi, oauthRequestApi }),
+  }),
+  createApiFactory({
+    api: oidcAuthApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      oauthRequestApi: oauthRequestApiRef,
+    },
+    factory: ({ discoveryApi, oauthRequestApi }) =>
+      OAuth2.create({
+        discoveryApi,
+        oauthRequestApi,
+        provider: {
+          id: 'oidc',
+          title: 'Your Identity Provider',
+          icon: OAuth2Icon,
+        },
+      }),
   }),
 ];

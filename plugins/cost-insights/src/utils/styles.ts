@@ -15,6 +15,7 @@
  */
 import {
   createStyles,
+  emphasize,
   darken,
   getLuminance,
   lighten,
@@ -116,6 +117,18 @@ export const useBarChartStyles = (theme: CostInsightsTheme) => ({
   },
 });
 
+export const useBarChartLayoutStyles = makeStyles<BackstageTheme>(theme =>
+  createStyles({
+    wrapper: {
+      display: 'flex',
+      flexDirection: 'column',
+    },
+    legend: {
+      paddingBottom: theme.spacing(2),
+    },
+  }),
+);
+
 export const useBarChartStepperButtonStyles = makeStyles<CostInsightsTheme>(
   (theme: CostInsightsTheme) =>
     createStyles({
@@ -146,12 +159,13 @@ export const useBarChartStepperButtonStyles = makeStyles<CostInsightsTheme>(
     }),
 );
 
-export const useBarChartLabelStyles = makeStyles(() =>
+export const useBarChartLabelStyles = makeStyles<BackstageTheme>(theme =>
   createStyles({
     foreignObject: {
       textAlign: 'center',
     },
     label: {
+      fontWeight: theme.typography.fontWeightBold,
       display: 'block',
       textDecoration: 'none',
       overflow: 'hidden',
@@ -161,6 +175,11 @@ export const useBarChartLabelStyles = makeStyles(() =>
     infoIcon: {
       marginLeft: 2,
       fontSize: '1.25em',
+    },
+    button: {
+      textTransform: 'none',
+      fontWeight: theme.typography.fontWeightBold,
+      fontSize: theme.typography.fontSize,
     },
   }),
 );
@@ -243,6 +262,12 @@ export const useCostGrowthStyles = makeStyles<BackstageTheme>(
       },
       savings: {
         color: theme.palette.status.ok,
+      },
+      indicator: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
       },
     }),
 );
@@ -356,15 +381,39 @@ export const useTooltipStyles = makeStyles<CostInsightsTheme>(
   (theme: CostInsightsTheme) =>
     createStyles({
       tooltip: {
-        padding: theme.spacing(1.5),
         backgroundColor: theme.palette.tooltip.background,
         borderRadius: theme.shape.borderRadius,
         boxShadow: theme.shadows[1],
         color: theme.palette.tooltip.color,
         fontSize: theme.typography.fontSize,
+        minWidth: 300,
+      },
+      maxWidth: {
+        maxWidth: 300,
+      },
+      actions: {
+        padding: theme.spacing(2),
+      },
+      header: {
+        padding: theme.spacing(2),
+      },
+      content: {
+        padding: theme.spacing(2),
       },
       lensIcon: {
         fontSize: `.75rem`,
+      },
+      divider: {
+        backgroundColor: emphasize(theme.palette.divider, 1),
+      },
+      truncate: {
+        maxWidth: 200,
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+      },
+      subtitle: {
+        fontStyle: 'italic',
       },
     }),
 );
@@ -446,6 +495,21 @@ export const useProductInsightsCardStyles = makeStyles<BackstageTheme>(
     }),
 );
 
+export const useProductInsightsChartStyles = makeStyles<BackstageTheme>(
+  (theme: BackstageTheme) =>
+    createStyles({
+      indicator: {
+        fontWeight: theme.typography.fontWeightBold,
+        fontSize: '1.25rem',
+      },
+      actions: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      },
+    }),
+);
+
 export const useBackdropStyles = makeStyles<BackstageTheme>(
   (theme: BackstageTheme) =>
     createStyles({
@@ -462,4 +526,43 @@ export const useSubtleTypographyStyles = makeStyles<BackstageTheme>(
         color: theme.palette.textSubtle,
       },
     }),
+);
+
+export const useEntityDialogStyles = makeStyles<BackstageTheme>(theme =>
+  createStyles({
+    dialogContent: {
+      padding: 0,
+    },
+    dialogTitle: {
+      padding: 0,
+    },
+    closeButton: {
+      position: 'absolute',
+      right: theme.spacing(1),
+      top: theme.spacing(1),
+      color: theme.palette.grey[500],
+      zIndex: 100,
+    },
+    row: {
+      fontSize: theme.typography.fontSize * 1.25,
+    },
+    rowTotal: {
+      fontWeight: theme.typography.fontWeightBold,
+    },
+    colFirst: {
+      paddingLeft: theme.spacing(2),
+    },
+    colLast: {
+      paddingRight: theme.spacing(2),
+    },
+    column: {
+      fontWeight: theme.typography.fontWeightBold,
+    },
+    growth: {
+      display: 'flex',
+      flexDirection: 'row',
+      alignContent: 'center',
+      justifyContent: 'flex-end',
+    },
+  }),
 );

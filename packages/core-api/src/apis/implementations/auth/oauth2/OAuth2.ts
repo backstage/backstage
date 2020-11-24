@@ -20,11 +20,6 @@ import { RefreshingAuthSessionManager } from '../../../../lib/AuthSessionManager
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import { Observable } from '../../../../types';
 import {
-  AuthProvider,
-  OAuthRequestApi,
-  DiscoveryApi,
-} from '../../../definitions';
-import {
   AuthRequestOptions,
   BackstageIdentity,
   OAuthApi,
@@ -36,19 +31,14 @@ import {
   BackstageIdentityApi,
 } from '../../../definitions/auth';
 import { OAuth2Session } from './types';
+import { OAuthApiCreateOptions } from '../types';
 
 type Options = {
   sessionManager: SessionManager<OAuth2Session>;
   scopeTransform: (scopes: string[]) => string[];
 };
 
-type CreateOptions = {
-  discoveryApi: DiscoveryApi;
-  oauthRequestApi: OAuthRequestApi;
-
-  environment?: string;
-  provider?: AuthProvider & { id: string };
-  defaultScopes?: string[];
+type CreateOptions = OAuthApiCreateOptions & {
   scopeTransform?: (scopes: string[]) => string[];
 };
 

@@ -18,7 +18,7 @@ import { Location, LocationSpec } from '@backstage/catalog-model';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from 'winston';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
-import { durationText } from '../util/timing';
+import { durationText } from '../util';
 import {
   AddLocationResult,
   HigherOrderOperation,
@@ -130,7 +130,7 @@ export class HigherOrderOperations implements HigherOrderOperation {
         await this.locationsCatalog.logUpdateSuccess(location.id, undefined);
       } catch (e) {
         this.logger.warn(
-          `Failed to refresh location ${location.type}:${location.target}, ${e}`,
+          `Failed to refresh location ${location.type}:${location.target}, ${e.stack}`,
         );
         await this.locationsCatalog.logUpdateFailure(location.id, e);
       }
@@ -152,7 +152,7 @@ export class HigherOrderOperations implements HigherOrderOperation {
 
     for (const item of readerOutput.errors) {
       this.logger.warn(
-        `Failed item in location ${item.location.type}:${item.location.target}, ${item.error}`,
+        `Failed item in location ${item.location.type}:${item.location.target}, ${item.error.stack}`,
       );
     }
 

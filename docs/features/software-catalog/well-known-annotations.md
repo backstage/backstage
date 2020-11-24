@@ -2,9 +2,8 @@
 id: well-known-annotations
 title: Well-known Annotations on Catalog Entities
 sidebar_label: Well-known Annotations
-description: Documentation on lists a number of well known Annotations, that
-have defined semantics. They can be attached to catalog entities and consumed
-by plugins as needed
+# prettier-ignore
+description: Documentation that lists a number of well known Annotations, that have defined semantics. They can be attached to catalog entities and consumed by plugins as needed.
 ---
 
 This section lists a number of well known
@@ -158,6 +157,27 @@ fallback (`rollbar.organization` followed by `organization.name`).
 Specifying this annotation may enable Rollbar related features in Backstage for
 that entity.
 
+### circleci.com/project-slug
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    circleci.com/project-slug: github/spotify/pump-station
+```
+
+The value of this annotation is the so-called slug (or alternatively, the ID) of
+a [CircleCI](https://circleci.com/) project within your organization. The value
+can be the format of `[source-control-manager]/[organization]/[project-slug]` or
+just `[organization]/[project-slug]`. When the `[source-control-manager]` slug
+is omitted, `bitbucket` will be used as a fallback.
+
+Specifying this annotation will cause the CI/CD features in Backstage to display
+data from CircleCI for that entity.
+
+Providing both the `github.com/project-slug` and `circleci.com/project-slug`
+annotations can cause problems as both may be used for CI/CD features.
+
 ### backstage.io/ldap-rdn, backstage.io/ldap-uuid, backstage.io/ldap-dn
 
 ```yaml
@@ -170,8 +190,24 @@ metadata:
 ```
 
 The value of these annotations are the corresponding attributes that were found
-when ingestion the entity from LDAP. Not all of them may be present, depending
+when ingesting the entity from LDAP. Not all of them may be present, depending
 on what attributes that the server presented at ingestion time.
+
+### graph.microsoft.com/tenant-id, graph.microsoft.com/group-id, graph.microsoft.com/user-id
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    graph.microsoft.com/tenant-id: 6902611b-ffc1-463f-8af3-4d5285dc057b
+    graph.microsoft.com/group-id: c57e8ba2-6cc4-1039-9ebc-d5f241a7ca21
+    graph.microsoft.com/user-id: 2de244b5-104b-4e8f-a3b8-dce3c31e54b6
+```
+
+The value of these annotations are the corresponding attributes that were found
+when ingesting the entity from the Microsoft Graph API. Not all of them may be
+present, depending on what attributes that the server presented at ingestion
+time.
 
 ### sonarqube.org/project-key
 

@@ -15,7 +15,7 @@
  */
 
 import moment from 'moment';
-import { Duration } from '../types';
+import { Duration, DEFAULT_DATE_FORMAT } from '../types';
 import { inclusiveEndDateOf, inclusiveStartDateOf } from '../utils/duration';
 import { pluralOf } from '../utils/grammar';
 
@@ -23,6 +23,11 @@ export type Period = {
   periodStart: string;
   periodEnd: string;
 };
+
+export const costFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+});
 
 export const currencyFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -78,27 +83,35 @@ export function formatPercent(n: number): string {
   if (isNaN(n) || Math.abs(n) < 0.01) {
     return '0%';
   }
-  if (Math.abs(n) >= 1e19) {
-    return '∞%';
+
+  if (Math.abs(n) > 10) {
+    return `>1000%`;
   }
+
   return `${(n * 100).toFixed(0)}%`;
 }
 
-export function formatLastTwoLookaheadQuarters(endDate: string) {
-  const start = moment(inclusiveStartDateOf(Duration.P3M, endDate)).format(
-    '[Q]Q YYYY',
-  );
-  const end = moment(inclusiveEndDateOf(Duration.P3M, endDate)).format(
+export function formatLastTwoLookaheadQuarters(inclusiveEndDate: string) {
+  const exclusiveEndDate = moment(inclusiveEndDate)
+    .add(1, 'day')
+    .format(DEFAULT_DATE_FORMAT);
+  const start = moment(
+    inclusiveStartDateOf(Duration.P3M, exclusiveEndDate),
+  ).format('[Q]Q YYYY');
+  const end = moment(inclusiveEndDateOf(Duration.P3M, inclusiveEndDate)).format(
     '[Q]Q YYYY',
   );
   return `${start} vs ${end}`;
 }
 
-export function formatLastTwoMonths(endDate: string) {
-  const start = moment(inclusiveStartDateOf(Duration.P1M, endDate))
+export function formatLastTwoMonths(inclusiveEndDate: string) {
+  const exclusiveEndDate = moment(inclusiveEndDate)
+    .add(1, 'day')
+    .format(DEFAULT_DATE_FORMAT);
+  const start = moment(inclusiveStartDateOf(Duration.P1M, exclusiveEndDate))
     .utc()
     .format('MMMM');
-  const end = moment(inclusiveEndDateOf(Duration.P1M, endDate))
+  const end = moment(inclusiveEndDateOf(Duration.P1M, inclusiveEndDate))
     .utc()
     .format('MMMM');
   return `${start} vs ${end}`;

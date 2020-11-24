@@ -17,13 +17,18 @@ import fs from 'fs-extra';
 import { Logger } from 'winston';
 import { Entity } from '@backstage/catalog-model';
 import { PublisherBase } from './types';
-import { resolvePackagePath } from '@backstage/backend-common';
+import {
+  resolvePackagePath,
+  PluginEndpointDiscovery,
+} from '@backstage/backend-common';
 
 export class LocalPublish implements PublisherBase {
   private readonly logger: Logger;
+  private readonly discovery: PluginEndpointDiscovery;
 
-  constructor(logger: Logger) {
+  constructor(logger: Logger, discovery: PluginEndpointDiscovery) {
     this.logger = logger;
+    this.discovery = discovery;
   }
 
   publish({
@@ -63,9 +68,16 @@ export class LocalPublish implements PublisherBase {
           reject(err);
         }
 
-        resolve({
-          remoteUrl: `http://localhost:7000/api/techdocs/static/docs/${entity.metadata.name}`,
-        });
+        this.discovery
+          .getBaseUrl('techdocs')
+          .then(techdocsApiUrl => {
+            resolve({
+              remoteUrl: `${techdocsApiUrl}/static/docs/${entity.metadata.name}`,
+            });
+          })
+          .catch(reason => {
+            reject(reason);
+          });
       });
     });
   }

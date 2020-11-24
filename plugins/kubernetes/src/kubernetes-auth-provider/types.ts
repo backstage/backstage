@@ -15,12 +15,12 @@
  */
 
 import { createApiRef } from '@backstage/core';
-import { AuthRequestBody } from '@backstage/plugin-kubernetes-backend';
+import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-backend';
 
 export interface KubernetesAuthProvider {
   decorateRequestBodyForAuth(
-    requestBody: AuthRequestBody,
-  ): Promise<AuthRequestBody>;
+    requestBody: KubernetesRequestBody,
+  ): Promise<KubernetesRequestBody>;
 }
 
 export const kubernetesAuthProvidersApiRef = createApiRef<
@@ -33,6 +33,6 @@ export const kubernetesAuthProvidersApiRef = createApiRef<
 export interface KubernetesAuthProvidersApi {
   decorateRequestBodyForAuth(
     authProvider: string,
-    requestBody: AuthRequestBody,
-  ): Promise<AuthRequestBody>;
+    requestBody: KubernetesRequestBody,
+  ): Promise<KubernetesRequestBody>;
 }

@@ -16,7 +16,12 @@
 
 import { createApiRef, DiscoveryApi } from '@backstage/core';
 import fetch from 'cross-fetch';
-import { ComponentWrapper, MeasuresWrapper, MetricKey } from './types';
+import {
+  ComponentWrapper,
+  MeasuresWrapper,
+  MetricKey,
+  SonarUrlProcessorFunc,
+} from './types';
 
 /**
  * Define a type to make sure that all metrics are used
@@ -29,6 +34,8 @@ export interface FindingSummary {
   lastAnalysis: string;
   metrics: Metrics;
   projectUrl: string;
+  getIssuesUrl: SonarUrlProcessorFunc;
+  getComponentMeasuresUrl: SonarUrlProcessorFunc;
 }
 
 export const sonarQubeApiRef = createApiRef<SonarQubeApi>({
@@ -105,6 +112,14 @@ export class SonarQubeApi {
       lastAnalysis: component.component.analysisDate,
       metrics,
       projectUrl: `${this.baseUrl}dashboard?id=${componentKey}`,
+      getIssuesUrl: identifier =>
+        `${
+          this.baseUrl
+        }project/issues?id=${componentKey}&types=${identifier.toUpperCase()}&resolved=false`,
+      getComponentMeasuresUrl: (identifier: string) =>
+        `${
+          this.baseUrl
+        }component_measures?id=${componentKey}&metric=${identifier.toLowerCase()}&resolved=false&view=list`,
     };
   }
 }

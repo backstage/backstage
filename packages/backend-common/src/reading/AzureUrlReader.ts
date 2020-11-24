@@ -14,49 +14,60 @@
  * limitations under the License.
  */
 
+import {
+  AzureIntegrationConfig,
+  readAzureIntegrationConfigs,
+} from '@backstage/integration';
 import fetch from 'cross-fetch';
-import { Config } from '@backstage/config';
+import { Readable } from 'stream';
+import parseGitUri from 'git-url-parse';
 import { NotFoundError } from '../errors';
-import { ReaderFactory, UrlReader } from './types';
+import {
+  ReaderFactory,
+  ReadTreeOptions,
+  ReadTreeResponse,
+  UrlReader,
+} from './types';
+import { ReadTreeResponseFactory } from './tree';
 
-type Options = {
-  // TODO: added here for future support, but we only allow dev.azure.com for now
-  host: string;
-  token?: string;
-};
+export function getDownloadUrl(url: string): URL {
+  const {
+    name: repoName,
+    owner: project,
+    organization,
+    protocol,
+    resource,
+    filepath,
+  } = parseGitUri(url);
 
-function readConfig(config: Config): Options[] {
-  const optionsArr = Array<Options>();
+  // scopePath will limit the downloaded content
+  // /docs will only download the docs folder and everything below it
+  // /docs/index.md will only download index.md but put it in the root of the archive
+  const scopePath = filepath
+    ? `&scopePath=${encodeURIComponent(filepath)}`
+    : '';
 
-  const providerConfigs =
-    config.getOptionalConfigArray('integrations.azure') ?? [];
-
-  for (const providerConfig of providerConfigs) {
-    const host = providerConfig.getOptionalString('host') ?? 'dev.azure.com';
-    const token = providerConfig.getOptionalString('token');
-
-    optionsArr.push({ host, token });
-  }
-
-  // As a convenience we always make sure there's at least an unauthenticated
-  // reader for public azure repos.
-  if (!optionsArr.some(p => p.host === 'dev.azure.com')) {
-    optionsArr.push({ host: 'dev.azure.com' });
-  }
-
-  return optionsArr;
+  return new URL(
+    `${protocol}://${resource}/${organization}/${project}/_apis/git/repositories/${repoName}/items?recursionLevel=full&download=true&api-version=6.0${scopePath}`,
+  );
 }
 
 export class AzureUrlReader implements UrlReader {
-  static factory: ReaderFactory = ({ config }) => {
-    return readConfig(config).map(options => {
-      const reader = new AzureUrlReader(options);
+  static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
+    const configs = readAzureIntegrationConfigs(
+      config.getOptionalConfigArray('integrations.azure') ?? [],
+    );
+    return configs.map(options => {
+      const reader = new AzureUrlReader(options, { treeResponseFactory });
       const predicate = (url: URL) => url.host === options.host;
       return { reader, predicate };
     });
   };
 
-  constructor(private readonly options: Options) {
+  constructor(
+    private readonly options: AzureIntegrationConfig,
+    private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
+  ) {
     if (options.host !== 'dev.azure.com') {
       throw Error(
         `Azure integration currently only supports 'dev.azure.com', tried to use host '${options.host}'`,
@@ -84,6 +95,28 @@ export class AzureUrlReader implements UrlReader {
       throw new NotFoundError(message);
     }
     throw new Error(message);
+  }
+
+  async readTree(
+    url: string,
+    options?: ReadTreeOptions,
+  ): Promise<ReadTreeResponse> {
+    const response = await fetch(
+      getDownloadUrl(url).toString(),
+      this.getRequestOptions({ Accept: 'application/zip' }),
+    );
+    if (!response.ok) {
+      const message = `Failed to read tree from ${url}, ${response.status} ${response.statusText}`;
+      if (response.status === 404) {
+        throw new NotFoundError(message);
+      }
+      throw new Error(message);
+    }
+
+    return this.deps.treeResponseFactory.fromZipArchive({
+      stream: (response.body as unknown) as Readable,
+      filter: options?.filter,
+    });
   }
 
   // Converts
@@ -145,8 +178,10 @@ export class AzureUrlReader implements UrlReader {
     }
   }
 
-  private getRequestOptions(): RequestInit {
-    const headers: HeadersInit = {};
+  private getRequestOptions(additionalHeaders?: {
+    [key: string]: string;
+  }): RequestInit {
+    const headers: HeadersInit = additionalHeaders ?? {};
 
     if (this.options.token) {
       headers.Authorization = `Basic ${Buffer.from(

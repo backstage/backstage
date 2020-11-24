@@ -15,13 +15,13 @@
  */
 
 import { KubernetesAuthTranslator } from './types';
-import { AuthRequestBody, ClusterDetails } from '../types/types';
+import { KubernetesRequestBody, ClusterDetails } from '../types/types';
 
 export class GoogleKubernetesAuthTranslator
   implements KubernetesAuthTranslator {
   async decorateClusterDetailsWithAuth(
     clusterDetails: ClusterDetails,
-    requestBody: AuthRequestBody,
+    requestBody: KubernetesRequestBody,
   ): Promise<ClusterDetails> {
     const clusterDetailsWithAuthToken: ClusterDetails = Object.assign(
       {},

@@ -33,12 +33,12 @@ import {
   SidebarContext,
   SidebarItem,
   SidebarDivider,
-  SidebarSearchField,
   SidebarSpace,
 } from '@backstage/core';
 import { NavLink } from 'react-router-dom';
 import { graphiQLRouteRef } from '@backstage/plugin-graphiql';
 import { Settings as SidebarSettings } from '@backstage/plugin-user-settings';
+import { SidebarSearch } from '@backstage/plugin-search';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -73,17 +73,11 @@ const SidebarLogo: FC<{}> = () => {
   );
 };
 
-const handleSearch = (query: string): void => {
-  // XXX (@koroeskohr): for testing purposes
-  // eslint-disable-next-line no-console
-  console.log(query);
-};
-
 const Root: FC<{}> = ({ children }) => (
   <SidebarPage>
     <Sidebar>
       <SidebarLogo />
-      <SidebarSearchField onSearch={handleSearch} />
+      <SidebarSearch />
       <SidebarDivider />
       {/* Global nav, not org-specific */}
       <SidebarItem icon={HomeIcon} to="/catalog" text="Home" />

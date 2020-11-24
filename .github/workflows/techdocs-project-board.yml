@@ -1,6 +1,7 @@
 name: Automatically add new TechDocs Issues and PRs to the GitHub project board
-# Development of TechDocs in Backstage is managed by this Kanban board - https://github.com/backstage/backstage/projects/5
-# New issues with TechDocs in their title or docs-like-code label will be added to the board.
+# Development of TechDocs in Backstage is managed by this Kanban board - https://github.com/orgs/backstage/projects/1
+# New issues and PRs with TechDocs in their title or docs-like-code label will be added to the board.
+# Caveat: New PRs created from forks will not be added since GitHub actions don't share credentials with forks.
 
 on:
   issues:
@@ -9,7 +10,7 @@ on:
     types: [opened, reopened, labeled, edited]
 
 env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  MY_GITHUB_TOKEN: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
 
 jobs:
   assign_issue_or_pr_to_project:
@@ -23,7 +24,7 @@ jobs:
           contains(github.event.issue.title, 'techdocs') ||
           contains(github.event.issue.title, 'Techdocs')
         with:
-          project: 'https://github.com/backstage/backstage/projects/5'
+          project: 'https://github.com/orgs/backstage/projects/1'
           column_name: 'Incoming'
 
       - name: Assign new issue to Incoming based on its label.
@@ -31,7 +32,7 @@ jobs:
         if: |
           contains(github.event.issue.labels.*.name, 'docs-like-code')
         with:
-          project: 'https://github.com/backstage/backstage/projects/5'
+          project: 'https://github.com/orgs/backstage/projects/1'
           column_name: 'Incoming'
 
       - name: Assign new PR to Incoming based on its title.
@@ -41,7 +42,7 @@ jobs:
           contains(github.event.pull_request.title, 'techdocs') ||
           contains(github.event.pull_request.title, 'Techdocs')
         with:
-          project: 'https://github.com/backstage/backstage/projects/5'
+          project: 'https://github.com/orgs/backstage/projects/1'
           column_name: 'Incoming'
 
       - name: Assign new PR to Incoming based on its label.
@@ -49,5 +50,5 @@ jobs:
         if: |
           contains(github.event.pull_request.labels.*.name, 'docs-like-code')
         with:
-          project: 'https://github.com/backstage/backstage/projects/5'
+          project: 'https://github.com/orgs/backstage/projects/1'
           column_name: 'Incoming'

@@ -19,7 +19,7 @@ import { OAuthState } from './types';
 
 export const readState = (stateString: string): OAuthState => {
   const state = Object.fromEntries(
-    new URLSearchParams(decodeURIComponent(stateString)),
+    new URLSearchParams(Buffer.from(stateString, 'hex').toString('utf-8')),
   );
   if (
     !state.nonce ||
@@ -40,7 +40,7 @@ export const encodeState = (state: OAuthState): string => {
   searchParams.append('nonce', state.nonce);
   searchParams.append('env', state.env);
 
-  return encodeURIComponent(searchParams.toString());
+  return Buffer.from(searchParams.toString(), 'utf-8').toString('hex');
 };
 
 export const verifyNonce = (req: express.Request, providerId: string) => {

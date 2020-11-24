@@ -89,6 +89,12 @@ are separated out into their own folder, see further down.
   There are no "core" packages in the backend. Instead we have `backend-common`
   which contains helper middleware and other utils.
 
+- [`catalog-client`](https://github.com/backstage/backstage/tree/master/packages/catalog-client) -
+  An isomorphic client to interact with the Software Catalog. Backend plugins
+  can use the package directly. Frontend plugins can use the client by using
+  `@backstage/plugin-catalog` in combination with `useApi` and the
+  `catalogApiRef`.
+
 - [`catalog-model/`](https://github.com/backstage/backstage/tree/master/packages/catalog-model) -
   You can consider this to be a library for working with the catalog of sorts.
   It contains the definition of an
@@ -167,12 +173,6 @@ are separated out into their own folder, see further down.
   This folder contains only the storybook config. Stories are within the core
   package. The Backstage Storybook is found
   [here](https://backstage.io/storybook)
-
-- [`techdocs-cli/`](https://github.com/backstage/backstage/tree/master/packages/techdocs-cli) -
-  Used for verifying TechDocs locally.
-
-- [`techdocs-container/`](https://github.com/backstage/backstage/tree/master/packages/techdocs-container) -
-  Used by the `techdocs-cli`
 
 - [`test-utils-core/`](https://github.com/backstage/backstage/tree/master/packages/test-utils-core)
 

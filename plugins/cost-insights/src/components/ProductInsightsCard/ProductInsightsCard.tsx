@@ -16,12 +16,11 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { InfoCard, useApi } from '@backstage/core';
-import { Box } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
+import { Typography } from '@material-ui/core';
 import { costInsightsApiRef } from '../../api';
+import { ProductInsightsChart } from './ProductInsightsChart';
 import { PeriodSelect } from '../PeriodSelect';
-import { ResourceGrowthBarChart } from '../ResourceGrowthBarChart';
-import { ResourceGrowthBarChartLegend } from '../ResourceGrowthBarChartLegend';
 import {
   useFilters,
   useLastCompleteBillingDate,
@@ -30,9 +29,8 @@ import {
 } from '../../hooks';
 import { useProductInsightsCardStyles as useStyles } from '../../utils/styles';
 import { mapFiltersToProps, mapLoadingToProps } from './selector';
-import { Duration, Maybe, Product, ProductCost } from '../../types';
+import { Duration, Maybe, Product, Entity } from '../../types';
 import { pluralOf } from '../../utils/grammar';
-import { formatPeriod } from '../../utils/formatters';
 
 type ProductInsightsCardProps = {
   product: Product;
@@ -43,7 +41,7 @@ export const ProductInsightsCard = ({ product }: ProductInsightsCardProps) => {
   const classes = useStyles();
   const { ScrollAnchor } = useScroll(product.kind);
   const lastCompleteBillingDate = useLastCompleteBillingDate();
-  const [resource, setResource] = useState<Maybe<ProductCost>>(null);
+  const [entity, setEntity] = useState<Maybe<Entity>>(null);
   const [error, setError] = useState<Maybe<Error>>(null);
 
   const { group, product: productFilter, setProduct, project } = useFilters(
@@ -57,38 +55,25 @@ export const ProductInsightsCard = ({ product }: ProductInsightsCardProps) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const dispatchLoadingProduct = useCallback(dispatchLoading, [product.kind]);
 
-  const amount = resource?.entities?.length || 0;
-  const hasCostsWithinTimeframe = resource?.change && !!amount;
+  const amount = entity?.entities?.length || 0;
+  const hasCostsWithinTimeframe = !!(entity?.change && amount);
 
-  const previousName = formatPeriod(
-    productFilter.duration,
-    lastCompleteBillingDate,
-    false,
-  );
-  const currentName = formatPeriod(
-    productFilter.duration,
-    lastCompleteBillingDate,
-    true,
-  );
-
-  const subheader = amount
+  const subheader = hasCostsWithinTimeframe
     ? `${amount} ${pluralOf(amount, 'entity', 'entities')}, sorted by cost`
-    : `There are no ${product.name} costs within this timeframe for your team's projects.`;
-
-  const costStart = resource?.aggregation[0] || 0;
-  const costEnd = resource?.aggregation[1] || 0;
+    : null;
 
   useEffect(() => {
     async function load() {
       if (loadingProduct) {
         try {
-          const p: ProductCost = await client.getProductInsights(
-            product.kind,
-            group!,
-            productFilter!.duration,
+          const e: Entity = await client.getProductInsights({
+            product: product.kind,
+            group: group!,
+            duration: productFilter!.duration,
+            lastCompleteBillingDate,
             project,
-          );
-          setResource(p);
+          });
+          setEntity(e);
         } catch (e) {
           setError(e);
         } finally {
@@ -100,13 +85,14 @@ export const ProductInsightsCard = ({ product }: ProductInsightsCardProps) => {
   }, [
     client,
     product,
-    setResource,
+    setEntity,
     loadingProduct,
     dispatchLoadingProduct,
     productFilter,
     group,
     product.kind,
     project,
+    lastCompleteBillingDate,
   ]);
 
   const onPeriodSelect = (duration: Duration) => {
@@ -135,33 +121,24 @@ export const ProductInsightsCard = ({ product }: ProductInsightsCardProps) => {
     );
   }
 
-  if (!resource) {
+  if (!entity) {
     return null;
   }
 
   return (
     <InfoCard title={product.name} subheader={subheader} {...infoCardProps}>
       <ScrollAnchor behavior="smooth" top={-12} />
-      {hasCostsWithinTimeframe && (
-        <>
-          <Box display="flex" flexDirection="column">
-            <Box pb={2}>
-              <ResourceGrowthBarChartLegend
-                duration={productFilter.duration}
-                change={resource.change!}
-                previousName={previousName}
-                currentName={currentName}
-                costStart={costStart}
-                costEnd={costEnd}
-              />
-            </Box>
-            <ResourceGrowthBarChart
-              previousName={previousName}
-              currentName={currentName}
-              resources={resource.entities || []}
-            />
-          </Box>
-        </>
+      {hasCostsWithinTimeframe ? (
+        <ProductInsightsChart
+          billingDate={lastCompleteBillingDate}
+          duration={productFilter.duration}
+          entity={entity}
+        />
+      ) : (
+        <Typography>
+          There are no {product.name} costs within this timeframe for your
+          team's projects.
+        </Typography>
       )}
     </InfoCard>
   );

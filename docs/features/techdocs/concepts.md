@@ -23,7 +23,7 @@ The TechDocs container is a Docker container available at
 pages, including stylesheets and scripts from Python flavored Markdown, through
 MkDocs.
 
-[TechDocs Container](https://github.com/backstage/backstage/blob/master/packages/techdocs-container/README.md)
+[TechDocs Container](https://github.com/backstage/techdocs-container)
 
 ### TechDocs publisher
 
@@ -41,7 +41,7 @@ documentation for publishing. Currently it mostly acts as a wrapper around the
 TechDocs container and provides an easy-to-use interface for our docker
 container.
 
-[TechDocs CLI](https://github.com/backstage/backstage/blob/master/packages/techdocs-cli/README.md)
+[TechDocs CLI](https://github.com/backstage/techdocs-cli)
 
 ### TechDocs Reader
 

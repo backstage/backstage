@@ -39,3 +39,5 @@ export const SmallDeletable = () => (
 export const SmallNotDeletable = () => (
   <Chip label="Small not deletable" size="small" />
 );
+
+export const Outline = () => <Chip label="Outline" variant="outlined" />;

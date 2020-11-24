@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { AuthRequestBody, ClusterDetails } from '../types/types';
+import { KubernetesRequestBody, ClusterDetails } from '../types/types';
 
 export interface KubernetesAuthTranslator {
   decorateClusterDetailsWithAuth(
     clusterDetails: ClusterDetails,
-    requestBody: AuthRequestBody,
+    requestBody: KubernetesRequestBody,
   ): Promise<ClusterDetails>;
 }

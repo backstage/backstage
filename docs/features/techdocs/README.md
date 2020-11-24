@@ -109,8 +109,8 @@ migrate Spotify's existing TechDocs features to open source.
 | ------------------------------------------- | -------------------------------------------------------- |
 | Frontend                                    | [`@backstage/plugin-techdocs`][techdocs/frontend]        |
 | Backend                                     | [`@backstage/plugin-techdocs-backend`][techdocs/backend] |
-| Docker Container (for generating doc sites) | [`packages/techdocs-container`][techdocs/container]      |
-| CLI (for local development)                 | [`packages/techdocs-cli`][techdocs/cli]                  |
+| Docker Container (for generating doc sites) | [`techdocs-container`][techdocs/container]               |
+| CLI (for local development)                 | [`@techdocs/cli`][techdocs/cli]                          |
 
 [getting started]: getting-started.md
 [concepts]: concepts.md
@@ -120,7 +120,14 @@ migrate Spotify's existing TechDocs features to open source.
   https://github.com/backstage/backstage/blob/master/plugins/techdocs
 [techdocs/backend]:
   https://github.com/backstage/backstage/blob/master/plugins/techdocs-backend
-[techdocs/container]:
-  https://github.com/backstage/backstage/blob/master/packages/techdocs-container
-[techdocs/cli]:
-  https://github.com/backstage/backstage/blob/master/packages/techdocs-cli
+[techdocs/container]: https://github.com/backstage/techdocs-container
+[techdocs/cli]: https://github.com/backstage/techdocs-cli
+
+## Feedback
+
+We have created a sweet and short TechDocs user survey -
+https://docs.google.com/forms/d/e/1FAIpQLSdn5Vn3MQhCdyYRuW8cMzZkMQF0bFxXYN168gZRvESLfJWVVg/viewform
+
+This is to gather inputs from you (the Backstage community) which will help us
+best serve TechDocs adopters and existing users. Your inputs will shape our
+roadmap and we will share it in the open.

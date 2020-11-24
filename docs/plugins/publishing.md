@@ -56,5 +56,3 @@ $ git reset --hard master
 $ yarn release
 $ git push --force
 ```
-
-[Back to Docs](../README.md)

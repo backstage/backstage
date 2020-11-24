@@ -17,16 +17,9 @@ import Stream, { PassThrough } from 'stream';
 import os from 'os';
 import fs from 'fs';
 import Docker from 'dockerode';
-import { runDockerContainer } from './helpers';
+import { UserOptions, runDockerContainer } from './helpers';
 
 describe('helpers', () => {
-  if (process.platform === 'win32') {
-    // eslint-disable-next-line jest/no-focused-tests
-    it.only('should skip tests on windows', () => {
-      expect('test').not.toBe('run');
-    });
-  }
-
   const mockDocker = new Docker() as jest.Mocked<Docker>;
 
   beforeEach(() => {
@@ -142,12 +135,17 @@ describe('helpers', () => {
         dockerClient: mockDocker,
       });
 
+      const userOptions: UserOptions = {};
+      if (process.getuid && process.getgid) {
+        userOptions.User = `${process.getuid()}:${process.getgid()}`;
+      }
+
       expect(mockDocker.run).toHaveBeenCalledWith(
         imageName,
         args,
         expect.any(Stream),
         expect.objectContaining({
-          User: `${process.getuid()}:${process.getgid()}`,
+          ...userOptions,
           Env: ['HOME=/tmp'],
         }),
       );

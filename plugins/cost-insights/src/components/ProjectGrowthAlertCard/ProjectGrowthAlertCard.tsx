@@ -15,12 +15,9 @@
  */
 
 import React from 'react';
-import moment from 'moment';
-import { Box } from '@material-ui/core';
 import { InfoCard } from '@backstage/core';
-import { ResourceGrowthBarChart } from '../ResourceGrowthBarChart';
-import { ResourceGrowthBarChartLegend } from '../ResourceGrowthBarChartLegend';
-import { Duration, ProjectGrowthData } from '../../types';
+import { ProjectGrowthAlertChart } from './ProjectGrowthAlertChart';
+import { ProjectGrowthData } from '../../types';
 import { pluralOf } from '../../utils/grammar';
 
 type ProjectGrowthAlertProps = {
@@ -28,39 +25,17 @@ type ProjectGrowthAlertProps = {
 };
 
 export const ProjectGrowthAlertCard = ({ alert }: ProjectGrowthAlertProps) => {
-  const [costStart, costEnd] = alert.aggregation;
-
   const subheader = `
     ${alert.products.length} ${pluralOf(alert.products.length, 'product')}${
     alert.products.length > 1 ? ', sorted by cost' : ''
   }`;
-  const previousName = moment(alert.periodStart, 'YYYY-[Q]Q').format(
-    '[Q]Q YYYY',
-  );
-  const currentName = moment(alert.periodEnd, 'YYYY-[Q]Q').format('[Q]Q YYYY');
 
   return (
     <InfoCard
       title={`Project growth for ${alert.project}`}
       subheader={subheader}
     >
-      <Box display="flex" flexDirection="column">
-        <Box pb={2}>
-          <ResourceGrowthBarChartLegend
-            change={alert.change}
-            duration={Duration.P3M}
-            previousName={previousName}
-            currentName={currentName}
-            costStart={costStart}
-            costEnd={costEnd}
-          />
-        </Box>
-        <ResourceGrowthBarChart
-          resources={alert.products}
-          previousName={previousName}
-          currentName={currentName}
-        />
-      </Box>
+      <ProjectGrowthAlertChart alert={alert} />
     </InfoCard>
   );
 };

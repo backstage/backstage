@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
-import { loadConfig } from '@backstage/config-loader';
+import { loadConfig, loadConfigSchema } from '@backstage/config-loader';
 import { ConfigReader } from '@backstage/config';
 import { paths } from './paths';
 
-export async function loadCliConfig(
-  configArgs: string[],
-  shouldReadSecrets: boolean = false,
-) {
+export async function loadCliConfig(configArgs: string[]) {
   const configPaths = configArgs.map(arg => paths.resolveTarget(arg));
 
+  // Consider all packages in the monorepo when loading in config
+  const LernaProject = require('@lerna/project');
+  const project = new LernaProject(paths.targetDir);
+  const packages = await project.getPackages();
+  const localPackageNames = packages.map((p: any) => p.name);
+  const schema = await loadConfigSchema({
+    dependencies: localPackageNames,
+  });
+
   const appConfigs = await loadConfig({
-    shouldReadSecrets,
     env: process.env.APP_ENV ?? process.env.NODE_ENV ?? 'production',
     configRoot: paths.targetRoot,
     configPaths,
@@ -35,8 +40,24 @@ export async function loadCliConfig(
     `Loaded config from ${appConfigs.map(c => c.context).join(', ')}`,
   );
 
-  return {
-    appConfigs,
-    config: ConfigReader.fromConfigs(appConfigs),
-  };
+  try {
+    const frontendAppConfigs = schema.process(appConfigs, {
+      visiblity: ['frontend'],
+    });
+    const frontendConfig = ConfigReader.fromConfigs(frontendAppConfigs);
+
+    return {
+      schema,
+      appConfigs,
+      frontendConfig,
+      frontendAppConfigs,
+    };
+  } catch (error) {
+    const maybeSchemaError = error as Error & { messages?: string[] };
+    if (maybeSchemaError.messages) {
+      const messages = maybeSchemaError.messages.join('\n  ');
+      throw new Error(`Configuration does not match schema\n\n  ${messages}`);
+    }
+    throw error;
+  }
 }

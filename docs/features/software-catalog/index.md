@@ -2,8 +2,8 @@
 id: software-catalog-overview
 title: Backstage Service Catalog (alpha)
 sidebar_label: Overview
-description: The Backstage Service Catalog — actually, a software catalog, since
-it includes more than just services
+# prettier-ignore
+description: The Backstage Service Catalog — actually, a software catalog, since it includes more than just services
 ---
 
 ## What is a Service Catalog?
@@ -33,10 +33,10 @@ More specifically, the Service Catalog enables two main use-cases:
 
 ## Getting Started
 
-The Software Catalog is available to browse on the start page at `/`. If you've
-followed [Installing in your Backstage App](./installation.md) in your separate
-App or [Getting Started with Backstage](../../getting-started) for this repo,
-you should be able to browse the catalog at `http://localhost:3000`.
+The Software Catalog is available to browse at `/catalog`. If you've followed
+[Installing in your Backstage App](./installation.md) in your separate App or
+[Getting Started with Backstage](../../getting-started) for this repo, you
+should be able to browse the catalog at `http://localhost:3000`.
 
 ![](../../assets/software-catalog/service-catalog-home.png)
 
@@ -62,7 +62,7 @@ Users can register new components by going to `/create` and clicking the
 Backstage expects the full URL to the YAML in your source control. Example:
 
 ```bash
-https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
+https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/artist-lookup-component.yaml
 ```
 
 _More examples can be found
@@ -91,7 +91,7 @@ above example can be added using the following configuration:
 catalog:
   locations:
     - type: url
-      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/artist-lookup-component.yaml
 ```
 
 More information about catalog configuration can be found

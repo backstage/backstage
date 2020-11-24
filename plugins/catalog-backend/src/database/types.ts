@@ -17,8 +17,8 @@
 import type {
   Entity,
   EntityName,
-  Location,
   EntityRelationSpec,
+  Location,
 } from '@backstage/catalog-model';
 
 export type DbEntitiesRow = {
@@ -80,26 +80,35 @@ export type DatabaseLocationUpdateLogEvent = {
 };
 
 /**
- * Filter matcher for a single entity field.
- *
- * Can be either null or a string, or an array of those. Null and the empty
- * string are treated equally, and match both a present field with a null or
- * empty value, as well as an absent field.
- *
- * A filter may contain asterisks (*) that are treated as wildcards for zero
- * or more arbitrary characters.
+ * Matches rows in the entities_search table.
  */
-export type EntityFilter = null | string | (null | string)[];
+export type EntitiesSearchFilter = {
+  /**
+   * The key to match on.
+   *
+   * Matches are always case insensitive.
+   */
+  key: string;
+
+  /**
+   * Match on plain equality of values.
+   *
+   * If undefined, this factor is not taken into account. Otherwise, match on
+   * values that are equal to any of the given array items. Matches are always
+   * case insensitive.
+   */
+  matchValueIn?: string[];
+};
 
 /**
- * A set of filter matchers used for filtering entities.
+ * A filter expression for entities.
  *
- * The keys are full dot-separated paths into the structure of an entity, for
- * example "metadata.name". You can also address any item in an array the same
- * way, e.g. "a.b.c": "x" works if b is an array of objects that have a c field
- * and any of those have the value x.
+ * Any (at least one) of the outer sets must match, within which all of the
+ * individual filters must match.
  */
-export type EntityFilters = Record<string, EntityFilter>;
+export type EntityFilter = {
+  anyOf: { allOf: EntitiesSearchFilter[] }[];
+};
 
 /**
  * An abstraction for transactions of the underlying database technology.
@@ -160,10 +169,7 @@ export type Database = {
     matchingGeneration?: number,
   ): Promise<DbEntityResponse>;
 
-  entities(
-    tx: Transaction,
-    filters?: EntityFilters[],
-  ): Promise<DbEntityResponse[]>;
+  entities(tx: Transaction, filter?: EntityFilter): Promise<DbEntityResponse[]>;
 
   entityByName(
     tx: Transaction,

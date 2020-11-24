@@ -57,8 +57,22 @@ export interface GroupEntityV1alpha1 extends Entity {
   spec: {
     type: string;
     parent?: string;
+    /**
+     * @deprecated This field will disappear on Dec 6th, 2020. Please remove
+     *             any consuming code. Producers can stop producing this field
+     *             before that date, as long as the catalog backend uses the
+     *             BuiltinKindsEntityProcessor which inserts the fields in the
+     *             mean time.
+     */
     ancestors: string[];
     children: string[];
+    /**
+     * @deprecated This field will disappear on Dec 6th, 2020. Please remove
+     *             any consuming code. Producers can stop producing this field
+     *             before that date, as long as the catalog backend uses the
+     *             BuiltinKindsEntityProcessor which inserts the fields in the
+     *             mean time.
+     */
     descendants: string[];
   };
 }

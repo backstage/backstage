@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { CheckboxTree } from '.';
 
 const CHECKBOX_TREE_ITEMS = [
@@ -71,3 +71,35 @@ export const Default = () => (
     subCategories={CHECKBOX_TREE_ITEMS}
   />
 );
+
+export const DynamicTree = () => {
+  function generateTree(showMore: boolean = false) {
+    const t = [
+      {
+        label: 'Show more',
+        options: [],
+      },
+    ];
+
+    if (showMore) {
+      t.push({
+        label: 'More',
+        options: [],
+      });
+    }
+
+    return t;
+  }
+
+  const [tree, setTree] = useState(generateTree());
+
+  return (
+    <CheckboxTree
+      onChange={state => {
+        setTree(generateTree(state.some(c => c.category === 'Show more')));
+      }}
+      label="default"
+      subCategories={tree}
+    />
+  );
+};

@@ -19,5 +19,5 @@ We are working on making Backstage the trusted standard toolbox (read: UX layer)
 for the open source infrastructure landscape. Think of it like Kubernetes for
 developer experience. We realize this is an ambitious goal. We can’t do it
 alone. If this sounds interesting or you'd like to help us shape our product
-vision, we'd love to talk. You can email me directly:
-[alund@spotify.com](mailto:alund@spotify.com).
+vision, we'd love to talk. You can email us directly:
+[backstage-interest@spotify.com](mailto:backstage-interest@spotify.com).
