@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog
 
+## 0.2.3
+
+### Patch Changes
+
+- Updated dependencies [475fc0aaa]
+- Updated dependencies [1166fcc36]
+- Updated dependencies [ef2831dde]
+- Updated dependencies [1185919f3]
+  - @backstage/core@0.3.2
+  - @backstage/catalog-model@0.3.0
+  - @backstage/plugin-scaffolder@0.3.1
+  - @backstage/catalog-client@0.3.1
+  - @backstage/plugin-techdocs@0.2.3
+
 ## 0.2.2
 
 ### Patch Changes
