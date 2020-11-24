@@ -39,10 +39,7 @@ import {
   formatGraphValue,
   isInvalid,
 } from '../../utils/graphs';
-import {
-  useCostOverviewStyles as useStyles,
-  DataVizColors,
-} from '../../utils/styles';
+import { useCostOverviewStyles as useStyles } from '../../utils/styles';
 import { useFilters, useLastCompleteBillingDate } from '../../hooks';
 import { mapFiltersToProps } from './selector';
 import { getPreviousPeriodTotalCost } from '../../utils/change';
@@ -135,8 +132,8 @@ export const CostOverviewByProductChart = ({
         dataKey={product}
         stackId="1"
         fillOpacity="1"
-        stroke={DataVizColors[i]}
-        fill={DataVizColors[i]}
+        stroke={theme.palette.dataViz[i]}
+        fill={theme.palette.dataViz[i]}
       />
     ));
   };

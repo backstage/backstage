@@ -24,19 +24,6 @@ import {
 import { BackstageTheme } from '@backstage/theme';
 import { CostInsightsTheme, CostInsightsThemeOptions } from '../types';
 
-export const DataVizColors = [
-  '#509BF5',
-  '#FF6437',
-  '#4B917D',
-  '#F573A0',
-  '#F59B23',
-  '#B49BC8',
-  '#C39687',
-  '#A0C3D2',
-  '#FFC864',
-  '#BABABA',
-];
-
 export const costInsightsLightTheme = {
   palette: {
     blue: '#509AF5',
@@ -50,6 +37,18 @@ export const costInsightsLightTheme = {
     },
     navigationText: '#b5b5b5',
     alertBackground: 'rgba(219, 219, 219, 0.13)',
+    dataViz: [
+      '#509BF5',
+      '#FF6437',
+      '#4B917D',
+      '#F573A0',
+      '#F59B23',
+      '#B49BC8',
+      '#C39687',
+      '#A0C3D2',
+      '#FFC864',
+      '#BABABA',
+    ],
   },
 } as CostInsightsThemeOptions;
 
@@ -68,6 +67,18 @@ export const costInsightsDarkTheme = {
     },
     navigationText: '#b5b5b5',
     alertBackground: 'rgba(32, 32, 32, 0.13)',
+    dataViz: [
+      '#B9D6FB',
+      '#FFC1AF',
+      '#B7D3CB',
+      '#FBC7D9',
+      '#FBD6A7',
+      '#E1D7E9',
+      '#E7D5CF',
+      '#D9E7ED',
+      '#FFE9C1',
+      '#E3E3E3',
+    ],
   },
 } as CostInsightsThemeOptions;
 
