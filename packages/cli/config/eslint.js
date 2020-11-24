@@ -58,6 +58,7 @@ module.exports = {
     ],
     'no-unused-expressions': 'off',
     '@typescript-eslint/no-unused-expressions': 'error',
+    '@typescript-eslint/consistent-type-assertions': 'error',
     '@typescript-eslint/no-unused-vars': [
       'warn',
       {
