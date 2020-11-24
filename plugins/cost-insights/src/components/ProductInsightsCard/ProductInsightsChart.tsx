@@ -30,6 +30,7 @@ import {
   BarChartLegend,
   BarChartTooltip,
   BarChartTooltipItem,
+  BarChartLegendOptions,
 } from '../BarChart';
 import { pluralOf } from '../../utils/grammar';
 import { findAlways, notEmpty } from '../../utils/assert';
@@ -45,7 +46,7 @@ import {
   useProductInsightsChartStyles as useStyles,
   useBarChartLayoutStyles as useLayoutStyles,
 } from '../../utils/styles';
-import { BarChartOptions, Duration, Entity, Maybe } from '../../types';
+import { Duration, Entity, Maybe } from '../../types';
 
 export type ProductInsightsChartProps = {
   billingDate: string;
@@ -70,7 +71,7 @@ export const ProductInsightsChart = ({
   const costEnd = entity.aggregation[1];
   const resources = entity.entities.map(resourceOf);
 
-  const options: Partial<BarChartOptions> = {
+  const options: Partial<BarChartLegendOptions> = {
     previousName: formatPeriod(duration, billingDate, false),
     currentName: formatPeriod(duration, billingDate, true),
   };
