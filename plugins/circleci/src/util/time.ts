@@ -13,26 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { CITable } from '../CITable';
-import { useBuilds } from '../../../../state';
 
-export const Builds = () => {
-  const [
-    { total, loading, value, projectName, page, pageSize },
-    { setPage, retry, setPageSize },
-  ] = useBuilds();
-  return (
-    <CITable
-      total={total}
-      loading={loading}
-      retry={retry}
-      builds={value ?? []}
-      projectName={projectName}
-      page={page}
-      onChangePage={setPage}
-      pageSize={pageSize}
-      onChangePageSize={setPageSize}
-    />
-  );
-};
+import dayjs from 'dayjs';
+import durationPlugin from 'dayjs/plugin/duration';
+import relativeTimePlugin from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(durationPlugin);
+dayjs.extend(relativeTimePlugin);
+
+type DateTimeObject = Date | string | number | undefined;
+
+export function relativeTimeTo(time: DateTimeObject, withoutSuffix = false) {
+  return dayjs().to(dayjs(time), withoutSuffix);
+}
+
+export function durationHumanized(
+  startTime: DateTimeObject,
+  endTime: DateTimeObject,
+) {
+  return dayjs.duration(dayjs(startTime).diff(dayjs(endTime))).humanize();
+}
