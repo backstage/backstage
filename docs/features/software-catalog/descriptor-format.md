@@ -93,6 +93,43 @@ significance and have reserved purposes and distinct shapes.
 
 See below for details about these fields.
 
+## Substitutions In The Descriptor Format
+
+The descriptor format supports substitutions using `$text`, `$json`, and
+`$yaml`.
+
+Placeholders like `$json: https://example.com/entity.json` are substituted by
+the content of the referenced file. Files can be referenced from any configured
+integration similar to locations by passing an absolute URL. It's also possible
+to reference relative files like `./referenced.yaml` from the same location.
+Relative references are handled relative to the folder of the
+`catalog-info.yaml` that contains the placeholder. There are three different
+types of placeholders:
+
+- `$text`: Interprets the contents of the referenced file as plain text and
+  embeds it as a string.
+- `$json`: Interprets the contents of the referenced file as JSON and embeds the
+  parsed structure.
+- `$yaml`: Interprets the contents of the referenced file as YAML and embeds the
+  parsed structure.
+
+For example, this can be used to load the definition of an API entity from a web
+server and embed it as a string in the field `spec.definition`:
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: petstore
+  description: The Petstore API
+spec:
+  type: openapi
+  lifecycle: production
+  owner: petstore@example.com
+  definition:
+    $text: https://petstore.swagger.io/v2/swagger.json
+```
+
 ## Common to All Kinds: The Envelope
 
 The root envelope object has the following structure.
