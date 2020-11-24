@@ -140,6 +140,8 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
         aggregation: aggregation,
         change: changeOf(aggregation),
         trendline: trendlineOf(aggregation),
+        // Optional field on Cost which needs to be supplied in order to see
+        // the product breakdown view in the top panel.
         groupedCosts: getGroupedProducts(intervals),
       },
     );
@@ -156,6 +158,8 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
         aggregation: aggregation,
         change: changeOf(aggregation),
         trendline: trendlineOf(aggregation),
+        // Optional field on Cost which needs to be supplied in order to see
+        // the product breakdown view in the top panel.
         groupedCosts: getGroupedProducts(intervals),
       },
     );
