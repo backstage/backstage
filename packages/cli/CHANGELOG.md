@@ -1,5 +1,14 @@
 # @backstage/cli
 
+## 0.3.1
+
+### Patch Changes
+
+- 29a0ccab2: The CLI now detects and transforms linked packages. You can link in external packages by adding them to both the `lerna.json` and `package.json` workspace paths.
+- faf311c26: New lint rule to disallow <type> assertions and promote `as` assertions. - @typescript-eslint/consistent-type-assertions
+- 31d8b6979: Add experimental backend:bundle command
+- 991345969: Add new `versions:check` and `versions:bump` commands to simplify version management and avoid conflicts
+
 ## 0.3.0
 
 ### Minor Changes
