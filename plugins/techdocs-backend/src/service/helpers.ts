@@ -39,6 +39,7 @@ type DocsBuilderArguments = {
   entity: Entity;
   logger: Logger;
   dockerClient: Docker;
+  token: string;
 };
 
 export class DocsBuilder {
@@ -65,9 +66,9 @@ export class DocsBuilder {
     this.dockerClient = dockerClient;
   }
 
-  public async build() {
+  public async build(token?: string) {
     this.logger.info(`Running preparer on entity ${getEntityId(this.entity)}`);
-    const preparedDir = await this.preparer.prepare(this.entity);
+    const preparedDir = await this.preparer.prepare(this.entity, token);
 
     this.logger.info(`Running generator on entity ${getEntityId(this.entity)}`);
     const { resultDir } = await this.generator.run({
@@ -90,7 +91,7 @@ export class DocsBuilder {
     new BuildMetadataStorage(this.entity.metadata.uid).storeBuildTimestamp();
   }
 
-  public async docsUpToDate() {
+  public async docsUpToDate(token?: string) {
     if (!this.entity.metadata.uid) {
       throw new Error(
         'Trying to build documentation for entity not in service catalog',
@@ -105,7 +106,15 @@ export class DocsBuilder {
     // Unless docs are stored locally
     const nonAgeCheckTypes = ['dir', 'file', 'url'];
     if (!nonAgeCheckTypes.includes(type)) {
-      const lastCommit = await getLastCommitTimestamp(target, this.logger);
+      const branch =
+        this.entity.metadata.annotations?.['github.com/project-slug-branch'] ||
+        'master';
+      const lastCommit = await getLastCommitTimestamp(
+        target,
+        this.logger,
+        branch,
+        token,
+      );
       const storageTimeStamp = buildMetadataStorage.getTimestamp();
 
       // Check if documentation source is newer than what we have

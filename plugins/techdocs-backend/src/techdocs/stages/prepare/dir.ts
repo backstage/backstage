@@ -31,7 +31,7 @@ export class DirectoryPreparer implements PreparerBase {
     this.logger = logger;
   }
 
-  private async resolveManagedByLocationToDir(entity: Entity) {
+  private async resolveManagedByLocationToDir(entity: Entity, token?: string) {
     const { type, target } = parseReferenceAnnotation(
       'backstage.io/managed-by-location',
       entity,
@@ -45,7 +45,15 @@ export class DirectoryPreparer implements PreparerBase {
       case 'gitlab':
       case 'azure/api': {
         const parsedGitLocation = parseGitUrl(target);
-        const repoLocation = await checkoutGitRepository(target, this.logger);
+        const branch =
+          entity.metadata.annotations?.['github.com/project-slug-branch'] ||
+          'master';
+        const repoLocation = await checkoutGitRepository(
+          target,
+          this.logger,
+          branch,
+          token,
+        );
 
         return path.dirname(
           path.join(repoLocation, parsedGitLocation.filepath),
@@ -59,7 +67,7 @@ export class DirectoryPreparer implements PreparerBase {
     }
   }
 
-  async prepare(entity: Entity): Promise<string> {
+  async prepare(entity: Entity, token?: string): Promise<string> {
     const { target } = parseReferenceAnnotation(
       'backstage.io/techdocs-ref',
       entity,
@@ -67,6 +75,7 @@ export class DirectoryPreparer implements PreparerBase {
 
     const managedByLocationDirectory = await this.resolveManagedByLocationToDir(
       entity,
+      token,
     );
 
     return new Promise(resolve => {

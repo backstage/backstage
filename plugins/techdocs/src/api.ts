@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core';
+import { createApiRef, OAuthApi } from '@backstage/core';
 
 import { ParsedEntityId } from './types';
 
@@ -62,9 +62,17 @@ export class TechDocsApi implements TechDocs {
 
 export class TechDocsStorageApi implements TechDocsStorage {
   public apiOrigin: string;
+  private readonly githubAuthApi: OAuthApi;
 
-  constructor({ apiOrigin }: { apiOrigin: string }) {
+  constructor({
+    apiOrigin,
+    githubAuthApi,
+  }: {
+    apiOrigin: string;
+    githubAuthApi: OAuthApi;
+  }) {
     this.apiOrigin = apiOrigin;
+    this.githubAuthApi = githubAuthApi;
   }
 
   async getEntityDocs(entityId: ParsedEntityId, path: string) {
@@ -74,6 +82,11 @@ export class TechDocsStorageApi implements TechDocsStorage {
 
     const request = await fetch(
       `${url.endsWith('/') ? url : `${url}/`}index.html`,
+      {
+        headers: new Headers({
+          Authorization: await this.getToken(),
+        }),
+      },
     );
 
     if (request.status === 404) {
@@ -94,5 +107,13 @@ export class TechDocsStorageApi implements TechDocsStorage {
       oldBaseUrl,
       `${this.apiOrigin}/docs/${namespace}/${kind}/${name}/${path}`,
     ).toString();
+  }
+
+  async getToken(): Promise<string> {
+    // NOTE(freben): There's a .read-only variant of this scope that we could
+    // use for readonly operations, but that means we would ask the user for a
+    // second auth during creation and I decided to keep the wider scope for
+    // all ops for now
+    return this.githubAuthApi.getAccessToken();
   }
 }

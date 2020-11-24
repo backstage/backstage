@@ -22,7 +22,11 @@ export type PreparerBase = {
    * with contents from the location in temporary storage and return the path
    * @param entity The entity from the Service Catalog
    */
-  prepare(entity: Entity, opts?: { logger: Logger }): Promise<string>;
+  prepare(
+    entity: Entity,
+    token?: string,
+    opts?: { logger: Logger },
+  ): Promise<string>;
 };
 
 export type PreparerBuilder = {

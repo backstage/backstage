@@ -109,6 +109,8 @@ export async function createRouter({
   router.get('/docs/:namespace/:kind/:name/*', async (req, res) => {
     const storageUrl = config.getString('techdocs.storageUrl');
 
+    const token = req.headers.authorization || '';
+
     const { kind, namespace, name } = req.params;
 
     const catalogUrl = await discovery.getBaseUrl('catalog');
@@ -131,10 +133,11 @@ export async function createRouter({
       dockerClient,
       logger,
       entity,
+      token,
     });
 
-    if (!(await docsBuilder.docsUpToDate())) {
-      await docsBuilder.build();
+    if (!(await docsBuilder.docsUpToDate(token))) {
+      await docsBuilder.build(token);
     }
 
     res.redirect(`${storageUrl}${req.path.replace('/docs', '')}`);

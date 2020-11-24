@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { TechDocsStorageApi } from './api';
+import { OAuthApi } from '@backstage/core';
 
 const DOC_STORAGE_URL = 'https://example-storage.com';
 
@@ -25,7 +26,10 @@ const mockEntity = {
 
 describe('TechDocsStorageApi', () => {
   it('should return correct base url based on defined storage', () => {
-    const storageApi = new TechDocsStorageApi({ apiOrigin: DOC_STORAGE_URL });
+    const storageApi = new TechDocsStorageApi({
+      apiOrigin: DOC_STORAGE_URL,
+      githubAuthApi: <OAuthApi>{},
+    });
 
     expect(storageApi.getBaseUrl('test.js', mockEntity, '')).toEqual(
       `${DOC_STORAGE_URL}/docs/${mockEntity.namespace}/${mockEntity.kind}/${mockEntity.name}/test.js`,
@@ -33,8 +37,10 @@ describe('TechDocsStorageApi', () => {
   });
 
   it('should return base url with correct entity structure', () => {
-    const storageApi = new TechDocsStorageApi({ apiOrigin: DOC_STORAGE_URL });
-
+    const storageApi = new TechDocsStorageApi({
+      apiOrigin: DOC_STORAGE_URL,
+      githubAuthApi: <OAuthApi>{},
+    });
     expect(storageApi.getBaseUrl('test/', mockEntity, '')).toEqual(
       `${DOC_STORAGE_URL}/docs/${mockEntity.namespace}/${mockEntity.kind}/${mockEntity.name}/test/`,
     );

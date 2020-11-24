@@ -31,14 +31,23 @@ export class CommonGitPreparer implements PreparerBase {
     this.logger = logger;
   }
 
-  async prepare(entity: Entity): Promise<string> {
+  async prepare(entity: Entity, token?: string): Promise<string> {
     const { target } = parseReferenceAnnotation(
       'backstage.io/techdocs-ref',
       entity,
     );
 
+    const branch =
+      entity.metadata.annotations?.['github.com/project-slug-branch'] ||
+      'master';
+
     try {
-      const repoPath = await checkoutGitRepository(target, this.logger);
+      const repoPath = await checkoutGitRepository(
+        target,
+        this.logger,
+        branch,
+        token,
+      );
       const parsedGitLocation = parseGitUrl(target);
 
       return path.join(repoPath, parsedGitLocation.filepath);

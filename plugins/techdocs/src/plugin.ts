@@ -34,6 +34,7 @@ import {
   createRouteRef,
   createApiFactory,
   configApiRef,
+  githubAuthApiRef,
 } from '@backstage/core';
 import {
   techdocsStorageApiRef,
@@ -62,10 +63,11 @@ export const plugin = createPlugin({
   apis: [
     createApiFactory({
       api: techdocsStorageApiRef,
-      deps: { configApi: configApiRef },
-      factory: ({ configApi }) =>
+      deps: { configApi: configApiRef, githubAuthApi: githubAuthApiRef },
+      factory: ({ configApi, githubAuthApi }) =>
         new TechDocsStorageApi({
           apiOrigin: configApi.getString('techdocs.requestUrl'),
+          githubAuthApi,
         }),
     }),
     createApiFactory({

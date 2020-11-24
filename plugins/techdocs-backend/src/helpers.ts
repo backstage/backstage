@@ -17,7 +17,7 @@
 import os from 'os';
 import path from 'path';
 import parseGitUrl from 'git-url-parse';
-import NodeGit, { Clone, Repository } from 'nodegit';
+import NodeGit, { Clone, Repository, Cred } from 'nodegit';
 import fs from 'fs-extra';
 import { getDefaultBranch } from './default-branch';
 import { getGitRepoType, getTokenForGitRepo } from './git-auth';
@@ -94,8 +94,13 @@ export const getLocationForEntity = (
 
 export const getGitRepositoryTempFolder = async (
   repositoryUrl: string,
+  branch?: string,
+  privateToken?: string,
 ): Promise<string> => {
   const parsedGitLocation = parseGitUrl(repositoryUrl);
+  parsedGitLocation.token = privateToken || '';
+  parsedGitLocation.ref = branch || 'master';
+
   // removes .git from git location path
   parsedGitLocation.git_suffix = false;
 
@@ -119,10 +124,24 @@ export const getGitRepositoryTempFolder = async (
 export const checkoutGitRepository = async (
   repoUrl: string,
   logger: Logger,
+  branch?: string,
+  privateToken?: string,
 ): Promise<string> => {
   const parsedGitLocation = parseGitUrl(repoUrl);
-  const repositoryTmpPath = await getGitRepositoryTempFolder(repoUrl);
-  const token = await getTokenForGitRepo(repoUrl);
+
+  parsedGitLocation.token = privateToken || '';
+  const repositoryTmpPath = await getGitRepositoryTempFolder(
+    repoUrl,
+    branch,
+    privateToken,
+  );
+
+  let token: String | undefined;
+  if (privateToken === '') {
+    token = await getTokenForGitRepo(repoUrl);
+  } else {
+    token = privateToken;
+  }
 
   if (fs.existsSync(repositoryTmpPath)) {
     try {
@@ -130,7 +149,14 @@ export const checkoutGitRepository = async (
       const currentBranchName = (
         await repository.getCurrentBranch()
       ).shorthand();
-      await repository.fetch('origin');
+      await repository.fetch('origin', {
+        callbacks: {
+          credentials: () => {
+            return Cred.userpassPlaintextNew(token as string, 'x-oauth-basic');
+          },
+        },
+      });
+
       await repository.mergeBranches(
         currentBranchName,
         `origin/${currentBranchName}`,
@@ -153,7 +179,15 @@ export const checkoutGitRepository = async (
   const repositoryCheckoutUrl = parsedGitLocation.toString('https');
 
   fs.mkdirSync(repositoryTmpPath, { recursive: true });
-  await Clone.clone(repositoryCheckoutUrl, repositoryTmpPath);
+  await Clone.clone(repositoryCheckoutUrl, repositoryTmpPath, {
+    fetchOpts: {
+      callbacks: {
+        credentials: () => {
+          return Cred.userpassPlaintextNew(token as string, 'x-oauth-basic');
+        },
+      },
+    },
+  });
 
   return repositoryTmpPath;
 };
@@ -161,8 +195,15 @@ export const checkoutGitRepository = async (
 export const getLastCommitTimestamp = async (
   repositoryUrl: string,
   logger: Logger,
+  branch: string,
+  privateToken?: string,
 ): Promise<number> => {
-  const repositoryLocation = await checkoutGitRepository(repositoryUrl, logger);
+  const repositoryLocation = await checkoutGitRepository(
+    repositoryUrl,
+    logger,
+    branch,
+    privateToken,
+  );
 
   const repository = await Repository.open(repositoryLocation);
   const commit = await repository.getReferenceCommit('HEAD');
