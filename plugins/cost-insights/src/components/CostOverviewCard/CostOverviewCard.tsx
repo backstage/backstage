@@ -24,24 +24,15 @@ import {
   Tab,
   Tabs,
 } from '@material-ui/core';
-import { CostGrowth } from '../CostGrowth';
 import { CostOverviewChart } from './CostOverviewChart';
-import { CostOverviewByProduct } from './CostOverviewByProduct';
+import { CostOverviewByProductChart } from './CostOverviewByProductChart';
 import { CostOverviewHeader } from './CostOverviewHeader';
-import { LegendItem } from '../LegendItem';
 import { MetricSelect } from '../MetricSelect';
 import { PeriodSelect } from '../PeriodSelect';
-import {
-  useScroll,
-  useFilters,
-  useConfig,
-  useLastCompleteBillingDate,
-} from '../../hooks';
+import { useScroll, useFilters, useConfig } from '../../hooks';
 import { mapFiltersToProps } from './selector';
 import { DefaultNavigation } from '../../utils/navigation';
-import { formatPercent } from '../../utils/formatters';
 import { findAlways } from '../../utils/assert';
-import { getComparedChange } from '../../utils/change';
 import { Cost, CostInsightsTheme, MetricData } from '../../types';
 import { useOverviewTabsStyles } from '../../utils/styles';
 
@@ -56,7 +47,6 @@ export const CostOverviewCard = ({
 }: CostOverviewCardProps) => {
   const theme = useTheme<CostInsightsTheme>();
   const config = useConfig();
-  const lastCompleteBillingDate = useLastCompleteBillingDate();
   const [tabIndex, setTabIndex] = useState(0);
 
   const { ScrollAnchor } = useScroll(DefaultNavigation.CostOverviewCard);
@@ -67,19 +57,11 @@ export const CostOverviewCard = ({
   const metric = filters.metric
     ? findAlways(config.metrics, m => m.kind === filters.metric)
     : null;
-  const comparedChange = metricData
-    ? getComparedChange(
-        dailyCostData,
-        metricData,
-        filters.duration,
-        lastCompleteBillingDate,
-      )
-    : null;
   const styles = useOverviewTabsStyles(theme);
 
   const tabs = [
-    { id: 'overview', label: 'OVERVIEW' },
-    { id: 'breakdown', label: 'BREAKDOWN BY PRODUCT' },
+    { id: 'overview', label: 'Total cost' },
+    { id: 'breakdown', label: 'Breakdown by product' },
   ];
 
   const OverviewTabs = () => {
@@ -104,34 +86,8 @@ export const CostOverviewCard = ({
     );
   };
 
-  const OverviewLegend = () => {
-    return (
-      <Box display="flex" flexDirection="row">
-        <Box mr={2}>
-          <LegendItem title="Cost Trend" markerColor={theme.palette.blue}>
-            {formatPercent(dailyCostData.change!.ratio)}
-          </LegendItem>
-        </Box>
-        {metric && metricData && comparedChange && (
-          <>
-            <Box mr={2}>
-              <LegendItem
-                title={`${metric.name} Trend`}
-                markerColor={theme.palette.magenta}
-              >
-                {formatPercent(metricData.change.ratio)}
-              </LegendItem>
-            </Box>
-            <LegendItem
-              title={comparedChange.ratio <= 0 ? 'Your Savings' : 'Your Excess'}
-            >
-              <CostGrowth change={comparedChange} duration={filters.duration} />
-            </LegendItem>
-          </>
-        )}
-      </Box>
-    );
-  };
+  // Metrics can only be selected on the total cost graph
+  const showMetricSelect = config.metrics.length && tabIndex === 0;
 
   return (
     <Card style={{ position: 'relative' }}>
@@ -146,20 +102,19 @@ export const CostOverviewCard = ({
         <Divider />
         <Box ml={2} my={1} display="flex" flexDirection="column">
           {tabIndex === 0 ? (
-            <>
-              <OverviewLegend />
-              <CostOverviewChart
-                dailyCostData={dailyCostData}
-                metric={metric}
-                metricData={metricData}
-              />
-            </>
+            <CostOverviewChart
+              dailyCostData={dailyCostData}
+              metric={metric}
+              metricData={metricData}
+            />
           ) : (
-            <CostOverviewByProduct dailyCostData={dailyCostData} />
+            <CostOverviewByProductChart
+              costsByProduct={dailyCostData.groupedCosts!}
+            />
           )}
         </Box>
         <Box display="flex" justifyContent="flex-end" alignItems="center">
-          {config.metrics.length && tabIndex === 0 && (
+          {showMetricSelect && (
             <MetricSelect
               metric={filters.metric}
               metrics={config.metrics}
