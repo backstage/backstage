@@ -82,10 +82,10 @@ describe('oauth helpers', () => {
     });
 
     it('should call postMessage twice but only one of them with target *', () => {
-      let responseBody: String;
+      let responseBody = '';
 
       const mockResponse = ({
-        end: jest.fn(function (body) {
+        end: jest.fn(body => {
           responseBody = body;
           return this;
         }),
