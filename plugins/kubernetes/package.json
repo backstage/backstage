@@ -9,6 +9,7 @@
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
+  "configSchema": "schema.d.ts",
   "scripts": {
     "build": "backstage-cli plugin:build",
     "start": "backstage-cli plugin:serve",
@@ -47,6 +48,7 @@
     "msw": "^0.21.2"
   },
   "files": [
-    "dist"
+    "dist",
+    "schema.d.ts"
   ]
 }
