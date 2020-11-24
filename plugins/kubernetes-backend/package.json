@@ -10,6 +10,7 @@
     "main": "dist/index.cjs.js",
     "types": "dist/index.d.ts"
   },
+  "configSchema": "schema.d.ts",
   "scripts": {
     "start": "backstage-cli backend:dev",
     "build": "backstage-cli backend:build",
@@ -42,6 +43,7 @@
     "supertest": "^4.0.2"
   },
   "files": [
-    "dist"
+    "dist",
+    "schema.d.ts"
   ]
 }
