@@ -27,6 +27,7 @@ export { FileReaderProcessor } from './FileReaderProcessor';
 export { GithubOrgReaderProcessor } from './GithubOrgReaderProcessor';
 export { OwnerRelationProcessor } from './OwnerRelationProcessor';
 export { LocationRefProcessor } from './LocationEntityProcessor';
+export { MicrosoftGraphOrgReaderProcessor } from './MicrosoftGraphOrgReaderProcessor';
 export { PlaceholderProcessor } from './PlaceholderProcessor';
 export type { PlaceholderResolver } from './PlaceholderProcessor';
 export { StaticLocationProcessor } from './StaticLocationProcessor';

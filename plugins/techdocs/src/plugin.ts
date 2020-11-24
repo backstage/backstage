@@ -58,6 +58,7 @@ export const rootCatalogDocsRouteRef = createRouteRef({
   title: 'Docs',
 });
 
+// TODO: Use discovery API for frontend to get URL for techdocs-backend instead of requestUrl
 export const plugin = createPlugin({
   id: 'techdocs',
   apis: [

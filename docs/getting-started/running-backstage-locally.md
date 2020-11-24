@@ -8,19 +8,19 @@ description: Documentation on How to run Backstage Locally
 
 - Node.js
 
-First make sure you are using Node.js with an Active LTS Release, currently v12.
+First make sure you are using Node.js with an Active LTS Release, currently v14.
 This is made easy with a version manager such as
 [nvm](https://github.com/nvm-sh/nvm) which allows for version switching.
 
 ```bash
 # Installing a new version
-nvm install 12
-> Downloading and installing node v12.18.3...
-> Now using node v12.18.3 (npm v6.14.6)
+nvm install 14
+> Downloading and installing node v14.15.1...
+> Now using node v14.15.1 (npm v6.14.8)
 
 # Checking your version
 node --version
-> v12.18.3
+> v14.15.1
 ```
 
 - Yarn

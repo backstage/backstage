@@ -25,6 +25,8 @@ import {
   AddLocationRequest,
   AddLocationResponse,
   CatalogApi,
+  CatalogEntitiesRequest,
+  CatalogListResponse,
   DiscoveryApi,
 } from './types';
 
@@ -35,55 +37,33 @@ export class CatalogClient implements CatalogApi {
     this.discoveryApi = options.discoveryApi;
   }
 
-  private async getRequired(path: string): Promise<any> {
-    const url = `${await this.discoveryApi.getBaseUrl('catalog')}${path}`;
-    const response = await fetch(url);
-
-    if (!response.ok) {
-      const payload = await response.text();
-      const message = `Request failed with ${response.status} ${response.statusText}, ${payload}`;
-      throw new Error(message);
-    }
-
-    return await response.json();
-  }
-
-  private async getOptional(path: string): Promise<any | undefined> {
-    const url = `${await this.discoveryApi.getBaseUrl('catalog')}${path}`;
-    const response = await fetch(url);
-
-    if (!response.ok) {
-      if (response.status === 404) {
-        return undefined;
-      }
-
-      const payload = await response.text();
-      const message = `Request failed with ${response.status} ${response.statusText}, ${payload}`;
-      throw new Error(message);
-    }
-
-    return await response.json();
-  }
-
   async getLocationById(id: String): Promise<Location | undefined> {
     return await this.getOptional(`/locations/${id}`);
   }
 
   async getEntities(
-    filter?: Record<string, string | string[]>,
-  ): Promise<Entity[]> {
-    let path = `/entities`;
-    if (filter) {
-      const parts: string[] = [];
-      for (const [key, value] of Object.entries(filter)) {
-        for (const v of [value].flat()) {
-          parts.push(`${encodeURIComponent(key)}=${encodeURIComponent(v)}`);
-        }
+    request?: CatalogEntitiesRequest,
+  ): Promise<CatalogListResponse<Entity>> {
+    const { filter = {}, fields = [] } = request ?? {};
+    const params: string[] = [];
+
+    const filterParts: string[] = [];
+    for (const [key, value] of Object.entries(filter)) {
+      for (const v of [value].flat()) {
+        filterParts.push(`${encodeURIComponent(key)}=${encodeURIComponent(v)}`);
       }
-      path += `?filter=${parts.join(',')}`;
+    }
+    if (filterParts.length) {
+      params.push(`filter=${filterParts.join(',')}`);
     }
 
-    return await this.getRequired(path);
+    if (fields.length) {
+      params.push(`fields=${fields.map(encodeURIComponent).join(',')}`);
+    }
+
+    const query = params.length ? `?${params.join('&')}` : '';
+    const entities: Entity[] = await this.getRequired(`/entities${query}`);
+    return { items: entities };
   }
 
   async getEntityByName(compoundName: EntityName): Promise<Entity | undefined> {
@@ -153,5 +133,39 @@ export class CatalogClient implements CatalogApi {
       );
     }
     return undefined;
+  }
+
+  //
+  // Private methods
+  //
+
+  private async getRequired(path: string): Promise<any> {
+    const url = `${await this.discoveryApi.getBaseUrl('catalog')}${path}`;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      const payload = await response.text();
+      const message = `Request failed with ${response.status} ${response.statusText}, ${payload}`;
+      throw new Error(message);
+    }
+
+    return await response.json();
+  }
+
+  private async getOptional(path: string): Promise<any | undefined> {
+    const url = `${await this.discoveryApi.getBaseUrl('catalog')}${path}`;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        return undefined;
+      }
+
+      const payload = await response.text();
+      const message = `Request failed with ${response.status} ${response.statusText}, ${payload}`;
+      throw new Error(message);
+    }
+
+    return await response.json();
   }
 }

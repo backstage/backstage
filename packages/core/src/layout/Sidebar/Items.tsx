@@ -14,24 +14,23 @@
  * limitations under the License.
  */
 
+import { IconComponent } from '@backstage/core-api';
+import { BackstageTheme } from '@backstage/theme';
 import {
+  Badge,
   makeStyles,
   styled,
   TextField,
   Typography,
-  Badge,
 } from '@material-ui/core';
-import { BackstageTheme } from '@backstage/theme';
-import { IconComponent } from '@backstage/core-api';
 import SearchIcon from '@material-ui/icons/Search';
 import clsx from 'clsx';
 import React, {
-  FC,
+  forwardRef,
+  KeyboardEventHandler,
+  ReactNode,
   useContext,
   useState,
-  KeyboardEventHandler,
-  forwardRef,
-  ReactNode,
 } from 'react';
 import { NavLink } from 'react-router-dom';
 import { sidebarConfig, SidebarContext } from './config';
@@ -121,7 +120,7 @@ type SidebarItemProps = {
   // If 'to' is set the item will act as a nav link with highlight, otherwise it's just a button
   to?: string;
   hasNotifications?: boolean;
-  onClick?: () => void;
+  onClick?: (ev: React.MouseEvent) => void;
   children?: ReactNode;
 };
 
@@ -212,15 +211,21 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>(
 
 type SidebarSearchFieldProps = {
   onSearch: (input: string) => void;
+  to?: string;
 };
 
-export const SidebarSearchField: FC<SidebarSearchFieldProps> = props => {
+export const SidebarSearchField = (props: SidebarSearchFieldProps) => {
   const [input, setInput] = useState('');
   const classes = useStyles();
 
+  const search = () => {
+    props.onSearch(input);
+    setInput('');
+  };
+
   const handleEnter: KeyboardEventHandler = ev => {
     if (ev.key === 'Enter') {
-      props.onSearch(input);
+      search();
     }
   };
 
@@ -228,11 +233,25 @@ export const SidebarSearchField: FC<SidebarSearchFieldProps> = props => {
     setInput(ev.target.value);
   };
 
+  const handleInputClick = (ev: React.MouseEvent<HTMLInputElement>) => {
+    // Clicking into the search fields shouldn't navigate to the search page
+    ev.preventDefault();
+    ev.stopPropagation();
+  };
+
+  const handleItemClick = (ev: React.MouseEvent) => {
+    // Clicking on the search icon while should execute a query with the current field content
+    search();
+    ev.preventDefault();
+  };
+
   return (
     <div className={classes.searchRoot}>
-      <SidebarItem icon={SearchIcon}>
+      <SidebarItem icon={SearchIcon} to={props.to} onClick={handleItemClick}>
         <TextField
           placeholder="Search"
+          value={input}
+          onClick={handleInputClick}
           onChange={handleInput}
           onKeyDown={handleEnter}
           className={classes.searchContainer}

@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "backstage-cli backend:build",
-    "build-image": "backstage-cli backend:build-image --build --tag example-backend",
+    "build-image": "backstage-cli backend:build-image --build --tag backstage",
     "start": "backstage-cli backend:dev",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
@@ -17,9 +17,11 @@
     "migrate:create": "knex migrate:make -x ts"
   },
   "dependencies": {
+    "app": "0.0.0",
     "@backstage/backend-common": "^{{version '@backstage/backend-common'}}",
     "@backstage/catalog-model": "^{{version '@backstage/catalog-model'}}",
     "@backstage/config": "^{{version '@backstage/config'}}",
+    "@backstage/plugin-app-backend": "^{{version '@backstage/plugin-app-backend'}}",
     "@backstage/plugin-auth-backend": "^{{version '@backstage/plugin-auth-backend'}}",
     "@backstage/plugin-catalog-backend": "^{{version '@backstage/plugin-catalog-backend'}}",
     "@backstage/plugin-proxy-backend": "^{{version '@backstage/plugin-proxy-backend'}}",

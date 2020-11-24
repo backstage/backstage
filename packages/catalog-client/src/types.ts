@@ -16,10 +16,21 @@
 
 import { Entity, EntityName, Location } from '@backstage/catalog-model';
 
+export type CatalogEntitiesRequest = {
+  filter?: Record<string, string | string[]> | undefined;
+  fields?: string[] | undefined;
+};
+
+export type CatalogListResponse<T> = {
+  items: T[];
+};
+
 export interface CatalogApi {
   getLocationById(id: String): Promise<Location | undefined>;
   getEntityByName(name: EntityName): Promise<Entity | undefined>;
-  getEntities(filter?: Record<string, string | string[]>): Promise<Entity[]>;
+  getEntities(
+    request?: CatalogEntitiesRequest,
+  ): Promise<CatalogListResponse<Entity>>;
   addLocation(location: AddLocationRequest): Promise<AddLocationResponse>;
   getLocationByEntity(entity: Entity): Promise<Location | undefined>;
   removeEntityByUid(uid: string): Promise<void>;

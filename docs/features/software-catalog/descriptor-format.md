@@ -43,7 +43,7 @@ software catalog API.
   "kind": "Component",
   "metadata": {
     "annotations": {
-      "backstage.io/managed-by-location": "file:/tmp/component-info.yaml",
+      "backstage.io/managed-by-location": "file:/tmp/catalog-info.yaml",
       "example.com/service-discovery": "artistweb",
       "circleci.com/project-slug": "github/example-org/artist-website"
     },
@@ -592,6 +592,9 @@ The current set of well-known and common values for this field is:
   [OpenAPI](https://swagger.io/specification/) version 2 or version 3 spec.
 - `asyncapi` - An API definition based on the
   [AsyncAPI](https://www.asyncapi.com/docs/specifications/latest/) spec.
+- `graphql` - An API definition based on
+  [GraphQL schemas](https://spec.graphql.org/) for consuming
+  [GraphQL](https://graphql.org/) based APIs.
 - `grpc` - An API definition based on
   [Protocol Buffers](https://developers.google.com/protocol-buffers) to use with
   [gRPC](https://grpc.io/).
@@ -700,6 +703,11 @@ sufficient to enter only the `metadata.name` field of that group.
 
 ### `spec.ancestors` [required]
 
+**NOTE**: This field was marked for deprecation on Nov 22nd, 2020. It will be
+removed entirely from the model on Dec 6th, 2020 in the repository and will not
+be present in released packages following the next release after that. Please
+update your code to not consume this field before the removal date.
+
 The recursive list of parents up the hierarchy, by stepping through parents one
 by one. The list must be present, but may be empty if `parent` is not present.
 The first entry in the list is equal to `parent`, and then the following ones
@@ -727,6 +735,11 @@ these entries point to groups in the same namespace, so in those cases it is
 sufficient to enter only the `metadata.name` field of those groups.
 
 ### `spec.descendants` [required]
+
+**NOTE**: This field was marked for deprecation on Nov 22nd, 2020. It will be
+removed entirely from the model on Dec 6th, 2020 in the repository and will not
+be present in released packages following the next release after that. Please
+update your code to not consume this field before the removal date.
 
 The immediate and recursive child groups of this group in the hierarchy
 (children, and children's children, etc.). The list must be present, but may be
