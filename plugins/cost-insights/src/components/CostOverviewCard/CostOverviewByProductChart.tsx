@@ -132,8 +132,8 @@ export const CostOverviewByProductChart = ({
         dataKey={product}
         stackId="1"
         fillOpacity="1"
-        stroke={theme.palette.dataViz[i]}
-        fill={theme.palette.dataViz[i]}
+        stroke={theme.palette.dataViz[sortedProducts.length - i]}
+        fill={theme.palette.dataViz[sortedProducts.length - i]}
       />
     ));
   };
