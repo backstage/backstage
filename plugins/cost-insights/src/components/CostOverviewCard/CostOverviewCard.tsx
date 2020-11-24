@@ -60,8 +60,12 @@ export const CostOverviewCard = ({
   const styles = useOverviewTabsStyles(theme);
 
   const tabs = [
-    { id: 'overview', label: 'Total cost' },
-    { id: 'breakdown', label: 'Breakdown by product' },
+    { id: 'overview', label: 'Total cost', title: 'Cloud Cost' },
+    {
+      id: 'breakdown',
+      label: 'Breakdown by product',
+      title: 'Cloud Cost By Product',
+    },
   ];
 
   const OverviewTabs = () => {
@@ -94,9 +98,7 @@ export const CostOverviewCard = ({
       <ScrollAnchor behavior="smooth" top={-20} />
       <CardContent>
         {dailyCostData.groupedCosts && <OverviewTabs />}
-        <CostOverviewHeader
-          title={tabIndex === 0 ? 'Cloud Cost' : 'Cloud Cost By Product'}
-        >
+        <CostOverviewHeader title={tabs[tabIndex].title}>
           <PeriodSelect duration={filters.duration} onSelect={setDuration} />
         </CostOverviewHeader>
         <Divider />
