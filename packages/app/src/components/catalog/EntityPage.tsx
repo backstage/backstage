@@ -47,7 +47,7 @@ import {
   EmbeddedRouter as LighthouseRouter,
   isPluginApplicableToEntity as isLighthouseAvailable,
   LastLighthouseAuditCard,
-} from '@backstage/plugin-lighthouse/';
+} from '@backstage/plugin-lighthouse';
 import { Router as SentryRouter } from '@backstage/plugin-sentry';
 import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
 import { Button, Grid } from '@material-ui/core';
