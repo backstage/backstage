@@ -4,7 +4,7 @@
 
 Marked the field `spec.implementsApis` on `Component` entities for deprecation on Dec 14th, 2020.
 
-Code that consumes these fields should remove those usages as soon as possible as migrate to using
+Code that consumes these fields should remove those usages as soon as possible and migrate to using
 relations instead. Producers should fill the field `spec.providesApis` instead, which has the same
 semantic.
 

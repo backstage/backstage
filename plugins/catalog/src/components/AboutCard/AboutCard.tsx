@@ -18,6 +18,7 @@ import {
   Entity,
   ENTITY_DEFAULT_NAMESPACE,
   RELATION_OWNED_BY,
+  RELATION_PROVIDES_API,
   serializeEntityRef,
 } from '@backstage/catalog-model';
 import {
@@ -111,6 +112,8 @@ type AboutCardProps = {
 export function AboutCard({ entity, variant }: AboutCardProps) {
   const classes = useStyles();
   const codeLink = getCodeLinkInfo(entity);
+  // TODO: Also support RELATION_CONSUMES_API here
+  const hasApis = entity.relations?.some(r => r.type === RELATION_PROVIDES_API);
 
   return (
     <Card className={variant === 'gridItem' ? classes.gridItemCard : ''}>
@@ -146,9 +149,9 @@ export function AboutCard({ entity, variant }: AboutCardProps) {
               }/${entity.kind}/${entity.metadata.name}`}
             />
             <IconLinkVertical
-              disabled={!entity.spec?.implementsApis}
+              disabled={!hasApis}
               label="View API"
-              title={!entity.spec?.implementsApis ? 'No APIs available' : ''}
+              title={hasApis ? '' : 'No APIs available'}
               icon={<ExtensionIcon />}
               href="api"
             />
