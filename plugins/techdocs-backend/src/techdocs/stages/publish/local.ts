@@ -16,13 +16,38 @@
 import fs from 'fs-extra';
 import { Logger } from 'winston';
 import { Entity } from '@backstage/catalog-model';
-import { PublisherBase } from './types';
 import {
   resolvePackagePath,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
 
-export class LocalPublish implements PublisherBase {
+export type LocalPublishParams = {
+  entity: Entity;
+  directory: string;
+};
+
+export type LocalPublishReturn =
+  | Promise<{ remoteUrl: string }>
+  | { remoteUrl: string };
+
+/**
+ * Type for the local publisher which uses local filesystem to store the generated static files.
+ *
+ * It uses a directory called "static" at the root of techdocs-backend plugin.
+ */
+export interface LocalPublisher {
+  /**
+   * Store the generated files inside a static folder in local filesystem.
+   *
+   * @param {LocalPublishParams} opts Object containing the entity from the service
+   * catalog, and the directory that contains the generated static files from TechDocs.
+   * @returns {LocalPublishReturn} Either a promise or an object with `remoteUrl` which is the URL
+   * which serves files from the local publisher's static directory.
+   */
+  publish(opts: LocalPublishParams): LocalPublishReturn;
+}
+
+export class LocalPublish {
   private readonly logger: Logger;
   private readonly discovery: PluginEndpointDiscovery;
 
@@ -31,17 +56,7 @@ export class LocalPublish implements PublisherBase {
     this.discovery = discovery;
   }
 
-  publish({
-    entity,
-    directory,
-  }: {
-    entity: Entity;
-    directory: string;
-  }):
-    | Promise<{
-        remoteUrl: string;
-      }>
-    | { remoteUrl: string } {
+  publish({ entity, directory }: LocalPublishParams): LocalPublishReturn {
     const entityNamespace = entity.metadata.namespace ?? 'default';
 
     const publishDir = resolvePackagePath(

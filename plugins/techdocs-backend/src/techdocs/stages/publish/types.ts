@@ -13,20 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity } from '@backstage/catalog-model';
 
 /**
- * Publisher is in charge of taking a folder created by
- * the builder, and pushing it to storage
+ * Key for all the different types of TechDocs publishers available.
  */
-export type PublisherBase = {
-  /**
-   *
-   * @param opts object containing the entity from the service
-   *             catalog, and the directory that has been generated
-   */
-  publish(opts: {
-    entity: Entity;
-    directory: string;
-  }): Promise<{ remoteUrl: string }> | { remoteUrl: string };
-};
+export type PublisherType = 'local' | 'google_gcs';
+
+export interface ExternalPublisher {}

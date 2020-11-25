@@ -27,7 +27,7 @@ import {
   DirectoryPreparer,
   Generators,
   TechdocsGenerator,
-  LocalPublish,
+  Publisher,
 } from '../techdocs';
 import { ConfigReader } from '@backstage/config';
 
@@ -41,7 +41,18 @@ export async function startStandaloneServer(
   options: ServerOptions,
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'techdocs-backend' });
-  const config = ConfigReader.fromConfigs([]);
+  const config = ConfigReader.fromConfigs([
+    {
+      context: '',
+      data: {
+        techdocs: {
+          publisher: {
+            type: 'local',
+          },
+        },
+      },
+    },
+  ]);
   const discovery = SingleHostDiscovery.fromConfig(config);
 
   logger.debug('Creating application...');
@@ -53,7 +64,7 @@ export async function startStandaloneServer(
   const techdocsGenerator = new TechdocsGenerator(logger, config);
   generators.register('techdocs', techdocsGenerator);
 
-  const publisher = new LocalPublish(logger, discovery);
+  const publisher = new Publisher(logger, config, discovery);
 
   const dockerClient = new Docker();
 

@@ -60,6 +60,11 @@ techdocs:
   requestUrl: http://localhost:7000/api/techdocs
   generators:
     techdocs: 'docker'
+  publisher:
+    # Ref: <Link to TechDocs publisher reference page>
+    type: 'local' # other options - google_gcs, aws_s3, azure_storage, etc.
+    # if type set to google_gcs
+    # google_token: 'abc'  # with write access
 
 sentry:
   organization: my-company

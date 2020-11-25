@@ -20,12 +20,7 @@ import Knex from 'knex';
 import fetch from 'cross-fetch';
 import { Config } from '@backstage/config';
 import Docker from 'dockerode';
-import {
-  GeneratorBuilder,
-  PreparerBuilder,
-  PublisherBase,
-  LocalPublish,
-} from '../techdocs';
+import { GeneratorBuilder, PreparerBuilder, PublisherBase } from '../techdocs';
 import {
   PluginEndpointDiscovery,
   resolvePackagePath,
@@ -63,7 +58,7 @@ export async function createRouter({
 
   router.get('/metadata/techdocs/*', async (req, res) => {
     let storageUrl = config.getString('techdocs.storageUrl');
-    if (publisher instanceof LocalPublish) {
+    if (publisher.isLocalPublisher()) {
       storageUrl = new URL(
         new URL(storageUrl).pathname,
         await discovery.getBaseUrl('techdocs'),
@@ -140,7 +135,7 @@ export async function createRouter({
     res.redirect(`${storageUrl}${req.path.replace('/docs', '')}`);
   });
 
-  if (publisher instanceof LocalPublish) {
+  if (publisher.isLocalPublisher()) {
     router.use('/static/docs', express.static(staticDocsDir));
   }
 

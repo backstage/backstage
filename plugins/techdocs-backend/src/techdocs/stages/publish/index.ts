@@ -13,5 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { LocalPublish } from './local';
-export type { PublisherBase } from './types';
+export { Publisher } from './publish';
+export type { PublisherBase } from './publish';
+export type { PublisherType } from './types';
