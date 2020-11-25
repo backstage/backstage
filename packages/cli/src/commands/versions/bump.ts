@@ -24,6 +24,7 @@ import {
   fetchPackageInfo,
   Lockfile,
 } from '../../lib/versioning';
+import { includedFilter, forbiddenDuplicatesFilter } from './lint';
 
 const DEP_TYPES = [
   'dependencies',
@@ -39,12 +40,16 @@ type PkgVersionInfo = {
 };
 
 export default async () => {
+  const lockfilePath = paths.resolveTargetRoot('yarn.lock');
+
   // First we discover all Backstage dependencies within our own repo
   const dependencyMap = await mapDependencies(paths.targetDir);
 
-  // Next check with the package registry what the latest version of all of those dependencies are
-  const targetVersions = new Map<string, string>();
-  await workerThreads(16, dependencyMap.keys(), async name => {
+  // Next check with the package registry to see which dependency ranges we need to bump
+  const versionBumps = new Map<string, PkgVersionInfo[]>();
+  // Track package versions that we want to remove from yarn.lock in order to trigger a bump
+  const unlocked = Array<{ name: string; range: string; latest: string }>();
+  await workerThreads(16, dependencyMap.entries(), async ([name, pkgs]) => {
     console.log(`Checking for updates of ${name}`);
     const info = await fetchPackageInfo(name);
     const latest = info['dist-tags'].latest;
@@ -52,37 +57,48 @@ export default async () => {
       throw new Error(`No latest version found for ${name}`);
     }
 
-    targetVersions.set(name, latest);
-  });
-
-  // Then figure out which local packages need to have their dependencies bumped
-  const versionBumps = new Map<string, PkgVersionInfo[]>();
-  for (const [name, pkgs] of dependencyMap) {
-    const targetVersion = targetVersions.get(name)!;
     for (const pkg of pkgs) {
-      if (semver.satisfies(targetVersion, pkg.range)) {
+      if (semver.satisfies(latest, pkg.range)) {
+        if (semver.minVersion(pkg.range)?.version !== latest) {
+          unlocked.push({ name, range: pkg.range, latest });
+        }
         continue;
       }
-
       versionBumps.set(
         pkg.name,
         (versionBumps.get(pkg.name) ?? []).concat({
           name,
           location: pkg.location,
-          range: `^${targetVersion}`, // TODO(Rugvip): Option to use something else than ^?
+          range: `^${latest}`, // TODO(Rugvip): Option to use something else than ^?
         }),
       );
     }
-  }
+  });
 
   console.log();
 
   // Write all discovered version bumps to package.json in this repo
-  if (versionBumps.size === 0) {
+  if (versionBumps.size === 0 && unlocked.length === 0) {
     console.log('All Backstage packages are up to date!');
   } else {
     console.log('Some packages are outdated, updating');
     console.log();
+
+    if (unlocked.length > 0) {
+      const lockfile = await Lockfile.load(lockfilePath);
+      for (const { name, range, latest } of unlocked) {
+        // Don't bother removing lockfile entries if they're already on the correct version
+        const existingEntry = lockfile.get(name)?.find(e => e.range === range);
+        if (existingEntry?.version === latest) {
+          continue;
+        }
+        console.log(
+          `Removing lockfile entry for ${name}@${range} to bump to ${latest}`,
+        );
+        lockfile.remove(name, range);
+      }
+      await lockfile.save();
+    }
 
     await workerThreads(16, versionBumps.entries(), async ([name, deps]) => {
       const pkgPath = resolvePath(deps[0].location, 'package.json');
@@ -110,9 +126,9 @@ export default async () => {
   console.log();
 
   // Finally we make sure the new lockfile doesn't have any duplicates
-  const lockfile = await Lockfile.load(paths.resolveTargetRoot('yarn.lock'));
+  const lockfile = await Lockfile.load(lockfilePath);
   const result = lockfile.analyze({
-    filter: name => dependencyMap.has(name),
+    filter: includedFilter,
   });
 
   if (result.newVersions.length > 0) {
@@ -130,9 +146,14 @@ export default async () => {
     console.log();
   }
 
-  if (result.newRanges.length > 0) {
+  const forbiddenNewRanges = result.newRanges.filter(({ name }) =>
+    forbiddenDuplicatesFilter(name),
+  );
+  if (forbiddenNewRanges.length > 0) {
     throw new Error(
-      `Version bump failed for ${result.newRanges.map(i => i.name).join(', ')}`,
+      `Version bump failed for ${forbiddenNewRanges
+        .map(i => i.name)
+        .join(', ')}`,
     );
   }
 };
