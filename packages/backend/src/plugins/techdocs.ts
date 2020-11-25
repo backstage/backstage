@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { createRouter } from '@backstage/plugin-techdocs-backend';
 import {
-  createRouter,
   DirectoryPreparer,
   Preparers,
   Generators,
@@ -23,7 +23,7 @@ import {
   CommonGitPreparer,
   UrlPreparer,
   Publisher,
-} from '@backstage/plugin-techdocs-backend';
+} from '@backstage/techdocs-common';
 import { PluginEnvironment } from '../types';
 import Docker from 'dockerode';
 

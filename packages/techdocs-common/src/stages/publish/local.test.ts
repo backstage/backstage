@@ -58,12 +58,12 @@ describe('local publisher', () => {
     await publisher.publish({ entity: mockEntity, directory: tempDir });
     const publishDir = path.resolve(
       __dirname,
-      `../../../../static/docs/${mockEntity.metadata.name}`,
+      `../../../../../plugins/techdocs-backend/static/docs/${mockEntity.metadata.name}`,
     );
 
     const resultDir = path.resolve(
       __dirname,
-      `../../../../static/docs/default/${mockEntity.kind}/${mockEntity.metadata.name}`,
+      `../../../../../plugins/techdocs-backend/static/docs/default/${mockEntity.kind}/${mockEntity.metadata.name}`,
     );
 
     expect(fs.existsSync(resultDir)).toBeTruthy();

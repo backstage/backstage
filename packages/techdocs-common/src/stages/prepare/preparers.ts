@@ -16,7 +16,7 @@
 
 import { PreparerBase, RemoteProtocol, PreparerBuilder } from './types';
 import { Entity } from '@backstage/catalog-model';
-import { parseReferenceAnnotation } from '../../../helpers';
+import { parseReferenceAnnotation } from '../../helpers';
 
 export class Preparers implements PreparerBuilder {
   private preparerMap = new Map<RemoteProtocol, PreparerBase>();

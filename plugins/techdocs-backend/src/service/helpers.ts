@@ -22,9 +22,10 @@ import {
   GeneratorBuilder,
   PreparerBase,
   GeneratorBase,
-} from '../techdocs';
+  getLocationForEntity,
+  getLastCommitTimestamp,
+} from '@backstage/techdocs-common';
 import { BuildMetadataStorage } from '../storage';
-import { getLocationForEntity, getLastCommitTimestamp } from '../helpers';
 
 const getEntityId = (entity: Entity) => {
   return `${entity.kind}:${entity.metadata.namespace ?? ''}:${

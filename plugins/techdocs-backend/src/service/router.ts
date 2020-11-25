@@ -20,14 +20,18 @@ import Knex from 'knex';
 import fetch from 'cross-fetch';
 import { Config } from '@backstage/config';
 import Docker from 'dockerode';
-import { GeneratorBuilder, PreparerBuilder, PublisherBase } from '../techdocs';
+import {
+  GeneratorBuilder,
+  PreparerBuilder,
+  PublisherBase,
+  getLocationForEntity,
+} from '@backstage/techdocs-common';
 import {
   PluginEndpointDiscovery,
   resolvePackagePath,
 } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { DocsBuilder } from './helpers';
-import { getLocationForEntity } from '../helpers';
 
 type RouterOptions = {
   preparers: PreparerBuilder;

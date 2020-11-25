@@ -16,7 +16,7 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { CommonGitPreparer } from './commonGit';
-import { checkoutGitRepository } from '../../../helpers';
+import { checkoutGitRepository } from '../../helpers';
 
 function normalizePath(path: string) {
   return path
@@ -25,8 +25,8 @@ function normalizePath(path: string) {
     .join('/');
 }
 
-jest.mock('../../../helpers', () => ({
-  ...jest.requireActual<{}>('../../../helpers'),
+jest.mock('../../helpers', () => ({
+  ...jest.requireActual<{}>('../../helpers'),
   checkoutGitRepository: jest.fn(() => '/tmp/backstage-repo/org/name/branch'),
 }));
 

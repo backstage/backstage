@@ -23,7 +23,7 @@ import { getDefaultBranch } from './default-branch';
 import { getGitRepoType, getTokenForGitRepo } from './git-auth';
 import { Entity } from '@backstage/catalog-model';
 import { InputError, UrlReader } from '@backstage/backend-common';
-import { RemoteProtocol } from './techdocs/stages/prepare/types';
+import { RemoteProtocol } from './stages/prepare/types';
 import { Logger } from 'winston';
 
 // Enables core.longpaths on windows to prevent crashing when checking out repos with long foldernames and/or deep nesting

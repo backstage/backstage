@@ -16,7 +16,7 @@
 import { Writable } from 'stream';
 import Docker from 'dockerode';
 import { Entity } from '@backstage/catalog-model';
-import { ParsedLocationAnnotation } from '../../../helpers';
+import { ParsedLocationAnnotation } from '../../helpers';
 
 /**
  * The returned directory from the generator which is ready

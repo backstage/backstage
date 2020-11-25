@@ -22,7 +22,7 @@ import yaml from 'js-yaml';
 import { Logger } from 'winston';
 import { Entity } from '@backstage/catalog-model';
 import { SupportedGeneratorKey } from './types';
-import { ParsedLocationAnnotation } from '../../../helpers';
+import { ParsedLocationAnnotation } from '../../helpers';
 import { RemoteProtocol } from '../prepare/types';
 
 // TODO: Implement proper support for more generators.

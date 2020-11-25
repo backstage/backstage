@@ -15,8 +15,7 @@
  */
 import { Entity } from '@backstage/catalog-model';
 import { PreparerBase } from './types';
-import { getDocFilesFromRepository } from '../../../helpers';
-
+import { getDocFilesFromRepository } from '../../helpers';
 import { Logger } from 'winston';
 import { UrlReader } from '@backstage/backend-common';
 

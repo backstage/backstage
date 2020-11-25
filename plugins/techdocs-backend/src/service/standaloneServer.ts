@@ -28,7 +28,7 @@ import {
   Generators,
   TechdocsGenerator,
   Publisher,
-} from '../techdocs';
+} from '@backstage/techdocs-common';
 import { ConfigReader } from '@backstage/config';
 
 export interface ServerOptions {

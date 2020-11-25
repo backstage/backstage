@@ -16,10 +16,7 @@
 import { PreparerBase } from './types';
 import { Entity } from '@backstage/catalog-model';
 import path from 'path';
-import {
-  parseReferenceAnnotation,
-  checkoutGitRepository,
-} from '../../../helpers';
+import { parseReferenceAnnotation, checkoutGitRepository } from '../../helpers';
 import { InputError } from '@backstage/backend-common';
 import parseGitUrl from 'git-url-parse';
 import { Logger } from 'winston';

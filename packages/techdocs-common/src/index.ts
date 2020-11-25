@@ -14,3 +14,6 @@
  * limitations under the License.
  */
 export * from './stages';
+export * from './helpers';
+export * from './default-branch';
+export * from './git-auth';

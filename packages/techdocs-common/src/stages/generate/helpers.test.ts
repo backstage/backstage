@@ -28,7 +28,7 @@ import {
   patchMkdocsYmlPreBuild,
 } from './helpers';
 import { RemoteProtocol } from '../prepare/types';
-import { ParsedLocationAnnotation } from '../../../helpers';
+import { ParsedLocationAnnotation } from '../../helpers';
 
 const mockEntity = {
   apiVersion: 'version',
