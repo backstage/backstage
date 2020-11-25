@@ -121,7 +121,7 @@ export function showLoginPopup(options: LoginPopupOptions): Promise<any> {
       if (popup.closed) {
         const errMessage = `Login failed, ${
           targetOrigin !== window.location.origin
-            ? 'incorrect app origin'
+            ? `Incorrect app origin, expected ${targetOrigin}`
             : 'popup was closed'
         }`;
         const error = new Error(errMessage);

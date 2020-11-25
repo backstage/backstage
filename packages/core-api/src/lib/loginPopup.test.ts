@@ -208,7 +208,7 @@ describe('showLoginPopup', () => {
       popupMock.closed = true;
     }, 150);
     await expect(payloadPromise).rejects.toThrow(
-      'Login failed, incorrect app origin',
+      'Login failed, Incorrect app origin, expected http://differenthost',
     );
 
     expect(openSpy).toBeCalledTimes(1);
