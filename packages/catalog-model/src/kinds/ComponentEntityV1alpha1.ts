@@ -52,6 +52,11 @@ export interface ComponentEntityV1alpha1 extends Entity {
     type: string;
     lifecycle: string;
     owner: string;
+    /**
+     * @deprecated This field will disappear on Dec 14th, 2020. Please remove
+     *             any consuming code. The new field providesApis provides the
+     *             same functionality like before.
+     */
     implementsApis?: string[];
     providesApis?: string[];
     consumesApis?: string[];

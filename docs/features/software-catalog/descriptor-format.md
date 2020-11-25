@@ -445,14 +445,18 @@ group of people in an organizational structure.
 
 ### `spec.implementsApis` [optional]
 
+**NOTE**: This field was marked for deprecation on Nov 25nd, 2020. It will be
+removed entirely from the model on Dec 14th, 2020 in the repository and will not
+be present in released packages following the next release after that. Please
+update your code to not consume this field before the removal date.
+
 Links APIs that are implemented by the component, e.g. `artist-api`. This field
 is optional.
 
 The software catalog expects a list of one or more strings that references the
 names of other entities of the `kind` `API`.
 
-This field has the same behavior as `spec.providesApis` and will be deprecated
-in the future.
+This field has the same behavior as `spec.providesApis`.
 
 ### `spec.providesApis` [optional]
 
