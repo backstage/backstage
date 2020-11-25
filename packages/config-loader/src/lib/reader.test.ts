@@ -28,7 +28,6 @@ function memoryFiles(files: { [path: string]: string }) {
 
 const mockContext: ReaderContext = {
   env: {},
-  skip: () => false,
   readFile: jest.fn(),
   readSecret: jest.fn(),
 };
@@ -178,23 +177,5 @@ describe('readConfigFile', () => {
     });
 
     await expect(config).rejects.toThrow('Invalid secret at .app: NOPE');
-  });
-
-  it('should omit skipped values', async () => {
-    const readFile = memoryFiles({
-      './app-config.yaml': 'app: { title: skip, name: include }',
-    });
-
-    const config = readConfigFile('./app-config.yaml', {
-      ...mockContext,
-      readFile,
-      skip: (path: string) => path === '.app.title',
-      readSecret: jest.fn() as ReadSecretFunc,
-    });
-
-    await expect(config).resolves.toEqual({
-      context: 'app-config.yaml',
-      data: { app: { name: 'include' } },
-    });
   });
 });

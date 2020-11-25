@@ -18,6 +18,7 @@ import { createGithubProvider } from './github';
 import { createGitlabProvider } from './gitlab';
 import { createGoogleProvider } from './google';
 import { createOAuth2Provider } from './oauth2';
+import { createOidcProvider } from './oidc';
 import { createOktaProvider } from './okta';
 import { createSamlProvider } from './saml';
 import { createAuth0Provider } from './auth0';
@@ -34,6 +35,7 @@ const factories: { [providerId: string]: AuthProviderFactory } = {
   auth0: createAuth0Provider,
   microsoft: createMicrosoftProvider,
   oauth2: createOAuth2Provider,
+  oidc: createOidcProvider,
   onelogin: createOneLoginProvider,
 };
 

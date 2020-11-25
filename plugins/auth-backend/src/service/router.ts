@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-import express from 'express';
-import Router from 'express-promise-router';
-import cookieParser from 'cookie-parser';
-import { Logger } from 'winston';
-import { createAuthProvider } from '../providers';
-import { Config } from '@backstage/config';
-import { DatabaseKeyStore, TokenFactory, createOidcRouter } from '../identity';
 import {
   NotFoundError,
-  PluginEndpointDiscovery,
   PluginDatabaseManager,
+  PluginEndpointDiscovery,
 } from '@backstage/backend-common';
+import { CatalogClient } from '@backstage/catalog-client';
+import { Config } from '@backstage/config';
+import cookieParser from 'cookie-parser';
+import express from 'express';
+import Router from 'express-promise-router';
+import { Logger } from 'winston';
+import { createOidcRouter, DatabaseKeyStore, TokenFactory } from '../identity';
+import { createAuthProvider } from '../providers';
+import session from 'express-session';
+import passport from 'passport';
 
 export interface RouterOptions {
   logger: Logger;
@@ -56,8 +59,18 @@ export async function createRouter({
     keyDurationSeconds,
     logger: logger.child({ component: 'token-factory' }),
   });
+  const catalogApi = new CatalogClient({ discoveryApi: discovery });
 
-  router.use(cookieParser());
+  const secret = config.getOptionalString('auth.session.secret');
+  if (secret) {
+    router.use(cookieParser(secret));
+    // TODO: Configure the server-side session storage.  The default MemoryStore is not designed for production
+    router.use(session({ secret, saveUninitialized: false, resave: false }));
+    router.use(passport.initialize());
+    router.use(passport.session());
+  } else {
+    router.use(cookieParser());
+  }
   router.use(express.urlencoded({ extended: false }));
   router.use(express.json());
 
@@ -73,6 +86,7 @@ export async function createRouter({
         logger,
         tokenIssuer,
         discovery,
+        catalogApi,
       });
 
       const r = Router();

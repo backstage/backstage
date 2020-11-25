@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { GroupEntity } from '@backstage/catalog-model';
+import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 
 export function buildOrgHierarchy(groups: GroupEntity[]) {
   const groupsByName = new Map(groups.map(g => [g.metadata.name, g]));
@@ -92,4 +92,23 @@ export function buildOrgHierarchy(groups: GroupEntity[]) {
   for (const group of groups) {
     visitAncestors(group);
   }
+}
+
+// Ensure that users have their transitive group memberships. Requires that
+// the groups were previously processed with buildOrgHierarchy()
+export function buildMemberOf(groups: GroupEntity[], users: UserEntity[]) {
+  const groupsByName = new Map(groups.map(g => [g.metadata.name, g]));
+
+  users.forEach(user => {
+    const transitiveMemberOf = new Set([...user.spec.memberOf]);
+
+    user.spec.memberOf.forEach(groupName => {
+      const group = groupsByName.get(groupName);
+
+      if (group) {
+        group.spec.ancestors.forEach(g => transitiveMemberOf.add(g));
+      }
+    });
+    user.spec.memberOf = [...transitiveMemberOf];
+  });
 }

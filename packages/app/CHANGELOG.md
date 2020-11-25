@@ -1,5 +1,66 @@
 # example-app
 
+## 0.2.3
+
+### Patch Changes
+
+- 475fc0aaa: Using the search field in the sidebar now navigates to the search result page.
+- Updated dependencies [475fc0aaa]
+- Updated dependencies [1166fcc36]
+- Updated dependencies [29a0ccab2]
+- Updated dependencies [8e6728e25]
+- Updated dependencies [c93a14b49]
+- Updated dependencies [ef2831dde]
+- Updated dependencies [2a71f4bab]
+- Updated dependencies [1185919f3]
+- Updated dependencies [a8de7f554]
+- Updated dependencies [faf311c26]
+- Updated dependencies [31d8b6979]
+- Updated dependencies [991345969]
+- Updated dependencies [475fc0aaa]
+  - @backstage/core@0.3.2
+  - @backstage/catalog-model@0.3.0
+  - @backstage/plugin-kubernetes@0.3.0
+  - @backstage/cli@0.3.1
+  - @backstage/plugin-cost-insights@0.4.1
+  - @backstage/plugin-scaffolder@0.3.1
+  - @backstage/plugin-register-component@0.2.2
+  - @backstage/plugin-circleci@0.2.2
+  - @backstage/plugin-search@0.2.1
+  - @backstage/plugin-api-docs@0.2.2
+  - @backstage/plugin-catalog@0.2.3
+  - @backstage/plugin-cloudbuild@0.2.2
+  - @backstage/plugin-github-actions@0.2.2
+  - @backstage/plugin-jenkins@0.3.1
+  - @backstage/plugin-lighthouse@0.2.3
+  - @backstage/plugin-rollbar@0.2.3
+  - @backstage/plugin-sentry@0.2.3
+  - @backstage/plugin-techdocs@0.2.3
+
+## 0.2.2
+
+### Patch Changes
+
+- 3efd03c0e: Removed obsolete CircleCI proxy config from example-app
+- Updated dependencies [1722cb53c]
+- Updated dependencies [1722cb53c]
+- Updated dependencies [17a9f48f6]
+- Updated dependencies [4040d4fcb]
+- Updated dependencies [f360395d0]
+- Updated dependencies [259d848ee]
+- Updated dependencies [8b7737d0b]
+- Updated dependencies [902340451]
+  - @backstage/cli@0.3.0
+  - @backstage/core@0.3.1
+  - @backstage/plugin-cost-insights@0.4.0
+  - @backstage/plugin-lighthouse@0.2.2
+  - @backstage/plugin-rollbar@0.2.2
+  - @backstage/plugin-sentry@0.2.2
+  - @backstage/plugin-techdocs@0.2.2
+  - @backstage/plugin-user-settings@0.2.2
+  - @backstage/plugin-catalog@0.2.2
+  - @backstage/test-utils@0.1.3
+
 ## 0.2.1
 
 ### Patch Changes

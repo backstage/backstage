@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
+import React from 'react';
 import { CITable } from '../CITable';
 import { useBuilds } from '../../../../state';
 
-export const Builds: FC<{}> = () => {
+export const Builds = () => {
   const [
     { total, loading, value, projectName, page, pageSize },
     { setPage, retry, setPageSize },

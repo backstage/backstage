@@ -17,13 +17,18 @@ import fs from 'fs-extra';
 import { Logger } from 'winston';
 import { Entity } from '@backstage/catalog-model';
 import { PublisherBase } from './types';
-import { resolvePackagePath } from '@backstage/backend-common';
+import {
+  resolvePackagePath,
+  PluginEndpointDiscovery,
+} from '@backstage/backend-common';
 
 export class LocalPublish implements PublisherBase {
   private readonly logger: Logger;
+  private readonly discovery: PluginEndpointDiscovery;
 
-  constructor(logger: Logger) {
+  constructor(logger: Logger, discovery: PluginEndpointDiscovery) {
     this.logger = logger;
+    this.discovery = discovery;
   }
 
   publish({
@@ -48,9 +53,7 @@ export class LocalPublish implements PublisherBase {
     );
 
     if (!fs.existsSync(publishDir)) {
-      this.logger.info(
-        `[TechDocs]: Could not find ${publishDir}, creates the directory.`,
-      );
+      this.logger.info(`Could not find ${publishDir}, creating the directory.`);
       fs.mkdirSync(publishDir, { recursive: true });
     }
 
@@ -58,14 +61,21 @@ export class LocalPublish implements PublisherBase {
       fs.copy(directory, publishDir, err => {
         if (err) {
           this.logger.debug(
-            `[TechDocs]: Failed to copy docs from ${directory} to ${publishDir}`,
+            `Failed to copy docs from ${directory} to ${publishDir}`,
           );
           reject(err);
         }
 
-        resolve({
-          remoteUrl: `http://localhost:7000/api/techdocs/static/docs/${entity.metadata.name}`,
-        });
+        this.discovery
+          .getBaseUrl('techdocs')
+          .then(techdocsApiUrl => {
+            resolve({
+              remoteUrl: `${techdocsApiUrl}/static/docs/${entity.metadata.name}`,
+            });
+          })
+          .catch(reason => {
+            reject(reason);
+          });
       });
     });
   }

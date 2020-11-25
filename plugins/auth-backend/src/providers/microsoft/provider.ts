@@ -163,7 +163,7 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
     });
   }
 
-  private getUserPhoto(accessToken: string): Promise<string> {
+  private getUserPhoto(accessToken: string): Promise<string | undefined> {
     return new Promise(resolve => {
       got
         .get('https://graph.microsoft.com/v1.0/me/photos/48x48/$value', {
@@ -184,7 +184,7 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
             `Could not retrieve user profile photo from Microsoft Graph API: ${error}`,
           );
           // User profile photo is optional, ignore errors and resolve undefined
-          resolve();
+          resolve(undefined);
         });
     });
   }

@@ -1,5 +1,38 @@
 # @backstage/plugin-catalog-backend
 
+## 0.2.2
+
+### Patch Changes
+
+- 0c2121240: Add support for reading groups and users from the Microsoft Graph API.
+- 1185919f3: Marked the `Group` entity fields `ancestors` and `descendants` for deprecation on Dec 6th, 2020. See https://github.com/backstage/backstage/issues/3049 for details.
+
+  Code that consumes these fields should remove those usages as soon as possible. There is no current or planned replacement for these fields.
+
+  The BuiltinKindsEntityProcessor has been updated to inject these fields as empty arrays if they are missing. Therefore, if you are on a catalog instance that uses the updated version of this code, you can start removing the fields from your source catalog-info.yaml data as well, without breaking validation.
+
+  After Dec 6th, the fields will be removed from types and classes of the Backstage repository. At the first release after that, they will not be present in released packages either.
+
+  If your catalog-info.yaml files still contain these fields after the deletion, they will still be valid and your ingestion will not break, but they won't be visible in the types for consuming code.
+
+- Updated dependencies [1166fcc36]
+- Updated dependencies [bff3305aa]
+- Updated dependencies [1185919f3]
+- Updated dependencies [b47dce06f]
+  - @backstage/catalog-model@0.3.0
+  - @backstage/backend-common@0.3.1
+
+## 0.2.1
+
+### Patch Changes
+
+- f531d307c: An entity A, that exists in the catalog, can no longer be overwritten by registering a different location that also tries to supply an entity with the same kind+namespace+name. Writes of that new entity will instead be rejected with a log message similar to `Rejecting write of entity Component:default/artist-lookup from file:/Users/freben/dev/github/backstage/packages/catalog-model/examples/components/artist-lookup-component.yaml because entity existed from github:https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/artist-lookup-component.yaml`
+- Updated dependencies [1722cb53c]
+- Updated dependencies [1722cb53c]
+- Updated dependencies [7b37e6834]
+- Updated dependencies [8e2effb53]
+  - @backstage/backend-common@0.3.0
+
 ## 0.2.0
 
 ### Minor Changes

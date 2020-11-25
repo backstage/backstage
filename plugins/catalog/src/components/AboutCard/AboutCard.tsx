@@ -119,6 +119,7 @@ export function AboutCard({ entity, variant }: AboutCardProps) {
         action={
           <IconButton
             aria-label="Edit"
+            title="Edit Metadata"
             onClick={() => {
               window.open(codeLink.edithref || '#', '_blank');
             }}
@@ -133,7 +134,12 @@ export function AboutCard({ entity, variant }: AboutCardProps) {
               disabled={
                 !entity.metadata.annotations?.['backstage.io/techdocs-ref']
               }
-              label="View Techdocs"
+              label="View TechDocs"
+              title={
+                !entity.metadata.annotations?.['backstage.io/techdocs-ref']
+                  ? 'No TechDocs available'
+                  : ''
+              }
               icon={<DocsIcon />}
               href={`/docs/${
                 entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE
@@ -142,6 +148,7 @@ export function AboutCard({ entity, variant }: AboutCardProps) {
             <IconLinkVertical
               disabled={!entity.spec?.implementsApis}
               label="View API"
+              title={!entity.spec?.implementsApis ? 'No APIs available' : ''}
               icon={<ExtensionIcon />}
               href="api"
             />

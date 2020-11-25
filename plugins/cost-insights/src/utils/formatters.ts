@@ -24,6 +24,11 @@ export type Period = {
   periodEnd: string;
 };
 
+export const costFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+});
+
 export const currencyFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
   currency: 'USD',
@@ -78,9 +83,11 @@ export function formatPercent(n: number): string {
   if (isNaN(n) || Math.abs(n) < 0.01) {
     return '0%';
   }
-  if (Math.abs(n) >= 1e19) {
-    return '∞%';
+
+  if (Math.abs(n) > 10) {
+    return `>1000%`;
   }
+
   return `${(n * 100).toFixed(0)}%`;
 }
 

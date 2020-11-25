@@ -153,7 +153,7 @@ export const Reader = ({ entityId, onReady }: Props) => {
   ]);
 
   if (error) {
-    return <TechDocsNotFound />;
+    return <TechDocsNotFound errorMessage={error.message} />;
   }
 
   return (

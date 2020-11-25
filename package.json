@@ -37,7 +37,8 @@
     ]
   },
   "resolutions": {
-    "**/@roadiehq/backstage-plugin-*/@backstage/core": "0.3.0"
+    "**/@roadiehq/**/@backstage/core": "*",
+    "**/@roadiehq/**/@backstage/catalog-model": "*"
   },
   "version": "1.0.0",
   "devDependencies": {

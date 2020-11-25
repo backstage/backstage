@@ -18,7 +18,7 @@ import { CICDSwitcher } from './EntityPage';
 import { UrlPatternDiscovery, ApiProvider, ApiRegistry } from '@backstage/core';
 import {
   buildKiteApiRef,
-  BuildKiteApi,
+  BuildkiteApi,
 } from '@roadiehq/backstage-plugin-buildkite';
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 
@@ -42,11 +42,11 @@ describe('EntityPage Test', () => {
   const discoveryApi = UrlPatternDiscovery.compile('http://exampleapi.com');
 
   const apis = ApiRegistry.from([
-    [buildKiteApiRef, new BuildKiteApi({ discoveryApi })],
+    [buildKiteApiRef, new BuildkiteApi({ discoveryApi })],
   ]);
 
   describe('CICDSwitcher Test', () => {
-    it('Should render BuildKite View', async () => {
+    it('Should render Buildkite View', async () => {
       const renderedComponent = await renderWithEffects(
         wrapInTestApp(
           <ApiProvider apis={apis}>
