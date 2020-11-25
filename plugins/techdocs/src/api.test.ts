@@ -24,11 +24,21 @@ const mockEntity = {
   name: 'test-component',
 };
 
+class MockOAuthApi implements OAuthApi {
+  async getAccessToken() {
+    await Promise.resolve(); // Wait a tick to allow new requests to get forwarded
+
+    return '';
+  }
+}
+
+const mockOAuthApi = new MockOAuthApi();
+
 describe('TechDocsStorageApi', () => {
   it('should return correct base url based on defined storage', () => {
     const storageApi = new TechDocsStorageApi({
       apiOrigin: DOC_STORAGE_URL,
-      githubAuthApi: <OAuthApi>{},
+      githubAuthApi: mockOAuthApi,
     });
 
     expect(storageApi.getBaseUrl('test.js', mockEntity, '')).toEqual(
@@ -39,7 +49,7 @@ describe('TechDocsStorageApi', () => {
   it('should return base url with correct entity structure', () => {
     const storageApi = new TechDocsStorageApi({
       apiOrigin: DOC_STORAGE_URL,
-      githubAuthApi: <OAuthApi>{},
+      githubAuthApi: mockOAuthApi,
     });
     expect(storageApi.getBaseUrl('test/', mockEntity, '')).toEqual(
       `${DOC_STORAGE_URL}/docs/${mockEntity.namespace}/${mockEntity.kind}/${mockEntity.name}/test/`,
