@@ -63,7 +63,7 @@ export async function runDockerContainer({
     );
   }
 
-  await new Promise((resolve, reject) => {
+  await new Promise<void>((resolve, reject) => {
     dockerClient.pull(imageName, {}, (err, stream) => {
       if (err) return reject(err);
       stream.pipe(logStream, { end: false });
@@ -119,7 +119,7 @@ export const runCommand = async ({
   options,
   logStream = new PassThrough(),
 }: RunCommandOptions) => {
-  await new Promise((resolve, reject) => {
+  await new Promise<void>((resolve, reject) => {
     const process = spawn(command, args, options);
 
     process.stdout.on('data', stream => {
