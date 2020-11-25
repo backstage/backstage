@@ -381,7 +381,7 @@ spec:
   type: website
   lifecycle: production
   owner: artist-relations@example.com
-  implementsApis:
+  providesApis:
     - artist-api
 ```
 
@@ -447,6 +447,25 @@ group of people in an organizational structure.
 
 Links APIs that are implemented by the component, e.g. `artist-api`. This field
 is optional.
+
+The software catalog expects a list of one or more strings that references the
+names of other entities of the `kind` `API`.
+
+This field has the same behavior as `spec.providesApis` and will be deprecated
+in the future.
+
+### `spec.providesApis` [optional]
+
+Links APIs that are provided by the component, e.g. `artist-api`. This field is
+optional.
+
+The software catalog expects a list of one or more strings that references the
+names of other entities of the `kind` `API`.
+
+### `spec.consumesApis` [optional]
+
+Links APIs that are consumed by the component, e.g. `artist-api`. This field is
+optional.
 
 The software catalog expects a list of one or more strings that references the
 names of other entities of the `kind` `API`.
