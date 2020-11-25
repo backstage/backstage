@@ -18,8 +18,7 @@ import { ApiEntity } from '@backstage/catalog-model';
 import { createApiFactory, createPlugin } from '@backstage/core';
 import { ApiExplorerPage } from './components/ApiExplorerPage/ApiExplorerPage';
 import { defaultDefinitionWidgets } from './components/ApiDefinitionCard';
-import { ApiEntityPage } from './components/ApiEntityPage/ApiEntityPage';
-import { entityRoute, rootRoute } from './routes';
+import { rootRoute } from './routes';
 import { apiDocsConfigRef } from './config';
 
 export const plugin = createPlugin({
@@ -40,6 +39,5 @@ export const plugin = createPlugin({
   ],
   register({ router }) {
     router.addRoute(rootRoute, ApiExplorerPage);
-    router.addRoute(entityRoute, ApiEntityPage);
   },
 });

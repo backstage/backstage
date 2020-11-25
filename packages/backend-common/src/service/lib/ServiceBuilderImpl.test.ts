@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
-import { createRouteRef } from '@backstage/core';
+import { applyCspDirectives } from './ServiceBuilderImpl';
 
-const NoIcon = () => null;
+describe('ServiceBuilderImpl', () => {
+  describe('applyCspDirectives', () => {
+    it('copies actual values', () => {
+      const result = applyCspDirectives({ key: ['value'] });
+      expect(result).toEqual(
+        expect.objectContaining({
+          'default-src': ["'self'"],
+          key: ['value'],
+        }),
+      );
+    });
 
-export const rootRoute = createRouteRef({
-  icon: NoIcon,
-  path: '/api-docs',
-  title: 'APIs',
-});
-
-export const catalogRoute = createRouteRef({
-  icon: NoIcon,
-  path: '',
-  title: 'API',
+    it('removes false value keys', () => {
+      const result = applyCspDirectives({ 'upgrade-insecure-requests': false });
+      expect(result!['upgrade-insecure-requests']).toBeUndefined();
+    });
+  });
 });

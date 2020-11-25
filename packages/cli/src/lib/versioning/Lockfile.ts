@@ -202,6 +202,19 @@ export class Lockfile {
     return result;
   }
 
+  remove(name: string, range: string): boolean {
+    const query = `${name}@${range}`;
+    const existed = Boolean(this.data[query]);
+    delete this.data[query];
+
+    const newEntries = this.packages.get(name)?.filter(e => e.range !== range);
+    if (newEntries) {
+      this.packages.set(name, newEntries);
+    }
+
+    return existed;
+  }
+
   /** Modifies the lockfile by bumping packages to the suggested versions */
   replaceVersions(results: AnalyzeResultNewVersion[]) {
     for (const { name, range, oldVersion, newVersion } of results) {

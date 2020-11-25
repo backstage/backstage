@@ -13,19 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { createRouteRef } from '@backstage/core';
-
-const NoIcon = () => null;
-
-export const rootRoute = createRouteRef({
-  icon: NoIcon,
-  path: '/api-docs',
-  title: 'APIs',
-});
-
-export const catalogRoute = createRouteRef({
-  icon: NoIcon,
-  path: '',
-  title: 'API',
-});
+export interface Config {
+  kubernetes?: {
+    /**
+     * @visibility frontend
+     */
+    serviceLocatorMethod: 'multiTenant';
+    /**
+     * @visibility frontend
+     */
+    clusterLocatorMethods: 'config'[];
+    clusters: {
+      /**
+       * @visibility frontend
+       */
+      url: string;
+      /**
+       * @visibility frontend
+       */
+      name: string;
+      /**
+       * @visibility secret
+       */
+      serviceAccountToken: string;
+      /**
+       * @visibility frontend
+       */
+      authProvider: 'serviceAccount';
+    }[];
+  };
+}

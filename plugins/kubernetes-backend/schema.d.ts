@@ -13,5 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export { ApiEntityPage } from './ApiEntityPage';
+export interface Config {
+  kubernetes?: {
+    serviceLocatorMethod: 'multiTenant';
+    clusterLocatorMethods: 'config'[];
+    clusters: {
+      url: string;
+      name: string;
+      serviceAccountToken: string;
+      authProvider: 'serviceAccount';
+    }[];
+  };
+}

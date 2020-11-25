@@ -1,5 +1,18 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.3.2
+
+### Patch Changes
+
+- ef2831dde: Move constructing the catalog-info.yaml URL for scaffolded components to the publishers
+- 5a1d8dca3: Fix React entity YAML filename to new standard
+- Updated dependencies [1166fcc36]
+- Updated dependencies [bff3305aa]
+- Updated dependencies [1185919f3]
+- Updated dependencies [b47dce06f]
+  - @backstage/catalog-model@0.3.0
+  - @backstage/backend-common@0.3.1
+
 ## 0.3.1
 
 ### Patch Changes
