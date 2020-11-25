@@ -26,7 +26,11 @@ import {
   GeneratorRunOptions,
   GeneratorRunResult,
 } from './types';
-import { runDockerContainer, runCommand } from './helpers';
+import {
+  runDockerContainer,
+  runCommand,
+  patchMkdocsYmlPreBuild,
+} from './helpers';
 
 type TechdocsGeneratorOptions = {
   // This option enables users to configure if they want to use TechDocs container
@@ -62,6 +66,7 @@ export class TechdocsGenerator implements GeneratorBase {
   public async run({
     directory,
     dockerClient,
+    parsedLocationAnnotation,
   }: GeneratorRunOptions): Promise<GeneratorRunResult> {
     const tmpdirPath = os.tmpdir();
     // Fixes a problem with macOS returning a path that is a symlink
@@ -70,6 +75,15 @@ export class TechdocsGenerator implements GeneratorBase {
       path.join(tmpdirResolvedPath, 'techdocs-tmp-'),
     );
     const [log, logStream] = createStream();
+
+    // TODO: In future mkdocs.yml can be mkdocs.yaml. So, use a config variable here to find out
+    // the correct file name.
+    // Do some updates to mkdocs.yml before generating docs e.g. adding repo_url
+    await patchMkdocsYmlPreBuild(
+      path.join(directory, 'mkdocs.yml'),
+      this.logger,
+      parsedLocationAnnotation,
+    );
 
     try {
       switch (this.options.runGeneratorIn) {

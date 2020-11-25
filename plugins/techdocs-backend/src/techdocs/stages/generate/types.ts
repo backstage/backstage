@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { Writable } from 'stream';
+import { Writable } from 'stream';
 import Docker from 'dockerode';
 import { Entity } from '@backstage/catalog-model';
+import { ParsedLocationAnnotation } from '../../../helpers';
 
 /**
  * The returned directory from the generator which is ready
@@ -26,14 +27,18 @@ export type GeneratorRunResult = {
 };
 
 /**
- * The values that the generator will receive. The directory of the
- * uncompiled documentation, with the values from the frontend. A dedicated log stream and a docker
- * client to run any generator on top of your directory.
+ * The values that the generator will receive.
+ *
+ * @param {string} directory The directory of the uncompiled documentation, with the values from the frontend
+ * @param {Docker} dockerClient A docker client to run any generator on top of your directory
+ * @param {ParsedLocationAnnotation} parsedLocationAnnotation backstage.io/techdocs-ref annotation of an entity
+ * @param {Writable} [logStream] A dedicated log stream
  */
 export type GeneratorRunOptions = {
   directory: string;
-  logStream?: Writable;
   dockerClient: Docker;
+  parsedLocationAnnotation: ParsedLocationAnnotation;
+  logStream?: Writable;
 };
 
 export type GeneratorBase = {

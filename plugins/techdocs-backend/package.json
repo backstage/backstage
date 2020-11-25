@@ -32,7 +32,9 @@
     "express-promise-router": "^3.0.3",
     "fs-extra": "^9.0.1",
     "git-url-parse": "^11.4.0",
+    "js-yaml": "^3.14.0",
     "knex": "^0.21.6",
+    "mock-fs": "^4.13.0",
     "nodegit": "^0.27.0",
     "winston": "^3.2.1"
   },
