@@ -79,8 +79,15 @@ export interface Config {
       optionsSuccessStatus?: number;
     };
 
-    /**  */
-    csp?: object;
+    /**
+     * Content Security Policy options.
+     *
+     * The keys are the plain policy ID, e.g. "upgrade-insecure-requests". The
+     * values are on the format that the helmet library expects them, as an
+     * array of strings. There is also the special value false, which means to
+     * remove the default value that Backstage puts in place for that policy.
+     */
+    csp?: { [policyId: string]: string[] | false };
   };
 
   /** Configuration for integrations towards various external repository provider systems */
