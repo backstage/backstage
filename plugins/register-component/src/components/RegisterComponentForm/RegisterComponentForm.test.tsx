@@ -18,10 +18,49 @@ import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { RegisterComponentForm } from './RegisterComponentForm';
+import {
+  githubAuthApiRef,
+  ApiProvider,
+  ApiRegistry,
+  errorApiRef,
+} from '@backstage/core';
+import { MemoryRouter } from 'react-router-dom';
+import { lightTheme } from '@backstage/theme';
+import { ThemeProvider } from '@material-ui/core';
+
+const githubApi: jest.Mocked<typeof githubAuthApiRef.T> = {
+  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+  getAccessToken: jest.fn(_a => new Promise(() => {})),
+  getBackstageIdentity: jest.fn(),
+  getProfile: jest.fn(),
+  sessionState$: jest.fn(),
+  signIn: jest.fn(),
+  signOut: jest.fn(),
+};
+
+const errorApi: jest.Mocked<typeof errorApiRef.T> = {
+  post: jest.fn(),
+  error$: jest.fn(),
+};
+
+const Wrapper = ({ children }: { children?: React.ReactNode }) => (
+  <MemoryRouter>
+    <ApiProvider
+      apis={ApiRegistry.with(errorApiRef, errorApi).with(
+        githubAuthApiRef,
+        githubApi,
+      )}
+    >
+      <ThemeProvider theme={lightTheme}>{children}</ThemeProvider>
+    </ApiProvider>
+  </MemoryRouter>
+);
 
 describe('RegisterComponentForm', () => {
   it('should initially render disabled buttons', async () => {
-    render(<RegisterComponentForm onSubmit={jest.fn()} />);
+    render(<RegisterComponentForm onSubmit={jest.fn()} />, {
+      wrapper: Wrapper,
+    });
 
     expect(
       await screen.findByText(/Enter the full path to the catalog-info.yaml/),
@@ -32,7 +71,9 @@ describe('RegisterComponentForm', () => {
   });
 
   it('should enable the submit buttons when the target url is set', async () => {
-    render(<RegisterComponentForm onSubmit={jest.fn()} />);
+    render(<RegisterComponentForm onSubmit={jest.fn()} />, {
+      wrapper: Wrapper,
+    });
 
     await act(async () => {
       await userEvent.type(
@@ -46,7 +87,9 @@ describe('RegisterComponentForm', () => {
   });
 
   it('should show spinner while submitting', async () => {
-    render(<RegisterComponentForm onSubmit={jest.fn()} submitting />);
+    render(<RegisterComponentForm onSubmit={jest.fn()} submitting />, {
+      wrapper: Wrapper,
+    });
 
     expect(screen.getByTestId('loading-progress')).toBeInTheDocument();
   });
