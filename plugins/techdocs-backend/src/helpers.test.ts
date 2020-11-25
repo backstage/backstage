@@ -15,7 +15,12 @@
  */
 
 import { Readable } from 'stream';
-import { getDocFilesFromRepository } from './helpers';
+import {
+  getDocFilesFromRepository,
+  getLocationForEntity,
+  getGitRepositoryTempFolder,
+  parseReferenceAnnotation,
+} from './helpers';
 import { UrlReader, ReadTreeResponse } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 
@@ -66,5 +71,79 @@ describe('getDocFilesFromRepository', () => {
     );
 
     expect(output).toBe('/tmp/testfolder');
+  });
+
+  it('should get repository temp folder', async () => {
+    const mockRepoUrl =
+      'https://github.com/backstage/backstage/blob/master/subfolder/';
+    const branch = 'master';
+    const privateToken = '';
+
+    const result = await getGitRepositoryTempFolder(
+      mockRepoUrl,
+      branch,
+      privateToken,
+    );
+
+    expect(result).toBe(
+      '/tmp/backstage-repo/github.com/backstage/backstage/master',
+    );
+  });
+
+  it('should get location for Entity', async () => {
+    const mockEntity: Entity = {
+      metadata: {
+        namespace: 'default',
+        annotations: {
+          'backstage.io/techdocs-ref':
+            'url:https://github.com/backstage/backstage/blob/master/subfolder/',
+        },
+        name: 'mytestcomponent',
+        description: 'A component for testing',
+      },
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      spec: {
+        type: 'documentation',
+        lifecycle: 'experimental',
+        owner: 'testuser',
+      },
+    };
+
+    const output = getLocationForEntity(mockEntity);
+
+    expect(output.target).toBe(
+      'https://github.com/backstage/backstage/blob/master/subfolder/',
+    );
+    expect(output.type).toBe('url');
+  });
+
+  it('should parse Reference annotation', async () => {
+    const mockEntity: Entity = {
+      metadata: {
+        namespace: 'default',
+        annotations: {
+          'backstage.io/techdocs-ref':
+            'url:https://github.com/backstage/backstage/blob/master/subfolder/',
+        },
+        name: 'mytestcomponent',
+        description: 'A component for testing',
+      },
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      spec: {
+        type: 'documentation',
+        lifecycle: 'experimental',
+        owner: 'testuser',
+      },
+    };
+
+    const mockAnnotationName = 'backstage.io/techdocs-ref';
+    const output = parseReferenceAnnotation(mockAnnotationName, mockEntity);
+
+    expect(output.target).toBe(
+      'https://github.com/backstage/backstage/blob/master/subfolder/',
+    );
+    expect(output.type).toBe('url');
   });
 });
