@@ -21,6 +21,7 @@ import { Logger } from 'winston';
 import { notFoundHandler, resolvePackagePath } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import { injectConfig, readConfigs } from '../lib/config';
+import fs from 'fs-extra';
 
 export interface RouterOptions {
   config: Config;
@@ -35,8 +36,17 @@ export async function createRouter(
   const { config, logger, appPackageName, staticFallbackHandler } = options;
 
   const appDistDir = resolvePackagePath(appPackageName, 'dist');
-  logger.info(`Serving static app content from ${appDistDir}`);
   const staticDir = resolvePath(appDistDir, 'static');
+
+  if (!(await fs.pathExists(staticDir))) {
+    logger.warn(
+      `Can't serve static app content from ${staticDir}, directory doesn't exist`,
+    );
+
+    return Router();
+  }
+
+  logger.info(`Serving static app content from ${appDistDir}`);
 
   const appConfigs = await readConfigs({
     config,
