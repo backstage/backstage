@@ -53,7 +53,7 @@ export const postMessageResponse = (
   const script = `
     var authResponse = decodeURIComponent('${base64Data}');
     var origin = decodeURIComponent('${base64Origin}');
-    var originInfo = {'targetOrigin': origin};
+    var originInfo = {'type': 'config_info', 'targetOrigin': origin};
     (window.opener || window.parent).postMessage(originInfo, '*');
     (window.opener || window.parent).postMessage(JSON.parse(authResponse), origin);
     window.close();

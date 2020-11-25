@@ -95,7 +95,7 @@ export function showLoginPopup(options: LoginPopupOptions): Promise<any> {
       }
       const { data } = event;
 
-      if (data.targetOrigin) {
+      if (data.type === 'config_info') {
         targetOrigin = data.targetOrigin;
         return;
       }

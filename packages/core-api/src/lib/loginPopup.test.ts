@@ -161,6 +161,7 @@ describe('showLoginPopup', () => {
       source: popupMock,
       origin: 'origin',
       data: {
+        type: 'config_info',
         targetOrigin: 'http://localhost',
       },
     } as MessageEvent);
@@ -198,6 +199,7 @@ describe('showLoginPopup', () => {
       source: popupMock,
       origin: 'origin',
       data: {
+        type: 'config_info',
         targetOrigin: 'http://differenthost',
       },
     } as MessageEvent);
