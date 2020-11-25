@@ -95,7 +95,13 @@ export class TechDocsStorageApi implements TechDocsStorage {
     );
 
     if (request.status === 404) {
-      throw new Error('Page not found');
+      let errorMessage = 'Page not found. ';
+      // path is empty for the home page of an entity's docs site
+      if (!path) {
+        errorMessage +=
+          'This could be because there is no index.md file in the root of the docs directory of this repository.';
+      }
+      throw new Error(errorMessage);
     }
 
     return request.text();
