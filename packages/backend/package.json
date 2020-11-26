@@ -1,6 +1,6 @@
 {
   "name": "example-backend",
-  "version": "0.2.2",
+  "version": "0.2.1",
   "main": "dist/index.cjs.js",
   "types": "src/index.ts",
   "private": true,
@@ -35,7 +35,7 @@
     "@octokit/rest": "^18.0.0",
     "azure-devops-node-api": "^10.1.1",
     "dockerode": "^3.2.0",
-    "example-app": "^0.2.2",
+    "example-app": "^0.2.1",
     "express": "^4.17.1",
     "express-promise-router": "^3.0.3",
     "knex": "^0.21.6",

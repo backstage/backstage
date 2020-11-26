@@ -1,8 +1,6 @@
 ---
 '@backstage/plugin-catalog-backend': minor
 '@backstage/plugin-catalog-import': minor
-'example-app': patch
-'example-backend': patch
 '@backstage/catalog-model': patch
 '@backstage/plugin-scaffolder': patch
 ---
