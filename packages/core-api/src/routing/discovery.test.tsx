@@ -15,7 +15,13 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import { collectRoutes, collectRouteParents } from './discovery';
+import {
+  traverseElementTree,
+  childDiscoverer,
+  routeElementDiscoverer,
+  routeCollector,
+  routeParentCollector,
+} from './discovery';
 import { createRouteRef } from './RouteRef';
 import { createPlugin } from '../plugin';
 import { createRoutableExtension } from '../extensions';
@@ -86,7 +92,15 @@ describe('discovery', () => {
       </MemoryRouter>
     );
 
-    expect(collectRoutes(root)).toEqual(
+    const { routes, routeParents } = traverseElementTree({
+      root,
+      discoverers: [childDiscoverer, routeElementDiscoverer],
+      collectors: {
+        routes: routeCollector,
+        routeParents: routeParentCollector,
+      },
+    });
+    expect(routes).toEqual(
       new Map([
         [ref1, '/foo'],
         [ref2, '/bar/:id'],
@@ -96,7 +110,7 @@ describe('discovery', () => {
       ]),
     );
 
-    expect(collectRouteParents(root)).toEqual(
+    expect(routeParents).toEqual(
       new Map([
         [ref1, undefined],
         [ref2, ref1],
@@ -129,7 +143,15 @@ describe('discovery', () => {
       </MemoryRouter>
     );
 
-    expect(collectRoutes(root)).toEqual(
+    const { routes, routeParents } = traverseElementTree({
+      root,
+      discoverers: [childDiscoverer, routeElementDiscoverer],
+      collectors: {
+        routes: routeCollector,
+        routeParents: routeParentCollector,
+      },
+    });
+    expect(routes).toEqual(
       new Map([
         [ref1, '/foo'],
         [ref2, '/bar/:id'],
@@ -138,7 +160,7 @@ describe('discovery', () => {
         [ref5, '/blop'],
       ]),
     );
-    expect(collectRouteParents(root)).toEqual(
+    expect(routeParents).toEqual(
       new Map([
         [ref1, undefined],
         [ref2, ref1],
@@ -153,12 +175,19 @@ describe('discovery', () => {
     const element = <Extension3 path="/baz" />;
 
     expect(() =>
-      collectRoutes(
-        <MemoryRouter>
-          <Extension1 path="/foo">{element}</Extension1>
-          <Extension2 path="/bar">{element}</Extension2>
-        </MemoryRouter>,
-      ),
+      traverseElementTree({
+        root: (
+          <MemoryRouter>
+            <Extension1 path="/foo">{element}</Extension1>
+            <Extension2 path="/bar">{element}</Extension2>
+          </MemoryRouter>
+        ),
+        discoverers: [childDiscoverer, routeElementDiscoverer],
+        collectors: {
+          routes: routeCollector,
+          routeParents: routeParentCollector,
+        },
+      }),
     ).toThrow(`Visited element Extension(MockComponent) twice`);
   });
 });

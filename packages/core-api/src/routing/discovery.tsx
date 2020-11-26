@@ -18,81 +18,143 @@ import { isValidElement, ReactNode, ReactElement, Children } from 'react';
 import { RouteRef } from './types';
 import { getComponentData } from '../extensions';
 
-type TraverseFunc<Context> = (
-  node: ReactElement,
-  parent: ReactElement,
-  context: Context,
-) => Generator<
-  Context extends undefined
-    ? { children: ReactNode; context?: Context }
-    : { children: ReactNode; context: Context },
-  void,
-  void
->;
+type Discoverer = (element: ReactElement) => ReactNode;
 
-function traverse<Context = undefined>(
-  options: { root: ReactElement; initialContext?: Context },
-  traverseFunc: TraverseFunc<Context>,
-): void {
+type Collector<Result, Context> = () => {
+  accumulator: Result;
+  visit(
+    accumulator: Result,
+    element: ReactElement,
+    parent: ReactElement,
+    context: Context,
+  ): Context;
+};
+
+/**
+ * A function that allows you to traverse a tree of React elements using
+ * varying methods to discover child nodes and collect data along the way.
+ */
+export function traverseElementTree<Results>(options: {
+  root: ReactElement;
+  discoverers: Discoverer[];
+  collectors: { [name in keyof Results]: Collector<Results[name], any> };
+}): Results {
   const visited = new Set();
-  const nodes: Array<{
-    children: ReactNode;
+  const collectors: {
+    [name in string]: ReturnType<Collector<any, any>>;
+  } = {};
+
+  // Bootstrap all collectors, initializing the accumulators and providing the visitor function
+  for (const name in options.collectors) {
+    if (options.collectors.hasOwnProperty(name)) {
+      collectors[name] = options.collectors[name]();
+    }
+  }
+
+  // Internal representation of an element in the tree that we're iterating over
+  type QueueItem = {
+    node: ReactNode;
     parent: ReactElement;
-    context: Context;
-  }> = [
+    contexts: { [name in string]: unknown };
+  };
+
+  const queue = [
     {
-      children: Children.toArray(options.root),
+      node: Children.toArray(options.root),
       parent: options.root,
-      context: options.initialContext!,
-    },
+      contexts: {},
+    } as QueueItem,
   ];
 
-  while (nodes.length !== 0) {
-    const { children, parent, context } = nodes.shift()!;
+  while (queue.length !== 0) {
+    const { node, parent, contexts } = queue.shift()!;
 
-    Children.forEach(children, child => {
-      if (!isValidElement(child)) {
+    // While the parent and the element we pass on to collectors and discoverers
+    // have been validated and are known to be React elements, the child nodes
+    // emitted by the discoverers are not.
+    Children.forEach(node, element => {
+      if (!isValidElement(element)) {
         return;
       }
-      if (visited.has(child)) {
-        const anyType = child?.type as
+      if (visited.has(element)) {
+        const anyType = element?.type as
           | { displayName?: string; name?: string }
           | undefined;
         const name = anyType?.displayName || anyType?.name || String(anyType);
         throw new Error(`Visited element ${name} twice`);
       }
-      visited.add(child);
+      visited.add(element);
 
-      for (const next of traverseFunc(child, parent, context)) {
-        nodes.push({
-          children: next.children,
-          context: next.context!,
-          parent: child,
-        });
+      const nextContexts: QueueItem['contexts'] = {};
+
+      // Collectors populate their result data using the current node, and compute
+      // context for the next iteration
+      for (const name in collectors) {
+        if (collectors.hasOwnProperty(name)) {
+          const collector = collectors[name];
+
+          nextContexts[name] = collector.visit(
+            collector.accumulator,
+            element,
+            parent,
+            contexts[name],
+          );
+        }
+      }
+
+      // Discoverers provide ways to continue the traversal from the current element
+      for (const discoverer of options.discoverers) {
+        const children = discoverer(element);
+        if (children) {
+          queue.push({
+            node: children,
+            parent: element,
+            contexts: nextContexts,
+          });
+        }
       }
     });
   }
+
+  return Object.fromEntries(
+    Object.entries(collectors).map(([name, c]) => [name, c.accumulator]),
+  ) as Results;
 }
 
-export const collectRoutes = (root: ReactElement) => {
-  const treeMap = new Map<RouteRef, string>();
+export function childDiscoverer(element: ReactElement): ReactNode {
+  return element.props?.children;
+}
 
-  traverse({ root }, function* traverseFunc(node, parent: ReactElement) {
-    const { path, element, children } = node.props as {
-      path?: string;
-      element?: ReactNode;
-      children?: ReactNode;
-    };
+export function routeElementDiscoverer(element: ReactElement): ReactNode {
+  if (element.props?.path && element.props?.element) {
+    return element.props?.element;
+  }
+  return undefined;
+}
+
+function createCollector<Result, Context>(
+  initialResult: Result,
+  visit: ReturnType<Collector<Result, Context>>['visit'],
+): Collector<Result, Context> {
+  return () => ({ accumulator: initialResult, visit });
+}
+
+export const routeCollector = createCollector(
+  new Map<RouteRef, string>(),
+  (acc, node, parent) => {
     if (parent.props.element === node) {
-      yield { children };
       return;
     }
+
+    const path: string | undefined = node.props?.path;
+    const element: ReactNode = node.props?.element;
+
     const routeRef = getComponentData<RouteRef>(node, 'core.mountPoint');
     if (routeRef) {
       if (!path) {
         throw new Error('Mounted routable extension must have a path');
       }
-      treeMap.set(routeRef, path);
+      acc.set(routeRef, path);
     } else if (isValidElement(element)) {
       const elementRouteRef = getComponentData<RouteRef>(
         element,
@@ -102,55 +164,39 @@ export const collectRoutes = (root: ReactElement) => {
         if (!path) {
           throw new Error('Route element must have a path');
         }
-        treeMap.set(elementRouteRef, path);
+        acc.set(elementRouteRef, path);
       }
-      yield { children: element };
+    }
+  },
+);
+
+export const routeParentCollector = createCollector(
+  new Map<RouteRef, RouteRef | undefined>(),
+  (acc, node, parent, parentRouteRef?: RouteRef) => {
+    if (parent.props.element === node) {
+      return parentRouteRef;
     }
 
-    yield { children };
-  });
+    const element: ReactNode = node.props?.element;
 
-  return treeMap;
-};
+    let nextParent = parentRouteRef;
 
-export const collectRouteParents = (root: ReactElement) => {
-  const treeMap = new Map<RouteRef, RouteRef | undefined>();
+    const routeRef = getComponentData<RouteRef>(node, 'core.mountPoint');
+    if (routeRef) {
+      acc.set(routeRef, parentRouteRef);
+      nextParent = routeRef;
+    } else if (isValidElement(element)) {
+      const elementRouteRef = getComponentData<RouteRef>(
+        element,
+        'core.mountPoint',
+      );
 
-  traverse<RouteRef | undefined>(
-    { root, initialContext: undefined },
-    function* traverseFunc(node, parent, parentRouteRef) {
-      const { element, children } = node.props as {
-        element?: ReactNode;
-        children?: ReactNode;
-      };
-      if (parent.props.element === node) {
-        yield { children };
-        return;
+      if (elementRouteRef) {
+        acc.set(elementRouteRef, parentRouteRef);
+        nextParent = elementRouteRef;
       }
+    }
 
-      let nextParent = parentRouteRef;
-
-      const routeRef = getComponentData<RouteRef>(node, 'core.mountPoint');
-      if (routeRef) {
-        treeMap.set(routeRef, parentRouteRef);
-        nextParent = routeRef;
-      } else if (isValidElement(element)) {
-        const elementRouteRef = getComponentData<RouteRef>(
-          element,
-          'core.mountPoint',
-        );
-
-        if (elementRouteRef) {
-          treeMap.set(elementRouteRef, parentRouteRef);
-          nextParent = elementRouteRef;
-          yield { children: element, context: elementRouteRef };
-        } else {
-          yield { children: element, context: parentRouteRef };
-        }
-      }
-      yield { children, context: nextParent };
-    },
-  );
-
-  return treeMap;
-};
+    return nextParent;
+  },
+);
