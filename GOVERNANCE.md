@@ -1,6 +1,6 @@
 # Process for becoming a maintainer
 
-## Your organization is not yet a maintainer
+## a) Your organization is not yet a maintainer
 
 - Express interest to the sponsors that your organization is interested in becoming a maintainer. Becoming a maintainer generally means that you are going to be spending substantial time on Backstage for the foreseeable future. You should have domain expertise and be extremely proficient in TypeScript.
 - We will expect you to start contributing increasingly complicated PRs, under the guidance of the existing maintainers.
@@ -8,7 +8,7 @@
 - As you gain experience with the code base and our standards, we will ask you to do code reviews for incoming PRs.
 - After a period of approximately 2-3 months of working together and making sure we see eye to eye, the existing sponsors and maintainers will confer and decide whether to grant maintainer status or not. We make no guarantees on the length of time this will take, but 2-3 months is the approximate goal.
 
-## Your organization is currently a maintainer
+## b) Your organization is currently a maintainer
 
 To become a maintainer you need to demonstrate the following:
 
