@@ -40,6 +40,9 @@ export function* parseEntityYaml(
       const json = document.toJSON();
       if (lodash.isPlainObject(json)) {
         yield result.entity(location, json as Entity);
+      } else if (json === null) {
+        // Ignore null values, these happen if there is an empty document in the
+        // YAML file, for example if --- is added to the end of the file.
       } else {
         const message = `Expected object at root, got ${typeof json}`;
         yield result.generalError(location, message);
