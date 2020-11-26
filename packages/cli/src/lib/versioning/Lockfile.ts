@@ -100,8 +100,14 @@ export class Lockfile {
     private readonly data: LockfileData,
   ) {}
 
+  /** Get the entries for a single package in the lockfile */
   get(name: string): LockfileQueryEntry[] | undefined {
     return this.packages.get(name);
+  }
+
+  /** Returns the name of all packages available in the lockfile */
+  keys(): IterableIterator<string> {
+    return this.packages.keys();
   }
 
   /** Analyzes the lockfile to identify possible actions and warnings for the entries */

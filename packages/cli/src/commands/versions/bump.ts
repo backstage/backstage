@@ -41,6 +41,9 @@ type PkgVersionInfo = {
 
 export default async () => {
   const lockfilePath = paths.resolveTargetRoot('yarn.lock');
+  const lockfile = await Lockfile.load(lockfilePath);
+
+  const findTargetVersion = createVersionFinder();
 
   // First we discover all Backstage dependencies within our own repo
   const dependencyMap = await mapDependencies(paths.targetDir);
@@ -48,20 +51,16 @@ export default async () => {
   // Next check with the package registry to see which dependency ranges we need to bump
   const versionBumps = new Map<string, PkgVersionInfo[]>();
   // Track package versions that we want to remove from yarn.lock in order to trigger a bump
-  const unlocked = Array<{ name: string; range: string; latest: string }>();
+  const unlocked = Array<{ name: string; range: string; target: string }>();
   await workerThreads(16, dependencyMap.entries(), async ([name, pkgs]) => {
-    console.log(`Checking for updates of ${name}`);
-    const info = await fetchPackageInfo(name);
-    const latest = info['dist-tags'].latest;
-    if (!latest) {
-      throw new Error(`No latest version found for ${name}`);
-    }
+    const target = await findTargetVersion(name);
 
     for (const pkg of pkgs) {
-      if (semver.satisfies(latest, pkg.range)) {
-        if (semver.minVersion(pkg.range)?.version !== latest) {
-          unlocked.push({ name, range: pkg.range, latest });
+      if (semver.satisfies(target, pkg.range)) {
+        if (semver.minVersion(pkg.range)?.version !== target) {
+          unlocked.push({ name, range: pkg.range, target });
         }
+
         continue;
       }
       versionBumps.set(
@@ -69,9 +68,29 @@ export default async () => {
         (versionBumps.get(pkg.name) ?? []).concat({
           name,
           location: pkg.location,
-          range: `^${latest}`, // TODO(Rugvip): Option to use something else than ^?
+          range: `^${target}`, // TODO(Rugvip): Option to use something else than ^?
         }),
       );
+    }
+  });
+
+  // Check for updates of transitive backstage dependencies
+  await workerThreads(16, lockfile.keys(), async name => {
+    // Only check @backstage packages and friends, we don't want this to do a full update of all deps
+    if (!includedFilter(name)) {
+      return;
+    }
+
+    const target = await findTargetVersion(name);
+
+    for (const entry of lockfile.get(name) ?? []) {
+      // Ignore lockfile entries that don't satisfy the version range, since
+      // these can't cause the package to be locked to an older version
+      if (!semver.satisfies(target, entry.range)) {
+        continue;
+      }
+      // Unlock all entries that are within range but on the old version
+      unlocked.push({ name, range: entry.range, target });
     }
   });
 
@@ -85,17 +104,21 @@ export default async () => {
     console.log();
 
     if (unlocked.length > 0) {
-      const lockfile = await Lockfile.load(lockfilePath);
-      for (const { name, range, latest } of unlocked) {
+      const removed = new Set<string>();
+      for (const { name, range, target } of unlocked) {
         // Don't bother removing lockfile entries if they're already on the correct version
         const existingEntry = lockfile.get(name)?.find(e => e.range === range);
-        if (existingEntry?.version === latest) {
+        if (existingEntry?.version === target) {
           continue;
         }
-        console.log(
-          `Removing lockfile entry for ${name}@${range} to bump to ${latest}`,
-        );
-        lockfile.remove(name, range);
+        const key = JSON.stringify({ name, range });
+        if (!removed.has(key)) {
+          removed.add(key);
+          console.log(
+            `Removing lockfile entry for ${name}@${range} to bump to ${target}`,
+          );
+          lockfile.remove(name, range);
+        }
       }
       await lockfile.save();
     }
@@ -126,24 +149,13 @@ export default async () => {
   console.log();
 
   // Finally we make sure the new lockfile doesn't have any duplicates
-  const lockfile = await Lockfile.load(lockfilePath);
-  const result = lockfile.analyze({
+  const dedupLockfile = await Lockfile.load(lockfilePath);
+  const result = dedupLockfile.analyze({
     filter: includedFilter,
   });
 
   if (result.newVersions.length > 0) {
-    console.log();
-    console.log('Removing duplicate dependencies from yarn.lock');
-    lockfile.replaceVersions(result.newVersions);
-    await lockfile.save();
-
-    console.log(
-      "Running 'yarn install' to remove duplicates from node_modules",
-    );
-    console.log();
-    await run('yarn', ['install']);
-
-    console.log();
+    throw new Error('Duplicate versions present after package bump');
   }
 
   const forbiddenNewRanges = result.newRanges.filter(({ name }) =>
@@ -157,6 +169,26 @@ export default async () => {
     );
   }
 };
+
+function createVersionFinder() {
+  const found = new Map<string, string>();
+
+  return async function findTargetVersion(name: string) {
+    const existing = found.get(name);
+    if (existing) {
+      return existing;
+    }
+
+    console.log(`Checking for updates of ${name}`);
+    const info = await fetchPackageInfo(name);
+    const latest = info['dist-tags'].latest;
+    if (!latest) {
+      throw new Error(`No latest version found for ${name}`);
+    }
+    found.set(name, latest);
+    return latest;
+  };
+}
 
 async function workerThreads<T>(
   count: number,
