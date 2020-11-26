@@ -24,9 +24,9 @@ import { createSamlProvider } from './saml';
 import { createAuth0Provider } from './auth0';
 import { createMicrosoftProvider } from './microsoft';
 import { createOneLoginProvider } from './onelogin';
-import { AuthProviderFactory, AuthProviderFactoryOptions } from './types';
+import { AuthProviderFactory } from './types';
 
-const factories: { [providerId: string]: AuthProviderFactory } = {
+export const factories: { [providerId: string]: AuthProviderFactory } = {
   google: createGoogleProvider,
   github: createGithubProvider,
   gitlab: createGitlabProvider,
@@ -38,15 +38,3 @@ const factories: { [providerId: string]: AuthProviderFactory } = {
   oidc: createOidcProvider,
   onelogin: createOneLoginProvider,
 };
-
-export function createAuthProvider(
-  providerId: string,
-  options: AuthProviderFactoryOptions,
-) {
-  const factory = factories[providerId];
-  if (!factory) {
-    throw Error(`No auth provider available for '${providerId}'`);
-  }
-
-  return factory(options);
-}

@@ -81,6 +81,52 @@ describe('oauth helpers', () => {
       expect(mockResponse.end).toBeCalledWith(expect.stringContaining(encoded));
     });
 
+    it('should call postMessage twice but only one of them with target *', () => {
+      let responseBody = '';
+
+      const mockResponse = ({
+        end: jest.fn(body => {
+          responseBody = body;
+          return this;
+        }),
+        setHeader: jest.fn().mockReturnThis(),
+      } as unknown) as express.Response;
+
+      const data: WebMessageResponse = {
+        type: 'authorization_response',
+        response: {
+          providerInfo: {
+            accessToken: 'ACCESS_TOKEN',
+            idToken: 'ID_TOKEN',
+            expiresInSeconds: 10,
+            scope: 'email',
+          },
+          profile: {
+            email: 'foo@bar.com',
+          },
+          backstageIdentity: {
+            id: 'a',
+            idToken: 'a.b.c',
+          },
+        },
+      };
+      postMessageResponse(mockResponse, appOrigin, data);
+      expect(responseBody.match(/.postMessage\(/g)).toHaveLength(2);
+      expect(
+        responseBody.match(/.postMessage\([a-zA-z.()]*, \'\*\'\)/g),
+      ).toHaveLength(1);
+
+      const errData: WebMessageResponse = {
+        type: 'authorization_response',
+        error: new Error('Unknown error occurred'),
+      };
+      postMessageResponse(mockResponse, appOrigin, errData);
+      expect(responseBody.match(/.postMessage\(/g)).toHaveLength(2);
+      expect(
+        responseBody.match(/.postMessage\([a-zA-z.()]*, \'\*\'\)/g),
+      ).toHaveLength(1);
+    });
+
     it('handles single quotes and unicode chars safely', () => {
       const mockResponse = ({
         end: jest.fn().mockReturnThis(),

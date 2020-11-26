@@ -131,6 +131,7 @@ npm
 nvm
 oauth
 Oauth
+oidc
 Okta
 Oldsberg
 onboarding

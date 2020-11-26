@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-export * from './service/router';
-export * from './providers';
-
-// flow package provides 2 functions
-// ensuresXRequestedWith and postMessageResponse to safely handle CORS requests for login. The WebMessageResponse type in flow is used to type the response from the login-popup
-export * from './lib/flow';
-
-// OAuth wrapper over a passport or a custom `startegy`.
-export * from './lib/oauth';
+export interface Config {
+  /** Configuration options for the rollbar plugin */
+  rollbar?: {
+    /**
+     * The Rollbar organization name. This can be omitted by using the `rollbar.com/project-slug` annotation.
+     * @see https://backstage.io/docs/features/software-catalog/well-known-annotations#rollbarcomproject-slug
+     * @visibility frontend
+     */
+    organization?: string;
+  };
+}
