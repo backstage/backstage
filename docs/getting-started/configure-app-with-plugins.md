@@ -6,7 +6,7 @@ description: Documentation on How Configuring App with plugins
 
 ## Adding existing plugins to your app
 
-The following steps assumes you have created a new Backstage app and want to add
+The following steps assume that you have created a new Backstage app and want to add
 an existing plugin to it. We are using the
 [CircleCI](https://github.com/backstage/backstage/blob/master/plugins/circleci/README.md)
 in this example.
