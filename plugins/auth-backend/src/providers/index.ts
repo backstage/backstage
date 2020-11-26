@@ -14,4 +14,16 @@
  * limitations under the License.
  */
 
-export { createAuthProvider } from './factories';
+export { factories as defaultAuthProviderFactories } from './factories';
+
+// Export the minimal interface required for implementing a
+// custom Authorization Handler
+export type {
+  AuthProviderRouteHandlers,
+  AuthProviderFactoryOptions,
+  AuthProviderFactory,
+} from './types';
+
+// These types are needed for a postMessage from the login pop-up
+// to the frontend
+export type { AuthResponse, BackstageIdentity, ProfileInfo } from './types';

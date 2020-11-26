@@ -168,12 +168,12 @@ export class OktaAuthProvider implements OAuthHandlers {
 }
 
 export const createOktaProvider: AuthProviderFactory = ({
+  providerId,
   globalConfig,
   config,
   tokenIssuer,
 }) =>
   OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-    const providerId = 'okta';
     const clientId = envConfig.getString('clientId');
     const clientSecret = envConfig.getString('clientSecret');
     const audience = envConfig.getString('audience');

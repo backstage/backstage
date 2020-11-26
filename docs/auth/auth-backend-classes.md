@@ -6,45 +6,59 @@ description: Documentation on Auth backend classes
 
 ## How Does Authentication Work?
 
-The Backstage application can use various authentication providers for
-authentication. A provider has to implement an `AuthProviderRouteHandlers`
-interface for handling authentication. This interface consists of four methods.
-Each of these methods is hosted at an endpoint `/auth/[provider]/method`, where
-`method` performs a certain operation as follows:
+The Backstage application can use various external authentication providers for
+authentication. An external provider is wrapped using an
+`AuthProviderRouteHandlers` interface for handling authentication. This
+interface consists of four methods. Each of these methods is hosted at an
+endpoint (by default)`/api/auth/[provider]/method`, where `method` performs a
+certain operation as follows:
 
 ```
-  /auth/[provider]/start -> start
-  /auth/[provider]/handler/frame -> frameHandler
-  /auth/[provider]/refresh -> refresh
-  /auth/[provider]/logout -> logout
+  /auth/[provider]/start -> Initiate a login from the web page
+  /auth/[provider]/handler/frame -> Handle a `finished` authentication operation
+  /auth/[provider]/refresh -> refresh -> Refresh the validity of a login
+  /auth/[provider]/logout -> logout a logged-in user
 ```
 
-For more information on how these methods are used and for which purpose, refer
-to the [OAuth documentation](oauth.md).
+The flow is as follows:
 
-For details on the parameters, input and output conditions for each method,
-refer to the type documentation under
-`plugins/auth-backend/src/providers/types.ts`.
+1. `User` attempts to sign-in.
+2. The `auth` wrapper re-directs the user to an external authenticator.
+3. The authenticator validates the user and returns the result of the validation
+   (success OR failure), to the wrapper's endpoint (`handler/frame`)
+4. `handler/frame` will issue the appropriate response to the webpage.
+5. User signs out by clicking on an UI interface and the webpage makes a request
+   to logout the user.
 
 There are currently two different classes for two authentication mechanisms that
 implement this interface: an `OAuthAdapter` for [OAuth](https://oauth.net/2/)
 based mechanisms and a `SAMLAuthProvider` for
 [SAML](http://docs.oasis-open.org/security/saml/Post2.0/sstc-saml-tech-overview-2.0.html)
+
+If you do not have a `OAuth2` or a `SAML` based authentication provider, look in
+the section [below](#Implementing-Your-Own-Auth-Wrapper)
+
 based mechanisms.
 
 ### OAuth mechanisms
+
+For more information on how these methods are used and for which purpose, refer
+to the [OAuth documentation](oauth.md).
 
 Currently OAuth is assumed to be the de facto authentication mechanism for
 Backstage based applications.
 
 Backstage comes with a "batteries-included" set of supported commonly used OAuth
-providers: Okta, GitHub, Google, GitLab, and a generic OAuth2 provider.
+providers: Okta, GitHub, Google, GitLab, and a generic OAuth2 provider. For a
+list of available providers, look at the available wrappers in
+`backstage/plugins/auth-backend/src/providers/`
 
-All of these use the authorization flow of OAuth2 to implement authentication.
+All of these use the **authorization flow** of OAuth2 to implement
+authentication.
 
-If your authentication provider is any of the above mentioned (except generic
-OAuth2) providers, you can configure them by setting the right variables in
-`app-config.yaml` under the `auth` section.
+If your authentication provider is any of the above mentioned providers, you can
+configure them by setting the right variables in `app-config.yaml` under the
+`auth` section.
 
 ### Configuration
 
@@ -85,18 +99,59 @@ auth:
             ...
 ```
 
-## Technical Notes
+## Implementing Your Own Auth Wrapper
 
-### OAuthEnvironmentHandler
+The core interface of any Auth wrapper is the `AuthProviderRouteHandlers`
+interface. This interface has 4 methods corresponding to API described in the
+initial section. Any Auth Wrapper will have to implement this interface.
 
-The concept of an "env" is core to the way the auth backend works. It uses an
+When initiating a login, a pop-up window is created by the frontend, to allow
+the user to initiate a login. This login request is done to the `/start`
+endpoint which is handled by the `start` method.
+
+The `start` method re-directs to the external auth provider who authenticates
+the request and re-directs the request to the `/frame/handler` endpoint, which
+is handled by the `frameHandler` method.
+
+The `frameHandler` returns a `html` response, containing a script that does a
+`postMessage` to the frontend's window containing the result of the request. The
+`WebMessageResponse` type is the message sent by the `postMessage` to the
+frontend.
+
+A `postMessageResponse` utility function wraps the logic of generating a
+`postMessage` response that ensures that `CORS` is successfully handled. This
+function takes an `express.Response`, a `WebMessageResponse` and the URL of the
+frontend (`appOrigin`) as parameters and return a `HTML` page with the script
+and the message
+
+### OAuth wrapping Interfaces.
+
+Each OAuth external provider is supported by a corresponding `Passport`
+strategy. For a generic OAuth2 provider, passport has a `passport-oauth2`
+strategy. The strategy class handles the implementation details of working with
+each provider.
+
+Each strategy is wrapped by a `OAuthHandlers` interface.
+
+This interface cannot be directly used as an `express` HTTP Request handler.
+
+To do so, `OAuthHandlers` are wrapped in a `OAuthAdapter`, which implements the
+`AuthProviderRouterHandlers` interface.
+
+#### Env
+
+The concept of an `env` is core to the way the auth backend works. It uses an
 `env` query parameter to identify the environment in which the application is
-running (`development`, `staging`, `production`, etc). Each runtime can support
-multiple environments at the same time and the right handler for each request is
-identified and dispatched to based on the `env` parameter. All
-`AuthProviderRouteHandlers` are wrapped within an `OAuthEnvironmentHandler`.
+running (`development`, `staging`, `production`, etc). Each runtime can
+simultaneously support multiple environments at the same time and the right
+handler for each request is identified and dispatched to, based on the `env`
+parameter.
 
-To instantiate multiple OAuth providers for different environments, use
+`OAuthEnvironmentHandler` is a utility wrapper for an `OAuthHandlers` that
+implements the `AuthProviderRouteHandlers` interface while supporting multiple
+`env`s.
+
+To instantiate OAuth providers (the same but for different environments), use
 `OAuthEnvironmentHandler.mapConfig`. It's a helper to iterate over a
 configuration object that is a map of environment to configurations. See one of
 the existing OAuth providers for an example of how it is used.
@@ -116,8 +171,13 @@ The `OAuthEnvironmentHandler.mapConfig(config, envConfig => ...)` call will
 split the `config` by the top level `development` and `production` keys, and
 pass on each block as `envConfig`.
 
-For a list of currently available providers, look in the `factories` module
-located in `plugins/auth-backend/src/providers/factories.ts`
+For convenience, the `AuthProviderFactory` is a factory function that has to be
+implemented which can then generate a `AuthProviderRouteHandlers` for a given
+`provider`.
+
+All of the supported providers provide a `AuthProviderFactory` that returns a
+`OAuthEnvironmentHandler` ,capable of handling authentication for multiple
+`env`s.
 
 ### OAuth2 provider
 
