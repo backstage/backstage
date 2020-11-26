@@ -72,7 +72,8 @@ describe('getDocFilesFromRepository', () => {
 
     expect(output).toBe('/tmp/testfolder');
   });
-
+});
+describe('getGitRepositoryTempFolder', () => {
   it('should get repository temp folder', async () => {
     const mockRepoUrl =
       'https://github.com/backstage/backstage/blob/master/subfolder/';
@@ -89,7 +90,8 @@ describe('getDocFilesFromRepository', () => {
       '/tmp/backstage-repo/github.com/backstage/backstage/master',
     );
   });
-
+});
+describe('getLocationForEntity', () => {
   it('should get location for Entity', async () => {
     const mockEntity: Entity = {
       metadata: {
@@ -117,7 +119,8 @@ describe('getDocFilesFromRepository', () => {
     );
     expect(output.type).toBe('url');
   });
-
+});
+describe('parseReferenceAnnotation', () => {
   it('should parse Reference annotation', async () => {
     const mockEntity: Entity = {
       metadata: {
