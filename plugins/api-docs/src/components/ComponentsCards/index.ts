@@ -14,12 +14,5 @@
  * limitations under the License.
  */
 
-import { createRouteRef } from '@backstage/core';
-
-const NoIcon = () => null;
-
-export const rootRoute = createRouteRef({
-  icon: NoIcon,
-  path: '/api-docs',
-  title: 'APIs',
-});
+export { ConsumingComponentsCard } from './ConsumingComponentsCard';
+export { ProvidingComponentsCard } from './ProvidingComponentsCard';

@@ -13,26 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  Router as GitHubActionsRouter,
-  isPluginApplicableToEntity as isGitHubActionsAvailable,
-} from '@backstage/plugin-github-actions';
-import {
-  Router as CircleCIRouter,
-  isPluginApplicableToEntity as isCircleCIAvailable,
-} from '@backstage/plugin-circleci';
-import { Router as ApiDocsRouter } from '@backstage/plugin-api-docs';
-import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
-
-import React from 'react';
-import {
-  EntityPageLayout,
-  useEntity,
-  AboutCard,
-} from '@backstage/plugin-catalog';
 import { Entity } from '@backstage/catalog-model';
-import { Grid } from '@material-ui/core';
 import { WarningPanel } from '@backstage/core';
+import { ConsumedApisCard, ProvidedApisCard } from '@backstage/plugin-api-docs';
+import {
+  AboutCard, EntityPageLayout,
+  useEntity
+} from '@backstage/plugin-catalog';
+import {
+  isPluginApplicableToEntity as isCircleCIAvailable, Router as CircleCIRouter
+} from '@backstage/plugin-circleci';
+import {
+  isPluginApplicableToEntity as isGitHubActionsAvailable, Router as GitHubActionsRouter
+} from '@backstage/plugin-github-actions';
+import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
+import { Grid } from '@material-ui/core';
+import React from 'react';
+
 
 const CICDSwitcher = ({ entity }: { entity: Entity }) => {
   // This component is just an example of how you can implement your company's logic in entity page.
@@ -60,6 +57,17 @@ const OverviewContent = ({ entity }: { entity: Entity }) => (
   </Grid>
 );
 
+const ComponentApisContent = ({ entity }: { entity: Entity }) => (
+  <Grid container spacing={3} alignItems="stretch">
+    <Grid item md={6}>
+      <ProvidedApisCard entity={entity} />
+    </Grid>
+    <Grid item md={6}>
+      <ConsumedApisCard entity={entity} />
+    </Grid>
+  </Grid>
+);
+
 const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
   <EntityPageLayout>
     <EntityPageLayout.Content
@@ -75,7 +83,7 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
     <EntityPageLayout.Content
       path="/api/*"
       title="API"
-      element={<ApiDocsRouter entity={entity} />}
+      element={<ComponentApisContent entity={entity} />}
     />
     <EntityPageLayout.Content
       path="/docs/*"
