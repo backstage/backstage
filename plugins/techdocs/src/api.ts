@@ -41,6 +41,11 @@ export interface TechDocs {
   getMetadata(metadataType: string, entityId: ParsedEntityId): Promise<string>;
 }
 
+/**
+ * API to talk to techdocs-backend.
+ *
+ * @property {string} apiOrigin Set to techdocs.requestUrl as the URL for techdocs-backend API
+ */
 export class TechDocsApi implements TechDocs {
   public apiOrigin: string;
 
@@ -60,6 +65,11 @@ export class TechDocsApi implements TechDocs {
   }
 }
 
+/**
+ * API which talks to TechDocs storage to fetch files to render.
+ *
+ * @property {string} apiOrigin Set to techdocs.requestUrl as the URL for techdocs-backend API
+ */
 export class TechDocsStorageApi implements TechDocsStorage {
   public apiOrigin: string;
 
@@ -67,6 +77,14 @@ export class TechDocsStorageApi implements TechDocsStorage {
     this.apiOrigin = apiOrigin;
   }
 
+  /**
+   * Fetch HTML content as text for an individual docs page in an entity's docs site.
+   *
+   * @param {ParsedEntityId} entityId Object containing entity data like name, namespace, etc.
+   * @param {string} path The unique path to an individual docs page e.g. overview/what-is-new
+   * @returns {string} HTML content of the docs page as string
+   * @throws {Error} Throws error when the page is not found.
+   */
   async getEntityDocs(entityId: ParsedEntityId, path: string) {
     const { kind, namespace, name } = entityId;
 
@@ -77,7 +95,13 @@ export class TechDocsStorageApi implements TechDocsStorage {
     );
 
     if (request.status === 404) {
-      throw new Error('Page not found');
+      let errorMessage = 'Page not found. ';
+      // path is empty for the home page of an entity's docs site
+      if (!path) {
+        errorMessage +=
+          'This could be because there is no index.md file in the root of the docs directory of this repository.';
+      }
+      throw new Error(errorMessage);
     }
 
     return request.text();

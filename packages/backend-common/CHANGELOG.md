@@ -1,5 +1,12 @@
 # @backstage/backend-common
 
+## 0.3.1
+
+### Patch Changes
+
+- bff3305aa: Added readTree support to AzureUrlReader
+- b47dce06f: Make integration host and url configurations visible in the frontend
+
 ## 0.3.0
 
 ### Minor Changes

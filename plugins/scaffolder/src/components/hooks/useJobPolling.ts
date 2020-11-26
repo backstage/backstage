@@ -13,50 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Job } from '../../types';
 import { useApi } from '@backstage/core';
 import { scaffolderApiRef } from '../../api';
+import { useInterval } from 'react-use';
 
 const DEFAULT_POLLING_INTERVAL = 1000;
-const poll = (thunk: () => Promise<void>, ms: number) => {
-  let shouldStop = false;
-  (async () => {
-    while (!shouldStop) {
-      await thunk();
-      await new Promise(res => setTimeout(res, ms));
-    }
-  })();
-
-  return () => {
-    shouldStop = true;
-  };
-};
 
 export const useJobPolling = (
   jobId: string | null,
+  onFinish?: (j: Job) => void,
   pollingInterval = DEFAULT_POLLING_INTERVAL,
 ) => {
   const scaffolderApi = useApi(scaffolderApiRef);
-  const [job, setJob] = useState<Job | null>(null);
-
-  useEffect(() => {
-    if (!jobId) return () => {};
-
-    const stopPolling = poll(async () => {
-      const nextJobState = await scaffolderApi.getJob(jobId);
-      if (
-        nextJobState.status === 'FAILED' ||
-        nextJobState.status === 'COMPLETED'
-      ) {
-        stopPolling();
+  const [currentJob, setCurrentJob] = useState<Job | null>(null);
+  const shouldBeRunningInterval =
+    jobId &&
+    currentJob?.status !== 'COMPLETED' &&
+    currentJob?.status !== 'FAILED';
+  useInterval(
+    async () => {
+      if (jobId) {
+        const job = await scaffolderApi.getJob(jobId);
+        if (job?.status === 'COMPLETED' || job?.status === 'FAILED') {
+          onFinish?.(job);
+        }
+        setCurrentJob(job);
       }
-      setJob(nextJobState);
-    }, pollingInterval);
-    return () => {
-      stopPolling();
-    };
-  }, [jobId, setJob, scaffolderApi, pollingInterval]);
+    },
+    shouldBeRunningInterval ? pollingInterval : null,
+  );
 
-  return job;
+  return currentJob;
 };

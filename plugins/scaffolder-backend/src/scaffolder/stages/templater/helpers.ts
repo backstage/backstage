@@ -66,7 +66,7 @@ export const runCommand = async ({
   args,
   logStream = new PassThrough(),
 }: RunCommandOptions) => {
-  await new Promise((resolve, reject) => {
+  await new Promise<void>((resolve, reject) => {
     const process = spawn(command, args);
 
     process.stdout.on('data', stream => {
@@ -109,7 +109,7 @@ export const runDockerContainer = async ({
   dockerClient,
   createOptions = {},
 }: RunDockerContainerOptions) => {
-  await new Promise((resolve, reject) => {
+  await new Promise<void>((resolve, reject) => {
     dockerClient.pull(imageName, {}, (err, stream) => {
       if (err) return reject(err);
       stream.pipe(logStream, { end: false });
@@ -120,6 +120,7 @@ export const runDockerContainer = async ({
   });
 
   const userOptions: UserOptions = {};
+  // @ts-ignore
   if (process.getuid && process.getgid) {
     // Files that are created inside the Docker container will be owned by
     // root on the host system on non Mac systems, because of reasons. Mainly the fact that

@@ -19,6 +19,7 @@ import { useAsync } from 'react-use';
 import { makeStyles, Typography, Grid, Divider } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import {
+  Link,
   EmptyState,
   Progress,
   Table,
@@ -31,8 +32,9 @@ import { FiltersButton, Filters, FiltersState } from '../Filters';
 import SearchApi, { Result, SearchResults } from '../../apis';
 
 const useStyles = makeStyles(theme => ({
-  searchTerm: {
-    background: '#eee',
+  searchQuery: {
+    color: theme.palette.text.primary,
+    background: theme.palette.background.default,
     borderRadius: '10%',
   },
   tableHeader: {
@@ -65,9 +67,12 @@ type Filters = {
 // TODO: move out column to make the search result component more generic
 const columns: TableColumn[] = [
   {
-    title: 'Component Id',
+    title: 'Name',
     field: 'name',
     highlight: true,
+    render: (result: Partial<Result>) => (
+      <Link to={result.url || ''}>{result.name}</Link>
+    ),
   },
   {
     title: 'Description',
@@ -107,7 +112,7 @@ const TableHeader = ({
           <Typography variant="h6">
             {`${numberOfResults} `}
             {numberOfResults > 1 ? `results for ` : `result for `}
-            <span className={classes.searchTerm}>"{searchQuery}"</span>{' '}
+            <span className={classes.searchQuery}>"{searchQuery}"</span>{' '}
           </Typography>
         ) : (
           <Typography variant="h6">{`${numberOfResults} results`}</Typography>
@@ -121,7 +126,7 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
   const catalogApi = useApi(catalogApiRef);
 
   const [showFilters, toggleFilters] = useState(false);
-  const [filters, setFilters] = useState<FiltersState>({
+  const [selectedFilters, setSelectedFilters] = useState<FiltersState>({
     selected: 'All',
     checked: [],
   });
@@ -141,16 +146,18 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
       // apply filters
 
       // filter on selected
-      if (filters.selected !== 'All') {
+      if (selectedFilters.selected !== 'All') {
         withFilters = results.filter((result: Result) =>
-          filters.selected.includes(result.kind),
+          selectedFilters.selected.includes(result.kind),
         );
       }
 
       // filter on checked
-      if (filters.checked.length > 0) {
-        withFilters = withFilters.filter((result: Result) =>
-          filters.checked.includes(result.lifecycle),
+      if (selectedFilters.checked.length > 0) {
+        withFilters = withFilters.filter(
+          (result: Result) =>
+            result.lifecycle &&
+            selectedFilters.checked.includes(result.lifecycle),
         );
       }
 
@@ -168,7 +175,7 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
 
       setFilteredResults(withFilters);
     }
-  }, [filters, searchQuery, results]);
+  }, [selectedFilters, searchQuery, results]);
   if (loading) {
     return <Progress />;
   }
@@ -184,33 +191,49 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
   }
 
   const resetFilters = () => {
-    setFilters({
+    setSelectedFilters({
       selected: 'All',
       checked: [],
     });
   };
 
   const updateSelected = (filter: string) => {
-    setFilters(prevState => ({
+    setSelectedFilters(prevState => ({
       ...prevState,
       selected: filter,
     }));
   };
 
   const updateChecked = (filter: string) => {
-    if (filters.checked.includes(filter)) {
-      setFilters(prevState => ({
+    if (selectedFilters.checked.includes(filter)) {
+      setSelectedFilters(prevState => ({
         ...prevState,
         checked: prevState.checked.filter(item => item !== filter),
       }));
       return;
     }
 
-    setFilters(prevState => ({
+    setSelectedFilters(prevState => ({
       ...prevState,
       checked: [...prevState.checked, filter],
     }));
   };
+
+  const filterOptions = results.reduce(
+    (acc, curr) => {
+      if (curr.kind && acc.kind.indexOf(curr.kind) < 0) {
+        acc.kind.push(curr.kind);
+      }
+      if (curr.lifecycle && acc.lifecycle.indexOf(curr.lifecycle) < 0) {
+        acc.lifecycle.push(curr.lifecycle);
+      }
+      return acc;
+    },
+    {
+      kind: [] as Array<string>,
+      lifecycle: [] as Array<string>,
+    },
+  );
 
   return (
     <>
@@ -218,7 +241,8 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
         {showFilters && (
           <Grid item xs={3}>
             <Filters
-              filters={filters}
+              filters={selectedFilters}
+              filterOptions={filterOptions}
               resetFilters={resetFilters}
               updateSelected={updateSelected}
               updateChecked={updateChecked}
@@ -235,7 +259,8 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
                 searchQuery={searchQuery}
                 numberOfResults={filteredResults.length}
                 numberOfSelectedFilters={
-                  (filters.selected !== 'All' ? 1 : 0) + filters.checked.length
+                  (selectedFilters.selected !== 'All' ? 1 : 0) +
+                  selectedFilters.checked.length
                 }
                 handleToggleFilters={() => toggleFilters(!showFilters)}
               />

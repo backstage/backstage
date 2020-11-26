@@ -37,15 +37,16 @@ import {
 import { DatabaseManager } from '../database';
 import {
   AnnotateLocationEntityProcessor,
+  BuiltinKindsEntityProcessor,
   CatalogProcessor,
   CodeOwnersProcessor,
   FileReaderProcessor,
   GithubOrgReaderProcessor,
   HigherOrderOperation,
   HigherOrderOperations,
+  LdapOrgReaderProcessor,
   LocationReaders,
   LocationRefProcessor,
-  OwnerRelationProcessor,
   MicrosoftGraphOrgReaderProcessor,
   PlaceholderProcessor,
   PlaceholderResolver,
@@ -54,8 +55,6 @@ import {
 } from '../ingestion';
 import { CatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { RepoLocationAnalyzer } from '../ingestion/LocationAnalyzer';
-import { BuiltinKindsEntityProcessor } from '../ingestion/processors/BuiltinKindsEntityProcessor';
-import { LdapOrgReaderProcessor } from '../ingestion/processors/LdapOrgReaderProcessor';
 import {
   jsonPlaceholderResolver,
   textPlaceholderResolver,
@@ -288,7 +287,6 @@ export class CatalogBuilder {
         new UrlReaderProcessor({ reader, logger }),
         new CodeOwnersProcessor({ reader }),
         new LocationRefProcessor(),
-        new OwnerRelationProcessor(),
         new AnnotateLocationEntityProcessor(),
       );
     }
