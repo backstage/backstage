@@ -30,7 +30,7 @@ builder.add(circleCIApiRef, new CircleCIApi(/* optional custom url for your own 
 export default builder.build() as ApiHolder;
 ```
 
-2. Add plugin itself:
+2. Add the plugin itself:
 
 ```js
 // packages/app/src/plugins.ts
