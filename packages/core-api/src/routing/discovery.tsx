@@ -70,6 +70,60 @@ export const collectRoutes = (tree: ReactNode) => {
   return treeMap;
 };
 
+export const collectRouteParents = (tree: ReactNode) => {
+  const treeMap = new Map<RouteRef, RouteRef | undefined>();
+
+  const nodes = [{ node: tree, parent: undefined as RouteRef | undefined }];
+
+  while (nodes.length !== 0) {
+    const { parent, node } = nodes.shift()!;
+    if (!isIterableElement(node)) {
+      continue;
+    }
+
+    React.Children.forEach(node, child => {
+      if (!isIterableElement(child)) {
+        return;
+      }
+
+      const { path, element, children } = child.props as {
+        path?: string;
+        element?: ReactNode;
+        children?: ReactNode;
+      };
+
+      let nextParent = parent;
+
+      if (path) {
+        const routeRef = getComponentData<RouteRef>(child, 'core.mountPoint');
+        if (routeRef) {
+          treeMap.set(routeRef, parent);
+          nextParent = routeRef;
+        } else if (isIterableElement(element)) {
+          const elementRouteRef = getComponentData<RouteRef>(
+            element,
+            'core.mountPoint',
+          );
+          if (elementRouteRef) {
+            treeMap.set(elementRouteRef, parent);
+
+            nextParent = elementRouteRef;
+            nodes.push({
+              parent: elementRouteRef,
+              node: element.props?.children,
+            });
+          } else {
+            nodes.push({ parent, node: element.props?.children });
+          }
+        }
+      }
+      nodes.push({ parent: nextParent, node: children });
+    });
+  }
+
+  return treeMap;
+};
+
 function isIterableElement(node: ReactNode): node is JSX.Element {
   return isValidElement(node) || Array.isArray(node);
 }

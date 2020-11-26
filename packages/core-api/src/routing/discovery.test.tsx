@@ -15,7 +15,7 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import { collectRoutes } from './discovery';
+import { collectRoutes, collectRouteParents } from './discovery';
 import { createRouteRef } from './RouteRef';
 import { createPlugin } from '../plugin';
 import { createRoutableExtension } from '../lib/extensions';
@@ -58,7 +58,7 @@ describe('discovery', () => {
       </div>,
     ];
 
-    const routes = collectRoutes(
+    const root = (
       <MemoryRouter>
         <Routes>
           <Extension1 path="/foo">
@@ -83,10 +83,10 @@ describe('discovery', () => {
             <Route path="/divsoup" element={<Extension4 />} />
           </div>
         </Routes>
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
-    expect(routes).toEqual(
+    expect(collectRoutes(root)).toEqual(
       new Map([
         [ref1, '/foo'],
         [ref2, '/bar/:id'],
@@ -95,10 +95,20 @@ describe('discovery', () => {
         [ref5, '/blop'],
       ]),
     );
+
+    expect(collectRouteParents(root)).toEqual(
+      new Map([
+        [ref1, undefined],
+        [ref2, ref1],
+        [ref3, ref2],
+        [ref4, undefined],
+        [ref5, ref1],
+      ]),
+    );
   });
 
   it('should handle all react router Route patterns', () => {
-    const routes = collectRoutes(
+    const root = (
       <MemoryRouter>
         <Routes>
           <Route
@@ -116,16 +126,25 @@ describe('discovery', () => {
             <Extension5 path="/blop" />
           </Route>
         </Routes>
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
-    expect(routes).toEqual(
+    expect(collectRoutes(root)).toEqual(
       new Map([
         [ref1, '/foo'],
         [ref2, '/bar/:id'],
         [ref3, '/baz'],
         [ref4, '/divsoup'],
         [ref5, '/blop'],
+      ]),
+    );
+    expect(collectRouteParents(root)).toEqual(
+      new Map([
+        [ref1, undefined],
+        [ref2, ref1],
+        [ref3, undefined],
+        [ref4, ref3],
+        [ref5, ref3],
       ]),
     );
   });
