@@ -10,37 +10,38 @@ The Backstage application can use various external authentication providers for
 authentication. An external provider is wrapped using an
 `AuthProviderRouteHandlers` interface for handling authentication. This
 interface consists of four methods. Each of these methods is hosted at an
-endpoint (by default)`/api/auth/[provider]/method`, where `method` performs a
+endpoint (by default) `/api/auth/[provider]/method`, where `method` performs a
 certain operation as follows:
 
 ```
   /auth/[provider]/start -> Initiate a login from the web page
-  /auth/[provider]/handler/frame -> Handle a `finished` authentication operation
-  /auth/[provider]/refresh -> refresh -> Refresh the validity of a login
-  /auth/[provider]/logout -> logout a logged-in user
+  /auth/[provider]/handler/frame -> Handle a finished authentication operation
+  /auth/[provider]/refresh -> Refresh the validity of a login
+  /auth/[provider]/logout -> Log out a logged-in user
 ```
 
 The flow is as follows:
 
-1. `User` attempts to sign-in.
-2. The `auth` wrapper re-directs the user to an external authenticator.
+1. A user attempts to sign in.
+2. A popup window is opened, pointing to the `auth` endpoint. That endpoint does
+   initial preparations and then re-directs the user to an external
+   authenticator, still inside the popup.
 3. The authenticator validates the user and returns the result of the validation
-   (success OR failure), to the wrapper's endpoint (`handler/frame`)
-4. `handler/frame` will issue the appropriate response to the webpage.
-5. User signs out by clicking on an UI interface and the webpage makes a request
-   to logout the user.
+   (success OR failure), to the wrapper's endpoint (`handler/frame`).
+4. The `handler/frame` rendered b´webpage will issue the appropriate response to
+   the webpage that opened the popup window, and the popup is closed.
+5. The user signs out by clicking on a UI interface and the webpage makes a
+   request to logout the user.
 
 There are currently two different classes for two authentication mechanisms that
 implement this interface: an `OAuthAdapter` for [OAuth](https://oauth.net/2/)
 based mechanisms and a `SAMLAuthProvider` for
-[SAML](http://docs.oasis-open.org/security/saml/Post2.0/sstc-saml-tech-overview-2.0.html)
+[SAML](http://docs.oasis-open.org/security/saml/Post2.0/sstc-saml-tech-overview-2.0.html).
 
-If you do not have a `OAuth2` or a `SAML` based authentication provider, look in
-the section [below](#Implementing-Your-Own-Auth-Wrapper)
+If you do not have an `OAuth2` or `SAML` based authentication provider, look in
+the section [below](#implementing-your-own-auth-wrapper).
 
-based mechanisms.
-
-### OAuth mechanisms
+### OAuth Mechanisms
 
 For more information on how these methods are used and for which purpose, refer
 to the [OAuth documentation](oauth.md).
@@ -51,7 +52,7 @@ Backstage based applications.
 Backstage comes with a "batteries-included" set of supported commonly used OAuth
 providers: Okta, GitHub, Google, GitLab, and a generic OAuth2 provider. For a
 list of available providers, look at the available wrappers in
-`backstage/plugins/auth-backend/src/providers/`
+`backstage/plugins/auth-backend/src/providers/`.
 
 All of these use the **authorization flow** of OAuth2 to implement
 authentication.
@@ -63,14 +64,13 @@ configure them by setting the right variables in `app-config.yaml` under the
 ### Configuration
 
 Each authentication provider (except SAML) needs five parameters: an OAuth
-client ID, a client secret, an authorization endpoint and a token endpoint, and
-an app origin. The app origin is the URL at which the frontend of the
-application is hosted, and it is read from the `app.baseUrl` config. This is
-required because the application opens a popup window to perform the
-authentication, and once the flow is completed, the popup window sends a
-`postMessage` to the frontend application to indicate the result of the
-operation. Also this URL is used to verify that authentication requests are
-coming from only this endpoint.
+client ID, a client secret, an authorization endpoint, a token endpoint, and an
+app origin. The app origin is the URL at which the frontend of the application
+is hosted, and it is read from the `app.baseUrl` config. This is required
+because the application opens a popup window to perform the authentication, and
+once the flow is completed, the popup window sends a `postMessage` to the
+frontend application to indicate the result of the operation. Also this URL is
+used to verify that authentication requests are coming from only this endpoint.
 
 These values are configured via the `app-config.yaml` present in the root of
 your app folder.
@@ -101,9 +101,9 @@ auth:
 
 ## Implementing Your Own Auth Wrapper
 
-The core interface of any Auth wrapper is the `AuthProviderRouteHandlers`
-interface. This interface has 4 methods corresponding to API described in the
-initial section. Any Auth Wrapper will have to implement this interface.
+The core interface of any auth wrapper is the `AuthProviderRouteHandlers`
+interface. This interface has four methods corresponding to the API described in
+the initial section. Any auth wrapper will have to implement this interface.
 
 When initiating a login, a pop-up window is created by the frontend, to allow
 the user to initiate a login. This login request is done to the `/start`
@@ -113,29 +113,28 @@ The `start` method re-directs to the external auth provider who authenticates
 the request and re-directs the request to the `/frame/handler` endpoint, which
 is handled by the `frameHandler` method.
 
-The `frameHandler` returns a `html` response, containing a script that does a
-`postMessage` to the frontend's window containing the result of the request. The
-`WebMessageResponse` type is the message sent by the `postMessage` to the
+The `frameHandler` returns an HTML response, containing a script that does a
+`postMessage` to the frontend's window, containing the result of the request.
+The `WebMessageResponse` type is the message sent by the `postMessage` to the
 frontend.
 
 A `postMessageResponse` utility function wraps the logic of generating a
-`postMessage` response that ensures that `CORS` is successfully handled. This
+`postMessage` response that ensures that CORS is successfully handled. This
 function takes an `express.Response`, a `WebMessageResponse` and the URL of the
-frontend (`appOrigin`) as parameters and return a `HTML` page with the script
-and the message
+frontend (`appOrigin`) as parameters and return an HTML page with the script and
+the message.
 
-### OAuth wrapping Interfaces.
+### OAuth Wrapping Interfaces.
 
-Each OAuth external provider is supported by a corresponding `Passport`
-strategy. For a generic OAuth2 provider, passport has a `passport-oauth2`
-strategy. The strategy class handles the implementation details of working with
-each provider.
+Each OAuth external provider is supported by a corresponding
+[Passport](https://github.com/jaredhanson/passport) strategy. For a generic
+OAuth2 provider, passport has a `passport-oauth2` strategy. The strategy class
+handles the implementation details of working with each provider.
 
-Each strategy is wrapped by a `OAuthHandlers` interface.
+Each strategy is wrapped by an `OAuthHandlers` interface.
 
-This interface cannot be directly used as an `express` HTTP Request handler.
-
-To do so, `OAuthHandlers` are wrapped in a `OAuthAdapter`, which implements the
+This interface cannot be directly used as an Express HTTP request handler. To do
+so, `OAuthHandlers` are wrapped in an `OAuthAdapter`, which implements the
 `AuthProviderRouterHandlers` interface.
 
 #### Env
@@ -153,7 +152,7 @@ implements the `AuthProviderRouteHandlers` interface while supporting multiple
 
 To instantiate OAuth providers (the same but for different environments), use
 `OAuthEnvironmentHandler.mapConfig`. It's a helper to iterate over a
-configuration object that is a map of environment to configurations. See one of
+configuration object that is a map of environments to configurations. See one of
 the existing OAuth providers for an example of how it is used.
 
 Given the following configuration:
@@ -168,18 +167,18 @@ production:
 ```
 
 The `OAuthEnvironmentHandler.mapConfig(config, envConfig => ...)` call will
-split the `config` by the top level `development` and `production` keys, and
-pass on each block as `envConfig`.
+split the config by the top level `development` and `production` keys, and pass
+on each block as `envConfig`.
 
 For convenience, the `AuthProviderFactory` is a factory function that has to be
 implemented which can then generate a `AuthProviderRouteHandlers` for a given
-`provider`.
+provider.
 
-All of the supported providers provide a `AuthProviderFactory` that returns a
-`OAuthEnvironmentHandler` ,capable of handling authentication for multiple
-`env`s.
+All of the supported providers provide an `AuthProviderFactory` that returns an
+`OAuthEnvironmentHandler`, capable of handling authentication for multiple
+environments.
 
-### OAuth2 provider
+### OAuth2 Provider
 
 The `oauth2` provider abstracts a generic **OAuth2 + OIDC** based authentication
 provider. What this means is that after the application has been given
