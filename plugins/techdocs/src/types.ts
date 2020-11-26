@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * To uniquely identify an entity in Backstage.
+ * @property {string} kind
+ * @property {string} namespace
+ * @property {string} name
+ */
 export type ParsedEntityId = {
   kind: string;
   namespace?: string;

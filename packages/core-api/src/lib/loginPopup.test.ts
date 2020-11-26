@@ -156,11 +156,59 @@ describe('showLoginPopup', () => {
     expect(addEventListenerSpy).toBeCalledTimes(1);
     expect(removeEventListenerSpy).toBeCalledTimes(0);
 
+    const listener = addEventListenerSpy.mock.calls[0][1] as EventListener;
+    listener({
+      source: popupMock,
+      origin: 'origin',
+      data: {
+        type: 'config_info',
+        targetOrigin: 'http://localhost',
+      },
+    } as MessageEvent);
+
     setTimeout(() => {
       popupMock.closed = true;
     }, 150);
     await expect(payloadPromise).rejects.toThrow(
       'Login failed, popup was closed',
+    );
+
+    expect(openSpy).toBeCalledTimes(1);
+    expect(addEventListenerSpy).toBeCalledTimes(1);
+    expect(removeEventListenerSpy).toBeCalledTimes(1);
+  });
+
+  it('should indicate if origin does not match', async () => {
+    const openSpy = jest
+      .spyOn(window, 'open')
+      .mockReturnValue({ closed: false } as Window);
+    const addEventListenerSpy = jest.spyOn(window, 'addEventListener');
+    const removeEventListenerSpy = jest.spyOn(window, 'removeEventListener');
+    const popupMock = { closed: false };
+
+    openSpy.mockReturnValue(popupMock as Window);
+
+    const payloadPromise = showLoginPopup({
+      url: 'url',
+      name: 'name',
+      origin: 'origin',
+    });
+
+    const listener = addEventListenerSpy.mock.calls[0][1] as EventListener;
+    listener({
+      source: popupMock,
+      origin: 'origin',
+      data: {
+        type: 'config_info',
+        targetOrigin: 'http://differenthost',
+      },
+    } as MessageEvent);
+
+    setTimeout(() => {
+      popupMock.closed = true;
+    }, 150);
+    await expect(payloadPromise).rejects.toThrow(
+      'Login failed, Incorrect app origin, expected http://differenthost',
     );
 
     expect(openSpy).toBeCalledTimes(1);

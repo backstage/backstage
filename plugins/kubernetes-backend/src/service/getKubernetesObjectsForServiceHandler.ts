@@ -15,25 +15,27 @@
  */
 
 import { Logger } from 'winston';
+import { ComponentEntityV1alpha1 } from '@backstage/catalog-model';
 import {
-  AuthRequestBody,
+  KubernetesRequestBody,
   ClusterDetails,
   KubernetesServiceLocator,
   KubernetesFetcher,
   KubernetesObjectTypes,
-  ObjectsByServiceIdResponse,
+  ObjectsByEntityResponse,
+  ObjectFetchParams,
 } from '../types/types';
 import { KubernetesAuthTranslator } from '../kubernetes-auth-translator/types';
 import { KubernetesAuthTranslatorGenerator } from '../kubernetes-auth-translator/KubernetesAuthTranslatorGenerator';
 
-export type GetKubernetesObjectsByServiceIdHandler = (
+export type GetKubernetesObjectsForServiceHandler = (
   serviceId: string,
   fetcher: KubernetesFetcher,
   serviceLocator: KubernetesServiceLocator,
   logger: Logger,
-  requestBody: AuthRequestBody,
-  objectsToFetch?: Set<KubernetesObjectTypes>,
-) => Promise<ObjectsByServiceIdResponse>;
+  requestBody: KubernetesRequestBody,
+  objectTypesToFetch?: Set<KubernetesObjectTypes>,
+) => Promise<ObjectsByEntityResponse>;
 
 const DEFAULT_OBJECTS = new Set<KubernetesObjectTypes>([
   'pods',
@@ -45,14 +47,26 @@ const DEFAULT_OBJECTS = new Set<KubernetesObjectTypes>([
   'ingresses',
 ]);
 
+function parseLabelSelector(entity: ComponentEntityV1alpha1): string {
+  const matchLabels = entity?.spec?.kubernetes?.selector?.matchLabels;
+  if (matchLabels) {
+    // TODO: figure out how to convert the selector to the full query param from the yaml
+    //  (as shown here https://github.com/kubernetes/apimachinery/blob/master/pkg/labels/selector.go)
+    return Object.keys(matchLabels)
+      .map(key => `${key}=${matchLabels[key.toString()]}`)
+      .join(',');
+  }
+  return '';
+}
+
 // Fans out the request to all clusters that the service lives in, aggregates their responses together
-export const handleGetKubernetesObjectsByServiceId: GetKubernetesObjectsByServiceIdHandler = async (
+export const handleGetKubernetesObjectsForService: GetKubernetesObjectsForServiceHandler = async (
   serviceId,
   fetcher,
   serviceLocator,
   logger,
   requestBody,
-  objectsToFetch = DEFAULT_OBJECTS,
+  objectTypesToFetch = DEFAULT_OBJECTS,
 ) => {
   const clusterDetails: ClusterDetails[] = await serviceLocator.getClustersByServiceId(
     serviceId,
@@ -78,14 +92,21 @@ export const handleGetKubernetesObjectsByServiceId: GetKubernetesObjectsByServic
       .join(', ')}]`,
   );
 
+  const labelSelector = parseLabelSelector(requestBody.entity);
+
   return Promise.all(
-    clusterDetailsDecoratedForAuth.map(cd => {
+    clusterDetailsDecoratedForAuth.map(clusterDetails => {
       return fetcher
-        .fetchObjectsByServiceId(serviceId, cd, objectsToFetch)
+        .fetchObjectsForService({
+          serviceId,
+          clusterDetails,
+          objectTypesToFetch,
+          labelSelector,
+        } as ObjectFetchParams)
         .then(result => {
           return {
             cluster: {
-              name: cd.name,
+              name: clusterDetails.name,
             },
             resources: result.responses,
             errors: result.errors,

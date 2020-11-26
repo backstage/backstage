@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { ApiEntityPage } from './ApiEntityPage';
+export * from './time';

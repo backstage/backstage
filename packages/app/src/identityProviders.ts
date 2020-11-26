@@ -22,9 +22,16 @@ import {
   samlAuthApiRef,
   microsoftAuthApiRef,
   oneloginAuthApiRef,
+  oidcAuthApiRef,
 } from '@backstage/core';
 
 export const providers = [
+  {
+    id: 'oidc-auth-provider',
+    title: 'Oidc',
+    message: 'Sign In using OpenId Connect',
+    apiRef: oidcAuthApiRef,
+  },
   {
     id: 'google-auth-provider',
     title: 'Google',

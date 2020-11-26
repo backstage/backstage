@@ -1,5 +1,14 @@
 # @backstage/plugin-cost-insights
 
+## 0.4.1
+
+### Patch Changes
+
+- 8e6728e25: fix product icon configuration
+- c93a14b49: truncate large percentages > 1000%
+- Updated dependencies [475fc0aaa]
+  - @backstage/core@0.3.2
+
 ## 0.4.0
 
 ### Minor Changes
