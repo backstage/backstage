@@ -7,23 +7,10 @@ Website: [https://circleci.com/](https://circleci.com/)
 
 ## Setup
 
-0. If you have standalone app (you didn't clone this repo), then do
+1. If you have standalone app (you didn't clone this repo), then do
 
 ```bash
 yarn add @backstage/plugin-circleci
-```
-
-1. Add plugin API to your Backstage instance:
-
-```js
-// packages/app/src/api.ts
-import { ApiHolder } from '@backstage/core';
-import { CircleCIApi, circleCIApiRef } from '@backstage/plugin-circleci';
-
-const builder = ApiRegistry.builder();
-builder.add(circleCIApiRef, new CircleCIApi(/* optional custom url for your own CircleCI instance */));
-
-export default builder.build() as ApiHolder;
 ```
 
 2. Add plugin itself:

@@ -6,28 +6,15 @@ description: Documentation on How Configuring App with plugins
 
 ## Adding existing plugins to your app
 
-The following steps assume that you have created a new Backstage app and want to add
-an existing plugin to it. We are using the
+The following steps assume that you have created a new Backstage app and want to
+add an existing plugin to it. We are using the
 [CircleCI](https://github.com/backstage/backstage/blob/master/plugins/circleci/README.md)
-in this example.
+plugin in this example.
 
-0. Add to the repo:
+1. Add the plugin's NPM package to the repo:
 
 ```bash
 yarn add @backstage/plugin-circleci
-```
-
-1. Add the plugin API to your Backstage instance:
-
-```js
-// packages/app/src/api.ts
-import { ApiHolder } from '@backstage/core';
-import { CircleCIApi, circleCIApiRef } from '@backstage/plugin-circleci';
-
-const builder = ApiRegistry.builder();
-builder.add(circleCIApiRef, new CircleCIApi(/* optional custom url for your own CircleCI instance */));
-
-export default builder.build() as ApiHolder;
 ```
 
 2. Add the plugin itself:
