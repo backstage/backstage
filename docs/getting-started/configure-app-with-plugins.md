@@ -17,7 +17,7 @@ in this example.
 yarn add @backstage/plugin-circleci
 ```
 
-1. Add plugin API to your Backstage instance:
+1. Add the plugin API to your Backstage instance:
 
 ```js
 // packages/app/src/api.ts
