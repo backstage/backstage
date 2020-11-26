@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import fs from 'fs';
+import fs from 'fs-extra';
 import os from 'os';
 import { resolve as resolvePath } from 'path';
 import Stream, { PassThrough } from 'stream';
@@ -288,45 +288,43 @@ describe('helpers', () => {
       mockFs.restore();
     });
 
-    it('should add repo_url to mkdocs.yml', () => {
+    it('should add repo_url to mkdocs.yml', async () => {
       const parsedLocationAnnotation: ParsedLocationAnnotation = {
         type: 'github',
         target: 'https://github.com/backstage/backstage',
       };
 
-      patchMkdocsYmlPreBuild(
+      await patchMkdocsYmlPreBuild(
         '/mkdocs.yml',
         mockLogger,
         parsedLocationAnnotation,
       );
 
-      const updatedMkdocsYml = fs.readFileSync('/mkdocs.yml').toString();
+      const updatedMkdocsYml = await fs.readFile('/mkdocs.yml');
 
-      expect(updatedMkdocsYml).toContain(
+      expect(updatedMkdocsYml.toString()).toContain(
         "repo_url: 'https://github.com/backstage/backstage'",
       );
     });
 
-    it('should not override existing repo_url in mkdocs.yml', () => {
+    it('should not override existing repo_url in mkdocs.yml', async () => {
       const parsedLocationAnnotation: ParsedLocationAnnotation = {
         type: 'github',
         target: 'https://github.com/neworg/newrepo',
       };
 
-      patchMkdocsYmlPreBuild(
+      await patchMkdocsYmlPreBuild(
         '/mkdocs_with_repo_url.yml',
         mockLogger,
         parsedLocationAnnotation,
       );
 
-      const updatedMkdocsYml = fs
-        .readFileSync('/mkdocs_with_repo_url.yml')
-        .toString();
+      const updatedMkdocsYml = await fs.readFile('/mkdocs_with_repo_url.yml');
 
-      expect(updatedMkdocsYml).toContain(
+      expect(updatedMkdocsYml.toString()).toContain(
         "repo_url: 'https://github.com/backstage/backstage'",
       );
-      expect(updatedMkdocsYml).not.toContain(
+      expect(updatedMkdocsYml.toString()).not.toContain(
         "repo_url: 'https://github.com/neworg/newrepo'",
       );
     });

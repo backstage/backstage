@@ -58,7 +58,7 @@ export class TechDocsApi implements TechDocs {
    *
    * When docs are built, we generate a techdocs_metadata.json and store it along with the generated
    * static files. It includes necessary data about the docs site. This method requests techdocs-backend
-   * which retries the TechDocs metadata.
+   * which retrieves the TechDocs metadata.
    *
    * @param {ParsedEntityId} entityId Object containing entity data like name, namespace, etc.
    */

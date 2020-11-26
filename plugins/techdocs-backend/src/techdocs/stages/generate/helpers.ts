@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import fs from 'fs';
+import fs from 'fs-extra';
 import { spawn } from 'child_process';
 import { Writable, PassThrough } from 'stream';
 import Docker from 'dockerode';
@@ -231,7 +231,7 @@ export const patchMkdocsYmlPreBuild = async (
 ) => {
   let mkdocsYmlFileString;
   try {
-    mkdocsYmlFileString = fs.readFileSync(mkdocsYmlPath, 'utf8');
+    mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
   } catch (error) {
     logger.warn(
       `Could not read file ${mkdocsYmlPath} before running the generator. ${error.message}`,
@@ -267,7 +267,7 @@ export const patchMkdocsYmlPreBuild = async (
   }
 
   try {
-    fs.writeFileSync(mkdocsYmlPath, yaml.safeDump(mkdocsYml), 'utf8');
+    await fs.writeFile(mkdocsYmlPath, yaml.safeDump(mkdocsYml), 'utf8');
   } catch (error) {
     logger.warn(
       `Could not write to ${mkdocsYmlPath} after updating it before running the generator. ${error.message}`,
