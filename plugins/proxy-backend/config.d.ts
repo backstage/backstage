@@ -17,7 +17,7 @@
 export interface Config {
   /**
    * A list of forwarding-proxies. Each key is a route to match,
-   * below the prefix that the proxy plugin is mounted on. I must
+   * below the prefix that the proxy plugin is mounted on. It must
    * start with a '/'.
    */
   proxy: { [key: string]: string | ProxyConfig };
