@@ -28,7 +28,7 @@ spec:
   type: service
   lifecycle: production
   owner: guest
-  implementsApis:
+  providesApis:
     - example-api
 `;
 
@@ -49,8 +49,7 @@ export const MissingImplementsApisEmptyState = () => {
       description={
         <Typography>
           Components can implement APIs that are displayed on this page. You
-          need to fill the <code>implementsApis</code> field to enable this
-          tool.
+          need to fill the <code>providesApis</code> field to enable this tool.
         </Typography>
       }
       action={
@@ -71,7 +70,7 @@ export const MissingImplementsApisEmptyState = () => {
           <Button
             variant="contained"
             color="primary"
-            href="https://backstage.io/docs/features/software-catalog/descriptor-format#specimplementsapis-optional"
+            href="https://backstage.io/docs/features/software-catalog/descriptor-format#specprovidesapis-optional"
           >
             Read more
           </Button>

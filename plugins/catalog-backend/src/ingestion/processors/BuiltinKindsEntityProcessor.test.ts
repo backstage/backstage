@@ -68,12 +68,14 @@ describe('BuiltinKindsEntityProcessor', () => {
           owner: 'o',
           lifecycle: 'l',
           implementsApis: ['a'],
+          providesApis: ['b'],
+          consumesApis: ['c'],
         },
       };
 
       await processor.postProcessEntity(entity, location, emit);
 
-      expect(emit).toBeCalledTimes(4);
+      expect(emit).toBeCalledTimes(8);
       expect(emit).toBeCalledWith({
         type: 'relation',
         relation: {
@@ -104,6 +106,38 @@ describe('BuiltinKindsEntityProcessor', () => {
           source: { kind: 'Component', namespace: 'default', name: 'n' },
           type: 'providesApi',
           target: { kind: 'API', namespace: 'default', name: 'a' },
+        },
+      });
+      expect(emit).toBeCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'API', namespace: 'default', name: 'b' },
+          type: 'apiProvidedBy',
+          target: { kind: 'Component', namespace: 'default', name: 'n' },
+        },
+      });
+      expect(emit).toBeCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Component', namespace: 'default', name: 'n' },
+          type: 'providesApi',
+          target: { kind: 'API', namespace: 'default', name: 'b' },
+        },
+      });
+      expect(emit).toBeCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'API', namespace: 'default', name: 'c' },
+          type: 'apiConsumedBy',
+          target: { kind: 'Component', namespace: 'default', name: 'n' },
+        },
+      });
+      expect(emit).toBeCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Component', namespace: 'default', name: 'n' },
+          type: 'consumesApi',
+          target: { kind: 'API', namespace: 'default', name: 'c' },
         },
       });
     });
