@@ -14,34 +14,44 @@
  * limitations under the License.
  */
 
-import React, { isValidElement, ReactNode } from 'react';
+import { isValidElement, ReactNode, ReactElement, Children } from 'react';
 import { RouteRef } from './types';
 import { getComponentData } from '../extensions';
 
 type TraverseFunc<Context> = (
-  node: JSX.Element,
+  node: ReactElement,
+  parent: ReactElement,
   context: Context,
 ) => Generator<
   Context extends undefined
-    ? { children: JSX.Element; context?: Context }
-    : { children: JSX.Element; context: Context },
+    ? { children: ReactNode; context?: Context }
+    : { children: ReactNode; context: Context },
   void,
   void
 >;
 
-function traverse<Context>(
-  root: ReactNode,
-  initialContext: Context,
+function traverse<Context = undefined>(
+  options: { root: ReactElement; initialContext?: Context },
   traverseFunc: TraverseFunc<Context>,
 ): void {
   const visited = new Set();
-  const nodes = [{ children: root, context: initialContext }];
+  const nodes: Array<{
+    children: ReactNode;
+    parent: ReactElement;
+    context: Context;
+  }> = [
+    {
+      children: Children.toArray(options.root),
+      parent: options.root,
+      context: options.initialContext!,
+    },
+  ];
 
   while (nodes.length !== 0) {
-    const { children, context } = nodes.shift()!;
+    const { children, parent, context } = nodes.shift()!;
 
-    React.Children.forEach(children, child => {
-      if (!isIterableElement(child)) {
+    Children.forEach(children, child => {
+      if (!isValidElement(child)) {
         return;
       }
       if (visited.has(child)) {
@@ -53,36 +63,48 @@ function traverse<Context>(
       }
       visited.add(child);
 
-      for (const next of traverseFunc(child, context)) {
-        nodes.push(next as { children: JSX.Element; context: Context });
+      for (const next of traverseFunc(child, parent, context)) {
+        nodes.push({
+          children: next.children,
+          context: next.context!,
+          parent: child,
+        });
       }
     });
   }
 }
 
-export const collectRoutes = (tree: ReactNode) => {
+export const collectRoutes = (root: ReactElement) => {
   const treeMap = new Map<RouteRef, string>();
 
-  traverse(tree, undefined, function* traverseFunc(node) {
+  traverse({ root }, function* traverseFunc(node, parent: ReactElement) {
     const { path, element, children } = node.props as {
       path?: string;
       element?: ReactNode;
       children?: ReactNode;
     };
-    if (path) {
-      const routeRef = getComponentData<RouteRef>(node, 'core.mountPoint');
-      if (routeRef) {
-        treeMap.set(routeRef, path);
-      } else if (isIterableElement(element)) {
-        const elementRouteRef = getComponentData<RouteRef>(
-          element,
-          'core.mountPoint',
-        );
-        if (elementRouteRef) {
-          treeMap.set(elementRouteRef, path);
-        }
-        yield { children: element.props?.children };
+    if (parent.props.element === node) {
+      yield { children };
+      return;
+    }
+    const routeRef = getComponentData<RouteRef>(node, 'core.mountPoint');
+    if (routeRef) {
+      if (!path) {
+        throw new Error('Mounted routable extension must have a path');
       }
+      treeMap.set(routeRef, path);
+    } else if (isValidElement(element)) {
+      const elementRouteRef = getComponentData<RouteRef>(
+        element,
+        'core.mountPoint',
+      );
+      if (elementRouteRef) {
+        if (!path) {
+          throw new Error('Route element must have a path');
+        }
+        treeMap.set(elementRouteRef, path);
+      }
+      yield { children: element };
     }
 
     yield { children };
@@ -91,47 +113,44 @@ export const collectRoutes = (tree: ReactNode) => {
   return treeMap;
 };
 
-export const collectRouteParents = (tree: ReactNode) => {
+export const collectRouteParents = (root: ReactElement) => {
   const treeMap = new Map<RouteRef, RouteRef | undefined>();
 
-  traverse<RouteRef | undefined>(tree, undefined, function* traverseFunc(
-    node,
-    parent,
-  ) {
-    const { path, element, children } = node.props as {
-      path?: string;
-      element?: ReactNode;
-      children?: ReactNode;
-    };
+  traverse<RouteRef | undefined>(
+    { root, initialContext: undefined },
+    function* traverseFunc(node, parent, parentRouteRef) {
+      const { element, children } = node.props as {
+        element?: ReactNode;
+        children?: ReactNode;
+      };
+      if (parent.props.element === node) {
+        yield { children };
+        return;
+      }
 
-    let nextParent = parent;
+      let nextParent = parentRouteRef;
 
-    if (path) {
       const routeRef = getComponentData<RouteRef>(node, 'core.mountPoint');
       if (routeRef) {
-        treeMap.set(routeRef, parent);
+        treeMap.set(routeRef, parentRouteRef);
         nextParent = routeRef;
-      } else if (isIterableElement(element)) {
+      } else if (isValidElement(element)) {
         const elementRouteRef = getComponentData<RouteRef>(
           element,
           'core.mountPoint',
         );
 
         if (elementRouteRef) {
-          treeMap.set(elementRouteRef, parent);
+          treeMap.set(elementRouteRef, parentRouteRef);
           nextParent = elementRouteRef;
-          yield { children: element.props?.children, context: elementRouteRef };
+          yield { children: element, context: elementRouteRef };
         } else {
-          yield { children: element.props?.children, context: parent };
+          yield { children: element, context: parentRouteRef };
         }
       }
-    }
-    yield { children, context: nextParent };
-  });
+      yield { children, context: nextParent };
+    },
+  );
 
   return treeMap;
 };
-
-function isIterableElement(node: ReactNode): node is JSX.Element {
-  return isValidElement(node) || Array.isArray(node);
-}
