@@ -1320,37 +1320,6 @@
     uuid "^8.0.0"
     yup "^0.29.3"
 
-"@backstage/plugin-catalog-backend@^0.2.2":
-  version "0.2.2"
-  resolved "https://registry.npmjs.org/@backstage/plugin-catalog-backend/-/plugin-catalog-backend-0.2.2.tgz#4e17e0376a920f1425de5b0997d34134ff101a11"
-  integrity sha512-2pxcqQ3C+FGqYDwL7dkMm76zNM75IF1P8rb3iKrbv8qRRwPqtT0wUx+Gctv3RSL8WgGyCxP1Ho9dQ+FC7o2YSQ==
-  dependencies:
-    "@azure/msal-node" "^1.0.0-alpha.8"
-    "@backstage/backend-common" "^0.3.1"
-    "@backstage/catalog-model" "^0.3.0"
-    "@backstage/config" "^0.1.1"
-    "@octokit/graphql" "^4.5.6"
-    "@types/express" "^4.17.6"
-    codeowners-utils "^1.0.2"
-    core-js "^3.6.5"
-    cross-fetch "^3.0.6"
-    express "^4.17.1"
-    express-promise-router "^3.0.3"
-    fs-extra "^9.0.0"
-    git-url-parse "^11.4.0"
-    knex "^0.21.6"
-    ldapjs "^2.2.0"
-    lodash "^4.17.15"
-    morgan "^1.10.0"
-    p-limit "^3.0.2"
-    qs "^6.9.4"
-    sqlite3 "^5.0.0"
-    uuid "^8.0.0"
-    winston "^3.2.1"
-    yaml "^1.9.2"
-    yn "^4.0.0"
-    yup "^0.29.3"
-
 "@bcoe/v8-coverage@^0.2.3":
   version "0.2.3"
   resolved "https://registry.npmjs.org/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
