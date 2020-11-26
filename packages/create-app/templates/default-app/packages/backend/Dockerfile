@@ -1,11 +1,12 @@
 FROM node:12-buster
+ARG NPM_TOKEN
 
 WORKDIR /usr/src/app
 
 # Copy repo skeleton first, to avoid unnecessary docker cache invalidation.
 # The skeleton contains the package.json of each package in the monorepo,
 # and along with yarn.lock and the root package.json, that's enough to run yarn install.
-ADD yarn.lock package.json skeleton.tar ./
+ADD .npmrc* yarn.lock package.json skeleton.tar ./
 
 RUN yarn install --frozen-lockfile --production --network-timeout 300000 && rm -rf "$(yarn cache dir)"
 
