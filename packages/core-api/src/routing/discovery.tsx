@@ -16,7 +16,7 @@
 
 import React, { isValidElement, ReactNode } from 'react';
 import { RouteRef } from './types';
-import { getComponentData } from '../lib/componentData';
+import { getComponentData } from '../extensions';
 
 export const collectRoutes = (tree: ReactNode) => {
   const treeMap = new Map<RouteRef, string>();

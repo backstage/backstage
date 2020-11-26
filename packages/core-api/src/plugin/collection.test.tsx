@@ -20,7 +20,7 @@ import { createPlugin } from '../plugin';
 import {
   createRoutableExtension,
   createComponentExtension,
-} from '../lib/extensions';
+} from '../extensions';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { collectPlugins } from './collection';
 

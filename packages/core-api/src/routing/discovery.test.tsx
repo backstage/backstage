@@ -18,7 +18,7 @@ import React, { PropsWithChildren } from 'react';
 import { collectRoutes, collectRouteParents } from './discovery';
 import { createRouteRef } from './RouteRef';
 import { createPlugin } from '../plugin';
-import { createRoutableExtension } from '../lib/extensions';
+import { createRoutableExtension } from '../extensions';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 
 const mockConfig = () => ({ path: '/foo', title: 'Foo' });

@@ -31,7 +31,7 @@
 
 import React, { isValidElement, ReactNode } from 'react';
 import { BackstagePlugin } from './types';
-import { getComponentData } from '../lib/componentData';
+import { getComponentData } from '../extensions';
 
 export const collectPlugins = (tree: ReactNode) => {
   const plugins = new Set<BackstagePlugin>();
