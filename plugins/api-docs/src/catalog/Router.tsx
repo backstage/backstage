@@ -22,7 +22,7 @@ import { EntityPageApi } from './EntityPageApi';
 import { MissingImplementsApisEmptyState } from './MissingImplementsApisEmptyState';
 
 const isPluginApplicableToEntity = (entity: Entity) => {
-  // TODO: Als support RELATION_CONSUMES_API
+  // TODO: Also support RELATION_CONSUMES_API
   return entity.relations?.some(r => r.type === RELATION_PROVIDES_API);
 };
 

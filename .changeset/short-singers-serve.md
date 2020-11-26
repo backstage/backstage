@@ -11,5 +11,5 @@ semantic.
 After Dec 14th, the fields will be removed from types and classes of the Backstage repository. At
 the first release after that, they will not be present in released packages either.
 
-If your catalog-info.yaml files still contain this fields after the deletion, they will still be
-valid and your ingestion will not break, but they won't be visible in the types for consuming code.
+If your catalog-info.yaml files still contain this field after the deletion, they will still be
+valid and your ingestion will not break, but they won't be visible in the types for consuming code, and the expected relations will not be generated based on them either.```
