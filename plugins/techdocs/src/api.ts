@@ -15,7 +15,6 @@
  */
 
 import { createApiRef } from '@backstage/core';
-
 import { ParsedEntityId } from './types';
 
 export const techdocsStorageApiRef = createApiRef<TechDocsStorageApi>({
@@ -38,7 +37,8 @@ export interface TechDocsStorage {
 }
 
 export interface TechDocs {
-  getMetadata(metadataType: string, entityId: ParsedEntityId): Promise<string>;
+  getTechDocsMetadata(entityId: ParsedEntityId): Promise<string>;
+  getEntityMetadata(entityId: ParsedEntityId): Promise<string>;
 }
 
 /**
@@ -53,10 +53,38 @@ export class TechDocsApi implements TechDocs {
     this.apiOrigin = apiOrigin;
   }
 
-  async getMetadata(metadataType: string, entityId: ParsedEntityId) {
+  /**
+   * Retrieve TechDocs metadata.
+   *
+   * When docs are built, we generate a techdocs_metadata.json and store it along with the generated
+   * static files. It includes necessary data about the docs site. This method requests techdocs-backend
+   * which retrieves the TechDocs metadata.
+   *
+   * @param {ParsedEntityId} entityId Object containing entity data like name, namespace, etc.
+   */
+  async getTechDocsMetadata(entityId: ParsedEntityId) {
     const { kind, namespace, name } = entityId;
 
-    const requestUrl = `${this.apiOrigin}/metadata/${metadataType}/${namespace}/${kind}/${name}`;
+    const requestUrl = `${this.apiOrigin}/metadata/techdocs/${namespace}/${kind}/${name}`;
+
+    const request = await fetch(`${requestUrl}`);
+    const res = await request.json();
+
+    return res;
+  }
+
+  /**
+   * Retrieve metadata about an entity.
+   *
+   * This method requests techdocs-backend which uses the catalog APIs to respond with filtered
+   * information required here.
+   *
+   * @param {ParsedEntityId} entityId Object containing entity data like name, namespace, etc.
+   */
+  async getEntityMetadata(entityId: ParsedEntityId) {
+    const { kind, namespace, name } = entityId;
+
+    const requestUrl = `${this.apiOrigin}/metadata/entity/${namespace}/${kind}/${name}`;
 
     const request = await fetch(`${requestUrl}`);
     const res = await request.json();
