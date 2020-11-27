@@ -2,7 +2,7 @@
 
 ## Overview
 
-This plugin displays PagerDuty information about an entity such as if there are any active incidents and how the escalation policy looks like.
+This plugin displays PagerDuty information about an entity such as if there are any active incidents and what the escalation policy is.
 
 There is also an easy way to trigger an alarm directly to the person who is currently on-call.
 
