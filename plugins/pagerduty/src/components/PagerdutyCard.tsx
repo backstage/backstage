@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { useState } from 'react';
-import { useApi, EmptyState } from '@backstage/core';
+import { useApi } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
 import {
   Button,
@@ -31,9 +31,10 @@ import { useAsync } from 'react-use';
 import { Alert } from '@material-ui/lab';
 import { pagerDutyApiRef, UnauthorizedError } from '../api';
 import { IconLinkVertical } from '@backstage/plugin-catalog';
-import PagerDutyIcon from './PagerDutyIcon';
+import { PagerDutyIcon } from './PagerDutyIcon';
 import AlarmAddIcon from '@material-ui/icons/AlarmAdd';
 import { TriggerDialog } from './TriggerDialog';
+import { MissingTokenError } from './MissingTokenError';
 
 const useStyles = makeStyles(theme => ({
   links: {
@@ -93,26 +94,11 @@ export const PagerDutyCard = ({ entity }: Props) => {
     setShowDialog(!showDialog);
   };
 
-  if (error) {
-    if (error instanceof UnauthorizedError) {
-      return (
-        <EmptyState
-          missing="info"
-          title="Missing or invalid PagerDuty Token"
-          description="The request to fetch data needs a valid token. See README for more details."
-          action={
-            <Button
-              color="primary"
-              variant="contained"
-              href="https://github.com/backstage/backstage/blob/master/plugins/pagerduty/README.md"
-            >
-              Read More
-            </Button>
-          }
-        />
-      );
-    }
+  if (error instanceof UnauthorizedError) {
+    return <MissingTokenError />;
+  }
 
+  if (error) {
     return (
       <Alert severity="error">
         Error encountered while fetching information. {error.message}
