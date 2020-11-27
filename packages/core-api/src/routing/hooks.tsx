@@ -75,3 +75,42 @@ export const RoutingProvider = ({
     </RoutingContext.Provider>
   );
 };
+
+export function validateRoutes(
+  routes: Map<RouteRef, string>,
+  routeParents: Map<RouteRef, RouteRef | undefined>,
+) {
+  const notLeafRoutes = new Set(routeParents.values());
+  notLeafRoutes.delete(undefined);
+
+  for (const route of routeParents.keys()) {
+    if (notLeafRoutes.has(route)) {
+      continue;
+    }
+
+    let currentRouteRef: RouteRef | undefined = route;
+
+    let fullPath = '';
+    while (currentRouteRef) {
+      const path = routes.get(currentRouteRef);
+      if (!path) {
+        throw new Error(`No path for ${currentRouteRef}`);
+      }
+      fullPath = `${path}${fullPath}`;
+      currentRouteRef = routeParents.get(currentRouteRef);
+    }
+
+    const params = fullPath.match(/:(\w+)/g);
+    if (params) {
+      for (let j = 0; j < params.length; j++) {
+        for (let i = j + 1; i < params.length; i++) {
+          if (params[i] === params[j]) {
+            throw new Error(
+              `Parameter ${params[i]} is duplicated in path ${fullPath}`,
+            );
+          }
+        }
+      }
+    }
+  }
+}

@@ -25,7 +25,7 @@ import {
 } from '../extensions/traversal';
 import { createPlugin } from '../plugin';
 import { routeCollector, routeParentCollector } from './collectors';
-import { useRouteRef, RoutingProvider } from './hooks';
+import { useRouteRef, RoutingProvider, validateRoutes } from './hooks';
 import { createRouteRef } from './RouteRef';
 import { RouteRef } from './types';
 
@@ -176,5 +176,30 @@ describe('discovery', () => {
     expect(
       rendered.getByText('Path at inside: /foo/blob/baz'),
     ).toBeInTheDocument();
+  });
+
+  it('should handle relative routing of parameterized routes with duplicate param names', () => {
+    const root = (
+      <MemoryRouter>
+        <Routes>
+          <Extension5 path="/foo/:id">
+            <Extension4 path="/bar/:id" name="borked" routeRef={ref4} />
+          </Extension5>
+        </Routes>
+      </MemoryRouter>
+    );
+
+    const { routes, routeParents } = traverseElementTree({
+      root,
+      discoverers: [childDiscoverer, routeElementDiscoverer],
+      collectors: {
+        routes: routeCollector,
+        routeParents: routeParentCollector,
+      },
+    });
+
+    expect(() => validateRoutes(routes, routeParents)).toThrow(
+      'Parameter :id is duplicated in path /foo/:id/bar/:id',
+    );
   });
 });
