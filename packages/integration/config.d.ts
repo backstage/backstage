@@ -14,22 +14,32 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { Command } from 'commander';
-import { serveBundle } from '../../lib/bundler';
-import { loadCliConfig } from '../../lib/config';
-import { paths } from '../../lib/paths';
+export interface Config {
+  integrations?: {
+    azure?: Array<{
+      /** @visibility frontend */
+      host: string;
+    }>;
 
-export default async (cmd: Command) => {
-  const { name } = await fs.readJson(paths.resolveTarget('package.json'));
-  const waitForExit = await serveBundle({
-    entry: 'dev/index',
-    checksEnabled: cmd.check,
-    ...(await loadCliConfig({
-      args: cmd.config,
-      fromPackage: name,
-    })),
-  });
+    bitbucket?: Array<{
+      /** @visibility frontend */
+      host: string;
+      /** @visibility frontend */
+      apiBaseUrl?: string;
+    }>;
 
-  await waitForExit();
-};
+    github?: Array<{
+      /** @visibility frontend */
+      host: string;
+      /** @visibility frontend */
+      apiBaseUrl?: string;
+      /** @visibility frontend */
+      rawBaseUrl?: string;
+    }>;
+
+    gitlab?: Array<{
+      /** @visibility frontend */
+      host: string;
+    }>;
+  };
+}
