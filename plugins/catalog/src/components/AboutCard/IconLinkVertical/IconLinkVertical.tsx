@@ -75,11 +75,11 @@ export function IconLinkVertical({
   if (action) {
     return (
       <Link
-        className={
-          disabled
-            ? classnames(classes.link, classes.linkStyle, classes.disabled)
-            : classnames(classes.link, classes.linkStyle)
-        }
+        className={classnames(
+          classes.link,
+          classes.linkStyle,
+          disabled && classes.disabled,
+        )}
         href={href}
         {...props}
       >
