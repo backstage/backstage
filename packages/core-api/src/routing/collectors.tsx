@@ -20,7 +20,7 @@ import { getComponentData } from '../extensions';
 import { createCollector } from '../extensions/traversal';
 
 export const routeCollector = createCollector(
-  new Map<RouteRef, string>(),
+  () => new Map<RouteRef, string>(),
   (acc, node, parent) => {
     if (parent.props.element === node) {
       return;
@@ -51,7 +51,7 @@ export const routeCollector = createCollector(
 );
 
 export const routeParentCollector = createCollector(
-  new Map<RouteRef, RouteRef | undefined>(),
+  () => new Map<RouteRef, RouteRef | undefined>(),
   (acc, node, parent, parentRouteRef?: RouteRef) => {
     if (parent.props.element === node) {
       return parentRouteRef;

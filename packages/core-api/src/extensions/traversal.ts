@@ -120,10 +120,10 @@ export function traverseElementTree<Results>(options: {
 }
 
 export function createCollector<Result, Context>(
-  initialResult: Result,
+  accumulatorFactory: () => Result,
   visit: ReturnType<Collector<Result, Context>>['visit'],
 ): Collector<Result, Context> {
-  return () => ({ accumulator: initialResult, visit });
+  return () => ({ accumulator: accumulatorFactory(), visit });
 }
 
 export function childDiscoverer(element: ReactElement): ReactNode {
