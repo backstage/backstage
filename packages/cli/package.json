@@ -88,7 +88,7 @@
     "replace-in-file": "^6.0.0",
     "rollup": "2.33.x",
     "rollup-plugin-dts": "1.4.13",
-    "rollup-plugin-esbuild": "^2.0.0",
+    "rollup-plugin-esbuild": "2.3.x",
     "rollup-plugin-peer-deps-external": "^2.2.2",
     "rollup-plugin-postcss": "^3.1.1",
     "rollup-plugin-typescript2": "^0.27.3",
