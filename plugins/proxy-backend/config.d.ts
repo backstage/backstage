@@ -20,34 +20,36 @@ export interface Config {
    * below the prefix that the proxy plugin is mounted on. It must
    * start with a '/'.
    */
-  proxy: { [key: string]: string | ProxyConfig };
-}
-
-interface ProxyConfig {
-  /**
-   * Target of the proxy. Url string to be parsed with the url module.
-   */
-  target: string;
-  /**
-   * Object with extra headers to be added to target requests.
-   */
-  headers?: { [key: string]: string };
-  /**
-   * Changes the origin of the host header to the target URL. Default: true.
-   */
-  changeOrigin?: boolean;
-  /**
-   * Rewrite target's url path. Object-keys will be used as RegExp to match paths.
-   * If pathRewrite is not specified, it is set to a single rewrite that removes the entire prefix and route.
-   */
-  pathRewrite?: { [regexp: string]: string };
-  /**
-   * Limit the forwarded HTTP methods, for example allowedMethods: ['GET'] to enforce read-only access.
-   */
-  allowedMethods?: string[];
-  /**
-   * Limit the forwarded HTTP methods. By default, only the headers that are considered safe for CORS
-   * and headers that are set by the proxy will be forwarded.
-   */
-  allowedHeaders?: string[];
+  proxy: {
+    [key: string]:
+      | string
+      | {
+          /**
+           * Target of the proxy. Url string to be parsed with the url module.
+           */
+          target: string;
+          /**
+           * Object with extra headers to be added to target requests.
+           */
+          headers?: { [key: string]: string };
+          /**
+           * Changes the origin of the host header to the target URL. Default: true.
+           */
+          changeOrigin?: boolean;
+          /**
+           * Rewrite target's url path. Object-keys will be used as RegExp to match paths.
+           * If pathRewrite is not specified, it is set to a single rewrite that removes the entire prefix and route.
+           */
+          pathRewrite?: { [regexp: string]: string };
+          /**
+           * Limit the forwarded HTTP methods, for example allowedMethods: ['GET'] to enforce read-only access.
+           */
+          allowedMethods?: string[];
+          /**
+           * Limit the forwarded HTTP methods. By default, only the headers that are considered safe for CORS
+           * and headers that are set by the proxy will be forwarded.
+           */
+          allowedHeaders?: string[];
+        };
+  };
 }
