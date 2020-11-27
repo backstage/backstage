@@ -47,18 +47,17 @@ import {
 
 ## Client configuration
 
-The PagerDutyClient can be configured with the appropriate urls:
+The client takes a config object which contains an instance of the `discoveryApi` which is used to look up the `baseUrl` of the `proxy`, and a `eventUrl` which is defaulted to: "https://events.pagerduty.com/v2".
 
 In `apis.ts`:
 
 ```ts
 createApiFactory({
   api: pagerDutyApiRef,
-  deps: { configApi: configApiRef },
-  factory: ({ configApi }) =>
+  deps: { discoveryApi: discoveryApiRef },
+  factory: ({ discoveryApi }) =>
     new PagerDutyClientApi({
-      api_url: `https://api.pagerduty.com`,
-      events_url: 'https://events.pagerduty.com/v2',
+      discoveryApi: discoveryApi
   }),
 }),
 ```

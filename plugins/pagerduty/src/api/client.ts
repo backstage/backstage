@@ -39,7 +39,9 @@ export class PagerDutyClientApi implements PagerDutyClient {
 
   async getServiceByIntegrationKey(integrationKey: string): Promise<Service[]> {
     const params = `include[]=integrations&include[]=escalation_policies&query=${integrationKey}`;
-    const url = `${this.config.api_url}/services?${params}`;
+    const url = `${await this.config.discoveryApi.getBaseUrl(
+      'proxy',
+    )}/pagerduty/services?${params}`;
     const { services } = await this.getByUrl<ServicesResponse>(url);
 
     return services;
@@ -47,7 +49,9 @@ export class PagerDutyClientApi implements PagerDutyClient {
 
   async getIncidentsByServiceId(serviceId: string): Promise<Incident[]> {
     const params = `service_ids[]=${serviceId}`;
-    const url = `${this.config.api_url}/incidents?${params}`;
+    const url = `${await this.config.discoveryApi.getBaseUrl(
+      'proxy',
+    )}/pagerduty/incidents?${params}`;
     const { incidents } = await this.getByUrl<IncidentsResponse>(url);
 
     return incidents;
@@ -55,7 +59,9 @@ export class PagerDutyClientApi implements PagerDutyClient {
 
   async getOnCallByPolicyId(policyId: string): Promise<OnCall[]> {
     const params = `include[]=users&escalation_policy_ids[]=${policyId}`;
-    const url = `${this.config.api_url}/oncalls?${params}`;
+    const url = `${await this.config.discoveryApi.getBaseUrl(
+      'proxy',
+    )}/pagerduty/oncalls?${params}`;
     const { oncalls } = await this.getByUrl<OnCallsResponse>(url);
 
     return oncalls;
@@ -92,7 +98,10 @@ export class PagerDutyClientApi implements PagerDutyClient {
       body,
     };
 
-    return this.request(`${this.config.events_url}/enqueue`, options);
+    return this.request(
+      `${this.config.eventsUrl ?? 'https://events.pagerduty.com/v2'}/enqueue`,
+      options,
+    );
   }
 
   private async getByUrl<T>(url: string): Promise<T> {
