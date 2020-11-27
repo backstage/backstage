@@ -28,6 +28,8 @@
     "@types/jest": "^26.0.7"
   },
   "files": [
-    "dist"
-  ]
+    "dist",
+    "config.d.ts"
+  ],
+  "configSchema": "config.d.ts"
 }

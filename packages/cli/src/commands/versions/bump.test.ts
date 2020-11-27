@@ -25,6 +25,7 @@ import { withLogCollector } from '@backstage/test-utils';
 
 const REGISTRY_VERSIONS: { [name: string]: string } = {
   '@backstage/core': '1.0.6',
+  '@backstage/core-api': '1.0.7',
   '@backstage/theme': '2.0.0',
 };
 
@@ -54,11 +55,8 @@ const lockfileMock = `${HEADER}
   version "1.0.3"
 `;
 
-// This resulting lockfile isn't a real world example, since it doesn't include the package bumps
+// This is the lockfile that we produce to unlock versions before we run yarn install
 const lockfileMockResult = `${HEADER}
-"@backstage/core-api@^1.0.3", "@backstage/core-api@^1.0.6":
-  version "1.0.6"
-
 "@backstage/core@^1.0.5":
   version "1.0.6"
   dependencies:
@@ -121,15 +119,16 @@ describe('bump', () => {
     expect(logs.filter(Boolean)).toEqual([
       'Checking for updates of @backstage/theme',
       'Checking for updates of @backstage/core',
+      'Checking for updates of @backstage/core-api',
       'Some packages are outdated, updating',
       'Removing lockfile entry for @backstage/core@^1.0.3 to bump to 1.0.6',
+      'Removing lockfile entry for @backstage/core-api@^1.0.6 to bump to 1.0.7',
+      'Removing lockfile entry for @backstage/core-api@^1.0.3 to bump to 1.0.7',
       'Bumping @backstage/theme in b to ^2.0.0',
       "Running 'yarn install' to install new versions",
-      'Removing duplicate dependencies from yarn.lock',
-      "Running 'yarn install' to remove duplicates from node_modules",
     ]);
 
-    expect(runObj.runPlain).toHaveBeenCalledTimes(2);
+    expect(runObj.runPlain).toHaveBeenCalledTimes(3);
     expect(runObj.runPlain).toHaveBeenCalledWith(
       'yarn',
       'info',
@@ -143,7 +142,7 @@ describe('bump', () => {
       '@backstage/theme',
     );
 
-    expect(runObj.run).toHaveBeenCalledTimes(2);
+    expect(runObj.run).toHaveBeenCalledTimes(1);
     expect(runObj.run).toHaveBeenCalledWith('yarn', ['install']);
 
     const lockfileContents = await fs.readFile('/yarn.lock', 'utf8');

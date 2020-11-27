@@ -18,14 +18,23 @@ import { loadConfig, loadConfigSchema } from '@backstage/config-loader';
 import { ConfigReader } from '@backstage/config';
 import { paths } from './paths';
 
-export async function loadCliConfig(configArgs: string[]) {
-  const configPaths = configArgs.map(arg => paths.resolveTarget(arg));
+type Options = {
+  args: string[];
+  fromPackage?: string;
+};
+
+export async function loadCliConfig(options: Options) {
+  const configPaths = options.args.map(arg => paths.resolveTarget(arg));
 
   // Consider all packages in the monorepo when loading in config
   const LernaProject = require('@lerna/project');
   const project = new LernaProject(paths.targetDir);
   const packages = await project.getPackages();
-  const localPackageNames = packages.map((p: any) => p.name);
+
+  const localPackageNames = options.fromPackage
+    ? findPackages(packages, options.fromPackage)
+    : packages.map((p: any) => p.name);
+
   const schema = await loadConfigSchema({
     dependencies: localPackageNames,
   });
@@ -60,4 +69,35 @@ export async function loadCliConfig(configArgs: string[]) {
     }
     throw error;
   }
+}
+
+function findPackages(packages: any[], fromPackage: string): string[] {
+  const PackageGraph = require('@lerna/package-graph');
+
+  const graph = new PackageGraph(packages);
+
+  const targets = new Set<string>();
+  const searchNames = [fromPackage];
+
+  while (searchNames.length) {
+    const name = searchNames.pop()!;
+
+    if (targets.has(name)) {
+      continue;
+    }
+
+    const node = graph.get(name);
+    if (!node) {
+      throw new Error(`Package '${name}' not found`);
+    }
+
+    targets.add(name);
+
+    // Workaround for Backstage main repo only, since the CLI has some artificial devDependencies
+    if (name !== '@backstage/cli') {
+      searchNames.push(...node.localDependencies.keys());
+    }
+  }
+
+  return Array.from(targets);
 }

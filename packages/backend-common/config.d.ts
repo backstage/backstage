@@ -96,7 +96,6 @@ export interface Config {
     azure?: Array<{
       /**
        * The hostname of the given Azure instance
-       * @visibility frontend
        */
       host: string;
       /**
@@ -110,7 +109,6 @@ export interface Config {
     bitbucket?: Array<{
       /**
        * The hostname of the given Bitbucket instance
-       * @visibility frontend
        */
       host: string;
       /**
@@ -120,7 +118,6 @@ export interface Config {
       token?: string;
       /**
        * The base url for the BitBucket API, for example https://api.bitbucket.org/2.0
-       * @visibility frontend
        */
       apiBaseUrl?: string;
       /**
@@ -139,7 +136,6 @@ export interface Config {
     github?: Array<{
       /**
        * The hostname of the given GitHub instance
-       * @visibility frontend
        */
       host: string;
       /**
@@ -149,12 +145,10 @@ export interface Config {
       token?: string;
       /**
        * The base url for the GitHub API, for example https://api.github.com
-       * @visibility frontend
        */
       apiBaseUrl?: string;
       /**
        * The base url for GitHub raw resources, for example https://raw.githubusercontent.com
-       * @visibility frontend
        */
       rawBaseUrl?: string;
     }>;
@@ -163,7 +157,6 @@ export interface Config {
     gitlab?: Array<{
       /**
        * The hostname of the given GitLab instance
-       * @visibility frontend
        */
       host: string;
       /**

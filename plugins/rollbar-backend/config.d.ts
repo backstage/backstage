@@ -14,4 +14,13 @@
  * limitations under the License.
  */
 
-export { ApiEntityPage } from './ApiEntityPage';
+export interface Config {
+  /** Configuration options for the rollbar-backend plugin */
+  rollbar?: {
+    /**
+     * The autentication token for accessing the Rollbar API
+     * @see https://explorer.docs.rollbar.com/#section/Authentication
+     */
+    accountToken: string;
+  };
+}

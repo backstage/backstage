@@ -141,6 +141,10 @@ export function registerCommands(program: CommanderStatic) {
 
   program
     .command('config:print')
+    .option(
+      '--package <name>',
+      'Only load config schema that applies to the given package',
+    )
     .option('--frontend', 'Print only the frontend configuration')
     .option('--with-secrets', 'Include secrets in the printed configuration')
     .option(
@@ -153,6 +157,10 @@ export function registerCommands(program: CommanderStatic) {
 
   program
     .command('config:check')
+    .option(
+      '--package <name>',
+      'Only load config schema that applies to the given package',
+    )
     .option(...configOption)
     .description(
       'Validate that the given configuration loads and matches schema',
