@@ -15,13 +15,13 @@
  */
 
 import React, { PropsWithChildren } from 'react';
+import { routeCollector, routeParentCollector } from './collectors';
+
 import {
   traverseElementTree,
   childDiscoverer,
   routeElementDiscoverer,
-  routeCollector,
-  routeParentCollector,
-} from './discovery';
+} from '../extensions/traversal';
 import { createRouteRef } from './RouteRef';
 import { createPlugin } from '../plugin';
 import { createRoutableExtension } from '../extensions';

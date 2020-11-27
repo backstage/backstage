@@ -16,13 +16,18 @@
 
 import React, { PropsWithChildren } from 'react';
 import { createRouteRef } from '../routing';
-import { createPlugin } from '../plugin';
+import { createPlugin } from './Plugin';
 import {
   createRoutableExtension,
   createComponentExtension,
 } from '../extensions';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
-import { collectPlugins } from './collection';
+import {
+  traverseElementTree,
+  childDiscoverer,
+  routeElementDiscoverer,
+} from '../extensions/traversal';
+import { pluginCollector } from './collectors';
 
 const mockConfig = () => ({ path: '/foo', title: 'Foo' });
 const MockComponent = ({ children }: PropsWithChildren<{}>) => <>{children}</>;
@@ -80,6 +85,14 @@ describe('collection', () => {
       </MemoryRouter>
     );
 
-    expect(collectPlugins(root)).toEqual(new Set([pluginA, pluginB, pluginC]));
+    const { plugins } = traverseElementTree({
+      root,
+      discoverers: [childDiscoverer, routeElementDiscoverer],
+      collectors: {
+        plugins: pluginCollector,
+      },
+    });
+
+    expect(plugins).toEqual(new Set([pluginA, pluginB, pluginC]));
   });
 });

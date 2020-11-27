@@ -29,44 +29,16 @@
  * limitations under the License.
  */
 
-import React, { isValidElement, ReactNode } from 'react';
 import { BackstagePlugin } from './types';
 import { getComponentData } from '../extensions';
+import { createCollector } from '../extensions/traversal';
 
-export const collectPlugins = (tree: ReactNode) => {
-  const plugins = new Set<BackstagePlugin>();
-
-  const nodes = [tree];
-
-  while (nodes.length !== 0) {
-    const node = nodes.shift();
-    if (!isIterableElement(node)) {
-      continue;
+export const pluginCollector = createCollector(
+  new Set<BackstagePlugin>(),
+  (acc, node) => {
+    const plugin = getComponentData<BackstagePlugin>(node, 'core.plugin');
+    if (plugin) {
+      acc.add(plugin);
     }
-
-    React.Children.forEach(node, child => {
-      if (!isIterableElement(child)) {
-        return;
-      }
-
-      const { element, children } = child.props as {
-        element?: ReactNode;
-        children?: ReactNode;
-      };
-      const plugin = getComponentData<BackstagePlugin>(child, 'core.plugin');
-      if (plugin) {
-        plugins.add(plugin);
-      }
-      if (isIterableElement(element)) {
-        nodes.push(element);
-      }
-      nodes.push(children);
-    });
-  }
-
-  return plugins;
-};
-
-function isIterableElement(node: ReactNode): node is JSX.Element {
-  return isValidElement(node) || Array.isArray(node);
-}
+  },
+);

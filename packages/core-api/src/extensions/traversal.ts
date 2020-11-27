@@ -15,12 +15,10 @@
  */
 
 import { isValidElement, ReactNode, ReactElement, Children } from 'react';
-import { RouteRef } from './types';
-import { getComponentData } from '../extensions';
 
-type Discoverer = (element: ReactElement) => ReactNode;
+export type Discoverer = (element: ReactElement) => ReactNode;
 
-type Collector<Result, Context> = () => {
+export type Collector<Result, Context> = () => {
   accumulator: Result;
   visit(
     accumulator: Result,
@@ -121,6 +119,13 @@ export function traverseElementTree<Results>(options: {
   ) as Results;
 }
 
+export function createCollector<Result, Context>(
+  initialResult: Result,
+  visit: ReturnType<Collector<Result, Context>>['visit'],
+): Collector<Result, Context> {
+  return () => ({ accumulator: initialResult, visit });
+}
+
 export function childDiscoverer(element: ReactElement): ReactNode {
   return element.props?.children;
 }
@@ -131,72 +136,3 @@ export function routeElementDiscoverer(element: ReactElement): ReactNode {
   }
   return undefined;
 }
-
-function createCollector<Result, Context>(
-  initialResult: Result,
-  visit: ReturnType<Collector<Result, Context>>['visit'],
-): Collector<Result, Context> {
-  return () => ({ accumulator: initialResult, visit });
-}
-
-export const routeCollector = createCollector(
-  new Map<RouteRef, string>(),
-  (acc, node, parent) => {
-    if (parent.props.element === node) {
-      return;
-    }
-
-    const path: string | undefined = node.props?.path;
-    const element: ReactNode = node.props?.element;
-
-    const routeRef = getComponentData<RouteRef>(node, 'core.mountPoint');
-    if (routeRef) {
-      if (!path) {
-        throw new Error('Mounted routable extension must have a path');
-      }
-      acc.set(routeRef, path);
-    } else if (isValidElement(element)) {
-      const elementRouteRef = getComponentData<RouteRef>(
-        element,
-        'core.mountPoint',
-      );
-      if (elementRouteRef) {
-        if (!path) {
-          throw new Error('Route element must have a path');
-        }
-        acc.set(elementRouteRef, path);
-      }
-    }
-  },
-);
-
-export const routeParentCollector = createCollector(
-  new Map<RouteRef, RouteRef | undefined>(),
-  (acc, node, parent, parentRouteRef?: RouteRef) => {
-    if (parent.props.element === node) {
-      return parentRouteRef;
-    }
-
-    const element: ReactNode = node.props?.element;
-
-    let nextParent = parentRouteRef;
-
-    const routeRef = getComponentData<RouteRef>(node, 'core.mountPoint');
-    if (routeRef) {
-      acc.set(routeRef, parentRouteRef);
-      nextParent = routeRef;
-    } else if (isValidElement(element)) {
-      const elementRouteRef = getComponentData<RouteRef>(
-        element,
-        'core.mountPoint',
-      );
-
-      if (elementRouteRef) {
-        acc.set(elementRouteRef, parentRouteRef);
-        nextParent = elementRouteRef;
-      }
-    }
-
-    return nextParent;
-  },
-);
