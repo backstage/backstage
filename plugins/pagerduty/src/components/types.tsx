@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { DiscoveryApi } from '@backstage/core';
+
 export type Incident = {
   id: string;
   title: string;
@@ -76,6 +78,6 @@ export type RequestOptions = {
 };
 
 export type ClientApiConfig = {
-  api_url: string;
-  events_url: string;
+  eventsUrl?: string;
+  discoveryApi: DiscoveryApi;
 };

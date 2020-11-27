@@ -17,7 +17,7 @@ import {
   createApiFactory,
   createPlugin,
   createRouteRef,
-  configApiRef,
+  discoveryApiRef,
 } from '@backstage/core';
 import { pagerDutyApiRef, PagerDutyClientApi } from './api';
 
@@ -31,13 +31,10 @@ export const plugin = createPlugin({
   apis: [
     createApiFactory({
       api: pagerDutyApiRef,
-      deps: { configApi: configApiRef },
-      factory: ({ configApi }) =>
+      deps: { discoveryApi: discoveryApiRef },
+      factory: ({ discoveryApi }) =>
         new PagerDutyClientApi({
-          api_url: `${configApi.getString(
-            'backend.baseUrl',
-          )}/api/proxy/pagerduty`,
-          events_url: 'https://events.pagerduty.com/v2',
+          discoveryApi: discoveryApi,
         }),
     }),
   ],
