@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/plugin-groups",
+  "name": "@backstage/plugin-org",
   "version": "0.2.3",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -28,7 +28,6 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
     "react": "^16.13.1",
-    "react-avatar": "^3.9.7",
     "react-dom": "^16.13.1",
     "react-router-dom": "6.0.0-beta.0",
     "react-use": "^15.3.3"

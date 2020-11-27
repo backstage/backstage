@@ -14,21 +14,13 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Typography, Grid } from '@material-ui/core';
-import { InfoCard } from '@backstage/core';
+import { Grid } from '@material-ui/core';
 import { GroupsComponent } from '../GroupsComponent';
 import { GroupsTable } from '../GroupsTable';
 
 export const GroupsList = () => (
   <GroupsComponent>
     <Grid container spacing={3} direction="column">
-      <Grid item>
-        <InfoCard title="Groups Graph">
-          <Typography variant="body1">
-            All content should be wrapped in a card like this.
-          </Typography>
-        </InfoCard>
-      </Grid>
       <Grid item>
         <GroupsTable />
       </Grid>

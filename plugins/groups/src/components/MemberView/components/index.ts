@@ -15,4 +15,3 @@
  */
 
 export { MemberSummary } from './MemberSummary';
-export { MemberStatistics } from './MemberStatistics';

@@ -1,6 +1,6 @@
-# squad
+# org
 
-Welcome to the squad plugin!
+Welcome to the org plugin!
 
 _This plugin was created through the Backstage CLI_
 

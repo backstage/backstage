@@ -18,12 +18,15 @@ import { Box, Grid, Link, Tooltip, Typography } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import { InfoCard, Progress, useApi } from '@backstage/core';
 import { useAsync } from 'react-use';
-import { catalogApiRef } from '@backstage/plugin-catalog';
+import {
+  catalogApiRef,
+  useEntityCompoundName,
+} from '@backstage/plugin-catalog';
 import { UserEntity } from '@backstage/catalog-model';
-import Avatar from 'react-avatar';
 import EmailIcon from '@material-ui/icons/Email';
 import GroupIcon from '@material-ui/icons/Group';
 import { Link as RouterLink, generatePath, useParams } from 'react-router-dom';
+import { Avatar } from '../../Avatar';
 import { viewGroupRouteRef } from '../../../plugin';
 
 const GroupLink = ({
@@ -48,15 +51,14 @@ const GroupLink = ({
 export const MemberSummary = () => {
   const catalogApi = useApi(catalogApiRef);
   const { memberName } = useParams();
+  const { namespace } = useEntityCompoundName();
   const { loading, error, value: member } = useAsync(async () => {
-    const members = await catalogApi.getEntities({
-      filter: {
-        kind: 'User',
-      },
+    const member = await catalogApi.getEntityByName({
+      kind: 'User',
+      namespace,
+      name: memberName,
     });
-    return ((members.items as unknown) as Array<UserEntity>).filter(
-      member => member.metadata.name === memberName,
-    )[0];
+    return member as UserEntity;
   }, [catalogApi]);
 
   if (loading) return <Progress />;
@@ -77,10 +79,8 @@ export const MemberSummary = () => {
             height="100%"
           >
             <Avatar
-              name={profile?.displayName}
-              src={profile?.picture}
-              size="75px"
-              round
+              displayName={profile?.displayName}
+              picture={profile?.picture}
             />
           </Box>
         </Grid>

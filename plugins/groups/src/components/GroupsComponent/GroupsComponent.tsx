@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { Header, Page, Content, SupportButton } from '@backstage/core';
 import {
   Box,
@@ -53,16 +53,20 @@ const BreadcrumbsComponent = () => {
       </RouterLink>
       {memberName && (
         <Typography color="inherit" classes={{ root: classes.text }}>
-          <Box display="flex" alignItems="center">
-            <Box mr={1}>{memberName.replace(/\./gi, ' ')}</Box>
+          <Box display="flex" alignItems="center" component="span">
+            <Box mr={1} component="span">
+              {memberName.replace(/\./gi, ' ')}
+            </Box>
             <PersonIcon fontSize="inherit" />
           </Box>
         </Typography>
       )}
       {groupName && (
         <Typography color="inherit">
-          <Box display="flex" alignItems="center">
-            <Box mr={1}>{groupName}</Box>
+          <Box display="flex" alignItems="center" component="span">
+            <Box mr={1} component="span">
+              {groupName}
+            </Box>
             <GroupIcon fontSize="inherit" />
           </Box>
         </Typography>
@@ -71,12 +75,8 @@ const BreadcrumbsComponent = () => {
   );
 };
 
-export const GroupsComponent = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => (
-  <Page themeId="tool">
+export const GroupsComponent = ({ children }: PropsWithChildren<{}>) => (
+  <Page themeId="home">
     <Header title="Groups" />
     <Content>
       <Box

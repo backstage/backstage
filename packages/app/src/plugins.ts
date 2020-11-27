@@ -40,4 +40,4 @@ export { plugin as GitHubInsights } from '@roadiehq/backstage-plugin-github-insi
 export { plugin as UserSettings } from '@backstage/plugin-user-settings';
 export { plugin as Buildkite } from '@roadiehq/backstage-plugin-buildkite';
 export { plugin as Search } from '@backstage/plugin-search';
-export { plugin as Groups } from '@backstage/plugin-groups';
+export { plugin as Org } from '@backstage/plugin-org';

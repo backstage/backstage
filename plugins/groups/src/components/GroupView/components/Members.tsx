@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import React from 'react';
-import Avatar from 'react-avatar';
 import Alert from '@material-ui/lab/Alert';
 import {
   Box,
@@ -31,15 +30,10 @@ import { Link as RouterLink, generatePath, useParams } from 'react-router-dom';
 import { catalogApiRef } from '@backstage/plugin-catalog';
 import { useAsync } from 'react-use';
 import { viewMemberRouteRef } from '../../../plugin';
+import { Avatar } from '../../Avatar';
 
 const useStyles = makeStyles(() =>
   createStyles({
-    infoCard: {
-      '& .sb-avatar': {
-        position: 'absolute',
-        top: '-25px',
-      },
-    },
     card: {
       overflow: 'visible',
       position: 'relative',
@@ -51,7 +45,6 @@ const MemberComponent = ({ member }: { member: UserEntity }) => {
   const classes = useStyles();
   const { name: metaName } = member.metadata;
   const { profile } = member.spec;
-
   return (
     <Grid item md={3}>
       <Card raised classes={{ root: classes.card }}>
@@ -63,10 +56,12 @@ const MemberComponent = ({ member }: { member: UserEntity }) => {
           justifyContent="center"
         >
           <Avatar
-            name={profile?.displayName}
-            src={profile?.picture}
-            size="50px"
-            round
+            displayName={profile?.displayName}
+            picture={profile?.picture}
+            customStyles={{
+              position: 'absolute',
+              top: '-25px',
+            }}
           />
           <Box py={4} textAlign="center">
             <Typography variant="h5">
@@ -88,7 +83,6 @@ const MemberComponent = ({ member }: { member: UserEntity }) => {
 };
 
 export const Members = () => {
-  const classes = useStyles();
   const { groupName } = useParams();
   const catalogApi = useApi(catalogApiRef);
   const { loading, error, value: members } = useAsync(async () => {
@@ -108,11 +102,7 @@ export const Members = () => {
 
   return (
     <Grid item>
-      <InfoCard
-        title="Members"
-        subheader={`of ${groupName}`}
-        className={classes.infoCard}
-      >
+      <InfoCard title="Members" subheader={`of ${groupName}`}>
         <Grid container spacing={3}>
           {members && members.length ? (
             members.map(member => (
