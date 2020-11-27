@@ -1308,7 +1308,7 @@
     to-fast-properties "^2.0.0"
 
 "@backstage/catalog-model@^0.2.0":
-  version "0.3.0"
+  version "0.3.1"
   dependencies:
     "@backstage/config" "^0.1.1"
     "@types/json-schema" "^7.0.5"
@@ -21172,7 +21172,7 @@ rollup-plugin-dts@1.4.13:
   optionalDependencies:
     "@babel/code-frame" "^7.10.4"
 
-rollup-plugin-esbuild@^2.0.0:
+rollup-plugin-esbuild@2.3.x:
   version "2.3.0"
   resolved "https://registry.npmjs.org/rollup-plugin-esbuild/-/rollup-plugin-esbuild-2.3.0.tgz#7c107d4508af80d30966a148b306cb7d5b36b258"
   integrity sha512-lNbWDRaClwXauaIybuaiOBRWgxcp3GkZu0UUix9yH/OHFgVohKmzlU0NtNbvfbxAcfEooyuBRAv6YCaJl1Mbpw==
