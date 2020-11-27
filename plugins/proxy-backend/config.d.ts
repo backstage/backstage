@@ -20,7 +20,7 @@ export interface Config {
    * below the prefix that the proxy plugin is mounted on. It must
    * start with a '/'.
    */
-  proxy: {
+  proxy?: {
     [key: string]:
       | string
       | {
