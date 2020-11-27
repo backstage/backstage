@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -111,7 +111,7 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/backend-common": "^0.3.1",
+    "@backstage/backend-common": "^0.3.2",
     "@backstage/config": "^0.1.1",
     "@backstage/core": "^0.3.2",
     "@backstage/dev-utils": "^0.1.4",

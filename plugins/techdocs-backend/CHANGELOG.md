@@ -1,5 +1,22 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.3.0
+
+### Minor Changes
+
+- 4b53294a6: - Use techdocs annotation to add repo_url if missing in mkdocs.yml. Having repo_url creates a Edit button on techdocs pages.
+  - techdocs-backend: API endpoint `/metadata/mkdocs/*` renamed to `/metadata/techdocs/*`
+
+### Patch Changes
+
+- Updated dependencies [3aa7efb3f]
+- Updated dependencies [ab94c9542]
+- Updated dependencies [2daf18e80]
+- Updated dependencies [069cda35f]
+- Updated dependencies [b3d4e4e57]
+  - @backstage/backend-common@0.3.2
+  - @backstage/catalog-model@0.3.1
+
 ## 0.2.2
 
 ### Patch Changes
