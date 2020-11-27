@@ -16,8 +16,9 @@
 
 import React, { createContext, ReactNode, useContext } from 'react';
 import { RouteRef } from './types';
+import { generatePath } from 'react-router-dom';
 
-export type RouteFunc = () => string;
+export type RouteFunc = (params?: Record<string, string>) => string;
 
 class RouteResolver {
   constructor(
@@ -38,8 +39,8 @@ class RouteResolver {
       currentRouteRef = this.routeParents.get(currentRouteRef);
     }
 
-    return () => {
-      return fullPath;
+    return (params?: Record<string, string>) => {
+      return generatePath(fullPath, params);
     };
   }
 }

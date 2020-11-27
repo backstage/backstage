@@ -27,6 +27,7 @@ import { createPlugin } from '../plugin';
 import { routeCollector, routeParentCollector } from './collectors';
 import { useRouteRef, RoutingProvider } from './hooks';
 import { createRouteRef } from './RouteRef';
+import { RouteRef } from './types';
 
 const mockConfig = () => ({ path: '/unused', title: 'Unused' });
 const MockComponent = ({ children }: PropsWithChildren<{}>) => <>{children}</>;
@@ -36,11 +37,19 @@ const plugin = createPlugin({ id: 'my-plugin' });
 const ref1 = createRouteRef(mockConfig());
 const ref2 = createRouteRef(mockConfig());
 const ref3 = createRouteRef(mockConfig());
+const ref4 = createRouteRef(mockConfig());
 
-const MockRouteSource = () => {
-  const routeFunc = useRouteRef(ref2);
-  expect(routeFunc?.()).toBe('/foo/bar');
-  return null;
+const MockRouteSource = (props: {
+  name: string;
+  routeRef: RouteRef;
+  params?: Record<string, string>;
+}) => {
+  const routeFunc = useRouteRef(props.routeRef);
+  return (
+    <div>
+      Path at {props.name}: {routeFunc?.(props.params)}
+    </div>
+  );
 };
 
 const Extension1 = plugin.provide(
@@ -52,18 +61,21 @@ const Extension2 = plugin.provide(
 const Extension3 = plugin.provide(
   createRoutableExtension({ component: MockComponent, mountPoint: ref3 }),
 );
+const Extension4 = plugin.provide(
+  createRoutableExtension({ component: MockRouteSource, mountPoint: ref4 }),
+);
 
 describe('discovery', () => {
-  it('should handle all react router Route patterns', () => {
+  it('should handle simple routeRef path creation for routeRefs used in other parts of the app', () => {
     const root = (
       <MemoryRouter initialEntries={['/foo/bar']}>
         <Routes>
           <Extension1 path="/foo">
-            <Extension2 path="/bar" />
+            <Extension2 path="/bar" name="inside" routeRef={ref2} />
           </Extension1>
           <Extension3 path="/baz" />
         </Routes>
-        <MockRouteSource />
+        <MockRouteSource name="outside" routeRef={ref2} />
       </MemoryRouter>
     );
 
@@ -76,12 +88,57 @@ describe('discovery', () => {
       },
     });
 
-    render(
+    const rendered = render(
       <RoutingProvider routes={routes} routeParents={routeParents}>
         {root}
       </RoutingProvider>,
     );
 
-    expect.assertions(2);
+    expect(rendered.getByText('Path at inside: /foo/bar')).toBeInTheDocument();
+    expect(rendered.getByText('Path at outside: /foo/bar')).toBeInTheDocument();
+  });
+
+  it('should handle routeRefs with parameters', () => {
+    const root = (
+      <MemoryRouter initialEntries={['/foo/bar/:id']}>
+        <Routes>
+          <Extension1 path="/foo">
+            <Extension4
+              path="/bar/:id"
+              name="inside"
+              routeRef={ref4}
+              params={{ id: 'bleb' }}
+            />
+          </Extension1>
+        </Routes>
+        <MockRouteSource
+          name="outside"
+          routeRef={ref4}
+          params={{ id: 'blob' }}
+        />
+      </MemoryRouter>
+    );
+
+    const { routes, routeParents } = traverseElementTree({
+      root,
+      discoverers: [childDiscoverer, routeElementDiscoverer],
+      collectors: {
+        routes: routeCollector,
+        routeParents: routeParentCollector,
+      },
+    });
+
+    const rendered = render(
+      <RoutingProvider routes={routes} routeParents={routeParents}>
+        {root}
+      </RoutingProvider>,
+    );
+
+    expect(
+      rendered.getByText('Path at inside: /foo/bar/bleb'),
+    ).toBeInTheDocument();
+    expect(
+      rendered.getByText('Path at outside: /foo/bar/blob'),
+    ).toBeInTheDocument();
   });
 });
