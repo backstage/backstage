@@ -47,10 +47,10 @@ export const MissingImplementsApisEmptyState = () => {
       missing="field"
       title="No APIs implemented by this entity"
       description={
-        <Typography>
+        <>
           Components can implement APIs that are displayed on this page. You
           need to fill the <code>providesApis</code> field to enable this tool.
-        </Typography>
+        </>
       }
       action={
         <>
