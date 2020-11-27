@@ -15,12 +15,12 @@
  */
 
 import React from 'react';
-import { List, ListSubheader, LinearProgress } from '@material-ui/core';
+import { List, ListSubheader } from '@material-ui/core';
 import { EscalationUsersEmptyState } from './EscalationUsersEmptyState';
 import { EscalationUser } from './EscalationUser';
 import { useAsync } from 'react-use';
 import { pagerDutyApiRef } from '../../api';
-import { useApi } from '@backstage/core';
+import { useApi, Progress } from '@backstage/core';
 import { Alert } from '@material-ui/lab';
 
 type Props = {
@@ -46,16 +46,18 @@ export const EscalationPolicy = ({ policyId }: Props) => {
   }
 
   if (loading) {
-    return <LinearProgress />;
+    return <Progress />;
   }
 
-  return users!.length ? (
+  if (!users?.length) {
+    return <EscalationUsersEmptyState />;
+  }
+
+  return (
     <List dense subheader={<ListSubheader>ON CALL</ListSubheader>}>
       {users!.map((user, index) => (
         <EscalationUser key={index} user={user} />
       ))}
     </List>
-  ) : (
-    <EscalationUsersEmptyState />
   );
 };

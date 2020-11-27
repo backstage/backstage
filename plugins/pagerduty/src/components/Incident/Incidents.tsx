@@ -15,12 +15,12 @@
  */
 
 import React, { useEffect } from 'react';
-import { List, ListSubheader, LinearProgress } from '@material-ui/core';
+import { List, ListSubheader } from '@material-ui/core';
 import { IncidentListItem } from './IncidentListItem';
 import { IncidentsEmptyState } from './IncidentEmptyState';
 import { useAsyncFn } from 'react-use';
 import { pagerDutyApiRef } from '../../api';
-import { useApi } from '@backstage/core';
+import { useApi, Progress } from '@backstage/core';
 import { Alert } from '@material-ui/lab';
 
 type Props = {
@@ -56,16 +56,18 @@ export const Incidents = ({
   }
 
   if (loading) {
-    return <LinearProgress />;
+    return <Progress />;
   }
 
-  return incidents?.length ? (
+  if (!incidents?.length) {
+    return <IncidentsEmptyState />;
+  }
+
+  return (
     <List dense subheader={<ListSubheader>INCIDENTS</ListSubheader>}>
       {incidents!.map((incident, index) => (
         <IncidentListItem key={incident.id + index} incident={incident} />
       ))}
     </List>
-  ) : (
-    <IncidentsEmptyState />
   );
 };

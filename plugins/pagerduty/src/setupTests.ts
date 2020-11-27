@@ -14,5 +14,3 @@
  * limitations under the License.
  */
 import '@testing-library/jest-dom';
-
-global.fetch = require('node-fetch');

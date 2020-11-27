@@ -22,7 +22,6 @@ import {
   CardContent,
   CardHeader,
   Divider,
-  LinearProgress,
   makeStyles,
 } from '@material-ui/core';
 import { Incidents } from './Incident';
@@ -35,6 +34,7 @@ import { PagerDutyIcon } from './PagerDutyIcon';
 import AlarmAddIcon from '@material-ui/icons/AlarmAdd';
 import { TriggerDialog } from './TriggerDialog';
 import { MissingTokenError } from './MissingTokenError';
+import { Progress } from '@backstage/core';
 
 const useStyles = makeStyles(theme => ({
   links: {
@@ -107,7 +107,7 @@ export const PagerDutyCard = ({ entity }: Props) => {
   }
 
   if (loading) {
-    return <LinearProgress />;
+    return <Progress />;
   }
 
   const pagerdutyLink = {
