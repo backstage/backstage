@@ -16,6 +16,13 @@
 
 import { Incident, OnCall, Service } from '../components/types';
 
+export type TriggerAlarmRequest = {
+  integrationKey: string;
+  source: string;
+  description: string;
+  userName: string;
+};
+
 export interface PagerDutyClient {
   /**
    * Fetches a list of services, filtered by the provided integration key.
@@ -38,10 +45,5 @@ export interface PagerDutyClient {
   /**
    * Triggers an incident to whoever is on-call.
    */
-  triggerAlarm(
-    integrationKey: string,
-    source: string,
-    description: string,
-    userName: string,
-  ): Promise<Response>;
+  triggerAlarm(request: TriggerAlarmRequest): Promise<Response>;
 }

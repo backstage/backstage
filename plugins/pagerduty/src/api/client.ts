@@ -25,7 +25,7 @@ import {
   OnCallsResponse,
   OnCall,
 } from '../components/types';
-import { PagerDutyClient } from './types';
+import { PagerDutyClient, TriggerAlarmRequest } from './types';
 
 export class UnauthorizedError extends Error {}
 
@@ -67,12 +67,12 @@ export class PagerDutyClientApi implements PagerDutyClient {
     return oncalls;
   }
 
-  triggerAlarm(
-    integrationKey: string,
-    source: string,
-    description: string,
-    userName: string,
-  ) {
+  triggerAlarm({
+    integrationKey,
+    source,
+    description,
+    userName,
+  }: TriggerAlarmRequest): Promise<Response> {
     const body = JSON.stringify({
       event_action: 'trigger',
       routing_key: integrationKey,
