@@ -16,7 +16,7 @@
 
 import React, { createContext, ReactNode, useContext } from 'react';
 import { RouteRef } from './types';
-import { generatePath } from 'react-router-dom';
+import { generatePath, useParams } from 'react-router-dom';
 
 export type RouteFunc = (params?: Record<string, string>) => string;
 
@@ -26,7 +26,7 @@ class RouteResolver {
     private readonly routeParents: Map<RouteRef, RouteRef | undefined>,
   ) {}
 
-  resolve(routeRef: RouteRef): RouteFunc {
+  resolve(routeRef: RouteRef, parentParams: Record<string, string>): RouteFunc {
     let currentRouteRef: RouteRef | undefined = routeRef;
     let fullPath = '';
 
@@ -40,20 +40,21 @@ class RouteResolver {
     }
 
     return (params?: Record<string, string>) => {
-      return generatePath(fullPath, params);
+      return generatePath(fullPath, { ...params, ...parentParams });
     };
   }
 }
 
 const RoutingContext = createContext<RouteResolver | undefined>(undefined);
 
-export function useRouteRef(routeRef: RouteRef): RouteFunc | undefined {
+export function useRouteRef(routeRef: RouteRef): RouteFunc {
   const resolver = useContext(RoutingContext);
+  const params = useParams();
   if (!resolver) {
     throw new Error('No route resolver found in context');
   }
 
-  return resolver.resolve(routeRef);
+  return resolver.resolve(routeRef, params);
 }
 
 type ProviderProps = {

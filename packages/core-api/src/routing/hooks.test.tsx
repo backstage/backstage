@@ -38,6 +38,7 @@ const ref1 = createRouteRef(mockConfig());
 const ref2 = createRouteRef(mockConfig());
 const ref3 = createRouteRef(mockConfig());
 const ref4 = createRouteRef(mockConfig());
+const ref5 = createRouteRef(mockConfig());
 
 const MockRouteSource = (props: {
   name: string;
@@ -47,7 +48,7 @@ const MockRouteSource = (props: {
   const routeFunc = useRouteRef(props.routeRef);
   return (
     <div>
-      Path at {props.name}: {routeFunc?.(props.params)}
+      Path at {props.name}: {routeFunc(props.params)}
     </div>
   );
 };
@@ -63,6 +64,9 @@ const Extension3 = plugin.provide(
 );
 const Extension4 = plugin.provide(
   createRoutableExtension({ component: MockRouteSource, mountPoint: ref4 }),
+);
+const Extension5 = plugin.provide(
+  createRoutableExtension({ component: MockComponent, mountPoint: ref5 }),
 );
 
 describe('discovery', () => {
@@ -100,7 +104,7 @@ describe('discovery', () => {
 
   it('should handle routeRefs with parameters', () => {
     const root = (
-      <MemoryRouter initialEntries={['/foo/bar/:id']}>
+      <MemoryRouter initialEntries={['/foo/bar/wat']}>
         <Routes>
           <Extension1 path="/foo">
             <Extension4
@@ -139,6 +143,38 @@ describe('discovery', () => {
     ).toBeInTheDocument();
     expect(
       rendered.getByText('Path at outside: /foo/bar/blob'),
+    ).toBeInTheDocument();
+  });
+
+  it('should handle relative routing within parameterized routes', () => {
+    const root = (
+      <MemoryRouter initialEntries={['/foo/blob/bar']}>
+        <Routes>
+          <Extension5 path="/foo/:id">
+            <Extension2 path="/bar" name="inside" routeRef={ref3} />
+            <Extension3 path="/baz" />
+          </Extension5>
+        </Routes>
+      </MemoryRouter>
+    );
+
+    const { routes, routeParents } = traverseElementTree({
+      root,
+      discoverers: [childDiscoverer, routeElementDiscoverer],
+      collectors: {
+        routes: routeCollector,
+        routeParents: routeParentCollector,
+      },
+    });
+
+    const rendered = render(
+      <RoutingProvider routes={routes} routeParents={routeParents}>
+        {root}
+      </RoutingProvider>,
+    );
+
+    expect(
+      rendered.getByText('Path at inside: /foo/blob/baz'),
     ).toBeInTheDocument();
   });
 });
