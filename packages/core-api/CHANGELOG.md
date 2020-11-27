@@ -1,5 +1,11 @@
 # @backstage/core-api
 
+## 0.2.2
+
+### Patch Changes
+
+- 9b9e86f8a: export oidc provider
+
 ## 0.2.1
 
 ### Patch Changes

@@ -64,11 +64,6 @@ techdocs:
 sentry:
   organization: my-company
 
-rollbar:
-  organization: my-company
-  accountToken:
-    $env: ROLLBAR_ACCOUNT_TOKEN
-
 lighthouse:
   baseUrl: http://localhost:3003
 

@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core-api",
   "description": "Internal Core API used by Backstage plugins and apps",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "private": false,
   "publishConfig": {
     "access": "public",
