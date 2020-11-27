@@ -78,7 +78,8 @@ There are also additional settings:
 
 - `allowedMethods`: Limit the forwarded HTTP methods. For example
   `allowedMethods: ['GET']` enforces read-only access.
-- `allowedHeaders`: A list of headers that should be forwarded to the target.
+- `allowedHeaders`: A list of headers that should be forwarded to and received
+  from the target.
 
 By default, the proxy will only forward safe HTTP request headers to the target.
 Those are based on the headers that are considered safe for CORS and includes
@@ -88,3 +89,6 @@ set by the proxy. If the proxy should forward other headers like
 example `allowedHeaders: ['Authorization']`. This should help to not
 accidentally forward confidential headers (`cookie`, `X-Auth-Request-User`) to
 third-parties.
+
+The same logic applies to headers that are sent from the target back to the
+frontend.
