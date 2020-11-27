@@ -18,8 +18,41 @@ import {
   getGitRepoType,
   getGithubHostToken,
   getTokenForGitRepo,
+  getGitlabHostToken,
+  getAzureHostToken,
 } from './git-auth';
-import { Config } from '@backstage/config';
+import { ConfigReader } from '@backstage/config';
+
+const createConfig = (data: any) =>
+  ConfigReader.fromConfigs([
+    {
+      context: 'app-config.yaml',
+      data,
+    },
+  ]);
+
+const testConfig = createConfig({
+  integrations: {
+    github: [
+      {
+        host: 'github.com',
+        token: 'githubToken',
+      },
+    ],
+    azure: [
+      {
+        host: 'dev.azure.com',
+        token: 'azureToken',
+      },
+    ],
+    gitlab: [
+      {
+        host: 'gitlab.com',
+        token: 'gitlabToken',
+      },
+    ],
+  },
+});
 
 describe('getGitRepoType', () => {
   it('should get the repo type github', async () => {
@@ -46,71 +79,65 @@ describe('getGitRepoType', () => {
   });
 });
 describe('getGithubHostToken', () => {
-  it('should get the github host token from the config', async () => {
-    const host = '';
-    class MockConfig implements Partial<Config> {
-      getOptionalConfigArray() {
-        return [];
-      }
-      get() {
-        return '';
-      }
-      getBoolean() {
-        return true;
-      }
-      getConfig() {
-        return <Config>{};
-      }
-      has() {
-        return false;
-      }
-      keys() {
-        return [];
-      }
-      getConfigArray() {
-        return [<Config>{}];
-      }
-      getNumber() {
-        return 0;
-      }
-      getOptional() {
-        return '';
-      }
-      getOptionalBoolean() {
-        return true;
-      }
-      getOptionalConfig() {
-        return undefined;
-      }
-      getOptionalNumber() {
-        return 0;
-      }
-      getOptionalString() {
-        return '';
-      }
-      getOptionalStringArray() {
-        return [''];
-      }
-      getString() {
-        return '';
-      }
-      getStringArray() {
-        return [];
-      }
-    }
+  it('should get the github host token from the config file', async () => {
+    const host = 'github.com';
 
-    const output = getGithubHostToken(new MockConfig(), host);
+    const output = getGithubHostToken(testConfig, host);
 
-    expect(output).toBe('');
+    expect(output).toBe('githubToken');
+  });
+});
+describe('getGitlabHostToken', () => {
+  it('should get the gitlab token for the git repo', async () => {
+    const host = 'gitlab.com';
+    const output = getGitlabHostToken(testConfig, host);
+
+    expect(output).toBe('gitlabToken');
+  });
+});
+describe('getAzureHostToken', () => {
+  it('should get the azure token for the repo', async () => {
+    const host = 'dev.azure.com';
+    const output = getAzureHostToken(testConfig, host);
+
+    expect(output).toBe('azureToken');
   });
 });
 describe('getTokenForGitRepo', () => {
-  it('should get the github token for github repo', async () => {
+  it('should get the github token for github repo from env', async () => {
+    process.env.GITHUB_TOKEN = 'githubMockToken';
     const repositoryUrl =
       'https://github.com/backstage/backstage/blob/master/subfolder/';
 
     const output = await getTokenForGitRepo(repositoryUrl);
 
-    expect(output).toBe(undefined);
+    expect(output).toBe('githubMockToken');
+  });
+  it('should get the gitlab token for git repo from env', async () => {
+    process.env.GITLAB_TOKEN = 'gitlabMockToken';
+    const repositoryUrl =
+      'https://gitlab.com/backstage/backstage/blob/master/subfolder/';
+
+    const output = await getTokenForGitRepo(repositoryUrl);
+
+    expect(output).toBe('gitlabMockToken');
+  });
+  it('should get the azure token from env', async () => {
+    process.env.AZURE_TOKEN = 'azureMockToken';
+    const repositoryUrl =
+      'https://azure.com/backstage/backstage/blob/master/subfolder/';
+
+    const output = await getTokenForGitRepo(repositoryUrl);
+
+    expect(output).toBe('azureMockToken');
+  });
+  it('should return undefined due to GITHUB_TOKEN not beein set', async () => {
+    process.env.GITHUB_TOKEN = undefined;
+    const repositoryUrl =
+      'https://github.com/backstage/backstage/blob/master/subfolder/';
+
+    const output = await getTokenForGitRepo(repositoryUrl);
+
+    expect(output).toBe('undefined');
   });
 });
