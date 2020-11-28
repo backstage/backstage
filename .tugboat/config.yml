@@ -1,0 +1,4 @@
+services:
+  backstage:
+    build:
+      dockerfile: ./packages/backend/Dockerfile
