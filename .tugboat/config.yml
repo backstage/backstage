@@ -1,4 +1,9 @@
 services:
   backstage:
-    build:
-      dockerfile: ./packages/backend/Dockerfile
+    image: tugboatqa/node:lts
+    commands:
+      init:
+        - yarn
+        - yarn build
+      start:
+        - yarn start-backend
