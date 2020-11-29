@@ -1,11 +1,11 @@
 import {
   createRouter,
   DirectoryPreparer,
-  CommonGitPreparer,
   Preparers,
   Generators,
-  Publisher,
   TechdocsGenerator,
+  CommonGitPreparer,
+  Publisher,
 } from '@backstage/plugin-techdocs-backend';
 import { PluginEnvironment } from '../types';
 import Docker from 'dockerode';
