@@ -20,6 +20,11 @@ type buildInfo = {
 
 const builds = {} as buildInfo;
 
+/**
+ * Store timestamps of the most recent TechDocs build of each Entity. This is
+ * used to invalidate cache if the latest commit in the documentation source
+ * repository is later than the timestamp.
+ */
 export class BuildMetadataStorage {
   public entityUid: string;
   private builds: buildInfo;
