@@ -9,7 +9,7 @@ description: Documentation on TechDocs Architecture
 When you deploy Backstage (with TechDocs enabled by default), you get a basic
 out-of-the box experience.
 
-![TechDocs Architecture diagram](../../assets/techdocs/architecture-basic.drawio.svg)
+<img data-zoomable src="../../assets/techdocs/architecture-basic.drawio.svg" alt="TechDocs Architecture diagram" />
 
 > Note: See below for our recommended deployment architecture which takes care
 > of stability, scalability and speed.
@@ -43,7 +43,7 @@ channel to talk about it.
 
 This is how we recommend deploying TechDocs in production environment.
 
-![TechDocs Architecture diagram](../../assets/techdocs/architecture-recommended.drawio.svg)
+<img data-zoomable src="../../assets/techdocs/architecture-recommended.drawio.svg" alt="TechDocs Architecture diagram" />
 
 The key difference in the recommended deployment approach is where the docs are
 built.

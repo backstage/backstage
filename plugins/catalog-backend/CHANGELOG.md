@@ -1,5 +1,34 @@
 # @backstage/plugin-catalog-backend
 
+## 0.2.3
+
+### Patch Changes
+
+- 1ec19a3f4: Ignore empty YAML documents. Having a YAML file like this is now ingested without an error:
+
+  ```yaml
+  apiVersion: backstage.io/v1alpha1
+  kind: Component
+  metadata:
+    name: web
+  spec:
+    type: website
+  ---
+
+  ```
+
+  This behaves now the same way as Kubernetes handles multiple documents in a single YAML file.
+
+- ab94c9542: Add `providesApis` and `consumesApis` to the component entity spec.
+- 2daf18e80: Start emitting all known relation types from the core entity kinds, based on their spec data.
+- Updated dependencies [3aa7efb3f]
+- Updated dependencies [ab94c9542]
+- Updated dependencies [2daf18e80]
+- Updated dependencies [069cda35f]
+- Updated dependencies [b3d4e4e57]
+  - @backstage/backend-common@0.3.2
+  - @backstage/catalog-model@0.3.1
+
 ## 0.2.2
 
 ### Patch Changes

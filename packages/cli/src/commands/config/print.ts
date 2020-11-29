@@ -21,7 +21,10 @@ import { loadCliConfig } from '../../lib/config';
 import { ConfigSchema, ConfigVisibility } from '@backstage/config-loader';
 
 export default async (cmd: Command) => {
-  const { schema, appConfigs } = await loadCliConfig(cmd.config);
+  const { schema, appConfigs } = await loadCliConfig({
+    args: cmd.config,
+    fromPackage: cmd.package,
+  });
   const visibility = getVisiblityOption(cmd);
   const data = serializeConfigData(appConfigs, schema, visibility);
 

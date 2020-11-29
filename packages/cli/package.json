@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -86,9 +86,9 @@
     "react-hot-loader": "^4.12.21",
     "recursive-readdir": "^2.2.2",
     "replace-in-file": "^6.0.0",
-    "rollup": "2.23.x",
+    "rollup": "2.33.x",
     "rollup-plugin-dts": "1.4.13",
-    "rollup-plugin-esbuild": "^2.0.0",
+    "rollup-plugin-esbuild": "2.3.x",
     "rollup-plugin-peer-deps-external": "^2.2.2",
     "rollup-plugin-postcss": "^3.1.1",
     "rollup-plugin-typescript2": "^0.27.3",
@@ -111,7 +111,7 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/backend-common": "^0.3.1",
+    "@backstage/backend-common": "^0.3.2",
     "@backstage/config": "^0.1.1",
     "@backstage/core": "^0.3.2",
     "@backstage/dev-utils": "^0.1.4",

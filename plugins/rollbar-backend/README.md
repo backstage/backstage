@@ -8,7 +8,6 @@ The following values are read from the configuration file.
 
 ```yaml
 rollbar:
-  organization: organization-name
   accountToken:
     $env: ROLLBAR_ACCOUNT_TOKEN
 ```

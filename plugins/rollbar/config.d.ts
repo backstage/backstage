@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-import {
-  ComponentEntity,
-  RELATION_PROVIDES_API,
-} from '@backstage/catalog-model';
-
-export const useComponentApiNames = (entity: ComponentEntity) => {
-  // TODO: This code doesn't handle namespaces and kinds correctly, but will be removed soon
-  return (
-    entity.relations
-      ?.filter(r => r.type === RELATION_PROVIDES_API)
-      ?.map(r => r.target.name) || []
-  );
-};
+export interface Config {
+  /** Configuration options for the rollbar plugin */
+  rollbar?: {
+    /**
+     * The Rollbar organization name. This can be omitted by using the `rollbar.com/project-slug` annotation.
+     * @see https://backstage.io/docs/features/software-catalog/well-known-annotations#rollbarcomproject-slug
+     * @visibility frontend
+     */
+    organization?: string;
+  };
+}

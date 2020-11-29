@@ -14,16 +14,32 @@
  * limitations under the License.
  */
 
-import {
-  ComponentEntity,
-  RELATION_PROVIDES_API,
-} from '@backstage/catalog-model';
+export interface Config {
+  integrations?: {
+    azure?: Array<{
+      /** @visibility frontend */
+      host: string;
+    }>;
 
-export const useComponentApiNames = (entity: ComponentEntity) => {
-  // TODO: This code doesn't handle namespaces and kinds correctly, but will be removed soon
-  return (
-    entity.relations
-      ?.filter(r => r.type === RELATION_PROVIDES_API)
-      ?.map(r => r.target.name) || []
-  );
-};
+    bitbucket?: Array<{
+      /** @visibility frontend */
+      host: string;
+      /** @visibility frontend */
+      apiBaseUrl?: string;
+    }>;
+
+    github?: Array<{
+      /** @visibility frontend */
+      host: string;
+      /** @visibility frontend */
+      apiBaseUrl?: string;
+      /** @visibility frontend */
+      rawBaseUrl?: string;
+    }>;
+
+    gitlab?: Array<{
+      /** @visibility frontend */
+      host: string;
+    }>;
+  };
+}
