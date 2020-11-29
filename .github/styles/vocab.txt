@@ -230,3 +230,4 @@ yaml
 Zalando
 Zhou
 Zolotusky
+zoomable
