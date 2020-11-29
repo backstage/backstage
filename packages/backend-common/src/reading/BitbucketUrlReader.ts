@@ -16,68 +16,13 @@
 
 import {
   BitbucketIntegrationConfig,
+  getBitbucketFileFetchUrl,
+  getBitbucketRequestOptions,
   readBitbucketIntegrationConfigs,
 } from '@backstage/integration';
 import fetch from 'cross-fetch';
-import parseGitUri from 'git-url-parse';
 import { NotFoundError } from '../errors';
 import { ReaderFactory, ReadTreeResponse, UrlReader } from './types';
-
-export function getApiRequestOptions(
-  provider: BitbucketIntegrationConfig,
-): RequestInit {
-  const headers: HeadersInit = {};
-
-  if (provider.token) {
-    headers.Authorization = `Bearer ${provider.token}`;
-  } else if (provider.username && provider.appPassword) {
-    headers.Authorization = `Basic ${Buffer.from(
-      `${provider.username}:${provider.appPassword}`,
-      'utf8',
-    ).toString('base64')}`;
-  }
-
-  return {
-    headers,
-  };
-}
-
-// Converts for example
-// from: https://bitbucket.org/orgname/reponame/src/master/file.yaml
-// to:   https://api.bitbucket.org/2.0/repositories/orgname/reponame/src/master/file.yaml
-export function getApiUrl(
-  target: string,
-  provider: BitbucketIntegrationConfig,
-): URL {
-  try {
-    const { owner, name, ref, filepathtype, filepath } = parseGitUri(target);
-    if (
-      !owner ||
-      !name ||
-      (filepathtype !== 'browse' &&
-        filepathtype !== 'raw' &&
-        filepathtype !== 'src')
-    ) {
-      throw new Error('Invalid Bitbucket URL or file path');
-    }
-
-    const pathWithoutSlash = filepath.replace(/^\//, '');
-
-    if (provider.host === 'bitbucket.org') {
-      if (!ref) {
-        throw new Error('Invalid Bitbucket URL or file path');
-      }
-      return new URL(
-        `${provider.apiBaseUrl}/repositories/${owner}/${name}/src/${ref}/${pathWithoutSlash}`,
-      );
-    }
-    return new URL(
-      `${provider.apiBaseUrl}/projects/${owner}/repos/${name}/raw/${pathWithoutSlash}?at=${ref}`,
-    );
-  } catch (e) {
-    throw new Error(`Incorrect URL: ${target}, ${e}`);
-  }
-}
 
 /**
  * A processor that adds the ability to read files from Bitbucket v1 and v2 APIs, such as
@@ -116,9 +61,8 @@ export class BitbucketUrlReader implements UrlReader {
   }
 
   async read(url: string): Promise<Buffer> {
-    const bitbucketUrl = getApiUrl(url, this.config);
-
-    const options = getApiRequestOptions(this.config);
+    const bitbucketUrl = getBitbucketFileFetchUrl(url, this.config);
+    const options = getBitbucketRequestOptions(this.config);
 
     let response: Response;
     try {
