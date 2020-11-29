@@ -86,7 +86,11 @@ const siteConfig = {
   },
 
   // Add custom scripts here that would be placed in <script> tags.
-  scripts: ['https://buttons.github.io/buttons.js'],
+  scripts: [
+    'https://buttons.github.io/buttons.js',
+    'https://unpkg.com/medium-zoom@1.0.6/dist/medium-zoom.min.js',
+    '/js/medium-zoom.js',
+  ],
 
   // On page navigation for the current documentation page.
   onPageNav: 'separate',
