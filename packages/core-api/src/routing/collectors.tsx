@@ -19,7 +19,7 @@ import { RouteRef } from '../routing/types';
 import { getComponentData } from '../extensions';
 import { createCollector } from '../extensions/traversal';
 
-export const routeCollector = createCollector(
+export const routePathCollector = createCollector(
   () => new Map<RouteRef, string>(),
   (acc, node, parent) => {
     if (parent.props.element === node) {

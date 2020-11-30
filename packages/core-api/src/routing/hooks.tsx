@@ -22,7 +22,7 @@ export type RouteFunc = (params?: Record<string, string>) => string;
 
 class RouteResolver {
   constructor(
-    private readonly routes: Map<RouteRef, string>,
+    private readonly routePaths: Map<RouteRef, string>,
     private readonly routeParents: Map<RouteRef, RouteRef | undefined>,
   ) {}
 
@@ -31,7 +31,7 @@ class RouteResolver {
     let fullPath = '';
 
     while (currentRouteRef) {
-      const path = this.routes.get(currentRouteRef);
+      const path = this.routePaths.get(currentRouteRef);
       if (!path) {
         throw new Error(`No path for ${currentRouteRef}`);
       }
@@ -58,17 +58,17 @@ export function useRouteRef(routeRef: RouteRef): RouteFunc {
 }
 
 type ProviderProps = {
-  routes: Map<RouteRef, string>;
+  routePaths: Map<RouteRef, string>;
   routeParents: Map<RouteRef, RouteRef | undefined>;
   children: ReactNode;
 };
 
 export const RoutingProvider = ({
-  routes,
+  routePaths,
   routeParents,
   children,
 }: ProviderProps) => {
-  const resolver = new RouteResolver(routes, routeParents);
+  const resolver = new RouteResolver(routePaths, routeParents);
   return (
     <RoutingContext.Provider value={resolver}>
       {children}
@@ -77,7 +77,7 @@ export const RoutingProvider = ({
 };
 
 export function validateRoutes(
-  routes: Map<RouteRef, string>,
+  routePaths: Map<RouteRef, string>,
   routeParents: Map<RouteRef, RouteRef | undefined>,
 ) {
   const notLeafRoutes = new Set(routeParents.values());
@@ -92,7 +92,7 @@ export function validateRoutes(
 
     let fullPath = '';
     while (currentRouteRef) {
-      const path = routes.get(currentRouteRef);
+      const path = routePaths.get(currentRouteRef);
       if (!path) {
         throw new Error(`No path for ${currentRouteRef}`);
       }

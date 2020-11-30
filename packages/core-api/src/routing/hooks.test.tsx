@@ -24,12 +24,16 @@ import {
   traverseElementTree,
 } from '../extensions/traversal';
 import { createPlugin } from '../plugin';
-import { routeCollector, routeParentCollector } from './collectors';
+import { routePathCollector, routeParentCollector } from './collectors';
 import { useRouteRef, RoutingProvider, validateRoutes } from './hooks';
 import { createRouteRef } from './RouteRef';
-import { RouteRef } from './types';
+import { RouteRef, RouteRefConfig } from './types';
 
-const mockConfig = () => ({ path: '/unused', title: 'Unused' });
+const mockConfig = (extra?: Partial<RouteRefConfig>) => ({
+  path: '/unused',
+  title: 'Unused',
+  ...extra,
+});
 const MockComponent = ({ children }: PropsWithChildren<{}>) => <>{children}</>;
 
 const plugin = createPlugin({ id: 'my-plugin' });
@@ -83,17 +87,17 @@ describe('discovery', () => {
       </MemoryRouter>
     );
 
-    const { routes, routeParents } = traverseElementTree({
+    const { routePaths, routeParents } = traverseElementTree({
       root,
       discoverers: [childDiscoverer, routeElementDiscoverer],
       collectors: {
-        routes: routeCollector,
+        routePaths: routePathCollector,
         routeParents: routeParentCollector,
       },
     });
 
     const rendered = render(
-      <RoutingProvider routes={routes} routeParents={routeParents}>
+      <RoutingProvider routePaths={routePaths} routeParents={routeParents}>
         {root}
       </RoutingProvider>,
     );
@@ -123,17 +127,17 @@ describe('discovery', () => {
       </MemoryRouter>
     );
 
-    const { routes, routeParents } = traverseElementTree({
+    const { routePaths, routeParents } = traverseElementTree({
       root,
       discoverers: [childDiscoverer, routeElementDiscoverer],
       collectors: {
-        routes: routeCollector,
+        routePaths: routePathCollector,
         routeParents: routeParentCollector,
       },
     });
 
     const rendered = render(
-      <RoutingProvider routes={routes} routeParents={routeParents}>
+      <RoutingProvider routePaths={routePaths} routeParents={routeParents}>
         {root}
       </RoutingProvider>,
     );
@@ -146,7 +150,7 @@ describe('discovery', () => {
     ).toBeInTheDocument();
   });
 
-  it('should handle relative routing within parameterized routes', () => {
+  it('should handle relative routing within parameterized routePaths', () => {
     const root = (
       <MemoryRouter initialEntries={['/foo/blob/bar']}>
         <Routes>
@@ -158,17 +162,17 @@ describe('discovery', () => {
       </MemoryRouter>
     );
 
-    const { routes, routeParents } = traverseElementTree({
+    const { routePaths, routeParents } = traverseElementTree({
       root,
       discoverers: [childDiscoverer, routeElementDiscoverer],
       collectors: {
-        routes: routeCollector,
+        routePaths: routePathCollector,
         routeParents: routeParentCollector,
       },
     });
 
     const rendered = render(
-      <RoutingProvider routes={routes} routeParents={routeParents}>
+      <RoutingProvider routePaths={routePaths} routeParents={routeParents}>
         {root}
       </RoutingProvider>,
     );
@@ -178,7 +182,7 @@ describe('discovery', () => {
     ).toBeInTheDocument();
   });
 
-  it('should handle relative routing of parameterized routes with duplicate param names', () => {
+  it('should handle relative routing of parameterized routePaths with duplicate param names', () => {
     const root = (
       <MemoryRouter>
         <Routes>
@@ -189,16 +193,16 @@ describe('discovery', () => {
       </MemoryRouter>
     );
 
-    const { routes, routeParents } = traverseElementTree({
+    const { routePaths, routeParents } = traverseElementTree({
       root,
       discoverers: [childDiscoverer, routeElementDiscoverer],
       collectors: {
-        routes: routeCollector,
+        routePaths: routePathCollector,
         routeParents: routeParentCollector,
       },
     });
 
-    expect(() => validateRoutes(routes, routeParents)).toThrow(
+    expect(() => validateRoutes(routePaths, routeParents)).toThrow(
       'Parameter :id is duplicated in path /foo/:id/bar/:id',
     );
   });
