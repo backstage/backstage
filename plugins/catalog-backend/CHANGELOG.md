@@ -1,5 +1,56 @@
 # @backstage/plugin-catalog-backend
 
+## 0.2.3
+
+### Patch Changes
+
+- 1ec19a3f4: Ignore empty YAML documents. Having a YAML file like this is now ingested without an error:
+
+  ```yaml
+  apiVersion: backstage.io/v1alpha1
+  kind: Component
+  metadata:
+    name: web
+  spec:
+    type: website
+  ---
+
+  ```
+
+  This behaves now the same way as Kubernetes handles multiple documents in a single YAML file.
+
+- ab94c9542: Add `providesApis` and `consumesApis` to the component entity spec.
+- 2daf18e80: Start emitting all known relation types from the core entity kinds, based on their spec data.
+- Updated dependencies [3aa7efb3f]
+- Updated dependencies [ab94c9542]
+- Updated dependencies [2daf18e80]
+- Updated dependencies [069cda35f]
+- Updated dependencies [b3d4e4e57]
+  - @backstage/backend-common@0.3.2
+  - @backstage/catalog-model@0.3.1
+
+## 0.2.2
+
+### Patch Changes
+
+- 0c2121240: Add support for reading groups and users from the Microsoft Graph API.
+- 1185919f3: Marked the `Group` entity fields `ancestors` and `descendants` for deprecation on Dec 6th, 2020. See https://github.com/backstage/backstage/issues/3049 for details.
+
+  Code that consumes these fields should remove those usages as soon as possible. There is no current or planned replacement for these fields.
+
+  The BuiltinKindsEntityProcessor has been updated to inject these fields as empty arrays if they are missing. Therefore, if you are on a catalog instance that uses the updated version of this code, you can start removing the fields from your source catalog-info.yaml data as well, without breaking validation.
+
+  After Dec 6th, the fields will be removed from types and classes of the Backstage repository. At the first release after that, they will not be present in released packages either.
+
+  If your catalog-info.yaml files still contain these fields after the deletion, they will still be valid and your ingestion will not break, but they won't be visible in the types for consuming code.
+
+- Updated dependencies [1166fcc36]
+- Updated dependencies [bff3305aa]
+- Updated dependencies [1185919f3]
+- Updated dependencies [b47dce06f]
+  - @backstage/catalog-model@0.3.0
+  - @backstage/backend-common@0.3.1
+
 ## 0.2.1
 
 ### Patch Changes

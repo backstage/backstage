@@ -15,7 +15,7 @@
  */
 
 import { OAuthApi } from '@backstage/core';
-import { AuthRequestBody } from '@backstage/plugin-kubernetes-backend';
+import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-backend';
 import { KubernetesAuthProvider, KubernetesAuthProvidersApi } from './types';
 import { GoogleKubernetesAuthProvider } from './GoogleKubernetesAuthProvider';
 import { ServiceAccountKubernetesAuthProvider } from './ServiceAccountKubernetesAuthProvider';
@@ -40,8 +40,8 @@ export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
 
   async decorateRequestBodyForAuth(
     authProvider: string,
-    requestBody: AuthRequestBody,
-  ): Promise<AuthRequestBody> {
+    requestBody: KubernetesRequestBody,
+  ): Promise<KubernetesRequestBody> {
     const kubernetesAuthProvider:
       | KubernetesAuthProvider
       | undefined = this.kubernetesAuthProviderMap.get(authProvider);

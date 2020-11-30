@@ -17,11 +17,15 @@
 import React from 'react';
 import { ErrorPage } from '@backstage/core';
 
-export const TechDocsNotFound = () => {
+type Props = {
+  errorMessage?: string;
+};
+
+export const TechDocsNotFound = ({ errorMessage }: Props) => {
   return (
     <ErrorPage
       status="404"
-      statusMessage="Documentation not found"
+      statusMessage={errorMessage || 'Documentation not found'}
       additionalInfo={window.location.pathname}
     />
   );

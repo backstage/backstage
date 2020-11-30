@@ -1094,3 +1094,8 @@ code {
     margin: 0 1.5em;
   }
 }
+
+/* Zoomed images using the medium-zoom library should be on top of screen. */
+.medium-zoom-image {
+  z-index: 10000;
+}

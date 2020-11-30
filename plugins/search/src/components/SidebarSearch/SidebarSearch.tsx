@@ -31,5 +31,5 @@ export const SidebarSearch = () => {
     [navigate],
   );
 
-  return <SidebarSearchField onSearch={handleSearch} />;
+  return <SidebarSearchField onSearch={handleSearch} to="/search" />;
 };

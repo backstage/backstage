@@ -57,7 +57,7 @@ export async function loadConfigSchema(
   return {
     process(
       configs: AppConfig[],
-      { visiblity, valueTransform } = {},
+      { visibility, valueTransform } = {},
     ): AppConfig[] {
       const result = validate(configs);
       if (result.errors) {
@@ -70,12 +70,12 @@ export async function loadConfigSchema(
 
       let processedConfigs = configs;
 
-      if (visiblity) {
+      if (visibility) {
         processedConfigs = processedConfigs.map(({ data, context }) => ({
           context,
           data: filterByVisibility(
             data,
-            visiblity,
+            visibility,
             result.visibilityByPath,
             valueTransform,
           ),

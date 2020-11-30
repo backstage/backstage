@@ -18,7 +18,7 @@ import { Config } from '@backstage/config';
 import compression from 'compression';
 import cors from 'cors';
 import express, { Router } from 'express';
-import helmet from 'helmet';
+import helmet, { HelmetOptions } from 'helmet';
 import * as http from 'http';
 import stoppable from 'stoppable';
 import { Logger } from 'winston';
@@ -56,7 +56,7 @@ const DEFAULT_CSP = {
   'script-src': ["'self'"],
   'script-src-attr': ["'none'"],
   'style-src': ["'self'", 'https:', "'unsafe-inline'"],
-  'upgrade-insecure-requests': [],
+  'upgrade-insecure-requests': [] as string[],
 };
 
 export class ServiceBuilderImpl implements ServiceBuilder {
@@ -64,7 +64,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
   private host: string | undefined;
   private logger: Logger | undefined;
   private corsOptions: cors.CorsOptions | undefined;
-  private cspOptions: CspOptions | undefined;
+  private cspOptions: Record<string, string[] | false> | undefined;
   private httpsSettings: HttpsSettings | undefined;
   private enableMetrics: boolean = true;
   private routers: [string, Router][];
@@ -154,20 +154,11 @@ export class ServiceBuilderImpl implements ServiceBuilder {
       host,
       logger,
       corsOptions,
-      cspOptions,
       httpsSettings,
+      helmetOptions,
     } = this.getOptions();
 
-    app.use(
-      helmet({
-        contentSecurityPolicy: {
-          directives: {
-            ...DEFAULT_CSP,
-            ...cspOptions,
-          },
-        },
-      }),
-    );
+    app.use(helmet(helmetOptions));
     if (corsOptions) {
       app.use(cors(corsOptions));
     }
@@ -214,16 +205,38 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     host: string;
     logger: Logger;
     corsOptions?: cors.CorsOptions;
-    cspOptions?: CspOptions;
     httpsSettings?: HttpsSettings;
+    helmetOptions: HelmetOptions;
   } {
     return {
       port: this.port ?? DEFAULT_PORT,
       host: this.host ?? DEFAULT_HOST,
       logger: this.logger ?? getRootLogger(),
       corsOptions: this.corsOptions,
-      cspOptions: this.cspOptions,
       httpsSettings: this.httpsSettings,
+      helmetOptions: {
+        contentSecurityPolicy: {
+          directives: applyCspDirectives(this.cspOptions),
+        },
+      },
     };
   }
+}
+
+export function applyCspDirectives(
+  directives: Record<string, string[] | false> | undefined,
+): CspOptions | undefined {
+  const result: CspOptions = { ...DEFAULT_CSP };
+
+  if (directives) {
+    for (const [key, value] of Object.entries(directives)) {
+      if (value === false) {
+        delete result[key];
+      } else {
+        result[key] = value;
+      }
+    }
+  }
+
+  return result;
 }

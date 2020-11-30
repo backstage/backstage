@@ -15,17 +15,17 @@
  */
 
 import React from 'react';
-import CodeIcon from '@material-ui/icons/Code';
-import { Header, HeaderLabel, Link } from '@backstage/core';
-import { CircularProgress } from '@material-ui/core';
-import { ParsedEntityId } from '../../types';
 import { AsyncState } from 'react-use/lib/useAsync';
+import { CircularProgress } from '@material-ui/core';
+import CodeIcon from '@material-ui/icons/Code';
+import { EntityName } from '@backstage/catalog-model';
+import { Header, HeaderLabel, Link } from '@backstage/core';
 
 type TechDocsPageHeaderProps = {
-  entityId: ParsedEntityId;
+  entityId: EntityName;
   metadataRequest: {
     entity: AsyncState<any>;
-    mkdocs: AsyncState<any>;
+    techdocs: AsyncState<any>;
   };
 };
 
@@ -33,15 +33,18 @@ export const TechDocsPageHeader = ({
   entityId,
   metadataRequest,
 }: TechDocsPageHeaderProps) => {
-  const { mkdocs: mkdocsMetadata, entity: entityMetadata } = metadataRequest;
+  const {
+    techdocs: techdocsMetadata,
+    entity: entityMetadata,
+  } = metadataRequest;
 
-  const { value: mkDocsMetadataValues } = mkdocsMetadata;
+  const { value: techdocsMetadataValues } = techdocsMetadata;
   const { value: entityMetadataValues } = entityMetadata;
 
   const { kind, name } = entityId;
 
   const { site_name: siteName, site_description: siteDescription } =
-    mkDocsMetadataValues || {};
+    techdocsMetadataValues || {};
 
   const {
     locationMetadata,

@@ -1,5 +1,20 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.2.0
+
+### Minor Changes
+
+- 1166fcc36: add kubernetes selector to component model
+
+### Patch Changes
+
+- Updated dependencies [1166fcc36]
+- Updated dependencies [bff3305aa]
+- Updated dependencies [1185919f3]
+- Updated dependencies [b47dce06f]
+  - @backstage/catalog-model@0.3.0
+  - @backstage/backend-common@0.3.1
+
 ## 0.1.3
 
 ### Patch Changes

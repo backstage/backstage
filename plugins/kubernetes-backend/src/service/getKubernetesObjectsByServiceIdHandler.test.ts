@@ -14,18 +14,39 @@
  * limitations under the License.
  */
 
-import { handleGetKubernetesObjectsByServiceId } from './getKubernetesObjectsByServiceIdHandler';
+import { handleGetKubernetesObjectsForService } from './getKubernetesObjectsForServiceHandler';
 import { getVoidLogger } from '@backstage/backend-common';
-import { ClusterDetails } from '..';
+import { ComponentEntityV1alpha1 } from '@backstage/catalog-model';
+import { ObjectFetchParams } from '..';
 
 const TEST_SERVICE_ID = 'my-service';
 
-const fetchObjectsByServiceId = jest.fn();
+const fetchObjectsForService = jest.fn();
 
 const getClustersByServiceId = jest.fn();
 
+const goodEntity: ComponentEntityV1alpha1 = {
+  apiVersion: 'backstage.io/v1beta1',
+  kind: 'Component',
+  metadata: {
+    name: 'test-component',
+  },
+  spec: {
+    type: 'service',
+    lifecycle: 'production',
+    owner: 'joe',
+    kubernetes: {
+      selector: {
+        matchLabels: {
+          'backstage.io/test-label': 'test-component',
+        },
+      },
+    },
+  },
+};
+
 const mockFetch = (mock: jest.Mock) => {
-  mock.mockImplementation((serviceId: string, clusterDetails: ClusterDetails) =>
+  mock.mockImplementation((params: ObjectFetchParams) =>
     Promise.resolve({
       errors: [],
       responses: [
@@ -34,7 +55,7 @@ const mockFetch = (mock: jest.Mock) => {
           resources: [
             {
               metadata: {
-                name: `my-pods-${serviceId}-${clusterDetails.name}`,
+                name: `my-pods-${params.serviceId}-${params.clusterDetails.name}`,
               },
             },
           ],
@@ -44,7 +65,7 @@ const mockFetch = (mock: jest.Mock) => {
           resources: [
             {
               metadata: {
-                name: `my-configmaps-${serviceId}-${clusterDetails.name}`,
+                name: `my-configmaps-${params.serviceId}-${params.clusterDetails.name}`,
               },
             },
           ],
@@ -54,7 +75,7 @@ const mockFetch = (mock: jest.Mock) => {
           resources: [
             {
               metadata: {
-                name: `my-services-${serviceId}-${clusterDetails.name}`,
+                name: `my-services-${params.serviceId}-${params.clusterDetails.name}`,
               },
             },
           ],
@@ -64,7 +85,7 @@ const mockFetch = (mock: jest.Mock) => {
   );
 };
 
-describe('handleGetKubernetesObjectsByServiceId', () => {
+describe('handleGetKubernetesObjectsForService', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
@@ -79,22 +100,22 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
       ]),
     );
 
-    mockFetch(fetchObjectsByServiceId);
+    mockFetch(fetchObjectsForService);
 
-    const result = await handleGetKubernetesObjectsByServiceId(
+    const result = await handleGetKubernetesObjectsForService(
       TEST_SERVICE_ID,
       {
-        fetchObjectsByServiceId,
+        fetchObjectsForService: fetchObjectsForService,
       },
       {
         getClustersByServiceId,
       },
       getVoidLogger(),
-      {},
+      { entity: goodEntity },
     );
 
     expect(getClustersByServiceId.mock.calls.length).toBe(1);
-    expect(fetchObjectsByServiceId.mock.calls.length).toBe(1);
+    expect(fetchObjectsForService.mock.calls.length).toBe(1);
     expect(result).toStrictEqual({
       items: [
         {
@@ -153,18 +174,19 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
       ]),
     );
 
-    mockFetch(fetchObjectsByServiceId);
+    mockFetch(fetchObjectsForService);
 
-    const result = await handleGetKubernetesObjectsByServiceId(
+    const result = await handleGetKubernetesObjectsForService(
       TEST_SERVICE_ID,
       {
-        fetchObjectsByServiceId,
+        fetchObjectsForService: fetchObjectsForService,
       },
       {
         getClustersByServiceId,
       },
       getVoidLogger(),
       {
+        entity: goodEntity,
         auth: {
           google: 'google_token_123',
         },
@@ -172,7 +194,7 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
     );
 
     expect(getClustersByServiceId.mock.calls.length).toBe(1);
-    expect(fetchObjectsByServiceId.mock.calls.length).toBe(2);
+    expect(fetchObjectsForService.mock.calls.length).toBe(2);
     expect(result).toStrictEqual({
       items: [
         {

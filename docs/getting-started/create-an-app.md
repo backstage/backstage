@@ -14,7 +14,7 @@ need to run Backstage in your own environment.
 
 To create a Backstage app, you will need to have
 [Node.js](https://nodejs.org/en/download/) Active LTS Release installed
-(currently v12).
+(currently v14).
 
 Backstage provides a utility for creating new apps. It guides you through the
 initial setup of selecting the name of the app and a database for the backend.

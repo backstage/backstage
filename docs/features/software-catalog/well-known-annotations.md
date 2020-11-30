@@ -238,22 +238,9 @@ annotation, with the same value format.
 
 ### backstage.io/definition-at-location
 
-This annotation allowed to load the API definition from another location. Now
-placeholders can be used instead:
-
-```
-apiVersion: backstage.io/v1alpha1
-kind: API
-metadata:
-  name: petstore
-  description: The Petstore API
-spec:
-  type: openapi
-  lifecycle: production
-  owner: petstore@example.com
-  definition:
-    $text: https://petstore.swagger.io/v2/swagger.json
-```
+This annotation allowed to load the API definition from another location. Use
+[substitution](./descriptor-format.md#substitutions-in-the-descriptor-format)
+instead.
 
 ## Links
 
