@@ -27,7 +27,7 @@ import {
 } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import EmailIcon from '@material-ui/icons/Email';
-import PagerdutyIcon from '../PagerDutyIcon';
+import { PagerDutyIcon } from '../PagerDutyIcon';
 import { User } from '../types';
 
 const useStyles = makeStyles({
@@ -69,7 +69,7 @@ export const EscalationUser = ({ user }: Props) => {
             rel="noopener noreferrer"
             color="primary"
           >
-            <PagerdutyIcon viewBox="0 0 100 100" />
+            <PagerDutyIcon viewBox="0 0 100 100" />
           </IconButton>
         </Tooltip>
       </ListItemSecondaryAction>

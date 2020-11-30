@@ -25,27 +25,21 @@ import { Alert } from '@material-ui/lab';
 
 type Props = {
   serviceId: string;
-  shouldRefreshIncidents: boolean;
-  setShouldRefreshIncidents: (shouldRefreshIncidents: boolean) => void;
+  refreshIncidents: Boolean;
 };
 
-export const Incidents = ({
-  serviceId,
-  shouldRefreshIncidents,
-  setShouldRefreshIncidents,
-}: Props) => {
+export const Incidents = ({ serviceId, refreshIncidents }: Props) => {
   const api = useApi(pagerDutyApiRef);
 
   const [{ value: incidents, loading, error }, getIncidents] = useAsyncFn(
     async () => {
-      setShouldRefreshIncidents(false);
       return await api.getIncidentsByServiceId(serviceId);
     },
   );
 
   useEffect(() => {
     getIncidents();
-  }, [shouldRefreshIncidents, getIncidents]);
+  }, [refreshIncidents, getIncidents]);
 
   if (error) {
     return (

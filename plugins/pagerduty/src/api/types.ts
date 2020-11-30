@@ -15,6 +15,7 @@
  */
 
 import { Incident, OnCall, Service } from '../components/types';
+import { DiscoveryApi } from '@backstage/core';
 
 export type TriggerAlarmRequest = {
   integrationKey: string;
@@ -47,3 +48,26 @@ export interface PagerDutyClient {
    */
   triggerAlarm(request: TriggerAlarmRequest): Promise<Response>;
 }
+
+export type ServicesResponse = {
+  services: Service[];
+};
+
+export type IncidentsResponse = {
+  incidents: Incident[];
+};
+
+export type OnCallsResponse = {
+  oncalls: OnCall[];
+};
+
+export type ClientApiConfig = {
+  eventsUrl?: string;
+  discoveryApi: DiscoveryApi;
+};
+
+export type RequestOptions = {
+  method: string;
+  headers: HeadersInit;
+  body?: BodyInit;
+};

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { useState } from 'react';
-import { useApi } from '@backstage/core';
+import { useApi, Progress } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
 import {
   Button,
@@ -34,7 +34,6 @@ import { PagerDutyIcon } from './PagerDutyIcon';
 import AlarmAddIcon from '@material-ui/icons/AlarmAdd';
 import { TriggerDialog } from './TriggerDialog';
 import { MissingTokenError } from './MissingTokenError';
-import { Progress } from '@backstage/core';
 
 const useStyles = makeStyles(theme => ({
   links: {
@@ -72,9 +71,7 @@ export const PagerDutyCard = ({ entity }: Props) => {
   const classes = useStyles();
   const api = useApi(pagerDutyApiRef);
   const [showDialog, setShowDialog] = useState<boolean>(false);
-  const [shouldRefreshIncidents, setShouldRefreshIncidents] = useState<boolean>(
-    false,
-  );
+  const [refreshIncidents, setRefreshIncidents] = useState<boolean>(false);
   const integrationKey = entity.metadata.annotations![
     PAGERDUTY_INTEGRATION_KEY
   ];
@@ -129,6 +126,10 @@ export const PagerDutyCard = ({ entity }: Props) => {
     ),
   };
 
+  const onTriggerRefresh = () => {
+    setRefreshIncidents(true);
+  };
+
   return (
     <Card>
       <CardHeader
@@ -152,8 +153,7 @@ export const PagerDutyCard = ({ entity }: Props) => {
       <CardContent>
         <Incidents
           serviceId={service!.id}
-          shouldRefreshIncidents={shouldRefreshIncidents}
-          setShouldRefreshIncidents={setShouldRefreshIncidents}
+          refreshIncidents={refreshIncidents}
         />
         <EscalationPolicy policyId={service!.policyId} />
         <TriggerDialog
@@ -161,7 +161,7 @@ export const PagerDutyCard = ({ entity }: Props) => {
           handleDialog={handleDialog}
           name={entity.metadata.name}
           integrationKey={integrationKey}
-          setShouldRefreshIncidents={setShouldRefreshIncidents}
+          onTriggerRefresh={onTriggerRefresh}
         />
       </CardContent>
     </Card>

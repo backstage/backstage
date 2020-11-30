@@ -37,7 +37,7 @@ describe('Incidents', () => {
         <ApiProvider apis={apis}>
           <Incidents
             serviceId="abc"
-            shouldRefreshIncidents={false}
+            onTriggerRefresh={false}
             setShouldRefreshIncidents={() => {}}
           />
         </ApiProvider>,
@@ -101,7 +101,7 @@ describe('Incidents', () => {
         <ApiProvider apis={apis}>
           <Incidents
             serviceId="abc"
-            shouldRefreshIncidents={false}
+            onTriggerRefresh={false}
             setShouldRefreshIncidents={() => {}}
           />
         </ApiProvider>,
@@ -131,7 +131,7 @@ describe('Incidents', () => {
         <ApiProvider apis={apis}>
           <Incidents
             serviceId="abc"
-            shouldRefreshIncidents={false}
+            onTriggerRefresh={false}
             setShouldRefreshIncidents={() => {}}
           />
         </ApiProvider>,

@@ -15,17 +15,16 @@
  */
 
 import { createApiRef } from '@backstage/core';
+import { Service, Incident, OnCall } from '../components/types';
 import {
-  Service,
-  Incident,
-  RequestOptions,
-  ClientApiConfig,
+  PagerDutyClient,
+  TriggerAlarmRequest,
   ServicesResponse,
   IncidentsResponse,
   OnCallsResponse,
-  OnCall,
-} from '../components/types';
-import { PagerDutyClient, TriggerAlarmRequest } from './types';
+  ClientApiConfig,
+  RequestOptions,
+} from './types';
 
 export class UnauthorizedError extends Error {}
 

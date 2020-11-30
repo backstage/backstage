@@ -57,7 +57,8 @@ createApiFactory({
   deps: { discoveryApi: discoveryApiRef },
   factory: ({ discoveryApi }) =>
     new PagerDutyClientApi({
-      discoveryApi: discoveryApi
+      discoveryApi: discoveryApi,
+      eventUrl: "https://events.pagerduty.com/v2" //to override the default value
   }),
 }),
 ```

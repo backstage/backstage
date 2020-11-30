@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { DiscoveryApi } from '@backstage/core';
-
 export type Incident = {
   id: string;
   title: string;
@@ -57,27 +55,4 @@ export type User = {
   email: string;
   html_url: string;
   name: string;
-};
-
-export type ServicesResponse = {
-  services: Service[];
-};
-
-export type IncidentsResponse = {
-  incidents: Incident[];
-};
-
-export type OnCallsResponse = {
-  oncalls: OnCall[];
-};
-
-export type RequestOptions = {
-  method: string;
-  headers: HeadersInit;
-  body?: BodyInit;
-};
-
-export type ClientApiConfig = {
-  eventsUrl?: string;
-  discoveryApi: DiscoveryApi;
 };

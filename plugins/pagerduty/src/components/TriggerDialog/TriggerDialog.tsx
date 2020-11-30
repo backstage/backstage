@@ -35,7 +35,7 @@ type Props = {
   integrationKey: string;
   showDialog: boolean;
   handleDialog: () => void;
-  setShouldRefreshIncidents: (shouldRefreshIncidents: boolean) => void;
+  onTriggerRefresh: () => void;
 };
 
 export const TriggerDialog = ({
@@ -43,22 +43,22 @@ export const TriggerDialog = ({
   integrationKey,
   showDialog,
   handleDialog,
-  setShouldRefreshIncidents,
+  onTriggerRefresh,
 }: Props) => {
   const alertApi = useApi(alertApiRef);
   const identityApi = useApi(identityApiRef);
-  const userId = identityApi.getUserId();
+  const userName = identityApi.getUserId();
   const api = useApi(pagerDutyApiRef);
   const [description, setDescription] = useState<string>('');
 
   const [{ value, loading, error }, handleTriggerAlarm] = useAsyncFn(
-    async (desc: string) =>
-      await api.triggerAlarm(
+    async (description: string) =>
+      await api.triggerAlarm({
         integrationKey,
-        window.location.toString(),
-        desc,
-        userId,
-      ),
+        source: window.location.toString(),
+        description,
+        userName,
+      }),
   );
 
   const descriptionChanged = (
@@ -70,9 +70,9 @@ export const TriggerDialog = ({
   useEffect(() => {
     if (value) {
       alertApi.post({
-        message: `Alarm successfully triggered by ${userId}`,
+        message: `Alarm successfully triggered by ${userName}`,
       });
-      setShouldRefreshIncidents(true);
+      onTriggerRefresh();
       handleDialog();
     }
 
@@ -82,7 +82,7 @@ export const TriggerDialog = ({
         severity: 'error',
       });
     }
-  }, [value, error, alertApi, handleDialog, userId, setShouldRefreshIncidents]);
+  }, [value, error, alertApi, handleDialog, userName, onTriggerRefresh]);
 
   if (!showDialog) {
     return null;

@@ -71,7 +71,7 @@ describe('TriggerDialog', () => {
             handleDialog={() => {}}
             name={entity.metadata.name}
             integrationKey="abc123"
-            setShouldRefreshIncidents={() => {}}
+            onTriggerRefresh={() => {}}
           />
         </ApiProvider>,
       ),
@@ -93,11 +93,13 @@ describe('TriggerDialog', () => {
       fireEvent.click(triggerButton);
     });
     expect(mockTriggerAlarmFn).toHaveBeenCalled();
-    expect(mockTriggerAlarmFn).toHaveBeenCalledWith(
-      entity!.metadata!.annotations!['pagerduty.com/integration-key'],
-      window.location.toString(),
+    expect(mockTriggerAlarmFn).toHaveBeenCalledWith({
+      integrationKey: entity!.metadata!.annotations![
+        'pagerduty.com/integration-key'
+      ],
+      source: window.location.toString(),
       description,
-      'guest@example.com',
-    );
+      userName: 'guest@example.com',
+    });
   });
 });

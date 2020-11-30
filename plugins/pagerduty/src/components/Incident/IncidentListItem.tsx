@@ -29,7 +29,7 @@ import {
 import { StatusError, StatusWarning } from '@backstage/core';
 import moment from 'moment';
 import { Incident } from '../types';
-import PagerdutyIcon from '../PagerDutyIcon';
+import { PagerDutyIcon } from '../PagerDutyIcon';
 
 const useStyles = makeStyles({
   denseListIcon: {
@@ -96,7 +96,7 @@ export const IncidentListItem = ({ incident }: Props) => {
             rel="noopener noreferrer"
             color="primary"
           >
-            <PagerdutyIcon viewBox="0 0 100 100" />
+            <PagerDutyIcon viewBox="0 0 100 100" />
           </IconButton>
         </Tooltip>
       </ListItemSecondaryAction>
