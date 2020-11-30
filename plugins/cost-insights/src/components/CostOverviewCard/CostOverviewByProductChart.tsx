@@ -131,7 +131,6 @@ export const CostOverviewByProductChart = ({
       <Area
         dataKey={product}
         stackId="1"
-        fillOpacity="1"
         stroke={theme.palette.dataViz[sortedProducts.length - i]}
         fill={theme.palette.dataViz[sortedProducts.length - i]}
       />
