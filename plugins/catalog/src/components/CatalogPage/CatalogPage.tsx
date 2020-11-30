@@ -19,7 +19,6 @@ import {
   Content,
   ContentHeader,
   errorApiRef,
-  identityApiRef,
   SupportButton,
   useApi,
 } from '@backstage/core';
@@ -38,6 +37,8 @@ import { ResultsFilter } from '../ResultsFilter/ResultsFilter';
 import CatalogLayout from './CatalogLayout';
 import { CatalogTabs, LabeledComponentType } from './CatalogTabs';
 import { WelcomeBanner } from './WelcomeBanner';
+import { useUserGroups } from '../useUserGroups';
+import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -65,7 +66,6 @@ const CatalogPageContents = () => {
   const catalogApi = useApi(catalogApiRef);
   const errorApi = useApi(errorApiRef);
   const { isStarredEntity } = useStarredEntities();
-  const userId = useApi(identityApiRef).getUserId();
   const [selectedTab, setSelectedTab] = useState<string>();
   const [selectedSidebarItem, setSelectedSidebarItem] = useState<string>();
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
@@ -112,6 +112,8 @@ const CatalogPageContents = () => {
     [],
   );
 
+  const { groups } = useUserGroups();
+
   const filterGroups = useMemo<ButtonGroup[]>(
     () => [
       {
@@ -121,7 +123,16 @@ const CatalogPageContents = () => {
             id: 'owned',
             label: 'Owned',
             icon: SettingsIcon,
-            filterFn: entity => entity.spec?.owner === userId,
+            filterFn: entity => {
+              const ownerRelation = entity.relations?.find(
+                r =>
+                  r.type === RELATION_OWNED_BY &&
+                  r.target.kind.toLowerCase() === 'group',
+              );
+              return (
+                !!ownerRelation && groups.includes(ownerRelation.target.name)
+              );
+            },
           },
           {
             id: 'starred',
@@ -142,7 +153,7 @@ const CatalogPageContents = () => {
         ],
       },
     ],
-    [isStarredEntity, userId, orgName],
+    [isStarredEntity, orgName, groups],
   );
 
   const showAddExampleEntities =
