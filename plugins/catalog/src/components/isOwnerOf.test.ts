@@ -25,7 +25,7 @@ describe('isOwnerOf', () => {
   it('should be owned by user', () => {
     const ownerEntity = {
       kind: 'User',
-      metadata: { name: 'user' },
+      metadata: { name: 'User', namespace: 'Default' },
     } as Entity;
     const ownedEntity = {
       relations: [

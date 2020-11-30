@@ -16,26 +16,25 @@
 
 import { UserEntity } from '@backstage/catalog-model';
 import { useAsync } from 'react-use';
+import { AsyncState } from 'react-use/lib/useAsync';
 import { identityApiRef, useApi } from '@backstage/core';
 import { catalogApiRef } from '../plugin';
 
 /**
  * Get the group memberships of the logged-in user.
  */
-export function useOwnUser(): {
-  value?: UserEntity;
-  loading: boolean;
-  error?: Error;
-} {
+export function useOwnUser(): AsyncState<UserEntity> {
   const catalogApi = useApi(catalogApiRef);
   const identityApi = useApi(identityApiRef);
 
   // TODO: get the full entity (or at least the full entity name) from the identityApi
-  return useAsync(async () => {
-    return (await catalogApi.getEntityByName({
-      kind: 'User',
-      namespace: 'default',
-      name: identityApi.getUserId(),
-    })) as UserEntity;
-  }, [catalogApi, identityApi]);
+  return useAsync(
+    () =>
+      catalogApi.getEntityByName({
+        kind: 'User',
+        namespace: 'default',
+        name: identityApi.getUserId(),
+      }) as Promise<UserEntity>,
+    [catalogApi, identityApi],
+  );
 }
