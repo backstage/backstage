@@ -15,7 +15,7 @@
  */
 
 import { render } from '@testing-library/react';
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, ReactElement } from 'react';
 import { MemoryRouter, Routes } from 'react-router-dom';
 import { createRoutableExtension } from '../extensions';
 import {
@@ -85,6 +85,28 @@ const Extension5 = plugin.provide(
   createRoutableExtension({ component: MockComponent, mountPoint: ref5 }),
 );
 
+function withRoutingProvider(root: ReactElement) {
+  const { routePaths, routeParents, routeObjects } = traverseElementTree({
+    root,
+    discoverers: [childDiscoverer, routeElementDiscoverer],
+    collectors: {
+      routePaths: routePathCollector,
+      routeParents: routeParentCollector,
+      routeObjects: routeObjectCollector,
+    },
+  });
+
+  return (
+    <RoutingProvider
+      routePaths={routePaths}
+      routeParents={routeParents}
+      routeObjects={routeObjects}
+    >
+      {root}
+    </RoutingProvider>
+  );
+}
+
 describe('discovery', () => {
   it('should handle simple routeRef path creation for routeRefs used in other parts of the app', () => {
     const root = (
@@ -99,25 +121,7 @@ describe('discovery', () => {
       </MemoryRouter>
     );
 
-    const { routePaths, routeParents, routeObjects } = traverseElementTree({
-      root,
-      discoverers: [childDiscoverer, routeElementDiscoverer],
-      collectors: {
-        routePaths: routePathCollector,
-        routeParents: routeParentCollector,
-        routeObjects: routeObjectCollector,
-      },
-    });
-
-    const rendered = render(
-      <RoutingProvider
-        routePaths={routePaths}
-        routeParents={routeParents}
-        routeObjects={routeObjects}
-      >
-        {root}
-      </RoutingProvider>,
-    );
+    const rendered = render(withRoutingProvider(root));
 
     expect(rendered.getByText('Path at inside: /foo/bar')).toBeInTheDocument();
     expect(rendered.getByText('Path at outside: /foo/bar')).toBeInTheDocument();
@@ -144,25 +148,7 @@ describe('discovery', () => {
       </MemoryRouter>
     );
 
-    const { routePaths, routeParents, routeObjects } = traverseElementTree({
-      root,
-      discoverers: [childDiscoverer, routeElementDiscoverer],
-      collectors: {
-        routePaths: routePathCollector,
-        routeParents: routeParentCollector,
-        routeObjects: routeObjectCollector,
-      },
-    });
-
-    const rendered = render(
-      <RoutingProvider
-        routePaths={routePaths}
-        routeParents={routeParents}
-        routeObjects={routeObjects}
-      >
-        {root}
-      </RoutingProvider>,
-    );
+    const rendered = render(withRoutingProvider(root));
 
     expect(
       rendered.getByText('Path at inside: /foo/bar/bleb'),
@@ -190,25 +176,7 @@ describe('discovery', () => {
       </MemoryRouter>
     );
 
-    const { routePaths, routeParents, routeObjects } = traverseElementTree({
-      root,
-      discoverers: [childDiscoverer, routeElementDiscoverer],
-      collectors: {
-        routePaths: routePathCollector,
-        routeParents: routeParentCollector,
-        routeObjects: routeObjectCollector,
-      },
-    });
-
-    const rendered = render(
-      <RoutingProvider
-        routePaths={routePaths}
-        routeParents={routeParents}
-        routeObjects={routeObjects}
-      >
-        {root}
-      </RoutingProvider>,
-    );
+    const rendered = render(withRoutingProvider(root));
 
     expect(
       rendered.getByText('Path at inside: /foo/blob/baz'),
@@ -233,25 +201,7 @@ describe('discovery', () => {
       </MemoryRouter>
     );
 
-    const { routePaths, routeParents, routeObjects } = traverseElementTree({
-      root,
-      discoverers: [childDiscoverer, routeElementDiscoverer],
-      collectors: {
-        routePaths: routePathCollector,
-        routeParents: routeParentCollector,
-        routeObjects: routeObjectCollector,
-      },
-    });
-
-    const rendered = render(
-      <RoutingProvider
-        routePaths={routePaths}
-        routeParents={routeParents}
-        routeObjects={routeObjects}
-      >
-        {root}
-      </RoutingProvider>,
-    );
+    const rendered = render(withRoutingProvider(root));
 
     expect(
       rendered.getByText(
