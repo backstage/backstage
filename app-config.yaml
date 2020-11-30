@@ -38,7 +38,7 @@ proxy:
     headers:
       Authorization:
         $env: TRAVISCI_AUTH_TOKEN
-      travis-api-version: 3
+      travis-api-version: '3'
 
   '/newrelic/apm/api':
     target: https://api.newrelic.com/v2
