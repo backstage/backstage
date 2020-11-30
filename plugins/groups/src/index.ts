@@ -15,3 +15,4 @@
  */
 export { plugin } from './plugin';
 export { Router } from './Router';
+export { GroupsList, GroupView, MemberView } from './components';

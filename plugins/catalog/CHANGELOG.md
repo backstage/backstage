@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog
 
+## 0.2.4
+
+### Patch Changes
+
+- 6f70ed7a9: Replace usage of implementsApis with relations
+- Updated dependencies [4b53294a6]
+- Updated dependencies [ab94c9542]
+- Updated dependencies [2daf18e80]
+- Updated dependencies [069cda35f]
+  - @backstage/plugin-techdocs@0.3.0
+  - @backstage/catalog-model@0.3.1
+
 ## 0.2.3
 
 ### Patch Changes

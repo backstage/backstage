@@ -115,15 +115,15 @@ describe('collectConfigSchemas', () => {
 
     await expect(collectConfigSchemas(['a'])).resolves.toEqual([
       {
-        path: 'node_modules/b/package.json',
+        path: path.join('node_modules', 'b', 'package.json'),
         value: { ...mockSchema, title: 'b' },
       },
       {
-        path: 'node_modules/c1/package.json',
+        path: path.join('node_modules', 'c1', 'package.json'),
         value: { ...mockSchema, title: 'c1' },
       },
       {
-        path: 'node_modules/d1/package.json',
+        path: path.join('node_modules', 'd1', 'package.json'),
         value: { ...mockSchema, title: 'd1' },
       },
     ]);
@@ -224,7 +224,11 @@ describe('collectConfigSchemas', () => {
     });
 
     await expect(collectConfigSchemas(['a'])).rejects.toThrow(
-      'Invalid schema in node_modules/a/schema.d.ts, missing Config export',
+      `Invalid schema in ${path.join(
+        'node_modules',
+        'a',
+        'schema.d.ts',
+      )}, missing Config export`,
     );
   });
 });

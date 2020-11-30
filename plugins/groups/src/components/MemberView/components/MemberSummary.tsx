@@ -102,7 +102,11 @@ export const MemberSummary = () => {
               </Tooltip>
               <Box ml={1} display="inline">
                 {groupnNames.map((groupName, index) => (
-                  <GroupLink groupName={groupName} index={index} />
+                  <GroupLink
+                    groupName={groupName}
+                    index={index}
+                    key={groupName}
+                  />
                 ))}
               </Box>
             </Box>

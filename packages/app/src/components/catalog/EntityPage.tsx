@@ -48,6 +48,7 @@ import {
   isPluginApplicableToEntity as isLighthouseAvailable,
   LastLighthouseAuditCard,
 } from '@backstage/plugin-lighthouse';
+import { GroupsList } from '@backstage/plugin-org';
 import { Router as SentryRouter } from '@backstage/plugin-sentry';
 import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
 import { Button, Grid } from '@material-ui/core';
@@ -314,6 +315,21 @@ const ApiEntityPage = ({ entity }: { entity: Entity }) => (
   </EntityPageLayout>
 );
 
+const OrgEntityPage = ({ entity }: { entity: Entity }) => (
+  <EntityPageLayout>
+    <EntityPageLayout.Content
+      path="/*"
+      title="Overview"
+      element={<ApiOverviewContent entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/groups/*"
+      title="Groups"
+      element={<GroupsList />}
+    />
+  </EntityPageLayout>
+);
+
 export const EntityPage = () => {
   const { entity } = useEntity();
 
@@ -322,6 +338,8 @@ export const EntityPage = () => {
       return <ComponentEntityPage entity={entity} />;
     case 'api':
       return <ApiEntityPage entity={entity} />;
+    case 'group':
+      return <OrgEntityPage entity={entity} />;
     default:
       return <DefaultEntityPage entity={entity} />;
   }

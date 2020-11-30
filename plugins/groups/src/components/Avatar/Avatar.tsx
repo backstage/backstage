@@ -54,7 +54,7 @@ export const Avatar = ({
         ...customStyles,
       }}
     >
-      {displayName && displayName.match(/\b\w/g).join('').substring(0, 2)}
+      {displayName && displayName.match(/\b\w/g)!.join('').substring(0, 2)}
     </MaterialAvatar>
   );
 };
