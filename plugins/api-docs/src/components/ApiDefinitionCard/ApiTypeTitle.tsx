@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-export { ApiDefinitionCard } from './ApiDefinitionCard';
-export { defaultDefinitionWidgets } from './ApiDefinitionWidget';
-export type { ApiDefinitionWidget } from './ApiDefinitionWidget';
-export { ApiTypeTitle } from './ApiTypeTitle';
+import { ApiEntity } from '@backstage/catalog-model';
+import { useApi } from '@backstage/core';
+import React from 'react';
+import { apiDocsConfigRef } from '../../config';
+
+export const ApiTypeTitle = ({ apiEntity }: { apiEntity: ApiEntity }) => {
+  const config = useApi(apiDocsConfigRef);
+  const definition = config.getApiDefinitionWidget(apiEntity);
+  const type = definition ? definition.title : apiEntity.spec.type;
+
+  return <span>{type}</span>;
+};
