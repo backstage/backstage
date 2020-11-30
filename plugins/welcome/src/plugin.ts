@@ -24,7 +24,8 @@ export const rootRouteRef = createRouteRef({
 
 export const plugin = createPlugin({
   id: 'welcome',
-  register({ router }) {
+  register({ router, featureFlags }) {
     router.addRoute(rootRouteRef, WelcomePage);
+    featureFlags.register('enable-welcome-box');
   },
 });
