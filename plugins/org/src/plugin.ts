@@ -13,17 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { Grid } from '@material-ui/core';
-import { GroupsComponent } from '../GroupsComponent';
-import { GroupsTable } from '../GroupsTable';
+import { createPlugin, createRouteRef } from '@backstage/core';
 
-export const GroupsList = () => (
-  <GroupsComponent>
-    <Grid container spacing={3} direction="column">
-      <Grid item>
-        <GroupsTable />
-      </Grid>
-    </Grid>
-  </GroupsComponent>
-);
+export const rootRouteRef = createRouteRef({
+  path: '',
+  title: 'Groups',
+});
+
+export const viewGroupRouteRef = createRouteRef({
+  path: ':groupName',
+  title: 'View Group',
+});
+
+export const viewMemberRouteRef = createRouteRef({
+  path: 'member/:memberName',
+  title: 'View Member',
+});
+
+export const plugin = createPlugin({
+  id: 'org',
+});

@@ -13,16 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React from 'react';
-import { Route, Routes } from 'react-router-dom';
-import { rootRouteRef, viewGroupRouteRef, viewMemberRouteRef } from './plugin';
-import { GroupsList, GroupView, MemberView } from './components';
-
-export const Router = () => (
-  <Routes>
-    <Route path={`/${rootRouteRef.path}`} element={<GroupsList />} />
-    <Route path={`/${viewGroupRouteRef.path}`} element={<GroupView />} />
-    <Route path={`/${viewMemberRouteRef.path}`} element={<MemberView />} />
-  </Routes>
-);
+export { MembersTab } from './MembersTab';

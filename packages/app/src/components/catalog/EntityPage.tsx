@@ -48,7 +48,7 @@ import {
   isPluginApplicableToEntity as isLighthouseAvailable,
   LastLighthouseAuditCard,
 } from '@backstage/plugin-lighthouse';
-import { GroupsList } from '@backstage/plugin-org';
+import { MembersTab, MemberTab } from '@backstage/plugin-org';
 import { Router as SentryRouter } from '@backstage/plugin-sentry';
 import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
 import { Button, Grid } from '@material-ui/core';
@@ -315,20 +315,40 @@ const ApiEntityPage = ({ entity }: { entity: Entity }) => (
   </EntityPageLayout>
 );
 
-const OrgEntityPage = ({ entity }: { entity: Entity }) => (
-  <EntityPageLayout>
-    <EntityPageLayout.Content
-      path="/*"
-      title="Overview"
-      element={<ApiOverviewContent entity={entity} />}
-    />
-    <EntityPageLayout.Content
-      path="/groups/*"
-      title="Groups"
-      element={<GroupsList />}
-    />
-  </EntityPageLayout>
+const OrgOverviewContent = ({ entity }: { entity: Entity }) => (
+  <Grid container spacing={3}>
+    <Grid item md={6}>
+      <AboutCard entity={entity} />
+    </Grid>
+  </Grid>
 );
+
+const OrgEntityPage = ({ entity }: { entity: Entity }) => {
+  return (
+    <EntityPageLayout>
+      {entity.kind === 'Group' ? (
+        <EntityPageLayout.Content
+          path="/*"
+          title="Overview"
+          element={<OrgOverviewContent entity={entity} />}
+        />
+      ) : null}
+      {entity.kind === 'Group' ? (
+        <EntityPageLayout.Content
+          path="/members/*"
+          title="Members"
+          element={<MembersTab />}
+        />
+      ) : (
+        <EntityPageLayout.Content
+          path="/*"
+          title="Profile"
+          element={<MemberTab />}
+        />
+      )}
+    </EntityPageLayout>
+  );
+};
 
 export const EntityPage = () => {
   const { entity } = useEntity();
@@ -339,6 +359,7 @@ export const EntityPage = () => {
     case 'api':
       return <ApiEntityPage entity={entity} />;
     case 'group':
+    case 'user':
       return <OrgEntityPage entity={entity} />;
     default:
       return <DefaultEntityPage entity={entity} />;

@@ -34,7 +34,6 @@ import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
 import { Router as LighthouseRouter } from '@backstage/plugin-lighthouse';
 import { Router as RegisterComponentRouter } from '@backstage/plugin-register-component';
 import { Router as SettingsRouter } from '@backstage/plugin-user-settings';
-import { Router as OrgRouter } from '@backstage/plugin-org';
 import { Router as ImportComponentRouter } from '@backstage/plugin-catalog-import';
 import { Route, Routes, Navigate } from 'react-router';
 
@@ -89,7 +88,6 @@ const AppRoutes = () => (
       element={<RegisterComponentRouter catalogRouteRef={catalogRouteRef} />}
     />
     <Route path="/settings" element={<SettingsRouter />} />
-    <Route path="/groups/*" element={<OrgRouter />} />
     {...deprecatedAppRoutes}
   </Routes>
 );

@@ -13,4 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { GroupsComponent } from './GroupsComponent';
+import React from 'react';
+import { Grid } from '@material-ui/core';
+import { MemberSummary } from './components';
+
+export const MemberTab = () => {
+  return (
+    <Grid container spacing={3}>
+      <Grid item xs={12} md={6}>
+        <MemberSummary />
+      </Grid>
+    </Grid>
+  );
+};

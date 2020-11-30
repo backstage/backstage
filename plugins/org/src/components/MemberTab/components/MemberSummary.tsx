@@ -16,57 +16,46 @@
 import React from 'react';
 import { Box, Grid, Link, Tooltip, Typography } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
-import { InfoCard, Progress, useApi } from '@backstage/core';
-import { useAsync } from 'react-use';
-import {
-  catalogApiRef,
-  useEntityCompoundName,
-} from '@backstage/plugin-catalog';
-import { UserEntity } from '@backstage/catalog-model';
+import { InfoCard } from '@backstage/core';
+import { entityRouteParams, useEntity } from '@backstage/plugin-catalog';
+import { Entity, UserEntity } from '@backstage/catalog-model';
 import EmailIcon from '@material-ui/icons/Email';
 import GroupIcon from '@material-ui/icons/Group';
-import { Link as RouterLink, generatePath, useParams } from 'react-router-dom';
+import { Link as RouterLink, generatePath } from 'react-router-dom';
 import { Avatar } from '../../Avatar';
-import { viewGroupRouteRef } from '../../../plugin';
 
 const GroupLink = ({
   groupName,
   index,
+  entity,
 }: {
   groupName: string;
   index: number;
+  entity: Entity;
 }) => (
   <>
     {index >= 1 ? ', ' : ''}
     <Link
       component={RouterLink}
-      to={`/groups/${generatePath(viewGroupRouteRef.path, {
-        groupName: groupName,
-      })}`}
+      to={generatePath(
+        `/catalog/:namespace/group/${groupName}`,
+        entityRouteParams(entity),
+      )}
     >
       [{groupName}]
     </Link>
   </>
 );
 export const MemberSummary = () => {
-  const catalogApi = useApi(catalogApiRef);
-  const { memberName } = useParams();
-  const { namespace } = useEntityCompoundName();
-  const { loading, error, value: member } = useAsync(async () => {
-    const member = await catalogApi.getEntityByName({
-      kind: 'User',
-      namespace,
-      name: memberName,
-    });
-    return member as UserEntity;
-  }, [catalogApi]);
+  const { entity: member } = useEntity();
+  const {
+    spec: { profile, memberOf: groupNames },
+  } = member as UserEntity;
 
-  if (loading) return <Progress />;
-  else if (error) return <Alert severity="error">{error.message}</Alert>;
-  else if (!member)
-    return <Alert severity="error">Member: {memberName} not found</Alert>;
-
-  const { profile, memberOf: groupnNames } = member.spec;
+  if (!member)
+    return (
+      <Alert severity="error">Member: {profile?.displayName} not found</Alert>
+    );
 
   return (
     <InfoCard title={profile?.displayName}>
@@ -101,11 +90,12 @@ export const MemberSummary = () => {
                 <GroupIcon />
               </Tooltip>
               <Box ml={1} display="inline">
-                {groupnNames.map((groupName, index) => (
+                {groupNames.map((groupName, index) => (
                   <GroupLink
                     groupName={groupName}
                     index={index}
                     key={groupName}
+                    entity={member}
                   />
                 ))}
               </Box>

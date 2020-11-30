@@ -13,4 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { GroupsList } from './GroupsList';
+export { plugin } from './plugin';
+export { MembersTab, MemberTab } from './components';

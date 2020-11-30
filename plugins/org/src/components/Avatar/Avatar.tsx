@@ -20,7 +20,7 @@ import {
   makeStyles,
   Theme,
 } from '@material-ui/core';
-import { stringToColour } from '../../utils';
+import { CSSProperties } from '@material-ui/core/styles/withStyles';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -34,6 +34,19 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
+const stringToColour = (str: string) => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  let colour = '#';
+  for (let i = 0; i < 3; i++) {
+    const value = (hash >> (i * 8)) & 0xff;
+    colour += `00${value.toString(16)}`.substr(-2);
+  }
+  return colour;
+};
+
 export const Avatar = ({
   displayName,
   picture,
@@ -41,7 +54,7 @@ export const Avatar = ({
 }: {
   displayName: string | undefined;
   picture: string | undefined;
-  customStyles?: {};
+  customStyles?: CSSProperties;
 }) => {
   const classes = useStyles();
   return (

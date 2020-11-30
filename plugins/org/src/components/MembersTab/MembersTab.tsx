@@ -25,12 +25,15 @@ import {
   Typography,
 } from '@material-ui/core';
 import { InfoCard, Progress, useApi } from '@backstage/core';
-import { UserEntity } from '@backstage/catalog-model';
-import { Link as RouterLink, generatePath, useParams } from 'react-router-dom';
-import { catalogApiRef } from '@backstage/plugin-catalog';
+import { UserEntity, RELATION_MEMBER_OF } from '@backstage/catalog-model';
+import { Link as RouterLink, generatePath } from 'react-router-dom';
+import {
+  catalogApiRef,
+  useEntity,
+  entityRouteParams,
+} from '@backstage/plugin-catalog';
 import { useAsync } from 'react-use';
-import { viewMemberRouteRef } from '../../../plugin';
-import { Avatar } from '../../Avatar';
+import { Avatar } from '../Avatar';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -43,6 +46,7 @@ const useStyles = makeStyles(() =>
 
 const MemberComponent = ({ member }: { member: UserEntity }) => {
   const classes = useStyles();
+  const { entity } = useEntity();
   const { name: metaName } = member.metadata;
   const { profile } = member.spec;
   return (
@@ -67,9 +71,10 @@ const MemberComponent = ({ member }: { member: UserEntity }) => {
             <Typography variant="h5">
               <Link
                 component={RouterLink}
-                to={`/groups/${generatePath(viewMemberRouteRef.path, {
-                  memberName: metaName,
-                })}`}
+                to={generatePath(
+                  `/catalog/:namespace/user/${metaName}`,
+                  entityRouteParams(entity),
+                )}
               >
                 {profile?.displayName}
               </Link>
@@ -82,9 +87,14 @@ const MemberComponent = ({ member }: { member: UserEntity }) => {
   );
 };
 
-export const Members = () => {
-  const { groupName } = useParams();
+export const MembersTab = () => {
+  const {
+    entity: {
+      metadata: { name: groupName },
+    },
+  } = useEntity();
   const catalogApi = useApi(catalogApiRef);
+
   const { loading, error, value: members } = useAsync(async () => {
     const membersList = await catalogApi.getEntities({
       filter: {
@@ -93,7 +103,11 @@ export const Members = () => {
     });
     const groupMembersList = ((membersList.items as unknown) as Array<
       UserEntity
-    >).filter(member => member.spec.memberOf.includes(groupName));
+    >).filter(member =>
+      member?.relations?.some(
+        r => r.type === RELATION_MEMBER_OF && r.target.name === groupName,
+      ),
+    );
     return groupMembersList;
   }, [catalogApi]);
 

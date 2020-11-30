@@ -26,6 +26,15 @@ import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEnti
 import { useEntityCompoundName } from '../useEntityCompoundName';
 import { Tabbed } from './Tabbed';
 
+const toTitleCase = (phrase: string) => {
+  return phrase
+    .replace(/\./g, ' ')
+    .toLowerCase()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
+
 const EntityPageTitle = ({
   entity,
   title,
@@ -39,14 +48,14 @@ const EntityPageTitle = ({
   </Box>
 );
 
-function headerProps(
+const headerProps = (
   kind: string,
   namespace: string | undefined,
   name: string,
   entity: Entity | undefined,
-): { headerTitle: string; headerType: string } {
+): { headerTitle: string; headerType: string } => {
   return {
-    headerTitle: `${name}${
+    headerTitle: `${kind === 'user' ? toTitleCase(name) : name}${
       namespace && namespace !== ENTITY_DEFAULT_NAMESPACE
         ? ` in ${namespace}`
         : ''
@@ -60,7 +69,7 @@ function headerProps(
       return t;
     })(),
   };
-}
+};
 
 export const EntityPageLayout = ({ children }: PropsWithChildren<{}>) => {
   const { kind, namespace, name } = useEntityCompoundName();
@@ -88,7 +97,7 @@ export const EntityPageLayout = ({ children }: PropsWithChildren<{}>) => {
         pageTitleOverride={headerTitle}
         type={headerType}
       >
-        {entity && (
+        {entity && kind !== 'user' && (
           <>
             <HeaderLabel
               label="Owner"

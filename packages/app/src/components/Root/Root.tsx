@@ -24,7 +24,6 @@ import MapIcon from '@material-ui/icons/MyLocation';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import MoneyIcon from '@material-ui/icons/MonetizationOn';
-import PeopleIcon from '@material-ui/icons/People';
 import LogoFull from './LogoFull';
 import LogoIcon from './LogoIcon';
 import {
@@ -84,7 +83,6 @@ const Root: FC<{}> = ({ children }) => (
       <SidebarItem icon={HomeIcon} to="/catalog" text="Home" />
       <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
       <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
-      <SidebarItem icon={PeopleIcon} to="groups" text="Groups" />
       <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
       {/* End global nav */}
       <SidebarDivider />
