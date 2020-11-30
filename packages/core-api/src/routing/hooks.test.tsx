@@ -24,7 +24,11 @@ import {
   traverseElementTree,
 } from '../extensions/traversal';
 import { createPlugin } from '../plugin';
-import { routePathCollector, routeParentCollector } from './collectors';
+import {
+  routePathCollector,
+  routeParentCollector,
+  routeObjectCollector,
+} from './collectors';
 import { useRouteRef, RoutingProvider, validateRoutes } from './hooks';
 import { createRouteRef } from './RouteRef';
 import { RouteRef, RouteRefConfig } from './types';
@@ -38,23 +42,31 @@ const MockComponent = ({ children }: PropsWithChildren<{}>) => <>{children}</>;
 
 const plugin = createPlugin({ id: 'my-plugin' });
 
-const ref1 = createRouteRef(mockConfig());
-const ref2 = createRouteRef(mockConfig());
-const ref3 = createRouteRef(mockConfig());
-const ref4 = createRouteRef(mockConfig());
-const ref5 = createRouteRef(mockConfig());
+const ref1 = createRouteRef(mockConfig({ path: '/wat1' }));
+const ref2 = createRouteRef(mockConfig({ path: '/wat2' }));
+const ref3 = createRouteRef(mockConfig({ path: '/wat3' }));
+const ref4 = createRouteRef(mockConfig({ path: '/wat4' }));
+const ref5 = createRouteRef(mockConfig({ path: '/wat5' }));
 
 const MockRouteSource = (props: {
   name: string;
   routeRef: RouteRef;
   params?: Record<string, string>;
 }) => {
-  const routeFunc = useRouteRef(props.routeRef);
-  return (
-    <div>
-      Path at {props.name}: {routeFunc(props.params)}
-    </div>
-  );
+  try {
+    const routeFunc = useRouteRef(props.routeRef);
+    return (
+      <div>
+        Path at {props.name}: {routeFunc(props.params)}
+      </div>
+    );
+  } catch (ex) {
+    return (
+      <div>
+        Error at {props.name}: {ex.message}
+      </div>
+    );
+  }
 };
 
 const Extension1 = plugin.provide(
@@ -87,17 +99,22 @@ describe('discovery', () => {
       </MemoryRouter>
     );
 
-    const { routePaths, routeParents } = traverseElementTree({
+    const { routePaths, routeParents, routeObjects } = traverseElementTree({
       root,
       discoverers: [childDiscoverer, routeElementDiscoverer],
       collectors: {
         routePaths: routePathCollector,
         routeParents: routeParentCollector,
+        routeObjects: routeObjectCollector,
       },
     });
 
     const rendered = render(
-      <RoutingProvider routePaths={routePaths} routeParents={routeParents}>
+      <RoutingProvider
+        routePaths={routePaths}
+        routeParents={routeParents}
+        routeObjects={routeObjects}
+      >
         {root}
       </RoutingProvider>,
     );
@@ -127,17 +144,22 @@ describe('discovery', () => {
       </MemoryRouter>
     );
 
-    const { routePaths, routeParents } = traverseElementTree({
+    const { routePaths, routeParents, routeObjects } = traverseElementTree({
       root,
       discoverers: [childDiscoverer, routeElementDiscoverer],
       collectors: {
         routePaths: routePathCollector,
         routeParents: routeParentCollector,
+        routeObjects: routeObjectCollector,
       },
     });
 
     const rendered = render(
-      <RoutingProvider routePaths={routePaths} routeParents={routeParents}>
+      <RoutingProvider
+        routePaths={routePaths}
+        routeParents={routeParents}
+        routeObjects={routeObjects}
+      >
         {root}
       </RoutingProvider>,
     );
@@ -152,33 +174,94 @@ describe('discovery', () => {
 
   it('should handle relative routing within parameterized routePaths', () => {
     const root = (
-      <MemoryRouter initialEntries={['/foo/blob/bar']}>
+      <MemoryRouter initialEntries={['/foo/blob/baz']}>
         <Routes>
           <Extension5 path="/foo/:id">
             <Extension2 path="/bar" name="inside" routeRef={ref3} />
             <Extension3 path="/baz" />
           </Extension5>
         </Routes>
+        <MockRouteSource name="outsideNoParams" routeRef={ref3} />
+        <MockRouteSource
+          name="outsideWithParams"
+          routeRef={ref3}
+          params={{ id: 'blob' }}
+        />
       </MemoryRouter>
     );
 
-    const { routePaths, routeParents } = traverseElementTree({
+    const { routePaths, routeParents, routeObjects } = traverseElementTree({
       root,
       discoverers: [childDiscoverer, routeElementDiscoverer],
       collectors: {
         routePaths: routePathCollector,
         routeParents: routeParentCollector,
+        routeObjects: routeObjectCollector,
       },
     });
 
     const rendered = render(
-      <RoutingProvider routePaths={routePaths} routeParents={routeParents}>
+      <RoutingProvider
+        routePaths={routePaths}
+        routeParents={routeParents}
+        routeObjects={routeObjects}
+      >
         {root}
       </RoutingProvider>,
     );
 
     expect(
       rendered.getByText('Path at inside: /foo/blob/baz'),
+    ).toBeInTheDocument();
+  });
+
+  it('should throw errors for routing to other routeRefs with unsupported parameters', () => {
+    const root = (
+      <MemoryRouter initialEntries={['/']}>
+        <Routes>
+          <Extension5 path="/foo/:id">
+            <Extension2 path="/bar" name="inside" routeRef={ref3} />
+            <Extension3 path="/baz" />
+          </Extension5>
+        </Routes>
+        <MockRouteSource name="outsideNoParams" routeRef={ref3} />
+        <MockRouteSource
+          name="outsideWithParams"
+          routeRef={ref3}
+          params={{ id: 'blob' }}
+        />
+      </MemoryRouter>
+    );
+
+    const { routePaths, routeParents, routeObjects } = traverseElementTree({
+      root,
+      discoverers: [childDiscoverer, routeElementDiscoverer],
+      collectors: {
+        routePaths: routePathCollector,
+        routeParents: routeParentCollector,
+        routeObjects: routeObjectCollector,
+      },
+    });
+
+    const rendered = render(
+      <RoutingProvider
+        routePaths={routePaths}
+        routeParents={routeParents}
+        routeObjects={routeObjects}
+      >
+        {root}
+      </RoutingProvider>,
+    );
+
+    expect(
+      rendered.getByText(
+        `Error at outsideWithParams: Cannot route to ${ref3} with parent ${ref5} as it has parameters`,
+      ),
+    ).toBeInTheDocument();
+    expect(
+      rendered.getByText(
+        `Error at outsideNoParams: Cannot route to ${ref3} with parent ${ref5} as it has parameters`,
+      ),
     ).toBeInTheDocument();
   });
 

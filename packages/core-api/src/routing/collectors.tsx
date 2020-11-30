@@ -15,7 +15,7 @@
  */
 
 import { isValidElement, ReactNode } from 'react';
-import { RouteRef } from '../routing/types';
+import { BackstageRouteObject, RouteRef } from '../routing/types';
 import { getComponentData } from '../extensions';
 import { createCollector } from '../extensions/traversal';
 
@@ -78,5 +78,39 @@ export const routeParentCollector = createCollector(
     }
 
     return nextParent;
+  },
+);
+
+export const routeObjectCollector = createCollector(
+  () => Array<BackstageRouteObject>(),
+  (acc, node, parent, parentChildArr: BackstageRouteObject[] = acc) => {
+    if (parent.props.element === node) {
+      return parentChildArr;
+    }
+
+    const path: string | undefined = node.props?.path;
+    const caseSensitive: boolean = Boolean(node.props?.caseSensitive);
+    const element: ReactNode = node.props?.element;
+
+    let routeRef = getComponentData<RouteRef>(node, 'core.mountPoint');
+    if (!routeRef && isValidElement(element)) {
+      routeRef = getComponentData<RouteRef>(element, 'core.mountPoint');
+    }
+    if (routeRef) {
+      const children: BackstageRouteObject[] = [];
+      if (!path) {
+        throw new Error(`No path found for mount point ${routeRef}`);
+      }
+      parentChildArr.push({
+        caseSensitive,
+        path,
+        element: null,
+        routeRef,
+        children,
+      });
+      return children;
+    }
+
+    return parentChildArr;
   },
 );

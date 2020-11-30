@@ -28,3 +28,12 @@ export type RouteRefConfig = {
   icon?: IconComponent;
   title: string;
 };
+
+// A duplicate of the react-router RouteObject, but with routeRef added
+export interface BackstageRouteObject {
+  caseSensitive: boolean;
+  children?: BackstageRouteObject[];
+  element: React.ReactNode;
+  path: string;
+  routeRef: RouteRef;
+}

@@ -31,6 +31,10 @@ export class AbsoluteRouteRef {
   get title() {
     return this.config.title;
   }
+
+  toString() {
+    return `routeRef{path=${this.path}}`;
+  }
 }
 
 export function createRouteRef(config: RouteRefConfig): AbsoluteRouteRef {
