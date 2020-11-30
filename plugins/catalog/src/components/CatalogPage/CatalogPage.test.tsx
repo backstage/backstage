@@ -15,7 +15,11 @@
  */
 
 import { CatalogApi } from '@backstage/catalog-client';
-import { Entity } from '@backstage/catalog-model';
+import {
+  Entity,
+  RELATION_MEMBER_OF,
+  RELATION_OWNED_BY,
+} from '@backstage/catalog-model';
 import {
   ApiProvider,
   ApiRegistry,
@@ -46,6 +50,12 @@ describe('CatalogPage', () => {
               owner: 'tools@example.com',
               type: 'service',
             },
+            relations: [
+              {
+                type: RELATION_OWNED_BY,
+                target: { kind: 'Group', name: 'tools', namespace: 'default' },
+              },
+            ],
           },
           {
             apiVersion: 'backstage.io/v1alpha1',
@@ -57,11 +67,34 @@ describe('CatalogPage', () => {
               owner: 'not-tools@example.com',
               type: 'service',
             },
+            relations: [
+              {
+                type: RELATION_OWNED_BY,
+                target: {
+                  kind: 'Group',
+                  name: 'not-tools',
+                  namespace: 'default',
+                },
+              },
+            ],
           },
         ] as Entity[],
       }),
     getLocationByEntity: () =>
       Promise.resolve({ id: 'id', type: 'github', target: 'url' }),
+    getEntityByName: async entityName => {
+      return {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'User',
+        metadata: { name: entityName.name },
+        relations: [
+          {
+            type: RELATION_MEMBER_OF,
+            target: { namespace: 'default', kind: 'Group', name: 'tools' },
+          },
+        ],
+      };
+    },
   };
   const testProfile: Partial<ProfileInfo> = {
     displayName: 'Display Name',
