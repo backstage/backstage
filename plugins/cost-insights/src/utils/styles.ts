@@ -68,8 +68,8 @@ export const costInsightsDarkTheme = {
     navigationText: '#b5b5b5',
     alertBackground: 'rgba(32, 32, 32, 0.13)',
     dataViz: [
-      '#c1dffd',
-      '#baddd5',
+      '#8accff',
+      '#7bc2ac',
       '#ff9664',
       '#ffa5d1',
       '#ffcc57',
