@@ -15,7 +15,7 @@
  */
 
 import { createApiRef } from '@backstage/core';
-import { ParsedEntityId } from './types';
+import { EntityName } from '@backstage/catalog-model';
 
 export const techdocsStorageApiRef = createApiRef<TechDocsStorageApi>({
   id: 'plugin.techdocs.storageservice',
@@ -28,17 +28,13 @@ export const techdocsApiRef = createApiRef<TechDocsApi>({
 });
 
 export interface TechDocsStorage {
-  getEntityDocs(entityId: ParsedEntityId, path: string): Promise<string>;
-  getBaseUrl(
-    oldBaseUrl: string,
-    entityId: ParsedEntityId,
-    path: string,
-  ): string;
+  getEntityDocs(entityId: EntityName, path: string): Promise<string>;
+  getBaseUrl(oldBaseUrl: string, entityId: EntityName, path: string): string;
 }
 
 export interface TechDocs {
-  getTechDocsMetadata(entityId: ParsedEntityId): Promise<string>;
-  getEntityMetadata(entityId: ParsedEntityId): Promise<string>;
+  getTechDocsMetadata(entityId: EntityName): Promise<string>;
+  getEntityMetadata(entityId: EntityName): Promise<string>;
 }
 
 /**
@@ -60,9 +56,9 @@ export class TechDocsApi implements TechDocs {
    * static files. It includes necessary data about the docs site. This method requests techdocs-backend
    * which retrieves the TechDocs metadata.
    *
-   * @param {ParsedEntityId} entityId Object containing entity data like name, namespace, etc.
+   * @param {EntityName} entityId Object containing entity data like name, namespace, etc.
    */
-  async getTechDocsMetadata(entityId: ParsedEntityId) {
+  async getTechDocsMetadata(entityId: EntityName) {
     const { kind, namespace, name } = entityId;
 
     const requestUrl = `${this.apiOrigin}/metadata/techdocs/${namespace}/${kind}/${name}`;
@@ -79,9 +75,9 @@ export class TechDocsApi implements TechDocs {
    * This method requests techdocs-backend which uses the catalog APIs to respond with filtered
    * information required here.
    *
-   * @param {ParsedEntityId} entityId Object containing entity data like name, namespace, etc.
+   * @param {EntityName} entityId Object containing entity data like name, namespace, etc.
    */
-  async getEntityMetadata(entityId: ParsedEntityId) {
+  async getEntityMetadata(entityId: EntityName) {
     const { kind, namespace, name } = entityId;
 
     const requestUrl = `${this.apiOrigin}/metadata/entity/${namespace}/${kind}/${name}`;
@@ -108,12 +104,12 @@ export class TechDocsStorageApi implements TechDocsStorage {
   /**
    * Fetch HTML content as text for an individual docs page in an entity's docs site.
    *
-   * @param {ParsedEntityId} entityId Object containing entity data like name, namespace, etc.
+   * @param {EntityName} entityId Object containing entity data like name, namespace, etc.
    * @param {string} path The unique path to an individual docs page e.g. overview/what-is-new
    * @returns {string} HTML content of the docs page as string
    * @throws {Error} Throws error when the page is not found.
    */
-  async getEntityDocs(entityId: ParsedEntityId, path: string) {
+  async getEntityDocs(entityId: EntityName, path: string) {
     const { kind, namespace, name } = entityId;
 
     const url = `${this.apiOrigin}/docs/${namespace}/${kind}/${name}/${path}`;
@@ -135,11 +131,7 @@ export class TechDocsStorageApi implements TechDocsStorage {
     return request.text();
   }
 
-  getBaseUrl(
-    oldBaseUrl: string,
-    entityId: ParsedEntityId,
-    path: string,
-  ): string {
+  getBaseUrl(oldBaseUrl: string, entityId: EntityName, path: string): string {
     const { kind, namespace, name } = entityId;
 
     return new URL(
