@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-export type { Location, LocationSpec } from './types';
-export {
-  locationSchema,
-  locationSpecSchema,
-  analyzeLocationSchema,
-} from './validation';
-export { LOCATION_ANNOTATION } from './annotation';
+export const ComponentIdValidators = {
+  httpsValidator: (value: any) =>
+    (typeof value === 'string' && value.match(/^https:\/\//) !== null) ||
+    'Must start with https://.',
+};

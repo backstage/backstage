@@ -9,6 +9,7 @@
     "@backstage/core": "^0.3.2",
     "@backstage/plugin-api-docs": "^0.3.0",
     "@backstage/plugin-catalog": "^0.2.4",
+    "@backstage/plugin-catalog-import": "^0.2.0",
     "@backstage/plugin-circleci": "^0.2.2",
     "@backstage/plugin-cloudbuild": "^0.2.2",
     "@backstage/plugin-cost-insights": "^0.4.1",

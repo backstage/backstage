@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-export type { Location, LocationSpec } from './types';
-export {
-  locationSchema,
-  locationSpecSchema,
-  analyzeLocationSchema,
-} from './validation';
-export { LOCATION_ANNOTATION } from './annotation';
+import { RouteRef } from '@backstage/core';
+import React from 'react';
+import { Route, Routes } from 'react-router-dom';
+import { ImportComponentPage } from './ImportComponentPage';
+
+export const Router = ({ catalogRouteRef }: { catalogRouteRef: RouteRef }) => (
+  <Routes>
+    <Route
+      element={<ImportComponentPage catalogRouteRef={catalogRouteRef} />}
+    />
+  </Routes>
+);
