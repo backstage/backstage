@@ -14,46 +14,28 @@
  * limitations under the License.
  */
 
+import { UserEntity } from '@backstage/catalog-model';
 import { useAsync } from 'react-use';
-import { useMemo } from 'react';
-import { RELATION_MEMBER_OF } from '@backstage/catalog-model';
 import { identityApiRef, useApi } from '@backstage/core';
 import { catalogApiRef } from '../plugin';
 
 /**
  * Get the group memberships of the logged-in user.
  */
-export const useUserGroups: () => {
-  groups: string[];
+export function useOwnUser(): {
+  value?: UserEntity;
   loading: boolean;
   error?: Error;
-} = () => {
+} {
   const catalogApi = useApi(catalogApiRef);
-  const userId = useApi(identityApiRef).getUserId();
+  const identityApi = useApi(identityApiRef);
 
-  // TODO: should the identityApiRef already include the entity? or at least a full EntityName?
-  const { value: user, loading, error } = useAsync(async () => {
-    return await catalogApi.getEntityByName({
+  // TODO: get the full entity (or at least the full entity name) from the identityApi
+  return useAsync(async () => {
+    return (await catalogApi.getEntityByName({
       kind: 'User',
       namespace: 'default',
-      name: userId,
-    });
-  }, [catalogApi, userId]);
-
-  // calculate the group memberships
-  const groups = useMemo<string[]>(() => {
-    if (user && user.relations) {
-      return user.relations
-        .filter(
-          r =>
-            r.type === RELATION_MEMBER_OF &&
-            r.target.kind.toLowerCase() === 'group',
-        )
-        .map(r => r.target.name);
-    }
-
-    return [];
-  }, [user]);
-
-  return { groups, loading, error };
-};
+      name: identityApi.getUserId(),
+    })) as UserEntity;
+  }, [catalogApi, identityApi]);
+}

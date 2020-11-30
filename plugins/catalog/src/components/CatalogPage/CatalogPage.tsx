@@ -37,8 +37,8 @@ import { ResultsFilter } from '../ResultsFilter/ResultsFilter';
 import CatalogLayout from './CatalogLayout';
 import { CatalogTabs, LabeledComponentType } from './CatalogTabs';
 import { WelcomeBanner } from './WelcomeBanner';
-import { useUserGroups } from '../useUserGroups';
-import { RELATION_OWNED_BY } from '@backstage/catalog-model';
+import { useOwnUser } from '../useOwnUser';
+import { isOwnerOf } from '../isOwnerOf';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -112,7 +112,7 @@ const CatalogPageContents = () => {
     [],
   );
 
-  const { groups } = useUserGroups();
+  const { value: user } = useOwnUser();
 
   const filterGroups = useMemo<ButtonGroup[]>(
     () => [
@@ -123,16 +123,7 @@ const CatalogPageContents = () => {
             id: 'owned',
             label: 'Owned',
             icon: SettingsIcon,
-            filterFn: entity => {
-              const ownerRelation = entity.relations?.find(
-                r =>
-                  r.type === RELATION_OWNED_BY &&
-                  r.target.kind.toLowerCase() === 'group',
-              );
-              return (
-                !!ownerRelation && groups.includes(ownerRelation.target.name)
-              );
-            },
+            filterFn: entity => user !== undefined && isOwnerOf(user, entity),
           },
           {
             id: 'starred',
@@ -153,7 +144,7 @@ const CatalogPageContents = () => {
         ],
       },
     ],
-    [isStarredEntity, orgName, groups],
+    [isStarredEntity, orgName, user],
   );
 
   const showAddExampleEntities =
