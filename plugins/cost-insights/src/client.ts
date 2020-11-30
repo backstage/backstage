@@ -20,9 +20,7 @@ import { CostInsightsApi, ProductInsightsOptions } from '../src/api';
 import {
   Alert,
   Cost,
-  DateAggregation,
   DEFAULT_DATE_FORMAT,
-  Duration,
   Entity,
   Group,
   MetricData,
@@ -34,52 +32,12 @@ import {
   ProjectGrowthAlert,
   UnlabeledDataflowAlert,
 } from '../src/utils/alerts';
-import { inclusiveStartDateOf } from '../src/utils/duration';
-import { trendlineOf, changeOf } from './utils/mockData';
-
-type IntervalFields = {
-  duration: Duration;
-  endDate: string;
-};
-
-function parseIntervals(intervals: string): IntervalFields {
-  const match = intervals.match(
-    /\/(?<duration>P\d+[DM])\/(?<date>\d{4}-\d{2}-\d{2})/,
-  );
-  if (Object.keys(match?.groups || {}).length !== 2) {
-    throw new Error(`Invalid intervals: ${intervals}`);
-  }
-  const { duration, date } = match!.groups!;
-  return {
-    duration: duration as Duration,
-    endDate: date,
-  };
-}
-
-function aggregationFor(
-  intervals: string,
-  baseline: number,
-): DateAggregation[] {
-  const { duration, endDate } = parseIntervals(intervals);
-  const days = dayjs(endDate).diff(
-    inclusiveStartDateOf(duration, endDate),
-    'day',
-  );
-
-  return [...Array(days).keys()].reduce(
-    (values: DateAggregation[], i: number): DateAggregation[] => {
-      const last = values.length ? values[values.length - 1].amount : baseline;
-      values.push({
-        date: dayjs(inclusiveStartDateOf(duration, endDate))
-          .add(i, 'day')
-          .format(DEFAULT_DATE_FORMAT),
-        amount: Math.max(0, last + (baseline / 20) * (Math.random() * 2 - 1)),
-      });
-      return values;
-    },
-    [],
-  );
-}
+import {
+  trendlineOf,
+  changeOf,
+  getGroupedProducts,
+  aggregationFor,
+} from './utils/mockData';
 
 export class ExampleCostInsightsClient implements CostInsightsApi {
   private request(_: any, res: any): Promise<any> {
@@ -140,6 +98,9 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
         aggregation: aggregation,
         change: changeOf(aggregation),
         trendline: trendlineOf(aggregation),
+        // Optional field on Cost which needs to be supplied in order to see
+        // the product breakdown view in the top panel.
+        groupedCosts: getGroupedProducts(intervals),
       },
     );
 
@@ -155,6 +116,9 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
         aggregation: aggregation,
         change: changeOf(aggregation),
         trendline: trendlineOf(aggregation),
+        // Optional field on Cost which needs to be supplied in order to see
+        // the product breakdown view in the top panel.
+        groupedCosts: getGroupedProducts(intervals),
       },
     );
 

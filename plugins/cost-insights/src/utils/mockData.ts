@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import dayjs from 'dayjs';
 import regression, { DataPoint } from 'regression';
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/core';
@@ -28,15 +29,22 @@ import {
   UnlabeledDataflowAlertProject,
   UnlabeledDataflowData,
   DateAggregation,
+  DEFAULT_DATE_FORMAT,
 } from '../types';
 import {
   DefaultLoadingAction,
   getDefaultState as getDefaultLoadingState,
 } from '../utils/loading';
 import { findAlways } from '../utils/assert';
+import { inclusiveStartDateOf } from './duration';
 
 type mockAlertRenderer<T> = (alert: T) => T;
 type mockEntityRenderer<T> = (entity: T) => T;
+
+type IntervalFields = {
+  duration: Duration;
+  endDate: string;
+};
 
 export const createMockEntity = (
   callback?: mockEntityRenderer<Entity>,
@@ -213,6 +221,45 @@ export function changeOf(aggregation: DateAggregation[]): ChangeStatistic {
   return {
     ratio: (after - before) / before,
     amount: after - before,
+  };
+}
+
+export function aggregationFor(
+  intervals: string,
+  baseline: number,
+): DateAggregation[] {
+  const { duration, endDate } = parseIntervals(intervals);
+  const days = dayjs(endDate).diff(
+    inclusiveStartDateOf(duration, endDate),
+    'day',
+  );
+
+  return [...Array(days).keys()].reduce(
+    (values: DateAggregation[], i: number): DateAggregation[] => {
+      const last = values.length ? values[values.length - 1].amount : baseline;
+      values.push({
+        date: dayjs(inclusiveStartDateOf(duration, endDate))
+          .add(i, 'day')
+          .format(DEFAULT_DATE_FORMAT),
+        amount: Math.max(0, last + (baseline / 20) * (Math.random() * 2 - 1)),
+      });
+      return values;
+    },
+    [],
+  );
+}
+
+function parseIntervals(intervals: string): IntervalFields {
+  const match = intervals.match(
+    /\/(?<duration>P\d+[DM])\/(?<date>\d{4}-\d{2}-\d{2})/,
+  );
+  if (Object.keys(match?.groups || {}).length !== 2) {
+    throw new Error(`Invalid intervals: ${intervals}`);
+  }
+  const { duration, date } = match!.groups!;
+  return {
+    duration: duration as Duration,
+    endDate: date,
   };
 }
 
@@ -460,5 +507,40 @@ export const MockAggregatedDailyCosts: DateAggregation[] = [
   {
     date: '2020-09-30',
     amount: 5500,
+  },
+];
+
+export const getGroupedProducts = (intervals: string) => [
+  {
+    id: 'Cloud Dataflow',
+    aggregation: aggregationFor(intervals, 1_700),
+  },
+  {
+    id: 'Compute Engine',
+    aggregation: aggregationFor(intervals, 350),
+  },
+  {
+    id: 'Cloud Storage',
+    aggregation: aggregationFor(intervals, 1_300),
+  },
+  {
+    id: 'BigQuery',
+    aggregation: aggregationFor(intervals, 2_000),
+  },
+  {
+    id: 'Cloud SQL',
+    aggregation: aggregationFor(intervals, 750),
+  },
+  {
+    id: 'Cloud Spanner',
+    aggregation: aggregationFor(intervals, 50),
+  },
+  {
+    id: 'Cloud Pub/Sub',
+    aggregation: aggregationFor(intervals, 1_000),
+  },
+  {
+    id: 'Cloud Bigtable',
+    aggregation: aggregationFor(intervals, 250),
   },
 ];
