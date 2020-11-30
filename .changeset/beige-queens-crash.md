@@ -9,5 +9,5 @@ To apply these changes to an existing app, make the following changes to `packag
 Replace the `RUN yarn install ...` line with the following:
 
 ```bash
-RUN yarn install --frozen-lockfile --production --network-timeout 600000 && rm -rf "$(yarn cache dir)"
+RUN yarn install --frozen-lockfile --production --network-timeout 300000 && rm -rf "$(yarn cache dir)"
 ```
