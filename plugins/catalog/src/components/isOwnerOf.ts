@@ -39,8 +39,8 @@ export function isOwnerOf(owner: Entity, owned: Entity) {
       possibleOwners.find(
         o =>
           owner.kind.toLowerCase() === o.kind.toLowerCase() &&
-          owner.namespace === o.namespace &&
-          owner.name === o.name,
+          owner.namespace.toLowerCase() === o.namespace.toLowerCase() &&
+          owner.name.toLowerCase() === o.name.toLowerCase(),
       ) !== undefined
     ) {
       return true;
