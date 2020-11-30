@@ -14,43 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  ConcreteRoute,
-  routeReference,
-  ReferencedRoute,
-  resolveRoute,
-  RouteRefConfig,
-} from './types';
-import { generatePath } from 'react-router-dom';
+import { RouteRefConfig } from './types';
 
-type SubRouteConfig = {
-  path: string;
-};
-
-export class SubRouteRef<T extends { [name in string]: string } | never = never>
-  implements ReferencedRoute {
-  constructor(
-    private readonly parent: ConcreteRoute,
-    private readonly config: SubRouteConfig,
-  ) {}
-
-  get [routeReference]() {
-    return this;
-  }
-
-  link<Args extends T extends never ? [] : [T]>(...args: Args): ConcreteRoute {
-    return {
-      [routeReference]: this,
-      [resolveRoute]: (path: string) => {
-        const ownPart = generatePath(this.config.path, args[0] ?? {});
-        const parentPart = this.parent[resolveRoute](path);
-        return parentPart + ownPart;
-      },
-    };
-  }
-}
-
-export class AbsoluteRouteRef implements ConcreteRoute {
+export class AbsoluteRouteRef {
   constructor(private readonly config: RouteRefConfig) {}
 
   get icon() {
@@ -64,20 +30,6 @@ export class AbsoluteRouteRef implements ConcreteRoute {
 
   get title() {
     return this.config.title;
-  }
-
-  createSubRoute<T extends { [name in string]: string } | never = never>(
-    config: SubRouteConfig,
-  ) {
-    return new SubRouteRef<T>(this, config);
-  }
-
-  get [routeReference]() {
-    return this;
-  }
-
-  [resolveRoute](path: string) {
-    return path;
   }
 }
 
