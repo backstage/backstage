@@ -17,7 +17,7 @@ import React from 'react';
 import { Box, Grid, Link, Tooltip, Typography } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import { InfoCard } from '@backstage/core';
-import { entityRouteParams, useEntity } from '@backstage/plugin-catalog';
+import { entityRouteParams } from '@backstage/plugin-catalog';
 import { Entity, UserEntity } from '@backstage/catalog-model';
 import EmailIcon from '@material-ui/icons/Email';
 import GroupIcon from '@material-ui/icons/Group';
@@ -46,8 +46,8 @@ const GroupLink = ({
     </Link>
   </>
 );
-export const MemberSummary = () => {
-  const { entity: member } = useEntity();
+
+export const MemberSummary = ({ entity: member }: { entity: Entity }) => {
   const {
     spec: { profile, memberOf: groupNames },
   } = member as UserEntity;

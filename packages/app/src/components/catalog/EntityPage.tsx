@@ -337,13 +337,13 @@ const OrgEntityPage = ({ entity }: { entity: Entity }) => {
         <EntityPageLayout.Content
           path="/members/*"
           title="Members"
-          element={<MembersTab />}
+          element={<MembersTab entity={entity} />}
         />
       ) : (
         <EntityPageLayout.Content
           path="/*"
           title="Profile"
-          element={<MemberTab />}
+          element={<MemberTab entity={entity} />}
         />
       )}
     </EntityPageLayout>

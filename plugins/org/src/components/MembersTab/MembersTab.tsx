@@ -25,13 +25,13 @@ import {
   Typography,
 } from '@material-ui/core';
 import { InfoCard, Progress, useApi } from '@backstage/core';
-import { UserEntity, RELATION_MEMBER_OF } from '@backstage/catalog-model';
-import { Link as RouterLink, generatePath } from 'react-router-dom';
 import {
-  catalogApiRef,
-  useEntity,
-  entityRouteParams,
-} from '@backstage/plugin-catalog';
+  UserEntity,
+  RELATION_MEMBER_OF,
+  Entity,
+} from '@backstage/catalog-model';
+import { Link as RouterLink, generatePath } from 'react-router-dom';
+import { catalogApiRef, entityRouteParams } from '@backstage/plugin-catalog';
 import { useAsync } from 'react-use';
 import { Avatar } from '../Avatar';
 
@@ -44,9 +44,14 @@ const useStyles = makeStyles(() =>
   }),
 );
 
-const MemberComponent = ({ member }: { member: UserEntity }) => {
+const MemberComponent = ({
+  member,
+  entity,
+}: {
+  member: UserEntity;
+  entity: Entity;
+}) => {
   const classes = useStyles();
-  const { entity } = useEntity();
   const { name: metaName } = member.metadata;
   const { profile } = member.spec;
   return (
@@ -87,12 +92,10 @@ const MemberComponent = ({ member }: { member: UserEntity }) => {
   );
 };
 
-export const MembersTab = () => {
+export const MembersTab = ({ entity }: { entity: Entity }) => {
   const {
-    entity: {
-      metadata: { name: groupName },
-    },
-  } = useEntity();
+    metadata: { name: groupName },
+  } = entity;
   const catalogApi = useApi(catalogApiRef);
 
   const { loading, error, value: members } = useAsync(async () => {
@@ -120,7 +123,11 @@ export const MembersTab = () => {
         <Grid container spacing={3}>
           {members && members.length ? (
             members.map(member => (
-              <MemberComponent member={member} key={member.metadata.uid} />
+              <MemberComponent
+                member={member}
+                key={member.metadata.uid}
+                entity={entity}
+              />
             ))
           ) : (
             <Box p={2}>
