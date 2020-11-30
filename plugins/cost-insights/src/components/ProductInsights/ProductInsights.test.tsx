@@ -16,9 +16,9 @@
 
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
-import { ProductInsightsCardList } from './ProductInsightsCardList';
+import { ProductInsights } from './ProductInsights';
 import { ProductInsightsOptions } from '../../api';
-import { mockDefaultLoadingState, MockProducts } from '../../utils/mockData';
+import { mockDefaultLoadingState } from '../../utils/mockData';
 import {
   MockConfigProvider,
   MockCostInsightsApiProvider,
@@ -28,10 +28,15 @@ import {
   MockScrollProvider,
   MockLoadingProvider,
 } from '../../utils/tests';
-import { Entity } from '../../types';
+import { Entity, Product } from '../../types';
 
 // suppress recharts componentDidUpdate warnings
 jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+const MockComputeEngine: Product = {
+  kind: 'compute-engine',
+  name: 'Compute Engine',
+};
 
 const MockComputeEngineInsights: Entity = {
   id: 'compute-engine',
@@ -43,8 +48,13 @@ const MockComputeEngineInsights: Entity = {
   },
 };
 
+const MockCloudDataflow: Product = {
+  kind: 'cloud-dataflow',
+  name: 'Cloud Dataflow',
+};
+
 const MockCloudDataflowInsights: Entity = {
-  id: 'cloud-dataflow',
+  id: MockCloudDataflow.kind,
   entities: [],
   aggregation: [1_000, 2_000],
   change: {
@@ -53,8 +63,13 @@ const MockCloudDataflowInsights: Entity = {
   },
 };
 
+const MockCloudStorage: Product = {
+  kind: 'cloud-storage',
+  name: 'Cloud Storage',
+};
+
 const MockCloudStorageInsights: Entity = {
-  id: 'cloud-storage',
+  id: MockCloudStorage.kind,
   entities: [],
   aggregation: [2_000, 4_000],
   change: {
@@ -63,8 +78,13 @@ const MockCloudStorageInsights: Entity = {
   },
 };
 
+const MockBigQuery: Product = {
+  kind: 'big-query',
+  name: 'BigQuery',
+};
+
 const MockBigQueryInsights: Entity = {
-  id: 'big-query',
+  id: MockBigQuery.kind,
   entities: [],
   aggregation: [8_000, 16_000],
   change: {
@@ -73,8 +93,13 @@ const MockBigQueryInsights: Entity = {
   },
 };
 
+const MockBigTable: Product = {
+  kind: 'big-table',
+  name: 'BigTable',
+};
+
 const MockBigTableInsights: Entity = {
-  id: 'big-table',
+  id: MockBigTable.kind,
   entities: [],
   aggregation: [16_000, 32_000],
   change: {
@@ -83,8 +108,13 @@ const MockBigTableInsights: Entity = {
   },
 };
 
+const MockCloudPubSub: Product = {
+  kind: 'cloud-pub-sub',
+  name: 'Cloud Pub/Sub',
+};
+
 const MockCloudPubSubInsights: Entity = {
-  id: 'cloud-pub-sub',
+  id: MockCloudPubSub.kind,
   entities: [],
   aggregation: [32_000, 64_000],
   change: {
@@ -125,12 +155,31 @@ function renderInContext(children: JSX.Element) {
   );
 }
 
-describe('<ProductInsightsCardList />', () => {
+describe('<ProductInsights />', () => {
+  const MockProducts: Product[] = [
+    MockComputeEngine,
+    MockCloudDataflow,
+    MockCloudStorage,
+    MockBigQuery,
+    MockBigTable,
+    MockCloudPubSub,
+  ];
+
+  function reverse(products: Product[]): Product[] {
+    return products.slice().reverse();
+  }
+
   it('should render each product panel', async () => {
     const noComputeEngineCostsRgx = /There are no Compute Engine costs within this timeframe for your team's projects./;
     const { getByText } = await renderInContext(
-      <ProductInsightsCardList products={MockProducts} />,
+      <ProductInsights
+        onLoaded={jest.fn()}
+        group="test-group"
+        project="test-project"
+        products={MockProducts}
+      />,
     );
+
     expect(getByText(noComputeEngineCostsRgx)).toBeInTheDocument();
     MockProducts.forEach(product =>
       expect(getByText(product.name)).toBeInTheDocument(),
@@ -139,12 +188,18 @@ describe('<ProductInsightsCardList />', () => {
 
   it('product panels should be sorted by total aggregated cost', async () => {
     const { queryAllByTestId } = await renderInContext(
-      <ProductInsightsCardList products={MockProducts} />,
+      <ProductInsights
+        onLoaded={jest.fn()}
+        group="test-group"
+        project="test-project"
+        products={MockProducts}
+      />,
     );
-    const expectedOrder = MockProducts.map(
-      product => `product-list-item-${product.kind}`,
-    ).reverse();
+
     const productPanels = queryAllByTestId(/^product-list-item/);
+    const expectedOrder = reverse(MockProducts).map(
+      product => `product-list-item-${product.kind}`,
+    );
 
     expect(productPanels.length).toBe(MockProducts.length);
     Array.from(productPanels)
@@ -152,5 +207,22 @@ describe('<ProductInsightsCardList />', () => {
       .forEach((id, i) => {
         expect(id).toBe(expectedOrder[i]);
       });
+  });
+
+  it('should call onLoaded with the correct sorted order', async () => {
+    const mockOnLoaded = jest.fn();
+    const expectedOrder = reverse(MockProducts);
+
+    await renderInContext(
+      <ProductInsights
+        onLoaded={mockOnLoaded}
+        group="test-group"
+        project="test-project"
+        products={MockProducts}
+      />,
+    );
+
+    expect(mockOnLoaded).toHaveBeenCalledTimes(1);
+    expect(mockOnLoaded).toHaveBeenCalledWith(expectedOrder);
   });
 });

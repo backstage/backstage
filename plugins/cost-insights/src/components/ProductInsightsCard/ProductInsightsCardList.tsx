@@ -14,162 +14,32 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useEffect, useReducer, useRef } from 'react';
-import { Box, CircularProgress } from '@material-ui/core';
-import { useApi } from '@backstage/core';
-import { costInsightsApiRef } from '../../api';
+import React from 'react';
+import { Box, CircularProgress, Collapse } from '@material-ui/core';
 import { ProductInsightsCard } from './ProductInsightsCard';
-import { Duration, Entity, Maybe, Product } from '../../types';
-import { DefaultLoadingAction } from '../../utils/loading';
-import {
-  useFilters,
-  useLoading,
-  useLastCompleteBillingDate,
-  MapLoadingToProps,
-} from '../../hooks';
-
-type State = {
-  [kind: string]: ProductState;
-};
-
-type ProductState = {
-  product: Product;
-  entity: Maybe<Entity>;
-  duration: Duration;
-};
-
-type LoadingProps = (isLoading: boolean) => void;
+import { Duration, Entity, Product } from '../../types';
+import { ProductState } from '../../utils/loading';
 
 type ProductInsightsCardListProps = {
-  products: Product[];
+  initialStates: ProductState[];
+  onSelectAsync: (product: Product, duration: Duration) => Promise<Entity>;
 };
 
-const DEFAULT_DURATION = Duration.P30D;
-
-function totalAggregationSort(a: ProductState, b: ProductState): number {
-  const [prevA, currA] = a.entity?.aggregation ?? [0, 0];
-  const [prevB, currB] = b.entity?.aggregation ?? [0, 0];
-  return prevB + currB - (prevA + currA);
-}
-
-const mapLoadingToProps: MapLoadingToProps<LoadingProps> = ({ dispatch }) => (
-  isLoading: boolean,
-) => dispatch({ [DefaultLoadingAction.CostInsightsProducts]: isLoading });
-
-function reducer(prevState: State, action: State): State {
-  return {
-    ...prevState,
-    ...action,
-  };
-}
-
 export const ProductInsightsCardList = ({
-  products,
+  initialStates,
+  onSelectAsync,
 }: ProductInsightsCardListProps) => {
-  const onceRef = useRef(false);
-  const client = useApi(costInsightsApiRef);
-  const filters = useFilters(p => p.pageFilters);
-  const [state, dispatch] = useReducer(reducer, {});
-  const lastCompleteBillingDate = useLastCompleteBillingDate();
-  const dispatchLoading = useLoading(mapLoadingToProps);
-
-  /* eslint-disable react-hooks/exhaustive-deps */
-  // See @CostInsightsPage
-  const dispatchLoadingProducts = useCallback(dispatchLoading, []);
-  /* eslint-enable react-hooks/exhaustive-deps */
-
-  const initialProductStates = onceRef.current
-    ? Object.values(state).sort(totalAggregationSort)
-    : Object.values(state);
-
-  const onSelectAsyncMemo = useCallback(
-    async function onSelectAsync(
-      product: Product,
-      duration: Duration,
-    ): Promise<Entity> {
-      if (filters.group) {
-        return client.getProductInsights({
-          group: filters.group,
-          project: filters.project,
-          product: product.kind,
-          duration: duration,
-          lastCompleteBillingDate: lastCompleteBillingDate,
-        });
-      }
-      return Promise.reject(
-        new Error(
-          `Cannot fetch insights for ${product.name}: Expected to have a group but found none.`,
-        ),
-      );
-    },
-    [client, filters.group, filters.project, lastCompleteBillingDate],
-  );
-
-  useEffect(() => {
-    async function getAllProductInsights(
-      products: Product[],
-      group: string,
-      project: Maybe<string>,
-      lastCompleteBillingDate: string,
-    ) {
-      const requests = products.map(product =>
-        client.getProductInsights({
-          group: group,
-          project: project,
-          product: product.kind,
-          duration: DEFAULT_DURATION,
-          lastCompleteBillingDate: lastCompleteBillingDate,
-        }),
-      );
-
-      try {
-        dispatchLoadingProducts(true);
-        const responses = await Promise.allSettled(requests);
-        const results = responses.map(response =>
-          response.status === 'fulfilled' ? response.value : null,
-        );
-        const initialState = results.reduce((acc, entity, index) => {
-          const product = products[index];
-          return {
-            ...acc,
-            [product.kind]: {
-              product: product,
-              entity: entity,
-              duration: DEFAULT_DURATION,
-            },
-          };
-        }, {});
-        dispatch(initialState);
-      } finally {
-        dispatchLoadingProducts(false);
-      }
-    }
-
-    if (filters.group) {
-      onceRef.current = true;
-      getAllProductInsights(
-        products,
-        filters.group,
-        filters.project,
-        lastCompleteBillingDate,
-      );
-    }
-  }, [
-    client,
-    products,
-    filters.group,
-    filters.project,
-    lastCompleteBillingDate,
-    dispatchLoadingProducts,
-  ]);
-
-  if (!initialProductStates.length) {
-    return <CircularProgress />;
+  if (!initialStates.length) {
+    return (
+      <Box display="flex" justifyContent="space-around" alignItems="center">
+        <CircularProgress />
+      </Box>
+    );
   }
 
   return (
-    <>
-      {initialProductStates.map(({ product, entity, duration }) => (
+    <Collapse in timeout={1000}>
+      {initialStates.map(({ product, entity, duration }) => (
         <Box
           key={product.kind}
           mb={6}
@@ -178,11 +48,11 @@ export const ProductInsightsCardList = ({
         >
           <ProductInsightsCard
             product={product}
-            onSelectAsync={onSelectAsyncMemo}
+            onSelectAsync={onSelectAsync}
             initialState={{ entity: entity, duration: duration }}
           />
         </Box>
       ))}
-    </>
+    </Collapse>
   );
 };

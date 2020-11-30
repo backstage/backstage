@@ -18,6 +18,8 @@ import moment from 'moment';
 import { Duration, DEFAULT_DATE_FORMAT } from '../types';
 import { assertNever } from './assert';
 
+export const DEFAULT_DURATION = Duration.P30D;
+
 /**
  * Derive the start date of a given period, assuming two repeating intervals.
  *

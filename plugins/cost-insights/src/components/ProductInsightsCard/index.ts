@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { ProductInsightsCardList } from './ProductInsightsCardList';
+export { ProductInsightsCard } from './ProductInsightsCard';
 export { ProductInsightsChart } from './ProductInsightsChart';

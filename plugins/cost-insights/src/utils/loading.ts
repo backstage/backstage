@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { Loading } from '../types';
+import { Duration, Entity, Loading, Maybe, Product } from '../types';
+import { DEFAULT_DURATION } from './duration';
+
+export type ProductState = {
+  product: Product;
+  entity: Maybe<Entity>;
+  duration: Duration;
+};
 
 export enum DefaultLoadingAction {
   UserGroups = 'user-groups',
@@ -55,4 +62,23 @@ export const getResetStateWithoutInitial = (
       : true;
     return { ...defaultState, [action]: loadingActionState };
   }, {});
+};
+
+export const settledResponseOf = (
+  responses: PromiseSettledResult<Entity | any>[],
+): Array<Maybe<Entity>> => {
+  return responses.map(response =>
+    response.status === 'fulfilled' ? response.value : null,
+  );
+};
+
+export const initialStatesOf = (
+  products: Product[],
+  responses: Array<Maybe<Entity>>,
+): ProductState[] => {
+  return products.map((product, index) => ({
+    entity: responses[index],
+    product: product,
+    duration: DEFAULT_DURATION,
+  }));
 };

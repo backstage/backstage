@@ -23,9 +23,9 @@ import React, {
 } from 'react';
 import { InfoCard } from '@backstage/core';
 import { Typography } from '@material-ui/core';
+import { default as Alert } from '@material-ui/lab/Alert';
 import { PeriodSelect } from '../PeriodSelect';
 import { ProductInsightsChart } from './ProductInsightsChart';
-import { ProductInsightsErrorCard } from './ProductInsightsErrorCard';
 import { useProductInsightsCardStyles as useStyles } from '../../utils/styles';
 import { DefaultLoadingAction } from '../../utils/loading';
 import { Duration, Entity, Maybe, Product } from '../../types';
@@ -86,44 +86,48 @@ export const ProductInsightsCard = ({
 
     if (mountedRef.current) {
       handleOnSelectAsync();
+    } else {
+      mountedRef.current = true;
     }
   }, [product, duration, onSelectAsync, dispatchLoadingProduct]);
 
-  useEffect(function hasComponentMounted() {
-    mountedRef.current = true;
-  }, []);
-
-  const amount = entity?.entities?.length || 0;
-  const hasCostsWithinTimeframe = !!(entity?.change && amount);
-
-  const subheader = hasCostsWithinTimeframe
-    ? `${amount} ${pluralOf(amount, 'entity', 'entities')}, sorted by cost`
+  const entities = entity?.entities ?? [];
+  const subheader = entities.length
+    ? `${entities.length} ${pluralOf(
+        entities.length,
+        'entity',
+        'entities',
+      )}, sorted by cost`
     : null;
-
-  const infoCardProps = {
-    headerProps: {
-      classes: classes,
-      action: <PeriodSelect duration={duration} onSelect={setDuration} />,
-    },
+  const headerProps = {
+    classes: classes,
+    action: <PeriodSelect duration={duration} onSelect={setDuration} />,
   };
 
   if (error || !entity) {
     return (
-      <ProductInsightsErrorCard
-        product={product}
-        duration={duration}
-        onSelect={setDuration}
-      />
+      <InfoCard title={product.name} headerProps={headerProps}>
+        <ScrollAnchor behavior="smooth" top={-12} />
+        <Alert severity="error">
+          {error
+            ? error.message
+            : `Error: Could not fetch product insights for ${product.name}`}
+        </Alert>
+      </InfoCard>
     );
   }
 
   return (
-    <InfoCard title={product.name} subheader={subheader} {...infoCardProps}>
+    <InfoCard
+      title={product.name}
+      subheader={subheader}
+      headerProps={headerProps}
+    >
       <ScrollAnchor behavior="smooth" top={-12} />
-      {hasCostsWithinTimeframe ? (
+      {entities.length ? (
         <ProductInsightsChart
-          duration={duration}
           entity={entity}
+          duration={duration}
           billingDate={lastCompleteBillingDate}
         />
       ) : (
