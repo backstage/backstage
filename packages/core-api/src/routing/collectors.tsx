@@ -14,10 +14,21 @@
  * limitations under the License.
  */
 
-import { isValidElement, ReactNode } from 'react';
+import { isValidElement, ReactElement, ReactNode } from 'react';
 import { BackstageRouteObject, RouteRef } from '../routing/types';
 import { getComponentData } from '../extensions';
 import { createCollector } from '../extensions/traversal';
+
+function getMountPoint(node: ReactElement): RouteRef | undefined {
+  const element: ReactNode = node.props?.element;
+
+  let routeRef = getComponentData<RouteRef>(node, 'core.mountPoint');
+  if (!routeRef && isValidElement(element)) {
+    routeRef = getComponentData<RouteRef>(element, 'core.mountPoint');
+  }
+
+  return routeRef;
+}
 
 export const routePathCollector = createCollector(
   () => new Map<RouteRef, string>(),
@@ -26,26 +37,13 @@ export const routePathCollector = createCollector(
       return;
     }
 
-    const path: string | undefined = node.props?.path;
-    const element: ReactNode = node.props?.element;
-
-    const routeRef = getComponentData<RouteRef>(node, 'core.mountPoint');
+    const routeRef = getMountPoint(node);
     if (routeRef) {
+      const path: string | undefined = node.props?.path;
       if (!path) {
         throw new Error('Mounted routable extension must have a path');
       }
       acc.set(routeRef, path);
-    } else if (isValidElement(element)) {
-      const elementRouteRef = getComponentData<RouteRef>(
-        element,
-        'core.mountPoint',
-      );
-      if (elementRouteRef) {
-        if (!path) {
-          throw new Error('Route element must have a path');
-        }
-        acc.set(elementRouteRef, path);
-      }
     }
   },
 );
@@ -57,24 +55,12 @@ export const routeParentCollector = createCollector(
       return parentRouteRef;
     }
 
-    const element: ReactNode = node.props?.element;
-
     let nextParent = parentRouteRef;
 
-    const routeRef = getComponentData<RouteRef>(node, 'core.mountPoint');
+    const routeRef = getMountPoint(node);
     if (routeRef) {
       acc.set(routeRef, parentRouteRef);
       nextParent = routeRef;
-    } else if (isValidElement(element)) {
-      const elementRouteRef = getComponentData<RouteRef>(
-        element,
-        'core.mountPoint',
-      );
-
-      if (elementRouteRef) {
-        acc.set(elementRouteRef, parentRouteRef);
-        nextParent = elementRouteRef;
-      }
     }
 
     return nextParent;
@@ -90,12 +76,8 @@ export const routeObjectCollector = createCollector(
 
     const path: string | undefined = node.props?.path;
     const caseSensitive: boolean = Boolean(node.props?.caseSensitive);
-    const element: ReactNode = node.props?.element;
 
-    let routeRef = getComponentData<RouteRef>(node, 'core.mountPoint');
-    if (!routeRef && isValidElement(element)) {
-      routeRef = getComponentData<RouteRef>(element, 'core.mountPoint');
-    }
+    const routeRef = getMountPoint(node);
     if (routeRef) {
       const children: BackstageRouteObject[] = [];
       if (!path) {
