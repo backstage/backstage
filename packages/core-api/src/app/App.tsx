@@ -184,7 +184,13 @@ export class PrivateAppImpl implements BackstageApp {
       }
     }
 
-    routes.push(<Route path="/*" element={<NotFoundErrorPage />} />);
+    routes.push(
+      <Route
+        key="not-found-error-page"
+        path="/*"
+        element={<NotFoundErrorPage />}
+      />,
+    );
 
     return routes;
   }

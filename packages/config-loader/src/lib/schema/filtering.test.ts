@@ -38,7 +38,7 @@ const data = {
   objS: { never: 'here' },
 };
 
-const visiblity = new Map<string, ConfigVisibility>(
+const visibility = new Map<string, ConfigVisibility>(
   Object.entries({
     '.arr.0': 'frontend',
     '.arr.1': 'backend',
@@ -100,6 +100,6 @@ describe('filterByVisibility', () => {
     ],
     [['frontend', 'backend', 'secret'], data],
   ])('should filter correctly with %p', (filter, expected) => {
-    expect(filterByVisibility(data, filter, visiblity)).toEqual(expected);
+    expect(filterByVisibility(data, filter, visibility)).toEqual(expected);
   });
 });
