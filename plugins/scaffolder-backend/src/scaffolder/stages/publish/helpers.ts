@@ -13,43 +13,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Repository, Remote, Signature, Cred } from 'nodegit';
+
+import git from 'isomorphic-git';
+import globby from 'globby';
+import fs from 'fs';
+import http from 'isomorphic-git/http/node';
 
 export async function pushToRemoteCred(
-  directory: string,
+  dir: string,
   remote: string,
-  credentialsProvider: () => Cred,
+  auth?: { username: string; password: string },
 ): Promise<void> {
-  const repo = await Repository.init(directory, 0);
-  const index = await repo.refreshIndex();
-  await index.addAll();
-  await index.write();
-  const oid = await index.writeTree();
-  await repo.createCommit(
-    'HEAD',
-    Signature.now('Scaffolder', 'scaffolder@backstage.io'),
-    Signature.now('Scaffolder', 'scaffolder@backstage.io'),
-    'initial commit',
-    oid,
-    [],
-  );
-
-  const remoteRepo = await Remote.create(repo, 'origin', remote);
-
-  await remoteRepo.push(['refs/heads/master:refs/heads/master'], {
-    callbacks: {
-      credentials: credentialsProvider,
-    },
+  await git.init({
+    fs,
+    dir,
   });
-}
 
-export async function pushToRemoteUserPass(
-  directory: string,
-  remote: string,
-  username: string,
-  password: string,
-): Promise<void> {
-  return pushToRemoteCred(directory, remote, () =>
-    Cred.userpassPlaintextNew(username, password),
-  );
+  const paths = await globby(['./**', './**/.*'], { gitignore: true });
+  for (const filepath of paths) {
+    await git.add({ fs, dir, filepath });
+  }
+
+  await git.commit({
+    fs,
+    dir,
+    message: 'Initial commit',
+    author: { name: 'Scaffolder', email: 'scaffolder@backstage.io' },
+    committer: { name: 'Scaffolder', email: 'scaffolder@backstage.io' },
+  });
+
+  await git.addRemote({
+    fs,
+    dir,
+    remote: 'origin',
+    url: remote,
+  });
+
+  await git.push({
+    fs,
+    dir,
+    http,
+    remote: 'origin',
+    onAuth: () => auth,
+  });
 }

@@ -16,7 +16,7 @@
 
 import { PublisherBase } from './types';
 import { Octokit } from '@octokit/rest';
-import { pushToRemoteUserPass } from './helpers';
+import { pushToRemoteCred } from './helpers';
 import { JsonValue } from '@backstage/config';
 import { RequiredTemplateValues } from '../templater';
 
@@ -51,12 +51,10 @@ export class GithubPublisher implements PublisherBase {
     directory: string;
   }): Promise<{ remoteUrl: string }> {
     const remoteUrl = await this.createRemote(values);
-    await pushToRemoteUserPass(
-      directory,
-      remoteUrl,
-      this.token,
-      'x-oauth-basic',
-    );
+    await pushToRemoteCred(directory, remoteUrl, {
+      username: this.token,
+      password: 'x-auth-basic',
+    });
 
     return { remoteUrl };
   }

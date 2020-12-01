@@ -61,7 +61,7 @@ export class GithubPreparer implements PreparerBase {
 
     try {
       await git.clone({
-        fs: require('fs'),
+        fs,
         http,
         url: repositoryCheckoutUrl,
         dir: checkoutLocation,
