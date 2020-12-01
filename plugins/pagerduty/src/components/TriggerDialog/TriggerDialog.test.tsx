@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, act } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import {
   ApiRegistry,
@@ -26,7 +26,6 @@ import {
 } from '@backstage/core';
 import { pagerDutyApiRef } from '../../api';
 import { Entity } from '@backstage/catalog-model';
-import { act } from 'react-dom/test-utils';
 import { TriggerDialog } from './TriggerDialog';
 
 describe('TriggerDialog', () => {

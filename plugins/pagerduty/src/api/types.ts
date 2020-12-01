@@ -62,7 +62,7 @@ export type OnCallsResponse = {
 };
 
 export type ClientApiConfig = {
-  eventsUrl?: string;
+  eventsBaseUrl?: string;
   discoveryApi: DiscoveryApi;
 };
 

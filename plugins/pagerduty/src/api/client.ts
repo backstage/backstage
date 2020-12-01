@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core';
+import { createApiRef, DiscoveryApi, ConfigApi } from '@backstage/core';
 import { Service, Incident, OnCall } from '../components/types';
 import {
   PagerDutyApi,
@@ -34,6 +34,15 @@ export const pagerDutyApiRef = createApiRef<PagerDutyApi>({
 });
 
 export class PagerDutyClient implements PagerDutyApi {
+  static fromConfig(configApi: ConfigApi, discoveryApi: DiscoveryApi) {
+    const eventsBaseUrl: string =
+      configApi.getOptionalString('pagerDuty.eventsBaseUrl') ??
+      'https://events.pagerduty.com/v2';
+    return new PagerDutyClient({
+      eventsBaseUrl,
+      discoveryApi,
+    });
+  }
   constructor(private readonly config: ClientApiConfig) {}
 
   async getServiceByIntegrationKey(integrationKey: string): Promise<Service[]> {
@@ -98,7 +107,8 @@ export class PagerDutyClient implements PagerDutyApi {
     };
 
     return this.request(
-      `${this.config.eventsUrl ?? 'https://events.pagerduty.com/v2'}/enqueue`,
+      `${this.config.eventsBaseUrl ??
+        'https://events.pagerduty.com/v2'}/enqueue`,
       options,
     );
   }

@@ -38,6 +38,6 @@ export { plugin as Cloudbuild } from '@backstage/plugin-cloudbuild';
 export { plugin as CostInsights } from '@backstage/plugin-cost-insights';
 export { plugin as GitHubInsights } from '@roadiehq/backstage-plugin-github-insights';
 export { plugin as UserSettings } from '@backstage/plugin-user-settings';
-export { plugin as Pagerduty } from '@backstage/plugin-pagerduty';
+export { plugin as PagerDuty } from '@backstage/plugin-pagerduty';
 export { plugin as Buildkite } from '@roadiehq/backstage-plugin-buildkite';
 export { plugin as Search } from '@backstage/plugin-search';

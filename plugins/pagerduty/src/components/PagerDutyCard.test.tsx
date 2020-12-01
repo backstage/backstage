@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { render, waitFor, fireEvent } from '@testing-library/react';
+import { render, waitFor, fireEvent, act } from '@testing-library/react';
 import { PagerDutyCard } from './PagerDutyCard';
 import { Entity } from '@backstage/catalog-model';
 import { wrapInTestApp } from '@backstage/test-utils';
@@ -26,7 +26,6 @@ import {
 } from '@backstage/core';
 import { pagerDutyApiRef, UnauthorizedError, PagerDutyClient } from '../api';
 import { Service } from './types';
-import { act } from 'react-dom/test-utils';
 
 const mockPagerDutyApi: Partial<PagerDutyClient> = {
   getServiceByIntegrationKey: async () => [],
