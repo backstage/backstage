@@ -15,6 +15,7 @@
  */
 
 import { Location, LocationSpec } from '@backstage/catalog-model';
+import client from 'prom-client';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from 'winston';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
@@ -33,6 +34,35 @@ import {
  * database more directly.
  */
 export class HigherOrderOperations implements HigherOrderOperation {
+  private readonly catalogEntityTotal = new client.Gauge({
+    name: 'backstage_catalog_entities_total',
+    help: 'Count of entities in the catalog',
+  });
+  private readonly catalogLocationTotal = new client.Gauge({
+    name: 'backstage_catalog_locations_total',
+    help: 'Count of locations in the catalog',
+  });
+  private readonly catalogRefreshDuration = new client.Gauge({
+    name: 'backstage_catalog_refresh_duration_seconds',
+    help: 'Duration of a catalog refresh in seconds',
+  });
+  private readonly catalogLocationsRefreshedTotal = new client.Counter({
+    name: 'backstage_catalog_locations_refreshed_total',
+    help: 'Total amount of refreshed locations',
+  });
+  private readonly catalogEntitiesRefreshedTotal = new client.Counter({
+    name: 'backstage_catalog_entities_refreshed_total',
+    help: 'Total amount of refreshed entities',
+  });
+  private readonly catalogLocationsRefreshFailuresTotal = new client.Counter({
+    name: 'backstage_catalog_locations_refresh_failures_total',
+    help: 'Total amount of location refresh failures',
+  });
+  private readonly catalogEntitiesRefreshFailuresTotal = new client.Counter({
+    name: 'backstage_catalog_entities_refresh_failures_total',
+    help: 'Total amount of entity refresh failures',
+  });
+
   constructor(
     private readonly entitiesCatalog: EntitiesCatalog,
     private readonly locationsCatalog: LocationsCatalog,
@@ -115,6 +145,7 @@ export class HigherOrderOperations implements HigherOrderOperation {
    * without changes.
    */
   async refreshAllLocations(): Promise<void> {
+    const endTimer = this.catalogRefreshDuration.startTimer();
     const startTimestamp = process.hrtime();
     this.logger.info('Beginning locations refresh');
 
@@ -133,12 +164,25 @@ export class HigherOrderOperations implements HigherOrderOperation {
           `Failed to refresh location ${location.type}:${location.target}, ${e.stack}`,
         );
         await this.locationsCatalog.logUpdateFailure(location.id, e);
+
+        this.catalogLocationsRefreshFailuresTotal.inc();
+      } finally {
+        this.catalogLocationsRefreshedTotal.inc();
       }
     }
 
     this.logger.info(
       `Completed locations refresh in ${durationText(startTimestamp)}`,
     );
+    endTimer();
+
+    // TODO: Getting all entities and locations is inefficient. Only doing
+    // it on refresh is quite inaqurate. But the current prom-client version
+    // doesn't support collect() yet:
+    // https://github.com/siimon/prom-client#configuration
+    const entities = await this.entitiesCatalog.entities();
+    this.catalogEntityTotal.set(entities.length);
+    this.catalogLocationTotal.set(locations.length);
   }
 
   // Performs a full refresh of a single location
@@ -177,7 +221,12 @@ export class HigherOrderOperations implements HigherOrderOperation {
           entity.entity.metadata.name,
         );
       }
+      this.catalogEntitiesRefreshFailuresTotal.inc(
+        readerOutput.entities.length,
+      );
       throw e;
+    } finally {
+      this.catalogEntitiesRefreshedTotal.inc(readerOutput.entities.length);
     }
 
     this.logger.info(`Posting update success markers`);

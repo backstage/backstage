@@ -22,6 +22,7 @@ import yaml from 'yaml';
 import { DatabaseManager } from '../database';
 import * as result from '../ingestion/processors/results';
 import { CatalogBuilder, CatalogEnvironment } from './CatalogBuilder';
+import client from 'prom-client';
 
 const dummyEntity = {
   apiVersion: 'backstage.io/v1alpha1',
@@ -54,6 +55,10 @@ describe('CatalogBuilder', () => {
   beforeEach(async () => {
     db = await DatabaseManager.createTestDatabaseConnection();
     jest.resetAllMocks();
+  });
+
+  afterEach(() => {
+    client.register.clear();
   });
 
   it('works with no changes', async () => {

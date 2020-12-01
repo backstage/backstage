@@ -21,6 +21,7 @@ import { LocationUpdateStatus } from '../catalog/types';
 import { DatabaseLocationUpdateLogStatus } from '../database/types';
 import { HigherOrderOperations } from './HigherOrderOperations';
 import { LocationReader } from './types';
+import client from 'prom-client';
 
 describe('HigherOrderOperations', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
@@ -56,6 +57,7 @@ describe('HigherOrderOperations', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
+    client.register.clear();
   });
 
   describe('addLocation', () => {
@@ -271,6 +273,7 @@ describe('HigherOrderOperations', () => {
   describe('refreshLocations', () => {
     it('works with no locations added', async () => {
       locationsCatalog.locations.mockResolvedValue([]);
+      entitiesCatalog.entities.mockResolvedValue([]);
 
       await expect(
         higherOrderOperation.refreshAllLocations(),
@@ -300,6 +303,7 @@ describe('HigherOrderOperations', () => {
       };
       const entityId = 'xyz123';
 
+      entitiesCatalog.entities.mockResolvedValue([]);
       locationsCatalog.locations.mockResolvedValue([
         { currentStatus: locationStatus, data: location },
       ]);
@@ -390,6 +394,7 @@ describe('HigherOrderOperations', () => {
         target: 'thing',
       };
 
+      entitiesCatalog.entities.mockResolvedValue([]);
       locationsCatalog.locations.mockResolvedValue([
         { currentStatus: locationStatus, data: location },
       ]);
