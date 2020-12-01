@@ -34,7 +34,7 @@ export default async (cmd: Command) => {
   const pkgPath = paths.resolveTarget(PKG_PATH);
   const pkg = await fs.readJson(pkgPath);
   const appConfigs = await findAppConfigs();
-  const npmrc = fs.existsSync(paths.resolveTargetRoot('.npmrc'))
+  const npmrc = (await fs.pathExists(paths.resolveTargetRoot('.npmrc')))
     ? ['.npmrc']
     : [];
   const tempDistWorkspace = await createDistWorkspace([pkg.name], {
