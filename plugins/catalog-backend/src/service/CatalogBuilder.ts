@@ -285,7 +285,7 @@ export class CatalogBuilder {
         LdapOrgReaderProcessor.fromConfig(config, { logger }),
         MicrosoftGraphOrgReaderProcessor.fromConfig(config, { logger }),
         new UrlReaderProcessor({ reader, logger }),
-        new CodeOwnersProcessor({ reader }),
+        new CodeOwnersProcessor({ reader, logger }),
         new LocationRefProcessor(),
         new AnnotateLocationEntityProcessor(),
       );
