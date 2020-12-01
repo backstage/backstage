@@ -1,5 +1,50 @@
 # example-backend
 
+## 0.2.4
+
+### Patch Changes
+
+- Updated dependencies [50eff1d00]
+- Updated dependencies [ff1301d28]
+- Updated dependencies [4b53294a6]
+- Updated dependencies [3aa7efb3f]
+- Updated dependencies [1ec19a3f4]
+- Updated dependencies [ab94c9542]
+- Updated dependencies [3a201c5d5]
+- Updated dependencies [2daf18e80]
+- Updated dependencies [069cda35f]
+- Updated dependencies [b3d4e4e57]
+- Updated dependencies [700a212b4]
+  - @backstage/plugin-auth-backend@0.2.4
+  - @backstage/plugin-app-backend@0.3.1
+  - @backstage/plugin-techdocs-backend@0.3.0
+  - @backstage/backend-common@0.3.2
+  - @backstage/plugin-catalog-backend@0.2.3
+  - @backstage/catalog-model@0.3.1
+  - @backstage/plugin-rollbar-backend@0.1.4
+  - example-app@0.2.4
+
+## 0.2.3
+
+### Patch Changes
+
+- Updated dependencies [1166fcc36]
+- Updated dependencies [bff3305aa]
+- Updated dependencies [0c2121240]
+- Updated dependencies [ef2831dde]
+- Updated dependencies [1185919f3]
+- Updated dependencies [475fc0aaa]
+- Updated dependencies [b47dce06f]
+- Updated dependencies [5a1d8dca3]
+  - @backstage/catalog-model@0.3.0
+  - @backstage/plugin-kubernetes-backend@0.2.0
+  - @backstage/backend-common@0.3.1
+  - @backstage/plugin-catalog-backend@0.2.2
+  - @backstage/plugin-scaffolder-backend@0.3.2
+  - example-app@0.2.3
+  - @backstage/plugin-auth-backend@0.2.3
+  - @backstage/plugin-techdocs-backend@0.2.2
+
 ## 0.2.2
 
 ### Patch Changes

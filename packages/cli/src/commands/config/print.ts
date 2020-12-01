@@ -21,8 +21,11 @@ import { loadCliConfig } from '../../lib/config';
 import { ConfigSchema, ConfigVisibility } from '@backstage/config-loader';
 
 export default async (cmd: Command) => {
-  const { schema, appConfigs } = await loadCliConfig(cmd.config);
-  const visibility = getVisiblityOption(cmd);
+  const { schema, appConfigs } = await loadCliConfig({
+    args: cmd.config,
+    fromPackage: cmd.package,
+  });
+  const visibility = getVisibilityOption(cmd);
   const data = serializeConfigData(appConfigs, schema, visibility);
 
   if (cmd.format === 'json') {
@@ -32,7 +35,7 @@ export default async (cmd: Command) => {
   }
 };
 
-function getVisiblityOption(cmd: Command): ConfigVisibility {
+function getVisibilityOption(cmd: Command): ConfigVisibility {
   if (cmd.frontend && cmd.withSecrets) {
     throw new Error('Not allowed to combine frontend and secret config');
   }
@@ -47,14 +50,14 @@ function getVisiblityOption(cmd: Command): ConfigVisibility {
 function serializeConfigData(
   appConfigs: AppConfig[],
   schema: ConfigSchema,
-  visiblity: ConfigVisibility,
+  visibility: ConfigVisibility,
 ) {
-  if (visiblity === 'frontend') {
+  if (visibility === 'frontend') {
     const frontendConfigs = schema.process(appConfigs, {
-      visiblity: ['frontend'],
+      visibility: ['frontend'],
     });
     return ConfigReader.fromConfigs(frontendConfigs).get();
-  } else if (visiblity === 'secret') {
+  } else if (visibility === 'secret') {
     return ConfigReader.fromConfigs(appConfigs).get();
   }
 

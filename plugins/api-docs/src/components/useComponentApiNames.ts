@@ -14,8 +14,16 @@
  * limitations under the License.
  */
 
-import { ComponentEntity } from '@backstage/catalog-model';
+import {
+  ComponentEntity,
+  RELATION_PROVIDES_API,
+} from '@backstage/catalog-model';
 
 export const useComponentApiNames = (entity: ComponentEntity) => {
-  return (entity.spec?.implementsApis as string[]) || [];
+  // TODO: This code doesn't handle namespaces and kinds correctly, but will be removed soon
+  return (
+    entity.relations
+      ?.filter(r => r.type === RELATION_PROVIDES_API)
+      ?.map(r => r.target.name) || []
+  );
 };

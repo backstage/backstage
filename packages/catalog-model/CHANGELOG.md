@@ -1,5 +1,41 @@
 # @backstage/catalog-model
 
+## 0.3.1
+
+### Patch Changes
+
+- ab94c9542: Add `providesApis` and `consumesApis` to the component entity spec.
+- 2daf18e80: Start emitting all known relation types from the core entity kinds, based on their spec data.
+- 069cda35f: Marked the field `spec.implementsApis` on `Component` entities for deprecation on Dec 14th, 2020.
+
+  Code that consumes these fields should remove those usages as soon as possible and migrate to using
+  relations instead. Producers should fill the field `spec.providesApis` instead, which has the same
+  semantic.
+
+  After Dec 14th, the fields will be removed from types and classes of the Backstage repository. At
+  the first release after that, they will not be present in released packages either.
+
+  If your catalog-info.yaml files still contain this field after the deletion, they will still be
+  valid and your ingestion will not break, but they won't be visible in the types for consuming code, and the expected relations will not be generated based on them either.
+
+## 0.3.0
+
+### Minor Changes
+
+- 1166fcc36: add kubernetes selector to component model
+
+### Patch Changes
+
+- 1185919f3: Marked the `Group` entity fields `ancestors` and `descendants` for deprecation on Dec 6th, 2020. See https://github.com/backstage/backstage/issues/3049 for details.
+
+  Code that consumes these fields should remove those usages as soon as possible. There is no current or planned replacement for these fields.
+
+  The BuiltinKindsEntityProcessor has been updated to inject these fields as empty arrays if they are missing. Therefore, if you are on a catalog instance that uses the updated version of this code, you can start removing the fields from your source catalog-info.yaml data as well, without breaking validation.
+
+  After Dec 6th, the fields will be removed from types and classes of the Backstage repository. At the first release after that, they will not be present in released packages either.
+
+  If your catalog-info.yaml files still contain these fields after the deletion, they will still be valid and your ingestion will not break, but they won't be visible in the types for consuming code.
+
 ## 0.2.0
 
 ### Minor Changes

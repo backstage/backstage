@@ -1,5 +1,21 @@
 # @backstage/backend-common
 
+## 0.3.2
+
+### Patch Changes
+
+- 3aa7efb3f: Added support for passing false as a CSP field value, to drop it from the defaults in the backend
+- b3d4e4e57: Move the frontend visibility declarations of integrations config from @backstage/backend-common to @backstage/integration
+- Updated dependencies [b3d4e4e57]
+  - @backstage/integration@0.1.2
+
+## 0.3.1
+
+### Patch Changes
+
+- bff3305aa: Added readTree support to AzureUrlReader
+- b47dce06f: Make integration host and url configurations visible in the frontend
+
 ## 0.3.0
 
 ### Minor Changes

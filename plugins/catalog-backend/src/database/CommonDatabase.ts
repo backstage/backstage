@@ -345,7 +345,11 @@ export class CommonDatabase implements Database {
     );
 
     // TODO(blam): translate constraint failures to sane NotFoundError instead
-    await tx.batchInsert('entities_relations', relationsRows, BATCH_SIZE);
+    await tx.batchInsert(
+      'entities_relations',
+      deduplicateRelations(relationsRows),
+      BATCH_SIZE,
+    );
   }
 
   async addLocation(
@@ -506,7 +510,7 @@ export class CommonDatabase implements Database {
       .orderBy(['type', 'target_full_name'])
       .select();
 
-    entity.relations = relations.map(r => ({
+    entity.relations = deduplicateRelations(relations).map(r => ({
       target: parseEntityName(r.target_full_name),
       type: r.type,
     }));
@@ -516,4 +520,13 @@ export class CommonDatabase implements Database {
       entity,
     };
   }
+}
+
+function deduplicateRelations(
+  rows: DbEntitiesRelationsRow[],
+): DbEntitiesRelationsRow[] {
+  return lodash.uniqBy(
+    rows,
+    r => `${r.source_full_name}:${r.target_full_name}:${r.type}`,
+  );
 }

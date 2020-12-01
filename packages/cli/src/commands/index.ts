@@ -45,6 +45,11 @@ export function registerCommands(program: CommanderStatic) {
     .action(lazy(() => import('./backend/build').then(m => m.default)));
 
   program
+    .command('backend:__experimental__bundle__', { hidden: true })
+    .description('Bundle all backend packages into dist-workspace')
+    .action(lazy(() => import('./backend/bundle').then(m => m.default)));
+
+  program
     .command('backend:build-image')
     .allowUnknownOption(true)
     .helpOption(', --backstage-cli-help') // Let docker handle --help
@@ -136,6 +141,10 @@ export function registerCommands(program: CommanderStatic) {
 
   program
     .command('config:print')
+    .option(
+      '--package <name>',
+      'Only load config schema that applies to the given package',
+    )
     .option('--frontend', 'Print only the frontend configuration')
     .option('--with-secrets', 'Include secrets in the printed configuration')
     .option(
@@ -148,11 +157,26 @@ export function registerCommands(program: CommanderStatic) {
 
   program
     .command('config:check')
+    .option(
+      '--package <name>',
+      'Only load config schema that applies to the given package',
+    )
     .option(...configOption)
     .description(
       'Validate that the given configuration loads and matches schema',
     )
     .action(lazy(() => import('./config/validate').then(m => m.default)));
+
+  program
+    .command('versions:bump')
+    .description('Bump Backstage packages to the latest versions')
+    .action(lazy(() => import('./versions/bump').then(m => m.default)));
+
+  program
+    .command('versions:check')
+    .option('--fix', 'Fix any auto-fixable versioning problems')
+    .description('Check Backstage package versioning')
+    .action(lazy(() => import('./versions/lint').then(m => m.default)));
 
   program
     .command('prepack')

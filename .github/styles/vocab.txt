@@ -131,6 +131,7 @@ npm
 nvm
 oauth
 Oauth
+oidc
 Okta
 Oldsberg
 onboarding
@@ -229,3 +230,4 @@ yaml
 Zalando
 Zhou
 Zolotusky
+zoomable

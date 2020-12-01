@@ -1,5 +1,64 @@
 # example-app
 
+## 0.2.4
+
+### Patch Changes
+
+- Updated dependencies [294295453]
+- Updated dependencies [f3bb55ee3]
+- Updated dependencies [4b53294a6]
+- Updated dependencies [6f70ed7a9]
+- Updated dependencies [ab94c9542]
+- Updated dependencies [3a201c5d5]
+- Updated dependencies [f538e2c56]
+- Updated dependencies [2daf18e80]
+- Updated dependencies [069cda35f]
+- Updated dependencies [8697dea5b]
+- Updated dependencies [b623cc275]
+  - @backstage/cli@0.3.2
+  - @backstage/plugin-api-docs@0.3.0
+  - @backstage/plugin-techdocs@0.3.0
+  - @backstage/plugin-catalog@0.2.4
+  - @backstage/catalog-model@0.3.1
+  - @backstage/plugin-rollbar@0.2.4
+
+## 0.2.3
+
+### Patch Changes
+
+- 475fc0aaa: Using the search field in the sidebar now navigates to the search result page.
+- Updated dependencies [475fc0aaa]
+- Updated dependencies [1166fcc36]
+- Updated dependencies [29a0ccab2]
+- Updated dependencies [8e6728e25]
+- Updated dependencies [c93a14b49]
+- Updated dependencies [ef2831dde]
+- Updated dependencies [2a71f4bab]
+- Updated dependencies [1185919f3]
+- Updated dependencies [a8de7f554]
+- Updated dependencies [faf311c26]
+- Updated dependencies [31d8b6979]
+- Updated dependencies [991345969]
+- Updated dependencies [475fc0aaa]
+  - @backstage/core@0.3.2
+  - @backstage/catalog-model@0.3.0
+  - @backstage/plugin-kubernetes@0.3.0
+  - @backstage/cli@0.3.1
+  - @backstage/plugin-cost-insights@0.4.1
+  - @backstage/plugin-scaffolder@0.3.1
+  - @backstage/plugin-register-component@0.2.2
+  - @backstage/plugin-circleci@0.2.2
+  - @backstage/plugin-search@0.2.1
+  - @backstage/plugin-api-docs@0.2.2
+  - @backstage/plugin-catalog@0.2.3
+  - @backstage/plugin-cloudbuild@0.2.2
+  - @backstage/plugin-github-actions@0.2.2
+  - @backstage/plugin-jenkins@0.3.1
+  - @backstage/plugin-lighthouse@0.2.3
+  - @backstage/plugin-rollbar@0.2.3
+  - @backstage/plugin-sentry@0.2.3
+  - @backstage/plugin-techdocs@0.2.3
+
 ## 0.2.2
 
 ### Patch Changes

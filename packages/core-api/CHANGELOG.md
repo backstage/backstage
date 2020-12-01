@@ -1,5 +1,17 @@
 # @backstage/core-api
 
+## 0.2.3
+
+### Patch Changes
+
+- 700a212b4: bug fix: issue 3223 - detect mismatching origin and indicate it in the message at auth failure
+
+## 0.2.2
+
+### Patch Changes
+
+- 9b9e86f8a: export oidc provider
+
 ## 0.2.1
 
 ### Patch Changes

@@ -121,12 +121,12 @@ type SAMLProviderOptions = {
 };
 
 export const createSamlProvider: AuthProviderFactory = ({
+  providerId,
   globalConfig,
   config,
   tokenIssuer,
 }) => {
   const url = new URL(globalConfig.baseUrl);
-  const providerId = 'saml';
   const entryPoint = config.getString('entryPoint');
   const issuer = config.getString('issuer');
   const opts = {

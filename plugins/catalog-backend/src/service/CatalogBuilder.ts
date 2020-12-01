@@ -37,15 +37,16 @@ import {
 import { DatabaseManager } from '../database';
 import {
   AnnotateLocationEntityProcessor,
+  BuiltinKindsEntityProcessor,
   CatalogProcessor,
   CodeOwnersProcessor,
   FileReaderProcessor,
   GithubOrgReaderProcessor,
   HigherOrderOperation,
   HigherOrderOperations,
+  LdapOrgReaderProcessor,
   LocationReaders,
   LocationRefProcessor,
-  OwnerRelationProcessor,
   MicrosoftGraphOrgReaderProcessor,
   PlaceholderProcessor,
   PlaceholderResolver,
@@ -53,13 +54,13 @@ import {
   UrlReaderProcessor,
 } from '../ingestion';
 import { CatalogRulesEnforcer } from '../ingestion/CatalogRules';
-import { BuiltinKindsEntityProcessor } from '../ingestion/processors/BuiltinKindsEntityProcessor';
-import { LdapOrgReaderProcessor } from '../ingestion/processors/LdapOrgReaderProcessor';
+import { RepoLocationAnalyzer } from '../ingestion/LocationAnalyzer';
 import {
   jsonPlaceholderResolver,
   textPlaceholderResolver,
   yamlPlaceholderResolver,
 } from '../ingestion/processors/PlaceholderProcessor';
+import { LocationAnalyzer } from '../ingestion/types';
 
 export type CatalogEnvironment = {
   logger: Logger;
@@ -203,6 +204,7 @@ export class CatalogBuilder {
     entitiesCatalog: EntitiesCatalog;
     locationsCatalog: LocationsCatalog;
     higherOrderOperation: HigherOrderOperation;
+    locationAnalyzer: LocationAnalyzer;
   }> {
     const { config, database, logger } = this.env;
 
@@ -230,11 +232,13 @@ export class CatalogBuilder {
       locationReader,
       logger,
     );
+    const locationAnalyzer = new RepoLocationAnalyzer(logger);
 
     return {
       entitiesCatalog,
       locationsCatalog,
       higherOrderOperation,
+      locationAnalyzer,
     };
   }
 
@@ -281,9 +285,8 @@ export class CatalogBuilder {
         LdapOrgReaderProcessor.fromConfig(config, { logger }),
         MicrosoftGraphOrgReaderProcessor.fromConfig(config, { logger }),
         new UrlReaderProcessor({ reader, logger }),
-        new CodeOwnersProcessor({ reader }),
+        new CodeOwnersProcessor({ reader, logger }),
         new LocationRefProcessor(),
-        new OwnerRelationProcessor(),
         new AnnotateLocationEntityProcessor(),
       );
     }

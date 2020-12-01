@@ -1,5 +1,17 @@
 # @backstage/plugin-circleci
 
+## 0.2.2
+
+### Patch Changes
+
+- a8de7f554: Improved CircleCI builds table to show more information and relevant links
+- Updated dependencies [475fc0aaa]
+- Updated dependencies [1166fcc36]
+- Updated dependencies [1185919f3]
+  - @backstage/core@0.3.2
+  - @backstage/catalog-model@0.3.0
+  - @backstage/plugin-catalog@0.2.3
+
 ## 0.2.1
 
 ### Patch Changes

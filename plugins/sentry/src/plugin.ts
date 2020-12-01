@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-import { createPlugin } from '@backstage/core';
+import { createPlugin, createRouteRef } from '@backstage/core';
 import SentryPluginPage from './components/SentryPluginPage';
+
+export const rootRouteRef = createRouteRef({
+  path: '/sentry',
+  title: 'Sentry',
+});
 
 export const plugin = createPlugin({
   id: 'sentry',
   register({ router }) {
-    router.registerRoute('/sentry', SentryPluginPage);
+    router.addRoute(rootRouteRef, SentryPluginPage);
   },
 });

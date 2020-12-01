@@ -14,7 +14,28 @@ It is only meant for local development, and the setup for it can be found inside
 
 ## Surfacing your Kubernetes components as part of an entity
 
-### Adding the entity annotation
+There are two ways to surface your kubernetes components as part of an entity.
+The label selector takes precedence over the annotation/service id.
+
+### Full label selector
+
+#### Adding the entity label selector to the spec
+
+In order for Backstage to detect that an entity has kubernetes components the `kubernetes.selector` must have a valid selector. (Currently only matchLabels is supported)
+
+```yaml
+spec:
+  kubernetes:
+    selector:
+      matchLabels:
+        someKey: someValue
+        other-key: other-value
+        app.kubernetes.io/name: dice-roller
+```
+
+### Common `backstage.io/kubernetes-id` label on objects
+
+#### Adding the entity annotation
 
 In order for Backstage to detect that an entity has Kubernetes components,
 the following annotation should be added to the entity.
@@ -24,7 +45,7 @@ annotations:
   'backstage.io/kubernetes-id': dice-roller
 ```
 
-### Labeling Kubernetes components
+#### Labeling Kubernetes components
 
 In order for Kubernetes components to show up in the service catalog
 as a part of an entity, Kubernetes components must be labeled with the following label:

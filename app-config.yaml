@@ -38,7 +38,7 @@ proxy:
     headers:
       Authorization:
         $env: TRAVISCI_AUTH_TOKEN
-      travis-api-version: 3
+      travis-api-version: '3'
 
   '/newrelic/apm/api':
     target: https://api.newrelic.com/v2
@@ -66,8 +66,8 @@ sentry:
 
 rollbar:
   organization: my-company
-  accountToken:
-    $env: ROLLBAR_ACCOUNT_TOKEN
+  # NOTE: The rollbar-backend & accountToken key may be deprecated in the future (replaced by a proxy config)
+  accountToken: my-rollbar-account-token
 
 lighthouse:
   baseUrl: http://localhost:3003
@@ -189,8 +189,10 @@ scaffolder:
     api:
       token:
         $env: AZURE_TOKEN
-
 auth:
+  ### Providing an auth.session.secret will enable session support in the auth-backend
+  # session:
+  #   secret: custom session secret
   providers:
     google:
       development:
@@ -235,6 +237,20 @@ auth:
           $env: AUTH_OAUTH2_AUTH_URL
         tokenUrl:
           $env: AUTH_OAUTH2_TOKEN_URL
+    oidc:
+      development:
+        metadataUrl:
+          $env: AUTH_OIDC_METADATA_URL
+        clientId:
+          $env: AUTH_OIDC_CLIENT_ID
+        clientSecret:
+          $env: AUTH_OIDC_CLIENT_SECRET
+        authorizationUrl:
+          $env: AUTH_OIDC_AUTH_URL
+        tokenUrl:
+          $env: AUTH_OIDC_TOKEN_URL
+        tokenSignedResponseAlg:
+          $env: AUTH_OIDC_TOKEN_SIGNED_RESPONSE_ALG
     auth0:
       development:
         clientId:

@@ -79,11 +79,11 @@ want to ensure some stability.
 
 ### [`cli`](https://github.com/backstage/backstage/tree/master/packages/cli/)
 
-The main toolchain used for Backstage development. The interface that is
-considered for stability are the various commands and options passed to those
-commands, as well as the environment variables read by the CLI. The build output
-may change over time and is not considered a breaking change unless it is likely
-to affect external tooling.
+The main toolchain used for Backstage development. The various CLI commands and
+options passed to those commands, as well as the environment variables read by
+the CLI, are considered to be the interface that the stability index refers to.
+The build output may change over time and is not considered a breaking change
+unless it is likely to affect external tooling.
 
 Stability: `2`
 

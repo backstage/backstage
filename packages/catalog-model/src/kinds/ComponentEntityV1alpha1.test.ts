@@ -34,6 +34,8 @@ describe('ComponentV1alpha1Validator', () => {
         lifecycle: 'production',
         owner: 'me',
         implementsApis: ['api-0'],
+        providesApis: ['api-0'],
+        consumesApis: ['api-0'],
       },
     };
   });
@@ -119,6 +121,46 @@ describe('ComponentV1alpha1Validator', () => {
 
   it('accepts no implementsApis', async () => {
     (entity as any).spec.implementsApis = [];
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('accepts missing providesApis', async () => {
+    delete (entity as any).spec.providesApis;
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects empty providesApis', async () => {
+    (entity as any).spec.providesApis = [''];
+    await expect(validator.check(entity)).rejects.toThrow(/providesApis/);
+  });
+
+  it('rejects undefined providesApis', async () => {
+    (entity as any).spec.providesApis = [undefined];
+    await expect(validator.check(entity)).rejects.toThrow(/providesApis/);
+  });
+
+  it('accepts no providesApis', async () => {
+    (entity as any).spec.providesApis = [];
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('accepts missing consumesApis', async () => {
+    delete (entity as any).spec.consumesApis;
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects empty consumesApis', async () => {
+    (entity as any).spec.consumesApis = [''];
+    await expect(validator.check(entity)).rejects.toThrow(/consumesApis/);
+  });
+
+  it('rejects undefined consumesApis', async () => {
+    (entity as any).spec.consumesApis = [undefined];
+    await expect(validator.check(entity)).rejects.toThrow(/consumesApis/);
+  });
+
+  it('accepts no consumesApis', async () => {
+    (entity as any).spec.consumesApis = [];
     await expect(validator.check(entity)).resolves.toBe(true);
   });
 });
