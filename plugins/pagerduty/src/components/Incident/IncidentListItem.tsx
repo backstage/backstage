@@ -27,7 +27,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import { StatusError, StatusWarning } from '@backstage/core';
-import moment from 'moment';
+import { formatDistanceToNowStrict } from 'date-fns';
 import { Incident } from '../types';
 import { PagerDutyIcon } from '../PagerDutyIcon';
 
@@ -54,7 +54,7 @@ type Props = {
 export const IncidentListItem = ({ incident }: Props) => {
   const classes = useStyles();
   const user = incident.assignments[0]?.assignee;
-  const createdAt = moment(incident.created_at).fromNow();
+  const createdAt = formatDistanceToNowStrict(new Date(incident.created_at));
 
   return (
     <ListItem dense key={incident.id}>
@@ -77,7 +77,7 @@ export const IncidentListItem = ({ incident }: Props) => {
         }}
         secondary={
           <Typography noWrap variant="body2" color="textSecondary">
-            Created {createdAt} and assigned to{' '}
+            Created {createdAt} ago and assigned to{' '}
             <Link
               href={user?.html_url ?? '#'}
               target="_blank"
