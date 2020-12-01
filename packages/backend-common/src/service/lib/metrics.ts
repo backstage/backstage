@@ -17,6 +17,7 @@ import prom from 'prom-client';
 import promBundle from 'express-prom-bundle';
 import { RequestHandler } from 'express';
 import * as url from 'url';
+import { useHotCleanup } from '../..';
 
 const rootRegEx = new RegExp('^/([^/]*)/.*');
 const apiRegEx = new RegExp('^/api/([^/]*)/.*');
@@ -38,7 +39,7 @@ export function normalizePath(req: any): string {
  */
 export function metricsHandler(): RequestHandler {
   // We can only initialize the metrics once and have to clean them up between hot reloads
-  prom.register.clear();
+  useHotCleanup(module, () => prom.register.clear());
 
   return promBundle({
     includeMethod: true,
