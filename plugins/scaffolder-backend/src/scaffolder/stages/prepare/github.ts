@@ -57,24 +57,23 @@ export class GithubPreparer implements PreparerBase {
       template.spec.path ?? '.',
     );
 
-    console.warn(repositoryCheckoutUrl);
-    const finalplace = path.resolve(tempDir, templateDirectory);
+    const checkoutLocation = path.resolve(tempDir, templateDirectory);
+
     try {
       await git.clone({
         fs: require('fs'),
         http,
         url: repositoryCheckoutUrl,
-        dir: finalplace,
-        // corsProxy: 'https://cors.isomorphic-git.org',
+        dir: checkoutLocation,
         singleBranch: true,
-        // need this header
-        headers: {
-          'user-agent': 'git/@isomorphic-git/cors-proxy',
-        },
         depth: 1,
+        onAuth: () => ({ username: token, password: 'x-oauth-basic' }),
       });
-      // onAuth: () => ({ username: token, password: 'x-oauth-basic' }),
     } catch (ex) {
+      opts.logger.error(
+        `Failed checking out repository:${repositoryCheckoutUrl}`,
+      );
+      opts.logger.error(ex.message);
       console.warn(ex.data.url);
       console.warn({
         fs: require('fs'),
@@ -87,6 +86,6 @@ export class GithubPreparer implements PreparerBase {
       throw ex;
     }
 
-    return finalplace;
+    return checkoutLocation;
   }
 }
