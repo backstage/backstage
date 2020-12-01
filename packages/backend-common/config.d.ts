@@ -29,7 +29,7 @@ export interface Config {
           /** Address of the interface that the backend should bind to. */
           address?: string;
           /** Port that the backend should listen to. */
-          port?: number;
+          port?: string | number;
         };
 
     /** HTTPS configuration for the backend. If omitted the backend will serve HTTP */
