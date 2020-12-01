@@ -67,22 +67,22 @@ export class GithubPreparer implements PreparerBase {
         dir: checkoutLocation,
         singleBranch: true,
         depth: 1,
+        onProgress: event => {
+          const total = event.total
+            ? `${event.loaded / event.total}%`
+            : event.loaded;
+          opts.logger.info({ status: event.phase, total });
+        },
+        headers: {
+          'user-agent': 'git/@isomorphic-git',
+        },
         onAuth: () => ({ username: token, password: 'x-oauth-basic' }),
       });
     } catch (ex) {
       opts.logger.error(
-        `Failed checking out repository:${repositoryCheckoutUrl}`,
+        `Failed checking out repository: ${repositoryCheckoutUrl}`,
       );
       opts.logger.error(ex.message);
-      console.warn(ex.data.url);
-      console.warn({
-        fs: require('fs'),
-        http,
-        url: repositoryCheckoutUrl,
-        dir: templateDirectory,
-        depth: 1,
-        onAuth: () => ({ username: token, password: 'x-oauth-basic' }),
-      });
       throw ex;
     }
 
