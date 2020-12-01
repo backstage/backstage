@@ -17,7 +17,7 @@
 import { createApiRef } from '@backstage/core';
 import { Service, Incident, OnCall } from '../components/types';
 import {
-  PagerDutyClient,
+  PagerDutyApi,
   TriggerAlarmRequest,
   ServicesResponse,
   IncidentsResponse,
@@ -28,12 +28,12 @@ import {
 
 export class UnauthorizedError extends Error {}
 
-export const pagerDutyApiRef = createApiRef<PagerDutyClient>({
+export const pagerDutyApiRef = createApiRef<PagerDutyApi>({
   id: 'plugin.pagerduty.api',
   description: 'Used to fetch data from PagerDuty API',
 });
 
-export class PagerDutyClientApi implements PagerDutyClient {
+export class PagerDutyClient implements PagerDutyApi {
   constructor(private readonly config: ClientApiConfig) {}
 
   async getServiceByIntegrationKey(integrationKey: string): Promise<Service[]> {

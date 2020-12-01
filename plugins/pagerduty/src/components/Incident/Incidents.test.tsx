@@ -35,11 +35,7 @@ describe('Incidents', () => {
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <Incidents
-            serviceId="abc"
-            onTriggerRefresh={false}
-            setShouldRefreshIncidents={() => {}}
-          />
+          <Incidents serviceId="abc" refreshIncidents={false} />
         </ApiProvider>,
       ),
     );
@@ -99,11 +95,7 @@ describe('Incidents', () => {
     } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <Incidents
-            serviceId="abc"
-            onTriggerRefresh={false}
-            setShouldRefreshIncidents={() => {}}
-          />
+          <Incidents serviceId="abc" refreshIncidents={false} />
         </ApiProvider>,
       ),
     );
@@ -129,11 +121,7 @@ describe('Incidents', () => {
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <Incidents
-            serviceId="abc"
-            onTriggerRefresh={false}
-            setShouldRefreshIncidents={() => {}}
-          />
+          <Incidents serviceId="abc" refreshIncidents={false} />
         </ApiProvider>,
       ),
     );

@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { render, waitFor, fireEvent } from '@testing-library/react';
-import { PagerDutyCard } from './PagerdutyCard';
+import { PagerDutyCard } from './PagerDutyCard';
 import { Entity } from '@backstage/catalog-model';
 import { wrapInTestApp } from '@backstage/test-utils';
 import {

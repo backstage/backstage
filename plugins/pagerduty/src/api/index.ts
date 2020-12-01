@@ -14,9 +14,5 @@
  * limitations under the License.
  */
 
-export {
-  PagerDutyClientApi,
-  pagerDutyApiRef,
-  UnauthorizedError,
-} from './client';
-export type { PagerDutyClient } from './types';
+export { PagerDutyClient, pagerDutyApiRef, UnauthorizedError } from './client';
+export type { PagerDutyApi } from './types';

@@ -19,7 +19,7 @@ import {
   createRouteRef,
   discoveryApiRef,
 } from '@backstage/core';
-import { pagerDutyApiRef, PagerDutyClientApi } from './api';
+import { pagerDutyApiRef, PagerDutyClient } from './api';
 
 export const rootRouteRef = createRouteRef({
   path: '/pagerduty',
@@ -33,7 +33,7 @@ export const plugin = createPlugin({
       api: pagerDutyApiRef,
       deps: { discoveryApi: discoveryApiRef },
       factory: ({ discoveryApi }) =>
-        new PagerDutyClientApi({
+        new PagerDutyClient({
           discoveryApi: discoveryApi,
         }),
     }),

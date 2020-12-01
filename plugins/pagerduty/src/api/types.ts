@@ -24,7 +24,7 @@ export type TriggerAlarmRequest = {
   userName: string;
 };
 
-export interface PagerDutyClient {
+export interface PagerDutyApi {
   /**
    * Fetches a list of services, filtered by the provided integration key.
    *
