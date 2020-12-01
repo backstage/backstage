@@ -31,7 +31,7 @@ export function getEntityRelations(
 
   if (filter?.kind) {
     entityNames = entityNames?.filter(
-      e => e.kind.toLowerCase() === filter.kind,
+      e => e.kind.toLowerCase() === filter.kind.toLowerCase(),
     );
   }
 
