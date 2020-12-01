@@ -391,6 +391,7 @@ export const useNavigationStyles = makeStyles<CostInsightsTheme>(
       menuList: {
         borderRadius: theme.shape.borderRadius,
         backgroundColor: theme.palette.navigation.background,
+        minWidth: 250,
       },
       menuItem: {
         background: 'transparent',
