@@ -19,17 +19,28 @@ import globby from 'globby';
 import fs from 'fs';
 import http from 'isomorphic-git/http/node';
 
+/*
+username	password
+GitHub	| token	'x-oauth-basic'
+GitHub App |	token	'x-access-token'
+BitBucket	| 'x-token-auth'	token
+GitLab	| 'oauth2'	token
+From : https://isomorphic-git.org/docs/en/onAuth
+*/
 export async function pushToRemoteCred(
   dir: string,
   remote: string,
-  auth?: { username: string; password: string },
+  auth?: { username: string; password: string; token: string },
 ): Promise<void> {
   await git.init({
     fs,
     dir,
   });
 
-  const paths = await globby(['./**', './**/.*'], { gitignore: true });
+  const paths = await globby(['./**', './**/.*'], {
+    cwd: dir,
+    gitignore: true,
+  });
   for (const filepath of paths) {
     await git.add({ fs, dir, filepath });
   }
@@ -49,11 +60,15 @@ export async function pushToRemoteCred(
     url: remote,
   });
 
+  console.warn({ username: auth.token, password: 'x-oauth-basic' });
   await git.push({
     fs,
     dir,
     http,
+    headers: {
+      'user-agent': 'git/@isomorphic-git',
+    },
     remote: 'origin',
-    onAuth: () => auth,
+    onAuth: () => ({ username: auth.token, password: 'x-oauth-basic' }),
   });
 }

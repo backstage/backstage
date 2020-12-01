@@ -54,6 +54,7 @@ export class GithubPublisher implements PublisherBase {
     await pushToRemoteCred(directory, remoteUrl, {
       username: this.token,
       password: 'x-auth-basic',
+      token: this.token,
     });
 
     return { remoteUrl };
