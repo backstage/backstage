@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export * from './JenkinsApi';
+export { JenkinsApi, jenkinsApiRef } from './JenkinsApi';
