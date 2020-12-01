@@ -16,14 +16,18 @@
 
 import { IconComponent } from '../icons';
 
-export type RouteRef = {
+export type RouteRef<Params extends { [param in string]: string } = {}> = {
   // TODO(Rugvip): Remove path, look up via registry instead
   path: string;
   icon?: IconComponent;
   title: string;
+  P: Params;
 };
 
-export type RouteRefConfig = {
+export type AnyRouteRef = RouteRef<any>;
+
+export type RouteRefConfig<Params extends { [param in string]: string }> = {
+  params?: Array<keyof Params>;
   path: string;
   icon?: IconComponent;
   title: string;
@@ -35,5 +39,5 @@ export interface BackstageRouteObject {
   children?: BackstageRouteObject[];
   element: React.ReactNode;
   path: string;
-  routeRef: RouteRef;
+  routeRef: AnyRouteRef;
 }

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { RouteRefConfig } from './types';
+import { RouteRefConfig, RouteRef } from './types';
 
-export class AbsoluteRouteRef {
-  constructor(private readonly config: RouteRefConfig) {}
+export class AbsoluteRouteRef<Params extends { [param in string]: string }> {
+  constructor(private readonly config: RouteRefConfig<Params>) {}
 
   get icon() {
     return this.config.icon;
@@ -32,16 +32,18 @@ export class AbsoluteRouteRef {
     return this.config.title;
   }
 
+  get P(): Params {
+    throw new Error("Don't call me maybe");
+  }
+
   toString() {
     return `routeRef{path=${this.path}}`;
   }
 }
 
-export function createRouteRef(config: RouteRefConfig): AbsoluteRouteRef {
-  return new AbsoluteRouteRef(config);
+export function createRouteRef<
+  ParamKeys extends string,
+  Params extends { [param in string]: string } = { [name in ParamKeys]: string }
+>(config: RouteRefConfig<Params>): RouteRef<Params> {
+  return new AbsoluteRouteRef<Params>(config);
 }
-
-// TODO(Rugvip): Added for backwards compatibility, remove once old usage is gone
-// We may want to avoid exporting the AbsoluteRouteRef itself though, and consider
-// a different model for how to create sub routes, just avoid this
-export type MutableRouteRef = AbsoluteRouteRef;

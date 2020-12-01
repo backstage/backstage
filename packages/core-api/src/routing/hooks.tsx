@@ -15,33 +15,42 @@
  */
 
 import React, { createContext, ReactNode, useContext, useMemo } from 'react';
-import { BackstageRouteObject, RouteRef } from './types';
+import { AnyRouteRef, BackstageRouteObject, RouteRef } from './types';
 import { generatePath, matchRoutes, useLocation } from 'react-router-dom';
 
-export type RouteFunc = (params?: Record<string, string>) => string;
+// The extra TS magic here is to require a single params argument if the RouteRef
+// had at least one param defined, but require 0 arguments if there are no params defined.
+// Without this we'd have to pass in empty object to all parameter-less RouteRefs
+// just to make TypeScript happy, or we would have to make the argument optional in
+// which case you might forget to pass it in when it is actually required.
+export type RouteFunc<Params extends { [param in string]: string }> = (
+  ...[params]: Params[keyof Params] extends never
+    ? readonly []
+    : readonly [Params]
+) => string;
 
 class RouteResolver {
   constructor(
-    private readonly routePaths: Map<RouteRef, string>,
-    private readonly routeParents: Map<RouteRef, RouteRef | undefined>,
+    private readonly routePaths: Map<AnyRouteRef, string>,
+    private readonly routeParents: Map<AnyRouteRef, AnyRouteRef | undefined>,
     private readonly routeObjects: BackstageRouteObject[],
   ) {}
 
-  resolve(
-    routeRef: RouteRef,
+  resolve<Params extends { [param in string]: string }>(
+    routeRef: RouteRef<Params>,
     sourceLocation: ReturnType<typeof useLocation>,
-  ): RouteFunc {
+  ): RouteFunc<Params> {
     const match = matchRoutes(this.routeObjects, sourceLocation) ?? [];
 
     const lastPath = this.routePaths.get(routeRef);
     if (!lastPath) {
       throw new Error(`No path for ${routeRef}`);
     }
-    const targetRefStack = Array<RouteRef>();
+    const targetRefStack = Array<AnyRouteRef>();
     let matchIndex = -1;
 
     for (
-      let currentRouteRef: RouteRef | undefined = routeRef;
+      let currentRouteRef: AnyRouteRef | undefined = routeRef;
       currentRouteRef;
       currentRouteRef = this.routeParents.get(currentRouteRef)
     ) {
@@ -87,15 +96,18 @@ class RouteResolver {
       .join('/')
       .replace(/\/\/+/g, '/'); // Normalize path to not contain repeated /'s
 
-    return (params?: Record<string, string>) => {
+    const routeFunc: RouteFunc<Params> = (...[params]) => {
       return `${parentPath}${prefixPath}${generatePath(lastPath, params)}`;
     };
+    return routeFunc;
   }
 }
 
 const RoutingContext = createContext<RouteResolver | undefined>(undefined);
 
-export function useRouteRef(routeRef: RouteRef): RouteFunc {
+export function useRouteRef<Params extends { [param in string]: string }>(
+  routeRef: RouteRef<Params>,
+): RouteFunc<Params> {
   const sourceLocation = useLocation();
   const resolver = useContext(RoutingContext);
   const routeFunc = useMemo(
@@ -111,8 +123,8 @@ export function useRouteRef(routeRef: RouteRef): RouteFunc {
 }
 
 type ProviderProps = {
-  routePaths: Map<RouteRef, string>;
-  routeParents: Map<RouteRef, RouteRef | undefined>;
+  routePaths: Map<AnyRouteRef, string>;
+  routeParents: Map<AnyRouteRef, AnyRouteRef | undefined>;
   routeObjects: BackstageRouteObject[];
   children: ReactNode;
 };
@@ -132,8 +144,8 @@ export const RoutingProvider = ({
 };
 
 export function validateRoutes(
-  routePaths: Map<RouteRef, string>,
-  routeParents: Map<RouteRef, RouteRef | undefined>,
+  routePaths: Map<AnyRouteRef, string>,
+  routeParents: Map<AnyRouteRef, AnyRouteRef | undefined>,
 ) {
   const notLeafRoutes = new Set(routeParents.values());
   notLeafRoutes.delete(undefined);
@@ -143,7 +155,7 @@ export function validateRoutes(
       continue;
     }
 
-    let currentRouteRef: RouteRef | undefined = route;
+    let currentRouteRef: AnyRouteRef | undefined = route;
 
     let fullPath = '';
     while (currentRouteRef) {

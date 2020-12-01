@@ -29,11 +29,16 @@ import {
   routeParentCollector,
   routeObjectCollector,
 } from './collectors';
-import { useRouteRef, RoutingProvider, validateRoutes } from './hooks';
+import {
+  useRouteRef,
+  RoutingProvider,
+  validateRoutes,
+  RouteFunc,
+} from './hooks';
 import { createRouteRef } from './RouteRef';
 import { RouteRef, RouteRefConfig } from './types';
 
-const mockConfig = (extra?: Partial<RouteRefConfig>) => ({
+const mockConfig = (extra?: Partial<RouteRefConfig<{}>>) => ({
   path: '/unused',
   title: 'Unused',
   ...extra,
@@ -48,13 +53,13 @@ const ref3 = createRouteRef(mockConfig({ path: '/wat3' }));
 const ref4 = createRouteRef(mockConfig({ path: '/wat4' }));
 const ref5 = createRouteRef(mockConfig({ path: '/wat5' }));
 
-const MockRouteSource = (props: {
+const MockRouteSource = <T extends { [name in string]: string }>(props: {
   name: string;
-  routeRef: RouteRef;
-  params?: Record<string, string>;
+  routeRef: RouteRef<T>;
+  params?: T;
 }) => {
   try {
-    const routeFunc = useRouteRef(props.routeRef);
+    const routeFunc = useRouteRef(props.routeRef) as RouteFunc<any>;
     return (
       <div>
         Path at {props.name}: {routeFunc(props.params)}
