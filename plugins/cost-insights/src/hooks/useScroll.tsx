@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 import React, {
+  CSSProperties,
   Dispatch,
+  PropsWithChildren,
   SetStateAction,
-  useState,
   useContext,
   useEffect,
   useRef,
-  PropsWithChildren,
+  useState,
 } from 'react';
-import { CSSProperties } from '@material-ui/styles';
 import { Maybe } from '../types';
 
 export type ScrollTo = Maybe<string>;
