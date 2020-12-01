@@ -17,7 +17,15 @@
 export function notEmpty<TValue>(
   value: TValue | null | undefined,
 ): value is TValue {
-  return value !== null && value !== undefined;
+  return !isNull(value) && !isUndefined(value);
+}
+
+export function isUndefined(value: any): boolean {
+  return value === undefined;
+}
+
+export function isNull(value: any): boolean {
+  return value === null;
 }
 
 // Utility for exhaustiveness checking in switch statements

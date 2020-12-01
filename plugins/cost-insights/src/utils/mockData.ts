@@ -563,7 +563,26 @@ export const SampleCloudDataflowInsights: Entity = {
         ratio: 0.2,
         amount: 2_000,
       },
-      entities: [],
+      entities: [
+        {
+          id: 'Sample SKU A',
+          aggregation: [3_000, 4_000],
+          change: {
+            ratio: 0.333333,
+            amount: 1_000,
+          },
+          entities: [],
+        },
+        {
+          id: 'Sample SKU B',
+          aggregation: [7_000, 8_000],
+          change: {
+            ratio: 0.14285714,
+            amount: 1_000,
+          },
+          entities: [],
+        },
+      ],
     },
     {
       id: 'entity-a',
