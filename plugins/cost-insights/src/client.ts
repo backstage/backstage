@@ -127,17 +127,12 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
   }
 
   async getProductInsights(options: ProductInsightsOptions): Promise<Entity> {
-    const projectProductInsights = await this.request(
-      options,
-      entityOf(options.product),
-    );
-
     const productInsights: Entity = await this.request(
       options,
       entityOf(options.product),
     );
 
-    return options.project ? projectProductInsights : productInsights;
+    return productInsights;
   }
 
   async getAlerts(group: string): Promise<Alert[]> {
