@@ -92,6 +92,7 @@ export type RouterHooks = {
 
   /**
    * @deprecated See the `addRoute` method
+   * @see https://github.com/backstage/backstage/issues/418
    */
   registerRoute(
     path: RoutePath,

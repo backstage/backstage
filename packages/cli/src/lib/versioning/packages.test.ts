@@ -15,6 +15,7 @@
  */
 
 import mockFs from 'mock-fs';
+import path from 'path';
 import * as runObj from '../run';
 import { paths } from '../paths';
 import { fetchPackageInfo, mapDependencies } from './packages';
@@ -54,16 +55,16 @@ describe('mapDependencies', () => {
     await project.getPackages();
 
     mockFs({
-      '/lerna.json': JSON.stringify({
+      'lerna.json': JSON.stringify({
         packages: ['pkgs/*'],
       }),
-      '/pkgs/a/package.json': JSON.stringify({
+      'pkgs/a/package.json': JSON.stringify({
         name: 'a',
         dependencies: {
           '@backstage/core': '1 || 2',
         },
       }),
-      '/pkgs/b/package.json': JSON.stringify({
+      'pkgs/b/package.json': JSON.stringify({
         name: 'b',
         dependencies: {
           '@backstage/core': '3',
@@ -71,9 +72,6 @@ describe('mapDependencies', () => {
         },
       }),
     });
-
-    const oldDir = paths.targetDir;
-    paths.targetDir = '/';
 
     const dependencyMap = await mapDependencies(paths.targetDir);
     expect(Array.from(dependencyMap)).toEqual([
@@ -83,12 +81,12 @@ describe('mapDependencies', () => {
           {
             name: 'a',
             range: '1 || 2',
-            location: '/pkgs/a',
+            location: path.resolve('pkgs', 'a'),
           },
           {
             name: 'b',
             range: '3',
-            location: '/pkgs/b',
+            location: path.resolve('pkgs', 'b'),
           },
         ],
       ],
@@ -98,12 +96,10 @@ describe('mapDependencies', () => {
           {
             name: 'b',
             range: '^0',
-            location: '/pkgs/b',
+            location: path.resolve('pkgs', 'b'),
           },
         ],
       ],
     ]);
-
-    paths.targetDir = oldDir;
   });
 });

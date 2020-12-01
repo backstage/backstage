@@ -20,9 +20,7 @@ import { CostInsightsApi, ProductInsightsOptions } from '../src/api';
 import {
   Alert,
   Cost,
-  DateAggregation,
   DEFAULT_DATE_FORMAT,
-  Duration,
   Entity,
   Group,
   MetricData,
@@ -34,52 +32,13 @@ import {
   ProjectGrowthAlert,
   UnlabeledDataflowAlert,
 } from '../src/utils/alerts';
-import { inclusiveStartDateOf } from '../src/utils/duration';
-import { trendlineOf, changeOf } from './utils/mockData';
-
-type IntervalFields = {
-  duration: Duration;
-  endDate: string;
-};
-
-function parseIntervals(intervals: string): IntervalFields {
-  const match = intervals.match(
-    /\/(?<duration>P\d+[DM])\/(?<date>\d{4}-\d{2}-\d{2})/,
-  );
-  if (Object.keys(match?.groups || {}).length !== 2) {
-    throw new Error(`Invalid intervals: ${intervals}`);
-  }
-  const { duration, date } = match!.groups!;
-  return {
-    duration: duration as Duration,
-    endDate: date,
-  };
-}
-
-function aggregationFor(
-  intervals: string,
-  baseline: number,
-): DateAggregation[] {
-  const { duration, endDate } = parseIntervals(intervals);
-  const days = dayjs(endDate).diff(
-    inclusiveStartDateOf(duration, endDate),
-    'day',
-  );
-
-  return [...Array(days).keys()].reduce(
-    (values: DateAggregation[], i: number): DateAggregation[] => {
-      const last = values.length ? values[values.length - 1].amount : baseline;
-      values.push({
-        date: dayjs(inclusiveStartDateOf(duration, endDate))
-          .add(i, 'day')
-          .format(DEFAULT_DATE_FORMAT),
-        amount: Math.max(0, last + (baseline / 20) * (Math.random() * 2 - 1)),
-      });
-      return values;
-    },
-    [],
-  );
-}
+import {
+  trendlineOf,
+  changeOf,
+  entityOf,
+  getGroupedProducts,
+  aggregationFor,
+} from './utils/mockData';
 
 export class ExampleCostInsightsClient implements CostInsightsApi {
   private request(_: any, res: any): Promise<any> {
@@ -140,6 +99,9 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
         aggregation: aggregation,
         change: changeOf(aggregation),
         trendline: trendlineOf(aggregation),
+        // Optional field on Cost which needs to be supplied in order to see
+        // the product breakdown view in the top panel.
+        groupedCosts: getGroupedProducts(intervals),
       },
     );
 
@@ -155,176 +117,22 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
         aggregation: aggregation,
         change: changeOf(aggregation),
         trendline: trendlineOf(aggregation),
+        // Optional field on Cost which needs to be supplied in order to see
+        // the product breakdown view in the top panel.
+        groupedCosts: getGroupedProducts(intervals),
       },
     );
 
     return projectDailyCost;
   }
 
-  async getProductInsights(
-    productInsightsOptions: ProductInsightsOptions,
-  ): Promise<Entity> {
-    const projectProductInsights = await this.request(productInsightsOptions, {
-      id: productInsightsOptions.product,
-      aggregation: [80_000, 110_000],
-      change: {
-        ratio: 0.375,
-        amount: 30_000,
-      },
-      entities: [
-        {
-          id: null, // entities with null ids will be appear as "Unlabeled" in product panels
-          aggregation: [45_000, 50_000],
-          change: {
-            ratio: 0.111,
-            amount: 5_000,
-          },
-          entities: [],
-        },
-        {
-          id: 'entity-a',
-          aggregation: [15_000, 20_000],
-          change: {
-            ratio: 0.333,
-            amount: 5_000,
-          },
-          entities: [],
-        },
-        {
-          id: 'entity-b',
-          aggregation: [20_000, 30_000],
-          change: {
-            ratio: 0.5,
-            amount: 10_000,
-          },
-          entities: [],
-        },
-        {
-          id: 'entity-c',
-          aggregation: [0, 10_000],
-          change: {
-            ratio: 10_000,
-            amount: 10_000,
-          },
-          entities: [],
-        },
-      ],
-    });
+  async getProductInsights(options: ProductInsightsOptions): Promise<Entity> {
+    const productInsights: Entity = await this.request(
+      options,
+      entityOf(options.product),
+    );
 
-    const productInsights: Entity = await this.request(productInsightsOptions, {
-      id: productInsightsOptions.product,
-      aggregation: [200_000, 250_000],
-      change: {
-        ratio: 0.2,
-        amount: 50_000,
-      },
-      entities: [
-        {
-          id: null, // entities with null ids will be appear as "Unlabeled" in product panels
-          aggregation: [36_000, 42_000],
-          change: {
-            ratio: 0.1666,
-            amount: 6_000,
-          },
-          entities: [],
-        },
-        {
-          id: 'entity-a',
-          aggregation: [15_000, 20_000],
-          change: {
-            ratio: -0.33333333,
-            amount: 5_000,
-          },
-          entities: [],
-        },
-        {
-          id: 'entity-b',
-          aggregation: [20_000, 30_000],
-          change: {
-            ratio: 0.5,
-            amount: 10_000,
-          },
-          entities: [],
-        },
-        {
-          id: 'entity-c',
-          aggregation: [18_000, 25_000],
-          change: {
-            ratio: 0.38,
-            amount: 7_000,
-          },
-          entities: [],
-        },
-        {
-          id: 'entity-d',
-          aggregation: [15_000, 30_000],
-          change: {
-            ratio: 1,
-            amount: 15_000,
-          },
-          entities: [],
-        },
-        {
-          id: 'entity-e',
-          aggregation: [0, 10_000],
-          entities: [],
-          change: {
-            ratio: 10_000,
-            amount: 10_000,
-          },
-        },
-        {
-          id: 'entity-f',
-          aggregation: [17_000, 19_000],
-          change: {
-            ratio: 0.118,
-            amount: 2_000,
-          },
-          entities: [],
-        },
-        {
-          id: 'entity-g',
-          aggregation: [80_000, 60_000],
-          change: {
-            ratio: -0.25,
-            amount: -20_000,
-          },
-          entities: [
-            {
-              id: 'vCPU Time Batch Belgium',
-              aggregation: [15_000, 15_000],
-              change: {
-                ratio: 0,
-                amount: 0,
-              },
-              entities: [],
-            },
-            {
-              id: 'RAM Time Belgium',
-              aggregation: [15_000, 30_000],
-              change: {
-                ratio: 1,
-                amount: 15_000,
-              },
-              entities: [],
-            },
-            {
-              id: 'Local Disk Time PD Standard Belgium',
-              aggregation: [50_000, 15_000],
-              change: {
-                ratio: -0.7,
-                amount: -35_000,
-              },
-              entities: [],
-            },
-          ],
-        },
-      ],
-    });
-
-    return productInsightsOptions.project
-      ? projectProductInsights
-      : productInsights;
+    return productInsights;
   }
 
   async getAlerts(group: string): Promise<Alert[]> {
@@ -335,7 +143,7 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
       aggregation: [60_000, 120_000],
       change: {
         ratio: 1,
-        amount: 60000,
+        amount: 60_000,
       },
       products: [
         { id: 'Compute Engine', aggregation: [58_000, 118_000] },

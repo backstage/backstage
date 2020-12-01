@@ -126,7 +126,7 @@ describe('ZipArchiveResponse', () => {
     const res = new ZipArchiveResponse(stream, 'mock-repo/docs/', '/tmp');
     const dir = await res.dir();
 
-    expect(dir).toMatch(/^\/tmp\/.*$/);
+    expect(dir).toMatch(/^[\/\\]tmp[\/\\].*$/);
     await expect(
       fs.readFile(resolvePath(dir, 'index.md'), 'utf8'),
     ).resolves.toBe('# Test\n');

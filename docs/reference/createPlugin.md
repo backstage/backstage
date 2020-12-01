@@ -4,7 +4,7 @@ title: createPlugin
 description: Documentation on createPlugin
 ---
 
-Taking a plugin config as argument and returns a new plugin.
+Takes a plugin config as an argument and returns a new plugin.
 
 ## Plugin Config
 
@@ -28,18 +28,22 @@ type PluginHooks = {
 
 ### Creating a basic plugin
 
-Showcasing adding multiple routes, a feature flag and a redirect.
+Showcasing adding a route and a feature flag.
 
 ```jsx
-import { createPlugin } from '@backstage/core';
+import { createPlugin, createRouteRef } from '@backstage/core';
 import ExampleComponent from './components/ExampleComponent';
+
+export const rootRouteRef = createRouteRef({
+  path: '/new-plugin',
+  title: 'New Plugin',
+});
 
 export default createPlugin({
   id: 'new-plugin',
   register({ router, featureFlags }) {
+    router.addRoute(rootRouteRef, ExampleComponent);
     featureFlags.register('enable-example-component');
-
-    router.registerRoute('/new-plugin', ExampleComponent);
   },
 });
 ```

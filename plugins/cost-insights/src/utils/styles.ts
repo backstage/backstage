@@ -37,6 +37,18 @@ export const costInsightsLightTheme = {
     },
     navigationText: '#b5b5b5',
     alertBackground: 'rgba(219, 219, 219, 0.13)',
+    dataViz: [
+      '#509BF5',
+      '#4B917D',
+      '#FF6437',
+      '#F573A0',
+      '#F59B23',
+      '#B49BC8',
+      '#C39687',
+      '#A0C3D2',
+      '#FFC864',
+      '#BABABA',
+    ],
   },
 } as CostInsightsThemeOptions;
 
@@ -55,6 +67,18 @@ export const costInsightsDarkTheme = {
     },
     navigationText: '#b5b5b5',
     alertBackground: 'rgba(32, 32, 32, 0.13)',
+    dataViz: [
+      '#8accff',
+      '#7bc2ac',
+      '#ff9664',
+      '#ffa5d1',
+      '#ffcc57',
+      '#e6ccfb',
+      '#f7c7b7',
+      '#d2f6ff',
+      '#fffb94',
+      '#ececec',
+    ],
   },
 } as CostInsightsThemeOptions;
 
@@ -86,6 +110,20 @@ export const useCostOverviewStyles = (theme: CostInsightsTheme) => ({
     width: 75,
   },
 });
+
+export const useOverviewTabsStyles = makeStyles<CostInsightsTheme>(
+  (theme: CostInsightsTheme) => ({
+    default: {
+      padding: theme.spacing(2),
+      fontWeight: theme.typography.fontWeightBold,
+      color: theme.palette.text.secondary,
+      textTransform: 'uppercase',
+    },
+    selected: {
+      color: theme.palette.text.primary,
+    },
+  }),
+);
 
 export const useBarChartStyles = (theme: CostInsightsTheme) => ({
   axis: {
@@ -353,6 +391,7 @@ export const useNavigationStyles = makeStyles<CostInsightsTheme>(
       menuList: {
         borderRadius: theme.shape.borderRadius,
         backgroundColor: theme.palette.navigation.background,
+        minWidth: 250,
       },
       menuItem: {
         background: 'transparent',

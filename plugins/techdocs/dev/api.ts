@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { ParsedEntityId } from '../src/types';
-
+import { EntityName } from '@backstage/catalog-model';
 import { TechDocsStorage } from '../src/api';
 
 export class TechDocsDevStorageApi implements TechDocsStorage {
@@ -25,7 +23,7 @@ export class TechDocsDevStorageApi implements TechDocsStorage {
     this.apiOrigin = apiOrigin;
   }
 
-  async getEntityDocs(entityId: ParsedEntityId, path: string) {
+  async getEntityDocs(entityId: EntityName, path: string) {
     const { name } = entityId;
 
     const url = `${this.apiOrigin}/${name}/${path}`;
@@ -41,11 +39,7 @@ export class TechDocsDevStorageApi implements TechDocsStorage {
     return request.text();
   }
 
-  getBaseUrl(
-    oldBaseUrl: string,
-    entityId: ParsedEntityId,
-    path: string,
-  ): string {
+  getBaseUrl(oldBaseUrl: string, entityId: EntityName, path: string): string {
     const { name } = entityId;
     return new URL(oldBaseUrl, `${this.apiOrigin}/${name}/${path}`).toString();
   }
