@@ -176,7 +176,7 @@ export const ProductEntityDialog = ({
       <Table
         columns={columns}
         data={rowData}
-        title={entity.id || 'Unknown'}
+        title={entity.id || 'Unlabeled'}
         subtitle="Resource breakdown"
         options={{
           paging: false,

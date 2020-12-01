@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   ContentRenderer,
   TooltipProps as RechartsTooltipProps,
@@ -33,14 +33,15 @@ import {
   BarChartLegendOptions,
 } from '../BarChart';
 import { pluralOf } from '../../utils/grammar';
-import { findAlways, notEmpty } from '../../utils/assert';
+import { findAlways, notEmpty, isUndefined } from '../../utils/assert';
 import { formatPeriod, formatPercent } from '../../utils/formatters';
 import {
   titleOf,
   tooltipItemOf,
   resourceOf,
   isInvalid,
-  isActiveLabel,
+  isLabeled,
+  isUnlabeled,
 } from '../../utils/graphs';
 import {
   useProductInsightsChartStyles as useStyles,
@@ -61,10 +62,14 @@ export const ProductInsightsChart = ({
 }: ProductInsightsChartProps) => {
   const classes = useStyles();
   const layoutClasses = useLayoutStyles();
-  const [isOpen, setOpen] = useState(false);
-  const [isClickable, setClickable] = useState(true);
-  const [selectLabel, setSelected] = useState<Maybe<string>>(null);
-  const [activeLabel, setActive] = useState<Maybe<string>>(null);
+  const [activeLabel, setActive] = useState<Maybe<string>>();
+  const [selectLabel, setSelected] = useState<Maybe<string>>();
+  const isSelected = useMemo(() => !isUndefined(selectLabel), [selectLabel]);
+  const isClickable = useMemo(() => {
+    const skus =
+      entity.entities.find(e => e.id === activeLabel)?.entities ?? [];
+    return skus.length > 0;
+  }, [entity, activeLabel]);
 
   const legendTitle = `Cost ${entity.change.ratio <= 0 ? 'Savings' : 'Growth'}`;
   const costStart = entity.aggregation[0];
@@ -76,52 +81,25 @@ export const ProductInsightsChart = ({
     currentName: formatPeriod(duration, billingDate, true),
   };
 
-  useEffect(() => {
-    function toggleModal() {
-      if (selectLabel) {
-        setOpen(true);
-      } else {
-        setOpen(false);
-      }
-    }
-
-    toggleModal();
-  }, [selectLabel]);
-
-  useEffect(() => {
-    // disable click if an entity is unlabeled or if it does not have any skus
-    function toggleClickableEntity() {
-      if (activeLabel) {
-        const hasSkus = entity.entities.find(e => e.id === activeLabel)
-          ?.entities.length;
-        if (hasSkus) {
-          setClickable(true);
-        } else {
-          setClickable(false);
-        }
-      } else {
-        setClickable(false);
-      }
-    }
-
-    toggleClickableEntity();
-  }, [activeLabel, entity]);
-
   const onMouseMove: RechartsFunction = (
     data: Record<'activeLabel', string | undefined>,
   ) => {
-    if (isActiveLabel(data)) {
+    if (isLabeled(data)) {
       setActive(data.activeLabel!);
-    } else {
+    } else if (isUnlabeled(data)) {
       setActive(null);
+    } else {
+      setActive(undefined);
     }
   };
 
   const onClick: RechartsFunction = (data: Record<'activeLabel', string>) => {
-    if (isActiveLabel(data)) {
+    if (isLabeled(data)) {
       setSelected(data.activeLabel);
-    } else {
+    } else if (isUnlabeled(data)) {
       setSelected(null);
+    } else {
+      setSelected(undefined);
     }
   };
 
@@ -213,10 +191,10 @@ export const ProductInsightsChart = ({
         options={options}
         {...barChartProps}
       />
-      {selectLabel && entity.entities.length && (
+      {isSelected && entity.entities.length && (
         <ProductEntityDialog
-          open={isOpen}
-          onClose={() => setSelected(null)}
+          open={isSelected}
+          onClose={() => setSelected(undefined)}
           entity={entity.entities.find(e => e.id === selectLabel)}
           options={options}
         />
