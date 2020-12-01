@@ -60,7 +60,7 @@ describe('getEntityRelations', () => {
     } as Entity;
 
     expect(
-      getEntityRelations(entity, RELATION_MEMBER_OF, { kind: 'group' }),
+      getEntityRelations(entity, RELATION_MEMBER_OF, { kind: 'Group' }),
     ).toEqual([{ kind: 'group', name: 'member' }]);
   });
 });
