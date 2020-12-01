@@ -6,4 +6,4 @@ metadata:
 spec:
   type: library
   lifecycle: experimental
-  owner: players@example.com
+  owner: team-c
