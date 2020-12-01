@@ -1,10 +1,11 @@
 services:
   backstage:
     image: tugboatqa/node:lts
+    default: true
     commands:
       init:
         - yarn install
         - yarn tsc
         - yarn build
       start:
-        - yarn start-backend
+        - APP_CONFIG_backend_listen_port=80 yarn start-backend
