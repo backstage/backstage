@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-export { ApiDefinitionCard } from './ApiDefinitionCard';
-export { defaultDefinitionWidgets } from './ApiDefinitionWidget';
-export type { ApiDefinitionWidget } from './ApiDefinitionWidget';
-export { ApiTypeTitle } from './ApiTypeTitle';
+import { renderInTestApp } from '@backstage/test-utils';
+import React from 'react';
+import { PlainApiDefinitionWidget } from './PlainApiDefinitionWidget';
+
+describe('<PlainApiDefinitionWidget />', () => {
+  it('renders plain text', async () => {
+    const { getByText } = await renderInTestApp(
+      <PlainApiDefinitionWidget definition="Hello World" language="yaml" />,
+    );
+    expect(getByText(/Hello World/i)).toBeInTheDocument();
+  });
+});
