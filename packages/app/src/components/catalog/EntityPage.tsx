@@ -48,7 +48,11 @@ import {
   isPluginApplicableToEntity as isLighthouseAvailable,
   LastLighthouseAuditCard,
 } from '@backstage/plugin-lighthouse';
-import { MembersTab, MemberTab } from '@backstage/plugin-org';
+import {
+  OwnershipCard as OrgOwnershipCard,
+  MembersTab,
+  MemberTab,
+} from '@backstage/plugin-org';
 import { Router as SentryRouter } from '@backstage/plugin-sentry';
 import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
 import { Button, Grid } from '@material-ui/core';
@@ -320,32 +324,33 @@ const OrgOverviewContent = ({ entity }: { entity: Entity }) => (
     <Grid item md={6}>
       <AboutCard entity={entity} />
     </Grid>
+    <Grid item md={6}>
+      <OrgOwnershipCard entity={entity} />
+    </Grid>
   </Grid>
 );
 
 const OrgEntityPage = ({ entity }: { entity: Entity }) => {
-  return (
+  return entity.kind.toLowerCase() === 'group' ? (
     <EntityPageLayout>
-      {entity.kind === 'Group' ? (
-        <EntityPageLayout.Content
-          path="/*"
-          title="Overview"
-          element={<OrgOverviewContent entity={entity} />}
-        />
-      ) : null}
-      {entity.kind === 'Group' ? (
-        <EntityPageLayout.Content
-          path="/members/*"
-          title="Members"
-          element={<MembersTab entity={entity} />}
-        />
-      ) : (
-        <EntityPageLayout.Content
-          path="/*"
-          title="Profile"
-          element={<MemberTab entity={entity} />}
-        />
-      )}
+      <EntityPageLayout.Content
+        path="/*"
+        title="Overview"
+        element={<OrgOverviewContent entity={entity} />}
+      />
+      <EntityPageLayout.Content
+        path="/members/*"
+        title="Members"
+        element={<MembersTab entity={entity} />}
+      />
+    </EntityPageLayout>
+  ) : (
+    <EntityPageLayout>
+      <EntityPageLayout.Content
+        path="/*"
+        title="Profile"
+        element={<MemberTab entity={entity} />}
+      />
     </EntityPageLayout>
   );
 };

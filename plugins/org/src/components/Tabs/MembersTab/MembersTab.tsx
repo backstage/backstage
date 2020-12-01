@@ -17,11 +17,11 @@ import React from 'react';
 import Alert from '@material-ui/lab/Alert';
 import {
   Box,
-  Card,
   createStyles,
   Grid,
   Link,
   makeStyles,
+  Theme,
   Typography,
 } from '@material-ui/core';
 import { InfoCard, Progress, useApi } from '@backstage/core';
@@ -33,13 +33,17 @@ import {
 import { Link as RouterLink, generatePath } from 'react-router-dom';
 import { catalogApiRef, entityRouteParams } from '@backstage/plugin-catalog';
 import { useAsync } from 'react-use';
-import { Avatar } from '../Avatar';
+import { Avatar } from '../../Avatar';
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     card: {
+      border: `1px solid ${theme.palette.divider}`,
+      boxShadow: theme.shadows[2],
+      borderRadius: '4px',
       overflow: 'visible',
       position: 'relative',
+      margin: theme.spacing(3, 0, 0),
     },
   }),
 );
@@ -56,7 +60,7 @@ const MemberComponent = ({
   const { profile } = member.spec;
   return (
     <Grid item md={3}>
-      <Card raised classes={{ root: classes.card }}>
+      <Box className={classes.card}>
         <Box
           display="flex"
           flexDirection="column"
@@ -72,7 +76,7 @@ const MemberComponent = ({
               top: '-25px',
             }}
           />
-          <Box py={4} textAlign="center">
+          <Box pt={2} textAlign="center">
             <Typography variant="h5">
               <Link
                 component={RouterLink}
@@ -87,7 +91,7 @@ const MemberComponent = ({
             <Typography variant="caption">{profile?.email}</Typography>
           </Box>
         </Box>
-      </Card>
+      </Box>
     </Grid>
   );
 };

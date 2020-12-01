@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { MemberTab } from './MemberTab';
-export { MembersTab } from './MembersTab';
+export * from './Tabs';
+export * from './Cards';

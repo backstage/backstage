@@ -22,7 +22,7 @@ import { Entity, UserEntity } from '@backstage/catalog-model';
 import EmailIcon from '@material-ui/icons/Email';
 import GroupIcon from '@material-ui/icons/Group';
 import { Link as RouterLink, generatePath } from 'react-router-dom';
-import { Avatar } from '../../Avatar';
+import { Avatar } from '../../../Avatar';
 
 const GroupLink = ({
   groupName,

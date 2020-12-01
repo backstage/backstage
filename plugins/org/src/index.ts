@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 export { plugin } from './plugin';
-export { MembersTab, MemberTab } from './components';
+export * from './components';
