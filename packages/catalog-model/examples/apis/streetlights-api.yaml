@@ -8,7 +8,7 @@ metadata:
 spec:
   type: asyncapi
   lifecycle: production
-  owner: streetlights@example.com
+  owner: team-c
   definition: |
     asyncapi: 2.0.0
     info:
