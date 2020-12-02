@@ -22,6 +22,7 @@ export interface Entity {
   aggregation: [number, number];
   entities: Entity[];
   change: ChangeStatistic;
+  entitiesLabel?: string;
 }
 
 /*
