@@ -15,7 +15,6 @@
  */
 
 import { Logger } from 'winston';
-import { ComponentEntityV1alpha1 } from '@backstage/catalog-model';
 import {
   KubernetesRequestBody,
   ClusterDetails,
@@ -46,18 +45,6 @@ const DEFAULT_OBJECTS = new Set<KubernetesObjectTypes>([
   'horizontalpodautoscalers',
   'ingresses',
 ]);
-
-function parseLabelSelector(entity: ComponentEntityV1alpha1): string {
-  const matchLabels = entity?.spec?.kubernetes?.selector?.matchLabels;
-  if (matchLabels) {
-    // TODO: figure out how to convert the selector to the full query param from the yaml
-    //  (as shown here https://github.com/kubernetes/apimachinery/blob/master/pkg/labels/selector.go)
-    return Object.keys(matchLabels)
-      .map(key => `${key}=${matchLabels[key.toString()]}`)
-      .join(',');
-  }
-  return '';
-}
 
 // Fans out the request to all clusters that the service lives in, aggregates their responses together
 export const handleGetKubernetesObjectsForService: GetKubernetesObjectsForServiceHandler = async (
@@ -92,7 +79,10 @@ export const handleGetKubernetesObjectsForService: GetKubernetesObjectsForServic
       .join(', ')}]`,
   );
 
-  const labelSelector = parseLabelSelector(requestBody.entity);
+  const labelSelector: string =
+    requestBody.entity?.metadata?.annotations?.[
+      'backstage.io/kubernetes-label-selector'
+    ] || `backstage.io/kubernetes-id=${requestBody.entity.metadata.name}`;
 
   return Promise.all(
     clusterDetailsDecoratedForAuth.map(clusterDetails => {

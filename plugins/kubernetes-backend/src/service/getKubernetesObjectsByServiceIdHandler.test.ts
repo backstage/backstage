@@ -16,7 +16,6 @@
 
 import { handleGetKubernetesObjectsForService } from './getKubernetesObjectsForServiceHandler';
 import { getVoidLogger } from '@backstage/backend-common';
-import { ComponentEntityV1alpha1 } from '@backstage/catalog-model';
 import { ObjectFetchParams } from '..';
 
 const TEST_SERVICE_ID = 'my-service';
@@ -24,26 +23,6 @@ const TEST_SERVICE_ID = 'my-service';
 const fetchObjectsForService = jest.fn();
 
 const getClustersByServiceId = jest.fn();
-
-const goodEntity: ComponentEntityV1alpha1 = {
-  apiVersion: 'backstage.io/v1beta1',
-  kind: 'Component',
-  metadata: {
-    name: 'test-component',
-  },
-  spec: {
-    type: 'service',
-    lifecycle: 'production',
-    owner: 'joe',
-    kubernetes: {
-      selector: {
-        matchLabels: {
-          'backstage.io/test-label': 'test-component',
-        },
-      },
-    },
-  },
-};
 
 const mockFetch = (mock: jest.Mock) => {
   mock.mockImplementation((params: ObjectFetchParams) =>
@@ -111,7 +90,24 @@ describe('handleGetKubernetesObjectsForService', () => {
         getClustersByServiceId,
       },
       getVoidLogger(),
-      { entity: goodEntity },
+      {
+        entity: {
+          apiVersion: 'backstage.io/v1beta1',
+          kind: 'Component',
+          metadata: {
+            name: 'test-component',
+            annotations: {
+              'backstage.io/kubernetes-labels-selector':
+                'backstage.io/test-label=test-component',
+            },
+          },
+          spec: {
+            type: 'service',
+            lifecycle: 'production',
+            owner: 'joe',
+          },
+        },
+      },
     );
 
     expect(getClustersByServiceId.mock.calls.length).toBe(1);
@@ -186,9 +182,24 @@ describe('handleGetKubernetesObjectsForService', () => {
       },
       getVoidLogger(),
       {
-        entity: goodEntity,
         auth: {
           google: 'google_token_123',
+        },
+        entity: {
+          apiVersion: 'backstage.io/v1beta1',
+          kind: 'Component',
+          metadata: {
+            name: 'test-component',
+            annotations: {
+              'backstage.io/kubernetes-labels-selector':
+                'backstage.io/test-label=test-component',
+            },
+          },
+          spec: {
+            type: 'service',
+            lifecycle: 'production',
+            owner: 'joe',
+          },
         },
       },
     );
