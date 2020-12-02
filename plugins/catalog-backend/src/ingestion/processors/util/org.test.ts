@@ -76,7 +76,7 @@ describe('buildMemberOf', () => {
     const u: UserEntity = {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'User',
-      metadata: { name },
+      metadata: { name: 'n' },
       spec: { profile: {}, memberOf: ['c'] },
     };
 
