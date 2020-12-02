@@ -190,6 +190,7 @@ scaffolder:
       token:
         $env: AZURE_TOKEN
 auth:
+  environment: development
   ### Providing an auth.session.secret will enable session support in the auth-backend
   # session:
   #   secret: custom session secret
@@ -203,9 +204,9 @@ auth:
     github:
       development:
         clientId:
-          $env: AUTH_GITHUB_CLIENT_ID
+          $env: 688ff0b3ac05066bbfbd
         clientSecret:
-          $env: AUTH_GITHUB_CLIENT_SECRET
+          $env: e054385169884b9618fd7ffa3e4d97b168708ca1
         enterpriseInstanceUrl:
           $env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
     gitlab:

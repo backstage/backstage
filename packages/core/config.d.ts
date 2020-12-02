@@ -62,4 +62,11 @@ export interface Config {
       timezone: string;
     }[];
   };
+  auth?: {
+    /**
+     * The environment config added to be able to change the authentication environment.
+     * @visibility frontend
+     */
+    environment?: string;
+  };
 }
