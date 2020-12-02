@@ -1,5 +1,5 @@
 ---
-'@backstage/catalog-model': minor
+'@backstage/catalog-model': patch
 '@backstage/plugin-catalog-backend': patch
 ---
 
