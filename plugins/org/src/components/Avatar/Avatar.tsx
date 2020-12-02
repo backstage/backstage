@@ -25,11 +25,12 @@ import { CSSProperties } from '@material-ui/core/styles/withStyles';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     avatar: {
-      width: '50px',
-      height: '50px',
+      width: '4rem',
+      height: '4rem',
       color: '#fff',
       fontWeight: theme.typography.fontWeightBold,
       letterSpacing: '1px',
+      textTransform: 'uppercase',
     },
   }),
 );

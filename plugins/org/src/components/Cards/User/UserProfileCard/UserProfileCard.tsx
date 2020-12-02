@@ -18,9 +18,14 @@ import { Box, Grid, Link, Tooltip, Typography } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import { InfoCard } from '@backstage/core';
 import { entityRouteParams } from '@backstage/plugin-catalog';
-import { Entity, UserEntity } from '@backstage/catalog-model';
+import {
+  Entity,
+  RELATION_MEMBER_OF,
+  UserEntity,
+} from '@backstage/catalog-model';
 import EmailIcon from '@material-ui/icons/Email';
 import GroupIcon from '@material-ui/icons/Group';
+import PersonIcon from '@material-ui/icons/Person';
 import { Link as RouterLink, generatePath } from 'react-router-dom';
 import { Avatar } from '../../../Avatar';
 
@@ -47,25 +52,44 @@ const GroupLink = ({
   </>
 );
 
-export const MemberSummary = ({ entity: member }: { entity: Entity }) => {
-  const {
-    spec: { profile, memberOf: groupNames },
-  } = member as UserEntity;
+const CardTitle = ({ title }) =>
+  title ? (
+    <Box display="flex" alignItems="center">
+      <PersonIcon fontSize="inherit" />
+      <Box ml={1}>{title}</Box>
+    </Box>
+  ) : null;
 
-  if (!member)
-    return (
-      <Alert severity="error">Member: {profile?.displayName} not found</Alert>
-    );
+export const UserProfileCard = ({
+  entity: user,
+  variant,
+}: {
+  entity: UserEntity;
+  variant: string;
+}) => {
+  const {
+    spec: { profile },
+  } = user;
+  const groupNames =
+    user?.relations
+      ?.filter(r => r.type === RELATION_MEMBER_OF)
+      ?.map(group => group.target.name) || [];
+
+  if (!user) return <Alert severity="error">User not found</Alert>;
 
   return (
-    <InfoCard title={profile?.displayName}>
+    <InfoCard
+      title={<CardTitle title={profile?.displayName} />}
+      variant={variant}
+    >
       <Grid container spacing={3}>
-        <Grid item md={2} xl={1}>
+        <Grid item xs={12} sm={2} xl={1}>
           <Box
             display="flex"
             alignItems="flex-start"
             justifyContent="center"
             height="100%"
+            width="100%"
           >
             <Avatar
               displayName={profile?.displayName}
@@ -79,9 +103,11 @@ export const MemberSummary = ({ entity: member }: { entity: Entity }) => {
               <Tooltip title="Email">
                 <EmailIcon fontSize="inherit" />
               </Tooltip>
-              <Box ml={1} display="inline">
-                {profile?.email}
-              </Box>
+              {profile?.email && (
+                <Box ml={1} display="inline">
+                  {profile.email}
+                </Box>
+              )}
             </Box>
           </Typography>
           <Typography variant="subtitle1">
@@ -95,7 +121,7 @@ export const MemberSummary = ({ entity: member }: { entity: Entity }) => {
                     groupName={groupName}
                     index={index}
                     key={groupName}
-                    entity={member}
+                    entity={user}
                   />
                 ))}
               </Box>

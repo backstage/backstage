@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+import { UserEntity } from '@backstage/catalog-model';
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import React from 'react';
-import { MemberSummary } from './MemberSummary';
+import { UserProfileCard } from './UserProfileCard';
 
-describe('MemberSummary Test', () => {
-  const userEntity = {
-    apiVersion: 'v1',
+describe('UserSummary Test', () => {
+  const userEntity: UserEntity = {
+    apiVersion: 'backstage.io/v1alpha1',
     kind: 'User',
     metadata: {
       name: 'calum.leavy',
@@ -33,11 +34,21 @@ describe('MemberSummary Test', () => {
       },
       memberOf: ['ExampleGroup'],
     },
+    relations: [
+      {
+        type: 'memberOf',
+        target: {
+          kind: 'group',
+          name: 'ExampleGroup',
+          namespace: 'default',
+        },
+      },
+    ],
   };
 
   it('Display Profile Card', async () => {
     const rendered = await renderWithEffects(
-      wrapInTestApp(<MemberSummary entity={userEntity} />),
+      wrapInTestApp(<UserProfileCard entity={userEntity} variant="gridItem" />),
     );
 
     expect(rendered.getByText('calum-leavy@example.com')).toBeInTheDocument();

@@ -13,17 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { Grid } from '@material-ui/core';
-import { MemberSummary } from './components';
-import { Entity } from '@backstage/catalog-model';
-
-export const MemberTab = ({ entity }: { entity: Entity }) => {
-  return (
-    <Grid container spacing={3}>
-      <Grid item xs={12} md={6}>
-        <MemberSummary entity={entity} />
-      </Grid>
-    </Grid>
-  );
-};
+export * from './GroupProfileCard';

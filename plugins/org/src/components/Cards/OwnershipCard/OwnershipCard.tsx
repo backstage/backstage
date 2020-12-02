@@ -15,11 +15,7 @@
  */
 import React from 'react';
 import { InfoCard, useApi, Progress } from '@backstage/core';
-import {
-  ComponentEntity,
-  Entity,
-  RELATION_OWNED_BY,
-} from '@backstage/catalog-model';
+import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { catalogApiRef } from '@backstage/plugin-catalog';
 import { useAsync } from 'react-use';
 import Alert from '@material-ui/lab/Alert';
@@ -33,7 +29,14 @@ import {
 } from '@material-ui/core';
 import { pageTheme } from '@backstage/theme';
 
-type ComponentKinds = 'service' | 'website' | 'library' | 'documentation';
+type EntitiesKinds = 'Component' | 'API';
+type EntitiesTypes =
+  | 'service'
+  | 'website'
+  | 'library'
+  | 'documentation'
+  | 'api'
+  | 'tool';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -42,42 +45,58 @@ const useStyles = makeStyles((theme: Theme) =>
       boxShadow: theme.shadows[2],
       borderRadius: '4px',
       padding: theme.spacing(2),
-      backgroundSize: 'contain',
+      color: '#fff',
+      transition: `${theme.transitions.duration.standard}ms`,
+      '&:hover': {
+        boxShadow: theme.shadows[4],
+      },
     },
     bold: {
       fontWeight: theme.typography.fontWeightBold,
     },
-    Services: {
-      background: pageTheme.service.backgroundImage,
+    service: {
+      background: `${pageTheme.home.shape}, linear-gradient(90deg, ${pageTheme.service.colors})`,
     },
-    Libraries: {
-      background: pageTheme.library.backgroundImage,
+    website: {
+      background: `${pageTheme.home.shape}, linear-gradient(90deg, ${pageTheme.website.colors})`,
     },
-    Websites: {
-      background: pageTheme.website.backgroundImage,
+    library: {
+      background: `${pageTheme.home.shape}, linear-gradient(90deg, ${pageTheme.library.colors})`,
     },
-    Documentations: {
-      background: pageTheme.documentation.backgroundImage,
+    documentation: {
+      background: `${pageTheme.home.shape}, linear-gradient(90deg, ${pageTheme.documentation.colors})`,
+    },
+    api: {
+      background: `${pageTheme.home.shape}, linear-gradient(90deg, #005B4B, #005B4B)`,
+    },
+    tool: {
+      background: `${pageTheme.home.shape}, linear-gradient(90deg, ${pageTheme.tool.colors})`,
     },
   }),
 );
 
-const countComponentsByType = (
-  components: Array<ComponentEntity>,
-  kind: ComponentKinds,
-) => components.filter(c => c.spec.type === kind).length;
+const countEntitiesBy = (
+  entities: Array<Entity>,
+  kind: EntitiesKinds,
+  type?: EntitiesTypes,
+) =>
+  entities.filter(
+    e => e.kind === kind && (type ? e?.spec?.type === type : true),
+  ).length;
 
-const ComponentCard = ({
+const EntityCountTile = ({
   counter,
+  className,
   name,
 }: {
   counter: number;
+  className: EntitiesTypes;
   name: string;
 }) => {
   const classes = useStyles();
   return (
     <Box
-      className={`${classes.card} ${classes[name]}`}
+      className={`${classes.card} ${classes[className]}`}
       display="flex"
       flexDirection="column"
       alignItems="center"
@@ -92,7 +111,13 @@ const ComponentCard = ({
   );
 };
 
-export const OwnershipCard = ({ entity }: { entity: Entity }) => {
+export const OwnershipCard = ({
+  entity,
+  variant,
+}: {
+  entity: Entity;
+  variant: string;
+}) => {
   const {
     metadata: { name: groupName },
   } = entity;
@@ -102,48 +127,70 @@ export const OwnershipCard = ({ entity }: { entity: Entity }) => {
     error,
     value: componentsWithCounters,
   } = useAsync(async () => {
-    const componentsList = await catalogApi.getEntities({
-      filter: {
-        kind: 'Component',
-      },
-    });
-    const ownedComponentsList = componentsList.items.filter(component =>
+    const entitiesList = await catalogApi.getEntities();
+    const ownedEntitiesList = entitiesList.items.filter(component =>
       component?.relations?.some(
         r => r.type === RELATION_OWNED_BY && r.target.name === groupName,
       ),
-    ) as Array<ComponentEntity>;
+    ) as Array<Entity>;
+
     return [
       {
-        counter: countComponentsByType(ownedComponentsList, 'service'),
+        counter: countEntitiesBy(ownedEntitiesList, 'Component', 'service'),
+        className: 'service',
         name: 'Services',
       },
       {
-        counter: countComponentsByType(ownedComponentsList, 'documentation'),
+        counter: countEntitiesBy(
+          ownedEntitiesList,
+          'Component',
+          'documentation',
+        ),
+        className: 'documentation',
         name: 'Documentations',
       },
       {
-        counter: countComponentsByType(ownedComponentsList, 'library'),
+        counter: countEntitiesBy(ownedEntitiesList, 'API'),
+        className: 'api',
+        name: 'API Endpoints',
+      },
+      {
+        counter: countEntitiesBy(ownedEntitiesList, 'Component', 'library'),
+        className: 'library',
         name: 'Libraries',
       },
       {
-        counter: countComponentsByType(ownedComponentsList, 'website'),
+        counter: countEntitiesBy(ownedEntitiesList, 'Component', 'website'),
+        className: 'website',
         name: 'Websites',
       },
-    ] as Array<{ counter: number; name: string }>;
+      {
+        counter: countEntitiesBy(ownedEntitiesList, 'Component', 'tool'),
+        className: 'tool',
+        name: 'Tools',
+      },
+    ] as Array<{ counter: number; className: EntitiesTypes; name: string }>;
   }, [catalogApi]);
 
-  if (loading) return <Progress />;
-  else if (error) return <Alert severity="error">{error.message}</Alert>;
+  if (loading) {
+    return <Progress />;
+  } else if (error) {
+    return <Alert severity="error">{error.message}</Alert>;
+  }
 
-  return componentsWithCounters ? (
-    <InfoCard title="Ownership">
+  return (
+    <InfoCard title="Ownership" variant={variant}>
       <Grid container>
-        {componentsWithCounters.map(c => (
-          <Grid item xs={12} md={6} key={c.name}>
-            <ComponentCard counter={c.counter} name={c.name} />
+        {componentsWithCounters?.map(c => (
+          <Grid item xs={12} md={6} lg={4} key={c.name}>
+            <EntityCountTile
+              counter={c.counter}
+              className={c.className}
+              name={c.name}
+            />
           </Grid>
         ))}
       </Grid>
     </InfoCard>
-  ) : null;
+  );
 };

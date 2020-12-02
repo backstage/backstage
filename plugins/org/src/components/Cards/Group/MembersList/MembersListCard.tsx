@@ -33,7 +33,7 @@ import {
 import { Link as RouterLink, generatePath } from 'react-router-dom';
 import { catalogApiRef, entityRouteParams } from '@backstage/plugin-catalog';
 import { useAsync } from 'react-use';
-import { Avatar } from '../../Avatar';
+import { Avatar } from '../../../Avatar';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -50,16 +50,16 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const MemberComponent = ({
   member,
-  entity,
+  groupEntity,
 }: {
   member: UserEntity;
-  entity: Entity;
+  groupEntity: Entity;
 }) => {
   const classes = useStyles();
   const { name: metaName } = member.metadata;
   const { profile } = member.spec;
   return (
-    <Grid item md={3}>
+    <Grid item xs={12} sm={6} md={3} xl={2}>
       <Box className={classes.card}>
         <Box
           display="flex"
@@ -73,7 +73,7 @@ const MemberComponent = ({
             picture={profile?.picture}
             customStyles={{
               position: 'absolute',
-              top: '-25px',
+              top: '-2rem',
             }}
           />
           <Box pt={2} textAlign="center">
@@ -82,7 +82,7 @@ const MemberComponent = ({
                 component={RouterLink}
                 to={generatePath(
                   `/catalog/:namespace/user/${metaName}`,
-                  entityRouteParams(entity),
+                  entityRouteParams(groupEntity),
                 )}
               >
                 {profile?.displayName}
@@ -96,10 +96,14 @@ const MemberComponent = ({
   );
 };
 
-export const MembersTab = ({ entity }: { entity: Entity }) => {
+export const MembersListCard = ({
+  entity: groupEntity,
+}: {
+  entity: Entity;
+}) => {
   const {
     metadata: { name: groupName },
-  } = entity;
+  } = groupEntity;
   const catalogApi = useApi(catalogApiRef);
 
   const { loading, error, value: members } = useAsync(async () => {
@@ -118,19 +122,25 @@ export const MembersTab = ({ entity }: { entity: Entity }) => {
     return groupMembersList;
   }, [catalogApi]);
 
-  if (loading) return <Progress />;
-  else if (error) return <Alert severity="error">{error.message}</Alert>;
+  if (loading) {
+    return <Progress />;
+  } else if (error) {
+    return <Alert severity="error">{error.message}</Alert>;
+  }
 
   return (
     <Grid item>
-      <InfoCard title="Members" subheader={`of ${groupName}`}>
+      <InfoCard
+        title={`Members (${members?.length || 0})`}
+        subheader={`of ${groupName}`}
+      >
         <Grid container spacing={3}>
           {members && members.length ? (
             members.map(member => (
               <MemberComponent
                 member={member}
+                groupEntity={groupEntity}
                 key={member.metadata.uid}
-                entity={entity}
               />
             ))
           ) : (

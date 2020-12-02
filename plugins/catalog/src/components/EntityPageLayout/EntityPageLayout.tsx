@@ -26,15 +26,6 @@ import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEnti
 import { useEntityCompoundName } from '../useEntityCompoundName';
 import { Tabbed } from './Tabbed';
 
-const toTitleCase = (phrase: string) => {
-  return phrase
-    .replace(/\./g, ' ')
-    .toLowerCase()
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-};
-
 const EntityPageTitle = ({
   entity,
   title,
@@ -55,7 +46,7 @@ const headerProps = (
   entity: Entity | undefined,
 ): { headerTitle: string; headerType: string } => {
   return {
-    headerTitle: `${kind === 'user' ? toTitleCase(name) : name}${
+    headerTitle: `${name}${
       namespace && namespace !== ENTITY_DEFAULT_NAMESPACE
         ? ` in ${namespace}`
         : ''
