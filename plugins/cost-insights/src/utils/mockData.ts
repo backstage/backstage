@@ -812,7 +812,7 @@ export const SampleComputeEngineInsights: Entity = {
           id: 'Sample SKU A',
           aggregation: [1_000, 2_000],
           change: {
-            ratio: 0.5,
+            ratio: 1,
             amount: 1_000,
           },
           entities: [],
@@ -849,6 +849,92 @@ export const SampleComputeEngineInsights: Entity = {
   ],
 };
 
+export const SampleEventsInsights: Entity = {
+  id: 'events',
+  aggregation: [20_000, 10_000],
+  change: {
+    ratio: -0.5,
+    amount: -10_000,
+  },
+  entitiesLabel: 'Product',
+  entities: [
+    {
+      id: 'entity-a',
+      aggregation: [15_000, 7_000],
+      change: {
+        ratio: -0.53333333333,
+        amount: -8_000,
+      },
+      entities: [
+        {
+          id: 'Sample Product A',
+          aggregation: [5_000, 2_000],
+          change: {
+            ratio: -0.6,
+            amount: -3_000,
+          },
+          entities: [],
+        },
+        {
+          id: 'Sample Product B',
+          aggregation: [7_000, 2_500],
+          change: {
+            ratio: -0.64285714285,
+            amount: -4_500,
+          },
+          entities: [],
+        },
+        {
+          id: 'Sample Product C',
+          aggregation: [3_000, 2_500],
+          change: {
+            ratio: -0.16666666666,
+            amount: -500,
+          },
+          entities: [],
+        },
+      ],
+    },
+    {
+      id: 'entity-b',
+      aggregation: [5_000, 3_000],
+      change: {
+        ratio: -0.4,
+        amount: -2_000,
+      },
+      entities: [
+        {
+          id: 'Sample Product A',
+          aggregation: [2_000, 1_000],
+          change: {
+            ratio: -0.5,
+            amount: -1_000,
+          },
+          entities: [],
+        },
+        {
+          id: 'Sample Product B',
+          aggregation: [1_000, 1_500],
+          change: {
+            ratio: 0.5,
+            amount: 500,
+          },
+          entities: [],
+        },
+        {
+          id: 'Sample Product C',
+          aggregation: [2_000, 500],
+          change: {
+            ratio: -0.75,
+            amount: -1_500,
+          },
+          entities: [],
+        },
+      ],
+    },
+  ],
+};
+
 export function entityOf(product: string): Entity {
   switch (product) {
     case 'computeEngine':
@@ -859,6 +945,8 @@ export function entityOf(product: string): Entity {
       return SampleCloudStorageInsights;
     case 'bigQuery':
       return SampleBigQueryInsights;
+    case 'events':
+      return SampleEventsInsights;
     default:
       throw new Error(
         `Cannot get insights for ${product}. Make sure product matches product property in app-info.yaml`,
