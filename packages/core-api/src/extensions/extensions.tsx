@@ -54,7 +54,7 @@ export function createReactExtension<Props extends {}>(options: {
 }): Extension<NamedExoticComponent<Props>> {
   const { component: Component, data = {} } = options;
   return {
-    expose(plugin: BackstagePlugin): NamedExoticComponent<Props> {
+    expose(plugin: BackstagePlugin<any, any>): NamedExoticComponent<Props> {
       const Result = (props: Props) => <Component {...props} />;
 
       attachComponentData(Result, 'core.plugin', plugin);

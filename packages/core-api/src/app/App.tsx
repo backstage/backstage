@@ -59,7 +59,7 @@ import { ApiResolver, ApiFactoryRegistry } from '../apis/system';
 type FullAppOptions = {
   apis: Iterable<AnyApiFactory>;
   icons: SystemIcons;
-  plugins: BackstagePlugin[];
+  plugins: BackstagePlugin<any, any>[];
   components: AppComponents;
   themes: AppTheme[];
   configLoader?: AppConfigLoader;
@@ -107,7 +107,7 @@ export class PrivateAppImpl implements BackstageApp {
 
   private readonly apis: Iterable<AnyApiFactory>;
   private readonly icons: SystemIcons;
-  private readonly plugins: BackstagePlugin[];
+  private readonly plugins: BackstagePlugin<any, any>[];
   private readonly components: AppComponents;
   private readonly themes: AppTheme[];
   private readonly configLoader?: AppConfigLoader;
@@ -125,7 +125,7 @@ export class PrivateAppImpl implements BackstageApp {
     this.defaultApis = options.defaultApis;
   }
 
-  getPlugins(): BackstagePlugin[] {
+  getPlugins(): BackstagePlugin<any, any>[] {
     return this.plugins;
   }
 
