@@ -66,9 +66,9 @@ export const ProductInsightsChart = ({
   const [selectLabel, setSelected] = useState<Maybe<string>>();
   const isSelected = useMemo(() => !isUndefined(selectLabel), [selectLabel]);
   const isClickable = useMemo(() => {
-    const skus =
+    const breakdownEntities =
       entity.entities.find(e => e.id === activeLabel)?.entities ?? [];
-    return skus.length > 0;
+    return breakdownEntities.length > 0;
   }, [entity, activeLabel]);
 
   const legendTitle = `Cost ${entity.change.ratio <= 0 ? 'Savings' : 'Growth'}`;
@@ -122,10 +122,13 @@ export const ProductInsightsChart = ({
 
     const activeEntity = findAlways(entity.entities, e => e.id === id);
     const ratio = activeEntity.change.ratio;
-    const skus = activeEntity.entities;
-    const subtitle = `${skus.length} ${pluralOf(skus.length, 'SKU')}`;
+    const breakdownEntities = activeEntity.entities;
+    const subtitle = `${breakdownEntities.length} ${pluralOf(
+      breakdownEntities.length,
+      entity.entitiesLabel || 'SKU',
+    )}`;
 
-    if (skus.length) {
+    if (breakdownEntities.length) {
       return (
         <BarChartTooltip
           title={title}
@@ -151,7 +154,7 @@ export const ProductInsightsChart = ({
       );
     }
 
-    // If an entity doesn't have any skus, there aren't any costs to break down.
+    // If an entity doesn't have any sub-entities, there aren't any costs to break down.
     return (
       <BarChartTooltip
         title={title}

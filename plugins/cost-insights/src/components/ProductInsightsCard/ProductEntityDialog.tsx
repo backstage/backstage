@@ -29,7 +29,7 @@ function createRenderer(col: keyof RowData, classes: Record<string, string>) {
     const row = rowData as RowData;
     const rowStyles = classnames(classes.row, {
       [classes.rowTotal]: row.id === 'total',
-      [classes.colFirst]: col === 'sku',
+      [classes.colFirst]: col === 'label',
       [classes.colLast]: col === 'ratio',
     });
 
@@ -50,7 +50,7 @@ function createRenderer(col: keyof RowData, classes: Record<string, string>) {
           />
         );
       default:
-        return <Typography className={rowStyles}>{row.sku}</Typography>;
+        return <Typography className={rowStyles}>{row.label}</Typography>;
     }
   };
 }
@@ -63,7 +63,7 @@ function createSorter(field?: keyof Omit<RowData, 'id'>) {
     const b = data2 as RowData;
     if (a.id === 'total') return 1;
     if (b.id === 'total') return 1;
-    if (field === 'sku') return a.sku.localeCompare(b.sku);
+    if (field === 'label') return a.label.localeCompare(b.label);
 
     return field
       ? a[field] - b[field]
@@ -80,7 +80,7 @@ const defaultEntity: Entity = {
 
 type RowData = {
   id: string;
-  sku: string;
+  label: string;
   previous: number;
   current: number;
   ratio: number;
@@ -118,10 +118,12 @@ export const ProductEntityDialog = ({
 
   const columns: TableColumn[] = [
     {
-      field: 'sku',
-      title: <Typography className={firstColClasses}>SKU</Typography>,
-      render: createRenderer('sku', classes),
-      customSort: createSorter('sku'),
+      field: 'label',
+      title: (
+        <Typography className={firstColClasses}>{entitiesLabel}</Typography>
+      ),
+      render: createRenderer('label', classes),
+      customSort: createSorter('label'),
       width: '33.33%',
     },
     {
@@ -154,14 +156,14 @@ export const ProductEntityDialog = ({
   const rowData: RowData[] = entity.entities
     .map(e => ({
       id: e.id || 'Unknown',
-      sku: e.id || 'Unknown',
+      label: e.id || 'Unknown',
       previous: e.aggregation[0],
       current: e.aggregation[1],
       ratio: e.change.ratio,
     }))
     .concat({
       id: 'total',
-      sku: 'Total',
+      label: 'Total',
       previous: entity.aggregation[0],
       current: entity.aggregation[1],
       ratio: entity.change.ratio,
