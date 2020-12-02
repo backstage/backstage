@@ -49,7 +49,7 @@ export default async function createPlugin({
   const urlPreparer = new UrlPreparer(reader, logger);
   preparers.register('url', urlPreparer);
 
-  const publisher = new Publisher(logger, config, discovery);
+  const publisher = Publisher.fromConfig(config, logger, discovery);
 
   const dockerClient = new Docker();
 

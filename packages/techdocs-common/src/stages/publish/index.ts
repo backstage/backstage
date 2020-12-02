@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 export { Publisher } from './publish';
-export type { PublisherBase } from './publish';
-export type { PublisherType } from './types';
+export type { PublisherBase, PublisherType } from './types';

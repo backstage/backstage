@@ -26,12 +26,9 @@ import {
   PublisherBase,
   getLocationForEntity,
 } from '@backstage/techdocs-common';
-import {
-  PluginEndpointDiscovery,
-  resolvePackagePath,
-} from '@backstage/backend-common';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
-import { DocsBuilder } from './helpers';
+import { DocsBuilder, getEntityNameFromUrlPath } from './helpers';
 
 type RouterOptions = {
   preparers: PreparerBuilder;
@@ -43,11 +40,6 @@ type RouterOptions = {
   config: Config;
   dockerClient: Docker;
 };
-
-const staticDocsDir = resolvePackagePath(
-  '@backstage/plugin-techdocs-backend',
-  'static/docs',
-);
 
 export async function createRouter({
   preparers,
@@ -61,24 +53,18 @@ export async function createRouter({
   const router = Router();
 
   router.get('/metadata/techdocs/*', async (req, res) => {
-    let storageUrl = config.getString('techdocs.storageUrl');
-    if (publisher.isLocalPublisher()) {
-      storageUrl = new URL(
-        new URL(storageUrl).pathname,
-        await discovery.getBaseUrl('techdocs'),
-      ).toString();
-    }
+    // path is `:namespace/:kind:/:name`
     const { '0': path } = req.params;
+    const entityName = getEntityNameFromUrlPath(path);
 
-    const metadataURL = `${storageUrl}/${path}/techdocs_metadata.json`;
-
-    try {
-      const techdocsMetadata = await (await fetch(metadataURL)).json();
-      res.send(techdocsMetadata);
-    } catch (err) {
-      logger.info(`Unable to get metadata for ${path} with error ${err}`);
-      throw new Error(`Unable to get metadata for ${path} with error ${err}`);
-    }
+    publisher
+      .fetchTechDocsMetadata(entityName)
+      .then(techdocsMetadataJson => {
+        res.send(techdocsMetadataJson);
+      })
+      .catch(reason => {
+        res.status(500).send(`Unable to get Metadata. Reason: ${reason}`);
+      });
   });
 
   router.get('/metadata/entity/:namespace/:kind/:name', async (req, res) => {
@@ -139,9 +125,7 @@ export async function createRouter({
     res.redirect(`${storageUrl}${req.path.replace('/docs', '')}`);
   });
 
-  if (publisher.isLocalPublisher()) {
-    router.use('/static/docs', express.static(staticDocsDir));
-  }
+  router.use('/static/docs', publisher.docsRouter());
 
   return router;
 }

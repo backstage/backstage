@@ -13,50 +13,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import express from 'express';
+import * as expressServeStaticCore from 'express-serve-static-core'; // Type from express library
+import fetch from 'cross-fetch';
 import fs from 'fs-extra';
 import { Logger } from 'winston';
-import { Entity } from '@backstage/catalog-model';
+import { EntityName } from '@backstage/catalog-model';
 import {
   resolvePackagePath,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
+import { Config } from '@backstage/config';
+import { PublisherBase, PublisherBaseParams } from './types';
 
-export type LocalPublishParams = {
-  entity: Entity;
-  directory: string;
-};
+/* `remoteUrl` is the URL which serves files from the local publisher's static directory. */
+export type LocalPublishReturn = Promise<{ remoteUrl: string }>;
 
-export type LocalPublishReturn =
-  | Promise<{ remoteUrl: string }>
-  | { remoteUrl: string };
+const staticDocsDir = resolvePackagePath(
+  '@backstage/plugin-techdocs-backend',
+  'static/docs',
+);
 
 /**
- * Type for the local publisher which uses local filesystem to store the generated static files.
- *
- * It uses a directory called "static" at the root of techdocs-backend plugin.
+ * Local publisher which uses the local filesystem to store the generated static files. It uses a directory
+ * called "static" at the root of techdocs-backend plugin.
  */
-export interface LocalPublisher {
-  /**
-   * Store the generated files inside a static folder in local filesystem.
-   *
-   * @param {LocalPublishParams} opts Object containing the entity from the service
-   * catalog, and the directory that contains the generated static files from TechDocs.
-   * @returns {LocalPublishReturn} Either a promise or an object with `remoteUrl` which is the URL
-   * which serves files from the local publisher's static directory.
-   */
-  publish(opts: LocalPublishParams): LocalPublishReturn;
-}
-
-export class LocalPublish {
+export class LocalPublish implements PublisherBase {
+  private readonly config: Config;
   private readonly logger: Logger;
   private readonly discovery: PluginEndpointDiscovery;
 
-  constructor(logger: Logger, discovery: PluginEndpointDiscovery) {
+  constructor(
+    config: Config,
+    logger: Logger,
+    discovery: PluginEndpointDiscovery,
+  ) {
+    this.config = config;
     this.logger = logger;
     this.discovery = discovery;
   }
 
-  publish({ entity, directory }: LocalPublishParams): LocalPublishReturn {
+  publish({ entity, directory }: PublisherBaseParams): LocalPublishReturn {
     const entityNamespace = entity.metadata.namespace ?? 'default';
 
     const publishDir = resolvePackagePath(
@@ -93,5 +90,39 @@ export class LocalPublish {
           });
       });
     });
+  }
+
+  fetchTechDocsMetadata(
+    entityName: EntityName,
+  ): Promise<{ techdocsMetadataJson: string }> {
+    return new Promise((resolve, reject) => {
+      this.discovery.getBaseUrl('techdocs').then(techdocsApiUrl => {
+        const storageUrl = new URL(
+          new URL(this.config.getString('techdocs.storageUrl')).pathname,
+          techdocsApiUrl,
+        ).toString();
+
+        const path = `${entityName.kind}/${entityName.namespace}/${entityName.name}`;
+        const metadataURL = `${storageUrl}/${path}/techdocs_metadata.json`;
+        fetch(metadataURL)
+          .then(response =>
+            response
+              .json()
+              .then(techdocsMetadataJson => resolve(techdocsMetadataJson))
+              .catch(err => {
+                reject(
+                  `Unable to parse metadata JSON for ${path}. Error: ${err}`,
+                );
+              }),
+          )
+          .catch(err => {
+            reject(`Unable to fetch metadata for ${path}. Error ${err}`);
+          });
+      });
+    });
+  }
+
+  docsRouter(): expressServeStaticCore.Handler {
+    return express.static(staticDocsDir);
   }
 }

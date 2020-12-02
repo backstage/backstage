@@ -16,96 +16,34 @@
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { Entity } from '@backstage/catalog-model';
-import { PublisherType } from './types';
+
+import { PublisherType, PublisherBase } from './types';
 import { LocalPublish } from './local';
 
-export type PublisherBaseParams = {
-  entity: Entity;
-  directory: string;
-};
-
-export type PublisherBaseReturn =
-  | Promise<{ remoteUrl: string }>
-  | { remoteUrl: string };
-
 /**
- * Type for the publisher instance registered with backend which manages publishing of the
- * generated static files after the prepare and generate steps of TechDocs.
- *
- * Depending upon the value of techdocs.publisher.type in app config, this instance creates
- * and uses a publisher of the particular type i.e. local, google_gcs, aws_s3, etc. It defaults
- * to use the local publisher.
+ * Factory class to create a TechDocs publisher based on defined publisher type in app config.
+ * Uses `techdocs.publisher.type`.
  */
-export interface PublisherBase {
-  /**
-   * Invoke the app's configured publisher's publish method.
-   *
-   * @param {PublisherBaseParams} opts Object containing the entity from the service
-   * catalog, and the directory that contains the generated static files from TechDocs.
-   */
-  publish(opts: PublisherBaseParams): PublisherBaseReturn;
-
-  /**
-   * Return true if local filesystem is being used to store generated files for TechDocs.
-   */
-  isLocalPublisher(): boolean;
-
-  /**
-   * Return true if an external cloud storage (GCS, S3, SFTP server, etc.) is being used to
-   * store generated files for TechDocs.
-   */
-  isExternalPublisher(): boolean;
-}
-
-export class Publisher implements PublisherBase {
-  private readonly logger: Logger;
-  private readonly config: Config;
-  private readonly discovery: PluginEndpointDiscovery;
-  private readonly publisherType: PublisherType;
-  private readonly publisher: any;
-
-  constructor(
-    logger: Logger,
+export class Publisher {
+  static fromConfig(
     config: Config,
+    logger: Logger,
     discovery: PluginEndpointDiscovery,
-  ) {
-    this.logger = logger;
-    this.config = config;
-    this.discovery = discovery;
+  ): PublisherBase {
+    const publisherType = (config.getOptionalString(
+      'techdocs.publisher.type',
+    ) ?? 'local') as PublisherType;
 
-    this.publisherType =
-      (this.config.getOptionalString(
-        'techdocs.publisher.type',
-      ) as PublisherType) ?? 'local';
-
-    switch (this.publisherType) {
+    switch (publisherType) {
       case 'google_gcs':
-        this.logger.info(
-          'Creating Google Storage Bucket publisher for TechDocs',
-        );
-        this.publisher = new LocalPublish(this.logger, this.discovery);
-        break;
+        logger.info('Creating Google Storage Bucket publisher for TechDocs');
+        return new LocalPublish(config, logger, discovery);
       case 'local':
-        this.logger.info('Creating Local publisher for TechDocs');
-        this.publisher = new LocalPublish(this.logger, this.discovery);
-        break;
+        logger.info('Creating Local publisher for TechDocs');
+        return new LocalPublish(config, logger, discovery);
       default:
-        this.logger.info('Creating Local publisher for TechDocs');
-        this.publisher = new LocalPublish(this.logger, this.discovery);
-        break;
+        logger.info('Creating Local publisher for TechDocs');
+        return new LocalPublish(config, logger, discovery);
     }
-  }
-
-  publish({ entity, directory }: PublisherBaseParams): PublisherBaseReturn {
-    return this.publisher.publish({ entity, directory });
-  }
-
-  isLocalPublisher(): boolean {
-    return this.publisherType === 'local';
-  }
-
-  isExternalPublisher(): boolean {
-    return this.publisherType !== 'local';
   }
 }

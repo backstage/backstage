@@ -64,7 +64,7 @@ export async function startStandaloneServer(
   const techdocsGenerator = new TechdocsGenerator(logger, config);
   generators.register('techdocs', techdocsGenerator);
 
-  const publisher = new Publisher(logger, config, discovery);
+  const publisher = Publisher.fromConfig(config, logger, discovery);
 
   const dockerClient = new Docker();
 

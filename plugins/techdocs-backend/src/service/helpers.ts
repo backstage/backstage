@@ -15,7 +15,7 @@
  */
 import Docker from 'dockerode';
 import { Logger } from 'winston';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, EntityName } from '@backstage/catalog-model';
 import {
   PreparerBuilder,
   PublisherBase,
@@ -127,3 +127,18 @@ export class DocsBuilder {
     return false;
   }
 }
+
+/**
+ * Using the path of the TechDocs page URL, return a structured EntityName type object with namespace,
+ * kind and name of the Entity.
+ * @param {string} path Example: default/Component/documented-component
+ */
+export const getEntityNameFromUrlPath = (path: string): EntityName => {
+  const [kind, namespace, name] = path.split('/');
+
+  return {
+    kind,
+    namespace,
+    name,
+  };
+};

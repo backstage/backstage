@@ -28,7 +28,7 @@ export default async function createPlugin({
   preparers.register('github', commonGitPreparer);
   preparers.register('gitlab', commonGitPreparer);
 
-  const publisher = new Publisher(logger, config, discovery);
+  const publisher = Publisher.fromConfig(config, logger, discovery);
 
   const dockerClient = new Docker();
 

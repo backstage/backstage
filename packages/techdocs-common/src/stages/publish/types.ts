@@ -13,10 +13,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Entity, EntityName } from '@backstage/catalog-model';
+// import serveStatic from 'serve-static';
+// import express from 'express';
+import * as express from 'express-serve-static-core';
 
 /**
- * Key for all the different types of TechDocs publishers available.
+ * Key for all the different types of TechDocs publishers that are supported.
  */
 export type PublisherType = 'local' | 'google_gcs';
 
-export interface ExternalPublisher {}
+export type PublisherBaseParams = {
+  entity: Entity;
+  /* The Path to the directory where the generated files are stored. */
+  directory: string;
+};
+
+export type PublisherBaseReturn = Promise<{}>;
+
+/**
+ * Base class for a TechDocs publisher (e.g. Local, Google GCS Bucket, AWS S3, etc.)
+ * The publisher handles publishing of the generated static files after the prepare and generate steps of TechDocs.
+ * It also provides APIs to communicate with the storage service.
+ */
+export interface PublisherBase {
+  /**
+   * Store the generated static files onto a storage service (either local filesystem or external service).
+   *
+   * @param options Object containing the entity from the service
+   * catalog, and the directory that contains the generated static files from TechDocs.
+   */
+  publish(options: PublisherBaseParams): PublisherBaseReturn;
+
+  /**
+   * Retrieve TechDocs Metadata about a site e.g. name, contributors, last updated, etc.
+   * This API uses the techdocs_metadata.json file that co-exists along with the generated docs.
+   */
+  fetchTechDocsMetadata(
+    entityName: EntityName,
+  ): Promise<{ techdocsMetadataJson: string }>;
+
+  /**
+   *
+   */
+  docsRouter(): express.Handler;
+}

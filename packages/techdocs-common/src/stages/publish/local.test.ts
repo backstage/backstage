@@ -21,6 +21,7 @@ import {
   getVoidLogger,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
 import { LocalPublish } from './local';
 
 const createMockEntity = (annotations = {}) => {
@@ -45,7 +46,18 @@ describe('local publisher', () => {
       getExternalBaseUrl: jest.fn(),
     };
 
-    const publisher = new LocalPublish(logger, testDiscovery);
+    const mockConfig = ConfigReader.fromConfigs([
+      {
+        context: '',
+        data: {
+          techdocs: {
+            requestUrl: 'http://localhost:7000',
+          },
+        },
+      },
+    ]);
+
+    const publisher = new LocalPublish(mockConfig, logger, testDiscovery);
 
     const mockEntity = createMockEntity();
 
