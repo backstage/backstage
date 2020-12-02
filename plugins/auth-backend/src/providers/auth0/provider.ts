@@ -149,12 +149,12 @@ export class Auth0AuthProvider implements OAuthHandlers {
 }
 
 export const createAuth0Provider: AuthProviderFactory = ({
+  providerId,
   globalConfig,
   config,
   tokenIssuer,
 }) =>
   OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-    const providerId = 'auth0';
     const clientId = envConfig.getString('clientId');
     const clientSecret = envConfig.getString('clientSecret');
     const domain = envConfig.getString('domain');

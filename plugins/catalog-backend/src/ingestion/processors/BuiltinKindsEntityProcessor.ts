@@ -26,8 +26,10 @@ import {
   locationEntityV1alpha1Validator,
   LocationSpec,
   parseEntityRef,
+  RELATION_API_CONSUMED_BY,
   RELATION_API_PROVIDED_BY,
   RELATION_CHILD_OF,
+  RELATION_CONSUMES_API,
   RELATION_HAS_MEMBER,
   RELATION_MEMBER_OF,
   RELATION_OWNED_BY,
@@ -137,6 +139,18 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
         { defaultKind: 'API', defaultNamespace: selfRef.namespace },
         RELATION_PROVIDES_API,
         RELATION_API_PROVIDED_BY,
+      );
+      doEmit(
+        component.spec.providesApis,
+        { defaultKind: 'API', defaultNamespace: selfRef.namespace },
+        RELATION_PROVIDES_API,
+        RELATION_API_PROVIDED_BY,
+      );
+      doEmit(
+        component.spec.consumesApis,
+        { defaultKind: 'API', defaultNamespace: selfRef.namespace },
+        RELATION_CONSUMES_API,
+        RELATION_API_CONSUMED_BY,
       );
     }
 

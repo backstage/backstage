@@ -1,0 +1,12 @@
+---
+title: Kubernetes
+author: Spotify
+authorUrl: https://github.com/spotify
+category: Kubernetes
+description: Surfaces components in a Kubernetes container orchestration environment into the Backstage catalog.
+documentation: https://github.com/backstage/backstage/tree/master/plugins/kubernetes
+iconUrl: https://raw.githubusercontent.com/cncf/artwork/master/projects/kubernetes/icon/color/kubernetes-icon-color.png
+npmPackageName: '@backstage/plugin-kubernetes'
+tags:
+  - kubernetes
+  - k8s

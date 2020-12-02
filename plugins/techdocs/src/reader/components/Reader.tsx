@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import React from 'react';
-import { useApi } from '@backstage/core';
-import { useShadowDom } from '..';
 import { useAsync } from 'react-use';
-import { techdocsStorageApiRef } from '../../api';
-import { useParams, useNavigate } from 'react-router-dom';
-import { ParsedEntityId } from '../../types';
 import { useTheme } from '@material-ui/core';
+import { useParams, useNavigate } from 'react-router-dom';
+import { EntityName } from '@backstage/catalog-model';
+import { useApi } from '@backstage/core';
 import { BackstageTheme } from '@backstage/theme';
+import { useShadowDom } from '..';
+import { techdocsStorageApiRef } from '../../api';
 import TechDocsProgressBar from './TechDocsProgressBar';
 
 import transformer, {
@@ -39,7 +38,7 @@ import transformer, {
 import { TechDocsNotFound } from './TechDocsNotFound';
 
 type Props = {
-  entityId: ParsedEntityId;
+  entityId: EntityName;
   onReady?: () => void;
 };
 

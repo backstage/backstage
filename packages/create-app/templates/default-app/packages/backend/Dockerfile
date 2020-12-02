@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 # and along with yarn.lock and the root package.json, that's enough to run yarn install.
 ADD .npmrc* yarn.lock package.json skeleton.tar ./
 
-RUN --mount=type=secret,id=NPM_TOKEN NPM_TOKEN=$(cat /run/secrets/NPM_TOKEN) yarn install --frozen-lockfile --production
+RUN --mount=type=secret,id=NPM_TOKEN NPM_TOKEN=$(cat /run/secrets/NPM_TOKEN) yarn install --frozen-lockfile --production --network-timeout 300000 && rm -rf "$(yarn cache dir)"
 
 # This will copy the contents of the dist-workspace when running the build-image command.
 # Do not use this Dockerfile outside of that command, as it will copy in the source code instead.

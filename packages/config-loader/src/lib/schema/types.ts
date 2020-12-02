@@ -87,7 +87,7 @@ type ConfigProcessingOptions = {
    * The visibilities that should be included in the output data.
    * If omitted, the data will not be filtered by visibility.
    */
-  visiblity?: ConfigVisibility[];
+  visibility?: ConfigVisibility[];
 
   /**
    * A transform function that can be used to transform primitive configuration values

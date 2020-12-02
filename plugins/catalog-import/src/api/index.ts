@@ -14,28 +14,5 @@
  * limitations under the License.
  */
 
-import fetch from 'cross-fetch';
-
-export class TechDocsMetadata {
-  private async getMetadataFile(docsUrl: String) {
-    const metadataURL = `${docsUrl}/techdocs_metadata.json`;
-
-    try {
-      const req = await fetch(metadataURL);
-
-      return await req.json();
-    } catch (error) {
-      throw new Error(error);
-    }
-  }
-
-  public async getMkDocsMetaData(docsUrl: any) {
-    const mkDocsMetadata = await this.getMetadataFile(docsUrl);
-
-    if (!mkDocsMetadata) return null;
-
-    return {
-      ...mkDocsMetadata,
-    };
-  }
-}
+export * from './CatalogImportApi';
+export * from './CatalogImportClient';

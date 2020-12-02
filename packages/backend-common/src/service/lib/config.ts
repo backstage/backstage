@@ -18,7 +18,7 @@ import { Config } from '@backstage/config';
 import { CorsOptions } from 'cors';
 
 export type BaseOptions = {
-  listenPort?: number;
+  listenPort?: string | number;
   listenHost?: string;
 };
 
@@ -89,8 +89,19 @@ export function readBaseOptions(config: Config): BaseOptions {
     });
   }
 
+  const port = config.getOptional('listen.port');
+  if (
+    typeof port !== 'undefined' &&
+    typeof port !== 'number' &&
+    typeof port !== 'string'
+  ) {
+    throw new Error(
+      `Invalid type in config for key 'backend.listen.post', got ${typeof port}, wanted string or number`,
+    );
+  }
+
   return removeUnknown({
-    listenPort: config.getOptionalNumber('listen.port'),
+    listenPort: port,
     listenHost: config.getOptionalString('listen.host'),
     baseUrl: config.getOptionalString('baseUrl'),
   });

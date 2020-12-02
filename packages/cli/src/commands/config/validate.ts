@@ -18,5 +18,8 @@ import { Command } from 'commander';
 import { loadCliConfig } from '../../lib/config';
 
 export default async (cmd: Command) => {
-  await loadCliConfig(cmd.config);
+  await loadCliConfig({
+    args: cmd.config,
+    fromPackage: cmd.package,
+  });
 };

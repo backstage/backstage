@@ -85,7 +85,10 @@ export class ServiceBuilderImpl implements ServiceBuilder {
 
     const baseOptions = readBaseOptions(backendConfig);
     if (baseOptions.listenPort) {
-      this.port = baseOptions.listenPort;
+      this.port =
+        typeof baseOptions.listenPort === 'string'
+          ? parseInt(baseOptions.listenPort, 10)
+          : baseOptions.listenPort;
     }
     if (baseOptions.listenHost) {
       this.host = baseOptions.listenHost;

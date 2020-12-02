@@ -54,6 +54,7 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
 # app.config.yaml
 rollbar:
   organization: organization-name
+  # used by rollbar-backend
   accountToken:
     $env: ROLLBAR_ACCOUNT_TOKEN
 ```

@@ -6,7 +6,53 @@ description: Documentation on How Configuring App with plugins
 
 ## Adding existing plugins to your app
 
-Coming soon!
+The following steps assume that you have created a new Backstage app and want to
+add an existing plugin to it. We are using the
+[CircleCI](https://github.com/backstage/backstage/blob/master/plugins/circleci/README.md)
+plugin in this example.
+
+1. Add the plugin's NPM package to the repo:
+
+```bash
+yarn add @backstage/plugin-circleci
+```
+
+2. Add the plugin itself:
+
+```js
+// packages/app/src/plugins.ts
+export { plugin as Circleci } from '@backstage/plugin-circleci';
+```
+
+3. Register the plugin router:
+
+```jsx
+// packages/app/src/components/catalog/EntityPage.tsx
+
+import { Router as CircleCIRouter } from '@backstage/plugin-circleci';
+
+// Then somewhere inside <EntityPageLayout>
+<EntityPageLayout.Content
+  path="/ci-cd/*"
+  title="CI/CD"
+  element={<CircleCIRouter />}
+/>;
+```
+
+Note that stand-alone plugins that are not "attached" to the Software Catalog
+would be added outside the `EntityPage`.
+
+4. [Optional] Add proxy config:
+
+```yaml
+// app-config.yaml
+proxy:
+  '/circleci/api':
+    target: https://circleci.com/api/v1.1
+    headers:
+      Circle-Token:
+        $env: CIRCLECI_AUTH_TOKEN
+```
 
 ### Adding a plugin page to the Sidebar
 

@@ -38,11 +38,11 @@ describe('forwardFileImports', () => {
     expect(plugin.name).toBe('forward-file-imports');
   });
 
-  it('should call through to original external option', () => {
+  it('should call through to original external option', async () => {
     const plugin = forwardFileImports({ include: /\.png$/ });
     const external = jest.fn((id: string) => id.endsWith('external'));
 
-    const options = plugin.options?.call(context, { external })!;
+    const options = (await plugin.options?.call(context, { external }))!;
     if (typeof options.external !== 'function') {
       throw new Error('options.external is not a function');
     }
@@ -70,12 +70,12 @@ describe('forwardFileImports', () => {
     ).toThrow('Unknown importer of file module ./my-image.png');
   });
 
-  it('should handle original external array', () => {
+  it('should handle original external array', async () => {
     const plugin = forwardFileImports({ include: /\.png$/ });
 
-    const options = plugin.options?.call(context, {
+    const options = (await plugin.options?.call(context, {
       external: ['my-external'],
-    })!;
+    }))!;
     if (typeof options.external !== 'function') {
       throw new Error('options.external is not a function');
     }
@@ -106,7 +106,7 @@ describe('forwardFileImports', () => {
     it('should extract files', async () => {
       const plugin = forwardFileImports({ include: /\.png$/ });
 
-      const options = plugin.options?.call(context, {})!;
+      const options = (await plugin.options?.call(context, {}))!;
       if (typeof options.external !== 'function') {
         throw new Error('options.external is not a function');
       }
