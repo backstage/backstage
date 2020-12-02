@@ -135,7 +135,7 @@ changes, let's start by wiping this component clean.
 1. Replace everything in the file with the following:
 
 ```tsx
-import React, { FC } from 'react';
+import React from 'react';
 import { useAsync } from 'react-use';
 import Alert from '@material-ui/lab/Alert';
 import {
@@ -147,7 +147,7 @@ import {
 import { useApi } from '@backstage/core-api';
 import { graphql } from '@octokit/graphql';
 
-const ExampleFetchComponent: FC<{}> = () => {
+const ExampleFetchComponent = () => {
   return <div>Nothing to see yet</div>;
 };
 

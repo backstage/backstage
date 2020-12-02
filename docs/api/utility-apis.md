@@ -33,10 +33,10 @@ hook exported by `@backstage/core`, or the `withApis` HOC if you prefer class
 components. For example, the `ErrorApi` can be accessed like this:
 
 ```tsx
-import React, { FC } from 'react';
+import React from 'react';
 import { useApi, errorApiRef } from '@backstage/core';
 
-export const MyComponent: FC<{}> = () => {
+export const MyComponent = () => {
   const errorApi = useApi(errorApiRef);
 
   // Signal to the app that something went wrong, and display the error to the user.
