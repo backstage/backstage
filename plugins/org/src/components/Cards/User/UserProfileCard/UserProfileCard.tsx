@@ -52,7 +52,7 @@ const GroupLink = ({
   </>
 );
 
-const CardTitle = ({ title }) =>
+const CardTitle = ({ title }: { title?: string }) =>
   title ? (
     <Box display="flex" alignItems="center">
       <PersonIcon fontSize="inherit" />

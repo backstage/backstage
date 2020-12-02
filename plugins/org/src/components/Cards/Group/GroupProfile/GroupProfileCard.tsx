@@ -67,7 +67,7 @@ const GroupLink = ({
   </>
 );
 
-const CardTitle = ({ title }) => (
+const CardTitle = ({ title }: { title: string }) => (
   <Box display="flex" alignItems="center">
     <GroupIcon fontSize="inherit" />
     <Box ml={1}>{title}</Box>
@@ -115,7 +115,7 @@ export const GroupProfileCard = ({
               </Box>
             </Typography>
           ) : null}
-          {childrens.length ? (
+          {childrens?.length ? (
             <Typography variant="subtitle1">
               <Box display="flex" alignItems="center">
                 <Tooltip title="Parent of">
