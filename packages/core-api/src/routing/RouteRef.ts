@@ -53,3 +53,13 @@ export function createRouteRef<
 >(config: RouteRefConfig<Params>): RouteRef<Params> {
   return new AbsoluteRouteRef<Params>(config);
 }
+
+export class ExternalRouteRef {
+  toString() {
+    return `externalRouteRef{}`;
+  }
+}
+
+export function createExternalRouteRef(): ExternalRouteRef {
+  return new ExternalRouteRef();
+}

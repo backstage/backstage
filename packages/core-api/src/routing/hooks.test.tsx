@@ -35,7 +35,11 @@ import {
   validateRoutes,
   RouteFunc,
 } from './hooks';
-import { createRouteRef } from './RouteRef';
+import {
+  createRouteRef,
+  createExternalRouteRef,
+  ExternalRouteRef,
+} from './RouteRef';
 import { RouteRef, RouteRefConfig } from './types';
 
 const mockConfig = (extra?: Partial<RouteRefConfig<{}>>) => ({
@@ -52,10 +56,13 @@ const ref2 = createRouteRef(mockConfig({ path: '/wat2' }));
 const ref3 = createRouteRef(mockConfig({ path: '/wat3' }));
 const ref4 = createRouteRef(mockConfig({ path: '/wat4' }));
 const ref5 = createRouteRef(mockConfig({ path: '/wat5' }));
+const eRefA = createExternalRouteRef();
+const eRefB = createExternalRouteRef();
+const eRefC = createExternalRouteRef();
 
 const MockRouteSource = <T extends { [name in string]: string }>(props: {
   name: string;
-  routeRef: RouteRef<T>;
+  routeRef: RouteRef<T> | ExternalRouteRef;
   params?: T;
 }) => {
   try {
@@ -90,7 +97,10 @@ const Extension5 = plugin.provide(
   createRoutableExtension({ component: MockComponent, mountPoint: ref5 }),
 );
 
-function withRoutingProvider(root: ReactElement) {
+function withRoutingProvider(
+  root: ReactElement,
+  routeBindings: [ExternalRouteRef, RouteRef][] = [],
+) {
   const { routePaths, routeParents, routeObjects } = traverseElementTree({
     root,
     discoverers: [childDiscoverer, routeElementDiscoverer],
@@ -106,6 +116,7 @@ function withRoutingProvider(root: ReactElement) {
       routePaths={routePaths}
       routeParents={routeParents}
       routeObjects={routeObjects}
+      routeBindings={new Map(routeBindings)}
     >
       {root}
     </RoutingProvider>
@@ -119,17 +130,35 @@ describe('discovery', () => {
         <Routes>
           <Extension1 path="/foo">
             <Extension2 path="/bar" name="inside" routeRef={ref2} />
+            <MockRouteSource name="insideExternal" routeRef={eRefA} />
           </Extension1>
           <Extension3 path="/baz" />
         </Routes>
         <MockRouteSource name="outside" routeRef={ref2} />
+        <MockRouteSource name="outsideExternal1" routeRef={eRefB} />
+        <MockRouteSource name="outsideExternal2" routeRef={eRefC} />
       </MemoryRouter>
     );
 
-    const rendered = render(withRoutingProvider(root));
+    const rendered = render(
+      withRoutingProvider(root, [
+        [eRefA, ref3],
+        [eRefB, ref1],
+        [eRefC, ref2],
+      ]),
+    );
 
     expect(rendered.getByText('Path at inside: /foo/bar')).toBeInTheDocument();
+    expect(
+      rendered.getByText('Path at insideExternal: /baz'),
+    ).toBeInTheDocument();
     expect(rendered.getByText('Path at outside: /foo/bar')).toBeInTheDocument();
+    expect(
+      rendered.getByText('Path at outsideExternal1: /foo'),
+    ).toBeInTheDocument();
+    expect(
+      rendered.getByText('Path at outsideExternal2: /foo/bar'),
+    ).toBeInTheDocument();
   });
 
   it('should handle routeRefs with parameters', () => {
