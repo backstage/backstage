@@ -17,6 +17,7 @@
 import { ComponentType } from 'react';
 import { RouteRef } from '../routing';
 import { AnyApiFactory } from '../apis/system';
+import { ExternalRouteRef } from '../routing/RouteRef';
 
 export type RouteOptions = {
   // Whether the route path must match exactly, defaults to true.
@@ -67,20 +68,34 @@ export type PluginOutput =
   | FeatureFlagOutput;
 
 export type Extension<T> = {
-  expose(plugin: BackstagePlugin): T;
+  expose(plugin: BackstagePlugin<any, any>): T;
 };
 
-export type BackstagePlugin = {
+export type AnyRoutes = { [name: string]: RouteRef<any> };
+
+export type AnyExternalRoutes = { [name: string]: ExternalRouteRef };
+
+export type BackstagePlugin<
+  Routes extends AnyRoutes,
+  ExternalRoutes extends AnyExternalRoutes
+> = {
   getId(): string;
   output(): PluginOutput[];
   getApis(): Iterable<AnyApiFactory>;
   provide<T>(extension: Extension<T>): T;
+  routes: Routes;
+  externalRoutes: ExternalRoutes;
 };
 
-export type PluginConfig = {
+export type PluginConfig<
+  Routes extends AnyRoutes,
+  ExternalRoutes extends AnyExternalRoutes
+> = {
   id: string;
   apis?: Iterable<AnyApiFactory>;
   register?(hooks: PluginHooks): void;
+  routes?: Routes;
+  externalRoutes?: ExternalRoutes;
 };
 
 export type PluginHooks = {

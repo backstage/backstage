@@ -93,7 +93,7 @@ export type AppOptions = {
   /**
    * A list of all plugins to include in the app.
    */
-  plugins?: BackstagePlugin[];
+  plugins?: BackstagePlugin<any, any>[];
 
   /**
    * Supply components to the app to override the default ones.
@@ -140,7 +140,7 @@ export type BackstageApp = {
   /**
    * Returns all plugins registered for the app.
    */
-  getPlugins(): BackstagePlugin[];
+  getPlugins(): BackstagePlugin<any, any>[];
 
   /**
    * Get a common icon for this app.
