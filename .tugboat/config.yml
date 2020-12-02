@@ -1,6 +1,7 @@
 services:
   backstage:
     image: tugboatqa/node:lts
+    expose: 7000
     default: true
     commands:
       init:
@@ -8,4 +9,4 @@ services:
         - yarn tsc
         - yarn build
       start:
-        - APP_CONFIG_backend_listen_port=80 yarn start-backend
+        - yarn start-backend
