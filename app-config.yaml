@@ -204,9 +204,9 @@ auth:
     github:
       development:
         clientId:
-          $env: 688ff0b3ac05066bbfbd
+          $env: AUTH_GITHUB_CLIENT_ID
         clientSecret:
-          $env: e054385169884b9618fd7ffa3e4d97b168708ca1
+          $env: AUTH_GITHUB_CLIENT_SECRET
         enterpriseInstanceUrl:
           $env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
     gitlab:
