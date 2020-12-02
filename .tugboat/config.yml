@@ -4,7 +4,7 @@ services:
     expose: 7000
     default: true
     commands:
-      init:
+      build:
         - yarn install
         - yarn tsc
         - yarn build
