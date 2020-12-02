@@ -153,14 +153,14 @@ export const MockProducts: Product[] = Object.keys(MockProductTypes).map(
     })),
 );
 
-export const MockLoadingActions = ([
+export const MockDefaultLoadingActions = ([
   DefaultLoadingAction.UserGroups,
   DefaultLoadingAction.CostInsightsInitial,
   DefaultLoadingAction.CostInsightsPage,
 ] as string[]).concat(MockProducts.map(product => product.kind));
 
 export const mockDefaultLoadingState = getDefaultLoadingState(
-  MockLoadingActions,
+  MockDefaultLoadingActions,
 );
 
 export const MockComputeEngine = findAlways(
@@ -509,6 +509,362 @@ export const MockAggregatedDailyCosts: DateAggregation[] = [
     amount: 5500,
   },
 ];
+
+export const SampleBigQueryInsights: Entity = {
+  id: 'bigQuery',
+  aggregation: [10_000, 30_000],
+  change: {
+    ratio: 3,
+    amount: 20_000,
+  },
+  entities: [
+    {
+      id: 'entity-a',
+      aggregation: [5_000, 10_000],
+      change: {
+        ratio: 1,
+        amount: 5_000,
+      },
+      entities: [],
+    },
+    {
+      id: 'entity-b',
+      aggregation: [5_000, 10_000],
+      change: {
+        ratio: 1,
+        amount: 5_000,
+      },
+      entities: [],
+    },
+    {
+      id: 'entity-c',
+      aggregation: [0, 10_000],
+      change: {
+        ratio: 10_000,
+        amount: 10_000,
+      },
+      entities: [],
+    },
+  ],
+};
+
+export const SampleCloudDataflowInsights: Entity = {
+  id: 'cloudDataflow',
+  aggregation: [100_000, 158_000],
+  change: {
+    ratio: 0.58,
+    amount: 58_000,
+  },
+  entities: [
+    {
+      id: null,
+      aggregation: [10_000, 12_000],
+      change: {
+        ratio: 0.2,
+        amount: 2_000,
+      },
+      entities: [
+        {
+          id: 'Sample SKU A',
+          aggregation: [3_000, 4_000],
+          change: {
+            ratio: 0.333333,
+            amount: 1_000,
+          },
+          entities: [],
+        },
+        {
+          id: 'Sample SKU B',
+          aggregation: [7_000, 8_000],
+          change: {
+            ratio: 0.14285714,
+            amount: 1_000,
+          },
+          entities: [],
+        },
+      ],
+    },
+    {
+      id: 'entity-a',
+      aggregation: [60_000, 70_000],
+      change: {
+        ratio: 0.16666666666666666,
+        amount: 10_000,
+      },
+      entities: [
+        {
+          id: 'Sample SKU A',
+          aggregation: [20_000, 15_000],
+          change: {
+            ratio: -0.25,
+            amount: -5_000,
+          },
+          entities: [],
+        },
+        {
+          id: 'Sample SKU B',
+          aggregation: [30_000, 35_000],
+          change: {
+            ratio: -0.16666666666666666,
+            amount: -5_000,
+          },
+          entities: [],
+        },
+        {
+          id: 'Sample SKU C',
+          aggregation: [10_000, 20_000],
+          change: {
+            ratio: 1,
+            amount: 10_000,
+          },
+          entities: [],
+        },
+      ],
+    },
+    {
+      id: 'entity-b',
+      aggregation: [12_000, 8_000],
+      change: {
+        ratio: -0.33333,
+        amount: -4_000,
+      },
+      entities: [
+        {
+          id: 'Sample SKU A',
+          aggregation: [4_000, 4_000],
+          change: {
+            ratio: 0,
+            amount: 0,
+          },
+          entities: [],
+        },
+        {
+          id: 'Sample SKU B',
+          aggregation: [8_000, 4_000],
+          change: {
+            ratio: -0.5,
+            amount: -4_000,
+          },
+          entities: [],
+        },
+      ],
+    },
+    {
+      id: 'entity-c',
+      aggregation: [0, 10_000],
+      change: {
+        ratio: 10_000,
+        amount: 10_000,
+      },
+      entities: [],
+    },
+  ],
+};
+
+export const SampleCloudStorageInsights: Entity = {
+  id: 'cloudStorage',
+  aggregation: [45_000, 45_000],
+  change: {
+    ratio: 0,
+    amount: 0,
+  },
+  entities: [
+    {
+      id: 'entity-a',
+      aggregation: [15_000, 20_000],
+      change: {
+        ratio: 0.333,
+        amount: 5_000,
+      },
+      entities: [
+        {
+          id: 'Sample SKU A',
+          aggregation: [10_000, 11_000],
+          change: {
+            ratio: 0.1,
+            amount: 1_000,
+          },
+          entities: [],
+        },
+        {
+          id: 'Sample SKU B',
+          aggregation: [2_000, 5_000],
+          change: {
+            ratio: 1.5,
+            amount: 3_000,
+          },
+          entities: [],
+        },
+        {
+          id: 'Sample SKU C',
+          aggregation: [3_000, 4_000],
+          change: {
+            ratio: 0.3333,
+            amount: 1_000,
+          },
+          entities: [],
+        },
+      ],
+    },
+    {
+      id: 'entity-b',
+      aggregation: [30_000, 25_000],
+      change: {
+        ratio: -0.16666,
+        amount: -5_000,
+      },
+      entities: [
+        {
+          id: 'Sample SKU A',
+          aggregation: [12_000, 13_000],
+          change: {
+            ratio: 0.08333333333333333,
+            amount: 1_000,
+          },
+          entities: [],
+        },
+        {
+          id: 'Sample SKU B',
+          aggregation: [16_000, 12_000],
+          change: {
+            ratio: -0.25,
+            amount: -4_000,
+          },
+          entities: [],
+        },
+        {
+          id: 'Sample SKU C',
+          aggregation: [2_000, 0],
+          change: {
+            ratio: -1,
+            amount: -2000,
+          },
+          entities: [],
+        },
+      ],
+    },
+    {
+      id: 'entity-c',
+      aggregation: [0, 0],
+      change: {
+        ratio: 0,
+        amount: 0,
+      },
+      entities: [],
+    },
+  ],
+};
+
+export const SampleComputeEngineInsights: Entity = {
+  id: 'computeEngine',
+  aggregation: [80_000, 90_000],
+  change: {
+    ratio: 0.125,
+    amount: 10_000,
+  },
+  entities: [
+    {
+      id: 'entity-a',
+      aggregation: [20_000, 10_000],
+      change: {
+        ratio: -0.5,
+        amount: -10_000,
+      },
+      entities: [
+        {
+          id: 'Sample SKU A',
+          aggregation: [4_000, 2_000],
+          change: {
+            ratio: -0.5,
+            amount: -2_000,
+          },
+          entities: [],
+        },
+        {
+          id: 'Sample SKU B',
+          aggregation: [7_000, 6_000],
+          change: {
+            ratio: -0.14285714285714285,
+            amount: -1_000,
+          },
+          entities: [],
+        },
+        {
+          id: 'Sample SKU C',
+          aggregation: [9_000, 2_000],
+          change: {
+            ratio: -0.7777777777777778,
+            amount: -7000,
+          },
+          entities: [],
+        },
+      ],
+    },
+    {
+      id: 'entity-b',
+      aggregation: [10_000, 20_000],
+      change: {
+        ratio: 1,
+        amount: 10_000,
+      },
+      entities: [
+        {
+          id: 'Sample SKU A',
+          aggregation: [1_000, 2_000],
+          change: {
+            ratio: 0.5,
+            amount: 1_000,
+          },
+          entities: [],
+        },
+        {
+          id: 'Sample SKU B',
+          aggregation: [4_000, 8_000],
+          change: {
+            ratio: 1,
+            amount: 4_000,
+          },
+          entities: [],
+        },
+        {
+          id: 'Sample SKU C',
+          aggregation: [5_000, 10_000],
+          change: {
+            ratio: 1,
+            amount: 5_000,
+          },
+          entities: [],
+        },
+      ],
+    },
+    {
+      id: 'entity-c',
+      aggregation: [0, 10_000],
+      change: {
+        ratio: 10_000,
+        amount: 10_000,
+      },
+      entities: [],
+    },
+  ],
+};
+
+export function entityOf(product: string): Entity {
+  switch (product) {
+    case 'computeEngine':
+      return SampleComputeEngineInsights;
+    case 'cloudDataflow':
+      return SampleCloudDataflowInsights;
+    case 'cloudStorage':
+      return SampleCloudStorageInsights;
+    case 'bigQuery':
+      return SampleBigQueryInsights;
+    default:
+      throw new Error(
+        `Cannot get insights for ${product}. Make sure product matches product property in app-info.yaml`,
+      );
+  }
+}
 
 export const getGroupedProducts = (intervals: string) => [
   {
