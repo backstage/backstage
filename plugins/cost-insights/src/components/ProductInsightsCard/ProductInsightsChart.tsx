@@ -200,6 +200,7 @@ export const ProductInsightsChart = ({
           onClose={() => setSelected(undefined)}
           entity={entity.entities.find(e => e.id === selectLabel)}
           options={options}
+          entitiesLabel={entity.entitiesLabel || 'SKU'}
         />
       )}
     </Box>

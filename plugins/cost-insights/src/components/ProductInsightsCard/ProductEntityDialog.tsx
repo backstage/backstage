@@ -93,6 +93,7 @@ type ProductEntityDialogOptions = Partial<
 type ProductEntityDialogProps = {
   open: boolean;
   entity?: Entity;
+  entitiesLabel: string;
   options?: ProductEntityDialogOptions;
   onClose: () => void;
 };
@@ -100,6 +101,7 @@ type ProductEntityDialogProps = {
 export const ProductEntityDialog = ({
   open,
   entity = defaultEntity,
+  entitiesLabel,
   options = {},
   onClose,
 }: ProductEntityDialogProps) => {
