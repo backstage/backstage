@@ -173,6 +173,8 @@ catalog:
     # Backstage example groups and users
     - type: url
       target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme-corp.yaml
+    - type: url
+      target: https://github.com/hooloovooo/some-old-docs/blob/master/catalog-info.yaml
 
 scaffolder:
   github:
