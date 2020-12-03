@@ -18,7 +18,7 @@ import { createApiRef } from '@backstage/core';
 import { PartialEntity } from '../util/types';
 
 export const catalogImportApiRef = createApiRef<CatalogImportApi>({
-  id: 'plugin.catalogimport.service',
+  id: 'plugin.catalog-import.service',
   description: 'Used by the catalog import plugin to make requests',
 });
 
