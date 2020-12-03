@@ -64,7 +64,7 @@ export const ImportComponentPage = ({
           </SupportButton>
         </ContentHeader>
         <Grid container spacing={3} direction="row-reverse">
-          <Grid item xs="5">
+          <Grid item xs={5}>
             <InfoCard
               deepLink={{
                 title: 'Learn more about the Software Catalog',
@@ -94,7 +94,7 @@ export const ImportComponentPage = ({
               </Typography>
             </InfoCard>
           </Grid>
-          <Grid item xs="7">
+          <Grid item xs={7}>
             <InfoCard>
               <ImportStepper
                 steps={[
