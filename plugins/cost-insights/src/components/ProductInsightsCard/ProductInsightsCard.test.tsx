@@ -81,7 +81,7 @@ describe('<ProductInsightsCard/>', () => {
     const rendered = await renderProductInsightsCardInTestApp(
       mockProductCost,
       MockComputeEngine,
-      Duration.P1M,
+      Duration.P30D,
     );
     expect(
       rendered.queryByTestId(`scroll-test-compute-engine`),
@@ -113,7 +113,7 @@ describe('<ProductInsightsCard/>', () => {
     const rendered = await renderProductInsightsCardInTestApp(
       entity,
       MockComputeEngine,
-      Duration.P1M,
+      Duration.P30D,
     );
     const subheaderRgx = new RegExp(subheader);
     expect(rendered.getByText(subheaderRgx)).toBeInTheDocument();

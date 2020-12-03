@@ -143,7 +143,7 @@ export const MockProductTypes: Record<string, string> = {
 
 export const MockProductFilters: ProductFilters = Object.keys(
   MockProductTypes,
-).map(productType => ({ duration: Duration.P1M, productType }));
+).map(productType => ({ duration: Duration.P30D, productType }));
 
 export const MockProducts: Product[] = Object.keys(MockProductTypes).map(
   productType =>

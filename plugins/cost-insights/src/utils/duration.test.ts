@@ -23,7 +23,6 @@ describe.each`
   duration         | startDate       | endDate
   ${Duration.P30D} | ${'2020-04-06'} | ${'2020-06-05'}
   ${Duration.P90D} | ${'2019-12-08'} | ${'2020-06-05'}
-  ${Duration.P1M}  | ${'2020-04-01'} | ${'2020-05-31'}
   ${Duration.P3M}  | ${'2019-10-01'} | ${'2020-03-31'}
 `('Calculates interval dates correctly', ({ duration, startDate, endDate }) => {
   it(`Calculates dates correctly for ${duration}`, () => {

@@ -37,12 +37,6 @@ export function inclusiveStartDateOf(
         .utc()
         .subtract(moment.duration(duration).add(moment.duration(duration)))
         .format(DEFAULT_DATE_FORMAT);
-    case Duration.P1M:
-      return moment(exclusiveEndDate)
-        .utc()
-        .startOf('month')
-        .subtract(moment.duration(duration).add(moment.duration(duration)))
-        .format(DEFAULT_DATE_FORMAT);
     case Duration.P3M:
       return moment(exclusiveEndDate)
         .utc()
@@ -64,11 +58,6 @@ export function exclusiveEndDateOf(
       return moment(inclusiveEndDate)
         .utc()
         .add(1, 'day')
-        .format(DEFAULT_DATE_FORMAT);
-    case Duration.P1M:
-      return moment(inclusiveEndDate)
-        .utc()
-        .startOf('month')
         .format(DEFAULT_DATE_FORMAT);
     case Duration.P3M:
       return moment(inclusiveEndDate)

@@ -66,7 +66,6 @@ describe('<PeriodSelect />', () => {
 
   describe.each`
     duration
-    ${Duration.P1M}
     ${Duration.P3M}
     ${Duration.P90D}
     ${Duration.P30D}
