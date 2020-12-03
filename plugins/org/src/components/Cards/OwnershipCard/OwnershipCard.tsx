@@ -147,12 +147,12 @@ export const OwnershipCard = ({
           'documentation',
         ),
         className: 'documentation',
-        name: 'Documentations',
+        name: 'Documentation',
       },
       {
         counter: countEntitiesBy(ownedEntitiesList, 'API'),
         className: 'api',
-        name: 'API Endpoints',
+        name: 'APIs',
       },
       {
         counter: countEntitiesBy(ownedEntitiesList, 'Component', 'library'),
