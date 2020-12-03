@@ -84,7 +84,7 @@ export const defaultApis = [
       GoogleAuth.create({
         discoveryApi,
         oauthRequestApi,
-        environment: configApi.getString('auth.environment'),
+        environment: configApi.getOptionalString('auth.environment'),
       }),
   }),
   createApiFactory({
@@ -98,7 +98,7 @@ export const defaultApis = [
       MicrosoftAuth.create({
         discoveryApi,
         oauthRequestApi,
-        environment: configApi.getString('auth.environment'),
+        environment: configApi.getOptionalString('auth.environment'),
       }),
   }),
   createApiFactory({
@@ -113,7 +113,7 @@ export const defaultApis = [
         discoveryApi,
         oauthRequestApi,
         defaultScopes: ['read:user'],
-        environment: configApi.getString('auth.environment'),
+        environment: configApi.getOptionalString('auth.environment'),
       }),
   }),
   createApiFactory({
@@ -127,7 +127,7 @@ export const defaultApis = [
       OktaAuth.create({
         discoveryApi,
         oauthRequestApi,
-        environment: configApi.getString('auth.environment'),
+        environment: configApi.getOptionalString('auth.environment'),
       }),
   }),
   createApiFactory({
@@ -141,7 +141,7 @@ export const defaultApis = [
       GitlabAuth.create({
         discoveryApi,
         oauthRequestApi,
-        environment: configApi.getString('auth.environment'),
+        environment: configApi.getOptionalString('auth.environment'),
       }),
   }),
   createApiFactory({
@@ -155,7 +155,7 @@ export const defaultApis = [
       Auth0Auth.create({
         discoveryApi,
         oauthRequestApi,
-        environment: configApi.getString('auth.environment'),
+        environment: configApi.getOptionalString('auth.environment'),
       }),
   }),
   createApiFactory({
@@ -169,7 +169,7 @@ export const defaultApis = [
       OAuth2.create({
         discoveryApi,
         oauthRequestApi,
-        environment: configApi.getString('auth.environment'),
+        environment: configApi.getOptionalString('auth.environment'),
       }),
   }),
   createApiFactory({
@@ -181,7 +181,7 @@ export const defaultApis = [
     factory: ({ discoveryApi, configApi }) =>
       SamlAuth.create({
         discoveryApi,
-        environment: configApi.getString('auth.environment'),
+        environment: configApi.getOptionalString('auth.environment'),
       }),
   }),
   createApiFactory({
@@ -195,7 +195,7 @@ export const defaultApis = [
       OneLoginAuth.create({
         discoveryApi,
         oauthRequestApi,
-        environment: configApi.getString('auth.environment'),
+        environment: configApi.getOptionalString('auth.environment'),
       }),
   }),
   createApiFactory({
@@ -214,7 +214,7 @@ export const defaultApis = [
           title: 'Your Identity Provider',
           icon: OAuth2Icon,
         },
-        environment: configApi.getString('auth.environment'),
+        environment: configApi.getOptionalString('auth.environment'),
       }),
   }),
 ];

@@ -62,9 +62,15 @@ export interface Config {
       timezone: string;
     }[];
   };
+
+  /**
+   * Configuration that provides information on available authentication providers configured for app
+   */
   auth?: {
     /**
-     * The environment config added to be able to change the authentication environment.
+     * The 'environment' attribute added as an optional parameter to have configurable environment value for `auth.providers`.
+     * default value: 'development'
+     * optional values: 'development' | 'production'
      * @visibility frontend
      */
     environment?: string;
