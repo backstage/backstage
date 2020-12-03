@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.3.1
+
+### Patch Changes
+
+- ae95c7ff3: Update URL auth format for Gitlab clone
+- Updated dependencies [612368274]
+- Updated dependencies [08835a61d]
+- Updated dependencies [a9fd599f7]
+- Updated dependencies [bcc211a08]
+  - @backstage/backend-common@0.3.3
+  - @backstage/catalog-model@0.4.0
+
 ## 0.3.0
 
 ### Minor Changes

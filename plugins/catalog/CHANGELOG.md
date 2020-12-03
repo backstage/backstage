@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog
 
+## 0.2.5
+
+### Patch Changes
+
+- ebf37bbae: Use the OWNED_BY relation and compare it to the users MEMBER_OF relation. The user entity is searched by name, based on the userId of the identity.
+- Updated dependencies [08835a61d]
+- Updated dependencies [a9fd599f7]
+- Updated dependencies [bcc211a08]
+- Updated dependencies [da2ad65cb]
+  - @backstage/catalog-model@0.4.0
+  - @backstage/plugin-scaffolder@0.3.2
+  - @backstage/plugin-techdocs@0.3.1
+  - @backstage/catalog-client@0.3.2
+
 ## 0.2.4
 
 ### Patch Changes

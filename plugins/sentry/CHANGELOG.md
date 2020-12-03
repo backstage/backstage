@@ -1,5 +1,15 @@
 # @backstage/plugin-sentry
 
+## 0.2.4
+
+### Patch Changes
+
+- 303c5ea17: Refactor route registration to remove deprecating code
+- Updated dependencies [08835a61d]
+- Updated dependencies [a9fd599f7]
+- Updated dependencies [bcc211a08]
+  - @backstage/catalog-model@0.4.0
+
 ## 0.2.3
 
 ### Patch Changes

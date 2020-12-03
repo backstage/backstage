@@ -1,5 +1,16 @@
 # @backstage/plugin-rollbar
 
+## 0.2.5
+
+### Patch Changes
+
+- Updated dependencies [08835a61d]
+- Updated dependencies [a9fd599f7]
+- Updated dependencies [bcc211a08]
+- Updated dependencies [ebf37bbae]
+  - @backstage/catalog-model@0.4.0
+  - @backstage/plugin-catalog@0.2.5
+
 ## 0.2.4
 
 ### Patch Changes
