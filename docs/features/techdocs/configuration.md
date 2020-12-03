@@ -1,12 +1,13 @@
 ---
 id: configuration
 title: TechDocs Configuration Options
-description: Reference documentation for configuring TechDocs using app-config.yaml
+description:
+  Reference documentation for configuring TechDocs using app-config.yaml
 ---
 
-Using the `app-config.yaml` in the Backstage app, you can configure TechDocs using several options.
-This page serves as a reference to all the available configuration options for TechDocs.
-
+Using the `app-config.yaml` in the Backstage app, you can configure TechDocs
+using several options. This page serves as a reference to all the available
+configuration options for TechDocs.
 
 ```yaml
 # File: app-config.yaml

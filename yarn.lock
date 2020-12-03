@@ -1316,7 +1316,7 @@
     to-fast-properties "^2.0.0"
 
 "@backstage/catalog-model@^0.2.0":
-  version "0.3.1"
+  version "0.4.0"
   dependencies:
     "@backstage/config" "^0.1.1"
     "@types/json-schema" "^7.0.5"
@@ -1324,6 +1324,132 @@
     json-schema "^0.2.5"
     lodash "^4.17.15"
     uuid "^8.0.0"
+    yup "^0.29.3"
+
+"@backstage/catalog-model@^0.3.0":
+  version "0.4.0"
+  dependencies:
+    "@backstage/config" "^0.1.1"
+    "@types/json-schema" "^7.0.5"
+    "@types/yup" "^0.29.8"
+    json-schema "^0.2.5"
+    lodash "^4.17.15"
+    uuid "^8.0.0"
+    yup "^0.29.3"
+
+"@backstage/catalog-model@^0.3.1":
+  version "0.3.1"
+  resolved "https://registry.npmjs.org/@backstage/catalog-model/-/catalog-model-0.3.1.tgz#45d08e2f333c9c566b2bf2629fd707fe989bb404"
+  integrity sha512-9XhV7c4rmVW+Yzj2PiwTQ7DsegWGB3C4ELsDRExuEVZONdqNcC02cyJtrt3fT5F31ZS3tHkB9bMUymFOBLqUSA==
+  dependencies:
+    "@backstage/config" "^0.1.1"
+    "@types/json-schema" "^7.0.5"
+    "@types/yup" "^0.29.8"
+    json-schema "^0.2.5"
+    lodash "^4.17.15"
+    uuid "^8.0.0"
+    yup "^0.29.3"
+
+"@backstage/cli@^0.3.1":
+  version "0.3.2"
+  resolved "https://registry.npmjs.org/@backstage/cli/-/cli-0.3.2.tgz#e1972beb30cd7cd7078ed405d810357449a8c9c5"
+  integrity sha512-JxVOD0RJivHX38dmRZuvk2atePVXcsv3jw5SC/l4S/dmGdnDKIbp21A5DNNzmHqxCJcnArtO54nFuss2pNgc1Q==
+  dependencies:
+    "@backstage/cli-common" "^0.1.1"
+    "@backstage/config" "^0.1.1"
+    "@backstage/config-loader" "^0.3.0"
+    "@hot-loader/react-dom" "^16.13.0"
+    "@lerna/package-graph" "^3.18.5"
+    "@lerna/project" "^3.18.0"
+    "@rollup/plugin-commonjs" "^16.0.0"
+    "@rollup/plugin-json" "^4.0.2"
+    "@rollup/plugin-node-resolve" "^9.0.0"
+    "@rollup/plugin-yaml" "^2.1.1"
+    "@spotify/eslint-config-base" "^9.0.0"
+    "@spotify/eslint-config-react" "^9.0.0"
+    "@spotify/eslint-config-typescript" "^9.0.0"
+    "@sucrase/webpack-loader" "^2.0.0"
+    "@svgr/plugin-jsx" "5.4.x"
+    "@svgr/plugin-svgo" "5.4.x"
+    "@svgr/rollup" "5.4.x"
+    "@svgr/webpack" "5.4.x"
+    "@types/start-server-webpack-plugin" "^2.2.0"
+    "@types/webpack-env" "^1.15.2"
+    "@types/webpack-node-externals" "^2.5.0"
+    "@typescript-eslint/eslint-plugin" "^v3.10.1"
+    "@typescript-eslint/parser" "^v3.10.1"
+    "@yarnpkg/lockfile" "^1.1.0"
+    bfj "^7.0.2"
+    chalk "^4.0.0"
+    chokidar "^3.3.1"
+    commander "^6.1.0"
+    css-loader "^3.5.3"
+    dashify "^2.0.0"
+    diff "^4.0.2"
+    esbuild "^0.7.7"
+    eslint "^7.1.0"
+    eslint-config-prettier "^6.0.0"
+    eslint-formatter-friendly "^7.0.0"
+    eslint-plugin-import "^2.20.2"
+    eslint-plugin-jest "^24.1.0"
+    eslint-plugin-jsx-a11y "^6.2.1"
+    eslint-plugin-monorepo "^0.2.1"
+    eslint-plugin-react "^7.12.4"
+    eslint-plugin-react-hooks "^4.0.0"
+    fork-ts-checker-webpack-plugin "^4.0.5"
+    fs-extra "^9.0.0"
+    handlebars "^4.7.3"
+    html-webpack-plugin "^4.3.0"
+    inquirer "^7.0.4"
+    jest "^26.0.1"
+    jest-css-modules "^2.1.0"
+    jest-esm-transformer "^1.0.0"
+    lodash "^4.17.19"
+    mini-css-extract-plugin "^0.9.0"
+    ora "^4.0.3"
+    raw-loader "^4.0.1"
+    react "^16.0.0"
+    react-dev-utils "^10.2.1"
+    react-hot-loader "^4.12.21"
+    recursive-readdir "^2.2.2"
+    replace-in-file "^6.0.0"
+    rollup "2.33.x"
+    rollup-plugin-dts "1.4.13"
+    rollup-plugin-esbuild "2.3.x"
+    rollup-plugin-peer-deps-external "^2.2.2"
+    rollup-plugin-postcss "^3.1.1"
+    rollup-plugin-typescript2 "^0.27.3"
+    rollup-pluginutils "^2.8.2"
+    semver "^7.3.2"
+    start-server-webpack-plugin "^2.2.5"
+    style-loader "^1.2.1"
+    sucrase "^3.16.0"
+    tar "^6.0.1"
+    terser-webpack-plugin "^1.4.3"
+    ts-jest "^26.4.3"
+    ts-loader "^7.0.4"
+    typescript "^4.0.3"
+    url-loader "^4.1.0"
+    webpack "^4.41.6"
+    webpack-dev-server "^3.11.0"
+    webpack-node-externals "^2.5.0"
+    yaml "^1.10.0"
+    yml-loader "^2.1.0"
+    yn "^4.0.0"
+
+"@backstage/config-loader@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.npmjs.org/@backstage/config-loader/-/config-loader-0.3.0.tgz#6e648b415cd2dda1b49e9b6da7f8554fd162efb6"
+  integrity sha512-XFcoDJ/+1i4v8A1rnZ43LouuxVIbQqhTcwCK+J5kY54N7Qi+ialnCVSpj3t9U3wI51JfztG55uIL5fEsCAu27g==
+  dependencies:
+    "@backstage/cli-common" "^0.1.1"
+    "@backstage/config" "^0.1.1"
+    ajv "^6.12.5"
+    fs-extra "^9.0.0"
+    json-schema "^0.2.5"
+    json-schema-merge-allof "^0.7.0"
+    typescript-json-schema "^0.43.0"
+    yaml "^1.9.2"
     yup "^0.29.3"
 
 "@bcoe/v8-coverage@^0.2.3":
@@ -5262,15 +5388,6 @@
   version "4.17.9"
   resolved "https://registry.npmjs.org/@types/express-serve-static-core/-/express-serve-static-core-4.17.9.tgz#2d7b34dcfd25ec663c25c85d76608f8b249667f1"
   integrity sha512-DG0BYg6yO+ePW+XoDENYz8zhNGC3jDDEpComMYn7WJc4mY1Us8Rw9ax2YhJXxpyk2SF47PQAoQ0YyVT1a0bEkA==
-  dependencies:
-    "@types/node" "*"
-    "@types/qs" "*"
-    "@types/range-parser" "*"
-
-"@types/express-serve-static-core@^4.17.14":
-  version "4.17.14"
-  resolved "https://registry.npmjs.org/@types/express-serve-static-core/-/express-serve-static-core-4.17.14.tgz#cabf91debeeb3cb04b798e2cff908864e89b6106"
-  integrity sha512-uFTLwu94TfUFMToXNgRZikwPuZdOtDgs3syBtAIr/OXorL1kJqUJT9qCLnRZ5KBOWfZQikQ2xKgR2tnDj1OgDA==
   dependencies:
     "@types/node" "*"
     "@types/qs" "*"
@@ -11319,6 +11436,11 @@ es6-weak-map@^2.0.2:
     es6-iterator "^2.0.3"
     es6-symbol "^3.1.1"
 
+esbuild@^0.7.7:
+  version "0.7.22"
+  resolved "https://registry.npmjs.org/esbuild/-/esbuild-0.7.22.tgz#9149b903f8128b7c45a754046c24199d76bbe08e"
+  integrity sha512-B43SYg8LGWYTCv9Gs0RnuLNwjzpuWOoCaZHTWEDEf5AfrnuDMerPVMdCEu7xOdhFvQ+UqfP2MGU9lxEy0JzccA==
+
 esbuild@^0.8.16:
   version "0.8.16"
   resolved "https://registry.npmjs.org/esbuild/-/esbuild-0.8.16.tgz#8ae34b15d938e8b8b5ac2459414fe3e7fd7dd6b2"
@@ -12928,7 +13050,7 @@ glob-to-regexp@^0.3.0:
   resolved "https://registry.npmjs.org/glob-to-regexp/-/glob-to-regexp-0.3.0.tgz#8c5a1494d2066c570cc3bfe4496175acc4d502ab"
   integrity sha1-jFoUlNIGbFcMw7/kSWF1rMTVAqs=
 
-glob@7.1.6, glob@^7.0.0, glob@^7.0.3, glob@^7.1.1, glob@^7.1.2, glob@^7.1.3, glob@^7.1.4, glob@^7.1.6:
+glob@7.1.6, glob@^7.0.0, glob@^7.0.3, glob@^7.1.1, glob@^7.1.2, glob@^7.1.3, glob@^7.1.4, glob@^7.1.6, glob@~7.1.6:
   version "7.1.6"
   resolved "https://registry.npmjs.org/glob/-/glob-7.1.6.tgz#141f33b81a7c2492e125594307480c46679278a6"
   integrity sha512-LwaxwyZ72Lk7vZINtNNrywX0ZuLyStrdDtabefZKAY5ZGJhVtgdznluResxNmPitE0SAO+O26sWTHeKSI2wMBA==
@@ -15809,6 +15931,14 @@ jws@^3.2.2:
   integrity sha512-YHlZCB6lMTllWDtSPHz/ZXTsi8S00usEV6v1tjq8tOUZzw7DpSDWVXjXDre6ed1w/pd495ODpHZYSdkRTsa0HA==
   dependencies:
     jwa "^1.4.1"
+    safe-buffer "^5.0.1"
+
+jws@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.npmjs.org/jws/-/jws-4.0.0.tgz#2d4e8cf6a318ffaa12615e9dec7e86e6c97310f4"
+  integrity sha512-KDncfTmOZoOMTFG4mBlG0qUIOlc03fmzH+ru6RgYVZhPkyiy/92Owlt/8UEN+a4TXR1FQetfIpJE8ApdvdVxTg==
+  dependencies:
+    jwa "^2.0.0"
     safe-buffer "^5.0.1"
 
 jwt-decode@*, jwt-decode@^3.1.0:
@@ -21512,6 +21642,13 @@ rollup-plugin-dts@1.4.13:
   optionalDependencies:
     "@babel/code-frame" "^7.10.4"
 
+rollup-plugin-esbuild@2.3.x:
+  version "2.3.0"
+  resolved "https://registry.npmjs.org/rollup-plugin-esbuild/-/rollup-plugin-esbuild-2.3.0.tgz#7c107d4508af80d30966a148b306cb7d5b36b258"
+  integrity sha512-lNbWDRaClwXauaIybuaiOBRWgxcp3GkZu0UUix9yH/OHFgVohKmzlU0NtNbvfbxAcfEooyuBRAv6YCaJl1Mbpw==
+  dependencies:
+    "@rollup/pluginutils" "^3.1.0"
+
 rollup-plugin-esbuild@2.6.x:
   version "2.6.0"
   resolved "https://registry.npmjs.org/rollup-plugin-esbuild/-/rollup-plugin-esbuild-2.6.0.tgz#80336399b113a179ccb2af5bdf7c03f061f37146"
@@ -23901,6 +24038,17 @@ typedarray@^0.0.6:
   resolved "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
+typescript-json-schema@^0.43.0:
+  version "0.43.0"
+  resolved "https://registry.npmjs.org/typescript-json-schema/-/typescript-json-schema-0.43.0.tgz#8bd9c832f1f15f006ff933907ce192222fdfd92f"
+  integrity sha512-4c9IMlIlHYJiQtzL1gh2nIPJEjBgJjDUs50gsnnc+GFyDSK1oFM3uQIBSVosiuA/4t6LSAXDS9vTdqbQC6EcgA==
+  dependencies:
+    "@types/json-schema" "^7.0.5"
+    glob "~7.1.6"
+    json-stable-stringify "^1.0.1"
+    typescript "~4.0.2"
+    yargs "^15.4.1"
+
 typescript-json-schema@^0.45.0:
   version "0.45.0"
   resolved "https://registry.npmjs.org/typescript-json-schema/-/typescript-json-schema-0.45.0.tgz#2f244e99518e589a442ee5f9c1d2c85a1ec7dc84"
@@ -23916,6 +24064,11 @@ typescript@^4.0.3, typescript@^4.1.2:
   version "4.1.2"
   resolved "https://registry.npmjs.org/typescript/-/typescript-4.1.2.tgz#6369ef22516fe5e10304aae5a5c4862db55380e9"
   integrity sha512-thGloWsGH3SOxv1SoY7QojKi0tc+8FnOmiarEGMbd/lar7QOEd3hvlx3Fp5y6FlDUGl9L+pd4n2e+oToGMmhRQ==
+
+typescript@~4.0.2:
+  version "4.0.5"
+  resolved "https://registry.npmjs.org/typescript/-/typescript-4.0.5.tgz#ae9dddfd1069f1cb5beb3ef3b2170dd7c1332389"
+  integrity sha512-ywmr/VrTVCmNTJ6iV2LwIrfG1P+lv6luD8sUJs+2eI9NLGigaN+nUQc13iHqisq7bra9lnmUSYqbJvegraBOPQ==
 
 ua-parser-js@^0.7.18:
   version "0.7.21"
