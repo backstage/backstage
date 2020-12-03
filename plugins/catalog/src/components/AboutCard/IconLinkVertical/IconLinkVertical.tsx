@@ -25,10 +25,9 @@ export type IconLinkVerticalProps = {
   disabled?: boolean;
   title?: string;
   label: string;
-  action?: React.ReactNode;
 };
 
-const useIconStyles = makeStyles(theme => ({
+const useIconStyles = makeStyles({
   link: {
     display: 'grid',
     justifyItems: 'center',
@@ -44,16 +43,12 @@ const useIconStyles = makeStyles(theme => ({
     fontWeight: 600,
     letterSpacing: 1.2,
   },
-  linkStyle: {
-    color: theme.palette.secondary.main,
-  },
-}));
+});
 
 export function IconLinkVertical({
   icon = <LinkIcon />,
   href = '#',
   disabled = false,
-  action,
   ...props
 }: IconLinkVerticalProps) {
   const classes = useIconStyles();
@@ -68,23 +63,6 @@ export function IconLinkVertical({
       >
         {icon}
         <span className={classes.label}>{props.label}</span>
-      </Link>
-    );
-  }
-
-  if (action) {
-    return (
-      <Link
-        className={classnames(
-          classes.link,
-          classes.linkStyle,
-          disabled && classes.disabled,
-        )}
-        href={href}
-        {...props}
-      >
-        {icon}
-        {action}
       </Link>
     );
   }
