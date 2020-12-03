@@ -28,7 +28,8 @@ import {
 } from '@backstage/techdocs-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
-import { DocsBuilder, getEntityNameFromUrlPath } from './helpers';
+import { getEntityNameFromUrlPath } from './helpers';
+import { DocsBuilder } from '../DocsBuilder';
 
 type RouterOptions = {
   preparers: PreparerBuilder;
@@ -92,9 +93,8 @@ export async function createRouter({
   });
 
   router.get('/docs/:namespace/:kind/:name/*', async (req, res) => {
-    const storageUrl = config.getString('techdocs.storageUrl');
-
     const { kind, namespace, name } = req.params;
+    const storageUrl = config.getString('techdocs.storageUrl');
 
     const catalogUrl = await discovery.getBaseUrl('catalog');
     const triple = [kind, namespace, name].map(encodeURIComponent).join('/');
@@ -109,22 +109,55 @@ export async function createRouter({
 
     const entity: Entity = await catalogRes.json();
 
-    const docsBuilder = new DocsBuilder({
-      preparers,
-      generators,
-      publisher,
-      dockerClient,
-      logger,
-      entity,
-    });
+    let publisherType = '';
+    try {
+      publisherType = config.getString('techdocs.publisher.type');
+    } catch (err) {
+      throw new Error(
+        'Unable to get techdocs.publisher.type in your app config. Set it to either ' +
+          "'local', 'google_gcs' or other support storage providers. Read more here " +
+          'https://backstage.io/docs/features/techdocs/architecture',
+      );
+    }
 
-    if (!(await docsBuilder.docsUpToDate())) {
-      await docsBuilder.build();
+    // techdocs-backend will only try to build documentation for an entity if techdocs.docsBuilder is set to 'local'
+    // If set to 'ci', it will only try to fetch and assume that that CI/CD pipeline of the repository hosting the
+    // entity's documentation is responsible for building and publishing documentation to the storage provider.
+    const shouldBuildDocs =
+      config.getString('techdocs.docsBuilder') === 'local';
+
+    if (shouldBuildDocs) {
+      const docsBuilder = new DocsBuilder({
+        preparers,
+        generators,
+        publisher,
+        dockerClient,
+        logger,
+        entity,
+      });
+      if (publisherType === 'local') {
+        if (!(await docsBuilder.docsUpToDate())) {
+          await docsBuilder.build();
+        }
+      } else if (publisherType === 'google_gcs') {
+        if (!(await publisher.hasDocsBeenGenerated(entity))) {
+          logger.info(
+            'Did not find generated docs files for the entity. Building docs.',
+          );
+          await docsBuilder.build();
+        } else {
+          logger.info(
+            'Found pre-generated docs for this entity. Serving them.',
+          );
+          // TODO: When to re-trigger build for cache invalidation?
+        }
+      }
     }
 
     res.redirect(`${storageUrl}${req.path.replace('/docs', '')}`);
   });
 
+  // Route middleware which serves files from the storage set in the publisher.
   router.use('/static/docs', publisher.docsRouter());
 
   return router;

@@ -19,6 +19,7 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 
 import { PublisherType, PublisherBase } from './types';
 import { LocalPublish } from './local';
+import { GoogleGCSPublish } from './googleStorage';
 
 /**
  * Factory class to create a TechDocs publisher based on defined publisher type in app config.
@@ -37,7 +38,7 @@ export class Publisher {
     switch (publisherType) {
       case 'google_gcs':
         logger.info('Creating Google Storage Bucket publisher for TechDocs');
-        return new LocalPublish(config, logger, discovery);
+        return GoogleGCSPublish.fromConfig(config, logger);
       case 'local':
         logger.info('Creating Local publisher for TechDocs');
         return new LocalPublish(config, logger, discovery);

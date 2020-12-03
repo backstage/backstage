@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import express from 'express';
-import * as expressServeStaticCore from 'express-serve-static-core'; // Type from express library
 import fetch from 'cross-fetch';
+import express from 'express';
 import fs from 'fs-extra';
 import { Logger } from 'winston';
-import { EntityName } from '@backstage/catalog-model';
+import { Entity, EntityName } from '@backstage/catalog-model';
 import {
   resolvePackagePath,
   PluginEndpointDiscovery,
@@ -92,9 +91,7 @@ export class LocalPublish implements PublisherBase {
     });
   }
 
-  fetchTechDocsMetadata(
-    entityName: EntityName,
-  ): Promise<{ techdocsMetadataJson: string }> {
+  fetchTechDocsMetadata(entityName: EntityName): Promise<string> {
     return new Promise((resolve, reject) => {
       this.discovery.getBaseUrl('techdocs').then(techdocsApiUrl => {
         const storageUrl = new URL(
@@ -102,8 +99,8 @@ export class LocalPublish implements PublisherBase {
           techdocsApiUrl,
         ).toString();
 
-        const path = `${entityName.kind}/${entityName.namespace}/${entityName.name}`;
-        const metadataURL = `${storageUrl}/${path}/techdocs_metadata.json`;
+        const entityRootDir = `${entityName.namespace}/${entityName.kind}/${entityName.name}`;
+        const metadataURL = `${storageUrl}/${entityRootDir}/techdocs_metadata.json`;
         fetch(metadataURL)
           .then(response =>
             response
@@ -111,18 +108,37 @@ export class LocalPublish implements PublisherBase {
               .then(techdocsMetadataJson => resolve(techdocsMetadataJson))
               .catch(err => {
                 reject(
-                  `Unable to parse metadata JSON for ${path}. Error: ${err}`,
+                  `Unable to parse metadata JSON for ${entityRootDir}. Error: ${err}`,
                 );
               }),
           )
           .catch(err => {
-            reject(`Unable to fetch metadata for ${path}. Error ${err}`);
+            reject(
+              `Unable to fetch metadata for ${entityRootDir}. Error ${err}`,
+            );
           });
       });
     });
   }
 
-  docsRouter(): expressServeStaticCore.Handler {
+  docsRouter(): express.Handler {
     return express.static(staticDocsDir);
+  }
+
+  async hasDocsBeenGenerated(entity: Entity): Promise<boolean> {
+    return new Promise(resolve => {
+      this.discovery.getBaseUrl('techdocs').then(techdocsApiUrl => {
+        const storageUrl = new URL(
+          new URL(this.config.getString('techdocs.storageUrl')).pathname,
+          techdocsApiUrl,
+        ).toString();
+
+        const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
+        const indexHtmlUrl = `${storageUrl}/${entityRootDir}/index.html`;
+        fetch(indexHtmlUrl)
+          .then(() => resolve(true))
+          .catch(() => resolve(false));
+      });
+    });
   }
 }

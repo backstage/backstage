@@ -54,6 +54,8 @@ nav:
           - Concepts: 'features/techdocs/concepts.md'
           - TechDocs Architecture: 'features/techdocs/architecture.md'
           - Creating and Publishing Documentation: 'features/techdocs/creating-and-publishing.md'
+          - Configuration: 'features/techdocs/configuration.md'
+          - Using Cloud Storage: 'features/techdocs/using-cloud-storage.md'
           - Troubleshooting: 'features/techdocs/troubleshooting.md'
           - FAQ: 'features/techdocs/FAQ.md'
   - Plugins:

@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 import { Entity, EntityName } from '@backstage/catalog-model';
-// import serveStatic from 'serve-static';
-// import express from 'express';
-import * as express from 'express-serve-static-core';
+import express from 'express';
 
 /**
  * Key for all the different types of TechDocs publishers that are supported.
@@ -49,12 +47,15 @@ export interface PublisherBase {
    * Retrieve TechDocs Metadata about a site e.g. name, contributors, last updated, etc.
    * This API uses the techdocs_metadata.json file that co-exists along with the generated docs.
    */
-  fetchTechDocsMetadata(
-    entityName: EntityName,
-  ): Promise<{ techdocsMetadataJson: string }>;
+  fetchTechDocsMetadata(entityName: EntityName): Promise<string>;
 
   /**
-   *
+   * Route middleware to serve static documentation files for an entity.
    */
   docsRouter(): express.Handler;
+
+  /**
+   * Check if the index.html is present for the Entity at the Storage location.
+   */
+  hasDocsBeenGenerated(entityName: Entity): Promise<boolean>;
 }
