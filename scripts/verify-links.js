@@ -158,7 +158,7 @@ async function main() {
         );
       } else if (problem === 'out-of-docs') {
         console.error(
-          'Links in docks must use absolute URLs for targets outside of docs',
+          'Links in docs must use absolute URLs for targets outside of docs',
         );
         console.error(`  From: ${basePath}`);
         console.error(`  To: ${url}`);
