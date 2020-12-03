@@ -1,5 +1,17 @@
 # @backstage/plugin-api-docs
 
+## 0.3.1
+
+### Patch Changes
+
+- 7eb8bfe4a: Update swagger-ui-react to 3.37.2
+- Updated dependencies [08835a61d]
+- Updated dependencies [a9fd599f7]
+- Updated dependencies [bcc211a08]
+- Updated dependencies [ebf37bbae]
+  - @backstage/catalog-model@0.4.0
+  - @backstage/plugin-catalog@0.2.5
+
 ## 0.3.0
 
 ### Minor Changes

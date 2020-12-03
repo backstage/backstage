@@ -1,5 +1,16 @@
 # @backstage/plugin-proxy-backend
 
+## 0.2.2
+
+### Patch Changes
+
+- 6a6c7c14e: Filter the headers that are sent from the proxied-targed back to the frontend to not forwarded unwanted authentication or
+  monitoring contexts from other origins (like `Set-Cookie` with e.g. a google analytics context). The implementation reuses
+  the `allowedHeaders` configuration that now controls both directions `frontend->target` and `target->frontend`.
+- 3619ea4c4: Add configuration schema for the commonly used properties
+- Updated dependencies [612368274]
+  - @backstage/backend-common@0.3.3
+
 ## 0.2.1
 
 ### Patch Changes

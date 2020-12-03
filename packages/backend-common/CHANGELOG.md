@@ -1,5 +1,14 @@
 # @backstage/backend-common
 
+## 0.3.3
+
+### Patch Changes
+
+- 612368274: Allow the `backend.listen.port` config to be both a number or a string.
+- Updated dependencies [4e7091759]
+- Updated dependencies [b4488ddb0]
+  - @backstage/config-loader@0.4.0
+
 ## 0.3.2
 
 ### Patch Changes

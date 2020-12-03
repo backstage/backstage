@@ -1,5 +1,17 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.2.1
+
+### Patch Changes
+
+- bcc211a08: k8s-plugin: refactor approach to use annotation based label-selector
+- Updated dependencies [612368274]
+- Updated dependencies [08835a61d]
+- Updated dependencies [a9fd599f7]
+- Updated dependencies [bcc211a08]
+  - @backstage/backend-common@0.3.3
+  - @backstage/catalog-model@0.4.0
+
 ## 0.2.0
 
 ### Minor Changes
