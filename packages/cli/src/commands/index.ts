@@ -55,7 +55,11 @@ export function registerCommands(program: CommanderStatic) {
     .helpOption(', --backstage-cli-help') // Let docker handle --help
     .option('--build', 'Build packages before packing them into the image')
     .description(
-      'Bundles the package into a docker image. All extra args are forwarded to docker image build',
+      // TODO: Add example use cases in Backstage documentation.
+      // For example, if a $NPM_TOKEN needs to be exposed, run `backend:build-image --secret
+      // id=NPM_TOKEN,src=/NPM_TOKEN.txt`.
+      'Bundles the package into a docker image. All extra args are forwarded to ' +
+        '`docker image build`.',
     )
     .action(lazy(() => import('./backend/buildImage').then(m => m.default)));
 
