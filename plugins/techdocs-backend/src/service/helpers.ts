@@ -121,11 +121,11 @@ export class DocsBuilder {
     }
 
     // TODO: Better caching for URL.
-    if ( type === 'url' ) {
+    if (type === 'url') {
       const builtAt = buildMetadataStorage.getTimestamp();
       const now = Date.now();
 
-      if ( builtAt > now - 1800000 ) {
+      if (builtAt > now - 1800000) {
         return true;
       }
     }
