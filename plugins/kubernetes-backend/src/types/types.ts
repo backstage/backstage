@@ -23,7 +23,7 @@ import {
   V1ReplicaSet,
   V1Service,
 } from '@kubernetes/client-node';
-import { ComponentEntityV1alpha1 } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 
 export interface ClusterDetails {
   name: string;
@@ -36,7 +36,7 @@ export interface KubernetesRequestBody {
   auth?: {
     google?: string;
   };
-  entity: ComponentEntityV1alpha1;
+  entity: Entity;
 }
 
 export interface ClusterObjects {

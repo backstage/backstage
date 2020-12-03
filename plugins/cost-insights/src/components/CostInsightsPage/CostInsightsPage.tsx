@@ -32,7 +32,8 @@ import {
 import { CostInsightsNavigation } from '../CostInsightsNavigation';
 import { CostOverviewCard } from '../CostOverviewCard';
 import { ProductInsights } from '../ProductInsights';
-import { CostInsightsSupportButton } from '../CostInsightsSupportButton';
+/* https://github.com/backstage/backstage/issues/2574 */
+// import { CostInsightsSupportButton } from '../CostInsightsSupportButton';
 import {
   useConfig,
   useCurrency,
@@ -164,7 +165,7 @@ export const CostInsightsPage = () => {
       <CostInsightsLayout groups={groups}>
         <Box textAlign="right">
           <CopyUrlToClipboard />
-          <CostInsightsSupportButton />
+          {/* <CostInsightsSupportButton /> */}
         </Box>
         <Container maxWidth="lg">
           <CostInsightsHeaderNoGroups />
@@ -239,7 +240,7 @@ export const CostInsightsPage = () => {
             mb={2}
           >
             <CopyUrlToClipboard />
-            <CostInsightsSupportButton />
+            {/* <CostInsightsSupportButton /> */}
           </Box>
           <Container maxWidth="lg" disableGutters>
             <Grid container direction="column">

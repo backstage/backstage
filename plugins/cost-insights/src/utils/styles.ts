@@ -222,16 +222,13 @@ export const useBarChartLabelStyles = makeStyles<BackstageTheme>(theme =>
   }),
 );
 
-export const useCostInsightsStyles = makeStyles<BackstageTheme>(
-  (theme: BackstageTheme) =>
-    createStyles({
-      h6Subtle: {
-        ...theme.typography.h6,
-        fontWeight: 'normal',
-        color: theme.palette.textSubtle,
-      },
-    }),
-);
+export const useCostInsightsStyles = makeStyles<BackstageTheme>(theme => ({
+  h6Subtle: {
+    ...theme.typography.h6,
+    fontWeight: 'normal',
+    color: theme.palette.textSubtle,
+  },
+}));
 
 export const useCostInsightsTabsStyles = makeStyles<BackstageTheme>(
   (theme: BackstageTheme) => ({
@@ -310,40 +307,37 @@ export const useCostGrowthStyles = makeStyles<BackstageTheme>(
     }),
 );
 
-export const useCostGrowthLegendStyles = makeStyles<BackstageTheme>(
-  (theme: BackstageTheme) =>
-    createStyles({
-      h5: {
-        ...theme.typography.h5,
-        fontWeight: 500,
-        padding: 0,
-      },
-      marker: {
-        display: 'inherit',
-        marginRight: theme.spacing(1),
-      },
-      helpIcon: {
-        display: 'inherit',
-      },
-      title: {
-        ...theme.typography.overline,
-        fontWeight: 500,
-        lineHeight: 0,
-        marginRight: theme.spacing(1),
-        color: theme.palette.textSubtle,
-      },
-      tooltip: {
-        display: 'block',
-        padding: theme.spacing(1),
-        backgroundColor: theme.palette.navigation.background,
-      },
-      tooltipText: {
-        color: theme.palette.background.default,
-        fontSize: theme.typography.fontSize,
-        lineHeight: 1.5,
-      },
-    }),
-);
+export const useCostGrowthLegendStyles = makeStyles<BackstageTheme>(theme => ({
+  h5: {
+    ...theme.typography.h5,
+    fontWeight: 500,
+    padding: 0,
+  },
+  marker: {
+    display: 'inherit',
+    marginRight: theme.spacing(1),
+  },
+  helpIcon: {
+    display: 'inherit',
+  },
+  title: {
+    ...theme.typography.overline,
+    fontWeight: 500,
+    lineHeight: 0,
+    marginRight: theme.spacing(1),
+    color: theme.palette.textSubtle,
+  },
+  tooltip: {
+    display: 'block',
+    padding: theme.spacing(1),
+    backgroundColor: theme.palette.navigation.background,
+  },
+  tooltipText: {
+    color: theme.palette.background.default,
+    fontSize: theme.typography.fontSize,
+    lineHeight: 1.5,
+  },
+}));
 
 export const useBarChartStepperStyles = makeStyles<BackstageTheme>(
   (theme: BackstageTheme) =>

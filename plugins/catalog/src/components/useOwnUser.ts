@@ -21,20 +21,21 @@ import { identityApiRef, useApi } from '@backstage/core';
 import { catalogApiRef } from '../plugin';
 
 /**
- * Get the group memberships of the logged-in user.
+ * Get the catalog User entity (if any) that matches the logged-in user.
  */
-export function useOwnUser(): AsyncState<UserEntity> {
+export function useOwnUser(): AsyncState<UserEntity | undefined> {
   const catalogApi = useApi(catalogApiRef);
   const identityApi = useApi(identityApiRef);
 
-  // TODO: get the full entity (or at least the full entity name) from the identityApi
+  // TODO: get the full entity (or at least the full entity name) from the
+  // identityApi
   return useAsync(
     () =>
       catalogApi.getEntityByName({
         kind: 'User',
         namespace: 'default',
         name: identityApi.getUserId(),
-      }) as Promise<UserEntity>,
+      }) as Promise<UserEntity | undefined>,
     [catalogApi, identityApi],
   );
 }

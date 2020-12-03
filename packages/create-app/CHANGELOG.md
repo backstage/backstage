@@ -1,5 +1,31 @@
 # @backstage/create-app
 
+## 0.2.3
+
+### Patch Changes
+
+- 68fdc3a9f: Optimized the `yarn install` step in the backend `Dockerfile`.
+
+  To apply these changes to an existing app, make the following changes to `packages/backend/Dockerfile`:
+
+  Replace the `RUN yarn install ...` line with the following:
+
+  ```bash
+  RUN yarn install --frozen-lockfile --production --network-timeout 300000 && rm -rf "$(yarn cache dir)"
+  ```
+
+- 4a655c89d: Removed `"resolutions"` entry for `esbuild` in the root `package.json` in order to use the version specified by `@backstage/cli`.
+
+  To apply this change to an existing app, remove the following from your root `package.json`:
+
+  ```json
+  "resolutions": {
+    "esbuild": "0.6.3"
+  },
+  ```
+
+- ea475893d: Add [API docs plugin](https://github.com/backstage/backstage/tree/master/plugins/api-docs) to new apps being created through the CLI.
+
 ## 0.2.2
 
 ### Patch Changes

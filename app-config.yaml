@@ -294,6 +294,9 @@ costInsights:
     bigQuery:
       name: BigQuery
       icon: search
+    events:
+      name: Events
+      icon: data
   metrics:
     DAU:
       name: Daily Active Users

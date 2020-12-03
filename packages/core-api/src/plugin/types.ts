@@ -66,10 +66,15 @@ export type PluginOutput =
   | RedirectRouteOutput
   | FeatureFlagOutput;
 
+export type Extension<T> = {
+  expose(plugin: BackstagePlugin): T;
+};
+
 export type BackstagePlugin = {
   getId(): string;
   output(): PluginOutput[];
   getApis(): Iterable<AnyApiFactory>;
+  provide<T>(extension: Extension<T>): T;
 };
 
 export type PluginConfig = {
