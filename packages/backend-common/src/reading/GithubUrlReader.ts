@@ -196,6 +196,7 @@ export class GithubUrlReader implements UrlReader {
       new URL(
         `${protocol}://${resource}/${full_name}/archive/${ref}.tar.gz`,
       ).toString(),
+      getApiRequestOptions(this.config)
     );
     if (!response.ok) {
       const message = `Failed to read tree from ${url}, ${response.status} ${response.statusText}`;
