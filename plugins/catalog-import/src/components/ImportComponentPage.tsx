@@ -15,7 +15,7 @@
  */
 
 import React, { useState } from 'react';
-import { Grid } from '@material-ui/core';
+import { Grid, Typography } from '@material-ui/core';
 import {
   InfoCard,
   Page,
@@ -57,15 +57,23 @@ export const ImportComponentPage = ({
     <Page themeId="home">
       <Header title="Register an existing component" />
       <Content>
-        <ContentHeader title="Start tracking your component on backstage">
+        <ContentHeader title="Start tracking your component in Backstage">
           <SupportButton>
-            Start tracking your component in Backstage. TODO: Add more
-            information about what this is.
+            Start tracking your component in Backstage by adding it to the
+            software catalog.
           </SupportButton>
         </ContentHeader>
         <Grid container spacing={3} direction="column">
           <Grid item>
             <InfoCard>
+              <Typography variant="body2" paragraph>
+                There are two ways to register an existing component. If you
+                already have a GitHub repository, enter the full URL to your
+                repo below and a new pull request with a sample metadata Entity
+                File (<code>catalog-info.yaml</code>) will be opened. Or, if
+                you've already created a Backstage metadata file and put it in
+                your repo, you can enter the full URL to that Entity File.
+              </Typography>
               <ImportStepper
                 steps={[
                   {
