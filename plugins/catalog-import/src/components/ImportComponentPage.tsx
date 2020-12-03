@@ -63,17 +63,39 @@ export const ImportComponentPage = ({
             software catalog.
           </SupportButton>
         </ContentHeader>
-        <Grid container spacing={3} direction="column">
-          <Grid item>
-            <InfoCard>
+        <Grid container spacing={3} direction="row-reverse">
+          <Grid item xs="5">
+            <InfoCard
+              deepLink={{
+                title: 'Learn more about the Software Catalog',
+                link:
+                  'https://backstage.io/docs/features/software-catalog/software-catalog-overview',
+              }}
+            >
               <Typography variant="body2" paragraph>
-                There are two ways to register an existing component. If you
-                already have a GitHub repository, enter the full URL to your
-                repo below and a new pull request with a sample metadata Entity
-                File (<code>catalog-info.yaml</code>) will be opened. Or, if
-                you've already created a Backstage metadata file and put it in
-                your repo, you can enter the full URL to that Entity File.
+                There are two ways to register an existing component.
+                <ol>
+                  <li>
+                    <b>GitHub Repo</b>
+                    <br />
+                    If you already have code in a GitHub repository, enter the
+                    full URL to your repo and a new pull request with a sample
+                    Backstage metadata Entity File (
+                    <code>catalog-info.yaml</code>) will be opened for you.
+                  </li>
+                  <li>
+                    <b>GitHub Repo &amp; Entity File</b>
+                    <br />
+                    If you've already created a Backstage metadata file and put
+                    it in your repo, you can enter the full URL to that Entity
+                    File.
+                  </li>
+                </ol>
               </Typography>
+            </InfoCard>
+          </Grid>
+          <Grid item xs="7">
+            <InfoCard>
               <ImportStepper
                 steps={[
                   {
