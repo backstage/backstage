@@ -71,6 +71,7 @@ export function entityHasChanges(previous: Entity, next: Entity): boolean {
   delete e2.metadata.uid;
   delete e2.metadata.etag;
   delete e2.metadata.generation;
+  delete e1.relations;
 
   // Remove already compared things
   delete e1.metadata.annotations;
