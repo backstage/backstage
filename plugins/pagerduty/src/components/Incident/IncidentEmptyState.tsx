@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { Grid, Typography } from '@material-ui/core';
-import EmptyStateImage from '../../assets/emptyState.svg';
+import EmptyStateImage from '../../assets/emptystate.svg';
 
 export const IncidentsEmptyState = () => {
   return (
