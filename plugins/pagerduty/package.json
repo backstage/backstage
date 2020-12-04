@@ -22,7 +22,6 @@
   "dependencies": {
     "@backstage/catalog-model": "^0.4.0",
     "@backstage/core": "^0.3.2",
-    "@backstage/test-utils": "^0.1.4",
     "@backstage/theme": "^0.2.1",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
@@ -37,13 +36,15 @@
   "devDependencies": {
     "@backstage/cli": "^0.4.0",
     "@backstage/dev-utils": "^0.1.5",
+    "@backstage/test-utils": "^0.1.4",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^10.4.1",
     "@testing-library/user-event": "^12.0.7",
     "@types/jest": "^26.0.7",
     "@types/node": "^12.0.0",
-    "msw": "^0.20.5",
-    "node-fetch": "^2.6.1"
+    "msw": "^0.21.2",
+    "node-fetch": "^2.6.1",
+    "cross-fetch": "^3.0.6"
   },
   "files": [
     "dist"
