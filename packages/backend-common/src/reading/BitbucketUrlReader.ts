@@ -21,8 +21,16 @@ import {
   readBitbucketIntegrationConfigs,
 } from '@backstage/integration';
 import fetch from 'cross-fetch';
-import { NotFoundError } from '../errors';
-import { ReaderFactory, ReadTreeResponse, UrlReader } from './types';
+import parseGitUri from 'git-url-parse';
+import { Readable } from 'stream';
+import { InputError, NotFoundError } from '../errors';
+import { ReadTreeResponseFactory } from './tree';
+import {
+  ReaderFactory,
+  ReadTreeOptions,
+  ReadTreeResponse,
+  UrlReader,
+} from './types';
 
 /**
  * A processor that adds the ability to read files from Bitbucket v1 and v2 APIs, such as
@@ -30,19 +38,23 @@ import { ReaderFactory, ReadTreeResponse, UrlReader } from './types';
  */
 export class BitbucketUrlReader implements UrlReader {
   private readonly config: BitbucketIntegrationConfig;
+  private readonly treeResponseFactory: ReadTreeResponseFactory;
 
-  static factory: ReaderFactory = ({ config }) => {
+  static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     const configs = readBitbucketIntegrationConfigs(
       config.getOptionalConfigArray('integrations.bitbucket') ?? [],
     );
     return configs.map(provider => {
-      const reader = new BitbucketUrlReader(provider);
+      const reader = new BitbucketUrlReader(provider, { treeResponseFactory });
       const predicate = (url: URL) => url.host === provider.host;
       return { reader, predicate };
     });
   };
 
-  constructor(config: BitbucketIntegrationConfig) {
+  constructor(
+    config: BitbucketIntegrationConfig,
+    deps: { treeResponseFactory: ReadTreeResponseFactory },
+  ) {
     const { host, apiBaseUrl, token, username, appPassword } = config;
 
     if (!apiBaseUrl) {
@@ -58,6 +70,7 @@ export class BitbucketUrlReader implements UrlReader {
     }
 
     this.config = config;
+    this.treeResponseFactory = deps.treeResponseFactory;
   }
 
   async read(url: string): Promise<Buffer> {
@@ -82,8 +95,47 @@ export class BitbucketUrlReader implements UrlReader {
     throw new Error(message);
   }
 
-  readTree(): Promise<ReadTreeResponse> {
-    throw new Error('BitbucketUrlReader does not implement readTree');
+  async readTree(
+    url: string,
+    options?: ReadTreeOptions,
+  ): Promise<ReadTreeResponse> {
+    const {
+      name: repoName,
+      owner,
+      ref,
+      protocol,
+      resource,
+      // filepath,
+    } = parseGitUri(url);
+
+    const isHosted = resource === 'bitbucket.org';
+
+    if (isHosted && !ref) {
+      // TODO(freben): We should add support for defaulting to the default branch
+      throw new InputError(
+        'Bitbucket URL must contain branch to be able to fetch tree',
+      );
+    }
+
+    const archiveUrl = isHosted
+      ? `${protocol}://${resource}/${owner}/${repoName}/get/${ref}.zip`
+      : `${protocol}://${resource}/projects/${owner}/repos/${repoName}/archive?format=zip`;
+
+    const response = await fetch(archiveUrl, getApiRequestOptions(this.config));
+    if (!response.ok) {
+      const message = `Failed to read tree from ${url}, ${response.status} ${response.statusText}`;
+      if (response.status === 404) {
+        throw new NotFoundError(message);
+      }
+      throw new Error(message);
+    }
+
+    return this.treeResponseFactory.fromZipArchive({
+      stream: (response.body as unknown) as Readable,
+      // TODO: The zip contains the commit hash, not branch name - may need additional api call to get it
+      // path: `${owner}-${repoName}-4f9778cd49a4/${filepath}`,
+      filter: options?.filter,
+    });
   }
 
   toString() {
