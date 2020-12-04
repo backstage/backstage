@@ -123,10 +123,7 @@ export async function createRouter({
     // techdocs-backend will only try to build documentation for an entity if techdocs.docsBuilder is set to 'local'
     // If set to 'ci', it will only try to fetch and assume that that CI/CD pipeline of the repository hosting the
     // entity's documentation is responsible for building and publishing documentation to the storage provider.
-    const shouldBuildDocs =
-      config.getString('techdocs.docsBuilder') === 'local';
-
-    if (shouldBuildDocs) {
+    if (config.getString('techdocs.docsBuilder') === 'local') {
       const docsBuilder = new DocsBuilder({
         preparers,
         generators,
@@ -140,17 +137,38 @@ export async function createRouter({
           await docsBuilder.build();
         }
       } else if (publisherType === 'google_gcs') {
+        // This block should be valid for all external storage implementations. So no need to duplicate in future,
+        // add the publisher type in the list here.
         if (!(await publisher.hasDocsBeenGenerated(entity))) {
           logger.info(
-            'Did not find generated docs files for the entity. Building docs.',
+            'No pre-generated documentation files found for the entity in the storage. Building docs...',
           );
           await docsBuilder.build();
-        } else {
-          logger.info(
-            'Found pre-generated docs for this entity. Serving them.',
-          );
-          // TODO: When to re-trigger build for cache invalidation?
+          // With a maximum of ~5 seconds wait, check if the files got published and if docs will be fetched
+          // on the user's page. If not, respond with a message asking them to check back later.
+          // The delay here is to make sure GCS registers newly uploaded files which is usually <1 second
+          for (let attempt = 0; attempt < 5; attempt++) {
+            if (await publisher.hasDocsBeenGenerated(entity)) {
+              break;
+            }
+            await new Promise(r => setTimeout(r, 1000));
+            logger.error(
+              'Published files are taking longer to show up in storage. Something went wrong.',
+            );
+            res
+              .status(408)
+              .send(
+                'Sorry! It is taking longer for the generated docs to show up up in storage. Check back later.',
+              );
+            return;
+          }
         }
+
+        logger.info('Found pre-generated docs for this entity. Serving them.');
+        // TODO: re-trigger build for cache invalidation.
+        // Compare the date modified of the requested file on storage and compare it against
+        // the last modified or last commit timestamp in the repository.
+        // Without this, docs will not be re-built once they have been generated.
       }
     }
 
