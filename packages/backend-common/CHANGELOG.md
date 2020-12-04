@@ -1,5 +1,23 @@
 # @backstage/backend-common
 
+## 0.3.3
+
+### Patch Changes
+
+- 612368274: Allow the `backend.listen.port` config to be both a number or a string.
+- Updated dependencies [4e7091759]
+- Updated dependencies [b4488ddb0]
+  - @backstage/config-loader@0.4.0
+
+## 0.3.2
+
+### Patch Changes
+
+- 3aa7efb3f: Added support for passing false as a CSP field value, to drop it from the defaults in the backend
+- b3d4e4e57: Move the frontend visibility declarations of integrations config from @backstage/backend-common to @backstage/integration
+- Updated dependencies [b3d4e4e57]
+  - @backstage/integration@0.1.2
+
 ## 0.3.1
 
 ### Patch Changes

@@ -1,5 +1,53 @@
 # example-backend
 
+## 0.2.5
+
+### Patch Changes
+
+- Updated dependencies [ae95c7ff3]
+- Updated dependencies [b4488ddb0]
+- Updated dependencies [612368274]
+- Updated dependencies [6a6c7c14e]
+- Updated dependencies [08835a61d]
+- Updated dependencies [a9fd599f7]
+- Updated dependencies [e42402b47]
+- Updated dependencies [bcc211a08]
+- Updated dependencies [3619ea4c4]
+  - @backstage/plugin-techdocs-backend@0.3.1
+  - @backstage/plugin-catalog-backend@0.3.0
+  - @backstage/backend-common@0.3.3
+  - @backstage/plugin-proxy-backend@0.2.2
+  - @backstage/catalog-model@0.4.0
+  - @backstage/plugin-kubernetes-backend@0.2.1
+  - @backstage/plugin-app-backend@0.3.2
+  - example-app@0.2.5
+  - @backstage/plugin-auth-backend@0.2.5
+  - @backstage/plugin-scaffolder-backend@0.3.3
+
+## 0.2.4
+
+### Patch Changes
+
+- Updated dependencies [50eff1d00]
+- Updated dependencies [ff1301d28]
+- Updated dependencies [4b53294a6]
+- Updated dependencies [3aa7efb3f]
+- Updated dependencies [1ec19a3f4]
+- Updated dependencies [ab94c9542]
+- Updated dependencies [3a201c5d5]
+- Updated dependencies [2daf18e80]
+- Updated dependencies [069cda35f]
+- Updated dependencies [b3d4e4e57]
+- Updated dependencies [700a212b4]
+  - @backstage/plugin-auth-backend@0.2.4
+  - @backstage/plugin-app-backend@0.3.1
+  - @backstage/plugin-techdocs-backend@0.3.0
+  - @backstage/backend-common@0.3.2
+  - @backstage/plugin-catalog-backend@0.2.3
+  - @backstage/catalog-model@0.3.1
+  - @backstage/plugin-rollbar-backend@0.1.4
+  - example-app@0.2.4
+
 ## 0.2.3
 
 ### Patch Changes

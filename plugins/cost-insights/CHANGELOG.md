@@ -1,5 +1,18 @@
 # @backstage/plugin-cost-insights
 
+## 0.4.2
+
+### Patch Changes
+
+- fe7257ff0: enable SKU breakdown for unlabeled entities
+- a2cfa311a: Add breakdown view to the Cost Overview panel
+- 69f38457f: Add support for non-SKU breakdowns for entities in the product panels.
+- bec334b33: disable support button
+- b4488ddb0: Added a type alias for PositionError = GeolocationPositionError
+- 00670a96e: sort product panels and navigation menu by greatest cost
+  update tsconfig.json to use ES2020 api
+  - @backstage/test-utils@0.1.4
+
 ## 0.4.1
 
 ### Patch Changes

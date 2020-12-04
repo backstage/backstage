@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-/**
- * To uniquely identify an entity in Backstage.
- * @property {string} kind
- * @property {string} namespace
- * @property {string} name
- */
-export type ParsedEntityId = {
-  kind: string;
-  namespace?: string;
-  name: string;
+export const ComponentIdValidators = {
+  httpsValidator: (value: any) =>
+    (typeof value === 'string' && value.match(/^https:\/\//) !== null) ||
+    'Must start with https://.',
 };

@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export { ApiEntityPage } from './ApiEntityPage';
+export * from './CatalogImportApi';
+export * from './CatalogImportClient';

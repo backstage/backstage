@@ -22,12 +22,18 @@ import partition from 'lodash/partition';
 // Packages that we try to avoid duplicates for
 const INCLUDED = [/^@backstage\//];
 
+export const includedFilter = (name: string) =>
+  INCLUDED.some(pattern => pattern.test(name));
+
 // Packages that are not allowed to have any duplicates
 const FORBID_DUPLICATES = [
   /^@backstage\/core$/,
   /^@backstage\/core-api$/,
   /^@backstage\/plugin-/,
 ];
+
+export const forbiddenDuplicatesFilter = (name: string) =>
+  FORBID_DUPLICATES.some(pattern => pattern.test(name));
 
 export default async (cmd: Command) => {
   const fix = Boolean(cmd.fix);
@@ -36,7 +42,7 @@ export default async (cmd: Command) => {
 
   const lockfile = await Lockfile.load(paths.resolveTargetRoot('yarn.lock'));
   const result = lockfile.analyze({
-    filter: name => INCLUDED.some(pattern => pattern.test(name)),
+    filter: includedFilter,
   });
 
   logArray(
@@ -53,7 +59,7 @@ export default async (cmd: Command) => {
       newVersionsForbidden,
       newVersionsAllowed,
     ] = partition(result.newVersions, ({ name }) =>
-      FORBID_DUPLICATES.some(pattern => pattern.test(name)),
+      forbiddenDuplicatesFilter(name),
     );
     if (newVersionsForbidden.length && !fix) {
       success = false;
@@ -75,7 +81,7 @@ export default async (cmd: Command) => {
 
   const [newRangesForbidden, newRangesAllowed] = partition(
     result.newRanges,
-    ({ name }) => FORBID_DUPLICATES.some(pattern => pattern.test(name)),
+    ({ name }) => forbiddenDuplicatesFilter(name),
   );
   if (newRangesForbidden.length) {
     success = false;

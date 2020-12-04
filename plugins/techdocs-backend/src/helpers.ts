@@ -146,8 +146,18 @@ export const checkoutGitRepository = async (
 
   if (token) {
     const type = getGitRepoType(repoUrl);
-    const auth = type === 'github' ? `${token}:x-oauth-basic` : `:${token}`;
-    parsedGitLocation.token = auth;
+    switch (type) {
+      case 'gitlab':
+        // Personal Access Token
+        parsedGitLocation.token = `dummyUsername:${token}`;
+        parsedGitLocation.git_suffix = true;
+        break;
+      case 'github':
+        parsedGitLocation.token = `${token}:x-oauth-basic`;
+        break;
+      default:
+        parsedGitLocation.token = `:${token}`;
+    }
   }
 
   const repositoryCheckoutUrl = parsedGitLocation.toString('https');

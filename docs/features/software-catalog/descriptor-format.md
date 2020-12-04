@@ -31,6 +31,7 @@ we recommend that you name them `catalog-info.yaml`.
 - [Kind: Resource](#kind-resource)
 - [Kind: System](#kind-system)
 - [Kind: Domain](#kind-domain)
+- [Kind: Location](#kind-location)
 
 ## Overall Shape Of An Entity
 
@@ -381,7 +382,7 @@ spec:
   type: website
   lifecycle: production
   owner: artist-relations@example.com
-  implementsApis:
+  providesApis:
     - artist-api
 ```
 
@@ -445,8 +446,31 @@ group of people in an organizational structure.
 
 ### `spec.implementsApis` [optional]
 
+**NOTE**: This field was marked for deprecation on Nov 25nd, 2020. It will be
+removed entirely from the model on Dec 14th, 2020 in the repository and will not
+be present in released packages following the next release after that. Please
+update your code to not consume this field before the removal date.
+
 Links APIs that are implemented by the component, e.g. `artist-api`. This field
 is optional.
+
+The software catalog expects a list of one or more strings that references the
+names of other entities of the `kind` `API`.
+
+This field has the same behavior as `spec.providesApis`.
+
+### `spec.providesApis` [optional]
+
+Links APIs that are provided by the component, e.g. `artist-api`. This field is
+optional.
+
+The software catalog expects a list of one or more strings that references the
+names of other entities of the `kind` `API`.
+
+### `spec.consumesApis` [optional]
+
+Links APIs that are consumed by the component, e.g. `artist-api`. This field is
+optional.
 
 The software catalog expects a list of one or more strings that references the
 names of other entities of the `kind` `API`.
@@ -861,3 +885,58 @@ This kind is not yet defined, but is reserved [for future use](system-model.md).
 ## Kind: Domain
 
 This kind is not yet defined, but is reserved [for future use](system-model.md).
+
+## Kind: Location
+
+Describes the following entity kind:
+
+| Field        | Value                   |
+| ------------ | ----------------------- |
+| `apiVersion` | `backstage.io/v1alpha1` |
+| `kind`       | `Location`              |
+
+A location is a marker that references other places to look for catalog data.
+
+Descriptor files for this kind may look as follows.
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: org-data
+spec:
+  type: url
+  targets:
+    - http://github.com/myorg/myproject/org-data-dump/catalog-info-staff.yaml
+    - http://github.com/myorg/myproject/org-data-dump/catalog-info-consultants.yaml
+```
+
+In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)
+shape, this kind has the following structure.
+
+### `apiVersion` and `kind` [required]
+
+Exactly equal to `backstage.io/v1alpha1` and `Location`, respectively.
+
+### `spec.type` [optional]
+
+The single location type, that's common to the targets specified in the spec. If
+it is left out, it is inherited from the location type that originally read the
+entity data. For example, if you have a `url` type location, that when read
+results in a `Location` kind entity with no `spec.type`, then the referenced
+targets in the entity will implicitly also be of `url` type. This is useful
+because you can define a hierarchy of things in a directory structure using
+relative target paths (see below), and it will work out no matter if it's
+consumed locally on disk from a `file` location, or as uploaded on a VCS.
+
+### `spec.target` [optional]
+
+A single target as a string. Can be either an absolute path/URL (depending on
+the type), or a relative path such as `./details/catalog-info.yaml` which is
+resolved relative to the location of this Location entity itself.
+
+### `spec.targets` [optional]
+
+A list of targets as strings. They can all be either absolute paths/URLs
+(depending on the type), or relative paths such as `./details/catalog-info.yaml`
+which are resolved relative to the location of this Location entity itself.

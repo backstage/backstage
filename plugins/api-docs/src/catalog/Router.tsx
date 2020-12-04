@@ -15,14 +15,15 @@
  */
 
 import React from 'react';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, RELATION_PROVIDES_API } from '@backstage/catalog-model';
 import { Route, Routes } from 'react-router';
 import { catalogRoute } from '../routes';
 import { EntityPageApi } from './EntityPageApi';
 import { MissingImplementsApisEmptyState } from './MissingImplementsApisEmptyState';
 
 const isPluginApplicableToEntity = (entity: Entity) => {
-  return ((entity.spec?.implementsApis as string[]) || []).length > 0;
+  // TODO: Also support RELATION_CONSUMES_API
+  return entity.relations?.some(r => r.type === RELATION_PROVIDES_API);
 };
 
 export const Router = ({ entity }: { entity: Entity }) =>

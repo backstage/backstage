@@ -1,5 +1,54 @@
 # @backstage/catalog-model
 
+## 0.4.0
+
+### Minor Changes
+
+- bcc211a08: k8s-plugin: refactor approach to use annotation based label-selector
+
+### Patch Changes
+
+- 08835a61d: Add support for relative targets and implicit types in Location entities.
+- a9fd599f7: Add Analyze location endpoint to catalog backend. Add catalog-import plugin and replace import-component with it. To start using Analyze location endpoint, you have add it to the `createRouter` function options in the `\backstage\packages\backend\src\plugins\catalog.ts` file:
+
+  ```ts
+  export default async function createPlugin(env: PluginEnvironment) {
+    const builder = new CatalogBuilder(env);
+    const {
+      entitiesCatalog,
+      locationsCatalog,
+      higherOrderOperation,
+      locationAnalyzer, //<--
+    } = await builder.build();
+
+    return await createRouter({
+      entitiesCatalog,
+      locationsCatalog,
+      higherOrderOperation,
+      locationAnalyzer, //<--
+      logger: env.logger,
+    });
+  }
+  ```
+
+## 0.3.1
+
+### Patch Changes
+
+- ab94c9542: Add `providesApis` and `consumesApis` to the component entity spec.
+- 2daf18e80: Start emitting all known relation types from the core entity kinds, based on their spec data.
+- 069cda35f: Marked the field `spec.implementsApis` on `Component` entities for deprecation on Dec 14th, 2020.
+
+  Code that consumes these fields should remove those usages as soon as possible and migrate to using
+  relations instead. Producers should fill the field `spec.providesApis` instead, which has the same
+  semantic.
+
+  After Dec 14th, the fields will be removed from types and classes of the Backstage repository. At
+  the first release after that, they will not be present in released packages either.
+
+  If your catalog-info.yaml files still contain this field after the deletion, they will still be
+  valid and your ingestion will not break, but they won't be visible in the types for consuming code, and the expected relations will not be generated based on them either.
+
 ## 0.3.0
 
 ### Minor Changes

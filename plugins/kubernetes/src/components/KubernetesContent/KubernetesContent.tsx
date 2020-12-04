@@ -26,7 +26,7 @@ import {
   TabbedCard,
   useApi,
 } from '@backstage/core';
-import { ComponentEntityV1alpha1, Entity } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { kubernetesApiRef } from '../../api/types';
 import {
   KubernetesRequestBody,
@@ -121,7 +121,7 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
     (async () => {
       // For each auth type, invoke decorateRequestBodyForAuth on corresponding KubernetesAuthProvider
       let requestBody: KubernetesRequestBody = {
-        entity: entity as ComponentEntityV1alpha1,
+        entity,
       };
       for (const authProviderStr of authProviders) {
         // Multiple asyncs done sequentially instead of all at once to prevent same requestBody from being modified simultaneously

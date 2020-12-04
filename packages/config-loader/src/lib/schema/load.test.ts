@@ -61,12 +61,12 @@ describe('loadConfigSchema', () => {
     const configs = [{ data: { key1: 'a', key2: 2 }, context: 'test' }];
 
     expect(schema.process(configs)).toEqual(configs);
-    expect(schema.process(configs, { visiblity: ['frontend'] })).toEqual([
+    expect(schema.process(configs, { visibility: ['frontend'] })).toEqual([
       { data: { key1: 'a' }, context: 'test' },
     ]);
     expect(
       schema.process(configs, {
-        visiblity: ['frontend'],
+        visibility: ['frontend'],
         valueTransform: () => 'X',
       }),
     ).toEqual([{ data: { key1: 'X' }, context: 'test' }]);
@@ -79,7 +79,7 @@ describe('loadConfigSchema', () => {
     const serialized = schema.serialize();
 
     const schema2 = await loadConfigSchema({ serialized });
-    expect(schema2.process(configs, { visiblity: ['frontend'] })).toEqual([
+    expect(schema2.process(configs, { visibility: ['frontend'] })).toEqual([
       { data: { key1: 'a' }, context: 'test' },
     ]);
     expect(() =>

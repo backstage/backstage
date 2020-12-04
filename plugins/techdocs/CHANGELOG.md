@@ -1,5 +1,38 @@
 # @backstage/plugin-techdocs
 
+## 0.3.1
+
+### Patch Changes
+
+- da2ad65cb: Use type EntityName from catalog-model for entities
+- Updated dependencies [b4488ddb0]
+- Updated dependencies [08835a61d]
+- Updated dependencies [a9fd599f7]
+- Updated dependencies [bcc211a08]
+- Updated dependencies [ebf37bbae]
+  - @backstage/core-api@0.2.4
+  - @backstage/catalog-model@0.4.0
+  - @backstage/plugin-catalog@0.2.5
+  - @backstage/test-utils@0.1.4
+
+## 0.3.0
+
+### Minor Changes
+
+- 4b53294a6: - Use techdocs annotation to add repo_url if missing in mkdocs.yml. Having repo_url creates a Edit button on techdocs pages.
+  - techdocs-backend: API endpoint `/metadata/mkdocs/*` renamed to `/metadata/techdocs/*`
+
+### Patch Changes
+
+- Updated dependencies [6f70ed7a9]
+- Updated dependencies [ab94c9542]
+- Updated dependencies [2daf18e80]
+- Updated dependencies [069cda35f]
+- Updated dependencies [700a212b4]
+  - @backstage/plugin-catalog@0.2.4
+  - @backstage/catalog-model@0.3.1
+  - @backstage/core-api@0.2.3
+
 ## 0.2.3
 
 ### Patch Changes
