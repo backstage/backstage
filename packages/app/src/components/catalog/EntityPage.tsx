@@ -68,6 +68,10 @@ import {
   Router as PullRequestsRouter,
 } from '@roadiehq/backstage-plugin-github-pull-requests';
 import {
+  JiraCard,
+  isPluginApplicableToEntity as isJiraAvailable,
+} from '@roadiehq/backstage-plugin-jira';
+import {
   isPluginApplicableToEntity as isTravisCIAvailable,
   RecentTravisCIBuildsWidget,
   Router as TravisCIRouter,
@@ -153,6 +157,11 @@ const ComponentOverviewContent = ({ entity }: { entity: Entity }) => (
           <ReadMeCard entity={entity} maxHeight={350} />
         </Grid>
       </>
+    )}
+    {isJiraAvailable(entity) && (
+      <Grid item xs={12} sm={6}>
+        <JiraCard entity={entity} />
+      </Grid>
     )}
     {isLighthouseAvailable(entity) && (
       <Grid item sm={4}>

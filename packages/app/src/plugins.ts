@@ -41,3 +41,4 @@ export { plugin as CatalogImport } from '@backstage/plugin-catalog-import';
 export { plugin as UserSettings } from '@backstage/plugin-user-settings';
 export { plugin as Buildkite } from '@roadiehq/backstage-plugin-buildkite';
 export { plugin as Search } from '@backstage/plugin-search';
+export { plugin as Jira } from '@roadiehq/backstage-plugin-jira';

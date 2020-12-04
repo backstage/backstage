@@ -52,6 +52,17 @@ proxy:
       Authorization:
         $env: BUILDKITE_TOKEN
 
+  '/jira/api':
+    target:
+      $env: JIRA_URL
+    headers:
+      Authorization:
+        $env: JIRA_TOKEN
+      Accept: 'application/json'
+      Content-Type: 'application/json'
+      X-Atlassian-Token: 'no-check'
+      User-Agent: 'MY-UA-STRING'
+
 organization:
   name: My Company
 
