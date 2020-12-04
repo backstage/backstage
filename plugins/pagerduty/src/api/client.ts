@@ -56,7 +56,7 @@ export class PagerDutyClient implements PagerDutyApi {
   }
 
   async getIncidentsByServiceId(serviceId: string): Promise<Incident[]> {
-    const params = `service_ids[]=${serviceId}`;
+    const params = `statuses[]=triggered&statuses[]=acknowledged&service_ids[]=${serviceId}`;
     const url = `${await this.config.discoveryApi.getBaseUrl(
       'proxy',
     )}/pagerduty/incidents?${params}`;
@@ -106,11 +106,9 @@ export class PagerDutyClient implements PagerDutyApi {
       body,
     };
 
-    return this.request(
-      `${this.config.eventsBaseUrl ??
-        'https://events.pagerduty.com/v2'}/enqueue`,
-      options,
-    );
+    const url = this.config.eventsBaseUrl ?? 'https://events.pagerduty.com/v2';
+
+    return this.request(`${url}/enqueue`, options);
   }
 
   private async getByUrl<T>(url: string): Promise<T> {
