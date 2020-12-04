@@ -178,7 +178,7 @@
             "description": "Listening configuration for local development",
             "properties": {
               "host": {
-                "type": "number",
+                "type": "string",
                 "visibility": "frontend",
                 "description": "The host that the frontend should be bound to. Only used for local development."
               },

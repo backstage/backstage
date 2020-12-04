@@ -160,7 +160,7 @@ export class CatalogImportClient implements CatalogImportApi {
         );
       });
 
-    const pullRequestRespone = await octo.pulls
+    const pullRequestResponse = await octo.pulls
       .create({
         owner,
         repo,
@@ -178,7 +178,7 @@ export class CatalogImportClient implements CatalogImportApi {
       });
 
     return {
-      link: pullRequestRespone.data.html_url,
+      link: pullRequestResponse.data.html_url,
       location: `https://github.com/${owner}/${repo}/blob/${repoData.data.default_branch}/${fileName}`,
     };
   }

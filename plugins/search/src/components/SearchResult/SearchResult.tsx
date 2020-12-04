@@ -251,7 +251,7 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
         )}
         <Grid item xs={showFilters ? 9 : 12}>
           <Table
-            options={{ paging: true, search: false }}
+            options={{ paging: true, pageSize: 20, search: false }}
             data={filteredResults}
             columns={columns}
             title={
