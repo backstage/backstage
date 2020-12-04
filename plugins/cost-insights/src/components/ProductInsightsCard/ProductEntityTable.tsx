@@ -135,7 +135,7 @@ export const ProductEntityTable = ({
     },
     {
       field: 'ratio',
-      title: <Typography className={lastColClasses}>M/M</Typography>,
+      title: <Typography className={lastColClasses}>Change</Typography>,
       align: 'right',
       render: createRenderer('ratio', classes),
       customSort: createSorter('ratio'),
