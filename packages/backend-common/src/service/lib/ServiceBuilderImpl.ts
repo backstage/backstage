@@ -39,7 +39,6 @@ import {
   readHttpsSettings,
 } from './config';
 import { createHttpServer, createHttpsServer } from './hostFactory';
-import { metricsHandler } from './metrics';
 
 export const DEFAULT_PORT = 7000;
 // '' is express default, which listens to all interfaces
@@ -66,7 +65,6 @@ export class ServiceBuilderImpl implements ServiceBuilder {
   private corsOptions: cors.CorsOptions | undefined;
   private cspOptions: Record<string, string[] | false> | undefined;
   private httpsSettings: HttpsSettings | undefined;
-  private enableMetrics: boolean = true;
   private routers: [string, Router][];
   // Reference to the module where builder is created - needed for hot module
   // reloading
@@ -108,9 +106,6 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     if (httpsSettings) {
       this.httpsSettings = httpsSettings;
     }
-
-    // For now, configuration of metrics is a simple boolean and active by default
-    this.enableMetrics = backendConfig.getOptionalBoolean('metrics') !== false;
 
     return this;
   }
@@ -166,9 +161,6 @@ export class ServiceBuilderImpl implements ServiceBuilder {
       app.use(cors(corsOptions));
     }
     app.use(compression());
-    if (this.enableMetrics) {
-      app.use(metricsHandler());
-    }
     app.use(requestLoggingHandler());
     for (const [root, route] of this.routers) {
       app.use(root, route);
