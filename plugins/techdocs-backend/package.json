@@ -24,7 +24,7 @@
     "@backstage/catalog-model": "^0.4.0",
     "@backstage/config": "^0.1.1",
     "@backstage/techdocs-common": "^0.1.1",
-    "@types/dockerode": "^2.5.34",
+    "@types/dockerode": "^3.2.1",
     "@types/express": "^4.17.6",
     "cross-fetch": "^3.0.6",
     "dockerode": "^3.2.1",

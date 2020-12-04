@@ -1426,19 +1426,7 @@
     term-size "^2.1.0"
     tty-table "^2.7.0"
 
-"@changesets/config@^1.2.0":
-  version "1.3.0"
-  resolved "https://registry.npmjs.org/@changesets/config/-/config-1.3.0.tgz#82fcbf572b00ba16636be9ea45167983f1fc203b"
-  integrity sha512-IeAHmN5kI7OywBUNJXsk/v4vcXDDscwgTe/K5D3FSng5QTvzbgiMAe5K1iwBxBvuT4u/33n89kxSJdg4TTTFfA==
-  dependencies:
-    "@changesets/errors" "^0.1.4"
-    "@changesets/get-dependents-graph" "^1.1.3"
-    "@changesets/logger" "^0.0.5"
-    "@changesets/types" "^3.1.0"
-    "@manypkg/get-packages" "^1.0.1"
-    fs-extra "^7.0.1"
-
-"@changesets/config@^1.4.0":
+"@changesets/config@^1.2.0", "@changesets/config@^1.4.0":
   version "1.4.0"
   resolved "https://registry.npmjs.org/@changesets/config/-/config-1.4.0.tgz#c157a4121f198b749f2bbc2e9015b6e976ece7d6"
   integrity sha512-eoTOcJ6py7jBDY8rUXwEGxR5UtvUX+p//0NhkVpPGcnvIeITHq+DOIsuWyGzWcb+1FaYkof3CCr32/komZTu4Q==
@@ -1824,11 +1812,11 @@
     yaml-ast-parser "0.0.43"
 
 "@gitbeaker/core@^25.2.0":
-  version "25.2.0"
-  resolved "https://registry.npmjs.org/@gitbeaker/core/-/core-25.2.0.tgz#c2f46b65ed88aebfa69afd2e58dbf4ebe2efb2c7"
-  integrity sha512-dhCvZItI8FIzHtJ9EySQ43GmNg3j39MxDGMCpDHn+Qb1o54QS+J6XPVQrMRmJioZIyj+WZQPX/IP+/mRkx8vhg==
+  version "25.6.0"
+  resolved "https://registry.npmjs.org/@gitbeaker/core/-/core-25.6.0.tgz#97d5ccc5d61bab6b678bec280036d594d275931e"
+  integrity sha512-+CohJNsbZiPl7jPgw7PHt5t0JIIV9NngObOskY1Ww8jef7SqaKpz0NsbSDawuWFBdmXApMpK81AEfASKtVI+cw==
   dependencies:
-    "@gitbeaker/requester-utils" "^25.2.0"
+    "@gitbeaker/requester-utils" "^25.6.0"
     form-data "^3.0.0"
     li "^1.3.0"
     xcase "^2.0.1"
@@ -1843,10 +1831,10 @@
     got "^11.7.0"
     xcase "^2.0.1"
 
-"@gitbeaker/requester-utils@^25.2.0":
-  version "25.2.0"
-  resolved "https://registry.npmjs.org/@gitbeaker/requester-utils/-/requester-utils-25.2.0.tgz#f71c44e0073617877f9875dd00c4ae0d74897b09"
-  integrity sha512-pjuFIVlbxSTPdN+zFT/LBP4ym8k0OBYwUpc5WkzoOtvdTGuDX05r8ufnV07kibLDJkwDmjwnH4Hsc66yevSQTw==
+"@gitbeaker/requester-utils@^25.2.0", "@gitbeaker/requester-utils@^25.6.0":
+  version "25.6.0"
+  resolved "https://registry.npmjs.org/@gitbeaker/requester-utils/-/requester-utils-25.6.0.tgz#001a432a48460bb5196a02ed71763eb707a1a01e"
+  integrity sha512-jD8cHbAZPR6+cB3HiukQxcqIKF5VkHtqg2m+Ns6ROE1pb0oRn10D/a9J1lZOXC9Jz2tQOBMWfHlplbmFFdB6Og==
   dependencies:
     form-data "^3.0.0"
     query-string "^6.13.3"
@@ -5252,10 +5240,17 @@
   resolved "https://registry.npmjs.org/@types/diff/-/diff-4.0.2.tgz#2e9bb89f9acc3ab0108f0f3dc4dbdcf2fff8a99c"
   integrity sha512-mIenTfsIe586/yzsyfql69KRnA75S8SVXQbTLpDejRrjH0QSJcpu3AUOi/Vjnt9IOsXKxPhJfGpQUNMueIU1fQ==
 
-"@types/dockerode@^2.5.32", "@types/dockerode@^2.5.34":
+"@types/dockerode@^2.5.34":
   version "2.5.34"
   resolved "https://registry.npmjs.org/@types/dockerode/-/dockerode-2.5.34.tgz#9adb884f7cc6c012a6eb4b2ad794cc5d01439959"
   integrity sha512-LcbLGcvcBwBAvjH9UrUI+4qotY+A5WCer5r43DR5XHv2ZIEByNXFdPLo1XxR+v/BjkGjlggW8qUiXuVEhqfkpA==
+  dependencies:
+    "@types/node" "*"
+
+"@types/dockerode@^3.2.1":
+  version "3.2.1"
+  resolved "https://registry.npmjs.org/@types/dockerode/-/dockerode-3.2.1.tgz#f713a8f6f1017c227845ab33239383da721207b9"
+  integrity sha512-AeZpdQMNqM8dtrEaaP81CbjdRVKNmFIMzgz5IlKIeS5uWEmjlEmENP444AGTEEF71r5TFuY9E4SkzZAO8lOF1A==
   dependencies:
     "@types/node" "*"
 
@@ -8773,9 +8768,9 @@ chokidar@^2.1.8:
     fsevents "^1.2.7"
 
 chokidar@^3.2.2, chokidar@^3.3.0, chokidar@^3.3.1, chokidar@^3.4.1, chokidar@^3.4.2:
-  version "3.4.2"
-  resolved "https://registry.npmjs.org/chokidar/-/chokidar-3.4.2.tgz#38dc8e658dec3809741eb3ef7bb0a47fe424232d"
-  integrity sha512-IZHaDeBeI+sZJRX7lGcXsdzgvZqKv6sECqsbErJA4mHWfpRrD8B97kSFN4cQz6nGBGiuFia1MKR4d6c1o8Cv7A==
+  version "3.4.3"
+  resolved "https://registry.npmjs.org/chokidar/-/chokidar-3.4.3.tgz#c1df38231448e45ca4ac588e6c79573ba6a57d5b"
+  integrity sha512-DtM3g7juCXQxFVSNPNByEC2+NImtBuxQQvWlHunpJIS5Ocr0lG306cC7FCi7cEA0fzmybPUIl4txBIobk1gGOQ==
   dependencies:
     anymatch "~3.1.1"
     braces "~3.0.2"
@@ -8783,7 +8778,7 @@ chokidar@^3.2.2, chokidar@^3.3.0, chokidar@^3.3.1, chokidar@^3.4.1, chokidar@^3.
     is-binary-path "~2.1.0"
     is-glob "~4.0.1"
     normalize-path "~3.0.0"
-    readdirp "~3.4.0"
+    readdirp "~3.5.0"
   optionalDependencies:
     fsevents "~2.1.2"
 
@@ -10741,7 +10736,7 @@ docker-modem@^2.1.0:
     split-ca "^1.0.1"
     ssh2 "^0.8.7"
 
-dockerode@^3.2.0, dockerode@^3.2.1:
+dockerode@^3.2.1:
   version "3.2.1"
   resolved "https://registry.npmjs.org/dockerode/-/dockerode-3.2.1.tgz#4a2222e3e1df536bf595e78e76d3cfbf6d4d93b9"
   integrity sha512-XsSVB5Wu5HWMg1aelV5hFSqFJaKS5x1aiV/+sT7YOzOq1IRl49I/UwV8Pe4x6t0iF9kiGkWu5jwfvbkcFVupBw==
@@ -20904,10 +20899,10 @@ readdirp@^2.2.1:
     micromatch "^3.1.10"
     readable-stream "^2.0.2"
 
-readdirp@~3.4.0:
-  version "3.4.0"
-  resolved "https://registry.npmjs.org/readdirp/-/readdirp-3.4.0.tgz#9fdccdf9e9155805449221ac645e8303ab5b9ada"
-  integrity sha512-0xe001vZBnJEK+uKcj8qOhyAKPzIT+gStxWr3LCB0DwcXR5NZJ3IaC+yGnHCYzB/S7ov3m3EEbZI2zeNvX+hGQ==
+readdirp@~3.5.0:
+  version "3.5.0"
+  resolved "https://registry.npmjs.org/readdirp/-/readdirp-3.5.0.tgz#9ba74c019b15d365278d2e91bb8c48d7b4d42c9e"
+  integrity sha512-cMhu7c/8rdhkHXWsY+osBhfSy0JikwpHK/5+imo+LpeasTF8ouErHrlYkwT0++njiyuDvc7OFY5T3ukvZ8qmFQ==
   dependencies:
     picomatch "^2.2.1"
 

@@ -46,6 +46,12 @@ proxy:
       X-Api-Key:
         $env: NEW_RELIC_REST_API_KEY
 
+  '/pagerduty':
+    target: https://api.pagerduty.com
+    headers:
+      Authorization:
+        $env: PAGERDUTY_TOKEN
+
   '/buildkite/api':
     target: https://api.buildkite.com/v2/
     headers:
@@ -194,6 +200,7 @@ scaffolder:
       token:
         $env: AZURE_TOKEN
 auth:
+  environment: development
   ### Providing an auth.session.secret will enable session support in the auth-backend
   # session:
   #   secret: custom session secret
@@ -313,3 +320,5 @@ homepage:
       timezone: 'Europe/Stockholm'
     - label: TYO
       timezone: 'Asia/Tokyo'
+pagerduty:
+  eventsBaseUrl: 'https://events.pagerduty.com/v2'

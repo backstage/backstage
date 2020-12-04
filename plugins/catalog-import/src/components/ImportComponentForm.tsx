@@ -99,7 +99,7 @@ export const RegisterComponentForm = ({ nextStep, saveConfig }: Props) => {
           variant="outlined"
           label="Repository URL"
           error={hasErrors}
-          placeholder="https://github.com/spotify/backstage"
+          placeholder="https://github.com/backstage/backstage"
           name="componentLocation"
           required
           margin="normal"
