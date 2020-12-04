@@ -60,10 +60,7 @@ export function exclusiveEndDateOf(
         .add(1, 'day')
         .format(DEFAULT_DATE_FORMAT);
     case Duration.P3M:
-      return moment(inclusiveEndDate)
-        .utc()
-        .startOf('quarter')
-        .format(DEFAULT_DATE_FORMAT);
+      return quarterEndDate(inclusiveEndDate);
     default:
       return assertNever(duration);
   }
@@ -82,4 +79,13 @@ export function inclusiveEndDateOf(
 // https://en.wikipedia.org/wiki/ISO_8601#Repeating_intervals
 export function intervalsOf(duration: Duration, inclusiveEndDate: string) {
   return `R2/${duration}/${exclusiveEndDateOf(duration, inclusiveEndDate)}`;
+}
+
+function quarterEndDate(inclusiveEndDate: string): string {
+  const endDate = moment(inclusiveEndDate).utc();
+  const endOfQuarter = endDate.endOf('quarter').format(DEFAULT_DATE_FORMAT);
+  if (endOfQuarter === inclusiveEndDate) {
+    return inclusiveEndDate;
+  }
+  return endDate.startOf('quarter').format(DEFAULT_DATE_FORMAT);
 }

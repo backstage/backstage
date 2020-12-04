@@ -73,8 +73,9 @@ describe('<PeriodSelect />', () => {
     it(`Should select ${duration}`, async () => {
       const mockOnSelect = jest.fn();
       const mockAggregation =
+        // Can't select an option that's already the default
         DefaultPageFilters.duration === duration
-          ? Duration.P1M
+          ? Duration.P30D
           : DefaultPageFilters.duration;
 
       const rendered = await renderInTestApp(
@@ -88,7 +89,6 @@ describe('<PeriodSelect />', () => {
       const button = getByRole(periodSelect, 'button');
 
       UserEvent.click(button);
-      await waitFor(() => rendered.getByText('Past 60 Days'));
       UserEvent.click(rendered.getByTestId(`period-select-option-${duration}`));
       expect(mockOnSelect).toHaveBeenLastCalledWith(duration);
     });
