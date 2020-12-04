@@ -13,6 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
+import { EmptyState } from '@backstage/core';
+import { Button } from '@material-ui/core';
 
-export { AboutCard } from './AboutCard';
-export { IconLinkVertical } from './IconLinkVertical';
+export const MissingTokenError = () => (
+  <EmptyState
+    missing="info"
+    title="Missing or invalid PagerDuty Token"
+    description="The request to fetch data needs a valid token. See README for more details."
+    action={
+      <Button
+        color="primary"
+        variant="contained"
+        href="https://github.com/backstage/backstage/blob/master/plugins/pagerduty/README.md"
+      >
+        Read More
+      </Button>
+    }
+  />
+);

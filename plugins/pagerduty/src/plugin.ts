@@ -13,6 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {
+  createApiFactory,
+  createPlugin,
+  createRouteRef,
+  discoveryApiRef,
+  configApiRef,
+} from '@backstage/core';
+import { pagerDutyApiRef, PagerDutyClient } from './api';
 
-export { AboutCard } from './AboutCard';
-export { IconLinkVertical } from './IconLinkVertical';
+export const rootRouteRef = createRouteRef({
+  path: '/pagerduty',
+  title: 'pagerduty',
+});
+
+export const plugin = createPlugin({
+  id: 'pagerduty',
+  apis: [
+    createApiFactory({
+      api: pagerDutyApiRef,
+      deps: { discoveryApi: discoveryApiRef, configApi: configApiRef },
+      factory: ({ configApi, discoveryApi }) =>
+        PagerDutyClient.fromConfig(configApi, discoveryApi),
+    }),
+  ],
+});

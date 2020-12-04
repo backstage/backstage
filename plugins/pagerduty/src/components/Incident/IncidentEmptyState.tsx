@@ -14,5 +14,23 @@
  * limitations under the License.
  */
 
-export { AboutCard } from './AboutCard';
-export { IconLinkVertical } from './IconLinkVertical';
+import React from 'react';
+import { Grid, Typography } from '@material-ui/core';
+import EmptyStateImage from '../../assets/emptystate.svg';
+
+export const IncidentsEmptyState = () => {
+  return (
+    <Grid container justify="center" direction="column" alignItems="center">
+      <Grid item xs={12}>
+        <Typography variant="h4">Nice! No incidents found!</Typography>
+      </Grid>
+      <Grid item xs={12}>
+        <img
+          src={EmptyStateImage}
+          alt="EmptyState"
+          data-testid="emptyStateImg"
+        />
+      </Grid>
+    </Grid>
+  );
+};

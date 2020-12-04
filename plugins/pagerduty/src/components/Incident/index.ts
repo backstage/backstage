@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export { AboutCard } from './AboutCard';
-export { IconLinkVertical } from './IconLinkVertical';
+export { Incidents } from './Incidents';

@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { AboutCard } from './AboutCard';
-export { IconLinkVertical } from './IconLinkVertical';
+export { PagerDutyClient, pagerDutyApiRef, UnauthorizedError } from './client';
+export type { PagerDutyApi } from './types';

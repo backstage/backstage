@@ -13,6 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export { AboutCard } from './AboutCard';
-export { IconLinkVertical } from './IconLinkVertical';
+export { plugin } from './plugin';
+export {
+  isPluginApplicableToEntity,
+  PagerDutyCard,
+} from './components/PagerDutyCard';
+export {
+  PagerDutyClient,
+  pagerDutyApiRef,
+  UnauthorizedError,
+} from './api/client';

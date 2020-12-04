@@ -13,6 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
+import { Card, CardContent, CardHeader, Divider } from '@material-ui/core';
+import { SubHeader } from './SubHeader';
+import { SubHeaderLink } from '../types';
 
-export { AboutCard } from './AboutCard';
-export { IconLinkVertical } from './IconLinkVertical';
+type Props = {
+  title: string;
+  links: SubHeaderLink[];
+  content: React.ReactNode;
+};
+
+export const AboutCard = ({ title, links, content }: Props) => (
+  <Card>
+    <CardHeader title={title} subheader={<SubHeader links={links} />} />
+    <Divider />
+    <CardContent>{content}</CardContent>
+  </Card>
+);

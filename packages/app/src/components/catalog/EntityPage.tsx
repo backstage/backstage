@@ -68,6 +68,10 @@ import {
   Router as PullRequestsRouter,
 } from '@roadiehq/backstage-plugin-github-pull-requests';
 import {
+  isPluginApplicableToEntity as isPagerDutyAvailable,
+  PagerDutyCard,
+} from '@backstage/plugin-pagerduty';
+import {
   isPluginApplicableToEntity as isTravisCIAvailable,
   RecentTravisCIBuildsWidget,
   Router as TravisCIRouter,
@@ -142,6 +146,11 @@ const ComponentOverviewContent = ({ entity }: { entity: Entity }) => (
     <Grid item md={6}>
       <AboutCard entity={entity} variant="gridItem" />
     </Grid>
+    {isPagerDutyAvailable(entity) && (
+      <Grid item md={6}>
+        <PagerDutyCard entity={entity} />
+      </Grid>
+    )}
     <RecentCICDRunsSwitcher entity={entity} />
     {isGitHubAvailable(entity) && (
       <>

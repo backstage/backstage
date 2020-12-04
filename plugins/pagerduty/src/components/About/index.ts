@@ -15,4 +15,5 @@
  */
 
 export { AboutCard } from './AboutCard';
-export { IconLinkVertical } from './IconLinkVertical';
+// export { SubHeader } from './SubHeader';
+// export { VerticalIcon } from './VerticalIcon';
