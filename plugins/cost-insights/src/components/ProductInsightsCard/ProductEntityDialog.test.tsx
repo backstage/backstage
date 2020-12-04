@@ -77,27 +77,23 @@ describe('<ProductEntityDialog/>', () => {
             open
             entity={atomicEntity}
             onClose={jest.fn()}
-            selectedLabel={null}
-            setSelectedLabel={jest.fn()}
           />,
         ),
       ),
     ).toThrow();
   });
 
-  it('Should not show tabs for a single sub-entity type', () => {
-    const { queryByText } = render(
+  it('Should show a tab for a single sub-entity type', () => {
+    const { getByText } = render(
       wrapInTestApp(
         <ProductEntityDialog
           open
           entity={singleBreakdownEntity}
           onClose={jest.fn()}
-          selectedLabel={null}
-          setSelectedLabel={jest.fn()}
         />,
       ),
     );
-    expect(queryByText('Breakdown by SKU')).not.toBeInTheDocument();
+    expect(getByText('Breakdown by SKU')).toBeInTheDocument();
   });
 
   it('Should show tabs when multiple sub-entity types exist', () => {
@@ -107,28 +103,11 @@ describe('<ProductEntityDialog/>', () => {
           open
           entity={multiBreakdownEntity}
           onClose={jest.fn()}
-          selectedLabel={null}
-          setSelectedLabel={jest.fn()}
         />,
       ),
     );
     expect(getByText('Breakdown by SKU')).toBeInTheDocument();
     expect(getByText('Breakdown by deployment')).toBeInTheDocument();
     expect(getByText('sku-1')).toBeInTheDocument();
-  });
-
-  it('Shows the pre-selected tab, if provided', () => {
-    const { getByText } = render(
-      wrapInTestApp(
-        <ProductEntityDialog
-          open
-          entity={multiBreakdownEntity}
-          onClose={jest.fn()}
-          selectedLabel="deployment"
-          setSelectedLabel={jest.fn()}
-        />,
-      ),
-    );
-    expect(getByText('d-1')).toBeInTheDocument();
   });
 });
