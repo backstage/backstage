@@ -85,7 +85,7 @@ function quarterEndDate(inclusiveEndDate: string): string {
   const endDate = moment(inclusiveEndDate).utc();
   const endOfQuarter = endDate.endOf('quarter').format(DEFAULT_DATE_FORMAT);
   if (endOfQuarter === inclusiveEndDate) {
-    return inclusiveEndDate;
+    return endDate.add(1, 'day').format(DEFAULT_DATE_FORMAT);
   }
   return endDate.startOf('quarter').format(DEFAULT_DATE_FORMAT);
 }
