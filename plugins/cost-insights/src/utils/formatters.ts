@@ -15,9 +15,9 @@
  */
 
 import moment from 'moment';
+import pluralize from 'pluralize';
 import { Duration, DEFAULT_DATE_FORMAT } from '../types';
 import { inclusiveEndDateOf, inclusiveStartDateOf } from '../utils/duration';
-import { pluralOf } from '../utils/grammar';
 
 export type Period = {
   periodStart: string;
@@ -75,7 +75,7 @@ export function formatCurrency(amount: number, currency?: string): string {
   const n = Math.round(amount);
   const numString = numberFormatter.format(n);
 
-  return currency ? `${numString} ${pluralOf(n, currency)}` : numString;
+  return currency ? `${numString} ${pluralize(currency, n)}` : numString;
 }
 
 export function formatPercent(n: number): string {
