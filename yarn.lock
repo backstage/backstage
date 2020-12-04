@@ -1290,40 +1290,34 @@
     to-fast-properties "^2.0.0"
 
 "@backstage/core@^0.2.0":
-  version "0.3.0"
+  version "0.2.0"
+  resolved "https://registry.npmjs.org/@backstage/core/-/core-0.2.0.tgz#543246b2d87563c9aa4d9fb96e40fdfc7e827520"
+  integrity sha512-75m2u3FoUngBOvt9l65xZcYTzzB+49OXpY1A9VNFUR1+jMs3cL/0HDfByQV2H0xXaHzMngQ8C5u/sWhkQsij1w==
   dependencies:
     "@backstage/config" "^0.1.1"
-    "@backstage/core-api" "^0.2.1"
-    "@backstage/theme" "^0.2.1"
+    "@backstage/core-api" "^0.2.0"
+    "@backstage/theme" "^0.2.0"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "4.0.0-alpha.45"
-    "@types/dagre" "^0.7.44"
     "@types/react" "^16.9"
     "@types/react-sparklines" "^1.7.0"
     classnames "^2.2.6"
     clsx "^1.1.0"
-    d3-selection "^2.0.0"
-    d3-shape "^2.0.0"
-    d3-zoom "^2.0.0"
-    dagre "^0.8.5"
     immer "^7.0.9"
     lodash "^4.17.15"
     material-table "^1.69.1"
     prop-types "^15.7.2"
-    qs "^6.9.4"
     rc-progress "^3.0.0"
     react "^16.12.0"
     react-dom "^16.12.0"
     react-helmet "6.1.0"
     react-hook-form "^6.6.0"
-    react-markdown "^5.0.2"
     react-router "6.0.0-beta.0"
     react-router-dom "6.0.0-beta.0"
     react-sparklines "^1.7.0"
     react-syntax-highlighter "^13.5.1"
     react-use "^15.3.3"
-    remark-gfm "^1.0.0"
 
 "@bcoe/v8-coverage@^0.2.3":
   version "0.2.3"
@@ -5549,6 +5543,13 @@
   version "13.13.15"
   resolved "https://registry.npmjs.org/@types/node/-/node-13.13.15.tgz#fe1cc3aa465a3ea6858b793fd380b66c39919766"
   integrity sha512-kwbcs0jySLxzLsa2nWUAGOd/s21WU1jebrEdtzhsj1D4Yps1EOuyI1Qcu+FD56dL7NRNIJtDDjcqIG22NwkgLw==
+
+"@types/nodegit@^0.26.12":
+  version "0.26.12"
+  resolved "https://registry.npmjs.org/@types/nodegit/-/nodegit-0.26.12.tgz#93afb4cb85d3a48d392c3232699c9c07d8251a36"
+  integrity sha512-4YpeTImFZNJ1cve4lEueHFVS8rAs8XpZqlmx+Bm9bMc+XMiCrcwaUf6peN7pod7Rl3esVlGP1zdBB7Z12eMVAA==
+  dependencies:
+    "@types/node" "*"
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
