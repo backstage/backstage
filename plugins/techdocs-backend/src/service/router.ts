@@ -147,11 +147,15 @@ export async function createRouter({
           // With a maximum of ~5 seconds wait, check if the files got published and if docs will be fetched
           // on the user's page. If not, respond with a message asking them to check back later.
           // The delay here is to make sure GCS registers newly uploaded files which is usually <1 second
+          let foundDocs = false;
           for (let attempt = 0; attempt < 5; attempt++) {
             if (await publisher.hasDocsBeenGenerated(entity)) {
+              foundDocs = true;
               break;
             }
             await new Promise(r => setTimeout(r, 1000));
+          }
+          if (!foundDocs) {
             logger.error(
               'Published files are taking longer to show up in storage. Something went wrong.',
             );
@@ -162,13 +166,15 @@ export async function createRouter({
               );
             return;
           }
+        } else {
+          logger.info(
+            'Found pre-generated docs for this entity. Serving them.',
+          );
+          // TODO: re-trigger build for cache invalidation.
+          // Compare the date modified of the requested file on storage and compare it against
+          // the last modified or last commit timestamp in the repository.
+          // Without this, docs will not be re-built once they have been generated.
         }
-
-        logger.info('Found pre-generated docs for this entity. Serving them.');
-        // TODO: re-trigger build for cache invalidation.
-        // Compare the date modified of the requested file on storage and compare it against
-        // the last modified or last commit timestamp in the repository.
-        // Without this, docs will not be re-built once they have been generated.
       }
     }
 
