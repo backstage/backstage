@@ -40,7 +40,7 @@
     "@backstage/catalog-model": "^0.3.1",
     "@backstage/config": "^0.1.1",
     "@google-cloud/storage": "^5.6.0",
-    "@types/dockerode": "^2.5.34",
+    "@types/dockerode": "^3.2.1",
     "@types/klaw": "^3.0.1",
     "cross-fetch": "^3.0.6",
     "dockerode": "^3.2.1",
