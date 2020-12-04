@@ -13,36 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useApi, Progress } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Divider,
-  makeStyles,
-} from '@material-ui/core';
+import { Button, makeStyles } from '@material-ui/core';
 import { Incidents } from './Incident';
 import { EscalationPolicy } from './Escalation';
 import { useAsync } from 'react-use';
 import { Alert } from '@material-ui/lab';
 import { pagerDutyApiRef, UnauthorizedError } from '../api';
-import { IconLinkVertical } from '@backstage/plugin-catalog';
-import { PagerDutyIcon } from './PagerDutyIcon';
 import AlarmAddIcon from '@material-ui/icons/AlarmAdd';
 import { TriggerDialog } from './TriggerDialog';
-import { MissingTokenError } from './MissingTokenError';
+import { MissingTokenError } from './Errors/MissingTokenError';
+import WebIcon from '@material-ui/icons/Web';
+import { AboutCard } from './About/AboutCard';
 
-const useStyles = makeStyles(theme => ({
-  links: {
-    margin: theme.spacing(2, 0),
-    display: 'grid',
-    gridAutoFlow: 'column',
-    gridAutoColumns: 'min-content',
-    gridGap: theme.spacing(3),
-  },
+const useStyles = makeStyles({
   triggerAlarm: {
     paddingTop: 0,
     paddingBottom: 0,
@@ -56,7 +42,7 @@ const useStyles = makeStyles(theme => ({
       textDecoration: 'none',
     },
   },
-}));
+});
 
 export const PAGERDUTY_INTEGRATION_KEY = 'pagerduty.com/integration-key';
 
@@ -76,6 +62,14 @@ export const PagerDutyCard = ({ entity }: Props) => {
     PAGERDUTY_INTEGRATION_KEY
   ];
 
+  const handleRefresh = useCallback(() => {
+    setRefreshIncidents(x => !x);
+  }, []);
+
+  const handleDialog = useCallback(() => {
+    setShowDialog(x => !x);
+  }, []);
+
   const { value: service, loading, error } = useAsync(async () => {
     const services = await api.getServiceByIntegrationKey(integrationKey);
 
@@ -86,10 +80,6 @@ export const PagerDutyCard = ({ entity }: Props) => {
       policyId: services[0].escalation_policy.id,
     };
   });
-
-  const handleDialog = () => {
-    setShowDialog(!showDialog);
-  };
 
   if (error instanceof UnauthorizedError) {
     return <MissingTokenError />;
@@ -107,13 +97,14 @@ export const PagerDutyCard = ({ entity }: Props) => {
     return <Progress />;
   }
 
-  const pagerdutyLink = {
-    title: 'View in PagerDuty',
+  const serviceLink = {
+    title: 'Service Directory',
     href: service!.url,
+    icon: <WebIcon />,
   };
 
-  const triggerAlarm = {
-    title: 'Trigger Alarm',
+  const triggerLink = {
+    title: 'Create Incident',
     action: (
       <Button
         data-testid="trigger-button"
@@ -121,49 +112,32 @@ export const PagerDutyCard = ({ entity }: Props) => {
         onClick={handleDialog}
         className={classes.triggerAlarm}
       >
-        Trigger Alarm
+        Create Incident
       </Button>
     ),
-  };
-
-  const onTriggerRefresh = () => {
-    setRefreshIncidents(true);
+    icon: <AlarmAddIcon onClick={handleDialog} />,
   };
 
   return (
-    <Card>
-      <CardHeader
-        title="PagerDuty"
-        subheader={
-          <nav className={classes.links}>
-            <IconLinkVertical
-              label={pagerdutyLink.title}
-              href={pagerdutyLink.href}
-              icon={<PagerDutyIcon viewBox="0 0 100 100" />}
-            />
-            <IconLinkVertical
-              label={triggerAlarm.title}
-              icon={<AlarmAddIcon />}
-              action={triggerAlarm.action}
-            />
-          </nav>
-        }
-      />
-      <Divider />
-      <CardContent>
-        <Incidents
-          serviceId={service!.id}
-          refreshIncidents={refreshIncidents}
-        />
-        <EscalationPolicy policyId={service!.policyId} />
-        <TriggerDialog
-          showDialog={showDialog}
-          handleDialog={handleDialog}
-          name={entity.metadata.name}
-          integrationKey={integrationKey}
-          onTriggerRefresh={onTriggerRefresh}
-        />
-      </CardContent>
-    </Card>
+    <AboutCard
+      title="PagerDuty"
+      links={[serviceLink, triggerLink]}
+      content={
+        <>
+          <Incidents
+            serviceId={service!.id}
+            refreshIncidents={refreshIncidents}
+          />
+          <EscalationPolicy policyId={service!.policyId} />
+          <TriggerDialog
+            showDialog={showDialog}
+            handleDialog={handleDialog}
+            name={entity.metadata.name}
+            integrationKey={integrationKey}
+            onIncidentCreated={handleRefresh}
+          />
+        </>
+      }
+    />
   );
 };

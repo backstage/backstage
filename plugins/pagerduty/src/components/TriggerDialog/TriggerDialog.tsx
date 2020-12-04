@@ -35,7 +35,7 @@ type Props = {
   integrationKey: string;
   showDialog: boolean;
   handleDialog: () => void;
-  onTriggerRefresh: () => void;
+  onIncidentCreated: () => void;
 };
 
 export const TriggerDialog = ({
@@ -43,7 +43,7 @@ export const TriggerDialog = ({
   integrationKey,
   showDialog,
   handleDialog,
-  onTriggerRefresh,
+  onIncidentCreated: onIncidentCreated,
 }: Props) => {
   const alertApi = useApi(alertApiRef);
   const identityApi = useApi(identityApiRef);
@@ -72,24 +72,20 @@ export const TriggerDialog = ({
       alertApi.post({
         message: `Alarm successfully triggered by ${userName}`,
       });
-      onTriggerRefresh();
+      onIncidentCreated();
       handleDialog();
     }
+  }, [value, alertApi, handleDialog, userName, onIncidentCreated]);
 
-    if (error) {
-      alertApi.post({
-        message: `Failed to trigger alarm. ${error.message}`,
-        severity: 'error',
-      });
-    }
-  }, [value, error, alertApi, handleDialog, userName, onTriggerRefresh]);
-
-  if (!showDialog) {
-    return null;
+  if (error) {
+    alertApi.post({
+      message: `Failed to trigger alarm. ${error.message}`,
+      severity: 'error',
+    });
   }
 
   return (
-    <Dialog maxWidth="md" open onClose={handleDialog} fullWidth>
+    <Dialog maxWidth="md" open={showDialog} onClose={handleDialog} fullWidth>
       <DialogTitle>
         This action will trigger an incident for <strong>"{name}"</strong>.
       </DialogTitle>

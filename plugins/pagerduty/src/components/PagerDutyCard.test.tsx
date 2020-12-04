@@ -85,11 +85,9 @@ describe('PageDutyCard', () => {
       ),
     );
     await waitFor(() => !queryByTestId('progress'));
-    expect(getByText('View in PagerDuty')).toBeInTheDocument();
-    expect(getByText('Trigger Alarm')).toBeInTheDocument();
-    expect(
-      getByText('Nice! No incidents are assigned to you!'),
-    ).toBeInTheDocument();
+    expect(getByText('Service Directory')).toBeInTheDocument();
+    expect(getByText('Create Incident')).toBeInTheDocument();
+    expect(getByText('Nice! No incidents found!')).toBeInTheDocument();
     expect(getByText('Empty escalation policy')).toBeInTheDocument();
   });
 
@@ -141,8 +139,8 @@ describe('PageDutyCard', () => {
       ),
     );
     await waitFor(() => !queryByTestId('progress'));
-    expect(getByText('View in PagerDuty')).toBeInTheDocument();
-    expect(getByText('Trigger Alarm')).toBeInTheDocument();
+    expect(getByText('Service Directory')).toBeInTheDocument();
+    expect(getByText('Create Incident')).toBeInTheDocument();
     const triggerButton = getByTestId('trigger-button');
     await act(async () => {
       fireEvent.click(triggerButton);

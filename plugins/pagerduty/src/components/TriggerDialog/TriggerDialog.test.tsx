@@ -70,7 +70,7 @@ describe('TriggerDialog', () => {
             handleDialog={() => {}}
             name={entity.metadata.name}
             integrationKey="abc123"
-            onTriggerRefresh={() => {}}
+            onIncidentCreated={() => {}}
           />
         </ApiProvider>,
       ),

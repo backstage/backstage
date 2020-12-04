@@ -56,3 +56,10 @@ export type User = {
   html_url: string;
   name: string;
 };
+
+export type SubHeaderLink = {
+  title: string;
+  href?: string;
+  icon: React.ReactNode;
+  action?: React.ReactNode;
+};
