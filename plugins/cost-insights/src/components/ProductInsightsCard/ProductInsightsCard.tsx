@@ -36,7 +36,7 @@ import {
   useLoading,
   useScroll,
 } from '../../hooks';
-import { findFirstKey } from '../../utils/assert';
+import { findAnyKey } from '../../utils/assert';
 
 type LoadingProps = (isLoading: boolean) => void;
 
@@ -93,7 +93,7 @@ export const ProductInsightsCard = ({
   }, [product, duration, onSelectAsync, dispatchLoadingProduct]);
 
   // Only a single entities Record for the root product entity is supported
-  const entityKey = findFirstKey(entity?.entities);
+  const entityKey = findAnyKey(entity?.entities);
   const entities = entityKey ? entity!.entities[entityKey] : [];
 
   const subheader = entityKey

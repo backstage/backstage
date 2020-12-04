@@ -51,7 +51,7 @@ export function findAlways<T>(
   return assertAlways(collection.find(callback));
 }
 
-export function findFirstKey<T>(
+export function findAnyKey<T>(
   record: Record<string, T> | undefined,
 ): string | undefined {
   return Object.keys(record ?? {}).find(_ => true);

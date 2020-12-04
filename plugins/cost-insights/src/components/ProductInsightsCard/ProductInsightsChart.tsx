@@ -37,7 +37,7 @@ import {
   findAlways,
   notEmpty,
   isUndefined,
-  findFirstKey,
+  findAnyKey,
   assertAlways,
 } from '../../utils/assert';
 import { formatPeriod, formatPercent } from '../../utils/formatters';
@@ -70,7 +70,7 @@ export const ProductInsightsChart = ({
   const layoutClasses = useLayoutStyles();
 
   // Only a single entities Record for the root product entity is supported
-  const entityLabel = assertAlways(findFirstKey(entity.entities));
+  const entityLabel = assertAlways(findAnyKey(entity.entities));
   const entities = entity.entities[entityLabel] ?? [];
 
   const [activeLabel, setActive] = useState<Maybe<string>>();
