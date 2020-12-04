@@ -21,6 +21,8 @@ import {
   Typography,
   makeStyles,
   IconButton,
+  createStyles,
+  Theme,
 } from '@material-ui/core';
 import Close from '@material-ui/icons/Close';
 
@@ -29,31 +31,35 @@ export default {
   component: Drawer,
 };
 
-const useDrawerStyles = makeStyles({
-  paper: {
-    width: '50%',
-    justifyContent: 'space-between',
-    padding: '20px',
-  },
-});
+const useDrawerStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    paper: {
+      width: '50%',
+      justifyContent: 'space-between',
+      padding: theme.spacing(2.5),
+    },
+  }),
+);
 
-const useDrawerContentStyles = makeStyles({
-  header: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  icon: {
-    fontSize: 20,
-  },
-  content: {
-    height: '80%',
-    backgroundColor: '#EEEEEE',
-  },
-  secondaryAction: {
-    marginLeft: '20px',
-  },
-});
+const useDrawerContentStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    header: {
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    icon: {
+      fontSize: 20,
+    },
+    content: {
+      height: '80%',
+      backgroundColor: '#EEEEEE',
+    },
+    secondaryAction: {
+      marginLeft: theme.spacing(2.5),
+    },
+  }),
+);
 
 /* Example content wrapped inside the Drawer component */
 const DrawerContent = ({
