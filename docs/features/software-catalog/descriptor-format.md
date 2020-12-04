@@ -31,6 +31,7 @@ we recommend that you name them `catalog-info.yaml`.
 - [Kind: Resource](#kind-resource)
 - [Kind: System](#kind-system)
 - [Kind: Domain](#kind-domain)
+- [Kind: Location](#kind-location)
 
 ## Overall Shape Of An Entity
 
@@ -884,3 +885,58 @@ This kind is not yet defined, but is reserved [for future use](system-model.md).
 ## Kind: Domain
 
 This kind is not yet defined, but is reserved [for future use](system-model.md).
+
+## Kind: Location
+
+Describes the following entity kind:
+
+| Field        | Value                   |
+| ------------ | ----------------------- |
+| `apiVersion` | `backstage.io/v1alpha1` |
+| `kind`       | `Location`              |
+
+A location is a marker that references other places to look for catalog data.
+
+Descriptor files for this kind may look as follows.
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: org-data
+spec:
+  type: url
+  targets:
+    - http://github.com/myorg/myproject/org-data-dump/catalog-info-staff.yaml
+    - http://github.com/myorg/myproject/org-data-dump/catalog-info-consultants.yaml
+```
+
+In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)
+shape, this kind has the following structure.
+
+### `apiVersion` and `kind` [required]
+
+Exactly equal to `backstage.io/v1alpha1` and `Location`, respectively.
+
+### `spec.type` [optional]
+
+The single location type, that's common to the targets specified in the spec. If
+it is left out, it is inherited from the location type that originally read the
+entity data. For example, if you have a `url` type location, that when read
+results in a `Location` kind entity with no `spec.type`, then the referenced
+targets in the entity will implicitly also be of `url` type. This is useful
+because you can define a hierarchy of things in a directory structure using
+relative target paths (see below), and it will work out no matter if it's
+consumed locally on disk from a `file` location, or as uploaded on a VCS.
+
+### `spec.target` [optional]
+
+A single target as a string. Can be either an absolute path/URL (depending on
+the type), or a relative path such as `./details/catalog-info.yaml` which is
+resolved relative to the location of this Location entity itself.
+
+### `spec.targets` [optional]
+
+A list of targets as strings. They can all be either absolute paths/URLs
+(depending on the type), or relative paths such as `./details/catalog-info.yaml`
+which are resolved relative to the location of this Location entity itself.

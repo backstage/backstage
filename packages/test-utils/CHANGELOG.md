@@ -1,5 +1,16 @@
 # @backstage/test-utils
 
+## 0.1.4
+
+### Patch Changes
+
+- Updated dependencies [b4488ddb0]
+- Updated dependencies [4a655c89d]
+- Updated dependencies [8a16e8af8]
+- Updated dependencies [00670a96e]
+  - @backstage/cli@0.4.0
+  - @backstage/core-api@0.2.4
+
 ## 0.1.3
 
 ### Patch Changes

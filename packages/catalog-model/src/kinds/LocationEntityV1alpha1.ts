@@ -26,7 +26,7 @@ const schema = yup.object<Partial<LocationEntityV1alpha1>>({
   kind: yup.string().required().equals([KIND]),
   spec: yup
     .object({
-      type: yup.string().required().min(1),
+      type: yup.string().notRequired().min(1),
       target: yup.string().notRequired().min(1),
       targets: yup.array(yup.string().required()).notRequired(),
     })
@@ -37,7 +37,7 @@ export interface LocationEntityV1alpha1 extends Entity {
   apiVersion: typeof API_VERSION[number];
   kind: typeof KIND;
   spec: {
-    type: string;
+    type?: string;
     target?: string;
     targets?: string[];
   };

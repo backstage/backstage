@@ -1,5 +1,21 @@
 # @backstage/cli
 
+## 0.4.0
+
+### Minor Changes
+
+- 00670a96e: sort product panels and navigation menu by greatest cost
+  update tsconfig.json to use ES2020 api
+
+### Patch Changes
+
+- b4488ddb0: Added a type alias for PositionError = GeolocationPositionError
+- 4a655c89d: Bump versions of `esbuild` and `rollup-plugin-esbuild`
+- 8a16e8af8: Support `.npmrc` when building with private NPM registries
+- Updated dependencies [4e7091759]
+- Updated dependencies [b4488ddb0]
+  - @backstage/config-loader@0.4.0
+
 ## 0.3.2
 
 ### Patch Changes
