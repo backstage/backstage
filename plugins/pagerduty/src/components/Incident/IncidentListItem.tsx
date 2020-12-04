@@ -29,7 +29,7 @@ import {
 import { StatusError, StatusWarning } from '@backstage/core';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { Incident } from '../types';
-import { PagerDutyIcon } from '../PagerDutyIcon';
+import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
 
 const useStyles = makeStyles({
   denseListIcon: {
@@ -96,7 +96,7 @@ export const IncidentListItem = ({ incident }: Props) => {
             rel="noopener noreferrer"
             color="primary"
           >
-            <PagerDutyIcon viewBox="0 0 100 100" />
+            <OpenInBrowserIcon />
           </IconButton>
         </Tooltip>
       </ListItemSecondaryAction>

@@ -40,9 +40,7 @@ describe('Incidents', () => {
       ),
     );
     await waitFor(() => !queryByTestId('progress'));
-    expect(
-      getByText('Nice! No incidents are assigned to you!'),
-    ).toBeInTheDocument();
+    expect(getByText('Nice! No incidents found!')).toBeInTheDocument();
   });
 
   it('Renders all incidents', async () => {

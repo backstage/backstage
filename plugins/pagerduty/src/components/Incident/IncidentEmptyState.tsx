@@ -15,14 +15,14 @@
  */
 
 import React from 'react';
-import { Grid } from '@material-ui/core';
+import { Grid, Typography } from '@material-ui/core';
 import EmptyStateImage from '../../assets/emptyState.svg';
 
 export const IncidentsEmptyState = () => {
   return (
     <Grid container justify="center" direction="column" alignItems="center">
       <Grid item xs={12}>
-        <h2>Nice! No incidents are assigned to you!</h2>
+        <Typography variant="h4">Nice! No incidents found!</Typography>
       </Grid>
       <Grid item xs={12}>
         <img
