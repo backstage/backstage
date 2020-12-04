@@ -64,7 +64,7 @@ export const ImportComponentPage = ({
           </SupportButton>
         </ContentHeader>
         <Grid container spacing={3} direction="row-reverse">
-          <Grid item xs={5}>
+          <Grid item xs={6}>
             <InfoCard
               deepLink={{
                 title: 'Learn more about the Software Catalog',
@@ -74,27 +74,24 @@ export const ImportComponentPage = ({
             >
               <Typography variant="body2" paragraph>
                 There are two ways to register an existing component.
-                <ol>
-                  <li>
-                    <b>GitHub Repo</b>
-                    <br />
-                    If you already have code in a GitHub repository, enter the
-                    full URL to your repo and a new pull request with a sample
-                    Backstage metadata Entity File (
-                    <code>catalog-info.yaml</code>) will be opened for you.
-                  </li>
-                  <li>
-                    <b>GitHub Repo &amp; Entity File</b>
-                    <br />
-                    If you've already created a Backstage metadata file and put
-                    it in your repo, you can enter the full URL to that Entity
-                    File.
-                  </li>
-                </ol>
+              </Typography>
+              <Typography variant="h6">GitHub Repo</Typography>
+              <Typography variant="body2" paragraph>
+                If you already have code in a GitHub repository, enter the full
+                URL to your repo and a new pull request with a sample Backstage
+                metadata Entity File (<code>catalog-info.yaml</code>) will be
+                opened for you.
+              </Typography>
+              <Typography variant="h6">
+                GitHub Repo &amp; Entity File
+              </Typography>
+              <Typography variant="body2" paragraph>
+                If you've already created a Backstage metadata file and put it
+                in your repo, you can enter the full URL to that Entity File.
               </Typography>
             </InfoCard>
           </Grid>
-          <Grid item xs={7}>
+          <Grid item xs={6}>
             <InfoCard>
               <ImportStepper
                 steps={[
