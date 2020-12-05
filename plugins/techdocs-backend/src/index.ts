@@ -15,5 +15,4 @@
  */
 
 export * from './service/router';
-// TODO: Do named exports here e.g. publishers, generators.
 export * from '@backstage/techdocs-common';
