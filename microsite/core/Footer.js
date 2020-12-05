@@ -57,8 +57,11 @@ class Footer extends React.Component {
               Open Source @ {this.props.config.organizationName}
             </a>
       
-            <a href="https://engineering.atspotify.com/">Spotify Engineering Blog</a>
-            <a href="https://developer.spotify.com/">Spotify for Developers</a>
+            <a href="https://engineering.atspotify.com/">
+              Spotify Engineering Blog
+            </a>
+            <a href="https://developer.spotify.com/">
+              Spotify for Developers
             </a>
       
             <a href={this.props.config.repoUrl}>GitHub</a>
