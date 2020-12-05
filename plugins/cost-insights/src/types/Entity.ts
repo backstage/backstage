@@ -34,7 +34,7 @@ export interface Entity {
   of the total cost **over the same time period**. The root entity is
   expected to only have _one_ Record consisting of the sub-entities to display
   in the product panel (keyed by the entity type, such as "service" for
-  compute entities.
+  compute entities).
 
   The root sub-entities may have multiple breakdowns  - for example, a
   breakdown of an entity cost by SKU vs deployment environment. The sum
