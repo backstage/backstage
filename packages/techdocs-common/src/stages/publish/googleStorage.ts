@@ -108,7 +108,7 @@ export class GoogleGCSPublish implements PublisherBase {
           // 'end' event happens when all the files have been read.
           const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
           allFilesToUpload.forEach(filePath => {
-            const source = path.join(directory, filePath); // Local file absolutely path
+            const source = path.join(directory, filePath); // Local file absolute path
             const destination = `${entityRootDir}/${filePath}`; // GCS Bucket file relative path
             this.storageClient
               .bucket(this.bucketName)

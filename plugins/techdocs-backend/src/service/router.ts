@@ -162,7 +162,7 @@ export async function createRouter({
             res
               .status(408)
               .send(
-                'Sorry! It is taking longer for the generated docs to show up up in storage. Check back later.',
+                'Sorry! It is taking longer for the generated docs to show up in storage. Check back later.',
               );
             return;
           }
