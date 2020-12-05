@@ -23,6 +23,7 @@ changesets
 Changesets
 chanwit
 Chanwit
+ci
 cisphobia
 cissexist
 classname
