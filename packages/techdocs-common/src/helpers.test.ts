@@ -15,9 +15,107 @@
  */
 
 import { Readable } from 'stream';
-import { getDocFilesFromRepository } from './helpers';
+import {
+  getDocFilesFromRepository,
+  getLocationForEntity,
+  parseReferenceAnnotation,
+} from './helpers';
 import { UrlReader, ReadTreeResponse } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
+
+const entityBase: Entity = {
+  metadata: {
+    namespace: 'default',
+    name: 'mytestcomponent',
+    description: 'A component for testing',
+  },
+  apiVersion: 'backstage.io/v1alpha1',
+  kind: 'Component',
+  spec: {
+    type: 'documentation',
+    lifecycle: 'experimental',
+    owner: 'testuser',
+  },
+};
+
+const metadataBase = {
+  namespace: 'default',
+  name: 'mytestcomponent',
+  description: 'A component for testing',
+};
+
+const goodAnnotation = {
+  annotations: {
+    'backstage.io/techdocs-ref':
+      'url:https://github.com/backstage/backstage/blob/master/subfolder/',
+  },
+};
+
+const mockEntityWithAnnotation: Entity = {
+  ...entityBase,
+  ...{
+    metadata: {
+      ...metadataBase,
+      ...goodAnnotation,
+    },
+  },
+};
+
+const badAnnotation = {
+  annotations: {
+    'backstage.io/techdocs-ref': 'bad-annotation',
+  },
+};
+
+const mockEntityWithBadAnnotation: Entity = {
+  ...entityBase,
+  ...{
+    metadata: {
+      ...metadataBase,
+      ...badAnnotation,
+    },
+  },
+};
+
+describe('parseReferenceAnnotation', () => {
+  it('should parse annotation', () => {
+    const parsedLocationAnnotation = parseReferenceAnnotation(
+      'backstage.io/techdocs-ref',
+      mockEntityWithAnnotation,
+    );
+    expect(parsedLocationAnnotation.type).toBe('url');
+    expect(parsedLocationAnnotation.target).toBe(
+      'https://github.com/backstage/backstage/blob/master/subfolder/',
+    );
+  });
+
+  it('should throw error without annotation', () => {
+    expect(() => {
+      parseReferenceAnnotation('backstage.io/techdocs-ref', entityBase);
+    }).toThrow(/No location annotation/);
+  });
+
+  it('should throw error with bad annotation', () => {
+    expect(() => {
+      parseReferenceAnnotation(
+        'backstage.io/techdocs-ref',
+        mockEntityWithBadAnnotation,
+      );
+    }).toThrow(/Failure to parse/);
+  });
+});
+
+describe('getLocationForEntity', () => {
+  it('should get location for entity', () => {
+    const parsedLocationAnnotation = getLocationForEntity(
+      mockEntityWithAnnotation,
+    );
+    expect(parsedLocationAnnotation.type).toBe('url');
+    expect(parsedLocationAnnotation.target).toBe(
+      'https://github.com/backstage/backstage/blob/master/subfolder/',
+    );
+  });
+});
 
 describe('getDocFilesFromRepository', () => {
   it('should read a remote directory using UrlReader.readTree', async () => {
@@ -41,28 +139,9 @@ describe('getDocFilesFromRepository', () => {
       }
     }
 
-    const mockEntity: Entity = {
-      metadata: {
-        namespace: 'default',
-        annotations: {
-          'backstage.io/techdocs-ref':
-            'url:https://github.com/backstage/backstage/blob/master/subfolder/',
-        },
-        name: 'mytestcomponent',
-        description: 'A component for testing',
-      },
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'Component',
-      spec: {
-        type: 'documentation',
-        lifecycle: 'experimental',
-        owner: 'testuser',
-      },
-    };
-
     const output = await getDocFilesFromRepository(
       new MockUrlReader(),
-      mockEntity,
+      mockEntityWithAnnotation,
     );
 
     expect(output).toBe('/tmp/testfolder');
