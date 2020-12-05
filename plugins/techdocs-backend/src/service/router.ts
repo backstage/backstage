@@ -120,10 +120,10 @@ export async function createRouter({
       );
     }
 
-    // techdocs-backend will only try to build documentation for an entity if techdocs.docsBuilder is set to 'local'
+    // techdocs-backend will only try to build documentation for an entity if techdocs.builder is set to 'local'
     // If set to 'ci', it will only try to fetch and assume that that CI/CD pipeline of the repository hosting the
     // entity's documentation is responsible for building and publishing documentation to the storage provider.
-    if (config.getString('techdocs.docsBuilder') === 'local') {
+    if (config.getString('techdocs.builder') === 'local') {
       const docsBuilder = new DocsBuilder({
         preparers,
         generators,

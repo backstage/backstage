@@ -68,11 +68,56 @@
             "visibility": "frontend"
           },
           "storageUrl": {
-            "type": "string"
+            "type": "string",
+            "visibility": "backend"
+          },
+          "generators": {
+            "type": "object",
+            "properties": {
+              "techdocs": {
+                "type": "string",
+                "visibility": "backend"
+              }
+            }
+          },
+          "builder": {
+            "type": "string",
+            "visibility": "frontend"
+          },
+          "publisher": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "visibility": "backend"
+              },
+              "google": {
+                "type": "object",
+                "properties": {
+                  "pathToKey": {
+                    "type": "string",
+                    "visibility": "secret"
+                  },
+                  "projectId": {
+                    "type": "string",
+                    "visibility": "secret"
+                  },
+                  "bucketName": {
+                    "type": "string",
+                    "visibility": "secret"
+                  }
+                }
+              }
+            },
+            "required": [
+              "type"
+            ]
           }
         },
         "required": [
-          "requestUrl"
+          "requestUrl",
+          "storageUrl",
+          "builder"
         ]
       }
     }

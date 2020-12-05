@@ -180,8 +180,8 @@ export class GoogleGCSPublish implements PublisherBase {
         .file(filePath)
         .createReadStream()
         .on('error', err => {
-          this.logger.error(err.message);
-          res.send(err.message);
+          this.logger.warn(err.message);
+          res.status(404).send(err.message);
         })
         .on('data', chunk => {
           fileStreamChunks.push(chunk);
