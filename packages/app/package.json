@@ -89,5 +89,8 @@
       "last 1 safari version"
     ]
   },
+  "files": [
+    "dist"
+  ],
   "license": "Apache-2.0"
 }
