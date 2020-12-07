@@ -15,6 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
+import { Gitlab } from '@gitbeaker/node';
 import { Logger } from 'winston';
 import { PreparerBase, PreparerBuilder } from './types';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
@@ -71,9 +72,33 @@ export class Preparers implements PreparerBuilder {
     const azurePreparer = new AzurePreparer(config);
 
     preparers.register('file', filePreparer);
-    preparers.register('gitlab', gitlabPreparer);
-    preparers.register('gitlab/api', gitlabPreparer);
     preparers.register('azure/api', azurePreparer);
+
+    const gitLabConfig = config.getOptionalConfig('scaffolder.gitlab.api');
+    if (gitLabConfig) {
+      try {
+        const gitLabToken = gitLabConfig.getString('token');
+        const host = `${gitLabConfig.getOptionalString('baseUrl')}/api/v4`;
+        const gitLabClient = new Gitlab({
+          host: host,
+          token: gitLabToken,
+        });
+
+        const gitlabPreparer = new GitlabPreparer(gitLabClient, gitLabToken);
+        preparers.register('gitlab', gitlabPreparer);
+        preparers.register('gitlab/api', gitlabPreparer);
+      } catch (e) {
+        if (process.env.NODE_ENV !== 'development') {
+          throw new Error(
+            `Failed to initialize gitlab scaffolding provider, ${e.message}`,
+          );
+        }
+
+        logger.warn(`Skipping gitlab scaffolding provider, ${e.message}`);
+      }
+    }
+    // preparers.register('gitlab', gitlabPreparer);
+    // preparers.register('gitlab/api', gitlabPreparer);
 
     const githubConfig = config.getOptionalConfig('scaffolder.github');
     if (githubConfig) {

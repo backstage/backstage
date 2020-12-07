@@ -23,14 +23,15 @@ import { PreparerBase, PreparerOptions } from './types';
 import GitUriParser from 'git-url-parse';
 import { Clone, Cred } from 'nodegit';
 import { Config } from '@backstage/config';
+import { Gitlab } from '@gitbeaker/core';
 
 export class GitlabPreparer implements PreparerBase {
-  private readonly privateToken: string;
+  private readonly client: Gitlab;
+  private readonly token: string;
 
-  constructor(config: Config) {
-    this.privateToken =
-      config.getOptionalString('catalog.processors.gitlabApi.privateToken') ??
-      '';
+  constructor(client: Gitlab, token: string) {
+    this.client = client;
+    this.token = token;
   }
 
   async prepare(
@@ -58,12 +59,12 @@ export class GitlabPreparer implements PreparerBase {
       template.spec.path ?? '.',
     );
 
-    const options = this.privateToken
+    const options = this.token
       ? {
           fetchOpts: {
             callbacks: {
               credentials: () =>
-                Cred.userpassPlaintextNew('oauth2', this.privateToken),
+                Cred.userpassPlaintextNew('oauth2', this.token),
             },
           },
         }
