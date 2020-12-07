@@ -16,15 +16,38 @@
 
 import { IconComponent } from '../icons';
 
+// @ts-ignore, we're just embedding the Params type for usage in other places
 export type RouteRef<Params extends { [param in string]: string } = {}> = {
   // TODO(Rugvip): Remove path, look up via registry instead
   path: string;
   icon?: IconComponent;
   title: string;
-  P: Params;
+  /**
+   * This function should not be used, create a separate RouteRef instead
+   * @deprecated
+   */
+  createSubRoute(): any;
 };
 
 export type AnyRouteRef = RouteRef<any>;
+
+/**
+ * This type should not be used
+ * @deprecated
+ */
+export type ConcreteRoute = {};
+
+/**
+ * This type should not be used, use RouteRef instead
+ * @deprecated
+ */
+export type AbsoluteRouteRef = RouteRef<{}>;
+
+/**
+ * This type should not be used, use RouteRef instead
+ * @deprecated
+ */
+export type MutableRouteRef = RouteRef<{}>;
 
 export type RouteRefConfig<Params extends { [param in string]: string }> = {
   params?: Array<keyof Params>;

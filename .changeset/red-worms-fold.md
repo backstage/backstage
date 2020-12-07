@@ -1,5 +1,9 @@
 ---
-'@backstage/core-api': minor
+'@backstage/core-api': patch
 ---
 
-Remove exported `ConcreteRoute`, `MutableRouteRef`, `AbsoluteRouteRef` types, and add as of yet unused `params` option to `createRouteRef`.
+Deprecated the `ConcreteRoute`, `MutableRouteRef`, `AbsoluteRouteRef` types and added a new `RouteRef` type as replacement.
+
+Deprecated and disabled the `createSubRoute` method of `AbsoluteRouteRef`.
+
+Add an as of yet unused `params` option to `createRouteRef`.

@@ -32,8 +32,14 @@ export class AbsoluteRouteRef<Params extends { [param in string]: string }> {
     return this.config.title;
   }
 
-  get P(): Params {
-    throw new Error("Don't call me maybe");
+  /**
+   * This function should not be used, create a separate RouteRef instead
+   * @deprecated
+   */
+  createSubRoute(): any {
+    throw new Error(
+      'This method should not be called, create a separate RouteRef instead',
+    );
   }
 
   toString() {
