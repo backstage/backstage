@@ -6,10 +6,13 @@ Adjust template to the latest changes in the `api-docs` plugin.
 
 ## Template Changes
 
-While updating to the latest `api-docs` plugin, the following changes are necessary for the `create-app` template in your `app/src/components/catalog/EntityPage.tsx`. This adds:
+While updating to the latest `api-docs` plugin, the following changes are
+necessary for the `create-app` template in your
+`app/src/components/catalog/EntityPage.tsx`. This adds:
 
 - A custom entity page for API entities
-- Changes the API tab to include the new `ConsumedApisCard` and `ProvidedApisCard` that link to the API entity.
+- Changes the API tab to include the new `ConsumedApisCard` and
+  `ProvidedApisCard` that link to the API entity.
 
 ```diff
  import {
