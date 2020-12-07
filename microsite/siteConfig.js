@@ -72,11 +72,6 @@ const siteConfig = {
     navGroupSubcategoryTitleColor: '#9e9e9e',
   },
 
-  /* Colors for syntax highlighting */
-  highlight: {
-    theme: 'dark',
-  },
-
   // This copyright info is used in /core/Footer.js and blog RSS/Atom feeds.
   copyright: `Copyright © ${new Date().getFullYear()} Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage`,
 
