@@ -31,6 +31,7 @@ import {
 } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
+import { Gitlab } from '@gitbeaker/node';
 
 const mockEntityWithProtocol = (protocol: string): TemplateEntityV1alpha1 => ({
   apiVersion: 'backstage.io/v1alpha1',
@@ -78,7 +79,7 @@ describe('GitLabPreparer', () => {
 
   ['gitlab', 'gitlab/api'].forEach(protocol => {
     it(`calls the clone command with the correct arguments for a repository using the ${protocol} protocol`, async () => {
-      const preparer = new GitlabPreparer(ConfigReader.fromConfigs([]));
+      const preparer = new GitlabPreparer(new Gitlab({}), 'fake-token');
       mockEntity = mockEntityWithProtocol(protocol);
       await preparer.prepare(mockEntity, { logger: getVoidLogger() });
       expect(mocks.Clone.clone).toHaveBeenNthCalledWith(
@@ -90,23 +91,7 @@ describe('GitLabPreparer', () => {
     });
 
     it(`calls the clone command with the correct arguments if an access token is provided for a repository using the ${protocol} protocol`, async () => {
-      const preparer = new GitlabPreparer(
-        ConfigReader.fromConfigs([
-          {
-            context: '',
-            data: {
-              scaffolder: {
-                gutkab: {
-                  api: {
-                    host: 'https://gitlab.com',
-                    token: 'fake-token',
-                  },
-                },
-              },
-            },
-          },
-        ]),
-      );
+      const preparer = new GitlabPreparer(new Gitlab({}), 'fake-token');
       mockEntity = mockEntityWithProtocol(protocol);
       await preparer.prepare(mockEntity, { logger: getVoidLogger() });
       expect(mocks.Clone.clone).toHaveBeenNthCalledWith(
@@ -124,7 +109,7 @@ describe('GitLabPreparer', () => {
     });
 
     it(`calls the clone command with the correct arguments for a repository when no path is provided using the ${protocol} protocol`, async () => {
-      const preparer = new GitlabPreparer(ConfigReader.fromConfigs([]));
+      const preparer = new GitlabPreparer();
       mockEntity = mockEntityWithProtocol(protocol);
       delete mockEntity.spec.path;
       await preparer.prepare(mockEntity, { logger: getVoidLogger() });
@@ -137,7 +122,7 @@ describe('GitLabPreparer', () => {
     });
 
     it(`return the temp directory with the path to the folder if it is specified using the ${protocol} protocol`, async () => {
-      const preparer = new GitlabPreparer(ConfigReader.fromConfigs([]));
+      const preparer = new GitlabPreparer(new Gitlab({}), 'fake-token');
       mockEntity = mockEntityWithProtocol(protocol);
       mockEntity.spec.path = './template/test/1/2/3';
       const response = await preparer.prepare(mockEntity, {
@@ -150,7 +135,7 @@ describe('GitLabPreparer', () => {
     });
 
     it('return the working directory with the path to the folder if it is specified', async () => {
-      const preparer = new GitlabPreparer(ConfigReader.fromConfigs([]));
+      const preparer = new GitlabPreparer(new Gitlab({}), 'fake-token');
       mockEntity.spec.path = './template/test/1/2/3';
       const response = await preparer.prepare(mockEntity, {
         logger: getVoidLogger(),
