@@ -20,23 +20,13 @@ import {
   TableColumn,
   TableFilter,
   TableState,
-  useApi,
   useQueryParamState,
 } from '@backstage/core';
-import { entityRoute, entityRouteParams } from '@backstage/plugin-catalog';
-import { Chip, Link } from '@material-ui/core';
+import { Chip } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React from 'react';
-import { generatePath, Link as RouterLink } from 'react-router-dom';
-import { apiDocsConfigRef } from '../../config';
-
-const ApiTypeTitle = ({ apiEntity }: { apiEntity: ApiEntityV1alpha1 }) => {
-  const config = useApi(apiDocsConfigRef);
-  const definition = config.getApiDefinitionWidget(apiEntity);
-  const type = definition ? definition.title : apiEntity.spec.type;
-
-  return <span>{type}</span>;
-};
+import { ApiTypeTitle } from '../ApiDefinitionCard';
+import { EntityLink } from '../EntityLink';
 
 const columns: TableColumn<Entity>[] = [
   {
@@ -44,15 +34,7 @@ const columns: TableColumn<Entity>[] = [
     field: 'metadata.name',
     highlight: true,
     render: (entity: any) => (
-      <Link
-        component={RouterLink}
-        to={generatePath(
-          `/catalog/${entityRoute.path}`,
-          entityRouteParams(entity),
-        )}
-      >
-        {entity.metadata.name}
-      </Link>
+      <EntityLink entity={entity}>{entity.metadata.name}</EntityLink>
     ),
   },
   {

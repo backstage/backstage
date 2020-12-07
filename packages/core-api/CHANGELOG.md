@@ -1,5 +1,12 @@
 # @backstage/core-api
 
+## 0.2.4
+
+### Patch Changes
+
+- b4488ddb0: Added a type alias for PositionError = GeolocationPositionError
+  - @backstage/test-utils@0.1.4
+
 ## 0.2.3
 
 ### Patch Changes

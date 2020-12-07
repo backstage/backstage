@@ -1,5 +1,11 @@
 # @backstage/plugin-welcome
 
+## 0.2.2
+
+### Patch Changes
+
+- 303c5ea17: Refactor route registration to remove deprecating code
+
 ## 0.2.1
 
 ### Patch Changes

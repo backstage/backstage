@@ -235,6 +235,40 @@ describe('GithubUrlReader', () => {
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
     });
 
+    it('includes the subdomain in the github url', async () => {
+      worker.resetHandlers();
+      worker.use(
+        rest.get(
+          'https://ghe.github.com/backstage/mock/archive/repo.tar.gz',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/x-gzip'),
+              ctx.body(repoBuffer),
+            ),
+        ),
+      );
+
+      const processor = new GithubUrlReader(
+        {
+          host: 'ghe.github.com',
+          apiBaseUrl: 'https://api.github.com',
+        },
+        { treeResponseFactory },
+      );
+
+      const response = await processor.readTree(
+        'https://ghe.github.com/backstage/mock/tree/repo/docs',
+      );
+
+      const files = await response.files();
+
+      expect(files.length).toBe(1);
+      const indexMarkdownFile = await files[0].content();
+
+      expect(indexMarkdownFile.toString()).toBe('# Test\n');
+    });
+
     it('must specify a branch', async () => {
       const processor = new GithubUrlReader(
         {

@@ -56,9 +56,11 @@ class DevAppBuilder {
   /**
    * Register an API factory to add to the app
    */
-  registerApi<Api, Deps extends { [name in string]: unknown }>(
-    factory: ApiFactory<Api, Deps>,
-  ): DevAppBuilder {
+  registerApi<
+    Api,
+    Impl extends Api,
+    Deps extends { [name in string]: unknown }
+  >(factory: ApiFactory<Api, Impl, Deps>): DevAppBuilder {
     this.apis.push(factory);
     return this;
   }
