@@ -25,7 +25,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { BuildStepAction } from 'circleci-api';
 import moment from 'moment';
-import React, { FC, Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 
 const LazyLog = React.lazy(() => import('react-lazylog/build/LazyLog'));
 moment.relativeTimeThreshold('ss', 0);
@@ -40,12 +40,17 @@ const useStyles = makeStyles({
   },
 });
 
-export const ActionOutput: FC<{
+export const ActionOutput = ({
+  url,
+  name,
+  className,
+  action,
+}: {
   url: string;
   name: string;
   className?: string;
   action: BuildStepAction;
-}> = ({ url, name, className, action }) => {
+}) => {
   const classes = useStyles();
 
   const [messages, setMessages] = useState([]);

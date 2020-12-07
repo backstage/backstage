@@ -57,7 +57,7 @@ type DenseTableProps = {
   viewer: Viewer;
 };
 
-export const DenseTable: FC<DenseTableProps> = ({ viewer }) => {
+export const DenseTable = ({ viewer }: DenseTableProps) => {
   const columns: TableColumn[] = [
     { title: 'Name', field: 'name' },
     { title: 'Created', field: 'createdAt' },

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, useState } from 'react';
+import React, { useState } from 'react';
 import { Grid } from '@material-ui/core';
 import {
   Header,
@@ -26,7 +26,7 @@ import {
 import { SentryPluginWidget } from '../SentryPluginWidget/SentryPluginWidget';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 
-const SentryPluginPage: FC<{}> = () => {
+const SentryPluginPage = () => {
   const [statsFor, setStatsFor] = useState<'12h' | '24h'>('12h');
   const toggleStatsFor = () => setStatsFor(statsFor === '12h' ? '12h' : '24h');
   const sentryProjectId = 'sample-sentry-project-id';

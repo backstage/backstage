@@ -81,13 +81,13 @@ import { useApi } from '@backstage/core-api';
 _from inline:_
 
 ```tsx
-const ExampleComponent: FC<{}> = () => ( ... )
+const ExampleComponent = () => ( ... )
 ```
 
 _to block:_
 
 ```tsx
-const ExampleComponent: FC<{}> = () => {
+const ExampleComponent = () => {
 
     return (
         ...
@@ -223,7 +223,7 @@ type DenseTableProps = {
   viewer: Viewer;
 };
 
-export const DenseTable: FC<DenseTableProps> = ({ viewer }) => {
+export const DenseTable = ({ viewer }: DenseTableProps) => {
   const columns: TableColumn[] = [
     { title: 'Name', field: 'name' },
     { title: 'Created', field: 'createdAt' },

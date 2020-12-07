@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React from 'react';
 import {
   createApp,
   AlertDisplay,
@@ -32,7 +32,7 @@ const catalogRouteRef = createRouteRef({
 });
 
 
-const App: FC<{}> = () => (
+const App = () => (
   <AppProvider>
     <AlertDisplay />
     <OAuthRequestDialog />

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import {
   ErrorApi,
   errorApiRef,
@@ -27,10 +27,13 @@ import SentryIssuesTable from '../SentryIssuesTable/SentryIssuesTable';
 import { useAsync } from 'react-use';
 import { sentryApiFactory } from '../../data/api-factory';
 
-export const SentryPluginWidget: FC<{
+export const SentryPluginWidget = ({
+  sentryProjectId,
+  statsFor,
+}: {
   sentryProjectId: string;
   statsFor: '24h' | '12h';
-}> = ({ sentryProjectId, statsFor }) => {
+}) => {
   const errorApi = useApi<ErrorApi>(errorApiRef);
   const configApi = useApi(configApiRef);
   const org = configApi.getString('sentry.organization');
