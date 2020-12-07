@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { SentryIssue } from './sentry-issue';
 
-export interface SentryApi {
-  fetchIssues(project: string, statsFor: string): Promise<SentryIssue[]>;
-}
+import { Entity } from '@backstage/catalog-model';
+
+export const SENTRY_PROJECT_SLUG_ANNOTATION = 'sentry.io/project-slug';
+
+export const useProjectSlug = (entity: Entity) => {
+  return entity?.metadata.annotations?.[SENTRY_PROJECT_SLUG_ANNOTATION] ?? '';
+};

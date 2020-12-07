@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { SentryIssue } from './sentry-issue';
-import { SentryApi } from './sentry-api';
+
+import { SentryIssue } from '../sentry-issue';
+import { SentryApi } from '../sentry-api';
 import mockData from './sentry-issue-mock.json';
 
 function getMockIssue(): SentryIssue {

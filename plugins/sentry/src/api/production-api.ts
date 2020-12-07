@@ -13,36 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { SentryIssue } from './sentry-issue';
 import { SentryApi } from './sentry-api';
+import { DiscoveryApi } from '@backstage/core';
 
 export class ProductionSentryApi implements SentryApi {
-  private organization: string;
-  private backendBaseUrl: string;
-
-  constructor(organization: string, backendBaseUrl: string) {
-    this.organization = organization;
-    this.backendBaseUrl = backendBaseUrl;
-  }
+  constructor(
+    private readonly discoveryApi: DiscoveryApi,
+    private readonly organization: string,
+  ) {}
 
   async fetchIssues(project: string, statsFor: string): Promise<SentryIssue[]> {
-    try {
-      const apiBaseUrl = `${this.backendBaseUrl}/sentry/api/0/projects/`;
-
-      const response = await fetch(
-        `${apiBaseUrl}/${this.organization}/${project}/issues/?statsFor=${statsFor}`,
-      );
-
-      if (response.status >= 400 && response.status < 600) {
-        throw new Error('Failed fetching Sentry issues');
-      }
-
-      return (await response.json()) as SentryIssue[];
-    } catch (exception) {
-      if (exception.detail) {
-        return exception;
-      }
-      throw new Error('Unknown error');
+    if (!project) {
+      return [];
     }
+
+    const apiUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/sentry/api`;
+
+    const response = await fetch(
+      `${apiUrl}/0/projects/${this.organization}/${project}/issues/?statsFor=${statsFor}`,
+    );
+
+    if (response.status >= 400 && response.status < 600) {
+      throw new Error('Failed fetching Sentry issues');
+    }
+
+    return (await response.json()) as SentryIssue[];
   }
 }

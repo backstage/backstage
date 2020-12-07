@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-import { createRouter } from '@backstage/plugin-sentry-backend';
-import type { PluginEnvironment } from '../types';
+import { SentryIssue } from './sentry-issue';
+import { createApiRef } from '@backstage/core';
 
-export default async function createPlugin({ logger }: PluginEnvironment) {
-  return await createRouter(logger);
+export const sentryApiRef = createApiRef<SentryApi>({
+  id: 'plugin.sentry.service',
+  description: 'Used by the Sentry plugin to make requests',
+});
+
+export interface SentryApi {
+  fetchIssues(project: string, statsFor: string): Promise<SentryIssue[]>;
 }
