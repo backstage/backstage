@@ -109,7 +109,7 @@ describe('GitLabPreparer', () => {
     });
 
     it(`calls the clone command with the correct arguments for a repository when no path is provided using the ${protocol} protocol`, async () => {
-      const preparer = new GitlabPreparer();
+      const preparer = new GitlabPreparer(new Gitlab({}), 'fake-token');
       mockEntity = mockEntityWithProtocol(protocol);
       delete mockEntity.spec.path;
       await preparer.prepare(mockEntity, { logger: getVoidLogger() });
