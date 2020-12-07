@@ -69,9 +69,9 @@ export class GithubPreparer implements PreparerBase {
         depth: 1,
         onProgress: event => {
           const total = event.total
-            ? `${event.loaded / event.total}%`
+            ? `${Math.round((event.loaded / event.total) * 100)}%`
             : event.loaded;
-          opts.logger.info({ status: event.phase, total });
+          opts.logger.info(`status={${event.phase},total={${total}}}`);
         },
         headers: {
           'user-agent': 'git/@isomorphic-git',

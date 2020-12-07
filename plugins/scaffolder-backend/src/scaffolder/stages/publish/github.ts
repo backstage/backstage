@@ -46,13 +46,13 @@ export class GithubPublisher implements PublisherBase {
   async publish({
     values,
     directory,
+    logger,
   }: PublisherOptions): Promise<PublisherResult> {
     const remoteUrl = await this.createRemote(values);
 
-    await pushToRemoteCred(directory, remoteUrl, {
+    await pushToRemoteCred(directory, remoteUrl, logger, {
       username: this.token,
-      password: 'x-auth-basic',
-      token: this.token,
+      password: 'x-oauth-basic',
     });
 
     const catalogInfoUrl = remoteUrl.replace(

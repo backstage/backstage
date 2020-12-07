@@ -18,7 +18,7 @@ import git from 'isomorphic-git';
 import globby from 'globby';
 import fs from 'fs';
 import http from 'isomorphic-git/http/node';
-
+import { Logger } from 'winston';
 /*
 username	password
 GitHub	| token	'x-oauth-basic'
@@ -30,8 +30,10 @@ From : https://isomorphic-git.org/docs/en/onAuth
 export async function pushToRemoteCred(
   dir: string,
   remote: string,
-  auth?: { username: string; password: string; token: string },
+  logger: Logger,
+  auth: { username: string; password: string },
 ): Promise<void> {
+  logger.info('Initializing Git Repo', dir);
   await git.init({
     fs,
     dir,
@@ -41,10 +43,13 @@ export async function pushToRemoteCred(
     cwd: dir,
     gitignore: true,
   });
+
+  logger.info('Adding files to repository', dir);
   for (const filepath of paths) {
     await git.add({ fs, dir, filepath });
   }
 
+  logger.info('Creating commit', dir);
   await git.commit({
     fs,
     dir,
@@ -60,7 +65,7 @@ export async function pushToRemoteCred(
     url: remote,
   });
 
-  console.warn({ username: auth.token, password: 'x-oauth-basic' });
+  logger.info('Pushing code to remote', remote);
   await git.push({
     fs,
     dir,
@@ -68,7 +73,13 @@ export async function pushToRemoteCred(
     headers: {
       'user-agent': 'git/@isomorphic-git',
     },
+    onProgress: event => {
+      const total = event.total
+        ? `${Math.round((event.loaded / event.total) * 100)}%`
+        : event.loaded;
+      logger.info(`status={${event.phase},total={${total}}}`);
+    },
     remote: 'origin',
-    onAuth: () => ({ username: auth.token, password: 'x-oauth-basic' }),
+    onAuth: () => auth,
   });
 }
