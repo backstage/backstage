@@ -38,13 +38,19 @@ proxy:
     headers:
       Authorization:
         $env: TRAVISCI_AUTH_TOKEN
-      travis-api-version: 3
+      travis-api-version: '3'
 
   '/newrelic/apm/api':
     target: https://api.newrelic.com/v2
     headers:
       X-Api-Key:
         $env: NEW_RELIC_REST_API_KEY
+
+  '/pagerduty':
+    target: https://api.pagerduty.com
+    headers:
+      Authorization:
+        $env: PAGERDUTY_TOKEN
 
   '/buildkite/api':
     target: https://api.buildkite.com/v2/
@@ -66,8 +72,8 @@ sentry:
 
 rollbar:
   organization: my-company
-  accountToken:
-    $env: ROLLBAR_ACCOUNT_TOKEN
+  # NOTE: The rollbar-backend & accountToken key may be deprecated in the future (replaced by a proxy config)
+  accountToken: my-rollbar-account-token
 
 lighthouse:
   baseUrl: http://localhost:3003
@@ -140,6 +146,19 @@ catalog:
       #       dn: ou=access,ou=groups,ou=example,dc=example,dc=net
       #       options:
       #         filter: (&(objectClass=some-group-class)(!(groupType=email)))
+    microsoftGraphOrg:
+      ### Example for how to add your Microsoft Graph tenant
+      #providers:
+      #  - target: https://graph.microsoft.com/v1.0
+      #    authority: https://login.microsoftonline.com
+      #    tenantId:
+      #      $env: MICROSOFT_GRAPH_TENANT_ID
+      #    clientId:
+      #      $env: MICROSOFT_GRAPH_CLIENT_ID
+      #    clientSecret:
+      #      $env: MICROSOFT_GRAPH_CLIENT_SECRET_TOKEN
+      #    userFilter: accountEnabled eq true and userType eq 'member'
+      #    groupFilter: securityEnabled eq false and mailEnabled eq true and groupTypes/any(c:c+eq+'Unified')
 
   locations:
     # Backstage example components
@@ -176,8 +195,11 @@ scaffolder:
     api:
       token:
         $env: AZURE_TOKEN
-
 auth:
+  environment: development
+  ### Providing an auth.session.secret will enable session support in the auth-backend
+  # session:
+  #   secret: custom session secret
   providers:
     google:
       development:
@@ -222,6 +244,20 @@ auth:
           $env: AUTH_OAUTH2_AUTH_URL
         tokenUrl:
           $env: AUTH_OAUTH2_TOKEN_URL
+    oidc:
+      development:
+        metadataUrl:
+          $env: AUTH_OIDC_METADATA_URL
+        clientId:
+          $env: AUTH_OIDC_CLIENT_ID
+        clientSecret:
+          $env: AUTH_OIDC_CLIENT_SECRET
+        authorizationUrl:
+          $env: AUTH_OIDC_AUTH_URL
+        tokenUrl:
+          $env: AUTH_OIDC_TOKEN_URL
+        tokenSignedResponseAlg:
+          $env: AUTH_OIDC_TOKEN_SIGNED_RESPONSE_ALG
     auth0:
       development:
         clientId:
@@ -261,6 +297,9 @@ costInsights:
     bigQuery:
       name: BigQuery
       icon: search
+    events:
+      name: Events
+      icon: data
   metrics:
     DAU:
       name: Daily Active Users
@@ -277,3 +316,5 @@ homepage:
       timezone: 'Europe/Stockholm'
     - label: TYO
       timezone: 'Asia/Tokyo'
+pagerduty:
+  eventsBaseUrl: 'https://events.pagerduty.com/v2'

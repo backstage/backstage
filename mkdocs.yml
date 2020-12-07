@@ -1,6 +1,9 @@
 site_name: 'Backstage'
 site_description: 'Main documentation for Backstage features and platform APIs'
 
+plugins:
+  - techdocs-core
+
 nav:
   - Overview:
       - What is Backstage?: 'overview/what-is-backstage.md'
@@ -111,6 +114,3 @@ nav:
       - 'support/support.md'
       - 'support/project-structure.md'
   - FAQ: FAQ.md
-
-plugins:
-  - techdocs-core

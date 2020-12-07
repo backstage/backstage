@@ -15,7 +15,7 @@
  */
 
 import { ClusterDetails, ClusterLocatorMethod } from '..';
-import { Config } from '../../../../packages/config/src';
+import { Config } from '@backstage/config';
 import { ConfigClusterLocator } from './ConfigClusterLocator';
 
 export { ConfigClusterLocator } from './ConfigClusterLocator';

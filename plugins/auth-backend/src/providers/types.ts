@@ -113,6 +113,7 @@ export interface AuthProviderRouteHandlers {
 }
 
 export type AuthProviderFactoryOptions = {
+  providerId: string;
   globalConfig: AuthProviderConfig;
   config: Config;
   logger: Logger;

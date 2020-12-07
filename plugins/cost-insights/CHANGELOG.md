@@ -1,5 +1,44 @@
 # @backstage/plugin-cost-insights
 
+## 0.4.2
+
+### Patch Changes
+
+- fe7257ff0: enable SKU breakdown for unlabeled entities
+- a2cfa311a: Add breakdown view to the Cost Overview panel
+- 69f38457f: Add support for non-SKU breakdowns for entities in the product panels.
+- bec334b33: disable support button
+- b4488ddb0: Added a type alias for PositionError = GeolocationPositionError
+- 00670a96e: sort product panels and navigation menu by greatest cost
+  update tsconfig.json to use ES2020 api
+  - @backstage/test-utils@0.1.4
+
+## 0.4.1
+
+### Patch Changes
+
+- 8e6728e25: fix product icon configuration
+- c93a14b49: truncate large percentages > 1000%
+- Updated dependencies [475fc0aaa]
+  - @backstage/core@0.3.2
+
+## 0.4.0
+
+### Minor Changes
+
+- 4040d4fcb: remove cost insights currency feature flag
+
+### Patch Changes
+
+- 1722cb53c: Added configuration schema
+- 17a9f48f6: remove excessive margin from cost overview banner
+- f360395d0: UI improvements: Increase width of first column in product entity dialog table
+  UI improvement: Display full cost amount in product entity dialog table
+- 259d848ee: Fix savings/excess display calculation
+- Updated dependencies [1722cb53c]
+  - @backstage/core@0.3.1
+  - @backstage/test-utils@0.1.3
+
 ## 0.3.0
 
 ### Minor Changes

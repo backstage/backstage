@@ -1,5 +1,56 @@
 # @backstage/plugin-catalog
 
+## 0.2.5
+
+### Patch Changes
+
+- ebf37bbae: Use the OWNED_BY relation and compare it to the users MEMBER_OF relation. The user entity is searched by name, based on the userId of the identity.
+- Updated dependencies [08835a61d]
+- Updated dependencies [a9fd599f7]
+- Updated dependencies [bcc211a08]
+- Updated dependencies [da2ad65cb]
+  - @backstage/catalog-model@0.4.0
+  - @backstage/plugin-scaffolder@0.3.2
+  - @backstage/plugin-techdocs@0.3.1
+  - @backstage/catalog-client@0.3.2
+
+## 0.2.4
+
+### Patch Changes
+
+- 6f70ed7a9: Replace usage of implementsApis with relations
+- Updated dependencies [4b53294a6]
+- Updated dependencies [ab94c9542]
+- Updated dependencies [2daf18e80]
+- Updated dependencies [069cda35f]
+  - @backstage/plugin-techdocs@0.3.0
+  - @backstage/catalog-model@0.3.1
+
+## 0.2.3
+
+### Patch Changes
+
+- Updated dependencies [475fc0aaa]
+- Updated dependencies [1166fcc36]
+- Updated dependencies [ef2831dde]
+- Updated dependencies [1185919f3]
+  - @backstage/core@0.3.2
+  - @backstage/catalog-model@0.3.0
+  - @backstage/plugin-scaffolder@0.3.1
+  - @backstage/catalog-client@0.3.1
+  - @backstage/plugin-techdocs@0.2.3
+
+## 0.2.2
+
+### Patch Changes
+
+- 8b7737d0b: Add About Card tooltips
+- Updated dependencies [1722cb53c]
+- Updated dependencies [717e43de1]
+  - @backstage/core@0.3.1
+  - @backstage/plugin-techdocs@0.2.2
+  - @backstage/catalog-client@0.3.0
+
 ## 0.2.1
 
 ### Patch Changes

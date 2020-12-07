@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   ContentRenderer,
   TooltipProps as RechartsTooltipProps,
@@ -30,22 +30,24 @@ import {
   BarChartLegend,
   BarChartTooltip,
   BarChartTooltipItem,
+  BarChartLegendOptions,
 } from '../BarChart';
 import { pluralOf } from '../../utils/grammar';
-import { findAlways, notEmpty } from '../../utils/assert';
+import { findAlways, notEmpty, isUndefined } from '../../utils/assert';
 import { formatPeriod, formatPercent } from '../../utils/formatters';
 import {
   titleOf,
   tooltipItemOf,
   resourceOf,
   isInvalid,
-  isActiveLabel,
+  isLabeled,
+  isUnlabeled,
 } from '../../utils/graphs';
 import {
   useProductInsightsChartStyles as useStyles,
   useBarChartLayoutStyles as useLayoutStyles,
 } from '../../utils/styles';
-import { BarChartOptions, Duration, Entity, Maybe } from '../../types';
+import { Duration, Entity, Maybe } from '../../types';
 
 export type ProductInsightsChartProps = {
   billingDate: string;
@@ -60,67 +62,44 @@ export const ProductInsightsChart = ({
 }: ProductInsightsChartProps) => {
   const classes = useStyles();
   const layoutClasses = useLayoutStyles();
-  const [isOpen, setOpen] = useState(false);
-  const [isClickable, setClickable] = useState(true);
-  const [selectLabel, setSelected] = useState<Maybe<string>>(null);
-  const [activeLabel, setActive] = useState<Maybe<string>>(null);
+  const [activeLabel, setActive] = useState<Maybe<string>>();
+  const [selectLabel, setSelected] = useState<Maybe<string>>();
+  const isSelected = useMemo(() => !isUndefined(selectLabel), [selectLabel]);
+  const isClickable = useMemo(() => {
+    const breakdownEntities =
+      entity.entities.find(e => e.id === activeLabel)?.entities ?? [];
+    return breakdownEntities.length > 0;
+  }, [entity, activeLabel]);
 
   const legendTitle = `Cost ${entity.change.ratio <= 0 ? 'Savings' : 'Growth'}`;
   const costStart = entity.aggregation[0];
   const costEnd = entity.aggregation[1];
   const resources = entity.entities.map(resourceOf);
 
-  const options: Partial<BarChartOptions> = {
+  const options: Partial<BarChartLegendOptions> = {
     previousName: formatPeriod(duration, billingDate, false),
     currentName: formatPeriod(duration, billingDate, true),
   };
 
-  useEffect(() => {
-    function toggleModal() {
-      if (selectLabel) {
-        setOpen(true);
-      } else {
-        setOpen(false);
-      }
-    }
-
-    toggleModal();
-  }, [selectLabel]);
-
-  useEffect(() => {
-    // disable click if an entity is unlabeled or if it does not have any skus
-    function toggleClickableEntity() {
-      if (activeLabel) {
-        const hasSkus = entity.entities.find(e => e.id === activeLabel)
-          ?.entities.length;
-        if (hasSkus) {
-          setClickable(true);
-        } else {
-          setClickable(false);
-        }
-      } else {
-        setClickable(false);
-      }
-    }
-
-    toggleClickableEntity();
-  }, [activeLabel, entity]);
-
   const onMouseMove: RechartsFunction = (
     data: Record<'activeLabel', string | undefined>,
   ) => {
-    if (isActiveLabel(data)) {
+    if (isLabeled(data)) {
       setActive(data.activeLabel!);
-    } else {
+    } else if (isUnlabeled(data)) {
       setActive(null);
+    } else {
+      setActive(undefined);
     }
   };
 
   const onClick: RechartsFunction = (data: Record<'activeLabel', string>) => {
-    if (isActiveLabel(data)) {
+    if (isLabeled(data)) {
       setSelected(data.activeLabel);
-    } else {
+    } else if (isUnlabeled(data)) {
       setSelected(null);
+    } else {
+      setSelected(undefined);
     }
   };
 
@@ -143,10 +122,13 @@ export const ProductInsightsChart = ({
 
     const activeEntity = findAlways(entity.entities, e => e.id === id);
     const ratio = activeEntity.change.ratio;
-    const skus = activeEntity.entities;
-    const subtitle = `${skus.length} ${pluralOf(skus.length, 'SKU')}`;
+    const breakdownEntities = activeEntity.entities;
+    const subtitle = `${breakdownEntities.length} ${pluralOf(
+      breakdownEntities.length,
+      entity.entitiesLabel || 'SKU',
+    )}`;
 
-    if (skus.length) {
+    if (breakdownEntities.length) {
       return (
         <BarChartTooltip
           title={title}
@@ -172,7 +154,7 @@ export const ProductInsightsChart = ({
       );
     }
 
-    // If an entity doesn't have any skus, there aren't any costs to break down.
+    // If an entity doesn't have any sub-entities, there aren't any costs to break down.
     return (
       <BarChartTooltip
         title={title}
@@ -212,12 +194,13 @@ export const ProductInsightsChart = ({
         options={options}
         {...barChartProps}
       />
-      {selectLabel && entity.entities.length && (
+      {isSelected && entity.entities.length && (
         <ProductEntityDialog
-          open={isOpen}
-          onClose={() => setSelected(null)}
+          open={isSelected}
+          onClose={() => setSelected(undefined)}
           entity={entity.entities.find(e => e.id === selectLabel)}
           options={options}
+          entitiesLabel={entity.entitiesLabel || 'SKU'}
         />
       )}
     </Box>

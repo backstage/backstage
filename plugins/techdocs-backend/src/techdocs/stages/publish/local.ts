@@ -53,9 +53,7 @@ export class LocalPublish implements PublisherBase {
     );
 
     if (!fs.existsSync(publishDir)) {
-      this.logger.info(
-        `[TechDocs]: Could not find ${publishDir}, creates the directory.`,
-      );
+      this.logger.info(`Could not find ${publishDir}, creating the directory.`);
       fs.mkdirSync(publishDir, { recursive: true });
     }
 
@@ -63,7 +61,7 @@ export class LocalPublish implements PublisherBase {
       fs.copy(directory, publishDir, err => {
         if (err) {
           this.logger.debug(
-            `[TechDocs]: Failed to copy docs from ${directory} to ${publishDir}`,
+            `Failed to copy docs from ${directory} to ${publishDir}`,
           );
           reject(err);
         }

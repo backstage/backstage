@@ -31,6 +31,7 @@ we recommend that you name them `catalog-info.yaml`.
 - [Kind: Resource](#kind-resource)
 - [Kind: System](#kind-system)
 - [Kind: Domain](#kind-domain)
+- [Kind: Location](#kind-location)
 
 ## Overall Shape Of An Entity
 
@@ -43,7 +44,7 @@ software catalog API.
   "kind": "Component",
   "metadata": {
     "annotations": {
-      "backstage.io/managed-by-location": "file:/tmp/component-info.yaml",
+      "backstage.io/managed-by-location": "file:/tmp/catalog-info.yaml",
       "example.com/service-discovery": "artistweb",
       "circleci.com/project-slug": "github/example-org/artist-website"
     },
@@ -92,6 +93,43 @@ some metadata fields like `name`, `labels`, and `annotations` are of special
 significance and have reserved purposes and distinct shapes.
 
 See below for details about these fields.
+
+## Substitutions In The Descriptor Format
+
+The descriptor format supports substitutions using `$text`, `$json`, and
+`$yaml`.
+
+Placeholders like `$json: https://example.com/entity.json` are substituted by
+the content of the referenced file. Files can be referenced from any configured
+integration similar to locations by passing an absolute URL. It's also possible
+to reference relative files like `./referenced.yaml` from the same location.
+Relative references are handled relative to the folder of the
+`catalog-info.yaml` that contains the placeholder. There are three different
+types of placeholders:
+
+- `$text`: Interprets the contents of the referenced file as plain text and
+  embeds it as a string.
+- `$json`: Interprets the contents of the referenced file as JSON and embeds the
+  parsed structure.
+- `$yaml`: Interprets the contents of the referenced file as YAML and embeds the
+  parsed structure.
+
+For example, this can be used to load the definition of an API entity from a web
+server and embed it as a string in the field `spec.definition`:
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: petstore
+  description: The Petstore API
+spec:
+  type: openapi
+  lifecycle: production
+  owner: petstore@example.com
+  definition:
+    $text: https://petstore.swagger.io/v2/swagger.json
+```
 
 ## Common to All Kinds: The Envelope
 
@@ -344,7 +382,7 @@ spec:
   type: website
   lifecycle: production
   owner: artist-relations@example.com
-  implementsApis:
+  providesApis:
     - artist-api
 ```
 
@@ -408,8 +446,31 @@ group of people in an organizational structure.
 
 ### `spec.implementsApis` [optional]
 
+**NOTE**: This field was marked for deprecation on Nov 25nd, 2020. It will be
+removed entirely from the model on Dec 14th, 2020 in the repository and will not
+be present in released packages following the next release after that. Please
+update your code to not consume this field before the removal date.
+
 Links APIs that are implemented by the component, e.g. `artist-api`. This field
 is optional.
+
+The software catalog expects a list of one or more strings that references the
+names of other entities of the `kind` `API`.
+
+This field has the same behavior as `spec.providesApis`.
+
+### `spec.providesApis` [optional]
+
+Links APIs that are provided by the component, e.g. `artist-api`. This field is
+optional.
+
+The software catalog expects a list of one or more strings that references the
+names of other entities of the `kind` `API`.
+
+### `spec.consumesApis` [optional]
+
+Links APIs that are consumed by the component, e.g. `artist-api`. This field is
+optional.
 
 The software catalog expects a list of one or more strings that references the
 names of other entities of the `kind` `API`.
@@ -592,6 +653,9 @@ The current set of well-known and common values for this field is:
   [OpenAPI](https://swagger.io/specification/) version 2 or version 3 spec.
 - `asyncapi` - An API definition based on the
   [AsyncAPI](https://www.asyncapi.com/docs/specifications/latest/) spec.
+- `graphql` - An API definition based on
+  [GraphQL schemas](https://spec.graphql.org/) for consuming
+  [GraphQL](https://graphql.org/) based APIs.
 - `grpc` - An API definition based on
   [Protocol Buffers](https://developers.google.com/protocol-buffers) to use with
   [gRPC](https://grpc.io/).
@@ -660,9 +724,7 @@ metadata:
 spec:
   type: business-unit
   parent: ops
-  ancestors: [ops, global-synergies, acme-corp]
   children: [backstage, other]
-  descendants: [backstage, other, team-a, team-b, team-c, team-d]
 ```
 
 In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)
@@ -698,40 +760,12 @@ namespace as the user. Only `Group` entities may be referenced. Most commonly,
 this field points to a group in the same namespace, so in those cases it is
 sufficient to enter only the `metadata.name` field of that group.
 
-### `spec.ancestors` [required]
-
-The recursive list of parents up the hierarchy, by stepping through parents one
-by one. The list must be present, but may be empty if `parent` is not present.
-The first entry in the list is equal to `parent`, and then the following ones
-are progressively farther up the hierarchy.
-
-The entries of this array are
-[entity references](https://backstage.io/docs/features/software-catalog/references),
-with the default kind `Group` and the default namespace equal to the same
-namespace as the user. Only `Group` entities may be referenced. Most commonly,
-these entries point to groups in the same namespace, so in those cases it is
-sufficient to enter only the `metadata.name` field of those groups.
-
 ### `spec.children` [required]
 
 The immediate child groups of this group in the hierarchy (whose `parent` field
 points to this group). The list must be present, but may be empty if there are
 no child groups. The items are not guaranteed to be ordered in any particular
 way.
-
-The entries of this array are
-[entity references](https://backstage.io/docs/features/software-catalog/references),
-with the default kind `Group` and the default namespace equal to the same
-namespace as the user. Only `Group` entities may be referenced. Most commonly,
-these entries point to groups in the same namespace, so in those cases it is
-sufficient to enter only the `metadata.name` field of those groups.
-
-### `spec.descendants` [required]
-
-The immediate and recursive child groups of this group in the hierarchy
-(children, and children's children, etc.). The list must be present, but may be
-empty if there are no child groups. The items are not guaranteed to be ordered
-in any particular way.
 
 The entries of this array are
 [entity references](https://backstage.io/docs/features/software-catalog/references),
@@ -811,3 +845,58 @@ This kind is not yet defined, but is reserved [for future use](system-model.md).
 ## Kind: Domain
 
 This kind is not yet defined, but is reserved [for future use](system-model.md).
+
+## Kind: Location
+
+Describes the following entity kind:
+
+| Field        | Value                   |
+| ------------ | ----------------------- |
+| `apiVersion` | `backstage.io/v1alpha1` |
+| `kind`       | `Location`              |
+
+A location is a marker that references other places to look for catalog data.
+
+Descriptor files for this kind may look as follows.
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: org-data
+spec:
+  type: url
+  targets:
+    - http://github.com/myorg/myproject/org-data-dump/catalog-info-staff.yaml
+    - http://github.com/myorg/myproject/org-data-dump/catalog-info-consultants.yaml
+```
+
+In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)
+shape, this kind has the following structure.
+
+### `apiVersion` and `kind` [required]
+
+Exactly equal to `backstage.io/v1alpha1` and `Location`, respectively.
+
+### `spec.type` [optional]
+
+The single location type, that's common to the targets specified in the spec. If
+it is left out, it is inherited from the location type that originally read the
+entity data. For example, if you have a `url` type location, that when read
+results in a `Location` kind entity with no `spec.type`, then the referenced
+targets in the entity will implicitly also be of `url` type. This is useful
+because you can define a hierarchy of things in a directory structure using
+relative target paths (see below), and it will work out no matter if it's
+consumed locally on disk from a `file` location, or as uploaded on a VCS.
+
+### `spec.target` [optional]
+
+A single target as a string. Can be either an absolute path/URL (depending on
+the type), or a relative path such as `./details/catalog-info.yaml` which is
+resolved relative to the location of this Location entity itself.
+
+### `spec.targets` [optional]
+
+A list of targets as strings. They can all be either absolute paths/URLs
+(depending on the type), or relative paths such as `./details/catalog-info.yaml`
+which are resolved relative to the location of this Location entity itself.

@@ -16,6 +16,7 @@
 
 import {
   formatPeriod,
+  formatPercent,
   lengthyCurrencyFormatter,
   quarterOf,
 } from './formatters';
@@ -67,5 +68,19 @@ describe.each`
 `('formatPeriod', ({ duration, date, isEndDate, output }) => {
   it(`Correctly formats ${duration} with date ${date}`, async () => {
     expect(formatPeriod(duration, date, isEndDate)).toBe(output);
+  });
+});
+
+describe.each`
+  ratio             | expected
+  ${0.0}            | ${'0%'}
+  ${0.000000000001} | ${'0%'}
+  ${-0.00000000001} | ${'0%'}
+  ${0.123123}       | ${'12%'}
+  ${1.123}          | ${'112%'}
+  ${10.123}         | ${'>1000%'}
+`('formatPercent', ({ ratio, expected }) => {
+  it(`correctly formats ${ratio} as ${expected}`, () => {
+    expect(formatPercent(ratio)).toBe(expected);
   });
 });

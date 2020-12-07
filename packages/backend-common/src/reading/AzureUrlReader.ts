@@ -19,22 +19,55 @@ import {
   readAzureIntegrationConfigs,
 } from '@backstage/integration';
 import fetch from 'cross-fetch';
+import { Readable } from 'stream';
+import parseGitUri from 'git-url-parse';
 import { NotFoundError } from '../errors';
-import { ReaderFactory, ReadTreeResponse, UrlReader } from './types';
+import {
+  ReaderFactory,
+  ReadTreeOptions,
+  ReadTreeResponse,
+  UrlReader,
+} from './types';
+import { ReadTreeResponseFactory } from './tree';
+
+export function getDownloadUrl(url: string): URL {
+  const {
+    name: repoName,
+    owner: project,
+    organization,
+    protocol,
+    resource,
+    filepath,
+  } = parseGitUri(url);
+
+  // scopePath will limit the downloaded content
+  // /docs will only download the docs folder and everything below it
+  // /docs/index.md will only download index.md but put it in the root of the archive
+  const scopePath = filepath
+    ? `&scopePath=${encodeURIComponent(filepath)}`
+    : '';
+
+  return new URL(
+    `${protocol}://${resource}/${organization}/${project}/_apis/git/repositories/${repoName}/items?recursionLevel=full&download=true&api-version=6.0${scopePath}`,
+  );
+}
 
 export class AzureUrlReader implements UrlReader {
-  static factory: ReaderFactory = ({ config }) => {
+  static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     const configs = readAzureIntegrationConfigs(
       config.getOptionalConfigArray('integrations.azure') ?? [],
     );
     return configs.map(options => {
-      const reader = new AzureUrlReader(options);
+      const reader = new AzureUrlReader(options, { treeResponseFactory });
       const predicate = (url: URL) => url.host === options.host;
       return { reader, predicate };
     });
   };
 
-  constructor(private readonly options: AzureIntegrationConfig) {
+  constructor(
+    private readonly options: AzureIntegrationConfig,
+    private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
+  ) {
     if (options.host !== 'dev.azure.com') {
       throw Error(
         `Azure integration currently only supports 'dev.azure.com', tried to use host '${options.host}'`,
@@ -64,8 +97,26 @@ export class AzureUrlReader implements UrlReader {
     throw new Error(message);
   }
 
-  readTree(): Promise<ReadTreeResponse> {
-    throw new Error('AzureUrlReader does not implement readTree');
+  async readTree(
+    url: string,
+    options?: ReadTreeOptions,
+  ): Promise<ReadTreeResponse> {
+    const response = await fetch(
+      getDownloadUrl(url).toString(),
+      this.getRequestOptions({ Accept: 'application/zip' }),
+    );
+    if (!response.ok) {
+      const message = `Failed to read tree from ${url}, ${response.status} ${response.statusText}`;
+      if (response.status === 404) {
+        throw new NotFoundError(message);
+      }
+      throw new Error(message);
+    }
+
+    return this.deps.treeResponseFactory.fromZipArchive({
+      stream: (response.body as unknown) as Readable,
+      filter: options?.filter,
+    });
   }
 
   // Converts
@@ -127,8 +178,10 @@ export class AzureUrlReader implements UrlReader {
     }
   }
 
-  private getRequestOptions(): RequestInit {
-    const headers: HeadersInit = {};
+  private getRequestOptions(additionalHeaders?: {
+    [key: string]: string;
+  }): RequestInit {
+    const headers: HeadersInit = additionalHeaders ?? {};
 
     if (this.options.token) {
       headers.Authorization = `Basic ${Buffer.from(

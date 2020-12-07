@@ -30,6 +30,8 @@ const schema = yup.object<Partial<ComponentEntityV1alpha1>>({
       lifecycle: yup.string().required().min(1),
       owner: yup.string().required().min(1),
       implementsApis: yup.array(yup.string().required()).notRequired(),
+      providesApis: yup.array(yup.string().required()).notRequired(),
+      consumesApis: yup.array(yup.string().required()).notRequired(),
     })
     .required(),
 });
@@ -41,7 +43,14 @@ export interface ComponentEntityV1alpha1 extends Entity {
     type: string;
     lifecycle: string;
     owner: string;
+    /**
+     * @deprecated This field will disappear on Dec 14th, 2020. Please remove
+     *             any consuming code. The new field providesApis provides the
+     *             same functionality like before.
+     */
     implementsApis?: string[];
+    providesApis?: string[];
+    consumesApis?: string[];
   };
 }
 

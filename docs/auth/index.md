@@ -93,6 +93,6 @@ sign-in methods.
 More details are provided in dedicated sections of the documentation.
 
 - [OAuth](./oauth.md): Description of the generic OAuth flow implemented by the
-  [auth-backend](../../plugins/auth-backend).
+  [auth-backend](https://github.com/backstage/backstage/tree/master/plugins/auth-backend).
 - [Glossary](./glossary.md): Glossary of some common terms related to the auth
   flows.

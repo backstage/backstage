@@ -16,7 +16,6 @@
 
 import webpack, { Module, Plugin } from 'webpack';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import { BundlingOptions, BackendBundlingOptions } from './types';
 import { svgrTemplate } from '../svgrTemplate';
 
 type Transforms = {
@@ -24,17 +23,25 @@ type Transforms = {
   plugins: Plugin[];
 };
 
-export const transforms = (
-  options: BundlingOptions | BackendBundlingOptions,
-): Transforms => {
-  const { isDev } = options;
+type TransformOptions = {
+  isDev: boolean;
+  // External paths that should be transformed
+  externalTransforms: string[];
+};
+
+export const transforms = (options: TransformOptions): Transforms => {
+  const { isDev, externalTransforms } = options;
 
   const extraTransforms = isDev ? ['react-hot-loader'] : [];
+
+  const transformExcludeCondition = {
+    and: [/node_modules/, { not: externalTransforms }],
+  };
 
   const loaders = [
     {
       test: /\.(tsx?)$/,
-      exclude: /node_modules/,
+      exclude: transformExcludeCondition,
       loader: require.resolve('@sucrase/webpack-loader'),
       options: {
         transforms: ['typescript', 'jsx', ...extraTransforms],
@@ -43,7 +50,7 @@ export const transforms = (
     },
     {
       test: /\.(jsx?|mjs)$/,
-      exclude: /node_modules/,
+      exclude: transformExcludeCondition,
       loader: require.resolve('@sucrase/webpack-loader'),
       options: {
         transforms: ['jsx', ...extraTransforms],

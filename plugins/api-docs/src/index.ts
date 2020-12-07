@@ -14,5 +14,6 @@
  * limitations under the License.
  */
 
-export { Router } from './catalog';
+export * from './catalog';
+export * from './components';
 export { plugin } from './plugin';

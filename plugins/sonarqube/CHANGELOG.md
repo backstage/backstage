@@ -1,5 +1,25 @@
 # @backstage/plugin-sonarqube
 
+## 0.1.5
+
+### Patch Changes
+
+- Updated dependencies [08835a61d]
+- Updated dependencies [a9fd599f7]
+- Updated dependencies [bcc211a08]
+  - @backstage/catalog-model@0.4.0
+
+## 0.1.4
+
+### Patch Changes
+
+- 26484d413: Add configuration schema
+- Updated dependencies [475fc0aaa]
+- Updated dependencies [1166fcc36]
+- Updated dependencies [1185919f3]
+  - @backstage/core@0.3.2
+  - @backstage/catalog-model@0.3.0
+
 ## 0.1.3
 
 ### Patch Changes

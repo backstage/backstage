@@ -18,7 +18,7 @@ import { Config } from '@backstage/config';
 import { CorsOptions } from 'cors';
 
 export type BaseOptions = {
-  listenPort?: number;
+  listenPort?: string | number;
   listenHost?: string;
 };
 
@@ -89,8 +89,19 @@ export function readBaseOptions(config: Config): BaseOptions {
     });
   }
 
+  const port = config.getOptional('listen.port');
+  if (
+    typeof port !== 'undefined' &&
+    typeof port !== 'number' &&
+    typeof port !== 'string'
+  ) {
+    throw new Error(
+      `Invalid type in config for key 'backend.listen.post', got ${typeof port}, wanted string or number`,
+    );
+  }
+
   return removeUnknown({
-    listenPort: config.getOptionalNumber('listen.port'),
+    listenPort: port,
     listenHost: config.getOptionalString('listen.host'),
     baseUrl: config.getOptionalString('baseUrl'),
   });
@@ -134,24 +145,33 @@ export function readCorsOptions(config: Config): CorsOptions | undefined {
  * Attempts to read a CSP options object from the root of a config object.
  *
  * @param config The root of a backend config object
- * @returns A CSP options object, or undefined if not specified
+ * @returns A CSP options object, or undefined if not specified. Values can be
+ *          false as well, which means to remove the default behavior for that
+ *          key.
  *
  * @example
  * ```yaml
  * backend:
  *   csp:
  *     connect-src: ["'self'", 'http:', 'https:']
+ *     upgrade-insecure-requests: false
  * ```
  */
-export function readCspOptions(config: Config): CspOptions | undefined {
+export function readCspOptions(
+  config: Config,
+): Record<string, string[] | false> | undefined {
   const cc = config.getOptionalConfig('csp');
   if (!cc) {
     return undefined;
   }
 
-  const result: CspOptions = {};
+  const result: Record<string, string[] | false> = {};
   for (const key of cc.keys()) {
-    result[key] = cc.getStringArray(key);
+    if (cc.get(key) === false) {
+      result[key] = false;
+    } else {
+      result[key] = cc.getStringArray(key);
+    }
   }
 
   return result;

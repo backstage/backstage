@@ -1,5 +1,55 @@
 # @backstage/plugin-auth-backend
 
+## 0.2.5
+
+### Patch Changes
+
+- Updated dependencies [612368274]
+- Updated dependencies [08835a61d]
+- Updated dependencies [a9fd599f7]
+- Updated dependencies [bcc211a08]
+  - @backstage/backend-common@0.3.3
+  - @backstage/catalog-model@0.4.0
+  - @backstage/catalog-client@0.3.2
+
+## 0.2.4
+
+### Patch Changes
+
+- 50eff1d00: Allow the backend to register custom AuthProviderFactories
+- 700a212b4: bug fix: issue 3223 - detect mismatching origin and indicate it in the message at auth failure
+- Updated dependencies [3aa7efb3f]
+- Updated dependencies [ab94c9542]
+- Updated dependencies [2daf18e80]
+- Updated dependencies [069cda35f]
+- Updated dependencies [b3d4e4e57]
+  - @backstage/backend-common@0.3.2
+  - @backstage/catalog-model@0.3.1
+
+## 0.2.3
+
+### Patch Changes
+
+- Updated dependencies [1166fcc36]
+- Updated dependencies [bff3305aa]
+- Updated dependencies [1185919f3]
+- Updated dependencies [b47dce06f]
+  - @backstage/catalog-model@0.3.0
+  - @backstage/backend-common@0.3.1
+  - @backstage/catalog-client@0.3.1
+
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies [1722cb53c]
+- Updated dependencies [1722cb53c]
+- Updated dependencies [7b37e6834]
+- Updated dependencies [8e2effb53]
+- Updated dependencies [717e43de1]
+  - @backstage/backend-common@0.3.0
+  - @backstage/catalog-client@0.3.0
+
 ## 0.2.1
 
 ### Patch Changes

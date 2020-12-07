@@ -14,7 +14,7 @@ need to run Backstage in your own environment.
 
 To create a Backstage app, you will need to have
 [Node.js](https://nodejs.org/en/download/) Active LTS Release installed
-(currently v12).
+(currently v14).
 
 Backstage provides a utility for creating new apps. It guides you through the
 initial setup of selecting the name of the app and a database for the backend.
@@ -37,6 +37,42 @@ app-folder is the name that was provided when prompted.
 
 Inside that directory, it will generate all the files and folder structure
 needed for you to run your app.
+
+### Linking in local Backstage packages
+
+It can often be useful to try out changes to the packages in the main Backstage
+repo within your own app. For example if you want to make modifications to
+`@backstage/core` and try them out in your app.
+
+To link in external packages, add them to your `package.json` and `lerna.json`
+workspace paths. These can be either relative or absolute paths with or without
+globs. For example:
+
+```json
+"packages": [
+  "packages/*",
+  "plugins/*",
+  "../backstage/packages/core", // New path added to work on @backstage/core
+],
+```
+
+Then reinstall packages to make yarn set up symlinks:
+
+```bash
+yarn install
+```
+
+With this in place you can now modify the `@backstage/core` package within the
+main repo, and have those changes be reflected and tested in your app. Simply
+run your app using `yarn start` as normal.
+
+Note that for backend packages you need to make sure that linked packages are
+not dependencies of any non-linked package. If you for example want to work on
+`@backstage/backend-common`, you need to also link in other backend plugins and
+packages that depend on `@backstage/backend-common`, or temporarily disable
+those plugins in your backend. This is because the transformation of backend
+module tree stops whenever a non-local package is encountered, and from that
+point node will `require` packages directly for that entire module subtree.
 
 ### Troubleshooting
 

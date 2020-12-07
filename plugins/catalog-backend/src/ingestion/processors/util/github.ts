@@ -162,9 +162,7 @@ export async function getOrganizationTeams(
       },
       spec: {
         type: 'team',
-        ancestors: [],
         children: [],
-        descendants: [],
       },
     };
 

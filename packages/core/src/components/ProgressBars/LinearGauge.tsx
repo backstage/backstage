@@ -40,12 +40,14 @@ export const LinearGauge: FC<Props> = ({ value }) => {
   const strokeColor = getProgressColor(theme.palette, percent, false, 100);
   return (
     <Tooltip title={`${percent}%`}>
-      <Line
-        percent={percent}
-        strokeWidth={4}
-        trailWidth={4}
-        strokeColor={strokeColor}
-      />
+      <span>
+        <Line
+          percent={percent}
+          strokeWidth={4}
+          trailWidth={4}
+          strokeColor={strokeColor}
+        />
+      </span>
     </Tooltip>
   );
 };

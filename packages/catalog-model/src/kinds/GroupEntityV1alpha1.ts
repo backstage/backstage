@@ -32,19 +32,9 @@ const schema = yup.object<Partial<GroupEntityV1alpha1>>({
       // one element and there is no simple workaround -_-
       // the cast is there to convince typescript that the array itself is
       // required without using .required()
-      ancestors: yup.array(yup.string().required()).test({
-        name: 'isDefined',
-        message: 'ancestors must be defined',
-        test: v => Boolean(v),
-      }) as yup.ArraySchema<string, object>,
       children: yup.array(yup.string().required()).test({
         name: 'isDefined',
         message: 'children must be defined',
-        test: v => Boolean(v),
-      }) as yup.ArraySchema<string, object>,
-      descendants: yup.array(yup.string().required()).test({
-        name: 'isDefined',
-        message: 'descendants must be defined',
         test: v => Boolean(v),
       }) as yup.ArraySchema<string, object>,
     })
@@ -57,9 +47,7 @@ export interface GroupEntityV1alpha1 extends Entity {
   spec: {
     type: string;
     parent?: string;
-    ancestors: string[];
     children: string[];
-    descendants: string[];
   };
 }
 

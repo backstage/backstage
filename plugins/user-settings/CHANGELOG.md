@@ -1,5 +1,13 @@
 # @backstage/plugin-user-settings
 
+## 0.2.2
+
+### Patch Changes
+
+- 1722cb53c: Added configuration schema
+- Updated dependencies [1722cb53c]
+  - @backstage/core@0.3.1
+
 ## 0.2.1
 
 ### Patch Changes

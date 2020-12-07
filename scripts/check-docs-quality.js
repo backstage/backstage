@@ -46,7 +46,7 @@ const getFilesToLint = () => {
     .toString()
     .split('\n')
     .filter(function (el) {
-      return el != '';
+      return el !== '';
     });
 };
 

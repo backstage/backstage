@@ -18,6 +18,7 @@ import {
   Entity,
   ENTITY_DEFAULT_NAMESPACE,
   RELATION_OWNED_BY,
+  RELATION_PROVIDES_API,
   serializeEntityRef,
 } from '@backstage/catalog-model';
 import {
@@ -111,6 +112,8 @@ type AboutCardProps = {
 export function AboutCard({ entity, variant }: AboutCardProps) {
   const classes = useStyles();
   const codeLink = getCodeLinkInfo(entity);
+  // TODO: Also support RELATION_CONSUMES_API here
+  const hasApis = entity.relations?.some(r => r.type === RELATION_PROVIDES_API);
 
   return (
     <Card className={variant === 'gridItem' ? classes.gridItemCard : ''}>
@@ -119,6 +122,7 @@ export function AboutCard({ entity, variant }: AboutCardProps) {
         action={
           <IconButton
             aria-label="Edit"
+            title="Edit Metadata"
             onClick={() => {
               window.open(codeLink.edithref || '#', '_blank');
             }}
@@ -133,15 +137,21 @@ export function AboutCard({ entity, variant }: AboutCardProps) {
               disabled={
                 !entity.metadata.annotations?.['backstage.io/techdocs-ref']
               }
-              label="View Techdocs"
+              label="View TechDocs"
+              title={
+                !entity.metadata.annotations?.['backstage.io/techdocs-ref']
+                  ? 'No TechDocs available'
+                  : ''
+              }
               icon={<DocsIcon />}
               href={`/docs/${
                 entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE
               }/${entity.kind}/${entity.metadata.name}`}
             />
             <IconLinkVertical
-              disabled={!entity.spec?.implementsApis}
+              disabled={!hasApis}
               label="View API"
+              title={hasApis ? '' : 'No APIs available'}
               icon={<ExtensionIcon />}
               href="api"
             />

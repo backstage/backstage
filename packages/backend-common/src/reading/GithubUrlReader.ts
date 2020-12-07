@@ -179,7 +179,7 @@ export class GithubUrlReader implements UrlReader {
       name: repoName,
       ref,
       protocol,
-      source,
+      resource,
       full_name,
       filepath,
     } = parseGitUri(url);
@@ -194,8 +194,9 @@ export class GithubUrlReader implements UrlReader {
     // TODO(Rugvip): use API to fetch URL instead
     const response = await fetch(
       new URL(
-        `${protocol}://${source}/${full_name}/archive/${ref}.tar.gz`,
+        `${protocol}://${resource}/${full_name}/archive/${ref}.tar.gz`,
       ).toString(),
+      getRawRequestOptions(this.config),
     );
     if (!response.ok) {
       const message = `Failed to read tree from ${url}, ${response.status} ${response.statusText}`;
@@ -207,7 +208,7 @@ export class GithubUrlReader implements UrlReader {
 
     const path = `${repoName}-${ref}/${filepath}`;
 
-    return this.deps.treeResponseFactory.fromArchive({
+    return this.deps.treeResponseFactory.fromTarArchive({
       // TODO(Rugvip): Underlying implementation of fetch will be node-fetch, we probably want
       //               to stick to using that in exclusively backend code.
       stream: (response.body as unknown) as Readable,

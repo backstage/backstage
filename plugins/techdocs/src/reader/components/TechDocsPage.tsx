@@ -26,19 +26,19 @@ export const TechDocsPage = () => {
   const [documentReady, setDocumentReady] = useState<boolean>(false);
   const { namespace, kind, name } = useParams();
 
-  const techDocsApi = useApi(techdocsApiRef);
+  const techdocsApi = useApi(techdocsApiRef);
 
-  const mkdocsMetadataRequest = useAsync(() => {
+  const techdocsMetadataRequest = useAsync(() => {
     if (documentReady) {
-      return techDocsApi.getMetadata('mkdocs', { kind, namespace, name });
+      return techdocsApi.getTechDocsMetadata({ kind, namespace, name });
     }
 
     return Promise.resolve({ loading: true });
-  }, [kind, namespace, name, techDocsApi, documentReady]);
+  }, [kind, namespace, name, techdocsApi, documentReady]);
 
   const entityMetadataRequest = useAsync(() => {
-    return techDocsApi.getMetadata('entity', { kind, namespace, name });
-  }, [kind, namespace, name, techDocsApi]);
+    return techdocsApi.getEntityMetadata({ kind, namespace, name });
+  }, [kind, namespace, name, techdocsApi]);
 
   const onReady = () => {
     setDocumentReady(true);
@@ -48,7 +48,7 @@ export const TechDocsPage = () => {
     <Page themeId="documentation">
       <TechDocsPageHeader
         metadataRequest={{
-          mkdocs: mkdocsMetadataRequest,
+          techdocs: techdocsMetadataRequest,
           entity: entityMetadataRequest,
         }}
         entityId={{
