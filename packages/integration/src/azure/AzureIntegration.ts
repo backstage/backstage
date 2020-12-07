@@ -34,7 +34,7 @@ export class AzureIntegration implements ScmIntegration {
     return 'azure';
   }
 
-  get name(): string {
+  get title(): string {
     return this.config.host;
   }
 }

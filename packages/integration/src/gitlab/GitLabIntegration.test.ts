@@ -43,6 +43,6 @@ describe('GitLabIntegration', () => {
   it('returns the basics', () => {
     const integration = new GitLabIntegration({ host: 'h.com' } as any);
     expect(integration.type).toBe('gitlab');
-    expect(integration.name).toBe('h.com');
+    expect(integration.title).toBe('h.com');
   });
 });

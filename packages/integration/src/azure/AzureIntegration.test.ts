@@ -43,6 +43,6 @@ describe('AzureIntegration', () => {
   it('returns the basics', () => {
     const integration = new AzureIntegration({ host: 'h.com' } as any);
     expect(integration.type).toBe('azure');
-    expect(integration.name).toBe('h.com');
+    expect(integration.title).toBe('h.com');
   });
 });

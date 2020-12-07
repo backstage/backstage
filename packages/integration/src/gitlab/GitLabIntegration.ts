@@ -37,7 +37,7 @@ export class GitLabIntegration implements ScmIntegration {
     return 'gitlab';
   }
 
-  get name(): string {
+  get title(): string {
     return this.config.host;
   }
 }

@@ -45,6 +45,6 @@ describe('GitHubIntegration', () => {
   it('returns the basics', () => {
     const integration = new GitHubIntegration({ host: 'h.com' } as any);
     expect(integration.type).toBe('github');
-    expect(integration.name).toBe('h.com');
+    expect(integration.title).toBe('h.com');
   });
 });

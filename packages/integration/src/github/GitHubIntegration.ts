@@ -37,7 +37,7 @@ export class GitHubIntegration implements ScmIntegration {
     return 'github';
   }
 
-  get name(): string {
+  get title(): string {
     return this.config.host;
   }
 }

@@ -37,7 +37,7 @@ export class BitbucketIntegration implements ScmIntegration {
     return 'bitbucket';
   }
 
-  get name(): string {
+  get title(): string {
     return this.config.host;
   }
 }

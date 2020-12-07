@@ -20,30 +20,31 @@ import { Config } from '@backstage/config';
  * Encapsulates a single SCM integration.
  */
 export type ScmIntegration = {
+  /**
+   * The type of integration, e.g. "github".
+   */
   type: string;
-  name: string;
+
+  /**
+   * A human readable title for the integration, that can be shown to users to
+   * differentiate between different integrations.
+   */
+  title: string;
 };
 
 /**
  * Holds all registered SCM integrations.
  */
-export type ScmIntegrations = {
+export type ScmIntegrationRegistry = {
   /**
    * Lists all registered integrations.
    */
   list(): ScmIntegration[];
 
   /**
-   * Fetches a named integration
+   * Fetches an integration by URL.
    *
-   * @param name The name of a registered integration
-   */
-  byName(name: string): ScmIntegration | undefined;
-
-  /**
-   * Fetches an integration by URL
-   *
-   * @param name A URL that matches a registered integration
+   * @param url A URL that matches a registered integration
    */
   byUrl(url: string): ScmIntegration | undefined;
 };

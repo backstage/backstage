@@ -22,12 +22,12 @@ import { GitLabIntegration } from './gitlab/GitLabIntegration';
 import {
   ScmIntegration,
   ScmIntegrationPredicateTuple,
-  ScmIntegrations,
+  ScmIntegrationRegistry,
 } from './types';
 
-export class ScmIntegrationsImpl implements ScmIntegrations {
-  static fromConfig(config: Config): ScmIntegrationsImpl {
-    return new ScmIntegrationsImpl([
+export class ScmIntegrations implements ScmIntegrationRegistry {
+  static fromConfig(config: Config): ScmIntegrations {
+    return new ScmIntegrations([
       ...AzureIntegration.factory({ config }),
       ...BitbucketIntegration.factory({ config }),
       ...GitHubIntegration.factory({ config }),
@@ -39,10 +39,6 @@ export class ScmIntegrationsImpl implements ScmIntegrations {
 
   list(): ScmIntegration[] {
     return this.integrations.map(i => i.integration);
-  }
-
-  byName(name: string): ScmIntegration | undefined {
-    return this.integrations.map(i => i.integration).find(i => i.name === name);
   }
 
   byUrl(url: string): ScmIntegration | undefined {
