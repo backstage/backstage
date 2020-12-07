@@ -1,5 +1,5 @@
 ---
-"@backstage/plugin-techdocs": minor
+'@backstage/plugin-techdocs': minor
 ---
 
 Removed modifyCss transformer and moved the css to injectCss transformer
