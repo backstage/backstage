@@ -33,7 +33,7 @@ function getMountPoint(node: ReactElement): RouteRef | undefined {
 export const routePathCollector = createCollector(
   () => new Map<RouteRef, string>(),
   (acc, node, parent) => {
-    if (parent.props.element === node) {
+    if (parent?.props.element === node) {
       return;
     }
 
@@ -51,7 +51,7 @@ export const routePathCollector = createCollector(
 export const routeParentCollector = createCollector(
   () => new Map<RouteRef, RouteRef | undefined>(),
   (acc, node, parent, parentRouteRef?: RouteRef) => {
-    if (parent.props.element === node) {
+    if (parent?.props.element === node) {
       return parentRouteRef;
     }
 
@@ -70,7 +70,7 @@ export const routeParentCollector = createCollector(
 export const routeObjectCollector = createCollector(
   () => Array<BackstageRouteObject>(),
   (acc, node, parent, parentChildArr: BackstageRouteObject[] = acc) => {
-    if (parent.props.element === node) {
+    if (parent?.props.element === node) {
       return parentChildArr;
     }
 
