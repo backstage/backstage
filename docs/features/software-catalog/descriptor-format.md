@@ -724,9 +724,7 @@ metadata:
 spec:
   type: business-unit
   parent: ops
-  ancestors: [ops, global-synergies, acme-corp]
   children: [backstage, other]
-  descendants: [backstage, other, team-a, team-b, team-c, team-d]
 ```
 
 In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)
@@ -762,50 +760,12 @@ namespace as the user. Only `Group` entities may be referenced. Most commonly,
 this field points to a group in the same namespace, so in those cases it is
 sufficient to enter only the `metadata.name` field of that group.
 
-### `spec.ancestors` [required]
-
-**NOTE**: This field was marked for deprecation on Nov 22nd, 2020. It will be
-removed entirely from the model on Dec 6th, 2020 in the repository and will not
-be present in released packages following the next release after that. Please
-update your code to not consume this field before the removal date.
-
-The recursive list of parents up the hierarchy, by stepping through parents one
-by one. The list must be present, but may be empty if `parent` is not present.
-The first entry in the list is equal to `parent`, and then the following ones
-are progressively farther up the hierarchy.
-
-The entries of this array are
-[entity references](https://backstage.io/docs/features/software-catalog/references),
-with the default kind `Group` and the default namespace equal to the same
-namespace as the user. Only `Group` entities may be referenced. Most commonly,
-these entries point to groups in the same namespace, so in those cases it is
-sufficient to enter only the `metadata.name` field of those groups.
-
 ### `spec.children` [required]
 
 The immediate child groups of this group in the hierarchy (whose `parent` field
 points to this group). The list must be present, but may be empty if there are
 no child groups. The items are not guaranteed to be ordered in any particular
 way.
-
-The entries of this array are
-[entity references](https://backstage.io/docs/features/software-catalog/references),
-with the default kind `Group` and the default namespace equal to the same
-namespace as the user. Only `Group` entities may be referenced. Most commonly,
-these entries point to groups in the same namespace, so in those cases it is
-sufficient to enter only the `metadata.name` field of those groups.
-
-### `spec.descendants` [required]
-
-**NOTE**: This field was marked for deprecation on Nov 22nd, 2020. It will be
-removed entirely from the model on Dec 6th, 2020 in the repository and will not
-be present in released packages following the next release after that. Please
-update your code to not consume this field before the removal date.
-
-The immediate and recursive child groups of this group in the hierarchy
-(children, and children's children, etc.). The list must be present, but may be
-empty if there are no child groups. The items are not guaranteed to be ordered
-in any particular way.
 
 The entries of this array are
 [entity references](https://backstage.io/docs/features/software-catalog/references),

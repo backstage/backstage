@@ -32,19 +32,9 @@ const schema = yup.object<Partial<GroupEntityV1alpha1>>({
       // one element and there is no simple workaround -_-
       // the cast is there to convince typescript that the array itself is
       // required without using .required()
-      ancestors: yup.array(yup.string().required()).test({
-        name: 'isDefined',
-        message: 'ancestors must be defined',
-        test: v => Boolean(v),
-      }) as yup.ArraySchema<string, object>,
       children: yup.array(yup.string().required()).test({
         name: 'isDefined',
         message: 'children must be defined',
-        test: v => Boolean(v),
-      }) as yup.ArraySchema<string, object>,
-      descendants: yup.array(yup.string().required()).test({
-        name: 'isDefined',
-        message: 'descendants must be defined',
         test: v => Boolean(v),
       }) as yup.ArraySchema<string, object>,
     })
@@ -57,23 +47,7 @@ export interface GroupEntityV1alpha1 extends Entity {
   spec: {
     type: string;
     parent?: string;
-    /**
-     * @deprecated This field will disappear on Dec 6th, 2020. Please remove
-     *             any consuming code. Producers can stop producing this field
-     *             before that date, as long as the catalog backend uses the
-     *             BuiltinKindsEntityProcessor which inserts the fields in the
-     *             mean time.
-     */
-    ancestors: string[];
     children: string[];
-    /**
-     * @deprecated This field will disappear on Dec 6th, 2020. Please remove
-     *             any consuming code. Producers can stop producing this field
-     *             before that date, as long as the catalog backend uses the
-     *             BuiltinKindsEntityProcessor which inserts the fields in the
-     *             mean time.
-     */
-    descendants: string[];
   };
 }
 

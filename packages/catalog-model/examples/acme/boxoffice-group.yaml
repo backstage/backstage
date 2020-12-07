@@ -6,6 +6,4 @@ metadata:
 spec:
   type: sub-department
   parent: infrastructure
-  ancestors: [infrastructure, acme-corp]
   children: [team-c, team-d]
-  descendants: [team-c, team-d]
