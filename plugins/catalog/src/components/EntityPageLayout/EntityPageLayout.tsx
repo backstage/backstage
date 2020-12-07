@@ -88,6 +88,7 @@ export const EntityPageLayout = ({ children }: PropsWithChildren<{}>) => {
         pageTitleOverride={headerTitle}
         type={headerType}
       >
+        {/* TODO: fix after catalog page customization is added */}
         {entity && kind !== 'user' && (
           <>
             <HeaderLabel
