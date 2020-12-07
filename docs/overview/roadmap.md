@@ -47,22 +47,20 @@ guidelines to get started.
 
 ### Ongoing work 🚧
 
-- **[Plugins for managing micro services end-2-end](https://github.com/backstage/backstage/milestone/14)**
-  Out of the box Backstage will ship with a set of plugins (Overview, CI, API
-  and Docs) that will demonstrate how a user can manage a micro service and
-  follow a change all the way out in production. Completing this work will make
-  it much easier to see how a plugin can be built that integrates with the
-  Backstage Service Catalog.
+- **[Backstage platform is stable](https://github.com/backstage/backstage/milestone/19)** -
+  The platform APIs and features are stable and can be depended on for
+  production use. After this plugins will require little to no maintenance.
+
+- **Deploy a product demo at `demo.backstage.io`** - Deploy a typical Backstage
+  deployment available publicly so that people can click around and get a feel
+  for the product without having to install anything. Work is happening in a
+  separate repo [`backstage/demo`](https://github.com/backstage/demo).
 
 - **[Users and teams](https://github.com/backstage/backstage/issues/1807)**
   Ownership is a central concept in Backstage. It should be easy to import your
   existing organizational data, such as users and groups/teams, into Backstage.
   A user the logs into Backstage should see software components owned by the
   team(s) they are in.
-
-- **[Backstage platform is stable](https://github.com/backstage/backstage/milestone/19)** -
-  The platform APIs and features are stable and can be depended on for
-  production use. After this plugins will require little to no maintenance.
 
 * **[Improved Kubernetes plugin](https://github.com/backstage/backstage/issues/2857)** -
   Native support for Kubernetes, making it easier for developers to see and
@@ -72,15 +70,6 @@ guidelines to get started.
   for plugin development.
 
 ### Future work 🔮
-
-- **Deploy a product demo at `demo.backstage.io`** - Deploy a typical Backstage
-  deployment available publicly so that people can click around and get a feel
-  for the product without having to install anything.
-
-- **[Global search](https://github.com/backstage/backstage/issues/1499)** -
-  Extend the basic search available in the Backstage Service Catalog with a
-  global search experience. Long term this search solution should be extensible,
-  making it possible for you add custom search results.
 
 - **[[TechDocs V.2] Stabilization release](https://github.com/backstage/backstage/milestone/17)** -
   Platform stability and compatibility improvements.
@@ -112,6 +101,7 @@ Chances are that someone will jump in and help build it.
 
 ### Completed milestones ✅
 
+- [Search v1 🔍](https://github.com/backstage/backstage/issues/1499)
 - [Kubernetes plugin - v1](https://github.com/backstage/backstage/tree/master/plugins/kubernetes)
 - [Helm charts](https://github.com/backstage/backstage/tree/master/contrib/chart/backstage)
 - [Backstage Design System 💅](https://backstage.io/blog/2020/09/30/backstage-design-system)
