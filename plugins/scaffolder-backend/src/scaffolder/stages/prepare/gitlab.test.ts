@@ -95,10 +95,11 @@ describe('GitLabPreparer', () => {
           {
             context: '',
             data: {
-              catalog: {
-                processors: {
-                  gitlabApi: {
-                    privateToken: 'fake-token',
+              scaffolder: {
+                gutkab: {
+                  api: {
+                    host: 'https://gitlab.com',
+                    token: 'fake-token',
                   },
                 },
               },
