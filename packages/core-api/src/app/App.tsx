@@ -15,46 +15,82 @@
  */
 import React, {
   ComponentType,
+  PropsWithChildren,
+  ReactElement,
   useMemo,
   useState,
-  ReactElement,
-  PropsWithChildren,
 } from 'react';
-import { Route, Routes, Navigate } from 'react-router-dom';
-import { AppContextProvider } from './AppContext';
+import { Navigate, Route, Routes } from 'react-router-dom';
+import { useAsync } from 'react-use';
 import {
-  BackstageApp,
-  AppComponents,
-  AppConfigLoader,
-  SignInResult,
-  SignInPageProps,
-} from './types';
-import { BackstagePlugin } from '../plugin';
-import {
-  featureFlagsApiRef,
-  AppThemeApi,
-  ConfigApi,
-  identityApiRef,
-} from '../apis/definitions';
-import { AppThemeProvider } from './AppThemeProvider';
-
-import { IconComponent, SystemIcons, SystemIconKey } from '../icons';
-import {
+  AnyApiFactory,
+  ApiHolder,
   ApiProvider,
   ApiRegistry,
   AppTheme,
-  AppThemeSelector,
   appThemeApiRef,
+  AppThemeSelector,
   configApiRef,
   ConfigReader,
-  useApi,
-  AnyApiFactory,
-  ApiHolder,
   LocalStorageFeatureFlags,
+  useApi,
 } from '../apis';
-import { useAsync } from 'react-use';
+import {
+  AppThemeApi,
+  ConfigApi,
+  featureFlagsApiRef,
+  identityApiRef,
+} from '../apis/definitions';
+import { ApiFactoryRegistry, ApiResolver } from '../apis/system';
+import {
+  childDiscoverer,
+  routeElementDiscoverer,
+  traverseElementTree,
+} from '../extensions/traversal';
+import { IconComponent, SystemIconKey, SystemIcons } from '../icons';
+import { BackstagePlugin } from '../plugin';
+import { RouteRef } from '../routing';
+import {
+  routeObjectCollector,
+  routeParentCollector,
+  routePathCollector,
+} from '../routing/collectors';
+import { RoutingProvider } from '../routing/hooks';
+import { ExternalRouteRef } from '../routing/RouteRef';
+import { AppContextProvider } from './AppContext';
 import { AppIdentity } from './AppIdentity';
-import { ApiResolver, ApiFactoryRegistry } from '../apis/system';
+import { AppThemeProvider } from './AppThemeProvider';
+import {
+  AppComponents,
+  AppConfigLoader,
+  AppOptions,
+  BackstageApp,
+  BindRouteFunc,
+  SignInPageProps,
+  SignInResult,
+} from './types';
+
+export function generateBoundRoutes(
+  bindRoutes: AppOptions['bindRoutes'],
+): Map<ExternalRouteRef, RouteRef> {
+  const result = new Map<ExternalRouteRef, RouteRef>();
+
+  if (bindRoutes) {
+    const bind: BindRouteFunc = (externalRoutes, targetRoutes) => {
+      for (const [key, value] of Object.entries(targetRoutes)) {
+        const externalRoute = externalRoutes[key];
+        if (!externalRoute) {
+          throw new Error(`Key ${key} is not an existing external route`);
+        }
+
+        result.set(externalRoute, value);
+      }
+    };
+    bindRoutes({ bind });
+  }
+
+  return result;
+}
 
 type FullAppOptions = {
   apis: Iterable<AnyApiFactory>;
@@ -64,6 +100,7 @@ type FullAppOptions = {
   themes: AppTheme[];
   configLoader?: AppConfigLoader;
   defaultApis: Iterable<AnyApiFactory>;
+  bindRoutes?: AppOptions['bindRoutes'];
 };
 
 function useConfigLoader(
@@ -112,6 +149,7 @@ export class PrivateAppImpl implements BackstageApp {
   private readonly themes: AppTheme[];
   private readonly configLoader?: AppConfigLoader;
   private readonly defaultApis: Iterable<AnyApiFactory>;
+  private readonly bindRoutes: AppOptions['bindRoutes'];
 
   private readonly identityApi = new AppIdentity();
 
@@ -123,6 +161,7 @@ export class PrivateAppImpl implements BackstageApp {
     this.themes = options.themes;
     this.configLoader = options.configLoader;
     this.defaultApis = options.defaultApis;
+    this.bindRoutes = options.bindRoutes;
   }
 
   getPlugins(): BackstagePlugin<any, any>[] {
@@ -202,6 +241,17 @@ export class PrivateAppImpl implements BackstageApp {
         [],
       );
 
+      // Probably want to memo this?
+      const { routePaths, routeParents, routeObjects } = traverseElementTree({
+        root: children,
+        discoverers: [childDiscoverer, routeElementDiscoverer],
+        collectors: {
+          routePaths: routePathCollector,
+          routeParents: routeParentCollector,
+          routeObjects: routeObjectCollector,
+        },
+      });
+
       const loadedConfig = useConfigLoader(
         this.configLoader,
         this.components,
@@ -218,7 +268,16 @@ export class PrivateAppImpl implements BackstageApp {
       return (
         <ApiProvider apis={this.getApiHolder()}>
           <AppContextProvider app={this}>
-            <AppThemeProvider>{children}</AppThemeProvider>
+            <AppThemeProvider>
+              <RoutingProvider
+                routePaths={routePaths}
+                routeParents={routeParents}
+                routeObjects={routeObjects}
+                routeBindings={generateBoundRoutes(this.bindRoutes)}
+              >
+                {children}
+              </RoutingProvider>
+            </AppThemeProvider>
           </AppContextProvider>
         </ApiProvider>
       );
