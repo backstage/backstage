@@ -79,7 +79,7 @@ export type AppComponents = {
  */
 export type AppConfigLoader = () => Promise<AppConfig[]>;
 
-type BindRouteFunc = <T extends AnyExternalRoutes>(
+export type BindRouteFunc = <T extends AnyExternalRoutes>(
   externalRoutes: T,
   targetRoutes: { [key in keyof T]: RouteRef<any> },
 ) => void;
