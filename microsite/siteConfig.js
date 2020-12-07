@@ -9,7 +9,7 @@
 // site configuration options.
 
 // List of projects/orgs using your project for the users page.
-const users = [];
+//const users = [];
 
 const siteConfig = {
   title: 'Backstage', // Title for your website.
