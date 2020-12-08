@@ -40,7 +40,7 @@ const MockComputeEngine: Product = {
 
 const MockComputeEngineInsights: Entity = {
   id: 'compute-engine',
-  entities: [],
+  entities: {},
   aggregation: [0, 0],
   change: {
     ratio: 0,
@@ -55,7 +55,7 @@ const MockCloudDataflow: Product = {
 
 const MockCloudDataflowInsights: Entity = {
   id: MockCloudDataflow.kind,
-  entities: [],
+  entities: {},
   aggregation: [1_000, 2_000],
   change: {
     ratio: 1,
@@ -70,7 +70,7 @@ const MockCloudStorage: Product = {
 
 const MockCloudStorageInsights: Entity = {
   id: MockCloudStorage.kind,
-  entities: [],
+  entities: {},
   aggregation: [2_000, 4_000],
   change: {
     ratio: 1,
@@ -85,7 +85,7 @@ const MockBigQuery: Product = {
 
 const MockBigQueryInsights: Entity = {
   id: MockBigQuery.kind,
-  entities: [],
+  entities: {},
   aggregation: [8_000, 16_000],
   change: {
     ratio: 1,
@@ -100,7 +100,7 @@ const MockBigTable: Product = {
 
 const MockBigTableInsights: Entity = {
   id: MockBigTable.kind,
-  entities: [],
+  entities: {},
   aggregation: [16_000, 32_000],
   change: {
     ratio: 1,
@@ -115,7 +115,7 @@ const MockCloudPubSub: Product = {
 
 const MockCloudPubSubInsights: Entity = {
   id: MockCloudPubSub.kind,
-  entities: [],
+  entities: {},
   aggregation: [32_000, 64_000],
   change: {
     ratio: 1,

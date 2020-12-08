@@ -42,7 +42,7 @@ const costInsightsApi = (entity: Entity): Partial<CostInsightsApi> => ({
 
 const mockProductCost = createMockEntity(() => ({
   id: 'test-id',
-  entities: [],
+  entities: {},
   aggregation: [3000, 4000],
   change: {
     ratio: 0.23,
@@ -91,21 +91,21 @@ describe('<ProductInsightsCard/>', () => {
   it('Should render the right subheader for products with cost data', async () => {
     const entity = {
       ...mockProductCost,
-      entities: [...Array(1000)].map(createMockEntity),
+      entities: { entity: [...Array(1000)].map(createMockEntity) },
     };
     const rendered = await renderProductInsightsCardInTestApp(
       entity,
       MockComputeEngine,
     );
-    const subheader = 'entities, sorted by cost';
-    const subheaderRgx = new RegExp(`${entity.entities.length} ${subheader}`);
-    expect(rendered.getByText(subheaderRgx)).toBeInTheDocument();
+    expect(
+      rendered.getByText(/1000 entities, sorted by cost/),
+    ).toBeInTheDocument();
   });
 
   it('Should render the right subheader if there is no cost data or change data', async () => {
     const entity: Entity = {
       id: 'test-id',
-      entities: [],
+      entities: {},
       aggregation: [0, 0],
       change: { ratio: 0, amount: 0 },
     };
@@ -135,7 +135,7 @@ describe('<ProductInsightsCard/>', () => {
       it(`Should display the correct relative time for ${duration}`, async () => {
         const entity = {
           ...mockProductCost,
-          entities: [...Array(3)].map(createMockEntity),
+          entities: { entity: [...Array(3)].map(createMockEntity) },
         };
         const rendered = await renderProductInsightsCardInTestApp(
           entity,
