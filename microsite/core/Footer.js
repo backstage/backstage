@@ -1,6 +1,4 @@
 /*
-* Made with <3 at Spotify
-
  * Copyright 2020 Backstage Project Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -88,6 +86,9 @@ class Footer extends React.Component {
             )}
           </div>
         </section>
+        <p style={{textAlign: 'center'}}>
+          <a href="https://spotify.github.io">Made with ❤️&nbsp; at Spotify</a>
+        </p>
         <p className="copyright">{this.props.config.copyright}</p>
       </footer>
     );
