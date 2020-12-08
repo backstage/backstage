@@ -27,9 +27,9 @@ export function useGithubRepos() {
   const submitPrToRepo = async (selectedRepo: ConfigSpec) => {
     const [ownerName, repoName] = selectedRepo.location.split('/').slice(-2);
     const configs = readGitHubIntegrationConfigs(
-      config.getOptionalConfigArray('integrations.github') ?? []
-    )
-    const githubIntegrationConfig = configs[0]
+      config.getOptionalConfigArray('integrations.github') ?? [],
+    );
+    const githubIntegrationConfig = configs[0];
     const submitPRResponse = await api
       .submitPrToRepo({
         owner: ownerName,
@@ -37,7 +37,7 @@ export function useGithubRepos() {
         fileContent: selectedRepo.config
           .map(entity => `---\n${YAML.stringify(entity)}`)
           .join('\n'),
-        githubIntegrationConfig
+        githubIntegrationConfig,
       })
       .catch(e => {
         throw new Error(`Failed to submit PR to repo:\n${e.message}`);

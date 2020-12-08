@@ -19,7 +19,7 @@ import { DiscoveryApi, OAuthApi } from '@backstage/core';
 import { CatalogImportApi } from './CatalogImportApi';
 import { AnalyzeLocationResponse } from '@backstage/plugin-catalog-backend';
 import { PartialEntity } from '../util/types';
-import { GitHubIntegrationConfig } from '@backstage/integration'
+import { GitHubIntegrationConfig } from '@backstage/integration';
 
 export class CatalogImportClient implements CatalogImportApi {
   private readonly discoveryApi: DiscoveryApi;

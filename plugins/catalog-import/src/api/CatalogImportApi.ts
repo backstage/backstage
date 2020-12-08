@@ -16,7 +16,7 @@
 
 import { createApiRef } from '@backstage/core';
 import { PartialEntity } from '../util/types';
-import { GitHubIntegrationConfig } from '@backstage/integration'
+import { GitHubIntegrationConfig } from '@backstage/integration';
 
 export const catalogImportApiRef = createApiRef<CatalogImportApi>({
   id: 'plugin.catalog-import.service',
