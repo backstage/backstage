@@ -13,3 +13,5 @@
 | [Talkdesk](https://www.talkdesk.com)         | [@jaime-talkdesk](https://github.com/jaime-talkdesk)         | Initial work for Engineering Portal and Self Provisioning to R&D                                 |
 | [Wealthsimple](https://www.wealthsimple.com) | [@andrewthauer](https://github.com/andrewthauer)             | Developer portal, service catalog, documentation and tooling                                     |
 | [Grab](https://www.grab.com)                 | [@althafh](https://github.com/althafh)                       | Initial work as a unified interface for all of Grab's internal tooling                           |
+| [Telenor Sweden](https://www.telenor.se)                 | [@O5ten](https://github.com/O5ten)               | Building a developer portal for scaffolding projects towards our unified build environment and microservice stacks |
+
