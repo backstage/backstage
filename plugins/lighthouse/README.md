@@ -27,8 +27,7 @@ your app's [`plugins.ts`](https://github.com/backstage/backstage/blob/master/pac
 to enable the plugin:
 
 ```js
-import { default as LighthousePlugin } from '@backstage/plugin-lighthouse';
-export LighthousePlugin;
+export { plugin as LighthousePlugin } from '@backstage/plugin-lighthouse';
 ```
 
 Then, you need to use the `lighthouseApiRef` exported from the plugin to initialize the Rest API in
@@ -74,7 +73,7 @@ metadata:
     lighthouse.com/website-url: # A single website url e.g. https://backstage.io/
 ```
 
-> NOTE: The lighthouse plugin only supports one website url per component at this time.
+> NOTE: The lighthouse plugin only supports one website URL per component at this time.
 
 Add a lighthouse tab to the EntityPage:
 

@@ -100,9 +100,7 @@ describe('github', () => {
             spec: {
               type: 'team',
               parent: 'parent',
-              ancestors: [],
               children: [],
-              descendants: [],
             },
           }),
         ],

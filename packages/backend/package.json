@@ -50,5 +50,8 @@
     "@types/express": "^4.17.6",
     "@types/express-serve-static-core": "^4.17.5",
     "@types/helmet": "^0.0.48"
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }

@@ -85,7 +85,7 @@ export class HigherOrderOperations implements HigherOrderOperation {
     // Write
     if (!previousLocation && !dryRun) {
       // TODO: We do not include location operations in the dryRun. We might perform
-      // this operation as a seperate dry run.
+      // this operation as a separate dry run.
       await this.locationsCatalog.addLocation(location);
     }
     if (readerOutput.entities.length === 0) {

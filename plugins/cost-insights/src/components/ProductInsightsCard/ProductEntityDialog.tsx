@@ -14,179 +14,55 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import classnames from 'classnames';
-import { Table, TableColumn } from '@backstage/core';
-import { Dialog, IconButton, Typography } from '@material-ui/core';
+import React, { useState } from 'react';
+import { HeaderTabs } from '@backstage/core';
+import { Dialog, IconButton } from '@material-ui/core';
 import { default as CloseButton } from '@material-ui/icons/Close';
-import { CostGrowthIndicator } from '../CostGrowth';
-import { costFormatter, formatPercent } from '../../utils/formatters';
 import { useEntityDialogStyles as useStyles } from '../../utils/styles';
-import { BarChartOptions, Entity } from '../../types';
-
-function createRenderer(col: keyof RowData, classes: Record<string, string>) {
-  return function render(rowData: {}): JSX.Element {
-    const row = rowData as RowData;
-    const rowStyles = classnames(classes.row, {
-      [classes.rowTotal]: row.id === 'total',
-      [classes.colFirst]: col === 'label',
-      [classes.colLast]: col === 'ratio',
-    });
-
-    switch (col) {
-      case 'previous':
-      case 'current':
-        return (
-          <Typography className={rowStyles}>
-            {costFormatter.format(row[col])}
-          </Typography>
-        );
-      case 'ratio':
-        return (
-          <CostGrowthIndicator
-            className={rowStyles}
-            ratio={row.ratio}
-            formatter={amount => formatPercent(Math.abs(amount))}
-          />
-        );
-      default:
-        return <Typography className={rowStyles}>{row.label}</Typography>;
-    }
-  };
-}
-
-// material-table does not support fixed rows. Override the sorting algorithm
-// to force Total row to bottom by default or when a user sort toggles a column.
-function createSorter(field?: keyof Omit<RowData, 'id'>) {
-  return function rowSort(data1: {}, data2: {}): number {
-    const a = data1 as RowData;
-    const b = data2 as RowData;
-    if (a.id === 'total') return 1;
-    if (b.id === 'total') return 1;
-    if (field === 'label') return a.label.localeCompare(b.label);
-
-    return field
-      ? a[field] - b[field]
-      : b.previous + b.current - (a.previous - a.current);
-  };
-}
-
-const defaultEntity: Entity = {
-  id: null,
-  aggregation: [0, 0],
-  change: { ratio: 0, amount: 0 },
-  entities: [],
-};
-
-type RowData = {
-  id: string;
-  label: string;
-  previous: number;
-  current: number;
-  ratio: number;
-};
-
-type ProductEntityDialogOptions = Partial<
-  Pick<BarChartOptions, 'previousName' | 'currentName'>
->;
+import { Entity } from '../../types';
+import {
+  ProductEntityTable,
+  ProductEntityTableOptions,
+} from './ProductEntityTable';
+import { findAlways } from '../../utils/assert';
 
 type ProductEntityDialogProps = {
   open: boolean;
-  entity?: Entity;
-  entitiesLabel: string;
-  options?: ProductEntityDialogOptions;
+  entity: Entity;
+  options?: ProductEntityTableOptions;
   onClose: () => void;
 };
 
 export const ProductEntityDialog = ({
   open,
-  entity = defaultEntity,
-  entitiesLabel,
+  entity,
   options = {},
   onClose,
 }: ProductEntityDialogProps) => {
   const classes = useStyles();
-
-  const data = Object.assign(
-    {
-      previousName: 'Previous',
-      currentName: 'Current',
-    },
-    options,
+  const labels = Object.keys(entity.entities);
+  const [selectedLabel, setSelectedLabel] = useState(
+    findAlways(labels, _ => true),
   );
 
-  const firstColClasses = classnames(classes.column, classes.colFirst);
-  const lastColClasses = classnames(classes.column, classes.colLast);
-
-  const columns: TableColumn[] = [
-    {
-      field: 'label',
-      title: (
-        <Typography className={firstColClasses}>{entitiesLabel}</Typography>
-      ),
-      render: createRenderer('label', classes),
-      customSort: createSorter('label'),
-      width: '33.33%',
-    },
-    {
-      field: 'previous',
-      title: (
-        <Typography className={classes.column}>{data.previousName}</Typography>
-      ),
-      align: 'right',
-      render: createRenderer('previous', classes),
-      customSort: createSorter('previous'),
-    },
-    {
-      field: 'current',
-      title: (
-        <Typography className={classes.column}>{data.currentName}</Typography>
-      ),
-      align: 'right',
-      render: createRenderer('current', classes),
-      customSort: createSorter('current'),
-    },
-    {
-      field: 'ratio',
-      title: <Typography className={lastColClasses}>M/M</Typography>,
-      align: 'right',
-      render: createRenderer('ratio', classes),
-      customSort: createSorter('ratio'),
-    },
-  ];
-
-  const rowData: RowData[] = entity.entities
-    .map(e => ({
-      id: e.id || 'Unknown',
-      label: e.id || 'Unknown',
-      previous: e.aggregation[0],
-      current: e.aggregation[1],
-      ratio: e.change.ratio,
-    }))
-    .concat({
-      id: 'total',
-      label: 'Total',
-      previous: entity.aggregation[0],
-      current: entity.aggregation[1],
-      ratio: entity.change.ratio,
-    })
-    .sort(createSorter());
+  const tabs = labels.map((label, index) => ({
+    id: index.toString(),
+    label: `Breakdown by ${label}`,
+  }));
 
   return (
     <Dialog open={open} onClose={onClose} scroll="body" fullWidth maxWidth="lg">
       <IconButton className={classes.closeButton} onClick={onClose}>
         <CloseButton />
       </IconButton>
-      <Table
-        columns={columns}
-        data={rowData}
-        title={entity.id || 'Unlabeled'}
-        subtitle="Resource breakdown"
-        options={{
-          paging: false,
-          search: false,
-          hideFilterIcons: true,
-        }}
+      <HeaderTabs
+        tabs={tabs}
+        onChange={index => setSelectedLabel(labels[index])}
+      />
+      <ProductEntityTable
+        entityLabel={selectedLabel}
+        entity={entity}
+        options={options}
       />
     </Dialog>
   );
