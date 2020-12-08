@@ -15,7 +15,11 @@
  */
 
 import { Duration } from '../types';
-import { inclusiveEndDateOf, inclusiveStartDateOf } from './duration';
+import {
+  inclusiveEndDateOf,
+  inclusiveStartDateOf,
+  quarterEndDate,
+} from './duration';
 
 const lastCompleteBillingDate = '2020-06-05';
 
@@ -30,5 +34,16 @@ describe.each`
       startDate,
     );
     expect(inclusiveEndDateOf(duration, lastCompleteBillingDate)).toBe(endDate);
+  });
+});
+
+describe.each`
+  inclusiveEndDate | expectedQuarterEndDate
+  ${'2020-12-31'}  | ${'2020-12-31'}
+  ${'2020-12-30'}  | ${'2020-09-30'}
+  ${'2021-02-19'}  | ${'2020-12-31'}
+`('quarterEndDate', ({ inclusiveEndDate, expectedQuarterEndDate }) => {
+  it(`calculates quarter end date correctly from inclusive end date ${inclusiveEndDate}`, () => {
+    expect(quarterEndDate(inclusiveEndDate)).toBe(expectedQuarterEndDate);
   });
 });
