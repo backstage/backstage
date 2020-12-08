@@ -19,6 +19,7 @@ import { DiscoveryApi, OAuthApi } from '@backstage/core';
 import { CatalogImportApi } from './CatalogImportApi';
 import { AnalyzeLocationResponse } from '@backstage/plugin-catalog-backend';
 import { PartialEntity } from '../util/types';
+import { GitHubIntegrationConfig } from '@backstage/integration'
 
 export class CatalogImportClient implements CatalogImportApi {
   private readonly discoveryApi: DiscoveryApi;
@@ -91,15 +92,18 @@ export class CatalogImportClient implements CatalogImportApi {
     owner,
     repo,
     fileContent,
+    githubIntegrationConfig,
   }: {
     owner: string;
     repo: string;
     fileContent: string;
+    githubIntegrationConfig: GitHubIntegrationConfig;
   }): Promise<{ link: string; location: string }> {
     const token = await this.githubAuthApi.getAccessToken(['repo']);
 
     const octo = new Octokit({
       auth: token,
+      baseUrl: githubIntegrationConfig.apiBaseUrl,
     });
 
     const branchName = 'backstage-integration';
@@ -179,7 +183,7 @@ export class CatalogImportClient implements CatalogImportApi {
 
     return {
       link: pullRequestResponse.data.html_url,
-      location: `https://github.com/${owner}/${repo}/blob/${repoData.data.default_branch}/${fileName}`,
+      location: `https://${githubIntegrationConfig.host}/${owner}/${repo}/blob/${repoData.data.default_branch}/${fileName}`,
     };
   }
 }

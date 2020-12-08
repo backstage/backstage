@@ -15,15 +15,21 @@
  */
 
 import * as YAML from 'yaml';
-import { useApi } from '@backstage/core';
+import { useApi, configApiRef } from '@backstage/core';
 import { catalogImportApiRef } from '../api/CatalogImportApi';
 import { ConfigSpec } from '../components/ImportComponentPage';
+import { readGitHubIntegrationConfigs } from '@backstage/integration';
 
 export function useGithubRepos() {
   const api = useApi(catalogImportApiRef);
+  const config = useApi(configApiRef);
 
   const submitPrToRepo = async (selectedRepo: ConfigSpec) => {
     const [ownerName, repoName] = selectedRepo.location.split('/').slice(-2);
+    const configs = readGitHubIntegrationConfigs(
+      config.getOptionalConfigArray('integrations.github') ?? []
+    )
+    const githubIntegrationConfig = configs[0]
     const submitPRResponse = await api
       .submitPrToRepo({
         owner: ownerName,
@@ -31,6 +37,7 @@ export function useGithubRepos() {
         fileContent: selectedRepo.config
           .map(entity => `---\n${YAML.stringify(entity)}`)
           .join('\n'),
+        githubIntegrationConfig
       })
       .catch(e => {
         throw new Error(`Failed to submit PR to repo:\n${e.message}`);
