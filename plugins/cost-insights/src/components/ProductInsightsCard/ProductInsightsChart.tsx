@@ -70,8 +70,10 @@ export const ProductInsightsChart = ({
   const layoutClasses = useLayoutStyles();
 
   // Only a single entities Record for the root product entity is supported
-  const entityLabel = assertAlways(findAnyKey(entity.entities));
-  const entities = entity.entities[entityLabel] ?? [];
+  const entities = useMemo(() => {
+    const entityLabel = assertAlways(findAnyKey(entity.entities));
+    return entity.entities[entityLabel] ?? [];
+  }, [entity]);
 
   const [activeLabel, setActive] = useState<Maybe<string>>();
   const [selectLabel, setSelected] = useState<Maybe<string>>();
