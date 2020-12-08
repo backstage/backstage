@@ -78,6 +78,9 @@ describe('github', () => {
               {
                 slug: 'team',
                 combinedSlug: 'blah/team',
+                name: 'Team',
+                description: 'The one and only team',
+                avatarUrl: 'http://example.com/team.jpeg',
                 parentTeam: {
                   slug: 'parent',
                   combinedSlug: '',
@@ -96,9 +99,16 @@ describe('github', () => {
       const output = {
         groups: [
           expect.objectContaining({
-            metadata: expect.objectContaining({ name: 'team' }),
+            metadata: expect.objectContaining({
+              name: 'team',
+              description: 'The one and only team',
+            }),
             spec: {
               type: 'team',
+              profile: {
+                displayName: 'Team',
+                picture: 'http://example.com/team.jpeg',
+              },
               parent: 'parent',
               children: [],
             },
