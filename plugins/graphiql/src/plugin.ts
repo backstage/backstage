@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-import { createPlugin, createApiFactory } from '@backstage/core';
+import {
+  createPlugin,
+  createApiFactory,
+  createRoutableExtension,
+} from '@backstage/core';
+import { GraphiQLPage as Component } from './components';
 import { graphQlBrowseApiRef, GraphQLEndpoints } from './lib/api';
+import { graphiQLRouteRef } from './route-refs';
 
 export const plugin = createPlugin({
   id: 'graphiql',
@@ -33,3 +39,10 @@ export const plugin = createPlugin({
     ),
   ],
 });
+
+export const GraphiQLPage = plugin.provide(
+  createRoutableExtension({
+    component: Component,
+    mountPoint: graphiQLRouteRef,
+  }),
+);
