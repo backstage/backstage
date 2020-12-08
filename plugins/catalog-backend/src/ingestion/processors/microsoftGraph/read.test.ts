@@ -253,8 +253,10 @@ describe('read microsoft graph', () => {
       });
       expect(client.getGroupMembers).toBeCalledTimes(1);
       expect(client.getGroupMembers).toBeCalledWith('groupid');
-      expect(client.getGroupPhotoWithSizeLimit).toBeCalledTimes(1);
-      expect(client.getGroupPhotoWithSizeLimit).toBeCalledWith('groupid', 120);
+      // TODO: Loading groups doesn't work right now as Microsoft Graph
+      // doesn't allows this yet
+      // expect(client.getGroupPhotoWithSizeLimit).toBeCalledTimes(1);
+      // expect(client.getGroupPhotoWithSizeLimit).toBeCalledWith('groupid', 120);
     });
   });
 

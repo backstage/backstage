@@ -74,7 +74,6 @@ export const UserProfileCard = ({
     user?.relations
       ?.filter(r => r.type === RELATION_MEMBER_OF)
       ?.map(group => group.target.name) || [];
-
   const displayName = profile?.displayName ?? metaName;
 
   if (!user) {
@@ -96,18 +95,19 @@ export const UserProfileCard = ({
           </Box>
         </Grid>
         <Grid item md={10} xl={11}>
-          <Typography variant="subtitle1">
-            <Box display="flex" alignItems="center">
-              <Tooltip title="Email">
-                <EmailIcon fontSize="inherit" />
-              </Tooltip>
-              {profile?.email && (
+          {profile?.email && (
+            <Typography variant="subtitle1">
+              <Box display="flex" alignItems="center">
+                <Tooltip title="Email">
+                  <EmailIcon fontSize="inherit" />
+                </Tooltip>
+
                 <Box ml={1} display="inline">
                   {profile.email}
                 </Box>
-              )}
-            </Box>
-          </Typography>
+              </Box>
+            </Typography>
+          )}
           <Typography variant="subtitle1">
             <Box display="flex" alignItems="center">
               <Tooltip title="Member of">
