@@ -14,7 +14,7 @@
     "start": "backstage-cli backend:dev",
     "build": "backstage-cli backend:build",
     "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
+    "test": "backstage-cli test --passWithNoTests",
     "prepack": "backstage-cli prepack",
     "postpack": "backstage-cli postpack",
     "clean": "backstage-cli clean"

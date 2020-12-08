@@ -13,16 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { SentryApi } from './sentry-api';
-import { MockSentryApi } from './mock-api';
-import { ProductionSentryApi } from './production-api';
 
-export function sentryApiFactory(
-  organization: string,
-  backendBaseUrl: string,
-): SentryApi {
-  if (process.env.NODE_ENV === 'production') {
-    return new ProductionSentryApi(organization, backendBaseUrl);
-  }
-  return new MockSentryApi();
-}
+export * from './SentryIssuesWidget';
