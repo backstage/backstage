@@ -110,7 +110,11 @@ export class Publishers implements PublisherBuilder {
           host: gitLabConfig.getOptionalString('baseUrl'),
           token: gitLabToken,
         });
-        const gitLabPublisher = new GitlabPublisher(gitLabClient, gitLabToken);
+        const gitLabPublisher = new GitlabPublisher(
+          gitLabClient,
+          gitLabToken,
+          logger,
+        );
         publishers.register('gitlab', gitLabPublisher);
         publishers.register('gitlab/api', gitLabPublisher);
       } catch (e) {

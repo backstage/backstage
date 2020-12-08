@@ -19,44 +19,66 @@ import { Gitlab } from '@gitbeaker/core';
 import { pushToRemoteUserPass } from './helpers';
 import { JsonValue } from '@backstage/config';
 import { RequiredTemplateValues } from '../templater';
+import { Logger } from 'winston';
 
 export class GitlabPublisher implements PublisherBase {
   private readonly client: Gitlab;
   private readonly token: string;
 
-  constructor(client: Gitlab, token: string) {
+  constructor(client: Gitlab, token: string, logger: Logger) {
     this.client = client;
     this.token = token;
+    this.logger = logger;
   }
 
   async publish({
     values,
     directory,
   }: PublisherOptions): Promise<PublisherResult> {
+    this.logger.warn(`sdgsdg1`);
     const remoteUrl = await this.createRemote(values);
+    this.logger.warn(`sdgsdg2`);
     await pushToRemoteUserPass(directory, remoteUrl, 'oauth2', this.token);
+    this.logger.warn(`sdgsdg3 ${remoteUrl}`);
 
-    return { remoteUrl };
+    const catalogInfoUrl = remoteUrl.replace(
+      /\.git$/,
+      '/-/blob/master/catalog-info.yaml',
+    );
+    return { remoteUrl, catalogInfoUrl };
   }
 
   private async createRemote(
     values: RequiredTemplateValues & Record<string, JsonValue>,
   ) {
-    const [owner, name] = values.storePath.split('/');
+    this.logger.warn(`sdgsdg ${values.storePath}`);
 
+    const pathElements = values.storePath.split('/');
+    this.logger.warn(`sdgsdg1`);
+    const name = pathElements[pathElements.length - 1];
+    this.logger.warn(`sdgsdg2`);
+    pathElements.pop();
+    this.logger.warn(`sdgsdg3`);
+    const owner = pathElements.join('/');
+    this.logger.warn(`sdgsdg4`);
+
+    this.logger.warn(`owner: ${owner}, name ${name}`);
+
+    this.logger.warn(`sdgsdg4`);
     let targetNamespace = ((await this.client.Namespaces.show(owner)) as {
       id: number;
     }).id;
+    this.logger.warn(`targetNamespace ${targetNamespace}`);
     if (!targetNamespace) {
       targetNamespace = ((await this.client.Users.current()) as { id: number })
         .id;
     }
-
+    this.logger.warn(`2targetNamespace ${targetNamespace}`);
     const project = (await this.client.Projects.create({
       namespace_id: targetNamespace,
       name: name,
     })) as { http_url_to_repo: string };
-
+    this.logger.warn(`end ${project?.http_url_to_repo}`);
     return project?.http_url_to_repo;
   }
 }
