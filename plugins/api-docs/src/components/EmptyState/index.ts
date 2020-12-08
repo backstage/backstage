@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export { EntityPageApi } from './EntityPageApi';
+export { MissingConsumesApisEmptyState } from './MissingConsumesApisEmptyState';
+export { MissingProvidesApisEmptyState } from './MissingProvidesApisEmptyState';
