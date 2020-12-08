@@ -47,7 +47,12 @@ describe('BitbucketUrlReader', () => {
     msw.setupDefaultHandlers(worker);
 
     const repoBuffer = fs.readFileSync(
-      path.resolve('src', 'reading', '__fixtures__', 'repo.zip'),
+      path.resolve(
+        'src',
+        'reading',
+        '__fixtures__',
+        'bitbucket-repo-with-commit-hash.zip',
+      ),
     );
 
     it('returns the wanted files from an archive', async () => {
@@ -61,10 +66,20 @@ describe('BitbucketUrlReader', () => {
               ctx.body(repoBuffer),
             ),
         ),
+        rest.get(
+          'https://api.bitbucket.org/2.0/repositories/backstage/mock/commits/master',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.json({
+                values: [{ hash: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st' }],
+              }),
+            ),
+        ),
       );
 
       const processor = new BitbucketUrlReader(
-        { host: 'bitbucket.org', apiBaseUrl: 'x' },
+        { host: 'bitbucket.org', apiBaseUrl: 'https://api.bitbucket.org/2.0' },
         { treeResponseFactory },
       );
 
@@ -75,17 +90,17 @@ describe('BitbucketUrlReader', () => {
       const files = await response.files();
 
       expect(files.length).toBe(2);
-      const mkDocsFile = await files[0].content();
-      const indexMarkdownFile = await files[1].content();
+      const indexMarkdownFile = await files[0].content();
+      const mkDocsFile = await files[1].content();
 
-      expect(mkDocsFile.toString()).toBe('site_name: Test\n');
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
+      expect(mkDocsFile.toString()).toBe('site_name: Test\n');
     });
 
     it('uses private bitbucket host', async () => {
       worker.use(
         rest.get(
-          'https://bitbucket.mycompany.net/projects/a/repos/b/archive?format=tgz',
+          'https://bitbucket.mycompany.net/projects/backstage/repos/mock/archive?format=tgz',
           (_, res, ctx) =>
             res(
               ctx.status(200),
@@ -93,15 +108,28 @@ describe('BitbucketUrlReader', () => {
               ctx.body(repoBuffer),
             ),
         ),
+        rest.get(
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/commits/?until=master',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.json({
+                values: [{ id: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st' }],
+              }),
+            ),
+        ),
       );
 
       const processor = new BitbucketUrlReader(
-        { host: 'bitbucket.mycompany.net', apiBaseUrl: 'x' },
+        {
+          host: 'bitbucket.mycompany.net',
+          apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
+        },
         { treeResponseFactory },
       );
 
       const response = await processor.readTree(
-        'https://bitbucket.mycompany.net/projects/a/repos/b/browse/docs',
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/docs',
       );
 
       const files = await response.files();
@@ -114,7 +142,7 @@ describe('BitbucketUrlReader', () => {
 
     it('must specify a branch', async () => {
       const processor = new BitbucketUrlReader(
-        { host: 'bitbucket.org', apiBaseUrl: 'x' },
+        { host: 'bitbucket.org', apiBaseUrl: 'https://api.bitbucket.org/2.0' },
         { treeResponseFactory },
       );
 
@@ -136,10 +164,20 @@ describe('BitbucketUrlReader', () => {
               ctx.body(repoBuffer),
             ),
         ),
+        rest.get(
+          'https://api.bitbucket.org/2.0/repositories/backstage/mock/commits/master',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.json({
+                values: [{ hash: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st' }],
+              }),
+            ),
+        ),
       );
 
       const processor = new BitbucketUrlReader(
-        { host: 'bitbucket.org', apiBaseUrl: 'x' },
+        { host: 'bitbucket.org', apiBaseUrl: 'https://api.bitbucket.org/2.0' },
         { treeResponseFactory },
       );
 

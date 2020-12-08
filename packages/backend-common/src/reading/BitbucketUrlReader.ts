@@ -99,14 +99,8 @@ export class BitbucketUrlReader implements UrlReader {
     url: string,
     options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
-    const {
-      name: repoName,
-      owner,
-      ref,
-      protocol,
-      resource,
-      // filepath,
-    } = parseGitUri(url);
+    const gitUrl: parseGitUri.GitUrl = parseGitUri(url);
+    const { name: repoName, owner, ref, protocol, resource, filepath } = gitUrl;
 
     const isHosted = resource === 'bitbucket.org';
 
@@ -130,10 +124,11 @@ export class BitbucketUrlReader implements UrlReader {
       throw new Error(message);
     }
 
+    const lastCommitShortHash = await this.getLastCommitShortHash(gitUrl);
+
     return this.treeResponseFactory.fromZipArchive({
       stream: (response.body as unknown) as Readable,
-      // TODO: The zip contains the commit hash, not branch name - may need additional api call to get it
-      // path: `${owner}-${repoName}-4f9778cd49a4/${filepath}`,
+      path: `${owner}-${repoName}-${lastCommitShortHash}/${filepath}`,
       filter: options?.filter,
     });
   }
@@ -145,5 +140,52 @@ export class BitbucketUrlReader implements UrlReader {
       authed = Boolean(username && appPassword);
     }
     return `bitbucket{host=${host},authed=${authed}}`;
+  }
+
+  private async getLastCommitShortHash(
+    gitUrl: parseGitUri.GitUrl,
+  ): Promise<String> {
+    const { name: repoName, owner, ref, protocol, resource } = gitUrl;
+
+    const isHosted = resource === 'bitbucket.org';
+
+    const branch = ref ? ref : 'master';
+    const commitsApiUrl = isHosted
+      ? `${protocol}://${this.config.apiBaseUrl}/repositories/${owner}/${repoName}/commits/${branch}`
+      : `${protocol}://${this.config.apiBaseUrl}/projects/${owner}/repos/${repoName}/commits/?until=${branch}`;
+
+    const commitsResponse = await fetch(
+      commitsApiUrl,
+      getApiRequestOptions(this.config),
+    );
+    if (!commitsResponse.ok) {
+      const message = `Failed to retrieve commits from ${commitsApiUrl}, ${commitsResponse.status} ${commitsResponse.statusText}`;
+      if (commitsResponse.status === 404) {
+        throw new NotFoundError(message);
+      }
+      throw new Error(message);
+    }
+
+    const commits = await commitsResponse.json();
+    if (isHosted) {
+      if (
+        commits &&
+        commits.values &&
+        commits.values.length > 0 &&
+        commits.values[0].hash
+      ) {
+        return commits.values[0].hash.substring(0, 12);
+      }
+    } else {
+      if (
+        commits &&
+        commits.values &&
+        commits.values.length > 0 &&
+        commits.values[0].id
+      ) {
+        return commits.values[0].id.substring(0, 12);
+      }
+    }
+    throw new Error(`Failed to read response from ${commitsApiUrl}`);
   }
 }
