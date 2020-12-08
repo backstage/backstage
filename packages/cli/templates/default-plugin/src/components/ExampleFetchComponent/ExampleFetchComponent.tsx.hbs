@@ -38,7 +38,7 @@ type DenseTableProps = {
   users: User[];
 };
 
-export const DenseTable = ({ users: DenseTableProps }) => {
+export const DenseTable = ({ users }: DenseTableProps) => {
   const classes = useStyles();
 
   const columns: TableColumn[] = [
