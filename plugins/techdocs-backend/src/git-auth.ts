@@ -22,7 +22,7 @@ export function getGitHost(url: string): string {
   return resource;
 }
 
-export function getGitRepoType(url: string): string {
+export async function getGitRepoType(url: string): string {
   const typeMapping = [
     { url: /github*/g, type: 'github' },
     { url: /gitlab*/g, type: 'gitlab' },
@@ -30,6 +30,33 @@ export function getGitRepoType(url: string): string {
   ];
 
   const type = typeMapping.filter(item => item.url.test(url))[0]?.type;
+
+  // If we have a custom host, like for hosted gitlab
+  if (!type) {
+    const config = await loadBackendConfig({
+      logger: getRootLogger(),
+      argv: process.argv,
+    });
+
+    const host = getGitHost(url);
+
+    for (const i in typeMapping) {
+      if (Object.prototype.hasOwnProperty.call(typeMapping, i)) {
+        const providerConfigs =
+          config.getOptionalConfigArray(
+            `integrations.${typeMapping[i].type}`,
+          ) ?? [];
+
+        const hostConfig = providerConfigs.filter(
+          providerConfig => providerConfig.getOptionalString('host') === host,
+        );
+
+        if (hostConfig.length > 0) {
+          return typeMapping[i].type;
+        }
+      }
+    }
+  }
 
   return type;
 }
@@ -100,7 +127,7 @@ export const getTokenForGitRepo = async (
   });
 
   const host = getGitHost(repositoryUrl);
-  const type = getGitRepoType(repositoryUrl);
+  const type = await getGitRepoType(repositoryUrl);
 
   try {
     switch (type) {

@@ -145,10 +145,11 @@ export const checkoutGitRepository = async (
   }
 
   if (token) {
-    const type = getGitRepoType(repoUrl);
+    const type = await getGitRepoType(repoUrl);
     switch (type) {
       case 'gitlab':
         // Personal Access Token
+        logger.warn('token');
         parsedGitLocation.token = `dummyUsername:${token}`;
         parsedGitLocation.git_suffix = true;
         break;
