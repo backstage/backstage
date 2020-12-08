@@ -8,9 +8,6 @@
 // See https://docusaurus.io/docs/site-config for all the possible
 // site configuration options.
 
-// List of projects/orgs using your project for the users page.
-const users = [];
-
 const siteConfig = {
   title: 'Backstage Service Catalog and Developer Platform', // Title for your website.
   tagline: 'An open platform for building developer portals',
@@ -70,11 +67,6 @@ const siteConfig = {
     navigatorTitleTextColor: '#e4e4e4',
     navigatorItemTextColor: '#9e9e9e',
     navGroupSubcategoryTitleColor: '#9e9e9e',
-  },
-
-  /* Colors for syntax highlighting */
-  highlight: {
-    theme: 'dark',
   },
 
   // This copyright info is used in /core/Footer.js and blog RSS/Atom feeds.
