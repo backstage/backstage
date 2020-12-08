@@ -19,3 +19,8 @@ export {
   readAzureIntegrationConfigs,
 } from './config';
 export type { AzureIntegrationConfig } from './config';
+export {
+  getAzureDownloadUrl,
+  getAzureFileFetchUrl,
+  getAzureRequestOptions,
+} from './core';
