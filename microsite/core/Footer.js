@@ -54,6 +54,12 @@ class Footer extends React.Component {
             <a href={this.props.config.fossWebsite}>
               Open Source @ {this.props.config.organizationName}
             </a>
+
+            <a href="https://engineering.atspotify.com/">
+              Spotify Engineering Blog
+            </a>
+            <a href="https://developer.spotify.com/">Spotify for Developers</a>
+
             <a href={this.props.config.repoUrl}>GitHub</a>
             <a
               className="github-button"
@@ -78,6 +84,9 @@ class Footer extends React.Component {
             )}
           </div>
         </section>
+        <p style={{ textAlign: 'center' }}>
+          <a href="https://spotify.github.io">Made with ❤️&nbsp; at Spotify</a>
+        </p>
         <p className="copyright">{this.props.config.copyright}</p>
       </footer>
     );
