@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, PropsWithChildren } from 'react';
 import { LinearProgress, LinearProgressProps } from '@material-ui/core';
 
-export const Progress = (props: LinearProgressProps) => {
+export const Progress = (props: PropsWithChildren<LinearProgressProps>) => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {

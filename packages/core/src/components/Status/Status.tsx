@@ -17,7 +17,7 @@
 import { makeStyles } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
 import classNames from 'classnames';
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   status: {
@@ -63,7 +63,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-export const StatusOK = props => {
+export const StatusOK = (props: PropsWithChildren<{}>) => {
   const classes = useStyles(props);
   return (
     <span
@@ -74,7 +74,7 @@ export const StatusOK = props => {
   );
 };
 
-export const StatusWarning = props => {
+export const StatusWarning = (props: PropsWithChildren<{}>) => {
   const classes = useStyles(props);
   return (
     <span
@@ -85,7 +85,7 @@ export const StatusWarning = props => {
   );
 };
 
-export const StatusError = props => {
+export const StatusError = (props: PropsWithChildren<{}>) => {
   const classes = useStyles(props);
   return (
     <span
@@ -96,7 +96,7 @@ export const StatusError = props => {
   );
 };
 
-export const StatusPending = props => {
+export const StatusPending = (props: PropsWithChildren<{}>) => {
   const classes = useStyles(props);
   return (
     <span
@@ -107,7 +107,7 @@ export const StatusPending = props => {
   );
 };
 
-export const StatusRunning = props => {
+export const StatusRunning = (props: PropsWithChildren<{}>) => {
   const classes = useStyles(props);
   return (
     <span
@@ -118,7 +118,7 @@ export const StatusRunning = props => {
   );
 };
 
-export const StatusAborted = props => {
+export const StatusAborted = (props: PropsWithChildren<{}>) => {
   const classes = useStyles(props);
   return (
     <span
