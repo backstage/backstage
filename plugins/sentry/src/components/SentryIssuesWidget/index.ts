@@ -14,7 +14,4 @@
  * limitations under the License.
  */
 
-export * from './api';
-export * from './components';
-export { plugin } from './plugin';
-export { Router } from './components/Router';
+export { SentryIssuesWidget } from './SentryIssuesWidget';

@@ -61,9 +61,15 @@
           "organization": {
             "type": "string",
             "visibility": "frontend"
-          }
+          },
+          "required": [
+            "organization"
+          ]
         }
       }
-    }
+    },
+    "required": [
+      "sentry"
+    ]
   }
 }

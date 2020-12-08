@@ -58,6 +58,13 @@ proxy:
       Authorization:
         $env: BUILDKITE_TOKEN
 
+  '/sentry/api':
+    target: https://sentry.io/api/
+    allowedMethods: ['GET']
+    headers:
+      Authorization:
+        $env: SENTRY_TOKEN
+
 organization:
   name: My Company
 

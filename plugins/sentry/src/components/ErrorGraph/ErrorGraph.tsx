@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
-import { SentryIssue } from '../../data/sentry-issue';
+import { SentryIssue } from '../../api';
 import { Sparklines, SparklinesBars } from 'react-sparklines';
 
 export const ErrorGraph = ({ sentryIssue }: { sentryIssue: SentryIssue }) => {

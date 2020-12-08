@@ -16,33 +16,40 @@
 
 import React, { useEffect } from 'react';
 import {
+  EmptyState,
   ErrorApi,
   errorApiRef,
   InfoCard,
+  MissingAnnotationEmptyState,
   Progress,
   useApi,
-  configApiRef,
 } from '@backstage/core';
 import SentryIssuesTable from '../SentryIssuesTable/SentryIssuesTable';
 import { useAsync } from 'react-use';
-import { sentryApiFactory } from '../../data/api-factory';
+import { sentryApiRef } from '../../api';
+import {
+  SENTRY_PROJECT_SLUG_ANNOTATION,
+  useProjectSlug,
+} from '../useProjectSlug';
+import { Entity } from '@backstage/catalog-model';
 
-export const SentryPluginWidget = ({
-  sentryProjectId,
-  statsFor,
+export const SentryIssuesWidget = ({
+  entity,
+  statsFor = '24h',
+  variant = 'gridItem',
 }: {
-  sentryProjectId: string;
-  statsFor: '24h' | '12h';
+  entity: Entity;
+  statsFor?: '24h' | '12h';
+  variant?: string;
 }) => {
   const errorApi = useApi<ErrorApi>(errorApiRef);
-  const configApi = useApi(configApiRef);
-  const org = configApi.getString('sentry.organization');
-  const backendBaseUrl = configApi.getString('backend.baseUrl');
-  const api = sentryApiFactory(org, backendBaseUrl);
+  const sentryApi = useApi(sentryApiRef);
+
+  const projectId = useProjectSlug(entity);
 
   const { loading, value, error } = useAsync(
-    () => api.fetchIssues(sentryProjectId, statsFor),
-    [statsFor, sentryProjectId],
+    () => sentryApi.fetchIssues(projectId, statsFor),
+    [sentryApi, statsFor, projectId],
   );
 
   useEffect(() => {
@@ -51,10 +58,24 @@ export const SentryPluginWidget = ({
     }
   }, [error, errorApi]);
 
-  if (loading) {
+  if (loading || !projectId || error) {
     return (
-      <InfoCard title="Sentry issues">
-        <Progress />
+      <InfoCard title="Sentry issues" variant={variant}>
+        {loading && <Progress />}
+
+        {!loading && !projectId && (
+          <MissingAnnotationEmptyState
+            annotation={SENTRY_PROJECT_SLUG_ANNOTATION}
+          />
+        )}
+
+        {!loading && error && (
+          <EmptyState
+            missing="info"
+            title="No information to display"
+            description={`There is no Sentry project with id '${projectId}'.`}
+          />
+        )}
       </InfoCard>
     );
   }

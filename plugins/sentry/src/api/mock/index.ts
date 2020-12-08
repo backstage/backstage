@@ -13,14 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getRequestHeaders } from './sentry-api';
 
-describe('SentryApiForwarder', () => {
-  it('should generate headers based on token passed in constructor', () => {
-    expect(getRequestHeaders('testtoken')).toEqual({
-      headers: {
-        Authorization: `Bearer testtoken`,
-      },
-    });
-  });
-});
+export { MockSentryApi } from './mock-api';
