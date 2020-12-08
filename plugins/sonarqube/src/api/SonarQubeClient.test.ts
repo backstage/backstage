@@ -18,12 +18,12 @@ import { UrlPatternDiscovery } from '@backstage/core';
 import { msw } from '@backstage/test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { FindingSummary, SonarQubeApi } from './index';
+import { FindingSummary, SonarQubeClient } from './index';
 import { ComponentWrapper, MeasuresWrapper } from './types';
 
 const server = setupServer();
 
-describe('SonarQubeApi', () => {
+describe('SonarQubeClient', () => {
   msw.setupDefaultHandlers(server);
 
   const mockBaseUrl = 'http://backstage:9191/api/proxy';
@@ -111,7 +111,7 @@ describe('SonarQubeApi', () => {
   it('should report finding summary', async () => {
     setupHandlers();
 
-    const client = new SonarQubeApi({ discoveryApi });
+    const client = new SonarQubeClient({ discoveryApi });
 
     const summary = await client.getFindingSummary('our-service');
     expect(summary).toEqual(
@@ -142,7 +142,7 @@ describe('SonarQubeApi', () => {
   it('should report finding summary (custom baseUrl)', async () => {
     setupHandlers();
 
-    const client = new SonarQubeApi({
+    const client = new SonarQubeClient({
       discoveryApi,
       baseUrl: 'http://a.instance.local',
     });
