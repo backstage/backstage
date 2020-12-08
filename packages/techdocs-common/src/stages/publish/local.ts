@@ -23,7 +23,7 @@ import {
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
-import { PublisherBase, PublisherBaseParams } from './types';
+import { PublisherBase, PublishRequest } from './types';
 
 /* `remoteUrl` is the URL which serves files from the local publisher's static directory. */
 export type LocalPublishReturn = Promise<{ remoteUrl: string }>;
@@ -52,7 +52,7 @@ export class LocalPublish implements PublisherBase {
     this.discovery = discovery;
   }
 
-  publish({ entity, directory }: PublisherBaseParams): LocalPublishReturn {
+  publish({ entity, directory }: PublishRequest): LocalPublishReturn {
     const entityNamespace = entity.metadata.namespace ?? 'default';
 
     const publishDir = resolvePackagePath(

@@ -21,13 +21,13 @@ import express from 'express';
  */
 export type PublisherType = 'local' | 'google_gcs';
 
-export type PublisherBaseParams = {
+export type PublishRequest = {
   entity: Entity;
   /* The Path to the directory where the generated files are stored. */
   directory: string;
 };
 
-export type PublisherBaseReturn = Promise<{}>;
+export type PublishResponse = {};
 
 /**
  * Base class for a TechDocs publisher (e.g. Local, Google GCS Bucket, AWS S3, etc.)
@@ -38,10 +38,10 @@ export interface PublisherBase {
   /**
    * Store the generated static files onto a storage service (either local filesystem or external service).
    *
-   * @param options Object containing the entity from the service
+   * @param request Object containing the entity from the service
    * catalog, and the directory that contains the generated static files from TechDocs.
    */
-  publish(options: PublisherBaseParams): PublisherBaseReturn;
+  publish(request: PublishRequest): Promise<PublishResponse>;
 
   /**
    * Retrieve TechDocs Metadata about a site e.g. name, contributors, last updated, etc.

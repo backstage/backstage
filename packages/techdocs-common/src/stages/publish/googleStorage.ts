@@ -21,7 +21,7 @@ import { Logger } from 'winston';
 import { Entity, EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { getHeadersForFileExtension, supportedFileType } from './helpers';
-import { PublisherBase, PublisherBaseParams } from './types';
+import { PublisherBase, PublishRequest } from './types';
 
 export class GoogleGCSPublish implements PublisherBase {
   static fromConfig(config: Config, logger: Logger): PublisherBase {
@@ -82,7 +82,7 @@ export class GoogleGCSPublish implements PublisherBase {
    * Upload all the files from the generated `directory` to the GCS bucket.
    * Directory structure used in the bucket is - entityNamespace/entityKind/entityName/index.html
    */
-  publish({ entity, directory }: PublisherBaseParams): Promise<{}> {
+  publish({ entity, directory }: PublishRequest): Promise<{}> {
     return new Promise((resolve, reject) => {
       // Path of all files to upload, relative to the root of the source directory
       // e.g. ['index.html', 'sub-page/index.html', 'assets/images/favicon.png']
