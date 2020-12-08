@@ -14,44 +14,10 @@
  * limitations under the License.
  */
 
-import {
-  ConcreteRoute,
-  routeReference,
-  ReferencedRoute,
-  resolveRoute,
-  RouteRefConfig,
-} from './types';
-import { generatePath } from 'react-router-dom';
+import { RouteRefConfig, RouteRef } from './types';
 
-type SubRouteConfig = {
-  path: string;
-};
-
-export class SubRouteRef<T extends { [name in string]: string } | never = never>
-  implements ReferencedRoute {
-  constructor(
-    private readonly parent: ConcreteRoute,
-    private readonly config: SubRouteConfig,
-  ) {}
-
-  get [routeReference]() {
-    return this;
-  }
-
-  link<Args extends T extends never ? [] : [T]>(...args: Args): ConcreteRoute {
-    return {
-      [routeReference]: this,
-      [resolveRoute]: (path: string) => {
-        const ownPart = generatePath(this.config.path, args[0] ?? {});
-        const parentPart = this.parent[resolveRoute](path);
-        return parentPart + ownPart;
-      },
-    };
-  }
-}
-
-export class AbsoluteRouteRef implements ConcreteRoute {
-  constructor(private readonly config: RouteRefConfig) {}
+export class AbsoluteRouteRef<Params extends { [param in string]: string }> {
+  constructor(private readonly config: RouteRefConfig<Params>) {}
 
   get icon() {
     return this.config.icon;
@@ -66,26 +32,24 @@ export class AbsoluteRouteRef implements ConcreteRoute {
     return this.config.title;
   }
 
-  createSubRoute<T extends { [name in string]: string } | never = never>(
-    config: SubRouteConfig,
-  ) {
-    return new SubRouteRef<T>(this, config);
+  /**
+   * This function should not be used, create a separate RouteRef instead
+   * @deprecated
+   */
+  createSubRoute(): any {
+    throw new Error(
+      'This method should not be called, create a separate RouteRef instead',
+    );
   }
 
-  get [routeReference]() {
-    return this;
-  }
-
-  [resolveRoute](path: string) {
-    return path;
+  toString() {
+    return `routeRef{path=${this.path}}`;
   }
 }
 
-export function createRouteRef(config: RouteRefConfig): AbsoluteRouteRef {
-  return new AbsoluteRouteRef(config);
+export function createRouteRef<
+  ParamKeys extends string,
+  Params extends { [param in string]: string } = { [name in ParamKeys]: string }
+>(config: RouteRefConfig<Params>): RouteRef<Params> {
+  return new AbsoluteRouteRef<Params>(config);
 }
-
-// TODO(Rugvip): Added for backwards compatibility, remove once old usage is gone
-// We may want to avoid exporting the AbsoluteRouteRef itself though, and consider
-// a different model for how to create sub routes, just avoid this
-export type MutableRouteRef = AbsoluteRouteRef;

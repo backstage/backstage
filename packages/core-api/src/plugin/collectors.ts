@@ -34,7 +34,7 @@ import { getComponentData } from '../extensions';
 import { createCollector } from '../extensions/traversal';
 
 export const pluginCollector = createCollector(
-  new Set<BackstagePlugin>(),
+  () => new Set<BackstagePlugin>(),
   (acc, node) => {
     const plugin = getComponentData<BackstagePlugin>(node, 'core.plugin');
     if (plugin) {
