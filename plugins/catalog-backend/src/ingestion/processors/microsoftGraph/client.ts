@@ -117,57 +117,32 @@ export class MicrosoftGraphClient {
     userId: string,
     maxSize: number,
   ): Promise<string | undefined> {
-    const response = await this.requestApi(`users/${userId}/photos`);
-
-    if (response.status === 404) {
-      return undefined;
-    } else if (response.status !== 200) {
-      await this.handleError('user photos', response);
-    }
-
-    const result = await response.json();
-    const photos = result.value as MicrosoftGraph.ProfilePhoto[];
-    let selectedPhoto: MicrosoftGraph.ProfilePhoto | undefined = undefined;
-
-    // Find the biggest picture that is smaller than the max size
-    for (const p of photos) {
-      if (
-        !selectedPhoto ||
-        (p.height! >= selectedPhoto.height! && p.height! <= maxSize)
-      ) {
-        selectedPhoto = p;
-      }
-    }
-
-    if (!selectedPhoto) {
-      return undefined;
-    }
-
-    return await this.getUserPhoto(userId, selectedPhoto.id!);
+    return await this.getPhotoWithSizeLimit('users', userId, maxSize);
   }
 
   async getUserPhoto(
     userId: string,
     sizeId?: string,
   ): Promise<string | undefined> {
-    const path = sizeId
-      ? `users/${userId}/photos/${sizeId}/$value`
-      : `users/${userId}/photo/$value`;
-    const response = await this.requestApi(path);
-
-    if (response.status === 404) {
-      return undefined;
-    } else if (response.status !== 200) {
-      await this.handleError('photo', response);
-    }
-
-    return `data:image/jpeg;base64,${Buffer.from(
-      await response.arrayBuffer(),
-    ).toString('base64')}`;
+    return await this.getPhoto('users', userId, sizeId);
   }
 
   async *getUsers(query?: ODataQuery): AsyncIterable<MicrosoftGraph.User> {
     yield* this.requestCollection<MicrosoftGraph.User>(`users`, query);
+  }
+
+  async getGroupPhotoWithSizeLimit(
+    groupId: string,
+    maxSize: number,
+  ): Promise<string | undefined> {
+    return await this.getPhotoWithSizeLimit('groups', groupId, maxSize);
+  }
+
+  async getGroupPhoto(
+    groupId: string,
+    sizeId?: string,
+  ): Promise<string | undefined> {
+    return await this.getPhoto('groups', groupId, sizeId);
   }
 
   async *getGroups(query?: ODataQuery): AsyncIterable<MicrosoftGraph.Group> {
@@ -188,6 +163,61 @@ export class MicrosoftGraphClient {
     }
 
     return await response.json();
+  }
+
+  private async getPhotoWithSizeLimit(
+    entityName: string,
+    id: string,
+    maxSize: number,
+  ): Promise<string | undefined> {
+    const response = await this.requestApi(`${entityName}/${id}/photos`);
+
+    if (response.status === 404) {
+      return undefined;
+    } else if (response.status !== 200) {
+      await this.handleError(`${entityName} photos`, response);
+    }
+
+    const result = await response.json();
+    const photos = result.value as MicrosoftGraph.ProfilePhoto[];
+    let selectedPhoto: MicrosoftGraph.ProfilePhoto | undefined = undefined;
+
+    // Find the biggest picture that is smaller than the max size
+    for (const p of photos) {
+      if (
+        !selectedPhoto ||
+        (p.height! >= selectedPhoto.height! && p.height! <= maxSize)
+      ) {
+        selectedPhoto = p;
+      }
+    }
+
+    if (!selectedPhoto) {
+      return undefined;
+    }
+
+    return await this.getPhoto(entityName, id, selectedPhoto.id!);
+  }
+
+  private async getPhoto(
+    entityName: string,
+    id: string,
+    sizeId?: string,
+  ): Promise<string | undefined> {
+    const path = sizeId
+      ? `${entityName}/${id}/photos/${sizeId}/$value`
+      : `${entityName}/${id}/photo/$value`;
+    const response = await this.requestApi(path);
+
+    if (response.status === 404) {
+      return undefined;
+    } else if (response.status !== 200) {
+      await this.handleError('photo', response);
+    }
+
+    return `data:image/jpeg;base64,${Buffer.from(
+      await response.arrayBuffer(),
+    ).toString('base64')}`;
   }
 
   private async handleError(path: string, response: Response): Promise<void> {
