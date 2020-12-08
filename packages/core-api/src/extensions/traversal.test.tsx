@@ -41,11 +41,14 @@ describe('discovery', () => {
       root,
       discoverers: [childDiscoverer],
       collectors: {
-        names: createCollector(Array<string>(), (acc, el) => {
-          if (typeof el.type === 'string') {
-            acc.push(el.type);
-          }
-        }),
+        names: createCollector(
+          () => Array<string>(),
+          (acc, el) => {
+            if (typeof el.type === 'string') {
+              acc.push(el.type);
+            }
+          },
+        ),
       },
     });
 
@@ -85,11 +88,14 @@ describe('discovery', () => {
           ),
       ],
       collectors: {
-        names: createCollector(Array<string>(), (acc, el) => {
-          if (typeof el.type === 'string') {
-            acc.push(el.type);
-          }
-        }),
+        names: createCollector(
+          () => Array<string>(),
+          (acc, el) => {
+            if (typeof el.type === 'string') {
+              acc.push(el.type);
+            }
+          },
+        ),
       },
     });
 

@@ -7972,11 +7972,6 @@ bindings@^1.5.0:
   dependencies:
     file-uri-to-path "1.0.0"
 
-bintrees@1.0.1:
-  version "1.0.1"
-  resolved "https://registry.npmjs.org/bintrees/-/bintrees-1.0.1.tgz#0e655c9b9c2435eaab68bf4027226d2b55a34524"
-  integrity sha1-DmVcm5wkNeqraL9AJyJtK1WjRSQ=
-
 bl@^1.0.0:
   version "1.2.2"
   resolved "https://registry.npmjs.org/bl/-/bl-1.2.2.tgz#a160911717103c07410cef63ef51b397c025af9c"
@@ -11445,9 +11440,9 @@ eslint-plugin-notice@^0.9.10:
     metric-lcs "^0.1.2"
 
 eslint-plugin-react-hooks@^4.0.0:
-  version "4.0.4"
-  resolved "https://registry.npmjs.org/eslint-plugin-react-hooks/-/eslint-plugin-react-hooks-4.0.4.tgz#aed33b4254a41b045818cacb047b81e6df27fa58"
-  integrity sha512-equAdEIsUETLFNCmmCkiCGq6rkSK5MoJhXFPFYeUebcjKgBmWWcgVOqZyQC8Bv1BwVCnTq9tBxgJFgAJTWoJtA==
+  version "4.2.0"
+  resolved "https://registry.npmjs.org/eslint-plugin-react-hooks/-/eslint-plugin-react-hooks-4.2.0.tgz#8c229c268d468956334c943bb45fc860280f5556"
+  integrity sha512-623WEiZJqxR7VdxFCKLI6d6LLpwJkGPYKODnkH3D7WpOG5KM8yWueBd8TLsNAetEJNF5iJmolaAKO3F8yzyVBQ==
 
 eslint-plugin-react@^7.12.4:
   version "7.21.5"
@@ -11793,14 +11788,6 @@ expect@^26.5.3:
     jest-matcher-utils "^26.5.2"
     jest-message-util "^26.5.2"
     jest-regex-util "^26.0.0"
-
-express-prom-bundle@^6.1.0:
-  version "6.1.0"
-  resolved "https://registry.npmjs.org/express-prom-bundle/-/express-prom-bundle-6.1.0.tgz#8fd72e5bedbbd686b8e7c49e0aecbc1b14b28743"
-  integrity sha512-krlvp5r6sgJ1IwL6M6/coMrNbAlwtpk+uyivfeyRMCupTK4HzIEQHH0gwrNhLiKyPmSbtZcSmtO6s+PRumRp5g==
-  dependencies:
-    on-finished "^2.3.0"
-    url-value-parser "^2.0.0"
 
 express-promise-router@^3.0.3:
   version "3.0.3"
@@ -18098,7 +18085,7 @@ oidc-token-hash@^5.0.0:
   resolved "https://registry.npmjs.org/oidc-token-hash/-/oidc-token-hash-5.0.0.tgz#acdfb1f4310f58e64d5d74a4e8671a426986e888"
   integrity sha512-8Yr4CZSv+Tn8ZkN3iN2i2w2G92mUKClp4z7EGUfdsERiYSbj7P4i/NHm72ft+aUdsiFx9UdIPSTwbyzQ6C4URg==
 
-on-finished@^2.3.0, on-finished@~2.3.0:
+on-finished@~2.3.0:
   version "2.3.0"
   resolved "https://registry.npmjs.org/on-finished/-/on-finished-2.3.0.tgz#20f1336481b083cd75337992a16971aa2d906947"
   integrity sha1-IPEzZIGwg811M3mSoWlxqi2QaUc=
@@ -19696,13 +19683,6 @@ progress@^2.0.0:
   version "2.0.3"
   resolved "https://registry.npmjs.org/progress/-/progress-2.0.3.tgz#7e8cf8d8f5b8f239c1bc68beb4eb78567d572ef8"
   integrity sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==
-
-prom-client@^12.0.0:
-  version "12.0.0"
-  resolved "https://registry.npmjs.org/prom-client/-/prom-client-12.0.0.tgz#9689379b19bd3f6ab88a9866124db9da3d76c6ed"
-  integrity sha512-JbzzHnw0VDwCvoqf8y1WDtq4wSBAbthMB1pcVI/0lzdqHGJI3KBJDXle70XK+c7Iv93Gihqo0a5LlOn+g8+DrQ==
-  dependencies:
-    tdigest "^0.1.1"
 
 promise-inflight@^1.0.1:
   version "1.0.1"
@@ -23166,13 +23146,6 @@ tarn@^3.0.1:
   resolved "https://registry.npmjs.org/tarn/-/tarn-3.0.1.tgz#ebac2c6dbc6977d34d4526e0a7814200386a8aec"
   integrity sha512-6usSlV9KyHsspvwu2duKH+FMUhqJnAh6J5J/4MITl8s94iSUQTLkJggdiewKv4RyARQccnigV48Z+khiuVZDJw==
 
-tdigest@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.npmjs.org/tdigest/-/tdigest-0.1.1.tgz#2e3cb2c39ea449e55d1e6cd91117accca4588021"
-  integrity sha1-Ljyyw56kSeVdHmzZEReszKRYgCE=
-  dependencies:
-    bintrees "1.0.1"
-
 teeny-request@^7.0.0:
   version "7.0.1"
   resolved "https://registry.npmjs.org/teeny-request/-/teeny-request-7.0.1.tgz#bdd41fdffea5f8fbc0d29392cb47bec4f66b2b4c"
@@ -24187,11 +24160,6 @@ url-parse@^1.4.3, url-parse@^1.4.7:
   dependencies:
     querystringify "^2.1.1"
     requires-port "^1.0.0"
-
-url-value-parser@^2.0.0:
-  version "2.0.1"
-  resolved "https://registry.npmjs.org/url-value-parser/-/url-value-parser-2.0.1.tgz#c8179a095ab9ec1f5aa17ca36af5af396b4e95ed"
-  integrity sha512-bexECeREBIueboLGM3Y1WaAzQkIn+Tca/Xjmjmfd0S/hFHSCEoFkNh0/D0l9G4K74MkEP/lLFRlYnxX3d68Qgw==
 
 url@^0.11.0, url@~0.11.0:
   version "0.11.0"

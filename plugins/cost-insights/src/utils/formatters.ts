@@ -104,19 +104,6 @@ export function formatLastTwoLookaheadQuarters(inclusiveEndDate: string) {
   return `${start} vs ${end}`;
 }
 
-export function formatLastTwoMonths(inclusiveEndDate: string) {
-  const exclusiveEndDate = moment(inclusiveEndDate)
-    .add(1, 'day')
-    .format(DEFAULT_DATE_FORMAT);
-  const start = moment(inclusiveStartDateOf(Duration.P1M, exclusiveEndDate))
-    .utc()
-    .format('MMMM');
-  const end = moment(inclusiveEndDateOf(Duration.P1M, inclusiveEndDate))
-    .utc()
-    .format('MMMM');
-  return `${start} vs ${end}`;
-}
-
 const formatRelativePeriod = (
   duration: Duration,
   date: string,
@@ -137,12 +124,6 @@ export function formatPeriod(
   isEndDate: boolean,
 ) {
   switch (duration) {
-    case Duration.P1M:
-      return monthOf(
-        isEndDate
-          ? inclusiveEndDateOf(duration, date)
-          : inclusiveStartDateOf(duration, date),
-      );
     case Duration.P3M:
       return quarterOf(
         isEndDate
