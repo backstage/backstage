@@ -9,6 +9,16 @@
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/gcp-projects"
+  },
+  "keywords": [
+    "backstage",
+    "google cloud"
+  ],
   "scripts": {
     "build": "backstage-cli plugin:build",
     "start": "backstage-cli plugin:serve",
