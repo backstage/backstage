@@ -198,6 +198,7 @@ talkdesk
 Talkdesk
 tasklist
 techdocs
+Telenor
 templated
 templater
 Templater
