@@ -115,7 +115,7 @@ export async function createRouter({
     } catch (err) {
       throw new Error(
         'Unable to get techdocs.publisher.type in your app config. Set it to either ' +
-          "'local', 'google_gcs' or other support storage providers. Read more here " +
+          "'local', 'googleGcs' or other support storage providers. Read more here " +
           'https://backstage.io/docs/features/techdocs/architecture',
       );
     }
@@ -136,7 +136,7 @@ export async function createRouter({
         if (!(await docsBuilder.docsUpToDate())) {
           await docsBuilder.build();
         }
-      } else if (publisherType === 'google_gcs') {
+      } else if (publisherType === 'googleGcs') {
         // This block should be valid for all external storage implementations. So no need to duplicate in future,
         // add the publisher type in the list here.
         if (!(await publisher.hasDocsBeenGenerated(entity))) {

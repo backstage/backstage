@@ -19,7 +19,7 @@ import express from 'express';
 /**
  * Key for all the different types of TechDocs publishers that are supported.
  */
-export type PublisherType = 'local' | 'google_gcs';
+export type PublisherType = 'local' | 'googleGcs';
 
 export type PublishRequest = {
   entity: Entity;

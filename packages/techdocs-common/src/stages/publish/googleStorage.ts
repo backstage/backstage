@@ -29,13 +29,13 @@ export class GoogleGCSPublish implements PublisherBase {
     let projectId = '';
     let bucketName = '';
     try {
-      pathToKey = config.getString('techdocs.publisher.google.pathToKey');
-      projectId = config.getString('techdocs.publisher.google.projectId');
-      bucketName = config.getString('techdocs.publisher.google.bucketName');
+      pathToKey = config.getString('techdocs.publisher.googleGcs.pathToKey');
+      projectId = config.getString('techdocs.publisher.googleGcs.projectId');
+      bucketName = config.getString('techdocs.publisher.googleGcs.bucketName');
     } catch (error) {
       throw new Error(
-        "Since techdocs.publisher.type is set to 'google_gcs' in your app config, " +
-          'pathToKey, projectId and bucketName are required in techdocs.publisher.google ' +
+        "Since techdocs.publisher.type is set to 'googleGcs' in your app config, " +
+          'pathToKey, projectId and bucketName are required in techdocs.publisher.googleGcs ' +
           'required to authenticate with Google Cloud Storage.',
       );
     }
@@ -59,7 +59,7 @@ export class GoogleGCSPublish implements PublisherBase {
         logger.error(
           `Could not retrieve metadata about the GCS bucket ${bucketName} in the GCP project ${projectId}. ` +
             'Make sure the GCP project and the bucket exists and the access key located at the path ' +
-            "techdocs.publisher.google.pathToKey defined in app config has the role 'Storage Object Creator'. " +
+            "techdocs.publisher.googleGcs.pathToKey defined in app config has the role 'Storage Object Creator'. " +
             'Refer to https://backstage.io/docs/features/techdocs/using-cloud-storage',
         );
         throw new Error(`from GCS client library: ${reason.message}`);

@@ -85,32 +85,44 @@
             "visibility": "frontend"
           },
           "publisher": {
-            "type": "object",
-            "properties": {
-              "type": {
-                "type": "string",
-                "visibility": "backend"
-              },
-              "google": {
+            "oneOf": [
+              {
                 "type": "object",
                 "properties": {
-                  "pathToKey": {
+                  "type": {
                     "type": "string",
-                    "visibility": "secret"
+                    "const": "local",
+                    "visibility": "backend"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "const": "googleGcs",
+                    "visibility": "backend"
                   },
-                  "projectId": {
-                    "type": "string",
-                    "visibility": "secret"
-                  },
-                  "bucketName": {
-                    "type": "string",
-                    "visibility": "secret"
+                  "googleGcs": {
+                    "type": "object",
+                    "properties": {
+                      "pathToKey": {
+                        "type": "string",
+                        "visibility": "secret"
+                      },
+                      "projectId": {
+                        "type": "string",
+                        "visibility": "secret"
+                      },
+                      "bucketName": {
+                        "type": "string",
+                        "visibility": "secret"
+                      }
+                    }
                   }
                 }
               }
-            },
-            "required": [
-              "type"
             ]
           }
         },

@@ -22,24 +22,24 @@ for the latest instructions on the following steps involving GCP.
 
 **1. Set `techdocs.publisher.type` config in your `app-config.yaml`**
 
-Set `techdocs.publisher.type` to `'google_gcs'`.
+Set `techdocs.publisher.type` to `'googleGcs'`.
 
 ```yaml
 techdocs:
   publisher:
-    type: 'google_gcs'
+    type: 'googleGcs'
 ```
 
 **2. GCP (Google Cloud Platform) Project**
 
 Create or choose a dedicated GCP project. Set
-`techdocs.publisher.google.projectId` to the project ID.
+`techdocs.publisher.googleGcs.projectId` to the project ID.
 
 ```yaml
 techdocs:
   publisher:
-    type: 'google_gcs'
-  google:
+    type: 'googleGcs'
+  googleGcs:
     projectId: 'gcp-project-id
 ```
 
@@ -58,13 +58,13 @@ IAM & Admin console), and create a new key. Use JSON format for the key.
 A `<GCP-PROJECT-ID-random-uid>.json` file will be downloaded. This is the secret
 key TechDocs will use to make API calls. Make it available in your Backstage
 server and/or your local development server and set it in the app config
-`techdocs.publisher.google.pathToKey`.
+`techdocs.publisher.googleGcs.pathToKey`.
 
 ```yaml
 techdocs:
   publisher:
-    type: 'google_gcs'
-    google:
+    type: 'googleGcs'
+    googleGcs:
       projectId: 'gcp-project-id'
       pathToKey: '/path/to/google_application_credentials.json'
 ```
@@ -80,8 +80,8 @@ Set the name of the bucket to `techdocs.publisher
 ```yaml
 techdocs:
   publisher:
-    type: 'google_gcs'
-    google:
+    type: 'googleGcs'
+    googleGcs:
       projectId: 'gcp-project-id'
       pathToKey: '/path/to/google_application_credentials.json'
       bucketName: 'name-of-techdocs-storage-bucket'

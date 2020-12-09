@@ -17,4 +17,4 @@ instead of
 An instance of `publisher` can either be a local filesystem publisher or a Google Cloud Storage publisher.
 
 Read more about the configs here https://backstage.io/docs/features/techdocs/configuration
-(You will also have to update `techdocs.storage.type` to `local` or `google_gcs`. And `techdocs.builder` to either `local` or `external`.)
+(You will also have to update `techdocs.storage.type` to `local` or `googleGcs`. And `techdocs.builder` to either `local` or `external`.)

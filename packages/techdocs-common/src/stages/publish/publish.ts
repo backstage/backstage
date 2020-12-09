@@ -36,7 +36,7 @@ export class Publisher {
     ) ?? 'local') as PublisherType;
 
     switch (publisherType) {
-      case 'google_gcs':
+      case 'googleGcs':
         logger.info('Creating Google Storage Bucket publisher for TechDocs');
         return GoogleGCSPublish.fromConfig(config, logger);
       case 'local':

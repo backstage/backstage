@@ -77,8 +77,8 @@ describe('Publisher', () => {
           techdocs: {
             requestUrl: 'http://localhost:7000',
             publisher: {
-              type: 'google_gcs',
-              google: {
+              type: 'googleGcs',
+              googleGcs: {
                 pathToKey: '/path/to/google-application-credentials.json',
                 projectId: 'gcp-project-id',
                 bucketName: 'bucketName',

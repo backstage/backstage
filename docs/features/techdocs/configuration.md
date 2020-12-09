@@ -50,16 +50,16 @@ techdocs:
 
   publisher:
 
-    # techdocs.publisher.type can be - 'local' or 'google_gcs' (aws_s3, azure_storage, etc. to be available as well).
+    # techdocs.publisher.type can be - 'local' or 'googleGcs' (awsS3, azureStorage, etc. to be available as well).
     # When set to 'local', techdocs-backend will create a 'static' directory at its root to store generated documentation files.
-    # When set to 'google_gcs', techdocs-backend will use a Google Cloud Storage Bucket to store generated documentation files.
+    # When set to 'googleGcs', techdocs-backend will use a Google Cloud Storage Bucket to store generated documentation files.
 
     type: 'local'
 
 
-    # Required when techdocs.publisher.type is set to 'google_gcs'. Skip otherwise.
+    # Required when techdocs.publisher.type is set to 'googleGcs'. Skip otherwise.
 
-    google:
+    googleGcs:
       # An API key is required to write to a storage bucket.
       pathToKey: '/path/to/google_application_credentials.json',
 
