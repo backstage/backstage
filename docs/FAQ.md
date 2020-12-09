@@ -124,7 +124,7 @@ service. The `@backstage/create-app` tool that is used to create your own
 Backstage app is similar to
 [`create-react-app`](https://github.com/facebook/create-react-app) in that it
 gives you a starting point. The code you get is meant to be evolved, and most of
-the functionality you get out of the box is brought in via NPM dependencies.
+the functionality you get out of the box is brought in via npm dependencies.
 Keeping your app up to date generally means keeping your dependencies up to
 date. The Backstage CLI provides a command to help you with that. Simply run
 `yarn backstage-cli versions:bump` at the root of your repo, and the latest
@@ -151,6 +151,27 @@ possible to do significant optimizations to the app load time by allowing
 plugins to share dependencies between each other when possible. This contributes
 to Backstage being fast, which is an important part of the user and developer
 experience.
+
+### Why are there no published Docker images or helm charts for Backstage?
+
+As mentioned above, Backstage is not a packaged service that you can use out of
+the box. In order to get started with Backstage you need to use the
+`@backstage/create-app` package to create and customize your own Backstage app.
+
+In order to build a Docker image from your own app, you can use the
+`yarn build-image` command which is included out of the box in the app template.
+By default this image will bundle up both the frontend and the backend into a
+single image that you can deploy using your favorite tooling.
+
+There are also some examples that can help you deploy Backstage to kubernetes in
+the
+[contrib](https://github.com/backstage/backstage/tree/master/contrib/kubernetes)
+folder.
+
+It is possible that example images will be provided in the future, which can be
+used to quickly try out a small subset of the functionality of Backstage, but
+these would not be able to provide much more functionality on top of what you
+can see on a demo site.
 
 ### Do I have to write plugins in TypeScript?
 

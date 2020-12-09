@@ -11,7 +11,7 @@ add an existing plugin to it. We are using the
 [CircleCI](https://github.com/backstage/backstage/blob/master/plugins/circleci/README.md)
 plugin in this example.
 
-1. Add the plugin's NPM package to the repo:
+1. Add the plugin's npm package to the repo:
 
 ```bash
 yarn add @backstage/plugin-circleci

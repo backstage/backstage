@@ -28,7 +28,7 @@ spec:
   type: service
   lifecycle: production
   owner: guest
-  providesApis:
+  consumesApis:
     - example-api
 `;
 
@@ -40,16 +40,16 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-export const MissingImplementsApisEmptyState = () => {
+export const MissingConsumesApisEmptyState = () => {
   const classes = useStyles();
   return (
     <EmptyState
       missing="field"
-      title="No APIs implemented by this entity"
+      title="No APIs consumed by this entity"
       description={
         <>
-          Components can implement APIs that are displayed on this page. You
-          need to fill the <code>providesApis</code> field to enable this tool.
+          Components can consume APIs that are displayed on this page. You need
+          to fill the <code>consumesApis</code> field to enable this tool.
         </>
       }
       action={
@@ -70,7 +70,7 @@ export const MissingImplementsApisEmptyState = () => {
           <Button
             variant="contained"
             color="primary"
-            href="https://backstage.io/docs/features/software-catalog/descriptor-format#specprovidesapis-optional"
+            href="https://backstage.io/docs/features/software-catalog/descriptor-format#specconsumesapis-optional"
           >
             Read more
           </Button>

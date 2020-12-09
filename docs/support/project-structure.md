@@ -161,7 +161,7 @@ are separated out into their own folder, see further down.
 
 - [`docgen/`](https://github.com/backstage/backstage/tree/master/packages/docgen) -
   Uses the
-  [Typescript Compiler API](https://github.com/Microsoft/TypeScript/wiki/Using-the-Compiler-API)
+  [TypeScript Compiler API](https://github.com/microsoft/TypeScript/wiki/Using-the-Compiler-API)
   to read out definitions and generate documentation for it.
 
 - [`e2e-test/`](https://github.com/backstage/backstage/tree/master/packages/e2e-test) -

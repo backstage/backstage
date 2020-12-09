@@ -4,7 +4,7 @@ This package provides the extended Material UI Theme(s) that power Backstage.
 
 ## Installation
 
-Install the package via npm or yarn:
+Install the package via npm or Yarn:
 
 ```sh
 $ npm install --save @backstage/theme
