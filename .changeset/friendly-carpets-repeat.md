@@ -11,11 +11,11 @@ _Breaking changes_
    Step-by-step guide to configure GCS is available here https://backstage.io/docs/features/techdocs/using-cloud-storage
    Set `techdocs.publisher.type` to `'local'` if you want to continue using local filesystem to store TechDocs files.
 
-2. `techdocs.builder` is now required and can be set to `'local'` or `'ci'`. (Set it to `'local'` for now, since CI/CD build
+2. `techdocs.builder` is now required and can be set to `'local'` or `'external'`. (Set it to `'local'` for now, since CI/CD build
    workflow for TechDocs will be available soon (in few weeks)).
    If builder is set to 'local' and you open a TechDocs page, `techdocs-backend` will try to build the docs, publish to storage and
    show the generated docs afterwords.
-   If builder is set to `'ci'`, `techdocs-backend` will only fetch the docs and will NOT try to build and publish. In this case of 'ci',
+   If builder is set to `'external'`, `techdocs-backend` will only fetch the docs and will NOT try to build and publish. In this case of `'external'`,
    we assume that docs are being built in the CI/CD pipeline of the repository.
    TechDocs will not assume a default value for `techdocs.builder`. It is better to explicitly define it in the `app-config.yaml`.
 

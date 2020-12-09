@@ -27,11 +27,12 @@ export const TechDocsNotFound = ({ errorMessage }: Props) => {
   );
 
   let additionalInfo = '';
-  if (techdocsBuilder === 'ci') {
+  if (techdocsBuilder !== 'local') {
     additionalInfo =
-      "Note that you have set techdocs.builder to 'ci' in your config, which means this Backstage app will not " +
-      "build docs if they are not found. Make sure the project's CI/CD pipeline builds and publishes docs. Or " +
-      "change techdocs.builder to 'local' to build docs from this Backstage instance.";
+      "Note that techdocs.builder is not set to 'local' in your config, which means this Backstage app will not " +
+      "build docs if they are not found. Make sure the project's docs are generated and published by some external " +
+      "process (e.g. CI/CD pipeline). Or change techdocs.builder to 'local' to build docs from this Backstage " +
+      'instance.';
   }
 
   return (

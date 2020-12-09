@@ -72,7 +72,7 @@ organization:
 techdocs:
   requestUrl: http://localhost:7000/api/techdocs
   storageUrl: http://localhost:7000/api/techdocs/static/docs
-  builder: 'local' # Alternatives - 'ci'
+  builder: 'local' # Alternatives - 'external'
   generators:
     techdocs: 'docker' # Alternatives - 'local'
   publisher:

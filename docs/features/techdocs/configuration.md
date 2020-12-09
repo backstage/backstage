@@ -27,7 +27,7 @@ techdocs:
 
   # generators.techdocs can have two values: 'docker' or 'local'. This is to determine how to run the generator - whether to
   # spin up the techdocs-container docker image or to run mkdocs locally (assuming all the dependencies are taken care of).
-  # You want to change this to 'local' if you are running Backstage using your own customer Docker setup and want to avoid running
+  # You want to change this to 'local' if you are running Backstage using your own custom Docker setup and want to avoid running
   # into Docker in Docker situation. Read more here
   # https://backstage.io/docs/features/techdocs/getting-started#disable-docker-in-docker-situation-optional
 
@@ -35,12 +35,12 @@ techdocs:
     techdocs: 'docker'
 
 
-  # techdocs.builder can be either 'local' or 'ci.
+  # techdocs.builder can be either 'local' or 'external.
   # If builder is set to 'local' and you open a TechDocs page, techdocs-backend will try to build the docs, publish to storage
   # and show the generated docs afterwords. This is the "Basic" setup of the TechDocs Architecture.
-  # If builder is set to 'ci', techdocs-backend will only fetch the docs and will NOT try to build and publish. In this case of 'ci',
-  # we assume that docs are being built in the CI/CD pipeline of the repository. This is the "Recommended" setup of the architecture.
-  # Read more here https://backstage.io/docs/features/techdocs/architecture
+  # If builder is set to 'external', techdocs-backend will only fetch the docs and will NOT try to build and publish. In this case of 'external',
+  # we assume that docs are being built by an external process (e.g. in the CI/CD pipeline of the repository). This is the "Recommended" setup of
+  # the architecture. Read more here https://backstage.io/docs/features/techdocs/architecture
 
   builder: 'local'
 
