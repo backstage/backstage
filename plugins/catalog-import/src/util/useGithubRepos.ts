@@ -18,6 +18,7 @@ import * as YAML from 'yaml';
 import { useApi, configApiRef } from '@backstage/core';
 import { catalogImportApiRef } from '../api/CatalogImportApi';
 import { ConfigSpec } from '../components/ImportComponentPage';
+import parseGitUri from 'git-url-parse';
 
 // TODO: (O5ten) Refactor into a core API instead of direct usage like this
 // https://github.com/backstage/backstage/pull/3613#issuecomment-7408929430
@@ -28,9 +29,12 @@ export function useGithubRepos() {
   const config = useApi(configApiRef);
 
   const submitPrToRepo = async (selectedRepo: ConfigSpec) => {
-    const [hostname, ownerName, repoName] = selectedRepo.location
-      .split('/')
-      .slice(-3);
+    const {
+      name: repoName,
+      owner: ownerName,
+      resource: hostname,
+    } = parseGitUri(selectedRepo.location);
+
     const configs = readGitHubIntegrationConfigs(
       config.getOptionalConfigArray('integrations.github') ?? [],
     );
