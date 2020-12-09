@@ -13,9 +13,9 @@ _Breaking changes_
 
 2. `techdocs.builder` is now required and can be set to `'local'` or `'external'`. (Set it to `'local'` for now, since CI/CD build
    workflow for TechDocs will be available soon (in few weeks)).
-   If builder is set to 'local' and you open a TechDocs page, `techdocs-backend` will try to build the docs, publish to storage and
+   If builder is set to 'local' and you open a TechDocs page, `techdocs-backend` will try to generate the docs, publish to storage and
    show the generated docs afterwords.
-   If builder is set to `'external'`, `techdocs-backend` will only fetch the docs and will NOT try to build and publish. In this case of `'external'`,
+   If builder is set to `'external'`, `techdocs-backend` will only fetch the docs and will NOT try to generate and publish. In this case of `'external'`,
    we assume that docs are being built in the CI/CD pipeline of the repository.
    TechDocs will not assume a default value for `techdocs.builder`. It is better to explicitly define it in the `app-config.yaml`.
 
@@ -30,7 +30,7 @@ Based on the config `techdocs.publisher.type`, the publisher could be either Loc
 
 4. `techdocs.storageUrl` is now a required config. Should be `http://localhost:7000/api/techdocs/static/docs` in most setups.
 
-5. Parts of `@backstage/plugin-techdocs-backend` have been moved to a new package `@backstage/techdocs-common` to build docs. Also to publish docs
+5. Parts of `@backstage/plugin-techdocs-backend` have been moved to a new package `@backstage/techdocs-common` to generate docs. Also to publish docs
    to-and-fro between TechDocs and a storage (either local or external). However, a Backstage app does NOT need to import the `techdocs-common` package -
    app should only import `@backstage/plugin-techdocs` and `@backstage/plugin-techdocs-backend`.
 

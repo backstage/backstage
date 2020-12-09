@@ -36,9 +36,9 @@ techdocs:
 
 
   # techdocs.builder can be either 'local' or 'external.
-  # If builder is set to 'local' and you open a TechDocs page, techdocs-backend will try to build the docs, publish to storage
+  # If builder is set to 'local' and you open a TechDocs page, techdocs-backend will try to generate the docs, publish to storage
   # and show the generated docs afterwords. This is the "Basic" setup of the TechDocs Architecture.
-  # If builder is set to 'external', techdocs-backend will only fetch the docs and will NOT try to build and publish. In this case of 'external',
+  # If builder is set to 'external', techdocs-backend will only fetch the docs and will NOT try to generate and publish. In this case of 'external',
   # we assume that docs are being built by an external process (e.g. in the CI/CD pipeline of the repository). This is the "Recommended" setup of
   # the architecture. Read more here https://backstage.io/docs/features/techdocs/architecture
 

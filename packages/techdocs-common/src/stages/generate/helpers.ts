@@ -209,7 +209,7 @@ export const getRepoUrlFromLocationAnnotation = (
 };
 
 /**
- * Update the mkdocs.yml file before TechDocs generator uses it to build docs site.
+ * Update the mkdocs.yml file before TechDocs generator uses it to generate docs site.
  *
  * List of tasks:
  * - Add repo_url if it does not exists
