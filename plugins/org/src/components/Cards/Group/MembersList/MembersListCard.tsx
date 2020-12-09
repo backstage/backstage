@@ -13,8 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import Alert from '@material-ui/lab/Alert';
+import {
+  Entity,
+  RELATION_MEMBER_OF,
+  UserEntity,
+} from '@backstage/catalog-model';
+import { Avatar, InfoCard, Progress, useApi } from '@backstage/core';
+import { catalogApiRef, entityRouteParams } from '@backstage/plugin-catalog';
 import {
   Box,
   createStyles,
@@ -24,16 +29,10 @@ import {
   Theme,
   Typography,
 } from '@material-ui/core';
-import { InfoCard, Progress, useApi } from '@backstage/core';
-import {
-  UserEntity,
-  RELATION_MEMBER_OF,
-  Entity,
-} from '@backstage/catalog-model';
-import { Link as RouterLink, generatePath } from 'react-router-dom';
-import { catalogApiRef, entityRouteParams } from '@backstage/plugin-catalog';
+import Alert from '@material-ui/lab/Alert';
+import React from 'react';
+import { generatePath, Link as RouterLink } from 'react-router-dom';
 import { useAsync } from 'react-use';
-import { Avatar } from '../../../Avatar';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

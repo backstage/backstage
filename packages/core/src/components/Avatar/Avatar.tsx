@@ -20,6 +20,7 @@ import {
   makeStyles,
   Theme,
 } from '@material-ui/core';
+import { extractInitials, stringToColor } from './utils';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -34,28 +35,13 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const stringToColour = (str: string) => {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = str.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  let colour = '#';
-  for (let i = 0; i < 3; i++) {
-    const value = (hash >> (i * 8)) & 0xff;
-    colour += `00${value.toString(16)}`.substr(-2);
-  }
-  return colour;
+export type AvatarProps = {
+  displayName?: string;
+  picture?: string;
+  customStyles?: CSSProperties;
 };
 
-export const Avatar = ({
-  displayName,
-  picture,
-  customStyles,
-}: {
-  displayName: string | undefined;
-  picture: string | undefined;
-  customStyles?: CSSProperties;
-}) => {
+export const Avatar = ({ displayName, picture, customStyles }: AvatarProps) => {
   const classes = useStyles();
   return (
     <MaterialAvatar
@@ -63,11 +49,11 @@ export const Avatar = ({
       src={picture}
       className={classes.avatar}
       style={{
-        backgroundColor: stringToColour(displayName || picture || ''),
+        backgroundColor: stringToColor(displayName || picture || ''),
         ...customStyles,
       }}
     >
-      {displayName && displayName.match(/\b\w/g)!.join('').substring(0, 2)}
+      {displayName && extractInitials(displayName)}
     </MaterialAvatar>
   );
 };

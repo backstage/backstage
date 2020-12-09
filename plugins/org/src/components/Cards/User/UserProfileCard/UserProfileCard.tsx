@@ -13,21 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { Box, Grid, Link, Tooltip, Typography } from '@material-ui/core';
-import Alert from '@material-ui/lab/Alert';
-import { InfoCard } from '@backstage/core';
-import { entityRouteParams } from '@backstage/plugin-catalog';
 import {
   Entity,
   RELATION_MEMBER_OF,
   UserEntity,
 } from '@backstage/catalog-model';
+import { Avatar, InfoCard } from '@backstage/core';
+import { entityRouteParams } from '@backstage/plugin-catalog';
+import { Box, Grid, Link, Tooltip, Typography } from '@material-ui/core';
 import EmailIcon from '@material-ui/icons/Email';
 import GroupIcon from '@material-ui/icons/Group';
 import PersonIcon from '@material-ui/icons/Person';
-import { Link as RouterLink, generatePath } from 'react-router-dom';
-import { Avatar } from '../../../Avatar';
+import Alert from '@material-ui/lab/Alert';
+import React from 'react';
+import { generatePath, Link as RouterLink } from 'react-router-dom';
 
 const GroupLink = ({
   groupName,
