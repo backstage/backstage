@@ -41,6 +41,7 @@ export type Service = {
 
 export type OnCall = {
   user: User;
+  escalation_level: number;
 };
 
 export type Assignee = {
