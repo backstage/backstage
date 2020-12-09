@@ -28,13 +28,17 @@ export function useGithubRepos() {
   const config = useApi(configApiRef);
 
   const submitPrToRepo = async (selectedRepo: ConfigSpec) => {
-    const [hostname, ownerName, repoName] = selectedRepo.location.split('/').slice(-3);
+    const [hostname, ownerName, repoName] = selectedRepo.location
+      .split('/')
+      .slice(-3);
     const configs = readGitHubIntegrationConfigs(
-        config.getOptionalConfigArray('integrations.github') ?? []
-    )
+      config.getOptionalConfigArray('integrations.github') ?? [],
+    );
     const githubIntegrationConfig = configs.find(v => v.host === hostname);
-    if(!githubIntegrationConfig) {
-      throw new Error(`Unable to locate github-integration for repo-location: ${selectedRepo.location}`);
+    if (!githubIntegrationConfig) {
+      throw new Error(
+        `Unable to locate github-integration for repo-location: ${selectedRepo.location}`,
+      );
     }
     const submitPRResponse = await api
       .submitPrToRepo({
@@ -43,7 +47,7 @@ export function useGithubRepos() {
         fileContent: selectedRepo.config
           .map(entity => `---\n${YAML.stringify(entity)}`)
           .join('\n'),
-        githubIntegrationConfig
+        githubIntegrationConfig,
       })
       .catch(e => {
         throw new Error(`Failed to submit PR to repo:\n${e.message}`);
