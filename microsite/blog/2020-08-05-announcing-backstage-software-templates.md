@@ -1,6 +1,6 @@
 ---
 title: Announcing Backstage Software Templates
-author: Stefan Ålund
+author: Stefan Ålund, Spotify
 authorURL: https://twitter.com/stalund
 ---
 

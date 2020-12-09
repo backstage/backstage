@@ -14,4 +14,13 @@
  * limitations under the License.
  */
 
-export * from './service/router';
+import { Router } from 'express';
+import { Logger } from 'winston';
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const createRouter = async (_: Logger): Promise<Router> => Router();
+
+throw new Error(
+  'The sentry-backend has been deprecated and replaced by the proxy-backend. See the ' +
+    'changelog on how to migrate to the proxy backend: https://github.com/backstage/backstage/blob/master/plugins/sentry/CHANGELOG.md.',
+);

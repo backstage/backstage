@@ -172,8 +172,8 @@ describe('createRouter', () => {
           },
           use_typescript: {
             default: true,
-            description: 'Include typescript',
-            title: 'Use Typescript',
+            description: 'Include TypeScript',
+            title: 'Use TypeScript',
             type: 'boolean',
           },
         },

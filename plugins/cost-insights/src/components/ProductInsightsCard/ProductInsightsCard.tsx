@@ -21,6 +21,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import pluralize from 'pluralize';
 import { InfoCard } from '@backstage/core';
 import { Typography } from '@material-ui/core';
 import { default as Alert } from '@material-ui/lab/Alert';
@@ -30,12 +31,12 @@ import { useProductInsightsCardStyles as useStyles } from '../../utils/styles';
 import { DefaultLoadingAction } from '../../utils/loading';
 import { Duration, Entity, Maybe, Product } from '../../types';
 import {
-  useLastCompleteBillingDate,
-  useScroll,
-  useLoading,
   MapLoadingToProps,
+  useLastCompleteBillingDate,
+  useLoading,
+  useScroll,
 } from '../../hooks';
-import { pluralOf } from '../../utils/grammar';
+import { findAnyKey } from '../../utils/assert';
 
 type LoadingProps = (isLoading: boolean) => void;
 
@@ -91,13 +92,12 @@ export const ProductInsightsCard = ({
     }
   }, [product, duration, onSelectAsync, dispatchLoadingProduct]);
 
-  const entities = entity?.entities ?? [];
-  const subheader = entities.length
-    ? `${entities.length} ${pluralOf(
-        entities.length,
-        'entity',
-        'entities',
-      )}, sorted by cost`
+  // Only a single entities Record for the root product entity is supported
+  const entityKey = findAnyKey(entity?.entities);
+  const entities = entityKey ? entity!.entities[entityKey] : [];
+
+  const subheader = entityKey
+    ? `${pluralize(entityKey, entities.length, true)}, sorted by cost`
     : null;
   const headerProps = {
     classes: classes,

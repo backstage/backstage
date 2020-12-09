@@ -21,7 +21,7 @@
 ### Patch Changes
 
 - 7b37d65fd: Adds the MarkdownContent component to render and display Markdown content with the default
-  [GFM](https://github.github.com/gfm/) (Github flavored Markdown) dialect.
+  [GFM](https://github.github.com/gfm/) (GitHub Flavored Markdown) dialect.
 
   ```
   <MarkdownContent content={markdownGithubFlavored} />
@@ -59,7 +59,7 @@
 
 - 482b6313d: Fix dense in Structured Metadata Table
 - 1c60f716e: Added EmptyState component
-- b79017fd3: Updated the `GithubAuth.create` method to configure the default scope of the Github Auth Api. As a result the
+- b79017fd3: Updated the `GithubAuth.create` method to configure the default scope of the GitHub Auth Api. As a result the
   default scope is configurable when overwriting the Core Api in the app.
 
   ```

@@ -72,7 +72,7 @@
 - 991a950e0: Added .fromConfig static factories for Preparers and Publishers + read integrations config to support url location types
 - c926765a2: Allow templates to be located on non-default branch
 - 6840a68df: Add authentication token to Scaffolder GitHub Preparer
-- 1c8c43756: The new `scaffolder.github.baseUrl` config property allows to specify a custom base url for GitHub enterprise instances
+- 1c8c43756: The new `scaffolder.github.baseUrl` config property allows to specify a custom base url for GitHub Enterprise instances
 - 5e4551e3a: Added support for configuring the working directory of the Scaffolder:
 
   ```yaml

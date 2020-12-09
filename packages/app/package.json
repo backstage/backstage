@@ -18,6 +18,7 @@
     "@backstage/plugin-github-actions": "^0.2.3",
     "@backstage/plugin-gitops-profiles": "^0.2.1",
     "@backstage/plugin-graphiql": "^0.2.1",
+    "@backstage/plugin-org": "^0.3.0",
     "@backstage/plugin-jenkins": "^0.3.2",
     "@backstage/plugin-kubernetes": "^0.3.1",
     "@backstage/plugin-lighthouse": "^0.2.4",
@@ -89,5 +90,8 @@
       "last 1 safari version"
     ]
   },
+  "files": [
+    "dist"
+  ],
   "license": "Apache-2.0"
 }

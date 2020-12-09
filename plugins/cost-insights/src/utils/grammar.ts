@@ -22,20 +22,6 @@ const vowels = {
   u: 'U',
 };
 
-export const pluralOf = (
-  n: number,
-  string: string,
-  plural?: string,
-): string => {
-  if (n !== 1) {
-    if (plural) {
-      return plural;
-    }
-    return string.concat('s');
-  }
-  return string;
-};
-
 export const indefiniteArticleOf = (
   articles: [string, string],
   word: string,

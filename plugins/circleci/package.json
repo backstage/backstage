@@ -10,6 +10,16 @@
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/circleci"
+  },
+  "keywords": [
+    "backstage",
+    "circleci"
+  ],
   "scripts": {
     "build": "backstage-cli plugin:build",
     "lint": "backstage-cli lint",

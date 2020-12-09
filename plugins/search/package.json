@@ -9,6 +9,15 @@
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/search"
+  },
+  "keywords": [
+    "backstage"
+  ],
   "scripts": {
     "build": "backstage-cli plugin:build",
     "start": "backstage-cli plugin:serve",
