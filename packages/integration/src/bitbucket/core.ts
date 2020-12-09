@@ -18,6 +18,38 @@ import parseGitUrl from 'git-url-parse';
 import { BitbucketIntegrationConfig } from './config';
 
 /**
+ * Given a URL pointing to a path on a provider, returns a URL that is suitable
+ * for downloading the subtree.
+ *
+ * @param url A URL pointing to a path
+ */
+export function getBitbucketDownloadUrl(
+  url: string,
+  config: BitbucketIntegrationConfig,
+): string {
+  const {
+    name: repoName,
+    owner: project,
+    ref,
+    protocol,
+    resource,
+    filepath,
+  } = parseGitUrl(url);
+
+  const isHosted = resource === 'bitbucket.org';
+
+  // path will limit the downloaded content
+  // /docs will only download the docs folder and everything below it
+  // /docs/index.md will download the docs folder and everything below it
+  const path = filepath ? `&path=${encodeURIComponent(filepath)}` : '';
+  const archiveUrl = isHosted
+    ? `${protocol}://${resource}/${project}/${repoName}/get/${ref}.zip`
+    : `${config.apiBaseUrl}/projects/${project}/repos/${repoName}/archive?format=zip&prefix=${project}-${repoName}${path}`;
+
+  return archiveUrl;
+}
+
+/**
  * Given a URL pointing to a file on a provider, returns a URL that is suitable
  * for fetching the contents of the data.
  *

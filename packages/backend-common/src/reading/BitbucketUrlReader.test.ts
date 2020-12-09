@@ -98,24 +98,22 @@ describe('BitbucketUrlReader', () => {
     });
 
     it('uses private bitbucket host', async () => {
+      const privateBitbucketRepoBuffer = fs.readFileSync(
+        path.resolve(
+          'src',
+          'reading',
+          '__fixtures__',
+          'bitbucket-server-repo.zip',
+        ),
+      );
       worker.use(
         rest.get(
-          'https://bitbucket.mycompany.net/projects/backstage/repos/mock/archive?format=tgz',
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive?format=zip&prefix=mock&path=docs',
           (_, res, ctx) =>
             res(
               ctx.status(200),
               ctx.set('Content-Type', 'application/zip'),
-              ctx.body(repoBuffer),
-            ),
-        ),
-        rest.get(
-          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/commits/?until=master',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.json({
-                values: [{ id: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st' }],
-              }),
+              ctx.body(privateBitbucketRepoBuffer),
             ),
         ),
       );

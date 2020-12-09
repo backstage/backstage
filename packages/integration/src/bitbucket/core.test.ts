@@ -15,7 +15,11 @@
  */
 
 import { BitbucketIntegrationConfig } from './config';
-import { getBitbucketFileFetchUrl, getBitbucketRequestOptions } from './core';
+import {
+  getBitbucketDownloadUrl,
+  getBitbucketFileFetchUrl,
+  getBitbucketRequestOptions,
+} from './core';
 
 describe('bitbucket core', () => {
   describe('getBitbucketRequestOptions', () => {
@@ -94,6 +98,50 @@ describe('bitbucket core', () => {
         ),
       ).toEqual(
         'https://bitbucket.mycompany.net/rest/api/1.0/projects/a/repos/b/raw/path/to/c.yaml?at=',
+      );
+    });
+  });
+
+  describe('getBitbucketDownloadUrl', () => {
+    it('add path param if a path is specified', () => {
+      const config: BitbucketIntegrationConfig = {
+        host: 'bitbucket.mycompany.net',
+        apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
+      };
+      const result = getBitbucketDownloadUrl(
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/docs',
+        config,
+      );
+      expect(result).toEqual(
+        'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive?format=zip&prefix=backstage-mock&path=docs',
+      );
+    });
+
+    it('do not add path param if no path is specified', () => {
+      const config: BitbucketIntegrationConfig = {
+        host: 'bitbucket.mycompany.net',
+        apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
+      };
+      const result = getBitbucketDownloadUrl(
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse',
+        config,
+      );
+      expect(new URL(result).searchParams.get('format')).toEqual('zip');
+      expect(new URL(result).searchParams.get('prefix')).not.toBeNull();
+      expect(new URL(result).searchParams.get('path')).toBeNull();
+    });
+
+    it('do not add path param if the repository is hosted on bitbucket.org', () => {
+      const config: BitbucketIntegrationConfig = {
+        host: 'bitbucket.org',
+        apiBaseUrl: 'https://api.bitbucket.org/2.0',
+      };
+      const result = getBitbucketDownloadUrl(
+        'https://bitbucket.org/backstage/mock/src/master',
+        config,
+      );
+      expect(result).toEqual(
+        'https://bitbucket.org/backstage/mock/get/master.zip',
       );
     });
   });

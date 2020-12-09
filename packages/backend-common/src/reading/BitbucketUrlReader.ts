@@ -16,6 +16,7 @@
 
 import {
   BitbucketIntegrationConfig,
+  getBitbucketDownloadUrl,
   getBitbucketFileFetchUrl,
   getBitbucketRequestOptions,
   readBitbucketIntegrationConfigs,
@@ -100,7 +101,7 @@ export class BitbucketUrlReader implements UrlReader {
     options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
     const gitUrl: parseGitUri.GitUrl = parseGitUri(url);
-    const { name: repoName, owner, ref, protocol, resource, filepath } = gitUrl;
+    const { name: repoName, owner: project, ref, resource, filepath } = gitUrl;
 
     const isHosted = resource === 'bitbucket.org';
 
@@ -111,11 +112,10 @@ export class BitbucketUrlReader implements UrlReader {
       );
     }
 
-    const archiveUrl = isHosted
-      ? `${protocol}://${resource}/${owner}/${repoName}/get/${ref}.zip`
-      : `${protocol}://${resource}/projects/${owner}/repos/${repoName}/archive?format=zip`;
-
-    const response = await fetch(archiveUrl, getApiRequestOptions(this.config));
+    const response = await fetch(
+      getBitbucketDownloadUrl(url, this.config),
+      getBitbucketRequestOptions(this.config),
+    );
     if (!response.ok) {
       const message = `Failed to read tree from ${url}, ${response.status} ${response.statusText}`;
       if (response.status === 404) {
@@ -124,11 +124,15 @@ export class BitbucketUrlReader implements UrlReader {
       throw new Error(message);
     }
 
-    const lastCommitShortHash = await this.getLastCommitShortHash(gitUrl);
+    let folderPath = `${project}-${repoName}`;
+    if (isHosted) {
+      const lastCommitShortHash = await this.getLastCommitShortHash(gitUrl);
+      folderPath = `${project}-${repoName}-${lastCommitShortHash}`;
+    }
 
     return this.treeResponseFactory.fromZipArchive({
       stream: (response.body as unknown) as Readable,
-      path: `${owner}-${repoName}-${lastCommitShortHash}/${filepath}`,
+      path: `${folderPath}/${filepath}`,
       filter: options?.filter,
     });
   }
@@ -145,18 +149,14 @@ export class BitbucketUrlReader implements UrlReader {
   private async getLastCommitShortHash(
     gitUrl: parseGitUri.GitUrl,
   ): Promise<String> {
-    const { name: repoName, owner, ref, protocol, resource } = gitUrl;
-
-    const isHosted = resource === 'bitbucket.org';
+    const { name: repoName, owner: project, ref } = gitUrl;
 
     const branch = ref ? ref : 'master';
-    const commitsApiUrl = isHosted
-      ? `${protocol}://${this.config.apiBaseUrl}/repositories/${owner}/${repoName}/commits/${branch}`
-      : `${protocol}://${this.config.apiBaseUrl}/projects/${owner}/repos/${repoName}/commits/?until=${branch}`;
+    const commitsApiUrl = `${this.config.apiBaseUrl}/repositories/${project}/${repoName}/commits/${branch}`;
 
     const commitsResponse = await fetch(
       commitsApiUrl,
-      getApiRequestOptions(this.config),
+      getBitbucketRequestOptions(this.config),
     );
     if (!commitsResponse.ok) {
       const message = `Failed to retrieve commits from ${commitsApiUrl}, ${commitsResponse.status} ${commitsResponse.statusText}`;
@@ -167,24 +167,13 @@ export class BitbucketUrlReader implements UrlReader {
     }
 
     const commits = await commitsResponse.json();
-    if (isHosted) {
-      if (
-        commits &&
-        commits.values &&
-        commits.values.length > 0 &&
-        commits.values[0].hash
-      ) {
-        return commits.values[0].hash.substring(0, 12);
-      }
-    } else {
-      if (
-        commits &&
-        commits.values &&
-        commits.values.length > 0 &&
-        commits.values[0].id
-      ) {
-        return commits.values[0].id.substring(0, 12);
-      }
+    if (
+      commits &&
+      commits.values &&
+      commits.values.length > 0 &&
+      commits.values[0].hash
+    ) {
+      return commits.values[0].hash.substring(0, 12);
     }
     throw new Error(`Failed to read response from ${commitsApiUrl}`);
   }
