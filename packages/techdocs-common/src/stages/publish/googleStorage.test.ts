@@ -75,6 +75,6 @@ describe('GoogleGCSPublish', () => {
     const entity = createMockEntity();
     return expect(
       publisher.publish({ entity, directory: '/path/to/generatedDirectory' }),
-    ).resolves.toStrictEqual({});
+    ).resolves.toBeUndefined();
   });
 });

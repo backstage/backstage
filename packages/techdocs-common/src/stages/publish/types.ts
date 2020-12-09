@@ -27,7 +27,10 @@ export type PublishRequest = {
   directory: string;
 };
 
-export type PublishResponse = {};
+/* `remoteUrl` is the URL which serves files from the local publisher's static directory. */
+export type PublishResponse = {
+  remoteUrl?: string;
+} | void;
 
 /**
  * Base class for a TechDocs publisher (e.g. Local, Google GCS Bucket, AWS S3, etc.)
