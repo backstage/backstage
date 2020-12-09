@@ -19,8 +19,8 @@ import { useApi, configApiRef } from '@backstage/core';
 import { catalogImportApiRef } from '../api/CatalogImportApi';
 import { ConfigSpec } from '../components/ImportComponentPage';
 
-//TODO: O5ten, refactor into a core API instead of direct usage like this
-//https://github.com/backstage/backstage/pull/3613#issuecomment-7408929430
+// TODO: (O5ten) Refactor into a core API instead of direct usage like this
+// https://github.com/backstage/backstage/pull/3613#issuecomment-7408929430
 import { readGitHubIntegrationConfigs } from '@backstage/integration';
 
 export function useGithubRepos() {
