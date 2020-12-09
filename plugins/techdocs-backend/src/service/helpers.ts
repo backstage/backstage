@@ -20,8 +20,6 @@ import {
   PreparerBuilder,
   PublisherBase,
   GeneratorBuilder,
-  PreparerBase,
-  GeneratorBase,
 } from '../techdocs';
 import { BuildMetadataStorage } from '../storage';
 import { getLocationForEntity, getLastCommitTimestamp } from '../helpers';
@@ -36,16 +34,14 @@ type DocsBuilderArguments = {
   preparers: PreparerBuilder;
   generators: GeneratorBuilder;
   publisher: PublisherBase;
-  entity: Entity;
   logger: Logger;
   dockerClient: Docker;
 };
 
 export class DocsBuilder {
-  private preparer: PreparerBase;
-  private generator: GeneratorBase;
+  private preparers: PreparerBuilder;
+  private generators: GeneratorBuilder;
   private publisher: PublisherBase;
-  private entity: Entity;
   private logger: Logger;
   private dockerClient: Docker;
 
@@ -53,57 +49,58 @@ export class DocsBuilder {
     preparers,
     generators,
     publisher,
-    entity,
     logger,
     dockerClient,
   }: DocsBuilderArguments) {
-    this.preparer = preparers.get(entity);
-    this.generator = generators.get(entity);
+    this.preparers = preparers;
+    this.generators = generators;
     this.publisher = publisher;
-    this.entity = entity;
     this.logger = logger;
     this.dockerClient = dockerClient;
   }
 
-  public async build() {
-    this.logger.info(`Running preparer on entity ${getEntityId(this.entity)}`);
-    const preparedDir = await this.preparer.prepare(this.entity);
+  public async build(entity: Entity) {
+    const preparer = this.preparers.get(entity);
+    const generator = this.generators.get(entity);
 
-    const parsedLocationAnnotation = getLocationForEntity(this.entity);
+    this.logger.info(`Running preparer on entity ${getEntityId(entity)}`);
+    const preparedDir = await preparer.prepare(entity);
 
-    this.logger.info(`Running generator on entity ${getEntityId(this.entity)}`);
-    const { resultDir } = await this.generator.run({
+    const parsedLocationAnnotation = getLocationForEntity(entity);
+
+    this.logger.info(`Running generator on entity ${getEntityId(entity)}`);
+    const { resultDir } = await generator.run({
       directory: preparedDir,
       dockerClient: this.dockerClient,
       parsedLocationAnnotation,
     });
 
-    this.logger.info(`Running publisher on entity ${getEntityId(this.entity)}`);
+    this.logger.info(`Running publisher on entity ${getEntityId(entity)}`);
     await this.publisher.publish({
-      entity: this.entity,
+      entity: entity,
       directory: resultDir,
     });
 
-    if (!this.entity.metadata.uid) {
+    if (!entity.metadata.uid) {
       throw new Error(
         'Trying to build documentation for entity not in service catalog',
       );
     }
 
-    new BuildMetadataStorage(this.entity.metadata.uid).storeBuildTimestamp();
+    new BuildMetadataStorage(entity.metadata.uid).storeBuildTimestamp();
   }
 
-  public async docsUpToDate() {
-    if (!this.entity.metadata.uid) {
+  public async docsUpToDate(entity: Entity) {
+    if (!entity.metadata.uid) {
       throw new Error(
         'Trying to build documentation for entity not in service catalog',
       );
     }
 
     const buildMetadataStorage = new BuildMetadataStorage(
-      this.entity.metadata.uid,
+      entity.metadata.uid,
     );
-    const { type, target } = getLocationForEntity(this.entity);
+    const { type, target } = getLocationForEntity(entity);
 
     // Unless docs are stored locally
     const nonAgeCheckTypes = ['dir', 'file', 'url'];
@@ -114,7 +111,7 @@ export class DocsBuilder {
       // Check if documentation source is newer than what we have
       if (storageTimeStamp && storageTimeStamp >= lastCommit) {
         this.logger.debug(
-          `Docs for entity ${getEntityId(this.entity)} is up to date.`,
+          `Docs for entity ${getEntityId(entity)} is up to date.`,
         );
         return true;
       }
@@ -131,7 +128,7 @@ export class DocsBuilder {
     }
 
     this.logger.debug(
-      `Docs for entity ${getEntityId(this.entity)} was outdated.`,
+      `Docs for entity ${getEntityId(entity)} was outdated.`,
     );
     return false;
   }

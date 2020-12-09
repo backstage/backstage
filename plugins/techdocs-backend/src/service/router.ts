@@ -130,14 +130,29 @@ export async function createRouter({
       publisher,
       dockerClient,
       logger,
-      entity,
     });
 
-    if (!(await docsBuilder.docsUpToDate())) {
-      await docsBuilder.build();
+    if (!(await docsBuilder.docsUpToDate(entity))) {
+      await docsBuilder.build(entity);
     }
 
     res.redirect(`${storageUrl}${req.path.replace('/docs', '')}`);
+  });
+
+  router.get('/buildall', async (req, res) => {
+    logger.info("BuildAll")
+    const catalogUrl = await discovery.getBaseUrl('catalog');
+
+    const entitiesRes = await fetch(`${catalogUrl}/entities`);
+
+    if (entitiesRes.ok) {
+      const entities = await entitiesRes.json() as Entity[];
+
+      const entitiesWithDocs = entities.filter(entity => !!entity.metadata.annotations?.['backstage.io/techdocs-ref']);
+      console.log(entitiesWithDocs)
+    }
+
+    res.send("Yeet!")
   });
 
   if (publisher instanceof LocalPublish) {

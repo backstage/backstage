@@ -23,9 +23,13 @@ import {
   TechdocsGenerator,
   CommonGitPreparer,
   UrlPreparer,
+  DocsBuilder,
+  EntityBuilder,
+  runPeriodically,
 } from '@backstage/plugin-techdocs-backend';
 import { PluginEnvironment } from '../types';
 import Docker from 'dockerode';
+import { useHotCleanup } from '@backstage/backend-common';
 
 export default async function createPlugin({
   logger,
@@ -53,6 +57,21 @@ export default async function createPlugin({
   const publisher = new LocalPublish(logger, discovery);
 
   const dockerClient = new Docker();
+
+  const builder = new DocsBuilder({
+    preparers,
+    generators,
+    publisher,
+    logger,
+    dockerClient,
+  });
+
+  const entityBuilder = new EntityBuilder({ builder, discovery, logger });
+
+  useHotCleanup(
+    module,
+    runPeriodically(() => entityBuilder.refreshDocs(), 100000),
+  );
 
   return await createRouter({
     preparers,
