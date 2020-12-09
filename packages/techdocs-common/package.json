@@ -48,14 +48,13 @@
     "fs-extra": "^9.0.1",
     "git-url-parse": "^11.4.0",
     "js-yaml": "^3.14.0",
-    "klaw": "^3.0.0",
     "mock-fs": "^4.13.0",
     "nodegit": "^0.27.0",
+    "recursive-readdir": "^2.2.2",
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.4.0",
-    "@types/klaw": "^3.0.1"
+    "@backstage/cli": "^0.4.0"
   },
   "jest": {
     "roots": [

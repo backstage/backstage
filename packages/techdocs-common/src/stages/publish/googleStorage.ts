@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import path from 'path';
 import express from 'express';
-import walk from 'klaw';
 import { Storage, UploadResponse } from '@google-cloud/storage';
 import { Logger } from 'winston';
 import { Entity, EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { getHeadersForFileExtension, supportedFileType } from './helpers';
+import {
+  getHeadersForFileExtension,
+  supportedFileType,
+  getFileTreeRecursively,
+} from './helpers';
 import { PublisherBase, PublishRequest } from './types';
 
 export class GoogleGCSPublish implements PublisherBase {
@@ -94,53 +96,38 @@ export class GoogleGCSPublish implements PublisherBase {
    * Directory structure used in the bucket is - entityNamespace/entityKind/entityName/index.html
    */
   publish({ entity, directory }: PublishRequest): Promise<void> {
-    return new Promise((resolve, reject) => {
-      // Path of all files to upload, relative to the root of the source directory
-      // e.g. ['index.html', 'sub-page/index.html', 'assets/images/favicon.png']
-      const allFilesToUpload: Array<string> = [];
+    return new Promise(async (resolve, reject) => {
+      // Note: GCS manages creation of parent directories if they do not exist.
+      // So collecting path of only the files is good enough.
+      const allFilesToUpload = await getFileTreeRecursively(directory);
 
-      // Iterate on all the files in the directory and its sub-directories
-      walk(directory)
-        .on('data', (item: walk.Item) => {
-          // GCS manages creation of parent directories if they do not exist.
-          // So collecting path of only the files is good enough.
-          if (item.stats.isFile()) {
-            // Remove the absolute path prefix of the source directory
-            const relativeFilePath = item.path.replace(`${directory}/`, '');
-            allFilesToUpload.push(relativeFilePath);
-          }
-        })
-        .on('error', (err: Error, item: walk.Item) => {
-          const errorMessage = `Unable to read file at ${item.path}. Error ${err.message}`;
-          this.logger.error(errorMessage);
-          reject(errorMessage);
-        })
-        .on('end', () => {
-          // 'end' event happens when all the files have been read.
-          const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
-          allFilesToUpload.forEach(filePath => {
-            const source = path.join(directory, filePath); // Local file absolute path
-            const destination = `${entityRootDir}/${filePath}`; // GCS Bucket file relative path
-            this.storageClient
-              .bucket(this.bucketName)
-              .upload(source, { destination })
-              .then(
-                (uploadResp: UploadResponse) => ({
-                  fileName: destination,
-                  status: uploadResp[0],
-                }),
-                (err: Error) => {
-                  const errorMessage = `Unable to upload file ${destination} to GCS. Error ${err.message}`;
-                  this.logger.error(errorMessage);
-                  reject(errorMessage);
-                },
-              );
-          });
+      const uploadPromises: Array<Promise<UploadResponse>> = [];
+      allFilesToUpload.forEach(filePath => {
+        // Remove the absolute path prefix of the source directory
+        // Path of all files to upload, relative to the root of the source directory
+        // e.g. ['index.html', 'sub-page/index.html', 'assets/images/favicon.png']
+        const relativeFilePath = filePath.replace(`${directory}/`, '');
+        const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
+        const destination = `${entityRootDir}/${relativeFilePath}`; // GCS Bucket file relative path
+        // TODO: Upload in chunks of ~10 files instead of all files at once.
+        uploadPromises.push(
+          this.storageClient.bucket(this.bucketName).upload(filePath, {
+            destination,
+          }),
+        );
+      });
 
+      Promise.all(uploadPromises)
+        .then(() => {
           this.logger.info(
-            `Successfully uploaded all the generated files for Entity ${entityRootDir}. Total number of files: ${allFilesToUpload.length}`,
+            `Successfully uploaded all the generated files for Entity ${entity.metadata.name}. Total number of files: ${allFilesToUpload.length}`,
           );
           resolve(undefined);
+        })
+        .catch((err: Error) => {
+          const errorMessage = `Unable to upload file(s) to Google Cloud Storage. Error ${err.message}`;
+          this.logger.error(errorMessage);
+          reject(errorMessage);
         });
     });
   }

@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import recursiveReadDir from 'recursive-readdir';
+
 export type supportedFileType = 'html' | 'css';
 
 export type responseHeadersType = {
@@ -43,4 +45,38 @@ export const getHeadersForFileExtension = (
     default:
       return headersCommon;
   }
+};
+
+/**
+ * Recursively traverse all the sub-directories of a path and return
+ * a list of absolute paths of all the files. e.g. tree command in Unix
+ *
+ * @example
+ *
+ * /User/username/my_dir
+ *     dirA
+ *     |   subDirA
+ *     |   |   file1
+ *     EmptyDir
+ *     dirB
+ *     |   file2
+ *     file3
+ *
+ * getFileListRecursively('/Users/username/myDir')
+ * // returns
+ * [
+ *   '/User/username/my_dir/dirA/subDirA/file1',
+ *   '/User/username/my_dir/dirB/file2',
+ *   '/User/username/my_dir/file3'
+ * ]
+ * @param rootDirPath Absolute path to the root directory.
+ */
+export const getFileTreeRecursively = async (
+  rootDirPath: string,
+): Promise<string[]> => {
+  // Iterate on all the files in the directory and its sub-directories
+  const fileList = await recursiveReadDir(rootDirPath).catch(error => {
+    throw new Error(`Failed to read template directory: ${error.message}`);
+  });
+  return fileList;
 };
