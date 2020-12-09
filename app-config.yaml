@@ -133,7 +133,7 @@ catalog:
             $env: GITHUB_TOKEN
         #### Example for how to add your GitHub Enterprise instance using the API:
         # - target: https://ghe.example.net
-        #   apiBaseUrl: https://ghe.example.net/api/v3
+        #   apiBaseUrl: https://ghe.example.net/api
         #   token:
         #     $env: GHE_TOKEN
     ldapOrg:
