@@ -61,7 +61,8 @@ techdocs:
 
     googleGcs:
       # An API key is required to write to a storage bucket.
-      pathToKey: '/path/to/google_application_credentials.json',
+      credentials:
+        $file: '/path/to/google_application_credentials.json',
 
       # Your GCP Project ID where the Cloud Storage Bucket is hosted.
       projectId: 'gcp-project-id'

@@ -38,10 +38,6 @@ jest.spyOn(logger, 'info').mockReturnValue(logger);
 let publisher: PublisherBase;
 
 beforeEach(() => {
-  mockFs({
-    '/path/to/google-application-credentials.json': '{}',
-  });
-
   const mockConfig = ConfigReader.fromConfigs([
     {
       context: '',
@@ -51,7 +47,7 @@ beforeEach(() => {
           publisher: {
             type: 'googleGcs',
             googleGcs: {
-              pathToKey: '/path/to/google-application-credentials.json',
+              credentials: '{}',
               projectId: 'gcp-project-id',
               bucketName: 'bucketName',
             },
@@ -62,10 +58,6 @@ beforeEach(() => {
   ]);
 
   publisher = GoogleGCSPublish.fromConfig(mockConfig, logger);
-});
-
-afterEach(() => {
-  mockFs.restore();
 });
 
 describe('GoogleGCSPublish', () => {

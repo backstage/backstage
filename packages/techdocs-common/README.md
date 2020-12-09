@@ -1,6 +1,6 @@
 # @backstage/techdocs-common
 
-Common functionalities for TechDocs, to be shared between techdocs plugins and techdocs-cli
+Common functionalities for TechDocs, to be shared between techdocs-backend plugin and techdocs-cli
 
 This package is used by `techdocs-backend` to serve docs from different types of publishers (Google GCS, Local, etc.).
 It is also used to build docs and publish them to storage, by both `techdocs-backend` and `techdocs-cli`.

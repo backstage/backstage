@@ -25,24 +25,35 @@ import { PublisherBase, PublishRequest } from './types';
 
 export class GoogleGCSPublish implements PublisherBase {
   static fromConfig(config: Config, logger: Logger): PublisherBase {
-    let pathToKey = '';
+    let credentials = '';
     let projectId = '';
     let bucketName = '';
     try {
-      pathToKey = config.getString('techdocs.publisher.googleGcs.pathToKey');
+      credentials = config.getString(
+        'techdocs.publisher.googleGcs.credentials',
+      );
       projectId = config.getString('techdocs.publisher.googleGcs.projectId');
       bucketName = config.getString('techdocs.publisher.googleGcs.bucketName');
     } catch (error) {
       throw new Error(
         "Since techdocs.publisher.type is set to 'googleGcs' in your app config, " +
-          'pathToKey, projectId and bucketName are required in techdocs.publisher.googleGcs ' +
+          'credentials, projectId and bucketName are required in techdocs.publisher.googleGcs ' +
           'required to authenticate with Google Cloud Storage.',
       );
     }
 
+    let credentialsJson = {};
+    try {
+      credentialsJson = JSON.parse(credentials);
+    } catch (err) {
+      throw new Error(
+        'Error in parsing techdocs.publisher.googleGcs.credentials config to JSON.',
+      );
+    }
+
     const storageClient = new Storage({
+      credentials: credentialsJson,
       projectId: projectId,
-      keyFilename: pathToKey,
     });
 
     // Check if the defined bucket exists. Being able to connect means the configuration is good
@@ -59,7 +70,7 @@ export class GoogleGCSPublish implements PublisherBase {
         logger.error(
           `Could not retrieve metadata about the GCS bucket ${bucketName} in the GCP project ${projectId}. ` +
             'Make sure the GCP project and the bucket exists and the access key located at the path ' +
-            "techdocs.publisher.googleGcs.pathToKey defined in app config has the role 'Storage Object Creator'. " +
+            "techdocs.publisher.googleGcs.credentials defined in app config has the role 'Storage Object Creator'. " +
             'Refer to https://backstage.io/docs/features/techdocs/using-cloud-storage',
         );
         throw new Error(`from GCS client library: ${reason.message}`);

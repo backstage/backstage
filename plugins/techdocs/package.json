@@ -107,7 +107,7 @@
                   "googleGcs": {
                     "type": "object",
                     "properties": {
-                      "pathToKey": {
+                      "credentials": {
                         "type": "string",
                         "visibility": "secret"
                       },

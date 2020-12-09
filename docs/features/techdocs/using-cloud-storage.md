@@ -58,7 +58,7 @@ IAM & Admin console), and create a new key. Use JSON format for the key.
 A `<GCP-PROJECT-ID-random-uid>.json` file will be downloaded. This is the secret
 key TechDocs will use to make API calls. Make it available in your Backstage
 server and/or your local development server and set it in the app config
-`techdocs.publisher.googleGcs.pathToKey`.
+`techdocs.publisher.googleGcs.credentials`.
 
 ```yaml
 techdocs:
@@ -66,7 +66,8 @@ techdocs:
     type: 'googleGcs'
     googleGcs:
       projectId: 'gcp-project-id'
-      pathToKey: '/path/to/google_application_credentials.json'
+      credentials:
+        $file: '/path/to/google_application_credentials.json'
 ```
 
 **4. GCS Bucket**
@@ -83,7 +84,8 @@ techdocs:
     type: 'googleGcs'
     googleGcs:
       projectId: 'gcp-project-id'
-      pathToKey: '/path/to/google_application_credentials.json'
+      credentials:
+        $file: '/path/to/google_application_credentials.json'
       bucketName: 'name-of-techdocs-storage-bucket'
 ```
 

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import mockFs from 'mock-fs';
 import {
   getVoidLogger,
   PluginEndpointDiscovery,
@@ -66,10 +65,6 @@ describe('Publisher', () => {
   });
 
   it('should create google gcs publisher from config', () => {
-    mockFs({
-      '/path/to/google-application-credentials.json': '{}',
-    });
-
     const mockConfig = ConfigReader.fromConfigs([
       {
         context: '',
@@ -79,7 +74,7 @@ describe('Publisher', () => {
             publisher: {
               type: 'googleGcs',
               googleGcs: {
-                pathToKey: '/path/to/google-application-credentials.json',
+                credentials: '{}',
                 projectId: 'gcp-project-id',
                 bucketName: 'bucketName',
               },
@@ -91,7 +86,5 @@ describe('Publisher', () => {
 
     const publisher = Publisher.fromConfig(mockConfig, logger, testDiscovery);
     expect(publisher).toBeInstanceOf(GoogleGCSPublish);
-
-    mockFs.restore();
   });
 });
