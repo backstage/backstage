@@ -22,7 +22,7 @@ export const IncidentsEmptyState = () => {
   return (
     <Grid container justify="center" direction="column" alignItems="center">
       <Grid item xs={12}>
-        <Typography variant="h4">Nice! No incidents found!</Typography>
+        <Typography variant="h5">Nice! No incidents found!</Typography>
       </Grid>
       <Grid item xs={12}>
         <img
