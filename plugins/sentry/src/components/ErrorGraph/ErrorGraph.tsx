@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React from 'react';
 import { SentryIssue } from '../../api';
 import { Sparklines, SparklinesBars } from 'react-sparklines';
 
-export const ErrorGraph: FC<{ sentryIssue: SentryIssue }> = ({
-  sentryIssue,
-}) => {
+export const ErrorGraph = ({ sentryIssue }: { sentryIssue: SentryIssue }) => {
   const data =
     '12h' in sentryIssue.stats
       ? sentryIssue.stats['12h']

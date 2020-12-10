@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Content,
   ContentHeader,
@@ -33,7 +33,7 @@ import { useAsync } from 'react-use';
 import { gitOpsApiRef } from '../../api';
 import { Alert } from '@material-ui/lab';
 
-const ClusterList: FC<{}> = () => {
+const ClusterList = () => {
   const api = useApi(gitOpsApiRef);
   const githubAuth = useApi(githubAuthApiRef);
   const [githubUsername, setGithubUsername] = useState(String);

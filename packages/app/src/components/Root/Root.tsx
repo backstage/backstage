@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, useContext } from 'react';
-import PropTypes from 'prop-types';
+import React, { useContext, PropsWithChildren } from 'react';
 import { Link, makeStyles } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
 import ExtensionIcon from '@material-ui/icons/Extension';
@@ -55,7 +54,7 @@ const useSidebarLogoStyles = makeStyles({
   },
 });
 
-const SidebarLogo: FC<{}> = () => {
+const SidebarLogo = () => {
   const classes = useSidebarLogoStyles();
   const { isOpen } = useContext(SidebarContext);
 
@@ -73,7 +72,7 @@ const SidebarLogo: FC<{}> = () => {
   );
 };
 
-const Root: FC<{}> = ({ children }) => (
+const Root = ({ children }: PropsWithChildren<{}>) => (
   <SidebarPage>
     <Sidebar>
       <SidebarLogo />
@@ -101,9 +100,5 @@ const Root: FC<{}> = ({ children }) => (
     {children}
   </SidebarPage>
 );
-
-Root.propTypes = {
-  children: PropTypes.node,
-};
 
 export default Root;

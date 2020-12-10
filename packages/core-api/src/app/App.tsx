@@ -15,10 +15,10 @@
  */
 import React, {
   ComponentType,
-  FC,
   useMemo,
   useState,
   ReactElement,
+  PropsWithChildren,
 } from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import { AppContextProvider } from './AppContext';
@@ -196,7 +196,7 @@ export class PrivateAppImpl implements BackstageApp {
   }
 
   getProvider(): ComponentType<{}> {
-    const Provider: FC<{}> = ({ children }) => {
+    const Provider = ({ children }: PropsWithChildren<{}>) => {
       const appThemeApi = useMemo(
         () => AppThemeSelector.createWithStorage(this.themes),
         [],
@@ -233,10 +233,13 @@ export class PrivateAppImpl implements BackstageApp {
     } = this.components;
 
     // This wraps the sign-in page and waits for sign-in to be completed before rendering the app
-    const SignInPageWrapper: FC<{
+    const SignInPageWrapper = ({
+      component: Component,
+      children,
+    }: {
       component: ComponentType<SignInPageProps>;
       children: ReactElement;
-    }> = ({ component: Component, children }) => {
+    }) => {
       const [result, setResult] = useState<SignInResult>();
 
       if (result) {
@@ -247,7 +250,7 @@ export class PrivateAppImpl implements BackstageApp {
       return <Component onResult={setResult} />;
     };
 
-    const AppRouter: FC<{}> = ({ children }) => {
+    const AppRouter = ({ children }: PropsWithChildren<{}>) => {
       const configApi = useApi(configApiRef);
 
       let { pathname } = new URL(

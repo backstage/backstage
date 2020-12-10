@@ -21,7 +21,7 @@ import {
   SignInPage,
   createRouteRef,
 } from '@backstage/core';
-import React, { FC } from 'react';
+import React from 'react';
 import Root from './components/Root';
 import * as plugins from './plugins';
 import { apis } from './apis';
@@ -92,7 +92,7 @@ const AppRoutes = () => (
   </Routes>
 );
 
-const App: FC<{}> = () => (
+const App = () => (
   <AppProvider>
     <AlertDisplay />
     <OAuthRequestDialog />
