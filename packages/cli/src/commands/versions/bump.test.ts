@@ -23,6 +23,15 @@ import * as runObj from '../../lib/run';
 import bump from './bump';
 import { withLogCollector } from '@backstage/test-utils';
 
+// Remove log coloring to simplify log matching
+jest.mock('chalk', () => ({
+  blue: (str: string) => str,
+  cyan: (str: string) => str,
+  green: (str: string) => str,
+  magenta: (str: string) => str,
+  yellow: (str: string) => str,
+}));
+
 const REGISTRY_VERSIONS: { [name: string]: string } = {
   '@backstage/core': '1.0.6',
   '@backstage/core-api': '1.0.7',
@@ -121,11 +130,15 @@ describe('bump', () => {
       'Checking for updates of @backstage/core',
       'Checking for updates of @backstage/core-api',
       'Some packages are outdated, updating',
-      'Removing lockfile entry for @backstage/core@^1.0.3 to bump to 1.0.6',
-      'Removing lockfile entry for @backstage/core-api@^1.0.6 to bump to 1.0.7',
-      'Removing lockfile entry for @backstage/core-api@^1.0.3 to bump to 1.0.7',
-      'Bumping @backstage/theme in b to ^2.0.0',
-      "Running 'yarn install' to install new versions",
+      'unlocking @backstage/core@^1.0.3 ~> 1.0.6',
+      'unlocking @backstage/core-api@^1.0.6 ~> 1.0.7',
+      'unlocking @backstage/core-api@^1.0.3 ~> 1.0.7',
+      'bumping @backstage/theme in b to ^2.0.0',
+      'Running yarn install to install new versions',
+      'The following packages may have breaking changes:',
+      '  @backstage/theme',
+      '    https://github.com/backstage/backstage/blob/master/packages/theme/CHANGELOG.md',
+      'Version bump complete!',
     ]);
 
     expect(runObj.runPlain).toHaveBeenCalledTimes(3);

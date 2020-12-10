@@ -15,6 +15,7 @@
  */
 
 import fs from 'fs-extra';
+import chalk from 'chalk';
 import semver from 'semver';
 import { resolve as resolvePath } from 'path';
 import { run } from '../../lib/run';
@@ -35,6 +36,7 @@ const DEP_TYPES = [
 
 type PkgVersionInfo = {
   range: string;
+  target: string;
   name: string;
   location: string;
 };
@@ -69,6 +71,7 @@ export default async () => {
           name,
           location: pkg.location,
           range: `^${target}`, // TODO(Rugvip): Option to use something else than ^?
+          target,
         }),
       );
     }
@@ -98,9 +101,9 @@ export default async () => {
 
   // Write all discovered version bumps to package.json in this repo
   if (versionBumps.size === 0 && unlocked.length === 0) {
-    console.log('All Backstage packages are up to date!');
+    console.log(chalk.green('All Backstage packages are up to date!'));
   } else {
-    console.log('Some packages are outdated, updating');
+    console.log(chalk.yellow('Some packages are outdated, updating'));
     console.log();
 
     if (unlocked.length > 0) {
@@ -115,7 +118,9 @@ export default async () => {
         if (!removed.has(key)) {
           removed.add(key);
           console.log(
-            `Removing lockfile entry for ${name}@${range} to bump to ${target}`,
+            `${chalk.magenta('unlocking')} ${name}@${chalk.yellow(
+              range,
+            )} ~> ${chalk.yellow(target)}`,
           );
           lockfile.remove(name, range);
         }
@@ -123,16 +128,34 @@ export default async () => {
       await lockfile.save();
     }
 
+    const breakingUpdates = new Map<string, { from: string; to: string }>();
     await workerThreads(16, versionBumps.entries(), async ([name, deps]) => {
       const pkgPath = resolvePath(deps[0].location, 'package.json');
       const pkgJson = await fs.readJson(pkgPath);
 
       for (const dep of deps) {
-        console.log(`Bumping ${dep.name} in ${name} to ${dep.range}`);
+        console.log(
+          `${chalk.cyan('bumping')} ${dep.name} in ${chalk.cyan(
+            name,
+          )} to ${chalk.yellow(dep.range)}`,
+        );
 
         for (const depType of DEP_TYPES) {
           if (depType in pkgJson && dep.name in pkgJson[depType]) {
+            const oldRange = pkgJson[depType][dep.name];
             pkgJson[depType][dep.name] = dep.range;
+
+            // Check if the update was at least a pre-v1 minor or post-v1 major release
+            const lockfileEntry = lockfile
+              .get(dep.name)
+              ?.find(entry => entry.range === oldRange);
+            if (lockfileEntry) {
+              const from = lockfileEntry.version;
+              const to = dep.target;
+              if (!semver.satisfies(to, `^${from}`)) {
+                breakingUpdates.set(dep.name, { from, to });
+              }
+            }
           }
         }
       }
@@ -141,9 +164,42 @@ export default async () => {
     });
 
     console.log();
-    console.log("Running 'yarn install' to install new versions");
+    console.log(
+      `Running ${chalk.blue('yarn install')} to install new versions`,
+    );
     console.log();
     await run('yarn', ['install']);
+
+    if (breakingUpdates.size > 0) {
+      console.log();
+      console.log(
+        chalk.yellow('The following packages may have breaking changes:'),
+      );
+      console.log();
+
+      for (const [name] of breakingUpdates) {
+        console.log(`  ${chalk.yellow(name)}`);
+
+        let path;
+        if (name.startsWith('@backstage/plugin-')) {
+          path = `plugins/${name.replace('@backstage/plugin-', '')}`;
+        } else if (name.startsWith('@backstage/')) {
+          path = `packages/${name.replace('@backstage/', '')}`;
+        }
+        if (path) {
+          // TODO(Rugvip): Grab these URLs and paths from package.json, possibly verify existence
+          //               Possibly invent new "changelog" field in package.json or some sh*t.
+          console.log(
+            `    https://github.com/backstage/backstage/blob/master/${path}/CHANGELOG.md`,
+          );
+        }
+        console.log();
+      }
+    } else {
+      console.log();
+    }
+
+    console.log(chalk.green('Version bump complete!'));
   }
 
   console.log();
