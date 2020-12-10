@@ -130,6 +130,7 @@ export const CostOverviewByProductChart = ({
     return ['Other', ...sortedProducts].map((product, i) => (
       <Area
         dataKey={product}
+        isAnimationActive={false}
         stackId="1"
         stroke={theme.palette.dataViz[sortedProducts.length - i]}
         fill={theme.palette.dataViz[sortedProducts.length - i]}
