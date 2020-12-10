@@ -27,7 +27,7 @@ BitBucket	| 'x-token-auth'	token
 GitLab	| 'oauth2'	token
 From : https://isomorphic-git.org/docs/en/onAuth
 */
-export async function pushToRemoteCred(
+export async function push(
   dir: string,
   remote: string,
   logger: Logger,

@@ -1,6 +1,6 @@
 ---
 title: Introducing Tech Radar for Backstage
-author: Bilawal Hameed
+author: Bilawal Hameed, Spotify
 authorURL: http://twitter.com/bilawalhameed
 authorImageURL: https://avatars0.githubusercontent.com/bih
 ---

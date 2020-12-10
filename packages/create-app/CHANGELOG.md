@@ -212,7 +212,7 @@
   --config ../../app-config.yaml --config ../../app-config.development.yaml
   ```
 
-- 5a920c6e4: Updated naming of environment variables. New pattern [NAME]\_TOKEN for Github, Gitlab, Azure & Github enterprise access tokens.
+- 5a920c6e4: Updated naming of environment variables. New pattern [NAME]\_TOKEN for GitHub, GitLab, Azure & GitHub Enterprise access tokens.
 
   ### Detail:
 

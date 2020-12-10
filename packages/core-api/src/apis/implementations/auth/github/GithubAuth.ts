@@ -45,7 +45,7 @@ export type GithubAuthResponse = {
 
 const DEFAULT_PROVIDER = {
   id: 'github',
-  title: 'Github',
+  title: 'GitHub',
   icon: GithubIcon,
 };
 

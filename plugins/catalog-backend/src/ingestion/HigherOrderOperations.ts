@@ -116,28 +116,34 @@ export class HigherOrderOperations implements HigherOrderOperation {
    */
   async refreshAllLocations(): Promise<void> {
     const startTimestamp = process.hrtime();
-    this.logger.info('Beginning locations refresh');
+    const logger = this.logger.child({
+      component: 'catalog-all-locations-refresh',
+    });
+
+    logger.info('Locations Refresh: Beginning locations refresh');
 
     const locations = await this.locationsCatalog.locations();
-    this.logger.info(`Visiting ${locations.length} locations`);
+    logger.info(`Locations Refresh: Visiting ${locations.length} locations`);
 
     for (const { data: location } of locations) {
-      this.logger.info(
-        `Refreshing location ${location.type}:${location.target}`,
+      logger.info(
+        `Locations Refresh: Refreshing location ${location.type}:${location.target}`,
       );
       try {
         await this.refreshSingleLocation(location);
         await this.locationsCatalog.logUpdateSuccess(location.id, undefined);
       } catch (e) {
-        this.logger.warn(
-          `Failed to refresh location ${location.type}:${location.target}, ${e.stack}`,
+        logger.warn(
+          `Locations Refresh: Failed to refresh location ${location.type}:${location.target}, ${e.stack}`,
         );
         await this.locationsCatalog.logUpdateFailure(location.id, e);
       }
     }
 
-    this.logger.info(
-      `Completed locations refresh in ${durationText(startTimestamp)}`,
+    logger.info(
+      `Locations Refresh: Completed locations refresh in ${durationText(
+        startTimestamp,
+      )}`,
     );
   }
 

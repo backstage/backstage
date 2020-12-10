@@ -99,7 +99,7 @@
   ![failed-to-create-component](https://user-images.githubusercontent.com/33940798/94339296-90969400-0016-11eb-9a74-ce16b3dd8d88.gif)
 
 - c5ef12926: fix the accordion details design when job stage fail
-- 1c8c43756: The new `scaffolder.github.baseUrl` config property allows to specify a custom base url for GitHub enterprise instances
+- 1c8c43756: The new `scaffolder.github.baseUrl` config property allows to specify a custom base url for GitHub Enterprise instances
 - Updated dependencies [28edd7d29]
 - Updated dependencies [819a70229]
 - Updated dependencies [3a4236570]

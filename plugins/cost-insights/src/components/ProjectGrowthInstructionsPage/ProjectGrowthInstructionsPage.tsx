@@ -72,26 +72,28 @@ export const ProjectGrowthInstructionsPage = () => {
       ratio: 3,
       amount: 40_000,
     },
-    entities: [
-      {
-        id: 'service-one',
-        aggregation: [18_200, 58_500],
-        entities: [],
-        change: { ratio: 2.21, amount: 40_300 },
-      },
-      {
-        id: 'service-two',
-        aggregation: [1200, 1300],
-        entities: [],
-        change: { ratio: 0.083, amount: 100 },
-      },
-      {
-        id: 'service-three',
-        aggregation: [600, 200],
-        entities: [],
-        change: { ratio: -0.666, amount: -400 },
-      },
-    ],
+    entities: {
+      service: [
+        {
+          id: 'service-one',
+          aggregation: [18_200, 58_500],
+          entities: {},
+          change: { ratio: 2.21, amount: 40_300 },
+        },
+        {
+          id: 'service-two',
+          aggregation: [1200, 1300],
+          entities: {},
+          change: { ratio: 0.083, amount: 100 },
+        },
+        {
+          id: 'service-three',
+          aggregation: [600, 200],
+          entities: {},
+          change: { ratio: -0.666, amount: -400 },
+        },
+      ],
+    },
   };
 
   return (

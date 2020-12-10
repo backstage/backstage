@@ -407,7 +407,7 @@ The current set of well-known and common values for this field is:
 
 - `service` - a backend service, typically exposing an API
 - `website` - a website
-- `library` - a software library, such as an NPM module or a Java library
+- `library` - a software library, such as an npm module or a Java library
 
 ### `spec.lifecycle` [required]
 
@@ -558,7 +558,7 @@ The current set of well-known and common values for this field is:
 
 - `service` - a backend service, typically exposing an API
 - `website` - a website
-- `library` - a software library, such as an NPM module or a Java library
+- `library` - a software library, such as an npm module or a Java library
 
 ### `spec.templater` [required]
 

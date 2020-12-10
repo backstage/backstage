@@ -10,3 +10,5 @@ spec:
     - ./apis/spotify-api.yaml
     - ./apis/streetlights-api.yaml
     - ./apis/swapi-graphql.yaml
+    - ./apis/wayback-archive-api.yaml
+    - ./apis/wayback-search-api.yaml

@@ -11,6 +11,15 @@
     "module": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/integration"
+  },
+  "keywords": [
+    "backstage"
+  ],
   "scripts": {
     "build": "backstage-cli build",
     "lint": "backstage-cli lint",
@@ -21,11 +30,13 @@
   },
   "dependencies": {
     "@backstage/config": "^0.1.1",
+    "cross-fetch": "^3.0.6",
     "git-url-parse": "^11.4.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.4.0",
-    "@types/jest": "^26.0.7"
+    "@types/jest": "^26.0.7",
+    "msw": "^0.21.2"
   },
   "files": [
     "dist",
