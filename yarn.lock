@@ -2180,6 +2180,16 @@
     got "^11.7.0"
     xcase "^2.0.1"
 
+"@gitbeaker/node@^26.0.0":
+  version "26.0.0"
+  resolved "https://registry.npmjs.org/@gitbeaker/node/-/node-26.0.0.tgz#78601455635739170766011826b0a75a23c2d7e4"
+  integrity sha512-z+Ssd/n00u477QhooEtYUen9Fluf9ox3OLr6yvT++vKW3VjVevuoE+XUczW0PqBES8o2sa8WX4KORs4C8wR4kg==
+  dependencies:
+    "@gitbeaker/core" "^26.0.0"
+    "@gitbeaker/requester-utils" "^26.0.0"
+    got "^11.7.0"
+    xcase "^2.0.1"
+
 "@gitbeaker/requester-utils@^25.2.0", "@gitbeaker/requester-utils@^25.6.0":
   version "25.6.0"
   resolved "https://registry.npmjs.org/@gitbeaker/requester-utils/-/requester-utils-25.6.0.tgz#001a432a48460bb5196a02ed71763eb707a1a01e"
