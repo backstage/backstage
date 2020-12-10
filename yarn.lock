@@ -2150,7 +2150,7 @@
   dependencies:
     yaml-ast-parser "0.0.43"
 
-"@gitbeaker/core@^25.2.0":
+"@gitbeaker/core@^25.6.0":
   version "25.6.0"
   resolved "https://registry.npmjs.org/@gitbeaker/core/-/core-25.6.0.tgz#97d5ccc5d61bab6b678bec280036d594d275931e"
   integrity sha512-+CohJNsbZiPl7jPgw7PHt5t0JIIV9NngObOskY1Ww8jef7SqaKpz0NsbSDawuWFBdmXApMpK81AEfASKtVI+cw==
@@ -2171,12 +2171,12 @@
     xcase "^2.0.1"
 
 "@gitbeaker/node@^25.2.0":
-  version "25.2.0"
-  resolved "https://registry.npmjs.org/@gitbeaker/node/-/node-25.2.0.tgz#cc91e83328ec32de0b1a0dac23accd2385734a66"
-  integrity sha512-FWchXYJ5agn0ptAQxtkkSKSg1ObbP2xfMzHLECxINFRBHYhg0ms8Fp8Qb+71pxJz7IMlvajyEtZaPfHBmyuh9Q==
+  version "25.6.0"
+  resolved "https://registry.npmjs.org/@gitbeaker/node/-/node-25.6.0.tgz#2baa1c7d653111751f6297299f9e78e37f403e39"
+  integrity sha512-zv7BVmphyOUtIkwU8/iH8z6F8AC2Hy56f/DpwhgB602qhKDRFwf/d7wze7VD5j65i0kIzgnSrxgdtosW7V9wsw==
   dependencies:
-    "@gitbeaker/core" "^25.2.0"
-    "@gitbeaker/requester-utils" "^25.2.0"
+    "@gitbeaker/core" "^25.6.0"
+    "@gitbeaker/requester-utils" "^25.6.0"
     got "^11.7.0"
     xcase "^2.0.1"
 
@@ -2190,7 +2190,7 @@
     got "^11.7.0"
     xcase "^2.0.1"
 
-"@gitbeaker/requester-utils@^25.2.0", "@gitbeaker/requester-utils@^25.6.0":
+"@gitbeaker/requester-utils@^25.6.0":
   version "25.6.0"
   resolved "https://registry.npmjs.org/@gitbeaker/requester-utils/-/requester-utils-25.6.0.tgz#001a432a48460bb5196a02ed71763eb707a1a01e"
   integrity sha512-jD8cHbAZPR6+cB3HiukQxcqIKF5VkHtqg2m+Ns6ROE1pb0oRn10D/a9J1lZOXC9Jz2tQOBMWfHlplbmFFdB6Og==
