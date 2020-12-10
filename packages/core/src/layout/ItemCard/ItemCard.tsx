@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
+import React from 'react';
 import { Button, Card, Chip, Typography, makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
@@ -44,14 +44,14 @@ type ItemCardProps = {
   label: string;
   onClick?: () => void;
 };
-export const ItemCard: FC<ItemCardProps> = ({
+export const ItemCard = ({
   description,
   tags,
   title,
   type,
   label,
   onClick,
-}) => {
+}: ItemCardProps) => {
   const classes = useStyles();
 
   return (

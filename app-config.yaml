@@ -38,7 +38,7 @@ proxy:
     headers:
       Authorization:
         $env: TRAVISCI_AUTH_TOKEN
-      travis-api-version: 3
+      travis-api-version: '3'
 
   '/newrelic/apm/api':
     target: https://api.newrelic.com/v2
@@ -46,11 +46,24 @@ proxy:
       X-Api-Key:
         $env: NEW_RELIC_REST_API_KEY
 
+  '/pagerduty':
+    target: https://api.pagerduty.com
+    headers:
+      Authorization:
+        $env: PAGERDUTY_TOKEN
+
   '/buildkite/api':
     target: https://api.buildkite.com/v2/
     headers:
       Authorization:
         $env: BUILDKITE_TOKEN
+
+  '/sentry/api':
+    target: https://sentry.io/api/
+    allowedMethods: ['GET']
+    headers:
+      Authorization:
+        $env: SENTRY_TOKEN
 
 organization:
   name: My Company
@@ -66,8 +79,8 @@ sentry:
 
 rollbar:
   organization: my-company
-  accountToken:
-    $env: ROLLBAR_ACCOUNT_TOKEN
+  # NOTE: The rollbar-backend & accountToken key may be deprecated in the future (replaced by a proxy config)
+  accountToken: my-rollbar-account-token
 
 lighthouse:
   baseUrl: http://localhost:3003
@@ -123,7 +136,7 @@ catalog:
             $env: GITHUB_TOKEN
         #### Example for how to add your GitHub Enterprise instance using the API:
         # - target: https://ghe.example.net
-        #   apiBaseUrl: https://ghe.example.net/api/v3
+        #   apiBaseUrl: https://ghe.example.net/api
         #   token:
         #     $env: GHE_TOKEN
     ldapOrg:
@@ -196,6 +209,7 @@ scaffolder:
       token:
         $env: AZURE_TOKEN
 auth:
+  environment: development
   ### Providing an auth.session.secret will enable session support in the auth-backend
   # session:
   #   secret: custom session secret
@@ -296,6 +310,9 @@ costInsights:
     bigQuery:
       name: BigQuery
       icon: search
+    events:
+      name: Events
+      icon: data
   metrics:
     DAU:
       name: Daily Active Users
@@ -312,3 +329,5 @@ homepage:
       timezone: 'Europe/Stockholm'
     - label: TYO
       timezone: 'Asia/Tokyo'
+pagerduty:
+  eventsBaseUrl: 'https://events.pagerduty.com/v2'

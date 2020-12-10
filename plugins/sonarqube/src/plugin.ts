@@ -20,7 +20,7 @@ import {
   createPlugin,
   discoveryApiRef,
 } from '@backstage/core';
-import { SonarQubeApi, sonarQubeApiRef } from './api';
+import { sonarQubeApiRef, SonarQubeClient } from './api';
 
 export const plugin = createPlugin({
   id: 'sonarqube',
@@ -29,7 +29,7 @@ export const plugin = createPlugin({
       api: sonarQubeApiRef,
       deps: { configApi: configApiRef, discoveryApi: discoveryApiRef },
       factory: ({ configApi, discoveryApi }) =>
-        new SonarQubeApi({
+        new SonarQubeClient({
           discoveryApi,
           baseUrl: configApi.getOptionalString('sonarQube.baseUrl'),
         }),

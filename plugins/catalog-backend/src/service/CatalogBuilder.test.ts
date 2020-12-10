@@ -144,7 +144,7 @@ describe('CatalogBuilder', () => {
           owner: 'o',
           lifecycle: 'l',
         },
-        relations: [],
+        relations: expect.anything(),
       },
     ]);
   });

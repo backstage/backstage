@@ -1,5 +1,74 @@
 # @backstage/plugin-api-docs
 
+## 0.4.0
+
+### Minor Changes
+
+- 246799c7f: Stop exposing a custom router from the `api-docs` plugin. Instead, use the
+  widgets exported by the plugin to compose your custom entity pages.
+
+  Instead of displaying the API definitions directly in the API tab of the
+  component, it now contains tables linking to the API entities. This also adds
+  new widgets to display relationships (bot provides & consumes relationships)
+  between components and APIs.
+
+  See the changelog of `create-app` for a migration guide.
+
+### Patch Changes
+
+- Updated dependencies [2527628e1]
+- Updated dependencies [6011b7d3e]
+- Updated dependencies [1c69d4716]
+- Updated dependencies [83b6e0c1f]
+- Updated dependencies [1665ae8bb]
+- Updated dependencies [04f26f88d]
+- Updated dependencies [ff243ce96]
+  - @backstage/core@0.4.0
+  - @backstage/plugin-catalog@0.2.6
+  - @backstage/catalog-model@0.5.0
+  - @backstage/theme@0.2.2
+
+## 0.3.1
+
+### Patch Changes
+
+- 7eb8bfe4a: Update swagger-ui-react to 3.37.2
+- Updated dependencies [08835a61d]
+- Updated dependencies [a9fd599f7]
+- Updated dependencies [bcc211a08]
+- Updated dependencies [ebf37bbae]
+  - @backstage/catalog-model@0.4.0
+  - @backstage/plugin-catalog@0.2.5
+
+## 0.3.0
+
+### Minor Changes
+
+- f3bb55ee3: APIs now have real entity pages that are customizable in the app.
+  Therefore the old entity page from this plugin is removed.
+  See the `packages/app` on how to create and customize the API entity page.
+
+### Patch Changes
+
+- 6f70ed7a9: Replace usage of implementsApis with relations
+- Updated dependencies [6f70ed7a9]
+- Updated dependencies [ab94c9542]
+- Updated dependencies [2daf18e80]
+- Updated dependencies [069cda35f]
+  - @backstage/plugin-catalog@0.2.4
+  - @backstage/catalog-model@0.3.1
+
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies [475fc0aaa]
+- Updated dependencies [1166fcc36]
+- Updated dependencies [1185919f3]
+  - @backstage/core@0.3.2
+  - @backstage/catalog-model@0.3.0
+  - @backstage/plugin-catalog@0.2.3
+
 ## 0.2.1
 
 ### Patch Changes

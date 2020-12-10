@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Config, ConfigReader } from '../../../../packages/config/src';
+import { Config, ConfigReader } from '@backstage/config';
 import { getCombinedClusterDetails } from './index';
 
 describe('getCombinedClusterDetails', () => {

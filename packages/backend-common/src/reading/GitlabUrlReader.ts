@@ -15,6 +15,8 @@
  */
 
 import {
+  getGitLabFileFetchUrl,
+  getGitLabRequestOptions,
   GitLabIntegrationConfig,
   readGitLabIntegrationConfigs,
 } from '@backstage/integration';
@@ -37,20 +39,11 @@ export class GitlabUrlReader implements UrlReader {
   constructor(private readonly options: GitLabIntegrationConfig) {}
 
   async read(url: string): Promise<Buffer> {
-    // TODO(Rugvip): merged the old GitlabReaderProcessor in here and used
-    // the existence of /~/blob/ to switch the logic. Don't know if this
-    // makes sense and it might require some more work.
-    let builtUrl: URL;
-    if (url.includes('/-/blob/')) {
-      const projectID = await this.getProjectID(url);
-      builtUrl = this.buildProjectUrl(url, projectID);
-    } else {
-      builtUrl = this.buildRawUrl(url);
-    }
+    const builtUrl = await getGitLabFileFetchUrl(url, this.options);
 
     let response: Response;
     try {
-      response = await fetch(builtUrl.toString(), this.getRequestOptions());
+      response = await fetch(builtUrl, getGitLabRequestOptions(this.options));
     } catch (e) {
       throw new Error(`Unable to read ${url}, ${e}`);
     }
@@ -68,109 +61,6 @@ export class GitlabUrlReader implements UrlReader {
 
   readTree(): Promise<ReadTreeResponse> {
     throw new Error('GitlabUrlReader does not implement readTree');
-  }
-
-  // Converts
-  // from: https://gitlab.example.com/a/b/blob/master/c.yaml
-  // to:   https://gitlab.example.com/a/b/raw/master/c.yaml
-  private buildRawUrl(target: string): URL {
-    try {
-      const url = new URL(target);
-
-      const [
-        empty,
-        userOrOrg,
-        repoName,
-        blobKeyword,
-        ...restOfPath
-      ] = url.pathname.split('/');
-
-      if (
-        empty !== '' ||
-        userOrOrg === '' ||
-        repoName === '' ||
-        blobKeyword !== 'blob' ||
-        !restOfPath.join('/').match(/\.yaml$/)
-      ) {
-        throw new Error('Wrong GitLab URL');
-      }
-
-      // Replace 'blob' with 'raw'
-      url.pathname = [empty, userOrOrg, repoName, 'raw', ...restOfPath].join(
-        '/',
-      );
-
-      return url;
-    } catch (e) {
-      throw new Error(`Incorrect url: ${target}, ${e}`);
-    }
-  }
-
-  // convert https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/filepath
-  // to https://gitlab.com/api/v4/projects/<PROJECTID>/repository/files/filepath?ref=branch
-  private buildProjectUrl(target: string, projectID: Number): URL {
-    try {
-      const url = new URL(target);
-
-      const branchAndFilePath = url.pathname.split('/-/blob/')[1];
-
-      const [branch, ...filePath] = branchAndFilePath.split('/');
-
-      url.pathname = [
-        '/api/v4/projects',
-        projectID,
-        'repository/files',
-        encodeURIComponent(filePath.join('/')),
-        'raw',
-      ].join('/');
-      url.search = `?ref=${branch}`;
-
-      return url;
-    } catch (e) {
-      throw new Error(`Incorrect url: ${target}, ${e}`);
-    }
-  }
-
-  private async getProjectID(target: string): Promise<Number> {
-    const url = new URL(target);
-
-    if (
-      // absPaths to gitlab files should contain /-/blob
-      // ex: https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/filepath
-      !url.pathname.match(/\/\-\/blob\//)
-    ) {
-      throw new Error('Please provide full path to yaml file from Gitlab');
-    }
-    try {
-      const repo = url.pathname.split('/-/blob/')[0];
-
-      // Find ProjectID from url
-      // convert 'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/filepath'
-      // to 'https://gitlab.com/api/v4/projects/groupA%2Fteams%2FsubgroupA%2FteamA%2Frepo'
-      const repoIDLookup = new URL(
-        `${url.protocol + url.hostname}/api/v4/projects/${encodeURIComponent(
-          repo.replace(/^\//, ''),
-        )}`,
-      );
-      const response = await fetch(
-        repoIDLookup.toString(),
-        this.getRequestOptions(),
-      );
-      const projectIDJson = await response.json();
-      const projectID: Number = projectIDJson.id;
-
-      return projectID;
-    } catch (e) {
-      throw new Error(`Could not get GitLab ProjectID for: ${target}, ${e}`);
-    }
-  }
-
-  private getRequestOptions(): RequestInit {
-    return {
-      headers: {
-        ['PRIVATE-TOKEN']: this.options.token ?? '',
-      },
-    };
   }
 
   toString() {

@@ -83,7 +83,7 @@ export const ScaffolderPage = () => {
             variant="contained"
             color="primary"
             component={RouterLink}
-            to="/register-component"
+            to="/catalog-import"
           >
             Register Existing Component
           </Button>

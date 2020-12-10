@@ -67,9 +67,9 @@ Firekube
 freben
 Fredrik
 github
-Github
+GitHub
 gitlab
-Gitlab
+GitLab
 Grafana
 graphql
 graphviz
@@ -101,6 +101,7 @@ kubernetes
 learnings
 lerna
 Lerna
+linkerd
 magiclink
 mailto
 maintainership
@@ -131,6 +132,7 @@ npm
 nvm
 oauth
 Oauth
+oidc
 Okta
 Oldsberg
 onboarding
@@ -197,6 +199,7 @@ talkdesk
 Talkdesk
 tasklist
 techdocs
+Telenor
 templated
 templater
 Templater
@@ -229,4 +232,5 @@ yaml
 Zalando
 Zhou
 Zolotusky
-linkerd
+zoomable
+

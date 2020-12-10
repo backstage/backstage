@@ -1,5 +1,165 @@
 # example-app
 
+## 0.2.6
+
+### Patch Changes
+
+- Updated dependencies [b2a07d2dc]
+- Updated dependencies [075d3dc5a]
+- Updated dependencies [e3071a0d4]
+- Updated dependencies [d6e8099ed]
+- Updated dependencies [88ef11b45]
+- Updated dependencies [06dbe707b]
+- Updated dependencies [2527628e1]
+- Updated dependencies [011708102]
+- Updated dependencies [04efbbdd2]
+- Updated dependencies [90458fed6]
+- Updated dependencies [6011b7d3e]
+- Updated dependencies [79418ddb6]
+- Updated dependencies [d2938af4c]
+- Updated dependencies [61897fb2c]
+- Updated dependencies [e1f4e24ef]
+- Updated dependencies [6a0d7a9fb]
+- Updated dependencies [0f8877168]
+- Updated dependencies [1c69d4716]
+- Updated dependencies [246799c7f]
+- Updated dependencies [83b6e0c1f]
+- Updated dependencies [87a33d2fe]
+- Updated dependencies [1665ae8bb]
+- Updated dependencies [04f26f88d]
+- Updated dependencies [ff243ce96]
+- Updated dependencies [2b71db211]
+  - @backstage/plugin-jenkins@0.3.3
+  - @backstage/plugin-sentry@0.3.0
+  - @backstage/plugin-cost-insights@0.5.0
+  - @backstage/cli@0.4.1
+  - @backstage/core@0.4.0
+  - @backstage/plugin-circleci@0.2.4
+  - @backstage/plugin-catalog@0.2.6
+  - @backstage/plugin-pagerduty@0.2.2
+  - @backstage/plugin-catalog-import@0.3.1
+  - @backstage/test-utils@0.1.5
+  - @backstage/plugin-search@0.2.3
+  - @backstage/plugin-api-docs@0.4.0
+  - @backstage/catalog-model@0.5.0
+  - @backstage/plugin-techdocs@0.4.0
+  - @backstage/theme@0.2.2
+  - @backstage/plugin-org@0.3.1
+  - @backstage/plugin-cloudbuild@0.2.4
+  - @backstage/plugin-explore@0.2.2
+  - @backstage/plugin-gcp-projects@0.2.2
+  - @backstage/plugin-github-actions@0.2.4
+  - @backstage/plugin-gitops-profiles@0.2.2
+  - @backstage/plugin-graphiql@0.2.2
+  - @backstage/plugin-kubernetes@0.3.2
+  - @backstage/plugin-lighthouse@0.2.5
+  - @backstage/plugin-newrelic@0.2.2
+  - @backstage/plugin-register-component@0.2.4
+  - @backstage/plugin-rollbar@0.2.6
+  - @backstage/plugin-scaffolder@0.3.3
+  - @backstage/plugin-tech-radar@0.3.1
+  - @backstage/plugin-user-settings@0.2.3
+  - @backstage/plugin-welcome@0.2.3
+
+## 0.2.5
+
+### Patch Changes
+
+- Updated dependencies [7eb8bfe4a]
+- Updated dependencies [fe7257ff0]
+- Updated dependencies [a2cfa311a]
+- Updated dependencies [69f38457f]
+- Updated dependencies [bec334b33]
+- Updated dependencies [303c5ea17]
+- Updated dependencies [b4488ddb0]
+- Updated dependencies [4a655c89d]
+- Updated dependencies [08835a61d]
+- Updated dependencies [a9fd599f7]
+- Updated dependencies [8a16e8af8]
+- Updated dependencies [bcc211a08]
+- Updated dependencies [00670a96e]
+- Updated dependencies [da2ad65cb]
+- Updated dependencies [ebf37bbae]
+  - @backstage/plugin-api-docs@0.3.1
+  - @backstage/plugin-cost-insights@0.4.2
+  - @backstage/plugin-sentry@0.2.4
+  - @backstage/plugin-welcome@0.2.2
+  - @backstage/cli@0.4.0
+  - @backstage/catalog-model@0.4.0
+  - @backstage/plugin-catalog-import@0.3.0
+  - @backstage/plugin-scaffolder@0.3.2
+  - @backstage/plugin-kubernetes@0.3.1
+  - @backstage/plugin-techdocs@0.3.1
+  - @backstage/plugin-catalog@0.2.5
+  - @backstage/test-utils@0.1.4
+  - @backstage/plugin-circleci@0.2.3
+  - @backstage/plugin-cloudbuild@0.2.3
+  - @backstage/plugin-github-actions@0.2.3
+  - @backstage/plugin-jenkins@0.3.2
+  - @backstage/plugin-lighthouse@0.2.4
+  - @backstage/plugin-register-component@0.2.3
+  - @backstage/plugin-rollbar@0.2.5
+  - @backstage/plugin-search@0.2.2
+
+## 0.2.4
+
+### Patch Changes
+
+- Updated dependencies [294295453]
+- Updated dependencies [f3bb55ee3]
+- Updated dependencies [4b53294a6]
+- Updated dependencies [6f70ed7a9]
+- Updated dependencies [ab94c9542]
+- Updated dependencies [3a201c5d5]
+- Updated dependencies [f538e2c56]
+- Updated dependencies [2daf18e80]
+- Updated dependencies [069cda35f]
+- Updated dependencies [8697dea5b]
+- Updated dependencies [b623cc275]
+  - @backstage/cli@0.3.2
+  - @backstage/plugin-api-docs@0.3.0
+  - @backstage/plugin-techdocs@0.3.0
+  - @backstage/plugin-catalog@0.2.4
+  - @backstage/catalog-model@0.3.1
+  - @backstage/plugin-rollbar@0.2.4
+
+## 0.2.3
+
+### Patch Changes
+
+- 475fc0aaa: Using the search field in the sidebar now navigates to the search result page.
+- Updated dependencies [475fc0aaa]
+- Updated dependencies [1166fcc36]
+- Updated dependencies [29a0ccab2]
+- Updated dependencies [8e6728e25]
+- Updated dependencies [c93a14b49]
+- Updated dependencies [ef2831dde]
+- Updated dependencies [2a71f4bab]
+- Updated dependencies [1185919f3]
+- Updated dependencies [a8de7f554]
+- Updated dependencies [faf311c26]
+- Updated dependencies [31d8b6979]
+- Updated dependencies [991345969]
+- Updated dependencies [475fc0aaa]
+  - @backstage/core@0.3.2
+  - @backstage/catalog-model@0.3.0
+  - @backstage/plugin-kubernetes@0.3.0
+  - @backstage/cli@0.3.1
+  - @backstage/plugin-cost-insights@0.4.1
+  - @backstage/plugin-scaffolder@0.3.1
+  - @backstage/plugin-register-component@0.2.2
+  - @backstage/plugin-circleci@0.2.2
+  - @backstage/plugin-search@0.2.1
+  - @backstage/plugin-api-docs@0.2.2
+  - @backstage/plugin-catalog@0.2.3
+  - @backstage/plugin-cloudbuild@0.2.2
+  - @backstage/plugin-github-actions@0.2.2
+  - @backstage/plugin-jenkins@0.3.1
+  - @backstage/plugin-lighthouse@0.2.3
+  - @backstage/plugin-rollbar@0.2.3
+  - @backstage/plugin-sentry@0.2.3
+  - @backstage/plugin-techdocs@0.2.3
+
 ## 0.2.2
 
 ### Patch Changes

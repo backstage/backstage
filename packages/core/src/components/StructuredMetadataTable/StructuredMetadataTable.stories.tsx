@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
+import React, { PropsWithChildren } from 'react';
 import { InfoCard } from '../../layout/InfoCard';
 import { Grid } from '@material-ui/core';
 import { StructuredMetadataTable } from './StructuredMetadataTable';
@@ -43,7 +43,7 @@ export default {
   component: StructuredMetadataTable,
 };
 
-const Wrapper: FC<{}> = ({ children }) => (
+const Wrapper = ({ children }: PropsWithChildren<{}>) => (
   <Grid container spacing={4}>
     <Grid item>{children}</Grid>
   </Grid>

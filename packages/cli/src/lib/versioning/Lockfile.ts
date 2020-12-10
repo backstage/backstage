@@ -37,7 +37,7 @@ type LockfileQueryEntry = {
   version: string;
 };
 
-/** Entries that have an invalid version range, for example an NPM tag */
+/** Entries that have an invalid version range, for example an npm tag */
 type AnalyzeResultInvalidRange = {
   name: string;
   range: string;
@@ -100,8 +100,14 @@ export class Lockfile {
     private readonly data: LockfileData,
   ) {}
 
+  /** Get the entries for a single package in the lockfile */
   get(name: string): LockfileQueryEntry[] | undefined {
     return this.packages.get(name);
+  }
+
+  /** Returns the name of all packages available in the lockfile */
+  keys(): IterableIterator<string> {
+    return this.packages.keys();
   }
 
   /** Analyzes the lockfile to identify possible actions and warnings for the entries */
@@ -200,6 +206,19 @@ export class Lockfile {
     }
 
     return result;
+  }
+
+  remove(name: string, range: string): boolean {
+    const query = `${name}@${range}`;
+    const existed = Boolean(this.data[query]);
+    delete this.data[query];
+
+    const newEntries = this.packages.get(name)?.filter(e => e.range !== range);
+    if (newEntries) {
+      this.packages.set(name, newEntries);
+    }
+
+    return existed;
   }
 
   /** Modifies the lockfile by bumping packages to the suggested versions */

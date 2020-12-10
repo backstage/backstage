@@ -1,5 +1,59 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.3.2
+
+### Patch Changes
+
+- 1e22f8e0b: Unify `dockerode` library and type dependency versions
+- Updated dependencies [38e24db00]
+- Updated dependencies [e3bd9fc2f]
+- Updated dependencies [12bbd748c]
+- Updated dependencies [83b6e0c1f]
+- Updated dependencies [e3bd9fc2f]
+  - @backstage/backend-common@0.4.0
+  - @backstage/config@0.1.2
+  - @backstage/catalog-model@0.5.0
+
+## 0.3.1
+
+### Patch Changes
+
+- ae95c7ff3: Update URL auth format for GitLab clone
+- Updated dependencies [612368274]
+- Updated dependencies [08835a61d]
+- Updated dependencies [a9fd599f7]
+- Updated dependencies [bcc211a08]
+  - @backstage/backend-common@0.3.3
+  - @backstage/catalog-model@0.4.0
+
+## 0.3.0
+
+### Minor Changes
+
+- 4b53294a6: - Use techdocs annotation to add repo_url if missing in mkdocs.yml. Having repo_url creates a Edit button on techdocs pages.
+  - techdocs-backend: API endpoint `/metadata/mkdocs/*` renamed to `/metadata/techdocs/*`
+
+### Patch Changes
+
+- Updated dependencies [3aa7efb3f]
+- Updated dependencies [ab94c9542]
+- Updated dependencies [2daf18e80]
+- Updated dependencies [069cda35f]
+- Updated dependencies [b3d4e4e57]
+  - @backstage/backend-common@0.3.2
+  - @backstage/catalog-model@0.3.1
+
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies [1166fcc36]
+- Updated dependencies [bff3305aa]
+- Updated dependencies [1185919f3]
+- Updated dependencies [b47dce06f]
+  - @backstage/catalog-model@0.3.0
+  - @backstage/backend-common@0.3.1
+
 ## 0.2.1
 
 ### Patch Changes
@@ -27,7 +81,7 @@
 
   Draft until we're happy with the implementation, then I can add more docs and changelog entry. Also didn't go on a thorough hunt for places where discovery can be used, but I don't think there are many since it's been pretty awkward to do service-to-service communication.
 
-- 5a920c6e4: Updated naming of environment variables. New pattern [NAME]\_TOKEN for Github, Gitlab, Azure & Github enterprise access tokens.
+- 5a920c6e4: Updated naming of environment variables. New pattern [NAME]\_TOKEN for GitHub, GitLab, Azure & GitHub Enterprise access tokens.
 
   ### Detail:
 

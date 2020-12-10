@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
+import React from 'react';
 import { StatusPending, StatusError, StatusOK } from '@backstage/core';
 
 import { Audit } from '../../api';
 
-const AuditStatusIcon: FC<{ audit: Audit }> = ({ audit }) => {
+const AuditStatusIcon = ({ audit }: { audit: Audit }) => {
   if (audit.status === 'FAILED') return <StatusError />;
   if (audit.status === 'COMPLETED') return <StatusOK />;
   return <StatusPending />;

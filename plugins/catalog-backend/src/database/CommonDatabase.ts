@@ -271,7 +271,7 @@ export class CommonDatabase implements Database {
       .select('entities.*')
       .orderBy('full_name', 'asc');
 
-    return Promise.all(rows.map(row => this.toEntityResponse(tx, row)));
+    return this.toEntityResponses(tx, rows);
   }
 
   async entityByName(
@@ -290,7 +290,7 @@ export class CommonDatabase implements Database {
       return undefined;
     }
 
-    return this.toEntityResponse(tx, rows[0]);
+    return this.toEntityResponses(tx, rows).then(r => r[0]);
   }
 
   async entityByUid(
@@ -307,7 +307,7 @@ export class CommonDatabase implements Database {
       return undefined;
     }
 
-    return this.toEntityResponse(tx, rows[0]);
+    return this.toEntityResponses(tx, rows).then(r => r[0]);
   }
 
   async removeEntityByUid(txOpaque: Transaction, uid: string): Promise<void> {
@@ -345,7 +345,11 @@ export class CommonDatabase implements Database {
     );
 
     // TODO(blam): translate constraint failures to sane NotFoundError instead
-    await tx.batchInsert('entities_relations', relationsRows, BATCH_SIZE);
+    await tx.batchInsert(
+      'entities_relations',
+      deduplicateRelations(relationsRows),
+      BATCH_SIZE,
+    );
   }
 
   async addLocation(
@@ -490,30 +494,68 @@ export class CommonDatabase implements Database {
     };
   }
 
-  private async toEntityResponse(
+  private async toEntityResponses(
     tx: Knex.Transaction<any, any>,
-    row: DbEntitiesRow,
-  ): Promise<DbEntityResponse> {
-    const entity = JSON.parse(row.data) as Entity;
-    entity.metadata.uid = row.id;
-    entity.metadata.etag = row.etag;
-    entity.metadata.generation = Number(row.generation); // cast due to sqlite
-
+    rows: DbEntitiesRow[],
+  ): Promise<DbEntityResponse[]> {
     // TODO(Rugvip): This is here because it's simple for now, but we likely
     //               need to refactor this to be more efficient or introduce pagination.
-    const relations = await tx<DbEntitiesRelationsRow>('entities_relations')
-      .where({ source_full_name: row.full_name })
-      .orderBy(['type', 'target_full_name'])
-      .select();
+    const relations = await this.getRelationsPerFullName(
+      tx,
+      rows.map(r => r.full_name),
+    );
 
-    entity.relations = relations.map(r => ({
-      target: parseEntityName(r.target_full_name),
-      type: r.type,
-    }));
+    const result = new Array<DbEntityResponse>();
+    for (const row of rows) {
+      const entity = JSON.parse(row.data) as Entity;
+      entity.metadata.uid = row.id;
+      entity.metadata.etag = row.etag;
+      entity.metadata.generation = Number(row.generation); // cast due to sqlite
 
-    return {
-      locationId: row.location_id || undefined,
-      entity,
-    };
+      entity.relations = (relations[row.full_name] ?? []).map(r => ({
+        target: parseEntityName(r.target_full_name),
+        type: r.type,
+      }));
+
+      result.push({
+        locationId: row.location_id || undefined,
+        entity,
+      });
+    }
+
+    return result;
   }
+
+  // Returns a mapping from e.g. component:default/foo to the relations whose
+  // source_full_name matches that.
+  private async getRelationsPerFullName(
+    tx: Knex.Transaction<any, any>,
+    sourceFullNames: string[],
+  ): Promise<Record<string, DbEntitiesRelationsRow[]>> {
+    const batches = lodash.chunk(lodash.uniq(sourceFullNames), 500);
+
+    const relations = new Array<DbEntitiesRelationsRow>();
+    for (const batch of batches) {
+      relations.push(
+        ...(await tx<DbEntitiesRelationsRow>('entities_relations')
+          .whereIn('source_full_name', batch)
+          .orderBy(['type', 'target_full_name'])
+          .select()),
+      );
+    }
+
+    return lodash.groupBy(
+      deduplicateRelations(relations),
+      r => r.source_full_name,
+    );
+  }
+}
+
+function deduplicateRelations(
+  rows: DbEntitiesRelationsRow[],
+): DbEntitiesRelationsRow[] {
+  return lodash.uniqBy(
+    rows,
+    r => `${r.source_full_name}:${r.target_full_name}:${r.type}`,
+  );
 }

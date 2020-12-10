@@ -33,10 +33,8 @@ import {
   OAuthRefreshRequest,
 } from '../../lib/oauth';
 import {
-  executeFetchUserProfileStrategy,
   executeFrameHandlerStrategy,
   executeRedirectStrategy,
-  executeRefreshTokenStrategy,
   PassportDoneCallback,
 } from '../../lib/passport';
 import { RedirectInfo, AuthProviderFactory, ProfileInfo } from '../types';
@@ -45,20 +43,25 @@ type PrivateInfo = {
   refreshToken: string;
 };
 
+type OidcImpl = {
+  strategy: OidcStrategy<UserinfoResponse, Client>;
+  client: Client;
+};
+
 export type OidcAuthProviderOptions = OAuthProviderOptions & {
   metadataUrl: string;
   tokenSignedResponseAlg?: string;
 };
 
 export class OidcAuthProvider implements OAuthHandlers {
-  readonly _strategy: Promise<OidcStrategy<UserinfoResponse, Client>>;
+  private readonly implementation: Promise<OidcImpl>;
 
   constructor(options: OidcAuthProviderOptions) {
-    this._strategy = this.setupStrategy(options);
+    this.implementation = this.setupStrategy(options);
   }
 
   async start(req: OAuthStartRequest): Promise<RedirectInfo> {
-    const strategy = await this._strategy;
+    const { strategy } = await this.implementation;
     return await executeRedirectStrategy(req, strategy, {
       accessType: 'offline',
       prompt: 'none',
@@ -70,7 +73,7 @@ export class OidcAuthProvider implements OAuthHandlers {
   async handler(
     req: express.Request,
   ): Promise<{ response: OAuthResponse; refreshToken: string }> {
-    const strategy = await this._strategy;
+    const { strategy } = await this.implementation;
     const { response, privateInfo } = await executeFrameHandlerStrategy<
       OAuthResponse,
       PrivateInfo
@@ -83,31 +86,20 @@ export class OidcAuthProvider implements OAuthHandlers {
   }
 
   async refresh(req: OAuthRefreshRequest): Promise<OAuthResponse> {
-    const strategy = await this._strategy;
-    const refreshTokenResponse = await executeRefreshTokenStrategy(
-      strategy,
-      req.refreshToken,
-      req.scope,
-    );
-    const {
-      accessToken,
-      params,
-      refreshToken: updatedRefreshToken,
-    } = refreshTokenResponse;
-
-    const profile = await executeFetchUserProfileStrategy(
-      strategy,
-      accessToken,
-      params.id_token,
-    );
+    const { client } = await this.implementation;
+    const tokenset = await client.refresh(req.refreshToken);
+    if (!tokenset.access_token) {
+      throw new Error('Refresh failed');
+    }
+    const profile = await client.userinfo(tokenset.access_token);
 
     return this.populateIdentity({
       providerInfo: {
-        accessToken,
-        refreshToken: updatedRefreshToken,
-        idToken: params.id_token,
-        expiresInSeconds: params.expires_in,
-        scope: params.scope,
+        accessToken: tokenset.access_token,
+        refreshToken: tokenset.refresh_token,
+        expiresInSeconds: tokenset.expires_in,
+        idToken: tokenset.id_token,
+        scope: tokenset.scope || '',
       },
       profile,
     });
@@ -115,7 +107,7 @@ export class OidcAuthProvider implements OAuthHandlers {
 
   private async setupStrategy(
     options: OidcAuthProviderOptions,
-  ): Promise<OidcStrategy<UserinfoResponse, Client>> {
+  ): Promise<OidcImpl> {
     const issuer = await Issuer.discover(options.metadataUrl);
     const client = new issuer.Client({
       client_id: options.clientId,
@@ -159,7 +151,7 @@ export class OidcAuthProvider implements OAuthHandlers {
       },
     );
     strategy.error = console.error;
-    return strategy;
+    return { strategy, client };
   }
 
   // Use this function to grab the user profile info from the token
@@ -179,12 +171,12 @@ export class OidcAuthProvider implements OAuthHandlers {
 }
 
 export const createOidcProvider: AuthProviderFactory = ({
+  providerId,
   globalConfig,
   config,
   tokenIssuer,
 }) =>
   OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-    const providerId = 'oidc';
     const clientId = envConfig.getString('clientId');
     const clientSecret = envConfig.getString('clientSecret');
     const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;

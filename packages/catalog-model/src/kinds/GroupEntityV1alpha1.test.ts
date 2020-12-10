@@ -34,9 +34,7 @@ describe('GroupV1alpha1Validator', () => {
       spec: {
         type: 'squad',
         parent: 'group-a',
-        ancestors: ['group-a', 'global-synergies', 'acme-corp'],
         children: ['child-a', 'child-b'],
-        descendants: ['desc-a', 'desc-b'],
       },
     };
   });
@@ -85,26 +83,6 @@ describe('GroupV1alpha1Validator', () => {
     await expect(validator.check(entity)).rejects.toThrow(/parent/);
   });
 
-  it('rejects missing ancestors', async () => {
-    delete (entity as any).spec.ancestors;
-    await expect(validator.check(entity)).rejects.toThrow(/ancestor/);
-  });
-
-  it('rejects empty ancestors', async () => {
-    (entity as any).spec.ancestors = [''];
-    await expect(validator.check(entity)).rejects.toThrow(/ancestor/);
-  });
-
-  it('rejects undefined ancestors', async () => {
-    (entity as any).spec.ancestors = [undefined];
-    await expect(validator.check(entity)).rejects.toThrow(/ancestor/);
-  });
-
-  it('accepts no ancestors', async () => {
-    (entity as any).spec.ancestors = [];
-    await expect(validator.check(entity)).resolves.toBe(true);
-  });
-
   it('rejects missing children', async () => {
     delete (entity as any).spec.children;
     await expect(validator.check(entity)).rejects.toThrow(/children/);
@@ -122,26 +100,6 @@ describe('GroupV1alpha1Validator', () => {
 
   it('accepts no children', async () => {
     (entity as any).spec.children = [];
-    await expect(validator.check(entity)).resolves.toBe(true);
-  });
-
-  it('rejects missing descendants', async () => {
-    delete (entity as any).spec.descendants;
-    await expect(validator.check(entity)).rejects.toThrow(/descendants/);
-  });
-
-  it('rejects empty descendants', async () => {
-    (entity as any).spec.descendants = [''];
-    await expect(validator.check(entity)).rejects.toThrow(/descendants/);
-  });
-
-  it('rejects undefined descendants', async () => {
-    (entity as any).spec.descendants = [undefined];
-    await expect(validator.check(entity)).rejects.toThrow(/descendants/);
-  });
-
-  it('accepts no descendants', async () => {
-    (entity as any).spec.descendants = [];
     await expect(validator.check(entity)).resolves.toBe(true);
   });
 });

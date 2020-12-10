@@ -69,7 +69,7 @@ nav:
       - Testing:
           - Overview: 'plugins/testing.md'
       - Publishing:
-          - Open source and NPM: 'plugins/publishing.md'
+          - Open source and npm: 'plugins/publishing.md'
           - Private/internal (non-open source): 'plugins/publish-private.md'
   - Configuration:
       - Overview: 'conf/index.md'

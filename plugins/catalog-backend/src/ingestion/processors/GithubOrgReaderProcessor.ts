@@ -18,9 +18,9 @@ import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { graphql } from '@octokit/graphql';
 import { Logger } from 'winston';
+import { getOrganizationTeams, getOrganizationUsers } from './github';
 import * as results from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
-import { getOrganizationTeams, getOrganizationUsers } from './util/github';
 import { buildOrgHierarchy } from './util/org';
 
 /**
@@ -64,6 +64,7 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
     const client = !provider.token
       ? graphql
       : graphql.defaults({
+          baseUrl: provider.apiBaseUrl,
           headers: {
             authorization: `token ${provider.token}`,
           },

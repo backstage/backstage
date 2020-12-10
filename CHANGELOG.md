@@ -1,12 +1,8 @@
 # Backstage Changelog
 
-This is a best-effort changelog where we manually collect breaking changes. It is not an exhaustive list of all changes or even features added.
+This changelog is no longer being updated and will be removed in the future, as each package now has its own changelog instead. It was a best-effort changelog where we manually collected breaking changes during the `v0.1.1-alpha.<n>` releases.
 
 If you encounter issues while upgrading to a newer version, don't hesitate to reach out on [Discord](https://discord.gg/EBHEGzX) or [open an issue](https://github.com/backstage/backstage/issues/new/choose)!
-
-## Next Release
-
-> Collect changes for the next release below
 
 ## v0.1.1-alpha.26
 

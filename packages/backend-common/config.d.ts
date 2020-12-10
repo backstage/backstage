@@ -29,7 +29,7 @@ export interface Config {
           /** Address of the interface that the backend should bind to. */
           address?: string;
           /** Port that the backend should listen to. */
-          port?: number;
+          port?: string | number;
         };
 
     /** HTTPS configuration for the backend. If omitted the backend will serve HTTP */
@@ -79,8 +79,15 @@ export interface Config {
       optionsSuccessStatus?: number;
     };
 
-    /**  */
-    csp?: object;
+    /**
+     * Content Security Policy options.
+     *
+     * The keys are the plain policy ID, e.g. "upgrade-insecure-requests". The
+     * values are on the format that the helmet library expects them, as an
+     * array of strings. There is also the special value false, which means to
+     * remove the default value that Backstage puts in place for that policy.
+     */
+    csp?: { [policyId: string]: string[] | false };
   };
 
   /** Configuration for integrations towards various external repository provider systems */
@@ -89,7 +96,6 @@ export interface Config {
     azure?: Array<{
       /**
        * The hostname of the given Azure instance
-       * @visibility frontend
        */
       host: string;
       /**
@@ -103,7 +109,6 @@ export interface Config {
     bitbucket?: Array<{
       /**
        * The hostname of the given Bitbucket instance
-       * @visibility frontend
        */
       host: string;
       /**
@@ -113,7 +118,6 @@ export interface Config {
       token?: string;
       /**
        * The base url for the BitBucket API, for example https://api.bitbucket.org/2.0
-       * @visibility frontend
        */
       apiBaseUrl?: string;
       /**
@@ -132,7 +136,6 @@ export interface Config {
     github?: Array<{
       /**
        * The hostname of the given GitHub instance
-       * @visibility frontend
        */
       host: string;
       /**
@@ -142,12 +145,10 @@ export interface Config {
       token?: string;
       /**
        * The base url for the GitHub API, for example https://api.github.com
-       * @visibility frontend
        */
       apiBaseUrl?: string;
       /**
        * The base url for GitHub raw resources, for example https://raw.githubusercontent.com
-       * @visibility frontend
        */
       rawBaseUrl?: string;
     }>;
@@ -156,7 +157,6 @@ export interface Config {
     gitlab?: Array<{
       /**
        * The hostname of the given GitLab instance
-       * @visibility frontend
        */
       host: string;
       /**

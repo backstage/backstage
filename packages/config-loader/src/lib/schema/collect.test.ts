@@ -16,6 +16,7 @@
 
 import mockFs from 'mock-fs';
 import { collectConfigSchemas } from './collect';
+import path from 'path';
 
 const mockSchema = {
   type: 'object',
@@ -56,7 +57,7 @@ describe('collectConfigSchemas', () => {
 
     await expect(collectConfigSchemas(['a'])).resolves.toEqual([
       {
-        path: 'node_modules/a/package.json',
+        path: path.join('node_modules', 'a', 'package.json'),
         value: mockSchema,
       },
     ]);
@@ -114,15 +115,15 @@ describe('collectConfigSchemas', () => {
 
     await expect(collectConfigSchemas(['a'])).resolves.toEqual([
       {
-        path: 'node_modules/b/package.json',
+        path: path.join('node_modules', 'b', 'package.json'),
         value: { ...mockSchema, title: 'b' },
       },
       {
-        path: 'node_modules/c1/package.json',
+        path: path.join('node_modules', 'c1', 'package.json'),
         value: { ...mockSchema, title: 'c1' },
       },
       {
-        path: 'node_modules/d1/package.json',
+        path: path.join('node_modules', 'd1', 'package.json'),
         value: { ...mockSchema, title: 'd1' },
       },
     ]);
@@ -163,15 +164,15 @@ describe('collectConfigSchemas', () => {
 
     await expect(collectConfigSchemas(['a', 'b', 'c'])).resolves.toEqual([
       {
-        path: 'node_modules/a/package.json',
+        path: path.join('node_modules', 'a', 'package.json'),
         value: { ...mockSchema, title: 'inline' },
       },
       {
-        path: 'node_modules/b/schema.json',
+        path: path.join('node_modules', 'b', 'schema.json'),
         value: { ...mockSchema, title: 'external' },
       },
       {
-        path: 'node_modules/c/schema.d.ts',
+        path: path.join('node_modules', 'c', 'schema.d.ts'),
         value: {
           $schema: 'http://json-schema.org/draft-07/schema#',
           type: 'object',
@@ -223,7 +224,11 @@ describe('collectConfigSchemas', () => {
     });
 
     await expect(collectConfigSchemas(['a'])).rejects.toThrow(
-      'Invalid schema in node_modules/a/schema.d.ts, missing Config export',
+      `Invalid schema in ${path.join(
+        'node_modules',
+        'a',
+        'schema.d.ts',
+      )}, missing Config export`,
     );
   });
 });

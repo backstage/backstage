@@ -1,5 +1,75 @@
 # @backstage/plugin-techdocs
 
+## 0.4.0
+
+### Minor Changes
+
+- 87a33d2fe: Removed modifyCss transformer and moved the css to injectCss transformer
+  Fixed issue where some internal doc links would cause a reload of the page
+
+### Patch Changes
+
+- Updated dependencies [b6557c098]
+- Updated dependencies [2527628e1]
+- Updated dependencies [6011b7d3e]
+- Updated dependencies [e1f4e24ef]
+- Updated dependencies [1c69d4716]
+- Updated dependencies [d8d5a17da]
+- Updated dependencies [83b6e0c1f]
+- Updated dependencies [1665ae8bb]
+- Updated dependencies [04f26f88d]
+- Updated dependencies [ff243ce96]
+  - @backstage/core-api@0.2.5
+  - @backstage/core@0.4.0
+  - @backstage/plugin-catalog@0.2.6
+  - @backstage/test-utils@0.1.5
+  - @backstage/catalog-model@0.5.0
+  - @backstage/theme@0.2.2
+
+## 0.3.1
+
+### Patch Changes
+
+- da2ad65cb: Use type EntityName from catalog-model for entities
+- Updated dependencies [b4488ddb0]
+- Updated dependencies [08835a61d]
+- Updated dependencies [a9fd599f7]
+- Updated dependencies [bcc211a08]
+- Updated dependencies [ebf37bbae]
+  - @backstage/core-api@0.2.4
+  - @backstage/catalog-model@0.4.0
+  - @backstage/plugin-catalog@0.2.5
+  - @backstage/test-utils@0.1.4
+
+## 0.3.0
+
+### Minor Changes
+
+- 4b53294a6: - Use techdocs annotation to add repo_url if missing in mkdocs.yml. Having repo_url creates a Edit button on techdocs pages.
+  - techdocs-backend: API endpoint `/metadata/mkdocs/*` renamed to `/metadata/techdocs/*`
+
+### Patch Changes
+
+- Updated dependencies [6f70ed7a9]
+- Updated dependencies [ab94c9542]
+- Updated dependencies [2daf18e80]
+- Updated dependencies [069cda35f]
+- Updated dependencies [700a212b4]
+  - @backstage/plugin-catalog@0.2.4
+  - @backstage/catalog-model@0.3.1
+  - @backstage/core-api@0.2.3
+
+## 0.2.3
+
+### Patch Changes
+
+- Updated dependencies [475fc0aaa]
+- Updated dependencies [1166fcc36]
+- Updated dependencies [1185919f3]
+  - @backstage/core@0.3.2
+  - @backstage/catalog-model@0.3.0
+  - @backstage/plugin-catalog@0.2.3
+
 ## 0.2.2
 
 ### Patch Changes

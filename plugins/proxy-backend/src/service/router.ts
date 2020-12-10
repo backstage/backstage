@@ -90,8 +90,8 @@ export function buildMiddleware(
     return fullConfig?.allowedMethods?.includes(req.method!) ?? true;
   };
 
-  // Only forward the allowed HTTP headers to not forward unwanted secret headers
-  const headerAllowList = new Set<string>(
+  // Only return the allowed HTTP headers to not forward unwanted secret headers
+  const requestHeaderAllowList = new Set<string>(
     [
       // allow all safe headers
       ...safeForwardHeaders,
@@ -104,12 +104,35 @@ export function buildMiddleware(
     ].map(h => h.toLocaleLowerCase()),
   );
 
+  // only forward the allowed headers in client->backend
   fullConfig.onProxyReq = (proxyReq: http.ClientRequest) => {
     const headerNames = proxyReq.getHeaderNames();
 
     headerNames.forEach(h => {
-      if (!headerAllowList.has(h.toLocaleLowerCase())) {
+      if (!requestHeaderAllowList.has(h.toLocaleLowerCase())) {
         proxyReq.removeHeader(h);
+      }
+    });
+  };
+
+  // Only forward the allowed HTTP headers to not forward unwanted secret headers
+  const responseHeaderAllowList = new Set<string>(
+    [
+      // allow all safe headers
+      ...safeForwardHeaders,
+
+      // allow all configured headers
+      ...(fullConfig.allowedHeaders || []),
+    ].map(h => h.toLocaleLowerCase()),
+  );
+
+  // only forward the allowed headers in backend->client
+  fullConfig.onProxyRes = (proxyRes: http.IncomingMessage) => {
+    const headerNames = Object.keys(proxyRes.headers);
+
+    headerNames.forEach(h => {
+      if (!responseHeaderAllowList.has(h.toLocaleLowerCase())) {
+        delete proxyRes.headers[h];
       }
     });
   };

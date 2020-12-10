@@ -14,63 +14,84 @@
  * limitations under the License.
  */
 import {
-  isPluginApplicableToEntity as isTravisCIAvailable,
-  RecentTravisCIBuildsWidget,
-  Router as TravisCIRouter,
-} from '@roadiehq/backstage-plugin-travis-ci';
+  ApiEntity,
+  Entity,
+  GroupEntity,
+  UserEntity,
+} from '@backstage/catalog-model';
+import { EmptyState } from '@backstage/core';
+import {
+  ApiDefinitionCard,
+  ConsumedApisCard,
+  ConsumingComponentsCard,
+  ProvidedApisCard,
+  ProvidingComponentsCard,
+} from '@backstage/plugin-api-docs';
+import {
+  AboutCard,
+  EntityPageLayout,
+  useEntity,
+} from '@backstage/plugin-catalog';
+import {
+  isPluginApplicableToEntity as isCircleCIAvailable,
+  Router as CircleCIRouter,
+} from '@backstage/plugin-circleci';
+import {
+  isPluginApplicableToEntity as isCloudbuildAvailable,
+  Router as CloudbuildRouter,
+} from '@backstage/plugin-cloudbuild';
 import {
   isPluginApplicableToEntity as isGitHubActionsAvailable,
   RecentWorkflowRunsCard,
   Router as GitHubActionsRouter,
 } from '@backstage/plugin-github-actions';
 import {
-  Router as CloudbuildRouter,
-  isPluginApplicableToEntity as isCloudbuildAvailable,
-} from '@backstage/plugin-cloudbuild';
-import {
-  Router as JenkinsRouter,
   isPluginApplicableToEntity as isJenkinsAvailable,
   LatestRunCard as JenkinsLatestRunCard,
+  Router as JenkinsRouter,
 } from '@backstage/plugin-jenkins';
-import {
-  isPluginApplicableToEntity as isCircleCIAvailable,
-  Router as CircleCIRouter,
-} from '@backstage/plugin-circleci';
-import { Router as ApiDocsRouter } from '@backstage/plugin-api-docs';
-import { Router as SentryRouter } from '@backstage/plugin-sentry';
-import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
 import { Router as KubernetesRouter } from '@backstage/plugin-kubernetes';
-import { Router as LinkerdRouter } from '@backstage/plugin-linkerd';
-import {
-  Router as GitHubInsightsRouter,
-  isPluginApplicableToEntity as isGitHubAvailable,
-  ReadMeCard,
-  LanguagesCard,
-  ReleasesCard,
-} from '@roadiehq/backstage-plugin-github-insights';
-import React, { ReactNode } from 'react';
-import {
-  AboutCard,
-  EntityPageLayout,
-  useEntity,
-} from '@backstage/plugin-catalog';
-import { Entity } from '@backstage/catalog-model';
-import { Button, Grid } from '@material-ui/core';
-import { EmptyState } from '@backstage/core';
 import {
   EmbeddedRouter as LighthouseRouter,
-  LastLighthouseAuditCard,
   isPluginApplicableToEntity as isLighthouseAvailable,
-} from '@backstage/plugin-lighthouse/';
+  LastLighthouseAuditCard,
+} from '@backstage/plugin-lighthouse';
 import {
-  Router as PullRequestsRouter,
+  OwnershipCard,
+  MembersListCard,
+  GroupProfileCard,
+  UserProfileCard,
+} from '@backstage/plugin-org';
+import { Router as SentryRouter } from '@backstage/plugin-sentry';
+import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
+import { Router as LinkerdRouter } from '@backstage/plugin-linkerd';
+import { Button, Grid } from '@material-ui/core';
+import {
+  isPluginApplicableToEntity as isBuildkiteAvailable,
+  Router as BuildkiteRouter,
+} from '@roadiehq/backstage-plugin-buildkite';
+import {
+  isPluginApplicableToEntity as isGitHubAvailable,
+  LanguagesCard,
+  ReadMeCard,
+  ReleasesCard,
+  Router as GitHubInsightsRouter,
+} from '@roadiehq/backstage-plugin-github-insights';
+import {
   isPluginApplicableToEntity as isPullRequestsAvailable,
   PullRequestsStatsCard,
+  Router as PullRequestsRouter,
 } from '@roadiehq/backstage-plugin-github-pull-requests';
 import {
-  Router as BuildkiteRouter,
-  isPluginApplicableToEntity as isBuildkiteAvailable,
-} from '@roadiehq/backstage-plugin-buildkite';
+  isPluginApplicableToEntity as isPagerDutyAvailable,
+  PagerDutyCard,
+} from '@backstage/plugin-pagerduty';
+import {
+  isPluginApplicableToEntity as isTravisCIAvailable,
+  RecentTravisCIBuildsWidget,
+  Router as TravisCIRouter,
+} from '@roadiehq/backstage-plugin-travis-ci';
+import React, { ReactNode } from 'react';
 
 export const CICDSwitcher = ({ entity }: { entity: Entity }) => {
   // This component is just an example of how you can implement your company's logic in entity page.
@@ -135,11 +156,16 @@ const RecentCICDRunsSwitcher = ({ entity }: { entity: Entity }) => {
   );
 };
 
-const OverviewContent = ({ entity }: { entity: Entity }) => (
+const ComponentOverviewContent = ({ entity }: { entity: Entity }) => (
   <Grid container spacing={3} alignItems="stretch">
     <Grid item md={6}>
       <AboutCard entity={entity} variant="gridItem" />
     </Grid>
+    {isPagerDutyAvailable(entity) && (
+      <Grid item md={6}>
+        <PagerDutyCard entity={entity} />
+      </Grid>
+    )}
     <RecentCICDRunsSwitcher entity={entity} />
     {isGitHubAvailable(entity) && (
       <>
@@ -165,12 +191,23 @@ const OverviewContent = ({ entity }: { entity: Entity }) => (
   </Grid>
 );
 
+const ComponentApisContent = ({ entity }: { entity: Entity }) => (
+  <Grid container spacing={3} alignItems="stretch">
+    <Grid item md={6}>
+      <ProvidedApisCard entity={entity} />
+    </Grid>
+    <Grid item md={6}>
+      <ConsumedApisCard entity={entity} />
+    </Grid>
+  </Grid>
+);
+
 const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
   <EntityPageLayout>
     <EntityPageLayout.Content
       path="/"
       title="Overview"
-      element={<OverviewContent entity={entity} />}
+      element={<ComponentOverviewContent entity={entity} />}
     />
     <EntityPageLayout.Content
       path="/ci-cd/*"
@@ -185,7 +222,7 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
     <EntityPageLayout.Content
       path="/api/*"
       title="API"
-      element={<ApiDocsRouter entity={entity} />}
+      element={<ComponentApisContent entity={entity} />}
     />
     <EntityPageLayout.Content
       path="/docs/*"
@@ -220,7 +257,7 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
     <EntityPageLayout.Content
       path="/"
       title="Overview"
-      element={<OverviewContent entity={entity} />}
+      element={<ComponentOverviewContent entity={entity} />}
     />
     <EntityPageLayout.Content
       path="/ci-cd/*"
@@ -264,12 +301,13 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
     />
   </EntityPageLayout>
 );
+
 const DefaultEntityPage = ({ entity }: { entity: Entity }) => (
   <EntityPageLayout>
     <EntityPageLayout.Content
       path="/*"
       title="Overview"
-      element={<OverviewContent entity={entity} />}
+      element={<ComponentOverviewContent entity={entity} />}
     />
     <EntityPageLayout.Content
       path="/docs/*"
@@ -279,13 +317,113 @@ const DefaultEntityPage = ({ entity }: { entity: Entity }) => (
   </EntityPageLayout>
 );
 
-export const EntityPage = () => {
-  const { entity } = useEntity();
+export const ComponentEntityPage = ({ entity }: { entity: Entity }) => {
   switch (entity?.spec?.type) {
     case 'service':
       return <ServiceEntityPage entity={entity} />;
     case 'website':
       return <WebsiteEntityPage entity={entity} />;
+    default:
+      return <DefaultEntityPage entity={entity} />;
+  }
+};
+
+const ApiOverviewContent = ({ entity }: { entity: Entity }) => (
+  <Grid container spacing={3}>
+    <Grid item md={6}>
+      <AboutCard entity={entity} />
+    </Grid>
+    <Grid container item md={12}>
+      <Grid item md={6}>
+        <ProvidingComponentsCard entity={entity} />
+      </Grid>
+      <Grid item md={6}>
+        <ConsumingComponentsCard entity={entity} />
+      </Grid>
+    </Grid>
+  </Grid>
+);
+
+const ApiDefinitionContent = ({ entity }: { entity: ApiEntity }) => (
+  <Grid container spacing={3}>
+    <Grid item xs={12}>
+      <ApiDefinitionCard apiEntity={entity} />
+    </Grid>
+  </Grid>
+);
+
+const ApiEntityPage = ({ entity }: { entity: Entity }) => (
+  <EntityPageLayout>
+    <EntityPageLayout.Content
+      path="/*"
+      title="Overview"
+      element={<ApiOverviewContent entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/definition/*"
+      title="Definition"
+      element={<ApiDefinitionContent entity={entity as ApiEntity} />}
+    />
+  </EntityPageLayout>
+);
+
+const UserOverviewContent = ({ entity }: { entity: UserEntity }) => (
+  <Grid container spacing={3}>
+    <Grid item xs={12} md={6}>
+      <UserProfileCard entity={entity} variant="gridItem" />
+    </Grid>
+    <Grid item xs={12} md={6}>
+      <OwnershipCard entity={entity} variant="gridItem" />
+    </Grid>
+  </Grid>
+);
+
+const UserEntityPage = ({ entity }: { entity: Entity }) => (
+  <EntityPageLayout>
+    <EntityPageLayout.Content
+      path="/*"
+      title="Overview"
+      element={<UserOverviewContent entity={entity as UserEntity} />}
+    />
+  </EntityPageLayout>
+);
+
+const GroupOverviewContent = ({ entity }: { entity: GroupEntity }) => (
+  <Grid container spacing={3}>
+    <Grid item xs={12} md={6}>
+      <GroupProfileCard entity={entity} variant="gridItem" />
+    </Grid>
+    <Grid item xs={12} md={6}>
+      <OwnershipCard entity={entity} variant="gridItem" />
+    </Grid>
+    <Grid item xs={12}>
+      <MembersListCard entity={entity} />
+    </Grid>
+  </Grid>
+);
+
+const GroupEntityPage = ({ entity }: { entity: Entity }) => (
+  <EntityPageLayout>
+    <EntityPageLayout.Content
+      path="/*"
+      title="Overview"
+      element={<GroupOverviewContent entity={entity as GroupEntity} />}
+    />
+  </EntityPageLayout>
+);
+
+export const EntityPage = () => {
+  const { entity } = useEntity();
+
+  switch (entity?.kind?.toLowerCase()) {
+    case 'component':
+      return <ComponentEntityPage entity={entity} />;
+    case 'api':
+      return <ApiEntityPage entity={entity} />;
+    case 'group':
+      return <GroupEntityPage entity={entity} />;
+    case 'user':
+      return <UserEntityPage entity={entity} />;
     default:
       return <DefaultEntityPage entity={entity} />;
   }

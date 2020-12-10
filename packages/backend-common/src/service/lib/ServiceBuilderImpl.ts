@@ -18,7 +18,7 @@ import { Config } from '@backstage/config';
 import compression from 'compression';
 import cors from 'cors';
 import express, { Router } from 'express';
-import helmet from 'helmet';
+import helmet, { HelmetOptions } from 'helmet';
 import * as http from 'http';
 import url from 'url';
 import stoppable from 'stoppable';
@@ -40,7 +40,6 @@ import {
   readHttpsSettings,
 } from './config';
 import { createHttpServer, createHttpsServer } from './hostFactory';
-import { metricsHandler } from './metrics';
 import { Server as WebSocketServer } from 'ws';
 
 export const DEFAULT_PORT = 7000;
@@ -58,7 +57,7 @@ const DEFAULT_CSP = {
   'script-src': ["'self'"],
   'script-src-attr': ["'none'"],
   'style-src': ["'self'", 'https:', "'unsafe-inline'"],
-  'upgrade-insecure-requests': [],
+  'upgrade-insecure-requests': [] as string[],
 };
 
 export class ServiceBuilderImpl implements ServiceBuilder {
@@ -66,9 +65,8 @@ export class ServiceBuilderImpl implements ServiceBuilder {
   private host: string | undefined;
   private logger: Logger | undefined;
   private corsOptions: cors.CorsOptions | undefined;
-  private cspOptions: CspOptions | undefined;
+  private cspOptions: Record<string, string[] | false> | undefined;
   private httpsSettings: HttpsSettings | undefined;
-  private enableMetrics: boolean = true;
   private routers: [string, Router][] = [];
   private webSockets: [string, WebSocketServer][] = [];
   // Reference to the module where builder is created - needed for hot module
@@ -87,7 +85,10 @@ export class ServiceBuilderImpl implements ServiceBuilder {
 
     const baseOptions = readBaseOptions(backendConfig);
     if (baseOptions.listenPort) {
-      this.port = baseOptions.listenPort;
+      this.port =
+        typeof baseOptions.listenPort === 'string'
+          ? parseInt(baseOptions.listenPort, 10)
+          : baseOptions.listenPort;
     }
     if (baseOptions.listenHost) {
       this.host = baseOptions.listenHost;
@@ -107,9 +108,6 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     if (httpsSettings) {
       this.httpsSettings = httpsSettings;
     }
-
-    // For now, configuration of metrics is a simple boolean and active by default
-    this.enableMetrics = backendConfig.getOptionalBoolean('metrics') !== false;
 
     return this;
   }
@@ -161,27 +159,15 @@ export class ServiceBuilderImpl implements ServiceBuilder {
       host,
       logger,
       corsOptions,
-      cspOptions,
       httpsSettings,
+      helmetOptions,
     } = this.getOptions();
 
-    app.use(
-      helmet({
-        contentSecurityPolicy: {
-          directives: {
-            ...DEFAULT_CSP,
-            ...cspOptions,
-          },
-        },
-      }),
-    );
+    app.use(helmet(helmetOptions));
     if (corsOptions) {
       app.use(cors(corsOptions));
     }
     app.use(compression());
-    if (this.enableMetrics) {
-      app.use(metricsHandler());
-    }
     app.use(requestLoggingHandler());
     for (const [root, route] of this.routers) {
       app.use(root, route);
@@ -239,16 +225,38 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     host: string;
     logger: Logger;
     corsOptions?: cors.CorsOptions;
-    cspOptions?: CspOptions;
     httpsSettings?: HttpsSettings;
+    helmetOptions: HelmetOptions;
   } {
     return {
       port: this.port ?? DEFAULT_PORT,
       host: this.host ?? DEFAULT_HOST,
       logger: this.logger ?? getRootLogger(),
       corsOptions: this.corsOptions,
-      cspOptions: this.cspOptions,
       httpsSettings: this.httpsSettings,
+      helmetOptions: {
+        contentSecurityPolicy: {
+          directives: applyCspDirectives(this.cspOptions),
+        },
+      },
     };
   }
+}
+
+export function applyCspDirectives(
+  directives: Record<string, string[] | false> | undefined,
+): CspOptions | undefined {
+  const result: CspOptions = { ...DEFAULT_CSP };
+
+  if (directives) {
+    for (const [key, value] of Object.entries(directives)) {
+      if (value === false) {
+        delete result[key];
+      } else {
+        result[key] = value;
+      }
+    }
+  }
+
+  return result;
 }

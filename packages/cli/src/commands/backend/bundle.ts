@@ -14,26 +14,59 @@
  * limitations under the License.
  */
 
-import { Command } from 'commander';
+import os from 'os';
 import fs from 'fs-extra';
+import { resolve as resolvePath } from 'path';
+import tar, { CreateOptions } from 'tar';
+import { Command } from 'commander';
 import { createDistWorkspace } from '../../lib/packager';
 import { paths } from '../../lib/paths';
 import { parseParallel, PARALLEL_ENV_VAR } from '../../lib/parallel';
+import { buildPackage, Output } from '../../lib/builder';
 
-const PKG_PATH = 'package.json';
-const TARGET_DIR = 'dist-workspace';
+const BUNDLE_FILE = 'bundle.tar.gz';
+const SKELETON_FILE = 'skeleton.tar.gz';
 
 export default async (cmd: Command) => {
-  const targetDir = paths.resolveTarget(TARGET_DIR);
-  const pkgPath = paths.resolveTarget(PKG_PATH);
-  const pkg = await fs.readJson(pkgPath);
+  const targetDir = paths.resolveTarget('dist');
+  const pkg = await fs.readJson(paths.resolveTarget('package.json'));
 
-  await fs.remove(targetDir);
-  await fs.mkdir(targetDir);
-  await createDistWorkspace([pkg.name], {
-    targetDir: targetDir,
-    buildDependencies: Boolean(cmd.build),
-    parallel: parseParallel(process.env[PARALLEL_ENV_VAR]),
-    skeleton: 'skeleton.tar',
-  });
+  // We build the target package without generating type declarations.
+  await buildPackage({ outputs: new Set([Output.cjs]) });
+
+  const tmpDir = await fs.mkdtemp(resolvePath(os.tmpdir(), 'backstage-bundle'));
+  try {
+    await createDistWorkspace([pkg.name], {
+      targetDir: tmpDir,
+      buildDependencies: Boolean(cmd.build),
+      buildExcludes: [pkg.name],
+      parallel: parseParallel(process.env[PARALLEL_ENV_VAR]),
+      skeleton: SKELETON_FILE,
+    });
+
+    // We built the target backend package using the regular build process, but the result of
+    // that has now been packed into the dist workspace, so clean up the dist dir.
+    await fs.remove(targetDir);
+    await fs.mkdir(targetDir);
+
+    // Move out skeleton.tar.gz before we create the main bundle, no point having that included up twice.
+    await fs.move(
+      resolvePath(tmpDir, SKELETON_FILE),
+      resolvePath(targetDir, SKELETON_FILE),
+    );
+
+    // Create main bundle.tar.gz, with some tweaks to make it more likely hit Docker build cache.
+    await tar.create(
+      {
+        file: resolvePath(targetDir, BUNDLE_FILE),
+        cwd: tmpDir,
+        portable: true,
+        noMtime: true,
+        gzip: true,
+      } as CreateOptions & { noMtime: boolean },
+      [''],
+    );
+  } finally {
+    await fs.remove(tmpDir);
+  }
 };

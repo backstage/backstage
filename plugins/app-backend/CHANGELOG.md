@@ -1,5 +1,35 @@
 # @backstage/plugin-app-backend
 
+## 0.3.3
+
+### Patch Changes
+
+- Updated dependencies [38e24db00]
+- Updated dependencies [e3bd9fc2f]
+- Updated dependencies [12bbd748c]
+- Updated dependencies [e3bd9fc2f]
+  - @backstage/backend-common@0.4.0
+  - @backstage/config@0.1.2
+
+## 0.3.2
+
+### Patch Changes
+
+- Updated dependencies [4e7091759]
+- Updated dependencies [b4488ddb0]
+- Updated dependencies [612368274]
+  - @backstage/config-loader@0.4.0
+  - @backstage/backend-common@0.3.3
+
+## 0.3.1
+
+### Patch Changes
+
+- ff1301d28: Warn if the app-backend can't start-up because the static directory that should be served is unavailable.
+- Updated dependencies [3aa7efb3f]
+- Updated dependencies [b3d4e4e57]
+  - @backstage/backend-common@0.3.2
+
 ## 0.3.0
 
 ### Minor Changes

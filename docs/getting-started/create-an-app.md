@@ -87,7 +87,7 @@ You may encounter the following error message:
 Couldn't find any versions for "file-saver" that matches "eligrey-FileSaver.js-1.3.8.tar.gz-art-external"
 ```
 
-This is likely because you have a globally configured NPM proxy, which breaks
+This is likely because you have a globally configured npm proxy, which breaks
 the installation of the `material-table` dependency. This is a known issue and
 being worked on in `material-table`, but for now you can work around it using
 the following:

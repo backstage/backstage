@@ -18,7 +18,6 @@ import { assertNever } from '../utils/assert';
 
 export const rateOf = (cost: number, duration: Duration) => {
   switch (duration) {
-    case Duration.P1M:
     case Duration.P30D:
       return cost / 12;
     case Duration.P90D:

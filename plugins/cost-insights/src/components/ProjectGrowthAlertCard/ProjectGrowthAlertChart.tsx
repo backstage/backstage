@@ -17,10 +17,10 @@
 import React from 'react';
 import moment from 'moment';
 import { Box } from '@material-ui/core';
-import { BarChart, BarChartLegend } from '../BarChart';
+import { BarChart, BarChartLegend, BarChartLegendOptions } from '../BarChart';
 import { LegendItem } from '../LegendItem';
 import { CostGrowth } from '../CostGrowth';
-import { BarChartOptions, Duration, ProjectGrowthData } from '../../types';
+import { Duration, ProjectGrowthData } from '../../types';
 import { useBarChartLayoutStyles as useStyles } from '../../utils/styles';
 import { resourceOf } from '../../utils/graphs';
 
@@ -37,7 +37,7 @@ export const ProjectGrowthAlertChart = ({
   const costEnd = alert.aggregation[1];
   const resourceData = alert.products.map(resourceOf);
 
-  const options: Partial<BarChartOptions> = {
+  const options: Partial<BarChartLegendOptions> = {
     previousName: moment(alert.periodStart, 'YYYY-[Q]Q').format('[Q]Q YYYY'),
     currentName: moment(alert.periodEnd, 'YYYY-[Q]Q').format('[Q]Q YYYY'),
   };
