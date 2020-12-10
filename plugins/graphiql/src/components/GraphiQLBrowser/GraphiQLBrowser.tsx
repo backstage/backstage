@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, useState, Suspense } from 'react';
+import React, { useState, Suspense } from 'react';
 import { Tabs, Tab, makeStyles, Typography, Divider } from '@material-ui/core';
 import 'graphiql/graphiql.css';
 import { StorageBucket } from '../../lib/storage';
@@ -47,7 +47,7 @@ type GraphiQLBrowserProps = {
   endpoints: GraphQLEndpoint[];
 };
 
-export const GraphiQLBrowser: FC<GraphiQLBrowserProps> = ({ endpoints }) => {
+export const GraphiQLBrowser = ({ endpoints }: GraphiQLBrowserProps) => {
   const classes = useStyles();
   const [tabIndex, setTabIndex] = useState(0);
 

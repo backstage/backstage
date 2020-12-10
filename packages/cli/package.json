@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@backstage/cli-common": "^0.1.1",
-    "@backstage/config": "^0.1.1",
+    "@backstage/config": "^0.1.2",
     "@backstage/config-loader": "^0.4.0",
     "@hot-loader/react-dom": "^16.13.0",
     "@lerna/package-graph": "^3.18.5",
@@ -111,12 +111,12 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/backend-common": "^0.3.3",
-    "@backstage/config": "^0.1.1",
-    "@backstage/core": "^0.3.2",
-    "@backstage/dev-utils": "^0.1.5",
-    "@backstage/test-utils": "^0.1.4",
-    "@backstage/theme": "^0.2.1",
+    "@backstage/backend-common": "^0.4.0",
+    "@backstage/config": "^0.1.2",
+    "@backstage/core": "^0.4.0",
+    "@backstage/dev-utils": "^0.1.6",
+    "@backstage/test-utils": "^0.1.5",
+    "@backstage/theme": "^0.2.2",
     "@types/diff": "^4.0.2",
     "@types/fs-extra": "^9.0.1",
     "@types/html-webpack-plugin": "^3.2.2",

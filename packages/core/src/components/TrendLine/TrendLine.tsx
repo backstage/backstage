@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React from 'react';
 import { Sparklines, SparklinesLine, SparklinesProps } from 'react-sparklines';
 import { useTheme } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
@@ -27,7 +27,7 @@ function color(data: number[], theme: BackstageTheme): string | undefined {
   return theme.palette.status.error;
 }
 
-export const TrendLine: FC<SparklinesProps & { title?: string }> = props => {
+export const TrendLine = (props: SparklinesProps & { title?: string }) => {
   const theme = useTheme<BackstageTheme>();
 
   if (!props.data) return null;

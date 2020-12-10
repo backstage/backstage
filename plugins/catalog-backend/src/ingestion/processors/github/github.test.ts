@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { msw } from '@backstage/test-utils';
 import { graphql } from '@octokit/graphql';
 import { graphql as graphqlMsw } from 'msw';
 import { setupServer } from 'msw/node';
-import { msw } from '@backstage/test-utils';
 import {
   getOrganizationTeams,
   getOrganizationUsers,

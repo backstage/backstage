@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core';
 import { InfoCard } from '../../layout/InfoCard';
 import { BottomLinkProps } from '../../layout/BottomLink';
@@ -36,7 +36,7 @@ const useStyles = makeStyles({
   },
 });
 
-export const GaugeCard: FC<Props> = props => {
+export const GaugeCard = (props: Props) => {
   const classes = useStyles(props);
   const { title, subheader, progress, deepLink, variant } = props;
 

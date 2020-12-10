@@ -39,8 +39,8 @@ const getSelectedIndexOrDefault = (
 
 /**
  * Compound component, which allows you to define layout
- * for EntityPage using Tabs as a subnavigation mechanism
- * Constists of 2 parts: Tabbed.Layout and Tabbed.Content.
+ * for EntityPage using Tabs as a sub-navigation mechanism
+ * Consists of 2 parts: Tabbed.Layout and Tabbed.Content.
  * Takes care of: tabs, routes, document titles, spacing around content
  *
  * @example
