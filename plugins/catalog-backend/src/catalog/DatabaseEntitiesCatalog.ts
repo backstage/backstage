@@ -290,7 +290,7 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
         'metadata.name': names,
       }),
     );
-    
+
     oldEntities.map(e => delete e.entity.relations);
 
     const oldEntitiesByName = new Map(
