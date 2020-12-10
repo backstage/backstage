@@ -21,7 +21,7 @@ import { useApi } from '@backstage/core';
 import { costInsightsApiRef } from '../../api';
 import { ProductInsightsCardList } from '../ProductInsightsCard/ProductInsightsCardList';
 import { Duration, Entity, Maybe, Product } from '../../types';
-import { DEFAULT_DURATION } from '../../utils/duration';
+import { intervalsOf, DEFAULT_DURATION } from '../../utils/duration';
 import {
   DefaultLoadingAction,
   initialStatesOf,
@@ -75,8 +75,7 @@ export const ProductInsights = ({
         group: group,
         project: project,
         product: product.kind,
-        duration: duration,
-        lastCompleteBillingDate: lastCompleteBillingDate,
+        intervals: intervalsOf(duration, lastCompleteBillingDate),
       });
     },
     [client, group, project, lastCompleteBillingDate],
@@ -97,8 +96,7 @@ export const ProductInsights = ({
               group: group,
               project: project,
               product: product.kind,
-              duration: DEFAULT_DURATION,
-              lastCompleteBillingDate: lastCompleteBillingDate,
+              intervals: intervalsOf(DEFAULT_DURATION, lastCompleteBillingDate),
             }),
           ),
         ).then(settledResponseOf);
