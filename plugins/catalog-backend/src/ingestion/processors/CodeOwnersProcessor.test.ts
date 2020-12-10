@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { getVoidLogger } from '@backstage/backend-common';
 import { LocationSpec } from '@backstage/catalog-model';
 import { CodeOwnersEntry } from 'codeowners-utils';
-import { createLogger } from 'winston';
 import {
   buildCodeOwnerUrl,
   buildUrl,
@@ -28,7 +28,7 @@ import {
   resolveCodeOwner,
 } from './CodeOwnersProcessor';
 
-const logger = createLogger();
+const logger = getVoidLogger();
 
 describe('CodeOwnersProcessor', () => {
   const mockUrl = ({ basePath = '' } = {}): string =>

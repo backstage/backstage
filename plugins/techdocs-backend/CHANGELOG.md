@@ -1,10 +1,24 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.3.2
+
+### Patch Changes
+
+- 1e22f8e0b: Unify `dockerode` library and type dependency versions
+- Updated dependencies [38e24db00]
+- Updated dependencies [e3bd9fc2f]
+- Updated dependencies [12bbd748c]
+- Updated dependencies [83b6e0c1f]
+- Updated dependencies [e3bd9fc2f]
+  - @backstage/backend-common@0.4.0
+  - @backstage/config@0.1.2
+  - @backstage/catalog-model@0.5.0
+
 ## 0.3.1
 
 ### Patch Changes
 
-- ae95c7ff3: Update URL auth format for Gitlab clone
+- ae95c7ff3: Update URL auth format for GitLab clone
 - Updated dependencies [612368274]
 - Updated dependencies [08835a61d]
 - Updated dependencies [a9fd599f7]
@@ -67,7 +81,7 @@
 
   Draft until we're happy with the implementation, then I can add more docs and changelog entry. Also didn't go on a thorough hunt for places where discovery can be used, but I don't think there are many since it's been pretty awkward to do service-to-service communication.
 
-- 5a920c6e4: Updated naming of environment variables. New pattern [NAME]\_TOKEN for Github, Gitlab, Azure & Github enterprise access tokens.
+- 5a920c6e4: Updated naming of environment variables. New pattern [NAME]\_TOKEN for GitHub, GitLab, Azure & GitHub Enterprise access tokens.
 
   ### Detail:
 

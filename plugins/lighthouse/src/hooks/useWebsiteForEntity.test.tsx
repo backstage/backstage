@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { renderHook } from '@testing-library/react-hooks';
 import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core-api';
 import { lighthouseApiRef, WebsiteListResponse } from '../api';
@@ -51,7 +51,7 @@ describe('useWebsiteForEntity', () => {
     },
   };
 
-  const wrapper: React.FC<{}> = ({ children }) => {
+  const wrapper = ({ children }: PropsWithChildren<{}>) => {
     return (
       <ApiProvider
         apis={ApiRegistry.with(errorApiRef, mockErrorApi).with(

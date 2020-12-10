@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
+import React from 'react';
 import {
   Link,
   Typography,
@@ -114,7 +114,7 @@ type Props = {
   onChangePageSize: (pageSize: number) => void;
 };
 
-export const WorkflowRunsTableView: FC<Props> = ({
+export const WorkflowRunsTableView = ({
   projectName,
   loading,
   pageSize,
@@ -124,7 +124,7 @@ export const WorkflowRunsTableView: FC<Props> = ({
   onChangePage,
   onChangePageSize,
   total,
-}) => {
+}: Props) => {
   return (
     <Table
       isLoading={loading}
@@ -177,7 +177,7 @@ export const WorkflowRunsTable = ({
     <EmptyState
       missing="data"
       title="No Workflow Data"
-      description="This component has Github Actions enabled, but no data was found. Have you created any Workflows? Click the button below to create a new Workflow."
+      description="This component has GitHub Actions enabled, but no data was found. Have you created any Workflows? Click the button below to create a new Workflow."
       action={
         <Button
           variant="contained"

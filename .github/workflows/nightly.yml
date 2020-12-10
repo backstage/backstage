@@ -62,7 +62,7 @@ jobs:
       - name: prepare nightly release
         run: yarn changeset version --snapshot nightly
 
-      # Publishes the nightly release to NPM, by using tag we make sure the release is
+      # Publishes the nightly release to npm, by using tag we make sure the release is
       # not flagged as the latest release, which means that people will not get this
       # version of the package unless requested explicitly
       - name: publish nightly release

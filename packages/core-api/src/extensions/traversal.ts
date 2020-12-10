@@ -23,7 +23,7 @@ export type Collector<Result, Context> = () => {
   visit(
     accumulator: Result,
     element: ReactElement,
-    parent: ReactElement,
+    parent: ReactElement | undefined,
     context: Context,
   ): Context;
 };
@@ -33,7 +33,7 @@ export type Collector<Result, Context> = () => {
  * varying methods to discover child nodes and collect data along the way.
  */
 export function traverseElementTree<Results>(options: {
-  root: ReactElement;
+  root: ReactNode;
   discoverers: Discoverer[];
   collectors: { [name in keyof Results]: Collector<Results[name], any> };
 }): Results {
@@ -52,14 +52,14 @@ export function traverseElementTree<Results>(options: {
   // Internal representation of an element in the tree that we're iterating over
   type QueueItem = {
     node: ReactNode;
-    parent: ReactElement;
+    parent: ReactElement | undefined;
     contexts: { [name in string]: unknown };
   };
 
   const queue = [
     {
       node: Children.toArray(options.root),
-      parent: options.root,
+      parent: undefined,
       contexts: {},
     } as QueueItem,
   ];
@@ -120,10 +120,10 @@ export function traverseElementTree<Results>(options: {
 }
 
 export function createCollector<Result, Context>(
-  initialResult: Result,
+  accumulatorFactory: () => Result,
   visit: ReturnType<Collector<Result, Context>>['visit'],
 ): Collector<Result, Context> {
-  return () => ({ accumulator: initialResult, visit });
+  return () => ({ accumulator: accumulatorFactory(), visit });
 }
 
 export function childDiscoverer(element: ReactElement): ReactNode {

@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React from 'react';
 import { Progress, Table, TableColumn, useApi } from '@backstage/core';
 import Alert from '@material-ui/lab/Alert';
 import { useAsync } from 'react-use';
 import { newRelicApiRef, NewRelicApplications } from '../../api';
 
-export const NewRelicAPMTable: FC<NewRelicApplications> = ({
-  applications,
-}) => {
+export const NewRelicAPMTable = ({ applications }: NewRelicApplications) => {
   const columns: TableColumn[] = [
     { title: 'Application', field: 'name' },
     { title: 'Response Time', field: 'responseTime' },
@@ -61,7 +59,7 @@ export const NewRelicAPMTable: FC<NewRelicApplications> = ({
   );
 };
 
-const NewRelicFetchComponent: FC<{}> = () => {
+const NewRelicFetchComponent = () => {
   const api = useApi(newRelicApiRef);
 
   const { value, loading, error } = useAsync(async () => {

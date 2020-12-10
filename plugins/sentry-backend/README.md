@@ -1,3 +1,5 @@
 # sentry-backend
 
-Simple plugin forwarding requests to [Sentry](https://sentry.io) API.
+> DEPRECATED
+
+Please use the [proxy-backend](../proxy-backend) instead. See [CHANGELOG.md](./CHANGELOG.md).

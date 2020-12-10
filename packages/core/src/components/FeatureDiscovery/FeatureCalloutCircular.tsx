@@ -16,7 +16,7 @@
 
 import { ClickAwayListener, makeStyles, Typography } from '@material-ui/core';
 import React, {
-  FC,
+  PropsWithChildren,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -93,12 +93,12 @@ type Placement = {
   textWidth: number;
 };
 
-export const FeatureCalloutCircular: FC<Props> = ({
+export const FeatureCalloutCircular = ({
   featureId,
   title,
   description,
   children,
-}) => {
+}: PropsWithChildren<Props>) => {
   const { show, hide } = useShowCallout(featureId);
   const portalElement = usePortal('core.callout');
   const wrapperRef = useRef<HTMLDivElement>(null);

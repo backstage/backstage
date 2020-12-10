@@ -1,6 +1,6 @@
 ---
 title: Weaveworks’ COVID-19 app uses Backstage UI
-author: Jeff Feng
+author: Jeff Feng, Spotify
 authorURL: https://github.com/fengypants
 authorImageURL: https://avatars2.githubusercontent.com/u/46946747
 ---

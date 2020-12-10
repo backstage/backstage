@@ -80,7 +80,7 @@ describe('getPreviousPeriodTotalCost', () => {
     expect(
       getPreviousPeriodTotalCost(
         mockGroupDailyCost.aggregation,
-        Duration.P1M,
+        Duration.P30D,
         exclusiveEndDate,
       ),
     ).toEqual(100_000);

@@ -20,6 +20,7 @@ import {
   TooltipProps as RechartsTooltipProps,
   RechartsFunction,
 } from 'recharts';
+import pluralize from 'pluralize';
 import { Box, Typography } from '@material-ui/core';
 import { default as FullScreenIcon } from '@material-ui/icons/Fullscreen';
 import { LegendItem } from '../LegendItem';
@@ -32,8 +33,13 @@ import {
   BarChartTooltipItem,
   BarChartLegendOptions,
 } from '../BarChart';
-import { pluralOf } from '../../utils/grammar';
-import { findAlways, notEmpty, isUndefined } from '../../utils/assert';
+import {
+  findAlways,
+  notEmpty,
+  isUndefined,
+  findAnyKey,
+  assertAlways,
+} from '../../utils/assert';
 import { formatPeriod, formatPercent } from '../../utils/formatters';
 import {
   titleOf,
@@ -62,19 +68,28 @@ export const ProductInsightsChart = ({
 }: ProductInsightsChartProps) => {
   const classes = useStyles();
   const layoutClasses = useLayoutStyles();
+
+  // Only a single entities Record for the root product entity is supported
+  const entities = useMemo(() => {
+    const entityLabel = assertAlways(findAnyKey(entity.entities));
+    return entity.entities[entityLabel] ?? [];
+  }, [entity]);
+
   const [activeLabel, setActive] = useState<Maybe<string>>();
   const [selectLabel, setSelected] = useState<Maybe<string>>();
   const isSelected = useMemo(() => !isUndefined(selectLabel), [selectLabel]);
+
   const isClickable = useMemo(() => {
-    const breakdownEntities =
-      entity.entities.find(e => e.id === activeLabel)?.entities ?? [];
-    return breakdownEntities.length > 0;
-  }, [entity, activeLabel]);
+    const breakdowns = Object.keys(
+      entities.find(e => e.id === activeLabel)?.entities ?? {},
+    );
+    return breakdowns.length > 0;
+  }, [entities, activeLabel]);
 
   const legendTitle = `Cost ${entity.change.ratio <= 0 ? 'Savings' : 'Growth'}`;
   const costStart = entity.aggregation[0];
   const costEnd = entity.aggregation[1];
-  const resources = entity.entities.map(resourceOf);
+  const resources = entities.map(resourceOf);
 
   const options: Partial<BarChartLegendOptions> = {
     previousName: formatPeriod(duration, billingDate, false),
@@ -120,15 +135,14 @@ export const ProductInsightsChart = ({
     const title = titleOf(label);
     const items = payload.map(tooltipItemOf).filter(notEmpty);
 
-    const activeEntity = findAlways(entity.entities, e => e.id === id);
+    const activeEntity = findAlways(entities, e => e.id === id);
     const ratio = activeEntity.change.ratio;
-    const breakdownEntities = activeEntity.entities;
-    const subtitle = `${breakdownEntities.length} ${pluralOf(
-      breakdownEntities.length,
-      entity.entitiesLabel || 'SKU',
-    )}`;
+    const breakdowns = Object.keys(activeEntity.entities);
 
-    if (breakdownEntities.length) {
+    if (breakdowns.length) {
+      const subtitle = breakdowns
+        .map(b => pluralize(b, activeEntity.entities[b].length, true))
+        .join(', ');
       return (
         <BarChartTooltip
           title={title}
@@ -194,13 +208,12 @@ export const ProductInsightsChart = ({
         options={options}
         {...barChartProps}
       />
-      {isSelected && entity.entities.length && (
+      {isSelected && entities.length && (
         <ProductEntityDialog
           open={isSelected}
           onClose={() => setSelected(undefined)}
-          entity={entity.entities.find(e => e.id === selectLabel)}
+          entity={findAlways(entities, e => e.id === selectLabel)}
           options={options}
-          entitiesLabel={entity.entitiesLabel || 'SKU'}
         />
       )}
     </Box>
