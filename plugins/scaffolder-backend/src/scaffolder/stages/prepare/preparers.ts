@@ -28,6 +28,7 @@ import { FilePreparer } from './file';
 import { GitlabPreparer } from './gitlab';
 import { AzurePreparer } from './azure';
 import { GithubPreparer } from './github';
+import { BitbucketPreparer } from './bitbucket';
 
 export class Preparers implements PreparerBuilder {
   private preparerMap = new Map<RemoteProtocol, PreparerBase>();
@@ -79,11 +80,13 @@ export class Preparers implements PreparerBuilder {
     const filePreparer = new FilePreparer();
     const gitlabPreparer = new GitlabPreparer(config);
     const azurePreparer = new AzurePreparer(config);
+    const bitbucketPreparer = new BitbucketPreparer(config);
 
     preparers.register('file', filePreparer);
     preparers.register('gitlab', gitlabPreparer);
     preparers.register('gitlab/api', gitlabPreparer);
     preparers.register('azure/api', azurePreparer);
+    preparers.register('bitbucket/api', bitbucketPreparer);
 
     const githubConfig = config.getOptionalConfig('scaffolder.github');
     if (githubConfig) {
