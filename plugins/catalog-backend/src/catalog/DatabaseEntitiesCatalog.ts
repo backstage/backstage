@@ -291,7 +291,7 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
       }),
     );
     
-    oldEntities.map(e=> delete e.entity.relations);
+    oldEntities.map(e => delete e.entity.relations);
 
     const oldEntitiesByName = new Map(
       oldEntities.map(e => [e.entity.metadata.name, e.entity]),
