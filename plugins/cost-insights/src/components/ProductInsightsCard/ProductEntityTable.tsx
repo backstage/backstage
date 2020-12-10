@@ -78,7 +78,7 @@ function createSorter(field?: keyof Omit<RowData, 'id'>) {
 
     return field
       ? a[field] - b[field]
-      : b.previous + b.current - (a.previous - a.current);
+      : b.previous + b.current - (a.previous + a.current);
   };
 }
 
