@@ -32,7 +32,7 @@
     "@backstage/backend-common": "^0.4.0",
     "@backstage/catalog-model": "^0.5.0",
     "@backstage/config": "^0.1.2",
-    "@gitbeaker/core": "^25.2.0",
+    "@gitbeaker/core": "^26.0.0",
     "@gitbeaker/node": "^25.2.0",
     "@octokit/rest": "^18.0.0",
     "@types/dockerode": "^3.2.1",
