@@ -173,9 +173,9 @@ export class CatalogImportClient implements CatalogImportApi {
 
     const prBody = `This pull request adds a **Backstage entity metadata file** \
 to this repository so that the component can be added to the \
-${appTitle} software catalog.\n\nAfter you merge this pull request, \
-you can [return to Backstage](${appBaseUrl}/catalog-import) \
-to register the component with the direct URL to the \`${fileName}\` file.`;
+[${appTitle} software catalog](${appBaseUrl}).\n\nAfter this pull request is merged, \
+the component will become available.\n\nFor more information, read an \
+[overview of the Backstage software catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview).`;
 
     const pullRequestResponse = await octo.pulls
       .create({
