@@ -80,7 +80,10 @@ export type LocationsCatalog = {
   locations(): Promise<LocationResponse[]>;
   location(id: string): Promise<LocationResponse>;
   locationHistory(id: string): Promise<LocationUpdateLogEvent[]>;
-  logUpdateSuccess(locationId: string, entityName?: string): Promise<void>;
+  logUpdateSuccess(
+    locationId: string,
+    entityName?: string | string[],
+  ): Promise<void>;
   logUpdateFailure(
     locationId: string,
     error?: Error,
