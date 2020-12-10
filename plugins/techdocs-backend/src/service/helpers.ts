@@ -16,11 +16,7 @@
 import Docker from 'dockerode';
 import { Logger } from 'winston';
 import { Entity } from '@backstage/catalog-model';
-import {
-  PreparerBuilder,
-  PublisherBase,
-  GeneratorBuilder,
-} from '../techdocs';
+import { PreparerBuilder, PublisherBase, GeneratorBuilder } from '../techdocs';
 import { BuildMetadataStorage } from '../storage';
 import { getLocationForEntity, getLastCommitTimestamp } from '../helpers';
 
@@ -97,9 +93,7 @@ export class DocsBuilder {
       );
     }
 
-    const buildMetadataStorage = new BuildMetadataStorage(
-      entity.metadata.uid,
-    );
+    const buildMetadataStorage = new BuildMetadataStorage(entity.metadata.uid);
     const { type, target } = getLocationForEntity(entity);
 
     // Unless docs are stored locally
@@ -127,9 +121,7 @@ export class DocsBuilder {
       }
     }
 
-    this.logger.debug(
-      `Docs for entity ${getEntityId(entity)} was outdated.`,
-    );
+    this.logger.debug(`Docs for entity ${getEntityId(entity)} was outdated.`);
     return false;
   }
 }

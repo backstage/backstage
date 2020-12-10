@@ -14,54 +14,57 @@
  * limitations under the License.
  */
 
-import { PluginEndpointDiscovery } from "@backstage/backend-common";
-import { Entity } from "@backstage/catalog-model";
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { Entity } from '@backstage/catalog-model';
 import { DocsBuilder } from './helpers';
 import { Logger } from 'winston';
 import fetch from 'cross-fetch';
 
 type EntityBuilderArguments = {
-    builder: DocsBuilder;
-    discovery: PluginEndpointDiscovery;
-    logger: Logger;
+  builder: DocsBuilder;
+  discovery: PluginEndpointDiscovery;
+  logger: Logger;
 };
 
 export class EntityBuilder {
-    private builder: DocsBuilder;
-    private discovery: PluginEndpointDiscovery;
-    private logger: Logger;
+  private builder: DocsBuilder;
+  private discovery: PluginEndpointDiscovery;
+  private logger: Logger;
 
-    constructor({ builder, discovery, logger }: EntityBuilderArguments) {
-        this.builder = builder;
-        this.discovery = discovery;
-        this.logger = logger;
+  constructor({ builder, discovery, logger }: EntityBuilderArguments) {
+    this.builder = builder;
+    this.discovery = discovery;
+    this.logger = logger;
+  }
+
+  public async refreshDocs() {
+    const entities = await this.getEntities();
+
+    entities.forEach(entity => {
+      this.builder.build(entity);
+    });
+  }
+
+  private async getEntities(): Promise<Entity[]> {
+    const catalogUrl = await this.discovery.getBaseUrl('catalog');
+
+    const entitiesRes = await fetch(`${catalogUrl}/entities`).catch(err =>
+      console.log(err),
+    );
+
+    if (entitiesRes && entitiesRes.ok) {
+      const entities = (await entitiesRes.json()) as Entity[];
+
+      return entities.filter(
+        entity => !!entity.metadata.annotations?.['backstage.io/techdocs-ref'],
+      );
     }
 
-    public async refreshDocs() {
-        const entities = await this.getEntities();
-
-        entities.forEach(entity => {
-            this.builder.build(entity);
-        });
-    }
-
-    private async getEntities(): Promise<Entity[]> {
-        const catalogUrl = await this.discovery.getBaseUrl('catalog');
-
-        const entitiesRes = await fetch(`${catalogUrl}/entities`)
-            .catch(err => console.log(err));
-
-        if (entitiesRes && entitiesRes.ok) {
-          const entities = await entitiesRes.json() as Entity[];
-    
-          return entities.filter(entity => !!entity.metadata.annotations?.['backstage.io/techdocs-ref']);
-        }
-
-        this.logger.warn(`Unable to call the catalog API, retrying...`);
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve(this.getEntities());
-            }, 3000);
-        });
-    }
+    this.logger.warn(`Unable to call the catalog API, retrying...`);
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve(this.getEntities());
+      }, 3000);
+    });
+  }
 }

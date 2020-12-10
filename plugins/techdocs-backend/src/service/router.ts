@@ -140,19 +140,21 @@ export async function createRouter({
   });
 
   router.get('/buildall', async (req, res) => {
-    logger.info("BuildAll")
+    logger.info('BuildAll');
     const catalogUrl = await discovery.getBaseUrl('catalog');
 
     const entitiesRes = await fetch(`${catalogUrl}/entities`);
 
     if (entitiesRes.ok) {
-      const entities = await entitiesRes.json() as Entity[];
+      const entities = (await entitiesRes.json()) as Entity[];
 
-      const entitiesWithDocs = entities.filter(entity => !!entity.metadata.annotations?.['backstage.io/techdocs-ref']);
-      console.log(entitiesWithDocs)
+      const entitiesWithDocs = entities.filter(
+        entity => !!entity.metadata.annotations?.['backstage.io/techdocs-ref'],
+      );
+      console.log(entitiesWithDocs);
     }
 
-    res.send("Yeet!")
+    res.send('Yeet!');
   });
 
   if (publisher instanceof LocalPublish) {

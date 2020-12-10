@@ -70,7 +70,7 @@ export default async function createPlugin({
 
   useHotCleanup(
     module,
-    runPeriodically(() => entityBuilder.refreshDocs(), 100000),
+    runPeriodically(() => entityBuilder.refreshDocs(), 1000000),
   );
 
   return await createRouter({
