@@ -158,20 +158,26 @@ export async function readMicrosoftGraphGroups(
       kind: 'Group',
       metadata: {
         name: name,
-        description: group.description ?? undefined,
         annotations: {
           [MICROSOFT_GRAPH_GROUP_ID_ANNOTATION]: group.id,
         },
       },
       spec: {
         type: 'team',
-        profile: {
-          displayName: group.displayName,
-          email: group.mail ?? undefined,
-        },
+        profile: {},
         children: [],
       },
     };
+
+    if (group.description) {
+      entity.metadata.description = group.description;
+    }
+    if (group.displayName) {
+      entity.spec.profile!.displayName = group.displayName;
+    }
+    if (group.mail) {
+      entity.spec.profile!.email = group.mail;
+    }
 
     // Download the members in parallel, otherwise it can take quite some time
     const loadGroupMembers = limiter(async () => {
