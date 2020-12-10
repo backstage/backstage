@@ -178,6 +178,17 @@ Internal CLI utility for running e2e tests.
 
 Stability: `N/A`
 
+### `integration` [GitHub](https://github.com/backstage/backstage/tree/master/packages/integration/)
+
+Provides shared utilities for managing integrations towards different types of
+third party systems. This package is currently internal and its functionality
+will likely be exposed via separate APIs in the future.
+
+Some of the functionality in this package is not available elsewhere yes, so if
+it's necessary it can be used, but there will be breaking changes.
+
+Stability: `0`
+
 ### `storybook` [GitHub](https://github.com/backstage/backstage/tree/master/packages/storybook/)
 
 Internal storybook build for publishing stories to
