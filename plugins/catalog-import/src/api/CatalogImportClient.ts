@@ -174,7 +174,7 @@ export class CatalogImportClient implements CatalogImportApi {
 to this repository so that the component can be added to the \
 ${appTitle} software catalog.\n\nAfter you merge this pull request, \
 you can [return to Backstage](${appBaseUrl}/catalog-import) \
-to register the component with the direct URL to the ${fileName} file.`;
+to register the component with the direct URL to the \`${fileName}\` file.`;
 
     const pullRequestResponse = await octo.pulls
       .create({
