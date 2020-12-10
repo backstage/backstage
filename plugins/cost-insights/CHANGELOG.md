@@ -1,5 +1,32 @@
 # @backstage/plugin-cost-insights
 
+## 0.5.0
+
+### Minor Changes
+
+- e3071a0d4: Add support for multiple types of entity cost breakdown.
+
+  This change is backwards-incompatible with plugin-cost-insights 0.3.x; the `entities` field on Entity returned in product cost queries changed from `Entity[]` to `Record<string, Entity[]`.
+
+- d6e8099ed: convert duration + last completed billing date to intervals
+- 88ef11b45: Remove calendar MoM period option and fix quarter end date logic
+
+### Patch Changes
+
+- 90458fed6: fix react-hooks/exhaustive-deps error
+- Updated dependencies [2527628e1]
+- Updated dependencies [e3bd9fc2f]
+- Updated dependencies [e1f4e24ef]
+- Updated dependencies [1c69d4716]
+- Updated dependencies [1665ae8bb]
+- Updated dependencies [04f26f88d]
+- Updated dependencies [ff243ce96]
+- Updated dependencies [e3bd9fc2f]
+  - @backstage/core@0.4.0
+  - @backstage/config@0.1.2
+  - @backstage/test-utils@0.1.5
+  - @backstage/theme@0.2.2
+
 ## 0.4.2
 
 ### Patch Changes
