@@ -1,4 +1,4 @@
-import React, { FC, useContext } from 'react';
+import React, { useContext } from 'react';
 import HomeIcon from '@material-ui/icons/Home';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import ExtensionIcon from '@material-ui/icons/Extension';
@@ -57,7 +57,7 @@ const useSidebarLogoStyles = makeStyles({
   },
 });
 
-const SidebarLogo: FC<{}> = () => {
+const SidebarLogo = () => {
   const classes = useSidebarLogoStyles();
   const { isOpen } = useContext(SidebarContext);
 

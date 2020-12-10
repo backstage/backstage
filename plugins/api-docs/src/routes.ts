@@ -23,9 +23,3 @@ export const rootRoute = createRouteRef({
   path: '/api-docs',
   title: 'APIs',
 });
-
-export const catalogRoute = createRouteRef({
-  icon: NoIcon,
-  path: '',
-  title: 'API',
-});

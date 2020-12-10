@@ -67,9 +67,9 @@ Firekube
 freben
 Fredrik
 github
-Github
+GitHub
 gitlab
-Gitlab
+GitLab
 Grafana
 graphql
 graphviz
@@ -198,6 +198,7 @@ talkdesk
 Talkdesk
 tasklist
 techdocs
+Telenor
 templated
 templater
 Templater

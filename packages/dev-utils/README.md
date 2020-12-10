@@ -6,7 +6,7 @@ This package provides utilities that help in developing plugins for Backstage, l
 
 ## Installation
 
-Install the package via npm or yarn:
+Install the package via npm or Yarn:
 
 ```sh
 $ npm install --save-dev @backstage/dev-utils

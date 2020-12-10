@@ -15,15 +15,35 @@
  */
 
 import * as YAML from 'yaml';
-import { useApi } from '@backstage/core';
+import { useApi, configApiRef } from '@backstage/core';
 import { catalogImportApiRef } from '../api/CatalogImportApi';
 import { ConfigSpec } from '../components/ImportComponentPage';
+import parseGitUri from 'git-url-parse';
+
+// TODO: (O5ten) Refactor into a core API instead of direct usage like this
+// https://github.com/backstage/backstage/pull/3613#issuecomment-7408929430
+import { readGitHubIntegrationConfigs } from '@backstage/integration';
 
 export function useGithubRepos() {
   const api = useApi(catalogImportApiRef);
+  const config = useApi(configApiRef);
 
   const submitPrToRepo = async (selectedRepo: ConfigSpec) => {
-    const [ownerName, repoName] = selectedRepo.location.split('/').slice(-2);
+    const {
+      name: repoName,
+      owner: ownerName,
+      resource: hostname,
+    } = parseGitUri(selectedRepo.location);
+
+    const configs = readGitHubIntegrationConfigs(
+      config.getOptionalConfigArray('integrations.github') ?? [],
+    );
+    const githubIntegrationConfig = configs.find(v => v.host === hostname);
+    if (!githubIntegrationConfig) {
+      throw new Error(
+        `Unable to locate github-integration for repo-location: ${selectedRepo.location}`,
+      );
+    }
     const submitPRResponse = await api
       .submitPrToRepo({
         owner: ownerName,
@@ -31,6 +51,7 @@ export function useGithubRepos() {
         fileContent: selectedRepo.config
           .map(entity => `---\n${YAML.stringify(entity)}`)
           .join('\n'),
+        githubIntegrationConfig,
       })
       .catch(e => {
         throw new Error(`Failed to submit PR to repo:\n${e.message}`);

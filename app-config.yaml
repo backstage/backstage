@@ -46,6 +46,12 @@ proxy:
       X-Api-Key:
         $env: NEW_RELIC_REST_API_KEY
 
+  '/pagerduty':
+    target: https://api.pagerduty.com
+    headers:
+      Authorization:
+        $env: PAGERDUTY_TOKEN
+
   '/buildkite/api':
     target: https://api.buildkite.com/v2/
     headers:
@@ -62,6 +68,13 @@ proxy:
       Content-Type: 'application/json'
       X-Atlassian-Token: 'no-check'
       User-Agent: 'MY-UA-STRING'
+
+  '/sentry/api':
+    target: https://sentry.io/api/
+    allowedMethods: ['GET']
+    headers:
+      Authorization:
+        $env: SENTRY_TOKEN
 
 organization:
   name: My Company
@@ -131,7 +144,7 @@ catalog:
             $env: GITHUB_TOKEN
         #### Example for how to add your GitHub Enterprise instance using the API:
         # - target: https://ghe.example.net
-        #   apiBaseUrl: https://ghe.example.net/api/v3
+        #   apiBaseUrl: https://ghe.example.net/api
         #   token:
         #     $env: GHE_TOKEN
     ldapOrg:
@@ -201,6 +214,7 @@ scaffolder:
       token:
         $env: AZURE_TOKEN
 auth:
+  environment: development
   ### Providing an auth.session.secret will enable session support in the auth-backend
   # session:
   #   secret: custom session secret
@@ -320,3 +334,5 @@ homepage:
       timezone: 'Europe/Stockholm'
     - label: TYO
       timezone: 'Asia/Tokyo'
+pagerduty:
+  eventsBaseUrl: 'https://events.pagerduty.com/v2'

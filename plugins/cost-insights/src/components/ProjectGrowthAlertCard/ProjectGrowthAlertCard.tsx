@@ -15,10 +15,10 @@
  */
 
 import React from 'react';
+import pluralize from 'pluralize';
 import { InfoCard } from '@backstage/core';
 import { ProjectGrowthAlertChart } from './ProjectGrowthAlertChart';
 import { ProjectGrowthData } from '../../types';
-import { pluralOf } from '../../utils/grammar';
 
 type ProjectGrowthAlertProps = {
   alert: ProjectGrowthData;
@@ -26,7 +26,7 @@ type ProjectGrowthAlertProps = {
 
 export const ProjectGrowthAlertCard = ({ alert }: ProjectGrowthAlertProps) => {
   const subheader = `
-    ${alert.products.length} ${pluralOf(alert.products.length, 'product')}${
+    ${pluralize('product', alert.products.length, true)}${
     alert.products.length > 1 ? ', sorted by cost' : ''
   }`;
 

@@ -6,9 +6,7 @@ metadata:
 spec:
   type: team
   parent: backstage
-  ancestors: [backstage, infrastructure, acme-corp]
   children: []
-  descendants: []
 ---
 apiVersion: backstage.io/v1alpha1
 kind: User

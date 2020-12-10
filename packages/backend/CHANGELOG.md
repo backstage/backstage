@@ -1,5 +1,34 @@
 # example-backend
 
+## 0.2.6
+
+### Patch Changes
+
+- 1e22f8e0b: Unify `dockerode` library and type dependency versions
+- Updated dependencies [6e8bb3ac0]
+- Updated dependencies [e708679d7]
+- Updated dependencies [047c018c9]
+- Updated dependencies [38e24db00]
+- Updated dependencies [e3bd9fc2f]
+- Updated dependencies [12bbd748c]
+- Updated dependencies [38d63fbe1]
+- Updated dependencies [1e22f8e0b]
+- Updated dependencies [83b6e0c1f]
+- Updated dependencies [e3bd9fc2f]
+  - @backstage/plugin-catalog-backend@0.4.0
+  - @backstage/backend-common@0.4.0
+  - @backstage/config@0.1.2
+  - @backstage/plugin-scaffolder-backend@0.3.4
+  - @backstage/plugin-techdocs-backend@0.3.2
+  - @backstage/catalog-model@0.5.0
+  - example-app@0.2.6
+  - @backstage/plugin-app-backend@0.3.3
+  - @backstage/plugin-auth-backend@0.2.6
+  - @backstage/plugin-graphql-backend@0.1.4
+  - @backstage/plugin-kubernetes-backend@0.2.2
+  - @backstage/plugin-proxy-backend@0.2.3
+  - @backstage/plugin-rollbar-backend@0.1.5
+
 ## 0.2.5
 
 ### Patch Changes

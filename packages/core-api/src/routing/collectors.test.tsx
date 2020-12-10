@@ -15,7 +15,7 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import { routeCollector, routeParentCollector } from './collectors';
+import { routePathCollector, routeParentCollector } from './collectors';
 
 import {
   traverseElementTree,
@@ -96,7 +96,7 @@ describe('discovery', () => {
       root,
       discoverers: [childDiscoverer, routeElementDiscoverer],
       collectors: {
-        routes: routeCollector,
+        routes: routePathCollector,
         routeParents: routeParentCollector,
       },
     });
@@ -147,7 +147,7 @@ describe('discovery', () => {
       root,
       discoverers: [childDiscoverer, routeElementDiscoverer],
       collectors: {
-        routes: routeCollector,
+        routes: routePathCollector,
         routeParents: routeParentCollector,
       },
     });
@@ -184,7 +184,7 @@ describe('discovery', () => {
         ),
         discoverers: [childDiscoverer, routeElementDiscoverer],
         collectors: {
-          routes: routeCollector,
+          routes: routePathCollector,
           routeParents: routeParentCollector,
         },
       }),

@@ -15,7 +15,7 @@
  */
 
 import { hot } from 'react-hot-loader/root';
-import React, { FC, ComponentType, ReactNode } from 'react';
+import React, { ComponentType, ReactNode } from 'react';
 import ReactDOM from 'react-dom';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
 import {
@@ -56,9 +56,11 @@ class DevAppBuilder {
   /**
    * Register an API factory to add to the app
    */
-  registerApi<Api, Deps extends { [name in string]: unknown }>(
-    factory: ApiFactory<Api, Deps>,
-  ): DevAppBuilder {
+  registerApi<
+    Api,
+    Impl extends Api,
+    Deps extends { [name in string]: unknown }
+  >(factory: ApiFactory<Api, Impl, Deps>): DevAppBuilder {
     this.apis.push(factory);
     return this;
   }
@@ -88,7 +90,7 @@ class DevAppBuilder {
 
     const sidebar = this.setupSidebar(this.plugins);
 
-    const DevApp: FC<{}> = () => {
+    const DevApp = () => {
       return (
         <AppProvider>
           <AlertDisplay />

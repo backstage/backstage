@@ -14,7 +14,94 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
+import {
+  Content,
+  createPlugin,
+  createRouteRef,
+  Header,
+  Page,
+} from '@backstage/core';
 import { createDevApp } from '@backstage/dev-utils';
-import { plugin } from '../src/plugin';
+import { Grid } from '@material-ui/core';
+import React from 'react';
+import {
+  MockSentryApi,
+  SentryApi,
+  sentryApiRef,
+  SentryIssuesWidget,
+} from '../src';
+import { SENTRY_PROJECT_SLUG_ANNOTATION } from '../src/components/useProjectSlug';
 
-createDevApp().registerPlugin(plugin).render();
+createDevApp()
+  .registerApi({
+    api: sentryApiRef,
+    deps: {},
+    factory: () =>
+      ({
+        fetchIssues: async (project: string) => {
+          switch (project) {
+            case 'error':
+              throw new Error('Error!');
+
+            case 'never':
+              return new Promise(() => {});
+
+            case 'with-values':
+              return new MockSentryApi().fetchIssues();
+
+            default:
+              return [];
+          }
+        },
+      } as SentryApi),
+  })
+  .registerPlugin(
+    createPlugin({
+      id: 'sentry-demo',
+      register({ router }) {
+        const entity = (name?: string) =>
+          ({
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Component',
+            metadata: {
+              annotations: {
+                [SENTRY_PROJECT_SLUG_ANNOTATION]: name,
+              },
+              name: name,
+            },
+          } as Entity);
+
+        const ExamplePage = () => (
+          <Page themeId="home">
+            <Header title="Sentry" />
+            <Content>
+              <Grid container>
+                <Grid item xs={12} md={6}>
+                  <SentryIssuesWidget entity={entity('error')} />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <SentryIssuesWidget entity={entity('empty')} />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <SentryIssuesWidget entity={entity('never')} />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <SentryIssuesWidget entity={entity('with-values')} />
+                </Grid>
+                <Grid item xs={12}>
+                  <SentryIssuesWidget entity={entity(undefined)} />
+                </Grid>
+              </Grid>
+            </Content>
+          </Page>
+        );
+
+        router.addRoute(
+          createRouteRef({ path: '/', title: 'Sentry' }),
+          ExamplePage,
+        );
+      },
+    }),
+  )
+  .render();

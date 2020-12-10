@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import React, { FC, createContext, useContext, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  ReactNode,
+  PropsWithChildren,
+} from 'react';
 import PropTypes from 'prop-types';
 import { ApiRef, ApiHolder, TypesToApiRefs } from './types';
 import { ApiAggregator } from './ApiAggregator';
@@ -26,7 +31,10 @@ type ApiProviderProps = {
 
 const Context = createContext<ApiHolder | undefined>(undefined);
 
-export const ApiProvider: FC<ApiProviderProps> = ({ apis, children }) => {
+export const ApiProvider = ({
+  apis,
+  children,
+}: PropsWithChildren<ApiProviderProps>) => {
   const parentHolder = useContext(Context);
   const holder = parentHolder ? new ApiAggregator(apis, parentHolder) : apis;
 
@@ -62,7 +70,7 @@ export function withApis<T>(apis: TypesToApiRefs<T>) {
   return function withApisWrapper<P extends T>(
     WrappedComponent: React.ComponentType<P>,
   ) {
-    const Hoc: FC<Omit<P, keyof T>> = props => {
+    const Hoc = (props: PropsWithChildren<Omit<P, keyof T>>) => {
       const apiHolder = useContext(Context);
 
       if (!apiHolder) {

@@ -13,11 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ApiEntity, Entity } from '@backstage/catalog-model';
+import {
+  ApiEntity,
+  Entity,
+  GroupEntity,
+  UserEntity,
+} from '@backstage/catalog-model';
 import { EmptyState } from '@backstage/core';
 import {
   ApiDefinitionCard,
-  Router as ApiDocsRouter,
+  ConsumedApisCard,
+  ConsumingComponentsCard,
+  ProvidedApisCard,
+  ProvidingComponentsCard,
 } from '@backstage/plugin-api-docs';
 import {
   AboutCard,
@@ -48,6 +56,12 @@ import {
   isPluginApplicableToEntity as isLighthouseAvailable,
   LastLighthouseAuditCard,
 } from '@backstage/plugin-lighthouse';
+import {
+  OwnershipCard,
+  MembersListCard,
+  GroupProfileCard,
+  UserProfileCard,
+} from '@backstage/plugin-org';
 import { Router as SentryRouter } from '@backstage/plugin-sentry';
 import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
 import { Button, Grid } from '@material-ui/core';
@@ -71,6 +85,10 @@ import {
   JiraCard,
   isPluginApplicableToEntity as isJiraAvailable,
 } from '@roadiehq/backstage-plugin-jira';
+import {
+  isPluginApplicableToEntity as isPagerDutyAvailable,
+  PagerDutyCard,
+} from '@backstage/plugin-pagerduty';
 import {
   isPluginApplicableToEntity as isTravisCIAvailable,
   RecentTravisCIBuildsWidget,
@@ -146,6 +164,11 @@ const ComponentOverviewContent = ({ entity }: { entity: Entity }) => (
     <Grid item md={6}>
       <AboutCard entity={entity} variant="gridItem" />
     </Grid>
+    {isPagerDutyAvailable(entity) && (
+      <Grid item md={6}>
+        <PagerDutyCard entity={entity} />
+      </Grid>
+    )}
     <RecentCICDRunsSwitcher entity={entity} />
     {isGitHubAvailable(entity) && (
       <>
@@ -176,6 +199,17 @@ const ComponentOverviewContent = ({ entity }: { entity: Entity }) => (
   </Grid>
 );
 
+const ComponentApisContent = ({ entity }: { entity: Entity }) => (
+  <Grid container spacing={3} alignItems="stretch">
+    <Grid item md={6}>
+      <ProvidedApisCard entity={entity} />
+    </Grid>
+    <Grid item md={6}>
+      <ConsumedApisCard entity={entity} />
+    </Grid>
+  </Grid>
+);
+
 const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
   <EntityPageLayout>
     <EntityPageLayout.Content
@@ -196,7 +230,7 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
     <EntityPageLayout.Content
       path="/api/*"
       title="API"
-      element={<ApiDocsRouter entity={entity} />}
+      element={<ComponentApisContent entity={entity} />}
     />
     <EntityPageLayout.Content
       path="/docs/*"
@@ -297,6 +331,14 @@ const ApiOverviewContent = ({ entity }: { entity: Entity }) => (
     <Grid item md={6}>
       <AboutCard entity={entity} />
     </Grid>
+    <Grid container item md={12}>
+      <Grid item md={6}>
+        <ProvidingComponentsCard entity={entity} />
+      </Grid>
+      <Grid item md={6}>
+        <ConsumingComponentsCard entity={entity} />
+      </Grid>
+    </Grid>
   </Grid>
 );
 
@@ -323,6 +365,51 @@ const ApiEntityPage = ({ entity }: { entity: Entity }) => (
   </EntityPageLayout>
 );
 
+const UserOverviewContent = ({ entity }: { entity: UserEntity }) => (
+  <Grid container spacing={3}>
+    <Grid item xs={12} md={6}>
+      <UserProfileCard entity={entity} variant="gridItem" />
+    </Grid>
+    <Grid item xs={12} md={6}>
+      <OwnershipCard entity={entity} variant="gridItem" />
+    </Grid>
+  </Grid>
+);
+
+const UserEntityPage = ({ entity }: { entity: Entity }) => (
+  <EntityPageLayout>
+    <EntityPageLayout.Content
+      path="/*"
+      title="Overview"
+      element={<UserOverviewContent entity={entity as UserEntity} />}
+    />
+  </EntityPageLayout>
+);
+
+const GroupOverviewContent = ({ entity }: { entity: GroupEntity }) => (
+  <Grid container spacing={3}>
+    <Grid item xs={12} md={6}>
+      <GroupProfileCard entity={entity} variant="gridItem" />
+    </Grid>
+    <Grid item xs={12} md={6}>
+      <OwnershipCard entity={entity} variant="gridItem" />
+    </Grid>
+    <Grid item xs={12}>
+      <MembersListCard entity={entity} />
+    </Grid>
+  </Grid>
+);
+
+const GroupEntityPage = ({ entity }: { entity: Entity }) => (
+  <EntityPageLayout>
+    <EntityPageLayout.Content
+      path="/*"
+      title="Overview"
+      element={<GroupOverviewContent entity={entity as GroupEntity} />}
+    />
+  </EntityPageLayout>
+);
+
 export const EntityPage = () => {
   const { entity } = useEntity();
 
@@ -331,6 +418,10 @@ export const EntityPage = () => {
       return <ComponentEntityPage entity={entity} />;
     case 'api':
       return <ApiEntityPage entity={entity} />;
+    case 'group':
+      return <GroupEntityPage entity={entity} />;
+    case 'user':
+      return <UserEntityPage entity={entity} />;
     default:
       return <DefaultEntityPage entity={entity} />;
   }

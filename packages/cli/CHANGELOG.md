@@ -1,5 +1,16 @@
 # @backstage/cli
 
+## 0.4.1
+
+### Patch Changes
+
+- 06dbe707b: Update experimental backend bundle command to only output archives to `dist/` instead of a full workspace mirror in `dist-workspace/`.
+- 011708102: Fixes a big in the bundling logic that caused `node_modules` inside local monorepo packages to be transformed.
+- 61897fb2c: Fix config schema for `.app.listen`
+- Updated dependencies [e3bd9fc2f]
+- Updated dependencies [e3bd9fc2f]
+  - @backstage/config@0.1.2
+
 ## 0.4.0
 
 ### Minor Changes

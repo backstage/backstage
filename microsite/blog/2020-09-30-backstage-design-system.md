@@ -1,6 +1,6 @@
 ---
 title: How to design for Backstage (even if you’re not a designer)
-author: Kat Zhou
+author: Kat Zhou, Spotify
 authorURL: http://twitter.com/katherinemzhou
 ---
 

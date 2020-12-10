@@ -15,7 +15,7 @@
  */
 
 export * from '@backstage/catalog-client';
-export { AboutCard } from './components/AboutCard';
+export { AboutCard, IconLinkVertical } from './components/AboutCard';
 export { EntityPageLayout } from './components/EntityPageLayout';
 export { Router } from './components/Router';
 export { useEntityCompoundName } from './components/useEntityCompoundName';

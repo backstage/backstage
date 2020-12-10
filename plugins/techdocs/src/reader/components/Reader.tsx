@@ -30,7 +30,6 @@ import transformer, {
   addLinkClickListener,
   removeMkdocsHeader,
   simplifyMkdocsFooter,
-  modifyCss,
   onCssReady,
   sanitizeDOM,
   injectCss,
@@ -71,15 +70,6 @@ export const Reader = ({ entityId, onReady }: Props) => {
         path,
       }),
       rewriteDocLinks(),
-      modifyCss({
-        cssTransforms: {
-          '.md-main__inner': [{ 'margin-top': '0' }],
-          '.md-sidebar': [{ top: '0' }, { width: '20rem' }],
-          '.md-typeset': [{ 'font-size': '1rem' }],
-          '.md-nav': [{ 'font-size': '1rem' }],
-          '.md-grid': [{ 'max-width': '80vw' }],
-        },
-      }),
       removeMkdocsHeader(),
       simplifyMkdocsFooter(),
       injectCss({
@@ -92,6 +82,11 @@ export const Reader = ({ entityId, onReady }: Props) => {
           --md-code-fg-color: ${theme.palette.text.primary};
           --md-code-bg-color: ${theme.palette.background.paper};
         }
+        .md-main__inner { margin-top: 0; }
+        .md-sidebar { top: 0; width: 20rem; }
+        .md-typeset { font-size: 1rem; }
+        .md-nav { font-size: 1rem; }
+        .md-grid { max-width: 80vw; }
         `,
       }),
     ]);

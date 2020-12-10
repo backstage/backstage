@@ -150,9 +150,7 @@ export async function readLdapGroups(
       },
       spec: {
         type: 'unknown',
-        ancestors: [],
         children: [],
-        descendants: [],
       },
     };
 
