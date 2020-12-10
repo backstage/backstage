@@ -167,7 +167,8 @@ export class CatalogImportClient implements CatalogImportApi {
         );
       });
 
-    const appTitle = this.configApi.getString('app.title');
+    const appTitle =
+      this.configApi.getOptionalString('app.title') ?? 'Backstage';
     const appBaseUrl = this.configApi.getString('app.baseUrl');
 
     const prBody = `This pull request adds a **Backstage entity metadata file** \
