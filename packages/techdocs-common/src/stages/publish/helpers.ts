@@ -15,14 +15,17 @@
  */
 import recursiveReadDir from 'recursive-readdir';
 
-export type supportedFileType = 'html' | 'css';
-
 export type responseHeadersType = {
   'Content-Type': string;
 };
 
+/**
+ * Some files need special headers to be used correctly by the frontend. This function
+ * generates headers in the response to those file requests.
+ * @param {string} fileExtension html, css, js etc.
+ */
 export const getHeadersForFileExtension = (
-  fileType: supportedFileType,
+  fileExtension: string,
 ): responseHeadersType => {
   const headersCommon = {
     'Content-Type': 'text/plain',
@@ -37,7 +40,7 @@ export const getHeadersForFileExtension = (
     'Content-Type': 'text/css; charset=UTF-8',
   };
 
-  switch (fileType) {
+  switch (fileExtension) {
     case 'html':
       return headersHTML;
     case 'css':

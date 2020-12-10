@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 import express from 'express';
-import { Storage, UploadResponse } from '@google-cloud/storage';
+import {
+  Storage,
+  UploadResponse,
+  FileExistsResponse,
+} from '@google-cloud/storage';
 import { Logger } from 'winston';
 import { Entity, EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import {
-  getHeadersForFileExtension,
-  supportedFileType,
-  getFileTreeRecursively,
-} from './helpers';
+import { getHeadersForFileExtension, getFileTreeRecursively } from './helpers';
 import { PublisherBase, PublishRequest } from './types';
 
 export class GoogleGCSPublish implements PublisherBase {
@@ -168,9 +168,7 @@ export class GoogleGCSPublish implements PublisherBase {
 
       // Files with different extensions (CSS, HTML) need to be served with different headers
       const fileExtension = filePath.split('.')[filePath.split('.').length - 1];
-      const responseHeaders = getHeadersForFileExtension(
-        fileExtension as supportedFileType,
-      );
+      const responseHeaders = getHeadersForFileExtension(fileExtension);
 
       const fileStreamChunks: Array<any> = [];
       this.storageClient
@@ -208,12 +206,12 @@ export class GoogleGCSPublish implements PublisherBase {
       this.storageClient
         .bucket(this.bucketName)
         .file(`${entityRootDir}/index.html`)
-        .createReadStream()
-        .on('error', () => {
-          resolve(false);
+        .exists()
+        .then((response: FileExistsResponse) => {
+          resolve(response[0]);
         })
-        .on('data', () => {
-          resolve(true);
+        .catch(() => {
+          resolve(false);
         });
     });
   }

@@ -14,7 +14,33 @@
  * limitations under the License.
  */
 import mockFs from 'mock-fs';
-import { getFileTreeRecursively } from './helpers';
+import { getFileTreeRecursively, getHeadersForFileExtension } from './helpers';
+
+describe('getHeadersForFileExtension', () => {
+  it('returns correct header for default extensions', () => {
+    const headers = getHeadersForFileExtension('xyz');
+    const expectedHeaders = {
+      'Content-Type': 'text/plain',
+    };
+    expect(headers).toEqual(expectedHeaders);
+  });
+
+  it('returns correct header for html', () => {
+    const headers = getHeadersForFileExtension('html');
+    const expectedHeaders = {
+      'Content-Type': 'text/html; charset=UTF-8',
+    };
+    expect(headers).toEqual(expectedHeaders);
+  });
+
+  it('returns correct header for css', () => {
+    const headers = getHeadersForFileExtension('css');
+    const expectedHeaders = {
+      'Content-Type': 'text/css; charset=UTF-8',
+    };
+    expect(headers).toEqual(expectedHeaders);
+  });
+});
 
 describe('getFileTreeRecursively', () => {
   beforeEach(() => {

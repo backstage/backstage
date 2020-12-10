@@ -61,7 +61,7 @@ beforeEach(() => {
 });
 
 describe('GoogleGCSPublish', () => {
-  it('should publish a directory', () => {
+  it('should publish a directory', async () => {
     mockFs({
       '/path/to/generatedDirectory': {
         'index.html': '',
@@ -73,8 +73,12 @@ describe('GoogleGCSPublish', () => {
     });
 
     const entity = createMockEntity();
-    return expect(
-      publisher.publish({ entity, directory: '/path/to/generatedDirectory' }),
-    ).resolves.toBeUndefined();
+    expect(
+      await publisher.publish({
+        entity,
+        directory: '/path/to/generatedDirectory',
+      }),
+    ).toBeUndefined();
+    mockFs.restore();
   });
 });

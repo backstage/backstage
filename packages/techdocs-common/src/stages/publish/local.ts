@@ -123,6 +123,7 @@ export class LocalPublish implements PublisherBase {
   }
 
   async hasDocsBeenGenerated(entity: Entity): Promise<boolean> {
+    const namespace = entity.metadata.namespace ?? 'default';
     return new Promise(resolve => {
       this.discovery.getBaseUrl('techdocs').then(techdocsApiUrl => {
         const storageUrl = new URL(
@@ -130,11 +131,16 @@ export class LocalPublish implements PublisherBase {
           techdocsApiUrl,
         ).toString();
 
-        const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
+        const entityRootDir = `${namespace}/${entity.kind}/${entity.metadata.name}`;
         const indexHtmlUrl = `${storageUrl}/${entityRootDir}/index.html`;
-        fetch(indexHtmlUrl)
-          .then(() => resolve(true))
-          .catch(() => resolve(false));
+        // Check if the file exists
+        fs.access(indexHtmlUrl, fs.constants.F_OK, err => {
+          if (err) {
+            resolve(false);
+          } else {
+            resolve(true);
+          }
+        });
       });
     });
   }
