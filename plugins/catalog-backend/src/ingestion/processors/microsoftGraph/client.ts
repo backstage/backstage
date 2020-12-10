@@ -184,7 +184,7 @@ export class MicrosoftGraphClient {
     const response = await this.requestApi(`organization/${tenantId}`);
 
     if (response.status !== 200) {
-      await this.handleError('organization/${tenantId}', response);
+      await this.handleError(`organization/${tenantId}`, response);
     }
 
     return await response.json();

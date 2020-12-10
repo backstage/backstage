@@ -50,7 +50,7 @@ const EntityPageSwitch = ({ EntityPage }: { EntityPage: ComponentType }) => {
   const { entity, loading, error } = useEntity();
   // Loading and error states
   if (loading) return <EntityPageLayout />;
-  if (error || (!loading && !entity)) return <EntityNotFound />;
+  if (error || !entity) return <EntityNotFound />;
 
   // Otherwise EntityPage provided from the App
   // Note that EntityPage will include EntityPageLayout already
