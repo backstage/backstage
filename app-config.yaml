@@ -189,9 +189,6 @@ catalog:
     # Backstage example groups and users
     - type: url
       target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme-corp.yaml
-    # Emojivoto
-    - type: file
-      target: /Users/blam/dev/spotify/backstage/plugins/linkerd-backend/sample/emojivoto.yaml
 
 scaffolder:
   github:

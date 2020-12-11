@@ -16,6 +16,7 @@
 export { plugin as WelcomePlugin } from '@backstage/plugin-welcome';
 export { plugin as LighthousePlugin } from '@backstage/plugin-lighthouse';
 export { plugin as CatalogPlugin } from '@backstage/plugin-catalog';
+export { plugin as LinkerdPlugin } from '@backstage/plugin-linkerd';
 export { plugin as ScaffolderPlugin } from '@backstage/plugin-scaffolder';
 export { plugin as TechRadar } from '@backstage/plugin-tech-radar';
 export { plugin as Explore } from '@backstage/plugin-explore';

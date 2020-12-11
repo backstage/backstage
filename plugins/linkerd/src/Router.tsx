@@ -19,6 +19,7 @@ import { Entity } from '@backstage/catalog-model';
 import { Route, Routes } from 'react-router-dom';
 import { MissingAnnotationEmptyState } from '@backstage/core';
 import { rootCatalogLinkerdPluginRef } from './plugin';
+import { Tab } from './components/Tab';
 
 const KUBERNETES_ANNOTATION = 'backstage.io/kubernetes-id';
 
@@ -32,7 +33,10 @@ export const Router = ({ entity }: { entity: Entity }) => {
 
   return (
     <Routes>
-      <Route path={`/${rootCatalogLinkerdPluginRef.path}`} element={<p />} />
+      <Route
+        path={`/${rootCatalogLinkerdPluginRef.path}`}
+        element={<Tab entity={entity} />}
+      />
     </Routes>
   );
 };

@@ -1,3 +1,5 @@
+import { DiscoveryApi } from '@backstage/core';
+
 /*
  * Copyright 2020 Spotify AB
  *
@@ -14,10 +16,14 @@
  * limitations under the License.
  */
 
-import { V1Deployment, V1Pod, V1ReplicaSet } from '@kubernetes/client-node';
+export class L5dClient {
+  private readonly discoveryApi: DiscoveryApi;
 
-export interface DeploymentTriple {
-  pods: V1Pod[];
-  replicaSets: V1ReplicaSet[];
-  deployments: V1Deployment[];
+  constructor(options: { discoveryApi: DiscoveryApi }) {
+    this.discoveryApi = options.discoveryApi;
+  }
+
+  async test() {
+    console.warn(this.discoveryApi.getBaseUrl('linkerd'));
+  }
 }

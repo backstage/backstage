@@ -20,6 +20,7 @@ import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 import * as k8s from '@kubernetes/client-node';
+import * as qs from 'querystring';
 import fetch from 'cross-fetch';
 import WebSocket from 'isomorphic-ws';
 import https from 'https';
@@ -66,9 +67,11 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const kc = new k8s.KubeConfig();
+
+  // TODO(blam): currently, we just skip all the config, and use the current k8s context on the host
+  // Let's make this driven by config instead
   kc.loadFromDefault();
   const baseUrl = kc.getCurrentCluster()?.server;
-  console.warn(baseUrl);
   const { logger } = options;
   const router = Router();
 
@@ -90,55 +93,151 @@ export async function createRouter(
   // TODO(blam): Get all stats for all namespaces
   // router.get('/namespaces/stats');
 
-  // TODO(blam): Get all stats for everything in one namespace
+  // // TODO(blam): Get all stats for everything in one namespace
+  // router.get(
+  //   '/namespace/:namespace/stats',
+  //   async ({ params: { namespace } }, response) => {
+  //     const tpsRequest = await makeRequest(
+  //       `/api/tps-reports?resource_type=all&namespace=${namespace}&tcp_stats=true&window=30s`,
+  //     );
+
+  //     console.warn(JSON.stringify(tpsRequest, null, 2));
+  //     const final = tpsRequest.ok.statTables
+  //       .filter((table: any) => table.podGroup.rows.length)
+  //       .map((table: any) =>
+  //         table.podGroup.rows.reduce(
+  //           (prev: any[], current: any) => [...prev, current],
+  //           [],
+  //         ),
+  //       )
+  //       .flat()
+  //       .reduce((prev: any, current: any) => {
+  //         prev[current.resource.type] = prev[current.resource.type] || {};
+  //         prev[current.resource.type][current.resource.name] =
+  //           prev[current.resource.type][current.resource.name] || {};
+
+  //         const timeWindowSeconds = (ms(current.timeWindow || 0) /
+  //           1000) as number;
+  //         const successCount = parseInt(current.stats?.successCount, 10);
+  //         const failureCount = parseInt(current.stats?.failureCount, 10);
+  //         const totalRequests = successCount + failureCount;
+
+  //         const b7e = {
+  //           totalRequests,
+  //           rps: totalRequests / timeWindowSeconds,
+  //           successRate: (successCount / totalRequests) * 100,
+  //           failureRate: (failureCount / totalRequests) * 100,
+  //         };
+
+  //         prev[current.resource.type][current.resource.name] = {
+  //           ...current,
+  //           b7e,
+  //         };
+  //         return prev;
+  //       }, {});
+
+  //     response.send(final);
+  //   },
+  // );
+
+  const generateTpsStats = async (options: any) => {
+    const actualOptions = {
+      ...options,
+      resource_type: 'all',
+      all_namespaces: true,
+      tcp_stats: true,
+      window: '30s',
+    };
+
+    const requests = await makeRequest(
+      `/api/tps-reports?${qs.stringify(actualOptions)}`,
+    );
+
+    JSON.stringify(requests, null, 2);
+    return requests.ok.statTables
+      .filter((table: any) => table.podGroup.rows.length)
+      .map((table: any) =>
+        table.podGroup.rows.reduce(
+          (prev: any[], current: any) => [...prev, current],
+          [],
+        ),
+      )
+      .flat()
+      .reduce((prev: any, current: any) => {
+        prev[current.resource.type] = prev[current.resource.type] || {};
+        prev[current.resource.type][current.resource.name] =
+          prev[current.resource.type][current.resource.name] || {};
+
+        const timeWindowSeconds = (ms(current.timeWindow || 0) /
+          1000) as number;
+        const successCount = parseInt(current.stats?.successCount, 10);
+        const failureCount = parseInt(current.stats?.failureCount, 10);
+        const totalRequests = successCount + failureCount;
+
+        const b7e = {
+          totalRequests,
+          rps: totalRequests / timeWindowSeconds,
+          successRate: (successCount / totalRequests) * 100,
+          failureRate: (failureCount / totalRequests) * 100,
+        };
+
+        prev[current.resource.type][current.resource.name] = {
+          ...current,
+          b7e,
+        };
+        return prev;
+      }, {});
+  };
+
+  // TODO(blam): Get a breakdown for a deployment in a namespace
   router.get(
-    '/namespace/:namespace/stats',
-    async ({ params: { namespace } }, response) => {
-      const tpsRequest = await makeRequest(
-        `/api/tps-reports?resource_type=all&namespace=${namespace}&tcp_stats=true&window=30s`,
-      );
+    '/namespace/:namespace/deployment/:deployment/stats',
+    async ({ params: { deployment, namespace } }, response) => {
+      const toOptions = {
+        to_name: deployment,
+        to_namespace: namespace,
+        to_type: 'deployment',
+      };
+      const fromOptions = {
+        from_name: deployment,
+        from_namespace: namespace,
+        from_type: 'deployment',
+      };
 
-      console.warn(JSON.stringify(tpsRequest, null, 2));
-      const final = tpsRequest.ok.statTables
-        .filter((table: any) => table.podGroup.rows.length)
-        .map((table: any) =>
-          table.podGroup.rows.reduce(
-            (prev: any[], current: any) => [...prev, current],
-            [],
-          ),
-        )
-        .flat()
-        .reduce((prev: any, current: any) => {
-          prev[current.resource.type] = prev[current.resource.type] || {};
-          prev[current.resource.type][current.resource.name] =
-            prev[current.resource.type][current.resource.name] || {};
-
-          const timeWindowSeconds = (ms(current.timeWindow || 0) /
-            1000) as number;
-          const successCount = parseInt(current.stats?.successCount, 10);
-          const failureCount = parseInt(current.stats?.failureCount, 10);
-          const totalRequests = successCount + failureCount;
-
-          const b7e = {
-            totalRequests,
-            rps: totalRequests / timeWindowSeconds,
-            successRate: (successCount / totalRequests) * 100,
-            failureRate: (failureCount / totalRequests) * 100,
-          };
-
-          prev[current.resource.type][current.resource.name] = {
-            ...current,
-            b7e,
-          };
-          return prev;
-        }, {});
-
-      response.send(final);
+      response.send({
+        incoming: await generateTpsStats(toOptions),
+        outgoing: await generateTpsStats(fromOptions),
+      });
     },
   );
 
   // TODO(blam): Get a breakdown for a deployment in a namespace
-  // router.get('/namespace/:namespace/deployment/:deployment/stats');
+  router.get(
+    '/namespace/:namespace/deployment/:deployment/stats',
+    async ({ params: { deployment, namespace } }, response) => {
+      const fromOptions = {
+        from_name: deployment,
+        from_namespace: namespace,
+        // from_type: 'deployment',
+      };
+
+      const toOptions = {
+        to_name: deployment,
+        to_namespace: namespace,
+        // to_type: 'deployment',
+      };
+
+      const [incoming, outgoing] = await Promise.all([
+        generateTpsStats(toOptions),
+        generateTpsStats(fromOptions),
+      ]);
+
+      response.send({
+        incoming,
+        outgoing,
+      });
+    },
+  );
 
   router.get('/health', (_, response) => {
     logger.info('PONG!');
@@ -159,15 +258,15 @@ export async function createWebSockets(options: RouterOptions) {
   const opts = buildRequestOptionsForUrl(baseUrl);
   server.on('error', options.logger.error);
 
-  server.on('connection', socket => {
+  server.on('connection', backstageSocket => {
     const linkerdConnection = new WebSocket(
       `${fixed}/api/v1/namespaces/linkerd/services/linkerd-web:8084/proxy/api/tap`,
       [],
       opts,
     );
-    socket.on('message', data => {
+    backstageSocket.on('message', data => {
       const { resource, namespace } = JSON.parse(data.toString());
-      linkerdConnection.on('message', message => socket.send(message));
+      linkerdConnection.on('message', message => backstageSocket.send(message));
 
       console.warn(resource, namespace);
       linkerdConnection.send(
@@ -185,7 +284,7 @@ export async function createWebSockets(options: RouterOptions) {
       //   maxRps: 0,
       // });
     });
-    socket.on('close', () => linkerdConnection.close());
+    backstageSocket.on('close', () => linkerdConnection.close());
   });
 
   return server;

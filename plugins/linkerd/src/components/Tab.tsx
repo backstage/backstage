@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core';
+import { useApi } from '@backstage/core';
+import * as React from 'react';
+import { linkerdPluginRef } from '../plugin';
 
-export const linkerdPluginRef = createApiRef<LinkerdApi>({
-  id: 'plugin.linkerd.service',
-  description:
-    'Used by the Kubernetes plugin to make requests to accompanying backend',
-});
-
-export interface LinkerdApi {}
+export const Tab = () => {
+  const l5d = useApi(linkerdPluginRef);
+  console.warn(l5d.test());
+  return <p>Hello</p>;
+};

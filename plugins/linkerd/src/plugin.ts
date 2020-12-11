@@ -15,16 +15,22 @@
  */
 import {
   createApiFactory,
+  createApiRef,
   createPlugin,
   createRouteRef,
   discoveryApiRef,
-  googleAuthApiRef,
 } from '@backstage/core';
-import { linkerdPluginRef } from './api/types';
+import { L5dClient } from './api/client';
 
 export const rootCatalogLinkerdPluginRef = createRouteRef({
   path: '*',
   title: 'Linkerd',
+});
+
+export const linkerdPluginRef = createApiRef<any>({
+  id: 'plugin.linkerd.service',
+  description:
+    'Used by the Linkerd plugin to make requests to accompanying backend',
 });
 
 export const plugin = createPlugin({
@@ -33,7 +39,7 @@ export const plugin = createPlugin({
     createApiFactory({
       api: linkerdPluginRef,
       deps: { discoveryApi: discoveryApiRef },
-      factory: ({ discoveryApi }) => null,
+      factory: ({ discoveryApi }) => new L5dClient({ discoveryApi }),
     }),
   ],
 });
