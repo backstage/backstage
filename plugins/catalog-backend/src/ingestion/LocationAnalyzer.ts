@@ -40,7 +40,7 @@ export class RepoLocationAnalyzer implements LocationAnalyzer {
         // Probably won't handle properly self-hosted git providers with custom url
         annotations: { [`${source}/project-slug`]: `${owner}/${name}` },
       },
-      spec: { type: 'other', lifecycle: 'unknown' },
+      spec: { type: 'other', lifecycle: 'unknown', owner: 'guest' },
     };
 
     this.logger.debug(`entity created for ${request.location.target}`);
