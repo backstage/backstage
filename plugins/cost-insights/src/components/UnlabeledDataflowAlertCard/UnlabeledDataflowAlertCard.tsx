@@ -49,8 +49,8 @@ export const UnlabeledDataflowAlertCard = ({
     <InfoCard title="Label Dataflow" subheader={subheader}>
       <Box className={classes.wrapper}>
         <BarChartLegend
-          costStart={alert.labeledCost}
-          costEnd={alert.unlabeledCost}
+          costStart={alert.unlabeledCost}
+          costEnd={alert.labeledCost}
           options={options}
         />
         <BarChart resources={resources} options={options} />
