@@ -15,6 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
+import { isValidHost } from '../helpers';
 
 const GITLAB_HOST = 'gitlab.com';
 
@@ -45,6 +46,13 @@ export function readGitLabIntegrationConfig(
 ): GitLabIntegrationConfig {
   const host = config.getOptionalString('host') ?? GITLAB_HOST;
   const token = config.getOptionalString('token');
+
+  if (!isValidHost(host)) {
+    throw new Error(
+      `Invalid GitLab integration config, '${host}' is not a valid host`,
+    );
+  }
+
   return { host, token };
 }
 

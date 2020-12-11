@@ -15,6 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
+import { isValidHost } from '../helpers';
 
 const GITHUB_HOST = 'github.com';
 const GITHUB_API_BASE_URL = 'https://api.github.com';
@@ -71,6 +72,12 @@ export function readGitHubIntegrationConfig(
   let apiBaseUrl = config.getOptionalString('apiBaseUrl');
   let rawBaseUrl = config.getOptionalString('rawBaseUrl');
   const token = config.getOptionalString('token');
+
+  if (!isValidHost(host)) {
+    throw new Error(
+      `Invalid GitHub integration config, '${host}' is not a valid host`,
+    );
+  }
 
   if (apiBaseUrl) {
     apiBaseUrl = apiBaseUrl.replace(/\/+$/, '');
