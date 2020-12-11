@@ -15,6 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
+import { isValidHost } from '../helpers';
 
 const AZURE_HOST = 'dev.azure.com';
 
@@ -47,6 +48,13 @@ export function readAzureIntegrationConfig(
 ): AzureIntegrationConfig {
   const host = config.getOptionalString('host') ?? AZURE_HOST;
   const token = config.getOptionalString('token');
+
+  if (!isValidHost(host)) {
+    throw new Error(
+      `Invalid Azure integration config, '${host}' is not a valid host`,
+    );
+  }
+
   return { host, token };
 }
 
