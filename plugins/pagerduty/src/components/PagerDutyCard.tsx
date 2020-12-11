@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { useState, useCallback } from 'react';
-import { useApi, Progress } from '@backstage/core';
+import { useApi, Progress, AboutCard } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
 import { Button, makeStyles } from '@material-ui/core';
 import { Incidents } from './Incident';
@@ -26,7 +26,6 @@ import AlarmAddIcon from '@material-ui/icons/AlarmAdd';
 import { TriggerDialog } from './TriggerDialog';
 import { MissingTokenError } from './Errors/MissingTokenError';
 import WebIcon from '@material-ui/icons/Web';
-import { AboutCard } from './About/AboutCard';
 
 const useStyles = makeStyles({
   triggerAlarm: {
@@ -98,13 +97,13 @@ export const PagerDutyCard = ({ entity }: Props) => {
   }
 
   const serviceLink = {
-    title: 'Service Directory',
+    label: 'Service Directory',
     href: service!.url,
     icon: <WebIcon />,
   };
 
   const triggerLink = {
-    title: 'Create Incident',
+    label: 'Create Incident',
     action: (
       <Button
         data-testid="trigger-button"
