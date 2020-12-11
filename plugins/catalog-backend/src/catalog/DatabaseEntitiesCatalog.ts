@@ -253,8 +253,8 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
       }
     }
 
-    const entityUpserts = (await Promise.all(tasks)).flat();
-    return entityUpserts;
+    const entityUpserts = await Promise.all(tasks);
+    return entityUpserts.flat();
   }
 
   // Set the relations originating from an entity using the DB layer
