@@ -37,3 +37,4 @@ export * from './TrendLine';
 export * from './WarningPanel';
 export * from './EmptyState';
 export * from './MarkdownContent';
+export * from './AboutCard';
