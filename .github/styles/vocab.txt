@@ -186,6 +186,7 @@ sparklines
 Spotifiers
 spotify
 Spotify
+sqlite
 squidfunk
 src
 stefanalund
