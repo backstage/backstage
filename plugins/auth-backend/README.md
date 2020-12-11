@@ -58,7 +58,7 @@ Follow this link, [Add new application](https://gitlab.com/-/profile/application
 
 1. Set Application Name to `backstage-dev` or something along those lines.
 1. The Authorization Callback URL should match the redirect URI set in Backstage.
-   1. Set this to `http://localhost:7000/api/auth/gitlab/handler/frame` for local development.
+   1. Set this to `http://localhost:3000/api/auth/gitlab/handler/frame` for local development.
    1. Set this to `http://{APP_FQDN}:{APP_BACKEND_PORT}/api/auth/gitlab/handler/frame` for non-local deployments.
    1. Select the following scopes from the list:
       - [x] `read_user` Grants read-only access to the authenticated user's profile through the /user API endpoint, which includes username, public email, and full name. Also grants access to read-only API endpoints under /users.
