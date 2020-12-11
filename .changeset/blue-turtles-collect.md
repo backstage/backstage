@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-backend': patch
 ---
 
-Added 'owner' propoerty to the config generated in LocationAnalyzer
+Added 'owner' property to the config generated in LocationAnalyzer
