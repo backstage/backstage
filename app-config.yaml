@@ -68,11 +68,15 @@ proxy:
 organization:
   name: My Company
 
+# Reference documentation http://backstage.io/docs/features/techdocs/configuration
 techdocs:
-  storageUrl: http://localhost:7000/api/techdocs/static/docs
   requestUrl: http://localhost:7000/api/techdocs
+  storageUrl: http://localhost:7000/api/techdocs/static/docs
+  builder: 'local' # Alternatives - 'external'
   generators:
-    techdocs: 'docker'
+    techdocs: 'docker' # Alternatives - 'local'
+  publisher:
+    type: 'local' # Alternatives - 'googleGcs'. Read documentation for using alternatives.
 
 sentry:
   organization: my-company

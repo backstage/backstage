@@ -37,6 +37,7 @@
     "@backstage/plugin-catalog": "^0.2.6",
     "@backstage/test-utils": "^0.1.5",
     "@backstage/theme": "^0.2.2",
+    "@backstage/techdocs-common": "^0.1.1",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
@@ -77,11 +78,68 @@
             "visibility": "frontend"
           },
           "storageUrl": {
-            "type": "string"
+            "type": "string",
+            "visibility": "backend"
+          },
+          "generators": {
+            "type": "object",
+            "properties": {
+              "techdocs": {
+                "type": "string",
+                "visibility": "backend"
+              }
+            }
+          },
+          "builder": {
+            "type": "string",
+            "visibility": "frontend"
+          },
+          "publisher": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "const": "local",
+                    "visibility": "backend"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "const": "googleGcs",
+                    "visibility": "backend"
+                  },
+                  "googleGcs": {
+                    "type": "object",
+                    "properties": {
+                      "credentials": {
+                        "type": "string",
+                        "visibility": "secret"
+                      },
+                      "projectId": {
+                        "type": "string",
+                        "visibility": "secret"
+                      },
+                      "bucketName": {
+                        "type": "string",
+                        "visibility": "secret"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
           }
         },
         "required": [
-          "requestUrl"
+          "requestUrl",
+          "storageUrl",
+          "builder"
         ]
       }
     }

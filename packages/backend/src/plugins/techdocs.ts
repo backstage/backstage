@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import {
   createRouter,
   DirectoryPreparer,
   Preparers,
   Generators,
-  LocalPublish,
   TechdocsGenerator,
   CommonGitPreparer,
   UrlPreparer,
+  Publisher,
 } from '@backstage/plugin-techdocs-backend';
 import { PluginEnvironment } from '../types';
 import Docker from 'dockerode';
@@ -50,7 +49,7 @@ export default async function createPlugin({
   const urlPreparer = new UrlPreparer(reader, logger);
   preparers.register('url', urlPreparer);
 
-  const publisher = new LocalPublish(logger, discovery);
+  const publisher = Publisher.fromConfig(config, logger, discovery);
 
   const dockerClient = new Docker();
 

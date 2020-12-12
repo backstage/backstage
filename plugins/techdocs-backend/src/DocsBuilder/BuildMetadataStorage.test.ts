@@ -13,6 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { BuildMetadataStorage } from './BuildMetadataStorage';
 
-export * from './service/router';
-export * from '@backstage/techdocs-common';
+describe('BuildMetadataStorage', () => {
+  it('should return build timestamp', () => {
+    const newMetadataStorage = new BuildMetadataStorage('123abc');
+    newMetadataStorage.storeBuildTimestamp();
+
+    const timestamp = newMetadataStorage.getTimestamp();
+
+    expect(timestamp).toBeLessThanOrEqual(Date.now());
+  });
+});
