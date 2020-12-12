@@ -20,7 +20,7 @@ import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
 import StartServerPlugin from 'start-server-webpack-plugin';
-import webpack from 'webpack';
+import webpack, { ResolvePlugin } from 'webpack';
 import nodeExternals from 'webpack-node-externals';
 import { optimization } from './optimization';
 import { Config } from '@backstage/config';
@@ -70,12 +70,75 @@ async function readBuildInfo() {
   };
 }
 
-async function loadLernaPackages(): Promise<
-  { name: string; location: string }[]
-> {
+type LernaPackage = {
+  name: string;
+  location: string;
+};
+
+async function loadLernaPackages(): Promise<LernaPackage[]> {
   const LernaProject = require('@lerna/project');
   const project = new LernaProject(cliPaths.targetDir);
   return project.getPackages();
+}
+
+// Enables proper resolution of packages when linking in external packages.
+// Without this the packages would depend on dependencies in the node_modules
+// of the external packages themselves, leading to module duplication
+class LinkedPackageResolvePlugin implements ResolvePlugin {
+  constructor(
+    private readonly targetModules: string,
+    private readonly packages: LernaPackage[],
+  ) {}
+
+  apply(resolver: any) {
+    resolver.hooks.resolve.tapAsync(
+      'LinkedPackageResolvePlugin',
+      (
+        request: { path?: false | string; context?: { issuer?: string } },
+        context: unknown,
+        callback: () => void,
+      ) => {
+        const pkg = this.packages.find(
+          pkg => request.path && request.path.startsWith(pkg.location),
+        );
+        if (!pkg) {
+          callback();
+          return;
+        }
+
+        // pkg here is an external package. We rewrite the context of any imports to resolve
+        // from the location of the package within the node_modules of the target root rather
+        // than the real location of the external package.
+        const modulesLocation = resolvePath(this.targetModules, pkg.name);
+        const newContext = request.context?.issuer
+          ? {
+              ...request.context,
+              issuer: request.context.issuer.replace(
+                pkg.location,
+                modulesLocation,
+              ),
+            }
+          : request.context;
+
+        // Re-run resolution but this time from the point of view of our target monorepo rather
+        // than the location of the external package. By resolving modules using this method we avoid
+        // pulling in e.g. `react` from the external repo, which would otherwise lead to conflicts.
+        resolver.doResolve(
+          resolver.hooks.resolve,
+          {
+            ...request,
+            context: newContext,
+            path:
+              request.path &&
+              request.path.replace(pkg.location, modulesLocation),
+          },
+          null,
+          context,
+          callback,
+        );
+      },
+    );
+  }
 }
 
 export async function createConfig(
@@ -85,12 +148,10 @@ export async function createConfig(
   const { checksEnabled, isDev, frontendConfig } = options;
 
   const packages = await loadLernaPackages();
-  const { plugins, loaders } = transforms({
-    ...options,
-    externalTransforms: packages.map(({ name }) =>
-      cliPaths.resolveTargetRoot('node_modules', name),
-    ),
-  });
+  const { plugins, loaders } = transforms(options);
+  // Any package that is part of the monorepo but outside the monorepo root dir need
+  // separate resolution logic.
+  const externalPkgs = packages.filter(p => !p.location.startsWith(paths.root));
 
   const baseUrl = frontendConfig.getString('app.baseUrl');
   const validBaseUrl = new URL(baseUrl);
@@ -165,6 +226,7 @@ export async function createConfig(
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx'],
       mainFields: ['browser', 'module', 'main'],
       plugins: [
+        new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
         new ModuleScopePlugin(
           [paths.targetSrc, paths.targetDev],
           [paths.targetPackageJson],
@@ -173,10 +235,6 @@ export async function createConfig(
       alias: {
         'react-dom': '@hot-loader/react-dom',
       },
-      // Enables proper resolution of packages when linking in external packages.
-      // Without this the packages would depend on dependencies in the node_modules
-      // of the external packages themselves, leading to module duplication
-      symlinks: false,
     },
     module: {
       rules: loaders,
@@ -205,13 +263,9 @@ export async function createBackendConfig(
   const moduleDirs = packages.map((p: any) =>
     resolvePath(p.location, 'node_modules'),
   );
+  const externalPkgs = packages.filter(p => !p.location.startsWith(paths.root)); // See frontend config
 
-  const { loaders } = transforms({
-    ...options,
-    externalTransforms: packages.map(({ name }) =>
-      cliPaths.resolveTargetRoot('node_modules', name),
-    ),
-  });
+  const { loaders } = transforms(options);
 
   return {
     mode: isDev ? 'development' : 'production',
@@ -253,6 +307,7 @@ export async function createBackendConfig(
       mainFields: ['browser', 'module', 'main'],
       modules: [paths.rootNodeModules, ...moduleDirs],
       plugins: [
+        new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
         new ModuleScopePlugin(
           [paths.targetSrc, paths.targetDev],
           [paths.targetPackageJson],
@@ -261,7 +316,6 @@ export async function createBackendConfig(
       alias: {
         'react-dom': '@hot-loader/react-dom',
       },
-      symlinks: false, // See frontend config, added here for the same reason
     },
     module: {
       rules: loaders,
