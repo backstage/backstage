@@ -4,43 +4,60 @@ title: Commands
 description: Descriptions of all commands available in the CLI.
 ---
 
-## Summary
+This page lists all commands provided by the Backstage CLI, what they're for,
+and where to use them.
+
+The documentation for each command begins with specifying its scope, this
+indicates where the command should be used by selecting from the following list:
+
+- `app` - A frontend app package, such as `packages/app`.
+- `backend` - A backend package, such as `packages/backend`.
+- `frontend-plugin` - A frontend plugin package.
+- `backend-plugin` - A backend plugin package.
+- `any` - Any kind of package.
+- `root` - The monorepo root, not specific to any one package.
+
+## help
+
+The following is a cleaned up output of of `yarn backstage-cli --help`:
 
 ```text
-app:build [options]              Build an app for a production release
-app:diff [options]               Diff an existing app with the creation template
-app:serve [options]              Serve an app for local development
+app:build                Build an app for a production release
+app:diff                 Diff an existing app with the creation template
+app:serve                Serve an app for local development
 
-backend:build                    Build a backend plugin
-backend:build-image [options]    Bundles the package into a docker image. All extra args are forwarded to `docker image build`.
-backend:dev [options]            Start local development server with HMR for the backend
+backend:build            Build a backend plugin
+backend:build-image      Bundles the package into a docker image
+backend:dev              Start local development server with HMR for the backend
 
-plugin:build                     Build a plugin
-plugin:diff [options]            Diff an existing plugin with the creation template
-plugin:serve [options]           Serves the dev/ folder of a plugin
+plugin:build             Build a plugin
+plugin:diff              Diff an existing plugin with the creation template
+plugin:serve             Serves the dev/ folder of a plugin
 
-build [options]                  Build a package for publishing
-build-workspace <workspace-dir>  Builds a temporary dist workspace from the provided packages
-lint [options]                   Lint a package
-test                             Run tests, forwarding args to Jest, defaulting to watch mode
-clean                            Delete cache directories
+build                    Build a package for publishing
+build-workspace          Builds a temporary dist workspace from the provided packages
+lint                     Lint a package
+test                     Run tests, forwarding args to Jest, defaulting to watch mode
+clean                    Delete cache directories
 
-create-plugin [options]          Creates a new plugin in the current repository
-remove-plugin                    Removes plugin in the current repository
+create-plugin            Creates a new plugin in the current repository
+remove-plugin            Removes plugin in the current repository
 
-config:print [options]           Print the app configuration for the current package
-config:check [options]           Validate that the given configuration loads and matches schema
+config:print             Print the app configuration for the current package
+config:check             Validate that the given configuration loads and matches schema
 
-versions:bump                    Bump Backstage packages to the latest versions
-versions:check [options]         Check Backstage package versioning
+versions:bump            Bump Backstage packages to the latest versions
+versions:check           Check Backstage package versioning
 
-prepack                          Prepares a package for packaging before publishing
-postpack                         Restores the changes made by the prepack command
+prepack                  Prepares a package for packaging before publishing
+postpack                 Restores the changes made by the prepack command
 
-help [command]                   display help for command
+help [command]           display help for command
 ```
 
 ## app:build
+
+Scope: `app`
 
 Creates a bundle of static content from the app, which can then be served via
 and static web server such as `nginx`, or via the `app-backend` plugin directly
@@ -81,7 +98,7 @@ can manually limit the parallelization of the build process by setting the
 environment variable `BACKSTAGE_CLI_BUILD_PARALLEL` to for example `2`.
 
 ```text
-Usage: backstage-cli app:build [options]
+Usage: backstage-cli app:build
 
 Options:
   --stats          Write bundle stats to output directory
@@ -90,6 +107,8 @@ Options:
 ```
 
 ## app:diff
+
+Scope: `app`
 
 Diff an existing app with the template used in `@backstage/create-app`. This
 will verify that your app package has not diverged from the template, and can be
@@ -100,7 +119,7 @@ This command is experimental and may be removed in the future. Compared to the
 checks to carry out.
 
 ```text
-Usage: backstage-cli app:diff [options]
+Usage: backstage-cli app:diff
 
 Options:
   --check     Fail if changes are required
@@ -110,16 +129,12 @@ Options:
 
 ## app:serve
 
+Scope: `app`
+
 Serve an app for local development. This starts up a local development server,
 using a bundling config that is quite similar to the `app:build` command, but
 with development features such as React Hot Module Replacement, faster
 sourcemaps, no minification, etc.
-
-The serve configuration is controlled through the static configuration, by
-default in `app-config.yaml`. The schema in the `app.baseUrl` determines whether
-HTTP or HTTPS is used, and the listening host and port port is also determined
-from the URL. It is possible to explicitly override the listening host and port
-if needed by setting `app.listen.host` and `app.listen.port`.
 
 The static configuration is injected into the frontend as well, but there it
 does not support watching, meaning that changes in for example `app-config.yaml`
@@ -132,7 +147,11 @@ process.env.NODE_ENV = 'development';
 process.env.BUILD_INFO = { /* See app:build */ };
 ```
 
-By default the
+The serve configuration is controlled through the static configuration, by
+default in `app-config.yaml`. The protocol of `app.baseUrl` determines whether
+HTTP or HTTPS is used, and the listening host and port is also determined by the
+URL. It is possible to override the listening host and port if needed by setting
+`app.listen.host` and `app.listen.port`.
 
 ```text
 Usage: backstage-cli app:serve [options]
@@ -145,10 +164,13 @@ Options:
 
 ## backend:build
 
-This builds a backend package for publish and use in production. The build
+Scope: `backend`, `backend-plugin` (To be replaced by `backend:bundle` for
+`backend`)
+
+This builds a backend package for publishing and use in production. The build
 output is written to `dist/`. Be sure to list any additional file that the
 package depends on at runtime in the `"files"` field inside `package.json`, a
-common example being the `migrations/` directory.
+common example being the `migrations` directory.
 
 ```text
 Usage: backstage-cli backend:build [options]
@@ -158,6 +180,8 @@ Options:
 ```
 
 ## backend:build-image
+
+Scope: `backend`
 
 Builds a Docker image of the backend package and forwards all unknown options to
 `docker image build`. For example:
@@ -202,6 +226,8 @@ Options:
 
 ## backend:dev
 
+Scope: `backend`, `backend-plugin`
+
 Starts a backend package in development mode, with watch mode enabled for all
 local packages.
 
@@ -216,6 +242,8 @@ Options:
 ```
 
 ## create-plugin
+
+Scope: `root`
 
 Creates a new plugin within the repository. This command is typically wrapped up
 in the root `package.json` to be executed with `yarn create-plugin`, using
@@ -235,6 +263,8 @@ Options:
 
 ## remove-plugin
 
+Scope: `root`
+
 A utility to remove a plugin from a repo, essentially undoing everything that
 was done by `create-plugin`.
 
@@ -249,6 +279,8 @@ Options:
 ```
 
 ## plugin:build
+
+Scope: `frontend-plugin`
 
 Build a frontend plugin for publishing to a package registry. There is no need
 to run this command during development or even in CI unless the package is being
@@ -269,6 +301,8 @@ Options:
 
 ## plugin:serve
 
+Scope: `frontend-plugin`
+
 Serves a frontend plugin by itself for isolated development. The serve task
 itself is essentially identical to `app:serve`, but the entrypoint is instead
 set to the `dev/` folder within the plugin.
@@ -288,6 +322,8 @@ Options:
 
 ## plugin:diff
 
+Scope: `frontend-plugin`
+
 Compares a frontend plugin to the `create-plugin` template, making sure that it
 hasn't diverged from the template and recommending updates when it has. A good
 practice is to run this command after updating the version of the CLI in a
@@ -303,6 +339,8 @@ Options:
 ```
 
 ## build
+
+Scope: `any`
 
 Build a single package for publishing, just like the `plugin:build` and
 `backend:build` commands. This command is intended for standalone packages that
@@ -324,6 +362,8 @@ Options:
 
 ## lint
 
+Scope: `any`
+
 Lint a package. In addition to the default `eslint` behavior, this command will
 include TypeScript files, treat warnings as errors, and default to linting the
 entire directory of no specific files are listed.
@@ -339,6 +379,8 @@ Options:
 
 ## test
 
+Scope: `any`
+
 Run tests, forwarding all unknown options to Jest, and defaulting to watch mode.
 
 ```text
@@ -349,6 +391,8 @@ Options:
 ```
 
 ## config:print
+
+Scope: `root`
 
 Print the static configuration, defaulting to reading `app-config.yaml` in the
 repo root, using schema collected from all local packages in the repo.
@@ -374,6 +418,8 @@ Options:
 
 ## config:check
 
+Scope: `root`
+
 Validate that static configuration loads and matches schema, defaulting to
 reading `app-config.yaml` in the repo root and using schema collected from all
 local packages in the repo.
@@ -389,6 +435,8 @@ Options:
 
 ## versions:bump
 
+Scope: `root`
+
 Bump all `@backstage` packages to the latest versions. This check for updates in
 the package registry, and will update entries both in `yarn.lock` and
 `package.json` files when necessary.
@@ -401,6 +449,8 @@ Options:
 ```
 
 ## versions:check
+
+Scope: `root`
 
 Validate `@backstage` dependencies within the repo, making sure that there are
 no duplicates of packages that might lead to breakages. For example,
@@ -420,6 +470,8 @@ Options:
 ```
 
 ## prepack
+
+Scope: `any`
 
 This command should be added as `scripts.prepack` in all packages. It enables
 packaging- and publish-time overrides for fields inside `packages.json`.
@@ -445,6 +497,8 @@ Options:
 
 ## postpack
 
+Scope: `any`
+
 This should be added as `scripts.postpack` in all packages.return. It restores
 `package.json` to what it looked like before calling the `prepack` command.
 
@@ -457,6 +511,8 @@ Options:
 
 ## clean
 
+Scope: `any`
+
 Remove cache and output directories.
 
 ```text
@@ -467,6 +523,8 @@ Options:
 ```
 
 ## build-workspace
+
+Scope: `any`
 
 Builds a mirror of the workspace using the packaged production version of each
 package. This essentially calls `yarn pack` in each included package and unpacks
