@@ -34,6 +34,11 @@
         ]
       }
     ],
+    "CLI": [
+      "cli/index",
+      "cli/commands",
+      "cli/under-the-hood"
+    ],
     "Core Features": [
       {
         "type": "subcategory",
