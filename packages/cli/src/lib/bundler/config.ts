@@ -20,13 +20,14 @@ import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
 import StartServerPlugin from 'start-server-webpack-plugin';
-import webpack, { ResolvePlugin } from 'webpack';
+import webpack from 'webpack';
 import nodeExternals from 'webpack-node-externals';
 import { optimization } from './optimization';
 import { Config } from '@backstage/config';
 import { BundlingPaths } from './paths';
 import { transforms } from './transforms';
-import { BundlingOptions, BackendBundlingOptions } from './types';
+import { LinkedPackageResolvePlugin } from './LinkedPackageResolvePlugin';
+import { BundlingOptions, BackendBundlingOptions, LernaPackage } from './types';
 import { version } from '../../lib/version';
 import { paths as cliPaths } from '../../lib/paths';
 import { runPlain } from '../run';
@@ -70,75 +71,10 @@ async function readBuildInfo() {
   };
 }
 
-type LernaPackage = {
-  name: string;
-  location: string;
-};
-
 async function loadLernaPackages(): Promise<LernaPackage[]> {
   const LernaProject = require('@lerna/project');
   const project = new LernaProject(cliPaths.targetDir);
   return project.getPackages();
-}
-
-// Enables proper resolution of packages when linking in external packages.
-// Without this the packages would depend on dependencies in the node_modules
-// of the external packages themselves, leading to module duplication
-class LinkedPackageResolvePlugin implements ResolvePlugin {
-  constructor(
-    private readonly targetModules: string,
-    private readonly packages: LernaPackage[],
-  ) {}
-
-  apply(resolver: any) {
-    resolver.hooks.resolve.tapAsync(
-      'LinkedPackageResolvePlugin',
-      (
-        request: { path?: false | string; context?: { issuer?: string } },
-        context: unknown,
-        callback: () => void,
-      ) => {
-        const pkg = this.packages.find(
-          pkg => request.path && request.path.startsWith(pkg.location),
-        );
-        if (!pkg) {
-          callback();
-          return;
-        }
-
-        // pkg here is an external package. We rewrite the context of any imports to resolve
-        // from the location of the package within the node_modules of the target root rather
-        // than the real location of the external package.
-        const modulesLocation = resolvePath(this.targetModules, pkg.name);
-        const newContext = request.context?.issuer
-          ? {
-              ...request.context,
-              issuer: request.context.issuer.replace(
-                pkg.location,
-                modulesLocation,
-              ),
-            }
-          : request.context;
-
-        // Re-run resolution but this time from the point of view of our target monorepo rather
-        // than the location of the external package. By resolving modules using this method we avoid
-        // pulling in e.g. `react` from the external repo, which would otherwise lead to conflicts.
-        resolver.doResolve(
-          resolver.hooks.resolve,
-          {
-            ...request,
-            context: newContext,
-            path:
-              request.path &&
-              request.path.replace(pkg.location, modulesLocation),
-          },
-          null,
-          context,
-          callback,
-        );
-      },
-    );
-  }
 }
 
 export async function createConfig(
