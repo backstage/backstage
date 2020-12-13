@@ -54,6 +54,7 @@ describe('CommonDatabase', () => {
         },
         spec: { i: 'j' },
       },
+      relations: [],
     };
 
     entityResponse = {
@@ -152,6 +153,7 @@ describe('CommonDatabase', () => {
             kind: 'k1',
             metadata: { name: 'n1', namespace: 'ns1' },
           },
+          relations: [],
         },
         {
           entity: {
@@ -159,6 +161,7 @@ describe('CommonDatabase', () => {
             kind: 'k1',
             metadata: { name: 'n1', namespace: 'ns1' },
           },
+          relations: [],
         },
       ];
       await expect(
@@ -174,6 +177,7 @@ describe('CommonDatabase', () => {
             kind: 'k1',
             metadata: { name: 'n1', namespace: 'ns1' },
           },
+          relations: [],
         },
         {
           entity: {
@@ -181,6 +185,7 @@ describe('CommonDatabase', () => {
             kind: 'k1',
             metadata: { name: 'n1', namespace: 'nS1' },
           },
+          relations: [],
         },
       ];
       await expect(
@@ -196,6 +201,7 @@ describe('CommonDatabase', () => {
             kind: 'k1',
             metadata: { name: 'n1', namespace: 'ns1' },
           },
+          relations: [],
         },
         {
           entity: {
@@ -203,6 +209,7 @@ describe('CommonDatabase', () => {
             kind: 'k1',
             metadata: { name: 'n1', namespace: 'ns2' },
           },
+          relations: [],
         },
       ];
       await expect(
@@ -285,7 +292,7 @@ describe('CommonDatabase', () => {
         db.addEntities(tx, [entityRequest]),
       );
       const updated = await db.transaction(tx =>
-        db.updateEntity(tx, { entity: added.entity }),
+        db.updateEntity(tx, { entity: added.entity, relations: [] }),
       );
       expect(updated.entity.apiVersion).toEqual(added.entity.apiVersion);
       expect(updated.entity.kind).toEqual(added.entity.kind);
@@ -305,7 +312,7 @@ describe('CommonDatabase', () => {
       );
       added.entity.metadata.name! = 'new!';
       const updated = await db.transaction(tx =>
-        db.updateEntity(tx, { entity: added.entity }),
+        db.updateEntity(tx, { entity: added.entity, relations: [] }),
       );
       expect(updated.entity.metadata.name).toEqual('new!');
     });
@@ -316,7 +323,11 @@ describe('CommonDatabase', () => {
       );
       await expect(
         db.transaction(tx =>
-          db.updateEntity(tx, { entity: added.entity }, 'garbage'),
+          db.updateEntity(
+            tx,
+            { entity: added.entity, relations: [] },
+            'garbage',
+          ),
         ),
       ).rejects.toThrow(ConflictError);
     });
@@ -327,7 +338,12 @@ describe('CommonDatabase', () => {
       );
       await expect(
         db.transaction(tx =>
-          db.updateEntity(tx, { entity: added.entity }, undefined, 1e20),
+          db.updateEntity(
+            tx,
+            { entity: added.entity, relations: [] },
+            undefined,
+            1e20,
+          ),
         ),
       ).rejects.toThrow(ConflictError);
     });
@@ -347,7 +363,10 @@ describe('CommonDatabase', () => {
         spec: { c: null },
       };
       await db.transaction(async tx => {
-        await db.addEntities(tx, [{ entity: e1 }, { entity: e2 }]);
+        await db.addEntities(tx, [
+          { entity: e1, relations: [] },
+          { entity: e2, relations: [] },
+        ]);
       });
       const result = await db.transaction(async tx => db.entities(tx));
       expect(result.length).toEqual(2);
@@ -385,7 +404,7 @@ describe('CommonDatabase', () => {
       await db.transaction(async tx => {
         await db.addEntities(
           tx,
-          entities.map(entity => ({ entity })),
+          entities.map(entity => ({ entity, relations: [] })),
         );
       });
 
@@ -426,7 +445,7 @@ describe('CommonDatabase', () => {
       await db.transaction(async tx => {
         await db.addEntities(
           tx,
-          entities.map(entity => ({ entity })),
+          entities.map(entity => ({ entity, relations: [] })),
         );
       });
 
@@ -566,8 +585,8 @@ describe('CommonDatabase', () => {
 
       const { id2: secondEntityId } = await db.transaction(async tx => {
         const [{ entity: e1 }, { entity: e2 }] = await db.addEntities(tx, [
-          { entity: entity1 },
-          { entity: entity2 },
+          { entity: entity1, relations: [] },
+          { entity: entity2, relations: [] },
         ]);
         const id1 = e1?.metadata?.uid!;
         const id2 = e2?.metadata?.uid!;
@@ -665,7 +684,7 @@ describe('CommonDatabase', () => {
       await db.transaction(async tx => {
         await db.addEntities(
           tx,
-          entities.map(entity => ({ entity })),
+          entities.map(entity => ({ entity, relations: [] })),
         );
       });
 
