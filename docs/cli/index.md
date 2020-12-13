@@ -66,6 +66,22 @@ the CLI without having to take a wide API surface into account. Allowing us to
 more quickly iterate and improve the tooling, as well more easily keeping
 dependencies up to date.
 
+## Opinions
+
+In no particular order, this is a list of opinions and goals that guide the
+design and development of the Backstage CLI:
+
+- All you need for development is `yarn start`, there should be no need to
+  manually build packages or run other tasks on the side.
+- Development experience comes first. The toolchain is optimized for keeping
+  development smooth, rather than making it easy to for example build and
+  publish packages.
+- TypeChecking and linting is left for editors and CI. Most code editors provide
+  tooling for these checks, and running them again during compilation would slow
+  down iteration speed and consume more resources.
+- Backstage is run in modern browsers. We keep transpilation lightweight and
+  rely on modern technology such as HTTP/2 to optimize frontend speed.
+
 ## Glossary
 
 - **Package** - A package in the Node.js ecosystem, often published to a package
