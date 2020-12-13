@@ -68,6 +68,7 @@ export const UserProfileCard = ({
   variant: string;
 }) => {
   const {
+    metadata: { name: metaName },
     spec: { profile },
   } = user;
   const groupNames =
@@ -75,13 +76,14 @@ export const UserProfileCard = ({
       ?.filter(r => r.type === RELATION_MEMBER_OF)
       ?.map(group => group.target.name) || [];
 
-  if (!user) return <Alert severity="error">User not found</Alert>;
+  const displayName = profile?.displayName ?? metaName;
+
+  if (!user) {
+    return <Alert severity="error">User not found</Alert>;
+  }
 
   return (
-    <InfoCard
-      title={<CardTitle title={profile?.displayName} />}
-      variant={variant}
-    >
+    <InfoCard title={<CardTitle title={displayName} />} variant={variant}>
       <Grid container spacing={3}>
         <Grid item xs={12} sm={2} xl={1}>
           <Box
@@ -91,10 +93,7 @@ export const UserProfileCard = ({
             height="100%"
             width="100%"
           >
-            <Avatar
-              displayName={profile?.displayName}
-              picture={profile?.picture}
-            />
+            <Avatar displayName={displayName} picture={profile?.picture} />
           </Box>
         </Grid>
         <Grid item md={10} xl={11}>

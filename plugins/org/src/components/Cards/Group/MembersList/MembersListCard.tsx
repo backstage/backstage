@@ -58,6 +58,8 @@ const MemberComponent = ({
   const classes = useStyles();
   const { name: metaName } = member.metadata;
   const { profile } = member.spec;
+  const displayName = profile?.displayName ?? metaName;
+
   return (
     <Grid item xs={12} sm={6} md={3} xl={2}>
       <Box className={classes.card}>
@@ -69,7 +71,7 @@ const MemberComponent = ({
           justifyContent="center"
         >
           <Avatar
-            displayName={profile?.displayName}
+            displayName={displayName}
             picture={profile?.picture}
             customStyles={{
               position: 'absolute',
@@ -85,7 +87,7 @@ const MemberComponent = ({
                   entityRouteParams(groupEntity),
                 )}
               >
-                {profile?.displayName}
+                {displayName}
               </Link>
             </Typography>
             <Typography variant="caption">{profile?.email}</Typography>
