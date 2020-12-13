@@ -42,7 +42,43 @@ help [command]                   display help for command
 
 ## app:build
 
-Build an app for a production release
+Creates a bundle of static content from the app, which can then be served via
+and static web server such as `nginx`, or via the `app-backend` plugin directly
+from a Backstage backend instance.
+
+The command also reads and injects static configuration into the bundle. It is
+important to note that when deploying with your own static content hosting
+solution, this will be the final configuration used in the frontend, unless you
+for example hook in configuration loading from the backend. When using the
+`nginx` image in this repo along with its included run script, `APP_CONFIG_`
+environment variables will be injected into the frontend, and when serving using
+the `app-backend` plugin, the configuration is completely injected from the
+backend and the configuration at the time of calling this command will not be
+used.
+
+Note that even when injecting configuration at runtime, it is not possible to
+change the base path of the app. For example, if you at build time have
+`app.baseUrl` set to `http://dev-app.com/my-app`, you're can change that to
+`https://prod-app.com/my-app`, but not to `https://prod-app.com`, as that would
+change the path.
+
+During the build, the following variables are set:
+
+```java
+process.env.NODE_ENV = 'production';
+process.env.BUILD_INFO = {
+  cliVersion: '0.4.0', // The version of the CLI package
+  gitVersion: 'v0.4.0-86-ge54815618', // output of `git describe --always`
+  packageVersion: '1.0.5', // The version of the app package itself
+  timestamp: 1678900000000, // Date.now() when the build started
+  commit: 'e548156182a973ed4b459e18533afc22c85ffff8', // output of `git rev-parse HEAD`
+};
+```
+
+Some CI environments do not properly report correct resource limits, potentially
+leading to errors such as `ENOMEM` during compilation. If you run into this you
+can manually limit the parallelization of the build process by setting the
+environment variable `BACKSTAGE_CLI_BUILD_PARALLEL` to for example `2`.
 
 ```text
 Usage: backstage-cli app:build [options]
@@ -55,7 +91,13 @@ Options:
 
 ## app:diff
 
-Diff an existing app with the creation template
+Diff an existing app with the template used in `@backstage/create-app`. This
+will verify that your app package has not diverged from the template, and can be
+useful to run after updating the version of `@backstage/cli` in your app.
+
+This command is experimental and may be removed in the future. Compared to the
+`plugin:diff` command this one is less valuable, as we have found fewer useful
+checks to carry out.
 
 ```text
 Usage: backstage-cli app:diff [options]
@@ -68,7 +110,29 @@ Options:
 
 ## app:serve
 
-Serve an app for local development
+Serve an app for local development. This starts up a local development server,
+using a bundling config that is quite similar to the `app:build` command, but
+with development features such as React Hot Module Replacement, faster
+sourcemaps, no minification, etc.
+
+The serve configuration is controlled through the static configuration, by
+default in `app-config.yaml`. The schema in the `app.baseUrl` determines whether
+HTTP or HTTPS is used, and the listening host and port port is also determined
+from the URL. It is possible to explicitly override the listening host and port
+if needed by setting `app.listen.host` and `app.listen.port`.
+
+The static configuration is injected into the frontend as well, but there it
+does not support watching, meaning that changes in for example `app-config.yaml`
+are not reflected until the serve process is restarted.
+
+During the build, the following variables are set:
+
+```java
+process.env.NODE_ENV = 'development';
+process.env.BUILD_INFO = { /* See app:build */ };
+```
+
+By default the
 
 ```text
 Usage: backstage-cli app:serve [options]
@@ -81,7 +145,10 @@ Options:
 
 ## backend:build
 
-Build a backend plugin
+This builds a backend package for publish and use in production. The build
+output is written to `dist/`. Be sure to list any additional file that the
+package depends on at runtime in the `"files"` field inside `package.json`, a
+common example being the `migrations/` directory.
 
 ```text
 Usage: backstage-cli backend:build [options]
