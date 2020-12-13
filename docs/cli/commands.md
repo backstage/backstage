@@ -382,6 +382,30 @@ Options:
 Scope: `any`
 
 Run tests, forwarding all unknown options to Jest, and defaulting to watch mode.
+When executing the tests, `process.env.NODE_ENV` will be set to `"test"`.
+
+This command uses a default Jest configuration that is included in the CLI,
+which is set up with similar goals for speed, scale, and working within a
+monorepo. The configuration sets the `src` as the root directory, enforces the
+`.test.` infix for tests, and uses `src/setupTests.ts` as the test setup
+location.
+
+If needed, the configuration can be extended using a `"jest"` field in
+`package.json`, both within the target package and the monorepo root, with
+configuration in the target package taking precedence. Refer to the
+[Jest configuration](https://jestjs.io/docs/en/configuration) for a full list of
+configuration options.
+
+In addition to the Jest configuration there's an optional `transformModules`
+option, which is an array of module names to transform. Normally modules inside
+`node_modules` are not transformed, but there are cases were published packages
+are not transpiled far enough to be supported by jest, in which case you need to
+enable transforms of them.
+
+Another way to override the Jest configuration is to place a `jest.config.js` or
+`jest.config.ts` file in the package. As opposed to the `package.json` way of
+overriding config, this completely removes the base config, and so you need to
+set it up from scratch.
 
 ```text
 Usage: backstage-cli test [options]
