@@ -14,12 +14,13 @@ indicates where the command should be used by selecting from the following list:
 - `backend` - A backend package, such as `packages/backend`.
 - `frontend-plugin` - A frontend plugin package.
 - `backend-plugin` - A backend plugin package.
-- `any` - Any kind of package.
-- `root` - The monorepo root, not specific to any one package.
+- `root` - The monorepo root.
+- `any` - Any kind of package, but not the repo root.
 
 ## help
 
-The following is a cleaned up output of of `yarn backstage-cli --help`:
+This command displays you a help summary or detailed help screens for each
+command. Below is a cleaned up output of `yarn backstage-cli --help`.
 
 ```text
 app:build                Build an app for a production release
@@ -59,13 +60,14 @@ help [command]           display help for command
 
 Scope: `app`
 
-Creates a bundle of static content from the app, which can then be served via
-and static web server such as `nginx`, or via the `app-backend` plugin directly
-from a Backstage backend instance.
+Builds a bundle of static content from the app, which can then be served via any
+static web server such as `nginx`, or via the
+[`app-backend`](https://www.npmjs.com/package/@backstage/plugin-app-backend)
+plugin directly from a Backstage backend instance.
 
 The command also reads and injects static configuration into the bundle. It is
-important to note that when deploying with your own static content hosting
-solution, this will be the final configuration used in the frontend, unless you
+important to note that when deploying using your own static content hosting
+solution, this will be the final configuration used in the frontend unless you
 for example hook in configuration loading from the backend. When using the
 `nginx` image in this repo along with its included run script, `APP_CONFIG_`
 environment variables will be injected into the frontend, and when serving using
@@ -75,7 +77,7 @@ used.
 
 Note that even when injecting configuration at runtime, it is not possible to
 change the base path of the app. For example, if you at build time have
-`app.baseUrl` set to `http://dev-app.com/my-app`, you're can change that to
+`app.baseUrl` set to `http://dev-app.com/my-app`, you can change that to
 `https://prod-app.com/my-app`, but not to `https://prod-app.com`, as that would
 change the path.
 
@@ -93,16 +95,18 @@ process.env.BUILD_INFO = {
 ```
 
 Some CI environments do not properly report correct resource limits, potentially
-leading to errors such as `ENOMEM` during compilation. If you run into this you
-can manually limit the parallelization of the build process by setting the
-environment variable `BACKSTAGE_CLI_BUILD_PARALLEL` to for example `2`.
+leading to errors such as `ENOMEM` during compilation. If you run into this
+issue you can limit the parallelization of the build process by setting the
+environment variable `BACKSTAGE_CLI_BUILD_PARALLEL`. You can set it to `false`
+or `1` to completely disable parallelization, but usually a low value such as
+`2` is enough.
 
 ```text
 Usage: backstage-cli app:build
 
 Options:
   --stats          Write bundle stats to output directory
-  --config <path>  Config files to load instead of app-config.yaml (default: [])
+  --config &lt;path&gt;  Config files to load instead of app-config.yaml (default: [])
   -h, --help       display help for command
 ```
 
@@ -114,9 +118,7 @@ Diff an existing app with the template used in `@backstage/create-app`. This
 will verify that your app package has not diverged from the template, and can be
 useful to run after updating the version of `@backstage/cli` in your app.
 
-This command is experimental and may be removed in the future. Compared to the
-`plugin:diff` command this one is less valuable, as we have found fewer useful
-checks to carry out.
+This command is experimental and may be removed in the future.
 
 ```text
 Usage: backstage-cli app:diff
@@ -132,13 +134,13 @@ Options:
 Scope: `app`
 
 Serve an app for local development. This starts up a local development server,
-using a bundling config that is quite similar to the `app:build` command, but
-with development features such as React Hot Module Replacement, faster
-sourcemaps, no minification, etc.
+using a bundling configuration that is quite similar to that of the `app:build`
+command, but with development features such as React Hot Module Replacement,
+faster sourcemaps, no minification, etc.
 
-The static configuration is injected into the frontend as well, but there it
-does not support watching, meaning that changes in for example `app-config.yaml`
-are not reflected until the serve process is restarted.
+The static configuration is injected into the frontend, but it does not support
+watching, meaning that changes in for example `app-config.yaml` are not
+reflected until the serve process is restarted.
 
 During the build, the following variables are set:
 
@@ -147,18 +149,17 @@ process.env.NODE_ENV = 'development';
 process.env.BUILD_INFO = { /* See app:build */ };
 ```
 
-The serve configuration is controlled through the static configuration, by
-default in `app-config.yaml`. The protocol of `app.baseUrl` determines whether
-HTTP or HTTPS is used, and the listening host and port is also determined by the
-URL. It is possible to override the listening host and port if needed by setting
-`app.listen.host` and `app.listen.port`.
+The server listening configuration is controlled through the static
+configuration. The `app.baseUrl` determines the listening host and port, as well
+as whether HTTPS is used or not. It is also possible to override the listening
+host and port if needed by setting `app.listen.host` and `app.listen.port`.
 
 ```text
 Usage: backstage-cli app:serve [options]
 
 Options:
   --check          Enable type checking and linting
-  --config <path>  Config files to load instead of app-config.yaml (default: [])
+  --config &lt;path&gt;  Config files to load instead of app-config.yaml (default: [])
   -h, --help       display help for command
 ```
 
@@ -183,25 +184,24 @@ Options:
 
 Scope: `backend`
 
-Builds a Docker image of the backend package and forwards all unknown options to
+Builds a Docker image of the backend package, forwarding all unknown options to
 `docker image build`. For example:
 
 ```bash
 yarn backstage-cli backend:build-image --build --tag my-backend-image
 ```
 
-The image is built with the backend package along with all of its local package
-dependencies. This uses a `Dockerfile` that is expected to exist at the root of
-the backend package. The `Dockerfile` will end up being executed from the root
-of the monorepo, rather than the backend package itself.
+The image is built using the backend package along with all of its local package
+dependencies. It expects to find a `Dockerfile` at the root of the backend
+package, which will be used during the build.
 
 The Dockerfile is **NOT** executed within the package or repo itself. Because
 the packages in the repo itself are configured for development instead of
 production use, the final Docker build happens in a separate temporary
-directory, to which the backend package and dependencies have been copied over.
-Only files listed within the `"files"` field within each package's
-`package.json` are copied over, along with the root `package.json`, `yarn.lock`,
-and any `app-config.*.yaml` files.
+directory, to which the backend package and dependencies have been copied. Only
+files listed within the `"files"` field within each package's `package.json` are
+copied over, along with the root `package.json`, `yarn.lock`, and any
+`app-config.*.yaml` files.
 
 During the build a `skeleton.tar` file is created and put at the repo root. This
 file contains the `package.json` of each included package, which together with
@@ -212,9 +212,9 @@ over, providing a significant speedup if Docker build layer caching available.
 This command is experimental and we hope to be able to replace it with one that
 is less integrated directly with Docker, and also supports multi-stage Docker
 builds. It is possible to replicate most of what this command does by manually
-building each package, then use the `build-workspace` to create the temporary
-workspace, and finally copy over any additional files to the workspace and
-execute the Docker build within it.
+building each package, and then use the `build-workspace` to create the
+temporary workspace, and finally copy over any additional files to the workspace
+and execute the Docker build within it.
 
 ```text
 Usage: backstage-cli backend:build-image [options]
@@ -237,7 +237,7 @@ Usage: backstage-cli backend:dev [options]
 Options:
   --check          Enable type checking and linting
   --inspect        Enable debugger
-  --config <path>  Config files to load instead of app-config.yaml (default: [])
+  --config &lt;path&gt;  Config files to load instead of app-config.yaml (default: [])
   -h, --help       display help for command
 ```
 
@@ -255,8 +255,8 @@ Usage: backstage-cli create-plugin [options]
 
 Options:
   --backend             Create plugin with the backend dependencies as default
-  --scope <scope>       npm scope
-  --npm-registry <URL>  npm registry URL
+  --scope &lt;scope&gt;       npm scope
+  --npm-registry &lt;URL&gt;  npm registry URL
   --no-private          Public npm package
   -h, --help            display help for command
 ```
@@ -289,7 +289,7 @@ when bundling local package dependencies.
 
 The output is written to a `dist/` folder. It also outputs type declarations for
 the plugin, and therefore requires `yarn tsc` to have been run first. The input
-type declarations are expected to be found within `dist-types` at the root of
+type declarations are expected to be found within `dist-types/` at the root of
 the monorepo.
 
 ```text
@@ -316,7 +316,7 @@ Usage: backstage-cli plugin:serve [options]
 
 Options:
   --check          Enable type checking and linting
-  --config <path>  Config files to load instead of app-config.yaml (default: [])
+  --config &lt;path&gt;  Config files to load instead of app-config.yaml (default: [])
   -h, --help       display help for command
 ```
 
@@ -356,7 +356,7 @@ first.
 Usage: backstage-cli build [options]
 
 Options:
-  --outputs <formats>  List of formats to output [types,cjs,esm]
+  --outputs &lt;formats&gt;  List of formats to output [types,cjs,esm]
   -h, --help           display help for command
 ```
 
@@ -372,7 +372,7 @@ entire directory of no specific files are listed.
 Usage: backstage-cli lint [options]
 
 Options:
-  --format <format>  Lint report output format (default: "eslint-formatter-friendly")
+  --format &lt;format&gt;  Lint report output format (default: "eslint-formatter-friendly")
   --fix              Attempt to automatically fix violations
   -h, --help         display help for command
 ```
@@ -397,15 +397,15 @@ configuration in the target package taking precedence. Refer to the
 configuration options.
 
 In addition to the Jest configuration there's an optional `transformModules`
-option, which is an array of module names to transform. Normally modules inside
-`node_modules` are not transformed, but there are cases were published packages
-are not transpiled far enough to be supported by jest, in which case you need to
-enable transforms of them.
+option, which is an array of module names to include in transformations.
+Normally modules inside `node_modules` are not transformed, but there are cases
+were published packages are not transpiled far enough to be usable by Jest, in
+which case you need to enable transform of them.
 
 Another way to override the Jest configuration is to place a `jest.config.js` or
-`jest.config.ts` file in the package. As opposed to the `package.json` way of
-overriding config, this completely removes the base config, and so you need to
-set it up from scratch.
+`jest.config.ts` file in the package root. As opposed to the `package.json` way
+of overriding config, this completely removes the base config, and so you need
+to set it up from scratch.
 
 ```text
 Usage: backstage-cli test [options]
@@ -432,11 +432,11 @@ yarn backstage-cli config:print --frontend --package my-app
 Usage: backstage-cli config:print [options]
 
 Options:
-  --package <name>   Only load config schema that applies to the given package
+  --package &lt;name&gt;   Only load config schema that applies to the given package
   --frontend         Print only the frontend configuration
   --with-secrets     Include secrets in the printed configuration
-  --format <format>  Format to print the configuration in, either json or yaml [yaml]
-  --config <path>    Config files to load instead of app-config.yaml (default: [])
+  --format &lt;format&gt;  Format to print the configuration in, either json or yaml [yaml]
+  --config &lt;path&gt;    Config files to load instead of app-config.yaml (default: [])
   -h, --help         display help for command
 ```
 
@@ -452,8 +452,8 @@ local packages in the repo.
 Usage: backstage-cli config:check [options]
 
 Options:
-  --package <name>  Only load config schema that applies to the given package
-  --config <path>   Config files to load instead of app-config.yaml (default: [])
+  --package &lt;name&gt;  Only load config schema that applies to the given package
+  --config &lt;path&gt;   Config files to load instead of app-config.yaml (default: [])
   -h, --help        display help for command
 ```
 
@@ -523,7 +523,7 @@ Options:
 
 Scope: `any`
 
-This should be added as `scripts.postpack` in all packages.return. It restores
+This should be added as `scripts.postpack` in all packages. It restores
 `package.json` to what it looked like before calling the `prepack` command.
 
 ```text
@@ -548,14 +548,14 @@ Options:
 
 ## build-workspace
 
-Scope: `any`
+Scope: `any`, `root`
 
 Builds a mirror of the workspace using the packaged production version of each
 package. This essentially calls `yarn pack` in each included package and unpacks
 the resulting archive in the target `workspace-dir`.
 
 ```text
-Usage: backstage-cli build-workspace [options] <workspace-dir>
+Usage: backstage-cli build-workspace [options] &lt;workspace-dir&gt;
 
 Options:
 ```
