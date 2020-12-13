@@ -139,14 +139,17 @@ Oldsberg
 onboarding
 Onboarding
 pagerduty
+parallelization
 Patrik
 Phoen
 plantuml
 Pomaceous
 postgres
+postpack
 pre
 prebaked
 preconfigured
+prepack
 Preprarer
 Prerequisities
 productional
@@ -184,6 +187,7 @@ Serverless
 Sinon
 smartsymobls
 Snyk
+sourcemaps
 sparklines
 Spotifiers
 spotify
@@ -217,6 +221,8 @@ toolsets
 tooltip
 tooltips
 touchpoints
+transpiled
+transpilation
 ui
 untracked
 upvote

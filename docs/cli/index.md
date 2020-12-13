@@ -14,9 +14,9 @@ executed either directly through `yarn backstage-cli <command>` or within
 [`@backstage/create-app`](https://www.npmjs.com/package/@backstage/create-app)
 it contains package scripts for executing the most common commands.
 
-Under the hood the CLI uses [webpack](https://webpack.js.org/) for bundling,
-[rollup](https://rollupjs.org/) for building packages,
-[jest](https://jestjs.io/) for testing, and [eslint](https://eslint.org/) for
+Under the hood the CLI uses [Webpack](https://webpack.js.org/) for bundling,
+[Rollup](https://rollupjs.org/) for building packages,
+[Jest](https://jestjs.io/) for testing, and [eslint](https://eslint.org/) for
 linting. It also includes custom tooling for working within Backstage apps, for
 example for keeping the app up to date and verifying static configuration.
 
