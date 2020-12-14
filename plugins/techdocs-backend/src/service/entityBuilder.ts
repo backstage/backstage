@@ -16,7 +16,7 @@
 
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
-import { DocsBuilder } from './helpers';
+import { DocsBuilder } from './../DocsBuilder';
 import { Logger } from 'winston';
 import fetch from 'cross-fetch';
 

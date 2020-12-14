@@ -208,7 +208,7 @@ export type Database = {
   addLocationUpdateLogEvent(
     locationId: string,
     status: DatabaseLocationUpdateLogStatus,
-    entityName?: string,
+    entityName?: string | string[],
     message?: string,
   ): Promise<void>;
 };

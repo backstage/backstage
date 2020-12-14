@@ -1,5 +1,15 @@
 # @backstage/integration
 
+## 0.1.3
+
+### Patch Changes
+
+- 38e24db00: Move the core url and auth logic to integration for the four major providers
+- b8ecf6f48: Add the basics of cross-integration concerns
+- Updated dependencies [e3bd9fc2f]
+- Updated dependencies [e3bd9fc2f]
+  - @backstage/config@0.1.2
+
 ## 0.1.2
 
 ### Patch Changes

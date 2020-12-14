@@ -23,6 +23,7 @@ changesets
 Changesets
 chanwit
 Chanwit
+ci
 cisphobia
 cissexist
 classname
@@ -42,6 +43,7 @@ const
 cookiecutter
 css
 dariddler
+dataflow
 deadnaming
 destructured
 dev
@@ -186,6 +188,7 @@ sparklines
 Spotifiers
 spotify
 Spotify
+sqlite
 squidfunk
 src
 stefanalund

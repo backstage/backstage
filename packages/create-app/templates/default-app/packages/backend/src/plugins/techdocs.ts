@@ -1,11 +1,11 @@
 import {
   createRouter,
   DirectoryPreparer,
-  CommonGitPreparer,
   Preparers,
   Generators,
-  LocalPublish,
   TechdocsGenerator,
+  CommonGitPreparer,
+  Publisher,
 } from '@backstage/plugin-techdocs-backend';
 import { PluginEnvironment } from '../types';
 import Docker from 'dockerode';
@@ -28,7 +28,7 @@ export default async function createPlugin({
   preparers.register('github', commonGitPreparer);
   preparers.register('gitlab', commonGitPreparer);
 
-  const publisher = new LocalPublish(logger, discovery);
+  const publisher = Publisher.fromConfig(config, logger, discovery);
 
   const dockerClient = new Docker();
 

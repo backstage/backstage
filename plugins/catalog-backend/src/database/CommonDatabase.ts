@@ -432,7 +432,7 @@ export class CommonDatabase implements Database {
   async addLocationUpdateLogEvent(
     locationId: string,
     status: DatabaseLocationUpdateLogStatus,
-    entityName?: string,
+    entityName?: string | string[],
     message?: string,
   ): Promise<void> {
     // Remove log entries older than a day
@@ -442,14 +442,20 @@ export class CommonDatabase implements Database {
       .where('created_at', '<', cutoff.toISOString())
       .del();
 
-    await this.database<DatabaseLocationUpdateLogEvent>(
-      'location_update_log',
-    ).insert({
-      status,
-      location_id: locationId,
-      entity_name: entityName,
-      message,
-    });
+    const items: Partial<DatabaseLocationUpdateLogEvent>[] = [entityName]
+      .flat()
+      .map(n => ({
+        status,
+        location_id: locationId,
+        entity_name: n,
+        message,
+      }));
+
+    for (const chunk of lodash.chunk(items, BATCH_SIZE)) {
+      await this.database<DatabaseLocationUpdateLogEvent>(
+        'location_update_log',
+      ).insert(chunk);
+    }
   }
 
   private async updateEntitiesSearch(

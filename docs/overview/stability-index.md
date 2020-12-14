@@ -39,28 +39,28 @@ TL;DR:
 
 ## Packages
 
-### [`example-app`](https://github.com/backstage/backstage/tree/master/packages/app/)
+### `example-app` [GitHub](https://github.com/backstage/backstage/tree/master/packages/app/)
 
 This is the `packages/app` package, and it serves as an example as well as
 utility for local development in the main Backstage repo.
 
 Stability: `N/A`
 
-### [`example-backend`](https://github.com/backstage/backstage/tree/master/packages/backend/)
+### `example-backend` [GitHub](https://github.com/backstage/backstage/tree/master/packages/backend/)
 
 This is the `packages/backend` package, and it serves as an example as well as
 utility for local development in the main Backstage repo.
 
 Stability: `N/A`
 
-### [`backend-common`](https://github.com/backstage/backstage/tree/master/packages/backend-common/)
+### `backend-common` [GitHub](https://github.com/backstage/backstage/tree/master/packages/backend-common/)
 
 A collection of common helpers to be used by both backend plugins, and for
 constructing backend packages.
 
 Stability: `1`
 
-### [`catalog-client`](https://github.com/backstage/backstage/tree/master/packages/catalog-client/)
+### `catalog-client` [GitHub](https://github.com/backstage/backstage/tree/master/packages/catalog-client/)
 
 An HTTP client for interacting with the catalog backend. Usable both in frontend
 and Backend.
@@ -68,7 +68,7 @@ and Backend.
 Stability: `0`. This is a very new addition and we have some immediate changes
 planned.
 
-### [`catalog-model`](https://github.com/backstage/backstage/tree/master/packages/catalog-model/)
+### `catalog-model` [GitHub](https://github.com/backstage/backstage/tree/master/packages/catalog-model/)
 
 Contains the core catalog model, and utilities for working with entities. Usable
 both in frontend and Backend.
@@ -77,7 +77,7 @@ Stability: `2`. The catalog model is evolving, but because of the broad usage we
 
 want to ensure some stability.
 
-### [`cli`](https://github.com/backstage/backstage/tree/master/packages/cli/)
+### `cli` [GitHub](https://github.com/backstage/backstage/tree/master/packages/cli/)
 
 The main toolchain used for Backstage development. The various CLI commands and
 options passed to those commands, as well as the environment variables read by
@@ -87,27 +87,27 @@ unless it is likely to affect external tooling.
 
 Stability: `2`
 
-### [`cli-common`](https://github.com/backstage/backstage/tree/master/packages/cli-common/)
+### `cli-common` [GitHub](https://github.com/backstage/backstage/tree/master/packages/cli-common/)
 
 Lightweight utilities used by the various Backstage CLIs, not intended for
 external use.
 
 Stability: `N/A`
 
-### [`config`](https://github.com/backstage/backstage/tree/master/packages/config/)
+### `config` [GitHub](https://github.com/backstage/backstage/tree/master/packages/config/)
 
 Provides the logic and interfaces for reading static configuration.
 
 Stability: `2`
 
-### [`config-loader`](https://github.com/backstage/backstage/tree/master/packages/config-loader/)
+### `config-loader` [GitHub](https://github.com/backstage/backstage/tree/master/packages/config-loader/)
 
 Used to load in static configuration, mainly for use by the CLI and
 @backstage/backend-common.
 
 Stability: `1`. Mainly intended for internal use.
 
-### [`core`](https://github.com/backstage/backstage/tree/master/packages/core/)
+### `core` [GitHub](https://github.com/backstage/backstage/tree/master/packages/core/)
 
 #### Section: React Components
 
@@ -147,51 +147,62 @@ ErrorApi, IdentityApi, the auth APIs, etc.
 Stability: `1`. Most changes to the core utility APIs will not lead to
 widespread breaking changes since most apps rely on the default implementations.
 
-### [`core-api`](https://github.com/backstage/backstage/tree/master/packages/core-api/)
+### `core-api` [GitHub](https://github.com/backstage/backstage/tree/master/packages/core-api/)
 
 The non-visual parts of @backstage/core. Everything in this packages is
 re-exported from @backstage/core, and this package should not be used directly.
 
 Stability: See @backstage/core
 
-### [`create-app`](https://github.com/backstage/backstage/tree/master/packages/create-app/)
+### `create-app` [GitHub](https://github.com/backstage/backstage/tree/master/packages/create-app/)
 
 The CLI used to scaffold new Backstage projects.
 
 Stability: `2`
 
-### [`dev-utils`](https://github.com/backstage/backstage/tree/master/packages/dev-utils/)
+### `dev-utils` [GitHub](https://github.com/backstage/backstage/tree/master/packages/dev-utils/)
 
 Provides utilities for developing plugins in isolation.
 
 Stability: `0`. This package is largely broken and needs updates.
 
-### [`docgen`](https://github.com/backstage/backstage/tree/master/packages/docgen/)
+### `docgen` [GitHub](https://github.com/backstage/backstage/tree/master/packages/docgen/)
 
 Internal CLI utility for generating API Documentation.
 
 Stability: `N/A`
 
-### [`e2e-test`](https://github.com/backstage/backstage/tree/master/packages/e2e-test/)
+### `e2e-test` [GitHub](https://github.com/backstage/backstage/tree/master/packages/e2e-test/)
 
 Internal CLI utility for running e2e tests.
 
 Stability: `N/A`
 
-### [`storybook`](https://github.com/backstage/backstage/tree/master/packages/storybook/)
+### `integration` [GitHub](https://github.com/backstage/backstage/tree/master/packages/integration/)
+
+Provides shared utilities for managing integrations towards different types of
+third party systems. This package is currently internal and its functionality
+will likely be exposed via separate APIs in the future.
+
+Some of the functionality in this package is not available elsewhere yes, so if
+it's necessary it can be used, but there will be breaking changes.
+
+Stability: `0`
+
+### `storybook` [GitHub](https://github.com/backstage/backstage/tree/master/packages/storybook/)
 
 Internal storybook build for publishing stories to
 https://backstage.io/storybook
 
 Stability: `N/A`
 
-### [`test-utils`](https://github.com/backstage/backstage/tree/master/packages/test-utils/)
+### `test-utils` [GitHub](https://github.com/backstage/backstage/tree/master/packages/test-utils/)
 
 Utilities for writing tests for Backstage plugins and apps.
 
 Stability: `2`
 
-### [`test-utils-core`](https://github.com/backstage/backstage/tree/master/packages/test-utils-core/)
+### `test-utils-core` [GitHub](https://github.com/backstage/backstage/tree/master/packages/test-utils-core/)
 
 Internal testing utilities that are separated out for usage in
 @backstage/core-api. All exports are re-exported by @backstage/test-utils. This
@@ -199,7 +210,7 @@ package should not be depended on directly.
 
 Stability: See @backstage/test-utils
 
-### [`theme`](https://github.com/backstage/backstage/tree/master/packages/theme/)
+### `theme` [GitHub](https://github.com/backstage/backstage/tree/master/packages/theme/)
 
 The core Backstage MUI theme along with customization utilities.
 
@@ -229,21 +240,21 @@ Any plugin that is not listed below is untracked and can generally be considered
 unstable with a score of `0`. Open a Pull Request if you want your plugin to be
 added!
 
-### [`api-docs`](https://github.com/backstage/backstage/tree/master/plugins/api-docs/)
+### `api-docs` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/api-docs/)
 
 Components to discover and display API entities as an extension to the catalog
 plugin.
 
 Stability: `0`
 
-### [`app-backend`](https://github.com/backstage/backstage/tree/master/plugins/app-backend/)
+### `app-backend` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/app-backend/)
 
 A backend plugin that can be used to serve the frontend app and inject
 configuration.
 
 Stability: `2`
 
-### [`auth-backend`](https://github.com/backstage/backstage/tree/master/plugins/auth-backend/)
+### `auth-backend` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/auth-backend/)
 
 A backend plugin that implements the backend portion of the various
 authentication flows used in Backstage.
@@ -256,7 +267,7 @@ Stability: `2`
 
 Stability: `1`
 
-### [`catalog`](https://github.com/backstage/backstage/tree/master/plugins/catalog/)
+### `catalog` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/catalog/)
 
 The frontend plugin for the catalog, with the table and building blocks for the
 entity pages.
@@ -264,7 +275,7 @@ entity pages.
 Stability: `1`. We're planning some work to overhaul how entity pages are
 constructed.
 
-### [`catalog-backend`](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend/)
+### `catalog-backend` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend/)
 
 The backend API for the catalog, also exposes the processing subsystem for
 customization of the catalog. Powers the @backstage/plugin-catalog frontend
@@ -278,53 +289,53 @@ Stability: `1`. There are plans to remove and rework some endpoints.
 
 Stability: `1`. There are plans to rework parts of the Processor interface.
 
-### [`catalog-graphql`](https://github.com/backstage/backstage/tree/master/plugins/catalog-graphql/)
+### `catalog-graphql` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/catalog-graphql/)
 
 Provides the catalog schema and resolvers for the graphql backend.
 
 Stability: `0`. Under heavy development and subject to change.
 
-### [`explore`](https://github.com/backstage/backstage/tree/master/plugins/explore/)
+### `explore` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/explore/)
 
 A frontend plugin that introduces the concept of exploring internal and external
 tooling in an organization.
 
 Stability: `0`. Only an example at the moment and not customizable.
 
-### [`graphiql`](https://github.com/backstage/backstage/tree/master/plugins/graphiql/)
+### `graphiql` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/graphiql/)
 
 Integrates GraphiQL as a tool to browse GraphQL API endpoints inside Backstage.
 
 Stability: `1`
 
-### [`graphql`](https://github.com/backstage/backstage/tree/master/plugins/graphql/)
+### `graphql` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/graphql/)
 
 A backend plugin that provides
 
 Stability: `0`. Under heavy development and subject to change.
 
-### [`kubernetes`](https://github.com/backstage/backstage/tree/master/plugins/kubernetes/)
+### `kubernetes` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/kubernetes/)
 
 The frontend component of the Kubernetes plugin, used to browse and visualize
 Kubernetes resources.
 
 Stability: `1`.
 
-### [`kubernetes-backend`](https://github.com/backstage/backstage/tree/master/plugins/kubernetes-backend/)
+### `kubernetes-backend` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/kubernetes-backend/)
 
 The backend component of the Kubernetes plugin, used to fetch Kubernetes
 resources from clusters and associate them with entities in the Catalog.
 
 Stability: `1`.
 
-### [`proxy-backend`](https://github.com/backstage/backstage/tree/master/plugins/proxy-backend/)
+### `proxy-backend` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/proxy-backend/)
 
 A backend plugin used to set up proxying to other endpoints based on static
 configuration.
 
 Stability: `1`
 
-### [`register-component`](https://github.com/backstage/backstage/tree/master/plugins/register-component/)
+### `register-component` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/register-component/)
 
 A frontend plugin that allows the user to register entity locations in the
 catalog.
@@ -332,14 +343,14 @@ catalog.
 Stability: `0`. This plugin is likely to be replaced by a generic entity import
 plugin instead.
 
-### [`scaffolder`](https://github.com/backstage/backstage/tree/master/plugins/scaffolder/)
+### `scaffolder` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/scaffolder/)
 
 The frontend scaffolder plugin where one can browse templates and initiate
 scaffolding jobs.
 
 Stability: `1`
 
-### [`scaffolder-backend`](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend/)
+### `scaffolder-backend` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend/)
 
 The backend scaffolder plugin that provides an implementation for templates in
 the catalog.
@@ -347,35 +358,35 @@ the catalog.
 Stability: `1`. There is planned work to rework the scaffolder in
 https://github.com/backstage/backstage/issues/2771.
 
-### [`tech-radar`](https://github.com/backstage/backstage/tree/master/plugins/tech-radar/)
+### `tech-radar` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/tech-radar/)
 
 Visualize the your company's official guidelines of different areas of software
 development.
 
 Stability: `0`
 
-### [`techdocs`](https://github.com/backstage/backstage/tree/master/plugins/techdocs/)
+### `techdocs` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/techdocs/)
 
 The frontend component of the TechDocs plugin, used to browse technical
 documentation of entities.
 
 Stability: `1`
 
-### [`techdocs-backend`](https://github.com/backstage/backstage/tree/master/plugins/techdocs-backend/)
+### `techdocs-backend` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/techdocs-backend/)
 
 The backend component of the TechDocs plugin, used to transform and serve
 TechDocs.
 
 Stability: `0`
 
-### [`user-settings`](https://github.com/backstage/backstage/tree/master/plugins/user-settings/)
+### `user-settings` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/user-settings/)
 
 A frontend plugin that provides a page where the user can tweak various
 settings.
 
 Stability: `1`
 
-### [`welcome`](https://github.com/backstage/backstage/tree/master/plugins/welcome/)
+### `welcome` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/welcome/)
 
 A plugin that can be used to welcome the user to Backstage.
 

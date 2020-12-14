@@ -15,7 +15,7 @@
  */
 
 export * from './service/router';
-export * from './techdocs';
-export { DocsBuilder } from './service/helpers';
-export { EntityBuilder } from './service/entityBuilder';
+export * from '@backstage/techdocs-common';
 export * from './util';
+export { DocsBuilder } from './DocsBuilder';
+export { EntityBuilder } from './service/entityBuilder';

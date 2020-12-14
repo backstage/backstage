@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-import React, { ComponentProps } from 'react';
-import { Link as MaterialLink } from '@material-ui/core';
-import { Link as RouterLink } from 'react-router-dom';
+import React, { ElementType } from 'react';
+import {
+  Link as MaterialLink,
+  LinkProps as MaterialLinkProps,
+} from '@material-ui/core';
+import {
+  Link as RouterLink,
+  LinkProps as RouterLinkProps,
+} from 'react-router-dom';
 
-type Props = ComponentProps<typeof MaterialLink> &
-  ComponentProps<typeof RouterLink> & { component?: React.FC<any> };
+type Props = MaterialLinkProps &
+  RouterLinkProps & {
+    component?: ElementType<any>;
+  };
 
 /**
  * Thin wrapper on top of material-ui's Link component

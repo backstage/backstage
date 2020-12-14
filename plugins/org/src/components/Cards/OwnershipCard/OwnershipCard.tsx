@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { InfoCard, useApi, Progress } from '@backstage/core';
-import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { catalogApiRef } from '@backstage/plugin-catalog';
 import { useAsync } from 'react-use';
 import Alert from '@material-ui/lab/Alert';
@@ -28,6 +29,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import { pageTheme } from '@backstage/theme';
+import { isOwnerOf } from '../../isOwnerOf';
 
 type EntitiesKinds = 'Component' | 'API';
 type EntitiesTypes =
@@ -118,9 +120,6 @@ export const OwnershipCard = ({
   entity: Entity;
   variant: string;
 }) => {
-  const {
-    metadata: { name: groupName },
-  } = entity;
   const catalogApi = useApi(catalogApiRef);
   const {
     loading,
@@ -129,10 +128,8 @@ export const OwnershipCard = ({
   } = useAsync(async () => {
     const entitiesList = await catalogApi.getEntities();
     const ownedEntitiesList = entitiesList.items.filter(component =>
-      component?.relations?.some(
-        r => r.type === RELATION_OWNED_BY && r.target.name === groupName,
-      ),
-    ) as Array<Entity>;
+      isOwnerOf(entity, component),
+    );
 
     return [
       {
