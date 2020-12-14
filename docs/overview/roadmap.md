@@ -54,7 +54,7 @@ guidelines to get started.
   Native support for Kubernetes, making it easier for developers to see and
   manage their services running in k8s.
 
-- **[Global search]()** -
+- **Global search** -
   Extend the basic search available in the Backstage Service Catalog with a
   global search experience.
 
@@ -63,7 +63,7 @@ guidelines to get started.
 
 ### Future work 🔮
 
-- **[Golden Path for Plugin Development]()** -
+- **Golden Path for Plugin Development** -
   Creating an easy, standardized way for developers to build plugins will encourage contributions and lead to a richer ecosystem for everyone.
 
 - **[GraphQL API](https://github.com/backstage/backstage/milestone/13)** -
