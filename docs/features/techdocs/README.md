@@ -96,26 +96,38 @@ Build a widget (plugin) framework so that contributors can easily contribute
 features to TechDocs - that others can use. And, also, so that we can easily
 migrate Spotify's existing TechDocs features to open source.
 
-## Structure
+## Platforms Supported
 
-- [Getting Started]
-- [Concepts]
-- [Creating and Publishing Documentation]
-- [FAQ]
+See [TechDocs Architecture](architecture.md) to get an overview of where these
+providers are used.
+
+| Source Code Hosting Provider | Support Status |
+| ---------------------------- | -------------- |
+| GitHub                       | Yes ✅         |
+| GitHub Enterprise            | Yes ✅         |
+| BitBucket                    | Yes ✅         |
+| Azure DevOps                 | Yes ✅         |
+| GitLab                       | Yes ✅         |
+| GitLab Enterprise            | Yes ✅         |
+
+| File Storage Provider             | Support Status | Track status                                                |
+| --------------------------------- | -------------- | ----------------------------------------------------------- |
+| Local Filesystem of Backstage app | Yes ✅         |                                                             |
+| Google Cloud Storage (GCS)        | Yes ✅         |                                                             |
+| Amazon Web Services (AWS) S3      | No ❌          | [#3714](https://github.com/backstage/backstage/issues/3714) |
+| Azure Storage                     | No ❌          |                                                             |
+
+[Reach out to us](#feedback) if you want to request more platforms.
 
 ## Tech Stack
 
-| Stack                                       | Location                                                 |
-| ------------------------------------------- | -------------------------------------------------------- |
-| Frontend                                    | [`@backstage/plugin-techdocs`][techdocs/frontend]        |
-| Backend                                     | [`@backstage/plugin-techdocs-backend`][techdocs/backend] |
-| Docker Container (for generating doc sites) | [`techdocs-container`][techdocs/container]               |
-| CLI (for local development)                 | [`@techdocs/cli`][techdocs/cli]                          |
+| Stack                                           | Location                                                 |
+| ----------------------------------------------- | -------------------------------------------------------- |
+| Frontend Plugin                                 | [`@backstage/plugin-techdocs`][techdocs/frontend]        |
+| Backend Plugin                                  | [`@backstage/plugin-techdocs-backend`][techdocs/backend] |
+| CLI (for local development and generating docs) | [`@techdocs/cli`][techdocs/cli]                          |
+| Docker Container (for generating docs)          | [`techdocs-container`][techdocs/container]               |
 
-[getting started]: getting-started.md
-[concepts]: concepts.md
-[creating and publishing documentation]: creating-and-publishing.md
-[faq]: FAQ.md 'Frequently asked questions'
 [techdocs/frontend]:
   https://github.com/backstage/backstage/blob/master/plugins/techdocs
 [techdocs/backend]:
@@ -131,3 +143,6 @@ https://docs.google.com/forms/d/e/1FAIpQLSdn5Vn3MQhCdyYRuW8cMzZkMQF0bFxXYN168gZR
 This is to gather inputs from you (the Backstage community) which will help us
 best serve TechDocs adopters and existing users. Your inputs will shape our
 roadmap and we will share it in the open.
+
+For any other general queries, reach out to us in the `#docs-like-code` channel
+of our [Discord chatroom](https://github.com/backstage/backstage#community).

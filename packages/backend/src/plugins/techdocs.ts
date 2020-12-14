@@ -32,10 +32,7 @@ export default async function createPlugin({
   discovery,
   reader,
 }: PluginEnvironment) {
-  const generators = new Generators();
-  const techdocsGenerator = new TechdocsGenerator(logger, config);
-  generators.register('techdocs', techdocsGenerator);
-
+  // Preparers are responsible for fetching source files for documentation.
   const preparers = new Preparers();
 
   const directoryPreparer = new DirectoryPreparer(logger);
@@ -49,8 +46,17 @@ export default async function createPlugin({
   const urlPreparer = new UrlPreparer(reader, logger);
   preparers.register('url', urlPreparer);
 
+  // Generators are used for generating documentation sites.
+  const generators = new Generators();
+  const techdocsGenerator = new TechdocsGenerator(logger, config);
+  generators.register('techdocs', techdocsGenerator);
+
+  // Publishers are used for
+  // 1. Publishing generated files to storage
+  // 2. Fetching files from storage and passing them to TechDocs frontend.
   const publisher = Publisher.fromConfig(config, logger, discovery);
 
+  // Docker client used by the generators.
   const dockerClient = new Docker();
 
   return await createRouter({

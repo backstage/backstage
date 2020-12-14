@@ -8,13 +8,41 @@ Spotify's docs-like-code solution in Backstage
 This page describes concepts that are introduced with Spotify's docs-like-code
 solution in Backstage.
 
-### TechDocs Core Plugin
+### TechDocs Preparer
 
-The TechDocs Core Plugin is an [MkDocs](https://www.mkdocs.org/) plugin created
-as a wrapper around multiple MkDocs plugins and Python Markdown extensions to
-standardize the configuration of MkDocs used for TechDocs.
+Prepare is the first step of generating documentation for an entity. It fetches
+the source markdown files from the source code hosting provider (GitHub, GitLab,
+etc.) and passes the files to the generator for next steps.
 
-[TechDocs Core](https://github.com/backstage/mkdocs-techdocs-core)
+There are two kinds of preparers available -
+
+1. Common Git Preparer - Uses `git clone` on any repository url.
+2. Url Reader - Uses source code hosting provider's API to download files.
+   (Faster and recommended)
+
+## TechDocs Generator
+
+Generation is the second step after preparing the markdown source files. This
+step either runs the TechDocs container (defined below) or runs `mkdocs` CLI to
+generate static HTML files and its assets.
+
+### TechDocs Publisher
+
+Publish is the third and final step after preparing and generating docs.
+TechDocs Publisher uploads the generated files to a storage.
+
+The `techdocs-backend` plugin currently comes with two publishers - Google Cloud
+Storage and Local Filesystem. You can configure them in your Backstage app.
+[See here](./configuration.md).
+
+A TechDocs publisher is responsible for two things (two-way communication
+between `techdocs-backend` and the storage)
+
+1. Publish generated static files to a storage (Configured by
+   `techdocs.builder`)
+2. Read files from the storage when users visit a TechDocs site
+
+[TechDocs Backend](https://github.com/backstage/backstage/tree/master/plugins/techdocs-backend)
 
 ### TechDocs container
 
@@ -25,14 +53,13 @@ MkDocs.
 
 [TechDocs Container](https://github.com/backstage/techdocs-container)
 
-### TechDocs publisher
+### TechDocs Core Plugin
 
-The `techdocs-backend` plugin currently comes with one publisher -
-`LocalPublish`.
+The TechDocs Core Plugin is an [MkDocs](https://www.mkdocs.org/) plugin created
+as a wrapper around multiple MkDocs plugins and Python Markdown extensions to
+standardize the configuration of MkDocs used for TechDocs.
 
-[TechDocs Backend](https://github.com/backstage/backstage/tree/master/plugins/techdocs-backend)
-
-More standalone publishers will come in the near future...
+[TechDocs Core](https://github.com/backstage/mkdocs-techdocs-core)
 
 ### TechDocs CLI
 

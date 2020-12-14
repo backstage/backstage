@@ -40,7 +40,7 @@ techdocs:
   publisher:
     type: 'googleGcs'
   googleGcs:
-    projectId: 'gcp-project-id
+    projectId: 'gcp-project-id'
 ```
 
 **3. Service account API key**
@@ -76,7 +76,7 @@ Create a dedicated bucket for TechDocs sites. techdocs-backend will publish
 documentation to this bucket. TechDocs will fetch files from here to serve
 documentation in Backstage.
 
-Set the name of the bucket to `techdocs.publisher
+Set the name of the bucket to `techdocs.publisher.googleGcs.bucketName`.
 
 ```yaml
 techdocs:
