@@ -2,4 +2,4 @@
 '@backstage/plugin-pagerduty': patch
 ---
 
-Modifies queries
+Supporting Timezones
