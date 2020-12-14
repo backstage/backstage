@@ -14,3 +14,4 @@
 | [Wealthsimple](https://www.wealthsimple.com) | [@andrewthauer](https://github.com/andrewthauer)             | Developer portal, service catalog, documentation and tooling                                                       |
 | [Grab](https://www.grab.com)                 | [@althafh](https://github.com/althafh)                       | Initial work as a unified interface for all of Grab's internal tooling                                             |
 | [Telenor Sweden](https://www.telenor.se)     | [@O5ten](https://github.com/O5ten)                           | Building a developer portal for scaffolding projects towards our unified build environment and microservice stacks |
+| [Fiverr](https://www.fiverr.com)             | [@nirga](https://github.com/nirga)                           | Unifying separate tools that developers are using today (i.e. monitoring, dead letter queues management, etc.) into a single platform. |
