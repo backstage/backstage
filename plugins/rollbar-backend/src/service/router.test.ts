@@ -106,7 +106,7 @@ describe('createRouter', () => {
             level: 50,
             occurrences: 100,
             projectId: 12345,
-            title: 'error occured',
+            title: 'error occurred',
             uniqueOccurrences: 10,
           },
           counts: [10, 10, 10, 10, 10, 50],
