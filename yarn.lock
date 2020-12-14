@@ -5702,6 +5702,13 @@
   dependencies:
     "@types/node" "*"
 
+"@types/fs-extra@^9.0.5":
+  version "9.0.5"
+  resolved "https://registry.npmjs.org/@types/fs-extra/-/fs-extra-9.0.5.tgz#2afb76a43a4bef80a363b94b314d0ca1694fc4f8"
+  integrity sha512-wr3t7wIW1c0A2BIJtdVp4EflriVaVVAsCAIHVzzh8B+GiFv9X1xeJjCs4upRXtzp7kQ6lP5xvskjoD4awJ1ZeA==
+  dependencies:
+    "@types/node" "*"
+
 "@types/git-url-parse@^9.0.0":
   version "9.0.0"
   resolved "https://registry.npmjs.org/@types/git-url-parse/-/git-url-parse-9.0.0.tgz#aac1315a44fa4ed5a52c3820f6c3c2fb79cbd12d"
@@ -6072,6 +6079,13 @@
   version "0.26.11"
   resolved "https://registry.npmjs.org/@types/nodegit/-/nodegit-0.26.11.tgz#0cbc5e929f23e5ffc536920e3a887e0b3f46d1a4"
   integrity sha512-BGrY9F8lBtfU+Ne1Pjb9k/PUsfSCUAqPXgKkTkM6mc5213H5VAoM12zG/sz/cr3jI3AXcngNbAYWlqSrXsWJug==
+  dependencies:
+    "@types/node" "*"
+
+"@types/nodegit@^0.26.12":
+  version "0.26.12"
+  resolved "https://registry.npmjs.org/@types/nodegit/-/nodegit-0.26.12.tgz#93afb4cb85d3a48d392c3232699c9c07d8251a36"
+  integrity sha512-4YpeTImFZNJ1cve4lEueHFVS8rAs8XpZqlmx+Bm9bMc+XMiCrcwaUf6peN7pod7Rl3esVlGP1zdBB7Z12eMVAA==
   dependencies:
     "@types/node" "*"
 
