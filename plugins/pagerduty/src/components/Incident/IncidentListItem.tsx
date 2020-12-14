@@ -25,7 +25,6 @@ import {
   IconButton,
   Link,
   Typography,
-  Grid,
 } from '@material-ui/core';
 import { StatusError, StatusWarning } from '@backstage/core';
 import { formatDistanceToNowStrict } from 'date-fns';
@@ -77,22 +76,16 @@ export const IncidentListItem = ({ incident }: Props) => {
           className: classes.listItemPrimary,
         }}
         secondary={
-          <Grid container>
-            <Grid item>
-              <Typography noWrap variant="body2" color="textSecondary">
-                Created {createdAt} ago and assigned to{' '}
-              </Typography>
-            </Grid>
-            <Grid item>
-              <Link
-                href={user?.html_url ?? '#'}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {user?.summary ?? 'nobody'}
-              </Link>
-            </Grid>
-          </Grid>
+          <Typography noWrap variant="body2" color="textSecondary">
+            Created {createdAt} ago and assigned to{' '}
+            <Link
+              href={user?.html_url ?? '#'}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {user?.summary ?? 'nobody'}
+            </Link>
+          </Typography>
         }
       />
       <ListItemSecondaryAction>

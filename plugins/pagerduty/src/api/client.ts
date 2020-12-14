@@ -66,7 +66,7 @@ export class PagerDutyClient implements PagerDutyApi {
   }
 
   async getOnCallByPolicyId(policyId: string): Promise<OnCall[]> {
-    const params = `time_zone=UTC&include[]=users&escalation_policy_ids[]=${policyId}&include[]=escalation_level`;
+    const params = `time_zone=UTC&include[]=users&escalation_policy_ids[]=${policyId}`;
     const url = `${await this.config.discoveryApi.getBaseUrl(
       'proxy',
     )}/pagerduty/oncalls?${params}`;
