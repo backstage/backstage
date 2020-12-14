@@ -58,28 +58,8 @@
     "msw": "^0.21.2"
   },
   "files": [
-    "dist"
+    "dist",
+    "config.d.ts"
   ],
-  "configSchema": {
-    "$schema": "https://backstage.io/schema/config-v1",
-    "title": "@backstage/sentry",
-    "type": "object",
-    "properties": {
-      "sentry": {
-        "type": "object",
-        "properties": {
-          "organization": {
-            "type": "string",
-            "visibility": "frontend"
-          },
-          "required": [
-            "organization"
-          ]
-        }
-      }
-    },
-    "required": [
-      "sentry"
-    ]
-  }
+  "configSchema": "config.d.ts"
 }
