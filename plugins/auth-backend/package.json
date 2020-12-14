@@ -81,27 +81,8 @@
   },
   "files": [
     "dist",
-    "migrations"
+    "migrations",
+    "config.d.ts"
   ],
-  "configSchema": {
-    "$schema": "https://backstage.io/schema/config-v1",
-    "title": "@backstage/auth-backend",
-    "type": "object",
-    "properties": {
-      "auth": {
-        "type": "object",
-        "properties": {
-          "session": {
-            "type": "object",
-            "properties": {
-              "secret": {
-                "type": "string",
-                "visibility": "secret"
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+  "configSchema": "config.d.ts"
 }
