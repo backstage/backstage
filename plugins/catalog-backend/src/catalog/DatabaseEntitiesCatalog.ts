@@ -18,7 +18,6 @@ import { ConflictError, NotFoundError } from '@backstage/backend-common';
 import {
   Entity,
   entityHasChanges,
-  EntityRelationSpec,
   generateUpdatedEntity,
   getEntityName,
   LOCATION_ANNOTATION,
@@ -111,47 +110,45 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
       outputEntities?: boolean;
     },
   ): Promise<EntityUpsertResponse[]> {
-    // Group the entities by unique kind+namespace combinations. The reason for
+    // Group the requests by unique kind+namespace combinations. The reason for
     // this is that the change detection and merging logic requires finding
     // pre-existing versions of the entities in the database. Those queries are
     // easier and faster to make if every batch revolves around a single kind-
     // namespace pair.
-    const entitiesByKindAndNamespace = groupBy(requests, ({ entity }) => {
+    const requestsByKindAndNamespace = groupBy(requests, ({ entity }) => {
       const name = getEntityName(entity);
       return `${name.kind}:${name.namespace}`.toLowerCase();
     });
+
+    // Go through the requests in reasonable batch sizes. Sometimes, sources
+    // produce tens of thousands of entities, and those are too large batch
+    // sizes to reasonably send to the database.
+    const batches = Object.values(requestsByKindAndNamespace)
+      .map(requests => chunk(requests, BATCH_SIZE))
+      .flat();
 
     // Bound the number of concurrent batches. We want a bit of concurrency for
     // performance reasons, but not so much that we starve the connection pool
     // or start thrashing.
     const limiter = limiterFactory(BATCH_CONCURRENCY);
-    const tasks = new Array<Promise<EntityUpsertResponse[]>>();
-
-    for (const groupRequests of Object.values(entitiesByKindAndNamespace)) {
-      // Go through the new entities in reasonable chunk sizes (sometimes,
-      // sources produce tens of thousands of entities, and those are too large
-      // batch sizes to reasonably send to the database)
-      for (const batch of chunk(groupRequests, BATCH_SIZE)) {
-        tasks.push(
-          limiter(async () => {
-            // Retry the batch write a few times to deal with contention
-            for (let attempt = 1; ; ++attempt) {
-              try {
-                return this.batchAddOrUpdateEntitiesSingleBatch(batch, options);
-              } catch (e) {
-                if (e instanceof ConflictError && attempt < BATCH_ATTEMPTS) {
-                  this.logger.warn(
-                    `Failed to write batch at attempt ${attempt}/${BATCH_ATTEMPTS}, ${e}`,
-                  );
-                } else {
-                  throw e;
-                }
-              }
+    const tasks = batches.map(batch =>
+      limiter(async () => {
+        // Retry the batch write a few times to deal with contention
+        for (let attempt = 1; ; ++attempt) {
+          try {
+            return this.batchAddOrUpdateEntitiesSingleBatch(batch, options);
+          } catch (e) {
+            if (e instanceof ConflictError && attempt < BATCH_ATTEMPTS) {
+              this.logger.warn(
+                `Failed to write batch at attempt ${attempt}/${BATCH_ATTEMPTS}, ${e}`,
+              );
+            } else {
+              throw e;
             }
-          }),
-        );
-      }
-    }
+          }
+        }
+      }),
+    );
 
     const responses = await Promise.all(tasks);
     return responses.flat();
@@ -203,7 +200,7 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
         // likely want to figure out a way to avoid that
         const entityId = entity.metadata.uid;
         if (entityId) {
-          await this.setRelations(entityId, relations, tx);
+          await this.database.setRelations(tx, entityId, relations);
           responses.push({ entityId });
         }
       }
@@ -230,15 +227,6 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
 
       return responses;
     });
-  }
-
-  // Set the relations originating from an entity using the DB layer
-  private async setRelations(
-    originatingEntityId: string,
-    relations: EntityRelationSpec[],
-    tx: Transaction,
-  ): Promise<void> {
-    await this.database.setRelations(tx, originatingEntityId, relations);
   }
 
   // Given a batch of entities that were just read from a location, take them
@@ -321,16 +309,16 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
 
     const res = await this.database.addEntities(
       tx,
-      requests.map(({ entity }) => ({ locationId, entity })),
+      requests.map(({ entity, relations }) => ({
+        locationId,
+        entity,
+        relations,
+      })),
     );
 
     const responses = res.map(({ entity }) => ({
       entityId: entity.metadata.uid!,
     }));
-
-    for (const [index, { entityId }] of responses.entries()) {
-      await this.setRelations(entityId, requests[index].relations, tx);
-    }
 
     this.logger.debug(
       `Added ${requests.length} entities in ${durationText(markTimestamp)}`,
@@ -350,11 +338,10 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
     const responses: EntityUpsertResponse[] = [];
 
     // TODO(freben): Still not batched
-    for (const entity of requests) {
-      const res = await this.addOrUpdateEntity(entity.entity, tx, locationId);
+    for (const request of requests) {
+      const res = await this.addOrUpdateEntity(tx, request, locationId);
       const entityId = res.metadata.uid!;
       responses.push({ entityId });
-      await this.setRelations(entityId, entity.relations, tx);
     }
 
     this.logger.debug(
@@ -366,8 +353,8 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
 
   // TODO(freben): Incorporate this into batchUpdate which is the only caller
   private async addOrUpdateEntity(
-    entity: Entity,
     tx: Transaction,
+    { entity, relations }: EntityUpsertRequest,
     locationId?: string,
   ): Promise<Entity> {
     // Find a matching (by uid, or by compound name, depending on the given
@@ -383,13 +370,13 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
       const updated = generateUpdatedEntity(existing.entity, entity);
       response = await this.database.updateEntity(
         tx,
-        { locationId, entity: updated },
+        { locationId, entity: updated, relations },
         existing.entity.metadata.etag,
         existing.entity.metadata.generation,
       );
     } else {
       const added = await this.database.addEntities(tx, [
-        { locationId, entity },
+        { locationId, entity, relations },
       ]);
       response = added[0];
     }
