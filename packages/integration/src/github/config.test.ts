@@ -23,7 +23,7 @@ import {
 
 describe('readGitHubIntegrationConfig', () => {
   function buildConfig(provider: Partial<GitHubIntegrationConfig>) {
-    return ConfigReader.fromConfigs([{ context: '', data: provider }]);
+    return new ConfigReader(provider);
   }
 
   it('reads all values', () => {
@@ -80,9 +80,7 @@ describe('readGitHubIntegrationConfigs', () => {
   function buildConfig(
     providers: Partial<GitHubIntegrationConfig>[],
   ): Config[] {
-    return providers.map(provider =>
-      ConfigReader.fromConfigs([{ context: '', data: provider }]),
-    );
+    return providers.map(provider => new ConfigReader(provider));
   }
 
   it('reads all values', () => {

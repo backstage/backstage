@@ -23,7 +23,7 @@ import {
 
 describe('readGitLabIntegrationConfig', () => {
   function buildConfig(data: Partial<GitLabIntegrationConfig>): Config {
-    return ConfigReader.fromConfigs([{ context: '', data }]);
+    return new ConfigReader(data);
   }
 
   it('reads all values', () => {
@@ -60,9 +60,7 @@ describe('readGitLabIntegrationConfig', () => {
 
 describe('readGitLabIntegrationConfigs', () => {
   function buildConfig(data: Partial<GitLabIntegrationConfig>[]): Config[] {
-    return data.map(item =>
-      ConfigReader.fromConfigs([{ context: '', data: item }]),
-    );
+    return data.map(item => new ConfigReader(item));
   }
 
   it('reads all values', () => {

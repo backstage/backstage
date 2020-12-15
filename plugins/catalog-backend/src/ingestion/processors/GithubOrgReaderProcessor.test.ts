@@ -28,14 +28,9 @@ describe('GithubOrgReaderProcessor', () => {
     function config(
       providers: { target: string; apiBaseUrl?: string; token?: string }[],
     ) {
-      return ConfigReader.fromConfigs([
-        {
-          context: '',
-          data: {
-            catalog: { processors: { githubOrg: { providers } } },
-          },
-        },
-      ]);
+      return new ConfigReader({
+        catalog: { processors: { githubOrg: { providers } } },
+      });
     }
 
     it('adds a default GitHub entry when missing', () => {
