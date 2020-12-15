@@ -54,7 +54,7 @@ const AppRoutes = () => {
 That's it! But now, we need the TechDocs Backend plugin for the frontend to
 work.
 
-## Adding TechDocs backend plugin
+## Adding TechDocs Backend plugin
 
 Navigate to `packages/backend` of your Backstage app, and install the
 `@backstage/plugin-techdocs-backend` package.
@@ -128,7 +128,8 @@ export default async function createPlugin({
 ```
 
 You may need to install the `dockerode` package. But you may already have it in
-your backend since Scaffolder plugin also uses it.
+your backend since [Scaffolder plugin](../software-templates/index.md) also uses
+it.
 
 See [Concepts](concepts.md) and [TechDocs Architecture](architecture.md) to
 learn more about how preparers, generators and publishers work.
@@ -171,7 +172,7 @@ acts as a middleware between TechDocs and the storage (where the static
 generated docs site are stored). These default values should mostly work for
 you. These options will soon be optional to set.
 
-### Should Backstage generate docs?
+### Should TechDocs Backend generate docs?
 
 ```yaml
 techdocs:
@@ -180,7 +181,7 @@ techdocs:
   builder: 'local'
 ```
 
-Set `techdocs.builder` to `'local'` if you want your Backstage app to be
+Set `techdocs.builder` to `'local'` if you want your TechDocs Backend to be
 responsible for generating documentation sites. If set to `'external'`,
 Backstage will assume that the sites are being generated on each entity's CI/CD
 pipeline, and are being stored in a storage somewhere.
@@ -214,10 +215,10 @@ techdocs:
 
 You can skip this if your `techdocs.builder` is set to `'external'`.
 
-The TechDocs backend plugin runs a docker container with mkdocs installed to
+The TechDocs Backend plugin runs a docker container with mkdocs installed to
 generate the frontend of the docs from source files (Markdown). If you are
 deploying Backstage using Docker, this will mean that your Backstage Docker
-container will try to run another Docker container for TechDocs backend.
+container will try to run another Docker container for TechDocs Backend.
 
 To avoid this problem, we have a configuration available. You can set a value in
 your `app-config.yaml` that tells the techdocs generator if it should run the
