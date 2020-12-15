@@ -42,7 +42,7 @@
     "express": "^4.17.1",
     "express-promise-router": "^3.0.3",
     "fs-extra": "^9.0.0",
-    "git-url-parse": "^11.4.0",
+    "git-url-parse": "^11.4.3",
     "knex": "^0.21.6",
     "ldapjs": "^2.2.0",
     "lodash": "^4.17.15",
