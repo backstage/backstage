@@ -64,6 +64,6 @@
   },
   "files": [
     "dist",
-    "universal"
+    "universal.js"
   ]
 }
