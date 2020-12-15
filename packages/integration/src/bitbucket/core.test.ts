@@ -144,8 +144,7 @@ describe('bitbucket core', () => {
       };
       worker.use(
         rest.get(
-          // TODO: Change URL to https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches/default when git-url-parse bug is fixed
-          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/projects/backstage/repos/mock/repos/browse/branches/default',
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches/default',
           (_, res, ctx) =>
             res(
               ctx.status(200),
@@ -159,13 +158,13 @@ describe('bitbucket core', () => {
         apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
       };
       const result = await getBitbucketDownloadUrl(
-        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse?at=main',
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse',
         config,
       );
-      expect(new URL(result).searchParams.get('format')).toEqual('zip');
-      expect(new URL(result).searchParams.get('at')).toEqual('main');
-      expect(new URL(result).searchParams.get('prefix')).not.toBeNull();
-      expect(new URL(result).searchParams.get('path')).toBeNull();
+
+      expect(result).toEqual(
+        'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive?format=zip&at=main&prefix=backstage-mock',
+      );
     });
 
     it('get by branch for Bitbucket Server', async () => {
