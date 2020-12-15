@@ -48,6 +48,7 @@
     "fs-extra": "^9.0.1",
     "git-url-parse": "^11.4.3",
     "js-yaml": "^3.14.0",
+    "mime-types": "^2.1.27",
     "mock-fs": "^4.13.0",
     "nodegit": "^0.27.0",
     "recursive-readdir": "^2.2.2",
@@ -58,6 +59,7 @@
     "@types/fs-extra": "^9.0.5",
     "@types/git-url-parse": "^9.0.0",
     "@types/js-yaml": "^3.12.5",
+    "@types/mime-types": "^2.1.0",
     "@types/mock-fs": "^4.13.0",
     "@types/nodegit": "^0.26.12",
     "@types/recursive-readdir": "^2.2.0"
