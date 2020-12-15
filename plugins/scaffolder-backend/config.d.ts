@@ -18,8 +18,7 @@ export interface Config {
   /** Configuration options for the scaffolder plugin */
   scaffolder?: {
     github?: {
-      token: string;
-      visibility: 'public' | 'internal' | 'private';
+      [key: string]: string;
     };
     gitlab?: {
       api: { [key: string]: string };
