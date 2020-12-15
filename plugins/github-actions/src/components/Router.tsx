@@ -19,8 +19,11 @@ import { Routes, Route } from 'react-router';
 import { rootRouteRef, buildRouteRef } from '../plugin';
 import { WorkflowRunDetails } from './WorkflowRunDetails';
 import { WorkflowRunsTable } from './WorkflowRunsTable';
-import { GITHUB_ACTIONS_ANNOTATION } from '../../universal';
 import { MissingAnnotationEmptyState } from '@backstage/core';
+
+// TODO(blam): Replace with the universal import from github-actions after a release
+// As it will break the E2E without it
+const GITHUB_ACTIONS_ANNOTATION = 'github.com/project-slug';
 
 export const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION]);

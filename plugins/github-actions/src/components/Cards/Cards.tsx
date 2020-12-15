@@ -32,7 +32,10 @@ import {
   useApi,
 } from '@backstage/core';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
-import { GITHUB_ACTIONS_ANNOTATION } from '../../../universal';
+
+// TODO(blam): Replace with the universal import from github-actions after a release
+// As it will break the E2E without it
+const GITHUB_ACTIONS_ANNOTATION = 'github.com/project-slug';
 
 const useStyles = makeStyles<Theme>({
   externalLinkIcon: {

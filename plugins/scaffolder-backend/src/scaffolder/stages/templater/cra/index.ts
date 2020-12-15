@@ -19,8 +19,11 @@ import { TemplaterBase, TemplaterRunOptions } from '..';
 import path from 'path';
 import { TemplaterRunResult } from '../types';
 import * as yaml from 'yaml';
-import { GITHUB_ACTIONS_ANNOTATION } from '@backstage/plugin-github-actions/universal';
 import { resolvePackagePath } from '@backstage/backend-common';
+
+// TODO(blam): Replace with the universal import from github-actions after a release
+// As it will break the E2E without it
+const GITHUB_ACTIONS_ANNOTATION = 'github.com/project-slug';
 
 export class CreateReactAppTemplater implements TemplaterBase {
   public async run(options: TemplaterRunOptions): Promise<TemplaterRunResult> {

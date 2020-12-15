@@ -15,13 +15,16 @@
  */
 import { Entity } from '@backstage/catalog-model';
 import { errorApiRef, useApi } from '@backstage/core-api';
-import { GITHUB_ACTIONS_ANNOTATION } from '../../../universal';
 import { useWorkflowRuns } from '../useWorkflowRuns';
 import React, { useEffect } from 'react';
 import { EmptyState, InfoCard, Table } from '@backstage/core';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import { Button, Link } from '@material-ui/core';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
+
+// TODO(blam): Replace with the universal import from github-actions after a release
+// As it will break the E2E without it
+const GITHUB_ACTIONS_ANNOTATION = 'github.com/project-slug';
 
 const firstLine = (message: string): string => message.split('\n')[0];
 
