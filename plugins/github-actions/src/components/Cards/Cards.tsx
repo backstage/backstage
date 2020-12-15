@@ -32,7 +32,7 @@ import {
   useApi,
 } from '@backstage/core';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
-import { GITHUB_ACTIONS_ANNOTATION } from '../useProjectName';
+import { GITHUB_ACTIONS_ANNOTATION } from '../../../universal';
 
 const useStyles = makeStyles<Theme>({
   externalLinkIcon: {

@@ -50,10 +50,10 @@ export const JobStatusModal = ({
   useEffect(() => {
     if (jobStatus === 'COMPLETED') {
       setDialogTitle('Successfully created component');
-      onComplete(job);
+      onComplete(job!);
     } else if (jobStatus === 'FAILED')
       setDialogTitle('Failed to create component');
-  }, [jobStatus, onComplete, setDialogTitle]);
+  }, [jobStatus, onComplete, setDialogTitle]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Dialog open onClose={onClose} fullWidth>

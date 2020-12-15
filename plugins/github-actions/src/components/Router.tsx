@@ -19,7 +19,7 @@ import { Routes, Route } from 'react-router';
 import { rootRouteRef, buildRouteRef } from '../plugin';
 import { WorkflowRunDetails } from './WorkflowRunDetails';
 import { WorkflowRunsTable } from './WorkflowRunsTable';
-import { GITHUB_ACTIONS_ANNOTATION } from './useProjectName';
+import { GITHUB_ACTIONS_ANNOTATION } from '../../universal';
 import { MissingAnnotationEmptyState } from '@backstage/core';
 
 export const isPluginApplicableToEntity = (entity: Entity) =>

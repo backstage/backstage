@@ -1,3 +1,4 @@
+// @ts-check
 /*
  * Copyright 2020 Spotify AB
  *
@@ -14,13 +15,8 @@
  * limitations under the License.
  */
 
-import { useAsync } from 'react-use';
-import { Entity } from '@backstage/catalog-model';
-import { GITHUB_ACTIONS_ANNOTATION } from '../../universal';
-
-export const useProjectName = (entity: Entity) => {
-  const { value, loading, error } = useAsync(async () => {
-    return entity?.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION] ?? '';
-  });
-  return { value, loading, error };
-};
+/**
+ * Annotation to define on the entity to enable the plugin
+ * @type {string}
+ */
+module.exports.GITHUB_ACTIONS_ANNOTATION = 'github.com/project-slug';
