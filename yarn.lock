@@ -11023,10 +11023,10 @@ eslint-plugin-jsx-a11y@^6.2.1:
     has "^1.0.3"
     jsx-ast-utils "^2.2.1"
 
-eslint-plugin-monorepo@^0.3.1:
-  version "0.3.1"
-  resolved "https://registry.npmjs.org/eslint-plugin-monorepo/-/eslint-plugin-monorepo-0.3.1.tgz#698a74b3ef2a3481faaefab6219184429a57e01e"
-  integrity sha512-Oz91zASwmNapr5IHP9MYh4mEmkb5ZQJ1XxXU6KFY5eLxD1+V+J4B+yYDiILkaQCf5Itz4LKgnCoiB59lD/X29A==
+eslint-plugin-monorepo@^0.3.2:
+  version "0.3.2"
+  resolved "https://registry.npmjs.org/eslint-plugin-monorepo/-/eslint-plugin-monorepo-0.3.2.tgz#bc546cbe84b21ae6a7622f261bf9fe73b1524367"
+  integrity sha512-CypTAqHjTR05XxzqDj7x88oVu2GiqqQA/datD9kIwciHzpj0oE4YbTdyEFFKADgd7dbd21KliSlUpOvo626FBw==
   dependencies:
     eslint-module-utils "^2.1.1"
     get-monorepo-packages "^1.1.0"
