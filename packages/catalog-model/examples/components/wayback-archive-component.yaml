@@ -6,6 +6,6 @@ metadata:
 spec:
   type: service
   lifecycle: production
-  owner: archive@example.com
+  owner: team-a
   providesApis:
     - wayback-archive
