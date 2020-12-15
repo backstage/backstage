@@ -29,9 +29,8 @@ export const getHeadersForFileExtension = (
   fileExtension: string,
 ): responseHeadersType => {
   return {
-    'Content-Type': mime.contentType(fileExtension)
-      ? mime.contentType(fileExtension)
-      : 'text/plain; charset=utf-8',
+    'Content-Type':
+      mime.contentType(fileExtension) || 'text/plain; charset=utf-8',
   } as responseHeadersType;
 };
 
