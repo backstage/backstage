@@ -35,6 +35,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "^0.4.1",
+    "@backstage/test-utils": "^0.1.5",
     "@types/jest": "^26.0.7",
     "msw": "^0.21.2"
   },
