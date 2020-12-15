@@ -97,7 +97,7 @@ export class LocationReaders implements LocationReader {
             output.errors.push({
               location: item.location,
               error: new Error(
-                `Entity of kind ${item.entity.kind} is not allowed from location ${item.location.target}:${item.location.type}`,
+                `Entity of kind ${item.entity.kind} is not allowed from location ${item.location.type} ${item.location.target}`,
               ),
             });
           }
@@ -117,7 +117,7 @@ export class LocationReaders implements LocationReader {
       items = newItems;
     }
 
-    const message = `Max recursion depth ${MAX_DEPTH} reached for ${location.type} ${location.target}`;
+    const message = `Max recursion depth ${MAX_DEPTH} reached for location ${location.type} ${location.target}`;
     logger.warn(message);
     output.errors.push({ location, error: new Error(message) });
     return output;

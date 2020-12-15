@@ -16,7 +16,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { Box, Container, Divider, Grid, Typography } from '@material-ui/core';
-import { featureFlagsApiRef, Progress, useApi } from '@backstage/core';
+import { Progress, useApi } from '@backstage/core';
 import { default as MaterialAlert } from '@material-ui/lab/Alert';
 import { costInsightsApiRef } from '../../api';
 import { AlertActionCardList } from '../AlertActionCardList';
@@ -32,7 +32,8 @@ import {
 import { CostInsightsNavigation } from '../CostInsightsNavigation';
 import { CostOverviewCard } from '../CostOverviewCard';
 import { ProductInsights } from '../ProductInsights';
-import { CostInsightsSupportButton } from '../CostInsightsSupportButton';
+/* https://github.com/backstage/backstage/issues/2574 */
+// import { CostInsightsSupportButton } from '../CostInsightsSupportButton';
 import {
   useConfig,
   useCurrency,
@@ -41,7 +42,7 @@ import {
   useLastCompleteBillingDate,
   useLoading,
 } from '../../hooks';
-import { Alert, Cost, Maybe, MetricData, Project } from '../../types';
+import { Alert, Cost, Maybe, MetricData, Product, Project } from '../../types';
 import { mapLoadingToProps } from './selector';
 import { ProjectSelect } from '../ProjectSelect';
 import { intervalsOf } from '../../utils/duration';
@@ -49,13 +50,13 @@ import { useSubtleTypographyStyles } from '../../utils/styles';
 
 export const CostInsightsPage = () => {
   const classes = useSubtleTypographyStyles();
-  const featureFlags = useApi(featureFlagsApiRef);
   const client = useApi(costInsightsApiRef);
   const config = useConfig();
   const groups = useGroups();
   const lastCompleteBillingDate = useLastCompleteBillingDate();
   const [currency, setCurrency] = useCurrency();
   const [projects, setProjects] = useState<Maybe<Project[]>>(null);
+  const [products, setProducts] = useState<Maybe<Product[]>>(null);
   const [dailyCost, setDailyCost] = useState<Maybe<Cost>>(null);
   const [metricData, setMetricData] = useState<Maybe<MetricData>>(null);
   const [alerts, setAlerts] = useState<Maybe<Alert[]>>(null);
@@ -164,7 +165,7 @@ export const CostInsightsPage = () => {
       <CostInsightsLayout groups={groups}>
         <Box textAlign="right">
           <CopyUrlToClipboard />
-          <CostInsightsSupportButton />
+          {/* <CostInsightsSupportButton /> */}
         </Box>
         <Container maxWidth="lg">
           <CostInsightsHeaderNoGroups />
@@ -191,27 +192,26 @@ export const CostInsightsPage = () => {
   const CostOverviewBanner = () => (
     <Box
       px={3}
-      marginTop={10}
+      pt={6}
       display="flex"
-      flexDirection="row"
       justifyContent="space-between"
+      alignItems="center"
+      minHeight={40}
     >
-      <Box minHeight={40} width="75%" pt={2}>
+      <Box>
         <Typography variant="h4">Cost Overview</Typography>
         <Typography classes={classes}>
           Billing data as of {lastCompleteBillingDate}
         </Typography>
       </Box>
-      <Box minHeight={40} maxHeight={60} display="flex">
-        {featureFlags.isActive('cost-insights-currencies') && (
-          <Box mr={1}>
-            <CurrencySelect
-              currency={currency}
-              currencies={config.currencies}
-              onSelect={setCurrency}
-            />
-          </Box>
-        )}
+      <Box display="flex">
+        <Box mr={1}>
+          <CurrencySelect
+            currency={currency}
+            currencies={config.currencies}
+            onSelect={setCurrency}
+          />
+        </Box>
         <ProjectSelect
           project={pageFilters.project}
           projects={projects || []}
@@ -226,7 +226,10 @@ export const CostInsightsPage = () => {
       <Grid container wrap="nowrap">
         <Grid item>
           <Box position="sticky" top={20}>
-            <CostInsightsNavigation alerts={alerts.length} />
+            <CostInsightsNavigation
+              products={products}
+              alerts={alerts.length}
+            />
           </Box>
         </Grid>
         <Grid item xs>
@@ -237,7 +240,7 @@ export const CostInsightsPage = () => {
             mb={2}
           >
             <CopyUrlToClipboard />
-            <CostInsightsSupportButton />
+            {/* <CostInsightsSupportButton /> */}
           </Box>
           <Container maxWidth="lg" disableGutters>
             <Grid container direction="column">
@@ -283,7 +286,12 @@ export const CostInsightsPage = () => {
               {!alerts.length && <Divider />}
               <Grid item xs>
                 <Box px={3} py={6}>
-                  <ProductInsights />
+                  <ProductInsights
+                    group={pageFilters.group}
+                    project={pageFilters.project}
+                    products={config.products}
+                    onLoaded={setProducts}
+                  />
                 </Box>
               </Grid>
             </Grid>

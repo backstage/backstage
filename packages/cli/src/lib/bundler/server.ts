@@ -23,9 +23,14 @@ import { ServeOptions } from './types';
 import { resolveBundlingPaths } from './paths';
 
 export async function serveBundle(options: ServeOptions) {
-  const url = resolveBaseUrl(options.config);
+  const url = resolveBaseUrl(options.frontendConfig);
 
-  const port = Number(url.port) || (url.protocol === 'https:' ? 443 : 80);
+  const host =
+    options.frontendConfig.getOptionalString('app.listen.host') || url.hostname;
+  const port =
+    options.frontendConfig.getOptionalNumber('app.listen.port') ||
+    Number(url.port) ||
+    (url.protocol === 'https:' ? 443 : 80);
 
   const paths = resolveBundlingPaths(options);
   const pkgPath = paths.targetPackageJson;
@@ -50,12 +55,12 @@ export async function serveBundle(options: ServeOptions) {
     clientLogLevel: 'warning',
     stats: 'errors-warnings',
     https: url.protocol === 'https:',
-    host: url.hostname,
+    host,
     port,
     proxy: pkg.proxy,
   });
 
-  await new Promise((resolve, reject) => {
+  await new Promise<void>((resolve, reject) => {
     server.listen(port, url.hostname, (err?: Error) => {
       if (err) {
         reject(err);

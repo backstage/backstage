@@ -66,10 +66,15 @@ export type PluginOutput =
   | RedirectRouteOutput
   | FeatureFlagOutput;
 
+export type Extension<T> = {
+  expose(plugin: BackstagePlugin): T;
+};
+
 export type BackstagePlugin = {
   getId(): string;
   output(): PluginOutput[];
   getApis(): Iterable<AnyApiFactory>;
+  provide<T>(extension: Extension<T>): T;
 };
 
 export type PluginConfig = {
@@ -92,6 +97,7 @@ export type RouterHooks = {
 
   /**
    * @deprecated See the `addRoute` method
+   * @see https://github.com/backstage/backstage/issues/418
    */
   registerRoute(
     path: RoutePath,

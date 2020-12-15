@@ -45,12 +45,22 @@ export function registerCommands(program: CommanderStatic) {
     .action(lazy(() => import('./backend/build').then(m => m.default)));
 
   program
+    .command('backend:__experimental__bundle__', { hidden: true })
+    .description('Bundle all backend packages into dist-workspace')
+    .option('--build', 'Build packages before packing them into the image')
+    .action(lazy(() => import('./backend/bundle').then(m => m.default)));
+
+  program
     .command('backend:build-image')
     .allowUnknownOption(true)
     .helpOption(', --backstage-cli-help') // Let docker handle --help
     .option('--build', 'Build packages before packing them into the image')
     .description(
-      'Bundles the package into a docker image. All extra args are forwarded to docker image build',
+      // TODO: Add example use cases in Backstage documentation.
+      // For example, if a $NPM_TOKEN needs to be exposed, run `backend:build-image --secret
+      // id=NPM_TOKEN,src=/NPM_TOKEN.txt`.
+      'Bundles the package into a docker image. All extra args are forwarded to ' +
+        '`docker image build`.',
     )
     .action(lazy(() => import('./backend/buildImage').then(m => m.default)));
 
@@ -77,9 +87,9 @@ export function registerCommands(program: CommanderStatic) {
       'Create plugin with the backend dependencies as default',
     )
     .description('Creates a new plugin in the current repository')
-    .option('--scope <scope>', 'NPM scope')
-    .option('--npm-registry <URL>', 'NPM registry URL')
-    .option('--no-private', 'Public NPM Package')
+    .option('--scope <scope>', 'npm scope')
+    .option('--npm-registry <URL>', 'npm registry URL')
+    .option('--no-private', 'Public npm package')
     .action(
       lazy(() => import('./create-plugin/createPlugin').then(m => m.default)),
     );
@@ -102,13 +112,6 @@ export function registerCommands(program: CommanderStatic) {
     .option('--check', 'Enable type checking and linting')
     .option(...configOption)
     .action(lazy(() => import('./plugin/serve').then(m => m.default)));
-
-  program
-    .command('plugin:export')
-    .description('Exports the dev/ folder of a plugin')
-    .option('--stats', 'Write bundle stats to output directory')
-    .option(...configOption)
-    .action(lazy(() => import('./plugin/export').then(m => m.default)));
 
   program
     .command('plugin:diff')
@@ -143,6 +146,11 @@ export function registerCommands(program: CommanderStatic) {
 
   program
     .command('config:print')
+    .option(
+      '--package <name>',
+      'Only load config schema that applies to the given package',
+    )
+    .option('--frontend', 'Print only the frontend configuration')
     .option('--with-secrets', 'Include secrets in the printed configuration')
     .option(
       '--format <format>',
@@ -151,6 +159,29 @@ export function registerCommands(program: CommanderStatic) {
     .option(...configOption)
     .description('Print the app configuration for the current package')
     .action(lazy(() => import('./config/print').then(m => m.default)));
+
+  program
+    .command('config:check')
+    .option(
+      '--package <name>',
+      'Only load config schema that applies to the given package',
+    )
+    .option(...configOption)
+    .description(
+      'Validate that the given configuration loads and matches schema',
+    )
+    .action(lazy(() => import('./config/validate').then(m => m.default)));
+
+  program
+    .command('versions:bump')
+    .description('Bump Backstage packages to the latest versions')
+    .action(lazy(() => import('./versions/bump').then(m => m.default)));
+
+  program
+    .command('versions:check')
+    .option('--fix', 'Fix any auto-fixable versioning problems')
+    .description('Check Backstage package versioning')
+    .action(lazy(() => import('./versions/lint').then(m => m.default)));
 
   program
     .command('prepack')

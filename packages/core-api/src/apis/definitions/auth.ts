@@ -312,6 +312,20 @@ export const oauth2ApiRef: ApiRef<
 });
 
 /**
+ * Provides authentication for custom OpenID Connect identity providers.
+ */
+export const oidcAuthApiRef: ApiRef<
+  OAuthApi &
+    OpenIdConnectApi &
+    ProfileInfoApi &
+    BackstageIdentityApi &
+    SessionApi
+> = createApiRef({
+  id: 'core.auth.oidc',
+  description: 'Example of how to use oidc custom provider',
+});
+
+/**
  * Provides authentication for saml based identity providers
  */
 export const samlAuthApiRef: ApiRef<

@@ -7,7 +7,7 @@ This folder contains Helm charts that can easily create a Kubernetes deployment 
 These charts depend on the `nginx-ingress` controller being present in the cluster. If it's not already installed you
 can run:
 
-```
+```shell
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm install nginx-ingress ingress-nginx/ingress-nginx
 ```
@@ -16,7 +16,7 @@ helm install nginx-ingress ingress-nginx/ingress-nginx
 
 After choosing a DNS name where backstage will be hosted create a yaml file for your custom configuration.
 
-```
+```yaml
 appConfig:
   app:
     baseUrl: https://backstage.mydomain.com
@@ -30,12 +30,11 @@ appConfig:
   techdocs:
     storageUrl: https://backstage.mydomain.com/api/techdocs/static/docs
     requestUrl: https://backstage.mydomain.com/api/techdocs
-
 ```
 
 Then use it to run:
 
-```
+```shell
 git clone https://github.com/backstage/backstage.git
 cd contrib/chart/backstage
 helm dependency update
@@ -54,7 +53,7 @@ After a few minutes Backstage should be up and running in your cluster under the
 
 Make sure to create the appropriate DNS entry in your infrastructure. To find the public IP address run:
 
-```bash
+```shell
 $ kubectl get ingress
 NAME                HOSTS   ADDRESS         PORTS   AGE
 backstage-ingress   *       123.1.2.3       80      17m
@@ -74,10 +73,10 @@ These charts can install or reuse a `clusterIssuer` to generate certificates for
 
 To enable it you need to provide a valid email address in the chart's values:
 
-```
+```yaml
 issuer:
   email: me@example.com
-  clusterIssuer: "letsencrypt-prod"
+  clusterIssuer: 'letsencrypt-prod'
 ```
 
 By default, the charts use `letsencrypt-staging` so in the above example we instruct helm to use the production issuer
@@ -92,7 +91,7 @@ Configuring a connection to an existing PostgreSQL instance is possible through 
 
 First create a yaml file with the configuration you want to override, for example `backstage-prod.yaml`:
 
-```bash
+```yaml
 postgresql:
   enabled: false
 
@@ -122,12 +121,11 @@ lighthouse:
       user: <pg user>
       password: <password>
       database: lighthouse_audit_service
-
 ```
 
 For the CA, create a `configMap` named `<release name>-<chart name>-postgres-ca` with a file called `ca.crt`:
 
-```
+```shell
 kubectl create configmap my-company-backstage-postgres-ca --from-file=ca.crt"
 ```
 
@@ -135,7 +133,7 @@ kubectl create configmap my-company-backstage-postgres-ca --from-file=ca.crt"
 
 Now install the helm chart:
 
-```
+```shell
 cd contrib/chart/backstage
 helm install -f backstage-prod.yaml my-backstage .
 ```
@@ -144,7 +142,7 @@ helm install -f backstage-prod.yaml my-backstage .
 
 The docker images used for the deployment can be configured through the charts values:
 
-```
+```yaml
 frontend:
   image:
     repository: <image-name>
@@ -165,7 +163,7 @@ lighthouse:
 
 Create a docker-registry secret
 
-```
+```shell
 kubectl create secret docker-registry <docker_registry_secret_name> # args
 ```
 
@@ -181,7 +179,7 @@ dockerRegistrySecretName: <docker_registry_secret_name>
 
 To install the charts a specific namespace use `--namespace <ns>`:
 
-```
+```shell
 helm install -f my_values.yaml --namespace demos backstage .
 ```
 
@@ -189,7 +187,7 @@ helm install -f my_values.yaml --namespace demos backstage .
 
 To deploy backstage with the pre-loaded demo data disable `backend.demoData`:
 
-```
+```shell
 helm install -f my_values.yaml --set backend.demoData=false backstage .
 ```
 
@@ -244,7 +242,7 @@ This error happens in the backend when it tries to connect to the configured Pos
 
 To uninstall Backstage simply run:
 
-```
+```shell
 RELEASE_NAME=<release-name> # use `helm list` to find out the name
 helm uninstall ${RELEASE_NAME}
 kubectl delete pvc data-${RELEASE_NAME}-postgresql-0

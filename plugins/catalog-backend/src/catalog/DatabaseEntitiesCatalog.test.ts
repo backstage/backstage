@@ -15,7 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import type { Entity } from '@backstage/catalog-model';
+import { Entity, LOCATION_ANNOTATION } from '@backstage/catalog-model';
 import { Database, DatabaseManager, Transaction } from '../database';
 import { EntityFilters } from '../service/EntityFilters';
 import { DatabaseEntitiesCatalog } from './DatabaseEntitiesCatalog';
@@ -80,9 +80,10 @@ describe('DatabaseEntitiesCatalog', () => {
           'kind=b,metadata.namespace=d,metadata.name=c',
         ),
       );
-      expect(db.setRelations).toHaveBeenCalledTimes(1);
-      expect(db.setRelations).toHaveBeenCalledWith(expect.anything(), 'u', []);
       expect(db.addEntities).toHaveBeenCalledTimes(1);
+      expect(db.addEntities).toHaveBeenCalledWith(expect.anything(), [
+        { entity: expect.anything(), relations: [] },
+      ]);
       expect(result).toEqual([{ entityId: 'u' }]);
     });
 
@@ -113,9 +114,10 @@ describe('DatabaseEntitiesCatalog', () => {
           'kind=b,metadata.namespace=d,metadata.name=c',
         ),
       );
-      expect(db.setRelations).toHaveBeenCalledTimes(1);
-      expect(db.setRelations).toHaveBeenCalledWith(expect.anything(), 'u', []);
       expect(db.addEntities).toHaveBeenCalledTimes(1);
+      expect(db.addEntities).toHaveBeenCalledWith(expect.anything(), [
+        { entity: expect.anything(), relations: [] },
+      ]);
       expect(transaction.rollback).toBeCalledTimes(1);
       expect(result).toEqual([{ entityId: 'u' }]);
     });
@@ -127,6 +129,9 @@ describe('DatabaseEntitiesCatalog', () => {
         metadata: {
           name: 'c',
           namespace: 'd',
+          annotations: {
+            [LOCATION_ANNOTATION]: 'mock',
+          },
         },
       };
       const dbEntity: Entity = {
@@ -135,14 +140,14 @@ describe('DatabaseEntitiesCatalog', () => {
         metadata: {
           name: 'c',
           namespace: 'd',
+          description: 'changes',
           uid: 'u',
+          annotations: {
+            [LOCATION_ANNOTATION]: 'mock',
+          },
         },
       };
-      db.entities.mockResolvedValue([
-        {
-          entity: dbEntity,
-        },
-      ]);
+      db.entities.mockResolvedValue([{ entity: dbEntity }]);
       db.addEntities.mockResolvedValue([
         { entity: { ...entity, metadata: { ...entity.metadata, uid: 'u' } } },
       ]);
@@ -154,7 +159,7 @@ describe('DatabaseEntitiesCatalog', () => {
       );
 
       expect(db.entities).toHaveBeenCalledTimes(2);
-      expect(db.setRelations).toHaveBeenCalledTimes(1);
+      expect(db.addEntities).toHaveBeenCalledTimes(1);
       expect(result).toEqual([
         {
           entityId: 'u',
@@ -230,12 +235,11 @@ describe('DatabaseEntitiesCatalog', () => {
               x: 'b',
             },
           },
+          relations: [],
         },
         'e',
         1,
       );
-      expect(db.setRelations).toHaveBeenCalledTimes(1);
-      expect(db.setRelations).toHaveBeenCalledWith(expect.anything(), 'u', []);
       expect(result).toEqual([{ entityId: 'u' }]);
     });
 
@@ -308,6 +312,7 @@ describe('DatabaseEntitiesCatalog', () => {
               x: 'b',
             },
           },
+          relations: [],
         },
         'e',
         1,

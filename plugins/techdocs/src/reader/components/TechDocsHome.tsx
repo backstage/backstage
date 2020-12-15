@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { useAsync } from 'react-use';
-import { useNavigate, generatePath } from 'react-router-dom';
-import { Grid } from '@material-ui/core';
 import {
+  Content,
+  Header,
   ItemCard,
+  Page,
   Progress,
   useApi,
-  Content,
-  Page,
-  Header,
 } from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog';
+import { Grid } from '@material-ui/core';
+import React from 'react';
+import { generatePath, useNavigate } from 'react-router-dom';
+import { useAsync } from 'react-use';
 import { rootDocsRouteRef } from '../../plugin';
 
 export const TechDocsHome = () => {
@@ -34,8 +34,8 @@ export const TechDocsHome = () => {
   const navigate = useNavigate();
 
   const { value, loading, error } = useAsync(async () => {
-    const entities = await catalogApi.getEntities();
-    return entities.filter(entity => {
+    const response = await catalogApi.getEntities();
+    return response.items.filter(entity => {
       return !!entity.metadata.annotations?.['backstage.io/techdocs-ref'];
     });
   });

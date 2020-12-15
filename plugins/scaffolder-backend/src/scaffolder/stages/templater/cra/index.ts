@@ -70,7 +70,6 @@ export class CreateReactAppTemplater implements TemplaterBase {
       extraAnnotations[GITHUB_ACTIONS_ANNOTATION] = options.values.storePath;
     }
 
-    // Need to also make a component-info.yaml to store the data about the service.
     const componentInfo = {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'Component',
@@ -89,7 +88,7 @@ export class CreateReactAppTemplater implements TemplaterBase {
     };
 
     await fs.promises.writeFile(
-      `${finalDir}/component-info.yaml`,
+      `${finalDir}/catalog-info.yaml`,
       yaml.stringify(componentInfo),
     );
 

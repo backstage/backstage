@@ -44,47 +44,6 @@ describe('loadConfig', () => {
         configRoot: '/root',
         configPaths: [],
         env: 'production',
-        shouldReadSecrets: false,
-      }),
-    ).resolves.toEqual([
-      {
-        context: 'app-config.yaml',
-        data: {
-          app: {
-            title: 'Example App',
-          },
-        },
-      },
-    ]);
-  });
-
-  it('loads config without secrets', async () => {
-    await expect(
-      loadConfig({
-        configRoot: '/root',
-        configPaths: ['/root/app-config.yaml'],
-        env: 'production',
-        shouldReadSecrets: false,
-      }),
-    ).resolves.toEqual([
-      {
-        context: 'app-config.yaml',
-        data: {
-          app: {
-            title: 'Example App',
-          },
-        },
-      },
-    ]);
-  });
-
-  it('loads config with secrets', async () => {
-    await expect(
-      loadConfig({
-        configRoot: '/root',
-        configPaths: ['/root/app-config.yaml'],
-        env: 'production',
-        shouldReadSecrets: true,
       }),
     ).resolves.toEqual([
       {
@@ -99,16 +58,12 @@ describe('loadConfig', () => {
     ]);
   });
 
-  it('loads development config without secrets', async () => {
+  it('loads config with secrets', async () => {
     await expect(
       loadConfig({
         configRoot: '/root',
-        configPaths: [
-          '/root/app-config.yaml',
-          '/root/app-config.development.yaml',
-        ],
-        env: 'development',
-        shouldReadSecrets: false,
+        configPaths: ['/root/app-config.yaml'],
+        env: 'production',
       }),
     ).resolves.toEqual([
       {
@@ -116,13 +71,8 @@ describe('loadConfig', () => {
         data: {
           app: {
             title: 'Example App',
+            sessionKey: 'abc123',
           },
-        },
-      },
-      {
-        context: 'app-config.development.yaml',
-        data: {
-          app: {},
         },
       },
     ]);
@@ -137,7 +87,6 @@ describe('loadConfig', () => {
           '/root/app-config.development.yaml',
         ],
         env: 'development',
-        shouldReadSecrets: true,
       }),
     ).resolves.toEqual([
       {

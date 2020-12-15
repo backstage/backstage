@@ -30,9 +30,9 @@ spec:
         type: string
         description: Help others understand what this website is for.
       use_typescript:
-        title:  Use Typescript
+        title:  Use TypeScript
         type: boolean
-        description: Include typescript
+        description: Include TypeScript
         default: true
       use_github_actions:
         title:  Use Github Actions workflows to build this component

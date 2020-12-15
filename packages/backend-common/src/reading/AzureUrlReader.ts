@@ -14,49 +14,40 @@
  * limitations under the License.
  */
 
+import {
+  AzureIntegrationConfig,
+  readAzureIntegrationConfigs,
+  getAzureFileFetchUrl,
+  getAzureDownloadUrl,
+  getAzureRequestOptions,
+} from '@backstage/integration';
 import fetch from 'cross-fetch';
-import { Config } from '@backstage/config';
+import { Readable } from 'stream';
 import { NotFoundError } from '../errors';
-import { ReaderFactory, UrlReader } from './types';
-
-type Options = {
-  // TODO: added here for future support, but we only allow dev.azure.com for now
-  host: string;
-  token?: string;
-};
-
-function readConfig(config: Config): Options[] {
-  const optionsArr = Array<Options>();
-
-  const providerConfigs =
-    config.getOptionalConfigArray('integrations.azure') ?? [];
-
-  for (const providerConfig of providerConfigs) {
-    const host = providerConfig.getOptionalString('host') ?? 'dev.azure.com';
-    const token = providerConfig.getOptionalString('token');
-
-    optionsArr.push({ host, token });
-  }
-
-  // As a convenience we always make sure there's at least an unauthenticated
-  // reader for public azure repos.
-  if (!optionsArr.some(p => p.host === 'dev.azure.com')) {
-    optionsArr.push({ host: 'dev.azure.com' });
-  }
-
-  return optionsArr;
-}
+import {
+  ReaderFactory,
+  ReadTreeOptions,
+  ReadTreeResponse,
+  UrlReader,
+} from './types';
+import { ReadTreeResponseFactory } from './tree';
 
 export class AzureUrlReader implements UrlReader {
-  static factory: ReaderFactory = ({ config }) => {
-    return readConfig(config).map(options => {
-      const reader = new AzureUrlReader(options);
+  static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
+    const configs = readAzureIntegrationConfigs(
+      config.getOptionalConfigArray('integrations.azure') ?? [],
+    );
+    return configs.map(options => {
+      const reader = new AzureUrlReader(options, { treeResponseFactory });
       const predicate = (url: URL) => url.host === options.host;
       return { reader, predicate };
     });
   };
 
-  constructor(private readonly options: Options) {
+  constructor(
+    private readonly options: AzureIntegrationConfig,
+    private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
+  ) {
     if (options.host !== 'dev.azure.com') {
       throw Error(
         `Azure integration currently only supports 'dev.azure.com', tried to use host '${options.host}'`,
@@ -65,11 +56,11 @@ export class AzureUrlReader implements UrlReader {
   }
 
   async read(url: string): Promise<Buffer> {
-    const builtUrl = this.buildRawUrl(url);
+    const builtUrl = getAzureFileFetchUrl(url);
 
     let response: Response;
     try {
-      response = await fetch(builtUrl.toString(), this.getRequestOptions());
+      response = await fetch(builtUrl, getAzureRequestOptions(this.options));
     } catch (e) {
       throw new Error(`Unable to read ${url}, ${e}`);
     }
@@ -86,76 +77,26 @@ export class AzureUrlReader implements UrlReader {
     throw new Error(message);
   }
 
-  // Converts
-  // from: https://dev.azure.com/{organization}/{project}/_git/reponame?path={path}&version=GB{commitOrBranch}&_a=contents
-  // to:   https://dev.azure.com/{organization}/{project}/_apis/git/repositories/reponame/items?path={path}&version={commitOrBranch}
-  private buildRawUrl(target: string): URL {
-    try {
-      const url = new URL(target);
-
-      const [
-        empty,
-        userOrOrg,
-        project,
-        srcKeyword,
-        repoName,
-      ] = url.pathname.split('/');
-
-      const path = url.searchParams.get('path') || '';
-      const ref = url.searchParams.get('version')?.substr(2);
-
-      if (
-        url.hostname !== 'dev.azure.com' ||
-        empty !== '' ||
-        userOrOrg === '' ||
-        project === '' ||
-        srcKeyword !== '_git' ||
-        repoName === '' ||
-        path === '' ||
-        ref === ''
-      ) {
-        throw new Error('Wrong Azure Devops URL or Invalid file path');
+  async readTree(
+    url: string,
+    options?: ReadTreeOptions,
+  ): Promise<ReadTreeResponse> {
+    const response = await fetch(
+      getAzureDownloadUrl(url),
+      getAzureRequestOptions(this.options, { Accept: 'application/zip' }),
+    );
+    if (!response.ok) {
+      const message = `Failed to read tree from ${url}, ${response.status} ${response.statusText}`;
+      if (response.status === 404) {
+        throw new NotFoundError(message);
       }
-
-      // transform to api
-      url.pathname = [
-        empty,
-        userOrOrg,
-        project,
-        '_apis',
-        'git',
-        'repositories',
-        repoName,
-        'items',
-      ].join('/');
-
-      const queryParams = [`path=${path}`];
-
-      if (ref) {
-        queryParams.push(`version=${ref}`);
-      }
-
-      url.search = queryParams.join('&');
-
-      url.protocol = 'https';
-
-      return url;
-    } catch (e) {
-      throw new Error(`Incorrect url: ${target}, ${e}`);
-    }
-  }
-
-  private getRequestOptions(): RequestInit {
-    const headers: HeadersInit = {};
-
-    if (this.options.token) {
-      headers.Authorization = `Basic ${Buffer.from(
-        `:${this.options.token}`,
-        'utf8',
-      ).toString('base64')}`;
+      throw new Error(message);
     }
 
-    return { headers };
+    return this.deps.treeResponseFactory.fromZipArchive({
+      stream: (response.body as unknown) as Readable,
+      filter: options?.filter,
+    });
   }
 
   toString() {

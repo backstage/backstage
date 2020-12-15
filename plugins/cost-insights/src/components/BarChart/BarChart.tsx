@@ -20,22 +20,21 @@ import {
   BarChart as RechartsBarChart,
   CartesianGrid,
   ContentRenderer,
-  TooltipProps,
+  TooltipProps as RechartsTooltipProps,
+  RechartsFunction,
   ResponsiveContainer,
   Tooltip as RechartsTooltip,
   XAxis,
   YAxis,
-  TooltipPayload,
 } from 'recharts';
 import { Box, useTheme } from '@material-ui/core';
 import { BarChartTick } from './BarChartTick';
 import { BarChartStepper } from './BarChartStepper';
-import { Tooltip, TooltipItemProps } from '../Tooltip';
-
+import { BarChartTooltip } from './BarChartTooltip';
+import { BarChartTooltipItem } from './BarChartTooltipItem';
 import { currencyFormatter } from '../../utils/formatters';
 import {
   BarChartData,
-  Maybe,
   ResourceData,
   DataKey,
   CostInsightsTheme,
@@ -43,28 +42,58 @@ import {
 import { notEmpty } from '../../utils/assert';
 import { useBarChartStyles } from '../../utils/styles';
 import { resourceSort } from '../../utils/sort';
+import { isInvalid, titleOf, tooltipItemOf } from '../../utils/graphs';
+
+export const defaultTooltip: ContentRenderer<RechartsTooltipProps> = ({
+  label,
+  payload = [],
+}) => {
+  if (isInvalid({ label, payload })) return null;
+
+  const title = titleOf(label);
+  const items = payload.map(tooltipItemOf).filter(notEmpty);
+  return (
+    <BarChartTooltip title={title}>
+      {items.map((item, index) => (
+        <BarChartTooltipItem key={`${item.label}-${index}`} item={item} />
+      ))}
+    </BarChartTooltip>
+  );
+};
 
 export type BarChartProps = {
+  resources: ResourceData[];
   responsive?: boolean;
   displayAmount?: number;
-  barChartData: BarChartData;
-  getTooltipItem: (payload: TooltipPayload) => Maybe<TooltipItemProps>;
-  resources: ResourceData[];
+  options?: Partial<BarChartData>;
+  tooltip?: ContentRenderer<RechartsTooltipProps>;
+  onClick?: RechartsFunction;
+  onMouseMove?: RechartsFunction;
 };
 
 export const BarChart = ({
+  resources,
   responsive = true,
   displayAmount = 6,
-  barChartData,
-  getTooltipItem,
-  resources,
+  options = {},
+  tooltip = defaultTooltip,
+  onClick,
+  onMouseMove,
 }: BarChartProps) => {
   const theme = useTheme<CostInsightsTheme>();
   const styles = useBarChartStyles(theme);
   const [activeChart, setActiveChart] = useState(false);
   const [stepWindow, setStepWindow] = useState(() => [0, displayAmount]);
 
-  const { previousFill, currentFill, previousName, currentName } = barChartData;
+  const data = Object.assign(
+    {
+      previousFill: theme.palette.lightBlue,
+      currentFill: theme.palette.darkBlue,
+      previousName: 'Previous',
+      currentName: 'Current',
+    },
+    options,
+  );
 
   const [stepStart, stepEnd] = stepWindow;
   const steps = Math.ceil(resources.length / displayAmount);
@@ -95,24 +124,11 @@ export const BarChart = ({
     [setStepWindow, resources, displayAmount],
   );
 
-  const handleChartEnter = () => setActiveChart(true);
-
-  const handleChartLeave = () => setActiveChart(false);
-
-  const renderTooltipContent: ContentRenderer<TooltipProps> = ({
-    label,
-    payload,
-  }) => {
-    if (!(payload && typeof label === 'string')) return [null, null];
-    const items = payload.map(getTooltipItem).filter(notEmpty);
-    return <Tooltip label={label} items={items} />;
-  };
-
   return (
     <Box
       position="relative"
-      onMouseLeave={handleChartLeave}
-      onMouseEnter={handleChartEnter}
+      onMouseLeave={() => setActiveChart(false)}
+      onMouseEnter={() => setActiveChart(true)}
       data-testid="bar-chart-wrapper"
     >
       {/* Setting fixed values for height and width generates a console warning in testing but enables ResponsiveContainer to render its children. */}
@@ -121,16 +137,22 @@ export const BarChart = ({
         width={responsive ? '100%' : styles.container.width}
       >
         <RechartsBarChart
+          style={{ cursor: onClick ? 'pointer' : null }}
+          onClick={onClick}
+          onMouseMove={onMouseMove}
           data={sortedResources}
           margin={styles.barChart.margin}
           barSize={45}
           data-testid="bar-chart"
         >
-          <RechartsTooltip
-            cursor={styles.cursor}
-            animationDuration={100}
-            content={renderTooltipContent}
-          />
+          {tooltip && (
+            <RechartsTooltip
+              filterNull
+              cursor={styles.cursor}
+              animationDuration={100}
+              content={tooltip}
+            />
+          )}
           <CartesianGrid
             vertical={false}
             stroke={styles.cartesianGrid.stroke}
@@ -145,18 +167,18 @@ export const BarChart = ({
           <YAxis
             tickFormatter={currencyFormatter.format}
             domain={[() => 0, globalResourcesMax]}
-            tick={{ fill: styles.axis.fill }}
+            tick={styles.axis}
           />
           <Bar
             dataKey={DataKey.Previous}
-            name={previousName}
-            fill={previousFill}
+            name={data.previousName}
+            fill={data.previousFill}
             isAnimationActive={false}
           />
           <Bar
             dataKey={DataKey.Current}
-            name={currentName}
-            fill={currentFill}
+            name={data.currentName}
+            fill={data.currentFill}
             isAnimationActive={false}
           />
         </RechartsBarChart>

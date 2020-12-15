@@ -2,9 +2,8 @@
 id: well-known-annotations
 title: Well-known Annotations on Catalog Entities
 sidebar_label: Well-known Annotations
-description: Documentation on lists a number of well known Annotations, that
-have defined semantics. They can be attached to catalog entities and consumed
-by plugins as needed
+# prettier-ignore
+description: Documentation that lists a number of well known Annotations, that have defined semantics. They can be attached to catalog entities and consumed by plugins as needed.
 ---
 
 This section lists a number of well known
@@ -191,8 +190,24 @@ metadata:
 ```
 
 The value of these annotations are the corresponding attributes that were found
-when ingestion the entity from LDAP. Not all of them may be present, depending
+when ingesting the entity from LDAP. Not all of them may be present, depending
 on what attributes that the server presented at ingestion time.
+
+### graph.microsoft.com/tenant-id, graph.microsoft.com/group-id, graph.microsoft.com/user-id
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    graph.microsoft.com/tenant-id: 6902611b-ffc1-463f-8af3-4d5285dc057b
+    graph.microsoft.com/group-id: c57e8ba2-6cc4-1039-9ebc-d5f241a7ca21
+    graph.microsoft.com/user-id: 2de244b5-104b-4e8f-a3b8-dce3c31e54b6
+```
+
+The value of these annotations are the corresponding attributes that were found
+when ingesting the entity from the Microsoft Graph API. Not all of them may be
+present, depending on what attributes that the server presented at ingestion
+time.
 
 ### sonarqube.org/project-key
 
@@ -223,22 +238,9 @@ annotation, with the same value format.
 
 ### backstage.io/definition-at-location
 
-This annotation allowed to load the API definition from another location. Now
-placeholders can be used instead:
-
-```
-apiVersion: backstage.io/v1alpha1
-kind: API
-metadata:
-  name: petstore
-  description: The Petstore API
-spec:
-  type: openapi
-  lifecycle: production
-  owner: petstore@example.com
-  definition:
-    $text: https://petstore.swagger.io/v2/swagger.json
-```
+This annotation allowed to load the API definition from another location. Use
+[substitution](./descriptor-format.md#substitutions-in-the-descriptor-format)
+instead.
 
 ## Links
 

@@ -1,6 +1,6 @@
 ---
 title: What the heck is Backstage anyway?
-author: Stefan Ålund
+author: Stefan Ålund, Spotify
 authorURL: http://twitter.com/stalund
 authorImageURL: https://pbs.twimg.com/profile_images/121166861/6919c047c0d0edaace78c3009b28e917-user-full-200-130.generated_400x400.jpg
 ---
@@ -85,4 +85,4 @@ We are envisioning [three phases](https://github.com/backstage/backstage/milesto
 
 https://github.com/backstage/backstage/milestones
 
-Want to discuss the project or need support? Join us on [Discord](https://discord.gg/MUpMjP2) or reach out on [alund@spotify.com](mailto:alund@spotify.com).
+Want to discuss the project or need support? Join us on [Discord](https://discord.gg/MUpMjP2) or reach out on [backstage-interest@spotify.com](mailto:backstage-interest@spotify.com).

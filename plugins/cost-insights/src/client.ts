@@ -16,21 +16,16 @@
 /* eslint-disable no-restricted-imports */
 
 import dayjs from 'dayjs';
-import regression, { DataPoint } from 'regression';
 import { CostInsightsApi, ProductInsightsOptions } from '../src/api';
 import {
   Alert,
-  ChangeStatistic,
   Cost,
-  DateAggregation,
   DEFAULT_DATE_FORMAT,
-  Duration,
+  Entity,
   Group,
   MetricData,
-  ProductCost,
   Project,
   ProjectGrowthData,
-  Trendline,
   UnlabeledDataflowData,
 } from '../src/types';
 import {
@@ -38,79 +33,12 @@ import {
   UnlabeledDataflowAlert,
 } from '../src/utils/alerts';
 import {
-  exclusiveEndDateOf,
-  inclusiveStartDateOf,
-} from '../src/utils/duration';
-
-type IntervalFields = {
-  duration: Duration;
-  endDate: string;
-};
-
-function parseIntervals(intervals: string): IntervalFields {
-  const match = intervals.match(
-    /\/(?<duration>P\d+[DM])\/(?<date>\d{4}-\d{2}-\d{2})/,
-  );
-  if (Object.keys(match?.groups || {}).length !== 2) {
-    throw new Error(`Invalid intervals: ${intervals}`);
-  }
-  const { duration, date } = match!.groups!;
-  return {
-    duration: duration as Duration,
-    endDate: date,
-  };
-}
-
-function aggregationFor(
-  intervals: string,
-  baseline: number,
-): DateAggregation[] {
-  const { duration, endDate } = parseIntervals(intervals);
-  const days = dayjs(exclusiveEndDateOf(duration, endDate)).diff(
-    inclusiveStartDateOf(duration, endDate),
-    'day',
-  );
-
-  return [...Array(days).keys()].reduce(
-    (values: DateAggregation[], i: number): DateAggregation[] => {
-      const last = values.length ? values[values.length - 1].amount : baseline;
-      values.push({
-        date: dayjs(inclusiveStartDateOf(duration, endDate))
-          .add(i, 'day')
-          .format(DEFAULT_DATE_FORMAT),
-        amount: Math.max(0, last + (baseline / 20) * (Math.random() * 2 - 1)),
-      });
-      return values;
-    },
-    [],
-  );
-}
-
-function trendlineOf(aggregation: DateAggregation[]): Trendline {
-  const data: ReadonlyArray<DataPoint> = aggregation.map(a => [
-    Date.parse(a.date) / 1000,
-    a.amount,
-  ]);
-  const result = regression.linear(data, { precision: 5 });
-  return {
-    slope: result.equation[0],
-    intercept: result.equation[1],
-  };
-}
-
-function changeOf(aggregation: DateAggregation[]): ChangeStatistic {
-  const half = Math.ceil(aggregation.length / 2);
-  const before = aggregation
-    .slice(0, half)
-    .reduce((sum, a) => sum + a.amount, 0);
-  const after = aggregation
-    .slice(half, aggregation.length)
-    .reduce((sum, a) => sum + a.amount, 0);
-  return {
-    ratio: (after - before) / before,
-    amount: after - before,
-  };
-}
+  trendlineOf,
+  changeOf,
+  entityOf,
+  getGroupedProducts,
+  aggregationFor,
+} from './utils/mockData';
 
 export class ExampleCostInsightsClient implements CostInsightsApi {
   private request(_: any, res: any): Promise<any> {
@@ -171,6 +99,9 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
         aggregation: aggregation,
         change: changeOf(aggregation),
         trendline: trendlineOf(aggregation),
+        // Optional field on Cost which needs to be supplied in order to see
+        // the product breakdown view in the top panel.
+        groupedCosts: getGroupedProducts(intervals),
       },
     );
 
@@ -186,92 +117,22 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
         aggregation: aggregation,
         change: changeOf(aggregation),
         trendline: trendlineOf(aggregation),
+        // Optional field on Cost which needs to be supplied in order to see
+        // the product breakdown view in the top panel.
+        groupedCosts: getGroupedProducts(intervals),
       },
     );
 
     return projectDailyCost;
   }
 
-  async getProductInsights(
-    productInsightsOptions: ProductInsightsOptions,
-  ): Promise<ProductCost> {
-    const projectProductInsights = await this.request(productInsightsOptions, {
-      aggregation: [80_000, 110_000],
-      change: {
-        ratio: 0.375,
-        amount: 30_000,
-      },
-      entities: [
-        {
-          id: null, // entities with null ids will be appear as "Unlabeled" in product panels
-          aggregation: [45_000, 50_000],
-        },
-        {
-          id: 'entity-a',
-          aggregation: [15_000, 20_000],
-        },
-        {
-          id: 'entity-b',
-          aggregation: [20_000, 30_000],
-        },
-        {
-          id: 'entity-e',
-          aggregation: [0, 10_000],
-        },
-      ],
-    });
-    const productInsights: ProductCost = await this.request(
-      productInsightsOptions,
-      {
-        aggregation: [200_000, 250_000],
-        change: {
-          ratio: 0.2,
-          amount: 50_000,
-        },
-        entities: [
-          {
-            id: null, // entities with null ids will be appear as "Unlabeled" in product panels
-            aggregation: [15_000, 30_000],
-          },
-          {
-            id: 'entity-a',
-            aggregation: [15_000, 20_000],
-          },
-          {
-            id: 'entity-b',
-            aggregation: [20_000, 30_000],
-          },
-          {
-            id: 'entity-c',
-            aggregation: [18_000, 25_000],
-          },
-          {
-            id: 'entity-d',
-            aggregation: [36_000, 42_000],
-          },
-          {
-            id: 'entity-e',
-            aggregation: [0, 10_000],
-          },
-          {
-            id: 'entity-f',
-            aggregation: [17_000, 19_000],
-          },
-          {
-            id: 'entity-g',
-            aggregation: [49_000, 30_000],
-          },
-          {
-            id: 'entity-h',
-            aggregation: [0, 34_000],
-          },
-        ],
-      },
+  async getProductInsights(options: ProductInsightsOptions): Promise<Entity> {
+    const productInsights: Entity = await this.request(
+      options,
+      entityOf(options.product),
     );
 
-    return productInsightsOptions.project
-      ? projectProductInsights
-      : productInsights;
+    return productInsights;
   }
 
   async getAlerts(group: string): Promise<Alert[]> {
@@ -282,7 +143,7 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
       aggregation: [60_000, 120_000],
       change: {
         ratio: 1,
-        amount: 60000,
+        amount: 60_000,
       },
       products: [
         { id: 'Compute Engine', aggregation: [58_000, 118_000] },

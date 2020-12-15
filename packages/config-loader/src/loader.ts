@@ -28,18 +28,13 @@ export type LoadConfigOptions = {
 
   // TODO(Rugvip): This will be removed in the future, but for now we use it to warn about possible mistakes.
   env: string;
-
-  // Whether to read secrets or omit them, defaults to false.
-  shouldReadSecrets?: boolean;
 };
 
 class Context {
   constructor(
     private readonly options: {
-      secretPaths: Set<string>;
       env: { [name in string]?: string };
       rootPath: string;
-      shouldReadSecrets: boolean;
     },
   ) {}
 
@@ -47,26 +42,14 @@ class Context {
     return this.options.env;
   }
 
-  skip(path: string): boolean {
-    if (this.options.shouldReadSecrets) {
-      return false;
-    }
-    return this.options.secretPaths.has(path);
-  }
-
   async readFile(path: string): Promise<string> {
     return fs.readFile(resolvePath(this.options.rootPath, path), 'utf8');
   }
 
   async readSecret(
-    path: string,
+    _path: string,
     desc: JsonObject,
   ): Promise<string | undefined> {
-    this.options.secretPaths.add(path);
-    if (!this.options.shouldReadSecrets) {
-      return undefined;
-    }
-
     return readSecret(desc, this);
   }
 }
@@ -100,8 +83,6 @@ export async function loadConfig(
   }
 
   try {
-    const secretPaths = new Set<string>();
-
     for (const configPath of configPaths) {
       if (!isAbsolute(configPath)) {
         throw new Error(`Config load path is not absolute: '${configPath}'`);
@@ -109,10 +90,8 @@ export async function loadConfig(
       const config = await readConfigFile(
         configPath,
         new Context({
-          secretPaths,
           env: process.env,
           rootPath: dirname(configPath),
-          shouldReadSecrets: Boolean(options.shouldReadSecrets),
         }),
       );
 

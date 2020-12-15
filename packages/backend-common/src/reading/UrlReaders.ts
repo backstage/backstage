@@ -23,6 +23,7 @@ import { BitbucketUrlReader } from './BitbucketUrlReader';
 import { GithubUrlReader } from './GithubUrlReader';
 import { GitlabUrlReader } from './GitlabUrlReader';
 import { FetchUrlReader } from './FetchUrlReader';
+import { ReadTreeResponseFactory } from './tree';
 
 type CreateOptions = {
   /** Root config object */
@@ -49,9 +50,10 @@ export class UrlReaders {
     fallback,
   }: CreateOptions): UrlReader {
     const mux = new UrlReaderPredicateMux({ fallback: fallback });
+    const treeResponseFactory = ReadTreeResponseFactory.create({ config });
 
     for (const factory of factories ?? []) {
-      const tuples = factory({ config, logger: logger });
+      const tuples = factory({ config, logger: logger, treeResponseFactory });
 
       for (const tuple of tuples) {
         mux.register(tuple);

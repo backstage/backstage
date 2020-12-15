@@ -102,12 +102,12 @@ export class Publishers implements PublisherBuilder {
       }
     }
 
-    const gitLabConfig = config.getOptionalConfig('scaffolder.gitlab.api');
+    const gitLabConfig = config.getOptionalConfig('scaffolder.gitlab');
     if (gitLabConfig) {
       try {
-        const gitLabToken = gitLabConfig.getString('token');
+        const gitLabToken = gitLabConfig.getConfig('api').getString('token');
         const gitLabClient = new Gitlab({
-          host: gitLabConfig.getOptionalString('baseUrl'),
+          host: gitLabConfig.getConfig('api').getOptionalString('baseUrl'),
           token: gitLabToken,
         });
         const gitLabPublisher = new GitlabPublisher(gitLabClient, gitLabToken);

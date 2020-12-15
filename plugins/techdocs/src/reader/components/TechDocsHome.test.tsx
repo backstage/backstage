@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
 import { ApiProvider, ApiRegistry } from '@backstage/core-api';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog';
 import { wrapInTestApp } from '@backstage/test-utils';
@@ -24,7 +23,7 @@ import { TechDocsHome } from './TechDocsHome';
 
 describe('TechDocs Home', () => {
   const catalogApi: Partial<CatalogApi> = {
-    getEntities: () => Promise.resolve([] as Entity[]),
+    getEntities: () => Promise.resolve({ items: [] }),
   };
 
   const apiRegistry = ApiRegistry.from([[catalogApiRef, catalogApi]]);

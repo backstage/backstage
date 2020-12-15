@@ -8,6 +8,7 @@
   "scripts": {
     "start": "yarn workspace app start",
     "build": "lerna run build",
+    "build-image": "yarn workspace backend build-image",
     "tsc": "tsc",
     "tsc:full": "tsc --skipLibCheck false --incremental false",
     "clean": "backstage-cli clean && lerna run clean",
@@ -30,9 +31,6 @@
     "@spotify/prettier-config": "^7.0.0",
     "lerna": "^3.20.2",
     "prettier": "^1.19.1"
-  },
-  "resolutions": {
-    "esbuild": "0.6.3"
   },
   "prettier": "@spotify/prettier-config",
   "lint-staged": {

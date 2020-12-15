@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { PublisherBase } from './types';
+import { PublisherBase, PublisherOptions, PublisherResult } from './types';
 import { GitApi } from 'azure-devops-node-api/GitApi';
 import { GitRepositoryCreateOptions } from 'azure-devops-node-api/interfaces/GitInterfaces';
-
+import { pushToRemoteUserPass } from './helpers';
 import { JsonValue } from '@backstage/config';
 import { RequiredTemplateValues } from '../templater';
-import { Repository, Remote, Signature, Cred } from 'nodegit';
 
 export class AzurePublisher implements PublisherBase {
   private readonly client: GitApi;
@@ -34,14 +33,12 @@ export class AzurePublisher implements PublisherBase {
   async publish({
     values,
     directory,
-  }: {
-    values: RequiredTemplateValues & Record<string, JsonValue>;
-    directory: string;
-  }): Promise<{ remoteUrl: string }> {
+  }: PublisherOptions): Promise<PublisherResult> {
     const remoteUrl = await this.createRemote(values);
-    await this.pushToRemote(directory, remoteUrl);
+    await pushToRemoteUserPass(directory, remoteUrl, 'notempty', this.token);
+    const catalogInfoUrl = `${remoteUrl}?path=%2Fcatalog-info.yaml`;
 
-    return { remoteUrl };
+    return { remoteUrl, catalogInfoUrl };
   }
 
   private async createRemote(
@@ -53,30 +50,5 @@ export class AzurePublisher implements PublisherBase {
     const repo = await this.client.createRepository(createOptions, project);
 
     return repo.remoteUrl || '';
-  }
-
-  private async pushToRemote(directory: string, remote: string): Promise<void> {
-    const repo = await Repository.init(directory, 0);
-    const index = await repo.refreshIndex();
-    await index.addAll();
-    await index.write();
-    const oid = await index.writeTree();
-    await repo.createCommit(
-      'HEAD',
-      Signature.now('Scaffolder', 'scaffolder@backstage.io'),
-      Signature.now('Scaffolder', 'scaffolder@backstage.io'),
-      'initial commit',
-      oid,
-      [],
-    );
-
-    const remoteRepo = await Remote.create(repo, 'origin', remote);
-
-    await remoteRepo.push(['refs/heads/master:refs/heads/master'], {
-      callbacks: {
-        // Username can anything but the empty string according to: https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=preview-page#use-a-pat
-        credentials: () => Cred.userpassPlaintextNew('notempty', this.token),
-      },
-    });
   }
 }

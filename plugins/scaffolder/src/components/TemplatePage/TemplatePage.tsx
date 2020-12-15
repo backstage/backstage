@@ -23,32 +23,34 @@ import {
   Page,
   useApi,
 } from '@backstage/core';
-import { catalogApiRef } from '@backstage/plugin-catalog';
+import {
+  catalogApiRef,
+  entityRoute,
+  entityRouteParams,
+} from '@backstage/plugin-catalog';
 import { LinearProgress } from '@material-ui/core';
 import { IChangeEvent } from '@rjsf/core';
 import React, { useState, useCallback } from 'react';
+import { generatePath, Navigate } from 'react-router';
 import { useParams } from 'react-router-dom';
-import useStaleWhileRevalidate from 'swr';
+import { useAsync } from 'react-use';
 import { scaffolderApiRef } from '../../api';
-import { JobStatusModal } from '../JobStatusModal';
-import { Job } from '../../types';
-import { MultistepJsonForm } from '../MultistepJsonForm';
-import { Navigate } from 'react-router';
 import { rootRoute } from '../../routes';
+import { JobStatusModal } from '../JobStatusModal';
+import { MultistepJsonForm } from '../MultistepJsonForm';
+import { useJobPolling } from '../hooks/useJobPolling';
 
 const useTemplate = (
   templateName: string,
   catalogApi: typeof catalogApiRef.T,
 ) => {
-  const { data, error } = useStaleWhileRevalidate(
-    `templates/${templateName}`,
-    async () =>
-      catalogApi.getEntities({
-        kind: 'Template',
-        'metadata.name': templateName,
-      }) as Promise<TemplateEntityV1alpha1[]>,
-  );
-  return { template: data?.[0], loading: !error && !data, error };
+  const { value, loading, error } = useAsync(async () => {
+    const response = await catalogApi.getEntities({
+      filter: { kind: 'Template', 'metadata.name': templateName },
+    });
+    return response.items as TemplateEntityV1alpha1[];
+  });
+  return { template: value?.[0], loading, error };
 };
 
 const OWNER_REPO_SCHEMA = {
@@ -83,57 +85,54 @@ export const TemplatePage = () => {
   const catalogApi = useApi(catalogApiRef);
   const scaffolderApi = useApi(scaffolderApiRef);
   const { templateName } = useParams();
+  const [catalogLink, setCatalogLink] = useState<string | undefined>();
   const { template, loading } = useTemplate(templateName, catalogApi);
-
   const [formState, setFormState] = useState({});
-
+  const [modalOpen, setModalOpen] = useState(false);
   const handleFormReset = () => setFormState({});
-  const handleChange = (e: IChangeEvent) =>
-    setFormState({ ...formState, ...e.formData });
+  const handleChange = useCallback(
+    (e: IChangeEvent) => setFormState({ ...formState, ...e.formData }),
+    [setFormState, formState],
+  );
 
   const [jobId, setJobId] = useState<string | null>(null);
-  const handleClose = () => setJobId(null);
+  const job = useJobPolling(jobId, async job => {
+    if (!job.metadata.catalogInfoUrl) {
+      errorApi.post(
+        new Error(`No catalogInfoUrl returned from the scaffolder`),
+      );
+      return;
+    }
+
+    try {
+      const {
+        entities: [createdEntity],
+      } = await catalogApi.addLocation({ target: job.metadata.catalogInfoUrl });
+
+      const resolvedPath = generatePath(
+        `/catalog/${entityRoute.path}`,
+        entityRouteParams(createdEntity),
+      );
+
+      setCatalogLink(resolvedPath);
+    } catch (ex) {
+      errorApi.post(
+        new Error(
+          `Something went wrong trying to add the new 'catalog-info.yaml' to the catalog`,
+        ),
+      );
+    }
+  });
 
   const handleCreate = async () => {
     try {
-      const job = await scaffolderApi.scaffold(templateName, formState);
-      setJobId(job);
+      const jobId = await scaffolderApi.scaffold(templateName, formState);
+      setJobId(jobId);
+      setModalOpen(true);
     } catch (e) {
       errorApi.post(e);
     }
   };
-
-  const [entity, setEntity] = React.useState<TemplateEntityV1alpha1 | null>(
-    null,
-  );
-
-  const handleCreateComplete = useCallback(
-    async (job: Job) => {
-      const target = job.metadata.remoteUrl?.replace(
-        /\.git$/,
-        // TODO(Rugvip): This is not the location we want. As part of scaffodler v2 we
-        //               want this to be more flexible, but before that we might want
-        //               to update all templates to use catalog-info.yaml instead.
-        '/blob/master/component-info.yaml',
-      );
-
-      if (!target) {
-        errorApi.post(
-          new Error(
-            `Failed to find component-info.yaml file in ${job.metadata.remoteUrl}.`,
-          ),
-        );
-        return;
-      }
-
-      const {
-        entities: [createdEntity],
-      } = await catalogApi.addLocation({ target });
-
-      setEntity((createdEntity as any) as TemplateEntityV1alpha1);
-    },
-    [catalogApi, setEntity, errorApi],
-  );
 
   if (!loading && !template) {
     errorApi.post(new Error('Template was not found.'));
@@ -162,14 +161,7 @@ export const TemplatePage = () => {
       />
       <Content>
         {loading && <LinearProgress data-testid="loading-progress" />}
-        {jobId && (
-          <JobStatusModal
-            onComplete={handleCreateComplete}
-            jobId={jobId}
-            onClose={handleClose}
-            entity={entity}
-          />
-        )}
+        {modalOpen && <JobStatusModal job={job} toCatalogLink={catalogLink} />}
         {template && (
           <InfoCard title={template.metadata.title} noPadding>
             <MultistepJsonForm

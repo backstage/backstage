@@ -28,10 +28,24 @@ development or small tweaks to be able to reuse deployment artifacts in
 different environments.
 
 The configuration is shared between the frontend and backend, meaning that
-values that are common between the two only needs to be defined once. Such as
-the `backend.baseUrl`.
+values that are common between the two only need to be defined once. Such as the
+`backend.baseUrl`.
 
 For more details, see [Writing Configuration](./writing.md).
+
+## Configuration Schema
+
+The configuration is validated using JSON Schema definitions. Each plugin and
+package can provide pieces of the configuration schema, which are stitched
+together to form a complete schema during validation. The configuration schema
+is also used to select what configuration is available in the frontend using a
+custom `visibility` keyword, as configuration is by default only available in
+the backend.
+
+You can validate your configuration against the schema using
+`backstage-cli config:check`, and define a schema for your own plugin either
+using JSON Schema or TypeScript. For more information, see
+[Defining Configuration](./defining.md).
 
 ## Reading Configuration
 
@@ -49,5 +63,5 @@ More details are provided in dedicated sections of the documentation.
   plugin.
 - [Writing Configuration](./writing.md): How to provide configuration for your
   Backstage deployment.
-- [Defining Configuration](./defining.md): How to define configuration for users
-  of your plugin.
+- [Defining Configuration](./defining.md): How to define a configuration schema
+  for users of your plugin or package.

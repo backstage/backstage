@@ -28,7 +28,7 @@ import {
   useTheme,
 } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
-import React, { FC } from 'react';
+import React from 'react';
 import { useAsync } from 'react-use';
 import { AsyncState } from 'react-use/lib/useAsync';
 import { catalogApiRef } from '../../plugin';
@@ -44,18 +44,22 @@ function useColocatedEntities(entity: Entity): AsyncState<Entity[]> {
   const catalogApi = useApi(catalogApiRef);
   return useAsync(async () => {
     const myLocation = entity.metadata.annotations?.[LOCATION_ANNOTATION];
-    return myLocation
-      ? await catalogApi.getEntities({ [LOCATION_ANNOTATION]: myLocation })
-      : [];
+    if (!myLocation) {
+      return [];
+    }
+    const response = await catalogApi.getEntities({
+      filter: { [LOCATION_ANNOTATION]: myLocation },
+    });
+    return response.items;
   }, [catalogApi, entity]);
 }
 
-export const UnregisterEntityDialog: FC<Props> = ({
+export const UnregisterEntityDialog = ({
   open,
   onConfirm,
   onClose,
   entity,
-}) => {
+}: Props) => {
   const { value: entities, loading, error } = useColocatedEntities(entity);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));

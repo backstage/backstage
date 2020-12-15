@@ -89,6 +89,12 @@ are separated out into their own folder, see further down.
   There are no "core" packages in the backend. Instead we have `backend-common`
   which contains helper middleware and other utils.
 
+- [`catalog-client`](https://github.com/backstage/backstage/tree/master/packages/catalog-client) -
+  An isomorphic client to interact with the Software Catalog. Backend plugins
+  can use the package directly. Frontend plugins can use the client by using
+  `@backstage/plugin-catalog` in combination with `useApi` and the
+  `catalogApiRef`.
+
 - [`catalog-model/`](https://github.com/backstage/backstage/tree/master/packages/catalog-model) -
   You can consider this to be a library for working with the catalog of sorts.
   It contains the definition of an
@@ -155,7 +161,7 @@ are separated out into their own folder, see further down.
 
 - [`docgen/`](https://github.com/backstage/backstage/tree/master/packages/docgen) -
   Uses the
-  [Typescript Compiler API](https://github.com/Microsoft/TypeScript/wiki/Using-the-Compiler-API)
+  [TypeScript Compiler API](https://github.com/microsoft/TypeScript/wiki/Using-the-Compiler-API)
   to read out definitions and generate documentation for it.
 
 - [`e2e-test/`](https://github.com/backstage/backstage/tree/master/packages/e2e-test) -

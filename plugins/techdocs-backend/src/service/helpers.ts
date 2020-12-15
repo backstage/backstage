@@ -13,113 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Docker from 'dockerode';
-import { Logger } from 'winston';
-import { Entity } from '@backstage/catalog-model';
-import {
-  PreparerBuilder,
-  PublisherBase,
-  GeneratorBuilder,
-  PreparerBase,
-  GeneratorBase,
-} from '../techdocs';
-import { BuildMetadataStorage } from '../storage';
-import { getLocationForEntity, getLastCommitTimestamp } from '../helpers';
+import { EntityName } from '@backstage/catalog-model';
+/**
+ * Using the path of the TechDocs page URL, return a structured EntityName type object with namespace,
+ * kind and name of the Entity.
+ * @param {string} path Example: default/Component/documented-component
+ */
+export const getEntityNameFromUrlPath = (path: string): EntityName => {
+  const [namespace, kind, name] = path.split('/');
 
-const getEntityId = (entity: Entity) => {
-  return `${entity.kind}:${entity.metadata.namespace ?? ''}:${
-    entity.metadata.name
-  }`;
+  return {
+    namespace,
+    kind,
+    name,
+  };
 };
-
-type DocsBuilderArguments = {
-  preparers: PreparerBuilder;
-  generators: GeneratorBuilder;
-  publisher: PublisherBase;
-  entity: Entity;
-  logger: Logger;
-  dockerClient: Docker;
-};
-
-export class DocsBuilder {
-  private preparer: PreparerBase;
-  private generator: GeneratorBase;
-  private publisher: PublisherBase;
-  private entity: Entity;
-  private logger: Logger;
-  private dockerClient: Docker;
-
-  constructor({
-    preparers,
-    generators,
-    publisher,
-    entity,
-    logger,
-    dockerClient,
-  }: DocsBuilderArguments) {
-    this.preparer = preparers.get(entity);
-    this.generator = generators.get(entity);
-    this.publisher = publisher;
-    this.entity = entity;
-    this.logger = logger;
-    this.dockerClient = dockerClient;
-  }
-
-  public async build() {
-    this.logger.info(`Running preparer on entity ${getEntityId(this.entity)}`);
-    const preparedDir = await this.preparer.prepare(this.entity);
-
-    this.logger.info(`Running generator on entity ${getEntityId(this.entity)}`);
-    const { resultDir } = await this.generator.run({
-      directory: preparedDir,
-      dockerClient: this.dockerClient,
-    });
-
-    this.logger.info(`Running publisher on entity ${getEntityId(this.entity)}`);
-    await this.publisher.publish({
-      entity: this.entity,
-      directory: resultDir,
-    });
-
-    if (!this.entity.metadata.uid) {
-      throw new Error(
-        'Trying to build documentation for entity not in service catalog',
-      );
-    }
-
-    new BuildMetadataStorage(this.entity.metadata.uid).storeBuildTimestamp();
-  }
-
-  public async docsUpToDate() {
-    if (!this.entity.metadata.uid) {
-      throw new Error(
-        'Trying to build documentation for entity not in service catalog',
-      );
-    }
-
-    const buildMetadataStorage = new BuildMetadataStorage(
-      this.entity.metadata.uid,
-    );
-    const { type, target } = getLocationForEntity(this.entity);
-
-    // Unless docs are stored locally
-    const nonAgeCheckTypes = ['dir', 'file', 'url'];
-    if (!nonAgeCheckTypes.includes(type)) {
-      const lastCommit = await getLastCommitTimestamp(target, this.logger);
-      const storageTimeStamp = buildMetadataStorage.getTimestamp();
-
-      // Check if documentation source is newer than what we have
-      if (storageTimeStamp && storageTimeStamp >= lastCommit) {
-        this.logger.debug(
-          `Docs for entity ${getEntityId(this.entity)} is up to date.`,
-        );
-        return true;
-      }
-    }
-
-    this.logger.debug(
-      `Docs for entity ${getEntityId(this.entity)} was outdated.`,
-    );
-    return false;
-  }
-}

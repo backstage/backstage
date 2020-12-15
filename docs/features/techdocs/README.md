@@ -122,3 +122,12 @@ migrate Spotify's existing TechDocs features to open source.
   https://github.com/backstage/backstage/blob/master/plugins/techdocs-backend
 [techdocs/container]: https://github.com/backstage/techdocs-container
 [techdocs/cli]: https://github.com/backstage/techdocs-cli
+
+## Feedback
+
+We have created a sweet and short TechDocs user survey -
+https://docs.google.com/forms/d/e/1FAIpQLSdn5Vn3MQhCdyYRuW8cMzZkMQF0bFxXYN168gZRvESLfJWVVg/viewform
+
+This is to gather inputs from you (the Backstage community) which will help us
+best serve TechDocs adopters and existing users. Your inputs will shape our
+roadmap and we will share it in the open.

@@ -1,5 +1,81 @@
 # @backstage/core
 
+## 0.4.0
+
+### Minor Changes
+
+- ff243ce96: Introducing a new optional property within `app-config.yaml` called `auth.environment` to have configurable environment value for `auth.providers`
+
+  **Default Value:** 'development'
+
+  **Optional Values:** 'production' | 'development'
+
+  **Migration-steps:**
+
+  - To override the default value, one could simply introduce the new property `environment` within the `auth` section of the `config.yaml`
+  - re-run the build to reflect the changed configs
+
+### Patch Changes
+
+- 2527628e1: Link `component` prop now accepts any element type.
+- 1c69d4716: Fix React warning of descendant paragraph tag
+- 04f26f88d: Export the `defaultConfigLoader` implementation
+- Updated dependencies [b6557c098]
+- Updated dependencies [e3bd9fc2f]
+- Updated dependencies [d8d5a17da]
+- Updated dependencies [1665ae8bb]
+- Updated dependencies [e3bd9fc2f]
+  - @backstage/core-api@0.2.5
+  - @backstage/config@0.1.2
+  - @backstage/theme@0.2.2
+
+## 0.3.2
+
+### Patch Changes
+
+- 475fc0aaa: Clear sidebar search field once a search is executed
+
+## 0.3.1
+
+### Patch Changes
+
+- 1722cb53c: Added configuration schema
+
+## 0.3.0
+
+### Minor Changes
+
+- 199237d2f: New DependencyGraph component added to core package.
+
+### Patch Changes
+
+- 7b37d65fd: Adds the MarkdownContent component to render and display Markdown content with the default
+  [GFM](https://github.github.com/gfm/) (GitHub Flavored Markdown) dialect.
+
+  ```
+  <MarkdownContent content={markdownGithubFlavored} />
+  ```
+
+  To render the Markdown content with plain [CommonMark](https://commonmark.org/), set the dialect to `common-mark`
+
+  ```
+  <MarkdownContent content={markdown} dialect='common-mark />
+  ```
+
+- 4aca74e08: Extend default config loader to read config from the window object.
+
+  Config will be read from `window.__APP_CONFIG__` which should be an object.
+
+- e8f69ba93: - The BottomLink is now able to handle with internal routes.
+  - @backstage/core Link component detect whether it's an external link or not, and render accordingly
+- 0c0798f08: Extend the table to share its current filter state. The filter state can be used together with the new `useQueryParamState` hook to store the current filter state to the browser history and restore it after navigating to other routes.
+- 0c0798f08: Make the selected state of Select and CheckboxTree controllable from outside.
+- 6627b626f: Fix divider prop not respected on InfoCard
+- Updated dependencies [c5bab94ab]
+- Updated dependencies [4577e377b]
+  - @backstage/core-api@0.2.1
+  - @backstage/theme@0.2.1
+
 ## 0.2.0
 
 ### Minor Changes
@@ -12,7 +88,7 @@
 
 - 482b6313d: Fix dense in Structured Metadata Table
 - 1c60f716e: Added EmptyState component
-- b79017fd3: Updated the `GithubAuth.create` method to configure the default scope of the Github Auth Api. As a result the
+- b79017fd3: Updated the `GithubAuth.create` method to configure the default scope of the GitHub Auth Api. As a result the
   default scope is configurable when overwriting the Core Api in the app.
 
   ```

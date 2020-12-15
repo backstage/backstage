@@ -1,5 +1,54 @@
 # @backstage/plugin-sonarqube
 
+## 0.1.6
+
+### Patch Changes
+
+- Updated dependencies [2527628e1]
+- Updated dependencies [1c69d4716]
+- Updated dependencies [83b6e0c1f]
+- Updated dependencies [1665ae8bb]
+- Updated dependencies [04f26f88d]
+- Updated dependencies [ff243ce96]
+  - @backstage/core@0.4.0
+  - @backstage/catalog-model@0.5.0
+  - @backstage/theme@0.2.2
+
+## 0.1.5
+
+### Patch Changes
+
+- Updated dependencies [08835a61d]
+- Updated dependencies [a9fd599f7]
+- Updated dependencies [bcc211a08]
+  - @backstage/catalog-model@0.4.0
+
+## 0.1.4
+
+### Patch Changes
+
+- 26484d413: Add configuration schema
+- Updated dependencies [475fc0aaa]
+- Updated dependencies [1166fcc36]
+- Updated dependencies [1185919f3]
+  - @backstage/core@0.3.2
+  - @backstage/catalog-model@0.3.0
+
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies [7b37d65fd]
+- Updated dependencies [4aca74e08]
+- Updated dependencies [e8f69ba93]
+- Updated dependencies [0c0798f08]
+- Updated dependencies [0c0798f08]
+- Updated dependencies [199237d2f]
+- Updated dependencies [6627b626f]
+- Updated dependencies [4577e377b]
+  - @backstage/core@0.3.0
+  - @backstage/theme@0.2.1
+
 ## 0.1.2
 
 ### Patch Changes

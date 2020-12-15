@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 import { DateAggregation, ResourceData } from '../types';
+import { ProductState } from './loading';
 
 export const aggregationSort = (
   a: DateAggregation,
   b: DateAggregation,
 ): number => a.date.localeCompare(b.date);
+
 export const resourceSort = (a: ResourceData, b: ResourceData) =>
   b.previous + b.current - (a.previous + a.current);
+
+export function totalAggregationSort(a: ProductState, b: ProductState): number {
+  const [prevA, currA] = a.entity?.aggregation ?? [0, 0];
+  const [prevB, currB] = b.entity?.aggregation ?? [0, 0];
+  return prevB + currB - (prevA + currA);
+}

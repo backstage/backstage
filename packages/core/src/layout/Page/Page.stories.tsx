@@ -14,25 +14,26 @@
  * limitations under the License.
  */
 
+import { Box, Chip, Grid, Link, Typography } from '@material-ui/core';
 import React, { useState } from 'react';
+import { MemoryRouter } from 'react-router';
 import {
-  Header,
-  Page,
-  HeaderLabel,
-  ContentHeader,
   Content,
-  InfoCard,
+  ContentHeader,
+  Header,
+  HeaderLabel,
   HeaderTabs,
+  InfoCard,
+  Page,
 } from '../';
 import {
+  GaugeCard,
+  StatusOK,
   SupportButton,
   Table,
-  StatusOK,
   TableColumn,
-  GaugeCard,
   TrendLine,
 } from '../../components';
-import { Box, Typography, Link, Chip, Grid } from '@material-ui/core';
 
 export default {
   title: 'Plugins/Examples',
@@ -194,23 +195,25 @@ const ExampleContentHeader = ({ selectedTab }: { selectedTab?: number }) => (
 export const PluginWithData = () => {
   const [selectedTab, setSelectedTab] = useState<number>(2);
   return (
-    <div style={{ border: '1px solid #ddd' }}>
-      <Page themeId="tool">
-        <ExampleHeader />
-        <HeaderTabs
-          selectedIndex={selectedTab}
-          onChange={index => setSelectedTab(index)}
-          tabs={tabs.map(({ label }, index) => ({
-            id: index.toString(),
-            label,
-          }))}
-        />
-        <Content>
-          <ExampleContentHeader selectedTab={selectedTab} />
-          <DataGrid />
-        </Content>
-      </Page>
-    </div>
+    <MemoryRouter>
+      <div style={{ border: '1px solid #ddd' }}>
+        <Page themeId="tool">
+          <ExampleHeader />
+          <HeaderTabs
+            selectedIndex={selectedTab}
+            onChange={index => setSelectedTab(index)}
+            tabs={tabs.map(({ label }, index) => ({
+              id: index.toString(),
+              label,
+            }))}
+          />
+          <Content>
+            <ExampleContentHeader selectedTab={selectedTab} />
+            <DataGrid />
+          </Content>
+        </Page>
+      </div>
+    </MemoryRouter>
   );
 };
 

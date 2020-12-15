@@ -15,29 +15,29 @@
  */
 
 import express from 'express';
-import { Logger } from 'winston';
+import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import { Logger } from 'winston';
+import { CatalogIdentityClient } from '../../lib/catalog';
 import {
+  encodeState,
+  OAuthAdapter,
+  OAuthEnvironmentHandler,
+  OAuthHandlers,
+  OAuthProviderOptions,
+  OAuthRefreshRequest,
+  OAuthResponse,
+  OAuthStartRequest,
+} from '../../lib/oauth';
+import {
+  executeFetchUserProfileStrategy,
   executeFrameHandlerStrategy,
   executeRedirectStrategy,
   executeRefreshTokenStrategy,
   makeProfileInfo,
-  executeFetchUserProfileStrategy,
   PassportDoneCallback,
 } from '../../lib/passport';
-import { RedirectInfo, AuthProviderFactory } from '../types';
-import {
-  OAuthAdapter,
-  OAuthHandlers,
-  OAuthProviderOptions,
-  OAuthResponse,
-  OAuthEnvironmentHandler,
-  OAuthStartRequest,
-  encodeState,
-  OAuthRefreshRequest,
-} from '../../lib/oauth';
-import passport from 'passport';
-import { CatalogIdentityClient } from '../../lib/catalog';
+import { AuthProviderFactory, RedirectInfo } from '../types';
 
 type PrivateInfo = {
   refreshToken: string;
@@ -175,14 +175,14 @@ export class GoogleAuthProvider implements OAuthHandlers {
 }
 
 export const createGoogleProvider: AuthProviderFactory = ({
+  providerId,
   globalConfig,
   config,
   logger,
   tokenIssuer,
-  discovery,
+  catalogApi,
 }) =>
   OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-    const providerId = 'google';
     const clientId = envConfig.getString('clientId');
     const clientSecret = envConfig.getString('clientSecret');
     const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
@@ -192,7 +192,7 @@ export const createGoogleProvider: AuthProviderFactory = ({
       clientSecret,
       callbackUrl,
       logger,
-      identityClient: new CatalogIdentityClient({ discovery }),
+      identityClient: new CatalogIdentityClient({ catalogApi }),
     });
 
     return OAuthAdapter.fromConfig(globalConfig, provider, {

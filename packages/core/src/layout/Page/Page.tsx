@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React, { PropsWithChildren } from 'react';
 import { BackstageTheme } from '@backstage/theme';
 import { makeStyles, ThemeProvider } from '@material-ui/core';
 
@@ -33,7 +33,7 @@ type Props = {
   themeId: string;
 };
 
-export const Page: FC<Props> = ({ themeId, children }) => {
+export const Page = ({ themeId, children }: PropsWithChildren<Props>) => {
   const classes = useStyles();
   return (
     <ThemeProvider

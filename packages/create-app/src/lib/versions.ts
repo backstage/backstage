@@ -35,6 +35,7 @@ import { version as cli } from '@backstage/cli/package.json';
 import { version as config } from '@backstage/config/package.json';
 import { version as core } from '@backstage/core/package.json';
 import { version as pluginApiDocs } from '@backstage/plugin-api-docs/package.json';
+import { version as pluginAppBackend } from '@backstage/plugin-app-backend/package.json';
 import { version as pluginAuthBackend } from '@backstage/plugin-auth-backend/package.json';
 import { version as pluginCatalog } from '@backstage/plugin-catalog/package.json';
 import { version as pluginCatalogBackend } from '@backstage/plugin-catalog-backend/package.json';
@@ -61,6 +62,7 @@ export const packageVersions = {
   '@backstage/config': config,
   '@backstage/core': core,
   '@backstage/plugin-api-docs': pluginApiDocs,
+  '@backstage/plugin-app-backend': pluginAppBackend,
   '@backstage/plugin-auth-backend': pluginAuthBackend,
   '@backstage/plugin-catalog': pluginCatalog,
   '@backstage/plugin-catalog-backend': pluginCatalogBackend,

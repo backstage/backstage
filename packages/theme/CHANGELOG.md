@@ -1,5 +1,17 @@
 # @backstage/theme
 
+## 0.2.2
+
+### Patch Changes
+
+- 1665ae8bb: Add a little more padding in dense tables
+
+## 0.2.1
+
+### Patch Changes
+
+- 4577e377b: Improve styling of outlined chips in dark mode.
+
 ## 0.2.0
 
 ### Minor Changes

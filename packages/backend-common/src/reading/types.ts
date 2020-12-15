@@ -16,17 +16,30 @@
 
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
+import { ReadTreeResponseFactory } from './tree';
+
+export type ReadTreeOptions = {
+  /**
+   * A filter that can be used to select which files should be included.
+   *
+   * The path passed to the filter function is the relative path from the URL
+   * that the file tree is fetched from, without any leading '/'.
+   *
+   * For example, given the URL https://github.com/my/repo/tree/master/my-dir, a file
+   * at https://github.com/my/repo/blob/master/my-dir/my-subdir/my-file.txt will
+   * be represented as my-subdir/my-file.txt
+   *
+   * If no filter is provided all files are extracted.
+   */
+  filter?(path: string): boolean;
+};
 
 /**
  * A generic interface for fetching plain data from URLs.
  */
 export type UrlReader = {
   read(url: string): Promise<Buffer>;
-  readTree?(
-    repoUrl: string,
-    branchName: string,
-    paths: Array<string>,
-  ): Promise<ReadTreeResponse>;
+  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
 };
 
 export type UrlReaderPredicateTuple = {
@@ -41,15 +54,21 @@ export type UrlReaderPredicateTuple = {
 export type ReaderFactory = (options: {
   config: Config;
   logger: Logger;
+  treeResponseFactory: ReadTreeResponseFactory;
 }) => UrlReaderPredicateTuple[];
 
-export type File = {
+export type ReadTreeResponseFile = {
   path: string;
   content(): Promise<Buffer>;
 };
 
+export type ReadTreeResponseDirOptions = {
+  /** The directory to write files to. Defaults to the OS tmpdir or `backend.workingDirectory` if set in config */
+  targetDir?: string;
+};
+
 export type ReadTreeResponse = {
-  files(): File[];
-  archive(): Promise<Buffer>;
-  dir(outDir?: string): Promise<string>;
+  files(): Promise<ReadTreeResponseFile[]>;
+  archive(): Promise<NodeJS.ReadableStream>;
+  dir(options?: ReadTreeResponseDirOptions): Promise<string>;
 };

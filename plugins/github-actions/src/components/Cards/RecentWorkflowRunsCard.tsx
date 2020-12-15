@@ -60,7 +60,7 @@ export const RecentWorkflowRunsCard = ({
     <EmptyState
       missing="data"
       title="No Workflow Data"
-      description="This component has Github Actions enabled, but no data was found. Have you created any Workflows? Click the button below to create a new Workflow."
+      description="This component has GitHub Actions enabled, but no data was found. Have you created any Workflows? Click the button below to create a new Workflow."
       action={
         <Button
           variant="contained"

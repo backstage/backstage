@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-import React, { FC, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Snackbar, IconButton } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import { Alert } from '@material-ui/lab';
 import { AlertMessage, useApi, alertApiRef } from '@backstage/core-api';
 
-type Props = {};
-
 // TODO: improve on this and promote to a shared component for use by all apps.
-export const AlertDisplay: FC<Props> = () => {
+export const AlertDisplay = () => {
   const [messages, setMessages] = useState<Array<AlertMessage>>([]);
   const alertApi = useApi(alertApiRef);
 

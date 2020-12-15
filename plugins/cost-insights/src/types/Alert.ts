@@ -41,12 +41,15 @@ export interface ResourceData {
   name: Maybe<string>;
 }
 
-export interface BarChartData {
+export interface BarChartOptions {
   previousFill: string;
   currentFill: string;
   previousName: string;
   currentName: string;
 }
+
+/** deprecated use BarChartOptions instead */
+export interface BarChartData extends BarChartOptions {}
 
 export enum DataKey {
   Previous = 'previous',

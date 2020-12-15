@@ -27,7 +27,9 @@ export const CostOverviewHeader = ({
   children,
 }: PropsWithChildren<CostOverviewHeaderProps>) => (
   <Box
-    marginY={1}
+    mt={2}
+    ml={1}
+    mb={1}
     display="flex"
     flexDirection="row"
     justifyContent="space-between"
