@@ -48,32 +48,38 @@ guidelines to get started.
 ### Ongoing work 🚧
 
 - **[Backstage platform is stable](https://github.com/backstage/backstage/milestone/19)** -
-  The core of Backstage and its features are stable and can be depended on for production use. After this plugins will require little to no maintenance.
+  The core of Backstage and its features are stable and can be depended on for
+  production use. After this plugins will require little to no maintenance.
 
 - **[Improved Kubernetes plugin](https://github.com/backstage/backstage/issues/2857)** -
   Native support for Kubernetes, making it easier for developers to see and
   manage their services running in k8s.
 
-- **Global search** -
-  Extend the basic search available in the Backstage Service Catalog with a
-  global search experience.
+- **Global search** - Extend the basic search available in the Backstage Service
+  Catalog with a global search experience.
 
 - **[Software Templates V2](https://github.com/backstage/backstage/issues/2771)** -
-  Expanding the templates to make steps more composable, by adding the ability to add more steps for custom logic like webhooks and using authorization from integrations.
+  Expanding the templates to make steps more composable, by adding the ability
+  to add more steps for custom logic like webhooks and using authorization from
+  integrations.
 
 ### Future work 🔮
 
-- **Golden Path for Plugin Development** -
-  Creating an easy, standardized way for developers to build plugins will encourage contributions and lead to a richer ecosystem for everyone.
+- **Golden Path for Plugin Development** - Creating an easy, standardized way
+  for developers to build plugins will encourage contributions and lead to a
+  richer ecosystem for everyone.
 
-- **[GraphQL API](https://github.com/backstage/backstage/milestone/13)** -
-  A GraphQL API will open up the rich metadata provided by Backstage in a single
+- **[GraphQL API](https://github.com/backstage/backstage/milestone/13)** - A
+  GraphQL API will open up the rich metadata provided by Backstage in a single
   query. Plugins can easily query this API as well as extend the model where
   needed.
 
-- **Inter Plugin Communication** -  **[Under consideration]** Establish more clearly defined patterns for plugins to communicate.
+- **Inter Plugin Communication** - **[Under consideration]** Establish more
+  clearly defined patterns for plugins to communicate.
 
-- **Improved Access Control** -  **[Under consideration]** Provide finer grained access controls and management making it possible for you to better control the platforms user experience. 
+- **Improved Access Control** - **[Under consideration]** Provide finer grained
+  access controls and management making it possible for you to better control
+  the platforms user experience.
 
 ### Plugins
 
@@ -90,11 +96,13 @@ Are you missing a plugin for your favorite tool? Please
 Chances are that someone will jump in and help build it.
 
 ### Community Initiatives 🧑‍🤝‍🧑 (Coming soon)
-- **Backstage Monthly Meetup** - 
-A space for the community to come together to share and learn about the latest happenings in Backstage.
 
-- **Backstage Hackathons** - 
-Open to everyone in our Backstage community, a celebration of you, the project and building awesome things together
+- **Backstage Monthly Meetup** - A space for the community to come together to
+  share and learn about the latest happenings in Backstage.
+
+- **Backstage Hackathons** - Open to everyone in our Backstage community, a
+  celebration of you, the project and building awesome things together
+
 ### Completed milestones ✅
 
 - [Deploy a product demo at `demo.backstage.io`](https://demo.backstage.io)
