@@ -19,7 +19,7 @@ indicates where the command should be used by selecting from the following list:
 
 ## help
 
-This command displays you a help summary or detailed help screens for each
+This command displays a help summary or detailed help screens for each
 command. Below is a cleaned up output of `yarn backstage-cli --help`.
 
 ```text
@@ -69,7 +69,7 @@ The command also reads and injects static configuration into the bundle. It is
 important to note that when deploying using your own static content hosting
 solution, this will be the final configuration used in the frontend unless you
 for example hook in configuration loading from the backend. When using the
-`nginx` image in this repo along with its included run script, `APP_CONFIG_`
+`nginx` based Dockerfile in this repo along with its included run script, `APP_CONFIG_`
 environment variables will be injected into the frontend, and when serving using
 the `app-backend` plugin, the configuration is completely injected from the
 backend and the configuration at the time of calling this command will not be
@@ -229,7 +229,7 @@ Options:
 Scope: `backend`, `backend-plugin`
 
 Starts a backend package in development mode, with watch mode enabled for all
-local packages.
+local dependencies.
 
 ```text
 Usage: backstage-cli backend:dev [options]
@@ -366,7 +366,7 @@ Scope: `any`
 
 Lint a package. In addition to the default `eslint` behavior, this command will
 include TypeScript files, treat warnings as errors, and default to linting the
-entire directory of no specific files are listed.
+entire directory if no specific files are listed.
 
 ```text
 Usage: backstage-cli lint [options]
@@ -393,7 +393,7 @@ location.
 If needed, the configuration can be extended using a `"jest"` field in
 `package.json`, both within the target package and the monorepo root, with
 configuration in the target package taking precedence. Refer to the
-[Jest configuration](https://jestjs.io/docs/en/configuration) for a full list of
+[Jest configuration documentation](https://jestjs.io/docs/en/configuration) for a full list of
 configuration options.
 
 In addition to the Jest configuration there's an optional `transformModules`
@@ -461,7 +461,7 @@ Options:
 
 Scope: `root`
 
-Bump all `@backstage` packages to the latest versions. This check for updates in
+Bump all `@backstage` packages to the latest versions. This checks for updates in
 the package registry, and will update entries both in `yarn.lock` and
 `package.json` files when necessary.
 
