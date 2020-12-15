@@ -72,9 +72,9 @@ guidelines to get started.
   needed.
 
 - **Inter Plugin Communication** -  **[Under consideration]** Establish more clearly defined patterns for plugins to communicate.
-Improved Access Control -   [Under consideration] Provide finer grained access controls and management making it possible for you to better control the platforms user experience. 
 
-- **Improved Access Control** -   **[Under consideration]** Provide finer grained access controls and management making it possible for you to better control the platforms user experience. 
+- **Improved Access Control** -  **[Under consideration]** Provide finer grained access controls and management making it possible for you to better control the platforms user experience. 
+
 ### Plugins
 
 Building and maintaining [plugins](https://backstage.io/plugins) is the work of
