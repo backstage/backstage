@@ -23,7 +23,7 @@ import {
 
 describe('readAzureIntegrationConfig', () => {
   function buildConfig(data: Partial<AzureIntegrationConfig>): Config {
-    return ConfigReader.fromConfigs([{ context: '', data }]);
+    return new ConfigReader(data);
   }
 
   it('reads all values', () => {
@@ -60,9 +60,7 @@ describe('readAzureIntegrationConfig', () => {
 
 describe('readAzureIntegrationConfigs', () => {
   function buildConfig(data: Partial<AzureIntegrationConfig>[]): Config[] {
-    return data.map(item =>
-      ConfigReader.fromConfigs([{ context: '', data: item }]),
-    );
+    return data.map(item => new ConfigReader(item));
   }
 
   it('reads all values', () => {

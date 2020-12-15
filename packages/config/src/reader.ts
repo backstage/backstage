@@ -69,7 +69,7 @@ export class ConfigReader implements Config {
 
   constructor(
     private readonly data: JsonObject | undefined,
-    private readonly context: string = 'empty-config',
+    private readonly context: string = 'mock-config',
     private readonly fallback?: ConfigReader,
     private readonly prefix: string = '',
   ) {}

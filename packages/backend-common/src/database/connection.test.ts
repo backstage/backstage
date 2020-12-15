@@ -18,19 +18,11 @@ import { ConfigReader } from '@backstage/config';
 import { createDatabaseClient } from './connection';
 
 describe('database connection', () => {
-  const createConfig = (data: any) =>
-    ConfigReader.fromConfigs([
-      {
-        context: '',
-        data,
-      },
-    ]);
-
   describe('createDatabaseClient', () => {
     it('returns a postgres connection', () => {
       expect(
         createDatabaseClient(
-          createConfig({
+          new ConfigReader({
             client: 'pg',
             connection: {
               host: 'acme',
@@ -46,7 +38,7 @@ describe('database connection', () => {
     it('returns an sqlite connection', () => {
       expect(
         createDatabaseClient(
-          createConfig({
+          new ConfigReader({
             client: 'sqlite3',
             connection: ':memory:',
           }),
@@ -57,7 +49,7 @@ describe('database connection', () => {
     it('tries to create a mysql connection as a passthrough', () => {
       expect(() =>
         createDatabaseClient(
-          createConfig({
+          new ConfigReader({
             client: 'mysql',
             connection: {
               host: '127.0.0.1',
@@ -73,7 +65,7 @@ describe('database connection', () => {
     it('accepts overrides', () => {
       expect(
         createDatabaseClient(
-          createConfig({
+          new ConfigReader({
             client: 'pg',
             connection: {
               host: 'acme',
@@ -94,7 +86,7 @@ describe('database connection', () => {
     it('throws an error without a client', () => {
       expect(() =>
         createDatabaseClient(
-          createConfig({
+          new ConfigReader({
             connection: '',
           }),
         ),
@@ -104,7 +96,7 @@ describe('database connection', () => {
     it('throws an error without a connection', () => {
       expect(() =>
         createDatabaseClient(
-          createConfig({
+          new ConfigReader({
             client: 'pg',
           }),
         ),

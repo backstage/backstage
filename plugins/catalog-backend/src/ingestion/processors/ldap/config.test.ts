@@ -32,9 +32,7 @@ describe('readLdapConfig', () => {
         },
       ],
     };
-    const actual = readLdapConfig(
-      ConfigReader.fromConfigs([{ context: '', data: config }]),
-    );
+    const actual = readLdapConfig(new ConfigReader(config));
     const expected = [
       {
         target: 'target',
@@ -125,9 +123,7 @@ describe('readLdapConfig', () => {
         },
       ],
     };
-    const actual = readLdapConfig(
-      ConfigReader.fromConfigs([{ context: '', data: config }]),
-    );
+    const actual = readLdapConfig(new ConfigReader(config));
     const expected = [
       {
         target: 'target',
