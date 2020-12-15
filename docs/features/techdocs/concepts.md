@@ -20,7 +20,7 @@ There are two kinds of preparers available -
 2. Url Reader - Uses source code hosting provider's API to download files.
    (Faster and recommended)
 
-## TechDocs Generator
+### TechDocs Generator
 
 Generation is the second step after preparing the markdown source files. This
 step either runs the TechDocs container (defined below) or runs `mkdocs` CLI to
