@@ -14,25 +14,29 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { Entity } from '@backstage/catalog-model';
-import { Route, Routes } from 'react-router-dom';
-import { MissingAnnotationEmptyState } from '@backstage/core';
 import {
-  rootRouteRef,
-  rootDocsRouteRef,
+  MissingAnnotationEmptyState,
+  createRoutableExtension,
+} from '@backstage/core';
+import React from 'react';
+import { Route, Routes } from 'react-router-dom';
+import { EntityPageDocs } from './EntityPageDocs';
+import {
+  plugin,
   rootCatalogDocsRouteRef,
+  rootDocsRouteRef,
+  rootRouteRef,
 } from './plugin';
 import { TechDocsHome } from './reader/components/TechDocsHome';
 import { TechDocsPage } from './reader/components/TechDocsPage';
-import { EntityPageDocs } from './EntityPageDocs';
 
 const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';
 
 export const Router = () => {
   return (
     <Routes>
-      <Route path={`/${rootRouteRef.path}`} element={<TechDocsHome />} />
+      <Route path="/" element={<TechDocsHome />} />
       <Route path={`/${rootDocsRouteRef.path}`} element={<TechDocsPage />} />
     </Routes>
   );
@@ -54,3 +58,10 @@ export const EmbeddedDocsRouter = ({ entity }: { entity: Entity }) => {
     </Routes>
   );
 };
+
+export const TechdocsHomePage = plugin.provide(
+  createRoutableExtension({
+    component: Router,
+    mountPoint: rootRouteRef,
+  }),
+);

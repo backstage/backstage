@@ -14,12 +14,23 @@
  * limitations under the License.
  */
 
-export * from '@backstage/catalog-client';
-export { AboutCard, IconLinkVertical } from './components/AboutCard';
-export { EntityPageLayout } from './components/EntityPageLayout';
-export { Router } from './components/Router';
-export { useEntityCompoundName } from './components/useEntityCompoundName';
-export { EntityContext, useEntity } from './hooks/useEntity';
-export { catalogApiRef, plugin } from './plugin';
-export * from './routes';
-export * from './extensions';
+import React from 'react';
+import { createRoutableExtension } from '@backstage/core';
+import { Router } from './components/Router';
+import { catalogRouteRef, entityRouteRef } from './routes';
+import { plugin } from './plugin';
+import { Outlet } from 'react-router-dom';
+
+export const CatalogIndexPage = plugin.provide(
+  createRoutableExtension({
+    component: Router,
+    mountPoint: catalogRouteRef,
+  }),
+);
+
+export const CatalogEntityPage = plugin.provide(
+  createRoutableExtension({
+    component: () => <Outlet />,
+    mountPoint: entityRouteRef,
+  }),
+);

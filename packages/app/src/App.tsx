@@ -28,8 +28,14 @@ import { apis } from './apis';
 import { hot } from 'react-hot-loader/root';
 import { providers } from './identityProviders';
 import { Router as CatalogRouter } from '@backstage/plugin-catalog';
-import { Router as DocsRouter } from '@backstage/plugin-techdocs';
-import { GraphiQLPage } from '@backstage/plugin-graphiql';
+import {
+  TechdocsHomePage,
+  plugin as techdocsPlugin,
+} from '@backstage/plugin-techdocs';
+import {
+  plugin as graphiqlPlugin,
+  GraphiQLPage,
+} from '@backstage/plugin-graphiql';
 import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
 import { Router as LighthouseRouter } from '@backstage/plugin-lighthouse';
 import { Router as RegisterComponentRouter } from '@backstage/plugin-register-component';
@@ -38,6 +44,11 @@ import { Router as ImportComponentRouter } from '@backstage/plugin-catalog-impor
 import { Route, Routes, Navigate } from 'react-router';
 
 import { EntityPage } from './components/catalog/EntityPage';
+
+const catalogRouteRef = createRouteRef({
+  path: '/catalog',
+  title: 'Service Catalog',
+});
 
 const app = createApp({
   apis,
@@ -54,18 +65,18 @@ const app = createApp({
       );
     },
   },
+  bindRoutes({ bind }) {
+    bind(graphiqlPlugin.externalRoutes, {
+      derp: techdocsPlugin.routes.root,
+    });
+  },
 });
 
 const AppProvider = app.getProvider();
 const AppRouter = app.getRouter();
 const deprecatedAppRoutes = app.getRoutes();
 
-const catalogRouteRef = createRouteRef({
-  path: '/catalog',
-  title: 'Service Catalog',
-});
-
-const AppRoutes = () => (
+const appRoutes = (
   <Routes>
     <Navigate key="/" to="/catalog" />
     <Route
@@ -76,7 +87,7 @@ const AppRoutes = () => (
       path={`${catalogRouteRef.path}/*`}
       element={<CatalogRouter EntityPage={EntityPage} />}
     />
-    <Route path="/docs/*" element={<DocsRouter />} />
+    <Route path="/docs/*" element={<TechdocsHomePage />} />
     <Route
       path="/tech-radar"
       element={<TechRadarRouter width={1500} height={800} />}
@@ -97,9 +108,7 @@ const App = () => (
     <AlertDisplay />
     <OAuthRequestDialog />
     <AppRouter>
-      <Root>
-        <AppRoutes />
-      </Root>
+      <Root>{appRoutes}</Root>
     </AppRouter>
   </AppProvider>
 );

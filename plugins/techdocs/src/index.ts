@@ -15,6 +15,6 @@
  */
 
 export { plugin } from './plugin';
-export { Router, EmbeddedDocsRouter } from './Router';
+export { Router, EmbeddedDocsRouter, TechdocsHomePage } from './Router';
 export * from './reader';
 export * from './api';
