@@ -27,7 +27,7 @@ export const rootCatalogLinkerdPluginRef = createRouteRef({
   title: 'Linkerd',
 });
 
-export const linkerdPluginRef = createApiRef<any>({
+export const linkerdPluginRef = createApiRef<L5dClient>({
   id: 'plugin.linkerd.service',
   description:
     'Used by the Linkerd plugin to make requests to accompanying backend',

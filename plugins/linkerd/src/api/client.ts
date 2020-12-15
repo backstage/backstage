@@ -1,5 +1,3 @@
-import { DiscoveryApi } from '@backstage/core';
-
 /*
  * Copyright 2020 Spotify AB
  *
@@ -15,6 +13,9 @@ import { DiscoveryApi } from '@backstage/core';
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Entity } from '@backstage/catalog-model';
+import { DiscoveryApi } from '@backstage/core';
+import fetch from 'cross-fetch';
 
 export class L5dClient {
   private readonly discoveryApi: DiscoveryApi;
@@ -23,7 +24,11 @@ export class L5dClient {
     this.discoveryApi = options.discoveryApi;
   }
 
-  async test() {
-    console.warn(this.discoveryApi.getBaseUrl('linkerd'));
+  async getStatsForEntity(entity: Entity) {
+    return await fetch(
+      `${this.discoveryApi.getBaseUrl('linkerd')}/namespace/${
+        entity.metadata.namespace
+      }/deployment/${entity.metadata.name}/stats`,
+    ).then(b => b.text());
   }
 }
