@@ -6,6 +6,7 @@ import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import BuildIcon from '@material-ui/icons/BuildRounded';
 import RuleIcon from '@material-ui/icons/AssignmentTurnedIn';
 import MapIcon from '@material-ui/icons/MyLocation';
+import AppsIcon from '@material-ui/icons/Apps';
 import { Link, makeStyles } from '@material-ui/core';
 import { NavLink } from 'react-router-dom';
 import LogoFull from './LogoFull';
@@ -34,6 +35,7 @@ export const AppSidebar = () => (
     <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
     <SidebarItem icon={RuleIcon} to="lighthouse" text="Lighthouse" />
     <SidebarItem icon={BuildIcon} to="circleci" text="CircleCI" />
+    <SidebarItem icon={AppsIcon} to="release-manager" text="Release Manager" />
     {/* End global nav */}
     <SidebarDivider />
     <SidebarSpace />

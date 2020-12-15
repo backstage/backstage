@@ -81,6 +81,11 @@ techdocs:
 sentry:
   organization: my-company
 
+releasemanager:
+  android:
+    baseUrl: http://localhost:5000/v1
+    identifier: com.spotify.music
+
 rollbar:
   organization: my-company
   # NOTE: The rollbar-backend & accountToken key may be deprecated in the future (replaced by a proxy config)

@@ -22,6 +22,7 @@ export { plugin as Explore } from '@backstage/plugin-explore';
 export { plugin as Circleci } from '@backstage/plugin-circleci';
 export { plugin as RegisterComponent } from '@backstage/plugin-register-component';
 export { plugin as Sentry } from '@backstage/plugin-sentry';
+export { plugin as ReleaseManager } from '@backstage/plugin-release-manager';
 export { plugin as GitopsProfiles } from '@backstage/plugin-gitops-profiles';
 export { plugin as TechDocs } from '@backstage/plugin-techdocs';
 export { plugin as GraphiQL } from '@backstage/plugin-graphiql';
