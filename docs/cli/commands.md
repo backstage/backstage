@@ -19,8 +19,8 @@ indicates where the command should be used by selecting from the following list:
 
 ## help
 
-This command displays a help summary or detailed help screens for each
-command. Below is a cleaned up output of `yarn backstage-cli --help`.
+This command displays a help summary or detailed help screens for each command.
+Below is a cleaned up output of `yarn backstage-cli --help`.
 
 ```text
 app:build                Build an app for a production release
@@ -69,11 +69,11 @@ The command also reads and injects static configuration into the bundle. It is
 important to note that when deploying using your own static content hosting
 solution, this will be the final configuration used in the frontend unless you
 for example hook in configuration loading from the backend. When using the
-`nginx` based Dockerfile in this repo along with its included run script, `APP_CONFIG_`
-environment variables will be injected into the frontend, and when serving using
-the `app-backend` plugin, the configuration is completely injected from the
-backend and the configuration at the time of calling this command will not be
-used.
+`nginx` based Dockerfile in this repo along with its included run script,
+`APP_CONFIG_` environment variables will be injected into the frontend, and when
+serving using the `app-backend` plugin, the configuration is completely injected
+from the backend and the configuration at the time of calling this command will
+not be used.
 
 Note that even when injecting configuration at runtime, it is not possible to
 change the base path of the app. For example, if you at build time have
@@ -97,9 +97,10 @@ process.env.BUILD_INFO = {
 Some CI environments do not properly report correct resource limits, potentially
 leading to errors such as `ENOMEM` during compilation. If you run into this
 issue you can limit the parallelization of the build process by setting the
-environment variable `BACKSTAGE_CLI_BUILD_PARALLEL`. You can set it to `false`
-or `1` to completely disable parallelization, but usually a low value such as
-`2` is enough.
+environment variable `BACKSTAGE_CLI_BUILD_PARALLEL`, which is forwarded to the
+[`terser-webpack-plugin`](https://github.com/webpack-contrib/terser-webpack-plugin#parallel).
+You can set it to `false` or `1` to completely disable parallelization, but
+usually a low value such as `2` is enough.
 
 ```text
 Usage: backstage-cli app:build
@@ -165,8 +166,7 @@ Options:
 
 ## backend:build
 
-Scope: `backend`, `backend-plugin` (To be replaced by `backend:bundle` for
-`backend`)
+Scope: `backend`, `backend-plugin`
 
 This builds a backend package for publishing and use in production. The build
 output is written to `dist/`. Be sure to list any additional file that the
@@ -393,8 +393,8 @@ location.
 If needed, the configuration can be extended using a `"jest"` field in
 `package.json`, both within the target package and the monorepo root, with
 configuration in the target package taking precedence. Refer to the
-[Jest configuration documentation](https://jestjs.io/docs/en/configuration) for a full list of
-configuration options.
+[Jest configuration documentation](https://jestjs.io/docs/en/configuration) for
+a full list of configuration options.
 
 In addition to the Jest configuration there's an optional `transformModules`
 option, which is an array of module names to include in transformations.
@@ -461,8 +461,8 @@ Options:
 
 Scope: `root`
 
-Bump all `@backstage` packages to the latest versions. This checks for updates in
-the package registry, and will update entries both in `yarn.lock` and
+Bump all `@backstage` packages to the latest versions. This checks for updates
+in the package registry, and will update entries both in `yarn.lock` and
 `package.json` files when necessary.
 
 ```text
@@ -556,6 +556,4 @@ the resulting archive in the target `workspace-dir`.
 
 ```text
 Usage: backstage-cli build-workspace [options] &lt;workspace-dir&gt;
-
-Options:
 ```

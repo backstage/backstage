@@ -72,9 +72,9 @@ CLI can therefore easily be replaced with other tools if necessary.
 
 Just like `react-scripts`, the Backstage CLI does not provide many hooks for
 overriding or customizing the build process. This is to allow for evolution of
-the CLI without having to take a wide API surface into account. This allows us to
-quickly iterate and improve the tooling, as well as to more easily keep dependencies
-up to date.
+the CLI without having to take a wide API surface into account. This allows us
+to quickly iterate and improve the tooling, as well as to more easily keep
+dependencies up to date.
 
 ## Opinions & Goals
 
