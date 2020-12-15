@@ -723,6 +723,10 @@ metadata:
   description: The infra business unit
 spec:
   type: business-unit
+  profile:
+    displayName: Infrastructure
+    email: infrastructure@example.com
+    picture: https://example.com/groups/bu-infrastructure.jpeg
   parent: ops
   children: [backstage, other]
 ```
@@ -746,6 +750,14 @@ Some common values for this field could be:
 - `business-unit`
 - `product-area`
 - `root` - as a common virtual root of the hierarchy, if desired
+
+### `spec.profile` [optional]
+
+Optional profile information about the group, mainly for display purposes. All
+fields of this structure are also optional. The email would be a group email of
+some form, that the group may wish to be used for contacting them. The picture
+is expected to be a URL pointing to an image that's representative of the group,
+and that a browser could fetch and render on a group page or similar.
 
 ### `spec.parent` [optional]
 

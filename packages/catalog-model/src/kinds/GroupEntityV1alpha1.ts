@@ -27,6 +27,13 @@ const schema = yup.object<Partial<GroupEntityV1alpha1>>({
   spec: yup
     .object({
       type: yup.string().required().min(1),
+      profile: yup
+        .object({
+          displayName: yup.string().min(1).notRequired(),
+          email: yup.string().min(1).notRequired(),
+          picture: yup.string().min(1).notRequired(),
+        })
+        .notRequired(),
       parent: yup.string().notRequired().min(1),
       // Use these manual tests because yup .required() requires at least
       // one element and there is no simple workaround -_-
@@ -46,6 +53,11 @@ export interface GroupEntityV1alpha1 extends Entity {
   kind: typeof KIND;
   spec: {
     type: string;
+    profile?: {
+      displayName?: string;
+      email?: string;
+      picture?: string;
+    };
     parent?: string;
     children: string[];
   };

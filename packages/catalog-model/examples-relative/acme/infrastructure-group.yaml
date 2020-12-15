@@ -5,6 +5,7 @@ metadata:
   description: The infra department
 spec:
   type: department
+  # Intentional no profile for testing
   parent: acme-corp
   ancestors: [acme-corp]
   children: [backstage, boxoffice]
