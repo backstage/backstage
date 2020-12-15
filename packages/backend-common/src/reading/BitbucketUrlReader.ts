@@ -16,6 +16,7 @@
 
 import {
   BitbucketIntegrationConfig,
+  getBitbucketDefaultBranch,
   getBitbucketDownloadUrl,
   getBitbucketFileFetchUrl,
   getBitbucketRequestOptions,
@@ -24,7 +25,7 @@ import {
 import fetch from 'cross-fetch';
 import parseGitUri from 'git-url-parse';
 import { Readable } from 'stream';
-import { InputError, NotFoundError } from '../errors';
+import { NotFoundError } from '../errors';
 import { ReadTreeResponseFactory } from './tree';
 import {
   ReaderFactory,
@@ -101,19 +102,13 @@ export class BitbucketUrlReader implements UrlReader {
     options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
     const gitUrl: parseGitUri.GitUrl = parseGitUri(url);
-    const { name: repoName, owner: project, ref, resource, filepath } = gitUrl;
+    const { name: repoName, owner: project, resource, filepath } = gitUrl;
 
     const isHosted = resource === 'bitbucket.org';
 
-    if (isHosted && !ref) {
-      // TODO(freben): We should add support for defaulting to the default branch
-      throw new InputError(
-        'Bitbucket URL must contain branch to be able to fetch tree',
-      );
-    }
-
+    const downloadUrl = await getBitbucketDownloadUrl(url, this.config);
     const response = await fetch(
-      getBitbucketDownloadUrl(url, this.config),
+      downloadUrl,
       getBitbucketRequestOptions(this.config),
     );
     if (!response.ok) {
@@ -126,7 +121,7 @@ export class BitbucketUrlReader implements UrlReader {
 
     let folderPath = `${project}-${repoName}`;
     if (isHosted) {
-      const lastCommitShortHash = await this.getLastCommitShortHash(gitUrl);
+      const lastCommitShortHash = await this.getLastCommitShortHash(url);
       folderPath = `${project}-${repoName}-${lastCommitShortHash}`;
     }
 
@@ -146,12 +141,13 @@ export class BitbucketUrlReader implements UrlReader {
     return `bitbucket{host=${host},authed=${authed}}`;
   }
 
-  private async getLastCommitShortHash(
-    gitUrl: parseGitUri.GitUrl,
-  ): Promise<String> {
-    const { name: repoName, owner: project, ref } = gitUrl;
+  private async getLastCommitShortHash(url: string): Promise<String> {
+    const { name: repoName, owner: project, ref } = parseGitUri(url);
 
-    const branch = ref ? ref : 'master';
+    let branch = ref;
+    if (!branch) {
+      branch = await getBitbucketDefaultBranch(url, this.config);
+    }
     const commitsApiUrl = `${this.config.apiBaseUrl}/repositories/${project}/${repoName}/commits/${branch}`;
 
     const commitsResponse = await fetch(

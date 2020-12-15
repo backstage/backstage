@@ -20,6 +20,7 @@ export {
 } from './config';
 export type { BitbucketIntegrationConfig } from './config';
 export {
+  getBitbucketDefaultBranch,
   getBitbucketDownloadUrl,
   getBitbucketFileFetchUrl,
   getBitbucketRequestOptions,

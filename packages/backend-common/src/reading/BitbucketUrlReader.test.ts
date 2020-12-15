@@ -127,7 +127,7 @@ describe('BitbucketUrlReader', () => {
       );
 
       const response = await processor.readTree(
-        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/docs',
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/docs?at=some-branch',
       );
 
       const files = await response.files();
@@ -136,19 +136,6 @@ describe('BitbucketUrlReader', () => {
       const indexMarkdownFile = await files[0].content();
 
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
-    });
-
-    it('must specify a branch', async () => {
-      const processor = new BitbucketUrlReader(
-        { host: 'bitbucket.org', apiBaseUrl: 'https://api.bitbucket.org/2.0' },
-        { treeResponseFactory },
-      );
-
-      await expect(
-        processor.readTree('https://bitbucket.org/backstage/mock'),
-      ).rejects.toThrow(
-        'Bitbucket URL must contain branch to be able to fetch tree',
-      );
     });
 
     it('returns the wanted files from an archive with a subpath', async () => {
