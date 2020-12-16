@@ -16,7 +16,7 @@
 
 import { ComponentType } from 'react';
 import { IconComponent, SystemIconKey, SystemIcons } from '../icons';
-import { BackstagePlugin, AnyExternalRoutes } from '../plugin';
+import { BackstagePlugin, AnyExternalRoutes } from '../plugin/types';
 import { RouteRef } from '../routing';
 import { AnyApiFactory } from '../apis';
 import { AppTheme, ProfileInfo } from '../apis/definitions';
