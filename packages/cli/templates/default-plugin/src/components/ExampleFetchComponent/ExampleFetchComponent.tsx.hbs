@@ -48,7 +48,7 @@ export const DenseTable = ({ users }: DenseTableProps) => {
     { title: 'Nationality', field: 'nationality' },
   ];
 
-  const data = users.map((user) => {
+  const data = users.map(user => {
     return {
       avatar: (
         <img
@@ -73,7 +73,7 @@ export const DenseTable = ({ users }: DenseTableProps) => {
   );
 };
 
-const ExampleFetchComponent = () => {
+export const ExampleFetchComponent = () => {
   const { value, loading, error } = useAsync(async (): Promise<User[]> => {
     const response = await fetch('https://randomuser.me/api/?results=20');
     const data = await response.json();
@@ -88,5 +88,3 @@ const ExampleFetchComponent = () => {
 
   return <DenseTable users={value || []} />;
 };
-
-export default ExampleFetchComponent;
