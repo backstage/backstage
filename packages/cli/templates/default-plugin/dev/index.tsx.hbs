@@ -1,0 +1,11 @@
+import React from 'react';
+import { createDevApp } from '@backstage/dev-utils';
+import { {{ pluginVar }}, ExamplePage } from '../src/plugin';
+
+createDevApp()
+  .registerPlugin({{ pluginVar }})
+  .addPage({
+    element: <ExamplePage />,
+    title: 'Root Page',
+  })
+  .render();

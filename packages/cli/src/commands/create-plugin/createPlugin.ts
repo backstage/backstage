@@ -20,6 +20,7 @@ import chalk from 'chalk';
 import inquirer, { Answers, Question } from 'inquirer';
 import { exec as execCb } from 'child_process';
 import { resolve as resolvePath, join as joinPath } from 'path';
+import camelCase from 'lodash/camelCase';
 import os from 'os';
 import { Command } from 'commander';
 import {
@@ -106,14 +107,10 @@ export async function addPluginDependencyToApp(
 
 export async function addPluginToApp(
   rootDir: string,
-  pluginName: string,
+  pluginVar: string,
   pluginPackage: string,
 ) {
-  const pluginNameCapitalized = pluginName
-    .split('-')
-    .map(name => capitalize(name))
-    .join('');
-  const pluginExport = `export { plugin as ${pluginNameCapitalized} } from '${pluginPackage}';`;
+  const pluginExport = `export { ${pluginVar} } from '${pluginPackage}';`;
   const pluginsFilePath = 'packages/app/src/plugins.ts';
   const pluginsFile = resolvePath(rootDir, pluginsFilePath);
 
@@ -223,6 +220,7 @@ export default async (cmd: Command) => {
   const name = cmd.scope
     ? `@${cmd.scope.replace(/^@/, '')}/plugin-${pluginId}`
     : `plugin-${pluginId}`;
+  const pluginVar = `${camelCase(answers.id)}Plugin`;
   const npmRegistry = cmd.npmRegistry && cmd.scope ? cmd.npmRegistry : '';
   const privatePackage = cmd.private === false ? false : true;
   const isMonoRepo = await fs.pathExists(paths.resolveTargetRoot('lerna.json'));
@@ -259,6 +257,7 @@ export default async (cmd: Command) => {
       tempDir,
       {
         ...answers,
+        pluginVar,
         pluginVersion,
         name,
         privatePackage,
@@ -278,7 +277,7 @@ export default async (cmd: Command) => {
       await addPluginDependencyToApp(paths.targetRoot, name, pluginVersion);
 
       Task.section('Import plugin in app');
-      await addPluginToApp(paths.targetRoot, pluginId, name);
+      await addPluginToApp(paths.targetRoot, pluginVar, name);
     }
 
     if (ownerIds && ownerIds.length) {
