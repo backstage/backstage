@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import '@backstage/cli/asset-types/asset-types';
+import '@backstage/cli/asset-types';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
