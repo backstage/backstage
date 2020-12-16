@@ -79,21 +79,6 @@ export const makeConfigs = async (
       mainFields.unshift('browser');
     }
 
-    const commonjsInclude: Array<RegExp | string> = [/node_modules/];
-
-    // Purpose of this file is
-    // to be bridge between
-    // frontend- and backend-
-    // plugins' code
-    const UNIVERSAL_FILE = 'universal.js';
-    const universalPath = paths.resolveTarget(UNIVERSAL_FILE);
-    const universalFileExists = fs.existsSync(universalPath);
-
-    if (universalFileExists) {
-      mainFields.push(UNIVERSAL_FILE);
-      commonjsInclude.push(UNIVERSAL_FILE);
-    }
-
     configs.push({
       input: 'src/index.ts',
       output,
@@ -105,7 +90,7 @@ export const makeConfigs = async (
         }),
         resolve({ mainFields }),
         commonjs({
-          include: commonjsInclude,
+          include: /node_modules/,
           exclude: [/\/[^/]+\.(?:stories|test)\.[^/]+$/],
         }),
         postcss(),

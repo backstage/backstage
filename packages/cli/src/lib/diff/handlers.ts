@@ -68,27 +68,6 @@ class PackageJsonHandler {
     await this.syncDependencies('devDependencies');
   }
 
-  private async syncFiles() {
-    const hasUniversalFile = this.targetPkg.files.includes('universal.js');
-    const hasConfigTypeScriptFile =
-      typeof this.targetPkg.configSchema === 'string';
-
-    if (hasUniversalFile || hasConfigTypeScriptFile) {
-      const files = [...this.pkg.files];
-      if (hasUniversalFile) {
-        files.push('universal.js');
-      }
-
-      if (hasConfigTypeScriptFile) {
-        files.push(this.targetPkg.configSchema);
-      }
-
-      await this.syncField('files', { files });
-    } else {
-      await this.syncField('files');
-    }
-  }
-
   // Make sure a field inside package.json is in sync. This mutates the targetObj and writes package.json on change.
   private async syncField(
     fieldName: string,
@@ -123,6 +102,15 @@ class PackageJsonHandler {
         targetObj[fieldName] = newValue;
         await this.write();
       }
+    }
+  }
+
+  private async syncFiles() {
+    if (typeof this.targetPkg.configSchema === 'string') {
+      const files = [...this.pkg.files, this.targetPkg.configSchema];
+      await this.syncField('files', { files });
+    } else {
+      await this.syncField('files');
     }
   }
 
