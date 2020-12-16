@@ -70,6 +70,8 @@
   },
   "files": [
     "dist",
-    "migrations/**/*.{js,d.ts}"
-  ]
+    "migrations/**/*.{js,d.ts}",
+    "config.d.ts"
+  ],
+  "configSchema": "config.d.ts"
 }
