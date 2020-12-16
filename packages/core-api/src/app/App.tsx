@@ -65,8 +65,8 @@ import {
   AppComponents,
   AppConfigLoader,
   AppOptions,
+  AppRouteBinder,
   BackstageApp,
-  BindRouteFunc,
   SignInPageProps,
   SignInResult,
 } from './types';
@@ -77,7 +77,7 @@ export function generateBoundRoutes(
   const result = new Map<ExternalRouteRef, RouteRef>();
 
   if (bindRoutes) {
-    const bind: BindRouteFunc = (externalRoutes, targetRoutes) => {
+    const bind: AppRouteBinder = (externalRoutes, targetRoutes) => {
       for (const [key, value] of Object.entries(targetRoutes)) {
         const externalRoute = externalRoutes[key];
         if (!externalRoute) {
