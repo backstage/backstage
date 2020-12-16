@@ -93,8 +93,8 @@ export class PluginImpl<
 }
 
 export function createPlugin<
-  Routes extends AnyRoutes,
-  ExternalRoutes extends AnyExternalRoutes
+  Routes extends AnyRoutes = {},
+  ExternalRoutes extends AnyExternalRoutes = {}
 >(
   config: PluginConfig<Routes, ExternalRoutes>,
 ): BackstagePlugin<Routes, ExternalRoutes> {
