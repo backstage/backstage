@@ -17,29 +17,25 @@ import mockFs from 'mock-fs';
 import { getFileTreeRecursively, getHeadersForFileExtension } from './helpers';
 
 describe('getHeadersForFileExtension', () => {
-  it('returns correct header for default extensions', () => {
-    const headers = getHeadersForFileExtension('xyz');
-    const expectedHeaders = {
-      'Content-Type': 'text/plain',
-    };
-    expect(headers).toEqual(expectedHeaders);
-  });
+  const correctMapOfExtensions = [
+    ['.html', 'text/html; charset=utf-8'],
+    ['.css', 'text/css; charset=utf-8'],
+    ['.png', 'image/png'],
+    ['.jpg', 'image/jpeg'],
+    ['.jpeg', 'image/jpeg'],
+    ['.svg', 'image/svg+xml'],
+    ['.json', 'application/json; charset=utf-8'],
+    ['.this-in-not-an-extension', 'text/plain; charset=utf-8'],
+  ];
 
-  it('returns correct header for html', () => {
-    const headers = getHeadersForFileExtension('html');
-    const expectedHeaders = {
-      'Content-Type': 'text/html; charset=UTF-8',
-    };
-    expect(headers).toEqual(expectedHeaders);
-  });
-
-  it('returns correct header for css', () => {
-    const headers = getHeadersForFileExtension('css');
-    const expectedHeaders = {
-      'Content-Type': 'text/css; charset=UTF-8',
-    };
-    expect(headers).toEqual(expectedHeaders);
-  });
+  test.each(correctMapOfExtensions)(
+    'check content-type for %s extension',
+    (extension, expectedContentType) => {
+      const headers = getHeadersForFileExtension(extension);
+      expect(headers).toHaveProperty('Content-Type');
+      expect(headers['Content-Type'].toLowerCase()).toBe(expectedContentType);
+    },
+  );
 });
 
 describe('getFileTreeRecursively', () => {
