@@ -33,7 +33,6 @@ describe('ComponentV1alpha1Validator', () => {
         type: 'service',
         lifecycle: 'production',
         owner: 'me',
-        implementsApis: ['api-0'],
         providesApis: ['api-0'],
         consumesApis: ['api-0'],
       },
@@ -102,26 +101,6 @@ describe('ComponentV1alpha1Validator', () => {
   it('rejects empty owner', async () => {
     (entity as any).spec.owner = '';
     await expect(validator.check(entity)).rejects.toThrow(/owner/);
-  });
-
-  it('accepts missing implementsApis', async () => {
-    delete (entity as any).spec.implementsApis;
-    await expect(validator.check(entity)).resolves.toBe(true);
-  });
-
-  it('rejects empty implementsApis', async () => {
-    (entity as any).spec.implementsApis = [''];
-    await expect(validator.check(entity)).rejects.toThrow(/implementsApis/);
-  });
-
-  it('rejects undefined implementsApis', async () => {
-    (entity as any).spec.implementsApis = [undefined];
-    await expect(validator.check(entity)).rejects.toThrow(/implementsApis/);
-  });
-
-  it('accepts no implementsApis', async () => {
-    (entity as any).spec.implementsApis = [];
-    await expect(validator.check(entity)).resolves.toBe(true);
   });
 
   it('accepts missing providesApis', async () => {

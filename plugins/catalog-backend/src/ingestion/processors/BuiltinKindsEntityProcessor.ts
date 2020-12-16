@@ -116,12 +116,6 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
         RELATION_OWNER_OF,
       );
       doEmit(
-        component.spec.implementsApis,
-        { defaultKind: 'API', defaultNamespace: selfRef.namespace },
-        RELATION_PROVIDES_API,
-        RELATION_API_PROVIDED_BY,
-      );
-      doEmit(
         component.spec.providesApis,
         { defaultKind: 'API', defaultNamespace: selfRef.namespace },
         RELATION_PROVIDES_API,
