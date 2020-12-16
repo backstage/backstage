@@ -12,7 +12,8 @@ If you haven't setup Backstage already, start
 
 > If you used `npx @backstage/create-app`, TechDocs may already be present.
 >
-> You should skip to `Setting the Configuration` below.
+> You should skip to [`Setting the Configuration`](#setting-the-configuration)
+> below.
 
 ## Adding TechDocs frontend plugin
 
@@ -250,7 +251,7 @@ the dependencies. For example, we want `Markdown` version to be
 You can also explicitly install `Markdown==3.2.2` after installing all other
 Python packages.
 
-## Run Backstage locally
+## Running Backstage locally
 
 Start the frontend and the backend app by
 [running backstage locally](../../getting-started/running-backstage-locally.md).
