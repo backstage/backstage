@@ -1,4 +1,5 @@
 abc
+adamdmharvey
 andrewthauer
 Apdex
 api
@@ -49,6 +50,7 @@ deadnaming
 destructured
 dev
 devs
+dhenneke
 discoverability
 Discoverability
 dls
@@ -57,6 +59,8 @@ Dockerfile
 Dockerize
 dockerode
 Docusaurus
+Dominik
+dtuite
 dzolotusky
 eg
 Ek
@@ -80,6 +84,7 @@ graphviz
 Gustavsson
 Hackathons
 haproxy
+Henneke
 heroku
 Heroku
 horizontalpodautoscalers
@@ -225,6 +230,7 @@ tooltips
 touchpoints
 transpiled
 transpilation
+Tuite
 ui
 untracked
 upvote
