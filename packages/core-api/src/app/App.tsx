@@ -242,18 +242,21 @@ export class PrivateAppImpl implements BackstageApp {
         [],
       );
 
-      // Probably want to memo this?
-      const { routePaths, routeParents, routeObjects } = traverseElementTree({
-        root: children,
-        discoverers: [childDiscoverer, routeElementDiscoverer],
-        collectors: {
-          routePaths: routePathCollector,
-          routeParents: routeParentCollector,
-          routeObjects: routeObjectCollector,
-        },
-      });
+      const { routePaths, routeParents, routeObjects } = useMemo(() => {
+        const result = traverseElementTree({
+          root: children,
+          discoverers: [childDiscoverer, routeElementDiscoverer],
+          collectors: {
+            routePaths: routePathCollector,
+            routeParents: routeParentCollector,
+            routeObjects: routeObjectCollector,
+          },
+        });
 
-      validateRoutes(routePaths, routeParents);
+        validateRoutes(result.routePaths, result.routeParents);
+
+        return result;
+      }, [children]);
 
       const loadedConfig = useConfigLoader(
         this.configLoader,
