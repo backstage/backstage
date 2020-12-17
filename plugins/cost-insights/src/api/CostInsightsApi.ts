@@ -18,7 +18,6 @@ import { createApiRef } from '@backstage/core';
 import {
   Alert,
   Cost,
-  Duration,
   Entity,
   Group,
   Project,
@@ -38,15 +37,9 @@ export type ProductInsightsOptions = {
   group: string;
 
   /**
-   * A time duration, such as P3M. See the Duration type for a detailed explanation
-   * of how the durations are interpreted in Cost Insights.
+   * An ISO 8601 repeating interval string, such as R2/P3M/2020-09-01
    */
-  duration: Duration;
-
-  /**
-   * The most current date for which billing data is complete, in YYYY-MM-DD format.
-   */
-  lastCompleteBillingDate: string;
+  intervals: string;
 
   /**
    * (optional) The project id from getGroupProjects or query parameters

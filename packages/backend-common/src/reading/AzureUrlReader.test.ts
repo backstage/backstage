@@ -158,9 +158,7 @@ describe('AzureUrlReader', () => {
 
     it('returns the wanted files from an archive', async () => {
       const processor = new AzureUrlReader(
-        {
-          host: 'dev.azure.com',
-        },
+        { host: 'dev.azure.com' },
         { treeResponseFactory },
       );
 

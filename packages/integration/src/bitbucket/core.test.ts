@@ -14,10 +14,21 @@
  * limitations under the License.
  */
 
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
+import { msw } from '@backstage/test-utils';
 import { BitbucketIntegrationConfig } from './config';
-import { getBitbucketFileFetchUrl, getBitbucketRequestOptions } from './core';
+import {
+  getBitbucketDefaultBranch,
+  getBitbucketDownloadUrl,
+  getBitbucketFileFetchUrl,
+  getBitbucketRequestOptions,
+} from './core';
 
 describe('bitbucket core', () => {
+  const worker = setupServer();
+  msw.setupDefaultHandlers(worker);
+
   describe('getBitbucketRequestOptions', () => {
     it('inserts a token when needed', () => {
       const withToken: BitbucketIntegrationConfig = {
@@ -95,6 +106,149 @@ describe('bitbucket core', () => {
       ).toEqual(
         'https://bitbucket.mycompany.net/rest/api/1.0/projects/a/repos/b/raw/path/to/c.yaml?at=',
       );
+    });
+  });
+
+  describe('getBitbucketDownloadUrl', () => {
+    it('add path param if a path is specified for Bitbucket Server', async () => {
+      const defaultBranchResponse = {
+        displayId: 'main',
+      };
+      worker.use(
+        rest.get(
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches/default',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(defaultBranchResponse),
+            ),
+        ),
+      );
+      const config: BitbucketIntegrationConfig = {
+        host: 'bitbucket.mycompany.net',
+        apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
+      };
+      const result = await getBitbucketDownloadUrl(
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/docs',
+        config,
+      );
+      expect(result).toEqual(
+        'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive?format=zip&at=main&prefix=backstage-mock&path=docs',
+      );
+    });
+
+    it('do not add path param if no path is specified for Bitbucket Server', async () => {
+      const defaultBranchResponse = {
+        displayId: 'main',
+      };
+      worker.use(
+        rest.get(
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches/default',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(defaultBranchResponse),
+            ),
+        ),
+      );
+      const config: BitbucketIntegrationConfig = {
+        host: 'bitbucket.mycompany.net',
+        apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
+      };
+      const result = await getBitbucketDownloadUrl(
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse',
+        config,
+      );
+
+      expect(result).toEqual(
+        'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive?format=zip&at=main&prefix=backstage-mock',
+      );
+    });
+
+    it('get by branch for Bitbucket Server', async () => {
+      const config: BitbucketIntegrationConfig = {
+        host: 'bitbucket.mycompany.net',
+        apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
+      };
+      const result = await getBitbucketDownloadUrl(
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/docs?at=some-branch',
+        config,
+      );
+      expect(result).toEqual(
+        'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive?format=zip&at=some-branch&prefix=backstage-mock&path=docs',
+      );
+    });
+
+    it('do not add path param for Bitbucket Cloud', async () => {
+      const config: BitbucketIntegrationConfig = {
+        host: 'bitbucket.org',
+        apiBaseUrl: 'https://api.bitbucket.org/2.0',
+      };
+      const result = await getBitbucketDownloadUrl(
+        'https://bitbucket.org/backstage/mock/src/master',
+        config,
+      );
+      expect(result).toEqual(
+        'https://bitbucket.org/backstage/mock/get/master.zip',
+      );
+    });
+  });
+
+  describe('getBitbucketDefaultBranch', () => {
+    it('return default branch for Bitbucket Cloud', async () => {
+      const repoInfoResponse = {
+        mainbranch: {
+          name: 'main',
+        },
+      };
+      worker.use(
+        rest.get(
+          'https://api.bitbucket.org/2.0/repositories/backstage/mock',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(repoInfoResponse),
+            ),
+        ),
+      );
+      const config: BitbucketIntegrationConfig = {
+        host: 'bitbucket.org',
+        apiBaseUrl: 'https://api.bitbucket.org/2.0',
+      };
+      const defaultBranch = await getBitbucketDefaultBranch(
+        'https://bitbucket.org/backstage/mock/src/main',
+        config,
+      );
+      expect(defaultBranch).toEqual('main');
+    });
+
+    it('return default branch for Bitbucket Server', async () => {
+      const defaultBranchResponse = {
+        displayId: 'main',
+      };
+      worker.use(
+        rest.get(
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches/default',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(defaultBranchResponse),
+            ),
+        ),
+      );
+      const config: BitbucketIntegrationConfig = {
+        host: 'bitbucket.mycompany.net',
+        apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
+      };
+      const defaultBranch = await getBitbucketDefaultBranch(
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/README.md',
+        config,
+      );
+      expect(defaultBranch).toEqual('main');
     });
   });
 });

@@ -95,35 +95,6 @@ export class CommonDatabase implements Database {
     }
   }
 
-  async addEntity(
-    txOpaque: Transaction,
-    request: DbEntityRequest,
-  ): Promise<DbEntityResponse> {
-    const tx = txOpaque as Knex.Transaction<any, any>;
-
-    if (request.entity.metadata.uid !== undefined) {
-      throw new InputError('May not specify uid for new entities');
-    } else if (request.entity.metadata.etag !== undefined) {
-      throw new InputError('May not specify etag for new entities');
-    } else if (request.entity.metadata.generation !== undefined) {
-      throw new InputError('May not specify generation for new entities');
-    }
-
-    const newEntity = lodash.cloneDeep(request.entity);
-    newEntity.metadata = {
-      ...newEntity.metadata,
-      uid: generateEntityUid(),
-      etag: generateEntityEtag(),
-      generation: 1,
-    };
-
-    const newRow = this.toEntityRow(request.locationId, newEntity);
-    await tx<DbEntitiesRow>('entities').insert(newRow);
-    await this.updateEntitiesSearch(tx, newRow.id, newEntity);
-
-    return { locationId: request.locationId, entity: newEntity };
-  }
-
   async addEntities(
     txOpaque: Transaction,
     request: DbEntityRequest[],
@@ -132,9 +103,10 @@ export class CommonDatabase implements Database {
 
     const result: DbEntityResponse[] = [];
     const entityRows: DbEntitiesRow[] = [];
+    const relationRows: DbEntitiesRelationsRow[] = [];
     const searchRows: DbEntitiesSearchRow[] = [];
 
-    for (const { entity, locationId } of request) {
+    for (const { entity, relations, locationId } of request) {
       if (entity.metadata.uid !== undefined) {
         throw new InputError('May not specify uid for new entities');
       } else if (entity.metadata.etag !== undefined) {
@@ -145,28 +117,27 @@ export class CommonDatabase implements Database {
         throw new InputError('May not specify relations for new entities');
       }
 
+      const uid = generateEntityUid();
+      const etag = generateEntityEtag();
+      const generation = 1;
       const newEntity = {
         ...entity,
         metadata: {
           ...entity.metadata,
-          uid: generateEntityUid(),
-          etag: generateEntityEtag(),
-          generation: 1,
+          uid,
+          etag,
+          generation,
         },
       };
 
       result.push({ entity: newEntity, locationId });
       entityRows.push(this.toEntityRow(locationId, newEntity));
-      searchRows.push(...buildEntitySearch(newEntity.metadata.uid, newEntity));
+      relationRows.push(...this.toRelationRows(uid, relations));
+      searchRows.push(...buildEntitySearch(uid, newEntity));
     }
 
     await tx.batchInsert('entities', entityRows, BATCH_SIZE);
-    await tx<DbEntitiesSearchRow>('entities_search')
-      .whereIn(
-        'entity_id',
-        entityRows.map(r => r.id),
-      )
-      .del();
+    await tx.batchInsert('entities_relations', relationRows, BATCH_SIZE);
     await tx.batchInsert('entities_search', searchRows, BATCH_SIZE);
 
     return result;
@@ -181,8 +152,7 @@ export class CommonDatabase implements Database {
     const tx = txOpaque as Knex.Transaction<any, any>;
 
     const { uid } = request.entity.metadata;
-
-    if (uid === undefined) {
+    if (!uid) {
       throw new InputError('Must specify uid when updating entities');
     }
 
@@ -193,40 +163,48 @@ export class CommonDatabase implements Database {
     if (oldRows.length !== 1) {
       throw new NotFoundError('No matching entity found');
     }
+    const etag = oldRows[0].etag;
+    const generation = Number(oldRows[0].generation);
 
-    // Validate the old entity
-    const oldRow = oldRows[0];
-    // The Number cast is here because sqlite reads it as a string, no matter
-    // what the table actually says
-    oldRow.generation = Number(oldRow.generation);
-    if (matchingEtag) {
-      if (matchingEtag !== oldRow.etag) {
-        throw new ConflictError(
-          `Etag mismatch, expected="${matchingEtag}" found="${oldRow.etag}"`,
-        );
-      }
+    // Validate the old entity. The Number cast is here because sqlite reads it
+    // as a string, no matter what the table actually says.
+    if (matchingEtag && matchingEtag !== etag) {
+      throw new ConflictError(
+        `Etag mismatch, expected="${matchingEtag}" found="${etag}"`,
+      );
     }
-    if (matchingGeneration) {
-      if (matchingGeneration !== oldRow.generation) {
-        throw new ConflictError(
-          `Generation mismatch, expected="${matchingGeneration}" found="${oldRow.generation}"`,
-        );
-      }
+    if (matchingGeneration && matchingGeneration !== generation) {
+      throw new ConflictError(
+        `Generation mismatch, expected="${matchingGeneration}" found="${generation}"`,
+      );
     }
 
     // Store the updated entity; select on the old etag to ensure that we do
     // not lose to another writer
     const newRow = this.toEntityRow(request.locationId, request.entity);
     const updatedRows = await tx<DbEntitiesRow>('entities')
-      .where({ id: oldRow.id, etag: oldRow.etag })
+      .where({ id: uid, etag })
       .update(newRow);
-
-    // If this happens, somebody else changed the entity just now
     if (updatedRows !== 1) {
       throw new ConflictError(`Failed to update entity`);
     }
 
-    await this.updateEntitiesSearch(tx, oldRow.id, request.entity);
+    const relationRows = this.toRelationRows(uid, request.relations);
+    await tx<DbEntitiesRelationsRow>('entities_relations')
+      .where({ originating_entity_id: uid })
+      .del();
+    await tx.batchInsert('entities_relations', relationRows, BATCH_SIZE);
+
+    try {
+      const entries = buildEntitySearch(uid, request.entity);
+      await tx<DbEntitiesSearchRow>('entities_search')
+        .where({ entity_id: uid })
+        .del();
+      await tx.batchInsert('entities_search', entries, BATCH_SIZE);
+    } catch {
+      // ignore intentionally - if this happens, the entity was deleted before
+      // we got around to writing the entries
+    }
 
     return request;
   }
@@ -326,30 +304,12 @@ export class CommonDatabase implements Database {
     relations: EntityRelationSpec[],
   ): Promise<void> {
     const tx = txOpaque as Knex.Transaction<any, any>;
+    const relationRows = this.toRelationRows(originatingEntityId, relations);
 
-    // remove all relations that exist for the originating entity id.
     await tx<DbEntitiesRelationsRow>('entities_relations')
       .where({ originating_entity_id: originatingEntityId })
       .del();
-
-    const serializeName = (e: EntityName) =>
-      `${e.kind}:${e.namespace}/${e.name}`.toLowerCase();
-
-    const relationsRows: DbEntitiesRelationsRow[] = relations.map(
-      ({ source, target, type }) => ({
-        originating_entity_id: originatingEntityId,
-        source_full_name: serializeName(source),
-        target_full_name: serializeName(target),
-        type,
-      }),
-    );
-
-    // TODO(blam): translate constraint failures to sane NotFoundError instead
-    await tx.batchInsert(
-      'entities_relations',
-      deduplicateRelations(relationsRows),
-      BATCH_SIZE,
-    );
+    await tx.batchInsert('entities_relations', relationRows, BATCH_SIZE);
   }
 
   async addLocation(
@@ -432,7 +392,7 @@ export class CommonDatabase implements Database {
   async addLocationUpdateLogEvent(
     locationId: string,
     status: DatabaseLocationUpdateLogStatus,
-    entityName?: string,
+    entityName?: string | string[],
     message?: string,
   ): Promise<void> {
     // Remove log entries older than a day
@@ -442,30 +402,19 @@ export class CommonDatabase implements Database {
       .where('created_at', '<', cutoff.toISOString())
       .del();
 
-    await this.database<DatabaseLocationUpdateLogEvent>(
-      'location_update_log',
-    ).insert({
-      status,
-      location_id: locationId,
-      entity_name: entityName,
-      message,
-    });
-  }
+    const items: Partial<DatabaseLocationUpdateLogEvent>[] = [entityName]
+      .flat()
+      .map(n => ({
+        status,
+        location_id: locationId,
+        entity_name: n,
+        message,
+      }));
 
-  private async updateEntitiesSearch(
-    tx: Knex.Transaction<any, any>,
-    entityId: string,
-    data: Entity,
-  ): Promise<void> {
-    try {
-      const entries = buildEntitySearch(entityId, data);
-      await tx<DbEntitiesSearchRow>('entities_search')
-        .where({ entity_id: entityId })
-        .del();
-      await tx<DbEntitiesSearchRow>('entities_search').insert(entries);
-    } catch {
-      // ignore intentionally - if this happens, the entity was deleted before
-      // we got around to writing the entries
+    for (const chunk of lodash.chunk(items, BATCH_SIZE)) {
+      await this.database<DatabaseLocationUpdateLogEvent>(
+        'location_update_log',
+      ).insert(chunk);
     }
   }
 
@@ -492,6 +441,23 @@ export class CommonDatabase implements Database {
       full_name: `${lowerKind}:${lowerNamespace}/${lowerName}`,
       data: JSON.stringify(data),
     };
+  }
+
+  private toRelationRows(
+    originatingEntityId: string,
+    relations: EntityRelationSpec[],
+  ): DbEntitiesRelationsRow[] {
+    const serializeName = (e: EntityName) =>
+      `${e.kind}:${e.namespace}/${e.name}`.toLowerCase();
+
+    const rows = relations.map(({ source, target, type }) => ({
+      originating_entity_id: originatingEntityId,
+      source_full_name: serializeName(source),
+      target_full_name: serializeName(target),
+      type,
+    }));
+
+    return deduplicateRelations(rows);
   }
 
   private async toEntityResponses(

@@ -19,4 +19,9 @@ export {
   readBitbucketIntegrationConfigs,
 } from './config';
 export type { BitbucketIntegrationConfig } from './config';
-export { getBitbucketFileFetchUrl, getBitbucketRequestOptions } from './core';
+export {
+  getBitbucketDefaultBranch,
+  getBitbucketDownloadUrl,
+  getBitbucketFileFetchUrl,
+  getBitbucketRequestOptions,
+} from './core';

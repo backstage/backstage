@@ -1,4 +1,5 @@
 abc
+adamdmharvey
 andrewthauer
 Apdex
 api
@@ -23,6 +24,7 @@ changesets
 Changesets
 chanwit
 Chanwit
+ci
 cisphobia
 cissexist
 classname
@@ -34,6 +36,7 @@ Codecov
 codehilite
 Codehilite
 codeowners
+composable
 config
 Config
 configmaps
@@ -42,10 +45,12 @@ const
 cookiecutter
 css
 dariddler
+dataflow
 deadnaming
 destructured
 dev
 devs
+dhenneke
 discoverability
 Discoverability
 dls
@@ -54,6 +59,8 @@ Dockerfile
 Dockerize
 dockerode
 Docusaurus
+Dominik
+dtuite
 dzolotusky
 eg
 Ek
@@ -64,6 +71,7 @@ facto
 failover
 Figma
 Firekube
+Fiverr
 freben
 Fredrik
 github
@@ -76,6 +84,7 @@ graphviz
 Gustavsson
 Hackathons
 haproxy
+Henneke
 heroku
 Heroku
 horizontalpodautoscalers
@@ -137,14 +146,17 @@ Oldsberg
 onboarding
 Onboarding
 pagerduty
+parallelization
 Patrik
 Phoen
 plantuml
 Pomaceous
 postgres
+postpack
 pre
 prebaked
 preconfigured
+prepack
 Preprarer
 Prerequisities
 productional
@@ -182,10 +194,12 @@ Serverless
 Sinon
 smartsymobls
 Snyk
+sourcemaps
 sparklines
 Spotifiers
 spotify
 Spotify
+sqlite
 squidfunk
 src
 stefanalund
@@ -214,6 +228,9 @@ toolsets
 tooltip
 tooltips
 touchpoints
+transpiled
+transpilation
+Tuite
 ui
 untracked
 upvote

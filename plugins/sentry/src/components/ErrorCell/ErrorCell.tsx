@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React from 'react';
 import { SentryIssue } from '../../api';
 import { Link, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -42,9 +42,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-export const ErrorCell: FC<{ sentryIssue: SentryIssue }> = ({
-  sentryIssue,
-}) => {
+export const ErrorCell = ({ sentryIssue }: { sentryIssue: SentryIssue }) => {
   const classes = useStyles();
   return (
     <div className={classes.root}>

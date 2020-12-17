@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState, useMemo, FC, ReactNode } from 'react';
+import React, { useState, useMemo, ReactNode } from 'react';
 import { useLocalStorage, useAsync } from 'react-use';
 import { useNavigate } from 'react-router-dom';
 import { Grid, Button } from '@material-ui/core';
@@ -39,7 +39,7 @@ import { createAuditRouteRef } from '../../plugin';
 
 export const LIMIT = 10;
 
-const AuditList: FC<{}> = () => {
+const AuditList = () => {
   const [dismissedStored] = useLocalStorage(LIGHTHOUSE_INTRO_LOCAL_STORAGE);
   const [dismissed, setDismissed] = useState(dismissedStored);
 

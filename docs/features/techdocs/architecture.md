@@ -50,8 +50,8 @@ built.
 
 We assume each entity lives in a repository somewhere (GitHub, GitLab, etc.). We
 recommend using a CI/CD pipeline with the repository that has a dedicated
-step/job to build docs for TechDocs. The generated static files are then stored
-in a cloud storage solution of your choice.
+step/job to generate docs for TechDocs. The generated static files are then
+stored in a cloud storage solution of your choice.
 [Track progress here](https://github.com/backstage/backstage/issues/3096).
 
 Similar to how it is done in the Basic setup, the TechDocs Reader requests
@@ -60,10 +60,10 @@ your configured storage solution for the necessary files and returns them to
 TechDocs Reader.
 
 We will provide instructions, scripts and/or templates (e.g. GitHub Actions) to
-build docs in your CI/CD system.
+generate docs in your CI/CD system.
 [Track progress here.](https://github.com/backstage/backstage/issues/3400) You
-will be able to use `techdocs-cli` to build docs and publish the generated docs
-site files to your cloud storage system.
+will be able to use `techdocs-cli` to generate docs and publish the generated
+docs site files to your cloud storage system.
 
 Note about caching: We have noticed internally that some storage providers can
 be quite slow, which is why we are recommending a cache that sits between the
@@ -120,8 +120,8 @@ docs site in real-time?**
 A: Generating the content from Markdown on the fly is not optimal (although that
 is how the basic out-of-the-box setup is implemented). Storage solutions act as
 a cache for the generated static content. TechDocs is also currently built on
-MkDocs which does not allow us to build docs per-page, so we would have to build
-all docs for a entity on every request.
+MkDocs which does not allow us to generate docs per-page, so we would have to
+build all docs for a entity on every request.
 
 # Future work
 

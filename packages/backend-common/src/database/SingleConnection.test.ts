@@ -21,14 +21,6 @@ import { SingleConnectionDatabaseManager } from './SingleConnection';
 jest.mock('./connection');
 
 describe('SingleConnectionDatabaseManager', () => {
-  const createConfig = (data: any) =>
-    ConfigReader.fromConfigs([
-      {
-        context: '',
-        data,
-      },
-    ]);
-
   const defaultConfigOptions = {
     backend: {
       database: {
@@ -42,7 +34,7 @@ describe('SingleConnectionDatabaseManager', () => {
       },
     },
   };
-  const defaultConfig = () => createConfig(defaultConfigOptions);
+  const defaultConfig = () => new ConfigReader(defaultConfigOptions);
 
   // This is similar to the ts-jest `mocked` helper.
   const mocked = (f: Function) => f as jest.Mock;

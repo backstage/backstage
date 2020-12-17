@@ -28,7 +28,7 @@ import {
   useTheme,
 } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
-import React, { FC } from 'react';
+import React from 'react';
 import { useAsync } from 'react-use';
 import { AsyncState } from 'react-use/lib/useAsync';
 import { catalogApiRef } from '../../plugin';
@@ -54,12 +54,12 @@ function useColocatedEntities(entity: Entity): AsyncState<Entity[]> {
   }, [catalogApi, entity]);
 }
 
-export const UnregisterEntityDialog: FC<Props> = ({
+export const UnregisterEntityDialog = ({
   open,
   onConfirm,
   onClose,
   entity,
-}) => {
+}: Props) => {
   const { value: entities, loading, error } = useColocatedEntities(entity);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));

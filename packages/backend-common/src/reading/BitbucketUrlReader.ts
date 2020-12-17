@@ -16,13 +16,23 @@
 
 import {
   BitbucketIntegrationConfig,
+  getBitbucketDefaultBranch,
+  getBitbucketDownloadUrl,
   getBitbucketFileFetchUrl,
   getBitbucketRequestOptions,
   readBitbucketIntegrationConfigs,
 } from '@backstage/integration';
 import fetch from 'cross-fetch';
+import parseGitUri from 'git-url-parse';
+import { Readable } from 'stream';
 import { NotFoundError } from '../errors';
-import { ReaderFactory, ReadTreeResponse, UrlReader } from './types';
+import { ReadTreeResponseFactory } from './tree';
+import {
+  ReaderFactory,
+  ReadTreeOptions,
+  ReadTreeResponse,
+  UrlReader,
+} from './types';
 
 /**
  * A processor that adds the ability to read files from Bitbucket v1 and v2 APIs, such as
@@ -30,19 +40,23 @@ import { ReaderFactory, ReadTreeResponse, UrlReader } from './types';
  */
 export class BitbucketUrlReader implements UrlReader {
   private readonly config: BitbucketIntegrationConfig;
+  private readonly treeResponseFactory: ReadTreeResponseFactory;
 
-  static factory: ReaderFactory = ({ config }) => {
+  static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     const configs = readBitbucketIntegrationConfigs(
       config.getOptionalConfigArray('integrations.bitbucket') ?? [],
     );
     return configs.map(provider => {
-      const reader = new BitbucketUrlReader(provider);
+      const reader = new BitbucketUrlReader(provider, { treeResponseFactory });
       const predicate = (url: URL) => url.host === provider.host;
       return { reader, predicate };
     });
   };
 
-  constructor(config: BitbucketIntegrationConfig) {
+  constructor(
+    config: BitbucketIntegrationConfig,
+    deps: { treeResponseFactory: ReadTreeResponseFactory },
+  ) {
     const { host, apiBaseUrl, token, username, appPassword } = config;
 
     if (!apiBaseUrl) {
@@ -58,6 +72,7 @@ export class BitbucketUrlReader implements UrlReader {
     }
 
     this.config = config;
+    this.treeResponseFactory = deps.treeResponseFactory;
   }
 
   async read(url: string): Promise<Buffer> {
@@ -82,8 +97,39 @@ export class BitbucketUrlReader implements UrlReader {
     throw new Error(message);
   }
 
-  readTree(): Promise<ReadTreeResponse> {
-    throw new Error('BitbucketUrlReader does not implement readTree');
+  async readTree(
+    url: string,
+    options?: ReadTreeOptions,
+  ): Promise<ReadTreeResponse> {
+    const gitUrl: parseGitUri.GitUrl = parseGitUri(url);
+    const { name: repoName, owner: project, resource, filepath } = gitUrl;
+
+    const isHosted = resource === 'bitbucket.org';
+
+    const downloadUrl = await getBitbucketDownloadUrl(url, this.config);
+    const response = await fetch(
+      downloadUrl,
+      getBitbucketRequestOptions(this.config),
+    );
+    if (!response.ok) {
+      const message = `Failed to read tree from ${url}, ${response.status} ${response.statusText}`;
+      if (response.status === 404) {
+        throw new NotFoundError(message);
+      }
+      throw new Error(message);
+    }
+
+    let folderPath = `${project}-${repoName}`;
+    if (isHosted) {
+      const lastCommitShortHash = await this.getLastCommitShortHash(url);
+      folderPath = `${project}-${repoName}-${lastCommitShortHash}`;
+    }
+
+    return this.treeResponseFactory.fromZipArchive({
+      stream: (response.body as unknown) as Readable,
+      path: `${folderPath}/${filepath}`,
+      filter: options?.filter,
+    });
   }
 
   toString() {
@@ -93,5 +139,38 @@ export class BitbucketUrlReader implements UrlReader {
       authed = Boolean(username && appPassword);
     }
     return `bitbucket{host=${host},authed=${authed}}`;
+  }
+
+  private async getLastCommitShortHash(url: string): Promise<String> {
+    const { name: repoName, owner: project, ref } = parseGitUri(url);
+
+    let branch = ref;
+    if (!branch) {
+      branch = await getBitbucketDefaultBranch(url, this.config);
+    }
+    const commitsApiUrl = `${this.config.apiBaseUrl}/repositories/${project}/${repoName}/commits/${branch}`;
+
+    const commitsResponse = await fetch(
+      commitsApiUrl,
+      getBitbucketRequestOptions(this.config),
+    );
+    if (!commitsResponse.ok) {
+      const message = `Failed to retrieve commits from ${commitsApiUrl}, ${commitsResponse.status} ${commitsResponse.statusText}`;
+      if (commitsResponse.status === 404) {
+        throw new NotFoundError(message);
+      }
+      throw new Error(message);
+    }
+
+    const commits = await commitsResponse.json();
+    if (
+      commits &&
+      commits.values &&
+      commits.values.length > 0 &&
+      commits.values[0].hash
+    ) {
+      return commits.values[0].hash.substring(0, 12);
+    }
+    throw new Error(`Failed to read response from ${commitsApiUrl}`);
   }
 }

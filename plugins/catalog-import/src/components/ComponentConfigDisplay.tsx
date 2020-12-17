@@ -74,7 +74,7 @@ const ComponentConfigDisplay = ({
   savePRLink,
   catalogRouteRef,
 }: Props) => {
-  const [errorOccured, setErrorOccured] = useState(false);
+  const [errorOccurred, setErrorOccurred] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const errorApi = useApi(errorApiRef);
   const { submitPrToRepo, addLocation } = useGithubRepos();
@@ -92,7 +92,7 @@ const ComponentConfigDisplay = ({
         nextStep();
       }
     } catch (e) {
-      setErrorOccured(true);
+      setErrorOccurred(true);
       setSubmitting(false);
       errorApi.post(e);
     }
@@ -178,7 +178,7 @@ const ComponentConfigDisplay = ({
           >
             Next
           </Button>
-          {errorOccured ? (
+          {errorOccurred ? (
             <Button
               style={{ marginLeft: '8px' }}
               variant="outlined"

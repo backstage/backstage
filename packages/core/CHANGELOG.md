@@ -1,5 +1,42 @@
 # @backstage/core
 
+## 0.4.1
+
+### Patch Changes
+
+- 8ef71ed32: Add a `<Avatar>` component to `@backstage/core`.
+- Updated dependencies [7dd2ef7d1]
+  - @backstage/core-api@0.2.6
+
+## 0.4.0
+
+### Minor Changes
+
+- ff243ce96: Introducing a new optional property within `app-config.yaml` called `auth.environment` to have configurable environment value for `auth.providers`
+
+  **Default Value:** 'development'
+
+  **Optional Values:** 'production' | 'development'
+
+  **Migration-steps:**
+
+  - To override the default value, one could simply introduce the new property `environment` within the `auth` section of the `config.yaml`
+  - re-run the build to reflect the changed configs
+
+### Patch Changes
+
+- 2527628e1: Link `component` prop now accepts any element type.
+- 1c69d4716: Fix React warning of descendant paragraph tag
+- 04f26f88d: Export the `defaultConfigLoader` implementation
+- Updated dependencies [b6557c098]
+- Updated dependencies [e3bd9fc2f]
+- Updated dependencies [d8d5a17da]
+- Updated dependencies [1665ae8bb]
+- Updated dependencies [e3bd9fc2f]
+  - @backstage/core-api@0.2.5
+  - @backstage/config@0.1.2
+  - @backstage/theme@0.2.2
+
 ## 0.3.2
 
 ### Patch Changes
