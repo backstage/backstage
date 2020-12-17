@@ -21,22 +21,37 @@ import {
   readGitLabIntegrationConfigs,
 } from '@backstage/integration';
 import fetch from 'cross-fetch';
-import { NotFoundError } from '../errors';
-import { ReaderFactory, ReadTreeResponse, UrlReader } from './types';
+import { InputError, NotFoundError } from '../errors';
+import { ReadTreeResponseFactory } from './tree';
+import {
+  ReaderFactory,
+  ReadTreeOptions,
+  ReadTreeResponse,
+  UrlReader,
+} from './types';
+import parseGitUri from 'git-url-parse';
+import { Readable } from 'stream';
 
 export class GitlabUrlReader implements UrlReader {
-  static factory: ReaderFactory = ({ config }) => {
+  private readonly treeResponseFactory: ReadTreeResponseFactory;
+
+  static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     const configs = readGitLabIntegrationConfigs(
       config.getOptionalConfigArray('integrations.gitlab') ?? [],
     );
     return configs.map(options => {
-      const reader = new GitlabUrlReader(options);
+      const reader = new GitlabUrlReader(options, { treeResponseFactory });
       const predicate = (url: URL) => url.host === options.host;
       return { reader, predicate };
     });
   };
 
-  constructor(private readonly options: GitLabIntegrationConfig) {}
+  constructor(
+    private readonly options: GitLabIntegrationConfig,
+    deps: { treeResponseFactory: ReadTreeResponseFactory },
+  ) {
+    this.treeResponseFactory = deps.treeResponseFactory;
+  }
 
   async read(url: string): Promise<Buffer> {
     const builtUrl = await getGitLabFileFetchUrl(url, this.options);
@@ -59,8 +74,45 @@ export class GitlabUrlReader implements UrlReader {
     throw new Error(message);
   }
 
-  readTree(): Promise<ReadTreeResponse> {
-    throw new Error('GitlabUrlReader does not implement readTree');
+  async readTree(
+    url: string,
+    options?: ReadTreeOptions,
+  ): Promise<ReadTreeResponse> {
+    const {
+      name: repoName,
+      ref,
+      protocol,
+      resource,
+      full_name,
+      filepath,
+    } = parseGitUri(url);
+
+    if (!ref) {
+      throw new InputError(
+        'GitLab URL must contain a branch to be able to fetch its tree',
+      );
+    }
+
+    const archive = `${protocol}://${resource}/${full_name}/-/archive/${ref}/${repoName}-${ref}.zip`;
+    const response = await fetch(
+      archive,
+      getGitLabRequestOptions(this.options),
+    );
+    if (!response.ok) {
+      const msg = `Failed to read tree from ${url}, ${response.status} ${response.statusText}`;
+      if (response.status === 404) {
+        throw new NotFoundError(msg);
+      }
+      throw new Error(msg);
+    }
+
+    const path = filepath ? `${repoName}-${ref}/${filepath}/` : '';
+
+    return this.treeResponseFactory.fromZipArchive({
+      stream: (response.body as unknown) as Readable,
+      path,
+      filter: options?.filter,
+    });
   }
 
   toString() {

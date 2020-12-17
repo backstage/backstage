@@ -41,7 +41,10 @@ describe('readGitLabIntegrationConfig', () => {
 
   it('inserts the defaults if missing', () => {
     const output = readGitLabIntegrationConfig(buildConfig({}));
-    expect(output).toEqual({ host: 'gitlab.com' });
+    expect(output).toEqual({
+      host: 'gitlab.com',
+      apiBaseUrl: 'gitlab.com/api/v4',
+    });
   });
 
   it('rejects funky configs', () => {
