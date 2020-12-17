@@ -14,17 +14,30 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { RouteRef } from '../routing';
 import { attachComponentData } from './componentData';
 import { Extension, BackstagePlugin } from '../plugin/types';
 
+type ComponentLoader<T> =
+  | {
+      lazy: () => Promise<T>;
+    }
+  | {
+      sync: T;
+    };
+
 export function createRoutableExtension<
   T extends (props: any) => JSX.Element
->(options: { component: T; mountPoint: RouteRef }): Extension<T> {
+>(options: {
+  component: () => Promise<T>;
+  mountPoint: RouteRef;
+}): Extension<T> {
   const { component, mountPoint } = options;
   return createReactExtension({
-    component,
+    component: {
+      lazy: component,
+    },
     data: {
       'core.mountPoint': mountPoint,
     },
@@ -33,32 +46,47 @@ export function createRoutableExtension<
 
 export function createComponentExtension<
   T extends (props: any) => JSX.Element
->(options: { component: T }): Extension<T> {
+>(options: { component: ComponentLoader<T> }): Extension<T> {
   const { component } = options;
   return createReactExtension({ component });
 }
 
 export function createReactExtension<
   T extends (props: any) => JSX.Element
->(options: { component: T; data?: Record<string, unknown> }): Extension<T> {
+>(options: {
+  component: ComponentLoader<T>;
+  data?: Record<string, unknown>;
+}): Extension<T> {
   const { data = {} } = options;
-  const Component = options.component as T & {
-    displayName?: string;
-  };
+
+  let Component: T;
+  if ('lazy' in options.component) {
+    const lazyLoader = options.component.lazy;
+    Component = (lazy(() =>
+      lazyLoader().then(component => ({ default: component })),
+    ) as unknown) as T;
+  } else {
+    Component = options.component.sync;
+  }
+  const componentName =
+    (Component as { displayName?: string }).displayName ||
+    Component.name ||
+    'Component';
 
   return {
     expose(plugin: BackstagePlugin<any, any>) {
-      const Result: any = (props: any) => <Component {...props} />;
+      const Result: any = (props: any) => (
+        <Suspense fallback="...">
+          <Component {...props} />
+        </Suspense>
+      );
 
       attachComponentData(Result, 'core.plugin', plugin);
       for (const [key, value] of Object.entries(data)) {
         attachComponentData(Result, key, value);
       }
 
-      const name = Component.displayName || Component.name || 'Component';
-      if (name) {
-        Result.displayName = `Extension(${name})`;
-      }
+      Result.displayName = `Extension(${componentName})`;
       return Result;
     },
   };

@@ -66,23 +66,24 @@ describe('Integration Test', () => {
 
   const HiddenComponent = plugin2.provide(
     createRoutableExtension({
-      component: (_: { path?: string }) => <div />,
+      component: () => Promise.resolve((_: { path?: string }) => <div />),
       mountPoint: plugin2RouteRef,
     }),
   );
 
   const ExposedComponent = plugin1.provide(
     createRoutableExtension({
-      component: (_: PropsWithChildren<{ path?: string }>) => {
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        const routeRefFunction = useRouteRef(externalRouteRef);
-        return <div>Our Route Is: {routeRefFunction({})}</div>;
-      },
+      component: () =>
+        Promise.resolve((_: PropsWithChildren<{ path?: string }>) => {
+          // eslint-disable-next-line react-hooks/rules-of-hooks
+          const routeRefFunction = useRouteRef(externalRouteRef);
+          return <div>Our Route Is: {routeRefFunction({})}</div>;
+        }),
       mountPoint: plugin1RouteRef,
     }),
   );
 
-  it('runs happy path', () => {
+  it('runs happy path', async () => {
     const components = {
       NotFoundErrorPage: () => null,
       BootErrorPage: () => null,
@@ -112,7 +113,7 @@ describe('Integration Test', () => {
     const Provider = app.getProvider();
     const Router = app.getRouter();
 
-    renderWithEffects(
+    await renderWithEffects(
       <Provider>
         <Router>
           <Routes>

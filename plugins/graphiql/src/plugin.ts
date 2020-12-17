@@ -19,7 +19,6 @@ import {
   createApiFactory,
   createRoutableExtension,
 } from '@backstage/core';
-import { GraphiQLPage as Component } from './components';
 import { graphQlBrowseApiRef, GraphQLEndpoints } from './lib/api';
 import { graphiQLRouteRef } from './route-refs';
 
@@ -42,7 +41,7 @@ export const plugin = createPlugin({
 
 export const GraphiQLPage = plugin.provide(
   createRoutableExtension({
-    component: Component,
+    component: () => import('./components').then(m => m.GraphiQLPage),
     mountPoint: graphiQLRouteRef,
   }),
 );

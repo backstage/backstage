@@ -41,19 +41,34 @@ const ref4 = createRouteRef(mockConfig());
 const ref5 = createRouteRef(mockConfig());
 
 const Extension1 = plugin.provide(
-  createRoutableExtension({ component: MockComponent, mountPoint: ref1 }),
+  createRoutableExtension({
+    component: () => Promise.resolve(MockComponent),
+    mountPoint: ref1,
+  }),
 );
 const Extension2 = plugin.provide(
-  createRoutableExtension({ component: MockComponent, mountPoint: ref2 }),
+  createRoutableExtension({
+    component: () => Promise.resolve(MockComponent),
+    mountPoint: ref2,
+  }),
 );
 const Extension3 = plugin.provide(
-  createRoutableExtension({ component: MockComponent, mountPoint: ref3 }),
+  createRoutableExtension({
+    component: () => Promise.resolve(MockComponent),
+    mountPoint: ref3,
+  }),
 );
 const Extension4 = plugin.provide(
-  createRoutableExtension({ component: MockComponent, mountPoint: ref4 }),
+  createRoutableExtension({
+    component: () => Promise.resolve(MockComponent),
+    mountPoint: ref4,
+  }),
 );
 const Extension5 = plugin.provide(
-  createRoutableExtension({ component: MockComponent, mountPoint: ref5 }),
+  createRoutableExtension({
+    component: () => Promise.resolve(MockComponent),
+    mountPoint: ref5,
+  }),
 );
 
 describe('discovery', () => {
@@ -190,6 +205,6 @@ describe('discovery', () => {
           routeParents: routeParentCollector,
         },
       }),
-    ).toThrow(`Visited element Extension(MockComponent) twice`);
+    ).toThrow(`Visited element Extension(Component) twice`);
   });
 });

@@ -85,19 +85,34 @@ const MockRouteSource = <T extends { [name in string]: string }>(props: {
 };
 
 const Extension1 = plugin.provide(
-  createRoutableExtension({ component: MockComponent, mountPoint: ref1 }),
+  createRoutableExtension({
+    component: () => Promise.resolve(MockComponent),
+    mountPoint: ref1,
+  }),
 );
 const Extension2 = plugin.provide(
-  createRoutableExtension({ component: MockRouteSource, mountPoint: ref2 }),
+  createRoutableExtension({
+    component: () => Promise.resolve(MockRouteSource),
+    mountPoint: ref2,
+  }),
 );
 const Extension3 = plugin.provide(
-  createRoutableExtension({ component: MockComponent, mountPoint: ref3 }),
+  createRoutableExtension({
+    component: () => Promise.resolve(MockComponent),
+    mountPoint: ref3,
+  }),
 );
 const Extension4 = plugin.provide(
-  createRoutableExtension({ component: MockRouteSource, mountPoint: ref4 }),
+  createRoutableExtension({
+    component: () => Promise.resolve(MockRouteSource),
+    mountPoint: ref4,
+  }),
 );
 const Extension5 = plugin.provide(
-  createRoutableExtension({ component: MockComponent, mountPoint: ref5 }),
+  createRoutableExtension({
+    component: () => Promise.resolve(MockComponent),
+    mountPoint: ref5,
+  }),
 );
 
 function withRoutingProvider(
@@ -127,7 +142,7 @@ function withRoutingProvider(
 }
 
 describe('discovery', () => {
-  it('should handle simple routeRef path creation for routeRefs used in other parts of the app', () => {
+  it('should handle simple routeRef path creation for routeRefs used in other parts of the app', async () => {
     const root = (
       <MemoryRouter initialEntries={['/foo/bar']}>
         <Routes>
@@ -151,7 +166,9 @@ describe('discovery', () => {
       ]),
     );
 
-    expect(rendered.getByText('Path at inside: /foo/bar')).toBeInTheDocument();
+    await expect(
+      rendered.findByText('Path at inside: /foo/bar'),
+    ).resolves.toBeInTheDocument();
     expect(
       rendered.getByText('Path at insideExternal: /baz'),
     ).toBeInTheDocument();
@@ -164,7 +181,7 @@ describe('discovery', () => {
     ).toBeInTheDocument();
   });
 
-  it('should handle routeRefs with parameters', () => {
+  it('should handle routeRefs with parameters', async () => {
     const root = (
       <MemoryRouter initialEntries={['/foo/bar/wat']}>
         <Routes>
@@ -187,37 +204,39 @@ describe('discovery', () => {
 
     const rendered = render(withRoutingProvider(root));
 
-    expect(
-      rendered.getByText('Path at inside: /foo/bar/bleb'),
-    ).toBeInTheDocument();
+    await expect(
+      rendered.findByText('Path at inside: /foo/bar/bleb'),
+    ).resolves.toBeInTheDocument();
     expect(
       rendered.getByText('Path at outside: /foo/bar/blob'),
     ).toBeInTheDocument();
   });
 
-  it('should handle relative routing within parameterized routePaths', () => {
+  it('should handle relative routing within parameterized routePaths', async () => {
     const root = (
       <MemoryRouter initialEntries={['/foo/blob/baz']}>
-        <Routes>
-          <Extension5 path="/foo/:id">
-            <Extension2 path="/bar" name="inside" routeRef={ref3} />
-            <Extension3 path="/baz" />
-          </Extension5>
-        </Routes>
-        <MockRouteSource name="outsideNoParams" routeRef={ref3} />
-        <MockRouteSource
-          name="outsideWithParams"
-          routeRef={ref3}
-          params={{ id: 'blob' }}
-        />
+        <React.Suspense fallback="loller">
+          <Routes>
+            <Extension5 path="/foo/:id">
+              <Extension2 path="/bar" name="inside" routeRef={ref3} />
+              <Extension3 path="/baz" />
+            </Extension5>
+          </Routes>
+          <MockRouteSource name="outsideNoParams" routeRef={ref3} />
+          <MockRouteSource
+            name="outsideWithParams"
+            routeRef={ref3}
+            params={{ id: 'blob' }}
+          />
+        </React.Suspense>
       </MemoryRouter>
     );
 
     const rendered = render(withRoutingProvider(root));
 
-    expect(
-      rendered.getByText('Path at inside: /foo/blob/baz'),
-    ).toBeInTheDocument();
+    await expect(
+      rendered.findByText('Path at inside: /foo/blob/baz'),
+    ).resolves.toBeInTheDocument();
   });
 
   it('should throw errors for routing to other routeRefs with unsupported parameters', () => {

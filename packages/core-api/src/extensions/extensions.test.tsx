@@ -33,7 +33,9 @@ describe('extensions', () => {
     const Component = () => <div />;
 
     const extension = createReactExtension({
-      component: Component,
+      component: {
+        sync: Component,
+      },
       data: {
         myData: { foo: 'bar' },
       },
@@ -51,11 +53,13 @@ describe('extensions', () => {
     const routeRef = createRouteRef({ path: '/foo', title: 'Foo' });
 
     const extension1 = createComponentExtension({
-      component: Component,
+      component: {
+        sync: Component,
+      },
     });
 
     const extension2 = createRoutableExtension({
-      component: Component,
+      component: () => Promise.resolve(Component),
       mountPoint: routeRef,
     });
 
