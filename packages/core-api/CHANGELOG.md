@@ -1,5 +1,11 @@
 # @backstage/core-api
 
+## 0.2.6
+
+### Patch Changes
+
+- 7dd2ef7d1: Use auth provider ID to create unique session storage keys for GitHub and SAML Auth.
+
 ## 0.2.5
 
 ### Patch Changes

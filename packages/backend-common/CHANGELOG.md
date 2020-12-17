@@ -1,5 +1,16 @@
 # @backstage/backend-common
 
+## 0.4.1
+
+### Patch Changes
+
+- 1d1c2860f: Implement readTree on BitBucketUrlReader and getBitbucketDownloadUrl
+- 4eafdec4a: Introduce readTree method for GitLab URL Reader
+- Updated dependencies [1d1c2860f]
+- Updated dependencies [4eafdec4a]
+- Updated dependencies [178e09323]
+  - @backstage/integration@0.1.4
+
 ## 0.4.0
 
 ### Minor Changes
