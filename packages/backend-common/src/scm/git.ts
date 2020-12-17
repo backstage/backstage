@@ -15,3 +15,47 @@
  */
 import git from 'isomorphic-git';
 import http from 'isomorphic-git/http/node';
+import fs from 'fs-extra';
+
+class SCM {
+  constructor(
+    private readonly config: { username: string; password: string },
+    private readonly logger: Logger,
+  ) {}
+
+  async clone({ url, dir }) {
+    return git.clone({
+      fs,
+      http,
+      url,
+      dir,
+      singleBranch: true,
+      depth: 1,
+      onProgress: event => {
+        const total = event.total
+          ? `${Math.round((event.loaded / event.total) * 100)}%`
+          : event.loaded;
+        this.logger.info(`status={${event.phase},total={${total}}}`);
+      },
+      headers: {
+        'user-agent': 'git/@isomorphic-git',
+      },
+      onAuth: () => ({
+        username: this.config.username,
+        password: this.config.password,
+      }),
+    });
+  }
+}
+
+export const fromAuth = ({
+  username,
+  password,
+  logger,
+}: {
+  username: string;
+  password: string;
+  logger: Logger;
+}) => {
+  return new SCM({ username, password });
+};
