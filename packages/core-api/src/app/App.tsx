@@ -56,7 +56,7 @@ import {
   routeParentCollector,
   routePathCollector,
 } from '../routing/collectors';
-import { RoutingProvider } from '../routing/hooks';
+import { RoutingProvider, validateRoutes } from '../routing/hooks';
 import { ExternalRouteRef } from '../routing/RouteRef';
 import { AppContextProvider } from './AppContext';
 import { AppIdentity } from './AppIdentity';
@@ -252,6 +252,8 @@ export class PrivateAppImpl implements BackstageApp {
           routeObjects: routeObjectCollector,
         },
       });
+
+      validateRoutes(routePaths, routeParents);
 
       const loadedConfig = useConfigLoader(
         this.configLoader,

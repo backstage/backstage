@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { renderWithEffects } from '@backstage/test-utils';
+import { renderWithEffects, withLogCollector } from '@backstage/test-utils';
 import { lightTheme } from '@backstage/theme';
-import { screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import React from 'react';
 import { BrowserRouter, Routes } from 'react-router-dom';
 import { createRoutableExtension } from '../extensions';
@@ -124,5 +124,61 @@ describe('Integration Test', () => {
     );
 
     expect(screen.getByText('Our Route Is: /foo/bar')).toBeInTheDocument();
+  });
+
+  it('should throw some error when the route has duplicate params', () => {
+    const components = {
+      NotFoundErrorPage: () => null,
+      BootErrorPage: () => null,
+      Progress: () => null,
+      Router: BrowserRouter,
+    };
+
+    const app = new PrivateAppImpl({
+      apis: [],
+      defaultApis: [],
+      themes: [
+        {
+          id: 'light',
+          title: 'Light Theme',
+          variant: 'light',
+          theme: lightTheme,
+        },
+      ],
+      icons: defaultSystemIcons,
+      plugins: [],
+      components,
+      bindRoutes: ({ bind }) => {
+        bind(plugin1.externalRoutes, { foo: plugin2RouteRef });
+      },
+    });
+
+    const Provider = app.getProvider();
+    const Router = app.getRouter();
+    const { error: errorLogs } = withLogCollector(() => {
+      expect(() =>
+        render(
+          <Provider>
+            <Router>
+              <Routes>
+                <ExposedComponent path="/test/:thing">
+                  <HiddenComponent path="/some/:thing" />
+                </ExposedComponent>
+              </Routes>
+            </Router>
+          </Provider>,
+        ),
+      ).toThrow(
+        'Parameter :thing is duplicated in path /test/:thing/some/:thing',
+      );
+    });
+    expect(errorLogs).toEqual([
+      expect.stringContaining(
+        'Parameter :thing is duplicated in path /test/:thing/some/:thing',
+      ),
+      expect.stringContaining(
+        'The above error occurred in the <Provider> component',
+      ),
+    ]);
   });
 });
