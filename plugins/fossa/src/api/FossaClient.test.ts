@@ -69,7 +69,7 @@ describe('FossaClient', () => {
     } as FindingSummary);
   });
 
-  it('should report finding summary without licenseing_issue_count', async () => {
+  it('should report finding summary without licensing_issue_count', async () => {
     server.use(
       rest.get(`${mockBaseUrl}/fossa/projects`, (req, res, ctx) => {
         expect(req.url.searchParams.toString()).toBe(

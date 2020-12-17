@@ -30,5 +30,5 @@ export const fossaApiRef = createApiRef<FossaApi>({
 });
 
 export type FossaApi = {
-  getFindingSummary(projectTitle?: string): Promise<FindingSummary | undefined>;
+  getFindingSummary(projectTitle: string): Promise<FindingSummary | undefined>;
 };

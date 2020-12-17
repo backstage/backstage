@@ -43,12 +43,8 @@ export class FossaClient implements FossaApi {
   }
 
   async getFindingSummary(
-    projectTitle?: string,
+    projectTitle: string,
   ): Promise<FindingSummary | undefined> {
-    if (!projectTitle) {
-      return undefined;
-    }
-
     const project = await this.callApi(
       `projects?count=1&title=${projectTitle}${
         this.organizationId ? `&organizationId=${this.organizationId}` : ''

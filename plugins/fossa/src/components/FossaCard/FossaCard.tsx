@@ -77,7 +77,8 @@ export const FossaCard = ({
   const projectTitle = useProjectName(entity);
 
   const { value, loading } = useAsync(
-    async () => fossaApi.getFindingSummary(projectTitle),
+    async () =>
+      projectTitle ? fossaApi.getFindingSummary(projectTitle) : undefined,
     [fossaApi, projectTitle],
   );
 
