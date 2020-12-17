@@ -1,5 +1,19 @@
 # @backstage/plugin-github-actions
 
+## 0.2.5
+
+### Patch Changes
+
+- Updated dependencies [c911061b7]
+- Updated dependencies [8ef71ed32]
+- Updated dependencies [0e6298f7e]
+- Updated dependencies [7dd2ef7d1]
+- Updated dependencies [ac3560b42]
+  - @backstage/catalog-model@0.6.0
+  - @backstage/core@0.4.1
+  - @backstage/core-api@0.2.6
+  - @backstage/plugin-catalog@0.2.7
+
 ## 0.2.4
 
 ### Patch Changes

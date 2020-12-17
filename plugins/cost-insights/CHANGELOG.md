@@ -1,5 +1,13 @@
 # @backstage/plugin-cost-insights
 
+## 0.5.2
+
+### Patch Changes
+
+- 48c305e69: pin all projects selection to the top of menu list
+- Updated dependencies [8ef71ed32]
+  - @backstage/core@0.4.1
+
 ## 0.5.1
 
 ### Patch Changes

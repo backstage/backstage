@@ -1,5 +1,11 @@
 # @backstage/cli
 
+## 0.4.2
+
+### Patch Changes
+
+- c36a01b4c: Re-enable symlink resolution during bundling, and switch to using a resolve plugin for external linked packages.
+
 ## 0.4.1
 
 ### Patch Changes

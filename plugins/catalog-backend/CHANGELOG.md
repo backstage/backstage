@@ -1,5 +1,58 @@
 # @backstage/plugin-catalog-backend
 
+## 0.5.0
+
+### Minor Changes
+
+- 6b37c95bf: Write relations directly as part of batch add / update of entities.
+
+  Slight change of the `CommonDatabase` contract:
+
+  ## `addEntity` removed
+
+  This method was unused by the core, and rendered unnecessary when `addEntities`
+  exists.
+
+  If you were a user of `addEntity`, please call `addEntities` instead, with an
+  array of one element.
+
+  ## `DbEntityRequest` has a new field `relations`
+
+  This is the structure that is passed to `addEntities` and `updateEntity`. It
+  used to be the case that you needed to call `setRelations` separately, but now
+  this instead happens directly when you call `addEntities` or `updateEntity`.
+
+  If you were using `addEntities` or `updateEntity` directly, please adapt your
+  code to add the `relations` array to each request. If you were calling
+  `setRelations` separately next to these methods, you no longer need to do so,
+  after adding the relations to the `DbEntityRequest`s.
+
+- ac3560b42: Remove `implementsApis` from `Component` entities. Deprecation happened in [#3449](https://github.com/backstage/backstage/pull/3449).
+  Use `providesApis` instead.
+
+### Patch Changes
+
+- c6eeefa35: Add support for Github Enterprise in GitHubOrgReaderProcessor so you can properly ingest users of a GHE organization.
+- fb386b760: Break the refresh loop into several smaller transactions
+- 7c3ffc0cd: Support `profile` of groups including `displayName`, `email`, and `picture` in
+  `LdapOrgReaderProcessor`. The source fields for them can be configured in the
+  `ldapOrg` provider.
+- e7496dc3e: Break out GithubOrgReaderProcessor config into its own file for consistency with the other org processors.
+- 8dd0a906d: Support `profile` of groups including `displayName` and `picture` in
+  `GithubOrgReaderProcessor`. Fixes the import of `description` for groups.
+- 8c31c681c: Batch the writing of statuses after refreshes. This reduced the runtime on sqlite from 16s to 0.2s, and on pg from 60s to 1s on my machine, for the huge LDAP set.
+- 7b98e7fee: Add index to foreign key columns. Postgres (and others) do not do this on the "source" side of a foreign key relation, which was what led to the slowness on large datasets. The full LDAP dataset ingestion now takes two minutes, which is not optimal yet but still a huge improvement over before when it basically never finished :)
+- 0097057ed: Support `profile` of groups including `displayName` and `email` in
+  `MicrosoftGraphOrgReaderProcessor`. Importing `picture` doesn't work yet, as
+  the Microsoft Graph API does not expose them correctly.
+- Updated dependencies [c911061b7]
+- Updated dependencies [1d1c2860f]
+- Updated dependencies [0e6298f7e]
+- Updated dependencies [4eafdec4a]
+- Updated dependencies [ac3560b42]
+  - @backstage/catalog-model@0.6.0
+  - @backstage/backend-common@0.4.1
+
 ## 0.4.0
 
 ### Minor Changes
