@@ -19,7 +19,14 @@ import {
   ENTITY_DEFAULT_NAMESPACE,
   RELATION_PROVIDES_API,
 } from '@backstage/catalog-model';
-import { IconButton } from '@material-ui/core';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  Divider,
+  IconButton,
+  makeStyles,
+} from '@material-ui/core';
 import ExtensionIcon from '@material-ui/icons/Extension';
 import DocsIcon from '@material-ui/icons/Description';
 import EditIcon from '@material-ui/icons/Edit';
@@ -27,8 +34,20 @@ import GitHubIcon from '@material-ui/icons/GitHub';
 import React from 'react';
 import { findLocationForEntityMeta } from '../../data/utils';
 import { createEditLink, determineUrlType } from '../createEditLink';
-import { AboutCard as CoreAboutCard } from '@backstage/core';
+import { HeaderIconLinkRow } from '@backstage/core';
 import { AboutContent } from './AboutContent';
+
+const useStyles = makeStyles({
+  gridItemCard: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: 'calc(100% - 10px)', // for pages without content header
+    marginBottom: '10px',
+  },
+  gridItemCardContent: {
+    flex: 1,
+  },
+});
 
 const iconMap: Record<string, React.ReactNode> = {
   github: <GitHubIcon />,
@@ -62,6 +81,7 @@ type AboutCardProps = {
 };
 
 export function AboutCard({ entity, variant }: AboutCardProps) {
+  const classes = useStyles();
   const codeLink = getCodeLinkInfo(entity);
   // TODO: Also support RELATION_CONSUMES_API here
   const hasApis = entity.relations?.some(r => r.type === RELATION_PROVIDES_API);
@@ -86,22 +106,31 @@ export function AboutCard({ entity, variant }: AboutCardProps) {
   };
 
   return (
-    <CoreAboutCard
-      variant={variant}
-      title="About"
-      headerAction={
-        <IconButton
-          aria-label="Edit"
-          title="Edit Metadata"
-          onClick={() => {
-            window.open(codeLink.edithref || '#', '_blank');
-          }}
-        >
-          <EditIcon />
-        </IconButton>
-      }
-      links={[viewInSource, viewInTechDocs, viewApi]}
-      content={<AboutContent entity={entity} />}
-    />
+    <Card className={variant === 'gridItem' ? classes.gridItemCard : ''}>
+      <CardHeader
+        title="About"
+        variant={variant}
+        action={
+          <IconButton
+            aria-label="Edit"
+            title="Edit Metadata"
+            onClick={() => {
+              window.open(codeLink.edithref || '#', '_blank');
+            }}
+          >
+            <EditIcon />
+          </IconButton>
+        }
+        subheader={
+          <HeaderIconLinkRow links={[viewInSource, viewInTechDocs, viewApi]} />
+        }
+      />
+      <Divider />
+      <CardContent
+        className={variant === 'gridItem' ? classes.gridItemCardContent : ''}
+      >
+        <AboutContent entity={entity} />
+      </CardContent>
+    </Card>
   );
 }

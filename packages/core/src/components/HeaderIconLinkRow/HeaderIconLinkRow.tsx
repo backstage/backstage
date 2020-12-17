@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { IconLinkVertical } from './IconLinkVertical';
-import { SubHeaderLink } from './types';
+import { HeaderIconLink } from './types';
 import { makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
@@ -29,10 +29,10 @@ const useStyles = makeStyles(theme => ({
 }));
 
 type Props = {
-  links: SubHeaderLink[];
+  links: HeaderIconLink[];
 };
 
-export const SubHeader = ({ links }: Props) => {
+export const HeaderIconLinkRow = ({ links }: Props) => {
   const classes = useStyles();
   return (
     <nav className={classes.links}>

@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 import React, { useState, useCallback } from 'react';
-import { useApi, Progress, AboutCard } from '@backstage/core';
+import { useApi, Progress, HeaderIconLinkRow } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
-import { Button, makeStyles } from '@material-ui/core';
+import {
+  Button,
+  makeStyles,
+  Card,
+  CardHeader,
+  Divider,
+  CardContent,
+} from '@material-ui/core';
 import { Incidents } from './Incident';
 import { EscalationPolicy } from './Escalation';
 import { useAsync } from 'react-use';
@@ -118,25 +125,26 @@ export const PagerDutyCard = ({ entity }: Props) => {
   };
 
   return (
-    <AboutCard
-      title="PagerDuty"
-      links={[serviceLink, triggerLink]}
-      content={
-        <>
-          <Incidents
-            serviceId={service!.id}
-            refreshIncidents={refreshIncidents}
-          />
-          <EscalationPolicy policyId={service!.policyId} />
-          <TriggerDialog
-            showDialog={showDialog}
-            handleDialog={handleDialog}
-            name={entity.metadata.name}
-            integrationKey={integrationKey}
-            onIncidentCreated={handleRefresh}
-          />
-        </>
-      }
-    />
+    <Card>
+      <CardHeader
+        title="PagerDuty"
+        subheader={<HeaderIconLinkRow links={[serviceLink, triggerLink]} />}
+      />
+      <Divider />
+      <CardContent>
+        <Incidents
+          serviceId={service!.id}
+          refreshIncidents={refreshIncidents}
+        />
+        <EscalationPolicy policyId={service!.policyId} />
+        <TriggerDialog
+          showDialog={showDialog}
+          handleDialog={handleDialog}
+          name={entity.metadata.name}
+          integrationKey={integrationKey}
+          onIncidentCreated={handleRefresh}
+        />
+      </CardContent>
+    </Card>
   );
 };
