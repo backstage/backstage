@@ -15,6 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
+import { isValidHost } from '../helpers';
 
 const BITBUCKET_HOST = 'bitbucket.org';
 const BITBUCKET_API_BASE_URL = 'https://api.bitbucket.org/2.0';
@@ -74,6 +75,12 @@ export function readBitbucketIntegrationConfig(
   const token = config.getOptionalString('token');
   const username = config.getOptionalString('username');
   const appPassword = config.getOptionalString('appPassword');
+
+  if (!isValidHost(host)) {
+    throw new Error(
+      `Invalid Bitbucket integration config, '${host}' is not a valid host`,
+    );
+  }
 
   if (apiBaseUrl) {
     apiBaseUrl = apiBaseUrl.replace(/\/+$/, '');

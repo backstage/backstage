@@ -83,6 +83,12 @@ object will be available in the frontend. The full ancestry does not need to
 have correctly defined visibilities however, so it is enough to only for example
 declare the visibility of a leaf node of `type: "string"`.
 
+| `visibility` |                                                                    |
+| ------------ | ------------------------------------------------------------------ |
+| `frontend`   | Visible in frontend and backend                                    |
+| `backend`    | (Default) Only in backend                                          |
+| `secret`     | Only in backend and may be excluded from logs for security reasons |
+
 ## Validation
 
 Schemas can be validated using the `backstage-cli config:check` command. If you

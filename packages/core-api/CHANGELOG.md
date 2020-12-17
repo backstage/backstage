@@ -1,5 +1,67 @@
 # @backstage/core-api
 
+## 0.2.6
+
+### Patch Changes
+
+- 7dd2ef7d1: Use auth provider ID to create unique session storage keys for GitHub and SAML Auth.
+
+## 0.2.5
+
+### Patch Changes
+
+- b6557c098: Update ApiFactory type to correctly infer API type and disallow mismatched implementations.
+
+  This fixes for example the following code:
+
+  ```ts
+  interface MyApi {
+    myMethod(): void
+  }
+
+  const myApiRef = createApiRef<MyApi>({...});
+
+  createApiFactory({
+    api: myApiRef,
+    deps: {},
+    // This should've caused an error, since the empty object does not fully implement MyApi
+    factory: () => ({}),
+  })
+  ```
+
+- d8d5a17da: Deprecated the `ConcreteRoute`, `MutableRouteRef`, `AbsoluteRouteRef` types and added a new `RouteRef` type as replacement.
+
+  Deprecated and disabled the `createSubRoute` method of `AbsoluteRouteRef`.
+
+  Add an as of yet unused `params` option to `createRouteRef`.
+
+- Updated dependencies [e3bd9fc2f]
+- Updated dependencies [e1f4e24ef]
+- Updated dependencies [1665ae8bb]
+- Updated dependencies [e3bd9fc2f]
+  - @backstage/config@0.1.2
+  - @backstage/test-utils@0.1.5
+  - @backstage/theme@0.2.2
+
+## 0.2.4
+
+### Patch Changes
+
+- b4488ddb0: Added a type alias for PositionError = GeolocationPositionError
+  - @backstage/test-utils@0.1.4
+
+## 0.2.3
+
+### Patch Changes
+
+- 700a212b4: bug fix: issue 3223 - detect mismatching origin and indicate it in the message at auth failure
+
+## 0.2.2
+
+### Patch Changes
+
+- 9b9e86f8a: export oidc provider
+
 ## 0.2.1
 
 ### Patch Changes
@@ -43,7 +105,7 @@
 
   ![](https://user-images.githubusercontent.com/872486/93851658-1a76f200-fce3-11ea-990b-26ca1a327a15.png)
 
-- b79017fd3: Updated the `GithubAuth.create` method to configure the default scope of the Github Auth Api. As a result the
+- b79017fd3: Updated the `GithubAuth.create` method to configure the default scope of the GitHub Auth Api. As a result the
   default scope is configurable when overwriting the Core Api in the app.
 
   ```

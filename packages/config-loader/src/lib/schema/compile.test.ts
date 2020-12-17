@@ -89,7 +89,7 @@ describe('compileConfigSchemas', () => {
     });
   });
 
-  it('should reject visiblity conflicts', () => {
+  it('should reject visibility conflicts', () => {
     expect(() =>
       compileConfigSchemas([
         {

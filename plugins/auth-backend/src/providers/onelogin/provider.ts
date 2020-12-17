@@ -147,12 +147,12 @@ export class OneLoginProvider implements OAuthHandlers {
 }
 
 export const createOneLoginProvider: AuthProviderFactory = ({
+  providerId,
   globalConfig,
   config,
   tokenIssuer,
 }) =>
   OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-    const providerId = 'onelogin';
     const clientId = envConfig.getString('clientId');
     const clientSecret = envConfig.getString('clientSecret');
     const issuer = envConfig.getString('issuer');

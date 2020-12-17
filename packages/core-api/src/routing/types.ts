@@ -16,26 +16,51 @@
 
 import { IconComponent } from '../icons';
 
-export const resolveRoute = Symbol('resolve-route');
-export const routeReference = Symbol('route-ref');
-
-export type ReferencedRoute = {
-  [routeReference]: unknown;
-};
-
-export type ConcreteRoute = ReferencedRoute & {
-  [resolveRoute](path: string): string;
-};
-
-export type RouteRef = {
+// @ts-ignore, we're just embedding the Params type for usage in other places
+export type RouteRef<Params extends { [param in string]: string } = {}> = {
   // TODO(Rugvip): Remove path, look up via registry instead
   path: string;
   icon?: IconComponent;
   title: string;
+  /**
+   * This function should not be used, create a separate RouteRef instead
+   * @deprecated
+   */
+  createSubRoute(): any;
 };
 
-export type RouteRefConfig = {
+export type AnyRouteRef = RouteRef<any>;
+
+/**
+ * This type should not be used
+ * @deprecated
+ */
+export type ConcreteRoute = {};
+
+/**
+ * This type should not be used, use RouteRef instead
+ * @deprecated
+ */
+export type AbsoluteRouteRef = RouteRef<{}>;
+
+/**
+ * This type should not be used, use RouteRef instead
+ * @deprecated
+ */
+export type MutableRouteRef = RouteRef<{}>;
+
+export type RouteRefConfig<Params extends { [param in string]: string }> = {
+  params?: Array<keyof Params>;
   path: string;
   icon?: IconComponent;
   title: string;
 };
+
+// A duplicate of the react-router RouteObject, but with routeRef added
+export interface BackstageRouteObject {
+  caseSensitive: boolean;
+  children?: BackstageRouteObject[];
+  element: React.ReactNode;
+  path: string;
+  routeRef: AnyRouteRef;
+}

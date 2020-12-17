@@ -1,5 +1,61 @@
 # @backstage/dev-utils
 
+## 0.1.6
+
+### Patch Changes
+
+- b6557c098: Update ApiFactory type to correctly infer API type and disallow mismatched implementations.
+
+  This fixes for example the following code:
+
+  ```ts
+  interface MyApi {
+    myMethod(): void
+  }
+
+  const myApiRef = createApiRef<MyApi>({...});
+
+  createApiFactory({
+    api: myApiRef,
+    deps: {},
+    // This should've caused an error, since the empty object does not fully implement MyApi
+    factory: () => ({}),
+  })
+  ```
+
+- e1f4e24ef: Fix @backstage/cli not being a devDependency
+- Updated dependencies [2527628e1]
+- Updated dependencies [e1f4e24ef]
+- Updated dependencies [1c69d4716]
+- Updated dependencies [1665ae8bb]
+- Updated dependencies [04f26f88d]
+- Updated dependencies [ff243ce96]
+  - @backstage/core@0.4.0
+  - @backstage/test-utils@0.1.5
+  - @backstage/theme@0.2.2
+
+## 0.1.5
+
+### Patch Changes
+
+- Updated dependencies [b4488ddb0]
+- Updated dependencies [4a655c89d]
+- Updated dependencies [8a16e8af8]
+- Updated dependencies [00670a96e]
+  - @backstage/cli@0.4.0
+  - @backstage/test-utils@0.1.4
+
+## 0.1.4
+
+### Patch Changes
+
+- Updated dependencies [1722cb53c]
+- Updated dependencies [1722cb53c]
+- Updated dependencies [902340451]
+  - @backstage/cli@0.3.0
+  - @backstage/core@0.3.1
+  - @backstage/test-utils@0.1.3
+
 ## 0.1.3
 
 ### Patch Changes

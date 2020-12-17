@@ -13,21 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState } from 'react';
-
-import { Header, Content, Page } from '@backstage/core';
+import { Content, Header, Page, useQueryParamState } from '@backstage/core';
 import { Grid } from '@material-ui/core';
-
+import React, { useEffect, useState } from 'react';
+import { useDebounce } from 'react-use';
 import { SearchBar } from '../SearchBar';
 import { SearchResult } from '../SearchResult';
 
 export const SearchPage = () => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [queryString, setQueryString] = useQueryParamState<string>('query');
+  const [searchQuery, setSearchQuery] = useState(queryString ?? '');
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     setSearchQuery(event.target.value);
   };
+
+  useEffect(() => setSearchQuery(queryString ?? ''), [queryString]);
+
+  useDebounce(
+    () => {
+      setQueryString(searchQuery);
+    },
+    200,
+    [searchQuery],
+  );
 
   const handleClearSearchBar = () => {
     setSearchQuery('');
@@ -46,7 +56,7 @@ export const SearchPage = () => {
             />
           </Grid>
           <Grid item xs={12}>
-            <SearchResult searchQuery={searchQuery.toLowerCase()} />
+            <SearchResult searchQuery={(queryString ?? '').toLowerCase()} />
           </Grid>
         </Grid>
       </Content>

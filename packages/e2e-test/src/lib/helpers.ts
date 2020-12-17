@@ -93,7 +93,7 @@ export function exitWithError(err: Error & { code?: unknown }) {
  */
 export function waitFor(fn: () => boolean, maxSeconds: number = 120) {
   let count = 0;
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     const handle = setInterval(() => {
       if (count++ > maxSeconds * 10) {
         reject(new Error('Timed out while waiting for condition'));
@@ -112,7 +112,7 @@ export async function waitForExit(child: ChildProcess) {
   if (child.exitCode !== null) {
     throw new Error(`Child already exited with code ${child.exitCode}`);
   }
-  await new Promise((resolve, reject) =>
+  await new Promise<void>((resolve, reject) =>
     child.once('exit', code => {
       if (code) {
         reject(new Error(`Child exited with code ${code}`));

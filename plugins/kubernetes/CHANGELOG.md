@@ -1,5 +1,61 @@
 # @backstage/plugin-kubernetes
 
+## 0.3.3
+
+### Patch Changes
+
+- Updated dependencies [c911061b7]
+- Updated dependencies [8ef71ed32]
+- Updated dependencies [0e6298f7e]
+- Updated dependencies [ac3560b42]
+  - @backstage/catalog-model@0.6.0
+  - @backstage/core@0.4.1
+  - @backstage/plugin-kubernetes-backend@0.2.3
+
+## 0.3.2
+
+### Patch Changes
+
+- Updated dependencies [2527628e1]
+- Updated dependencies [e3bd9fc2f]
+- Updated dependencies [1c69d4716]
+- Updated dependencies [83b6e0c1f]
+- Updated dependencies [1665ae8bb]
+- Updated dependencies [04f26f88d]
+- Updated dependencies [ff243ce96]
+- Updated dependencies [e3bd9fc2f]
+  - @backstage/core@0.4.0
+  - @backstage/config@0.1.2
+  - @backstage/catalog-model@0.5.0
+  - @backstage/theme@0.2.2
+  - @backstage/plugin-kubernetes-backend@0.2.2
+
+## 0.3.1
+
+### Patch Changes
+
+- bcc211a08: k8s-plugin: refactor approach to use annotation based label-selector
+- Updated dependencies [08835a61d]
+- Updated dependencies [a9fd599f7]
+- Updated dependencies [bcc211a08]
+  - @backstage/catalog-model@0.4.0
+  - @backstage/plugin-kubernetes-backend@0.2.1
+
+## 0.3.0
+
+### Minor Changes
+
+- 1166fcc36: add kubernetes selector to component model
+
+### Patch Changes
+
+- Updated dependencies [475fc0aaa]
+- Updated dependencies [1166fcc36]
+- Updated dependencies [1185919f3]
+  - @backstage/core@0.3.2
+  - @backstage/catalog-model@0.3.0
+  - @backstage/plugin-kubernetes-backend@0.2.0
+
 ## 0.2.1
 
 ### Patch Changes

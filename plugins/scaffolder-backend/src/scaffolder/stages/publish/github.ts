@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { PublisherBase } from './types';
+import { PublisherBase, PublisherOptions, PublisherResult } from './types';
 import { Octokit } from '@octokit/rest';
 import { pushToRemoteUserPass } from './helpers';
 import { JsonValue } from '@backstage/config';
@@ -46,10 +46,7 @@ export class GithubPublisher implements PublisherBase {
   async publish({
     values,
     directory,
-  }: {
-    values: RequiredTemplateValues & Record<string, JsonValue>;
-    directory: string;
-  }): Promise<{ remoteUrl: string }> {
+  }: PublisherOptions): Promise<PublisherResult> {
     const remoteUrl = await this.createRemote(values);
     await pushToRemoteUserPass(
       directory,
@@ -57,8 +54,12 @@ export class GithubPublisher implements PublisherBase {
       this.token,
       'x-oauth-basic',
     );
+    const catalogInfoUrl = remoteUrl.replace(
+      /\.git$/,
+      '/blob/master/catalog-info.yaml',
+    );
 
-    return { remoteUrl };
+    return { remoteUrl, catalogInfoUrl };
   }
 
   private async createRemote(

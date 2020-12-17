@@ -41,7 +41,7 @@ export JENKINS_BASIC_AUTH_HEADER="Basic $HEADER"
 ```
 
 5. Run app with `yarn start`
-6. Add the Jenkins folder annotation to your `component-info.yaml`, (note: currently this plugin only supports folders and Git SCM)
+6. Add the Jenkins folder annotation to your `catalog-info.yaml`, (note: currently this plugin only supports folders and Git SCM)
 
 ```yaml
 apiVersion: backstage.io/v1alpha1

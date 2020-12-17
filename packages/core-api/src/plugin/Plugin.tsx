@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-import { PluginConfig, PluginOutput, BackstagePlugin } from './types';
+import {
+  PluginConfig,
+  PluginOutput,
+  BackstagePlugin,
+  Extension,
+} from './types';
 import { AnyApiFactory } from '../apis';
 
-export class PluginImpl {
+export class PluginImpl implements BackstagePlugin {
   private storedOutput?: PluginOutput[];
 
   constructor(private readonly config: PluginConfig) {}
@@ -63,6 +68,10 @@ export class PluginImpl {
 
     this.storedOutput = outputs;
     return this.storedOutput;
+  }
+
+  provide<T>(extension: Extension<T>): T {
+    return extension.expose(this);
   }
 
   toString() {

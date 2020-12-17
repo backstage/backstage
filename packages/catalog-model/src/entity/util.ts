@@ -46,6 +46,10 @@ export function generateEntityEtag(): string {
  * are added or existing annotations were changed (since they are effectively
  * merged when doing updates).
  *
+ * Note that this comparison does NOT take state, relations or similar into
+ * account. It only compares the actual input entity data, i.e. metadata and
+ * spec.
+ *
  * @param previous The old state of the entity
  * @param next The new state of the entity
  */
@@ -75,6 +79,10 @@ export function entityHasChanges(previous: Entity, next: Entity): boolean {
   // Remove already compared things
   delete e1.metadata.annotations;
   delete e2.metadata.annotations;
+
+  // Remove things that we explicitly do not compare
+  delete e1.relations;
+  delete e2.relations;
 
   return !lodash.isEqual(e1, e2);
 }

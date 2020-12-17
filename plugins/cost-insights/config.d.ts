@@ -31,7 +31,7 @@ interface Config {
         /**
          * @visibility frontend
          */
-        icon: 'compute' | 'data' | 'database' | 'storage' | 'search' | 'ml';
+        icon?: 'compute' | 'data' | 'database' | 'storage' | 'search' | 'ml';
       };
     };
 

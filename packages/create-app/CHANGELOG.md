@@ -1,5 +1,306 @@
 # @backstage/create-app
 
+## 0.2.5
+
+### Patch Changes
+
+- 2783ec018: In the techdocs-backend plugin (`packages/backend/src/plugins/techdocs.ts`), create a publisher using
+
+  ```
+    const publisher = Publisher.fromConfig(config, logger, discovery);
+  ```
+
+  instead of
+
+  ```
+    const publisher = new LocalPublish(logger, discovery);
+  ```
+
+  An instance of `publisher` can either be a local filesystem publisher or a Google Cloud Storage publisher.
+
+  Read more about the configs here https://backstage.io/docs/features/techdocs/configuration
+  (You will also have to update `techdocs.storage.type` to `local` or `googleGcs`. And `techdocs.builder` to either `local` or `external`.)
+
+## 0.2.4
+
+### Patch Changes
+
+- 94348441e: Add `"files": ["dist"]` to both app and backend packages. This ensures that packaged versions of these packages do not contain unnecessary files.
+
+  To apply this change to an existing app, add the following to `packages/app/package.json` and `packages/backend/package.json`:
+
+  ```json
+    "files": [
+      "dist"
+    ]
+  ```
+
+- cb5fc4b29: Adjust template to the latest changes in the `api-docs` plugin.
+
+  ## Template Changes
+
+  While updating to the latest `api-docs` plugin, the following changes are
+  necessary for the `create-app` template in your
+  `app/src/components/catalog/EntityPage.tsx`. This adds:
+
+  - A custom entity page for API entities
+  - Changes the API tab to include the new `ConsumedApisCard` and
+    `ProvidedApisCard` that link to the API entity.
+
+  ```diff
+   import {
+  +  ApiDefinitionCard,
+  -  Router as ApiDocsRouter,
+  +  ConsumedApisCard,
+  +  ProvidedApisCard,
+  +  ConsumedApisCard,
+  +  ConsumingComponentsCard,
+  +  ProvidedApisCard,
+  +  ProvidingComponentsCard
+   } from '@backstage/plugin-api-docs';
+
+  ...
+
+  +const ComponentApisContent = ({ entity }: { entity: Entity }) => (
+  +  <Grid container spacing={3} alignItems="stretch">
+  +    <Grid item md={6}>
+  +      <ProvidedApisCard entity={entity} />
+  +    </Grid>
+  +    <Grid item md={6}>
+  +      <ConsumedApisCard entity={entity} />
+  +    </Grid>
+  +  </Grid>
+  +);
+
+   const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
+     <EntityPageLayout>
+       <EntityPageLayout.Content
+        path="/"
+        title="Overview"
+        element={<OverviewContent entity={entity} />}
+      />
+      <EntityPageLayout.Content
+        path="/ci-cd/*"
+        title="CI/CD"
+        element={<CICDSwitcher entity={entity} />}
+      />
+      <EntityPageLayout.Content
+        path="/api/*"
+        title="API"
+  -     element={<ApiDocsRouter entity={entity} />}
+  +     element={<ComponentApisContent entity={entity} />}
+      />
+  ...
+
+  -export const EntityPage = () => {
+  -  const { entity } = useEntity();
+  -  switch (entity?.spec?.type) {
+  -    case 'service':
+  -      return <ServiceEntityPage entity={entity} />;
+  -    case 'website':
+  -      return <WebsiteEntityPage entity={entity} />;
+  -    default:
+  -      return <DefaultEntityPage entity={entity} />;
+  -  }
+  -};
+
+  +export const ComponentEntityPage = ({ entity }: { entity: Entity }) => {
+  +  switch (entity?.spec?.type) {
+  +    case 'service':
+  +      return <ServiceEntityPage entity={entity} />;
+  +    case 'website':
+  +      return <WebsiteEntityPage entity={entity} />;
+  +    default:
+  +      return <DefaultEntityPage entity={entity} />;
+  +  }
+  +};
+  +
+  +const ApiOverviewContent = ({ entity }: { entity: Entity }) => (
+  +  <Grid container spacing={3}>
+  +    <Grid item md={6}>
+  +      <AboutCard entity={entity} />
+  +    </Grid>
+  +    <Grid container item md={12}>
+  +      <Grid item md={6}>
+  +        <ProvidingComponentsCard entity={entity} />
+  +      </Grid>
+  +      <Grid item md={6}>
+  +        <ConsumingComponentsCard entity={entity} />
+  +      </Grid>
+  +    </Grid>
+  +  </Grid>
+  +);
+  +
+  +const ApiDefinitionContent = ({ entity }: { entity: ApiEntity }) => (
+  +  <Grid container spacing={3}>
+  +    <Grid item xs={12}>
+  +      <ApiDefinitionCard apiEntity={entity} />
+  +    </Grid>
+  +  </Grid>
+  +);
+  +
+  +const ApiEntityPage = ({ entity }: { entity: Entity }) => (
+  +  <EntityPageLayout>
+  +    <EntityPageLayout.Content
+  +      path="/*"
+  +      title="Overview"
+  +      element={<ApiOverviewContent entity={entity} />}
+  +    />
+  +    <EntityPageLayout.Content
+  +      path="/definition/*"
+  +      title="Definition"
+  +      element={<ApiDefinitionContent entity={entity as ApiEntity} />}
+  +    />
+  +  </EntityPageLayout>
+  +);
+  +
+  +export const EntityPage = () => {
+  +  const { entity } = useEntity();
+  +
+  +  switch (entity?.kind?.toLowerCase()) {
+  +    case 'component':
+  +      return <ComponentEntityPage entity={entity} />;
+  +    case 'api':
+  +      return <ApiEntityPage entity={entity} />;
+  +    default:
+  +      return <DefaultEntityPage entity={entity} />;
+  +  }
+  +};
+  ```
+
+- 1e22f8e0b: Unify `dockerode` library and type dependency versions
+
+## 0.2.3
+
+### Patch Changes
+
+- 68fdc3a9f: Optimized the `yarn install` step in the backend `Dockerfile`.
+
+  To apply these changes to an existing app, make the following changes to `packages/backend/Dockerfile`:
+
+  Replace the `RUN yarn install ...` line with the following:
+
+  ```bash
+  RUN yarn install --frozen-lockfile --production --network-timeout 300000 && rm -rf "$(yarn cache dir)"
+  ```
+
+- 4a655c89d: Removed `"resolutions"` entry for `esbuild` in the root `package.json` in order to use the version specified by `@backstage/cli`.
+
+  To apply this change to an existing app, remove the following from your root `package.json`:
+
+  ```json
+  "resolutions": {
+    "esbuild": "0.6.3"
+  },
+  ```
+
+- ea475893d: Add [API docs plugin](https://github.com/backstage/backstage/tree/master/plugins/api-docs) to new apps being created through the CLI.
+
+## 0.2.2
+
+### Patch Changes
+
+- 7d7abd50c: Add `app-backend` as a backend plugin, and make a single docker build of the backend the default way to deploy backstage.
+
+  Note that the `app-backend` currently only is a solution for deployments of the app, it's not a dev server and is not intended for local development.
+
+  ## Template changes
+
+  As a part of installing the `app-backend` plugin, the below changes where made. The changes are grouped into two steps, installing the plugin, and updating the Docker build and configuration.
+
+  ### Installing the `app-backend` plugin in the backend
+
+  First, install the `@backstage/plugin-app-backend` plugin package in your backend. These changes where made for `v0.3.0` of the plugin, and the installation process might change in the future. Run the following from the root of the repo:
+
+  ```bash
+  cd packages/backend
+  yarn add @backstage/plugin-app-backend
+  ```
+
+  For the `app-backend` to get access to the static content in the frontend we also need to add the local `app` package as a dependency. Add the following to your `"dependencies"` in `packages/backend/package.json`, assuming your app package is still named `app` and on version `0.0.0`:
+
+  ```json
+  "app": "0.0.0",
+  ```
+
+  Don't worry, this will not cause your entire frontend dependency tree to be added to the app, just double check that `packages/app/package.json` has a `"bundled": true` field at top-level. This signals to the backend build process that the package is bundled and that no transitive dependencies should be included.
+
+  Next, create `packages/backend/src/plugins/app.ts` with the following:
+
+  ```ts
+  import { createRouter } from '@backstage/plugin-app-backend';
+  import { PluginEnvironment } from '../types';
+
+  export default async function createPlugin({
+    logger,
+    config,
+  }: PluginEnvironment) {
+    return await createRouter({
+      logger,
+      config,
+      appPackageName: 'app',
+    });
+  }
+  ```
+
+  In `packages/backend/src/index.ts`, make the following changes:
+
+  Add an import for the newly created plugin setup file:
+
+  ```ts
+  import app from './plugins/app';
+  ```
+
+  Setup the following plugin env.
+
+  ```ts
+  const appEnv = useHotMemoize(module, () => createEnv('app'));
+  ```
+
+  Change service builder setup to include the `app` plugin as follows. Note that the `app` plugin is not installed on the `/api` route with most other plugins.
+
+  ```ts
+  const service = createServiceBuilder(module)
+    .loadConfig(config)
+    .addRouter('/api', apiRouter)
+    .addRouter('', await app(appEnv));
+  ```
+
+  You should now have the `app-backend` plugin installed in your backend, ready to serve the frontend bundle!
+
+  ### Docker build setup
+
+  Since the backend image is now the only one needed for a simple Backstage deployment, the image tag name in the `build-image` script inside `packages/backend/package.json` was changed to the following:
+
+  ```json
+  "build-image": "backstage-cli backend:build-image --build --tag backstage",
+  ```
+
+  For convenience, a `build-image` script was also added to the root `package.json` with the following:
+
+  ```json
+  "build-image": "yarn workspace backend build-image",
+  ```
+
+  In the root of the repo, a new `app-config.production.yaml` file was added. This is used to set the appropriate `app.baseUrl` now that the frontend is served directly by the backend in the production deployment. It has the following contents:
+
+  ```yaml
+  app:
+    # Should be the same as backend.baseUrl when using the `app-backend` plugin
+    baseUrl: http://localhost:7000
+
+  backend:
+    baseUrl: http://localhost:7000
+    listen:
+      port: 7000
+  ```
+
+  In order to load in the new configuration at runtime, the command in the `Dockerfile` at the repo root was changed to the following:
+
+  ```dockerfile
+  CMD ["node", "packages/backend", "--config", "app-config.yaml", "--config", "app-config.production.yaml"]
+  ```
+
 ## 0.2.1
 
 ### Patch Changes
@@ -81,7 +382,7 @@
   --config ../../app-config.yaml --config ../../app-config.development.yaml
   ```
 
-- 5a920c6e4: Updated naming of environment variables. New pattern [NAME]\_TOKEN for Github, Gitlab, Azure & Github enterprise access tokens.
+- 5a920c6e4: Updated naming of environment variables. New pattern [NAME]\_TOKEN for GitHub, GitLab, Azure & GitHub Enterprise access tokens.
 
   ### Detail:
 

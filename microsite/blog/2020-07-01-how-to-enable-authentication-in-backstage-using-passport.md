@@ -1,6 +1,6 @@
 ---
 title: How to enable authentication in Backstage using Passport
-author: Lee Mills
+author: Lee Mills, Spotify
 authorURL: https://github.com/leemills83
 authorImageURL: https://avatars1.githubusercontent.com/u/1236238?s=460&v=4
 ---

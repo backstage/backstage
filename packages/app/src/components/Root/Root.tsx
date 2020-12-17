@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, useContext } from 'react';
-import PropTypes from 'prop-types';
+import React, { useContext, PropsWithChildren } from 'react';
 import { Link, makeStyles } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
 import ExtensionIcon from '@material-ui/icons/Extension';
@@ -33,12 +32,12 @@ import {
   SidebarContext,
   SidebarItem,
   SidebarDivider,
-  SidebarSearchField,
   SidebarSpace,
 } from '@backstage/core';
 import { NavLink } from 'react-router-dom';
 import { graphiQLRouteRef } from '@backstage/plugin-graphiql';
 import { Settings as SidebarSettings } from '@backstage/plugin-user-settings';
+import { SidebarSearch } from '@backstage/plugin-search';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -55,7 +54,7 @@ const useSidebarLogoStyles = makeStyles({
   },
 });
 
-const SidebarLogo: FC<{}> = () => {
+const SidebarLogo = () => {
   const classes = useSidebarLogoStyles();
   const { isOpen } = useContext(SidebarContext);
 
@@ -73,17 +72,11 @@ const SidebarLogo: FC<{}> = () => {
   );
 };
 
-const handleSearch = (query: string): void => {
-  // XXX (@koroeskohr): for testing purposes
-  // eslint-disable-next-line no-console
-  console.log(query);
-};
-
-const Root: FC<{}> = ({ children }) => (
+const Root = ({ children }: PropsWithChildren<{}>) => (
   <SidebarPage>
     <Sidebar>
       <SidebarLogo />
-      <SidebarSearchField onSearch={handleSearch} />
+      <SidebarSearch />
       <SidebarDivider />
       {/* Global nav, not org-specific */}
       <SidebarItem icon={HomeIcon} to="/catalog" text="Home" />
@@ -107,9 +100,5 @@ const Root: FC<{}> = ({ children }) => (
     {children}
   </SidebarPage>
 );
-
-Root.propTypes = {
-  children: PropTypes.node,
-};
 
 export default Root;

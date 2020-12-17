@@ -1,6 +1,6 @@
 ---
 title: The Plugin Marketplace is open
-author: Stefan Ålund
+author: Stefan Ålund, Spotify
 authorURL: https://twitter.com/stalund
 ---
 

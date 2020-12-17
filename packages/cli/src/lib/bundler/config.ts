@@ -26,7 +26,8 @@ import { optimization } from './optimization';
 import { Config } from '@backstage/config';
 import { BundlingPaths } from './paths';
 import { transforms } from './transforms';
-import { BundlingOptions, BackendBundlingOptions } from './types';
+import { LinkedPackageResolvePlugin } from './LinkedPackageResolvePlugin';
+import { BundlingOptions, BackendBundlingOptions, LernaPackage } from './types';
 import { version } from '../../lib/version';
 import { paths as cliPaths } from '../../lib/paths';
 import { runPlain } from '../run';
@@ -70,13 +71,23 @@ async function readBuildInfo() {
   };
 }
 
+async function loadLernaPackages(): Promise<LernaPackage[]> {
+  const LernaProject = require('@lerna/project');
+  const project = new LernaProject(cliPaths.targetDir);
+  return project.getPackages();
+}
+
 export async function createConfig(
   paths: BundlingPaths,
   options: BundlingOptions,
 ): Promise<webpack.Configuration> {
   const { checksEnabled, isDev, frontendConfig } = options;
 
+  const packages = await loadLernaPackages();
   const { plugins, loaders } = transforms(options);
+  // Any package that is part of the monorepo but outside the monorepo root dir need
+  // separate resolution logic.
+  const externalPkgs = packages.filter(p => !p.location.startsWith(paths.root));
 
   const baseUrl = frontendConfig.getString('app.baseUrl');
   const validBaseUrl = new URL(baseUrl);
@@ -151,6 +162,7 @@ export async function createConfig(
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx'],
       mainFields: ['browser', 'module', 'main'],
       plugins: [
+        new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
         new ModuleScopePlugin(
           [paths.targetSrc, paths.targetDev],
           [paths.targetPackageJson],
@@ -181,16 +193,15 @@ export async function createBackendConfig(
 ): Promise<webpack.Configuration> {
   const { checksEnabled, isDev } = options;
 
-  const { loaders } = transforms(options);
-
   // Find all local monorepo packages and their node_modules, and mark them as external.
-  const LernaProject = require('@lerna/project');
-  const project = new LernaProject(cliPaths.targetDir);
-  const packages = await project.getPackages();
+  const packages = await await loadLernaPackages();
   const localPackageNames = packages.map((p: any) => p.name);
   const moduleDirs = packages.map((p: any) =>
     resolvePath(p.location, 'node_modules'),
   );
+  const externalPkgs = packages.filter(p => !p.location.startsWith(paths.root)); // See frontend config
+
+  const { loaders } = transforms(options);
 
   return {
     mode: isDev ? 'development' : 'production',
@@ -232,6 +243,7 @@ export async function createBackendConfig(
       mainFields: ['browser', 'module', 'main'],
       modules: [paths.rootNodeModules, ...moduleDirs],
       plugins: [
+        new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
         new ModuleScopePlugin(
           [paths.targetSrc, paths.targetDev],
           [paths.targetPackageJson],
