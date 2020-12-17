@@ -21,13 +21,18 @@ export interface Config {
   catalog?: {
     /**
      * Rules to apply to catalog entities - accepts an array of objects with below attributes
-     *  attr: 'allow' - accepts an array of string. e.g. [Component, API, Group, User, Template, Location]
-     *  opt-attr: 'locations' - accepts an array of key, value pair objects.
-     *    keys: 'target', 'type'
-     *    e.g.[{type: url, target: https://github.com}]
      */
     rules?: Array<{
+      /**
+       * attr: 'allow' - accepts an array of string. e.g. [Component, API, Group, User, Template, Location]
+       */
       allow: Array<string>;
+      /**
+       * opt-attr: 'locations' - accepts an array of key, value pair objects.
+       * keys: 'target', 'type'
+       * e.g.[{type: url, target: https://github.com}]
+       *
+       */
       locations?: Array<{ [key: string]: string }>;
     }>;
     /**
