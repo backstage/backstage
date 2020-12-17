@@ -149,6 +149,7 @@ async function main() {
     badUrls.push(...badFileUrls);
   }
 
+  console.warn(docPages);
   if (badUrls.length) {
     console.log(`Found ${badUrls.length} bad links within repo`);
     for (const { url, basePath, problem } of badUrls) {
