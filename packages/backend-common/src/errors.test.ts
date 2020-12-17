@@ -34,7 +34,7 @@ describe('errors', () => {
       const error = new E('abcdef', cause);
       expect(error.cause).toBe(cause);
       expect(error.toString()).toContain(
-        `${name}: abcdef; caused by Error: hello`,
+        `${error.name}: abcdef; caused by Error: hello`,
       );
     }
   });

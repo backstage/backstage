@@ -33,7 +33,7 @@ export class UrlReaderPredicateMux implements UrlReader {
     this.readers.push(tuple);
   }
 
-  read(url: string): Promise<Buffer> {
+  async read(url: string): Promise<Buffer> {
     const parsed = new URL(url);
 
     for (const { predicate, reader } of this.readers) {

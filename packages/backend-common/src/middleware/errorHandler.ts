@@ -41,7 +41,7 @@ export type ErrorHandlerOptions = {
  * This is commonly the very last middleware in the chain.
  *
  * Its primary purpose is not to do translation of business logic exceptions,
- * but rather to be a gobal catch-all for uncaught "fatal" errors that are
+ * but rather to be a global catch-all for uncaught "fatal" errors that are
  * expected to result in a 500 error. However, it also does handle some common
  * error types (such as http-error exceptions) and returns the enclosed status
  * code accordingly.

@@ -15,18 +15,20 @@
  */
 
 import {
-  GitHubIntegrationConfig,
-  readGitHubIntegrationConfigs,
   getGitHubFileFetchUrl,
   GithubCredentialsProvider,
+  GitHubIntegrationConfig,
+  readGitHubIntegrationConfigs,
 } from '@backstage/integration';
 import fetch from 'cross-fetch';
 import parseGitUrl from 'git-url-parse';
 import { Readable } from 'stream';
 import { NotFoundError, NotModifiedError } from '../errors';
+import { ChangeTrackingFetcher } from './ChangeTrackingFetcher';
 import { ReadTreeResponseFactory } from './tree';
 import {
   ReaderFactory,
+  ReadOptions,
   ReadTreeOptions,
   ReadTreeResponse,
   UrlReader,
@@ -41,11 +43,15 @@ export class GithubUrlReader implements UrlReader {
     const configs = readGitHubIntegrationConfigs(
       config.getOptionalConfigArray('integrations.github') ?? [],
     );
+    const fetcher = new ChangeTrackingFetcher({
+      maxAgeMillis: 24 * 60 * 60 * 1000,
+    });
     return configs.map(provider => {
       const credentialsProvider = GithubCredentialsProvider.create(provider);
       const reader = new GithubUrlReader(provider, {
         treeResponseFactory,
         credentialsProvider,
+        delegateFetcher: fetcher.fetch.bind(fetcher),
       });
       const predicate = (url: URL) => url.host === provider.host;
       return { reader, predicate };
@@ -57,6 +63,11 @@ export class GithubUrlReader implements UrlReader {
     private readonly deps: {
       treeResponseFactory: ReadTreeResponseFactory;
       credentialsProvider: GithubCredentialsProvider;
+      delegateFetcher: (
+        url: string,
+        init?: RequestInit | undefined,
+        options?: ReadOptions | undefined,
+      ) => Promise<Response>;
     },
   ) {
     if (!config.apiBaseUrl && !config.rawBaseUrl) {
@@ -66,20 +77,22 @@ export class GithubUrlReader implements UrlReader {
     }
   }
 
-  async read(url: string): Promise<Buffer> {
+  async read(url: string, readOptions?: ReadOptions): Promise<Buffer> {
     const ghUrl = getGitHubFileFetchUrl(url, this.config);
     const { headers } = await this.deps.credentialsProvider.getCredentials({
       url,
     });
     let response: Response;
     try {
-      response = await fetch(ghUrl.toString(), {
-        headers: {
-          ...headers,
-          Accept: 'application/vnd.github.v3.raw',
-        },
-      });
+      response = await this.deps.delegateFetcher(
+        ghUrl.toString(),
+        { headers: { ...headers, Accept: 'application/vnd.github.v3.raw' } },
+        readOptions,
+      );
     } catch (e) {
+      if (e instanceof NotModifiedError) {
+        throw e;
+      }
       throw new Error(`Unable to read ${url}, ${e}`);
     }
 

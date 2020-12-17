@@ -18,6 +18,31 @@ import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 import { ReadTreeResponseFactory } from './tree';
 
+/**
+ * Options that affect the reading of URLs.
+ */
+export type ReadOptions = {
+  /**
+   * Control the data re-fetching strategy.
+   *
+   * This option can be used when the caller is only interested in the data if
+   * it known to have changed since the last time it was requested.
+   *
+   * Implementations are free to ignore this option, and to treat it as being
+   * equal to 'always'.
+   *
+   * Possible values are:
+   *
+   * - 'always': Always get the latest data from the remote. This is the
+   *   default.
+   * - 'if-changed': A check may be issued to the remote to see if the data has
+   *   changed. If no previous read had been issued, or if the data was found
+   *   to be changed, the data is returned as normal. If the data was found to
+   *   not have changed, the read throws a NotModifiedError.
+   */
+  refetchStrategy?: 'always' | 'if-changed';
+};
+
 export type ReadTreeOptions = {
   /**
    * A filter that can be used to select which files should be included.
@@ -51,7 +76,7 @@ export type ReadTreeOptions = {
  * A generic interface for fetching plain data from URLs.
  */
 export type UrlReader = {
-  read(url: string): Promise<Buffer>;
+  read(url: string, options?: ReadOptions): Promise<Buffer>;
   readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
 };
 

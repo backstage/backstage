@@ -17,6 +17,7 @@
 import { ConfigReader } from '@backstage/config';
 import { GithubCredentialsProvider } from '@backstage/integration';
 import { msw } from '@backstage/test-utils';
+import fetch from 'cross-fetch';
 import fs from 'fs';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -38,7 +39,11 @@ const githubProcessor = new GithubUrlReader(
     host: 'github.com',
     apiBaseUrl: 'https://api.github.com',
   },
-  { treeResponseFactory, credentialsProvider: mockCredentialsProvider },
+  {
+    treeResponseFactory,
+    credentialsProvider: mockCredentialsProvider,
+    delegateFetcher: fetch,
+  },
 );
 
 const gheProcessor = new GithubUrlReader(
@@ -46,7 +51,11 @@ const gheProcessor = new GithubUrlReader(
     host: 'ghe.github.com',
     apiBaseUrl: 'https://ghe.github.com/api/v3',
   },
-  { treeResponseFactory, credentialsProvider: mockCredentialsProvider },
+  {
+    treeResponseFactory,
+    credentialsProvider: mockCredentialsProvider,
+    delegateFetcher: fetch,
+  },
 );
 
 describe('GithubUrlReader', () => {
