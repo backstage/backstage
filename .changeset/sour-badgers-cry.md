@@ -2,4 +2,4 @@
 '@backstage/core-api': patch
 ---
 
-GitHub Auth Api uses provider.id to build storage key name.
+Use auth provider ID to create unique session storage keys for GitHub and SAML Auth.
