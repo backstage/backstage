@@ -1,5 +1,16 @@
 # @backstage/plugin-sonarqube
 
+## 0.1.7
+
+### Patch Changes
+
+- Updated dependencies [c911061b7]
+- Updated dependencies [8ef71ed32]
+- Updated dependencies [0e6298f7e]
+- Updated dependencies [ac3560b42]
+  - @backstage/catalog-model@0.6.0
+  - @backstage/core@0.4.1
+
 ## 0.1.6
 
 ### Patch Changes

@@ -1,5 +1,44 @@
 # example-app
 
+## 0.2.7
+
+### Patch Changes
+
+- Updated dependencies [c0fac6163]
+- Updated dependencies [48c305e69]
+- Updated dependencies [c911061b7]
+- Updated dependencies [ab805860a]
+- Updated dependencies [dae4f3983]
+- Updated dependencies [8ef71ed32]
+- Updated dependencies [0e6298f7e]
+- Updated dependencies [f3e75508d]
+- Updated dependencies [3b50f833d]
+- Updated dependencies [c36a01b4c]
+- Updated dependencies [c5297baeb]
+- Updated dependencies [ac3560b42]
+- Updated dependencies [962d1ad66]
+  - @backstage/plugin-org@0.3.2
+  - @backstage/plugin-cost-insights@0.5.2
+  - @backstage/catalog-model@0.6.0
+  - @backstage/plugin-techdocs@0.5.0
+  - @backstage/core@0.4.1
+  - @backstage/plugin-catalog-import@0.3.2
+  - @backstage/plugin-pagerduty@0.2.3
+  - @backstage/cli@0.4.2
+  - @backstage/plugin-sentry@0.3.1
+  - @backstage/plugin-api-docs@0.4.1
+  - @backstage/plugin-catalog@0.2.7
+  - @backstage/plugin-circleci@0.2.5
+  - @backstage/plugin-cloudbuild@0.2.5
+  - @backstage/plugin-github-actions@0.2.5
+  - @backstage/plugin-jenkins@0.3.4
+  - @backstage/plugin-kubernetes@0.3.3
+  - @backstage/plugin-lighthouse@0.2.6
+  - @backstage/plugin-register-component@0.2.5
+  - @backstage/plugin-rollbar@0.2.7
+  - @backstage/plugin-scaffolder@0.3.4
+  - @backstage/plugin-search@0.2.4
+
 ## 0.2.6
 
 ### Patch Changes
