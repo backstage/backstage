@@ -30,7 +30,9 @@ import {
 import { pluginCollector } from './collectors';
 
 const mockConfig = () => ({ path: '/foo', title: 'Foo' });
-const MockComponent = ({ children }: PropsWithChildren<{}>) => <>{children}</>;
+const MockComponent = ({ children }: PropsWithChildren<{ path?: string }>) => (
+  <>{children}</>
+);
 
 const pluginA = createPlugin({ id: 'my-plugin-a' });
 const pluginB = createPlugin({ id: 'my-plugin-b' });

@@ -47,7 +47,9 @@ const mockConfig = (extra?: Partial<RouteRefConfig<{}>>) => ({
   title: 'Unused',
   ...extra,
 });
-const MockComponent = ({ children }: PropsWithChildren<{}>) => <>{children}</>;
+const MockComponent = ({ children }: PropsWithChildren<{ path?: string }>) => (
+  <>{children}</>
+);
 
 const plugin = createPlugin({ id: 'my-plugin' });
 
@@ -61,6 +63,7 @@ const eRefB = createExternalRouteRef();
 const eRefC = createExternalRouteRef();
 
 const MockRouteSource = <T extends { [name in string]: string }>(props: {
+  path?: string;
   name: string;
   routeRef: RouteRef<T> | ExternalRouteRef;
   params?: T;

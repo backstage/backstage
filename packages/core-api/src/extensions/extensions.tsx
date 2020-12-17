@@ -14,24 +14,14 @@
  * limitations under the License.
  */
 
-import React, {
-  NamedExoticComponent,
-  ComponentType,
-  PropsWithChildren,
-} from 'react';
+import React from 'react';
 import { RouteRef } from '../routing';
 import { attachComponentData } from './componentData';
 import { Extension, BackstagePlugin } from '../plugin/types';
 
-export function createRoutableExtension<Props extends {}>(options: {
-  component: ComponentType<Props>;
-  mountPoint: RouteRef;
-  // TODO(Rugvip): We want to carry forward the exact props type from the inner component, with
-  //               or without children. ComponentType stops us from doing that though, as it always
-  //               adds children to the props internally. We may want to work around this with custom types.
-}): Extension<
-  NamedExoticComponent<PropsWithChildren<Props & { path?: string }>>
-> {
+export function createRoutableExtension<
+  T extends (props: any) => JSX.Element
+>(options: { component: T; mountPoint: RouteRef }): Extension<T> {
   const { component, mountPoint } = options;
   return createReactExtension({
     component,
@@ -41,21 +31,24 @@ export function createRoutableExtension<Props extends {}>(options: {
   });
 }
 
-export function createComponentExtension<Props extends {}>(options: {
-  component: ComponentType<Props>;
-}): Extension<NamedExoticComponent<Props>> {
+export function createComponentExtension<
+  T extends (props: any) => JSX.Element
+>(options: { component: T }): Extension<T> {
   const { component } = options;
   return createReactExtension({ component });
 }
 
-export function createReactExtension<Props extends {}>(options: {
-  component: ComponentType<Props>;
-  data?: Record<string, unknown>;
-}): Extension<NamedExoticComponent<Props>> {
-  const { component: Component, data = {} } = options;
+export function createReactExtension<
+  T extends (props: any) => JSX.Element
+>(options: { component: T; data?: Record<string, unknown> }): Extension<T> {
+  const { data = {} } = options;
+  const Component = options.component as T & {
+    displayName?: string;
+  };
+
   return {
-    expose(plugin: BackstagePlugin<any, any>): NamedExoticComponent<Props> {
-      const Result = (props: Props) => <Component {...props} />;
+    expose(plugin: BackstagePlugin<any, any>) {
+      const Result: any = (props: any) => <Component {...props} />;
 
       attachComponentData(Result, 'core.plugin', plugin);
       for (const [key, value] of Object.entries(data)) {
@@ -66,7 +59,7 @@ export function createReactExtension<Props extends {}>(options: {
       if (name) {
         Result.displayName = `Extension(${name})`;
       }
-      return Result as NamedExoticComponent<Props>;
+      return Result;
     },
   };
 }

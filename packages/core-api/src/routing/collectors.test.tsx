@@ -28,7 +28,9 @@ import { createRoutableExtension } from '../extensions';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 
 const mockConfig = () => ({ path: '/foo', title: 'Foo' });
-const MockComponent = ({ children }: PropsWithChildren<{}>) => <>{children}</>;
+const MockComponent = ({ children }: PropsWithChildren<{ path?: string }>) => (
+  <>{children}</>
+);
 
 const plugin = createPlugin({ id: 'my-plugin' });
 

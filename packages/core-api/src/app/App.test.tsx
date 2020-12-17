@@ -17,7 +17,7 @@
 import { renderWithEffects, withLogCollector } from '@backstage/test-utils';
 import { lightTheme } from '@backstage/theme';
 import { render, screen } from '@testing-library/react';
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { BrowserRouter, Routes } from 'react-router-dom';
 import { createRoutableExtension } from '../extensions';
 import { defaultSystemIcons } from '../icons';
@@ -66,14 +66,14 @@ describe('Integration Test', () => {
 
   const HiddenComponent = plugin2.provide(
     createRoutableExtension({
-      component: () => null,
+      component: (_: { path?: string }) => <div />,
       mountPoint: plugin2RouteRef,
     }),
   );
 
   const ExposedComponent = plugin1.provide(
     createRoutableExtension({
-      component: () => {
+      component: (_: PropsWithChildren<{ path?: string }>) => {
         // eslint-disable-next-line react-hooks/rules-of-hooks
         const routeRefFunction = useRouteRef(externalRouteRef);
         return <div>Our Route Is: {routeRefFunction({})}</div>;
