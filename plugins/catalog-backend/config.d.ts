@@ -15,7 +15,6 @@
  */
 
 import { JsonValue } from '@backstage/config';
-import { StringLocale } from 'yup';
 
 export interface Config {
   /** Configuration options for the catalog plugin */
