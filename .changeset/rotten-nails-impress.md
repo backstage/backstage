@@ -4,4 +4,4 @@
 '@backstage/plugin-pagerduty': patch
 ---
 
-Create AboutCard in core and use it in pagerduty and catalog plugin
+Create HeaderIconLinkRow in core and use it in pagerduty and catalog plugin
