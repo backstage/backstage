@@ -1644,7 +1644,7 @@
     to-fast-properties "^2.0.0"
 
 "@backstage/catalog-model@^0.2.0":
-  version "0.5.0"
+  version "0.6.0"
   dependencies:
     "@backstage/config" "^0.1.2"
     "@types/json-schema" "^7.0.5"
@@ -1655,7 +1655,7 @@
     yup "^0.29.3"
 
 "@backstage/catalog-model@^0.3.0":
-  version "0.5.0"
+  version "0.6.0"
   dependencies:
     "@backstage/config" "^0.1.2"
     "@types/json-schema" "^7.0.5"
@@ -1666,10 +1666,10 @@
     yup "^0.29.3"
 
 "@backstage/core@^0.3.0":
-  version "0.4.0"
+  version "0.4.1"
   dependencies:
     "@backstage/config" "^0.1.2"
-    "@backstage/core-api" "^0.2.5"
+    "@backstage/core-api" "^0.2.6"
     "@backstage/theme" "^0.2.2"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
@@ -13688,10 +13688,10 @@ graphql-upload@^8.0.2:
     http-errors "^1.7.3"
     object-path "^0.11.4"
 
-graphql@15.3.0, graphql@^15.3.0:
-  version "15.3.0"
-  resolved "https://registry.npmjs.org/graphql/-/graphql-15.3.0.tgz#3ad2b0caab0d110e3be4a5a9b2aa281e362b5278"
-  integrity sha512-GTCJtzJmkFLWRfFJuoo9RWWa/FfamUHgiFosxi/X1Ani4AVWbeyBenZTNX6dM+7WSbbFfTo/25eh0LLkwHMw2w==
+graphql@15.4.0, graphql@^15.3.0:
+  version "15.4.0"
+  resolved "https://registry.npmjs.org/graphql/-/graphql-15.4.0.tgz#e459dea1150da5a106486ba7276518b5295a4347"
+  integrity sha512-EB3zgGchcabbsU9cFe1j+yxdzKQKAbGUWRb13DsrsMN1yyfmmIq+2+L5MqVWcDCE4V89R5AyUOi7sMOGxdsYtA==
 
 graphql@^14.5.3:
   version "14.7.0"
