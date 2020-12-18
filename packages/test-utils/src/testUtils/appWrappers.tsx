@@ -80,6 +80,7 @@ export function wrapInTestApp(
       },
     ],
     defaultApis: mockApis,
+    bindRoutes: () => {},
   });
 
   let Wrapper: ComponentType;

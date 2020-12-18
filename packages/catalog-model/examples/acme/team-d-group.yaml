@@ -5,6 +5,10 @@ metadata:
   description: Team D
 spec:
   type: team
+  profile:
+    displayName: Team D
+    email: team-d@example.com
+    picture: https://example.com/groups/team-d.jpeg
   parent: boxoffice
   children: []
 ---

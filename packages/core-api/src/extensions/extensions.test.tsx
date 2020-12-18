@@ -30,10 +30,12 @@ const plugin = createPlugin({
 
 describe('extensions', () => {
   it('should create a react extension with component data', () => {
-    const Component = () => null;
+    const Component = () => <div />;
 
     const extension = createReactExtension({
-      component: Component,
+      component: {
+        sync: Component,
+      },
       data: {
         myData: { foo: 'bar' },
       },
@@ -47,15 +49,17 @@ describe('extensions', () => {
   });
 
   it('should create react extensions of different types', () => {
-    const Component = () => null;
+    const Component = () => <div />;
     const routeRef = createRouteRef({ path: '/foo', title: 'Foo' });
 
     const extension1 = createComponentExtension({
-      component: Component,
+      component: {
+        sync: Component,
+      },
     });
 
     const extension2 = createRoutableExtension({
-      component: Component,
+      component: () => Promise.resolve(Component),
       mountPoint: routeRef,
     });
 

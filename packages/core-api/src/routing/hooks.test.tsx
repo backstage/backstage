@@ -35,7 +35,11 @@ import {
   validateRoutes,
   RouteFunc,
 } from './hooks';
-import { createRouteRef } from './RouteRef';
+import {
+  createRouteRef,
+  createExternalRouteRef,
+  ExternalRouteRef,
+} from './RouteRef';
 import { RouteRef, RouteRefConfig } from './types';
 
 const mockConfig = (extra?: Partial<RouteRefConfig<{}>>) => ({
@@ -43,7 +47,9 @@ const mockConfig = (extra?: Partial<RouteRefConfig<{}>>) => ({
   title: 'Unused',
   ...extra,
 });
-const MockComponent = ({ children }: PropsWithChildren<{}>) => <>{children}</>;
+const MockComponent = ({ children }: PropsWithChildren<{ path?: string }>) => (
+  <>{children}</>
+);
 
 const plugin = createPlugin({ id: 'my-plugin' });
 
@@ -52,10 +58,14 @@ const ref2 = createRouteRef(mockConfig({ path: '/wat2' }));
 const ref3 = createRouteRef(mockConfig({ path: '/wat3' }));
 const ref4 = createRouteRef(mockConfig({ path: '/wat4' }));
 const ref5 = createRouteRef(mockConfig({ path: '/wat5' }));
+const eRefA = createExternalRouteRef();
+const eRefB = createExternalRouteRef();
+const eRefC = createExternalRouteRef();
 
 const MockRouteSource = <T extends { [name in string]: string }>(props: {
+  path?: string;
   name: string;
-  routeRef: RouteRef<T>;
+  routeRef: RouteRef<T> | ExternalRouteRef;
   params?: T;
 }) => {
   try {
@@ -75,22 +85,40 @@ const MockRouteSource = <T extends { [name in string]: string }>(props: {
 };
 
 const Extension1 = plugin.provide(
-  createRoutableExtension({ component: MockComponent, mountPoint: ref1 }),
+  createRoutableExtension({
+    component: () => Promise.resolve(MockComponent),
+    mountPoint: ref1,
+  }),
 );
 const Extension2 = plugin.provide(
-  createRoutableExtension({ component: MockRouteSource, mountPoint: ref2 }),
+  createRoutableExtension({
+    component: () => Promise.resolve(MockRouteSource),
+    mountPoint: ref2,
+  }),
 );
 const Extension3 = plugin.provide(
-  createRoutableExtension({ component: MockComponent, mountPoint: ref3 }),
+  createRoutableExtension({
+    component: () => Promise.resolve(MockComponent),
+    mountPoint: ref3,
+  }),
 );
 const Extension4 = plugin.provide(
-  createRoutableExtension({ component: MockRouteSource, mountPoint: ref4 }),
+  createRoutableExtension({
+    component: () => Promise.resolve(MockRouteSource),
+    mountPoint: ref4,
+  }),
 );
 const Extension5 = plugin.provide(
-  createRoutableExtension({ component: MockComponent, mountPoint: ref5 }),
+  createRoutableExtension({
+    component: () => Promise.resolve(MockComponent),
+    mountPoint: ref5,
+  }),
 );
 
-function withRoutingProvider(root: ReactElement) {
+function withRoutingProvider(
+  root: ReactElement,
+  routeBindings: [ExternalRouteRef, RouteRef][] = [],
+) {
   const { routePaths, routeParents, routeObjects } = traverseElementTree({
     root,
     discoverers: [childDiscoverer, routeElementDiscoverer],
@@ -106,6 +134,7 @@ function withRoutingProvider(root: ReactElement) {
       routePaths={routePaths}
       routeParents={routeParents}
       routeObjects={routeObjects}
+      routeBindings={new Map(routeBindings)}
     >
       {root}
     </RoutingProvider>
@@ -113,26 +142,46 @@ function withRoutingProvider(root: ReactElement) {
 }
 
 describe('discovery', () => {
-  it('should handle simple routeRef path creation for routeRefs used in other parts of the app', () => {
+  it('should handle simple routeRef path creation for routeRefs used in other parts of the app', async () => {
     const root = (
       <MemoryRouter initialEntries={['/foo/bar']}>
         <Routes>
           <Extension1 path="/foo">
             <Extension2 path="/bar" name="inside" routeRef={ref2} />
+            <MockRouteSource name="insideExternal" routeRef={eRefA} />
           </Extension1>
           <Extension3 path="/baz" />
         </Routes>
         <MockRouteSource name="outside" routeRef={ref2} />
+        <MockRouteSource name="outsideExternal1" routeRef={eRefB} />
+        <MockRouteSource name="outsideExternal2" routeRef={eRefC} />
       </MemoryRouter>
     );
 
-    const rendered = render(withRoutingProvider(root));
+    const rendered = render(
+      withRoutingProvider(root, [
+        [eRefA, ref3],
+        [eRefB, ref1],
+        [eRefC, ref2],
+      ]),
+    );
 
-    expect(rendered.getByText('Path at inside: /foo/bar')).toBeInTheDocument();
+    await expect(
+      rendered.findByText('Path at inside: /foo/bar'),
+    ).resolves.toBeInTheDocument();
+    expect(
+      rendered.getByText('Path at insideExternal: /baz'),
+    ).toBeInTheDocument();
     expect(rendered.getByText('Path at outside: /foo/bar')).toBeInTheDocument();
+    expect(
+      rendered.getByText('Path at outsideExternal1: /foo'),
+    ).toBeInTheDocument();
+    expect(
+      rendered.getByText('Path at outsideExternal2: /foo/bar'),
+    ).toBeInTheDocument();
   });
 
-  it('should handle routeRefs with parameters', () => {
+  it('should handle routeRefs with parameters', async () => {
     const root = (
       <MemoryRouter initialEntries={['/foo/bar/wat']}>
         <Routes>
@@ -155,37 +204,39 @@ describe('discovery', () => {
 
     const rendered = render(withRoutingProvider(root));
 
-    expect(
-      rendered.getByText('Path at inside: /foo/bar/bleb'),
-    ).toBeInTheDocument();
+    await expect(
+      rendered.findByText('Path at inside: /foo/bar/bleb'),
+    ).resolves.toBeInTheDocument();
     expect(
       rendered.getByText('Path at outside: /foo/bar/blob'),
     ).toBeInTheDocument();
   });
 
-  it('should handle relative routing within parameterized routePaths', () => {
+  it('should handle relative routing within parameterized routePaths', async () => {
     const root = (
       <MemoryRouter initialEntries={['/foo/blob/baz']}>
-        <Routes>
-          <Extension5 path="/foo/:id">
-            <Extension2 path="/bar" name="inside" routeRef={ref3} />
-            <Extension3 path="/baz" />
-          </Extension5>
-        </Routes>
-        <MockRouteSource name="outsideNoParams" routeRef={ref3} />
-        <MockRouteSource
-          name="outsideWithParams"
-          routeRef={ref3}
-          params={{ id: 'blob' }}
-        />
+        <React.Suspense fallback="loller">
+          <Routes>
+            <Extension5 path="/foo/:id">
+              <Extension2 path="/bar" name="inside" routeRef={ref3} />
+              <Extension3 path="/baz" />
+            </Extension5>
+          </Routes>
+          <MockRouteSource name="outsideNoParams" routeRef={ref3} />
+          <MockRouteSource
+            name="outsideWithParams"
+            routeRef={ref3}
+            params={{ id: 'blob' }}
+          />
+        </React.Suspense>
       </MemoryRouter>
     );
 
     const rendered = render(withRoutingProvider(root));
 
-    expect(
-      rendered.getByText('Path at inside: /foo/blob/baz'),
-    ).toBeInTheDocument();
+    await expect(
+      rendered.findByText('Path at inside: /foo/blob/baz'),
+    ).resolves.toBeInTheDocument();
   });
 
   it('should throw errors for routing to other routeRefs with unsupported parameters', () => {

@@ -47,26 +47,28 @@ guidelines to get started.
 
 ### Ongoing work 🚧
 
-- **[Backstage platform is stable](https://github.com/backstage/backstage/milestone/19)** -
-  The core of Backstage and its features are stable and can be depended on for
-  production use. After this plugins will require little to no maintenance.
+- **[Platform stabilization](https://github.com/backstage/backstage/milestone/19)** -
+  Stabilize the core of Backstage, including its core features, so that the
+  platform can be depended on for production use. After this, plugins will
+  require little-to-no maintenance.
 
-- **[Improved Kubernetes plugin](https://github.com/backstage/backstage/issues/2857)** -
-  Native support for Kubernetes, making it easier for developers to see and
-  manage their services running in k8s.
+- **[Kubernetes plugin for service owners](https://github.com/backstage/backstage/issues/2857)** -
+  Improve native support for Kubernetes, making it easier for service owners to
+  see and manage their services running in K8s, regardless if that's locally, in
+  AWS, GCS, Azure, or elsewhere.
 
-- **Global search** - Extend the basic search available in the Backstage Service
-  Catalog with a global search experience.
+- **Global search** - Extend the basic search functionality currently available
+  in the Backstage Service Catalog to become a global search experience.
 
 - **[Software Templates V2](https://github.com/backstage/backstage/issues/2771)** -
-  Expanding the templates to make steps more composable, by adding the ability
-  to add more steps for custom logic like webhooks and using authorization from
-  integrations.
+  Expand the templates to make the steps more composable by adding the ability
+  to add more steps for custom logic, including webhooks and using authorization
+  from integrations.
 
 ### Future work 🔮
 
-- **Golden Path for Plugin Development** - Creating an easy, standardized way
-  for developers to build plugins will encourage contributions and lead to a
+- **Golden Path for Plugin Development** - Create an easy, standardized way for
+  developers to build plugins that will encourage contributions and lead to a
   richer ecosystem for everyone.
 
 - **[GraphQL API](https://github.com/backstage/backstage/milestone/13)** - A
@@ -74,12 +76,12 @@ guidelines to get started.
   query. Plugins can easily query this API as well as extend the model where
   needed.
 
-- **Inter Plugin Communication** - **[Under consideration]** Establish more
+- **Inter-Plugin Communication** - **[Under consideration]** Establish more
   clearly defined patterns for plugins to communicate.
 
 - **Improved Access Control** - **[Under consideration]** Provide finer grained
-  access controls and management making it possible for you to better control
-  the platforms user experience.
+  access controls and management for better control of the platform user
+  experience.
 
 ### Plugins
 

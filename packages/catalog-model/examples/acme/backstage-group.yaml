@@ -5,5 +5,9 @@ metadata:
   description: The backstage sub-department
 spec:
   type: sub-department
+  profile:
+    displayName: Backstage
+    email: backstage@example.com
+    picture: https://example.com/groups/backstage.jpeg
   parent: infrastructure
   children: [team-a, team-b]
