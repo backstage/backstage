@@ -15,7 +15,11 @@
  */
 
 import { ApiEntity } from '@backstage/catalog-model';
-import { createApiFactory, createPlugin } from '@backstage/core';
+import {
+  createApiFactory,
+  createPlugin,
+  createRoutableExtension,
+} from '@backstage/core';
 import { ApiExplorerPage } from './components/ApiExplorerPage/ApiExplorerPage';
 import { defaultDefinitionWidgets } from './components/ApiDefinitionCard';
 import { rootRoute } from './routes';
@@ -37,7 +41,20 @@ export const plugin = createPlugin({
       },
     }),
   ],
+  routes: {
+    root: rootRoute,
+  },
   register({ router }) {
     router.addRoute(rootRoute, ApiExplorerPage);
   },
 });
+
+export const ApiDocsExplorerPage = plugin.provide(
+  createRoutableExtension({
+    mountPoint: rootRoute,
+    component: () =>
+      import('./components/ApiExplorerPage/ApiExplorerPage').then(
+        m => m.ApiExplorerPage,
+      ),
+  }),
+);

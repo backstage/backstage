@@ -35,6 +35,7 @@ import { Router as LighthouseRouter } from '@backstage/plugin-lighthouse';
 import { Router as RegisterComponentRouter } from '@backstage/plugin-register-component';
 import { Router as SettingsRouter } from '@backstage/plugin-user-settings';
 import { Router as ImportComponentRouter } from '@backstage/plugin-catalog-import';
+import { ApiDocsExplorerPage } from '@backstage/plugin-api-docs';
 import { Route, Routes, Navigate } from 'react-router';
 
 import { EntityPage } from './components/catalog/EntityPage';
@@ -87,6 +88,8 @@ const AppRoutes = () => (
       path="/register-component"
       element={<RegisterComponentRouter catalogRouteRef={catalogRouteRef} />}
     />
+
+    <Route path="/api-docs" element={<ApiDocsExplorerPage />} />
     <Route path="/settings" element={<SettingsRouter />} />
     {...deprecatedAppRoutes}
   </Routes>

@@ -15,4 +15,4 @@
  */
 
 export * from './components';
-export { plugin } from './plugin';
+export { plugin, ApiDocsExplorerPage } from './plugin';
