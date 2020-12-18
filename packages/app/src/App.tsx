@@ -32,7 +32,6 @@ import { Router as DocsRouter } from '@backstage/plugin-techdocs';
 import { Router as GraphiQLRouter } from '@backstage/plugin-graphiql';
 import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
 import { Router as LighthouseRouter } from '@backstage/plugin-lighthouse';
-import { Router as RegisterComponentRouter } from '@backstage/plugin-register-component';
 import { Router as SettingsRouter } from '@backstage/plugin-user-settings';
 import { Router as ImportComponentRouter } from '@backstage/plugin-catalog-import';
 import { Route, Routes, Navigate } from 'react-router';
@@ -83,10 +82,6 @@ const AppRoutes = () => (
     />
     <Route path="/graphiql" element={<GraphiQLRouter />} />
     <Route path="/lighthouse/*" element={<LighthouseRouter />} />
-    <Route
-      path="/register-component"
-      element={<RegisterComponentRouter catalogRouteRef={catalogRouteRef} />}
-    />
     <Route path="/settings" element={<SettingsRouter />} />
     {...deprecatedAppRoutes}
   </Routes>
