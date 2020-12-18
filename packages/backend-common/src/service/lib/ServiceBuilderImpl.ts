@@ -52,7 +52,7 @@ const DEFAULT_CSP = {
   'frame-ancestors': ["'self'"],
   'img-src': ["'self'", 'data:'],
   'object-src': ["'none'"],
-  'script-src': ["'self'"],
+  'script-src': ["'self'", "'unsafe-eval'"],
   'script-src-attr': ["'none'"],
   'style-src': ["'self'", 'https:', "'unsafe-inline'"],
   'upgrade-insecure-requests': [] as string[],

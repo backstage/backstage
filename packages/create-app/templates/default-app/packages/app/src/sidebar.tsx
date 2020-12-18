@@ -20,10 +20,12 @@ import {
   SidebarContext,
   SidebarSpace,
 } from '@backstage/core';
+import { SidebarSearch } from '@backstage/plugin-search';
 
 export const AppSidebar = () => (
   <Sidebar>
     <SidebarLogo />
+    <SidebarSearch />
     <SidebarDivider />
     {/* Global nav, not org-specific */}
     <SidebarItem icon={HomeIcon} to="./" text="Home" />

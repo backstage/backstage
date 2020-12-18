@@ -13,6 +13,7 @@ import { Route, Routes, Navigate } from 'react-router';
 import { Router as CatalogRouter } from '@backstage/plugin-catalog';
 import { Router as DocsRouter } from '@backstage/plugin-techdocs';
 import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
+import { SearchPage as SearchRouter } from '@backstage/plugin-search';
 
 import { EntityPage } from './components/catalog/EntityPage';
 
@@ -48,6 +49,10 @@ const App = () => (
           <Route
             path="/tech-radar"
             element={<TechRadarRouter width={1500} height={800} />}
+          />
+          <Route
+            path="/search"
+            element={<SearchRouter/>}
           />
           {deprecatedAppRoutes}
         </Routes>
