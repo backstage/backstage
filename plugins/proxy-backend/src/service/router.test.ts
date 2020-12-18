@@ -14,25 +14,27 @@
  * limitations under the License.
  */
 
-import { buildMiddleware, createRouter } from './router';
-import * as winston from 'winston';
 import {
+  getVoidLogger,
   loadBackendConfig,
   SingleHostDiscovery,
 } from '@backstage/backend-common';
-import createProxyMiddleware, {
-  Config as ProxyMiddlewareConfig,
-  Proxy,
-} from 'http-proxy-middleware';
+import { Request, Response } from 'express';
 import * as http from 'http';
+import {
+  createProxyMiddleware,
+  Options as ProxyMiddlewareConfig,
+  RequestHandler,
+} from 'http-proxy-middleware';
+import { buildMiddleware, createRouter } from './router';
 
-jest.mock('http-proxy-middleware', () => {
-  return jest.fn().mockImplementation(
-    (): Proxy => {
+jest.mock('http-proxy-middleware', () => ({
+  createProxyMiddleware: jest.fn().mockImplementation(
+    (): RequestHandler => {
       return () => undefined;
     },
-  );
-});
+  ),
+}));
 
 const mockCreateProxyMiddleware = createProxyMiddleware as jest.MockedFunction<
   typeof createProxyMiddleware
@@ -40,7 +42,7 @@ const mockCreateProxyMiddleware = createProxyMiddleware as jest.MockedFunction<
 
 describe('createRouter', () => {
   it('works', async () => {
-    const logger = winston.createLogger();
+    const logger = getVoidLogger();
     const config = await loadBackendConfig({ logger, argv: [] });
     const discovery = SingleHostDiscovery.fromConfig(config);
     const router = await createRouter({
@@ -53,7 +55,7 @@ describe('createRouter', () => {
 });
 
 describe('buildMiddleware', () => {
-  const logger = winston.createLogger();
+  const logger = getVoidLogger();
 
   beforeEach(() => {
     mockCreateProxyMiddleware.mockClear();
@@ -135,8 +137,8 @@ describe('buildMiddleware', () => {
 
     config.onProxyReq!(
       testClientRequest as http.ClientRequest,
-      {} as http.IncomingMessage,
-      {} as http.ServerResponse,
+      {} as Request,
+      {} as Response,
     );
 
     expect(testClientRequest.removeHeader).toHaveBeenCalledTimes(1);
@@ -163,8 +165,8 @@ describe('buildMiddleware', () => {
 
     config.onProxyReq!(
       testClientRequest as http.ClientRequest,
-      {} as http.IncomingMessage,
-      {} as http.ServerResponse,
+      {} as Request,
+      {} as Response,
     );
 
     expect(testClientRequest.removeHeader).toHaveBeenCalledTimes(1);
@@ -189,8 +191,8 @@ describe('buildMiddleware', () => {
 
     config.onProxyReq!(
       testClientRequest as http.ClientRequest,
-      {} as http.IncomingMessage,
-      {} as http.ServerResponse,
+      {} as Request,
+      {} as Response,
     );
 
     expect(testClientRequest.removeHeader).toHaveBeenCalledTimes(1);
@@ -227,8 +229,8 @@ describe('buildMiddleware', () => {
 
     config.onProxyRes!(
       testClientResponse as http.IncomingMessage,
-      {} as http.IncomingMessage,
-      {} as http.ServerResponse,
+      {} as Request,
+      {} as Response,
     );
 
     expect(Object.keys(testClientResponse.headers!)).toEqual([
@@ -262,8 +264,8 @@ describe('buildMiddleware', () => {
 
     config.onProxyRes!(
       testClientResponse as http.IncomingMessage,
-      {} as http.IncomingMessage,
-      {} as http.ServerResponse,
+      {} as Request,
+      {} as Response,
     );
 
     expect(Object.keys(testClientResponse.headers!)).toEqual(['set-cookie']);

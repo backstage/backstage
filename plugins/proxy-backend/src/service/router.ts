@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import express from 'express';
 import Router from 'express-promise-router';
-import createProxyMiddleware, {
-  Config as ProxyMiddlewareConfig,
-  Proxy,
+import http from 'http';
+import {
+  createProxyMiddleware,
+  Options as ProxyMiddlewareConfig,
+  RequestHandler,
 } from 'http-proxy-middleware';
 import { Logger } from 'winston';
-import http from 'http';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 
 // A list of headers that are always forwarded to the proxy targets.
 const safeForwardHeaders = [
@@ -64,7 +65,7 @@ export function buildMiddleware(
   logger: Logger,
   route: string,
   config: string | ProxyConfig,
-): Proxy {
+): RequestHandler {
   const fullConfig =
     typeof config === 'string' ? { target: config } : { ...config };
 
