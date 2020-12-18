@@ -37,7 +37,6 @@ import {
   TableColumn,
 } from '@backstage/core';
 import { durationHumanized, relativeTimeTo } from '../../../../util';
-import { circleCIBuildRouteRef } from '../../../../route-refs';
 
 export type CITableBuildInfo = {
   id: string;
@@ -147,9 +146,7 @@ const generatedColumns: TableColumn[] = [
     render: (row: Partial<CITableBuildInfo>) => (
       <Link
         component={RouterLink}
-        to={`${generatePath(circleCIBuildRouteRef.path, {
-          buildId: row.id!,
-        })}`}
+        to={`${generatePath(':buildId', { buildId: row.id! })}`}
       >
         {row.buildName ? row.buildName : row?.workflow?.name}
       </Link>

@@ -31,13 +31,14 @@ const CircleCIIcon = (props: SvgIconProps) => (
   </SvgIcon>
 );
 
-export const circleCIRouteRef = createRouteRef({
+export const rootRouteRef = createRouteRef({
   icon: CircleCIIcon,
   path: '',
   title: 'CircleCI | All builds',
 });
 
-export const circleCIBuildRouteRef = createRouteRef({
+export const buildRouteRef = createRouteRef({
   path: ':buildId',
   title: 'CircleCI | Build info',
+  params: ['buildId'],
 });

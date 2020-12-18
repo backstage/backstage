@@ -18,8 +18,10 @@ import {
   createPlugin,
   createApiFactory,
   discoveryApiRef,
+  createRoutableExtension,
 } from '@backstage/core';
 import { circleCIApiRef, CircleCIApi } from './api';
+import { rootRouteRef, buildRouteRef } from './route-refs';
 
 export const plugin = createPlugin({
   id: 'circleci',
@@ -30,4 +32,15 @@ export const plugin = createPlugin({
       factory: ({ discoveryApi }) => new CircleCIApi({ discoveryApi }),
     }),
   ],
+  routes: {
+    root: rootRouteRef,
+    build: buildRouteRef,
+  },
 });
+
+export const CircleCiPage = plugin.provide(
+  createRoutableExtension({
+    mountPoint: rootRouteRef,
+    component: () => import('./components/Router').then(m => m.Router),
+  }),
+);

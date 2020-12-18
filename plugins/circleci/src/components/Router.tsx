@@ -16,7 +16,6 @@
 
 import React from 'react';
 import { Routes, Route } from 'react-router';
-import { circleCIRouteRef, circleCIBuildRouteRef } from '../route-refs';
 import { BuildWithStepsPage } from './BuildWithStepsPage/';
 import { BuildsPage } from './BuildsPage';
 import { CIRCLECI_ANNOTATION } from '../constants';
@@ -31,10 +30,7 @@ export const Router = ({ entity }: { entity: Entity }) =>
     <MissingAnnotationEmptyState annotation={CIRCLECI_ANNOTATION} />
   ) : (
     <Routes>
-      <Route path={`/${circleCIRouteRef.path}`} element={<BuildsPage />} />
-      <Route
-        path={`/${circleCIBuildRouteRef.path}`}
-        element={<BuildWithStepsPage />}
-      />
+      <Route path="/" element={<BuildsPage />} />
+      <Route path="/:buildId" element={<BuildWithStepsPage />} />
     </Routes>
   );
