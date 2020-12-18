@@ -3,12 +3,18 @@
 This package provides a CLI for creating apps.
 You can use the flag `--skip-install` to skip the install.
 
-## Installation
+## Usage
 
 With `npx`:
 
 ```sh
 $ npx @backstage/create-app
+```
+
+To run the app from your locally cloned copy:
+
+```sh
+$ yarn backstage-create-app
 ```
 
 ## Documentation
