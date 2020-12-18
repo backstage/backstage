@@ -22,3 +22,4 @@ export type {
   MutableRouteRef,
 } from './types';
 export { createRouteRef } from './RouteRef';
+export { useRouteRef } from './hooks';

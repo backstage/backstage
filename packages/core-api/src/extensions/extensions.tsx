@@ -14,59 +14,80 @@
  * limitations under the License.
  */
 
-import React, {
-  NamedExoticComponent,
-  ComponentType,
-  PropsWithChildren,
-} from 'react';
+import React, { lazy, Suspense } from 'react';
 import { RouteRef } from '../routing';
 import { attachComponentData } from './componentData';
 import { Extension, BackstagePlugin } from '../plugin/types';
 
-export function createRoutableExtension<Props extends {}>(options: {
-  component: ComponentType<Props>;
+type ComponentLoader<T> =
+  | {
+      lazy: () => Promise<T>;
+    }
+  | {
+      sync: T;
+    };
+
+export function createRoutableExtension<
+  T extends (props: any) => JSX.Element
+>(options: {
+  component: () => Promise<T>;
   mountPoint: RouteRef;
-  // TODO(Rugvip): We want to carry forward the exact props type from the inner component, with
-  //               or without children. ComponentType stops us from doing that though, as it always
-  //               adds children to the props internally. We may want to work around this with custom types.
-}): Extension<
-  NamedExoticComponent<PropsWithChildren<Props & { path?: string }>>
-> {
+}): Extension<T> {
   const { component, mountPoint } = options;
   return createReactExtension({
-    component,
+    component: {
+      lazy: component,
+    },
     data: {
       'core.mountPoint': mountPoint,
     },
   });
 }
 
-export function createComponentExtension<Props extends {}>(options: {
-  component: ComponentType<Props>;
-}): Extension<NamedExoticComponent<Props>> {
+export function createComponentExtension<
+  T extends (props: any) => JSX.Element
+>(options: { component: ComponentLoader<T> }): Extension<T> {
   const { component } = options;
   return createReactExtension({ component });
 }
 
-export function createReactExtension<Props extends {}>(options: {
-  component: ComponentType<Props>;
+export function createReactExtension<
+  T extends (props: any) => JSX.Element
+>(options: {
+  component: ComponentLoader<T>;
   data?: Record<string, unknown>;
-}): Extension<NamedExoticComponent<Props>> {
-  const { component: Component, data = {} } = options;
+}): Extension<T> {
+  const { data = {} } = options;
+
+  let Component: T;
+  if ('lazy' in options.component) {
+    const lazyLoader = options.component.lazy;
+    Component = (lazy(() =>
+      lazyLoader().then(component => ({ default: component })),
+    ) as unknown) as T;
+  } else {
+    Component = options.component.sync;
+  }
+  const componentName =
+    (Component as { displayName?: string }).displayName ||
+    Component.name ||
+    'Component';
+
   return {
-    expose(plugin: BackstagePlugin): NamedExoticComponent<Props> {
-      const Result = (props: Props) => <Component {...props} />;
+    expose(plugin: BackstagePlugin<any, any>) {
+      const Result: any = (props: any) => (
+        <Suspense fallback="...">
+          <Component {...props} />
+        </Suspense>
+      );
 
       attachComponentData(Result, 'core.plugin', plugin);
       for (const [key, value] of Object.entries(data)) {
         attachComponentData(Result, key, value);
       }
 
-      const name = Component.displayName || Component.name || 'Component';
-      if (name) {
-        Result.displayName = `Extension(${name})`;
-      }
-      return Result as NamedExoticComponent<Props>;
+      Result.displayName = `Extension(${componentName})`;
+      return Result;
     },
   };
 }

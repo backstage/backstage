@@ -17,6 +17,7 @@
 import React, { createContext, ReactNode, useContext, useMemo } from 'react';
 import { AnyRouteRef, BackstageRouteObject, RouteRef } from './types';
 import { generatePath, matchRoutes, useLocation } from 'react-router-dom';
+import { ExternalRouteRef } from './RouteRef';
 
 // The extra TS magic here is to require a single params argument if the RouteRef
 // had at least one param defined, but require 0 arguments if there are no params defined.
@@ -34,12 +35,17 @@ class RouteResolver {
     private readonly routePaths: Map<AnyRouteRef, string>,
     private readonly routeParents: Map<AnyRouteRef, AnyRouteRef | undefined>,
     private readonly routeObjects: BackstageRouteObject[],
+    private readonly routeBindings: Map<ExternalRouteRef, RouteRef>,
   ) {}
 
   resolve<Params extends { [param in string]: string }>(
-    routeRef: RouteRef<Params>,
+    routeRefOrExternalRouteRef: RouteRef<Params> | ExternalRouteRef,
     sourceLocation: ReturnType<typeof useLocation>,
   ): RouteFunc<Params> {
+    const routeRef =
+      this.routeBindings.get(routeRefOrExternalRouteRef) ??
+      (routeRefOrExternalRouteRef as RouteRef<Params>);
+
     const match = matchRoutes(this.routeObjects, sourceLocation) ?? [];
 
     const lastPath = this.routePaths.get(routeRef);
@@ -106,7 +112,7 @@ class RouteResolver {
 const RoutingContext = createContext<RouteResolver | undefined>(undefined);
 
 export function useRouteRef<Params extends { [param in string]: string }>(
-  routeRef: RouteRef<Params>,
+  routeRef: RouteRef<Params> | ExternalRouteRef,
 ): RouteFunc<Params> {
   const sourceLocation = useLocation();
   const resolver = useContext(RoutingContext);
@@ -126,6 +132,7 @@ type ProviderProps = {
   routePaths: Map<AnyRouteRef, string>;
   routeParents: Map<AnyRouteRef, AnyRouteRef | undefined>;
   routeObjects: BackstageRouteObject[];
+  routeBindings: Map<ExternalRouteRef, RouteRef>;
   children: ReactNode;
 };
 
@@ -133,9 +140,15 @@ export const RoutingProvider = ({
   routePaths,
   routeParents,
   routeObjects,
+  routeBindings,
   children,
 }: ProviderProps) => {
-  const resolver = new RouteResolver(routePaths, routeParents, routeObjects);
+  const resolver = new RouteResolver(
+    routePaths,
+    routeParents,
+    routeObjects,
+    routeBindings,
+  );
   return (
     <RoutingContext.Provider value={resolver}>
       {children}
