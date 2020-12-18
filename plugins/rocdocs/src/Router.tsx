@@ -13,6 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { plugin } from './plugin';
-export { Router } from './Router';
-export * from './renderers';
+
+import React from 'react';
+import { Route, Routes } from 'react-router-dom';
+import { rootRouteRef, rootDocsRouteRef } from './plugin';
+import { RocDocsHome } from './components/RocDocsHome';
+import { RocDocsPage } from './components/RocDocsPage';
+import { Renderer } from '.';
+
+export const Router = ({ renderer }: { renderer: Renderer }) => {
+  return (
+    <Routes>
+      <Route path={`/${rootRouteRef.path}`} element={<RocDocsHome />} />
+      <Route
+        path={`/${rootDocsRouteRef.path}`}
+        element={<RocDocsPage renderer={renderer} />}
+      />
+    </Routes>
+  );
+};
+
+//

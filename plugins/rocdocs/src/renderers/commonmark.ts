@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
-export class Indexer {
+import { Parser, HtmlRenderer } from 'commonmark';
 
-}
+export const renderer = (markdown: string) => {
+  const reader = new Parser();
+  const writer = new HtmlRenderer();
+
+  return writer.render(reader.parse(markdown));
+};

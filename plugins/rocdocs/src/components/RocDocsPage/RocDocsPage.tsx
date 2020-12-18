@@ -14,10 +14,39 @@
  * limitations under the License.
  */
 
+import { Content, Header, Page, useApi } from '@backstage/core';
 import React from 'react';
+import { useParams } from 'react-router-dom';
+import { useAsync } from 'react-use';
 
-export const RocDocsPage = () => {
-    return (
-        <div>test</div>
-    );
+import { Renderer } from '../..';
+import { rocdocsApiRef } from '../../api';
+import { RocDocsMenu } from '../RocDocsMenu';
+import Grid from '@material-ui/core/Grid';
+
+export const RocDocsPage = ({ renderer }: { renderer: Renderer }) => {
+  const rocdocsApi = useApi(rocdocsApiRef);
+  const { namespace, kind, name, '*': path } = useParams();
+
+  const { value, error } = useAsync(async () => {
+    return await rocdocsApi.getDocs({ namespace, kind, name }, path);
+  }, [name, kind, namespace, path]);
+
+  if (error) return <div>Error {error}</div>;
+
+  return value ? (
+    <Page themeId="documentation">
+      <Header title={`${kind} / ${name}`} type="documentation" />
+      <Content>
+        <Grid container spacing={2}>
+          <Grid item xs={3}>
+            <RocDocsMenu menuData={value.menu.nav} />
+          </Grid>
+          <Grid item xs={9}>
+            <div dangerouslySetInnerHTML={{ __html: renderer(value.page) }} />
+          </Grid>
+        </Grid>
+      </Content>
+    </Page>
+  ) : null;
 };

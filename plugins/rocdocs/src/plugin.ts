@@ -13,17 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createPlugin, createRouteRef } from '@backstage/core';
-import { RocDocsPage } from './components/RocDocsPage';
+import {
+  createApiFactory,
+  createPlugin,
+  createRouteRef,
+  discoveryApiRef,
+} from '@backstage/core';
+import { rocdocsApiRef, RocDocsApi } from './api';
 
 export const rootRouteRef = createRouteRef({
-  path: '/rocdocs',
+  path: '',
   title: 'rocdocs',
+});
+
+export const rootDocsRouteRef = createRouteRef({
+  path: ':namespace/:kind/:name/*',
+  title: 'Docs',
 });
 
 export const plugin = createPlugin({
   id: 'rocdocs',
-  register({ router }) {
-    router.addRoute(rootRouteRef, RocDocsPage);
-  },
+  apis: [
+    createApiFactory({
+      api: rocdocsApiRef,
+      deps: { discoveryApi: discoveryApiRef },
+      factory: ({ discoveryApi }) =>
+        new RocDocsApi({
+          discoveryApi,
+        }),
+    }),
+  ],
 });

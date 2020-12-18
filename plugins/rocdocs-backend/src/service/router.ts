@@ -18,14 +18,10 @@ import Router from 'express-promise-router';
 import express from 'express';
 import Knex from 'knex';
 import { Config } from '@backstage/config';
-import {
-  PluginEndpointDiscovery,
-  UrlReader
-} from '@backstage/backend-common';
+import { PluginEndpointDiscovery, UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import fetch from 'cross-fetch';
-import { parseReferenceAnnotation } from '../helpers';
-
+import { DocsHandler } from './lib/docs-handler';
 
 type RouterOptions = {
   logger: Logger;
@@ -35,40 +31,37 @@ type RouterOptions = {
   reader: UrlReader;
 };
 
-export async function createRouter({ discovery, reader }: RouterOptions): Promise<express.Router> {
+export async function createRouter({
+  discovery,
+  reader,
+}: RouterOptions): Promise<express.Router> {
   const router = Router();
 
-  /*router.get('*', async (_req, res) => {
-    res.send("Heya!")
-  });*/
+  router.get(
+    ['/docs/:namespace/:kind/:name', '/docs/:namespace/:kind/:name/*?'],
+    async (req, res) => {
+      const { kind, namespace, name, 0: path } = req.params;
 
-  router.get('/docs/:namespace/:kind/:name', async (req, res) => {
-    const { kind, namespace, name } = req.params;
+      const catalogUrl = await discovery.getBaseUrl('catalog');
+      const triple = [kind, namespace, name].map(encodeURIComponent).join('/');
 
-    const catalogUrl = await discovery.getBaseUrl('catalog');
-    const triple = [kind, namespace, name].map(encodeURIComponent).join('/');
+      const catalogRes = await fetch(
+        `${catalogUrl}/entities/by-name/${triple}`,
+      );
+      if (!catalogRes.ok) {
+        const catalogResText = await catalogRes.text();
+        res.status(catalogRes.status);
+        res.send(catalogResText);
+        return;
+      }
 
-    const catalogRes = await fetch(`${catalogUrl}/entities/by-name/${triple}`);
-    if (!catalogRes.ok) {
-      const catalogResText = await catalogRes.text();
-      res.status(catalogRes.status);
-      res.send(catalogResText);
-      return;
-    }
+      const entity: Entity = await catalogRes.json();
 
-    const entity: Entity = await catalogRes.json();
+      const docsHandler = new DocsHandler({ entity, reader });
 
-    const { type, target } = parseReferenceAnnotation('backstage.io/rocdocs-ref', entity);
-
-    if (type !== 'url') {
-      throw new Error(`Invalid rocdocs-ref with type ${type}. Only 'url' type is supported.`);
-    }
-    console.log(target)
-    const response = await reader.readTree(target)
-    console.log(response)
-
-    console.log(await response.files());
-  });
+      res.json(await docsHandler.getDocsResponse(path));
+    },
+  );
 
   return router;
 }

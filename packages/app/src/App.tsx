@@ -36,6 +36,7 @@ import { Router as RegisterComponentRouter } from '@backstage/plugin-register-co
 import { Router as SettingsRouter } from '@backstage/plugin-user-settings';
 import { Router as ImportComponentRouter } from '@backstage/plugin-catalog-import';
 import { Route, Routes, Navigate } from 'react-router';
+import { Router as RocDocsRouter, commonmark } from '@backstage/plugin-rocdocs';
 
 import { EntityPage } from './components/catalog/EntityPage';
 
@@ -77,6 +78,10 @@ const AppRoutes = () => (
       element={<CatalogRouter EntityPage={EntityPage} />}
     />
     <Route path="/docs/*" element={<DocsRouter />} />
+    <Route
+      path="/rocdocs/*"
+      element={<RocDocsRouter renderer={commonmark} />}
+    />
     <Route
       path="/tech-radar"
       element={<TechRadarRouter width={1500} height={800} />}

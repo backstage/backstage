@@ -20,13 +20,17 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
+    "@backstage/catalog-model": "^0.6.0",
     "@backstage/core": "^0.3.0",
+    "@backstage/plugin-catalog": "^0.2.7",
     "@backstage/theme": "^0.2.1",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
+    "commonmark": "^0.29.3",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-router-dom": "6.0.0-beta.0",
     "react-use": "^15.3.3"
   },
   "devDependencies": {
@@ -36,10 +40,11 @@
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^10.4.1",
     "@testing-library/user-event": "^12.0.7",
+    "@types/commonmark": "^0.27.4",
     "@types/jest": "^26.0.7",
     "@types/node": "^12.0.0",
-    "msw": "^0.21.2",
-    "cross-fetch": "^3.0.6"
+    "cross-fetch": "^3.0.6",
+    "msw": "^0.21.2"
   },
   "files": [
     "dist"
