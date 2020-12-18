@@ -16,6 +16,7 @@
 export { plugin as WelcomePlugin } from '@backstage/plugin-welcome';
 export { plugin as LighthousePlugin } from '@backstage/plugin-lighthouse';
 export { plugin as CatalogPlugin } from '@backstage/plugin-catalog';
+export { plugin as CatalogImport } from '@backstage/plugin-catalog-import';
 export { plugin as ScaffolderPlugin } from '@backstage/plugin-scaffolder';
 export { plugin as TechRadar } from '@backstage/plugin-tech-radar';
 export { plugin as Explore } from '@backstage/plugin-explore';
@@ -36,7 +37,6 @@ export { plugin as Kubernetes } from '@backstage/plugin-kubernetes';
 export { plugin as Cloudbuild } from '@backstage/plugin-cloudbuild';
 export { plugin as CostInsights } from '@backstage/plugin-cost-insights';
 export { plugin as GitHubInsights } from '@roadiehq/backstage-plugin-github-insights';
-export { plugin as CatalogImport } from '@backstage/plugin-catalog-import';
 export { plugin as UserSettings } from '@backstage/plugin-user-settings';
 export { plugin as PagerDuty } from '@backstage/plugin-pagerduty';
 export { plugin as Buildkite } from '@roadiehq/backstage-plugin-buildkite';
