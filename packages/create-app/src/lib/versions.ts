@@ -48,6 +48,7 @@ import { version as pluginRegisterComponent } from '@backstage/plugin-register-c
 import { version as pluginRollbarBackend } from '@backstage/plugin-rollbar-backend/package.json';
 import { version as pluginScaffolder } from '@backstage/plugin-scaffolder/package.json';
 import { version as pluginScaffolderBackend } from '@backstage/plugin-scaffolder-backend/package.json';
+import { version as pluginSearch } from '@backstage/plugin-search/package.json';
 import { version as pluginTechRadar } from '@backstage/plugin-tech-radar/package.json';
 import { version as pluginTechdocs } from '@backstage/plugin-techdocs/package.json';
 import { version as pluginTechdocsBackend } from '@backstage/plugin-techdocs-backend/package.json';
@@ -75,6 +76,7 @@ export const packageVersions = {
   '@backstage/plugin-rollbar-backend': pluginRollbarBackend,
   '@backstage/plugin-scaffolder': pluginScaffolder,
   '@backstage/plugin-scaffolder-backend': pluginScaffolderBackend,
+  '@backstage/plugin-search': pluginSearch,
   '@backstage/plugin-tech-radar': pluginTechRadar,
   '@backstage/plugin-techdocs': pluginTechdocs,
   '@backstage/plugin-techdocs-backend': pluginTechdocsBackend,
