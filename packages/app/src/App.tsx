@@ -66,7 +66,7 @@ const catalogRouteRef = createRouteRef({
   title: 'Service Catalog',
 });
 
-const AppRoutes = () => (
+const routes = (
   <Routes>
     <Navigate key="/" to="/catalog" />
     <Route
@@ -100,9 +100,7 @@ const App = () => (
     <AlertDisplay />
     <OAuthRequestDialog />
     <AppRouter>
-      <Root>
-        <AppRoutes />
-      </Root>
+      <Root>{routes}</Root>
     </AppRouter>
   </AppProvider>
 );
