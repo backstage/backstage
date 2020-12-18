@@ -109,7 +109,6 @@ export function AboutCard({ entity, variant }: AboutCardProps) {
     <Card className={variant === 'gridItem' ? classes.gridItemCard : ''}>
       <CardHeader
         title="About"
-        variant={variant}
         action={
           <IconButton
             aria-label="Edit"
