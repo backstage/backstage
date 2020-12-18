@@ -14,52 +14,22 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Link, makeStyles } from '@material-ui/core';
+import React, { useState } from 'react';
 import { generatePath, Link as RouterLink, useParams } from 'react-router-dom';
-
-const useListStyles = makeStyles({
-  unorderedList: {
-    listStyleType: 'none',
-    padding: '0',
-    '& ul': {
-      padding: '0 0 0 20px',
-    },
-  },
-  listItem: {
-    padding: '5px 0 0 0',
-  },
-});
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import Collapse from '@material-ui/core/Collapse';
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import ExpandMore from '@material-ui/icons/ExpandMore';
+import { makeStyles, createStyles, Theme } from '@material-ui/core';
 
 type RocDocsMenuItemProps = {
   menuItem: RocDocsMenuItem;
 };
 
 const RocDocsMenuItem = ({ menuItem }: RocDocsMenuItemProps) => {
-  const { namespace, kind, name } = useParams();
-  const listStyles = useListStyles();
-
-  return (
-    <li className={listStyles.listItem}>
-      {menuItem.link ? (
-        <Link
-          component={RouterLink}
-          to={`/rocdocs/${generatePath('/:namespace/:kind/:name/*', {
-            namespace: namespace,
-            kind: kind,
-            name: name,
-            '*': menuItem.link as string,
-          })}`}
-        >
-          {menuItem.name}
-        </Link>
-      ) : (
-        menuItem.name
-      )}
-
-      {menuItem.items ? <RocDocsMenu menuData={menuItem.items} /> : null}
-    </li>
-  );
+  return <></>;
 };
 
 type RocDocsMenuItem = {
@@ -70,16 +40,73 @@ type RocDocsMenuItem = {
 
 type RocDocsMenuProps = {
   menuData: RocDocsMenuItem[];
+  listClasses?: string;
 };
 
-export const RocDocsMenu = ({ menuData }: RocDocsMenuProps) => {
-  const listStyles = useListStyles();
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    nested: {
+      paddingLeft: theme.spacing(4),
+    },
+  }),
+);
+
+export const RocDocsMenu = ({ menuData, listClasses }: RocDocsMenuProps) => {
+  const { namespace, kind, name } = useParams();
+  const [open, setOpen] = useState<{ [key: string]: boolean }>({});
+  const styles = useStyles();
+
+  const expander = (isOpen: boolean) => {
+    return isOpen ? <ExpandLess /> : <ExpandMore />;
+  };
 
   return (
-    <ul className={listStyles.unorderedList}>
+    <List component="nav">
       {menuData.map(menuItem => {
-        return <RocDocsMenuItem menuItem={menuItem} />;
+        const isOpen =
+          open[menuItem.link] !== undefined ? open[menuItem.link] : true;
+
+        return (
+          <div key={`${menuItem.link}`}>
+            <>
+              <ListItem
+                className={listClasses}
+                button
+                component={menuItem.link ? RouterLink : 'div'}
+                onClick={() => {
+                  if (menuItem.items) {
+                    setOpen({ [menuItem.link]: !isOpen });
+                  }
+                }}
+                to={
+                  menuItem.link
+                    ? `/rocdocs/${generatePath('/:namespace/:kind/:name/*', {
+                        namespace: namespace,
+                        kind: kind,
+                        name: name,
+                        '*': menuItem.link as string,
+                      })}`
+                    : undefined
+                }
+              >
+                <ListItemText primary={menuItem.name} />
+                {menuItem.items ? expander(isOpen) : null}
+              </ListItem>
+
+              {menuItem.items ? (
+                <>
+                  <Collapse in={isOpen} timeout="auto" unmountOnExit>
+                    <RocDocsMenu
+                      listClasses={styles.nested}
+                      menuData={menuItem.items}
+                    />
+                  </Collapse>
+                </>
+              ) : null}
+            </>
+          </div>
+        );
       })}
-    </ul>
+    </List>
   );
 };
