@@ -26,10 +26,10 @@ import { Config } from '@backstage/config';
 
 export class BitbucketPreparer implements PreparerBase {
   private readonly privateToken: string;
-  private readonly user: string;
+  private readonly username: string;
 
   constructor(config: Config) {
-    this.user =
+    this.username =
       config.getOptionalString('scaffolder.bitbucket.api.username') ?? '';
     this.privateToken =
       config.getOptionalString('scaffolder.bitbucket.api.token') ?? '';
@@ -50,13 +50,7 @@ export class BitbucketPreparer implements PreparerBase {
     const templateId = template.metadata.name;
 
     const repo = GitUriParser(location);
-    let repositoryCheckoutUrl;
-    // could be refactor once https://github.com/IonicaBizau/git-url-parse/pull/117 has been published
-    if (repo.source === 'bitbucket.org') {
-      repositoryCheckoutUrl = `${repo.protocol}://${repo.resource}/${repo.owner}/${repo.name}`;
-    } else {
-      repositoryCheckoutUrl = `${repo.protocol}://${repo.resource}/scm/${repo.owner}/${repo.name}`;
-    }
+    const repositoryCheckoutUrl = repo.toString('https');
 
     const tempDir = await fs.promises.mkdtemp(
       path.join(workingDirectory, templateId),
@@ -72,7 +66,7 @@ export class BitbucketPreparer implements PreparerBase {
           fetchOpts: {
             callbacks: {
               credentials: () =>
-                Cred.userpassPlaintextNew(this.user, this.privateToken),
+                Cred.userpassPlaintextNew(this.username, this.privateToken),
             },
           },
         }

@@ -50,7 +50,7 @@ export class BitbucketPublisher implements PublisherBase {
     values: RequiredTemplateValues & Record<string, JsonValue>,
   ): Promise<PublisherResult> {
     const [project, name] = values.storePath.split('/');
-    if (this.host === 'bitbucket.org') {
+    if (this.host === 'https://bitbucket.org') {
       return this.createBitbucketCloudRepository(project, name);
     }
     return this.createBitbucketServerRepository(project, name);
@@ -60,9 +60,39 @@ export class BitbucketPublisher implements PublisherBase {
     project: string,
     name: string,
   ): Promise<PublisherResult> {
-    throw new Error(
-      `Failed to create ${project}/${name} on bitbucket.org which is currently not supported`,
-    );
+    let response: Response;
+    const buffer = Buffer.from(`${this.username}:${this.token}`, 'utf8');
+
+    const options: RequestInit = {
+      method: 'POST',
+      body: JSON.stringify({}),
+      headers: {
+        Authorization: `Basic ${buffer.toString('base64')}`,
+        'Content-Type': 'application/json',
+      },
+    };
+    try {
+      response = await fetch(
+        `https://api.bitbucket.org/2.0/repositories/${project}/${name}`,
+        options,
+      );
+    } catch (e) {
+      throw new Error(`Unable to create repository, ${e}`);
+    }
+    if (response.status === 200) {
+      const r = await response.json();
+      let remoteUrl = '';
+      for (const link of r.links.clone) {
+        if (link.name === 'https') {
+          remoteUrl = link.href;
+        }
+      }
+
+      // TODO use the urlReader to get the defautl branch
+      const catalogInfoUrl = `${r.links.html.href}/src/master/catalog-info.yaml`;
+      return { remoteUrl, catalogInfoUrl };
+    }
+    throw new Error(`Not a valid response code ${await response.text()}`);
   }
 
   private async createBitbucketServerRepository(
