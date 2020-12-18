@@ -24,11 +24,14 @@ export const rootRoute = createRouteRef({
   path: '',
   title: 'Catalog',
 });
+export const catalogRouteRef = rootRoute;
+
 export const entityRoute = createRouteRef({
   icon: NoIcon,
   path: ':namespace/:kind/:name/*',
   title: 'Entity',
 });
+export const entityRouteRef = entityRoute;
 
 // Utility function to get suitable route params for entityRoute, given an
 // entity instance

@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-export * from '@backstage/catalog-client';
-export { AboutCard, IconLinkVertical } from './components/AboutCard';
-export { EntityPageLayout } from './components/EntityPageLayout';
-export { Router } from './components/Router';
-export { useEntityCompoundName } from './components/useEntityCompoundName';
-export { EntityContext, useEntity } from './hooks/useEntity';
-export { catalogApiRef, plugin } from './plugin';
-export * from './routes';
-export * from './extensions';
+import React from 'react';
+import { Outlet } from 'react-router';
+import { EntityProvider } from '../EntityProvider';
+
+export const CatalogEntityPage = () => {
+  return (
+    <EntityProvider>
+      <Outlet />
+    </EntityProvider>
+  );
+};
