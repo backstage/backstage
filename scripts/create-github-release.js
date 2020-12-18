@@ -24,7 +24,8 @@
  *
  * Example:
  *
- * (Dry Run mode, will not create release)
+ * (Dry Run mode, will create a DRAFT release, but will not publish it.)
+ * (Draft releases are visible to maintainers and do not notify users.)
  * $ node scripts/get-release-description v0.4.1 <GITHUB_TOKEN>
  *
  * This will open the git tree at this tag https://github.com/backstage/backstage/tree/v0.4.1
@@ -34,7 +35,7 @@
  * (Production or GitHub Actions Mode)
  * $ node scripts/get-release-description v0.4.1 <GITHUB_TOKEN> 1
  *
- * This will do the same steps as above, and will create the Release with the description.
+ * This will do the same steps as above, and will publish the Release with the description.
  */
 
 const { Octokit } = require('@octokit/rest');
@@ -44,7 +45,7 @@ const [TAG_NAME, GITHUB_TOKEN, BOOL_CREATE_RELEASE] = process.argv.slice(2);
 
 if (!BOOL_CREATE_RELEASE) {
   console.log(
-    '\nRunning script in Dry Run mode. It will output details, but will not create any Release.',
+    '\nRunning script in Dry Run mode. It will output details, wil create a draft release but will NOT publish it.',
   );
 }
 
@@ -146,19 +147,26 @@ async function prepareReleaseDescription(prDescription) {
 
 // Create Release on GitHub.
 async function createRelease(releaseDescription) {
-  // Create the release
+  // Create draft release if BOOL_CREATE_RELEASE is undefined
+  // Publish release if BOOL_CREATE_RELEASE is not undefined
+  const boolCreateDraft = !BOOL_CREATE_RELEASE;
+
   const releaseResponse = await octokit.repos.createRelease({
     owner: GH_REPO,
     repo: GH_REPO,
     tag_name: TAG_NAME,
     name: TAG_NAME,
     body: releaseDescription,
-    draft: false,
+    draft: boolCreateDraft,
     prerelease: false,
   });
 
   if (releaseResponse.status === 201) {
-    console.log('Created release!');
+    if (boolCreateDraft) {
+      console.log('Created draft release! Click Publish to notify users.');
+    } else {
+      console.log('Published release!');
+    }
     console.log(releaseResponse.data.html_url);
   } else {
     console.error(releaseResponse);
@@ -171,11 +179,7 @@ async function main() {
   const prDescription = await getPrDescriptionFromCommitMessage(commitMessage);
   const releaseDescription = await prepareReleaseDescription(prDescription);
 
-  if (BOOL_CREATE_RELEASE) {
-    await createRelease(releaseDescription);
-  } else {
-    console.log('Skipping release since script running in Dry Run mode.');
-  }
+  await createRelease(releaseDescription);
 }
 
 main().catch(error => {
