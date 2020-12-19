@@ -21,6 +21,7 @@ import { ConfigReader } from '@backstage/config';
 import { Publisher } from './publish';
 import { LocalPublish } from './local';
 import { GoogleGCSPublish } from './googleStorage';
+import { AwsS3Publish } from './awsS3';
 
 const logger = getVoidLogger();
 const discovery: jest.Mocked<PluginEndpointDiscovery> = {
@@ -80,5 +81,23 @@ describe('Publisher', () => {
       discovery,
     });
     expect(publisher).toBeInstanceOf(GoogleGCSPublish);
+  });
+
+  it('should create AWS S3 publisher from config', () => {
+    const mockConfig = new ConfigReader({
+      techdocs: {
+        requestUrl: 'http://localhost:7000',
+        publisher: {
+          type: 'awsS3',
+          awsS3: {
+            credentials: '{}',
+            bucketName: 'bucketName',
+          },
+        },
+      },
+    });
+
+    const publisher = Publisher.fromConfig(mockConfig, logger, testDiscovery);
+    expect(publisher).toBeInstanceOf(AwsS3Publish);
   });
 });

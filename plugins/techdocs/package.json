@@ -132,6 +132,29 @@
                     }
                   }
                 }
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "const": "awsS3",
+                    "visibility": "backend"
+                  },
+                  "awsS3": {
+                    "type": "object",
+                    "properties": {
+                      "credentials": {
+                        "type": "string",
+                        "visibility": "secret"
+                      },
+                      "bucketName": {
+                        "type": "string",
+                        "visibility": "secret"
+                      }
+                    }
+                  }
+                }
               }
             ]
           }
