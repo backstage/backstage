@@ -30,6 +30,11 @@ import {
 } from '../scaffolder';
 import { CatalogEntityClient } from '../lib/catalog';
 import { validate, ValidatorResult } from 'jsonschema';
+import NodeGit from 'nodegit';
+
+// Enables core.longpaths on windows to prevent crashing when checking out repos with long foldernames and/or deep nesting
+// @ts-ignore
+NodeGit?.Libgit2?.opts(28, 1);
 
 export interface RouterOptions {
   preparers: PreparerBuilder;
