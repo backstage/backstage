@@ -76,7 +76,7 @@ techdocs:
   generators:
     techdocs: 'docker' # Alternatives - 'local'
   publisher:
-    type: 'local' # Alternatives - 'googleGcs'. Read documentation for using alternatives.
+    type: 'local' # Alternatives - 'googleGcs' - 'awsS3'. Read documentation for using alternatives.
 
 sentry:
   organization: my-company
