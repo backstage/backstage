@@ -105,13 +105,13 @@ describe('AwsS3Publish', () => {
     const entityRootDir = `${entityNameMock.namespace}/${entityNameMock.kind}/${entityNameMock.name}`;
     mockFs({
       [entityRootDir]: {
-        'techdocs_metadata.json': 'file-content'
-      }
+        'techdocs_metadata.json': 'file-content',
+      },
     });
 
-    expect(
-      await publisher.fetchTechDocsMetadata(entityNameMock),
-    ).toBe('file-content');
+    expect(await publisher.fetchTechDocsMetadata(entityNameMock)).toBe(
+      'file-content',
+    );
     mockFs.restore();
   });
 });

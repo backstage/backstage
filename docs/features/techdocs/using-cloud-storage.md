@@ -112,31 +112,39 @@ techdocs:
 
 **2. AWS Policies**
 
-AWS Policies lets you **control access** to Amazon Web Services (AWS) products and ressources.   
-Here we will use a user policy **and** a bucket policy to show you the different possibilities you have but you can use only one.
+AWS Policies lets you **control access** to Amazon Web Services (AWS) products
+and resources.  
+Here we will use a user policy **and** a bucket policy to show you the different
+possibilities you have but you can use only one.
 
 <img data-zoomable src="../../assets/techdocs/aws-s3.png" alt="AWS S3" />
 
-This is an example of how you can manage your poilicies:
+This is an example of how you can manage your policies:
 
-a. Admin user creates a **bucket policy** granting a set of permissions to our TechDocs user.
+a. Admin user creates a **bucket policy** granting a set of permissions to our
+TechDocs user.
 
-b. Admin user attaches a **user policy** to the TechDocs user granting additional permissions.
+b. Admin user attaches a **user policy** to the TechDocs user granting
+additional permissions.
 
-c. TechDocs User then tries permissions granted via both the **bucket** policy and the **user** policy.
+c. TechDocs User then tries permissions granted via both the **bucket** policy
+and the **user** policy.
 
 **2.1 Creation**
 
 **2.1.1 Create an Admin user** (if you don't have one yet)
 
-Create an **administrator user** `ADMIN_USER` and grant him administrator privileges by attaching a user policy giving him **full access**.   
-Note down the Admin User credentials and IAM User Sign-In URL as you will need to use these informations in the next step.
+Create an **administrator user** `ADMIN_USER` and grant him administrator
+privileges by attaching a user policy giving him **full access**.  
+Note down the Admin User credentials and IAM User Sign-In URL as you will need
+to use this information in the next step.
 
 **2.1.2 Create an AWS S3 Bucket**
 
-Using the credentials of your Admin User `ADMIN_USER`, and the special IAM user sign-in URL, create a dedicated **bucket** for TechDocs sites. techdocs-backend will publish
-documentation to this bucket. TechDocs will fetch files from here to serve
-documentation in Backstage.
+Using the credentials of your Admin User `ADMIN_USER`, and the special IAM user
+sign-in URL, create a dedicated **bucket** for TechDocs sites. techdocs-backend
+will publish documentation to this bucket. TechDocs will fetch files from here
+to serve documentation in Backstage.
 
 Set the name of the bucket to `techdocs.publisher.awsS3.bucketName`.
 
@@ -152,61 +160,60 @@ techdocs:
 
 **2.1.3 Create the `TechDocs` user**
 
-This user will be used to interact with your bucket, it will only have permissions to **get - put** objects.
+This user will be used to interact with your bucket, it will only have
+permissions to **get - put** objects.
 
 In the IAM console, do the following:
 
 - Create a new user, `TechDocs`
 - Note down the TechDocs User credentials
-- Note down the Amazon Resource Name (ARN) for the TechDocs user. In the IAM console, select the TechDocs user, and you can find the user ARN in the Summary tab.
+- Note down the Amazon Resource Name (ARN) for the TechDocs user. In the IAM
+  console, select the TechDocs user, and you can find the user ARN in the
+  Summary tab.
 
 **2.2 Attach policies**
 
-Remember that you can use Bucket policy **or** User policy.   
-Just make sure that you grant all the permissions to the TechDocs user: `3:PutObject`, `s3:GetObject`, `s3:ListBucket` and `s3:GetBucketLocation`.
+Remember that you can use Bucket policy **or** User policy.  
+Just make sure that you grant all the permissions to the TechDocs user:
+`3:PutObject`, `s3:GetObject`, `s3:ListBucket` and `s3:GetBucketLocation`.
 
 **2.2.1 Create the bucket policy**
 
-You now have to attach the following policity to your bucket in the Permission section:
+You now have to attach the following policy to your bucket in the Permission
+section:
 
 ```json
 {
-   "Version": "2012-10-17",
-   "Statement": [
-      {
-         "Sid": "statement1",
-         "Effect": "Allow",
-         "Principal": {
-            "AWS": "arn:aws:iam::YOUR_ACCOUNT_ID:user/TechDocs"
-         },
-         "Action": [
-            "s3:GetBucketLocation",
-            "s3:ListBucket"
-         ],
-         "Resource": [
-            "arn:aws:s3:::name-of-techdocs-storage-bucket"
-         ]
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "statement1",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::YOUR_ACCOUNT_ID:user/TechDocs"
       },
-      {
-         "Sid": "statement2",
-         "Effect": "Allow",
-         "Principal": {
-            "AWS": "arn:aws:iam::YOUR_ACCOUNT_ID:user/TechDocs"
-         },
-         "Action": [
-             "s3:GetObject"
-         ],
-         "Resource": [
-            "arn:aws:s3:::name-of-techdocs-storage-bucket/*"
-         ]
-      }
-   ]
+      "Action": ["s3:GetBucketLocation", "s3:ListBucket"],
+      "Resource": ["arn:aws:s3:::name-of-techdocs-storage-bucket"]
+    },
+    {
+      "Sid": "statement2",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::YOUR_ACCOUNT_ID:user/TechDocs"
+      },
+      "Action": ["s3:GetObject"],
+      "Resource": ["arn:aws:s3:::name-of-techdocs-storage-bucket/*"]
+    }
+  ]
 }
 ```
 
-- The first statement grants **TechDocs User** the bucket operation permissions `s3:GetBucketLocation` and `s3:ListBucket` which are permissions required by the console.
-- The second statement grants the `s3:GetObject` permission.   
-(**NOTE :** if you do not use the user policy defined below you must also add the `s3:PutObject` permission to allow the TechDocs user to add objects.)
+- The first statement grants **TechDocs User** the bucket operation permissions
+  `s3:GetBucketLocation` and `s3:ListBucket` which are permissions required by
+  the console.
+- The second statement grants the `s3:GetObject` permission.  
+  (**NOTE :** if you do not use the user policy defined below you must also add
+  the `s3:PutObject` permission to allow the TechDocs user to add objects.)
 
 **2.2.2 Create the user policy**
 
@@ -214,25 +221,23 @@ Create an inline policy for the TechDocs user by using the following policy:
 
 ```json
 {
-   "Version": "2012-10-17",
-   "Statement": [
-      {
-         "Sid": "PermissionForObjectOperations",
-         "Effect": "Allow",
-         "Action": [
-            "s3:PutObject"
-         ],
-         "Resource": [
-            "arn:aws:s3:::name-of-techdocs-storage-bucket/*"
-         ]
-      }
-   ]
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "PermissionForObjectOperations",
+      "Effect": "Allow",
+      "Action": ["s3:PutObject"],
+      "Resource": ["arn:aws:s3:::name-of-techdocs-storage-bucket/*"]
+    }
+  ]
 }
 ```
 
-See more details in the section [Working with Inline Policies](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_manage.html).
+See more details in the section
+[Working with Inline Policies](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_manage.html).
 
-Now you need to create your credentials file (`.json`) with the `TechDocs` User credentials:
+Now you need to create your credentials file (`.json`) with the `TechDocs` User
+credentials:
 
 ```json
 {
@@ -241,7 +246,8 @@ Now you need to create your credentials file (`.json`) with the `TechDocs` User 
 }
 ```
 
-Make it available in your Backstage server and/or your local development server and set it in the app config techdocs.publisher.awsS3.credentials.
+Make it available in your Backstage server and/or your local development server
+and set it in the app config techdocs.publisher.awsS3.credentials.
 
 ```yaml
 techdocs:
@@ -254,5 +260,5 @@ techdocs:
 
 **3. That's it!**
 
-Your Backstage app is now ready to use AWS S3 for TechDocs, to
-store the static generated documentation files.
+Your Backstage app is now ready to use AWS S3 for TechDocs, to store the static
+generated documentation files.
