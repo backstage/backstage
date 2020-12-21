@@ -18,11 +18,19 @@ import http from 'isomorphic-git/http/node';
 import fs from 'fs-extra';
 import { Logger } from 'winston';
 
+/*
+provider    username  	    password
+GitHub      token	          'x-oauth-basic'
+GitHub App 	token	          'x-access-token'
+BitBucket	  'x-token-auth'	token
+GitLab      'oauth2'	      token
+From : https://isomorphic-git.org/docs/en/onAuth
+*/
 class SCM {
   constructor(
     private readonly config: {
-      username: string;
-      password: string;
+      username?: string;
+      password?: string;
       logger?: Logger;
     },
   ) {}
@@ -126,14 +134,15 @@ class SCM {
   }
 }
 
+// TODO(blam): This could potentially become something like for URL
+// and use the integrations config for URLReading instead.
+// But for now, I don't want to do all that in this PR.
 export const fromAuth = ({
   username,
   password,
   logger,
 }: {
-  username: string;
-  password: string;
+  username?: string;
+  password?: string;
   logger?: Logger;
-}) => {
-  return new SCM({ username, password, logger });
-};
+}) => new SCM({ username, password, logger });

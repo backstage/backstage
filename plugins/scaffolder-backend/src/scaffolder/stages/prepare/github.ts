@@ -18,11 +18,9 @@ import fs from 'fs-extra';
 import path from 'path';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { parseLocationAnnotation } from '../helpers';
-import { InputError } from '@backstage/backend-common';
+import { InputError, Git } from '@backstage/backend-common';
 import { PreparerBase, PreparerOptions } from './types';
 import GitUriParser from 'git-url-parse';
-import git from 'isomorphic-git';
-import http from 'isomorphic-git/http/node';
 
 export class GithubPreparer implements PreparerBase {
   token?: string;
@@ -37,7 +35,6 @@ export class GithubPreparer implements PreparerBase {
   ): Promise<string> {
     const { protocol, location } = parseLocationAnnotation(template);
     const workingDirectory = opts?.workingDirectory ?? os.tmpdir();
-    const { token } = this;
 
     if (!['github', 'url'].includes(protocol)) {
       throw new InputError(
@@ -58,33 +55,16 @@ export class GithubPreparer implements PreparerBase {
     );
 
     const checkoutLocation = path.resolve(tempDir, templateDirectory);
+    const git = Git.fromAuth({
+      username: this.token,
+      password: 'x-oauth-basic',
+      logger: opts.logger,
+    });
 
-    try {
-      await git.clone({
-        fs,
-        http,
-        url: repositoryCheckoutUrl,
-        dir: checkoutLocation,
-        singleBranch: true,
-        depth: 1,
-        onProgress: event => {
-          const total = event.total
-            ? `${Math.round((event.loaded / event.total) * 100)}%`
-            : event.loaded;
-          opts.logger.info(`status={${event.phase},total={${total}}}`);
-        },
-        headers: {
-          'user-agent': 'git/@isomorphic-git',
-        },
-        onAuth: () => ({ username: token, password: 'x-oauth-basic' }),
-      });
-    } catch (ex) {
-      opts.logger.error(
-        `Failed checking out repository: ${repositoryCheckoutUrl}`,
-      );
-      opts.logger.error(ex.message);
-      throw ex;
-    }
+    await git.clone({
+      url: repositoryCheckoutUrl,
+      dir: checkoutLocation,
+    });
 
     return checkoutLocation;
   }

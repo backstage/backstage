@@ -13,15 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export * from './config';
-export * from './database';
-export * from './discovery';
-export * from './errors';
-export * from './logging';
-export * from './middleware';
-export * from './reading';
-export * from './service';
-export * from './paths';
-export * from './hot';
-export * from './scm';
+export * as Git from './git';
