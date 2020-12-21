@@ -17,7 +17,7 @@ import React from 'react';
 import classnames from 'classnames';
 import { makeStyles, Link } from '@material-ui/core';
 import LinkIcon from '@material-ui/icons/Link';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink } from '../Link';
 
 type IconLinkVerticalProps = {
   icon?: React.ReactNode;
