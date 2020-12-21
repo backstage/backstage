@@ -101,7 +101,7 @@ export const getTokenForGitRepo = async (
       case 'azure/api':
         return getAzureIntegrationConfig(config, host).token;
       default:
-        throw new Error('Failed to get reository type');
+        throw new Error('Failed to get repository type');
     }
   } catch (error) {
     throw error;
