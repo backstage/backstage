@@ -26,11 +26,18 @@ export class S3 {
 
   headObject({ Key }: { Key: string }) {
     return {
-      promise: this.promise,
+      promise: () => this.checkFileExists(Key),
       createReadStream: () => {
         const emitter = new EventEmitter();
         process.nextTick(() => {
-          emitter.emit('data', Buffer.from(fs.readFileSync(Key)));
+          if (fs.existsSync(Key)) {
+            emitter.emit('data', Buffer.from(fs.readFileSync(Key)));
+          } else {
+            emitter.emit(
+              'error',
+              new Error(`The file ${Key} doest not exist !`),
+            );
+          }
           emitter.emit('end');
         });
         return emitter;
@@ -40,22 +47,39 @@ export class S3 {
 
   getObject({ Key }: { Key: string }) {
     return {
-      promise: () =>
-        new Promise(resolve => {
-          resolve(fs.existsSync(Key));
-        }),
+      promise: () => this.checkFileExists(Key)
     };
   }
 
-  promise() {
-    return new Promise(resolve => {
-      resolve('');
-    });
+  checkFileExists(Key: string) {
+    return new Promise((resolve, reject) => {
+      if (fs.existsSync(Key)) {
+        resolve('');
+      } else {
+        reject({ message: 'The object doest not exist !'});
+      }
+    })
   }
 
-  upload() {
+  headBucket() {
+    return new Promise((resolve) => {
+      resolve('')
+    })
+  }
+
+  upload({ Key }: { Key: string }) {
     return {
-      promise: this.promise,
+      promise: () =>
+        new Promise((resolve, reject) => {
+          if (
+            fs.existsSync(Key) &&
+            fs.readFileSync(Key).toString() === 'mock-error'
+          ) {
+            reject('');
+          } else {
+            resolve('');
+          }
+        }),
     };
   }
 }

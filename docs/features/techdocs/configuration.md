@@ -52,7 +52,8 @@ techdocs:
 
     # techdocs.publisher.type can be - 'local' or 'googleGcs' (awsS3, azureStorage, etc. to be available as well).
     # When set to 'local', techdocs-backend will create a 'static' directory at its root to store generated documentation files.
-    # When set to 'googleGcs' or 'awsS3', techdocs-backend will use a Google Cloud Storage Bucket to store generated documentation files.
+    # When set to 'googleGcs', techdocs-backend will use a Google Cloud Storage Bucket to store generated documentation files.
+    # When set to 'awsS3', techdocs-backend will use an Amazon Web Service (AWS) S3 bucket to store generated documentation files.
 
     type: 'local'
 

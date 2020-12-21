@@ -134,8 +134,8 @@ and the **user** policy.
 
 **2.1.1 Create an Admin user** (if you don't have one yet)
 
-Create an **administrator user** `ADMIN_USER` and grant him administrator
-privileges by attaching a user policy giving him **full access**.  
+Create an **administrator user** account `ADMIN_USER` and grant it administrator
+privileges by attaching a user policy giving the account **full access**.  
 Note down the Admin User credentials and IAM User Sign-In URL as you will need
 to use this information in the next step.
 
