@@ -90,10 +90,14 @@ describe('AwsS3Publish', () => {
       });
 
       const entity = createMockEntity();
-      await publisher.publish({
-        entity,
-        directory: '/path/to/generatedDirectory',
-      }).catch(error => expect(error).toBe(`Unable to upload file(s) to AWS S3. Error`))
+      await publisher
+        .publish({
+          entity,
+          directory: '/path/to/generatedDirectory',
+        })
+        .catch(error =>
+          expect(error).toBe(`Unable to upload file(s) to AWS S3. Error`),
+        );
       mockFs.restore();
     });
   });
