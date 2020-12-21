@@ -27,6 +27,12 @@ export class S3 {
   headObject({ Key }: { Key: string }) {
     return {
       promise: () => this.checkFileExists(Key),
+    };
+  }
+
+  getObject({ Key }: { Key: string }) {
+    return {
+      promise: () => this.checkFileExists(Key),
       createReadStream: () => {
         const emitter = new EventEmitter();
         process.nextTick(() => {
@@ -42,12 +48,6 @@ export class S3 {
         });
         return emitter;
       },
-    };
-  }
-
-  getObject({ Key }: { Key: string }) {
-    return {
-      promise: () => this.checkFileExists(Key),
     };
   }
 

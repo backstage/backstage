@@ -159,6 +159,10 @@
                       "bucketName": {
                         "type": "string",
                         "visibility": "secret"
+                      },
+                      "region": {
+                        "type": "string",
+                        "visibility": "secret"
                       }
                     }
                   }
