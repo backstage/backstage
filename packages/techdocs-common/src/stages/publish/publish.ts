@@ -21,16 +21,20 @@ import { PublisherType, PublisherBase } from './types';
 import { LocalPublish } from './local';
 import { GoogleGCSPublish } from './googleStorage';
 
+type factoryOptions = {
+  logger: Logger;
+  discovery: PluginEndpointDiscovery;
+};
+
 /**
  * Factory class to create a TechDocs publisher based on defined publisher type in app config.
  * Uses `techdocs.publisher.type`.
  */
 export class Publisher {
-  static fromConfig(
+  static async fromConfig(
     config: Config,
-    logger: Logger,
-    discovery: PluginEndpointDiscovery,
-  ): PublisherBase {
+    { logger, discovery }: factoryOptions,
+  ): Promise<PublisherBase> {
     const publisherType = (config.getOptionalString(
       'techdocs.publisher.type',
     ) ?? 'local') as PublisherType;
