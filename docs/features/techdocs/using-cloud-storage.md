@@ -236,18 +236,18 @@ Create an inline policy for the TechDocs user by using the following policy:
 See more details in the section
 [Working with Inline Policies](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_manage.html).
 
-Now you need to create your credentials file (`.json`) with the `TechDocs` User
-credentials:
+Now you need to fill in the environment variables with the `TechDocs` User
+credentials. You can also specify a region if you want to accesses the resources
+in a specific region. Otherwise no region will be selected by default.
 
-```json
-{
-  "accessKeyId": "TECHDOCS_USER_ACCESS_KEY_ID",
-  "secretAccessKey": "TECHDOCS_USER_SECRET_ACCESS_KEY"
-}
+```properties
+TECHDOCS_AWSS3_ACCESS_KEY_ID_CREDENTIAL="TECHDOCS_ACCESS_KEY_ID"
+TECHDOCS_AWSS3_SECRET_ACCESS_KEY_CREDENTIAL="TECHDOCS_SECRET_ACCESS_KEY"
+AWSS3_REGION="" // Optional
 ```
 
 Make it available in your Backstage server and/or your local development server
-and set it in the app config techdocs.publisher.awsS3.credentials.
+and set it in the app config techdocs.publisher.awsS3.
 
 ```yaml
 techdocs:
@@ -255,7 +255,12 @@ techdocs:
     type: 'awsS3'
     awsS3:
       credentials:
-        $file: '/path/to/aws_application_credentials.json'
+        accessKeyId:
+          $env: TECHDOCS_AWSS3_ACCESS_KEY_ID_CREDENTIAL
+        secretAccessKey:
+          $env: TECHDOCS_AWSS3_SECRET_ACCESS_KEY_CREDENTIAL
+      region:
+        $env: AWSS3_REGION
 ```
 
 **3. That's it!**

@@ -45,7 +45,10 @@ beforeEach(() => {
       publisher: {
         type: 'awsS3',
         awsS3: {
-          credentials: '{}',
+          credentials: {
+            accessKeyId: 'accessKeyId',
+            secretAccessKey: 'secretAccessKey',
+          },
           bucketName: 'bucketName',
         },
       },

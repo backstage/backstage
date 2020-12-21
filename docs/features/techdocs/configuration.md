@@ -76,7 +76,12 @@ techdocs:
     awsS3:
       # An API key is required to write to a storage bucket.
       credentials:
-        $file: '/path/to/aws_application_credentials.json',
+        accessKeyId:
+          $env: TECHDOCS_AWSS3_ACCESS_KEY_ID_CREDENTIAL
+        secretAccessKey:
+          $env: TECHDOCS_AWSS3_SECRET_ACCESS_KEY_CREDENTIAL
+      region:
+        $env: AWSS3_REGION
 
       # AWS S3 Bucket Name
       bucketName: 'techdocs-storage',
