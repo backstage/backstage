@@ -18,6 +18,7 @@ spec:
     required: 
       - component_id
       - use_typescript
+      - description
     properties:
       component_id:
         title: Name
@@ -33,3 +34,9 @@ spec:
         type: boolean
         description: Include TypeScript
         default: true
+      use_github_actions:
+        title:  Use Github Actions workflows to build this component
+        type: boolean
+        description: Use Github Actions
+        default: true
+

@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 import fs from 'fs-extra';
-import { runDockerContainer } from './helpers';
-import { TemplaterBase, TemplaterRunOptions } from '.';
+import { runDockerContainer } from '../helpers';
+import { TemplaterBase, TemplaterRunOptions } from '..';
 import path from 'path';
-import { TemplaterRunResult } from './types';
+import { TemplaterRunResult } from '../types';
 import * as yaml from 'yaml';
+import { resolvePackagePath } from '@backstage/backend-common';
+
+// TODO(blam): Replace with the universal import from github-actions after a release
+// As it will break the E2E without it
+const GITHUB_ACTIONS_ANNOTATION = 'github.com/project-slug';
 
 export class CreateReactAppTemplater implements TemplaterBase {
   public async run(options: TemplaterRunOptions): Promise<TemplaterRunResult> {
     const {
       component_id: componentName,
       use_typescript: withTypescript,
+      use_github_actions: withGithubActions,
       description,
       owner,
     } = options.values;
@@ -48,13 +54,34 @@ export class CreateReactAppTemplater implements TemplaterBase {
       },
     });
 
-    // Need to also make a catalog-info.yaml to store the data about the service.
+    const extraAnnotations: Record<string, string> = {};
+    const finalDir = path.resolve(
+      resultDir,
+      options.values.component_id as string,
+    );
+
+    if (withGithubActions) {
+      await fs.promises.mkdir(`${finalDir}/.github`);
+      await fs.promises.mkdir(`${finalDir}/.github/workflows`);
+      await fs.promises.copyFile(
+        `${resolvePackagePath(
+          '@backstage/plugin-scaffolder-backend',
+        )}/templates/.github/workflows/main.yml`,
+        `${finalDir}/.github/workflows/main.yml`,
+      );
+
+      extraAnnotations[GITHUB_ACTIONS_ANNOTATION] = options.values.storePath;
+    }
+
     const componentInfo = {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'Component',
       metadata: {
         name: componentName,
         description,
+        annotations: {
+          ...extraAnnotations,
+        },
       },
       spec: {
         type: 'website',
@@ -62,11 +89,6 @@ export class CreateReactAppTemplater implements TemplaterBase {
         owner,
       },
     };
-
-    const finalDir = path.resolve(
-      resultDir,
-      options.values.component_id as string,
-    );
 
     await fs.promises.writeFile(
       `${finalDir}/catalog-info.yaml`,
