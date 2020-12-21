@@ -34,6 +34,7 @@ const createMockEntity = (annotations = {}) => {
 
 const logger = winston.createLogger();
 jest.spyOn(logger, 'info').mockReturnValue(logger);
+jest.spyOn(logger, 'error').mockReturnValue(logger);
 
 let publisher: PublisherBase;
 
@@ -55,63 +56,117 @@ beforeEach(() => {
 });
 
 describe('AwsS3Publish', () => {
-  it('should publish a directory', async () => {
-    mockFs({
-      '/path/to/generatedDirectory': {
-        'index.html': '',
-        '404.html': '',
-        assets: {
-          'main.css': '',
+  describe('publish', () => {
+    it('should publish a directory', async () => {
+      mockFs({
+        '/path/to/generatedDirectory': {
+          'index.html': '',
+          '404.html': '',
+          assets: {
+            'main.css': '',
+          },
         },
-      },
+      });
+
+      const entity = createMockEntity();
+      expect(
+        await publisher.publish({
+          entity,
+          directory: '/path/to/generatedDirectory',
+        }),
+      ).toBeUndefined();
+      mockFs.restore();
     });
 
-    const entity = createMockEntity();
-    expect(
+    it('should fail to publish a directory', async () => {
+      mockFs({
+        '/path/to/generatedDirectory': {
+          'index.html': 'mock-error',
+          '404.html': '',
+          assets: {
+            'main.css': '',
+          },
+        },
+      });
+
+      const entity = createMockEntity();
       await publisher.publish({
         entity,
         directory: '/path/to/generatedDirectory',
-      }),
-    ).toBeUndefined();
-    mockFs.restore();
+      }).catch(error => expect(error).toBe(`Unable to upload file(s) to AWS S3. Error`))
+      mockFs.restore();
+    });
   });
 
-  it('should return true if docs has been generated', async () => {
-    const entityMock = {
-      apiVersion: 'apiVersion',
-      kind: 'kind',
-      metadata: {
-        namespace: '/namespace',
+  describe('hasDocsBeenGenerated', () => {
+    it('should return true if docs has been generated', async () => {
+      const entityMock = {
+        apiVersion: 'apiVersion',
+        kind: 'kind',
+        metadata: {
+          namespace: '/namespace',
+          name: 'name',
+        },
+      };
+      const entityRootDir = `${entityMock.metadata.namespace}/${entityMock.kind}/${entityMock.metadata.name}`;
+      mockFs({
+        [entityRootDir]: {
+          'index.html': 'file-content',
+        },
+      });
+
+      expect(await publisher.hasDocsBeenGenerated(entityMock)).toBe(true);
+      mockFs.restore();
+    });
+
+    it('should return false if docs has not been generated', async () => {
+      const entityMock = {
+        apiVersion: 'apiVersion',
+        kind: 'kind',
+        metadata: {
+          namespace: 'namespace',
+          name: 'name',
+        },
+      };
+
+      expect(await publisher.hasDocsBeenGenerated(entityMock)).toBe(false);
+    });
+  });
+
+  describe('fetchTechDocsMetadata', () => {
+    it('should return tech docs metadata', async () => {
+      const entityNameMock = {
         name: 'name',
-      },
-    };
-    const entityRootDir = `${entityMock.metadata.namespace}/${entityMock.kind}/${entityMock.metadata.name}`;
-    mockFs({
-      [entityRootDir]: {
-        'index.html': 'file-content',
-      },
+        namespace: '/namespace',
+        kind: 'kind',
+      };
+      const entityRootDir = `${entityNameMock.namespace}/${entityNameMock.kind}/${entityNameMock.name}`;
+      mockFs({
+        [entityRootDir]: {
+          'techdocs_metadata.json': 'file-content',
+        },
+      });
+
+      expect(await publisher.fetchTechDocsMetadata(entityNameMock)).toBe(
+        'file-content',
+      );
+      mockFs.restore();
     });
 
-    expect(await publisher.hasDocsBeenGenerated(entityMock)).toBe(true);
-    mockFs.restore();
-  });
-
-  it('should return tech docs metadata', async () => {
-    const entityNameMock = {
-      name: 'name',
-      namespace: '/namespace',
-      kind: 'kind',
-    };
-    const entityRootDir = `${entityNameMock.namespace}/${entityNameMock.kind}/${entityNameMock.name}`;
-    mockFs({
-      [entityRootDir]: {
-        'techdocs_metadata.json': 'file-content',
-      },
+    it('should return an error if the techdocs_metadata.json file is not present', async () => {
+      const entityNameMock = {
+        name: 'name',
+        namespace: 'namespace',
+        kind: 'kind',
+      };
+      const entityRootDir = `${entityNameMock.namespace}/${entityNameMock.kind}/${entityNameMock.name}`;
+      await publisher
+        .fetchTechDocsMetadata(entityNameMock)
+        .catch(error =>
+          expect(error).toBe(
+            `The file ${entityRootDir}/techdocs_metadata.json doest not exist !`,
+          ),
+        );
     });
-
-    expect(await publisher.fetchTechDocsMetadata(entityNameMock)).toBe(
-      'file-content',
-    );
-    mockFs.restore();
   });
 });

@@ -55,26 +55,26 @@ export class AwsS3Publish implements PublisherBase {
 
     // Check if the defined bucket exists. Being able to connect means the configuration is good
     // and the storage client will work.
-    storageClient
-      .headObject({
+    storageClient.headBucket(
+      {
         Bucket: bucketName,
-        Key: (credentialsJson as CredentialsOptions).accessKeyId,
-      })
-      .promise()
-      .then(() => {
-        logger.info(
-          `Successfully connected to the AWS S3 bucket ${bucketName}.`,
-        );
-      })
-      .catch(reason => {
-        logger.error(
-          `Could not retrieve metadata about the AWS S3 bucket ${bucketName}. ` +
-            'Make sure the AWS project and the bucket exists and the access key located at the path ' +
-            "techdocs.publisher.awsS3.credentials defined in app config has the role 'Storage Object Creator'. " +
-            'Refer to https://backstage.io/docs/features/techdocs/using-cloud-storage',
-        );
-        throw new Error(`from AWS client library: ${reason.message}`);
-      });
+      },
+      err => {
+        if (err) {
+          logger.error(
+            `Could not retrieve metadata about the AWS S3 bucket ${bucketName}. ` +
+              'Make sure the AWS project and the bucket exists and the access key located at the path ' +
+              "techdocs.publisher.awsS3.credentials defined in app config has the role 'Storage Object Creator'. " +
+              'Refer to https://backstage.io/docs/features/techdocs/using-cloud-storage',
+          );
+          throw new Error(`from AWS client library: ${err.message}`);
+        } else {
+          logger.info(
+            `Successfully connected to the AWS S3 bucket ${bucketName}.`,
+          );
+        }
+      },
+    );
 
     return new AwsS3Publish(storageClient, bucketName, logger);
   }
@@ -95,7 +95,7 @@ export class AwsS3Publish implements PublisherBase {
    */
   publish({ entity, directory }: PublishRequest): Promise<void> {
     return new Promise(async (resolve, reject) => {
-      // Note: GCS manages creation of parent directories if they do not exist.
+      // Note: S3 manages creation of parent directories if they do not exist.
       // So collecting path of only the files is good enough.
       const allFilesToUpload = await getFileTreeRecursively(directory);
 
@@ -123,7 +123,6 @@ export class AwsS3Publish implements PublisherBase {
           uploadPromises.push(this.storageClient.upload(params).promise());
         });
       });
-
       Promise.all(uploadPromises)
         .then(() => {
           this.logger.info(
@@ -212,7 +211,7 @@ export class AwsS3Publish implements PublisherBase {
     return new Promise(resolve => {
       const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
       this.storageClient
-        .getObject({
+        .headObject({
           Bucket: this.bucketName,
           Key: `${entityRootDir}/index.html`,
         })

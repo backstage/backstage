@@ -149,7 +149,7 @@ export async function createRouter({
             await docsBuilder.build();
             // With a maximum of ~5 seconds wait, check if the files got published and if docs will be fetched
             // on the user's page. If not, respond with a message asking them to check back later.
-            // The delay here is to make sure GCS registers newly uploaded files which is usually <1 second
+            // The delay here is to make sure GCS/AWS/etc. registers newly uploaded files which is usually <1 second
             let foundDocs = false;
             for (let attempt = 0; attempt < 5; attempt++) {
               if (await publisher.hasDocsBeenGenerated(entity)) {
