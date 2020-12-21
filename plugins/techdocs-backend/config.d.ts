@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+/**
+ * techdocs schema below is an abstract of what's used within techdocs-backend and for its visisbility
+ * to view the complete techdoc schema please refer: plugins/techdocs/config.d.ts
+ * */
 export interface Config {
   /** Configuration options for the techdocs-backend plugin */
   techdocs: {
@@ -29,7 +32,7 @@ export interface Config {
      * alternative: 'external' etc.
      * @see http://backstage.io/docs/features/techdocs/configuration
      */
-    builder: string;
+    builder: 'local' | 'external';
     /**
      * techdocs publisher information
      */
@@ -40,7 +43,7 @@ export interface Config {
        * aleternatives: 'googleGcs' etc.
        * @see http://backstage.io/docs/features/techdocs/configuration
        */
-      type: string;
+      type: 'local' | 'googleGcs' | 'awsS3';
     };
   };
 }

@@ -36,7 +36,7 @@ export interface Config {
      * @see http://backstage.io/docs/features/techdocs/configuration
      * @visibility frontend
      */
-    builder: string;
+    builder: 'local' | 'external';
 
     /**
      * techdocs publisher information
@@ -54,38 +54,48 @@ export interface Config {
     /**
      * techdocs publisher information
      */
-    publisher?: {
-      /**
-       * attr: 'type' - accepts a string value
-       * e.g. type: 'local'
-       * aleternatives: 'googleGcs' etc.
-       * @see http://backstage.io/docs/features/techdocs/configuration
-       */
-      type: string;
+    publisher?:
+      | {
+          /**
+           * attr: 'type' - accepts a string value
+           * e.g. type: 'local'
+           * aleternatives: 'googleGcs' etc.
+           * @see http://backstage.io/docs/features/techdocs/configuration
+           */
+          type: 'local' | 'awsS3';
+        }
+      | {
+          /**
+           * attr: 'type' - accepts a string value
+           * e.g. type: 'googleGcs'
+           * aleternatives: 'googleGcs' etc.
+           * @see http://backstage.io/docs/features/techdocs/configuration
+           */
+          type: 'googleGcs';
 
-      /**
-       * googleGcs required when 'type' is set to googleGcs, skip otherwise
-       */
-      googleGcs?: {
-        /**
-         *  API key used to write to a storage bucket.
-         * attr: 'credentials' - accepts a string value
-         * @visibility secret
-         */
-        credentials: string;
-        /**
-         * GCP Project ID where the Cloud Storage Bucket is hosted.
-         * attr: 'projectId' - accepts a string value
-         * @visibility secret
-         */
-        projectId: string;
-        /**
-         * Cloud Storage Bucket Name
-         * attr: 'bucketName' - accepts a string value
-         * @visibility secret
-         */
-        bucketName: string;
-      };
-    };
+          /**
+           * googleGcs required when 'type' is set to googleGcs
+           */
+          googleGcs?: {
+            /**
+             * API key used to write to a storage bucket.
+             * attr: 'credentials' - accepts a string value
+             * @visibility secret
+             */
+            credentials: string;
+            /**
+             * GCP Project ID where the Cloud Storage Bucket is hosted.
+             * attr: 'projectId' - accepts a string value
+             * @visibility secret
+             */
+            projectId: string;
+            /**
+             * Cloud Storage Bucket Name
+             * attr: 'bucketName' - accepts a string value
+             * @visibility secret
+             */
+            bucketName: string;
+          };
+        };
   };
 }
