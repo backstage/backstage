@@ -14,6 +14,4 @@
  * limitations under the License.
  */
 
-export { AboutCard } from './AboutCard';
-// export { SubHeader } from './SubHeader';
-// export { VerticalIcon } from './VerticalIcon';
+export { HeaderIconLinkRow } from './HeaderIconLinkRow';

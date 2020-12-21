@@ -17,12 +17,12 @@ import React from 'react';
 import classnames from 'classnames';
 import { makeStyles, Link } from '@material-ui/core';
 import LinkIcon from '@material-ui/icons/Link';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink } from '../Link';
 
-export type VerticalIconProps = {
+export type IconLinkVerticalProps = {
   icon?: React.ReactNode;
   href?: string;
-  title?: string;
+  disabled?: boolean;
   label: string;
   action?: React.ReactNode;
 };
@@ -33,6 +33,9 @@ const useIconStyles = makeStyles(theme => ({
     justifyItems: 'center',
     gridGap: 4,
     textAlign: 'center',
+  },
+  disabled: {
+    color: 'gray',
   },
   label: {
     fontSize: '0.7rem',
@@ -45,33 +48,33 @@ const useIconStyles = makeStyles(theme => ({
   },
 }));
 
-export function VerticalIcon({
+export function IconLinkVertical({
   icon = <LinkIcon />,
   href = '#',
+  disabled = false,
   action,
   ...props
-}: VerticalIconProps) {
+}: IconLinkVerticalProps) {
   const classes = useIconStyles();
 
-  if (action) {
+  if (disabled) {
     return (
       <Link
-        className={classnames(classes.link, classes.linkStyle)}
-        href={href}
+        className={classnames(classes.link, classes.disabled)}
+        underline="none"
         {...props}
       >
         {icon}
-        {action}
+        <span className={classes.label}>{props.label}</span>
       </Link>
     );
   }
 
-  // Absolute links should not be using RouterLink
-  if (href?.startsWith('//') || href?.includes('://')) {
+  if (action) {
     return (
-      <Link className={classes.link} href={href} {...props}>
+      <Link className={classnames(classes.link, classes.linkStyle)} {...props}>
         {icon}
-        <span className={classes.label}>{props.label}</span>
+        {action}
       </Link>
     );
   }
