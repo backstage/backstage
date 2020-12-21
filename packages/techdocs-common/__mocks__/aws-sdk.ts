@@ -47,7 +47,7 @@ export class S3 {
 
   getObject({ Key }: { Key: string }) {
     return {
-      promise: () => this.checkFileExists(Key)
+      promise: () => this.checkFileExists(Key),
     };
   }
 
@@ -56,15 +56,15 @@ export class S3 {
       if (fs.existsSync(Key)) {
         resolve('');
       } else {
-        reject({ message: 'The object doest not exist !'});
+        reject({ message: 'The object doest not exist !' });
       }
-    })
+    });
   }
 
   headBucket() {
-    return new Promise((resolve) => {
-      resolve('')
-    })
+    return new Promise(resolve => {
+      resolve('');
+    });
   }
 
   upload({ Key }: { Key: string }) {
