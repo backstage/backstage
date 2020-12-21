@@ -143,7 +143,7 @@ export class AwsS3Publish implements PublisherBase {
 
       const fileStreamChunks: Array<any> = [];
       this.storageClient
-        .headObject({
+        .getObject({
           Bucket: this.bucketName,
           Key: `${entityRootDir}/techdocs_metadata.json`,
         })
