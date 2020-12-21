@@ -19,11 +19,10 @@ import { makeStyles, Link } from '@material-ui/core';
 import LinkIcon from '@material-ui/icons/Link';
 import { Link as RouterLink } from '../Link';
 
-type IconLinkVerticalProps = {
+export type IconLinkVerticalProps = {
   icon?: React.ReactNode;
   href?: string;
   disabled?: boolean;
-  title?: string;
   label: string;
   action?: React.ReactNode;
 };
@@ -63,7 +62,6 @@ export function IconLinkVertical({
       <Link
         className={classnames(classes.link, classes.disabled)}
         underline="none"
-        title={props.title}
         {...props}
       >
         {icon}
@@ -74,23 +72,9 @@ export function IconLinkVertical({
 
   if (action) {
     return (
-      <Link
-        className={classnames(classes.link, classes.linkStyle)}
-        href={href}
-        {...props}
-      >
+      <Link className={classnames(classes.link, classes.linkStyle)} {...props}>
         {icon}
         {action}
-      </Link>
-    );
-  }
-
-  // Absolute links should not be using RouterLink
-  if (href?.startsWith('//') || href?.includes('://')) {
-    return (
-      <Link className={classes.link} href={href} {...props}>
-        {icon}
-        <span className={classes.label}>{props.label}</span>
       </Link>
     );
   }

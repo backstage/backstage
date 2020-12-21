@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { IconLinkVertical } from './IconLinkVertical';
-import { HeaderIconLink } from './types';
+import { IconLinkVertical, IconLinkVerticalProps } from './IconLinkVertical';
 import { makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
@@ -29,7 +28,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 type Props = {
-  links: HeaderIconLink[];
+  links: IconLinkVerticalProps[];
 };
 
 export const HeaderIconLinkRow = ({ links }: Props) => {
