@@ -61,7 +61,7 @@ export async function serveBundle(options: ServeOptions) {
   });
 
   await new Promise<void>((resolve, reject) => {
-    server.listen(port, url.hostname, (err?: Error) => {
+    server.listen(port, host, (err?: Error) => {
       if (err) {
         reject(err);
         return;
