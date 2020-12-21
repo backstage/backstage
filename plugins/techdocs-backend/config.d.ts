@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /**
- * techdocs schema below is an abstract of what's used within techdocs-backend and for its visisbility
+ * techdocs schema below is an abstract of what's used within techdocs-backend and for its visibility
  * to view the complete techdoc schema please refer: plugins/techdocs/config.d.ts
  * */
 export interface Config {
