@@ -145,8 +145,16 @@
                     "type": "object",
                     "properties": {
                       "credentials": {
-                        "type": "string",
-                        "visibility": "secret"
+                        "type": "object",
+                        "visibility": "secret",
+                        "properties": {
+                          "accessKeyId": {
+                            "type": "string"
+                          },
+                          "secretAccessKey": {
+                            "type": "string"
+                          }
+                        }
                       },
                       "bucketName": {
                         "type": "string",
