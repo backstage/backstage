@@ -1,7 +1,11 @@
 ---
+'@backstage/create-app': patch
 '@backstage/techdocs-common': minor
 '@backstage/plugin-techdocs-backend': minor
 ---
+
+techdocs-backend: Simplified file, removing individual preparers and generators.
+techdocs-backend: UrlReader is now available to use in preparers.
 
 In your Backstage app, `packages/backend/plugins/techdocs.ts` file has now been simplified,
 to remove registering individual preparers and generators.
