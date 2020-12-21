@@ -48,7 +48,7 @@ export interface Config {
        * aleternatives: 'local' etc.
        * @see http://backstage.io/docs/features/techdocs/configuration
        */
-      techdocs: string;
+      techdocs: 'local' | 'docker';
     };
 
     /**
