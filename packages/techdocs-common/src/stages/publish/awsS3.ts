@@ -21,16 +21,23 @@ import { Entity, EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { getHeadersForFileExtension, getFileTreeRecursively } from './helpers';
 import { PublisherBase, PublishRequest } from './types';
-import { CredentialsOptions } from 'aws-sdk/lib/credentials';
 import { ManagedUpload } from 'aws-sdk/clients/s3';
 import fs from 'fs';
 
 export class AwsS3Publish implements PublisherBase {
   static fromConfig(config: Config, logger: Logger): PublisherBase {
-    let credentials = '';
+    let region = null;
+    let accessKeyId = null;
+    let secretAccessKey = null;
     let bucketName = '';
     try {
-      credentials = config.getString('techdocs.publisher.awsS3.credentials');
+      accessKeyId = config.getString(
+        'techdocs.publisher.awsS3.credentials.accessKeyId',
+      );
+      secretAccessKey = config.getString(
+        'techdocs.publisher.awsS3.credentials.secretAccessKey',
+      );
+      region = config.getOptionalString('techdocs.publisher.awsS3.region');
       bucketName = config.getString('techdocs.publisher.awsS3.bucketName');
     } catch (error) {
       throw new Error(
@@ -40,17 +47,9 @@ export class AwsS3Publish implements PublisherBase {
       );
     }
 
-    let credentialsJson = {};
-    try {
-      credentialsJson = JSON.parse(credentials);
-    } catch (err) {
-      throw new Error(
-        'Error in parsing techdocs.publisher.awsS3.credentials config to JSON.',
-      );
-    }
-
     const storageClient = new aws.S3({
-      credentials: credentialsJson as CredentialsOptions,
+      credentials: { accessKeyId, secretAccessKey },
+      ...(region && { region }),
     });
 
     // Check if the defined bucket exists. Being able to connect means the configuration is good
