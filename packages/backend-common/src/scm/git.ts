@@ -16,14 +16,19 @@
 import git from 'isomorphic-git';
 import http from 'isomorphic-git/http/node';
 import fs from 'fs-extra';
+import { Logger } from 'winston';
 
 class SCM {
   constructor(
-    private readonly config: { username: string; password: string },
-    private readonly logger: Logger,
+    private readonly config: {
+      username: string;
+      password: string;
+      logger?: Logger;
+    },
   ) {}
 
-  async clone({ url, dir }) {
+  async clone({ url, dir }: { url: string; dir: string }) {
+    this.config.logger?.info(`Cloning repo {dir=${dir},url=${url}}`);
     return git.clone({
       fs,
       http,
@@ -35,11 +40,84 @@ class SCM {
         const total = event.total
           ? `${Math.round((event.loaded / event.total) * 100)}%`
           : event.loaded;
-        this.logger.info(`status={${event.phase},total={${total}}}`);
+        this.config.logger?.info(`status={${event.phase},total={${total}}}`);
       },
       headers: {
         'user-agent': 'git/@isomorphic-git',
       },
+      onAuth: () => ({
+        username: this.config.username,
+        password: this.config.password,
+      }),
+    });
+  }
+
+  async init({ dir }: { dir: string }) {
+    this.config.logger?.info(`Init git repository {dir=${dir}}`);
+
+    return git.init({
+      fs,
+      dir,
+    });
+  }
+
+  async add({ dir, filepath }: { dir: string; filepath: string }) {
+    this.config.logger?.info(`Adding file {dir=${dir},filepath=${filepath}}`);
+
+    return git.add({ fs, dir, filepath });
+  }
+
+  async commit({
+    dir,
+    message,
+    author,
+    committer,
+  }: {
+    dir: string;
+    message: string;
+    author: { name: string; email: string };
+    committer: { name: string; email: string };
+  }) {
+    this.config.logger?.info(
+      `Committing file to repo {dir=${dir},message=${message}}`,
+    );
+
+    return git.commit({ fs, dir, message, author, committer });
+  }
+
+  async addRemote({
+    dir,
+    url,
+    remoteName,
+  }: {
+    dir: string;
+    remoteName: string;
+    url: string;
+  }) {
+    this.config.logger?.info(
+      `Creating new remote {dir=${dir},remoteName=${remoteName},url=${url}}`,
+    );
+    return git.addRemote({ fs, dir, remote: remoteName, url });
+  }
+
+  async push({ dir, remoteName }: { dir: string; remoteName: string }) {
+    this.config.logger?.info(
+      `Pushing directory to remote {dir=${dir},remoteName=${remoteName}}`,
+    );
+    git.push({
+      fs,
+      dir,
+      http,
+      onProgress: event => {
+        const total = event.total
+          ? `${Math.round((event.loaded / event.total) * 100)}%`
+          : event.loaded;
+        this.config.logger?.info(`status={${event.phase},total={${total}}}`);
+      },
+      headers: {
+        'user-agent': 'git/@isomorphic-git',
+      },
+      remote: remoteName,
       onAuth: () => ({
         username: this.config.username,
         password: this.config.password,
@@ -55,7 +133,7 @@ export const fromAuth = ({
 }: {
   username: string;
   password: string;
-  logger: Logger;
+  logger?: Logger;
 }) => {
-  return new SCM({ username, password });
+  return new SCM({ username, password, logger });
 };
