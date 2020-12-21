@@ -25,6 +25,8 @@ GitHub App 	token	          'x-access-token'
 BitBucket	  'x-token-auth'	token
 GitLab      'oauth2'	      token
 From : https://isomorphic-git.org/docs/en/onAuth
+
+Azure       'notempty'      token
 */
 class SCM {
   constructor(

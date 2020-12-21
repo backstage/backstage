@@ -16,7 +16,7 @@
 
 import { PublisherBase, PublisherOptions, PublisherResult } from './types';
 import { Gitlab } from '@gitbeaker/core';
-import { pushToRemoteUserPass } from './helpers';
+import { Git } from '@backstage/backend-common';
 import { JsonValue } from '@backstage/config';
 import { RequiredTemplateValues } from '../templater';
 
@@ -32,9 +32,26 @@ export class GitlabPublisher implements PublisherBase {
   async publish({
     values,
     directory,
+    logger,
   }: PublisherOptions): Promise<PublisherResult> {
     const remoteUrl = await this.createRemote(values);
-    await pushToRemoteUserPass(directory, remoteUrl, 'oauth2', this.token);
+
+    const git = Git.fromAuth({
+      password: this.token,
+      username: 'oauth2',
+      logger,
+    });
+
+    await git.addRemote({
+      dir: directory,
+      url: remoteUrl,
+      remoteName: 'origin',
+    });
+
+    await git.push({
+      dir: directory,
+      remoteName: 'origin',
+    });
 
     return { remoteUrl };
   }

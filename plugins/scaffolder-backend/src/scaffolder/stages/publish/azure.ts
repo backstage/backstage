@@ -16,8 +16,8 @@
 
 import { PublisherBase, PublisherOptions, PublisherResult } from './types';
 import { GitApi } from 'azure-devops-node-api/GitApi';
+import { Git } from '@backstage/backend-common';
 import { GitRepositoryCreateOptions } from 'azure-devops-node-api/interfaces/GitInterfaces';
-import { pushToRemoteUserPass } from './helpers';
 import { JsonValue } from '@backstage/config';
 import { RequiredTemplateValues } from '../templater';
 
@@ -33,10 +33,27 @@ export class AzurePublisher implements PublisherBase {
   async publish({
     values,
     directory,
+    logger,
   }: PublisherOptions): Promise<PublisherResult> {
     const remoteUrl = await this.createRemote(values);
-    await pushToRemoteUserPass(directory, remoteUrl, 'notempty', this.token);
     const catalogInfoUrl = `${remoteUrl}?path=%2Fcatalog-info.yaml`;
+
+    const git = Git.fromAuth({
+      username: 'notempty',
+      password: this.token,
+      logger,
+    });
+
+    await git.addRemote({
+      dir: directory,
+      url: remoteUrl,
+      remoteName: 'origin',
+    });
+
+    await git.push({
+      dir: directory,
+      remoteName: 'origin',
+    });
 
     return { remoteUrl, catalogInfoUrl };
   }
