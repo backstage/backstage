@@ -153,8 +153,6 @@ techdocs:
   publisher:
     type: 'awsS3'
     awsS3:
-      credentials:
-        $file: '/path/to/aws_application_credentials.json'
       bucketName: 'name-of-techdocs-storage-bucket'
 ```
 
