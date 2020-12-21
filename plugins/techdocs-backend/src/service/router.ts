@@ -24,15 +24,12 @@ import {
   GeneratorBuilder,
   PreparerBuilder,
   PublisherBase,
-  LocalPublish,
-} from '../techdocs';
-import {
-  PluginEndpointDiscovery,
-  resolvePackagePath,
-} from '@backstage/backend-common';
+  getLocationForEntity,
+} from '@backstage/techdocs-common';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
-import { DocsBuilder } from './helpers';
-import { getLocationForEntity } from '../helpers';
+import { getEntityNameFromUrlPath } from './helpers';
+import { DocsBuilder } from '../DocsBuilder';
 
 type RouterOptions = {
   preparers: PreparerBuilder;
@@ -44,11 +41,6 @@ type RouterOptions = {
   config: Config;
   dockerClient: Docker;
 };
-
-const staticDocsDir = resolvePackagePath(
-  '@backstage/plugin-techdocs-backend',
-  'static/docs',
-);
 
 export async function createRouter({
   preparers,
@@ -62,24 +54,18 @@ export async function createRouter({
   const router = Router();
 
   router.get('/metadata/techdocs/*', async (req, res) => {
-    let storageUrl = config.getString('techdocs.storageUrl');
-    if (publisher instanceof LocalPublish) {
-      storageUrl = new URL(
-        new URL(storageUrl).pathname,
-        await discovery.getBaseUrl('techdocs'),
-      ).toString();
-    }
+    // path is `:namespace/:kind:/:name`
     const { '0': path } = req.params;
+    const entityName = getEntityNameFromUrlPath(path);
 
-    const metadataURL = `${storageUrl}/${path}/techdocs_metadata.json`;
-
-    try {
-      const techdocsMetadata = await (await fetch(metadataURL)).json();
-      res.send(techdocsMetadata);
-    } catch (err) {
-      logger.info(`Unable to get metadata for ${path} with error ${err}`);
-      throw new Error(`Unable to get metadata for ${path} with error ${err}`);
-    }
+    publisher
+      .fetchTechDocsMetadata(entityName)
+      .then(techdocsMetadataJson => {
+        res.send(techdocsMetadataJson);
+      })
+      .catch(reason => {
+        res.status(500).send(`Unable to get Metadata. Reason: ${reason}`);
+      });
   });
 
   router.get('/metadata/entity/:namespace/:kind/:name', async (req, res) => {
@@ -107,9 +93,8 @@ export async function createRouter({
   });
 
   router.get('/docs/:namespace/:kind/:name/*', async (req, res) => {
-    const storageUrl = config.getString('techdocs.storageUrl');
-
     const { kind, namespace, name } = req.params;
+    const storageUrl = config.getString('techdocs.storageUrl');
 
     const catalogUrl = await discovery.getBaseUrl('catalog');
     const triple = [kind, namespace, name].map(encodeURIComponent).join('/');
@@ -124,25 +109,80 @@ export async function createRouter({
 
     const entity: Entity = await catalogRes.json();
 
-    const docsBuilder = new DocsBuilder({
-      preparers,
-      generators,
-      publisher,
-      dockerClient,
-      logger,
-      entity,
-    });
+    let publisherType = '';
+    try {
+      publisherType = config.getString('techdocs.publisher.type');
+    } catch (err) {
+      throw new Error(
+        'Unable to get techdocs.publisher.type in your app config. Set it to either ' +
+          "'local', 'googleGcs' or other support storage providers. Read more here " +
+          'https://backstage.io/docs/features/techdocs/architecture',
+      );
+    }
 
-    if (!(await docsBuilder.docsUpToDate())) {
-      await docsBuilder.build();
+    // techdocs-backend will only try to build documentation for an entity if techdocs.builder is set to 'local'
+    // If set to 'external', it will only try to fetch and assume that an external process (e.g. CI/CD pipeline
+    // of the repository) is responsible for building and publishing documentation to the storage provider.
+    if (config.getString('techdocs.builder') === 'local') {
+      const docsBuilder = new DocsBuilder({
+        preparers,
+        generators,
+        publisher,
+        dockerClient,
+        logger,
+        entity,
+      });
+      if (publisherType === 'local') {
+        if (!(await docsBuilder.docsUpToDate())) {
+          await docsBuilder.build();
+        }
+      } else if (publisherType === 'googleGcs') {
+        // This block should be valid for all external storage implementations. So no need to duplicate in future,
+        // add the publisher type in the list here.
+        if (!(await publisher.hasDocsBeenGenerated(entity))) {
+          logger.info(
+            'No pre-generated documentation files found for the entity in the storage. Building docs...',
+          );
+          await docsBuilder.build();
+          // With a maximum of ~5 seconds wait, check if the files got published and if docs will be fetched
+          // on the user's page. If not, respond with a message asking them to check back later.
+          // The delay here is to make sure GCS registers newly uploaded files which is usually <1 second
+          let foundDocs = false;
+          for (let attempt = 0; attempt < 5; attempt++) {
+            if (await publisher.hasDocsBeenGenerated(entity)) {
+              foundDocs = true;
+              break;
+            }
+            await new Promise(r => setTimeout(r, 1000));
+          }
+          if (!foundDocs) {
+            logger.error(
+              'Published files are taking longer to show up in storage. Something went wrong.',
+            );
+            res
+              .status(408)
+              .send(
+                'Sorry! It is taking longer for the generated docs to show up in storage. Check back later.',
+              );
+            return;
+          }
+        } else {
+          logger.info(
+            'Found pre-generated docs for this entity. Serving them.',
+          );
+          // TODO: re-trigger build for cache invalidation.
+          // Compare the date modified of the requested file on storage and compare it against
+          // the last modified or last commit timestamp in the repository.
+          // Without this, docs will not be re-built once they have been generated.
+        }
+      }
     }
 
     res.redirect(`${storageUrl}${req.path.replace('/docs', '')}`);
   });
 
-  if (publisher instanceof LocalPublish) {
-    router.use('/static/docs', express.static(staticDocsDir));
-  }
+  // Route middleware which serves files from the storage set in the publisher.
+  router.use('/static/docs', publisher.docsRouter());
 
   return router;
 }

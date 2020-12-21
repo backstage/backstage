@@ -1,5 +1,24 @@
 # @backstage/catalog-client
 
+## 0.3.4
+
+### Patch Changes
+
+- Updated dependencies [c911061b7]
+- Updated dependencies [0e6298f7e]
+- Updated dependencies [ac3560b42]
+  - @backstage/catalog-model@0.6.0
+
+## 0.3.3
+
+### Patch Changes
+
+- Updated dependencies [e3bd9fc2f]
+- Updated dependencies [83b6e0c1f]
+- Updated dependencies [e3bd9fc2f]
+  - @backstage/config@0.1.2
+  - @backstage/catalog-model@0.5.0
+
 ## 0.3.2
 
 ### Patch Changes

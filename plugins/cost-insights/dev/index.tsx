@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 import { createDevApp } from '@backstage/dev-utils';
-import { createPlugin, createApiFactory } from '@backstage/core';
 import { costInsightsApiRef } from '../src/api';
 import { ExampleCostInsightsClient } from '../src/client';
-import { pluginConfig } from '../src/plugin';
+import { plugin } from '../src/plugin';
 
-const devPlugin = createPlugin({
-  ...pluginConfig,
-  apis: [
-    createApiFactory({
-      api: costInsightsApiRef,
-      deps: {},
-      factory: () => new ExampleCostInsightsClient(),
-    }),
-  ],
-});
-
-createDevApp().registerPlugin(devPlugin).render();
+createDevApp()
+  .registerPlugin(plugin)
+  .registerApi({
+    api: costInsightsApiRef,
+    deps: {},
+    factory: () => new ExampleCostInsightsClient(),
+  })
+  .render();

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, TableColumn, TrendLine, useApi } from '@backstage/core';
 import { Website, lighthouseApiRef } from '../../api';
 import { useInterval } from 'react-use';
@@ -52,7 +52,7 @@ const columns: TableColumn[] = [
   },
 ];
 
-export const AuditListTable: FC<{ items: Website[] }> = ({ items }) => {
+export const AuditListTable = ({ items }: { items: Website[] }) => {
   const [websiteState, setWebsiteState] = useState(items);
   const lighthouseApi = useApi(lighthouseApiRef);
 

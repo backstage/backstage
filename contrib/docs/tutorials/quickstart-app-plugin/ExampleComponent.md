@@ -3,7 +3,7 @@
 ExampleComponent.tsx reference
 
 ```tsx
-import React, { FC } from 'react';
+import React from 'react';
 import { Typography, Grid } from '@material-ui/core';
 import {
   InfoCard,
@@ -18,7 +18,7 @@ import {
 import { useApi } from '@backstage/core-api';
 import ExampleFetchComponent from '../ExampleFetchComponent';
 
-const ExampleComponent: FC<{}> = () => {
+const ExampleComponent = () => {
   const identityApi = useApi(identityApiRef);
   const userId = identityApi.getUserId();
   const profile = identityApi.getProfile();

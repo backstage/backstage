@@ -16,9 +16,9 @@
 import React, {
   Children,
   isValidElement,
-  FC,
   useState,
   useEffect,
+  PropsWithChildren,
 } from 'react';
 import { Stepper as MuiStepper } from '@material-ui/core';
 
@@ -47,12 +47,12 @@ export interface StepperProps {
   activeStep?: number;
 }
 
-export const SimpleStepper: FC<StepperProps> = ({
+export const SimpleStepper = ({
   children,
   elevated,
   onStepChange,
   activeStep = 0,
-}) => {
+}: PropsWithChildren<StepperProps>) => {
   const [stepIndex, setStepIndex] = useState<number>(activeStep);
   const [stepHistory, setStepHistory] = useState<number[]>([0]);
 

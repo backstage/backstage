@@ -1,5 +1,45 @@
 # @backstage/plugin-jenkins
 
+## 0.3.4
+
+### Patch Changes
+
+- Updated dependencies [c911061b7]
+- Updated dependencies [8ef71ed32]
+- Updated dependencies [0e6298f7e]
+- Updated dependencies [ac3560b42]
+  - @backstage/catalog-model@0.6.0
+  - @backstage/core@0.4.1
+  - @backstage/plugin-catalog@0.2.7
+
+## 0.3.3
+
+### Patch Changes
+
+- b2a07d2dc: Avoid loading data from Jenkins twice. Don't load data when navigating through the pages as all data from all pages is already loaded.
+- 04efbbdd2: Refactor to support ADR004 module exporting.
+
+  For more information, see https://backstage.io/docs/architecture-decisions/adrs-adr004.
+
+- 0f8877168: Improve loading speed of the CI/CD page.
+  Only request the necessary fields from Jenkins to keep the request size low.
+  In addition everything is loaded in a single request, instead of requesting
+  each job and build individually. As this (and also the previous behavior) can
+  lead to a big amount of data, this limits the amount of jobs to 50.
+  For each job, only the latest build is loaded. Loading the full build history
+  of a job can lead to excessive load on the Jenkins instance.
+- Updated dependencies [2527628e1]
+- Updated dependencies [6011b7d3e]
+- Updated dependencies [1c69d4716]
+- Updated dependencies [83b6e0c1f]
+- Updated dependencies [1665ae8bb]
+- Updated dependencies [04f26f88d]
+- Updated dependencies [ff243ce96]
+  - @backstage/core@0.4.0
+  - @backstage/plugin-catalog@0.2.6
+  - @backstage/catalog-model@0.5.0
+  - @backstage/theme@0.2.2
+
 ## 0.3.2
 
 ### Patch Changes

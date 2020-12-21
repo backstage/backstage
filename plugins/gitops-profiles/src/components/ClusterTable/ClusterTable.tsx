@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
+import React from 'react';
 import { Table, TableColumn } from '@backstage/core';
 import { Link } from '@material-ui/core';
 import { ClusterStatus } from '../../api';
@@ -61,7 +61,7 @@ const columns: TableColumn[] = [
 type ClusterTableProps = {
   components: ClusterStatus[];
 };
-const ClusterTable: FC<ClusterTableProps> = ({ components }) => {
+const ClusterTable = ({ components }: ClusterTableProps) => {
   return (
     <Table columns={columns} options={{ paging: false }} data={components} />
   );

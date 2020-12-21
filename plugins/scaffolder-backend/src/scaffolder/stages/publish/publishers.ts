@@ -51,7 +51,17 @@ export class Publishers implements PublisherBuilder {
         if (detected) {
           return detected;
         }
-        throw new Error(`No preparer integration found for url "${location}"`);
+        if (type) {
+          throw new Error(
+            `No publisher configuration available for type '${type}' with url "${location}". ` +
+              "Make sure you've added appropriate configuration in the 'scaffolder' configuration section",
+          );
+        } else {
+          throw new Error(
+            `Failed to detect publisher type. Unable to determine integration type for location "${location}". ` +
+              "Please add appropriate configuration to the 'integrations' configuration section",
+          );
+        }
       }
       throw new Error(`No publisher registered for type: "${protocol}"`);
     }
@@ -102,12 +112,12 @@ export class Publishers implements PublisherBuilder {
       }
     }
 
-    const gitLabConfig = config.getOptionalConfig('scaffolder.gitlab.api');
+    const gitLabConfig = config.getOptionalConfig('scaffolder.gitlab');
     if (gitLabConfig) {
       try {
-        const gitLabToken = gitLabConfig.getString('token');
+        const gitLabToken = gitLabConfig.getConfig('api').getString('token');
         const gitLabClient = new Gitlab({
-          host: gitLabConfig.getOptionalString('baseUrl'),
+          host: gitLabConfig.getConfig('api').getOptionalString('baseUrl'),
           token: gitLabToken,
         });
         const gitLabPublisher = new GitlabPublisher(gitLabClient, gitLabToken);

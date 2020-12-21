@@ -14,8 +14,83 @@
  * limitations under the License.
  */
 
+import fetch from 'cross-fetch';
 import parseGitUrl from 'git-url-parse';
 import { BitbucketIntegrationConfig } from './config';
+
+/**
+ * Given a URL pointing to a path on a provider, returns the default branch.
+ *
+ * @param url A URL pointing to a path
+ * @param config The relevant provider config
+ */
+export async function getBitbucketDefaultBranch(
+  url: string,
+  config: BitbucketIntegrationConfig,
+): Promise<string> {
+  const { name: repoName, owner: project, resource } = parseGitUrl(url);
+
+  const isHosted = resource === 'bitbucket.org';
+  const branchUrl = isHosted
+    ? `${config.apiBaseUrl}/repositories/${project}/${repoName}`
+    : `${config.apiBaseUrl}/projects/${project}/repos/${repoName}/branches/default`;
+
+  const response = await fetch(branchUrl, getBitbucketRequestOptions(config));
+  if (!response.ok) {
+    const message = `Failed to retrieve default branch from ${branchUrl}, ${response.status} ${response.statusText}`;
+    throw new Error(message);
+  }
+
+  let defaultBranch;
+  if (isHosted) {
+    const repoInfo = await response.json();
+    defaultBranch = repoInfo.mainbranch.name;
+  } else {
+    const { displayId } = await response.json();
+    defaultBranch = displayId;
+  }
+  if (!defaultBranch) {
+    throw new Error(`Failed to read default branch from ${branchUrl}`);
+  }
+  return defaultBranch;
+}
+
+/**
+ * Given a URL pointing to a path on a provider, returns a URL that is suitable
+ * for downloading the subtree.
+ *
+ * @param url A URL pointing to a path
+ * @param config The relevant provider config
+ */
+export async function getBitbucketDownloadUrl(
+  url: string,
+  config: BitbucketIntegrationConfig,
+): Promise<string> {
+  const {
+    name: repoName,
+    owner: project,
+    ref,
+    protocol,
+    resource,
+    filepath,
+  } = parseGitUrl(url);
+
+  const isHosted = resource === 'bitbucket.org';
+
+  let branch = ref;
+  if (!branch) {
+    branch = await getBitbucketDefaultBranch(url, config);
+  }
+  // path will limit the downloaded content
+  // /docs will only download the docs folder and everything below it
+  // /docs/index.md will download the docs folder and everything below it
+  const path = filepath ? `&path=${encodeURIComponent(filepath)}` : '';
+  const archiveUrl = isHosted
+    ? `${protocol}://${resource}/${project}/${repoName}/get/${branch}.zip`
+    : `${config.apiBaseUrl}/projects/${project}/repos/${repoName}/archive?format=zip&at=${branch}&prefix=${project}-${repoName}${path}`;
+
+  return archiveUrl;
+}
 
 /**
  * Given a URL pointing to a file on a provider, returns a URL that is suitable

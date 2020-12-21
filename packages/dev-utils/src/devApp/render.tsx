@@ -15,7 +15,7 @@
  */
 
 import { hot } from 'react-hot-loader/root';
-import React, { FC, ComponentType, ReactNode } from 'react';
+import React, { ComponentType, ReactNode } from 'react';
 import ReactDOM from 'react-dom';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
 import {
@@ -90,7 +90,7 @@ class DevAppBuilder {
 
     const sidebar = this.setupSidebar(this.plugins);
 
-    const DevApp: FC<{}> = () => {
+    const DevApp = () => {
       return (
         <AppProvider>
           <AlertDisplay />

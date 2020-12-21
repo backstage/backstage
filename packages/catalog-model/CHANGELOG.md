@@ -1,5 +1,32 @@
 # @backstage/catalog-model
 
+## 0.6.0
+
+### Minor Changes
+
+- ac3560b42: Remove `implementsApis` from `Component` entities. Deprecation happened in [#3449](https://github.com/backstage/backstage/pull/3449).
+  Use `providesApis` instead.
+
+### Patch Changes
+
+- c911061b7: Introduce a `profile` section for group entities that can optional include a
+  `displayName`, `email` and `picture`.
+- 0e6298f7e: Ignore relations when comparing entities. This stops the refresh loop from rewriting entities over and over.
+
+## 0.5.0
+
+### Minor Changes
+
+- 83b6e0c1f: Remove the deprecated fields `ancestors` and `descendants` from the `Group` entity.
+
+  See https://github.com/backstage/backstage/issues/3049 and the PRs linked from it for details.
+
+### Patch Changes
+
+- Updated dependencies [e3bd9fc2f]
+- Updated dependencies [e3bd9fc2f]
+  - @backstage/config@0.1.2
+
 ## 0.4.0
 
 ### Minor Changes

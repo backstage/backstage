@@ -13,8 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import Alert from '@material-ui/lab/Alert';
+import {
+  Entity,
+  GroupEntity,
+  RELATION_MEMBER_OF,
+  UserEntity,
+} from '@backstage/catalog-model';
+import { Avatar, InfoCard, Progress, useApi } from '@backstage/core';
+import { catalogApiRef, entityRouteParams } from '@backstage/plugin-catalog';
 import {
   Box,
   createStyles,
@@ -24,16 +30,10 @@ import {
   Theme,
   Typography,
 } from '@material-ui/core';
-import { InfoCard, Progress, useApi } from '@backstage/core';
-import {
-  UserEntity,
-  RELATION_MEMBER_OF,
-  Entity,
-} from '@backstage/catalog-model';
-import { Link as RouterLink, generatePath } from 'react-router-dom';
-import { catalogApiRef, entityRouteParams } from '@backstage/plugin-catalog';
+import Alert from '@material-ui/lab/Alert';
+import React from 'react';
+import { generatePath, Link as RouterLink } from 'react-router-dom';
 import { useAsync } from 'react-use';
-import { Avatar } from '../../../Avatar';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -43,7 +43,9 @@ const useStyles = makeStyles((theme: Theme) =>
       borderRadius: '4px',
       overflow: 'visible',
       position: 'relative',
-      margin: theme.spacing(3, 0, 0),
+      margin: theme.spacing(3, 0, 1),
+      flex: '1',
+      minWidth: '0px',
     },
   }),
 );
@@ -56,10 +58,14 @@ const MemberComponent = ({
   groupEntity: Entity;
 }) => {
   const classes = useStyles();
-  const { name: metaName } = member.metadata;
-  const { profile } = member.spec;
+  const {
+    metadata: { name: metaName },
+    spec: { profile },
+  } = member;
+  const displayName = profile?.displayName ?? metaName;
+
   return (
-    <Grid item xs={12} sm={6} md={3} xl={2}>
+    <Grid item container xs={12} sm={6} md={3} xl={2}>
       <Box className={classes.card}>
         <Box
           display="flex"
@@ -69,7 +75,7 @@ const MemberComponent = ({
           justifyContent="center"
         >
           <Avatar
-            displayName={profile?.displayName}
+            displayName={displayName}
             picture={profile?.picture}
             customStyles={{
               position: 'absolute',
@@ -85,7 +91,7 @@ const MemberComponent = ({
                   entityRouteParams(groupEntity),
                 )}
               >
-                {profile?.displayName}
+                {displayName}
               </Link>
             </Typography>
             <Typography variant="caption">{profile?.email}</Typography>
@@ -99,12 +105,15 @@ const MemberComponent = ({
 export const MembersListCard = ({
   entity: groupEntity,
 }: {
-  entity: Entity;
+  entity: GroupEntity;
 }) => {
   const {
     metadata: { name: groupName },
+    spec: { profile },
   } = groupEntity;
   const catalogApi = useApi(catalogApiRef);
+
+  const displayName = profile?.displayName ?? groupName;
 
   const { loading, error, value: members } = useAsync(async () => {
     const membersList = await catalogApi.getEntities({
@@ -132,7 +141,7 @@ export const MembersListCard = ({
     <Grid item>
       <InfoCard
         title={`Members (${members?.length || 0})`}
-        subheader={`of ${groupName}`}
+        subheader={`of ${displayName}`}
       >
         <Grid container spacing={3}>
           {members && members.length ? (

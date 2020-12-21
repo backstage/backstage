@@ -1,5 +1,45 @@
 # @backstage/plugin-api-docs
 
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies [c911061b7]
+- Updated dependencies [8ef71ed32]
+- Updated dependencies [0e6298f7e]
+- Updated dependencies [ac3560b42]
+  - @backstage/catalog-model@0.6.0
+  - @backstage/core@0.4.1
+  - @backstage/plugin-catalog@0.2.7
+
+## 0.4.0
+
+### Minor Changes
+
+- 246799c7f: Stop exposing a custom router from the `api-docs` plugin. Instead, use the
+  widgets exported by the plugin to compose your custom entity pages.
+
+  Instead of displaying the API definitions directly in the API tab of the
+  component, it now contains tables linking to the API entities. This also adds
+  new widgets to display relationships (bot provides & consumes relationships)
+  between components and APIs.
+
+  See the changelog of `create-app` for a migration guide.
+
+### Patch Changes
+
+- Updated dependencies [2527628e1]
+- Updated dependencies [6011b7d3e]
+- Updated dependencies [1c69d4716]
+- Updated dependencies [83b6e0c1f]
+- Updated dependencies [1665ae8bb]
+- Updated dependencies [04f26f88d]
+- Updated dependencies [ff243ce96]
+  - @backstage/core@0.4.0
+  - @backstage/plugin-catalog@0.2.6
+  - @backstage/catalog-model@0.5.0
+  - @backstage/theme@0.2.2
+
 ## 0.3.1
 
 ### Patch Changes

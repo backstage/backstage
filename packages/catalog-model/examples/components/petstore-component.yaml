@@ -7,7 +7,7 @@ spec:
   type: service
   lifecycle: experimental
   owner: team-c
-  implementsApis:
+  providesApis:
     - petstore
     - streetlights
     - hello-world
