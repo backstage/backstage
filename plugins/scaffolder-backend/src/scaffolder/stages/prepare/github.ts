@@ -55,6 +55,7 @@ export class GithubPreparer implements PreparerBase {
     );
 
     const checkoutLocation = path.resolve(tempDir, templateDirectory);
+
     const git = Git.fromAuth({
       username: this.token,
       password: 'x-oauth-basic',
@@ -63,7 +64,7 @@ export class GithubPreparer implements PreparerBase {
 
     await git.clone({
       url: repositoryCheckoutUrl,
-      dir: checkoutLocation,
+      dir: tempDir,
     });
 
     return checkoutLocation;
