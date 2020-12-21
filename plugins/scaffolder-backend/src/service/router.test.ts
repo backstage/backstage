@@ -55,11 +55,8 @@ describe('createRouter - working directory', () => {
   });
 
   const workDirConfig = (path: string) => ({
-    context: '',
-    data: {
-      backend: {
-        workingDirectory: path,
-      },
+    backend: {
+      workingDirectory: path,
     },
   });
 
@@ -91,7 +88,7 @@ describe('createRouter - working directory', () => {
         preparers: new Preparers(),
         templaters: new Templaters(),
         publishers: new Publishers(),
-        config: ConfigReader.fromConfigs([workDirConfig('/path')]),
+        config: new ConfigReader(workDirConfig('/path')),
         dockerClient: new Docker(),
         entityClient: mockedEntityClient,
       }),
@@ -104,7 +101,7 @@ describe('createRouter - working directory', () => {
       preparers: mockPreparers,
       templaters: new Templaters(),
       publishers: new Publishers(),
-      config: ConfigReader.fromConfigs([workDirConfig('/path')]),
+      config: new ConfigReader(workDirConfig('/path')),
       dockerClient: new Docker(),
       entityClient: mockedEntityClient,
     });
@@ -127,7 +124,7 @@ describe('createRouter - working directory', () => {
       preparers: mockPreparers,
       templaters: new Templaters(),
       publishers: new Publishers(),
-      config: ConfigReader.fromConfigs([]),
+      config: new ConfigReader({}),
       dockerClient: new Docker(),
       entityClient: mockedEntityClient,
     });
@@ -190,7 +187,7 @@ describe('createRouter', () => {
       preparers: new Preparers(),
       templaters: new Templaters(),
       publishers: new Publishers(),
-      config: ConfigReader.fromConfigs([]),
+      config: new ConfigReader({}),
       dockerClient: new Docker(),
       entityClient: generateEntityClient(template),
     });

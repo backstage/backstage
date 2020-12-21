@@ -15,7 +15,7 @@
  */
 
 import { Octokit } from '@octokit/rest';
-import { DiscoveryApi, OAuthApi } from '@backstage/core';
+import { DiscoveryApi, OAuthApi, ConfigApi } from '@backstage/core';
 import { CatalogImportApi } from './CatalogImportApi';
 import { AnalyzeLocationResponse } from '@backstage/plugin-catalog-backend';
 import { PartialEntity } from '../util/types';
@@ -24,13 +24,16 @@ import { GitHubIntegrationConfig } from '@backstage/integration';
 export class CatalogImportClient implements CatalogImportApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly githubAuthApi: OAuthApi;
+  private readonly configApi: ConfigApi;
 
   constructor(options: {
     discoveryApi: DiscoveryApi;
     githubAuthApi: OAuthApi;
+    configApi: ConfigApi;
   }) {
     this.discoveryApi = options.discoveryApi;
     this.githubAuthApi = options.githubAuthApi;
+    this.configApi = options.configApi;
   }
 
   async generateEntityDefinitions({
@@ -164,12 +167,23 @@ export class CatalogImportClient implements CatalogImportApi {
         );
       });
 
+    const appTitle =
+      this.configApi.getOptionalString('app.title') ?? 'Backstage';
+    const appBaseUrl = this.configApi.getString('app.baseUrl');
+
+    const prBody = `This pull request adds a **Backstage entity metadata file** \
+to this repository so that the component can be added to the \
+[${appTitle} software catalog](${appBaseUrl}).\n\nAfter this pull request is merged, \
+the component will become available.\n\nFor more information, read an \
+[overview of the Backstage software catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview).`;
+
     const pullRequestResponse = await octo.pulls
       .create({
         owner,
         repo,
         title: `Add ${fileName} config file`,
         head: branchName,
+        body: prBody,
         base: repoData.data.default_branch,
       })
       .catch(e => {

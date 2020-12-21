@@ -29,7 +29,7 @@ import { hot } from 'react-hot-loader/root';
 import { providers } from './identityProviders';
 import { Router as CatalogRouter } from '@backstage/plugin-catalog';
 import { Router as DocsRouter } from '@backstage/plugin-techdocs';
-import { Router as GraphiQLRouter } from '@backstage/plugin-graphiql';
+import { GraphiQLPage } from '@backstage/plugin-graphiql';
 import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
 import { Router as LighthouseRouter } from '@backstage/plugin-lighthouse';
 import { Router as RegisterComponentRouter } from '@backstage/plugin-register-component';
@@ -81,7 +81,7 @@ const AppRoutes = () => (
       path="/tech-radar"
       element={<TechRadarRouter width={1500} height={800} />}
     />
-    <Route path="/graphiql" element={<GraphiQLRouter />} />
+    <Route path="/graphiql" element={<GraphiQLPage />} />
     <Route path="/lighthouse/*" element={<LighthouseRouter />} />
     <Route
       path="/register-component"

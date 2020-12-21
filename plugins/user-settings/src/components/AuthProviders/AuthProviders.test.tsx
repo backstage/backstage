@@ -37,18 +37,13 @@ const mockGoogleAuth = {
 };
 
 const createConfig = () =>
-  ConfigReader.fromConfigs([
-    {
-      context: '',
-      data: {
-        auth: {
-          providers: {
-            google: { development: {} },
-          },
-        },
+  new ConfigReader({
+    auth: {
+      providers: {
+        google: { development: {} },
       },
     },
-  ]);
+  });
 
 const config = createConfig();
 

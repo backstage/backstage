@@ -169,10 +169,18 @@ are separated out into their own folder, see further down.
   packages, publish them, created a new app, and the run it. CI uses this for
   e2e-tests.
 
+- [`integration/`](https://github.com/backstage/backstage/tree/master/packages/integration) -
+  Common functionalities of integrations like GitHub, GitLab, etc.
+
 - [`storybook/`](https://github.com/backstage/backstage/tree/master/packages/storybook) -
   This folder contains only the storybook config. Stories are within the core
   package. The Backstage Storybook is found
   [here](https://backstage.io/storybook)
+
+- [`techdocs-common/`](https://github.com/backstage/backstage/tree/master/packages/techdocs-common) -
+  Common functionalities for TechDocs, to be shared between
+  [techdocs-backend](https://github.com/backstage/backstage/tree/master/plugins/techdocs-backend)
+  plugin and [techdocs-cli](https://github.com/backstage/techdocs-cli).
 
 - [`test-utils-core/`](https://github.com/backstage/backstage/tree/master/packages/test-utils-core)
 

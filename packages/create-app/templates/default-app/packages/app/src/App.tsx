@@ -14,6 +14,7 @@ import { Router as CatalogRouter } from '@backstage/plugin-catalog';
 import { Router as DocsRouter } from '@backstage/plugin-techdocs';
 import { Router as RegisterComponentRouter } from '@backstage/plugin-register-component';
 import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
+import { SearchPage as SearchRouter } from '@backstage/plugin-search';
 
 import { EntityPage } from './components/catalog/EntityPage';
 
@@ -53,6 +54,10 @@ const App = () => (
           <Route
             path="/register-component"
             element={<RegisterComponentRouter catalogRouteRef={catalogRouteRef} />}
+          />
+          <Route
+            path="/search"
+            element={<SearchRouter/>}
           />
           {deprecatedAppRoutes}
         </Routes>

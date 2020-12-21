@@ -20,23 +20,18 @@ import { GitHubIntegration } from './GitHubIntegration';
 describe('GitHubIntegration', () => {
   it('has a working factory', () => {
     const integrations = GitHubIntegration.factory({
-      config: ConfigReader.fromConfigs([
-        {
-          context: '',
-          data: {
-            integrations: {
-              github: [
-                {
-                  host: 'h.com',
-                  apiBaseUrl: 'a',
-                  rawBaseUrl: 'r',
-                  token: 't',
-                },
-              ],
+      config: new ConfigReader({
+        integrations: {
+          github: [
+            {
+              host: 'h.com',
+              apiBaseUrl: 'a',
+              rawBaseUrl: 'r',
+              token: 't',
             },
-          },
+          ],
         },
-      ]),
+      }),
     });
     expect(integrations.length).toBe(2); // including default
     expect(integrations[0].predicate(new URL('https://h.com/a'))).toBe(true);

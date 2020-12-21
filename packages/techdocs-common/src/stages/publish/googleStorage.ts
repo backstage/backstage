@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import path from 'path';
 import express from 'express';
 import {
   Storage,
@@ -167,7 +168,7 @@ export class GoogleGCSPublish implements PublisherBase {
       const filePath = req.path.replace(/^\//, '');
 
       // Files with different extensions (CSS, HTML) need to be served with different headers
-      const fileExtension = filePath.split('.')[filePath.split('.').length - 1];
+      const fileExtension = path.extname(filePath);
       const responseHeaders = getHeadersForFileExtension(fileExtension);
 
       const fileStreamChunks: Array<any> = [];

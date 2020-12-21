@@ -18,6 +18,7 @@ import { Config } from '@backstage/config';
 import { isValidHost } from '../helpers';
 
 const GITLAB_HOST = 'gitlab.com';
+const GITLAB_API_BASE_URL = 'gitlab.com/api/v4';
 
 /**
  * The configuration parameters for a single GitLab integration.
@@ -27,6 +28,17 @@ export type GitLabIntegrationConfig = {
    * The host of the target that this matches on, e.g. "gitlab.com"
    */
   host: string;
+
+  /**
+   * The base URL of the API of this provider, e.g. "https://gitlab.com/api/v4",
+   * with no trailing slash.
+   *
+   * May be omitted specifically for GitLab; then it will be deduced.
+   *
+   * The API will always be preferred if both its base URL and a token are
+   * present.
+   */
+  apiBaseUrl?: string;
 
   /**
    * The authorization token to use for requests this provider.
@@ -45,6 +57,7 @@ export function readGitLabIntegrationConfig(
   config: Config,
 ): GitLabIntegrationConfig {
   const host = config.getOptionalString('host') ?? GITLAB_HOST;
+  let apiBaseUrl = config.getOptionalString('apiBaseUrl');
   const token = config.getOptionalString('token');
 
   if (!isValidHost(host)) {
@@ -53,7 +66,12 @@ export function readGitLabIntegrationConfig(
     );
   }
 
-  return { host, token };
+  if (apiBaseUrl) {
+    apiBaseUrl = apiBaseUrl.replace(/\/+$/, '');
+  } else if (host === GITLAB_HOST) {
+    apiBaseUrl = GITLAB_API_BASE_URL;
+  }
+  return { host, token, apiBaseUrl };
 }
 
 /**

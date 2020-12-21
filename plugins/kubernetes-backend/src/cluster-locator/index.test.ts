@@ -60,7 +60,7 @@ describe('getCombinedClusterDetails', () => {
 
   it('throws an error when using an unsupported cluster locator', async () => {
     await expect(
-      getCombinedClusterDetails(['magic' as any], new ConfigReader({}, 'ctx')),
+      getCombinedClusterDetails(['magic' as any], new ConfigReader({})),
     ).rejects.toStrictEqual(
       new Error('Unsupported kubernetes.clusterLocatorMethods: "magic"'),
     );

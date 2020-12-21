@@ -1,4 +1,5 @@
 abc
+adamdmharvey
 andrewthauer
 Apdex
 api
@@ -35,6 +36,7 @@ Codecov
 codehilite
 Codehilite
 codeowners
+composable
 config
 Config
 configmaps
@@ -48,6 +50,7 @@ deadnaming
 destructured
 dev
 devs
+dhenneke
 discoverability
 Discoverability
 dls
@@ -56,6 +59,8 @@ Dockerfile
 Dockerize
 dockerode
 Docusaurus
+Dominik
+dtuite
 dzolotusky
 eg
 Ek
@@ -79,6 +84,7 @@ graphviz
 Gustavsson
 Hackathons
 haproxy
+Henneke
 heroku
 Heroku
 horizontalpodautoscalers
@@ -140,14 +146,17 @@ Oldsberg
 onboarding
 Onboarding
 pagerduty
+parallelization
 Patrik
 Phoen
 plantuml
 Pomaceous
 postgres
+postpack
 pre
 prebaked
 preconfigured
+prepack
 Preprarer
 Prerequisities
 productional
@@ -185,6 +194,7 @@ Serverless
 Sinon
 smartsymobls
 Snyk
+sourcemaps
 sparklines
 Spotifiers
 spotify
@@ -218,6 +228,9 @@ toolsets
 tooltip
 tooltips
 touchpoints
+transpiled
+transpilation
+Tuite
 ui
 untracked
 upvote

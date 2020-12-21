@@ -23,7 +23,7 @@ import {
 
 describe('readGitLabIntegrationConfig', () => {
   function buildConfig(data: Partial<GitLabIntegrationConfig>): Config {
-    return ConfigReader.fromConfigs([{ context: '', data }]);
+    return new ConfigReader(data);
   }
 
   it('reads all values', () => {
@@ -41,7 +41,10 @@ describe('readGitLabIntegrationConfig', () => {
 
   it('inserts the defaults if missing', () => {
     const output = readGitLabIntegrationConfig(buildConfig({}));
-    expect(output).toEqual({ host: 'gitlab.com' });
+    expect(output).toEqual({
+      host: 'gitlab.com',
+      apiBaseUrl: 'gitlab.com/api/v4',
+    });
   });
 
   it('rejects funky configs', () => {
@@ -60,9 +63,7 @@ describe('readGitLabIntegrationConfig', () => {
 
 describe('readGitLabIntegrationConfigs', () => {
   function buildConfig(data: Partial<GitLabIntegrationConfig>[]): Config[] {
-    return data.map(item =>
-      ConfigReader.fromConfigs([{ context: '', data: item }]),
-    );
+    return data.map(item => new ConfigReader(item));
   }
 
   it('reads all values', () => {

@@ -63,7 +63,7 @@ class SamlAuth implements ProfileInfoApi, BackstageIdentityApi, SessionApi {
 
     const authSessionStore = new AuthSessionStore<SamlSession>({
       manager: sessionManager,
-      storageKey: 'samlSession',
+      storageKey: `${provider.id}Session`,
     });
 
     return new SamlAuth(authSessionStore);

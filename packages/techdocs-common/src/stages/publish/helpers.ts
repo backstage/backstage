@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import mime from 'mime-types';
 import recursiveReadDir from 'recursive-readdir';
 
 export type responseHeadersType = {
@@ -22,32 +23,15 @@ export type responseHeadersType = {
 /**
  * Some files need special headers to be used correctly by the frontend. This function
  * generates headers in the response to those file requests.
- * @param {string} fileExtension html, css, js etc.
+ * @param {string} fileExtension .html, .css, .js, .png etc.
  */
 export const getHeadersForFileExtension = (
   fileExtension: string,
 ): responseHeadersType => {
-  const headersCommon = {
-    'Content-Type': 'text/plain',
-  };
-  const headersHTML = {
-    ...headersCommon,
-    'Content-Type': 'text/html; charset=UTF-8',
-  };
-
-  const headersCSS = {
-    ...headersCommon,
-    'Content-Type': 'text/css; charset=UTF-8',
-  };
-
-  switch (fileExtension) {
-    case 'html':
-      return headersHTML;
-    case 'css':
-      return headersCSS;
-    default:
-      return headersCommon;
-  }
+  return {
+    'Content-Type':
+      mime.contentType(fileExtension) || 'text/plain; charset=utf-8',
+  } as responseHeadersType;
 };
 
 /**

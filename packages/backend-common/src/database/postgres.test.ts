@@ -34,15 +34,7 @@ describe('postgres', () => {
     'postgresql://foo:bar@acme:5432/foodb';
 
   const createConfig = (connection: any): Config =>
-    ConfigReader.fromConfigs([
-      {
-        context: '',
-        data: {
-          client: 'pg',
-          connection,
-        },
-      },
-    ]);
+    new ConfigReader({ client: 'pg', connection });
 
   describe('buildPgDatabaseConfig', () => {
     it('builds a postgres config', () => {
