@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Logger } from 'winston';
 import { Entity } from '@backstage/catalog-model';
+import { UrlReader } from '@backstage/backend-common';
 import { PreparerBase } from './types';
 import { getDocFilesFromRepository } from '../../helpers';
-import { Logger } from 'winston';
-import { UrlReader } from '@backstage/backend-common';
 
 export class UrlPreparer implements PreparerBase {
   private readonly logger: Logger;

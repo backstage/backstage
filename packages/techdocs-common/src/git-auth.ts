@@ -15,7 +15,14 @@
  */
 import parseGitUrl from 'git-url-parse';
 import { Config } from '@backstage/config';
-import { getRootLogger, loadBackendConfig } from '@backstage/backend-common';
+import {
+  readGitHubIntegrationConfigs,
+  readGitLabIntegrationConfigs,
+  readAzureIntegrationConfigs,
+  GitHubIntegrationConfig,
+  GitLabIntegrationConfig,
+  AzureIntegrationConfig,
+} from '@backstage/integration';
 
 export function getGitHost(url: string): string {
   const { resource } = parseGitUrl(url);
@@ -34,85 +41,67 @@ export function getGitRepoType(url: string): string {
   return type;
 }
 
-export function getGithubHostToken(
+export const getGitHubIntegrationConfig = (
   config: Config,
   host: string,
-): string | undefined {
-  const providerConfigs =
-    config.getOptionalConfigArray('integrations.github') ?? [];
-
-  const hostConfig = providerConfigs.filter(
-    providerConfig => providerConfig.getOptionalString('host') === host,
+): GitHubIntegrationConfig => {
+  const allGitHubConfigs = readGitHubIntegrationConfigs(
+    config.getOptionalConfigArray('integrations.github') ?? [],
   );
-  const token =
-    hostConfig[0]?.getOptionalString('token') ??
-    config.getOptionalString('catalog.processors.github.privateToken') ??
-    config.getOptionalString('catalog.processors.githubApi.privateToken') ??
-    process.env.GITHUB_TOKEN;
+  const gitHubIntegrationConfig = allGitHubConfigs.find(v => v.host === host);
+  if (!gitHubIntegrationConfig) {
+    throw new Error(`Unable to locate GitHub integration for the host ${host}`);
+  }
+  return gitHubIntegrationConfig;
+};
 
-  return token;
-}
-
-export function getGitlabHostToken(
+export const getGitLabIntegrationConfig = (
   config: Config,
   host: string,
-): string | undefined {
-  const providerConfigs =
-    config.getOptionalConfigArray('integrations.gitlab') ?? [];
-
-  const hostConfig = providerConfigs.filter(
-    providerConfig => providerConfig.getOptionalString('host') === host,
+): GitLabIntegrationConfig => {
+  const allGitLabConfigs = readGitLabIntegrationConfigs(
+    config.getOptionalConfigArray('integrations.gitlab') ?? [],
   );
-  const token =
-    hostConfig[0]?.getOptionalString('token') ??
-    config.getOptionalString('catalog.processors.gitlab.privateToken') ??
-    config.getOptionalString('catalog.processors.gitlabApi.privateToken') ??
-    process.env.GITLAB_TOKEN;
+  const gitLabIntegrationConfig = allGitLabConfigs.find(v => v.host === host);
+  if (!gitLabIntegrationConfig) {
+    throw new Error(`Unable to locate GitLab integration for the host ${host}`);
+  }
+  return gitLabIntegrationConfig;
+};
 
-  return token;
-}
-
-export function getAzureHostToken(
+export const getAzureIntegrationConfig = (
   config: Config,
   host: string,
-): string | undefined {
-  const providerConfigs =
-    config.getOptionalConfigArray('integrations.azure') ?? [];
-
-  const hostConfig = providerConfigs.filter(
-    providerConfig => providerConfig.getOptionalString('host') === host,
+): AzureIntegrationConfig => {
+  const allAzureIntegrationConfig = readAzureIntegrationConfigs(
+    config.getOptionalConfigArray('integrations.azure') ?? [],
   );
-  const token =
-    hostConfig[0]?.getOptionalString('token') ??
-    config.getOptionalString('catalog.processors.azureApi.privateToken') ??
-    process.env.AZURE_TOKEN;
-
-  return token;
-}
+  const azureIntegrationConfig = allAzureIntegrationConfig.find(
+    v => v.host === host,
+  );
+  if (!azureIntegrationConfig) {
+    throw new Error(`Unable to locate Azure integration for the host ${host}`);
+  }
+  return azureIntegrationConfig;
+};
 
 export const getTokenForGitRepo = async (
   repositoryUrl: string,
+  config: Config,
 ): Promise<string | undefined> => {
-  // TODO(Rugvip): Config should not be loaded here, pass it in instead
-  const config = await loadBackendConfig({
-    logger: getRootLogger(),
-    argv: process.argv,
-  });
-
   const host = getGitHost(repositoryUrl);
   const type = getGitRepoType(repositoryUrl);
 
   try {
     switch (type) {
       case 'github':
-        return getGithubHostToken(config, host);
+        return getGitHubIntegrationConfig(config, host).token;
       case 'gitlab':
-        return getGitlabHostToken(config, host);
+        return getGitLabIntegrationConfig(config, host).token;
       case 'azure/api':
-        return getAzureHostToken(config, host);
-
+        return getAzureIntegrationConfig(config, host).token;
       default:
-        throw new Error('Failed to get repository type');
+        throw new Error('Failed to get reository type');
     }
   } catch (error) {
     throw error;
