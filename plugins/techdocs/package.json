@@ -63,85 +63,8 @@
     "msw": "^0.21.2"
   },
   "files": [
-    "dist"
+    "dist",
+    "config.d.ts"
   ],
-  "configSchema": {
-    "$schema": "https://backstage.io/schema/config-v1",
-    "title": "@backstage/techdocs",
-    "type": "object",
-    "properties": {
-      "techdocs": {
-        "type": "object",
-        "properties": {
-          "requestUrl": {
-            "type": "string",
-            "visibility": "frontend"
-          },
-          "storageUrl": {
-            "type": "string",
-            "visibility": "backend"
-          },
-          "generators": {
-            "type": "object",
-            "properties": {
-              "techdocs": {
-                "type": "string",
-                "visibility": "backend"
-              }
-            }
-          },
-          "builder": {
-            "type": "string",
-            "visibility": "frontend"
-          },
-          "publisher": {
-            "oneOf": [
-              {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "const": "local",
-                    "visibility": "backend"
-                  }
-                }
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "const": "googleGcs",
-                    "visibility": "backend"
-                  },
-                  "googleGcs": {
-                    "type": "object",
-                    "properties": {
-                      "credentials": {
-                        "type": "string",
-                        "visibility": "secret"
-                      },
-                      "projectId": {
-                        "type": "string",
-                        "visibility": "secret"
-                      },
-                      "bucketName": {
-                        "type": "string",
-                        "visibility": "secret"
-                      }
-                    }
-                  }
-                }
-              }
-            ]
-          }
-        },
-        "required": [
-          "requestUrl",
-          "storageUrl",
-          "builder"
-        ]
-      }
-    }
-  }
+  "configSchema": "config.d.ts"
 }
