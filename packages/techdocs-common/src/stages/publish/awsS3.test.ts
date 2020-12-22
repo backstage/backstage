@@ -171,7 +171,7 @@ describe('AwsS3Publish', () => {
         .fetchTechDocsMetadata(entityNameMock)
         .catch(error =>
           expect(error).toBe(
-            `The file ${entityRootDir}/techdocs_metadata.json doest not exist !`,
+            `The file ${entityRootDir}/techdocs_metadata.json doest not exist.`,
           ),
         );
     });

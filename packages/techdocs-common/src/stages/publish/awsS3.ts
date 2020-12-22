@@ -15,13 +15,12 @@
  */
 import path from 'path';
 import express from 'express';
-import aws from 'aws-sdk';
+import { PutObjectCommandOutput, S3 } from '@aws-sdk/client-s3';
 import { Logger } from 'winston';
 import { Entity, EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { getHeadersForFileExtension, getFileTreeRecursively } from './helpers';
 import { PublisherBase, PublishRequest } from './types';
-import { ManagedUpload } from 'aws-sdk/clients/s3';
 import fs from 'fs';
 
 export class AwsS3Publish implements PublisherBase {
@@ -47,7 +46,7 @@ export class AwsS3Publish implements PublisherBase {
       );
     }
 
-    const storageClient = new aws.S3({
+    const storageClient = new S3({
       credentials: { accessKeyId, secretAccessKey },
       ...(region && { region }),
     });
@@ -79,7 +78,7 @@ export class AwsS3Publish implements PublisherBase {
   }
 
   constructor(
-    private readonly storageClient: aws.S3,
+    private readonly storageClient: S3,
     private readonly bucketName: string,
     private readonly logger: Logger,
   ) {
@@ -98,7 +97,7 @@ export class AwsS3Publish implements PublisherBase {
       // So collecting path of only the files is good enough.
       const allFilesToUpload = await getFileTreeRecursively(directory);
 
-      const uploadPromises: Array<Promise<ManagedUpload.SendData>> = [];
+      const uploadPromises: Array<Promise<PutObjectCommandOutput>> = [];
       allFilesToUpload.forEach(filePath => {
         // Remove the absolute path prefix of the source directory
         // Path of all files to upload, relative to the root of the source directory
@@ -119,7 +118,7 @@ export class AwsS3Publish implements PublisherBase {
           };
 
           // TODO: Upload in chunks of ~10 files instead of all files at once.
-          uploadPromises.push(this.storageClient.upload(params).promise());
+          uploadPromises.push(this.storageClient.putObject(params));
         });
       });
       Promise.all(uploadPromises)
@@ -141,25 +140,25 @@ export class AwsS3Publish implements PublisherBase {
     return new Promise((resolve, reject) => {
       const entityRootDir = `${entityName.namespace}/${entityName.kind}/${entityName.name}`;
 
-      const fileStreamChunks: Array<any> = [];
       this.storageClient
         .getObject({
           Bucket: this.bucketName,
           Key: `${entityRootDir}/techdocs_metadata.json`,
         })
-        .createReadStream()
-        .on('error', err => {
+        .then(file => {
+          const techdocsMetadataJson = file?.Body?.toString();
+
+          if (!techdocsMetadataJson) {
+            throw new Error(
+              `Unable to parse the techdocs metadata file ${entityRootDir}/techdocs_metadata.json.`,
+            );
+          }
+
+          resolve(techdocsMetadataJson);
+        })
+        .catch(err => {
           this.logger.error(err.message);
           reject(err.message);
-        })
-        .on('data', chunk => {
-          fileStreamChunks.push(chunk);
-        })
-        .on('end', () => {
-          const techdocsMetadataJson = Buffer.concat(
-            fileStreamChunks,
-          ).toString();
-          resolve(techdocsMetadataJson);
         });
     });
   }
@@ -177,19 +176,15 @@ export class AwsS3Publish implements PublisherBase {
       const fileExtension = path.extname(filePath);
       const responseHeaders = getHeadersForFileExtension(fileExtension);
 
-      const fileStreamChunks: Array<any> = [];
       this.storageClient
         .getObject({ Bucket: this.bucketName, Key: filePath })
-        .createReadStream()
-        .on('error', err => {
-          this.logger.warn(err.message);
-          res.status(404).send(err.message);
-        })
-        .on('data', chunk => {
-          fileStreamChunks.push(chunk);
-        })
-        .on('end', () => {
-          const fileContent = Buffer.concat(fileStreamChunks).toString();
+        .then(object => {
+          const fileContent = object?.Body?.toString();
+
+          if (!fileContent) {
+            throw new Error(`Unable to parse the file ${filePath}.`);
+          }
+
           // Inject response headers
           for (const [headerKey, headerValue] of Object.entries(
             responseHeaders,
@@ -198,6 +193,10 @@ export class AwsS3Publish implements PublisherBase {
           }
 
           res.send(fileContent);
+        })
+        .catch(err => {
+          this.logger.warn(err.message);
+          res.status(404).send(err.message);
         });
     };
   }
@@ -214,7 +213,6 @@ export class AwsS3Publish implements PublisherBase {
           Bucket: this.bucketName,
           Key: `${entityRootDir}/index.html`,
         })
-        .promise()
         .then(() => {
           resolve(true);
         })
