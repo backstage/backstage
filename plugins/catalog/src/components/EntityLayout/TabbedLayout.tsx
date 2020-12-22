@@ -34,7 +34,7 @@ export function useSelectedSubRoute(
 
   const [matchedRoute] = matchRoutes(routes, `/${params['*']}`) ?? [];
   const foundIndex = matchedRoute
-    ? subRoutes.findIndex(t => t.path === matchedRoute.route.path)
+    ? subRoutes.findIndex(t => `${t.path}/*` === matchedRoute.route.path)
     : 0;
 
   return {
