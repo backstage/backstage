@@ -2,4 +2,4 @@
 '@backstage/core-api': patch
 ---
 
-Remove race condition in loginPopup
+Delay auth loginPopup close to avoid race condition with callers of authFlowHelpers.

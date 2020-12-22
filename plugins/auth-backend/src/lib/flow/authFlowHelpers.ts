@@ -56,7 +56,9 @@ export const postMessageResponse = (
     var originInfo = {'type': 'config_info', 'targetOrigin': origin};
     (window.opener || window.parent).postMessage(originInfo, '*');
     (window.opener || window.parent).postMessage(JSON.parse(authResponse), origin);
-    window.close();
+    setTimeout(() => {
+      window.close();
+    }, 100 * 2); // double the interval of the core-api lib/loginPopup.ts
   `;
   const hash = crypto.createHash('sha256').update(script).digest('base64');
 
