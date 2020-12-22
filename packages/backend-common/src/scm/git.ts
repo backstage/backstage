@@ -114,7 +114,7 @@ class SCM {
     this.config.logger?.info(
       `Pushing directory to remote {dir=${dir},remoteName=${remoteName}}`,
     );
-    git.push({
+    return git.push({
       fs,
       dir,
       http,

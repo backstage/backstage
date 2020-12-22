@@ -35,6 +35,7 @@ export class GithubPreparer implements PreparerBase {
   ): Promise<string> {
     const { protocol, location } = parseLocationAnnotation(template);
     const workingDirectory = opts?.workingDirectory ?? os.tmpdir();
+    const { logger } = opts;
 
     if (!['github', 'url'].includes(protocol)) {
       throw new InputError(
@@ -56,11 +57,13 @@ export class GithubPreparer implements PreparerBase {
 
     const checkoutLocation = path.resolve(tempDir, templateDirectory);
 
-    const git = Git.fromAuth({
-      username: this.token,
-      password: 'x-oauth-basic',
-      logger: opts.logger,
-    });
+    const git = this.token
+      ? Git.fromAuth({
+          username: this.token,
+          password: 'x-oauth-basic',
+          logger,
+        })
+      : Git.fromAuth({ logger });
 
     await git.clone({
       url: repositoryCheckoutUrl,
