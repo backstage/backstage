@@ -57,7 +57,7 @@ export class AzurePreparer implements PreparerBase {
       template.spec.path ?? '.',
     );
 
-    // Username can anything but the empty string according to:
+    // Username can be anything but the empty string according to:
     // https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=preview-page#use-a-pat
     const git = this.privateToken
       ? Git.fromAuth({

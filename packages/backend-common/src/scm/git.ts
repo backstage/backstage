@@ -37,6 +37,45 @@ class SCM {
     },
   ) {}
 
+  async add({ dir, filepath }: { dir: string; filepath: string }) {
+    this.config.logger?.info(`Adding file {dir=${dir},filepath=${filepath}}`);
+
+    return git.add({ fs, dir, filepath });
+  }
+
+  async addRemote({
+    dir,
+    url,
+    remoteName,
+  }: {
+    dir: string;
+    remoteName: string;
+    url: string;
+  }) {
+    this.config.logger?.info(
+      `Creating new remote {dir=${dir},remoteName=${remoteName},url=${url}}`,
+    );
+    return git.addRemote({ fs, dir, remote: remoteName, url });
+  }
+
+  async commit({
+    dir,
+    message,
+    author,
+    committer,
+  }: {
+    dir: string;
+    message: string;
+    author: { name: string; email: string };
+    committer: { name: string; email: string };
+  }) {
+    this.config.logger?.info(
+      `Committing file to repo {dir=${dir},message=${message}}`,
+    );
+
+    return git.commit({ fs, dir, message, author, committer });
+  }
+
   async clone({ url, dir }: { url: string; dir: string }) {
     this.config.logger?.info(`Cloning repo {dir=${dir},url=${url}}`);
     return git.clone({
@@ -62,6 +101,39 @@ class SCM {
     });
   }
 
+  // https://isomorphic-git.org/docs/en/currentBranch
+  async currentBranch({ dir, fullName }: { dir: string; fullName?: boolean }) {
+    const fullname = fullName ?? false;
+    return git.currentBranch({ fs, dir, fullname });
+  }
+
+  // https://isomorphic-git.org/docs/en/fetch
+  async fetch({ dir, remote }: { dir: string; remote?: string }) {
+    const remoteValue = remote ?? 'origin';
+    this.config.logger?.info(
+      `Fetching remote=${remoteValue} for repository {dir=${dir}}`,
+    );
+    return git.fetch({
+      fs,
+      http,
+      dir,
+      remote: remoteValue,
+      onProgress: event => {
+        const total = event.total
+          ? `${Math.round((event.loaded / event.total) * 100)}%`
+          : event.loaded;
+        this.config.logger?.info(`status={${event.phase},total={${total}}}`);
+      },
+      headers: {
+        'user-agent': 'git/@isomorphic-git',
+      },
+      onAuth: () => ({
+        username: this.config.username,
+        password: this.config.password,
+      }),
+    });
+  }
+
   async init({ dir }: { dir: string }) {
     this.config.logger?.info(`Init git repository {dir=${dir}}`);
 
@@ -71,43 +143,21 @@ class SCM {
     });
   }
 
-  async add({ dir, filepath }: { dir: string; filepath: string }) {
-    this.config.logger?.info(`Adding file {dir=${dir},filepath=${filepath}}`);
-
-    return git.add({ fs, dir, filepath });
-  }
-
-  async commit({
+  // https://isomorphic-git.org/docs/en/merge
+  async merge({
     dir,
-    message,
-    author,
-    committer,
+    headBranch,
+    baseBranch,
   }: {
     dir: string;
-    message: string;
-    author: { name: string; email: string };
-    committer: { name: string; email: string };
+    headBranch: string;
+    baseBranch?: string;
   }) {
     this.config.logger?.info(
-      `Committing file to repo {dir=${dir},message=${message}}`,
+      `Merging branch '${headBranch}' into '${baseBranch}' for repository {dir=${dir}}`,
     );
-
-    return git.commit({ fs, dir, message, author, committer });
-  }
-
-  async addRemote({
-    dir,
-    url,
-    remoteName,
-  }: {
-    dir: string;
-    remoteName: string;
-    url: string;
-  }) {
-    this.config.logger?.info(
-      `Creating new remote {dir=${dir},remoteName=${remoteName},url=${url}}`,
-    );
-    return git.addRemote({ fs, dir, remote: remoteName, url });
+    // If baseBranch is undefined, current branch is used.
+    return git.merge({ fs, dir, ours: baseBranch, theirs: headBranch });
   }
 
   async push({ dir, remoteName }: { dir: string; remoteName: string }) {
@@ -133,6 +183,16 @@ class SCM {
         password: this.config.password,
       }),
     });
+  }
+
+  // https://isomorphic-git.org/docs/en/readCommit
+  async readCommit({ dir, sha }: { dir: string; sha: string }) {
+    return git.readCommit({ fs, dir, oid: sha });
+  }
+
+  // https://isomorphic-git.org/docs/en/resolveRef
+  async resolveRef({ dir, ref }: { dir: string; ref: string }) {
+    return git.resolveRef({ fs, dir, ref });
   }
 }
 
