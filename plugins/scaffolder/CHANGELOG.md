@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder
 
+## 0.3.5
+
+### Patch Changes
+
+- 19554f6d6: Added Github Actions for Create React App, and allow better imports of files inside a module when they're exposed using `files` in `package.json`
+- Updated dependencies [1dc445e89]
+- Updated dependencies [342270e4d]
+  - @backstage/core@0.4.2
+  - @backstage/plugin-catalog@0.2.8
+
 ## 0.3.4
 
 ### Patch Changes

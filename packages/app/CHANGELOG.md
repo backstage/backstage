@@ -1,5 +1,23 @@
 # example-app
 
+## 0.2.8
+
+### Patch Changes
+
+- Updated dependencies [19554f6d6]
+- Updated dependencies [1dc445e89]
+- Updated dependencies [342270e4d]
+- Updated dependencies [7d72f9b09]
+  - @backstage/cli@0.4.3
+  - @backstage/plugin-github-actions@0.2.6
+  - @backstage/plugin-scaffolder@0.3.5
+  - @backstage/core@0.4.2
+  - @backstage/test-utils@0.1.6
+  - @backstage/plugin-graphiql@0.2.3
+  - @backstage/plugin-catalog@0.2.8
+  - @backstage/plugin-pagerduty@0.2.4
+  - @backstage/plugin-techdocs@0.5.1
+
 ## 0.2.7
 
 ### Patch Changes

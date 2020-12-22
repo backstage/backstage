@@ -1,5 +1,12 @@
 # @backstage/cli
 
+## 0.4.3
+
+### Patch Changes
+
+- 19554f6d6: Added Github Actions for Create React App, and allow better imports of files inside a module when they're exposed using `files` in `package.json`
+- 7d72f9b09: Fix for `app.listen.host` configuration not properly overriding listening host.
+
 ## 0.4.2
 
 ### Patch Changes
