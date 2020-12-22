@@ -83,7 +83,7 @@ describe('Publisher', () => {
     expect(publisher).toBeInstanceOf(GoogleGCSPublish);
   });
 
-  it('should create AWS S3 publisher from config', () => {
+  it('should create AWS S3 publisher from config', async () => {
     const mockConfig = new ConfigReader({
       techdocs: {
         requestUrl: 'http://localhost:7000',
@@ -100,7 +100,10 @@ describe('Publisher', () => {
       },
     });
 
-    const publisher = Publisher.fromConfig(mockConfig, logger, testDiscovery);
+    const publisher = await Publisher.fromConfig(mockConfig, {
+      logger,
+      discovery,
+    });
     expect(publisher).toBeInstanceOf(AwsS3Publish);
   });
 });
