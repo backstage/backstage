@@ -45,7 +45,7 @@ const [TAG_NAME, GITHUB_TOKEN, BOOL_CREATE_RELEASE] = process.argv.slice(2);
 
 if (!BOOL_CREATE_RELEASE) {
   console.log(
-    '\nRunning script in Dry Run mode. It will output details, wil create a draft release but will NOT publish it.',
+    '\nRunning script in Dry Run mode. It will output details, will create a draft release but will NOT publish it.',
   );
 }
 
