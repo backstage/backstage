@@ -24,16 +24,18 @@
  *
  * Example:
  *
+ * Set GITHUB_TOKEN environment variable.
+ *
  * (Dry Run mode, will create a DRAFT release, but will not publish it.)
  * (Draft releases are visible to maintainers and do not notify users.)
- * $ node scripts/get-release-description v0.4.1 <GITHUB_TOKEN>
+ * $ node scripts/get-release-description v0.4.1
  *
  * This will open the git tree at this tag https://github.com/backstage/backstage/tree/v0.4.1
  * It will identify https://github.com/backstage/backstage/pull/3668 as the responsible changeset PR.
  * And will use everything in the PR description under "Releases" section.
  *
  * (Production or GitHub Actions Mode)
- * $ node scripts/get-release-description v0.4.1 <GITHUB_TOKEN> 1
+ * $ node scripts/get-release-description v0.4.1 true
  *
  * This will do the same steps as above, and will publish the Release with the description.
  */
@@ -41,7 +43,7 @@
 const { Octokit } = require('@octokit/rest');
 
 // See Examples above to learn about these command line arguments.
-const [TAG_NAME, GITHUB_TOKEN, BOOL_CREATE_RELEASE] = process.argv.slice(2);
+const [TAG_NAME, BOOL_CREATE_RELEASE] = process.argv.slice(2);
 
 if (!BOOL_CREATE_RELEASE) {
   console.log(
@@ -55,7 +57,7 @@ const EXPECTED_COMMIT_MESSAGE = /^Merge pull request #(?<prNumber>[0-9]+) from b
 
 // Initialize a GitHub client
 const octokit = new Octokit({
-  auth: GITHUB_TOKEN,
+  auth: process.env.GITHUB_TOKEN,
 });
 
 // Get the message of the commit responsible for a tag

@@ -31,4 +31,6 @@ jobs:
       # TODO/Note: This will only create a Draft release, which the maintainer can see and publish.
       # If the Draft release looks good, modify the step to go ahead publish the release. (By adding the third CLI argument.)
       - name: Create release on GitHub
-        run: node scripts/create-github-release.js ${{ steps.get_version.outputs.TAG_NAME }} ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+        run: node scripts/create-github-release.js ${{ steps.get_version.outputs.TAG_NAME }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
