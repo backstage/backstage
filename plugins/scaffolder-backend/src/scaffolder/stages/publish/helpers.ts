@@ -14,44 +14,42 @@
  * limitations under the License.
  */
 
-import git from 'isomorphic-git';
 import globby from 'globby';
-import fs from 'fs';
-import http from 'isomorphic-git/http/node';
 import { Logger } from 'winston';
-/*
-username	password
-GitHub	| token	'x-oauth-basic'
-GitHub App |	token	'x-access-token'
-BitBucket	| 'x-token-auth'	token
-GitLab	| 'oauth2'	token
-From : https://isomorphic-git.org/docs/en/onAuth
-*/
-export async function push(
-  dir: string,
-  remote: string,
-  logger: Logger,
-  auth: { username: string; password: string },
-): Promise<void> {
-  logger.info('Initializing Git Repo', dir);
+import { Git } from '@backstage/backend-common';
+
+export async function initRepoAndPush({
+  dir,
+  remoteUrl,
+  auth,
+  logger,
+}: {
+  dir: string;
+  remoteUrl: string;
+  auth: { username: string; password: string };
+  logger: Logger;
+}): Promise<void> {
+  const git = Git.fromAuth({
+    username: auth.username,
+    password: auth.password,
+    logger,
+  });
+
   await git.init({
-    fs,
     dir,
   });
 
   const paths = await globby(['./**', './**/.*'], {
     cwd: dir,
     gitignore: true,
+    dot: true,
   });
 
-  logger.info('Adding files to repository', dir);
   for (const filepath of paths) {
-    await git.add({ fs, dir, filepath });
+    await git.add({ dir, filepath });
   }
 
-  logger.info('Creating commit', dir);
   await git.commit({
-    fs,
     dir,
     message: 'Initial commit',
     author: { name: 'Scaffolder', email: 'scaffolder@backstage.io' },
@@ -59,27 +57,13 @@ export async function push(
   });
 
   await git.addRemote({
-    fs,
     dir,
-    remote: 'origin',
-    url: remote,
+    url: remoteUrl,
+    remoteName: 'origin',
   });
 
-  logger.info('Pushing code to remote', remote);
   await git.push({
-    fs,
     dir,
-    http,
-    headers: {
-      'user-agent': 'git/@isomorphic-git',
-    },
-    onProgress: event => {
-      const total = event.total
-        ? `${Math.round((event.loaded / event.total) * 100)}%`
-        : event.loaded;
-      logger.info(`status={${event.phase},total={${total}}}`);
-    },
-    remote: 'origin',
-    onAuth: () => auth,
+    remoteName: 'origin',
   });
 }

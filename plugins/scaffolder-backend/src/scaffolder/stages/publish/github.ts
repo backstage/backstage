@@ -16,10 +16,9 @@
 
 import { PublisherBase, PublisherOptions, PublisherResult } from './types';
 import { Octokit } from '@octokit/rest';
-import { Git } from '@backstage/backend-common';
+import { initRepoAndPush } from './helpers';
 import { JsonValue } from '@backstage/config';
 import { RequiredTemplateValues } from '../templater';
-import globby from 'globby';
 
 export type RepoVisibilityOptions = 'private' | 'internal' | 'public';
 
@@ -50,42 +49,15 @@ export class GithubPublisher implements PublisherBase {
     logger,
   }: PublisherOptions): Promise<PublisherResult> {
     const remoteUrl = await this.createRemote(values);
-    const git = Git.fromAuth({
-      username: this.token,
-      password: 'x-oauth-basic',
+
+    await initRepoAndPush({
+      dir: directory,
+      remoteUrl,
+      auth: {
+        username: this.token,
+        password: 'x-oauth-basic',
+      },
       logger,
-    });
-
-    await git.init({
-      dir: directory,
-    });
-
-    const paths = await globby(['./**', './**/.*'], {
-      cwd: directory,
-      gitignore: true,
-      dot: true,
-    });
-
-    for (const filepath of paths) {
-      await git.add({ dir: directory, filepath });
-    }
-
-    await git.commit({
-      dir: directory,
-      message: 'Initial commit',
-      author: { name: 'Scaffolder', email: 'scaffolder@backstage.io' },
-      committer: { name: 'Scaffolder', email: 'scaffolder@backstage.io' },
-    });
-
-    await git.addRemote({
-      dir: directory,
-      url: remoteUrl,
-      remoteName: 'origin',
-    });
-
-    await git.push({
-      dir: directory,
-      remoteName: 'origin',
     });
 
     const catalogInfoUrl = remoteUrl.replace(

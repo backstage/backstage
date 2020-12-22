@@ -16,10 +16,10 @@
 
 import { PublisherBase, PublisherOptions, PublisherResult } from './types';
 import { GitApi } from 'azure-devops-node-api/GitApi';
-import { Git } from '@backstage/backend-common';
 import { GitRepositoryCreateOptions } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import { JsonValue } from '@backstage/config';
 import { RequiredTemplateValues } from '../templater';
+import { initRepoAndPush } from './helpers';
 
 export class AzurePublisher implements PublisherBase {
   private readonly client: GitApi;
@@ -38,21 +38,14 @@ export class AzurePublisher implements PublisherBase {
     const remoteUrl = await this.createRemote(values);
     const catalogInfoUrl = `${remoteUrl}?path=%2Fcatalog-info.yaml`;
 
-    const git = Git.fromAuth({
-      username: 'notempty',
-      password: this.token,
+    await initRepoAndPush({
+      dir: directory,
+      remoteUrl,
+      auth: {
+        username: 'notempty',
+        password: this.token,
+      },
       logger,
-    });
-
-    await git.addRemote({
-      dir: directory,
-      url: remoteUrl,
-      remoteName: 'origin',
-    });
-
-    await git.push({
-      dir: directory,
-      remoteName: 'origin',
     });
 
     return { remoteUrl, catalogInfoUrl };
