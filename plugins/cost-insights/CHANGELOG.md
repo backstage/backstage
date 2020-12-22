@@ -1,5 +1,11 @@
 # @backstage/plugin-cost-insights
 
+## 0.5.3
+
+### Patch Changes
+
+- c02defd57: Make alert url field optional
+
 ## 0.5.2
 
 ### Patch Changes
