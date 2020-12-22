@@ -1,5 +1,14 @@
 # @backstage/test-utils
 
+## 0.1.6
+
+### Patch Changes
+
+- 1dc445e89: Update to use new plugin extension API
+- Updated dependencies [d681db2b5]
+- Updated dependencies [1dc445e89]
+  - @backstage/core-api@0.2.7
+
 ## 0.1.5
 
 ### Patch Changes

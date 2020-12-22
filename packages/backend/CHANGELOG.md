@@ -1,5 +1,22 @@
 # example-backend
 
+## 0.2.8
+
+### Patch Changes
+
+- 7cfcd58ee: use node 14 for backend Dockerfile
+- Updated dependencies [19554f6d6]
+- Updated dependencies [33a82a713]
+- Updated dependencies [5de26b9a6]
+- Updated dependencies [30d6c78fb]
+- Updated dependencies [5084e5039]
+- Updated dependencies [a8573e53b]
+- Updated dependencies [aed8f7f12]
+  - @backstage/plugin-scaffolder-backend@0.3.6
+  - @backstage/plugin-catalog-backend@0.5.1
+  - @backstage/plugin-techdocs-backend@0.5.0
+  - example-app@0.2.8
+
 ## 0.2.7
 
 ### Patch Changes

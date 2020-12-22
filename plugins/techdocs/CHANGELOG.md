@@ -1,5 +1,20 @@
 # @backstage/plugin-techdocs
 
+## 0.5.1
+
+### Patch Changes
+
+- Updated dependencies [d681db2b5]
+- Updated dependencies [1dc445e89]
+- Updated dependencies [342270e4d]
+- Updated dependencies [1dc445e89]
+- Updated dependencies [a8573e53b]
+  - @backstage/core-api@0.2.7
+  - @backstage/core@0.4.2
+  - @backstage/test-utils@0.1.6
+  - @backstage/plugin-catalog@0.2.8
+  - @backstage/techdocs-common@0.3.0
+
 ## 0.5.0
 
 ### Minor Changes
