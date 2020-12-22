@@ -168,6 +168,11 @@ export const checkoutGitRepository = async (
         dir: repositoryTmpPath,
         headBranch: `origin/${currentBranchName}`,
         baseBranch: currentBranchName || undefined,
+        author: { name: 'Backstage TechDocs', email: 'techdocs@backstage.io' },
+        committer: {
+          name: 'Backstage TechDocs',
+          email: 'techdocs@backstage.io',
+        },
       });
       return repositoryTmpPath;
     } catch (e) {

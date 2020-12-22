@@ -148,16 +148,27 @@ class SCM {
     dir,
     headBranch,
     baseBranch,
+    author,
+    committer,
   }: {
     dir: string;
     headBranch: string;
     baseBranch?: string;
+    author: { name: string; email: string };
+    committer: { name: string; email: string };
   }) {
     this.config.logger?.info(
       `Merging branch '${headBranch}' into '${baseBranch}' for repository {dir=${dir}}`,
     );
     // If baseBranch is undefined, current branch is used.
-    return git.merge({ fs, dir, ours: baseBranch, theirs: headBranch });
+    return git.merge({
+      fs,
+      dir,
+      ours: baseBranch,
+      theirs: headBranch,
+      author,
+      committer,
+    });
   }
 
   async push({ dir, remoteName }: { dir: string; remoteName: string }) {
