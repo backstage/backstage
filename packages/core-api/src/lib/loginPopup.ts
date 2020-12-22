@@ -79,8 +79,6 @@ export function showLoginPopup(options: LoginPopupOptions): Promise<any> {
       `menubar=no,location=no,resizable=no,scrollbars=no,status=no,width=${width},height=${height},top=${top},left=${left}`,
     );
 
-    let targetOrigin = '';
-
     if (!popup || typeof popup.closed === 'undefined' || popup.closed) {
       reject(new Error('Failed to open auth popup.'));
       return;
@@ -96,7 +94,6 @@ export function showLoginPopup(options: LoginPopupOptions): Promise<any> {
       const { data } = event;
 
       if (data.type === 'config_info') {
-        targetOrigin = data.targetOrigin;
         return;
       }
 
@@ -117,23 +114,8 @@ export function showLoginPopup(options: LoginPopupOptions): Promise<any> {
       done();
     };
 
-    const intervalId = setInterval(() => {
-      if (popup.closed) {
-        const errMessage = `Login failed, ${
-          targetOrigin !== window.location.origin
-            ? `Incorrect app origin, expected ${targetOrigin}`
-            : 'popup was closed'
-        }`;
-        const error = new Error(errMessage);
-        error.name = 'PopupClosedError';
-        reject(error);
-        done();
-      }
-    }, 100);
-
     function done() {
       window.removeEventListener('message', messageListener);
-      clearInterval(intervalId);
     }
 
     window.addEventListener('message', messageListener);
