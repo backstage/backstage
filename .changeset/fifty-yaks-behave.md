@@ -1,5 +1,4 @@
 ---
-'example-app': patch
 '@backstage/techdocs-common': patch
 ---
 
