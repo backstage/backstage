@@ -44,6 +44,7 @@ type PrivateInfo = {
 export type OAuth2AuthProviderOptions = OAuthProviderOptions & {
   authorizationUrl: string;
   tokenUrl: string;
+  pkce?: boolean;
 };
 
 export class OAuth2AuthProvider implements OAuthHandlers {
@@ -58,6 +59,8 @@ export class OAuth2AuthProvider implements OAuthHandlers {
         authorizationURL: options.authorizationUrl,
         tokenURL: options.tokenUrl,
         passReqToCallback: false as true,
+        pkce: options.pkce,
+        state: options.pkce, // needed for pkce; enable session with app-config.yaml auth.session.secret
       },
       (
         accessToken: any,
@@ -168,6 +171,7 @@ export const createOAuth2Provider: AuthProviderFactory = ({
     const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
     const authorizationUrl = envConfig.getString('authorizationUrl');
     const tokenUrl = envConfig.getString('tokenUrl');
+    const pkce = envConfig.getOptionalBoolean('pkce');
 
     const provider = new OAuth2AuthProvider({
       clientId,
@@ -175,6 +179,7 @@ export const createOAuth2Provider: AuthProviderFactory = ({
       callbackUrl,
       authorizationUrl,
       tokenUrl,
+      pkce,
     });
 
     return OAuthAdapter.fromConfig(globalConfig, provider, {
