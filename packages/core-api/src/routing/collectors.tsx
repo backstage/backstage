@@ -111,9 +111,10 @@ export const routeParentCollector = createCollector(
 
 export const routeObjectCollector = createCollector(
   () => Array<BackstageRouteObject>(),
-  (acc, node, parent, parentChildArr: BackstageRouteObject[] = acc) => {
+  (acc, node, parent, parentObj: BackstageRouteObject | undefined) => {
+    const parentChildren = parentObj?.children ?? acc;
     if (parent?.props.element === node) {
-      return parentChildArr;
+      return parentObj;
     }
 
     const path: string | undefined = node.props?.path;
@@ -121,20 +122,40 @@ export const routeObjectCollector = createCollector(
 
     const routeRef = getMountPoint(node);
     if (routeRef) {
-      const children: BackstageRouteObject[] = [];
-      if (!path) {
-        throw new Error(`No path found for mount point ${routeRef}`);
+      if (path) {
+        const newObject: BackstageRouteObject = {
+          caseSensitive,
+          path,
+          element: null,
+          routeRefs: new Set([routeRef]),
+          children: [],
+        };
+        parentChildren.push(newObject);
+        return newObject;
       }
-      parentChildArr.push({
+
+      parentObj?.routeRefs.add(routeRef);
+    }
+
+    const isGatherer = getComponentData<boolean>(
+      node,
+      'core.gatherMountPoints',
+    );
+    if (isGatherer) {
+      if (!path) {
+        throw new Error('Mount point gatherer must have a path');
+      }
+      const newObject: BackstageRouteObject = {
         caseSensitive,
         path,
         element: null,
-        routeRef,
-        children,
-      });
-      return children;
+        routeRefs: new Set(),
+        children: [],
+      };
+      parentChildren.push(newObject);
+      return newObject;
     }
 
-    return parentChildArr;
+    return parentObj;
   },
 );
