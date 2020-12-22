@@ -100,7 +100,7 @@ describe('Publisher', () => {
       },
     });
 
-    const publisher = Publisher.fromConfig(mockConfig, logger, testDiscovery);
+    const publisher = Publisher.fromConfig(mockConfig, { logger, discovery });
     expect(publisher).toBeInstanceOf(AwsS3Publish);
   });
 });
