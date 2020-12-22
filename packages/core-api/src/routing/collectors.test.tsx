@@ -15,7 +15,11 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import { routePathCollector, routeParentCollector } from './collectors';
+import {
+  routePathCollector,
+  routeParentCollector,
+  routeObjectCollector,
+} from './collectors';
 
 import {
   traverseElementTree,
@@ -86,6 +90,16 @@ function sortedEntries<T>(map: Map<RouteRef, T>): [RouteRef, T][] {
   );
 }
 
+function routeObj(path: string, refs: RouteRef[], children: any[] = []) {
+  return {
+    path: path,
+    caseSensitive: false,
+    element: null,
+    routeRefs: new Set(refs),
+    children: children,
+  };
+}
+
 describe('discovery', () => {
   it('should collect routes', () => {
     const list = [
@@ -124,12 +138,13 @@ describe('discovery', () => {
       </MemoryRouter>
     );
 
-    const { routes, routeParents } = traverseElementTree({
+    const { routes, routeParents, routeObjects } = traverseElementTree({
       root,
       discoverers: [childDiscoverer, routeElementDiscoverer],
       collectors: {
         routes: routePathCollector,
         routeParents: routeParentCollector,
+        routeObjects: routeObjectCollector,
       },
     });
     expect(sortedEntries(routes)).toEqual([
@@ -145,6 +160,17 @@ describe('discovery', () => {
       [ref3, ref2],
       [ref4, undefined],
       [ref5, ref1],
+    ]);
+    expect(routeObjects).toEqual([
+      routeObj(
+        '/foo',
+        [ref1],
+        [
+          routeObj('/bar/:id', [ref2], [routeObj('/baz', [ref3])]),
+          routeObj('/blop', [ref5]),
+        ],
+      ),
+      routeObj('/divsoup', [ref4]),
     ]);
   });
 
@@ -216,12 +242,13 @@ describe('discovery', () => {
       </MemoryRouter>
     );
 
-    const { routes, routeParents } = traverseElementTree({
+    const { routes, routeParents, routeObjects } = traverseElementTree({
       root,
       discoverers: [childDiscoverer, routeElementDiscoverer],
       collectors: {
         routes: routePathCollector,
         routeParents: routeParentCollector,
+        routeObjects: routeObjectCollector,
       },
     });
     expect(sortedEntries(routes)).toEqual([
@@ -237,6 +264,10 @@ describe('discovery', () => {
       [ref3, undefined],
       [ref4, ref3],
       [ref5, ref3],
+    ]);
+    expect(routeObjects).toEqual([
+      routeObj('/foo', [ref1, ref2]),
+      routeObj('/bar', [ref3], [routeObj('/baz', [ref4, ref5])]),
     ]);
   });
 
@@ -258,12 +289,13 @@ describe('discovery', () => {
       </MemoryRouter>
     );
 
-    const { routes, routeParents } = traverseElementTree({
+    const { routes, routeParents, routeObjects } = traverseElementTree({
       root,
       discoverers: [childDiscoverer, routeElementDiscoverer],
       collectors: {
         routes: routePathCollector,
         routeParents: routeParentCollector,
+        routeObjects: routeObjectCollector,
       },
     });
     expect(sortedEntries(routes)).toEqual([
@@ -279,6 +311,19 @@ describe('discovery', () => {
       [ref3, ref1],
       [ref4, ref3],
       [ref5, ref1],
+    ]);
+    expect(routeObjects).toEqual([
+      routeObj(
+        '/foo',
+        [ref1],
+        [
+          routeObj(
+            '/bar',
+            [ref2, ref5],
+            [routeObj('/baz', [ref3], [routeObj('/blop', [ref4])])],
+          ),
+        ],
+      ),
     ]);
   });
 

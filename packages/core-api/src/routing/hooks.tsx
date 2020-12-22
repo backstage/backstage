@@ -60,8 +60,8 @@ class RouteResolver {
       currentRouteRef;
       currentRouteRef = this.routeParents.get(currentRouteRef)
     ) {
-      matchIndex = match.findIndex(
-        m => (m.route as BackstageRouteObject).routeRef === currentRouteRef,
+      matchIndex = match.findIndex(m =>
+        (m.route as BackstageRouteObject).routeRefs.has(currentRouteRef!),
       );
       if (matchIndex !== -1) {
         break;
