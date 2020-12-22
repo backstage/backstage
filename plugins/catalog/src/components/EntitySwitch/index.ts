@@ -15,3 +15,4 @@
  */
 
 export { EntitySwitch } from './EntitySwitch';
+export { isKind, isNamespace, isComponentType } from './conditions';
