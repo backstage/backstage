@@ -103,6 +103,17 @@ export AUTH_AUTH0_CLIENT_ID=x
 export AUTH_AUTH0_CLIENT_SECRET=x
 ```
 
+### OAuth2
+
+PKCE can be enabled by setting `pkce: true` and providing a value for `auth.session.secret` in `app-config.yaml`.
+
+```bash
+export AUTH_OAUTH2_CLIENT_ID=x
+export AUTH_OAUTH2_CLIENT_SECRET=x
+export AUTH_OAUTH2_AUTH_URL=x
+export AUTH_OAUTH2_TOKEN_URL=x
+```
+
 ### Microsoft
 
 #### Creating an Azure AD App Registration
