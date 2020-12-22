@@ -37,7 +37,7 @@ export const ApiExplorerPage = () => {
             variant="contained"
             color="primary"
             component={RouterLink}
-            to="/register-component"
+            to="/catalog-import"
           >
             Register Existing API
           </Button>
