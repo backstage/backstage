@@ -112,10 +112,10 @@ const headerProps = (
 };
 
 /**
- * EntityLayout is a compound component, which allows you to define a layout
+ * EntityLayout is a compound component, which allows you to define a layout for
  * entities using a sub-navigation mechanism.
  *
- * Consists of 2 parts: EntityLayout and EntityLayout.Route
+ * Consists of two parts: EntityLayout and EntityLayout.Route
  *
  * @example
  * ```jsx
