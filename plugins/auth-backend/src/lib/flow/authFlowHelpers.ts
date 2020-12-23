@@ -58,7 +58,7 @@ export const postMessageResponse = (
     (window.opener || window.parent).postMessage(JSON.parse(authResponse), origin);
     setTimeout(() => {
       window.close();
-    }, 100 * 2); // double the interval of the core-api lib/loginPopup.ts
+    }, 100); // same as the interval of the core-api lib/loginPopup.ts (to address race conditions)
   `;
   const hash = crypto.createHash('sha256').update(script).digest('base64');
 
