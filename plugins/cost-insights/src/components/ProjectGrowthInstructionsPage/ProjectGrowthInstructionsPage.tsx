@@ -101,7 +101,7 @@ export const ProjectGrowthInstructionsPage = () => {
       <Typography variant="h1">Investigating cloud cost growth</Typography>
       <Typography paragraph>
         Cost Insights shows an alert when costs for a particular billing entity,
-        such as a GCP project, has grown at a rate faster than our alerting
+        such as a GCP project, have grown at a rate faster than our alerting
         threshold. The responsible team should follow this guide to decide
         whether this warrants further investigation.
       </Typography>
