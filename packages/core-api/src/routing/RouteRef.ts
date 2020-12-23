@@ -44,13 +44,7 @@ export function createRouteRef<
   return new AbsoluteRouteRef<Params>(config);
 }
 
-const create = Symbol('create-external-route-ref');
-
 export class ExternalRouteRef {
-  static [create]() {
-    return new ExternalRouteRef();
-  }
-
   private constructor() {}
 
   toString() {
@@ -59,5 +53,5 @@ export class ExternalRouteRef {
 }
 
 export function createExternalRouteRef(): ExternalRouteRef {
-  return ExternalRouteRef[create]();
+  return new ((ExternalRouteRef as unknown) as { new (): ExternalRouteRef })();
 }
