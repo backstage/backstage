@@ -28,7 +28,7 @@ const Background = props => {
             <Block.Paragraph>
               Watch the videos below to get an introduction to Backstage and 
               to see how we use different plugins to customize {' '}
-              <a href="https://labs.spotify.com/2020/04/21/how-we-use-backstage-at-spotify/">
+              <a href="https://engineering.atspotify.com/2020/04/21/how-we-use-backstage-at-spotify/">
               our internal version of Backstage at Spotify
               </a>
               .
