@@ -14,5 +14,18 @@
  * limitations under the License.
  */
 
-export * from './components';
-export * from './devApp';
+import React from 'react';
+import { Grid, GridProps } from '@material-ui/core';
+import { Entity } from '@backstage/catalog-model';
+import { EntityProvider } from '@backstage/plugin-catalog';
+
+export const EntityGridItem = ({
+  entity,
+  ...rest
+}: Omit<GridProps, 'item' | 'container'> & { entity: Entity }): JSX.Element => {
+  return (
+    <EntityProvider entity={entity}>
+      <Grid {...rest} item />
+    </EntityProvider>
+  );
+};
