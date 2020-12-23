@@ -101,7 +101,7 @@ export const ProjectGrowthInstructionsPage = () => {
       <Typography variant="h1">Investigating cloud cost growth</Typography>
       <Typography paragraph>
         Cost Insights shows an alert when costs for a particular billing entity,
-        such as a GCP project, have grown at a rate faster than our alerting
+        such as a GCP project, has grown at a rate faster than our alerting
         threshold. The responsible team should follow this guide to decide
         whether this warrants further investigation.
       </Typography>
@@ -135,7 +135,7 @@ export const ProjectGrowthInstructionsPage = () => {
         <Typography paragraph>
           Next, evaluate whether the growth is significant. This helps avoid
           premature optimization, where cost in engineering time is more than
-          would be saved from the optimization over a reasonable timeframe.
+          would be saved from the optimization over a reasonable time frame.
         </Typography>
         <Typography paragraph>
           We recommend reframing the cost growth itself in terms of engineering
@@ -205,7 +205,7 @@ export const ProjectGrowthInstructionsPage = () => {
           Is the workload using cloud resources efficiently? For compute
           resources, do the utilization metrics look reasonable? Autoscaling
           infrastructure, such as Kubernetes, can run workloads more efficiently
-          without comprimising reliability.
+          without compromising reliability.
         </Typography>
         <Typography variant="h5">Lifecycle</Typography>
         <Typography paragraph>
