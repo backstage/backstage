@@ -23,7 +23,7 @@ import { entityRoute, rootRoute } from '../routes';
 import { CatalogPage } from './CatalogPage';
 import { EntityNotFound } from './EntityNotFound';
 import { EntityPageLayout } from './EntityPageLayout';
-import { EntityProvider } from './EntityProvider';
+import { EntityLoaderProvider } from './EntityLoaderProvider';
 
 const DefaultEntityPage = () => (
   <EntityPageLayout>
@@ -79,9 +79,9 @@ export const Router = ({
     <Route
       path={`${entityRoute.path}`}
       element={
-        <EntityProvider>
+        <EntityLoaderProvider>
           <EntityPageSwitch EntityPage={EntityPage} />
-        </EntityProvider>
+        </EntityLoaderProvider>
       }
     />
     <Route
