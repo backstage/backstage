@@ -1,5 +1,14 @@
 # @backstage/core-api
 
+## 0.2.7
+
+### Patch Changes
+
+- d681db2b5: Fix for GitHub and SAML auth not properly updating session state when already logged in.
+- 1dc445e89: Introduce new plugin extension API
+- Updated dependencies [1dc445e89]
+  - @backstage/test-utils@0.1.6
+
 ## 0.2.6
 
 ### Patch Changes

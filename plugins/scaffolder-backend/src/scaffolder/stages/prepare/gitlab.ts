@@ -13,24 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import os from 'os';
-import fs from 'fs-extra';
-import path from 'path';
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { parseLocationAnnotation } from '../helpers';
 import { InputError } from '@backstage/backend-common';
-import { PreparerBase, PreparerOptions } from './types';
+import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
+import {
+  GitLabIntegrationConfig,
+  readGitLabIntegrationConfigs,
+} from '@backstage/integration';
+import fs from 'fs-extra';
 import GitUriParser from 'git-url-parse';
 import { Clone, Cred } from 'nodegit';
-import { Config } from '@backstage/config';
+import os from 'os';
+import path from 'path';
+import { parseLocationAnnotation } from '../helpers';
+import { PreparerBase, PreparerOptions } from './types';
 
 export class GitlabPreparer implements PreparerBase {
-  private readonly privateToken: string;
+  private readonly integrations: GitLabIntegrationConfig[];
+  private readonly scaffolderToken: string | undefined;
 
   constructor(config: Config) {
-    this.privateToken =
-      config.getOptionalString('catalog.processors.gitlabApi.privateToken') ??
-      '';
+    this.integrations = readGitLabIntegrationConfigs(
+      config.getOptionalConfigArray('integrations.gitlab') ?? [],
+    );
+    this.scaffolderToken = config.getOptionalString(
+      'scaffolder.gitlab.api.token',
+    );
   }
 
   async prepare(
@@ -58,12 +66,12 @@ export class GitlabPreparer implements PreparerBase {
       template.spec.path ?? '.',
     );
 
-    const options = this.privateToken
+    const token = this.getToken(parsedGitLocation.resource);
+    const options = token
       ? {
           fetchOpts: {
             callbacks: {
-              credentials: () =>
-                Cred.userpassPlaintextNew('oauth2', this.privateToken),
+              credentials: () => Cred.userpassPlaintextNew('oauth2', token),
             },
           },
         }
@@ -72,5 +80,12 @@ export class GitlabPreparer implements PreparerBase {
     await Clone.clone(repositoryCheckoutUrl, tempDir, options);
 
     return path.resolve(tempDir, templateDirectory);
+  }
+
+  private getToken(host: string): string | undefined {
+    return (
+      this.scaffolderToken ||
+      this.integrations.find(c => c.host === host)?.token
+    );
   }
 }

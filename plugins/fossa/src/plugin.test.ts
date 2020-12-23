@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
-export { AboutCard } from './AboutCard';
-// export { SubHeader } from './SubHeader';
-// export { VerticalIcon } from './VerticalIcon';
+import { plugin } from './plugin';
+
+describe('fossa', () => {
+  it('should export plugin', () => {
+    expect(plugin).toBeDefined();
+  });
+});

@@ -15,7 +15,7 @@
  */
 
 import React, { lazy, Suspense } from 'react';
-import { RouteRef } from '../routing';
+import { RouteRef, useRouteRef } from '../routing';
 import { attachComponentData } from './componentData';
 import { Extension, BackstagePlugin } from '../plugin/types';
 
@@ -36,7 +36,23 @@ export function createRoutableExtension<
   const { component, mountPoint } = options;
   return createReactExtension({
     component: {
-      lazy: component,
+      lazy: () =>
+        component().then(InnerComponent => {
+          const RoutableExtensionWrapper = ((props: any) => {
+            // Validate that the routing is wired up correctly in the App.tsx
+            try {
+              useRouteRef(mountPoint);
+            } catch {
+              throw new Error(
+                'Routable extension component was not discovered in the app element tree. ' +
+                  'Routable extension components may not be rendered by other components and must be ' +
+                  'directly available as an element within the App provider component.',
+              );
+            }
+            return <InnerComponent {...props} />;
+          }) as T;
+          return RoutableExtensionWrapper;
+        }),
     },
     data: {
       'core.mountPoint': mountPoint,

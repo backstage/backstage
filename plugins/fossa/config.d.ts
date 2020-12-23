@@ -14,4 +14,12 @@
  * limitations under the License.
  */
 
-export { IconLinkVertical } from './IconLinkVertical';
+export interface Config {
+  fossa?: {
+    /**
+     * The organization id in fossa.
+     * @visibility frontend
+     */
+    organizationId: string;
+  };
+}

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { VerticalIcon } from './VerticalIcon';
-import { SubHeaderLink } from '../types';
+import { IconLinkVertical, IconLinkVerticalProps } from './IconLinkVertical';
 import { makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
@@ -29,21 +28,15 @@ const useStyles = makeStyles(theme => ({
 }));
 
 type Props = {
-  links: SubHeaderLink[];
+  links: IconLinkVerticalProps[];
 };
 
-export const SubHeader = ({ links }: Props) => {
+export const HeaderIconLinkRow = ({ links }: Props) => {
   const classes = useStyles();
   return (
     <nav className={classes.links}>
-      {links.map(link => (
-        <VerticalIcon
-          key={link.title}
-          label={link.title}
-          href={link.href ?? '#'}
-          action={link.action}
-          icon={link.icon}
-        />
+      {links.map((link, index) => (
+        <IconLinkVertical key={index + 1} {...link} />
       ))}
     </nav>
   );

@@ -42,7 +42,7 @@ const mockEntityWithProtocol = (protocol: string): TemplateEntityV1alpha1 => ({
     name: 'graphql-starter',
     title: 'GraphQL Service',
     description:
-      'A GraphQL starter template for backstage to get you up and running\nthe best pracices with GraphQL\n',
+      'A GraphQL starter template for backstage to get you up and running\nthe best practices with GraphQL\n',
     uid: '9cf16bad-16e0-4213-b314-c4eec773c50b',
     etag: 'ZTkxMjUxMjUtYWY3Yi00MjU2LWFkYWMtZTZjNjU5ZjJhOWM2',
     generation: 1,
@@ -89,15 +89,40 @@ describe('GitLabPreparer', () => {
       );
     });
 
-    it(`calls the clone command with the correct arguments if an access token is provided for a repository using the ${protocol} protocol`, async () => {
+    it(`calls the clone command with the correct arguments if an access token is provided in integrations for a repository using the ${protocol} protocol`, async () => {
       const preparer = new GitlabPreparer(
         new ConfigReader({
-          catalog: {
-            processors: {
-              gitlabApi: {
-                privateToken: 'fake-token',
+          integrations: {
+            gitlab: [
+              {
+                host: 'gitlab.com',
+                token: 'fake-token',
               },
+            ],
+          },
+        }),
+      );
+      mockEntity = mockEntityWithProtocol(protocol);
+      await preparer.prepare(mockEntity, { logger: getVoidLogger() });
+      expect(mocks.Clone.clone).toHaveBeenNthCalledWith(
+        1,
+        'https://gitlab.com/benjdlambert/backstage-graphql-template',
+        expect.any(String),
+        {
+          fetchOpts: {
+            callbacks: {
+              credentials: expect.anything(),
             },
+          },
+        },
+      );
+    });
+
+    it(`calls the clone command with the correct arguments if an access token is provided in scaffolder for a repository using the ${protocol} protocol`, async () => {
+      const preparer = new GitlabPreparer(
+        new ConfigReader({
+          scaffolder: {
+            gitlab: { api: { token: 'fake-token' } },
           },
         }),
       );

@@ -141,13 +141,13 @@ Status of all the features mentioned above.
 **In place ✅**
 
 - Basic setup with techdocs-backend file server as storage.
+- Basic setup with cloud storage solution.
 
 **Work in progress 🚧**
 
-- Basic setup with cloud storage solution.
+- `techdocs-cli` is able to generate docs in CI/CD environment.
+- `techdocs-cli` is able to publish docs site to any storage.
 
 **Not implemented yet ❌**
 
-- `techdocs-cli` is able to generate docs in CI/CD environment.
-- `techdocs-cli` is able to publish docs site to any storage.
 - `techdocs-backend` integration with Backstage access control management.

@@ -30,24 +30,17 @@ to enable the plugin:
 export { plugin as LighthousePlugin } from '@backstage/plugin-lighthouse';
 ```
 
-Then, you need to use the `lighthouseApiRef` exported from the plugin to initialize the Rest API in
-your [`apis.ts`](https://github.com/backstage/backstage/blob/master/packages/app/src/apis.ts).
+Modify your app routes to include the Router component exported from the plugin, for example:
 
-```js
-import { ApiHolder, ApiRegistry } from '@backstage/core';
-import { Config } from '@backstage/config';
-import {
-  lighthouseApiRef,
-  LighthouseRestApi,
-} from '@backstage/plugin-lighthouse';
+```tsx
+import { Router as LighthouseRouter } from '@backstage/plugin-lighthouse';
 
-export const apis = (config: ConfigApi) => {
-  const builder = ApiRegistry.builder();
-
-  builder.add(lighthouseApiRef, LighthouseRestApi.fromConfig(config));
-
-  return builder.build() as ApiHolder;
-}
+// Inside App component
+<Routes>
+  // ...
+  <Route path="/lighthouse/*" element={<LighthouseRouter />} />
+  // ...
+</Routes>;
 ```
 
 Then configure the lighthouse service url in your [`app-config.yaml`](https://github.com/backstage/backstage/blob/master/app-config.yaml).
@@ -86,7 +79,7 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
   <EntityPageLayout>
     // ...
     <EntityPageLayout.Content
-      path="/lighthouse"
+      path="/lighthouse/*"
       title="Lighthouse"
       element={<LighthouseRouter entity={entity} />}
     />
