@@ -15,17 +15,35 @@
  */
 
 import React from 'react';
-import { Grid, GridProps } from '@material-ui/core';
+import { Grid, GridProps, makeStyles } from '@material-ui/core';
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog';
+import { BackstageTheme } from '@backstage/theme';
+
+const useStyles = makeStyles<BackstageTheme, { entity: Entity }>(theme => ({
+  root: ({ entity }) => ({
+    position: 'relative',
+
+    '&::before': {
+      content: `"${entity.metadata.name}"`,
+      top: -theme.typography.fontSize + 4,
+      display: 'block',
+      position: 'absolute',
+      color: theme.palette.textSubtle,
+    },
+  }),
+}));
 
 export const EntityGridItem = ({
   entity,
+  classes,
   ...rest
 }: Omit<GridProps, 'item' | 'container'> & { entity: Entity }): JSX.Element => {
+  const itemClasses = useStyles({ entity });
+
   return (
     <EntityProvider entity={entity}>
-      <Grid {...rest} item />
+      <Grid classes={{ root: itemClasses.root, ...classes }} {...rest} item />
     </EntityProvider>
   );
 };
