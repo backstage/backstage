@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { hot } from 'react-hot-loader/root';
+import { hot } from 'react-hot-loader';
 import React, { ComponentType, ReactNode } from 'react';
 import ReactDOM from 'react-dom';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
@@ -150,7 +150,12 @@ class DevAppBuilder {
    * Build and render directory to #root element, with react hot loading.
    */
   render(): void {
-    const DevApp = hot(this.build());
+    const hotModule =
+      require.cache['./dev/index.tsx'] ??
+      require.cache['./dev/index.ts'] ??
+      module;
+
+    const DevApp = hot(hotModule)(this.build());
 
     const paths = this.findPluginPaths(this.plugins);
 
