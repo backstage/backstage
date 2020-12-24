@@ -30,7 +30,7 @@ import {
   OAuthRequestDialog,
   AnyApiFactory,
   IconComponent,
-  BackstageRoutes,
+  FlatRoutes,
   attachComponentData,
 } from '@backstage/core';
 import SentimentDissatisfiedIcon from '@material-ui/icons/SentimentDissatisfied';
@@ -133,10 +133,10 @@ class DevAppBuilder {
           <AppRouter>
             <SidebarPage>
               {sidebar}
-              <BackstageRoutes>
+              <FlatRoutes>
                 {this.routes}
                 {deprecatedAppRoutes}
-              </BackstageRoutes>
+              </FlatRoutes>
             </SidebarPage>
           </AppRouter>
         </AppProvider>
