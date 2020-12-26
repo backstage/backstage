@@ -34,12 +34,13 @@ export const AlertInsightsSection = ({
         subtitle={alert.subtitle}
         number={number}
       />
-      <Box textAlign="left" mt={0} mb={4}>
-        <Button variant="contained" color="primary" href={alert.url}>
-          {alert.buttonText || 'View Instructions'}
-        </Button>
-        {/* <Button color="primary">Dismiss notification</Button> */}
-      </Box>
+      {alert.url && (
+        <Box textAlign="left" mt={0} mb={4}>
+          <Button variant="contained" color="primary" href={alert.url}>
+            {alert.buttonText || 'View Instructions'}
+          </Button>
+        </Box>
+      )}
       {alert.element}
     </Box>
   );

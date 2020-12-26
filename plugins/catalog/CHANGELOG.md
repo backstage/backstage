@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog
 
+## 0.2.8
+
+### Patch Changes
+
+- 342270e4d: Create AboutCard in core and use it in pagerduty and catalog plugin
+- Updated dependencies [19554f6d6]
+- Updated dependencies [1dc445e89]
+- Updated dependencies [342270e4d]
+  - @backstage/plugin-scaffolder@0.3.5
+  - @backstage/core@0.4.2
+  - @backstage/plugin-techdocs@0.5.1
+
 ## 0.2.7
 
 ### Patch Changes

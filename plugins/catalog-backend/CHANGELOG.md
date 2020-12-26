@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-backend
 
+## 0.5.1
+
+### Patch Changes
+
+- 5de26b9a6: Start warning about usage of deprecated location types, such as `github`
+- 30d6c78fb: Added configuration schema for the commonly used properties
+- 5084e5039: Updated the config schema
+
 ## 0.5.0
 
 ### Minor Changes

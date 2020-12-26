@@ -51,10 +51,13 @@ jobs:
       - name: test
         run: yarn lerna -- run test
 
+      # credit: https://github.com/appleboy/discord-action/issues/3#issuecomment-731426861
       - name: Discord notification
         if: ${{ failure() }}
-        uses: Ilshidur/action-discord@0.2.0
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        with:
-          args: 'Windows master build failed https://github.com/{{GITHUB_REPOSITORY}}/actions/runs/{{GITHUB_RUN_ID}}'
+        run: |
+          $MESSAGE=@"
+          {\"content\": \"Windows master build failed https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}\"}
+          "@
+          C:\msys64\usr\bin\curl.exe -i -H "Accept: application/json" -H "Content-Type:application/json" -X POST $env:DISCORD_WEBHOOK --data $MESSAGE
