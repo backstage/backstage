@@ -117,7 +117,7 @@ and resources.
 Here we will use a user policy **and** a bucket policy to show you the different
 possibilities you have but you can use only one.
 
-<img data-zoomable src="../../assets/techdocs/aws-s3.png" alt="AWS S3" />
+<img data-zoomable src="../../assets/techdocs/aws-s3.drawio.svg" alt="AWS S3" width="500" />
 
 This is an example of how you can manage your policies:
 
