@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export * from './components';
-export * from './devApp';
+export { EntityGridItem } from './EntityGridItem';
