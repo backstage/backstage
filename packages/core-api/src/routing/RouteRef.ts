@@ -25,25 +25,15 @@ export class AbsoluteRouteRef<Params extends { [param in string]: string }> {
 
   // TODO(Rugvip): Remove this, routes are looked up via the registry instead
   get path() {
-    return this.config.path;
+    return this.config.path ?? '';
   }
 
   get title() {
     return this.config.title;
   }
 
-  /**
-   * This function should not be used, create a separate RouteRef instead
-   * @deprecated
-   */
-  createSubRoute(): any {
-    throw new Error(
-      'This method should not be called, create a separate RouteRef instead',
-    );
-  }
-
   toString() {
-    return `routeRef{path=${this.path}}`;
+    return `routeRef{title=${this.title}}`;
   }
 }
 
@@ -54,13 +44,7 @@ export function createRouteRef<
   return new AbsoluteRouteRef<Params>(config);
 }
 
-const create = Symbol('create-external-route-ref');
-
 export class ExternalRouteRef {
-  static [create]() {
-    return new ExternalRouteRef();
-  }
-
   private constructor() {}
 
   toString() {
@@ -69,5 +53,5 @@ export class ExternalRouteRef {
 }
 
 export function createExternalRouteRef(): ExternalRouteRef {
-  return ExternalRouteRef[create]();
+  return new ((ExternalRouteRef as unknown) as { new (): ExternalRouteRef })();
 }

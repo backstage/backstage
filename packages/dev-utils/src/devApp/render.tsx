@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { hot } from 'react-hot-loader/root';
+import { hot } from 'react-hot-loader';
 import React, { ComponentType, ReactNode } from 'react';
 import ReactDOM from 'react-dom';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
@@ -29,9 +29,25 @@ import {
   AlertDisplay,
   OAuthRequestDialog,
   AnyApiFactory,
+  IconComponent,
+  FlatRoutes,
+  attachComponentData,
 } from '@backstage/core';
 import SentimentDissatisfiedIcon from '@material-ui/icons/SentimentDissatisfied';
-import { Routes } from 'react-router';
+import { Outlet } from 'react-router';
+
+const GatheringRoute: (props: {
+  path: string;
+  children: JSX.Element;
+}) => JSX.Element = () => <Outlet />;
+
+attachComponentData(GatheringRoute, 'core.gatherMountPoints', true);
+
+type RegisterPageOptions = {
+  element: JSX.Element;
+  title?: string;
+  icon?: IconComponent;
+};
 
 // TODO(rugvip): export proper plugin type from core that isn't the plugin class
 type BackstagePlugin = ReturnType<typeof createPlugin>;
@@ -44,6 +60,8 @@ class DevAppBuilder {
   private readonly plugins = new Array<BackstagePlugin>();
   private readonly apis = new Array<AnyApiFactory>();
   private readonly rootChildren = new Array<ReactNode>();
+  private readonly routes = new Array<JSX.Element>();
+  private readonly sidebarItems = new Array<JSX.Element>();
 
   /**
    * Register one or more plugins to render in the dev app
@@ -75,6 +93,21 @@ class DevAppBuilder {
     return this;
   }
 
+  addPage({ element, title, icon }: RegisterPageOptions): DevAppBuilder {
+    const path = `/page-${this.routes.length + 1}`;
+    this.sidebarItems.push(
+      <SidebarItem
+        key={path}
+        to={path}
+        text={title ?? path}
+        icon={icon ?? BookmarkIcon}
+      />,
+    );
+    this.routes.push(
+      <GatheringRoute key={path} path={path} children={element} />,
+    );
+    return this;
+  }
   /**
    * Build a DevApp component using the resources registered so far
    */
@@ -100,7 +133,10 @@ class DevAppBuilder {
           <AppRouter>
             <SidebarPage>
               {sidebar}
-              <Routes>{deprecatedAppRoutes}</Routes>
+              <FlatRoutes>
+                {this.routes}
+                {deprecatedAppRoutes}
+              </FlatRoutes>
             </SidebarPage>
           </AppRouter>
         </AppProvider>
@@ -114,7 +150,12 @@ class DevAppBuilder {
    * Build and render directory to #root element, with react hot loading.
    */
   render(): void {
-    const DevApp = hot(this.build());
+    const hotModule =
+      require.cache['./dev/index.tsx'] ??
+      require.cache['./dev/index.ts'] ??
+      module;
+
+    const DevApp = hot(hotModule)(this.build());
 
     const paths = this.findPluginPaths(this.plugins);
 
@@ -166,6 +207,7 @@ class DevAppBuilder {
     return (
       <Sidebar>
         <SidebarSpacer />
+        {this.sidebarItems}
         {sidebarItems}
       </Sidebar>
     );
@@ -199,7 +241,7 @@ class DevAppBuilder {
 // this to provide their own plugin dev wrappers.
 
 /**
- * Creates a dev app for rendering one or more plugins and exposing the touchpoints of the plugin.
+ * Creates a dev app for rendering one or more plugins and exposing the touch points of the plugin.
  */
 export function createDevApp() {
   return new DevAppBuilder();
