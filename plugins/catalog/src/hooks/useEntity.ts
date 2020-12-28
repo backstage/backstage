@@ -55,7 +55,7 @@ export const useEntityFromUrl = (): EntityLoadingStatus => {
 };
 
 /**
- * Grab Entity from the context and it's current loading state.
+ * Grab Entity from the context and its current loading state.
  */
 export const useEntity = () => {
   const { entity, loading, error } = useContext<{
