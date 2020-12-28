@@ -18,10 +18,11 @@ import os from 'os';
 import path from 'path';
 import parseGitUrl from 'git-url-parse';
 import fs from 'fs-extra';
+import { InputError, UrlReader, Git } from '@backstage/backend-common';
+import { Entity } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
 import { getDefaultBranch } from './default-branch';
 import { getGitRepoType, getTokenForGitRepo } from './git-auth';
-import { Entity } from '@backstage/catalog-model';
-import { InputError, UrlReader, Git } from '@backstage/backend-common';
 import { RemoteProtocol } from './stages/prepare/types';
 import { Logger } from 'winston';
 
@@ -89,6 +90,7 @@ export const getLocationForEntity = (
 
 export const getGitRepositoryTempFolder = async (
   repositoryUrl: string,
+  config: Config,
 ): Promise<string> => {
   const parsedGitLocation = parseGitUrl(repositoryUrl);
   // removes .git from git location path
@@ -97,6 +99,7 @@ export const getGitRepositoryTempFolder = async (
   if (!parsedGitLocation.ref) {
     parsedGitLocation.ref = await getDefaultBranch(
       parsedGitLocation.toString('https'),
+      config,
     );
   }
 
@@ -113,11 +116,12 @@ export const getGitRepositoryTempFolder = async (
 
 export const checkoutGitRepository = async (
   repoUrl: string,
+  config: Config,
   logger: Logger,
 ): Promise<string> => {
   const parsedGitLocation = parseGitUrl(repoUrl);
-  const repositoryTmpPath = await getGitRepositoryTempFolder(repoUrl);
-  const token = await getTokenForGitRepo(repoUrl);
+  const repositoryTmpPath = await getGitRepositoryTempFolder(repoUrl, config);
+  const token = await getTokenForGitRepo(repoUrl, config);
 
   // Initialize a git client
   let git = Git.fromAuth({ logger });
@@ -193,9 +197,14 @@ export const checkoutGitRepository = async (
 
 export const getLastCommitTimestamp = async (
   repositoryUrl: string,
+  config: Config,
   logger: Logger,
 ): Promise<number> => {
-  const repositoryLocation = await checkoutGitRepository(repositoryUrl, logger);
+  const repositoryLocation = await checkoutGitRepository(
+    repositoryUrl,
+    config,
+    logger,
+  );
 
   const git = Git.fromAuth({ logger });
   const sha = await git.resolveRef({ dir: repositoryLocation, ref: 'HEAD' });
