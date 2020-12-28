@@ -15,9 +15,17 @@
  */
 
 import { LinkedPackageResolvePlugin } from './LinkedPackageResolvePlugin';
+import * as os from 'os';
+
+// TODO Remove when Linux hack removed
+/* eslint-disable  */
+
+// TODO Remove when Linux hack removed
+const onlyTestItIfLinux = os.platform() === 'linux' ? it : it.skip;
 
 describe('LinkedPackageResolvePlugin', () => {
-  it('should re-write paths for external packages', () => {
+  // TODO Only run if Linux until test is rewritten to support both Linux + Windows
+  onlyTestItIfLinux('should re-write paths for external packages', () => {
     const plugin = new LinkedPackageResolvePlugin('/root/repo/node_modules', [
       {
         name: 'a',
