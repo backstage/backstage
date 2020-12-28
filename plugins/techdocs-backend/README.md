@@ -11,9 +11,8 @@ most convenient when developing the techdocs backend plugin itself.
 To evaluate TechDocs and have a greater amount of functionality available, instead do
 
 ```bash
-# in one terminal window, run this from from the very root of the Backstage project
-cd packages/backend
-yarn start
+# in one terminal window, run this from the very root of the Backstage project
+yarn --cwd packages/backend start
 ```
 
 ## What techdocs-backend does

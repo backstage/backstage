@@ -17,8 +17,7 @@ The catalog frontend plugin should be installed in your `app` package, which is
 created as a part of `@backstage/create-app`. To install the package, run:
 
 ```bash
-cd packages/app
-yarn add @backstage/plugin-catalog
+yarn --cwd packages/app add @backstage/plugin-catalog
 ```
 
 Make sure the version of `@backstage/plugin-catalog` matches the version of
@@ -82,8 +81,7 @@ The catalog backend should be installed in your `backend` package, which is
 created as a part of `@backstage/create-app`. To install the package, run:
 
 ```bash
-cd packages/backend
-yarn add @backstage/plugin-catalog-backend
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend
 ```
 
 Make sure the version of `@backstage/plugin-catalog-backend` matches the version
@@ -190,8 +188,7 @@ catalog:
 Finally, start up the backend with the new configuration:
 
 ```bash
-cd packages/backend
-yarn start
+yarn --cwd packages/backend start
 ```
 
 If you've also set up the frontend plugin, so you should be ready to go browse

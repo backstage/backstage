@@ -27,9 +27,8 @@ suitable framework if needed.
 ### Installing the dependencies:
 
 ```bash
-cd plugins/auth-backend
-yarn add passport-provider-a
-yarn add @types/passport-provider-a
+yarn --cwd plugins/auth-backend add passport-provider-a
+yarn --cwd plugins/auth-backend add @types/passport-provider-a
 ```
 
 ### Create implementation

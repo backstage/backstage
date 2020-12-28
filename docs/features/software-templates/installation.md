@@ -20,8 +20,7 @@ The scaffolder frontend plugin should be installed in your `app` package, which
 is created as a part of `@backstage/create-app`. To install the package, run:
 
 ```bash
-cd packages/app
-yarn add @backstage/plugin-scaffolder
+yarn --cwd packages/app add @backstage/plugin-scaffolder
 ```
 
 Make sure the version of `@backstage/plugin-scaffolder` matches the version of
@@ -67,8 +66,7 @@ The scaffolder backend should be installed in your `backend` package, which is
 created as a part of `@backstage/create-app`. To install the package, run:
 
 ```bash
-cd packages/backend
-yarn add @backstage/plugin-scaffolder-backend
+yarn --cwd packages/backend add @backstage/plugin-scaffolder-backend
 ```
 
 Make sure the version of `@backstage/plugin-scaffolder-backend` matches the
@@ -232,8 +230,7 @@ Finally, make sure you have a local Docker daemon running, and start up the
 backend with the new configuration:
 
 ```bash
-cd packages/backend
-GITHUB_TOKEN=<token> yarn start
+GITHUB_TOKEN=<token> yarn --cwd packages/backend start
 ```
 
 If you've also set up the frontend plugin, so you should be ready to go browse

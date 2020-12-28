@@ -18,9 +18,8 @@ most convenient when developing the catalog backend plugin itself.
 To evaluate the catalog and have a greater amount of functionality available, instead do
 
 ```bash
-# in one terminal window, run this from from the very root of the Backstage project
-cd packages/backend
-yarn start
+# in one terminal window, run this from the very root of the Backstage project
+yarn --cwd packages/backend start
 ```
 
 This will launch the full example backend, populated some example entities.

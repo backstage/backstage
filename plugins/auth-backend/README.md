@@ -131,11 +131,10 @@ The secret value will then be displayed on the screen. **You will not be able to
 #### Starting the Auth Backend
 
 ```bash
-cd packages/backend
 export AUTH_MICROSOFT_CLIENT_ID=x
 export AUTH_MICROSOFT_CLIENT_SECRET=x
 export AUTH_MICROSOFT_TENANT_ID=x
-yarn start
+yarn --cwd packages/backend start
 ```
 
 ### SAML
