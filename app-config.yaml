@@ -255,7 +255,7 @@ auth:
           $env: AUTH_OAUTH2_AUTH_URL
         tokenUrl:
           $env: AUTH_OAUTH2_TOKEN_URL
-        pkce: false
+        pkce: 'false'
     oidc:
       development:
         metadataUrl:

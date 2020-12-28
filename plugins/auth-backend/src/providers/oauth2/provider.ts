@@ -171,7 +171,7 @@ export const createOAuth2Provider: AuthProviderFactory = ({
     const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
     const authorizationUrl = envConfig.getString('authorizationUrl');
     const tokenUrl = envConfig.getString('tokenUrl');
-    const pkce = envConfig.getOptionalBoolean('pkce');
+    const pkce = envConfig.getOptionalString('pkce') === 'true';
 
     const provider = new OAuth2AuthProvider({
       clientId,

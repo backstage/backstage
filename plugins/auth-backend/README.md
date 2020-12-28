@@ -105,7 +105,7 @@ export AUTH_AUTH0_CLIENT_SECRET=x
 
 ### OAuth2
 
-PKCE can be enabled by setting `pkce: true` and providing a value for `auth.session.secret` in `app-config.yaml`.
+PKCE can be enabled by setting `auth.providers.oauth2.development.pkce: 'true'` and providing a value for `auth.session.secret` in `app-config.yaml`.
 
 ```bash
 export AUTH_OAUTH2_CLIENT_ID=x
