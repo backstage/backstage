@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import git from 'isomorphic-git';
+import git, { ProgressCallback } from 'isomorphic-git';
 import http from 'isomorphic-git/http/node';
 import fs from 'fs-extra';
 import { Logger } from 'winston';
@@ -85,19 +85,11 @@ class SCM {
       dir,
       singleBranch: true,
       depth: 1,
-      onProgress: event => {
-        const total = event.total
-          ? `${Math.round((event.loaded / event.total) * 100)}%`
-          : event.loaded;
-        this.config.logger?.info(`status={${event.phase},total={${total}}}`);
-      },
+      onProgress: this.onProgressHandler,
       headers: {
         'user-agent': 'git/@isomorphic-git',
       },
-      onAuth: () => ({
-        username: this.config.username,
-        password: this.config.password,
-      }),
+      onAuth: this.onAuth,
     });
   }
 
@@ -118,19 +110,11 @@ class SCM {
       http,
       dir,
       remote: remoteValue,
-      onProgress: event => {
-        const total = event.total
-          ? `${Math.round((event.loaded / event.total) * 100)}%`
-          : event.loaded;
-        this.config.logger?.info(`status={${event.phase},total={${total}}}`);
-      },
+      onProgress: this.onProgressHandler,
       headers: {
         'user-agent': 'git/@isomorphic-git',
       },
-      onAuth: () => ({
-        username: this.config.username,
-        password: this.config.password,
-      }),
+      onAuth: this.onAuth,
     });
   }
 
@@ -179,20 +163,12 @@ class SCM {
       fs,
       dir,
       http,
-      onProgress: event => {
-        const total = event.total
-          ? `${Math.round((event.loaded / event.total) * 100)}%`
-          : event.loaded;
-        this.config.logger?.info(`status={${event.phase},total={${total}}}`);
-      },
+      onProgress: this.onProgressHandler,
       headers: {
         'user-agent': 'git/@isomorphic-git',
       },
       remote: remoteName,
-      onAuth: () => ({
-        username: this.config.username,
-        password: this.config.password,
-      }),
+      onAuth: this.onAuth,
     });
   }
 
@@ -205,6 +181,18 @@ class SCM {
   async resolveRef({ dir, ref }: { dir: string; ref: string }) {
     return git.resolveRef({ fs, dir, ref });
   }
+
+  private onAuth = () => ({
+    username: this.config.username,
+    password: this.config.password,
+  });
+
+  private onProgressHandler: ProgressCallback = event => {
+    const total = event.total
+      ? `${Math.round((event.loaded / event.total) * 100)}%`
+      : event.loaded;
+    this.config.logger?.info(`status={${event.phase},total={${total}}}`);
+  };
 }
 
 // TODO(blam): This could potentially become something like for URL
