@@ -131,6 +131,7 @@ export async function createRouter({
         dockerClient,
         logger,
         entity,
+        config,
       });
       if (publisherType === 'local') {
         if (!(await docsBuilder.docsUpToDate())) {

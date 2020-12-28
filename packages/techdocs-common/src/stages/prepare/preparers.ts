@@ -30,18 +30,15 @@ export class Preparers implements PreparerBuilder {
   private preparerMap = new Map<RemoteProtocol, PreparerBase>();
 
   static async fromConfig(
-    // @ts-ignore
-    // Config not used now, but will be used in urlPreparer when it starts using
-    // @backstage/integration to get the tokens for providers.
     config: Config,
     { logger, reader }: factoryOptions,
   ): Promise<PreparerBuilder> {
     const preparers = new Preparers();
 
-    const directoryPreparer = new DirectoryPreparer(logger);
+    const directoryPreparer = new DirectoryPreparer(config, logger);
     preparers.register('dir', directoryPreparer);
 
-    const commonGitPreparer = new CommonGitPreparer(logger);
+    const commonGitPreparer = new CommonGitPreparer(config, logger);
     preparers.register('github', commonGitPreparer);
     preparers.register('gitlab', commonGitPreparer);
     preparers.register('azure/api', commonGitPreparer);
