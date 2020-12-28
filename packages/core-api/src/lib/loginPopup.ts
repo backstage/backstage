@@ -79,33 +79,40 @@ export function showLoginPopup(options: LoginPopupOptions): Promise<any> {
       `menubar=no,location=no,resizable=no,scrollbars=no,status=no,width=${width},height=${height},top=${top},left=${left}`,
     );
 
-    let targetOrigin = '';
-
     if (!popup || typeof popup.closed === 'undefined' || popup.closed) {
       reject(new Error('Failed to open auth popup.'));
       return;
     }
 
-    const messageListener = (event: MessageEvent) => {
-      if (event.source !== popup) {
-        return;
-      }
-      if (event.origin !== options.origin) {
-        return;
-      }
-      const { data } = event;
+    let targetOrigin = '';
+    let authResult: AuthResult | undefined = undefined;
 
-      if (data.type === 'config_info') {
-        targetOrigin = data.targetOrigin;
-        return;
+    const onMessageReceived = (event: MessageEvent) => {
+      if (event.source === popup && event.origin === options.origin) {
+        const { data } = event;
+        if (data.type === 'config_info') {
+          targetOrigin = data.targetOrigin;
+        } else if (data.type === 'authorization_response') {
+          authResult = data as AuthResult;
+        }
       }
+    };
 
-      if (data.type !== 'authorization_response') {
-        return;
-      }
-      const authResult = data as AuthResult;
+    window.addEventListener('message', onMessageReceived);
 
-      if ('error' in authResult) {
+    const onComplete = () => {
+      window.removeEventListener('message', onMessageReceived);
+      if (!targetOrigin || !authResult) {
+        const errMessage = 'Login failed, popup was closed';
+        const error = new Error(errMessage);
+        error.name = 'PopupClosedError';
+        reject(error);
+      } else if (targetOrigin !== window.location.origin) {
+        const errMessage = `Login failed, incorrect app origin, expected ${window.location.origin} but got ${targetOrigin}`;
+        const error = new Error(errMessage);
+        error.name = 'PopupClosedError';
+        reject(error);
+      } else if ('error' in authResult) {
         const error = new Error(authResult.error.message);
         error.name = authResult.error.name;
         // TODO: proper error type
@@ -114,28 +121,25 @@ export function showLoginPopup(options: LoginPopupOptions): Promise<any> {
       } else {
         resolve(authResult.response);
       }
-      done();
     };
 
     const intervalId = setInterval(() => {
-      if (popup.closed) {
-        const errMessage = `Login failed, ${
-          targetOrigin !== window.location.origin
-            ? `Incorrect app origin, expected ${targetOrigin}`
-            : 'popup was closed'
-        }`;
-        const error = new Error(errMessage);
-        error.name = 'PopupClosedError';
-        reject(error);
-        done();
+      if (!popup.closed) {
+        return;
+      }
+
+      // Stop the close poll loop, but keep listening for messages a while
+      // longer
+      clearInterval(intervalId);
+
+      if (!targetOrigin || !authResult) {
+        // Delay this slightly, to avoid a race condition where seemingly the two
+        // messages do not arrive in a timely manner.
+        // https://github.com/backstage/backstage/issues/3785
+        setTimeout(onComplete, 100);
+      } else {
+        onComplete();
       }
     }, 100);
-
-    function done() {
-      window.removeEventListener('message', messageListener);
-      clearInterval(intervalId);
-    }
-
-    window.addEventListener('message', messageListener);
   });
 }
