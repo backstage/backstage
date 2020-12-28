@@ -23,18 +23,23 @@ import {
   LinearProgress,
 } from '@material-ui/core';
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { Job } from '../../types';
 import { JobStage } from '../JobStage/JobStage';
 
 type Props = {
   job: Job | null;
   toCatalogLink?: string;
+  open: boolean;
+  setOpen: (newState: boolean) => void;
 };
 
-export const JobStatusModal = ({ job, toCatalogLink }: Props) => {
-  const [isOpen, setOpen] = useState(true);
-
+export const JobStatusModal = ({
+  job,
+  toCatalogLink,
+  open,
+  setOpen,
+}: Props) => {
   const renderTitle = () => {
     switch (job?.status) {
       case 'COMPLETED':
@@ -47,16 +52,17 @@ export const JobStatusModal = ({ job, toCatalogLink }: Props) => {
   };
 
   const onClose = useCallback(() => {
+    setOpen(false);
     if (!job) {
       return;
     }
     if (job.status === 'COMPLETED' || job.status === 'FAILED') {
       setOpen(false);
     }
-  }, [job]);
+  }, [job, setOpen]);
 
   return (
-    <Dialog open={isOpen} onClose={onClose} fullWidth>
+    <Dialog open={open} onClose={onClose} fullWidth>
       <DialogTitle id="responsive-dialog-title">{renderTitle()}</DialogTitle>
       <DialogContent>
         {!job ? (

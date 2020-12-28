@@ -161,7 +161,12 @@ export const TemplatePage = () => {
       />
       <Content>
         {loading && <LinearProgress data-testid="loading-progress" />}
-        {modalOpen && <JobStatusModal job={job} toCatalogLink={catalogLink} />}
+        <JobStatusModal
+          job={job}
+          toCatalogLink={catalogLink}
+          open={modalOpen}
+          setOpen={setModalOpen}
+        />
         {template && (
           <InfoCard title={template.metadata.title} noPadding>
             <MultistepJsonForm
