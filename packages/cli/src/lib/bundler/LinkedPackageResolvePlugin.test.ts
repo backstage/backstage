@@ -19,8 +19,6 @@ import * as os from 'os';
 
 // TODO Remove when Linux hack removed
 /* eslint-disable  */
-
-// TODO Remove when Linux hack removed
 const onlyTestItIfLinux = os.platform() === 'linux' ? it : it.skip;
 
 describe('LinkedPackageResolvePlugin', () => {
