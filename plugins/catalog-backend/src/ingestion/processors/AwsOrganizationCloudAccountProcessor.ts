@@ -15,7 +15,6 @@
  */
 import {
   ComponentEntityV1alpha1,
-  Entity,
   LocationSpec,
 } from '@backstage/catalog-model';
 import AWS, { Organizations } from 'aws-sdk';
@@ -25,26 +24,19 @@ import * as results from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
 
 const AWS_ORGANIZATION_REGION = 'us-east-1';
-const LOCATION_TYPE = 'aws-organization';
+const LOCATION_TYPE = 'aws-cloud-accounts';
 
-export class AwsOrganizationProcessor implements CatalogProcessor {
+/**
+ * A processor for ingesting AWS Accounts from AWS Organizations.
+ *
+ * If custom authentication is needed, it can be achieved by configuring the global AWS.credentials object.
+ */
+export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
   organizations: Organizations;
   constructor() {
     this.organizations = new AWS.Organizations({
       region: AWS_ORGANIZATION_REGION,
     }); // Only available in us-east-1
-  }
-
-  async handleError(): Promise<void> {
-    return undefined;
-  }
-
-  async postProcessEntity(entity: Entity): Promise<Entity> {
-    return entity;
-  }
-
-  async preProcessEntity(entity: Entity): Promise<Entity> {
-    return entity;
   }
 
   normalizeName(name: string): string {
@@ -68,16 +60,16 @@ export class AwsOrganizationProcessor implements CatalogProcessor {
   async getAwsAccounts(): Promise<Account[]> {
     let awsAccounts: Account[] = [];
     let isInitialAttempt = true;
-    let NextToken = undefined;
-    while (isInitialAttempt || NextToken) {
+    let nextToken = undefined;
+    while (isInitialAttempt || nextToken) {
       isInitialAttempt = false;
       const orgAccounts: ListAccountsResponse = await this.organizations
-        .listAccounts({ NextToken })
+        .listAccounts({ NextToken: nextToken })
         .promise();
       if (orgAccounts.Accounts) {
         awsAccounts = awsAccounts.concat(orgAccounts.Accounts);
-        NextToken = orgAccounts.NextToken;
       }
+      nextToken = orgAccounts.NextToken;
     }
 
     return awsAccounts;
@@ -123,9 +115,5 @@ export class AwsOrganizationProcessor implements CatalogProcessor {
       });
 
     return true;
-  }
-
-  async validateEntityKind(): Promise<boolean> {
-    return false;
   }
 }

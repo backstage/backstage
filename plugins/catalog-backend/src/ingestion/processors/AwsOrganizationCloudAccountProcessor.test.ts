@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { AwsOrganizationProcessor } from './AwsOrganizationProcessor';
+import { AwsOrganizationCloudAccountProcessor } from './AwsOrganizationCloudAccountProcessor';
 
-describe('AwsOrganizationProcessor', () => {
+describe('AwsOrganizationCloudAccountProcessor', () => {
   describe('readLocation', () => {
-    const processor = new AwsOrganizationProcessor();
-    const location = { type: 'aws-organization', target: 'b' };
+    const processor = new AwsOrganizationCloudAccountProcessor();
+    const location = { type: 'aws-cloud-accounts', target: 'b' };
     const emit = jest.fn();
     const listAccounts = jest.fn();
 
