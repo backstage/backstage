@@ -1,5 +1,11 @@
 # @backstage/cli
 
+## 0.4.4
+
+### Patch Changes
+
+- d45efbc9b: Fix typo in .app.listen.port config schema
+
 ## 0.4.3
 
 ### Patch Changes

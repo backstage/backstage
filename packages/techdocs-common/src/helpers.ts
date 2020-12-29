@@ -17,19 +17,14 @@
 import os from 'os';
 import path from 'path';
 import parseGitUrl from 'git-url-parse';
-import NodeGit, { Clone, Repository } from 'nodegit';
 import fs from 'fs-extra';
-import { InputError, UrlReader } from '@backstage/backend-common';
+import { InputError, UrlReader, Git } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { getDefaultBranch } from './default-branch';
 import { getGitRepoType, getTokenForGitRepo } from './git-auth';
 import { RemoteProtocol } from './stages/prepare/types';
 import { Logger } from 'winston';
-
-// Enables core.longpaths on windows to prevent crashing when checking out repos with long foldernames and/or deep nesting
-// @ts-ignore
-NodeGit.Libgit2.opts(28, 1);
 
 export type ParsedLocationAnnotation = {
   type: RemoteProtocol;
@@ -128,17 +123,61 @@ export const checkoutGitRepository = async (
   const repositoryTmpPath = await getGitRepositoryTempFolder(repoUrl, config);
   const token = await getTokenForGitRepo(repoUrl, config);
 
+  // Initialize a git client
+  let git = Git.fromAuth({ logger });
+
+  // Docs about why username and password are set to these specific values.
+  // https://isomorphic-git.org/docs/en/onAuth#oauth2-tokens
+  if (token) {
+    const type = getGitRepoType(repoUrl);
+    switch (type) {
+      case 'github':
+        git = Git.fromAuth({
+          username: token,
+          password: 'x-oauth-basic',
+          logger,
+        });
+        parsedGitLocation.token = `${token}:x-oauth-basic`;
+        break;
+      case 'gitlab':
+        git = Git.fromAuth({
+          username: 'oauth2',
+          password: token,
+          logger,
+        });
+        parsedGitLocation.token = `dummyUsername:${token}`;
+        parsedGitLocation.git_suffix = true;
+        break;
+      case 'azure/api':
+        git = Git.fromAuth({
+          username: 'notempty',
+          password: token,
+          logger: logger,
+        });
+        break;
+      default:
+        parsedGitLocation.token = `:${token}`;
+    }
+  }
+
+  // Pull from repository if it has already been cloned.
   if (fs.existsSync(repositoryTmpPath)) {
     try {
-      const repository = await Repository.open(repositoryTmpPath);
-      const currentBranchName = (
-        await repository.getCurrentBranch()
-      ).shorthand();
-      await repository.fetch('origin');
-      await repository.mergeBranches(
-        currentBranchName,
-        `origin/${currentBranchName}`,
-      );
+      const currentBranchName = await git.currentBranch({
+        dir: repositoryTmpPath,
+      });
+
+      await git.fetch({ dir: repositoryTmpPath, remote: 'origin' });
+      await git.merge({
+        dir: repositoryTmpPath,
+        theirs: `origin/${currentBranchName}`,
+        ours: currentBranchName || undefined,
+        author: { name: 'Backstage TechDocs', email: 'techdocs@backstage.io' },
+        committer: {
+          name: 'Backstage TechDocs',
+          email: 'techdocs@backstage.io',
+        },
+      });
       return repositoryTmpPath;
     } catch (e) {
       logger.info(
@@ -148,26 +187,10 @@ export const checkoutGitRepository = async (
     }
   }
 
-  if (token) {
-    const type = getGitRepoType(repoUrl);
-    switch (type) {
-      case 'gitlab':
-        // Personal Access Token
-        parsedGitLocation.token = `dummyUsername:${token}`;
-        parsedGitLocation.git_suffix = true;
-        break;
-      case 'github':
-        parsedGitLocation.token = `${token}:x-oauth-basic`;
-        break;
-      default:
-        parsedGitLocation.token = `:${token}`;
-    }
-  }
-
   const repositoryCheckoutUrl = parsedGitLocation.toString('https');
 
   fs.mkdirSync(repositoryTmpPath, { recursive: true });
-  await Clone.clone(repositoryCheckoutUrl, repositoryTmpPath);
+  await git.clone({ url: repositoryCheckoutUrl, dir: repositoryTmpPath });
 
   return repositoryTmpPath;
 };
@@ -183,10 +206,11 @@ export const getLastCommitTimestamp = async (
     logger,
   );
 
-  const repository = await Repository.open(repositoryLocation);
-  const commit = await repository.getReferenceCommit('HEAD');
+  const git = Git.fromAuth({ logger });
+  const sha = await git.resolveRef({ dir: repositoryLocation, ref: 'HEAD' });
+  const commit = await git.readCommit({ dir: repositoryLocation, sha });
 
-  return commit.date().getTime();
+  return commit.commit.committer.timestamp;
 };
 
 export const getDocFilesFromRepository = async (
