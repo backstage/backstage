@@ -2,7 +2,7 @@
 
 Backstage is a single-page application composed of a set of plugins. This folder holds numerous plugins that are managed by this repository.
 
-For more information about the plugin ecosystem, see the documention here:
+For more information about the plugin ecosystem, see the documentation here:
 
 > https://backstage.io/docs/plugins/
 
