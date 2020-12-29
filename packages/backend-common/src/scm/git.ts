@@ -19,17 +19,17 @@ import fs from 'fs-extra';
 import { Logger } from 'winston';
 
 /*
-provider    username  	    password
+provider    username        password
 GitHub      token	          'x-oauth-basic'
-GitHub App 	token	          'x-access-token'
-BitBucket	  'x-token-auth'	token
-GitLab      'oauth2'	      token
+GitHub App  token	          'x-access-token'
+BitBucket   'x-token-auth'  token
+GitLab      'oauth2'        token
 From : https://isomorphic-git.org/docs/en/onAuth
 
 Azure       'notempty'      token
 */
-class SCM {
-  constructor(
+export class Git {
+  private constructor(
     private readonly config: {
       username?: string;
       password?: string;
@@ -85,7 +85,7 @@ class SCM {
       dir,
       singleBranch: true,
       depth: 1,
-      onProgress: this.onProgressHandler,
+      onProgress: this.onProgressHandler(),
       headers: {
         'user-agent': 'git/@isomorphic-git',
       },
@@ -110,7 +110,7 @@ class SCM {
       http,
       dir,
       remote: remoteValue,
-      onProgress: this.onProgressHandler,
+      onProgress: this.onProgressHandler(),
       headers: {
         'user-agent': 'git/@isomorphic-git',
       },
@@ -163,7 +163,7 @@ class SCM {
       fs,
       dir,
       http,
-      onProgress: this.onProgressHandler,
+      onProgress: this.onProgressHandler(),
       headers: {
         'user-agent': 'git/@isomorphic-git',
       },
@@ -187,23 +187,28 @@ class SCM {
     password: this.config.password,
   });
 
-  private onProgressHandler: ProgressCallback = event => {
-    const total = event.total
-      ? `${Math.round((event.loaded / event.total) * 100)}%`
-      : event.loaded;
-    this.config.logger?.info(`status={${event.phase},total={${total}}}`);
-  };
-}
+  private onProgressHandler = (): ProgressCallback => {
+    let currentPhase = '';
 
-// TODO(blam): This could potentially become something like for URL
-// and use the integrations config for URLReading instead.
-// But for now, I don't want to do all that in this PR.
-export const fromAuth = ({
-  username,
-  password,
-  logger,
-}: {
-  username?: string;
-  password?: string;
-  logger?: Logger;
-}) => new SCM({ username, password, logger });
+    return event => {
+      if (currentPhase !== event.phase) {
+        currentPhase = event.phase;
+        this.config.logger?.info(event.phase);
+      }
+      const total = event.total
+        ? `${Math.round((event.loaded / event.total) * 100)}%`
+        : event.loaded;
+      this.config.logger?.debug(`status={${event.phase},total={${total}}}`);
+    };
+  };
+
+  static fromAuth = ({
+    username,
+    password,
+    logger,
+  }: {
+    username?: string;
+    password?: string;
+    logger?: Logger;
+  }) => new Git({ username, password, logger });
+}

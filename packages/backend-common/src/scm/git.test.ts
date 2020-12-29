@@ -18,7 +18,7 @@ jest.mock('isomorphic-git/http/node');
 jest.mock('fs-extra');
 
 import * as isomorphic from 'isomorphic-git';
-import * as Git from './git';
+import { Git } from './git';
 import http from 'isomorphic-git/http/node';
 import fs from 'fs-extra';
 
