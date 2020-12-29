@@ -135,7 +135,6 @@ type SidebarItemButtonProps = SidebarItemBaseProps & {
 };
 
 type SidebarItemLinkProps = SidebarItemBaseProps & {
-  text?: string;
   to: string;
   onClick?: (ev: React.MouseEvent) => void;
 };
