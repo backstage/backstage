@@ -170,8 +170,8 @@ export const checkoutGitRepository = async (
       await git.fetch({ dir: repositoryTmpPath, remote: 'origin' });
       await git.merge({
         dir: repositoryTmpPath,
-        headBranch: `origin/${currentBranchName}`,
-        baseBranch: currentBranchName || undefined,
+        theirs: `origin/${currentBranchName}`,
+        ours: currentBranchName || undefined,
         author: { name: 'Backstage TechDocs', email: 'techdocs@backstage.io' },
         committer: {
           name: 'Backstage TechDocs',

@@ -46,16 +46,16 @@ export class Git {
   async addRemote({
     dir,
     url,
-    remoteName,
+    remote,
   }: {
     dir: string;
-    remoteName: string;
+    remote: string;
     url: string;
   }) {
     this.config.logger?.info(
-      `Creating new remote {dir=${dir},remoteName=${remoteName},url=${url}}`,
+      `Creating new remote {dir=${dir},remote=${remote},url=${url}}`,
     );
-    return git.addRemote({ fs, dir, remote: remoteName, url });
+    return git.addRemote({ fs, dir, remote, url });
   }
 
   async commit({
@@ -130,34 +130,35 @@ export class Git {
   // https://isomorphic-git.org/docs/en/merge
   async merge({
     dir,
-    headBranch,
-    baseBranch,
+    theirs,
+    ours,
     author,
     committer,
   }: {
     dir: string;
-    headBranch: string;
-    baseBranch?: string;
+    theirs: string;
+    ours?: string;
     author: { name: string; email: string };
     committer: { name: string; email: string };
   }) {
     this.config.logger?.info(
-      `Merging branch '${headBranch}' into '${baseBranch}' for repository {dir=${dir}}`,
+      `Merging branch '${theirs}' into '${ours}' for repository {dir=${dir}}`,
     );
-    // If baseBranch is undefined, current branch is used.
+
+    // If ours is undefined, current branch is used.
     return git.merge({
       fs,
       dir,
-      ours: baseBranch,
-      theirs: headBranch,
+      ours,
+      theirs,
       author,
       committer,
     });
   }
 
-  async push({ dir, remoteName }: { dir: string; remoteName: string }) {
+  async push({ dir, remote }: { dir: string; remote: string }) {
     this.config.logger?.info(
-      `Pushing directory to remote {dir=${dir},remoteName=${remoteName}}`,
+      `Pushing directory to remote {dir=${dir},remote=${remote}}`,
     );
     return git.push({
       fs,
@@ -167,7 +168,7 @@ export class Git {
       headers: {
         'user-agent': 'git/@isomorphic-git',
       },
-      remote: remoteName,
+      remote: remote,
       onAuth: this.onAuth,
     });
   }

@@ -46,15 +46,15 @@ describe('Git', () => {
     it('should call isomorphic-git with the correct arguments', async () => {
       const git = Git.fromAuth({});
       const dir = 'mockdirectory';
-      const remoteName = 'origin';
+      const remote = 'origin';
       const url = 'git@github.com/something/sads';
 
-      await git.addRemote({ dir, remoteName, url });
+      await git.addRemote({ dir, remote, url });
 
       expect(isomorphic.addRemote).toHaveBeenCalledWith({
         fs,
         dir,
-        remote: remoteName,
+        remote,
         url,
       });
     });
@@ -224,18 +224,18 @@ describe('Git', () => {
         name: 'comitter',
         email: 'test@backstage.io',
       };
-      const headBranch = 'master';
-      const baseBranch = 'production';
+      const theirs = 'master';
+      const ours = 'production';
 
       const git = Git.fromAuth({});
 
-      await git.merge({ dir, headBranch, baseBranch, author, committer });
+      await git.merge({ dir, theirs, ours, author, committer });
 
       expect(isomorphic.merge).toHaveBeenCalledWith({
         fs,
         dir,
-        ours: baseBranch,
-        theirs: headBranch,
+        ours,
+        theirs,
         author,
         committer,
       });
@@ -244,7 +244,7 @@ describe('Git', () => {
 
   describe('push', () => {
     it('should call isomorphic-git with the correct arguments', async () => {
-      const remoteName = 'origin';
+      const remote = 'origin';
       const dir = '/some/mock/dir';
       const auth = {
         username: 'blob',
@@ -252,12 +252,12 @@ describe('Git', () => {
       };
       const git = Git.fromAuth(auth);
 
-      await git.push({ dir, remoteName });
+      await git.push({ dir, remote });
 
       expect(isomorphic.push).toHaveBeenCalledWith({
         fs,
         http,
-        remote: remoteName,
+        remote,
         dir,
         onProgress: expect.any(Function),
         headers: {
@@ -267,7 +267,7 @@ describe('Git', () => {
       });
     });
     it('should pass a function that returns the authorization as the onAuth handler', async () => {
-      const remoteName = 'origin';
+      const remote = 'origin';
       const dir = '/some/mock/dir';
       const auth = {
         username: 'blob',
@@ -275,7 +275,7 @@ describe('Git', () => {
       };
       const git = Git.fromAuth(auth);
 
-      await git.push({ remoteName, dir });
+      await git.push({ remote, dir });
 
       const { onAuth } = ((isomorphic.push as unknown) as jest.Mock<
         typeof isomorphic['push']

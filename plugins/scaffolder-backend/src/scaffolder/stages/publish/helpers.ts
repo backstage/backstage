@@ -59,11 +59,11 @@ export async function initRepoAndPush({
   await git.addRemote({
     dir,
     url: remoteUrl,
-    remoteName: 'origin',
+    remote: 'origin',
   });
 
   await git.push({
     dir,
-    remoteName: 'origin',
+    remote: 'origin',
   });
 }
