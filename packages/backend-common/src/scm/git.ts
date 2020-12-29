@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import git, { ProgressCallback } from 'isomorphic-git';
+import git, {
+  ProgressCallback,
+  MergeResult,
+  ReadCommitResult,
+} from 'isomorphic-git';
 import http from 'isomorphic-git/http/node';
 import fs from 'fs-extra';
 import { Logger } from 'winston';
@@ -37,7 +41,13 @@ export class Git {
     },
   ) {}
 
-  async add({ dir, filepath }: { dir: string; filepath: string }) {
+  async add({
+    dir,
+    filepath,
+  }: {
+    dir: string;
+    filepath: string;
+  }): Promise<void> {
     this.config.logger?.info(`Adding file {dir=${dir},filepath=${filepath}}`);
 
     return git.add({ fs, dir, filepath });
@@ -51,7 +61,7 @@ export class Git {
     dir: string;
     remote: string;
     url: string;
-  }) {
+  }): Promise<void> {
     this.config.logger?.info(
       `Creating new remote {dir=${dir},remote=${remote},url=${url}}`,
     );
@@ -68,7 +78,7 @@ export class Git {
     message: string;
     author: { name: string; email: string };
     committer: { name: string; email: string };
-  }) {
+  }): Promise<string> {
     this.config.logger?.info(
       `Committing file to repo {dir=${dir},message=${message}}`,
     );
@@ -76,7 +86,7 @@ export class Git {
     return git.commit({ fs, dir, message, author, committer });
   }
 
-  async clone({ url, dir }: { url: string; dir: string }) {
+  async clone({ url, dir }: { url: string; dir: string }): Promise<void> {
     this.config.logger?.info(`Cloning repo {dir=${dir},url=${url}}`);
     return git.clone({
       fs,
@@ -94,18 +104,30 @@ export class Git {
   }
 
   // https://isomorphic-git.org/docs/en/currentBranch
-  async currentBranch({ dir, fullName }: { dir: string; fullName?: boolean }) {
+  async currentBranch({
+    dir,
+    fullName,
+  }: {
+    dir: string;
+    fullName?: boolean;
+  }): Promise<string | void> {
     const fullname = fullName ?? false;
     return git.currentBranch({ fs, dir, fullname });
   }
 
   // https://isomorphic-git.org/docs/en/fetch
-  async fetch({ dir, remote }: { dir: string; remote?: string }) {
+  async fetch({
+    dir,
+    remote,
+  }: {
+    dir: string;
+    remote?: string;
+  }): Promise<void> {
     const remoteValue = remote ?? 'origin';
     this.config.logger?.info(
       `Fetching remote=${remoteValue} for repository {dir=${dir}}`,
     );
-    return git.fetch({
+    await git.fetch({
       fs,
       http,
       dir,
@@ -118,7 +140,7 @@ export class Git {
     });
   }
 
-  async init({ dir }: { dir: string }) {
+  async init({ dir }: { dir: string }): Promise<void> {
     this.config.logger?.info(`Init git repository {dir=${dir}}`);
 
     return git.init({
@@ -140,7 +162,7 @@ export class Git {
     ours?: string;
     author: { name: string; email: string };
     committer: { name: string; email: string };
-  }) {
+  }): Promise<MergeResult> {
     this.config.logger?.info(
       `Merging branch '${theirs}' into '${ours}' for repository {dir=${dir}}`,
     );
@@ -174,12 +196,24 @@ export class Git {
   }
 
   // https://isomorphic-git.org/docs/en/readCommit
-  async readCommit({ dir, sha }: { dir: string; sha: string }) {
+  async readCommit({
+    dir,
+    sha,
+  }: {
+    dir: string;
+    sha: string;
+  }): Promise<ReadCommitResult> {
     return git.readCommit({ fs, dir, oid: sha });
   }
 
   // https://isomorphic-git.org/docs/en/resolveRef
-  async resolveRef({ dir, ref }: { dir: string; ref: string }) {
+  async resolveRef({
+    dir,
+    ref,
+  }: {
+    dir: string;
+    ref: string;
+  }): Promise<string> {
     return git.resolveRef({ fs, dir, ref });
   }
 
