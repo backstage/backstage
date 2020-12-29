@@ -66,7 +66,7 @@ describe('pushToRemoteCred', () => {
     expect(mockIndex.writeTree).toHaveBeenCalled();
   });
 
-  it('should create a commit with on head with the right name and commiter', async () => {
+  it('should create a commit with on head with the right name and committer', async () => {
     const mockSignature = { mockSignature: 'bloblly' };
     Signature.now.mockReturnValue(mockSignature);
 
@@ -94,7 +94,7 @@ describe('pushToRemoteCred', () => {
     expect(Remote.create).toHaveBeenCalledWith(mockRepo, 'origin', 'mockclone');
   });
 
-  it('shoud push to the remote repo', async () => {
+  it('should push to the remote repo', async () => {
     await pushToRemoteCred(directory, remote, credentialsProvider);
 
     const [remotes, { callbacks }] = mockRemote.push.mock
