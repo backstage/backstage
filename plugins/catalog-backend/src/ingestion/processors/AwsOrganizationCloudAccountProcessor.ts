@@ -26,6 +26,8 @@ import { CatalogProcessor, CatalogProcessorEmit } from './types';
 const AWS_ORGANIZATION_REGION = 'us-east-1';
 const LOCATION_TYPE = 'aws-cloud-accounts';
 
+const ORGANIZATION_ANNOTATION = 'amazonaws.com/organization-id';
+
 /**
  * A processor for ingesting AWS Accounts from AWS Organizations.
  *
@@ -110,6 +112,18 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
 
     (await this.getAwsAccounts())
       .map(account => this.mapAccountToComponent(account))
+      .filter(entity => {
+        if (location.target !== '') {
+          if (entity.metadata.annotations) {
+            return (
+              entity.metadata.annotations[ORGANIZATION_ANNOTATION] ===
+              location.type
+            );
+          }
+          return false;
+        }
+        return true;
+      })
       .forEach((entity: ComponentEntityV1alpha1) => {
         emit(results.entity(location, entity));
       });
