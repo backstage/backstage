@@ -182,7 +182,7 @@
                 "visibility": "frontend",
                 "description": "The host that the frontend should be bound to. Only used for local development."
               },
-              "post": {
+              "port": {
                 "type": "number",
                 "visibility": "frontend",
                 "description": "The port that the frontend should be bound to. Only used for local development."
