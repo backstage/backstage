@@ -31,14 +31,14 @@ type Props = {
   job: Job | null;
   toCatalogLink?: string;
   open: boolean;
-  setOpen: (newState: boolean) => void;
+  onModalClose: () => void;
 };
 
 export const JobStatusModal = ({
   job,
   toCatalogLink,
   open,
-  setOpen,
+  onModalClose,
 }: Props) => {
   const renderTitle = () => {
     switch (job?.status) {
@@ -52,14 +52,14 @@ export const JobStatusModal = ({
   };
 
   const onClose = useCallback(() => {
-    setOpen(false);
     if (!job) {
       return;
     }
+    // Disallow closing modal if the job is in progress.
     if (job.status === 'COMPLETED' || job.status === 'FAILED') {
-      setOpen(false);
+      onModalClose();
     }
-  }, [job, setOpen]);
+  }, [job, onModalClose]);
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth>
@@ -87,7 +87,7 @@ export const JobStatusModal = ({
       )}
       {job?.status === 'FAILED' && (
         <DialogActions>
-          <Action onClick={() => setOpen(false)}>Close</Action>
+          <Action onClick={onClose}>Close</Action>
         </DialogActions>
       )}
     </Dialog>

@@ -165,7 +165,7 @@ export const TemplatePage = () => {
           job={job}
           toCatalogLink={catalogLink}
           open={modalOpen}
-          setOpen={setModalOpen}
+          onModalClose={() => setModalOpen(false)}
         />
         {template && (
           <InfoCard title={template.metadata.title} noPadding>
