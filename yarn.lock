@@ -19055,16 +19055,16 @@ passport-onelogin-oauth@^0.0.1:
     pkginfo "0.2.x"
     uid2 "0.0.3"
 
-passport-saml@^1.3.3:
-  version "1.3.3"
-  resolved "https://registry.npmjs.org/passport-saml/-/passport-saml-1.3.3.tgz#cbea1a2b21ff32b3bc4bfd84dc39c3a370df9935"
-  integrity sha512-54ecY/A6UEsyCehJws6a+J6THvwtYnGl9cnAUxx5DjsuKgZrDs0tSy58K4hCk1XG/LOcdQSF1TR3xlRXgTULhA==
+"passport-saml@^1.3.5, <1.4.0":
+  version "1.3.5"
+  resolved "https://registry.npmjs.org/passport-saml/-/passport-saml-1.3.5.tgz#747f2c8bb8b9fed41e8cd14586df5aa83e8a8996"
+  integrity sha512-HFamiqgGiMRCbUBm3wx02WYWKb6ojke0WJHrg4QXI8tx35HrTmDiY8MksUXhouJtEkfcRwXjBL2cSEpRQ6+PgQ==
   dependencies:
     debug "^3.1.0"
     passport-strategy "*"
     q "^1.5.0"
     xml-crypto "^1.4.0"
-    xml-encryption "^1.0.0"
+    xml-encryption "1.2.1"
     xml2js "0.4.x"
     xmlbuilder "^11.0.0"
     xmldom "0.1.x"
@@ -25236,7 +25236,7 @@ xml-crypto@^1.4.0:
     xmldom "0.1.27"
     xpath "0.0.27"
 
-xml-encryption@^1.0.0:
+xml-encryption@1.2.1:
   version "1.2.1"
   resolved "https://registry.npmjs.org/xml-encryption/-/xml-encryption-1.2.1.tgz#e6d18817c4309fd07ca7793cca93c3fd06745baa"
   integrity sha512-hn5w3l5p2+nGjlmM0CAhMChDzVGhW+M37jH35Z+GJIipXbn9PUlAIRZ6I5Wm7ynlqZjFrMAr83d/CIp9VZJMTA==
