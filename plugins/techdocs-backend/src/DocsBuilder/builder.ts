@@ -16,6 +16,7 @@
 import Docker from 'dockerode';
 import { Logger } from 'winston';
 import { Entity } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
 import {
   PreparerBuilder,
   PublisherBase,
@@ -40,6 +41,7 @@ type DocsBuilderArguments = {
   entity: Entity;
   logger: Logger;
   dockerClient: Docker;
+  config: Config;
 };
 
 export class DocsBuilder {
@@ -49,6 +51,7 @@ export class DocsBuilder {
   private entity: Entity;
   private logger: Logger;
   private dockerClient: Docker;
+  private config: Config;
 
   constructor({
     preparers,
@@ -57,6 +60,7 @@ export class DocsBuilder {
     entity,
     logger,
     dockerClient,
+    config,
   }: DocsBuilderArguments) {
     this.preparer = preparers.get(entity);
     this.generator = generators.get(entity);
@@ -64,6 +68,7 @@ export class DocsBuilder {
     this.entity = entity;
     this.logger = logger;
     this.dockerClient = dockerClient;
+    this.config = config;
   }
 
   public async build() {
@@ -109,7 +114,11 @@ export class DocsBuilder {
     // Unless docs are stored locally
     const nonAgeCheckTypes = ['dir', 'file', 'url'];
     if (!nonAgeCheckTypes.includes(type)) {
-      const lastCommit = await getLastCommitTimestamp(target, this.logger);
+      const lastCommit = await getLastCommitTimestamp(
+        target,
+        this.config,
+        this.logger,
+      );
       const storageTimeStamp = buildMetadataStorage.getTimestamp();
 
       // Check if documentation source is newer than what we have

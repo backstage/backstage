@@ -135,6 +135,7 @@ neuro
 newrelic
 nginx
 Niklas
+nodegit
 nohoist
 nonces
 npm

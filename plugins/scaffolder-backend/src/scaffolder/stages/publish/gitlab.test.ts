@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-jest.mock('nodegit');
 jest.mock('@gitbeaker/node');
-jest.mock('./helpers', () => ({
-  pushToRemoteUserPass: jest.fn(),
-}));
+jest.mock('./helpers');
 
 import { GitlabPublisher } from './gitlab';
 import { Gitlab as GitlabAPI } from '@gitbeaker/core';
 import { Gitlab } from '@gitbeaker/node';
-import { pushToRemoteUserPass } from './helpers';
+import { initRepoAndPush } from './helpers';
+import { getVoidLogger } from '@backstage/backend-common';
 
 const { mockGitlabClient } = require('@gitbeaker/node') as {
   mockGitlabClient: {
@@ -34,6 +32,7 @@ const { mockGitlabClient } = require('@gitbeaker/node') as {
 };
 
 describe('GitLab Publisher', () => {
+  const logger = getVoidLogger();
   const publisher = new GitlabPublisher(new Gitlab({}), 'fake-token');
 
   beforeEach(() => {
@@ -56,6 +55,7 @@ describe('GitLab Publisher', () => {
           owner: 'bob',
         },
         directory: '/tmp/test',
+        logger,
       });
 
       expect(result).toEqual({ remoteUrl: 'mockclone' });
@@ -63,12 +63,12 @@ describe('GitLab Publisher', () => {
         namespace_id: 42,
         name: 'test',
       });
-      expect(pushToRemoteUserPass).toHaveBeenCalledWith(
-        '/tmp/test',
-        'mockclone',
-        'oauth2',
-        'fake-token',
-      );
+      expect(initRepoAndPush).toHaveBeenCalledWith({
+        dir: '/tmp/test',
+        remoteUrl: 'mockclone',
+        auth: { username: 'oauth2', password: 'fake-token' },
+        logger,
+      });
     });
 
     it('should use gitbeaker to create a repo in the authed user if the namespace property is not set', async () => {
@@ -86,6 +86,7 @@ describe('GitLab Publisher', () => {
           owner: 'bob',
         },
         directory: '/tmp/test',
+        logger,
       });
 
       expect(result).toEqual({ remoteUrl: 'mockclone' });
@@ -94,12 +95,12 @@ describe('GitLab Publisher', () => {
         namespace_id: 21,
         name: 'test',
       });
-      expect(pushToRemoteUserPass).toHaveBeenCalledWith(
-        '/tmp/test',
-        'mockclone',
-        'oauth2',
-        'fake-token',
-      );
+      expect(initRepoAndPush).toHaveBeenCalledWith({
+        dir: '/tmp/test',
+        remoteUrl: 'mockclone',
+        auth: { username: 'oauth2', password: 'fake-token' },
+        logger,
+      });
     });
   });
 });

@@ -21,6 +21,6 @@ export type {
   ConcreteRoute,
   MutableRouteRef,
 } from './types';
-export { BackstageRoutes } from './BackstageRoutes';
+export { FlatRoutes } from './FlatRoutes';
 export { createRouteRef } from './RouteRef';
 export { useRouteRef } from './hooks';

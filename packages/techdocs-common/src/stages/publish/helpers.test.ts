@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 import mockFs from 'mock-fs';
+import * as os from 'os';
+import * as path from 'path';
 import { getFileTreeRecursively, getHeadersForFileExtension } from './helpers';
 
 describe('getHeadersForFileExtension', () => {
@@ -39,9 +41,11 @@ describe('getHeadersForFileExtension', () => {
 });
 
 describe('getFileTreeRecursively', () => {
+  const root = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
+
   beforeEach(() => {
     mockFs({
-      '/rootDir': {
+      [root]: {
         file1: '',
         subDirA: {
           file2: '',
@@ -57,9 +61,9 @@ describe('getFileTreeRecursively', () => {
   });
 
   it('returns complete file tree of a path', async () => {
-    const fileList = await getFileTreeRecursively('/rootDir');
+    const fileList = await getFileTreeRecursively(root);
     expect(fileList.length).toBe(2);
-    expect(fileList).toContain('/rootDir/file1');
-    expect(fileList).toContain('/rootDir/subDirA/file2');
+    expect(fileList).toContain(path.resolve(root, 'file1'));
+    expect(fileList).toContain(path.resolve(root, 'subDirA/file2'));
   });
 });

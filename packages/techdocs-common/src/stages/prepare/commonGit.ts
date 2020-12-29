@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 import path from 'path';
-import { Entity } from '@backstage/catalog-model';
-import { PreparerBase } from './types';
 import parseGitUrl from 'git-url-parse';
+import { Entity } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
+import { PreparerBase } from './types';
 import { parseReferenceAnnotation, checkoutGitRepository } from '../../helpers';
 
 import { Logger } from 'winston';
 
 export class CommonGitPreparer implements PreparerBase {
+  private readonly config: Config;
   private readonly logger: Logger;
 
-  constructor(logger: Logger) {
+  constructor(config: Config, logger: Logger) {
+    this.config = config;
     this.logger = logger;
   }
 
@@ -35,7 +38,11 @@ export class CommonGitPreparer implements PreparerBase {
     );
 
     try {
-      const repoPath = await checkoutGitRepository(target, this.logger);
+      const repoPath = await checkoutGitRepository(
+        target,
+        this.config,
+        this.logger,
+      );
       const parsedGitLocation = parseGitUrl(target);
 
       return path.join(repoPath, parsedGitLocation.filepath);
