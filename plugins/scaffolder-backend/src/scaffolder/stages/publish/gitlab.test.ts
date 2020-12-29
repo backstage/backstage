@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-jest.mock('nodegit');
 jest.mock('@gitbeaker/node');
 jest.mock('./helpers');
 

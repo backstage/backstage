@@ -1666,10 +1666,10 @@
     yup "^0.29.3"
 
 "@backstage/core@^0.3.0":
-  version "0.4.1"
+  version "0.4.2"
   dependencies:
     "@backstage/config" "^0.1.2"
-    "@backstage/core-api" "^0.2.6"
+    "@backstage/core-api" "^0.2.7"
     "@backstage/theme" "^0.2.2"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
@@ -5971,13 +5971,6 @@
   version "13.13.15"
   resolved "https://registry.npmjs.org/@types/node/-/node-13.13.15.tgz#fe1cc3aa465a3ea6858b793fd380b66c39919766"
   integrity sha512-kwbcs0jySLxzLsa2nWUAGOd/s21WU1jebrEdtzhsj1D4Yps1EOuyI1Qcu+FD56dL7NRNIJtDDjcqIG22NwkgLw==
-
-"@types/nodegit@^0.26.12":
-  version "0.26.12"
-  resolved "https://registry.npmjs.org/@types/nodegit/-/nodegit-0.26.12.tgz#93afb4cb85d3a48d392c3232699c9c07d8251a36"
-  integrity sha512-4YpeTImFZNJ1cve4lEueHFVS8rAs8XpZqlmx+Bm9bMc+XMiCrcwaUf6peN7pod7Rl3esVlGP1zdBB7Z12eMVAA==
-  dependencies:
-    "@types/node" "*"
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
