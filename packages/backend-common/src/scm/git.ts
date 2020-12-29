@@ -110,9 +110,11 @@ export class Git {
   }: {
     dir: string;
     fullName?: boolean;
-  }): Promise<string | void> {
+  }): Promise<string | undefined> {
     const fullname = fullName ?? false;
-    return git.currentBranch({ fs, dir, fullname });
+    return git.currentBranch({ fs, dir, fullname }) as Promise<
+      string | undefined
+    >;
   }
 
   // https://isomorphic-git.org/docs/en/fetch
