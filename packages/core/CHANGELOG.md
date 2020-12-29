@@ -1,5 +1,15 @@
 # @backstage/core
 
+## 0.4.3
+
+### Patch Changes
+
+- a08c32ced: Add `FlatRoutes` component to replace the top-level `Routes` component from `react-router` within apps, removing the need for manually appending `/*` to paths or sorting routes.
+- Updated dependencies [a08c32ced]
+- Updated dependencies [86c3c652a]
+- Updated dependencies [27f2af935]
+  - @backstage/core-api@0.2.8
+
 ## 0.4.2
 
 ### Patch Changes
