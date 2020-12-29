@@ -19,7 +19,7 @@ import {
   LocationSpec,
 } from '@backstage/catalog-model';
 import AWS, { Organizations } from 'aws-sdk';
-import { Account } from 'aws-sdk/clients/organizations';
+import { Account, ListAccountsResponse } from 'aws-sdk/clients/organizations';
 
 import * as results from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
@@ -71,7 +71,7 @@ export class AwsOrganizationProcessor implements CatalogProcessor {
     let NextToken = undefined;
     while (isInitialAttempt || NextToken) {
       isInitialAttempt = false;
-      const orgAccounts = await this.organizations
+      const orgAccounts: ListAccountsResponse = await this.organizations
         .listAccounts({ NextToken })
         .promise();
       if (orgAccounts.Accounts) {

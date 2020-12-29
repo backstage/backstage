@@ -29,7 +29,7 @@ describe('AwsOrganizationProcessor', () => {
     it('generates component entities for accounts', async () => {
       listAccounts.mockImplementation(() => {
         return {
-          promise: async function () {
+          async promise() {
             return {
               Accounts: [
                 {
