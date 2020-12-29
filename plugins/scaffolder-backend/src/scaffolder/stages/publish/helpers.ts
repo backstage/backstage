@@ -13,43 +13,57 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Repository, Remote, Signature, Cred } from 'nodegit';
 
-export async function pushToRemoteCred(
-  directory: string,
-  remote: string,
-  credentialsProvider: () => Cred,
-): Promise<void> {
-  const repo = await Repository.init(directory, 0);
-  const index = await repo.refreshIndex();
-  await index.addAll();
-  await index.write();
-  const oid = await index.writeTree();
-  await repo.createCommit(
-    'HEAD',
-    Signature.now('Scaffolder', 'scaffolder@backstage.io'),
-    Signature.now('Scaffolder', 'scaffolder@backstage.io'),
-    'initial commit',
-    oid,
-    [],
-  );
+import globby from 'globby';
+import { Logger } from 'winston';
+import { Git } from '@backstage/backend-common';
 
-  const remoteRepo = await Remote.create(repo, 'origin', remote);
-
-  await remoteRepo.push(['refs/heads/master:refs/heads/master'], {
-    callbacks: {
-      credentials: credentialsProvider,
-    },
+export async function initRepoAndPush({
+  dir,
+  remoteUrl,
+  auth,
+  logger,
+}: {
+  dir: string;
+  remoteUrl: string;
+  auth: { username: string; password: string };
+  logger: Logger;
+}): Promise<void> {
+  const git = Git.fromAuth({
+    username: auth.username,
+    password: auth.password,
+    logger,
   });
-}
 
-export async function pushToRemoteUserPass(
-  directory: string,
-  remote: string,
-  username: string,
-  password: string,
-): Promise<void> {
-  return pushToRemoteCred(directory, remote, () =>
-    Cred.userpassPlaintextNew(username, password),
-  );
+  await git.init({
+    dir,
+  });
+
+  const paths = await globby(['./**', './**/.*'], {
+    cwd: dir,
+    gitignore: true,
+    dot: true,
+  });
+
+  for (const filepath of paths) {
+    await git.add({ dir, filepath });
+  }
+
+  await git.commit({
+    dir,
+    message: 'Initial commit',
+    author: { name: 'Scaffolder', email: 'scaffolder@backstage.io' },
+    committer: { name: 'Scaffolder', email: 'scaffolder@backstage.io' },
+  });
+
+  await git.addRemote({
+    dir,
+    url: remoteUrl,
+    remote: 'origin',
+  });
+
+  await git.push({
+    dir,
+    remote: 'origin',
+  });
 }

@@ -1,11 +1,8 @@
 import {
   createRouter,
-  DirectoryPreparer,
-  CommonGitPreparer,
   Preparers,
   Generators,
-  LocalPublish,
-  TechdocsGenerator,
+  Publisher,
 } from '@backstage/plugin-techdocs-backend';
 import { PluginEnvironment } from '../types';
 import Docker from 'dockerode';
@@ -14,22 +11,28 @@ export default async function createPlugin({
   logger,
   config,
   discovery,
+  reader,
 }: PluginEnvironment) {
-  const generators = new Generators();
-  const techdocsGenerator = new TechdocsGenerator(logger, config);
+  // Preparers are responsible for fetching source files for documentation.
+  const preparers = await Preparers.fromConfig(config, {
+    logger,
+    reader,
+  });
 
-  generators.register('techdocs', techdocsGenerator);
+  // Generators are used for generating documentation sites.
+  const generators = await Generators.fromConfig(config, {
+    logger,
+  });
 
-  const preparers = new Preparers();
-  const directoryPreparer = new DirectoryPreparer(logger);
-  const commonGitPreparer = new CommonGitPreparer(logger);
+  // Publisher is used for
+  // 1. Publishing generated files to storage
+  // 2. Fetching files from storage and passing them to TechDocs frontend.
+  const publisher = await Publisher.fromConfig(config, {
+    logger,
+    discovery,
+  });
 
-  preparers.register('dir', directoryPreparer);
-  preparers.register('github', commonGitPreparer);
-  preparers.register('gitlab', commonGitPreparer);
-
-  const publisher = new LocalPublish(logger, discovery);
-
+  // Docker client (conditionally) used by the generators, based on techdocs.generators config.
   const dockerClient = new Docker();
 
   return await createRouter({

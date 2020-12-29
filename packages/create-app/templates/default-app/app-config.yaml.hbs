@@ -57,10 +57,13 @@ proxy:
     changeOrigin: true
 
 techdocs:
-  storageUrl: http://localhost:7000/api/techdocs/static/docs
   requestUrl: http://localhost:7000/api/techdocs
+  storageUrl: http://localhost:7000/api/techdocs/static/docs
+  builder: 'local'
   generators:
     techdocs: 'docker'
+  publisher:
+    type: 'local'
 
 lighthouse:
   baseUrl: http://localhost:3003

@@ -6,8 +6,8 @@ metadata:
 spec:
   type: service
   lifecycle: experimental
-  owner: pets@example.com
-  implementsApis:
+  owner: team-c
+  providesApis:
     - petstore
     - streetlights
     - hello-world

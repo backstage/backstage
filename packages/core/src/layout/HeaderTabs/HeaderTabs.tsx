@@ -43,11 +43,16 @@ export type Tab = {
   label: string;
 };
 
-export const HeaderTabs: React.FC<{
+type HeaderTabsProps = {
   tabs: Tab[];
   onChange?: (index: number) => void;
   selectedIndex?: number;
-}> = ({ tabs, onChange, selectedIndex }) => {
+};
+export const HeaderTabs = ({
+  tabs,
+  onChange,
+  selectedIndex,
+}: HeaderTabsProps) => {
   const [selectedTab, setSelectedTab] = useState<number>(selectedIndex ?? 0);
   const styles = useStyles();
 

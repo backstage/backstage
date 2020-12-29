@@ -69,7 +69,7 @@ export class ConfigReader implements Config {
 
   constructor(
     private readonly data: JsonObject | undefined,
-    private readonly context: string = 'empty-config',
+    private readonly context: string = 'mock-config',
     private readonly fallback?: ConfigReader,
     private readonly prefix: string = '',
   ) {}
@@ -272,23 +272,17 @@ export class ConfigReader implements Config {
     if (value === undefined) {
       return this.fallback?.readConfigValue(key, validate);
     }
-    if (value !== undefined) {
-      const result = validate(value);
-      if (result !== true) {
-        const {
-          key: keyName = key,
-          value: theValue = value,
+    const result = validate(value);
+    if (result !== true) {
+      const { key: keyName = key, value: theValue = value, expected } = result;
+      throw new TypeError(
+        errors.type(
+          this.fullKey(keyName),
+          this.context,
+          typeOf(theValue),
           expected,
-        } = result;
-        throw new TypeError(
-          errors.type(
-            this.fullKey(keyName),
-            this.context,
-            typeOf(theValue),
-            expected,
-          ),
-        );
-      }
+        ),
+      );
     }
 
     return value as T;

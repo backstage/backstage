@@ -80,9 +80,10 @@ describe('DatabaseEntitiesCatalog', () => {
           'kind=b,metadata.namespace=d,metadata.name=c',
         ),
       );
-      expect(db.setRelations).toHaveBeenCalledTimes(1);
-      expect(db.setRelations).toHaveBeenCalledWith(expect.anything(), 'u', []);
       expect(db.addEntities).toHaveBeenCalledTimes(1);
+      expect(db.addEntities).toHaveBeenCalledWith(expect.anything(), [
+        { entity: expect.anything(), relations: [] },
+      ]);
       expect(result).toEqual([{ entityId: 'u' }]);
     });
 
@@ -113,9 +114,10 @@ describe('DatabaseEntitiesCatalog', () => {
           'kind=b,metadata.namespace=d,metadata.name=c',
         ),
       );
-      expect(db.setRelations).toHaveBeenCalledTimes(1);
-      expect(db.setRelations).toHaveBeenCalledWith(expect.anything(), 'u', []);
       expect(db.addEntities).toHaveBeenCalledTimes(1);
+      expect(db.addEntities).toHaveBeenCalledWith(expect.anything(), [
+        { entity: expect.anything(), relations: [] },
+      ]);
       expect(transaction.rollback).toBeCalledTimes(1);
       expect(result).toEqual([{ entityId: 'u' }]);
     });
@@ -145,11 +147,7 @@ describe('DatabaseEntitiesCatalog', () => {
           },
         },
       };
-      db.entities.mockResolvedValue([
-        {
-          entity: dbEntity,
-        },
-      ]);
+      db.entities.mockResolvedValue([{ entity: dbEntity }]);
       db.addEntities.mockResolvedValue([
         { entity: { ...entity, metadata: { ...entity.metadata, uid: 'u' } } },
       ]);
@@ -161,7 +159,7 @@ describe('DatabaseEntitiesCatalog', () => {
       );
 
       expect(db.entities).toHaveBeenCalledTimes(2);
-      expect(db.setRelations).toHaveBeenCalledTimes(1);
+      expect(db.addEntities).toHaveBeenCalledTimes(1);
       expect(result).toEqual([
         {
           entityId: 'u',
@@ -237,12 +235,11 @@ describe('DatabaseEntitiesCatalog', () => {
               x: 'b',
             },
           },
+          relations: [],
         },
         'e',
         1,
       );
-      expect(db.setRelations).toHaveBeenCalledTimes(1);
-      expect(db.setRelations).toHaveBeenCalledWith(expect.anything(), 'u', []);
       expect(result).toEqual([{ entityId: 'u' }]);
     });
 
@@ -315,6 +312,7 @@ describe('DatabaseEntitiesCatalog', () => {
               x: 'b',
             },
           },
+          relations: [],
         },
         'e',
         1,

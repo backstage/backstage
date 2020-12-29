@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React from 'react';
 import { Tooltip, useTheme } from '@material-ui/core';
 // @ts-ignore
 import { Line } from 'rc-progress';
@@ -28,7 +28,7 @@ type Props = {
   value: number;
 };
 
-export const LinearGauge: FC<Props> = ({ value }) => {
+export const LinearGauge = ({ value }: Props) => {
   const theme = useTheme<BackstageTheme>();
   if (isNaN(value)) {
     return null;

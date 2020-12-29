@@ -87,7 +87,7 @@ describe('TokenFactory', () => {
       iat: expect.any(Number),
       exp: expect.any(Number),
     });
-    expect(payload.exp).toBe(payload.iat + keyDurationSeconds * 1000);
+    expect(payload.exp).toBe(payload.iat + keyDurationSeconds);
   });
 
   it('should generate new signing keys when the current one expires', async () => {

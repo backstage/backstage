@@ -54,9 +54,11 @@ describe('OidcAuthProvider', () => {
       .get('/.well-known/openid-configuration')
       .reply(200, issuerMetadata);
     const provider = new OidcAuthProvider(clientMetadata);
-    const strategy = ((await provider._strategy) as any) as {
-      _client: ClientMetadata;
-      _issuer: IssuerMetadata;
+    const { strategy } = ((await (provider as any).implementation) as any) as {
+      strategy: {
+        _client: ClientMetadata;
+        _issuer: IssuerMetadata;
+      };
     };
     // Assert that the expected request to the metadaurl was made.
     expect(scope.isDone()).toBeTruthy();
@@ -89,27 +91,38 @@ describe('OidcAuthProvider', () => {
     const provider = new OidcAuthProvider(clientMetadata);
     const req = {
       method: 'GET',
-      url: '/?code=test2',
+      url: 'https://oidc.test/?code=test2',
       session: ({ 'oidc:oidc.test': 'test' } as any) as Session,
     } as express.Request;
     await provider.handler(req);
     expect(scope.isDone()).toBeTruthy();
   });
 
-  const options = {
-    globalConfig: {
-      appUrl: 'https://oidc.test',
-      baseUrl: 'https://oidc.test',
-    },
-    config: ({
-      keys: jest.fn(() => ['test']),
-      getConfig: jest.fn(() => ({ getString: () => '' })),
-    } as any) as Config,
-  } as AuthProviderFactoryOptions;
-
-  it('createOidcProvider', () => {
+  it('createOidcProvider', async () => {
+    const scope = nock('https://oidc.test')
+      .get('/.well-known/openid-configuration')
+      .reply(200, issuerMetadata);
+    const options = {
+      globalConfig: {
+        appUrl: 'https://oidc.test',
+        baseUrl: 'https://oidc.test',
+      },
+      config: ({
+        keys: jest.fn(() => ['test']),
+        getConfig: jest.fn(() => ({
+          getString: (key: string) => {
+            const conf = {
+              ...clientMetadata,
+              metadataUrl: 'https://oidc.test/.well-known/openid-configuration',
+            } as any;
+            return conf[key] as string;
+          },
+        })),
+      } as any) as Config,
+    } as AuthProviderFactoryOptions;
     const provider = createOidcProvider(options) as OAuthAdapter;
-    console.log(provider);
     expect(provider.start).toBeDefined();
+    await new Promise(resolve => process.nextTick(resolve)); // advance a tick to give nock a chance to intercept the request
+    expect(scope.isDone()).toBeTruthy();
   });
 });

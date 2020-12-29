@@ -1,5 +1,36 @@
 # @backstage/test-utils
 
+## 0.1.6
+
+### Patch Changes
+
+- 1dc445e89: Update to use new plugin extension API
+- Updated dependencies [d681db2b5]
+- Updated dependencies [1dc445e89]
+  - @backstage/core-api@0.2.7
+
+## 0.1.5
+
+### Patch Changes
+
+- e1f4e24ef: Fix @backstage/cli not being a devDependency
+- Updated dependencies [b6557c098]
+- Updated dependencies [d8d5a17da]
+- Updated dependencies [1665ae8bb]
+  - @backstage/core-api@0.2.5
+  - @backstage/theme@0.2.2
+
+## 0.1.4
+
+### Patch Changes
+
+- Updated dependencies [b4488ddb0]
+- Updated dependencies [4a655c89d]
+- Updated dependencies [8a16e8af8]
+- Updated dependencies [00670a96e]
+  - @backstage/cli@0.4.0
+  - @backstage/core-api@0.2.4
+
 ## 0.1.3
 
 ### Patch Changes

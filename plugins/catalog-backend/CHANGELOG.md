@@ -1,5 +1,181 @@
 # @backstage/plugin-catalog-backend
 
+## 0.5.1
+
+### Patch Changes
+
+- 5de26b9a6: Start warning about usage of deprecated location types, such as `github`
+- 30d6c78fb: Added configuration schema for the commonly used properties
+- 5084e5039: Updated the config schema
+
+## 0.5.0
+
+### Minor Changes
+
+- 6b37c95bf: Write relations directly as part of batch add / update of entities.
+
+  Slight change of the `CommonDatabase` contract:
+
+  ## `addEntity` removed
+
+  This method was unused by the core, and rendered unnecessary when `addEntities`
+  exists.
+
+  If you were a user of `addEntity`, please call `addEntities` instead, with an
+  array of one element.
+
+  ## `DbEntityRequest` has a new field `relations`
+
+  This is the structure that is passed to `addEntities` and `updateEntity`. It
+  used to be the case that you needed to call `setRelations` separately, but now
+  this instead happens directly when you call `addEntities` or `updateEntity`.
+
+  If you were using `addEntities` or `updateEntity` directly, please adapt your
+  code to add the `relations` array to each request. If you were calling
+  `setRelations` separately next to these methods, you no longer need to do so,
+  after adding the relations to the `DbEntityRequest`s.
+
+- ac3560b42: Remove `implementsApis` from `Component` entities. Deprecation happened in [#3449](https://github.com/backstage/backstage/pull/3449).
+  Use `providesApis` instead.
+
+### Patch Changes
+
+- c6eeefa35: Add support for Github Enterprise in GitHubOrgReaderProcessor so you can properly ingest users of a GHE organization.
+- fb386b760: Break the refresh loop into several smaller transactions
+- 7c3ffc0cd: Support `profile` of groups including `displayName`, `email`, and `picture` in
+  `LdapOrgReaderProcessor`. The source fields for them can be configured in the
+  `ldapOrg` provider.
+- e7496dc3e: Break out GithubOrgReaderProcessor config into its own file for consistency with the other org processors.
+- 8dd0a906d: Support `profile` of groups including `displayName` and `picture` in
+  `GithubOrgReaderProcessor`. Fixes the import of `description` for groups.
+- 8c31c681c: Batch the writing of statuses after refreshes. This reduced the runtime on sqlite from 16s to 0.2s, and on pg from 60s to 1s on my machine, for the huge LDAP set.
+- 7b98e7fee: Add index to foreign key columns. Postgres (and others) do not do this on the "source" side of a foreign key relation, which was what led to the slowness on large datasets. The full LDAP dataset ingestion now takes two minutes, which is not optimal yet but still a huge improvement over before when it basically never finished :)
+- 0097057ed: Support `profile` of groups including `displayName` and `email` in
+  `MicrosoftGraphOrgReaderProcessor`. Importing `picture` doesn't work yet, as
+  the Microsoft Graph API does not expose them correctly.
+- Updated dependencies [c911061b7]
+- Updated dependencies [1d1c2860f]
+- Updated dependencies [0e6298f7e]
+- Updated dependencies [4eafdec4a]
+- Updated dependencies [ac3560b42]
+  - @backstage/catalog-model@0.6.0
+  - @backstage/backend-common@0.4.1
+
+## 0.4.0
+
+### Minor Changes
+
+- 83b6e0c1f: Remove the deprecated fields `ancestors` and `descendants` from the `Group` entity.
+
+  See https://github.com/backstage/backstage/issues/3049 and the PRs linked from it for details.
+
+### Patch Changes
+
+- 6e8bb3ac0: leave unknown placeholder-lookalikes untouched in the catalog processing loop
+- e708679d7: refreshAllLocations uses a child logger of the HigherOrderOperation with a meta `component` : `catalog-all-locations-refresh`
+- 047c018c9: Batch the fetching of relations
+- 38d63fbe1: Fix string template literal
+- Updated dependencies [38e24db00]
+- Updated dependencies [e3bd9fc2f]
+- Updated dependencies [12bbd748c]
+- Updated dependencies [83b6e0c1f]
+- Updated dependencies [e3bd9fc2f]
+  - @backstage/backend-common@0.4.0
+  - @backstage/config@0.1.2
+  - @backstage/catalog-model@0.5.0
+
+## 0.3.0
+
+### Minor Changes
+
+- a9fd599f7: Add Analyze location endpoint to catalog backend. Add catalog-import plugin and replace import-component with it. To start using Analyze location endpoint, you have add it to the `createRouter` function options in the `\backstage\packages\backend\src\plugins\catalog.ts` file:
+
+  ```ts
+  export default async function createPlugin(env: PluginEnvironment) {
+    const builder = new CatalogBuilder(env);
+    const {
+      entitiesCatalog,
+      locationsCatalog,
+      higherOrderOperation,
+      locationAnalyzer, //<--
+    } = await builder.build();
+
+    return await createRouter({
+      entitiesCatalog,
+      locationsCatalog,
+      higherOrderOperation,
+      locationAnalyzer, //<--
+      logger: env.logger,
+    });
+  }
+  ```
+
+### Patch Changes
+
+- b4488ddb0: Added a type alias for PositionError = GeolocationPositionError
+- 08835a61d: Add support for relative targets and implicit types in Location entities.
+- e42402b47: Gracefully handle missing codeowners.
+
+  The CodeOwnersProcessor now also takes a logger as a parameter.
+
+- Updated dependencies [612368274]
+- Updated dependencies [08835a61d]
+- Updated dependencies [a9fd599f7]
+- Updated dependencies [bcc211a08]
+  - @backstage/backend-common@0.3.3
+  - @backstage/catalog-model@0.4.0
+
+## 0.2.3
+
+### Patch Changes
+
+- 1ec19a3f4: Ignore empty YAML documents. Having a YAML file like this is now ingested without an error:
+
+  ```yaml
+  apiVersion: backstage.io/v1alpha1
+  kind: Component
+  metadata:
+    name: web
+  spec:
+    type: website
+  ---
+
+  ```
+
+  This behaves now the same way as Kubernetes handles multiple documents in a single YAML file.
+
+- ab94c9542: Add `providesApis` and `consumesApis` to the component entity spec.
+- 2daf18e80: Start emitting all known relation types from the core entity kinds, based on their spec data.
+- Updated dependencies [3aa7efb3f]
+- Updated dependencies [ab94c9542]
+- Updated dependencies [2daf18e80]
+- Updated dependencies [069cda35f]
+- Updated dependencies [b3d4e4e57]
+  - @backstage/backend-common@0.3.2
+  - @backstage/catalog-model@0.3.1
+
+## 0.2.2
+
+### Patch Changes
+
+- 0c2121240: Add support for reading groups and users from the Microsoft Graph API.
+- 1185919f3: Marked the `Group` entity fields `ancestors` and `descendants` for deprecation on Dec 6th, 2020. See https://github.com/backstage/backstage/issues/3049 for details.
+
+  Code that consumes these fields should remove those usages as soon as possible. There is no current or planned replacement for these fields.
+
+  The BuiltinKindsEntityProcessor has been updated to inject these fields as empty arrays if they are missing. Therefore, if you are on a catalog instance that uses the updated version of this code, you can start removing the fields from your source catalog-info.yaml data as well, without breaking validation.
+
+  After Dec 6th, the fields will be removed from types and classes of the Backstage repository. At the first release after that, they will not be present in released packages either.
+
+  If your catalog-info.yaml files still contain these fields after the deletion, they will still be valid and your ingestion will not break, but they won't be visible in the types for consuming code.
+
+- Updated dependencies [1166fcc36]
+- Updated dependencies [bff3305aa]
+- Updated dependencies [1185919f3]
+- Updated dependencies [b47dce06f]
+  - @backstage/catalog-model@0.3.0
+  - @backstage/backend-common@0.3.1
+
 ## 0.2.1
 
 ### Patch Changes

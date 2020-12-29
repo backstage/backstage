@@ -25,23 +25,17 @@ type Transforms = {
 
 type TransformOptions = {
   isDev: boolean;
-  // External paths that should be transformed
-  externalTransforms: string[];
 };
 
 export const transforms = (options: TransformOptions): Transforms => {
-  const { isDev, externalTransforms } = options;
+  const { isDev } = options;
 
   const extraTransforms = isDev ? ['react-hot-loader'] : [];
-
-  const transformExcludeCondition = {
-    and: [/node_modules/, { not: externalTransforms }],
-  };
 
   const loaders = [
     {
       test: /\.(tsx?)$/,
-      exclude: transformExcludeCondition,
+      exclude: /node_modules/,
       loader: require.resolve('@sucrase/webpack-loader'),
       options: {
         transforms: ['typescript', 'jsx', ...extraTransforms],
@@ -50,7 +44,7 @@ export const transforms = (options: TransformOptions): Transforms => {
     },
     {
       test: /\.(jsx?|mjs)$/,
-      exclude: transformExcludeCondition,
+      exclude: /node_modules/,
       loader: require.resolve('@sucrase/webpack-loader'),
       options: {
         transforms: ['jsx', ...extraTransforms],

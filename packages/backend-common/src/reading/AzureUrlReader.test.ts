@@ -20,7 +20,7 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '../logging';
-import { AzureUrlReader, getDownloadUrl } from './AzureUrlReader';
+import { AzureUrlReader } from './AzureUrlReader';
 import { msw } from '@backstage/test-utils';
 import { ReadTreeResponseFactory } from './tree';
 
@@ -111,13 +111,13 @@ describe('AzureUrlReader', () => {
         url: 'https://api.com/a/b/blob/master/path/to/c.yaml',
         config: createConfig(),
         error:
-          'Incorrect url: https://api.com/a/b/blob/master/path/to/c.yaml, Error: Wrong Azure Devops URL or Invalid file path',
+          'Incorrect URL: https://api.com/a/b/blob/master/path/to/c.yaml, Error: Wrong Azure Devops URL or Invalid file path',
       },
       {
         url: 'com/a/b/blob/master/path/to/c.yaml',
         config: createConfig(),
         error:
-          'Incorrect url: com/a/b/blob/master/path/to/c.yaml, TypeError: Invalid URL: com/a/b/blob/master/path/to/c.yaml',
+          'Incorrect URL: com/a/b/blob/master/path/to/c.yaml, TypeError: Invalid URL: com/a/b/blob/master/path/to/c.yaml',
       },
       {
         url: '',
@@ -158,9 +158,7 @@ describe('AzureUrlReader', () => {
 
     it('returns the wanted files from an archive', async () => {
       const processor = new AzureUrlReader(
-        {
-          host: 'dev.azure.com',
-        },
+        { host: 'dev.azure.com' },
         { treeResponseFactory },
       );
 
@@ -176,23 +174,6 @@ describe('AzureUrlReader', () => {
 
       expect(mkDocsFile.toString()).toBe('site_name: Test\n');
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
-    });
-  });
-
-  describe('getDownloadUrl', () => {
-    it('do not add scopePath if no path is specified', async () => {
-      const result = getDownloadUrl(
-        'https://dev.azure.com/organization/project/_git/repository',
-      );
-
-      expect(result.searchParams.get('scopePath')).toBeNull();
-    });
-
-    it('add scopePath if a path is specified', async () => {
-      const result = getDownloadUrl(
-        'https://dev.azure.com/organization/project/_git/repository?path=%2Fdocs',
-      );
-      expect(result.searchParams.get('scopePath')).toEqual('docs');
     });
   });
 });

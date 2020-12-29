@@ -39,12 +39,12 @@ const EntityPageTitle = ({
   </Box>
 );
 
-function headerProps(
+const headerProps = (
   kind: string,
   namespace: string | undefined,
   name: string,
   entity: Entity | undefined,
-): { headerTitle: string; headerType: string } {
+): { headerTitle: string; headerType: string } => {
   return {
     headerTitle: `${name}${
       namespace && namespace !== ENTITY_DEFAULT_NAMESPACE
@@ -60,7 +60,7 @@ function headerProps(
       return t;
     })(),
   };
-}
+};
 
 export const EntityPageLayout = ({ children }: PropsWithChildren<{}>) => {
   const { kind, namespace, name } = useEntityCompoundName();
@@ -88,7 +88,8 @@ export const EntityPageLayout = ({ children }: PropsWithChildren<{}>) => {
         pageTitleOverride={headerTitle}
         type={headerType}
       >
-        {entity && (
+        {/* TODO: fix after catalog page customization is added */}
+        {entity && kind !== 'user' && (
           <>
             <HeaderLabel
               label="Owner"

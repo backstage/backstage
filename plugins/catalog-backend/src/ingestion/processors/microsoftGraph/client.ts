@@ -117,12 +117,65 @@ export class MicrosoftGraphClient {
     userId: string,
     maxSize: number,
   ): Promise<string | undefined> {
-    const response = await this.requestApi(`users/${userId}/photos`);
+    return await this.getPhotoWithSizeLimit('users', userId, maxSize);
+  }
+
+  async getUserPhoto(
+    userId: string,
+    sizeId?: string,
+  ): Promise<string | undefined> {
+    return await this.getPhoto('users', userId, sizeId);
+  }
+
+  async *getUsers(query?: ODataQuery): AsyncIterable<MicrosoftGraph.User> {
+    yield* this.requestCollection<MicrosoftGraph.User>(`users`, query);
+  }
+
+  async getGroupPhotoWithSizeLimit(
+    groupId: string,
+    maxSize: number,
+  ): Promise<string | undefined> {
+    return await this.getPhotoWithSizeLimit('groups', groupId, maxSize);
+  }
+
+  async getGroupPhoto(
+    groupId: string,
+    sizeId?: string,
+  ): Promise<string | undefined> {
+    return await this.getPhoto('groups', groupId, sizeId);
+  }
+
+  async *getGroups(query?: ODataQuery): AsyncIterable<MicrosoftGraph.Group> {
+    yield* this.requestCollection<MicrosoftGraph.Group>(`groups`, query);
+  }
+
+  async *getGroupMembers(groupId: string): AsyncIterable<GroupMember> {
+    yield* this.requestCollection<GroupMember>(`groups/${groupId}/members`);
+  }
+
+  async getOrganization(
+    tenantId: string,
+  ): Promise<MicrosoftGraph.Organization> {
+    const response = await this.requestApi(`organization/${tenantId}`);
+
+    if (response.status !== 200) {
+      await this.handleError(`organization/${tenantId}`, response);
+    }
+
+    return await response.json();
+  }
+
+  private async getPhotoWithSizeLimit(
+    entityName: string,
+    id: string,
+    maxSize: number,
+  ): Promise<string | undefined> {
+    const response = await this.requestApi(`${entityName}/${id}/photos`);
 
     if (response.status === 404) {
       return undefined;
     } else if (response.status !== 200) {
-      await this.handleError('user photos', response);
+      await this.handleError(`${entityName} photos`, response);
     }
 
     const result = await response.json();
@@ -143,16 +196,17 @@ export class MicrosoftGraphClient {
       return undefined;
     }
 
-    return await this.getUserPhoto(userId, selectedPhoto.id!);
+    return await this.getPhoto(entityName, id, selectedPhoto.id!);
   }
 
-  async getUserPhoto(
-    userId: string,
+  private async getPhoto(
+    entityName: string,
+    id: string,
     sizeId?: string,
   ): Promise<string | undefined> {
     const path = sizeId
-      ? `users/${userId}/photos/${sizeId}/$value`
-      : `users/${userId}/photo/$value`;
+      ? `${entityName}/${id}/photos/${sizeId}/$value`
+      : `${entityName}/${id}/photo/$value`;
     const response = await this.requestApi(path);
 
     if (response.status === 404) {
@@ -164,30 +218,6 @@ export class MicrosoftGraphClient {
     return `data:image/jpeg;base64,${Buffer.from(
       await response.arrayBuffer(),
     ).toString('base64')}`;
-  }
-
-  async *getUsers(query?: ODataQuery): AsyncIterable<MicrosoftGraph.User> {
-    yield* this.requestCollection<MicrosoftGraph.User>(`users`, query);
-  }
-
-  async *getGroups(query?: ODataQuery): AsyncIterable<MicrosoftGraph.Group> {
-    yield* this.requestCollection<MicrosoftGraph.Group>(`groups`, query);
-  }
-
-  async *getGroupMembers(groupId: string): AsyncIterable<GroupMember> {
-    yield* this.requestCollection<GroupMember>(`groups/${groupId}/members`);
-  }
-
-  async getOrganization(
-    tenantId: string,
-  ): Promise<MicrosoftGraph.Organization> {
-    const response = await this.requestApi(`organization/${tenantId}`);
-
-    if (response.status !== 200) {
-      await this.handleError('organization/${tenantId}', response);
-    }
-
-    return await response.json();
   }
 
   private async handleError(path: string, response: Response): Promise<void> {

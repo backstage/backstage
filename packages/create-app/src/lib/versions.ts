@@ -39,15 +39,16 @@ import { version as pluginAppBackend } from '@backstage/plugin-app-backend/packa
 import { version as pluginAuthBackend } from '@backstage/plugin-auth-backend/package.json';
 import { version as pluginCatalog } from '@backstage/plugin-catalog/package.json';
 import { version as pluginCatalogBackend } from '@backstage/plugin-catalog-backend/package.json';
+import { version as pluginCatalogImport } from '@backstage/plugin-catalog-import/package.json';
 import { version as pluginCircleci } from '@backstage/plugin-circleci/package.json';
 import { version as pluginExplore } from '@backstage/plugin-explore/package.json';
 import { version as pluginGithubActions } from '@backstage/plugin-github-actions/package.json';
 import { version as pluginLighthouse } from '@backstage/plugin-lighthouse/package.json';
 import { version as pluginProxyBackend } from '@backstage/plugin-proxy-backend/package.json';
-import { version as pluginRegisterComponent } from '@backstage/plugin-register-component/package.json';
 import { version as pluginRollbarBackend } from '@backstage/plugin-rollbar-backend/package.json';
 import { version as pluginScaffolder } from '@backstage/plugin-scaffolder/package.json';
 import { version as pluginScaffolderBackend } from '@backstage/plugin-scaffolder-backend/package.json';
+import { version as pluginSearch } from '@backstage/plugin-search/package.json';
 import { version as pluginTechRadar } from '@backstage/plugin-tech-radar/package.json';
 import { version as pluginTechdocs } from '@backstage/plugin-techdocs/package.json';
 import { version as pluginTechdocsBackend } from '@backstage/plugin-techdocs-backend/package.json';
@@ -66,15 +67,16 @@ export const packageVersions = {
   '@backstage/plugin-auth-backend': pluginAuthBackend,
   '@backstage/plugin-catalog': pluginCatalog,
   '@backstage/plugin-catalog-backend': pluginCatalogBackend,
+  '@backstage/plugin-catalog-import': pluginCatalogImport,
   '@backstage/plugin-circleci': pluginCircleci,
   '@backstage/plugin-explore': pluginExplore,
   '@backstage/plugin-github-actions': pluginGithubActions,
   '@backstage/plugin-lighthouse': pluginLighthouse,
   '@backstage/plugin-proxy-backend': pluginProxyBackend,
-  '@backstage/plugin-register-component': pluginRegisterComponent,
   '@backstage/plugin-rollbar-backend': pluginRollbarBackend,
   '@backstage/plugin-scaffolder': pluginScaffolder,
   '@backstage/plugin-scaffolder-backend': pluginScaffolderBackend,
+  '@backstage/plugin-search': pluginSearch,
   '@backstage/plugin-tech-radar': pluginTechRadar,
   '@backstage/plugin-techdocs': pluginTechdocs,
   '@backstage/plugin-techdocs-backend': pluginTechdocsBackend,

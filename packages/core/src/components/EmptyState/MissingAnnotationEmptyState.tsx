@@ -20,8 +20,7 @@ import { BackstageTheme } from '@backstage/theme';
 import { EmptyState } from './EmptyState';
 import { CodeSnippet } from '../CodeSnippet';
 
-const COMPONENT_YAML = `# Example
-apiVersion: backstage.io/v1alpha1
+const COMPONENT_YAML = `apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: example
@@ -31,8 +30,7 @@ metadata:
 spec:
   type: website
   lifecycle: production
-  owner: guest
-`;
+  owner: guest`;
 
 type Props = {
   annotation: string;
@@ -49,10 +47,10 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
 export const MissingAnnotationEmptyState = ({ annotation }: Props) => {
   const classes = useStyles();
   const description = (
-    <Typography>
+    <>
       The <code>{annotation}</code> annotation is missing. You need to add the
       annotation to your component if you want to enable this tool.
-    </Typography>
+    </>
   );
   return (
     <EmptyState
@@ -70,7 +68,7 @@ export const MissingAnnotationEmptyState = ({ annotation }: Props) => {
               text={COMPONENT_YAML.replace('ANNOTATION', annotation)}
               language="yaml"
               showLineNumbers
-              highlightedNumbers={[7, 8]}
+              highlightedNumbers={[6, 7]}
               customStyle={{ background: 'inherit', fontSize: '115%' }}
             />
           </div>

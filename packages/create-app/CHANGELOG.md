@@ -1,5 +1,266 @@
 # @backstage/create-app
 
+## 0.3.1
+
+### Patch Changes
+
+- 4e0e3b1bf: Add missing `yarn clean` for app.
+
+  For users with existing Backstage installations, add the following under the `scripts` section in `packages/app/package.json`, after the "lint" entry:
+
+  ```json
+  "clean": "backstage-cli clean",
+  ```
+
+  This will add the missing `yarn clean` for the generated frontend.
+
+- 352a6581f: Added `"start-backend"` script to root `package.json`.
+
+  To apply this change to an existing app, add the following script to the root `package.json`:
+
+  ```json
+  "start-backend": "yarn workspace backend start"
+  ```
+
+## 0.3.0
+
+### Minor Changes
+
+- 0101c7a16: Add search plugin to default template for CLI created apps
+
+### Patch Changes
+
+- a8573e53b: techdocs-backend: Simplified file, removing individual preparers and generators.
+  techdocs-backend: UrlReader is now available to use in preparers.
+
+  In your Backstage app, `packages/backend/plugins/techdocs.ts` file has now been simplified,
+  to remove registering individual preparers and generators.
+
+  Please update the file when upgrading the version of `@backstage/plugin-techdocs-backend` package.
+
+  ```typescript
+  const preparers = await Preparers.fromConfig(config, {
+    logger,
+    reader,
+  });
+
+  const generators = await Generators.fromConfig(config, {
+    logger,
+  });
+
+  const publisher = await Publisher.fromConfig(config, {
+    logger,
+    discovery,
+  });
+  ```
+
+  You should be able to remove unnecessary imports, and just do
+
+  ```typescript
+  import {
+    createRouter,
+    Preparers,
+    Generators,
+    Publisher,
+  } from '@backstage/plugin-techdocs-backend';
+  ```
+
+## 0.2.5
+
+### Patch Changes
+
+- 2783ec018: In the techdocs-backend plugin (`packages/backend/src/plugins/techdocs.ts`), create a publisher using
+
+  ```
+    const publisher = Publisher.fromConfig(config, logger, discovery);
+  ```
+
+  instead of
+
+  ```
+    const publisher = new LocalPublish(logger, discovery);
+  ```
+
+  An instance of `publisher` can either be a local filesystem publisher or a Google Cloud Storage publisher.
+
+  Read more about the configs here https://backstage.io/docs/features/techdocs/configuration
+  (You will also have to update `techdocs.storage.type` to `local` or `googleGcs`. And `techdocs.builder` to either `local` or `external`.)
+
+## 0.2.4
+
+### Patch Changes
+
+- 94348441e: Add `"files": ["dist"]` to both app and backend packages. This ensures that packaged versions of these packages do not contain unnecessary files.
+
+  To apply this change to an existing app, add the following to `packages/app/package.json` and `packages/backend/package.json`:
+
+  ```json
+    "files": [
+      "dist"
+    ]
+  ```
+
+- cb5fc4b29: Adjust template to the latest changes in the `api-docs` plugin.
+
+  ## Template Changes
+
+  While updating to the latest `api-docs` plugin, the following changes are
+  necessary for the `create-app` template in your
+  `app/src/components/catalog/EntityPage.tsx`. This adds:
+
+  - A custom entity page for API entities
+  - Changes the API tab to include the new `ConsumedApisCard` and
+    `ProvidedApisCard` that link to the API entity.
+
+  ```diff
+   import {
+  +  ApiDefinitionCard,
+  -  Router as ApiDocsRouter,
+  +  ConsumedApisCard,
+  +  ProvidedApisCard,
+  +  ConsumedApisCard,
+  +  ConsumingComponentsCard,
+  +  ProvidedApisCard,
+  +  ProvidingComponentsCard
+   } from '@backstage/plugin-api-docs';
+
+  ...
+
+  +const ComponentApisContent = ({ entity }: { entity: Entity }) => (
+  +  <Grid container spacing={3} alignItems="stretch">
+  +    <Grid item md={6}>
+  +      <ProvidedApisCard entity={entity} />
+  +    </Grid>
+  +    <Grid item md={6}>
+  +      <ConsumedApisCard entity={entity} />
+  +    </Grid>
+  +  </Grid>
+  +);
+
+   const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
+     <EntityPageLayout>
+       <EntityPageLayout.Content
+        path="/"
+        title="Overview"
+        element={<OverviewContent entity={entity} />}
+      />
+      <EntityPageLayout.Content
+        path="/ci-cd/*"
+        title="CI/CD"
+        element={<CICDSwitcher entity={entity} />}
+      />
+      <EntityPageLayout.Content
+        path="/api/*"
+        title="API"
+  -     element={<ApiDocsRouter entity={entity} />}
+  +     element={<ComponentApisContent entity={entity} />}
+      />
+  ...
+
+  -export const EntityPage = () => {
+  -  const { entity } = useEntity();
+  -  switch (entity?.spec?.type) {
+  -    case 'service':
+  -      return <ServiceEntityPage entity={entity} />;
+  -    case 'website':
+  -      return <WebsiteEntityPage entity={entity} />;
+  -    default:
+  -      return <DefaultEntityPage entity={entity} />;
+  -  }
+  -};
+
+  +export const ComponentEntityPage = ({ entity }: { entity: Entity }) => {
+  +  switch (entity?.spec?.type) {
+  +    case 'service':
+  +      return <ServiceEntityPage entity={entity} />;
+  +    case 'website':
+  +      return <WebsiteEntityPage entity={entity} />;
+  +    default:
+  +      return <DefaultEntityPage entity={entity} />;
+  +  }
+  +};
+  +
+  +const ApiOverviewContent = ({ entity }: { entity: Entity }) => (
+  +  <Grid container spacing={3}>
+  +    <Grid item md={6}>
+  +      <AboutCard entity={entity} />
+  +    </Grid>
+  +    <Grid container item md={12}>
+  +      <Grid item md={6}>
+  +        <ProvidingComponentsCard entity={entity} />
+  +      </Grid>
+  +      <Grid item md={6}>
+  +        <ConsumingComponentsCard entity={entity} />
+  +      </Grid>
+  +    </Grid>
+  +  </Grid>
+  +);
+  +
+  +const ApiDefinitionContent = ({ entity }: { entity: ApiEntity }) => (
+  +  <Grid container spacing={3}>
+  +    <Grid item xs={12}>
+  +      <ApiDefinitionCard apiEntity={entity} />
+  +    </Grid>
+  +  </Grid>
+  +);
+  +
+  +const ApiEntityPage = ({ entity }: { entity: Entity }) => (
+  +  <EntityPageLayout>
+  +    <EntityPageLayout.Content
+  +      path="/*"
+  +      title="Overview"
+  +      element={<ApiOverviewContent entity={entity} />}
+  +    />
+  +    <EntityPageLayout.Content
+  +      path="/definition/*"
+  +      title="Definition"
+  +      element={<ApiDefinitionContent entity={entity as ApiEntity} />}
+  +    />
+  +  </EntityPageLayout>
+  +);
+  +
+  +export const EntityPage = () => {
+  +  const { entity } = useEntity();
+  +
+  +  switch (entity?.kind?.toLowerCase()) {
+  +    case 'component':
+  +      return <ComponentEntityPage entity={entity} />;
+  +    case 'api':
+  +      return <ApiEntityPage entity={entity} />;
+  +    default:
+  +      return <DefaultEntityPage entity={entity} />;
+  +  }
+  +};
+  ```
+
+- 1e22f8e0b: Unify `dockerode` library and type dependency versions
+
+## 0.2.3
+
+### Patch Changes
+
+- 68fdc3a9f: Optimized the `yarn install` step in the backend `Dockerfile`.
+
+  To apply these changes to an existing app, make the following changes to `packages/backend/Dockerfile`:
+
+  Replace the `RUN yarn install ...` line with the following:
+
+  ```bash
+  RUN yarn install --frozen-lockfile --production --network-timeout 300000 && rm -rf "$(yarn cache dir)"
+  ```
+
+- 4a655c89d: Removed `"resolutions"` entry for `esbuild` in the root `package.json` in order to use the version specified by `@backstage/cli`.
+
+  To apply this change to an existing app, remove the following from your root `package.json`:
+
+  ```json
+  "resolutions": {
+    "esbuild": "0.6.3"
+  },
+  ```
+
+- ea475893d: Add [API docs plugin](https://github.com/backstage/backstage/tree/master/plugins/api-docs) to new apps being created through the CLI.
+
 ## 0.2.2
 
 ### Patch Changes
@@ -186,7 +447,7 @@
   --config ../../app-config.yaml --config ../../app-config.development.yaml
   ```
 
-- 5a920c6e4: Updated naming of environment variables. New pattern [NAME]\_TOKEN for Github, Gitlab, Azure & Github enterprise access tokens.
+- 5a920c6e4: Updated naming of environment variables. New pattern [NAME]\_TOKEN for GitHub, GitLab, Azure & GitHub Enterprise access tokens.
 
   ### Detail:
 

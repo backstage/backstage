@@ -60,8 +60,8 @@ export async function serveBundle(options: ServeOptions) {
     proxy: pkg.proxy,
   });
 
-  await new Promise((resolve, reject) => {
-    server.listen(port, url.hostname, (err?: Error) => {
+  await new Promise<void>((resolve, reject) => {
+    server.listen(port, host, (err?: Error) => {
       if (err) {
         reject(err);
         return;

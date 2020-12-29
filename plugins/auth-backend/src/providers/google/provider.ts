@@ -175,6 +175,7 @@ export class GoogleAuthProvider implements OAuthHandlers {
 }
 
 export const createGoogleProvider: AuthProviderFactory = ({
+  providerId,
   globalConfig,
   config,
   logger,
@@ -182,7 +183,6 @@ export const createGoogleProvider: AuthProviderFactory = ({
   catalogApi,
 }) =>
   OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-    const providerId = 'google';
     const clientId = envConfig.getString('clientId');
     const clientSecret = envConfig.getString('clientSecret');
     const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;

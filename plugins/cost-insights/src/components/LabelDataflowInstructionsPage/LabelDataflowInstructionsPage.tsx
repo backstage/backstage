@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { Box, Typography } from '@material-ui/core';
-import { CodeSnippet } from '@backstage/core';
+import { CodeSnippet, Link } from '@backstage/core';
 import { AlertInstructionsLayout } from '../AlertInstructionsLayout';
 
 export const LabelDataflowInstructionsPage = () => {
@@ -31,10 +31,10 @@ export const LabelDataflowInstructionsPage = () => {
       </Typography>
       <Typography paragraph>
         In Cloud Dataflow, labels can be added to a job either programmatically
-        or via the command-line when launching a job. Note that GCP has
-        <a href="https://cloud.google.com/compute/docs/labeling-resources#restrictions">
+        or via the command-line when launching a job. Note that GCP has{' '}
+        <Link to="https://cloud.google.com/compute/docs/labeling-resources#restrictions">
           restrictions
-        </a>{' '}
+        </Link>{' '}
         on the length and characters that can be used in labels.
       </Typography>
       <Typography paragraph>
@@ -46,9 +46,9 @@ export const LabelDataflowInstructionsPage = () => {
         <Typography variant="h3">DataflowPipelineOptions</Typography>
         <Typography paragraph>
           Dataflow jobs using Beam's{' '}
-          <a href="https://beam.apache.org/releases/javadoc/2.3.0/org/apache/beam/runners/dataflow/options/DataflowPipelineOptions.html">
+          <Link to="https://beam.apache.org/releases/javadoc/2.3.0/org/apache/beam/runners/dataflow/options/DataflowPipelineOptions.html">
             DataflowPipelineOptions
-          </a>{' '}
+          </Link>{' '}
           directly can use the <b>setLabels</b> function to add one or more
           labels:
           <CodeSnippet
@@ -79,13 +79,13 @@ sc.optionsAs[DataflowPipelineOptions].setLabels(Map("job-id" -> "my-dataflow-job
         </Typography>
         <Typography paragraph>
           For more information on specifying options, see the{' '}
-          <a href="https://cloud.google.com/dataflow/docs/guides/specifying-exec-params">
+          <Link to="https://cloud.google.com/dataflow/docs/guides/specifying-exec-params">
             Dataflow documentation
-          </a>{' '}
+          </Link>{' '}
           or{' '}
-          <a href="https://spotify.github.io/scio/api/com/spotify/scio/ScioContext.html">
+          <Link to="https://spotify.github.io/scio/api/com/spotify/scio/ScioContext.html">
             Scio Scaladoc
-          </a>
+          </Link>
           .
         </Typography>
       </Box>

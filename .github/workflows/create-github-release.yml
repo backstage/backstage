@@ -1,0 +1,36 @@
+# New tags and releases are created by changeset https://github.com/atlassian/changesets
+name: Create a new release on GitHub when a new tag is created
+
+on:
+  push:
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v0.4.0, v1.1.0
+
+jobs:
+  build:
+    name: Create a new release on GitHub when a new tag is created
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: use node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+
+      - name: Install node dependencies
+        run: npm install @octokit/rest
+
+      # GITHUB_REF is of the format refs/tags/vA.B.C
+      # This step extracts vA.B.C from GITHUB_REF
+      - name: Get the version
+        id: get_version
+        run: echo "::set-output name=TAG_NAME::${GITHUB_REF#refs/tags/}"
+
+      # TODO/Note: This will only create a Draft release, which the maintainer can see and publish.
+      # If the Draft release looks good, modify the step to go ahead publish the release. (By adding the third CLI argument.)
+      - name: Create release on GitHub
+        run: node scripts/create-github-release.js ${{ steps.get_version.outputs.TAG_NAME }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}

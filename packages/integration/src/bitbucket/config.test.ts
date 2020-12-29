@@ -23,7 +23,7 @@ import {
 
 describe('readBitbucketIntegrationConfig', () => {
   function buildConfig(data: Partial<BitbucketIntegrationConfig>): Config {
-    return ConfigReader.fromConfigs([{ context: '', data }]);
+    return new ConfigReader(data);
   }
 
   it('reads all values', () => {
@@ -83,9 +83,7 @@ describe('readBitbucketIntegrationConfig', () => {
 
 describe('readBitbucketIntegrationConfigs', () => {
   function buildConfig(data: Partial<BitbucketIntegrationConfig>[]): Config[] {
-    return data.map(item =>
-      ConfigReader.fromConfigs([{ context: '', data: item }]),
-    );
+    return data.map(item => new ConfigReader(item));
   }
 
   it('reads all values', () => {

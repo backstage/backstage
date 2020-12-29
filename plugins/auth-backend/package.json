@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend",
-  "version": "0.2.2",
+  "version": "0.2.8",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -10,6 +10,15 @@
     "main": "dist/index.cjs.js",
     "types": "dist/index.d.ts"
   },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/auth-backend"
+  },
+  "keywords": [
+    "backstage"
+  ],
   "scripts": {
     "start": "backstage-cli backend:dev",
     "build": "backstage-cli backend:build",
@@ -20,10 +29,10 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.3.0",
-    "@backstage/catalog-client": "^0.3.0",
-    "@backstage/catalog-model": "^0.2.0",
-    "@backstage/config": "^0.1.1",
+    "@backstage/backend-common": "^0.4.1",
+    "@backstage/catalog-client": "^0.3.4",
+    "@backstage/catalog-model": "^0.6.0",
+    "@backstage/config": "^0.1.2",
     "@types/express": "^4.17.6",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.5",
@@ -36,7 +45,7 @@
     "got": "^11.5.2",
     "helmet": "^4.0.0",
     "jose": "^1.27.1",
-    "jwt-decode": "2.2.0",
+    "jwt-decode": "^3.1.0",
     "knex": "^0.21.6",
     "moment": "^2.26.0",
     "morgan": "^1.10.0",
@@ -55,11 +64,11 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.3.0",
+    "@backstage/cli": "^0.4.4",
     "@types/body-parser": "^1.19.0",
     "@types/cookie-parser": "^1.4.2",
     "@types/express-session": "^1.17.2",
-    "@types/jwt-decode": "2.2.1",
+    "@types/jwt-decode": "^3.1.0",
     "@types/nock": "^11.1.0",
     "@types/openid-client": "^3.7.0",
     "@types/passport": "^1.0.3",
@@ -72,27 +81,8 @@
   },
   "files": [
     "dist",
-    "migrations"
+    "migrations",
+    "config.d.ts"
   ],
-  "configSchema": {
-    "$schema": "https://backstage.io/schema/config-v1",
-    "title": "@backstage/auth-backend",
-    "type": "object",
-    "properties": {
-      "auth": {
-        "type": "object",
-        "properties": {
-          "session": {
-            "type": "object",
-            "properties": {
-              "secret": {
-                "type": "string",
-                "visibility": "secret"
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+  "configSchema": "config.d.ts"
 }
