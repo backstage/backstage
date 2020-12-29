@@ -15,6 +15,7 @@
  */
 import { PreparerBase } from './types';
 import { Entity } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
 import path from 'path';
 import { parseReferenceAnnotation, checkoutGitRepository } from '../../helpers';
 import { InputError } from '@backstage/backend-common';
@@ -22,9 +23,11 @@ import parseGitUrl from 'git-url-parse';
 import { Logger } from 'winston';
 
 export class DirectoryPreparer implements PreparerBase {
+  private readonly config: Config;
   private readonly logger: Logger;
 
-  constructor(logger: Logger) {
+  constructor(config: Config, logger: Logger) {
+    this.config = config;
     this.logger = logger;
   }
 
@@ -43,7 +46,11 @@ export class DirectoryPreparer implements PreparerBase {
       case 'url':
       case 'azure/api': {
         const parsedGitLocation = parseGitUrl(target);
-        const repoLocation = await checkoutGitRepository(target, this.logger);
+        const repoLocation = await checkoutGitRepository(
+          target,
+          this.config,
+          this.logger,
+        );
 
         return path.dirname(
           path.join(repoLocation, parsedGitLocation.filepath),

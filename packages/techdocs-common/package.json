@@ -39,6 +39,7 @@
     "@backstage/backend-common": "^0.4.1",
     "@backstage/catalog-model": "^0.6.0",
     "@backstage/config": "^0.1.2",
+    "@backstage/integration": "^0.1.4",
     "@google-cloud/storage": "^5.6.0",
     "@types/dockerode": "^3.2.1",
     "@types/express": "^4.17.6",

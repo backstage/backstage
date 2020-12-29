@@ -15,6 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
 import { CommonGitPreparer } from './commonGit';
 import { checkoutGitRepository } from '../../helpers';
 
@@ -43,11 +44,13 @@ const createMockEntity = (annotations = {}) => {
   };
 };
 
+const mockConfig = new ConfigReader({});
+
 const logger = getVoidLogger();
 
 describe('commonGit preparer', () => {
   it('should prepare temp docs path from github repo', async () => {
-    const preparer = new CommonGitPreparer(logger);
+    const preparer = new CommonGitPreparer(mockConfig, logger);
 
     const mockEntity = createMockEntity({
       'backstage.io/techdocs-ref':
@@ -62,7 +65,7 @@ describe('commonGit preparer', () => {
   });
 
   it('should prepare temp docs path from gitlab repo', async () => {
-    const preparer = new CommonGitPreparer(logger);
+    const preparer = new CommonGitPreparer(mockConfig, logger);
 
     const mockEntity = createMockEntity({
       'backstage.io/techdocs-ref':
@@ -77,7 +80,7 @@ describe('commonGit preparer', () => {
   });
 
   it('should prepare temp docs path from azure repo', async () => {
-    const preparer = new CommonGitPreparer(logger);
+    const preparer = new CommonGitPreparer(mockConfig, logger);
 
     const mockEntity = createMockEntity({
       'backstage.io/techdocs-ref':

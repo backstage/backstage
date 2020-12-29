@@ -52,7 +52,7 @@ export async function startStandaloneServer(
 
   logger.debug('Creating application...');
   const preparers = new Preparers();
-  const directoryPreparer = new DirectoryPreparer(logger);
+  const directoryPreparer = new DirectoryPreparer(config, logger);
   preparers.register('dir', directoryPreparer);
 
   const generators = new Generators();
