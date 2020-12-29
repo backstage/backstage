@@ -81,7 +81,7 @@ jobs:
       - uses: Klemensas/action-autotag@1.2.3
         if: matrix.node-version == '12.x'
         with:
-          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          GITHUB_TOKEN: '${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}'
           package_root: 'packages/core'
           tag_prefix: 'v'
 

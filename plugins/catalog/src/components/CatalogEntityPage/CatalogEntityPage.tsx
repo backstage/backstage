@@ -16,12 +16,12 @@
 
 import React from 'react';
 import { Outlet } from 'react-router';
-import { EntityProvider } from '../EntityProvider';
+import { EntityLoaderProvider } from '../EntityLoaderProvider';
 
 export const CatalogEntityPage = () => {
   return (
-    <EntityProvider>
+    <EntityLoaderProvider>
       <Outlet />
-    </EntityProvider>
+    </EntityLoaderProvider>
   );
 };

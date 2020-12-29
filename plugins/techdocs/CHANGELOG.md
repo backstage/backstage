@@ -1,5 +1,21 @@
 # @backstage/plugin-techdocs
 
+## 0.5.2
+
+### Patch Changes
+
+- 359f9d2d8: Added configuration schema for the commonly used properties of techdocs and techdocs-backend plugins
+- Updated dependencies [a08c32ced]
+- Updated dependencies [7e0b8cac5]
+- Updated dependencies [8804e8981]
+- Updated dependencies [87c0c53c2]
+- Updated dependencies [86c3c652a]
+- Updated dependencies [27f2af935]
+  - @backstage/core-api@0.2.8
+  - @backstage/core@0.4.3
+  - @backstage/plugin-catalog@0.2.9
+  - @backstage/techdocs-common@0.3.1
+
 ## 0.5.1
 
 ### Patch Changes

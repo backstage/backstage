@@ -1,5 +1,16 @@
 # @backstage/dev-utils
 
+## 0.1.7
+
+### Patch Changes
+
+- 696b8ce74: Add new `addPage` method for use with extensions, as well as an `EntityGridItem` to easily create different test cases for entity overview cards.
+- Updated dependencies [a08c32ced]
+- Updated dependencies [7e0b8cac5]
+- Updated dependencies [87c0c53c2]
+  - @backstage/core@0.4.3
+  - @backstage/plugin-catalog@0.2.9
+
 ## 0.1.6
 
 ### Patch Changes

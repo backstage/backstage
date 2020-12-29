@@ -1,5 +1,25 @@
 # @backstage/techdocs-common
 
+## 0.3.1
+
+### Patch Changes
+
+- 8804e8981: Using @backstage/integration package for GitHub/GitLab/Azure tokens and request options.
+
+  Most probably you do not have to make any changes in the app because of this change.
+  However, if you are using the `DirectoryPreparer` or `CommonGitPreparer` exported by
+  `@backstage/techdocs-common` package, you now need to add pass in a `config` (from `@backstage/config`)
+  instance as argument.
+
+  ```
+  <!-- Before -->
+      const directoryPreparer = new DirectoryPreparer(logger);
+      const commonGitPreparer = new CommonGitPreparer(logger);
+  <!-- Now -->
+      const directoryPreparer = new DirectoryPreparer(config, logger);
+      const commonGitPreparer = new CommonGitPreparer(config, logger);
+  ```
+
 ## 0.3.0
 
 ### Minor Changes

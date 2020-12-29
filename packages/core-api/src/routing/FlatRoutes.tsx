@@ -66,13 +66,11 @@ function createRoutesFromChildren(children: ReactNode): RouteObject[] {
     });
 }
 
-type BackstageRoutesProps = {
+type FlatRoutesProps = {
   children: ReactNode;
 };
 
-export const BackstageRoutes = (
-  props: BackstageRoutesProps,
-): JSX.Element | null => {
+export const FlatRoutes = (props: FlatRoutesProps): JSX.Element | null => {
   const routes = createRoutesFromChildren(props.children);
   return useRoutes(routes);
 };
