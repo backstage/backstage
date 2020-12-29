@@ -6,7 +6,7 @@ For more information about the plugin ecosystem, see the documention here:
 
 > https://backstage.io/docs/plugins/
 
-You can also see the [Plugin Marketplace](https://https://backstage.io/plugins) to see other open source plugins to add to your instance.
+You can also see the [Plugin Marketplace](https://https://backstage.io/plugins) for other open source plugins you can add to your Backstage instance.
 
 ## Suggesting a plugin
 
