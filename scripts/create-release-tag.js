@@ -16,30 +16,6 @@
  * limitations under the License.
  */
 
-/**
- * This script creates a release on GitHub for the Backstage repository.
- * Given a git tag, it identifies the PR created by changesets which is responsible for creating
- * the git tag. It then uses the PR description consisting of changelogs for packages as the
- * release description.
- *
- * Example:
- *
- * Set GITHUB_TOKEN environment variable.
- *
- * (Dry Run mode, will create a DRAFT release, but will not publish it.)
- * (Draft releases are visible to maintainers and do not notify users.)
- * $ node scripts/get-release-description v0.4.1
- *
- * This will open the git tree at this tag https://github.com/backstage/backstage/tree/v0.4.1
- * It will identify https://github.com/backstage/backstage/pull/3668 as the responsible changeset PR.
- * And will use everything in the PR description under "Releases" section.
- *
- * (Production or GitHub Actions Mode)
- * $ node scripts/get-release-description v0.4.1 true
- *
- * This will do the same steps as above, and will publish the Release with the description.
- */
-
 const { Octokit } = require('@octokit/rest');
 
 const baseOptions = {
