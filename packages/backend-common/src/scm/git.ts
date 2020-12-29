@@ -20,8 +20,8 @@ import { Logger } from 'winston';
 
 /*
 provider    username        password
-GitHub      token	          'x-oauth-basic'
-GitHub App  token	          'x-access-token'
+GitHub      token           'x-oauth-basic'
+GitHub App  token           'x-access-token'
 BitBucket   'x-token-auth'  token
 GitLab      'oauth2'        token
 From : https://isomorphic-git.org/docs/en/onAuth
