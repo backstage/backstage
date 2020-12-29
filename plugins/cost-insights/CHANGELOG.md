@@ -1,5 +1,13 @@
 # @backstage/plugin-cost-insights
 
+## 0.5.4
+
+### Patch Changes
+
+- 3fca9adb9: Fix links in sample instructions
+- Updated dependencies [a08c32ced]
+  - @backstage/core@0.4.3
+
 ## 0.5.3
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @backstage/core-api
 
+## 0.2.8
+
+### Patch Changes
+
+- a08c32ced: Add `FlatRoutes` component to replace the top-level `Routes` component from `react-router` within apps, removing the need for manually appending `/*` to paths or sorting routes.
+- 86c3c652a: Deprecate `RouteRef` path parameter and member, and remove deprecated `routeRef.createSubRouteRef`.
+- 27f2af935: Delay auth loginPopup close to avoid race condition with callers of authFlowHelpers.
+
 ## 0.2.7
 
 ### Patch Changes

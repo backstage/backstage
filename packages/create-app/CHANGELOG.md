@@ -1,5 +1,27 @@
 # @backstage/create-app
 
+## 0.3.1
+
+### Patch Changes
+
+- 4e0e3b1bf: Add missing `yarn clean` for app.
+
+  For users with existing Backstage installations, add the following under the `scripts` section in `packages/app/package.json`, after the "lint" entry:
+
+  ```json
+  "clean": "backstage-cli clean",
+  ```
+
+  This will add the missing `yarn clean` for the generated frontend.
+
+- 352a6581f: Added `"start-backend"` script to root `package.json`.
+
+  To apply this change to an existing app, add the following script to the root `package.json`:
+
+  ```json
+  "start-backend": "yarn workspace backend start"
+  ```
+
 ## 0.3.0
 
 ### Minor Changes

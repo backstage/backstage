@@ -1,5 +1,11 @@
 # @backstage/plugin-auth-backend
 
+## 0.2.8
+
+### Patch Changes
+
+- cc046682e: fix bug in token expiration date
+
 ## 0.2.7
 
 ### Patch Changes
