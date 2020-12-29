@@ -15,10 +15,7 @@
  */
 
 jest.mock('@octokit/rest');
-jest.mock('nodegit');
-jest.mock('./helpers', () => ({
-  pushToRemoteUserPass: jest.fn(),
-}));
+jest.mock('./helpers');
 
 import { Octokit } from '@octokit/rest';
 import {
@@ -27,7 +24,8 @@ import {
   UsersGetByUsernameResponseData,
 } from '@octokit/types';
 import { GithubPublisher } from './github';
-import { pushToRemoteUserPass } from './helpers';
+import { initRepoAndPush } from './helpers';
+import { getVoidLogger } from '@backstage/backend-common';
 
 const { mockGithubClient } = require('@octokit/rest') as {
   mockGithubClient: {
@@ -38,6 +36,7 @@ const { mockGithubClient } = require('@octokit/rest') as {
 };
 
 describe('GitHub Publisher', () => {
+  const logger = getVoidLogger();
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -69,6 +68,7 @@ describe('GitHub Publisher', () => {
             access: 'blam/team',
           },
           directory: '/tmp/test',
+          logger,
         });
 
         expect(result).toEqual({
@@ -91,12 +91,12 @@ describe('GitHub Publisher', () => {
           repo: 'test',
           permission: 'admin',
         });
-        expect(pushToRemoteUserPass).toHaveBeenCalledWith(
-          '/tmp/test',
-          'https://github.com/backstage/backstage.git',
-          'abc',
-          'x-oauth-basic',
-        );
+        expect(initRepoAndPush).toHaveBeenCalledWith({
+          dir: '/tmp/test',
+          remoteUrl: 'https://github.com/backstage/backstage.git',
+          auth: { username: 'abc', password: 'x-oauth-basic' },
+          logger,
+        });
       });
 
       it('should use octokit to create a repo in the authed user if the organisation property is not set', async () => {
@@ -118,6 +118,7 @@ describe('GitHub Publisher', () => {
             access: 'blam',
           },
           directory: '/tmp/test',
+          logger,
         });
 
         expect(result).toEqual({
@@ -132,12 +133,13 @@ describe('GitHub Publisher', () => {
           private: false,
         });
         expect(mockGithubClient.repos.addCollaborator).not.toHaveBeenCalled();
-        expect(pushToRemoteUserPass).toHaveBeenCalledWith(
-          '/tmp/test',
-          'https://github.com/backstage/backstage.git',
-          'abc',
-          'x-oauth-basic',
-        );
+
+        expect(initRepoAndPush).toHaveBeenCalledWith({
+          dir: '/tmp/test',
+          remoteUrl: 'https://github.com/backstage/backstage.git',
+          auth: { username: 'abc', password: 'x-oauth-basic' },
+          logger,
+        });
       });
     });
 
@@ -161,6 +163,7 @@ describe('GitHub Publisher', () => {
           description: 'description',
         },
         directory: '/tmp/test',
+        logger,
       });
 
       expect(result).toEqual({
@@ -181,12 +184,12 @@ describe('GitHub Publisher', () => {
         username: 'bob',
         permission: 'admin',
       });
-      expect(pushToRemoteUserPass).toHaveBeenCalledWith(
-        '/tmp/test',
-        'https://github.com/backstage/backstage.git',
-        'abc',
-        'x-oauth-basic',
-      );
+      expect(initRepoAndPush).toHaveBeenCalledWith({
+        dir: '/tmp/test',
+        remoteUrl: 'https://github.com/backstage/backstage.git',
+        auth: { username: 'abc', password: 'x-oauth-basic' },
+        logger,
+      });
     });
   });
 
@@ -216,6 +219,7 @@ describe('GitHub Publisher', () => {
           owner: 'bob',
         },
         directory: '/tmp/test',
+        logger,
       });
 
       expect(result).toEqual({
@@ -229,12 +233,12 @@ describe('GitHub Publisher', () => {
         private: true,
         visibility: 'internal',
       });
-      expect(pushToRemoteUserPass).toHaveBeenCalledWith(
-        '/tmp/test',
-        'https://github.com/backstage/backstage.git',
-        'abc',
-        'x-oauth-basic',
-      );
+      expect(initRepoAndPush).toHaveBeenCalledWith({
+        dir: '/tmp/test',
+        remoteUrl: 'https://github.com/backstage/backstage.git',
+        auth: { username: 'abc', password: 'x-oauth-basic' },
+        logger,
+      });
     });
   });
 
@@ -263,6 +267,7 @@ describe('GitHub Publisher', () => {
           owner: 'bob',
         },
         directory: '/tmp/test',
+        logger,
       });
 
       expect(result).toEqual({
@@ -276,12 +281,12 @@ describe('GitHub Publisher', () => {
         name: 'test',
         private: true,
       });
-      expect(pushToRemoteUserPass).toHaveBeenCalledWith(
-        '/tmp/test',
-        'https://github.com/backstage/backstage.git',
-        'abc',
-        'x-oauth-basic',
-      );
+      expect(initRepoAndPush).toHaveBeenCalledWith({
+        dir: '/tmp/test',
+        remoteUrl: 'https://github.com/backstage/backstage.git',
+        auth: { username: 'abc', password: 'x-oauth-basic' },
+        logger,
+      });
     });
   });
 });

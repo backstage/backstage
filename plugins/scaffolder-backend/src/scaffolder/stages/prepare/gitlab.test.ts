@@ -13,11 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const mocks = {
-  Clone: { clone: jest.fn() },
-  CheckoutOptions: jest.fn(() => {}),
-};
-jest.doMock('nodegit', () => mocks);
 jest.doMock('fs-extra', () => ({
   promises: {
     mkdtemp: jest.fn(dir => `${dir}-static`),
@@ -30,7 +25,7 @@ import {
   LOCATION_ANNOTATION,
 } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
-import { getVoidLogger } from '@backstage/backend-common';
+import { getVoidLogger, Git } from '@backstage/backend-common';
 
 const mockEntityWithProtocol = (protocol: string): TemplateEntityV1alpha1 => ({
   apiVersion: 'backstage.io/v1alpha1',
@@ -72,6 +67,12 @@ const mockEntityWithProtocol = (protocol: string): TemplateEntityV1alpha1 => ({
 
 describe('GitLabPreparer', () => {
   let mockEntity: TemplateEntityV1alpha1;
+  const mockGitClient = {
+    clone: jest.fn(),
+  };
+
+  jest.spyOn(Git, 'fromAuth').mockReturnValue(mockGitClient as any);
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -80,13 +81,13 @@ describe('GitLabPreparer', () => {
     it(`calls the clone command with the correct arguments for a repository using the ${protocol} protocol`, async () => {
       const preparer = new GitlabPreparer(new ConfigReader({}));
       mockEntity = mockEntityWithProtocol(protocol);
+
       await preparer.prepare(mockEntity, { logger: getVoidLogger() });
-      expect(mocks.Clone.clone).toHaveBeenNthCalledWith(
-        1,
-        'https://gitlab.com/benjdlambert/backstage-graphql-template',
-        expect.any(String),
-        {},
-      );
+
+      expect(mockGitClient.clone).toHaveBeenCalledWith({
+        url: 'https://gitlab.com/benjdlambert/backstage-graphql-template',
+        dir: expect.any(String),
+      });
     });
 
     it(`calls the clone command with the correct arguments if an access token is provided in integrations for a repository using the ${protocol} protocol`, async () => {
@@ -103,19 +104,15 @@ describe('GitLabPreparer', () => {
         }),
       );
       mockEntity = mockEntityWithProtocol(protocol);
-      await preparer.prepare(mockEntity, { logger: getVoidLogger() });
-      expect(mocks.Clone.clone).toHaveBeenNthCalledWith(
-        1,
-        'https://gitlab.com/benjdlambert/backstage-graphql-template',
-        expect.any(String),
-        {
-          fetchOpts: {
-            callbacks: {
-              credentials: expect.anything(),
-            },
-          },
-        },
-      );
+      const logger = getVoidLogger();
+
+      await preparer.prepare(mockEntity, { logger });
+
+      expect(Git.fromAuth).toHaveBeenCalledWith({
+        logger,
+        username: 'oauth2',
+        password: 'fake-token',
+      });
     });
 
     it(`calls the clone command with the correct arguments if an access token is provided in scaffolder for a repository using the ${protocol} protocol`, async () => {
@@ -127,32 +124,28 @@ describe('GitLabPreparer', () => {
         }),
       );
       mockEntity = mockEntityWithProtocol(protocol);
-      await preparer.prepare(mockEntity, { logger: getVoidLogger() });
-      expect(mocks.Clone.clone).toHaveBeenNthCalledWith(
-        1,
-        'https://gitlab.com/benjdlambert/backstage-graphql-template',
-        expect.any(String),
-        {
-          fetchOpts: {
-            callbacks: {
-              credentials: expect.anything(),
-            },
-          },
-        },
-      );
+      const logger = getVoidLogger();
+
+      await preparer.prepare(mockEntity, { logger });
+
+      expect(Git.fromAuth).toHaveBeenCalledWith({
+        logger,
+        username: 'oauth2',
+        password: 'fake-token',
+      });
     });
 
     it(`calls the clone command with the correct arguments for a repository when no path is provided using the ${protocol} protocol`, async () => {
       const preparer = new GitlabPreparer(new ConfigReader({}));
       mockEntity = mockEntityWithProtocol(protocol);
       delete mockEntity.spec.path;
+
       await preparer.prepare(mockEntity, { logger: getVoidLogger() });
-      expect(mocks.Clone.clone).toHaveBeenNthCalledWith(
-        1,
-        'https://gitlab.com/benjdlambert/backstage-graphql-template',
-        expect.any(String),
-        {},
-      );
+
+      expect(mockGitClient.clone).toHaveBeenCalledWith({
+        url: 'https://gitlab.com/benjdlambert/backstage-graphql-template',
+        dir: expect.any(String),
+      });
     });
 
     it(`return the temp directory with the path to the folder if it is specified using the ${protocol} protocol`, async () => {

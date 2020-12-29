@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { InputError } from '@backstage/backend-common';
+import { InputError, Git } from '@backstage/backend-common';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
@@ -22,7 +22,6 @@ import {
 } from '@backstage/integration';
 import fs from 'fs-extra';
 import GitUriParser from 'git-url-parse';
-import { Clone, Cred } from 'nodegit';
 import os from 'os';
 import path from 'path';
 import { parseLocationAnnotation } from '../helpers';
@@ -46,6 +45,7 @@ export class GitlabPreparer implements PreparerBase {
     opts: PreparerOptions,
   ): Promise<string> {
     const { protocol, location } = parseLocationAnnotation(template);
+    const { logger } = opts;
     const workingDirectory = opts?.workingDirectory ?? os.tmpdir();
 
     if (!['gitlab', 'gitlab/api', 'url'].includes(protocol)) {
@@ -67,17 +67,18 @@ export class GitlabPreparer implements PreparerBase {
     );
 
     const token = this.getToken(parsedGitLocation.resource);
-    const options = token
-      ? {
-          fetchOpts: {
-            callbacks: {
-              credentials: () => Cred.userpassPlaintextNew('oauth2', token),
-            },
-          },
-        }
-      : {};
+    const git = token
+      ? Git.fromAuth({
+          password: token,
+          username: 'oauth2',
+          logger,
+        })
+      : Git.fromAuth({ logger });
 
-    await Clone.clone(repositoryCheckoutUrl, tempDir, options);
+    await git.clone({
+      url: repositoryCheckoutUrl,
+      dir: tempDir,
+    });
 
     return path.resolve(tempDir, templateDirectory);
   }
