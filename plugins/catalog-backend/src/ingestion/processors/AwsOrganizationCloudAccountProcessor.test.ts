@@ -19,7 +19,7 @@ import { AwsOrganizationCloudAccountProcessor } from './AwsOrganizationCloudAcco
 describe('AwsOrganizationCloudAccountProcessor', () => {
   describe('readLocation', () => {
     const processor = new AwsOrganizationCloudAccountProcessor();
-    const location = { type: 'aws-cloud-accounts', target: 'b' };
+    const location = { type: 'aws-cloud-accounts', target: '' };
     const emit = jest.fn();
     const listAccounts = jest.fn();
 
@@ -44,6 +44,56 @@ describe('AwsOrganizationCloudAccountProcessor', () => {
         };
       });
       await processor.readLocation(location, false, emit);
+      expect(emit).toBeCalledWith({
+        type: 'entity',
+        location,
+        entity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: {
+            annotations: {
+              'amazonaws.com/arn':
+                'arn:aws:organizations::192594491037:account/o-1vl18kc5a3/957140518395',
+              'amazonaws.com/account-id': '957140518395',
+              'amazonaws.com/organization-id': 'o-1vl18kc5a3',
+            },
+            name: 'testaccount',
+            namespace: 'default',
+          },
+          spec: {
+            type: 'cloud-account',
+            lifecycle: 'unknown',
+            owner: 'unknown',
+          },
+        },
+      });
+    });
+
+    it('filters out accounts not in specified location target', async () => {
+      const location = { type: 'aws-cloud-accounts', target: 'o-1vl18kc5a3' };
+      listAccounts.mockImplementation(() => {
+        return {
+          async promise() {
+            return {
+              Accounts: [
+                {
+                  Arn:
+                    'arn:aws:organizations::192594491037:account/o-1vl18kc5a3/957140518395',
+                  Name: 'testaccount',
+                },
+                {
+                  Arn:
+                    'arn:aws:organizations::192594491037:account/o-zzzzzzzzz/957140518395',
+                  Name: 'testaccount2',
+                },
+              ],
+              NextToken: undefined,
+            };
+          },
+        };
+      });
+      await processor.readLocation(location, false, emit);
+      expect(emit).toBeCalledTimes(1);
       expect(emit).toBeCalledWith({
         type: 'entity',
         location,
