@@ -47,14 +47,14 @@ export type CertificateReferenceOptions = {
 };
 
 export type CertificateSigningOptions = {
-  algorithm: string;
+  algorithm?: string;
   size?: number;
   days?: number;
-  attributes?: CertificateAttributes;
+  attributes: CertificateAttributes;
 };
 
 export type CertificateAttributes = {
-  commonName?: string;
+  commonName: string;
 };
 
 /**
@@ -193,8 +193,26 @@ export function readCspOptions(
  * ```
  */
 export function readHttpsSettings(config: Config): HttpsSettings | undefined {
-  const cc = config.getOptionalConfig('https');
+  const https = config.get('https');
+  if (https === true) {
+    const baseUrl = config.getString('baseUrl');
+    let commonName;
+    try {
+      commonName = new URL(baseUrl).hostname;
+    } catch (error) {
+      throw new Error(`Invalid backend.baseUrl "${baseUrl}"`);
+    }
 
+    return {
+      certificate: {
+        attributes: {
+          commonName,
+        },
+      },
+    };
+  }
+
+  const cc = config.getOptionalConfig('https');
   if (!cc) {
     return undefined;
   }
