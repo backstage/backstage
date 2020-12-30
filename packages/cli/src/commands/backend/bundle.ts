@@ -38,7 +38,7 @@ export default async (cmd: Command) => {
   try {
     await createDistWorkspace([pkg.name], {
       targetDir: tmpDir,
-      buildDependencies: Boolean(cmd.build),
+      buildDependencies: Boolean(cmd.buildDependencies),
       buildExcludes: [pkg.name],
       parallel: parseParallel(process.env[PARALLEL_ENV_VAR]),
       skeleton: SKELETON_FILE,
