@@ -1666,10 +1666,10 @@
     yup "^0.29.3"
 
 "@backstage/core@^0.3.0":
-  version "0.4.2"
+  version "0.4.3"
   dependencies:
     "@backstage/config" "^0.1.2"
-    "@backstage/core-api" "^0.2.7"
+    "@backstage/core-api" "^0.2.8"
     "@backstage/theme" "^0.2.2"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
