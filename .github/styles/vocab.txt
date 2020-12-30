@@ -63,7 +63,6 @@ Docusaurus
 Dominik
 dtuite
 dzolotusky
-eg
 Ek
 env
 Env
@@ -141,7 +140,7 @@ nonces
 npm
 nvm
 oauth
-Oauth
+OAuth
 oidc
 Okta
 Oldsberg
@@ -160,7 +159,6 @@ prebaked
 preconfigured
 prepack
 Preprarer
-Prerequisities
 productional
 Protobuf
 proxying
@@ -194,7 +192,6 @@ semlas
 semver
 Serverless
 Sinon
-smartsymobls
 Snyk
 sourcemaps
 sparklines
@@ -221,7 +218,6 @@ Templater
 templaters
 Templaters
 Thauer
-theres
 toc
 tolerations
 Tolerations
