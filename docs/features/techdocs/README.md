@@ -45,8 +45,6 @@ about TechDocs and the philosophy in its
 [v2]: https://github.com/backstage/backstage/milestone/22
 [v3]: https://github.com/backstage/backstage/milestone/17
 
-<!-- TODO: Add link to milestone for v3 -->
-
 ## Use Cases
 
 #### TechDocs V.0
