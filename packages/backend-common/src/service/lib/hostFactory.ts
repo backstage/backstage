@@ -59,26 +59,78 @@ export function createHttpsServer(
 
   const signingOptions: any = httpsSettings?.certificate;
 
-  if (signingOptions?.algorithm !== undefined) {
+  if (signingOptions?.attributes) {
     logger?.info('Generating self-signed certificate with attributes');
+    if (signingOptions?.algorithm) {
+      logger?.warn(
+        'Certificate generation configuration with parameters in backend.https.certificate is deprecated, set backend.https = true instead',
+      );
+    }
 
     const certificateAttributes: Array<any> = Object.entries(
       signingOptions.attributes,
     ).map(([name, value]) => ({ name, value }));
 
-    // TODO: Create a type def for selfsigned.
     const signatures = require('selfsigned').generate(certificateAttributes, {
-      algorithm: signingOptions?.algorithm,
+      algorithm: signingOptions?.algorithm || 'sha256',
       keySize: signingOptions?.size || 2048,
       days: signingOptions?.days || 30,
+      extensions: [
+        {
+          name: 'keyUsage',
+          keyCertSign: true,
+          digitalSignature: true,
+          nonRepudiation: true,
+          keyEncipherment: true,
+          dataEncipherment: true,
+        },
+        {
+          name: 'extKeyUsage',
+          serverAuth: true,
+          clientAuth: true,
+          codeSigning: true,
+          timeStamping: true,
+        },
+        {
+          name: 'subjectAltName',
+          altNames: [
+            {
+              type: 2, // DNS
+              value: 'localhost',
+            },
+            {
+              type: 2,
+              value: 'localhost.localdomain',
+            },
+            {
+              type: 2,
+              value: '[::1]',
+            },
+            {
+              type: 7, // IP
+              ip: '127.0.0.1',
+            },
+            {
+              type: 7,
+              ip: 'fe80::1',
+            },
+            ...(signingOptions.attributes.commonName
+              ? [
+                  {
+                    type: 2, // DNS
+                    value: signingOptions.attributes.commonName,
+                  },
+                ]
+              : []),
+          ],
+        },
+      ],
     });
-
-    logger?.info('Bootstrapping self-signed certificate');
 
     credentials.key = signatures.private;
     credentials.cert = signatures.cert;
   } else {
-    logger?.info('Bootstrapping cert from config');
+    logger?.info('Loading certificate from config');
 
     credentials.key = signingOptions?.key;
     credentials.cert = signingOptions?.cert;
