@@ -49,6 +49,7 @@ dataflow
 deadnaming
 destructured
 dev
+devops
 devs
 dhenneke
 discoverability
