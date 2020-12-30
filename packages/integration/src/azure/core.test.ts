@@ -54,6 +54,18 @@ describe('azure core', () => {
         result:
           'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?path=my-template.yaml',
       },
+      {
+        url:
+          'https://api.com/org-name/project-name/_git/repo-name?path=my-template.yaml',
+        result:
+          'https://api.com/org-name/project-name/_apis/git/repositories/repo-name/items?path=my-template.yaml',
+      },
+      {
+        url:
+          'https://api.com/org-name/project-name/_git/repo-name?path=my-template.yaml&version=GBmaster',
+        result:
+          'https://api.com/org-name/project-name/_apis/git/repositories/repo-name/items?path=my-template.yaml&version=master',
+      },
     ])('should handle happy path %#', async ({ url, result }) => {
       expect(getAzureFileFetchUrl(url)).toBe(result);
     });
