@@ -33,6 +33,8 @@ describe('AzurePreparer', () => {
     clone: jest.fn(),
   };
 
+  const logger = getVoidLogger();
+
   jest.spyOn(Git, 'fromAuth').mockReturnValue(mockGitClient as any);
 
   let mockEntity: TemplateEntityV1alpha1;
@@ -78,31 +80,55 @@ describe('AzurePreparer', () => {
     };
   });
 
-  it('initializes git client with the correct arguments if an access token is provided for a repository', async () => {
+  // TODO(blam): Here's a test that will fail when the deprecation is complete
+  it('calls the clone command with deprecated token', async () => {
     const preparer = new AzurePreparer(
       new ConfigReader({
         scaffolder: {
           azure: {
             api: {
-              token: 'fake-token',
+              token: 'fake-azure-token',
             },
           },
         },
       }),
+      { logger },
     );
-    const logger = getVoidLogger();
-    await preparer.prepare(mockEntity, { logger });
+
+    await preparer.prepare(mockEntity);
 
     expect(Git.fromAuth).toHaveBeenCalledWith({
-      username: 'notempty',
-      password: 'fake-token',
       logger,
+      password: 'fake-azure-token',
+      username: 'notempty',
     });
   });
-  it('calls the clone command with the correct arguments for a repository', async () => {
-    const preparer = new AzurePreparer(new ConfigReader({}));
 
-    await preparer.prepare(mockEntity, { logger: getVoidLogger() });
+  it('calls the clone command with token from integrations config', async () => {
+    const preparer = new AzurePreparer(
+      new ConfigReader({
+        integrations: {
+          azure: [
+            { host: 'dev.azure.com', token: 'fake-azure-token-integration' },
+          ],
+        },
+      }),
+      { logger },
+    );
+
+    await preparer.prepare(mockEntity);
+
+    expect(Git.fromAuth).toHaveBeenCalledWith({
+      logger,
+      password: 'fake-azure-token-integration',
+      username: 'notempty',
+    });
+  });
+
+  it('calls the clone command with the correct arguments for a repository', async () => {
+    const preparer = new AzurePreparer(new ConfigReader({}), { logger });
+
+    await preparer.prepare(mockEntity);
 
     expect(mockGitClient.clone).toHaveBeenCalledWith({
       url:
@@ -112,10 +138,10 @@ describe('AzurePreparer', () => {
   });
 
   it('calls the clone command with the correct arguments for a repository when no path is provided', async () => {
-    const preparer = new AzurePreparer(new ConfigReader({}));
+    const preparer = new AzurePreparer(new ConfigReader({}), { logger });
     delete mockEntity.spec.path;
 
-    await preparer.prepare(mockEntity, { logger: getVoidLogger() });
+    await preparer.prepare(mockEntity);
 
     expect(mockGitClient.clone).toHaveBeenCalledWith({
       url:
@@ -125,12 +151,10 @@ describe('AzurePreparer', () => {
   });
 
   it('return the temp directory with the path to the folder if it is specified', async () => {
-    const preparer = new AzurePreparer(new ConfigReader({}));
+    const preparer = new AzurePreparer(new ConfigReader({}), { logger });
     mockEntity.spec.path = './template/test/1/2/3';
 
-    const response = await preparer.prepare(mockEntity, {
-      logger: getVoidLogger(),
-    });
+    const response = await preparer.prepare(mockEntity);
 
     expect(response.split('\\').join('/')).toMatch(
       /\/template\/test\/1\/2\/3$/,
@@ -138,11 +162,10 @@ describe('AzurePreparer', () => {
   });
 
   it('return the working directory with the path to the folder if it is specified', async () => {
-    const preparer = new AzurePreparer(new ConfigReader({}));
+    const preparer = new AzurePreparer(new ConfigReader({}), { logger });
     mockEntity.spec.path = './template/test/1/2/3';
 
     const response = await preparer.prepare(mockEntity, {
-      logger: getVoidLogger(),
       workingDirectory: '/workDir',
     });
 

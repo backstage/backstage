@@ -20,22 +20,46 @@ import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { parseLocationAnnotation } from '../helpers';
 import { InputError, Git } from '@backstage/backend-common';
 import { PreparerBase, PreparerOptions } from './types';
+import { Logger } from 'winston';
 import GitUriParser from 'git-url-parse';
+import { Config } from '@backstage/config';
+import {
+  GitHubIntegrationConfig,
+  readGitHubIntegrationConfigs,
+} from '@backstage/integration';
 
 export class GithubPreparer implements PreparerBase {
-  token?: string;
+  private readonly integrations: GitHubIntegrationConfig[];
+  private readonly scaffolderToken: string | undefined;
+  private readonly logger: Logger;
 
-  constructor(params: { token?: string } = {}) {
-    this.token = params.token;
+  constructor(config: Config, { logger }: { logger: Logger }) {
+    this.logger = logger;
+    this.integrations = readGitHubIntegrationConfigs(
+      config.getOptionalConfigArray('integrations.github') ?? [],
+    );
+
+    if (!this.integrations.length) {
+      this.logger.warn(
+        'Integrations for Github in Scaffolder are not set. This will cause errors in a future release. Please migrate to using integrations config and specifying tokens under hostnames',
+      );
+    }
+
+    this.scaffolderToken = config.getOptionalString('scaffolder.github.token');
+
+    if (this.scaffolderToken) {
+      this.logger.warn(
+        "DEPRECATION: Using the token format under 'scaffolder.github.token' will not be respected in future releases. Please consider using integrations config instead",
+      );
+    }
   }
 
   async prepare(
     template: TemplateEntityV1alpha1,
-    opts: PreparerOptions,
+    opts?: PreparerOptions,
   ): Promise<string> {
     const { protocol, location } = parseLocationAnnotation(template);
     const workingDirectory = opts?.workingDirectory ?? os.tmpdir();
-    const { logger } = opts;
 
     if (!['github', 'url'].includes(protocol)) {
       throw new InputError(
@@ -57,13 +81,15 @@ export class GithubPreparer implements PreparerBase {
 
     const checkoutLocation = path.resolve(tempDir, templateDirectory);
 
-    const git = this.token
+    const token = this.getToken(parsedGitLocation.resource);
+
+    const git = token
       ? Git.fromAuth({
-          username: this.token,
+          username: token,
           password: 'x-oauth-basic',
-          logger,
+          logger: this.logger,
         })
-      : Git.fromAuth({ logger });
+      : Git.fromAuth({ logger: this.logger });
 
     await git.clone({
       url: repositoryCheckoutUrl,
@@ -71,5 +97,11 @@ export class GithubPreparer implements PreparerBase {
     });
 
     return checkoutLocation;
+  }
+  private getToken(host: string): string | undefined {
+    return (
+      this.scaffolderToken ||
+      this.integrations.find(c => c.host === host)?.token
+    );
   }
 }

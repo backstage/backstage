@@ -26,26 +26,41 @@ import os from 'os';
 import path from 'path';
 import { parseLocationAnnotation } from '../helpers';
 import { PreparerBase, PreparerOptions } from './types';
+import { Logger } from 'winston';
 
 export class GitlabPreparer implements PreparerBase {
   private readonly integrations: GitLabIntegrationConfig[];
   private readonly scaffolderToken: string | undefined;
+  private readonly logger: Logger;
 
-  constructor(config: Config) {
+  constructor(config: Config, { logger }: { logger: Logger }) {
+    this.logger = logger;
     this.integrations = readGitLabIntegrationConfigs(
       config.getOptionalConfigArray('integrations.gitlab') ?? [],
     );
+
+    if (!this.integrations.length) {
+      this.logger.warn(
+        'Integrations for GitLab in Scaffolder are not set. This will cause errors in a future release. Please migrate to using integrations config and specifying tokens under hostnames',
+      );
+    }
+
     this.scaffolderToken = config.getOptionalString(
       'scaffolder.gitlab.api.token',
     );
+
+    if (this.scaffolderToken) {
+      this.logger.warn(
+        "DEPRECATION: Using the token format under 'scaffolder.gitlab.api.token' will not be respected in future releases. Please consider using integrations config instead",
+      );
+    }
   }
 
   async prepare(
     template: TemplateEntityV1alpha1,
-    opts: PreparerOptions,
+    opts?: PreparerOptions,
   ): Promise<string> {
     const { protocol, location } = parseLocationAnnotation(template);
-    const { logger } = opts;
     const workingDirectory = opts?.workingDirectory ?? os.tmpdir();
 
     if (!['gitlab', 'gitlab/api', 'url'].includes(protocol)) {
@@ -71,9 +86,9 @@ export class GitlabPreparer implements PreparerBase {
       ? Git.fromAuth({
           password: token,
           username: 'oauth2',
-          logger,
+          logger: this.logger,
         })
-      : Git.fromAuth({ logger });
+      : Git.fromAuth({ logger: this.logger });
 
     await git.clone({
       url: repositoryCheckoutUrl,

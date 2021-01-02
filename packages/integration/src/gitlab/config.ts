@@ -31,7 +31,7 @@ export type GitLabIntegrationConfig = {
 
   /**
    * The base URL of the API of this provider, e.g. "https://gitlab.com/api/v4",
-   * with no trailing slash.
+   * with no trailing slash.s
    *
    * May be omitted specifically for GitLab; then it will be deduced.
    *

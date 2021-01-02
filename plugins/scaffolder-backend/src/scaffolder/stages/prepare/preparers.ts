@@ -77,31 +77,15 @@ export class Preparers implements PreparerBuilder {
     const preparers = new Preparers(typeDetector);
 
     const filePreparer = new FilePreparer();
-    const gitlabPreparer = new GitlabPreparer(config);
-    const azurePreparer = new AzurePreparer(config);
+    const gitlabPreparer = new GitlabPreparer(config, { logger });
+    const azurePreparer = new AzurePreparer(config, { logger });
+    const githubPreparer = new GithubPreparer(config, { logger });
 
     preparers.register('file', filePreparer);
     preparers.register('gitlab', gitlabPreparer);
     preparers.register('gitlab/api', gitlabPreparer);
     preparers.register('azure/api', azurePreparer);
-
-    const githubConfig = config.getOptionalConfig('scaffolder.github');
-    if (githubConfig) {
-      try {
-        const githubToken = githubConfig.getString('token');
-        const githubPreparer = new GithubPreparer({ token: githubToken });
-
-        preparers.register('github', githubPreparer);
-      } catch (e) {
-        if (process.env.NODE_ENV !== 'development') {
-          throw new Error(
-            `Failed to initialize github scaffolding provider, ${e.message}`,
-          );
-        }
-
-        logger.warn(`Skipping github scaffolding provider, ${e.message}`);
-      }
-    }
+    preparers.register('github', githubPreparer);
 
     return preparers;
   }

@@ -22,22 +22,46 @@ import { InputError, Git } from '@backstage/backend-common';
 import { PreparerBase, PreparerOptions } from './types';
 import GitUriParser from 'git-url-parse';
 import { Config } from '@backstage/config';
+import { Logger } from 'winston';
+import {
+  readAzureIntegrationConfigs,
+  AzureIntegrationConfig,
+} from '@backstage/integration';
 
 export class AzurePreparer implements PreparerBase {
-  private readonly privateToken: string;
+  private readonly integrations: AzureIntegrationConfig[];
+  private readonly scaffolderToken: string | undefined;
+  private readonly logger: Logger;
 
-  constructor(config: Config) {
-    this.privateToken =
-      config.getOptionalString('scaffolder.azure.api.token') ?? '';
+  constructor(config: Config, { logger }: { logger: Logger }) {
+    this.logger = logger;
+    this.integrations = readAzureIntegrationConfigs(
+      config.getOptionalConfigArray('integrations.azure') ?? [],
+    );
+
+    if (!this.integrations.length) {
+      this.logger.warn(
+        'Integrations for Azure in Scaffolder are not set. This will cause errors in a future release. Please migrate to using integrations config and specifying tokens under hostnames',
+      );
+    }
+
+    this.scaffolderToken = config.getOptionalString(
+      'scaffolder.azure.api.token',
+    );
+
+    if (this.scaffolderToken) {
+      this.logger.warn(
+        "DEPRECATION: Using the token format under 'scaffolder.azure.api.token' will not be respected in future releases. Please consider using integrations config instead",
+      );
+    }
   }
 
   async prepare(
     template: TemplateEntityV1alpha1,
-    opts: PreparerOptions,
+    opts?: PreparerOptions,
   ): Promise<string> {
     const { protocol, location } = parseLocationAnnotation(template);
     const workingDirectory = opts?.workingDirectory ?? os.tmpdir();
-    const { logger } = opts;
 
     if (!['azure/api', 'url'].includes(protocol)) {
       throw new InputError(
@@ -57,15 +81,17 @@ export class AzurePreparer implements PreparerBase {
       template.spec.path ?? '.',
     );
 
+    const token = this.getToken(parsedGitLocation.resource);
+
     // Username can be anything but the empty string according to:
     // https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=preview-page#use-a-pat
-    const git = this.privateToken
+    const git = token
       ? Git.fromAuth({
-          password: this.privateToken,
+          password: token,
           username: 'notempty',
-          logger,
+          logger: this.logger,
         })
-      : Git.fromAuth({ logger });
+      : Git.fromAuth({ logger: this.logger });
 
     await git.clone({
       url: repositoryCheckoutUrl,
@@ -73,5 +99,12 @@ export class AzurePreparer implements PreparerBase {
     });
 
     return path.resolve(tempDir, templateDirectory);
+  }
+
+  private getToken(host: string): string | undefined {
+    return (
+      this.scaffolderToken ||
+      this.integrations.find(c => c.host === host)?.token
+    );
   }
 }

@@ -26,12 +26,14 @@ import {
   LOCATION_ANNOTATION,
 } from '@backstage/catalog-model';
 import { getVoidLogger, Git } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
 
 describe('GitHubPreparer', () => {
   let mockEntity: TemplateEntityV1alpha1;
   const mockGitClient = {
     clone: jest.fn(),
   };
+  const logger = getVoidLogger();
 
   jest.spyOn(Git, 'fromAuth').mockReturnValue(mockGitClient as any);
 
@@ -77,9 +79,18 @@ describe('GitHubPreparer', () => {
     };
   });
   it('calls the clone command with the correct arguments for a repository', async () => {
-    const preparer = new GithubPreparer();
+    const preparer = new GithubPreparer(
+      new ConfigReader({
+        scaffolder: {
+          github: {
+            token: 'fake-token',
+          },
+        },
+      }),
+      { logger },
+    );
 
-    await preparer.prepare(mockEntity, { logger: getVoidLogger() });
+    await preparer.prepare(mockEntity);
 
     expect(mockGitClient.clone).toHaveBeenCalledWith({
       url: 'https://github.com/benjdlambert/backstage-graphql-template',
@@ -123,15 +134,42 @@ describe('GitHubPreparer', () => {
     );
   });
 
-  it('calls the clone command with the token when provided', async () => {
-    const preparer = new GithubPreparer({ token: 'abc' });
-    const logger = getVoidLogger();
+  it('calls the clone command with deprecated token', async () => {
+    const preparer = new GithubPreparer(
+      new ConfigReader({
+        scaffolder: {
+          github: {
+            token: 'fake-token',
+          },
+        },
+      }),
+      { logger },
+    );
 
-    await preparer.prepare(mockEntity, { logger });
+    await preparer.prepare(mockEntity);
 
     expect(Git.fromAuth).toHaveBeenCalledWith({
       logger,
-      username: 'abc',
+      username: 'fake-token',
+      password: 'x-oauth-basic',
+    });
+  });
+
+  it('calls the clone command with token from integrations config', async () => {
+    const preparer = new GithubPreparer(
+      new ConfigReader({
+        integrations: {
+          github: [{ host: 'github.com', token: 'fake-me' }],
+        },
+      }),
+      { logger },
+    );
+
+    await preparer.prepare(mockEntity);
+
+    expect(Git.fromAuth).toHaveBeenCalledWith({
+      logger,
+      username: 'fake-me',
       password: 'x-oauth-basic',
     });
   });
