@@ -98,10 +98,10 @@ describe('GitHubPreparer', () => {
     });
   });
   it('calls the clone command with the correct arguments for a repository when no path is provided', async () => {
-    const preparer = new GithubPreparer();
+    const preparer = new GithubPreparer(new ConfigReader({}), { logger });
     delete mockEntity.spec.path;
 
-    await preparer.prepare(mockEntity, { logger: getVoidLogger() });
+    await preparer.prepare(mockEntity);
 
     expect(mockGitClient.clone).toHaveBeenCalledWith({
       url: 'https://github.com/benjdlambert/backstage-graphql-template',
@@ -110,22 +110,18 @@ describe('GitHubPreparer', () => {
   });
 
   it('return the temp directory with the path to the folder if it is specified', async () => {
-    const preparer = new GithubPreparer();
+    const preparer = new GithubPreparer(new ConfigReader({}), { logger });
     mockEntity.spec.path = './template/test/1/2/3';
-    const response = await preparer.prepare(mockEntity, {
-      logger: getVoidLogger(),
-    });
-
+    const response = await preparer.prepare(mockEntity);
     expect(response.split('\\').join('/')).toMatch(
       /\/template\/test\/1\/2\/3$/,
     );
   });
 
   it('return the working directory with the path to the folder if it is specified', async () => {
-    const preparer = new GithubPreparer();
+    const preparer = new GithubPreparer(new ConfigReader({}), { logger });
     mockEntity.spec.path = './template/test/1/2/3';
     const response = await preparer.prepare(mockEntity, {
-      logger: getVoidLogger(),
       workingDirectory: '/workDir',
     });
 
