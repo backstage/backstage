@@ -22,7 +22,7 @@ import { Config } from '@backstage/config';
 import { getHeadersForFileExtension, getFileTreeRecursively } from './helpers';
 import { PublisherBase, PublishRequest } from './types';
 import { ManagedUpload } from 'aws-sdk/clients/s3';
-import fs from 'fs';
+import fs from 'fs-extra';
 
 export class AwsS3Publish implements PublisherBase {
   static fromConfig(config: Config, logger: Logger): PublisherBase {
@@ -92,14 +92,15 @@ export class AwsS3Publish implements PublisherBase {
    * Upload all the files from the generated `directory` to the S3 bucket.
    * Directory structure used in the bucket is - entityNamespace/entityKind/entityName/index.html
    */
-  publish({ entity, directory }: PublishRequest): Promise<void> {
-    return new Promise(async (resolve, reject) => {
+  async publish({ entity, directory }: PublishRequest): Promise<void> {
+    try {
       // Note: S3 manages creation of parent directories if they do not exist.
       // So collecting path of only the files is good enough.
       const allFilesToUpload = await getFileTreeRecursively(directory);
 
       const uploadPromises: Array<Promise<ManagedUpload.SendData>> = [];
-      allFilesToUpload.forEach(filePath => {
+
+      for (const filePath of allFilesToUpload) {
         // Remove the absolute path prefix of the source directory
         // Path of all files to upload, relative to the root of the source directory
         // e.g. ['index.html', 'sub-page/index.html', 'assets/images/favicon.png']
@@ -107,61 +108,57 @@ export class AwsS3Publish implements PublisherBase {
         const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
         const destination = `${entityRootDir}/${relativeFilePath}`; // S3 Bucket file relative path
 
-        fs.readFile(filePath, (err, data) => {
-          if (err) {
-            reject(err);
-          }
+        const fileContent = await fs.readFile(filePath, 'utf8');
 
-          const params = {
-            Bucket: this.bucketName,
-            Key: destination,
-            Body: data,
-          };
+        const params = {
+          Bucket: this.bucketName,
+          Key: destination,
+          Body: fileContent,
+        };
 
-          // TODO: Upload in chunks of ~10 files instead of all files at once.
-          uploadPromises.push(this.storageClient.upload(params).promise());
-        });
-      });
-      Promise.all(uploadPromises)
-        .then(() => {
-          this.logger.info(
-            `Successfully uploaded all the generated files for Entity ${entity.metadata.name}. Total number of files: ${allFilesToUpload.length}`,
-          );
-          resolve(undefined);
-        })
-        .catch((err: Error) => {
-          const errorMessage = `Unable to upload file(s) to AWS S3. Error ${err.message}`;
-          this.logger.error(errorMessage);
-          reject(errorMessage);
-        });
-    });
+        uploadPromises.push(this.storageClient.upload(params).promise());
+      }
+      await Promise.all(uploadPromises);
+      this.logger.info(
+        `Successfully uploaded all the generated files for Entity ${entity.metadata.name}. Total number of files: ${allFilesToUpload.length}`,
+      );
+      return;
+    } catch (e) {
+      const errorMessage = `Unable to upload file(s) to AWS S3. Error ${e.message}`;
+      this.logger.error(errorMessage);
+      throw new Error(errorMessage);
+    }
   }
 
-  fetchTechDocsMetadata(entityName: EntityName): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const entityRootDir = `${entityName.namespace}/${entityName.kind}/${entityName.name}`;
+  async fetchTechDocsMetadata(entityName: EntityName): Promise<string> {
+    try {
+      return await new Promise<string>((resolve, reject) => {
+        const entityRootDir = `${entityName.namespace}/${entityName.kind}/${entityName.name}`;
 
-      const fileStreamChunks: Array<any> = [];
-      this.storageClient
-        .getObject({
-          Bucket: this.bucketName,
-          Key: `${entityRootDir}/techdocs_metadata.json`,
-        })
-        .createReadStream()
-        .on('error', err => {
-          this.logger.error(err.message);
-          reject(err.message);
-        })
-        .on('data', chunk => {
-          fileStreamChunks.push(chunk);
-        })
-        .on('end', () => {
-          const techdocsMetadataJson = Buffer.concat(
-            fileStreamChunks,
-          ).toString();
-          resolve(techdocsMetadataJson);
-        });
-    });
+        const fileStreamChunks: Array<any> = [];
+        this.storageClient
+          .getObject({
+            Bucket: this.bucketName,
+            Key: `${entityRootDir}/techdocs_metadata.json`,
+          })
+          .createReadStream()
+          .on('error', err => {
+            this.logger.error(err.message);
+            reject(new Error(err.message));
+          })
+          .on('data', chunk => {
+            fileStreamChunks.push(chunk);
+          })
+          .on('end', () => {
+            const techdocsMetadataJson = Buffer.concat(
+              fileStreamChunks,
+            ).toString();
+            resolve(techdocsMetadataJson);
+          });
+      });
+    } catch (e) {
+      throw new Error(`TechDocs metadata fetch failed, ${e.message}`);
+    }
   }
 
   /**
@@ -207,20 +204,17 @@ export class AwsS3Publish implements PublisherBase {
    * can be used to verify if there are any pre-generated docs available to serve.
    */
   async hasDocsBeenGenerated(entity: Entity): Promise<boolean> {
-    return new Promise(resolve => {
+    try {
       const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
-      this.storageClient
+      await this.storageClient
         .headObject({
           Bucket: this.bucketName,
           Key: `${entityRootDir}/index.html`,
         })
-        .promise()
-        .then(() => {
-          resolve(true);
-        })
-        .catch(() => {
-          resolve(false);
-        });
-    });
+        .promise();
+      return Promise.resolve(true);
+    } catch (e) {
+      return Promise.resolve(false);
+    }
   }
 }

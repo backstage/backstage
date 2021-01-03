@@ -71,10 +71,7 @@ export class S3 {
     return {
       promise: () =>
         new Promise((resolve, reject) => {
-          if (
-            fs.existsSync(Key) &&
-            fs.readFileSync(Key).toString() === 'mock-error'
-          ) {
+          if (!fs.existsSync(Key)) {
             reject('');
           } else {
             resolve('');

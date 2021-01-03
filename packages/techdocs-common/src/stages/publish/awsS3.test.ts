@@ -25,6 +25,7 @@ const createMockEntity = (annotations = {}) => {
     kind: 'TestKind',
     metadata: {
       name: 'test-component-name',
+      namespace: 'test-namespace',
       annotations: {
         ...annotations,
       },
@@ -61,8 +62,13 @@ beforeEach(() => {
 describe('AwsS3Publish', () => {
   describe('publish', () => {
     it('should publish a directory', async () => {
+      const entity = createMockEntity();
+      const {
+        kind,
+        metadata: { namespace, name },
+      } = entity;
       mockFs({
-        '/path/to/generatedDirectory': {
+        [`${namespace}/${kind}/${name}`]: {
           'index.html': '',
           '404.html': '',
           assets: {
@@ -71,20 +77,27 @@ describe('AwsS3Publish', () => {
         },
       });
 
-      const entity = createMockEntity();
       expect(
         await publisher.publish({
           entity,
-          directory: '/path/to/generatedDirectory',
+          directory: `${namespace}/${kind}/${name}`,
         }),
       ).toBeUndefined();
       mockFs.restore();
     });
 
     it('should fail to publish a directory', async () => {
+      const wrongPathToGeneratedDirectory = '/wrong/path/to/generatedDirectory';
+      const entity = createMockEntity();
+
+      const {
+        kind,
+        metadata: { namespace, name },
+      } = entity;
+
       mockFs({
-        '/path/to/generatedDirectory': {
-          'index.html': 'mock-error',
+        [`${namespace}/${kind}/${name}`]: {
+          'index.html': '',
           '404.html': '',
           assets: {
             'main.css': '',
@@ -92,14 +105,17 @@ describe('AwsS3Publish', () => {
         },
       });
 
-      const entity = createMockEntity();
       await publisher
         .publish({
           entity,
-          directory: '/path/to/generatedDirectory',
+          directory: wrongPathToGeneratedDirectory,
         })
         .catch(error =>
-          expect(error).toBe(`Unable to upload file(s) to AWS S3. Error`),
+          expect(error).toEqual(
+            new Error(
+              `Unable to upload file(s) to AWS S3. Error Failed to read template directory: ENOENT, no such file or directory '${wrongPathToGeneratedDirectory}'`,
+            ),
+          ),
         );
       mockFs.restore();
     });
@@ -170,8 +186,10 @@ describe('AwsS3Publish', () => {
       await publisher
         .fetchTechDocsMetadata(entityNameMock)
         .catch(error =>
-          expect(error).toBe(
-            `The file ${entityRootDir}/techdocs_metadata.json doest not exist !`,
+          expect(error).toEqual(
+            new Error(
+              `TechDocs metadata fetch failed, The file ${entityRootDir}/techdocs_metadata.json doest not exist !`,
+            ),
           ),
         );
     });
