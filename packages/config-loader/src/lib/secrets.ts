@@ -107,6 +107,9 @@ export async function readSecret(
     return ctx.env[secret.env];
   }
   if ('data' in secret) {
+    console.warn(
+      `Configuration uses deprecated $data key, use $include instead.`,
+    );
     const url =
       'path' in secret ? `${secret.data}#${secret.path}` : secret.data;
     const [filePath, dataPath] = url.split(/#(.*)/);
