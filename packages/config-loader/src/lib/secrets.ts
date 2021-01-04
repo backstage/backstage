@@ -42,7 +42,12 @@ type DataSecret = {
   path?: string;
 };
 
-type Secret = FileSecret | EnvSecret | DataSecret;
+// TODO(Rugvip): Move this out of secret reading when we remove the deprecated DataSecret and $secret format
+type IncludeSecret = {
+  include: string;
+};
+
+type Secret = FileSecret | EnvSecret | DataSecret | IncludeSecret;
 
 // Schema for each type of secret description
 const secretLoaderSchemas = {
