@@ -15156,10 +15156,10 @@ jose@^2.0.2:
   dependencies:
     "@panva/asn1.js" "^1.0.0"
 
-jose@^3.2.0:
-  version "3.2.0"
-  resolved "https://registry.npmjs.org/jose/-/jose-3.2.0.tgz#cdf41918c00a1511cbbb89667ef033c68b1015ef"
-  integrity sha512-H7Ho/MP9YBiFTHibyvak8rxn+gSr9ZngUEcvnk5XxoPF4Ler05z3NtRZrU0VzjRx6J00YZgZ7VSgsuPWtE/LFw==
+jose@^3.5.0:
+  version "3.5.0"
+  resolved "https://registry.npmjs.org/jose/-/jose-3.5.0.tgz#0a9b1cbedb53ec024d4fcbae779e719e7cf88916"
+  integrity sha512-pW9z+ny33gxX2wXLQl3SkPQWGaUvOMYLijuiMHIHUYIDsrZjdMqYYS5UTkusuMzZkqe5T8YImA4FOqqB1IWmRg==
 
 joycon@^2.2.5:
   version "2.2.5"
