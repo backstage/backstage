@@ -28,6 +28,7 @@ const ctx: ReaderContext = {
       'my-data.json': '{"a":{"b":{"c":42}}}',
       'my-data.yaml': 'some:\n yaml:\n  key: 7',
       'my-data.yml': 'different: { key: hello }',
+      'invalid.yaml': 'foo: [}',
     } as { [key: string]: string })[path];
 
     if (!content) {
@@ -82,6 +83,41 @@ describe('readSecret', () => {
     await expect(
       readSecret({ data: 'no-data.yml#different.key' }, ctx),
     ).rejects.toThrow('File not found!');
+  });
+
+  it('should include extra files', async () => {
+    // New format with path in fragment
+    await expect(
+      readSecret({ include: 'my-data.json#a.b.c' }, ctx),
+    ).resolves.toBe(42);
+    await expect(
+      readSecret({ include: 'my-data.json#a.b' }, ctx),
+    ).resolves.toEqual({ c: 42 });
+    await expect(
+      readSecret({ include: 'my-data.yaml#some.yaml.key' }, ctx),
+    ).resolves.toBe(7);
+    await expect(readSecret({ include: 'my-data.yaml' }, ctx)).resolves.toEqual(
+      {
+        some: { yaml: { key: 7 } },
+      },
+    );
+    await expect(
+      readSecret({ include: 'my-data.yaml#' }, ctx),
+    ).resolves.toEqual({
+      some: { yaml: { key: 7 } },
+    });
+    await expect(
+      readSecret({ include: 'my-data.yml#different.key' }, ctx),
+    ).resolves.toBe('hello');
+    await expect(
+      readSecret({ include: 'no-data.yml#different.key' }, ctx),
+    ).rejects.toThrow('File not found!');
+    await expect(
+      readSecret({ include: 'my-data.yml#missing.key' }, ctx),
+    ).rejects.toThrow('Value is not an object at missing in my-data.yml');
+    await expect(readSecret({ include: 'invalid.yaml' }, ctx)).rejects.toThrow(
+      'Failed to parse included file invalid.yaml, YAMLSyntaxError: Flow sequence contains an unexpected }',
+    );
   });
 
   it('should reject invalid secrets', async () => {
