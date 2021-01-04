@@ -36,6 +36,7 @@
     "@octokit/graphql": "^4.5.6",
     "@types/express": "^4.17.6",
     "@types/ldapjs": "^1.0.9",
+    "aws-sdk": "^2.817.0",
     "codeowners-utils": "^1.0.2",
     "core-js": "^3.6.5",
     "cross-fetch": "^3.0.6",

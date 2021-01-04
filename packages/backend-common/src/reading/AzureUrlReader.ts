@@ -47,13 +47,7 @@ export class AzureUrlReader implements UrlReader {
   constructor(
     private readonly options: AzureIntegrationConfig,
     private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
-  ) {
-    if (options.host !== 'dev.azure.com') {
-      throw Error(
-        `Azure integration currently only supports 'dev.azure.com', tried to use host '${options.host}'`,
-      );
-    }
-  }
+  ) {}
 
   async read(url: string): Promise<Buffer> {
     const builtUrl = getAzureFileFetchUrl(url);

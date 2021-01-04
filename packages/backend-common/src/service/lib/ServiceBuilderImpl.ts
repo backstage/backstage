@@ -145,7 +145,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     return this;
   }
 
-  start(): Promise<http.Server> {
+  async start(): Promise<http.Server> {
     const app = express();
     const {
       port,
@@ -168,15 +168,15 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     app.use(notFoundHandler());
     app.use(errorHandler());
 
+    const server: http.Server = httpsSettings
+      ? await createHttpsServer(app, httpsSettings, logger)
+      : createHttpServer(app, logger);
+
     return new Promise((resolve, reject) => {
       app.on('error', e => {
         logger.error(`Failed to start up on port ${port}, ${e}`);
         reject(e);
       });
-
-      const server: http.Server = httpsSettings
-        ? createHttpsServer(app, httpsSettings, logger)
-        : createHttpServer(app, logger);
 
       const stoppableServer = stoppable(
         server.listen(port, host, () => {

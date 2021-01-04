@@ -32,26 +32,41 @@ export interface Config {
           port?: string | number;
         };
 
-    /** HTTPS configuration for the backend. If omitted the backend will serve HTTP */
-    https?: {
-      /** Certificate configuration or parameters for generating a self-signed certificate */
-      certificate?:
-        | {
-            /** Algorithm to use to generate a self-signed certificate */
-            algorithm: string;
-            keySize?: number;
-            days?: number;
-          }
-        | {
-            /** PEM encoded certificate. Use $file to load in a file */
-            cert: string;
-            /**
-             * PEM encoded certificate key. Use $file to load in a file.
-             * @visibility secret
-             */
-            key: string;
-          };
-    };
+    /**
+     * HTTPS configuration for the backend. If omitted the backend will serve HTTP.
+     *
+     * Setting this to `true` will cause self-signed certificates to be generated, which
+     * can be useful for local development or other non-production scenarios.
+     */
+    https?:
+      | true
+      | {
+          /**
+           * Certificate configuration or parameters for generating a self-signed certificate
+           *
+           * Setting parameters for self-signed certificates is deprecated and will be removed in
+           * the future, set `backend.https = true` instead.
+           */
+          certificate?:
+            | {
+                /** Algorithm to use to generate a self-signed certificate */
+                algorithm?: string;
+                keySize?: number;
+                days?: number;
+                attributes: {
+                  commonName: string;
+                };
+              }
+            | {
+                /** PEM encoded certificate. Use $file to load in a file */
+                cert: string;
+                /**
+                 * PEM encoded certificate key. Use $file to load in a file.
+                 * @visibility secret
+                 */
+                key: string;
+              };
+        };
 
     /** Database connection configuration, select database type using the `client` field */
     database:
