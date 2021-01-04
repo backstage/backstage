@@ -48,7 +48,7 @@
     "express": "^4.17.1",
     "fs-extra": "^9.0.1",
     "git-url-parse": "^11.4.3",
-    "js-yaml": "^3.14.0",
+    "js-yaml": "^4.0.0",
     "mime-types": "^2.1.27",
     "mock-fs": "^4.13.0",
     "recursive-readdir": "^2.2.2",

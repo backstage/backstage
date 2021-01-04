@@ -241,7 +241,7 @@ export const patchMkdocsYmlPreBuild = async (
 
   let mkdocsYml: any;
   try {
-    mkdocsYml = yaml.safeLoad(mkdocsYmlFileString);
+    mkdocsYml = yaml.load(mkdocsYmlFileString);
 
     // mkdocsYml should be an object type after successful parsing.
     // But based on its type definition, it can also be a string or undefined, which we don't want.
@@ -267,7 +267,7 @@ export const patchMkdocsYmlPreBuild = async (
   }
 
   try {
-    await fs.writeFile(mkdocsYmlPath, yaml.safeDump(mkdocsYml), 'utf8');
+    await fs.writeFile(mkdocsYmlPath, yaml.dump(mkdocsYml), 'utf8');
   } catch (error) {
     logger.warn(
       `Could not write to ${mkdocsYmlPath} after updating it before running the generator. ${error.message}`,
