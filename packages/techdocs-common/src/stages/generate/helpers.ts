@@ -267,7 +267,7 @@ export const patchMkdocsYmlPreBuild = async (
   }
 
   try {
-    await fs.writeFile(mkdocsYmlPath, yaml.safeDump(mkdocsYml), 'utf8');
+    await fs.writeFile(mkdocsYmlPath, yaml.dump(mkdocsYml), 'utf8');
   } catch (error) {
     logger.warn(
       `Could not write to ${mkdocsYmlPath} after updating it before running the generator. ${error.message}`,
