@@ -138,6 +138,7 @@ nodegit
 nohoist
 nonces
 npm
+nvarchar
 nvm
 oauth
 OAuth
@@ -235,6 +236,7 @@ upvote
 url
 utils
 validators
+varchar
 Voi
 Wealthsimple
 Weaveworks
