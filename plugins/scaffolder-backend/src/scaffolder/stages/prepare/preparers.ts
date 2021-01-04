@@ -86,7 +86,7 @@ export class Preparers implements PreparerBuilder {
     preparers.register('gitlab', gitlabPreparer);
     preparers.register('gitlab/api', gitlabPreparer);
     preparers.register('azure/api', azurePreparer);
-    preparers.register('bitbucket/api', bitbucketPreparer);
+    preparers.register('bitbucket', bitbucketPreparer);
 
     const githubConfig = config.getOptionalConfig('scaffolder.github');
     if (githubConfig) {

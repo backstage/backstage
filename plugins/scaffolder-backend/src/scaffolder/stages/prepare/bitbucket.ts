@@ -42,7 +42,7 @@ export class BitbucketPreparer implements PreparerBase {
     const workingDirectory = opts?.workingDirectory ?? os.tmpdir();
     const { logger } = opts;
 
-    if (!['bitbucket/api', 'url'].includes(protocol)) {
+    if (!['bitbucket', 'url'].includes(protocol)) {
       throw new InputError(
         `Wrong location protocol: ${protocol}, should be 'url'`,
       );

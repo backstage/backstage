@@ -19,4 +19,4 @@ export type RemoteProtocol =
   | 'gitlab'
   | 'gitlab/api'
   | 'azure/api'
-  | 'bitbucket/api';
+  | 'bitbucket';

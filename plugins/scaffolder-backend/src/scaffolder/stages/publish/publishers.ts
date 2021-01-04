@@ -178,7 +178,7 @@ export class Publishers implements PublisherBuilder {
           bitbucketUsername,
           bitbucketToken,
         );
-        publishers.register('bitbucket/api', bitbucketPublisher);
+        publishers.register('bitbucket', bitbucketPublisher);
       } catch (e) {
         const providerName = 'bitbucket';
         if (process.env.NODE_ENV !== 'development') {

@@ -14,44 +14,55 @@
  * limitations under the License.
  */
 
-const mockResponse = jest.fn();
 jest.mock('./helpers');
-jest.mock('cross-fetch', () => mockResponse);
 
 import { BitbucketPublisher } from './bitbucket';
 import { initRepoAndPush } from './helpers';
 import { getVoidLogger } from '@backstage/backend-common';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
+import { msw } from '@backstage/test-utils';
 
 describe('Bitbucket Publisher', () => {
   const logger = getVoidLogger();
+  const server = setupServer();
+  msw.setupDefaultHandlers(server);
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   describe('publish: createRemoteInBitbucketCloud', () => {
     it('should create repo in bitbucket cloud', async () => {
+      server.use(
+        rest.post(
+          'https://api.bitbucket.org/2.0/repositories/project/repo',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json({
+                links: {
+                  html: {
+                    href: 'https://bitbucket.org/project/repo',
+                  },
+                  clone: [
+                    {
+                      name: 'https',
+                      href: 'https://bitbucket.org/project/repo',
+                    },
+                  ],
+                },
+              }),
+            ),
+        ),
+      );
+
       const publisher = new BitbucketPublisher(
         'https://bitbucket.org',
         'fake-user',
         'fake-token',
       );
-      mockResponse.mockResolvedValue({
-        status: 200,
-        json: () =>
-          Promise.resolve({
-            links: {
-              html: {
-                href: 'https://bitbucket.org/project/repo',
-              },
-              clone: [
-                {
-                  name: 'https',
-                  href: 'https://bitbucket.org/project/repo',
-                },
-              ],
-            },
-          }),
-      });
 
       const result = await publisher.publish({
         values: {
@@ -78,31 +89,38 @@ describe('Bitbucket Publisher', () => {
   });
   describe('publish: createRemoteInBitbucketServer', () => {
     it('should create repo in bitbucket server', async () => {
+      server.use(
+        rest.post(
+          'https://bitbucket.mycompany.com/rest/api/1.0/projects/project/repos',
+          (_, res, ctx) =>
+            res(
+              ctx.status(201),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json({
+                links: {
+                  self: [
+                    {
+                      href:
+                        'https://bitbucket.mycompany.com/projects/project/repos/repo',
+                    },
+                  ],
+                  clone: [
+                    {
+                      name: 'http',
+                      href: 'https://bitbucket.mycompany.com/scm/project/repo',
+                    },
+                  ],
+                },
+              }),
+            ),
+        ),
+      );
+
       const publisher = new BitbucketPublisher(
         'https://bitbucket.mycompany.com',
         'fake-user',
         'fake-token',
       );
-      mockResponse.mockResolvedValue({
-        status: 201,
-        json: () =>
-          Promise.resolve({
-            links: {
-              self: [
-                {
-                  href:
-                    'https://bitbucket.mycompany.com/projects/project/repos/repo',
-                },
-              ],
-              clone: [
-                {
-                  name: 'http',
-                  href: 'https://bitbucket.mycompany.com/scm/project/repo',
-                },
-              ],
-            },
-          }),
-      });
 
       const result = await publisher.publish({
         values: {

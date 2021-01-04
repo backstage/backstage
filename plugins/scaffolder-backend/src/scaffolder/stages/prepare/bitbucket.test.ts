@@ -44,7 +44,7 @@ describe('BitbucketPreparer', () => {
       metadata: {
         annotations: {
           [LOCATION_ANNOTATION]:
-            'bitbucket/api:https://bitbucket.org/backstage-project/backstage-repo',
+            'bitbucket:https://bitbucket.org/backstage-project/backstage-repo',
         },
         name: 'graphql-starter',
         title: 'GraphQL Service',
