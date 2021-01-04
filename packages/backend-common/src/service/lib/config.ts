@@ -193,7 +193,7 @@ export function readCspOptions(
  * ```
  */
 export function readHttpsSettings(config: Config): HttpsSettings | undefined {
-  const https = config.get('https');
+  const https = config.getOptional('https');
   if (https === true) {
     const baseUrl = config.getString('baseUrl');
     let commonName;
