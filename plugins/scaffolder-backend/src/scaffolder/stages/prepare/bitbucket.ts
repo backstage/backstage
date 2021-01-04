@@ -18,10 +18,9 @@ import fs from 'fs-extra';
 import path from 'path';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { parseLocationAnnotation } from '../helpers';
-import { InputError } from '@backstage/backend-common';
+import { InputError, Git } from '@backstage/backend-common';
 import { PreparerBase, PreparerOptions } from './types';
 import GitUriParser from 'git-url-parse';
-import { Clone, Cred } from 'nodegit';
 import { Config } from '@backstage/config';
 
 export class BitbucketPreparer implements PreparerBase {
@@ -41,6 +40,7 @@ export class BitbucketPreparer implements PreparerBase {
   ): Promise<string> {
     const { protocol, location } = parseLocationAnnotation(template);
     const workingDirectory = opts?.workingDirectory ?? os.tmpdir();
+    const { logger } = opts;
 
     if (!['bitbucket/api', 'url'].includes(protocol)) {
       throw new InputError(
@@ -61,19 +61,21 @@ export class BitbucketPreparer implements PreparerBase {
       template.spec.path ?? '.',
     );
 
-    const options = this.privateToken
-      ? {
-          fetchOpts: {
-            callbacks: {
-              credentials: () =>
-                Cred.userpassPlaintextNew(this.username, this.privateToken),
-            },
-          },
-        }
-      : {};
+    const checkoutLocation = path.resolve(tempDir, templateDirectory);
 
-    await Clone.clone(repositoryCheckoutUrl, tempDir, options);
+    const git = this.privateToken
+      ? Git.fromAuth({
+          username: this.username,
+          password: this.privateToken,
+          logger,
+        })
+      : Git.fromAuth({ logger });
 
-    return path.resolve(tempDir, templateDirectory);
+    await git.clone({
+      url: repositoryCheckoutUrl,
+      dir: tempDir,
+    });
+
+    return checkoutLocation;
   }
 }

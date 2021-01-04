@@ -15,7 +15,7 @@
  */
 
 import { PublisherBase, PublisherOptions, PublisherResult } from './types';
-import { pushToRemoteUserPass } from './helpers';
+import { initRepoAndPush } from './helpers';
 import { RequiredTemplateValues } from '../templater';
 import { JsonValue } from '../../../../../../packages/config/src';
 import fetch from 'cross-fetch';
@@ -34,32 +34,36 @@ export class BitbucketPublisher implements PublisherBase {
   async publish({
     values,
     directory,
+    logger,
   }: PublisherOptions): Promise<PublisherResult> {
     const result = await this.createRemote(values);
 
-    await pushToRemoteUserPass(
-      directory,
-      result.remoteUrl,
-      this.username,
-      this.token,
-    );
+    await initRepoAndPush({
+      dir: directory,
+      remoteUrl: result.remoteUrl,
+      auth: {
+        username: this.username,
+        password: this.token,
+      },
+      logger,
+    });
     return result;
   }
 
   private async createRemote(
     values: RequiredTemplateValues & Record<string, JsonValue>,
   ): Promise<PublisherResult> {
-    const [project, name] = values.storePath.split('/');
     if (this.host === 'https://bitbucket.org') {
-      return this.createBitbucketCloudRepository(project, name);
+      return this.createBitbucketCloudRepository(values);
     }
-    return this.createBitbucketServerRepository(project, name);
+    return this.createBitbucketServerRepository(values);
   }
 
   private async createBitbucketCloudRepository(
-    project: string,
-    name: string,
+    values: RequiredTemplateValues & Record<string, JsonValue>,
   ): Promise<PublisherResult> {
+    const [project, name] = values.storePath.split('/');
+
     let response: Response;
     const buffer = Buffer.from(`${this.username}:${this.token}`, 'utf8');
 
@@ -96,14 +100,16 @@ export class BitbucketPublisher implements PublisherBase {
   }
 
   private async createBitbucketServerRepository(
-    project: string,
-    name: string,
+    values: RequiredTemplateValues & Record<string, JsonValue>,
   ): Promise<PublisherResult> {
+    const [project, name] = values.storePath.split('/');
+
     let response: Response;
     const options: RequestInit = {
       method: 'POST',
       body: JSON.stringify({
         name: name,
+        description: values.description,
       }),
       headers: {
         Authorization: `Bearer ${this.token}`,
