@@ -69,7 +69,10 @@ export class BitbucketPublisher implements PublisherBase {
 
     const options: RequestInit = {
       method: 'POST',
-      body: JSON.stringify({}),
+      body: JSON.stringify({
+        scm: 'git',
+        description: values.description,
+      }),
       headers: {
         Authorization: `Basic ${buffer.toString('base64')}`,
         'Content-Type': 'application/json',
