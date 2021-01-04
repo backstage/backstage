@@ -35,7 +35,6 @@ export type PublisherBase = {
 
 export type PublisherOptions = {
   values: RequiredTemplateValues & Record<string, JsonValue>;
-  logger: Logger;
   directory: string;
 };
 

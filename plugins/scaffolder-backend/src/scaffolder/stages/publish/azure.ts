@@ -17,7 +17,7 @@
 import { PublisherBase, PublisherOptions, PublisherResult } from './types';
 import { GitApi } from 'azure-devops-node-api/GitApi';
 import { GitRepositoryCreateOptions } from 'azure-devops-node-api/interfaces/GitInterfaces';
-import { JsonValue } from '@backstage/config';
+import { JsonValue, Config } from '@backstage/config';
 import { RequiredTemplateValues } from '../templater';
 import { initRepoAndPush } from './helpers';
 
@@ -25,7 +25,7 @@ export class AzurePublisher implements PublisherBase {
   private readonly client: GitApi;
   private readonly token: string;
 
-  constructor(client: GitApi, token: string) {
+  constructor(config: Config) {
     this.client = client;
     this.token = token;
   }

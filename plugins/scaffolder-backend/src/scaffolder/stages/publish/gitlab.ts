@@ -16,23 +16,46 @@
 
 import { PublisherBase, PublisherOptions, PublisherResult } from './types';
 import { Gitlab } from '@gitbeaker/core';
-import { JsonValue } from '@backstage/config';
+import { Config, JsonValue } from '@backstage/config';
+import { Logger } from 'winston';
 import { initRepoAndPush } from './helpers';
 import { RequiredTemplateValues } from '../templater';
+import {
+  GitLabIntegrationConfig,
+  readGitLabIntegrationConfigs,
+} from '@backstage/integration';
 
 export class GitlabPublisher implements PublisherBase {
-  private readonly client: Gitlab;
-  private readonly token: string;
+  private readonly integrations: GitLabIntegrationConfig[];
+  private readonly scaffolderToken: string | undefined;
+  private readonly logger: Logger;
 
-  constructor(client: Gitlab, token: string) {
-    this.client = client;
-    this.token = token;
+  constructor(config: Config, { logger }: { logger: Logger }) {
+    this.logger = logger;
+    this.integrations = readGitLabIntegrationConfigs(
+      config.getOptionalConfigArray('integrations.gitlab') ?? [],
+    );
+
+    if (!this.integrations.length) {
+      this.logger.warn(
+        'Integrations for GitLab in Scaffolder are not set. This will cause errors in a future release. Please migrate to using integrations config and specifying tokens under hostnames',
+      );
+    }
+
+    this.scaffolderToken = config.getOptionalString(
+      'scaffolder.gitlab.api.token',
+    );
+
+    if (this.scaffolderToken) {
+      this.logger.warn(
+        "DEPRECATION: Using the token format under 'scaffolder.gitlab.api.token' will not be respected in future releases. Please consider using integrations config instead",
+      );
+    }
   }
 
   async publish({
     values,
     directory,
-    logger,
   }: PublisherOptions): Promise<PublisherResult> {
     const remoteUrl = await this.createRemote(values);
 
