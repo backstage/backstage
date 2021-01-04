@@ -241,7 +241,7 @@ export const patchMkdocsYmlPreBuild = async (
 
   let mkdocsYml: any;
   try {
-    mkdocsYml = yaml.safeLoad(mkdocsYmlFileString);
+    mkdocsYml = yaml.load(mkdocsYmlFileString);
 
     // mkdocsYml should be an object type after successful parsing.
     // But based on its type definition, it can also be a string or undefined, which we don't want.
