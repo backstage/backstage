@@ -141,16 +141,17 @@ itself:
 $file: ./my-secret.txt
 ```
 
-### Data File Secrets
+### Including Files
 
-This reads secrets from a path within a JSON-like data file. The file path
-behaves similar to file secrets, but with the addition of a url fragment that is
-used to point to a specific value inside the file. Supported file extensions are
-`.json`, `.yaml`, and `.yml`. For example, the following would read out
-`my-secret-key` from `my-secrets.json`:
+The `$include` keyword can be used to load in JSON data from an external file.
+It's able to load and parse data from `.json`, `.yml`, and `.yaml` files. It's
+also possible to include a url fragment (`#`) to point to a value at the given
+path in the file.
+
+For example, the following would read `my-secret-key` from `my-secrets.json`:
 
 ```yaml
-$data: ./my-secrets.json#deployment.key
+$include: ./my-secrets.json#deployment.key
 ```
 
 Example `my-secrets.json` file:
