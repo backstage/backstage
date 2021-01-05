@@ -1,9 +1,8 @@
 ---
 id: stability-index
 title: Stability Index
-description:
-  An overview of the commitment to stability for different parts of the
-  Backstage codebase.
+# prettier-ignore
+description: An overview of the commitment to stability for different parts of the Backstage codebase.
 ---
 
 ## Overview
