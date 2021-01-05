@@ -23,10 +23,10 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 const server = setupServer();
 const mockBaseUrl = 'http://backstage:9191/i-am-a-mock-base';
 const discovery: PluginEndpointDiscovery = {
-  async getBaseUrl(_pluginId) {
+  async getBaseUrl() {
     return mockBaseUrl;
   },
-  async getExternalBaseUrl(_pluginId) {
+  async getExternalBaseUrl() {
     return mockBaseUrl;
   },
 };
