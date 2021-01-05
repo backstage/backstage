@@ -206,6 +206,13 @@ scaffolder:
     api:
       token:
         $env: AZURE_TOKEN
+  bitbucket:
+    api:
+      host: https://bitbucket.org
+      username:
+        $env: BITBUCKET_USERNAME
+      token:
+        $env: BITBUCKET_TOKEN
 auth:
   environment: development
   ### Providing an auth.session.secret will enable session support in the auth-backend
