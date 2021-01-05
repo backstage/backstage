@@ -2,4 +2,4 @@
 '@backstage/plugin-search': patch
 ---
 
-Fix Material-UI error for search filtering
+Fix Material-UI warning for search filtering
