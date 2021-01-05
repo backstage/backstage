@@ -46,7 +46,15 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const LogModal: React.FC<Props> = ({ log, open = false, onClose }) => {
+export const LogModal = ({
+  log,
+  open = false,
+  onClose,
+}: {
+  log: string[];
+  open: boolean;
+  onClose: () => void;
+}) => {
   const classes = useStyles();
 
   return (

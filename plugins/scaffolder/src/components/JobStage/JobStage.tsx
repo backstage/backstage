@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable jsx-a11y/no-static-element-interactions */
 /*
  * Copyright 2020 Spotify AB
  *
@@ -20,10 +18,12 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  AccordionActions,
   Box,
   CircularProgress,
   LinearProgress,
   Typography,
+  Button,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -153,19 +153,17 @@ export const JobStage = ({ endedAt, startedAt, name, log, status }: Props) => {
               onClose={toggleLogsFullScreen}
               log={log}
             />
-            <div
-              style={{ height: '20vh', width: '100%' }}
-              onClick={toggleLogsFullScreen}
-            >
-              <LazyLog
-                text={`${log.join('\n')}\nclick to view logs in full screen.`}
-                extraLines={1}
-                follow
-              />
+            <div style={{ height: '20vh', width: '100%' }}>
+              <LazyLog text={`${log.join('\n')}`} extraLines={1} follow />
             </div>
           </Suspense>
         )}
       </AccordionDetails>
+      <AccordionActions>
+        <Button color="primary" onClick={toggleLogsFullScreen}>
+          Open in fullcreen
+        </Button>
+      </AccordionActions>
     </Accordion>
   );
 };
