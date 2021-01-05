@@ -19,6 +19,9 @@ import {
   V1Pod,
   V1ReplicaSet,
   V1HorizontalPodAutoscaler,
+  V1Service,
+  V1ConfigMap,
+  ExtensionsV1beta1Ingress,
 } from '@kubernetes/client-node';
 
 export interface DeploymentResources {
@@ -26,4 +29,22 @@ export interface DeploymentResources {
   replicaSets: V1ReplicaSet[];
   deployments: V1Deployment[];
   horizontalPodAutoscalers: V1HorizontalPodAutoscaler[];
+}
+
+export interface GroupedResponses extends DeploymentResources {
+  services: V1Service[];
+  configMaps: V1ConfigMap[];
+  ingresses: ExtensionsV1beta1Ingress[];
+}
+
+// Higher is more sever, but it's relative
+export type ErrorSeverity = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+
+export interface DetectedError {
+  severity: ErrorSeverity;
+  cluster: string;
+  kind: string;
+  name: string;
+  message: string[];
+  duplicateCount: number;
 }

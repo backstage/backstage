@@ -38,67 +38,15 @@ import { kubernetesApiRef } from '../../api/types';
 import {
   KubernetesRequestBody,
   ClusterObjects,
-  FetchResponse,
   ObjectsByEntityResponse,
 } from '@backstage/plugin-kubernetes-backend';
 import { kubernetesAuthProvidersApiRef } from '../../kubernetes-auth-provider/types';
-import { DeploymentResources } from '../../types/types';
-import {
-  ExtensionsV1beta1Ingress,
-  V1ConfigMap,
-  V1Service,
-} from '@kubernetes/client-node';
 import { ErrorPanel } from './ErrorPanel';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { DeploymentsAccordions } from '../DeploymentsAccordions';
-
-interface GroupedResponses extends DeploymentResources {
-  services: V1Service[];
-  configMaps: V1ConfigMap[];
-  ingresses: ExtensionsV1beta1Ingress[];
-}
-
-// TODO this could probably be a lodash groupBy
-const groupResponses = (fetchResponse: FetchResponse[]): GroupedResponses => {
-  return fetchResponse.reduce(
-    (prev, next) => {
-      switch (next.type) {
-        case 'deployments':
-          prev.deployments.push(...next.resources);
-          break;
-        case 'pods':
-          prev.pods.push(...next.resources);
-          break;
-        case 'replicasets':
-          prev.replicaSets.push(...next.resources);
-          break;
-        case 'services':
-          prev.services.push(...next.resources);
-          break;
-        case 'configmaps':
-          prev.configMaps.push(...next.resources);
-          break;
-        case 'horizontalpodautoscalers':
-          prev.horizontalPodAutoscalers.push(...next.resources);
-          break;
-        case 'ingresses':
-          prev.ingresses.push(...next.resources);
-          break;
-        default:
-      }
-      return prev;
-    },
-    {
-      pods: [],
-      replicaSets: [],
-      deployments: [],
-      services: [],
-      configMaps: [],
-      horizontalPodAutoscalers: [],
-      ingresses: [],
-    } as GroupedResponses,
-  );
-};
+import { ErrorReporting } from '../ErrorReporting';
+import { detectErrors } from '../../utils/error-detection';
+import { groupResponses } from '../../utils/response';
 
 type KubernetesContentProps = { entity: Entity; children?: React.ReactNode };
 
@@ -172,6 +120,21 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
               entityName={entity.metadata.name}
               errorMessage={error}
             />
+          )}
+
+          {kubernetesObjects && (
+            <>
+              <Grid item container>
+                <Grid item xs={12}>
+                  <ErrorReporting
+                    detectedErrors={detectErrors(kubernetesObjects)}
+                  />
+                </Grid>
+              </Grid>
+              <Grid item>
+                <Divider />
+              </Grid>
+            </>
           )}
 
           {kubernetesObjects?.items.map((item, i) => (
