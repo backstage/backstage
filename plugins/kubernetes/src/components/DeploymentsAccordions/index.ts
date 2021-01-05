@@ -13,17 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import {
-  V1Deployment,
-  V1Pod,
-  V1ReplicaSet,
-  V1HorizontalPodAutoscaler,
-} from '@kubernetes/client-node';
-
-export interface DeploymentResources {
-  pods: V1Pod[];
-  replicaSets: V1ReplicaSet[];
-  deployments: V1Deployment[];
-  horizontalPodAutoscalers: V1HorizontalPodAutoscaler[];
-}
+export { DeploymentsAccordions } from './DeploymentsAccordions';

@@ -16,26 +16,27 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import { DeploymentTables } from './DeploymentTables';
+import { DeploymentsAccordions } from './DeploymentsAccordions';
 import * as twoDeployFixture from './__fixtures__/2-deployments.json';
 import { wrapInTestApp } from '@backstage/test-utils';
 
-describe('DeploymentTables', () => {
+describe('DeploymentsAccordions', () => {
   it('should render 2 deployments', async () => {
-    const { getByText } = render(
+    const { getByText, getAllByText } = render(
       wrapInTestApp(
-        <DeploymentTables deploymentTriple={twoDeployFixture as any} />,
+        <DeploymentsAccordions deploymentResources={twoDeployFixture as any} />,
       ),
     );
 
-    // title
     expect(getByText('dice-roller')).toBeInTheDocument();
-    expect(getByText('dice-roller-canary')).toBeInTheDocument();
+    expect(getByText('10 pods')).toBeInTheDocument();
 
-    // pod names
-    expect(getByText('dice-roller-6c8646bfd-2m5hv')).toBeInTheDocument();
-    expect(
-      getByText('dice-roller-canary-7d64cd756c-55rfq'),
-    ).toBeInTheDocument();
+    expect(getByText('min replicas 10 / max replicas 15')).toBeInTheDocument();
+    expect(getByText('current CPU usage: 30%')).toBeInTheDocument();
+    expect(getByText('target CPU usage: 50%')).toBeInTheDocument();
+
+    expect(getByText('dice-roller-canary')).toBeInTheDocument();
+    expect(getByText('2 pods')).toBeInTheDocument();
+    expect(getAllByText('No pods with errors')).toHaveLength(2);
   });
 });

@@ -4431,5 +4431,89 @@
         "updatedReplicas": 2
       }
     }
+  ],
+  "horizontalPodAutoscalers": [
+    {
+      "apiVersion": "autoscaling/v1",
+      "kind": "HorizontalPodAutoscaler",
+      "metadata": {
+        "annotations": {
+          "autoscaling.alpha.kubernetes.io/conditions": "[{\"type\":\"AbleToScale\",\"status\":\"True\",\"lastTransitionTime\":\"2021-01-05T10:26:04Z\",\"reason\":\"SucceededGetScale\",\"message\":\"the HPA controller was able to get the target's current scale\"},{\"type\":\"ScalingActive\",\"status\":\"False\",\"lastTransitionTime\":\"2021-01-05T10:26:04Z\",\"reason\":\"FailedGetResourceMetric\",\"message\":\"the HPA was unable to compute the replica count: unable to get metrics for resource cpu: no metrics returned from resource metrics API\"}]",
+          "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"autoscaling/v1\",\"kind\":\"HorizontalPodAutoscaler\",\"metadata\":{\"annotations\":{},\"labels\":{\"backstage.io/kubernetes-id\":\"dice-roller\"},\"name\":\"dice-roller\",\"namespace\":\"default\"},\"spec\":{\"maxReplicas\":15,\"minReplicas\":10,\"scaleTargetRef\":{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"name\":\"dice-roller\"},\"targetCPUUtilizationPercentage\":50}}\n"
+        },
+        "creationTimestamp": "2021-01-05T10:25:48Z",
+        "labels": {
+          "backstage.io/kubernetes-id": "dice-roller"
+        },
+        "managedFields": [
+          {
+            "apiVersion": "autoscaling/v1",
+            "fieldsType": "FieldsV1",
+            "fieldsV1": {
+              "f:metadata": {
+                "f:annotations": {
+                  ".": {},
+                  "f:kubectl.kubernetes.io/last-applied-configuration": {}
+                },
+                "f:labels": {
+                  ".": {},
+                  "f:backstage.io/kubernetes-id": {}
+                }
+              },
+              "f:spec": {
+                "f:maxReplicas": {},
+                "f:minReplicas": {},
+                "f:scaleTargetRef": {
+                  "f:apiVersion": {},
+                  "f:kind": {},
+                  "f:name": {}
+                },
+                "f:targetCPUUtilizationPercentage": {}
+              }
+            },
+            "manager": "kubectl-client-side-apply",
+            "operation": "Update",
+            "time": "2021-01-05T10:25:48Z"
+          },
+          {
+            "apiVersion": "autoscaling/v1",
+            "fieldsType": "FieldsV1",
+            "fieldsV1": {
+              "f:metadata": {
+                "f:annotations": {
+                  "f:autoscaling.alpha.kubernetes.io/conditions": {}
+                }
+              },
+              "f:status": {
+                "f:currentReplicas": {}
+              }
+            },
+            "manager": "kube-controller-manager",
+            "operation": "Update",
+            "time": "2021-01-05T10:26:04Z"
+          }
+        ],
+        "name": "dice-roller",
+        "namespace": "default",
+        "resourceVersion": "598",
+        "selfLink": "/apis/autoscaling/v1/namespaces/default/horizontalpodautoscalers/dice-roller",
+        "uid": "dd7c5329-567c-43c2-b159-756808d90a8e"
+      },
+      "spec": {
+        "maxReplicas": 15,
+        "minReplicas": 10,
+        "scaleTargetRef": {
+          "apiVersion": "apps/v1",
+          "kind": "Deployment",
+          "name": "dice-roller"
+        },
+        "targetCPUUtilizationPercentage": 50
+      },
+      "status": {
+        "currentReplicas": 10,
+        "desiredReplicas": 0,
+        "currentCPUUtilizationPercentage": 30
+      }
+    }
   ]
 }

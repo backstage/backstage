@@ -1644,9 +1644,11 @@
     to-fast-properties "^2.0.0"
 
 "@backstage/catalog-model@^0.2.0":
-  version "0.6.0"
+  version "0.2.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@backstage/catalog-model/-/catalog-model-0.2.0.tgz#e3fe2a4ddeb6a9b6ec480c80cb2b9c39cb245576"
+  integrity sha1-4/4qTd62qbbsSAyAyyucOcskVXY=
   dependencies:
-    "@backstage/config" "^0.1.2"
+    "@backstage/config" "^0.1.1"
     "@types/json-schema" "^7.0.5"
     "@types/yup" "^0.29.8"
     json-schema "^0.2.5"
@@ -1655,9 +1657,11 @@
     yup "^0.29.3"
 
 "@backstage/catalog-model@^0.3.0":
-  version "0.6.0"
+  version "0.3.1"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@backstage/catalog-model/-/catalog-model-0.3.1.tgz#45d08e2f333c9c566b2bf2629fd707fe989bb404"
+  integrity sha1-RdCOLzM8nFZrK/Jin9cH/pibtAQ=
   dependencies:
-    "@backstage/config" "^0.1.2"
+    "@backstage/config" "^0.1.1"
     "@types/json-schema" "^7.0.5"
     "@types/yup" "^0.29.8"
     json-schema "^0.2.5"
@@ -1666,16 +1670,17 @@
     yup "^0.29.3"
 
 "@backstage/core@^0.3.0":
-  version "0.4.3"
+  version "0.3.2"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@backstage/core/-/core-0.3.2.tgz#a8209126d5076cf4a8b9bd632fe4e5e2edb62916"
+  integrity sha1-qCCRJtUHbPSoub1jL+Tl4u22KRY=
   dependencies:
-    "@backstage/config" "^0.1.2"
-    "@backstage/core-api" "^0.2.8"
-    "@backstage/theme" "^0.2.2"
+    "@backstage/config" "^0.1.1"
+    "@backstage/core-api" "^0.2.1"
+    "@backstage/theme" "^0.2.1"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "4.0.0-alpha.45"
     "@types/dagre" "^0.7.44"
-    "@types/prop-types" "^15.7.3"
     "@types/react" "^16.9"
     "@types/react-sparklines" "^1.7.0"
     classnames "^2.2.6"
@@ -7398,6 +7403,11 @@ argparse@^1.0.10, argparse@^1.0.7:
   integrity sha512-o5Roy6tNG4SL/FOkCAN6RzjiakZS25RLYFrcMttJqbdd8BWrnA+fGz57iN5Pb06pvBGvl5gQ0B48dJlslXvoTg==
   dependencies:
     sprintf-js "~1.0.2"
+
+argparse@^2.0.1:
+  version "2.0.1"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/argparse/-/argparse-2.0.1.tgz#246f50f3ca78a3240f6c997e8a9bd1eac49e4b38"
+  integrity sha1-JG9Q88p4oyQPbJl+ipvR6sSeSzg=
 
 aria-query@^3.0.0:
   version "3.0.0"
@@ -15738,6 +15748,13 @@ js-yaml@^3.13.0, js-yaml@^3.13.1, js-yaml@^3.14.0, js-yaml@^3.6.1, js-yaml@^3.8.
   dependencies:
     argparse "^1.0.7"
     esprima "^4.0.0"
+
+js-yaml@^4.0.0:
+  version "4.0.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/js-yaml/-/js-yaml-4.0.0.tgz#f426bc0ff4b4051926cd588c71113183409a121f"
+  integrity sha1-9Ca8D/S0BRkmzViMcRExg0CaEh8=
+  dependencies:
+    argparse "^2.0.1"
 
 jsbn@~0.1.0:
   version "0.1.1"

@@ -14,16 +14,23 @@
  * limitations under the License.
  */
 
-import React, { ReactElement, useEffect, useState } from 'react';
-import { Grid, TabProps } from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Divider,
+  Grid,
+  Typography,
+} from '@material-ui/core';
 import { Config } from '@backstage/config';
 import {
-  CardTab,
   configApiRef,
   Content,
   Page,
   Progress,
-  TabbedCard,
+  StatusError,
+  StatusOK,
   useApi,
 } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
@@ -35,29 +42,24 @@ import {
   ObjectsByEntityResponse,
 } from '@backstage/plugin-kubernetes-backend';
 import { kubernetesAuthProvidersApiRef } from '../../kubernetes-auth-provider/types';
-import { DeploymentTables } from '../DeploymentTables';
-import { DeploymentTriple } from '../../types/types';
+import { DeploymentResources } from '../../types/types';
 import {
   ExtensionsV1beta1Ingress,
   V1ConfigMap,
-  V1HorizontalPodAutoscaler,
   V1Service,
 } from '@kubernetes/client-node';
-import { Services } from '../Services';
-import { ConfigMaps } from '../ConfigMaps';
-import { Ingresses } from '../Ingresses';
-import { HorizontalPodAutoscalers } from '../HorizontalPodAutoscalers';
 import { ErrorPanel } from './ErrorPanel';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { DeploymentsAccordions } from '../DeploymentsAccordions';
 
-interface GroupedResponses extends DeploymentTriple {
+interface GroupedResponses extends DeploymentResources {
   services: V1Service[];
   configMaps: V1ConfigMap[];
-  horizontalPodAutoscalers: V1HorizontalPodAutoscaler[];
   ingresses: ExtensionsV1beta1Ingress[];
 }
 
 // TODO this could probably be a lodash groupBy
-const groupResponses = (fetchResponse: FetchResponse[]) => {
+const groupResponses = (fetchResponse: FetchResponse[]): GroupedResponses => {
   return fetchResponse.reduce(
     (prev, next) => {
       switch (next.type) {
@@ -189,63 +191,92 @@ type ClusterProps = {
 };
 
 const Cluster = ({ clusterObjects }: ClusterProps) => {
-  const [selectedTab, setSelectedTab] = useState<string | number>('one');
-
-  const handleChange = (_ev: any, newSelectedTab: string | number) =>
-    setSelectedTab(newSelectedTab);
-
   const groupedResponses = groupResponses(clusterObjects.resources);
 
-  const configMaps = groupedResponses.configMaps;
-  const hpas = groupedResponses.horizontalPodAutoscalers;
-  const ingresses = groupedResponses.ingresses;
-
-  const tabs: ReactElement<TabProps>[] = [
-    <CardTab key={1} value="one" label="Deployments">
-      <DeploymentTables
-        deploymentTriple={{
-          deployments: groupedResponses.deployments,
-          replicaSets: groupedResponses.replicaSets,
-          pods: groupedResponses.pods,
-        }}
-      />
-    </CardTab>,
-    <CardTab key={2} value="two" label="Services">
-      <Services services={groupedResponses.services} />
-    </CardTab>,
-  ];
-
-  if (configMaps.length > 0) {
-    tabs.push(
-      <CardTab key={3} value="three" label="Config Maps">
-        <ConfigMaps configMaps={configMaps} />
-      </CardTab>,
-    );
-  }
-  if (hpas.length > 0) {
-    tabs.push(
-      <CardTab key={4} value="four" label="Horizontal Pod Autoscalers">
-        <HorizontalPodAutoscalers hpas={hpas} />
-      </CardTab>,
-    );
-  }
-  if (ingresses.length > 0) {
-    tabs.push(
-      <CardTab key={5} value="five" label="Ingresses">
-        <Ingresses ingresses={ingresses} />
-      </CardTab>,
-    );
-  }
+  // TODO implement
+  const podsWithErrors = [];
 
   return (
     <>
-      <TabbedCard
-        value={selectedTab}
-        onChange={handleChange}
-        title={clusterObjects.cluster.name}
-      >
-        {tabs}
-      </TabbedCard>
+      <Accordion defaultExpanded TransitionProps={{ unmountOnExit: true }}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1a-content"
+        >
+          <ClusterSummary
+            clusterName={clusterObjects.cluster.name}
+            totalNumberOfPods={groupedResponses.pods.length}
+            numberOfPodsWithErrors={podsWithErrors.length}
+          />
+        </AccordionSummary>
+        <AccordionDetails>
+          <DeploymentsAccordions deploymentResources={groupedResponses} />
+        </AccordionDetails>
+      </Accordion>
     </>
+  );
+};
+
+type ClusterSummaryProps = {
+  clusterName: string;
+  totalNumberOfPods: number;
+  numberOfPodsWithErrors: number;
+  children?: React.ReactNode;
+};
+
+const ClusterSummary = ({
+  clusterName,
+  totalNumberOfPods,
+  numberOfPodsWithErrors,
+}: ClusterSummaryProps) => {
+  return (
+    <Grid
+      container
+      direction="row"
+      justify="flex-start"
+      alignItems="flex-start"
+    >
+      <Grid
+        xs={2}
+        item
+        container
+        direction="column"
+        justify="flex-start"
+        alignItems="flex-start"
+        spacing={0}
+      >
+        <Grid item xs>
+          <Typography variant="h3">{clusterName}</Typography>
+        </Grid>
+        <Grid item xs>
+          <Typography color="textSecondary" variant="body1">
+            Cluster
+          </Typography>
+        </Grid>
+      </Grid>
+      <Grid item xs={1}>
+        {/* TODO move style to class */}
+        <Divider style={{ height: '4em' }} orientation="vertical" />
+      </Grid>
+      <Grid
+        item
+        container
+        xs={3}
+        direction="column"
+        justify="flex-start"
+        alignItems="flex-start"
+      >
+        <Grid item>
+          <StatusOK>{totalNumberOfPods} pods</StatusOK>
+        </Grid>
+        <Grid item>
+          {numberOfPodsWithErrors > 0 ? (
+            <StatusError>{numberOfPodsWithErrors} pods with errors</StatusError>
+          ) : (
+            <StatusOK>No pods with errors</StatusOK>
+          )}
+        </Grid>
+      </Grid>
+    </Grid>
   );
 };

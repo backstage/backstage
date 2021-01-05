@@ -13,4 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { DeploymentTables } from './DeploymentTables';
+export { PodDrawer } from './PodDrawer';
+export { PodsTable } from './PodsTable';
