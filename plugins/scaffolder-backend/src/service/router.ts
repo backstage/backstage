@@ -97,7 +97,12 @@ export async function createRouter(
         },
       };
 
-      const template = await entityClient.findTemplate(templateName);
+      // Forward authorization header from client
+      const template = await entityClient.findTemplate(templateName, {
+        headers: req.headers.authorization
+          ? { authorization: req.headers.authorization }
+          : {},
+      });
 
       const validationResult: ValidatorResult = validate(
         values,

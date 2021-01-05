@@ -20,6 +20,7 @@ import {
   createPlugin,
   discoveryApiRef,
   createRoutableExtension,
+  identityApiRef,
 } from '@backstage/core';
 import {
   catalogApiRef,
@@ -32,8 +33,9 @@ export const catalogPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: catalogApiRef,
-      deps: { discoveryApi: discoveryApiRef },
-      factory: ({ discoveryApi }) => new CatalogClient({ discoveryApi }),
+      deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
+      factory: ({ discoveryApi, identityApi }) =>
+        new CatalogClient({ discoveryApi, identityApi }),
     }),
   ],
   routes: {

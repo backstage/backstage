@@ -14,28 +14,38 @@
  * limitations under the License.
  */
 
-import { DiscoveryApi } from '@backstage/core';
+import { DiscoveryApi, IdentityApi } from '@backstage/core';
 import fetch from 'cross-fetch';
 import { FindingSummary, FossaApi } from './FossaApi';
 
 export class FossaClient implements FossaApi {
   discoveryApi: DiscoveryApi;
+  identityApi?: IdentityApi;
   organizationId?: string;
 
   constructor({
     discoveryApi,
+    identityApi,
     organizationId,
   }: {
     discoveryApi: DiscoveryApi;
+    identityApi?: IdentityApi;
     organizationId?: string;
   }) {
     this.discoveryApi = discoveryApi;
+    this.identityApi = identityApi;
     this.organizationId = organizationId;
   }
 
   private async callApi(path: string): Promise<any> {
     const apiUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/fossa`;
-    const response = await fetch(`${apiUrl}/${path}`);
+    const headers: Record<string, string> = {};
+    if (this.identityApi) {
+      headers.authorization = `Bearer ${this.identityApi.getIdToken()}`;
+    }
+    const response = await fetch(`${apiUrl}/${path}`, {
+      headers,
+    });
     if (response.status === 200) {
       return await response.json();
     }

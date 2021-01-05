@@ -28,13 +28,19 @@ import {
   CatalogEntitiesRequest,
   CatalogListResponse,
   DiscoveryApi,
+  IdentityApi,
 } from './types';
 
 export class CatalogClient implements CatalogApi {
   private readonly discoveryApi: DiscoveryApi;
+  private readonly identityApi: IdentityApi;
 
-  constructor(options: { discoveryApi: DiscoveryApi }) {
+  constructor(options: {
+    discoveryApi: DiscoveryApi;
+    identityApi: IdentityApi;
+  }) {
     this.discoveryApi = options.discoveryApi;
+    this.identityApi = options.identityApi;
   }
 
   async getLocationById(id: String): Promise<Location | undefined> {
@@ -76,12 +82,14 @@ export class CatalogClient implements CatalogApi {
     target,
     dryRun,
   }: AddLocationRequest): Promise<AddLocationResponse> {
+    const idToken = await this.identityApi.getIdToken();
     const response = await fetch(
       `${await this.discoveryApi.getBaseUrl('catalog')}/locations${
         dryRun ? '?dryRun=true' : ''
       }`,
       {
         headers: {
+          authorization: `Bearer ${idToken}`,
           'Content-Type': 'application/json',
         },
         method: 'POST',
@@ -119,9 +127,13 @@ export class CatalogClient implements CatalogApi {
   }
 
   async removeEntityByUid(uid: string): Promise<void> {
+    const idToken = await this.identityApi.getIdToken();
     const response = await fetch(
       `${await this.discoveryApi.getBaseUrl('catalog')}/entities/by-uid/${uid}`,
       {
+        headers: {
+          authorization: `Bearer ${idToken}`,
+        },
         method: 'DELETE',
       },
     );
@@ -140,7 +152,12 @@ export class CatalogClient implements CatalogApi {
 
   private async getRequired(path: string): Promise<any> {
     const url = `${await this.discoveryApi.getBaseUrl('catalog')}${path}`;
-    const response = await fetch(url);
+    const idToken = await this.identityApi.getIdToken();
+    const response = await fetch(url, {
+      headers: {
+        authorization: `Bearer ${idToken}`,
+      },
+    });
 
     if (!response.ok) {
       const payload = await response.text();
@@ -153,7 +170,12 @@ export class CatalogClient implements CatalogApi {
 
   private async getOptional(path: string): Promise<any | undefined> {
     const url = `${await this.discoveryApi.getBaseUrl('catalog')}${path}`;
-    const response = await fetch(url);
+    const idToken = await this.identityApi.getIdToken();
+    const response = await fetch(url, {
+      headers: {
+        authorization: `Bearer ${idToken}`,
+      },
+    });
 
     if (!response.ok) {
       if (response.status === 404) {

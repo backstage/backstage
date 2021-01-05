@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DiscoveryApi } from '@backstage/core';
+import { DiscoveryApi, IdentityApi } from '@backstage/core';
 import { KubernetesApi } from './types';
 import {
   KubernetesRequestBody,
@@ -23,9 +23,14 @@ import {
 
 export class KubernetesBackendClient implements KubernetesApi {
   private readonly discoveryApi: DiscoveryApi;
+  private readonly identityApi: IdentityApi;
 
-  constructor(options: { discoveryApi: DiscoveryApi }) {
+  constructor(options: {
+    discoveryApi: DiscoveryApi;
+    identityApi: IdentityApi;
+  }) {
     this.discoveryApi = options.discoveryApi;
+    this.identityApi = options.identityApi;
   }
 
   private async getRequired(
@@ -33,9 +38,11 @@ export class KubernetesBackendClient implements KubernetesApi {
     requestBody: KubernetesRequestBody,
   ): Promise<any> {
     const url = `${await this.discoveryApi.getBaseUrl('kubernetes')}${path}`;
+    const idToken = await this.identityApi.getIdToken();
     const response = await fetch(url, {
       method: 'POST',
       headers: {
+        authorization: `Bearer ${idToken}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(requestBody),

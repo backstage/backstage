@@ -18,13 +18,27 @@ import { Entity } from '@backstage/catalog-model';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { CatalogClient } from './CatalogClient';
-import { CatalogListResponse, DiscoveryApi } from './types';
+import { CatalogListResponse, DiscoveryApi, IdentityApi } from './types';
 
 const server = setupServer();
 const mockBaseUrl = 'http://backstage:9191/i-am-a-mock-base';
 const discoveryApi: DiscoveryApi = {
   async getBaseUrl(_pluginId) {
     return mockBaseUrl;
+  },
+};
+const identityApi: IdentityApi = {
+  getUserId() {
+    return 'jane-fonda';
+  },
+  getProfile() {
+    return { email: 'jane-fonda@spotify.com' };
+  },
+  async getIdToken() {
+    return Promise.resolve('fake-id-token');
+  },
+  async signOut() {
+    return Promise.resolve();
   },
 };
 
@@ -36,7 +50,7 @@ describe('CatalogClient', () => {
   afterEach(() => server.resetHandlers());
 
   beforeEach(() => {
-    client = new CatalogClient({ discoveryApi });
+    client = new CatalogClient({ discoveryApi, identityApi });
   });
 
   describe('getEntities', () => {

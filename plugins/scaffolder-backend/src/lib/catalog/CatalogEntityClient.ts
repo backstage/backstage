@@ -37,7 +37,10 @@ export class CatalogEntityClient {
    *
    * Throws a NotFoundError or ConflictError if 0 or multiple templates are found.
    */
-  async findTemplate(templateName: string): Promise<TemplateEntityV1alpha1> {
+  async findTemplate(
+    templateName: string,
+    options?: { headers?: Record<string, string> },
+  ): Promise<TemplateEntityV1alpha1> {
     const conditions = [
       'kind=template',
       `metadata.name=${encodeURIComponent(templateName)}`,
@@ -46,6 +49,11 @@ export class CatalogEntityClient {
     const baseUrl = await this.discovery.getBaseUrl('catalog');
     const response = await fetch(
       `${baseUrl}/entities?filter=${conditions.join(',')}`,
+      {
+        headers: {
+          ...options?.headers,
+        },
+      },
     );
 
     if (!response.ok) {

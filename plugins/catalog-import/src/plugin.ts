@@ -20,6 +20,7 @@ import {
   createRouteRef,
   discoveryApiRef,
   githubAuthApiRef,
+  identityApiRef,
   configApiRef,
   createRoutableExtension,
 } from '@backstage/core';
@@ -39,10 +40,16 @@ export const catalogImportPlugin = createPlugin({
       deps: {
         discoveryApi: discoveryApiRef,
         githubAuthApi: githubAuthApiRef,
+        identityApi: identityApiRef,
         configApi: configApiRef,
       },
-      factory: ({ discoveryApi, githubAuthApi, configApi }) =>
-        new CatalogImportClient({ discoveryApi, githubAuthApi, configApi }),
+      factory: ({ discoveryApi, githubAuthApi, identityApi, configApi }) =>
+        new CatalogImportClient({
+          discoveryApi,
+          githubAuthApi,
+          identityApi,
+          configApi,
+        }),
     }),
   ],
   routes: {

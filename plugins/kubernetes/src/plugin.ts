@@ -18,6 +18,7 @@ import {
   createPlugin,
   createRouteRef,
   discoveryApiRef,
+  identityApiRef,
   googleAuthApiRef,
 } from '@backstage/core';
 import { KubernetesBackendClient } from './api/KubernetesBackendClient';
@@ -35,9 +36,9 @@ export const plugin = createPlugin({
   apis: [
     createApiFactory({
       api: kubernetesApiRef,
-      deps: { discoveryApi: discoveryApiRef },
-      factory: ({ discoveryApi }) =>
-        new KubernetesBackendClient({ discoveryApi }),
+      deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
+      factory: ({ discoveryApi, identityApi }) =>
+        new KubernetesBackendClient({ discoveryApi, identityApi }),
     }),
     createApiFactory({
       api: kubernetesAuthProvidersApiRef,

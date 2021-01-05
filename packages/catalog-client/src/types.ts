@@ -53,3 +53,17 @@ export type AddLocationResponse = {
 export type DiscoveryApi = {
   getBaseUrl(pluginId: string): Promise<string>;
 };
+/**
+ * This is a copy of the core IdentityApi, to avoid importing core.
+ */
+export type ProfileInfo = {
+  email?: string;
+  displayName?: string;
+  picture?: string;
+};
+export type IdentityApi = {
+  getUserId(): string;
+  getProfile(): ProfileInfo;
+  getIdToken(): Promise<string | undefined>;
+  signOut(): Promise<void>;
+};
