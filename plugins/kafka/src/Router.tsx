@@ -15,11 +15,13 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { MissingAnnotationEmptyState } from '@backstage/core';
 import React from 'react';
 import { Route, Routes } from 'react-router';
+
+import { rootCatalogKafkaRouteRef } from './plugin';
 import { KAFKA_CONSUMER_GROUP_ANNOTATION } from './constants';
 import { KafkaTopicsForConsumer } from './components/ConsumerGroupOffsets/ConsumerGroupOffsets';
+import { MissingAnnotationEmptyState } from '@backstage/core';
 
 export const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[KAFKA_CONSUMER_GROUP_ANNOTATION]);
@@ -30,7 +32,7 @@ export const Router = ({ entity }: { entity: Entity }) => {
   ) : (
     <Routes>
       <Route
-        path={`/$(rootRouteRef.path)`}
+        path={`${rootCatalogKafkaRouteRef.path}`}
         element={<KafkaTopicsForConsumer />}
       />
     </Routes>

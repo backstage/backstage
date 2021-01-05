@@ -22,9 +22,9 @@ import {
 } from '@backstage/core';
 import { KafkaApi, kafkaApiRef } from './api/KafkaApi';
 
-export const rootRouteRef = createRouteRef({
-  path: '/kafka',
-  title: 'kafka',
+export const rootCatalogKafkaRouteRef = createRouteRef({
+  path: '*',
+  title: 'Kafka',
 });
 
 export const plugin = createPlugin({
