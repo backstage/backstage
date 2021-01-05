@@ -100,7 +100,7 @@ const Background = props => {
               width="560"
               height="315"
               src="https://www.youtube.com/embed/YLAd5hdXR_Q"
-              frameborder="0"
+              frameBorder="0"
               allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
               allowfullscreen
             ></iframe>
@@ -135,7 +135,7 @@ const Background = props => {
               width="560"
               height="315"
               src="https://www.youtube.com/embed/mOLCgdPw1iA"
-              frameborder="0"
+              frameBorder="0"
               allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
               allowfullscreen
             ></iframe>
