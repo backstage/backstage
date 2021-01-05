@@ -102,7 +102,7 @@ const Background = props => {
               src="https://www.youtube.com/embed/YLAd5hdXR_Q"
               frameBorder="0"
               allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen
+              allowFullScreen
             ></iframe>
           </Block.MediaFrame>
         </Block.Container>
@@ -137,7 +137,7 @@ const Background = props => {
               src="https://www.youtube.com/embed/mOLCgdPw1iA"
               frameBorder="0"
               allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen
+              allowFullScreen
             ></iframe>
           </Block.MediaFrame>
         </Block.Container>
