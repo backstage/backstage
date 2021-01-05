@@ -42,7 +42,12 @@ type DataSecret = {
   path?: string;
 };
 
-type Secret = FileSecret | EnvSecret | DataSecret;
+// TODO(Rugvip): Move this out of secret reading when we remove the deprecated DataSecret and $secret format
+type IncludeSecret = {
+  include: string;
+};
+
+type Secret = FileSecret | EnvSecret | DataSecret | IncludeSecret;
 
 // Schema for each type of secret description
 const secretLoaderSchemas = {
@@ -54,6 +59,9 @@ const secretLoaderSchemas = {
   }),
   data: yup.object({
     data: yup.string().required(),
+  }),
+  include: yup.object({
+    include: yup.string().required(),
   }),
 };
 
@@ -94,7 +102,7 @@ const dataSecretParser: {
 export async function readSecret(
   data: JsonObject,
   ctx: ReaderContext,
-): Promise<string | undefined> {
+): Promise<JsonValue | undefined> {
   const secret = secretSchema.validateSync(data, { strict: true }) as Secret;
 
   if ('file' in secret) {
@@ -104,6 +112,9 @@ export async function readSecret(
     return ctx.env[secret.env];
   }
   if ('data' in secret) {
+    console.warn(
+      `Configuration uses deprecated $data key, use $include instead.`,
+    );
     const url =
       'path' in secret ? `${secret.data}#${secret.path}` : secret.data;
     const [filePath, dataPath] = url.split(/#(.*)/);
@@ -133,6 +144,35 @@ export async function readSecret(
     }
 
     return String(value);
+  }
+  if ('include' in secret) {
+    const [filePath, dataPath] = secret.include.split(/#(.*)/);
+
+    const ext = extname(filePath);
+    const parser = dataSecretParser[ext];
+    if (!parser) {
+      throw new Error(`No data secret parser available for extension ${ext}`);
+    }
+
+    const content = await ctx.readFile(filePath);
+
+    const parts = dataPath ? dataPath.split('.') : [];
+
+    let value: JsonValue | undefined;
+    try {
+      value = await parser(content);
+    } catch (error) {
+      throw new Error(`Failed to parse included file ${filePath}, ${error}`);
+    }
+    for (const [index, part] of parts.entries()) {
+      if (!isObject(value)) {
+        const errPath = parts.slice(0, index).join('.');
+        throw new Error(`Value is not an object at ${errPath} in ${filePath}`);
+      }
+      value = value[part];
+    }
+
+    return value;
   }
 
   isNever<typeof secret>();
