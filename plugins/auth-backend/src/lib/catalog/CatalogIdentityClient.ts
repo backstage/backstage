@@ -21,6 +21,7 @@ import {
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
 import { UserEntity } from '@backstage/catalog-model';
+
 type UserQuery = {
   annotations: Record<string, string>;
 };
