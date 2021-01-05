@@ -46,15 +46,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const LogModal = ({
-  log,
-  open = false,
-  onClose,
-}: {
-  log: string[];
-  open: boolean;
-  onClose: () => void;
-}) => {
+export const LogModal = ({ log, open = false, onClose }: Props) => {
   const classes = useStyles();
 
   return (
@@ -73,4 +65,3 @@ export const LogModal = ({
     </Dialog>
   );
 };
-export default LogModal;

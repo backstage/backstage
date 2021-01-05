@@ -31,9 +31,9 @@ import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import cn from 'classnames';
 import moment from 'moment';
 import React, { Suspense, useEffect, useState } from 'react';
+import { LogModal } from './LogModal';
 import { Job } from '../../types';
 
-const LogModal = React.lazy(() => import('./LogModal'));
 const LazyLog = React.lazy(() => import('react-lazylog/build/LazyLog'));
 moment.relativeTimeThreshold('ss', 0);
 
