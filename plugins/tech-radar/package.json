@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-tech-radar",
-  "version": "0.1.1-alpha.26",
+  "version": "0.3.1",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -10,6 +10,15 @@
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/tech-radar"
+  },
+  "keywords": [
+    "backstage"
+  ],
   "scripts": {
     "build": "backstage-cli plugin:build",
     "lint": "backstage-cli lint",
@@ -21,9 +30,9 @@
     "start": "backstage-cli plugin:serve"
   },
   "dependencies": {
-    "@backstage/core": "^0.1.1-alpha.26",
-    "@backstage/test-utils": "^0.1.1-alpha.26",
-    "@backstage/theme": "^0.1.1-alpha.26",
+    "@backstage/core": "^0.4.3",
+    "@backstage/test-utils": "^0.1.5",
+    "@backstage/theme": "^0.2.2",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
@@ -35,9 +44,9 @@
     "react-use": "^15.3.3"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.1.1-alpha.26",
-    "@backstage/dev-utils": "^0.1.1-alpha.26",
-    "@backstage/test-utils": "^0.1.1-alpha.26",
+    "@backstage/cli": "^0.4.4",
+    "@backstage/dev-utils": "^0.1.7",
+    "@backstage/test-utils": "^0.1.6",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^10.4.1",
     "@testing-library/user-event": "^12.0.7",

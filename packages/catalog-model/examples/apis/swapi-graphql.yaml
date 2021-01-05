@@ -6,7 +6,7 @@ metadata:
 spec:
   type: graphql
   lifecycle: production
-  owner: yoda@dagobah.space
+  owner: team-b
   definition: |
     schema {
       query: Root

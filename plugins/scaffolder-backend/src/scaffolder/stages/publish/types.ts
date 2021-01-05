@@ -17,6 +17,7 @@ import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { RequiredTemplateValues } from '../templater';
 import { JsonValue } from '@backstage/config';
 import { RemoteProtocol } from '../types';
+import { Logger } from 'winston';
 
 /**
  * Publisher is in charge of taking a folder created by
@@ -29,11 +30,18 @@ export type PublisherBase = {
    *             catalog, plus the values from the form and the directory that has
    *             been templated
    */
-  publish(opts: {
-    entity: TemplateEntityV1alpha1;
-    values: RequiredTemplateValues & Record<string, JsonValue>;
-    directory: string;
-  }): Promise<{ remoteUrl: string }>;
+  publish(opts: PublisherOptions): Promise<PublisherResult>;
+};
+
+export type PublisherOptions = {
+  values: RequiredTemplateValues & Record<string, JsonValue>;
+  logger: Logger;
+  directory: string;
+};
+
+export type PublisherResult = {
+  remoteUrl: string;
+  catalogInfoUrl?: string;
 };
 
 export type PublisherBuilder = {

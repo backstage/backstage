@@ -13,7 +13,7 @@ There was also some confusion on how to reference entities in URLs in the
 Backstage frontend.
 
 Following discussion in
-[Issue 1947](https://github.com/spotify/backstage/issues/1947), a decision was
+[Issue 1947](https://github.com/backstage/backstage/issues/1947), a decision was
 made.
 
 ## Entity References in YAML files

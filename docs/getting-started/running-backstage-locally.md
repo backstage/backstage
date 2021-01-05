@@ -8,19 +8,19 @@ description: Documentation on How to run Backstage Locally
 
 - Node.js
 
-First make sure you are using Node.js with an Active LTS Release, currently v12.
+First make sure you are using Node.js with an Active LTS Release, currently v14.
 This is made easy with a version manager such as
 [nvm](https://github.com/nvm-sh/nvm) which allows for version switching.
 
 ```bash
 # Installing a new version
-nvm install 12
-> Downloading and installing node v12.18.3...
-> Now using node v12.18.3 (npm v6.14.6)
+nvm install 14
+> Downloading and installing node v14.15.1...
+> Now using node v14.15.1 (npm v6.14.8)
 
 # Checking your version
 node --version
-> v12.18.3
+> v14.15.1
 ```
 
 - Yarn
@@ -42,7 +42,7 @@ of GitHub and run an initial build.
 
 ```bash
 # Start from your local development folder
-git clone --depth 1 git@github.com:spotify/backstage.git
+git clone --depth 1 git@github.com:backstage/backstage.git
 cd backstage
 
 # Fetch our dependencies and run an initial build
@@ -84,19 +84,19 @@ exploring.
 
 But you can also set up any of the available authentication methods. The easiest
 option will be GitHub. To setup GitHub authentication in Backstage, see
-[these instructions](https://github.com/spotify/backstage/tree/master/plugins/auth-backend#github).
+[these instructions](https://github.com/backstage/backstage/tree/master/plugins/auth-backend#github).
 
 ---
 
 Congratulations! That should be it. Let us know how it went
 [on discord](https://discord.gg/EBHEGzX), file issues for any
-[feature](https://github.com/spotify/backstage/issues/new?labels=help+wanted&template=feature_template.md)
+[feature](https://github.com/backstage/backstage/issues/new?labels=help+wanted&template=feature_template.md)
 or
-[plugin suggestions](https://github.com/spotify/backstage/issues/new?labels=plugin&template=plugin_template.md&title=%5BPlugin%5D+THE+PLUGIN+NAME),
+[plugin suggestions](https://github.com/backstage/backstage/issues/new?labels=plugin&template=plugin_template.md&title=%5BPlugin%5D+THE+PLUGIN+NAME),
 or
-[bugs](https://github.com/spotify/backstage/issues/new?labels=bug&template=bug_template.md)
+[bugs](https://github.com/backstage/backstage/issues/new?labels=bug&template=bug_template.md)
 you have, and feel free to
-[contribute](https://github.com/spotify/backstage/blob/master/CONTRIBUTING.md)!
+[contribute](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md)!
 
 ## Creating a Plugin
 

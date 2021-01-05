@@ -48,6 +48,14 @@ h6 {
   color: $textColor;
 }
 
+h2:hover .hash-link {
+  opacity: 1;
+}
+
+.hash-link {
+  fill: white;
+}
+
 /* body elements  */
 p,
 ul,
@@ -1093,4 +1101,9 @@ code {
     width: auto;
     margin: 0 1.5em;
   }
+}
+
+/* Zoomed images using the medium-zoom library should be on top of screen. */
+.medium-zoom-image {
+  z-index: 10000;
 }

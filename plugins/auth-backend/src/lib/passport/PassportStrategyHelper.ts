@@ -116,7 +116,6 @@ export const executeFrameHandlerStrategy = async <T, PrivateInfo = never>(
       strategy.redirect = () => {
         reject(new Error('Unexpected redirect'));
       };
-
       strategy.authenticate(req, {});
     },
   );

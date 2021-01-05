@@ -34,7 +34,7 @@ describe('parseEntityYaml', () => {
         name: backstage
         description: backstage.io
         annotations:
-          github.com/project-slug: 'spotify/backstage'
+          github.com/project-slug: 'backstage/backstage'
       spec:
         type: website
         lifecycle: production
@@ -54,7 +54,7 @@ describe('parseEntityYaml', () => {
           name: 'backstage',
           description: 'backstage.io',
           annotations: {
-            'github.com/project-slug': 'spotify/backstage',
+            'github.com/project-slug': 'backstage/backstage',
           },
         },
         spec: {
@@ -110,6 +110,41 @@ describe('parseEntityYaml', () => {
         },
         spec: {
           type: 'service',
+        },
+      }),
+    ]);
+  });
+
+  it('should handle empty yaml documents', () => {
+    // This happens if the user accidentially adds a "---"
+    // at the end of a file
+    const results = Array.from(
+      parseEntityYaml(
+        Buffer.from(
+          `
+      apiVersion: backstage.io/v1alpha1
+      kind: Component
+      metadata:
+        name: web
+      spec:
+        type: website
+---
+    `,
+          'utf8',
+        ),
+        testLoc,
+      ),
+    );
+
+    expect(results).toEqual([
+      result.entity(testLoc, {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'web',
+        },
+        spec: {
+          type: 'website',
         },
       }),
     ]);

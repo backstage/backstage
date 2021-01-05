@@ -4,14 +4,12 @@
 # The last matching pattern takes precedence.
 # https://help.github.com/articles/about-codeowners/
 
-*                                           @spotify/backstage-core
-/docs/features/techdocs                     @spotify/techdocs-core
-/plugins/cost-insights                      @spotify/silver-lining
+*                                           @backstage/maintainers
+/docs/features/techdocs                     @backstage/techdocs-core
+/plugins/cost-insights                      @backstage/silver-lining
 /plugins/cloudbuild                         @trivago/ebarrios
-/plugins/techdocs                           @spotify/techdocs-core
-/plugins/techdocs-backend                   @spotify/techdocs-core
-/packages/techdocs-cli                      @spotify/techdocs-core
-/packages/techdocs-container                @spotify/techdocs-core
-/.github/workflows/techdocs.yml             @spotify/techdocs-core
-/.github/workflows/techdocs-pypi.yml        @spotify/techdocs-core
-/.changeset/cost-insights-*                 @spotify/silver-lining
+/plugins/search                             @backstage/techdocs-core
+/plugins/techdocs                           @backstage/techdocs-core
+/plugins/techdocs-backend                   @backstage/techdocs-core
+/packages/techdocs-common                   @backstage/techdocs-core
+/.changeset/cost-insights-*                 @backstage/silver-lining

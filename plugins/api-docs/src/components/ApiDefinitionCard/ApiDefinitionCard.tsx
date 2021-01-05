@@ -15,50 +15,11 @@
  */
 
 import { ApiEntity } from '@backstage/catalog-model';
-import { CardTab, useApi, TabbedCard } from '@backstage/core';
+import { CardTab, TabbedCard, useApi } from '@backstage/core';
 import { Alert } from '@material-ui/lab';
 import React from 'react';
 import { apiDocsConfigRef } from '../../config';
 import { PlainApiDefinitionWidget } from '../PlainApiDefinitionWidget';
-import { OpenApiDefinitionWidget } from '../OpenApiDefinitionWidget';
-import { AsyncApiDefinitionWidget } from '../AsyncApiDefinitionWidget';
-import { GraphQlDefinitionWidget } from '../GraphQlDefinitionWidget';
-
-export type ApiDefinitionWidget = {
-  type: string;
-  title: string;
-  component: (definition: string) => React.ReactElement;
-  rawLanguage?: string;
-};
-
-export function defaultDefinitionWidgets(): ApiDefinitionWidget[] {
-  return [
-    {
-      type: 'openapi',
-      title: 'OpenAPI',
-      rawLanguage: 'yaml',
-      component: definition => (
-        <OpenApiDefinitionWidget definition={definition} />
-      ),
-    },
-    {
-      type: 'asyncapi',
-      title: 'AsyncAPI',
-      rawLanguage: 'yaml',
-      component: definition => (
-        <AsyncApiDefinitionWidget definition={definition} />
-      ),
-    },
-    {
-      type: 'graphql',
-      title: 'GraphQL',
-      rawLanguage: 'graphql',
-      component: definition => (
-        <GraphQlDefinitionWidget definition={definition} />
-      ),
-    },
-  ];
-}
 
 type Props = {
   apiEntity?: ApiEntity;

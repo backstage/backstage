@@ -67,10 +67,13 @@ jobs:
         continue-on-error: true
 
       - name: verify doc links
-        run: node docs/verify-links.js
+        run: node scripts/verify-links.js
 
       - name: prettier
         run: yarn prettier:check
+
+      - name: validate config
+        run: yarn backstage-cli config:check
 
       - name: lint
         run: yarn lerna -- run lint --since origin/master

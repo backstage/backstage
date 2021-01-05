@@ -18,7 +18,7 @@ import { Location, LocationSpec } from '@backstage/catalog-model';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from 'winston';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
-import { durationText } from '../util/timing';
+import { durationText } from '../util';
 import {
   AddLocationResult,
   HigherOrderOperation,
@@ -33,22 +33,12 @@ import {
  * database more directly.
  */
 export class HigherOrderOperations implements HigherOrderOperation {
-  private readonly entitiesCatalog: EntitiesCatalog;
-  private readonly locationsCatalog: LocationsCatalog;
-  private readonly locationReader: LocationReader;
-  private readonly logger: Logger;
-
   constructor(
-    entitiesCatalog: EntitiesCatalog,
-    locationsCatalog: LocationsCatalog,
-    locationReader: LocationReader,
-    logger: Logger,
-  ) {
-    this.entitiesCatalog = entitiesCatalog;
-    this.locationsCatalog = locationsCatalog;
-    this.locationReader = locationReader;
-    this.logger = logger;
-  }
+    private readonly entitiesCatalog: EntitiesCatalog,
+    private readonly locationsCatalog: LocationsCatalog,
+    private readonly locationReader: LocationReader,
+    private readonly logger: Logger,
+  ) {}
 
   /**
    * Adds a single location to the catalog.
@@ -62,7 +52,12 @@ export class HigherOrderOperations implements HigherOrderOperation {
    *
    * @param spec The location to add
    */
-  async addLocation(spec: LocationSpec): Promise<AddLocationResult> {
+  async addLocation(
+    spec: LocationSpec,
+    options?: { dryRun?: boolean },
+  ): Promise<AddLocationResult> {
+    const dryRun = options?.dryRun || false;
+
     // Attempt to find a previous location matching the spec
     const previousLocations = await this.locationsCatalog.locations();
     const previousLocation = previousLocations.find(
@@ -88,7 +83,9 @@ export class HigherOrderOperations implements HigherOrderOperation {
     // in the entities list. But we aren't sure what to do about those yet.
 
     // Write
-    if (!previousLocation) {
+    if (!previousLocation && !dryRun) {
+      // TODO: We do not include location operations in the dryRun. We might perform
+      // this operation as a separate dry run.
       await this.locationsCatalog.addLocation(location);
     }
     if (readerOutput.entities.length === 0) {
@@ -97,12 +94,14 @@ export class HigherOrderOperations implements HigherOrderOperation {
 
     const writtenEntities = await this.entitiesCatalog.batchAddOrUpdateEntities(
       readerOutput.entities,
-      location.id,
+      {
+        locationId: dryRun ? undefined : location.id,
+        dryRun,
+        outputEntities: true,
+      },
     );
 
-    const entities = await this.entitiesCatalog.entities([
-      { 'metadata.uid': writtenEntities.map(e => e.entityId) },
-    ]);
+    const entities = writtenEntities.map(e => e.entity!);
 
     return { location, entities };
   }
@@ -117,28 +116,34 @@ export class HigherOrderOperations implements HigherOrderOperation {
    */
   async refreshAllLocations(): Promise<void> {
     const startTimestamp = process.hrtime();
-    this.logger.info('Beginning locations refresh');
+    const logger = this.logger.child({
+      component: 'catalog-all-locations-refresh',
+    });
+
+    logger.info('Locations Refresh: Beginning locations refresh');
 
     const locations = await this.locationsCatalog.locations();
-    this.logger.info(`Visiting ${locations.length} locations`);
+    logger.info(`Locations Refresh: Visiting ${locations.length} locations`);
 
     for (const { data: location } of locations) {
-      this.logger.info(
-        `Refreshing location ${location.type}:${location.target}`,
+      logger.info(
+        `Locations Refresh: Refreshing location ${location.type}:${location.target}`,
       );
       try {
         await this.refreshSingleLocation(location);
         await this.locationsCatalog.logUpdateSuccess(location.id, undefined);
       } catch (e) {
-        this.logger.warn(
-          `Failed to refresh location ${location.type}:${location.target}, ${e}`,
+        logger.warn(
+          `Locations Refresh: Failed to refresh location ${location.type}:${location.target}, ${e.stack}`,
         );
         await this.locationsCatalog.logUpdateFailure(location.id, e);
       }
     }
 
-    this.logger.info(
-      `Completed locations refresh in ${durationText(startTimestamp)}`,
+    logger.info(
+      `Locations Refresh: Completed locations refresh in ${durationText(
+        startTimestamp,
+      )}`,
     );
   }
 
@@ -153,7 +158,7 @@ export class HigherOrderOperations implements HigherOrderOperation {
 
     for (const item of readerOutput.errors) {
       this.logger.warn(
-        `Failed item in location ${item.location.type}:${item.location.target}, ${item.error}`,
+        `Failed item in location ${item.location.type}:${item.location.target}, ${item.error.stack}`,
       );
     }
 
@@ -168,7 +173,7 @@ export class HigherOrderOperations implements HigherOrderOperation {
     try {
       await this.entitiesCatalog.batchAddOrUpdateEntities(
         readerOutput.entities,
-        location.id,
+        { locationId: location.id },
       );
     } catch (e) {
       for (const entity of readerOutput.entities) {
@@ -183,12 +188,10 @@ export class HigherOrderOperations implements HigherOrderOperation {
 
     this.logger.info(`Posting update success markers`);
 
-    for (const entity of readerOutput.entities) {
-      await this.locationsCatalog.logUpdateSuccess(
-        location.id,
-        entity.entity.metadata.name,
-      );
-    }
+    await this.locationsCatalog.logUpdateSuccess(
+      location.id,
+      readerOutput.entities.map(e => e.entity.metadata.name),
+    );
 
     this.logger.info(
       `Wrote ${readerOutput.entities.length} entities from location ${

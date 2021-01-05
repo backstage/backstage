@@ -25,26 +25,13 @@ import {
   BackstageIdentity,
   AuthRequestOptions,
 } from '../../../definitions/auth';
-import {
-  OAuthRequestApi,
-  AuthProvider,
-  DiscoveryApi,
-} from '../../../definitions';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import {
   AuthSessionStore,
   StaticAuthSessionManager,
 } from '../../../../lib/AuthSessionManager';
 import { Observable } from '../../../../types';
-
-type CreateOptions = {
-  discoveryApi: DiscoveryApi;
-  oauthRequestApi: OAuthRequestApi;
-
-  defaultScopes?: string[];
-  environment?: string;
-  provider?: AuthProvider & { id: string };
-};
+import { OAuthApiCreateOptions } from '../types';
 
 export type GithubAuthResponse = {
   providerInfo: {
@@ -58,7 +45,7 @@ export type GithubAuthResponse = {
 
 const DEFAULT_PROVIDER = {
   id: 'github',
-  title: 'Github',
+  title: 'GitHub',
   icon: GithubIcon,
 };
 
@@ -69,7 +56,7 @@ class GithubAuth implements OAuthApi, SessionApi {
     provider = DEFAULT_PROVIDER,
     oauthRequestApi,
     defaultScopes = ['read:user'],
-  }: CreateOptions) {
+  }: OAuthApiCreateOptions) {
     const connector = new DefaultAuthConnector({
       discoveryApi,
       environment,
@@ -97,7 +84,7 @@ class GithubAuth implements OAuthApi, SessionApi {
 
     const authSessionStore = new AuthSessionStore<GithubSession>({
       manager: sessionManager,
-      storageKey: 'githubSession',
+      storageKey: `${provider.id}Session`,
       sessionScopes: (session: GithubSession) => session.providerInfo.scopes,
     });
 

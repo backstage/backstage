@@ -16,6 +16,7 @@
 
 import { ConflictError } from '@backstage/backend-common';
 import { Entity, Location, parseEntityRef } from '@backstage/catalog-model';
+import { EntityFilters } from '../service/EntityFilters';
 import { DatabaseManager } from './DatabaseManager';
 import type {
   DbEntityRequest,
@@ -53,6 +54,7 @@ describe('CommonDatabase', () => {
         },
         spec: { i: 'j' },
       },
+      relations: [],
     };
 
     entityResponse = {
@@ -91,7 +93,7 @@ describe('CommonDatabase', () => {
       timestamp: null,
     };
 
-    await db.addLocation(input);
+    await db.transaction(async tx => await db.addLocation(tx, input));
 
     const locations = await db.locations();
     expect(locations).toEqual(
@@ -151,6 +153,7 @@ describe('CommonDatabase', () => {
             kind: 'k1',
             metadata: { name: 'n1', namespace: 'ns1' },
           },
+          relations: [],
         },
         {
           entity: {
@@ -158,6 +161,7 @@ describe('CommonDatabase', () => {
             kind: 'k1',
             metadata: { name: 'n1', namespace: 'ns1' },
           },
+          relations: [],
         },
       ];
       await expect(
@@ -173,6 +177,7 @@ describe('CommonDatabase', () => {
             kind: 'k1',
             metadata: { name: 'n1', namespace: 'ns1' },
           },
+          relations: [],
         },
         {
           entity: {
@@ -180,6 +185,7 @@ describe('CommonDatabase', () => {
             kind: 'k1',
             metadata: { name: 'n1', namespace: 'nS1' },
           },
+          relations: [],
         },
       ];
       await expect(
@@ -195,6 +201,7 @@ describe('CommonDatabase', () => {
             kind: 'k1',
             metadata: { name: 'n1', namespace: 'ns1' },
           },
+          relations: [],
         },
         {
           entity: {
@@ -202,6 +209,7 @@ describe('CommonDatabase', () => {
             kind: 'k1',
             metadata: { name: 'n1', namespace: 'ns2' },
           },
+          relations: [],
         },
       ];
       await expect(
@@ -238,7 +246,8 @@ describe('CommonDatabase', () => {
         type: 'a',
         target: 'b',
       };
-      await db.addLocation(location);
+
+      await db.transaction(async tx => await db.addLocation(tx, location));
 
       await db.addLocationUpdateLogEvent(
         'dd12620d-0436-422f-93bd-929aa0788123',
@@ -283,7 +292,7 @@ describe('CommonDatabase', () => {
         db.addEntities(tx, [entityRequest]),
       );
       const updated = await db.transaction(tx =>
-        db.updateEntity(tx, { entity: added.entity }),
+        db.updateEntity(tx, { entity: added.entity, relations: [] }),
       );
       expect(updated.entity.apiVersion).toEqual(added.entity.apiVersion);
       expect(updated.entity.kind).toEqual(added.entity.kind);
@@ -303,7 +312,7 @@ describe('CommonDatabase', () => {
       );
       added.entity.metadata.name! = 'new!';
       const updated = await db.transaction(tx =>
-        db.updateEntity(tx, { entity: added.entity }),
+        db.updateEntity(tx, { entity: added.entity, relations: [] }),
       );
       expect(updated.entity.metadata.name).toEqual('new!');
     });
@@ -314,7 +323,11 @@ describe('CommonDatabase', () => {
       );
       await expect(
         db.transaction(tx =>
-          db.updateEntity(tx, { entity: added.entity }, 'garbage'),
+          db.updateEntity(
+            tx,
+            { entity: added.entity, relations: [] },
+            'garbage',
+          ),
         ),
       ).rejects.toThrow(ConflictError);
     });
@@ -325,7 +338,12 @@ describe('CommonDatabase', () => {
       );
       await expect(
         db.transaction(tx =>
-          db.updateEntity(tx, { entity: added.entity }, undefined, 1e20),
+          db.updateEntity(
+            tx,
+            { entity: added.entity, relations: [] },
+            undefined,
+            1e20,
+          ),
         ),
       ).rejects.toThrow(ConflictError);
     });
@@ -345,9 +363,12 @@ describe('CommonDatabase', () => {
         spec: { c: null },
       };
       await db.transaction(async tx => {
-        await db.addEntities(tx, [{ entity: e1 }, { entity: e2 }]);
+        await db.addEntities(tx, [
+          { entity: e1, relations: [] },
+          { entity: e2, relations: [] },
+        ]);
       });
-      const result = await db.transaction(async tx => db.entities(tx, []));
+      const result = await db.transaction(async tx => db.entities(tx));
       expect(result.length).toEqual(2);
       expect(result).toEqual(
         expect.arrayContaining([
@@ -383,13 +404,13 @@ describe('CommonDatabase', () => {
       await db.transaction(async tx => {
         await db.addEntities(
           tx,
-          entities.map(entity => ({ entity })),
+          entities.map(entity => ({ entity, relations: [] })),
         );
       });
 
       await expect(
         db.transaction(async tx =>
-          db.entities(tx, [{ kind: 'k2', 'spec.c': 'some' }]),
+          db.entities(tx, EntityFilters.ofFilterString('kind=k2,spec.c=some')),
         ),
       ).resolves.toEqual([
         {
@@ -399,56 +420,14 @@ describe('CommonDatabase', () => {
       ]);
     });
 
-    it('can get all specific entities for matching filters with nulls (both missing and literal null value)', async () => {
+    it('can get all specific entities for matching filters case insensitively', async () => {
       const entities: Entity[] = [
-        { apiVersion: 'a', kind: 'k1', metadata: { name: 'n' } },
         {
-          apiVersion: 'a',
-          kind: 'k2',
-          metadata: { name: 'n' },
-          spec: { c: 'some' },
+          apiVersion: 'A',
+          kind: 'K1',
+          metadata: { name: 'N' },
+          spec: { c: 'SOME' },
         },
-        {
-          apiVersion: 'a',
-          kind: 'k3',
-          metadata: { name: 'n' },
-          spec: { c: null },
-        },
-      ];
-
-      await db.transaction(async tx => {
-        await db.addEntities(
-          tx,
-          entities.map(entity => ({ entity })),
-        );
-      });
-
-      const rows = await db.transaction(async tx =>
-        db.entities(tx, [{ apiVersion: 'a', 'spec.c': [null, 'some'] }]),
-      );
-
-      expect(rows.length).toEqual(3);
-      expect(rows).toEqual(
-        expect.arrayContaining([
-          {
-            locationId: undefined,
-            entity: expect.objectContaining({ kind: 'k1' }),
-          },
-          {
-            locationId: undefined,
-            entity: expect.objectContaining({ kind: 'k2' }),
-          },
-          {
-            locationId: undefined,
-            entity: expect.objectContaining({ kind: 'k3' }),
-          },
-        ]),
-      );
-    });
-
-    it('can get all specific entities for matching filters case insensitively)', async () => {
-      const entities: Entity[] = [
-        { apiVersion: 'A', kind: 'K1', metadata: { name: 'N' } },
         {
           apiVersion: 'a',
           kind: 'k2',
@@ -459,19 +438,22 @@ describe('CommonDatabase', () => {
           apiVersion: 'a',
           kind: 'k3',
           metadata: { name: 'n' },
-          spec: { c: null },
+          spec: { c: 'somE' },
         },
       ];
 
       await db.transaction(async tx => {
         await db.addEntities(
           tx,
-          entities.map(entity => ({ entity })),
+          entities.map(entity => ({ entity, relations: [] })),
         );
       });
 
       const rows = await db.transaction(async tx =>
-        db.entities(tx, [{ ApiVersioN: 'A', 'spEc.C': [null, 'some'] }]),
+        db.entities(
+          tx,
+          EntityFilters.ofFilterString('ApiVersioN=A,spEc.C=some'),
+        ),
       );
 
       expect(rows.length).toEqual(3);
@@ -603,8 +585,8 @@ describe('CommonDatabase', () => {
 
       const { id2: secondEntityId } = await db.transaction(async tx => {
         const [{ entity: e1 }, { entity: e2 }] = await db.addEntities(tx, [
-          { entity: entity1 },
-          { entity: entity2 },
+          { entity: entity1, relations: [] },
+          { entity: entity2, relations: [] },
         ]);
         const id1 = e1?.metadata?.uid!;
         const id2 = e2?.metadata?.uid!;
@@ -702,7 +684,7 @@ describe('CommonDatabase', () => {
       await db.transaction(async tx => {
         await db.addEntities(
           tx,
-          entities.map(entity => ({ entity })),
+          entities.map(entity => ({ entity, relations: [] })),
         );
       });
 

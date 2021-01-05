@@ -21,7 +21,6 @@ import {
   ContentHeader,
   Page,
   Header,
-  HeaderLabel,
   SupportButton,
 } from '@backstage/core';
 import RadarComponent from '../components/RadarComponent';
@@ -48,10 +47,7 @@ export const RadarPage = ({
   const classes = useStyles();
   return (
     <Page themeId="tool">
-      <Header title={title} subtitle={subtitle}>
-        <HeaderLabel label="Owner" value="Spotify" />
-        <HeaderLabel label="Lifecycle" value="Beta" />
-      </Header>
+      <Header title={title} subtitle={subtitle} />
       <Content className={classes.overflowXScroll}>
         <ContentHeader title={pageTitle}>
           <SupportButton>

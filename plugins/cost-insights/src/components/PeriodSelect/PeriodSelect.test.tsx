@@ -19,8 +19,9 @@ import { getByRole, waitFor } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import UserEvent from '@testing-library/user-event';
 import { PeriodSelect, getDefaultOptions } from './PeriodSelect';
-import { Duration, getDefaultPageFilters, Group } from '../../types';
+import { getDefaultPageFilters } from '../../utils/filters';
 import { MockBillingDateProvider } from '../../utils/tests';
+import { Group, Duration } from '../../types';
 
 const DefaultPageFilters = getDefaultPageFilters([{ id: 'tools' }] as Group[]);
 const lastCompleteBillingDate = '2020-05-01';
@@ -65,7 +66,6 @@ describe('<PeriodSelect />', () => {
 
   describe.each`
     duration
-    ${Duration.P1M}
     ${Duration.P3M}
     ${Duration.P90D}
     ${Duration.P30D}
@@ -73,8 +73,9 @@ describe('<PeriodSelect />', () => {
     it(`Should select ${duration}`, async () => {
       const mockOnSelect = jest.fn();
       const mockAggregation =
+        // Can't select an option that's already the default
         DefaultPageFilters.duration === duration
-          ? Duration.P1M
+          ? Duration.P30D
           : DefaultPageFilters.duration;
 
       const rendered = await renderInTestApp(
@@ -88,7 +89,6 @@ describe('<PeriodSelect />', () => {
       const button = getByRole(periodSelect, 'button');
 
       UserEvent.click(button);
-      await waitFor(() => rendered.getByText('Past 60 Days'));
       UserEvent.click(rendered.getByTestId(`period-select-option-${duration}`));
       expect(mockOnSelect).toHaveBeenLastCalledWith(duration);
     });

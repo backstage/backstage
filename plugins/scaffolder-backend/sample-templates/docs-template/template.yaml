@@ -9,13 +9,13 @@ metadata:
     - techdocs
     - mkdocs
 spec:
-  owner: spotify/techdocs-core
+  owner: backstage/techdocs-core
   templater: cookiecutter
   type: documentation
   path: '.'
-  
+
   schema:
-    required: 
+    required:
       - component_id
       - description
     properties:
@@ -27,4 +27,3 @@ spec:
         title: Description
         type: string
         description: Help others understand what these docs are about.
-   

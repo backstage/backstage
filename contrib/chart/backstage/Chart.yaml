@@ -1,6 +1,6 @@
 apiVersion: v2
 name: backstage
-description: A Helm chart for Spotify Backstage
+description: A Helm chart for Backstage
 type: application
 
 # This is the chart version. This version number should be incremented each time you make changes
@@ -12,7 +12,7 @@ version: 0.1.1
 appVersion: v0.1.1-alpha.23
 
 sources:
-  - https://github.com/spotify/backstage
+  - https://github.com/backstage/backstage
   - https://github.com/spotify/lighthouse-audit-service
 
 dependencies:

@@ -94,7 +94,7 @@ export class FieldFormatEntityPolicy implements EntityPolicy {
           : '';
 
         throw new Error(
-          `"${field}" is not valid;${message} To learn more about catalog file format, visit: https://github.com/spotify/backstage/blob/master/docs/architecture-decisions/adr002-default-catalog-file-format.md`,
+          `"${field}" is not valid;${message} To learn more about catalog file format, visit: https://github.com/backstage/backstage/blob/master/docs/architecture-decisions/adr002-default-catalog-file-format.md`,
         );
       }
     }

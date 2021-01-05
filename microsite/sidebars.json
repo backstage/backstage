@@ -7,6 +7,7 @@
       "overview/vision",
       "overview/background",
       "overview/adopting",
+      "overview/stability-index",
       "overview/logos"
     ],
     "Getting Started": [
@@ -33,6 +34,7 @@
         ]
       }
     ],
+    "CLI": ["cli/index", "cli/commands"],
     "Core Features": [
       {
         "type": "subcategory",
@@ -45,6 +47,7 @@
           "features/software-catalog/descriptor-format",
           "features/software-catalog/references",
           "features/software-catalog/well-known-annotations",
+          "features/software-catalog/well-known-relations",
           "features/software-catalog/extending-the-model",
           "features/software-catalog/external-integrations",
           "features/software-catalog/software-catalog-api"
@@ -72,6 +75,8 @@
           "features/techdocs/concepts",
           "features/techdocs/architecture",
           "features/techdocs/creating-and-publishing",
+          "features/techdocs/configuration",
+          "features/techdocs/using-cloud-storage",
           "features/techdocs/troubleshooting",
           "features/techdocs/faqs"
         ]

@@ -15,30 +15,38 @@
  */
 
 import { errorHandler } from '@backstage/backend-common';
+import {
+  locationSpecSchema,
+  analyzeLocationSchema,
+} from '@backstage/catalog-model';
 import type { Entity } from '@backstage/catalog-model';
-import { locationSpecSchema } from '@backstage/catalog-model';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
+import yn from 'yn';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
-import { HigherOrderOperation } from '../ingestion/types';
-import {
-  translateQueryToEntityFilters,
-  translateQueryToFieldMapper,
-} from './filterQuery';
+import { LocationAnalyzer, HigherOrderOperation } from '../ingestion/types';
+import { translateQueryToFieldMapper } from './filterQuery';
+import { EntityFilters } from './EntityFilters';
 import { requireRequestBody, validateRequestBody } from './util';
 
 export interface RouterOptions {
   entitiesCatalog?: EntitiesCatalog;
   locationsCatalog?: LocationsCatalog;
   higherOrderOperation?: HigherOrderOperation;
+  locationAnalyzer?: LocationAnalyzer;
   logger: Logger;
 }
 
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { entitiesCatalog, locationsCatalog, higherOrderOperation } = options;
+  const {
+    entitiesCatalog,
+    locationsCatalog,
+    higherOrderOperation,
+    locationAnalyzer,
+  } = options;
 
   const router = Router();
   router.use(express.json());
@@ -46,9 +54,9 @@ export async function createRouter(
   if (entitiesCatalog) {
     router
       .get('/entities', async (req, res) => {
-        const filters = translateQueryToEntityFilters(req.query);
+        const filter = EntityFilters.ofQuery(req.query);
         const fieldMapper = translateQueryToFieldMapper(req.query);
-        const entities = await entitiesCatalog.entities(filters);
+        const entities = await entitiesCatalog.entities(filter);
         res.status(200).send(entities.map(fieldMapper));
       })
       .post('/entities', async (req, res) => {
@@ -56,18 +64,16 @@ export async function createRouter(
         const [result] = await entitiesCatalog.batchAddOrUpdateEntities([
           { entity: body as Entity, relations: [] },
         ]);
-        const [entity] = await entitiesCatalog.entities([
-          { 'metadata.uid': result.entityId },
-        ]);
+        const [entity] = await entitiesCatalog.entities(
+          EntityFilters.ofMatchers({ 'metadata.uid': result.entityId }),
+        );
         res.status(200).send(entity);
       })
       .get('/entities/by-uid/:uid', async (req, res) => {
         const { uid } = req.params;
-        const entities = await entitiesCatalog.entities([
-          {
-            'metadata.uid': uid,
-          },
-        ]);
+        const entities = await entitiesCatalog.entities(
+          EntityFilters.ofMatchers({ 'metadata.uid': uid }),
+        );
         if (!entities.length) {
           res.status(404).send(`No entity with uid ${uid}`);
         }
@@ -80,13 +86,13 @@ export async function createRouter(
       })
       .get('/entities/by-name/:kind/:namespace/:name', async (req, res) => {
         const { kind, namespace, name } = req.params;
-        const entities = await entitiesCatalog.entities([
-          {
+        const entities = await entitiesCatalog.entities(
+          EntityFilters.ofMatchers({
             kind: kind,
             'metadata.namespace': namespace,
             'metadata.name': name,
-          },
-        ]);
+          }),
+        );
         if (!entities.length) {
           res
             .status(404)
@@ -101,7 +107,8 @@ export async function createRouter(
   if (higherOrderOperation) {
     router.post('/locations', async (req, res) => {
       const input = await validateRequestBody(req, locationSpecSchema);
-      const output = await higherOrderOperation.addLocation(input);
+      const dryRun = yn(req.query.dryRun, { default: false });
+      const output = await higherOrderOperation.addLocation(input, { dryRun });
       res.status(201).send(output);
     });
   }
@@ -127,6 +134,14 @@ export async function createRouter(
         await locationsCatalog.removeLocation(id);
         res.status(204).send();
       });
+  }
+
+  if (locationAnalyzer) {
+    router.post('/analyze-location', async (req, res) => {
+      const input = await validateRequestBody(req, analyzeLocationSchema);
+      const output = await locationAnalyzer.analyzeLocation(input);
+      res.status(200).send(output);
+    });
   }
 
   router.use(errorHandler());

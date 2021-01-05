@@ -140,15 +140,21 @@ async function buildPlugin(pluginFolder: string) {
     'yarn build',
   ];
   for (const command of commands) {
-    await Task.forItem('executing', command, async () => {
-      process.chdir(pluginFolder);
-
-      await exec(command).catch(error => {
+    try {
+      await Task.forItem('executing', command, async () => {
+        process.chdir(pluginFolder);
+        await exec(command);
+      }).catch(error => {
         process.stdout.write(error.stderr);
         process.stdout.write(error.stdout);
-        throw new Error(`Could not execute command ${chalk.cyan(command)}`);
+        throw new Error(
+          `Warning: Could not execute command ${chalk.cyan(command)}`,
+        );
       });
-    });
+    } catch (error) {
+      Task.error(error.message);
+      break;
+    }
   }
 }
 

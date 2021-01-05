@@ -23,7 +23,12 @@ import {
   MockConfigProvider,
   MockBillingDateProvider,
 } from '../../utils/tests';
-import { AlertCost, defaultCurrencies, findAlways } from '../../types';
+import { AlertCost } from '../../types';
+import { defaultCurrencies } from '../../utils/currency';
+import { findAlways } from '../../utils/assert';
+
+// suppress recharts componentDidUpdate deprecation warnings
+jest.spyOn(console, 'warn').mockImplementation(() => {});
 
 const engineers = findAlways(defaultCurrencies, c => c.kind === null);
 

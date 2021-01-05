@@ -36,6 +36,7 @@ class LocalStorage {
 }
 
 class MockManager implements SessionManager<string> {
+  setSession = jest.fn();
   getSession = jest.fn();
   removeSession = jest.fn();
   sessionState$ = jest.fn();
@@ -59,6 +60,7 @@ describe('GheAuth AuthSessionStore', () => {
 
     await expect(store.getSession({})).resolves.toBe('a b c');
     expect(manager.getSession).not.toHaveBeenCalled();
+    expect(manager.setSession).toHaveBeenCalledWith('a b c');
   });
 
   it('should not use session without enough scope', async () => {
@@ -72,6 +74,7 @@ describe('GheAuth AuthSessionStore', () => {
       'a b c d',
     );
     expect(manager.getSession).toHaveBeenCalledTimes(1);
+    expect(manager.setSession).not.toHaveBeenCalled();
   });
 
   it('should not use expired session', async () => {
@@ -87,6 +90,7 @@ describe('GheAuth AuthSessionStore', () => {
 
     await expect(store.getSession({})).resolves.toBe('123');
     expect(manager.getSession).toHaveBeenCalledTimes(1);
+    expect(manager.setSession).not.toHaveBeenCalled();
   });
 
   it('should not load missing session', async () => {
@@ -96,6 +100,7 @@ describe('GheAuth AuthSessionStore', () => {
 
     await expect(store.getSession({})).resolves.toBe('123');
     expect(manager.getSession).toHaveBeenCalledTimes(1);
+    expect(manager.setSession).not.toHaveBeenCalled();
 
     expect(localStorage.getItem('my-key')).toBe('"123"');
   });
@@ -109,6 +114,7 @@ describe('GheAuth AuthSessionStore', () => {
 
     await expect(store.getSession({})).resolves.toBe('123');
     expect(manager.getSession).toHaveBeenCalledTimes(1);
+    expect(manager.setSession).not.toHaveBeenCalled();
   });
 
   it('should clear session', () => {
@@ -119,6 +125,7 @@ describe('GheAuth AuthSessionStore', () => {
     store.removeSession();
 
     expect(localStorage.getItem('my-key')).toBe(null);
+    expect(manager.removeSession).toHaveBeenCalled();
   });
 
   it('should forward sessionState calls', () => {

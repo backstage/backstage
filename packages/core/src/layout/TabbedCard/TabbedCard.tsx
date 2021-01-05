@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import React, { FC, useState, ReactElement, ReactNode } from 'react';
+import React, {
+  useState,
+  ReactElement,
+  ReactNode,
+  PropsWithChildren,
+} from 'react';
 import {
   Card,
   CardContent,
@@ -55,14 +60,14 @@ type Props = {
   deepLink?: BottomLinkProps;
 };
 
-const TabbedCard: FC<Props> = ({
+const TabbedCard = ({
   slackChannel = '#backstage',
   children,
   title,
   deepLink,
   value,
   onChange,
-}) => {
+}: PropsWithChildren<Props>) => {
   const tabsClasses = useTabsStyles();
   const [selectedIndex, selectIndex] = useState(0);
 
@@ -118,7 +123,7 @@ type CardTabProps = TabProps & {
   children: ReactNode;
 };
 
-const CardTab: FC<CardTabProps> = ({ children, ...props }) => {
+const CardTab = ({ children, ...props }: PropsWithChildren<CardTabProps>) => {
   const classes = useCardTabStyles();
 
   return <Tab disableRipple classes={classes} {...props} />;

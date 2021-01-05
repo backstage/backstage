@@ -52,7 +52,7 @@ export interface StorageApi {
   remove(key: string): Promise<void>;
 
   /**
-   * Save persistant data, and emit messages to anyone that is using observe$ for this key
+   * Save persistent data, and emit messages to anyone that is using observe$ for this key
    *
    * @param {String} key Unique key associated with the data.
    */

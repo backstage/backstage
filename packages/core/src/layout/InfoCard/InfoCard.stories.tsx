@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
-import { InfoCard } from '.';
 import { Grid, Typography } from '@material-ui/core';
+import React, { PropsWithChildren } from 'react';
+import { MemoryRouter } from 'react-router';
+import { InfoCard } from '.';
 
 const linkInfo = { title: 'Go to XYZ Location', link: '#' };
 
@@ -35,12 +36,14 @@ const text = (
   </Typography>
 );
 
-const Wrapper: FC<{}> = ({ children }) => (
-  <Grid container spacing={4}>
-    <Grid item xs={4}>
-      {children}
+const Wrapper = ({ children }: PropsWithChildren<{}>) => (
+  <MemoryRouter>
+    <Grid container spacing={4}>
+      <Grid item xs={4}>
+        {children}
+      </Grid>
     </Grid>
-  </Grid>
+  </MemoryRouter>
 );
 
 export const Default = () => (

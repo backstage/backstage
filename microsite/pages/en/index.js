@@ -27,11 +27,11 @@ class Index extends React.Component {
               </Block.Title>
               <Block.Paragraph>
                 Powered by a centralized service catalog, Backstage restores
-                order to your infrastructure. So your product teams can ship
-                high-quality code quickly — without compromising autonomy.
+                order to your infrastructure and enables your product teams to
+                ship high-quality code quickly — without compromising autonomy.
               </Block.Paragraph>
               <Block.LinkButton
-                href={'https://github.com/spotify/backstage#getting-started'}
+                href={'https://github.com/backstage/backstage#getting-started'}
               >
                 GitHub
               </Block.LinkButton>
@@ -282,7 +282,7 @@ class Index extends React.Component {
             Build your own software templates
           </ActionBlock.Title>
           <ActionBlock.Link
-            href={`https://github.com/spotify/backstage/blob/master/docs/features/software-templates/extending/index.md`}
+            href={`https://github.com/backstage/backstage/blob/master/docs/features/software-templates/extending/index.md`}
           >
             Contribute
           </ActionBlock.Link>

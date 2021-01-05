@@ -2,8 +2,8 @@
 title: Firebase Functions
 author: roadie.io
 authorUrl: https://roadie.io/
-category: Monitoring
+category: Infrastructure
 description: View Firebase Functions details for your service in Backstage.
 documentation: https://roadie.io/backstage/plugins/firebase-functions
-iconUrl: https://roadie.io/static/49fb23200ad0eaa6703b4ddf75c78cf1/45f2b/logo-vertical.png
+iconUrl: https://roadie.io/images/logos/firebase.png
 npmPackageName: '@roadiehq/backstage-plugin-firebase-functions'

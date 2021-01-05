@@ -12,7 +12,7 @@ There are however some ways to get this to work without too much effort. It's mo
 
 ### Using `global-agent`
 
-1. Install `global-agent` using `yarn install global-agent`
+1. Install `global-agent` using `yarn add global-agent`
 2. Go to the entry file for the backend (`src/index.ts`)
 3. At the top of the file paste the following:
 
@@ -33,7 +33,7 @@ More information and more options for configuring `global-agent` including just 
 
 `proxy-agent` is a library that you can use to override the `globalAgents` of `node` land with a tunnel to use for each request.
 
-1. Install `proxy-agent` using `yarn install proxy-agent`
+1. Install `proxy-agent` using `yarn add proxy-agent`
 2. Go to the entry file for the backend (`src/index.ts`)
 3. At the top of the file paste the following:
 

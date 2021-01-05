@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { render } from '@testing-library/react';
+import { render, within } from '@testing-library/react';
 import { startCase } from 'lodash';
 import React from 'react';
 import { StructuredMetadataTable } from './StructuredMetadataTable';
@@ -67,6 +67,26 @@ describe('<StructuredMetadataTable />', () => {
       });
       metadata.arrayField.forEach(value => {
         expect(getByText(value)).toBeInTheDocument();
+      });
+    });
+
+    it('Supports boolean values', () => {
+      const metadata = { foo: true, bar: false };
+      const expectedValues = [
+        ['Foo', '✅'],
+        ['Bar', '❌'],
+      ];
+
+      const { getAllByRole } = render(
+        <StructuredMetadataTable metadata={metadata} />,
+      );
+
+      getAllByRole('row').forEach((row, index) => {
+        const [firstCell, secondCell] = within(row).getAllByRole('cell');
+        const [expectedKey, expectedValue] = expectedValues[index];
+
+        expect(firstCell).toHaveTextContent(expectedKey);
+        expect(secondCell).toHaveTextContent(expectedValue);
       });
     });
 

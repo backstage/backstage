@@ -16,4 +16,4 @@
 
 export { SubvalueCell } from './SubvalueCell';
 export { Table } from './Table';
-export type { TableColumn, TableFilter, TableProps } from './Table';
+export type { TableColumn, TableFilter, TableProps, TableState } from './Table';

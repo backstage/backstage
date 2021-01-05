@@ -17,8 +17,9 @@
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { AlertActionCard } from './AlertActionCard';
-import { ProjectGrowthAlert, ProjectGrowthData } from '../../types';
 import { MockScrollProvider } from '../../utils/tests';
+import { ProjectGrowthAlert } from '../../utils/alerts';
+import { ProjectGrowthData } from '../../types';
 
 const data: ProjectGrowthData = {
   aggregation: [500000.8, 970502.8],

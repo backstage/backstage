@@ -1,0 +1,211 @@
+# @backstage/plugin-catalog
+
+## 0.2.9
+
+### Patch Changes
+
+- 7e0b8cac5: Add `CatalogIndexPage` and `CatalogEntityPage`, two new extensions that replace the existing `Router` component.
+
+  Add `EntityLayout` to replace `EntityPageLayout`, using children instead of an element property, and allowing for collection of all `RouteRef` mount points used within tabs.
+
+  Add `EntitySwitch` to be used to select components based on entity data, along with accompanying `isKind`, `isNamespace`, and `isComponentType` filters.
+
+- 87c0c53c2: Add new `EntityProvider` component, which can be used to provide an entity for the `useEntity` hook.
+- Updated dependencies [a08c32ced]
+- Updated dependencies [359f9d2d8]
+  - @backstage/core@0.4.3
+  - @backstage/plugin-techdocs@0.5.2
+
+## 0.2.8
+
+### Patch Changes
+
+- 342270e4d: Create AboutCard in core and use it in pagerduty and catalog plugin
+- Updated dependencies [19554f6d6]
+- Updated dependencies [1dc445e89]
+- Updated dependencies [342270e4d]
+  - @backstage/plugin-scaffolder@0.3.5
+  - @backstage/core@0.4.2
+  - @backstage/plugin-techdocs@0.5.1
+
+## 0.2.7
+
+### Patch Changes
+
+- Updated dependencies [c911061b7]
+- Updated dependencies [dae4f3983]
+- Updated dependencies [8ef71ed32]
+- Updated dependencies [0e6298f7e]
+- Updated dependencies [ac3560b42]
+  - @backstage/catalog-model@0.6.0
+  - @backstage/plugin-techdocs@0.5.0
+  - @backstage/core@0.4.1
+  - @backstage/catalog-client@0.3.4
+  - @backstage/plugin-scaffolder@0.3.4
+
+## 0.2.6
+
+### Patch Changes
+
+- 6011b7d3e: Added pagerduty plugin to example app
+- Updated dependencies [2527628e1]
+- Updated dependencies [1c69d4716]
+- Updated dependencies [83b6e0c1f]
+- Updated dependencies [87a33d2fe]
+- Updated dependencies [1665ae8bb]
+- Updated dependencies [04f26f88d]
+- Updated dependencies [ff243ce96]
+  - @backstage/core@0.4.0
+  - @backstage/catalog-model@0.5.0
+  - @backstage/plugin-techdocs@0.4.0
+  - @backstage/theme@0.2.2
+  - @backstage/plugin-scaffolder@0.3.3
+  - @backstage/catalog-client@0.3.3
+
+## 0.2.5
+
+### Patch Changes
+
+- ebf37bbae: Use the OWNED_BY relation and compare it to the users MEMBER_OF relation. The user entity is searched by name, based on the userId of the identity.
+- Updated dependencies [08835a61d]
+- Updated dependencies [a9fd599f7]
+- Updated dependencies [bcc211a08]
+- Updated dependencies [da2ad65cb]
+  - @backstage/catalog-model@0.4.0
+  - @backstage/plugin-scaffolder@0.3.2
+  - @backstage/plugin-techdocs@0.3.1
+  - @backstage/catalog-client@0.3.2
+
+## 0.2.4
+
+### Patch Changes
+
+- 6f70ed7a9: Replace usage of implementsApis with relations
+- Updated dependencies [4b53294a6]
+- Updated dependencies [ab94c9542]
+- Updated dependencies [2daf18e80]
+- Updated dependencies [069cda35f]
+  - @backstage/plugin-techdocs@0.3.0
+  - @backstage/catalog-model@0.3.1
+
+## 0.2.3
+
+### Patch Changes
+
+- Updated dependencies [475fc0aaa]
+- Updated dependencies [1166fcc36]
+- Updated dependencies [ef2831dde]
+- Updated dependencies [1185919f3]
+  - @backstage/core@0.3.2
+  - @backstage/catalog-model@0.3.0
+  - @backstage/plugin-scaffolder@0.3.1
+  - @backstage/catalog-client@0.3.1
+  - @backstage/plugin-techdocs@0.2.3
+
+## 0.2.2
+
+### Patch Changes
+
+- 8b7737d0b: Add About Card tooltips
+- Updated dependencies [1722cb53c]
+- Updated dependencies [717e43de1]
+  - @backstage/core@0.3.1
+  - @backstage/plugin-techdocs@0.2.2
+  - @backstage/catalog-client@0.3.0
+
+## 0.2.1
+
+### Patch Changes
+
+- 2d0bd1be7: Improved the edit link to open the component yaml in edit mode in corresponding SCM. Broke out logic for createEditLink to be reused.
+- Updated dependencies [7b37d65fd]
+- Updated dependencies [4aca74e08]
+- Updated dependencies [e8f69ba93]
+- Updated dependencies [0c0798f08]
+- Updated dependencies [0c0798f08]
+- Updated dependencies [199237d2f]
+- Updated dependencies [6627b626f]
+- Updated dependencies [4577e377b]
+- Updated dependencies [59166e5ec]
+  - @backstage/core@0.3.0
+  - @backstage/theme@0.2.1
+  - @backstage/plugin-scaffolder@0.3.0
+  - @backstage/plugin-techdocs@0.2.1
+
+## 0.2.0
+
+### Minor Changes
+
+- 28edd7d29: Create backend plugin through CLI
+- 368fd8243: Created EntityNotFound component for catalog which displays the 404 page when entity is not found.
+
+  Fixes #2266
+
+- 6d97d2d6f: The InfoCard variant `'height100'` is deprecated. Use variant `'gridItem'` instead.
+
+  When the InfoCard is displayed as a grid item within a grid, you may want items to have the same height for all items.
+  Set to the `'gridItem'` variant to display the InfoCard with full height suitable for Grid:
+  `<InfoCard variant="gridItem">...</InfoCard>`
+
+  Changed the InfoCards in '@backstage/plugin-github-actions', '@backstage/plugin-jenkins', '@backstage/plugin-lighthouse'
+  to pass an optional variant to the corresponding card of the plugin.
+
+  As a result the overview content of the EntityPage shows cards with full height suitable for Grid.
+
+- f0aa01bcc: Add client side paging for catalog table
+- 8b9c8196f: Locations registered through the catalog client now default to the 'url' type. The type selection dropdown in the register-component form has been removed.
+- 2ebcfac8d: Add a validate button to the register-component page
+
+  This allows the user to validate his location before adding it.
+
+- 0b956f21b: The URL path for a catalog entity has changed,
+
+  - from: `/catalog/:kind/:optionalNamespaceAndName`
+  - to: `/catalog/:namespace/:kind/:name`
+
+  Redirects are in place, so disruptions for users should not happen.
+
+### Patch Changes
+
+- 0aecfded0: handle the case where no entities are available to show
+- 60d40892c: Remove "in default" in component name
+- 97c2cb19b: update the EntityNotFound component
+- Updated dependencies [28edd7d29]
+- Updated dependencies [819a70229]
+- Updated dependencies [3a4236570]
+- Updated dependencies [ae5983387]
+- Updated dependencies [0d4459c08]
+- Updated dependencies [482b6313d]
+- Updated dependencies [e0be86b6f]
+- Updated dependencies [f70a52868]
+- Updated dependencies [12b5fe940]
+- Updated dependencies [8351ad79b]
+- Updated dependencies [fb74f1db6]
+- Updated dependencies [1c60f716e]
+- Updated dependencies [144c66d50]
+- Updated dependencies [a768a07fb]
+- Updated dependencies [b79017fd3]
+- Updated dependencies [6d97d2d6f]
+- Updated dependencies [5adfc005e]
+- Updated dependencies [93a3fa3ae]
+- Updated dependencies [782f3b354]
+- Updated dependencies [c5ef12926]
+- Updated dependencies [2713f28f4]
+- Updated dependencies [406015b0d]
+- Updated dependencies [82759d3e4]
+- Updated dependencies [ac8d5d5c7]
+- Updated dependencies [fa56f4615]
+- Updated dependencies [ebca83d48]
+- Updated dependencies [aca79334f]
+- Updated dependencies [c0d5242a0]
+- Updated dependencies [b3d57961c]
+- Updated dependencies [1c8c43756]
+- Updated dependencies [3beb5c9fc]
+- Updated dependencies [754e31db5]
+- Updated dependencies [57b54c8ed]
+- Updated dependencies [1611c6dbc]
+  - @backstage/plugin-scaffolder@0.2.0
+  - @backstage/plugin-techdocs@0.2.0
+  - @backstage/core@0.2.0
+  - @backstage/catalog-model@0.2.0
+  - @backstage/theme@0.2.0

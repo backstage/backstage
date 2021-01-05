@@ -57,10 +57,13 @@ proxy:
     changeOrigin: true
 
 techdocs:
-  storageUrl: http://localhost:7000/api/techdocs/static/docs
   requestUrl: http://localhost:7000/api/techdocs
+  storageUrl: http://localhost:7000/api/techdocs/static/docs
+  builder: 'local'
   generators:
     techdocs: 'docker'
+  publisher:
+    type: 'local'
 
 lighthouse:
   baseUrl: http://localhost:3003
@@ -81,23 +84,23 @@ catalog:
   locations:
     # Backstage example components
     - type: url
-      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
 
     # Backstage example APIs
     - type: url
-      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
 
     # Backstage example templates
     - type: github
-      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml
+      target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml
       rules:
         - allow: [Template]
     - type: github
-      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/springboot-grpc-template/template.yaml
+      target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/springboot-grpc-template/template.yaml
       rules:
         - allow: [Template]
     - type: github
-      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/create-react-app/template.yaml
+      target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/create-react-app/template.yaml
       rules:
         - allow: [Template]
     - type: github
@@ -105,6 +108,6 @@ catalog:
       rules:
         - allow: [Template]
     - type: github
-      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/docs-template/template.yaml
+      target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/docs-template/template.yaml
       rules:
         - allow: [Template]

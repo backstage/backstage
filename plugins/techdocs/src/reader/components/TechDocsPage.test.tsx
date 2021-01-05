@@ -50,17 +50,18 @@ describe('<TechDocsPage />', () => {
       entityId: 'Component::backstage',
     });
 
-    const techDocsApi: Partial<TechDocsApi> = {
-      getMetadata: () => Promise.resolve([]),
+    const techdocsApi: Partial<TechDocsApi> = {
+      getEntityMetadata: () => Promise.resolve([]),
+      getTechDocsMetadata: () => Promise.resolve([]),
     };
-    const techDocsStorageApi: Partial<TechDocsStorageApi> = {
+    const techdocsStorageApi: Partial<TechDocsStorageApi> = {
       getEntityDocs: (): Promise<string> => Promise.resolve('String'),
       getBaseUrl: (): string => '',
     };
 
     const apiRegistry = ApiRegistry.from([
-      [techdocsApiRef, techDocsApi],
-      [techdocsStorageApiRef, techDocsStorageApi],
+      [techdocsApiRef, techdocsApi],
+      [techdocsStorageApiRef, techdocsStorageApi],
     ]);
 
     await act(async () => {

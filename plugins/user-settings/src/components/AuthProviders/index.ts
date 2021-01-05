@@ -16,3 +16,4 @@
 
 export { AuthProviders } from './AuthProviders';
 export { DefaultProviderSettings } from './DefaultProviderSettings';
+export { ProviderSettingsItem } from './ProviderSettingsItem';

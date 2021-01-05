@@ -137,7 +137,7 @@ router.use('/summary', async (req, res) => {
 ```
 
 For a more detailed example, see
-[the lighthouse plugin](https://github.com/spotify/backstage/tree/master/plugins/lighthouse)
+[the lighthouse plugin](https://github.com/backstage/backstage/tree/master/plugins/lighthouse)
 that stores some state in a database and adds new capabilities to the underlying
 API.
 

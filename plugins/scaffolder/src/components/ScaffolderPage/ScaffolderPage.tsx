@@ -53,10 +53,12 @@ export const ScaffolderPage = () => {
 
   const { data: templates, isValidating, error } = useStaleWhileRevalidate(
     'templates/all',
-    async () =>
-      catalogApi.getEntities({ kind: 'Template' }) as Promise<
-        TemplateEntityV1alpha1[]
-      >,
+    async () => {
+      const response = await catalogApi.getEntities({
+        filter: { kind: 'Template' },
+      });
+      return response.items as TemplateEntityV1alpha1[];
+    },
   );
 
   useEffect(() => {
@@ -81,7 +83,7 @@ export const ScaffolderPage = () => {
             variant="contained"
             color="primary"
             component={RouterLink}
-            to="/register-component"
+            to="/catalog-import"
           >
             Register Existing Component
           </Button>

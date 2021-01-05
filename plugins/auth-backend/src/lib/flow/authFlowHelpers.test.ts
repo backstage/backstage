@@ -15,10 +15,20 @@
  */
 
 import express from 'express';
-import { ensuresXRequestedWith, postMessageResponse } from './authFlowHelpers';
+import {
+  safelyEncodeURIComponent,
+  ensuresXRequestedWith,
+  postMessageResponse,
+} from './authFlowHelpers';
 import { WebMessageResponse } from './types';
 
 describe('oauth helpers', () => {
+  describe('safelyEncodeURIComponent', () => {
+    it('encodes all occurrences of single quotes', () => {
+      expect(safelyEncodeURIComponent("a'ö'b")).toBe('a%27%C3%B6%27b');
+    });
+  });
+
   describe('postMessageResponse', () => {
     const appOrigin = 'http://localhost:3000';
     it('should post a message back with payload success', () => {
@@ -45,15 +55,12 @@ describe('oauth helpers', () => {
           },
         },
       };
-      const jsonData = JSON.stringify(data);
-      const base64Data = Buffer.from(jsonData, 'utf8').toString('base64');
+      const encoded = safelyEncodeURIComponent(JSON.stringify(data));
 
       postMessageResponse(mockResponse, appOrigin, data);
       expect(mockResponse.setHeader).toBeCalledTimes(3);
       expect(mockResponse.end).toBeCalledTimes(1);
-      expect(mockResponse.end).toBeCalledWith(
-        expect.stringContaining(base64Data),
-      );
+      expect(mockResponse.end).toBeCalledWith(expect.stringContaining(encoded));
     });
 
     it('should post a message back with payload error', () => {
@@ -64,16 +71,93 @@ describe('oauth helpers', () => {
 
       const data: WebMessageResponse = {
         type: 'authorization_response',
-        error: new Error('Unknown error occured'),
+        error: new Error('Unknown error occurred'),
       };
-      const jsonData = JSON.stringify(data);
-      const base64Data = Buffer.from(jsonData, 'utf8').toString('base64');
+      const encoded = safelyEncodeURIComponent(JSON.stringify(data));
+
+      postMessageResponse(mockResponse, appOrigin, data);
+      expect(mockResponse.setHeader).toBeCalledTimes(3);
+      expect(mockResponse.end).toBeCalledTimes(1);
+      expect(mockResponse.end).toBeCalledWith(expect.stringContaining(encoded));
+    });
+
+    it('should call postMessage twice but only one of them with target *', () => {
+      let responseBody = '';
+
+      const mockResponse = ({
+        end: jest.fn(body => {
+          responseBody = body;
+          return this;
+        }),
+        setHeader: jest.fn().mockReturnThis(),
+      } as unknown) as express.Response;
+
+      const data: WebMessageResponse = {
+        type: 'authorization_response',
+        response: {
+          providerInfo: {
+            accessToken: 'ACCESS_TOKEN',
+            idToken: 'ID_TOKEN',
+            expiresInSeconds: 10,
+            scope: 'email',
+          },
+          profile: {
+            email: 'foo@bar.com',
+          },
+          backstageIdentity: {
+            id: 'a',
+            idToken: 'a.b.c',
+          },
+        },
+      };
+      postMessageResponse(mockResponse, appOrigin, data);
+      expect(responseBody.match(/.postMessage\(/g)).toHaveLength(2);
+      expect(
+        responseBody.match(/.postMessage\([a-zA-z.()]*, \'\*\'\)/g),
+      ).toHaveLength(1);
+
+      const errData: WebMessageResponse = {
+        type: 'authorization_response',
+        error: new Error('Unknown error occurred'),
+      };
+      postMessageResponse(mockResponse, appOrigin, errData);
+      expect(responseBody.match(/.postMessage\(/g)).toHaveLength(2);
+      expect(
+        responseBody.match(/.postMessage\([a-zA-z.()]*, \'\*\'\)/g),
+      ).toHaveLength(1);
+    });
+
+    it('handles single quotes and unicode chars safely', () => {
+      const mockResponse = ({
+        end: jest.fn().mockReturnThis(),
+        setHeader: jest.fn().mockReturnThis(),
+      } as unknown) as express.Response;
+
+      const data: WebMessageResponse = {
+        type: 'authorization_response',
+        response: {
+          providerInfo: {
+            accessToken: 'ACCESS_TOKEN',
+            idToken: 'ID_TOKEN',
+            expiresInSeconds: 10,
+            scope: 'email',
+          },
+          profile: {
+            email: 'foo@bar.com',
+            displayName: "Adam l'Hôpital",
+          },
+          backstageIdentity: {
+            id: 'a',
+            idToken: 'a.b.c',
+          },
+        },
+      };
 
       postMessageResponse(mockResponse, appOrigin, data);
       expect(mockResponse.setHeader).toBeCalledTimes(3);
       expect(mockResponse.end).toBeCalledTimes(1);
       expect(mockResponse.end).toBeCalledWith(
-        expect.stringContaining(base64Data),
+        expect.stringContaining('Adam%20l%27H%C3%B4pital'),
       );
     });
   });

@@ -5,10 +5,12 @@ metadata:
   description: Team B
 spec:
   type: team
+  profile:
+    displayName: Team B
+    email: team-b@example.com
+    picture: https://example.com/groups/team-b.jpeg
   parent: backstage
-  ancestors: [backstage, infrastructure, acme-corp]
   children: []
-  descendants: []
 ---
 apiVersion: backstage.io/v1alpha1
 kind: User

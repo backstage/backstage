@@ -22,7 +22,7 @@ music and wants to have a theme tune for every service in Backstage.
 
 Sam built a Spotify plugin for Backstage that allows service owners to define a
 theme tune for their service. The theme tune plays whenever a user visits the
-service page in Backstage. The plugin is published to NPM and available for any
+service page in Backstage. The plugin is published to npm and available for any
 organization to easily install and add to their Backstage installation.
 
 # 1. A New Plugin
@@ -264,14 +264,9 @@ release of Sam's plugin specifies a dependency on Backstage with a minimum
 version set to the same release as the one were the annotation was added to the
 core schema.
 
-<details>
-  <summary></summary>
-
 # 9. Revenge of the Sam
 
 Sam, now in full control of all theme tunes in Backstage, releases v2.0.1, which
 switches all tracks to 4uLU6hMCjMI75M1A2tKUQC. Sam wanted to do something more
 nefarious, but since Backstage sandboxes sensitive actions and is mostly
 read-only with strict CSP, Sam's hands were tied.
-
-</details>

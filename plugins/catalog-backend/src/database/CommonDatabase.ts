@@ -45,7 +45,8 @@ import {
   DbEntityResponse,
   DbLocationsRow,
   DbLocationsRowWithStatus,
-  EntityFilters,
+  EntityFilter,
+  Transaction,
 } from './types';
 
 // The number of items that are sent per batch to the database layer, when
@@ -63,9 +64,23 @@ export class CommonDatabase implements Database {
     private readonly logger: Logger,
   ) {}
 
-  async transaction<T>(fn: (tx: unknown) => Promise<T>): Promise<T> {
+  async transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T> {
     try {
-      return await this.database.transaction<T>(fn);
+      let result: T | undefined = undefined;
+
+      await this.database.transaction(
+        async tx => {
+          // We can't return here, as knex swallows the return type in case the transaction is rolled back:
+          // https://github.com/knex/knex/blob/e37aeaa31c8ef9c1b07d2e4d3ec6607e557d800d/lib/transaction.js#L136
+          result = await fn(tx);
+        },
+        {
+          // If we explicitly trigger a rollback, don't fail.
+          doNotRejectOnRollback: true,
+        },
+      );
+
+      return result!;
     } catch (e) {
       this.logger.debug(`Error during transaction, ${e}`);
 
@@ -80,46 +95,18 @@ export class CommonDatabase implements Database {
     }
   }
 
-  async addEntity(
-    txOpaque: unknown,
-    request: DbEntityRequest,
-  ): Promise<DbEntityResponse> {
-    const tx = txOpaque as Knex.Transaction<any, any>;
-
-    if (request.entity.metadata.uid !== undefined) {
-      throw new InputError('May not specify uid for new entities');
-    } else if (request.entity.metadata.etag !== undefined) {
-      throw new InputError('May not specify etag for new entities');
-    } else if (request.entity.metadata.generation !== undefined) {
-      throw new InputError('May not specify generation for new entities');
-    }
-
-    const newEntity = lodash.cloneDeep(request.entity);
-    newEntity.metadata = {
-      ...newEntity.metadata,
-      uid: generateEntityUid(),
-      etag: generateEntityEtag(),
-      generation: 1,
-    };
-
-    const newRow = this.toEntityRow(request.locationId, newEntity);
-    await tx<DbEntitiesRow>('entities').insert(newRow);
-    await this.updateEntitiesSearch(tx, newRow.id, newEntity);
-
-    return { locationId: request.locationId, entity: newEntity };
-  }
-
   async addEntities(
-    txOpaque: unknown,
+    txOpaque: Transaction,
     request: DbEntityRequest[],
   ): Promise<DbEntityResponse[]> {
     const tx = txOpaque as Knex.Transaction<any, any>;
 
     const result: DbEntityResponse[] = [];
     const entityRows: DbEntitiesRow[] = [];
+    const relationRows: DbEntitiesRelationsRow[] = [];
     const searchRows: DbEntitiesSearchRow[] = [];
 
-    for (const { entity, locationId } of request) {
+    for (const { entity, relations, locationId } of request) {
       if (entity.metadata.uid !== undefined) {
         throw new InputError('May not specify uid for new entities');
       } else if (entity.metadata.etag !== undefined) {
@@ -130,35 +117,34 @@ export class CommonDatabase implements Database {
         throw new InputError('May not specify relations for new entities');
       }
 
+      const uid = generateEntityUid();
+      const etag = generateEntityEtag();
+      const generation = 1;
       const newEntity = {
         ...entity,
         metadata: {
           ...entity.metadata,
-          uid: generateEntityUid(),
-          etag: generateEntityEtag(),
-          generation: 1,
+          uid,
+          etag,
+          generation,
         },
       };
 
       result.push({ entity: newEntity, locationId });
       entityRows.push(this.toEntityRow(locationId, newEntity));
-      searchRows.push(...buildEntitySearch(newEntity.metadata.uid, newEntity));
+      relationRows.push(...this.toRelationRows(uid, relations));
+      searchRows.push(...buildEntitySearch(uid, newEntity));
     }
 
     await tx.batchInsert('entities', entityRows, BATCH_SIZE);
-    await tx<DbEntitiesSearchRow>('entities_search')
-      .whereIn(
-        'entity_id',
-        entityRows.map(r => r.id),
-      )
-      .del();
+    await tx.batchInsert('entities_relations', relationRows, BATCH_SIZE);
     await tx.batchInsert('entities_search', searchRows, BATCH_SIZE);
 
     return result;
   }
 
   async updateEntity(
-    txOpaque: unknown,
+    txOpaque: Transaction,
     request: DbEntityRequest,
     matchingEtag?: string,
     matchingGeneration?: number,
@@ -166,8 +152,7 @@ export class CommonDatabase implements Database {
     const tx = txOpaque as Knex.Transaction<any, any>;
 
     const { uid } = request.entity.metadata;
-
-    if (uid === undefined) {
+    if (!uid) {
       throw new InputError('Must specify uid when updating entities');
     }
 
@@ -178,111 +163,84 @@ export class CommonDatabase implements Database {
     if (oldRows.length !== 1) {
       throw new NotFoundError('No matching entity found');
     }
+    const etag = oldRows[0].etag;
+    const generation = Number(oldRows[0].generation);
 
-    // Validate the old entity
-    const oldRow = oldRows[0];
-    // The Number cast is here because sqlite reads it as a string, no matter
-    // what the table actually says
-    oldRow.generation = Number(oldRow.generation);
-    if (matchingEtag) {
-      if (matchingEtag !== oldRow.etag) {
-        throw new ConflictError(
-          `Etag mismatch, expected="${matchingEtag}" found="${oldRow.etag}"`,
-        );
-      }
+    // Validate the old entity. The Number cast is here because sqlite reads it
+    // as a string, no matter what the table actually says.
+    if (matchingEtag && matchingEtag !== etag) {
+      throw new ConflictError(
+        `Etag mismatch, expected="${matchingEtag}" found="${etag}"`,
+      );
     }
-    if (matchingGeneration) {
-      if (matchingGeneration !== oldRow.generation) {
-        throw new ConflictError(
-          `Generation mismatch, expected="${matchingGeneration}" found="${oldRow.generation}"`,
-        );
-      }
+    if (matchingGeneration && matchingGeneration !== generation) {
+      throw new ConflictError(
+        `Generation mismatch, expected="${matchingGeneration}" found="${generation}"`,
+      );
     }
 
     // Store the updated entity; select on the old etag to ensure that we do
     // not lose to another writer
     const newRow = this.toEntityRow(request.locationId, request.entity);
     const updatedRows = await tx<DbEntitiesRow>('entities')
-      .where({ id: oldRow.id, etag: oldRow.etag })
+      .where({ id: uid, etag })
       .update(newRow);
-
-    // If this happens, somebody else changed the entity just now
     if (updatedRows !== 1) {
       throw new ConflictError(`Failed to update entity`);
     }
 
-    await this.updateEntitiesSearch(tx, oldRow.id, request.entity);
+    const relationRows = this.toRelationRows(uid, request.relations);
+    await tx<DbEntitiesRelationsRow>('entities_relations')
+      .where({ originating_entity_id: uid })
+      .del();
+    await tx.batchInsert('entities_relations', relationRows, BATCH_SIZE);
+
+    try {
+      const entries = buildEntitySearch(uid, request.entity);
+      await tx<DbEntitiesSearchRow>('entities_search')
+        .where({ entity_id: uid })
+        .del();
+      await tx.batchInsert('entities_search', entries, BATCH_SIZE);
+    } catch {
+      // ignore intentionally - if this happens, the entity was deleted before
+      // we got around to writing the entries
+    }
 
     return request;
   }
 
   async entities(
-    txOpaque: unknown,
-    filters?: EntityFilters[],
+    txOpaque: Transaction,
+    filter?: EntityFilter,
   ): Promise<DbEntityResponse[]> {
     const tx = txOpaque as Knex.Transaction<any, any>;
 
     let entitiesQuery = tx<DbEntitiesRow>('entities');
 
-    for (const singleFilter of filters ?? []) {
+    for (const singleFilter of filter?.anyOf ?? []) {
       entitiesQuery = entitiesQuery.orWhere(function singleFilterFn() {
-        for (const [matchKey, matchVal] of Object.entries(singleFilter)) {
-          const key = matchKey.toLowerCase().replace(/[*]/g, '%');
-          const keyOp = key.includes('%') ? 'like' : '=';
-          const values = Array.isArray(matchVal) ? matchVal : [matchVal];
-
-          let matchNulls = false;
-          const matchIn: string[] = [];
-          const matchLike: string[] = [];
-
-          for (const value of values) {
-            if (!value) {
-              matchNulls = true;
-            } else if (value.includes('*')) {
-              matchLike.push(value.toLowerCase().replace(/[*]/g, '%'));
-            } else {
-              matchIn.push(value.toLowerCase());
-            }
-          }
-
+        for (const { key, matchValueIn } of singleFilter.allOf) {
           // NOTE(freben): This used to be a set of OUTER JOIN, which may seem to
           // make a lot of sense. However, it had abysmal performance on sqlite
           // when datasets grew large, so we're using IN instead.
           const matchQuery = tx<DbEntitiesSearchRow>('entities_search')
             .select('entity_id')
             .where(function keyFilter() {
-              this.andWhere('key', keyOp, key);
-              this.andWhere(function valueFilter() {
-                if (matchIn.length === 1) {
-                  this.orWhere({ value: matchIn[0] });
-                } else if (matchIn.length > 1) {
-                  this.orWhereIn('value', matchIn);
+              this.andWhere({ key: key.toLowerCase() });
+              if (matchValueIn) {
+                if (matchValueIn.length === 1) {
+                  this.andWhere({ value: matchValueIn[0].toLowerCase() });
+                } else if (matchValueIn.length > 1) {
+                  this.andWhere(
+                    'value',
+                    'in',
+                    matchValueIn.map(v => v.toLowerCase()),
+                  );
                 }
-                if (matchLike.length) {
-                  for (const x of matchLike) {
-                    this.orWhere('value', 'like', tx.raw('?', [x]));
-                  }
-                }
-                if (matchNulls) {
-                  // Match explicit nulls, and then handle absence separately
-                  // below
-                  this.orWhereNull('value');
-                }
-              });
+              }
             });
 
-          // Handle absence as nulls as well
-          this.andWhere(function match() {
-            this.whereIn('id', matchQuery);
-            if (matchNulls) {
-              this.orWhereNotIn(
-                'id',
-                tx<DbEntitiesSearchRow>('entities_search')
-                  .select('entity_id')
-                  .where('key', keyOp, key),
-              );
-            }
-          });
+          this.andWhere('id', 'in', matchQuery);
         }
       });
     }
@@ -291,11 +249,11 @@ export class CommonDatabase implements Database {
       .select('entities.*')
       .orderBy('full_name', 'asc');
 
-    return Promise.all(rows.map(row => this.toEntityResponse(tx, row)));
+    return this.toEntityResponses(tx, rows);
   }
 
   async entityByName(
-    txOpaque: unknown,
+    txOpaque: Transaction,
     name: EntityName,
   ): Promise<DbEntityResponse | undefined> {
     const tx = txOpaque as Knex.Transaction<any, any>;
@@ -310,11 +268,11 @@ export class CommonDatabase implements Database {
       return undefined;
     }
 
-    return this.toEntityResponse(tx, rows[0]);
+    return this.toEntityResponses(tx, rows).then(r => r[0]);
   }
 
   async entityByUid(
-    txOpaque: unknown,
+    txOpaque: Transaction,
     uid: string,
   ): Promise<DbEntityResponse | undefined> {
     const tx = txOpaque as Knex.Transaction<any, any>;
@@ -327,10 +285,10 @@ export class CommonDatabase implements Database {
       return undefined;
     }
 
-    return this.toEntityResponse(tx, rows[0]);
+    return this.toEntityResponses(tx, rows).then(r => r[0]);
   }
 
-  async removeEntityByUid(txOpaque: unknown, uid: string): Promise<void> {
+  async removeEntityByUid(txOpaque: Transaction, uid: string): Promise<void> {
     const tx = txOpaque as Knex.Transaction<any, any>;
 
     const result = await tx<DbEntitiesRow>('entities').where({ id: uid }).del();
@@ -341,46 +299,35 @@ export class CommonDatabase implements Database {
   }
 
   async setRelations(
-    txOpaque: unknown,
+    txOpaque: Transaction,
     originatingEntityId: string,
     relations: EntityRelationSpec[],
   ): Promise<void> {
     const tx = txOpaque as Knex.Transaction<any, any>;
+    const relationRows = this.toRelationRows(originatingEntityId, relations);
 
-    // remove all relations that exist for the originating entity id.
     await tx<DbEntitiesRelationsRow>('entities_relations')
       .where({ originating_entity_id: originatingEntityId })
       .del();
-
-    const serializeName = (e: EntityName) =>
-      `${e.kind}:${e.namespace}/${e.name}`.toLowerCase();
-
-    const relationsRows: DbEntitiesRelationsRow[] = relations.map(
-      ({ source, target, type }) => ({
-        originating_entity_id: originatingEntityId,
-        source_full_name: serializeName(source),
-        target_full_name: serializeName(target),
-        type,
-      }),
-    );
-
-    // TODO(blam): translate constraint failures to sane NotFoundError instead
-    await tx.batchInsert('entities_relations', relationsRows, BATCH_SIZE);
+    await tx.batchInsert('entities_relations', relationRows, BATCH_SIZE);
   }
 
-  async addLocation(location: Location): Promise<DbLocationsRow> {
-    return await this.database.transaction<DbLocationsRow>(async tx => {
-      const row: DbLocationsRow = {
-        id: location.id,
-        type: location.type,
-        target: location.target,
-      };
-      await tx<DbLocationsRow>('locations').insert(row);
-      return row;
-    });
+  async addLocation(
+    txOpaque: Transaction,
+    location: Location,
+  ): Promise<DbLocationsRow> {
+    const tx = txOpaque as Knex.Transaction<any, any>;
+
+    const row: DbLocationsRow = {
+      id: location.id,
+      type: location.type,
+      target: location.target,
+    };
+    await tx<DbLocationsRow>('locations').insert(row);
+    return row;
   }
 
-  async removeLocation(txOpaque: unknown, id: string): Promise<void> {
+  async removeLocation(txOpaque: Transaction, id: string): Promise<void> {
     const tx = txOpaque as Knex.Transaction<any, any>;
 
     await tx<DbEntitiesRow>('entities')
@@ -445,7 +392,7 @@ export class CommonDatabase implements Database {
   async addLocationUpdateLogEvent(
     locationId: string,
     status: DatabaseLocationUpdateLogStatus,
-    entityName?: string,
+    entityName?: string | string[],
     message?: string,
   ): Promise<void> {
     // Remove log entries older than a day
@@ -455,30 +402,19 @@ export class CommonDatabase implements Database {
       .where('created_at', '<', cutoff.toISOString())
       .del();
 
-    await this.database<DatabaseLocationUpdateLogEvent>(
-      'location_update_log',
-    ).insert({
-      status,
-      location_id: locationId,
-      entity_name: entityName,
-      message,
-    });
-  }
+    const items: Partial<DatabaseLocationUpdateLogEvent>[] = [entityName]
+      .flat()
+      .map(n => ({
+        status,
+        location_id: locationId,
+        entity_name: n,
+        message,
+      }));
 
-  private async updateEntitiesSearch(
-    tx: Knex.Transaction<any, any>,
-    entityId: string,
-    data: Entity,
-  ): Promise<void> {
-    try {
-      const entries = buildEntitySearch(entityId, data);
-      await tx<DbEntitiesSearchRow>('entities_search')
-        .where({ entity_id: entityId })
-        .del();
-      await tx<DbEntitiesSearchRow>('entities_search').insert(entries);
-    } catch {
-      // ignore intentionally - if this happens, the entity was deleted before
-      // we got around to writing the entries
+    for (const chunk of lodash.chunk(items, BATCH_SIZE)) {
+      await this.database<DatabaseLocationUpdateLogEvent>(
+        'location_update_log',
+      ).insert(chunk);
     }
   }
 
@@ -507,30 +443,85 @@ export class CommonDatabase implements Database {
     };
   }
 
-  private async toEntityResponse(
-    tx: Knex.Transaction<any, any>,
-    row: DbEntitiesRow,
-  ): Promise<DbEntityResponse> {
-    const entity = JSON.parse(row.data) as Entity;
-    entity.metadata.uid = row.id;
-    entity.metadata.etag = row.etag;
-    entity.metadata.generation = Number(row.generation); // cast due to sqlite
+  private toRelationRows(
+    originatingEntityId: string,
+    relations: EntityRelationSpec[],
+  ): DbEntitiesRelationsRow[] {
+    const serializeName = (e: EntityName) =>
+      `${e.kind}:${e.namespace}/${e.name}`.toLowerCase();
 
-    // TODO(Rugvip): This is here because it's simple for now, but we likely
-    //               need to refactor this to be more efficient or introduce pagination.
-    const relations = await tx<DbEntitiesRelationsRow>('entities_relations')
-      .where({ source_full_name: row.full_name })
-      .orderBy(['type', 'target_full_name'])
-      .select();
-
-    entity.relations = relations.map(r => ({
-      target: parseEntityName(r.target_full_name),
-      type: r.type,
+    const rows = relations.map(({ source, target, type }) => ({
+      originating_entity_id: originatingEntityId,
+      source_full_name: serializeName(source),
+      target_full_name: serializeName(target),
+      type,
     }));
 
-    return {
-      locationId: row.location_id || undefined,
-      entity,
-    };
+    return deduplicateRelations(rows);
   }
+
+  private async toEntityResponses(
+    tx: Knex.Transaction<any, any>,
+    rows: DbEntitiesRow[],
+  ): Promise<DbEntityResponse[]> {
+    // TODO(Rugvip): This is here because it's simple for now, but we likely
+    //               need to refactor this to be more efficient or introduce pagination.
+    const relations = await this.getRelationsPerFullName(
+      tx,
+      rows.map(r => r.full_name),
+    );
+
+    const result = new Array<DbEntityResponse>();
+    for (const row of rows) {
+      const entity = JSON.parse(row.data) as Entity;
+      entity.metadata.uid = row.id;
+      entity.metadata.etag = row.etag;
+      entity.metadata.generation = Number(row.generation); // cast due to sqlite
+
+      entity.relations = (relations[row.full_name] ?? []).map(r => ({
+        target: parseEntityName(r.target_full_name),
+        type: r.type,
+      }));
+
+      result.push({
+        locationId: row.location_id || undefined,
+        entity,
+      });
+    }
+
+    return result;
+  }
+
+  // Returns a mapping from e.g. component:default/foo to the relations whose
+  // source_full_name matches that.
+  private async getRelationsPerFullName(
+    tx: Knex.Transaction<any, any>,
+    sourceFullNames: string[],
+  ): Promise<Record<string, DbEntitiesRelationsRow[]>> {
+    const batches = lodash.chunk(lodash.uniq(sourceFullNames), 500);
+
+    const relations = new Array<DbEntitiesRelationsRow>();
+    for (const batch of batches) {
+      relations.push(
+        ...(await tx<DbEntitiesRelationsRow>('entities_relations')
+          .whereIn('source_full_name', batch)
+          .orderBy(['type', 'target_full_name'])
+          .select()),
+      );
+    }
+
+    return lodash.groupBy(
+      deduplicateRelations(relations),
+      r => r.source_full_name,
+    );
+  }
+}
+
+function deduplicateRelations(
+  rows: DbEntitiesRelationsRow[],
+): DbEntitiesRelationsRow[] {
+  return lodash.uniqBy(
+    rows,
+    r => `${r.source_full_name}:${r.target_full_name}:${r.type}`,
+  );
 }

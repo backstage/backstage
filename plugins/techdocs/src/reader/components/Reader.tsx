@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import React from 'react';
-import { useApi } from '@backstage/core';
-import { useShadowDom } from '..';
 import { useAsync } from 'react-use';
-import { techdocsStorageApiRef } from '../../api';
-import { useParams, useNavigate } from 'react-router-dom';
-import { ParsedEntityId } from '../../types';
 import { useTheme } from '@material-ui/core';
+import { useParams, useNavigate } from 'react-router-dom';
+import { EntityName } from '@backstage/catalog-model';
+import { useApi } from '@backstage/core';
 import { BackstageTheme } from '@backstage/theme';
+import { useShadowDom } from '..';
+import { techdocsStorageApiRef } from '../../api';
 import TechDocsProgressBar from './TechDocsProgressBar';
 
 import transformer, {
@@ -31,7 +30,6 @@ import transformer, {
   addLinkClickListener,
   removeMkdocsHeader,
   simplifyMkdocsFooter,
-  modifyCss,
   onCssReady,
   sanitizeDOM,
   injectCss,
@@ -39,7 +37,7 @@ import transformer, {
 import { TechDocsNotFound } from './TechDocsNotFound';
 
 type Props = {
-  entityId: ParsedEntityId;
+  entityId: EntityName;
   onReady?: () => void;
 };
 
@@ -72,15 +70,6 @@ export const Reader = ({ entityId, onReady }: Props) => {
         path,
       }),
       rewriteDocLinks(),
-      modifyCss({
-        cssTransforms: {
-          '.md-main__inner': [{ 'margin-top': '0' }],
-          '.md-sidebar': [{ top: '0' }, { width: '20rem' }],
-          '.md-typeset': [{ 'font-size': '1rem' }],
-          '.md-nav': [{ 'font-size': '1rem' }],
-          '.md-grid': [{ 'max-width': '80vw' }],
-        },
-      }),
       removeMkdocsHeader(),
       simplifyMkdocsFooter(),
       injectCss({
@@ -93,6 +82,11 @@ export const Reader = ({ entityId, onReady }: Props) => {
           --md-code-fg-color: ${theme.palette.text.primary};
           --md-code-bg-color: ${theme.palette.background.paper};
         }
+        .md-main__inner { margin-top: 0; }
+        .md-sidebar { top: 0; width: 20rem; }
+        .md-typeset { font-size: 1rem; }
+        .md-nav { font-size: 1rem; }
+        .md-grid { max-width: 80vw; }
         `,
       }),
     ]);
@@ -153,7 +147,7 @@ export const Reader = ({ entityId, onReady }: Props) => {
   ]);
 
   if (error) {
-    return <TechDocsNotFound />;
+    return <TechDocsNotFound errorMessage={error.message} />;
   }
 
   return (

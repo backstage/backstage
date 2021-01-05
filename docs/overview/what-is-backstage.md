@@ -9,7 +9,7 @@ Powered by a centralized service catalog, Backstage restores order to your micro
 
 [Backstage](https://backstage.io/) is an open platform for building developer
 portals. Powered by a centralized service catalog, Backstage restores order to
-your microservices and infrastructure. So your product teams can ship
+your microservices and infrastructure and enables your product teams to ship
 high-quality code quickly — without compromising autonomy.
 
 Backstage unifies all your infrastructure tooling, services, and documentation
@@ -30,7 +30,7 @@ Out of the box, Backstage includes:
   code" approach
 
 - Plus, a growing ecosystem of
-  [open source plugins](https://github.com/spotify/backstage/tree/master/plugins)
+  [open source plugins](https://github.com/backstage/backstage/tree/master/plugins)
   that further expand Backstage’s customizability and functionality
 
 ## Backstage and the CNCF

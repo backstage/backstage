@@ -40,7 +40,6 @@ export async function loadBackendConfig(options: Options): Promise<Config> {
     env: process.env.APP_ENV ?? process.env.NODE_ENV ?? 'development',
     configRoot: paths.targetRoot,
     configPaths: configOpts.map(opt => resolvePath(opt)),
-    shouldReadSecrets: true,
   });
 
   options.logger.info(

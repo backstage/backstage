@@ -22,9 +22,7 @@ import express from 'express';
 describe('Router', () => {
   describe('/health', () => {
     it('should return ok', async () => {
-      const config = ConfigReader.fromConfigs([
-        { data: { backend: { baseUrl: 'lol' } }, context: 'something' },
-      ]);
+      const config = new ConfigReader({ backend: { baseUrl: 'lol' } });
 
       const router = await createRouter({ config, logger: createLogger() });
       const app = express().use(router);

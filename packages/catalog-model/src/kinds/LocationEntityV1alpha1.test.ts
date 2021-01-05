@@ -54,9 +54,9 @@ describe('LocationV1alpha1Validator', () => {
     await expect(validator.check(entity)).resolves.toBe(false);
   });
 
-  it('rejects missing type', async () => {
+  it('accepts missing type', async () => {
     delete (entity as any).spec.type;
-    await expect(validator.check(entity)).rejects.toThrow(/type/);
+    await expect(validator.check(entity)).resolves.toBe(true);
   });
 
   it('rejects wrong type', async () => {
@@ -71,7 +71,7 @@ describe('LocationV1alpha1Validator', () => {
 
   it('accepts good target', async () => {
     (entity as any).spec.target =
-      'https://github.com/spotify/backstage/blob/master/plugins/catalog-backend/examples/artist-lookup-component.yaml';
+      'https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/examples/artist-lookup-component.yaml';
     await expect(validator.check(entity)).resolves.toBe(true);
   });
 
@@ -87,8 +87,8 @@ describe('LocationV1alpha1Validator', () => {
 
   it('accepts good targets', async () => {
     (entity as any).spec.targets = [
-      'https://github.com/spotify/backstage/blob/master/plugins/catalog-backend/examples/artist-lookup-component.yaml',
-      'https://github.com/spotify/backstage/blob/master/plugins/catalog-backend/examples/playback-order-component.yaml',
+      'https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/examples/artist-lookup-component.yaml',
+      'https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/examples/playback-order-component.yaml',
     ];
     await expect(validator.check(entity)).resolves.toBe(true);
   });

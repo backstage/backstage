@@ -14,25 +14,27 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Box, Card, CardContent, Divider, useTheme } from '@material-ui/core';
-import { CostGrowth } from '../CostGrowth';
+import React, { useState } from 'react';
+import {
+  Box,
+  Card,
+  CardContent,
+  Divider,
+  useTheme,
+  Tab,
+  Tabs,
+} from '@material-ui/core';
 import { CostOverviewChart } from './CostOverviewChart';
+import { CostOverviewByProductChart } from './CostOverviewByProductChart';
 import { CostOverviewHeader } from './CostOverviewHeader';
-import { LegendItem } from '../LegendItem';
 import { MetricSelect } from '../MetricSelect';
 import { PeriodSelect } from '../PeriodSelect';
 import { useScroll, useFilters, useConfig } from '../../hooks';
 import { mapFiltersToProps } from './selector';
 import { DefaultNavigation } from '../../utils/navigation';
-import { formatPercent } from '../../utils/formatters';
-import {
-  Cost,
-  CostInsightsTheme,
-  MetricData,
-  findAlways,
-  getComparedChange,
-} from '../../types';
+import { findAlways } from '../../utils/assert';
+import { Cost, CostInsightsTheme, MetricData } from '../../types';
+import { useOverviewTabsStyles } from '../../utils/styles';
 
 export type CostOverviewCardProps = {
   dailyCostData: Cost;
@@ -45,6 +47,8 @@ export const CostOverviewCard = ({
 }: CostOverviewCardProps) => {
   const theme = useTheme<CostInsightsTheme>();
   const config = useConfig();
+  const [tabIndex, setTabIndex] = useState(0);
+
   const { ScrollAnchor } = useScroll(DefaultNavigation.CostOverviewCard);
   const { setDuration, setProject, setMetric, ...filters } = useFilters(
     mapFiltersToProps,
@@ -53,56 +57,66 @@ export const CostOverviewCard = ({
   const metric = filters.metric
     ? findAlways(config.metrics, m => m.kind === filters.metric)
     : null;
-  const comparedChange = metricData
-    ? getComparedChange(dailyCostData, metricData)
-    : null;
+  const styles = useOverviewTabsStyles(theme);
+
+  const tabs = [
+    { id: 'overview', label: 'Total cost', title: 'Cloud Cost' },
+    {
+      id: 'breakdown',
+      label: 'Breakdown by product',
+      title: 'Cloud Cost By Product',
+    },
+  ];
+
+  const OverviewTabs = () => {
+    return (
+      <>
+        <Tabs
+          indicatorColor="primary"
+          onChange={(_, index) => setTabIndex(index)}
+          value={tabIndex}
+        >
+          {tabs.map((tab, index) => (
+            <Tab
+              className={styles.default}
+              label={tab.label}
+              key={tab.id}
+              value={index}
+              classes={{ selected: styles.selected }}
+            />
+          ))}
+        </Tabs>
+      </>
+    );
+  };
+
+  // Metrics can only be selected on the total cost graph
+  const showMetricSelect = config.metrics.length && tabIndex === 0;
 
   return (
     <Card style={{ position: 'relative' }}>
       <ScrollAnchor behavior="smooth" top={-20} />
       <CardContent>
-        <CostOverviewHeader title="Cloud Cost">
+        {dailyCostData.groupedCosts && <OverviewTabs />}
+        <CostOverviewHeader title={tabs[tabIndex].title}>
           <PeriodSelect duration={filters.duration} onSelect={setDuration} />
         </CostOverviewHeader>
         <Divider />
-        <Box my={1} display="flex" flexDirection="column">
-          <Box display="flex" flexDirection="row">
-            <Box mr={2}>
-              <LegendItem title="Cost Trend" markerColor={theme.palette.blue}>
-                {formatPercent(dailyCostData.change.ratio)}
-              </LegendItem>
-            </Box>
-            {metric && metricData && comparedChange && (
-              <>
-                <Box mr={2}>
-                  <LegendItem
-                    title={`${metric.name} Trend`}
-                    markerColor={theme.palette.magenta}
-                  >
-                    {formatPercent(metricData.change.ratio)}
-                  </LegendItem>
-                </Box>
-                <LegendItem
-                  title={
-                    comparedChange.ratio <= 0 ? 'Your Savings' : 'Your Excess'
-                  }
-                >
-                  <CostGrowth
-                    change={comparedChange}
-                    duration={filters.duration}
-                  />
-                </LegendItem>
-              </>
-            )}
-          </Box>
-          <CostOverviewChart
-            dailyCostData={dailyCostData}
-            metric={metric}
-            metricData={metricData}
-          />
+        <Box ml={2} my={1} display="flex" flexDirection="column">
+          {tabIndex === 0 ? (
+            <CostOverviewChart
+              dailyCostData={dailyCostData}
+              metric={metric}
+              metricData={metricData}
+            />
+          ) : (
+            <CostOverviewByProductChart
+              costsByProduct={dailyCostData.groupedCosts!}
+            />
+          )}
         </Box>
         <Box display="flex" justifyContent="flex-end" alignItems="center">
-          {config.metrics.length > 1 && (
+          {showMetricSelect && (
             <MetricSelect
               metric={filters.metric}
               metrics={config.metrics}

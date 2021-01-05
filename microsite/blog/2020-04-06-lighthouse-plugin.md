@@ -1,6 +1,6 @@
 ---
 title: Introducing Lighthouse for Backstage
-author: Paul Marbach
+author: Paul Marbach, Spotify
 authorURL: http://twitter.com/fastfrwrd
 authorImageURL: https://pbs.twimg.com/profile_images/1224058798958088192/JPxS8uzR_400x400.jpg
 ---
@@ -33,7 +33,7 @@ Trigger an audit directly from Backstage, or trigger audits programmatically wit
 
 ## Using Lighthouse in Backstage
 
-To learn how you can enable Lighthouse auditing within Backstage, head over to the [README](https://github.com/spotify/backstage/tree/master/plugins/lighthouse) for the plugin to get started.
+To learn how you can enable Lighthouse auditing within Backstage, head over to the [README](https://github.com/backstage/backstage/tree/master/plugins/lighthouse) for the plugin to get started.
 
 ## A personal note
 

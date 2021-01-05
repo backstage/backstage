@@ -61,7 +61,7 @@ describe('JobProcessor', () => {
 
   const mockValues: RequiredTemplateValues = {
     owner: 'blobby',
-    storePath: 'spotify/mock-repo',
+    storePath: 'backstage/mock-repo',
   };
 
   describe('create', () => {

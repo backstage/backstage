@@ -25,13 +25,13 @@
 import Router from 'express-promise-router';
 import {
   createServiceBuilder,
-  loadBackendConfig,
   getRootLogger,
-  useHotMemoize,
+  loadBackendConfig,
   notFoundHandler,
   SingleConnectionDatabaseManager,
   SingleHostDiscovery,
   UrlReaders,
+  useHotMemoize,
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import healthcheck from './plugins/healthcheck';
@@ -40,7 +40,6 @@ import catalog from './plugins/catalog';
 import kubernetes from './plugins/kubernetes';
 import rollbar from './plugins/rollbar';
 import scaffolder from './plugins/scaffolder';
-import sentry from './plugins/sentry';
 import proxy from './plugins/proxy';
 import techdocs from './plugins/techdocs';
 import graphql from './plugins/graphql';
@@ -76,7 +75,6 @@ async function main() {
   const authEnv = useHotMemoize(module, () => createEnv('auth'));
   const proxyEnv = useHotMemoize(module, () => createEnv('proxy'));
   const rollbarEnv = useHotMemoize(module, () => createEnv('rollbar'));
-  const sentryEnv = useHotMemoize(module, () => createEnv('sentry'));
   const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
   const kubernetesEnv = useHotMemoize(module, () => createEnv('kubernetes'));
   const graphqlEnv = useHotMemoize(module, () => createEnv('graphql'));
@@ -86,7 +84,6 @@ async function main() {
   apiRouter.use('/catalog', await catalog(catalogEnv));
   apiRouter.use('/rollbar', await rollbar(rollbarEnv));
   apiRouter.use('/scaffolder', await scaffolder(scaffolderEnv));
-  apiRouter.use('/sentry', await sentry(sentryEnv));
   apiRouter.use('/auth', await auth(authEnv));
   apiRouter.use('/techdocs', await techdocs(techdocsEnv));
   apiRouter.use('/kubernetes', await kubernetes(kubernetesEnv));

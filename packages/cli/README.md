@@ -4,7 +4,7 @@ This package provides a CLI for developing Backstage plugins and apps.
 
 ## Installation
 
-Install the package via npm or yarn:
+Install the package via npm or Yarn:
 
 ```sh
 $ npm install --save @backstage/cli
@@ -30,5 +30,5 @@ To try out the command locally, you can execute the following from the parent di
 
 ## Documentation
 
-- [Backstage Readme](https://github.com/spotify/backstage/blob/master/README.md)
-- [Backstage Documentation](https://github.com/spotify/backstage/blob/master/docs/README.md)
+- [Backstage Readme](https://github.com/backstage/backstage/blob/master/README.md)
+- [Backstage Documentation](https://github.com/backstage/backstage/blob/master/docs/README.md)

@@ -52,19 +52,7 @@ configuration will lead to the proxy acting on backend requests to
 
 The value inside each route is either a simple URL string, or an object on the
 format accepted by
-[http-proxy-middleware](https://www.npmjs.com/package/http-proxy-middleware). It
-is also possible to limit the forwarded HTTP methods with the configuration
-`allowedMethods`, for example `allowedMethods: ['GET']` to enforce read-only
-access.
-
-By default, the proxy will only forward safe HTTP request headers to the target.
-Those are based on the headers that are considered safe for CORS and includes
-headers like `content-type` or `last-modified`, as well as all headers that are
-set by the proxy. If the proxy should forward other headers like
-`authorization`, this must be enabled by the `allowedHeaders` config, for
-example `allowedHeaders: ['Authorization']`. This should help to not
-accidentally forward confidential headers (`cookie`, `X-Auth-Request-User`) to
-third-parties.
+[http-proxy-middleware](https://www.npmjs.com/package/http-proxy-middleware).
 
 If the value is a string, it is assumed to correspond to:
 
@@ -85,3 +73,22 @@ except with the following caveats for convenience:
   `'^/api/proxy/larger-example/v1/': '/'` is added. That means that a request to
   `/api/proxy/larger-example/v1/some/path` will be translated to a request to
   `http://larger.example.com:8080/svc.v1/some/path`.
+
+There are also additional settings:
+
+- `allowedMethods`: Limit the forwarded HTTP methods. For example
+  `allowedMethods: ['GET']` enforces read-only access.
+- `allowedHeaders`: A list of headers that should be forwarded to and received
+  from the target.
+
+By default, the proxy will only forward safe HTTP request headers to the target.
+Those are based on the headers that are considered safe for CORS and includes
+headers like `content-type` or `last-modified`, as well as all headers that are
+set by the proxy. If the proxy should forward other headers like
+`authorization`, this must be enabled by the `allowedHeaders` config, for
+example `allowedHeaders: ['Authorization']`. This should help to not
+accidentally forward confidential headers (`cookie`, `X-Auth-Request-User`) to
+third-parties.
+
+The same logic applies to headers that are sent from the target back to the
+frontend.

@@ -56,7 +56,7 @@ The catalog components depend on a number of other
 [Utility APIs](../../api/utility-apis.md) to function, including at least the
 `ErrorApi` and `StorageApi`. You can find an example of how to install these in
 your app
-[here](https://github.com/spotify/backstage/blob/61c3a7e5b750dc7c059ef16b188594d31b2c04c2/packages/app/src/apis.ts#L80).
+[here](https://github.com/backstage/backstage/blob/61c3a7e5b750dc7c059ef16b188594d31b2c04c2/packages/app/src/apis.ts#L80).
 
 ## Gotchas that we will fix
 
@@ -122,6 +122,7 @@ export default async function createPlugin({
     entitiesCatalog,
     locationsCatalog,
     locationReader,
+    db,
     logger,
   );
 
@@ -167,21 +168,21 @@ catalog:
   locations:
     # Backstage Example Component
     - type: url
-      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
     - type: url
-      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/playback-order-component.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/playback-order-component.yaml
     - type: url
-      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/podcast-api-component.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/podcast-api-component.yaml
     - type: url
-      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/queue-proxy-component.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/queue-proxy-component.yaml
     - type: url
-      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/searcher-component.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/searcher-component.yaml
     - type: url
-      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/playback-lib-component.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/playback-lib-component.yaml
     - type: url
-      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/www-artist-component.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/www-artist-component.yaml
     - type: url
-      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/shuffle-api-component.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/shuffle-api-component.yaml
 ```
 
 ### Running the Backend

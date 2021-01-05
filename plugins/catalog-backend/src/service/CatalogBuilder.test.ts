@@ -40,11 +40,14 @@ const dummyEntityYaml = yaml.stringify(dummyEntity);
 
 describe('CatalogBuilder', () => {
   let db: Knex<any, unknown[]>;
-  const reader: jest.Mocked<UrlReader> = { read: jest.fn() };
+  const reader: jest.Mocked<UrlReader> = {
+    read: jest.fn(),
+    readTree: jest.fn(),
+  };
   const env: CatalogEnvironment = {
     logger: getVoidLogger(),
     database: { getClient: async () => db },
-    config: ConfigReader.fromConfigs([]),
+    config: new ConfigReader({}),
     reader,
   };
 
@@ -141,7 +144,7 @@ describe('CatalogBuilder', () => {
           owner: 'o',
           lifecycle: 'l',
         },
-        relations: [],
+        relations: expect.anything(),
       },
     ]);
   });

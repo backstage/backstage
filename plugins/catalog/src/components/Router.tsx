@@ -23,7 +23,7 @@ import { entityRoute, rootRoute } from '../routes';
 import { CatalogPage } from './CatalogPage';
 import { EntityNotFound } from './EntityNotFound';
 import { EntityPageLayout } from './EntityPageLayout';
-import { EntityProvider } from './EntityProvider';
+import { EntityLoaderProvider } from './EntityLoaderProvider';
 
 const DefaultEntityPage = () => (
   <EntityPageLayout>
@@ -50,7 +50,7 @@ const EntityPageSwitch = ({ EntityPage }: { EntityPage: ComponentType }) => {
   const { entity, loading, error } = useEntity();
   // Loading and error states
   if (loading) return <EntityPageLayout />;
-  if (error || (!loading && !entity)) return <EntityNotFound />;
+  if (error || !entity) return <EntityNotFound />;
 
   // Otherwise EntityPage provided from the App
   // Note that EntityPage will include EntityPageLayout already
@@ -79,9 +79,9 @@ export const Router = ({
     <Route
       path={`${entityRoute.path}`}
       element={
-        <EntityProvider>
+        <EntityLoaderProvider>
           <EntityPageSwitch EntityPage={EntityPage} />
-        </EntityProvider>
+        </EntityLoaderProvider>
       }
     />
     <Route

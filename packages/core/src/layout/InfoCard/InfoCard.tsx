@@ -143,7 +143,7 @@ type Props = {
 export const InfoCard = ({
   title,
   subheader,
-  divider,
+  divider = true,
   deepLink,
   slackChannel = '#backstage',
   variant,
@@ -190,23 +190,20 @@ export const InfoCard = ({
     <Card style={calculatedStyle} className={className}>
       <ErrorBoundary slackChannel={slackChannel}>
         {title && (
-          <>
-            <CardHeader
-              classes={{
-                root: classes.header,
-                title: classes.headerTitle,
-                subheader: classes.headerSubheader,
-                avatar: classes.headerAvatar,
-                action: classes.headerAction,
-                content: classes.headerContent,
-              }}
-              title={title}
-              subheader={subheader}
-              style={{ ...headerStyle }}
-              {...headerProps}
-            />
-            <Divider />
-          </>
+          <CardHeader
+            classes={{
+              root: classes.header,
+              title: classes.headerTitle,
+              subheader: classes.headerSubheader,
+              avatar: classes.headerAvatar,
+              action: classes.headerAction,
+              content: classes.headerContent,
+            }}
+            title={title}
+            subheader={subheader}
+            style={{ ...headerStyle }}
+            {...headerProps}
+          />
         )}
         {actionsTopRight && (
           <CardActionsTopRight>{actionsTopRight}</CardActionsTopRight>

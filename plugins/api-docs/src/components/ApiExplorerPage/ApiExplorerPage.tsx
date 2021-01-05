@@ -25,8 +25,8 @@ import { ApiExplorerLayout } from './ApiExplorerLayout';
 
 export const ApiExplorerPage = () => {
   const catalogApi = useApi(catalogApiRef);
-  const { loading, error, value: matchingEntities } = useAsync(() => {
-    return catalogApi.getEntities({ kind: 'API' });
+  const { loading, error, value: catalogResponse } = useAsync(() => {
+    return catalogApi.getEntities({ filter: { kind: 'API' } });
   }, [catalogApi]);
 
   return (
@@ -37,14 +37,14 @@ export const ApiExplorerPage = () => {
             variant="contained"
             color="primary"
             component={RouterLink}
-            to="/register-component"
+            to="/catalog-import"
           >
             Register Existing API
           </Button>
           <SupportButton>All your APIs</SupportButton>
         </ContentHeader>
         <ApiExplorerTable
-          entities={matchingEntities!}
+          entities={catalogResponse?.items ?? []}
           loading={loading}
           error={error}
         />

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
+import React, { PropsWithChildren } from 'react';
 import { InfoCard } from '../../layout/InfoCard';
 import { Grid } from '@material-ui/core';
 import { StructuredMetadataTable } from './StructuredMetadataTable';
@@ -24,6 +24,8 @@ const metadata = {
   description:
     'This is a long description of what this is doing (and some additional info too). \n It has new lines and extra text to make it especially annoying to render. But it just ignores them.',
   something: 'Yes',
+  'true value': true,
+  'false value': false,
   owner: 'squad',
   'longer key name': ['v1', 'v2', 'v3'],
   rules: {
@@ -41,7 +43,7 @@ export default {
   component: StructuredMetadataTable,
 };
 
-const Wrapper: FC<{}> = ({ children }) => (
+const Wrapper = ({ children }: PropsWithChildren<{}>) => (
   <Grid container spacing={4}>
     <Grid item>{children}</Grid>
   </Grid>

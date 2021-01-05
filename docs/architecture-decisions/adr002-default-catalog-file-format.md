@@ -39,7 +39,7 @@ inside Backstage, or by push events from a CI/CD pipelines, or by webhook
 triggers from the version control system, etc.
 
 Each file describes one or more entities in accordance with the
-[Backstage System Model](https://github.com/spotify/backstage/issues/390). All
+[Backstage System Model](https://github.com/backstage/backstage/issues/390). All
 of these entities have a common structure and nomenclature, and they are stored
 in the software catalog from which they then can be queried.
 
@@ -87,7 +87,7 @@ The root envelope object has the following structure.
 ### `apiVersion` and `kind`
 
 The `kind` is the high level entity type being described, typically from the
-[Backstage system model](https://github.com/spotify/backstage/issues/390). The
+[Backstage system model](https://github.com/backstage/backstage/issues/390). The
 first versions of the catalog will focus on the `Component` kind.
 
 The `apiVersion`is the version of specification format for that particular

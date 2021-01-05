@@ -81,13 +81,13 @@ import { useApi } from '@backstage/core-api';
 _from inline:_
 
 ```tsx
-const ExampleComponent: FC<{}> = () => ( ... )
+const ExampleComponent = () => ( ... )
 ```
 
 _to block:_
 
 ```tsx
-const ExampleComponent: FC<{}> = () => {
+const ExampleComponent = () => {
 
     return (
         ...
@@ -120,10 +120,10 @@ If everything is saved, you should see your name, id, and email on the
 github-playground page. Our data accessed is synchronous. So we just grab and
 go.
 
-https://github.com/spotify/backstage/tree/master/contrib
+https://github.com/backstage/backstage/tree/master/contrib
 
 6. Here is the entire file for reference
-   [ExampleComponent.tsx](https://github.com/spotify/backstage/tree/master/contrib/docs/tutorials/quickstart-app-plugin/ExampleComponent.md)
+   [ExampleComponent.tsx](https://github.com/backstage/backstage/tree/master/contrib/docs/tutorials/quickstart-app-plugin/ExampleComponent.md)
 
 # The Wipe
 
@@ -135,7 +135,7 @@ changes, let's start by wiping this component clean.
 1. Replace everything in the file with the following:
 
 ```tsx
-import React, { FC } from 'react';
+import React from 'react';
 import { useAsync } from 'react-use';
 import Alert from '@material-ui/lab/Alert';
 import {
@@ -147,7 +147,7 @@ import {
 import { useApi } from '@backstage/core-api';
 import { graphql } from '@octokit/graphql';
 
-const ExampleFetchComponent: FC<{}> = () => {
+const ExampleFetchComponent = () => {
   return <div>Nothing to see yet</div>;
 };
 
@@ -223,7 +223,7 @@ type DenseTableProps = {
   viewer: Viewer;
 };
 
-export const DenseTable: FC<DenseTableProps> = ({ viewer }) => {
+export const DenseTable = ({ viewer }: DenseTableProps) => {
   const columns: TableColumn[] = [
     { title: 'Name', field: 'name' },
     { title: 'Created', field: 'createdAt' },
@@ -302,7 +302,7 @@ return (
 8. After saving that, and given we don't have any errors, you should see a table
    with basic information on your repositories.
 9. Here is the entire file for reference
-   [ExampleFetchComponent.tsx](https://github.com/spotify/backstage/tree/master/contrib/docs/tutorials/quickstart-app-plugin/ExampleFetchComponent.md)
+   [ExampleFetchComponent.tsx](https://github.com/backstage/backstage/tree/master/contrib/docs/tutorials/quickstart-app-plugin/ExampleFetchComponent.md)
 10. We finished! You should see your own GitHub repository's information
     displayed in a basic table. If you run into issues, you can compare the repo
     that backs this document,

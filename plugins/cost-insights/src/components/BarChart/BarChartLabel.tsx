@@ -15,7 +15,7 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import { Box } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import { useBarChartLabelStyles } from '../../utils/styles';
 
 type BarChartLabel = {
@@ -23,6 +23,7 @@ type BarChartLabel = {
   y: number;
   height: number;
   width: number;
+  details?: JSX.Element;
 };
 
 export const BarChartLabel = ({
@@ -30,11 +31,11 @@ export const BarChartLabel = ({
   y,
   height,
   width,
+  details,
   children,
 }: PropsWithChildren<BarChartLabel>) => {
   const classes = useBarChartLabelStyles();
   const translateX = width * -0.5;
-  const childArray = React.Children.toArray(children);
 
   return (
     <foreignObject
@@ -46,8 +47,10 @@ export const BarChartLabel = ({
       width={width}
     >
       <Box display="flex" flexDirection="column" justifyContent="center">
-        <b className={classes.label}>{childArray[0]}</b>
-        {childArray.slice(1)}
+        <Typography className={classes.label} gutterBottom>
+          {children}
+        </Typography>
+        {details}
       </Box>
     </foreignObject>
   );

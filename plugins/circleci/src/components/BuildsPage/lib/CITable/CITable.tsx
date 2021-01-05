@@ -13,10 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
-import { Link, Typography, Box, IconButton } from '@material-ui/core';
+
+import React from 'react';
+import {
+  Avatar,
+  Link,
+  Typography,
+  Box,
+  IconButton,
+  makeStyles,
+} from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
 import GitHubIcon from '@material-ui/icons/GitHub';
+import LaunchIcon from '@material-ui/icons/Launch';
 import { Link as RouterLink, generatePath } from 'react-router-dom';
 import {
   StatusError,
@@ -27,17 +36,22 @@ import {
   Table,
   TableColumn,
 } from '@backstage/core';
+import { durationHumanized, relativeTimeTo } from '../../../../util';
 import { circleCIBuildRouteRef } from '../../../../route-refs';
 
 export type CITableBuildInfo = {
   id: string;
   buildName: string;
   buildUrl?: string;
+  startTime?: string;
+  stopTime?: string;
   source: {
     branchName: string;
     commit: {
       hash: string;
+      shortHash: string;
       url: string;
+      committerName?: string;
     };
   };
   status: string;
@@ -47,6 +61,18 @@ export type CITableBuildInfo = {
     skipped: number;
     failed: number;
     testUrl: string; // fixme better name
+  };
+  workflow: {
+    id: string;
+    url: string;
+    name?: string;
+    jobName?: string;
+  };
+  user: {
+    isUser: boolean;
+    login: string;
+    name?: string;
+    avatarUrl?: string;
   };
   onRestartClick: () => void;
 };
@@ -69,6 +95,43 @@ const getStatusComponent = (status: string | undefined = '') => {
   }
 };
 
+const useStyles = makeStyles(theme => ({
+  root: {
+    display: 'flex',
+    '& > *': {
+      margin: theme.spacing(1),
+      verticalAlign: 'center',
+    },
+  },
+  small: {
+    width: theme.spacing(3),
+    height: theme.spacing(3),
+  },
+}));
+
+const SourceInfo = ({ build }: { build: CITableBuildInfo }) => {
+  const classes = useStyles();
+  const { user, source } = build;
+
+  return (
+    <Box display="flex" alignItems="center" className={classes.root}>
+      <Avatar alt={user.name} src={user.avatarUrl} className={classes.small} />
+      <Box>
+        <Typography variant="button">{source?.branchName}</Typography>
+        <Typography variant="body1">
+          {source?.commit?.url !== undefined ? (
+            <Link href={source?.commit?.url} target="_blank">
+              {source?.commit.shortHash}
+            </Link>
+          ) : (
+            source?.commit.shortHash
+          )}
+        </Typography>
+      </Box>
+    </Box>
+  );
+};
+
 const generatedColumns: TableColumn[] = [
   {
     title: 'ID',
@@ -80,26 +143,43 @@ const generatedColumns: TableColumn[] = [
     title: 'Build',
     field: 'buildName',
     highlight: true,
+    width: '20%',
     render: (row: Partial<CITableBuildInfo>) => (
       <Link
         component={RouterLink}
-        to={`${generatePath(circleCIBuildRouteRef.path, { buildId: row.id! })}`}
+        to={`${generatePath(circleCIBuildRouteRef.path, {
+          buildId: row.id!,
+        })}`}
       >
-        {row.buildName}
+        {row.buildName ? row.buildName : row?.workflow?.name}
+      </Link>
+    ),
+  },
+  {
+    title: 'Job',
+    field: 'buildName',
+    highlight: true,
+    render: (row: Partial<CITableBuildInfo>) => (
+      <Link href={row?.buildUrl} target="_blank">
+        <Box display="flex" alignItems="center">
+          <LaunchIcon fontSize="small" color="disabled" />
+          <Box mr={1} />
+          {row?.workflow?.jobName}
+        </Box>
       </Link>
     ),
   },
   {
     title: 'Source',
+    field: 'source.commit.hash',
+    highlight: true,
     render: (row: Partial<CITableBuildInfo>) => (
-      <>
-        <p>{row.source?.branchName}</p>
-        <p>{row.source?.commit.hash}</p>
-      </>
+      <SourceInfo build={row as any} />
     ),
   },
   {
     title: 'Status',
+    field: 'status',
     render: (row: Partial<CITableBuildInfo>) => (
       <Box display="flex" alignItems="center">
         {getStatusComponent(row.status)}
@@ -109,13 +189,31 @@ const generatedColumns: TableColumn[] = [
     ),
   },
   {
+    title: 'Time',
+    field: 'startTime',
+    render: (row: Partial<CITableBuildInfo>) => (
+      <>
+        <Typography variant="body2">
+          run {relativeTimeTo(row?.startTime)}
+        </Typography>
+        <Typography variant="body2">
+          took {durationHumanized(row?.startTime, row?.stopTime)}
+        </Typography>
+      </>
+    ),
+  },
+  {
+    title: 'Workflow',
+    field: 'workflow.name',
+  },
+  {
     title: 'Actions',
+    width: '10%',
     render: (row: Partial<CITableBuildInfo>) => (
       <IconButton onClick={row.onRestartClick}>
         <RetryIcon />
       </IconButton>
     ),
-    width: '10%',
   },
 ];
 
@@ -130,7 +228,8 @@ type Props = {
   pageSize: number;
   onChangePageSize: (pageSize: number) => void;
 };
-export const CITable: FC<Props> = ({
+
+export const CITable = ({
   projectName,
   loading,
   pageSize,
@@ -140,11 +239,16 @@ export const CITable: FC<Props> = ({
   onChangePage,
   onChangePageSize,
   total,
-}) => {
+}: Props) => {
   return (
     <Table
       isLoading={loading}
-      options={{ paging: true, pageSize }}
+      options={{
+        paging: true,
+        pageSize,
+        padding: 'dense',
+        pageSizeOptions: [10, 20, 50],
+      }}
       totalCount={total}
       page={page}
       actions={[

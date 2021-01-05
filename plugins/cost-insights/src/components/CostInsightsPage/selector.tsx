@@ -18,7 +18,7 @@ import {
   getResetState,
   DefaultLoadingAction,
   getResetStateWithoutInitial,
-} from '../../types';
+} from '../../utils/loading';
 
 type CostInsightsPageLoadingProps = {
   loadingActions: Array<string>;

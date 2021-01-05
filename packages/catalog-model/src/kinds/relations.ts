@@ -33,7 +33,9 @@ export const RELATION_OWNER_OF = 'ownerOf';
  * A relation with an API entity, typically from a component or system
  */
 export const RELATION_CONSUMES_API = 'consumesApi';
+export const RELATION_API_CONSUMED_BY = 'apiConsumedBy';
 export const RELATION_PROVIDES_API = 'providesApi';
+export const RELATION_API_PROVIDED_BY = 'apiProvidedBy';
 
 /**
  * A relation denoting a dependency on another entity.

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Fragment, ReactElement, FC, ComponentType } from 'react';
+import React, { Fragment, ReactElement, ComponentType } from 'react';
 import {
   IconButton,
   List,
@@ -35,14 +35,14 @@ type ActionItemProps = {
   WrapperComponent?: ComponentType;
 };
 
-const ActionItem: FC<ActionItemProps> = ({
+const ActionItem = ({
   label,
   secondaryLabel,
   icon,
   disabled = false,
   onClick,
   WrapperComponent = React.Fragment,
-}) => {
+}: ActionItemProps) => {
   return (
     <WrapperComponent>
       <ListItem
@@ -66,9 +66,7 @@ export type HeaderActionMenuProps = {
   actionItems: ActionItemProps[];
 };
 
-export const HeaderActionMenu: FC<HeaderActionMenuProps> = ({
-  actionItems,
-}) => {
+export const HeaderActionMenu = ({ actionItems }: HeaderActionMenuProps) => {
   const [open, setOpen] = React.useState(false);
   const anchorElRef = React.useRef(null);
 

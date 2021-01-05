@@ -30,6 +30,7 @@ import { RemoteProtocol } from '../types';
 import { GithubPublisher, RepoVisibilityOptions } from './github';
 import { GitlabPublisher } from './gitlab';
 import { AzurePublisher } from './azure';
+import { BitbucketPublisher } from './bitbucket';
 
 export class Publishers implements PublisherBuilder {
   private publisherMap = new Map<RemoteProtocol, PublisherBase>();
@@ -51,7 +52,17 @@ export class Publishers implements PublisherBuilder {
         if (detected) {
           return detected;
         }
-        throw new Error(`No preparer integration found for url "${location}"`);
+        if (type) {
+          throw new Error(
+            `No publisher configuration available for type '${type}' with url "${location}". ` +
+              "Make sure you've added appropriate configuration in the 'scaffolder' configuration section",
+          );
+        } else {
+          throw new Error(
+            `Failed to detect publisher type. Unable to determine integration type for location "${location}". ` +
+              "Please add appropriate configuration to the 'integrations' configuration section",
+          );
+        }
       }
       throw new Error(`No publisher registered for type: "${protocol}"`);
     }
@@ -102,12 +113,12 @@ export class Publishers implements PublisherBuilder {
       }
     }
 
-    const gitLabConfig = config.getOptionalConfig('scaffolder.gitlab.api');
+    const gitLabConfig = config.getOptionalConfig('scaffolder.gitlab');
     if (gitLabConfig) {
       try {
-        const gitLabToken = gitLabConfig.getString('token');
+        const gitLabToken = gitLabConfig.getConfig('api').getString('token');
         const gitLabClient = new Gitlab({
-          host: gitLabConfig.getOptionalString('baseUrl'),
+          host: gitLabConfig.getConfig('api').getOptionalString('baseUrl'),
           token: gitLabToken,
         });
         const gitLabPublisher = new GitlabPublisher(gitLabClient, gitLabToken);
@@ -153,6 +164,34 @@ export class Publishers implements PublisherBuilder {
       }
     }
 
+    const bitbucketConfig = config.getOptionalConfig(
+      'scaffolder.bitbucket.api',
+    );
+    if (bitbucketConfig) {
+      try {
+        const baseUrl = bitbucketConfig.getString('host');
+        const bitbucketUsername = bitbucketConfig.getString('username');
+        const bitbucketToken = bitbucketConfig.getString('token');
+
+        const bitbucketPublisher = new BitbucketPublisher(
+          baseUrl,
+          bitbucketUsername,
+          bitbucketToken,
+        );
+        publishers.register('bitbucket', bitbucketPublisher);
+      } catch (e) {
+        const providerName = 'bitbucket';
+        if (process.env.NODE_ENV !== 'development') {
+          throw new Error(
+            `Failed to initialize ${providerName} scaffolding provider, ${e.message}`,
+          );
+        }
+
+        logger.warn(
+          `Skipping ${providerName} scaffolding provider, ${e.message}`,
+        );
+      }
+    }
     return publishers;
   }
 }

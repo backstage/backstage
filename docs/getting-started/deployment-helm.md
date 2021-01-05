@@ -8,7 +8,7 @@ sidebar_label: Kubernetes and Helm
 # Helm charts
 
 An example Backstage app can be deployed in Kubernetes using the
-[Backstage Helm charts](https://github.com/spotify/backstage/tree/master/contrib/chart/backstage).
+[Backstage Helm charts](https://github.com/backstage/backstage/tree/master/contrib/chart/backstage).
 
 First, choose a DNS name where Backstage will be hosted, and create a YAML file
 for your custom configuration.
@@ -32,7 +32,7 @@ appConfig:
 Then use it to run:
 
 ```bash
-git clone https://github.com/spotify/backstage.git
+git clone https://github.com/backstage/backstage.git
 cd contrib/chart/backstage
 helm dependency update
 helm install -f backstage-mydomain.yaml backstage .
@@ -61,4 +61,4 @@ backstage-ingress   *       123.1.2.3       80      17m
 > **NOTE**: this is not a production ready deployment.
 
 For more information on how to customize the deployment check the
-[README](https://github.com/spotify/backstage/tree/master/contrib/chart/backstage/README.md).
+[README](https://github.com/backstage/backstage/tree/master/contrib/chart/backstage/README.md).

@@ -65,6 +65,7 @@ export type SelectedFilters = {
 
 type Props = {
   filters: Filter[];
+  selectedFilters?: SelectedFilters;
   onChangeFilters: (arg: any) => any;
 };
 
@@ -73,21 +74,20 @@ export const Filters = (props: Props) => {
 
   const { onChangeFilters } = props;
 
-  const [filters, setFilters] = useState(props.filters);
-  const [selectedFilters, setSelectedFilters] = useState<SelectedFilters>({});
+  const [selectedFilters, setSelectedFilters] = useState<SelectedFilters>({
+    ...props.selectedFilters,
+  });
   const [reset, triggerReset] = useState(false);
 
   // Trigger re-rendering
   const handleClick = () => {
     setSelectedFilters({});
-    setFilters([...props.filters]);
     triggerReset(el => !el);
   };
 
   useEffect(() => {
     onChangeFilters(selectedFilters);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedFilters]);
+  }, [selectedFilters, onChangeFilters]);
 
   // As material table doesn't provide a way to add a column filter tab we will make our own filter logic
   return (
@@ -99,29 +99,38 @@ export const Filters = (props: Props) => {
         </Button>
       </div>
       <div className={classes.filters}>
-        {filters?.length &&
-          filters.map(filter =>
+        {props.filters?.length &&
+          props.filters.map(filter =>
             filter.type === 'checkbox-tree' ? (
               <CheckboxTree
                 triggerReset={reset}
                 key={filter.element.label}
                 {...(filter.element as CheckboxTreeProps)}
+                selected={
+                  selectedFilters[filter.element.label]
+                    ? (selectedFilters[filter.element.label] as string[]).map(
+                        s => ({
+                          category: s,
+                        }),
+                      )
+                    : undefined
+                }
                 onChange={el =>
                   setSelectedFilters({
                     ...selectedFilters,
                     [filter.element.label]: el
                       .filter(
                         (checkboxFilter: any) =>
-                          checkboxFilter.category !== null ||
-                          checkboxFilter.selectedChilds.length,
+                          checkboxFilter.category ||
+                          checkboxFilter.selectedChildren.length,
                       )
                       .map((checkboxFilter: any) =>
-                        checkboxFilter.category !== null
+                        checkboxFilter.category
                           ? [
-                              ...checkboxFilter.selectedChilds,
+                              ...checkboxFilter.selectedChildren,
                               checkboxFilter.category,
                             ]
-                          : checkboxFilter.selectedChilds,
+                          : checkboxFilter.selectedChildren,
                       )
                       .flat(),
                   })
@@ -132,10 +141,11 @@ export const Filters = (props: Props) => {
                 triggerReset={reset}
                 key={filter.element.label}
                 {...(filter.element as SelectProps)}
+                selected={selectedFilters[filter.element.label]}
                 onChange={el =>
                   setSelectedFilters({
                     ...selectedFilters,
-                    [filter.element.label]: el,
+                    [filter.element.label]: el as any,
                   })
                 }
               />

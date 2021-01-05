@@ -24,14 +24,3 @@ import { Error as LDAPError } from 'ldapjs';
 export function errorString(error: LDAPError) {
   return `${error.code} ${error.name}: ${error.message}`;
 }
-
-/**
- * Makes all keys of an entire hierarchy optional.
- */
-export type RecursivePartial<T> = {
-  [P in keyof T]?: T[P] extends (infer U)[]
-    ? RecursivePartial<U>[]
-    : T[P] extends object
-    ? RecursivePartial<T[P]>
-    : T[P];
-};

@@ -1,6 +1,6 @@
 ---
 title: How to design for Backstage (even if you’re not a designer)
-author: Kat Zhou
+author: Kat Zhou, Spotify
 authorURL: http://twitter.com/katherinemzhou
 ---
 
@@ -68,9 +68,9 @@ To keep up with our latest design guidelines, go to [Designing for Backstage](ht
 
 ![img](assets/backstage-github-ds.png)
 
-### [GitHub](https://github.com/spotify/backstage)
+### [GitHub](https://github.com/backstage/backstage)
 
-Join in on the action [at spotify/backstage on GitHub](https://github.com/spotify/backstage) by submitting issues and opening pull requests for all things related to components and patterns in Backstage.
+Join in on the action [at backstage/backstage on GitHub](https://github.com/backstage/backstage) by submitting issues and opening pull requests for all things related to components and patterns in Backstage.
 
 ![img](assets/backstage-discord-DS.png)
 

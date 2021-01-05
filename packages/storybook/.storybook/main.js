@@ -22,7 +22,7 @@ module.exports = {
 
     // Remove the default babel-loader for js files, we're using sucrase instead
     const [jsLoader] = config.module.rules.splice(0, 1);
-    if (jsLoader.use[0].loader !== 'babel-loader') {
+    if (!jsLoader.use[0].loader.includes('babel-loader')) {
       throw new Error(
         `Unexpected loader removed from storybook config, ${jsLoader.use[0].loader}`,
       );

@@ -17,6 +17,7 @@
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { SearchEntry } from 'ldapjs';
 import merge from 'lodash/merge';
+import { RecursivePartial } from '../../../util';
 import { LdapClient } from './client';
 import { GroupConfig, UserConfig } from './config';
 import {
@@ -25,7 +26,6 @@ import {
   LDAP_UUID_ANNOTATION,
 } from './constants';
 import { readLdapGroups, readLdapUsers, resolveRelations } from './read';
-import { RecursivePartial } from './util';
 
 function user(data: RecursivePartial<UserEntity>): UserEntity {
   return merge(
@@ -47,7 +47,7 @@ function group(data: RecursivePartial<GroupEntity>): GroupEntity {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'Group',
       metadata: { name: 'name' },
-      spec: { type: 'type', ancestors: [], children: [], descendants: [] },
+      spec: { type: 'type', children: [] },
     } as GroupEntity,
     data,
   );
@@ -138,6 +138,8 @@ describe('readLdapGroups', () => {
         cn: ['cn-value'],
         description: ['description-value'],
         tt: ['type-value'],
+        mail: ['mail-value'],
+        avatarUrl: ['avatarUrl-value'],
         memberOf: ['x', 'y', 'z'],
         member: ['e', 'f', 'g'],
         entryDN: ['dn-value'],
@@ -151,6 +153,9 @@ describe('readLdapGroups', () => {
         rdn: 'cn',
         name: 'cn',
         description: 'description',
+        displayName: 'cn',
+        email: 'mail',
+        picture: 'avatarUrl',
         type: 'tt',
         memberOf: 'memberOf',
         members: 'member',
@@ -173,9 +178,12 @@ describe('readLdapGroups', () => {
         },
         spec: {
           type: 'type-value',
-          ancestors: [],
+          profile: {
+            displayName: 'cn-value',
+            email: 'mail-value',
+            picture: 'avatarUrl-value',
+          },
           children: [],
-          descendants: [],
         },
       }),
     ]);

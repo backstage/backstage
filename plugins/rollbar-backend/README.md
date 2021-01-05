@@ -8,7 +8,6 @@ The following values are read from the configuration file.
 
 ```yaml
 rollbar:
-  organization: spotify
   accountToken:
     $env: ROLLBAR_ACCOUNT_TOKEN
 ```
@@ -18,5 +17,5 @@ access account token._
 
 ## Links
 
-- [Frontend part of the plugin](https://github.com/spotify/backstage/tree/master/plugins/rollbar)
+- [Frontend part of the plugin](https://github.com/backstage/backstage/tree/master/plugins/rollbar)
 - [The Backstage homepage](https://backstage.io)

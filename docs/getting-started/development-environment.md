@@ -56,7 +56,7 @@ system resources and slow things down.
 ## Package Scripts
 
 There are many commands to be found in the root
-[package.json](https://github.com/spotify/backstage/blob/master/package.json),
+[package.json](https://github.com/backstage/backstage/blob/master/package.json),
 here are some useful ones:
 
 ```python
@@ -86,7 +86,7 @@ yarn create-plugin # Create a new plugin
 ```
 
 > See
-> [package.json](https://github.com/spotify/backstage/blob/master/package.json)
+> [package.json](https://github.com/backstage/backstage/blob/master/package.json)
 > for other yarn commands/options.
 
 ## Local configuration

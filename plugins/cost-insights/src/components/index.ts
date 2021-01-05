@@ -17,4 +17,3 @@
 export * from './BarChart';
 export * from './CostGrowth';
 export * from './LegendItem';
-export * from './Tooltip';

@@ -18,8 +18,8 @@ import { errorApiRef, useApi } from '@backstage/core';
 import { createContext, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useAsync } from 'react-use';
-import { catalogApiRef } from '../api/types';
 import { useEntityCompoundName } from '../components/useEntityCompoundName';
+import { catalogApiRef } from '../plugin';
 
 type EntityLoadingStatus = {
   entity?: Entity;
@@ -55,7 +55,7 @@ export const useEntityFromUrl = (): EntityLoadingStatus => {
 };
 
 /**
- * Always going to return an entity, or throw an error if not a descendant of a EntityProvider.
+ * Grab Entity from the context and its current loading state.
  */
 export const useEntity = () => {
   const { entity, loading, error } = useContext<{

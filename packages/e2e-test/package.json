@@ -1,12 +1,12 @@
 {
   "name": "e2e-test",
   "description": "E2E test for verifying Backstage packages",
-  "version": "0.1.1-alpha.26",
+  "version": "0.2.0",
   "private": true,
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
-    "url": "https://github.com/spotify/backstage",
+    "url": "https://github.com/backstage/backstage",
     "directory": "packages/e2e-test"
   },
   "keywords": [
@@ -24,7 +24,7 @@
     "e2e-test": "bin/e2e-test"
   },
   "devDependencies": {
-    "@backstage/cli-common": "^0.1.1-alpha.26",
+    "@backstage/cli-common": "^0.1.1",
     "@types/fs-extra": "^9.0.1",
     "@types/node": "^13.7.2",
     "chalk": "^4.0.0",

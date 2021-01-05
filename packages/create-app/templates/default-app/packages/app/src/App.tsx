@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React from 'react';
 import {
   createApp,
   AlertDisplay,
@@ -12,8 +12,9 @@ import { AppSidebar } from './sidebar';
 import { Route, Routes, Navigate } from 'react-router';
 import { Router as CatalogRouter } from '@backstage/plugin-catalog';
 import { Router as DocsRouter } from '@backstage/plugin-techdocs';
-import { Router as RegisterComponentRouter } from '@backstage/plugin-register-component';
+import { Router as ImportComponentRouter } from '@backstage/plugin-catalog-import';
 import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
+import { SearchPage as SearchRouter } from '@backstage/plugin-search';
 
 import { EntityPage } from './components/catalog/EntityPage';
 
@@ -32,7 +33,7 @@ const catalogRouteRef = createRouteRef({
 });
 
 
-const App: FC<{}> = () => (
+const App = () => (
   <AppProvider>
     <AlertDisplay />
     <OAuthRequestDialog />
@@ -51,8 +52,12 @@ const App: FC<{}> = () => (
             element={<TechRadarRouter width={1500} height={800} />}
           />
           <Route
-            path="/register-component"
-            element={<RegisterComponentRouter catalogRouteRef={catalogRouteRef} />}
+            path="/catalog-import"
+            element={<ImportComponentRouter catalogRouteRef={catalogRouteRef} />}
+          />
+          <Route
+            path="/search"
+            element={<SearchRouter/>}
           />
           {deprecatedAppRoutes}
         </Routes>

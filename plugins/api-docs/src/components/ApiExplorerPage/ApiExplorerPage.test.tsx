@@ -26,24 +26,26 @@ import { ApiExplorerPage } from './ApiExplorerPage';
 describe('ApiCatalogPage', () => {
   const catalogApi: Partial<CatalogApi> = {
     getEntities: () =>
-      Promise.resolve([
-        {
-          apiVersion: 'backstage.io/v1alpha1',
-          kind: 'API',
-          metadata: {
-            name: 'Entity1',
+      Promise.resolve({
+        items: [
+          {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'API',
+            metadata: {
+              name: 'Entity1',
+            },
+            spec: { type: 'openapi' },
           },
-          spec: { type: 'openapi' },
-        },
-        {
-          apiVersion: 'backstage.io/v1alpha1',
-          kind: 'API',
-          metadata: {
-            name: 'Entity2',
+          {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'API',
+            metadata: {
+              name: 'Entity2',
+            },
+            spec: { type: 'openapi' },
           },
-          spec: { type: 'openapi' },
-        },
-      ] as Entity[]),
+        ] as Entity[],
+      }),
     getLocationByEntity: () =>
       Promise.resolve({ id: 'id', type: 'github', target: 'url' }),
   };

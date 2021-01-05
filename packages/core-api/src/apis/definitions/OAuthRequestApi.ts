@@ -99,7 +99,7 @@ export type PendingAuthRequest = {
 export type OAuthRequestApi = {
   /**
    * A utility for showing login popups or similar things, and merging together multiple requests for
-   * different scopes into one request that inclues all scopes.
+   * different scopes into one request that includes all scopes.
    *
    * The passed in options provide information about the login provider, and how to handle auth requests.
    *
@@ -114,7 +114,7 @@ export type OAuthRequestApi = {
   ): AuthRequester<AuthResponse>;
 
   /**
-   * Observers panding auth requests. The returned observable will emit all
+   * Observers pending auth requests. The returned observable will emit all
    * current active auth request, at most one for each created auth requester.
    *
    * Each request has its own info about the login provider, forwarded from the auth requester options.
