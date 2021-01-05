@@ -13,4 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { default } from './ExampleFetchComponent';
+
+import { useEntity } from '@backstage/plugin-catalog';
+import { KAFKA_CONSUMER_GROUP_ANNOTATION } from '../../constants';
+
+export const useConsumerGroupFromEntity = () => {
+  const { entity } = useEntity();
+
+  return entity.metadata.annotations?.[KAFKA_CONSUMER_GROUP_ANNOTATION] ?? '';
+};

@@ -13,8 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createPlugin, createRouteRef } from '@backstage/core';
-import ExampleComponent from './components/ExampleComponent';
+import {
+  configApiRef,
+  createApiFactory,
+  createPlugin,
+  createRouteRef,
+  discoveryApiRef,
+} from '@backstage/core';
+import { KafkaApi, kafkaApiRef } from './api/KafkaApi';
 
 export const rootRouteRef = createRouteRef({
   path: '/kafka',
@@ -23,7 +29,12 @@ export const rootRouteRef = createRouteRef({
 
 export const plugin = createPlugin({
   id: 'kafka',
-  register({ router }) {
-    router.addRoute(rootRouteRef, ExampleComponent);
-  },
+  apis: [
+    createApiFactory({
+      api: kafkaApiRef,
+      deps: { discoveryApi: discoveryApiRef, configApi: configApiRef },
+      factory: ({ configApi, discoveryApi }) =>
+        KafkaApi.fromConfig(configApi, discoveryApi),
+    }),
+  ],
 });
