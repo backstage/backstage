@@ -34,6 +34,7 @@ import {
   useHotMemoize,
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
+import { BackstageIdentityStrategy } from '@backstage/plugin-auth-backend';
 import healthcheck from './plugins/healthcheck';
 import auth from './plugins/auth';
 import catalog from './plugins/catalog';
@@ -45,6 +46,7 @@ import techdocs from './plugins/techdocs';
 import graphql from './plugins/graphql';
 import app from './plugins/app';
 import { PluginEnvironment } from './types';
+import passport from 'passport';
 
 function makeCreateEnv(config: Config) {
   const root = getRootLogger();
@@ -80,16 +82,26 @@ async function main() {
   const graphqlEnv = useHotMemoize(module, () => createEnv('graphql'));
   const appEnv = useHotMemoize(module, () => createEnv('app'));
 
+  passport.use(
+    new BackstageIdentityStrategy({
+      discovery: SingleHostDiscovery.fromConfig(config),
+    }),
+  );
+  const backstageAuth = passport.authenticate('backstage', {
+    session: false,
+  });
+
   const apiRouter = Router();
-  apiRouter.use('/catalog', await catalog(catalogEnv));
-  apiRouter.use('/rollbar', await rollbar(rollbarEnv));
-  apiRouter.use('/scaffolder', await scaffolder(scaffolderEnv));
+  apiRouter.use(passport.initialize());
+  apiRouter.use('/catalog', backstageAuth, await catalog(catalogEnv));
+  apiRouter.use('/rollbar', backstageAuth, await rollbar(rollbarEnv));
+  apiRouter.use('/scaffolder', backstageAuth, await scaffolder(scaffolderEnv));
   apiRouter.use('/auth', await auth(authEnv));
-  apiRouter.use('/techdocs', await techdocs(techdocsEnv));
-  apiRouter.use('/kubernetes', await kubernetes(kubernetesEnv));
-  apiRouter.use('/proxy', await proxy(proxyEnv));
-  apiRouter.use('/graphql', await graphql(graphqlEnv));
-  apiRouter.use(notFoundHandler());
+  apiRouter.use('/techdocs', backstageAuth, await techdocs(techdocsEnv));
+  apiRouter.use('/kubernetes', backstageAuth, await kubernetes(kubernetesEnv));
+  apiRouter.use('/proxy', backstageAuth, await proxy(proxyEnv));
+  apiRouter.use('/graphql', backstageAuth, await graphql(graphqlEnv));
+  apiRouter.use(backstageAuth, notFoundHandler());
 
   const service = createServiceBuilder(module)
     .loadConfig(config)

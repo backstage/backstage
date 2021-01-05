@@ -19984,7 +19984,7 @@ passport-saml@^2.0.0:
     xmlbuilder "^11.0.0"
     xmldom "0.1.x"
 
-passport-strategy@*, passport-strategy@1.x.x:
+passport-strategy@*, passport-strategy@1.x.x, passport-strategy@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/passport-strategy/-/passport-strategy-1.0.0.tgz#b5539aa8fc225a3d1ad179476ddf236b440f52e4"
   integrity sha1-tVOaqPwiWj0a0XlHbd8ja0QPUuQ=
