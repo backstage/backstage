@@ -27,7 +27,7 @@ const MANIFEST_DATA = {
   },
   name: 'Backstage-<changeme>',
   url: 'https://backstage.io',
-  description: 'Github App for Backstage',
+  description: 'GitHub App for Backstage',
   public: false,
 };
 
