@@ -133,7 +133,8 @@ export type CostInsightsApi = {
    * The time period is supplied as a Duration rather than intervals, since this is always expected
    * to return data for two bucketed time period (e.g. month vs month, or quarter vs quarter).
    *
-   * @param options Options to use when fetching insights for a particular cloud product and interval time frame.
+   * @param options Options to use when fetching insights for a particular cloud product and
+   *                interval time frame.
    */
   getProductInsights(options: ProductInsightsOptions): Promise<Entity>;
 
