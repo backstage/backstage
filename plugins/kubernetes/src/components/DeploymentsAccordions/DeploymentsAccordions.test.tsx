@@ -22,9 +22,14 @@ import { wrapInTestApp } from '@backstage/test-utils';
 
 describe('DeploymentsAccordions', () => {
   it('should render 2 deployments', async () => {
-    const { getByText, getAllByText } = render(
+    const { getByText } = render(
       wrapInTestApp(
-        <DeploymentsAccordions deploymentResources={twoDeployFixture as any} />,
+        <DeploymentsAccordions
+          deploymentResources={twoDeployFixture as any}
+          clusterPodNamesWithErrors={
+            new Set(['dice-roller-canary-7d64cd756c-vtbdx'])
+          }
+        />,
       ),
     );
 
@@ -37,6 +42,7 @@ describe('DeploymentsAccordions', () => {
 
     expect(getByText('dice-roller-canary')).toBeInTheDocument();
     expect(getByText('2 pods')).toBeInTheDocument();
-    expect(getAllByText('No pods with errors')).toHaveLength(2);
+    expect(getByText('No pods with errors')).toBeInTheDocument();
+    expect(getByText('1 pod with errors')).toBeInTheDocument();
   });
 });

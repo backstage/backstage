@@ -32,6 +32,7 @@ import { V1ObjectMeta } from '@kubernetes/client-node';
 import { withStyles } from '@material-ui/core/styles';
 import { MarkdownContent, StructuredMetadataTable } from '@backstage/core';
 import jsYaml from 'js-yaml';
+import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 
 const useDrawerStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -65,6 +66,9 @@ const useDrawerContentStyles = makeStyles((_: Theme) =>
 );
 
 const PodDrawerButton = withStyles({
+  root: {
+    padding: '6px 1px',
+  },
   label: {
     textTransform: 'none',
   },
@@ -104,6 +108,7 @@ export const KubernetesDrawer = <T extends KubernetesDrawerable>({
       <PodDrawerButton
         onClick={e => toggleDrawer(e, true)}
         onFocus={event => event.stopPropagation()}
+        startIcon={<ArrowRightIcon />}
       >
         {children === undefined ? (
           <Typography variant={buttonVariant}>

@@ -39,11 +39,13 @@ import { HorizontalPodAutoscalerDrawer } from '../HorizontalPodAutoscalers';
 
 type DeploymentsAccordionsProps = {
   deploymentResources: DeploymentResources;
+  clusterPodNamesWithErrors: Set<string>;
   children?: React.ReactNode;
 };
 
 export const DeploymentsAccordions = ({
   deploymentResources,
+  clusterPodNamesWithErrors,
 }: DeploymentsAccordionsProps) => {
   const isOwnedBy = (
     ownerReferences: V1OwnerReference[],
@@ -91,6 +93,7 @@ export const DeploymentsAccordions = ({
                     deployment={deployment}
                     ownedPods={ownedPods}
                     matchingHpa={matchingHpa}
+                    clusterPodNamesWithErrors={clusterPodNamesWithErrors}
                   />
                 </Grid>
               );
@@ -105,6 +108,7 @@ type DeploymentAccordionProps = {
   deployment: V1Deployment;
   ownedPods: V1Pod[];
   matchingHpa?: V1HorizontalPodAutoscaler;
+  clusterPodNamesWithErrors: Set<string>;
   children?: React.ReactNode;
 };
 
@@ -112,9 +116,11 @@ const DeploymentAccordion = ({
   deployment,
   ownedPods,
   matchingHpa,
+  clusterPodNamesWithErrors,
 }: DeploymentAccordionProps) => {
-  // TODO implement
-  const podsWithErrors = [];
+  const podsWithErrors = ownedPods.filter(p =>
+    clusterPodNamesWithErrors.has(p.metadata?.name ?? ''),
+  );
 
   return (
     <Accordion TransitionProps={{ unmountOnExit: true }}>
@@ -148,14 +154,9 @@ const DeploymentSummary = ({
   hpa,
 }: DeploymentSummaryProps) => {
   return (
-    <Grid
-      container
-      direction="row"
-      justify="flex-start"
-      alignItems="flex-start"
-    >
+    <Grid container direction="row" justify="flex-start" alignItems="center">
       <Grid
-        xs={2}
+        xs={3}
         item
         container
         direction="column"
@@ -174,37 +175,40 @@ const DeploymentSummary = ({
       </Grid>
       <Grid item xs={1}>
         {/* TODO move style to class */}
-        <Divider style={{ height: '4em' }} orientation="vertical" />
+        <Divider style={{ height: '5em' }} orientation="vertical" />
       </Grid>
       {hpa && (
-        <HorizontalPodAutoscalerDrawer hpa={hpa}>
-          <Grid
-            item
-            container
-            direction="column"
-            justify="flex-start"
-            alignItems="flex-start"
-          >
-            <Grid item>
-              <Typography variant="subtitle2">
-                min replicas {hpa.spec?.minReplicas ?? '?'} / max replicas{' '}
-                {hpa.spec?.maxReplicas ?? '?'}
-              </Typography>
+        <Grid item xs={3}>
+          <HorizontalPodAutoscalerDrawer hpa={hpa}>
+            <Grid
+              item
+              container
+              direction="column"
+              justify="flex-start"
+              alignItems="flex-start"
+              spacing={0}
+            >
+              <Grid item>
+                <Typography variant="subtitle2">
+                  min replicas {hpa.spec?.minReplicas ?? '?'} / max replicas{' '}
+                  {hpa.spec?.maxReplicas ?? '?'}
+                </Typography>
+              </Grid>
+              <Grid item>
+                <Typography variant="subtitle2">
+                  current CPU usage:{' '}
+                  {hpa.status?.currentCPUUtilizationPercentage ?? '?'}%
+                </Typography>
+              </Grid>
+              <Grid item>
+                <Typography variant="subtitle2">
+                  target CPU usage:{' '}
+                  {hpa.spec?.targetCPUUtilizationPercentage ?? '?'}%
+                </Typography>
+              </Grid>
             </Grid>
-            <Grid item>
-              <Typography variant="subtitle2">
-                current CPU usage:{' '}
-                {hpa.status?.currentCPUUtilizationPercentage ?? '?'}%
-              </Typography>
-            </Grid>
-            <Grid item>
-              <Typography variant="subtitle2">
-                target CPU usage:{' '}
-                {hpa.spec?.targetCPUUtilizationPercentage ?? '?'}%
-              </Typography>
-            </Grid>
-          </Grid>
-        </HorizontalPodAutoscalerDrawer>
+          </HorizontalPodAutoscalerDrawer>
+        </Grid>
       )}
       <Grid
         item
@@ -219,7 +223,10 @@ const DeploymentSummary = ({
         </Grid>
         <Grid item>
           {numberOfPodsWithErrors > 0 ? (
-            <StatusError>{numberOfPodsWithErrors} pods with errors</StatusError>
+            <StatusError>
+              {numberOfPodsWithErrors} pod
+              {numberOfPodsWithErrors > 1 ? 's' : ''} with errors
+            </StatusError>
           ) : (
             <StatusOK>No pods with errors</StatusOK>
           )}

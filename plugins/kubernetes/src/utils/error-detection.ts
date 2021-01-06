@@ -15,12 +15,18 @@
  */
 
 import { V1Pod, V1Deployment } from '@kubernetes/client-node';
-import { DetectedError, ErrorSeverity } from '../types/types';
+import {
+  DetectedError,
+  DetectedErrorsByCluster,
+  ErrorDetectable,
+  ErrorDetectableKind,
+  ErrorSeverity,
+} from '../types/types';
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-backend';
 import { groupResponses } from './response';
 import { totalRestarts } from './pod';
 
-interface ErrorMapper<T extends Detectable> {
+interface ErrorMapper<T extends ErrorDetectable> {
   severity: ErrorSeverity;
   errorExplanation: string;
   errorExists: (object: T) => boolean;
@@ -102,11 +108,9 @@ const deploymentErrorMappers: ErrorMapper<V1Deployment>[] = [
   },
 ];
 
-type Detectable = V1Pod | V1Deployment;
-
-const detectErrorsInObjects = <T extends Detectable>(
+const detectErrorsInObjects = <T extends ErrorDetectable>(
   objects: T[],
-  kind: string,
+  kind: ErrorDetectableKind,
   clusterName: string,
   errorMappers: ErrorMapper<T>[],
 ): DetectedError[] => {
@@ -121,17 +125,18 @@ const detectErrorsInObjects = <T extends Detectable>(
 
         const value = errors.get(joinedMessage);
 
+        const name = object.metadata?.name ?? 'unknown';
+
         if (value !== undefined) {
-          value.duplicateCount++;
+          value.names.push(name);
           errors.set(joinedMessage, value);
         } else {
           errors.set(joinedMessage, {
             cluster: clusterName,
             kind: kind,
-            name: object.metadata?.name ?? 'unknown',
+            names: [name],
             message: message,
             severity: errorMapper.severity,
-            duplicateCount: 0,
           });
         }
       }
@@ -158,31 +163,37 @@ const detectErrorsInDeployments = (
     deploymentErrorMappers,
   );
 
+const bySeverity = (a: DetectedError, b: DetectedError) => {
+  if (a.severity < b.severity) {
+    return 1;
+  } else if (b.severity < a.severity) {
+    return -1;
+  }
+  return 0;
+};
+
 export const detectErrors = (
   objects: ObjectsByEntityResponse,
-): DetectedError[] => {
-  let errors: DetectedError[] = [];
+): DetectedErrorsByCluster => {
+  const errors: DetectedErrorsByCluster = new Map<string, DetectedError[]>();
 
   for (const clusterResponse of objects.items) {
+    let clusterErrors: DetectedError[] = [];
+
     const groupedResponses = groupResponses(clusterResponse.resources);
 
-    errors = errors.concat(
+    clusterErrors = clusterErrors.concat(
       detectErrorsInPods(groupedResponses.pods, clusterResponse.cluster.name),
     );
-    errors = errors.concat(
+    clusterErrors = clusterErrors.concat(
       detectErrorsInDeployments(
         groupedResponses.deployments,
         clusterResponse.cluster.name,
       ),
     );
+
+    errors.set(clusterResponse.cluster.name, clusterErrors.sort(bySeverity));
   }
 
-  return errors.sort((a, b) => {
-    if (a.severity < b.severity) {
-      return 1;
-    } else if (b.severity < a.severity) {
-      return -1;
-    }
-    return 0;
-  });
+  return errors;
 };

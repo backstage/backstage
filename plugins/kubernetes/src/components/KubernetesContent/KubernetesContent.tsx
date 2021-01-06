@@ -36,8 +36,8 @@ import {
 import { Entity } from '@backstage/catalog-model';
 import { kubernetesApiRef } from '../../api/types';
 import {
-  KubernetesRequestBody,
   ClusterObjects,
+  KubernetesRequestBody,
   ObjectsByEntityResponse,
 } from '@backstage/plugin-kubernetes-backend';
 import { kubernetesAuthProvidersApiRef } from '../../kubernetes-auth-provider/types';
@@ -47,6 +47,7 @@ import { DeploymentsAccordions } from '../DeploymentsAccordions';
 import { ErrorReporting } from '../ErrorReporting';
 import { detectErrors } from '../../utils/error-detection';
 import { groupResponses } from '../../utils/response';
+import { DetectedError } from '../../types/types';
 
 type KubernetesContentProps = { entity: Entity; children?: React.ReactNode };
 
@@ -98,6 +99,11 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
   const clustersWithErrors =
     kubernetesObjects?.items.filter(r => r.errors.length > 0) ?? [];
 
+  const detectedErrors =
+    kubernetesObjects !== undefined
+      ? detectErrors(kubernetesObjects)
+      : new Map<string, DetectedError[]>();
+
   return (
     <Page themeId="tool">
       <Content>
@@ -126,20 +132,24 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
             <>
               <Grid item container>
                 <Grid item xs={12}>
-                  <ErrorReporting
-                    detectedErrors={detectErrors(kubernetesObjects)}
-                  />
+                  <ErrorReporting detectedErrors={detectedErrors} />
                 </Grid>
               </Grid>
               <Grid item>
                 <Divider />
+              </Grid>
+              <Grid item>
+                <Typography variant="h3">Your Clusters</Typography>
               </Grid>
             </>
           )}
 
           {kubernetesObjects?.items.map((item, i) => (
             <Grid item key={i}>
-              <Cluster clusterObjects={item} />
+              <Cluster
+                clusterObjects={item}
+                detectedErrors={detectedErrors.get(item.cluster.name)}
+              />
             </Grid>
           ))}
         </Grid>
@@ -150,14 +160,19 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
 
 type ClusterProps = {
   clusterObjects: ClusterObjects;
+  detectedErrors?: DetectedError[];
   children?: React.ReactNode;
 };
 
-const Cluster = ({ clusterObjects }: ClusterProps) => {
+const Cluster = ({ clusterObjects, detectedErrors }: ClusterProps) => {
   const groupedResponses = groupResponses(clusterObjects.resources);
 
-  // TODO implement
-  const podsWithErrors = [];
+  const podsWithErrors = new Set<string>(
+    detectedErrors
+      ?.filter(de => de.kind === 'Pod')
+      .map(de => de.names)
+      .flat() ?? [],
+  );
 
   return (
     <>
@@ -169,11 +184,14 @@ const Cluster = ({ clusterObjects }: ClusterProps) => {
           <ClusterSummary
             clusterName={clusterObjects.cluster.name}
             totalNumberOfPods={groupedResponses.pods.length}
-            numberOfPodsWithErrors={podsWithErrors.length}
+            numberOfPodsWithErrors={podsWithErrors.size}
           />
         </AccordionSummary>
         <AccordionDetails>
-          <DeploymentsAccordions deploymentResources={groupedResponses} />
+          <DeploymentsAccordions
+            deploymentResources={groupedResponses}
+            clusterPodNamesWithErrors={podsWithErrors}
+          />
         </AccordionDetails>
       </Accordion>
     </>

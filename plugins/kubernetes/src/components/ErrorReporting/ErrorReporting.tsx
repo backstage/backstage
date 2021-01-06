@@ -14,41 +14,58 @@
  * limitations under the License.
  */
 import * as React from 'react';
-import { Table, TableColumn } from '@backstage/core';
-import { DetectedError } from '../../types/types';
-import { Chip } from '@material-ui/core';
+import { Table, TableColumn, InfoCard } from '@backstage/core';
+import { DetectedError, DetectedErrorsByCluster } from '../../types/types';
+import { Chip, Typography } from '@material-ui/core';
 
 type ErrorReportingProps = {
-  detectedErrors: DetectedError[];
+  detectedErrors: DetectedErrorsByCluster;
 };
 
 const columns: TableColumn<DetectedError>[] = [
   {
     title: 'cluster',
+    width: '15%',
     render: (detectedError: DetectedError) => detectedError.cluster,
   },
   {
     title: 'kind',
+    width: '15%',
     render: (detectedError: DetectedError) => detectedError.kind,
   },
   {
     title: 'name',
-    render: (detectedError: DetectedError) => (
-      <>
-        {detectedError.name}{' '}
-        {detectedError.duplicateCount > 0 && (
-          <Chip
-            label={`+ ${detectedError.duplicateCount} other${
-              detectedError.duplicateCount > 1 ? 's' : ''
-            }`}
-            size="small"
-          />
-        )}
-      </>
-    ),
+    width: '30%',
+    render: (detectedError: DetectedError) => {
+      const errorCount = detectedError.names.length;
+
+      if (errorCount === 0) {
+        // This shouldn't happen
+        return null;
+      }
+
+      const displayName = detectedError.names[0];
+
+      const otherErrorCount = errorCount - 1;
+
+      return (
+        <>
+          {displayName}{' '}
+          {otherErrorCount > 0 && (
+            <Chip
+              label={`+ ${otherErrorCount} other${
+                otherErrorCount > 1 ? 's' : ''
+              }`}
+              size="small"
+            />
+          )}
+        </>
+      );
+    },
   },
   {
     title: 'messages',
+    width: '40%',
     render: (detectedError: DetectedError) => (
       <>
         {detectedError.message.map((m, i) => (
@@ -60,7 +77,27 @@ const columns: TableColumn<DetectedError>[] = [
 ];
 
 export const ErrorReporting = ({ detectedErrors }: ErrorReportingProps) => {
+  const errors = Array.from(detectedErrors.values()).flat();
+
   return (
-    <Table title="Error Reporting" data={detectedErrors} columns={columns} />
+    <>
+      {errors.length === 0 ? (
+        <InfoCard title="Error Reporting">
+          <div>
+            <Typography variant="h6">
+              Nice! There are no errors to report!
+            </Typography>
+            {/*  TODO the tick goes here */}
+          </div>
+        </InfoCard>
+      ) : (
+        <Table
+          title="Error Reporting"
+          data={errors}
+          columns={columns}
+          options={{ paging: true, search: false }}
+        />
+      )}
+    </>
   );
 };
