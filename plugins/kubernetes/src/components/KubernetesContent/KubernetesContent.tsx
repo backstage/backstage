@@ -45,9 +45,8 @@ import { ErrorPanel } from './ErrorPanel';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { DeploymentsAccordions } from '../DeploymentsAccordions';
 import { ErrorReporting } from '../ErrorReporting';
-import { detectErrors } from '../../error-detection/error-detection';
 import { groupResponses } from '../../utils/response';
-import { DetectedError } from '../../types/types';
+import { DetectedError, detectErrors } from '../../error-detection';
 
 type KubernetesContentProps = { entity: Entity; children?: React.ReactNode };
 
