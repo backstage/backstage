@@ -69,8 +69,6 @@
     "@types/cookie-parser": "^1.4.2",
     "@types/express-session": "^1.17.2",
     "@types/jwt-decode": "^3.1.0",
-    "@types/nock": "^11.1.0",
-    "@types/openid-client": "^3.7.0",
     "@types/passport": "^1.0.3",
     "@types/passport-github2": "^1.2.4",
     "@types/passport-google-oauth20": "^2.0.3",

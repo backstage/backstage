@@ -82,7 +82,6 @@
     "@types/tar": "^4.0.3",
     "@types/unzipper": "^0.10.3",
     "@types/webpack-env": "^1.15.2",
-    "@types/yaml": "^1.9.7",
     "get-port": "^5.1.1",
     "http-errors": "^1.7.3",
     "jest": "^26.0.1",
