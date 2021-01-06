@@ -122,6 +122,38 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: dice-roller-big
+  labels:
+    'backstage.io/kubernetes-id': dice-roller
+spec:
+  selector:
+    matchLabels:
+      app: dice-roller-big
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: dice-roller-big
+        'backstage.io/kubernetes-id': dice-roller
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.14.2
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100000m"
+            limits:
+              memory: "128Mi"
+              cpu: "100000m"
+          ports:
+            - containerPort: 80
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
   name: dice-roller-bad-cm
   labels:
     'backstage.io/kubernetes-id': dice-roller

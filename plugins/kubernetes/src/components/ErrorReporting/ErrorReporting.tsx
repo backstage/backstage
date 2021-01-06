@@ -76,8 +76,19 @@ const columns: TableColumn<DetectedError>[] = [
   },
 ];
 
+const sortBySeverity = (a: DetectedError, b: DetectedError) => {
+  if (a.severity < b.severity) {
+    return 1;
+  } else if (b.severity < a.severity) {
+    return -1;
+  }
+  return 0;
+};
+
 export const ErrorReporting = ({ detectedErrors }: ErrorReportingProps) => {
-  const errors = Array.from(detectedErrors.values()).flat();
+  const errors = Array.from(detectedErrors.values())
+    .flat()
+    .sort(sortBySeverity);
 
   return (
     <>

@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { V1Pod, V1Deployment } from '@kubernetes/client-node';
+import {
+  V1Pod,
+  V1Deployment,
+  V1HorizontalPodAutoscaler,
+} from '@kubernetes/client-node';
 import {
   DetectedError,
   DetectedErrorsByCluster,
@@ -87,6 +91,24 @@ const podErrorMappers: ErrorMapper<V1Pod>[] = [
       );
     },
   },
+  {
+    // this is probably pretty
+    severity: 4,
+    errorExplanation: 'container-last-state-error',
+    errorExists: pod => {
+      return (pod.status?.containerStatuses ?? []).some(
+        cs => (cs.lastState?.terminated?.reason ?? '') === 'Error',
+      );
+    },
+    messageAccessor: pod => {
+      return (pod.status?.containerStatuses ?? [])
+        .filter(cs => (cs.lastState?.terminated?.reason ?? '') === 'Error')
+        .map(
+          cs =>
+            `container=${cs.name} exited with error code (${cs.lastState?.terminated?.exitCode})`,
+        );
+    },
+  },
 ];
 
 const deploymentErrorMappers: ErrorMapper<V1Deployment>[] = [
@@ -104,6 +126,26 @@ const deploymentErrorMappers: ErrorMapper<V1Deployment>[] = [
         .filter(c => c.status === 'False')
         .filter(c => c.message !== undefined)
         .map(c => c.message ?? '');
+    },
+  },
+];
+
+const hpaErrorMappers: ErrorMapper<V1HorizontalPodAutoscaler>[] = [
+  {
+    // this is probably important
+    severity: 8,
+    errorExplanation: 'hpa-max-current-replicas',
+    errorExists: hpa => {
+      return (hpa.spec?.maxReplicas ?? -1) === hpa.status?.currentReplicas;
+    },
+    messageAccessor: hpa => {
+      return [
+        `Current number of replicas (${
+          hpa.status?.currentReplicas
+        }) is equal to the configured max number of replicas (${
+          hpa.spec?.maxReplicas ?? -1
+        })`,
+      ];
     },
   },
 ];
@@ -163,14 +205,16 @@ const detectErrorsInDeployments = (
     deploymentErrorMappers,
   );
 
-const bySeverity = (a: DetectedError, b: DetectedError) => {
-  if (a.severity < b.severity) {
-    return 1;
-  } else if (b.severity < a.severity) {
-    return -1;
-  }
-  return 0;
-};
+const detectErrorsInHpa = (
+  hpas: V1HorizontalPodAutoscaler[],
+  clusterName: string,
+): DetectedError[] =>
+  detectErrorsInObjects(
+    hpas,
+    'HorizontalPodAutoscaler',
+    clusterName,
+    hpaErrorMappers,
+  );
 
 export const detectErrors = (
   objects: ObjectsByEntityResponse,
@@ -192,7 +236,14 @@ export const detectErrors = (
       ),
     );
 
-    errors.set(clusterResponse.cluster.name, clusterErrors.sort(bySeverity));
+    clusterErrors = clusterErrors.concat(
+      detectErrorsInHpa(
+        groupedResponses.horizontalPodAutoscalers,
+        clusterResponse.cluster.name,
+      ),
+    );
+
+    errors.set(clusterResponse.cluster.name, clusterErrors);
   }
 
   return errors;

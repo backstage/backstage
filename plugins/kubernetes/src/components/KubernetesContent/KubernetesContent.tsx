@@ -131,7 +131,7 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
           {kubernetesObjects && (
             <>
               <Grid item container>
-                <Grid item xs={12}>
+                <Grid item>
                   <ErrorReporting detectedErrors={detectedErrors} />
                 </Grid>
               </Grid>
@@ -141,17 +141,18 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
               <Grid item>
                 <Typography variant="h3">Your Clusters</Typography>
               </Grid>
+              <Grid item container>
+                {kubernetesObjects?.items.map((item, i) => (
+                  <Grid item key={i} xs={12}>
+                    <Cluster
+                      clusterObjects={item}
+                      detectedErrors={detectedErrors.get(item.cluster.name)}
+                    />
+                  </Grid>
+                ))}
+              </Grid>
             </>
           )}
-
-          {kubernetesObjects?.items.map((item, i) => (
-            <Grid item key={i}>
-              <Cluster
-                clusterObjects={item}
-                detectedErrors={detectedErrors.get(item.cluster.name)}
-              />
-            </Grid>
-          ))}
         </Grid>
       </Content>
     </Page>
@@ -176,7 +177,7 @@ const Cluster = ({ clusterObjects, detectedErrors }: ClusterProps) => {
 
   return (
     <>
-      <Accordion defaultExpanded TransitionProps={{ unmountOnExit: true }}>
+      <Accordion TransitionProps={{ unmountOnExit: true }}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <ClusterSummary
             clusterName={clusterObjects.cluster.name}
