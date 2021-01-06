@@ -13,17 +13,14 @@ configuration options for TechDocs.
 # File: app-config.yaml
 
 techdocs:
-
   # TechDocs makes API calls to techdocs-backend using this URL. e.g. get docs of an entity, get metadata, etc.
 
   requestUrl: http://localhost:7000/api/techdocs
-
 
   # Just another route in techdocs-backend where TechDocs requests the static files from. This URL uses an HTTP middleware
   # to serve files from either a local directory or an External storage provider.
 
   storageUrl: http://localhost:7000/api/techdocs/static/docs
-
 
   # generators.techdocs can have two values: 'docker' or 'local'. This is to determine how to run the generator - whether to
   # spin up the techdocs-container docker image or to run mkdocs locally (assuming all the dependencies are taken care of).
@@ -34,7 +31,6 @@ techdocs:
   generators:
     techdocs: 'docker'
 
-
   # techdocs.builder can be either 'local' or 'external.
   # If builder is set to 'local' and you open a TechDocs page, techdocs-backend will try to generate the docs, publish to storage
   # and show the generated docs afterwords. This is the "Basic" setup of the TechDocs Architecture.
@@ -44,32 +40,29 @@ techdocs:
 
   builder: 'local'
 
-
   # techdocs.publisher is used to configure the Storage option, whether you want to use the local filesystem to store generated docs
   # or you want to use External storage providers like Google Cloud Storage, AWS S3, etc.
 
   publisher:
-
-    # techdocs.publisher.type can be - 'local' or 'googleGcs' (awsS3, azureStorage, etc. to be available as well).
+    # techdocs.publisher.type can be - 'local' or 'googleGcs' or 'awsS3' (azureStorage to be available in future).
     # When set to 'local', techdocs-backend will create a 'static' directory at its root to store generated documentation files.
     # When set to 'googleGcs', techdocs-backend will use a Google Cloud Storage Bucket to store generated documentation files.
     # When set to 'awsS3', techdocs-backend will use an Amazon Web Service (AWS) S3 bucket to store generated documentation files.
 
     type: 'local'
 
-
     # Required when techdocs.publisher.type is set to 'googleGcs'. Skip otherwise.
 
     googleGcs:
       # An API key is required to write to a storage bucket.
       credentials:
-        $file: '/path/to/google_application_credentials.json',
+        $file: '/path/to/google_application_credentials.json'
 
       # Your GCP Project ID where the Cloud Storage Bucket is hosted.
       projectId: 'gcp-project-id'
 
       # Cloud Storage Bucket Name
-      bucketName: 'techdocs-storage',
+      bucketName: 'techdocs-storage'
 
     # Required when techdocs.publisher.type is set to 'awsS3'. Skip otherwise.
 
@@ -84,6 +77,5 @@ techdocs:
         $env: AWSS3_REGION
 
       # AWS S3 Bucket Name
-      bucketName: 'techdocs-storage',
-
+      bucketName: 'techdocs-storage'
 ```
