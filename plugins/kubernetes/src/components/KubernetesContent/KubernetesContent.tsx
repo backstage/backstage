@@ -177,10 +177,7 @@ const Cluster = ({ clusterObjects, detectedErrors }: ClusterProps) => {
   return (
     <>
       <Accordion defaultExpanded TransitionProps={{ unmountOnExit: true }}>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1a-content"
-        >
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <ClusterSummary
             clusterName={clusterObjects.cluster.name}
             totalNumberOfPods={groupedResponses.pods.length}
@@ -236,7 +233,6 @@ const ClusterSummary = ({
         </Grid>
       </Grid>
       <Grid item xs={1}>
-        {/* TODO move style to class */}
         <Divider style={{ height: '4em' }} orientation="vertical" />
       </Grid>
       <Grid

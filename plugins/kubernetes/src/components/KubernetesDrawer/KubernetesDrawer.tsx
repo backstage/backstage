@@ -67,7 +67,7 @@ const useDrawerContentStyles = makeStyles((_: Theme) =>
 
 const PodDrawerButton = withStyles({
   root: {
-    padding: '6px 1px',
+    padding: '6px 5px',
   },
   label: {
     textTransform: 'none',
@@ -199,11 +199,9 @@ const KubernetesDrawerContent = <T extends KubernetesDrawerable>({
         />
       </div>
       <div className={classes.content}>
-        {// TODO make nicer
-        isYaml && (
+        {isYaml && (
           <MarkdownContent
             content={`\`\`\`yaml\n${jsYaml.dump(object)}\n\`\`\``}
-            dialect="common-mark"
           />
         )}
         {!isYaml && <StructuredMetadataTable metadata={renderObject(object)} />}

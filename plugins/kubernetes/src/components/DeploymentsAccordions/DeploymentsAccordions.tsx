@@ -174,7 +174,6 @@ const DeploymentSummary = ({
         </Grid>
       </Grid>
       <Grid item xs={1}>
-        {/* TODO move style to class */}
         <Divider style={{ height: '5em' }} orientation="vertical" />
       </Grid>
       {hpa && (

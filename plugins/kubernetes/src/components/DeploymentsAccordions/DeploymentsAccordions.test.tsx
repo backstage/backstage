@@ -35,14 +35,13 @@ describe('DeploymentsAccordions', () => {
 
     expect(getByText('dice-roller')).toBeInTheDocument();
     expect(getByText('10 pods')).toBeInTheDocument();
-
+    expect(getByText('No pods with errors')).toBeInTheDocument();
     expect(getByText('min replicas 10 / max replicas 15')).toBeInTheDocument();
     expect(getByText('current CPU usage: 30%')).toBeInTheDocument();
     expect(getByText('target CPU usage: 50%')).toBeInTheDocument();
 
     expect(getByText('dice-roller-canary')).toBeInTheDocument();
     expect(getByText('2 pods')).toBeInTheDocument();
-    expect(getByText('No pods with errors')).toBeInTheDocument();
     expect(getByText('1 pod with errors')).toBeInTheDocument();
   });
 });

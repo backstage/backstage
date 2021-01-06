@@ -18,13 +18,17 @@ spec:
       containers:
         - name: nginx
           image: nginx:1.14.2
+          args:
+            - bash
+            - -c
+            - yes > /dev/null & yes > /dev/null & yes > /dev/null
           resources:
             requests:
               memory: "64Mi"
               cpu: "50m"
             limits:
               memory: "128Mi"
-              cpu: "500m"
+              cpu: "50m"
           ports:
             - containerPort: 80
 
