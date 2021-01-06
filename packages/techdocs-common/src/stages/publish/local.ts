@@ -66,7 +66,7 @@ export class LocalPublish implements PublisherBase {
     }
 
     return new Promise((resolve, reject) => {
-      fs.copy(directory, publishDir, err => {
+      fs.move(directory, publishDir, err => {
         if (err) {
           this.logger.debug(
             `Failed to copy docs from ${directory} to ${publishDir}`,

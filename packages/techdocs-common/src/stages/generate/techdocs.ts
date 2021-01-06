@@ -99,6 +99,17 @@ export class TechdocsGenerator implements GeneratorBase {
           this.logger.info(
             `Successfully generated docs from ${directory} into ${resultDir} using local mkdocs`,
           );
+          await runCommand({
+            command: 'rm',
+            args: ['-rf', `${resultDir}/backstage-repo`],
+            options: {
+              cwd: directory,
+            },
+            logStream,
+          });
+          this.logger.info(
+            `Removed ${resultDir}/backstage-repo from result folder`,
+          );
           break;
         case 'docker':
           await runDockerContainer({
