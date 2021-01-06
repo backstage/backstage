@@ -49,7 +49,7 @@ export class CatalogImportClient implements CatalogImportApi {
         },
         method: 'POST',
         body: JSON.stringify({
-          location: { type: 'github', target: repo },
+          location: { type: 'url', target: repo },
         }),
       },
     ).catch(e => {
@@ -78,7 +78,7 @@ export class CatalogImportClient implements CatalogImportApi {
         },
         method: 'POST',
         body: JSON.stringify({
-          type: 'github',
+          type: 'url',
           target: location,
           presence: 'optional',
         }),

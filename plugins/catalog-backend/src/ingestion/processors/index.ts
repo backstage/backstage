@@ -23,6 +23,7 @@ export { CodeOwnersProcessor } from './CodeOwnersProcessor';
 export { FileReaderProcessor } from './FileReaderProcessor';
 export { GithubOrgReaderProcessor } from './GithubOrgReaderProcessor';
 export { LdapOrgReaderProcessor } from './LdapOrgReaderProcessor';
+export { LocationDiscoveryProcessor } from './LocationDiscoveryProcessor';
 export { LocationRefProcessor } from './LocationEntityProcessor';
 export { MicrosoftGraphOrgReaderProcessor } from './MicrosoftGraphOrgReaderProcessor';
 export { PlaceholderProcessor } from './PlaceholderProcessor';
