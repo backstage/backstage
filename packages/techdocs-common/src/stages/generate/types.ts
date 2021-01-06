@@ -31,13 +31,15 @@ export type GeneratorRunResult = {
  *
  * @param {string} directory The directory of the uncompiled documentation, with the values from the frontend
  * @param {Docker} dockerClient A docker client to run any generator on top of your directory
+ * @param {string} expectedResultDir Optional directory to store generated docs in. Default: A newly created temporary directory.
  * @param {ParsedLocationAnnotation} parsedLocationAnnotation backstage.io/techdocs-ref annotation of an entity
  * @param {Writable} [logStream] A dedicated log stream
  */
 export type GeneratorRunOptions = {
   directory: string;
   dockerClient: Docker;
-  parsedLocationAnnotation: ParsedLocationAnnotation;
+  expectedResultDir?: string;
+  parsedLocationAnnotation?: ParsedLocationAnnotation;
   logStream?: Writable;
 };
 

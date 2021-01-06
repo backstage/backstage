@@ -66,24 +66,36 @@ export class TechdocsGenerator implements GeneratorBase {
   public async run({
     directory,
     dockerClient,
+    expectedResultDir,
     parsedLocationAnnotation,
   }: GeneratorRunOptions): Promise<GeneratorRunResult> {
-    const tmpdirPath = os.tmpdir();
-    // Fixes a problem with macOS returning a path that is a symlink
-    const tmpdirResolvedPath = fs.realpathSync(tmpdirPath);
-    const resultDir = fs.mkdtempSync(
-      path.join(tmpdirResolvedPath, 'techdocs-tmp-'),
-    );
+    // If provided with a directory to output the generated files in, use that directory.
+    // Else create a new temporary directory and return path.
+    let resultDir;
+    if (expectedResultDir) {
+      resultDir = expectedResultDir;
+      await fs.ensureDir(resultDir);
+    } else {
+      const tmpdirPath = os.tmpdir();
+      // Fixes a problem with macOS returning a path that is a symlink
+      const tmpdirResolvedPath = fs.realpathSync(tmpdirPath);
+      resultDir = fs.mkdtempSync(
+        path.join(tmpdirResolvedPath, 'techdocs-tmp-'),
+      );
+    }
+
     const [log, logStream] = createStream();
 
     // TODO: In future mkdocs.yml can be mkdocs.yaml. So, use a config variable here to find out
     // the correct file name.
     // Do some updates to mkdocs.yml before generating docs e.g. adding repo_url
-    await patchMkdocsYmlPreBuild(
-      path.join(directory, 'mkdocs.yml'),
-      this.logger,
-      parsedLocationAnnotation,
-    );
+    if (parsedLocationAnnotation) {
+      await patchMkdocsYmlPreBuild(
+        path.join(directory, 'mkdocs.yml'),
+        this.logger,
+        parsedLocationAnnotation,
+      );
+    }
 
     try {
       switch (this.options.runGeneratorIn) {
