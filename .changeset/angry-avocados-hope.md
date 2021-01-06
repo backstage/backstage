@@ -4,4 +4,4 @@
 '@backstage/plugin-tech-radar': patch
 ---
 
-Remove test deps from production package list
+Remove test dependencies from production package list
