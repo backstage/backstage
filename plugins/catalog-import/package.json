@@ -33,7 +33,6 @@
     "@backstage/catalog-model": "^0.6.0",
     "@backstage/core": "^0.4.3",
     "@backstage/plugin-catalog": "^0.2.10",
-    "@backstage/plugin-catalog-backend": "^0.5.2",
     "@backstage/integration": "^0.1.5",
     "@backstage/theme": "^0.2.2",
     "@material-ui/core": "^4.11.0",
