@@ -53,6 +53,7 @@ techdocs:
     # techdocs.publisher.type can be - 'local' or 'googleGcs' (awsS3, azureStorage, etc. to be available as well).
     # When set to 'local', techdocs-backend will create a 'static' directory at its root to store generated documentation files.
     # When set to 'googleGcs', techdocs-backend will use a Google Cloud Storage Bucket to store generated documentation files.
+    # When set to 'awsS3', techdocs-backend will use an Amazon Web Service (AWS) S3 bucket to store generated documentation files.
 
     type: 'local'
 
@@ -68,6 +69,21 @@ techdocs:
       projectId: 'gcp-project-id'
 
       # Cloud Storage Bucket Name
+      bucketName: 'techdocs-storage',
+
+    # Required when techdocs.publisher.type is set to 'awsS3'. Skip otherwise.
+
+    awsS3:
+      # An API key is required to write to a storage bucket.
+      credentials:
+        accessKeyId:
+          $env: TECHDOCS_AWSS3_ACCESS_KEY_ID_CREDENTIAL
+        secretAccessKey:
+          $env: TECHDOCS_AWSS3_SECRET_ACCESS_KEY_CREDENTIAL
+      region:
+        $env: AWSS3_REGION
+
+      # AWS S3 Bucket Name
       bucketName: 'techdocs-storage',
 
 ```

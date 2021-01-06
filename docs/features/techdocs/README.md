@@ -108,12 +108,12 @@ providers are used.
 | GitLab                       | Yes ✅         |
 | GitLab Enterprise            | Yes ✅         |
 
-| File Storage Provider             | Support Status | Track status                                                |
-| --------------------------------- | -------------- | ----------------------------------------------------------- |
-| Local Filesystem of Backstage app | Yes ✅         |                                                             |
-| Google Cloud Storage (GCS)        | Yes ✅         |                                                             |
-| Amazon Web Services (AWS) S3      | No ❌          | [#3714](https://github.com/backstage/backstage/issues/3714) |
-| Azure Storage                     | No ❌          |                                                             |
+| File Storage Provider             | Support Status |
+| --------------------------------- | -------------- |
+| Local Filesystem of Backstage app | Yes ✅         |
+| Google Cloud Storage (GCS)        | Yes ✅         |
+| Amazon Web Services (AWS) S3      | Yes ✅         |
+| Azure Storage                     | No ❌          |
 
 [Reach out to us](#feedback) if you want to request more platforms.
 

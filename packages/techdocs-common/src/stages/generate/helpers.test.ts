@@ -303,7 +303,7 @@ describe('helpers', () => {
       const updatedMkdocsYml = await fs.readFile('/mkdocs.yml');
 
       expect(updatedMkdocsYml.toString()).toContain(
-        "repo_url: 'https://github.com/backstage/backstage'",
+        'repo_url: https://github.com/backstage/backstage',
       );
     });
 
@@ -322,10 +322,10 @@ describe('helpers', () => {
       const updatedMkdocsYml = await fs.readFile('/mkdocs_with_repo_url.yml');
 
       expect(updatedMkdocsYml.toString()).toContain(
-        "repo_url: 'https://github.com/backstage/backstage'",
+        'repo_url: https://github.com/backstage/backstage',
       );
       expect(updatedMkdocsYml.toString()).not.toContain(
-        "repo_url: 'https://github.com/neworg/newrepo'",
+        'repo_url: https://github.com/neworg/newrepo',
       );
     });
   });

@@ -127,7 +127,7 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
 
   const [showFilters, toggleFilters] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState<FiltersState>({
-    selected: 'All',
+    selected: '',
     checked: [],
   });
 
@@ -146,7 +146,7 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
       // apply filters
 
       // filter on selected
-      if (selectedFilters.selected !== 'All') {
+      if (selectedFilters.selected !== '') {
         withFilters = results.filter((result: Result) =>
           selectedFilters.selected.includes(result.kind),
         );
@@ -192,7 +192,7 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
 
   const resetFilters = () => {
     setSelectedFilters({
-      selected: 'All',
+      selected: '',
       checked: [],
     });
   };
@@ -259,7 +259,7 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
                 searchQuery={searchQuery}
                 numberOfResults={filteredResults.length}
                 numberOfSelectedFilters={
-                  (selectedFilters.selected !== 'All' ? 1 : 0) +
+                  (selectedFilters.selected !== '' ? 1 : 0) +
                   selectedFilters.checked.length
                 }
                 handleToggleFilters={() => toggleFilters(!showFilters)}

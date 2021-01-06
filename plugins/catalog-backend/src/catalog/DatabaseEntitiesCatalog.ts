@@ -205,7 +205,7 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
         }
       }
 
-      if (options?.outputEntities) {
+      if (options?.outputEntities && responses.length > 0) {
         const writtenEntities = await this.database.entities(
           tx,
           EntityFilters.ofMatchers({
@@ -285,7 +285,8 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
         // instead and call a dedicated batch update database method
         toUpdate.push(request);
       } else {
-        toIgnore.push(request);
+        // Use the existing entity to ensure that we're able to read it back by uid if needed
+        toIgnore.push({ ...request, entity: oldEntity });
       }
     }
 

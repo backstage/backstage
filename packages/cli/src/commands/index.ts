@@ -45,9 +45,12 @@ export function registerCommands(program: CommanderStatic) {
     .action(lazy(() => import('./backend/build').then(m => m.default)));
 
   program
-    .command('backend:__experimental__bundle__', { hidden: true })
-    .description('Bundle all backend packages into dist-workspace')
-    .option('--build', 'Build packages before packing them into the image')
+    .command('backend:bundle')
+    .description('Bundle the backend into a deployment archive')
+    .option(
+      '--build-dependencies',
+      'Build all local package dependencies before bundling the backend',
+    )
     .action(lazy(() => import('./backend/bundle').then(m => m.default)));
 
   program

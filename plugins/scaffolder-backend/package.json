@@ -59,12 +59,14 @@
   },
   "devDependencies": {
     "@backstage/cli": "^0.4.3",
+    "@backstage/test-utils": "^0.1.5",
     "@octokit/types": "^5.4.1",
     "@types/fs-extra": "^9.0.1",
     "@types/git-url-parse": "^9.0.0",
     "@types/supertest": "^2.0.8",
     "supertest": "^4.0.2",
-    "yaml": "^1.10.0"
+    "yaml": "^1.10.0",
+    "msw": "^0.21.2"
   },
   "files": [
     "dist",

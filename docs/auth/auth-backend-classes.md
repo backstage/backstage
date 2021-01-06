@@ -61,6 +61,19 @@ If your authentication provider is any of the above mentioned providers, you can
 configure them by setting the right variables in `app-config.yaml` under the
 `auth` section.
 
+### SAML
+
+The SAML Provider is currently under development. Additional validation and
+profile handling is still required before use in production.
+
+To configure the SAML Auth provider, look at the configuration parameters
+supported by
+[Passport-SAML](https://github.com/node-saml/passport-saml#config-parameter-details)
+under the `auth.providers.saml` key
+
+For security reasons, validate that the response from the IdP is indeed signed
+by also providing the `cert` configuration.
+
 ### Configuration
 
 Each authentication provider (except SAML) needs five parameters: an OAuth
@@ -96,6 +109,11 @@ auth:
       development:
         clientId:
           $env:
+    saml:
+      entryPoint:
+        $env: AUTH_SAML_ENTRY_POINT
+      issuer:
+        $env: AUTH_SAML_ISSUER
             ...
 ```
 
