@@ -61,7 +61,7 @@ export type CostInsightsApi = {
    * if a user has multiple groups, they are able to switch between groups to see costs for each.
    *
    * This method should be removed once the Backstage identity plugin provides the same concept.
-   * 
+   *
    * @param userId The login id for the current user
    */
   getUserGroups(userId: string): Promise<Group[]>;
