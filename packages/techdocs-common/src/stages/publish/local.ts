@@ -84,8 +84,8 @@ export class LocalPublish implements PublisherBase {
           .catch(reason => {
             reject(reason);
           });
+        fs.remove(directory);
       });
-      fs.remove(directory);
     });
   }
 
