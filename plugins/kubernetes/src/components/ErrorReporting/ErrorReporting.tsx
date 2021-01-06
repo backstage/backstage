@@ -15,7 +15,7 @@
  */
 import * as React from 'react';
 import { Table, TableColumn, InfoCard } from '@backstage/core';
-import { DetectedError, DetectedErrorsByCluster } from '../../types/types';
+import { DetectedError, DetectedErrorsByCluster } from '../../error-detection';
 import { Chip, Typography } from '@material-ui/core';
 
 type ErrorReportingProps = {

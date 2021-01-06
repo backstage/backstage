@@ -36,23 +36,3 @@ export interface GroupedResponses extends DeploymentResources {
   configMaps: V1ConfigMap[];
   ingresses: ExtensionsV1beta1Ingress[];
 }
-
-// Higher is more sever, but it's relative
-export type ErrorSeverity = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
-
-export type ErrorDetectable = V1Pod | V1Deployment | V1HorizontalPodAutoscaler;
-
-export type ErrorDetectableKind =
-  | 'Pod'
-  | 'Deployment'
-  | 'HorizontalPodAutoscaler';
-
-export type DetectedErrorsByCluster = Map<string, DetectedError[]>;
-
-export interface DetectedError {
-  severity: ErrorSeverity;
-  cluster: string;
-  kind: ErrorDetectableKind;
-  names: string[];
-  message: string[];
-}
