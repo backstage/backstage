@@ -50,6 +50,7 @@
           "features/software-catalog/well-known-relations",
           "features/software-catalog/extending-the-model",
           "features/software-catalog/external-integrations",
+          "features/software-catalog/kubernetes-in-backstage",
           "features/software-catalog/software-catalog-api"
         ]
       },
