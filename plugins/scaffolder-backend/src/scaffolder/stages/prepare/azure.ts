@@ -18,10 +18,9 @@ import fs from 'fs-extra';
 import path from 'path';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { parseLocationAnnotation } from '../helpers';
-import { InputError } from '@backstage/backend-common';
+import { InputError, Git } from '@backstage/backend-common';
 import { PreparerBase, PreparerOptions } from './types';
 import GitUriParser from 'git-url-parse';
-import { Clone, Cred } from 'nodegit';
 import { Config } from '@backstage/config';
 
 export class AzurePreparer implements PreparerBase {
@@ -38,6 +37,7 @@ export class AzurePreparer implements PreparerBase {
   ): Promise<string> {
     const { protocol, location } = parseLocationAnnotation(template);
     const workingDirectory = opts?.workingDirectory ?? os.tmpdir();
+    const { logger } = opts;
 
     if (!['azure/api', 'url'].includes(protocol)) {
       throw new InputError(
@@ -57,19 +57,20 @@ export class AzurePreparer implements PreparerBase {
       template.spec.path ?? '.',
     );
 
-    const options = this.privateToken
-      ? {
-          fetchOpts: {
-            callbacks: {
-              credentials: () =>
-                // Username can anything but the empty string according to: https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=preview-page#use-a-pat
-                Cred.userpassPlaintextNew('notempty', this.privateToken),
-            },
-          },
-        }
-      : {};
+    // Username can be anything but the empty string according to:
+    // https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=preview-page#use-a-pat
+    const git = this.privateToken
+      ? Git.fromAuth({
+          password: this.privateToken,
+          username: 'notempty',
+          logger,
+        })
+      : Git.fromAuth({ logger });
 
-    await Clone.clone(repositoryCheckoutUrl, tempDir, options);
+    await git.clone({
+      url: repositoryCheckoutUrl,
+      dir: tempDir,
+    });
 
     return path.resolve(tempDir, templateDirectory);
   }

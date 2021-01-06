@@ -1,5 +1,11 @@
 # @backstage/theme
 
+## 0.2.2
+
+### Patch Changes
+
+- 1665ae8bb: Add a little more padding in dense tables
+
 ## 0.2.1
 
 ### Patch Changes

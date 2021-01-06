@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React from 'react';
 import { Page } from '../Page';
 import { Header } from '../Header';
 import { Content } from '../Content/Content';
@@ -32,12 +32,12 @@ export type Props = SignInPageProps & {
   align?: 'center' | 'left';
 };
 
-export const SignInPage: FC<Props> = ({
+export const SignInPage = ({
   onResult,
   providers = [],
   title,
   align = 'left',
-}) => {
+}: Props) => {
   const configApi = useApi(configApiRef);
   const classes = useStyles();
 

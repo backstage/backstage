@@ -16,6 +16,7 @@
 
 import express from 'express';
 import {
+  SamlConfig,
   Strategy as SamlStrategy,
   Profile as SamlProfile,
   VerifyWithoutRequest,
@@ -112,27 +113,31 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
   }
 }
 
-type SAMLProviderOptions = {
-  entryPoint: string;
-  issuer: string;
-  path: string;
+type SAMLProviderOptions = SamlConfig & {
   tokenIssuer: TokenIssuer;
   appUrl: string;
 };
 
+type SignatureAlgorithm = 'sha1' | 'sha256' | 'sha512';
+
 export const createSamlProvider: AuthProviderFactory = ({
+  providerId,
   globalConfig,
   config,
   tokenIssuer,
 }) => {
-  const url = new URL(globalConfig.baseUrl);
-  const providerId = 'saml';
-  const entryPoint = config.getString('entryPoint');
-  const issuer = config.getString('issuer');
   const opts = {
-    entryPoint,
-    issuer,
-    path: `${url.pathname}/${providerId}/handler/frame`,
+    callbackUrl: `${globalConfig.baseUrl}/${providerId}/handler/frame`,
+    entryPoint: config.getString('entryPoint'),
+    issuer: config.getString('issuer'),
+    cert: config.getOptionalString('cert'),
+    privateCert: config.getOptionalString('privateKey'),
+    decryptionPvk: config.getOptionalString('decryptionPvk'),
+    signatureAlgorithm: config.getOptionalString('signatureAlgorithm') as
+      | SignatureAlgorithm
+      | undefined,
+    digestAlgorithm: config.getOptionalString('digestAlgorithm'),
+
     tokenIssuer,
     appUrl: globalConfig.appUrl,
   };

@@ -45,7 +45,6 @@ export const EmptyStateImage = ({ missing }: Props) => {
           src={missingAnnotation}
           className={classes.generalImg}
           alt="annotation is missing"
-          data-testid="missingAnnotation"
         />
       );
     case 'info':

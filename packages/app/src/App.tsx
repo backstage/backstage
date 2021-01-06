@@ -21,7 +21,7 @@ import {
   SignInPage,
   createRouteRef,
 } from '@backstage/core';
-import React, { FC } from 'react';
+import React from 'react';
 import Root from './components/Root';
 import * as plugins from './plugins';
 import { apis } from './apis';
@@ -34,6 +34,7 @@ import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
 import { Router as LighthouseRouter } from '@backstage/plugin-lighthouse';
 import { Router as RegisterComponentRouter } from '@backstage/plugin-register-component';
 import { Router as SettingsRouter } from '@backstage/plugin-user-settings';
+import { Router as ImportComponentRouter } from '@backstage/plugin-catalog-import';
 import { Route, Routes, Navigate } from 'react-router';
 
 import { EntityPage } from './components/catalog/EntityPage';
@@ -68,6 +69,10 @@ const AppRoutes = () => (
   <Routes>
     <Navigate key="/" to="/catalog" />
     <Route
+      path="/catalog-import/*"
+      element={<ImportComponentRouter catalogRouteRef={catalogRouteRef} />}
+    />
+    <Route
       path={`${catalogRouteRef.path}/*`}
       element={<CatalogRouter EntityPage={EntityPage} />}
     />
@@ -87,7 +92,7 @@ const AppRoutes = () => (
   </Routes>
 );
 
-const App: FC<{}> = () => (
+const App = () => (
   <AppProvider>
     <AlertDisplay />
     <OAuthRequestDialog />

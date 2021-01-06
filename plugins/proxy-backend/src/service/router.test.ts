@@ -198,4 +198,74 @@ describe('buildMiddleware', () => {
       'X-Auth-Request-User',
     );
   });
+
+  it('responds default headers', async () => {
+    buildMiddleware('/api/', logger, 'test', {
+      target: 'http://mocked',
+    });
+
+    expect(createProxyMiddleware).toHaveBeenCalledTimes(1);
+
+    const config = mockCreateProxyMiddleware.mock
+      .calls[0][1] as ProxyMiddlewareConfig;
+
+    const testClientResponse = {
+      headers: {
+        'cache-control': 'value',
+        'content-language': 'value',
+        'content-length': 'value',
+        'content-type': 'value',
+        expires: 'value',
+        'last-modified': 'value',
+        pragma: 'value',
+        'set-cookie': ['value'],
+      },
+    } as Partial<http.IncomingMessage>;
+
+    expect(config).toBeDefined();
+    expect(config.onProxyReq).toBeDefined();
+
+    config.onProxyRes!(
+      testClientResponse as http.IncomingMessage,
+      {} as http.IncomingMessage,
+      {} as http.ServerResponse,
+    );
+
+    expect(Object.keys(testClientResponse.headers!)).toEqual([
+      'cache-control',
+      'content-language',
+      'content-length',
+      'content-type',
+      'expires',
+      'last-modified',
+      'pragma',
+    ]);
+  });
+
+  it('responds configured headers', async () => {
+    buildMiddleware('/api/', logger, 'test', {
+      target: 'http://mocked',
+      allowedHeaders: ['set-cookie'],
+    });
+
+    expect(createProxyMiddleware).toHaveBeenCalledTimes(1);
+
+    const config = mockCreateProxyMiddleware.mock
+      .calls[0][1] as ProxyMiddlewareConfig;
+
+    const testClientResponse = {
+      headers: {
+        'set-cookie': [],
+        'x-auth-request-user': 'asd',
+      },
+    } as Partial<http.IncomingMessage>;
+
+    config.onProxyRes!(
+      testClientResponse as http.IncomingMessage,
+      {} as http.IncomingMessage,
+      {} as http.ServerResponse,
+    );
+
+    expect(Object.keys(testClientResponse.headers!)).toEqual(['set-cookie']);
+  });
 });

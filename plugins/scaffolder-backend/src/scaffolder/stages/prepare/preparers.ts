@@ -28,6 +28,7 @@ import { FilePreparer } from './file';
 import { GitlabPreparer } from './gitlab';
 import { AzurePreparer } from './azure';
 import { GithubPreparer } from './github';
+import { BitbucketPreparer } from './bitbucket';
 
 export class Preparers implements PreparerBuilder {
   private preparerMap = new Map<RemoteProtocol, PreparerBase>();
@@ -50,7 +51,17 @@ export class Preparers implements PreparerBuilder {
         if (detected) {
           return detected;
         }
-        throw new Error(`No preparer integration found for url "${location}"`);
+        if (type) {
+          throw new Error(
+            `No preparer configuration available for type '${type}' with url "${location}". ` +
+              "Make sure you've added appropriate configuration in the 'scaffolder' configuration section",
+          );
+        } else {
+          throw new Error(
+            `Failed to detect preparer type. Unable to determine integration type for location "${location}". ` +
+              "Please add appropriate configuration to the 'integrations' configuration section",
+          );
+        }
       }
       throw new Error(`No preparer registered for type: "${protocol}"`);
     }
@@ -69,11 +80,13 @@ export class Preparers implements PreparerBuilder {
     const filePreparer = new FilePreparer();
     const gitlabPreparer = new GitlabPreparer(config);
     const azurePreparer = new AzurePreparer(config);
+    const bitbucketPreparer = new BitbucketPreparer(config);
 
     preparers.register('file', filePreparer);
     preparers.register('gitlab', gitlabPreparer);
     preparers.register('gitlab/api', gitlabPreparer);
     preparers.register('azure/api', azurePreparer);
+    preparers.register('bitbucket', bitbucketPreparer);
 
     const githubConfig = config.getOptionalConfig('scaffolder.github');
     if (githubConfig) {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { GroupEntity } from '@backstage/catalog-model';
+import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 
 export function buildOrgHierarchy(groups: GroupEntity[]) {
   const groupsByName = new Map(groups.map(g => [g.metadata.name, g]));
@@ -35,61 +35,44 @@ export function buildOrgHierarchy(groups: GroupEntity[]) {
   }
 
   //
-  // Make sure that g.descendants is complete
+  // Make sure that g.children.parent is g
   //
 
-  function visitDescendants(current: GroupEntity): string[] {
-    if (current.spec.descendants.length) {
-      return current.spec.descendants;
-    }
-
-    const accumulator = new Set<string>();
-    for (const childName of current.spec.children) {
-      accumulator.add(childName);
+  for (const group of groups) {
+    const selfName = group.metadata.name;
+    for (const childName of group.spec.children) {
       const child = groupsByName.get(childName);
-      if (child) {
-        for (const d of visitDescendants(child)) {
-          accumulator.add(d);
+      if (child && !child.spec.parent) {
+        child.spec.parent = selfName;
+      }
+    }
+  }
+}
+
+// Ensure that users have their transitive group memberships. Requires that
+// the groups were previously processed with buildOrgHierarchy()
+export function buildMemberOf(groups: GroupEntity[], users: UserEntity[]) {
+  const groupsByName = new Map(groups.map(g => [g.metadata.name, g]));
+
+  users.forEach(user => {
+    const transitiveMemberOf = new Set<string>();
+
+    const todo = [...user.spec.memberOf];
+    for (;;) {
+      const current = todo.pop();
+      if (!current) {
+        break;
+      }
+
+      if (!transitiveMemberOf.has(current)) {
+        transitiveMemberOf.add(current);
+        const group = groupsByName.get(current);
+        if (group?.spec.parent) {
+          todo.push(group.spec.parent);
         }
       }
     }
 
-    const descendants = Array.from(accumulator);
-    current.spec.descendants = descendants;
-    return descendants;
-  }
-
-  for (const group of groups) {
-    visitDescendants(group);
-  }
-
-  //
-  // Make sure that g.ancestors is complete
-  //
-
-  function visitAncestors(current: GroupEntity): string[] {
-    if (current.spec.ancestors.length) {
-      return current.spec.ancestors;
-    }
-
-    let ancestors: string[];
-    const parentName = current.spec.parent;
-    if (!parentName) {
-      ancestors = [];
-    } else {
-      const parent = groupsByName.get(parentName);
-      if (parent) {
-        ancestors = [parentName, ...visitAncestors(parent)];
-      } else {
-        ancestors = [parentName];
-      }
-    }
-
-    current.spec.ancestors = ancestors;
-    return ancestors;
-  }
-
-  for (const group of groups) {
-    visitAncestors(group);
-  }
+    user.spec.memberOf = [...transitiveMemberOf];
+  });
 }

@@ -15,16 +15,17 @@
  */
 
 jest.mock('@octokit/rest');
-jest.mock('nodegit');
+jest.mock('./helpers');
 
 import { Octokit } from '@octokit/rest';
-import * as NodeGit from 'nodegit';
 import {
   OctokitResponse,
   ReposCreateInOrgResponseData,
   UsersGetByUsernameResponseData,
 } from '@octokit/types';
 import { GithubPublisher } from './github';
+import { initRepoAndPush } from './helpers';
+import { getVoidLogger } from '@backstage/backend-common';
 
 const { mockGithubClient } = require('@octokit/rest') as {
   mockGithubClient: {
@@ -34,26 +35,8 @@ const { mockGithubClient } = require('@octokit/rest') as {
   };
 };
 
-const {
-  Repository,
-  mockRepo,
-  mockIndex,
-  Signature,
-  Remote,
-  mockRemote,
-  Cred,
-} = require('nodegit') as {
-  Repository: jest.Mocked<{ init: any }>;
-  Signature: jest.Mocked<{ now: any }>;
-  Cred: jest.Mocked<{ userpassPlaintextNew: any }>;
-  Remote: jest.Mocked<{ create: any }>;
-
-  mockIndex: jest.Mocked<NodeGit.Index>;
-  mockRepo: jest.Mocked<NodeGit.Repository>;
-  mockRemote: jest.Mocked<NodeGit.Remote>;
-};
-
 describe('GitHub Publisher', () => {
+  const logger = getVoidLogger();
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -69,19 +52,30 @@ describe('GitHub Publisher', () => {
       it('should use octokit to create a repo in an organisation if the organisation property is set', async () => {
         mockGithubClient.repos.createInOrg.mockResolvedValue({
           data: {
-            clone_url: 'mockclone',
+            clone_url: 'https://github.com/backstage/backstage.git',
           },
         } as OctokitResponse<ReposCreateInOrgResponseData>);
+        mockGithubClient.users.getByUsername.mockResolvedValue({
+          data: {
+            type: 'Organization',
+          },
+        } as OctokitResponse<UsersGetByUsernameResponseData>);
 
-        await publisher.publish({
+        const result = await publisher.publish({
           values: {
             storePath: 'blam/test',
             owner: 'bob',
             access: 'blam/team',
           },
           directory: '/tmp/test',
+          logger,
         });
 
+        expect(result).toEqual({
+          remoteUrl: 'https://github.com/backstage/backstage.git',
+          catalogInfoUrl:
+            'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
+        });
         expect(mockGithubClient.repos.createInOrg).toHaveBeenCalledWith({
           org: 'blam',
           name: 'test',
@@ -97,12 +91,18 @@ describe('GitHub Publisher', () => {
           repo: 'test',
           permission: 'admin',
         });
+        expect(initRepoAndPush).toHaveBeenCalledWith({
+          dir: '/tmp/test',
+          remoteUrl: 'https://github.com/backstage/backstage.git',
+          auth: { username: 'abc', password: 'x-oauth-basic' },
+          logger,
+        });
       });
 
       it('should use octokit to create a repo in the authed user if the organisation property is not set', async () => {
         mockGithubClient.repos.createForAuthenticatedUser.mockResolvedValue({
           data: {
-            clone_url: 'mockclone',
+            clone_url: 'https://github.com/backstage/backstage.git',
           },
         } as OctokitResponse<ReposCreateInOrgResponseData>);
         mockGithubClient.users.getByUsername.mockResolvedValue({
@@ -111,15 +111,21 @@ describe('GitHub Publisher', () => {
           },
         } as OctokitResponse<UsersGetByUsernameResponseData>);
 
-        await publisher.publish({
+        const result = await publisher.publish({
           values: {
             storePath: 'blam/test',
             owner: 'bob',
             access: 'blam',
           },
           directory: '/tmp/test',
+          logger,
         });
 
+        expect(result).toEqual({
+          remoteUrl: 'https://github.com/backstage/backstage.git',
+          catalogInfoUrl:
+            'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
+        });
         expect(
           mockGithubClient.repos.createForAuthenticatedUser,
         ).toHaveBeenCalledWith({
@@ -127,13 +133,20 @@ describe('GitHub Publisher', () => {
           private: false,
         });
         expect(mockGithubClient.repos.addCollaborator).not.toHaveBeenCalled();
+
+        expect(initRepoAndPush).toHaveBeenCalledWith({
+          dir: '/tmp/test',
+          remoteUrl: 'https://github.com/backstage/backstage.git',
+          auth: { username: 'abc', password: 'x-oauth-basic' },
+          logger,
+        });
       });
     });
 
     it('should invite other user in the authed user', async () => {
       mockGithubClient.repos.createForAuthenticatedUser.mockResolvedValue({
         data: {
-          clone_url: 'mockclone',
+          clone_url: 'https://github.com/backstage/backstage.git',
         },
       } as OctokitResponse<ReposCreateInOrgResponseData>);
       mockGithubClient.users.getByUsername.mockResolvedValue({
@@ -142,7 +155,7 @@ describe('GitHub Publisher', () => {
         },
       } as OctokitResponse<UsersGetByUsernameResponseData>);
 
-      await publisher.publish({
+      const result = await publisher.publish({
         values: {
           storePath: 'blam/test',
           owner: 'bob',
@@ -150,8 +163,14 @@ describe('GitHub Publisher', () => {
           description: 'description',
         },
         directory: '/tmp/test',
+        logger,
       });
 
+      expect(result).toEqual({
+        remoteUrl: 'https://github.com/backstage/backstage.git',
+        catalogInfoUrl:
+          'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
+      });
       expect(
         mockGithubClient.repos.createForAuthenticatedUser,
       ).toHaveBeenCalledWith({
@@ -165,112 +184,11 @@ describe('GitHub Publisher', () => {
         username: 'bob',
         permission: 'admin',
       });
-    });
-
-    describe('publish: createGitDirectory', () => {
-      const values = {
-        storePath: 'blam/test',
-        owner: 'lols',
-        access: 'lols',
-      };
-
-      const mockDir = '/tmp/test/dir';
-
-      mockGithubClient.repos.createInOrg.mockResolvedValue({
-        data: {
-          clone_url: 'mockclone',
-        },
-      } as OctokitResponse<ReposCreateInOrgResponseData>);
-      mockGithubClient.users.getByUsername.mockResolvedValue({
-        data: {
-          type: 'Organization',
-        },
-      } as OctokitResponse<UsersGetByUsernameResponseData>);
-
-      it('should call init on the repo with the directory', async () => {
-        await publisher.publish({
-          values,
-          directory: mockDir,
-        });
-
-        expect(Repository.init).toHaveBeenCalledWith(mockDir, 0);
-      });
-
-      it('should call refresh index on the index and write the new files', async () => {
-        await publisher.publish({
-          values,
-          directory: mockDir,
-        });
-
-        expect(mockRepo.refreshIndex).toHaveBeenCalled();
-      });
-
-      it('should call add all files and write', async () => {
-        await publisher.publish({
-          values,
-          directory: mockDir,
-        });
-
-        expect(mockIndex.addAll).toHaveBeenCalled();
-        expect(mockIndex.write).toHaveBeenCalled();
-        expect(mockIndex.writeTree).toHaveBeenCalled();
-      });
-
-      it('should create a commit with on head with the right name and commiter', async () => {
-        const mockSignature = { mockSignature: 'bloblly' };
-        Signature.now.mockReturnValue(mockSignature);
-
-        await publisher.publish({
-          values,
-          directory: mockDir,
-        });
-
-        expect(Signature.now).toHaveBeenCalledTimes(2);
-        expect(Signature.now).toHaveBeenCalledWith(
-          'Scaffolder',
-          'scaffolder@backstage.io',
-        );
-
-        expect(mockRepo.createCommit).toHaveBeenCalledWith(
-          'HEAD',
-          mockSignature,
-          mockSignature,
-          'initial commit',
-          'mockoid',
-          [],
-        );
-      });
-
-      it('creates a remote with the repo and remote', async () => {
-        await publisher.publish({
-          values,
-          directory: mockDir,
-        });
-
-        expect(Remote.create).toHaveBeenCalledWith(
-          mockRepo,
-          'origin',
-          'mockclone',
-        );
-      });
-
-      it('shoud push to the remote repo', async () => {
-        await publisher.publish({
-          values,
-          directory: mockDir,
-        });
-
-        const [remotes, { callbacks }] = mockRemote.push.mock
-          .calls[0] as NodeGit.PushOptions[];
-
-        expect(remotes).toEqual(['refs/heads/master:refs/heads/master']);
-
-        callbacks?.credentials?.();
-
-        expect(Cred.userpassPlaintextNew).toHaveBeenCalledWith(
-          'abc',
-          'x-oauth-basic',
-        );
+      expect(initRepoAndPush).toHaveBeenCalledWith({
+        dir: '/tmp/test',
+        remoteUrl: 'https://github.com/backstage/backstage.git',
+        auth: { username: 'abc', password: 'x-oauth-basic' },
+        logger,
       });
     });
   });
@@ -285,7 +203,7 @@ describe('GitHub Publisher', () => {
     it('creates a private repository in the organization with visibility set to internal', async () => {
       mockGithubClient.repos.createInOrg.mockResolvedValue({
         data: {
-          clone_url: 'mockclone',
+          clone_url: 'https://github.com/backstage/backstage.git',
         },
       } as OctokitResponse<ReposCreateInOrgResponseData>);
       mockGithubClient.users.getByUsername.mockResolvedValue({
@@ -294,20 +212,32 @@ describe('GitHub Publisher', () => {
         },
       } as OctokitResponse<UsersGetByUsernameResponseData>);
 
-      await publisher.publish({
+      const result = await publisher.publish({
         values: {
           isOrg: true,
           storePath: 'blam/test',
           owner: 'bob',
         },
         directory: '/tmp/test',
+        logger,
       });
 
+      expect(result).toEqual({
+        remoteUrl: 'https://github.com/backstage/backstage.git',
+        catalogInfoUrl:
+          'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
+      });
       expect(mockGithubClient.repos.createInOrg).toHaveBeenCalledWith({
         org: 'blam',
         name: 'test',
         private: true,
         visibility: 'internal',
+      });
+      expect(initRepoAndPush).toHaveBeenCalledWith({
+        dir: '/tmp/test',
+        remoteUrl: 'https://github.com/backstage/backstage.git',
+        auth: { username: 'abc', password: 'x-oauth-basic' },
+        logger,
       });
     });
   });
@@ -322,7 +252,7 @@ describe('GitHub Publisher', () => {
     it('creates a private repository', async () => {
       mockGithubClient.repos.createForAuthenticatedUser.mockResolvedValue({
         data: {
-          clone_url: 'mockclone',
+          clone_url: 'https://github.com/backstage/backstage.git',
         },
       } as OctokitResponse<ReposCreateInOrgResponseData>);
       mockGithubClient.users.getByUsername.mockResolvedValue({
@@ -331,19 +261,31 @@ describe('GitHub Publisher', () => {
         },
       } as OctokitResponse<UsersGetByUsernameResponseData>);
 
-      await publisher.publish({
+      const result = await publisher.publish({
         values: {
           storePath: 'blam/test',
           owner: 'bob',
         },
         directory: '/tmp/test',
+        logger,
       });
 
+      expect(result).toEqual({
+        remoteUrl: 'https://github.com/backstage/backstage.git',
+        catalogInfoUrl:
+          'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
+      });
       expect(
         mockGithubClient.repos.createForAuthenticatedUser,
       ).toHaveBeenCalledWith({
         name: 'test',
         private: true,
+      });
+      expect(initRepoAndPush).toHaveBeenCalledWith({
+        dir: '/tmp/test',
+        remoteUrl: 'https://github.com/backstage/backstage.git',
+        auth: { username: 'abc', password: 'x-oauth-basic' },
+        logger,
       });
     });
   });

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { JsonObject } from '@backstage/config';
+import { JsonObject, JsonValue } from '@backstage/config';
 
 export type ReadFileFunc = (path: string) => Promise<string>;
 export type ReadSecretFunc = (
   path: string,
   desc: JsonObject,
-) => Promise<string | undefined>;
+) => Promise<JsonValue | undefined>;
 export type SkipFunc = (path: string) => boolean;
 
 /**
@@ -28,7 +28,6 @@ export type SkipFunc = (path: string) => boolean;
  */
 export type ReaderContext = {
   env: { [name in string]?: string };
-  skip: SkipFunc;
   readFile: ReadFileFunc;
   readSecret: ReadSecretFunc;
 };

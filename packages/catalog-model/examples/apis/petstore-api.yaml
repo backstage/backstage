@@ -9,7 +9,7 @@ metadata:
 spec:
   type: openapi
   lifecycle: experimental
-  owner: pets@example.com
+  owner: team-c
   definition: |
     openapi: "3.0.0"
     info:

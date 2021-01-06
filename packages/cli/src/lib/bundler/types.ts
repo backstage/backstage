@@ -17,27 +17,29 @@
 import { AppConfig, Config } from '@backstage/config';
 import { BundlingPathsOptions } from './paths';
 import { ParallelOption } from '../parallel';
+import { ConfigSchema } from '@backstage/config-loader';
 
 export type BundlingOptions = {
   checksEnabled: boolean;
   isDev: boolean;
-  config: Config;
-  appConfigs: AppConfig[];
+  frontendConfig: Config;
+  frontendAppConfigs: AppConfig[];
   baseUrl: URL;
   parallel?: ParallelOption;
 };
 
 export type ServeOptions = BundlingPathsOptions & {
   checksEnabled: boolean;
-  config: Config;
-  appConfigs: AppConfig[];
+  frontendConfig: Config;
+  frontendAppConfigs: AppConfig[];
 };
 
 export type BuildOptions = BundlingPathsOptions & {
   statsJsonEnabled: boolean;
   parallel?: ParallelOption;
-  config: Config;
-  appConfigs: AppConfig[];
+  schema?: ConfigSchema;
+  frontendConfig: Config;
+  frontendAppConfigs: AppConfig[];
 };
 
 export type BackendBundlingOptions = {
@@ -50,4 +52,9 @@ export type BackendBundlingOptions = {
 export type BackendServeOptions = BundlingPathsOptions & {
   checksEnabled: boolean;
   inspectEnabled: boolean;
+};
+
+export type LernaPackage = {
+  name: string;
+  location: string;
 };

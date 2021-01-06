@@ -15,6 +15,7 @@
  */
 
 import React, { ReactNode, PropsWithChildren } from 'react';
+import classnames from 'classnames';
 import { Box, Divider, Typography } from '@material-ui/core';
 import { useTooltipStyles as useStyles } from '../../utils/styles';
 
@@ -35,6 +36,9 @@ export const BarChartTooltip = ({
   children,
 }: PropsWithChildren<BarChartTooltipProps>) => {
   const classes = useStyles();
+  const titleClassName = classnames(classes.truncate, {
+    [classes.maxWidth]: topRight === undefined,
+  });
 
   return (
     <Box className={classes.tooltip} display="flex" flexDirection="column">
@@ -47,17 +51,19 @@ export const BarChartTooltip = ({
         pt={2}
       >
         <Box display="flex" flexDirection="column">
-          <Typography variant="h6">{title}</Typography>
+          <Typography className={titleClassName} variant="h6">
+            {title}
+          </Typography>
           {subtitle && (
             <Typography className={classes.subtitle} variant="subtitle1">
               {subtitle}
             </Typography>
           )}
         </Box>
-        {topRight}
+        {topRight && <Box ml={2}>{topRight}</Box>}
       </Box>
       {content && (
-        <Box px={2} pt={2}>
+        <Box px={2} pt={2} className={classes.maxWidth}>
           <Typography variant="body1" paragraph>
             {content}
           </Typography>

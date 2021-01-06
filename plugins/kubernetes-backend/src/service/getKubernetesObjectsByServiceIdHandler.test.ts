@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import { handleGetKubernetesObjectsByServiceId } from './getKubernetesObjectsByServiceIdHandler';
+import { handleGetKubernetesObjectsForService } from './getKubernetesObjectsForServiceHandler';
 import { getVoidLogger } from '@backstage/backend-common';
-import { ClusterDetails } from '..';
+import { ObjectFetchParams } from '..';
 
 const TEST_SERVICE_ID = 'my-service';
 
-const fetchObjectsByServiceId = jest.fn();
+const fetchObjectsForService = jest.fn();
 
 const getClustersByServiceId = jest.fn();
 
 const mockFetch = (mock: jest.Mock) => {
-  mock.mockImplementation((serviceId: string, clusterDetails: ClusterDetails) =>
+  mock.mockImplementation((params: ObjectFetchParams) =>
     Promise.resolve({
       errors: [],
       responses: [
@@ -34,7 +34,7 @@ const mockFetch = (mock: jest.Mock) => {
           resources: [
             {
               metadata: {
-                name: `my-pods-${serviceId}-${clusterDetails.name}`,
+                name: `my-pods-${params.serviceId}-${params.clusterDetails.name}`,
               },
             },
           ],
@@ -44,7 +44,7 @@ const mockFetch = (mock: jest.Mock) => {
           resources: [
             {
               metadata: {
-                name: `my-configmaps-${serviceId}-${clusterDetails.name}`,
+                name: `my-configmaps-${params.serviceId}-${params.clusterDetails.name}`,
               },
             },
           ],
@@ -54,7 +54,7 @@ const mockFetch = (mock: jest.Mock) => {
           resources: [
             {
               metadata: {
-                name: `my-services-${serviceId}-${clusterDetails.name}`,
+                name: `my-services-${params.serviceId}-${params.clusterDetails.name}`,
               },
             },
           ],
@@ -64,7 +64,7 @@ const mockFetch = (mock: jest.Mock) => {
   );
 };
 
-describe('handleGetKubernetesObjectsByServiceId', () => {
+describe('handleGetKubernetesObjectsForService', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
@@ -79,22 +79,39 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
       ]),
     );
 
-    mockFetch(fetchObjectsByServiceId);
+    mockFetch(fetchObjectsForService);
 
-    const result = await handleGetKubernetesObjectsByServiceId(
+    const result = await handleGetKubernetesObjectsForService(
       TEST_SERVICE_ID,
       {
-        fetchObjectsByServiceId,
+        fetchObjectsForService: fetchObjectsForService,
       },
       {
         getClustersByServiceId,
       },
       getVoidLogger(),
-      {},
+      {
+        entity: {
+          apiVersion: 'backstage.io/v1beta1',
+          kind: 'Component',
+          metadata: {
+            name: 'test-component',
+            annotations: {
+              'backstage.io/kubernetes-labels-selector':
+                'backstage.io/test-label=test-component',
+            },
+          },
+          spec: {
+            type: 'service',
+            lifecycle: 'production',
+            owner: 'joe',
+          },
+        },
+      },
     );
 
     expect(getClustersByServiceId.mock.calls.length).toBe(1);
-    expect(fetchObjectsByServiceId.mock.calls.length).toBe(1);
+    expect(fetchObjectsForService.mock.calls.length).toBe(1);
     expect(result).toStrictEqual({
       items: [
         {
@@ -153,12 +170,12 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
       ]),
     );
 
-    mockFetch(fetchObjectsByServiceId);
+    mockFetch(fetchObjectsForService);
 
-    const result = await handleGetKubernetesObjectsByServiceId(
+    const result = await handleGetKubernetesObjectsForService(
       TEST_SERVICE_ID,
       {
-        fetchObjectsByServiceId,
+        fetchObjectsForService: fetchObjectsForService,
       },
       {
         getClustersByServiceId,
@@ -168,11 +185,27 @@ describe('handleGetKubernetesObjectsByServiceId', () => {
         auth: {
           google: 'google_token_123',
         },
+        entity: {
+          apiVersion: 'backstage.io/v1beta1',
+          kind: 'Component',
+          metadata: {
+            name: 'test-component',
+            annotations: {
+              'backstage.io/kubernetes-labels-selector':
+                'backstage.io/test-label=test-component',
+            },
+          },
+          spec: {
+            type: 'service',
+            lifecycle: 'production',
+            owner: 'joe',
+          },
+        },
       },
     );
 
     expect(getClustersByServiceId.mock.calls.length).toBe(1);
-    expect(fetchObjectsByServiceId.mock.calls.length).toBe(2);
+    expect(fetchObjectsForService.mock.calls.length).toBe(2);
     expect(result).toStrictEqual({
       items: [
         {

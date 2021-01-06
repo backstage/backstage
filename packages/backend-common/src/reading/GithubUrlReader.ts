@@ -17,6 +17,8 @@
 import {
   GitHubIntegrationConfig,
   readGitHubIntegrationConfigs,
+  getGitHubFileFetchUrl,
+  getGitHubRequestOptions,
 } from '@backstage/integration';
 import fetch from 'cross-fetch';
 import parseGitUri from 'git-url-parse';
@@ -29,92 +31,6 @@ import {
   ReadTreeResponse,
   UrlReader,
 } from './types';
-
-export function getApiRequestOptions(
-  provider: GitHubIntegrationConfig,
-): RequestInit {
-  const headers: HeadersInit = {
-    Accept: 'application/vnd.github.v3.raw',
-  };
-
-  if (provider.token) {
-    headers.Authorization = `token ${provider.token}`;
-  }
-
-  return {
-    headers,
-  };
-}
-
-export function getRawRequestOptions(
-  provider: GitHubIntegrationConfig,
-): RequestInit {
-  const headers: HeadersInit = {};
-
-  if (provider.token) {
-    headers.Authorization = `token ${provider.token}`;
-  }
-
-  return {
-    headers,
-  };
-}
-
-// Converts for example
-// from: https://github.com/a/b/blob/branchname/path/to/c.yaml
-// to:   https://api.github.com/repos/a/b/contents/path/to/c.yaml?ref=branchname
-export function getApiUrl(
-  target: string,
-  provider: GitHubIntegrationConfig,
-): URL {
-  try {
-    const { owner, name, ref, filepathtype, filepath } = parseGitUri(target);
-
-    if (
-      !owner ||
-      !name ||
-      !ref ||
-      (filepathtype !== 'blob' && filepathtype !== 'raw')
-    ) {
-      throw new Error('Invalid GitHub URL or file path');
-    }
-
-    const pathWithoutSlash = filepath.replace(/^\//, '');
-    return new URL(
-      `${provider.apiBaseUrl}/repos/${owner}/${name}/contents/${pathWithoutSlash}?ref=${ref}`,
-    );
-  } catch (e) {
-    throw new Error(`Incorrect URL: ${target}, ${e}`);
-  }
-}
-
-// Converts for example
-// from: https://github.com/a/b/blob/branchname/c.yaml
-// to:   https://raw.githubusercontent.com/a/b/branchname/c.yaml
-export function getRawUrl(
-  target: string,
-  provider: GitHubIntegrationConfig,
-): URL {
-  try {
-    const { owner, name, ref, filepathtype, filepath } = parseGitUri(target);
-
-    if (
-      !owner ||
-      !name ||
-      !ref ||
-      (filepathtype !== 'blob' && filepathtype !== 'raw')
-    ) {
-      throw new Error('Invalid GitHub URL or file path');
-    }
-
-    const pathWithoutSlash = filepath.replace(/^\//, '');
-    return new URL(
-      `${provider.rawBaseUrl}/${owner}/${name}/${ref}/${pathWithoutSlash}`,
-    );
-  } catch (e) {
-    throw new Error(`Incorrect URL: ${target}, ${e}`);
-  }
-}
 
 /**
  * A processor that adds the ability to read files from GitHub v3 APIs, such as
@@ -144,14 +60,8 @@ export class GithubUrlReader implements UrlReader {
   }
 
   async read(url: string): Promise<Buffer> {
-    const useApi =
-      this.config.apiBaseUrl && (this.config.token || !this.config.rawBaseUrl);
-    const ghUrl = useApi
-      ? getApiUrl(url, this.config)
-      : getRawUrl(url, this.config);
-    const options = useApi
-      ? getApiRequestOptions(this.config)
-      : getRawRequestOptions(this.config);
+    const ghUrl = getGitHubFileFetchUrl(url, this.config);
+    const options = getGitHubRequestOptions(this.config);
 
     let response: Response;
     try {
@@ -179,7 +89,7 @@ export class GithubUrlReader implements UrlReader {
       name: repoName,
       ref,
       protocol,
-      source,
+      resource,
       full_name,
       filepath,
     } = parseGitUri(url);
@@ -194,8 +104,9 @@ export class GithubUrlReader implements UrlReader {
     // TODO(Rugvip): use API to fetch URL instead
     const response = await fetch(
       new URL(
-        `${protocol}://${source}/${full_name}/archive/${ref}.tar.gz`,
+        `${protocol}://${resource}/${full_name}/archive/${ref}.tar.gz`,
       ).toString(),
+      getGitHubRequestOptions(this.config),
     );
     if (!response.ok) {
       const message = `Failed to read tree from ${url}, ${response.status} ${response.statusText}`;
@@ -207,7 +118,7 @@ export class GithubUrlReader implements UrlReader {
 
     const path = `${repoName}-${ref}/${filepath}`;
 
-    return this.deps.treeResponseFactory.fromArchive({
+    return this.deps.treeResponseFactory.fromTarArchive({
       // TODO(Rugvip): Underlying implementation of fetch will be node-fetch, we probably want
       //               to stick to using that in exclusively backend code.
       stream: (response.body as unknown) as Readable,

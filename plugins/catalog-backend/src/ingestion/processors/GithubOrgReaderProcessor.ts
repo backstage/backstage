@@ -18,9 +18,14 @@ import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { graphql } from '@octokit/graphql';
 import { Logger } from 'winston';
+import {
+  getOrganizationTeams,
+  getOrganizationUsers,
+  ProviderConfig,
+  readGithubConfig,
+} from './github';
 import * as results from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
-import { getOrganizationTeams, getOrganizationUsers } from './util/github';
 import { buildOrgHierarchy } from './util/org';
 
 /**
@@ -33,7 +38,7 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
   static fromConfig(config: Config, options: { logger: Logger }) {
     return new GithubOrgReaderProcessor({
       ...options,
-      providers: readConfig(config),
+      providers: readGithubConfig(config),
     });
   }
 
@@ -64,6 +69,7 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
     const client = !provider.token
       ? graphql
       : graphql.defaults({
+          baseUrl: provider.apiBaseUrl,
           headers: {
             authorization: `token ${provider.token}`,
           },
@@ -111,73 +117,6 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
 /*
  * Helpers
  */
-
-/**
- * The configuration parameters for a single GitHub API provider.
- */
-type ProviderConfig = {
-  /**
-   * The prefix of the target that this matches on, e.g. "https://github.com",
-   * with no trailing slash.
-   */
-  target: string;
-
-  /**
-   * The base URL of the API of this provider, e.g. "https://api.github.com",
-   * with no trailing slash.
-   *
-   * May be omitted specifically for GitHub; then it will be deduced.
-   */
-  apiBaseUrl?: string;
-
-  /**
-   * The authorization token to use for requests to this provider.
-   *
-   * If no token is specified, anonymous access is used.
-   */
-  token?: string;
-};
-
-// TODO(freben): Break out common code and config from here and GithubReaderProcessor
-export function readConfig(config: Config): ProviderConfig[] {
-  const providers: ProviderConfig[] = [];
-
-  const providerConfigs =
-    config.getOptionalConfigArray('catalog.processors.githubOrg.providers') ??
-    [];
-
-  // First read all the explicit providers
-  for (const providerConfig of providerConfigs) {
-    const target = providerConfig.getString('target').replace(/\/+$/, '');
-    let apiBaseUrl = providerConfig.getOptionalString('apiBaseUrl');
-    const token = providerConfig.getOptionalString('token');
-
-    if (apiBaseUrl) {
-      apiBaseUrl = apiBaseUrl.replace(/\/+$/, '');
-    } else if (target === 'https://github.com') {
-      apiBaseUrl = 'https://api.github.com';
-    }
-
-    if (!apiBaseUrl) {
-      throw new Error(
-        `Provider at ${target} must configure an explicit apiBaseUrl`,
-      );
-    }
-
-    providers.push({ target, apiBaseUrl, token });
-  }
-
-  // If no explicit github.com provider was added, put one in the list as
-  // a convenience
-  if (!providers.some(p => p.target === 'https://github.com')) {
-    providers.push({
-      target: 'https://github.com',
-      apiBaseUrl: 'https://api.github.com',
-    });
-  }
-
-  return providers;
-}
 
 export function parseUrl(urlString: string): { org: string } {
   const path = new URL(urlString).pathname.substr(1).split('/');

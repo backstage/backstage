@@ -30,6 +30,7 @@ type CostInsightsPaletteAdditions = {
   tooltip: CostInsightsTooltipOptions;
   navigationText: string;
   alertBackground: string;
+  dataViz: string[];
 };
 
 export type CostInsightsPalette = BackstagePalette &

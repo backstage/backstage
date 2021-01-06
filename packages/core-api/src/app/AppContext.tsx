@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { createContext, useContext, FC } from 'react';
+import React, { createContext, PropsWithChildren, useContext } from 'react';
 import { BackstageApp } from './types';
 
 const Context = createContext<BackstageApp | undefined>(undefined);
@@ -23,7 +23,10 @@ type Props = {
   app: BackstageApp;
 };
 
-export const AppContextProvider: FC<Props> = ({ app, children }) => (
+export const AppContextProvider = ({
+  app,
+  children,
+}: PropsWithChildren<Props>) => (
   <Context.Provider value={app} children={children} />
 );
 

@@ -25,7 +25,7 @@ export AUTH_GOOGLE_CLIENT_ID=x
 export AUTH_GOOGLE_CLIENT_SECRET=x
 ```
 
-### Github
+### GitHub
 
 #### Creating a GitHub OAuth application
 
@@ -42,7 +42,7 @@ export AUTH_GITHUB_CLIENT_ID=x
 export AUTH_GITHUB_CLIENT_SECRET=x
 ```
 
-for github enterprise:
+For GitHub Enterprise:
 
 ```bash
 export AUTH_GITHUB_CLIENT_ID=x
@@ -50,7 +50,7 @@ export AUTH_GITHUB_CLIENT_SECRET=x
 export AUTH_GITHUB_ENTERPRISE_INSTANCE_URL=https://x
 ```
 
-### Gitlab
+### GitLab
 
 #### Creating a GitLab OAuth application
 
@@ -70,7 +70,7 @@ Follow this link, [Add new application](https://gitlab.com/-/profile/application
 
 ```bash
 export GITLAB_BASE_URL=https://gitlab.com
-export AUTH_GITLAB_CLIENT_ID=x  # Gitlab calls this the Application ID
+export AUTH_GITLAB_CLIENT_ID=x  # GitLab calls this the Application ID
 export AUTH_GITLAB_CLIENT_SECRET=x
 ```
 

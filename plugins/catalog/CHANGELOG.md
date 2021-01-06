@@ -1,5 +1,118 @@
 # @backstage/plugin-catalog
 
+## 0.2.9
+
+### Patch Changes
+
+- 7e0b8cac5: Add `CatalogIndexPage` and `CatalogEntityPage`, two new extensions that replace the existing `Router` component.
+
+  Add `EntityLayout` to replace `EntityPageLayout`, using children instead of an element property, and allowing for collection of all `RouteRef` mount points used within tabs.
+
+  Add `EntitySwitch` to be used to select components based on entity data, along with accompanying `isKind`, `isNamespace`, and `isComponentType` filters.
+
+- 87c0c53c2: Add new `EntityProvider` component, which can be used to provide an entity for the `useEntity` hook.
+- Updated dependencies [a08c32ced]
+- Updated dependencies [359f9d2d8]
+  - @backstage/core@0.4.3
+  - @backstage/plugin-techdocs@0.5.2
+
+## 0.2.8
+
+### Patch Changes
+
+- 342270e4d: Create AboutCard in core and use it in pagerduty and catalog plugin
+- Updated dependencies [19554f6d6]
+- Updated dependencies [1dc445e89]
+- Updated dependencies [342270e4d]
+  - @backstage/plugin-scaffolder@0.3.5
+  - @backstage/core@0.4.2
+  - @backstage/plugin-techdocs@0.5.1
+
+## 0.2.7
+
+### Patch Changes
+
+- Updated dependencies [c911061b7]
+- Updated dependencies [dae4f3983]
+- Updated dependencies [8ef71ed32]
+- Updated dependencies [0e6298f7e]
+- Updated dependencies [ac3560b42]
+  - @backstage/catalog-model@0.6.0
+  - @backstage/plugin-techdocs@0.5.0
+  - @backstage/core@0.4.1
+  - @backstage/catalog-client@0.3.4
+  - @backstage/plugin-scaffolder@0.3.4
+
+## 0.2.6
+
+### Patch Changes
+
+- 6011b7d3e: Added pagerduty plugin to example app
+- Updated dependencies [2527628e1]
+- Updated dependencies [1c69d4716]
+- Updated dependencies [83b6e0c1f]
+- Updated dependencies [87a33d2fe]
+- Updated dependencies [1665ae8bb]
+- Updated dependencies [04f26f88d]
+- Updated dependencies [ff243ce96]
+  - @backstage/core@0.4.0
+  - @backstage/catalog-model@0.5.0
+  - @backstage/plugin-techdocs@0.4.0
+  - @backstage/theme@0.2.2
+  - @backstage/plugin-scaffolder@0.3.3
+  - @backstage/catalog-client@0.3.3
+
+## 0.2.5
+
+### Patch Changes
+
+- ebf37bbae: Use the OWNED_BY relation and compare it to the users MEMBER_OF relation. The user entity is searched by name, based on the userId of the identity.
+- Updated dependencies [08835a61d]
+- Updated dependencies [a9fd599f7]
+- Updated dependencies [bcc211a08]
+- Updated dependencies [da2ad65cb]
+  - @backstage/catalog-model@0.4.0
+  - @backstage/plugin-scaffolder@0.3.2
+  - @backstage/plugin-techdocs@0.3.1
+  - @backstage/catalog-client@0.3.2
+
+## 0.2.4
+
+### Patch Changes
+
+- 6f70ed7a9: Replace usage of implementsApis with relations
+- Updated dependencies [4b53294a6]
+- Updated dependencies [ab94c9542]
+- Updated dependencies [2daf18e80]
+- Updated dependencies [069cda35f]
+  - @backstage/plugin-techdocs@0.3.0
+  - @backstage/catalog-model@0.3.1
+
+## 0.2.3
+
+### Patch Changes
+
+- Updated dependencies [475fc0aaa]
+- Updated dependencies [1166fcc36]
+- Updated dependencies [ef2831dde]
+- Updated dependencies [1185919f3]
+  - @backstage/core@0.3.2
+  - @backstage/catalog-model@0.3.0
+  - @backstage/plugin-scaffolder@0.3.1
+  - @backstage/catalog-client@0.3.1
+  - @backstage/plugin-techdocs@0.2.3
+
+## 0.2.2
+
+### Patch Changes
+
+- 8b7737d0b: Add About Card tooltips
+- Updated dependencies [1722cb53c]
+- Updated dependencies [717e43de1]
+  - @backstage/core@0.3.1
+  - @backstage/plugin-techdocs@0.2.2
+  - @backstage/catalog-client@0.3.0
+
 ## 0.2.1
 
 ### Patch Changes

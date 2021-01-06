@@ -1,5 +1,75 @@
 # @backstage/plugin-lighthouse
 
+## 0.2.6
+
+### Patch Changes
+
+- Updated dependencies [c911061b7]
+- Updated dependencies [8ef71ed32]
+- Updated dependencies [0e6298f7e]
+- Updated dependencies [7dd2ef7d1]
+- Updated dependencies [ac3560b42]
+  - @backstage/catalog-model@0.6.0
+  - @backstage/core@0.4.1
+  - @backstage/core-api@0.2.6
+  - @backstage/plugin-catalog@0.2.7
+
+## 0.2.5
+
+### Patch Changes
+
+- Updated dependencies [b6557c098]
+- Updated dependencies [2527628e1]
+- Updated dependencies [6011b7d3e]
+- Updated dependencies [e3bd9fc2f]
+- Updated dependencies [1c69d4716]
+- Updated dependencies [d8d5a17da]
+- Updated dependencies [83b6e0c1f]
+- Updated dependencies [1665ae8bb]
+- Updated dependencies [04f26f88d]
+- Updated dependencies [ff243ce96]
+- Updated dependencies [e3bd9fc2f]
+  - @backstage/core-api@0.2.5
+  - @backstage/core@0.4.0
+  - @backstage/plugin-catalog@0.2.6
+  - @backstage/config@0.1.2
+  - @backstage/catalog-model@0.5.0
+  - @backstage/theme@0.2.2
+
+## 0.2.4
+
+### Patch Changes
+
+- Updated dependencies [b4488ddb0]
+- Updated dependencies [08835a61d]
+- Updated dependencies [a9fd599f7]
+- Updated dependencies [bcc211a08]
+- Updated dependencies [ebf37bbae]
+  - @backstage/core-api@0.2.4
+  - @backstage/catalog-model@0.4.0
+  - @backstage/plugin-catalog@0.2.5
+
+## 0.2.3
+
+### Patch Changes
+
+- Updated dependencies [475fc0aaa]
+- Updated dependencies [1166fcc36]
+- Updated dependencies [1185919f3]
+  - @backstage/core@0.3.2
+  - @backstage/catalog-model@0.3.0
+  - @backstage/plugin-catalog@0.2.3
+
+## 0.2.2
+
+### Patch Changes
+
+- 1722cb53c: Added configuration schema
+- Updated dependencies [1722cb53c]
+- Updated dependencies [8b7737d0b]
+  - @backstage/core@0.3.1
+  - @backstage/plugin-catalog@0.2.2
+
 ## 0.2.1
 
 ### Patch Changes

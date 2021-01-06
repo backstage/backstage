@@ -74,6 +74,14 @@ async function verifyUrl(basePath, absUrl, docPages) {
     path = resolvePath(dirname(resolvePath(projectRoot, basePath)), url);
   }
 
+  if (
+    absUrl === url &&
+    basePath.match(/^(?:docs)\//) &&
+    !path.startsWith(resolvePath(projectRoot, 'docs'))
+  ) {
+    return { url, basePath, problem: 'out-of-docs' };
+  }
+
   const exists = await fs.pathExists(path);
   if (!exists) {
     return { url, basePath, problem: 'missing' };
@@ -147,6 +155,18 @@ async function main() {
       if (problem === 'missing') {
         console.error(
           `Unable to reach ${url} from root or microsite/static/, linked from ${basePath}`,
+        );
+      } else if (problem === 'out-of-docs') {
+        console.error(
+          'Links in docs must use absolute URLs for targets outside of docs',
+        );
+        console.error(`  From: ${basePath}`);
+        console.error(`  To: ${url}`);
+        console.error(
+          `  Likely replace with: https://github.com/backstage/backstage/blob/master/${url.replace(
+            /^[./]+/,
+            '',
+          )}`,
         );
       } else if (problem === 'doc-missing') {
         const suggestion =

@@ -52,7 +52,7 @@ describe('RollbarHome component', () => {
               catalogApiRef,
               ({
                 async getEntities() {
-                  return [];
+                  return { items: [] };
                 },
               } as Partial<CatalogApi>) as CatalogApi,
             ],

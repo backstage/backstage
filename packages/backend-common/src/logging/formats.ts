@@ -17,19 +17,23 @@ import * as winston from 'winston';
 import { TransformableInfo } from 'logform';
 
 const coloredTemplate = (info: TransformableInfo) => {
-  const { timestamp, level, message, plugin, service } = info;
+  const { timestamp, level, message, plugin, service, ...fields } = info;
   const colorizer = winston.format.colorize();
   const prefix = plugin || service;
   const timestampColor = colorizer.colorize('timestamp', timestamp);
   const prefixColor = colorizer.colorize('prefix', prefix);
 
-  return `${timestampColor} ${prefixColor} ${level} ${message}`;
+  const extraFields = Object.entries(fields)
+    .map(([key, value]) => `${colorizer.colorize('field', `${key}`)}=${value}`)
+    .join(' ');
+
+  return `${timestampColor} ${prefixColor} ${level} ${message} ${extraFields}`;
 };
 
 export const coloredFormat = winston.format.combine(
   winston.format.timestamp(),
   winston.format.colorize({
-    colors: { timestamp: 'dim', prefix: 'blue' },
+    colors: { timestamp: 'dim', prefix: 'blue', field: 'cyan' },
   }),
   winston.format.printf(coloredTemplate),
 );

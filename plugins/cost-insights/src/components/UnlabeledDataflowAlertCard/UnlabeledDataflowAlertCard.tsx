@@ -15,11 +15,11 @@
  */
 
 import React from 'react';
+import pluralize from 'pluralize';
 import { InfoCard } from '@backstage/core';
 import { Box } from '@material-ui/core';
 import { BarChart, BarChartLegend } from '../BarChart';
 import { UnlabeledDataflowData, ResourceData } from '../../types';
-import { pluralOf } from '../../utils/grammar';
 import { useBarChartLayoutStyles as useStyles } from '../../utils/styles';
 
 type UnlabeledDataflowAlertProps = {
@@ -30,9 +30,9 @@ export const UnlabeledDataflowAlertCard = ({
   alert,
 }: UnlabeledDataflowAlertProps) => {
   const classes = useStyles();
-  const projects = pluralOf(alert.projects.length, 'project');
+  const projects = pluralize('project', alert.projects.length, true);
   const subheader = `
-    Showing costs from ${alert.projects.length} ${projects} with unlabeled Dataflow jobs in the last 30 days.
+    Showing costs from ${projects} with unlabeled Dataflow jobs in the last 30 days.
   `;
   const options = {
     previousName: 'Unlabeled Cost',
@@ -49,8 +49,8 @@ export const UnlabeledDataflowAlertCard = ({
     <InfoCard title="Label Dataflow" subheader={subheader}>
       <Box className={classes.wrapper}>
         <BarChartLegend
-          costStart={alert.labeledCost}
-          costEnd={alert.unlabeledCost}
+          costStart={alert.unlabeledCost}
+          costEnd={alert.labeledCost}
           options={options}
         />
         <BarChart resources={resources} options={options} />

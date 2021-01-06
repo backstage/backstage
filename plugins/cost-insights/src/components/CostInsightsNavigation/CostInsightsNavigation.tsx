@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
+  Collapse,
   MenuList,
   MenuItem,
   ListItemIcon,
@@ -23,7 +24,7 @@ import {
   Typography,
   Badge,
 } from '@material-ui/core';
-import { useNavigationStyles } from '../../utils/styles';
+import { useNavigationStyles as useStyles } from '../../utils/styles';
 import { useConfig, useScroll } from '../../hooks';
 import { findAlways } from '../../utils/assert';
 import {
@@ -31,55 +32,79 @@ import {
   NavigationItem,
   getDefaultNavigationItems,
 } from '../../utils/navigation';
+import { Maybe, Product } from '../../types';
 
 type CostInsightsNavigationProps = {
   alerts: number;
+  products: Maybe<Product[]>;
 };
 
-export const CostInsightsNavigation = ({
-  alerts,
-}: CostInsightsNavigationProps) => {
-  const classes = useNavigationStyles();
-  const { products, icons } = useConfig();
+export const CostInsightsNavigation = React.memo(
+  ({ alerts, products }: CostInsightsNavigationProps) => {
+    const classes = useStyles();
+    const { icons } = useConfig();
+    const [isOpen, setOpen] = useState(false);
 
-  const productNavigationItems: NavigationItem[] = products.map(product => ({
-    navigation: product.kind,
-    icon: findAlways(icons, i => i.kind === product.kind).component,
-    title: product.name,
-  }));
+    const defaultNavigationItems = getDefaultNavigationItems(alerts);
+    const productNavigationItems: NavigationItem[] =
+      products?.map(product => ({
+        title: product.name,
+        navigation: product.kind,
+        icon: findAlways(icons, i => i.kind === product.kind).component,
+      })) ?? [];
 
-  const navigationItems = getDefaultNavigationItems(alerts).concat(
-    productNavigationItems,
-  );
+    useEffect(
+      function toggleProductMenuItems() {
+        if (products?.length) {
+          setOpen(true);
+        } else {
+          setOpen(false);
+        }
+      },
+      [products],
+    );
 
-  return (
-    <MenuList className={classes.menuList}>
-      {navigationItems.map((item: NavigationItem) => (
-        <NavigationMenuItem
-          key={`navigation-menu-item-${item.navigation}`}
-          navigation={item.navigation}
-          icon={
-            item.navigation === DefaultNavigation.AlertInsightsHeader ? (
-              <Badge badgeContent={alerts} color="secondary">
-                {React.cloneElement(item.icon, {
+    return (
+      <MenuList className={classes.menuList}>
+        {defaultNavigationItems.map(item => (
+          <NavigationMenuItem
+            key={`navigation-menu-item-${item.navigation}`}
+            navigation={item.navigation}
+            title={item.title}
+            icon={
+              item.navigation === DefaultNavigation.AlertInsightsHeader ? (
+                <Badge badgeContent={alerts} color="secondary">
+                  {React.cloneElement(item.icon, {
+                    className: classes.navigationIcon,
+                  })}
+                </Badge>
+              ) : (
+                React.cloneElement(item.icon, {
                   className: classes.navigationIcon,
-                })}
-              </Badge>
-            ) : (
-              React.cloneElement(item.icon, {
+                })
+              )
+            }
+          />
+        ))}
+        <Collapse in={isOpen} timeout={850}>
+          {productNavigationItems.map((item: NavigationItem) => (
+            <NavigationMenuItem
+              key={`navigation-menu-item-${item.navigation}`}
+              navigation={item.navigation}
+              icon={React.cloneElement(item.icon, {
                 className: classes.navigationIcon,
-              })
-            )
-          }
-          title={item.title}
-        />
-      ))}
-    </MenuList>
-  );
-};
+              })}
+              title={item.title}
+            />
+          ))}
+        </Collapse>
+      </MenuList>
+    );
+  },
+);
 
 const NavigationMenuItem = ({ navigation, icon, title }: NavigationItem) => {
-  const classes = useNavigationStyles();
+  const classes = useStyles();
   const { scrollIntoView } = useScroll(navigation);
   return (
     <MenuItem

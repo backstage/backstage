@@ -18,30 +18,13 @@ yarn start
 
 ## What techdocs-backend does
 
-This plugin is the backend part of the techdocs plugin. It provides building and serving of your docs without having to use another service and hosting provider. To use it set your techdocs storageUrl in your `app-config.yml` to `http://localhost:7000/api/techdocs/static/docs`.
+This plugin is the backend part of the techdocs plugin. It provides serving and building of documentation for any entity.
+To configure various storage providers and building options, see http://backstage.io/docs/features/techdocs/configuration
 
-```yaml
-techdocs:
-  storageUrl: http://localhost:7000/api/techdocs/static/docs
-```
-
-## Extending techdocs-backend
-
-Currently the build process of techdocs-backend is split up in these three stages.
-
-- Preparers
-- Generators
-- Publishers
-
-Preparers read your entity data and creates a working directory with your documentation source code. For example if you have set your `backstage.io/techdocs-ref` to `github:https://github.com/backstage/backstage.git` it will clone that repository to a temp folder and pass that on to the generator.
-
-Generators takes the prepared source and runs the `techdocs-container` on it. It then passes on the output folder of that build to the publisher.
-
-Publishers gets a folder path from the generator and publish it to your storage solution. Currently the only built in storage solution is a folder called `static/docs` inside the techdocs-backend plugin.
-
-Any of these can be extended. If we want to publish to a external static file server using rsync for example that can be done by creating a rsync publisher. _(Keep in mind that if you want techdocs-backend to initiate a build this would also require techdocs-backend to act as a proxy, which is not yet implemented.)_
+The techdocs-backend re-exports the [techdocs-common](https://github.com/backstage/backstage/tree/master/packages/techdocs-common) package which has the features to prepare, generate and publish docs.
+The Publishers are also used to fetch the static documentation files and render them in TechDocs.
 
 ## Links
 
 - [Frontend part of the plugin](https://github.com/backstage/backstage/tree/master/plugins/techdocs)
-- [The Backstage homepage](https://backstage.io)
+- [Backstage homepage](https://backstage.io)
