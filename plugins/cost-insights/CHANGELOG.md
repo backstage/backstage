@@ -1,5 +1,11 @@
 # @backstage/plugin-cost-insights
 
+## 0.5.5
+
+### Patch Changes
+
+- ab0892358: Remove test dependencies from production package list
+
 ## 0.5.4
 
 ### Patch Changes
