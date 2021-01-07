@@ -1,18 +1,5 @@
 # @backstage/backend-common
 
-## 0.4.2
-
-### Patch Changes
-
-- 5ecd50f8a: Fix HTTPS certificate generation and add new config switch, enabling it simply by setting `backend.https = true`. Also introduces caching of generated certificates in order to avoid having to add a browser override every time the backend is restarted.
-- 00042e73c: Moving the Git actions to isomorphic-git instead of the node binding version of nodegit
-- 0829ff126: Tweaked development log formatter to include extra fields at the end of each log line
-- 036a84373: Provide support for on-prem azure devops
-- Updated dependencies [ad5c56fd9]
-- Updated dependencies [036a84373]
-  - @backstage/config-loader@0.4.1
-  - @backstage/integration@0.1.5
-
 ## 0.4.1
 
 ### Patch Changes

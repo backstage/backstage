@@ -1,11 +1,5 @@
 # @backstage/integration
 
-## 0.1.5
-
-### Patch Changes
-
-- 036a84373: Provide support for on-prem azure devops
-
 ## 0.1.4
 
 ### Patch Changes

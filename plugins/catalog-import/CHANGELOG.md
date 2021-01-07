@@ -1,20 +1,5 @@
 # @backstage/plugin-catalog-import
 
-## 0.3.3
-
-### Patch Changes
-
-- edb7d0775: Create "url" type location when registering using the catalog-import plugin.
-- Updated dependencies [99be3057c]
-- Updated dependencies [49d2016a4]
-- Updated dependencies [9c09a364f]
-- Updated dependencies [73e75ea0a]
-- Updated dependencies [036a84373]
-- Updated dependencies [071711d70]
-  - @backstage/plugin-catalog-backend@0.5.2
-  - @backstage/plugin-catalog@0.2.10
-  - @backstage/integration@0.1.5
-
 ## 0.3.2
 
 ### Patch Changes

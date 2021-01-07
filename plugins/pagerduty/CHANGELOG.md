@@ -1,11 +1,5 @@
 # @backstage/plugin-pagerduty
 
-## 0.2.5
-
-### Patch Changes
-
-- b7a124883: Optimize empty state image size.
-
 ## 0.2.4
 
 ### Patch Changes

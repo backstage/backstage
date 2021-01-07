@@ -1,12 +1,5 @@
 # @backstage/plugin-tech-radar
 
-## 0.3.2
-
-### Patch Changes
-
-- ab0892358: Remove test dependencies from production package list
-- bc909178d: Updated example data in `README`.
-
 ## 0.3.1
 
 ### Patch Changes

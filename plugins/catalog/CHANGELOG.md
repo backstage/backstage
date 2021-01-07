@@ -1,14 +1,5 @@
 # @backstage/plugin-catalog
 
-## 0.2.10
-
-### Patch Changes
-
-- 9c09a364f: Remove the unused dependency to `@backstage/plugin-techdocs`.
-- Updated dependencies [8e083f41f]
-- Updated dependencies [947d3c269]
-  - @backstage/plugin-scaffolder@0.3.6
-
 ## 0.2.9
 
 ### Patch Changes
