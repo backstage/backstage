@@ -24,11 +24,11 @@ spec:
             - yes > /dev/null & yes > /dev/null & yes > /dev/null
           resources:
             requests:
-              memory: "64Mi"
-              cpu: "50m"
+              memory: '64Mi'
+              cpu: '50m'
             limits:
-              memory: "128Mi"
-              cpu: "50m"
+              memory: '128Mi'
+              cpu: '50m'
           ports:
             - containerPort: 80
 
@@ -57,36 +57,35 @@ spec:
             - containerPort: 80
           resources:
             requests:
-              memory: "64Mi"
-              cpu: "50m"
+              memory: '64Mi'
+              cpu: '50m'
             limits:
-              memory: "128Mi"
-              cpu: "500m"
+              memory: '128Mi'
+              cpu: '500m'
         - name: side-car
           image: nginx:1.14.2
           ports:
             - containerPort: 81
           resources:
             requests:
-              memory: "64Mi"
-              cpu: "50m"
+              memory: '64Mi'
+              cpu: '50m'
             limits:
-              memory: "128Mi"
-              cpu: "500m"
+              memory: '128Mi'
+              cpu: '500m'
         - name: other-side-car
           image: nginx:1.14.2
           ports:
             - containerPort: 82
           resources:
             requests:
-              memory: "64Mi"
-              cpu: "50m"
+              memory: '64Mi'
+              cpu: '50m'
             limits:
-              memory: "128Mi"
-              cpu: "500m"
+              memory: '128Mi'
+              cpu: '500m'
 
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -109,16 +108,15 @@ spec:
           image: nginx:6000000
           resources:
             requests:
-              memory: "64Mi"
-              cpu: "50m"
+              memory: '64Mi'
+              cpu: '50m'
             limits:
-              memory: "128Mi"
-              cpu: "500m"
+              memory: '128Mi'
+              cpu: '500m'
           ports:
             - containerPort: 80
 
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -141,16 +139,15 @@ spec:
           image: nginx:1.14.2
           resources:
             requests:
-              memory: "64Mi"
-              cpu: "100000m"
+              memory: '64Mi'
+              cpu: '100000m'
             limits:
-              memory: "128Mi"
-              cpu: "100000m"
+              memory: '128Mi'
+              cpu: '100000m'
           ports:
             - containerPort: 80
 
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -179,11 +176,11 @@ spec:
                   key: some-key
           resources:
             requests:
-              memory: "64Mi"
-              cpu: "50m"
+              memory: '64Mi'
+              cpu: '50m'
             limits:
-              memory: "128Mi"
-              cpu: "500m"
+              memory: '128Mi'
+              cpu: '500m'
           ports:
             - containerPort: 80
 
