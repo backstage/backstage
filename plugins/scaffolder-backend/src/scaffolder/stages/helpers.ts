@@ -85,7 +85,9 @@ export function makeDeprecatedLocationTypeDetector(
   config.getOptionalConfigArray('integrations.azure')?.forEach(sub => {
     hostMap.set(sub.getString('host'), 'azure/api');
   });
-
+  config.getOptionalConfigArray('integrations.bitbucket')?.forEach(sub => {
+    hostMap.set(sub.getString('host'), 'bitbucket');
+  });
   return (url: string): string | undefined => {
     const parsed = new URL(url);
     return hostMap.get(parsed.hostname);

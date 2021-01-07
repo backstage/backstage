@@ -34,7 +34,6 @@
     "@backstage/catalog-model": "^0.6.0",
     "@backstage/core": "^0.4.3",
     "@backstage/plugin-scaffolder": "^0.3.5",
-    "@backstage/plugin-techdocs": "^0.5.2",
     "@backstage/theme": "^0.2.2",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",

@@ -45,7 +45,7 @@ export interface Config {
       /**
        * attr: 'techdocs' - accepts a string value
        * e.g. type: 'docker'
-       * aleternatives: 'local' etc.
+       * alternatives: 'local' etc.
        * @see http://backstage.io/docs/features/techdocs/configuration
        */
       techdocs: 'local' | 'docker';
@@ -59,16 +59,61 @@ export interface Config {
           /**
            * attr: 'type' - accepts a string value
            * e.g. type: 'local'
-           * aleternatives: 'googleGcs' etc.
+           * alternatives: 'googleGcs' etc.
            * @see http://backstage.io/docs/features/techdocs/configuration
            */
-          type: 'local' | 'awsS3';
+          type: 'local';
+        }
+      | {
+          /**
+           * attr: 'type' - accepts a string value
+           * e.g. type: 'awsS3'
+           * alternatives: 'googleGcs' etc.
+           * @see http://backstage.io/docs/features/techdocs/configuration
+           */
+          type: 'awsS3';
+
+          /**
+           * awsS3 required when 'type' is set to awsS3
+           */
+          awsS3?: {
+            /**
+             * Credentials used to access a storage bucket
+             * @visibility secret
+             */
+            credentials: {
+              /**
+               * User access key id
+               * attr: 'accessKeyId' - accepts a string value
+               * @visibility secret
+               */
+              accessKeyId: string;
+              /**
+               * User secret access key
+               * attr: 'secretAccessKey' - accepts a string value
+               * @visibility secret
+               */
+              secretAccessKey: string;
+            };
+            /**
+             * Cloud Storage Bucket Name
+             * attr: 'bucketName' - accepts a string value
+             * @visibility secret
+             */
+            bucketName: string;
+            /**
+             * AWS Region
+             * attr: 'region' - accepts a string value
+             * @visibility secret
+             */
+            region?: string;
+          };
         }
       | {
           /**
            * attr: 'type' - accepts a string value
            * e.g. type: 'googleGcs'
-           * aleternatives: 'googleGcs' etc.
+           * alternatives: 'googleGcs' etc.
            * @see http://backstage.io/docs/features/techdocs/configuration
            */
           type: 'googleGcs';

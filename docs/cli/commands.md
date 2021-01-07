@@ -28,6 +28,7 @@ app:diff                 Diff an existing app with the creation template
 app:serve                Serve an app for local development
 
 backend:build            Build a backend plugin
+backend:bundle           Bundle the backend into a deployment archive
 backend:build-image      Bundles the package into a docker image
 backend:dev              Start local development server with HMR for the backend
 
@@ -166,7 +167,7 @@ Options:
 
 ## backend:build
 
-Scope: `backend`, `backend-plugin`
+Scope: `backend-plugin`
 
 This builds a backend package for publishing and use in production. The build
 output is written to `dist/`. Be sure to list any additional file that the
@@ -178,6 +179,52 @@ Usage: backstage-cli backend:build [options]
 
 Options:
   -h, --help  display help for command
+```
+
+## backend:bundle
+
+Scope: `backend`
+
+Bundle the backend and all of its local dependencies into a deployment archive.
+The archive is written to `dist/bundle.tar.gz`, and contains the packaged
+version of all dependencies of the target package, along with the target package
+itself. The layout of the packages in the archive is the same as the directory
+layout in the target monorepo, and the bundle also contains the root
+`package.json` and `yarn.lock`.
+
+To use the bundle, extract it into a target directory, run
+`yarn install --production`, and then start the target backend package using for
+example `node package/backend`.
+
+The `dist/bundle.tar.gz` is accompanied by a `dist/skeleton.tar.gz`, which has
+the same layout, but only contains `package.json` files and `yarn.lock`. This
+can be used to run a `yarn install` in environments that will benefit from the
+caching that this enables, such as Docker image builds. To use the skeleton
+archive, simply extract it first, run install, and then extract the main bundle.
+
+The following is an example of a `Dockerfile` that can be used to package the
+output of `backstage-cli backend:bundle` into an image:
+
+```Dockerfile
+FROM node:14-buster
+WORKDIR /app
+
+ADD yarn.lock package.json packages/backend/dist/skeleton.tar.gz ./
+RUN yarn install --production --network-timeout 600000 && rm -rf "$(yarn cache dir)"
+
+ADD packages/backend/dist/bundle.tar.gz app-config.yaml ./
+
+CMD node packages/backend
+```
+
+```text
+Usage: backstage-cli backend:bundle [options]
+
+Bundle the backend into a deployment archive
+
+Options:
+  --build-dependencies  Build all local package dependencies before bundling the backend
+  -h, --help            display help for command
 ```
 
 ## backend:build-image

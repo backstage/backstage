@@ -133,49 +133,54 @@ export async function createRouter({
         entity,
         config,
       });
-      if (publisherType === 'local') {
-        if (!(await docsBuilder.docsUpToDate())) {
-          await docsBuilder.build();
-        }
-      } else if (publisherType === 'googleGcs') {
-        // This block should be valid for all external storage implementations. So no need to duplicate in future,
-        // add the publisher type in the list here.
-        if (!(await publisher.hasDocsBeenGenerated(entity))) {
-          logger.info(
-            'No pre-generated documentation files found for the entity in the storage. Building docs...',
-          );
-          await docsBuilder.build();
-          // With a maximum of ~5 seconds wait, check if the files got published and if docs will be fetched
-          // on the user's page. If not, respond with a message asking them to check back later.
-          // The delay here is to make sure GCS registers newly uploaded files which is usually <1 second
-          let foundDocs = false;
-          for (let attempt = 0; attempt < 5; attempt++) {
-            if (await publisher.hasDocsBeenGenerated(entity)) {
-              foundDocs = true;
-              break;
-            }
-            await new Promise(r => setTimeout(r, 1000));
+      switch (publisherType) {
+        case 'local':
+          if (!(await docsBuilder.docsUpToDate())) {
+            await docsBuilder.build();
           }
-          if (!foundDocs) {
-            logger.error(
-              'Published files are taking longer to show up in storage. Something went wrong.',
+          break;
+        case 'awsS3':
+        case 'googleGcs':
+          // This block should be valid for all external storage implementations. So no need to duplicate in future,
+          // add the publisher type in the list here.
+          if (!(await publisher.hasDocsBeenGenerated(entity))) {
+            logger.info(
+              'No pre-generated documentation files found for the entity in the storage. Building docs...',
             );
-            res
-              .status(408)
-              .send(
-                'Sorry! It is taking longer for the generated docs to show up in storage. Check back later.',
+            await docsBuilder.build();
+            // With a maximum of ~5 seconds wait, check if the files got published and if docs will be fetched
+            // on the user's page. If not, respond with a message asking them to check back later.
+            // The delay here is to make sure GCS/AWS/etc. registers newly uploaded files which is usually <1 second
+            let foundDocs = false;
+            for (let attempt = 0; attempt < 5; attempt++) {
+              if (await publisher.hasDocsBeenGenerated(entity)) {
+                foundDocs = true;
+                break;
+              }
+              await new Promise(r => setTimeout(r, 1000));
+            }
+            if (!foundDocs) {
+              logger.error(
+                'Published files are taking longer to show up in storage. Something went wrong.',
               );
-            return;
+              res
+                .status(408)
+                .send(
+                  'Sorry! It is taking longer for the generated docs to show up in storage. Check back later.',
+                );
+              return;
+            }
+          } else {
+            logger.info(
+              'Found pre-generated docs for this entity. Serving them.',
+            );
+            // TODO: re-trigger build for cache invalidation.
+            // Compare the date modified of the requested file on storage and compare it against
+            // the last modified or last commit timestamp in the repository.
+            // Without this, docs will not be re-built once they have been generated.
           }
-        } else {
-          logger.info(
-            'Found pre-generated docs for this entity. Serving them.',
-          );
-          // TODO: re-trigger build for cache invalidation.
-          // Compare the date modified of the requested file on storage and compare it against
-          // the last modified or last commit timestamp in the repository.
-          // Without this, docs will not be re-built once they have been generated.
-        }
+          break;
+        default:
       }
     }
 

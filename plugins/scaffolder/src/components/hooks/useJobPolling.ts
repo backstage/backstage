@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Job } from '../../types';
 import { useApi } from '@backstage/core';
 import { scaffolderApiRef } from '../../api';
@@ -28,10 +28,23 @@ export const useJobPolling = (
 ) => {
   const scaffolderApi = useApi(scaffolderApiRef);
   const [currentJob, setCurrentJob] = useState<Job | null>(null);
+
+  useEffect(() => {
+    const resetCurrentJob = async () => {
+      if (jobId) {
+        const job = await scaffolderApi.getJob(jobId);
+        setCurrentJob(job);
+      }
+    };
+
+    resetCurrentJob();
+  }, [jobId, scaffolderApi]);
+
   const shouldBeRunningInterval =
     jobId &&
     currentJob?.status !== 'COMPLETED' &&
     currentJob?.status !== 'FAILED';
+
   useInterval(
     async () => {
       if (jobId) {

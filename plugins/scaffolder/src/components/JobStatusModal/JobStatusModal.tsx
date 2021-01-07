@@ -23,18 +23,23 @@ import {
   LinearProgress,
 } from '@material-ui/core';
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { Job } from '../../types';
 import { JobStage } from '../JobStage/JobStage';
 
 type Props = {
   job: Job | null;
   toCatalogLink?: string;
+  open: boolean;
+  onModalClose: () => void;
 };
 
-export const JobStatusModal = ({ job, toCatalogLink }: Props) => {
-  const [isOpen, setOpen] = useState(true);
-
+export const JobStatusModal = ({
+  job,
+  toCatalogLink,
+  open,
+  onModalClose,
+}: Props) => {
   const renderTitle = () => {
     switch (job?.status) {
       case 'COMPLETED':
@@ -50,13 +55,14 @@ export const JobStatusModal = ({ job, toCatalogLink }: Props) => {
     if (!job) {
       return;
     }
+    // Disallow closing modal if the job is in progress.
     if (job.status === 'COMPLETED' || job.status === 'FAILED') {
-      setOpen(false);
+      onModalClose();
     }
-  }, [job]);
+  }, [job, onModalClose]);
 
   return (
-    <Dialog open={isOpen} onClose={onClose} fullWidth>
+    <Dialog open={open} onClose={onClose} fullWidth>
       <DialogTitle id="responsive-dialog-title">{renderTitle()}</DialogTitle>
       <DialogContent>
         {!job ? (
@@ -81,7 +87,7 @@ export const JobStatusModal = ({ job, toCatalogLink }: Props) => {
       )}
       {job?.status === 'FAILED' && (
         <DialogActions>
-          <Action onClick={() => setOpen(false)}>Close</Action>
+          <Action onClick={onClose}>Close</Action>
         </DialogActions>
       )}
     </Dialog>

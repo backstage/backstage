@@ -17,4 +17,5 @@
 export * from './api';
 export * from './components';
 export { plugin } from './plugin';
+export { EntitySentryCard, EntitySentryContent } from './extensions';
 export { Router } from './components/Router';
