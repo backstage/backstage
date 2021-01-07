@@ -60,7 +60,7 @@
   "devDependencies": {
     "@backstage/cli": "^0.4.5",
     "@backstage/test-utils": "^0.1.5",
-    "@octokit/types": "^5.4.1",
+    "@octokit/types": "^6.2.1",
     "@types/fs-extra": "^9.0.1",
     "@types/git-url-parse": "^9.0.0",
     "@types/supertest": "^2.0.8",

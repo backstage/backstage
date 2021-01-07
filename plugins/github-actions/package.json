@@ -41,7 +41,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
     "@octokit/rest": "^18.0.0",
-    "@octokit/types": "^5.4.1",
+    "@octokit/types": "^6.2.1",
     "moment": "^2.27.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
