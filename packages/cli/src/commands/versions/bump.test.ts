@@ -135,7 +135,7 @@ describe('bump', () => {
       'unlocking @backstage/core-api@^1.0.3 ~> 1.0.7',
       'bumping @backstage/theme in b to ^2.0.0',
       'Running yarn install to install new versions',
-      'The following packages may have breaking changes:',
+      '⚠️  The following packages may have breaking changes:',
       '  @backstage/theme',
       '    https://github.com/backstage/backstage/blob/master/packages/theme/CHANGELOG.md',
       'Version bump complete!',
