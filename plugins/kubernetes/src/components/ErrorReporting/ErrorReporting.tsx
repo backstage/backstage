@@ -16,7 +16,8 @@
 import * as React from 'react';
 import { Table, TableColumn, InfoCard } from '@backstage/core';
 import { DetectedError, DetectedErrorsByCluster } from '../../error-detection';
-import { Chip, Typography } from '@material-ui/core';
+import { Chip, Typography, Grid } from '@material-ui/core';
+import EmptyStateImage from '../../../assets/emptystate.svg';
 
 type ErrorReportingProps = {
   detectedErrors: DetectedErrorsByCluster;
@@ -91,24 +92,48 @@ export const ErrorReporting = ({ detectedErrors }: ErrorReportingProps) => {
     .sort(sortBySeverity);
 
   return (
-    <>
+    <Grid container>
       {errors.length === 0 ? (
-        <InfoCard title="Error Reporting">
-          <div>
-            <Typography variant="h6">
-              Nice! There are no errors to report!
-            </Typography>
-            {/*  TODO the tick goes here */}
-          </div>
-        </InfoCard>
+        <Grid item xs={6}>
+          <InfoCard title="Error Reporting">
+            <ErrorEmptyState />
+          </InfoCard>
+        </Grid>
       ) : (
-        <Table
-          title="Error Reporting"
-          data={errors}
-          columns={columns}
-          options={{ paging: true, search: false }}
-        />
+        <Grid item xs={10}>
+          <Table
+            title="Error Reporting"
+            data={errors}
+            columns={columns}
+            options={{ paging: true, search: false }}
+          />
+        </Grid>
       )}
-    </>
+    </Grid>
+  );
+};
+
+export const ErrorEmptyState = () => {
+  return (
+    <Grid
+      container
+      justify="center"
+      direction="column"
+      alignItems="center"
+      spacing={2}
+    >
+      <Grid item xs={12}>
+        <Typography variant="h5">
+          Nice! There are no errors to report!
+        </Typography>
+      </Grid>
+      <Grid item xs={12}>
+        <img
+          src={EmptyStateImage}
+          alt="EmptyState"
+          data-testid="emptyStateImg"
+        />
+      </Grid>
+    </Grid>
   );
 };

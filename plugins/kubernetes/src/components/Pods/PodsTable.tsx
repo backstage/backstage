@@ -17,7 +17,7 @@
 import React from 'react';
 import { Table, TableColumn } from '@backstage/core';
 import { V1Pod } from '@kubernetes/client-node';
-import { PodDrawer } from './index';
+import { PodDrawer } from './PodDrawer';
 import {
   containersReady,
   containerStatuses,

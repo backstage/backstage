@@ -129,10 +129,8 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
 
           {kubernetesObjects && (
             <>
-              <Grid item container>
-                <Grid item>
-                  <ErrorReporting detectedErrors={detectedErrors} />
-                </Grid>
+              <Grid item>
+                <ErrorReporting detectedErrors={detectedErrors} />
               </Grid>
               <Grid item>
                 <Divider />
