@@ -51,16 +51,9 @@ export class S3 {
     });
   }
 
-  putObject({ Key }: { Key: string }) {
-    return new Promise((resolve, reject) => {
-      if (
-        fs.existsSync(Key) &&
-        fs.readFileSync(Key).toString() === 'mock-error'
-      ) {
-        reject('');
-      } else {
-        resolve('');
-      }
+  putObject() {
+    return new Promise(resolve => {
+      resolve('');
     });
   }
 }

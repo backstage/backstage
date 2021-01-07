@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import mockFs from 'mock-fs';
-import path from 'path';
 import * as winston from 'winston';
 import { ConfigReader } from '@backstage/config';
 import { AwsS3Publish } from './awsS3';
@@ -46,7 +45,7 @@ const getEntityRootDir = (entity: Entity) => {
     kind,
     metadata: { namespace, name },
   } = entity;
-  const entityRootDir = path.join(namespace as string, kind, name);
+  const entityRootDir = `${namespace}/${kind}/${name}`;
   return entityRootDir;
 };
 
@@ -102,12 +101,6 @@ describe('AwsS3Publish', () => {
     });
 
     it('should fail to publish a directory', async () => {
-      const wrongPathToGeneratedDirectory = path.join(
-        'wrong',
-        'path',
-        'to',
-        'generatedDirectory',
-      );
       const entity = createMockEntity();
       const entityRootDir = getEntityRootDir(entity);
 
@@ -124,13 +117,11 @@ describe('AwsS3Publish', () => {
       await publisher
         .publish({
           entity,
-          directory: wrongPathToGeneratedDirectory,
+          directory: '/wrong/path/to/generatedDirectory',
         })
         .catch(error =>
-          expect(error).toEqual(
-            new Error(
-              `Unable to upload file(s) to AWS S3. Error Failed to read template directory: ENOENT, no such file or directory '${wrongPathToGeneratedDirectory}'`,
-            ),
+          expect(error.message).toContain(
+            'Unable to upload file(s) to AWS S3. Error Failed to read template directory',
           ),
         );
       mockFs.restore();
