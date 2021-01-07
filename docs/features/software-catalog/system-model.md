@@ -107,10 +107,6 @@ product or use-case, share the same entity types in their APIs, and integrate
 well with each other. Other domains could be “Content Ingestion”, “Ads” or
 “Search”.
 
-## Current status
-
-Backstage currently supports Components and APIs.
-
 ## Links
 
 - [Original RFC](https://github.com/backstage/backstage/issues/390)

@@ -91,3 +91,16 @@ A membership relation, typically for [Users](descriptor-format.md#kind-user) in
 [Groups](descriptor-format.md#kind-group).
 
 This relation is commonly based on `spec.memberOf`.
+
+### `partOf` and `hasPart`
+
+A relation with an [Domain](descriptor-format.md#kind-domain) or
+[System](descriptor-format.md#kind-system) entity, typically from a
+[Component](descriptor-format.md#kind-component),
+[API](descriptor-format.md#kind-api), or
+[System](descriptor-format.md#kind-system).
+
+These relations express that a component, API, or system belongs to or is
+grouped under a system or domain.
+
+This relation is commonly based on `spec.system` or `spec.domain`.

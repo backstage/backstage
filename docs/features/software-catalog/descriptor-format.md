@@ -382,6 +382,8 @@ spec:
   type: website
   lifecycle: production
   owner: artist-relations@example.com
+  system: artist-engagement-portal
+  domain: artists
   providesApis:
     - artist-api
 ```
@@ -443,6 +445,22 @@ component, but there will always be one ultimate owner.
 Apart from being a string, the software catalog leaves the format of this field
 open to implementers to choose. Most commonly, it is set to the ID or email of a
 group of people in an organizational structure.
+
+### `spec.system` [optional]
+
+Links the system that the component belongs to, e.g. `artist-engagement-portal`.
+This field is optional.
+
+The software catalog expects a single string that references the name of an
+entity of the `kind` `System`.
+
+### `spec.domain` [optional]
+
+Links the domain that the component belongs to, e.g. `artists`. This field is
+optional.
+
+The software catalog expects a single string that references the name of an
+entity of the `kind` `Domain`.
 
 ### `spec.providesApis` [optional]
 
@@ -598,6 +616,8 @@ spec:
   type: openapi
   lifecycle: production
   owner: artist-relations@example.com
+  system: artist-engagement-portal
+  domain: artists
   definition: |
     openapi: "3.0.0"
     info:
@@ -679,6 +699,22 @@ one ultimate owner.
 Apart from being a string, the software catalog leaves the format of this field
 open to implementers to choose. Most commonly, it is set to the ID or email of a
 group of people in an organizational structure.
+
+### `spec.system` [optional]
+
+Links the system that the API belongs to, e.g. `artist-engagement-portal`. This
+field is optional.
+
+The software catalog expects a single string that references the name of an
+entity of the `kind` `System`.
+
+### `spec.domain` [optional]
+
+Links the domain that the API belongs to, e.g. `artists`. This field is
+optional.
+
+The software catalog expects a single string that references the name of an
+entity of the `kind` `Domain`.
 
 ### `spec.definition` [required]
 
@@ -833,15 +869,219 @@ sufficient to enter only the `metadata.name` field of those groups.
 
 ## Kind: Resource
 
-This kind is not yet defined, but is reserved [for future use](system-model.md).
+Describes the following entity kind:
+
+| Field        | Value                   |
+| ------------ | ----------------------- |
+| `apiVersion` | `backstage.io/v1alpha1` |
+| `kind`       | `Resource`              |
+
+A resource describes the infrastructure a system needs to operate, like BigTable
+databases, Pub/Sub topics, S3 buckets or CDNs. Modelling them together with
+components and systems allows to visualize resource footprint, and create
+tooling around them.
+
+Descriptor files for this kind may look as follows.
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: artists-db
+  description: Stores artist details
+spec:
+  type: database
+  owner: artist-relations@example.com
+  domain: artists
+  system: artist-engagement-portal
+```
+
+In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)
+shape, this kind has the following structure.
+
+### `apiVersion` and `kind` [required]
+
+Exactly equal to `backstage.io/v1alpha1` and `Resource`, respectively.
+
+### `spec.owner` [required]
+
+The owner of the resource, e.g. `artist-relations@example.com`. This field is
+required.
+
+In Backstage, the owner of an resource is the singular entity (commonly a team)
+that bears ultimate responsibility for the resource, and has the authority and
+capability to develop and maintain it. They will be the point of contact if
+something goes wrong, or if features are to be requested. The main purpose of
+this field is for display purposes in Backstage, so that people looking at
+catalog items can get an understanding of to whom this resource belongs. It is
+not to be used by automated processes to for example assign authorization in
+runtime systems. There may be others that also manage or otherwise touch the
+resource, but there will always be one ultimate owner.
+
+Apart from being a string, the software catalog leaves the format of this field
+open to implementers to choose. Most commonly, it is set to the ID or email of a
+group of people in an organizational structure.
+
+### `spec.type` [required]
+
+The type of resource as a string, e.g. `database`. This field is required. There
+is currently no enforced set of values for this field, so it is left up to the
+adopting organization to choose a nomenclature that matches the resources used
+in their tech stack.
+
+Some common values for this field could be:
+
+- `database`
+- `s3-bucket`
+- `cluster`
+
+### `spec.system` [optional]
+
+Links the system that the resource belongs to, e.g. `artist-engagement-portal`.
+This field is optional.
+
+The software catalog expects a single string that references the name of an
+entity of the `kind` `System`.
+
+### `spec.domain` [optional]
+
+Links the domain that the resource belongs to, e.g. `artists`. This field is
+optional.
+
+The software catalog expects a single string that references the name of an
+entity of the `kind` `Domain`.
 
 ## Kind: System
 
-This kind is not yet defined, but is reserved [for future use](system-model.md).
+Describes the following entity kind:
+
+| Field        | Value                   |
+| ------------ | ----------------------- |
+| `apiVersion` | `backstage.io/v1alpha1` |
+| `kind`       | `System`                |
+
+A system is a collection of resources and components. The system may expose or
+consume one or several APIs. It is viewed as abstraction level that provides
+potential consumers insights into exposed features without needing a too
+detailed view into the details of all components. This also gives the owning
+team the possibility to decide about published artifacts and APIs.
+
+Descriptor files for this kind may look as follows.
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: artist-engagement-portal
+  description: Handy tools to keep artists in the loop
+spec:
+  owner: artist-relations@example.com
+  domain: artists
+  providesApis:
+    - artist-api
+```
+
+In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)
+shape, this kind has the following structure.
+
+### `apiVersion` and `kind` [required]
+
+Exactly equal to `backstage.io/v1alpha1` and `System`, respectively.
+
+### `spec.owner` [required]
+
+The owner of the System, e.g. `artist-relations@example.com`. This field is
+required.
+
+In Backstage, the owner of an System is the singular entity (commonly a team)
+that bears ultimate responsibility for the System, and has the authority and
+capability to develop and maintain it. They will be the point of contact if
+something goes wrong, or if features are to be requested. The main purpose of
+this field is for display purposes in Backstage, so that people looking at
+catalog items can get an understanding of to whom this System belongs. It is not
+to be used by automated processes to for example assign authorization in runtime
+systems. There may be others that also develop or otherwise touch the System,
+but there will always be one ultimate owner.
+
+Apart from being a string, the software catalog leaves the format of this field
+open to implementers to choose. Most commonly, it is set to the ID or email of a
+group of people in an organizational structure.
+
+### `spec.domain` [optional]
+
+Links the domain that the system belongs to, e.g. `artists`. This field is
+optional.
+
+The software catalog expects a single string that references the name of an
+entity of the `kind` `Domain`.
+
+### `spec.providesApis` [optional]
+
+Links APIs that are exposed by the system, e.g. `artist-api`, providing
+consumers a higher level abstraction on providers of APIs without needing to
+have a detailed view in the involved components. This field is optional.
+
+The software catalog expects a list of one or more strings that references the
+names of other entities of the `kind` `API`.
+
+### `spec.consumesApis` [optional]
+
+Links APIs that are consumed by the system, e.g. `artist-api`, providing
+providers a higher level abstraction on consumers of their APIs without needing
+to have a detailed view in the involved components. This field is optional.
+
+The software catalog expects a list of one or more strings that references the
+names of other entities of the `kind` `API`.
 
 ## Kind: Domain
 
-This kind is not yet defined, but is reserved [for future use](system-model.md).
+Describes the following entity kind:
+
+| Field        | Value                   |
+| ------------ | ----------------------- |
+| `apiVersion` | `backstage.io/v1alpha1` |
+| `kind`       | `Domain`                |
+
+A Domain groups a collection of systems that share terminology, domain models,
+business purpose, or documentation, i.e. form a bounded context.
+
+Descriptor files for this kind may look as follows.
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: Domain
+metadata:
+  name: artists
+  description: Everything about artists
+spec:
+  owner: artist-relations@example.com
+```
+
+In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)
+shape, this kind has the following structure.
+
+### `apiVersion` and `kind` [required]
+
+Exactly equal to `backstage.io/v1alpha1` and `Domain`, respectively.
+
+### `spec.owner` [required]
+
+The owner of the domain, e.g. `artist-relations@example.com`. This field is
+required.
+
+In Backstage, the owner of an domain is the singular entity (commonly a team)
+that bears ultimate responsibility for the domain, and has the authority and
+capability to develop and maintain it. They will be the point of contact if
+something goes wrong, or if features are to be requested. The main purpose of
+this field is for display purposes in Backstage, so that people looking at
+catalog items can get an understanding of to whom this system belongs. It is not
+to be used by automated processes to for example assign authorization in runtime
+systems. There may be others that also develop or otherwise touch the system,
+but there will always be one ultimate owner.
+
+Apart from being a string, the software catalog leaves the format of this field
+open to implementers to choose. Most commonly, it is set to the ID or email of a
+group of people in an organizational structure.
 
 ## Kind: Location
 
