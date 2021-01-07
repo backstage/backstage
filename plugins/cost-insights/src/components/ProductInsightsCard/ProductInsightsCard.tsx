@@ -132,7 +132,7 @@ export const ProductInsightsCard = ({
         />
       ) : (
         <Typography>
-          There are no {product.name} costs within this timeframe for your
+          There are no {product.name} costs within this time frame for your
           team's projects.
         </Typography>
       )}
