@@ -173,11 +173,11 @@ export default async () => {
     if (breakingUpdates.size > 0) {
       console.log();
       console.log(
-        chalk.yellow('The following packages may have breaking changes:'),
+        chalk.yellow('⚠️  The following packages may have breaking changes:'),
       );
       console.log();
 
-      for (const [name] of breakingUpdates) {
+      for (const name of Array.from(breakingUpdates.keys()).sort()) {
         console.log(`  ${chalk.yellow(name)}`);
 
         let path;
