@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 import mockFs from 'mock-fs';
+import path from 'path';
 import * as winston from 'winston';
 import { ConfigReader } from '@backstage/config';
 import { AwsS3Publish } from './awsS3';
 import { PublisherBase } from './types';
+import type { Entity, EntityName } from '@backstage/catalog-model';
 
-const createMockEntity = (annotations = {}) => {
+const createMockEntity = (annotations = {}): Entity => {
   return {
     apiVersion: 'version',
     kind: 'TestKind',
@@ -31,6 +33,21 @@ const createMockEntity = (annotations = {}) => {
       },
     },
   };
+};
+
+const createMockEntityName = (): EntityName => ({
+  kind: 'TestKind',
+  name: 'test-component-name',
+  namespace: 'test-namespace',
+});
+
+const getEntityRootDir = (entity: Entity) => {
+  const {
+    kind,
+    metadata: { namespace, name },
+  } = entity;
+  const entityRootDir = path.join(namespace as string, kind, name);
+  return entityRootDir;
 };
 
 const logger = winston.createLogger();
@@ -63,12 +80,10 @@ describe('AwsS3Publish', () => {
   describe('publish', () => {
     it('should publish a directory', async () => {
       const entity = createMockEntity();
-      const {
-        kind,
-        metadata: { namespace, name },
-      } = entity;
+      const entityRootDir = getEntityRootDir(entity);
+
       mockFs({
-        [`${namespace}/${kind}/${name}`]: {
+        [entityRootDir]: {
           'index.html': '',
           '404.html': '',
           assets: {
@@ -80,23 +95,24 @@ describe('AwsS3Publish', () => {
       expect(
         await publisher.publish({
           entity,
-          directory: `${namespace}/${kind}/${name}`,
+          directory: entityRootDir,
         }),
       ).toBeUndefined();
       mockFs.restore();
     });
 
     it('should fail to publish a directory', async () => {
-      const wrongPathToGeneratedDirectory = '/wrong/path/to/generatedDirectory';
+      const wrongPathToGeneratedDirectory = path.join(
+        'wrong',
+        'path',
+        'to',
+        'generatedDirectory',
+      );
       const entity = createMockEntity();
-
-      const {
-        kind,
-        metadata: { namespace, name },
-      } = entity;
+      const entityRootDir = getEntityRootDir(entity);
 
       mockFs({
-        [`${namespace}/${kind}/${name}`]: {
+        [entityRootDir]: {
           'index.html': '',
           '404.html': '',
           assets: {
@@ -123,47 +139,32 @@ describe('AwsS3Publish', () => {
 
   describe('hasDocsBeenGenerated', () => {
     it('should return true if docs has been generated', async () => {
-      const entityMock = {
-        apiVersion: 'apiVersion',
-        kind: 'kind',
-        metadata: {
-          namespace: '/namespace',
-          name: 'name',
-        },
-      };
-      const entityRootDir = `${entityMock.metadata.namespace}/${entityMock.kind}/${entityMock.metadata.name}`;
+      const entity = createMockEntity();
+      const entityRootDir = getEntityRootDir(entity);
+
       mockFs({
         [entityRootDir]: {
           'index.html': 'file-content',
         },
       });
 
-      expect(await publisher.hasDocsBeenGenerated(entityMock)).toBe(true);
+      expect(await publisher.hasDocsBeenGenerated(entity)).toBe(true);
       mockFs.restore();
     });
 
     it('should return false if docs has not been generated', async () => {
-      const entityMock = {
-        apiVersion: 'apiVersion',
-        kind: 'kind',
-        metadata: {
-          namespace: 'namespace',
-          name: 'name',
-        },
-      };
+      const entity = createMockEntity();
 
-      expect(await publisher.hasDocsBeenGenerated(entityMock)).toBe(false);
+      expect(await publisher.hasDocsBeenGenerated(entity)).toBe(false);
     });
   });
 
   describe('fetchTechDocsMetadata', () => {
     it('should return tech docs metadata', async () => {
-      const entityNameMock = {
-        name: 'name',
-        namespace: '/namespace',
-        kind: 'kind',
-      };
-      const entityRootDir = `${entityNameMock.namespace}/${entityNameMock.kind}/${entityNameMock.name}`;
+      const entityNameMock = createMockEntityName();
+      const entity = createMockEntity();
+      const entityRootDir = getEntityRootDir(entity);
+
       mockFs({
         [entityRootDir]: {
           'techdocs_metadata.json': 'file-content',
@@ -177,12 +178,10 @@ describe('AwsS3Publish', () => {
     });
 
     it('should return an error if the techdocs_metadata.json file is not present', async () => {
-      const entityNameMock = {
-        name: 'name',
-        namespace: 'namespace',
-        kind: 'kind',
-      };
-      const entityRootDir = `${entityNameMock.namespace}/${entityNameMock.kind}/${entityNameMock.name}`;
+      const entityNameMock = createMockEntityName();
+      const entity = createMockEntity();
+      const entityRootDir = getEntityRootDir(entity);
+
       await publisher
         .fetchTechDocsMetadata(entityNameMock)
         .catch(error =>

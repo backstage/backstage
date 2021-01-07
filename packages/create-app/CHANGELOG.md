@@ -1,5 +1,36 @@
 # @backstage/create-app
 
+## 0.3.2
+
+### Patch Changes
+
+- c2b52d9c5: Replace `register-component` plugin with new `catalog-import` plugin
+- fc6839f13: Bump `sqlite3` to v5.
+
+  To apply this change to an existing app, change the version of `sqlite3` in the `dependencies` of `packages/backend/package.json`:
+
+  ```diff
+       "pg": "^8.3.0",
+  -    "sqlite3": "^4.2.0",
+  +    "sqlite3": "^5.0.0",
+       "winston": "^3.2.1"
+  ```
+
+  Note that the `sqlite3` dependency may not be preset if you chose to use PostgreSQL when creating the app.
+
+- 8d68e4cdc: Removed the Circle CI sidebar item, since the target page does not exist.
+
+  To apply this change to an existing app, remove `"CircleCI"` sidebar item from `packages/app/src/sidebar.tsx`, and the `BuildIcon` import if it is unused.
+
+- 1773a5182: Removed lighthouse plugin from the default set up plugins, as it requires a separate Backend to function.
+
+  To apply this change to an existing app, remove the following:
+
+  1. The `lighthouse` block from `app-config.yaml`.
+  2. The `@backstage/plugin-lighthouse` dependency from `packages/app/package.json`.
+  3. The `@backstage/plugin-lighthouse` re-export from `packages/app/src/plugins.ts`.
+  4. The Lighthouse sidebar item from `packages/app/src/sidebar.tsx`, and the `RuleIcon` import if it is unused.
+
 ## 0.3.1
 
 ### Patch Changes

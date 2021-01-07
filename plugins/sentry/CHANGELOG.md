@@ -1,5 +1,13 @@
 # @backstage/plugin-sentry
 
+## 0.3.2
+
+### Patch Changes
+
+- 88da267cc: Port to new composability API by exporting new `EntitySentryContent` and `EntitySentryCard` component extensions.
+- Updated dependencies [9c09a364f]
+  - @backstage/plugin-catalog@0.2.10
+
 ## 0.3.1
 
 ### Patch Changes
