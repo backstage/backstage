@@ -20,14 +20,21 @@ import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { parseLocationAnnotation } from '../helpers';
 import { InputError, Git } from '@backstage/backend-common';
 import { PreparerBase, PreparerOptions } from './types';
+import { readBitbucketIntegrationConfigs, BitbucketIntegrationConfig } from '@backstage/integration';
 import GitUriParser from 'git-url-parse';
 import { Config } from '@backstage/config';
+import { Logger } from 'winston';
 
 export class BitbucketPreparer implements PreparerBase {
   private readonly privateToken: string;
   private readonly username: string;
-
-  constructor(config: Config) {
+  private readonly logger: Logger;
+  private readonly integrations: BitbucketIntegrationConfig[];  
+  constructor(config: Config, { logger }: { logger: Logger}) {
+    this.logger = logger;
+    this.integrations = readBitbucketIntegrationConfigs(
+      config.getOptionalConfigArray('integrations.bitbucket') ??Takj
+    )
     this.username =
       config.getOptionalString('scaffolder.bitbucket.api.username') ?? '';
     this.privateToken =
