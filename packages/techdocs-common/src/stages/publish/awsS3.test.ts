@@ -187,7 +187,7 @@ describe('AwsS3Publish', () => {
         .catch(error =>
           expect(error).toEqual(
             new Error(
-              `TechDocs metadata fetch failed, The file ${entityRootDir}/techdocs_metadata.json doest not exist !`,
+              `TechDocs metadata fetch failed, The file ${entityRootDir}/techdocs_metadata.json doest not exist.`,
             ),
           ),
         );
