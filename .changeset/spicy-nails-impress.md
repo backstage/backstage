@@ -2,4 +2,4 @@
 '@backstage/plugin-cost-insights': patch
 ---
 
-Remove unused dev package dependency for production
+Minor wording change in UI
