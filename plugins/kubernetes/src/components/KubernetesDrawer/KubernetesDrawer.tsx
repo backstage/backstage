@@ -199,11 +199,7 @@ const KubernetesDrawerContent = <T extends KubernetesDrawerable>({
         />
       </div>
       <div className={classes.content}>
-        {isYaml && (
-          <MarkdownContent
-            content={`\`\`\`yaml\n${jsYaml.dump(object)}\n\`\`\``}
-          />
-        )}
+        {isYaml && <CodeSnippet language="yaml" text={jsYaml.dump(object)} />}
         {!isYaml && <StructuredMetadataTable metadata={renderObject(object)} />}
       </div>
     </>
