@@ -1,6 +1,6 @@
 {
   "name": "example-backend",
-  "version": "0.2.8",
+  "version": "0.2.10",
   "main": "dist/index.cjs.js",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -37,7 +37,7 @@
     "@backstage/plugin-kubernetes-backend": "^0.2.3",
     "@backstage/plugin-proxy-backend": "^0.2.3",
     "@backstage/plugin-rollbar-backend": "^0.1.5",
-    "@backstage/plugin-scaffolder-backend": "^0.3.6",
+    "@backstage/plugin-scaffolder-backend": "^0.4.0",
     "@backstage/plugin-techdocs-backend": "^0.5.0",
     "@gitbeaker/node": "^25.2.0",
     "@octokit/rest": "^18.0.0",

@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.4.0
+
+### Minor Changes
+
+- 5eb8c9b9e: Fix gitlab scaffolder publisher
+
+### Patch Changes
+
+- 7e3451700: bug(scaffolder): Ignore the .git folder when adding dot-files to the index
+
 ## 0.3.7
 
 ### Patch Changes

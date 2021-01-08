@@ -56,7 +56,7 @@
     "@backstage/plugin-rollbar-backend": "^0.1.6",
     "@backstage/plugin-scaffolder": "^0.3.6",
     "@backstage/plugin-search": "^0.2.5",
-    "@backstage/plugin-scaffolder-backend": "^0.3.7",
+    "@backstage/plugin-scaffolder-backend": "^0.4.0",
     "@backstage/plugin-tech-radar": "^0.3.2",
     "@backstage/plugin-techdocs": "^0.5.2",
     "@backstage/plugin-techdocs-backend": "^0.5.2",
