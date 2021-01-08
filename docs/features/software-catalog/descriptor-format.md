@@ -383,7 +383,6 @@ spec:
   lifecycle: production
   owner: artist-relations@example.com
   system: artist-engagement-portal
-  domain: artists
   providesApis:
     - artist-api
 ```
@@ -453,14 +452,6 @@ This field is optional.
 
 The software catalog expects a single string that references the name of an
 entity of the `kind` `System`.
-
-### `spec.domain` [optional]
-
-Links the domain that the component belongs to, e.g. `artists`. This field is
-optional.
-
-The software catalog expects a single string that references the name of an
-entity of the `kind` `Domain`.
 
 ### `spec.providesApis` [optional]
 
@@ -617,7 +608,6 @@ spec:
   lifecycle: production
   owner: artist-relations@example.com
   system: artist-engagement-portal
-  domain: artists
   definition: |
     openapi: "3.0.0"
     info:
@@ -707,14 +697,6 @@ field is optional.
 
 The software catalog expects a single string that references the name of an
 entity of the `kind` `System`.
-
-### `spec.domain` [optional]
-
-Links the domain that the API belongs to, e.g. `artists`. This field is
-optional.
-
-The software catalog expects a single string that references the name of an
-entity of the `kind` `Domain`.
 
 ### `spec.definition` [required]
 
@@ -892,7 +874,6 @@ metadata:
 spec:
   type: database
   owner: artist-relations@example.com
-  domain: artists
   system: artist-engagement-portal
 ```
 
@@ -942,14 +923,6 @@ This field is optional.
 
 The software catalog expects a single string that references the name of an
 entity of the `kind` `System`.
-
-### `spec.domain` [optional]
-
-Links the domain that the resource belongs to, e.g. `artists`. This field is
-optional.
-
-The software catalog expects a single string that references the name of an
-entity of the `kind` `Domain`.
 
 ## Kind: System
 
