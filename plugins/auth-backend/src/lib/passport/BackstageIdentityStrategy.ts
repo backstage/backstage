@@ -75,6 +75,7 @@ export class BackstageIdentityStrategy extends Strategy {
         issuer,
       }) as { sub: string };
       // Verified, forward BackstageIdentity to req.user
+      // TODO: Settle internal user format/properties
       const user: BackstageIdentity = {
         id: decoded.sub,
         idToken: token,
