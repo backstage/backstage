@@ -24,7 +24,8 @@ import { Logger } from 'winston';
 import { Entity, EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { getHeadersForFileExtension, getFileTreeRecursively } from './helpers';
-import { PublisherBase, PublishRequest } from './types';
+import { PublisherBase, PublishRequest, TechDocsMetadata } from './types';
+import JSON5 from 'json5';
 
 export class GoogleGCSPublish implements PublisherBase {
   static async fromConfig(
@@ -132,7 +133,7 @@ export class GoogleGCSPublish implements PublisherBase {
     });
   }
 
-  fetchTechDocsMetadata(entityName: EntityName): Promise<string> {
+  fetchTechDocsMetadata(entityName: EntityName): Promise<TechDocsMetadata> {
     return new Promise((resolve, reject) => {
       const entityRootDir = `${entityName.namespace}/${entityName.kind}/${entityName.name}`;
 
@@ -152,7 +153,7 @@ export class GoogleGCSPublish implements PublisherBase {
           const techdocsMetadataJson = Buffer.concat(
             fileStreamChunks,
           ).toString();
-          resolve(techdocsMetadataJson);
+          resolve(JSON5.parse(techdocsMetadataJson));
         });
     });
   }

@@ -18,7 +18,7 @@ import path from 'path';
 import * as winston from 'winston';
 import { ConfigReader } from '@backstage/config';
 import { AwsS3Publish } from './awsS3';
-import { PublisherBase } from './types';
+import { PublisherBase, TechDocsMetadata } from './types';
 import type { Entity, EntityName } from '@backstage/catalog-model';
 
 const createMockEntity = (annotations = {}): Entity => {
@@ -159,13 +159,39 @@ describe('AwsS3Publish', () => {
 
       mockFs({
         [entityRootDir]: {
-          'techdocs_metadata.json': 'file-content',
+          'techdocs_metadata.json':
+            '{"site_name": "backstage", "site_description": "site_content"}',
         },
       });
 
-      expect(await publisher.fetchTechDocsMetadata(entityNameMock)).toBe(
-        'file-content',
-      );
+      const expectedMetadata: TechDocsMetadata = {
+        site_name: 'backstage',
+        site_description: 'site_content',
+      };
+      expect(
+        await publisher.fetchTechDocsMetadata(entityNameMock),
+      ).toStrictEqual(expectedMetadata);
+      mockFs.restore();
+    });
+
+    it('should return tech docs metadata when json encoded with single quotes', async () => {
+      const entityNameMock = createMockEntityName();
+      const entity = createMockEntity();
+      const entityRootDir = getEntityRootDir(entity);
+
+      mockFs({
+        [entityRootDir]: {
+          'techdocs_metadata.json': `{'site_name': 'backstage', 'site_description': 'site_content'}`,
+        },
+      });
+
+      const expectedMetadata: TechDocsMetadata = {
+        site_name: 'backstage',
+        site_description: 'site_content',
+      };
+      expect(
+        await publisher.fetchTechDocsMetadata(entityNameMock),
+      ).toStrictEqual(expectedMetadata);
       mockFs.restore();
     });
 

@@ -20,9 +20,10 @@ import { Logger } from 'winston';
 import { Entity, EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { getHeadersForFileExtension, getFileTreeRecursively } from './helpers';
-import { PublisherBase, PublishRequest } from './types';
+import { PublisherBase, PublishRequest, TechDocsMetadata } from './types';
 import fs from 'fs-extra';
 import { Readable } from 'stream';
+import JSON5 from 'json5';
 
 const streamToBuffer = (stream: Readable): Promise<Buffer> => {
   return new Promise((resolve, reject) => {
@@ -32,7 +33,7 @@ const streamToBuffer = (stream: Readable): Promise<Buffer> => {
       stream.on('error', reject);
       stream.on('end', () => resolve(Buffer.concat(chunks)));
     } catch (e) {
-      throw new Error(`Unable to parse the response data, ${e.message}`);
+      throw new Error(`Unable to parse the response data ${e.message}`);
     }
   });
 };
@@ -162,9 +163,11 @@ export class AwsS3Publish implements PublisherBase {
     }
   }
 
-  async fetchTechDocsMetadata(entityName: EntityName): Promise<string> {
+  async fetchTechDocsMetadata(
+    entityName: EntityName,
+  ): Promise<TechDocsMetadata> {
     try {
-      return await new Promise<string>((resolve, reject) => {
+      return await new Promise<TechDocsMetadata>((resolve, reject) => {
         const entityRootDir = `${entityName.namespace}/${entityName.kind}/${entityName.name}`;
 
         this.storageClient
@@ -182,8 +185,11 @@ export class AwsS3Publish implements PublisherBase {
                 `Unable to parse the techdocs metadata file ${entityRootDir}/techdocs_metadata.json.`,
               );
             }
+            const techdocsMetadata = JSON5.parse(
+              techdocsMetadataJson.toString('utf-8'),
+            );
 
-            resolve(techdocsMetadataJson.toString('utf-8'));
+            resolve(techdocsMetadata);
           })
           .catch(err => {
             this.logger.error(err.message);
