@@ -39,7 +39,7 @@ export async function initRepoAndPush({
     dir,
   });
 
-  const paths = await globby(['./**', './**/.*'], {
+  const paths = await globby(['./**', './**/.*', '!.git'], {
     cwd: dir,
     gitignore: true,
     dot: true,
