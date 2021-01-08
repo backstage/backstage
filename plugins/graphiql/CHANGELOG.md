@@ -1,5 +1,11 @@
 # @backstage/plugin-graphiql
 
+## 0.2.4
+
+### Patch Changes
+
+- 21f6be0f6: Patch release to force a release for the `esm.js` extension change for dynamically loading chunks
+
 ## 0.2.3
 
 ### Patch Changes

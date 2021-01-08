@@ -1,5 +1,11 @@
 # @backstage/plugin-cost-insights
 
+## 0.5.6
+
+### Patch Changes
+
+- 9e9504ce4: Minor wording change in UI
+
 ## 0.5.5
 
 ### Patch Changes
