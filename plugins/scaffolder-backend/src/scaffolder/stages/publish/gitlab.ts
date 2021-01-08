@@ -20,6 +20,7 @@ import { JsonValue } from '@backstage/config';
 import { initRepoAndPush } from './helpers';
 import { RequiredTemplateValues } from '../templater';
 
+
 export class GitlabPublisher implements PublisherBase {
   private readonly client: Gitlab;
   private readonly token: string;
@@ -52,7 +53,10 @@ export class GitlabPublisher implements PublisherBase {
   private async createRemote(
     values: RequiredTemplateValues & Record<string, JsonValue>,
   ) {
-    const [owner, name] = values.storePath.split('/');
+    const pathElements = values.storePath.split('/');
+    const name = pathElements[pathElements.length - 1];
+    pathElements.pop();
+    const owner = pathElements.join('/');
 
     let targetNamespace = ((await this.client.Namespaces.show(owner)) as {
       id: number;

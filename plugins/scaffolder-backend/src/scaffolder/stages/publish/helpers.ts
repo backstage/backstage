@@ -45,6 +45,10 @@ export async function initRepoAndPush({
     dot: true,
   });
 
+  await git.init({
+    dir,
+  });
+
   for (const filepath of paths) {
     await git.add({ dir, filepath });
   }
