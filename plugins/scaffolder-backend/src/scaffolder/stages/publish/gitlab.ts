@@ -52,10 +52,7 @@ export class GitlabPublisher implements PublisherBase {
   private async createRemote(
     values: RequiredTemplateValues & Record<string, JsonValue>,
   ) {
-    const pathElements = values.storePath.split('/');
-    const name = pathElements[pathElements.length - 1];
-    pathElements.pop();
-    const owner = pathElements.join('/');
+    const [owner, name] = values.storePath.split('/');
 
     let targetNamespace = ((await this.client.Namespaces.show(owner)) as {
       id: number;

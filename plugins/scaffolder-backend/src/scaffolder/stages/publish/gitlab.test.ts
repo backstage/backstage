@@ -51,7 +51,7 @@ describe('GitLab Publisher', () => {
       const result = await publisher.publish({
         values: {
           isOrg: true,
-          storePath: 'bloum/blam/test',
+          storePath: 'blam/test',
           owner: 'bob',
         },
         directory: '/tmp/test',
@@ -82,7 +82,7 @@ describe('GitLab Publisher', () => {
 
       const result = await publisher.publish({
         values: {
-          storePath: 'bloum/blam/test',
+          storePath: 'blam/test',
           owner: 'bob',
         },
         directory: '/tmp/test',
