@@ -36,6 +36,7 @@ export class BackstageIdentityStrategy extends Strategy {
     this.name = 'backstage';
   }
 
+  // TODO(erilar): Move to its own module (IdentityClient?) and add tests
   private async refreshKeyStore(rawJwtToken: string) {
     const { header, payload } = JWT.decode(rawJwtToken, {
       complete: true,
