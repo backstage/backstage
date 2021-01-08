@@ -25,21 +25,20 @@ type InstallationData = {
   repositorySelection: 'selected' | 'all';
 };
 
-type InstallationRepoData = {
-  etag: string;
-  repos: Set<string>;
-};
+class Cache {
+  private readonly entries = new Map<string, { token: string; exp: Date }>();
 
+  getToken(key: string) {}
+}
 // for each app
 class GithubAppManager {
   private readonly appClient: Octokit;
   private readonly baseAuthConfig: { appId: number; privateKey: string };
   private readonly installationDatas = new Map<string, InstallationData>();
-  private readonly installationRepoDatas = new Map<
-    number,
-    InstallationRepoData
-  >();
 
+  // private readonly repoTokenCache = new Cache<{ token: string; exp: Date }>(
+  //   ({ exp }) => isInThePast(exp),
+  // );
   private installationsEtag?: string;
 
   constructor(config: GithubAppConfig) {
@@ -76,18 +75,16 @@ class GithubAppManager {
       throw new Error(`The app for ${owner}/${repo} is suspended`);
     }
 
-    const auth = createAppAuth({ ...this.baseAuthConfig, installationId });
-
-    const { token } = await auth({ type: 'installation' });
-
     if (repositorySelection === 'all') {
+      const auth = createAppAuth({ ...this.baseAuthConfig, installationId });
+
+      const { token } = await auth({ type: 'installation' });
+      console.log('DEBUG: token =', token);
+
       return { accessToken: token };
     }
 
-    // const octokit = new Octokit({ auth: token });
-    const res = await this.getInstallationClient(
-      installationId,
-    ).apps.createInstallationAccessToken({
+    const res = await this.appClient.apps.createInstallationAccessToken({
       installation_id: installationId,
       repositories: [repo],
     });
@@ -97,44 +94,6 @@ class GithubAppManager {
     //  repository_selection: 'selected',
     //  repositories: [ [Object] ]
     return { accessToken: res.data.token };
-
-    // const hasRepo = await this.installationHasRepo(installationId, repo, token);
-    // if (!hasRepo) {
-    //   const error = new Error(
-    //     `No app installation found for ${owner}/${repo} in ${this.baseAuthConfig.appId}`,
-    //   );
-    //   error.name = 'NotFoundError';
-    //   throw error;
-    // }
-
-    // return { accessToken: token };
-  }
-
-  private async installationHasRepo(id: number, repo: string, token: string) {
-    const octokit = new Octokit({ auth: token });
-
-    const installationRepoData = this.installationRepoDatas.get(id);
-
-    let repos: Set<string>;
-    try {
-      const res = await octokit.apps.listReposAccessibleToInstallation({
-        headers: {
-          'If-None-Match': installationRepoData?.etag,
-        },
-      });
-      repos = new Set(res.data.repositories.map(repo => repo.name));
-      this.installationRepoDatas.set(id, {
-        etag: res.headers.etag,
-        repos,
-      });
-    } catch (error) {
-      if (error.status !== 304) {
-        throw error;
-      }
-      repos = installationRepoData!.repos;
-    }
-
-    return repos.has(repo);
   }
 
   private async getInstallationData(owner: string): Promise<InstallationData> {
@@ -177,7 +136,6 @@ class GithubAppManager {
   }
 }
 
-// for each github installation
 class GithubIntegration {
   private readonly apps: GithubAppManager[];
 
@@ -199,7 +157,7 @@ class GithubIntegration {
     );
     const result = results.find(result => result.credentials);
     if (result) {
-      return result.credentials;
+      return result.credentials!;
     }
 
     const errors = results.map(r => r.error);
