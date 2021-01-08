@@ -20,7 +20,6 @@ import { JsonValue } from '@backstage/config';
 import { initRepoAndPush } from './helpers';
 import { RequiredTemplateValues } from '../templater';
 
-
 export class GitlabPublisher implements PublisherBase {
   private readonly client: Gitlab;
   private readonly token: string;
