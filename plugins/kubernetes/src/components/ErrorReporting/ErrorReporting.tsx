@@ -92,24 +92,20 @@ export const ErrorReporting = ({ detectedErrors }: ErrorReportingProps) => {
     .sort(sortBySeverity);
 
   return (
-    <Grid container>
+    <>
       {errors.length === 0 ? (
-        <Grid item xs={6}>
-          <InfoCard title="Error Reporting">
-            <ErrorEmptyState />
-          </InfoCard>
-        </Grid>
+        <InfoCard title="Error Reporting">
+          <ErrorEmptyState />
+        </InfoCard>
       ) : (
-        <Grid item xs={10}>
-          <Table
-            title="Error Reporting"
-            data={errors}
-            columns={columns}
-            options={{ paging: true, search: false }}
-          />
-        </Grid>
+        <Table
+          title="Error Reporting"
+          data={errors}
+          columns={columns}
+          options={{ paging: true, search: false }}
+        />
       )}
-    </Grid>
+    </>
   );
 };
 

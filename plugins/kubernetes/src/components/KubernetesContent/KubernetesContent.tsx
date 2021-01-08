@@ -215,7 +215,6 @@ const ClusterSummary = ({
       <Grid
         xs={2}
         item
-        container
         direction="column"
         justify="flex-start"
         alignItems="flex-start"
@@ -223,8 +222,6 @@ const ClusterSummary = ({
       >
         <Grid item xs>
           <Typography variant="h3">{clusterName}</Typography>
-        </Grid>
-        <Grid item xs>
           <Typography color="textSecondary" variant="body1">
             Cluster
           </Typography>

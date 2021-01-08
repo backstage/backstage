@@ -18,6 +18,7 @@ import React from 'react';
 import { V1Deployment } from '@kubernetes/client-node';
 import { KubernetesDrawer } from '../KubernetesDrawer/KubernetesDrawer';
 import { renderCondition } from '../../utils/pod';
+import { Typography, Grid } from '@material-ui/core';
 
 export const DeploymentDrawer = ({
   deployment,
@@ -47,7 +48,25 @@ export const DeploymentDrawer = ({
           ...conditions,
         };
       }}
-      buttonVariant="h4"
-    />
+    >
+      <Grid
+        container
+        direction="column"
+        justify="flex-start"
+        alignItems="flex-start"
+        spacing={0}
+      >
+        <Grid item>
+          <Typography variant="h5">
+            {deployment.metadata?.name ?? 'unknown object'}
+          </Typography>
+        </Grid>
+        <Grid item>
+          <Typography color="textSecondary" variant="body1">
+            Deployment
+          </Typography>
+        </Grid>
+      </Grid>
+    </KubernetesDrawer>
   );
 };

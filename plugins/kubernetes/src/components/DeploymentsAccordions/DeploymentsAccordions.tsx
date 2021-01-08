@@ -155,23 +155,8 @@ const DeploymentSummary = ({
 }: DeploymentSummaryProps) => {
   return (
     <Grid container direction="row" justify="flex-start" alignItems="center">
-      <Grid
-        xs={3}
-        item
-        container
-        direction="column"
-        justify="flex-start"
-        alignItems="flex-start"
-        spacing={0}
-      >
-        <Grid item xs>
-          <DeploymentDrawer deployment={deployment} />
-        </Grid>
-        <Grid item xs>
-          <Typography color="textSecondary" variant="body1">
-            Deployment
-          </Typography>
-        </Grid>
+      <Grid xs={3} item>
+        <DeploymentDrawer deployment={deployment} />
       </Grid>
       <Grid item xs={1}>
         <Divider style={{ height: '5em' }} orientation="vertical" />
