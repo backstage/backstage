@@ -16,7 +16,7 @@
 
 import { GithubAppConfig, GitHubIntegrationConfig } from './config';
 import { createAppAuth } from '@octokit/auth-app';
-import { Octokit } from '@octokit/rest';
+import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
 import gitUrlParse from 'git-url-parse';
 import moment from 'moment';
 
@@ -30,13 +30,11 @@ type InstallationData = {
 class GithubAppManager {
   private readonly appClient: Octokit;
   private readonly baseAuthConfig: { appId: number; privateKey: string };
-  private readonly installationDatas = new Map<string, InstallationData>();
+  private installations?: RestEndpointMethodTypes['apps']['listInstallations']['response'];
   private readonly tokenCache = new Map<
     string,
     { accessToken: string; exp: Date }
   >();
-
-  private installationsEtag?: string;
 
   constructor(config: GithubAppConfig) {
     this.baseAuthConfig = {
@@ -67,7 +65,10 @@ class GithubAppManager {
 
     // App is installed in the entire org
     if (repositorySelection === 'all') {
-      const auth = createAppAuth({ ...this.baseAuthConfig, installationId });
+      const auth = createAppAuth({
+        ...this.baseAuthConfig,
+        installationId,
+      });
       const { token } = await auth({ type: 'installation' });
       return { accessToken: token };
     }
@@ -97,35 +98,31 @@ class GithubAppManager {
   private async getInstallationData(owner: string): Promise<InstallationData> {
     // List all installations using the last used etag.
     // Return cached InstallationData if error with status 304 is thrown.
+    let installation;
     try {
-      const installations = await this.appClient.apps.listInstallations({
+      this.installations = await this.appClient.apps.listInstallations({
         headers: {
-          'If-None-Match': this.installationsEtag,
+          'If-None-Match': this.installations?.headers.etag,
         },
       });
-      this.installationsEtag = installations.headers.etag;
 
-      const installation = installations.data.find(
+      installation = this.installations.data.find(
         inst => inst.account?.login === owner,
       );
-
-      if (installation) {
-        const data = {
-          installationId: installation.id,
-          suspended: Boolean(installation.suspended_by),
-          repositorySelection: installation.repository_selection,
-        };
-        this.installationDatas.set(owner, data);
-        return data;
-      }
     } catch (error) {
       if (error.status !== 304) {
         throw error;
       }
-      const data = this.installationDatas.get(owner);
-      if (data) {
-        return data;
-      }
+      installation = this.installations?.data.find(
+        inst => inst.account?.login === owner,
+      );
+    }
+    if (installation) {
+      return {
+        installationId: installation.id,
+        suspended: Boolean(installation.suspended_by),
+        repositorySelection: installation.repository_selection,
+      };
     }
 
     const notFoundError = new Error(
