@@ -447,11 +447,16 @@ group of people in an organizational structure.
 
 ### `spec.system` [optional]
 
-Links the system that the component belongs to, e.g. `artist-engagement-portal`.
-This field is optional.
+An [entity reference](#string-references) that to the system that the component
+belongs to, e.g. `artist-engagement-portal`. This field is optional.
 
-The software catalog expects a single string that references the name of an
-entity of the `kind` `System`.
+| Default [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                            |
+| ----------------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------- |
+| [`System`](#kind-system) (only)                 | Same as this entity, typically `default`   | [`partOf`, and reverse `hasPart`](well-known-relations.md#partof-and-haspart) |
+
+| [`kind`](#apiversion-and-kind-required)                   | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                            |
+| --------------------------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------- |
+| [`System`](#kind-system) (default), [`API`](#kind-system) | Same as this entity, typically `default`   | [`partOf`, and reverse `hasPart`](well-known-relations.md#partof-and-haspart) |
 
 ### `spec.providesApis` [optional]
 
