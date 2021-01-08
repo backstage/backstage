@@ -426,7 +426,7 @@ class Index extends React.Component {
         <ActionBlock className="stripe bg-teal">
           <ActionBlock.Title>Learn more about the K8s plugin</ActionBlock.Title>
           <ActionBlock.Link
-            href={`https://backstage.io/blog/2020/1/12/new-backstage-feature-kubernetes-for-service-owners`}
+            href={`https://backstage.io/blog/2021/1/12/new-backstage-feature-kubernetes-for-service-owners`}
           >
             Docs
           </ActionBlock.Link>
