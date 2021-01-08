@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder-backend': minor
 ---
 
-Fix gitlab scaffoler publisher
+Fix gitlab scaffolder publisher
