@@ -18,6 +18,7 @@ import { GithubAppConfig, GitHubIntegrationConfig } from './config';
 import { createAppAuth } from '@octokit/auth-app';
 import { Octokit } from '@octokit/rest';
 import gitUrlParse from 'git-url-parse';
+import moment from 'moment';
 
 type InstallationData = {
   installationId: number;
@@ -25,20 +26,16 @@ type InstallationData = {
   repositorySelection: 'selected' | 'all';
 };
 
-class Cache {
-  private readonly entries = new Map<string, { token: string; exp: Date }>();
-
-  getToken(key: string) {}
-}
-// for each app
+// GithubAppManager issues tokens for a speicifc GitHub App
 class GithubAppManager {
   private readonly appClient: Octokit;
   private readonly baseAuthConfig: { appId: number; privateKey: string };
   private readonly installationDatas = new Map<string, InstallationData>();
+  private readonly tokenCache = new Map<
+    string,
+    { accessToken: string; exp: Date }
+  >();
 
-  // private readonly repoTokenCache = new Cache<{ token: string; exp: Date }>(
-  //   ({ exp }) => isInThePast(exp),
-  // );
   private installationsEtag?: string;
 
   constructor(config: GithubAppConfig) {
@@ -52,15 +49,8 @@ class GithubAppManager {
     });
   }
 
-  getInstallationClient(installationId: number): Octokit {
-    return new Octokit({
-      authStrategy: createAppAuth,
-      auth: {
-        ...this.baseAuthConfig,
-        installationId,
-      },
-    });
-  }
+  private lessThanOneHourAgo = (date: Date) =>
+    moment(date).isAfter(moment().subtract(1, 'hours'));
 
   async getInstallationCredentials(
     owner: string,
@@ -75,28 +65,38 @@ class GithubAppManager {
       throw new Error(`The app for ${owner}/${repo} is suspended`);
     }
 
+    // App is installed in the entire org
     if (repositorySelection === 'all') {
       const auth = createAppAuth({ ...this.baseAuthConfig, installationId });
-
       const { token } = await auth({ type: 'installation' });
-      console.log('DEBUG: token =', token);
-
       return { accessToken: token };
+    }
+
+    // App is not installed org wide which requires a specific app token.
+    const cacheKey = `${owner}/${repo}`;
+    if (this.tokenCache.has(cacheKey)) {
+      const item = this.tokenCache.get(cacheKey);
+      if (this.lessThanOneHourAgo(item?.exp!)) {
+        return {
+          accessToken: item?.accessToken!,
+        };
+      }
     }
 
     const res = await this.appClient.apps.createInstallationAccessToken({
       installation_id: installationId,
       repositories: [repo],
     });
-    // token: 'v1.186839cac1afb9236d3b41dffee02ffbcf17861b',
-    //  expires_at: '2021-01-07T17:12:50Z',
-    //  permissions: { contents: 'read', metadata: 'read' },
-    //  repository_selection: 'selected',
-    //  repositories: [ [Object] ]
+    this.tokenCache.set(cacheKey, {
+      accessToken: res.data.token,
+      exp: new Date(res.data.expires_at),
+    });
     return { accessToken: res.data.token };
   }
 
   private async getInstallationData(owner: string): Promise<InstallationData> {
+    // List all installations using the last used etag.
+    // Return cached InstallationData if error with status 304 is thrown.
     try {
       const installations = await this.appClient.apps.listInstallations({
         headers: {
@@ -136,6 +136,7 @@ class GithubAppManager {
   }
 }
 
+// GithubIntegration corresponds to a Github installation which internally could hold several GitHub Apps.
 class GithubIntegration {
   private readonly apps: GithubAppManager[];
 
