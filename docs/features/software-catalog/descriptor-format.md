@@ -428,8 +428,8 @@ The current set of well-known and common values for this field is:
 
 ### `spec.owner` [required]
 
-The owner of the component, e.g. `artist-relations@example.com`. This field is
-required.
+An [entity reference](#string-references) to the owner of the component, e.g.
+`artist-relations@example.com`. This field is required.
 
 In Backstage, the owner of a component is the singular entity (commonly a team)
 that bears ultimate responsibility for the component, and has the authority and
@@ -441,38 +441,36 @@ not to be used by automated processes to for example assign authorization in
 runtime systems. There may be others that also develop or otherwise touch the
 component, but there will always be one ultimate owner.
 
-Apart from being a string, the software catalog leaves the format of this field
-open to implementers to choose. Most commonly, it is set to the ID or email of a
-group of people in an organizational structure.
+| [`kind`](#apiversion-and-kind-required)                | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                              |
+| ------------------------------------------------------ | ------------------------------------------ | ------------------------------------------------------------------------------- |
+| [`Group`](#kind-group) (default), [`User`](#kind-user) | Same as this entity, typically `default`   | [`ownerOf`, and reverse `ownedBy`](well-known-relations.md#ownedby-and-ownerof) |
 
 ### `spec.system` [optional]
 
-An [entity reference](#string-references) that to the system that the component
+An [entity reference](#string-references) to the system that the component
 belongs to, e.g. `artist-engagement-portal`. This field is optional.
 
-| Default [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                            |
-| ----------------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------- |
-| [`System`](#kind-system) (only)                 | Same as this entity, typically `default`   | [`partOf`, and reverse `hasPart`](well-known-relations.md#partof-and-haspart) |
-
-| [`kind`](#apiversion-and-kind-required)                   | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                            |
-| --------------------------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------- |
-| [`System`](#kind-system) (default), [`API`](#kind-system) | Same as this entity, typically `default`   | [`partOf`, and reverse `hasPart`](well-known-relations.md#partof-and-haspart) |
+| [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                            |
+| --------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------- |
+| [`System`](#kind-system) (default)      | Same as this entity, typically `default`   | [`partOf`, and reverse `hasPart`](well-known-relations.md#partof-and-haspart) |
 
 ### `spec.providesApis` [optional]
 
-Links APIs that are provided by the component, e.g. `artist-api`. This field is
-optional.
+An array of [entity reference](#string-references) to the APIs that are provided
+by the component, e.g. `artist-api`. This field is optional.
 
-The software catalog expects a list of one or more strings that references the
-names of other entities of the `kind` `API`.
+| [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                                                  |
+| --------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------------- |
+| [`API`](#kind-api) (default)            | Same as this entity, typically `default`   | [`providesApi`, and reverse `apiProvidedBy`](well-known-relations.md#providesapi-and-apiprovidedby) |
 
 ### `spec.consumesApis` [optional]
 
-Links APIs that are consumed by the component, e.g. `artist-api`. This field is
-optional.
+An array of [entity reference](#string-references) to the APIs that are consumed
+by the component, e.g. `artist-api`. This field is optional.
 
-The software catalog expects a list of one or more strings that references the
-names of other entities of the `kind` `API`.
+| [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                                                  |
+| --------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------------- |
+| [`API`](#kind-api) (default)            | Same as this entity, typically `default`   | [`consumesApi`, and reverse `apiConsumedBy`](well-known-relations.md#consumesapi-and-apiconsumedby) |
 
 ## Kind: Template
 
@@ -678,8 +676,8 @@ The current set of well-known and common values for this field is:
 
 ### `spec.owner` [required]
 
-The owner of the API, e.g. `artist-relations@example.com`. This field is
-required.
+An [entity reference](#string-references) to the owner of the component, e.g.
+`artist-relations@example.com`. This field is required.
 
 In Backstage, the owner of an API is the singular entity (commonly a team) that
 bears ultimate responsibility for the API, and has the authority and capability
@@ -691,17 +689,18 @@ processes to for example assign authorization in runtime systems. There may be
 others that also develop or otherwise touch the API, but there will always be
 one ultimate owner.
 
-Apart from being a string, the software catalog leaves the format of this field
-open to implementers to choose. Most commonly, it is set to the ID or email of a
-group of people in an organizational structure.
+| [`kind`](#apiversion-and-kind-required)                | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                              |
+| ------------------------------------------------------ | ------------------------------------------ | ------------------------------------------------------------------------------- |
+| [`Group`](#kind-group) (default), [`User`](#kind-user) | Same as this entity, typically `default`   | [`ownerOf`, and reverse `ownedBy`](well-known-relations.md#ownedby-and-ownerof) |
 
 ### `spec.system` [optional]
 
-Links the system that the API belongs to, e.g. `artist-engagement-portal`. This
-field is optional.
+An [entity reference](#string-references) to the system that the API belongs to,
+e.g. `artist-engagement-portal`. This field is optional.
 
-The software catalog expects a single string that references the name of an
-entity of the `kind` `System`.
+| [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                            |
+| --------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------- |
+| [`System`](#kind-system) (default)      | Same as this entity, typically `default`   | [`partOf`, and reverse `hasPart`](well-known-relations.md#partof-and-haspart) |
 
 ### `spec.definition` [required]
 
@@ -774,11 +773,11 @@ parent; the catalog supports multi-root hierarchies. Groups may however not have
 more than one parent.
 
 This field is an
-[entity reference](https://backstage.io/docs/features/software-catalog/references),
-with the default kind `Group` and the default namespace equal to the same
-namespace as the user. Only `Group` entities may be referenced. Most commonly,
-this field points to a group in the same namespace, so in those cases it is
-sufficient to enter only the `metadata.name` field of that group.
+[entity reference](https://backstage.io/docs/features/software-catalog/references).
+
+| [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                                |
+| --------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------- |
+| [`Group`](#kind-group) (default)        | Same as this entity, typically `default`   | [`childOf`, and reverse `parentOf`](well-known-relations.md#parentof-and-childof) |
 
 ### `spec.children` [required]
 
@@ -788,11 +787,11 @@ no child groups. The items are not guaranteed to be ordered in any particular
 way.
 
 The entries of this array are
-[entity references](https://backstage.io/docs/features/software-catalog/references),
-with the default kind `Group` and the default namespace equal to the same
-namespace as the user. Only `Group` entities may be referenced. Most commonly,
-these entries point to groups in the same namespace, so in those cases it is
-sufficient to enter only the `metadata.name` field of those groups.
+[entity references](https://backstage.io/docs/features/software-catalog/references).
+
+| [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                                    |
+| --------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------- |
+| [`Group`](#kind-group) (default)        | Same as this entity, typically `default`   | [`hasMember`, and reverse `memberOf`](well-known-relations.md#memberof-and-hasmember) |
 
 ## Kind: User
 
@@ -848,7 +847,12 @@ user is not member of any groups. The items are not guaranteed to be ordered in
 any particular way.
 
 The entries of this array are
-[entity references](https://backstage.io/docs/features/software-catalog/references),
+[entity references](https://backstage.io/docs/features/software-catalog/references).
+
+| [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                                    |
+| --------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------- |
+| [`Group`](#kind-group) (default)        | Same as this entity, typically `default`   | [`memberOf`, and reverse `hasMember`](well-known-relations.md#memberof-and-hasmember) |
+
 with the default kind `Group` and the default namespace equal to the same
 namespace as the user. Only `Group` entities may be referenced. Most commonly,
 these entries point to groups in the same namespace, so in those cases it is
@@ -891,8 +895,8 @@ Exactly equal to `backstage.io/v1alpha1` and `Resource`, respectively.
 
 ### `spec.owner` [required]
 
-The owner of the resource, e.g. `artist-relations@example.com`. This field is
-required.
+An [entity reference](#string-references) to the owner of the component, e.g.
+`artist-relations@example.com`. This field is required.
 
 In Backstage, the owner of an resource is the singular entity (commonly a team)
 that bears ultimate responsibility for the resource, and has the authority and
@@ -904,9 +908,9 @@ not to be used by automated processes to for example assign authorization in
 runtime systems. There may be others that also manage or otherwise touch the
 resource, but there will always be one ultimate owner.
 
-Apart from being a string, the software catalog leaves the format of this field
-open to implementers to choose. Most commonly, it is set to the ID or email of a
-group of people in an organizational structure.
+| [`kind`](#apiversion-and-kind-required)                | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                              |
+| ------------------------------------------------------ | ------------------------------------------ | ------------------------------------------------------------------------------- |
+| [`Group`](#kind-group) (default), [`User`](#kind-user) | Same as this entity, typically `default`   | [`ownerOf`, and reverse `ownedBy`](well-known-relations.md#ownedby-and-ownerof) |
 
 ### `spec.type` [required]
 
@@ -923,11 +927,12 @@ Some common values for this field could be:
 
 ### `spec.system` [optional]
 
-Links the system that the resource belongs to, e.g. `artist-engagement-portal`.
-This field is optional.
+An [entity reference](#string-references) to the system that the resource
+belongs to, e.g. `artist-engagement-portal`. This field is optional.
 
-The software catalog expects a single string that references the name of an
-entity of the `kind` `System`.
+| [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                            |
+| --------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------- |
+| [`System`](#kind-system) (default)      | Same as this entity, typically `default`   | [`partOf`, and reverse `hasPart`](well-known-relations.md#partof-and-haspart) |
 
 ## Kind: System
 
@@ -968,8 +973,8 @@ Exactly equal to `backstage.io/v1alpha1` and `System`, respectively.
 
 ### `spec.owner` [required]
 
-The owner of the System, e.g. `artist-relations@example.com`. This field is
-required.
+An [entity reference](#string-references) to the owner of the system, e.g.
+`artist-relations@example.com`. This field is required.
 
 In Backstage, the owner of an System is the singular entity (commonly a team)
 that bears ultimate responsibility for the System, and has the authority and
@@ -981,35 +986,44 @@ to be used by automated processes to for example assign authorization in runtime
 systems. There may be others that also develop or otherwise touch the System,
 but there will always be one ultimate owner.
 
-Apart from being a string, the software catalog leaves the format of this field
-open to implementers to choose. Most commonly, it is set to the ID or email of a
-group of people in an organizational structure.
+| [`kind`](#apiversion-and-kind-required)                | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                              |
+| ------------------------------------------------------ | ------------------------------------------ | ------------------------------------------------------------------------------- |
+| [`Group`](#kind-group) (default), [`User`](#kind-user) | Same as this entity, typically `default`   | [`ownerOf`, and reverse `ownedBy`](well-known-relations.md#ownedby-and-ownerof) |
 
 ### `spec.domain` [optional]
 
-Links the domain that the system belongs to, e.g. `artists`. This field is
-optional.
+An [entity reference](#string-references) to the domain that the system belongs
+to, e.g. `artists`. This field is optional.
 
-The software catalog expects a single string that references the name of an
-entity of the `kind` `Domain`.
+| [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                            |
+| --------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------- |
+| [`Domain`](#kind-domain) (default)      | Same as this entity, typically `default`   | [`partOf`, and reverse `hasPart`](well-known-relations.md#partof-and-haspart) |
 
 ### `spec.providesApis` [optional]
 
-Links APIs that are exposed by the system, e.g. `artist-api`, providing
-consumers a higher level abstraction on providers of APIs without needing to
-have a detailed view in the involved components. This field is optional.
+An array of [entity reference](#string-references) to the APIs that are provided
+by the system, e.g. `artist-api`. This field is optional.
 
-The software catalog expects a list of one or more strings that references the
-names of other entities of the `kind` `API`.
+APIs can be exposed by the system, providing consumers a higher level
+abstraction on providers of APIs without needing to have a detailed view in the
+involved components.
+
+| [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                                                  |
+| --------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------------- |
+| [`API`](#kind-api) (default)            | Same as this entity, typically `default`   | [`providesApi`, and reverse `apiProvidedBy`](well-known-relations.md#providesapi-and-apiprovidedby) |
 
 ### `spec.consumesApis` [optional]
 
-Links APIs that are consumed by the system, e.g. `artist-api`, providing
-providers a higher level abstraction on consumers of their APIs without needing
-to have a detailed view in the involved components. This field is optional.
+An array of [entity reference](#string-references) to the APIs that are consumed
+by the system, e.g. `artist-api`. This field is optional.
 
-The software catalog expects a list of one or more strings that references the
-names of other entities of the `kind` `API`.
+APIs can be consumed by the system, providing providers a higher level
+abstraction on consumers of their APIs without needing to have a detailed view
+in the involved components. This field is optional.
+
+| [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                                                  |
+| --------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------------- |
+| [`API`](#kind-api) (default)            | Same as this entity, typically `default`   | [`consumesApi`, and reverse `apiConsumedBy`](well-known-relations.md#consumesapi-and-apiconsumedby) |
 
 ## Kind: Domain
 
@@ -1044,8 +1058,8 @@ Exactly equal to `backstage.io/v1alpha1` and `Domain`, respectively.
 
 ### `spec.owner` [required]
 
-The owner of the domain, e.g. `artist-relations@example.com`. This field is
-required.
+An [entity reference](#string-references) to the owner of the domain, e.g.
+`artist-relations@example.com`. This field is required.
 
 In Backstage, the owner of an domain is the singular entity (commonly a team)
 that bears ultimate responsibility for the domain, and has the authority and
@@ -1057,9 +1071,9 @@ to be used by automated processes to for example assign authorization in runtime
 systems. There may be others that also develop or otherwise touch the system,
 but there will always be one ultimate owner.
 
-Apart from being a string, the software catalog leaves the format of this field
-open to implementers to choose. Most commonly, it is set to the ID or email of a
-group of people in an organizational structure.
+| [`kind`](#apiversion-and-kind-required)                | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                              |
+| ------------------------------------------------------ | ------------------------------------------ | ------------------------------------------------------------------------------- |
+| [`Group`](#kind-group) (default), [`User`](#kind-user) | Same as this entity, typically `default`   | [`ownerOf`, and reverse `ownedBy`](well-known-relations.md#ownedby-and-ownerof) |
 
 ## Kind: Location
 
