@@ -17,7 +17,7 @@
 import React from 'react';
 import { WarningPanel } from '@backstage/core';
 import { Typography } from '@material-ui/core';
-import { ClusterObjects } from '../../../../kubernetes-backend/src';
+import { ClusterObjects } from '@backstage/plugin-kubernetes-backend';
 
 const clustersWithErrorsToErrorMessage = (
   clustersWithErrors: ClusterObjects[],
