@@ -32,7 +32,7 @@ describe('DeploymentDrawer', () => {
     );
 
     expect(getAllByText('dice-roller')).toHaveLength(2);
-    expect(getByText('Deployment')).toBeInTheDocument();
+    expect(getAllByText('Deployment')).toHaveLength(2);
     expect(getByText('YAML')).toBeInTheDocument();
     expect(getByText('Strategy')).toBeInTheDocument();
     expect(getByText('Rolling Update:')).toBeInTheDocument();
