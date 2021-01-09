@@ -1,6 +1,16 @@
-# ADR0000: [title]
+---
+id: adrs-adr000
+title: ADR000: [TITLE]
+description: Architecture Decision Record (ADR) for [TITLE] [DESCRIPTION]
+---
 
-<!-- These documents have names that are short noun phrases. For example, "ADR0001: Deployment on Ruby on Rails 3.0.10" or "ADR0009: LDAP for Multitenant Integration" -->
+| Created    | Status |
+| ---------- | ------ |
+| YYYY-MM-DD | Open   | <!-- Statuses can be of type Open or Agreed --> |
+
+# ADR000: [title]
+
+<!-- These documents have names that are short noun phrases. For example, "ADR001: Deployment on Ruby on Rails 3.0.10" or "ADR009: LDAP for Multitenant Integration" -->
 
 ## Status
 
