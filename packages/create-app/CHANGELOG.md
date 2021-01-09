@@ -1,5 +1,11 @@
 # @backstage/create-app
 
+## 0.3.3
+
+### Patch Changes
+
+- bd9c6719f: Bumping the version for `create-app` so that we can use the latest versions of internal packages and rebuild the version which is passed to the package.json
+
 ## 0.3.2
 
 ### Patch Changes
