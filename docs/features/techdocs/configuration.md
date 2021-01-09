@@ -54,15 +54,14 @@ techdocs:
     # Required when techdocs.publisher.type is set to 'googleGcs'. Skip otherwise.
 
     googleGcs:
-      # An API key is required to write to a storage bucket.
+      # (Required) Cloud Storage Bucket Name
+      bucketName: 'techdocs-storage'
+
+      # (Optional) An API key is required to write to a storage bucket.
+      # If missing, GOOGLE_APPLICATION_CREDENTIALS environment variable will be used.
+      # https://cloud.google.com/docs/authentication/production
       credentials:
         $file: '/path/to/google_application_credentials.json'
-
-      # Your GCP Project ID where the Cloud Storage Bucket is hosted.
-      projectId: 'gcp-project-id'
-
-      # Cloud Storage Bucket Name
-      bucketName: 'techdocs-storage'
 
     # Required when techdocs.publisher.type is set to 'awsS3'. Skip otherwise.
 
