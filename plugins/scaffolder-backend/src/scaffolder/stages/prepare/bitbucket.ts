@@ -63,7 +63,6 @@ export class BitbucketPreparer implements PreparerBase {
   ): Promise<string> {
     const { protocol, location } = parseLocationAnnotation(template);
     const workingDirectory = opts?.workingDirectory ?? os.tmpdir();
-    const { logger } = opts;
 
     if (!['bitbucket', 'url'].includes(protocol)) {
       throw new InputError(
@@ -86,13 +85,14 @@ export class BitbucketPreparer implements PreparerBase {
 
     const checkoutLocation = path.resolve(tempDir, templateDirectory);
 
-    const git = this.privateToken
+    const auth = this.getAuth(repo.resource);
+
+    const git = auth
       ? Git.fromAuth({
-          username: this.username,
-          password: this.privateToken,
-          logger,
+          ...auth,
+          logger: this.logger,
         })
-      : Git.fromAuth({ logger });
+      : Git.fromAuth({ logger: this.logger });
 
     await git.clone({
       url: repositoryCheckoutUrl,
@@ -100,5 +100,33 @@ export class BitbucketPreparer implements PreparerBase {
     });
 
     return checkoutLocation;
+  }
+
+  private getAuth(
+    host: string,
+  ): { username: string; password: string } | undefined {
+    if (this.username && this.privateToken) {
+      return { username: this.username, password: this.privateToken };
+    }
+
+    const bitbucketIntegrationConfig = this.integrations.find(
+      c => c.host === host,
+    );
+
+    // TODO(blam): Not sure how appPassword fits in here. Just doing the most simple of
+    // implementations with the intergations config for now but can maybe fallback to
+    // appPassword instead maybe at a later stage.
+    if (
+      !bitbucketIntegrationConfig ||
+      !bitbucketIntegrationConfig.username ||
+      !bitbucketIntegrationConfig.token
+    ) {
+      return undefined;
+    }
+
+    return {
+      username: bitbucketIntegrationConfig.username,
+      password: bitbucketIntegrationConfig.token,
+    };
   }
 }
