@@ -123,17 +123,19 @@ export interface Config {
            */
           googleGcs?: {
             /**
-             * API key used to write to a storage bucket.
+             * (Optional) API key used to write to a storage bucket.
+             * If not set, environment variables will be used to authenticate.
+             * Read more: https://cloud.google.com/docs/authentication/production
              * attr: 'credentials' - accepts a string value
              * @visibility secret
              */
-            credentials: string;
+            credentials?: string;
             /**
              * GCP Project ID where the Cloud Storage Bucket is hosted.
              * attr: 'projectId' - accepts a string value
              * @visibility secret
              */
-            projectId: string;
+            projectId?: string;
             /**
              * Cloud Storage Bucket Name
              * attr: 'bucketName' - accepts a string value
