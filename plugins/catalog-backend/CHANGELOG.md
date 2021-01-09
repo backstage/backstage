@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend
 
+## 0.5.2
+
+### Patch Changes
+
+- 99be3057c: Fixed a bug where the catalog would read back all entities when adding a location that already exists.
+- 49d2016a4: Change `location_update_log` columns from `nvarchar(255)` to `text`
+- 73e75ea0a: Add processor for ingesting AWS accounts from AWS Organizations
+- 071711d70: Remove `sqlite3` as a dependency. You may need to add `sqlite3` as a dependency of your backend if you were relying on this indirect dependency.
+- Updated dependencies [5ecd50f8a]
+- Updated dependencies [00042e73c]
+- Updated dependencies [0829ff126]
+- Updated dependencies [036a84373]
+  - @backstage/backend-common@0.4.2
+
 ## 0.5.1
 
 ### Patch Changes

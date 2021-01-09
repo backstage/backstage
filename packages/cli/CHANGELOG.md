@@ -1,5 +1,16 @@
 # @backstage/cli
 
+## 0.4.5
+
+### Patch Changes
+
+- 37a7d26c4: Use consistent file extensions for JS output when building packages.
+- 818d45e94: Fix detection of external package child directories
+- 0588be01f: Add `backend:bundle` command for bundling a backend package with dependencies into a deployment archive.
+- b8abdda57: Add color to output from `versions:bump` in order to make it easier to spot changes. Also highlight possible breaking changes and link to changelogs.
+- Updated dependencies [ad5c56fd9]
+  - @backstage/config-loader@0.4.1
+
 ## 0.4.4
 
 ### Patch Changes

@@ -215,6 +215,7 @@ function lazy(
     try {
       const actionFunc = await getActionFunc();
       await actionFunc(...args);
+
       process.exit(0);
     } catch (error) {
       exitWithError(error);
