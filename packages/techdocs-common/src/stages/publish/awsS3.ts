@@ -22,6 +22,15 @@ import { Config } from '@backstage/config';
 import { getHeadersForFileExtension, getFileTreeRecursively } from './helpers';
 import { PublisherBase, PublishRequest } from './types';
 import fs from 'fs-extra';
+import { Readable } from 'stream';
+
+const streamToString = (stream: Readable): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const chunks: any[] = [];
+    stream.on('data', chunk => chunks.push(chunk));
+    stream.on('error', reject);
+    stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+  });
 
 export class AwsS3Publish implements PublisherBase {
   static fromConfig(config: Config, logger: Logger): PublisherBase {
@@ -139,8 +148,10 @@ export class AwsS3Publish implements PublisherBase {
             Bucket: this.bucketName,
             Key: `${entityRootDir}/techdocs_metadata.json`,
           })
-          .then(file => {
-            const techdocsMetadataJson = file?.Body?.toString();
+          .then(async file => {
+            const techdocsMetadataJson = await streamToString(
+              file.Body as Readable,
+            );
 
             if (!techdocsMetadataJson) {
               throw new Error(
@@ -175,8 +186,8 @@ export class AwsS3Publish implements PublisherBase {
 
       this.storageClient
         .getObject({ Bucket: this.bucketName, Key: filePath })
-        .then(object => {
-          const fileContent = object?.Body?.toString();
+        .then(async object => {
+          const fileContent = await streamToString(object.Body as Readable);
           if (!fileContent) {
             throw new Error(`Unable to parse the file ${filePath}.`);
           }

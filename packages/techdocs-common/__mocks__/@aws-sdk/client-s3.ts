@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { S3ClientConfig } from '@aws-sdk/client-s3';
+import { EventEmitter } from 'events';
 import fs from 'fs';
 
 export class S3 {
@@ -36,8 +37,13 @@ export class S3 {
   getObject({ Key }: { Key: string }) {
     return new Promise((resolve, reject) => {
       if (fs.existsSync(Key)) {
+        const emitter = new EventEmitter();
+        process.nextTick(() => {
+          emitter.emit('data', Buffer.from(fs.readFileSync(Key)));
+          emitter.emit('end');
+        });
         resolve({
-          Body: Buffer.from(fs.readFileSync(Key)),
+          Body: emitter,
         });
       } else {
         reject({ message: `The file ${Key} doest not exist.` });
