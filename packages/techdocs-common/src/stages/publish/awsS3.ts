@@ -24,13 +24,18 @@ import { PublisherBase, PublishRequest } from './types';
 import fs from 'fs-extra';
 import { Readable } from 'stream';
 
-const streamToString = (stream: Readable): Promise<string> =>
-  new Promise((resolve, reject) => {
-    const chunks: any[] = [];
-    stream.on('data', chunk => chunks.push(chunk));
-    stream.on('error', reject);
-    stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
-  });
+const streamToString = (stream: Readable): Promise<string> => {
+  try {
+    return new Promise((resolve, reject) => {
+      const chunks: any[] = [];
+      stream.on('data', chunk => chunks.push(chunk));
+      stream.on('error', reject);
+      stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+    });
+  } catch (e) {
+    throw new Error(`Unable to parse the response data, ${e.message}`);
+  }
+};
 
 export class AwsS3Publish implements PublisherBase {
   static fromConfig(config: Config, logger: Logger): PublisherBase {
