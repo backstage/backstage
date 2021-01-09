@@ -13,5 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export const KAFKA_CONSUMER_GROUP_ANNOTATION =
-  'kafka.apache.org/consumer-group';
+
+import { createRouter } from '@backstage/plugin-kafka-backend';
+import { PluginEnvironment } from '../types';
+
+export default async function createPlugin({
+  logger,
+  config,
+}: PluginEnvironment) {
+  return await createRouter({ logger, config });
+}
