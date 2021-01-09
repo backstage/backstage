@@ -15,7 +15,7 @@
  */
 
 export * from './service/router';
-export { BackstageIdentityStrategy } from './lib/passport';
+export { IdentityClient } from './identity';
 export * from './providers';
 
 // flow package provides 2 functions

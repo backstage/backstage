@@ -39,7 +39,7 @@ describe('IdentityClient', () => {
   afterEach(() => server.resetHandlers());
 
   beforeEach(() => {
-    client = new IdentityClient({ discovery });
+    client = new IdentityClient({ discovery, issuer: mockBaseUrl });
   });
 
   describe('listPublicKeys', () => {

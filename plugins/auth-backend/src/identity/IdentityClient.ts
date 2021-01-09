@@ -15,17 +15,97 @@
  */
 
 import fetch from 'cross-fetch';
-import { JWKECKey } from 'jose';
+import { JWK, JWT, JWKS, JWKECKey } from 'jose';
+import { BackstageIdentity } from '../providers';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 
 /**
- * A identity client to interact with auth-backend.
+ * A identity client to interact with auth-backend
+ * and authenticate backstage identity tokens
  */
 export class IdentityClient {
   private readonly discovery: PluginEndpointDiscovery;
+  private readonly issuer: string;
+  private keyStore: JWKS.KeyStore;
+  private keyStoreUpdated: number;
 
-  constructor(options: { discovery: PluginEndpointDiscovery }) {
+  constructor(options: { discovery: PluginEndpointDiscovery; issuer: string }) {
     this.discovery = options.discovery;
+    this.issuer = options.issuer;
+    this.keyStore = new JWKS.KeyStore();
+    this.keyStoreUpdated = 0;
+  }
+
+  /**
+   * Verifies the given backstage identity token
+   * (provided as a Bearer token in the authorization header).
+   * Returns a BackstageIdentity (user) matching the token.
+   * The method throws an error if verification fails.
+   */
+  async authenticate(
+    authorizationHeader: string | undefined,
+  ): Promise<BackstageIdentity> {
+    // Extract token from header
+    const token = IdentityClient.getBearerToken(authorizationHeader);
+    if (!token) {
+      throw new Error('No bearer token found in authorization header');
+    }
+    // Get signing key matching token
+    const key = await this.getKey(token);
+    if (!key) {
+      throw new Error('No signing key matching token found');
+    }
+    // Verify token claims and signature
+    // Note: Claims must match those set by TokenFactory when issuing tokens
+    // Note: verify throws if verification fails
+    const decoded = JWT.IdToken.verify(token, key, {
+      algorithms: ['ES256'],
+      audience: 'backstage',
+      issuer: this.issuer,
+    }) as { sub: string };
+    // Verified, return the matching user as BackstageIdentity
+    // TODO: Settle internal user format/properties
+    const user: BackstageIdentity = {
+      id: decoded.sub,
+      idToken: token,
+    };
+    return user;
+  }
+
+  /**
+   * Parses the given authorization header and returns
+   * the bearer token, or null if no bearer token is given
+   */
+  static getBearerToken(
+    authorizationHeader: string | undefined,
+  ): string | null {
+    if (typeof authorizationHeader !== 'string') {
+      return null;
+    }
+    const matches = authorizationHeader.match(/Bearer\s+(\S+)/i);
+    return matches && matches[1];
+  }
+
+  /**
+   * Returns the public signing key matching the given jwt token,
+   * or null if no matching key was found
+   */
+  private async getKey(rawJwtToken: string): Promise<JWK.Key | null> {
+    const { header, payload } = JWT.decode(rawJwtToken, {
+      complete: true,
+    }) as {
+      header: { kid: string };
+      payload: { iat: number };
+    };
+    // Refresh public keys if needed
+    if (
+      !this.keyStore.get({ kid: header.kid }) &&
+      payload?.iat &&
+      payload.iat > this.keyStoreUpdated
+    ) {
+      await this.refreshKeyStore();
+    }
+    return this.keyStore.get({ kid: header.kid });
   }
 
   /**
@@ -48,5 +128,17 @@ export class IdentityClient {
     const publicKeys: { keys: JWKECKey[] } = await response.json();
 
     return publicKeys;
+  }
+
+  /**
+   * Fetches public keys and caches them locally
+   */
+  private async refreshKeyStore(): Promise<void> {
+    const now = Date.now() / 1000;
+    const publicKeys = await this.listPublicKeys();
+    this.keyStore = new JWKS.KeyStore(
+      publicKeys.keys.map(key => JWK.asKey(key)),
+    );
+    this.keyStoreUpdated = now;
   }
 }

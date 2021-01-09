@@ -22,6 +22,7 @@
  * Happy hacking!
  */
 
+import { Request, Response, NextFunction } from 'express';
 import Router from 'express-promise-router';
 import {
   createServiceBuilder,
@@ -34,7 +35,7 @@ import {
   useHotMemoize,
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
-import { BackstageIdentityStrategy } from '@backstage/plugin-auth-backend';
+import { IdentityClient } from '@backstage/plugin-auth-backend';
 import healthcheck from './plugins/healthcheck';
 import auth from './plugins/auth';
 import catalog from './plugins/catalog';
@@ -46,7 +47,6 @@ import techdocs from './plugins/techdocs';
 import graphql from './plugins/graphql';
 import app from './plugins/app';
 import { PluginEnvironment } from './types';
-import passport from 'passport';
 
 function makeCreateEnv(config: Config) {
   const root = getRootLogger();
@@ -82,26 +82,34 @@ async function main() {
   const graphqlEnv = useHotMemoize(module, () => createEnv('graphql'));
   const appEnv = useHotMemoize(module, () => createEnv('app'));
 
-  passport.use(
-    new BackstageIdentityStrategy({
-      discovery: SingleHostDiscovery.fromConfig(config),
-    }),
-  );
-  const backstageAuth = passport.authenticate('backstage', {
-    session: false,
+  const discovery = SingleHostDiscovery.fromConfig(config);
+  const identity = new IdentityClient({
+    discovery,
+    issuer: await discovery.getExternalBaseUrl('auth'),
   });
+  const authMiddleware = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      req.user = await identity.authenticate(req.headers.authorization);
+      next();
+    } catch (error) {
+      res.status(401).send(`Unauthorized`);
+    }
+  };
 
   const apiRouter = Router();
-  apiRouter.use(passport.initialize());
-  apiRouter.use('/catalog', backstageAuth, await catalog(catalogEnv));
-  apiRouter.use('/rollbar', backstageAuth, await rollbar(rollbarEnv));
-  apiRouter.use('/scaffolder', backstageAuth, await scaffolder(scaffolderEnv));
+  apiRouter.use('/catalog', authMiddleware, await catalog(catalogEnv));
+  apiRouter.use('/rollbar', authMiddleware, await rollbar(rollbarEnv));
+  apiRouter.use('/scaffolder', authMiddleware, await scaffolder(scaffolderEnv));
   apiRouter.use('/auth', await auth(authEnv));
-  apiRouter.use('/techdocs', backstageAuth, await techdocs(techdocsEnv));
-  apiRouter.use('/kubernetes', backstageAuth, await kubernetes(kubernetesEnv));
-  apiRouter.use('/proxy', backstageAuth, await proxy(proxyEnv));
-  apiRouter.use('/graphql', backstageAuth, await graphql(graphqlEnv));
-  apiRouter.use(backstageAuth, notFoundHandler());
+  apiRouter.use('/techdocs', authMiddleware, await techdocs(techdocsEnv));
+  apiRouter.use('/kubernetes', authMiddleware, await kubernetes(kubernetesEnv));
+  apiRouter.use('/proxy', authMiddleware, await proxy(proxyEnv));
+  apiRouter.use('/graphql', authMiddleware, await graphql(graphqlEnv));
+  apiRouter.use(authMiddleware, notFoundHandler());
 
   const service = createServiceBuilder(module)
     .loadConfig(config)
