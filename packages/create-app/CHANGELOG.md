@@ -1,5 +1,11 @@
 # @backstage/create-app
 
+## 0.3.4
+
+### Patch Changes
+
+- 643dcec7c: noop release for create-app to force re-deploy
+
 ## 0.3.3
 
 ### Patch Changes
