@@ -159,6 +159,7 @@ export async function createRouter(
               const result = await publisher.publish({
                 values: ctx.values,
                 directory: ctx.resultDir,
+                logger: ctx.logger,
               });
               return result;
             },

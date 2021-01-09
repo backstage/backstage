@@ -1,5 +1,24 @@
 # @backstage/plugin-scaffolder
 
+## 0.3.6
+
+### Patch Changes
+
+- 8e083f41f: Bug fix: User can retry creating a new component if an error occurs, without having to reload the page.
+- 947d3c269: You can now maximize the logs into full-screen by clicking the button under each step of the job
+- Updated dependencies [9c09a364f]
+  - @backstage/plugin-catalog@0.2.10
+
+## 0.3.5
+
+### Patch Changes
+
+- 19554f6d6: Added Github Actions for Create React App, and allow better imports of files inside a module when they're exposed using `files` in `package.json`
+- Updated dependencies [1dc445e89]
+- Updated dependencies [342270e4d]
+  - @backstage/core@0.4.2
+  - @backstage/plugin-catalog@0.2.8
+
 ## 0.3.4
 
 ### Patch Changes

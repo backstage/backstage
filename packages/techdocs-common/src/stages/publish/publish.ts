@@ -20,17 +20,22 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PublisherType, PublisherBase } from './types';
 import { LocalPublish } from './local';
 import { GoogleGCSPublish } from './googleStorage';
+import { AwsS3Publish } from './awsS3';
+
+type factoryOptions = {
+  logger: Logger;
+  discovery: PluginEndpointDiscovery;
+};
 
 /**
  * Factory class to create a TechDocs publisher based on defined publisher type in app config.
  * Uses `techdocs.publisher.type`.
  */
 export class Publisher {
-  static fromConfig(
+  static async fromConfig(
     config: Config,
-    logger: Logger,
-    discovery: PluginEndpointDiscovery,
-  ): PublisherBase {
+    { logger, discovery }: factoryOptions,
+  ): Promise<PublisherBase> {
     const publisherType = (config.getOptionalString(
       'techdocs.publisher.type',
     ) ?? 'local') as PublisherType;
@@ -39,6 +44,9 @@ export class Publisher {
       case 'googleGcs':
         logger.info('Creating Google Storage Bucket publisher for TechDocs');
         return GoogleGCSPublish.fromConfig(config, logger);
+      case 'awsS3':
+        logger.info('Creating AWS S3 Bucket publisher for TechDocs');
+        return AwsS3Publish.fromConfig(config, logger);
       case 'local':
         logger.info('Creating Local publisher for TechDocs');
         return new LocalPublish(config, logger, discovery);

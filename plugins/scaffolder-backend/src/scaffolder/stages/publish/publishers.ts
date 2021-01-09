@@ -30,6 +30,7 @@ import { RemoteProtocol } from '../types';
 import { GithubPublisher, RepoVisibilityOptions } from './github';
 import { GitlabPublisher } from './gitlab';
 import { AzurePublisher } from './azure';
+import { BitbucketPublisher } from './bitbucket';
 
 export class Publishers implements PublisherBuilder {
   private publisherMap = new Map<RemoteProtocol, PublisherBase>();
@@ -163,6 +164,34 @@ export class Publishers implements PublisherBuilder {
       }
     }
 
+    const bitbucketConfig = config.getOptionalConfig(
+      'scaffolder.bitbucket.api',
+    );
+    if (bitbucketConfig) {
+      try {
+        const baseUrl = bitbucketConfig.getString('host');
+        const bitbucketUsername = bitbucketConfig.getString('username');
+        const bitbucketToken = bitbucketConfig.getString('token');
+
+        const bitbucketPublisher = new BitbucketPublisher(
+          baseUrl,
+          bitbucketUsername,
+          bitbucketToken,
+        );
+        publishers.register('bitbucket', bitbucketPublisher);
+      } catch (e) {
+        const providerName = 'bitbucket';
+        if (process.env.NODE_ENV !== 'development') {
+          throw new Error(
+            `Failed to initialize ${providerName} scaffolding provider, ${e.message}`,
+          );
+        }
+
+        logger.warn(
+          `Skipping ${providerName} scaffolding provider, ${e.message}`,
+        );
+      }
+    }
     return publishers;
   }
 }

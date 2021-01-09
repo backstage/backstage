@@ -16,7 +16,7 @@
 
 import { PublisherBase, PublisherOptions, PublisherResult } from './types';
 import { Octokit } from '@octokit/rest';
-import { pushToRemoteUserPass } from './helpers';
+import { initRepoAndPush } from './helpers';
 import { JsonValue } from '@backstage/config';
 import { RequiredTemplateValues } from '../templater';
 
@@ -46,14 +46,20 @@ export class GithubPublisher implements PublisherBase {
   async publish({
     values,
     directory,
+    logger,
   }: PublisherOptions): Promise<PublisherResult> {
     const remoteUrl = await this.createRemote(values);
-    await pushToRemoteUserPass(
-      directory,
+
+    await initRepoAndPush({
+      dir: directory,
       remoteUrl,
-      this.token,
-      'x-oauth-basic',
-    );
+      auth: {
+        username: this.token,
+        password: 'x-oauth-basic',
+      },
+      logger,
+    });
+
     const catalogInfoUrl = remoteUrl.replace(
       /\.git$/,
       '/blob/master/catalog-info.yaml',

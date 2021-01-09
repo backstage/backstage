@@ -1,5 +1,31 @@
 # @backstage/plugin-cost-insights
 
+## 0.5.6
+
+### Patch Changes
+
+- 9e9504ce4: Minor wording change in UI
+
+## 0.5.5
+
+### Patch Changes
+
+- ab0892358: Remove test dependencies from production package list
+
+## 0.5.4
+
+### Patch Changes
+
+- 3fca9adb9: Fix links in sample instructions
+- Updated dependencies [a08c32ced]
+  - @backstage/core@0.4.3
+
+## 0.5.3
+
+### Patch Changes
+
+- c02defd57: Make alert url field optional
+
 ## 0.5.2
 
 ### Patch Changes

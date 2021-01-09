@@ -1,5 +1,35 @@
 # @backstage/plugin-auth-backend
 
+## 0.2.9
+
+### Patch Changes
+
+- 0289a059c: Add support for the majority of the Core configurations for Passport-SAML.
+
+  These configuration keys are supported:
+
+  - entryPoint
+  - issuer
+  - cert
+  - privateKey
+  - decryptionPvk
+  - signatureAlgorithm
+  - digestAlgorithm
+
+  As part of this change, there is also a fix to the redirection behaviour when doing load balancing and HTTPS termination - the application's baseUrl is used to generate the callback URL. For properly configured Backstage installations, no changes are necessary, and the baseUrl is respected.
+
+- Updated dependencies [5ecd50f8a]
+- Updated dependencies [00042e73c]
+- Updated dependencies [0829ff126]
+- Updated dependencies [036a84373]
+  - @backstage/backend-common@0.4.2
+
+## 0.2.8
+
+### Patch Changes
+
+- cc046682e: fix bug in token expiration date
+
 ## 0.2.7
 
 ### Patch Changes

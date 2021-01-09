@@ -13,15 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Entity } from '@backstage/catalog-model';
 import React, { ReactNode } from 'react';
-import { useEntityFromUrl, EntityContext } from '../../hooks/useEntity';
+import { EntityContext } from '../../hooks/useEntity';
 
-export const EntityProvider = ({ children }: { children: ReactNode }) => {
-  const { entity, loading, error } = useEntityFromUrl();
-
-  return (
-    <EntityContext.Provider value={{ entity, loading, error }}>
-      {children}
-    </EntityContext.Provider>
-  );
+type EntityProviderProps = {
+  entity: Entity;
+  children: ReactNode;
 };
+
+export const EntityProvider = ({ entity, children }: EntityProviderProps) => (
+  <EntityContext.Provider
+    value={{
+      entity,
+      loading: Boolean(entity),
+      error: undefined,
+    }}
+  >
+    {children}
+  </EntityContext.Provider>
+);

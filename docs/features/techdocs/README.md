@@ -45,8 +45,6 @@ about TechDocs and the philosophy in its
 [v2]: https://github.com/backstage/backstage/milestone/22
 [v3]: https://github.com/backstage/backstage/milestone/17
 
-<!-- TODO: Add link to milestone for v3 -->
-
 ## Use Cases
 
 #### TechDocs V.0
@@ -110,12 +108,12 @@ providers are used.
 | GitLab                       | Yes ✅         |
 | GitLab Enterprise            | Yes ✅         |
 
-| File Storage Provider             | Support Status | Track status                                                |
-| --------------------------------- | -------------- | ----------------------------------------------------------- |
-| Local Filesystem of Backstage app | Yes ✅         |                                                             |
-| Google Cloud Storage (GCS)        | Yes ✅         |                                                             |
-| Amazon Web Services (AWS) S3      | No ❌          | [#3714](https://github.com/backstage/backstage/issues/3714) |
-| Azure Storage                     | No ❌          |                                                             |
+| File Storage Provider             | Support Status                                                    |
+| --------------------------------- | ----------------------------------------------------------------- |
+| Local Filesystem of Backstage app | Yes ✅                                                            |
+| Google Cloud Storage (GCS)        | Yes ✅                                                            |
+| Amazon Web Services (AWS) S3      | Yes ✅                                                            |
+| Azure Storage                     | No ❌ [#3938](https://github.com/backstage/backstage/issues/3938) |
 
 [Reach out to us](#feedback) if you want to request more platforms.
 

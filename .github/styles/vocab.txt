@@ -36,6 +36,7 @@ Codecov
 codehilite
 Codehilite
 codeowners
+composability
 composable
 config
 Config
@@ -49,6 +50,7 @@ dataflow
 deadnaming
 destructured
 dev
+devops
 devs
 dhenneke
 discoverability
@@ -62,7 +64,6 @@ Docusaurus
 Dominik
 dtuite
 dzolotusky
-eg
 Ek
 env
 Env
@@ -134,12 +135,14 @@ neuro
 newrelic
 nginx
 Niklas
+nodegit
 nohoist
 nonces
 npm
+nvarchar
 nvm
 oauth
-Oauth
+OAuth
 oidc
 Okta
 Oldsberg
@@ -158,7 +161,6 @@ prebaked
 preconfigured
 prepack
 Preprarer
-Prerequisities
 productional
 Protobuf
 proxying
@@ -192,7 +194,6 @@ semlas
 semver
 Serverless
 Sinon
-smartsymobls
 Snyk
 sourcemaps
 sparklines
@@ -219,7 +220,6 @@ Templater
 templaters
 Templaters
 Thauer
-theres
 toc
 tolerations
 Tolerations
@@ -237,6 +237,7 @@ upvote
 url
 utils
 validators
+varchar
 Voi
 Wealthsimple
 Weaveworks

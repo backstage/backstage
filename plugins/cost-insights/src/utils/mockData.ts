@@ -234,14 +234,24 @@ export function aggregationFor(
     'day',
   );
 
+  function nextDelta(): number {
+    const varianceFromBaseline = 0.15;
+    // Let's give positive vibes in trendlines - higher change for positive delta with >0.5 value
+    const positiveTrendChance = 0.55;
+    const normalization = positiveTrendChance - 1;
+    return baseline * (Math.random() + normalization) * varianceFromBaseline;
+  }
+
   return [...Array(days).keys()].reduce(
     (values: DateAggregation[], i: number): DateAggregation[] => {
       const last = values.length ? values[values.length - 1].amount : baseline;
+      const date = dayjs(inclusiveStartDateOf(duration, endDate))
+        .add(i, 'day')
+        .format(DEFAULT_DATE_FORMAT);
+      const amount = Math.max(0, last + nextDelta());
       values.push({
-        date: dayjs(inclusiveStartDateOf(duration, endDate))
-          .add(i, 'day')
-          .format(DEFAULT_DATE_FORMAT),
-        amount: Math.max(0, last + (baseline / 20) * (Math.random() * 2 - 1)),
+        date: date,
+        amount: amount,
       });
       return values;
     },

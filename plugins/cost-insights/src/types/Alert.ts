@@ -25,7 +25,7 @@ import { Maybe } from './Maybe';
 export type Alert = {
   title: string;
   subtitle: string;
-  url: string;
+  url?: string;
   buttonText?: string; // Default: View Instructions
   element: JSX.Element;
 };

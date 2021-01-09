@@ -13,13 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { PreparerBase, RemoteProtocol, PreparerBuilder } from './types';
+import { Logger } from 'winston';
+import { UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
+import { DirectoryPreparer, CommonGitPreparer, UrlPreparer } from '.';
+import { PreparerBase, RemoteProtocol, PreparerBuilder } from './types';
 import { parseReferenceAnnotation } from '../../helpers';
+
+type factoryOptions = {
+  logger: Logger;
+  reader: UrlReader;
+};
 
 export class Preparers implements PreparerBuilder {
   private preparerMap = new Map<RemoteProtocol, PreparerBase>();
+
+  static async fromConfig(
+    config: Config,
+    { logger, reader }: factoryOptions,
+  ): Promise<PreparerBuilder> {
+    const preparers = new Preparers();
+
+    const directoryPreparer = new DirectoryPreparer(config, logger);
+    preparers.register('dir', directoryPreparer);
+
+    const commonGitPreparer = new CommonGitPreparer(config, logger);
+    preparers.register('github', commonGitPreparer);
+    preparers.register('gitlab', commonGitPreparer);
+    preparers.register('azure/api', commonGitPreparer);
+
+    const urlPreparer = new UrlPreparer(reader, logger);
+    preparers.register('url', urlPreparer);
+
+    return preparers;
+  }
 
   register(protocol: RemoteProtocol, preparer: PreparerBase) {
     this.preparerMap.set(protocol, preparer);

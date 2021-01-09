@@ -24,7 +24,7 @@ import webpack from 'webpack';
 import nodeExternals from 'webpack-node-externals';
 import { optimization } from './optimization';
 import { Config } from '@backstage/config';
-import { BundlingPaths } from './paths';
+import { BundlingPaths, isChildPath } from './paths';
 import { transforms } from './transforms';
 import { LinkedPackageResolvePlugin } from './LinkedPackageResolvePlugin';
 import { BundlingOptions, BackendBundlingOptions, LernaPackage } from './types';
@@ -87,7 +87,9 @@ export async function createConfig(
   const { plugins, loaders } = transforms(options);
   // Any package that is part of the monorepo but outside the monorepo root dir need
   // separate resolution logic.
-  const externalPkgs = packages.filter(p => !p.location.startsWith(paths.root));
+  const externalPkgs = packages.filter(
+    p => !isChildPath(paths.root, p.location),
+  );
 
   const baseUrl = frontendConfig.getString('app.baseUrl');
   const validBaseUrl = new URL(baseUrl);
@@ -199,7 +201,9 @@ export async function createBackendConfig(
   const moduleDirs = packages.map((p: any) =>
     resolvePath(p.location, 'node_modules'),
   );
-  const externalPkgs = packages.filter(p => !p.location.startsWith(paths.root)); // See frontend config
+  const externalPkgs = packages.filter(
+    p => !isChildPath(paths.root, p.location),
+  ); // See frontend config
 
   const { loaders } = transforms(options);
 

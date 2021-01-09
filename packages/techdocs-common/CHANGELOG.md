@@ -1,5 +1,78 @@
 # @backstage/techdocs-common
 
+## 0.3.2
+
+### Patch Changes
+
+- 7ec525481: 1. Added option to use AWS S3 as a choice to store the static generated files for TechDocs.
+- f8ba88ded: Fix for `integration.github.apiBaseUrl` configuration not properly overriding apiBaseUrl used by techdocs
+- 00042e73c: Moving the Git actions to isomorphic-git instead of the node binding version of nodegit
+- Updated dependencies [5ecd50f8a]
+- Updated dependencies [00042e73c]
+- Updated dependencies [0829ff126]
+- Updated dependencies [036a84373]
+  - @backstage/backend-common@0.4.2
+  - @backstage/integration@0.1.5
+
+## 0.3.1
+
+### Patch Changes
+
+- 8804e8981: Using @backstage/integration package for GitHub/GitLab/Azure tokens and request options.
+
+  Most probably you do not have to make any changes in the app because of this change.
+  However, if you are using the `DirectoryPreparer` or `CommonGitPreparer` exported by
+  `@backstage/techdocs-common` package, you now need to add pass in a `config` (from `@backstage/config`)
+  instance as argument.
+
+  ```
+  <!-- Before -->
+      const directoryPreparer = new DirectoryPreparer(logger);
+      const commonGitPreparer = new CommonGitPreparer(logger);
+  <!-- Now -->
+      const directoryPreparer = new DirectoryPreparer(config, logger);
+      const commonGitPreparer = new CommonGitPreparer(config, logger);
+  ```
+
+## 0.3.0
+
+### Minor Changes
+
+- a8573e53b: techdocs-backend: Simplified file, removing individual preparers and generators.
+  techdocs-backend: UrlReader is now available to use in preparers.
+
+  In your Backstage app, `packages/backend/plugins/techdocs.ts` file has now been simplified,
+  to remove registering individual preparers and generators.
+
+  Please update the file when upgrading the version of `@backstage/plugin-techdocs-backend` package.
+
+  ```typescript
+  const preparers = await Preparers.fromConfig(config, {
+    logger,
+    reader,
+  });
+
+  const generators = await Generators.fromConfig(config, {
+    logger,
+  });
+
+  const publisher = await Publisher.fromConfig(config, {
+    logger,
+    discovery,
+  });
+  ```
+
+  You should be able to remove unnecessary imports, and just do
+
+  ```typescript
+  import {
+    createRouter,
+    Preparers,
+    Generators,
+    Publisher,
+  } from '@backstage/plugin-techdocs-backend';
+  ```
+
 ## 0.2.0
 
 ### Minor Changes

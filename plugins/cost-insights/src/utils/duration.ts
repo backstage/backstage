@@ -24,7 +24,7 @@ export const DEFAULT_DURATION = Duration.P30D;
  * Derive the start date of a given period, assuming two repeating intervals.
  *
  * @param duration see comment on Duration enum
- * @param endDate from CostInsightsApi.getLastCompleteBillingDate + 1 day
+ * @param exclusiveEndDate from CostInsightsApi.getLastCompleteBillingDate + 1 day
  */
 export function inclusiveStartDateOf(
   duration: Duration,

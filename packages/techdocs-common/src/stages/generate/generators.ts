@@ -14,17 +14,31 @@
  * limitations under the License.
  */
 
+import { Logger } from 'winston';
+import { Entity } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
+import { TechdocsGenerator } from '.';
 import {
   GeneratorBase,
   SupportedGeneratorKey,
   GeneratorBuilder,
 } from './types';
-
-import { Entity } from '@backstage/catalog-model';
 import { getGeneratorKey } from './helpers';
 
 export class Generators implements GeneratorBuilder {
   private generatorMap = new Map<SupportedGeneratorKey, GeneratorBase>();
+
+  static async fromConfig(
+    config: Config,
+    { logger }: { logger: Logger },
+  ): Promise<GeneratorBuilder> {
+    const generators = new Generators();
+
+    const techdocsGenerator = new TechdocsGenerator(logger, config);
+    generators.register('techdocs', techdocsGenerator);
+
+    return generators;
+  }
 
   register(generatorKey: SupportedGeneratorKey, generator: GeneratorBase) {
     this.generatorMap.set(generatorKey, generator);

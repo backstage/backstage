@@ -27,8 +27,8 @@ class Index extends React.Component {
               </Block.Title>
               <Block.Paragraph>
                 Powered by a centralized service catalog, Backstage restores
-                order to your infrastructure. So your product teams can ship
-                high-quality code quickly — without compromising autonomy.
+                order to your infrastructure and enables your product teams to
+                ship high-quality code quickly — without compromising autonomy.
               </Block.Paragraph>
               <Block.LinkButton
                 href={'https://github.com/backstage/backstage#getting-started'}

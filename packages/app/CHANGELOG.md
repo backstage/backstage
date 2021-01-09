@@ -1,5 +1,50 @@
 # example-app
 
+## 0.2.9
+
+### Patch Changes
+
+- Updated dependencies [ab0892358]
+- Updated dependencies [37a7d26c4]
+- Updated dependencies [8e083f41f]
+- Updated dependencies [88da267cc]
+- Updated dependencies [9c09a364f]
+- Updated dependencies [01707438b]
+- Updated dependencies [edb7d0775]
+- Updated dependencies [818d45e94]
+- Updated dependencies [0588be01f]
+- Updated dependencies [b8abdda57]
+- Updated dependencies [b7a124883]
+- Updated dependencies [bc909178d]
+- Updated dependencies [947d3c269]
+  - @backstage/plugin-cost-insights@0.5.5
+  - @backstage/plugin-tech-radar@0.3.2
+  - @backstage/cli@0.4.5
+  - @backstage/plugin-scaffolder@0.3.6
+  - @backstage/plugin-sentry@0.3.2
+  - @backstage/plugin-catalog@0.2.10
+  - @backstage/plugin-search@0.2.5
+  - @backstage/plugin-catalog-import@0.3.3
+  - @backstage/plugin-pagerduty@0.2.5
+
+## 0.2.8
+
+### Patch Changes
+
+- Updated dependencies [19554f6d6]
+- Updated dependencies [1dc445e89]
+- Updated dependencies [342270e4d]
+- Updated dependencies [7d72f9b09]
+  - @backstage/cli@0.4.3
+  - @backstage/plugin-github-actions@0.2.6
+  - @backstage/plugin-scaffolder@0.3.5
+  - @backstage/core@0.4.2
+  - @backstage/test-utils@0.1.6
+  - @backstage/plugin-graphiql@0.2.3
+  - @backstage/plugin-catalog@0.2.8
+  - @backstage/plugin-pagerduty@0.2.4
+  - @backstage/plugin-techdocs@0.5.1
+
 ## 0.2.7
 
 ### Patch Changes
