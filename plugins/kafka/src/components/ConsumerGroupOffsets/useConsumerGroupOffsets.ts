@@ -16,7 +16,7 @@
 
 import { errorApiRef, useApi } from '@backstage/core';
 import { useAsyncRetry } from 'react-use';
-import { kafkaApiRef } from '../../api/KafkaApi';
+import { kafkaApiRef } from '../../api/types';
 import _ from 'lodash';
 
 export function useConsumerGroupOffsets(groupId: string) {
@@ -25,31 +25,31 @@ export function useConsumerGroupOffsets(groupId: string) {
 
   const { loading, value: topics, retry } = useAsyncRetry(async () => {
     try {
-      const groupOnlyOffsets = await api.fetchGroupOffsets(groupId);
-      const topicOffsets = _.keyBy(
-        await api.fetchTopicsOffsets(
-          groupOnlyOffsets.map(value => value.topic),
-        ),
-        offsets => offsets.topic,
-      );
+      const groupOffsets = await api.getConsumerGroupOffsets(groupId);
+      const groupWithTopicOffsets = await Promise.all(
+        groupOffsets.map(async ({ topic, partitions }) => {
+          debugger;
+          const topicOffsets = _.keyBy(
+            await api.getTopicOffsets(topic),
+            partition => partition.id,
+          );
 
-      return groupOnlyOffsets.flatMap(value => {
-        let topicPartitionOffsets = _.keyBy(
-          topicOffsets[value.topic].partitions,
-          partition => partition.id,
-        );
-        return value.partitions.map(partition => ({
-          topic: value.topic,
-          partitionId: partition.id,
-          groupOffset: partition.offset,
-          topicOffset: topicPartitionOffsets[partition.id].offset,
-        }));
-      });
+          return partitions.map(partition => ({
+            topic: topic,
+            partitionId: partition.id,
+            groupOffset: partition.offset,
+            topicOffset: topicOffsets[partition.id].offset,
+          }));
+        }),
+      );
+      return groupWithTopicOffsets.flat();
     } catch (e) {
       errorApi.post(e);
       throw e;
     }
   }, [api, errorApi, groupId]);
+
+  debugger;
 
   return [
     {

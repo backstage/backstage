@@ -20,7 +20,8 @@ import {
   createRouteRef,
   discoveryApiRef,
 } from '@backstage/core';
-import { KafkaApi, kafkaApiRef } from './api/KafkaApi';
+import { KafkaBackendClient } from './api/KafkaBackendClient';
+import { kafkaApiRef } from './api/types';
 
 export const rootCatalogKafkaRouteRef = createRouteRef({
   path: '*',
@@ -33,8 +34,7 @@ export const plugin = createPlugin({
     createApiFactory({
       api: kafkaApiRef,
       deps: { discoveryApi: discoveryApiRef, configApi: configApiRef },
-      factory: ({ configApi, discoveryApi }) =>
-        KafkaApi.fromConfig(configApi, discoveryApi),
+      factory: ({ discoveryApi }) => new KafkaBackendClient({ discoveryApi }),
     }),
   ],
 });

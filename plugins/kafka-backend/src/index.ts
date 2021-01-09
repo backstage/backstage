@@ -13,6 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { plugin } from './plugin';
-export { KAFKA_CONSUMER_GROUP_ANNOTATION } from './constants';
-export { Router, isPluginApplicableToEntity } from './Router';
+
+export * from './service/router';
+export * from './types/types';

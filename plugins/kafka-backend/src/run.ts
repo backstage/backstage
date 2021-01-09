@@ -13,6 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { plugin } from './plugin';
-export { KAFKA_CONSUMER_GROUP_ANNOTATION } from './constants';
-export { Router, isPluginApplicableToEntity } from './Router';
+
+import yn from 'yn';
+import { getRootLogger } from '@backstage/backend-common';
+import { startStandaloneServer } from './service/standaloneServer';
+
+const port = process.env.PLUGIN_PORT ? Number(process.env.PLUGIN_PORT) : 7000;
+const enableCors = yn(process.env.PLUGIN_CORS, { default: false });
+const logger = getRootLogger();
+
+startStandaloneServer({ port, enableCors, logger }).catch(err => {
+  logger.error(err);
+  process.exit(1);
+});
+
+process.on('SIGINT', () => {
+  logger.info('CTRL+C pressed; exiting.');
+  process.exit(0);
+});

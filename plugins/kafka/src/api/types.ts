@@ -13,6 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { plugin } from './plugin';
-export { KAFKA_CONSUMER_GROUP_ANNOTATION } from './constants';
-export { Router, isPluginApplicableToEntity } from './Router';
+
+import { createApiRef } from '@backstage/core';
+import {
+  ConsumerGroupOffsetsResponse,
+  TopicOffsetsResponse,
+} from '@backstage/plugin-kafka-backend';
+
+export const kafkaApiRef = createApiRef<KafkaApi>({
+  id: 'plugin.kafka.service',
+  description:
+    'Used by the Kafka plugin to make requests to accompanying backend',
+});
+
+export interface KafkaApi {
+  getTopicOffsets(topic: string): Promise<TopicOffsetsResponse>;
+  getConsumerGroupOffsets(consumerGroup: string): Promise<ConsumerGroupOffsetsResponse>;
+}

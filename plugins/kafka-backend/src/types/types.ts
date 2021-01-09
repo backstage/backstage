@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
-export { KafkaApi } from './KafkaApi';
+import { TopicOffset, PartitionOffset } from '../service/KafkaApi';
+
+export type TopicOffsetsResponse = Array<PartitionOffset>;
+export type ConsumerGroupOffsetsResponse = Array<TopicOffset>;
