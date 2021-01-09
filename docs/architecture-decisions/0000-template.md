@@ -6,7 +6,7 @@ description: Architecture Decision Record (ADR) for [TITLE] [DESCRIPTION]
 
 | Created    | Status |
 | ---------- | ------ |
-| YYYY-MM-DD | Open   | <!-- Statuses can be of type Open or Agreed --> |
+| YYYY-MM-DD | Open   |
 
 # ADR000: [title]
 
