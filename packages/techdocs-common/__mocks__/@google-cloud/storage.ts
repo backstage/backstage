@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 type storageOptions = {
-  projectId?: string;
   keyFilename?: string;
 };
 
@@ -39,11 +38,9 @@ class Bucket {
 }
 
 export class Storage {
-  private readonly projectId;
   private readonly keyFilename;
 
   constructor(options: storageOptions) {
-    this.projectId = options.projectId;
     this.keyFilename = options.keyFilename;
   }
 

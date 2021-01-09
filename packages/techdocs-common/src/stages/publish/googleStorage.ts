@@ -56,15 +56,11 @@ export class GoogleGCSPublish implements PublisherBase {
         );
       }
     }
-    const projectId = config.getOptionalString(
-      'techdocs.publisher.googleGcs.projectId',
-    );
 
     const storageClient = new Storage({
       ...(credentials && {
         credentials: credentialsJson,
       }),
-      ...(projectId && { projectId }),
     });
 
     // Check if the defined bucket exists. Being able to connect means the configuration is good
