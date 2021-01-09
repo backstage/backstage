@@ -30,6 +30,7 @@ import { ConfigReader } from '@backstage/config';
 
 describe('BitbucketPreparer', () => {
   let mockEntity: TemplateEntityV1alpha1;
+  const logger = getVoidLogger();
   const mockGitClient = {
     clone: jest.fn(),
   };
@@ -79,8 +80,8 @@ describe('BitbucketPreparer', () => {
   });
 
   it('calls the clone command with the correct arguments for a repository', async () => {
-    const preparer = new BitbucketPreparer(new ConfigReader({}));
-    await preparer.prepare(mockEntity, { logger: getVoidLogger() });
+    const preparer = new BitbucketPreparer(new ConfigReader({}), { logger });
+    await preparer.prepare(mockEntity);
     expect(mockGitClient.clone).toHaveBeenCalledWith({
       url: 'https://bitbucket.org/backstage-project/backstage-repo',
       dir: expect.any(String),
@@ -100,18 +101,22 @@ describe('BitbucketPreparer', () => {
           ],
         },
       }),
+      { logger },
     );
-    await preparer.prepare(mockEntity, { logger: getVoidLogger() });
-    expect(mockGitClient.clone).toHaveBeenCalledWith({
-      url: 'https://bitbucket.org/backstage-project/backstage-repo',
-      dir: expect.any(String),
+
+    await preparer.prepare(mockEntity);
+
+    expect(Git.fromAuth).toHaveBeenCalledWith({
+      logger,
+      username: 'fake-user',
+      password: 'fake-password',
     });
   });
 
   it('calls the clone command with the correct arguments for a repository when no path is provided', async () => {
-    const preparer = new BitbucketPreparer(new ConfigReader({}));
+    const preparer = new BitbucketPreparer(new ConfigReader({}), { logger });
     delete mockEntity.spec.path;
-    await preparer.prepare(mockEntity, { logger: getVoidLogger() });
+    await preparer.prepare(mockEntity);
     expect(mockGitClient.clone).toHaveBeenCalledWith({
       url: 'https://bitbucket.org/backstage-project/backstage-repo',
       dir: expect.any(String),
@@ -119,22 +124,93 @@ describe('BitbucketPreparer', () => {
   });
 
   it('return the temp directory with the path to the folder if it is specified', async () => {
-    const preparer = new BitbucketPreparer(new ConfigReader({}));
+    const preparer = new BitbucketPreparer(new ConfigReader({}), { logger });
     mockEntity.spec.path = './template/test/1/2/3';
-    const response = await preparer.prepare(mockEntity, {
-      logger: getVoidLogger(),
-    });
+    const response = await preparer.prepare(mockEntity);
 
     expect(response.split('\\').join('/')).toMatch(
       /\/template\/test\/1\/2\/3$/,
     );
   });
 
+  it('calls the clone command with deprecated auth method', async () => {
+    const preparer = new BitbucketPreparer(
+      new ConfigReader({
+        scaffolder: {
+          bitbucket: {
+            api: {
+              username: 'fakeusername',
+              token: 'faketoken',
+            },
+          },
+        },
+      }),
+      { logger },
+    );
+
+    await preparer.prepare(mockEntity);
+
+    expect(Git.fromAuth).toHaveBeenCalledWith({
+      logger,
+      username: 'fakeusername',
+      password: 'faketoken',
+    });
+  });
+
+  it('calls the clone command with integrations config for auth method', async () => {
+    const preparer = new BitbucketPreparer(
+      new ConfigReader({
+        integrations: {
+          bitbucket: [
+            {
+              host: 'bitbucket.org',
+              username: 'asd3',
+              token: 'faketoken',
+            },
+          ],
+        },
+      }),
+      { logger },
+    );
+
+    await preparer.prepare(mockEntity);
+
+    expect(Git.fromAuth).toHaveBeenCalledWith({
+      logger,
+      username: 'asd3',
+      password: 'faketoken',
+    });
+  });
+
+  it('calls the clone command with integrations config with appPassword for auth method', async () => {
+    const preparer = new BitbucketPreparer(
+      new ConfigReader({
+        integrations: {
+          bitbucket: [
+            {
+              host: 'bitbucket.org',
+              username: 'asd3',
+              appPassword: 'myapppassword',
+            },
+          ],
+        },
+      }),
+      { logger },
+    );
+
+    await preparer.prepare(mockEntity);
+
+    expect(Git.fromAuth).toHaveBeenCalledWith({
+      logger,
+      username: 'asd3',
+      password: 'myapppassword',
+    });
+  });
+
   it('return the working directory with the path to the folder if it is specified', async () => {
-    const preparer = new BitbucketPreparer(new ConfigReader({}));
+    const preparer = new BitbucketPreparer(new ConfigReader({}), { logger });
     mockEntity.spec.path = './template/test/1/2/3';
     const response = await preparer.prepare(mockEntity, {
-      logger: getVoidLogger(),
       workingDirectory: '/workDir',
     });
 

@@ -59,7 +59,7 @@ export class BitbucketPreparer implements PreparerBase {
 
   async prepare(
     template: TemplateEntityV1alpha1,
-    opts: PreparerOptions,
+    opts?: PreparerOptions,
   ): Promise<string> {
     const { protocol, location } = parseLocationAnnotation(template);
     const workingDirectory = opts?.workingDirectory ?? os.tmpdir();
@@ -113,20 +113,25 @@ export class BitbucketPreparer implements PreparerBase {
       c => c.host === host,
     );
 
-    // TODO(blam): Not sure how appPassword fits in here. Just doing the most simple of
-    // implementations with the intergations config for now but can maybe fallback to
-    // appPassword instead maybe at a later stage.
+    if (!bitbucketIntegrationConfig) {
+      return undefined;
+    }
+
     if (
-      !bitbucketIntegrationConfig ||
       !bitbucketIntegrationConfig.username ||
-      !bitbucketIntegrationConfig.token
+      !(
+        bitbucketIntegrationConfig.token ||
+        bitbucketIntegrationConfig.appPassword
+      )
     ) {
       return undefined;
     }
 
     return {
       username: bitbucketIntegrationConfig.username,
-      password: bitbucketIntegrationConfig.token,
+      password:
+        bitbucketIntegrationConfig.token! ||
+        bitbucketIntegrationConfig.appPassword!,
     };
   }
 }
