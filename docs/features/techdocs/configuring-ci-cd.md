@@ -24,10 +24,10 @@ REPOSITORY_URL='https://github.com/org/repo'
 git clone $REPOSITORY_URL
 
 # Generate
-npx techdocs-cli generate --source-dir ./repo --output-dir ./site
+npx @techdocs/cli generate --source-dir ./repo --output-dir ./site
 
 # Publish
-npx techdocs-cli publish --directory ./site --publisher-type awsS3 --bucket-name <bucket> --entity <Namespace/Kind/Name>
+npx @techdocs/cli publish --directory ./site --publisher-type awsS3 --bucket-name <bucket> --entity <Namespace/Kind/Name>
 
 # That's it!
 ```
@@ -64,7 +64,7 @@ Take a look at
 complete command reference, details, and options.
 
 ```
-npx techdocs-cli generate --no-docker --source-dir PATH_TO_REPO --output-dir ./site
+npx @techdocs/cli generate --no-docker --source-dir PATH_TO_REPO --output-dir ./site
 ```
 
 `PATH_TO_REPO` should be the location where the prepare step above clones the
@@ -83,5 +83,5 @@ necessary authentication environment variables.
 - [AWS authentication](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-environment.html)
 
 ```
-techdocs-cli publish --directory ./site --publisher-type <awsS3|googleGcs> --bucket-name <bucket> --entity <namespace/kind/name>
+npx @techdocs/cli publish --directory ./site --publisher-type <awsS3|googleGcs> --bucket-name <bucket> --entity <namespace/kind/name>
 ```
