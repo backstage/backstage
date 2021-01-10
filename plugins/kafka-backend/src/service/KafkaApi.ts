@@ -60,7 +60,7 @@ export class KafkaApi {
     await admin.connect();
 
     try {
-      let groupOffsets = await admin.fetchOffsets({ groupId });
+      const groupOffsets = await admin.fetchOffsets({ groupId });
 
       return groupOffsets.map(topicOffset => ({
         topic: topicOffset.topic,

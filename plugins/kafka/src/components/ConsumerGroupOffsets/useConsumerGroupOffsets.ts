@@ -28,7 +28,6 @@ export function useConsumerGroupOffsets(groupId: string) {
       const groupOffsets = await api.getConsumerGroupOffsets(groupId);
       const groupWithTopicOffsets = await Promise.all(
         groupOffsets.map(async ({ topic, partitions }) => {
-          debugger;
           const topicOffsets = _.keyBy(
             await api.getTopicOffsets(topic),
             partition => partition.id,
@@ -48,8 +47,6 @@ export function useConsumerGroupOffsets(groupId: string) {
       throw e;
     }
   }, [api, errorApi, groupId]);
-
-  debugger;
 
   return [
     {
