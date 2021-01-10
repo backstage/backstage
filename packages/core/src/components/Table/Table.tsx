@@ -40,6 +40,7 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import { isEqual, transform } from 'lodash';
 import MTable, {
   Column,
+  Icons,
   MaterialTableProps,
   MTableHeader,
   MTableToolbar,
@@ -56,58 +57,28 @@ import { CheckboxTreeProps } from '../CheckboxTree/CheckboxTree';
 import { SelectProps } from '../Select/Select';
 import { Filter, Filters, SelectedFilters, Without } from './Filters';
 
-const tableIcons = {
-  Add: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
-    <AddBox {...props} ref={ref} />
-  )),
-  Check: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
-    <Check {...props} ref={ref} />
-  )),
-  Clear: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
-    <Clear {...props} ref={ref} />
-  )),
-  Delete: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
-    <DeleteOutline {...props} ref={ref} />
-  )),
-  DetailPanel: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
+const tableIcons: Icons = {
+  Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
+  Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
+  Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+  Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
+  DetailPanel: forwardRef((props, ref) => (
     <ChevronRight {...props} ref={ref} />
   )),
-  Edit: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
-    <Edit {...props} ref={ref} />
-  )),
-  Export: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
-    <SaveAlt {...props} ref={ref} />
-  )),
-  Filter: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
-    <FilterList {...props} ref={ref} />
-  )),
-  FirstPage: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
-    <FirstPage {...props} ref={ref} />
-  )),
-  LastPage: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
-    <LastPage {...props} ref={ref} />
-  )),
-  NextPage: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
-    <ChevronRight {...props} ref={ref} />
-  )),
-  PreviousPage: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
+  Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
+  Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
+  Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
+  FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
+  LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
+  NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+  PreviousPage: forwardRef((props, ref) => (
     <ChevronLeft {...props} ref={ref} />
   )),
-  ResetSearch: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
-    <Clear {...props} ref={ref} />
-  )),
-  Search: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
-    <Search {...props} ref={ref} />
-  )),
-  SortArrow: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
-    <ArrowUpward {...props} ref={ref} />
-  )),
-  ThirdStateCheck: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
-    <Remove {...props} ref={ref} />
-  )),
-  ViewColumn: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
-    <ViewColumn {...props} ref={ref} />
-  )),
+  ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+  Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
+  SortArrow: forwardRef((props, ref) => <ArrowUpward {...props} ref={ref} />),
+  ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
+  ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />),
 };
 
 // TODO: Material table might already have such a function internally that we can use?
