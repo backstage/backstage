@@ -184,7 +184,7 @@ export class GoogleGCSPublish implements PublisherBase {
           fileStreamChunks.push(chunk);
         })
         .on('end', () => {
-          const fileContent = Buffer.concat(fileStreamChunks).toString();
+          const fileContent = Buffer.concat(fileStreamChunks);
           // Inject response headers
           for (const [headerKey, headerValue] of Object.entries(
             responseHeaders,
