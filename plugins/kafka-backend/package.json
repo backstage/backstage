@@ -35,7 +35,7 @@
     "@backstage/catalog-model": "^0.6.0",
     "@backstage/config": "^0.1.2",
     "kafkajs": "^1.16.0-beta.6",
-    "winston": "^3.3.3"
+    "winston": "^3.2.1"
   },
   "devDependencies": {
     "@backstage/cli": "^0.4.2",
