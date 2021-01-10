@@ -28,5 +28,7 @@ export const kafkaApiRef = createApiRef<KafkaApi>({
 
 export interface KafkaApi {
   getTopicOffsets(topic: string): Promise<TopicOffsetsResponse>;
-  getConsumerGroupOffsets(consumerGroup: string): Promise<ConsumerGroupOffsetsResponse>;
+  getConsumerGroupOffsets(
+    consumerGroup: string,
+  ): Promise<ConsumerGroupOffsetsResponse>;
 }
