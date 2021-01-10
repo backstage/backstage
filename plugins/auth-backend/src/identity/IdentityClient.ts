@@ -15,7 +15,7 @@
  */
 
 import fetch from 'cross-fetch';
-import { JWK, JWT, JWKS, JWKECKey } from 'jose';
+import { JWK, JWT, JWKS, JSONWebKey } from 'jose';
 import { BackstageIdentity } from '../providers';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 
@@ -112,7 +112,7 @@ export class IdentityClient {
    * Lists public part of keys used to sign Backstage Identity tokens
    */
   async listPublicKeys(): Promise<{
-    keys: JWKECKey[];
+    keys: JSONWebKey[];
   }> {
     const url = `${await this.discovery.getBaseUrl(
       'auth',
@@ -125,7 +125,7 @@ export class IdentityClient {
       throw new Error(message);
     }
 
-    const publicKeys: { keys: JWKECKey[] } = await response.json();
+    const publicKeys: { keys: JSONWebKey[] } = await response.json();
 
     return publicKeys;
   }
@@ -136,9 +136,9 @@ export class IdentityClient {
   private async refreshKeyStore(): Promise<void> {
     const now = Date.now() / 1000;
     const publicKeys = await this.listPublicKeys();
-    this.keyStore = new JWKS.KeyStore(
-      publicKeys.keys.map(key => JWK.asKey(key)),
-    );
+    this.keyStore = JWKS.asKeyStore({
+      keys: publicKeys.keys.map(key => key as JSONWebKey),
+    });
     this.keyStoreUpdated = now;
   }
 }
