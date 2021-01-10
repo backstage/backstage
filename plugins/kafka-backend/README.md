@@ -12,7 +12,7 @@ The name of the client to use when connecting to the cluster.
 
 ### brokers
 
-A list of the brokers' hostnames and ports to connect to.
+A list of the brokers' host names and ports to connect to.
 
 Example:
 
