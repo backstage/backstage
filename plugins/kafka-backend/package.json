@@ -45,7 +45,7 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.4.2",
+    "@backstage/cli": "^0.4.3",
     "supertest": "^4.0.2"
   },
   "files": [
