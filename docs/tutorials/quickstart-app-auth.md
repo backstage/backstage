@@ -131,7 +131,7 @@ auth:
 
 2. Generate a GitLab Application client ID and secret
 
-- Log into Gitlab
+- Log into GitLab
 - Navigate to (Profile > Settings >
   Applications)[https://gitlab.com/-/profile/applications]
 - Name your application
