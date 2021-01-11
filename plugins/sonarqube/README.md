@@ -50,7 +50,7 @@ const OverviewContent = ({ entity }: { entity: Entity }) => (
 # app-config.yaml
 
 proxy:
-  '/sonarqube/api':
+  '/sonarqube':
     target: https://sonarcloud.io/api
     allowedMethods: ['GET']
     headers:
@@ -66,7 +66,7 @@ proxy:
 # app-config.yaml
 
 proxy:
-  '/sonarqube/api':
+  '/sonarqube':
     target: https://your.sonarqube.instance.com/api
     allowedMethods: ['GET']
     headers:
