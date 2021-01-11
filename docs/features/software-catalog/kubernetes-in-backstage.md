@@ -34,7 +34,7 @@ This configures how to determine which clusters a component is running in.
 
 Currently, the only valid serviceLocatorMethod is:
 
-#### multiTenant
+### multiTenant
 
 This configuration assumes that all components run on all the provided clusters.
 
@@ -44,26 +44,26 @@ This is used to determine where to retrieve cluster configuration from.
 
 Currently, the only valid cluster locator method is:
 
-#### config
+`"config"`
 
 This cluster locator method will read cluster information from your app-config
 (see below).
 
-##### clusters
+### clusters
 
 Used by the `config` cluster locator method to construct Kubernetes clients.
 
-###### url
+### clusters.\*.url
 
 The base URL to the Kubernetes control plane. Can be found by using the
 `Kubernetes master` result from running the `kubectl cluster-info` command.
 
-###### name
+### clusters.\*.name
 
 A name to represent this cluster, this must be unique within the `clusters`
 array. Users will see this value in the Service Catalog Kubernetes plugin.
 
-###### authProvider
+### clusters.\*.authProvider
 
 This determines how the Kubernetes client authenticates with the Kubernetes
 cluster. Valid values are:
@@ -73,7 +73,7 @@ cluster. Valid values are:
 | `serviceAccount` | This will use a Kubernetes [service account](https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/) to access the Kubernetes API. When this is used the `serviceAccountToken` field should also be set. |
 | `google`         | This will use a user's Google auth token from the [Google auth plugin](https://backstage.io/docs/auth/) to access the Kubernetes API.                                                                                             |
 
-###### serviceAccount (optional)
+### clusters.\*.serviceAccount (optional)
 
 The service account token to be used when using the `serviceAccount` auth
 provider.
@@ -125,7 +125,7 @@ You can write your own custom label selector query that backstage will use to
 lookup the objects (similar to `kubectl --selector="your query here"`). Review
 the documentation
 [here](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/)
-for more info
+for more info.
 
 ```yaml
 'backstage.io/kubernetes-label-selector': 'app=my-app,component=front-end'
