@@ -46,7 +46,8 @@ Currently, the only valid cluster locator method is:
 
 #### config
 
-This cluster locator method will read cluster information from your app-config (see below).
+This cluster locator method will read cluster information from your app-config
+(see below).
 
 ##### clusters
 
@@ -74,7 +75,8 @@ cluster. Valid values are:
 
 ###### serviceAccount (optional)
 
-The service account token to be used when using the `serviceAccount` auth provider.
+The service account token to be used when using the `serviceAccount` auth
+provider.
 
 ## RBAC
 
