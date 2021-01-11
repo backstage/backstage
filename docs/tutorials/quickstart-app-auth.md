@@ -88,7 +88,7 @@ auth:
         #  $env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
 ```
 
-2. Generate Github client id and secret
+2. Generate a GitHub client ID and secret
 
 - Log into http://github.com
 - Navigate to (Settings > Developer Settings > OAuth Apps > New OAuth
