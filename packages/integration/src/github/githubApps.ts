@@ -19,6 +19,7 @@ import { createAppAuth } from '@octokit/auth-app';
 import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
 import gitUrlParse from 'git-url-parse';
 import moment from 'moment';
+import { InstallationAccessTokenAuthentication } from '@octokit/auth-app/dist-types/types';
 
 type InstallationData = {
   installationId: number;
@@ -26,15 +27,37 @@ type InstallationData = {
   repositorySelection: 'selected' | 'all';
 };
 
+class Cache {
+  private readonly tokenCache = new Map<
+    string,
+    { token: string; expiresAt: Date }
+  >();
+
+  async getToken(
+    key: string,
+    fn: () => Promise<{ token: string; expiresAt: Date }>,
+  ): Promise<{ accessToken: string }> {
+    const item = this.tokenCache.get(key);
+    if (item && this.isNotExpired(item.expiresAt)) {
+      return { accessToken: item.token };
+    }
+
+    const result = await fn();
+    this.tokenCache.set(key, result);
+    return { accessToken: result.token };
+  }
+
+  // consider timestamps older than 50 minutes to be expired.
+  private isNotExpired = (date: Date) =>
+    moment(date).isAfter(moment().subtract(50, 'minutes'));
+}
+
 // GithubAppManager issues tokens for a speicifc GitHub App
 class GithubAppManager {
   private readonly appClient: Octokit;
   private readonly baseAuthConfig: { appId: number; privateKey: string };
   private installations?: RestEndpointMethodTypes['apps']['listInstallations']['response'];
-  private readonly tokenCache = new Map<
-    string,
-    { accessToken: string; exp: Date }
-  >();
+  private readonly cache = new Cache();
 
   constructor(config: GithubAppConfig) {
     this.baseAuthConfig = {
@@ -46,9 +69,6 @@ class GithubAppManager {
       auth: this.baseAuthConfig,
     });
   }
-
-  private lessThanOneHourAgo = (date: Date) =>
-    moment(date).isAfter(moment().subtract(1, 'hours'));
 
   async getInstallationCredentials(
     owner: string,
@@ -65,34 +85,31 @@ class GithubAppManager {
 
     // App is installed in the entire org
     if (repositorySelection === 'all') {
-      const auth = createAppAuth({
-        ...this.baseAuthConfig,
-        installationId,
+      return this.cache.getToken(owner, async () => {
+        const auth = createAppAuth({
+          ...this.baseAuthConfig,
+          installationId,
+        });
+        const result = await auth({ type: 'installation' });
+        const {
+          token,
+          expiresAt,
+        } = result as InstallationAccessTokenAuthentication;
+        return { token, expiresAt: new Date(expiresAt) };
       });
-      const { token } = await auth({ type: 'installation' });
-      return { accessToken: token };
     }
 
     // App is not installed org wide which requires a specific app token.
-    const cacheKey = `${owner}/${repo}`;
-    if (this.tokenCache.has(cacheKey)) {
-      const item = this.tokenCache.get(cacheKey);
-      if (this.lessThanOneHourAgo(item?.exp!)) {
-        return {
-          accessToken: item?.accessToken!,
-        };
-      }
-    }
-
-    const res = await this.appClient.apps.createInstallationAccessToken({
-      installation_id: installationId,
-      repositories: [repo],
+    return this.cache.getToken(`${owner}/${repo}`, async () => {
+      const result = await this.appClient.apps.createInstallationAccessToken({
+        installation_id: installationId,
+        repositories: [repo],
+      });
+      return {
+        token: result.data.token,
+        expiresAt: new Date(result.data.expires_at),
+      };
     });
-    this.tokenCache.set(cacheKey, {
-      accessToken: res.data.token,
-      exp: new Date(res.data.expires_at),
-    });
-    return { accessToken: res.data.token };
   }
 
   private async getInstallationData(owner: string): Promise<InstallationData> {

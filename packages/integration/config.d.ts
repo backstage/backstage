@@ -35,6 +35,16 @@ export interface Config {
       apiBaseUrl?: string;
       /** @visibility frontend */
       rawBaseUrl?: string;
+      apps?: Array<{
+        appId: number;
+        /** @visiblity secret */
+        privateKey: string;
+        /** @visiblity secret */
+        webhookSecret: string;
+        clientId: string;
+        /** @visiblity secret */
+        clientSecret: string;
+      }>;
     }>;
 
     gitlab?: Array<{

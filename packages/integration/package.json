@@ -31,7 +31,10 @@
   "dependencies": {
     "@backstage/config": "^0.1.2",
     "cross-fetch": "^3.0.6",
-    "git-url-parse": "^11.4.3"
+    "git-url-parse": "^11.4.3",
+    "@octokit/rest": "^18.0.12",
+    "@octokit/auth-app": "^2.10.5",
+    "moment": "^2.29.1"
   },
   "devDependencies": {
     "@backstage/cli": "^0.4.5",

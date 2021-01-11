@@ -58,8 +58,22 @@ export type GitHubIntegrationConfig = {
    * If no token is specified, anonymous access is used.
    */
   token?: string;
+
+  /**
+   * The GitHub Apps configuration to use for requests to this provider.
+   *
+   * If no apps is specified, token or anonymous is used.
+   */
+  apps?: GithubAppConfig[];
 };
 
+export type GithubAppConfig = {
+  appId: number;
+  privateKey: string;
+  webhookSecret: string;
+  clientId: string;
+  clientSecret: string;
+};
 /**
  * Reads a single GitHub integration config.
  *
