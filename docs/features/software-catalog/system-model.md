@@ -23,7 +23,7 @@ We model software in the Backstage catalogue using these three core entities
 - **Resources** are physical or virtual infrastructure needed to operate a
   component
 
-![](../../assets/software-catalog/software-model-core-entities.png)
+![](../../assets/software-catalog/software-model-core-entities.drawio.svg)
 
 ### Component
 
@@ -72,6 +72,8 @@ these entities using the following (optional) concepts:
 - **Systems** are a collection of entities that cooperate to perform some
   function
 - **Domains** relate entities and systems to part of the business
+
+![](../../assets/software-catalog/software-model-entities.drawio.svg)
 
 ### System
 
