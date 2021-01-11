@@ -19,6 +19,7 @@ import path from 'path';
 import * as runObj from '../run';
 import { paths } from '../paths';
 import { fetchPackageInfo, mapDependencies } from './packages';
+import { NotFoundError } from '@backstage/backend-common';
 
 describe('fetchPackageInfo', () => {
   afterEach(() => {
@@ -38,6 +39,14 @@ describe('fetchPackageInfo', () => {
       'info',
       '--json',
       'my-package',
+    );
+  });
+
+  it('should throw if no info', async () => {
+    jest.spyOn(runObj, 'runPlain').mockResolvedValue('');
+
+    await expect(fetchPackageInfo('my-package')).rejects.toThrow(
+      new NotFoundError(`No package information found for package my-package`),
     );
   });
 });

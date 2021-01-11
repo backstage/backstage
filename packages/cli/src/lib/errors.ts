@@ -44,3 +44,5 @@ export function exitWithError(error: Error): never {
     process.exit(1);
   }
 }
+
+export class NotFoundError extends CustomError {}
