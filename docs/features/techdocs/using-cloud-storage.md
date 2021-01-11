@@ -180,7 +180,7 @@ In the IAM console, do the following:
 **2.2 Attach policies**
 
 Remember that you can use Bucket policy **or** User policy. Just make sure that
-you grant all the permissions to the TechDocs user: `3:PutObject`,
+you grant all the permissions to the TechDocs user: `s3:PutObject`,
 `s3:GetObject`, `s3:ListBucket` and `s3:GetBucketLocation`.
 
 **2.2.1 Create the bucket policy**

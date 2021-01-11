@@ -72,7 +72,7 @@ export class GoogleGCSPublish implements PublisherBase {
       logger.error(
         `Could not retrieve metadata about the GCS bucket ${bucketName}. ` +
           'Make sure the bucket exists. Also make sure that authentication is setup either by explicitly defining ' +
-          'techdocs.publisher.googleGcs.credentials in app config or by using environment variables' +
+          'techdocs.publisher.googleGcs.credentials in app config or by using environment variables. ' +
           'Refer to https://backstage.io/docs/features/techdocs/using-cloud-storage',
       );
       throw new Error(err.message);
