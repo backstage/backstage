@@ -60,7 +60,7 @@ software catalog API.
   },
   "spec": {
     "lifecycle": "production",
-    "owner": "artist-relations@example.com",
+    "owner": "artist-relations-team",
     "type": "website"
   }
 }
@@ -84,7 +84,7 @@ metadata:
 spec:
   type: website
   lifecycle: production
-  owner: artist-relations@example.com
+  owner: artist-relations-team
 ```
 
 The root fields `apiVersion`, `kind`, `metadata`, and `spec` are part of the
@@ -381,7 +381,7 @@ metadata:
 spec:
   type: website
   lifecycle: production
-  owner: artist-relations@example.com
+  owner: artist-relations-team
   system: artist-engagement-portal
   providesApis:
     - artist-api
@@ -429,7 +429,7 @@ The current set of well-known and common values for this field is:
 ### `spec.owner` [required]
 
 An [entity reference](#string-references) to the owner of the component, e.g.
-`artist-relations@example.com`. This field is required.
+`artist-relations-team`. This field is required.
 
 In Backstage, the owner of a component is the singular entity (commonly a team)
 that bears ultimate responsibility for the component, and has the authority and
@@ -456,8 +456,8 @@ belongs to, e.g. `artist-engagement-portal`. This field is optional.
 
 ### `spec.providesApis` [optional]
 
-An array of [entity reference](#string-references) to the APIs that are provided
-by the component, e.g. `artist-api`. This field is optional.
+An array of [entity references](#string-references) to the APIs that are
+provided by the component, e.g. `artist-api`. This field is optional.
 
 | [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                                                  |
 | --------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------------- |
@@ -465,8 +465,8 @@ by the component, e.g. `artist-api`. This field is optional.
 
 ### `spec.consumesApis` [optional]
 
-An array of [entity reference](#string-references) to the APIs that are consumed
-by the component, e.g. `artist-api`. This field is optional.
+An array of [entity references](#string-references) to the APIs that are
+consumed by the component, e.g. `artist-api`. This field is optional.
 
 | [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                                                  |
 | --------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------------- |
@@ -609,7 +609,7 @@ metadata:
 spec:
   type: openapi
   lifecycle: production
-  owner: artist-relations@example.com
+  owner: artist-relations-team
   system: artist-engagement-portal
   definition: |
     openapi: "3.0.0"
@@ -677,7 +677,7 @@ The current set of well-known and common values for this field is:
 ### `spec.owner` [required]
 
 An [entity reference](#string-references) to the owner of the component, e.g.
-`artist-relations@example.com`. This field is required.
+`artist-relations-team`. This field is required.
 
 In Backstage, the owner of an API is the singular entity (commonly a team) that
 bears ultimate responsibility for the API, and has the authority and capability
@@ -853,11 +853,6 @@ The entries of this array are
 | --------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------- |
 | [`Group`](#kind-group) (default)        | Same as this entity, typically `default`   | [`memberOf`, and reverse `hasMember`](well-known-relations.md#memberof-and-hasmember) |
 
-with the default kind `Group` and the default namespace equal to the same
-namespace as the user. Only `Group` entities may be referenced. Most commonly,
-these entries point to groups in the same namespace, so in those cases it is
-sufficient to enter only the `metadata.name` field of those groups.
-
 ## Kind: Resource
 
 Describes the following entity kind:
@@ -882,7 +877,7 @@ metadata:
   description: Stores artist details
 spec:
   type: database
-  owner: artist-relations@example.com
+  owner: artist-relations-team
   system: artist-engagement-portal
 ```
 
@@ -895,10 +890,10 @@ Exactly equal to `backstage.io/v1alpha1` and `Resource`, respectively.
 
 ### `spec.owner` [required]
 
-An [entity reference](#string-references) to the owner of the component, e.g.
-`artist-relations@example.com`. This field is required.
+An [entity reference](#string-references) to the owner of the resource, e.g.
+`artist-relations-team`. This field is required.
 
-In Backstage, the owner of an resource is the singular entity (commonly a team)
+In Backstage, the owner of a resource is the singular entity (commonly a team)
 that bears ultimate responsibility for the resource, and has the authority and
 capability to develop and maintain it. They will be the point of contact if
 something goes wrong, or if features are to be requested. The main purpose of
@@ -958,7 +953,7 @@ metadata:
   name: artist-engagement-portal
   description: Handy tools to keep artists in the loop
 spec:
-  owner: artist-relations@example.com
+  owner: artist-relations-team
   domain: artists
   providesApis:
     - artist-api
@@ -974,16 +969,16 @@ Exactly equal to `backstage.io/v1alpha1` and `System`, respectively.
 ### `spec.owner` [required]
 
 An [entity reference](#string-references) to the owner of the system, e.g.
-`artist-relations@example.com`. This field is required.
+`artist-relations-team`. This field is required.
 
-In Backstage, the owner of an System is the singular entity (commonly a team)
-that bears ultimate responsibility for the System, and has the authority and
+In Backstage, the owner of a system is the singular entity (commonly a team)
+that bears ultimate responsibility for the system, and has the authority and
 capability to develop and maintain it. They will be the point of contact if
 something goes wrong, or if features are to be requested. The main purpose of
 this field is for display purposes in Backstage, so that people looking at
-catalog items can get an understanding of to whom this System belongs. It is not
+catalog items can get an understanding of to whom this system belongs. It is not
 to be used by automated processes to for example assign authorization in runtime
-systems. There may be others that also develop or otherwise touch the System,
+systems. There may be others that also develop or otherwise touch the system,
 but there will always be one ultimate owner.
 
 | [`kind`](#apiversion-and-kind-required)                | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                              |
@@ -1001,8 +996,8 @@ to, e.g. `artists`. This field is optional.
 
 ### `spec.providesApis` [optional]
 
-An array of [entity reference](#string-references) to the APIs that are provided
-by the system, e.g. `artist-api`. This field is optional.
+An array of [entity references](#string-references) to the APIs that are
+provided by the system, e.g. `artist-api`. This field is optional.
 
 APIs can be exposed by the system, providing consumers a higher level
 abstraction on providers of APIs without needing to have a detailed view in the
@@ -1014,8 +1009,8 @@ involved components.
 
 ### `spec.consumesApis` [optional]
 
-An array of [entity reference](#string-references) to the APIs that are consumed
-by the system, e.g. `artist-api`. This field is optional.
+An array of [entity references](#string-references) to the APIs that are
+consumed by the system, e.g. `artist-api`. This field is optional.
 
 APIs can be consumed by the system, providing providers a higher level
 abstraction on consumers of their APIs without needing to have a detailed view
@@ -1046,7 +1041,7 @@ metadata:
   name: artists
   description: Everything about artists
 spec:
-  owner: artist-relations@example.com
+  owner: artist-relations-team
 ```
 
 In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)
@@ -1059,16 +1054,16 @@ Exactly equal to `backstage.io/v1alpha1` and `Domain`, respectively.
 ### `spec.owner` [required]
 
 An [entity reference](#string-references) to the owner of the domain, e.g.
-`artist-relations@example.com`. This field is required.
+`artist-relations-team`. This field is required.
 
-In Backstage, the owner of an domain is the singular entity (commonly a team)
+In Backstage, the owner of a domain is the singular entity (commonly a team)
 that bears ultimate responsibility for the domain, and has the authority and
 capability to develop and maintain it. They will be the point of contact if
 something goes wrong, or if features are to be requested. The main purpose of
 this field is for display purposes in Backstage, so that people looking at
-catalog items can get an understanding of to whom this system belongs. It is not
+catalog items can get an understanding of to whom this domain belongs. It is not
 to be used by automated processes to for example assign authorization in runtime
-systems. There may be others that also develop or otherwise touch the system,
+systems. There may be others that also develop or otherwise touch the domain,
 but there will always be one ultimate owner.
 
 | [`kind`](#apiversion-and-kind-required)                | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                              |
