@@ -331,7 +331,7 @@ Modify the imported reference based on the authentication method you selected ab
 | Gitlab        | gitlabAuthApiRef    |
 | Google        | googleAuthApiRef    |
 | Microsoft     | microsoftAuthApiRef |
-| Auth0         | googleAuthApiRef    |
+| Auth0         | auth0AuthApiRef    |
 
 6. In the same file, modify createApp
 
