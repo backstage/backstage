@@ -44,21 +44,23 @@ In short: local or global, single or multi-cloud, managed or unmanaged — Backs
 ## Rethinking the developer experience
 The philosophy behind Backstage is simple: improve developer experience by reducing infrastructure complexity. As popular and widespread as Kubernetes has become, all of the tools to date have been geared toward the needs of cluster admins. These tools add unnecessary complexity to the workflows of the typical developer building, testing, and deploying services.
 
-We believe Backstage Kubernetes gives developers back control of their services by providing a more focussed and consistent experience. Backstage provides a single standard for developers to monitor their Kubernetes deployments, regardless of the underlying cloud infrastructure.
+We believe Backstage Kubernetes gives developers back control of their services by providing a more focused and consistent experience. Backstage provides a single standard for developers to monitor their Kubernetes deployments, regardless of the underlying cloud infrastructure.
 
 ## Future iterations
 
 The current focus of Kubernetes in Backstage is Deployments/ReplicaSets/Pods — but we know that not everyone utilizes these.
 
-As we continue to grow and develop Kubernetes in Backstage with the community, we hope to offer support for Kubernetes resources beyond Deployments and Custom Resource Definitions.
+As we continue to grow and develop Kubernetes in Backstage with the community, we hope to offer support for Kubernetes resources beyond Deployments and Custom Resource Definitions. You can browse or add open issues for the plugin [here].
 
 ## Getting started
 
-We made the Kubernetes plugin a core feature of Backstage. Like Software Templates (scaffolder) and TechDocs, the k8s-plugin is installed with the core app. [When you update the app to the latest version and go to the Kubernetes tab of any service, you will be asked to provide your cloud provider credentials. [Learn more about getting started with the k8s-plugin here].]
+We made the Kubernetes plugin a core feature of Backstage. Like Software Templates (scaffolder) and TechDocs, the k8s-plugin is installed with the core app. When you update the app to the latest version and go to the Kubernetes tab of any service, you will be asked to provide your cloud provider credentials. Learn more in the plugin README files for [kubernetes] and [kubernetes-backend].
 
 To contribute or get more information on Kubernetes in Backstage, [join the discussion on Discord]!
 
 
 
-[Learn more about getting started with the K8s-plugin here]: https://backstage.io/docs/features/kubernetes
+[here]: https://github.com/backstage/backstage/issues?q=is%3Aissue+is%3Aopen+kubernetes+label%3Ak8s-plugin
+[kubernetes]: https://github.com/backstage/backstage/tree/master/plugins/kubernetes#surfacing-your-kubernetes-components-as-part-of-an-entity
+[kubernetes-backend]: https://github.com/backstage/backstage/tree/master/plugins/kubernetes-backend
 [join the discussion on Discord]: https://discord.gg/MUpMjP2
