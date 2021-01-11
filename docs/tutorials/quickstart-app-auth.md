@@ -293,7 +293,7 @@ auth:
 # For macOS Catalina & Z Shell
 # ------ simple-backstage-app GitHub
 #
-# (Change the name of the environment variables based on your auth setup above
+# (Change the name of the environment variables based on your auth setup above)
 export AUTH_GITHUB_CLIENT_ID=xxx
 export AUTH_GITHUB_CLIENT_SECRET=xxx
 # export AUTH_GITHUB_ENTERPRISE_INSTANCE_URL=https://github.{MY_BIZ}.com
@@ -315,7 +315,7 @@ export AUTH_GITHUB_CLIENT_SECRET=xxx
 > ...
 ```
 
-6. Open and change _root > packages > app > src >_`App.tsx` to use correct
+5. Open and change _root > packages > app > src >`App.tsx` to use correct
    authentication provider reference
 
 ```tsx
@@ -332,9 +332,9 @@ Modify the imported reference based on authentication method selected above
 | Microsoft     | microsoftAuthApiRef |
 | Auth0         | googleAuthApiRef    |
 
-7. In the same file, modify createApp
+6. In the same file, modify createApp
 
-Remeber to modify the provider information based on the table above.
+Remember to modify the provider information based on the table above.
 
 ```tsx
 const app = createApp({
