@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import fs from 'fs-extra';
+import os from 'os';
+import path from 'path';
 import Docker from 'dockerode';
 import { Logger } from 'winston';
 import { Entity } from '@backstage/catalog-model';
@@ -78,8 +81,17 @@ export class DocsBuilder {
     const parsedLocationAnnotation = getLocationForEntity(this.entity);
 
     this.logger.info(`Running generator on entity ${getEntityId(this.entity)}`);
-    const { resultDir } = await this.generator.run({
-      directory: preparedDir,
+    // Create a temporary directory to store the generated files in.
+    const tmpdirPath = os.tmpdir();
+    // Fixes a problem with macOS returning a path that is a symlink
+    const tmpdirResolvedPath = fs.realpathSync(tmpdirPath);
+    const outputDir = await fs.mkdtemp(
+      path.join(tmpdirResolvedPath, 'techdocs-tmp-'),
+    );
+
+    await this.generator.run({
+      inputDir: preparedDir,
+      outputDir,
       dockerClient: this.dockerClient,
       parsedLocationAnnotation,
     });
@@ -87,8 +99,10 @@ export class DocsBuilder {
     this.logger.info(`Running publisher on entity ${getEntityId(this.entity)}`);
     await this.publisher.publish({
       entity: this.entity,
-      directory: resultDir,
+      directory: outputDir,
     });
+
+    // TODO: Remove the generated directory once published.
 
     if (!this.entity.metadata.uid) {
       throw new Error(

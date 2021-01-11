@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
 import path from 'path';
-import os from 'os';
 import { Logger } from 'winston';
 import { PassThrough } from 'stream';
 import { Config } from '@backstage/config';
 
-import {
-  GeneratorBase,
-  GeneratorRunOptions,
-  GeneratorRunResult,
-} from './types';
+import { GeneratorBase, GeneratorRunOptions } from './types';
 import {
   runDockerContainer,
   runCommand,
@@ -64,26 +58,11 @@ export class TechdocsGenerator implements GeneratorBase {
   }
 
   public async run({
-    directory,
+    inputDir,
+    outputDir,
     dockerClient,
-    expectedResultDir,
     parsedLocationAnnotation,
-  }: GeneratorRunOptions): Promise<GeneratorRunResult> {
-    // If provided with a directory to output the generated files in, use that directory.
-    // Else create a new temporary directory and return path.
-    let resultDir;
-    if (expectedResultDir) {
-      resultDir = expectedResultDir;
-      await fs.ensureDir(resultDir);
-    } else {
-      const tmpdirPath = os.tmpdir();
-      // Fixes a problem with macOS returning a path that is a symlink
-      const tmpdirResolvedPath = fs.realpathSync(tmpdirPath);
-      resultDir = fs.mkdtempSync(
-        path.join(tmpdirResolvedPath, 'techdocs-tmp-'),
-      );
-    }
-
+  }: GeneratorRunOptions): Promise<void> {
     const [log, logStream] = createStream();
 
     // TODO: In future mkdocs.yml can be mkdocs.yaml. So, use a config variable here to find out
@@ -91,7 +70,7 @@ export class TechdocsGenerator implements GeneratorBase {
     // Do some updates to mkdocs.yml before generating docs e.g. adding repo_url
     if (parsedLocationAnnotation) {
       await patchMkdocsYmlPreBuild(
-        path.join(directory, 'mkdocs.yml'),
+        path.join(inputDir, 'mkdocs.yml'),
         this.logger,
         parsedLocationAnnotation,
       );
@@ -102,14 +81,14 @@ export class TechdocsGenerator implements GeneratorBase {
         case 'local':
           await runCommand({
             command: 'mkdocs',
-            args: ['build', '-d', resultDir, '-v'],
+            args: ['build', '-d', outputDir, '-v'],
             options: {
-              cwd: directory,
+              cwd: inputDir,
             },
             logStream,
           });
           this.logger.info(
-            `Successfully generated docs from ${directory} into ${resultDir} using local mkdocs`,
+            `Successfully generated docs from ${inputDir} into ${outputDir} using local mkdocs`,
           );
           break;
         case 'docker':
@@ -117,12 +96,12 @@ export class TechdocsGenerator implements GeneratorBase {
             imageName: 'spotify/techdocs',
             args: ['build', '-d', '/result'],
             logStream,
-            docsDir: directory,
-            resultDir,
+            docsDir: inputDir,
+            outputDir,
             dockerClient,
           });
           this.logger.info(
-            `Successfully generated docs from ${directory} into ${resultDir} using techdocs-container`,
+            `Successfully generated docs from ${inputDir} into ${outputDir} using techdocs-container`,
           );
           break;
         default:
@@ -132,14 +111,12 @@ export class TechdocsGenerator implements GeneratorBase {
       }
     } catch (error) {
       this.logger.debug(
-        `Failed to generate docs from ${directory} into ${resultDir}`,
+        `Failed to generate docs from ${inputDir} into ${outputDir}`,
       );
       this.logger.debug(`Build failed with error: ${log}`);
       throw new Error(
-        `Failed to generate docs from ${directory} into ${resultDir} with error ${error.message}`,
+        `Failed to generate docs from ${inputDir} into ${outputDir} with error ${error.message}`,
       );
     }
-
-    return { resultDir };
   }
 }
