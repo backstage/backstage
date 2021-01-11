@@ -37,7 +37,8 @@ techdocs-backend will publish documentation to this bucket. TechDocs will fetch
 files from here to serve documentation in Backstage. Note that the bucket names
 are globally unique.
 
-Set the name of the bucket to `techdocs.publisher.googleGcs.bucketName`.
+Set the config `techdocs.publisher.googleGcs.bucketName` in your
+`app-config.yaml` to the name of the bucket you just created.
 
 ```yaml
 techdocs:
