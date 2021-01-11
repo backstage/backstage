@@ -42,13 +42,15 @@ const OverviewContent = ({ entity }: { entity: Entity }) => (
 
 4. Add the proxy config:
 
+    Provide a method for your Backstage backend to get to your SonarQube API end point.
+
 **SonarCloud**
 
 ```yaml
 # app-config.yaml
 
 proxy:
-  '/sonarqube':
+  '/sonarqube/api':
     target: https://sonarcloud.io/api
     allowedMethods: ['GET']
     headers:
@@ -64,7 +66,7 @@ proxy:
 # app-config.yaml
 
 proxy:
-  '/sonarqube':
+  '/sonarqube/api':
     target: https://your.sonarqube.instance.com/api
     allowedMethods: ['GET']
     headers:
