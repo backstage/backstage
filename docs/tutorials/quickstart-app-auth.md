@@ -180,7 +180,7 @@ auth:
 
 - Log into https://console.cloud.google.com
 - Select or create a new project from the dropdown on the top bar
-- Navigate to (APIs & Services - >
+- Navigate to (APIs & Services >
   Credentials)[https://console.cloud.google.com/apis/credentials]
 - Add new Authorised JavaScript origin = `http://localhost:3000`
 - Add new Authorised redirect URI =
