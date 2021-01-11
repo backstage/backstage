@@ -1,14 +1,12 @@
-
 title: New Backstage feature: Kubernetes for Service owners
 author: Matthew Clarke, Spotify
 authorURL: https://github.com/mclarke47
+
 ---
 
 TLDR; We’re rethinking the Kubernetes developer experience with a new feature: a Kubernetes monitoring tool that’s designed around the needs of service owners, not cluster admins. Now developers can easily check the health of their services no matter how or where those services are deployed — whether it’s on a local host for testing or in production on dozens of clusters around the world.
 
 And since Backstage uses the native Kubernetes API, the feature works with whichever cloud provider (AWS, Azure, GCP, etc.) or managed service (OpenShift, IBM Cloud, GKE, etc.) you already use.
-
-
 
 <--truncate-->
 
@@ -42,6 +40,7 @@ Since Backstage communicates directly with the Kubernetes API, it’s cloud agno
 In short: local or global, single or multi-cloud, managed or unmanaged — Backstage always provides a seamless Kubernetes experience for your service owners’ day-to-day development needs.
 
 ## Rethinking the developer experience
+
 The philosophy behind Backstage is simple: improve developer experience by reducing infrastructure complexity. As popular and widespread as Kubernetes has become, all of the tools to date have been geared toward the needs of cluster admins. These tools add unnecessary complexity to the workflows of the typical developer building, testing, and deploying services.
 
 We believe Backstage Kubernetes gives developers back control of their services by providing a more focused and consistent experience. Backstage provides a single standard for developers to monitor their Kubernetes deployments, regardless of the underlying cloud infrastructure.
@@ -58,9 +57,7 @@ We made the Kubernetes plugin a core feature of Backstage. Like Software Templat
 
 To contribute or get more information on Kubernetes in Backstage, [join the discussion on Discord]!
 
-
-
 [here]: https://github.com/backstage/backstage/issues?q=is%3Aissue+is%3Aopen+kubernetes+label%3Ak8s-plugin
 [kubernetes]: https://github.com/backstage/backstage/tree/master/plugins/kubernetes#surfacing-your-kubernetes-components-as-part-of-an-entity
 [kubernetes-backend]: https://github.com/backstage/backstage/tree/master/plugins/kubernetes-backend
-[join the discussion on Discord]: https://discord.gg/MUpMjP2
+[join the discussion on discord]: https://discord.gg/MUpMjP2
