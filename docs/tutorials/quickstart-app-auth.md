@@ -13,7 +13,7 @@ title: Monorepo App Setup With Authentication
 >
 > This document assumes you have Node.js 12 or 14 active along with Yarn and
 > Python. Please note, that at the time of this writing, the current version is
-> v0.4.5 This guide can still be used with future versions, just, verify as you
+> v0.4.5. This guide can still be used with future versions, just, verify as you
 > go.
 
 # The Skeleton Application
