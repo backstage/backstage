@@ -315,7 +315,7 @@ export AUTH_GITHUB_CLIENT_SECRET=xxx
 > ...
 ```
 
-5. Open and change _root > packages > app > src >`App.tsx` to use correct
+5. Open and change \_root > packages > app > src >`App.tsx` to use correct
    authentication provider reference
 
 ```tsx
