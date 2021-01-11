@@ -129,7 +129,7 @@ auth:
         audience: https://gitlab.com # Or your self-hosted Gitlab instance URL
 ```
 
-2. Generate Gitlab Application for client id and secret
+2. Generate a GitLab Application client ID and secret
 
 - Log into Gitlab
 - Navigate to (Profile > Settings >
