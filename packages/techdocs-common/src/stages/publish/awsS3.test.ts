@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import mockFs from 'mock-fs';
+import path from 'path';
 import * as winston from 'winston';
 import { ConfigReader } from '@backstage/config';
 import { AwsS3Publish } from './awsS3';
@@ -45,7 +46,7 @@ const getEntityRootDir = (entity: Entity) => {
     kind,
     metadata: { namespace, name },
   } = entity;
-  const entityRootDir = `${namespace}/${kind}/${name}`;
+  const entityRootDir = path.join(namespace as string, kind, name);
   return entityRootDir;
 };
 
@@ -171,14 +172,17 @@ describe('AwsS3Publish', () => {
     it('should return an error if the techdocs_metadata.json file is not present', async () => {
       const entityNameMock = createMockEntityName();
       const entity = createMockEntity();
-      const entityRootDir = getEntityRootDir(entity);
+      const {
+        metadata: { name, namespace },
+        kind,
+      } = entity;
 
       await publisher
         .fetchTechDocsMetadata(entityNameMock)
         .catch(error =>
           expect(error).toEqual(
             new Error(
-              `TechDocs metadata fetch failed, The file ${entityRootDir}/techdocs_metadata.json doest not exist.`,
+              `TechDocs metadata fetch failed, The file ${namespace}/${kind}/${name}/techdocs_metadata.json doest not exist.`,
             ),
           ),
         );

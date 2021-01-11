@@ -52,14 +52,10 @@ export class S3 {
   }
 
   headBucket() {
-    return new Promise(resolve => {
-      resolve('');
-    });
+    return '';
   }
 
   putObject() {
-    return new Promise(resolve => {
-      resolve('');
-    });
+    return '';
   }
 }
