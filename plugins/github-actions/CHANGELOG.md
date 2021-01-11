@@ -1,5 +1,32 @@
 # @backstage/plugin-github-actions
 
+## 0.2.6
+
+### Patch Changes
+
+- 19554f6d6: Added Github Actions for Create React App, and allow better imports of files inside a module when they're exposed using `files` in `package.json`
+- Updated dependencies [d681db2b5]
+- Updated dependencies [1dc445e89]
+- Updated dependencies [342270e4d]
+- Updated dependencies [1dc445e89]
+  - @backstage/core-api@0.2.7
+  - @backstage/core@0.4.2
+  - @backstage/plugin-catalog@0.2.8
+
+## 0.2.5
+
+### Patch Changes
+
+- Updated dependencies [c911061b7]
+- Updated dependencies [8ef71ed32]
+- Updated dependencies [0e6298f7e]
+- Updated dependencies [7dd2ef7d1]
+- Updated dependencies [ac3560b42]
+  - @backstage/catalog-model@0.6.0
+  - @backstage/core@0.4.1
+  - @backstage/core-api@0.2.6
+  - @backstage/plugin-catalog@0.2.7
+
 ## 0.2.4
 
 ### Patch Changes

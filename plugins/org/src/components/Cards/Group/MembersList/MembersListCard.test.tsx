@@ -18,12 +18,12 @@ import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import React from 'react';
 import { ApiProvider, ApiRegistry } from '@backstage/core';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, GroupEntity } from '@backstage/catalog-model';
 import { MembersListCard } from './MembersListCard';
 
 describe('MemberTab Test', () => {
-  const groupEntity = {
-    apiVersion: 'v1',
+  const groupEntity: GroupEntity = {
+    apiVersion: 'backstage.io/v1alpha1',
     kind: 'Group',
     metadata: {
       name: 'team-d',
@@ -33,9 +33,7 @@ describe('MemberTab Test', () => {
     spec: {
       type: 'team',
       parent: 'boxoffice',
-      ancestors: ['boxoffice', 'acme-corp'],
       children: [],
-      descendants: [],
     },
   };
 

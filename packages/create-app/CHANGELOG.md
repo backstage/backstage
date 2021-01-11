@@ -1,5 +1,134 @@
 # @backstage/create-app
 
+## 0.3.4
+
+### Patch Changes
+
+- 643dcec7c: noop release for create-app to force re-deploy
+
+## 0.3.3
+
+### Patch Changes
+
+- bd9c6719f: Bumping the version for `create-app` so that we can use the latest versions of internal packages and rebuild the version which is passed to the package.json
+
+## 0.3.2
+
+### Patch Changes
+
+- c2b52d9c5: Replace `register-component` plugin with new `catalog-import` plugin
+- fc6839f13: Bump `sqlite3` to v5.
+
+  To apply this change to an existing app, change the version of `sqlite3` in the `dependencies` of `packages/backend/package.json`:
+
+  ```diff
+       "pg": "^8.3.0",
+  -    "sqlite3": "^4.2.0",
+  +    "sqlite3": "^5.0.0",
+       "winston": "^3.2.1"
+  ```
+
+  Note that the `sqlite3` dependency may not be preset if you chose to use PostgreSQL when creating the app.
+
+- 8d68e4cdc: Removed the Circle CI sidebar item, since the target page does not exist.
+
+  To apply this change to an existing app, remove `"CircleCI"` sidebar item from `packages/app/src/sidebar.tsx`, and the `BuildIcon` import if it is unused.
+
+- 1773a5182: Removed lighthouse plugin from the default set up plugins, as it requires a separate Backend to function.
+
+  To apply this change to an existing app, remove the following:
+
+  1. The `lighthouse` block from `app-config.yaml`.
+  2. The `@backstage/plugin-lighthouse` dependency from `packages/app/package.json`.
+  3. The `@backstage/plugin-lighthouse` re-export from `packages/app/src/plugins.ts`.
+  4. The Lighthouse sidebar item from `packages/app/src/sidebar.tsx`, and the `RuleIcon` import if it is unused.
+
+## 0.3.1
+
+### Patch Changes
+
+- 4e0e3b1bf: Add missing `yarn clean` for app.
+
+  For users with existing Backstage installations, add the following under the `scripts` section in `packages/app/package.json`, after the "lint" entry:
+
+  ```json
+  "clean": "backstage-cli clean",
+  ```
+
+  This will add the missing `yarn clean` for the generated frontend.
+
+- 352a6581f: Added `"start-backend"` script to root `package.json`.
+
+  To apply this change to an existing app, add the following script to the root `package.json`:
+
+  ```json
+  "start-backend": "yarn workspace backend start"
+  ```
+
+## 0.3.0
+
+### Minor Changes
+
+- 0101c7a16: Add search plugin to default template for CLI created apps
+
+### Patch Changes
+
+- a8573e53b: techdocs-backend: Simplified file, removing individual preparers and generators.
+  techdocs-backend: UrlReader is now available to use in preparers.
+
+  In your Backstage app, `packages/backend/plugins/techdocs.ts` file has now been simplified,
+  to remove registering individual preparers and generators.
+
+  Please update the file when upgrading the version of `@backstage/plugin-techdocs-backend` package.
+
+  ```typescript
+  const preparers = await Preparers.fromConfig(config, {
+    logger,
+    reader,
+  });
+
+  const generators = await Generators.fromConfig(config, {
+    logger,
+  });
+
+  const publisher = await Publisher.fromConfig(config, {
+    logger,
+    discovery,
+  });
+  ```
+
+  You should be able to remove unnecessary imports, and just do
+
+  ```typescript
+  import {
+    createRouter,
+    Preparers,
+    Generators,
+    Publisher,
+  } from '@backstage/plugin-techdocs-backend';
+  ```
+
+## 0.2.5
+
+### Patch Changes
+
+- 2783ec018: In the techdocs-backend plugin (`packages/backend/src/plugins/techdocs.ts`), create a publisher using
+
+  ```
+    const publisher = Publisher.fromConfig(config, logger, discovery);
+  ```
+
+  instead of
+
+  ```
+    const publisher = new LocalPublish(logger, discovery);
+  ```
+
+  An instance of `publisher` can either be a local filesystem publisher or a Google Cloud Storage publisher.
+
+  Read more about the configs here https://backstage.io/docs/features/techdocs/configuration
+  (You will also have to update `techdocs.storage.type` to `local` or `googleGcs`. And `techdocs.builder` to either `local` or `external`.)
+
 ## 0.2.4
 
 ### Patch Changes

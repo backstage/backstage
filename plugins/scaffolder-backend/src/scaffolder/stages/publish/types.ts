@@ -17,6 +17,7 @@ import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { RequiredTemplateValues } from '../templater';
 import { JsonValue } from '@backstage/config';
 import { RemoteProtocol } from '../types';
+import { Logger } from 'winston';
 
 /**
  * Publisher is in charge of taking a folder created by
@@ -34,6 +35,7 @@ export type PublisherBase = {
 
 export type PublisherOptions = {
   values: RequiredTemplateValues & Record<string, JsonValue>;
+  logger: Logger;
   directory: string;
 };
 

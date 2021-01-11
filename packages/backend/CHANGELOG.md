@@ -1,5 +1,60 @@
 # example-backend
 
+## 0.2.10
+
+### Patch Changes
+
+- Updated dependencies [5eb8c9b9e]
+- Updated dependencies [7e3451700]
+  - @backstage/plugin-scaffolder-backend@0.4.0
+
+## 0.2.8
+
+### Patch Changes
+
+- 7cfcd58ee: use node 14 for backend Dockerfile
+- Updated dependencies [19554f6d6]
+- Updated dependencies [33a82a713]
+- Updated dependencies [5de26b9a6]
+- Updated dependencies [30d6c78fb]
+- Updated dependencies [5084e5039]
+- Updated dependencies [a8573e53b]
+- Updated dependencies [aed8f7f12]
+  - @backstage/plugin-scaffolder-backend@0.3.6
+  - @backstage/plugin-catalog-backend@0.5.1
+  - @backstage/plugin-techdocs-backend@0.5.0
+  - example-app@0.2.8
+
+## 0.2.7
+
+### Patch Changes
+
+- Updated dependencies [c6eeefa35]
+- Updated dependencies [fb386b760]
+- Updated dependencies [c911061b7]
+- Updated dependencies [7c3ffc0cd]
+- Updated dependencies [dae4f3983]
+- Updated dependencies [7b15cc271]
+- Updated dependencies [e7496dc3e]
+- Updated dependencies [1d1c2860f]
+- Updated dependencies [0e6298f7e]
+- Updated dependencies [8dd0a906d]
+- Updated dependencies [4eafdec4a]
+- Updated dependencies [6b37c95bf]
+- Updated dependencies [8c31c681c]
+- Updated dependencies [7b98e7fee]
+- Updated dependencies [ac3560b42]
+- Updated dependencies [94c65a9d4]
+- Updated dependencies [0097057ed]
+  - @backstage/plugin-catalog-backend@0.5.0
+  - @backstage/catalog-model@0.6.0
+  - @backstage/plugin-techdocs-backend@0.4.0
+  - @backstage/plugin-auth-backend@0.2.7
+  - @backstage/backend-common@0.4.1
+  - @backstage/plugin-scaffolder-backend@0.3.5
+  - example-app@0.2.7
+  - @backstage/plugin-kubernetes-backend@0.2.3
+
 ## 0.2.6
 
 ### Patch Changes

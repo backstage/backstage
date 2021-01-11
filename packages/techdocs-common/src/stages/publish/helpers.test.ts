@@ -14,38 +14,38 @@
  * limitations under the License.
  */
 import mockFs from 'mock-fs';
+import * as os from 'os';
+import * as path from 'path';
 import { getFileTreeRecursively, getHeadersForFileExtension } from './helpers';
 
 describe('getHeadersForFileExtension', () => {
-  it('returns correct header for default extensions', () => {
-    const headers = getHeadersForFileExtension('xyz');
-    const expectedHeaders = {
-      'Content-Type': 'text/plain',
-    };
-    expect(headers).toEqual(expectedHeaders);
-  });
+  const correctMapOfExtensions = [
+    ['.html', 'text/html; charset=utf-8'],
+    ['.css', 'text/css; charset=utf-8'],
+    ['.png', 'image/png'],
+    ['.jpg', 'image/jpeg'],
+    ['.jpeg', 'image/jpeg'],
+    ['.svg', 'image/svg+xml'],
+    ['.json', 'application/json; charset=utf-8'],
+    ['.this-in-not-an-extension', 'text/plain; charset=utf-8'],
+  ];
 
-  it('returns correct header for html', () => {
-    const headers = getHeadersForFileExtension('html');
-    const expectedHeaders = {
-      'Content-Type': 'text/html; charset=UTF-8',
-    };
-    expect(headers).toEqual(expectedHeaders);
-  });
-
-  it('returns correct header for css', () => {
-    const headers = getHeadersForFileExtension('css');
-    const expectedHeaders = {
-      'Content-Type': 'text/css; charset=UTF-8',
-    };
-    expect(headers).toEqual(expectedHeaders);
-  });
+  test.each(correctMapOfExtensions)(
+    'check content-type for %s extension',
+    (extension, expectedContentType) => {
+      const headers = getHeadersForFileExtension(extension);
+      expect(headers).toHaveProperty('Content-Type');
+      expect(headers['Content-Type'].toLowerCase()).toBe(expectedContentType);
+    },
+  );
 });
 
 describe('getFileTreeRecursively', () => {
+  const root = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
+
   beforeEach(() => {
     mockFs({
-      '/rootDir': {
+      [root]: {
         file1: '',
         subDirA: {
           file2: '',
@@ -61,9 +61,9 @@ describe('getFileTreeRecursively', () => {
   });
 
   it('returns complete file tree of a path', async () => {
-    const fileList = await getFileTreeRecursively('/rootDir');
+    const fileList = await getFileTreeRecursively(root);
     expect(fileList.length).toBe(2);
-    expect(fileList).toContain('/rootDir/file1');
-    expect(fileList).toContain('/rootDir/subDirA/file2');
+    expect(fileList).toContain(path.resolve(root, 'file1'));
+    expect(fileList).toContain(path.resolve(root, 'subDirA/file2'));
   });
 });

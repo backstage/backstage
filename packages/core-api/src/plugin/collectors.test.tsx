@@ -30,7 +30,9 @@ import {
 import { pluginCollector } from './collectors';
 
 const mockConfig = () => ({ path: '/foo', title: 'Foo' });
-const MockComponent = ({ children }: PropsWithChildren<{}>) => <>{children}</>;
+const MockComponent = ({ children }: PropsWithChildren<{ path?: string }>) => (
+  <>{children}</>
+);
 
 const pluginA = createPlugin({ id: 'my-plugin-a' });
 const pluginB = createPlugin({ id: 'my-plugin-b' });
@@ -40,19 +42,25 @@ const ref1 = createRouteRef(mockConfig());
 const ref2 = createRouteRef(mockConfig());
 
 const Extension1 = pluginA.provide(
-  createRoutableExtension({ component: MockComponent, mountPoint: ref1 }),
+  createRoutableExtension({
+    component: () => Promise.resolve(MockComponent),
+    mountPoint: ref1,
+  }),
 );
 const Extension2 = pluginB.provide(
-  createRoutableExtension({ component: MockComponent, mountPoint: ref2 }),
+  createRoutableExtension({
+    component: () => Promise.resolve(MockComponent),
+    mountPoint: ref2,
+  }),
 );
 const Extension3 = pluginA.provide(
-  createComponentExtension({ component: MockComponent }),
+  createComponentExtension({ component: { sync: MockComponent } }),
 );
 const Extension4 = pluginB.provide(
-  createComponentExtension({ component: MockComponent }),
+  createComponentExtension({ component: { sync: MockComponent } }),
 );
 const Extension5 = pluginC.provide(
-  createComponentExtension({ component: MockComponent }),
+  createComponentExtension({ component: { sync: MockComponent } }),
 );
 
 describe('collection', () => {

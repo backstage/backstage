@@ -16,13 +16,17 @@
 import fetch from 'cross-fetch';
 import parseGitUrl from 'git-url-parse';
 import { Config } from '@backstage/config';
-import { getRootLogger, loadBackendConfig } from '@backstage/backend-common';
 import {
-  getAzureHostToken,
+  getGitHubRequestOptions,
+  getGitLabRequestOptions,
+  getAzureRequestOptions,
+} from '@backstage/integration';
+import {
   getGitHost,
-  getGithubHostToken,
-  getGitlabHostToken,
   getGitRepoType,
+  getGitHubIntegrationConfig,
+  getGitLabIntegrationConfig,
+  getAzureIntegrationConfig,
 } from './git-auth';
 
 interface IGitlabBranch {
@@ -50,19 +54,19 @@ interface IGitlabBranch {
 }
 
 function getGithubApiUrl(config: Config, url: string): URL {
-  const { protocol, owner, name } = parseGitUrl(url);
+  const { resource, owner, name } = parseGitUrl(url);
   const providerConfigs =
     config.getOptionalConfigArray('integrations.github') ?? [];
 
-  // TODO: Maybe we need to filter by host in the array, not sure about GHE
-  const targetProviderConfig = providerConfigs[0];
+  const hostConfig = providerConfigs.filter(
+    providerConfig => providerConfig.getOptionalString('host') === resource,
+  );
 
   const apiBaseUrl =
-    targetProviderConfig?.getOptionalString('integrations.github.apiBaseUrl') ??
-    'api.github.com';
+    hostConfig[0]?.getOptionalString('apiBaseUrl') ?? 'https://api.github.com';
   const apiRepos = 'repos';
 
-  return new URL(`${protocol}://${apiBaseUrl}/${apiRepos}/${owner}/${name}`);
+  return new URL(`${apiBaseUrl}/${apiRepos}/${owner}/${name}`);
 }
 
 function getGitlabApiUrl(url: string): URL {
@@ -86,62 +90,15 @@ function getAzureApiUrl(url: string): URL {
   );
 }
 
-function getGithubRequestOptions(config: Config, host: string): RequestInit {
-  const headers: HeadersInit = {
-    Accept: 'application/vnd.github.v3.raw',
-  };
-
-  const token = getGithubHostToken(config, host);
-
-  if (token) {
-    headers.Authorization = `token ${token}`;
-  }
-
-  return {
-    headers,
-  };
-}
-
-function getGitlabRequestOptions(config: Config, host: string): RequestInit {
-  const headers: HeadersInit = {
-    'PRIVATE-TOKEN': '',
-  };
-
-  const token = getGitlabHostToken(config, host);
-  if (token) {
-    headers['PRIVATE-TOKEN'] = token;
-  }
-
-  return {
-    headers,
-  };
-}
-
-function getAzureRequestOptions(config: Config, host: string): RequestInit {
-  const headers: HeadersInit = {};
-
-  const token = getAzureHostToken(config, host);
-
-  if (token !== '') {
-    headers.Authorization = `Basic ${Buffer.from(`:${token}`, 'utf8').toString(
-      'base64',
-    )}`;
-  }
-
-  const requestOptions: RequestInit = {
-    headers,
-  };
-
-  return requestOptions;
-}
-
 async function getGithubDefaultBranch(
   repositoryUrl: string,
   config: Config,
 ): Promise<string> {
   const path = getGithubApiUrl(config, repositoryUrl).toString();
   const host = getGitHost(repositoryUrl);
-  const options = getGithubRequestOptions(config, host);
+
+  const integrationConfig = getGitHubIntegrationConfig(config, host);
+  const options = getGitHubRequestOptions(integrationConfig);
 
   try {
     const raw = await fetch(path, options);
@@ -169,9 +126,10 @@ async function getGitlabDefaultBranch(
   config: Config,
 ): Promise<string> {
   const path = getGitlabApiUrl(repositoryUrl).toString();
+  const host = getGitHost(repositoryUrl);
 
-  const gitlabHost = getGitHost(repositoryUrl);
-  const options = getGitlabRequestOptions(config, gitlabHost);
+  const integrationConfig = getGitLabIntegrationConfig(config, host);
+  const options = getGitLabRequestOptions(integrationConfig);
 
   try {
     const raw = await fetch(path, options);
@@ -203,7 +161,9 @@ async function getAzureDefaultBranch(
 ): Promise<string> {
   const path = getAzureApiUrl(repositoryUrl).toString();
   const host = getGitHost(repositoryUrl);
-  const options = getAzureRequestOptions(config, host);
+
+  const integrationConfig = getAzureIntegrationConfig(config, host);
+  const options = getAzureRequestOptions(integrationConfig);
 
   try {
     const urlResponse = await fetch(path, options);
@@ -235,12 +195,8 @@ async function getAzureDefaultBranch(
 
 export const getDefaultBranch = async (
   repositoryUrl: string,
+  config: Config,
 ): Promise<string> => {
-  // TODO(Rugvip): Config should not be loaded here, pass it in instead
-  const config = await loadBackendConfig({
-    logger: getRootLogger(),
-    argv: process.argv,
-  });
   const type = getGitRepoType(repositoryUrl);
 
   try {

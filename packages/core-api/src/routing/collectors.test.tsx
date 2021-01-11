@@ -15,7 +15,11 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import { routePathCollector, routeParentCollector } from './collectors';
+import {
+  routePathCollector,
+  routeParentCollector,
+  routeObjectCollector,
+} from './collectors';
 
 import {
   traverseElementTree,
@@ -24,35 +28,77 @@ import {
 } from '../extensions/traversal';
 import { createRouteRef } from './RouteRef';
 import { createPlugin } from '../plugin';
-import { createRoutableExtension } from '../extensions';
+import { attachComponentData, createRoutableExtension } from '../extensions';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import { RouteRef } from './types';
 
-const mockConfig = () => ({ path: '/foo', title: 'Foo' });
-const MockComponent = ({ children }: PropsWithChildren<{}>) => <>{children}</>;
+const MockComponent = ({ children }: PropsWithChildren<{ path?: string }>) => (
+  <>{children}</>
+);
 
 const plugin = createPlugin({ id: 'my-plugin' });
 
-const ref1 = createRouteRef(mockConfig());
-const ref2 = createRouteRef(mockConfig());
-const ref3 = createRouteRef(mockConfig());
-const ref4 = createRouteRef(mockConfig());
-const ref5 = createRouteRef(mockConfig());
+const ref1 = createRouteRef({ path: '/foo1', title: 'Foo' });
+const ref2 = createRouteRef({ path: '/foo2', title: 'Foo' });
+const ref3 = createRouteRef({ path: '/foo3', title: 'Foo' });
+const ref4 = createRouteRef({ path: '/foo4', title: 'Foo' });
+const ref5 = createRouteRef({ path: '/foo5', title: 'Foo' });
+const refOrder = [ref1, ref2, ref3, ref4, ref5];
 
 const Extension1 = plugin.provide(
-  createRoutableExtension({ component: MockComponent, mountPoint: ref1 }),
+  createRoutableExtension({
+    component: () => Promise.resolve(MockComponent),
+    mountPoint: ref1,
+  }),
 );
 const Extension2 = plugin.provide(
-  createRoutableExtension({ component: MockComponent, mountPoint: ref2 }),
+  createRoutableExtension({
+    component: () => Promise.resolve(MockComponent),
+    mountPoint: ref2,
+  }),
 );
 const Extension3 = plugin.provide(
-  createRoutableExtension({ component: MockComponent, mountPoint: ref3 }),
+  createRoutableExtension({
+    component: () => Promise.resolve(MockComponent),
+    mountPoint: ref3,
+  }),
 );
 const Extension4 = plugin.provide(
-  createRoutableExtension({ component: MockComponent, mountPoint: ref4 }),
+  createRoutableExtension({
+    component: () => Promise.resolve(MockComponent),
+    mountPoint: ref4,
+  }),
 );
 const Extension5 = plugin.provide(
-  createRoutableExtension({ component: MockComponent, mountPoint: ref5 }),
+  createRoutableExtension({
+    component: () => Promise.resolve(MockComponent),
+    mountPoint: ref5,
+  }),
 );
+
+const AggregationComponent = ({
+  children,
+}: PropsWithChildren<{
+  path: string;
+}>) => <>{children}</>;
+
+attachComponentData(AggregationComponent, 'core.gatherMountPoints', true);
+
+function sortedEntries<T>(map: Map<RouteRef, T>): [RouteRef, T][] {
+  return Array.from(map).sort(
+    ([a], [b]) => refOrder.indexOf(a) - refOrder.indexOf(b),
+  );
+}
+
+function routeObj(path: string, refs: RouteRef[], children: any[] = []) {
+  return {
+    path: path,
+    caseSensitive: false,
+    element: null,
+    routeRefs: new Set(refs),
+    children: children,
+  };
+}
 
 describe('discovery', () => {
   it('should collect routes', () => {
@@ -92,33 +138,40 @@ describe('discovery', () => {
       </MemoryRouter>
     );
 
-    const { routes, routeParents } = traverseElementTree({
+    const { routes, routeParents, routeObjects } = traverseElementTree({
       root,
       discoverers: [childDiscoverer, routeElementDiscoverer],
       collectors: {
         routes: routePathCollector,
         routeParents: routeParentCollector,
+        routeObjects: routeObjectCollector,
       },
     });
-    expect(routes).toEqual(
-      new Map([
-        [ref1, '/foo'],
-        [ref2, '/bar/:id'],
-        [ref3, '/baz'],
-        [ref4, '/divsoup'],
-        [ref5, '/blop'],
-      ]),
-    );
-
-    expect(routeParents).toEqual(
-      new Map([
-        [ref1, undefined],
-        [ref2, ref1],
-        [ref3, ref2],
-        [ref4, undefined],
-        [ref5, ref1],
-      ]),
-    );
+    expect(sortedEntries(routes)).toEqual([
+      [ref1, '/foo'],
+      [ref2, '/bar/:id'],
+      [ref3, '/baz'],
+      [ref4, '/divsoup'],
+      [ref5, '/blop'],
+    ]);
+    expect(sortedEntries(routeParents)).toEqual([
+      [ref1, undefined],
+      [ref2, ref1],
+      [ref3, ref2],
+      [ref4, undefined],
+      [ref5, ref1],
+    ]);
+    expect(routeObjects).toEqual([
+      routeObj(
+        '/foo',
+        [ref1],
+        [
+          routeObj('/bar/:id', [ref2], [routeObj('/baz', [ref3])]),
+          routeObj('/blop', [ref5]),
+        ],
+      ),
+      routeObj('/divsoup', [ref4]),
+    ]);
   });
 
   it('should handle all react router Route patterns', () => {
@@ -151,24 +204,154 @@ describe('discovery', () => {
         routeParents: routeParentCollector,
       },
     });
-    expect(routes).toEqual(
-      new Map([
-        [ref1, '/foo'],
-        [ref2, '/bar/:id'],
-        [ref3, '/baz'],
-        [ref4, '/divsoup'],
-        [ref5, '/blop'],
-      ]),
+    expect(sortedEntries(routes)).toEqual([
+      [ref1, '/foo'],
+      [ref2, '/bar/:id'],
+      [ref3, '/baz'],
+      [ref4, '/divsoup'],
+      [ref5, '/blop'],
+    ]);
+    expect(sortedEntries(routeParents)).toEqual([
+      [ref1, undefined],
+      [ref2, ref1],
+      [ref3, undefined],
+      [ref4, ref3],
+      [ref5, ref3],
+    ]);
+  });
+
+  it('should use the route aggregator key to bind child routes to the same path', () => {
+    const root = (
+      <MemoryRouter>
+        <Routes>
+          <AggregationComponent path="/foo">
+            <Extension1 />
+            <div>
+              <Extension2 />
+            </div>
+            HELLO
+          </AggregationComponent>
+          <Extension3 path="/bar">
+            <AggregationComponent path="/baz">
+              <Extension4>
+                <Extension5 />
+              </Extension4>
+            </AggregationComponent>
+          </Extension3>
+        </Routes>
+      </MemoryRouter>
     );
-    expect(routeParents).toEqual(
-      new Map([
-        [ref1, undefined],
-        [ref2, ref1],
-        [ref3, undefined],
-        [ref4, ref3],
-        [ref5, ref3],
-      ]),
+
+    const { routes, routeParents, routeObjects } = traverseElementTree({
+      root,
+      discoverers: [childDiscoverer, routeElementDiscoverer],
+      collectors: {
+        routes: routePathCollector,
+        routeParents: routeParentCollector,
+        routeObjects: routeObjectCollector,
+      },
+    });
+    expect(sortedEntries(routes)).toEqual([
+      [ref1, '/foo'],
+      [ref2, '/foo'],
+      [ref3, '/bar'],
+      [ref4, '/baz'],
+      [ref5, '/baz'],
+    ]);
+    expect(sortedEntries(routeParents)).toEqual([
+      [ref1, undefined],
+      [ref2, undefined],
+      [ref3, undefined],
+      [ref4, ref3],
+      [ref5, ref3],
+    ]);
+    expect(routeObjects).toEqual([
+      routeObj('/foo', [ref1, ref2]),
+      routeObj('/bar', [ref3], [routeObj('/baz', [ref4, ref5])]),
+    ]);
+  });
+
+  it('should use the route aggregator but stop when encountering explicit path', () => {
+    const root = (
+      <MemoryRouter>
+        <Routes>
+          <Extension1 path="/foo">
+            <AggregationComponent path="/bar">
+              <Extension2>
+                <Extension3 path="/baz">
+                  <Extension4 path="/blop" />
+                </Extension3>
+                <Extension5 />
+              </Extension2>
+            </AggregationComponent>
+          </Extension1>
+        </Routes>
+      </MemoryRouter>
     );
+
+    const { routes, routeParents, routeObjects } = traverseElementTree({
+      root,
+      discoverers: [childDiscoverer, routeElementDiscoverer],
+      collectors: {
+        routes: routePathCollector,
+        routeParents: routeParentCollector,
+        routeObjects: routeObjectCollector,
+      },
+    });
+    expect(sortedEntries(routes)).toEqual([
+      [ref1, '/foo'],
+      [ref2, '/bar'],
+      [ref3, '/baz'],
+      [ref4, '/blop'],
+      [ref5, '/bar'],
+    ]);
+    expect(sortedEntries(routeParents)).toEqual([
+      [ref1, undefined],
+      [ref2, ref1],
+      [ref3, ref1],
+      [ref4, ref3],
+      [ref5, ref1],
+    ]);
+    expect(routeObjects).toEqual([
+      routeObj(
+        '/foo',
+        [ref1],
+        [
+          routeObj(
+            '/bar',
+            [ref2, ref5],
+            [routeObj('/baz', [ref3], [routeObj('/blop', [ref4])])],
+          ),
+        ],
+      ),
+    ]);
+  });
+
+  it('should stop gathering mount points after encountering explicit path', () => {
+    const root = (
+      <MemoryRouter>
+        <Routes>
+          <Extension1 path="/foo">
+            <AggregationComponent path="/bar">
+              <Extension2 path="/baz">
+                <Extension3 />
+              </Extension2>
+            </AggregationComponent>
+          </Extension1>
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(() => {
+      traverseElementTree({
+        root,
+        discoverers: [childDiscoverer, routeElementDiscoverer],
+        collectors: {
+          routes: routePathCollector,
+          routeParents: routeParentCollector,
+        },
+      });
+    }).toThrow('Mounted routable extension must have a path');
   });
 
   it('should not visit the same element twice', () => {
@@ -188,6 +371,6 @@ describe('discovery', () => {
           routeParents: routeParentCollector,
         },
       }),
-    ).toThrow(`Visited element Extension(MockComponent) twice`);
+    ).toThrow(`Visited element Extension(Component) twice`);
   });
 });

@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DirectoryPreparer } from './dir';
 import { getVoidLogger } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
+import { DirectoryPreparer } from './dir';
 import { checkoutGitRepository } from '../../helpers';
 
 function normalizePath(path: string) {
@@ -44,9 +45,11 @@ const createMockEntity = (annotations: {}) => {
   };
 };
 
+const mockConfig = new ConfigReader({});
+
 describe('directory preparer', () => {
   it('should merge managed-by-location and techdocs-ref when techdocs-ref is relative', async () => {
-    const directoryPreparer = new DirectoryPreparer(logger);
+    const directoryPreparer = new DirectoryPreparer(mockConfig, logger);
 
     const mockEntity = createMockEntity({
       'backstage.io/managed-by-location':
@@ -60,7 +63,7 @@ describe('directory preparer', () => {
   });
 
   it('should merge managed-by-location and techdocs-ref when techdocs-ref is absolute', async () => {
-    const directoryPreparer = new DirectoryPreparer(logger);
+    const directoryPreparer = new DirectoryPreparer(mockConfig, logger);
 
     const mockEntity = createMockEntity({
       'backstage.io/managed-by-location':
@@ -74,7 +77,7 @@ describe('directory preparer', () => {
   });
 
   it('should merge managed-by-location and techdocs-ref when managed-by-location is a git repository', async () => {
-    const directoryPreparer = new DirectoryPreparer(logger);
+    const directoryPreparer = new DirectoryPreparer(mockConfig, logger);
 
     const mockEntity = createMockEntity({
       'backstage.io/managed-by-location':

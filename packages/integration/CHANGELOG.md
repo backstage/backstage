@@ -1,5 +1,19 @@
 # @backstage/integration
 
+## 0.1.5
+
+### Patch Changes
+
+- 036a84373: Provide support for on-prem azure devops
+
+## 0.1.4
+
+### Patch Changes
+
+- 1d1c2860f: Implement readTree on BitBucketUrlReader and getBitbucketDownloadUrl
+- 4eafdec4a: Introduce readTree method for GitLab URL Reader
+- 178e09323: Validate that integration config contains a valid host
+
 ## 0.1.3
 
 ### Patch Changes

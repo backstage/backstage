@@ -1,5 +1,28 @@
 # @backstage/plugin-api-docs
 
+## 0.4.2
+
+### Patch Changes
+
+- 9161531b2: Link register API to catalog-import plugin
+- Updated dependencies [a08c32ced]
+- Updated dependencies [7e0b8cac5]
+- Updated dependencies [87c0c53c2]
+  - @backstage/core@0.4.3
+  - @backstage/plugin-catalog@0.2.9
+
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies [c911061b7]
+- Updated dependencies [8ef71ed32]
+- Updated dependencies [0e6298f7e]
+- Updated dependencies [ac3560b42]
+  - @backstage/catalog-model@0.6.0
+  - @backstage/core@0.4.1
+  - @backstage/plugin-catalog@0.2.7
+
 ## 0.4.0
 
 ### Minor Changes

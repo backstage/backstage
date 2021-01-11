@@ -13,17 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-jest.mock('nodegit');
-jest.mock('azure-devops-node-api/GitApi');
-jest.mock('azure-devops-node-api/interfaces/GitInterfaces');
-jest.mock('./helpers', () => ({
-  pushToRemoteUserPass: jest.fn(),
-}));
+jest.mock('./helpers');
 
 import { AzurePublisher } from './azure';
 import { GitApi } from 'azure-devops-node-api/GitApi';
-import { pushToRemoteUserPass } from './helpers';
+import * as helpers from './helpers';
+import { getVoidLogger } from '@backstage/backend-common';
 
 const { mockGitApi } = require('azure-devops-node-api/GitApi') as {
   mockGitApi: {
@@ -33,6 +28,7 @@ const { mockGitApi } = require('azure-devops-node-api/GitApi') as {
 
 describe('Azure Publisher', () => {
   const publisher = new AzurePublisher(new GitApi('', []), 'fake-token');
+  const logger = getVoidLogger();
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -50,6 +46,7 @@ describe('Azure Publisher', () => {
           owner: 'bob',
         },
         directory: '/tmp/test',
+        logger,
       });
 
       expect(result).toEqual({
@@ -63,12 +60,12 @@ describe('Azure Publisher', () => {
         },
         'project',
       );
-      expect(pushToRemoteUserPass).toHaveBeenCalledWith(
-        '/tmp/test',
-        'https://dev.azure.com/organization/project/_git/repo',
-        'notempty',
-        'fake-token',
-      );
+      expect(helpers.initRepoAndPush).toHaveBeenCalledWith({
+        dir: '/tmp/test',
+        remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+        auth: { username: 'notempty', password: 'fake-token' },
+        logger,
+      });
     });
   });
 });

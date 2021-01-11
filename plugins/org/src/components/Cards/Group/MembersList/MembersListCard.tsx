@@ -15,6 +15,7 @@
  */
 import {
   Entity,
+  GroupEntity,
   RELATION_MEMBER_OF,
   UserEntity,
 } from '@backstage/catalog-model';
@@ -42,7 +43,9 @@ const useStyles = makeStyles((theme: Theme) =>
       borderRadius: '4px',
       overflow: 'visible',
       position: 'relative',
-      margin: theme.spacing(3, 0, 0),
+      margin: theme.spacing(3, 0, 1),
+      flex: '1',
+      minWidth: '0px',
     },
   }),
 );
@@ -55,12 +58,14 @@ const MemberComponent = ({
   groupEntity: Entity;
 }) => {
   const classes = useStyles();
-  const { name: metaName } = member.metadata;
-  const { profile } = member.spec;
+  const {
+    metadata: { name: metaName },
+    spec: { profile },
+  } = member;
   const displayName = profile?.displayName ?? metaName;
 
   return (
-    <Grid item xs={12} sm={6} md={3} xl={2}>
+    <Grid item container xs={12} sm={6} md={3} xl={2}>
       <Box className={classes.card}>
         <Box
           display="flex"
@@ -100,12 +105,15 @@ const MemberComponent = ({
 export const MembersListCard = ({
   entity: groupEntity,
 }: {
-  entity: Entity;
+  entity: GroupEntity;
 }) => {
   const {
     metadata: { name: groupName },
+    spec: { profile },
   } = groupEntity;
   const catalogApi = useApi(catalogApiRef);
+
+  const displayName = profile?.displayName ?? groupName;
 
   const { loading, error, value: members } = useAsync(async () => {
     const membersList = await catalogApi.getEntities({
@@ -133,7 +141,7 @@ export const MembersListCard = ({
     <Grid item>
       <InfoCard
         title={`Members (${members?.length || 0})`}
-        subheader={`of ${groupName}`}
+        subheader={`of ${displayName}`}
       >
         <Grid container spacing={3}>
           {members && members.length ? (

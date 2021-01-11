@@ -37,6 +37,13 @@ export type SessionManager<T> = {
 };
 
 /**
+ * An extension of the session manager where the session can also be pushed from the manager.
+ */
+export interface MutableSessionManager<T> extends SessionManager<T> {
+  setSession(session: T | undefined): void;
+}
+
+/**
  * A function called to determine the scopes of a session.
  */
 export type SessionScopesFunc<T> = (session: T) => Set<string>;

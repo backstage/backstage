@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.4.1",
+  "version": "0.4.5",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -30,7 +30,7 @@
   "dependencies": {
     "@backstage/cli-common": "^0.1.1",
     "@backstage/config": "^0.1.2",
-    "@backstage/config-loader": "^0.4.0",
+    "@backstage/config-loader": "^0.4.1",
     "@hot-loader/react-dom": "^16.13.0",
     "@lerna/package-graph": "^3.18.5",
     "@lerna/project": "^3.18.0",
@@ -66,7 +66,7 @@
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-jest": "^24.1.0",
     "eslint-plugin-jsx-a11y": "^6.2.1",
-    "eslint-plugin-monorepo": "^0.2.1",
+    "eslint-plugin-monorepo": "^0.3.2",
     "eslint-plugin-react": "^7.12.4",
     "eslint-plugin-react-hooks": "^4.0.0",
     "fork-ts-checker-webpack-plugin": "^4.0.5",
@@ -111,11 +111,11 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/backend-common": "^0.4.0",
+    "@backstage/backend-common": "^0.4.2",
     "@backstage/config": "^0.1.2",
-    "@backstage/core": "^0.4.0",
-    "@backstage/dev-utils": "^0.1.6",
-    "@backstage/test-utils": "^0.1.5",
+    "@backstage/core": "^0.4.3",
+    "@backstage/dev-utils": "^0.1.7",
+    "@backstage/test-utils": "^0.1.6",
     "@backstage/theme": "^0.2.2",
     "@types/diff": "^4.0.2",
     "@types/fs-extra": "^9.0.1",
@@ -125,7 +125,6 @@
     "@types/mini-css-extract-plugin": "^0.9.1",
     "@types/mock-fs": "^4.13.0",
     "@types/node": "^13.7.2",
-    "@types/ora": "^3.2.0",
     "@types/react-dev-utils": "^9.0.4",
     "@types/recursive-readdir": "^2.2.0",
     "@types/rollup-plugin-peer-deps-external": "^2.2.0",
@@ -182,7 +181,7 @@
                 "visibility": "frontend",
                 "description": "The host that the frontend should be bound to. Only used for local development."
               },
-              "post": {
+              "port": {
                 "type": "number",
                 "visibility": "frontend",
                 "description": "The port that the frontend should be bound to. Only used for local development."

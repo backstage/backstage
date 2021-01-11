@@ -16,6 +16,7 @@
 
 import { resolve as resolvePath } from 'path';
 import { ResolvePlugin } from 'webpack';
+import { isChildPath } from './paths';
 import { LernaPackage } from './types';
 
 // Enables proper resolution of packages when linking in external packages.
@@ -40,7 +41,7 @@ export class LinkedPackageResolvePlugin implements ResolvePlugin {
         callback: () => void,
       ) => {
         const pkg = this.packages.find(
-          pkg => data.path && data.path.startsWith(pkg.location),
+          pkg => data.path && isChildPath(pkg.location, data.path),
         );
         if (!pkg) {
           callback();

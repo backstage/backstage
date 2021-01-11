@@ -18,10 +18,9 @@ import fs from 'fs-extra';
 import path from 'path';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { parseLocationAnnotation } from '../helpers';
-import { InputError } from '@backstage/backend-common';
+import { InputError, Git } from '@backstage/backend-common';
 import { PreparerBase, PreparerOptions } from './types';
 import GitUriParser from 'git-url-parse';
-import { Clone, CloneOptions, Cred } from 'nodegit';
 
 export class GithubPreparer implements PreparerBase {
   token?: string;
@@ -36,7 +35,7 @@ export class GithubPreparer implements PreparerBase {
   ): Promise<string> {
     const { protocol, location } = parseLocationAnnotation(template);
     const workingDirectory = opts?.workingDirectory ?? os.tmpdir();
-    const { token } = this;
+    const { logger } = opts;
 
     if (!['github', 'url'].includes(protocol)) {
       throw new InputError(
@@ -56,25 +55,21 @@ export class GithubPreparer implements PreparerBase {
       template.spec.path ?? '.',
     );
 
-    let cloneOptions: CloneOptions = {
-      checkoutBranch: parsedGitLocation.ref,
-    };
+    const checkoutLocation = path.resolve(tempDir, templateDirectory);
 
-    if (token) {
-      cloneOptions = {
-        ...cloneOptions,
-        fetchOpts: {
-          callbacks: {
-            credentials() {
-              return Cred.userpassPlaintextNew(token, 'x-oauth-basic');
-            },
-          },
-        },
-      };
-    }
+    const git = this.token
+      ? Git.fromAuth({
+          username: this.token,
+          password: 'x-oauth-basic',
+          logger,
+        })
+      : Git.fromAuth({ logger });
 
-    await Clone.clone(repositoryCheckoutUrl, tempDir, cloneOptions);
+    await git.clone({
+      url: repositoryCheckoutUrl,
+      dir: tempDir,
+    });
 
-    return path.resolve(tempDir, templateDirectory);
+    return checkoutLocation;
   }
 }

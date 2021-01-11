@@ -38,9 +38,7 @@ describe('createRouter', () => {
     const router = await createRouter({
       rollbarApi,
       logger: getVoidLogger(),
-      config: ConfigReader.fromConfigs([
-        { context: 'abc', data: { rollbar: { accountToken: 'foo' } } },
-      ]),
+      config: new ConfigReader({ rollbar: { accountToken: 'foo' } }),
     });
     app = express().use(router);
   });

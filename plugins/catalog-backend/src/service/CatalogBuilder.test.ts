@@ -47,7 +47,7 @@ describe('CatalogBuilder', () => {
   const env: CatalogEnvironment = {
     logger: getVoidLogger(),
     database: { getClient: async () => db },
-    config: ConfigReader.fromConfigs([]),
+    config: new ConfigReader({}),
     reader,
   };
 

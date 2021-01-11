@@ -43,7 +43,6 @@ export function getAzureFileFetchUrl(url: string): string {
     const ref = parsedUrl.searchParams.get('version')?.substr(2);
 
     if (
-      parsedUrl.hostname !== 'dev.azure.com' ||
       empty !== '' ||
       userOrOrg === '' ||
       project === '' ||

@@ -1,5 +1,57 @@
 # @backstage/plugin-catalog
 
+## 0.2.10
+
+### Patch Changes
+
+- 9c09a364f: Remove the unused dependency to `@backstage/plugin-techdocs`.
+- Updated dependencies [8e083f41f]
+- Updated dependencies [947d3c269]
+  - @backstage/plugin-scaffolder@0.3.6
+
+## 0.2.9
+
+### Patch Changes
+
+- 7e0b8cac5: Add `CatalogIndexPage` and `CatalogEntityPage`, two new extensions that replace the existing `Router` component.
+
+  Add `EntityLayout` to replace `EntityPageLayout`, using children instead of an element property, and allowing for collection of all `RouteRef` mount points used within tabs.
+
+  Add `EntitySwitch` to be used to select components based on entity data, along with accompanying `isKind`, `isNamespace`, and `isComponentType` filters.
+
+- 87c0c53c2: Add new `EntityProvider` component, which can be used to provide an entity for the `useEntity` hook.
+- Updated dependencies [a08c32ced]
+- Updated dependencies [359f9d2d8]
+  - @backstage/core@0.4.3
+  - @backstage/plugin-techdocs@0.5.2
+
+## 0.2.8
+
+### Patch Changes
+
+- 342270e4d: Create AboutCard in core and use it in pagerduty and catalog plugin
+- Updated dependencies [19554f6d6]
+- Updated dependencies [1dc445e89]
+- Updated dependencies [342270e4d]
+  - @backstage/plugin-scaffolder@0.3.5
+  - @backstage/core@0.4.2
+  - @backstage/plugin-techdocs@0.5.1
+
+## 0.2.7
+
+### Patch Changes
+
+- Updated dependencies [c911061b7]
+- Updated dependencies [dae4f3983]
+- Updated dependencies [8ef71ed32]
+- Updated dependencies [0e6298f7e]
+- Updated dependencies [ac3560b42]
+  - @backstage/catalog-model@0.6.0
+  - @backstage/plugin-techdocs@0.5.0
+  - @backstage/core@0.4.1
+  - @backstage/catalog-client@0.3.4
+  - @backstage/plugin-scaffolder@0.3.4
+
 ## 0.2.6
 
 ### Patch Changes

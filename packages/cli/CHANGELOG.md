@@ -1,5 +1,35 @@
 # @backstage/cli
 
+## 0.4.5
+
+### Patch Changes
+
+- 37a7d26c4: Use consistent file extensions for JS output when building packages.
+- 818d45e94: Fix detection of external package child directories
+- 0588be01f: Add `backend:bundle` command for bundling a backend package with dependencies into a deployment archive.
+- b8abdda57: Add color to output from `versions:bump` in order to make it easier to spot changes. Also highlight possible breaking changes and link to changelogs.
+- Updated dependencies [ad5c56fd9]
+  - @backstage/config-loader@0.4.1
+
+## 0.4.4
+
+### Patch Changes
+
+- d45efbc9b: Fix typo in .app.listen.port config schema
+
+## 0.4.3
+
+### Patch Changes
+
+- 19554f6d6: Added Github Actions for Create React App, and allow better imports of files inside a module when they're exposed using `files` in `package.json`
+- 7d72f9b09: Fix for `app.listen.host` configuration not properly overriding listening host.
+
+## 0.4.2
+
+### Patch Changes
+
+- c36a01b4c: Re-enable symlink resolution during bundling, and switch to using a resolve plugin for external linked packages.
+
 ## 0.4.1
 
 ### Patch Changes

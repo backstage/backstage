@@ -20,21 +20,16 @@ import { AzureIntegration } from './AzureIntegration';
 describe('AzureIntegration', () => {
   it('has a working factory', () => {
     const integrations = AzureIntegration.factory({
-      config: ConfigReader.fromConfigs([
-        {
-          context: '',
-          data: {
-            integrations: {
-              azure: [
-                {
-                  host: 'h.com',
-                  token: 'token',
-                },
-              ],
+      config: new ConfigReader({
+        integrations: {
+          azure: [
+            {
+              host: 'h.com',
+              token: 'token',
             },
-          },
+          ],
         },
-      ]),
+      }),
     });
     expect(integrations.length).toBe(2); // including default
     expect(integrations[0].predicate(new URL('https://h.com/a'))).toBe(true);

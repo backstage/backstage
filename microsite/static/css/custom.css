@@ -48,6 +48,14 @@ h6 {
   color: $textColor;
 }
 
+h2:hover .hash-link {
+  opacity: 1;
+}
+
+.hash-link {
+  fill: white;
+}
+
 /* body elements  */
 p,
 ul,

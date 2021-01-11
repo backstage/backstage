@@ -17,9 +17,9 @@
 import { PublisherBase, PublisherOptions, PublisherResult } from './types';
 import { GitApi } from 'azure-devops-node-api/GitApi';
 import { GitRepositoryCreateOptions } from 'azure-devops-node-api/interfaces/GitInterfaces';
-import { pushToRemoteUserPass } from './helpers';
 import { JsonValue } from '@backstage/config';
 import { RequiredTemplateValues } from '../templater';
+import { initRepoAndPush } from './helpers';
 
 export class AzurePublisher implements PublisherBase {
   private readonly client: GitApi;
@@ -33,10 +33,20 @@ export class AzurePublisher implements PublisherBase {
   async publish({
     values,
     directory,
+    logger,
   }: PublisherOptions): Promise<PublisherResult> {
     const remoteUrl = await this.createRemote(values);
-    await pushToRemoteUserPass(directory, remoteUrl, 'notempty', this.token);
     const catalogInfoUrl = `${remoteUrl}?path=%2Fcatalog-info.yaml`;
+
+    await initRepoAndPush({
+      dir: directory,
+      remoteUrl,
+      auth: {
+        username: 'notempty',
+        password: this.token,
+      },
+      logger,
+    });
 
     return { remoteUrl, catalogInfoUrl };
   }

@@ -63,17 +63,12 @@ describe('local publisher', () => {
       getExternalBaseUrl: jest.fn(),
     };
 
-    const mockConfig = ConfigReader.fromConfigs([
-      {
-        context: '',
-        data: {
-          techdocs: {
-            requestUrl: 'http://localhost:7000',
-            storageUrl: 'http://localhost:7000/static/docs',
-          },
-        },
+    const mockConfig = new ConfigReader({
+      techdocs: {
+        requestUrl: 'http://localhost:7000',
+        storageUrl: 'http://localhost:7000/static/docs',
       },
-    ]);
+    });
 
     const publisher = new LocalPublish(mockConfig, logger, testDiscovery);
     const mockEntity = createMockEntity();

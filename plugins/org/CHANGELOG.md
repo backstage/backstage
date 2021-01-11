@@ -1,5 +1,27 @@
 # @backstage/plugin-org
 
+## 0.3.2
+
+### Patch Changes
+
+- c0fac6163: Wrap entity cards on smaller screens
+- ab805860a: Ensure a name is always displayed for user entities in the org plugin. This can happen when there is no profile
+  displayName provided (e.g. a GitHub user that has not added a name to their profile)
+- 8ef71ed32: Add a `<Avatar>` component to `@backstage/core`.
+- c5297baeb: Display the new `profile` fields (`displayName`, `email`, and `picture`) for
+  groups on the `GroupProfileCard`.
+
+  This also resolves some cases where `profile` fields are missing for users or
+  groups and for example falls back to displaying the entity name. Adds additional test data to the ACME Corp dataset.
+
+- Updated dependencies [c911061b7]
+- Updated dependencies [8ef71ed32]
+- Updated dependencies [0e6298f7e]
+- Updated dependencies [ac3560b42]
+  - @backstage/catalog-model@0.6.0
+  - @backstage/core@0.4.1
+  - @backstage/plugin-catalog@0.2.7
+
 ## 0.3.1
 
 ### Patch Changes

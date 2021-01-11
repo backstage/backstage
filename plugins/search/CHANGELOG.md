@@ -1,5 +1,25 @@
 # @backstage/plugin-search
 
+## 0.2.5
+
+### Patch Changes
+
+- 01707438b: Fix Material-UI warning for search filtering
+- Updated dependencies [9c09a364f]
+  - @backstage/plugin-catalog@0.2.10
+
+## 0.2.4
+
+### Patch Changes
+
+- Updated dependencies [c911061b7]
+- Updated dependencies [8ef71ed32]
+- Updated dependencies [0e6298f7e]
+- Updated dependencies [ac3560b42]
+  - @backstage/catalog-model@0.6.0
+  - @backstage/core@0.4.1
+  - @backstage/plugin-catalog@0.2.7
+
 ## 0.2.3
 
 ### Patch Changes

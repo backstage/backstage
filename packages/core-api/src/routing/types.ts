@@ -19,14 +19,10 @@ import { IconComponent } from '../icons';
 // @ts-ignore, we're just embedding the Params type for usage in other places
 export type RouteRef<Params extends { [param in string]: string } = {}> = {
   // TODO(Rugvip): Remove path, look up via registry instead
+  /** @deprecated paths are no longer accessed directly from RouteRefs, use useRouteRef instead */
   path: string;
   icon?: IconComponent;
   title: string;
-  /**
-   * This function should not be used, create a separate RouteRef instead
-   * @deprecated
-   */
-  createSubRoute(): any;
 };
 
 export type AnyRouteRef = RouteRef<any>;
@@ -51,7 +47,8 @@ export type MutableRouteRef = RouteRef<{}>;
 
 export type RouteRefConfig<Params extends { [param in string]: string }> = {
   params?: Array<keyof Params>;
-  path: string;
+  /** @deprecated Route refs no longer decide their own path */
+  path?: string;
   icon?: IconComponent;
   title: string;
 };
@@ -62,5 +59,5 @@ export interface BackstageRouteObject {
   children?: BackstageRouteObject[];
   element: React.ReactNode;
   path: string;
-  routeRef: AnyRouteRef;
+  routeRefs: Set<AnyRouteRef>;
 }

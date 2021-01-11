@@ -179,7 +179,7 @@ export const OwnershipCard = ({
     <InfoCard title="Ownership" variant={variant}>
       <Grid container>
         {componentsWithCounters?.map(c => (
-          <Grid item xs={12} md={6} lg={4} key={c.name}>
+          <Grid item xs={6} md={6} lg={4} key={c.name}>
             <EntityCountTile
               counter={c.counter}
               className={c.className}
