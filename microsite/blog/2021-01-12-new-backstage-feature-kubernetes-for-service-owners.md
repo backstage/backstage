@@ -1,7 +1,7 @@
+---
 title: New Backstage feature: Kubernetes for Service owners
 author: Matthew Clarke, Spotify
 authorURL: https://github.com/mclarke47
-
 ---
 
 TLDR; We’re rethinking the Kubernetes developer experience with a new feature: a Kubernetes monitoring tool that’s designed around the needs of service owners, not cluster admins. Now developers can easily check the health of their services no matter how or where those services are deployed — whether it’s on a local host for testing or in production on dozens of clusters around the world.
