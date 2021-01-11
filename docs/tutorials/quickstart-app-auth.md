@@ -53,7 +53,7 @@ guest. Let's fix that now and add auth.
 
 # The Auth Configuration
 
-Default Backstage installation includes multiple authentication providers out of
+A default Backstage installation includes multiple authentication providers out of
 the box. The steps to enable new authentication provider in Backstage are very
 similar to each other, the biggest difference is usually configuring the
 external authentication provider. Please see a subset of possible providers and
