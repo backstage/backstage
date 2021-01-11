@@ -82,7 +82,7 @@ jobs:
   # We can't re-use the output from the above step, but we'll have a guaranteed node_modules cache and
   # only run the build steps that are necessary for publishing
   release:
-    if: github.event.commits[0].author.username == 'backstage-service' && contains(github.event.head_commit.message, 'from backstage/changeset-release/master')
+    if: contains(github.event.commits.*.author.username, 'github-actions[bot]') && contains(github.event.head_commit.message, 'from backstage/changeset-release/master')
     needs: build
 
     runs-on: ubuntu-latest
