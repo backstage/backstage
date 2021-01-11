@@ -323,7 +323,7 @@ export AUTH_GITHUB_CLIENT_SECRET=xxx
 import { githubAuthApiRef, SignInPage } from '@backstage/core';
 ```
 
-Modify the imported reference based on authentication method selected above
+Modify the imported reference based on the authentication method you selected above:
 
 | Auth Provider | Import Name         |
 | ------------- | ------------------- |
