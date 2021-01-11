@@ -13,8 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './publishers';
-export * from './github';
-export * from './gitlab';
-export * from './azure';
-export * from './types';
+export { AzurePublisher } from './azure';
+export { BitbucketPublisher } from './bitbucket';
+export { GithubPublisher } from './github';
+export type { RepoVisibilityOptions } from './github';
+export { GitlabPublisher } from './gitlab';
+export { Publishers } from './publishers';
+export type {
+  PublisherBase,
+  PublisherBuilder,
+  PublisherOptions,
+  PublisherResult,
+} from './types';
