@@ -54,7 +54,7 @@ guest. Let's fix that now and add auth.
 # The Auth Configuration
 
 A default Backstage installation includes multiple authentication providers out of
-the box. The steps to enable new authentication provider in Backstage are very
+the box. The steps to enable new authentication providers in Backstage are very
 similar to each other, the biggest difference is usually configuring the
 external authentication provider. Please see a subset of possible providers and
 instructions to integrate them below. Steps 1 & 2 are described separately for
