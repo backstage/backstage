@@ -95,7 +95,7 @@ techdocs:
     googleGcs:
       bucketName: 'name-of-techdocs-storage-bucket'
       credentials:
-        $env: TECHDOCS_GCS_CREDENTIALS
+        $env: GOOGLE_APPLICATION_CREDENTIALS
 ```
 
 **4. That's it!**
