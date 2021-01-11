@@ -19,25 +19,12 @@ import { wrapInTestApp } from '@backstage/test-utils';
 import ReleaseManagerPage from './ReleaseManagerPage';
 import useAxios from 'axios-hooks';
 import { tracksMock } from './utils/mocks';
-
-jest.mock('@backstage/core', () => {
-  const originalModule = jest.requireActual('@backstage/core');
-
-  return {
-    __esModule: true,
-    ...originalModule,
-    useApi: jest.fn().mockImplementation(() => ({
-      getString: (path: string) => {
-        if (path === 'releasemanager.android.identifier')
-          return 'com.spotify.music';
-
-        if (path === 'releasemanager.android.baseUrl') return '';
-
-        return '';
-      },
-    })),
-  };
-});
+import {
+  ApiProvider,
+  ApiRegistry,
+  configApiRef,
+  ConfigReader,
+} from '@backstage/core';
 
 jest.mock('axios-hooks');
 
@@ -51,10 +38,30 @@ const responseMap: { [key: string]: any } = {
   return [...responseMap[url], mockExecute];
 });
 
+class ConfigReaderMock extends ConfigReader {
+  getString(key: string): string {
+    if (key === 'releasemanager.android.identifier') return 'com.spotify.music';
+    if (key === 'releasemanager.android.baseUrl') return '';
+
+    return '';
+  }
+}
+
 describe('<ReleaseManagerPage />', () => {
   it('renders without exploding', async () => {
     await act(async () => {
-      const { getByText } = await render(wrapInTestApp(<ReleaseManagerPage />));
+      const { getByText } = await render(
+        wrapInTestApp(
+          <ApiProvider
+            apis={ApiRegistry.with(
+              configApiRef,
+              new ConfigReaderMock({}, 'ctx'),
+            )}
+          >
+            <ReleaseManagerPage />
+          </ApiProvider>,
+        ),
+      );
       expect(getByText('Release Manager')).toBeInTheDocument();
     });
   });

@@ -21,7 +21,6 @@ import {
   Content,
   ContentHeader,
   Header,
-  HeaderLabel,
   Page,
   useApi,
 } from '@backstage/core';
@@ -66,10 +65,7 @@ const ReleaseManagerPage = () => {
 
   return (
     <Page themeId="home">
-      <Header type="Tool" title="Release Manager">
-        <HeaderLabel label="Owner" value="release" url="/org/release" />
-        <HeaderLabel label="Lifecycle" value="Experimental" />
-      </Header>
+      <Header type="Tool" title="Release Manager" />
       <Content>
         <ContentHeader title="Overview" />
         <h2>Android</h2>
