@@ -14,30 +14,35 @@
  * limitations under the License.
  */
 
-import { ScmIntegration, ScmIntegrationFactory } from '../types';
+import { basicIntegrations } from '../helpers';
+import { ScmIntegration, ScmIntegrationsFactory } from '../types';
 import {
   GitHubIntegrationConfig,
   readGitHubIntegrationConfigs,
 } from './config';
 
 export class GitHubIntegration implements ScmIntegration {
-  static factory: ScmIntegrationFactory = ({ config }) => {
+  static factory: ScmIntegrationsFactory<GitHubIntegration> = ({ config }) => {
     const configs = readGitHubIntegrationConfigs(
       config.getOptionalConfigArray('integrations.github') ?? [],
     );
-    return configs.map(integration => ({
-      predicate: (url: URL) => url.host === integration.host,
-      integration: new GitHubIntegration(integration),
-    }));
+    return basicIntegrations(
+      configs.map(c => new GitHubIntegration(c)),
+      i => i.config.host,
+    );
   };
 
-  constructor(private readonly config: GitHubIntegrationConfig) {}
+  constructor(private readonly integrationConfig: GitHubIntegrationConfig) {}
 
   get type(): string {
     return 'github';
   }
 
   get title(): string {
-    return this.config.host;
+    return this.integrationConfig.host;
+  }
+
+  get config(): GitHubIntegrationConfig {
+    return this.integrationConfig;
   }
 }
