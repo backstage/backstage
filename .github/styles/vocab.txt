@@ -138,12 +138,14 @@ Niklas
 nodegit
 nohoist
 nonces
+noop
 npm
 nvarchar
 nvm
 oauth
 OAuth
 oidc
+okta
 Okta
 Oldsberg
 onboarding

@@ -14,30 +14,37 @@
  * limitations under the License.
  */
 
-import { ScmIntegration, ScmIntegrationFactory } from '../types';
+import { basicIntegrations } from '../helpers';
+import { ScmIntegration, ScmIntegrationsFactory } from '../types';
 import {
   BitbucketIntegrationConfig,
   readBitbucketIntegrationConfigs,
 } from './config';
 
 export class BitbucketIntegration implements ScmIntegration {
-  static factory: ScmIntegrationFactory = ({ config }) => {
+  static factory: ScmIntegrationsFactory<BitbucketIntegration> = ({
+    config,
+  }) => {
     const configs = readBitbucketIntegrationConfigs(
       config.getOptionalConfigArray('integrations.bitbucket') ?? [],
     );
-    return configs.map(integration => ({
-      predicate: (url: URL) => url.host === integration.host,
-      integration: new BitbucketIntegration(integration),
-    }));
+    return basicIntegrations(
+      configs.map(c => new BitbucketIntegration(c)),
+      i => i.config.host,
+    );
   };
 
-  constructor(private readonly config: BitbucketIntegrationConfig) {}
+  constructor(private readonly integrationConfig: BitbucketIntegrationConfig) {}
 
   get type(): string {
     return 'bitbucket';
   }
 
   get title(): string {
-    return this.config.host;
+    return this.integrationConfig.host;
+  }
+
+  get config(): BitbucketIntegrationConfig {
+    return this.integrationConfig;
   }
 }
