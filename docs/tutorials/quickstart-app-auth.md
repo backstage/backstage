@@ -369,8 +369,8 @@ When the browser loads, you should be presented with a login page for GitHub.
 Login as usual with your GitHub account. If this is your first time, you will be
 asked to authorize and then are redirected to the catalog page if all is well.
 
-For more information you can clone the repository:
-https://github.com/RoadieHQ/backstage-auth-example Each authentication setting
+For more information you can clone [the backstage-auth-example repository](https://github.com/RoadieHQ/backstage-auth-example).
+ Each authentication setting
 is set up there on a branch named after the authentication provider.
 
 # Where to go from here
