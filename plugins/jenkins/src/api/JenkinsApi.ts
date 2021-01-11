@@ -145,7 +145,7 @@ export class JenkinsApi {
 
     for (const jobDetails of folder.jobs) {
       const jobScmInfo = this.extractScmDetailsFromJob(jobDetails);
-      if (jobDetails && jobDetails.jobs) {
+      if (jobDetails?.jobs) {
         // skipping folders inside folders for now
       } else {
         for (const buildDetails of jobDetails.builds) {
