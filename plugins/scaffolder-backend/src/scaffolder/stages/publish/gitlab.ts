@@ -28,6 +28,7 @@ import {
 export class GitlabPublisher implements PublisherBase {
   private readonly integrations: GitLabIntegrationConfig[];
   private readonly scaffolderToken: string | undefined;
+  private readonly apiBaseUrl: string | undefined;
   private readonly logger: Logger;
 
   constructor(config: Config, { logger }: { logger: Logger }) {
@@ -46,9 +47,17 @@ export class GitlabPublisher implements PublisherBase {
       'scaffolder.gitlab.api.token',
     );
 
+    this.apiBaseUrl = config.getOptionalString('scaffolder.gitlab.api.baseUrl');
+
     if (this.scaffolderToken) {
       this.logger.warn(
         "DEPRECATION: Using the token format under 'scaffolder.gitlab.api.token' will not be respected in future releases. Please consider using integrations config instead",
+      );
+    }
+
+    if (this.apiBaseUrl) {
+      this.logger.warn(
+        "DEPRECATION: Using the apiBaseUrl format under 'scaffolder.gitlab.api.baseUrl' will not be respected in future releases. Please consider using integrations config instead",
       );
     }
   }
@@ -58,18 +67,45 @@ export class GitlabPublisher implements PublisherBase {
     directory,
   }: PublisherOptions): Promise<PublisherResult> {
     const remoteUrl = await this.createRemote(values);
+    const { host } = new URL(remoteUrl);
+    const token = this.getToken(host);
+
+    if (!token) {
+      throw new Error('No token provided to create the remote repository');
+    }
 
     await initRepoAndPush({
       dir: directory,
       remoteUrl,
       auth: {
         username: 'oauth2',
-        password: this.token,
+        password: token,
       },
-      logger,
+      logger: this.logger,
     });
 
     return { remoteUrl };
+  }
+
+  private getToken(host: string): string | undefined {
+    return (
+      this.scaffolderToken ||
+      this.integrations.find(c => c.host === host)?.token
+    );
+  }
+
+  private getBaseUrl(host: string): string | undefined {
+    return (
+      this.apiBaseUrl ||
+      this.integrations.find(c => c.host === host)?.apiBaseUrl
+    );
+  }
+
+  private getConfig(host: string): { baseUrl?: string; token?: string } {
+    return {
+      baseUrl: this.getBaseUrl(host),
+      token: this.getToken(host),
+    };
   }
 
   private async createRemote(
@@ -80,15 +116,24 @@ export class GitlabPublisher implements PublisherBase {
     pathElements.pop();
     const owner = pathElements.join('/');
 
-    let targetNamespace = ((await this.client.Namespaces.show(owner)) as {
+    const config = this.getConfig();
+
+    if (!config.token) {
+      throw new Error(
+        'No authentication set for Gitlab publisher. Creating the remote repository is not possible without a token',
+      );
+    }
+
+    const client = new Gitlab({ host: config.baseUrl, token: config.token });
+
+    let targetNamespace = ((await client.Namespaces.show(owner)) as {
       id: number;
     }).id;
     if (!targetNamespace) {
-      targetNamespace = ((await this.client.Users.current()) as { id: number })
-        .id;
+      targetNamespace = ((await client.Users.current()) as { id: number }).id;
     }
 
-    const project = (await this.client.Projects.create({
+    const project = (await client.Projects.create({
       namespace_id: targetNamespace,
       name: name,
     })) as { http_url_to_repo: string };

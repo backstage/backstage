@@ -20,12 +20,15 @@ import { GitRepositoryCreateOptions } from 'azure-devops-node-api/interfaces/Git
 import { JsonValue, Config } from '@backstage/config';
 import { RequiredTemplateValues } from '../templater';
 import { initRepoAndPush } from './helpers';
-
+import { Config } from '@backstage/config';
+import { Logger } from 'winston';
 export class AzurePublisher implements PublisherBase {
   private readonly client: GitApi;
   private readonly token: string;
+  private readonly logger: Logger;
 
-  constructor(config: Config) {
+  constructor(config: Config, { logger }: { logger: Logger }) {
+    this.logger = logger;
     this.client = client;
     this.token = token;
   }

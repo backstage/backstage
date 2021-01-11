@@ -52,7 +52,7 @@ export class BitbucketPreparer implements PreparerBase {
 
     if (this.username || this.privateToken) {
       this.logger.warn(
-        "DEPRECATION: Using the token format under 'scaffolder.github.token' will not be respected in future releases. Please consider using integrations config instead",
+        "DEPRECATION: Using the token format under 'scaffolder.bitbucket.token' will not be respected in future releases. Please consider using integrations config instead",
       );
     }
   }

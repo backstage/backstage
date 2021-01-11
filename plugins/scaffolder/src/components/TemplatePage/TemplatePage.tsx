@@ -63,7 +63,7 @@ const OWNER_REPO_SCHEMA = {
       description: 'Who is going to own this component',
     },
     storePath: {
-      format: 'GitHub user or org / Repo name',
+      format: 'storeLocation',
       type: 'string' as const,
       title: 'Store path',
       description: 'GitHub store path in org/repo format',
@@ -77,7 +77,7 @@ const OWNER_REPO_SCHEMA = {
 };
 
 const REPO_FORMAT = {
-  'GitHub user or org / Repo name': /[^\/]*\/[^\/]*/,
+  storeLocation: /[^\/]*\/[^\/]*/,
 };
 
 export const TemplatePage = () => {
