@@ -10,6 +10,8 @@ TLDR; We’re rethinking the Kubernetes developer experience with a new feature:
 
 And since Backstage uses the native Kubernetes API, the feature works with whichever cloud provider (AWS, Azure, GCP, etc.) or managed service (OpenShift, IBM Cloud, GKE, etc.) you already use.
 
+<!--truncate-->
+
 ## The missing link between K8s and your service
 
 A core feature of Backstage is its service catalog, which aggregates information about software systems together inside a single tool, with a consistent, familiar UI.
