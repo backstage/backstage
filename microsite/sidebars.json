@@ -38,6 +38,11 @@
     "Core Features": [
       {
         "type": "subcategory",
+        "label": "Kubernetes",
+        "ids": ["features/kubernetes/overview"]
+      },
+      {
+        "type": "subcategory",
         "label": "Software Catalog",
         "ids": [
           "features/software-catalog/software-catalog-overview",

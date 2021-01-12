@@ -1,6 +1,7 @@
 ---
-id: kubernetes-in-backstage
-title: Kubernetes in Backstage
+id: overview
+title: Kubernetes
+sidebar_label: Overview
 description: Monitoring Kubernetes based services with the service catalog
 ---
 
