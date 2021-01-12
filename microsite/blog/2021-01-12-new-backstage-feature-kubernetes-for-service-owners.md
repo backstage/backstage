@@ -53,11 +53,10 @@ As we continue to grow and develop Kubernetes in Backstage with the community, w
 
 ## Getting started
 
-We made the Kubernetes plugin a core feature of Backstage. Like Software Templates (scaffolder) and TechDocs, the k8s-plugin is installed with the core app. When you update the app to the latest version and go to the Kubernetes tab of any service, you will be asked to provide your cloud provider credentials. Learn more in the plugin README files for [kubernetes] and [kubernetes-backend].
+We made the Kubernetes plugin a core feature of Backstage. Like Software Templates (scaffolder) and TechDocs, the k8s-plugin is installed with the core app. When you update the app to the latest version and go to the Kubernetes tab of any service, you will be asked to provide your cloud provider credentials. To learn more, including details on configuration and surfacing your Kubernetes components as part of an entity, [read the docs].
 
 To contribute or get more information on Kubernetes in Backstage, [join the discussion on Discord]!
 
 [here]: https://github.com/backstage/backstage/issues?q=is%3Aissue+is%3Aopen+kubernetes+label%3Ak8s-plugin
-[kubernetes]: https://github.com/backstage/backstage/tree/master/plugins/kubernetes#surfacing-your-kubernetes-components-as-part-of-an-entity
-[kubernetes-backend]: https://github.com/backstage/backstage/tree/master/plugins/kubernetes-backend
+[read the docs]: https://backstage.io/docs/features/kubernetes
 [join the discussion on discord]: https://discord.gg/MUpMjP2
