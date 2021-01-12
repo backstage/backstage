@@ -6634,6 +6634,11 @@
   resolved "https://registry.npmjs.org/@types/lru-cache/-/lru-cache-5.1.0.tgz#57f228f2b80c046b4a1bd5cac031f81f207f4f03"
   integrity sha512-RaE0B+14ToE4l6UqdarKPnXwVDuigfFv+5j9Dze/Nqr23yyuqdNvzcZi3xB+3Agvi5R4EOgAksfv3lXX4vBt9w==
 
+"@types/luxon@^1.25.0":
+  version "1.25.0"
+  resolved "https://registry.npmjs.org/@types/luxon/-/luxon-1.25.0.tgz#3d6fe591fac874f48dd225cb5660b2b785a21a05"
+  integrity sha512-iIJp2CP6C32gVqI08HIYnzqj55tlLnodIBMCcMf28q9ckqMfMzocCmIzd9JWI/ALLPMUiTkCu1JGv3FFtu6t3g==
+
 "@types/markdown-to-jsx@^6.11.0":
   version "6.11.2"
   resolved "https://registry.npmjs.org/@types/markdown-to-jsx/-/markdown-to-jsx-6.11.2.tgz#05d1aaffbf15be7be12c70535fa4fed65cc7c64f"
@@ -17661,6 +17666,11 @@ lru-queue@0.1:
   integrity sha1-Jzi9nw089PhEkMVzbEhpmsYyzaM=
   dependencies:
     es5-ext "~0.10.2"
+
+luxon@^1.25.0:
+  version "1.25.0"
+  resolved "https://registry.npmjs.org/luxon/-/luxon-1.25.0.tgz#d86219e90bc0102c0eb299d65b2f5e95efe1fe72"
+  integrity sha512-hEgLurSH8kQRjY6i4YLey+mcKVAWXbDNlZRmM6AgWDJ1cY3atl8Ztf5wEY7VBReFbmGnwQPz7KYJblL8B2k0jQ==
 
 macos-release@^2.2.0:
   version "2.3.0"

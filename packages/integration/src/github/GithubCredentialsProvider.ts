@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import gitUrlParse from 'git-url-parse';
 import { GithubAppConfig, GitHubIntegrationConfig } from './config';
 import { createAppAuth } from '@octokit/auth-app';
 import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
-import gitUrlParse from 'git-url-parse';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import { InstallationAccessTokenAuthentication } from '@octokit/auth-app/dist-types/types';
 
 type InstallationData = {
@@ -30,26 +30,26 @@ type InstallationData = {
 class Cache {
   private readonly tokenCache = new Map<
     string,
-    { token: string; expiresAt: Date }
+    { token: string; expiresAt: DateTime }
   >();
 
-  async getToken(
+  async getOrCreateToken(
     key: string,
-    fn: () => Promise<{ token: string; expiresAt: Date }>,
+    supplier: () => Promise<{ token: string; expiresAt: DateTime }>,
   ): Promise<{ accessToken: string }> {
     const item = this.tokenCache.get(key);
     if (item && this.isNotExpired(item.expiresAt)) {
       return { accessToken: item.token };
     }
 
-    const result = await fn();
+    const result = await supplier();
     this.tokenCache.set(key, result);
     return { accessToken: result.token };
   }
 
   // consider timestamps older than 50 minutes to be expired.
-  private isNotExpired = (date: Date) =>
-    moment(date).isAfter(moment().subtract(50, 'minutes'));
+  private isNotExpired = (date: DateTime) =>
+    date.diff(DateTime.local(), 'minutes').minutes > 50;
 }
 
 // GithubAppManager issues tokens for a speicifc GitHub App
@@ -85,7 +85,7 @@ class GithubAppManager {
 
     // App is installed in the entire org
     if (repositorySelection === 'all') {
-      return this.cache.getToken(owner, async () => {
+      return this.cache.getOrCreateToken(owner, async () => {
         const auth = createAppAuth({
           ...this.baseAuthConfig,
           installationId,
@@ -95,19 +95,19 @@ class GithubAppManager {
           token,
           expiresAt,
         } = result as InstallationAccessTokenAuthentication;
-        return { token, expiresAt: new Date(expiresAt) };
+        return { token, expiresAt: DateTime.fromISO(expiresAt) };
       });
     }
 
     // App is not installed org wide which requires a specific app token.
-    return this.cache.getToken(`${owner}/${repo}`, async () => {
+    return this.cache.getOrCreateToken(`${owner}/${repo}`, async () => {
       const result = await this.appClient.apps.createInstallationAccessToken({
         installation_id: installationId,
         repositories: [repo],
       });
       return {
         token: result.data.token,
-        expiresAt: new Date(result.data.expires_at),
+        expiresAt: DateTime.fromISO(result.data.expires_at),
       };
     });
   }
@@ -150,18 +150,19 @@ class GithubAppManager {
   }
 }
 
-// GithubIntegration corresponds to a Github installation which internally could hold several GitHub Apps.
-class GithubIntegration {
+// GithubAppCredentialsMux corresponds to a Github installation which internally could hold several GitHub Apps.
+export class GithubAppCredentialsMux {
   private readonly apps: GithubAppManager[];
 
   constructor(config: GitHubIntegrationConfig) {
     this.apps = config.apps?.map(ac => new GithubAppManager(ac)) ?? [];
   }
 
-  async getCredentialsForAppInstallation(
-    owner: string,
-    repo: string,
-  ): Promise<{ accessToken: string }> {
+  async getAppToken(owner: string, repo: string): Promise<string | undefined> {
+    if (this.apps.length === 0) {
+      return undefined;
+    }
+
     const results = await Promise.all(
       this.apps.map(app =>
         app.getInstallationCredentials(owner, repo).then(
@@ -172,7 +173,7 @@ class GithubIntegration {
     );
     const result = results.find(result => result.credentials);
     if (result) {
-      return result.credentials!;
+      return result.credentials!.accessToken;
     }
 
     const errors = results.map(r => r.error);
@@ -180,39 +181,42 @@ class GithubIntegration {
     if (notNotFoundError) {
       throw notNotFoundError;
     }
-    const notFoundError = new Error(
-      `No app installation found for ${owner}/${repo}`,
-    );
-    notFoundError.name = 'NotFoundError';
-    throw notFoundError;
+
+    return undefined;
   }
 }
 
-export class GithubAppAuthProvider {
-  private readonly integrations: Map<string, GithubIntegration>;
-
-  constructor(configs: GitHubIntegrationConfig[]) {
-    this.integrations = new Map(
-      configs.map(config => [config.host, new GithubIntegration(config)]),
+// TODO: Possibly move this to a backend only package so that it's not used in the frontend by mistake
+export class GithubCredentialsProvider {
+  static create(config: GitHubIntegrationConfig): GithubCredentialsProvider {
+    return new GithubCredentialsProvider(
+      new GithubAppCredentialsMux(config),
+      config.token,
     );
   }
 
-  // getCredentials('github.com/backstage/somerepo')
-  async getCredentials(url: string): Promise<{ accessToken: string }> {
-    const parsed = gitUrlParse(url);
+  private constructor(
+    private readonly githubAppCredentialsMux: GithubAppCredentialsMux,
+    private readonly token?: string,
+  ) {}
 
-    const host = parsed.source;
+  async getCredentials(opts: { url: string }) {
+    const parsed = gitUrlParse(opts.url);
     const owner = parsed.owner;
     const repo = parsed.name;
 
-    const integration = await this.integrations.get(host);
-    const credentials = await integration?.getCredentialsForAppInstallation(
-      owner,
-      repo,
-    );
-    if (!credentials) {
-      throw new Error(`No app installation found for ${owner}/${repo}`);
+    let token = await this.githubAppCredentialsMux.getAppToken(owner, repo);
+    if (!token) {
+      token = this.token;
     }
-    return credentials;
+
+    return {
+      headers: token
+        ? {
+            Authorization: `Bearer ${token}`,
+          }
+        : undefined,
+      token,
+    };
   }
 }

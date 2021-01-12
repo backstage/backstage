@@ -86,6 +86,13 @@ export function readGitHubIntegrationConfig(
   let apiBaseUrl = config.getOptionalString('apiBaseUrl');
   let rawBaseUrl = config.getOptionalString('rawBaseUrl');
   const token = config.getOptionalString('token');
+  const apps = config.getOptionalConfigArray('apps')?.map(c => ({
+    appId: c.getNumber('appId'),
+    clientId: c.getString('clientId'),
+    clientSecret: c.getString('clientSecret'),
+    webhookSecret: c.getString('webhookSecret'),
+    privateKey: c.getString('privateKey'),
+  }));
 
   if (!isValidHost(host)) {
     throw new Error(
@@ -105,7 +112,7 @@ export function readGitHubIntegrationConfig(
     rawBaseUrl = GITHUB_RAW_BASE_URL;
   }
 
-  return { host, apiBaseUrl, rawBaseUrl, token };
+  return { host, apiBaseUrl, rawBaseUrl, token, apps };
 }
 
 /**

@@ -34,12 +34,13 @@
     "git-url-parse": "^11.4.3",
     "@octokit/rest": "^18.0.12",
     "@octokit/auth-app": "^2.10.5",
-    "moment": "^2.29.1"
+    "luxon": "^1.25.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.4.5",
     "@backstage/test-utils": "^0.1.5",
     "@types/jest": "^26.0.7",
+    "@types/luxon": "^1.25.0",
     "msw": "^0.21.2"
   },
   "files": [
