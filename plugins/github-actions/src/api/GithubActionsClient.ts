@@ -15,13 +15,7 @@
  */
 
 import { GithubActionsApi } from './GithubActionsApi';
-import { Octokit } from '@octokit/rest';
-import {
-  ActionsListWorkflowRunsForRepoResponseData,
-  ActionsGetWorkflowResponseData,
-  ActionsGetWorkflowRunResponseData,
-  EndpointInterface,
-} from '@octokit/types';
+import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
 
 export class GithubActionsClient implements GithubActionsApi {
   async reRunWorkflow({
@@ -55,7 +49,9 @@ export class GithubActionsClient implements GithubActionsApi {
     pageSize?: number;
     page?: number;
     branch?: string;
-  }): Promise<ActionsListWorkflowRunsForRepoResponseData> {
+  }): Promise<
+    RestEndpointMethodTypes['actions']['listWorkflowRuns']['response']['data']
+  > {
     const workflowRuns = await new Octokit({
       auth: token,
     }).actions.listWorkflowRunsForRepo({
@@ -77,7 +73,9 @@ export class GithubActionsClient implements GithubActionsApi {
     owner: string;
     repo: string;
     id: number;
-  }): Promise<ActionsGetWorkflowResponseData> {
+  }): Promise<
+    RestEndpointMethodTypes['actions']['getWorkflow']['response']['data']
+  > {
     const workflow = await new Octokit({ auth: token }).actions.getWorkflow({
       owner,
       repo,
@@ -95,7 +93,9 @@ export class GithubActionsClient implements GithubActionsApi {
     owner: string;
     repo: string;
     id: number;
-  }): Promise<ActionsGetWorkflowRunResponseData> {
+  }): Promise<
+    RestEndpointMethodTypes['actions']['getWorkflowRun']['response']['data']
+  > {
     const run = await new Octokit({ auth: token }).actions.getWorkflowRun({
       owner,
       repo,
@@ -113,7 +113,9 @@ export class GithubActionsClient implements GithubActionsApi {
     owner: string;
     repo: string;
     runId: number;
-  }): Promise<EndpointInterface> {
+  }): Promise<
+    RestEndpointMethodTypes['actions']['downloadJobLogsForWorkflowRun']['response']['data']
+  > {
     const workflow = await new Octokit({
       auth: token,
     }).actions.downloadJobLogsForWorkflowRun({

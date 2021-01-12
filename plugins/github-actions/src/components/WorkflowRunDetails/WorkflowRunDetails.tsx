@@ -209,8 +209,8 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
               </TableCell>
               <TableCell>
                 <WorkflowRunStatus
-                  status={details.value?.status}
-                  conclusion={details.value?.conclusion}
+                  status={details.value?.status || undefined}
+                  conclusion={details.value?.conclusion || undefined}
                 />
               </TableCell>
             </TableRow>
@@ -218,7 +218,7 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
               <TableCell>
                 <Typography noWrap>Author</Typography>
               </TableCell>
-              <TableCell>{`${details.value?.head_commit.author.name} (${details.value?.head_commit.author.email})`}</TableCell>
+              <TableCell>{`${details.value?.head_commit.author?.name} (${details.value?.head_commit.author?.email})`}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>

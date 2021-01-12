@@ -38,7 +38,7 @@
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
-    "@octokit/rest": "^18.0.6",
+    "@octokit/rest": "^18.0.12",
     "git-url-parse": "^11.4.3",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
