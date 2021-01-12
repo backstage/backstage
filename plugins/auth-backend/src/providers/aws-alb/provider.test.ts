@@ -18,7 +18,9 @@ import express from 'express';
 import * as jwtVerify from 'jose/jwt/verify';
 
 import { AwsAlbAuthProvider } from './provider';
-import { UserEntityV1alpha1 } from '@backstage/catalog-model';
+import { AuthResponse } from '../types';
+
+const mockedJwtVerify = jwtVerify as jest.Mocked<any>;
 
 const mockKey = async () => {
   return `-----BEGIN PUBLIC KEY-----
@@ -44,26 +46,21 @@ jest.mock('jose/jwt/verify', () => {
   };
 });
 
-const identityResolutionCallbackMock = async (): Promise<
-  UserEntityV1alpha1
-> => {
+const identityResolutionCallbackMock = async (): Promise<AuthResponse<any>> => {
   return {
-    apiVersion: 'backstage.io/v1alpha1',
-    kind: 'User',
-    metadata: {
-      name: 'foo',
+    backstageIdentity: {
+      id: 'foo',
+      idToken: '',
     },
-    spec: {
-      memberOf: [],
-      profile: {
-        displayName: 'Foo Bar',
-      },
+    profile: {
+      displayName: 'Foo Bar',
     },
+    providerInfo: {},
   };
 };
 
 const identityResolutionCallbackRejectedMock = async (): Promise<
-  UserEntityV1alpha1
+  AuthResponse<any>
 > => {
   throw new Error('failed');
 };
@@ -81,13 +78,6 @@ describe('AwsALBAuthProvider', () => {
     getLocationById: jest.fn(),
     removeEntityByUid: jest.fn(),
     getEntityByName: jest.fn(),
-  };
-
-  const tokenIssuer = {
-    issueToken: async () => {
-      return '';
-    },
-    listPublicKeys: jest.fn(),
   };
 
   const mockResponseSend = jest.fn();
@@ -108,18 +98,13 @@ describe('AwsALBAuthProvider', () => {
 
   describe('should transform to type OAuthResponse', () => {
     it('when JWT is valid and identity is resolved successfully', async () => {
-      const provider = new AwsAlbAuthProvider(
-        getVoidLogger(),
-        catalogApi,
-        tokenIssuer,
-        {
-          region: 'us-west-2',
-          identityResolutionCallback: identityResolutionCallbackMock,
-          issuer: 'foo',
-        },
-      );
+      const provider = new AwsAlbAuthProvider(getVoidLogger(), catalogApi, {
+        region: 'us-west-2',
+        identityResolutionCallback: identityResolutionCallbackMock,
+        issuer: 'foo',
+      });
 
-      jwtVerify.default.mockImplementationOnce(async () => {
+      mockedJwtVerify.default.mockImplementationOnce(async () => {
         return {
           payload: {
             sub: 'foo',
@@ -143,16 +128,11 @@ describe('AwsALBAuthProvider', () => {
   });
   describe('should fail when', () => {
     it('JWT is missing', async () => {
-      const provider = new AwsAlbAuthProvider(
-        getVoidLogger(),
-        catalogApi,
-        tokenIssuer,
-        {
-          region: 'us-west-2',
-          identityResolutionCallback: identityResolutionCallbackMock,
-          issuer: 'foo',
-        },
-      );
+      const provider = new AwsAlbAuthProvider(getVoidLogger(), catalogApi, {
+        region: 'us-west-2',
+        identityResolutionCallback: identityResolutionCallbackMock,
+        issuer: 'foo',
+      });
 
       await provider.refresh(mockRequestWithoutJwt, mockResponse);
 
@@ -160,18 +140,13 @@ describe('AwsALBAuthProvider', () => {
     });
 
     it('JWT is invalid', async () => {
-      const provider = new AwsAlbAuthProvider(
-        getVoidLogger(),
-        catalogApi,
-        tokenIssuer,
-        {
-          region: 'us-west-2',
-          identityResolutionCallback: identityResolutionCallbackMock,
-          issuer: 'foo',
-        },
-      );
+      const provider = new AwsAlbAuthProvider(getVoidLogger(), catalogApi, {
+        region: 'us-west-2',
+        identityResolutionCallback: identityResolutionCallbackMock,
+        issuer: 'foo',
+      });
 
-      jwtVerify.default.mockImplementationOnce(async () => {
+      mockedJwtVerify.default.mockImplementationOnce(async () => {
         throw new Error('bad JWT');
       });
 
@@ -181,18 +156,13 @@ describe('AwsALBAuthProvider', () => {
     });
 
     it('issuer is invalid', async () => {
-      const provider = new AwsAlbAuthProvider(
-        getVoidLogger(),
-        catalogApi,
-        tokenIssuer,
-        {
-          region: 'us-west-2',
-          identityResolutionCallback: identityResolutionCallbackMock,
-          issuer: 'foobar',
-        },
-      );
+      const provider = new AwsAlbAuthProvider(getVoidLogger(), catalogApi, {
+        region: 'us-west-2',
+        identityResolutionCallback: identityResolutionCallbackMock,
+        issuer: 'foobar',
+      });
 
-      jwtVerify.default.mockImplementationOnce(async () => {
+      mockedJwtVerify.default.mockImplementationOnce(async () => {
         return {};
       });
 
@@ -202,18 +172,13 @@ describe('AwsALBAuthProvider', () => {
     });
 
     it('identity resolution callback rejects', async () => {
-      const provider = new AwsAlbAuthProvider(
-        getVoidLogger(),
-        catalogApi,
-        tokenIssuer,
-        {
-          region: 'us-west-2',
-          identityResolutionCallback: identityResolutionCallbackRejectedMock,
-          issuer: 'foo',
-        },
-      );
+      const provider = new AwsAlbAuthProvider(getVoidLogger(), catalogApi, {
+        region: 'us-west-2',
+        identityResolutionCallback: identityResolutionCallbackRejectedMock,
+        issuer: 'foo',
+      });
 
-      jwtVerify.default.mockImplementationOnce(async () => {
+      mockedJwtVerify.default.mockImplementationOnce(async () => {
         return {};
       });
 

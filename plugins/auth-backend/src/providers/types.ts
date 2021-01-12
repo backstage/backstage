@@ -112,6 +112,11 @@ export interface AuthProviderRouteHandlers {
   logout?(req: express.Request, res: express.Response): Promise<void>;
 }
 
+export type IdentityResolver = (
+  payload: object,
+  catalogApi: CatalogApi,
+) => Promise<AuthResponse<any>>;
+
 export type AuthProviderFactoryOptions = {
   providerId: string;
   globalConfig: AuthProviderConfig;
@@ -120,6 +125,7 @@ export type AuthProviderFactoryOptions = {
   tokenIssuer: TokenIssuer;
   discovery: PluginEndpointDiscovery;
   catalogApi: CatalogApi;
+  identityResolver?: IdentityResolver;
 };
 
 export type AuthProviderFactory = (

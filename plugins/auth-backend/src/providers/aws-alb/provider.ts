@@ -16,30 +16,26 @@
 import {
   AuthProviderFactoryOptions,
   AuthProviderRouteHandlers,
+  IdentityResolver,
 } from '../types';
-import { TokenIssuer } from '../../identity';
 import express from 'express';
+// @ts-ignore no types available for R2
 import r2 from 'r2';
 import * as crypto from 'crypto';
 import { KeyObject } from 'crypto';
 import { Logger } from 'winston';
 import jwtVerify from 'jose/jwt/verify';
 import { CatalogApi } from '@backstage/catalog-client';
-import { UserEntityV1alpha1 } from '@backstage/catalog-model';
 
 const ALB_JWT_HEADER = 'x-amzn-oidc-data';
 /**
  * A callback function that receives a verified JWT and returns a UserEntity
  *  @param {payload} The verified JWT payload
  */
-type IdentityResolutionCallback = (
-  payload: object,
-  catalogApi: CatalogApi,
-) => Promise<UserEntityV1alpha1>;
 type AwsAlbAuthProviderOptions = {
   region: string;
   issuer: string;
-  identityResolutionCallback: IdentityResolutionCallback;
+  identityResolutionCallback: IdentityResolver;
 };
 export const getJWTHeaders = (input: string) => {
   const encoded = input.split('.')[0];
@@ -49,19 +45,16 @@ export const getJWTHeaders = (input: string) => {
 export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
   private logger: Logger;
   private readonly catalogClient: CatalogApi;
-  private tokenIssuer: TokenIssuer;
   private options: AwsAlbAuthProviderOptions;
   private readonly keyCache: { [key: string]: KeyObject };
 
   constructor(
     logger: Logger,
     catalogClient: CatalogApi,
-    tokenIssuer: TokenIssuer,
     options: AwsAlbAuthProviderOptions,
   ) {
     this.logger = logger;
     this.catalogClient = catalogClient;
-    this.tokenIssuer = tokenIssuer;
     this.options = options;
     this.keyCache = {};
   }
@@ -88,16 +81,7 @@ export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
           verifiedToken.payload,
           this.catalogClient,
         );
-        res.send({
-          providerInfo: {},
-          profile: resolvedEntity?.spec?.profile,
-          backstageIdentity: {
-            id: resolvedEntity?.metadata?.name,
-            idToken: await this.tokenIssuer.issueToken({
-              claims: { sub: resolvedEntity?.metadata?.name },
-            }),
-          },
-        });
+        res.send(resolvedEntity);
       } catch (e) {
         this.logger.error('exception occurred during JWT processing', e);
         res.send(401);
@@ -124,15 +108,22 @@ export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
   }
 }
 
-export const createAwsAlbProvider = (
-  { logger, catalogApi, tokenIssuer, config }: AuthProviderFactoryOptions,
-  identityResolver: IdentityResolutionCallback,
-) => {
+export const createAwsAlbProvider = ({
+  logger,
+  catalogApi,
+  config,
+  identityResolver,
+}: AuthProviderFactoryOptions) => {
   const region = config.getString('region');
   const issuer = config.getString('iss');
-  return new AwsAlbAuthProvider(logger, catalogApi, tokenIssuer, {
-    region,
-    issuer,
-    identityResolutionCallback: identityResolver,
-  });
+  if (identityResolver !== undefined) {
+    return new AwsAlbAuthProvider(logger, catalogApi, {
+      region,
+      issuer,
+      identityResolutionCallback: identityResolver,
+    });
+  }
+  throw new Error(
+    'Identity resolver is required to use this authentication provider',
+  );
 };
