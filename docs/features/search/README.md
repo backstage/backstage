@@ -2,8 +2,9 @@
 id: search-overview
 title: Search Documentation
 sidebar_label: Overview
-description: Backstage Global Search lets you find the right information you are
-looking for in the Backstage ecosystem.
+description:
+  Backstage Global Search lets you find the right information you are looking
+  for in the Backstage ecosystem.
 ---
 
 # Backstage Global Search
