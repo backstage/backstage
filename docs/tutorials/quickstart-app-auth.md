@@ -53,9 +53,9 @@ guest. Let's fix that now and add auth.
 
 # The Auth Configuration
 
-A default Backstage installation includes multiple authentication providers out of
-the box. The steps to enable new authentication providers in Backstage are very
-similar to each other, the biggest difference is usually configuring the
+A default Backstage installation includes multiple authentication providers out
+of the box. The steps to enable new authentication providers in Backstage are
+very similar to each other, the biggest difference is usually configuring the
 external authentication provider. Please see a subset of possible providers and
 instructions to integrate them below. Steps 1 & 2 are described separately for
 each provider and steps beyond that are common for all.
@@ -63,7 +63,7 @@ each provider and steps beyond that are common for all.
 <details><summary>Github</summary>
 <p>
 
-1. Open `app-config.yaml` and change it as follows
+### 1. Open `app-config.yaml` and change it as follows
 
 _from:_
 
@@ -88,7 +88,7 @@ auth:
         #  $env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
 ```
 
-2. Generate a GitHub client ID and secret
+### 2. Generate a GitHub client ID and secret
 
 - Log into http://github.com
 - Navigate to (Settings > Developer Settings > OAuth Apps > New OAuth
@@ -106,7 +106,7 @@ auth:
 <details><summary>GitLab</summary>
 <p>
 
-1. Open `app-config.yaml` and change it as follows
+### 1. Open `app-config.yaml` and change it as follows
 
 _from:_
 
@@ -129,7 +129,7 @@ auth:
         audience: https://gitlab.com # Or your self-hosted Gitlab instance URL
 ```
 
-2. Generate a GitLab Application client ID and secret
+### 2. Generate a Gitlab Application client ID and secret
 
 - Log into GitLab
 - Navigate to (Profile > Settings >
@@ -137,12 +137,14 @@ auth:
 - Name your application
 - Set Callback URL = http://localhost:7000/api/auth/gitlab/handler/frame
 - Select the following values:
-  - `read_user (Read the authenticated user's personal information)`
-  - `read_repository (Allows read-only access to the repository)`
-  - `write_repository (Allows read-write access to the repository)`
-  - `openid (Authenticate using OpenID Connect)`
-  - `profile (Allows read-only access to the user's personal information using OpenID Connect)`
-  - `email (Allows read-only access to the user's primary email address using OpenID Connect)`
+  - `read_user` (Read the authenticated user's personal information)
+  - `read_repository` (Allows read-only access to the repository)
+  - `write_repository` (Allows read-write access to the repository)
+  - `openid` (Authenticate using OpenID Connect)
+  - `profile` (Allows read-only access to the user's personal information using
+    OpenID Connect)
+  - `email` (Allows read-only access to the user's primary email address using
+    OpenID Connect)
 - Click [Save application]
 - On the next page, copy and paste your new Application ID and Secret to
   environment variables defined in the `app-config.yaml` file,
@@ -154,7 +156,7 @@ auth:
 <details><summary>Google</summary>
 <p>
 
-1. Open `app-config.yaml` and change it as follows
+### 1. Open `app-config.yaml` and change it as follows
 
 _from:_
 
@@ -176,12 +178,14 @@ auth:
           $env: AUTH_GOOGLE_CLIENT_SECRET
 ```
 
-2. Generate Google Credentials in Google Cloud console
+### 2. Generate Google Credentials in Google Cloud console
 
 - Log into https://console.cloud.google.com
 - Select or create a new project from the dropdown on the top bar
 - Navigate to (APIs & Services >
   Credentials)[https://console.cloud.google.com/apis/credentials]
+- Click Create Credentials and select [OAuth client ID]
+- Select Web Application as the application type
 - Add new Authorised JavaScript origin = `http://localhost:3000`
 - Add new Authorised redirect URI =
   `http://localhost:7000/api/auth/google/handler/frame`
@@ -196,7 +200,7 @@ auth:
 <details><summary>Microsoft</summary>
 <p>
 
-1. Open `app-config.yaml` and change it as follows
+### 1. Open `app-config.yaml` and change it as follows
 
 _from:_
 
@@ -220,7 +224,7 @@ auth:
           $env: AUTH_MICROSOFT_TENANT_ID
 ```
 
-2. Create a Microsoft App Registration in Microsoft Portal
+### 2. Create a Microsoft App Registration in Microsoft Portal
 
 - Log into https://portal.azure.com
 - Navigate to (Azure Active Directory > App
@@ -244,7 +248,7 @@ auth:
 <details><summary>Auth0</summary>
 <p>
 
-1. Open `app-config.yaml` and change it as follows
+### 1. Open `app-config.yaml` and change it as follows
 
 _from:_
 
@@ -268,7 +272,7 @@ auth:
           $env: AUTH_AUTH0_DOMAIN_ID
 ```
 
-2. Create an Auth0 application in the Auth0 management console
+### 2. Create an Auth0 application in the Auth0 management console
 
 - Log into https://manage.auth0.com/dashboard/
 - Navigate to Applications
@@ -287,8 +291,9 @@ auth:
 </p>
 </details>
 
-3. Set environment variables in whatever fashion is easiest for you. I chose to
-   add mine to my `.zshrc` profile.
+### 3. Set environment variables in whatever fashion is easiest for you. I chose to
+
+add mine to my `.zshrc` profile.
 
 ```zsh
 # For macOS Catalina & Z Shell
@@ -300,7 +305,7 @@ export AUTH_GITHUB_CLIENT_SECRET=xxx
 # export AUTH_GITHUB_ENTERPRISE_INSTANCE_URL=https://github.{MY_BIZ}.com
 ```
 
-4. And of course I need to source that file.
+### 4. And of course I need to source that file.
 
 ```zsh
 # Loading the new variables
@@ -316,14 +321,16 @@ export AUTH_GITHUB_CLIENT_SECRET=xxx
 > ...
 ```
 
-5. Open and change \_root > packages > app > src >`App.tsx` to use correct
-   authentication provider reference
+### 5. Open and change _root > packages > app > src >_ `App.tsx` to use correct
+
+authentication provider reference
 
 ```tsx
 import { githubAuthApiRef, SignInPage } from '@backstage/core';
 ```
 
-Modify the imported reference based on the authentication method you selected above:
+Modify the imported reference based on the authentication method you selected
+above:
 
 | Auth Provider | Import Name         |
 | ------------- | ------------------- |
@@ -331,9 +338,9 @@ Modify the imported reference based on the authentication method you selected ab
 | Gitlab        | gitlabAuthApiRef    |
 | Google        | googleAuthApiRef    |
 | Microsoft     | microsoftAuthApiRef |
-| Auth0         | auth0AuthApiRef    |
+| Auth0         | auth0AuthApiRef     |
 
-6. In the same file, modify createApp
+### 6. In the same file, modify createApp
 
 Remember to modify the provider information based on the table above.
 
@@ -369,9 +376,10 @@ When the browser loads, you should be presented with a login page for GitHub.
 Login as usual with your GitHub account. If this is your first time, you will be
 asked to authorize and then are redirected to the catalog page if all is well.
 
-For more information you can clone [the backstage-auth-example repository](https://github.com/RoadieHQ/backstage-auth-example).
- Each authentication setting
-is set up there on a branch named after the authentication provider.
+For more information you can clone
+[the backstage-auth-example repository](https://github.com/RoadieHQ/backstage-auth-example).
+Each authentication setting is set up there on a branch named after the
+authentication provider.
 
 # Where to go from here
 
