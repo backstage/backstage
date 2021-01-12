@@ -9781,7 +9781,7 @@ case-sensitive-paths-webpack-plugin@^2.2.0:
   resolved "https://registry.npmjs.org/case-sensitive-paths-webpack-plugin/-/case-sensitive-paths-webpack-plugin-2.3.0.tgz#23ac613cc9a856e4f88ff8bb73bbb5e989825cf7"
   integrity sha512-/4YgnZS8y1UXXmC02xD5rRrBEu6T5ub+mQHLNRj0fzTRbgdBYhsNo2V5EqwgqrExjxsjtF/OpAKAMkKsxbD5XQ==
 
-caseless@~0.12.0:
+caseless@^0.12.0, caseless@~0.12.0:
   version "0.12.0"
   resolved "https://registry.npmjs.org/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
   integrity sha1-G2gcIf+EAzyCZUMJBolCDRhxUdw=
@@ -16549,19 +16549,17 @@ jest@^26.0.1:
     import-local "^3.0.2"
     jest-cli "^26.6.3"
 
-jose@^1.27.1:
-  version "1.27.1"
-  resolved "https://registry.npmjs.org/jose/-/jose-1.27.1.tgz#a1de2ecb5b3ae1ae28f0d9d0cc536349ada27ec8"
-  integrity sha512-VyHM6IJPw0TTGqHVNlPWg16/ASDPAmcChcLqSb3WNBvwWFoWPeFqlmAUCm8/oIG1GjZwAlUDuRKFfycowarcVA==
-  dependencies:
-    "@panva/asn1.js" "^1.0.0"
-
 jose@^2.0.2:
   version "2.0.2"
   resolved "https://registry.npmjs.org/jose/-/jose-2.0.2.tgz#fb22385b80c658cc7a0cae05b7086c04c6be49f4"
   integrity sha512-yD93lsiMA1go/qxSY/vXWBodmIZJIxeB7QhFi8z1yQ3KUwKENqI9UA8VCHlQ5h3x1zWuWZjoY87ByQzkQbIrQg==
   dependencies:
     "@panva/asn1.js" "^1.0.0"
+
+jose@^3.5.1:
+  version "3.5.1"
+  resolved "https://registry.npmjs.org/jose/-/jose-3.5.1.tgz#adc0d5000dbf64a7f4db171d449dbcf6b556b6f0"
+  integrity sha512-BQQJafCDvsmtc/LaK57cjfhU/1AKBhJSbJhKPq+uhrjMoV/sh3/dbk9cm08nAeSGS6j+sjhWoY+LZPUXiKzYzw==
 
 joycon@^2.2.5:
   version "2.2.5"
@@ -18824,7 +18822,7 @@ node-fetch-npm@^2.0.2:
     json-parse-better-errors "^1.0.0"
     safe-buffer "^5.1.1"
 
-node-fetch@2.6.1, node-fetch@^2.1.2, node-fetch@^2.2.0, node-fetch@^2.3.0, node-fetch@^2.5.0, node-fetch@^2.6.0, node-fetch@^2.6.1:
+node-fetch@2.6.1, node-fetch@^2.0.0-alpha.8, node-fetch@^2.1.2, node-fetch@^2.2.0, node-fetch@^2.3.0, node-fetch@^2.5.0, node-fetch@^2.6.0, node-fetch@^2.6.1:
   version "2.6.1"
   resolved "https://registry.npmjs.org/node-fetch/-/node-fetch-2.6.1.tgz#045bd323631f76ed2e2b55573394416b639a0052"
   integrity sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==
@@ -21205,6 +21203,15 @@ quick-lru@^5.1.1:
   version "5.1.1"
   resolved "https://registry.npmjs.org/quick-lru/-/quick-lru-5.1.1.tgz#366493e6b3e42a3a6885e2e99d18f80fb7a8c932"
   integrity sha512-WuyALRjWPDGtt/wzJiadO5AXY+8hZ80hVpe6MyivgraREW751X3SbhRvG3eLKOYN+8VEvqLcf3wdnt44Z4S4SA==
+
+r2@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.npmjs.org/r2/-/r2-2.0.1.tgz#94cd802ecfce9a622549c8182032d8e4a2b2e612"
+  integrity sha512-EEmxoxYCe3LHzAUhRIRxdCKERpeRNmlLj6KLUSORqnK6dWl/K5ShmDGZqM2lRZQeqJgF+wyqk0s1M7SWUveNOQ==
+  dependencies:
+    caseless "^0.12.0"
+    node-fetch "^2.0.0-alpha.8"
+    typedarray-to-buffer "^3.1.2"
 
 raf-schd@^4.0.2:
   version "4.0.2"
@@ -25002,7 +25009,7 @@ typed-rest-client@^1.8.0:
     tunnel "0.0.6"
     underscore "1.8.3"
 
-typedarray-to-buffer@^3.1.5:
+typedarray-to-buffer@^3.1.2, typedarray-to-buffer@^3.1.5:
   version "3.1.5"
   resolved "https://registry.npmjs.org/typedarray-to-buffer/-/typedarray-to-buffer-3.1.5.tgz#a97ee7a9ff42691b9f783ff1bc5112fe3fca9080"
   integrity sha512-zdu8XMNEDepKKR+XYOXAVPtWui0ly0NtohUscw+UmaHiAWT8hrV1rr//H6V+0DvJ3OQ19S979M0laLfX8rm82Q==
