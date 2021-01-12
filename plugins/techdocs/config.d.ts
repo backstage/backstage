@@ -99,7 +99,7 @@ export interface Config {
               secretAccessKey: string;
             };
             /**
-             * Cloud Storage Bucket Name
+             * (Required) Cloud Storage Bucket Name
              * attr: 'bucketName' - accepts a string value
              * @visibility backend
              */
