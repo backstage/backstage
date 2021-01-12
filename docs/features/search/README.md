@@ -58,7 +58,7 @@ Backstage ecosystem.
 
 - As an app developer I should be able to spin up an instance of ElasticSearch.
 - As an app developer I should be able to define a ElasticSearch cluster in my
-  app_config where my data gets indexed to.
+  app_config.yaml where my data gets indexed to.
 
 more to come...
 
