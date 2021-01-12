@@ -223,7 +223,7 @@ auth:
 2. Create Microsoft Directory in Microsoft Portal
 
 - Log into https://portal.azure.com
-- Navigate to (Azure Active Directory -> App
+- Navigate to (Azure Active Directory > App
   Registrations)[https://portal.azure.com/#blade/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/RegisteredApps]
 - Create a New Registration
 - Add new Redirect URI = `http://localhost:3000`
