@@ -46,9 +46,14 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
 type Props = {
   nextStep: () => void;
   saveConfig: (configFile: ConfigSpec) => void;
+  repository: string;
 };
 
-export const RegisterComponentForm = ({ nextStep, saveConfig }: Props) => {
+export const RegisterComponentForm = ({
+  nextStep,
+  saveConfig,
+  repository,
+}: Props) => {
   const { register, handleSubmit, errors, formState } = useForm({
     mode: 'onChange',
   });
@@ -103,7 +108,7 @@ export const RegisterComponentForm = ({ nextStep, saveConfig }: Props) => {
           name="componentLocation"
           required
           margin="normal"
-          helperText="Enter the full path to the repository in GitHub to start tracking your component."
+          helperText={`Enter the full path to the repository in ${repository} to start tracking your component.`}
           inputRef={register({
             required: true,
             validate: ComponentIdValidators,
