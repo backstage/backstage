@@ -72,7 +72,7 @@ more to come...
 
 ## Backstage Search Big Picture
 
-To be created...
+To be created, see [issue.](https://github.com/backstage/backstage/pull/4030)
 
 ## Search Engines Supported
 
