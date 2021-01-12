@@ -268,7 +268,7 @@ identical in use to
 
 Their purpose is mainly, but not limited, to reference into external systems.
 This could for example be a reference to the git ref the entity was ingested
-from, to monitoring and logging systems, to pagerduty schedules, etc. Users may
+from, to monitoring and logging systems, to PagerDuty schedules, etc. Users may
 add these to descriptor YAML files, but in addition to this automated systems
 may also add annotations, either during ingestion into the catalog, or at a
 later time.
