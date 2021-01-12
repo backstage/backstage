@@ -25,12 +25,12 @@ in the Backstage ecosystem.
 
 ## Project roadmap
 
-| Version                 | Description                                                                                                                                                     |
-| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Backstage Search V.0 ✅ | Search Frontend letting you search through the entities of the software catalog. [See V.0 Use Cases.](#backstage-search-v0)                                     |
-| Backstage Search V.1 ⌛ | Basic “out-of-the-box” in-memory indexing process of entities and its metadata registered to the Software Catalog. [See V.1 Use Cases.](#backstage-search-v1)   |
-| Backstage Search V.2 ⌛ | Search Backend responsible for the indexing process of entities and its metadata registered to the Software Catalog. [See V.2 Use Cases.](#backstage-search-v2) |
-| Backstage Search V.3 ⌛ | Standardized Search API lets you index your own data from your plugin to the search engine cluster of choice. [See V.3 Use Cases.](#backstage-search-v3)        |
+| Version                 | Description                                                                                                                                                       |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Backstage Search V.0 ✅ | Search Frontend letting you search through the entities of the software catalog. [See V.0 Use Cases.](#backstage-search-v0)                                       |
+| Backstage Search V.1 ⌛ | Basic “out-of-the-box” in-memory indexing process of entities, and its metadata, registered to the Software Catalog. [See V.1 Use Cases.](#backstage-search-v1)   |
+| Backstage Search V.2 ⌛ | Search Backend responsible for the indexing process of entities, and its metadata, registered to the Software Catalog. [See V.2 Use Cases.](#backstage-search-v2) |
+| Backstage Search V.3 ⌛ | Standardized Search API lets you index your own data from your plugin to the search engine cluster of choice. [See V.3 Use Cases.](#backstage-search-v3)          |
 
 ## Use Cases
 
