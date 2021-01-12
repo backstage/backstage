@@ -4,7 +4,7 @@ author: Matthew Clarke, Spotify
 authorURL: https://github.com/mclarke47
 ---
 
-![Animation of Kubernetes and cloud provider icons becoming the Backstage logo](assets/2021-01-12/backstage-k8s-1-hero.gif)
+![Animation of Kubernetes and cloud provider icons becoming the Backstage logo](/Users/alexandrawei/Desktop/GitHub/backstage/microsite/blog/assets/21-01-12/backstage-k8s-1-hero.gif)
 
 TLDR; We’re rethinking the Kubernetes developer experience with a new feature: a Kubernetes monitoring tool that’s designed around the needs of service owners, not cluster admins. Now developers can easily check the health of their services no matter how or where those services are deployed — whether it’s on a local host for testing or in production on dozens of clusters around the world.
 
@@ -22,17 +22,19 @@ By navigating to a service’s overview page in Backstage, you can see everythin
 
 Kubernetes in Backstage can be configured to search multiple clusters for your services. It will then aggregate them together into a single view. So if you deploy to multiple clusters you will no longer need to switch kubectl contexts to understand the current state of your service.
 
-![List of deployments in Backstage Kubernetes plugin](assets/2021-01-12/backstage-k8s-2-deployments.png)
+![List of deployments in Backstage Kubernetes plugin](/Users/alexandrawei/Desktop/GitHub/backstage/microsite/blog/assets/21-01-12/backstage-k8s-2-deployments.png)
 
 ## Automatic error reporting
 
 Instead of trying different kubectl commands to figure out where an error occurred, Backstage will automatically find and highlight errors in Kubernetes resources that are affecting your service. So you can spend time fixing errors, not hunting for them.
 
+![Error reporting screen in Backstage Kubernetes plugin](/Users/alexandrawei/Desktop/GitHub/backstage/microsite/blog/assets/21-01-12/backstage-k8s-3-error-reporting.png)
+
 ## Autoscaling limits at a glance
 
 Backstage also shows you how close your service is to its autoscaling limit. Coming up to a period of high load? Now you will be able to see how your horizontal autoscaling is dealing with it across multiple clusters.
 
-![Autoscaling limits screen in Backstage Kubernetes plugin](assets/2021-01-12/backstage-k8s-4-autoscaling-limits.png)
+![Autoscaling limits screen in Backstage Kubernetes plugin](/Users/alexandrawei/Desktop/GitHub/backstage/microsite/blog/assets/21-01-12/backstage-k8s-4-autoscaling-limits.png)
 
 ## Pick a cloud, any Cloud
 
