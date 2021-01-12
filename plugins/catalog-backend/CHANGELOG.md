@@ -54,7 +54,7 @@
 
 ### Patch Changes
 
-- c6eeefa35: Add support for Github Enterprise in GitHubOrgReaderProcessor so you can properly ingest users of a GHE organization.
+- c6eeefa35: Add support for GitHub Enterprise in GitHubOrgReaderProcessor so you can properly ingest users of a GHE organization.
 - fb386b760: Break the refresh loop into several smaller transactions
 - 7c3ffc0cd: Support `profile` of groups including `displayName`, `email`, and `picture` in
   `LdapOrgReaderProcessor`. The source fields for them can be configured in the

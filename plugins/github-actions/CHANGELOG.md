@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- 19554f6d6: Added Github Actions for Create React App, and allow better imports of files inside a module when they're exposed using `files` in `package.json`
+- 19554f6d6: Added GitHub Actions for Create React App, and allow better imports of files inside a module when they're exposed using `files` in `package.json`
 - Updated dependencies [d681db2b5]
 - Updated dependencies [1dc445e89]
 - Updated dependencies [342270e4d]
@@ -94,7 +94,7 @@
 ### Minor Changes
 
 - 28edd7d29: Create backend plugin through CLI
-- d67c529ab: Adds a widget to show recent git workflow runs to the github actions plugin. The default setting is the last 5 runs across all branches but both branch and the number of runs are configurable.
+- d67c529ab: Adds a widget to show recent git workflow runs to the GitHub actions plugin. The default setting is the last 5 runs across all branches but both branch and the number of runs are configurable.
 - 6d97d2d6f: The InfoCard variant `'height100'` is deprecated. Use variant `'gridItem'` instead.
 
   When the InfoCard is displayed as a grid item within a grid, you may want items to have the same height for all items.

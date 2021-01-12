@@ -4,7 +4,7 @@
 
 ### Minor Changes
 
-- 5eb8c9b9e: Fix gitlab scaffolder publisher
+- 5eb8c9b9e: Fix GitLab scaffolder publisher
 
 ### Patch Changes
 
@@ -28,7 +28,7 @@
 
 ### Patch Changes
 
-- 19554f6d6: Added Github Actions for Create React App, and allow better imports of files inside a module when they're exposed using `files` in `package.json`
+- 19554f6d6: Added GitHub Actions for Create React App, and allow better imports of files inside a module when they're exposed using `files` in `package.json`
 - 33a82a713: GitLab preparer uses the right token (primarily the same one as the publisher, falling back to the integrations token)
 - aed8f7f12: Clearer error message when preparer or publisher type can't be determined.
 
