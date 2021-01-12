@@ -994,32 +994,6 @@ to, e.g. `artists`. This field is optional.
 | --------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------- |
 | [`Domain`](#kind-domain) (default)      | Same as this entity, typically `default`   | [`partOf`, and reverse `hasPart`](well-known-relations.md#partof-and-haspart) |
 
-### `spec.providesApis` [optional]
-
-An array of [entity references](#string-references) to the APIs that are
-provided by the system, e.g. `artist-api`. This field is optional.
-
-APIs can be exposed by the system, providing consumers a higher level
-abstraction on providers of APIs without needing to have a detailed view in the
-involved components.
-
-| [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                                                  |
-| --------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------------- |
-| [`API`](#kind-api) (default)            | Same as this entity, typically `default`   | [`providesApi`, and reverse `apiProvidedBy`](well-known-relations.md#providesapi-and-apiprovidedby) |
-
-### `spec.consumesApis` [optional]
-
-An array of [entity references](#string-references) to the APIs that are
-consumed by the system, e.g. `artist-api`. This field is optional.
-
-APIs can be consumed by the system, providing providers a higher level
-abstraction on consumers of their APIs without needing to have a detailed view
-in the involved components. This field is optional.
-
-| [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                                                  |
-| --------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------------- |
-| [`API`](#kind-api) (default)            | Same as this entity, typically `default`   | [`consumesApi`, and reverse `apiConsumedBy`](well-known-relations.md#consumesapi-and-apiconsumedby) |
-
 ## Kind: Domain
 
 Describes the following entity kind:
