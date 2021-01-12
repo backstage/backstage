@@ -57,13 +57,8 @@ export const RELATION_MEMBER_OF = 'memberOf';
 export const RELATION_HAS_MEMBER = 'hasMember';
 
 /**
-<<<<<<< HEAD
  * A part/whole relation, typically for components in a system and systems
  * in a domain.
-=======
- * A grouping relation, typically for components, resources or APIs in a
- * system, or for systems inside a domain.
->>>>>>> Add system, domain and resource entity kinds
  */
 export const RELATION_PART_OF = 'partOf';
 export const RELATION_HAS_PART = 'hasPart';
