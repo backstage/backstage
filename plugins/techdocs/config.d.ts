@@ -78,10 +78,13 @@ export interface Config {
            */
           awsS3?: {
             /**
-             * Credentials used to access a storage bucket
+             * (Optional) Credentials used to access a storage bucket.
+             * If not set, environment variables or aws config file will be used to authenticate.
+             * https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-environment.html
+             * https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-shared.html
              * @visibility secret
              */
-            credentials: {
+            credentials?: {
               /**
                * User access key id
                * attr: 'accessKeyId' - accepts a string value
@@ -98,11 +101,13 @@ export interface Config {
             /**
              * Cloud Storage Bucket Name
              * attr: 'bucketName' - accepts a string value
-             * @visibility secret
+             * @visibility backend
              */
             bucketName: string;
             /**
-             * AWS Region
+             * (Optional) AWS Region.
+             * If not set, AWS_REGION environment variable or aws config file will be used.
+             * https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-region.html
              * attr: 'region' - accepts a string value
              * @visibility secret
              */
@@ -125,7 +130,7 @@ export interface Config {
             /**
              * (Required) Cloud Storage Bucket Name
              * attr: 'bucketName' - accepts a string value
-             * @visibility secret
+             * @visibility backend
              */
             bucketName: string;
             /**

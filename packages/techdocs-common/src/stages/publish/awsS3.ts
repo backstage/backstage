@@ -39,30 +39,47 @@ const streamToString = (stream: Readable): Promise<string> => {
 
 export class AwsS3Publish implements PublisherBase {
   static fromConfig(config: Config, logger: Logger): PublisherBase {
-    let region = null;
-    let accessKeyId = null;
-    let secretAccessKey = null;
     let bucketName = '';
     try {
-      accessKeyId = config.getString(
-        'techdocs.publisher.awsS3.credentials.accessKeyId',
-      );
-      secretAccessKey = config.getString(
-        'techdocs.publisher.awsS3.credentials.secretAccessKey',
-      );
-      region = config.getOptionalString('techdocs.publisher.awsS3.region');
       bucketName = config.getString('techdocs.publisher.awsS3.bucketName');
     } catch (error) {
       throw new Error(
         "Since techdocs.publisher.type is set to 'awsS3' in your app config, " +
-          'credentials and bucketName are required in techdocs.publisher.awsS3 ' +
-          'required to authenticate with AWS S3.',
+          'techdocs.publisher.awsS3.bucketName is required.',
       );
     }
 
+    // Credentials is an optional config. If missing, default AWS environment variables
+    // or AWS config file in ~/.aws/config will be used to authenticate
+    // https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-environment.html
+    // https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-shared.html
+    const credentials = config.getOptionalConfig(
+      'techdocs.publisher.awsS3.credentials',
+    );
+    let accessKeyId = undefined;
+    let secretAccessKey = undefined;
+    if (credentials) {
+      accessKeyId = credentials.getOptionalString('accessKeyId');
+      secretAccessKey = credentials.getOptionalString('secretAccessKey');
+    }
+
+    // AWS Region is an optional config. If missing, default AWS env variable AWS_REGION
+    // or AWS config file in ~/.aws/config will be used. But the AWS SDK v3 client needs
+    // to have the AWS Region information for it to work.
+    const region = config.getOptionalString('techdocs.publisher.awsS3.region');
+
     const storageClient = new S3({
-      credentials: { accessKeyId, secretAccessKey },
-      ...(region && { region }),
+      ...(credentials &&
+        accessKeyId &&
+        secretAccessKey && {
+          credentials: {
+            accessKeyId,
+            secretAccessKey,
+          },
+        }),
+      ...(region && {
+        region,
+      }),
     });
 
     // Check if the defined bucket exists. Being able to connect means the configuration is good
@@ -75,11 +92,12 @@ export class AwsS3Publish implements PublisherBase {
         if (err) {
           logger.error(
             `Could not retrieve metadata about the AWS S3 bucket ${bucketName}. ` +
-              'Make sure the AWS project and the bucket exists and the access key located at the path ' +
-              "techdocs.publisher.awsS3.credentials defined in app config has the role 'Storage Object Creator'. " +
-              'Refer to https://backstage.io/docs/features/techdocs/using-cloud-storage',
+              'Make sure the bucket exists. Also make sure that authentication is setup either by ' +
+              'explicitly defining credentials and region in techdocs.publisher.awsS3 in app config or ' +
+              'by using environment variables. Refer to https://backstage.io/docs/features/techdocs/using-cloud-storage',
           );
-          throw new Error(`from AWS client library: ${err.message}`);
+          logger.error(`from AWS client library: ${err.message}`);
+          throw new Error();
         } else {
           logger.info(
             `Successfully connected to the AWS S3 bucket ${bucketName}.`,
