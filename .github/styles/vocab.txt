@@ -8,6 +8,8 @@ apis
 args
 asciidoc
 async
+Autoscaling
+autoscaling
 Avro
 backrub
 Balachandran
@@ -229,6 +231,7 @@ transpiled
 transpilation
 Tuite
 ui
+unmanaged
 untracked
 upvote
 url
