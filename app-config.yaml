@@ -127,7 +127,7 @@ integrations:
 
 catalog:
   rules:
-    - allow: [Component, API, Group, User, Template, Location]
+    - allow: [Component, API, Resource, Group, User, Template, System, Domain, Location]
 
   processors:
     githubOrg:

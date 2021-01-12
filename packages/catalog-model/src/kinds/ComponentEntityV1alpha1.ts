@@ -32,6 +32,7 @@ const schema = yup.object<Partial<ComponentEntityV1alpha1>>({
       subcomponentOf: yup.string().notRequired().min(1),
       providesApis: yup.array(yup.string().required()).notRequired(),
       consumesApis: yup.array(yup.string().required()).notRequired(),
+      system: yup.string().notRequired().min(1),
     })
     .required(),
 });
@@ -46,6 +47,7 @@ export interface ComponentEntityV1alpha1 extends Entity {
     subcomponentOf?: string;
     providesApis?: string[];
     consumesApis?: string[];
+    system?: string;
   };
 }
 
