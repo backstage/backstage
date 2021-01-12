@@ -27,8 +27,8 @@ describe('AwsOrganizationCloudAccountProcessor', () => {
     afterEach(() => jest.resetAllMocks());
 
     it('generates component entities for accounts', async () => {
-      listAccounts.mockImplementation(() => {
-        return {
+      listAccounts.mockImplementation(() =>
+        Promise.resolve({
           Accounts: [
             {
               Arn:
@@ -37,8 +37,8 @@ describe('AwsOrganizationCloudAccountProcessor', () => {
             },
           ],
           NextToken: undefined,
-        };
-      });
+        }),
+      );
       await processor.readLocation(location, false, emit);
       expect(emit).toBeCalledWith({
         type: 'entity',
@@ -67,8 +67,8 @@ describe('AwsOrganizationCloudAccountProcessor', () => {
 
     it('filters out accounts not in specified location target', async () => {
       const location = { type: 'aws-cloud-accounts', target: 'o-1vl18kc5a3' };
-      listAccounts.mockImplementation(() => {
-        return {
+      listAccounts.mockImplementation(() =>
+        Promise.resolve({
           Accounts: [
             {
               Arn:
@@ -82,8 +82,8 @@ describe('AwsOrganizationCloudAccountProcessor', () => {
             },
           ],
           NextToken: undefined,
-        };
-      });
+        }),
+      );
       await processor.readLocation(location, false, emit);
       expect(emit).toBeCalledTimes(1);
       expect(emit).toBeCalledWith({
