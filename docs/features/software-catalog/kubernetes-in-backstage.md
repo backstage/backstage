@@ -4,8 +4,6 @@ title: Kubernetes in Backstage
 description: Monitoring Kubernetes based services with the service catalog
 ---
 
-# Kubernetes in Backstage
-
 Kubernetes in Backstage is a way to monitor your service's current status when
 it is deployed on Kubernetes.
 
@@ -21,8 +19,9 @@ kubernetes:
   clusters:
     - url: http://127.0.0.1:9999
       name: minikube
-      serviceAccountToken: TOKEN
       authProvider: 'serviceAccount'
+      serviceAccountToken:
+        $env: K8S_MINIKUBE_TOKEN
     - url: http://127.0.0.2:9999
       name: gke-cluster-1
       authProvider: 'google'
@@ -32,22 +31,19 @@ kubernetes:
 
 This configures how to determine which clusters a component is running in.
 
-Currently, the only valid serviceLocatorMethod is:
+Currently, the only valid value is:
 
-### multiTenant
-
-This configuration assumes that all components run on all the provided clusters.
+- `multiTenant` - This configuration assumes that all components run on all the
+  provided clusters.
 
 ### clusterLocatorMethods
 
-This is used to determine where to retrieve cluster configuration from.
+This is an array used to determine where to retrieve cluster configuration from.
 
 Currently, the only valid cluster locator method is:
 
-`"config"`
-
-This cluster locator method will read cluster information from your app-config
-(see below).
+- `config` - This cluster locator method will read cluster information from your
+  app-config (see below).
 
 ### clusters
 
@@ -56,7 +52,7 @@ Used by the `config` cluster locator method to construct Kubernetes clients.
 ### clusters.\*.url
 
 The base URL to the Kubernetes control plane. Can be found by using the
-`Kubernetes master` result from running the `kubectl cluster-info` command.
+"Kubernetes master" result from running the `kubectl cluster-info` command.
 
 ### clusters.\*.name
 
@@ -78,7 +74,7 @@ cluster. Valid values are:
 The service account token to be used when using the `serviceAccount` auth
 provider.
 
-## RBAC
+## Roll Based Access Control
 
 The current RBAC permissions required are read-only cluster wide, for the
 following objects:
@@ -93,7 +89,7 @@ following objects:
 
 ## Surfacing your Kubernetes components as part of an entity
 
-There are two ways to surface your kubernetes components as part of an entity.
+There are two ways to surface your Kubernetes components as part of an entity.
 The label selector takes precedence over the annotation/service id.
 
 ### Common `backstage.io/kubernetes-id` label
@@ -101,7 +97,7 @@ The label selector takes precedence over the annotation/service id.
 #### Adding the entity annotation
 
 In order for Backstage to detect that an entity has Kubernetes components, the
-following annotation should be added to the entity.
+following annotation should be added to the entity's `catalog-info.yaml`:
 
 ```yaml
 annotations:
@@ -111,20 +107,18 @@ annotations:
 #### Labeling Kubernetes components
 
 In order for Kubernetes components to show up in the service catalog as a part
-of an entity, Kubernetes components must be labeled with the following label:
+of an entity, Kubernetes components themselves can have the following label:
 
 ```yaml
-'backstage.io/kubernetes-id': <ENTITY_NAME>
+'backstage.io/kubernetes-id': <BACKSTAGE_ENTITY_NAME>
 ```
 
-### label selector query annotation
+### Label selector query annotation
 
-#### Adding a label selector query annotation
-
-You can write your own custom label selector query that backstage will use to
+You can write your own custom label selector query that Backstage will use to
 lookup the objects (similar to `kubectl --selector="your query here"`). Review
-the documentation
-[here](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/)
+the
+[labels and selectors Kubernetes documentation](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/)
 for more info.
 
 ```yaml
