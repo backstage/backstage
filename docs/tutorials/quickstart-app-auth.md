@@ -220,7 +220,7 @@ auth:
           $env: AUTH_MICROSOFT_TENANT_ID
 ```
 
-2. Create Microsoft Directory in Microsoft Portal
+2. Create a Microsoft App Registration in Microsoft Portal
 
 - Log into https://portal.azure.com
 - Navigate to (Azure Active Directory > App
