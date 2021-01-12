@@ -84,7 +84,7 @@ the search engines are used.
 | ------------- | -------------- |
 | ElasticSearch | Not yet ❌     |
 
-[Reach out to us](#search) if you want to chat about support for more search
+[Reach out to us](#feedback) if you want to chat about support for more search
 engines.
 
 ## Tech Stack
