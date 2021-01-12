@@ -36,6 +36,8 @@ export const makeRouter = (
   router.get('/consumer/:consumerId/offsets', async (req, res) => {
     const consumerId = req.params.consumerId;
 
+    logger.debug(`Fetch consumer group ${consumerId} offsets`);
+
     const groupOffsets = await kafkaApi.fetchGroupOffsets(consumerId);
 
     const groupWithTopicOffsets = await Promise.all(
