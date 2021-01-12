@@ -113,6 +113,9 @@ export interface AuthProviderRouteHandlers {
 }
 
 export type IdentityResolver = (
+  /**
+   * An object containing information specific to the auth provider.
+   */
   payload: object,
   catalogApi: CatalogApi,
 ) => Promise<AuthResponse<any>>;
