@@ -268,7 +268,7 @@ auth:
           $env: AUTH_AUTH0_DOMAIN_ID
 ```
 
-2. Create Auth0 application in Auth0 management console
+2. Create an Auth0 application in the Auth0 management console
 
 - Log into https://manage.auth0.com/dashboard/
 - Navigate to Applications
