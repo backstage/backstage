@@ -31,7 +31,8 @@ import {
 import {
   ProjectGrowthAlert,
   UnlabeledDataflowAlert,
-} from '../src/utils/alerts';
+  KubernetesMigrationAlert,
+} from '../src/alerts';
 import {
   trendlineOf,
   changeOf,
@@ -174,6 +175,34 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
     const alerts: Alert[] = await this.request({ group }, [
       new ProjectGrowthAlert(projectGrowthData),
       new UnlabeledDataflowAlert(unlabeledDataflowData),
+      new KubernetesMigrationAlert(this, {
+        startDate: '2021-01-24',
+        endDate: '2020-02-24',
+        change: {
+          ratio: 0,
+          amount: 0,
+        },
+        services: [
+          {
+            id: 'service-a',
+            aggregation: [20_000, 10_000],
+            change: {
+              ratio: -1,
+              amount: -10_000,
+            },
+            entities: {},
+          },
+          {
+            id: 'service-b',
+            aggregation: [30_000, 15_000],
+            change: {
+              ratio: -1,
+              amount: 15_000,
+            },
+            entities: {},
+          },
+        ],
+      }),
     ]);
 
     return alerts;

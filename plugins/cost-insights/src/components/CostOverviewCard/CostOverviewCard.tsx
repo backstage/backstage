@@ -49,7 +49,7 @@ export const CostOverviewCard = ({
   const config = useConfig();
   const [tabIndex, setTabIndex] = useState(0);
 
-  const { ScrollAnchor } = useScroll(DefaultNavigation.CostOverviewCard);
+  const [, , ScrollAnchor] = useScroll();
   const { setDuration, setProject, setMetric, ...filters } = useFilters(
     mapFiltersToProps,
   );
@@ -95,7 +95,7 @@ export const CostOverviewCard = ({
 
   return (
     <Card style={{ position: 'relative' }}>
-      <ScrollAnchor behavior="smooth" top={-20} />
+      <ScrollAnchor id={DefaultNavigation.CostOverviewCard} />
       <CardContent>
         {dailyCostData.groupedCosts && <OverviewTabs />}
         <CostOverviewHeader title={tabs[tabIndex].title}>

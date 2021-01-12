@@ -60,7 +60,7 @@ export const ProductInsightsCard = ({
 }: PropsWithChildren<ProductInsightsCardProps>) => {
   const classes = useStyles();
   const mountedRef = useRef(false);
-  const { ScrollAnchor } = useScroll(product.kind);
+  const [, , ScrollAnchor] = useScroll();
   const [error, setError] = useState<Maybe<Error>>(null);
   const dispatchLoading = useLoading(mapLoadingToProps);
   const lastCompleteBillingDate = useLastCompleteBillingDate();
@@ -107,7 +107,7 @@ export const ProductInsightsCard = ({
   if (error || !entity) {
     return (
       <InfoCard title={product.name} headerProps={headerProps}>
-        <ScrollAnchor behavior="smooth" top={-12} />
+        <ScrollAnchor id={product.kind} />
         <Alert severity="error">
           {error
             ? error.message
@@ -123,7 +123,7 @@ export const ProductInsightsCard = ({
       subheader={subheader}
       headerProps={headerProps}
     >
-      <ScrollAnchor behavior="smooth" top={-12} />
+      <ScrollAnchor id={product.kind} />
       {entities.length ? (
         <ProductInsightsChart
           entity={entity}

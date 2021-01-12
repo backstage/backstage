@@ -16,6 +16,7 @@
 
 export * from './useConfig';
 export * from './useCurrency';
+export * from './useAlerts';
 export * from './useFilters';
 export * from './useCurrency';
 export * from './useGroups';

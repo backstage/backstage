@@ -14,50 +14,22 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Alert, UnlabeledDataflowData, ProjectGrowthData } from '../types';
-import { UnlabeledDataflowAlertCard } from '../components/UnlabeledDataflowAlertCard';
-import { ProjectGrowthAlertCard } from '../components/ProjectGrowthAlertCard';
+import { Alert, AlertStatus } from '../types';
 
-/**
- * The alerts below are examples of Alert implementation; the CostInsightsApi permits returning
- * any implementation of the Alert type, so adopters can create their own. The CostInsightsApi
- * fetches alert data from the backend, then creates Alert classes with the data.
- */
+const createStatusHandler = (status?: string) => (alert: Alert) =>
+  alert.status === status;
+export const isActive = createStatusHandler();
+export const isSnoozed = createStatusHandler(AlertStatus.Snoozed);
+export const isAccepted = createStatusHandler(AlertStatus.Accepted);
+export const isDismissed = createStatusHandler(AlertStatus.Dismissed);
 
-export class UnlabeledDataflowAlert implements Alert {
-  data: UnlabeledDataflowData;
+export const sumOfAllAlerts = (sum: number, alerts: Alert[]) =>
+  sum + alerts.length;
 
-  constructor(data: UnlabeledDataflowData) {
-    this.data = data;
-  }
-
-  title = 'Add labels to workflows';
-  subtitle =
-    'Labels show in billing data, enabling cost insights for each workflow.';
-  url = '/cost-insights/labeling-jobs';
-
-  get element() {
-    return <UnlabeledDataflowAlertCard alert={this.data} />;
-  }
-}
-
-export class ProjectGrowthAlert implements Alert {
-  data: ProjectGrowthData;
-
-  constructor(data: ProjectGrowthData) {
-    this.data = data;
-  }
-
-  get title() {
-    return `Investigate cost growth in project ${this.data.project}`;
-  }
-
-  subtitle =
-    'Cost growth outpacing business growth is unsustainable long-term.';
-  url = '/cost-insights/investigating-growth';
-
-  get element() {
-    return <ProjectGrowthAlertCard alert={this.data} />;
-  }
+export function choose<T>(
+  status: readonly [boolean, boolean, boolean],
+  values: [T, T, T],
+): T | null {
+  const i = status.indexOf(true);
+  return i < 0 ? null : values[i];
 }

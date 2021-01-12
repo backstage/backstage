@@ -30,10 +30,11 @@ export const AlertInsightsHeader = ({
   subtitle,
 }: AlertInsightsHeaderProps) => {
   const classes = useStyles();
-  const { ScrollAnchor } = useScroll(DefaultNavigation.AlertInsightsHeader);
+  const [, , ScrollAnchor] = useScroll();
+
   return (
     <Box mb={6} position="relative">
-      <ScrollAnchor top={-20} behavior="smooth" />
+      <ScrollAnchor id={DefaultNavigation.AlertInsightsHeader} />
       <Typography variant="h4" align="center">
         {title}{' '}
         <span role="img" aria-label="direct-hit">

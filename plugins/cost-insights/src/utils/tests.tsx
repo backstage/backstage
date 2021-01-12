@@ -22,6 +22,7 @@ import {
   IdentityApi,
   identityApiRef,
 } from '@backstage/core';
+import { AlertsContext, AlertsContextProps } from '../hooks/useAlerts';
 import { LoadingContext, LoadingContextProps } from '../hooks/useLoading';
 import { GroupsContext, GroupsContextProps } from '../hooks/useGroups';
 import { FilterContext, FilterContextProps } from '../hooks/useFilters';
@@ -163,8 +164,9 @@ export type MockScrollProviderProps = PropsWithChildren<{}>;
 
 export const MockScrollProvider = ({ children }: MockScrollProviderProps) => {
   const defaultContext: ScrollContextProps = {
-    scrollTo: null,
-    setScrollTo: jest.fn(),
+    scroll: null,
+    setScroll: jest.fn(),
+    ScrollAnchor: jest.fn(() => <div />),
   };
   return (
     <ScrollContext.Provider value={defaultContext}>
@@ -230,4 +232,29 @@ export const MockCostInsightsApiProvider = ({
   ]);
 
   return <ApiProvider apis={defaultContext}>{children}</ApiProvider>;
+};
+
+export type MockAlertsProviderContextProps = PartialPropsWithChildren<
+  AlertsContextProps
+>;
+
+export const MockAlertsProvider = ({
+  children,
+  ...context
+}: MockAlertsProviderContextProps) => {
+  const defaultContext: AlertsContextProps = {
+    alerts: {
+      alerts: [],
+      snoozed: null,
+      accepted: null,
+      dismissed: null,
+    },
+    setAlerts: jest.fn(),
+  };
+
+  return (
+    <AlertsContext.Provider value={{ ...defaultContext, ...context }}>
+      {children}
+    </AlertsContext.Provider>
+  );
 };
