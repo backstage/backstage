@@ -29,18 +29,14 @@ describe('AwsOrganizationCloudAccountProcessor', () => {
     it('generates component entities for accounts', async () => {
       listAccounts.mockImplementation(() => {
         return {
-          async promise() {
-            return {
-              Accounts: [
-                {
-                  Arn:
-                    'arn:aws:organizations::192594491037:account/o-1vl18kc5a3/957140518395',
-                  Name: 'testaccount',
-                },
-              ],
-              NextToken: undefined,
-            };
-          },
+          Accounts: [
+            {
+              Arn:
+                'arn:aws:organizations::192594491037:account/o-1vl18kc5a3/957140518395',
+              Name: 'testaccount',
+            },
+          ],
+          NextToken: undefined,
         };
       });
       await processor.readLocation(location, false, emit);
@@ -73,23 +69,19 @@ describe('AwsOrganizationCloudAccountProcessor', () => {
       const location = { type: 'aws-cloud-accounts', target: 'o-1vl18kc5a3' };
       listAccounts.mockImplementation(() => {
         return {
-          async promise() {
-            return {
-              Accounts: [
-                {
-                  Arn:
-                    'arn:aws:organizations::192594491037:account/o-1vl18kc5a3/957140518395',
-                  Name: 'testaccount',
-                },
-                {
-                  Arn:
-                    'arn:aws:organizations::192594491037:account/o-zzzzzzzzz/957140518395',
-                  Name: 'testaccount2',
-                },
-              ],
-              NextToken: undefined,
-            };
-          },
+          Accounts: [
+            {
+              Arn:
+                'arn:aws:organizations::192594491037:account/o-1vl18kc5a3/957140518395',
+              Name: 'testaccount',
+            },
+            {
+              Arn:
+                'arn:aws:organizations::192594491037:account/o-zzzzzzzzz/957140518395',
+              Name: 'testaccount2',
+            },
+          ],
+          NextToken: undefined,
         };
       });
       await processor.readLocation(location, false, emit);
