@@ -77,8 +77,9 @@ export const ImportComponentPage = ({
               </Typography>
               <Typography variant="h6">GitHub Repo</Typography>
               <Typography variant="body2" paragraph>
-                If you already have code in a GitHub repository, enter the full
-                URL to your repo and a new pull request with a sample Backstage
+                If you already have code in a GitHub repository without
+                Backstage metadata file set up for it, enter the full URL to
+                your repo and a new pull request with a sample Backstage
                 metadata Entity File (<code>catalog-info.yaml</code>) will be
                 opened for you.
               </Typography>

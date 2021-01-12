@@ -28,12 +28,12 @@ export function useGithubRepos() {
   const api = useApi(catalogImportApiRef);
   const config = useApi(configApiRef);
 
-  const submitPrToRepo = async (selectedRepo: ConfigSpec) => {
+  const getGithubIntegrationConfig = (location: string) => {
     const {
       name: repoName,
       owner: ownerName,
       resource: hostname,
-    } = parseGitUri(selectedRepo.location);
+    } = parseGitUri(location);
 
     const configs = readGitHubIntegrationConfigs(
       config.getOptionalConfigArray('integrations.github') ?? [],
@@ -41,9 +41,22 @@ export function useGithubRepos() {
     const githubIntegrationConfig = configs.find(v => v.host === hostname);
     if (!githubIntegrationConfig) {
       throw new Error(
-        `Unable to locate github-integration for repo-location: ${selectedRepo.location}`,
+        `Unable to locate github-integration for repo-location: ${location}`,
       );
     }
+    return {
+      repoName,
+      ownerName,
+      githubIntegrationConfig,
+    };
+  };
+
+  const submitPrToRepo = async (selectedRepo: ConfigSpec) => {
+    const {
+      repoName,
+      ownerName,
+      githubIntegrationConfig,
+    } = getGithubIntegrationConfig(selectedRepo.location);
     const submitPRResponse = await api
       .submitPrToRepo({
         owner: ownerName,
@@ -68,8 +81,28 @@ export function useGithubRepos() {
     return submitPRResponse;
   };
 
+  const checkForExistingCatalogInfo = async (location: string) => {
+    const {
+      repoName,
+      ownerName,
+      githubIntegrationConfig,
+    } = getGithubIntegrationConfig(location);
+    return await api
+      .checkForExistingCatalogInfo({
+        owner: ownerName,
+        repo: repoName,
+        githubIntegrationConfig,
+      })
+      .catch(e => {
+        throw new Error(
+          `Failed to inspect repository for existing catalog-info.yaml:\n${e.message}`,
+        );
+      });
+  };
+
   return {
     submitPrToRepo,
+    checkForExistingCatalogInfo,
     generateEntityDefinitions: (repo: string) =>
       api.generateEntityDefinitions({ repo }),
     addLocation: (location: string) =>
