@@ -454,6 +454,15 @@ belongs to, e.g. `artist-engagement-portal`. This field is optional.
 | --------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------- |
 | [`System`](#kind-system) (default)      | Same as this entity, typically `default`   | [`partOf`, and reverse `hasPart`](well-known-relations.md#partof-and-haspart) |
 
+### `spec.subcomponentOf` [optional]
+
+An [entity reference](#string-references) to another component of which the
+component is a part, e.g. `spotify-ios-app`. This field is optional.
+
+| [`kind`](#apiversion-and-kind-required)  | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                            |
+| ---------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------- |
+| [`Component`](#kind-component) (default) | Same as this entity, typically `default`   | [`partOf`, and reverse `hasPart`](well-known-relations.md#partof-and-haspart) |
+
 ### `spec.providesApis` [optional]
 
 An array of [entity references](#string-references) to the APIs that are
