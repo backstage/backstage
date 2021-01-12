@@ -33,6 +33,7 @@ describe('ComponentV1alpha1Validator', () => {
         type: 'service',
         lifecycle: 'production',
         owner: 'me',
+        subcomponentOf: 'monolith',
         providesApis: ['api-0'],
         consumesApis: ['api-0'],
       },
@@ -101,6 +102,21 @@ describe('ComponentV1alpha1Validator', () => {
   it('rejects empty owner', async () => {
     (entity as any).spec.owner = '';
     await expect(validator.check(entity)).rejects.toThrow(/owner/);
+  });
+
+  it('accepts missing subcomponentOf', async () => {
+    delete (entity as any).spec.subcomponentOf;
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects wrong subcomponentOf', async () => {
+    (entity as any).spec.subcomponentOf = 7;
+    await expect(validator.check(entity)).rejects.toThrow(/subcomponentOf/);
+  });
+
+  it('rejects empty subcomponentOf', async () => {
+    (entity as any).spec.subcomponentOf = '';
+    await expect(validator.check(entity)).rejects.toThrow(/subcomponentOf/);
   });
 
   it('accepts missing providesApis', async () => {

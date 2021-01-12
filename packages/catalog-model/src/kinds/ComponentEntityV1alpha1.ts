@@ -29,6 +29,7 @@ const schema = yup.object<Partial<ComponentEntityV1alpha1>>({
       type: yup.string().required().min(1),
       lifecycle: yup.string().required().min(1),
       owner: yup.string().required().min(1),
+      subcomponentOf: yup.string().notRequired().min(1),
       providesApis: yup.array(yup.string().required()).notRequired(),
       consumesApis: yup.array(yup.string().required()).notRequired(),
     })
@@ -42,6 +43,7 @@ export interface ComponentEntityV1alpha1 extends Entity {
     type: string;
     lifecycle: string;
     owner: string;
+    subcomponentOf?: string;
     providesApis?: string[];
     consumesApis?: string[];
   };
