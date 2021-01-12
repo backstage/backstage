@@ -66,5 +66,5 @@ We made the Kubernetes plugin a core feature of Backstage. Like Software Templat
 To contribute or get more information on Kubernetes in Backstage, [join the discussion on Discord]!
 
 [here]: https://github.com/backstage/backstage/issues?q=is%3Aissue+is%3Aopen+kubernetes+label%3Ak8s-plugin
-[read the docs]: https://backstage.io/docs/features/kubernetes
+[read the docs]: https://backstage.io/docs/features/kubernetes/overview
 [join the discussion on discord]: https://discord.gg/MUpMjP2
