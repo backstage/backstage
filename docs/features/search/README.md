@@ -71,7 +71,7 @@ more to come...
 
 more to come...
 
-## Backstage Search Big Picture
+## Backstage Search Architecture
 
 To be created, see [issue.](https://github.com/backstage/backstage/pull/4030)
 
