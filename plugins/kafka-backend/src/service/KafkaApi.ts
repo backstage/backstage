@@ -27,12 +27,17 @@ export type TopicOffset = {
   partitions: PartitionOffset[];
 };
 
-export class KafkaApi {
+export interface KafkaApi {
+  fetchTopicOffsets(topic: string): Promise<Array<PartitionOffset>>;
+  fetchGroupOffsets(groupId: string): Promise<Array<TopicOffset>>;
+}
+
+export class KafkaJsApiImpl implements KafkaApi {
   private readonly kafka: Kafka;
   private readonly logger: Logger;
 
   constructor(clientId: string, brokers: string[], logger: Logger) {
-    logger.info(
+    logger.debug(
       `creating kafka client with clientId=${clientId} and brokers=${brokers}`,
     );
 
@@ -41,20 +46,22 @@ export class KafkaApi {
   }
 
   async fetchTopicOffsets(topic: string): Promise<Array<PartitionOffset>> {
-    this.logger.info(`fetching topic offsets for ${topic}`);
+    this.logger.debug(`fetching topic offsets for ${topic}`);
 
     const admin = this.kafka.admin();
     await admin.connect();
 
     try {
-      return KafkaApi.toPartitionOffsets(await admin.fetchTopicOffsets(topic));
+      return KafkaJsApiImpl.toPartitionOffsets(
+        await admin.fetchTopicOffsets(topic),
+      );
     } finally {
       await admin.disconnect();
     }
   }
 
   async fetchGroupOffsets(groupId: string): Promise<Array<TopicOffset>> {
-    this.logger.info(`fetching consumer group offsets for ${groupId}`);
+    this.logger.debug(`fetching consumer group offsets for ${groupId}`);
 
     const admin = this.kafka.admin();
     await admin.connect();
@@ -64,7 +71,7 @@ export class KafkaApi {
 
       return groupOffsets.map(topicOffset => ({
         topic: topicOffset.topic,
-        partitions: KafkaApi.toPartitionOffsets(topicOffset.partitions),
+        partitions: KafkaJsApiImpl.toPartitionOffsets(topicOffset.partitions),
       }));
     } finally {
       await admin.disconnect();

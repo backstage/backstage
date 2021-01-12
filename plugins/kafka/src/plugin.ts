@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import {
-  configApiRef,
   createApiFactory,
   createPlugin,
   createRouteRef,
@@ -33,7 +32,7 @@ export const plugin = createPlugin({
   apis: [
     createApiFactory({
       api: kafkaApiRef,
-      deps: { discoveryApi: discoveryApiRef, configApi: configApiRef },
+      deps: { discoveryApi: discoveryApiRef },
       factory: ({ discoveryApi }) => new KafkaBackendClient({ discoveryApi }),
     }),
   ],

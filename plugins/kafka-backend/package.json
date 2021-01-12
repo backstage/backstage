@@ -31,21 +31,26 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
+    "@backstage/backend-common": "^0.4.1",
+    "@backstage/catalog-model": "^0.6.0",
+    "@backstage/config": "^0.1.2",
+    "@types/express": "^4.17.6",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-promise-router": "^3.0.3",
     "helmet": "^4.0.0",
-    "@backstage/backend-common": "^0.4.1",
-    "@backstage/catalog-model": "^0.6.0",
-    "@backstage/config": "^0.1.2",
-    "@types/express": "^4.17.6",
     "kafkajs": "^1.16.0-beta.6",
+    "lodash": "^4.17.15",
     "winston": "^3.2.1",
     "yn": "^4.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.4.3",
+    "@types/jest-when": "^2.7.2",
+    "@types/lodash": "^4.14.151",
+    "jest-extended": "^0.11.5",
+    "jest-when": "^3.1.0",
     "supertest": "^4.0.2"
   },
   "files": [

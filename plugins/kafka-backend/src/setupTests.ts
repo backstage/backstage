@@ -14,4 +14,11 @@
  * limitations under the License.
  */
 
-export {};
+import type { Config } from '@jest/types';
+import 'jest-extended';
+
+const config: Config.InitialOptions = {
+  setupFilesAfterEnv: ['jest-extended'],
+};
+
+export default config;

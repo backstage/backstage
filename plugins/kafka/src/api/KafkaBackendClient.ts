@@ -15,11 +15,7 @@
  */
 
 import { DiscoveryApi } from '@backstage/core';
-import { KafkaApi } from './types';
-import {
-  ConsumerGroupOffsetsResponse,
-  TopicOffsetsResponse,
-} from '@backstage/plugin-kafka-backend';
+import { KafkaApi, ConsumerGroupOffsetsResponse } from './types';
 
 export class KafkaBackendClient implements KafkaApi {
   private readonly discoveryApi: DiscoveryApi;
@@ -44,10 +40,6 @@ export class KafkaBackendClient implements KafkaApi {
     }
 
     return await response.json();
-  }
-
-  async getTopicOffsets(topic: string): Promise<TopicOffsetsResponse> {
-    return await this.getRequired(`/topic/${topic}/offsets`);
   }
 
   async getConsumerGroupOffsets(

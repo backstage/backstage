@@ -17,7 +17,6 @@
 import { errorApiRef, useApi } from '@backstage/core';
 import { useAsyncRetry } from 'react-use';
 import { kafkaApiRef } from '../../api/types';
-import _ from 'lodash';
 
 export function useConsumerGroupOffsets(groupId: string) {
   const api = useApi(kafkaApiRef);
@@ -25,23 +24,8 @@ export function useConsumerGroupOffsets(groupId: string) {
 
   const { loading, value: topics, retry } = useAsyncRetry(async () => {
     try {
-      const groupOffsets = await api.getConsumerGroupOffsets(groupId);
-      const groupWithTopicOffsets = await Promise.all(
-        groupOffsets.map(async ({ topic, partitions }) => {
-          const topicOffsets = _.keyBy(
-            await api.getTopicOffsets(topic),
-            partition => partition.id,
-          );
-
-          return partitions.map(partition => ({
-            topic: topic,
-            partitionId: partition.id,
-            groupOffset: partition.offset,
-            topicOffset: topicOffsets[partition.id].offset,
-          }));
-        }),
-      );
-      return groupWithTopicOffsets.flat();
+      const response = await api.getConsumerGroupOffsets(groupId);
+      return response.offsets;
     } catch (e) {
       errorApi.post(e);
       throw e;

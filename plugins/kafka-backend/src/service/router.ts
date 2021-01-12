@@ -18,7 +18,8 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
-import { KafkaApi } from './KafkaApi';
+import { KafkaApi, KafkaJsApiImpl } from './KafkaApi';
+import _ from 'lodash';
 
 export interface RouterOptions {
   logger: Logger;
@@ -32,28 +33,27 @@ export const makeRouter = (
   const router = Router();
   router.use(express.json());
 
-  router.get('/topic/:topicId/offsets', async (req, res) => {
-    const topicId = req.params.topicId;
-    try {
-      const response = await kafkaApi.fetchTopicOffsets(topicId);
-      res.send(response);
-    } catch (e) {
-      logger.error(`action=fetchTopicOffsets topicId=${topicId}, error=${e}`);
-      res.status(500).send({ error: e.message });
-    }
-  });
-
   router.get('/consumer/:consumerId/offsets', async (req, res) => {
     const consumerId = req.params.consumerId;
-    try {
-      const response = await kafkaApi.fetchGroupOffsets(consumerId);
-      res.send(response);
-    } catch (e) {
-      logger.error(
-        `action=fetchGroupOffsets consumerId=${consumerId}, error=${e}`,
-      );
-      res.status(500).send({ error: e.message });
-    }
+
+    const groupOffsets = await kafkaApi.fetchGroupOffsets(consumerId);
+
+    const groupWithTopicOffsets = await Promise.all(
+      groupOffsets.map(async ({ topic, partitions }) => {
+        const topicOffsets = _.keyBy(
+          await kafkaApi.fetchTopicOffsets(topic),
+          partition => partition.id,
+        );
+
+        return partitions.map(partition => ({
+          topic: topic,
+          partitionId: partition.id,
+          groupOffset: partition.offset,
+          topicOffset: topicOffsets[partition.id].offset,
+        }));
+      }),
+    );
+    res.send({ consumerId, offsets: groupWithTopicOffsets.flat() });
   });
 
   return router;
@@ -69,7 +69,7 @@ export async function createRouter(
   const clientId = options.config.getString('kafka.clientId');
   const brokers = options.config.getStringArray('kafka.brokers');
 
-  const kafkaApi = new KafkaApi(clientId, brokers, logger);
+  const kafkaApi = new KafkaJsApiImpl(clientId, brokers, logger);
 
   return makeRouter(logger, kafkaApi);
 }

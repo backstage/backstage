@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export * from './service/router';
-export * from './types/types';
+export { createRouter } from './service/router';

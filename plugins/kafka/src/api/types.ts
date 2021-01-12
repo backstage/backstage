@@ -15,10 +15,6 @@
  */
 
 import { createApiRef } from '@backstage/core';
-import {
-  ConsumerGroupOffsetsResponse,
-  TopicOffsetsResponse,
-} from '@backstage/plugin-kafka-backend';
 
 export const kafkaApiRef = createApiRef<KafkaApi>({
   id: 'plugin.kafka.service',
@@ -26,8 +22,17 @@ export const kafkaApiRef = createApiRef<KafkaApi>({
     'Used by the Kafka plugin to make requests to accompanying backend',
 });
 
+export type ConsumerGroupOffsetsResponse = {
+  consumerId: string;
+  offsets: {
+    topic: string;
+    partitionId: number;
+    topicOffset: string;
+    groupOffset: string;
+  }[];
+};
+
 export interface KafkaApi {
-  getTopicOffsets(topic: string): Promise<TopicOffsetsResponse>;
   getConsumerGroupOffsets(
     consumerGroup: string,
   ): Promise<ConsumerGroupOffsetsResponse>;
