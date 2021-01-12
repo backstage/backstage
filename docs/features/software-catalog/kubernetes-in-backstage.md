@@ -74,7 +74,7 @@ cluster. Valid values are:
 The service account token to be used when using the `serviceAccount` auth
 provider.
 
-## Roll Based Access Control
+## Role Based Access Control
 
 The current RBAC permissions required are read-only cluster wide, for the
 following objects:
