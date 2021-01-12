@@ -66,15 +66,22 @@ techdocs:
     # Required when techdocs.publisher.type is set to 'awsS3'. Skip otherwise.
 
     awsS3:
-      # An API key is required to write to a storage bucket.
+      # (Required) AWS S3 Bucket Name
+      bucketName: 'techdocs-storage'
+
+      # (Optional) An API key is required to write to a storage bucket.
+      # If not set, environment variables or aws config file will be used to authenticate.
+      # https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-environment.html
+      # https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-shared.html
       credentials:
         accessKeyId:
           $env: TECHDOCS_AWSS3_ACCESS_KEY_ID_CREDENTIAL
         secretAccessKey:
           $env: TECHDOCS_AWSS3_SECRET_ACCESS_KEY_CREDENTIAL
-      region:
-        $env: AWSS3_REGION
 
-      # AWS S3 Bucket Name
-      bucketName: 'techdocs-storage'
+      # (Optional) AWS Region of the bucket.
+      # If not set, AWS_REGION environment variable or aws config file will be used.
+      # https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-region.html
+      region:
+        $env: AWS_REGION
 ```
