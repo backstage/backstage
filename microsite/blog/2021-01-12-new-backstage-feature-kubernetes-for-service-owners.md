@@ -36,6 +36,8 @@ Backstage also shows you how close your service is to its autoscaling limit. Com
 
 ![Autoscaling limits screen in Backstage Kubernetes plugin](/microsite/blog/assets/21-01-12/backstage-k8s-4-autoscaling-limits.png)
 
+![Autoscaling limits screen in Backstage Kubernetes plugin](/microsite/blog/assets/21-01-12/backstage-k8s-5-autoscaling-limits.png)
+
 ## Pick a cloud, any Cloud
 
 Since Backstage communicates directly with the Kubernetes API, it’s cloud agnostic — it doesn’t matter how or where you’re running Kubernetes. You’ll always get the same familiar view of your deployments, whether you’re:
