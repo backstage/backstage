@@ -92,13 +92,15 @@ This relation is commonly based on `spec.memberOf`.
 
 ### `partOf` and `hasPart`
 
-A relation with a [Domain](descriptor-format.md#kind-domain) or
-[System](descriptor-format.md#kind-system) entity, typically from a
+A relation with a [Domain](descriptor-format.md#kind-domain),
+[System](descriptor-format.md#kind-system) or
+[Component](descriptor-format.md#kind-component) entity, typically from a
 [Component](descriptor-format.md#kind-component),
 [API](descriptor-format.md#kind-api), or
 [System](descriptor-format.md#kind-system).
 
-These relations express that a component, API or resource belongs to a system,
-or that a system is grouped under a domain.
+These relations express that a component belongs to a larger component; a
+component, API or resource belongs to a system; or that a system is grouped
+under a domain.
 
 This relation is commonly based on `spec.system` or `spec.domain`.
