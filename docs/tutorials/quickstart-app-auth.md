@@ -176,7 +176,7 @@ auth:
           $env: AUTH_GOOGLE_CLIENT_SECRET
 ```
 
-2. Generate Google Application in Google Cloud console
+2. Generate Google Credentials in Google Cloud console
 
 - Log into https://console.cloud.google.com
 - Select or create a new project from the dropdown on the top bar
