@@ -26,11 +26,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useMountedState } from 'react-use';
-import parseGitUri from 'git-url-parse';
 import { ComponentIdValidators } from '../util/validate';
 import { useGithubRepos } from '../util/useGithubRepos';
 import { ConfigSpec } from './ImportComponentPage';
 import { catalogApiRef } from '@backstage/plugin-catalog';
+import { urlType } from '../util/urls';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   form: {
@@ -65,9 +65,9 @@ export const RegisterComponentForm = ({ nextStep, saveConfig }: Props) => {
     const { componentLocation: target } = formData;
     try {
       if (!isMounted()) return;
-      const type = !parseGitUri(target).filepathtype ? 'repo' : 'file';
+      const type = urlType(target);
 
-      if (type === 'repo') {
+      if (type === 'tree') {
         saveConfig({
           type,
           location: target,

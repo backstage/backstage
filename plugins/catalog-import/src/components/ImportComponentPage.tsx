@@ -32,7 +32,7 @@ import { ImportFinished } from './ImportFinished';
 import { PartialEntity } from '../util/types';
 
 export type ConfigSpec = {
-  type: 'repo' | 'file';
+  type: 'tree' | 'file';
   location: string;
   config: PartialEntity[];
 };
@@ -44,7 +44,7 @@ export const ImportComponentPage = ({
 }) => {
   const [activeStep, setActiveStep] = useState(0);
   const [configFile, setConfigFile] = useState<ConfigSpec>({
-    type: 'repo',
+    type: 'tree',
     location: '',
     config: [],
   });
