@@ -5,7 +5,10 @@ const siteConfig = require(process.cwd() + '/siteConfig.js');
 
 function Docs() {
   return (
-    <Redirect redirect="/docs/features/software-templates/software-templates-index" config={siteConfig} />
+    <Redirect
+      redirect="/docs/features/software-templates/software-templates-index"
+      config={siteConfig}
+    />
   );
 }
 
