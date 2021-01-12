@@ -107,7 +107,7 @@ export AUTH_GITHUB_CLIENT_SECRET=xxx
 > ...
 ```
 
-4. The values to replace `xxx` above come from your oauth app setup.
+4. The values to replace `xxx` above come from your OAuth app setup.
 
 ```
 > Log into http://github.com
