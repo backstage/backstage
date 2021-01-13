@@ -51,7 +51,7 @@ export interface Config {
         cert?: string;
         privateKey?: string;
         decryptionPvk?: string;
-        signatureAlgorithm?: 'sha1' | 'sha256' | 'sha512';
+        signatureAlgorithm?: 'sha256' | 'sha512';
         digestAlgorithm?: string;
       };
       okta?: {

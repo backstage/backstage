@@ -19879,17 +19879,16 @@ passport-onelogin-oauth@^0.0.1:
     pkginfo "0.2.x"
     uid2 "0.0.3"
 
-"passport-saml@^1.3.5, <1.4.0":
-  version "1.3.5"
-  resolved "https://registry.npmjs.org/passport-saml/-/passport-saml-1.3.5.tgz#747f2c8bb8b9fed41e8cd14586df5aa83e8a8996"
-  integrity sha512-HFamiqgGiMRCbUBm3wx02WYWKb6ojke0WJHrg4QXI8tx35HrTmDiY8MksUXhouJtEkfcRwXjBL2cSEpRQ6+PgQ==
+passport-saml@^2.0.0:
+  version "2.0.2"
+  resolved "https://registry.npmjs.org/passport-saml/-/passport-saml-2.0.2.tgz#41c459f0f4c4cf0374b161bf3f9ab008fcacb8fe"
+  integrity sha512-e8rT/nWEY3YalktzZlGXvnj6mLDQD4R+atfStCF4nHCbqK5IUpip+Bj2Wzbm9v5F/KI497k57kNXkHCLfDSVjA==
   dependencies:
     debug "^3.1.0"
     passport-strategy "*"
-    q "^1.5.0"
-    xml-crypto "^1.4.0"
+    xml-crypto "^2.0.0"
     xml-encryption "1.2.1"
-    xml2js "0.4.x"
+    xml2js "^0.4.23"
     xmlbuilder "^11.0.0"
     xmldom "0.1.x"
 
@@ -21043,7 +21042,7 @@ pupa@^2.0.1:
   dependencies:
     escape-goat "^2.0.0"
 
-q@^1.1.2, q@^1.5.0, q@^1.5.1:
+q@^1.1.2, q@^1.5.1:
   version "1.5.1"
   resolved "https://registry.npmjs.org/q/-/q-1.5.1.tgz#7e32f75b41381291d04611f1bf14109ac00651d7"
   integrity sha1-fjL3W0E4EpHQRhHxvxQQmsAGUdc=
@@ -26074,10 +26073,10 @@ xml-but-prettier@^1.0.1:
   dependencies:
     repeat-string "^1.5.2"
 
-xml-crypto@^1.4.0:
-  version "1.5.3"
-  resolved "https://registry.npmjs.org/xml-crypto/-/xml-crypto-1.5.3.tgz#a8f500b90f0dfaf0efa3331c345ecb0fff993c34"
-  integrity sha512-uHkmpUtX15xExe5iimPmakAZN+6CqIvjmaJTy4FwqGzaTjrKRBNeqMh8zGEzVNgW0dk6beFYpyQSgqV/J6C5xA==
+xml-crypto@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/xml-crypto/-/xml-crypto-2.0.0.tgz#54cd268ad9d31930afcf7092cbb664258ca9e826"
+  integrity sha512-/a04qr7RpONRZHOxROZ6iIHItdsQQjN3sj8lJkYDDss8tAkEaAs0VrFjb3tlhmS5snQru5lTs9/5ISSMdPDHlg==
   dependencies:
     xmldom "0.1.27"
     xpath "0.0.27"
@@ -26097,7 +26096,7 @@ xml-name-validator@^3.0.0:
   resolved "https://registry.npmjs.org/xml-name-validator/-/xml-name-validator-3.0.0.tgz#6ae73e06de4d8c6e47f9fb181f78d648ad457c6a"
   integrity sha512-A5CUptxDsvxKJEU3yO6DuWBSJz/qizqzJKOMIfUJHETbBw/sFaDxgd6fxm1ewUaM0jZ444Fc5vC5ROYurg/4Pw==
 
-xml2js@0.4.x:
+xml2js@^0.4.23:
   version "0.4.23"
   resolved "https://registry.npmjs.org/xml2js/-/xml2js-0.4.23.tgz#a0c69516752421eb2ac758ee4d4ccf58843eac66"
   integrity sha512-ySPiMjM0+pLDftHgXY4By0uswI3SPKLDw/i3UXbnO8M/p28zqexCUoPmQFrYD+/1BzhGJSs2i1ERWKJAtiLrug==
