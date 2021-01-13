@@ -55,7 +55,16 @@ export default async () => {
   // Track package versions that we want to remove from yarn.lock in order to trigger a bump
   const unlocked = Array<{ name: string; range: string; target: string }>();
   await workerThreads(16, dependencyMap.entries(), async ([name, pkgs]) => {
-    const target = await findTargetVersion(name);
+    let target: string;
+    try {
+      target = await findTargetVersion(name);
+    } catch (error) {
+      if (error.name === 'NotFoundError') {
+        console.log(`Package info not found, ignoring package ${name}`);
+        return;
+      }
+      throw error;
+    }
 
     for (const pkg of pkgs) {
       if (semver.satisfies(target, pkg.range)) {
@@ -84,7 +93,16 @@ export default async () => {
       return;
     }
 
-    const target = await findTargetVersion(name);
+    let target: string;
+    try {
+      target = await findTargetVersion(name);
+    } catch (error) {
+      if (error.name === 'NotFoundError') {
+        console.log(`Package info not found, ignoring package ${name}`);
+        return;
+      }
+      throw error;
+    }
 
     for (const entry of lockfile.get(name) ?? []) {
       // Ignore lockfile entries that don't satisfy the version range, since
