@@ -103,7 +103,7 @@ auth:
 </p>
 </details>
 
-<details><summary>GitLab</summary>
+<details><summary>Gitlab</summary>
 <p>
 
 ### 1. Open `app-config.yaml` and change it as follows
