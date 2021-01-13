@@ -19,7 +19,7 @@ import path from 'path';
 import * as runObj from '../run';
 import { paths } from '../paths';
 import { fetchPackageInfo, mapDependencies } from './packages';
-import { NotFoundError } from '@backstage/backend-common';
+import { NotFoundError } from '../errors';
 
 describe('fetchPackageInfo', () => {
   afterEach(() => {

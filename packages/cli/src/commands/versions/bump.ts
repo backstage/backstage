@@ -98,7 +98,7 @@ export default async () => {
     try {
       target = await findTargetVersion(name);
     } catch (error) {
-      if (error instanceof NotFoundError) {
+      if (error.name === 'NotFoundError') {
         console.log(`Package info not found, ignoring package ${name}`);
         return;
       }
