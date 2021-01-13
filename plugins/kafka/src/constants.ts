@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 export const KAFKA_CONSUMER_GROUP_ANNOTATION =
-  'kafka.apache.org/consumer-group';
+  'kafka.apache.org/consumer-groups';
