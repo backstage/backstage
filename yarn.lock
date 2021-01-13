@@ -2963,30 +2963,30 @@
   dependencies:
     yaml-ast-parser "0.0.43"
 
-"@gitbeaker/core@^25.2.0":
-  version "25.6.0"
-  resolved "https://registry.npmjs.org/@gitbeaker/core/-/core-25.6.0.tgz#97d5ccc5d61bab6b678bec280036d594d275931e"
-  integrity sha512-+CohJNsbZiPl7jPgw7PHt5t0JIIV9NngObOskY1Ww8jef7SqaKpz0NsbSDawuWFBdmXApMpK81AEfASKtVI+cw==
+"@gitbeaker/core@^28.0.2":
+  version "28.0.2"
+  resolved "https://registry.npmjs.org/@gitbeaker/core/-/core-28.0.2.tgz#5c2cbe27a20426a96d9511642153ead18ff88877"
+  integrity sha512-H+0ChYSxLh+EVNzmOguHaJMR7xB9FlVZGi89JQ7BJ2meq0h1TQl+QaGqTyTNM4GYhn7cYrl7ebGoU0yrnYUWSg==
   dependencies:
-    "@gitbeaker/requester-utils" "^25.6.0"
+    "@gitbeaker/requester-utils" "^28.0.2"
     form-data "^3.0.0"
     li "^1.3.0"
     xcase "^2.0.1"
 
-"@gitbeaker/node@^25.2.0":
-  version "25.2.0"
-  resolved "https://registry.npmjs.org/@gitbeaker/node/-/node-25.2.0.tgz#cc91e83328ec32de0b1a0dac23accd2385734a66"
-  integrity sha512-FWchXYJ5agn0ptAQxtkkSKSg1ObbP2xfMzHLECxINFRBHYhg0ms8Fp8Qb+71pxJz7IMlvajyEtZaPfHBmyuh9Q==
+"@gitbeaker/node@^28.0.2":
+  version "28.0.2"
+  resolved "https://registry.npmjs.org/@gitbeaker/node/-/node-28.0.2.tgz#ead4eb9e1b4400d3a6fe9769b50e43e84fc99747"
+  integrity sha512-FCILxXiRep3PUpe/P2+Ak1KdwzIz3azxf1OY8Jb72gKjNNTgCi4ByFCIpHkvbFZlr7kDKTtcPyEN6oA6qnrCdQ==
   dependencies:
-    "@gitbeaker/core" "^25.2.0"
-    "@gitbeaker/requester-utils" "^25.2.0"
+    "@gitbeaker/core" "^28.0.2"
+    "@gitbeaker/requester-utils" "^28.0.2"
     got "^11.7.0"
     xcase "^2.0.1"
 
-"@gitbeaker/requester-utils@^25.2.0", "@gitbeaker/requester-utils@^25.6.0":
-  version "25.6.0"
-  resolved "https://registry.npmjs.org/@gitbeaker/requester-utils/-/requester-utils-25.6.0.tgz#001a432a48460bb5196a02ed71763eb707a1a01e"
-  integrity sha512-jD8cHbAZPR6+cB3HiukQxcqIKF5VkHtqg2m+Ns6ROE1pb0oRn10D/a9J1lZOXC9Jz2tQOBMWfHlplbmFFdB6Og==
+"@gitbeaker/requester-utils@^28.0.2":
+  version "28.0.2"
+  resolved "https://registry.npmjs.org/@gitbeaker/requester-utils/-/requester-utils-28.0.2.tgz#3c1bf97e6b73053ef3c38a2871cbc8e1a2e7501a"
+  integrity sha512-S851vQi0x9Sg5Tx0BcwzkG6OTIG0X4qYTBaA9kPM2sEKg2OOsd8X0HRhj/TbFGr/YVz+3Ubu7oueeWSyr5jvfQ==
   dependencies:
     form-data "^3.0.0"
     query-string "^6.13.3"
