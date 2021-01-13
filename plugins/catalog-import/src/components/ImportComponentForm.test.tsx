@@ -57,7 +57,11 @@ describe('<RegisterComponentForm />', () => {
   ) {
     return await renderInTestApp(
       <ApiProvider apis={apis}>
-        <RegisterComponentForm nextStep={nextStep} saveConfig={saveConfig} />
+        <RegisterComponentForm
+          nextStep={nextStep}
+          saveConfig={saveConfig}
+          repository="GitHub"
+        />
       </ApiProvider>,
     );
   }

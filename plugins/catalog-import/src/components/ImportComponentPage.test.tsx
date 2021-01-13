@@ -16,9 +16,15 @@
 import React from 'react';
 import { msw, renderInTestApp } from '@backstage/test-utils';
 import { ImportComponentPage } from './ImportComponentPage';
-import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
+import {
+  ApiProvider,
+  ApiRegistry,
+  configApiRef,
+  errorApiRef,
+} from '@backstage/core';
 import { catalogApiRef, CatalogClient } from '@backstage/plugin-catalog';
 import { catalogImportApiRef, CatalogImportClient } from '../api';
+
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 
 import { rest } from 'msw';
@@ -106,6 +112,17 @@ describe('<ImportComponentPage />', () => {
           },
           configApi: {} as any,
         }),
+      ],
+      [
+        configApiRef,
+        {
+          getOptional: () => 'Title',
+          getOptionalConfigArray: () => [],
+          has: () => true,
+          getConfig: () => ({
+            has: () => true,
+          }),
+        },
       ],
       [errorApiRef, mockErrorApi],
     ]);
