@@ -15,8 +15,8 @@
  */
 
 import express from 'express';
+import { SamlConfig } from 'passport-saml/lib/passport-saml/types';
 import {
-  SamlConfig,
   Strategy as SamlStrategy,
   Profile as SamlProfile,
   VerifyWithoutRequest,
