@@ -40,7 +40,7 @@
     "@backstage/plugin-scaffolder-backend": "^0.4.0",
     "@backstage/plugin-techdocs-backend": "^0.5.0",
     "@gitbeaker/node": "^28.0.2",
-    "@octokit/rest": "^18.0.0",
+    "@octokit/rest": "^18.0.12",
     "azure-devops-node-api": "^10.1.1",
     "dockerode": "^3.2.1",
     "example-app": "^0.2.8",

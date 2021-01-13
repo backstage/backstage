@@ -143,6 +143,7 @@ npm
 nvarchar
 nvm
 OAuth
+octokit
 oidc
 Okta
 Oldsberg
