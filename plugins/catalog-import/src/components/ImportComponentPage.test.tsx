@@ -64,6 +64,7 @@ jest.mock('@octokit/rest', () => ({
   }),
 }));
 
+const OUR_GITHUB_TEST_REPO = 'https://github.com/someuser/somerepo';
 describe('<ImportComponentPage />', () => {
   const server = setupServer();
   msw.setupDefaultHandlers(server);
@@ -136,6 +137,56 @@ describe('<ImportComponentPage />', () => {
     );
   }
 
+  it('Should not explode on non-Github URLs', async () => {
+    await renderSUT();
+    await waitFor(() => {
+      fireEvent.input(
+        screen.getByPlaceholderText('https://github.com/backstage/backstage'),
+        {
+          target: {
+            value: 'https://test-git-provider.localhost/someuser/somerepo',
+          },
+        },
+      );
+    });
+
+    fireEvent.click(screen.getByText('Next'));
+    await waitFor(() => {
+      const firstStepInput = screen.queryByPlaceholderText(
+        'https://github.com/backstage/backstage',
+      );
+      expect(firstStepInput).not.toBeInTheDocument();
+    });
+  });
+
+  it('Should offer direct file import from non-Github URLs', async () => {
+    await renderSUT();
+    await waitFor(() => {
+      fireEvent.input(
+        screen.getByPlaceholderText('https://github.com/backstage/backstage'),
+        {
+          target: {
+            value:
+              'https://test-git-provider.localhost/someuser/somerepo/catalog-info.yaml',
+          },
+        },
+      );
+    });
+
+    fireEvent.click(screen.getByText('Next'));
+    await waitFor(() => {
+      const firstStepInput = screen.queryByPlaceholderText(
+        'https://github.com/backstage/backstage',
+      );
+      expect(firstStepInput).not.toBeInTheDocument();
+    });
+    expect(
+      screen.getByText(
+        'https://test-git-provider.localhost/someuser/somerepo/catalog-info.yaml',
+      ),
+    ).toBeInTheDocument();
+  });
+
   it('Should use found yaml file directly and not create a pull request if GitHub api returns one', async () => {
     codeSearchMockResponse = () =>
       Promise.resolve({
@@ -152,7 +203,7 @@ describe('<ImportComponentPage />', () => {
     await waitFor(() => {
       fireEvent.input(
         screen.getByPlaceholderText('https://github.com/backstage/backstage'),
-        { target: { value: 'https://test.localhost/someuser/somerepo' } },
+        { target: { value: OUR_GITHUB_TEST_REPO } },
       );
     });
 
@@ -160,7 +211,7 @@ describe('<ImportComponentPage />', () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          'https://test.localhost/someusername/somerepo/blob/master/src/catalog-info.yaml',
+          'https://github.com/someusername/somerepo/blob/master/src/catalog-info.yaml',
         ),
       ).toBeInTheDocument();
 
@@ -181,25 +232,23 @@ describe('<ImportComponentPage />', () => {
     await waitFor(() => {
       fireEvent.input(
         screen.getByPlaceholderText('https://github.com/backstage/backstage'),
-        { target: { value: 'https://test.localhost/someuser/somerepo' } },
+        { target: { value: OUR_GITHUB_TEST_REPO } },
       );
     });
 
     fireEvent.click(screen.getByText('Next'));
     await waitFor(() => {
-      expect(
-        screen.getByText('https://test.localhost/someuser/somerepo'),
-      ).toBeInTheDocument();
+      expect(screen.getByText(OUR_GITHUB_TEST_REPO)).toBeInTheDocument();
     });
     const textNode = container
-      .querySelector('a[href="https://test.localhost/someuser/somerepo"]')
+      .querySelector('a[href="https://github.com/someuser/somerepo"]')
       ?.closest('p');
     expect(textNode?.innerHTML).toContain(
       'Following config object will be submitted in a pull request to the repository',
     );
     expect(
       screen.queryByText(
-        'https://test.localhost/someusername/somerepo/blob/master/src/catalog-info.yaml',
+        'https://github.com/someusername/somerepo/blob/master/src/catalog-info.yaml',
       ),
     ).not.toBeInTheDocument();
   });

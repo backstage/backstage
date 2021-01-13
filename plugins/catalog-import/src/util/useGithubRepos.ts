@@ -81,7 +81,13 @@ export function useGithubRepos() {
     return submitPRResponse;
   };
 
-  const checkForExistingCatalogInfo = async (location: string) => {
+  const checkForExistingCatalogInfo = async (
+    location: string,
+  ): Promise<{ exists: boolean; url?: string }> => {
+    const { source } = parseGitUri(location);
+    if (source !== 'github.com') {
+      return Promise.resolve({ exists: false });
+    }
     const {
       repoName,
       ownerName,
