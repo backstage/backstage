@@ -117,6 +117,45 @@ export interface Config {
       | {
           /**
            * attr: 'type' - accepts a string value
+           * e.g. type: 'azureStorage'
+           * alternatives: 'azureStorage' etc.
+           * @see http://backstage.io/docs/features/techdocs/configuration
+           */
+          type: 'azureStorage';
+
+          /**
+           * azureStorage required when 'type' is set to azureStorage
+           */
+          azureStorage?: {
+            /**
+             * Credentials used to access a storage container
+             * @visibility secret
+             */
+            credentials: {
+              /**
+               * Account access name
+               * attr: 'account' - accepts a string value
+               * @visibility secret
+               */
+              account: string;
+              /**
+               * Account secret primary key
+               * attr: 'accountKey' - accepts a string value
+               * @visibility secret
+               */
+              accountKey: string;
+            };
+            /**
+             * Cloud Storage Container Name
+             * attr: 'containerName' - accepts a string value
+             * @visibility backend
+             */
+            containerName: string;
+          };
+        }
+      | {
+          /**
+           * attr: 'type' - accepts a string value
            * e.g. type: 'googleGcs'
            * alternatives: 'googleGcs' etc.
            * @see http://backstage.io/docs/features/techdocs/configuration
