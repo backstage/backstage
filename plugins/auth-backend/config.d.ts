@@ -46,6 +46,7 @@ export interface Config {
       };
       saml?: {
         entryPoint: string;
+        logoutUrl?: string;
         issuer: string;
         cert?: string;
         privateKey?: string;

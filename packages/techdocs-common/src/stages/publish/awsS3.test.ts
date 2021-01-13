@@ -102,12 +102,6 @@ describe('AwsS3Publish', () => {
     });
 
     it('should fail to publish a directory', async () => {
-      const wrongPathToGeneratedDirectory = path.join(
-        'wrong',
-        'path',
-        'to',
-        'generatedDirectory',
-      );
       const entity = createMockEntity();
       const entityRootDir = getEntityRootDir(entity);
 
@@ -124,13 +118,11 @@ describe('AwsS3Publish', () => {
       await publisher
         .publish({
           entity,
-          directory: wrongPathToGeneratedDirectory,
+          directory: '/wrong/path/to/generatedDirectory',
         })
         .catch(error =>
-          expect(error).toEqual(
-            new Error(
-              `Unable to upload file(s) to AWS S3. Error Failed to read template directory: ENOENT, no such file or directory '${wrongPathToGeneratedDirectory}'`,
-            ),
+          expect(error.message).toContain(
+            'Unable to upload file(s) to AWS S3. Error Failed to read template directory',
           ),
         );
       mockFs.restore();
@@ -180,14 +172,17 @@ describe('AwsS3Publish', () => {
     it('should return an error if the techdocs_metadata.json file is not present', async () => {
       const entityNameMock = createMockEntityName();
       const entity = createMockEntity();
-      const entityRootDir = getEntityRootDir(entity);
+      const {
+        metadata: { name, namespace },
+        kind,
+      } = entity;
 
       await publisher
         .fetchTechDocsMetadata(entityNameMock)
         .catch(error =>
           expect(error).toEqual(
             new Error(
-              `TechDocs metadata fetch failed, The file ${entityRootDir}/techdocs_metadata.json doest not exist !`,
+              `TechDocs metadata fetch failed, The file ${namespace}/${kind}/${name}/techdocs_metadata.json doest not exist.`,
             ),
           ),
         );

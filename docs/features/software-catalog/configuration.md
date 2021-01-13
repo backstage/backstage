@@ -60,7 +60,7 @@ data from. Each entry is a structure with up to four elements:
   and raw. If it is not supplied, anonymous access will be used.
 - `apiBaseUrl` (optional): If you want to communicate using the APIv3 method
   with this provider, specify the base URL for its endpoint here, with no
-  trailing slash. Specifically when the target is github, you can leave it out
+  trailing slash. Specifically when the target is GitHub, you can leave it out
   to be inferred automatically. For a GitHub Enterprise installation, it is
   commonly at `https://api.<host>` or `https://<host>/api/v3`.
 - `rawBaseUrl` (optional): If you want to communicate using the raw HTTP method

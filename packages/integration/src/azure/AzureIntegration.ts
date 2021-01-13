@@ -14,27 +14,32 @@
  * limitations under the License.
  */
 
-import { ScmIntegration, ScmIntegrationFactory } from '../types';
+import { basicIntegrations } from '../helpers';
+import { ScmIntegration, ScmIntegrationsFactory } from '../types';
 import { AzureIntegrationConfig, readAzureIntegrationConfigs } from './config';
 
 export class AzureIntegration implements ScmIntegration {
-  static factory: ScmIntegrationFactory = ({ config }) => {
+  static factory: ScmIntegrationsFactory<AzureIntegration> = ({ config }) => {
     const configs = readAzureIntegrationConfigs(
       config.getOptionalConfigArray('integrations.azure') ?? [],
     );
-    return configs.map(integration => ({
-      predicate: (url: URL) => url.host === integration.host,
-      integration: new AzureIntegration(integration),
-    }));
+    return basicIntegrations(
+      configs.map(c => new AzureIntegration(c)),
+      i => i.config.host,
+    );
   };
 
-  constructor(private readonly config: AzureIntegrationConfig) {}
+  constructor(private readonly integrationConfig: AzureIntegrationConfig) {}
 
   get type(): string {
     return 'azure';
   }
 
   get title(): string {
-    return this.config.host;
+    return this.integrationConfig.host;
+  }
+
+  get config(): AzureIntegrationConfig {
+    return this.integrationConfig;
   }
 }

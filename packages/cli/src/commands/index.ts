@@ -205,6 +205,13 @@ export function registerCommands(program: CommanderStatic) {
     .command('build-workspace <workspace-dir> ...<packages>')
     .description('Builds a temporary dist workspace from the provided packages')
     .action(lazy(() => import('./buildWorkspace').then(m => m.default)));
+
+  program
+    .command('create-github-app <github-org>', { hidden: true })
+    .description(
+      'Create new GitHub App in your organization. This command is experimental and may change in the future.',
+    )
+    .action(lazy(() => import('./create-github-app').then(m => m.default)));
 }
 
 // Wraps an action function so that it always exits and handles errors

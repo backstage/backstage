@@ -59,7 +59,7 @@ import GitHubIcon from '@material-ui/icons/GitHub';
 ```
 
 Simple! The App will reload with your changes automatically. You should now see
-a github icon displayed in the sidebar. Clicking that will link to our new
+a GitHub icon displayed in the sidebar. Clicking that will link to our new
 plugin. And now, the API fun begins.
 
 # The Identity
