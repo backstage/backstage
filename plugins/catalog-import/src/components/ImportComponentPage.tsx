@@ -107,7 +107,6 @@ export const ImportComponentPage = ({
 
               {manifestGenerationAvailable(configApi) && (
                 <React.Fragment>
-                  {' '}
                   <Typography variant="h6">GitHub Repo</Typography>
                   <Typography variant="body2" paragraph>
                     If you already have code in a GitHub repository without
