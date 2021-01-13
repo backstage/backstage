@@ -93,8 +93,8 @@ auth:
 - Log into http://github.com
 - Navigate to (Settings > Developer Settings > OAuth Apps > New OAuth
   App)[https://github.com/settings/applications/new]
-- Set Homepage URL = http://localhost:3000
-- Set Callback URL = http://localhost:7000/api/auth/github
+- Set Homepage URL = `http://localhost:3000`
+- Set Callback URL = `http://localhost:7000/api/auth/github`
 - Click [Register application]
 - On the next page, copy and paste your new Client ID and Client Secret to
   environment variables defined in the `app-config.yaml` file,
@@ -103,7 +103,7 @@ auth:
 </p>
 </details>
 
-<details><summary>Gitlab</summary>
+<details><summary>GitLab</summary>
 <p>
 
 ### 1. Open `app-config.yaml` and change it as follows
@@ -126,16 +126,16 @@ auth:
           $env: AUTH_GITLAB_CLIENT_ID
         clientSecret:
           $env: AUTH_GITLAB_CLIENT_SECRET
-        audience: https://gitlab.com # Or your self-hosted Gitlab instance URL
+        audience: https://gitlab.com # Or your self-hosted GitLab instance URL
 ```
 
-### 2. Generate a Gitlab Application client ID and secret
+### 2. Generate a GitLab Application client ID and secret
 
 - Log into GitLab
 - Navigate to (Profile > Settings >
   Applications)[https://gitlab.com/-/profile/applications]
 - Name your application
-- Set Callback URL = http://localhost:7000/api/auth/gitlab/handler/frame
+- Set Callback URL = `http://localhost:7000/api/auth/gitlab/handler/frame`
 - Select the following values:
   - `read_user` (Read the authenticated user's personal information)
   - `read_repository` (Allows read-only access to the repository)
@@ -335,7 +335,7 @@ above:
 | Auth Provider | Import Name         |
 | ------------- | ------------------- |
 | GitHub        | githubAuthApiRef    |
-| Gitlab        | gitlabAuthApiRef    |
+| GitLab        | gitlabAuthApiRef    |
 | Google        | googleAuthApiRef    |
 | Microsoft     | microsoftAuthApiRef |
 | Auth0         | auth0AuthApiRef     |
