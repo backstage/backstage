@@ -74,6 +74,8 @@
     "@types/passport-google-oauth20": "^2.0.3",
     "@types/passport-microsoft": "^0.0.0",
     "@types/passport-saml": "^1.1.2",
+    "@types/passport-strategy": "^0.2.35",
+    "@types/xml2js": "^0.4.7",
     "msw": "^0.21.2",
     "nock": "^13.0.5"
   },
