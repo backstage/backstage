@@ -1,5 +1,17 @@
 # @backstage/create-app
 
+## 0.3.4
+
+### Patch Changes
+
+- 643dcec7c: noop release for create-app to force re-deploy
+
+## 0.3.3
+
+### Patch Changes
+
+- bd9c6719f: Bumping the version for `create-app` so that we can use the latest versions of internal packages and rebuild the version which is passed to the package.json
+
 ## 0.3.2
 
 ### Patch Changes

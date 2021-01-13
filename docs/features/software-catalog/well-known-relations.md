@@ -48,11 +48,10 @@ where present.
 ### `providesApi` and `apiProvidedBy`
 
 A relation with an [API](descriptor-format.md#kind-api) entity, typically from a
-[Component](descriptor-format.md#kind-component) or
-[System](descriptor-format.md#kind-system).
+[Component](descriptor-format.md#kind-component).
 
-These relations express that a component or system exposes an API - meaning that
-it hosts callable endpoints from which you can consume that API.
+These relations express that a component exposes an API - meaning that it hosts
+callable endpoints from which you can consume that API.
 
 This relation is commonly generated based on `spec.providesApis` of the
 component or system in question.
@@ -60,11 +59,10 @@ component or system in question.
 ### `consumesApi` and `apiConsumedBy`
 
 A relation with an [API](descriptor-format.md#kind-api) entity, typically from a
-[Component](descriptor-format.md#kind-component) or
-[System](descriptor-format.md#kind-system).
+[Component](descriptor-format.md#kind-component).
 
-These relations express that a component or system consumes an API - meaning
-that it depends on endpoints of the API.
+These relations express that a component consumes an API - meaning that it
+depends on endpoints of the API.
 
 This relation is commonly generated based on `spec.consumesApis` of the
 component or system in question.
@@ -91,3 +89,18 @@ A membership relation, typically for [Users](descriptor-format.md#kind-user) in
 [Groups](descriptor-format.md#kind-group).
 
 This relation is commonly based on `spec.memberOf`.
+
+### `partOf` and `hasPart`
+
+A relation with a [Domain](descriptor-format.md#kind-domain),
+[System](descriptor-format.md#kind-system) or
+[Component](descriptor-format.md#kind-component) entity, typically from a
+[Component](descriptor-format.md#kind-component),
+[API](descriptor-format.md#kind-api), or
+[System](descriptor-format.md#kind-system).
+
+These relations express that a component belongs to a larger component; a
+component, API or resource belongs to a system; or that a system is grouped
+under a domain.
+
+This relation is commonly based on `spec.system` or `spec.domain`.

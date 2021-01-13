@@ -1,9 +1,8 @@
 ---
 id: stability-index
 title: Stability Index
-description:
-  An overview of the commitment to stability for different parts of the
-  Backstage codebase.
+# prettier-ignore
+description: An overview of the commitment to stability for different parts of the Backstage codebase.
 ---
 
 ## Overview
@@ -291,7 +290,7 @@ Stability: `1`. There are plans to rework parts of the Processor interface.
 
 ### `catalog-graphql` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/catalog-graphql/)
 
-Provides the catalog schema and resolvers for the graphql backend.
+Provides the catalog schema and resolvers for the GraphQL backend.
 
 Stability: `0`. Under heavy development and subject to change.
 

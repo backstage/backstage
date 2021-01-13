@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './preparers';
-export * from './types';
-export * from './file';
-export * from './github';
-export * from './gitlab';
-export * from './azure';
+
+export { AzurePreparer } from './azure';
+export { BitbucketPreparer } from './bitbucket';
+export { FilePreparer } from './file';
+export { GithubPreparer } from './github';
+export { GitlabPreparer } from './gitlab';
+export { Preparers } from './preparers';
+export type { PreparerBase, PreparerBuilder, PreparerOptions } from './types';
