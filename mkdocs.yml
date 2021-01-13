@@ -56,6 +56,7 @@ nav:
           - Creating and Publishing Documentation: 'features/techdocs/creating-and-publishing.md'
           - Configuration: 'features/techdocs/configuration.md'
           - Using Cloud Storage: 'features/techdocs/using-cloud-storage.md'
+          - HOW TO guides: 'features/techdocs/how-to-guides.md'
           - Troubleshooting: 'features/techdocs/troubleshooting.md'
           - FAQ: 'features/techdocs/FAQ.md'
       - Kubernetes:

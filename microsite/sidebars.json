@@ -83,6 +83,7 @@
           "features/techdocs/creating-and-publishing",
           "features/techdocs/configuration",
           "features/techdocs/using-cloud-storage",
+          "features/techdocs/how-to-guides",
           "features/techdocs/troubleshooting",
           "features/techdocs/faqs"
         ]
