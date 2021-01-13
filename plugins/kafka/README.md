@@ -69,7 +69,7 @@ kafka:
     - localhost:9092
 ```
 
-6. Add `kafka.apache.org/consumer-group` annotation to your services:
+6. Add `kafka.apache.org/consumer-groups` annotation to your services:
 
 ```yaml
 apiVersion: backstage.io/v1alpha1
@@ -77,7 +77,7 @@ kind: Component
 metadata:
   # ...
   annotations:
-    kafka.apache.org/consumer-group: consumer-group-name
+    kafka.apache.org/consumer-groups: consumer-group-name
 spec:
   type: service
 ```
