@@ -13,3 +13,4 @@
 /plugins/techdocs-backend                   @backstage/techdocs-core
 /packages/techdocs-common                   @backstage/techdocs-core
 /.changeset/cost-insights-*                 @backstage/silver-lining
+/.changeset/techdocs-*                      @backstage/techdocs-core
