@@ -84,4 +84,17 @@ techdocs:
       # https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-region.html
       region:
         $env: AWS_REGION
+
+    # Required when techdocs.publisher.type is set to 'azureStorage'. Skip otherwise.
+
+    azureStorage:
+      # An API key is required to write to a storage container.
+      credentials:
+        account:
+          $env: TECHDOCS_AZURE_STORAGE_ACCOUNT
+        accountKey:
+          $env: TECHDOCS_AZURE_STORAGE_ACCOUNT_KEY
+
+      # Azure Storage Container Name
+      containerName: 'techdocs-storage'
 ```

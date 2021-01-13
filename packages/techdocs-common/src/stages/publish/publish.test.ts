@@ -22,6 +22,7 @@ import { Publisher } from './publish';
 import { LocalPublish } from './local';
 import { GoogleGCSPublish } from './googleStorage';
 import { AwsS3Publish } from './awsS3';
+import { AzureStoragePublish } from './azureStorage';
 
 const logger = getVoidLogger();
 const discovery: jest.Mocked<PluginEndpointDiscovery> = {
@@ -104,5 +105,29 @@ describe('Publisher', () => {
       discovery,
     });
     expect(publisher).toBeInstanceOf(AwsS3Publish);
+  });
+
+  it('should create Azure Storage publisher from config', async () => {
+    const mockConfig = new ConfigReader({
+      techdocs: {
+        requestUrl: 'http://localhost:7000',
+        publisher: {
+          type: 'azureStorage',
+          azureStorage: {
+            credentials: {
+              account: 'account',
+              accountKey: 'accountKey',
+            },
+            containerName: 'containerName',
+          },
+        },
+      },
+    });
+
+    const publisher = await Publisher.fromConfig(mockConfig, {
+      logger,
+      discovery,
+    });
+    expect(publisher).toBeInstanceOf(AzureStoragePublish);
   });
 });
