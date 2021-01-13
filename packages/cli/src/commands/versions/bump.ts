@@ -26,7 +26,6 @@ import {
   Lockfile,
 } from '../../lib/versioning';
 import { includedFilter, forbiddenDuplicatesFilter } from './lint';
-import { NotFoundError } from '../../lib/errors';
 
 const DEP_TYPES = [
   'dependencies',
@@ -60,7 +59,7 @@ export default async () => {
     try {
       target = await findTargetVersion(name);
     } catch (error) {
-      if (error instanceof NotFoundError) {
+      if (error.name === 'NotFoundError') {
         console.log(`Package info not found, ignoring package ${name}`);
         return;
       }
