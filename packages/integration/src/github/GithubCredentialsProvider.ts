@@ -19,7 +19,6 @@ import { GithubAppConfig, GitHubIntegrationConfig } from './config';
 import { createAppAuth } from '@octokit/auth-app';
 import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
 import { DateTime } from 'luxon';
-import { InstallationAccessTokenAuthentication } from '@octokit/auth-app/dist-types/types';
 
 type InstallationData = {
   installationId: number;
@@ -72,7 +71,7 @@ class GithubAppManager {
 
   async getInstallationCredentials(
     owner: string,
-    repo: string,
+    repo?: string,
   ): Promise<{ accessToken: string }> {
     const {
       installationId,
@@ -80,31 +79,27 @@ class GithubAppManager {
       repositorySelection,
     } = await this.getInstallationData(owner);
     if (suspended) {
-      throw new Error(`The app for ${owner}/${repo} is suspended`);
+      throw new Error(
+        `The app for ${[owner, repo].filter(Boolean).join('/')} is suspended`,
+      );
     }
 
-    // App is installed in the entire org
-    if (repositorySelection === 'all') {
-      return this.cache.getOrCreateToken(owner, async () => {
-        const auth = createAppAuth({
-          ...this.baseAuthConfig,
-          installationId,
-        });
-        const result = await auth({ type: 'installation' });
-        const {
-          token,
-          expiresAt,
-        } = result as InstallationAccessTokenAuthentication;
-        return { token, expiresAt: DateTime.fromISO(expiresAt) };
-      });
+    if (repositorySelection !== 'all' && !repo) {
+      throw new Error(
+        'Application must be installed for the entire organization',
+      );
     }
 
-    // App is not installed org wide which requires a specific app token.
-    return this.cache.getOrCreateToken(`${owner}/${repo}`, async () => {
+    const cacheKey = !repo ? owner : `${owner}/${repo}`;
+    const repositories = repositorySelection !== 'all' ? [repo!] : undefined;
+
+    // Go and grab an access token for the app scoped to a repository if provided, if not use the organisation installation.
+    return this.cache.getOrCreateToken(cacheKey, async () => {
       const result = await this.appClient.apps.createInstallationAccessToken({
         installation_id: installationId,
-        repositories: [repo],
+        repositories,
       });
+
       return {
         token: result.data.token,
         expiresAt: DateTime.fromISO(result.data.expires_at),
@@ -158,7 +153,7 @@ export class GithubAppCredentialsMux {
     this.apps = config.apps?.map(ac => new GithubAppManager(ac)) ?? [];
   }
 
-  async getAppToken(owner: string, repo: string): Promise<string | undefined> {
+  async getAppToken(owner: string, repo?: string): Promise<string | undefined> {
     if (this.apps.length === 0) {
       return undefined;
     }
@@ -171,6 +166,7 @@ export class GithubAppCredentialsMux {
         ),
       ),
     );
+
     const result = results.find(result => result.credentials);
     if (result) {
       return result.credentials!.accessToken;
@@ -186,6 +182,11 @@ export class GithubAppCredentialsMux {
   }
 }
 
+export type GithubCredentials = {
+  headers?: { [name: string]: string };
+  token?: string;
+};
+
 // TODO: Possibly move this to a backend only package so that it's not used in the frontend by mistake
 export class GithubCredentialsProvider {
   static create(config: GitHubIntegrationConfig): GithubCredentialsProvider {
@@ -200,10 +201,15 @@ export class GithubCredentialsProvider {
     private readonly token?: string,
   ) {}
 
-  async getCredentials(opts: { url: string }) {
+  /**
+   * @returns GithubCredentials.
+   * @param opts
+   */
+  async getCredentials(opts: { url: string }): Promise<GithubCredentials> {
     const parsed = gitUrlParse(opts.url);
-    const owner = parsed.owner;
-    const repo = parsed.name;
+
+    const owner = parsed.owner || parsed.name;
+    const repo = parsed.owner ? parsed.name : undefined;
 
     let token = await this.githubAppCredentialsMux.getAppToken(owner, repo);
     if (!token) {
