@@ -144,6 +144,18 @@ export class DocsBuilder {
       }
     }
 
+    // Cache downloaded source files for 30 minutes.
+    // TODO: When urlReader/readTree supports some way to get latest commit timestamp,
+    // it should be used to invalidate cache.
+    if (type === 'url') {
+      const builtAt = buildMetadataStorage.getTimestamp();
+      const now = Date.now();
+
+      if (builtAt > now - 1800000) {
+        return true;
+      }
+    }
+
     this.logger.debug(
       `Docs for entity ${getEntityId(this.entity)} was outdated.`,
     );
