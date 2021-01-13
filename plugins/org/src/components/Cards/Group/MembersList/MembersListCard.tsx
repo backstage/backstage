@@ -125,7 +125,9 @@ export const MembersListCard = ({
       UserEntity
     >).filter(member =>
       member?.relations?.some(
-        r => r.type === RELATION_MEMBER_OF && r.target.name === groupName,
+        r =>
+          r.type === RELATION_MEMBER_OF &&
+          r.target.name.toLowerCase() === groupName.toLowerCase(),
       ),
     );
     return groupMembersList;
