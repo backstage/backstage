@@ -17,7 +17,7 @@ import { Entity } from '@backstage/catalog-model';
 import { Table, TableColumn, TableProps } from '@backstage/core';
 import { Chip, Link } from '@material-ui/core';
 import Edit from '@material-ui/icons/Edit';
-import GitHub from '@material-ui/icons/GitHub';
+import OpenInNew from '@material-ui/icons/OpenInNew';
 import { Alert } from '@material-ui/lab';
 import React from 'react';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
@@ -111,13 +111,12 @@ export const CatalogTable = ({
     (rowData: Entity) => {
       const location = findLocationForEntityMeta(rowData.metadata);
       return {
-        icon: () => <GitHub fontSize="small" />,
-        tooltip: 'View on GitHub',
+        icon: () => <OpenInNew fontSize="small" />,
+        tooltip: 'View',
         onClick: () => {
           if (!location) return;
           window.open(location.target, '_blank');
         },
-        hidden: location?.type !== 'github',
       };
     },
     (rowData: Entity) => {
@@ -129,7 +128,6 @@ export const CatalogTable = ({
           if (!location) return;
           window.open(createEditLink(location), '_blank');
         },
-        hidden: location?.type !== 'github',
       };
     },
     (rowData: Entity) => {

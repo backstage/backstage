@@ -96,9 +96,10 @@ export const ProductInsightsCard = ({
   const entityKey = findAnyKey(entity?.entities);
   const entities = entityKey ? entity!.entities[entityKey] : [];
 
-  const subheader = entityKey
-    ? `${pluralize(entityKey, entities.length, true)}, sorted by cost`
-    : null;
+  const subheader =
+    entityKey && entities.length
+      ? `${pluralize(entityKey, entities.length, true)}, sorted by cost`
+      : null;
   const headerProps = {
     classes: classes,
     action: <PeriodSelect duration={duration} onSelect={setDuration} />,

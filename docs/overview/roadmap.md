@@ -8,9 +8,9 @@ description: Roadmap of Backstage Project
 
 > Backstage is currently under rapid development. This means that you can expect
 > APIs and features to evolve. It is also recommended that teams who adopt
-> Backstage today upgrade their installation as new
-> [releases](https://github.com/backstage/backstage/releases) become available,
-> as Backwards compatibility is not yet guaranteed.
+> Backstage today [upgrade their installation](../cli/commands.md#versionsbump)
+> as new [releases](https://github.com/backstage/backstage/releases) become
+> available, as Backwards compatibility is not yet guaranteed.
 
 ## Phases
 

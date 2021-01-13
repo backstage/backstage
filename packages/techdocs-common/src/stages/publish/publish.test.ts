@@ -69,7 +69,6 @@ describe('Publisher', () => {
           type: 'googleGcs',
           googleGcs: {
             credentials: '{}',
-            projectId: 'gcp-project-id',
             bucketName: 'bucketName',
           },
         },

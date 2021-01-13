@@ -55,3 +55,10 @@ export const RELATION_CHILD_OF = 'childOf';
  */
 export const RELATION_MEMBER_OF = 'memberOf';
 export const RELATION_HAS_MEMBER = 'hasMember';
+
+/**
+ * A part/whole relation, typically for components in a system and systems
+ * in a domain.
+ */
+export const RELATION_PART_OF = 'partOf';
+export const RELATION_HAS_PART = 'hasPart';

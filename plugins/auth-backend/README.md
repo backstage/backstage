@@ -10,7 +10,7 @@ to the appropriate provider in the backend.
 ## Local development
 
 Choose your OAuth Providers, replace `x` with actual value and then start backend:
-Example for Google Oauth Provider at root directory:
+Example for Google OAuth Provider at root directory:
 
 ```bash
 export AUTH_GOOGLE_CLIENT_ID=x
@@ -89,8 +89,16 @@ export AUTH_GITLAB_CLIENT_SECRET=x
 
 ### Okta
 
+Add a new Okta application using the following URI conventions:
+
+Login redirect URI's: `http://localhost:7000/api/auth/okta/handler/frame`
+Logout redirect URI's: `http://localhost:7000/api/auth/okta/logout`
+Initiate login URI's: `http://localhost:7000/api/auth/okta/start`
+
+Then configure the following environment variables to be used in the `app-config.yaml` file:
+
 ```bash
-export AUTH_OKTA_AUDIENCE=x
+export AUTH_OKTA_AUDIENCE=https://example.okta.com
 export AUTH_OKTA_CLIENT_ID=x
 export AUTH_OKTA_CLIENT_SECRET=x
 ```

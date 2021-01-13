@@ -58,6 +58,8 @@ nav:
           - Using Cloud Storage: 'features/techdocs/using-cloud-storage.md'
           - Troubleshooting: 'features/techdocs/troubleshooting.md'
           - FAQ: 'features/techdocs/FAQ.md'
+      - Kubernetes:
+          - Overview: 'features/kubernetes/index.md'
   - Plugins:
       - Overview: 'plugins/index.md'
       - Existing plugins: 'plugins/existing-plugins.md'

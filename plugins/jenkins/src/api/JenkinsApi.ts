@@ -63,7 +63,7 @@ export class JenkinsApi {
     return lastBuild;
   }
 
-  extractScmDetailsFromJob(jobDetails: any): any {
+  extractScmDetailsFromJob(jobDetails: any): any | undefined {
     const scmInfo = jobDetails.actions
       .filter(
         (action: any) =>
@@ -78,6 +78,10 @@ export class JenkinsApi {
         };
       })
       .pop();
+
+    if (!scmInfo) {
+      return undefined;
+    }
 
     const author = jobDetails.actions
       .filter(
@@ -141,7 +145,7 @@ export class JenkinsApi {
 
     for (const jobDetails of folder.jobs) {
       const jobScmInfo = this.extractScmDetailsFromJob(jobDetails);
-      if (jobDetails.jobs) {
+      if (jobDetails?.jobs) {
         // skipping folders inside folders for now
       } else {
         for (const buildDetails of jobDetails.builds) {

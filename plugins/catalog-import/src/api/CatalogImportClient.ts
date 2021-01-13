@@ -17,7 +17,6 @@
 import { Octokit } from '@octokit/rest';
 import { DiscoveryApi, OAuthApi, ConfigApi } from '@backstage/core';
 import { CatalogImportApi } from './CatalogImportApi';
-import { AnalyzeLocationResponse } from '@backstage/plugin-catalog-backend';
 import { PartialEntity } from '../util/types';
 import { GitHubIntegrationConfig } from '@backstage/integration';
 
@@ -61,8 +60,8 @@ export class CatalogImportClient implements CatalogImportApi {
       );
     }
 
-    const payload = (await response.json()) as AnalyzeLocationResponse;
-    return payload.generateEntities.map(x => x.entity);
+    const payload = await response.json();
+    return payload.generateEntities.map((x: any) => x.entity);
   }
 
   async createRepositoryLocation({
