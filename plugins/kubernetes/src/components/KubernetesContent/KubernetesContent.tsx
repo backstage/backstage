@@ -47,6 +47,7 @@ import { DeploymentsAccordions } from '../DeploymentsAccordions';
 import { ErrorReporting } from '../ErrorReporting';
 import { groupResponses } from '../../utils/response';
 import { DetectedError, detectErrors } from '../../error-detection';
+import { ServicesAccordions } from '../ServicesAccordions';
 
 type KubernetesContentProps = { entity: Entity; children?: React.ReactNode };
 
@@ -187,10 +188,18 @@ const Cluster = ({ clusterObjects, detectedErrors }: ClusterProps) => {
           />
         </AccordionSummary>
         <AccordionDetails>
-          <DeploymentsAccordions
-            deploymentResources={groupedResponses}
-            clusterPodNamesWithErrors={podsWithErrors}
-          />
+          <Grid container direction="column">
+            <Grid item>
+              <DeploymentsAccordions
+                deploymentResources={groupedResponses}
+                clusterPodNamesWithErrors={podsWithErrors}
+              />
+            </Grid>
+
+            <Grid item>
+              <ServicesAccordions deploymentResources={groupedResponses} />
+            </Grid>
+          </Grid>
         </AccordionDetails>
       </Accordion>
     </>
