@@ -60,7 +60,7 @@ external authentication provider. Please see a subset of possible providers and
 instructions to integrate them below. Steps 1 & 2 are described separately for
 each provider and steps beyond that are common for all.
 
-<details><summary>Github</summary>
+<details><summary>GitHub</summary>
 <p>
 
 ### 1. Open `app-config.yaml` and change it as follows
@@ -334,7 +334,7 @@ above:
 
 | Auth Provider | Import Name         |
 | ------------- | ------------------- |
-| Github        | githubAuthApiRef    |
+| GitHub        | githubAuthApiRef    |
 | Gitlab        | gitlabAuthApiRef    |
 | Google        | googleAuthApiRef    |
 | Microsoft     | microsoftAuthApiRef |
