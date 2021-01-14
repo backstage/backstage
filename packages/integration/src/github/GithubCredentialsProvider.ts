@@ -204,8 +204,13 @@ export class GithubCredentialsProvider {
   ) {}
 
   /**
-   * @returns GithubCredentials.
-   * @param opts
+   * Returns GithubCredentials for requested url.
+   * Consecutive calls to this method with the same url will return cached credentials.
+   * The shortest lifetime for a token returned is 10 minutes.
+   * @param opts containing the organization or repository url
+   * @returns {Promise} of @type {GithubCredentials}.
+   * @example
+   * const { token, headers } = await getCredentials({url: 'github.com/backstage/foobar'})
    */
   async getCredentials(opts: { url: string }): Promise<GithubCredentials> {
     const parsed = gitUrlParse(opts.url);
