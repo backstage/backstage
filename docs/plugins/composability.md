@@ -139,7 +139,7 @@ a component:
 export const FooPage = plugin.provide(
   createRoutableExtension({
     component: () => import('./components/FooPage').then(m => m.FooPage),
-    mountPoint: fooRouteRef,
+    mountPoint: fooPageRouteRef,
   }),
 );
 ```
@@ -213,9 +213,9 @@ const appRoutes = (
 We'll assume that `FooPage` and `BarPage` are routable extensions, exported by
 the `fooPlugin` and `barPlugin` respectively. Since the `FooPage` is a routable
 extension it has a `RouteRef` assigned as its mount point, which we'll refer to
-as `fooRootRouteRef`.
+as `fooPageRouteRef`.
 
-Given the above example, the `fooRootRouteRef` will be associated with the
+Given the above example, the `fooPageRouteRef` will be associated with the
 `'/foo'` route. The path is no longer accessible via the `path` property of the
 `RouteRef` though, as the routing structure is tied to the app's react tree. We
 instead use the new `useRouteRef` hook if we want to create a concrete link to
@@ -225,14 +225,14 @@ like this:
 
 ```tsx
 const MyComponent = () => {
-  const fooRoute = useRouteRef(fooRouteRef);
+  const fooRoute = useRouteRef(fooPageRouteRef);
   return <a href={fooRoute()}>Link to Foo</a>;
 };
 ```
 
 Now let's assume that we want to link from the `BarPage` to the `FooPage`.
 Before the introduction of the new composability system, we would do this by
-importing the `fooRootRouteRef` from the `fooPlugin`. This created an
+importing the `fooPageRouteRef` from the `fooPlugin`. This created an
 unnecessary dependency on the plugin, and also provided little flexibility in
 allowing the app to tie plugins together, with the links instead being dictated
 by the plugins themselves. To solve this, we introduce `ExternalRouteRef`s. Much
@@ -285,7 +285,7 @@ like this:
 // In foo-plugin
 export const fooPlugin = createPlugin({
   routes: {
-    root: fooRootRouteRef,
+    root: fooPageRouteRef,
   },
   ...
 })
