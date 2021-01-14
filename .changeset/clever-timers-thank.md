@@ -3,7 +3,7 @@
 '@backstage/integration': patch
 ---
 
-Add support for Github Apps authentication for backend plugins.
+Add support for GitHub Apps authentication for backend plugins.
 
 `GithubCredentialsProvider` requests and caches GitHub credentials based on a repository or organization url.
 
