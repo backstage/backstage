@@ -5,7 +5,6 @@ title: Backstage Glossary
 description: List of all abbreviations, terms, phrases used in Backstage together with its explanations.
 ---
 
-# Backstage Glossary
 
 The Backstage Glossary lists all abbreviations, terms or phrases that are used
 in Backstage together with its explanation. We highly recommend you to use these
