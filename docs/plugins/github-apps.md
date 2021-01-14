@@ -16,7 +16,7 @@ the OAuth apps and their respective scopes.
 - App permissions is not managed by Backstage. They're created with some simple
   default permissions which you are free to change as you need, but you will
   need to update them in the GitHub web console, not in Backstage right now. The
-  permissions that are defaulted are `metadata
+  permissions that are defaulted are `metadata:read` and `contents:read`.
 - The created GitHub App is private by default, this is most likely what you
   want for github.com but it's recommended to make your application public for
   GitHub Enterprise in order to share application across your GHE organizations.
