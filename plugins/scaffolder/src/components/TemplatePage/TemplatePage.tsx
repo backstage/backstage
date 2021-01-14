@@ -39,6 +39,7 @@ import { rootRoute } from '../../routes';
 import { JobStatusModal } from '../JobStatusModal';
 import { MultistepJsonForm } from '../MultistepJsonForm';
 import { useJobPolling } from '../hooks/useJobPolling';
+import gitParse from 'git-url-parse';
 
 const useTemplate = (
   templateName: string,
@@ -183,6 +184,18 @@ export const TemplatePage = () => {
                   label: 'Choose owner and repo',
                   schema: OWNER_REPO_SCHEMA,
                   customFormats: REPO_FORMAT,
+                  validate: (formData, errors) => {
+                    const { storePath } = formData;
+                    const parsedUrl = gitParse(storePath);
+
+                    if (!parsedUrl.resource) {
+                      errors.storePath.addError(
+                        'There needs to be a hostname in the storePath',
+                      );
+                    }
+
+                    return errors;
+                  },
                 },
               ]}
             />
