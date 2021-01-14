@@ -1,5 +1,24 @@
 # @backstage/plugin-catalog-import
 
+## 0.3.4
+
+### Patch Changes
+
+- 34a01a171: Improve how URLs are analyzed for add/import
+- bc40ccecf: Add more generic descriptions for the catalog-import form.
+- 94fdf4955: Get rid of all usages of @octokit/types, and bump the rest of the octokit dependencies to the latest version
+- be5ac7fde: Remove dependency to `@backstage/plugin-catalog-backend`.
+- Updated dependencies [466354aaa]
+- Updated dependencies [f3b064e1c]
+- Updated dependencies [c00488983]
+- Updated dependencies [265a7ab30]
+- Updated dependencies [abbee6fff]
+- Updated dependencies [147fadcb9]
+  - @backstage/integration@0.2.0
+  - @backstage/catalog-model@0.6.1
+  - @backstage/plugin-catalog@0.2.11
+  - @backstage/core@0.4.4
+
 ## 0.3.3
 
 ### Patch Changes

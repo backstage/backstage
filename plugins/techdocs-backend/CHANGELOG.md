@@ -1,5 +1,27 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.5.3
+
+### Patch Changes
+
+- 68ad5af51: Improve techdocs-common Generator API for it to be used by techdocs-cli. TechDocs generator.run function now takes
+  an input AND an output directory. Most probably you use techdocs-common via plugin-techdocs-backend, and so there
+  is no breaking change for you.
+  But if you use techdocs-common separately, you need to create an output directory and pass into the generator.
+- cb7af51e7: If using Url Reader, cache downloaded source files for 30 minutes.
+- Updated dependencies [68ad5af51]
+- Updated dependencies [f3b064e1c]
+- Updated dependencies [371f67ecd]
+- Updated dependencies [f1e74777a]
+- Updated dependencies [dbe4450c3]
+- Updated dependencies [5826d0973]
+- Updated dependencies [b3b9445df]
+- Updated dependencies [abbee6fff]
+- Updated dependencies [147fadcb9]
+  - @backstage/techdocs-common@0.3.3
+  - @backstage/catalog-model@0.6.1
+  - @backstage/backend-common@0.4.3
+
 ## 0.5.2
 
 ### Patch Changes
