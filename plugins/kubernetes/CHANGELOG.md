@@ -1,5 +1,11 @@
 # @backstage/plugin-kubernetes
 
+## 0.3.5
+
+### Patch Changes
+
+- 1fea88fd0: Fixed an issue where assets weren't properly bundled in the published package.
+
 ## 0.3.4
 
 ### Patch Changes
