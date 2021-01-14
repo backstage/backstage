@@ -176,6 +176,7 @@
     ],
     "Contribute": ["../CONTRIBUTING"],
     "Support": ["support/support", "support/project-structure"],
+    "Glossary": ["glossary"],
     "FAQ": ["FAQ"]
   }
 }

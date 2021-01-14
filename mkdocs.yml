@@ -117,4 +117,5 @@ nav:
   - Support:
       - 'support/support.md'
       - 'support/project-structure.md'
+  - Glossary: glossary.md
   - FAQ: FAQ.md
