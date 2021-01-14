@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import type { Props as RecentWorkflowRunsCardProps } from './RecentWorkflowRunsCard';
-import React from 'react';
-import { render } from '@testing-library/react';
-import { RecentWorkflowRunsCard } from './RecentWorkflowRunsCard';
-import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core-api';
-import { useWorkflowRuns } from '../useWorkflowRuns';
-import { ThemeProvider } from '@material-ui/core';
+import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
 import { lightTheme } from '@backstage/theme';
+import { ThemeProvider } from '@material-ui/core';
+import { render } from '@testing-library/react';
+import React from 'react';
 import { MemoryRouter } from 'react-router';
+import { useWorkflowRuns } from '../useWorkflowRuns';
+import type { Props as RecentWorkflowRunsCardProps } from './RecentWorkflowRunsCard';
+import { RecentWorkflowRunsCard } from './RecentWorkflowRunsCard';
 
 jest.mock('../useWorkflowRuns', () => ({
   useWorkflowRuns: jest.fn(),

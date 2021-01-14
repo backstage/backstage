@@ -34,7 +34,6 @@
   "dependencies": {
     "@backstage/catalog-model": "^0.6.0",
     "@backstage/core": "^0.4.3",
-    "@backstage/core-api": "^0.2.7",
     "@backstage/plugin-catalog": "^0.2.8",
     "@backstage/theme": "^0.2.2",
     "@material-ui/core": "^4.11.0",
