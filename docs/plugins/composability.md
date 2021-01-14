@@ -254,10 +254,9 @@ const headerLinkRouteRef = createExternalRouteRef();
 ### Binding External Routes in the App
 
 The association of external routes is controlled by the app. Each
-`ExternalRouteRef` of a plugin should be bound to an actual `RouteRef`,
-usually from another plugin. The binding process happens once at app startup,
-and is then used through the lifetime of the app to help resolve concrete route
-paths.
+`ExternalRouteRef` of a plugin should be bound to an actual `RouteRef`, usually
+from another plugin. The binding process happens once at app startup, and is
+then used through the lifetime of the app to help resolve concrete route paths.
 
 Using the above example of the `BarPage` linking to the `FooPage`, we might do
 something like this in the app:

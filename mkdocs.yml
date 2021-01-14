@@ -66,6 +66,7 @@ nav:
       - Creating a new plugin: 'plugins/create-a-plugin.md'
       - Developing a plugin: 'plugins/plugin-development.md'
       - Structure of a plugin: 'plugins/structure-of-a-plugin.md'
+      - Composability System Migration: 'plugins/composability.md'
       - Backends and APIs:
           - Proxying: 'plugins/proxying.md'
           - Backstage backend plugin: 'plugins/backend-plugin.md'
