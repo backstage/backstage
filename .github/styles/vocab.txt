@@ -70,6 +70,7 @@ Ek
 env
 Env
 eslint
+Expedia
 facto
 failover
 Figma
@@ -108,6 +109,7 @@ Kaewkasi
 Knex
 kubectl
 kubernetes
+Kumar
 learnings
 lerna
 Lerna
@@ -195,6 +197,7 @@ semlas
 semver
 Serverless
 Sinon
+Sneha
 Snyk
 sourcemaps
 sparklines
