@@ -1,5 +1,13 @@
 # @backstage/cli
 
+## 0.4.6
+
+### Patch Changes
+
+- 94fdf4955: Get rid of all usages of @octokit/types, and bump the rest of the octokit dependencies to the latest version
+- 08e9893d2: Handle no npm info
+- 9cf71f8bf: Added experimental `create-github-app` command.
+
 ## 0.4.5
 
 ### Patch Changes
