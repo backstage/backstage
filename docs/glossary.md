@@ -1,9 +1,8 @@
 ---
 id: Glossary
 title: Backstage Glossary
-description:
-  List of all abbreviations, terms, phrases used in Backstage together with its
-  explainations.
+# prettier-ignore
+description: List of all abbreviations, terms, phrases used in Backstage together with its explanations.
 ---
 
 # Backstage Glossary
