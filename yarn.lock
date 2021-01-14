@@ -6479,13 +6479,6 @@
   dependencies:
     "@types/unist" "*"
 
-"@types/helmet@^0.0.48":
-  version "0.0.48"
-  resolved "https://registry.npmjs.org/@types/helmet/-/helmet-0.0.48.tgz#e754399d2f4672ba63962e8490efd3edd31d9799"
-  integrity sha512-C7MpnvSDrunS1q2Oy1VWCY7CDWHozqSnM8P4tFeRTuzwqni+PYOjEredwcqWG+kLpYcgLsgcY3orHB54gbx2Jw==
-  dependencies:
-    "@types/express" "*"
-
 "@types/history@*":
   version "4.7.5"
   resolved "https://registry.npmjs.org/@types/history/-/history-4.7.5.tgz#527d20ef68571a4af02ed74350164e7a67544860"
