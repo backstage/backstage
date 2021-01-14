@@ -20,6 +20,8 @@ import { Config, JsonValue } from '@backstage/config';
 import { Logger } from 'winston';
 import { initRepoAndPush } from './helpers';
 import { RequiredTemplateValues } from '../templater';
+import gitUrlParse from 'git-url-parse';
+
 import {
   GitLabIntegrationConfig,
   readGitLabIntegrationConfigs,
@@ -116,7 +118,9 @@ export class GitlabPublisher implements PublisherBase {
     pathElements.pop();
     const owner = pathElements.join('/');
 
-    const config = this.getConfig();
+    const { resource: host } = gitUrlParse(values.storePath);
+
+    const config = this.getConfig(host);
 
     if (!config.token) {
       throw new Error(
