@@ -19,35 +19,29 @@ import type { Entity } from '../entity/Entity';
 import { schemaValidator } from './util';
 
 const API_VERSION = ['backstage.io/v1alpha1', 'backstage.io/v1beta1'] as const;
-const KIND = 'API' as const;
+const KIND = 'System' as const;
 
-const schema = yup.object<Partial<ApiEntityV1alpha1>>({
+const schema = yup.object<Partial<SystemEntityV1alpha1>>({
   apiVersion: yup.string().required().oneOf(API_VERSION),
   kind: yup.string().required().equals([KIND]),
   spec: yup
     .object({
-      type: yup.string().required().min(1),
-      lifecycle: yup.string().required().min(1),
       owner: yup.string().required().min(1),
-      definition: yup.string().required().min(1),
-      system: yup.string().notRequired().min(1),
+      domain: yup.string().notRequired().min(1),
     })
     .required(),
 });
 
-export interface ApiEntityV1alpha1 extends Entity {
+export interface SystemEntityV1alpha1 extends Entity {
   apiVersion: typeof API_VERSION[number];
   kind: typeof KIND;
   spec: {
-    type: string;
-    lifecycle: string;
     owner: string;
-    definition: string;
-    system?: string;
+    domain?: string;
   };
 }
 
-export const apiEntityV1alpha1Validator = schemaValidator(
+export const systemEntityV1alpha1Validator = schemaValidator(
   KIND,
   API_VERSION,
   schema,

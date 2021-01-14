@@ -15,27 +15,23 @@
  */
 
 import {
-  ComponentEntityV1alpha1,
-  componentEntityV1alpha1Validator as validator,
-} from './ComponentEntityV1alpha1';
+  ResourceEntityV1alpha1,
+  resourceEntityV1alpha1Validator as validator,
+} from './ResourceEntityV1alpha1';
 
-describe('ComponentV1alpha1Validator', () => {
-  let entity: ComponentEntityV1alpha1;
+describe('ResourceV1alpha1Validator', () => {
+  let entity: ResourceEntityV1alpha1;
 
   beforeEach(() => {
     entity = {
       apiVersion: 'backstage.io/v1alpha1',
-      kind: 'Component',
+      kind: 'Resource',
       metadata: {
         name: 'test',
       },
       spec: {
-        type: 'service',
-        lifecycle: 'production',
+        type: 'database',
         owner: 'me',
-        subcomponentOf: 'monolith',
-        providesApis: ['api-0'],
-        consumesApis: ['api-0'],
         system: 'system',
       },
     };
@@ -75,21 +71,6 @@ describe('ComponentV1alpha1Validator', () => {
     await expect(validator.check(entity)).rejects.toThrow(/type/);
   });
 
-  it('rejects missing lifecycle', async () => {
-    delete (entity as any).spec.lifecycle;
-    await expect(validator.check(entity)).rejects.toThrow(/lifecycle/);
-  });
-
-  it('rejects wrong lifecycle', async () => {
-    (entity as any).spec.lifecycle = 7;
-    await expect(validator.check(entity)).rejects.toThrow(/lifecycle/);
-  });
-
-  it('rejects empty lifecycle', async () => {
-    (entity as any).spec.lifecycle = '';
-    await expect(validator.check(entity)).rejects.toThrow(/lifecycle/);
-  });
-
   it('rejects missing owner', async () => {
     delete (entity as any).spec.owner;
     await expect(validator.check(entity)).rejects.toThrow(/owner/);
@@ -103,61 +84,6 @@ describe('ComponentV1alpha1Validator', () => {
   it('rejects empty owner', async () => {
     (entity as any).spec.owner = '';
     await expect(validator.check(entity)).rejects.toThrow(/owner/);
-  });
-
-  it('accepts missing subcomponentOf', async () => {
-    delete (entity as any).spec.subcomponentOf;
-    await expect(validator.check(entity)).resolves.toBe(true);
-  });
-
-  it('rejects wrong subcomponentOf', async () => {
-    (entity as any).spec.subcomponentOf = 7;
-    await expect(validator.check(entity)).rejects.toThrow(/subcomponentOf/);
-  });
-
-  it('rejects empty subcomponentOf', async () => {
-    (entity as any).spec.subcomponentOf = '';
-    await expect(validator.check(entity)).rejects.toThrow(/subcomponentOf/);
-  });
-
-  it('accepts missing providesApis', async () => {
-    delete (entity as any).spec.providesApis;
-    await expect(validator.check(entity)).resolves.toBe(true);
-  });
-
-  it('rejects empty providesApis', async () => {
-    (entity as any).spec.providesApis = [''];
-    await expect(validator.check(entity)).rejects.toThrow(/providesApis/);
-  });
-
-  it('rejects undefined providesApis', async () => {
-    (entity as any).spec.providesApis = [undefined];
-    await expect(validator.check(entity)).rejects.toThrow(/providesApis/);
-  });
-
-  it('accepts no providesApis', async () => {
-    (entity as any).spec.providesApis = [];
-    await expect(validator.check(entity)).resolves.toBe(true);
-  });
-
-  it('accepts missing consumesApis', async () => {
-    delete (entity as any).spec.consumesApis;
-    await expect(validator.check(entity)).resolves.toBe(true);
-  });
-
-  it('rejects empty consumesApis', async () => {
-    (entity as any).spec.consumesApis = [''];
-    await expect(validator.check(entity)).rejects.toThrow(/consumesApis/);
-  });
-
-  it('rejects undefined consumesApis', async () => {
-    (entity as any).spec.consumesApis = [undefined];
-    await expect(validator.check(entity)).rejects.toThrow(/consumesApis/);
-  });
-
-  it('accepts no consumesApis', async () => {
-    (entity as any).spec.consumesApis = [];
-    await expect(validator.check(entity)).resolves.toBe(true);
   });
 
   it('accepts missing system', async () => {
