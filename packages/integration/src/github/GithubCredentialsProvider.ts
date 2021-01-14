@@ -112,25 +112,20 @@ class GithubAppManager {
   private async getInstallationData(owner: string): Promise<InstallationData> {
     // List all installations using the last used etag.
     // Return cached InstallationData if error with status 304 is thrown.
-    let installation;
     try {
       this.installations = await this.appClient.apps.listInstallations({
         headers: {
           'If-None-Match': this.installations?.headers.etag,
         },
       });
-
-      installation = this.installations.data.find(
-        inst => inst.account?.login === owner,
-      );
     } catch (error) {
       if (error.status !== 304) {
         throw error;
       }
-      installation = this.installations?.data.find(
-        inst => inst.account?.login === owner,
-      );
     }
+    const installation = this.installations?.data.find(
+      inst => inst.account?.login === owner,
+    );
     if (installation) {
       return {
         installationId: installation.id,
