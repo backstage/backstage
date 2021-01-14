@@ -22,4 +22,4 @@ const { token, headers } = await credentialsProvider.getCredentials({
 });
 ```
 
-Updates `GithubUrlReader` to use the GithubCredentialsProvider.
+Updates `GithubUrlReader` to use the `GithubCredentialsProvider`.
