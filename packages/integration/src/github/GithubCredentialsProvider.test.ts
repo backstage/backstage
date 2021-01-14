@@ -92,7 +92,7 @@ describe('GithubCredentialsProvider tests', () => {
     expect(token).toEqual(accessToken2);
     expect(headers).toEqual({ Authorization: 'Bearer secret_token' });
 
-    // fallback to the configured token if no applicatin is matching
+    // fallback to the configured token if no application is matching
     await expect(
       github.getCredentials({
         url: 'https://github.com/404/foobar',
