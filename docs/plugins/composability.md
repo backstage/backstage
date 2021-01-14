@@ -1,8 +1,8 @@
 ---
 id: composability
 title: Composability System Migration
-description:
-  Documentation and migration instructions for new composability APIs.
+# prettier-ignore
+description: Documentation and migration instructions for new composability APIs.
 ---
 
 ## Summary
@@ -59,7 +59,7 @@ inspected, while our component data adds more structured access and simplifies
 evolution by allowing for multiple different versions of a piece of data to be
 used and interpreted at once.
 
-The initial use-cases for component data is support route and plugin discovery
+The initial use-case for component data is to support route and plugin discovery
 through elements in the app. Through this we allow for the React element tree in
 the app to be the source of truth, both for which plugins are used, as well as
 all top-level plugin routes in the app. The use of component data is not limited
@@ -254,8 +254,8 @@ const headerLinkRouteRef = createExternalRouteRef();
 ### Binding External Routes in the App
 
 The association of external routes is controlled by the app. Each
-`ExternalRouteRef` of a plugin should be<- bound to an actual `RouteRef`,
-usually from another plugin. The binding process happens once att app startup,
+`ExternalRouteRef` of a plugin should be bound to an actual `RouteRef`,
+usually from another plugin. The binding process happens once at app startup,
 and is then used through the lifetime of the app to help resolve concrete route
 paths.
 
@@ -517,15 +517,15 @@ It would be ported to this:
 ```tsx
 <EntityLayout>
   <EntityLayout.Route path="/" title="Overview">
-    <ComponentOverviewContent entity={entity} />}
+    <ComponentOverviewContent entity={entity} />
   </EntityLayout.Route>
 
   <EntityLayout.Route path="/sentry" title="Sentry">
-    <SentryRouter entity={entity} />}
+    <SentryRouter entity={entity} />
   </EntityLayout.Route>
 
   <EntityLayout.Route path="/kubernetes" title="Kubernetes">
-    <KubernetesRouter entity={entity} />}
+    <KubernetesRouter entity={entity} />
   </EntityLayout.Route>
 </EntityLayout>
 ```
