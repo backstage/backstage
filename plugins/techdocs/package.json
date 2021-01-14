@@ -33,7 +33,6 @@
   "dependencies": {
     "@backstage/catalog-model": "^0.6.0",
     "@backstage/core": "^0.4.3",
-    "@backstage/core-api": "^0.2.8",
     "@backstage/plugin-catalog": "^0.2.9",
     "@backstage/test-utils": "^0.1.6",
     "@backstage/theme": "^0.2.2",
