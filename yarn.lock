@@ -16550,9 +16550,9 @@ jest@^26.0.1:
     jest-cli "^26.6.3"
 
 jose@^2.0.2:
-  version "2.0.2"
-  resolved "https://registry.npmjs.org/jose/-/jose-2.0.2.tgz#fb22385b80c658cc7a0cae05b7086c04c6be49f4"
-  integrity sha512-yD93lsiMA1go/qxSY/vXWBodmIZJIxeB7QhFi8z1yQ3KUwKENqI9UA8VCHlQ5h3x1zWuWZjoY87ByQzkQbIrQg==
+  version "2.0.3"
+  resolved "https://registry.npmjs.org/jose/-/jose-2.0.3.tgz#9c931ab3e13e2d16a5b9e6183e60b2fc40a8e1b8"
+  integrity sha512-L+RlDgjO0Tk+Ki6/5IXCSEnmJCV8iMFZoBuEgu2vPQJJ4zfG/k3CAqZUMKDYNRHIDyy0QidJpOvX0NgpsAqFlw==
   dependencies:
     "@panva/asn1.js" "^1.0.0"
 
