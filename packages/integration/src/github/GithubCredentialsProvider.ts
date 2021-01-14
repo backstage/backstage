@@ -80,7 +80,9 @@ class GithubAppManager {
     } = await this.getInstallationData(owner);
     if (suspended) {
       throw new Error(
-        `The app for ${[owner, repo].filter(Boolean).join('/')} is suspended`,
+        `The GitHub application for ${[owner, repo]
+          .filter(Boolean)
+          .join('/')} is suspended`,
       );
     }
 

@@ -198,7 +198,7 @@ describe('GithubCredentialsProvider tests', () => {
       github.getCredentials({
         url: 'https://github.com/backstage',
       }),
-    ).rejects.toThrow('The app for backstage is suspended');
+    ).rejects.toThrow('The GitHub application for backstage is suspended');
   });
 
   it('should return the default token when the call to github return a status that is not recognized', async () => {
