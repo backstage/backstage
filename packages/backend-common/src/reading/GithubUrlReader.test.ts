@@ -15,6 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
+import { GithubCredentialsProvider } from '@backstage/integration';
 import { msw } from '@backstage/test-utils';
 import fs from 'fs';
 import { rest } from 'msw';
@@ -28,6 +29,18 @@ const treeResponseFactory = ReadTreeResponseFactory.create({
 });
 
 describe('GithubUrlReader', () => {
+  const mockCredentialsProvider = ({
+    getCredentials: jest.fn().mockResolvedValue({ headers: {} }),
+  } as unknown) as GithubCredentialsProvider;
+
+  const worker = setupServer();
+
+  msw.setupDefaultHandlers(worker);
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe('implementation', () => {
     it('rejects unknown targets', async () => {
       const processor = new GithubUrlReader(
@@ -35,7 +48,7 @@ describe('GithubUrlReader', () => {
           host: 'github.com',
           apiBaseUrl: 'https://api.github.com',
         },
-        { treeResponseFactory },
+        { treeResponseFactory, credentialsProvider: mockCredentialsProvider },
       );
       await expect(
         processor.read('https://not.github.com/apa'),
@@ -45,11 +58,52 @@ describe('GithubUrlReader', () => {
     });
   });
 
+  describe('read', () => {
+    it('should use the headers from the credentials provider to the fetch request when doing read', async () => {
+      expect.assertions(2);
+
+      const mockHeaders = {
+        Authorization: 'bearer blah',
+        otherheader: 'something',
+      };
+
+      (mockCredentialsProvider.getCredentials as jest.Mock).mockResolvedValue({
+        headers: mockHeaders,
+      });
+
+      worker.use(
+        rest.get(
+          'https://api.github.com/repos/backstage/mock/tree/contents/?ref=repo',
+          (req, res, ctx) => {
+            expect(req.headers.get('authorization')).toBe(
+              mockHeaders.Authorization,
+            );
+            expect(req.headers.get('otherheader')).toBe(
+              mockHeaders.otherheader,
+            );
+            return res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/x-gzip'),
+              ctx.body('foo'),
+            );
+          },
+        ),
+      );
+
+      const processor = new GithubUrlReader(
+        {
+          host: 'ghe.github.com',
+          apiBaseUrl: 'https://api.github.com',
+        },
+        { treeResponseFactory, credentialsProvider: mockCredentialsProvider },
+      );
+      await processor.read(
+        'https://ghe.github.com/backstage/mock/tree/blob/repo',
+      );
+    });
+  });
+
   describe('readTree', () => {
-    const worker = setupServer();
-
-    msw.setupDefaultHandlers(worker);
-
     const repoBuffer = fs.readFileSync(
       path.resolve('src', 'reading', '__fixtures__', 'repo.tar.gz'),
     );
@@ -74,7 +128,7 @@ describe('GithubUrlReader', () => {
           host: 'github.com',
           apiBaseUrl: 'https://api.github.com',
         },
-        { treeResponseFactory },
+        { treeResponseFactory, credentialsProvider: mockCredentialsProvider },
       );
 
       const response = await processor.readTree(
@@ -110,7 +164,7 @@ describe('GithubUrlReader', () => {
           host: 'ghe.github.com',
           apiBaseUrl: 'https://api.github.com',
         },
-        { treeResponseFactory },
+        { treeResponseFactory, credentialsProvider: mockCredentialsProvider },
       );
 
       const response = await processor.readTree(
@@ -125,13 +179,57 @@ describe('GithubUrlReader', () => {
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
     });
 
+    it('should use the headers from the credentials provider to the fetch request', async () => {
+      expect.assertions(2);
+
+      const mockHeaders = {
+        Authorization: 'bearer blah',
+        otherheader: 'something',
+      };
+
+      (mockCredentialsProvider.getCredentials as jest.Mock).mockResolvedValue({
+        headers: mockHeaders,
+      });
+
+      worker.use(
+        rest.get(
+          'https://ghe.github.com/backstage/mock/archive/repo.tar.gz',
+          (req, res, ctx) => {
+            expect(req.headers.get('authorization')).toBe(
+              mockHeaders.Authorization,
+            );
+            expect(req.headers.get('otherheader')).toBe(
+              mockHeaders.otherheader,
+            );
+            return res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/x-gzip'),
+              ctx.body(repoBuffer),
+            );
+          },
+        ),
+      );
+
+      const processor = new GithubUrlReader(
+        {
+          host: 'ghe.github.com',
+          apiBaseUrl: 'https://api.github.com',
+        },
+        { treeResponseFactory, credentialsProvider: mockCredentialsProvider },
+      );
+
+      await processor.readTree(
+        'https://ghe.github.com/backstage/mock/tree/repo/docs',
+      );
+    });
+
     it('must specify a branch', async () => {
       const processor = new GithubUrlReader(
         {
           host: 'github.com',
           apiBaseUrl: 'https://api.github.com',
         },
-        { treeResponseFactory },
+        { treeResponseFactory, credentialsProvider: mockCredentialsProvider },
       );
 
       await expect(
@@ -147,7 +245,7 @@ describe('GithubUrlReader', () => {
           host: 'github.com',
           apiBaseUrl: 'https://api.github.com',
         },
-        { treeResponseFactory },
+        { treeResponseFactory, credentialsProvider: mockCredentialsProvider },
       );
 
       const response = await processor.readTree(
