@@ -74,6 +74,8 @@ function fetchResultsToResponseWrapper(
 
 const statusCodeToErrorType = (statusCode: number): KubernetesErrorTypes => {
   switch (statusCode) {
+    case 400:
+      return 'BAD_REQUEST';
     case 401:
       return 'UNAUTHORIZED_ERROR';
     case 500:
