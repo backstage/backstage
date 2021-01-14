@@ -113,17 +113,17 @@ export const ErrorEmptyState = () => {
   return (
     <Grid
       container
-      justify="center"
-      direction="column"
+      justify="space-around"
+      direction="row"
       alignItems="center"
       spacing={2}
     >
-      <Grid item xs={12}>
+      <Grid item xs={4}>
         <Typography variant="h5">
           Nice! There are no errors to report!
         </Typography>
       </Grid>
-      <Grid item xs={12}>
+      <Grid item xs={4}>
         <img
           src={EmptyStateImage}
           alt="EmptyState"
