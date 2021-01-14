@@ -17,3 +17,4 @@
 | [Fiverr](https://www.fiverr.com)             | [@nirga](https://github.com/nirga)                           | Unifying separate tools that developers are using today (i.e. monitoring, dead letter queues management, etc.) into a single platform. |
 | [Zalando SE](https://www.zalando.de)         | [@leviferreira](https://github.com/leviferreira)             | Building V2 of the Internal Development Portal.                                                                                        |
 | [LegalZoom](https://legalzoom.com)           | [@backjo](https://github.com/backjo)                         | Developer portal - hub for all engineering projects and metadata.                                                                      |
+| [Expedia Group](https://www.expediagroup.com)| [Mike Turner](miturner@expediagroup.com), [Sneha Kumar](snkumar@expediagroup.com), [@guillermomanzo](https://github.com/guillermomanzo)         | EG Common Developer Toolkit
