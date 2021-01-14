@@ -1,5 +1,13 @@
 # @backstage/plugin-graphiql
 
+## 0.2.5
+
+### Patch Changes
+
+- 5a1368ba1: Updated README
+- Updated dependencies [265a7ab30]
+  - @backstage/core@0.4.4
+
 ## 0.2.4
 
 ### Patch Changes

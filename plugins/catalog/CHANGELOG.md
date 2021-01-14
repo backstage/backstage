@@ -1,5 +1,22 @@
 # @backstage/plugin-catalog
 
+## 0.2.11
+
+### Patch Changes
+
+- c00488983: Enable catalog table actions for all location types.
+
+  The edit button has had support for other providers for a while and there is
+  no specific reason the View in GitHub cannot work for all locations. This
+  change also replaces the GitHub icon with the OpenInNew icon.
+
+- Updated dependencies [f3b064e1c]
+- Updated dependencies [265a7ab30]
+- Updated dependencies [abbee6fff]
+- Updated dependencies [147fadcb9]
+  - @backstage/catalog-model@0.6.1
+  - @backstage/core@0.4.4
+
 ## 0.2.10
 
 ### Patch Changes

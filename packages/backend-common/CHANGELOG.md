@@ -1,5 +1,12 @@
 # @backstage/backend-common
 
+## 0.4.3
+
+### Patch Changes
+
+- Updated dependencies [466354aaa]
+  - @backstage/integration@0.2.0
+
 ## 0.4.2
 
 ### Patch Changes

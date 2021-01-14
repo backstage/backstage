@@ -1,7 +1,7 @@
 {
   "name": "@backstage/techdocs-common",
   "description": "Common functionalities for TechDocs, to be shared between techdocs-backend plugin and techdocs-cli",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "private": false,
@@ -37,10 +37,10 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1.0",
-    "@backstage/backend-common": "^0.4.2",
-    "@backstage/catalog-model": "^0.6.0",
+    "@backstage/backend-common": "^0.4.3",
+    "@backstage/catalog-model": "^0.6.1",
     "@backstage/config": "^0.1.2",
-    "@backstage/integration": "^0.1.5",
+    "@backstage/integration": "^0.2.0",
     "@google-cloud/storage": "^5.6.0",
     "@types/dockerode": "^3.2.1",
     "@types/express": "^4.17.6",
@@ -57,7 +57,7 @@
   },
   "devDependencies": {
     "@aws-sdk/types": "3.1.0",
-    "@backstage/cli": "^0.4.5",
+    "@backstage/cli": "^0.4.6",
     "@types/fs-extra": "^9.0.5",
     "@types/git-url-parse": "^9.0.0",
     "@types/js-yaml": "^3.12.5",

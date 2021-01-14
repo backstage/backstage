@@ -30,7 +30,7 @@ export const RELATION_OWNED_BY = 'ownedBy';
 export const RELATION_OWNER_OF = 'ownerOf';
 
 /**
- * A relation with an API entity, typically from a component or system
+ * A relation with an API entity, typically from a component
  */
 export const RELATION_CONSUMES_API = 'consumesApi';
 export const RELATION_API_CONSUMED_BY = 'apiConsumedBy';

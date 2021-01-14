@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import { errorApiRef, useApi } from '@backstage/core-api';
+import {
+  EmptyState,
+  errorApiRef,
+  InfoCard,
+  Table,
+  useApi,
+} from '@backstage/core';
+import { Button, Link } from '@material-ui/core';
+import React, { useEffect } from 'react';
+import { generatePath, Link as RouterLink } from 'react-router-dom';
 import { GITHUB_ACTIONS_ANNOTATION } from '../useProjectName';
 import { useWorkflowRuns } from '../useWorkflowRuns';
-import React, { useEffect } from 'react';
-import { EmptyState, InfoCard, Table } from '@backstage/core';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
-import { Button, Link } from '@material-ui/core';
-import { generatePath, Link as RouterLink } from 'react-router-dom';
 
 const firstLine = (message: string): string => message.split('\n')[0];
 

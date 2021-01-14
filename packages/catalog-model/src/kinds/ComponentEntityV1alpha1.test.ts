@@ -36,6 +36,7 @@ describe('ComponentV1alpha1Validator', () => {
         subcomponentOf: 'monolith',
         providesApis: ['api-0'],
         consumesApis: ['api-0'],
+        system: 'system',
       },
     };
   });
@@ -157,5 +158,20 @@ describe('ComponentV1alpha1Validator', () => {
   it('accepts no consumesApis', async () => {
     (entity as any).spec.consumesApis = [];
     await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('accepts missing system', async () => {
+    delete (entity as any).spec.system;
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects wrong system', async () => {
+    (entity as any).spec.system = 7;
+    await expect(validator.check(entity)).rejects.toThrow(/system/);
+  });
+
+  it('rejects empty system', async () => {
+    (entity as any).spec.system = '';
+    await expect(validator.check(entity)).rejects.toThrow(/system/);
   });
 });
