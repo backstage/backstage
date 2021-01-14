@@ -10,7 +10,7 @@ description: Documentation and migration instructions for new composability APIs
 This page describes the new composability system that was recently introduced in
 Backstage, and it does so from the perspective of the existing patterns and
 APIs. As the new system is solidified and existing code is ported, this page
-will removed and replaced with a more direct description of the composability
+will be removed and replaced with a more direct description of the composability
 system. For now, the primary purpose of this documentation is to aid in the
 migration of existing plugins, but it does cover the migration of apps as well.
 
@@ -232,7 +232,7 @@ const MyComponent = () => {
 
 Now let's assume that we want to link from the `BarPage` to the `FooPage`.
 Before the introduction of the new composability system, we would do this by
-importing the `fooPageRouteRef` from the `fooPlugin`. This created an
+importing the `fooPageRouteRef` exported by the `fooPlugin`. This created an
 unnecessary dependency on the plugin, and also provided little flexibility in
 allowing the app to tie plugins together, with the links instead being dictated
 by the plugins themselves. To solve this, we introduce `ExternalRouteRef`s. Much
@@ -272,7 +272,8 @@ createApp({
 ```
 
 Given the above binding, using `useRouteRef(headerLinkRouteRef)` within the
-`barPlugin` will let us create a link whatever path the `FooPage` is mounted at.
+`barPlugin` will let us create a link to whatever path the `FooPage` is mounted
+at.
 
 Note that we are not importing and using the `RouteRef`s directly in the app,
 and instead rely on the plugin instance to access routes of the plugins. This is
@@ -302,7 +303,7 @@ export const barPlugin = createPlugin({
 Also note that you almost always want to create the route references themselves
 in a different file than the one that creates the plugin instance, for example a
 top-level `routes.ts`. This is to avoid circular imports when you use the route
-references from other parts of the app.
+references from other parts of the same plugin.
 
 ### Parameterized Routes
 
@@ -347,11 +348,11 @@ entity. A `switch` or `if` / `else if` chain is then used to select what
 children should be rendered based on information in the entity.
 
 This pattern will no longer work with the new composability system, and in
-general is very difficult to build any form declarative model around, as it
+general is very difficult to build any form of declarative model around, as it
 depends on runtime execution. To help replace existing code, a new
 `EntitySwitch` component has been added to the `@backstage/catalog` plugin,
-which grabs the selected entity from context, and selects at most one element to
-render using a list of `EntitySwitch.Case`s children.
+which grabs the selected entity from a context, and selects at most one element
+to render using a list of `EntitySwitch.Case` children.
 
 For example, if you want all entities of kind `"Template"` to be rendered with a
 `MyTemplate` component, and all other entities to be rendered with a `MyOther`
@@ -530,8 +531,8 @@ It would be ported to this:
 ```
 
 In addition to the renaming, the `element` prop has been moved to `children`.
-Also note that the `/*` suffix has been remove from the `"/kubernetes"` path, as
-it's now added automatically.
+Also note that the `/*` suffix has been removed from the `"/kubernetes"` path,
+as it's now added automatically.
 
 Usage of the `EntityLayout` component is required to be able to properly
 discover routes, and so it is required to apply this change before you can start
