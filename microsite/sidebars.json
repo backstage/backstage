@@ -95,6 +95,7 @@
       "plugins/plugin-development",
       "plugins/structure-of-a-plugin",
       "plugins/integrating-plugin-into-service-catalog",
+      "plugins/composability",
       {
         "type": "subcategory",
         "label": "Backends and APIs",

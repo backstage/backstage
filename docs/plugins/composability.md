@@ -1,6 +1,6 @@
 ---
 id: composability
-title: New Composability System
+title: Composability System Migration
 description:
   Documentation and migration instructions for new composability APIs.
 ---
@@ -8,10 +8,11 @@ description:
 ## Summary
 
 This page describes the new composability system that was recently introduced in
-Backstage. It describes the new system from the perspective of the existing
-patterns and APIs. As the new system is solidified and existing code is ported,
-this page will removed and replaced with a more direct description of the
-composability system.
+Backstage, and it does so from the perspective of the existing patterns and
+APIs. As the new system is solidified and existing code is ported, this page
+will removed and replaced with a more direct description of the composability
+system. For now, the primary purpose of this documentation is to aid in the
+migration of existing plugins, but it does cover the migration of apps as well.
 
 The core principle of the new composability system is that plugins should have
 clear boundaries and connections. It should isolate crashes within a plugin, but
