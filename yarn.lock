@@ -8560,12 +8560,12 @@ axobject-query@^2.0.2:
   integrity sha512-ICt34ZmrVt8UQnvPl6TVyDTkmhXmAyAT4Jh5ugfGUX4MOrZ+U/ZY6/sdylRw3qGNr9Ub5AJsaHeDMzNLehRdOQ==
 
 azure-devops-node-api@^10.1.1:
-  version "10.1.1"
-  resolved "https://registry.npmjs.org/azure-devops-node-api/-/azure-devops-node-api-10.1.1.tgz#9016d8935316fff260f5f8fafd81d0caff90a19e"
-  integrity sha512-P4Hyrh/+Nzc2KXQk73z72/GsenSWIH5o8uiyELqykJYs9TWTVCxVwghoR7lPeiY6QVoXkq2S2KtvAgi5fyjl9w==
+  version "10.2.1"
+  resolved "https://registry.npmjs.org/azure-devops-node-api/-/azure-devops-node-api-10.2.1.tgz#835080164f8c30cec6506c47198b044c053f1f36"
+  integrity sha512-XuSiUaYpk0tQpd9fD8qfRa5y1IdavupKNVmwxy0w/RhmxG2Wl8uAYnNJchUoWd3Rn9On0mYTCCZSn+UlYdYFSg==
   dependencies:
     tunnel "0.0.6"
-    typed-rest-client "^1.7.3"
+    typed-rest-client "^1.8.0"
     underscore "1.8.3"
 
 babel-code-frame@^6.22.0:
@@ -24941,10 +24941,10 @@ type@^2.0.0:
   resolved "https://registry.npmjs.org/type/-/type-2.0.0.tgz#5f16ff6ef2eb44f260494dae271033b29c09a9c3"
   integrity sha512-KBt58xCHry4Cejnc2ISQAF7QY+ORngsWfxezO68+12hKV6lQY8P/psIkcbjeHWn7MqcgciWJyCCevFMJdIXpow==
 
-typed-rest-client@^1.7.3:
-  version "1.7.3"
-  resolved "https://registry.npmjs.org/typed-rest-client/-/typed-rest-client-1.7.3.tgz#1beb263b86b14d34596f6127c6172dd5fd652e7b"
-  integrity sha512-CwTpx/TkRHGZoHkJhBcp4X8K3/WtlzSHVQR0OIFnt10j4tgy4ypgq/SrrgVpA1s6tAL49Q6J3R5C0Cgfh2ddqA==
+typed-rest-client@^1.8.0:
+  version "1.8.0"
+  resolved "https://registry.npmjs.org/typed-rest-client/-/typed-rest-client-1.8.0.tgz#3b6c22a7cc31b665ec1e4bedb3482ebe12e2fbe6"
+  integrity sha512-Nu1MrdH6ECrRW5gHoRAdubgCs4oH6q5/J76jsEC8bVDfvVoVPkigukPalhMHPwb7ZvpsZqPptd5zpt/QdtrdBw==
   dependencies:
     qs "^6.9.1"
     tunnel "0.0.6"
