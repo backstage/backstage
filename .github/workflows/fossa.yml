@@ -13,21 +13,23 @@ jobs:
       matrix:
         node-version: [10.x, 12.x, 14.x, 15.x]
 
-    steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
-      - run: npm ci
-      - run: npm run build --if-present
-      - run: npm test
-        # Runs a set of commands to initialize and analyze with FOSSA
-      - name: run FOSSA analysis
-        env:
-          # FOSSA Push-Only API Token
-          FOSSA_API_KEY: '9ee7e8893660832a7387dcc32377fb61'
-        run: |
-          curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | bash
-          fossa init
-          fossa analyze
+steps:
+  - uses: actions/checkout@v2
+  - uses: borales/actions-yarn@v2.0.0
+    with:
+      cmd: install
+  - uses: borales/actions-yarn@v2.0.0
+    with:
+      cmd: build
+  - uses: borales/actions-yarn@v2.0.0
+    with:
+      cmd: test
+    # Runs a set of commands to initialize and analyze with FOSSA
+  - name: run FOSSA analysis
+    env:
+      # FOSSA Push-Only API Token
+      FOSSA_API_KEY: '9ee7e8893660832a7387dcc32377fb61'
+    run: |
+      curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | bash
+      fossa init
+      fossa analyze
