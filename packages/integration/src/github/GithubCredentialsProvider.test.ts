@@ -170,7 +170,7 @@ describe('GithubCredentialsProvider tests', () => {
         url: 'https://github.com/backstage',
       }),
     ).rejects.toThrow(
-      'Application must be installed for the entire organization',
+      'The Backstage GitHub application used in the backstage organization must be installed for the entire organization to be able to issue credentials without a specified repository.',
     );
   });
 

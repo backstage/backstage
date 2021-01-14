@@ -88,7 +88,7 @@ class GithubAppManager {
 
     if (repositorySelection !== 'all' && !repo) {
       throw new Error(
-        'Application must be installed for the entire organization',
+        `The Backstage GitHub application used in the ${owner} organization must be installed for the entire organization to be able to issue credentials without a specified repository.`,
       );
     }
 
