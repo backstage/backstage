@@ -62,7 +62,7 @@ export type GitHubIntegrationConfig = {
   /**
    * The GitHub Apps configuration to use for requests to this provider.
    *
-   * If no apps is specified, token or anonymous is used.
+   * If no apps are specified, token or anonymous is used.
    */
   apps?: GithubAppConfig[];
 };
