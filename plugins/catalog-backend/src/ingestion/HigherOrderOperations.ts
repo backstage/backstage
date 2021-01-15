@@ -186,7 +186,7 @@ export class HigherOrderOperations implements HigherOrderOperation {
       throw e;
     }
 
-    this.logger.info(`Posting update success markers`);
+    this.logger.debug(`Posting update success markers`);
 
     await this.locationsCatalog.logUpdateSuccess(
       location.id,

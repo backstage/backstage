@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-organizations": "^3.2.0",
-    "@azure/msal-node": "^1.0.0-alpha.8",
+    "@azure/msal-node": "^1.0.0-beta.3",
     "@backstage/backend-common": "^0.4.3",
     "@backstage/catalog-model": "^0.6.1",
     "@backstage/config": "^0.1.2",

@@ -879,21 +879,20 @@
   dependencies:
     tslib "^1.8.0"
 
-"@azure/msal-common@^1.6.2":
-  version "1.6.2"
-  resolved "https://registry.npmjs.org/@azure/msal-common/-/msal-common-1.6.2.tgz#91f3732866d727e20f1e142e6e88a981268fbff2"
-  integrity sha512-GShzp1q7Ld8SwYiDEjQZ9PmFOY4x+2stE86maiguylE9/d/c2muqKjc8aepmEqyjbV7o/omDvEf2Sr9QcIqkSA==
+"@azure/msal-common@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/@azure/msal-common/-/msal-common-2.1.0.tgz#a4bc17e254d6ec524016f13267947dd4ff4a624d"
+  integrity sha512-Y1Id+jG59S3eY2ZQQtUA/lxwbRcgjcWaiib9YX+SwV3zeRauKfEiZT7l3z+lwV+T+Sst20F6l1mJsfQcfE7CEQ==
   dependencies:
     debug "^4.1.1"
 
-"@azure/msal-node@^1.0.0-alpha.8":
-  version "1.0.0-alpha.12"
-  resolved "https://registry.npmjs.org/@azure/msal-node/-/msal-node-1.0.0-alpha.12.tgz#09d8d52f5cea90b133c3d48fe4ec477693040c91"
-  integrity sha512-uGLOJRWiEhfJIrTv/lwdm4RxQFm++00h83zNgDn0O3NkXlzAoCCq9QFYW84PjMR/Q2PUvVy7uW+6yKL/Nq3gBA==
+"@azure/msal-node@^1.0.0-beta.3":
+  version "1.0.0-beta.3"
+  resolved "https://registry.npmjs.org/@azure/msal-node/-/msal-node-1.0.0-beta.3.tgz#c84c7948028b39e48b901f5fac35bdedcbc8772e"
+  integrity sha512-/KfYRfrsOIrZONvo/0Vi5umuqbPBtCWNtmRvkse64uI0C4CP/W4WXwRD42VMws/8LtKvr1I5rYlYgFzt5zDz/A==
   dependencies:
-    "@azure/msal-common" "^1.6.2"
-    axios "^0.19.2"
-    debug "^4.1.1"
+    "@azure/msal-common" "^2.1.0"
+    axios "^0.21.1"
     jsonwebtoken "^8.5.1"
     uuid "^8.3.0"
 
@@ -2436,7 +2435,7 @@
     to-fast-properties "^2.0.0"
 
 "@backstage/catalog-model@^0.2.0":
-  version "0.6.0"
+  version "0.6.1"
   dependencies:
     "@backstage/config" "^0.1.2"
     "@types/json-schema" "^7.0.5"
@@ -2447,7 +2446,7 @@
     yup "^0.29.3"
 
 "@backstage/catalog-model@^0.3.0":
-  version "0.6.0"
+  version "0.6.1"
   dependencies:
     "@backstage/config" "^0.1.2"
     "@types/json-schema" "^7.0.5"
@@ -2458,7 +2457,7 @@
     yup "^0.29.3"
 
 "@backstage/core@^0.3.0":
-  version "0.4.3"
+  version "0.4.4"
   dependencies:
     "@backstage/config" "^0.1.2"
     "@backstage/core-api" "^0.2.8"
