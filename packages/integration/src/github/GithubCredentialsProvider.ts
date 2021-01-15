@@ -60,7 +60,9 @@ const HEADERS = {
   Accept: 'application/vnd.github.machine-man-preview+json',
 };
 
-// GithubAppManager issues tokens for a speicifc GitHub App
+/**
+ * GithubAppManager issues and caches tokens for a specific GitHub App.
+ */
 class GithubAppManager {
   private readonly appClient: Octokit;
   private readonly baseAuthConfig: { appId: number; privateKey: string };
