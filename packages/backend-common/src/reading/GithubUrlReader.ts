@@ -21,7 +21,7 @@ import {
   getGitHubRequestOptions,
 } from '@backstage/integration';
 import fetch from 'cross-fetch';
-import parseGitUri from 'git-url-parse';
+import parseGitUrl from 'git-url-parse';
 import { Readable } from 'stream';
 import { InputError, NotFoundError } from '../errors';
 import { ReadTreeResponseFactory } from './tree';
@@ -92,7 +92,7 @@ export class GithubUrlReader implements UrlReader {
       resource,
       full_name,
       filepath,
-    } = parseGitUri(url);
+    } = parseGitUrl(url);
 
     if (!ref) {
       // TODO(Rugvip): We should add support for defaulting to the default branch
