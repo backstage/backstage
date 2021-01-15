@@ -51,6 +51,15 @@ class Cache {
     date.diff(DateTime.local(), 'minutes').minutes > 50;
 }
 
+/**
+ * This accept header is required when calling App APIs in GitHub Enterprise.
+ * It has no effect on calls to github.com and can probably be removed entierly
+ * once GitHub Apps is out of preview.
+ */
+const HEADERS = {
+  Accept: 'application/vnd.github.machine-man-preview+json',
+};
+
 // GithubAppManager issues tokens for a speicifc GitHub App
 class GithubAppManager {
   private readonly appClient: Octokit;
@@ -58,12 +67,14 @@ class GithubAppManager {
   private installations?: RestEndpointMethodTypes['apps']['listInstallations']['response'];
   private readonly cache = new Cache();
 
-  constructor(config: GithubAppConfig) {
+  constructor(config: GithubAppConfig, baseUrl?: string) {
     this.baseAuthConfig = {
       appId: config.appId,
       privateKey: config.privateKey,
     };
     this.appClient = new Octokit({
+      baseUrl,
+      headers: HEADERS,
       authStrategy: createAppAuth,
       auth: this.baseAuthConfig,
     });
@@ -85,7 +96,6 @@ class GithubAppManager {
           .join('/')} is suspended`,
       );
     }
-
     if (repositorySelection !== 'all' && !repo) {
       throw new Error(
         `The Backstage GitHub application used in the ${owner} organization must be installed for the entire organization to be able to issue credentials without a specified repository.`,
@@ -99,9 +109,9 @@ class GithubAppManager {
     return this.cache.getOrCreateToken(cacheKey, async () => {
       const result = await this.appClient.apps.createInstallationAccessToken({
         installation_id: installationId,
+        headers: HEADERS,
         repositories,
       });
-
       return {
         token: result.data.token,
         expiresAt: DateTime.fromISO(result.data.expires_at),
@@ -116,6 +126,7 @@ class GithubAppManager {
       this.installations = await this.appClient.apps.listInstallations({
         headers: {
           'If-None-Match': this.installations?.headers.etag,
+          Accept: HEADERS.Accept,
         },
       });
     } catch (error) {
@@ -133,7 +144,6 @@ class GithubAppManager {
         repositorySelection: installation.repository_selection,
       };
     }
-
     const notFoundError = new Error(
       `No app installation found for ${owner} in ${this.baseAuthConfig.appId}`,
     );
@@ -147,7 +157,8 @@ export class GithubAppCredentialsMux {
   private readonly apps: GithubAppManager[];
 
   constructor(config: GitHubIntegrationConfig) {
-    this.apps = config.apps?.map(ac => new GithubAppManager(ac)) ?? [];
+    this.apps =
+      config.apps?.map(ac => new GithubAppManager(ac, config.apiBaseUrl)) ?? [];
   }
 
   async getAppToken(owner: string, repo?: string): Promise<string | undefined> {
