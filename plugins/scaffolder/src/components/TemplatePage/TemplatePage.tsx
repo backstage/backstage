@@ -67,7 +67,8 @@ const OWNER_REPO_SCHEMA = {
       format: 'storeLocation',
       type: 'string' as const,
       title: 'Store path',
-      description: 'GitHub store path in org/repo format',
+      description:
+        'A full URL to the repository that should be created. e.g https://github.com/backstage/new-repo',
     },
     access: {
       type: 'string' as const,
@@ -188,9 +189,13 @@ export const TemplatePage = () => {
                     const { storePath } = formData;
                     const parsedUrl = gitParse(storePath);
 
-                    if (!parsedUrl.resource) {
+                    if (
+                      !parsedUrl.resource ||
+                      !parsedUrl.owner ||
+                      !parsedUrl.name
+                    ) {
                       errors.storePath.addError(
-                        'There needs to be a hostname in the store path',
+                        'The store path should be a complete Git URL to the new repository location. For example https://github.com/backstage/new-repo',
                       );
                     }
 
