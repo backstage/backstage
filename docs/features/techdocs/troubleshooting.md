@@ -40,7 +40,10 @@ locally:
 npx: installed 278 in 9.682s
 [techdocs-preview-bundle] Running local version of Backstage at http://localhost:3000
 INFO    -  Building documentation...
-WARNING -  Config value: 'dev_addr'. Warning: The use of the IP address '0.0.0.0' suggests a production environment or the use of a proxy to connect to the MkDocs server. However, the MkDocs' server is intended for local development purposes only. Please use a third party production-ready server instead.
+WARNING -  Config value: 'dev_addr'. Warning: The use of the IP address '0.0.0.0'
+  suggests a production environment or the use of a proxy to connect to the MkDocs
+  server. However, the MkDocs' server is intended for local development purposes only.
+  Please use a third party production-ready server instead.
 INFO    -  Cleaning site directory
 DEBUG   -  Successfully imported extension module "plantuml_markdown".
 DEBUG   -  Successfully loaded extension "plantuml_markdown.PlantUMLMarkdownExtension".
