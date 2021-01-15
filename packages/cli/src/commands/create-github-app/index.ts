@@ -26,7 +26,7 @@ import { GithubCreateAppServer } from './GithubCreateAppServer';
 export default async (org: string) => {
   const { slug, name, ...config } = await GithubCreateAppServer.run({ org });
 
-  const fileName = `github-app-${slug}.yaml`;
+  const fileName = `github-app-${slug}-credentials.yaml`;
   const content = `# Name: ${name}\n${stringifyYaml(config)}`;
   await fs.writeFile(paths.resolveTargetRoot(fileName), content);
   console.log(`GitHub App configuration written to ${chalk.cyan(fileName)}`);
