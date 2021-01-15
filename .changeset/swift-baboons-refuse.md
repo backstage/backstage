@@ -50,4 +50,4 @@ export default async function createPlugin({
 }
 ```
 
-This will ensure that the `scaffolder-backend` backage can add handlers for the `url` protocol which is becoming the standard when registering entities in the `catalog`
+This will ensure that the `scaffolder-backend` package can add handlers for the `url` protocol which is becoming the standard when registering entities in the `catalog`
