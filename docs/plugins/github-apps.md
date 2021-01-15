@@ -9,7 +9,7 @@ the OAuth apps and their respective scopes.
 
 ## Caveats
 
-- It's not possible to have multiple backstage GitHub Apps installed in the same
+- It's not possible to have multiple Backstage GitHub Apps installed in the same
   GitHub organization be managed by Backstage. We currently don't check through
   all the registered GitHub Apps to see which ones are installed for a
   particular repository. We just respect global Organization installs right now.
