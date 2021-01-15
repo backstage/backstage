@@ -27,12 +27,16 @@ import { entityRoute } from '../../routes';
 
 type EntityRefLinkProps = {
   entityRef: Entity | EntityName;
+  defaultKind?: string;
 };
 
 // TODO: This component is private for now, as it should probably belong into
 // some kind of helper module for the catalog plugin to avoid a dependency on
 // the catalog plugin itself.
-export const EntityRefLink = ({ entityRef }: EntityRefLinkProps) => {
+export const EntityRefLink = ({
+  entityRef,
+  defaultKind,
+}: EntityRefLinkProps) => {
   let kind;
   let namespace;
   let name;
@@ -54,7 +58,7 @@ export const EntityRefLink = ({ entityRef }: EntityRefLinkProps) => {
   kind = kind.toLowerCase();
 
   const title = `${serializeEntityRef({
-    kind,
+    kind: defaultKind && defaultKind.toLowerCase() === kind ? undefined : kind,
     name,
     namespace,
   })}`;
@@ -64,6 +68,7 @@ export const EntityRefLink = ({ entityRef }: EntityRefLinkProps) => {
     name,
   };
 
+  // TODO: Use useRouteRef here to generate the path
   return (
     <Link
       component={RouterLink}

@@ -50,10 +50,12 @@ export const AboutContent = ({ entity }: Props) => {
         </Typography>
       </AboutField>
       <AboutField label="Owner" gridSizes={{ xs: 12, sm: 6, lg: 4 }}>
-        {ownedByRelations.map((t, i) => [
-          i > 0 && ', ',
-          <EntityRefLink key={i} entityRef={t} />,
-        ])}
+        {ownedByRelations.map((t, i) => (
+          <React.Fragment key={i}>
+            {i > 0 && ', '}
+            <EntityRefLink entityRef={t} />
+          </React.Fragment>
+        ))}
       </AboutField>
       <AboutField
         label="System"
@@ -61,7 +63,10 @@ export const AboutContent = ({ entity }: Props) => {
         gridSizes={{ xs: 12, sm: 6, lg: 4 }}
       >
         {partOfSystemRelation && (
-          <EntityRefLink entityRef={partOfSystemRelation} />
+          <EntityRefLink
+            entityRef={partOfSystemRelation}
+            defaultKind="system"
+          />
         )}
       </AboutField>
       <AboutField
