@@ -118,14 +118,7 @@ export class Publishers implements PublisherBuilder {
     const azureConfig = config.getOptionalConfig('scaffolder.azure');
     if (azureConfig) {
       try {
-        const baseUrl = azureConfig.getString('baseUrl');
-        const azureToken = azureConfig.getConfig('api').getString('token');
-
-        const authHandler = getPersonalAccessTokenHandler(azureToken);
-        const webApi = new WebApi(baseUrl, authHandler);
-        const azureClient = await webApi.getGitApi();
-
-        const azurePublisher = new AzurePublisher(azureClient, azureToken);
+        const azurePublisher = new AzurePublisher(config, { logger });
         publishers.register('azure/api', azurePublisher);
       } catch (e) {
         const providerName = 'azure';
