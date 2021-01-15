@@ -70,6 +70,7 @@ Ek
 env
 Env
 eslint
+Expedia
 facto
 failover
 Figma
@@ -77,6 +78,7 @@ Firekube
 Fiverr
 freben
 Fredrik
+gitbeaker
 GitHub
 GitLab
 Grafana
@@ -107,6 +109,7 @@ Kaewkasi
 Knex
 kubectl
 kubernetes
+Kumar
 learnings
 lerna
 Lerna
@@ -142,6 +145,7 @@ npm
 nvarchar
 nvm
 OAuth
+octokit
 oidc
 Okta
 Oldsberg
@@ -181,6 +185,8 @@ rollbar
 Rollbar
 Rollup
 Rosaceae
+routable
+Routable
 rst
 rsync
 rugvip
@@ -193,6 +199,7 @@ semlas
 semver
 Serverless
 Sinon
+Sneha
 Snyk
 sourcemaps
 sparklines

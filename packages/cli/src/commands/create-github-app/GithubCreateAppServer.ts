@@ -47,7 +47,6 @@ const FORM_PAGE = `
 
 type GithubAppConfig = {
   appId: number;
-  apiUrl: string;
   slug?: string;
   name?: string;
   webhookUrl?: string;
@@ -88,14 +87,11 @@ export class GithubCreateAppServer {
           `POST /app-manifests/${encodeURIComponent(
             req.query.code as string,
           )}/conversions`,
-        ).then(({ data, url }) => {
-          // url = https://api.github.com/app-manifests/<code>/conversions
-          const apiUrl = url.replace(/(?:\/[^\/]+){3}$/, '');
+        ).then(({ data }) => {
           resolve({
             name: data.name,
             slug: data.slug,
             appId: data.id,
-            apiUrl,
             webhookUrl: this.webhookUrl,
             clientId: data.client_id,
             clientSecret: data.client_secret,

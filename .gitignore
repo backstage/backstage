@@ -130,3 +130,6 @@ site
 
 # Local configuration files
 *.local.yaml
+
+# Sensitive credentials
+*-credentials.yaml

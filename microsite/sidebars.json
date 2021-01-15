@@ -83,6 +83,7 @@
           "features/techdocs/creating-and-publishing",
           "features/techdocs/configuration",
           "features/techdocs/using-cloud-storage",
+          "features/techdocs/how-to-guides",
           "features/techdocs/troubleshooting",
           "features/techdocs/faqs"
         ]
@@ -95,6 +96,7 @@
       "plugins/plugin-development",
       "plugins/structure-of-a-plugin",
       "plugins/integrating-plugin-into-service-catalog",
+      "plugins/composability",
       {
         "type": "subcategory",
         "label": "Backends and APIs",
@@ -176,6 +178,7 @@
     ],
     "Contribute": ["../CONTRIBUTING"],
     "Support": ["support/support", "support/project-structure"],
+    "Glossary": ["glossary"],
     "FAQ": ["FAQ"]
   }
 }

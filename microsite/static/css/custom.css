@@ -48,6 +48,11 @@ h6 {
   color: $textColor;
 }
 
+summary {
+  color: $textColor;
+  cursor: pointer;
+}
+
 h2:hover .hash-link {
   opacity: 1;
 }

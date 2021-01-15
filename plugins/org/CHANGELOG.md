@@ -1,5 +1,19 @@
 # @backstage/plugin-org
 
+## 0.3.3
+
+### Patch Changes
+
+- f573cf368: Fixed - normalizing strings for comparison when ignoring when one is in low case.
+- Updated dependencies [f3b064e1c]
+- Updated dependencies [c00488983]
+- Updated dependencies [265a7ab30]
+- Updated dependencies [abbee6fff]
+- Updated dependencies [147fadcb9]
+  - @backstage/catalog-model@0.6.1
+  - @backstage/plugin-catalog@0.2.11
+  - @backstage/core@0.4.4
+
 ## 0.3.2
 
 ### Patch Changes

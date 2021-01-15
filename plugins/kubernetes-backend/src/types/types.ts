@@ -135,6 +135,7 @@ export interface KubernetesClustersSupplier {
 }
 
 export type KubernetesErrorTypes =
+  | 'BAD_REQUEST'
   | 'UNAUTHORIZED_ERROR'
   | 'SYSTEM_ERROR'
   | 'UNKNOWN_ERROR';

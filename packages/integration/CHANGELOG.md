@@ -1,5 +1,11 @@
 # @backstage/integration
 
+## 0.2.0
+
+### Minor Changes
+
+- 466354aaa: Build out the `ScmIntegrations` class, as well as the individual `*Integration` classes
+
 ## 0.1.5
 
 ### Patch Changes

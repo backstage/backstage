@@ -18,7 +18,6 @@ import { useAsyncRetry } from 'react-use';
 import { WorkflowRun } from './WorkflowRunsTable/WorkflowRunsTable';
 import { githubActionsApiRef } from '../api/GithubActionsApi';
 import { useApi, githubAuthApiRef, errorApiRef } from '@backstage/core';
-import { ActionsListWorkflowRunsForRepoResponseData } from '@octokit/types';
 
 export function useWorkflowRuns({
   owner,
@@ -55,44 +54,40 @@ export function useWorkflowRuns({
           page: page + 1,
           branch,
         })
-        .then(
-          (
-            workflowRunsData: ActionsListWorkflowRunsForRepoResponseData,
-          ): WorkflowRun[] => {
-            setTotal(workflowRunsData.total_count);
-            // Transformation here
-            return workflowRunsData.workflow_runs.map(run => ({
-              message: run.head_commit.message,
-              id: `${run.id}`,
-              onReRunClick: async () => {
-                try {
-                  await api.reRunWorkflow({
-                    token,
-                    owner,
-                    repo,
-                    runId: run.id,
-                  });
-                } catch (e) {
-                  errorApi.post(e);
-                }
+        .then((workflowRunsData): WorkflowRun[] => {
+          setTotal(workflowRunsData.total_count);
+          // Transformation here
+          return workflowRunsData.workflow_runs.map(run => ({
+            message: run.head_commit.message,
+            id: `${run.id}`,
+            onReRunClick: async () => {
+              try {
+                await api.reRunWorkflow({
+                  token,
+                  owner,
+                  repo,
+                  runId: run.id,
+                });
+              } catch (e) {
+                errorApi.post(e);
+              }
+            },
+            source: {
+              branchName: run.head_branch,
+              commit: {
+                hash: run.head_commit.id,
+                url: run.head_repository.branches_url.replace(
+                  '{/branch}',
+                  run.head_branch,
+                ),
               },
-              source: {
-                branchName: run.head_branch,
-                commit: {
-                  hash: run.head_commit.id,
-                  url: run.head_repository.branches_url.replace(
-                    '{/branch}',
-                    run.head_branch,
-                  ),
-                },
-              },
-              status: run.status,
-              conclusion: run.conclusion,
-              url: run.url,
-              githubUrl: run.html_url,
-            }));
-          },
-        )
+            },
+            status: run.status,
+            conclusion: run.conclusion,
+            url: run.url,
+            githubUrl: run.html_url,
+          }));
+        })
     );
   }, [page, pageSize, repo, owner]);
 

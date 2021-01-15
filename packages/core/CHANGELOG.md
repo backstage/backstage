@@ -1,5 +1,11 @@
 # @backstage/core
 
+## 0.4.4
+
+### Patch Changes
+
+- 265a7ab30: Fix issue where `SidebarItem` with `onClick` and without `to` renders an inaccessible div. It now renders a button.
+
 ## 0.4.3
 
 ### Patch Changes

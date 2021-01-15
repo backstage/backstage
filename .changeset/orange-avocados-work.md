@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-backend': patch
 ---
 
-AWS SDK version bump for Catalog Backend.
+Refuse to remove the bootstrap location
