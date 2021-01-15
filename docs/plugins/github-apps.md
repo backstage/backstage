@@ -1,4 +1,4 @@
-# Using GithubApps for backend authentication
+# Using GitHub Apps for Backend Authentication
 
 Backstage can be configured to use GitHub Apps for backend authentication. This
 comes with advantages such as higher rate limits and that Backstage can act as an
