@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Grid, Typography, Chip, makeStyles } from '@material-ui/core';
-import { AboutField } from './AboutField';
 import {
   Entity,
-  ENTITY_DEFAULT_NAMESPACE,
   RELATION_OWNED_BY,
-  serializeEntityRef,
+  RELATION_PART_OF,
 } from '@backstage/catalog-model';
+import { Chip, Grid, makeStyles, Typography } from '@material-ui/core';
+import React from 'react';
+import { EntityRefLink } from '../EntityRefLink';
+import { getEntityRelations } from '../getEntityRelations';
+import { AboutField } from './AboutField';
 
 const useStyles = makeStyles({
   description: {
@@ -36,6 +37,11 @@ type Props = {
 
 export const AboutContent = ({ entity }: Props) => {
   const classes = useStyles();
+  const [partOfSystemRelation] = getEntityRelations(entity, RELATION_PART_OF, {
+    kind: 'system',
+  });
+  const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
+
   return (
     <Grid container>
       <AboutField label="Description" gridSizes={{ xs: 12 }}>
@@ -43,22 +49,21 @@ export const AboutContent = ({ entity }: Props) => {
           {entity?.metadata?.description || 'No description'}
         </Typography>
       </AboutField>
+      <AboutField label="Owner" gridSizes={{ xs: 12, sm: 6, lg: 4 }}>
+        {ownedByRelations.map((t, i) => [
+          i > 0 && ', ',
+          <EntityRefLink key={i} entityRef={t} />,
+        ])}
+      </AboutField>
       <AboutField
-        label="Owner"
-        value={entity?.relations
-          ?.filter(r => r.type === RELATION_OWNED_BY)
-          .map(({ target: { kind, name, namespace } }) =>
-            // TODO(Rugvip): we want to provide some utils for this
-            serializeEntityRef({
-              kind,
-              name,
-              namespace:
-                namespace === ENTITY_DEFAULT_NAMESPACE ? undefined : namespace,
-            }),
-          )
-          .join(', ')}
+        label="System"
+        value="No System"
         gridSizes={{ xs: 12, sm: 6, lg: 4 }}
-      />
+      >
+        {partOfSystemRelation && (
+          <EntityRefLink entityRef={partOfSystemRelation} />
+        )}
+      </AboutField>
       <AboutField
         label="Type"
         value={entity?.spec?.type as string}
