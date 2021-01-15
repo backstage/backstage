@@ -190,7 +190,7 @@ export const TemplatePage = () => {
 
                     if (!parsedUrl.resource) {
                       errors.storePath.addError(
-                        'There needs to be a hostname in the storePath',
+                        'There needs to be a hostname in the store path',
                       );
                     }
 

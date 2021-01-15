@@ -31,16 +31,14 @@ import {
 export class AzurePreparer implements PreparerBase {
   private readonly integrations: AzureIntegrationConfig[];
   private readonly scaffolderToken: string | undefined;
-  private readonly logger: Logger;
 
   constructor(config: Config, { logger }: { logger: Logger }) {
-    this.logger = logger;
     this.integrations = readAzureIntegrationConfigs(
       config.getOptionalConfigArray('integrations.azure') ?? [],
     );
 
     if (!this.integrations.length) {
-      this.logger.warn(
+      logger.warn(
         'Integrations for Azure in Scaffolder are not set. This will cause errors in a future release. Please migrate to using integrations config and specifying tokens under hostnames',
       );
     }
@@ -50,7 +48,7 @@ export class AzurePreparer implements PreparerBase {
     );
 
     if (this.scaffolderToken) {
-      this.logger.warn(
+      logger.warn(
         "DEPRECATION: Using the token format under 'scaffolder.azure.api.token' will not be respected in future releases. Please consider using integrations config instead",
       );
     }
@@ -58,10 +56,11 @@ export class AzurePreparer implements PreparerBase {
 
   async prepare(
     template: TemplateEntityV1alpha1,
-    opts?: PreparerOptions,
+    opts: PreparerOptions,
   ): Promise<string> {
     const { protocol, location } = parseLocationAnnotation(template);
-    const workingDirectory = opts?.workingDirectory ?? os.tmpdir();
+    const workingDirectory = opts.workingDirectory ?? os.tmpdir();
+    const logger = opts.logger;
 
     if (!['azure/api', 'url'].includes(protocol)) {
       throw new InputError(
@@ -89,9 +88,9 @@ export class AzurePreparer implements PreparerBase {
       ? Git.fromAuth({
           password: token,
           username: 'notempty',
-          logger: this.logger,
+          logger,
         })
-      : Git.fromAuth({ logger: this.logger });
+      : Git.fromAuth({ logger });
 
     await git.clone({
       url: repositoryCheckoutUrl,

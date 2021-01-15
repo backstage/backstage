@@ -31,16 +31,14 @@ import { Logger } from 'winston';
 export class GitlabPreparer implements PreparerBase {
   private readonly integrations: GitLabIntegrationConfig[];
   private readonly scaffolderToken: string | undefined;
-  private readonly logger: Logger;
 
   constructor(config: Config, { logger }: { logger: Logger }) {
-    this.logger = logger;
     this.integrations = readGitLabIntegrationConfigs(
       config.getOptionalConfigArray('integrations.gitlab') ?? [],
     );
 
     if (!this.integrations.length) {
-      this.logger.warn(
+      logger.warn(
         'Integrations for GitLab in Scaffolder are not set. This will cause errors in a future release. Please migrate to using integrations config and specifying tokens under hostnames',
       );
     }
@@ -50,7 +48,7 @@ export class GitlabPreparer implements PreparerBase {
     );
 
     if (this.scaffolderToken) {
-      this.logger.warn(
+      logger.warn(
         "DEPRECATION: Using the token format under 'scaffolder.gitlab.api.token' will not be respected in future releases. Please consider using integrations config instead",
       );
     }
@@ -58,10 +56,11 @@ export class GitlabPreparer implements PreparerBase {
 
   async prepare(
     template: TemplateEntityV1alpha1,
-    opts?: PreparerOptions,
+    opts: PreparerOptions,
   ): Promise<string> {
     const { protocol, location } = parseLocationAnnotation(template);
-    const workingDirectory = opts?.workingDirectory ?? os.tmpdir();
+    const logger = opts.logger;
+    const workingDirectory = opts.workingDirectory ?? os.tmpdir();
 
     if (!['gitlab', 'gitlab/api', 'url'].includes(protocol)) {
       throw new InputError(
@@ -86,9 +85,9 @@ export class GitlabPreparer implements PreparerBase {
       ? Git.fromAuth({
           password: token,
           username: 'oauth2',
-          logger: this.logger,
+          logger,
         })
-      : Git.fromAuth({ logger: this.logger });
+      : Git.fromAuth({ logger });
 
     await git.clone({
       url: repositoryCheckoutUrl,

@@ -15,32 +15,55 @@
  */
 
 import { PublisherBase, PublisherOptions, PublisherResult } from './types';
-import { Octokit } from '@octokit/rest';
 import { initRepoAndPush } from './helpers';
-import { JsonValue } from '@backstage/config';
-import { RequiredTemplateValues } from '../templater';
+import { Config } from '@backstage/config';
+import { Logger } from 'winston';
+import {
+  GitHubIntegrationConfig,
+  readGitHubIntegrationConfigs,
+} from '@backstage/integration';
+import gitUrlParse from 'git-url-parse';
+import { Octokit } from '@octokit/rest';
 
 export type RepoVisibilityOptions = 'private' | 'internal' | 'public';
-
-interface GithubPublisherParams {
-  client: Octokit;
-  token: string;
-  repoVisibility: RepoVisibilityOptions;
-}
-
 export class GithubPublisher implements PublisherBase {
-  private client: Octokit;
-  private token: string;
-  private repoVisibility: RepoVisibilityOptions;
+  private scaffolderToken: string | undefined;
+  private readonly integrations: GitHubIntegrationConfig[];
+  private readonly apiBaseUrl: string | undefined;
+  private readonly repoVisibility: RepoVisibilityOptions;
 
-  constructor({
-    client,
-    token,
-    repoVisibility = 'public',
-  }: GithubPublisherParams) {
-    this.client = client;
-    this.token = token;
-    this.repoVisibility = repoVisibility;
+  constructor(config: Config, { logger }: { logger: Logger }) {
+    this.integrations = readGitHubIntegrationConfigs(
+      config.getOptionalConfigArray('integrations.github') ?? [],
+    );
+
+    if (!this.integrations.length) {
+      logger.warn(
+        'Integrations for GitHub in Scaffolder are not set. This will cause errors in a future release. Please migrate to using integrations config and specifying tokens under hostnames',
+      );
+    }
+
+    this.scaffolderToken = config.getOptionalString(
+      'scaffolder.github.api.token',
+    );
+
+    this.apiBaseUrl = config.getOptionalString('scaffolder.github.api.baseUrl');
+
+    if (this.scaffolderToken) {
+      logger.warn(
+        "DEPRECATION: Using the token format under 'scaffolder.github.api.token' will not be respected in future releases. Please consider using integrations config instead",
+      );
+    }
+
+    if (this.apiBaseUrl) {
+      logger.warn(
+        "DEPRECATION: Using the apiBaseUrl format under 'scaffolder.github.api.baseUrl' will not be respected in future releases. Please consider using integrations config instead",
+      );
+    }
+
+    this.repoVisibility = (config.getOptionalString(
+      'scaffolder.github.visibility',
+    ) ?? 'public') as RepoVisibilityOptions;
   }
 
   async publish({
@@ -48,13 +71,29 @@ export class GithubPublisher implements PublisherBase {
     directory,
     logger,
   }: PublisherOptions): Promise<PublisherResult> {
-    const remoteUrl = await this.createRemote(values);
+    const { resource: host, owner, name } = gitUrlParse(values.storePath);
+    const token = this.getToken(host);
+
+    if (!token) {
+      throw new Error('No token provided to create the remote repository');
+    }
+
+    const description = values.description as string;
+    const access = values.access as string;
+    const remoteUrl = await this.createRemote({
+      description,
+      access,
+      host,
+      name,
+      owner,
+      token,
+    });
 
     await initRepoAndPush({
       dir: directory,
       remoteUrl,
       auth: {
-        username: this.token,
+        username: token ?? '',
         password: 'x-oauth-basic',
       },
       logger,
@@ -68,24 +107,34 @@ export class GithubPublisher implements PublisherBase {
     return { remoteUrl, catalogInfoUrl };
   }
 
-  private async createRemote(
-    values: RequiredTemplateValues & Record<string, JsonValue>,
-  ) {
-    const [owner, name] = values.storePath.split('/');
-    const description = values.description as string;
+  private async createRemote(opts: {
+    access: string;
+    name: string;
+    owner: string;
+    host: string;
+    token: string;
+    description: string;
+  }) {
+    const { access, description, host, owner, name, token } = opts;
 
-    const user = await this.client.users.getByUsername({ username: owner });
+    // create a github client with the config
+    const githubClient = new Octokit({
+      auth: token,
+      baseUrl: this.getBaseUrl(host),
+    });
+
+    const user = await githubClient.users.getByUsername({ username: owner });
 
     const repoCreationPromise =
       user.data.type === 'Organization'
-        ? this.client.repos.createInOrg({
+        ? githubClient.repos.createInOrg({
             name,
             org: owner,
             private: this.repoVisibility !== 'public',
             visibility: this.repoVisibility,
             description,
           })
-        : this.client.repos.createForAuthenticatedUser({
+        : githubClient.repos.createForAuthenticatedUser({
             name,
             private: this.repoVisibility === 'private',
             description,
@@ -93,10 +142,9 @@ export class GithubPublisher implements PublisherBase {
 
     const { data } = await repoCreationPromise;
 
-    const access = values.access as string;
     if (access?.startsWith(`${owner}/`)) {
       const [, team] = access.split('/');
-      await this.client.teams.addOrUpdateRepoPermissionsInOrg({
+      await githubClient.teams.addOrUpdateRepoPermissionsInOrg({
         org: owner,
         team_slug: team,
         owner,
@@ -105,7 +153,7 @@ export class GithubPublisher implements PublisherBase {
       });
       // no need to add access if it's the person who own's the personal account
     } else if (access && access !== owner) {
-      await this.client.repos.addCollaborator({
+      await githubClient.repos.addCollaborator({
         owner,
         repo: name,
         username: access,
@@ -114,5 +162,19 @@ export class GithubPublisher implements PublisherBase {
     }
 
     return data?.clone_url;
+  }
+
+  private getToken(host: string): string | undefined {
+    return (
+      this.scaffolderToken ||
+      this.integrations.find(c => c.host === host)?.token
+    );
+  }
+
+  private getBaseUrl(host: string): string | undefined {
+    return (
+      this.apiBaseUrl ||
+      this.integrations.find(c => c.host === host)?.apiBaseUrl
+    );
   }
 }

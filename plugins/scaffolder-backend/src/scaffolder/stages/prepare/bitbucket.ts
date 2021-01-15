@@ -31,16 +31,14 @@ import { Logger } from 'winston';
 export class BitbucketPreparer implements PreparerBase {
   private readonly privateToken: string;
   private readonly username: string;
-  private readonly logger: Logger;
   private readonly integrations: BitbucketIntegrationConfig[];
   constructor(config: Config, { logger }: { logger: Logger }) {
-    this.logger = logger;
     this.integrations = readBitbucketIntegrationConfigs(
       config.getOptionalConfigArray('integrations.bitbucket') ?? [],
     );
 
     if (!this.integrations.length) {
-      this.logger.warn(
+      logger.warn(
         'Integrations for BitBucket in Scaffolder are not set. This will cause errors in a future release. Please migrate to using integrations config and specifying tokens under hostnames',
       );
     }
@@ -51,7 +49,7 @@ export class BitbucketPreparer implements PreparerBase {
       config.getOptionalString('scaffolder.bitbucket.api.token') ?? '';
 
     if (this.username || this.privateToken) {
-      this.logger.warn(
+      logger.warn(
         "DEPRECATION: Using the token format under 'scaffolder.bitbucket.token' will not be respected in future releases. Please consider using integrations config instead",
       );
     }
@@ -59,10 +57,11 @@ export class BitbucketPreparer implements PreparerBase {
 
   async prepare(
     template: TemplateEntityV1alpha1,
-    opts?: PreparerOptions,
+    opts: PreparerOptions,
   ): Promise<string> {
     const { protocol, location } = parseLocationAnnotation(template);
-    const workingDirectory = opts?.workingDirectory ?? os.tmpdir();
+    const workingDirectory = opts.workingDirectory ?? os.tmpdir();
+    const logger = opts.logger;
 
     if (!['bitbucket', 'url'].includes(protocol)) {
       throw new InputError(
@@ -90,9 +89,9 @@ export class BitbucketPreparer implements PreparerBase {
     const git = auth
       ? Git.fromAuth({
           ...auth,
-          logger: this.logger,
+          logger,
         })
-      : Git.fromAuth({ logger: this.logger });
+      : Git.fromAuth({ logger });
 
     await git.clone({
       url: repositoryCheckoutUrl,

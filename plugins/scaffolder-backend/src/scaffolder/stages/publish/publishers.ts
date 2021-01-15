@@ -15,8 +15,6 @@
  */
 
 import { Logger } from 'winston';
-import { Octokit } from '@octokit/rest';
-import { Gitlab } from '@gitbeaker/node';
 import { getPersonalAccessTokenHandler, WebApi } from 'azure-devops-node-api';
 import { Config } from '@backstage/config';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
@@ -27,7 +25,7 @@ import {
 } from '../helpers';
 import { PublisherBase, PublisherBuilder } from './types';
 import { RemoteProtocol } from '../types';
-import { GithubPublisher, RepoVisibilityOptions } from './github';
+import { GithubPublisher } from './github';
 import { GitlabPublisher } from './gitlab';
 import { AzurePublisher } from './azure';
 import { BitbucketPublisher } from './bitbucket';
@@ -80,23 +78,7 @@ export class Publishers implements PublisherBuilder {
     const githubConfig = config.getOptionalConfig('scaffolder.github');
     if (githubConfig) {
       try {
-        const repoVisibility = githubConfig.getString(
-          'visibility',
-        ) as RepoVisibilityOptions;
-
-        const githubToken = githubConfig.getString('token');
-        const githubHost =
-          githubConfig.getOptionalString('host') ?? 'https://api.github.com';
-        const githubClient = new Octokit({
-          auth: githubToken,
-          baseUrl: githubHost,
-        });
-        const githubPublisher = new GithubPublisher({
-          client: githubClient,
-          token: githubToken,
-          repoVisibility,
-        });
-
+        const githubPublisher = new GithubPublisher(config, { logger });
         publishers.register('file', githubPublisher);
         publishers.register('github', githubPublisher);
       } catch (e) {
@@ -116,12 +98,7 @@ export class Publishers implements PublisherBuilder {
     const gitLabConfig = config.getOptionalConfig('scaffolder.gitlab');
     if (gitLabConfig) {
       try {
-        const gitLabToken = gitLabConfig.getConfig('api').getString('token');
-        const gitLabClient = new Gitlab({
-          host: gitLabConfig.getConfig('api').getOptionalString('baseUrl'),
-          token: gitLabToken,
-        });
-        const gitLabPublisher = new GitlabPublisher(gitLabClient, gitLabToken);
+        const gitLabPublisher = new GitlabPublisher(config, { logger });
         publishers.register('gitlab', gitLabPublisher);
         publishers.register('gitlab/api', gitLabPublisher);
       } catch (e) {

@@ -31,16 +31,14 @@ import {
 export class GithubPreparer implements PreparerBase {
   private readonly integrations: GitHubIntegrationConfig[];
   private readonly scaffolderToken: string | undefined;
-  private readonly logger: Logger;
 
   constructor(config: Config, { logger }: { logger: Logger }) {
-    this.logger = logger;
     this.integrations = readGitHubIntegrationConfigs(
       config.getOptionalConfigArray('integrations.github') ?? [],
     );
 
     if (!this.integrations.length) {
-      this.logger.warn(
+      logger.warn(
         'Integrations for Github in Scaffolder are not set. This will cause errors in a future release. Please migrate to using integrations config and specifying tokens under hostnames',
       );
     }
@@ -48,7 +46,7 @@ export class GithubPreparer implements PreparerBase {
     this.scaffolderToken = config.getOptionalString('scaffolder.github.token');
 
     if (this.scaffolderToken) {
-      this.logger.warn(
+      logger.warn(
         "DEPRECATION: Using the token format under 'scaffolder.github.token' will not be respected in future releases. Please consider using integrations config instead",
       );
     }
@@ -56,10 +54,11 @@ export class GithubPreparer implements PreparerBase {
 
   async prepare(
     template: TemplateEntityV1alpha1,
-    opts?: PreparerOptions,
+    opts: PreparerOptions,
   ): Promise<string> {
     const { protocol, location } = parseLocationAnnotation(template);
-    const workingDirectory = opts?.workingDirectory ?? os.tmpdir();
+    const workingDirectory = opts.workingDirectory ?? os.tmpdir();
+    const logger = opts.logger;
 
     if (!['github', 'url'].includes(protocol)) {
       throw new InputError(
@@ -87,9 +86,9 @@ export class GithubPreparer implements PreparerBase {
       ? Git.fromAuth({
           username: token,
           password: 'x-oauth-basic',
-          logger: this.logger,
+          logger,
         })
-      : Git.fromAuth({ logger: this.logger });
+      : Git.fromAuth({ logger });
 
     await git.clone({
       url: repositoryCheckoutUrl,
