@@ -187,9 +187,9 @@ catalog:
     # Example component for github-actions
     - type: url
       target: https://github.com/backstage/backstage/blob/master/plugins/github-actions/examples/sample.yaml
-    # Example component for techdocs
+    # Example component for TechDocs
     - type: url
-      target: https://github.com/backstage/backstage/blob/master/plugins/techdocs-backend/examples/documented-component/documented-component.yaml
+      target: https://github.com/backstage/backstage/blob/master/plugins/techdocs-backend/examples/documented-component/catalog-info.yaml
     # Backstage example APIs
     - type: url
       target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
