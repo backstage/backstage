@@ -169,12 +169,7 @@ export class GoogleGCSPublish implements PublisherBase {
       // Files with different extensions (CSS, HTML) need to be served with different headers
       const fileExtension = path.extname(filePath);
       const responseHeaders = getHeadersForFileExtension(fileExtension);
-      res.writeHead(200, {
-        ...{
-          'Transfer-Encoding': 'chunked',
-        },
-        ...responseHeaders,
-      });
+      res.writeHead(200, responseHeaders);
 
       // Pipe file chunks directly from storage to client.
       this.storageClient
