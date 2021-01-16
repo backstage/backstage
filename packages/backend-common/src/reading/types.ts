@@ -32,6 +32,19 @@ export type ReadTreeOptions = {
    * If no filter is provided all files are extracted.
    */
   filter?(path: string): boolean;
+
+  /**
+   * A commit SHA can be provided to check whether readTree's response has changed from a previous execution.
+   *
+   * In the readTree() response, a SHA is returned along with the tree blob. The SHA belongs to the
+   * latest commit on the target repository's branch that was used to read the blob.
+   *
+   * When a SHA is given in ReadTreeOptions, readTree will first compare the SHA against the latest commit
+   * on the target branch. If they match, it will throw a NotModifiedError indicating that the readTree
+   * response will not differ from the previous response which included this particular SHA. If they mismatch,
+   * readTree will return a new SHA along with the rest of ReadTreeResponse.
+   */
+  sha?: string;
 };
 
 /**
@@ -67,8 +80,12 @@ export type ReadTreeResponseDirOptions = {
   targetDir?: string;
 };
 
-export type ReadTreeResponse = {
+export type ReadTreeArchiveResponse = {
   files(): Promise<ReadTreeResponseFile[]>;
   archive(): Promise<NodeJS.ReadableStream>;
   dir(options?: ReadTreeResponseDirOptions): Promise<string>;
 };
+
+export interface ReadTreeResponse extends ReadTreeArchiveResponse {
+  sha: string;
+}

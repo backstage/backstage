@@ -21,7 +21,7 @@ import { Readable, pipeline as pipelineCb } from 'stream';
 import { promisify } from 'util';
 import concatStream from 'concat-stream';
 import {
-  ReadTreeResponse,
+  ReadTreeArchiveResponse,
   ReadTreeResponseFile,
   ReadTreeResponseDirOptions,
 } from '../types';
@@ -34,7 +34,7 @@ const pipeline = promisify(pipelineCb);
 /**
  * Wraps a tar archive stream into a tree response reader.
  */
-export class TarArchiveResponse implements ReadTreeResponse {
+export class TarArchiveResponse implements ReadTreeArchiveResponse {
   private read = false;
 
   constructor(

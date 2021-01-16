@@ -45,12 +45,15 @@ export class UrlReaderPredicateMux implements UrlReader {
     throw new NotAllowedError(`Reading from '${url}' is not allowed`);
   }
 
-  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse> {
+  async readTree(
+    url: string,
+    options?: ReadTreeOptions,
+  ): Promise<ReadTreeResponse> {
     const parsed = new URL(url);
 
     for (const { predicate, reader } of this.readers) {
       if (predicate(parsed)) {
-        return reader.readTree(url, options);
+        return await reader.readTree(url, options);
       }
     }
 

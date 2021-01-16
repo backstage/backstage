@@ -75,22 +75,27 @@ export class AzureUrlReader implements UrlReader {
     url: string,
     options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
-    const response = await fetch(
+    const archiveAzureResponse = await fetch(
       getAzureDownloadUrl(url),
       getAzureRequestOptions(this.options, { Accept: 'application/zip' }),
     );
-    if (!response.ok) {
-      const message = `Failed to read tree from ${url}, ${response.status} ${response.statusText}`;
-      if (response.status === 404) {
+    if (!archiveAzureResponse.ok) {
+      const message = `Failed to read tree from ${url}, ${archiveAzureResponse.status} ${archiveAzureResponse.statusText}`;
+      if (archiveAzureResponse.status === 404) {
         throw new NotFoundError(message);
       }
       throw new Error(message);
     }
 
-    return this.deps.treeResponseFactory.fromZipArchive({
-      stream: (response.body as unknown) as Readable,
+    const archiveResponse = await this.deps.treeResponseFactory.fromZipArchive({
+      stream: (archiveAzureResponse.body as unknown) as Readable,
       filter: options?.filter,
     });
+
+    const response = archiveResponse as ReadTreeResponse;
+    // TODO: Just a placeholder for now.
+    response.sha = '';
+    return response;
   }
 
   toString() {

@@ -17,7 +17,7 @@
 import os from 'os';
 import { Readable } from 'stream';
 import { Config } from '@backstage/config';
-import { ReadTreeResponse } from '../types';
+import { ReadTreeArchiveResponse } from '../types';
 import { TarArchiveResponse } from './TarArchiveResponse';
 import { ZipArchiveResponse } from './ZipArchiveResponse';
 
@@ -40,7 +40,9 @@ export class ReadTreeResponseFactory {
 
   constructor(private readonly workDir: string) {}
 
-  async fromTarArchive(options: FromArchiveOptions): Promise<ReadTreeResponse> {
+  async fromTarArchive(
+    options: FromArchiveOptions,
+  ): Promise<ReadTreeArchiveResponse> {
     return new TarArchiveResponse(
       options.stream,
       options.path ?? '',
@@ -49,7 +51,9 @@ export class ReadTreeResponseFactory {
     );
   }
 
-  async fromZipArchive(options: FromArchiveOptions): Promise<ReadTreeResponse> {
+  async fromZipArchive(
+    options: FromArchiveOptions,
+  ): Promise<ReadTreeArchiveResponse> {
     return new ZipArchiveResponse(
       options.stream,
       options.path ?? '',

@@ -20,7 +20,7 @@ import { resolve as resolvePath } from 'path';
 import { TarArchiveResponse } from './TarArchiveResponse';
 
 const archiveData = fs.readFileSync(
-  resolvePath(__filename, '../../__fixtures__/repo.tar.gz'),
+  resolvePath(__filename, '../../__fixtures__/mock-main.tar.gz'),
 );
 
 describe('TarArchiveResponse', () => {
@@ -38,7 +38,7 @@ describe('TarArchiveResponse', () => {
   it('should read files', async () => {
     const stream = fs.createReadStream('/test-archive.tar.gz');
 
-    const res = new TarArchiveResponse(stream, 'mock-repo/', '/tmp');
+    const res = new TarArchiveResponse(stream, 'mock-main/', '/tmp');
     const files = await res.files();
 
     expect(files).toEqual([
@@ -61,7 +61,7 @@ describe('TarArchiveResponse', () => {
   it('should read files with filter', async () => {
     const stream = fs.createReadStream('/test-archive.tar.gz');
 
-    const res = new TarArchiveResponse(stream, 'mock-repo/', '/tmp', path =>
+    const res = new TarArchiveResponse(stream, 'mock-main/', '/tmp', path =>
       path.endsWith('.yml'),
     );
     const files = await res.files();
@@ -79,7 +79,7 @@ describe('TarArchiveResponse', () => {
   it('should read as archive and files', async () => {
     const stream = fs.createReadStream('/test-archive.tar.gz');
 
-    const res = new TarArchiveResponse(stream, 'mock-repo/', '/tmp');
+    const res = new TarArchiveResponse(stream, 'mock-main/', '/tmp');
     const buffer = await res.archive();
 
     await expect(res.archive()).rejects.toThrow(
@@ -113,17 +113,17 @@ describe('TarArchiveResponse', () => {
     const dir = await res.dir();
 
     await expect(
-      fs.readFile(resolvePath(dir, 'mock-repo/mkdocs.yml'), 'utf8'),
+      fs.readFile(resolvePath(dir, 'mock-main/mkdocs.yml'), 'utf8'),
     ).resolves.toBe('site_name: Test\n');
     await expect(
-      fs.readFile(resolvePath(dir, 'mock-repo/docs/index.md'), 'utf8'),
+      fs.readFile(resolvePath(dir, 'mock-main/docs/index.md'), 'utf8'),
     ).resolves.toBe('# Test\n');
   });
 
   it('should extract archive into directory with a subpath', async () => {
     const stream = fs.createReadStream('/test-archive.tar.gz');
 
-    const res = new TarArchiveResponse(stream, 'mock-repo/docs/', '/tmp');
+    const res = new TarArchiveResponse(stream, 'mock-main/docs/', '/tmp');
     const dir = await res.dir();
 
     expect(dir).toMatch(/^[\/\\]tmp[\/\\].*$/);
@@ -135,7 +135,7 @@ describe('TarArchiveResponse', () => {
   it('should extract archive into directory with a subpath and filter', async () => {
     const stream = fs.createReadStream('/test-archive.tar.gz');
 
-    const res = new TarArchiveResponse(stream, 'mock-repo/', '/tmp', path =>
+    const res = new TarArchiveResponse(stream, 'mock-main/', '/tmp', path =>
       path.endsWith('.yml'),
     );
     const dir = await res.dir({ targetDir: '/tmp' });

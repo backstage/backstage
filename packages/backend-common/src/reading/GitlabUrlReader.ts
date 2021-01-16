@@ -94,13 +94,13 @@ export class GitlabUrlReader implements UrlReader {
     }
 
     const archive = `${protocol}://${resource}/${full_name}/-/archive/${ref}/${repoName}-${ref}.zip`;
-    const response = await fetch(
+    const archiveGitLabResponse = await fetch(
       archive,
       getGitLabRequestOptions(this.options),
     );
-    if (!response.ok) {
-      const msg = `Failed to read tree from ${url}, ${response.status} ${response.statusText}`;
-      if (response.status === 404) {
+    if (!archiveGitLabResponse.ok) {
+      const msg = `Failed to read tree from ${url}, ${archiveGitLabResponse.status} ${archiveGitLabResponse.statusText}`;
+      if (archiveGitLabResponse.status === 404) {
         throw new NotFoundError(msg);
       }
       throw new Error(msg);
@@ -108,11 +108,16 @@ export class GitlabUrlReader implements UrlReader {
 
     const path = filepath ? `${repoName}-${ref}/${filepath}/` : '';
 
-    return this.treeResponseFactory.fromZipArchive({
-      stream: (response.body as unknown) as Readable,
+    const archiveResponse = await this.treeResponseFactory.fromZipArchive({
+      stream: (archiveGitLabResponse.body as unknown) as Readable,
       path,
       filter: options?.filter,
     });
+
+    const response = archiveResponse as ReadTreeResponse;
+    // TODO: Just a placeholder for now.
+    response.sha = '';
+    return response;
   }
 
   toString() {

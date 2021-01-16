@@ -20,7 +20,7 @@ import unzipper, { Entry } from 'unzipper';
 import archiver from 'archiver';
 import { Readable } from 'stream';
 import {
-  ReadTreeResponse,
+  ReadTreeArchiveResponse,
   ReadTreeResponseFile,
   ReadTreeResponseDirOptions,
 } from '../types';
@@ -28,7 +28,7 @@ import {
 /**
  * Wraps a zip archive stream into a tree response reader.
  */
-export class ZipArchiveResponse implements ReadTreeResponse {
+export class ZipArchiveResponse implements ReadTreeArchiveResponse {
   private read = false;
 
   constructor(

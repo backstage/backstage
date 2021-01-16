@@ -108,13 +108,13 @@ export class BitbucketUrlReader implements UrlReader {
     const isHosted = resource === 'bitbucket.org';
 
     const downloadUrl = await getBitbucketDownloadUrl(url, this.config);
-    const response = await fetch(
+    const archiveBitbucketResponse = await fetch(
       downloadUrl,
       getBitbucketRequestOptions(this.config),
     );
-    if (!response.ok) {
-      const message = `Failed to read tree from ${url}, ${response.status} ${response.statusText}`;
-      if (response.status === 404) {
+    if (!archiveBitbucketResponse.ok) {
+      const message = `Failed to read tree from ${url}, ${archiveBitbucketResponse.status} ${archiveBitbucketResponse.statusText}`;
+      if (archiveBitbucketResponse.status === 404) {
         throw new NotFoundError(message);
       }
       throw new Error(message);
@@ -126,11 +126,16 @@ export class BitbucketUrlReader implements UrlReader {
       folderPath = `${project}-${repoName}-${lastCommitShortHash}`;
     }
 
-    return this.treeResponseFactory.fromZipArchive({
-      stream: (response.body as unknown) as Readable,
+    const archiveResponse = await this.treeResponseFactory.fromZipArchive({
+      stream: (archiveBitbucketResponse.body as unknown) as Readable,
       path: `${folderPath}/${filepath}`,
       filter: options?.filter,
     });
+
+    const response = archiveResponse as ReadTreeResponse;
+    // TODO: Just a placeholder for now.
+    response.sha = '';
+    return response;
   }
 
   toString() {

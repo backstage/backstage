@@ -21,6 +21,7 @@ import fs from 'fs';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import path from 'path';
+import { NotModifiedError } from '../errors';
 import { GithubUrlReader } from './GithubUrlReader';
 import { ReadTreeResponseFactory } from './tree';
 
@@ -28,11 +29,27 @@ const treeResponseFactory = ReadTreeResponseFactory.create({
   config: new ConfigReader({}),
 });
 
-describe('GithubUrlReader', () => {
-  const mockCredentialsProvider = ({
-    getCredentials: jest.fn().mockResolvedValue({ headers: {} }),
-  } as unknown) as GithubCredentialsProvider;
+const mockCredentialsProvider = ({
+  getCredentials: jest.fn().mockResolvedValue({ headers: {} }),
+} as unknown) as GithubCredentialsProvider;
 
+const githubProcessor = new GithubUrlReader(
+  {
+    host: 'github.com',
+    apiBaseUrl: 'https://api.github.com',
+  },
+  { treeResponseFactory, credentialsProvider: mockCredentialsProvider },
+);
+
+const gheProcessor = new GithubUrlReader(
+  {
+    host: 'ghe.github.com',
+    apiBaseUrl: 'https://ghe.github.com/api/v3',
+  },
+  { treeResponseFactory, credentialsProvider: mockCredentialsProvider },
+);
+
+describe('GithubUrlReader', () => {
   const worker = setupServer();
 
   msw.setupDefaultHandlers(worker);
@@ -43,15 +60,8 @@ describe('GithubUrlReader', () => {
 
   describe('implementation', () => {
     it('rejects unknown targets', async () => {
-      const processor = new GithubUrlReader(
-        {
-          host: 'github.com',
-          apiBaseUrl: 'https://api.github.com',
-        },
-        { treeResponseFactory, credentialsProvider: mockCredentialsProvider },
-      );
       await expect(
-        processor.read('https://not.github.com/apa'),
+        githubProcessor.read('https://not.github.com/apa'),
       ).rejects.toThrow(
         'Incorrect URL: https://not.github.com/apa, Error: Invalid GitHub URL or file path',
       );
@@ -73,7 +83,7 @@ describe('GithubUrlReader', () => {
 
       worker.use(
         rest.get(
-          'https://api.github.com/repos/backstage/mock/tree/contents/?ref=repo',
+          'https://api.github.com/repos/backstage/mock/tree/contents/?ref=main',
           (req, res, ctx) => {
             expect(req.headers.get('authorization')).toBe(
               mockHeaders.Authorization,
@@ -90,28 +100,43 @@ describe('GithubUrlReader', () => {
         ),
       );
 
-      const processor = new GithubUrlReader(
-        {
-          host: 'ghe.github.com',
-          apiBaseUrl: 'https://api.github.com',
-        },
-        { treeResponseFactory, credentialsProvider: mockCredentialsProvider },
-      );
-      await processor.read(
-        'https://ghe.github.com/backstage/mock/tree/blob/repo',
+      await githubProcessor.read(
+        'https://github.com/backstage/mock/tree/blob/main',
       );
     });
   });
 
   describe('readTree', () => {
     const repoBuffer = fs.readFileSync(
-      path.resolve('src', 'reading', '__fixtures__', 'repo.tar.gz'),
+      path.resolve('src', 'reading', '__fixtures__', 'mock-main.tar.gz'),
     );
 
+    const reposGithubApiResponse = {
+      id: '123',
+      full_name: 'backstage/mock',
+      default_branch: 'main',
+      branches_url:
+        'https://api.github.com/repos/backstage/mock/branches{/branch}',
+    };
+
+    const reposGheApiResponse = {
+      ...reposGithubApiResponse,
+      branches_url:
+        'https://ghe.github.com/api/v3/repos/backstage/mock/branches{/branch}',
+    };
+
+    const branchesApiResponse = {
+      name: 'main',
+      commit: {
+        sha: 'sha123abc',
+      },
+    };
+
     beforeEach(() => {
+      // For github.com host
       worker.use(
         rest.get(
-          'https://github.com/backstage/mock/archive/repo.tar.gz',
+          'https://github.com/backstage/mock/archive/main.tar.gz',
           (_, res, ctx) =>
             res(
               ctx.status(200),
@@ -120,20 +145,73 @@ describe('GithubUrlReader', () => {
             ),
         ),
       );
+
+      worker.use(
+        rest.get('https://api.github.com/repos/backstage/mock', (_, res, ctx) =>
+          res(
+            ctx.status(200),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json(reposGithubApiResponse),
+          ),
+        ),
+      );
+
+      worker.use(
+        rest.get(
+          'https://api.github.com/repos/backstage/mock/branches/main',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(branchesApiResponse),
+            ),
+        ),
+      );
+
+      // For a GHE host
+      worker.use(
+        rest.get(
+          'https://ghe.github.com/backstage/mock/archive/main.tar.gz',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/x-gzip'),
+              ctx.body(repoBuffer),
+            ),
+        ),
+      );
+
+      worker.use(
+        rest.get(
+          'https://ghe.github.com/api/v3/repos/backstage/mock',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(reposGheApiResponse),
+            ),
+        ),
+      );
+
+      worker.use(
+        rest.get(
+          'https://ghe.github.com/api/v3/repos/backstage/mock/branches/main',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(branchesApiResponse),
+            ),
+        ),
+      );
     });
 
     it('returns the wanted files from an archive', async () => {
-      const processor = new GithubUrlReader(
-        {
-          host: 'github.com',
-          apiBaseUrl: 'https://api.github.com',
-        },
-        { treeResponseFactory, credentialsProvider: mockCredentialsProvider },
+      const response = await githubProcessor.readTree(
+        'https://github.com/backstage/mock/tree/main',
       );
 
-      const response = await processor.readTree(
-        'https://github.com/backstage/mock/tree/repo',
-      );
+      expect(response.sha).toBe('sha123abc');
 
       const files = await response.files();
 
@@ -142,40 +220,6 @@ describe('GithubUrlReader', () => {
       const indexMarkdownFile = await files[1].content();
 
       expect(mkDocsFile.toString()).toBe('site_name: Test\n');
-      expect(indexMarkdownFile.toString()).toBe('# Test\n');
-    });
-
-    it('includes the subdomain in the github url', async () => {
-      worker.resetHandlers();
-      worker.use(
-        rest.get(
-          'https://ghe.github.com/backstage/mock/archive/repo.tar.gz',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/x-gzip'),
-              ctx.body(repoBuffer),
-            ),
-        ),
-      );
-
-      const processor = new GithubUrlReader(
-        {
-          host: 'ghe.github.com',
-          apiBaseUrl: 'https://api.github.com',
-        },
-        { treeResponseFactory, credentialsProvider: mockCredentialsProvider },
-      );
-
-      const response = await processor.readTree(
-        'https://ghe.github.com/backstage/mock/tree/repo/docs',
-      );
-
-      const files = await response.files();
-
-      expect(files.length).toBe(1);
-      const indexMarkdownFile = await files[0].content();
-
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
     });
 
@@ -193,7 +237,7 @@ describe('GithubUrlReader', () => {
 
       worker.use(
         rest.get(
-          'https://ghe.github.com/backstage/mock/archive/repo.tar.gz',
+          'https://ghe.github.com/backstage/mock/archive/main.tar.gz',
           (req, res, ctx) => {
             expect(req.headers.get('authorization')).toBe(
               mockHeaders.Authorization,
@@ -210,46 +254,14 @@ describe('GithubUrlReader', () => {
         ),
       );
 
-      const processor = new GithubUrlReader(
-        {
-          host: 'ghe.github.com',
-          apiBaseUrl: 'https://api.github.com',
-        },
-        { treeResponseFactory, credentialsProvider: mockCredentialsProvider },
-      );
-
-      await processor.readTree(
-        'https://ghe.github.com/backstage/mock/tree/repo/docs',
+      await gheProcessor.readTree(
+        'https://ghe.github.com/backstage/mock/tree/main',
       );
     });
 
-    it('must specify a branch', async () => {
-      const processor = new GithubUrlReader(
-        {
-          host: 'github.com',
-          apiBaseUrl: 'https://api.github.com',
-        },
-        { treeResponseFactory, credentialsProvider: mockCredentialsProvider },
-      );
-
-      await expect(
-        processor.readTree('https://github.com/backstage/mock'),
-      ).rejects.toThrow(
-        'GitHub URL must contain branch to be able to fetch tree',
-      );
-    });
-
-    it('returns the wanted files from an archive with a subpath', async () => {
-      const processor = new GithubUrlReader(
-        {
-          host: 'github.com',
-          apiBaseUrl: 'https://api.github.com',
-        },
-        { treeResponseFactory, credentialsProvider: mockCredentialsProvider },
-      );
-
-      const response = await processor.readTree(
-        'https://github.com/backstage/mock/tree/repo/docs',
+    it('includes the subdomain in the github url', async () => {
+      const response = await gheProcessor.readTree(
+        'https://ghe.github.com/backstage/mock/tree/main/docs',
       );
 
       const files = await response.files();
@@ -258,6 +270,56 @@ describe('GithubUrlReader', () => {
       const indexMarkdownFile = await files[0].content();
 
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
+    });
+
+    it('returns the wanted files from an archive with a subpath', async () => {
+      const response = await githubProcessor.readTree(
+        'https://github.com/backstage/mock/tree/main/docs',
+      );
+
+      const files = await response.files();
+
+      expect(files.length).toBe(1);
+      const indexMarkdownFile = await files[0].content();
+
+      expect(indexMarkdownFile.toString()).toBe('# Test\n');
+    });
+
+    it('throws a NotModifiedError when given a sha in options', async () => {
+      const fnGithub = async () => {
+        await githubProcessor.readTree('https://github.com/backstage/mock', {
+          sha: 'sha123abc',
+        });
+      };
+
+      const fnGhe = async () => {
+        await gheProcessor.readTree(
+          'https://ghe.github.com/backstage/mock/tree/main/docs',
+          {
+            sha: 'sha123abc',
+          },
+        );
+      };
+
+      await expect(fnGithub).rejects.toThrow(NotModifiedError);
+      await expect(fnGhe).rejects.toThrow(NotModifiedError);
+    });
+
+    it('should not throw error when given an outdated sha in options', async () => {
+      const response = await githubProcessor.readTree(
+        'https://github.com/backstage/mock/tree/main',
+        {
+          sha: 'outdatedSha123abc',
+        },
+      );
+      expect((await response.files()).length).toBe(2);
+    });
+
+    it('should detect the default branch', async () => {
+      const response = await githubProcessor.readTree(
+        'https://github.com/backstage/mock',
+      );
+      expect((await response.files()).length).toBe(2);
     });
   });
 });
