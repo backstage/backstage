@@ -1,3 +1,12 @@
+---
+'@backstage/create-app': patch
+---
+
+use `fromConfig` for all scaffolder helpers, and use the url protocol for app-config location entries.
+
+To apply this change to your local installation, replace the contents of your `packages/backend/src/plugins/scaffolder.ts` with the following contents:
+
+```ts
 import {
   CookieCutter,
   createRouter,
@@ -39,3 +48,6 @@ export default async function createPlugin({
     entityClient,
   });
 }
+```
+
+This will ensure that the `scaffolder-backend` package can add handlers for the `url` protocol which is becoming the standard when registering entities in the `catalog`
