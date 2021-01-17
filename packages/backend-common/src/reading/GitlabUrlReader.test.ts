@@ -23,12 +23,29 @@ import path from 'path';
 import { getVoidLogger } from '../logging';
 import { GitlabUrlReader } from './GitlabUrlReader';
 import { ReadTreeResponseFactory } from './tree';
+import { NotModifiedError, NotFoundError } from '../errors';
 
 const logger = getVoidLogger();
 
 const treeResponseFactory = ReadTreeResponseFactory.create({
   config: new ConfigReader({}),
 });
+
+const gitlabProcessor = new GitlabUrlReader(
+  {
+    host: 'gitlab.com',
+    apiBaseUrl: 'https://gitlab.com/api/v4',
+  },
+  { treeResponseFactory },
+);
+
+const hostedGitlabProcessor = new GitlabUrlReader(
+  {
+    host: 'gitlab.mycompany.com',
+    apiBaseUrl: 'https://gitlab.mycompany.com/api/v4',
+  },
+  { treeResponseFactory },
+);
 
 describe('GitlabUrlReader', () => {
   const worker = setupServer();
@@ -136,39 +153,112 @@ describe('GitlabUrlReader', () => {
   });
 
   describe('readTree', () => {
-    const repoBuffer = fs.readFileSync(
-      path.resolve('src', 'reading', '__fixtures__', 'repo.zip'),
+    const archiveBuffer = fs.readFileSync(
+      path.resolve('src', 'reading', '__fixtures__', 'gitlab-archive.zip'),
     );
+
+    const projectGitlabApiResponse = {
+      id: 11111111,
+      default_branch: 'main',
+    };
+
+    const branchGitlabApiResponse = {
+      commit: {
+        id: 'sha123abc',
+      },
+    };
 
     beforeEach(() => {
       worker.use(
         rest.get(
-          'https://gitlab.com/backstage/mock/-/archive/repo/mock-repo.zip',
+          'https://gitlab.com/api/v4/projects/backstage%2Fmock/repository/archive.zip?sha=main',
           (_, res, ctx) =>
             res(
               ctx.status(200),
               ctx.set('Content-Type', 'application/zip'),
-              ctx.body(repoBuffer),
+              ctx.body(archiveBuffer),
+            ),
+        ),
+      );
+
+      worker.use(
+        rest.get(
+          'https://gitlab.com/api/v4/projects/backstage%2Fmock',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(projectGitlabApiResponse),
+            ),
+        ),
+      );
+
+      worker.use(
+        rest.get(
+          'https://gitlab.com/api/v4/projects/backstage%2Fmock/repository/branches/main',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(branchGitlabApiResponse),
+            ),
+        ),
+      );
+
+      worker.use(
+        rest.get(
+          'https://gitlab.com/api/v4/projects/backstage%2Fmock/repository/branches/branchDoesNotExist',
+          (_, res, ctx) => res(ctx.status(404)),
+        ),
+      );
+
+      worker.use(
+        rest.get(
+          'https://gitlab.mycompany.com/api/v4/projects/backstage%2Fmock',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(projectGitlabApiResponse),
+            ),
+        ),
+      );
+
+      worker.use(
+        rest.get(
+          'https://gitlab.mycompany.com/api/v4/projects/backstage%2Fmock/repository/branches/main',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(branchGitlabApiResponse),
+            ),
+        ),
+      );
+
+      worker.use(
+        rest.get(
+          'https://gitlab.mycompany.com/api/v4/projects/backstage%2Fmock/repository/archive.zip?sha=main',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/zip'),
+              ctx.body(archiveBuffer),
             ),
         ),
       );
     });
 
     it('returns the wanted files from an archive', async () => {
-      const processor = new GitlabUrlReader(
-        { host: 'gitlab.com' },
-        { treeResponseFactory },
-      );
-
-      const response = await processor.readTree(
-        'https://gitlab.com/backstage/mock/tree/repo',
+      const response = await gitlabProcessor.readTree(
+        'https://gitlab.com/backstage/mock/tree/main',
       );
 
       const files = await response.files();
       expect(files.length).toBe(2);
 
-      const indexMarkdownFile = await files[0].content();
-      const mkDocsFile = await files[1].content();
+      const mkDocsFile = await files[0].content();
+      const indexMarkdownFile = await files[1].content();
 
       expect(mkDocsFile.toString()).toBe('site_name: Test\n');
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
@@ -177,23 +267,18 @@ describe('GitlabUrlReader', () => {
     it('returns the wanted files from hosted gitlab', async () => {
       worker.use(
         rest.get(
-          'https://git.mycompany.com/backstage/mock/-/archive/repo/mock-repo.zip',
+          'https://gitlab.mycompany.com/backstage/mock/-/archive/main.zip',
           (_, res, ctx) =>
             res(
               ctx.status(200),
               ctx.set('Content-Type', 'application/zip'),
-              ctx.body(repoBuffer),
+              ctx.body(archiveBuffer),
             ),
         ),
       );
 
-      const processor = new GitlabUrlReader(
-        { host: 'git.mycompany.com' },
-        { treeResponseFactory },
-      );
-
-      const response = await processor.readTree(
-        'https://git.mycompany.com/backstage/mock/tree/repo/docs',
+      const response = await hostedGitlabProcessor.readTree(
+        'https://gitlab.mycompany.com/backstage/mock/tree/main/docs',
       );
 
       const files = await response.files();
@@ -202,29 +287,11 @@ describe('GitlabUrlReader', () => {
       const indexMarkdownFile = await files[0].content();
 
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
-    });
-
-    it('throws an error when branch is not specified', async () => {
-      const processor = new GitlabUrlReader(
-        { host: 'gitlab.com' },
-        { treeResponseFactory },
-      );
-
-      await expect(
-        processor.readTree('https://gitlab.com/backstage/mock'),
-      ).rejects.toThrow(
-        'GitLab URL must contain a branch to be able to fetch its tree',
-      );
     });
 
     it('returns the wanted files from an archive with a subpath', async () => {
-      const processor = new GitlabUrlReader(
-        { host: 'gitlab.com' },
-        { treeResponseFactory },
-      );
-
-      const response = await processor.readTree(
-        'https://gitlab.com/backstage/mock/tree/repo/docs',
+      const response = await gitlabProcessor.readTree(
+        'https://gitlab.com/backstage/mock/tree/main/docs',
       );
 
       const files = await response.files();
@@ -233,6 +300,52 @@ describe('GitlabUrlReader', () => {
       const indexMarkdownFile = await files[0].content();
 
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
+    });
+
+    it('throws a NotModifiedError when given a sha in options', async () => {
+      const fnGitlab = async () => {
+        await gitlabProcessor.readTree('https://gitlab.com/backstage/mock', {
+          sha: 'sha123abc',
+        });
+      };
+
+      const fnHostedGitlab = async () => {
+        await hostedGitlabProcessor.readTree(
+          'https://gitlab.mycompany.com/backstage/mock',
+          {
+            sha: 'sha123abc',
+          },
+        );
+      };
+
+      await expect(fnGitlab).rejects.toThrow(NotModifiedError);
+      await expect(fnHostedGitlab).rejects.toThrow(NotModifiedError);
+    });
+
+    it('should not throw error when given an outdated sha in options', async () => {
+      const response = await gitlabProcessor.readTree(
+        'https://gitlab.com/backstage/mock/tree/main',
+        {
+          sha: 'outdatedSha123abc',
+        },
+      );
+      expect((await response.files()).length).toBe(2);
+    });
+
+    it('should detect the default branch', async () => {
+      const response = await gitlabProcessor.readTree(
+        'https://gitlab.com/backstage/mock',
+      );
+      expect((await response.files()).length).toBe(2);
+    });
+
+    it('should throw error on missing branch', async () => {
+      const fnGithub = async () => {
+        await gitlabProcessor.readTree(
+          'https://gitlab.com/backstage/mock/tree/branchDoesNotExist',
+        );
+      };
+      await expect(fnGithub).rejects.toThrow(NotFoundError);
     });
   });
 });

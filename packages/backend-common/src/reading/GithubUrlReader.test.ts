@@ -21,7 +21,7 @@ import fs from 'fs';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import path from 'path';
-import { NotModifiedError } from '../errors';
+import { NotFoundError, NotModifiedError } from '../errors';
 import { GithubUrlReader } from './GithubUrlReader';
 import { ReadTreeResponseFactory } from './tree';
 
@@ -165,6 +165,13 @@ describe('GithubUrlReader', () => {
               ctx.set('Content-Type', 'application/json'),
               ctx.json(branchesApiResponse),
             ),
+        ),
+      );
+
+      worker.use(
+        rest.get(
+          'https://api.github.com/repos/backstage/mock/branches/branchDoesNotExist',
+          (_, res, ctx) => res(ctx.status(404)),
         ),
       );
 
@@ -320,6 +327,15 @@ describe('GithubUrlReader', () => {
         'https://github.com/backstage/mock',
       );
       expect((await response.files()).length).toBe(2);
+    });
+
+    it('should throw error on missing branch', async () => {
+      const fnGithub = async () => {
+        await githubProcessor.readTree(
+          'https://github.com/backstage/mock/tree/branchDoesNotExist',
+        );
+      };
+      await expect(fnGithub).rejects.toThrow(NotFoundError);
     });
   });
 });

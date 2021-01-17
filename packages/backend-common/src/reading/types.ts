@@ -83,6 +83,10 @@ export type ReadTreeResponseDirOptions = {
 export type ReadTreeArchiveResponse = {
   files(): Promise<ReadTreeResponseFile[]>;
   archive(): Promise<NodeJS.ReadableStream>;
+
+  /**
+   * dir() extracts the tree response into a directory and returns the path of the directory.
+   */
   dir(options?: ReadTreeResponseDirOptions): Promise<string>;
 };
 

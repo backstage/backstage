@@ -119,7 +119,7 @@ export class GithubUrlReader implements UrlReader {
       },
     );
     if (!repoGitHubResponse.ok) {
-      const message = `Failed to read tree from ${url}, ${repoGitHubResponse.status} ${repoGitHubResponse.statusText}`;
+      const message = `Failed to read tree (repository) from ${url}, ${repoGitHubResponse.status} ${repoGitHubResponse.statusText}`;
       if (repoGitHubResponse.status === 404) {
         throw new NotFoundError(message);
       }
@@ -142,6 +142,13 @@ export class GithubUrlReader implements UrlReader {
         headers,
       },
     );
+    if (!branchGitHubResponse.ok) {
+      const message = `Failed to read tree (branch) from ${url}, ${branchGitHubResponse.status} ${branchGitHubResponse.statusText}`;
+      if (branchGitHubResponse.status === 404) {
+        throw new NotFoundError(message);
+      }
+      throw new Error(message);
+    }
     const commitSha = (await branchGitHubResponse.json()).commit.sha;
 
     if (options?.sha && options.sha === commitSha) {
@@ -162,6 +169,13 @@ export class GithubUrlReader implements UrlReader {
         headers,
       },
     );
+    if (!archive.ok) {
+      const message = `Failed to read tree (archive) from ${url}, ${archive.status} ${archive.statusText}`;
+      if (archive.status === 404) {
+        throw new NotFoundError(message);
+      }
+      throw new Error(message);
+    }
 
     const path = `${repoName}-${branch}/${filepath}`;
 

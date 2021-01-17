@@ -139,7 +139,7 @@ describe('AzureUrlReader', () => {
 
   describe('readTree', () => {
     const repoBuffer = fs.readFileSync(
-      path.resolve('src', 'reading', '__fixtures__', 'repo.zip'),
+      path.resolve('src', 'reading', '__fixtures__', 'mock-main.zip'),
     );
 
     beforeEach(() => {
@@ -169,8 +169,8 @@ describe('AzureUrlReader', () => {
       const files = await response.files();
 
       expect(files.length).toBe(2);
-      const mkDocsFile = await files[1].content();
-      const indexMarkdownFile = await files[0].content();
+      const mkDocsFile = await files[0].content();
+      const indexMarkdownFile = await files[1].content();
 
       expect(mkDocsFile.toString()).toBe('site_name: Test\n');
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
