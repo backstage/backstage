@@ -42,6 +42,7 @@ export class GitlabPreparer implements PreparerBase {
 
     const parsedGitLocation = parseGitUrl(location);
     const repositoryCheckoutUrl = parsedGitLocation.toString('https');
+    const ref = parsedGitLocation.toString('ref');
     const tempDir = await fs.promises.mkdtemp(
       path.join(workingDirectory, templateId),
     );
@@ -61,6 +62,7 @@ export class GitlabPreparer implements PreparerBase {
 
     await git.clone({
       url: repositoryCheckoutUrl,
+      ref: ref,
       dir: tempDir,
     });
 
