@@ -78,6 +78,7 @@ Firekube
 Fiverr
 freben
 Fredrik
+Georgoulas
 gitbeaker
 GitHub
 GitLab
@@ -100,6 +101,7 @@ incentivised
 inlined
 inlinehilite
 interop
+Ioannis
 JavaScript
 jq
 js
