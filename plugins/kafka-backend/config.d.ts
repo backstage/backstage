@@ -17,5 +17,10 @@ export interface Config {
   kafka?: {
     clientId: string;
     brokers: string[];
+    ssl?: {
+      ca: string[];
+      key: string;
+      cert: string;
+    };
   };
 }

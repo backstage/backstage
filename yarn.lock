@@ -2437,7 +2437,7 @@
 "@backstage/catalog-model@^0.2.0":
   version "0.6.1"
   dependencies:
-    "@backstage/config" "^0.1.1"
+    "@backstage/config" "^0.1.2"
     "@types/json-schema" "^7.0.5"
     "@types/yup" "^0.29.8"
     json-schema "^0.2.5"
@@ -2448,7 +2448,7 @@
 "@backstage/catalog-model@^0.3.0":
   version "0.6.1"
   dependencies:
-    "@backstage/config" "^0.1.1"
+    "@backstage/config" "^0.1.2"
     "@types/json-schema" "^7.0.5"
     "@types/yup" "^0.29.8"
     json-schema "^0.2.5"
@@ -2459,13 +2459,14 @@
 "@backstage/core@^0.3.0":
   version "0.4.4"
   dependencies:
-    "@backstage/config" "^0.1.1"
-    "@backstage/core-api" "^0.2.1"
-    "@backstage/theme" "^0.2.1"
+    "@backstage/config" "^0.1.2"
+    "@backstage/core-api" "^0.2.8"
+    "@backstage/theme" "^0.2.2"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "4.0.0-alpha.45"
     "@types/dagre" "^0.7.44"
+    "@types/prop-types" "^15.7.3"
     "@types/react" "^16.9"
     "@types/react-sparklines" "^1.7.0"
     classnames "^2.2.6"

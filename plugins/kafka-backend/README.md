@@ -14,6 +14,10 @@ The name of the client to use when connecting to the cluster.
 
 A list of the brokers' host names and ports to connect to.
 
+### ssl (optional)
+
+Configure TLS connection to the Kafka cluster. The options are passed directly to [tls.connect] and used to create the TLS secure context. Normally these would include `key` and `cert`.
+
 Example:
 
 ```yaml

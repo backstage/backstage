@@ -16,6 +16,7 @@
 
 import { Kafka, SeekEntry } from 'kafkajs';
 import { Logger } from 'winston';
+import { ConnectionOptions } from 'tls';
 
 export type PartitionOffset = {
   id: number;
@@ -27,6 +28,13 @@ export type TopicOffset = {
   partitions: PartitionOffset[];
 };
 
+export type Options = {
+  clientId: string;
+  brokers: string[];
+  ssl?: ConnectionOptions;
+  logger: Logger;
+};
+
 export interface KafkaApi {
   fetchTopicOffsets(topic: string): Promise<Array<PartitionOffset>>;
   fetchGroupOffsets(groupId: string): Promise<Array<TopicOffset>>;
@@ -36,13 +44,13 @@ export class KafkaJsApiImpl implements KafkaApi {
   private readonly kafka: Kafka;
   private readonly logger: Logger;
 
-  constructor(clientId: string, brokers: string[], logger: Logger) {
-    logger.debug(
-      `creating kafka client with clientId=${clientId} and brokers=${brokers}`,
+  constructor(options: Options) {
+    options.logger.debug(
+      `creating kafka client with clientId=${options.clientId} and brokers=${options.brokers}`,
     );
 
-    this.kafka = new Kafka({ clientId, brokers });
-    this.logger = logger;
+    this.kafka = new Kafka(options);
+    this.logger = options.logger;
   }
 
   async fetchTopicOffsets(topic: string): Promise<Array<PartitionOffset>> {

@@ -20,6 +20,7 @@ import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 import { KafkaApi, KafkaJsApiImpl } from './KafkaApi';
 import _ from 'lodash';
+import { ConnectionOptions } from 'tls';
 
 export interface RouterOptions {
   logger: Logger;
@@ -71,7 +72,10 @@ export async function createRouter(
   const clientId = options.config.getString('kafka.clientId');
   const brokers = options.config.getStringArray('kafka.brokers');
 
-  const kafkaApi = new KafkaJsApiImpl(clientId, brokers, logger);
+  const sslConfig = options.config.getOptional('kafka.ssl');
+  const ssl = sslConfig ? (sslConfig as ConnectionOptions) : undefined;
+
+  const kafkaApi = new KafkaJsApiImpl({ clientId, brokers, logger, ssl });
 
   return makeRouter(logger, kafkaApi);
 }
