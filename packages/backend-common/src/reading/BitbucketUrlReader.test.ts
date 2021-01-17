@@ -20,6 +20,7 @@ import fs from 'fs';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import path from 'path';
+import { NotModifiedError } from '../errors';
 import { BitbucketUrlReader } from './BitbucketUrlReader';
 import { ReadTreeResponseFactory } from './tree';
 
@@ -27,15 +28,24 @@ const treeResponseFactory = ReadTreeResponseFactory.create({
   config: new ConfigReader({}),
 });
 
+const bitbucketProcessor = new BitbucketUrlReader(
+  { host: 'bitbucket.org', apiBaseUrl: 'https://api.bitbucket.org/2.0' },
+  { treeResponseFactory },
+);
+
+const hostedBitbucketProcessor = new BitbucketUrlReader(
+  {
+    host: 'bitbucket.mycompany.net',
+    apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
+  },
+  { treeResponseFactory },
+);
+
 describe('BitbucketUrlReader', () => {
   describe('implementation', () => {
     it('rejects unknown targets', async () => {
-      const processor = new BitbucketUrlReader(
-        { host: 'bitbucket.org', apiBaseUrl: 'https://api.bitbucket.org/2.0' },
-        { treeResponseFactory },
-      );
       await expect(
-        processor.read('https://not.bitbucket.com/apa'),
+        bitbucketProcessor.read('https://not.bitbucket.com/apa'),
       ).rejects.toThrow(
         'Incorrect URL: https://not.bitbucket.com/apa, Error: Invalid Bitbucket URL or file path',
       );
@@ -55,8 +65,30 @@ describe('BitbucketUrlReader', () => {
       ),
     );
 
-    it('returns the wanted files from an archive', async () => {
+    const privateBitbucketRepoBuffer = fs.readFileSync(
+      path.resolve(
+        'src',
+        'reading',
+        '__fixtures__',
+        'bitbucket-server-repo.zip',
+      ),
+    );
+
+    beforeEach(() => {
       worker.use(
+        rest.get(
+          'https://api.bitbucket.org/2.0/repositories/backstage/mock',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.json({
+                mainbranch: {
+                  type: 'branch',
+                  name: 'master',
+                },
+              }),
+            ),
+        ),
         rest.get(
           'https://bitbucket.org/backstage/mock/get/master.zip',
           (_, res, ctx) =>
@@ -76,16 +108,34 @@ describe('BitbucketUrlReader', () => {
               }),
             ),
         ),
+        rest.get(
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive?format=zip&prefix=mock&path=docs',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/zip'),
+              ctx.body(privateBitbucketRepoBuffer),
+            ),
+        ),
+        rest.get(
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/repositories/backstage/mock/commits/some-branch',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.json({
+                values: [{ hash: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st' }],
+              }),
+            ),
+        ),
       );
+    });
 
-      const processor = new BitbucketUrlReader(
-        { host: 'bitbucket.org', apiBaseUrl: 'https://api.bitbucket.org/2.0' },
-        { treeResponseFactory },
-      );
-
-      const response = await processor.readTree(
+    it('returns the wanted files from an archive', async () => {
+      const response = await bitbucketProcessor.readTree(
         'https://bitbucket.org/backstage/mock/src/master',
       );
+
+      expect(response.sha).toBe('12ab34cd56ef');
 
       const files = await response.files();
 
@@ -98,37 +148,11 @@ describe('BitbucketUrlReader', () => {
     });
 
     it('uses private bitbucket host', async () => {
-      const privateBitbucketRepoBuffer = fs.readFileSync(
-        path.resolve(
-          'src',
-          'reading',
-          '__fixtures__',
-          'bitbucket-server-repo.zip',
-        ),
-      );
-      worker.use(
-        rest.get(
-          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive?format=zip&prefix=mock&path=docs',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/zip'),
-              ctx.body(privateBitbucketRepoBuffer),
-            ),
-        ),
-      );
-
-      const processor = new BitbucketUrlReader(
-        {
-          host: 'bitbucket.mycompany.net',
-          apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
-        },
-        { treeResponseFactory },
-      );
-
-      const response = await processor.readTree(
+      const response = await hostedBitbucketProcessor.readTree(
         'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/docs?at=some-branch',
       );
+
+      expect(response.sha).toBe('12ab34cd56ef');
 
       const files = await response.files();
 
@@ -139,36 +163,11 @@ describe('BitbucketUrlReader', () => {
     });
 
     it('returns the wanted files from an archive with a subpath', async () => {
-      worker.use(
-        rest.get(
-          'https://bitbucket.org/backstage/mock/get/master.zip',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/zip'),
-              ctx.body(repoBuffer),
-            ),
-        ),
-        rest.get(
-          'https://api.bitbucket.org/2.0/repositories/backstage/mock/commits/master',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.json({
-                values: [{ hash: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st' }],
-              }),
-            ),
-        ),
-      );
-
-      const processor = new BitbucketUrlReader(
-        { host: 'bitbucket.org', apiBaseUrl: 'https://api.bitbucket.org/2.0' },
-        { treeResponseFactory },
-      );
-
-      const response = await processor.readTree(
+      const response = await bitbucketProcessor.readTree(
         'https://bitbucket.org/backstage/mock/src/master/docs',
       );
+
+      expect(response.sha).toBe('12ab34cd56ef');
 
       const files = await response.files();
 
@@ -176,6 +175,26 @@ describe('BitbucketUrlReader', () => {
       const indexMarkdownFile = await files[0].content();
 
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
+    });
+
+    it('throws a NotModifiedError when given a sha in options', async () => {
+      const fnBitbucket = async () => {
+        await bitbucketProcessor.readTree(
+          'https://bitbucket.org/backstage/mock',
+          { sha: '12ab34cd56ef' },
+        );
+      };
+
+      await expect(fnBitbucket).rejects.toThrow(NotModifiedError);
+    });
+
+    it('should not throw a NotModifiedError when given an outdated sha in options', async () => {
+      const response = await bitbucketProcessor.readTree(
+        'https://bitbucket.org/backstage/mock',
+        { sha: 'outdatedSha123abc' },
+      );
+
+      expect(response.sha).toBe('12ab34cd56ef');
     });
   });
 });

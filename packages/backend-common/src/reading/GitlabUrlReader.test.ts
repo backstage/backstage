@@ -179,9 +179,6 @@ describe('GitlabUrlReader', () => {
               ctx.body(archiveBuffer),
             ),
         ),
-      );
-
-      worker.use(
         rest.get(
           'https://gitlab.com/api/v4/projects/backstage%2Fmock',
           (_, res, ctx) =>
@@ -191,9 +188,6 @@ describe('GitlabUrlReader', () => {
               ctx.json(projectGitlabApiResponse),
             ),
         ),
-      );
-
-      worker.use(
         rest.get(
           'https://gitlab.com/api/v4/projects/backstage%2Fmock/repository/branches/main',
           (_, res, ctx) =>
@@ -203,16 +197,10 @@ describe('GitlabUrlReader', () => {
               ctx.json(branchGitlabApiResponse),
             ),
         ),
-      );
-
-      worker.use(
         rest.get(
           'https://gitlab.com/api/v4/projects/backstage%2Fmock/repository/branches/branchDoesNotExist',
           (_, res, ctx) => res(ctx.status(404)),
         ),
-      );
-
-      worker.use(
         rest.get(
           'https://gitlab.mycompany.com/api/v4/projects/backstage%2Fmock',
           (_, res, ctx) =>
@@ -222,9 +210,6 @@ describe('GitlabUrlReader', () => {
               ctx.json(projectGitlabApiResponse),
             ),
         ),
-      );
-
-      worker.use(
         rest.get(
           'https://gitlab.mycompany.com/api/v4/projects/backstage%2Fmock/repository/branches/main',
           (_, res, ctx) =>
@@ -234,9 +219,6 @@ describe('GitlabUrlReader', () => {
               ctx.json(branchGitlabApiResponse),
             ),
         ),
-      );
-
-      worker.use(
         rest.get(
           'https://gitlab.mycompany.com/api/v4/projects/backstage%2Fmock/repository/archive.zip?sha=main',
           (_, res, ctx) =>
