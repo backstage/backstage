@@ -20,10 +20,11 @@ import {
   getAzureFileFetchUrl,
   getAzureDownloadUrl,
   getAzureRequestOptions,
+  getAzureCommitsUrl,
 } from '@backstage/integration';
 import fetch from 'cross-fetch';
 import { Readable } from 'stream';
-import { NotFoundError } from '../errors';
+import { NotFoundError, NotModifiedError } from '../errors';
 import {
   ReaderFactory,
   ReadTreeOptions,
@@ -75,6 +76,25 @@ export class AzureUrlReader implements UrlReader {
     url: string,
     options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
+    // Get latest commit SHA
+
+    const commitsAzureResponse = await fetch(
+      getAzureCommitsUrl(url),
+      getAzureRequestOptions(this.options),
+    );
+    if (!commitsAzureResponse.ok) {
+      const message = `Failed to read tree from ${url}, ${commitsAzureResponse.status} ${commitsAzureResponse.statusText}`;
+      if (commitsAzureResponse.status === 404) {
+        throw new NotFoundError(message);
+      }
+      throw new Error(message);
+    }
+
+    const commitSha = (await commitsAzureResponse.json()).value[0].commitId;
+    if (options?.sha && options.sha === commitSha) {
+      throw new NotModifiedError();
+    }
+
     const archiveAzureResponse = await fetch(
       getAzureDownloadUrl(url),
       getAzureRequestOptions(this.options, { Accept: 'application/zip' }),
@@ -93,8 +113,7 @@ export class AzureUrlReader implements UrlReader {
     });
 
     const response = archiveResponse as ReadTreeResponse;
-    // TODO: Just a placeholder for now.
-    response.sha = '';
+    response.sha = commitSha;
     return response;
   }
 

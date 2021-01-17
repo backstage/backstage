@@ -23,6 +23,7 @@ import { getVoidLogger } from '../logging';
 import { AzureUrlReader } from './AzureUrlReader';
 import { msw } from '@backstage/test-utils';
 import { ReadTreeResponseFactory } from './tree';
+import { NotModifiedError } from '../errors';
 
 const logger = getVoidLogger();
 
@@ -142,6 +143,11 @@ describe('AzureUrlReader', () => {
       path.resolve('src', 'reading', '__fixtures__', 'mock-main.zip'),
     );
 
+    const processor = new AzureUrlReader(
+      { host: 'dev.azure.com' },
+      { treeResponseFactory },
+    );
+
     beforeEach(() => {
       worker.use(
         rest.get(
@@ -153,19 +159,65 @@ describe('AzureUrlReader', () => {
               ctx.body(repoBuffer),
             ),
         ),
+        rest.get(
+          // https://docs.microsoft.com/en-us/rest/api/azure/devops/git/commits/get%20commits?view=azure-devops-rest-6.0#on-a-branch
+          'https://dev.azure.com/organization/project/_apis/git/repositories/repository/commits',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.json({
+                count: 2,
+                value: [
+                  {
+                    commitId: '123abc2',
+                    comment: 'second commit',
+                  },
+                  {
+                    commitId: '123abc1',
+                    comment: 'first commit',
+                  },
+                ],
+              }),
+            ),
+        ),
       );
     });
 
     it('returns the wanted files from an archive', async () => {
-      const processor = new AzureUrlReader(
-        { host: 'dev.azure.com' },
-        { treeResponseFactory },
-      );
-
       const response = await processor.readTree(
         'https://dev.azure.com/organization/project/_git/repository',
       );
 
+      expect(response.sha).toBe('123abc2');
+
+      const files = await response.files();
+
+      expect(files.length).toBe(2);
+      const mkDocsFile = await files[0].content();
+      const indexMarkdownFile = await files[1].content();
+
+      expect(mkDocsFile.toString()).toBe('site_name: Test\n');
+      expect(indexMarkdownFile.toString()).toBe('# Test\n');
+    });
+
+    it('throws a NotModifiedError when given a sha in options', async () => {
+      const fnAzure = async () => {
+        await processor.readTree(
+          'https://dev.azure.com/organization/project/_git/repository',
+          { sha: '123abc2' },
+        );
+      };
+
+      await expect(fnAzure).rejects.toThrow(NotModifiedError);
+    });
+
+    it('should not throw a NotModifiedError when given an outdated sha in options', async () => {
+      const response = await processor.readTree(
+        'https://dev.azure.com/organization/project/_git/repository',
+        { sha: 'outdated123abc' },
+      );
+
+      expect(response.sha).toBe('123abc2');
       const files = await response.files();
 
       expect(files.length).toBe(2);
