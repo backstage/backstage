@@ -35,7 +35,12 @@ describe('FetchUrlReader', () => {
       config: new ConfigReader({
         backend: {
           reading: {
-            allow: [{ host: 'example.com' }, { host: '*.examples.org' }],
+            allow: [
+              { host: 'example.com' },
+              { host: 'example.com:700' },
+              { host: '*.examples.org' },
+              { host: '*.examples.org:700' },
+            ],
           },
         },
       }),
@@ -50,9 +55,19 @@ describe('FetchUrlReader', () => {
 
     expect(predicate(new URL('https://example.com/test'))).toBe(true);
     expect(predicate(new URL('https://a.example.com/test'))).toBe(false);
+    expect(predicate(new URL('https://example.com:600/test'))).toBe(false);
+    expect(predicate(new URL('https://a.example.com:600/test'))).toBe(false);
+    expect(predicate(new URL('https://example.com:700/test'))).toBe(true);
+    expect(predicate(new URL('https://a.example.com:700/test'))).toBe(false);
     expect(predicate(new URL('https://other.com/test'))).toBe(false);
     expect(predicate(new URL('https://examples.org/test'))).toBe(false);
     expect(predicate(new URL('https://a.examples.org/test'))).toBe(true);
     expect(predicate(new URL('https://a.b.examples.org/test'))).toBe(true);
+    expect(predicate(new URL('https://examples.org:600/test'))).toBe(false);
+    expect(predicate(new URL('https://a.examples.org:600/test'))).toBe(false);
+    expect(predicate(new URL('https://a.b.examples.org:600/test'))).toBe(false);
+    expect(predicate(new URL('https://examples.org:700/test'))).toBe(false);
+    expect(predicate(new URL('https://a.examples.org:700/test'))).toBe(true);
+    expect(predicate(new URL('https://a.b.examples.org:700/test'))).toBe(true);
   });
 });

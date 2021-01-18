@@ -105,9 +105,10 @@ export interface Config {
        */
       allow?: Array<{
         /**
-         * A hostname to allow outgoing requests to, being either a full hostname or
+         * A host to allow outgoing requests to, being either a full host or
          * a subdomain wildcard pattern with a leading `*`. For example `example.com`
          * and `*.example.com` are valid values, `prod.*.example.com` is not.
+         * The host may also contain a port, for example `example.com:8080`.
          */
         host: string;
       }>;

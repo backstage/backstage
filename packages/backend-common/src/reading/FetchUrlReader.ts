@@ -39,9 +39,9 @@ export class FetchUrlReader implements UrlReader {
           const host = allowConfig.getString('host');
           if (host.startsWith('*.')) {
             const suffix = host.slice(1);
-            return (url: URL) => url.hostname.endsWith(suffix);
+            return (url: URL) => url.host.endsWith(suffix);
           }
-          return (url: URL) => url.hostname === host;
+          return (url: URL) => url.host === host;
         }) ?? [];
 
     const reader = new FetchUrlReader();
