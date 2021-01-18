@@ -29,9 +29,10 @@ At a base-level, we want to support the following:
 
 More advanced use-cases we hope to support with this architecture include:
 
-- It should be easy for any plugin to expose new content to search.
+- It should be easy for any plugin to expose new content to search. (e.g. entity
+  metadata, documentation from TechDocs)
 - It should be easy for any plugin to append relevant metadata to existing
-  content in search.
+  content in search. (e.g. location (path) for TechDocs page)
 - It should be easy to refine search queries (e.g. ranking, scoring, etc.)
 - It should be easy to customize the search UI
 - It should be easy to add search functionality to any Backstage plugin or
