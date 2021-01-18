@@ -1,5 +1,16 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.2.4
+
+### Patch Changes
+
+- 5a9a7e7c2: Revamped Kubernetes UI and added error reporting/detection
+- Updated dependencies [f3b064e1c]
+- Updated dependencies [abbee6fff]
+- Updated dependencies [147fadcb9]
+  - @backstage/catalog-model@0.6.1
+  - @backstage/backend-common@0.4.3
+
 ## 0.2.3
 
 ### Patch Changes

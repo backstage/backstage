@@ -1,5 +1,26 @@
 # @backstage/plugin-kubernetes
 
+## 0.3.5
+
+### Patch Changes
+
+- 1fea88fd0: Fixed an issue where assets weren't properly bundled in the published package.
+
+## 0.3.4
+
+### Patch Changes
+
+- 5a9a7e7c2: Revamped Kubernetes UI and added error reporting/detection
+- 3e7c09c84: Minor updates to display of errors
+- Updated dependencies [5a9a7e7c2]
+- Updated dependencies [f3b064e1c]
+- Updated dependencies [265a7ab30]
+- Updated dependencies [abbee6fff]
+- Updated dependencies [147fadcb9]
+  - @backstage/plugin-kubernetes-backend@0.2.4
+  - @backstage/catalog-model@0.6.1
+  - @backstage/core@0.4.4
+
 ## 0.3.3
 
 ### Patch Changes

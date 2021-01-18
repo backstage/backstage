@@ -24,13 +24,13 @@ import { PublisherBase, PublishRequest } from './types';
 import fs from 'fs-extra';
 import { Readable } from 'stream';
 
-const streamToString = (stream: Readable): Promise<string> => {
+const streamToBuffer = (stream: Readable): Promise<Buffer> => {
   return new Promise((resolve, reject) => {
     try {
       const chunks: any[] = [];
       stream.on('data', chunk => chunks.push(chunk));
       stream.on('error', reject);
-      stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+      stream.on('end', () => resolve(Buffer.concat(chunks)));
     } catch (e) {
       throw new Error(`Unable to parse the response data, ${e.message}`);
     }
@@ -173,7 +173,7 @@ export class AwsS3Publish implements PublisherBase {
             Key: `${entityRootDir}/techdocs_metadata.json`,
           })
           .then(async file => {
-            const techdocsMetadataJson = await streamToString(
+            const techdocsMetadataJson = await streamToBuffer(
               file.Body as Readable,
             );
 
@@ -183,7 +183,7 @@ export class AwsS3Publish implements PublisherBase {
               );
             }
 
-            resolve(techdocsMetadataJson);
+            resolve(techdocsMetadataJson.toString('utf-8'));
           })
           .catch(err => {
             this.logger.error(err.message);
@@ -211,7 +211,7 @@ export class AwsS3Publish implements PublisherBase {
       this.storageClient
         .getObject({ Bucket: this.bucketName, Key: filePath })
         .then(async object => {
-          const fileContent = await streamToString(object.Body as Readable);
+          const fileContent = await streamToBuffer(object.Body as Readable);
           if (!fileContent) {
             throw new Error(`Unable to parse the file ${filePath}.`);
           }

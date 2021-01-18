@@ -20,7 +20,7 @@ import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { parseLocationAnnotation } from '../helpers';
 import { InputError, Git } from '@backstage/backend-common';
 import { PreparerBase, PreparerOptions } from './types';
-import GitUriParser from 'git-url-parse';
+import parseGitUrl from 'git-url-parse';
 import { Config } from '@backstage/config';
 
 export class AzurePreparer implements PreparerBase {
@@ -46,7 +46,7 @@ export class AzurePreparer implements PreparerBase {
     }
     const templateId = template.metadata.name;
 
-    const parsedGitLocation = GitUriParser(location);
+    const parsedGitLocation = parseGitUrl(location);
     const repositoryCheckoutUrl = parsedGitLocation.toString('https');
     const tempDir = await fs.promises.mkdtemp(
       path.join(workingDirectory, templateId),

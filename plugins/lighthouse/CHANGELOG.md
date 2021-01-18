@@ -1,5 +1,20 @@
 # @backstage/plugin-lighthouse
 
+## 0.2.7
+
+### Patch Changes
+
+- cf7df3b1f: Strip trailing slash from url when creating a new audit. This change prevents duplicate audits from being displayed in the audit list.
+- a6f9dca0d: Remove dependency on `@backstage/core-api`. No plugin should ever depend on that package; it's an internal concern whose important bits are re-exported by `@backstage/core` which is the public facing dependency to use.
+- Updated dependencies [f3b064e1c]
+- Updated dependencies [c00488983]
+- Updated dependencies [265a7ab30]
+- Updated dependencies [abbee6fff]
+- Updated dependencies [147fadcb9]
+  - @backstage/catalog-model@0.6.1
+  - @backstage/plugin-catalog@0.2.11
+  - @backstage/core@0.4.4
+
 ## 0.2.6
 
 ### Patch Changes

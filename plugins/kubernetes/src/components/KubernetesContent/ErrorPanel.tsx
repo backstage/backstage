@@ -52,8 +52,8 @@ export const ErrorPanel = ({
   clustersWithErrors,
 }: ErrorPanelProps) => (
   <WarningPanel
-    title="There was an error retrieving kubernetes objects"
-    message={`There was an error retrieving some Kubernetes resources for the entity: ${entityName}`}
+    title="There was a problem retrieving Kubernetes objects"
+    message={`There was a problem retrieving some Kubernetes resources for the entity: ${entityName}. This could mean that the Error Reporting card is not completely accurate.`}
   >
     {clustersWithErrors && (
       <div>Errors: {clustersWithErrorsToErrorMessage(clustersWithErrors)}</div>

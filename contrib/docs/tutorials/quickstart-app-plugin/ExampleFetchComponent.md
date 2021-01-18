@@ -11,8 +11,8 @@ import {
   TableColumn,
   Progress,
   githubAuthApiRef,
+  useApi,
 } from '@backstage/core';
-import { useApi } from '@backstage/core-api';
 import { graphql } from '@octokit/graphql';
 
 const query = `{

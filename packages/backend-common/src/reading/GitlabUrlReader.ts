@@ -29,7 +29,7 @@ import {
   ReadTreeResponse,
   UrlReader,
 } from './types';
-import parseGitUri from 'git-url-parse';
+import parseGitUrl from 'git-url-parse';
 import { Readable } from 'stream';
 
 export class GitlabUrlReader implements UrlReader {
@@ -85,7 +85,7 @@ export class GitlabUrlReader implements UrlReader {
       resource,
       full_name,
       filepath,
-    } = parseGitUri(url);
+    } = parseGitUrl(url);
 
     if (!ref) {
       throw new InputError(

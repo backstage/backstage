@@ -152,7 +152,7 @@ export async function waitForPageWithText(
 
   // The page may not be fully loaded and hence we need to retry.
   let findTextAttempts = 0;
-  const escapedText = text.replace(/"/g, '\\"');
+  const escapedText = text.replace(/"|\\/g, '\\$&');
   for (;;) {
     try {
       browser.assert.evaluate(

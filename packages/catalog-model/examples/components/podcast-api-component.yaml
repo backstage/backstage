@@ -9,3 +9,4 @@ spec:
   type: service
   lifecycle: experimental
   owner: team-b
+  system: podcast

@@ -1,5 +1,35 @@
 # example-backend
 
+## 0.2.11
+
+### Patch Changes
+
+- cc068c0d6: Bump the gitbeaker dependencies to 28.x.
+
+  To update your own installation, go through the `package.json` files of all of
+  your packages, and ensure that all dependencies on `@gitbeaker/node` or
+  `@gitbeaker/core` are at version `^28.0.2`. Then run `yarn install` at the root
+  of your repo.
+
+- Updated dependencies [68ad5af51]
+- Updated dependencies [5a9a7e7c2]
+- Updated dependencies [f3b064e1c]
+- Updated dependencies [94fdf4955]
+- Updated dependencies [cc068c0d6]
+- Updated dependencies [ade6b3bdf]
+- Updated dependencies [468579734]
+- Updated dependencies [cb7af51e7]
+- Updated dependencies [abbee6fff]
+- Updated dependencies [147fadcb9]
+- Updated dependencies [711ba55a2]
+  - @backstage/plugin-techdocs-backend@0.5.3
+  - @backstage/plugin-kubernetes-backend@0.2.4
+  - @backstage/catalog-model@0.6.1
+  - @backstage/plugin-catalog-backend@0.5.3
+  - @backstage/plugin-scaffolder-backend@0.4.1
+  - @backstage/plugin-auth-backend@0.2.10
+  - @backstage/backend-common@0.4.3
+
 ## 0.2.10
 
 ### Patch Changes

@@ -72,8 +72,7 @@ Our first modification will be to extract information from the Identity API.
 
 ```tsx
 // Add identityApiRef to the list of imported from core
-import { identityApiRef } from '@backstage/core';
-import { useApi } from '@backstage/core-api';
+import { identityApiRef, useApi } from '@backstage/core';
 ```
 
 3. Adjust the ExampleComponent from inline to block
@@ -143,8 +142,8 @@ import {
   TableColumn,
   Progress,
   githubAuthApiRef,
+  useApi,
 } from '@backstage/core';
-import { useApi } from '@backstage/core-api';
 import { graphql } from '@octokit/graphql';
 
 const ExampleFetchComponent = () => {

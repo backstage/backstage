@@ -14,8 +14,8 @@ import {
   HeaderLabel,
   SupportButton,
   identityApiRef,
+  useApi,
 } from '@backstage/core';
-import { useApi } from '@backstage/core-api';
 import ExampleFetchComponent from '../ExampleFetchComponent';
 
 const ExampleComponent = () => {
