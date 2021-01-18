@@ -70,7 +70,7 @@ export function useGithubRepos() {
         githubIntegrationConfig,
       })
       .catch(e => {
-        throw new Error(`Failed to submit PR to repo:\n${e.message}`);
+        throw new Error(`Failed to submit PR to repo: ${e.message}`);
       });
 
     await api
@@ -78,7 +78,7 @@ export function useGithubRepos() {
         location: submitPRResponse.location,
       })
       .catch(e => {
-        throw new Error(`Failed to create repository location:\n${e.message}`);
+        throw new Error(`Failed to create repository location: ${e.message}`);
       });
 
     return submitPRResponse;
@@ -95,7 +95,7 @@ export function useGithubRepos() {
     try {
       githubConfig = getGithubIntegrationConfig(location);
     } catch (e) {
-      return Promise.resolve({ exists: false });
+      return { exists: false };
     }
     return await api
       .checkForExistingCatalogInfo({
@@ -105,7 +105,7 @@ export function useGithubRepos() {
       })
       .catch(e => {
         throw new Error(
-          `Failed to inspect repository for existing catalog-info.yaml:\n${e.message}`,
+          `Failed to inspect repository for existing catalog-info.yaml: ${e.message}`,
         );
       });
   };
