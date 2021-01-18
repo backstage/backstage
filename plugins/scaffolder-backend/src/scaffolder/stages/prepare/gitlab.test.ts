@@ -85,7 +85,7 @@ describe('GitLabPreparer', () => {
       await preparer.prepare(mockEntity, { logger: getVoidLogger() });
 
       expect(mockGitClient.clone).toHaveBeenCalledWith({
-        url: 'https://gitlab.com/benjdlambert/backstage-graphql-template',
+        url: 'https://gitlab.com/benjdlambert/backstage-graphql-template.git',
         dir: expect.any(String),
       });
     });
@@ -143,7 +143,7 @@ describe('GitLabPreparer', () => {
       await preparer.prepare(mockEntity, { logger: getVoidLogger() });
 
       expect(mockGitClient.clone).toHaveBeenCalledWith({
-        url: 'https://gitlab.com/benjdlambert/backstage-graphql-template',
+        url: 'https://gitlab.com/benjdlambert/backstage-graphql-template.git',
         dir: expect.any(String),
       });
     });

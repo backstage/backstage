@@ -45,7 +45,7 @@ describe('GitLab Publisher', () => {
         id: 42,
       } as { id: number });
       mockGitlabClient.Projects.create.mockResolvedValue({
-        http_url_to_repo: 'mockclone',
+        http_url_to_repo: 'https://github.com/backstage/backstage.git',
       } as { http_url_to_repo: string });
 
       const result = await publisher.publish({
@@ -58,14 +58,18 @@ describe('GitLab Publisher', () => {
         logger,
       });
 
-      expect(result).toEqual({ remoteUrl: 'mockclone' });
+      expect(result).toEqual({
+        remoteUrl: 'https://github.com/backstage/backstage.git',
+        catalogInfoUrl:
+          'https://github.com/backstage/backstage/-/blob/master/catalog-info.yaml',
+      });
       expect(mockGitlabClient.Projects.create).toHaveBeenCalledWith({
         namespace_id: 42,
         name: 'test',
       });
       expect(initRepoAndPush).toHaveBeenCalledWith({
         dir: '/tmp/test',
-        remoteUrl: 'mockclone',
+        remoteUrl: 'https://github.com/backstage/backstage.git',
         auth: { username: 'oauth2', password: 'fake-token' },
         logger,
       });
@@ -77,7 +81,7 @@ describe('GitLab Publisher', () => {
         id: 21,
       } as { id: number });
       mockGitlabClient.Projects.create.mockResolvedValue({
-        http_url_to_repo: 'mockclone',
+        http_url_to_repo: 'https://github.com/backstage/backstage.git',
       } as { http_url_to_repo: string });
 
       const result = await publisher.publish({
@@ -89,7 +93,11 @@ describe('GitLab Publisher', () => {
         logger,
       });
 
-      expect(result).toEqual({ remoteUrl: 'mockclone' });
+      expect(result).toEqual({
+        remoteUrl: 'https://github.com/backstage/backstage.git',
+        catalogInfoUrl:
+          'https://github.com/backstage/backstage/-/blob/master/catalog-info.yaml',
+      });
       expect(mockGitlabClient.Users.current).toHaveBeenCalled();
       expect(mockGitlabClient.Projects.create).toHaveBeenCalledWith({
         namespace_id: 21,
@@ -97,7 +105,7 @@ describe('GitLab Publisher', () => {
       });
       expect(initRepoAndPush).toHaveBeenCalledWith({
         dir: '/tmp/test',
-        remoteUrl: 'mockclone',
+        remoteUrl: 'https://github.com/backstage/backstage.git',
         auth: { username: 'oauth2', password: 'fake-token' },
         logger,
       });

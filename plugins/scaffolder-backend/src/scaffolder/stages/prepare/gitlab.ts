@@ -56,6 +56,7 @@ export class GitlabPreparer implements PreparerBase {
     const templateId = template.metadata.name;
 
     const parsedGitLocation = parseGitUrl(location);
+    parsedGitLocation.git_suffix = true;
     const repositoryCheckoutUrl = parsedGitLocation.toString('https');
     const tempDir = await fs.promises.mkdtemp(
       path.join(workingDirectory, templateId),

@@ -46,7 +46,12 @@ export class GitlabPublisher implements PublisherBase {
       logger,
     });
 
-    return { remoteUrl };
+    const catalogInfoUrl = remoteUrl.replace(
+      /\.git$/,
+      '/-/blob/master/catalog-info.yaml',
+    );
+
+    return { remoteUrl, catalogInfoUrl };
   }
 
   private async createRemote(
