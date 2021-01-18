@@ -11,19 +11,10 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [10.x, 12.x, 14.x, 15.x]
+        node-version: [14.x]
 
 steps:
   - uses: actions/checkout@v2
-  - uses: borales/actions-yarn@v2.0.0
-    with:
-      cmd: install
-  - uses: borales/actions-yarn@v2.0.0
-    with:
-      cmd: build
-  - uses: borales/actions-yarn@v2.0.0
-    with:
-      cmd: test
     # Runs a set of commands to initialize and analyze with FOSSA
   - name: run FOSSA analysis
     env:
