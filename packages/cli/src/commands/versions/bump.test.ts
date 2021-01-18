@@ -177,4 +177,71 @@ describe('bump', () => {
       },
     });
   });
+
+  it('should ignore not found packages', async () => {
+    // Make sure all modules involved in package discovery are in the module cache before we mock fs
+    await mapDependencies(paths.targetDir);
+    mockFs({
+      '/yarn.lock': lockfileMockResult,
+      '/lerna.json': JSON.stringify({
+        packages: ['packages/*'],
+      }),
+      '/packages/a/package.json': JSON.stringify({
+        name: 'a',
+        dependencies: {
+          '@backstage/core': '^1.0.5',
+        },
+      }),
+      '/packages/b/package.json': JSON.stringify({
+        name: 'b',
+        dependencies: {
+          '@backstage/core': '^1.0.3',
+          '@backstage/theme': '^2.0.0',
+        },
+      }),
+    });
+
+    paths.targetDir = '/';
+    jest
+      .spyOn(paths, 'resolveTargetRoot')
+      .mockImplementation((...paths) => resolvePath('/', ...paths));
+    jest.spyOn(runObj, 'runPlain').mockImplementation(async () => '');
+    jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
+
+    const { log: logs } = await withLogCollector(['log'], async () => {
+      await bump();
+    });
+    expect(logs.filter(Boolean)).toEqual([
+      'Checking for updates of @backstage/theme',
+      'Checking for updates of @backstage/core',
+      'Package info not found, ignoring package @backstage/theme',
+      'Package info not found, ignoring package @backstage/core',
+      'Checking for updates of @backstage/theme',
+      'Checking for updates of @backstage/core',
+      'Package info not found, ignoring package @backstage/theme',
+      'Package info not found, ignoring package @backstage/core',
+      'All Backstage packages are up to date!',
+    ]);
+
+    expect(runObj.run).toHaveBeenCalledTimes(0);
+
+    const lockfileContents = await fs.readFile('/yarn.lock', 'utf8');
+    expect(lockfileContents).toBe(lockfileMockResult);
+
+    const packageA = await fs.readJson('/packages/a/package.json');
+    expect(packageA).toEqual({
+      name: 'a',
+      dependencies: {
+        '@backstage/core': '^1.0.5', // not bumped
+      },
+    });
+    const packageB = await fs.readJson('/packages/b/package.json');
+    expect(packageB).toEqual({
+      name: 'b',
+      dependencies: {
+        '@backstage/core': '^1.0.3', // not bumped
+        '@backstage/theme': '^2.0.0', // not bumped
+      },
+    });
+  });
 });
