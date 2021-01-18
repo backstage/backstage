@@ -2,7 +2,11 @@
 '@backstage/backend-common': patch
 ---
 
-1. URL Reader's `readTree` method now returns a `sha` in the response along with the blob. The SHA belongs to the latest commit on the target. `readTree` also takes an optional `sha` in its options and throws a `NotModifiedError` if the SHA matches with the latest commit SHA on the url's target. This can be used in building a cache when working with URL Reader.
+1. URL Reader's `readTree` method now returns an `etag` in the response along with the blob. The etag is an identifier of the blob and will only change if the blob is modified on the target. Usually it is set to the latest commit SHA on the target.
+
+`readTree` also takes an optional `etag` in its options and throws a `NotModifiedError` if the etag matches with the etag of the resource.
+
+So, the `etag` can be used in building a cache when working with URL Reader.
 
 An example -
 
@@ -11,11 +15,11 @@ const response = await reader.readTree(
   'https://github.com/backstage/backstage',
 );
 
-const commitSha = response.sha;
+const etag = response.etag;
 
 // Will throw a new NotModifiedError (exported from @backstage/backstage-common)
 await reader.readTree('https://github.com/backstage/backstage', {
-  sha: commitSha,
+  etag,
 });
 ```
 

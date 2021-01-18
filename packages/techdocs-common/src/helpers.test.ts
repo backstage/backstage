@@ -135,7 +135,7 @@ describe('getDocFilesFromRepository', () => {
           archive: async () => {
             return Readable.from('');
           },
-          sha: '',
+          etag: '',
         };
       }
     }

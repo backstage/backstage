@@ -17,7 +17,7 @@
 import os from 'os';
 import { Readable } from 'stream';
 import { Config } from '@backstage/config';
-import { ReadTreeArchiveResponse } from '../types';
+import { ReadTreeResponse } from '../types';
 import { TarArchiveResponse } from './TarArchiveResponse';
 import { ZipArchiveResponse } from './ZipArchiveResponse';
 
@@ -26,6 +26,8 @@ type FromArchiveOptions = {
   stream: Readable;
   // If set, the root of the tree will be set to the given directory path.
   path?: string;
+  // etag of the blob
+  etag: string;
   // Filter passed on from the ReadTreeOptions
   filter?: (path: string) => boolean;
 };
@@ -40,24 +42,22 @@ export class ReadTreeResponseFactory {
 
   constructor(private readonly workDir: string) {}
 
-  async fromTarArchive(
-    options: FromArchiveOptions,
-  ): Promise<ReadTreeArchiveResponse> {
+  async fromTarArchive(options: FromArchiveOptions): Promise<ReadTreeResponse> {
     return new TarArchiveResponse(
       options.stream,
       options.path ?? '',
       this.workDir,
+      options.etag,
       options.filter,
     );
   }
 
-  async fromZipArchive(
-    options: FromArchiveOptions,
-  ): Promise<ReadTreeArchiveResponse> {
+  async fromZipArchive(options: FromArchiveOptions): Promise<ReadTreeResponse> {
     return new ZipArchiveResponse(
       options.stream,
       options.path ?? '',
       this.workDir,
+      options.etag,
       options.filter,
     );
   }

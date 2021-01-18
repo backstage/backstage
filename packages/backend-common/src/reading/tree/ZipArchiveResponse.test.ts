@@ -38,7 +38,7 @@ describe('ZipArchiveResponse', () => {
   it('should read files', async () => {
     const stream = fs.createReadStream('/test-archive.zip');
 
-    const res = new ZipArchiveResponse(stream, 'mock-main/', '/tmp');
+    const res = new ZipArchiveResponse(stream, 'mock-main/', '/tmp', 'etag');
     const files = await res.files();
 
     expect(files).toEqual([
@@ -61,8 +61,12 @@ describe('ZipArchiveResponse', () => {
   it('should read files with filter', async () => {
     const stream = fs.createReadStream('/test-archive.zip');
 
-    const res = new ZipArchiveResponse(stream, 'mock-main/', '/tmp', path =>
-      path.endsWith('.yml'),
+    const res = new ZipArchiveResponse(
+      stream,
+      'mock-main/',
+      '/tmp',
+      'etag',
+      path => path.endsWith('.yml'),
     );
     const files = await res.files();
 
@@ -79,14 +83,14 @@ describe('ZipArchiveResponse', () => {
   it('should read as archive and files', async () => {
     const stream = fs.createReadStream('/test-archive.zip');
 
-    const res = new ZipArchiveResponse(stream, 'mock-main/', '/tmp');
+    const res = new ZipArchiveResponse(stream, 'mock-main/', '/tmp', 'etag');
     const buffer = await res.archive();
 
     await expect(res.archive()).rejects.toThrow(
       'Response has already been read',
     );
 
-    const res2 = new ZipArchiveResponse(buffer, '', '/tmp');
+    const res2 = new ZipArchiveResponse(buffer, '', '/tmp', 'etag');
     const files = await res2.files();
 
     expect(files).toEqual([
@@ -109,7 +113,7 @@ describe('ZipArchiveResponse', () => {
   it('should extract entire archive into directory', async () => {
     const stream = fs.createReadStream('/test-archive.zip');
 
-    const res = new ZipArchiveResponse(stream, '', '/tmp');
+    const res = new ZipArchiveResponse(stream, '', '/tmp', 'etag');
     const dir = await res.dir();
 
     await expect(
@@ -123,7 +127,12 @@ describe('ZipArchiveResponse', () => {
   it('should extract archive into directory with a subpath', async () => {
     const stream = fs.createReadStream('/test-archive.zip');
 
-    const res = new ZipArchiveResponse(stream, 'mock-main/docs/', '/tmp');
+    const res = new ZipArchiveResponse(
+      stream,
+      'mock-main/docs/',
+      '/tmp',
+      'etag',
+    );
     const dir = await res.dir();
 
     expect(dir).toMatch(/^[\/\\]tmp[\/\\].*$/);
@@ -135,8 +144,12 @@ describe('ZipArchiveResponse', () => {
   it('should extract archive into directory with a subpath and filter', async () => {
     const stream = fs.createReadStream('/test-archive.zip');
 
-    const res = new ZipArchiveResponse(stream, 'mock-main/', '/tmp', path =>
-      path.endsWith('.yml'),
+    const res = new ZipArchiveResponse(
+      stream,
+      'mock-main/',
+      '/tmp',
+      'etag',
+      path => path.endsWith('.yml'),
     );
     const dir = await res.dir({ targetDir: '/tmp' });
 

@@ -20,7 +20,7 @@ import unzipper, { Entry } from 'unzipper';
 import archiver from 'archiver';
 import { Readable } from 'stream';
 import {
-  ReadTreeArchiveResponse,
+  ReadTreeResponse,
   ReadTreeResponseFile,
   ReadTreeResponseDirOptions,
 } from '../types';
@@ -28,13 +28,15 @@ import {
 /**
  * Wraps a zip archive stream into a tree response reader.
  */
-export class ZipArchiveResponse implements ReadTreeArchiveResponse {
+export class ZipArchiveResponse implements ReadTreeResponse {
   private read = false;
+  public readonly etag;
 
   constructor(
     private readonly stream: Readable,
     private readonly subPath: string,
     private readonly workDir: string,
+    etag: string,
     private readonly filter?: (path: string) => boolean,
   ) {
     if (subPath) {
@@ -47,6 +49,8 @@ export class ZipArchiveResponse implements ReadTreeArchiveResponse {
         );
       }
     }
+
+    this.etag = etag;
   }
 
   // Make sure the input stream is only read once

@@ -284,10 +284,10 @@ describe('GitlabUrlReader', () => {
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
     });
 
-    it('throws a NotModifiedError when given a sha in options', async () => {
+    it('throws a NotModifiedError when given a etag in options', async () => {
       const fnGitlab = async () => {
         await gitlabProcessor.readTree('https://gitlab.com/backstage/mock', {
-          sha: 'sha123abc',
+          etag: 'sha123abc',
         });
       };
 
@@ -295,7 +295,7 @@ describe('GitlabUrlReader', () => {
         await hostedGitlabProcessor.readTree(
           'https://gitlab.mycompany.com/backstage/mock',
           {
-            sha: 'sha123abc',
+            etag: 'sha123abc',
           },
         );
       };
@@ -304,11 +304,11 @@ describe('GitlabUrlReader', () => {
       await expect(fnHostedGitlab).rejects.toThrow(NotModifiedError);
     });
 
-    it('should not throw error when given an outdated sha in options', async () => {
+    it('should not throw error when given an outdated etag in options', async () => {
       const response = await gitlabProcessor.readTree(
         'https://gitlab.com/backstage/mock/tree/main',
         {
-          sha: 'outdatedSha123abc',
+          etag: 'outdatedsha123abc',
         },
       );
       expect((await response.files()).length).toBe(2);

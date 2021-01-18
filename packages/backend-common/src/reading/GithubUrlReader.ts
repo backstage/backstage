@@ -151,7 +151,7 @@ export class GithubUrlReader implements UrlReader {
     }
     const commitSha = (await branchGitHubResponse.json()).commit.sha;
 
-    if (options?.sha && options.sha === commitSha) {
+    if (options?.etag && options.etag === commitSha) {
       throw new NotModifiedError();
     }
 
@@ -179,17 +179,14 @@ export class GithubUrlReader implements UrlReader {
 
     const path = `${repoName}-${branch}/${filepath}`;
 
-    const archiveResponse = await this.deps.treeResponseFactory.fromTarArchive({
+    return await this.deps.treeResponseFactory.fromTarArchive({
       // TODO(Rugvip): Underlying implementation of fetch will be node-fetch, we probably want
       //               to stick to using that in exclusively backend code.
       stream: (archive.body as unknown) as Readable,
       path,
+      etag: commitSha,
       filter: options?.filter,
     });
-
-    const response = archiveResponse as ReadTreeResponse;
-    response.sha = commitSha;
-    return response;
   }
 
   toString() {

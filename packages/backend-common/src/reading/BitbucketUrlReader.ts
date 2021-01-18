@@ -106,7 +106,7 @@ export class BitbucketUrlReader implements UrlReader {
     );
 
     const lastCommitShortHash = await this.getLastCommitShortHash(url);
-    if (options?.sha && options.sha === lastCommitShortHash) {
+    if (options?.etag && options.etag === lastCommitShortHash) {
       throw new NotModifiedError();
     }
 
@@ -130,15 +130,12 @@ export class BitbucketUrlReader implements UrlReader {
       folderPath = `${project}-${repoName}-${lastCommitShortHash}`;
     }
 
-    const archiveResponse = await this.treeResponseFactory.fromZipArchive({
+    return await this.treeResponseFactory.fromZipArchive({
       stream: (archiveBitbucketResponse.body as unknown) as Readable,
       path: `${folderPath}/${filepath}`,
+      etag: lastCommitShortHash,
       filter: options?.filter,
     });
-
-    const response = archiveResponse as ReadTreeResponse;
-    response.sha = lastCommitShortHash;
-    return response;
   }
 
   toString() {

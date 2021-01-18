@@ -121,7 +121,7 @@ export class GitlabUrlReader implements UrlReader {
 
     const commitSha = (await branchGitlabResponse.json()).commit.id;
 
-    if (options?.sha && options.sha === commitSha) {
+    if (options?.etag && options.etag === commitSha) {
       throw new NotModifiedError();
     }
 
@@ -144,15 +144,12 @@ export class GitlabUrlReader implements UrlReader {
       ? `${repoName}-${branch}-${commitSha}/${filepath}/`
       : '';
 
-    const archiveResponse = await this.treeResponseFactory.fromZipArchive({
+    return await this.treeResponseFactory.fromZipArchive({
       stream: (archiveGitLabResponse.body as unknown) as Readable,
       path,
+      etag: commitSha,
       filter: options?.filter,
     });
-
-    const response = archiveResponse as ReadTreeResponse;
-    response.sha = commitSha;
-    return response;
   }
 
   toString() {

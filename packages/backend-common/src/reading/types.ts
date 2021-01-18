@@ -34,17 +34,17 @@ export type ReadTreeOptions = {
   filter?(path: string): boolean;
 
   /**
-   * A commit SHA can be provided to check whether readTree's response has changed from a previous execution.
+   * An etag can be provided to check whether readTree's response has changed from a previous execution.
    *
-   * In the readTree() response, a SHA is returned along with the tree blob. The SHA belongs to the
-   * latest commit on the target repository's branch that was used to read the blob.
+   * In the readTree() response, an etag is returned along with the tree blob. The etag is a unique identifer
+   * of the tree blob, usually the commit SHA or etag from the target.
    *
-   * When a SHA is given in ReadTreeOptions, readTree will first compare the SHA against the latest commit
-   * on the target branch. If they match, it will throw a NotModifiedError indicating that the readTree
-   * response will not differ from the previous response which included this particular SHA. If they mismatch,
-   * readTree will return a new SHA along with the rest of ReadTreeResponse.
+   * When a etag is given in ReadTreeOptions, readTree will first compare the etag against the etag
+   * on the target branch. If they match, readTree will throw a NotModifiedError indicating that the readTree
+   * response will not differ from the previous response which included this particular etag. If they mismatch,
+   * readTree will return the rest of ReadTreeResponse along with a new etag.
    */
-  sha?: string;
+  etag?: string;
 };
 
 /**
@@ -80,7 +80,7 @@ export type ReadTreeResponseDirOptions = {
   targetDir?: string;
 };
 
-export type ReadTreeArchiveResponse = {
+export type ReadTreeResponse = {
   files(): Promise<ReadTreeResponseFile[]>;
   archive(): Promise<NodeJS.ReadableStream>;
 
@@ -88,8 +88,9 @@ export type ReadTreeArchiveResponse = {
    * dir() extracts the tree response into a directory and returns the path of the directory.
    */
   dir(options?: ReadTreeResponseDirOptions): Promise<string>;
-};
 
-export interface ReadTreeResponse extends ReadTreeArchiveResponse {
-  sha: string;
-}
+  /**
+   * A unique identifer of the tree blob, usually the commit SHA or etag from the target.
+   */
+  etag: string;
+};

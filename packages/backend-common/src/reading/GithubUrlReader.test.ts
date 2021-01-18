@@ -128,7 +128,7 @@ describe('GithubUrlReader', () => {
     const branchesApiResponse = {
       name: 'main',
       commit: {
-        sha: 'sha123abc',
+        sha: 'etag123abc',
       },
     };
 
@@ -198,7 +198,7 @@ describe('GithubUrlReader', () => {
         'https://github.com/backstage/mock/tree/main',
       );
 
-      expect(response.sha).toBe('sha123abc');
+      expect(response.etag).toBe('etag123abc');
 
       const files = await response.files();
 
@@ -272,10 +272,10 @@ describe('GithubUrlReader', () => {
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
     });
 
-    it('throws a NotModifiedError when given a sha in options', async () => {
+    it('throws a NotModifiedError when given a etag in options', async () => {
       const fnGithub = async () => {
         await githubProcessor.readTree('https://github.com/backstage/mock', {
-          sha: 'sha123abc',
+          etag: 'etag123abc',
         });
       };
 
@@ -283,7 +283,7 @@ describe('GithubUrlReader', () => {
         await gheProcessor.readTree(
           'https://ghe.github.com/backstage/mock/tree/main/docs',
           {
-            sha: 'sha123abc',
+            etag: 'etag123abc',
           },
         );
       };
@@ -292,11 +292,11 @@ describe('GithubUrlReader', () => {
       await expect(fnGhe).rejects.toThrow(NotModifiedError);
     });
 
-    it('should not throw error when given an outdated sha in options', async () => {
+    it('should not throw error when given an outdated etag in options', async () => {
       const response = await githubProcessor.readTree(
         'https://github.com/backstage/mock/tree/main',
         {
-          sha: 'outdatedSha123abc',
+          etag: 'outdatedetag123abc',
         },
       );
       expect((await response.files()).length).toBe(2);

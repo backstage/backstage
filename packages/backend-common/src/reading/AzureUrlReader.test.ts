@@ -188,7 +188,7 @@ describe('AzureUrlReader', () => {
         'https://dev.azure.com/organization/project/_git/repository',
       );
 
-      expect(response.sha).toBe('123abc2');
+      expect(response.etag).toBe('123abc2');
 
       const files = await response.files();
 
@@ -200,24 +200,24 @@ describe('AzureUrlReader', () => {
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
     });
 
-    it('throws a NotModifiedError when given a sha in options', async () => {
+    it('throws a NotModifiedError when given a etag in options', async () => {
       const fnAzure = async () => {
         await processor.readTree(
           'https://dev.azure.com/organization/project/_git/repository',
-          { sha: '123abc2' },
+          { etag: '123abc2' },
         );
       };
 
       await expect(fnAzure).rejects.toThrow(NotModifiedError);
     });
 
-    it('should not throw a NotModifiedError when given an outdated sha in options', async () => {
+    it('should not throw a NotModifiedError when given an outdated etag in options', async () => {
       const response = await processor.readTree(
         'https://dev.azure.com/organization/project/_git/repository',
-        { sha: 'outdated123abc' },
+        { etag: 'outdated123abc' },
       );
 
-      expect(response.sha).toBe('123abc2');
+      expect(response.etag).toBe('123abc2');
       const files = await response.files();
 
       expect(files.length).toBe(2);

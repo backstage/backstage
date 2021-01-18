@@ -21,7 +21,7 @@ import { Readable, pipeline as pipelineCb } from 'stream';
 import { promisify } from 'util';
 import concatStream from 'concat-stream';
 import {
-  ReadTreeArchiveResponse,
+  ReadTreeResponse,
   ReadTreeResponseFile,
   ReadTreeResponseDirOptions,
 } from '../types';
@@ -34,13 +34,15 @@ const pipeline = promisify(pipelineCb);
 /**
  * Wraps a tar archive stream into a tree response reader.
  */
-export class TarArchiveResponse implements ReadTreeArchiveResponse {
+export class TarArchiveResponse implements ReadTreeResponse {
   private read = false;
+  public readonly etag;
 
   constructor(
     private readonly stream: Readable,
     private readonly subPath: string,
     private readonly workDir: string,
+    etag: string,
     private readonly filter?: (path: string) => boolean,
   ) {
     if (subPath) {
@@ -53,6 +55,8 @@ export class TarArchiveResponse implements ReadTreeArchiveResponse {
         );
       }
     }
+
+    this.etag = etag;
   }
 
   // Make sure the input stream is only read once

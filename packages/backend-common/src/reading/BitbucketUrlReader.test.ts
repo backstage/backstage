@@ -135,7 +135,7 @@ describe('BitbucketUrlReader', () => {
         'https://bitbucket.org/backstage/mock/src/master',
       );
 
-      expect(response.sha).toBe('12ab34cd56ef');
+      expect(response.etag).toBe('12ab34cd56ef');
 
       const files = await response.files();
 
@@ -152,7 +152,7 @@ describe('BitbucketUrlReader', () => {
         'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/docs?at=some-branch',
       );
 
-      expect(response.sha).toBe('12ab34cd56ef');
+      expect(response.etag).toBe('12ab34cd56ef');
 
       const files = await response.files();
 
@@ -167,7 +167,7 @@ describe('BitbucketUrlReader', () => {
         'https://bitbucket.org/backstage/mock/src/master/docs',
       );
 
-      expect(response.sha).toBe('12ab34cd56ef');
+      expect(response.etag).toBe('12ab34cd56ef');
 
       const files = await response.files();
 
@@ -177,24 +177,24 @@ describe('BitbucketUrlReader', () => {
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
     });
 
-    it('throws a NotModifiedError when given a sha in options', async () => {
+    it('throws a NotModifiedError when given a etag in options', async () => {
       const fnBitbucket = async () => {
         await bitbucketProcessor.readTree(
           'https://bitbucket.org/backstage/mock',
-          { sha: '12ab34cd56ef' },
+          { etag: '12ab34cd56ef' },
         );
       };
 
       await expect(fnBitbucket).rejects.toThrow(NotModifiedError);
     });
 
-    it('should not throw a NotModifiedError when given an outdated sha in options', async () => {
+    it('should not throw a NotModifiedError when given an outdated etag in options', async () => {
       const response = await bitbucketProcessor.readTree(
         'https://bitbucket.org/backstage/mock',
-        { sha: 'outdatedSha123abc' },
+        { etag: 'outdatedetag123abc' },
       );
 
-      expect(response.sha).toBe('12ab34cd56ef');
+      expect(response.etag).toBe('12ab34cd56ef');
     });
   });
 });

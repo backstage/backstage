@@ -91,7 +91,7 @@ export class AzureUrlReader implements UrlReader {
     }
 
     const commitSha = (await commitsAzureResponse.json()).value[0].commitId;
-    if (options?.sha && options.sha === commitSha) {
+    if (options?.etag && options.etag === commitSha) {
       throw new NotModifiedError();
     }
 
@@ -107,14 +107,11 @@ export class AzureUrlReader implements UrlReader {
       throw new Error(message);
     }
 
-    const archiveResponse = await this.deps.treeResponseFactory.fromZipArchive({
+    return await this.deps.treeResponseFactory.fromZipArchive({
       stream: (archiveAzureResponse.body as unknown) as Readable,
+      etag: commitSha,
       filter: options?.filter,
     });
-
-    const response = archiveResponse as ReadTreeResponse;
-    response.sha = commitSha;
-    return response;
   }
 
   toString() {
