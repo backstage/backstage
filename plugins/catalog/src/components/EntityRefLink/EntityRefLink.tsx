@@ -17,17 +17,18 @@ import {
   Entity,
   EntityName,
   ENTITY_DEFAULT_NAMESPACE,
-  serializeEntityRef,
 } from '@backstage/catalog-model';
 import { Link } from '@material-ui/core';
 import React from 'react';
 import { generatePath } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { entityRoute } from '../../routes';
+import { formatEntityRefTitle } from './format';
 
 type EntityRefLinkProps = {
   entityRef: Entity | EntityName;
   defaultKind?: string;
+  children?: React.ReactNode;
 };
 
 // TODO: This component is private for now, as it should probably belong into
@@ -36,6 +37,7 @@ type EntityRefLinkProps = {
 export const EntityRefLink = ({
   entityRef,
   defaultKind,
+  children,
 }: EntityRefLinkProps) => {
   let kind;
   let namespace;
@@ -51,17 +53,8 @@ export const EntityRefLink = ({
     name = entityRef.name;
   }
 
-  if (namespace === ENTITY_DEFAULT_NAMESPACE) {
-    namespace = undefined;
-  }
-
   kind = kind.toLowerCase();
 
-  const title = `${serializeEntityRef({
-    kind: defaultKind && defaultKind.toLowerCase() === kind ? undefined : kind,
-    name,
-    namespace,
-  })}`;
   const routeParams = {
     kind,
     namespace: namespace?.toLowerCase() ?? ENTITY_DEFAULT_NAMESPACE,
@@ -74,7 +67,8 @@ export const EntityRefLink = ({
       component={RouterLink}
       to={generatePath(`/catalog/${entityRoute.path}`, routeParams)}
     >
-      {title}
+      {children}
+      {!children && formatEntityRefTitle(entityRef, { defaultKind })}
     </Link>
   );
 };
