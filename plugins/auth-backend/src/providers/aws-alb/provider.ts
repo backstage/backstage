@@ -16,7 +16,7 @@
 import {
   AuthProviderFactoryOptions,
   AuthProviderRouteHandlers,
-  IdentityResolver,
+  ExperimentalIdentityResolver,
 } from '../types';
 import express from 'express';
 // @ts-ignore no types available for R2
@@ -24,6 +24,7 @@ import r2 from 'r2';
 import * as crypto from 'crypto';
 import { KeyObject } from 'crypto';
 import { Logger } from 'winston';
+import NodeCache from 'node-cache';
 import jwtVerify from 'jose/jwt/verify';
 import { CatalogApi } from '@backstage/catalog-client';
 
@@ -35,7 +36,7 @@ const ALB_JWT_HEADER = 'x-amzn-oidc-data';
 type AwsAlbAuthProviderOptions = {
   region: string;
   issuer: string;
-  identityResolutionCallback: IdentityResolver;
+  identityResolutionCallback: ExperimentalIdentityResolver;
 };
 export const getJWTHeaders = (input: string) => {
   const encoded = input.split('.')[0];
@@ -46,7 +47,7 @@ export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
   private logger: Logger;
   private readonly catalogClient: CatalogApi;
   private options: AwsAlbAuthProviderOptions;
-  private readonly keyCache: { [key: string]: KeyObject };
+  private readonly keyCache: NodeCache;
 
   constructor(
     logger: Logger,
@@ -56,7 +57,7 @@ export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
     this.logger = logger;
     this.catalogClient = catalogClient;
     this.options = options;
-    this.keyCache = {};
+    this.keyCache = new NodeCache({ stdTTL: 3600 });
   }
   frameHandler(): Promise<void> {
     return Promise.resolve(undefined);
@@ -96,14 +97,15 @@ export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
   }
 
   async getKey(keyId: string): Promise<KeyObject> {
-    if (this.keyCache[keyId]) {
-      return this.keyCache[keyId];
+    const optionalCacheKey = this.keyCache.get<KeyObject>(keyId);
+    if (optionalCacheKey) {
+      return optionalCacheKey;
     }
     const keyText: string = await r2(
       `https://public-keys.auth.elb.${this.options.region}.amazonaws.com/${keyId}`,
     ).text;
     const keyValue = crypto.createPublicKey(keyText);
-    this.keyCache[keyId] = keyValue;
+    this.keyCache.set(keyId, keyValue);
     return keyValue;
   }
 }

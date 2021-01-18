@@ -54,6 +54,7 @@
     "knex": "^0.21.6",
     "moment": "^2.26.0",
     "morgan": "^1.10.0",
+    "node-cache": "^5.1.2",
     "openid-client": "^4.2.1",
     "passport": "^0.4.1",
     "passport-github2": "^0.1.12",
