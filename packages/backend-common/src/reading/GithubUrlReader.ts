@@ -18,7 +18,7 @@ import {
   GitHubIntegrationConfig,
   readGitHubIntegrationConfigs,
   getGitHubFileFetchUrl,
-  getGitHubRequestOptions,
+  GithubCredentialsProvider,
 } from '@backstage/integration';
 import fetch from 'cross-fetch';
 import parseGitUri from 'git-url-parse';
@@ -42,7 +42,11 @@ export class GithubUrlReader implements UrlReader {
       config.getOptionalConfigArray('integrations.github') ?? [],
     );
     return configs.map(provider => {
-      const reader = new GithubUrlReader(provider, { treeResponseFactory });
+      const credentialsProvider = GithubCredentialsProvider.create(provider);
+      const reader = new GithubUrlReader(provider, {
+        treeResponseFactory,
+        credentialsProvider,
+      });
       const predicate = (url: URL) => url.host === provider.host;
       return { reader, predicate };
     });
@@ -50,7 +54,10 @@ export class GithubUrlReader implements UrlReader {
 
   constructor(
     private readonly config: GitHubIntegrationConfig,
-    private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
+    private readonly deps: {
+      treeResponseFactory: ReadTreeResponseFactory;
+      credentialsProvider: GithubCredentialsProvider;
+    },
   ) {
     if (!config.apiBaseUrl && !config.rawBaseUrl) {
       throw new Error(
@@ -61,11 +68,17 @@ export class GithubUrlReader implements UrlReader {
 
   async read(url: string): Promise<Buffer> {
     const ghUrl = getGitHubFileFetchUrl(url, this.config);
-    const options = getGitHubRequestOptions(this.config);
-
+    const { headers } = await this.deps.credentialsProvider.getCredentials({
+      url,
+    });
     let response: Response;
     try {
-      response = await fetch(ghUrl.toString(), options);
+      response = await fetch(ghUrl.toString(), {
+        headers: {
+          ...headers,
+          Accept: 'application/vnd.github.v3.raw',
+        },
+      });
     } catch (e) {
       throw new Error(`Unable to read ${url}, ${e}`);
     }
@@ -101,12 +114,19 @@ export class GithubUrlReader implements UrlReader {
       );
     }
 
+    const { headers } = await this.deps.credentialsProvider.getCredentials({
+      url,
+    });
     // TODO(Rugvip): use API to fetch URL instead
     const response = await fetch(
       new URL(
         `${protocol}://${resource}/${full_name}/archive/${ref}.tar.gz`,
       ).toString(),
-      getGitHubRequestOptions(this.config),
+      {
+        headers: {
+          ...headers,
+        },
+      },
     );
     if (!response.ok) {
       const message = `Failed to read tree from ${url}, ${response.status} ${response.statusText}`;
