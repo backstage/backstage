@@ -17,7 +17,7 @@
 import { useEntity } from '@backstage/plugin-catalog';
 import { KAFKA_CONSUMER_GROUP_ANNOTATION } from '../../constants';
 
-export const useConsumerGroupFromEntity = () => {
+export const useConsumerGroupsForEntity = () => {
   const { entity } = useEntity();
 
   return entity.metadata.annotations?.[KAFKA_CONSUMER_GROUP_ANNOTATION] ?? '';

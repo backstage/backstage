@@ -18,8 +18,7 @@ import { Table, TableColumn } from '@backstage/core';
 import { Box, Typography } from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
 import React from 'react';
-import { useConsumerGroupFromEntity } from './useConsumerGroupsFromEntity';
-import { useConsumerGroupOffsets } from './useConsumerGroupOffsets';
+import { useConsumerGroupsOffsetsForEntity } from './useConsumerGroupsOffsetsForEntity';
 
 export type TopicPartitionInfo = {
   topic: string;
@@ -98,14 +97,7 @@ export const ConsumerGroupOffsets = ({
 };
 
 export const KafkaTopicsForConsumer = () => {
-  const consumerGroup = useConsumerGroupFromEntity();
-  const [tableProps, { retry }] = useConsumerGroupOffsets(consumerGroup);
+  const [tableProps, { retry }] = useConsumerGroupsOffsetsForEntity();
 
-  return (
-    <ConsumerGroupOffsets
-      {...tableProps}
-      consumerGroup={consumerGroup}
-      retry={retry}
-    />
-  );
+  return <ConsumerGroupOffsets {...tableProps} retry={retry} />;
 };

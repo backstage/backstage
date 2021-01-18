@@ -17,28 +17,31 @@
 import { errorApiRef, useApi } from '@backstage/core';
 import { useAsyncRetry } from 'react-use';
 import { kafkaApiRef } from '../../api/types';
+import { useConsumerGroupsForEntity } from './useConsumerGroupsForEntity';
 
-export function useConsumerGroupOffsets(groupId: string) {
+export const useConsumerGroupsOffsetsForEntity = () => {
+  const consumerGroup = useConsumerGroupsForEntity();
   const api = useApi(kafkaApiRef);
   const errorApi = useApi(errorApiRef);
 
   const { loading, value: topics, retry } = useAsyncRetry(async () => {
     try {
-      const response = await api.getConsumerGroupOffsets(groupId);
+      const response = await api.getConsumerGroupOffsets(consumerGroup);
       return response.offsets;
     } catch (e) {
       errorApi.post(e);
       throw e;
     }
-  }, [api, errorApi, groupId]);
+  }, [api, errorApi, consumerGroup]);
 
   return [
     {
       loading,
+      consumerGroup,
       topics,
     },
     {
       retry,
     },
   ] as const;
-}
+};

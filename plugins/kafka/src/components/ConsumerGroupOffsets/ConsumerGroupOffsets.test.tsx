@@ -17,26 +17,17 @@
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { ConsumerGroupOffsets } from './ConsumerGroupOffsets';
+import * as data from './__fixtures__/consumer-group-offsets.json';
+import { ConsumerGroupOffsetsResponse } from '../../api/types';
+
+const consumerGroupOffsets = data as ConsumerGroupOffsetsResponse;
 
 describe('ConsumerGroupOffsets', () => {
   it('should render consumer group table', async () => {
     const rendered = await renderInTestApp(
       <ConsumerGroupOffsets
-        consumerGroup="consumer"
-        topics={[
-          {
-            topic: 'topic1',
-            partitionId: 1,
-            topicOffset: '100',
-            groupOffset: '50',
-          },
-          {
-            topic: 'topic2',
-            partitionId: 1,
-            topicOffset: '2340',
-            groupOffset: '1234',
-          },
-        ]}
+        consumerGroup={consumerGroupOffsets.consumerId}
+        topics={consumerGroupOffsets.offsets}
         loading={false}
         retry={() => {}}
       />,
