@@ -44,7 +44,7 @@ export function useGithubRepos() {
     const githubIntegrationConfig = configs.find(v => v.host === hostname);
     if (!githubIntegrationConfig) {
       throw new Error(
-        `Unable to locate github-integration for repo-location: ${location}`,
+        `Unable to locate github-integration for repo-location, ${location}`,
       );
     }
     return {
@@ -70,7 +70,7 @@ export function useGithubRepos() {
         githubIntegrationConfig,
       })
       .catch(e => {
-        throw new Error(`Failed to submit PR to repo: ${e.message}`);
+        throw new Error(`Failed to submit PR to repo, ${e.message}`);
       });
 
     await api
@@ -78,7 +78,7 @@ export function useGithubRepos() {
         location: submitPRResponse.location,
       })
       .catch(e => {
-        throw new Error(`Failed to create repository location: ${e.message}`);
+        throw new Error(`Failed to create repository location, ${e.message}`);
       });
 
     return submitPRResponse;
@@ -105,7 +105,7 @@ export function useGithubRepos() {
       })
       .catch(e => {
         throw new Error(
-          `Failed to inspect repository for existing catalog-info.yaml: ${e.message}`,
+          `Failed to inspect repository for existing catalog-info.yaml, ${e.message}`,
         );
       });
   };
