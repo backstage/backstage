@@ -169,16 +169,23 @@ export class GoogleGCSPublish implements PublisherBase {
       // Files with different extensions (CSS, HTML) need to be served with different headers
       const fileExtension = path.extname(filePath);
       const responseHeaders = getHeadersForFileExtension(fileExtension);
-      res.writeHead(200, responseHeaders);
 
       // Pipe file chunks directly from storage to client.
       this.storageClient
         .bucket(this.bucketName)
         .file(filePath)
         .createReadStream()
+        .on('pipe', () => {
+          res.writeHead(200, responseHeaders);
+        })
         .on('error', err => {
           this.logger.warn(err.message);
-          res.destroy(err);
+          // Send a 404 with a meaningful message if possible.
+          if (!res.headersSent) {
+            res.status(404).send(err.message);
+          } else {
+            res.destroy();
+          }
         })
         .pipe(res);
     };
