@@ -112,7 +112,12 @@ export interface AuthProviderRouteHandlers {
   logout?(req: express.Request, res: express.Response): Promise<void>;
 }
 
-export type IdentityResolver = (
+/**
+ * EXPERIMENTAL - this will almost certainly break in a future release.
+ *
+ * Used to resolve an identity from auth information in some auth providers.
+ */
+export type ExperimentalIdentityResolver = (
   /**
    * An object containing information specific to the auth provider.
    */
@@ -128,7 +133,7 @@ export type AuthProviderFactoryOptions = {
   tokenIssuer: TokenIssuer;
   discovery: PluginEndpointDiscovery;
   catalogApi: CatalogApi;
-  identityResolver?: IdentityResolver;
+  identityResolver?: ExperimentalIdentityResolver;
 };
 
 export type AuthProviderFactory = (
