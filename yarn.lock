@@ -1644,11 +1644,9 @@
     to-fast-properties "^2.0.0"
 
 "@backstage/catalog-model@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.npmjs.org/@backstage/catalog-model/-/catalog-model-0.2.0.tgz#e3fe2a4ddeb6a9b6ec480c80cb2b9c39cb245576"
-  integrity sha512-Y1ocdRpBlxK/VrJQjHlQd0bgADECd1B2NRjwd8ss46ibT5hwLvMOfD80+Fa7oPLu0ktJrH4lq0pNIIJIml48zA==
+  version "0.6.0"
   dependencies:
-    "@backstage/config" "^0.1.1"
+    "@backstage/config" "^0.1.2"
     "@types/json-schema" "^7.0.5"
     "@types/yup" "^0.29.8"
     json-schema "^0.2.5"
@@ -1657,11 +1655,9 @@
     yup "^0.29.3"
 
 "@backstage/catalog-model@^0.3.0":
-  version "0.3.1"
-  resolved "https://registry.npmjs.org/@backstage/catalog-model/-/catalog-model-0.3.1.tgz#45d08e2f333c9c566b2bf2629fd707fe989bb404"
-  integrity sha512-9XhV7c4rmVW+Yzj2PiwTQ7DsegWGB3C4ELsDRExuEVZONdqNcC02cyJtrt3fT5F31ZS3tHkB9bMUymFOBLqUSA==
+  version "0.6.0"
   dependencies:
-    "@backstage/config" "^0.1.1"
+    "@backstage/config" "^0.1.2"
     "@types/json-schema" "^7.0.5"
     "@types/yup" "^0.29.8"
     json-schema "^0.2.5"
@@ -1670,17 +1666,16 @@
     yup "^0.29.3"
 
 "@backstage/core@^0.3.0":
-  version "0.3.2"
-  resolved "https://registry.npmjs.org/@backstage/core/-/core-0.3.2.tgz#a8209126d5076cf4a8b9bd632fe4e5e2edb62916"
-  integrity sha512-i5d+Wh8js4qEWoAsPY5L7HVSWpumr1OhfF2dUCGYdyW6AMqVJPca6+n6zp1Rg2CO+J9norp44XAVVCbyhtUpig==
+  version "0.4.3"
   dependencies:
-    "@backstage/config" "^0.1.1"
-    "@backstage/core-api" "^0.2.1"
-    "@backstage/theme" "^0.2.1"
+    "@backstage/config" "^0.1.2"
+    "@backstage/core-api" "^0.2.8"
+    "@backstage/theme" "^0.2.2"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "4.0.0-alpha.45"
     "@types/dagre" "^0.7.44"
+    "@types/prop-types" "^15.7.3"
     "@types/react" "^16.9"
     "@types/react-sparklines" "^1.7.0"
     classnames "^2.2.6"
@@ -2191,6 +2186,16 @@
     li "^1.3.0"
     xcase "^2.0.1"
 
+"@gitbeaker/core@^28.0.2":
+  version "28.0.2"
+  resolved "https://registry.npmjs.org/@gitbeaker/core/-/core-28.0.2.tgz#5c2cbe27a20426a96d9511642153ead18ff88877"
+  integrity sha512-H+0ChYSxLh+EVNzmOguHaJMR7xB9FlVZGi89JQ7BJ2meq0h1TQl+QaGqTyTNM4GYhn7cYrl7ebGoU0yrnYUWSg==
+  dependencies:
+    "@gitbeaker/requester-utils" "^28.0.2"
+    form-data "^3.0.0"
+    li "^1.3.0"
+    xcase "^2.0.1"
+
 "@gitbeaker/node@^25.2.0":
   version "25.2.0"
   resolved "https://registry.npmjs.org/@gitbeaker/node/-/node-25.2.0.tgz#cc91e83328ec32de0b1a0dac23accd2385734a66"
@@ -2201,10 +2206,29 @@
     got "^11.7.0"
     xcase "^2.0.1"
 
+"@gitbeaker/node@^28.0.2":
+  version "28.0.2"
+  resolved "https://registry.npmjs.org/@gitbeaker/node/-/node-28.0.2.tgz#ead4eb9e1b4400d3a6fe9769b50e43e84fc99747"
+  integrity sha512-FCILxXiRep3PUpe/P2+Ak1KdwzIz3azxf1OY8Jb72gKjNNTgCi4ByFCIpHkvbFZlr7kDKTtcPyEN6oA6qnrCdQ==
+  dependencies:
+    "@gitbeaker/core" "^28.0.2"
+    "@gitbeaker/requester-utils" "^28.0.2"
+    got "^11.7.0"
+    xcase "^2.0.1"
+
 "@gitbeaker/requester-utils@^25.2.0", "@gitbeaker/requester-utils@^25.6.0":
   version "25.6.0"
   resolved "https://registry.npmjs.org/@gitbeaker/requester-utils/-/requester-utils-25.6.0.tgz#001a432a48460bb5196a02ed71763eb707a1a01e"
   integrity sha512-jD8cHbAZPR6+cB3HiukQxcqIKF5VkHtqg2m+Ns6ROE1pb0oRn10D/a9J1lZOXC9Jz2tQOBMWfHlplbmFFdB6Og==
+  dependencies:
+    form-data "^3.0.0"
+    query-string "^6.13.3"
+    xcase "^2.0.1"
+
+"@gitbeaker/requester-utils@^28.0.2":
+  version "28.0.2"
+  resolved "https://registry.npmjs.org/@gitbeaker/requester-utils/-/requester-utils-28.0.2.tgz#3c1bf97e6b73053ef3c38a2871cbc8e1a2e7501a"
+  integrity sha512-S851vQi0x9Sg5Tx0BcwzkG6OTIG0X4qYTBaA9kPM2sEKg2OOsd8X0HRhj/TbFGr/YVz+3Ubu7oueeWSyr5jvfQ==
   dependencies:
     form-data "^3.0.0"
     query-string "^6.13.3"
