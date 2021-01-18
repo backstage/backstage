@@ -80,6 +80,26 @@ export interface Config {
     };
 
     /**
+     * Configuration related to URL reading, used for example for reading catalog info
+     * files, scaffolder templates, and techdocs content.
+     */
+    reading?: {
+      /**
+       * A list of targets to allow outgoing requests to. Users will be able to make
+       * requests on behalf of the backend to the targets that are allowed by this list.
+       */
+      allow?: Array<{
+        /**
+         * A host to allow outgoing requests to, being either a full host or
+         * a subdomain wildcard pattern with a leading `*`. For example `example.com`
+         * and `*.example.com` are valid values, `prod.*.example.com` is not.
+         * The host may also contain a port, for example `example.com:8080`.
+         */
+        host: string;
+      }>;
+    };
+
+    /**
      * Content Security Policy options.
      *
      * The keys are the plain policy ID, e.g. "upgrade-insecure-requests". The
