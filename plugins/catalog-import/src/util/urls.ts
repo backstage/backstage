@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import parseGitUri from 'git-url-parse';
+import parseGitUrl from 'git-url-parse';
 
 export type UrlType = 'file' | 'tree';
 
 export function urlType(url: string): UrlType {
-  const { filepathtype, filepath } = parseGitUri(url);
+  const { filepathtype, filepath } = parseGitUrl(url);
 
   if (filepathtype === 'tree' || filepathtype === 'file') {
     return filepathtype;
