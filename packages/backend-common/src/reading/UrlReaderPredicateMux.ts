@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { NotAllowedError } from '../errors';
 import {
   ReadTreeOptions,
   ReadTreeResponse,
@@ -21,22 +22,12 @@ import {
   UrlReaderPredicateTuple,
 } from './types';
 
-type Options = {
-  // UrlReader to fall back to if no other reader is matched
-  fallback?: UrlReader;
-};
-
 /**
  * A UrlReader implementation that selects from a set of UrlReaders
  * based on a predicate tied to each reader.
  */
 export class UrlReaderPredicateMux implements UrlReader {
   private readonly readers: UrlReaderPredicateTuple[] = [];
-  private readonly fallback?: UrlReader;
-
-  constructor({ fallback }: Options) {
-    this.fallback = fallback;
-  }
 
   register(tuple: UrlReaderPredicateTuple): void {
     this.readers.push(tuple);
@@ -51,11 +42,7 @@ export class UrlReaderPredicateMux implements UrlReader {
       }
     }
 
-    if (this.fallback) {
-      return this.fallback.read(url);
-    }
-
-    throw new Error(`No reader found that could handle '${url}'`);
+    throw new NotAllowedError(`Reading from '${url}' is not allowed`);
   }
 
   readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse> {
@@ -67,16 +54,10 @@ export class UrlReaderPredicateMux implements UrlReader {
       }
     }
 
-    if (this.fallback) {
-      return this.fallback.readTree(url, options);
-    }
-
-    throw new Error(`No reader found that could handle '${url}'`);
+    throw new NotAllowedError(`Reading from '${url}' is not allowed`);
   }
 
   toString() {
-    return `predicateMux{readers=${this.readers
-      .map(t => t.reader)
-      .join(',')},fallback=${this.fallback}}`;
+    return `predicateMux{readers=${this.readers.map(t => t.reader).join(',')}`;
   }
 }
