@@ -15,13 +15,10 @@
  */
 
 import { Logger } from 'winston';
-import { getPersonalAccessTokenHandler, WebApi } from 'azure-devops-node-api';
 import { Config } from '@backstage/config';
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import {
   DeprecatedLocationTypeDetector,
   makeDeprecatedLocationTypeDetector,
-  parseLocationAnnotation,
 } from '../helpers';
 import { PublisherBase, PublisherBuilder } from './types';
 import { RemoteProtocol } from '../types';
@@ -39,31 +36,28 @@ export class Publishers implements PublisherBuilder {
     this.publisherMap.set(protocol, publisher);
   }
 
-  get(template: TemplateEntityV1alpha1): PublisherBase {
-    const { protocol, location } = parseLocationAnnotation(template);
-    const publisher = this.publisherMap.get(protocol);
+  get(storePath: string, { logger }: { logger: Logger }): PublisherBase {
+    const protocol = this.typeDetector?.(storePath);
 
-    if (!publisher) {
-      if ((protocol as string) === 'url') {
-        const type = this.typeDetector?.(location);
-        const detected = type && this.publisherMap.get(type as RemoteProtocol);
-        if (detected) {
-          return detected;
-        }
-        if (type) {
-          throw new Error(
-            `No publisher configuration available for type '${type}' with url "${location}". ` +
-              "Make sure you've added appropriate configuration in the 'scaffolder' configuration section",
-          );
-        } else {
-          throw new Error(
-            `Failed to detect publisher type. Unable to determine integration type for location "${location}". ` +
-              "Please add appropriate configuration to the 'integrations' configuration section",
-          );
-        }
-      }
-      throw new Error(`No publisher registered for type: "${protocol}"`);
+    if (!protocol) {
+      throw new Error(
+        `No matching publisher detected for "${storePath}". Please make sure this host is registered in the integration config`,
+      );
     }
+
+    logger.info(
+      `Selected publisher ${protocol} for publishing to URL ${storePath}`,
+    );
+
+    const publisher = this.publisherMap.get(protocol as RemoteProtocol);
+    if (!publisher) {
+      throw new Error(
+        `Failed to detect publisher type. Unable to determine integration type for location "${location}". ` +
+          "Please add appropriate configuration to the 'integrations' configuration section",
+      );
+    }
+
+    logger.info(`Selected publisher for protocol ${protocol}`);
 
     return publisher;
   }
@@ -139,15 +133,7 @@ export class Publishers implements PublisherBuilder {
     );
     if (bitbucketConfig) {
       try {
-        const baseUrl = bitbucketConfig.getString('host');
-        const bitbucketUsername = bitbucketConfig.getString('username');
-        const bitbucketToken = bitbucketConfig.getString('token');
-
-        const bitbucketPublisher = new BitbucketPublisher(
-          baseUrl,
-          bitbucketUsername,
-          bitbucketToken,
-        );
+        const bitbucketPublisher = new BitbucketPublisher(config, { logger });
         publishers.register('bitbucket', bitbucketPublisher);
       } catch (e) {
         const providerName = 'bitbucket';

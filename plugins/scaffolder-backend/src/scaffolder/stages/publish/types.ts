@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { RequiredTemplateValues } from '../templater';
 import { JsonValue } from '@backstage/config';
 import { RemoteProtocol } from '../types';
@@ -46,5 +45,5 @@ export type PublisherResult = {
 
 export type PublisherBuilder = {
   register(protocol: RemoteProtocol, publisher: PublisherBase): void;
-  get(template: TemplateEntityV1alpha1): PublisherBase;
+  get(storePath: string, { logger }: { logger: Logger }): PublisherBase;
 };

@@ -15,11 +15,10 @@
  */
 
 import { PublisherBase, PublisherOptions, PublisherResult } from './types';
-import { Gitlab } from '@gitbeaker/core';
-import { Config, JsonValue } from '@backstage/config';
+import { Gitlab } from '@gitbeaker/node';
+import { Config } from '@backstage/config';
 import { Logger } from 'winston';
 import { initRepoAndPush } from './helpers';
-import { RequiredTemplateValues } from '../templater';
 import gitUrlParse from 'git-url-parse';
 
 import {
@@ -67,14 +66,30 @@ export class GitlabPublisher implements PublisherBase {
   async publish({
     values,
     directory,
+    logger,
   }: PublisherOptions): Promise<PublisherResult> {
-    const remoteUrl = await this.createRemote(values);
-    const { host } = new URL(remoteUrl);
-    const token = this.getToken(host);
+    const { resource: host, owner, name } = gitUrlParse(values.storePath);
 
+    const token = this.getToken(host);
     if (!token) {
-      throw new Error('No token provided to create the remote repository');
+      throw new Error(
+        'No authentication set for Gitlab publisher. Creating the remote repository is not possible without a token',
+      );
     }
+
+    const baseUrl = this.getBaseUrl(host);
+    if (!baseUrl) {
+      throw new Error(
+        'No host set for Gitlab publisher. Creating the remote repository is not possible without a host',
+      );
+    }
+
+    const remoteUrl = await this.createRemote({
+      host: baseUrl,
+      owner,
+      name,
+      token,
+    });
 
     await initRepoAndPush({
       dir: directory,
@@ -83,10 +98,14 @@ export class GitlabPublisher implements PublisherBase {
         username: 'oauth2',
         password: token,
       },
-      logger: this.logger,
+      logger,
     });
 
-    return { remoteUrl };
+    const catalogInfoUrl = remoteUrl.replace(
+      /\.git$/,
+      '/-/blob/master/catalog-info.yaml',
+    );
+    return { remoteUrl, catalogInfoUrl };
   }
 
   private getToken(host: string): string | undefined {
@@ -103,33 +122,15 @@ export class GitlabPublisher implements PublisherBase {
     );
   }
 
-  private getConfig(host: string): { baseUrl?: string; token?: string } {
-    return {
-      baseUrl: this.getBaseUrl(host),
-      token: this.getToken(host),
-    };
-  }
+  private async createRemote(opts: {
+    host: string;
+    name: string;
+    owner: string;
+    token: string;
+  }) {
+    const { owner, name, host, token } = opts;
 
-  private async createRemote(
-    values: RequiredTemplateValues & Record<string, JsonValue>,
-  ) {
-    const pathElements = values.storePath.split('/');
-    const name = pathElements[pathElements.length - 1];
-    pathElements.pop();
-    const owner = pathElements.join('/');
-
-    const { resource: host } = gitUrlParse(values.storePath);
-
-    const config = this.getConfig(host);
-
-    if (!config.token) {
-      throw new Error(
-        'No authentication set for Gitlab publisher. Creating the remote repository is not possible without a token',
-      );
-    }
-
-    const client = new Gitlab({ host: config.baseUrl, token: config.token });
-
+    const client = new Gitlab({ host: host, token: token });
     let targetNamespace = ((await client.Namespaces.show(owner)) as {
       id: number;
     }).id;

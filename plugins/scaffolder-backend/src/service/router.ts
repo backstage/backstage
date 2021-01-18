@@ -154,7 +154,9 @@ export async function createRouter(
           {
             name: 'Publish template',
             handler: async (ctx: StageContext<{ resultDir: string }>) => {
-              const publisher = publishers.get(ctx.entity);
+              const publisher = publishers.get(ctx.values.storePath, {
+                logger: ctx.logger,
+              });
               ctx.logger.info('Will now store the template');
               const result = await publisher.publish({
                 values: ctx.values,
