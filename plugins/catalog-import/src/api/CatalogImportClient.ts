@@ -19,6 +19,7 @@ import { DiscoveryApi, OAuthApi, ConfigApi } from '@backstage/core';
 import { CatalogImportApi } from './CatalogImportApi';
 import { PartialEntity } from '../util/types';
 import { GitHubIntegrationConfig } from '@backstage/integration';
+import fetch from 'cross-fetch';
 
 export class CatalogImportClient implements CatalogImportApi {
   private readonly discoveryApi: DiscoveryApi;
@@ -133,9 +134,7 @@ export class CatalogImportClient implements CatalogImportApi {
         exists,
       };
     }
-    return Promise.resolve({
-      exists,
-    });
+    return { exists };
   }
 
   async submitPrToRepo({
