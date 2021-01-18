@@ -54,10 +54,6 @@ export function generateEntityEtag(): string {
  * @param next The new state of the entity
  */
 export function entityHasChanges(previous: Entity, next: Entity): boolean {
-  if (entityHasAnnotationChanges(previous, next)) {
-    return true;
-  }
-
   const e1 = lodash.cloneDeep(previous);
   const e2 = lodash.cloneDeep(next);
 
@@ -67,6 +63,18 @@ export function entityHasChanges(previous: Entity, next: Entity): boolean {
   if (!e2.metadata.labels) {
     e2.metadata.labels = {};
   }
+  if (!e1.metadata.annotations) {
+    e1.metadata.annotations = {};
+  }
+  if (!e2.metadata.annotations) {
+    e2.metadata.annotations = {};
+  }
+  if (!e1.metadata.tags) {
+    e1.metadata.tags = [];
+  }
+  if (!e2.metadata.tags) {
+    e2.metadata.tags = [];
+  }
 
   // Remove generated fields
   delete e1.metadata.uid;
@@ -75,10 +83,6 @@ export function entityHasChanges(previous: Entity, next: Entity): boolean {
   delete e2.metadata.uid;
   delete e2.metadata.etag;
   delete e2.metadata.generation;
-
-  // Remove already compared things
-  delete e1.metadata.annotations;
-  delete e2.metadata.annotations;
 
   // Remove things that we explicitly do not compare
   delete e1.relations;
@@ -106,14 +110,6 @@ export function generateUpdatedEntity(previous: Entity, next: Entity): Entity {
 
   const result = lodash.cloneDeep(next);
 
-  // Annotations are merged, with the new ones taking precedence
-  if (previous.metadata.annotations) {
-    next.metadata.annotations = {
-      ...previous.metadata.annotations,
-      ...next.metadata.annotations,
-    };
-  }
-
   // Generated fields are copied and updated
   const bumpEtag = entityHasChanges(previous, result);
   const bumpGeneration = !lodash.isEqual(previous.spec, result.spec);
@@ -122,27 +118,4 @@ export function generateUpdatedEntity(previous: Entity, next: Entity): Entity {
   result.metadata.generation = bumpGeneration ? generation + 1 : generation;
 
   return result;
-}
-
-function entityHasAnnotationChanges(previous: Entity, next: Entity): boolean {
-  // Since the next annotations get merged into the previous, extract only
-  // the overlapping keys and check if their values match.
-  if (next.metadata.annotations) {
-    if (!previous.metadata.annotations) {
-      return true;
-    }
-    if (
-      !lodash.isEqual(
-        next.metadata.annotations,
-        lodash.pick(
-          previous.metadata.annotations,
-          Object.keys(next.metadata.annotations),
-        ),
-      )
-    ) {
-      return true;
-    }
-  }
-
-  return false;
 }
