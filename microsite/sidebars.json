@@ -74,6 +74,14 @@
       },
       {
         "type": "subcategory",
+        "label": "Backstage Search",
+        "ids": [
+          "features/search/search-overview",
+          "features/search/architecture"
+        ]
+      },
+      {
+        "type": "subcategory",
         "label": "TechDocs",
         "ids": [
           "features/techdocs/techdocs-overview",
