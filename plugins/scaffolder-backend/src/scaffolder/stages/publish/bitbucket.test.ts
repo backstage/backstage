@@ -22,6 +22,7 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { msw } from '@backstage/test-utils';
+import { ConfigReader } from '@backstage/config';
 
 describe('Bitbucket Publisher', () => {
   const logger = getVoidLogger();
@@ -59,14 +60,25 @@ describe('Bitbucket Publisher', () => {
       );
 
       const publisher = new BitbucketPublisher(
-        'https://bitbucket.org',
-        'fake-user',
-        'fake-token',
+        new ConfigReader({
+          integrations: {
+            bitbucket: [
+              {
+                host: 'bitbucket.org',
+                username: 'fake-user',
+                appPassword: 'fake-token',
+              },
+            ],
+          },
+        }),
+        {
+          logger: getVoidLogger(),
+        },
       );
 
       const result = await publisher.publish({
         values: {
-          storePath: 'project/repo',
+          storePath: 'https://bitbucket.org/project/repo',
           owner: 'bob',
         },
         directory: '/tmp/test',
@@ -87,6 +99,7 @@ describe('Bitbucket Publisher', () => {
       });
     });
   });
+
   describe('publish: createRemoteInBitbucketServer', () => {
     it('should create repo in bitbucket server', async () => {
       server.use(
@@ -117,14 +130,24 @@ describe('Bitbucket Publisher', () => {
       );
 
       const publisher = new BitbucketPublisher(
-        'https://bitbucket.mycompany.com',
-        'fake-user',
-        'fake-token',
+        new ConfigReader({
+          integrations: {
+            bitbucket: [
+              {
+                host: 'bitbucket.mycompany.com',
+                token: 'fake-token',
+              },
+            ],
+          },
+        }),
+        {
+          logger: getVoidLogger(),
+        },
       );
 
       const result = await publisher.publish({
         values: {
-          storePath: 'project/repo',
+          storePath: 'https://bitbucket.mycompany.com/project/repo',
           owner: 'bob',
         },
         directory: '/tmp/test',
@@ -140,7 +163,7 @@ describe('Bitbucket Publisher', () => {
       expect(initRepoAndPush).toHaveBeenCalledWith({
         dir: '/tmp/test',
         remoteUrl: 'https://bitbucket.mycompany.com/scm/project/repo',
-        auth: { username: 'fake-user', password: 'fake-token' },
+        auth: { username: 'x-token-auth', password: 'fake-token' },
         logger: logger,
       });
     });

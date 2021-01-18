@@ -52,7 +52,7 @@ export class Publishers implements PublisherBuilder {
     const publisher = this.publisherMap.get(protocol as RemoteProtocol);
     if (!publisher) {
       throw new Error(
-        `Failed to detect publisher type. Unable to determine integration type for location "${location}". ` +
+        `Failed to detect publisher type. Unable to determine integration type for location "${protocol}". ` +
           "Please add appropriate configuration to the 'integrations' configuration section",
       );
     }
@@ -69,85 +69,19 @@ export class Publishers implements PublisherBuilder {
     const typeDetector = makeDeprecatedLocationTypeDetector(config);
     const publishers = new Publishers(typeDetector);
 
-    const githubConfig = config.getOptionalConfig('scaffolder.github');
-    if (githubConfig) {
-      try {
-        const githubPublisher = new GithubPublisher(config, { logger });
-        publishers.register('file', githubPublisher);
-        publishers.register('github', githubPublisher);
-      } catch (e) {
-        const providerName = 'github';
-        if (process.env.NODE_ENV !== 'development') {
-          throw new Error(
-            `Failed to initialize ${providerName} scaffolding provider, ${e.message}`,
-          );
-        }
+    const githubPublisher = new GithubPublisher(config, { logger });
+    publishers.register('file', githubPublisher);
+    publishers.register('github', githubPublisher);
 
-        logger.warn(
-          `Skipping ${providerName} scaffolding provider, ${e.message}`,
-        );
-      }
-    }
+    const gitLabPublisher = new GitlabPublisher(config, { logger });
+    publishers.register('gitlab', gitLabPublisher);
 
-    const gitLabConfig = config.getOptionalConfig('scaffolder.gitlab');
-    if (gitLabConfig) {
-      try {
-        const gitLabPublisher = new GitlabPublisher(config, { logger });
-        publishers.register('gitlab', gitLabPublisher);
-        publishers.register('gitlab/api', gitLabPublisher);
-      } catch (e) {
-        const providerName = 'gitlab';
-        if (process.env.NODE_ENV !== 'development') {
-          throw new Error(
-            `Failed to initialize ${providerName} scaffolding provider, ${e.message}`,
-          );
-        }
+    const azurePublisher = new AzurePublisher(config, { logger });
+    publishers.register('azure', azurePublisher);
 
-        logger.warn(
-          `Skipping ${providerName} scaffolding provider, ${e.message}`,
-        );
-      }
-    }
+    const bitbucketPublisher = new BitbucketPublisher(config, { logger });
+    publishers.register('bitbucket', bitbucketPublisher);
 
-    const azureConfig = config.getOptionalConfig('scaffolder.azure');
-    if (azureConfig) {
-      try {
-        const azurePublisher = new AzurePublisher(config, { logger });
-        publishers.register('azure/api', azurePublisher);
-      } catch (e) {
-        const providerName = 'azure';
-        if (process.env.NODE_ENV !== 'development') {
-          throw new Error(
-            `Failed to initialize ${providerName} scaffolding provider, ${e.message}`,
-          );
-        }
-
-        logger.warn(
-          `Skipping ${providerName} scaffolding provider, ${e.message}`,
-        );
-      }
-    }
-
-    const bitbucketConfig = config.getOptionalConfig(
-      'scaffolder.bitbucket.api',
-    );
-    if (bitbucketConfig) {
-      try {
-        const bitbucketPublisher = new BitbucketPublisher(config, { logger });
-        publishers.register('bitbucket', bitbucketPublisher);
-      } catch (e) {
-        const providerName = 'bitbucket';
-        if (process.env.NODE_ENV !== 'development') {
-          throw new Error(
-            `Failed to initialize ${providerName} scaffolding provider, ${e.message}`,
-          );
-        }
-
-        logger.warn(
-          `Skipping ${providerName} scaffolding provider, ${e.message}`,
-        );
-      }
-    }
     return publishers;
   }
 }

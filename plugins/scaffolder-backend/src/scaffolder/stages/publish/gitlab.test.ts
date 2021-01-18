@@ -14,33 +14,56 @@
  * limitations under the License.
  */
 
-jest.mock('@gitbeaker/node');
+jest.mock('@gitbeaker/node', () => ({
+  Gitlab: jest.fn(),
+}));
+
 jest.mock('./helpers');
 
 import { GitlabPublisher } from './gitlab';
-import { Gitlab as GitlabAPI } from '@gitbeaker/core';
 import { Gitlab } from '@gitbeaker/node';
 import { initRepoAndPush } from './helpers';
 import { getVoidLogger } from '@backstage/backend-common';
-
-const { mockGitlabClient } = require('@gitbeaker/node') as {
-  mockGitlabClient: {
-    Namespaces: jest.Mocked<GitlabAPI['Namespaces']>;
-    Projects: jest.Mocked<GitlabAPI['Projects']>;
-    Users: jest.Mocked<GitlabAPI['Users']>;
-  };
-};
+import { ConfigReader } from '@backstage/config';
 
 describe('GitLab Publisher', () => {
   const logger = getVoidLogger();
-  const publisher = new GitlabPublisher(new Gitlab({}), 'fake-token');
+  const mockGitlabClient = {
+    Namespaces: {
+      show: jest.fn(),
+    },
+    Projects: {
+      create: jest.fn(),
+    },
+    Users: {
+      current: jest.fn(),
+    },
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
+
+    ((Gitlab as unknown) as jest.Mock).mockImplementation(
+      () => mockGitlabClient,
+    );
   });
 
   describe('publish: createRemoteInGitLab', () => {
     it('should use gitbeaker to create a repo in a namespace if the namespace property is set', async () => {
+      const publisher = new GitlabPublisher(
+        new ConfigReader({
+          integrations: {
+            gitlab: [
+              {
+                host: 'gitlab.com',
+                token: 'fake-token',
+              },
+            ],
+          },
+        }),
+        { logger },
+      );
+
       mockGitlabClient.Namespaces.show.mockResolvedValue({
         id: 42,
       } as { id: number });
@@ -51,14 +74,17 @@ describe('GitLab Publisher', () => {
       const result = await publisher.publish({
         values: {
           isOrg: true,
-          storePath: 'bloum/blam/test',
+          storePath: 'https://gitlab.com/blam/test',
           owner: 'bob',
         },
         directory: '/tmp/test',
         logger,
       });
 
-      expect(result).toEqual({ remoteUrl: 'mockclone' });
+      expect(result).toEqual({
+        remoteUrl: 'mockclone',
+        catalogInfoUrl: 'mockclone',
+      });
       expect(mockGitlabClient.Projects.create).toHaveBeenCalledWith({
         namespace_id: 42,
         name: 'test',
@@ -72,6 +98,20 @@ describe('GitLab Publisher', () => {
     });
 
     it('should use gitbeaker to create a repo in the authed user if the namespace property is not set', async () => {
+      const publisher = new GitlabPublisher(
+        new ConfigReader({
+          integrations: {
+            gitlab: [
+              {
+                host: 'gitlab.com',
+                token: 'fake-token',
+              },
+            ],
+          },
+        }),
+        { logger },
+      );
+
       mockGitlabClient.Namespaces.show.mockResolvedValue({});
       mockGitlabClient.Users.current.mockResolvedValue({
         id: 21,
@@ -82,14 +122,17 @@ describe('GitLab Publisher', () => {
 
       const result = await publisher.publish({
         values: {
-          storePath: 'bloum/blam/test',
+          storePath: 'https://gitlab.com/blam/test',
           owner: 'bob',
         },
         directory: '/tmp/test',
         logger,
       });
 
-      expect(result).toEqual({ remoteUrl: 'mockclone' });
+      expect(result).toEqual({
+        remoteUrl: 'mockclone',
+        catalogInfoUrl: 'mockclone',
+      });
       expect(mockGitlabClient.Users.current).toHaveBeenCalled();
       expect(mockGitlabClient.Projects.create).toHaveBeenCalledWith({
         namespace_id: 21,

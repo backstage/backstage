@@ -78,12 +78,12 @@ describe('GitLabPreparer', () => {
     jest.clearAllMocks();
   });
 
-  ['gitlab', 'gitlab/api'].forEach(protocol => {
+  ['gitlab'].forEach(protocol => {
     it(`calls the clone command with the correct arguments for a repository using the ${protocol} protocol`, async () => {
       const preparer = new GitlabPreparer(new ConfigReader({}), { logger });
       mockEntity = mockEntityWithProtocol(protocol);
 
-      await preparer.prepare(mockEntity);
+      await preparer.prepare(mockEntity, { logger: getVoidLogger() });
 
       expect(mockGitClient.clone).toHaveBeenCalledWith({
         url: 'https://gitlab.com/benjdlambert/backstage-graphql-template',
@@ -107,7 +107,7 @@ describe('GitLabPreparer', () => {
       );
       mockEntity = mockEntityWithProtocol(protocol);
 
-      await preparer.prepare(mockEntity);
+      await preparer.prepare(mockEntity, { logger });
 
       expect(Git.fromAuth).toHaveBeenCalledWith({
         logger,
@@ -127,7 +127,7 @@ describe('GitLabPreparer', () => {
       );
       mockEntity = mockEntityWithProtocol(protocol);
 
-      await preparer.prepare(mockEntity);
+      await preparer.prepare(mockEntity, { logger });
 
       expect(Git.fromAuth).toHaveBeenCalledWith({
         logger,
@@ -141,7 +141,7 @@ describe('GitLabPreparer', () => {
       mockEntity = mockEntityWithProtocol(protocol);
       delete mockEntity.spec.path;
 
-      await preparer.prepare(mockEntity);
+      await preparer.prepare(mockEntity, { logger: getVoidLogger() });
 
       expect(mockGitClient.clone).toHaveBeenCalledWith({
         url: 'https://gitlab.com/benjdlambert/backstage-graphql-template',
@@ -153,7 +153,9 @@ describe('GitLabPreparer', () => {
       const preparer = new GitlabPreparer(new ConfigReader({}), { logger });
       mockEntity = mockEntityWithProtocol(protocol);
       mockEntity.spec.path = './template/test/1/2/3';
-      const response = await preparer.prepare(mockEntity);
+      const response = await preparer.prepare(mockEntity, {
+        logger: getVoidLogger(),
+      });
       expect(response.split('\\').join('/')).toMatch(
         /\/template\/test\/1\/2\/3$/,
       );
@@ -164,6 +166,7 @@ describe('GitLabPreparer', () => {
       mockEntity.spec.path = './template/test/1/2/3';
       const response = await preparer.prepare(mockEntity, {
         workingDirectory: '/workDir',
+        logger: getVoidLogger(),
       });
 
       expect(response.split('\\').join('/')).toMatch(

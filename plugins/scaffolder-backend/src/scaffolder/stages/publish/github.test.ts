@@ -26,6 +26,7 @@ import {
 import { GithubPublisher } from './github';
 import { initRepoAndPush } from './helpers';
 import { getVoidLogger } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
 
 const { mockGithubClient } = require('@octokit/rest') as {
   mockGithubClient: {
@@ -42,11 +43,21 @@ describe('GitHub Publisher', () => {
   });
 
   describe('with public repo visibility', () => {
-    const publisher = new GithubPublisher({
-      client: new Octokit(),
-      token: 'abc',
-      repoVisibility: 'public',
-    });
+    const publisher = new GithubPublisher(
+      new ConfigReader({
+        integrations: {
+          github: [
+            {
+              token: 'fake-token',
+              host: 'github.com',
+            },
+          ],
+        },
+      }),
+      {
+        logger,
+      },
+    );
 
     describe('publish: createRemoteInGithub', () => {
       it('should use octokit to create a repo in an organisation if the organisation property is set', async () => {
@@ -63,7 +74,7 @@ describe('GitHub Publisher', () => {
 
         const result = await publisher.publish({
           values: {
-            storePath: 'blam/test',
+            storePath: 'https://github.com/blam/test',
             owner: 'bob',
             access: 'blam/team',
           },
@@ -94,7 +105,7 @@ describe('GitHub Publisher', () => {
         expect(initRepoAndPush).toHaveBeenCalledWith({
           dir: '/tmp/test',
           remoteUrl: 'https://github.com/backstage/backstage.git',
-          auth: { username: 'abc', password: 'x-oauth-basic' },
+          auth: { username: 'fake-token', password: 'x-oauth-basic' },
           logger,
         });
       });
@@ -113,7 +124,7 @@ describe('GitHub Publisher', () => {
 
         const result = await publisher.publish({
           values: {
-            storePath: 'blam/test',
+            storePath: 'https://github.com/blam/test',
             owner: 'bob',
             access: 'blam',
           },
@@ -137,7 +148,7 @@ describe('GitHub Publisher', () => {
         expect(initRepoAndPush).toHaveBeenCalledWith({
           dir: '/tmp/test',
           remoteUrl: 'https://github.com/backstage/backstage.git',
-          auth: { username: 'abc', password: 'x-oauth-basic' },
+          auth: { username: 'fake-token', password: 'x-oauth-basic' },
           logger,
         });
       });
@@ -157,7 +168,7 @@ describe('GitHub Publisher', () => {
 
       const result = await publisher.publish({
         values: {
-          storePath: 'blam/test',
+          storePath: 'https://github.com/blam/test',
           owner: 'bob',
           access: 'bob',
           description: 'description',
@@ -187,18 +198,26 @@ describe('GitHub Publisher', () => {
       expect(initRepoAndPush).toHaveBeenCalledWith({
         dir: '/tmp/test',
         remoteUrl: 'https://github.com/backstage/backstage.git',
-        auth: { username: 'abc', password: 'x-oauth-basic' },
+        auth: { username: 'fake-token', password: 'x-oauth-basic' },
         logger,
       });
     });
   });
 
   describe('with internal repo visibility', () => {
-    const publisher = new GithubPublisher({
-      client: new Octokit(),
-      token: 'abc',
-      repoVisibility: 'internal',
-    });
+    const publisher = new GithubPublisher(
+      new ConfigReader({
+        integrations: {
+          github: [{ host: 'github.com', token: 'fake-token' }],
+        },
+        scaffolder: {
+          github: {
+            visibility: 'internal',
+          },
+        },
+      }),
+      { logger },
+    );
 
     it('creates a private repository in the organization with visibility set to internal', async () => {
       mockGithubClient.repos.createInOrg.mockResolvedValue({
@@ -215,7 +234,7 @@ describe('GitHub Publisher', () => {
       const result = await publisher.publish({
         values: {
           isOrg: true,
-          storePath: 'blam/test',
+          storePath: 'https://github.com/blam/test',
           owner: 'bob',
         },
         directory: '/tmp/test',
@@ -236,18 +255,33 @@ describe('GitHub Publisher', () => {
       expect(initRepoAndPush).toHaveBeenCalledWith({
         dir: '/tmp/test',
         remoteUrl: 'https://github.com/backstage/backstage.git',
-        auth: { username: 'abc', password: 'x-oauth-basic' },
+        auth: { username: 'fake-token', password: 'x-oauth-basic' },
         logger,
       });
     });
   });
 
   describe('private visibility in a user account', () => {
-    const publisher = new GithubPublisher({
-      client: new Octokit(),
-      token: 'abc',
-      repoVisibility: 'private',
-    });
+    const publisher = new GithubPublisher(
+      new ConfigReader({
+        integrations: {
+          github: [
+            {
+              token: 'fake-token',
+              host: 'github.com',
+            },
+          ],
+        },
+        scaffolder: {
+          github: {
+            visibility: 'private',
+          },
+        },
+      }),
+      {
+        logger,
+      },
+    );
 
     it('creates a private repository', async () => {
       mockGithubClient.repos.createForAuthenticatedUser.mockResolvedValue({
@@ -263,7 +297,7 @@ describe('GitHub Publisher', () => {
 
       const result = await publisher.publish({
         values: {
-          storePath: 'blam/test',
+          storePath: 'https://github.com/blam/test',
           owner: 'bob',
         },
         directory: '/tmp/test',
@@ -284,7 +318,7 @@ describe('GitHub Publisher', () => {
       expect(initRepoAndPush).toHaveBeenCalledWith({
         dir: '/tmp/test',
         remoteUrl: 'https://github.com/backstage/backstage.git',
-        auth: { username: 'abc', password: 'x-oauth-basic' },
+        auth: { username: 'fake-token', password: 'x-oauth-basic' },
         logger,
       });
     });

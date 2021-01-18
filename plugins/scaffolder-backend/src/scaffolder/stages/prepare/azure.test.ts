@@ -46,7 +46,7 @@ describe('AzurePreparer', () => {
       metadata: {
         annotations: {
           [LOCATION_ANNOTATION]:
-            'azure/api:https://dev.azure.com/backstage-org/backstage-project/_git/template-repo?path=%2Ftemplate.yaml',
+            'url:https://dev.azure.com/backstage-org/backstage-project/_git/template-repo?path=%2Ftemplate.yaml',
         },
         name: 'graphql-starter',
         title: 'GraphQL Service',
@@ -95,7 +95,7 @@ describe('AzurePreparer', () => {
       { logger },
     );
 
-    await preparer.prepare(mockEntity);
+    await preparer.prepare(mockEntity, { logger });
 
     expect(Git.fromAuth).toHaveBeenCalledWith({
       logger,
@@ -116,7 +116,7 @@ describe('AzurePreparer', () => {
       { logger },
     );
 
-    await preparer.prepare(mockEntity);
+    await preparer.prepare(mockEntity, { logger });
 
     expect(Git.fromAuth).toHaveBeenCalledWith({
       logger,
@@ -128,7 +128,7 @@ describe('AzurePreparer', () => {
   it('calls the clone command with the correct arguments for a repository', async () => {
     const preparer = new AzurePreparer(new ConfigReader({}), { logger });
 
-    await preparer.prepare(mockEntity);
+    await preparer.prepare(mockEntity, { logger: getVoidLogger() });
 
     expect(mockGitClient.clone).toHaveBeenCalledWith({
       url:
@@ -141,7 +141,7 @@ describe('AzurePreparer', () => {
     const preparer = new AzurePreparer(new ConfigReader({}), { logger });
     delete mockEntity.spec.path;
 
-    await preparer.prepare(mockEntity);
+    await preparer.prepare(mockEntity, { logger: getVoidLogger() });
 
     expect(mockGitClient.clone).toHaveBeenCalledWith({
       url:
@@ -154,7 +154,9 @@ describe('AzurePreparer', () => {
     const preparer = new AzurePreparer(new ConfigReader({}), { logger });
     mockEntity.spec.path = './template/test/1/2/3';
 
-    const response = await preparer.prepare(mockEntity);
+    const response = await preparer.prepare(mockEntity, {
+      logger: getVoidLogger(),
+    });
 
     expect(response.split('\\').join('/')).toMatch(
       /\/template\/test\/1\/2\/3$/,
@@ -167,6 +169,7 @@ describe('AzurePreparer', () => {
 
     const response = await preparer.prepare(mockEntity, {
       workingDirectory: '/workDir',
+      logger: getVoidLogger(),
     });
 
     expect(response.split('\\').join('/')).toMatch(

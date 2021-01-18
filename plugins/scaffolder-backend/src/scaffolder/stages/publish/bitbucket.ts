@@ -25,10 +25,14 @@ import {
 import { Logger } from 'winston';
 import gitUrlParse from 'git-url-parse';
 
+// TODO(blam): We should probably start to use a bitbucket client here that we can change
+// the  baseURL to point at on-prem or public bitbucket versions like we do for
+// github and ghe
 export class BitbucketPublisher implements PublisherBase {
   private readonly host?: string;
   private readonly username?: string;
   private readonly token?: string;
+  private readonly appPassword?: string;
   private readonly integrations: BitbucketIntegrationConfig[];
 
   constructor(config: Config, { logger }: { logger: Logger }) {
@@ -64,6 +68,15 @@ export class BitbucketPublisher implements PublisherBase {
         "DEPRECATION: Using the apiBaseUrl format under 'scaffolder.bitbucket.api.username' will not be respected in future releases. Please consider using integrations config instead",
       );
     }
+
+    this.appPassword = config.getOptionalString(
+      'scaffolder.bitbucket.api.appPassword',
+    );
+    if (this.appPassword) {
+      logger.warn(
+        "DEPRECATION: Using the appPassword format under 'scaffolder.bitbucket.api.appassword' will not be respected in future releases. Please consider using integrations config instead",
+      );
+    }
   }
 
   async publish({
@@ -71,20 +84,20 @@ export class BitbucketPublisher implements PublisherBase {
     directory,
     logger,
   }: PublisherOptions): Promise<PublisherResult> {
-    const { resource: host, owner: project, name } = gitUrlParse(
+    const { resource: hostname, owner: project, name } = gitUrlParse(
       values.storePath,
     );
 
-    const token = this.getToken(host);
-    if (!token) {
-      throw new Error('No token provided to create the remote repository');
+    const token = this.getToken(hostname);
+    const appPassword = this.getAppPassword(hostname);
+    const username = this.getUsername(hostname);
+
+    if (!username && !appPassword && !token) {
+      throw new Error('Cannot create repository without bitbucket credentials');
     }
-    const username = this.getUsername(host);
-    if (!username) {
-      throw new Error('No username provided to create the remote repository');
-    }
-    const apiUrl = this.getHost(host);
-    if (!apiUrl) {
+    const host = this.getHost(hostname);
+
+    if (!host) {
       throw new Error('No host provided to create the remote repository');
     }
 
@@ -94,14 +107,17 @@ export class BitbucketPublisher implements PublisherBase {
       name,
       description,
       host,
+      username,
+      token,
+      appPassword,
     });
 
     await initRepoAndPush({
       dir: directory,
       remoteUrl: result.remoteUrl,
       auth: {
-        username: username,
-        password: token,
+        username: username ? username : 'x-token-auth',
+        password: appPassword ? appPassword : token ?? '',
       },
       logger,
     });
@@ -109,12 +125,15 @@ export class BitbucketPublisher implements PublisherBase {
   }
 
   private async createRemote(opts: {
+    username?: string;
+    token?: string;
+    appPassword?: string;
     project: string;
     name: string;
     description: string;
     host: string;
   }): Promise<PublisherResult> {
-    if (opts.host === 'https://bitbucket.org') {
+    if (opts.host === 'bitbucket.org') {
       return this.createBitbucketCloudRepository(opts);
     }
     return this.createBitbucketServerRepository(opts);
@@ -124,11 +143,22 @@ export class BitbucketPublisher implements PublisherBase {
     project: string;
     name: string;
     description: string;
+    username?: string;
+    appPassword?: string;
   }): Promise<PublisherResult> {
-    const { project, name, description } = opts;
+    const { project, name, description, username, appPassword } = opts;
+    if (!appPassword) {
+      throw new Error(
+        'appPassword is required to create the remote repository',
+      );
+    }
+
+    if (!username) {
+      throw new Error('username is required to create the remote repository');
+    }
 
     let response: Response;
-    const buffer = Buffer.from(`${this.username}:${this.token}`, 'utf8');
+    const buffer = Buffer.from(`${username}:${appPassword}`, 'utf8');
 
     const options: RequestInit = {
       method: 'POST',
@@ -169,8 +199,13 @@ export class BitbucketPublisher implements PublisherBase {
     project: string;
     name: string;
     description: string;
+    token?: string;
+    host: string;
   }): Promise<PublisherResult> {
-    const { project, name, description } = opts;
+    const { project, name, description, token, host } = opts;
+    if (!token) {
+      throw new Error('No token provided to create the remote repository');
+    }
 
     let response: Response;
     const options: RequestInit = {
@@ -180,13 +215,13 @@ export class BitbucketPublisher implements PublisherBase {
         description: description,
       }),
       headers: {
-        Authorization: `Bearer ${this.token}`,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
     };
     try {
       response = await fetch(
-        `${this.host}/rest/api/1.0/projects/${project}/repos`,
+        `https://${host}/rest/api/1.0/projects/${project}/repos`,
         options,
       );
     } catch (e) {
@@ -213,6 +248,13 @@ export class BitbucketPublisher implements PublisherBase {
   private getUsername(host: string): string | undefined {
     return (
       this.username || this.integrations.find(c => c.host === host)?.username
+    );
+  }
+
+  private getAppPassword(host: string): string | undefined {
+    return (
+      this.appPassword ||
+      this.integrations.find(c => c.host === host)?.appPassword
     );
   }
 

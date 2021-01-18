@@ -30,10 +30,7 @@ describe('Helpers', () => {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Template',
         metadata: {
-          annotations: {
-            // [LOCATION_ANNOTATION]:
-            //   'github:https://github.com/benjdlambert/backstage-graphql-template/blob/master/template.yaml',
-          },
+          annotations: {},
           name: 'graphql-starter',
           title: 'GraphQL Service',
           description:
@@ -275,11 +272,11 @@ describe('Helpers', () => {
       expect(detector('http://derp.org:80/wat')).toBe('gitlab');
       expect(detector('https://foo.org/wat')).toBe('gitlab');
       expect(detector('http://not.derp.net')).toBe(undefined);
-      expect(detector('http://derp.net')).toBe('azure/api');
-      expect(detector('http://derp.net:8080/wat')).toBe('azure/api');
+      expect(detector('http://derp.net')).toBe('azure');
+      expect(detector('http://derp.net:8080/wat')).toBe('azure');
       expect(detector('http://github.com')).toBe('github');
       expect(detector('http://gitlab.com')).toBe('gitlab');
-      expect(detector('http://dev.azure.com')).toBe('azure/api');
+      expect(detector('http://dev.azure.com')).toBe('azure');
     });
   });
 });

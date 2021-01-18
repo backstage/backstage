@@ -90,7 +90,7 @@ describe('GitHubPreparer', () => {
       { logger },
     );
 
-    await preparer.prepare(mockEntity);
+    await preparer.prepare(mockEntity, { logger: getVoidLogger() });
 
     expect(mockGitClient.clone).toHaveBeenCalledWith({
       url: 'https://github.com/benjdlambert/backstage-graphql-template',
@@ -101,7 +101,7 @@ describe('GitHubPreparer', () => {
     const preparer = new GithubPreparer(new ConfigReader({}), { logger });
     delete mockEntity.spec.path;
 
-    await preparer.prepare(mockEntity);
+    await preparer.prepare(mockEntity, { logger: getVoidLogger() });
 
     expect(mockGitClient.clone).toHaveBeenCalledWith({
       url: 'https://github.com/benjdlambert/backstage-graphql-template',
@@ -112,7 +112,9 @@ describe('GitHubPreparer', () => {
   it('return the temp directory with the path to the folder if it is specified', async () => {
     const preparer = new GithubPreparer(new ConfigReader({}), { logger });
     mockEntity.spec.path = './template/test/1/2/3';
-    const response = await preparer.prepare(mockEntity);
+    const response = await preparer.prepare(mockEntity, {
+      logger: getVoidLogger(),
+    });
     expect(response.split('\\').join('/')).toMatch(
       /\/template\/test\/1\/2\/3$/,
     );
@@ -123,6 +125,7 @@ describe('GitHubPreparer', () => {
     mockEntity.spec.path = './template/test/1/2/3';
     const response = await preparer.prepare(mockEntity, {
       workingDirectory: '/workDir',
+      logger: getVoidLogger(),
     });
 
     expect(response.split('\\').join('/')).toMatch(
@@ -142,7 +145,7 @@ describe('GitHubPreparer', () => {
       { logger },
     );
 
-    await preparer.prepare(mockEntity);
+    await preparer.prepare(mockEntity, { logger });
 
     expect(Git.fromAuth).toHaveBeenCalledWith({
       logger,
@@ -161,7 +164,7 @@ describe('GitHubPreparer', () => {
       { logger },
     );
 
-    await preparer.prepare(mockEntity);
+    await preparer.prepare(mockEntity, { logger });
 
     expect(Git.fromAuth).toHaveBeenCalledWith({
       logger,

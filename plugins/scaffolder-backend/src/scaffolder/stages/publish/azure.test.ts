@@ -15,28 +15,45 @@
  */
 jest.mock('./helpers');
 
+jest.mock('azure-devops-node-api', () => ({
+  WebApi: jest.fn(),
+  getPersonalAccessTokenHandler: jest.fn(),
+}));
+
 import { AzurePublisher } from './azure';
-import { GitApi } from 'azure-devops-node-api/GitApi';
+import { WebApi } from 'azure-devops-node-api';
 import * as helpers from './helpers';
 import { getVoidLogger } from '@backstage/backend-common';
-
-const { mockGitApi } = require('azure-devops-node-api/GitApi') as {
-  mockGitApi: {
-    createRepository: jest.MockedFunction<GitApi['createRepository']>;
-  };
-};
+import { ConfigReader } from '@backstage/config';
 
 describe('Azure Publisher', () => {
-  const publisher = new AzurePublisher(new GitApi('', []), 'fake-token');
   const logger = getVoidLogger();
-
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
 
   describe('publish: createRemoteInAzure', () => {
     it('should use azure-devops-node-api to create a repo in the given project', async () => {
-      mockGitApi.createRepository.mockResolvedValue({
+      const mockGitClient = {
+        createRepository: jest.fn(),
+      };
+      const mockGitApi = {
+        getGitApi: jest.fn().mockReturnValue(mockGitClient),
+      };
+
+      ((WebApi as unknown) as jest.Mock).mockImplementation(() => mockGitApi);
+
+      const publisher = new AzurePublisher(
+        new ConfigReader({
+          scaffolder: {
+            azure: {
+              api: {
+                baseUrl: 'https://dev.azure.com/myorg',
+                token: 'fake-azure-token',
+              },
+            },
+          },
+        }),
+        { logger },
+      );
+      mockGitClient.createRepository.mockResolvedValue({
         remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
       } as { remoteUrl: string });
 
@@ -54,7 +71,7 @@ describe('Azure Publisher', () => {
         catalogInfoUrl:
           'https://dev.azure.com/organization/project/_git/repo?path=%2Fcatalog-info.yaml',
       });
-      expect(mockGitApi.createRepository).toHaveBeenCalledWith(
+      expect(mockGitClient.createRepository).toHaveBeenCalledWith(
         {
           name: 'repo',
         },
@@ -63,7 +80,62 @@ describe('Azure Publisher', () => {
       expect(helpers.initRepoAndPush).toHaveBeenCalledWith({
         dir: '/tmp/test',
         remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
-        auth: { username: 'notempty', password: 'fake-token' },
+        auth: { username: 'notempty', password: 'fake-azure-token' },
+        logger,
+      });
+    });
+
+    it('should use azure-devops-node-api with integrations config', async () => {
+      const mockGitClient = {
+        createRepository: jest.fn(),
+      };
+      const mockGitApi = {
+        getGitApi: jest.fn().mockReturnValue(mockGitClient),
+      };
+
+      ((WebApi as unknown) as jest.Mock).mockImplementation(() => mockGitApi);
+
+      const publisher = new AzurePublisher(
+        new ConfigReader({
+          integrations: {
+            azure: [
+              {
+                host: 'dev.azure.com',
+                token: 'fake-azure-token',
+              },
+            ],
+          },
+        }),
+        { logger },
+      );
+      mockGitClient.createRepository.mockResolvedValue({
+        remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+      } as { remoteUrl: string });
+
+      const result = await publisher.publish({
+        values: {
+          storePath: 'https://dev.azure.com/organization/project/_git/repo',
+          owner: 'bob',
+        },
+        directory: '/tmp/test',
+        logger,
+      });
+
+      expect(result).toEqual({
+        remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+        catalogInfoUrl:
+          'https://dev.azure.com/organization/project/_git/repo?path=%2Fcatalog-info.yaml',
+      });
+      expect(mockGitClient.createRepository).toHaveBeenCalledWith(
+        {
+          name: 'repo',
+        },
+        'project',
+      );
+      expect(helpers.initRepoAndPush).toHaveBeenCalledWith({
+        dir: '/tmp/test',
+        remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+        auth: { username: 'notempty', password: 'fake-azure-token' },
         logger,
       });
     });

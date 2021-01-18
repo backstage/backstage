@@ -74,7 +74,8 @@ export function makeDeprecatedLocationTypeDetector(
   // These are installed by default by the integrations
   hostMap.set('github.com', 'github');
   hostMap.set('gitlab.com', 'gitlab');
-  hostMap.set('dev.azure.com', 'azure/api');
+  hostMap.set('dev.azure.com', 'azure');
+  hostMap.set('bitbucket.org', 'bitbucket');
 
   config.getOptionalConfigArray('integrations.github')?.forEach(sub => {
     hostMap.set(sub.getString('host'), 'github');
@@ -83,7 +84,7 @@ export function makeDeprecatedLocationTypeDetector(
     hostMap.set(sub.getString('host'), 'gitlab');
   });
   config.getOptionalConfigArray('integrations.azure')?.forEach(sub => {
-    hostMap.set(sub.getString('host'), 'azure/api');
+    hostMap.set(sub.getString('host'), 'azure');
   });
   config.getOptionalConfigArray('integrations.bitbucket')?.forEach(sub => {
     hostMap.set(sub.getString('host'), 'bitbucket');

@@ -83,6 +83,7 @@ export class AzurePublisher implements PublisherBase {
       project: owner,
       name,
     });
+
     const catalogInfoUrl = `${remoteUrl}?path=%2Fcatalog-info.yaml`;
 
     await initRepoAndPush({

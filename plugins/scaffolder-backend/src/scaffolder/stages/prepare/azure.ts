@@ -62,7 +62,7 @@ export class AzurePreparer implements PreparerBase {
     const workingDirectory = opts.workingDirectory ?? os.tmpdir();
     const logger = opts.logger;
 
-    if (!['azure/api', 'url'].includes(protocol)) {
+    if (!['azure', 'url'].includes(protocol)) {
       throw new InputError(
         `Wrong location protocol: ${protocol}, should be 'url'`,
       );

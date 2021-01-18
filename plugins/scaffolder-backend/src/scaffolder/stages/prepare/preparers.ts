@@ -85,8 +85,7 @@ export class Preparers implements PreparerBuilder {
 
     preparers.register('file', filePreparer);
     preparers.register('gitlab', gitlabPreparer);
-    preparers.register('gitlab/api', gitlabPreparer);
-    preparers.register('azure/api', azurePreparer);
+    preparers.register('azure', azurePreparer);
     preparers.register('github', githubPreparer);
     preparers.register('bitbucket', bitbucketPreparer);
 
