@@ -37,8 +37,14 @@ type Props = {
 
 export const AboutContent = ({ entity }: Props) => {
   const classes = useStyles();
+  const isSystem = entity.kind.toLowerCase() === 'system';
+  const isDomain = entity.kind.toLowerCase() === 'domain';
+  const isResource = entity.kind.toLowerCase() === 'resource';
   const [partOfSystemRelation] = getEntityRelations(entity, RELATION_PART_OF, {
     kind: 'system',
+  });
+  const [partOfDomainRelation] = getEntityRelations(entity, RELATION_PART_OF, {
+    kind: 'domain',
   });
   const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
 
@@ -57,28 +63,48 @@ export const AboutContent = ({ entity }: Props) => {
           </React.Fragment>
         ))}
       </AboutField>
-      <AboutField
-        label="System"
-        value="No System"
-        gridSizes={{ xs: 12, sm: 6, lg: 4 }}
-      >
-        {partOfSystemRelation && (
-          <EntityRefLink
-            entityRef={partOfSystemRelation}
-            defaultKind="system"
-          />
-        )}
-      </AboutField>
-      <AboutField
-        label="Type"
-        value={entity?.spec?.type as string}
-        gridSizes={{ xs: 12, sm: 6, lg: 4 }}
-      />
-      <AboutField
-        label="Lifecycle"
-        value={entity?.spec?.lifecycle as string}
-        gridSizes={{ xs: 12, sm: 6, lg: 4 }}
-      />
+      {isSystem && (
+        <AboutField
+          label="Domain"
+          value="No Domain"
+          gridSizes={{ xs: 12, sm: 6, lg: 4 }}
+        >
+          {partOfDomainRelation && (
+            <EntityRefLink
+              entityRef={partOfDomainRelation}
+              defaultKind="domain"
+            />
+          )}
+        </AboutField>
+      )}
+      {!isSystem && !isDomain && (
+        <AboutField
+          label="System"
+          value="No System"
+          gridSizes={{ xs: 12, sm: 6, lg: 4 }}
+        >
+          {partOfSystemRelation && (
+            <EntityRefLink
+              entityRef={partOfSystemRelation}
+              defaultKind="system"
+            />
+          )}
+        </AboutField>
+      )}
+      {!isSystem && !isDomain && (
+        <AboutField
+          label="Type"
+          value={entity?.spec?.type as string}
+          gridSizes={{ xs: 12, sm: 6, lg: 4 }}
+        />
+      )}
+      {!isSystem && !isDomain && !isResource && (
+        <AboutField
+          label="Lifecycle"
+          value={entity?.spec?.lifecycle as string}
+          gridSizes={{ xs: 12, sm: 6, lg: 4 }}
+        />
+      )}
       <AboutField
         label="Tags"
         value="No Tags"
