@@ -8,11 +8,11 @@ description: Architecture Decision Record (ADR) for Luxon Date Library
 | ---------- | ------ |
 | 2021-01-16 | Open   |
 
-# ADR010: Luxon Date Library
+# ADR010: Use the Luxon Date Library
 
 ## Status
 
-Proposed
+Accepted
 
 ## Context
 
