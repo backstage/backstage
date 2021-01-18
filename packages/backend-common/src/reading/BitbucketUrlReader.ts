@@ -23,7 +23,7 @@ import {
   readBitbucketIntegrationConfigs,
 } from '@backstage/integration';
 import fetch from 'cross-fetch';
-import parseGitUri from 'git-url-parse';
+import parseGitUrl from 'git-url-parse';
 import { Readable } from 'stream';
 import { NotFoundError } from '../errors';
 import { ReadTreeResponseFactory } from './tree';
@@ -101,8 +101,9 @@ export class BitbucketUrlReader implements UrlReader {
     url: string,
     options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
-    const gitUrl: parseGitUri.GitUrl = parseGitUri(url);
-    const { name: repoName, owner: project, resource, filepath } = gitUrl;
+    const { name: repoName, owner: project, resource, filepath } = parseGitUrl(
+      url,
+    );
 
     const isHosted = resource === 'bitbucket.org';
 
@@ -142,7 +143,7 @@ export class BitbucketUrlReader implements UrlReader {
   }
 
   private async getLastCommitShortHash(url: string): Promise<String> {
-    const { name: repoName, owner: project, ref } = parseGitUri(url);
+    const { name: repoName, owner: project, ref } = parseGitUrl(url);
 
     let branch = ref;
     if (!branch) {

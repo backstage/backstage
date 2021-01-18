@@ -48,6 +48,9 @@ nav:
               - Create your own Templater: 'features/software-templates/extending/create-your-own-templater.md'
               - Create your own Publisher: 'features/software-templates/extending/create-your-own-publisher.md'
               - Create your own Preparer: 'features/software-templates/extending/create-your-own-preparer.md'
+      - Backstage Search:
+          - Overview: 'features/search/README.md'
+          - Architecture: 'features/search/architecture.md'
       - TechDocs:
           - Overview: 'features/techdocs/README.md'
           - Getting Started: 'features/techdocs/getting-started.md'
@@ -56,14 +59,18 @@ nav:
           - Creating and Publishing Documentation: 'features/techdocs/creating-and-publishing.md'
           - Configuration: 'features/techdocs/configuration.md'
           - Using Cloud Storage: 'features/techdocs/using-cloud-storage.md'
+          - HOW TO guides: 'features/techdocs/how-to-guides.md'
           - Troubleshooting: 'features/techdocs/troubleshooting.md'
           - FAQ: 'features/techdocs/FAQ.md'
+      - Kubernetes:
+          - Overview: 'features/kubernetes/index.md'
   - Plugins:
       - Overview: 'plugins/index.md'
       - Existing plugins: 'plugins/existing-plugins.md'
       - Creating a new plugin: 'plugins/create-a-plugin.md'
       - Developing a plugin: 'plugins/plugin-development.md'
       - Structure of a plugin: 'plugins/structure-of-a-plugin.md'
+      - Composability System Migration: 'plugins/composability.md'
       - Backends and APIs:
           - Proxying: 'plugins/proxying.md'
           - Backstage backend plugin: 'plugins/backend-plugin.md'
@@ -115,4 +122,5 @@ nav:
   - Support:
       - 'support/support.md'
       - 'support/project-structure.md'
+  - Glossary: glossary.md
   - FAQ: FAQ.md

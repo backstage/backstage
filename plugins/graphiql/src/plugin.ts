@@ -25,7 +25,8 @@ import { graphiQLRouteRef } from './route-refs';
 export const plugin = createPlugin({
   id: 'graphiql',
   apis: [
-    // GitLab is used as an example endpoint, but most plug
+    // GitLab is used as an example endpoint, but most will want to plug in
+    // their own instead.
     createApiFactory(
       graphQlBrowseApiRef,
       GraphQLEndpoints.from([

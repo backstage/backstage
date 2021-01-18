@@ -37,7 +37,7 @@ jest.spyOn(logger, 'info').mockReturnValue(logger);
 
 let publisher: PublisherBase;
 
-beforeEach(() => {
+beforeEach(async () => {
   const mockConfig = new ConfigReader({
     techdocs: {
       requestUrl: 'http://localhost:7000',
@@ -45,14 +45,13 @@ beforeEach(() => {
         type: 'googleGcs',
         googleGcs: {
           credentials: '{}',
-          projectId: 'gcp-project-id',
           bucketName: 'bucketName',
         },
       },
     },
   });
 
-  publisher = GoogleGCSPublish.fromConfig(mockConfig, logger);
+  publisher = await GoogleGCSPublish.fromConfig(mockConfig, logger);
 });
 
 describe('GoogleGCSPublish', () => {

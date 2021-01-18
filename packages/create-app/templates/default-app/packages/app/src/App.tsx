@@ -15,6 +15,7 @@ import { Router as DocsRouter } from '@backstage/plugin-techdocs';
 import { Router as ImportComponentRouter } from '@backstage/plugin-catalog-import';
 import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
 import { SearchPage as SearchRouter } from '@backstage/plugin-search';
+import { Router as SettingsRouter } from '@backstage/plugin-user-settings';
 
 import { EntityPage } from './components/catalog/EntityPage';
 
@@ -59,6 +60,7 @@ const App = () => (
             path="/search"
             element={<SearchRouter/>}
           />
+          <Route path="/settings" element={<SettingsRouter />} />
           {deprecatedAppRoutes}
         </Routes>
       </SidebarPage>

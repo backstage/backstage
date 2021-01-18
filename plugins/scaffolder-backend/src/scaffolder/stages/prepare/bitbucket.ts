@@ -24,7 +24,7 @@ import {
   readBitbucketIntegrationConfigs,
   BitbucketIntegrationConfig,
 } from '@backstage/integration';
-import GitUriParser from 'git-url-parse';
+import parseGitUrl from 'git-url-parse';
 import { Config } from '@backstage/config';
 import { Logger } from 'winston';
 
@@ -70,7 +70,7 @@ export class BitbucketPreparer implements PreparerBase {
     }
     const templateId = template.metadata.name;
 
-    const repo = GitUriParser(location);
+    const repo = parseGitUrl(location);
     const repositoryCheckoutUrl = repo.toString('https');
 
     const tempDir = await fs.promises.mkdtemp(

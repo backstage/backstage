@@ -30,6 +30,7 @@ const schema = yup.object<Partial<ApiEntityV1alpha1>>({
       lifecycle: yup.string().required().min(1),
       owner: yup.string().required().min(1),
       definition: yup.string().required().min(1),
+      system: yup.string().notRequired().min(1),
     })
     .required(),
 });
@@ -42,6 +43,7 @@ export interface ApiEntityV1alpha1 extends Entity {
     lifecycle: string;
     owner: string;
     definition: string;
+    system?: string;
   };
 }
 

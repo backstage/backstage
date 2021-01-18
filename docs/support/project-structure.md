@@ -1,8 +1,8 @@
 ---
 id: project-structure
 title: Backstage Project Structure
-description:
-  Introduction to files and folders in the Backstage Project repository
+# prettier-ignore
+description: Introduction to files and folders in the Backstage Project repository
 ---
 
 Backstage is a complex project, and the GitHub repository contains many
@@ -31,10 +31,6 @@ the code.
   Backstage ships with it's own `yarn` implementation. This allows us to have
   better control over our `yarn.lock` file and hopefully avoid problems due to
   yarn versioning differences.
-
-- [`docker/`](https://github.com/backstage/backstage/tree/master/docker) - Files
-  related to our root Dockerfile. We are planning to refactor this, so expect
-  this folder to be moved in the future.
 
 - [`contrib/`](https://github.com/backstage/backstage/tree/master/contrib) -
   Collection of examples or resources provided by the community. We really

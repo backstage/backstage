@@ -1,10 +1,31 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.4.1
+
+### Patch Changes
+
+- 94fdf4955: Get rid of all usages of @octokit/types, and bump the rest of the octokit dependencies to the latest version
+- cc068c0d6: Bump the gitbeaker dependencies to 28.x.
+
+  To update your own installation, go through the `package.json` files of all of
+  your packages, and ensure that all dependencies on `@gitbeaker/node` or
+  `@gitbeaker/core` are at version `^28.0.2`. Then run `yarn install` at the root
+  of your repo.
+
+- 711ba55a2: Export all preparers and publishers properly
+- Updated dependencies [466354aaa]
+- Updated dependencies [f3b064e1c]
+- Updated dependencies [abbee6fff]
+- Updated dependencies [147fadcb9]
+  - @backstage/integration@0.2.0
+  - @backstage/catalog-model@0.6.1
+  - @backstage/backend-common@0.4.3
+
 ## 0.4.0
 
 ### Minor Changes
 
-- 5eb8c9b9e: Fix gitlab scaffolder publisher
+- 5eb8c9b9e: Fix GitLab scaffolder publisher
 
 ### Patch Changes
 
@@ -28,7 +49,7 @@
 
 ### Patch Changes
 
-- 19554f6d6: Added Github Actions for Create React App, and allow better imports of files inside a module when they're exposed using `files` in `package.json`
+- 19554f6d6: Added GitHub Actions for Create React App, and allow better imports of files inside a module when they're exposed using `files` in `package.json`
 - 33a82a713: GitLab preparer uses the right token (primarily the same one as the publisher, falling back to the integrations token)
 - aed8f7f12: Clearer error message when preparer or publisher type can't be determined.
 

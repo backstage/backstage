@@ -17,8 +17,11 @@ import {
   ComponentEntityV1alpha1,
   LocationSpec,
 } from '@backstage/catalog-model';
-import AWS, { Organizations } from 'aws-sdk';
-import { Account, ListAccountsResponse } from 'aws-sdk/clients/organizations';
+import {
+  Account,
+  Organizations,
+  ListAccountsCommandOutput,
+} from '@aws-sdk/client-organizations';
 
 import * as results from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
@@ -38,7 +41,7 @@ const ORGANIZATION_ANNOTATION: string = 'amazonaws.com/organization-id';
 export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
   organizations: Organizations;
   constructor() {
-    this.organizations = new AWS.Organizations({
+    this.organizations = new Organizations({
       region: AWS_ORGANIZATION_REGION,
     }); // Only available in us-east-1
   }
@@ -67,9 +70,9 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
     let nextToken = undefined;
     while (isInitialAttempt || nextToken) {
       isInitialAttempt = false;
-      const orgAccounts: ListAccountsResponse = await this.organizations
-        .listAccounts({ NextToken: nextToken })
-        .promise();
+      const orgAccounts: ListAccountsCommandOutput = await this.organizations.listAccounts(
+        { NextToken: nextToken },
+      );
       if (orgAccounts.Accounts) {
         awsAccounts = awsAccounts.concat(orgAccounts.Accounts);
       }

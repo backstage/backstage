@@ -15,12 +15,7 @@
  */
 
 import { createApiRef } from '@backstage/core';
-import {
-  ActionsListWorkflowRunsForRepoResponseData,
-  ActionsGetWorkflowResponseData,
-  ActionsGetWorkflowRunResponseData,
-  EndpointInterface,
-} from '@octokit/types';
+import { RestEndpointMethodTypes } from '@octokit/rest';
 
 export const githubActionsApiRef = createApiRef<GithubActionsApi>({
   id: 'plugin.githubactions.service',
@@ -42,7 +37,9 @@ export type GithubActionsApi = {
     pageSize?: number;
     page?: number;
     branch?: string;
-  }) => Promise<ActionsListWorkflowRunsForRepoResponseData>;
+  }) => Promise<
+    RestEndpointMethodTypes['actions']['listWorkflowRuns']['response']['data']
+  >;
   getWorkflow: ({
     token,
     owner,
@@ -53,7 +50,9 @@ export type GithubActionsApi = {
     owner: string;
     repo: string;
     id: number;
-  }) => Promise<ActionsGetWorkflowResponseData>;
+  }) => Promise<
+    RestEndpointMethodTypes['actions']['getWorkflow']['response']['data']
+  >;
   getWorkflowRun: ({
     token,
     owner,
@@ -64,7 +63,9 @@ export type GithubActionsApi = {
     owner: string;
     repo: string;
     id: number;
-  }) => Promise<ActionsGetWorkflowRunResponseData>;
+  }) => Promise<
+    RestEndpointMethodTypes['actions']['getWorkflowRun']['response']['data']
+  >;
   reRunWorkflow: ({
     token,
     owner,
@@ -86,5 +87,7 @@ export type GithubActionsApi = {
     owner: string;
     repo: string;
     runId: number;
-  }) => Promise<EndpointInterface>;
+  }) => Promise<
+    RestEndpointMethodTypes['actions']['downloadJobLogsForWorkflowRun']['response']['data']
+  >;
 };

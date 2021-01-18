@@ -39,7 +39,7 @@ type RunDockerContainerOptions = {
   args: string[];
   logStream?: Writable;
   docsDir: string;
-  resultDir: string;
+  outputDir: string;
   dockerClient: Docker;
   createOptions?: Docker.ContainerCreateOptions;
 };
@@ -56,7 +56,7 @@ export async function runDockerContainer({
   args,
   logStream = new PassThrough(),
   docsDir,
-  resultDir,
+  outputDir,
   dockerClient,
   createOptions,
 }: RunDockerContainerOptions) {
@@ -89,7 +89,7 @@ export async function runDockerContainer({
       },
       WorkingDir: '/content',
       HostConfig: {
-        Binds: [`${docsDir}:/content`, `${resultDir}:/result`],
+        Binds: [`${docsDir}:/content`, `${outputDir}:/result`],
       },
       ...createOptions,
     },

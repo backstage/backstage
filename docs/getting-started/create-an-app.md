@@ -74,6 +74,22 @@ those plugins in your backend. This is because the transformation of backend
 module tree stops whenever a non-local package is encountered, and from that
 point node will `require` packages directly for that entire module subtree.
 
+Type checking can also have issues when linking in external packages, since the
+linked in packages will use the types in the external project and dependency
+version mismatches between the two projects may cause errors. To fix any of
+those errors you need to sync versions of the dependencies in the two projects.
+A simple way to do this can be to copy over `yarn.lock` from the external
+project and run `yarn install`, although this is quite intrusive and can cause
+other issues in existing projects, so use this method with care. It can often be
+best to simply ignore the type errors, as app serving will work just fine
+anyway.
+
+Another issue with type checking is that the incremental type cache doesn't
+invalidate correctly for the linked in packages, causing type checking to not
+reflect changes made to types. You can work around this by either setting
+`compilerOptions.incremental = false` in `tsconfig.json`, or by deleting the
+types cache folder `dist-types` before running `yarn tsc`.
+
 ### Troubleshooting
 
 The create app command doesn't always work as expected, this is a collection of

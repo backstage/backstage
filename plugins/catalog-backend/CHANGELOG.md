@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend
 
+## 0.5.3
+
+### Patch Changes
+
+- 94fdf4955: Get rid of all usages of @octokit/types, and bump the rest of the octokit dependencies to the latest version
+- ade6b3bdf: AWS SDK version bump for Catalog Backend.
+- abbee6fff: Implement System, Domain and Resource entity kinds.
+- 147fadcb9: Add subcomponentOf to Component kind to represent subsystems of larger components.
+- Updated dependencies [f3b064e1c]
+- Updated dependencies [abbee6fff]
+- Updated dependencies [147fadcb9]
+  - @backstage/catalog-model@0.6.1
+  - @backstage/backend-common@0.4.3
+
 ## 0.5.2
 
 ### Patch Changes
@@ -54,7 +68,7 @@
 
 ### Patch Changes
 
-- c6eeefa35: Add support for Github Enterprise in GitHubOrgReaderProcessor so you can properly ingest users of a GHE organization.
+- c6eeefa35: Add support for GitHub Enterprise in GitHubOrgReaderProcessor so you can properly ingest users of a GHE organization.
 - fb386b760: Break the refresh loop into several smaller transactions
 - 7c3ffc0cd: Support `profile` of groups including `displayName`, `email`, and `picture` in
   `LdapOrgReaderProcessor`. The source fields for them can be configured in the

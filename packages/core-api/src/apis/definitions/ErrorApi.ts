@@ -18,7 +18,7 @@ import { ApiRef, createApiRef } from '../system';
 import { Observable } from '../../types';
 
 /**
- * Mirrors the javascript Error class, for the purpose of
+ * Mirrors the JavaScript Error class, for the purpose of
  * providing documentation and optional fields.
  */
 type Error = {

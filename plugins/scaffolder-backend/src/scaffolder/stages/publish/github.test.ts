@@ -17,16 +17,11 @@
 jest.mock('@octokit/rest');
 jest.mock('./helpers');
 
-import { Octokit } from '@octokit/rest';
-import {
-  OctokitResponse,
-  ReposCreateInOrgResponseData,
-  UsersGetByUsernameResponseData,
-} from '@octokit/types';
-import { GithubPublisher } from './github';
-import { initRepoAndPush } from './helpers';
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
+import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
+import { GithubPublisher } from './github';
+import { initRepoAndPush } from './helpers';
 
 const { mockGithubClient } = require('@octokit/rest') as {
   mockGithubClient: {
@@ -65,12 +60,12 @@ describe('GitHub Publisher', () => {
           data: {
             clone_url: 'https://github.com/backstage/backstage.git',
           },
-        } as OctokitResponse<ReposCreateInOrgResponseData>);
+        } as RestEndpointMethodTypes['repos']['createInOrg']['response']);
         mockGithubClient.users.getByUsername.mockResolvedValue({
           data: {
             type: 'Organization',
           },
-        } as OctokitResponse<UsersGetByUsernameResponseData>);
+        } as RestEndpointMethodTypes['users']['getByUsername']['response']);
 
         const result = await publisher.publish({
           values: {
@@ -115,12 +110,12 @@ describe('GitHub Publisher', () => {
           data: {
             clone_url: 'https://github.com/backstage/backstage.git',
           },
-        } as OctokitResponse<ReposCreateInOrgResponseData>);
+        } as RestEndpointMethodTypes['repos']['createForAuthenticatedUser']['response']);
         mockGithubClient.users.getByUsername.mockResolvedValue({
           data: {
             type: 'User',
           },
-        } as OctokitResponse<UsersGetByUsernameResponseData>);
+        } as RestEndpointMethodTypes['users']['getByUsername']['response']);
 
         const result = await publisher.publish({
           values: {
@@ -159,12 +154,12 @@ describe('GitHub Publisher', () => {
         data: {
           clone_url: 'https://github.com/backstage/backstage.git',
         },
-      } as OctokitResponse<ReposCreateInOrgResponseData>);
+      } as RestEndpointMethodTypes['repos']['createForAuthenticatedUser']['response']);
       mockGithubClient.users.getByUsername.mockResolvedValue({
         data: {
           type: 'User',
         },
-      } as OctokitResponse<UsersGetByUsernameResponseData>);
+      } as RestEndpointMethodTypes['users']['getByUsername']['response']);
 
       const result = await publisher.publish({
         values: {
@@ -224,12 +219,12 @@ describe('GitHub Publisher', () => {
         data: {
           clone_url: 'https://github.com/backstage/backstage.git',
         },
-      } as OctokitResponse<ReposCreateInOrgResponseData>);
+      } as RestEndpointMethodTypes['repos']['createInOrg']['response']);
       mockGithubClient.users.getByUsername.mockResolvedValue({
         data: {
           type: 'Organization',
         },
-      } as OctokitResponse<UsersGetByUsernameResponseData>);
+      } as RestEndpointMethodTypes['users']['getByUsername']['response']);
 
       const result = await publisher.publish({
         values: {
@@ -288,12 +283,12 @@ describe('GitHub Publisher', () => {
         data: {
           clone_url: 'https://github.com/backstage/backstage.git',
         },
-      } as OctokitResponse<ReposCreateInOrgResponseData>);
+      } as RestEndpointMethodTypes['repos']['createForAuthenticatedUser']['response']);
       mockGithubClient.users.getByUsername.mockResolvedValue({
         data: {
           type: 'User',
         },
-      } as OctokitResponse<UsersGetByUsernameResponseData>);
+      } as RestEndpointMethodTypes['users']['getByUsername']['response']);
 
       const result = await publisher.publish({
         values: {
