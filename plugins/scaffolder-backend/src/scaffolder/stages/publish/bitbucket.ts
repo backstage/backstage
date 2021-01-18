@@ -16,19 +16,54 @@
 
 import { PublisherBase, PublisherOptions, PublisherResult } from './types';
 import { initRepoAndPush } from './helpers';
-import { RequiredTemplateValues } from '../templater';
-import { JsonValue } from '../../../../../../packages/config/src';
 import fetch from 'cross-fetch';
+import { Config } from '@backstage/config';
+import {
+  BitbucketIntegrationConfig,
+  readBitbucketIntegrationConfigs,
+} from '@backstage/integration';
+import { Logger } from 'winston';
+import gitUrlParse from 'git-url-parse';
 
 export class BitbucketPublisher implements PublisherBase {
-  private readonly host: string;
-  private readonly username: string;
-  private readonly token: string;
+  private readonly host?: string;
+  private readonly username?: string;
+  private readonly token?: string;
+  private readonly integrations: BitbucketIntegrationConfig[];
 
-  constructor(host: string, username: string, token: string) {
-    this.host = host;
-    this.username = username;
-    this.token = token;
+  constructor(config: Config, { logger }: { logger: Logger }) {
+    this.integrations = readBitbucketIntegrationConfigs(
+      config.getOptionalConfigArray('integrations.bitbucket') ?? [],
+    );
+
+    if (!this.integrations.length) {
+      logger.warn(
+        'Integrations for Bitbucket in Scaffolder are not set. This will cause errors in a future release. Please migrate to using integrations config and specifying tokens under hostnames',
+      );
+    }
+
+    this.token = config.getOptionalString('scaffolder.bitbucket.api.token');
+    if (this.token) {
+      logger.warn(
+        "DEPRECATION: Using the token format under 'scaffolder.bitbucket.api.token' will not be respected in future releases. Please consider using integrations config instead",
+      );
+    }
+
+    this.host = config.getOptionalString('scaffolder.bitbucket.api.host');
+    if (this.host) {
+      logger.warn(
+        "DEPRECATION: Using the apiBaseUrl format under 'scaffolder.bitbucket.api.host' will not be respected in future releases. Please consider using integrations config instead",
+      );
+    }
+
+    this.username = config.getOptionalString(
+      'scaffolder.bitbucket.api.username',
+    );
+    if (this.username) {
+      logger.warn(
+        "DEPRECATION: Using the apiBaseUrl format under 'scaffolder.bitbucket.api.username' will not be respected in future releases. Please consider using integrations config instead",
+      );
+    }
   }
 
   async publish({
@@ -36,33 +71,61 @@ export class BitbucketPublisher implements PublisherBase {
     directory,
     logger,
   }: PublisherOptions): Promise<PublisherResult> {
-    const result = await this.createRemote(values);
+    const { resource: host, owner: project, name } = gitUrlParse(
+      values.storePath,
+    );
+
+    const token = this.getToken(host);
+    if (!token) {
+      throw new Error('No token provided to create the remote repository');
+    }
+    const username = this.getUsername(host);
+    if (!username) {
+      throw new Error('No username provided to create the remote repository');
+    }
+    const apiUrl = this.getHost(host);
+    if (!apiUrl) {
+      throw new Error('No host provided to create the remote repository');
+    }
+
+    const description = values.description as string;
+    const result = await this.createRemote({
+      project,
+      name,
+      description,
+      host,
+    });
 
     await initRepoAndPush({
       dir: directory,
       remoteUrl: result.remoteUrl,
       auth: {
-        username: this.username,
-        password: this.token,
+        username: username,
+        password: token,
       },
       logger,
     });
     return result;
   }
 
-  private async createRemote(
-    values: RequiredTemplateValues & Record<string, JsonValue>,
-  ): Promise<PublisherResult> {
-    if (this.host === 'https://bitbucket.org') {
-      return this.createBitbucketCloudRepository(values);
+  private async createRemote(opts: {
+    project: string;
+    name: string;
+    description: string;
+    host: string;
+  }): Promise<PublisherResult> {
+    if (opts.host === 'https://bitbucket.org') {
+      return this.createBitbucketCloudRepository(opts);
     }
-    return this.createBitbucketServerRepository(values);
+    return this.createBitbucketServerRepository(opts);
   }
 
-  private async createBitbucketCloudRepository(
-    values: RequiredTemplateValues & Record<string, JsonValue>,
-  ): Promise<PublisherResult> {
-    const [project, name] = values.storePath.split('/');
+  private async createBitbucketCloudRepository(opts: {
+    project: string;
+    name: string;
+    description: string;
+  }): Promise<PublisherResult> {
+    const { project, name, description } = opts;
 
     let response: Response;
     const buffer = Buffer.from(`${this.username}:${this.token}`, 'utf8');
@@ -71,7 +134,7 @@ export class BitbucketPublisher implements PublisherBase {
       method: 'POST',
       body: JSON.stringify({
         scm: 'git',
-        description: values.description,
+        description: description,
       }),
       headers: {
         Authorization: `Basic ${buffer.toString('base64')}`,
@@ -102,17 +165,19 @@ export class BitbucketPublisher implements PublisherBase {
     throw new Error(`Not a valid response code ${await response.text()}`);
   }
 
-  private async createBitbucketServerRepository(
-    values: RequiredTemplateValues & Record<string, JsonValue>,
-  ): Promise<PublisherResult> {
-    const [project, name] = values.storePath.split('/');
+  private async createBitbucketServerRepository(opts: {
+    project: string;
+    name: string;
+    description: string;
+  }): Promise<PublisherResult> {
+    const { project, name, description } = opts;
 
     let response: Response;
     const options: RequestInit = {
       method: 'POST',
       body: JSON.stringify({
         name: name,
-        description: values.description,
+        description: description,
       }),
       headers: {
         Authorization: `Bearer ${this.token}`,
@@ -139,5 +204,19 @@ export class BitbucketPublisher implements PublisherBase {
       return { remoteUrl, catalogInfoUrl };
     }
     throw new Error(`Not a valid response code ${await response.text()}`);
+  }
+
+  private getToken(host: string): string | undefined {
+    return this.token || this.integrations.find(c => c.host === host)?.token;
+  }
+
+  private getUsername(host: string): string | undefined {
+    return (
+      this.username || this.integrations.find(c => c.host === host)?.username
+    );
+  }
+
+  private getHost(host: string): string | undefined {
+    return this.host || this.integrations.find(c => c.host === host)?.host;
   }
 }
