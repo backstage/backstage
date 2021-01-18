@@ -64,7 +64,6 @@ const OWNER_REPO_SCHEMA = {
       description: 'Who is going to own this component',
     },
     storePath: {
-      format: 'storeLocation',
       type: 'string' as const,
       title: 'Store path',
       description:
@@ -77,11 +76,6 @@ const OWNER_REPO_SCHEMA = {
     },
   },
 };
-
-const REPO_FORMAT = {
-  storeLocation: /[^\/]*\/[^\/]*/,
-};
-
 export const TemplatePage = () => {
   const errorApi = useApi(errorApiRef);
   const catalogApi = useApi(catalogApiRef);
@@ -184,7 +178,6 @@ export const TemplatePage = () => {
                 {
                   label: 'Choose owner and repo',
                   schema: OWNER_REPO_SCHEMA,
-                  customFormats: REPO_FORMAT,
                   validate: (formData, errors) => {
                     const { storePath } = formData;
                     const parsedUrl = gitParse(storePath);
@@ -194,9 +187,15 @@ export const TemplatePage = () => {
                       !parsedUrl.owner ||
                       !parsedUrl.name
                     ) {
-                      errors.storePath.addError(
-                        'The store path should be a complete Git URL to the new repository location. For example https://github.com/backstage/new-repo',
-                      );
+                      if (parsedUrl.resource === 'dev.azure.com') {
+                        errors.storePath.addError(
+                          "The store path should be formatted like https://dev.azure.com/{org}/{project}/_git/{repo} for Azure URL's",
+                        );
+                      } else {
+                        errors.storePath.addError(
+                          'The store path should be a complete Git URL to the new repository location. For example: https://github.com/{owner}/{repo}',
+                        );
+                      }
                     }
 
                     return errors;
