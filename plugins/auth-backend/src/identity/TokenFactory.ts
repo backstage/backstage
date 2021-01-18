@@ -18,7 +18,7 @@ import moment from 'moment';
 import { TokenIssuer, TokenParams, KeyStore, AnyJWK } from './types';
 import parseJwk, { JWK } from 'jose/jwk/parse';
 import SignJWT from 'jose/jwt/sign';
-import generateSecret from 'jose/util/generate_secret';
+import generateKeyPair from 'jose/util/generate_key_pair';
 import fromKeyLike from 'jose/jwk/from_key_like';
 import { Logger } from 'winston';
 import { v4 as uuid } from 'uuid';
@@ -129,12 +129,20 @@ export class TokenFactory implements TokenIssuer {
     const promise = (async () => {
       // This generates a new signing key to be used to sign tokens until the next key rotation
 
-      const key = await generateSecret('HS256');
+      const key = await generateKeyPair('ES256');
       const kid = uuid();
-      const jwk = await fromKeyLike(key);
-      jwk.kid = kid;
-      jwk.alg = 'HS256';
+      const jwk = await fromKeyLike(key.privateKey);
 
+      // @ts-ignore https://github.com/microsoft/TypeScript/issues/13195 -
+      // JOSE Library provides optional for most fields - and TS does not distinguish between missing/undefined.
+      // Because AnyJWK requires keys to have type "string", this throws a TypeError - though in practice, if the field
+      // is undefined, JOSE will not send it back as key.
+      const storedJwk: AnyJWK = {
+        ...jwk,
+        alg: 'ES256',
+        kid: kid,
+        use: 'sig',
+      };
       // We're not allowed to use the key until it has been successfully stored
       // TODO: some token verification implementations aggressively cache the list of keys, and
       //       don't attempt to fetch new ones even if they encounter an unknown kid. Therefore we
@@ -142,14 +150,9 @@ export class TokenFactory implements TokenIssuer {
       //       the new one. This also needs to be implemented cross-service though, meaning new services
       //       that boot up need to be able to grab an existing key to use for signing.
       this.logger.info(`Created new signing key ${jwk.kid}`);
-      await this.keyStore.addKey({
-        // @ts-ignore
-        use: 'sig',
-        ...jwk,
-      });
-
+      await this.keyStore.addKey(storedJwk);
       // At this point we are allowed to start using the new key
-      return jwk;
+      return storedJwk;
     })();
 
     this.privateKeyPromise = promise;

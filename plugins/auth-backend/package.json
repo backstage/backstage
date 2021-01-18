@@ -18,13 +18,7 @@
   },
   "jest": {
     "moduleNameMapper": {
-      "jose/jwt/sign": "<rootDir>/../node_modules/jose/dist/node/cjs/jwt/sign",
-      "jose/jwt/verify": "<rootDir>/../node_modules/jose/dist/node/cjs/jwt/verify",
-      "jose/jwk/from_key_like": "<rootDir>/../node_modules/jose/dist/node/cjs/jwk/from_key_like",
-      "jose/jwk/parse": "<rootDir>/../node_modules/jose/dist/node/cjs/jwk/parse",
-      "jose/util/base64url": "<rootDir>/../node_modules/jose/dist/node/cjs/util/base64url",
-      "jose/util/decode_protected_header": "<rootDir>/../node_modules/jose/dist/node/cjs/util/decode_protected_header",
-      "jose/util/generate_secret": "<rootDir>/../node_modules/jose/dist/node/cjs/util/generate_secret"
+      "^jose/(.*)$": "<rootDir>/../node_modules/jose/dist/node/cjs/$1"
     }
   },
   "keywords": [
