@@ -33,7 +33,7 @@ We will use [Luxon](https://moment.github.io/luxon/index.html) as the standard
 date library within Backstage.
 
 `Luxon` provides a similar feature set and API to `Moment.js`, but improves on
-it's design through immutability and the usage of modern JavaScript APIs (e.g.
+its design through immutability and the usage of modern JavaScript APIs (e.g.
 `Intl`). This results in smaller bundle sizes while providing a full feature set
 and avoids the need for using additional libraries for common date & time tasks.
 
