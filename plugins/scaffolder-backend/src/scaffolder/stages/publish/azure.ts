@@ -102,7 +102,6 @@ export class AzurePublisher implements PublisherBase {
     client: IGitApi,
     opts: { name: string; project: string },
   ) {
-    // const [project, name] = values.storePath.split('/');
     const { name, project } = opts;
     const createOptions: GitRepositoryCreateOptions = { name };
     const repo = await client.createRepository(createOptions, project);
