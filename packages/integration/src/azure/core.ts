@@ -129,11 +129,11 @@ export function getAzureCommitsUrl(url: string): string {
     const ref = parsedUrl.searchParams.get('version')?.substr(2);
 
     if (
-      empty !== '' ||
-      userOrOrg === '' ||
-      project === '' ||
+      !!empty ||
+      !userOrOrg ||
+      !project ||
       srcKeyword !== '_git' ||
-      repoName === ''
+      !repoName
     ) {
       throw new Error('Wrong Azure Devops URL');
     }

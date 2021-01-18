@@ -130,7 +130,7 @@ export class GithubUrlReader implements UrlReader {
 
     // ref is an empty string if no branch is set in provided url to readTree.
     // Use GitHub API to get the default branch of the repository.
-    const branch = ref === '' ? repoResponseJson.default_branch : ref;
+    const branch = ref || repoResponseJson.default_branch;
     const branchesApiUrl = repoResponseJson.branches_url;
 
     // Fetch the latest commit in the provided or default branch to compare against

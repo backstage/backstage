@@ -99,7 +99,7 @@ export class GitlabUrlReader implements UrlReader {
     const projectGitlabResponseJson = await projectGitlabResponse.json();
 
     // ref is an empty string if no branch is set in provided url to readTree.
-    const branch = ref === '' ? projectGitlabResponseJson.default_branch : ref;
+    const branch = ref || projectGitlabResponseJson.default_branch;
 
     // Fetch the latest commit in the provided or default branch to compare against
     // the provided sha.
