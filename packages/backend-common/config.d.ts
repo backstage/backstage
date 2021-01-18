@@ -41,31 +41,16 @@ export interface Config {
     https?:
       | true
       | {
-          /**
-           * Certificate configuration or parameters for generating a self-signed certificate
-           *
-           * Setting parameters for self-signed certificates is deprecated and will be removed in
-           * the future, set `backend.https = true` instead.
-           */
-          certificate?:
-            | {
-                /** Algorithm to use to generate a self-signed certificate */
-                algorithm?: string;
-                keySize?: number;
-                days?: number;
-                attributes: {
-                  commonName: string;
-                };
-              }
-            | {
-                /** PEM encoded certificate. Use $file to load in a file */
-                cert: string;
-                /**
-                 * PEM encoded certificate key. Use $file to load in a file.
-                 * @visibility secret
-                 */
-                key: string;
-              };
+          /** Certificate configuration */
+          certificate?: {
+            /** PEM encoded certificate. Use $file to load in a file */
+            cert: string;
+            /**
+             * PEM encoded certificate key. Use $file to load in a file.
+             * @visibility secret
+             */
+            key: string;
+          };
         };
 
     /** Database connection configuration, select database type using the `client` field */
