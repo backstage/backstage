@@ -37,12 +37,14 @@ let codeSearchMockResponse: () => Promise<{
   };
 }>;
 
+let findGithubConfigMockResponse = () => ({
+  host: 'test.localhost',
+  owner: 'someuser',
+});
+
 jest.mock('@backstage/integration', () => ({
   readGitHubIntegrationConfigs: () => ({
-    find: () => ({
-      host: 'test.localhost',
-      owner: 'someuser',
-    }),
+    find: findGithubConfigMockResponse,
   }),
 }));
 
@@ -138,6 +140,7 @@ describe('<ImportComponentPage />', () => {
   }
 
   it('Should not explode on non-Github URLs', async () => {
+    findGithubConfigMockResponse = () => undefined!!;
     await renderSUT();
     await waitFor(() => {
       fireEvent.input(
@@ -160,6 +163,7 @@ describe('<ImportComponentPage />', () => {
   });
 
   it('Should offer direct file import from non-Github URLs', async () => {
+    findGithubConfigMockResponse = () => undefined!!;
     await renderSUT();
     await waitFor(() => {
       fireEvent.input(
@@ -188,6 +192,10 @@ describe('<ImportComponentPage />', () => {
   });
 
   it('Should use found yaml file directly and not create a pull request if GitHub api returns one', async () => {
+    findGithubConfigMockResponse = () => ({
+      host: 'test.localhost',
+      owner: 'someuser',
+    });
     codeSearchMockResponse = () =>
       Promise.resolve({
         data: {
@@ -221,6 +229,10 @@ describe('<ImportComponentPage />', () => {
   });
 
   it('Should indicate a pull request creation when no yaml file found in the repo', async () => {
+    findGithubConfigMockResponse = () => ({
+      host: 'test.localhost',
+      owner: 'someuser',
+    });
     codeSearchMockResponse = () =>
       Promise.resolve({
         data: {

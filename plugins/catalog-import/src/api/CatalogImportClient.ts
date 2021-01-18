@@ -128,10 +128,10 @@ export class CatalogImportClient implements CatalogImportApi {
       const catalogInfoItem = searchResult.data.items
         .map(it => it.path)
         .sort((a, b) => a.length - b.length)[0];
-      return Promise.resolve({
+      return {
         url: `blob/${defaultBranch}/${catalogInfoItem}`,
         exists,
-      });
+      };
     }
     return Promise.resolve({
       exists,

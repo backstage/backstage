@@ -22,7 +22,10 @@ import parseGitUri from 'git-url-parse';
 
 // TODO: (O5ten) Refactor into a core API instead of direct usage like this
 // https://github.com/backstage/backstage/pull/3613#issuecomment-7408929430
-import { readGitHubIntegrationConfigs } from '@backstage/integration';
+import {
+  GitHubIntegrationConfig,
+  readGitHubIntegrationConfigs,
+} from '@backstage/integration';
 
 export function useGithubRepos() {
   const api = useApi(catalogImportApiRef);
@@ -84,20 +87,21 @@ export function useGithubRepos() {
   const checkForExistingCatalogInfo = async (
     location: string,
   ): Promise<{ exists: boolean; url?: string }> => {
-    const { source } = parseGitUri(location);
-    if (source !== 'github.com') {
+    let githubConfig: {
+      repoName: string;
+      ownerName: string;
+      githubIntegrationConfig: GitHubIntegrationConfig;
+    };
+    try {
+      githubConfig = getGithubIntegrationConfig(location);
+    } catch (e) {
       return Promise.resolve({ exists: false });
     }
-    const {
-      repoName,
-      ownerName,
-      githubIntegrationConfig,
-    } = getGithubIntegrationConfig(location);
     return await api
       .checkForExistingCatalogInfo({
-        owner: ownerName,
-        repo: repoName,
-        githubIntegrationConfig,
+        owner: githubConfig.ownerName,
+        repo: githubConfig.repoName,
+        githubIntegrationConfig: githubConfig.githubIntegrationConfig,
       })
       .catch(e => {
         throw new Error(
