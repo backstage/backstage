@@ -81,13 +81,7 @@ describe('TokenFactory', () => {
     const token = await factory.issueToken({ claims: { sub: 'foo' } });
 
     const { keys } = await factory.listPublicKeys();
-    const keyMap: {
-      [key: string]: AnyJWK;
-    } = {};
-
-    keys.forEach(key => {
-      keyMap[key.kid] = key;
-    });
+    const keyMap = Object.fromEntries(keys.map(key => [key.kid, key]));
 
     const payload = (
       await jwtVerify(token, async header => {
