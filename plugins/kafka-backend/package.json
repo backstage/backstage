@@ -45,7 +45,6 @@
     "@backstage/cli": "^0.4.3",
     "@types/jest-when": "^2.7.2",
     "@types/lodash": "^4.14.151",
-    "jest-extended": "^0.11.5",
     "jest-when": "^3.1.0",
     "supertest": "^4.0.2"
   },
