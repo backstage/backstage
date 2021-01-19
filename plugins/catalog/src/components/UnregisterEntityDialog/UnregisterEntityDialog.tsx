@@ -15,7 +15,7 @@
  */
 
 import { Entity, ORIGIN_LOCATION_ANNOTATION } from '@backstage/catalog-model';
-import { alertApiRef, Progress, useApi } from '@backstage/core';
+import { alertApiRef, configApiRef, Progress, useApi } from '@backstage/core';
 import {
   Button,
   Dialog,
@@ -81,6 +81,7 @@ export const UnregisterEntityDialog = ({
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const catalogApi = useApi(catalogApiRef);
   const alertApi = useApi(alertApiRef);
+  const configApi = useApi(configApiRef);
 
   const removeEntity = async () => {
     const uid = entity.metadata.uid;
@@ -104,12 +105,14 @@ export const UnregisterEntityDialog = ({
 
         {error ? (
           <Alert severity="error" style={{ wordBreak: 'break-word' }}>
-            {error instanceof DeniedLocationException ? (
+            {error.name === 'DeniedLocationException' ? (
               <>
                 You cannot unregister this entity, since it originates from a
                 protected Backstage configuration (location
-                {`"${error.locationName}"`}). If you believe this is in error,
-                please contact your Backstage operator.
+                {`"${(error as DeniedLocationException).locationName}"`}). If
+                you believe this is in error, please contact the{' '}
+                {configApi.getOptionalString('app.title') ?? 'Backstage'}{' '}
+                operator.
               </>
             ) : (
               error.toString()
