@@ -14,5 +14,16 @@
  * limitations under the License.
  */
 
-export { plugin, GcpProjectsPage } from './plugin';
-export * from './api';
+import React from 'react';
+import { Route, Routes } from 'react-router-dom';
+import { NewProjectPage } from '../NewProjectPage';
+import { ProjectDetailsPage } from '../ProjectDetailsPage';
+import { ProjectListPage } from '../ProjectListPage';
+
+export const GcpProjectsPage = () => (
+  <Routes>
+    <Route path="/" element={<ProjectListPage />} />
+    <Route path="/new" element={<NewProjectPage />} />
+    <Route path="/project" element={<ProjectDetailsPage />} />
+  </Routes>
+);
