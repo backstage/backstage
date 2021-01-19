@@ -20,7 +20,7 @@ import { FindingSummary, FossaApi } from './FossaApi';
 
 export class FossaClient implements FossaApi {
   discoveryApi: DiscoveryApi;
-  identityApi?: IdentityApi;
+  identityApi: IdentityApi;
   organizationId?: string;
 
   constructor({
@@ -29,7 +29,7 @@ export class FossaClient implements FossaApi {
     organizationId,
   }: {
     discoveryApi: DiscoveryApi;
-    identityApi?: IdentityApi;
+    identityApi: IdentityApi;
     organizationId?: string;
   }) {
     this.discoveryApi = discoveryApi;
@@ -39,10 +39,9 @@ export class FossaClient implements FossaApi {
 
   private async callApi(path: string): Promise<any> {
     const apiUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/fossa`;
-    const headers: Record<string, string> = {};
-    if (this.identityApi) {
-      headers.authorization = `Bearer ${this.identityApi.getIdToken()}`;
-    }
+    const headers: Record<string, string> = {
+      authorization: await `Bearer ${this.identityApi.getIdToken()}`,
+    };
     const response = await fetch(`${apiUrl}/${path}`, {
       headers,
     });
