@@ -27,7 +27,7 @@ import { useWebsiteForEntity } from '../../hooks/useWebsiteForEntity';
 import AuditStatusIcon from '../AuditStatusIcon';
 
 const LighthouseCategoryScoreStatus = ({ score }: { score: number }) => {
-  const scoreAsPercentage = score * 100;
+  const scoreAsPercentage = Math.round(score * 100);
   switch (true) {
     case scoreAsPercentage >= 90:
       return (

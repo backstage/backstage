@@ -38,7 +38,7 @@ const websiteListResponse = data as WebsiteListResponse;
 let entityWebsite = websiteListResponse.items[2];
 
 describe('<LastLighthouseAuditCard />', () => {
-  const asPercentage = (fraction: number) => `${fraction * 100}%`;
+  const asPercentage = (fraction: number) => `${Math.round(fraction * 100)}%`;
 
   beforeEach(() => {
     (useWebsiteForEntity as jest.Mock).mockReturnValue({
