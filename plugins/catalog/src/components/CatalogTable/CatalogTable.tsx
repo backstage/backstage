@@ -13,7 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity } from '@backstage/catalog-model';
+import {
+  Entity,
+  EntityName,
+  RELATION_OWNED_BY,
+  RELATION_PART_OF,
+} from '@backstage/catalog-model';
 import { Table, TableColumn, TableProps } from '@backstage/core';
 import { Chip, Link } from '@material-ui/core';
 import Edit from '@material-ui/icons/Edit';
@@ -22,20 +27,31 @@ import { Alert } from '@material-ui/lab';
 import React from 'react';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
 import { findLocationForEntityMeta } from '../../data/utils';
-import { createEditLink } from '../createEditLink';
 import { useStarredEntities } from '../../hooks/useStarredEntities';
 import { entityRoute, entityRouteParams } from '../../routes';
+import { createEditLink } from '../createEditLink';
+import { EntityRefLink, formatEntityRefTitle } from '../EntityRefLink';
 import {
   favouriteEntityIcon,
   favouriteEntityTooltip,
 } from '../FavouriteEntity/FavouriteEntity';
+import { getEntityRelations } from '../getEntityRelations';
 
-const columns: TableColumn<Entity>[] = [
+type EntityRow = Entity & {
+  row: {
+    partOfSystemRelationTitle?: string;
+    partOfSystemRelation?: EntityName;
+    ownedByRelationsTitle?: string;
+    ownedByRelations: EntityName[];
+  };
+};
+
+const columns: TableColumn<EntityRow>[] = [
   {
     title: 'Name',
     field: 'metadata.name',
     highlight: true,
-    render: (entity: any) => (
+    render: entity => (
       <Link
         component={RouterLink}
         to={generatePath(entityRoute.path, {
@@ -48,8 +64,32 @@ const columns: TableColumn<Entity>[] = [
     ),
   },
   {
+    title: 'System',
+    field: 'row.partOfSystemRelationTitle',
+    render: entity => (
+      <>
+        {entity.row.partOfSystemRelation && (
+          <EntityRefLink
+            entityRef={entity.row.partOfSystemRelation}
+            defaultKind="system"
+          />
+        )}
+      </>
+    ),
+  },
+  {
     title: 'Owner',
-    field: 'spec.owner',
+    field: 'row.ownedByRelationsTitle',
+    render: entity => (
+      <>
+        {entity.row.ownedByRelations.map((t, i) => (
+          <React.Fragment key={i}>
+            {i > 0 && ', '}
+            <EntityRefLink entityRef={t} defaultKind="group" />
+          </React.Fragment>
+        ))}
+      </>
+    ),
   },
   {
     title: 'Lifecycle',
@@ -65,7 +105,7 @@ const columns: TableColumn<Entity>[] = [
     cellStyle: {
       padding: '0px 16px 0px 20px',
     },
-    render: (entity: Entity) => (
+    render: entity => (
       <>
         {entity.metadata.tags &&
           entity.metadata.tags.map(t => (
@@ -141,8 +181,31 @@ export const CatalogTable = ({
     },
   ];
 
+  const rows = entities.map(e => {
+    const [partOfSystemRelation] = getEntityRelations(e, RELATION_PART_OF, {
+      kind: 'system',
+    });
+    const ownedByRelations = getEntityRelations(e, RELATION_OWNED_BY);
+
+    return {
+      ...e,
+      row: {
+        ownedByRelationsTitle: ownedByRelations
+          .map(r => formatEntityRefTitle(r, { defaultKind: 'group' }))
+          .join(', '),
+        ownedByRelations,
+        partOfSystemRelationTitle: partOfSystemRelation
+          ? formatEntityRefTitle(partOfSystemRelation, {
+              defaultKind: 'system',
+            })
+          : undefined,
+        partOfSystemRelation,
+      },
+    };
+  });
+
   return (
-    <Table<Entity>
+    <Table<EntityRow>
       isLoading={loading}
       columns={columns}
       options={{
@@ -155,7 +218,7 @@ export const CatalogTable = ({
         pageSizeOptions: [20, 50, 100],
       }}
       title={`${titlePreamble} (${(entities && entities.length) || 0})`}
-      data={entities}
+      data={rows}
       actions={actions}
     />
   );
