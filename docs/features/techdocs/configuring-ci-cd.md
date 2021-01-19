@@ -12,7 +12,7 @@ workflow associated with the repository containing the documentation files. This
 document explains the steps needed to generate docs on CI and publish to a cloud
 storage using [`techdocs-cli`](https://github.com/backstage/techdocs-cli).
 
-The steps here target all kinds of CI providers (GitHub actions, Circle CI,
+The steps here target all kinds of CI providers (GitHub Actions, CircleCI,
 Jenkins, etc.) Specific tools for individual providers will also be made
 available here for simplicity (e.g. A GitHub Actions runner, CircleCI orb, etc.)
 
@@ -44,7 +44,7 @@ the workflow only on changes to files inside the `docs/` directory or
 The first step on the CI is to clone the repository in a working directory. This
 is almost always the first step in most CI workflows.
 
-On GitHub actions, you can add a step
+On GitHub Actions, you can add a step
 
 [`- uses: actions@checkout@v2`](https://github.com/actions/checkout).
 
@@ -67,7 +67,7 @@ complete command reference, details, and options.
 npx @techdocs/cli generate --no-docker --source-dir PATH_TO_REPO --output-dir ./site
 ```
 
-`PATH_TO_REPO` should be the location where the prepare step above clones the
+`PATH_TO_REPO` should be the location in the file path where the prepare step above clones the
 repository.
 
 ## 4. Publish step
@@ -76,7 +76,7 @@ Take a look at
 [`techdocs-cli` README](https://github.com/backstage/techdocs-cli) for the
 complete command reference, details, and options.
 
-Depending on your cloud storage provider (AWS or Google Cloud), set the
+Depending on your cloud storage provider (AWS, Google Cloud, or Azure), set the
 necessary authentication environment variables.
 
 - [Google Cloud authentication](https://cloud.google.com/storage/docs/authentication#libauth)
