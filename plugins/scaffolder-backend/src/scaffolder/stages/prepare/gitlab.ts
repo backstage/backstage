@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { InputError, Git } from '@backstage/backend-common';
+import { Git } from '@backstage/backend-common';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { GitLabIntegrationConfig } from '@backstage/integration';
 import fs from 'fs-extra';
@@ -34,15 +34,10 @@ export class GitlabPreparer implements PreparerBase {
     template: TemplateEntityV1alpha1,
     opts: PreparerOptions,
   ): Promise<string> {
-    const { protocol, location } = parseLocationAnnotation(template);
+    const { location } = parseLocationAnnotation(template);
     const logger = opts.logger;
     const workingDirectory = opts.workingDirectory ?? os.tmpdir();
 
-    if (!['gitlab', 'gitlab/api', 'url'].includes(protocol)) {
-      throw new InputError(
-        `Wrong location protocol: ${protocol}, should be 'url'`,
-      );
-    }
     const templateId = template.metadata.name;
 
     const parsedGitLocation = parseGitUrl(location);

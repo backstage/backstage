@@ -18,7 +18,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { parseLocationAnnotation } from '../helpers';
-import { InputError, Git } from '@backstage/backend-common';
+import { Git } from '@backstage/backend-common';
 import { PreparerBase, PreparerOptions } from './types';
 import { BitbucketIntegrationConfig } from '@backstage/integration';
 import parseGitUrl from 'git-url-parse';
@@ -42,15 +42,9 @@ export class BitbucketPreparer implements PreparerBase {
     template: TemplateEntityV1alpha1,
     opts: PreparerOptions,
   ): Promise<string> {
-    const { protocol, location } = parseLocationAnnotation(template);
+    const { location } = parseLocationAnnotation(template);
     const workingDirectory = opts.workingDirectory ?? os.tmpdir();
     const logger = opts.logger;
-
-    if (!['bitbucket', 'url'].includes(protocol)) {
-      throw new InputError(
-        `Wrong location protocol: ${protocol}, should be 'url'`,
-      );
-    }
     const templateId = template.metadata.name;
 
     const repo = parseGitUrl(location);
