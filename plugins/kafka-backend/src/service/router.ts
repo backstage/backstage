@@ -20,7 +20,7 @@ import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 import { KafkaApi, KafkaJsApiImpl } from './KafkaApi';
 import _ from 'lodash';
-import { getClusterDetails } from '../config/clusterReader';
+import { getClusterDetails } from '../config/ClusterReader';
 
 export interface RouterOptions {
   logger: Logger;
