@@ -1,5 +1,5 @@
 ---
-'@backstage/core': patch
+'@backstage/core': minor
 ---
 
 Removed `InfoCard` variant `height100`, originally deprecated in [#2826](https://github.com/backstage/backstage/pull/2826).
