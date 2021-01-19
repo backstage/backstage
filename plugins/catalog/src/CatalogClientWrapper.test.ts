@@ -18,7 +18,7 @@ import { CatalogClient } from '@backstage/catalog-client';
 import { DiscoveryApi, IdentityApi } from '@backstage/core';
 import { CatalogClientWrapper } from './CatalogClientWrapper';
 
-jest.mock('./CatalogClient');
+jest.mock('@backstage/catalog-client');
 const MockedCatalogClient = CatalogClient as jest.Mock<CatalogClient>;
 
 const mockBaseUrl = 'http://backstage:9191/i-am-a-mock-base';
