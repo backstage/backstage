@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, LOCATION_ANNOTATION } from '@backstage/catalog-model';
+import { Entity, ORIGIN_LOCATION_ANNOTATION } from '@backstage/catalog-model';
 import { alertApiRef, Progress, useApi } from '@backstage/core';
 import {
   Button,
@@ -32,6 +32,7 @@ import React from 'react';
 import { useAsync } from 'react-use';
 import { AsyncState } from 'react-use/lib/useAsync';
 import { catalogApiRef } from '../../plugin';
+import { formatEntityRefTitle } from '../EntityRefLink';
 
 type Props = {
   open: boolean;
@@ -40,15 +41,30 @@ type Props = {
   entity: Entity;
 };
 
+class DeniedLocationException extends Error {
+  constructor(public readonly locationName: string) {
+    super(`You may not remove the location ${locationName}`);
+    this.name = 'DeniedLocationException';
+  }
+}
+
 function useColocatedEntities(entity: Entity): AsyncState<Entity[]> {
   const catalogApi = useApi(catalogApiRef);
   return useAsync(async () => {
-    const myLocation = entity.metadata.annotations?.[LOCATION_ANNOTATION];
+    const myLocation =
+      entity.metadata.annotations?.[ORIGIN_LOCATION_ANNOTATION];
     if (!myLocation) {
       return [];
     }
+
+    if (myLocation === 'bootstrap:bootstrap') {
+      throw new DeniedLocationException(myLocation);
+    }
+
     const response = await catalogApi.getEntities({
-      filter: { [LOCATION_ANNOTATION]: myLocation },
+      filter: {
+        [`metadata.annotations.${ORIGIN_LOCATION_ANNOTATION}`]: myLocation,
+      },
     });
     return response.items;
   }, [catalogApi, entity]);
@@ -82,13 +98,25 @@ export const UnregisterEntityDialog = ({
       <DialogTitle id="responsive-dialog-title">
         Are you sure you want to unregister this entity?
       </DialogTitle>
+
       <DialogContent>
         {loading ? <Progress /> : null}
+
         {error ? (
           <Alert severity="error" style={{ wordBreak: 'break-word' }}>
-            {error.toString()}
+            {error instanceof DeniedLocationException ? (
+              <>
+                You cannot unregister this entity, since it originates from a
+                protected Backstage configuration (location
+                {`"${error.locationName}"`}). If you believe this is in error,
+                please contact your Backstage operator.
+              </>
+            ) : (
+              error.toString()
+            )}
           </Alert>
         ) : null}
+
         {entities?.length ? (
           <>
             <DialogContentText>
@@ -96,9 +124,10 @@ export const UnregisterEntityDialog = ({
             </DialogContentText>
             <Typography component="div">
               <ul>
-                {entities.map(e => (
-                  <li key={e.metadata.name}>{e.metadata.name}</li>
-                ))}
+                {entities.map(e => {
+                  const fullName = formatEntityRefTitle(e);
+                  return <li key={fullName}>{fullName}</li>;
+                })}
               </ul>
             </Typography>
             <DialogContentText>
@@ -107,16 +136,21 @@ export const UnregisterEntityDialog = ({
             <Typography component="div">
               <ul style={{ wordBreak: 'break-word' }}>
                 <li>
-                  {entities[0]?.metadata.annotations?.[LOCATION_ANNOTATION]}
+                  {
+                    entities[0]?.metadata.annotations?.[
+                      ORIGIN_LOCATION_ANNOTATION
+                    ]
+                  }
                 </li>
               </ul>
             </Typography>
+            <DialogContentText>
+              To undo, just re-register the entity in Backstage.
+            </DialogContentText>
           </>
         ) : null}
-        <DialogContentText>
-          To undo, just re-register the entity in Backstage.
-        </DialogContentText>
       </DialogContent>
+
       <DialogActions>
         <Button onClick={onClose} color="primary">
           Cancel
