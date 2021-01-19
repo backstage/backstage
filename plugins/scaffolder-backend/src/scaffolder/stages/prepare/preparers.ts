@@ -21,13 +21,7 @@ import { GitlabPreparer } from './gitlab';
 import { AzurePreparer } from './azure';
 import { GithubPreparer } from './github';
 import { BitbucketPreparer } from './bitbucket';
-import {
-  readAzureIntegrationConfigs,
-  readBitbucketIntegrationConfigs,
-  readGitHubIntegrationConfigs,
-  readGitLabIntegrationConfigs,
-  ScmIntegrations,
-} from '@backstage/integration';
+import { ScmIntegrations } from '@backstage/integration';
 
 export class Preparers implements PreparerBuilder {
   private preparerMap = new Map<string, PreparerBase>();
@@ -46,14 +40,7 @@ export class Preparers implements PreparerBuilder {
     return preparer;
   }
 
-  static async fromConfig(
-    config: Config,
-    //    { logger }: { logger: Logger },
-  ): Promise<PreparerBuilder> {
-    // TODO(blam/jhaals)
-    // iterate through the integration configs for each provider, and create the preparer
-    // register the preparer to hostname.
-    // if no preparer is returned for the hostname fromConfig, use the backup token credentials from scaffolder block and warn
+  static async fromConfig(config: Config): Promise<PreparerBuilder> {
     const preparers = new Preparers();
     const scm = ScmIntegrations.fromConfig(config);
     for (const integration of scm.azure.list()) {
@@ -73,7 +60,7 @@ export class Preparers implements PreparerBuilder {
     for (const integration of scm.gitlab.list()) {
       preparers.register(
         integration.config.host,
-        GitlabPreparer.fromConfig(integration),
+        GitlabPreparer.fromConfig(integration.config),
       );
     }
 
