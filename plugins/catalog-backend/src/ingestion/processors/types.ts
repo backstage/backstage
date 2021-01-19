@@ -46,12 +46,16 @@ export type CatalogProcessor = {
    * @param entity The (possibly partial) entity to process
    * @param location The location that the entity came from
    * @param emit A sink for auxiliary items resulting from the processing
+   * @param originLocation The location that the entity originally came from.
+   *   While location resolves to the direct parent location, originLocation
+   *   tells which location was used to start the ingestion loop.
    * @returns The same entity or a modified version of it
    */
   preProcessEntity?(
     entity: Entity,
     location: LocationSpec,
     emit: CatalogProcessorEmit,
+    originLocation: LocationSpec,
   ): Promise<Entity>;
 
   /**

@@ -40,6 +40,23 @@ expecting a two-item array out of it. The format of the target part is
 type-dependent and could conceivably even be an empty string, but the separator
 colon is always present.
 
+### backstage.io/managed-by-origin-location
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    backstage.io/managed-by-origin-location: github:http://github.com/backstage/backstage/catalog-info.yaml
+```
+
+The value of this annotation is a location reference string (see above). It
+points to the location, which registration lead to the creation of the entity.
+In most cases, the `backstage.io/managed-by-location` and
+`backstage.io/managed-by-origin-location` will be equal. It will be different if
+the original location delegates to another location. A common case is, that a
+location is registered via the `bootstrap:boostrap` which means that is part of
+the `app-config.yml` of a backstage installation.
+
 ### backstage.io/techdocs-ref
 
 ```yaml
