@@ -13,12 +13,12 @@ configuration options for TechDocs.
 # File: app-config.yaml
 
 techdocs:
-  # TechDocs makes API calls to techdocs-backend using this URL. e.g. get docs of an entity, get metadata, etc.
+  # TechDocs makes API calls to techdocs-backend using this URL. e.g. get docs of an entity, get metadata, etc. (Optional)
 
   requestUrl: http://localhost:7000/api/techdocs
 
   # Just another route in techdocs-backend where TechDocs requests the static files from. This URL uses an HTTP middleware
-  # to serve files from either a local directory or an External storage provider.
+  # to serve files from either a local directory or an External storage provider. (Optional)
 
   storageUrl: http://localhost:7000/api/techdocs/static/docs
 

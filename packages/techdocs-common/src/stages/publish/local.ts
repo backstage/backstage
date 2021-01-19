@@ -23,6 +23,7 @@ import { Entity, EntityName } from '@backstage/catalog-model';
 import {
   resolvePackagePath,
   PluginEndpointDiscovery,
+  SingleHostDiscovery,
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import {
@@ -109,9 +110,9 @@ export class LocalPublish implements PublisherBase {
 
   fetchTechDocsMetadata(entityName: EntityName): Promise<TechDocsMetadata> {
     return new Promise((resolve, reject) => {
-      this.discovery.getBaseUrl('techdocs').then(techdocsApiUrl => {
+      this.discovery.getBaseUrl('techdocs').then(async techdocsApiUrl => {
         const storageUrl = new URL(
-          new URL(this.config.getString('techdocs.storageUrl')).pathname,
+          new URL(await this.getStorageUrl()).pathname,
           techdocsApiUrl,
         ).toString();
 
@@ -141,12 +142,20 @@ export class LocalPublish implements PublisherBase {
     return express.static(staticDocsDir);
   }
 
+  async getStorageUrl() {
+    const discoveryApi = SingleHostDiscovery.fromConfig(this.config);
+    return (
+      this.config.getOptionalString('techdocs.storageUrl') ??
+      (await discoveryApi.getBaseUrl('techdocs'))
+    );
+  }
+
   async hasDocsBeenGenerated(entity: Entity): Promise<boolean> {
     const namespace = entity.metadata.namespace ?? 'default';
     return new Promise(resolve => {
-      this.discovery.getBaseUrl('techdocs').then(techdocsApiUrl => {
+      this.discovery.getBaseUrl('techdocs').then(async techdocsApiUrl => {
         const storageUrl = new URL(
-          new URL(this.config.getString('techdocs.storageUrl')).pathname,
+          new URL(await this.getStorageUrl()).pathname,
           techdocsApiUrl,
         ).toString();
 

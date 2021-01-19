@@ -26,7 +26,10 @@ import {
   PublisherBase,
   getLocationForEntity,
 } from '@backstage/techdocs-common';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import {
+  PluginEndpointDiscovery,
+  SingleHostDiscovery,
+} from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { getEntityNameFromUrlPath } from './helpers';
 import { DocsBuilder } from '../DocsBuilder';
@@ -102,7 +105,10 @@ export async function createRouter({
 
   router.get('/docs/:namespace/:kind/:name/*', async (req, res) => {
     const { kind, namespace, name } = req.params;
-    const storageUrl = config.getString('techdocs.storageUrl');
+    const discoveryApi = SingleHostDiscovery.fromConfig(config);
+    const storageUrl =
+      config.getOptionalString('techdocs.storageUrl') ??
+      `${await discoveryApi.getBaseUrl('techdocs')}/static/docs`;
 
     const catalogUrl = await discovery.getBaseUrl('catalog');
     const triple = [kind, namespace, name].map(encodeURIComponent).join('/');

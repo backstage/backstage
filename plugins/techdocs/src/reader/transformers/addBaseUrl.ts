@@ -35,12 +35,12 @@ export const addBaseUrl = ({
     ): void => {
       Array.from(list)
         .filter(elem => !!elem.getAttribute(attributeName))
-        .forEach((elem: T) => {
+        .forEach(async (elem: T) => {
           const elemAttribute = elem.getAttribute(attributeName);
           if (!elemAttribute) return;
           elem.setAttribute(
             attributeName,
-            techdocsStorageApi.getBaseUrl(elemAttribute, entityId, path),
+            await techdocsStorageApi.getBaseUrl(elemAttribute, entityId, path),
           );
         });
     };

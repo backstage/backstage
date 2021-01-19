@@ -24,7 +24,7 @@ export interface Config {
      * attr: 'storageUrl' - accepts a string value
      * e.g. storageUrl: http://localhost:7000/api/techdocs/static/docs
      */
-    storageUrl: string;
+    storageUrl?: string;
     /**
      * documentation building process depends on the builder attr
      * attr: 'builder' - accepts a string value

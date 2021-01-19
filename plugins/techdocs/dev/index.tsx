@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { configApiRef, discoveryApiRef } from '@backstage/core';
 import { createDevApp } from '@backstage/dev-utils';
 import { plugin } from '../src/plugin';
 import { TechDocsDevStorageApi } from './api';
@@ -22,10 +23,11 @@ import { techdocsStorageApiRef } from '../src';
 createDevApp()
   .registerApi({
     api: techdocsStorageApiRef,
-    deps: {},
-    factory: () =>
+    deps: { configApi: configApiRef, discoveryApi: discoveryApiRef },
+    factory: ({ configApi, discoveryApi }) =>
       new TechDocsDevStorageApi({
-        apiOrigin: 'http://localhost:3000/api',
+        configApi,
+        discoveryApi,
       }),
   })
   .registerPlugin(plugin)
