@@ -14,36 +14,60 @@
  * limitations under the License.
  */
 
+import { ConfigApi, OAuthApi } from '@backstage/core';
+import { readGitHubIntegrationConfigs } from '@backstage/integration';
 import { GithubActionsApi } from './GithubActionsApi';
 import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
 
 export class GithubActionsClient implements GithubActionsApi {
+  private readonly configApi: ConfigApi;
+  private readonly githubAuthApi: OAuthApi;
+
+  constructor(options: { configApi: ConfigApi; githubAuthApi: OAuthApi }) {
+    this.configApi = options.configApi;
+    this.githubAuthApi = options.githubAuthApi;
+  }
+
+  private async getOctokit(hostname?: string): Promise<Octokit> {
+    // TODO: Get access token for the specified hostname
+    const token = await this.githubAuthApi.getAccessToken(['repo']);
+    const configs = readGitHubIntegrationConfigs(
+      this.configApi.getOptionalConfigArray('integrations.github') ?? [],
+    );
+    const githubIntegrationConfig = configs.find(
+      v => v.host === hostname ?? 'github.com',
+    );
+    const baseUrl = githubIntegrationConfig?.apiBaseUrl;
+    return new Octokit({ auth: token, baseUrl });
+  }
+
   async reRunWorkflow({
-    token,
+    hostname,
     owner,
     repo,
     runId,
   }: {
-    token: string;
+    hostname?: string;
     owner: string;
     repo: string;
     runId: number;
   }): Promise<any> {
-    return new Octokit({ auth: token }).actions.reRunWorkflow({
+    const octokit = await this.getOctokit(hostname);
+    return octokit.actions.reRunWorkflow({
       owner,
       repo,
       run_id: runId,
     });
   }
   async listWorkflowRuns({
-    token,
+    hostname,
     owner,
     repo,
     pageSize = 100,
     page = 0,
     branch,
   }: {
-    token: string;
+    hostname?: string;
     owner: string;
     repo: string;
     pageSize?: number;
@@ -52,9 +76,8 @@ export class GithubActionsClient implements GithubActionsApi {
   }): Promise<
     RestEndpointMethodTypes['actions']['listWorkflowRuns']['response']['data']
   > {
-    const workflowRuns = await new Octokit({
-      auth: token,
-    }).actions.listWorkflowRunsForRepo({
+    const octokit = await this.getOctokit(hostname);
+    const workflowRuns = await octokit.actions.listWorkflowRunsForRepo({
       owner,
       repo,
       per_page: pageSize,
@@ -64,19 +87,20 @@ export class GithubActionsClient implements GithubActionsApi {
     return workflowRuns.data;
   }
   async getWorkflow({
-    token,
+    hostname,
     owner,
     repo,
     id,
   }: {
-    token: string;
+    hostname?: string;
     owner: string;
     repo: string;
     id: number;
   }): Promise<
     RestEndpointMethodTypes['actions']['getWorkflow']['response']['data']
   > {
-    const workflow = await new Octokit({ auth: token }).actions.getWorkflow({
+    const octokit = await this.getOctokit(hostname);
+    const workflow = await octokit.actions.getWorkflow({
       owner,
       repo,
       workflow_id: id,
@@ -84,19 +108,20 @@ export class GithubActionsClient implements GithubActionsApi {
     return workflow.data;
   }
   async getWorkflowRun({
-    token,
+    hostname,
     owner,
     repo,
     id,
   }: {
-    token: string;
+    hostname?: string;
     owner: string;
     repo: string;
     id: number;
   }): Promise<
     RestEndpointMethodTypes['actions']['getWorkflowRun']['response']['data']
   > {
-    const run = await new Octokit({ auth: token }).actions.getWorkflowRun({
+    const octokit = await this.getOctokit(hostname);
+    const run = await octokit.actions.getWorkflowRun({
       owner,
       repo,
       run_id: id,
@@ -104,21 +129,20 @@ export class GithubActionsClient implements GithubActionsApi {
     return run.data;
   }
   async downloadJobLogsForWorkflowRun({
-    token,
+    hostname,
     owner,
     repo,
     runId,
   }: {
-    token: string;
+    hostname?: string;
     owner: string;
     repo: string;
     runId: number;
   }): Promise<
     RestEndpointMethodTypes['actions']['downloadJobLogsForWorkflowRun']['response']['data']
   > {
-    const workflow = await new Octokit({
-      auth: token,
-    }).actions.downloadJobLogsForWorkflowRun({
+    const octokit = await this.getOctokit(hostname);
+    const workflow = await octokit.actions.downloadJobLogsForWorkflowRun({
       owner,
       repo,
       job_id: runId,

@@ -34,6 +34,8 @@ import { useProjectName } from '../useProjectName';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import DescriptionIcon from '@material-ui/icons/Description';
 import { Entity } from '@backstage/catalog-model';
+import { configApiRef, useApi } from '@backstage/core';
+import { readGitHubIntegrationConfigs } from '@backstage/integration';
 
 const LazyLog = React.lazy(() => import('react-lazylog/build/LazyLog'));
 const LinePart = React.lazy(() => import('react-lazylog/build/LinePart'));
@@ -107,11 +109,21 @@ export const WorkflowRunLogs = ({
   runId: string;
   inProgress: boolean;
 }) => {
+  const config = useApi(configApiRef);
   const classes = useStyles();
   const projectName = useProjectName(entity);
 
+  // TODO: Get github hostname from metadata annotation
+  const hostname = readGitHubIntegrationConfigs(
+    config.getOptionalConfigArray('integrations.github') ?? [],
+  )[0].host;
   const [owner, repo] = projectName.value ? projectName.value.split('/') : [];
-  const jobLogs = useDownloadWorkflowRunLogs(repo, owner, runId);
+  const jobLogs = useDownloadWorkflowRunLogs({
+    hostname,
+    owner,
+    repo,
+    id: runId,
+  });
   const [open, setOpen] = React.useState(false);
 
   const handleOpen = () => {
