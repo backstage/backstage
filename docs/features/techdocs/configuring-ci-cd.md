@@ -14,7 +14,8 @@ storage using [`techdocs-cli`](https://github.com/backstage/techdocs-cli).
 
 The steps here target all kinds of CI providers (GitHub Actions, CircleCI,
 Jenkins, etc.). Specific tools for individual providers will also be made
-available here for simplicity (e.g. a GitHub Actions runner, CircleCI orb, etc.).
+available here for simplicity (e.g. a GitHub Actions runner, CircleCI orb,
+etc.).
 
 A summary of the instructions below looks like this -
 
