@@ -25,7 +25,7 @@ state issues. On top of this, `momentjs` is
 recommends using one of the more modern alternative libraries.
 
 See
-[[RFC] Standardized Date & Time Library](https://github.com/backstage/backstage/issues/3401)
+[[RFC] Standardized Date & Time Library](https://github.com/backstage/backstage/issues/3401).
 
 ## Decision
 
