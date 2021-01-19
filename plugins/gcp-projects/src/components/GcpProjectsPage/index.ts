@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export { plugin, GcpProjectsPage } from './plugin';
-export * from './api';
+export { GcpProjectsPage } from './GcpProjectsPage';

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,5 +14,17 @@
  * limitations under the License.
  */
 
-export { plugin, GcpProjectsPage } from './plugin';
-export * from './api';
+import { createRouteRef } from '@backstage/core';
+
+export const rootRouteRef = createRouteRef({
+  path: '/gcp-projects',
+  title: 'GCP Projects',
+});
+export const projectRouteRef = createRouteRef({
+  path: '/gcp-projects/project',
+  title: 'GCP Project Page',
+});
+export const newProjectRouteRef = createRouteRef({
+  path: '/gcp-projects/new',
+  title: 'GCP Project Page',
+});
