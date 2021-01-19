@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-import fetch from 'cross-fetch';
-import {
-  ConflictError,
-  NotFoundError,
-  PluginEndpointDiscovery,
-} from '@backstage/backend-common';
+import { ConflictError, NotFoundError } from '@backstage/backend-common';
+import { CatalogClient } from '@backstage/catalog-client';
 import { UserEntity } from '@backstage/catalog-model';
 
 type UserQuery = {
@@ -30,10 +26,10 @@ type UserQuery = {
  * A catalog client tailored for reading out identity data from the catalog.
  */
 export class CatalogIdentityClient {
-  private readonly discovery: PluginEndpointDiscovery;
+  private readonly catalogClient: CatalogClient;
 
-  constructor(options: { discovery: PluginEndpointDiscovery }) {
-    this.discovery = options.discovery;
+  constructor(options: { catalogClient: CatalogClient }) {
+    this.catalogClient = options.catalogClient;
   }
 
   /**
@@ -42,8 +38,8 @@ export class CatalogIdentityClient {
    * Throws a NotFoundError or ConflictError if 0 or multiple users are found.
    */
   async findUser(
+    token: string | undefined,
     query: UserQuery,
-    options?: { headers?: Record<string, string> },
   ): Promise<UserEntity> {
     const filter: Record<string, string> = {
       kind: 'user',
@@ -51,44 +47,17 @@ export class CatalogIdentityClient {
     for (const [key, value] of Object.entries(query.annotations)) {
       filter[`metadata.annotations.${key}`] = value;
     }
-    const params: string[] = [];
 
-    const filterParts: string[] = [];
-    for (const [key, value] of Object.entries(filter)) {
-      for (const v of [value].flat()) {
-        filterParts.push(`${encodeURIComponent(key)}=${encodeURIComponent(v)}`);
-      }
-    }
-    if (filterParts.length) {
-      params.push(`filter=${filterParts.join(',')}`);
-    }
-    const queryPart = params.length ? `?${params.join('&')}` : '';
+    const { items } = await this.catalogClient.getEntities(token, { filter });
 
-    const url = `${await this.discovery.getBaseUrl(
-      'catalog',
-    )}/entities${queryPart}`;
-    const response = await fetch(url, {
-      headers: {
-        ...options?.headers,
-      },
-    });
-
-    if (!response.ok) {
-      const payload = await response.text();
-      const message = `Request failed with ${response.status} ${response.statusText}, ${payload}`;
-      throw new Error(message);
-    }
-
-    const entities: UserEntity[] = await response.json();
-
-    if (entities.length !== 1) {
-      if (entities.length > 1) {
+    if (items.length !== 1) {
+      if (items.length > 1) {
         throw new ConflictError('User lookup resulted in multiple matches');
       } else {
         throw new NotFoundError('User not found');
       }
     }
 
-    return entities[0] as UserEntity;
+    return items[0] as UserEntity;
   }
 }

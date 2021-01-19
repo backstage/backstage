@@ -14,109 +14,31 @@
  * limitations under the License.
  */
 
-import { UserEntity } from '@backstage/catalog-model';
-import { rest } from 'msw';
-import { setupServer } from 'msw/node';
+import { CatalogClient } from '@backstage/catalog-client';
 import { CatalogIdentityClient } from './CatalogIdentityClient';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 
-const server = setupServer();
-const mockBaseUrl = 'http://backstage:9191/i-am-a-mock-base';
-const discovery: PluginEndpointDiscovery = {
-  async getBaseUrl() {
-    return mockBaseUrl;
-  },
-  async getExternalBaseUrl() {
-    return mockBaseUrl;
-  },
-};
+jest.mock('./CatalogClient');
+const MockedCatalogClient = CatalogClient as jest.Mock<CatalogClient>;
 
 describe('CatalogIdentityClient', () => {
-  let client: CatalogIdentityClient;
+  const token = 'fake-id-token';
 
-  beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
-  afterAll(() => server.close());
-  afterEach(() => server.resetHandlers());
+  afterEach(() => jest.resetAllMocks());
 
-  beforeEach(() => {
-    client = new CatalogIdentityClient({ discovery });
-  });
+  it('passes through the correct search params', async () => {
+    const client = new CatalogIdentityClient({
+      catalogClient: new MockedCatalogClient(),
+    });
 
-  describe('findUser', () => {
-    const defaultServiceResponse: UserEntity[] = [
-      {
-        apiVersion: 'backstage.io/v1alpha1',
-        kind: 'User',
-        metadata: {
-          name: 'Test1',
-          namespace: 'test1',
-          annotations: {
-            key: 'value',
-          },
-        },
-        spec: {
-          memberOf: ['group1'],
-        },
+    client.findUser(token, { annotations: { key: 'value' } });
+
+    const getEntities = MockedCatalogClient.mock.instances[0].getEntities;
+    expect(getEntities).toHaveBeenCalledWith(token, {
+      filter: {
+        kind: 'user',
+        'metadata.annotations.key': 'value',
       },
-    ];
-
-    beforeEach(() => {
-      server.use(
-        rest.get(`${mockBaseUrl}/entities`, (_, res, ctx) => {
-          return res(ctx.json(defaultServiceResponse));
-        }),
-      );
     });
-
-    it('should entities from correct endpoint', async () => {
-      const response = await client.findUser({ annotations: { key: 'value' } });
-      expect(response).toEqual(defaultServiceResponse[0]);
-    });
-
-    it('builds entity search filters properly', async () => {
-      expect.assertions(2);
-
-      server.use(
-        rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
-          expect(req.url.search).toBe(
-            '?filter=kind=user,metadata.annotations.key=value',
-          );
-          return res(ctx.json(defaultServiceResponse));
-        }),
-      );
-
-      const response = await client.findUser({ annotations: { key: 'value' } });
-
-      expect(response).toEqual(defaultServiceResponse[0]);
-    });
-
-    it('omits authorization header if not available', async () => {
-      expect.assertions(1);
-
-      server.use(
-        rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
-          expect(req.headers.has('authorization')).toBe(false);
-          return res(ctx.json([]));
-        }),
-      );
-
-      client.findUser({ annotations: { key: 'value' } });
-    });
-
-    it('adds authorization header if available', async () => {
-      expect.assertions(1);
-
-      server.use(
-        rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
-          expect(req.headers.get('authorization')).toEqual('hello');
-          return res(ctx.json([]));
-        }),
-      );
-
-      client.findUser(
-        { annotations: { key: 'value' } },
-        { headers: { authorization: 'hello' } },
-      );
-    });
+    expect(getEntities).toHaveBeenCalledTimes(1);
   });
 });

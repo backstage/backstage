@@ -157,18 +157,11 @@ export class GoogleAuthProvider implements OAuthHandlers {
       const token = await this.tokenIssuer.issueToken({
         claims: { sub: 'backstage.io/auth-backend' },
       });
-      const user = await this.identityClient.findUser(
-        {
-          annotations: {
-            'google.com/email': profile.email,
-          },
+      const user = await this.identityClient.findUser(token, {
+        annotations: {
+          'google.com/email': profile.email,
         },
-        {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        },
-      );
+      });
 
       return {
         ...response,
@@ -194,7 +187,7 @@ export const createGoogleProvider: AuthProviderFactory = ({
   config,
   logger,
   tokenIssuer,
-  discovery,
+  catalogClient,
 }) =>
   OAuthEnvironmentHandler.mapConfig(config, envConfig => {
     const clientId = envConfig.getString('clientId');
@@ -207,7 +200,7 @@ export const createGoogleProvider: AuthProviderFactory = ({
       callbackUrl,
       logger,
       tokenIssuer,
-      identityClient: new CatalogIdentityClient({ discovery }),
+      identityClient: new CatalogIdentityClient({ catalogClient }),
     });
 
     return OAuthAdapter.fromConfig(globalConfig, provider, {
