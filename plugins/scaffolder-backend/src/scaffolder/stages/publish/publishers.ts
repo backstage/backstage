@@ -62,24 +62,21 @@ export class Publishers implements PublisherBuilder {
     return publisher;
   }
 
-  static async fromConfig(
-    config: Config,
-    { logger }: { logger: Logger },
-  ): Promise<PublisherBuilder> {
+  static async fromConfig(config: Config): Promise<PublisherBuilder> {
     const typeDetector = makeDeprecatedLocationTypeDetector(config);
     const publishers = new Publishers(typeDetector);
 
-    const githubPublisher = new GithubPublisher(config, { logger });
+    const githubPublisher = GithubPublisher.fromConfig(config);
     publishers.register('file', githubPublisher);
     publishers.register('github', githubPublisher);
 
-    const gitLabPublisher = new GitlabPublisher(config, { logger });
+    const gitLabPublisher = GitlabPublisher.fromConfig(config);
     publishers.register('gitlab', gitLabPublisher);
 
-    const azurePublisher = new AzurePublisher(config, { logger });
+    const azurePublisher = AzurePublisher.fromConfig(config);
     publishers.register('azure', azurePublisher);
 
-    const bitbucketPublisher = new BitbucketPublisher(config, { logger });
+    const bitbucketPublisher = BitbucketPublisher.fromConfig(config);
     publishers.register('bitbucket', bitbucketPublisher);
 
     return publishers;

@@ -34,17 +34,13 @@ export class BitbucketPreparer implements PreparerBase {
   private readonly integrations: BitbucketIntegrationConfig[];
 
   static fromConfig(config: Config, { logger }: { logger: Logger }) {
-    const integrations = readBitbucketIntegrationConfigs(
-      config.getOptionalConfigArray('integrations.bitbucket') ?? [],
-    );
-
     const user = config.getOptionalString('scaffolder.bitbucket.api.username');
     const token = config.getOptionalString('scaffolder.bitbucket.api.token');
     const password = config.getOptionalString(
       'scaffolder.bitbucket.api.appPassword',
     );
 
-    if (!integrations && (user || token || password)) {
+    if (user || token || password) {
       logger.warn(
         "DEPRECATION: Setting credentials under 'scaffolder.bitbucket.api' will not be respected in future releases. Please consider using integrations config instead",
         'Please migrate to using integrations config and specifying tokens under hostnames',

@@ -49,9 +49,6 @@ describe('GitHub Publisher', () => {
           ],
         },
       }),
-      {
-        logger,
-      },
     );
 
     describe('publish: createRemoteInGithub', () => {
@@ -211,7 +208,6 @@ describe('GitHub Publisher', () => {
           },
         },
       }),
-      { logger },
     );
 
     it('creates a private repository in the organization with visibility set to internal', async () => {
@@ -273,9 +269,6 @@ describe('GitHub Publisher', () => {
           },
         },
       }),
-      {
-        logger,
-      },
     );
 
     it('creates a private repository', async () => {

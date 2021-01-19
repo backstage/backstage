@@ -40,9 +40,7 @@ describe('Publishers', () => {
   });
 
   it('should return the correct preparer when the source matches for github', async () => {
-    const publishers = await Publishers.fromConfig(new ConfigReader({}), {
-      logger: getVoidLogger(),
-    });
+    const publishers = await Publishers.fromConfig(new ConfigReader({}));
 
     expect(
       publishers.get('https://github.com/org/repo', {
@@ -52,9 +50,7 @@ describe('Publishers', () => {
   });
 
   it('should return the correct preparer when the source matches for azure', async () => {
-    const publishers = await Publishers.fromConfig(new ConfigReader({}), {
-      logger: getVoidLogger(),
-    });
+    const publishers = await Publishers.fromConfig(new ConfigReader({}));
 
     expect(
       publishers.get('https://dev.azure.com/org/project/_git/repo', {
@@ -64,9 +60,7 @@ describe('Publishers', () => {
   });
 
   it('should return the correct preparer when the source matches for bitbucket', async () => {
-    const publishers = await Publishers.fromConfig(new ConfigReader({}), {
-      logger: getVoidLogger(),
-    });
+    const publishers = await Publishers.fromConfig(new ConfigReader({}));
 
     expect(
       publishers.get('https://bitbucket.org/owner/repo', {
@@ -76,9 +70,7 @@ describe('Publishers', () => {
   });
 
   it('should return the correct preparer when the source matches for gitlab', async () => {
-    const publishers = await Publishers.fromConfig(new ConfigReader({}), {
-      logger: getVoidLogger(),
-    });
+    const publishers = await Publishers.fromConfig(new ConfigReader({}));
 
     expect(
       publishers.get('https://gitlab.com/owner/repo', {
@@ -96,9 +88,6 @@ describe('Publishers', () => {
           ],
         },
       }),
-      {
-        logger: getVoidLogger(),
-      },
     );
 
     expect(

@@ -22,7 +22,6 @@ import {
   BitbucketIntegrationConfig,
   readBitbucketIntegrationConfigs,
 } from '@backstage/integration';
-import { Logger } from 'winston';
 import gitUrlParse from 'git-url-parse';
 
 // TODO(blam): We should probably start to use a bitbucket client here that we can change
@@ -35,48 +34,21 @@ export class BitbucketPublisher implements PublisherBase {
   private readonly appPassword?: string;
   private readonly integrations: BitbucketIntegrationConfig[];
 
-  constructor(config: Config, { logger }: { logger: Logger }) {
+  static fromConfig(config: Config) {
+    return new BitbucketPublisher(config);
+  }
+  constructor(config: Config) {
     this.integrations = readBitbucketIntegrationConfigs(
       config.getOptionalConfigArray('integrations.bitbucket') ?? [],
     );
-
-    if (!this.integrations.length) {
-      logger.warn(
-        'Integrations for Bitbucket in Scaffolder are not set. This will cause errors in a future release. Please migrate to using integrations config and specifying tokens under hostnames',
-      );
-    }
-
     this.token = config.getOptionalString('scaffolder.bitbucket.api.token');
-    if (this.token) {
-      logger.warn(
-        "DEPRECATION: Using the token format under 'scaffolder.bitbucket.api.token' will not be respected in future releases. Please consider using integrations config instead",
-      );
-    }
-
     this.host = config.getOptionalString('scaffolder.bitbucket.api.host');
-    if (this.host) {
-      logger.warn(
-        "DEPRECATION: Using the apiBaseUrl format under 'scaffolder.bitbucket.api.host' will not be respected in future releases. Please consider using integrations config instead",
-      );
-    }
-
     this.username = config.getOptionalString(
       'scaffolder.bitbucket.api.username',
     );
-    if (this.username) {
-      logger.warn(
-        "DEPRECATION: Using the apiBaseUrl format under 'scaffolder.bitbucket.api.username' will not be respected in future releases. Please consider using integrations config instead",
-      );
-    }
-
     this.appPassword = config.getOptionalString(
       'scaffolder.bitbucket.api.appPassword',
     );
-    if (this.appPassword) {
-      logger.warn(
-        "DEPRECATION: Using the appPassword format under 'scaffolder.bitbucket.api.appassword' will not be respected in future releases. Please consider using integrations config instead",
-      );
-    }
   }
 
   async publish({

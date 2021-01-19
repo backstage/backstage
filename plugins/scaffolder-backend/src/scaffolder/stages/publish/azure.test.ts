@@ -51,7 +51,6 @@ describe('Azure Publisher', () => {
             },
           },
         }),
-        { logger },
       );
       mockGitClient.createRepository.mockResolvedValue({
         remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
@@ -106,7 +105,6 @@ describe('Azure Publisher', () => {
             ],
           },
         }),
-        { logger },
       );
       mockGitClient.createRepository.mockResolvedValue({
         remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',

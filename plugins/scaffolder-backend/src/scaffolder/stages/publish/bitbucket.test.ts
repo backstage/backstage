@@ -71,9 +71,6 @@ describe('Bitbucket Publisher', () => {
             ],
           },
         }),
-        {
-          logger: getVoidLogger(),
-        },
       );
 
       const result = await publisher.publish({
@@ -140,9 +137,6 @@ describe('Bitbucket Publisher', () => {
             ],
           },
         }),
-        {
-          logger: getVoidLogger(),
-        },
       );
 
       const result = await publisher.publish({

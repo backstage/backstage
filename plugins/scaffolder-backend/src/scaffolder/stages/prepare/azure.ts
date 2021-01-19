@@ -33,19 +33,13 @@ export class AzurePreparer implements PreparerBase {
   private readonly scaffolderToken: string | undefined;
 
   static fromConfig(config: Config, { logger }: { logger: Logger }) {
-    const integrations = readAzureIntegrationConfigs(
-      config.getOptionalConfigArray('integrations.azure') ?? [],
-    );
-
-    if (
-      config.getOptionalString('scaffolder.azure.api.token') &&
-      !integrations.length
-    ) {
+    if (config.getOptionalString('scaffolder.azure.api.token')) {
       logger.warn(
         "DEPRECATION: Using the token format under 'scaffolder.azure.api.token' will not be respected in future releases. Please consider using integrations config instead",
         'Please migrate to using integrations config and specifying tokens under hostnames',
       );
     }
+
     return new AzurePreparer(config);
   }
 

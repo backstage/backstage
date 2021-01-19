@@ -17,7 +17,6 @@
 import { PublisherBase, PublisherOptions, PublisherResult } from './types';
 import { Gitlab } from '@gitbeaker/node';
 import { Config } from '@backstage/config';
-import { Logger } from 'winston';
 import { initRepoAndPush } from './helpers';
 import gitUrlParse from 'git-url-parse';
 
@@ -30,37 +29,20 @@ export class GitlabPublisher implements PublisherBase {
   private readonly integrations: GitLabIntegrationConfig[];
   private readonly scaffolderToken: string | undefined;
   private readonly apiBaseUrl: string | undefined;
-  private readonly logger: Logger;
 
-  constructor(config: Config, { logger }: { logger: Logger }) {
-    this.logger = logger;
+  constructor(config: Config) {
     this.integrations = readGitLabIntegrationConfigs(
       config.getOptionalConfigArray('integrations.gitlab') ?? [],
     );
-
-    if (!this.integrations.length) {
-      this.logger.warn(
-        'Integrations for GitLab in Scaffolder are not set. This will cause errors in a future release. Please migrate to using integrations config and specifying tokens under hostnames',
-      );
-    }
-
     this.scaffolderToken = config.getOptionalString(
       'scaffolder.gitlab.api.token',
     );
 
     this.apiBaseUrl = config.getOptionalString('scaffolder.gitlab.api.baseUrl');
+  }
 
-    if (this.scaffolderToken) {
-      this.logger.warn(
-        "DEPRECATION: Using the token format under 'scaffolder.gitlab.api.token' will not be respected in future releases. Please consider using integrations config instead",
-      );
-    }
-
-    if (this.apiBaseUrl) {
-      this.logger.warn(
-        "DEPRECATION: Using the apiBaseUrl format under 'scaffolder.gitlab.api.baseUrl' will not be respected in future releases. Please consider using integrations config instead",
-      );
-    }
+  static fromConfig(config: Config) {
+    return new GitlabPublisher(config);
   }
 
   async publish({

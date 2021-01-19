@@ -17,7 +17,6 @@
 import { PublisherBase, PublisherOptions, PublisherResult } from './types';
 import { initRepoAndPush } from './helpers';
 import { Config } from '@backstage/config';
-import { Logger } from 'winston';
 import {
   GitHubIntegrationConfig,
   readGitHubIntegrationConfigs,
@@ -32,34 +31,19 @@ export class GithubPublisher implements PublisherBase {
   private readonly apiBaseUrl: string | undefined;
   private readonly repoVisibility: RepoVisibilityOptions;
 
-  constructor(config: Config, { logger }: { logger: Logger }) {
+  static fromConfig(config: Config) {
+    return new GithubPublisher(config);
+  }
+  constructor(config: Config) {
     this.integrations = readGitHubIntegrationConfigs(
       config.getOptionalConfigArray('integrations.github') ?? [],
     );
-
-    if (!this.integrations.length) {
-      logger.warn(
-        'Integrations for GitHub in Scaffolder are not set. This will cause errors in a future release. Please migrate to using integrations config and specifying tokens under hostnames',
-      );
-    }
 
     this.scaffolderToken = config.getOptionalString(
       'scaffolder.github.api.token',
     );
 
     this.apiBaseUrl = config.getOptionalString('scaffolder.github.api.baseUrl');
-
-    if (this.scaffolderToken) {
-      logger.warn(
-        "DEPRECATION: Using the token format under 'scaffolder.github.api.token' will not be respected in future releases. Please consider using integrations config instead",
-      );
-    }
-
-    if (this.apiBaseUrl) {
-      logger.warn(
-        "DEPRECATION: Using the apiBaseUrl format under 'scaffolder.github.api.baseUrl' will not be respected in future releases. Please consider using integrations config instead",
-      );
-    }
 
     this.repoVisibility = (config.getOptionalString(
       'scaffolder.github.visibility',

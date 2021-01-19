@@ -19,7 +19,6 @@ import { IGitApi } from 'azure-devops-node-api/GitApi';
 import { GitRepositoryCreateOptions } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import { Config } from '@backstage/config';
 import { initRepoAndPush } from './helpers';
-import { Logger } from 'winston';
 import {
   AzureIntegrationConfig,
   readAzureIntegrationConfigs,
@@ -32,33 +31,18 @@ export class AzurePublisher implements PublisherBase {
   private readonly apiBaseUrl?: string;
   private readonly token?: string;
 
-  constructor(config: Config, { logger }: { logger: Logger }) {
+  static fromConfig(config: Config) {
+    return new AzurePublisher(config);
+  }
+
+  constructor(config: Config) {
     this.integrations = readAzureIntegrationConfigs(
       config.getOptionalConfigArray('integrations.azure') ?? [],
     );
 
-    if (!this.integrations.length) {
-      logger.warn(
-        'Integrations for Azure in Scaffolder are not set. This will cause errors in a future release. Please migrate to using integrations config and specifying tokens under hostnames',
-      );
-    }
-
     this.token = config.getOptionalString('scaffolder.azure.api.token');
-    if (this.token) {
-      logger.warn(
-        "DEPRECATION: Using the token format under 'scaffolder.github.api.token' will not be respected in future releases. Please consider using integrations config instead",
-      );
-    }
-
     this.apiBaseUrl = config.getOptionalString('scaffolder.azure.api.baseUrl');
-
-    if (this.apiBaseUrl) {
-      logger.warn(
-        "DEPRECATION: Using the apiBaseUrl format under 'scaffolder.azure.api.baseUrl' will not be respected in future releases. Please consider using integrations config instead",
-      );
-    }
   }
-
   async publish({
     values,
     directory,

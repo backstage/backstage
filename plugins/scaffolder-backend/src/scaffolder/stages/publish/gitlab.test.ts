@@ -61,7 +61,6 @@ describe('GitLab Publisher', () => {
             ],
           },
         }),
-        { logger },
       );
 
       mockGitlabClient.Namespaces.show.mockResolvedValue({
@@ -109,7 +108,6 @@ describe('GitLab Publisher', () => {
             ],
           },
         }),
-        { logger },
       );
 
       mockGitlabClient.Namespaces.show.mockResolvedValue({});

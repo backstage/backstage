@@ -38,7 +38,7 @@ export default async function createPlugin({
   templaters.register('cra', craTemplater);
 
   const preparers = await Preparers.fromConfig(config, { logger });
-  const publishers = await Publishers.fromConfig(config, { logger });
+  const publishers = await Publishers.fromConfig(config);
 
   const dockerClient = new Docker();
 
