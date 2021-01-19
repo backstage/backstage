@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import type { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { RemoteProtocol } from '../types';
 import { Logger } from 'winston';
 
 export type PreparerOptions = {

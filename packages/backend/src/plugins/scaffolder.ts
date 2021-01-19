@@ -37,8 +37,8 @@ export default async function createPlugin({
   templaters.register('cookiecutter', cookiecutterTemplater);
   templaters.register('cra', craTemplater);
 
-  const preparers = await Preparers.fromConfig(config, { logger });
-  const publishers = await Publishers.fromConfig(config);
+  const preparers = await Preparers.fromConfig(config);
+  const publishers = await Publishers.fromConfig(config, { logger });
 
   const dockerClient = new Docker();
 

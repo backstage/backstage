@@ -18,7 +18,6 @@ jest.mock('@octokit/rest');
 jest.mock('./helpers');
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { ConfigReader } from '@backstage/config';
 import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
 import { GithubPublisher } from './github';
 import { initRepoAndPush } from './helpers';

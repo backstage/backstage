@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 import { Preparers } from '.';
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { FilePreparer } from './file';
 import { GithubPreparer } from './github';
-import { ConfigReader } from '@backstage/config';
 
 describe('Preparers', () => {
   it('should return the correct preparer based on the hostname', async () => {
-    const preparer = new GithubPreparer(
-      new ConfigReader({
-        host: 'github.com',
-        apiBaseUrl: 'lols',
-        token: 'something else yo',
-      }),
-    );
+    const preparer = await GithubPreparer.fromConfig({
+      host: 'github.com',
+      apiBaseUrl: 'lols',
+      token: 'something else yo',
+    });
 
     const preparers = new Preparers();
     preparers.register('github.com', preparer);
@@ -38,13 +33,11 @@ describe('Preparers', () => {
   });
 
   it('should throw an error if there is nothing that will match the url provided', async () => {
-    const preparer = new GithubPreparer(
-      new ConfigReader({
-        host: 'github.com',
-        apiBaseUrl: 'lols',
-        token: 'something else yo',
-      }),
-    );
+    const preparer = await GithubPreparer.fromConfig({
+      host: 'github.com',
+      apiBaseUrl: 'lols',
+      token: 'something else yo',
+    });
 
     const preparers = new Preparers();
     preparers.register('github.com', preparer);

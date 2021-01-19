@@ -15,7 +15,6 @@
  */
 import { RequiredTemplateValues } from '../templater';
 import { JsonValue } from '@backstage/config';
-import { RemoteProtocol } from '../types';
 import { Logger } from 'winston';
 
 /**
@@ -44,6 +43,6 @@ export type PublisherResult = {
 };
 
 export type PublisherBuilder = {
-  register(protocol: RemoteProtocol, publisher: PublisherBase): void;
+  register(host: string, publisher: PublisherBase): void;
   get(storePath: string): PublisherBase;
 };

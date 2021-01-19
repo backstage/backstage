@@ -24,7 +24,6 @@ import { GitlabPublisher } from './gitlab';
 import { Gitlab } from '@gitbeaker/node';
 import { initRepoAndPush } from './helpers';
 import { getVoidLogger } from '@backstage/backend-common';
-import { ConfigReader } from '@backstage/config';
 
 describe('GitLab Publisher', () => {
   const logger = getVoidLogger();

@@ -24,7 +24,6 @@ import {
   TemplateEntityV1alpha1,
   LOCATION_ANNOTATION,
 } from '@backstage/catalog-model';
-import { ConfigReader } from '@backstage/config';
 import { getVoidLogger, Git } from '@backstage/backend-common';
 
 const mockTemplate = (): TemplateEntityV1alpha1 => ({

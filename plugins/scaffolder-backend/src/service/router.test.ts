@@ -47,7 +47,7 @@ describe('createRouter - working directory', () => {
     const mockPreparer = {
       prepare: mockPrepare,
     };
-    mockPreparers.register('azure', mockPreparer);
+    mockPreparers.register('dev.azure.com', mockPreparer);
   });
 
   beforeEach(() => {
@@ -65,7 +65,7 @@ describe('createRouter - working directory', () => {
     kind: 'Template',
     metadata: {
       annotations: {
-        'backstage.io/managed-by-location': 'azure:dev.azure.com',
+        'backstage.io/managed-by-location': 'azure:https://dev.azure.com',
       },
     },
     spec: {
