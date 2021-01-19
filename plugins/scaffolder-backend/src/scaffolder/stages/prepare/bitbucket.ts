@@ -32,27 +32,35 @@ export class BitbucketPreparer implements PreparerBase {
   private readonly privateToken: string;
   private readonly username: string;
   private readonly integrations: BitbucketIntegrationConfig[];
-  constructor(config: Config, { logger }: { logger: Logger }) {
-    this.integrations = readBitbucketIntegrationConfigs(
+
+  static fromConfig(config: Config, { logger }: { logger: Logger }) {
+    const integrations = readBitbucketIntegrationConfigs(
       config.getOptionalConfigArray('integrations.bitbucket') ?? [],
     );
 
-    if (!this.integrations.length) {
+    const user = config.getOptionalString('scaffolder.bitbucket.api.username');
+    const token = config.getOptionalString('scaffolder.bitbucket.api.token');
+    const password = config.getOptionalString(
+      'scaffolder.bitbucket.api.appPassword',
+    );
+
+    if (!integrations && (user || token || password)) {
       logger.warn(
-        'Integrations for BitBucket in Scaffolder are not set. This will cause errors in a future release. Please migrate to using integrations config and specifying tokens under hostnames',
+        "DEPRECATION: Setting credentials under 'scaffolder.bitbucket.api' will not be respected in future releases. Please consider using integrations config instead",
+        'Please migrate to using integrations config and specifying tokens under hostnames',
       );
     }
+    return new BitbucketPreparer(config);
+  }
+  constructor(config: Config) {
+    this.integrations = readBitbucketIntegrationConfigs(
+      config.getOptionalConfigArray('integrations.bitbucket') ?? [],
+    );
 
     this.username =
       config.getOptionalString('scaffolder.bitbucket.api.username') ?? '';
     this.privateToken =
       config.getOptionalString('scaffolder.bitbucket.api.token') ?? '';
-
-    if (this.username || this.privateToken) {
-      logger.warn(
-        "DEPRECATION: Using the token format under 'scaffolder.bitbucket.token' will not be respected in future releases. Please consider using integrations config instead",
-      );
-    }
   }
 
   async prepare(

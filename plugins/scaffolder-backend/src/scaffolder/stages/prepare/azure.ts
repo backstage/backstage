@@ -32,26 +32,31 @@ export class AzurePreparer implements PreparerBase {
   private readonly integrations: AzureIntegrationConfig[];
   private readonly scaffolderToken: string | undefined;
 
-  constructor(config: Config, { logger }: { logger: Logger }) {
+  static fromConfig(config: Config, { logger }: { logger: Logger }) {
+    const integrations = readAzureIntegrationConfigs(
+      config.getOptionalConfigArray('integrations.azure') ?? [],
+    );
+
+    if (
+      config.getOptionalString('scaffolder.azure.api.token') &&
+      !integrations.length
+    ) {
+      logger.warn(
+        "DEPRECATION: Using the token format under 'scaffolder.azure.api.token' will not be respected in future releases. Please consider using integrations config instead",
+        'Please migrate to using integrations config and specifying tokens under hostnames',
+      );
+    }
+    return new AzurePreparer(config);
+  }
+
+  constructor(config: Config) {
     this.integrations = readAzureIntegrationConfigs(
       config.getOptionalConfigArray('integrations.azure') ?? [],
     );
 
-    if (!this.integrations.length) {
-      logger.warn(
-        'Integrations for Azure in Scaffolder are not set. This will cause errors in a future release. Please migrate to using integrations config and specifying tokens under hostnames',
-      );
-    }
-
     this.scaffolderToken = config.getOptionalString(
       'scaffolder.azure.api.token',
     );
-
-    if (this.scaffolderToken) {
-      logger.warn(
-        "DEPRECATION: Using the token format under 'scaffolder.azure.api.token' will not be respected in future releases. Please consider using integrations config instead",
-      );
-    }
   }
 
   async prepare(

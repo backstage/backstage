@@ -78,10 +78,10 @@ export class Preparers implements PreparerBuilder {
     const preparers = new Preparers(typeDetector);
 
     const filePreparer = new FilePreparer();
-    const gitlabPreparer = new GitlabPreparer(config, { logger });
-    const azurePreparer = new AzurePreparer(config, { logger });
-    const githubPreparer = new GithubPreparer(config, { logger });
-    const bitbucketPreparer = new BitbucketPreparer(config, { logger });
+    const gitlabPreparer = GitlabPreparer.fromConfig(config, { logger });
+    const azurePreparer = AzurePreparer.fromConfig(config, { logger });
+    const githubPreparer = GithubPreparer.fromConfig(config, { logger });
+    const bitbucketPreparer = BitbucketPreparer.fromConfig(config, { logger });
 
     preparers.register('file', filePreparer);
     preparers.register('gitlab', gitlabPreparer);

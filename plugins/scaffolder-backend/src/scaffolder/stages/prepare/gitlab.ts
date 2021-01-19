@@ -32,26 +32,32 @@ export class GitlabPreparer implements PreparerBase {
   private readonly integrations: GitLabIntegrationConfig[];
   private readonly scaffolderToken: string | undefined;
 
-  constructor(config: Config, { logger }: { logger: Logger }) {
+  static fromConfig(config: Config, { logger }: { logger: Logger }) {
+    const integrations = readGitLabIntegrationConfigs(
+      config.getOptionalConfigArray('integrations.gitlab') ?? [],
+    );
+
+    if (
+      config.getOptionalString('scaffolder.gitlab.api.token') &&
+      !integrations.length
+    ) {
+      logger.warn(
+        "DEPRECATION: Using the token format under 'scaffolder.gitlab.token' will not be respected in future releases. Please consider using integrations config instead",
+        'Please migrate to using integrations config and specifying tokens under hostnames',
+      );
+    }
+
+    return new GitlabPreparer(config);
+  }
+
+  constructor(config: Config) {
     this.integrations = readGitLabIntegrationConfigs(
       config.getOptionalConfigArray('integrations.gitlab') ?? [],
     );
 
-    if (!this.integrations.length) {
-      logger.warn(
-        'Integrations for GitLab in Scaffolder are not set. This will cause errors in a future release. Please migrate to using integrations config and specifying tokens under hostnames',
-      );
-    }
-
     this.scaffolderToken = config.getOptionalString(
       'scaffolder.gitlab.api.token',
     );
-
-    if (this.scaffolderToken) {
-      logger.warn(
-        "DEPRECATION: Using the token format under 'scaffolder.gitlab.api.token' will not be respected in future releases. Please consider using integrations config instead",
-      );
-    }
   }
 
   async prepare(

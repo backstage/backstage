@@ -80,7 +80,7 @@ describe('GitLabPreparer', () => {
 
   ['gitlab'].forEach(protocol => {
     it(`calls the clone command with the correct arguments for a repository using the ${protocol} protocol`, async () => {
-      const preparer = new GitlabPreparer(new ConfigReader({}), { logger });
+      const preparer = new GitlabPreparer(new ConfigReader({}));
       mockEntity = mockEntityWithProtocol(protocol);
 
       await preparer.prepare(mockEntity, { logger: getVoidLogger() });
@@ -103,7 +103,6 @@ describe('GitLabPreparer', () => {
             ],
           },
         }),
-        { logger },
       );
       mockEntity = mockEntityWithProtocol(protocol);
 
@@ -123,7 +122,6 @@ describe('GitLabPreparer', () => {
             gitlab: { api: { token: 'fake-token' } },
           },
         }),
-        { logger },
       );
       mockEntity = mockEntityWithProtocol(protocol);
 
@@ -137,7 +135,7 @@ describe('GitLabPreparer', () => {
     });
 
     it(`calls the clone command with the correct arguments for a repository when no path is provided using the ${protocol} protocol`, async () => {
-      const preparer = new GitlabPreparer(new ConfigReader({}), { logger });
+      const preparer = new GitlabPreparer(new ConfigReader({}));
       mockEntity = mockEntityWithProtocol(protocol);
       delete mockEntity.spec.path;
 
@@ -150,7 +148,7 @@ describe('GitLabPreparer', () => {
     });
 
     it(`return the temp directory with the path to the folder if it is specified using the ${protocol} protocol`, async () => {
-      const preparer = new GitlabPreparer(new ConfigReader({}), { logger });
+      const preparer = new GitlabPreparer(new ConfigReader({}));
       mockEntity = mockEntityWithProtocol(protocol);
       mockEntity.spec.path = './template/test/1/2/3';
       const response = await preparer.prepare(mockEntity, {
@@ -162,7 +160,7 @@ describe('GitLabPreparer', () => {
     });
 
     it('return the working directory with the path to the folder if it is specified', async () => {
-      const preparer = new GitlabPreparer(new ConfigReader({}), { logger });
+      const preparer = new GitlabPreparer(new ConfigReader({}));
       mockEntity.spec.path = './template/test/1/2/3';
       const response = await preparer.prepare(mockEntity, {
         workingDirectory: '/workDir',

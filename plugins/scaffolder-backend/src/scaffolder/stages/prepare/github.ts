@@ -32,24 +32,29 @@ export class GithubPreparer implements PreparerBase {
   private readonly integrations: GitHubIntegrationConfig[];
   private readonly scaffolderToken: string | undefined;
 
-  constructor(config: Config, { logger }: { logger: Logger }) {
-    this.integrations = readGitHubIntegrationConfigs(
+  static fromConfig(config: Config, { logger }: { logger: Logger }) {
+    const integrations = readGitHubIntegrationConfigs(
       config.getOptionalConfigArray('integrations.github') ?? [],
     );
 
-    if (!this.integrations.length) {
-      logger.warn(
-        'Integrations for Github in Scaffolder are not set. This will cause errors in a future release. Please migrate to using integrations config and specifying tokens under hostnames',
-      );
-    }
-
-    this.scaffolderToken = config.getOptionalString('scaffolder.github.token');
-
-    if (this.scaffolderToken) {
+    if (
+      config.getOptionalString('scaffolder.github.token') &&
+      !integrations.length
+    ) {
       logger.warn(
         "DEPRECATION: Using the token format under 'scaffolder.github.token' will not be respected in future releases. Please consider using integrations config instead",
+        'Please migrate to using integrations config and specifying tokens under hostnames',
       );
     }
+
+    return new GithubPreparer(config);
+  }
+
+  constructor(config: Config) {
+    this.integrations = readGitHubIntegrationConfigs(
+      config.getOptionalConfigArray('integrations.github') ?? [],
+    );
+    this.scaffolderToken = config.getOptionalString('scaffolder.github.token');
   }
 
   async prepare(

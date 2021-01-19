@@ -87,7 +87,6 @@ describe('GitHubPreparer', () => {
           },
         },
       }),
-      { logger },
     );
 
     await preparer.prepare(mockEntity, { logger: getVoidLogger() });
@@ -98,7 +97,7 @@ describe('GitHubPreparer', () => {
     });
   });
   it('calls the clone command with the correct arguments for a repository when no path is provided', async () => {
-    const preparer = new GithubPreparer(new ConfigReader({}), { logger });
+    const preparer = new GithubPreparer(new ConfigReader({}));
     delete mockEntity.spec.path;
 
     await preparer.prepare(mockEntity, { logger: getVoidLogger() });
@@ -110,7 +109,7 @@ describe('GitHubPreparer', () => {
   });
 
   it('return the temp directory with the path to the folder if it is specified', async () => {
-    const preparer = new GithubPreparer(new ConfigReader({}), { logger });
+    const preparer = new GithubPreparer(new ConfigReader({}));
     mockEntity.spec.path = './template/test/1/2/3';
     const response = await preparer.prepare(mockEntity, {
       logger: getVoidLogger(),
@@ -121,7 +120,7 @@ describe('GitHubPreparer', () => {
   });
 
   it('return the working directory with the path to the folder if it is specified', async () => {
-    const preparer = new GithubPreparer(new ConfigReader({}), { logger });
+    const preparer = new GithubPreparer(new ConfigReader({}));
     mockEntity.spec.path = './template/test/1/2/3';
     const response = await preparer.prepare(mockEntity, {
       workingDirectory: '/workDir',
@@ -142,7 +141,6 @@ describe('GitHubPreparer', () => {
           },
         },
       }),
-      { logger },
     );
 
     await preparer.prepare(mockEntity, { logger });
@@ -161,7 +159,6 @@ describe('GitHubPreparer', () => {
           github: [{ host: 'github.com', token: 'fake-me' }],
         },
       }),
-      { logger },
     );
 
     await preparer.prepare(mockEntity, { logger });

@@ -80,7 +80,7 @@ describe('BitbucketPreparer', () => {
   });
 
   it('calls the clone command with the correct arguments for a repository', async () => {
-    const preparer = new BitbucketPreparer(new ConfigReader({}), { logger });
+    const preparer = new BitbucketPreparer(new ConfigReader({}));
     await preparer.prepare(mockEntity, { logger: getVoidLogger() });
     expect(mockGitClient.clone).toHaveBeenCalledWith({
       url: 'https://bitbucket.org/backstage-project/backstage-repo',
@@ -101,7 +101,6 @@ describe('BitbucketPreparer', () => {
           ],
         },
       }),
-      { logger },
     );
 
     await preparer.prepare(mockEntity, { logger });
@@ -114,7 +113,7 @@ describe('BitbucketPreparer', () => {
   });
 
   it('calls the clone command with the correct arguments for a repository when no path is provided', async () => {
-    const preparer = new BitbucketPreparer(new ConfigReader({}), { logger });
+    const preparer = new BitbucketPreparer(new ConfigReader({}));
     delete mockEntity.spec.path;
     await preparer.prepare(mockEntity, { logger: getVoidLogger() });
     expect(mockGitClient.clone).toHaveBeenCalledWith({
@@ -124,7 +123,7 @@ describe('BitbucketPreparer', () => {
   });
 
   it('return the temp directory with the path to the folder if it is specified', async () => {
-    const preparer = new BitbucketPreparer(new ConfigReader({}), { logger });
+    const preparer = new BitbucketPreparer(new ConfigReader({}));
     mockEntity.spec.path = './template/test/1/2/3';
     const response = await preparer.prepare(mockEntity, {
       logger: getVoidLogger(),
@@ -147,7 +146,6 @@ describe('BitbucketPreparer', () => {
           },
         },
       }),
-      { logger },
     );
 
     await preparer.prepare(mockEntity, { logger });
@@ -172,7 +170,6 @@ describe('BitbucketPreparer', () => {
           ],
         },
       }),
-      { logger },
     );
 
     await preparer.prepare(mockEntity, { logger });
@@ -197,7 +194,6 @@ describe('BitbucketPreparer', () => {
           ],
         },
       }),
-      { logger },
     );
 
     await preparer.prepare(mockEntity, { logger });
@@ -210,7 +206,7 @@ describe('BitbucketPreparer', () => {
   });
 
   it('return the working directory with the path to the folder if it is specified', async () => {
-    const preparer = new BitbucketPreparer(new ConfigReader({}), { logger });
+    const preparer = new BitbucketPreparer(new ConfigReader({}));
     mockEntity.spec.path = './template/test/1/2/3';
     const response = await preparer.prepare(mockEntity, {
       workingDirectory: '/workDir',

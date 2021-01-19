@@ -92,7 +92,6 @@ describe('AzurePreparer', () => {
           },
         },
       }),
-      { logger },
     );
 
     await preparer.prepare(mockEntity, { logger });
@@ -113,7 +112,6 @@ describe('AzurePreparer', () => {
           ],
         },
       }),
-      { logger },
     );
 
     await preparer.prepare(mockEntity, { logger });
@@ -126,7 +124,7 @@ describe('AzurePreparer', () => {
   });
 
   it('calls the clone command with the correct arguments for a repository', async () => {
-    const preparer = new AzurePreparer(new ConfigReader({}), { logger });
+    const preparer = new AzurePreparer(new ConfigReader({}));
 
     await preparer.prepare(mockEntity, { logger: getVoidLogger() });
 
@@ -138,7 +136,7 @@ describe('AzurePreparer', () => {
   });
 
   it('calls the clone command with the correct arguments for a repository when no path is provided', async () => {
-    const preparer = new AzurePreparer(new ConfigReader({}), { logger });
+    const preparer = new AzurePreparer(new ConfigReader({}));
     delete mockEntity.spec.path;
 
     await preparer.prepare(mockEntity, { logger: getVoidLogger() });
@@ -151,7 +149,7 @@ describe('AzurePreparer', () => {
   });
 
   it('return the temp directory with the path to the folder if it is specified', async () => {
-    const preparer = new AzurePreparer(new ConfigReader({}), { logger });
+    const preparer = new AzurePreparer(new ConfigReader({}));
     mockEntity.spec.path = './template/test/1/2/3';
 
     const response = await preparer.prepare(mockEntity, {
@@ -164,7 +162,7 @@ describe('AzurePreparer', () => {
   });
 
   it('return the working directory with the path to the folder if it is specified', async () => {
-    const preparer = new AzurePreparer(new ConfigReader({}), { logger });
+    const preparer = new AzurePreparer(new ConfigReader({}));
     mockEntity.spec.path = './template/test/1/2/3';
 
     const response = await preparer.prepare(mockEntity, {
