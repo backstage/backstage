@@ -20,21 +20,7 @@ import { EntityContext } from '@backstage/plugin-catalog';
 import { Entity } from '@backstage/catalog-model';
 
 describe('useConsumerGroupOffsets', () => {
-  const entity: Entity = {
-    apiVersion: 'v1',
-    kind: 'Component',
-    metadata: {
-      name: 'test',
-      annotations: {
-        'kafka.apache.org/consumer-groups': 'consumer',
-      },
-    },
-    spec: {
-      owner: 'guest',
-      type: 'Website',
-      lifecycle: 'development',
-    },
-  };
+  let entity: Entity;
 
   const wrapper = ({ children }: PropsWithChildren<{}>) => {
     return (
@@ -46,8 +32,51 @@ describe('useConsumerGroupOffsets', () => {
 
   const subject = () => renderHook(useConsumerGroupsForEntity, { wrapper });
 
-  it('returns correct consumer group for annotation', async () => {
+  it('returns correct cluster and consumer group for annotation', async () => {
+    entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'test',
+        annotations: {
+          'kafka.apache.org/consumer-groups': 'prod/consumer',
+        },
+      },
+      spec: {
+        owner: 'guest',
+        type: 'Website',
+        lifecycle: 'development',
+      },
+    };
     const { result } = subject();
-    expect(result.current).toBe('consumer');
+    expect(result.current).toStrictEqual({
+      clusterId: 'prod',
+      consumerGroup: 'consumer',
+    });
+  });
+
+  it('fails on missing cluster', async () => {
+    entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'test',
+        annotations: {
+          'kafka.apache.org/consumer-groups': 'consumer',
+        },
+      },
+      spec: {
+        owner: 'guest',
+        type: 'Website',
+        lifecycle: 'development',
+      },
+    };
+    const { result } = subject();
+    expect(() => result.current).toThrowError();
+    expect(result.error).toStrictEqual(
+      new Error(
+        `Failed to parse kafka consumer group annotation: got "consumer"`,
+      ),
+    );
   });
 });

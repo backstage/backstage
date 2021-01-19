@@ -14,20 +14,10 @@
  * limitations under the License.
  */
 
-import { useEntity } from '@backstage/plugin-catalog';
-import { KAFKA_CONSUMER_GROUP_ANNOTATION } from '../../constants';
+import { ConnectionOptions } from 'tls';
 
-export const useConsumerGroupsForEntity = () => {
-  const { entity } = useEntity();
-  const annotation =
-    entity.metadata.annotations?.[KAFKA_CONSUMER_GROUP_ANNOTATION] ?? '';
-  const [clusterId, consumerGroup] = annotation.split('/');
-
-  if (!clusterId || !consumerGroup) {
-    throw new Error(
-      `Failed to parse kafka consumer group annotation: got "${annotation}"`,
-    );
-  }
-
-  return { clusterId, consumerGroup };
-};
+export interface ClusterDetails {
+  name: string;
+  brokers: string[];
+  ssl?: ConnectionOptions;
+}

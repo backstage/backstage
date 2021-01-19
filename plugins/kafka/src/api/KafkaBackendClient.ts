@@ -43,8 +43,11 @@ export class KafkaBackendClient implements KafkaApi {
   }
 
   async getConsumerGroupOffsets(
+    clusterId: string,
     consumerGroup: string,
   ): Promise<ConsumerGroupOffsetsResponse> {
-    return await this.getRequired(`/consumer/${consumerGroup}/offsets`);
+    return await this.getRequired(
+      `/consumers/${clusterId}/${consumerGroup}/offsets`,
+    );
   }
 }

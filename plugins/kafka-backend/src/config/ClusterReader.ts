@@ -13,17 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export interface Config {
-  kafka?: {
-    clientId: string;
-    clusters: {
-      name: string;
-      brokers: string[];
-      ssl?: {
-        ca: string[];
-        key: string;
-        cert: string;
+
+import { Config } from '@backstage/config';
+import { ConnectionOptions } from 'tls';
+import { ClusterDetails } from '../types/types';
+
+export function getClusterDetails(config: Config[]): ClusterDetails[] {
+  return config.map(clusterConfig => {
+    const clusterDetails = {
+      name: clusterConfig.getString('name'),
+      brokers: clusterConfig.getStringArray('brokers'),
+    };
+    const sslConfig = clusterConfig.getOptional('kafka.ssl');
+    if (sslConfig) {
+      return {
+        ...clusterDetails,
+        ssl: sslConfig as ConnectionOptions,
       };
-    }[];
-  };
+    }
+
+    return clusterDetails;
+  });
 }

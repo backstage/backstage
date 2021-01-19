@@ -45,7 +45,7 @@ describe('useConsumerGroupOffsets', () => {
     metadata: {
       name: 'test',
       annotations: {
-        'kafka.apache.org/consumer-groups': consumerGroupOffsets.consumerId,
+        'kafka.apache.org/consumer-groups': `cluster/${consumerGroupOffsets.consumerId}`,
       },
     },
     spec: {
@@ -75,7 +75,7 @@ describe('useConsumerGroupOffsets', () => {
 
   it('returns correct consumer group for annotation', async () => {
     when(mockKafkaApi.getConsumerGroupOffsets)
-      .calledWith(consumerGroupOffsets.consumerId)
+      .calledWith('cluster', consumerGroupOffsets.consumerId)
       .mockResolvedValue(consumerGroupOffsets);
 
     const { result, waitForNextUpdate } = subject();
