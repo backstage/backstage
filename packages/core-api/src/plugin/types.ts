@@ -99,23 +99,19 @@ export type PluginConfig<
 };
 
 export type PluginHooks = {
+  /**
+   * @deprecated All router hooks have been deprecated
+   */
   router: RouterHooks;
   featureFlags: FeatureFlagsHooks;
 };
 
 export type RouterHooks = {
+  /**
+   * @deprecated Use a routable extension instead, see https://backstage.io/docs/plugins/composability#porting-existing-plugins
+   */
   addRoute(
     target: RouteRef,
-    Component: ComponentType<any>,
-    options?: RouteOptions,
-  ): void;
-
-  /**
-   * @deprecated See the `addRoute` method
-   * @see https://github.com/backstage/backstage/issues/418
-   */
-  registerRoute(
-    path: RoutePath,
     Component: ComponentType<any>,
     options?: RouteOptions,
   ): void;

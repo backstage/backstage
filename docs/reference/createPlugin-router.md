@@ -15,15 +15,6 @@ addRoute(
   Component: ComponentType<any>,
   options?: RouteOptions,
 ): void;
-
-/**
- * @deprecated See the `addRoute` method
- */
-registerRoute(
-  path: RoutePath,
-  Component: ComponentType<any>,
-  options?: RouteOptions,
-): void;
 ```
 
 ## RouteRef
