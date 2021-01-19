@@ -17,7 +17,7 @@
 import { CatalogClient } from '@backstage/catalog-client';
 import { CatalogIdentityClient } from './CatalogIdentityClient';
 
-jest.mock('./CatalogClient');
+jest.mock('@backstage/catalog-client');
 const MockedCatalogClient = CatalogClient as jest.Mock<CatalogClient>;
 
 describe('CatalogIdentityClient', () => {
