@@ -56,7 +56,7 @@ describe('<TechDocsPage />', () => {
     };
     const techdocsStorageApi: Partial<TechDocsStorageApi> = {
       getEntityDocs: (): Promise<string> => Promise.resolve('String'),
-      getBaseUrl: (): string => '',
+      getBaseUrl: (): Promise<string> => Promise.resolve('String'),
     };
 
     const apiRegistry = ApiRegistry.from([

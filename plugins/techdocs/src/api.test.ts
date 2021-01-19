@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useApi, configApiRef, UrlPatternDiscovery } from '@backstage/core';
 import { TechDocsStorageApi } from './api';
-
-const DOC_STORAGE_URL = 'https://example-storage.com';
 
 const mockEntity = {
   kind: 'Component',
@@ -24,19 +23,23 @@ const mockEntity = {
 };
 
 describe('TechDocsStorageApi', () => {
+  const mockBaseUrl = 'http://backstage:9191/api/techdocs';
+  const configApi = useApi(configApiRef);
+  const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);
+
   it('should return correct base url based on defined storage', () => {
-    const storageApi = new TechDocsStorageApi({ apiOrigin: DOC_STORAGE_URL });
+    const storageApi = new TechDocsStorageApi({ configApi, discoveryApi });
 
     expect(storageApi.getBaseUrl('test.js', mockEntity, '')).toEqual(
-      `${DOC_STORAGE_URL}/docs/${mockEntity.namespace}/${mockEntity.kind}/${mockEntity.name}/test.js`,
+      `${mockBaseUrl}/docs/${mockEntity.namespace}/${mockEntity.kind}/${mockEntity.name}/test.js`,
     );
   });
 
   it('should return base url with correct entity structure', () => {
-    const storageApi = new TechDocsStorageApi({ apiOrigin: DOC_STORAGE_URL });
+    const storageApi = new TechDocsStorageApi({ configApi, discoveryApi });
 
     expect(storageApi.getBaseUrl('test/', mockEntity, '')).toEqual(
-      `${DOC_STORAGE_URL}/docs/${mockEntity.namespace}/${mockEntity.kind}/${mockEntity.name}/test/`,
+      `${mockBaseUrl}/docs/${mockEntity.namespace}/${mockEntity.kind}/${mockEntity.name}/test/`,
     );
   });
 });
