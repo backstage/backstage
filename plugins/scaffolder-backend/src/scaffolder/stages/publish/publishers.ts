@@ -14,70 +14,125 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
 import { Config } from '@backstage/config';
-import {
-  DeprecatedLocationTypeDetector,
-  makeDeprecatedLocationTypeDetector,
-} from '../helpers';
 import { PublisherBase, PublisherBuilder } from './types';
-import { RemoteProtocol } from '../types';
-import { GithubPublisher } from './github';
+import { GithubPublisher, RepoVisibilityOptions } from './github';
 import { GitlabPublisher } from './gitlab';
 import { AzurePublisher } from './azure';
 import { BitbucketPublisher } from './bitbucket';
+import { Logger } from 'winston';
+import { ScmIntegrations } from '@backstage/integration';
 
 export class Publishers implements PublisherBuilder {
-  private publisherMap = new Map<RemoteProtocol, PublisherBase>();
+  private publisherMap = new Map<string, PublisherBase | undefined>();
 
-  constructor(private readonly typeDetector?: DeprecatedLocationTypeDetector) {}
-
-  register(protocol: RemoteProtocol, publisher: PublisherBase) {
-    this.publisherMap.set(protocol, publisher);
+  register(host: string, preparer: PublisherBase | undefined) {
+    this.publisherMap.set(host, preparer);
   }
 
-  get(storePath: string, { logger }: { logger: Logger }): PublisherBase {
-    const protocol = this.typeDetector?.(storePath);
-
-    if (!protocol) {
+  get(url: string): PublisherBase {
+    const preparer = this.publisherMap.get(new URL(url).host);
+    if (!preparer) {
       throw new Error(
-        `No matching publisher detected for "${storePath}". Please make sure this host is registered in the integration config`,
+        `Unable to find a publisher for URL: ${url}. Please make sure to register this host under an integration in app-config`,
       );
     }
-
-    logger.info(
-      `Selected publisher ${protocol} for publishing to URL ${storePath}`,
-    );
-
-    const publisher = this.publisherMap.get(protocol as RemoteProtocol);
-    if (!publisher) {
-      throw new Error(
-        `Failed to detect publisher type. Unable to determine integration type for location "${protocol}". ` +
-          "Please add appropriate configuration to the 'integrations' configuration section",
-      );
-    }
-
-    logger.info(`Selected publisher for protocol ${protocol}`);
-
-    return publisher;
+    return preparer;
   }
 
-  static async fromConfig(config: Config): Promise<PublisherBuilder> {
-    const typeDetector = makeDeprecatedLocationTypeDetector(config);
-    const publishers = new Publishers(typeDetector);
+  static async fromConfig(
+    config: Config,
+    { logger }: { logger: Logger },
+  ): Promise<PublisherBuilder> {
+    const publishers = new Publishers();
 
-    const githubPublisher = GithubPublisher.fromConfig(config);
-    publishers.register('file', githubPublisher);
-    publishers.register('github', githubPublisher);
+    const scm = ScmIntegrations.fromConfig(config);
 
-    const gitLabPublisher = GitlabPublisher.fromConfig(config);
-    publishers.register('gitlab', gitLabPublisher);
+    for (const integration of scm.azure.list()) {
+      const publisher = await AzurePublisher.fromConfig(integration.config);
 
-    const azurePublisher = AzurePublisher.fromConfig(config);
-    publishers.register('azure', azurePublisher);
+      if (publisher) {
+        publishers.register(integration.config.host, publisher);
+      } else {
+        logger.warn('DEPRECATED');
 
-    const bitbucketPublisher = BitbucketPublisher.fromConfig(config);
-    publishers.register('bitbucket', bitbucketPublisher);
+        publishers.register(
+          integration.config.host,
+          await AzurePublisher.fromConfig({
+            token: config.getOptionalString('scaffolder.azure.token'),
+            host: integration.config.host,
+          }),
+        );
+      }
+    }
+
+    for (const integration of scm.github.list()) {
+      const repoVisibility = (config.getOptionalString(
+        'scaffolder.github.visibility',
+      ) ?? 'public') as RepoVisibilityOptions;
+
+      const publisher = await GithubPublisher.fromConfig(integration.config, {
+        repoVisibility,
+      });
+
+      if (publisher) {
+        publishers.register(integration.config.host, publisher);
+      } else {
+        logger.warn('DEPRECATED');
+
+        publishers.register(
+          integration.config.host,
+          await GithubPublisher.fromConfig(
+            {
+              token: config.getOptionalString('scaffolder.github.token') ?? '',
+              host: integration.config.host,
+            },
+            { repoVisibility },
+          ),
+        );
+      }
+    }
+
+    for (const integration of scm.gitlab.list()) {
+      const publisher = await GitlabPublisher.fromConfig(integration.config);
+
+      if (publisher) {
+        publishers.register(integration.config.host, publisher);
+      } else {
+        logger.warn('DEPRECATED');
+
+        publishers.register(
+          integration.config.host,
+          await GitlabPublisher.fromConfig({
+            token: config.getOptionalString('scaffolder.gitlab.token') ?? '',
+            host: integration.config.host,
+          }),
+        );
+      }
+    }
+
+    for (const integration of scm.bitbucket.list()) {
+      const publisher = await BitbucketPublisher.fromConfig(integration.config);
+
+      if (publisher) {
+        publishers.register(integration.config.host, publisher);
+      } else {
+        logger.warn('DEPRECATED');
+
+        publishers.register(
+          integration.config.host,
+          await BitbucketPublisher.fromConfig({
+            token: config.getOptionalString('scaffolder.bitbucket.token') ?? '',
+            username:
+              config.getOptionalString('scaffolder.bitbucket.username') ?? '',
+            appPassword:
+              config.getOptionalString('scaffolder.bitbucket.appPassword') ??
+              '',
+            host: integration.config.host,
+          }),
+        );
+      }
+    }
 
     return publishers;
   }

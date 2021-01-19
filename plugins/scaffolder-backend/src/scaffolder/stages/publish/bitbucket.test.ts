@@ -22,7 +22,6 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { msw } from '@backstage/test-utils';
-import { ConfigReader } from '@backstage/config';
 
 describe('Bitbucket Publisher', () => {
   const logger = getVoidLogger();
@@ -59,19 +58,11 @@ describe('Bitbucket Publisher', () => {
         ),
       );
 
-      const publisher = new BitbucketPublisher(
-        new ConfigReader({
-          integrations: {
-            bitbucket: [
-              {
-                host: 'bitbucket.org',
-                username: 'fake-user',
-                appPassword: 'fake-token',
-              },
-            ],
-          },
-        }),
-      );
+      const publisher = await BitbucketPublisher.fromConfig({
+        host: 'bitbucket.org',
+        username: 'fake-user',
+        appPassword: 'fake-token',
+      });
 
       const result = await publisher.publish({
         values: {
@@ -126,18 +117,10 @@ describe('Bitbucket Publisher', () => {
         ),
       );
 
-      const publisher = new BitbucketPublisher(
-        new ConfigReader({
-          integrations: {
-            bitbucket: [
-              {
-                host: 'bitbucket.mycompany.com',
-                token: 'fake-token',
-              },
-            ],
-          },
-        }),
-      );
+      const publisher = await BitbucketPublisher.fromConfig({
+        host: 'bitbucket.mycompany.com',
+        token: 'fake-token',
+      });
 
       const result = await publisher.publish({
         values: {

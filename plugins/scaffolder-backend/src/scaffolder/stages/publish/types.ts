@@ -45,5 +45,5 @@ export type PublisherResult = {
 
 export type PublisherBuilder = {
   register(protocol: RemoteProtocol, publisher: PublisherBase): void;
-  get(storePath: string, { logger }: { logger: Logger }): PublisherBase;
+  get(storePath: string): PublisherBase;
 };

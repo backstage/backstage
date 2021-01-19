@@ -50,18 +50,10 @@ describe('GitLab Publisher', () => {
 
   describe('publish: createRemoteInGitLab', () => {
     it('should use gitbeaker to create a repo in a namespace if the namespace property is set', async () => {
-      const publisher = new GitlabPublisher(
-        new ConfigReader({
-          integrations: {
-            gitlab: [
-              {
-                host: 'gitlab.com',
-                token: 'fake-token',
-              },
-            ],
-          },
-        }),
-      );
+      const publisher = await GitlabPublisher.fromConfig({
+        host: 'gitlab.com',
+        token: 'fake-token',
+      });
 
       mockGitlabClient.Namespaces.show.mockResolvedValue({
         id: 42,
@@ -70,7 +62,7 @@ describe('GitLab Publisher', () => {
         http_url_to_repo: 'mockclone',
       } as { http_url_to_repo: string });
 
-      const result = await publisher.publish({
+      const result = await publisher!.publish({
         values: {
           isOrg: true,
           storePath: 'https://gitlab.com/blam/test',
@@ -97,18 +89,10 @@ describe('GitLab Publisher', () => {
     });
 
     it('should use gitbeaker to create a repo in the authed user if the namespace property is not set', async () => {
-      const publisher = new GitlabPublisher(
-        new ConfigReader({
-          integrations: {
-            gitlab: [
-              {
-                host: 'gitlab.com',
-                token: 'fake-token',
-              },
-            ],
-          },
-        }),
-      );
+      const publisher = await GitlabPublisher.fromConfig({
+        host: 'gitlab.com',
+        token: 'fake-token',
+      });
 
       mockGitlabClient.Namespaces.show.mockResolvedValue({});
       mockGitlabClient.Users.current.mockResolvedValue({
@@ -118,7 +102,7 @@ describe('GitLab Publisher', () => {
         http_url_to_repo: 'mockclone',
       } as { http_url_to_repo: string });
 
-      const result = await publisher.publish({
+      const result = await publisher!.publish({
         values: {
           storePath: 'https://gitlab.com/blam/test',
           owner: 'bob',

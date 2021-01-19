@@ -38,21 +38,16 @@ describe('GitHub Publisher', () => {
   });
 
   describe('with public repo visibility', () => {
-    const publisher = new GithubPublisher(
-      new ConfigReader({
-        integrations: {
-          github: [
-            {
-              token: 'fake-token',
-              host: 'github.com',
-            },
-          ],
-        },
-      }),
-    );
-
     describe('publish: createRemoteInGithub', () => {
       it('should use octokit to create a repo in an organisation if the organisation property is set', async () => {
+        const publisher = await GithubPublisher.fromConfig(
+          {
+            token: 'fake-token',
+            host: 'github.com',
+          },
+          { repoVisibility: 'public' },
+        );
+
         mockGithubClient.repos.createInOrg.mockResolvedValue({
           data: {
             clone_url: 'https://github.com/backstage/backstage.git',
@@ -64,7 +59,7 @@ describe('GitHub Publisher', () => {
           },
         } as RestEndpointMethodTypes['users']['getByUsername']['response']);
 
-        const result = await publisher.publish({
+        const result = await publisher!.publish({
           values: {
             storePath: 'https://github.com/blam/test',
             owner: 'bob',
@@ -103,6 +98,14 @@ describe('GitHub Publisher', () => {
       });
 
       it('should use octokit to create a repo in the authed user if the organisation property is not set', async () => {
+        const publisher = await GithubPublisher.fromConfig(
+          {
+            token: 'fake-token',
+            host: 'github.com',
+          },
+          { repoVisibility: 'public' },
+        );
+
         mockGithubClient.repos.createForAuthenticatedUser.mockResolvedValue({
           data: {
             clone_url: 'https://github.com/backstage/backstage.git',
@@ -114,7 +117,7 @@ describe('GitHub Publisher', () => {
           },
         } as RestEndpointMethodTypes['users']['getByUsername']['response']);
 
-        const result = await publisher.publish({
+        const result = await publisher!.publish({
           values: {
             storePath: 'https://github.com/blam/test',
             owner: 'bob',
@@ -147,6 +150,14 @@ describe('GitHub Publisher', () => {
     });
 
     it('should invite other user in the authed user', async () => {
+      const publisher = await GithubPublisher.fromConfig(
+        {
+          token: 'fake-token',
+          host: 'github.com',
+        },
+        { repoVisibility: 'public' },
+      );
+
       mockGithubClient.repos.createForAuthenticatedUser.mockResolvedValue({
         data: {
           clone_url: 'https://github.com/backstage/backstage.git',
@@ -158,7 +169,7 @@ describe('GitHub Publisher', () => {
         },
       } as RestEndpointMethodTypes['users']['getByUsername']['response']);
 
-      const result = await publisher.publish({
+      const result = await publisher!.publish({
         values: {
           storePath: 'https://github.com/blam/test',
           owner: 'bob',
@@ -197,20 +208,15 @@ describe('GitHub Publisher', () => {
   });
 
   describe('with internal repo visibility', () => {
-    const publisher = new GithubPublisher(
-      new ConfigReader({
-        integrations: {
-          github: [{ host: 'github.com', token: 'fake-token' }],
-        },
-        scaffolder: {
-          github: {
-            visibility: 'internal',
-          },
-        },
-      }),
-    );
-
     it('creates a private repository in the organization with visibility set to internal', async () => {
+      const publisher = await GithubPublisher.fromConfig(
+        {
+          token: 'fake-token',
+          host: 'github.com',
+        },
+        { repoVisibility: 'internal' },
+      );
+
       mockGithubClient.repos.createInOrg.mockResolvedValue({
         data: {
           clone_url: 'https://github.com/backstage/backstage.git',
@@ -222,7 +228,7 @@ describe('GitHub Publisher', () => {
         },
       } as RestEndpointMethodTypes['users']['getByUsername']['response']);
 
-      const result = await publisher.publish({
+      const result = await publisher!.publish({
         values: {
           isOrg: true,
           storePath: 'https://github.com/blam/test',
@@ -253,25 +259,15 @@ describe('GitHub Publisher', () => {
   });
 
   describe('private visibility in a user account', () => {
-    const publisher = new GithubPublisher(
-      new ConfigReader({
-        integrations: {
-          github: [
-            {
-              token: 'fake-token',
-              host: 'github.com',
-            },
-          ],
-        },
-        scaffolder: {
-          github: {
-            visibility: 'private',
-          },
-        },
-      }),
-    );
-
     it('creates a private repository', async () => {
+      const publisher = await GithubPublisher.fromConfig(
+        {
+          token: 'fake-token',
+          host: 'github.com',
+        },
+        { repoVisibility: 'private' },
+      );
+
       mockGithubClient.repos.createForAuthenticatedUser.mockResolvedValue({
         data: {
           clone_url: 'https://github.com/backstage/backstage.git',
@@ -283,7 +279,7 @@ describe('GitHub Publisher', () => {
         },
       } as RestEndpointMethodTypes['users']['getByUsername']['response']);
 
-      const result = await publisher.publish({
+      const result = await publisher!.publish({
         values: {
           storePath: 'https://github.com/blam/test',
           owner: 'bob',

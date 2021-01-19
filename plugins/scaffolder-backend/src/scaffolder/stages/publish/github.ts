@@ -16,68 +16,54 @@
 
 import { PublisherBase, PublisherOptions, PublisherResult } from './types';
 import { initRepoAndPush } from './helpers';
-import { Config } from '@backstage/config';
-import {
-  GitHubIntegrationConfig,
-  readGitHubIntegrationConfigs,
-} from '@backstage/integration';
+import { GitHubIntegrationConfig } from '@backstage/integration';
 import gitUrlParse from 'git-url-parse';
 import { Octokit } from '@octokit/rest';
 
 export type RepoVisibilityOptions = 'private' | 'internal' | 'public';
 export class GithubPublisher implements PublisherBase {
-  private scaffolderToken: string | undefined;
-  private readonly integrations: GitHubIntegrationConfig[];
-  private readonly apiBaseUrl: string | undefined;
-  private readonly repoVisibility: RepoVisibilityOptions;
+  static async fromConfig(
+    config: GitHubIntegrationConfig,
+    { repoVisibility }: { repoVisibility: RepoVisibilityOptions },
+  ) {
+    if (!config.token) {
+      return undefined;
+    }
 
-  static fromConfig(config: Config) {
-    return new GithubPublisher(config);
+    const githubClient = new Octokit({
+      auth: config.token,
+      baseUrl: config.apiBaseUrl,
+    });
+
+    return new GithubPublisher(config.token, githubClient, repoVisibility);
   }
-  constructor(config: Config) {
-    this.integrations = readGitHubIntegrationConfigs(
-      config.getOptionalConfigArray('integrations.github') ?? [],
-    );
-
-    this.scaffolderToken = config.getOptionalString(
-      'scaffolder.github.api.token',
-    );
-
-    this.apiBaseUrl = config.getOptionalString('scaffolder.github.api.baseUrl');
-
-    this.repoVisibility = (config.getOptionalString(
-      'scaffolder.github.visibility',
-    ) ?? 'public') as RepoVisibilityOptions;
-  }
+  constructor(
+    private readonly token: string,
+    private readonly client: Octokit,
+    private readonly repoVisibility: RepoVisibilityOptions,
+  ) {}
 
   async publish({
     values,
     directory,
     logger,
   }: PublisherOptions): Promise<PublisherResult> {
-    const { resource: host, owner, name } = gitUrlParse(values.storePath);
-    const token = this.getToken(host);
-
-    if (!token) {
-      throw new Error('No token provided to create the remote repository');
-    }
+    const { owner, name } = gitUrlParse(values.storePath);
 
     const description = values.description as string;
     const access = values.access as string;
     const remoteUrl = await this.createRemote({
       description,
       access,
-      host,
       name,
       owner,
-      token,
     });
 
     await initRepoAndPush({
       dir: directory,
       remoteUrl,
       auth: {
-        username: token ?? '',
+        username: this.token,
         password: 'x-oauth-basic',
       },
       logger,
@@ -95,30 +81,24 @@ export class GithubPublisher implements PublisherBase {
     access: string;
     name: string;
     owner: string;
-    host: string;
-    token: string;
     description: string;
   }) {
-    const { access, description, host, owner, name, token } = opts;
+    const { access, description, owner, name } = opts;
 
-    // create a github client with the config
-    const githubClient = new Octokit({
-      auth: token,
-      baseUrl: this.getBaseUrl(host),
+    const user = await this.client.users.getByUsername({
+      username: owner,
     });
-
-    const user = await githubClient.users.getByUsername({ username: owner });
 
     const repoCreationPromise =
       user.data.type === 'Organization'
-        ? githubClient.repos.createInOrg({
+        ? this.client.repos.createInOrg({
             name,
             org: owner,
             private: this.repoVisibility !== 'public',
             visibility: this.repoVisibility,
             description,
           })
-        : githubClient.repos.createForAuthenticatedUser({
+        : this.client.repos.createForAuthenticatedUser({
             name,
             private: this.repoVisibility === 'private',
             description,
@@ -128,7 +108,7 @@ export class GithubPublisher implements PublisherBase {
 
     if (access?.startsWith(`${owner}/`)) {
       const [, team] = access.split('/');
-      await githubClient.teams.addOrUpdateRepoPermissionsInOrg({
+      await this.client.teams.addOrUpdateRepoPermissionsInOrg({
         org: owner,
         team_slug: team,
         owner,
@@ -137,7 +117,7 @@ export class GithubPublisher implements PublisherBase {
       });
       // no need to add access if it's the person who own's the personal account
     } else if (access && access !== owner) {
-      await githubClient.repos.addCollaborator({
+      await this.client.repos.addCollaborator({
         owner,
         repo: name,
         username: access,
@@ -146,19 +126,5 @@ export class GithubPublisher implements PublisherBase {
     }
 
     return data?.clone_url;
-  }
-
-  private getToken(host: string): string | undefined {
-    return (
-      this.scaffolderToken ||
-      this.integrations.find(c => c.host === host)?.token
-    );
-  }
-
-  private getBaseUrl(host: string): string | undefined {
-    return (
-      this.apiBaseUrl ||
-      this.integrations.find(c => c.host === host)?.apiBaseUrl
-    );
   }
 }

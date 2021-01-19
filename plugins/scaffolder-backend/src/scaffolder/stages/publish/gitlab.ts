@@ -16,61 +16,37 @@
 
 import { PublisherBase, PublisherOptions, PublisherResult } from './types';
 import { Gitlab } from '@gitbeaker/node';
-import { Config } from '@backstage/config';
+import { Gitlab as GitlabClient } from '@gitbeaker/core';
 import { initRepoAndPush } from './helpers';
 import gitUrlParse from 'git-url-parse';
 
-import {
-  GitLabIntegrationConfig,
-  readGitLabIntegrationConfigs,
-} from '@backstage/integration';
+import { GitLabIntegrationConfig } from '@backstage/integration';
 
 export class GitlabPublisher implements PublisherBase {
-  private readonly integrations: GitLabIntegrationConfig[];
-  private readonly scaffolderToken: string | undefined;
-  private readonly apiBaseUrl: string | undefined;
+  static async fromConfig(config: GitLabIntegrationConfig) {
+    if (!config.token) {
+      return undefined;
+    }
 
-  constructor(config: Config) {
-    this.integrations = readGitLabIntegrationConfigs(
-      config.getOptionalConfigArray('integrations.gitlab') ?? [],
-    );
-    this.scaffolderToken = config.getOptionalString(
-      'scaffolder.gitlab.api.token',
-    );
-
-    this.apiBaseUrl = config.getOptionalString('scaffolder.gitlab.api.baseUrl');
+    const client = new Gitlab({ host: config.apiBaseUrl, token: config.token });
+    return new GitlabPublisher(config.token, client);
   }
 
-  static fromConfig(config: Config) {
-    return new GitlabPublisher(config);
-  }
+  constructor(
+    private readonly token: string,
+    private readonly client: GitlabClient,
+  ) {}
 
   async publish({
     values,
     directory,
     logger,
   }: PublisherOptions): Promise<PublisherResult> {
-    const { resource: host, owner, name } = gitUrlParse(values.storePath);
-
-    const token = this.getToken(host);
-    if (!token) {
-      throw new Error(
-        'No authentication set for Gitlab publisher. Creating the remote repository is not possible without a token',
-      );
-    }
-
-    const baseUrl = this.getBaseUrl(host);
-    if (!baseUrl) {
-      throw new Error(
-        'No host set for Gitlab publisher. Creating the remote repository is not possible without a host',
-      );
-    }
+    const { owner, name } = gitUrlParse(values.storePath);
 
     const remoteUrl = await this.createRemote({
-      host: baseUrl,
       owner,
       name,
-      token,
     });
 
     await initRepoAndPush({
@@ -78,7 +54,7 @@ export class GitlabPublisher implements PublisherBase {
       remoteUrl,
       auth: {
         username: 'oauth2',
-        password: token,
+        password: this.token,
       },
       logger,
     });
@@ -90,37 +66,21 @@ export class GitlabPublisher implements PublisherBase {
     return { remoteUrl, catalogInfoUrl };
   }
 
-  private getToken(host: string): string | undefined {
-    return (
-      this.scaffolderToken ||
-      this.integrations.find(c => c.host === host)?.token
-    );
-  }
+  private async createRemote(opts: { name: string; owner: string }) {
+    const { owner, name } = opts;
 
-  private getBaseUrl(host: string): string | undefined {
-    return (
-      this.apiBaseUrl ||
-      this.integrations.find(c => c.host === host)?.apiBaseUrl
-    );
-  }
-
-  private async createRemote(opts: {
-    host: string;
-    name: string;
-    owner: string;
-    token: string;
-  }) {
-    const { owner, name, host, token } = opts;
-
-    const client = new Gitlab({ host: host, token: token });
-    let targetNamespace = ((await client.Namespaces.show(owner)) as {
+    // TODO(blam): this needs cleaning up to be nicer. The amount of brackets is too damn high!
+    // Shouldn't have to cast things now
+    let targetNamespace = ((await this.client.Namespaces.show(owner)) as {
       id: number;
     }).id;
+
     if (!targetNamespace) {
-      targetNamespace = ((await client.Users.current()) as { id: number }).id;
+      targetNamespace = ((await this.client.Users.current()) as { id: number })
+        .id;
     }
 
-    const project = (await client.Projects.create({
+    const project = (await this.client.Projects.create({
       namespace_id: targetNamespace,
       name: name,
     })) as { http_url_to_repo: string };

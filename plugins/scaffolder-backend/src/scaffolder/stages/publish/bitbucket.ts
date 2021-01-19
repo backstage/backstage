@@ -17,79 +17,50 @@
 import { PublisherBase, PublisherOptions, PublisherResult } from './types';
 import { initRepoAndPush } from './helpers';
 import fetch from 'cross-fetch';
-import { Config } from '@backstage/config';
-import {
-  BitbucketIntegrationConfig,
-  readBitbucketIntegrationConfigs,
-} from '@backstage/integration';
+import { BitbucketIntegrationConfig } from '@backstage/integration';
 import gitUrlParse from 'git-url-parse';
 
 // TODO(blam): We should probably start to use a bitbucket client here that we can change
-// the  baseURL to point at on-prem or public bitbucket versions like we do for
-// github and ghe
+// the baseURL to point at on-prem or public bitbucket versions like we do for
+// github and ghe. There's to much logic and not enough types here for us to say that this way is better than using
+// a supported bitbucket client if one exists.
 export class BitbucketPublisher implements PublisherBase {
-  private readonly host?: string;
-  private readonly username?: string;
-  private readonly token?: string;
-  private readonly appPassword?: string;
-  private readonly integrations: BitbucketIntegrationConfig[];
+  static async fromConfig(config: BitbucketIntegrationConfig) {
+    return new BitbucketPublisher(
+      config.host,
+      config.token,
+      config.appPassword,
+      config.username,
+    );
+  }
 
-  static fromConfig(config: Config) {
-    return new BitbucketPublisher(config);
-  }
-  constructor(config: Config) {
-    this.integrations = readBitbucketIntegrationConfigs(
-      config.getOptionalConfigArray('integrations.bitbucket') ?? [],
-    );
-    this.token = config.getOptionalString('scaffolder.bitbucket.api.token');
-    this.host = config.getOptionalString('scaffolder.bitbucket.api.host');
-    this.username = config.getOptionalString(
-      'scaffolder.bitbucket.api.username',
-    );
-    this.appPassword = config.getOptionalString(
-      'scaffolder.bitbucket.api.appPassword',
-    );
-  }
+  constructor(
+    private readonly host: string,
+    private readonly token?: string,
+    private readonly appPassword?: string,
+    private readonly username?: string,
+  ) {}
 
   async publish({
     values,
     directory,
     logger,
   }: PublisherOptions): Promise<PublisherResult> {
-    const { resource: hostname, owner: project, name } = gitUrlParse(
-      values.storePath,
-    );
-
-    const token = this.getToken(hostname);
-    const appPassword = this.getAppPassword(hostname);
-    const username = this.getUsername(hostname);
-
-    if (!username && !appPassword && !token) {
-      throw new Error('Cannot create repository without bitbucket credentials');
-    }
-    const host = this.getHost(hostname);
-
-    if (!host) {
-      throw new Error('No host provided to create the remote repository');
-    }
+    const { owner: project, name } = gitUrlParse(values.storePath);
 
     const description = values.description as string;
     const result = await this.createRemote({
       project,
       name,
       description,
-      host,
-      username,
-      token,
-      appPassword,
     });
 
     await initRepoAndPush({
       dir: directory,
       remoteUrl: result.remoteUrl,
       auth: {
-        username: username ? username : 'x-token-auth',
-        password: appPassword ? appPassword : token ?? '',
+        username: this.username ? this.username : 'x-token-auth',
+        password: this.appPassword ? this.appPassword : this.token ?? '',
       },
       logger,
     });
@@ -97,15 +68,11 @@ export class BitbucketPublisher implements PublisherBase {
   }
 
   private async createRemote(opts: {
-    username?: string;
-    token?: string;
-    appPassword?: string;
     project: string;
     name: string;
     description: string;
-    host: string;
   }): Promise<PublisherResult> {
-    if (opts.host === 'bitbucket.org') {
+    if (this.host === 'bitbucket.org') {
       return this.createBitbucketCloudRepository(opts);
     }
     return this.createBitbucketServerRepository(opts);
@@ -115,22 +82,11 @@ export class BitbucketPublisher implements PublisherBase {
     project: string;
     name: string;
     description: string;
-    username?: string;
-    appPassword?: string;
   }): Promise<PublisherResult> {
-    const { project, name, description, username, appPassword } = opts;
-    if (!appPassword) {
-      throw new Error(
-        'appPassword is required to create the remote repository',
-      );
-    }
-
-    if (!username) {
-      throw new Error('username is required to create the remote repository');
-    }
+    const { project, name, description } = opts;
 
     let response: Response;
-    const buffer = Buffer.from(`${username}:${appPassword}`, 'utf8');
+    const buffer = Buffer.from(`${this.username}:${this.appPassword}`, 'utf8');
 
     const options: RequestInit = {
       method: 'POST',
@@ -171,13 +127,8 @@ export class BitbucketPublisher implements PublisherBase {
     project: string;
     name: string;
     description: string;
-    token?: string;
-    host: string;
   }): Promise<PublisherResult> {
-    const { project, name, description, token, host } = opts;
-    if (!token) {
-      throw new Error('No token provided to create the remote repository');
-    }
+    const { project, name, description } = opts;
 
     let response: Response;
     const options: RequestInit = {
@@ -187,13 +138,13 @@ export class BitbucketPublisher implements PublisherBase {
         description: description,
       }),
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${this.token}`,
         'Content-Type': 'application/json',
       },
     };
     try {
       response = await fetch(
-        `https://${host}/rest/api/1.0/projects/${project}/repos`,
+        `https://${this.host}/rest/api/1.0/projects/${project}/repos`,
         options,
       );
     } catch (e) {
@@ -211,26 +162,5 @@ export class BitbucketPublisher implements PublisherBase {
       return { remoteUrl, catalogInfoUrl };
     }
     throw new Error(`Not a valid response code ${await response.text()}`);
-  }
-
-  private getToken(host: string): string | undefined {
-    return this.token || this.integrations.find(c => c.host === host)?.token;
-  }
-
-  private getUsername(host: string): string | undefined {
-    return (
-      this.username || this.integrations.find(c => c.host === host)?.username
-    );
-  }
-
-  private getAppPassword(host: string): string | undefined {
-    return (
-      this.appPassword ||
-      this.integrations.find(c => c.host === host)?.appPassword
-    );
-  }
-
-  private getHost(host: string): string | undefined {
-    return this.host || this.integrations.find(c => c.host === host)?.host;
   }
 }
