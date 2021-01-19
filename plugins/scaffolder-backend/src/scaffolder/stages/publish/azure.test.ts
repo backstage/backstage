@@ -24,7 +24,6 @@ import { AzurePublisher } from './azure';
 import { WebApi } from 'azure-devops-node-api';
 import * as helpers from './helpers';
 import { getVoidLogger } from '@backstage/backend-common';
-import { ConfigReader } from '@backstage/config';
 
 describe('Azure Publisher', () => {
   const logger = getVoidLogger();
@@ -40,79 +39,18 @@ describe('Azure Publisher', () => {
 
       ((WebApi as unknown) as jest.Mock).mockImplementation(() => mockGitApi);
 
-      const publisher = new AzurePublisher(
-        new ConfigReader({
-          scaffolder: {
-            azure: {
-              api: {
-                baseUrl: 'https://dev.azure.com/myorg',
-                token: 'fake-azure-token',
-              },
-            },
-          },
-        }),
-      );
+      const publisher = await AzurePublisher.fromConfig({
+        host: 'dev.azure.com',
+        token: 'fake-azure-token',
+      });
+
       mockGitClient.createRepository.mockResolvedValue({
         remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
       } as { remoteUrl: string });
 
-      const result = await publisher.publish({
+      const result = await publisher!.publish({
         values: {
           storePath: 'project/repo',
-          owner: 'bob',
-        },
-        directory: '/tmp/test',
-        logger,
-      });
-
-      expect(result).toEqual({
-        remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
-        catalogInfoUrl:
-          'https://dev.azure.com/organization/project/_git/repo?path=%2Fcatalog-info.yaml',
-      });
-      expect(mockGitClient.createRepository).toHaveBeenCalledWith(
-        {
-          name: 'repo',
-        },
-        'project',
-      );
-      expect(helpers.initRepoAndPush).toHaveBeenCalledWith({
-        dir: '/tmp/test',
-        remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
-        auth: { username: 'notempty', password: 'fake-azure-token' },
-        logger,
-      });
-    });
-
-    it('should use azure-devops-node-api with integrations config', async () => {
-      const mockGitClient = {
-        createRepository: jest.fn(),
-      };
-      const mockGitApi = {
-        getGitApi: jest.fn().mockReturnValue(mockGitClient),
-      };
-
-      ((WebApi as unknown) as jest.Mock).mockImplementation(() => mockGitApi);
-
-      const publisher = new AzurePublisher(
-        new ConfigReader({
-          integrations: {
-            azure: [
-              {
-                host: 'dev.azure.com',
-                token: 'fake-azure-token',
-              },
-            ],
-          },
-        }),
-      );
-      mockGitClient.createRepository.mockResolvedValue({
-        remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
-      } as { remoteUrl: string });
-
-      const result = await publisher.publish({
-        values: {
-          storePath: 'https://dev.azure.com/organization/project/_git/repo',
           owner: 'bob',
         },
         directory: '/tmp/test',

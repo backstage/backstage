@@ -17,53 +17,35 @@
 import { PublisherBase, PublisherOptions, PublisherResult } from './types';
 import { IGitApi } from 'azure-devops-node-api/GitApi';
 import { GitRepositoryCreateOptions } from 'azure-devops-node-api/interfaces/GitInterfaces';
-import { Config } from '@backstage/config';
 import { initRepoAndPush } from './helpers';
-import {
-  AzureIntegrationConfig,
-  readAzureIntegrationConfigs,
-} from '@backstage/integration';
+import { AzureIntegrationConfig } from '@backstage/integration';
 import gitUrlParse from 'git-url-parse';
 import { getPersonalAccessTokenHandler, WebApi } from 'azure-devops-node-api';
 
 export class AzurePublisher implements PublisherBase {
-  private readonly integrations: AzureIntegrationConfig[];
-  private readonly apiBaseUrl?: string;
-  private readonly token?: string;
-
-  static fromConfig(config: Config) {
-    return new AzurePublisher(config);
+  static async fromConfig(config: AzureIntegrationConfig) {
+    if (!config.token) {
+      return undefined;
+    }
+    const authHandler = getPersonalAccessTokenHandler(config.token);
+    const webApi = new WebApi(config.host, authHandler);
+    const azureClient = await webApi.getGitApi();
+    return new AzurePublisher(config.token, azureClient);
   }
 
-  constructor(config: Config) {
-    this.integrations = readAzureIntegrationConfigs(
-      config.getOptionalConfigArray('integrations.azure') ?? [],
-    );
+  constructor(
+    private readonly token: string,
+    private readonly azureClient: IGitApi,
+  ) {}
 
-    this.token = config.getOptionalString('scaffolder.azure.api.token');
-    this.apiBaseUrl = config.getOptionalString('scaffolder.azure.api.baseUrl');
-  }
   async publish({
     values,
     directory,
     logger,
   }: PublisherOptions): Promise<PublisherResult> {
-    const { resource: host, owner, name } = gitUrlParse(values.storePath);
+    const { owner, name } = gitUrlParse(values.storePath);
 
-    const token = this.getToken(host);
-    if (!token) {
-      throw new Error('No token provided to create the remote repository');
-    }
-    const baseUrl = this.getBaseUrl(host);
-    if (!baseUrl) {
-      throw new Error('No baseUrl provided to create the remote repository');
-    }
-
-    const authHandler = getPersonalAccessTokenHandler(token);
-    const webApi = new WebApi(baseUrl, authHandler);
-    const azureClient = await webApi.getGitApi();
-
-    const remoteUrl = await this.createRemote(azureClient, {
+    const remoteUrl = await this.createRemote({
       project: owner,
       name,
     });
@@ -75,7 +57,7 @@ export class AzurePublisher implements PublisherBase {
       remoteUrl,
       auth: {
         username: 'notempty',
-        password: token,
+        password: this.token,
       },
       logger,
     });
@@ -83,24 +65,14 @@ export class AzurePublisher implements PublisherBase {
     return { remoteUrl, catalogInfoUrl };
   }
 
-  private async createRemote(
-    client: IGitApi,
-    opts: { name: string; project: string },
-  ) {
+  private async createRemote(opts: { name: string; project: string }) {
     const { name, project } = opts;
     const createOptions: GitRepositoryCreateOptions = { name };
-    const repo = await client.createRepository(createOptions, project);
+    const repo = await this.azureClient.createRepository(
+      createOptions,
+      project,
+    );
 
     return repo.remoteUrl || '';
-  }
-
-  private getToken(host: string): string | undefined {
-    return this.token || this.integrations.find(c => c.host === host)?.token;
-  }
-
-  private getBaseUrl(host: string): string | undefined {
-    return (
-      this.apiBaseUrl || this.integrations.find(c => c.host === host)?.host
-    );
   }
 }

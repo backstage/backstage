@@ -15,43 +15,20 @@
  */
 import { InputError, Git } from '@backstage/backend-common';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { Config } from '@backstage/config';
-import {
-  GitLabIntegrationConfig,
-  readGitLabIntegrationConfigs,
-} from '@backstage/integration';
+import { GitLabIntegrationConfig } from '@backstage/integration';
 import fs from 'fs-extra';
 import parseGitUrl from 'git-url-parse';
 import os from 'os';
 import path from 'path';
 import { parseLocationAnnotation } from '../helpers';
 import { PreparerBase, PreparerOptions } from './types';
-import { Logger } from 'winston';
 
 export class GitlabPreparer implements PreparerBase {
-  private readonly integrations: GitLabIntegrationConfig[];
-  private readonly scaffolderToken: string | undefined;
-
-  static fromConfig(config: Config, { logger }: { logger: Logger }) {
-    if (config.getOptionalString('scaffolder.gitlab.api.token')) {
-      logger.warn(
-        "DEPRECATION: Using the token format under 'scaffolder.gitlab.token' will not be respected in future releases. Please consider using integrations config instead",
-        'Please migrate to using integrations config and specifying tokens under hostnames',
-      );
-    }
-
-    return new GitlabPreparer(config);
+  static fromConfig(config: GitLabIntegrationConfig) {
+    return new GitlabPreparer(config.token);
   }
 
-  constructor(config: Config) {
-    this.integrations = readGitLabIntegrationConfigs(
-      config.getOptionalConfigArray('integrations.gitlab') ?? [],
-    );
-
-    this.scaffolderToken = config.getOptionalString(
-      'scaffolder.gitlab.api.token',
-    );
-  }
+  constructor(private readonly token?: string) {}
 
   async prepare(
     template: TemplateEntityV1alpha1,
@@ -79,10 +56,9 @@ export class GitlabPreparer implements PreparerBase {
       template.spec.path ?? '.',
     );
 
-    const token = this.getToken(parsedGitLocation.resource);
-    const git = token
+    const git = this.token
       ? Git.fromAuth({
-          password: token,
+          password: this.token,
           username: 'oauth2',
           logger,
         })
@@ -94,12 +70,5 @@ export class GitlabPreparer implements PreparerBase {
     });
 
     return path.resolve(tempDir, templateDirectory);
-  }
-
-  private getToken(host: string): string | undefined {
-    return (
-      this.scaffolderToken ||
-      this.integrations.find(c => c.host === host)?.token
-    );
   }
 }

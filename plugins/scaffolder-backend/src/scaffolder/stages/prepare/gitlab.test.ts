@@ -78,9 +78,11 @@ describe('GitLabPreparer', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
-
+  const preparer = GitlabPreparer.fromConfig({
+    host: 'gitlab.com',
+    token: 'fake-token',
+  });
   it(`calls the clone command with the correct arguments for a repository`, async () => {
-    const preparer = new GitlabPreparer(new ConfigReader({}));
     mockEntity = mockTemplate();
 
     await preparer.prepare(mockEntity, { logger: getVoidLogger() });
@@ -92,37 +94,6 @@ describe('GitLabPreparer', () => {
   });
 
   it(`calls the clone command with the correct arguments if an access token is provided in integrations for a repository`, async () => {
-    const preparer = new GitlabPreparer(
-      new ConfigReader({
-        integrations: {
-          gitlab: [
-            {
-              host: 'gitlab.com',
-              token: 'fake-token',
-            },
-          ],
-        },
-      }),
-    );
-    mockEntity = mockTemplate();
-
-    await preparer.prepare(mockEntity, { logger });
-
-    expect(Git.fromAuth).toHaveBeenCalledWith({
-      logger,
-      username: 'oauth2',
-      password: 'fake-token',
-    });
-  });
-
-  it(`calls the clone command with the correct arguments if an access token is provided in scaffolder for a repository`, async () => {
-    const preparer = new GitlabPreparer(
-      new ConfigReader({
-        scaffolder: {
-          gitlab: { api: { token: 'fake-token' } },
-        },
-      }),
-    );
     mockEntity = mockTemplate();
 
     await preparer.prepare(mockEntity, { logger });
@@ -135,7 +106,6 @@ describe('GitLabPreparer', () => {
   });
 
   it(`calls the clone command with the correct arguments for a repository when no path is provided`, async () => {
-    const preparer = new GitlabPreparer(new ConfigReader({}));
     mockEntity = mockTemplate();
     delete mockEntity.spec.path;
 
@@ -148,7 +118,6 @@ describe('GitLabPreparer', () => {
   });
 
   it(`return the temp directory with the path to the folder if it is specified`, async () => {
-    const preparer = new GitlabPreparer(new ConfigReader({}));
     mockEntity = mockTemplate();
     mockEntity.spec.path = './template/test/1/2/3';
     const response = await preparer.prepare(mockEntity, {
@@ -160,7 +129,6 @@ describe('GitLabPreparer', () => {
   });
 
   it('return the working directory with the path to the folder if it is specified', async () => {
-    const preparer = new GitlabPreparer(new ConfigReader({}));
     mockEntity.spec.path = './template/test/1/2/3';
     const response = await preparer.prepare(mockEntity, {
       workingDirectory: '/workDir',

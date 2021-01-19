@@ -20,44 +20,23 @@ import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { parseLocationAnnotation } from '../helpers';
 import { InputError, Git } from '@backstage/backend-common';
 import { PreparerBase, PreparerOptions } from './types';
-import {
-  readBitbucketIntegrationConfigs,
-  BitbucketIntegrationConfig,
-} from '@backstage/integration';
+import { BitbucketIntegrationConfig } from '@backstage/integration';
 import parseGitUrl from 'git-url-parse';
-import { Config } from '@backstage/config';
-import { Logger } from 'winston';
 
 export class BitbucketPreparer implements PreparerBase {
-  private readonly privateToken: string;
-  private readonly username: string;
-  private readonly integrations: BitbucketIntegrationConfig[];
-
-  static fromConfig(config: Config, { logger }: { logger: Logger }) {
-    const user = config.getOptionalString('scaffolder.bitbucket.api.username');
-    const token = config.getOptionalString('scaffolder.bitbucket.api.token');
-    const password = config.getOptionalString(
-      'scaffolder.bitbucket.api.appPassword',
+  static fromConfig(config: BitbucketIntegrationConfig) {
+    return new BitbucketPreparer(
+      config.username,
+      config.token,
+      config.appPassword,
     );
-
-    if (user || token || password) {
-      logger.warn(
-        "DEPRECATION: Setting credentials under 'scaffolder.bitbucket.api' will not be respected in future releases. Please consider using integrations config instead",
-        'Please migrate to using integrations config and specifying tokens under hostnames',
-      );
-    }
-    return new BitbucketPreparer(config);
   }
-  constructor(config: Config) {
-    this.integrations = readBitbucketIntegrationConfigs(
-      config.getOptionalConfigArray('integrations.bitbucket') ?? [],
-    );
 
-    this.username =
-      config.getOptionalString('scaffolder.bitbucket.api.username') ?? '';
-    this.privateToken =
-      config.getOptionalString('scaffolder.bitbucket.api.token') ?? '';
-  }
+  constructor(
+    private readonly username?: string,
+    private readonly token?: string,
+    private readonly appPassword?: string,
+  ) {}
 
   async prepare(
     template: TemplateEntityV1alpha1,
@@ -88,8 +67,7 @@ export class BitbucketPreparer implements PreparerBase {
 
     const checkoutLocation = path.resolve(tempDir, templateDirectory);
 
-    const auth = this.getAuth(repo.resource);
-
+    const auth = this.getAuth();
     const git = auth
       ? Git.fromAuth({
           ...auth,
@@ -105,36 +83,18 @@ export class BitbucketPreparer implements PreparerBase {
     return checkoutLocation;
   }
 
-  private getAuth(
-    host: string,
-  ): { username: string; password: string } | undefined {
-    if (this.username && this.privateToken) {
-      return { username: this.username, password: this.privateToken };
+  private getAuth(): { username: string; password: string } | undefined {
+    if (this.username && this.appPassword) {
+      return { username: this.username, password: this.appPassword };
     }
 
-    const bitbucketIntegrationConfig = this.integrations.find(
-      c => c.host === host,
-    );
-
-    if (!bitbucketIntegrationConfig) {
-      return undefined;
+    if (this.token) {
+      return {
+        username: 'x-token-auth',
+        password: this.token! || this.appPassword!,
+      };
     }
 
-    if (
-      !bitbucketIntegrationConfig.username ||
-      !(
-        bitbucketIntegrationConfig.token ||
-        bitbucketIntegrationConfig.appPassword
-      )
-    ) {
-      return undefined;
-    }
-
-    return {
-      username: bitbucketIntegrationConfig.username,
-      password:
-        bitbucketIntegrationConfig.token! ||
-        bitbucketIntegrationConfig.appPassword!,
-    };
+    return undefined;
   }
 }

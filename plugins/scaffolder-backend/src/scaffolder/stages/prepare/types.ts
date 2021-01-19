@@ -35,6 +35,6 @@ export interface PreparerBase {
 }
 
 export type PreparerBuilder = {
-  register(protocol: RemoteProtocol, preparer: PreparerBase): void;
-  get(template: TemplateEntityV1alpha1): PreparerBase;
+  register(host: string, preparer: PreparerBase): void;
+  get(url: string): PreparerBase;
 };

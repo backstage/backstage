@@ -27,6 +27,7 @@ import {
   StageContext,
   TemplaterBuilder,
   PublisherBuilder,
+  parseLocationAnnotation,
 } from '../scaffolder';
 import { CatalogEntityClient } from '../lib/catalog';
 import { validate, ValidatorResult } from 'jsonschema';
@@ -129,7 +130,13 @@ export async function createRouter(
           {
             name: 'Prepare the skeleton',
             handler: async ctx => {
-              const preparer = preparers.get(ctx.entity);
+              const { protocol, location: pullPath } = parseLocationAnnotation(
+                ctx.entity,
+              );
+
+              const preparer =
+                protcol === file ? new FilePreparer() : preparers.get(pullPath);
+
               const skeletonDir = await preparer.prepare(ctx.entity, {
                 logger: ctx.logger,
                 workingDirectory,

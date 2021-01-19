@@ -26,7 +26,6 @@ import {
   LOCATION_ANNOTATION,
 } from '@backstage/catalog-model';
 import { getVoidLogger, Git } from '@backstage/backend-common';
-import { ConfigReader } from '@backstage/config';
 
 describe('AzurePreparer', () => {
   const mockGitClient = {
@@ -80,20 +79,13 @@ describe('AzurePreparer', () => {
     };
   });
 
+  const preparer = AzurePreparer.fromConfig({
+    host: 'dev.azure.com',
+    token: 'fake-azure-token',
+  });
+
   // TODO(blam): Here's a test that will fail when the deprecation is complete
   it('calls the clone command with deprecated token', async () => {
-    const preparer = new AzurePreparer(
-      new ConfigReader({
-        scaffolder: {
-          azure: {
-            api: {
-              token: 'fake-azure-token',
-            },
-          },
-        },
-      }),
-    );
-
     await preparer.prepare(mockEntity, { logger });
 
     expect(Git.fromAuth).toHaveBeenCalledWith({
@@ -104,28 +96,16 @@ describe('AzurePreparer', () => {
   });
 
   it('calls the clone command with token from integrations config', async () => {
-    const preparer = new AzurePreparer(
-      new ConfigReader({
-        integrations: {
-          azure: [
-            { host: 'dev.azure.com', token: 'fake-azure-token-integration' },
-          ],
-        },
-      }),
-    );
-
     await preparer.prepare(mockEntity, { logger });
 
     expect(Git.fromAuth).toHaveBeenCalledWith({
       logger,
-      password: 'fake-azure-token-integration',
+      password: 'fake-azure-token',
       username: 'notempty',
     });
   });
 
   it('calls the clone command with the correct arguments for a repository', async () => {
-    const preparer = new AzurePreparer(new ConfigReader({}));
-
     await preparer.prepare(mockEntity, { logger: getVoidLogger() });
 
     expect(mockGitClient.clone).toHaveBeenCalledWith({
@@ -136,7 +116,6 @@ describe('AzurePreparer', () => {
   });
 
   it('calls the clone command with the correct arguments for a repository when no path is provided', async () => {
-    const preparer = new AzurePreparer(new ConfigReader({}));
     delete mockEntity.spec.path;
 
     await preparer.prepare(mockEntity, { logger: getVoidLogger() });
@@ -149,7 +128,6 @@ describe('AzurePreparer', () => {
   });
 
   it('return the temp directory with the path to the folder if it is specified', async () => {
-    const preparer = new AzurePreparer(new ConfigReader({}));
     mockEntity.spec.path = './template/test/1/2/3';
 
     const response = await preparer.prepare(mockEntity, {
@@ -162,7 +140,6 @@ describe('AzurePreparer', () => {
   });
 
   it('return the working directory with the path to the folder if it is specified', async () => {
-    const preparer = new AzurePreparer(new ConfigReader({}));
     mockEntity.spec.path = './template/test/1/2/3';
 
     const response = await preparer.prepare(mockEntity, {

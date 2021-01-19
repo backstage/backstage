@@ -20,35 +20,15 @@ import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { parseLocationAnnotation } from '../helpers';
 import { InputError, Git } from '@backstage/backend-common';
 import { PreparerBase, PreparerOptions } from './types';
-import { Logger } from 'winston';
 import parseGitUrl from 'git-url-parse';
-import { Config } from '@backstage/config';
-import {
-  GitHubIntegrationConfig,
-  readGitHubIntegrationConfigs,
-} from '@backstage/integration';
+import { GitHubIntegrationConfig } from '@backstage/integration';
 
 export class GithubPreparer implements PreparerBase {
-  private readonly integrations: GitHubIntegrationConfig[];
-  private readonly scaffolderToken: string | undefined;
-
-  static fromConfig(config: Config, { logger }: { logger: Logger }) {
-    if (config.getOptionalString('scaffolder.github.token')) {
-      logger.warn(
-        "DEPRECATION: Using the token format under 'scaffolder.github.token' will not be respected in future releases. Please consider using integrations config instead",
-        'Please migrate to using integrations config and specifying tokens under hostnames',
-      );
-    }
-
-    return new GithubPreparer(config);
+  static fromConfig(config: GitHubIntegrationConfig) {
+    return new GithubPreparer(config.token);
   }
 
-  constructor(config: Config) {
-    this.integrations = readGitHubIntegrationConfigs(
-      config.getOptionalConfigArray('integrations.github') ?? [],
-    );
-    this.scaffolderToken = config.getOptionalString('scaffolder.github.token');
-  }
+  constructor(private readonly token?: string) {}
 
   async prepare(
     template: TemplateEntityV1alpha1,
@@ -78,11 +58,9 @@ export class GithubPreparer implements PreparerBase {
 
     const checkoutLocation = path.resolve(tempDir, templateDirectory);
 
-    const token = this.getToken(parsedGitLocation.resource);
-
-    const git = token
+    const git = this.token
       ? Git.fromAuth({
-          username: token,
+          username: this.token,
           password: 'x-oauth-basic',
           logger,
         })
@@ -94,11 +72,5 @@ export class GithubPreparer implements PreparerBase {
     });
 
     return checkoutLocation;
-  }
-  private getToken(host: string): string | undefined {
-    return (
-      this.scaffolderToken ||
-      this.integrations.find(c => c.host === host)?.token
-    );
   }
 }
