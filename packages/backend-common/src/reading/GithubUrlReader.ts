@@ -98,14 +98,9 @@ export class GithubUrlReader implements UrlReader {
     url: string,
     options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
-    const {
-      protocol,
-      resource,
-      name: repoName,
-      ref,
-      filepath,
-      full_name,
-    } = parseGitUrl(url);
+    const { ref, filepath, full_name } = parseGitUrl(url);
+    // Caveat: The ref will totally be incorrect if the branch name includes a /
+    // Thus, readTree can not work on url containing branch name that has a /
 
     const { headers } = await this.deps.credentialsProvider.getCredentials({
       url,
@@ -132,6 +127,7 @@ export class GithubUrlReader implements UrlReader {
     // Use GitHub API to get the default branch of the repository.
     const branch = ref || repoResponseJson.default_branch;
     const branchesApiUrl = repoResponseJson.branches_url;
+    const archiveApiUrl = repoResponseJson.archive_url;
 
     // Fetch the latest commit in the provided or default branch to compare against
     // the provided sha.
@@ -155,19 +151,12 @@ export class GithubUrlReader implements UrlReader {
       throw new NotModifiedError();
     }
 
-    // Note: the API way of downloading an archive URL does not return a real time archive.
-    // https://github.community/t/archive-downloaded-via-v3-rest-api-is-not-real-time/14827
-    // It looks like this https://api.github.com/repos/owner/repo/{archive_format}{/ref}
-    // and can be used from `repoResponseJson.archive_url`.
-    // Continue using the "direct" way i.e. https://github.com/:owner/:repo/archive/branch.tar.gz
-    // until the bug? is fixed.
     const archive = await fetch(
-      new URL(
-        `${protocol}://${resource}/${full_name}/archive/${branch}.tar.gz`,
-      ).toString(),
-      {
-        headers,
-      },
+      // archiveApiUrl looks like "https://api.github.com/repos/owner/repo/{archive_format}{/ref}"
+      archiveApiUrl
+        .replace('{archive_format}', 'tarball')
+        .replace('{/ref}', `/${commitSha}`),
+      { headers },
     );
     if (!archive.ok) {
       const message = `Failed to read tree (archive) from ${url}, ${archive.status} ${archive.statusText}`;
@@ -177,7 +166,18 @@ export class GithubUrlReader implements UrlReader {
       throw new Error(message);
     }
 
-    const path = `${repoName}-${branch}/${filepath}`;
+    // Note that repoResponseJson.full_name must be used over full_name because the path
+    // is case sensitive and full_name may not be inq the correct case.
+    // TODO(OrkoHunter): The directory name inside the tarball should be retrieved from the tar
+    // instead of being constructed here. Same goes for GitLab, Bitbucket and Azure.
+    const extractedDirName = `${repoResponseJson.full_name.replace(
+      '/',
+      '-',
+    )}-${commitSha.substr(0, 7)}`;
+
+    // The path includes the name of the directory inside the tarball and a sub path
+    // if requested in readTree.
+    const path = `${extractedDirName}/${filepath}`;
 
     return await this.deps.treeResponseFactory.fromTarArchive({
       // TODO(Rugvip): Underlying implementation of fetch will be node-fetch, we probably want

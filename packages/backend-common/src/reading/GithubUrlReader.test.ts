@@ -108,7 +108,12 @@ describe('GithubUrlReader', () => {
 
   describe('readTree', () => {
     const repoBuffer = fs.readFileSync(
-      path.resolve('src', 'reading', '__fixtures__', 'mock-main.tar.gz'),
+      path.resolve(
+        'src',
+        'reading',
+        '__fixtures__',
+        'backstage-mock-etag123.tar.gz',
+      ),
     );
 
     const reposGithubApiResponse = {
@@ -117,12 +122,16 @@ describe('GithubUrlReader', () => {
       default_branch: 'main',
       branches_url:
         'https://api.github.com/repos/backstage/mock/branches{/branch}',
+      archive_url:
+        'https://api.github.com/repos/backstage/mock/{archive_format}{/ref}',
     };
 
     const reposGheApiResponse = {
       ...reposGithubApiResponse,
       branches_url:
         'https://ghe.github.com/api/v3/repos/backstage/mock/branches{/branch}',
+      archive_url:
+        'https://ghe.github.com/api/v3/repos/backstage/mock/{archive_format}{/ref}',
     };
 
     const branchesApiResponse = {
@@ -134,15 +143,6 @@ describe('GithubUrlReader', () => {
 
     beforeEach(() => {
       worker.use(
-        rest.get(
-          'https://github.com/backstage/mock/archive/main.tar.gz',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/x-gzip'),
-              ctx.body(repoBuffer),
-            ),
-        ),
         rest.get('https://api.github.com/repos/backstage/mock', (_, res, ctx) =>
           res(
             ctx.status(200),
@@ -160,11 +160,20 @@ describe('GithubUrlReader', () => {
             ),
         ),
         rest.get(
+          'https://api.github.com/repos/backstage/mock/tarball/etag123abc',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/x-gzip'),
+              ctx.body(repoBuffer),
+            ),
+        ),
+        rest.get(
           'https://api.github.com/repos/backstage/mock/branches/branchDoesNotExist',
           (_, res, ctx) => res(ctx.status(404)),
         ),
         rest.get(
-          'https://ghe.github.com/backstage/mock/archive/main.tar.gz',
+          'https://ghe.github.com/api/v3/repos/backstage/mock/tarball/etag123abc',
           (_, res, ctx) =>
             res(
               ctx.status(200),
@@ -224,7 +233,7 @@ describe('GithubUrlReader', () => {
 
       worker.use(
         rest.get(
-          'https://ghe.github.com/backstage/mock/archive/main.tar.gz',
+          'https://ghe.github.com/api/v3/repos/backstage/mock/tarball/etag123abc',
           (req, res, ctx) => {
             expect(req.headers.get('authorization')).toBe(
               mockHeaders.Authorization,
