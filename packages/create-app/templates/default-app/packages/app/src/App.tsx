@@ -5,11 +5,12 @@ import {
   OAuthRequestDialog,
   SidebarPage,
   createRouteRef,
+  FlatRoutes,
 } from '@backstage/core';
 import { apis } from './apis';
 import * as plugins from './plugins';
 import { AppSidebar } from './sidebar';
-import { Route, Routes, Navigate } from 'react-router';
+import { Route, Navigate } from 'react-router';
 import { Router as CatalogRouter } from '@backstage/plugin-catalog';
 import { Router as DocsRouter } from '@backstage/plugin-techdocs';
 import { Router as ImportComponentRouter } from '@backstage/plugin-catalog-import';
@@ -41,13 +42,13 @@ const App = () => (
     <AppRouter>
       <SidebarPage>
         <AppSidebar />
-        <Routes>
+        <FlatRoutes>
           <Navigate key="/" to="/catalog" />
           <Route
-            path="/catalog/*"
+            path="/catalog"
             element={<CatalogRouter EntityPage={EntityPage} />}
           />
-          <Route path="/docs/*" element={<DocsRouter />} />
+          <Route path="/docs" element={<DocsRouter />} />
           <Route
             path="/tech-radar"
             element={<TechRadarRouter width={1500} height={800} />}
@@ -62,7 +63,7 @@ const App = () => (
           />
           <Route path="/settings" element={<SettingsRouter />} />
           {deprecatedAppRoutes}
-        </Routes>
+        </FlatRoutes>
       </SidebarPage>
     </AppRouter>
   </AppProvider>
