@@ -86,7 +86,7 @@ follows:
 
 _note_ Currently the templaters that we provide are basically Docker action
 containers that are run on top of the skeleton folder. This keeps dependencies
-to a minimal for running backstage scaffolder, but you don't /have/ to use
+to a minimum for running backstage scaffolder, but you don't _have_ to use
 Docker. You can `pip install cookiecutter` to run it locally in your backend.
 You could create your own templater that spins up an EC2 instance and downloads
 the folder and does everything using an AMI if you want. It's entirely up to
