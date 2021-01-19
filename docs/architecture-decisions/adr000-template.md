@@ -4,10 +4,6 @@ title: ADR000: [TITLE]
 description: Architecture Decision Record (ADR) for [TITLE] [DESCRIPTION]
 ---
 
-| Created    | Status |
-| ---------- | ------ |
-| YYYY-MM-DD | Open   |
-
 # ADR000: [title]
 
 <!-- These documents have names that are short noun phrases. For example, "ADR001: Deployment on Ruby on Rails 3.0.10" or "ADR009: LDAP for Multitenant Integration" -->
