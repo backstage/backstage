@@ -27,6 +27,8 @@ import {
   catalogRouteRef,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
+import { catalogRouteRef, entityRouteRef } from './routes';
+import { CatalogClientWrapper } from './CatalogClientWrapper';
 
 export const catalogPlugin = createPlugin({
   id: 'catalog',
@@ -35,7 +37,10 @@ export const catalogPlugin = createPlugin({
       api: catalogApiRef,
       deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
       factory: ({ discoveryApi, identityApi }) =>
-        new CatalogClient({ discoveryApi, identityApi }),
+        new CatalogClientWrapper({
+          client: new CatalogClient({ discoveryApi }),
+          identityApi,
+        }),
     }),
   ],
   routes: {

@@ -24,30 +24,27 @@ import fetch from 'cross-fetch';
 import {
   AddLocationRequest,
   AddLocationResponse,
-  CatalogApi,
   CatalogEntitiesRequest,
   CatalogListResponse,
   DiscoveryApi,
-  IdentityApi,
 } from './types';
 
-export class CatalogClient implements CatalogApi {
+export class CatalogClient {
   private readonly discoveryApi: DiscoveryApi;
-  private readonly identityApi: IdentityApi;
 
-  constructor(options: {
-    discoveryApi: DiscoveryApi;
-    identityApi: IdentityApi;
-  }) {
+  constructor(options: { discoveryApi: DiscoveryApi }) {
     this.discoveryApi = options.discoveryApi;
-    this.identityApi = options.identityApi;
   }
 
-  async getLocationById(id: String): Promise<Location | undefined> {
-    return await this.getOptional(`/locations/${id}`);
+  async getLocationById(
+    token: string | undefined,
+    id: String,
+  ): Promise<Location | undefined> {
+    return await this.getOptional(token, `/locations/${id}`);
   }
 
   async getEntities(
+    token: string | undefined,
     request?: CatalogEntitiesRequest,
   ): Promise<CatalogListResponse<Entity>> {
     const { filter = {}, fields = [] } = request ?? {};
@@ -68,28 +65,35 @@ export class CatalogClient implements CatalogApi {
     }
 
     const query = params.length ? `?${params.join('&')}` : '';
-    const entities: Entity[] = await this.getRequired(`/entities${query}`);
+    const entities: Entity[] = await this.getRequired(
+      token,
+      `/entities${query}`,
+    );
     return { items: entities };
   }
 
-  async getEntityByName(compoundName: EntityName): Promise<Entity | undefined> {
+  async getEntityByName(
+    token: string | undefined,
+    compoundName: EntityName,
+  ): Promise<Entity | undefined> {
     const { kind, namespace = 'default', name } = compoundName;
-    return this.getOptional(`/entities/by-name/${kind}/${namespace}/${name}`);
+    return this.getOptional(
+      token,
+      `/entities/by-name/${kind}/${namespace}/${name}`,
+    );
   }
 
-  async addLocation({
-    type = 'url',
-    target,
-    dryRun,
-  }: AddLocationRequest): Promise<AddLocationResponse> {
-    const idToken = await this.identityApi.getIdToken();
+  async addLocation(
+    token: string | undefined,
+    { type = 'url', target, dryRun }: AddLocationRequest,
+  ): Promise<AddLocationResponse> {
     const response = await fetch(
       `${await this.discoveryApi.getBaseUrl('catalog')}/locations${
         dryRun ? '?dryRun=true' : ''
       }`,
       {
         headers: {
-          authorization: `Bearer ${idToken}`,
+          authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         method: 'POST',
@@ -118,21 +122,29 @@ export class CatalogClient implements CatalogApi {
     };
   }
 
-  async getLocationByEntity(entity: Entity): Promise<Location | undefined> {
+  async getLocationByEntity(
+    token: string | undefined,
+    entity: Entity,
+  ): Promise<Location | undefined> {
     const locationCompound = entity.metadata.annotations?.[LOCATION_ANNOTATION];
-    const all: { data: Location }[] = await this.getRequired('/locations');
+    const all: { data: Location }[] = await this.getRequired(
+      token,
+      '/locations',
+    );
     return all
       .map(r => r.data)
       .find(l => locationCompound === `${l.type}:${l.target}`);
   }
 
-  async removeEntityByUid(uid: string): Promise<void> {
-    const idToken = await this.identityApi.getIdToken();
+  async removeEntityByUid(
+    token: string | undefined,
+    uid: string,
+  ): Promise<void> {
     const response = await fetch(
       `${await this.discoveryApi.getBaseUrl('catalog')}/entities/by-uid/${uid}`,
       {
         headers: {
-          authorization: `Bearer ${idToken}`,
+          authorization: `Bearer ${token}`,
         },
         method: 'DELETE',
       },
@@ -150,13 +162,13 @@ export class CatalogClient implements CatalogApi {
   // Private methods
   //
 
-  private async getRequired(path: string): Promise<any> {
+  private async getRequired(
+    token: string | undefined,
+    path: string,
+  ): Promise<any> {
     const url = `${await this.discoveryApi.getBaseUrl('catalog')}${path}`;
-    const idToken = await this.identityApi.getIdToken();
     const response = await fetch(url, {
-      headers: {
-        authorization: `Bearer ${idToken}`,
-      },
+      headers: token ? { authorization: `Bearer ${token}` } : {},
     });
 
     if (!response.ok) {
@@ -168,13 +180,13 @@ export class CatalogClient implements CatalogApi {
     return await response.json();
   }
 
-  private async getOptional(path: string): Promise<any | undefined> {
+  private async getOptional(
+    token: string | undefined,
+    path: string,
+  ): Promise<any | undefined> {
     const url = `${await this.discoveryApi.getBaseUrl('catalog')}${path}`;
-    const idToken = await this.identityApi.getIdToken();
     const response = await fetch(url, {
-      headers: {
-        authorization: `Bearer ${idToken}`,
-      },
+      headers: token ? { authorization: `Bearer ${token}` } : {},
     });
 
     if (!response.ok) {
