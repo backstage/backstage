@@ -19,7 +19,6 @@ import { DiscoveryApi, OAuthApi, ConfigApi } from '@backstage/core';
 import { CatalogImportApi } from './CatalogImportApi';
 import { PartialEntity } from '../util/types';
 import { GitHubIntegrationConfig } from '@backstage/integration';
-import fetch from 'cross-fetch';
 
 export class CatalogImportClient implements CatalogImportApi {
   private readonly discoveryApi: DiscoveryApi;
