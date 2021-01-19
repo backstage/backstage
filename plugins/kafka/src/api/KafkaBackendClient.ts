@@ -24,7 +24,7 @@ export class KafkaBackendClient implements KafkaApi {
     this.discoveryApi = options.discoveryApi;
   }
 
-  private async getRequired(path: string): Promise<any> {
+  private async internalGet(path: string): Promise<any> {
     const url = `${await this.discoveryApi.getBaseUrl('kafka')}${path}`;
     const response = await fetch(url, {
       method: 'GET',
@@ -46,7 +46,7 @@ export class KafkaBackendClient implements KafkaApi {
     clusterId: string,
     consumerGroup: string,
   ): Promise<ConsumerGroupOffsetsResponse> {
-    return await this.getRequired(
+    return await this.internalGet(
       `/consumers/${clusterId}/${consumerGroup}/offsets`,
     );
   }
