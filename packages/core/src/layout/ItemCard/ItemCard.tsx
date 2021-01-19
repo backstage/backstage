@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Button, Card, Chip, makeStyles, Typography } from '@material-ui/core';
 import React from 'react';
-import { Button, Card, Chip, Typography, makeStyles } from '@material-ui/core';
+import { Link } from '../../components';
 
 const useStyles = makeStyles(theme => ({
   header: {
@@ -30,6 +31,9 @@ const useStyles = makeStyles(theme => ({
     overflow: 'hidden',
     textOverflow: 'ellipsis',
   },
+  withTags: {
+    height: 'calc(175px - 32px - 8px)',
+  },
   footer: {
     display: 'flex',
     flexDirection: 'row-reverse',
@@ -43,7 +47,9 @@ type ItemCardProps = {
   type?: string;
   label: string;
   onClick?: () => void;
+  href?: string;
 };
+
 export const ItemCard = ({
   description,
   tags,
@@ -51,6 +57,7 @@ export const ItemCard = ({
   type,
   label,
   onClick,
+  href,
 }: ItemCardProps) => {
   const classes = useStyles();
 
@@ -64,13 +71,22 @@ export const ItemCard = ({
         {tags?.map((tag, i) => (
           <Chip label={tag} key={`tag-${i}`} />
         ))}
-        <Typography variant="body2" paragraph className={classes.description}>
+        <Typography
+          variant="body2"
+          paragraph
+          className={`${classes.description} ${
+            tags && tags.length > 0 ? classes.withTags : ''
+          }`}
+        >
           {description}
         </Typography>
         <div className={classes.footer}>
-          <Button onClick={onClick} color="primary">
-            {label}
-          </Button>
+          {!href && (
+            <Button onClick={onClick} color="primary">
+              {label}
+            </Button>
+          )}
+          {href && <Link to={href}>{label}</Link>}
         </div>
       </div>
     </Card>
