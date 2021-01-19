@@ -183,7 +183,8 @@
       "architecture-decisions/adrs-adr006",
       "architecture-decisions/adrs-adr007",
       "architecture-decisions/adrs-adr008",
-      "architecture-decisions/adrs-adr009"
+      "architecture-decisions/adrs-adr009",
+      "architecture-decisions/adrs-adr010"
     ],
     "Contribute": ["../CONTRIBUTING"],
     "Support": ["support/support", "support/project-structure"],
