@@ -58,25 +58,44 @@ async function main() {
     'diff',
     '--name-only',
     parentRef,
-    'packages/*/package.json',
-    'plugins/*/package.json',
+    "'packages/*/package.json'",
+    "'plugins/*/package.json'",
   );
   const packageList = diff.split(/^(.*)$/gm).filter(s => s.trim());
 
   const packageVersions = await Promise.all(
     packageList.map(async path => {
-      const { name, version: newVersion } = JSON.parse(
-        await fs.readFile(path, 'utf8'),
-      );
-      const { version: oldVersion } = JSON.parse(
-        await runPlain('git', 'show', `${parentRef}:${path}`),
-      );
+      let name;
+      let newVersion;
+      let oldVersion;
+
+      try {
+        const data = JSON.parse(
+          await runPlain('git', 'show', `${parentRef}:${path}`),
+        );
+        name = data.name;
+        oldVersion = data.version;
+      } catch {
+        oldVersion = '<none>';
+      }
+
+      try {
+        const data = JSON.parse(await fs.readFile(path, 'utf8'));
+        name = data.name;
+        newVersion = data.version;
+      } catch (error) {
+        if (error.code === 'ENOENT') {
+          newVersion = '<none>';
+        }
+      }
+
       return { name, oldVersion, newVersion };
     }),
   );
 
   const newVersions = packageVersions.filter(
-    ({ oldVersion, newVersion }) => oldVersion !== newVersion,
+    ({ oldVersion, newVersion }) =>
+      oldVersion !== newVersion && newVersion !== '<none>',
   );
 
   if (newVersions.length === 0) {
@@ -89,7 +108,7 @@ async function main() {
   const maxLength = Math.max(...newVersions.map(_ => _.name.length));
   for (const { name, oldVersion, newVersion } of newVersions) {
     console.log(
-      `  ${name.padEnd(maxLength, ' ')} ${oldVersion} -> ${newVersion}`,
+      `  ${name.padEnd(maxLength, ' ')} ${oldVersion} to ${newVersion}`,
     );
   }
   console.log(`::set-output name=needs_release::true`);
