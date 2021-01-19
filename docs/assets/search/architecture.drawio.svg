@@ -92,7 +92,7 @@
                             <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #5C5C5C; line-height: 1.2; pointer-events: all; white-space: nowrap; ">
                                 Other Plugins
                                 <br/>
-                                (TechDocs, Catalogue, Etc)
+                                (TechDocs, Catalog, Etc)
                             </div>
                         </div>
                     </div>
@@ -147,13 +147,13 @@
                     <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 1px; height: 1px; padding-top: 289px; margin-left: 555px;">
                         <div style="box-sizing: border-box; font-size: 0; text-align: center; ">
                             <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #5C5C5C; line-height: 1.2; pointer-events: all; white-space: nowrap; ">
-                                Other Backend Plugin (TechDocs, Catalogue, Etc)
+                                Other Backend Plugin (TechDocs, Catalog, Etc)
                             </div>
                         </div>
                     </div>
                 </foreignObject>
                 <text x="555" y="293" fill="#5C5C5C" font-family="Helvetica" font-size="12px" text-anchor="middle">
-                    Other Backend Plugin (TechDocs, Catalogue, Etc)
+                    Other Backend Plugin (TechDocs, Catalog, Etc)
                 </text>
             </switch>
         </g>
