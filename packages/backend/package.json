@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@backstage/backend-common": "^0.5.1",
+    "@backstage/catalog-client": "^0.3.5",
     "@backstage/catalog-model": "^0.7.0",
     "@backstage/config": "^0.1.2",
     "@backstage/plugin-app-backend": "^0.3.5",

@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-import fetch from 'cross-fetch';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import {
-  ConflictError,
-  NotFoundError,
-  PluginEndpointDiscovery,
-} from '@backstage/backend-common';
+import { CatalogClient } from '@backstage/catalog-client';
+import { ConflictError, NotFoundError } from '@backstage/backend-common';
 
 /**
  * A catalog client tailored for reading out entity data from the catalog.
  */
 export class CatalogEntityClient {
-  private readonly discovery: PluginEndpointDiscovery;
+  private readonly catalogClient: CatalogClient;
 
-  constructor(options: { discovery: PluginEndpointDiscovery }) {
-    this.discovery = options.discovery;
+  constructor(options: { catalogClient: CatalogClient }) {
+    this.catalogClient = options.catalogClient;
   }
 
   /**
@@ -38,32 +34,15 @@ export class CatalogEntityClient {
    * Throws a NotFoundError or ConflictError if 0 or multiple templates are found.
    */
   async findTemplate(
+    token: string | undefined,
     templateName: string,
-    options?: { headers?: Record<string, string> },
   ): Promise<TemplateEntityV1alpha1> {
-    const conditions = [
-      'kind=template',
-      `metadata.name=${encodeURIComponent(templateName)}`,
-    ];
-
-    const baseUrl = await this.discovery.getBaseUrl('catalog');
-    const response = await fetch(
-      `${baseUrl}/entities?filter=${conditions.join(',')}`,
-      {
-        headers: {
-          ...options?.headers,
-        },
+    const { items: templates } = (await this.catalogClient.getEntities(token, {
+      filter: {
+        kind: 'template',
+        'metadata.name': templateName,
       },
-    );
-
-    if (!response.ok) {
-      const text = await response.text();
-      throw new Error(
-        `Request failed with ${response.status} ${response.statusText}, ${text}`,
-      );
-    }
-
-    const templates: TemplateEntityV1alpha1[] = await response.json();
+    })) as { items: TemplateEntityV1alpha1[] };
 
     if (templates.length !== 1) {
       if (templates.length > 1) {

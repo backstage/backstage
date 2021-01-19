@@ -15,6 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
+import { BackstageIdentity } from '@backstage/core';
 import Docker from 'dockerode';
 import express from 'express';
 import { resolve as resolvePath } from 'path';
@@ -97,12 +98,12 @@ export async function createRouter(
         },
       };
 
-      // Forward authorization header from client
-      const template = await entityClient.findTemplate(templateName, {
-        headers: req.headers.authorization
-          ? { authorization: req.headers.authorization }
-          : {},
-      });
+      // Forward authorization from client
+      const user = req.user as BackstageIdentity;
+      const template = await entityClient.findTemplate(
+        user?.idToken,
+        templateName,
+      );
 
       const validationResult: ValidatorResult = validate(
         values,
