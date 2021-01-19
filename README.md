@@ -39,7 +39,7 @@ Check out [the documentation](https://backstage.io/docs/getting-started) on how 
 
 - [Main documentation](https://backstage.io/docs)
 - [Service Catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview)
-- [Architecture](https://backstage.io/docs/overview/architecture-terminology) ([Decisions](https://backstage.io/docs/architecture-decisions/adrs-overview))
+- [Architecture](https://backstage.io/docs/overview/architecture-overview) ([Decisions](https://backstage.io/docs/architecture-decisions/adrs-overview))
 - [Designing for Backstage](https://backstage.io/docs/dls/design)
 - [Storybook - UI components](https://backstage.io/storybook)
 
