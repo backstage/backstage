@@ -31,7 +31,7 @@ export interface Config {
       token?: string;
     }>;
 
-    /** Integration configuration for BitBucket */
+    /** Integration configuration for Bitbucket */
     bitbucket?: Array<{
       /**
        * The hostname of the given Bitbucket instance
@@ -44,7 +44,7 @@ export interface Config {
        */
       token?: string;
       /**
-       * The base url for the BitBucket API, for example https://api.bitbucket.org/2.0
+       * The base url for the Bitbucket API, for example https://api.bitbucket.org/2.0
        * @visibility frontend
        */
       apiBaseUrl?: string;
@@ -54,7 +54,7 @@ export interface Config {
        */
       username?: string;
       /**
-       * BitBucket app password used to authenticate requests.
+       * Bitbucket app password used to authenticate requests.
        * @visibility secret
        */
       appPassword?: string;
