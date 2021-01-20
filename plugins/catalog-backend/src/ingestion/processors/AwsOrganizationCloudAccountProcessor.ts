@@ -13,10 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  ComponentEntityV1alpha1,
-  LocationSpec,
-} from '@backstage/catalog-model';
+import { LocationSpec, ResourceEntityV1alpha1 } from '@backstage/catalog-model';
 import {
   Account,
   Organizations,
@@ -82,13 +79,13 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
     return awsAccounts;
   }
 
-  mapAccountToComponent(account: Account): ComponentEntityV1alpha1 {
+  mapAccountToComponent(account: Account): ResourceEntityV1alpha1 {
     const { accountId, organizationId } = this.extractInformationFromArn(
       account.Arn as string,
     );
     return {
       apiVersion: 'backstage.io/v1alpha1',
-      kind: 'Component',
+      kind: 'Resource',
       metadata: {
         annotations: {
           [ACCOUNTID_ANNOTATION]: accountId,
@@ -100,7 +97,6 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
       },
       spec: {
         type: 'cloud-account',
-        lifecycle: 'unknown',
         owner: 'unknown',
       },
     };
@@ -129,7 +125,7 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
         }
         return true;
       })
-      .forEach((entity: ComponentEntityV1alpha1) => {
+      .forEach((entity: ResourceEntityV1alpha1) => {
         emit(results.entity(location, entity));
       });
 
