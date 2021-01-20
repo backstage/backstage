@@ -52,6 +52,7 @@ describe('GitLab Publisher', () => {
       const publisher = await GitlabPublisher.fromConfig({
         host: 'gitlab.com',
         token: 'fake-token',
+        baseUrl: 'https://gitlab.hosted.com',
       });
 
       mockGitlabClient.Namespaces.show.mockResolvedValue({
@@ -71,6 +72,10 @@ describe('GitLab Publisher', () => {
         logger,
       });
 
+      expect(Gitlab).toHaveBeenCalledWith({
+        token: 'fake-token',
+        host: 'https://gitlab.hosted.com',
+      });
       expect(result).toEqual({
         remoteUrl: 'mockclone',
         catalogInfoUrl: 'mockclone',
