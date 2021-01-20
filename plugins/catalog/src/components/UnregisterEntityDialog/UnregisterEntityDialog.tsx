@@ -112,7 +112,7 @@ export const UnregisterEntityDialog = ({
                 {`"${(error as DeniedLocationException).locationName}"`}). If
                 you believe this is in error, please contact the{' '}
                 {configApi.getOptionalString('app.title') ?? 'Backstage'}{' '}
-                operator.
+                integrator.
               </>
             ) : (
               error.toString()
