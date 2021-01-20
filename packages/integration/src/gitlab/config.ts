@@ -18,7 +18,6 @@ import { Config } from '@backstage/config';
 import { isValidHost } from '../helpers';
 
 const GITLAB_HOST = 'gitlab.com';
-const GITLAB_API_BASE_URL = 'gitlab.com/api/v4';
 
 /**
  * The configuration parameters for a single GitLab integration.
@@ -68,8 +67,6 @@ export function readGitLabIntegrationConfig(
 
   if (apiBaseUrl) {
     apiBaseUrl = apiBaseUrl.replace(/\/+$/, '');
-  } else if (host === GITLAB_HOST) {
-    apiBaseUrl = GITLAB_API_BASE_URL;
   }
   return { host, token, apiBaseUrl };
 }
