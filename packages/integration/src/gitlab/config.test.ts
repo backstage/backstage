@@ -46,7 +46,7 @@ describe('readGitLabIntegrationConfig', () => {
     const output = readGitLabIntegrationConfig(buildConfig({}));
     expect(output).toEqual({
       host: 'gitlab.com',
-      apiBaseUrl: 'gitlab.com/api/v4',
+      apiBaseUrl: 'https://gitlab.com/api/v4',
       baseUrl: 'https://gitlab.com',
     });
   });
@@ -58,6 +58,7 @@ describe('readGitLabIntegrationConfig', () => {
 
     expect(output).toEqual({
       host: 'gitlab.com',
+      baseUrl: 'https://gitlab.com',
       apiBaseUrl: 'https://gitlab.com/api/v4',
     });
   });
