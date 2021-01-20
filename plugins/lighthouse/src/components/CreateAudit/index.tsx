@@ -79,7 +79,7 @@ export const CreateAuditContent = () => {
       // TODO use the id from the response to redirect to the audit page for that id when
       // FAILED and RUNNING audits are supported
       await lighthouseApi.triggerAudit({
-        url,
+        url: url.replace(/\/$/, ''),
         options: {
           lighthouseConfig: {
             settings: {

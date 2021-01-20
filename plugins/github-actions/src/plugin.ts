@@ -15,9 +15,11 @@
  */
 
 import {
+  configApiRef,
   createPlugin,
   createRouteRef,
   createApiFactory,
+  githubAuthApiRef,
 } from '@backstage/core';
 import { githubActionsApiRef, GithubActionsClient } from './api';
 
@@ -34,5 +36,12 @@ export const buildRouteRef = createRouteRef({
 
 export const plugin = createPlugin({
   id: 'github-actions',
-  apis: [createApiFactory(githubActionsApiRef, new GithubActionsClient())],
+  apis: [
+    createApiFactory({
+      api: githubActionsApiRef,
+      deps: { configApi: configApiRef, githubAuthApi: githubAuthApiRef },
+      factory: ({ configApi, githubAuthApi }) =>
+        new GithubActionsClient({ configApi, githubAuthApi }),
+    }),
+  ],
 });

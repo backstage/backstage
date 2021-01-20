@@ -31,8 +31,9 @@ describe('GitLabIntegration', () => {
         },
       }),
     });
-    expect(integrations.length).toBe(2); // including default
-    expect(integrations[0].predicate(new URL('https://h.com/a'))).toBe(true);
+    expect(integrations.list().length).toBe(2); // including default
+    expect(integrations.list()[0].config.host).toBe('h.com');
+    expect(integrations.list()[1].config.host).toBe('gitlab.com');
   });
 
   it('returns the basics', () => {

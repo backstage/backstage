@@ -46,11 +46,12 @@ export interface Config {
       };
       saml?: {
         entryPoint: string;
+        logoutUrl?: string;
         issuer: string;
         cert?: string;
         privateKey?: string;
         decryptionPvk?: string;
-        signatureAlgorithm?: 'sha1' | 'sha256' | 'sha512';
+        signatureAlgorithm?: 'sha256' | 'sha512';
         digestAlgorithm?: string;
       };
       okta?: {

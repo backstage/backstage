@@ -15,41 +15,72 @@
  */
 import path from 'path';
 import express from 'express';
-import aws from 'aws-sdk';
+import { PutObjectCommandOutput, S3 } from '@aws-sdk/client-s3';
 import { Logger } from 'winston';
 import { Entity, EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { getHeadersForFileExtension, getFileTreeRecursively } from './helpers';
 import { PublisherBase, PublishRequest } from './types';
-import { ManagedUpload } from 'aws-sdk/clients/s3';
 import fs from 'fs-extra';
+import { Readable } from 'stream';
+
+const streamToBuffer = (stream: Readable): Promise<Buffer> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const chunks: any[] = [];
+      stream.on('data', chunk => chunks.push(chunk));
+      stream.on('error', reject);
+      stream.on('end', () => resolve(Buffer.concat(chunks)));
+    } catch (e) {
+      throw new Error(`Unable to parse the response data, ${e.message}`);
+    }
+  });
+};
 
 export class AwsS3Publish implements PublisherBase {
   static fromConfig(config: Config, logger: Logger): PublisherBase {
-    let region = null;
-    let accessKeyId = null;
-    let secretAccessKey = null;
     let bucketName = '';
     try {
-      accessKeyId = config.getString(
-        'techdocs.publisher.awsS3.credentials.accessKeyId',
-      );
-      secretAccessKey = config.getString(
-        'techdocs.publisher.awsS3.credentials.secretAccessKey',
-      );
-      region = config.getOptionalString('techdocs.publisher.awsS3.region');
       bucketName = config.getString('techdocs.publisher.awsS3.bucketName');
     } catch (error) {
       throw new Error(
         "Since techdocs.publisher.type is set to 'awsS3' in your app config, " +
-          'credentials and bucketName are required in techdocs.publisher.awsS3 ' +
-          'required to authenticate with AWS S3.',
+          'techdocs.publisher.awsS3.bucketName is required.',
       );
     }
 
-    const storageClient = new aws.S3({
-      credentials: { accessKeyId, secretAccessKey },
-      ...(region && { region }),
+    // Credentials is an optional config. If missing, default AWS environment variables
+    // or AWS shared credentials file at ~/.aws/credentials will be used to authenticate
+    // https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-environment.html
+    // https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-shared.html
+    const credentials = config.getOptionalConfig(
+      'techdocs.publisher.awsS3.credentials',
+    );
+    let accessKeyId = undefined;
+    let secretAccessKey = undefined;
+    if (credentials) {
+      accessKeyId = credentials.getOptionalString('accessKeyId');
+      secretAccessKey = credentials.getOptionalString('secretAccessKey');
+    }
+
+    // AWS Region is an optional config. If missing, default AWS env variable AWS_REGION
+    // or AWS shared credentials file at ~/.aws/credentials will be used. Any way, AWS SDK v3 client needs
+    // to have the AWS Region information for it to work.
+    // https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-region.html
+    const region = config.getOptionalString('techdocs.publisher.awsS3.region');
+
+    const storageClient = new S3({
+      ...(credentials &&
+        accessKeyId &&
+        secretAccessKey && {
+          credentials: {
+            accessKeyId,
+            secretAccessKey,
+          },
+        }),
+      ...(region && {
+        region,
+      }),
     });
 
     // Check if the defined bucket exists. Being able to connect means the configuration is good
@@ -62,11 +93,12 @@ export class AwsS3Publish implements PublisherBase {
         if (err) {
           logger.error(
             `Could not retrieve metadata about the AWS S3 bucket ${bucketName}. ` +
-              'Make sure the AWS project and the bucket exists and the access key located at the path ' +
-              "techdocs.publisher.awsS3.credentials defined in app config has the role 'Storage Object Creator'. " +
-              'Refer to https://backstage.io/docs/features/techdocs/using-cloud-storage',
+              'Make sure the bucket exists. Also make sure that authentication is setup either by ' +
+              'explicitly defining credentials and region in techdocs.publisher.awsS3 in app config or ' +
+              'by using environment variables. Refer to https://backstage.io/docs/features/techdocs/using-cloud-storage',
           );
-          throw new Error(`from AWS client library: ${err.message}`);
+          logger.error(`from AWS client library: ${err.message}`);
+          throw new Error();
         } else {
           logger.info(
             `Successfully connected to the AWS S3 bucket ${bucketName}.`,
@@ -79,7 +111,7 @@ export class AwsS3Publish implements PublisherBase {
   }
 
   constructor(
-    private readonly storageClient: aws.S3,
+    private readonly storageClient: S3,
     private readonly bucketName: string,
     private readonly logger: Logger,
   ) {
@@ -98,7 +130,7 @@ export class AwsS3Publish implements PublisherBase {
       // So collecting path of only the files is good enough.
       const allFilesToUpload = await getFileTreeRecursively(directory);
 
-      const uploadPromises: Array<Promise<ManagedUpload.SendData>> = [];
+      const uploadPromises: Array<Promise<PutObjectCommandOutput>> = [];
 
       for (const filePath of allFilesToUpload) {
         // Remove the absolute path prefix of the source directory
@@ -116,7 +148,7 @@ export class AwsS3Publish implements PublisherBase {
           Body: fileContent,
         };
 
-        uploadPromises.push(this.storageClient.upload(params).promise());
+        uploadPromises.push(this.storageClient.putObject(params));
       }
       await Promise.all(uploadPromises);
       this.logger.info(
@@ -135,25 +167,27 @@ export class AwsS3Publish implements PublisherBase {
       return await new Promise<string>((resolve, reject) => {
         const entityRootDir = `${entityName.namespace}/${entityName.kind}/${entityName.name}`;
 
-        const fileStreamChunks: Array<any> = [];
         this.storageClient
           .getObject({
             Bucket: this.bucketName,
             Key: `${entityRootDir}/techdocs_metadata.json`,
           })
-          .createReadStream()
-          .on('error', err => {
+          .then(async file => {
+            const techdocsMetadataJson = await streamToBuffer(
+              file.Body as Readable,
+            );
+
+            if (!techdocsMetadataJson) {
+              throw new Error(
+                `Unable to parse the techdocs metadata file ${entityRootDir}/techdocs_metadata.json.`,
+              );
+            }
+
+            resolve(techdocsMetadataJson.toString('utf-8'));
+          })
+          .catch(err => {
             this.logger.error(err.message);
             reject(new Error(err.message));
-          })
-          .on('data', chunk => {
-            fileStreamChunks.push(chunk);
-          })
-          .on('end', () => {
-            const techdocsMetadataJson = Buffer.concat(
-              fileStreamChunks,
-            ).toString();
-            resolve(techdocsMetadataJson);
           });
       });
     } catch (e) {
@@ -174,19 +208,14 @@ export class AwsS3Publish implements PublisherBase {
       const fileExtension = path.extname(filePath);
       const responseHeaders = getHeadersForFileExtension(fileExtension);
 
-      const fileStreamChunks: Array<any> = [];
       this.storageClient
         .getObject({ Bucket: this.bucketName, Key: filePath })
-        .createReadStream()
-        .on('error', err => {
-          this.logger.warn(err.message);
-          res.status(404).send(err.message);
-        })
-        .on('data', chunk => {
-          fileStreamChunks.push(chunk);
-        })
-        .on('end', () => {
-          const fileContent = Buffer.concat(fileStreamChunks).toString();
+        .then(async object => {
+          const fileContent = await streamToBuffer(object.Body as Readable);
+          if (!fileContent) {
+            throw new Error(`Unable to parse the file ${filePath}.`);
+          }
+
           // Inject response headers
           for (const [headerKey, headerValue] of Object.entries(
             responseHeaders,
@@ -195,6 +224,10 @@ export class AwsS3Publish implements PublisherBase {
           }
 
           res.send(fileContent);
+        })
+        .catch(err => {
+          this.logger.warn(err.message);
+          res.status(404).send(err.message);
         });
     };
   }
@@ -206,12 +239,10 @@ export class AwsS3Publish implements PublisherBase {
   async hasDocsBeenGenerated(entity: Entity): Promise<boolean> {
     try {
       const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
-      await this.storageClient
-        .headObject({
-          Bucket: this.bucketName,
-          Key: `${entityRootDir}/index.html`,
-        })
-        .promise();
+      await this.storageClient.headObject({
+        Bucket: this.bucketName,
+        Key: `${entityRootDir}/index.html`,
+      });
       return Promise.resolve(true);
     } catch (e) {
       return Promise.resolve(false);

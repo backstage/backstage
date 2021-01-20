@@ -37,12 +37,13 @@ describe('FossaClient', () => {
     server.use(
       rest.get(`${mockBaseUrl}/fossa/projects`, (req, res, ctx) => {
         expect(req.url.searchParams.toString()).toBe(
-          'count=1&title=our-service&organizationId=8736',
+          'count=1&sort=title+&title=our-service&organizationId=8736',
         );
         return res(
           ctx.json([
             {
               locator: 'custom+8736/our-service',
+              title: 'our-service',
               default_branch: 'develop',
               revisions: [
                 {
@@ -73,12 +74,13 @@ describe('FossaClient', () => {
     server.use(
       rest.get(`${mockBaseUrl}/fossa/projects`, (req, res, ctx) => {
         expect(req.url.searchParams.toString()).toBe(
-          'count=1&title=our-service&organizationId=8736',
+          'count=1&sort=title+&title=our-service&organizationId=8736',
         );
         return res(
           ctx.json([
             {
               locator: 'custom+8736/our-service',
+              title: 'our-service',
               default_branch: 'refs/master',
               revisions: [
                 {
@@ -104,13 +106,43 @@ describe('FossaClient', () => {
     } as FindingSummary);
   });
 
+  it('should handle empty result', async () => {
+    server.use(
+      rest.get(`${mockBaseUrl}/fossa/projects`, (req, res, ctx) => {
+        expect(req.url.searchParams.toString()).toBe(
+          'count=1&sort=title+&title=our-service&organizationId=8736',
+        );
+        return res(ctx.json([]));
+      }),
+    );
+
+    const summary = await client.getFindingSummary('our-service');
+
+    expect(summary).toBeUndefined();
+  });
+
+  it('should ignore result with invalid title', async () => {
+    server.use(
+      rest.get(`${mockBaseUrl}/fossa/projects`, (req, res, ctx) => {
+        expect(req.url.searchParams.toString()).toBe(
+          'count=1&sort=title+&title=our-service&organizationId=8736',
+        );
+        return res(ctx.json([{ title: 'our-service-2' }]));
+      }),
+    );
+
+    const summary = await client.getFindingSummary('our-service');
+
+    expect(summary).toBeUndefined();
+  });
+
   it('should skip organizationId', async () => {
     client = new FossaClient({ discoveryApi });
 
     server.use(
       rest.get(`${mockBaseUrl}/fossa/projects`, (req, res, ctx) => {
         expect(req.url.searchParams.toString()).toBe(
-          'count=1&title=our-service',
+          'count=1&sort=title+&title=our-service',
         );
         return res(ctx.status(404));
       }),
@@ -125,7 +157,7 @@ describe('FossaClient', () => {
     server.use(
       rest.get(`${mockBaseUrl}/fossa/projects`, (req, res, ctx) => {
         expect(req.url.searchParams.toString()).toBe(
-          'count=1&title=our-service&organizationId=8736',
+          'count=1&sort=title+&title=our-service&organizationId=8736',
         );
         return res(ctx.status(404));
       }),

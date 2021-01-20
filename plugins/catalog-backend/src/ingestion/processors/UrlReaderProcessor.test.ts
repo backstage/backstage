@@ -27,13 +27,18 @@ import {
 } from './types';
 
 describe('UrlReaderProcessor', () => {
-  const mockApiOrigin = 'http://localhost:23000';
+  const mockApiOrigin = 'http://localhost';
   const server = setupServer();
 
   msw.setupDefaultHandlers(server);
   it('should load from url', async () => {
     const logger = getVoidLogger();
-    const reader = UrlReaders.default({ logger, config: new ConfigReader({}) });
+    const reader = UrlReaders.default({
+      logger,
+      config: new ConfigReader({
+        backend: { reading: { allow: [{ host: 'localhost' }] } },
+      }),
+    });
     const processor = new UrlReaderProcessor({ reader, logger });
     const spec = {
       type: 'url',
@@ -57,7 +62,12 @@ describe('UrlReaderProcessor', () => {
 
   it('should fail load from url with error', async () => {
     const logger = getVoidLogger();
-    const reader = UrlReaders.default({ logger, config: new ConfigReader({}) });
+    const reader = UrlReaders.default({
+      logger,
+      config: new ConfigReader({
+        backend: { reading: { allow: [{ host: 'localhost' }] } },
+      }),
+    });
     const processor = new UrlReaderProcessor({ reader, logger });
     const spec = {
       type: 'url',

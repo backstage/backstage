@@ -23,7 +23,7 @@ We model software in the Backstage catalogue using these three core entities
 - **Resources** are physical or virtual infrastructure needed to operate a
   component
 
-![](../../assets/software-catalog/software-model-core-entities.png)
+![](../../assets/software-catalog/software-model-core-entities.drawio.svg)
 
 ### Component
 
@@ -73,6 +73,8 @@ these entities using the following (optional) concepts:
   function
 - **Domains** relate entities and systems to part of the business
 
+![](../../assets/software-catalog/software-model-entities.drawio.svg)
+
 ### System
 
 With increasing complexity in software, systems form an important abstraction
@@ -106,10 +108,6 @@ domain would come with some documentation on how to accept payments for a new
 product or use-case, share the same entity types in their APIs, and integrate
 well with each other. Other domains could be “Content Ingestion”, “Ads” or
 “Search”.
-
-## Current status
-
-Backstage currently supports Components and APIs.
 
 ## Links
 

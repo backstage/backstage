@@ -117,6 +117,7 @@ describe('<ProductInsightsCard/>', () => {
     );
     const subheaderRgx = new RegExp(subheader);
     expect(rendered.getByText(subheaderRgx)).toBeInTheDocument();
+    expect(rendered.queryByText(/sorted by cost/)).not.toBeInTheDocument();
     expect(
       rendered.queryByTestId('.resource-growth-chart-legend'),
     ).not.toBeInTheDocument();

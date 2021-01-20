@@ -1,10 +1,25 @@
 # @backstage/plugin-github-actions
 
+## 0.2.7
+
+### Patch Changes
+
+- 94fdf4955: Get rid of all usages of @octokit/types, and bump the rest of the octokit dependencies to the latest version
+- a6f9dca0d: Remove dependency on `@backstage/core-api`. No plugin should ever depend on that package; it's an internal concern whose important bits are re-exported by `@backstage/core` which is the public facing dependency to use.
+- Updated dependencies [f3b064e1c]
+- Updated dependencies [c00488983]
+- Updated dependencies [265a7ab30]
+- Updated dependencies [abbee6fff]
+- Updated dependencies [147fadcb9]
+  - @backstage/catalog-model@0.6.1
+  - @backstage/plugin-catalog@0.2.11
+  - @backstage/core@0.4.4
+
 ## 0.2.6
 
 ### Patch Changes
 
-- 19554f6d6: Added Github Actions for Create React App, and allow better imports of files inside a module when they're exposed using `files` in `package.json`
+- 19554f6d6: Added GitHub Actions for Create React App, and allow better imports of files inside a module when they're exposed using `files` in `package.json`
 - Updated dependencies [d681db2b5]
 - Updated dependencies [1dc445e89]
 - Updated dependencies [342270e4d]
@@ -94,7 +109,7 @@
 ### Minor Changes
 
 - 28edd7d29: Create backend plugin through CLI
-- d67c529ab: Adds a widget to show recent git workflow runs to the github actions plugin. The default setting is the last 5 runs across all branches but both branch and the number of runs are configurable.
+- d67c529ab: Adds a widget to show recent git workflow runs to the GitHub actions plugin. The default setting is the last 5 runs across all branches but both branch and the number of runs are configurable.
 - 6d97d2d6f: The InfoCard variant `'height100'` is deprecated. Use variant `'gridItem'` instead.
 
   When the InfoCard is displayed as a grid item within a grid, you may want items to have the same height for all items.

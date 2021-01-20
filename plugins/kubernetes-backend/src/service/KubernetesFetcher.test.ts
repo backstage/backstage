@@ -197,6 +197,27 @@ describe('KubernetesClientProvider', () => {
   });
   // they're in testErrorResponse
   // eslint-disable-next-line jest/expect-expect
+  it('should return pods, bad request error', async () => {
+    await testErrorResponse(
+      {
+        response: {
+          statusCode: 400,
+          request: {
+            uri: {
+              pathname: '/some/path',
+            },
+          },
+        },
+      },
+      {
+        errorType: 'BAD_REQUEST',
+        resourcePath: '/some/path',
+        statusCode: 400,
+      },
+    );
+  });
+  // they're in testErrorResponse
+  // eslint-disable-next-line jest/expect-expect
   it('should return pods, unauthorized error', async () => {
     await testErrorResponse(
       {

@@ -59,7 +59,7 @@ import GitHubIcon from '@material-ui/icons/GitHub';
 ```
 
 Simple! The App will reload with your changes automatically. You should now see
-a github icon displayed in the sidebar. Clicking that will link to our new
+a GitHub icon displayed in the sidebar. Clicking that will link to our new
 plugin. And now, the API fun begins.
 
 # The Identity
@@ -72,8 +72,7 @@ Our first modification will be to extract information from the Identity API.
 
 ```tsx
 // Add identityApiRef to the list of imported from core
-import { identityApiRef } from '@backstage/core';
-import { useApi } from '@backstage/core-api';
+import { identityApiRef, useApi } from '@backstage/core';
 ```
 
 3. Adjust the ExampleComponent from inline to block
@@ -143,8 +142,8 @@ import {
   TableColumn,
   Progress,
   githubAuthApiRef,
+  useApi,
 } from '@backstage/core';
-import { useApi } from '@backstage/core-api';
 import { graphql } from '@octokit/graphql';
 
 const ExampleFetchComponent = () => {

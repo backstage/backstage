@@ -8,6 +8,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    outputs:
+      needs_release: ${{ steps.release_check.outputs.needs_release }}
+
     strategy:
       matrix:
         node-version: [12.x, 14.x]
@@ -47,6 +50,15 @@ jobs:
         run: yarn install --frozen-lockfile
       # End of yarn setup
 
+      - name: Fetch previous commit for release check
+        run: git fetch origin '${{ github.event.before }}'
+
+      - name: Check if release
+        id: release_check
+        run: node scripts/check-if-release.js
+        env:
+          COMMIT_SHA_BEFORE: '${{ github.event.before }}'
+
       - name: validate config
         run: yarn backstage-cli config:check
 
@@ -82,8 +94,9 @@ jobs:
   # We can't re-use the output from the above step, but we'll have a guaranteed node_modules cache and
   # only run the build steps that are necessary for publishing
   release:
-    if: contains(github.event.commits.*.author.username, 'backstage-service') && contains(github.event.head_commit.message, 'from backstage/changeset-release/master')
     needs: build
+
+    if: needs.build.outputs.needs_release == 'true'
 
     runs-on: ubuntu-latest
 

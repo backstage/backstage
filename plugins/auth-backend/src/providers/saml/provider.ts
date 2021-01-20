@@ -15,8 +15,8 @@
  */
 
 import express from 'express';
+import { SamlConfig } from 'passport-saml/lib/passport-saml/types';
 import {
-  SamlConfig,
   Strategy as SamlStrategy,
   Profile as SamlProfile,
   VerifyWithoutRequest,
@@ -129,6 +129,7 @@ export const createSamlProvider: AuthProviderFactory = ({
   const opts = {
     callbackUrl: `${globalConfig.baseUrl}/${providerId}/handler/frame`,
     entryPoint: config.getString('entryPoint'),
+    logoutUrl: config.getOptionalString('logoutUrl'),
     issuer: config.getString('issuer'),
     cert: config.getOptionalString('cert'),
     privateCert: config.getOptionalString('privateKey'),
@@ -142,5 +143,10 @@ export const createSamlProvider: AuthProviderFactory = ({
     appUrl: globalConfig.appUrl,
   };
 
+  // passport-saml will return an error if the `cert` key is set, and the value is empty.
+  // Since we read from config (such as environment variables) an empty string should be equal to being unset.
+  if (!opts.cert) {
+    delete opts.cert;
+  }
   return new SamlAuthProvider(opts);
 };

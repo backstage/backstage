@@ -20,7 +20,7 @@ import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { parseLocationAnnotation } from '../helpers';
 import { InputError, Git } from '@backstage/backend-common';
 import { PreparerBase, PreparerOptions } from './types';
-import GitUriParser from 'git-url-parse';
+import parseGitUrl from 'git-url-parse';
 import { Config } from '@backstage/config';
 
 export class BitbucketPreparer implements PreparerBase {
@@ -49,7 +49,7 @@ export class BitbucketPreparer implements PreparerBase {
     }
     const templateId = template.metadata.name;
 
-    const repo = GitUriParser(location);
+    const repo = parseGitUrl(location);
     const repositoryCheckoutUrl = repo.toString('https');
 
     const tempDir = await fs.promises.mkdtemp(

@@ -43,7 +43,7 @@ export class Publisher {
     switch (publisherType) {
       case 'googleGcs':
         logger.info('Creating Google Storage Bucket publisher for TechDocs');
-        return GoogleGCSPublish.fromConfig(config, logger);
+        return await GoogleGCSPublish.fromConfig(config, logger);
       case 'awsS3':
         logger.info('Creating AWS S3 Bucket publisher for TechDocs');
         return AwsS3Publish.fromConfig(config, logger);

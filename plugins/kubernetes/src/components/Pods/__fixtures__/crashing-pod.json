@@ -1,0 +1,233 @@
+{
+  "metadata": {
+    "creationTimestamp": "2020-09-25T10:34:01.000Z",
+    "generateName": "dice-roller-canary-7d64cd756c-",
+    "labels": {
+      "app": "dice-roller-canary",
+      "backstage.io/kubernetes-id": "dice-roller",
+      "pod-template-hash": "7d64cd756c"
+    },
+    "name": "dice-roller-canary-7d64cd756c-55rfq",
+    "namespace": "default",
+    "ownerReferences": [
+      {
+        "apiVersion": "apps/v1",
+        "blockOwnerDeletion": true,
+        "controller": true,
+        "kind": "ReplicaSet",
+        "name": "dice-roller-canary-7d64cd756c",
+        "uid": "9208395b-a9a7-4e46-b881-6a189f7fbdb0"
+      }
+    ],
+    "resourceVersion": "620452",
+    "selfLink": "/api/v1/namespaces/default/pods/dice-roller-canary-7d64cd756c-55rfq",
+    "uid": "65ad28e3-5d51-4b4b-9bf8-4cb069803034"
+  },
+  "spec": {
+    "containers": [
+      {
+        "image": "nginx:1.14.2",
+        "imagePullPolicy": "IfNotPresent",
+        "name": "nginx",
+        "ports": [
+          {
+            "containerPort": 80,
+            "protocol": "TCP"
+          }
+        ],
+        "resources": {},
+        "terminationMessagePath": "/dev/termination-log",
+        "terminationMessagePolicy": "File",
+        "volumeMounts": [
+          {
+            "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+            "name": "default-token-5gctn",
+            "readOnly": true
+          }
+        ]
+      },
+      {
+        "image": "nginx:1.14.2",
+        "imagePullPolicy": "IfNotPresent",
+        "name": "side-car",
+        "ports": [
+          {
+            "containerPort": 81,
+            "protocol": "TCP"
+          }
+        ],
+        "resources": {},
+        "terminationMessagePath": "/dev/termination-log",
+        "terminationMessagePolicy": "File",
+        "volumeMounts": [
+          {
+            "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+            "name": "default-token-5gctn",
+            "readOnly": true
+          }
+        ]
+      },
+      {
+        "image": "nginx:1.14.2",
+        "imagePullPolicy": "IfNotPresent",
+        "name": "other-side-car",
+        "ports": [
+          {
+            "containerPort": 82,
+            "protocol": "TCP"
+          }
+        ],
+        "resources": {},
+        "terminationMessagePath": "/dev/termination-log",
+        "terminationMessagePolicy": "File",
+        "volumeMounts": [
+          {
+            "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+            "name": "default-token-5gctn",
+            "readOnly": true
+          }
+        ]
+      }
+    ],
+    "dnsPolicy": "ClusterFirst",
+    "enableServiceLinks": true,
+    "nodeName": "minikube",
+    "priority": 0,
+    "restartPolicy": "Always",
+    "schedulerName": "default-scheduler",
+    "securityContext": {},
+    "serviceAccount": "default",
+    "serviceAccountName": "default",
+    "terminationGracePeriodSeconds": 30,
+    "tolerations": [
+      {
+        "effect": "NoExecute",
+        "key": "node.kubernetes.io/not-ready",
+        "operator": "Exists",
+        "tolerationSeconds": 300
+      },
+      {
+        "effect": "NoExecute",
+        "key": "node.kubernetes.io/unreachable",
+        "operator": "Exists",
+        "tolerationSeconds": 300
+      }
+    ],
+    "volumes": [
+      {
+        "name": "default-token-5gctn",
+        "secret": {
+          "defaultMode": 420,
+          "secretName": "default-token-5gctn"
+        }
+      }
+    ]
+  },
+  "status": {
+    "conditions": [
+      {
+        "lastProbeTime": null,
+        "lastTransitionTime": "2020-09-25T10:34:01.000Z",
+        "status": "True",
+        "type": "Initialized"
+      },
+      {
+        "lastProbeTime": null,
+        "lastTransitionTime": "2020-09-25T14:18:53.000Z",
+        "message": "containers with unready status: [side-car other-side-car]",
+        "reason": "ContainersNotReady",
+        "status": "False",
+        "type": "Ready"
+      },
+      {
+        "lastProbeTime": null,
+        "lastTransitionTime": "2020-09-25T14:18:53.000Z",
+        "message": "containers with unready status: [side-car other-side-car]",
+        "reason": "ContainersNotReady",
+        "status": "False",
+        "type": "ContainersReady"
+      },
+      {
+        "lastProbeTime": null,
+        "lastTransitionTime": "2020-09-25T10:34:01.000Z",
+        "status": "True",
+        "type": "PodScheduled"
+      }
+    ],
+    "containerStatuses": [
+      {
+        "containerID": "docker://6ce15178d114a85f3d2e832de45c3355ab5b71ed5f4d4d225ee1c83bf07f69d9",
+        "image": "nginx:1.14.2",
+        "imageID": "docker-pullable://nginx@sha256:f7988fb6c02e0ce69257d9bd9cf37ae20a60f1df7563c3a2a6abe24160306b8d",
+        "lastState": {},
+        "name": "nginx",
+        "ready": true,
+        "restartCount": 0,
+        "started": true,
+        "state": {
+          "running": {
+            "startedAt": "2020-09-25T10:34:01.000Z"
+          }
+        }
+      },
+      {
+        "containerID": "docker://b3ce93d7f90bfe22558c61d2505b8473580574accdebb5fa4e51c0729c3511f4",
+        "image": "nginx:1.14.2",
+        "imageID": "docker-pullable://nginx@sha256:f7988fb6c02e0ce69257d9bd9cf37ae20a60f1df7563c3a2a6abe24160306b8d",
+        "lastState": {
+          "terminated": {
+            "containerID": "docker://b3ce93d7f90bfe22558c61d2505b8473580574accdebb5fa4e51c0729c3511f4",
+            "exitCode": 1,
+            "finishedAt": "2020-09-25T14:18:52.000Z",
+            "reason": "Error",
+            "startedAt": "2020-09-25T14:18:50.000Z"
+          }
+        },
+        "name": "other-side-car",
+        "ready": false,
+        "restartCount": 38,
+        "started": false,
+        "state": {
+          "waiting": {
+            "message": "back-off 5m0s restarting failed container=other-side-car pod=dice-roller-canary-7d64cd756c-55rfq_default(65ad28e3-5d51-4b4b-9bf8-4cb069803034)",
+            "reason": "CrashLoopBackOff"
+          }
+        }
+      },
+      {
+        "containerID": "docker://b7f0e65a2b8ab48c5f234616cfe8286aa96b55c3ef09c5cfbc4cdbe67a96f8cb",
+        "image": "nginx:1.14.2",
+        "imageID": "docker-pullable://nginx@sha256:f7988fb6c02e0ce69257d9bd9cf37ae20a60f1df7563c3a2a6abe24160306b8d",
+        "lastState": {
+          "terminated": {
+            "containerID": "docker://b7f0e65a2b8ab48c5f234616cfe8286aa96b55c3ef09c5cfbc4cdbe67a96f8cb",
+            "exitCode": 1,
+            "finishedAt": "2020-09-25T14:18:52.000Z",
+            "reason": "Error",
+            "startedAt": "2020-09-25T14:18:50.000Z"
+          }
+        },
+        "name": "side-car",
+        "ready": false,
+        "restartCount": 38,
+        "started": false,
+        "state": {
+          "waiting": {
+            "message": "back-off 5m0s restarting failed container=side-car pod=dice-roller-canary-7d64cd756c-55rfq_default(65ad28e3-5d51-4b4b-9bf8-4cb069803034)",
+            "reason": "CrashLoopBackOff"
+          }
+        }
+      }
+    ],
+    "hostIP": "192.168.64.2",
+    "phase": "Running",
+    "podIP": "172.17.0.16",
+    "podIPs": [
+      {
+        "ip": "172.17.0.16"
+      }
+    ],
+    "qosClass": "BestEffort",
+    "startTime": "2020-09-25T10:34:01.000Z"
+  }
+}

@@ -26,11 +26,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useMountedState } from 'react-use';
-import parseGitUri from 'git-url-parse';
 import { ComponentIdValidators } from '../util/validate';
 import { useGithubRepos } from '../util/useGithubRepos';
 import { ConfigSpec } from './ImportComponentPage';
 import { catalogApiRef } from '@backstage/plugin-catalog';
+import { urlType } from '../util/urls';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   form: {
@@ -46,9 +46,14 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
 type Props = {
   nextStep: () => void;
   saveConfig: (configFile: ConfigSpec) => void;
+  repository: string;
 };
 
-export const RegisterComponentForm = ({ nextStep, saveConfig }: Props) => {
+export const RegisterComponentForm = ({
+  nextStep,
+  saveConfig,
+  repository,
+}: Props) => {
   const { register, handleSubmit, errors, formState } = useForm({
     mode: 'onChange',
   });
@@ -59,27 +64,45 @@ export const RegisterComponentForm = ({ nextStep, saveConfig }: Props) => {
 
   const isMounted = useMountedState();
   const errorApi = useApi(errorApiRef);
-  const { generateEntityDefinitions } = useGithubRepos();
+  const {
+    generateEntityDefinitions,
+    checkForExistingCatalogInfo,
+  } = useGithubRepos();
 
   const onSubmit = async (formData: Record<string, string>) => {
     const { componentLocation: target } = formData;
-    try {
-      if (!isMounted()) return;
-      const type = !parseGitUri(target).filepathtype ? 'repo' : 'file';
+    async function saveCatalogFileConfig(target: string) {
+      const data = await catalogApi.addLocation({ target });
+      saveConfig({
+        type: 'file',
+        location: data.location.target,
+        config: data.entities,
+      });
+    }
 
-      if (type === 'repo') {
+    async function trySaveRepositoryConfig(target: string) {
+      const existingCatalog = await checkForExistingCatalogInfo(target);
+      if (existingCatalog.exists) {
+        const targetUrl = target.endsWith('/')
+          ? `${target}${existingCatalog.url}`
+          : `${target}/${existingCatalog.url}`;
+        await saveCatalogFileConfig(targetUrl);
+      } else {
         saveConfig({
-          type,
+          type: 'tree',
           location: target,
           config: await generateEntityDefinitions(target),
         });
+      }
+    }
+
+    try {
+      if (!isMounted()) return;
+      const type = urlType(target);
+      if (type === 'tree') {
+        await trySaveRepositoryConfig(target);
       } else {
-        const data = await catalogApi.addLocation({ target });
-        saveConfig({
-          type,
-          location: data.location.target,
-          config: data.entities,
-        });
+        await saveCatalogFileConfig(target);
       }
       nextStep();
     } catch (e) {
@@ -103,7 +126,7 @@ export const RegisterComponentForm = ({ nextStep, saveConfig }: Props) => {
           name="componentLocation"
           required
           margin="normal"
-          helperText="Enter the full path to the repository in GitHub to start tracking your component."
+          helperText={`Enter the full path to the repository in ${repository} to start tracking your component.`}
           inputRef={register({
             required: true,
             validate: ComponentIdValidators,

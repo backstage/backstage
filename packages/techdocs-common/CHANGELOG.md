@@ -1,5 +1,44 @@
 # @backstage/techdocs-common
 
+## 0.3.4
+
+### Patch Changes
+
+- a594a7257: @backstage/techdocs-common can now be imported in an environment without @backstage/plugin-techdocs-backend being installed.
+
+## 0.3.3
+
+### Patch Changes
+
+- 68ad5af51: Improve techdocs-common Generator API for it to be used by techdocs-cli. TechDocs generator.run function now takes
+  an input AND an output directory. Most probably you use techdocs-common via plugin-techdocs-backend, and so there
+  is no breaking change for you.
+  But if you use techdocs-common separately, you need to create an output directory and pass into the generator.
+- 371f67ecd: fix to-string breakage of binary files
+- f1e74777a: Fix bug where binary files (`png`, etc.) could not load when using AWS or GCS publisher.
+- dbe4450c3: Google Cloud authentication in TechDocs has been improved.
+
+  1. `techdocs.publisher.googleGcs.credentials` is now optional. If it is missing, `GOOGLE_APPLICATION_CREDENTIALS`
+     environment variable (and some other methods) will be used to authenticate.
+     Read more here https://cloud.google.com/docs/authentication/production
+
+  2. `techdocs.publisher.googleGcs.projectId` is no longer used. You can remove it from your `app-config.yaml`.
+
+- 5826d0973: AWS SDK version bump for TechDocs.
+- b3b9445df: AWS S3 authentication in TechDocs has been improved.
+
+  1. `techdocs.publisher.awsS3.bucketName` is now the only required config. `techdocs.publisher.awsS3.credentials` and `techdocs.publisher.awsS3.region` are optional.
+
+  2. If `techdocs.publisher.awsS3.credentials` and `techdocs.publisher.awsS3.region` are missing, the AWS environment variables `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and `AWS_REGION` will be used. There are more better ways of setting up AWS authentication. Read the guide at https://backstage.io/docs/features/techdocs/using-cloud-storage
+
+- Updated dependencies [466354aaa]
+- Updated dependencies [f3b064e1c]
+- Updated dependencies [abbee6fff]
+- Updated dependencies [147fadcb9]
+  - @backstage/integration@0.2.0
+  - @backstage/catalog-model@0.6.1
+  - @backstage/backend-common@0.4.3
+
 ## 0.3.2
 
 ### Patch Changes

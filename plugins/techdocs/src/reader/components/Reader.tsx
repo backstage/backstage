@@ -115,7 +115,15 @@ export const Reader = ({ entityId, onReady }: Props) => {
         baseUrl: window.location.origin,
         onClick: (_: MouseEvent, url: string) => {
           const parsedUrl = new URL(url);
-          navigate(`${parsedUrl.pathname}${parsedUrl.hash}`);
+          if (parsedUrl.hash) {
+            history.pushState(
+              null,
+              '',
+              `${parsedUrl.pathname}${parsedUrl.hash}`,
+            );
+          } else {
+            navigate(parsedUrl.pathname);
+          }
 
           shadowRoot?.querySelector(parsedUrl.hash)?.scrollIntoView();
         },
