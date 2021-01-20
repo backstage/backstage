@@ -78,7 +78,7 @@ export class GitlabUrlReader implements UrlReader {
     url: string,
     options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
-    const { name: repoName, ref, full_name, filepath } = parseGitUrl(url);
+    const { ref, full_name, filepath } = parseGitUrl(url);
 
     // Use GitLab API to get the default branch
     // encodeURIComponent is required for GitLab API

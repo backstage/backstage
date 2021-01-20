@@ -101,16 +101,12 @@ export class BitbucketUrlReader implements UrlReader {
     url: string,
     options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
-    const { name: repoName, owner: project, resource, filepath } = parseGitUrl(
-      url,
-    );
+    const { filepath } = parseGitUrl(url);
 
     const lastCommitShortHash = await this.getLastCommitShortHash(url);
     if (options?.etag && options.etag === lastCommitShortHash) {
       throw new NotModifiedError();
     }
-
-    const isHosted = resource === 'bitbucket.org';
 
     const downloadUrl = await getBitbucketDownloadUrl(url, this.config);
     const archiveBitbucketResponse = await fetch(
