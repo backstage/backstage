@@ -30,13 +30,12 @@ import {
  */
 export class ZipArchiveResponse implements ReadTreeResponse {
   private read = false;
-  public readonly etag;
 
   constructor(
     private readonly stream: Readable,
     private readonly subPath: string,
     private readonly workDir: string,
-    etag: string,
+    public readonly etag: string,
     private readonly filter?: (path: string) => boolean,
   ) {
     if (subPath) {
