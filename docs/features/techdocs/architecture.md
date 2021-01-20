@@ -134,9 +134,8 @@ with the cloud storage provider, for both fetching static generated sites and
 publishing the updates. There are other planned features like an authentication
 layer for users to determine whether they have the permission to view a
 particular docs site. There are a handful of features which are extremely hard
-to develop without a tightly integrated backend in place. Hence, supporting
-`techdocs` without `techdocs-backend` is limiting and challenging for its
-development.
+to develop without a tightly integrated backend in place. Hence, support for
+`techdocs` without `techdocs-backend` is limited and challenging to develop.
 
 # Future work
 
