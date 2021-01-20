@@ -48,13 +48,18 @@ export class Publishers implements PublisherBuilder {
 
     const scm = ScmIntegrations.fromConfig(config);
 
+    const deprecationWarning = (name: string) => {
+      logger.warn(
+        `'Specifying credentials for ${name} in the Scaffolder configuration is deprecated. This will cause errors in a future release. Please migrate to using integrations config and specifying tokens under hostnames'`,
+      );
+    };
+
     for (const integration of scm.azure.list()) {
       const publisher = await AzurePublisher.fromConfig(integration.config);
-
       if (publisher) {
         publishers.register(integration.config.host, publisher);
       } else {
-        logger.warn('DEPRECATED');
+        deprecationWarning('Azure');
 
         publishers.register(
           integration.config.host,
@@ -74,11 +79,10 @@ export class Publishers implements PublisherBuilder {
       const publisher = await GithubPublisher.fromConfig(integration.config, {
         repoVisibility,
       });
-
       if (publisher) {
         publishers.register(integration.config.host, publisher);
       } else {
-        logger.warn('DEPRECATED');
+        deprecationWarning('GitHub');
 
         publishers.register(
           integration.config.host,
@@ -99,7 +103,7 @@ export class Publishers implements PublisherBuilder {
       if (publisher) {
         publishers.register(integration.config.host, publisher);
       } else {
-        logger.warn('DEPRECATED');
+        deprecationWarning('Gitlab');
 
         publishers.register(
           integration.config.host,
@@ -117,7 +121,7 @@ export class Publishers implements PublisherBuilder {
       if (publisher) {
         publishers.register(integration.config.host, publisher);
       } else {
-        logger.warn('DEPRECATED');
+        deprecationWarning('Bitbucket');
 
         publishers.register(
           integration.config.host,
