@@ -64,27 +64,45 @@ export const RegisterComponentForm = ({
 
   const isMounted = useMountedState();
   const errorApi = useApi(errorApiRef);
-  const { generateEntityDefinitions } = useGithubRepos();
+  const {
+    generateEntityDefinitions,
+    checkForExistingCatalogInfo,
+  } = useGithubRepos();
 
   const onSubmit = async (formData: Record<string, string>) => {
     const { componentLocation: target } = formData;
-    try {
-      if (!isMounted()) return;
-      const type = urlType(target);
+    async function saveCatalogFileConfig(target: string) {
+      const data = await catalogApi.addLocation({ target });
+      saveConfig({
+        type: 'file',
+        location: data.location.target,
+        config: data.entities,
+      });
+    }
 
-      if (type === 'tree') {
+    async function trySaveRepositoryConfig(target: string) {
+      const existingCatalog = await checkForExistingCatalogInfo(target);
+      if (existingCatalog.exists) {
+        const targetUrl = target.endsWith('/')
+          ? `${target}${existingCatalog.url}`
+          : `${target}/${existingCatalog.url}`;
+        await saveCatalogFileConfig(targetUrl);
+      } else {
         saveConfig({
-          type,
+          type: 'tree',
           location: target,
           config: await generateEntityDefinitions(target),
         });
+      }
+    }
+
+    try {
+      if (!isMounted()) return;
+      const type = urlType(target);
+      if (type === 'tree') {
+        await trySaveRepositoryConfig(target);
       } else {
-        const data = await catalogApi.addLocation({ target });
-        saveConfig({
-          type,
-          location: data.location.target,
-          config: data.entities,
-        });
+        await saveCatalogFileConfig(target);
       }
       nextStep();
     } catch (e) {
