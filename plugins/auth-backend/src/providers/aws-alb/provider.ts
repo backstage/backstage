@@ -19,8 +19,7 @@ import {
   ExperimentalIdentityResolver,
 } from '../types';
 import express from 'express';
-// @ts-ignore no types available for R2
-import r2 from 'r2';
+import fetch from 'cross-fetch';
 import * as crypto from 'crypto';
 import { KeyObject } from 'crypto';
 import { Logger } from 'winston';
@@ -101,9 +100,9 @@ export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
     if (optionalCacheKey) {
       return optionalCacheKey;
     }
-    const keyText: string = await r2(
+    const keyText: string = await fetch(
       `https://public-keys.auth.elb.${this.options.region}.amazonaws.com/${keyId}`,
-    ).text;
+    ).then(response => response.json());
     const keyValue = crypto.createPublicKey(keyText);
     this.keyCache.set(keyId, keyValue);
     return keyValue;

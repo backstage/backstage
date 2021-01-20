@@ -65,7 +65,6 @@
     "passport-okta-oauth": "^0.0.1",
     "passport-onelogin-oauth": "^0.0.1",
     "passport-saml": "^2.0.0",
-    "r2": "^2.0.1",
     "uuid": "^8.0.0",
     "winston": "^3.2.1",
     "yn": "^4.0.0"

@@ -30,11 +30,13 @@ yOlxJ2VW88mLAQGJ7HPAvOdylxZsItMnzCuqNzZvie8m/NJsOjhDncVkrw==
 `;
 };
 
-jest.mock('r2', () => ({
+jest.mock('cross-fetch', () => ({
   __esModule: true,
-  default: () => {
+  default: async () => {
     return {
-      text: mockKey(),
+      json: async () => {
+        return mockKey();
+      },
     };
   },
 }));

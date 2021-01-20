@@ -133,7 +133,6 @@ export class TokenFactory implements TokenIssuer {
       const kid = uuid();
       const jwk = await fromKeyLike(key.privateKey);
 
-      // @ts-ignore https://github.com/microsoft/TypeScript/issues/13195 -
       // JOSE Library provides optional for most fields - and TS does not distinguish between missing/undefined.
       // Because AnyJWK requires keys to have type "string", this throws a TypeError - though in practice, if the field
       // is undefined, JOSE will not send it back as key.
@@ -142,7 +141,7 @@ export class TokenFactory implements TokenIssuer {
         alg: 'ES256',
         kid: kid,
         use: 'sig',
-      };
+      } as AnyJWK;
       // We're not allowed to use the key until it has been successfully stored
       // TODO: some token verification implementations aggressively cache the list of keys, and
       //       don't attempt to fetch new ones even if they encounter an unknown kid. Therefore we
