@@ -5,7 +5,7 @@
 '@backstage/plugin-scaffolder-backend': minor
 ---
 
-- Deprecating the `scaffolder.${provider}.token` auth duplication and favoring `integrations.${provider}` instead. If you recieve deprecation warnings your config should change like the following:
+- Deprecating the `scaffolder.${provider}.token` auth duplication and favoring `integrations.${provider}` instead. If you receive deprecation warnings your config should change like the following:
 
 ```yaml
 scaffolder:
@@ -45,8 +45,8 @@ This of course is the case for all the providers respectively.
 
 - Adding support for cross provider scaffolding, you can now create repositories in for example Bitbucket using a template residing in GitHub.
 
-- Fix Gitlab scaffolding so that it returns a `catalogInfoUrl` which automatically imports the project into the catalog.
+- Fix GitLab scaffolding so that it returns a `catalogInfoUrl` which automatically imports the project into the catalog.
 
 - The `Store Path` field on the `scaffolder` frontend has now changed so that you require the full URL to the desired destination repository.
 
-`backstage/new-repository` would become `https://github.com/backstage/new-repository` if provider was github for example.
+`backstage/new-repository` would become `https://github.com/backstage/new-repository` if provider was GitHub for example.
