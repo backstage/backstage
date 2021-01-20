@@ -25,10 +25,10 @@ import { PreparerBase, PreparerOptions } from './types';
 
 export class GitlabPreparer implements PreparerBase {
   static fromConfig(config: GitLabIntegrationConfig) {
-    return new GitlabPreparer(config.token);
+    return new GitlabPreparer({ token: config.token });
   }
 
-  constructor(private readonly token?: string) {}
+  constructor(private readonly config: { token?: string }) {}
 
   async prepare(
     template: TemplateEntityV1alpha1,
@@ -51,9 +51,9 @@ export class GitlabPreparer implements PreparerBase {
       template.spec.path ?? '.',
     );
 
-    const git = this.token
+    const git = this.config.token
       ? Git.fromAuth({
-          password: this.token,
+          password: this.config.token,
           username: 'oauth2',
           logger,
         })

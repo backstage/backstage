@@ -30,13 +30,10 @@ export class AzurePublisher implements PublisherBase {
     const authHandler = getPersonalAccessTokenHandler(config.token);
     const webApi = new WebApi(config.host, authHandler);
     const azureClient = await webApi.getGitApi();
-    return new AzurePublisher(config.token, azureClient);
+    return new AzurePublisher({ token: config.token, client: azureClient });
   }
 
-  constructor(
-    private readonly token: string,
-    private readonly azureClient: IGitApi,
-  ) {}
+  constructor(private readonly config: { token: string; client: IGitApi }) {}
 
   async publish({
     values,
@@ -57,7 +54,7 @@ export class AzurePublisher implements PublisherBase {
       remoteUrl,
       auth: {
         username: 'notempty',
-        password: this.token,
+        password: this.config.token,
       },
       logger,
     });
@@ -68,7 +65,7 @@ export class AzurePublisher implements PublisherBase {
   private async createRemote(opts: { name: string; project: string }) {
     const { name, project } = opts;
     const createOptions: GitRepositoryCreateOptions = { name };
-    const repo = await this.azureClient.createRepository(
+    const repo = await this.config.client.createRepository(
       createOptions,
       project,
     );
