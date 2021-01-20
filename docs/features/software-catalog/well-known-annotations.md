@@ -22,7 +22,7 @@ use.
 # Example:
 metadata:
   annotations:
-    backstage.io/managed-by-location: url:http://github.com/backstage/backstage/catalog-info.yaml
+    backstage.io/managed-by-location: url:http://github.com/backstage/backstage/blob/master/catalog-info.yaml
 ```
 
 The value of this annotation is a so called location reference string, that
@@ -46,7 +46,7 @@ colon is always present.
 # Example:
 metadata:
   annotations:
-    backstage.io/managed-by-origin-location: url:http://github.com/backstage/backstage/catalog-info.yaml
+    backstage.io/managed-by-origin-location: url:http://github.com/backstage/backstage/blob/master/catalog-info.yaml
 ```
 
 The value of this annotation is a location reference string (see above). It
@@ -54,7 +54,7 @@ points to the location, whose registration lead to the creation of the entity.
 In most cases, the `backstage.io/managed-by-location` and
 `backstage.io/managed-by-origin-location` will be equal. They will be different
 if the original location delegates to another location. A common case is, that a
-location is registered as `bootstrap:boostrap` which means that it is part of
+location is registered as `bootstrap:bootstrap` which means that it is part of
 the `app-config.yaml` of a Backstage installation.
 
 ### backstage.io/techdocs-ref
@@ -63,7 +63,7 @@ the `app-config.yaml` of a Backstage installation.
 # Example:
 metadata:
   annotations:
-    backstage.io/techdocs-ref: url:https://github.com/backstage/backstage.git
+    backstage.io/techdocs-ref: url:https://github.com/backstage/backstage/tree/master
 ```
 
 The value of this annotation is a location reference string (see above). If this
