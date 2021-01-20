@@ -25,7 +25,14 @@ jobs:
         run: |
           fossa init --project PROJECT_NAME
           yq eval -i '.analyze.modules[].options.strategy = "yarn-list"' .fossa.yml
-          yq eval -i 'del(.analyze.modules[] | select(.type == "mvn"))' .fossa.yml
+
+          # This deletes entries for template and example packages found within packages and plugins
+          # Seems like yq has a bug that causes only a subset of all matches to be deleted each run
+          yq eval -i 'del(.analyze.modules[] | select(.path == "*/*/**"))' .fossa.yml
+          yq eval -i 'del(.analyze.modules[] | select(.path == "*/*/**"))' .fossa.yml
+          yq eval -i 'del(.analyze.modules[] | select(.path == "*/*/**"))' .fossa.yml
+          yq eval -i 'del(.analyze.modules[] | select(.path == "*/*/**"))' .fossa.yml
+          yq eval -i 'del(.analyze.modules[] | select(.path == "*/*/**"))' .fossa.yml
 
       - name: Show config
         run: cat .fossa.yml
