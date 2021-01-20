@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { useState } from 'react';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { useTheme, Box } from '@material-ui/core';
@@ -62,6 +62,7 @@ export const CostOverviewByProductChart = ({
   const styles = useStyles(theme);
   const lastCompleteBillingDate = useLastCompleteBillingDate();
   const { duration } = useFilters(mapFiltersToProps);
+  const [isExpanded, setExpanded] = useState(false);
 
   if (!costsByProduct) {
     return null;
@@ -79,23 +80,27 @@ export const CostOverviewByProductChart = ({
     lastCompleteBillingDate,
   );
   const currentPeriodTotal = totalCost - previousPeriodTotal;
+  const otherProducts: string[] = [];
+
   const productsByDate = costsByProduct.reduce((prodByDate, product) => {
     const productTotal = aggregationSum(product.aggregation);
     // Group products with less than 10% of the total cost into "Other" category
-    // when there we have >= 5 products.
+    // when we have >= 8 products.
     const isOtherProduct =
-      costsByProduct.length >= 5 &&
+      costsByProduct.length >= 8 &&
       productTotal < totalCost * LOW_COST_THRESHOLD;
-    const productName = isOtherProduct ? 'Other' : product.id;
-    const updatedProdByDate = { ...prodByDate };
 
+    const updatedProdByDate = { ...prodByDate };
+    if (isOtherProduct) {
+      otherProducts.push(product.id);
+    }
     product.aggregation.forEach(curAggregation => {
       const productCostsForDate = updatedProdByDate[curAggregation.date] || {};
 
       updatedProdByDate[curAggregation.date] = {
         ...productCostsForDate,
-        [productName]:
-          (productCostsForDate[productName] || 0) + curAggregation.amount,
+        [product.id]:
+          (productCostsForDate[product.id] || 0) + curAggregation.amount,
       };
     });
 
