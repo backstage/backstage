@@ -19,9 +19,13 @@ import { JWK, JWT, JWKS, JSONWebKey } from 'jose';
 import { BackstageIdentity } from '../providers';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 
+const CLOCK_MARGIN_S = 10;
+
 /**
  * A identity client to interact with auth-backend
  * and authenticate backstage identity tokens
+ *
+ * @experimental This is not a stable API yet
  */
 export class IdentityClient {
   private readonly discovery: PluginEndpointDiscovery;
@@ -38,17 +42,13 @@ export class IdentityClient {
 
   /**
    * Verifies the given backstage identity token
-   * (provided as a Bearer token in the authorization header).
    * Returns a BackstageIdentity (user) matching the token.
    * The method throws an error if verification fails.
    */
-  async authenticate(
-    authorizationHeader: string | undefined,
-  ): Promise<BackstageIdentity> {
+  async authenticate(token: string | undefined): Promise<BackstageIdentity> {
     // Extract token from header
-    const token = IdentityClient.getBearerToken(authorizationHeader);
     if (!token) {
-      throw new Error('No bearer token found in authorization header');
+      throw new Error('No token specified');
     }
     // Get signing key matching token
     const key = await this.getKey(token);
@@ -78,12 +78,12 @@ export class IdentityClient {
    */
   static getBearerToken(
     authorizationHeader: string | undefined,
-  ): string | null {
+  ): string | undefined {
     if (typeof authorizationHeader !== 'string') {
-      return null;
+      return undefined;
     }
     const matches = authorizationHeader.match(/Bearer\s+(\S+)/i);
-    return matches && matches[1];
+    return matches?.[1];
   }
 
   /**
@@ -97,14 +97,16 @@ export class IdentityClient {
       header: { kid: string };
       payload: { iat: number };
     };
+
     // Refresh public keys if needed
-    if (
-      !this.keyStore.get({ kid: header.kid }) &&
-      payload?.iat &&
-      payload.iat > this.keyStoreUpdated
-    ) {
+    // Add a small margin in case clocks are out of sync
+    const keyStoreHasKey = !!this.keyStore.get({ kid: header.kid });
+    const issuedAfterLastRefresh =
+      payload?.iat && payload.iat > this.keyStoreUpdated - CLOCK_MARGIN_S;
+    if (!keyStoreHasKey && issuedAfterLastRefresh) {
       await this.refreshKeyStore();
     }
+
     return this.keyStore.get({ kid: header.kid });
   }
 

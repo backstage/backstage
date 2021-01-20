@@ -22,7 +22,6 @@
  * Happy hacking!
  */
 
-import { Request, Response, NextFunction } from 'express';
 import Router from 'express-promise-router';
 import {
   createServiceBuilder,
@@ -35,7 +34,6 @@ import {
   useHotMemoize,
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
-import { IdentityClient } from '@backstage/plugin-auth-backend';
 import healthcheck from './plugins/healthcheck';
 import auth from './plugins/auth';
 import catalog from './plugins/catalog';
@@ -82,34 +80,16 @@ async function main() {
   const graphqlEnv = useHotMemoize(module, () => createEnv('graphql'));
   const appEnv = useHotMemoize(module, () => createEnv('app'));
 
-  const discovery = SingleHostDiscovery.fromConfig(config);
-  const identity = new IdentityClient({
-    discovery,
-    issuer: await discovery.getExternalBaseUrl('auth'),
-  });
-  const authMiddleware = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
-    try {
-      req.user = await identity.authenticate(req.headers.authorization);
-      next();
-    } catch (error) {
-      res.status(401).send(`Unauthorized`);
-    }
-  };
-
   const apiRouter = Router();
-  apiRouter.use('/catalog', authMiddleware, await catalog(catalogEnv));
-  apiRouter.use('/rollbar', authMiddleware, await rollbar(rollbarEnv));
-  apiRouter.use('/scaffolder', authMiddleware, await scaffolder(scaffolderEnv));
+  apiRouter.use('/catalog', await catalog(catalogEnv));
+  apiRouter.use('/rollbar', await rollbar(rollbarEnv));
+  apiRouter.use('/scaffolder', await scaffolder(scaffolderEnv));
   apiRouter.use('/auth', await auth(authEnv));
-  apiRouter.use('/techdocs', authMiddleware, await techdocs(techdocsEnv));
-  apiRouter.use('/kubernetes', authMiddleware, await kubernetes(kubernetesEnv));
-  apiRouter.use('/proxy', authMiddleware, await proxy(proxyEnv));
-  apiRouter.use('/graphql', authMiddleware, await graphql(graphqlEnv));
-  apiRouter.use(authMiddleware, notFoundHandler());
+  apiRouter.use('/techdocs', await techdocs(techdocsEnv));
+  apiRouter.use('/kubernetes', await kubernetes(kubernetesEnv));
+  apiRouter.use('/proxy', await proxy(proxyEnv));
+  apiRouter.use('/graphql', await graphql(graphqlEnv));
+  apiRouter.use(notFoundHandler());
 
   const service = createServiceBuilder(module)
     .loadConfig(config)

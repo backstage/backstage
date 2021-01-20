@@ -15,7 +15,6 @@
  */
 
 import { JWT, JSONWebKey } from 'jose';
-import { utc } from 'moment';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import {
@@ -23,39 +22,11 @@ import {
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
 import { IdentityClient } from './IdentityClient';
+import { MemoryKeyStore } from './MemoryKeyStore';
 import { TokenFactory } from './TokenFactory';
-import { KeyStore, AnyJWK, StoredKey } from './types';
+import { KeyStore } from './types';
 
 const logger = getVoidLogger();
-
-class MemoryKeyStore implements KeyStore {
-  private readonly keys = new Map<
-    string,
-    { createdAt: moment.Moment; key: string }
-  >();
-
-  async addKey(key: AnyJWK): Promise<void> {
-    this.keys.set(key.kid, {
-      createdAt: utc(),
-      key: JSON.stringify(key),
-    });
-  }
-
-  async removeKeys(kids: string[]): Promise<void> {
-    for (const kid of kids) {
-      this.keys.delete(kid);
-    }
-  }
-
-  async listKeys(): Promise<{ items: StoredKey[] }> {
-    return {
-      items: Array.from(this.keys).map(([, { createdAt, key: keyStr }]) => ({
-        createdAt,
-        key: JSON.parse(keyStr),
-      })),
-    };
-  }
-}
 
 function jwtKid(jwt: string): string {
   const { header } = JWT.decode(jwt, { complete: true }) as {
@@ -124,7 +95,7 @@ describe('IdentityClient', () => {
 
     it('should accept fresh token', async () => {
       const token = await factory.issueToken({ claims: { sub: 'foo' } });
-      const response = await client.authenticate(`Bearer ${token}`);
+      const response = await client.authenticate(token);
       expect(response).toEqual({ id: 'foo', idToken: token });
     });
 
@@ -139,7 +110,7 @@ describe('IdentityClient', () => {
         const token = await hackerFactory.issueToken({
           claims: { sub: 'foo' },
         });
-        await client.authenticate(`Bearer ${token}`);
+        await client.authenticate(token);
       }).rejects.toThrow();
     });
 
@@ -153,7 +124,7 @@ describe('IdentityClient', () => {
           claims: { sub: 'foo' },
         });
         jest.spyOn(Date, 'now').mockImplementation(() => fixedTime);
-        await client.authenticate(`Bearer ${token}`);
+        await client.authenticate(token);
       }).rejects.toThrow();
     });
 
@@ -168,7 +139,7 @@ describe('IdentityClient', () => {
         const token = await hackerFactory.issueToken({
           claims: { sub: 'foo' },
         });
-        await client.authenticate(`Bearer ${token}`);
+        await client.authenticate(token);
       }).rejects.toThrow();
     });
 
@@ -180,14 +151,14 @@ describe('IdentityClient', () => {
       const token1 = await factory.issueToken({ claims: { sub: 'foo1' } });
       try {
         // This throws as token has already expired
-        await client.authenticate(`Bearer ${token1}`);
+        await client.authenticate(token1);
       } catch (_err) {
         // Ignore thrown error
       }
       // Move forward in time where the signing key has been rotated
       jest.spyOn(Date, 'now').mockImplementation(() => fixedTime);
       const token = await factory.issueToken({ claims: { sub: 'foo' } });
-      const response = await client.authenticate(`Bearer ${token}`);
+      const response = await client.authenticate(token);
       expect(response).toEqual({ id: 'foo', idToken: token });
     });
 
@@ -207,25 +178,25 @@ describe('IdentityClient', () => {
           }),
         );
         const fakeToken = `${header}.${payload}.`;
-        return await client.authenticate(`Bearer ${fakeToken}`);
+        return await client.authenticate(fakeToken);
       }).rejects.toThrow();
     });
   });
 
   describe('getBearerToken', () => {
-    it('should return null on undefined input', async () => {
+    it('should return undefined on undefined input', async () => {
       const token = IdentityClient.getBearerToken(undefined);
-      expect(token).toBeNull();
+      expect(token).toBeUndefined();
     });
 
-    it('should return null on malformed input', async () => {
+    it('should return undefined on malformed input', async () => {
       const token = IdentityClient.getBearerToken('malformed');
-      expect(token).toBeNull();
+      expect(token).toBeUndefined();
     });
 
-    it('should return null on unexpected scheme', async () => {
+    it('should return undefined on unexpected scheme', async () => {
       const token = IdentityClient.getBearerToken('Basic token');
-      expect(token).toBeNull();
+      expect(token).toBeUndefined();
     });
 
     it('should return Bearer token', async () => {
