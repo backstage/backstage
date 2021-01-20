@@ -15,41 +15,115 @@
  */
 
 export interface Config {
+  /** Configuration for integrations towards various external repository provider systems */
   integrations?: {
+    /** Integration configuration for Azure */
     azure?: Array<{
-      /** @visibility frontend */
+      /**
+       * The hostname of the given Azure instance
+       * @visibility frontend
+       */
       host: string;
+      /**
+       * Token used to authenticate requests.
+       * @visibility secret
+       */
+      token?: string;
     }>;
 
+    /** Integration configuration for BitBucket */
     bitbucket?: Array<{
-      /** @visibility frontend */
+      /**
+       * The hostname of the given Bitbucket instance
+       * @visibility frontend
+       */
       host: string;
-      /** @visibility frontend */
+      /**
+       * Token used to authenticate requests.
+       * @visibility secret
+       */
+      token?: string;
+      /**
+       * The base url for the BitBucket API, for example https://api.bitbucket.org/2.0
+       * @visibility frontend
+       */
       apiBaseUrl?: string;
+      /**
+       * The username to use for authenticated requests.
+       * @visibility secret
+       */
+      username?: string;
+      /**
+       * BitBucket app password used to authenticate requests.
+       * @visibility secret
+       */
+      appPassword?: string;
     }>;
 
+    /** Integration configuration for GitHub */
     github?: Array<{
-      /** @visibility frontend */
+      /**
+       * The hostname of the given GitHub instance
+       * @visibility frontend
+       */
       host: string;
-      /** @visibility frontend */
+      /**
+       * Token used to authenticate requests.
+       * @visibility secret
+       */
+      token?: string;
+      /**
+       * The base url for the GitHub API, for example https://api.github.com
+       * @visibility frontend
+       */
       apiBaseUrl?: string;
-      /** @visibility frontend */
+      /**
+       * The base url for GitHub raw resources, for example https://raw.githubusercontent.com
+       * @visibility frontend
+       */
       rawBaseUrl?: string;
+
+      /** GitHub Apps configuration */
       apps?: Array<{
+        /**
+         * The numeric GitHub App ID
+         * @visibility frontend
+         */
         appId: number;
-        /** @visiblity secret */
+        /**
+         * The private key to use for auth against the app
+         * @visibility secret
+         */
         privateKey: string;
-        /** @visiblity secret */
+        /**
+         * The secret used for webhooks
+         * @visibility secret
+         */
         webhookSecret: string;
+        /**
+         * The client ID to use
+         */
         clientId: string;
-        /** @visiblity secret */
+        /**
+         * The client secret to use
+         * @visibility secret
+         */
         clientSecret: string;
       }>;
     }>;
 
+    /** Integration configuration for GitLab */
     gitlab?: Array<{
-      /** @visibility frontend */
+      /**
+       * The hostname of the given GitLab instance
+       * @visibility frontend
+       */
       host: string;
+      /**
+       * Token used to authenticate requests.
+       * @visibility secret
+       */
+      token?: string;
     }>;
   };
 }
