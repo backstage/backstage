@@ -196,20 +196,20 @@ the static generated documentation files. When you start the backend of the app,
 you should be able to see
 `techdocs info Successfully connected to the AWS S3 bucket` in the logs.
 
-## Configuring Azure Storage Container with TechDocs
+## Configuring Azure Blob Storage Container with TechDocs
 
 Follow the
-[official Azure Storage documentation](https://docs.microsoft.com/pt-br/javascript/api/@azure/storage-blob/?view=azure-node-latest)
-for the latest instructions on the following steps involving Azure Storage.
+[official Azure Blob Storage documentation](https://docs.microsoft.com/en-us/azure/storage/common/storage-auth?toc=/azure/storage/blobs/toc.json)
+for the latest instructions on the following steps involving Azure Blob Storage.
 
 **1. Set `techdocs.publisher.type` config in your `app-config.yaml`**
 
-Set `techdocs.publisher.type` to `'azureStorage'`.
+Set `techdocs.publisher.type` to `'azureBlobStorage'`.
 
 ```yaml
 techdocs:
   publisher:
-    type: 'azureStorage'
+    type: 'azureBlobStorage'
 ```
 
 **2. Service account credentials**
@@ -220,14 +220,14 @@ and get your Storage account name and Primary Key.
 ```yaml
 techdocs:
   publisher:
-    type: 'azureStorage'
-    azureStorage:
+    type: 'azureBlobStorage'
+    azureBlobStorage:
       credentials:
         account: 'account'
         accountKey: 'accountKey'
 ```
 
-**3. Azure Storage Container**
+**3. Azure Blob Storage Container**
 
 Create a dedicated container for TechDocs sites. techdocs-backend will publish
 documentation to this container. TechDocs will fetch files from here to serve
@@ -236,23 +236,25 @@ documentation in Backstage.
 To create a new container, access "Blob Service > Containers > New Container".
 
 Set the name of the container to
-`techdocs.publisher.azureStorage.containerName`.
+`techdocs.publisher.azureBlobStorage.containerName`.
 
 ```yaml
 techdocs:
   publisher:
-    type: 'azureStorage'
-    azureStorage:
-      credentials:
-        account: 'account'
-        accountKey: 'accountKey'
+    type: 'azureBlobStorage'
+    azureBlobStorage:
       containerName: 'name-of-techdocs-storage-container'
+      credentials:
+        account:
+          $env: TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT
+        accountKey:
+          $env: TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_KEY
 ```
 
 **4. That's it!**
 
-Your Backstage app is now ready to use Azure Storage for TechDocs, to store and
-read the static generated documentation files. When you start the backend of the
-app, you should be able to see
-`techdocs info Successfully connected to the Azure Storage container` in the
-logs.
+Your Backstage app is now ready to use Azure Blob Storage for TechDocs, to store
+and read the static generated documentation files. When you start the backend of
+the app, you should be able to see
+`techdocs info Successfully connected to the Azure Blob Storage container` in
+the logs.

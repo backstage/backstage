@@ -113,7 +113,7 @@ providers are used.
 | Local Filesystem of Backstage app | Yes ✅         |
 | Google Cloud Storage (GCS)        | Yes ✅         |
 | Amazon Web Services (AWS) S3      | Yes ✅         |
-| Azure Storage                     | Yes ✅         |
+| Azure Blob Storage                | Yes ✅         |
 
 [Reach out to us](#feedback) if you want to request more platforms.
 
