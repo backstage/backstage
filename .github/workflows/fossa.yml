@@ -23,7 +23,7 @@ jobs:
       - name: Configure Fossa
         # The --option flag for fossa init does not work yet, see https://github.com/fossas/fossa-cli/issues/614
         run: |
-          fossa init --project PROJECT_NAME
+          fossa init
           yq eval -i '.analyze.modules[].options.strategy = "yarn-list"' .fossa.yml
 
           # This deletes entries for template and example packages found within packages and plugins
