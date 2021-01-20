@@ -18,11 +18,11 @@ export default async function createPlugin({
   const cookiecutterTemplater = new CookieCutter();
   const craTemplater = new CreateReactAppTemplater();
   const templaters = new Templaters();
-  
+
   templaters.register('cookiecutter', cookiecutterTemplater);
   templaters.register('cra', craTemplater);
 
-  const preparers = await Preparers.fromConfig(config);
+  const preparers = await Preparers.fromConfig(config, { logger });
   const publishers = await Publishers.fromConfig(config, { logger });
 
   const dockerClient = new Docker();

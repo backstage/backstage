@@ -16,6 +16,7 @@
 
 import { Config } from '@backstage/config';
 import { PreparerBase, PreparerBuilder } from './types';
+import { Logger } from 'winston';
 
 import { GitlabPreparer } from './gitlab';
 import { AzurePreparer } from './azure';
@@ -40,7 +41,11 @@ export class Preparers implements PreparerBuilder {
     return preparer;
   }
 
-  static async fromConfig(config: Config): Promise<PreparerBuilder> {
+  static async fromConfig(
+    config: Config,
+    // eslint-disable-next-line
+    _: { logger: Logger },
+  ): Promise<PreparerBuilder> {
     const preparers = new Preparers();
     const scm = ScmIntegrations.fromConfig(config);
     for (const integration of scm.azure.list()) {
