@@ -35,12 +35,18 @@ export class GithubPublisher implements PublisherBase {
       baseUrl: config.apiBaseUrl,
     });
 
-    return new GithubPublisher(config.token, githubClient, repoVisibility);
+    return new GithubPublisher({
+      token: config.token,
+      client: githubClient,
+      repoVisibility,
+    });
   }
   constructor(
-    private readonly token: string,
-    private readonly client: Octokit,
-    private readonly repoVisibility: RepoVisibilityOptions,
+    private readonly config: {
+      token: string;
+      client: Octokit;
+      repoVisibility: RepoVisibilityOptions;
+    },
   ) {}
 
   async publish({
@@ -63,7 +69,7 @@ export class GithubPublisher implements PublisherBase {
       dir: directory,
       remoteUrl,
       auth: {
-        username: this.token,
+        username: this.config.token,
         password: 'x-oauth-basic',
       },
       logger,
@@ -85,22 +91,22 @@ export class GithubPublisher implements PublisherBase {
   }) {
     const { access, description, owner, name } = opts;
 
-    const user = await this.client.users.getByUsername({
+    const user = await this.config.client.users.getByUsername({
       username: owner,
     });
 
     const repoCreationPromise =
       user.data.type === 'Organization'
-        ? this.client.repos.createInOrg({
+        ? this.config.client.repos.createInOrg({
             name,
             org: owner,
-            private: this.repoVisibility !== 'public',
-            visibility: this.repoVisibility,
+            private: this.config.repoVisibility !== 'public',
+            visibility: this.config.repoVisibility,
             description,
           })
-        : this.client.repos.createForAuthenticatedUser({
+        : this.config.client.repos.createForAuthenticatedUser({
             name,
-            private: this.repoVisibility === 'private',
+            private: this.config.repoVisibility === 'private',
             description,
           });
 
@@ -108,7 +114,7 @@ export class GithubPublisher implements PublisherBase {
 
     if (access?.startsWith(`${owner}/`)) {
       const [, team] = access.split('/');
-      await this.client.teams.addOrUpdateRepoPermissionsInOrg({
+      await this.config.client.teams.addOrUpdateRepoPermissionsInOrg({
         org: owner,
         team_slug: team,
         owner,
@@ -117,7 +123,7 @@ export class GithubPublisher implements PublisherBase {
       });
       // no need to add access if it's the person who own's the personal account
     } else if (access && access !== owner) {
-      await this.client.repos.addCollaborator({
+      await this.config.client.repos.addCollaborator({
         owner,
         repo: name,
         username: access,

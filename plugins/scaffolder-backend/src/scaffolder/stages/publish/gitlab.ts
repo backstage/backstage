@@ -29,12 +29,11 @@ export class GitlabPublisher implements PublisherBase {
     }
 
     const client = new Gitlab({ host: config.baseUrl, token: config.token });
-    return new GitlabPublisher(config.token, client);
+    return new GitlabPublisher({ token: config.token, client });
   }
 
   constructor(
-    private readonly token: string,
-    private readonly client: GitlabClient,
+    private readonly config: { token: string; client: GitlabClient },
   ) {}
 
   async publish({
@@ -54,7 +53,7 @@ export class GitlabPublisher implements PublisherBase {
       remoteUrl,
       auth: {
         username: 'oauth2',
-        password: this.token,
+        password: this.config.token,
       },
       logger,
     });
@@ -71,16 +70,19 @@ export class GitlabPublisher implements PublisherBase {
 
     // TODO(blam): this needs cleaning up to be nicer. The amount of brackets is too damn high!
     // Shouldn't have to cast things now
-    let targetNamespace = ((await this.client.Namespaces.show(owner)) as {
+    let targetNamespace = ((await this.config.client.Namespaces.show(
+      owner,
+    )) as {
       id: number;
     }).id;
 
     if (!targetNamespace) {
-      targetNamespace = ((await this.client.Users.current()) as { id: number })
-        .id;
+      targetNamespace = ((await this.config.client.Users.current()) as {
+        id: number;
+      }).id;
     }
 
-    const project = (await this.client.Projects.create({
+    const project = (await this.config.client.Projects.create({
       namespace_id: targetNamespace,
       name: name,
     })) as { http_url_to_repo: string };

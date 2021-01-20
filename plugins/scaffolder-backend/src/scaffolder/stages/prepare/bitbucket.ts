@@ -25,17 +25,19 @@ import parseGitUrl from 'git-url-parse';
 
 export class BitbucketPreparer implements PreparerBase {
   static fromConfig(config: BitbucketIntegrationConfig) {
-    return new BitbucketPreparer(
-      config.username,
-      config.token,
-      config.appPassword,
-    );
+    return new BitbucketPreparer({
+      username: config.username,
+      token: config.token,
+      appPassword: config.appPassword,
+    });
   }
 
   constructor(
-    private readonly username?: string,
-    private readonly token?: string,
-    private readonly appPassword?: string,
+    private readonly config: {
+      username?: string;
+      token?: string;
+      appPassword?: string;
+    },
   ) {}
 
   async prepare(
@@ -78,14 +80,16 @@ export class BitbucketPreparer implements PreparerBase {
   }
 
   private getAuth(): { username: string; password: string } | undefined {
-    if (this.username && this.appPassword) {
-      return { username: this.username, password: this.appPassword };
+    const { username, token, appPassword } = this.config;
+
+    if (username && appPassword) {
+      return { username: username, password: appPassword };
     }
 
-    if (this.token) {
+    if (token) {
       return {
         username: 'x-token-auth',
-        password: this.token! || this.appPassword!,
+        password: token! || appPassword!,
       };
     }
 

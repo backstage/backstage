@@ -25,10 +25,10 @@ import { GitHubIntegrationConfig } from '@backstage/integration';
 
 export class GithubPreparer implements PreparerBase {
   static fromConfig(config: GitHubIntegrationConfig) {
-    return new GithubPreparer(config.token);
+    return new GithubPreparer({ token: config.token });
   }
 
-  constructor(private readonly token?: string) {}
+  constructor(private readonly config: { token?: string }) {}
 
   async prepare(
     template: TemplateEntityV1alpha1,
@@ -53,9 +53,9 @@ export class GithubPreparer implements PreparerBase {
 
     const checkoutLocation = path.resolve(tempDir, templateDirectory);
 
-    const git = this.token
+    const git = this.config.token
       ? Git.fromAuth({
-          username: this.token,
+          username: this.config.token,
           password: 'x-oauth-basic',
           logger,
         })

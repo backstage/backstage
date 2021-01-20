@@ -26,19 +26,21 @@ import parseGitUrl from 'git-url-parse';
 // a supported bitbucket client if one exists.
 export class BitbucketPublisher implements PublisherBase {
   static async fromConfig(config: BitbucketIntegrationConfig) {
-    return new BitbucketPublisher(
-      config.host,
-      config.token,
-      config.appPassword,
-      config.username,
-    );
+    return new BitbucketPublisher({
+      host: config.host,
+      token: config.token,
+      appPassword: config.appPassword,
+      username: config.username,
+    });
   }
 
   constructor(
-    private readonly host: string,
-    private readonly token?: string,
-    private readonly appPassword?: string,
-    private readonly username?: string,
+    private readonly config: {
+      host: string;
+      token?: string;
+      appPassword?: string;
+      username?: string;
+    },
   ) {}
 
   async publish({
@@ -59,8 +61,10 @@ export class BitbucketPublisher implements PublisherBase {
       dir: directory,
       remoteUrl: result.remoteUrl,
       auth: {
-        username: this.username ? this.username : 'x-token-auth',
-        password: this.appPassword ? this.appPassword : this.token ?? '',
+        username: this.config.username ? this.config.username : 'x-token-auth',
+        password: this.config.appPassword
+          ? this.config.appPassword
+          : this.config.token ?? '',
       },
       logger,
     });
@@ -72,7 +76,7 @@ export class BitbucketPublisher implements PublisherBase {
     name: string;
     description: string;
   }): Promise<PublisherResult> {
-    if (this.host === 'bitbucket.org') {
+    if (this.config.host === 'bitbucket.org') {
       return this.createBitbucketCloudRepository(opts);
     }
     return this.createBitbucketServerRepository(opts);
@@ -86,7 +90,10 @@ export class BitbucketPublisher implements PublisherBase {
     const { project, name, description } = opts;
 
     let response: Response;
-    const buffer = Buffer.from(`${this.username}:${this.appPassword}`, 'utf8');
+    const buffer = Buffer.from(
+      `${this.config.username}:${this.config.appPassword}`,
+      'utf8',
+    );
 
     const options: RequestInit = {
       method: 'POST',
@@ -138,13 +145,13 @@ export class BitbucketPublisher implements PublisherBase {
         description: description,
       }),
       headers: {
-        Authorization: `Bearer ${this.token}`,
+        Authorization: `Bearer ${this.config.token}`,
         'Content-Type': 'application/json',
       },
     };
     try {
       response = await fetch(
-        `https://${this.host}/rest/api/1.0/projects/${project}/repos`,
+        `https://${this.config.host}/rest/api/1.0/projects/${project}/repos`,
         options,
       );
     } catch (e) {

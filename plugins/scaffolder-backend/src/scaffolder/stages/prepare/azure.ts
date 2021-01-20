@@ -25,10 +25,10 @@ import { AzureIntegrationConfig } from '@backstage/integration';
 
 export class AzurePreparer implements PreparerBase {
   static fromConfig(config: AzureIntegrationConfig) {
-    return new AzurePreparer(config.token);
+    return new AzurePreparer({ token: config.token });
   }
 
-  constructor(private readonly token?: string) {}
+  constructor(private readonly config: { token?: string }) {}
 
   async prepare(
     template: TemplateEntityV1alpha1,
@@ -53,9 +53,9 @@ export class AzurePreparer implements PreparerBase {
 
     // Username can be anything but the empty string according to:
     // https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=preview-page#use-a-pat
-    const git = this.token
+    const git = this.config.token
       ? Git.fromAuth({
-          password: this.token,
+          password: this.config.token,
           username: 'notempty',
           logger,
         })
