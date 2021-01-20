@@ -35,6 +35,7 @@
     "@backstage/plugin-catalog-backend": "^0.5.3",
     "@backstage/plugin-graphql-backend": "^0.1.4",
     "@backstage/plugin-kubernetes-backend": "^0.2.4",
+    "@backstage/plugin-kafka-backend": "^0.1.0",
     "@backstage/plugin-proxy-backend": "^0.2.3",
     "@backstage/plugin-rollbar-backend": "^0.1.5",
     "@backstage/plugin-scaffolder-backend": "^0.4.1",
