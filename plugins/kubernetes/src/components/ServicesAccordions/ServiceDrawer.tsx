@@ -32,9 +32,7 @@ export const ServiceDrawer = ({
       expanded={expanded}
       kind="Service"
       renderObject={(service: V1Service) => {
-        return {
-          ...service.spec,
-        };
+        return service.spec || {};
       }}
     >
       <Grid

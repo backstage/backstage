@@ -32,9 +32,7 @@ export const IngressDrawer = ({
       expanded={expanded}
       kind="Ingress"
       renderObject={(ingress: ExtensionsV1beta1Ingress) => {
-        return {
-          ...ingress.spec,
-        };
+        return ingress.spec || {};
       }}
     >
       <Grid
