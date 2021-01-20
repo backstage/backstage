@@ -78,7 +78,7 @@ export class GitlabUrlReader implements UrlReader {
     url: string,
     options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
-    const { name: repoName, ref, full_name, filepath } = parseGitUrl(url);
+    const { ref, full_name, filepath } = parseGitUrl(url);
 
     // Use GitLab API to get the default branch
     // encodeURIComponent is required for GitLab API
@@ -140,9 +140,29 @@ export class GitlabUrlReader implements UrlReader {
       throw new Error(message);
     }
 
-    const path = filepath
-      ? `${repoName}-${branch}-${commitSha}/${filepath}/`
-      : '';
+    // Get the filename of archive from the header of the response
+    const contentDispositionHeader = archiveGitLabResponse.headers.get(
+      'content-disposition',
+    ) as string;
+    if (!contentDispositionHeader) {
+      throw new Error(
+        `Failed to read tree from ${url}. ` +
+          'GitLab API response for downloading archive does not contain content-disposition header ',
+      );
+    }
+    const fileNameRegEx = new RegExp(
+      /^attachment; filename="(?<fileName>.*).zip"$/,
+    );
+    const archiveFileName = contentDispositionHeader.match(fileNameRegEx)
+      ?.groups?.fileName;
+    if (!archiveFileName) {
+      throw new Error(
+        `Failed to read tree from ${url}. GitLab API response for downloading archive has an unexpected ` +
+          `format of content-disposition header ${contentDispositionHeader} `,
+      );
+    }
+
+    const path = filepath ? `${archiveFileName}/${filepath}/` : '';
 
     return await this.treeResponseFactory.fromZipArchive({
       stream: (archiveGitLabResponse.body as unknown) as Readable,

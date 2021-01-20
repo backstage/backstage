@@ -101,16 +101,12 @@ export class BitbucketUrlReader implements UrlReader {
     url: string,
     options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
-    const { name: repoName, owner: project, resource, filepath } = parseGitUrl(
-      url,
-    );
+    const { filepath } = parseGitUrl(url);
 
     const lastCommitShortHash = await this.getLastCommitShortHash(url);
     if (options?.etag && options.etag === lastCommitShortHash) {
       throw new NotModifiedError();
     }
-
-    const isHosted = resource === 'bitbucket.org';
 
     const downloadUrl = await getBitbucketDownloadUrl(url, this.config);
     const archiveBitbucketResponse = await fetch(
@@ -125,14 +121,31 @@ export class BitbucketUrlReader implements UrlReader {
       throw new Error(message);
     }
 
-    let folderPath = `${project}-${repoName}`;
-    if (isHosted) {
-      folderPath = `${project}-${repoName}-${lastCommitShortHash}`;
+    // Get the filename of archive from the header of the response
+    const contentDispositionHeader = archiveBitbucketResponse.headers.get(
+      'content-disposition',
+    ) as string;
+    if (!contentDispositionHeader) {
+      throw new Error(
+        `Failed to read tree from ${url}. ` +
+          'Bitbucket API response for downloading archive does not contain content-disposition header ',
+      );
+    }
+    const fileNameRegEx = new RegExp(
+      /^attachment; filename=(?<fileName>.*).zip$/,
+    );
+    const archiveFileName = contentDispositionHeader.match(fileNameRegEx)
+      ?.groups?.fileName;
+    if (!archiveFileName) {
+      throw new Error(
+        `Failed to read tree from ${url}. Bitbucket API response for downloading archive has an unexpected ` +
+          `format of content-disposition header ${contentDispositionHeader} `,
+      );
     }
 
     return await this.treeResponseFactory.fromZipArchive({
       stream: (archiveBitbucketResponse.body as unknown) as Readable,
-      path: `${folderPath}/${filepath}`,
+      path: `${archiveFileName}/${filepath}`,
       etag: lastCommitShortHash,
       filter: options?.filter,
     });

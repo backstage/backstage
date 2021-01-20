@@ -90,6 +90,52 @@ export class CatalogImportClient implements CatalogImportApi {
     }
   }
 
+  async checkForExistingCatalogInfo({
+    owner,
+    repo,
+    githubIntegrationConfig,
+  }: {
+    owner: string;
+    repo: string;
+    githubIntegrationConfig: GitHubIntegrationConfig;
+  }): Promise<{ exists: boolean; url?: string }> {
+    const token = await this.githubAuthApi.getAccessToken(['repo']);
+    const octo = new Octokit({
+      auth: token,
+      baseUrl: githubIntegrationConfig.apiBaseUrl,
+    });
+    const catalogFileName = 'catalog-info.yaml';
+    const query = `repo:${owner}/${repo}+filename:${catalogFileName}`;
+
+    const searchResult = await octo.search.code({ q: query }).catch(e => {
+      throw new Error(
+        formatHttpErrorMessage(
+          "Couldn't search repository for metadata file.",
+          e,
+        ),
+      );
+    });
+    const exists = searchResult.data.total_count > 0;
+    if (exists) {
+      const repoInformation = await octo.repos.get({ owner, repo }).catch(e => {
+        throw new Error(formatHttpErrorMessage("Couldn't fetch repo data", e));
+      });
+      const defaultBranch = repoInformation.data.default_branch;
+
+      // Github search sorts returned values with 'best match' using 'multiple factors to boost the most relevant item',
+      // aka magic.
+      // Sorting to use the shortest item, closest to the repository root.
+      const catalogInfoItem = searchResult.data.items
+        .map(it => it.path)
+        .sort((a, b) => a.length - b.length)[0];
+      return {
+        url: `blob/${defaultBranch}/${catalogInfoItem}`,
+        exists,
+      };
+    }
+    return { exists };
+  }
+
   async submitPrToRepo({
     owner,
     repo,

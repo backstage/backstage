@@ -68,10 +68,10 @@
   dependencies:
     "@openapi-contrib/openapi-schema-to-json-schema" "^3.0.0"
 
-"@asyncapi/parser@^1.0.1":
-  version "1.1.0"
-  resolved "https://registry.npmjs.org/@asyncapi/parser/-/parser-1.1.0.tgz#b366c85a6322e182e040d60f36400a0b5c26393c"
-  integrity sha512-0+NeTiW5sPNYaFf4P2VCcy7Z7MLMP7H969cgOp3gvVTKroI5idkYnWo/C16tKAxs+2oOQ9WnPolsNgc+jb/qtg==
+"@asyncapi/parser@^1.3.2":
+  version "1.3.2"
+  resolved "https://registry.npmjs.org/@asyncapi/parser/-/parser-1.3.2.tgz#6ff22680ff0e9aaf732121040e01e1f5836a305d"
+  integrity sha512-YDGdxoVA3+gQ3jvWDp+J3IV5XsvAe+nSHSytPg9m5hfJ48R+mBPMnO7Bnh//gR17LjbmyebPj27h4Ceyaa4d3Q==
   dependencies:
     "@apidevtools/json-schema-ref-parser" "^9.0.6"
     "@asyncapi/specs" "^2.7.5"
@@ -81,6 +81,21 @@
     json-to-ast "^2.1.0"
     node-fetch "^2.6.0"
     tiny-merge-patch "^0.1.2"
+
+"@asyncapi/react-component@^0.18.2":
+  version "0.18.2"
+  resolved "https://registry.npmjs.org/@asyncapi/react-component/-/react-component-0.18.2.tgz#74882b4c2a5ecd00c156898f38d0a5c9e8c4384d"
+  integrity sha512-vsD3acSM0hTxxSsTJoU79kpI9FXVA64OqNCu8xrawfaU4wdsSQWWn0y7SD8pUfwe4gohwmms0xNcAaMzYIhGLw==
+  dependencies:
+    "@asyncapi/avro-schema-parser" "^0.2.0"
+    "@asyncapi/openapi-schema-parser" "^2.0.0"
+    "@asyncapi/parser" "^1.3.2"
+    constate "^1.2.0"
+    dompurify "^2.1.1"
+    markdown-it "^11.0.1"
+    merge "^2.1.0"
+    openapi-sampler "^1.0.0-beta.15"
+    react-use "^12.2.0"
 
 "@asyncapi/specs@^2.7.5":
   version "2.7.5"
@@ -3769,21 +3784,6 @@
   integrity sha512-iMo32MPLcI9cPxs3YL5kmKxKgDmkSZDCFEqIT5eRk7d/Ll8r4X3SwGYSigzALd6+RHWlFEmjL1QyaQ15xDZFlw==
   dependencies:
     stream "^0.0.2"
-
-"@kyma-project/asyncapi-react@^0.14.2":
-  version "0.14.2"
-  resolved "https://registry.npmjs.org/@kyma-project/asyncapi-react/-/asyncapi-react-0.14.2.tgz#6d99ef878f0481b05db0f3be7c94f4534176675f"
-  integrity sha512-lf3zcIuCTaVEIkCpF7Vwulrucgdfp1zXUIvkqjYPteOJjOuT6BAvnYwgvFUYibitmD/ADkvK8ybIeKdNJcyaPw==
-  dependencies:
-    "@asyncapi/avro-schema-parser" "^0.2.0"
-    "@asyncapi/openapi-schema-parser" "^2.0.0"
-    "@asyncapi/parser" "^1.0.1"
-    constate "^1.2.0"
-    dompurify "^2.1.1"
-    markdown-it "^11.0.1"
-    merge "^1.2.1"
-    openapi-sampler "^1.0.0-beta.15"
-    react-use "^12.2.0"
 
 "@lerna/add@3.21.0":
   version "3.21.0"
@@ -18348,10 +18348,10 @@ merge2@^1.2.3, merge2@^1.3.0:
   resolved "https://registry.npmjs.org/merge2/-/merge2-1.3.0.tgz#5b366ee83b2f1582c48f87e47cf1a9352103ca81"
   integrity sha512-2j4DAdlBOkiSZIsaXk4mTE3sRS02yBHAtfy127xRV3bQUFqXkjHCHLW6Scv7DwNRbIWNHH8zpnz9zMaKXIdvYw==
 
-merge@^1.2.1:
-  version "1.2.1"
-  resolved "https://registry.npmjs.org/merge/-/merge-1.2.1.tgz#38bebf80c3220a8a487b6fcfb3941bb11720c145"
-  integrity sha512-VjFo4P5Whtj4vsLzsYBu5ayHhoHJ0UqNm7ibvShmbmoz7tGi0vXaoJbGdB+GmDMLUdg8DpQXEIeVDAe8MaABvQ==
+merge@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/merge/-/merge-2.1.0.tgz#91fff62458ba2eca378dd395fa85f1690bf87f60"
+  integrity sha512-TcuhVDV+e6X457MQAm7xIb19rWhZuEDEho7RrwxMpQ/3GhD5sDlnP188gjQQuweXHy9igdke5oUtVOXX1X8Sxg==
 
 methods@^1.0.0, methods@^1.1.1, methods@^1.1.2, methods@~1.1.2:
   version "1.1.2"

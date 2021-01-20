@@ -165,6 +165,10 @@ describe('GithubUrlReader', () => {
             res(
               ctx.status(200),
               ctx.set('Content-Type', 'application/x-gzip'),
+              ctx.set(
+                'content-disposition',
+                'attachment; filename=backstage-mock-etag123.tar.gz',
+              ),
               ctx.body(repoBuffer),
             ),
         ),
@@ -178,6 +182,10 @@ describe('GithubUrlReader', () => {
             res(
               ctx.status(200),
               ctx.set('Content-Type', 'application/x-gzip'),
+              ctx.set(
+                'content-disposition',
+                'attachment; filename=backstage-mock-etag123.tar.gz',
+              ),
               ctx.body(repoBuffer),
             ),
         ),
@@ -244,6 +252,10 @@ describe('GithubUrlReader', () => {
             return res(
               ctx.status(200),
               ctx.set('Content-Type', 'application/x-gzip'),
+              ctx.set(
+                'content-disposition',
+                'attachment; filename=backstage-mock-etag123.tar.gz',
+              ),
               ctx.body(repoBuffer),
             );
           },

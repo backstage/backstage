@@ -95,6 +95,10 @@ describe('BitbucketUrlReader', () => {
             res(
               ctx.status(200),
               ctx.set('Content-Type', 'application/zip'),
+              ctx.set(
+                'content-disposition',
+                'attachment; filename=backstage-mock-12ab34cd56ef.zip',
+              ),
               ctx.body(repoBuffer),
             ),
         ),
@@ -114,6 +118,10 @@ describe('BitbucketUrlReader', () => {
             res(
               ctx.status(200),
               ctx.set('Content-Type', 'application/zip'),
+              ctx.set(
+                'content-disposition',
+                'attachment; filename=backstage-mock.zip',
+              ),
               ctx.body(privateBitbucketRepoBuffer),
             ),
         ),
