@@ -24,33 +24,44 @@ import { Logger } from 'winston';
 import { Entity, EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { getHeadersForFileExtension, getFileTreeRecursively } from './helpers';
-import { PublisherBase, PublishRequest } from './types';
+import { PublisherBase, PublishRequest, TechDocsMetadata } from './types';
+import limiterFactory from 'p-limit';
+import JSON5 from 'json5';
 
-export class AzureStoragePublish implements PublisherBase {
+// The number of batches that may be ongoing at the same time.
+const BATCH_CONCURRENCY = 3;
+
+export class AzureBlobStoragePublish implements PublisherBase {
   static async fromConfig(
     config: Config,
     logger: Logger,
   ): Promise<PublisherBase> {
-    let account = '';
-    let accountKey = '';
     let containerName = '';
     try {
-      account = config.getString(
-        'techdocs.publisher.azureStorage.credentials.account',
-      );
-      accountKey = config.getString(
-        'techdocs.publisher.azureStorage.credentials.accountKey',
-      );
       containerName = config.getString(
-        'techdocs.publisher.azureStorage.containerName',
+        'techdocs.publisher.azureBlobStorage.containerName',
       );
     } catch (error) {
       throw new Error(
-        "Since techdocs.publisher.type is set to 'azureStorage' in your app config, " +
-          'credentials and containerName are required in techdocs.publisher.azureStorage ' +
-          'required to authenticate with Azure Storage.',
+        "Since techdocs.publisher.type is set to 'awsS3' in your app config, " +
+          'techdocs.publisher.awsS3.bucketName is required.',
       );
     }
+
+    // Credentials is an optional config. If missing, default AWS environment variables
+    // or AWS shared credentials file at ~/.aws/credentials will be used to authenticate
+    // https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-environment.html
+    // https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-shared.html
+    let account = '';
+    let accountKey = '';
+    account =
+      config.getOptionalString(
+        'techdocs.publisher.azureBlobStorage.credentials.account',
+      ) || '';
+    accountKey =
+      config.getOptionalString(
+        'techdocs.publisher.azureBlobStorage.credentials.accountKey',
+      ) || '';
 
     const credential = new StorageSharedKeyCredential(account, accountKey);
     const storageClient = new BlobServiceClient(
@@ -63,20 +74,22 @@ export class AzureStoragePublish implements PublisherBase {
       .getProperties()
       .then(() => {
         logger.info(
-          `Successfully connected to the Azure Storage container ${containerName}.`,
+          `Successfully connected to the Azure Blob Storage container ${containerName}.`,
         );
       })
       .catch(reason => {
         logger.error(
-          `Could not retrieve metadata about the Azure Storage container ${containerName}. ` +
+          `Could not retrieve metadata about the Azure Blob Storage container ${containerName}. ` +
             'Make sure the Azure project and the container exists and the access key located at the path ' +
-            "techdocs.publisher.azureStorage.credentials defined in app config has the role 'Storage Object Creator'. " +
+            "techdocs.publisher.azureBlobStorage.credentials defined in app config has the role 'Storage Object Creator'. " +
             'Refer to https://backstage.io/docs/features/techdocs/using-cloud-storage',
         );
-        throw new Error(`from Azure Storage client library: ${reason.message}`);
+        throw new Error(
+          `from Azure Blob Storage client library: ${reason.message}`,
+        );
       });
 
-    return new AzureStoragePublish(storageClient, containerName, logger);
+    return new AzureBlobStoragePublish(storageClient, containerName, logger);
   }
 
   constructor(
@@ -90,17 +103,23 @@ export class AzureStoragePublish implements PublisherBase {
   }
 
   /**
-   * Upload all the files from the generated `directory` to the Azure Storage container.
+   * Upload all the files from the generated `directory` to the Azure Blob Storage container.
    * Directory structure used in the container is - entityNamespace/entityKind/entityName/index.html
    */
   async publish({ entity, directory }: PublishRequest): Promise<void> {
     try {
-      // Note: Azure Storage manages creation of parent directories if they do not exist.
+      // Note: Azure Blob Storage manages creation of parent directories if they do not exist.
       // So collecting path of only the files is good enough.
       const allFilesToUpload = await getFileTreeRecursively(directory);
 
       const uploadPromises: Array<Promise<BlobUploadCommonResponse>> = [];
-      allFilesToUpload.forEach(filePath => {
+
+      // Bound the number of concurrent batches. We want a bit of concurrency for
+      // performance reasons, but not so much that we starve the connection pool
+      // or start thrashing.
+      const limiter = limiterFactory(BATCH_CONCURRENCY);
+
+      const promises = allFilesToUpload.map(filePath => {
         // Remove the absolute path prefix of the source directory
         // Path of all files to upload, relative to the root of the source directory
         // e.g. ['index.html', 'sub-page/index.html', 'assets/images/favicon.png']
@@ -108,30 +127,33 @@ export class AzureStoragePublish implements PublisherBase {
         const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
         const destination = path.normalize(
           `${entityRootDir}/${relativeFilePath}`,
-        ); // Azure Storage Container file relative path
+        ); // Azure Blob Storage Container file relative path
+
         // TODO: Upload in chunks of ~10 files instead of all files at once.
-        uploadPromises.push(
-          this.storageClient
-            .getContainerClient(this.containerName)
-            .getBlockBlobClient(destination)
-            .uploadFile(filePath),
-        );
+        return limiter(async () => {
+          await uploadPromises.push(
+            this.storageClient
+              .getContainerClient(this.containerName)
+              .getBlockBlobClient(destination)
+              .uploadFile(filePath),
+          );
+        });
       });
 
-      await Promise.all(uploadPromises).then(() => {
+      await Promise.all(promises).then(() => {
         this.logger.info(
           `Successfully uploaded all the generated files for Entity ${entity.metadata.name}. Total number of files: ${allFilesToUpload.length}`,
         );
       });
       return;
     } catch (e) {
-      const errorMessage = `Unable to upload file(s) to Azure Storage. Error ${e.message}`;
+      const errorMessage = `Unable to upload file(s) to Azure Blob Storage. Error ${e.message}`;
       this.logger.error(errorMessage);
       throw new Error(errorMessage);
     }
   }
 
-  download(containerName: string, path: string): Promise<string> {
+  private download(containerName: string, path: string): Promise<Buffer> {
     return new Promise((resolve, reject) => {
       const fileStreamChunks: Array<any> = [];
       this.storageClient
@@ -153,19 +175,24 @@ export class AzureStoragePublish implements PublisherBase {
               fileStreamChunks.push(chunk);
             })
             .on('end', () => {
-              resolve(Buffer.concat(fileStreamChunks).toString());
+              resolve(Buffer.concat(fileStreamChunks));
             });
         });
     });
   }
 
-  async fetchTechDocsMetadata(entityName: EntityName): Promise<string> {
+  async fetchTechDocsMetadata(
+    entityName: EntityName,
+  ): Promise<TechDocsMetadata> {
     const entityRootDir = `${entityName.namespace}/${entityName.kind}/${entityName.name}`;
     try {
-      return this.download(
-        this.containerName,
-        `${entityRootDir}/techdocs_metadata.json`,
-      );
+      return await new Promise<TechDocsMetadata>(resolve => {
+        const download = this.download(
+          this.containerName,
+          `${entityRootDir}/techdocs_metadata.json`,
+        );
+        resolve(JSON5.parse(download.toString()));
+      });
     } catch (e) {
       this.logger.error(e.message);
       throw e;

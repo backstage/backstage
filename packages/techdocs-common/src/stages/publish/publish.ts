@@ -21,7 +21,7 @@ import { PublisherType, PublisherBase } from './types';
 import { LocalPublish } from './local';
 import { GoogleGCSPublish } from './googleStorage';
 import { AwsS3Publish } from './awsS3';
-import { AzureStoragePublish } from './azureStorage';
+import { AzureBlobStoragePublish } from './azureBlobStorage';
 
 type factoryOptions = {
   logger: Logger;
@@ -48,9 +48,11 @@ export class Publisher {
       case 'awsS3':
         logger.info('Creating AWS S3 Bucket publisher for TechDocs');
         return AwsS3Publish.fromConfig(config, logger);
-      case 'azureStorage':
-        logger.info('Creating Azure Storage Container publisher for TechDocs');
-        return AzureStoragePublish.fromConfig(config, logger);
+      case 'azureBlobStorage':
+        logger.info(
+          'Creating Azure Blob Storage Container publisher for TechDocs',
+        );
+        return AzureBlobStoragePublish.fromConfig(config, logger);
       case 'local':
         logger.info('Creating Local publisher for TechDocs');
         return new LocalPublish(config, logger, discovery);

@@ -19,7 +19,11 @@ import express from 'express';
 /**
  * Key for all the different types of TechDocs publishers that are supported.
  */
-export type PublisherType = 'local' | 'googleGcs' | 'awsS3' | 'azureStorage';
+export type PublisherType =
+  | 'local'
+  | 'googleGcs'
+  | 'awsS3'
+  | 'azureBlobStorage';
 
 export type PublishRequest = {
   entity: Entity;

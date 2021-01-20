@@ -117,21 +117,23 @@ export interface Config {
       | {
           /**
            * attr: 'type' - accepts a string value
-           * e.g. type: 'azureStorage'
-           * alternatives: 'azureStorage' etc.
+           * e.g. type: 'azureBlobStorage'
+           * alternatives: 'azureBlobStorage' etc.
            * @see http://backstage.io/docs/features/techdocs/configuration
            */
-          type: 'azureStorage';
+          type: 'azureBlobStorage';
 
           /**
-           * azureStorage required when 'type' is set to azureStorage
+           * azureBlobStorage required when 'type' is set to azureBlobStorage
            */
-          azureStorage?: {
+          azureBlobStorage?: {
             /**
-             * Credentials used to access a storage container
+             * (Optional) Credentials used to access a storage container.
+             * If not set, environment variables will be used to authenticate.
+             * https://docs.microsoft.com/en-us/azure/storage/common/storage-auth?toc=/azure/storage/blobs/toc.json
              * @visibility secret
              */
-            credentials: {
+            credentials?: {
               /**
                * Account access name
                * attr: 'account' - accepts a string value
@@ -146,7 +148,7 @@ export interface Config {
               accountKey: string;
             };
             /**
-             * Cloud Storage Container Name
+             * (Required) Cloud Storage Container Name
              * attr: 'containerName' - accepts a string value
              * @visibility backend
              */
