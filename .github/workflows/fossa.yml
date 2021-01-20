@@ -32,5 +32,6 @@ jobs:
 
       - name: Fossa Analyze
         env:
-          FOSSA_API_KEY: ${{ secrets.FOSSA_API_KEY }}
+          # FOSSA Push-Only API Token
+          FOSSA_API_KEY: 9ee7e8893660832a7387dcc32377fb61
         run: fossa analyze --branch "$GITHUB_REF"
