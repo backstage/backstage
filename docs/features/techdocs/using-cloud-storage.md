@@ -223,8 +223,10 @@ techdocs:
     type: 'azureBlobStorage'
     azureBlobStorage:
       credentials:
-        account: 'account'
-        accountKey: 'accountKey'
+        account:
+          $env: TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT
+        accountKey:
+          $env: TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_KEY
 ```
 
 **3. Azure Blob Storage Container**
