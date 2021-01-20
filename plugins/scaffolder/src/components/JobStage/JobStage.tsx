@@ -161,7 +161,7 @@ export const JobStage = ({ endedAt, startedAt, name, log, status }: Props) => {
       </AccordionDetails>
       <AccordionActions>
         <Button color="primary" onClick={toggleLogsFullScreen}>
-          Open in fullcreen
+          Open in fullscreen
         </Button>
       </AccordionActions>
     </Accordion>

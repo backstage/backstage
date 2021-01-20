@@ -51,6 +51,17 @@ describe('readGitLabIntegrationConfig', () => {
     });
   });
 
+  it('injects the correct GitLab API base URL when missing', () => {
+    const output = readGitLabIntegrationConfig(
+      buildConfig({ host: 'gitlab.com' }),
+    );
+
+    expect(output).toEqual({
+      host: 'gitlab.com',
+      apiBaseUrl: 'https://gitlab.com/api/v4',
+    });
+  });
+
   it('rejects funky configs', () => {
     const valid: any = {
       host: 'a.com',
@@ -91,6 +102,7 @@ describe('readGitLabIntegrationConfigs', () => {
     expect(output).toEqual([
       {
         host: 'gitlab.com',
+        apiBaseUrl: 'https://gitlab.com/api/v4',
       },
     ]);
   });

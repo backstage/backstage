@@ -37,7 +37,10 @@ describe('<EntityRefLink />', () => {
       wrapper: MemoryRouter,
     });
 
-    expect(getByText('component:software')).toBeInTheDocument();
+    expect(getByText('component:software')).toHaveAttribute(
+      'href',
+      '/catalog/default/component/software',
+    );
   });
 
   it('renders link for entity in other namespace', () => {
@@ -57,7 +60,10 @@ describe('<EntityRefLink />', () => {
     const { getByText } = render(<EntityRefLink entityRef={entity} />, {
       wrapper: MemoryRouter,
     });
-    expect(getByText('component:test/software')).toBeInTheDocument();
+    expect(getByText('component:test/software')).toHaveAttribute(
+      'href',
+      '/catalog/test/component/software',
+    );
   });
 
   it('renders link for entity and hides default kind', () => {
@@ -80,7 +86,10 @@ describe('<EntityRefLink />', () => {
         wrapper: MemoryRouter,
       },
     );
-    expect(getByText('test/software')).toBeInTheDocument();
+    expect(getByText('test/software')).toHaveAttribute(
+      'href',
+      '/catalog/test/component/software',
+    );
   });
 
   it('renders link for entity name in default namespace', () => {
@@ -92,7 +101,10 @@ describe('<EntityRefLink />', () => {
     const { getByText } = render(<EntityRefLink entityRef={entityName} />, {
       wrapper: MemoryRouter,
     });
-    expect(getByText('component:software')).toBeInTheDocument();
+    expect(getByText('component:software')).toHaveAttribute(
+      'href',
+      '/catalog/default/component/software',
+    );
   });
 
   it('renders link for entity name in other namespace', () => {
@@ -104,7 +116,10 @@ describe('<EntityRefLink />', () => {
     const { getByText } = render(<EntityRefLink entityRef={entityName} />, {
       wrapper: MemoryRouter,
     });
-    expect(getByText('component:test/software')).toBeInTheDocument();
+    expect(getByText('component:test/software')).toHaveAttribute(
+      'href',
+      '/catalog/test/component/software',
+    );
   });
 
   it('renders link for entity name and hides default kind', () => {
@@ -119,6 +134,29 @@ describe('<EntityRefLink />', () => {
         wrapper: MemoryRouter,
       },
     );
-    expect(getByText('test/software')).toBeInTheDocument();
+    expect(getByText('test/software')).toHaveAttribute(
+      'href',
+      '/catalog/test/component/software',
+    );
+  });
+
+  it('renders link with custom children', () => {
+    const entityName = {
+      kind: 'Component',
+      namespace: 'test',
+      name: 'software',
+    };
+    const { getByText } = render(
+      <EntityRefLink entityRef={entityName} defaultKind="component">
+        Custom Children
+      </EntityRefLink>,
+      {
+        wrapper: MemoryRouter,
+      },
+    );
+    expect(getByText('Custom Children')).toHaveAttribute(
+      'href',
+      '/catalog/test/component/software',
+    );
   });
 });

@@ -24,14 +24,14 @@ export const githubActionsApiRef = createApiRef<GithubActionsApi>({
 
 export type GithubActionsApi = {
   listWorkflowRuns: ({
-    token,
+    hostname,
     owner,
     repo,
     pageSize,
     page,
     branch,
   }: {
-    token: string;
+    hostname?: string;
     owner: string;
     repo: string;
     pageSize?: number;
@@ -41,12 +41,12 @@ export type GithubActionsApi = {
     RestEndpointMethodTypes['actions']['listWorkflowRuns']['response']['data']
   >;
   getWorkflow: ({
-    token,
+    hostname,
     owner,
     repo,
     id,
   }: {
-    token: string;
+    hostname?: string;
     owner: string;
     repo: string;
     id: number;
@@ -54,12 +54,12 @@ export type GithubActionsApi = {
     RestEndpointMethodTypes['actions']['getWorkflow']['response']['data']
   >;
   getWorkflowRun: ({
-    token,
+    hostname,
     owner,
     repo,
     id,
   }: {
-    token: string;
+    hostname?: string;
     owner: string;
     repo: string;
     id: number;
@@ -67,23 +67,23 @@ export type GithubActionsApi = {
     RestEndpointMethodTypes['actions']['getWorkflowRun']['response']['data']
   >;
   reRunWorkflow: ({
-    token,
+    hostname,
     owner,
     repo,
     runId,
   }: {
-    token: string;
+    hostname?: string;
     owner: string;
     repo: string;
     runId: number;
   }) => Promise<any>;
   downloadJobLogsForWorkflowRun: ({
-    token,
+    hostname,
     owner,
     repo,
     runId,
   }: {
-    token: string;
+    hostname?: string;
     owner: string;
     repo: string;
     runId: number;

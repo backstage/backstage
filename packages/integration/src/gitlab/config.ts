@@ -18,7 +18,8 @@ import { Config } from '@backstage/config';
 import { isValidHost } from '../helpers';
 
 const GITLAB_HOST = 'gitlab.com';
-const GITLAB_API_BASE_URL = 'gitlab.com/api/v4';
+const GITLAB_API_BASE_URL = 'https://gitlab.com/api/v4';
+
 /**
  * The configuration parameters for a single GitLab integration.
  */
@@ -29,7 +30,6 @@ export type GitLabIntegrationConfig = {
   host: string;
 
   /**
-   * @deprecated
    * The base URL of the API of this provider, e.g. "https://gitlab.com/api/v4",
    * with no trailing slash.
    *
@@ -99,7 +99,7 @@ export function readGitLabIntegrationConfigs(
   // As a convenience we always make sure there's at least an unauthenticated
   // reader for public gitlab repos.
   if (!result.some(c => c.host === GITLAB_HOST)) {
-    result.push({ host: GITLAB_HOST });
+    result.push({ host: GITLAB_HOST, apiBaseUrl: GITLAB_API_BASE_URL });
   }
 
   return result;

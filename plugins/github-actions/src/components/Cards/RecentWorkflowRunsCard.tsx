@@ -15,12 +15,14 @@
  */
 import { Entity } from '@backstage/catalog-model';
 import {
+  configApiRef,
   EmptyState,
   errorApiRef,
   InfoCard,
   Table,
   useApi,
 } from '@backstage/core';
+import { readGitHubIntegrationConfigs } from '@backstage/integration';
 import { Button, Link } from '@material-ui/core';
 import React, { useEffect } from 'react';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
@@ -45,11 +47,17 @@ export const RecentWorkflowRunsCard = ({
   limit = 5,
   variant,
 }: Props) => {
+  const config = useApi(configApiRef);
   const errorApi = useApi(errorApiRef);
+  // TODO: Get github hostname from metadata annotation
+  const hostname = readGitHubIntegrationConfigs(
+    config.getOptionalConfigArray('integrations.github') ?? [],
+  )[0].host;
   const [owner, repo] = (
     entity?.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION] ?? '/'
   ).split('/');
   const [{ runs = [], loading, error }] = useWorkflowRuns({
+    hostname,
     owner,
     repo,
     branch,

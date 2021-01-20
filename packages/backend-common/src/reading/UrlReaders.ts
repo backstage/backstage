@@ -22,8 +22,8 @@ import { AzureUrlReader } from './AzureUrlReader';
 import { BitbucketUrlReader } from './BitbucketUrlReader';
 import { GithubUrlReader } from './GithubUrlReader';
 import { GitlabUrlReader } from './GitlabUrlReader';
-import { FetchUrlReader } from './FetchUrlReader';
 import { ReadTreeResponseFactory } from './tree';
+import { FetchUrlReader } from './FetchUrlReader';
 
 type CreateOptions = {
   /** Root config object */
@@ -32,8 +32,6 @@ type CreateOptions = {
   logger: Logger;
   /** A list of factories used to construct individual readers that match on URLs */
   factories?: ReaderFactory[];
-  /** Fallback reader to use if none of the readers created by the factories match */
-  fallback?: UrlReader;
 };
 
 /**
@@ -43,13 +41,8 @@ export class UrlReaders {
   /**
    * Creates a UrlReader without any known types.
    */
-  static create({
-    logger,
-    config,
-    factories,
-    fallback,
-  }: CreateOptions): UrlReader {
-    const mux = new UrlReaderPredicateMux({ fallback: fallback });
+  static create({ logger, config, factories }: CreateOptions): UrlReader {
+    const mux = new UrlReaderPredicateMux();
     const treeResponseFactory = ReadTreeResponseFactory.create({ config });
 
     for (const factory of factories ?? []) {
@@ -67,10 +60,8 @@ export class UrlReaders {
    * Creates a UrlReader that includes all the default factories from this package.
    *
    * Any additional factories passed will be loaded before the default ones.
-   *
-   * If no fallback reader is passed, a plain fetch reader will be used.
    */
-  static default({ logger, config, factories = [], fallback }: CreateOptions) {
+  static default({ logger, config, factories = [] }: CreateOptions) {
     return UrlReaders.create({
       logger,
       config,
@@ -79,8 +70,8 @@ export class UrlReaders {
         BitbucketUrlReader.factory,
         GithubUrlReader.factory,
         GitlabUrlReader.factory,
+        FetchUrlReader.factory,
       ]),
-      fallback: fallback ?? new FetchUrlReader(),
     });
   }
 }

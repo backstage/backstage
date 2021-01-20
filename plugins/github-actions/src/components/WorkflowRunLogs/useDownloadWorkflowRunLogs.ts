@@ -14,22 +14,26 @@
  * limitations under the License.
  */
 
-import { useApi, githubAuthApiRef } from '@backstage/core';
+import { useApi } from '@backstage/core';
 import { useAsync } from 'react-use';
 import { githubActionsApiRef } from '../../api';
 
-export const useDownloadWorkflowRunLogs = (
-  repo: string,
-  owner: string,
-  id: string,
-) => {
+export const useDownloadWorkflowRunLogs = ({
+  hostname,
+  owner,
+  repo,
+  id,
+}: {
+  hostname?: string;
+  owner: string;
+  repo: string;
+  id: string;
+}) => {
   const api = useApi(githubActionsApiRef);
-  const auth = useApi(githubAuthApiRef);
   const details = useAsync(async () => {
-    const token = await auth.getAccessToken(['repo']);
     return repo && owner
       ? api.downloadJobLogsForWorkflowRun({
-          token,
+          hostname,
           owner,
           repo,
           runId: parseInt(id, 10),

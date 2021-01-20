@@ -23,4 +23,5 @@ export {
   getAzureDownloadUrl,
   getAzureFileFetchUrl,
   getAzureRequestOptions,
+  getAzureCommitsUrl,
 } from './core';

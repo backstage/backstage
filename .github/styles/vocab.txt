@@ -67,6 +67,7 @@ Dominik
 dtuite
 dzolotusky
 Ek
+etag
 env
 Env
 eslint
@@ -115,6 +116,7 @@ Kumar
 learnings
 lerna
 Lerna
+Luxon
 magiclink
 mailto
 maintainership
