@@ -25,7 +25,12 @@ import {
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
-import { PublisherBase, PublishRequest, PublishResponse } from './types';
+import {
+  PublisherBase,
+  PublishRequest,
+  PublishResponse,
+  TechDocsMetadata,
+} from './types';
 
 // TODO: Use a more persistent storage than node_modules or /tmp directory.
 // Make it configurable with techdocs.publisher.local.publishDirectory
@@ -102,7 +107,7 @@ export class LocalPublish implements PublisherBase {
     });
   }
 
-  fetchTechDocsMetadata(entityName: EntityName): Promise<string> {
+  fetchTechDocsMetadata(entityName: EntityName): Promise<TechDocsMetadata> {
     return new Promise((resolve, reject) => {
       this.discovery.getBaseUrl('techdocs').then(techdocsApiUrl => {
         const storageUrl = new URL(
@@ -116,7 +121,7 @@ export class LocalPublish implements PublisherBase {
           .then(response =>
             response
               .json()
-              .then(techdocsMetadataJson => resolve(techdocsMetadataJson))
+              .then(techdocsMetadata => resolve(techdocsMetadata))
               .catch(err => {
                 reject(
                   `Unable to parse metadata JSON for ${entityRootDir}. Error: ${err}`,
