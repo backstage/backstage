@@ -43,6 +43,15 @@ const GoodComponent = ({ text, children }: GoodProps) => (
     {children}
   </div>
 );
+
+/* Or as a shorthand, if no specifc child type is required */
+type GoodProps = PropsWithChildren<{ text: string }>;
+const GoodComponent = ({ text, children }: GoodProps) => (
+  <div>
+    <div>{text}</div>
+    {children}
+  </div>
+);
 ```
 
 ## Consequences
