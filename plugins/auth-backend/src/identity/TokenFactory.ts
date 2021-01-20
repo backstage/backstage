@@ -16,7 +16,10 @@
 
 import moment from 'moment';
 import { TokenIssuer, TokenParams, KeyStore, AnyJWK } from './types';
-import { JSONWebKey, JWK, JWS } from 'jose';
+import parseJwk, { JWK } from 'jose/jwk/parse';
+import SignJWT from 'jose/jwt/sign';
+import generateKeyPair from 'jose/util/generate_key_pair';
+import fromKeyLike from 'jose/jwk/from_key_like';
 import { Logger } from 'winston';
 import { v4 as uuid } from 'uuid';
 
@@ -53,7 +56,7 @@ export class TokenFactory implements TokenIssuer {
   private readonly keyDurationSeconds: number;
 
   private keyExpiry?: moment.Moment;
-  private privateKeyPromise?: Promise<JSONWebKey>;
+  private privateKeyPromise?: Promise<JWK>;
 
   constructor(options: Options) {
     this.issuer = options.issuer;
@@ -64,7 +67,7 @@ export class TokenFactory implements TokenIssuer {
 
   async issueToken(params: TokenParams): Promise<string> {
     const key = await this.getKey();
-
+    const keyLike = await parseJwk(key);
     const iss = this.issuer;
     const sub = params.claims.sub;
     const aud = 'backstage';
@@ -72,11 +75,9 @@ export class TokenFactory implements TokenIssuer {
     const exp = iat + this.keyDurationSeconds;
 
     this.logger.info(`Issuing token for ${sub}`);
-
-    return JWS.sign({ iss, sub, aud, iat, exp }, key, {
-      alg: key.alg,
-      kid: key.kid,
-    });
+    return new SignJWT({ iss, sub, aud, iat, exp })
+      .setProtectedHeader({ alg: key.alg, typ: 'JWT', kid: key.kid })
+      .sign(keyLike);
   }
 
   // This will be called by other services that want to verify ID tokens.
@@ -114,7 +115,7 @@ export class TokenFactory implements TokenIssuer {
     return { keys: validKeys.map(({ key }) => key) };
   }
 
-  private async getKey(): Promise<JSONWebKey> {
+  private async getKey(): Promise<JWK> {
     // Make sure that we only generate one key at a time
     if (this.privateKeyPromise) {
       if (this.keyExpiry?.isAfter()) {
@@ -127,23 +128,30 @@ export class TokenFactory implements TokenIssuer {
     this.keyExpiry = moment().add(this.keyDurationSeconds, 'seconds');
     const promise = (async () => {
       // This generates a new signing key to be used to sign tokens until the next key rotation
-      const key = await JWK.generate('EC', 'P-256', {
-        use: 'sig',
-        kid: uuid(),
-        alg: 'ES256',
-      });
 
+      const key = await generateKeyPair('ES256');
+      const kid = uuid();
+      const jwk = await fromKeyLike(key.privateKey);
+
+      // JOSE Library provides optional for most fields - and TS does not distinguish between missing/undefined.
+      // Because AnyJWK requires keys to have type "string", this throws a TypeError - though in practice, if the field
+      // is undefined, JOSE will not send it back as key.
+      const storedJwk: AnyJWK = {
+        ...jwk,
+        alg: 'ES256',
+        kid: kid,
+        use: 'sig',
+      } as AnyJWK;
       // We're not allowed to use the key until it has been successfully stored
       // TODO: some token verification implementations aggressively cache the list of keys, and
       //       don't attempt to fetch new ones even if they encounter an unknown kid. Therefore we
       //       may want to keep using the existing key for some period of time until we switch to
       //       the new one. This also needs to be implemented cross-service though, meaning new services
       //       that boot up need to be able to grab an existing key to use for signing.
-      this.logger.info(`Created new signing key ${key.kid}`);
-      await this.keyStore.addKey((key.toJWK(false) as unknown) as AnyJWK);
-
+      this.logger.info(`Created new signing key ${jwk.kid}`);
+      await this.keyStore.addKey(storedJwk);
       // At this point we are allowed to start using the new key
-      return key as JSONWebKey;
+      return storedJwk;
     })();
 
     this.privateKeyPromise = promise;

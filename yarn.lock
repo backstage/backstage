@@ -10126,6 +10126,11 @@ clone-response@^1.0.2:
   dependencies:
     mimic-response "^1.0.0"
 
+clone@2.x:
+  version "2.1.2"
+  resolved "https://registry.npmjs.org/clone/-/clone-2.1.2.tgz#1b7f4b9f591f1e8f83670401600345a02887435f"
+  integrity sha1-G39Ln1kfHo+DZwQBYANFoCiHQ18=
+
 clone@^1.0.2:
   version "1.0.4"
   resolved "https://registry.npmjs.org/clone/-/clone-1.0.4.tgz#da309cc263df15994c688ca902179ca3c7cd7c7e"
@@ -16549,19 +16554,17 @@ jest@^26.0.1:
     import-local "^3.0.2"
     jest-cli "^26.6.3"
 
-jose@^1.27.1:
-  version "1.27.1"
-  resolved "https://registry.npmjs.org/jose/-/jose-1.27.1.tgz#a1de2ecb5b3ae1ae28f0d9d0cc536349ada27ec8"
-  integrity sha512-VyHM6IJPw0TTGqHVNlPWg16/ASDPAmcChcLqSb3WNBvwWFoWPeFqlmAUCm8/oIG1GjZwAlUDuRKFfycowarcVA==
+jose@^2.0.2:
+  version "2.0.3"
+  resolved "https://registry.npmjs.org/jose/-/jose-2.0.3.tgz#9c931ab3e13e2d16a5b9e6183e60b2fc40a8e1b8"
+  integrity sha512-L+RlDgjO0Tk+Ki6/5IXCSEnmJCV8iMFZoBuEgu2vPQJJ4zfG/k3CAqZUMKDYNRHIDyy0QidJpOvX0NgpsAqFlw==
   dependencies:
     "@panva/asn1.js" "^1.0.0"
 
-jose@^2.0.2:
-  version "2.0.2"
-  resolved "https://registry.npmjs.org/jose/-/jose-2.0.2.tgz#fb22385b80c658cc7a0cae05b7086c04c6be49f4"
-  integrity sha512-yD93lsiMA1go/qxSY/vXWBodmIZJIxeB7QhFi8z1yQ3KUwKENqI9UA8VCHlQ5h3x1zWuWZjoY87ByQzkQbIrQg==
-  dependencies:
-    "@panva/asn1.js" "^1.0.0"
+jose@^3.5.1:
+  version "3.5.1"
+  resolved "https://registry.npmjs.org/jose/-/jose-3.5.1.tgz#adc0d5000dbf64a7f4db171d449dbcf6b556b6f0"
+  integrity sha512-BQQJafCDvsmtc/LaK57cjfhU/1AKBhJSbJhKPq+uhrjMoV/sh3/dbk9cm08nAeSGS6j+sjhWoY+LZPUXiKzYzw==
 
 joycon@^2.2.5:
   version "2.2.5"
@@ -18807,6 +18810,13 @@ node-addon-api@2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/node-addon-api/-/node-addon-api-2.0.0.tgz#f9afb8d777a91525244b01775ea0ddbe1125483b"
   integrity sha512-ASCL5U13as7HhOExbT6OlWJJUV/lLzL2voOSP1UVehpRD8FbSrSDjfScK/KwAvVTI5AS6r4VwbOMlIqtvRidnA==
+
+node-cache@^5.1.2:
+  version "5.1.2"
+  resolved "https://registry.npmjs.org/node-cache/-/node-cache-5.1.2.tgz#f264dc2ccad0a780e76253a694e9fd0ed19c398d"
+  integrity sha512-t1QzWwnk4sjLWaQAS8CHgOJ+RAfmHpxFWmc36IWTiWHQfs0w5JDMBS1b1ZxQteo0vVVuWJvIUKHDkkeK7vIGCg==
+  dependencies:
+    clone "2.x"
 
 node-dir@^0.1.10:
   version "0.1.17"
