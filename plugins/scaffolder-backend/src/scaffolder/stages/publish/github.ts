@@ -17,7 +17,7 @@
 import { PublisherBase, PublisherOptions, PublisherResult } from './types';
 import { initRepoAndPush } from './helpers';
 import { GitHubIntegrationConfig } from '@backstage/integration';
-import gitUrlParse from 'git-url-parse';
+import parseGitUrl from 'git-url-parse';
 import { Octokit } from '@octokit/rest';
 
 export type RepoVisibilityOptions = 'private' | 'internal' | 'public';
@@ -48,7 +48,7 @@ export class GithubPublisher implements PublisherBase {
     directory,
     logger,
   }: PublisherOptions): Promise<PublisherResult> {
-    const { owner, name } = gitUrlParse(values.storePath);
+    const { owner, name } = parseGitUrl(values.storePath);
 
     const description = values.description as string;
     const access = values.access as string;

@@ -18,7 +18,7 @@ import { PublisherBase, PublisherOptions, PublisherResult } from './types';
 import { initRepoAndPush } from './helpers';
 import fetch from 'cross-fetch';
 import { BitbucketIntegrationConfig } from '@backstage/integration';
-import gitUrlParse from 'git-url-parse';
+import parseGitUrl from 'git-url-parse';
 
 // TODO(blam): We should probably start to use a bitbucket client here that we can change
 // the baseURL to point at on-prem or public bitbucket versions like we do for
@@ -46,7 +46,7 @@ export class BitbucketPublisher implements PublisherBase {
     directory,
     logger,
   }: PublisherOptions): Promise<PublisherResult> {
-    const { owner: project, name } = gitUrlParse(values.storePath);
+    const { owner: project, name } = parseGitUrl(values.storePath);
 
     const description = values.description as string;
     const result = await this.createRemote({

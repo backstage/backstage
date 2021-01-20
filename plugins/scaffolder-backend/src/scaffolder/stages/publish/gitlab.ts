@@ -18,7 +18,7 @@ import { PublisherBase, PublisherOptions, PublisherResult } from './types';
 import { Gitlab } from '@gitbeaker/node';
 import { Gitlab as GitlabClient } from '@gitbeaker/core';
 import { initRepoAndPush } from './helpers';
-import gitUrlParse from 'git-url-parse';
+import parseGitUrl from 'git-url-parse';
 
 import { GitLabIntegrationConfig } from '@backstage/integration';
 
@@ -28,7 +28,7 @@ export class GitlabPublisher implements PublisherBase {
       return undefined;
     }
 
-    const client = new Gitlab({ host: config.apiBaseUrl, token: config.token });
+    const client = new Gitlab({ host: config.baseUrl, token: config.token });
     return new GitlabPublisher(config.token, client);
   }
 
@@ -42,7 +42,7 @@ export class GitlabPublisher implements PublisherBase {
     directory,
     logger,
   }: PublisherOptions): Promise<PublisherResult> {
-    const { owner, name } = gitUrlParse(values.storePath);
+    const { owner, name } = parseGitUrl(values.storePath);
 
     const remoteUrl = await this.createRemote({
       owner,

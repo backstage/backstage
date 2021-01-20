@@ -65,7 +65,7 @@ describe('createRouter - working directory', () => {
     kind: 'Template',
     metadata: {
       annotations: {
-        'backstage.io/managed-by-location': 'azure:https://dev.azure.com',
+        'backstage.io/managed-by-location': 'url:https://dev.azure.com',
       },
     },
     spec: {

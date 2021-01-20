@@ -19,7 +19,7 @@ import { IGitApi } from 'azure-devops-node-api/GitApi';
 import { GitRepositoryCreateOptions } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import { initRepoAndPush } from './helpers';
 import { AzureIntegrationConfig } from '@backstage/integration';
-import gitUrlParse from 'git-url-parse';
+import parseGitUrl from 'git-url-parse';
 import { getPersonalAccessTokenHandler, WebApi } from 'azure-devops-node-api';
 
 export class AzurePublisher implements PublisherBase {
@@ -43,7 +43,7 @@ export class AzurePublisher implements PublisherBase {
     directory,
     logger,
   }: PublisherOptions): Promise<PublisherResult> {
-    const { owner, name } = gitUrlParse(values.storePath);
+    const { owner, name } = parseGitUrl(values.storePath);
 
     const remoteUrl = await this.createRemote({
       project: owner,

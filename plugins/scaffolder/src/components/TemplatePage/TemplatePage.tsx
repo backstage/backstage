@@ -39,7 +39,7 @@ import { rootRoute } from '../../routes';
 import { JobStatusModal } from '../JobStatusModal';
 import { MultistepJsonForm } from '../MultistepJsonForm';
 import { useJobPolling } from '../hooks/useJobPolling';
-import gitParse from 'git-url-parse';
+import parseGitUrl from 'git-url-parse';
 
 const useTemplate = (
   templateName: string,
@@ -180,22 +180,28 @@ export const TemplatePage = () => {
                   schema: OWNER_REPO_SCHEMA,
                   validate: (formData, errors) => {
                     const { storePath } = formData;
-                    const parsedUrl = gitParse(storePath);
+                    try {
+                      const parsedUrl = parseGitUrl(storePath);
 
-                    if (
-                      !parsedUrl.resource ||
-                      !parsedUrl.owner ||
-                      !parsedUrl.name
-                    ) {
-                      if (parsedUrl.resource === 'dev.azure.com') {
-                        errors.storePath.addError(
-                          "The store path should be formatted like https://dev.azure.com/{org}/{project}/_git/{repo} for Azure URL's",
-                        );
-                      } else {
-                        errors.storePath.addError(
-                          'The store path should be a complete Git URL to the new repository location. For example: https://github.com/{owner}/{repo}',
-                        );
+                      if (
+                        !parsedUrl.resource ||
+                        !parsedUrl.owner ||
+                        !parsedUrl.name
+                      ) {
+                        if (parsedUrl.resource === 'dev.azure.com') {
+                          errors.storePath.addError(
+                            "The store path should be formatted like https://dev.azure.com/{org}/{project}/_git/{repo} for Azure URL's",
+                          );
+                        } else {
+                          errors.storePath.addError(
+                            'The store path should be a complete Git URL to the new repository location. For example: https://github.com/{owner}/{repo}',
+                          );
+                        }
                       }
+                    } catch (ex) {
+                      errors.storePath.addError(
+                        `Failed validation of the store pathn with message ${ex.message}`,
+                      );
                     }
 
                     return errors;

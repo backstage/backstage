@@ -32,7 +32,7 @@ const mockTemplate = (): TemplateEntityV1alpha1 => ({
   metadata: {
     annotations: {
       [LOCATION_ANNOTATION]:
-        'gitlab:https://gitlab.com/benjdlambert/backstage-graphql-template/-/blob/master/template.yaml',
+        'url:https://gitlab.com/benjdlambert/backstage-graphql-template/-/blob/master/template.yaml',
     },
     name: 'graphql-starter',
     title: 'GraphQL Service',

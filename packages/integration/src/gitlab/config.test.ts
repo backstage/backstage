@@ -31,11 +31,14 @@ describe('readGitLabIntegrationConfig', () => {
       buildConfig({
         host: 'a.com',
         token: 't',
+        baseUrl: 'https://baseurl.for.me/gitlab',
       }),
     );
+
     expect(output).toEqual({
       host: 'a.com',
       token: 't',
+      baseUrl: 'https://baseurl.for.me/gitlab',
     });
   });
 
@@ -43,7 +46,8 @@ describe('readGitLabIntegrationConfig', () => {
     const output = readGitLabIntegrationConfig(buildConfig({}));
     expect(output).toEqual({
       host: 'gitlab.com',
-      apiBaseUrl: undefined,
+      apiBaseUrl: 'gitlab.com/api/v4',
+      baseUrl: 'https://gitlab.com',
     });
   });
 
@@ -78,6 +82,7 @@ describe('readGitLabIntegrationConfigs', () => {
     expect(output).toContainEqual({
       host: 'a.com',
       token: 't',
+      baseUrl: 'https://a.com',
     });
   });
 
