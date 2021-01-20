@@ -166,18 +166,31 @@ export class GithubUrlReader implements UrlReader {
       throw new Error(message);
     }
 
-    // Note that repoResponseJson.full_name must be used over full_name because the path
-    // is case sensitive and full_name may not be inq the correct case.
-    // TODO(OrkoHunter): The directory name inside the tarball should be retrieved from the tar
-    // instead of being constructed here. Same goes for GitLab, Bitbucket and Azure.
-    const extractedDirName = `${repoResponseJson.full_name.replace(
-      '/',
-      '-',
-    )}-${commitSha.substr(0, 7)}`;
+    // Get the filename of archive from the header of the response
+    const contentDispositionHeader = archive.headers.get(
+      'content-disposition',
+    ) as string;
+    if (!contentDispositionHeader) {
+      throw new Error(
+        `Failed to read tree from ${url}. ` +
+          'GitHub API response for downloading archive does not contain content-disposition header ',
+      );
+    }
+    const fileNameRegEx = new RegExp(
+      /^attachment; filename=(?<fileName>.*).tar.gz$/,
+    );
+    const archiveFileName = contentDispositionHeader.match(fileNameRegEx)
+      ?.groups?.fileName;
+    if (!archiveFileName) {
+      throw new Error(
+        `Failed to read tree from ${url}. GitHub API response for downloading archive has an unexpected ` +
+          `format of content-disposition header ${contentDispositionHeader} `,
+      );
+    }
 
     // The path includes the name of the directory inside the tarball and a sub path
     // if requested in readTree.
-    const path = `${extractedDirName}/${filepath}`;
+    const path = `${archiveFileName}/${filepath}`;
 
     return await this.deps.treeResponseFactory.fromTarArchive({
       // TODO(Rugvip): Underlying implementation of fetch will be node-fetch, we probably want

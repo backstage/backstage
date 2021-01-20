@@ -76,6 +76,8 @@ export class AzureUrlReader implements UrlReader {
     url: string,
     options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
+    // TODO: Support filepath based reading tree feature like other providers
+
     // Get latest commit SHA
 
     const commitsAzureResponse = await fetch(

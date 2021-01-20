@@ -176,6 +176,10 @@ describe('GitlabUrlReader', () => {
             res(
               ctx.status(200),
               ctx.set('Content-Type', 'application/zip'),
+              ctx.set(
+                'content-disposition',
+                'attachment; filename="mock-main-sha123abc.zip"',
+              ),
               ctx.body(archiveBuffer),
             ),
         ),
@@ -225,6 +229,10 @@ describe('GitlabUrlReader', () => {
             res(
               ctx.status(200),
               ctx.set('Content-Type', 'application/zip'),
+              ctx.set(
+                'content-disposition',
+                'attachment; filename="mock-main-sha123abc.zip"',
+              ),
               ctx.body(archiveBuffer),
             ),
         ),
@@ -254,6 +262,10 @@ describe('GitlabUrlReader', () => {
             res(
               ctx.status(200),
               ctx.set('Content-Type', 'application/zip'),
+              ctx.set(
+                'content-disposition',
+                'attachment; filename="mock-main-sha123abc.zip"',
+              ),
               ctx.body(archiveBuffer),
             ),
         ),
