@@ -74,6 +74,14 @@
       },
       {
         "type": "subcategory",
+        "label": "Backstage Search",
+        "ids": [
+          "features/search/search-overview",
+          "features/search/architecture"
+        ]
+      },
+      {
+        "type": "subcategory",
         "label": "TechDocs",
         "ids": [
           "features/techdocs/techdocs-overview",
@@ -83,6 +91,7 @@
           "features/techdocs/creating-and-publishing",
           "features/techdocs/configuration",
           "features/techdocs/using-cloud-storage",
+          "features/techdocs/configuring-ci-cd",
           "features/techdocs/how-to-guides",
           "features/techdocs/troubleshooting",
           "features/techdocs/faqs"
@@ -174,7 +183,8 @@
       "architecture-decisions/adrs-adr006",
       "architecture-decisions/adrs-adr007",
       "architecture-decisions/adrs-adr008",
-      "architecture-decisions/adrs-adr009"
+      "architecture-decisions/adrs-adr009",
+      "architecture-decisions/adrs-adr010"
     ],
     "Contribute": ["../CONTRIBUTING"],
     "Support": ["support/support", "support/project-structure"],

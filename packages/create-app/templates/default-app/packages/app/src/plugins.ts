@@ -6,3 +6,5 @@ export { plugin as GithubActions } from '@backstage/plugin-github-actions';
 export { plugin as ScaffolderPlugin } from '@backstage/plugin-scaffolder';
 export { plugin as TechDocsPlugin } from '@backstage/plugin-techdocs';
 export { plugin as TechRadar } from '@backstage/plugin-tech-radar';
+export { plugin as UserSettings } from '@backstage/plugin-user-settings';
+

@@ -8,8 +8,6 @@ FROM nginx:mainline
 # This dockerfile requires the app to be built on the host first, as it
 # simply copies in the build output into the image.
 
-# The safest way to build this image is to use `yarn docker-build:app`
-
 RUN apt-get update && apt-get -y install jq && rm -rf /var/lib/apt/lists/*
 
 COPY packages/app/dist /usr/share/nginx/html

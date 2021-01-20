@@ -131,6 +131,19 @@ spec:
     $text: https://petstore.swagger.io/v2/swagger.json
 ```
 
+Note that to be able to read from targets that are outside of the normal
+integration points such as `github.com`, you'll need to explicitly allow it by
+adding an entry in the `backend.reading.allow` list. For example:
+
+```yml
+backend:
+  baseUrl: ...
+  reading:
+    allow:
+      - host: example.com
+      - host: '*.examples.org'
+```
+
 ## Common to All Kinds: The Envelope
 
 The root envelope object has the following structure.

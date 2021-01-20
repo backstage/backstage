@@ -21,7 +21,7 @@ import {
   readGitLabIntegrationConfigs,
 } from '@backstage/integration';
 import fs from 'fs-extra';
-import GitUriParser from 'git-url-parse';
+import parseGitUrl from 'git-url-parse';
 import os from 'os';
 import path from 'path';
 import { parseLocationAnnotation } from '../helpers';
@@ -55,7 +55,7 @@ export class GitlabPreparer implements PreparerBase {
     }
     const templateId = template.metadata.name;
 
-    const parsedGitLocation = GitUriParser(location);
+    const parsedGitLocation = parseGitUrl(location);
     const repositoryCheckoutUrl = parsedGitLocation.toString('https');
     const tempDir = await fs.promises.mkdtemp(
       path.join(workingDirectory, templateId),

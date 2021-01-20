@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import { Link } from '@backstage/core';
+import { configApiRef, Link, useApi } from '@backstage/core';
+import { readGitHubIntegrationConfigs } from '@backstage/integration';
 import {
   Accordion,
   AccordionDetails,
@@ -159,10 +160,15 @@ const JobListItem = ({
 };
 
 export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
+  const config = useApi(configApiRef);
   const projectName = useProjectName(entity);
 
+  // TODO: Get github hostname from metadata annotation
+  const hostname = readGitHubIntegrationConfigs(
+    config.getOptionalConfigArray('integrations.github') ?? [],
+  )[0].host;
   const [owner, repo] = projectName.value ? projectName.value.split('/') : [];
-  const details = useWorkflowRunsDetails(repo, owner);
+  const details = useWorkflowRunsDetails({ hostname, owner, repo });
   const jobs = useWorkflowRunJobs(details.value?.jobs_url);
 
   const error = projectName.error || (projectName.value && details.error);

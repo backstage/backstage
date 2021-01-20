@@ -67,6 +67,7 @@ Dominik
 dtuite
 dzolotusky
 Ek
+etag
 env
 Env
 eslint
@@ -78,6 +79,7 @@ Firekube
 Fiverr
 freben
 Fredrik
+Georgoulas
 gitbeaker
 GitHub
 GitLab
@@ -100,6 +102,7 @@ incentivised
 inlined
 inlinehilite
 interop
+Ioannis
 JavaScript
 jq
 js
@@ -113,6 +116,7 @@ Kumar
 learnings
 lerna
 Lerna
+Luxon
 magiclink
 mailto
 maintainership
