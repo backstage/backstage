@@ -80,10 +80,22 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
 
   // We grab the needed dependencies from the create app template
   const createAppDeps = new Set<string>();
+
+  function appendDeps(pkg: any) {
+    Array<string>()
+      .concat(
+        Object.keys(pkg.dependencies ?? {}),
+        Object.keys(pkg.devDependencies ?? {}),
+        Object.keys(pkg.peerDependencies ?? {}),
+      )
+      .filter(name => name.startsWith('@backstage/'))
+      .forEach(dep => createAppDeps.add(dep));
+  }
+
   for (const pkgJsonPath of templatePackagePaths) {
     const path = paths.resolveOwnRoot(pkgJsonPath);
     const pkgTemplate = await fs.readFile(path, 'utf8');
-    const { dependencies = {}, devDependencies = {} } = JSON.parse(
+    const pkg = JSON.parse(
       handlebars.compile(pkgTemplate)(
         {
           privatePackage: true,
@@ -102,12 +114,11 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
         },
       ),
     );
-
-    Array<string>()
-      .concat(Object.keys(dependencies), Object.keys(devDependencies))
-      .filter(name => name.startsWith('@backstage/'))
-      .forEach(dep => createAppDeps.add(dep));
+    appendDeps(pkg);
   }
+
+  // eslint-disable-next-line import/no-extraneous-dependencies
+  appendDeps(require('@backstage/create-app/package.json'));
 
   print(`Preparing workspace`);
   await runPlain([

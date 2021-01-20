@@ -37,6 +37,13 @@
     "recursive-readdir": "^2.2.2"
   },
   "devDependencies": {
+    "@types/fs-extra": "^9.0.1",
+    "@types/inquirer": "^7.3.1",
+    "@types/react-dev-utils": "^9.0.4",
+    "@types/recursive-readdir": "^2.2.0",
+    "ts-node": "^8.6.2"
+  },
+  "peerDependencies": {
     "@backstage/backend-common": "^0.4.3",
     "@backstage/catalog-model": "^0.6.1",
     "@backstage/cli": "^0.4.6",
@@ -62,12 +69,7 @@
     "@backstage/plugin-techdocs-backend": "^0.5.3",
     "@backstage/plugin-user-settings": "^0.2.3",
     "@backstage/test-utils": "^0.1.6",
-    "@backstage/theme": "^0.2.2",
-    "@types/fs-extra": "^9.0.1",
-    "@types/inquirer": "^7.3.1",
-    "@types/react-dev-utils": "^9.0.4",
-    "@types/recursive-readdir": "^2.2.0",
-    "ts-node": "^8.6.2"
+    "@backstage/theme": "^0.2.2"
   },
   "nodemonConfig": {
     "watch": "./src",
