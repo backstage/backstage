@@ -16,7 +16,7 @@
 import mockFs from 'mock-fs';
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
-import { AzureStoragePublish } from './azureStorage';
+import { AzureBlobStoragePublish } from './azureBlobStorage';
 import { PublisherBase } from './types';
 import type { Entity } from '@backstage/catalog-model';
 
@@ -54,8 +54,8 @@ beforeEach(async () => {
     techdocs: {
       requestUrl: 'http://localhost:7000',
       publisher: {
-        type: 'azureStorage',
-        azureStorage: {
+        type: 'azureBlobStorage',
+        azureBlobStorage: {
           credentials: {
             account: 'account',
             accountKey: 'accountKey',
@@ -66,10 +66,10 @@ beforeEach(async () => {
     },
   });
 
-  publisher = await AzureStoragePublish.fromConfig(mockConfig, logger);
+  publisher = await AzureBlobStoragePublish.fromConfig(mockConfig, logger);
 });
 
-describe('AzureStoragePublish', () => {
+describe('AzureBlobStoragePublish', () => {
   describe('publish', () => {
     it('should publish a directory', async () => {
       const entity = createMockEntity();
@@ -117,7 +117,7 @@ describe('AzureStoragePublish', () => {
         .catch(error =>
           expect(error).toEqual(
             new Error(
-              `Unable to upload file(s) to Azure Storage. Error Failed to read template directory: ENOENT, no such file or directory '${wrongPathToGeneratedDirectory}'`,
+              `Unable to upload file(s) to Azure Blob Storage. Error Failed to read template directory: ENOENT, no such file or directory '${wrongPathToGeneratedDirectory}'`,
             ),
           ),
         );
