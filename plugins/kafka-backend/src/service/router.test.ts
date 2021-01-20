@@ -86,26 +86,29 @@ describe('router', () => {
 
       expect(response.status).toEqual(200);
       expect(response.body.consumerId).toEqual('hey');
-      expect(response.body.offsets).toIncludeSameMembers([
-        {
-          topic: 'topic1',
-          partitionId: 1,
-          groupOffset: '100',
-          topicOffset: '500',
-        },
-        {
-          topic: 'topic1',
-          partitionId: 2,
-          groupOffset: '213',
-          topicOffset: '1000',
-        },
-        {
-          topic: 'topic2',
-          partitionId: 1,
-          groupOffset: '456',
-          topicOffset: '456',
-        },
-      ]);
+      // Note the Set comparison here since there's no guarantee on the order of the elements in the list.
+      expect(new Set(response.body.offsets)).toStrictEqual(
+        new Set([
+          {
+            topic: 'topic1',
+            partitionId: 1,
+            groupOffset: '100',
+            topicOffset: '500',
+          },
+          {
+            topic: 'topic1',
+            partitionId: 2,
+            groupOffset: '213',
+            topicOffset: '1000',
+          },
+          {
+            topic: 'topic2',
+            partitionId: 1,
+            groupOffset: '456',
+            topicOffset: '456',
+          },
+        ]),
+      );
     });
 
     it('handles internal error correctly', async () => {
