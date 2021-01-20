@@ -84,5 +84,5 @@ YWRtaW46MTFlYzI1NmU0Mzg1MDFjM2Y1Yzc2Yjc1MWE3ZTQ3YWY4Mw== is the base64 of user a
 
 ## Limitations
 
-- Only works with organisation folder jobs backed by GitHub
+- Only works with organization folder jobs backed by GitHub
 - No pagination support currently, limited to 50 jobs - don't run this on a Jenkins with lots of builds
