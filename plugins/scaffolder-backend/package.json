@@ -53,7 +53,7 @@
     "helmet": "^4.0.0",
     "isomorphic-git": "^1.8.0",
     "jsonschema": "^1.2.6",
-    "luxon": "^1.25.0",
+    "knex": "^0.21.6",
     "morgan": "^1.10.0",
     "p-queue": "^6.3.0",
     "uuid": "^8.2.0",
@@ -73,6 +73,7 @@
   },
   "files": [
     "dist",
+    "migrations",
     "config.d.ts"
   ],
   "configSchema": "config.d.ts"
