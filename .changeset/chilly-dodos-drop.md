@@ -3,4 +3,4 @@
 '@backstage/plugin-techdocs-backend': patch
 ---
 
-1. Added option to use Azure Storage as a choice to store the static generated files for TechDocs.
+1. Added option to use Azure Blob Storage as a choice to store the static generated files for TechDocs.
