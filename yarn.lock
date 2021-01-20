@@ -24083,9 +24083,9 @@ subscriptions-transport-ws@^0.9.11, subscriptions-transport-ws@^0.9.16:
     ws "^5.2.0"
 
 sucrase@^3.16.0:
-  version "3.16.0"
-  resolved "https://registry.npmjs.org/sucrase/-/sucrase-3.16.0.tgz#19b5b886ccca270dd5ca12ff060eeaf0b599735f"
-  integrity sha512-ovVuswxV5TayCPXfTk8bgBgk6uNRvsinIkEpq0J6zS1xXCx5N/LLGcbsKdRhqn/ToZylMX6+yXaR1LSn1I42Pg==
+  version "3.17.0"
+  resolved "https://registry.npmjs.org/sucrase/-/sucrase-3.17.0.tgz#d9fe5d7e359d884cdb31130358fbdfc18bfb4c24"
+  integrity sha512-wtiqaokYRjFSSrv8fQu7pThKTIZSLwiffW+PHQG52hlI8eJO47v1tXbKt6fYb8Z1kCyuCkNH9etpTUebb7g+pA==
   dependencies:
     commander "^4.0.0"
     glob "7.1.6"
