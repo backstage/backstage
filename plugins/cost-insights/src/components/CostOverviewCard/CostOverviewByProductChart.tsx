@@ -109,36 +109,48 @@ export const CostOverviewByProductChart = ({
 
   const chartData: Record<string, number>[] = Object.keys(productsByDate).map(
     date => {
+      const costsForDate = Object.keys(productsByDate[date]).reduce(
+        (dateCosts, product) => {
+          // Group costs for products that belong to 'Other' in the chart.
+          const cost = productsByDate[date][product];
+          const productCost = otherProducts.includes(product)
+            ? { Other: (dateCosts.Other || 0) + cost }
+            : { [product]: cost };
+          return { ...dateCosts, ...productCost };
+        },
+        {} as Record<string, number>,
+      );
       return {
-        ...productsByDate[date],
+        ...costsForDate,
         date: Date.parse(date),
       };
     },
   );
 
+  const sortedProducts = costsByProduct.sort(
+    (a, b) => aggregationSum(a.aggregation) - aggregationSum(b.aggregation),
+  );
+
   const renderAreas = () => {
-    const productGroupNames = new Set(
-      Object.values(productsByDate)
-        .map(d => Object.keys(d))
-        .flat(),
-    );
-    const sortedProducts = costsByProduct
+    const separatedProducts = sortedProducts
       // Check that product is a separate group and hasn't been added to 'Other'
       .filter(
-        product => product.id !== 'Other' && productGroupNames.has(product.id),
-      )
-      .sort(
-        (a, b) => aggregationSum(a.aggregation) - aggregationSum(b.aggregation),
+        product =>
+          product.id !== 'Other' && !otherProducts.includes(product.id),
       )
       .map(product => product.id);
     // Keep 'Other' category at the bottom of the stack
-    return ['Other', ...sortedProducts].map((product, i) => (
+    return ['Other', ...separatedProducts].map((product, i) => (
       <Area
         dataKey={product}
         isAnimationActive={false}
         stackId="1"
-        stroke={theme.palette.dataViz[sortedProducts.length - i]}
-        fill={theme.palette.dataViz[sortedProducts.length - i]}
+        stroke={theme.palette.dataViz[separatedProducts.length - i]}
+        fill={theme.palette.dataViz[separatedProducts.length - i]}
+        onClick={() => setExpanded(true)}
+        style={{
+          cursor: product === 'Other' && !isExpanded ? 'pointer' : null,
+        }}
       />
     ));
   };
@@ -149,18 +161,43 @@ export const CostOverviewByProductChart = ({
   }) => {
     if (isInvalid({ label, payload })) return null;
 
-    const title = dayjs(label).utc().format(DEFAULT_DATE_FORMAT);
+    const dateTitle = dayjs(label).utc().format(DEFAULT_DATE_FORMAT);
     const items = payload.map(p => ({
       label: p.dataKey as string,
       value: formatGraphValue(p.value as number),
       fill: p.fill!,
     }));
 
+    const otherGroupItem = items.find(item => item.label === 'Other');
+    const expandedOtherItems = sortedProducts
+      .filter(product => otherProducts.includes(product.id))
+      .map(product => ({
+        label: product.id,
+        value: formatGraphValue(productsByDate[dateTitle][product.id]),
+        fill:
+          otherGroupItem?.fill ||
+          theme.palette.dataViz[theme.palette.dataViz.length - 1],
+      }));
+    const expandedTooltipItems = expandedOtherItems
+      .reverse()
+      .map((item, index) => (
+        <TooltipItem key={`${item.label}-${index}`} item={item} />
+      ));
     return (
-      <Tooltip title={title}>
-        {items.reverse().map((item, index) => (
-          <TooltipItem key={`${item.label}-${index}`} item={item} />
-        ))}
+      <Tooltip title={dateTitle}>
+        {items
+          .filter(item => item.label !== 'Other')
+          .reverse()
+          .map((item, index) => (
+            <TooltipItem key={`${item.label}-${index}`} item={item} />
+          ))}
+        {!isExpanded ? (
+          <TooltipItem
+            key="Other"
+            item={{ ...otherGroupItem!, label: 'Other (Click to Expand)' }}
+          />
+        ) : null}
+        {isExpanded ? expandedTooltipItems : null}
       </Tooltip>
     );
   };
