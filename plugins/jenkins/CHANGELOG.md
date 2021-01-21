@@ -1,5 +1,15 @@
 # @backstage/plugin-jenkins
 
+## 0.3.7
+
+### Patch Changes
+
+- 9f8faed25: Update Jenkins card with build date, duration, and rename card to "latest" build.
+- Updated dependencies [a4e636c8f]
+- Updated dependencies [099c5cf4f]
+- Updated dependencies [a08db734c]
+  - @backstage/plugin-catalog@0.2.13
+
 ## 0.3.6
 
 ### Patch Changes

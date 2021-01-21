@@ -1,7 +1,7 @@
 {
   "name": "@backstage/create-app",
   "description": "Create app package for Backstage",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -52,7 +52,7 @@
     "@backstage/plugin-api-docs": "^0.4.3",
     "@backstage/plugin-app-backend": "^0.3.4",
     "@backstage/plugin-auth-backend": "^0.2.11",
-    "@backstage/plugin-catalog": "^0.2.12",
+    "@backstage/plugin-catalog": "^0.2.13",
     "@backstage/plugin-catalog-backend": "^0.5.4",
     "@backstage/plugin-catalog-import": "^0.3.5",
     "@backstage/plugin-circleci": "^0.2.6",
@@ -63,7 +63,7 @@
     "@backstage/plugin-rollbar-backend": "^0.1.7",
     "@backstage/plugin-scaffolder": "^0.4.0",
     "@backstage/plugin-search": "^0.2.6",
-    "@backstage/plugin-scaffolder-backend": "^0.5.0",
+    "@backstage/plugin-scaffolder-backend": "^0.5.1",
     "@backstage/plugin-tech-radar": "^0.3.3",
     "@backstage/plugin-techdocs": "^0.5.4",
     "@backstage/plugin-techdocs-backend": "^0.5.4",
