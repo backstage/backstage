@@ -59,7 +59,7 @@ export const AboutContent = ({ entity }: Props) => {
         {ownedByRelations.map((t, i) => (
           <React.Fragment key={i}>
             {i > 0 && ', '}
-            <EntityRefLink entityRef={t} />
+            <EntityRefLink entityRef={t} defaultKind="group" />
           </React.Fragment>
         ))}
       </AboutField>
