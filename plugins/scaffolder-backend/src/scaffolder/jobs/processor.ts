@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 import { Processor, Job, StageContext, StageInput } from './types';
-import { JsonValue } from '@backstage/config';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import * as uuid from 'uuid';
 import Docker from 'dockerode';
-import { RequiredTemplateValues, TemplaterBase } from '../stages/templater';
+import { TemplaterValues, TemplaterBase } from '../stages/templater';
 import { PreparerBuilder } from '../stages/prepare';
 import { makeLogStream } from './logger';
 
@@ -42,7 +41,7 @@ export class JobProcessor implements Processor {
     stages,
   }: {
     entity: TemplateEntityV1alpha1;
-    values: RequiredTemplateValues & Record<string, JsonValue>;
+    values: TemplaterValues;
     stages: StageInput[];
   }): Job {
     const id = uuid.v4();

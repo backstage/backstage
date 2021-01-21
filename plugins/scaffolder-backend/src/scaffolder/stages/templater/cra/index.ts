@@ -70,7 +70,9 @@ export class CreateReactAppTemplater implements TemplaterBase {
         `${finalDir}/.github/workflows/main.yml`,
       );
 
-      extraAnnotations[GITHUB_ACTIONS_ANNOTATION] = options.values.storePath;
+      extraAnnotations[
+        GITHUB_ACTIONS_ANNOTATION
+      ] = `${options.values?.destination?.git?.owner}/${options.values?.destination?.git?.name}`;
     }
 
     const componentInfo = {
