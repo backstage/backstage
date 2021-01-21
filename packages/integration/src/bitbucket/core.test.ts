@@ -116,7 +116,7 @@ describe('bitbucket core', () => {
       };
       worker.use(
         rest.get(
-          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches/default',
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/default-branch',
           (_, res, ctx) =>
             res(
               ctx.status(200),
@@ -144,7 +144,7 @@ describe('bitbucket core', () => {
       };
       worker.use(
         rest.get(
-          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches/default',
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/default-branch',
           (_, res, ctx) =>
             res(
               ctx.status(200),
@@ -231,7 +231,7 @@ describe('bitbucket core', () => {
       };
       worker.use(
         rest.get(
-          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches/default',
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/default-branch',
           (_, res, ctx) =>
             res(
               ctx.status(200),
