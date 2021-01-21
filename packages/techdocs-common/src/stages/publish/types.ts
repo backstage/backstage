@@ -33,6 +33,14 @@ export type PublishResponse = {
 } | void;
 
 /**
+ * Type to hold metadata found in techdocs_metadata.json and associated with each site
+ */
+export type TechDocsMetadata = {
+  site_name: string;
+  site_description: string;
+};
+
+/**
  * Base class for a TechDocs publisher (e.g. Local, Google GCS Bucket, AWS S3, etc.)
  * The publisher handles publishing of the generated static files after the prepare and generate steps of TechDocs.
  * It also provides APIs to communicate with the storage service.
@@ -50,7 +58,7 @@ export interface PublisherBase {
    * Retrieve TechDocs Metadata about a site e.g. name, contributors, last updated, etc.
    * This API uses the techdocs_metadata.json file that co-exists along with the generated docs.
    */
-  fetchTechDocsMetadata(entityName: EntityName): Promise<string>;
+  fetchTechDocsMetadata(entityName: EntityName): Promise<TechDocsMetadata>;
 
   /**
    * Route middleware to serve static documentation files for an entity.

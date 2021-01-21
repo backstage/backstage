@@ -19,12 +19,13 @@ import { AsyncState } from 'react-use/lib/useAsync';
 import CodeIcon from '@material-ui/icons/Code';
 import { EntityName } from '@backstage/catalog-model';
 import { Header, HeaderLabel, Link } from '@backstage/core';
+import { TechDocsMetadata } from '../../types';
 
 type TechDocsPageHeaderProps = {
   entityId: EntityName;
   metadataRequest: {
     entity: AsyncState<any>;
-    techdocs: AsyncState<any>;
+    techdocs: AsyncState<TechDocsMetadata>;
   };
 };
 

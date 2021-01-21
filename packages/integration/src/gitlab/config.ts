@@ -46,6 +46,14 @@ export type GitLabIntegrationConfig = {
    * If no token is specified, anonymous access is used.
    */
   token?: string;
+
+  /**
+   * The baseUrl of this provider, e.g "https://gitlab.com",
+   * which is passed into the gitlab client.
+   *
+   * If no baseUrl is provided, it will default to https://${host}
+   */
+  baseUrl?: string;
 };
 
 /**
@@ -59,6 +67,7 @@ export function readGitLabIntegrationConfig(
   const host = config.getOptionalString('host') ?? GITLAB_HOST;
   let apiBaseUrl = config.getOptionalString('apiBaseUrl');
   const token = config.getOptionalString('token');
+  const baseUrl = config.getOptionalString('baseUrl') ?? `https://${host}`;
 
   if (!isValidHost(host)) {
     throw new Error(
@@ -71,7 +80,8 @@ export function readGitLabIntegrationConfig(
   } else if (host === GITLAB_HOST) {
     apiBaseUrl = GITLAB_API_BASE_URL;
   }
-  return { host, token, apiBaseUrl };
+
+  return { host, token, apiBaseUrl, baseUrl };
 }
 
 /**

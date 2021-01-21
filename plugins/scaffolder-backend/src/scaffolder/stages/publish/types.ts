@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { RequiredTemplateValues } from '../templater';
 import { JsonValue } from '@backstage/config';
-import { RemoteProtocol } from '../types';
 import { Logger } from 'winston';
 
 /**
@@ -35,8 +33,8 @@ export type PublisherBase = {
 
 export type PublisherOptions = {
   values: RequiredTemplateValues & Record<string, JsonValue>;
-  logger: Logger;
   directory: string;
+  logger: Logger;
 };
 
 export type PublisherResult = {
@@ -45,6 +43,6 @@ export type PublisherResult = {
 };
 
 export type PublisherBuilder = {
-  register(protocol: RemoteProtocol, publisher: PublisherBase): void;
-  get(template: TemplateEntityV1alpha1): PublisherBase;
+  register(host: string, publisher: PublisherBase): void;
+  get(storePath: string): PublisherBase;
 };

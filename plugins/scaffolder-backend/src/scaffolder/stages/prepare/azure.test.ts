@@ -26,12 +26,13 @@ import {
   LOCATION_ANNOTATION,
 } from '@backstage/catalog-model';
 import { getVoidLogger, Git } from '@backstage/backend-common';
-import { ConfigReader } from '@backstage/config';
 
 describe('AzurePreparer', () => {
   const mockGitClient = {
     clone: jest.fn(),
   };
+
+  const logger = getVoidLogger();
 
   jest.spyOn(Git, 'fromAuth').mockReturnValue(mockGitClient as any);
 
@@ -44,7 +45,7 @@ describe('AzurePreparer', () => {
       metadata: {
         annotations: {
           [LOCATION_ANNOTATION]:
-            'azure/api:https://dev.azure.com/backstage-org/backstage-project/_git/template-repo?path=%2Ftemplate.yaml',
+            'url:https://dev.azure.com/backstage-org/backstage-project/_git/template-repo?path=%2Ftemplate.yaml',
         },
         name: 'graphql-starter',
         title: 'GraphQL Service',
@@ -78,30 +79,33 @@ describe('AzurePreparer', () => {
     };
   });
 
-  it('initializes git client with the correct arguments if an access token is provided for a repository', async () => {
-    const preparer = new AzurePreparer(
-      new ConfigReader({
-        scaffolder: {
-          azure: {
-            api: {
-              token: 'fake-token',
-            },
-          },
-        },
-      }),
-    );
-    const logger = getVoidLogger();
+  const preparer = AzurePreparer.fromConfig({
+    host: 'dev.azure.com',
+    token: 'fake-azure-token',
+  });
+
+  // TODO(blam): Here's a test that will fail when the deprecation is complete
+  it('calls the clone command with deprecated token', async () => {
     await preparer.prepare(mockEntity, { logger });
 
     expect(Git.fromAuth).toHaveBeenCalledWith({
-      username: 'notempty',
-      password: 'fake-token',
       logger,
+      password: 'fake-azure-token',
+      username: 'notempty',
     });
   });
-  it('calls the clone command with the correct arguments for a repository', async () => {
-    const preparer = new AzurePreparer(new ConfigReader({}));
 
+  it('calls the clone command with token from integrations config', async () => {
+    await preparer.prepare(mockEntity, { logger });
+
+    expect(Git.fromAuth).toHaveBeenCalledWith({
+      logger,
+      password: 'fake-azure-token',
+      username: 'notempty',
+    });
+  });
+
+  it('calls the clone command with the correct arguments for a repository', async () => {
     await preparer.prepare(mockEntity, { logger: getVoidLogger() });
 
     expect(mockGitClient.clone).toHaveBeenCalledWith({
@@ -112,7 +116,6 @@ describe('AzurePreparer', () => {
   });
 
   it('calls the clone command with the correct arguments for a repository when no path is provided', async () => {
-    const preparer = new AzurePreparer(new ConfigReader({}));
     delete mockEntity.spec.path;
 
     await preparer.prepare(mockEntity, { logger: getVoidLogger() });
@@ -125,7 +128,6 @@ describe('AzurePreparer', () => {
   });
 
   it('return the temp directory with the path to the folder if it is specified', async () => {
-    const preparer = new AzurePreparer(new ConfigReader({}));
     mockEntity.spec.path = './template/test/1/2/3';
 
     const response = await preparer.prepare(mockEntity, {
@@ -138,12 +140,11 @@ describe('AzurePreparer', () => {
   });
 
   it('return the working directory with the path to the folder if it is specified', async () => {
-    const preparer = new AzurePreparer(new ConfigReader({}));
     mockEntity.spec.path = './template/test/1/2/3';
 
     const response = await preparer.prepare(mockEntity, {
-      logger: getVoidLogger(),
       workingDirectory: '/workDir',
+      logger: getVoidLogger(),
     });
 
     expect(response.split('\\').join('/')).toMatch(

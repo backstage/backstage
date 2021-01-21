@@ -27,6 +27,8 @@ import {
   StageContext,
   TemplaterBuilder,
   PublisherBuilder,
+  parseLocationAnnotation,
+  FilePreparer,
 } from '../scaffolder';
 import { CatalogEntityClient } from '../lib/catalog';
 import { validate, ValidatorResult } from 'jsonschema';
@@ -129,7 +131,15 @@ export async function createRouter(
           {
             name: 'Prepare the skeleton',
             handler: async ctx => {
-              const preparer = preparers.get(ctx.entity);
+              const { protocol, location: pullPath } = parseLocationAnnotation(
+                ctx.entity,
+              );
+
+              const preparer =
+                protocol === 'file'
+                  ? new FilePreparer()
+                  : preparers.get(pullPath);
+
               const skeletonDir = await preparer.prepare(ctx.entity, {
                 logger: ctx.logger,
                 workingDirectory,
@@ -154,7 +164,7 @@ export async function createRouter(
           {
             name: 'Publish template',
             handler: async (ctx: StageContext<{ resultDir: string }>) => {
-              const publisher = publishers.get(ctx.entity);
+              const publisher = publishers.get(ctx.values.storePath);
               ctx.logger.info('Will now store the template');
               const result = await publisher.publish({
                 values: ctx.values,
@@ -167,9 +177,9 @@ export async function createRouter(
         ],
       });
 
-      res.status(201).json({ id: job.id });
-
       jobProcessor.run(job);
+
+      res.status(201).json({ id: job.id });
     });
 
   const app = express();

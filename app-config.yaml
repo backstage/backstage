@@ -372,3 +372,8 @@ homepage:
       timezone: 'Asia/Tokyo'
 pagerduty:
   eventsBaseUrl: 'https://events.pagerduty.com/v2'
+
+kafka:
+  clientId: backstage
+  brokers:
+    - localhost:9092

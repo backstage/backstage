@@ -59,6 +59,8 @@ createDevApp()
                 projectUrl: `/#${componentKey}`,
                 getIssuesUrl: i => `/#${componentKey}/issues/${i}`,
                 getComponentMeasuresUrl: i => `/#${componentKey}/measures/${i}`,
+                getSecurityHotspotsUrl: () =>
+                  `#${componentKey}/security_hotspots`,
               } as FindingSummary;
 
             case 'failed':
@@ -70,6 +72,7 @@ createDevApp()
                   reliability_rating: '2.0',
                   vulnerabilities: '18',
                   security_rating: '3.0',
+                  security_review_rating: '3.0',
                   code_smells: '22',
                   sqale_rating: '5.0',
                   coverage: '15.7',
@@ -78,6 +81,8 @@ createDevApp()
                 projectUrl: `/#${componentKey}`,
                 getIssuesUrl: i => `/#${componentKey}/issues/${i}`,
                 getComponentMeasuresUrl: i => `/#${componentKey}/measures/${i}`,
+                getSecurityHotspotsUrl: () =>
+                  `#${componentKey}/security_hotspots`,
               } as FindingSummary;
 
             case 'passed':
@@ -89,6 +94,8 @@ createDevApp()
                   reliability_rating: '1.0',
                   vulnerabilities: '0',
                   security_rating: '1.0',
+                  security_hotspots_reviewed: '100.0',
+                  security_review_rating: '1.0',
                   code_smells: '0',
                   sqale_rating: '1.0',
                   coverage: '100.0',
@@ -97,6 +104,8 @@ createDevApp()
                 projectUrl: `/#${componentKey}`,
                 getIssuesUrl: i => `/#${componentKey}/issues/${i}`,
                 getComponentMeasuresUrl: i => `/#${componentKey}/measures/${i}`,
+                getSecurityHotspotsUrl: () =>
+                  `#${componentKey}/security_hotspots`,
               } as FindingSummary;
 
             default:

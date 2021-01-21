@@ -58,14 +58,22 @@ export async function createRouter({
     const { '0': path } = req.params;
     const entityName = getEntityNameFromUrlPath(path);
 
-    publisher
-      .fetchTechDocsMetadata(entityName)
-      .then(techdocsMetadataJson => {
-        res.send(techdocsMetadataJson);
-      })
-      .catch(reason => {
-        res.status(500).send(`Unable to get Metadata. Reason: ${reason}`);
-      });
+    try {
+      const techdocsMetadata = await publisher.fetchTechDocsMetadata(
+        entityName,
+      );
+
+      res.send(techdocsMetadata);
+    } catch (err) {
+      logger.error(
+        `Unable to get metadata for ${entityName.namespace}/${entityName.name} with error ${err}`,
+      );
+      res
+        .status(500)
+        .send(
+          `Unable to get metadata for $${entityName.namespace}/${entityName.name}, reason: ${err}`,
+        );
+    }
   });
 
   router.get('/metadata/entity/:namespace/:kind/:name', async (req, res) => {
