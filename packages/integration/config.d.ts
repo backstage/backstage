@@ -83,11 +83,13 @@ export interface Config {
        */
       rawBaseUrl?: string;
 
-      /** GitHub Apps configuration */
+      /**
+       * GitHub Apps configuration
+       * @visibility backend
+       */
       apps?: Array<{
         /**
          * The numeric GitHub App ID
-         * @visibility frontend
          */
         appId: number;
         /**
