@@ -5,7 +5,6 @@ metadata:
   description: {{cookiecutter.description | jsonify}}
   annotations:
     github.com/project-slug: {{cookiecutter.destination.git.owner + "/" + cookiecutter.destination.git.name}}
-    backstage.io/source-url: {{cookiecutter.storePath | jsonify}}
     backstage.io/techdocs-ref: url:{{cookiecutter.storePath}}
 spec:
   type: website

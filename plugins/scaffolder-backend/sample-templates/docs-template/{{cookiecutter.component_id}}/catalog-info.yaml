@@ -3,8 +3,8 @@ kind: Component
 metadata:
   name: {{cookiecutter.component_id | jsonify}}
   description: {{cookiecutter.description | jsonify}}
+  annotations:
     github.com/project-slug: {{cookiecutter.destination.git.owner + "/" + cookiecutter.destination.git.name}}
-    backstage.io/source-ref: {{cookiecutter.storePath | jsonify}}
     backstage.io/techdocs-ref: url:{{cookiecutter.storePath}}
 spec:
   type: documentation
