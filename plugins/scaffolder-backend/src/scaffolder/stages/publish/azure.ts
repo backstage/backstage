@@ -27,24 +27,30 @@ export class AzurePublisher implements PublisherBase {
     if (!config.token) {
       return undefined;
     }
-    const authHandler = getPersonalAccessTokenHandler(config.token);
-    const webApi = new WebApi(config.host, authHandler);
-    const azureClient = await webApi.getGitApi();
-    return new AzurePublisher({ token: config.token, client: azureClient });
+    return new AzurePublisher({ token: config.token });
   }
 
-  constructor(private readonly config: { token: string; client: IGitApi }) {}
+  constructor(private readonly config: { token: string }) {}
 
   async publish({
     values,
     directory,
     logger,
   }: PublisherOptions): Promise<PublisherResult> {
-    const { owner, name } = parseGitUrl(values.storePath);
+    const { owner, name, organization, resource } = parseGitUrl(
+      values.storePath,
+    );
+    const authHandler = getPersonalAccessTokenHandler(this.config.token);
+    const webApi = new WebApi(
+      `https://${resource}/${organization}`,
+      authHandler,
+    );
+    const client = await webApi.getGitApi();
 
     const remoteUrl = await this.createRemote({
       project: owner,
       name,
+      client,
     });
 
     const catalogInfoUrl = `${remoteUrl}?path=%2Fcatalog-info.yaml`;
@@ -62,13 +68,14 @@ export class AzurePublisher implements PublisherBase {
     return { remoteUrl, catalogInfoUrl };
   }
 
-  private async createRemote(opts: { name: string; project: string }) {
-    const { name, project } = opts;
+  private async createRemote(opts: {
+    name: string;
+    project: string;
+    client: IGitApi;
+  }) {
+    const { name, project, client } = opts;
     const createOptions: GitRepositoryCreateOptions = { name };
-    const repo = await this.config.client.createRepository(
-      createOptions,
-      project,
-    );
+    const repo = await client.createRepository(createOptions, project);
 
     return repo.remoteUrl || '';
   }
