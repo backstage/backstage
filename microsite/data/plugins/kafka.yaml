@@ -6,6 +6,6 @@ category: Monitoring
 description: Observability for Apache Kafka clusters and async API of components.
 documentation: https://github.com/backstage/backstage/tree/master/plugins/kafka
 iconUrl: https://kafka.apache.org/images/apache-kafka.png
-npmPackageName: '@backstage/kafka'
+npmPackageName: '@backstage/plugin-kafka'
 tags:
   - monitoring
