@@ -39,6 +39,8 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
     padding: 0,
     background: theme.palette.navigation.background,
     overflowX: 'hidden',
+    msOverflowStyle: 'none',
+    scrollbarWidth: 'none',
     width: sidebarConfig.drawerWidthClosed,
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
@@ -46,6 +48,9 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
     }),
     '& > *': {
       flexShrink: 0,
+    },
+    '&::-webkit-scrollbar': {
+      display: 'none',
     },
   },
   drawerOpen: {
