@@ -16,7 +16,8 @@
 import React, { useState } from 'react';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import { useTheme, Box } from '@material-ui/core';
+import { useTheme, Box, Typography } from '@material-ui/core';
+import { default as FullScreenIcon } from '@material-ui/icons/Fullscreen';
 import {
   AreaChart,
   ContentRenderer,
@@ -59,7 +60,7 @@ export const CostOverviewByProductChart = ({
   costsByProduct,
 }: CostOverviewByProductChartProps) => {
   const theme = useTheme<CostInsightsTheme>();
-  const styles = useStyles(theme);
+  const classes = useStyles(theme);
   const lastCompleteBillingDate = useLastCompleteBillingDate();
   const { duration } = useFilters(mapFiltersToProps);
   const [isExpanded, setExpanded] = useState(false);
@@ -113,9 +114,10 @@ export const CostOverviewByProductChart = ({
         (dateCosts, product) => {
           // Group costs for products that belong to 'Other' in the chart.
           const cost = productsByDate[date][product];
-          const productCost = otherProducts.includes(product)
-            ? { Other: (dateCosts.Other || 0) + cost }
-            : { [product]: cost };
+          const productCost =
+            !isExpanded && otherProducts.includes(product)
+              ? { Other: (dateCosts.Other || 0) + cost }
+              : { [product]: cost };
           return { ...dateCosts, ...productCost };
         },
         {} as Record<string, number>,
@@ -140,19 +142,31 @@ export const CostOverviewByProductChart = ({
       )
       .map(product => product.id);
     // Keep 'Other' category at the bottom of the stack
-    return ['Other', ...separatedProducts].map((product, i) => (
-      <Area
-        dataKey={product}
-        isAnimationActive={false}
-        stackId="1"
-        stroke={theme.palette.dataViz[separatedProducts.length - i]}
-        fill={theme.palette.dataViz[separatedProducts.length - i]}
-        onClick={() => setExpanded(true)}
-        style={{
-          cursor: product === 'Other' && !isExpanded ? 'pointer' : null,
-        }}
-      />
-    ));
+    const productsToDisplay = isExpanded
+      ? sortedProducts.map(product => product.id)
+      : ['Other', ...separatedProducts];
+
+    return productsToDisplay.map((product, i) => {
+      // Logic to handle case where there are more products than data viz colors.
+      const productColor =
+        theme.palette.dataViz[
+          (productsToDisplay.length - 1 - i) %
+            (theme.palette.dataViz.length - 1)
+        ];
+      return (
+        <Area
+          dataKey={product}
+          isAnimationActive={false}
+          stackId="1"
+          stroke={productColor}
+          fill={productColor}
+          onClick={() => setExpanded(true)}
+          style={{
+            cursor: product === 'Other' && !isExpanded ? 'pointer' : null,
+          }}
+        />
+      );
+    });
   };
 
   const tooltipRenderer: ContentRenderer<TooltipProps> = ({
@@ -167,37 +181,18 @@ export const CostOverviewByProductChart = ({
       value: formatGraphValue(p.value as number),
       fill: p.fill!,
     }));
-
-    const otherGroupItem = items.find(item => item.label === 'Other');
-    const expandedOtherItems = sortedProducts
-      .filter(product => otherProducts.includes(product.id))
-      .map(product => ({
-        label: product.id,
-        value: formatGraphValue(productsByDate[dateTitle][product.id]),
-        fill:
-          otherGroupItem?.fill ||
-          theme.palette.dataViz[theme.palette.dataViz.length - 1],
-      }));
-    const expandedTooltipItems = expandedOtherItems
-      .reverse()
-      .map((item, index) => (
-        <TooltipItem key={`${item.label}-${index}`} item={item} />
-      ));
+    const expandText = (
+      <Box display="flex" justifyContent="space-between" alignItems="center">
+        <FullScreenIcon />
+        <Typography>Click to expand</Typography>
+      </Box>
+    );
     return (
       <Tooltip title={dateTitle}>
-        {items
-          .filter(item => item.label !== 'Other')
-          .reverse()
-          .map((item, index) => (
-            <TooltipItem key={`${item.label}-${index}`} item={item} />
-          ))}
-        {!isExpanded ? (
-          <TooltipItem
-            key="Other"
-            item={{ ...otherGroupItem!, label: 'Other (Click to Expand)' }}
-          />
-        ) : null}
-        {isExpanded ? expandedTooltipItems : null}
+        {items.reverse().map((item, index) => (
+          <TooltipItem key={`${item.label}-${index}`} item={item} />
+        ))}
+        {!isExpanded ? expandText : null}
       </Tooltip>
     );
   };
@@ -218,8 +213,8 @@ export const CostOverviewByProductChart = ({
         />
       </Box>
       <ResponsiveContainer
-        width={styles.container.width}
-        height={styles.container.height}
+        width={classes.container.width}
+        height={classes.container.height}
       >
         <AreaChart
           data={chartData}
@@ -229,20 +224,20 @@ export const CostOverviewByProductChart = ({
             bottom: 40,
           }}
         >
-          <CartesianGrid stroke={styles.cartesianGrid.stroke} />
+          <CartesianGrid stroke={classes.cartesianGrid.stroke} />
           <XAxis
             dataKey="date"
             domain={['dataMin', 'dataMax']}
             tickFormatter={overviewGraphTickFormatter}
             tickCount={6}
             type="number"
-            stroke={styles.axis.fill}
+            stroke={classes.axis.fill}
           />
           <YAxis
             domain={[() => 0, 'dataMax']}
-            tick={{ fill: styles.axis.fill }}
+            tick={{ fill: classes.axis.fill }}
             tickFormatter={formatGraphValue}
-            width={styles.yAxis.width}
+            width={classes.yAxis.width}
           />
           {renderAreas()}
           <RechartsTooltip content={tooltipRenderer} animationDuration={100} />
