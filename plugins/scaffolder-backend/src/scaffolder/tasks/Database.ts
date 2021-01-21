@@ -13,23 +13,79 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Task, Status } from './types';
+import { DbTaskRow, TaskSpec } from './types';
+import { v4 as uuid } from 'uuid';
+import { DateTime } from 'luxon';
 
-export class Database {
-  private readonly store = new Map<string, Task>();
+export interface Database {
+  get(taskId: string): Promise<DbTaskRow>;
+  // updateTask(task: Task): Promise<DbTaskRow>;
+  createTask(task: TaskSpec): Promise<DbTaskRow>;
+  claimTask(): Promise<DbTaskRow>;
+  heartBeat(runId: string): Promise<void>;
+}
 
-  get(taskId: string) {
-    return this.store.get(taskId);
+export class InMemoryDatabase implements Database {
+  private readonly store = new Map<string, DbTaskRow>();
+
+  async heartBeat(runId: string): Promise<void> {
+    let task: DbTaskRow | undefined;
+
+    for (const t of this.store.values()) {
+      if (t.runId === runId) {
+        task = t;
+      }
+    }
+
+    if (!task) {
+      throw new Error('No task with matching runId found');
+    }
+
+    this.store.set(task.taskId, {
+      ...task,
+      lastHeartbeat: DateTime.local().toString(),
+    });
   }
 
-  write(task: Task) {
-    return task;
+  async claimTask(): Promise<DbTaskRow> {
+    for (const t of this.store.values()) {
+      if (t.status === 'OPEN') {
+        const task: DbTaskRow = {
+          ...t,
+          status: 'PROCESSING',
+          runId: uuid(),
+        };
+        this.store.set(t.taskId, task);
+        return task;
+      }
+    }
+    throw new Error('No task found');
   }
 
-  writeStatus(taskId: string, status: Status) {
+  async createTask(spec: TaskSpec): Promise<DbTaskRow> {
+    return {
+      taskId: uuid(),
+      spec,
+      status: 'OPEN',
+      retryCount: 0,
+      createdAt: new Date().toISOString(),
+    };
+  }
+
+  async get(taskId: string): Promise<DbTaskRow> {
     const task = this.store.get(taskId);
     if (task) {
-      this.store.set(taskId, { ...task, status });
+      return task;
     }
+    throw new Error(`could not found task ${taskId}`);
   }
+
+  // async updateTask(task: Task): Promise<Task> {
+  //   if (!task.taskId) {
+  //     throw new Error('Task must contain id');
+  //   }
+
+  //   this.store.set(task.taskId, task);
+  //   return task;
+  // }
 }

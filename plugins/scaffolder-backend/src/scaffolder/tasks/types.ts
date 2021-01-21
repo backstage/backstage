@@ -14,17 +14,43 @@
  * limitations under the License.
  */
 
-export type Status = 'OPEN' | 'PROCESSING' | 'FAILED' | 'CANCELLED';
-export type Task = {
+export type Status =
+  | 'OPEN'
+  | 'PROCESSING'
+  | 'FAILED'
+  | 'CANCELLED'
+  | 'COMPLETED';
+
+export type CompletedTaskState = 'FAILED' | 'COMPLETED';
+
+export type DbTaskRow = {
   taskId: string;
-  metadata: string;
+  spec: TaskSpec;
   status: Status;
-  lastHeartbeat: string;
+  lastHeartbeat?: string;
   retryCount: number;
+  createdAt: string;
+  runId?: string;
+};
+
+export type DbTaskEventRow = {
+  id: number;
+  runId?: number;
+  stageName: string;
   createdAt: string;
 };
 
-export type ClaimResponse = {
-  runId: number;
-  task: Task;
+export type TaskSpec = {
+  metadata: string;
 };
+
+export interface Task {
+  spec: TaskSpec;
+  emitLog(message: string): Promise<void>;
+  complete(result: CompletedTaskState): Promise<void>;
+}
+
+export interface TaskBroker {
+  claim(): Promise<Task>;
+  dispatch(spec: TaskSpec): Promise<void>;
+}
