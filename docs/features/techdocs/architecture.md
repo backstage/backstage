@@ -123,6 +123,20 @@ a cache for the generated static content. TechDocs is also currently built on
 MkDocs which does not allow us to generate docs per-page, so we would have to
 build all docs for a entity on every request.
 
+**Q. Can you use the techdocs plugin without the techdocs-backend plugin?**
+
+A: `techdocs` and `techdocs-backend` plugins are designed to be used together,
+like any other Backstage plugin with a frontend and its backend (catalog,
+scaffolder, etc.). If you set your Backstage instance to generate docs on the
+server, `techdocs-backend` will be responsible for managing the whole build
+process, making sure it's scalable. It is responsible for securely communicating
+with the cloud storage provider, for both fetching static generated sites and
+publishing the updates. There are other planned features like an authentication
+layer for users to determine whether they have the permission to view a
+particular docs site. There are a handful of features which are extremely hard
+to develop without a tightly integrated backend in place. Hence, support for
+`techdocs` without `techdocs-backend` is limited and challenging to develop.
+
 # Future work
 
 _Ideas here are far fetched and not in the project's milestone for near future
