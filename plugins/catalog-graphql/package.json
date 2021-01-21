@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-graphql",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -30,8 +30,8 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.4.1",
-    "@backstage/catalog-model": "^0.6.0",
+    "@backstage/backend-common": "^0.5.0",
+    "@backstage/catalog-model": "^0.7.0",
     "@backstage/config": "^0.1.2",
     "@graphql-modules/core": "^0.7.17",
     "apollo-server": "^2.16.1",
@@ -42,7 +42,7 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.4.2",
+    "@backstage/cli": "^0.4.7",
     "@backstage/test-utils": "^0.1.5",
     "@graphql-codegen/cli": "^1.17.7",
     "@graphql-codegen/typescript": "^1.17.7",

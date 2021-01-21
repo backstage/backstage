@@ -1,5 +1,20 @@
 # @backstage/plugin-kubernetes
 
+## 0.3.6
+
+### Patch Changes
+
+- d014185db: Show Kubernetes Service manifests.
+  Show Kubernetes Ingress manifests.
+- Updated dependencies [def2307f3]
+- Updated dependencies [d54857099]
+- Updated dependencies [efd6ef753]
+- Updated dependencies [a187b8ad0]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/plugin-kubernetes-backend@0.2.5
+  - @backstage/core@0.5.0
+
 ## 0.3.5
 
 ### Patch Changes

@@ -1,5 +1,80 @@
 # @backstage/integration
 
+## 0.3.0
+
+### Minor Changes
+
+- ed6baab66: - Deprecating the `scaffolder.${provider}.token` auth duplication and favoring `integrations.${provider}` instead. If you receive deprecation warnings your config should change like the following:
+
+  ```yaml
+  scaffolder:
+    github:
+      token:
+        $env: GITHUB_TOKEN
+      visibility: public
+  ```
+
+  To something that looks like this:
+
+  ```yaml
+  integration:
+    github:
+      - host: github.com
+        token:
+          $env: GITHUB_TOKEN
+  scaffolder:
+    github:
+      visibility: public
+  ```
+
+  You can also configure multiple different hosts under the `integration` config like the following:
+
+  ```yaml
+  integration:
+    github:
+      - host: github.com
+        token:
+          $env: GITHUB_TOKEN
+      - host: ghe.mycompany.com
+        token:
+          $env: GITHUB_ENTERPRISE_TOKEN
+  ```
+
+  This of course is the case for all the providers respectively.
+
+  - Adding support for cross provider scaffolding, you can now create repositories in for example Bitbucket using a template residing in GitHub.
+
+  - Fix GitLab scaffolding so that it returns a `catalogInfoUrl` which automatically imports the project into the catalog.
+
+  - The `Store Path` field on the `scaffolder` frontend has now changed so that you require the full URL to the desired destination repository.
+
+  `backstage/new-repository` would become `https://github.com/backstage/new-repository` if provider was GitHub for example.
+
+### Patch Changes
+
+- 0b135e7e0: Add support for GitHub Apps authentication for backend plugins.
+
+  `GithubCredentialsProvider` requests and caches GitHub credentials based on a repository or organization url.
+
+  The `GithubCredentialsProvider` class should be considered stateful since tokens will be cached internally.
+  Consecutive calls to get credentials will return the same token, tokens older than 50 minutes will be considered expired and reissued.
+  `GithubCredentialsProvider` will default to the configured access token if no GitHub Apps are configured.
+
+  More information on how to create and configure a GitHub App to use with backstage can be found in the documentation.
+
+  Usage:
+
+  ```javascript
+  const credentialsProvider = new GithubCredentialsProvider(config);
+  const { token, headers } = await credentialsProvider.getCredentials({
+    url: 'https://github.com/',
+  });
+  ```
+
+  Updates `GithubUrlReader` to use the `GithubCredentialsProvider`.
+
+- fa8ba330a: Fix GitLab API base URL and add it by default to the gitlab.com host
+
 ## 0.2.0
 
 ### Minor Changes

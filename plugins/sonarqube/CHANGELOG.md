@@ -1,5 +1,17 @@
 # @backstage/plugin-sonarqube
 
+## 0.1.8
+
+### Patch Changes
+
+- 57f9d92cb: Add support for the security hotspots that are provided by SonarQube and SonarCloud.
+- Updated dependencies [def2307f3]
+- Updated dependencies [efd6ef753]
+- Updated dependencies [a187b8ad0]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/core@0.5.0
+
 ## 0.1.7
 
 ### Patch Changes
