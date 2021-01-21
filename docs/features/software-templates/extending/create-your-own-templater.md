@@ -61,7 +61,7 @@ That type looks like the following:
 ```ts
 export type TemplaterRunOptions = {
   directory: string;
-  values: RequiredTemplateValues & Record<string, JsonValue>;
+  values: TemplaterValues;
   logStream?: Writable;
   dockerClient: Docker;
 };

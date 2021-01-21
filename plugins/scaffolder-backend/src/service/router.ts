@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Config, JsonValue } from '@backstage/config';
+import { Config } from '@backstage/config';
 import fs from 'fs-extra';
 import Docker from 'dockerode';
 import express from 'express';
@@ -23,9 +23,9 @@ import { Logger } from 'winston';
 import {
   JobProcessor,
   PreparerBuilder,
-  RequiredTemplateValues,
   StageContext,
   TemplaterBuilder,
+  TemplaterValues,
   PublisherBuilder,
   parseLocationAnnotation,
   FilePreparer,
@@ -110,13 +110,12 @@ export async function createRouter(
     })
     .post('/v1/jobs', async (req, res) => {
       const templateName: string = req.body.templateName;
-      const values: RequiredTemplateValues & Record<string, JsonValue> = {
+      const values: TemplaterValues = {
         ...req.body.values,
         destination: {
           git: parseGitUrl(req.body.values.storePath),
         },
       };
-      req.body.values;
 
       const template = await entityClient.findTemplate(templateName);
 

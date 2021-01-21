@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { RequiredTemplateValues } from '../templater';
-import { JsonValue } from '@backstage/config';
+import { TemplaterValues } from '../templater';
 import { Logger } from 'winston';
 
 /**
@@ -32,7 +31,7 @@ export type PublisherBase = {
 };
 
 export type PublisherOptions = {
-  values: RequiredTemplateValues & Record<string, JsonValue>;
+  values: TemplaterValues;
   directory: string;
   logger: Logger;
 };

@@ -15,7 +15,6 @@
  */
 import type { Writable } from 'stream';
 import Docker from 'dockerode';
-import { JsonValue } from '@backstage/config';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import gitUrlParse from 'git-url-parse';
 
@@ -26,10 +25,12 @@ import gitUrlParse from 'git-url-parse';
 export type RequiredTemplateValues = {
   owner: string;
   storePath: string;
-  destination: {
-    git: gitUrlParse.GitUrl;
+  destination?: {
+    git?: gitUrlParse.GitUrl;
   };
 };
+
+export type TemplaterValues = RequiredTemplateValues & Record<string, any>;
 
 /**
  * The returned directory from the templater which is ready
@@ -46,7 +47,7 @@ export type TemplaterRunResult = {
  */
 export type TemplaterRunOptions = {
   directory: string;
-  values: RequiredTemplateValues & Record<string, any>;
+  values: TemplaterValues;
   logStream?: Writable;
   dockerClient: Docker;
 };

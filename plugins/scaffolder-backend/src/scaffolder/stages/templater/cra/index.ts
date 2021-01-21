@@ -72,7 +72,7 @@ export class CreateReactAppTemplater implements TemplaterBase {
 
       extraAnnotations[
         GITHUB_ACTIONS_ANNOTATION
-      ] = `${options.values.destination.git.owner}/${options.values.destination.git.name}`;
+      ] = `${options.values?.destination?.git?.owner}/${options.values?.destination?.git?.name}`;
     }
 
     const componentInfo = {
