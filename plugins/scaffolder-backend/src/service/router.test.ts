@@ -107,10 +107,14 @@ describe('createRouter - working directory', () => {
     });
 
     const app = express().use(router);
-    await request(app).post('/v1/jobs').send({
-      templateName: '',
-      values: {},
-    });
+    await request(app)
+      .post('/v1/jobs')
+      .send({
+        templateName: '',
+        values: {
+          storePath: 'https://github.com/backstage/good',
+        },
+      });
 
     expect(mockPrepare).toBeCalledWith(expect.anything(), {
       logger: expect.anything(),
@@ -130,10 +134,14 @@ describe('createRouter - working directory', () => {
     });
 
     const app = express().use(router);
-    await request(app).post('/v1/jobs').send({
-      templateName: '',
-      values: {},
-    });
+    await request(app)
+      .post('/v1/jobs')
+      .send({
+        templateName: '',
+        values: {
+          storePath: 'https://github.com/backstage/goodrepo',
+        },
+      });
 
     expect(mockPrepare).toBeCalledWith(expect.anything(), {
       logger: expect.anything(),
@@ -200,10 +208,14 @@ describe('createRouter', () => {
 
   describe('POST /v1/jobs', () => {
     it('rejects template values which do not match the template schema definition', async () => {
-      const response = await request(app).post('/v1/jobs').send({
-        templateName: '',
-        values: {},
-      });
+      const response = await request(app)
+        .post('/v1/jobs')
+        .send({
+          templateName: '',
+          values: {
+            storePath: 'https://github.com/backstage/backstage',
+          },
+        });
 
       expect(response.status).toEqual(400);
     });

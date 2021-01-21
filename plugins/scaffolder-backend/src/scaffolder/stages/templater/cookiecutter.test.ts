@@ -26,6 +26,7 @@ import path from 'path';
 import { RunDockerContainerOptions, RunCommandOptions } from './helpers';
 import { PassThrough } from 'stream';
 import Docker from 'dockerode';
+import parseGitUrl from 'git-url-parse';
 
 const commandExists = require('command-exists-promise');
 
@@ -56,16 +57,21 @@ describe('CookieCutter Templater', () => {
 
     const values = {
       owner: 'blobby',
-      storePath: 'backstage/end-repo',
+      storePath: 'https://github.com/org/repo',
       description: 'description',
       component_id: 'newthing',
+      destination: {
+        git: parseGitUrl('https://github.com/org/repo'),
+      },
     };
 
     await cookie.run({ directory: tempdir, values, dockerClient: mockDocker });
 
     const cookieCutterJson = await fs.readJSON(`${tempdir}/cookiecutter.json`);
 
-    expect(cookieCutterJson).toEqual(expect.objectContaining(values));
+    expect(cookieCutterJson).toEqual(
+      expect.objectContaining(JSON.parse(JSON.stringify(values))),
+    );
   });
 
   it('should merge any value that is in the cookiecutter.json path already', async () => {
@@ -78,15 +84,24 @@ describe('CookieCutter Templater', () => {
 
     const values = {
       owner: 'blobby',
-      storePath: 'backstage/end-repo',
+      storePath: 'https://github.com/org/repo',
       component_id: 'something',
+      destination: {
+        git: parseGitUrl('https://github.com/org/repo'),
+      },
     };
 
     await cookie.run({ directory: tempdir, values, dockerClient: mockDocker });
 
     const cookieCutterJson = await fs.readJSON(`${tempdir}/cookiecutter.json`);
 
-    expect(cookieCutterJson).toEqual({ ...existingJson, ...values });
+    expect(cookieCutterJson).toEqual({
+      ...existingJson,
+      ...values,
+      destination: {
+        git: expect.objectContaining({ organization: 'org', name: 'repo' }),
+      },
+    });
   });
 
   it('should throw an error if the cookiecutter json is malformed and not missing', async () => {
@@ -96,7 +111,10 @@ describe('CookieCutter Templater', () => {
 
     const values = {
       owner: 'blobby',
-      storePath: 'backstage/end-repo',
+      storePath: 'https://github.com/org/repo',
+      destination: {
+        git: parseGitUrl('https://github.com/org/repo'),
+      },
     };
 
     await expect(
@@ -109,8 +127,11 @@ describe('CookieCutter Templater', () => {
 
     const values = {
       owner: 'blobby',
-      storePath: 'backstage/end-repo',
+      storePath: 'https://github.com/org/repo',
       component_id: 'newthing',
+      destination: {
+        git: parseGitUrl('https://github.com/org/repo'),
+      },
     };
 
     await cookie.run({ directory: tempdir, values, dockerClient: mockDocker });
@@ -137,8 +158,11 @@ describe('CookieCutter Templater', () => {
 
     const values = {
       owner: 'blobby',
-      storePath: 'backstage/end-repo',
+      storePath: 'https://github.com/org/repo',
       component_id: 'newthing',
+      destination: {
+        git: parseGitUrl('https://github.com/org/repo'),
+      },
     };
 
     const { resultDir } = await cookie.run({
@@ -157,8 +181,11 @@ describe('CookieCutter Templater', () => {
 
     const values = {
       owner: 'blobby',
-      storePath: 'backstage/end-repo',
+      storePath: 'https://github.com/org/repo',
       component_id: 'newthing',
+      destination: {
+        git: parseGitUrl('https://github.com/org/repo'),
+      },
     };
 
     await cookie.run({
@@ -203,8 +230,11 @@ describe('CookieCutter Templater', () => {
 
       const values = {
         owner: 'blobby',
-        storePath: 'backstage/end-repo',
+        storePath: 'https://github.com/org/repo',
         component_id: 'newthing',
+        destination: {
+          git: parseGitUrl('https://github.com/org/repo'),
+        },
       };
 
       await cookie.run({
@@ -243,7 +273,10 @@ describe('CookieCutter Templater', () => {
           directory: tempdir,
           values: {
             owner: 'blobby',
-            storePath: 'backstage/end-repo',
+            storePath: 'https://github.com/org/repo',
+            destination: {
+              git: parseGitUrl('https://github.com/org/repo'),
+            },
           },
           logStream: stream,
           dockerClient: mockDocker,

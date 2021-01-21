@@ -32,6 +32,7 @@ import {
 } from '../scaffolder';
 import { CatalogEntityClient } from '../lib/catalog';
 import { validate, ValidatorResult } from 'jsonschema';
+import parseGitUrl from 'git-url-parse';
 
 export interface RouterOptions {
   preparers: PreparerBuilder;
@@ -109,8 +110,13 @@ export async function createRouter(
     })
     .post('/v1/jobs', async (req, res) => {
       const templateName: string = req.body.templateName;
-      const values: RequiredTemplateValues & Record<string, JsonValue> =
-        req.body.values;
+      const values: RequiredTemplateValues & Record<string, JsonValue> = {
+        ...req.body.values,
+        destination: {
+          git: parseGitUrl(req.body.values.storePath),
+        },
+      };
+      req.body.values;
 
       const template = await entityClient.findTemplate(templateName);
 
@@ -123,7 +129,6 @@ export async function createRouter(
         res.status(400).json({ errors: validationResult.errors });
         return;
       }
-
       const job = jobProcessor.create({
         entity: template,
         values,
