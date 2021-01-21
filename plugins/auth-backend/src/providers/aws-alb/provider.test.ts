@@ -15,12 +15,12 @@
  */
 import { getVoidLogger } from '@backstage/backend-common';
 import express from 'express';
-import * as jwtVerify from 'jose/jwt/verify';
+import { JWT } from 'jose';
 
 import { AwsAlbAuthProvider } from './provider';
 import { AuthResponse } from '../types';
 
-const mockedJwtVerify = jwtVerify as jest.Mocked<any>;
+const jwtMock = JWT as jest.Mocked<any>;
 
 const mockKey = async () => {
   return `-----BEGIN PUBLIC KEY-----
@@ -29,6 +29,8 @@ yOlxJ2VW88mLAQGJ7HPAvOdylxZsItMnzCuqNzZvie8m/NJsOjhDncVkrw==
 -----END PUBLIC KEY-----
 `;
 };
+
+jest.mock('jose');
 
 jest.mock('cross-fetch', () => ({
   __esModule: true,
@@ -40,13 +42,6 @@ jest.mock('cross-fetch', () => ({
     };
   },
 }));
-
-jest.mock('jose/jwt/verify', () => {
-  return {
-    __esModule: true,
-    default: jest.fn(),
-  };
-});
 
 const identityResolutionCallbackMock = async (): Promise<AuthResponse<any>> => {
   return {
@@ -106,13 +101,9 @@ describe('AwsALBAuthProvider', () => {
         issuer: 'foo',
       });
 
-      mockedJwtVerify.default.mockImplementationOnce(async () => {
-        return {
-          payload: {
-            sub: 'foo',
-          },
-        };
-      });
+      jwtMock.verify.mockImplementationOnce(() => ({
+        sub: 'foo',
+      }));
 
       await provider.refresh(mockRequest, mockResponse);
 
@@ -148,7 +139,7 @@ describe('AwsALBAuthProvider', () => {
         issuer: 'foo',
       });
 
-      mockedJwtVerify.default.mockImplementationOnce(async () => {
+      jwtMock.verify.mockImplementationOnce(() => {
         throw new Error('bad JWT');
       });
 
@@ -164,9 +155,7 @@ describe('AwsALBAuthProvider', () => {
         issuer: 'foobar',
       });
 
-      mockedJwtVerify.default.mockImplementationOnce(async () => {
-        return {};
-      });
+      jwtMock.verify.mockReturnValueOnce({});
 
       await provider.refresh(mockRequest, mockResponse);
 
@@ -180,9 +169,7 @@ describe('AwsALBAuthProvider', () => {
         issuer: 'foo',
       });
 
-      mockedJwtVerify.default.mockImplementationOnce(async () => {
-        return {};
-      });
+      jwtMock.verify.mockReturnValueOnce({});
 
       await provider.refresh(mockRequest, mockResponse);
 

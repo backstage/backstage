@@ -13,17 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TextDecoder, TextEncoder } from 'util';
 
-// @ts-ignore
-global.TextDecoder = TextDecoder;
-global.TextEncoder = TextEncoder;
 import express from 'express';
 import { Session } from 'express-session';
 import nock from 'nock';
 import { ClientMetadata, IssuerMetadata } from 'openid-client';
 import { createOidcProvider, OidcAuthProvider } from './provider';
-import UnsecuredJWT from 'jose/jwt/unsecured';
+import { JWT, JWK } from 'jose';
 import { AuthProviderFactoryOptions } from '../types';
 import { Config } from '@backstage/config';
 import { OAuthAdapter } from '../../lib/oauth';
@@ -84,7 +80,7 @@ describe('OidcAuthProvider', () => {
       .reply(200, issuerMetadata)
       .post('/as/token.oauth2')
       .reply(200, {
-        id_token: new UnsecuredJWT(jwt).encode(),
+        id_token: JWT.sign(jwt, JWK.None),
         access_token: 'test',
         authorization_signed_response_alg: 'HS256',
       })
