@@ -232,8 +232,6 @@ catalog:
     # Backstage example groups and users
     - type: file
       target: ../catalog-model/examples/acme-corp.yaml
-    - type: file
-      target: ../../local.yaml
 
 scaffolder:
   github:
