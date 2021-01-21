@@ -1,5 +1,48 @@
 # @backstage/plugin-catalog-backend
 
+## 0.5.4
+
+### Patch Changes
+
+- def2307f3: Adds a `backstage.io/managed-by-origin-location` annotation to all entities. It links to the
+  location that was registered to the catalog and which emitted this entity. It has a different
+  semantic than the existing `backstage.io/managed-by-location` annotation, which tells the direct
+  parent location that created this entity.
+
+  Consider this example: The Backstage operator adds a location of type `github-org` in the
+  `app-config.yaml`. This setting will be added to a `bootstrap:boostrap` location. The processor
+  discovers the entities in the following branch
+  `Location bootstrap:bootstrap -> Location github-org:… -> User xyz`. The user `xyz` will be:
+
+  ```yaml
+  apiVersion: backstage.io/v1alpha1
+  kind: User
+  metadata:
+    name: xyz
+    annotations:
+      # This entity was added by the 'github-org:…' location
+      backstage.io/managed-by-location: github-org:…
+      # The entity was added because the 'bootstrap:boostrap' was added to the catalog
+      backstage.io/managed-by-origin-location: bootstrap:bootstrap
+      # ...
+  spec:
+    # ...
+  ```
+
+- 318a6af9f: Change AWS Account type from Component to Resource
+- ac7be581a: Refuse to remove the bootstrap location
+- ad838c02f: Reduce log noise on locations refresh
+- f9ba00a1c: Update the @azure/msal-node dependency to 1.0.0-beta.3.
+- Updated dependencies [def2307f3]
+- Updated dependencies [0b135e7e0]
+- Updated dependencies [294a70cab]
+- Updated dependencies [0ea032763]
+- Updated dependencies [5345a1f98]
+- Updated dependencies [09a370426]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/backend-common@0.5.0
+
 ## 0.5.3
 
 ### Patch Changes

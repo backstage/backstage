@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-techdocs",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -31,12 +31,12 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/catalog-model": "^0.6.1",
-    "@backstage/core": "^0.4.4",
-    "@backstage/plugin-catalog": "^0.2.11",
+    "@backstage/catalog-model": "^0.7.0",
+    "@backstage/core": "^0.5.0",
+    "@backstage/plugin-catalog": "^0.2.12",
     "@backstage/test-utils": "^0.1.6",
     "@backstage/theme": "^0.2.2",
-    "@backstage/techdocs-common": "^0.3.3",
+    "@backstage/techdocs-common": "^0.3.5",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
@@ -49,8 +49,8 @@
     "sanitize-html": "^1.27.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.4.6",
-    "@backstage/dev-utils": "^0.1.7",
+    "@backstage/cli": "^0.4.7",
+    "@backstage/dev-utils": "^0.1.8",
     "@backstage/test-utils": "^0.1.6",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^10.4.1",
