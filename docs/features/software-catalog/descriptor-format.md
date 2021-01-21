@@ -977,8 +977,6 @@ metadata:
 spec:
   owner: artist-relations-team
   domain: artists
-  providesApis:
-    - artist-api
 ```
 
 In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)
