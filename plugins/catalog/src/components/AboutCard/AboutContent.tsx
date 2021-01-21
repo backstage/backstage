@@ -40,9 +40,17 @@ export const AboutContent = ({ entity }: Props) => {
   const isSystem = entity.kind.toLowerCase() === 'system';
   const isDomain = entity.kind.toLowerCase() === 'domain';
   const isResource = entity.kind.toLowerCase() === 'resource';
+  const isComponent = entity.kind.toLowerCase() === 'component';
   const [partOfSystemRelation] = getEntityRelations(entity, RELATION_PART_OF, {
     kind: 'system',
   });
+  const [partOfComponentRelation] = getEntityRelations(
+    entity,
+    RELATION_PART_OF,
+    {
+      kind: 'component',
+    },
+  );
   const [partOfDomainRelation] = getEntityRelations(entity, RELATION_PART_OF, {
     kind: 'domain',
   });
@@ -89,6 +97,18 @@ export const AboutContent = ({ entity }: Props) => {
               defaultKind="system"
             />
           )}
+        </AboutField>
+      )}
+      {isComponent && partOfComponentRelation && (
+        <AboutField
+          label="Parent Component"
+          value="No Parent Component"
+          gridSizes={{ xs: 12, sm: 6, lg: 4 }}
+        >
+          <EntityRefLink
+            entityRef={partOfComponentRelation}
+            defaultKind="component"
+          />
         </AboutField>
       )}
       {!isSystem && !isDomain && (

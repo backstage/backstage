@@ -15,4 +15,6 @@ spec:
     - ./components/www-artist-component.yaml
     - ./components/shuffle-api-component.yaml
     - ./components/wayback-archive-component.yaml
+    - ./components/wayback-archive-ingestion-component.yaml
+    - ./components/wayback-archive-storage-component.yaml
     - ./components/wayback-search-component.yaml
