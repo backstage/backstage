@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
+import { DateTime, Duration } from 'luxon';
 import { Link, Theme, makeStyles, LinearProgress } from '@material-ui/core';
 import { InfoCard, StructuredMetadataTable } from '@backstage/core';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
@@ -30,28 +31,37 @@ const useStyles = makeStyles<Theme>({
 
 const WidgetContent = ({
   loading,
-  lastRun,
+  latestRun,
 }: {
   loading?: boolean;
-  lastRun: any;
+  latestRun: any;
   branch: string;
 }) => {
   const classes = useStyles();
-  if (loading || !lastRun) return <LinearProgress />;
-
+  if (loading || !latestRun) return <LinearProgress />;
+  const displayDate = DateTime.fromMillis(latestRun.timestamp).toRelative();
+  // TODO This works, but hard codes as minutes. Would prefer something smarter/relative.
+  const durationInMinutes = Math.round(
+    Duration.fromMillis(latestRun.duration).as('minutes'),
+  );
+  const displayDuration = `${durationInMinutes} minute${
+    durationInMinutes > 1 ? 's' : ''
+  }`;
   return (
     <StructuredMetadataTable
       metadata={{
         status: (
           <>
             <JenkinsRunStatus
-              status={lastRun.building ? 'running' : lastRun.result}
+              status={latestRun.building ? 'running' : latestRun.result}
             />
           </>
         ),
-        build: lastRun.fullDisplayName,
-        url: (
-          <Link href={lastRun.url} target="_blank">
+        build: latestRun.fullDisplayName,
+        'latest run': displayDate,
+        duration: displayDuration,
+        link: (
+          <Link href={latestRun.url} target="_blank">
             See more on Jenkins{' '}
             <ExternalLinkIcon className={classes.externalLinkIcon} />
           </Link>
@@ -70,10 +80,10 @@ export const LatestRunCard = ({
 }) => {
   const { owner, repo } = useProjectSlugFromEntity();
   const [{ builds, loading }] = useBuilds(owner, repo, branch);
-  const lastRun = builds ?? {};
+  const latestRun = builds ?? {};
   return (
-    <InfoCard title={`Last ${branch} build`} variant={variant}>
-      <WidgetContent loading={loading} branch={branch} lastRun={lastRun} />
+    <InfoCard title={`Latest ${branch} build`} variant={variant}>
+      <WidgetContent loading={loading} branch={branch} latestRun={latestRun} />
     </InfoCard>
   );
 };
