@@ -63,6 +63,8 @@ export class SonarQubeClient implements SonarQubeApi {
       reliability_rating: undefined,
       vulnerabilities: undefined,
       security_rating: undefined,
+      security_hotspots_reviewed: undefined,
+      security_review_rating: undefined,
       code_smells: undefined,
       sqale_rating: undefined,
       coverage: undefined,
@@ -92,10 +94,12 @@ export class SonarQubeClient implements SonarQubeApi {
         `${
           this.baseUrl
         }project/issues?id=${componentKey}&types=${identifier.toUpperCase()}&resolved=false`,
-      getComponentMeasuresUrl: (identifier: string) =>
+      getComponentMeasuresUrl: identifier =>
         `${
           this.baseUrl
         }component_measures?id=${componentKey}&metric=${identifier.toLowerCase()}&resolved=false&view=list`,
+      getSecurityHotspotsUrl: () =>
+        `${this.baseUrl}project/security_hotspots?id=${componentKey}`,
     };
   }
 }

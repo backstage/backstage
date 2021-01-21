@@ -93,6 +93,7 @@ Henneke
 Heroku
 horizontalpodautoscalers
 Hostname
+hotspots
 html
 http
 https
