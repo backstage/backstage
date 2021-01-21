@@ -15,19 +15,29 @@
  */
 
 import { useEntity } from '@backstage/plugin-catalog';
+import { useMemo } from 'react';
 import { KAFKA_CONSUMER_GROUP_ANNOTATION } from '../../constants';
 
 export const useConsumerGroupsForEntity = () => {
   const { entity } = useEntity();
   const annotation =
     entity.metadata.annotations?.[KAFKA_CONSUMER_GROUP_ANNOTATION] ?? '';
-  const [clusterId, consumerGroup] = annotation.split('/');
 
-  if (!clusterId || !consumerGroup) {
-    throw new Error(
-      `Failed to parse kafka consumer group annotation: got "${annotation}"`,
-    );
-  }
+  const consumerList = useMemo(() => {
+    return annotation.split(',').map(consumer => {
+      const [clusterId, consumerGroup] = consumer.split('/');
 
-  return { clusterId, consumerGroup };
+      if (!clusterId || !consumerGroup) {
+        throw new Error(
+          `Failed to parse kafka consumer group annotation: got "${annotation}"`,
+        );
+      }
+      return {
+        clusterId: clusterId.trim(),
+        consumerGroup: consumerGroup.trim(),
+      };
+    });
+  }, [annotation]);
+
+  return consumerList;
 };

@@ -51,7 +51,7 @@ describe('router', () => {
     jest.resetAllMocks();
   });
 
-  describe('get /:clusterId/consumer/:consumerId/offsets', () => {
+  describe('get /consumers/clusterId/:consumerId/offsets', () => {
     it('returns topic and group offsets', async () => {
       const topic1Offsets = [
         { id: 1, offset: '500' },
@@ -82,7 +82,7 @@ describe('router', () => {
         .calledWith('hey')
         .mockResolvedValue(groupOffsets);
 
-      const response = await request(app).get('/prod/consumer/hey/offsets');
+      const response = await request(app).get('/consumers/prod/hey/offsets');
 
       expect(response.status).toEqual(200);
       expect(response.body.consumerId).toEqual('hey');
@@ -114,7 +114,7 @@ describe('router', () => {
     it('handles internal error correctly', async () => {
       prodKafkaApi.fetchGroupOffsets.mockRejectedValue(Error('oh no'));
 
-      const response = await request(app).get('/prod/consumer/hey/offsets');
+      const response = await request(app).get('/consumers/prod/hey/offsets');
 
       expect(response.status).toEqual(500);
     });
@@ -147,29 +147,35 @@ describe('router', () => {
         .calledWith('hey')
         .mockResolvedValue(groupDevOffsets);
 
-      const prodResponse = await request(app).get('/prod/consumer/hey/offsets');
-      const devResponse = await request(app).get('/dev/consumer/hey/offsets');
+      const prodResponse = await request(app).get(
+        '/consumers/prod/hey/offsets',
+      );
+      const devResponse = await request(app).get('/consumers/dev/hey/offsets');
 
       expect(prodResponse.status).toEqual(200);
       expect(prodResponse.body.consumerId).toEqual('hey');
-      expect(prodResponse.body.offsets).toIncludeSameMembers([
-        {
-          topic: 'topic1',
-          partitionId: 1,
-          groupOffset: '100',
-          topicOffset: '500',
-        },
-      ]);
+      expect(new Set(prodResponse.body.offsets)).toStrictEqual(
+        new Set([
+          {
+            topic: 'topic1',
+            partitionId: 1,
+            groupOffset: '100',
+            topicOffset: '500',
+          },
+        ]),
+      );
       expect(devResponse.status).toEqual(200);
       expect(devResponse.body.consumerId).toEqual('hey');
-      expect(devResponse.body.offsets).toIncludeSameMembers([
-        {
-          topic: 'topic1',
-          partitionId: 1,
-          groupOffset: '567',
-          topicOffset: '1234',
-        },
-      ]);
+      expect(new Set(devResponse.body.offsets)).toStrictEqual(
+        new Set([
+          {
+            topic: 'topic1',
+            partitionId: 1,
+            groupOffset: '567',
+            topicOffset: '1234',
+          },
+        ]),
+      );
     });
   });
 });

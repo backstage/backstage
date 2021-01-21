@@ -99,6 +99,13 @@ kubernetes:
     - 'config'
   clusters: []
 
+kafka:
+  clientId: backstage
+  clusters:
+    - name: cluster
+      brokers:
+        - localhost:9092
+
 integrations:
   github:
     - host: github.com
@@ -225,6 +232,8 @@ catalog:
     # Backstage example groups and users
     - type: file
       target: ../catalog-model/examples/acme-corp.yaml
+    - type: file
+      target: ../../local.yaml
 
 scaffolder:
   github:
@@ -372,8 +381,3 @@ homepage:
       timezone: 'Asia/Tokyo'
 pagerduty:
   eventsBaseUrl: 'https://events.pagerduty.com/v2'
-
-kafka:
-  clientId: backstage
-  brokers:
-    - localhost:9092

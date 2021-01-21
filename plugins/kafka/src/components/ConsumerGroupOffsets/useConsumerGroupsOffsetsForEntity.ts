@@ -20,28 +20,35 @@ import { kafkaApiRef } from '../../api/types';
 import { useConsumerGroupsForEntity } from './useConsumerGroupsForEntity';
 
 export const useConsumerGroupsOffsetsForEntity = () => {
-  const { clusterId, consumerGroup } = useConsumerGroupsForEntity();
+  const consumers = useConsumerGroupsForEntity();
   const api = useApi(kafkaApiRef);
   const errorApi = useApi(errorApiRef);
 
-  const { loading, value: topics, retry } = useAsyncRetry(async () => {
+  const {
+    loading,
+    value: consumerGroupsTopics,
+    retry,
+  } = useAsyncRetry(async () => {
     try {
-      const response = await api.getConsumerGroupOffsets(
-        clusterId,
-        consumerGroup,
+      return await Promise.all(
+        consumers.map(async ({ clusterId, consumerGroup }) => {
+          const response = await api.getConsumerGroupOffsets(
+            clusterId,
+            consumerGroup,
+          );
+          return { clusterId, consumerGroup, topics: response.offsets };
+        }),
       );
-      return response.offsets;
     } catch (e) {
       errorApi.post(e);
       throw e;
     }
-  }, [api, errorApi, consumerGroup]);
+  }, [consumers, api, errorApi]);
 
   return [
     {
       loading,
-      consumerGroup,
-      topics,
+      consumerGroupsTopics,
     },
     {
       retry,

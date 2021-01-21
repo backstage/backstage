@@ -49,10 +49,66 @@ describe('useConsumerGroupOffsets', () => {
       },
     };
     const { result } = subject();
-    expect(result.current).toStrictEqual({
-      clusterId: 'prod',
-      consumerGroup: 'consumer',
-    });
+    expect(result.current).toStrictEqual([
+      {
+        clusterId: 'prod',
+        consumerGroup: 'consumer',
+      },
+    ]);
+  });
+
+  it('returns correct cluster and consumer group for multiple consumers', async () => {
+    entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'test',
+        annotations: {
+          'kafka.apache.org/consumer-groups':
+            'prod/consumer,dev/another-consumer',
+        },
+      },
+      spec: {
+        owner: 'guest',
+        type: 'Website',
+        lifecycle: 'development',
+      },
+    };
+    const { result } = subject();
+    expect(result.current).toStrictEqual([
+      { clusterId: 'prod', consumerGroup: 'consumer' },
+      {
+        clusterId: 'dev',
+        consumerGroup: 'another-consumer',
+      },
+    ]);
+  });
+
+  it('returns correct cluster and consumer group for annotation with extra spaces', async () => {
+    entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'test',
+        annotations: {
+          'kafka.apache.org/consumer-groups':
+            '   prod/consumer   ,   dev/another-consumer   ',
+        },
+      },
+      spec: {
+        owner: 'guest',
+        type: 'Website',
+        lifecycle: 'development',
+      },
+    };
+    const { result } = subject();
+    expect(result.current).toStrictEqual([
+      { clusterId: 'prod', consumerGroup: 'consumer' },
+      {
+        clusterId: 'dev',
+        consumerGroup: 'another-consumer',
+      },
+    ]);
   });
 
   it('fails on missing cluster', async () => {
@@ -62,7 +118,7 @@ describe('useConsumerGroupOffsets', () => {
       metadata: {
         name: 'test',
         annotations: {
-          'kafka.apache.org/consumer-groups': 'consumer',
+          'kafka.apache.org/consumer-groups': 'dev/another,consumer',
         },
       },
       spec: {
@@ -75,7 +131,7 @@ describe('useConsumerGroupOffsets', () => {
     expect(() => result.current).toThrowError();
     expect(result.error).toStrictEqual(
       new Error(
-        `Failed to parse kafka consumer group annotation: got "consumer"`,
+        `Failed to parse kafka consumer group annotation: got "dev/another,consumer"`,
       ),
     );
   });
