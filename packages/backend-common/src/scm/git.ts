@@ -86,7 +86,15 @@ export class Git {
     return git.commit({ fs, dir, message, author, committer });
   }
 
-  async clone({ url, dir, ref }: { url: string; dir: string; ref?: string }): Promise<void> {
+  async clone({
+    url,
+    dir,
+    ref,
+  }: {
+    url: string;
+    dir: string;
+    ref?: string;
+  }): Promise<void> {
     this.config.logger?.info(`Cloning repo {dir=${dir},url=${url}}`);
     return git.clone({
       fs,
