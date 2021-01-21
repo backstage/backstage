@@ -18,35 +18,35 @@ import fs from 'fs-extra';
 import path from 'path';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { parseLocationAnnotation } from '../helpers';
-import { InputError, Git } from '@backstage/backend-common';
+import { Git } from '@backstage/backend-common';
 import { PreparerBase, PreparerOptions } from './types';
+import { BitbucketIntegrationConfig } from '@backstage/integration';
 import parseGitUrl from 'git-url-parse';
-import { Config } from '@backstage/config';
 
 export class BitbucketPreparer implements PreparerBase {
-  private readonly privateToken: string;
-  private readonly username: string;
-
-  constructor(config: Config) {
-    this.username =
-      config.getOptionalString('scaffolder.bitbucket.api.username') ?? '';
-    this.privateToken =
-      config.getOptionalString('scaffolder.bitbucket.api.token') ?? '';
+  static fromConfig(config: BitbucketIntegrationConfig) {
+    return new BitbucketPreparer({
+      username: config.username,
+      token: config.token,
+      appPassword: config.appPassword,
+    });
   }
+
+  constructor(
+    private readonly config: {
+      username?: string;
+      token?: string;
+      appPassword?: string;
+    },
+  ) {}
 
   async prepare(
     template: TemplateEntityV1alpha1,
     opts: PreparerOptions,
   ): Promise<string> {
-    const { protocol, location } = parseLocationAnnotation(template);
-    const workingDirectory = opts?.workingDirectory ?? os.tmpdir();
-    const { logger } = opts;
-
-    if (!['bitbucket', 'url'].includes(protocol)) {
-      throw new InputError(
-        `Wrong location protocol: ${protocol}, should be 'url'`,
-      );
-    }
+    const { location } = parseLocationAnnotation(template);
+    const workingDirectory = opts.workingDirectory ?? os.tmpdir();
+    const logger = opts.logger;
     const templateId = template.metadata.name;
 
     const repo = parseGitUrl(location);
@@ -63,10 +63,10 @@ export class BitbucketPreparer implements PreparerBase {
 
     const checkoutLocation = path.resolve(tempDir, templateDirectory);
 
-    const git = this.privateToken
+    const auth = this.getAuth();
+    const git = auth
       ? Git.fromAuth({
-          username: this.username,
-          password: this.privateToken,
+          ...auth,
           logger,
         })
       : Git.fromAuth({ logger });
@@ -77,5 +77,22 @@ export class BitbucketPreparer implements PreparerBase {
     });
 
     return checkoutLocation;
+  }
+
+  private getAuth(): { username: string; password: string } | undefined {
+    const { username, token, appPassword } = this.config;
+
+    if (username && appPassword) {
+      return { username: username, password: appPassword };
+    }
+
+    if (token) {
+      return {
+        username: 'x-token-auth',
+        password: token! || appPassword!,
+      };
+    }
+
+    return undefined;
   }
 }

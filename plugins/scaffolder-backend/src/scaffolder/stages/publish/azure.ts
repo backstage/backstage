@@ -15,27 +15,38 @@
  */
 
 import { PublisherBase, PublisherOptions, PublisherResult } from './types';
-import { GitApi } from 'azure-devops-node-api/GitApi';
+import { IGitApi } from 'azure-devops-node-api/GitApi';
 import { GitRepositoryCreateOptions } from 'azure-devops-node-api/interfaces/GitInterfaces';
-import { JsonValue } from '@backstage/config';
-import { RequiredTemplateValues } from '../templater';
 import { initRepoAndPush } from './helpers';
+import { AzureIntegrationConfig } from '@backstage/integration';
+import parseGitUrl from 'git-url-parse';
+import { getPersonalAccessTokenHandler, WebApi } from 'azure-devops-node-api';
 
 export class AzurePublisher implements PublisherBase {
-  private readonly client: GitApi;
-  private readonly token: string;
-
-  constructor(client: GitApi, token: string) {
-    this.client = client;
-    this.token = token;
+  static async fromConfig(config: AzureIntegrationConfig) {
+    if (!config.token) {
+      return undefined;
+    }
+    const authHandler = getPersonalAccessTokenHandler(config.token);
+    const webApi = new WebApi(config.host, authHandler);
+    const azureClient = await webApi.getGitApi();
+    return new AzurePublisher({ token: config.token, client: azureClient });
   }
+
+  constructor(private readonly config: { token: string; client: IGitApi }) {}
 
   async publish({
     values,
     directory,
     logger,
   }: PublisherOptions): Promise<PublisherResult> {
-    const remoteUrl = await this.createRemote(values);
+    const { owner, name } = parseGitUrl(values.storePath);
+
+    const remoteUrl = await this.createRemote({
+      project: owner,
+      name,
+    });
+
     const catalogInfoUrl = `${remoteUrl}?path=%2Fcatalog-info.yaml`;
 
     await initRepoAndPush({
@@ -43,7 +54,7 @@ export class AzurePublisher implements PublisherBase {
       remoteUrl,
       auth: {
         username: 'notempty',
-        password: this.token,
+        password: this.config.token,
       },
       logger,
     });
@@ -51,13 +62,13 @@ export class AzurePublisher implements PublisherBase {
     return { remoteUrl, catalogInfoUrl };
   }
 
-  private async createRemote(
-    values: RequiredTemplateValues & Record<string, JsonValue>,
-  ) {
-    const [project, name] = values.storePath.split('/');
-
+  private async createRemote(opts: { name: string; project: string }) {
+    const { name, project } = opts;
     const createOptions: GitRepositoryCreateOptions = { name };
-    const repo = await this.client.createRepository(createOptions, project);
+    const repo = await this.config.client.createRepository(
+      createOptions,
+      project,
+    );
 
     return repo.remoteUrl || '';
   }

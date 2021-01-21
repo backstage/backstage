@@ -13,13 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { InputError, Git } from '@backstage/backend-common';
+import { Git } from '@backstage/backend-common';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { Config } from '@backstage/config';
-import {
-  GitLabIntegrationConfig,
-  readGitLabIntegrationConfigs,
-} from '@backstage/integration';
+import { GitLabIntegrationConfig } from '@backstage/integration';
 import fs from 'fs-extra';
 import parseGitUrl from 'git-url-parse';
 import os from 'os';
@@ -28,31 +24,20 @@ import { parseLocationAnnotation } from '../helpers';
 import { PreparerBase, PreparerOptions } from './types';
 
 export class GitlabPreparer implements PreparerBase {
-  private readonly integrations: GitLabIntegrationConfig[];
-  private readonly scaffolderToken: string | undefined;
-
-  constructor(config: Config) {
-    this.integrations = readGitLabIntegrationConfigs(
-      config.getOptionalConfigArray('integrations.gitlab') ?? [],
-    );
-    this.scaffolderToken = config.getOptionalString(
-      'scaffolder.gitlab.api.token',
-    );
+  static fromConfig(config: GitLabIntegrationConfig) {
+    return new GitlabPreparer({ token: config.token });
   }
+
+  constructor(private readonly config: { token?: string }) {}
 
   async prepare(
     template: TemplateEntityV1alpha1,
     opts: PreparerOptions,
   ): Promise<string> {
-    const { protocol, location } = parseLocationAnnotation(template);
-    const { logger } = opts;
-    const workingDirectory = opts?.workingDirectory ?? os.tmpdir();
+    const { location } = parseLocationAnnotation(template);
+    const logger = opts.logger;
+    const workingDirectory = opts.workingDirectory ?? os.tmpdir();
 
-    if (!['gitlab', 'gitlab/api', 'url'].includes(protocol)) {
-      throw new InputError(
-        `Wrong location protocol: ${protocol}, should be 'url'`,
-      );
-    }
     const templateId = template.metadata.name;
 
     const parsedGitLocation = parseGitUrl(location);
@@ -66,10 +51,9 @@ export class GitlabPreparer implements PreparerBase {
       template.spec.path ?? '.',
     );
 
-    const token = this.getToken(parsedGitLocation.resource);
-    const git = token
+    const git = this.config.token
       ? Git.fromAuth({
-          password: token,
+          password: this.config.token,
           username: 'oauth2',
           logger,
         })
@@ -81,12 +65,5 @@ export class GitlabPreparer implements PreparerBase {
     });
 
     return path.resolve(tempDir, templateDirectory);
-  }
-
-  private getToken(host: string): string | undefined {
-    return (
-      this.scaffolderToken ||
-      this.integrations.find(c => c.host === host)?.token
-    );
   }
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import gitUrlParse from 'git-url-parse';
+import parseGitUrl from 'git-url-parse';
 import { GithubAppConfig, GitHubIntegrationConfig } from './config';
 import { createAppAuth } from '@octokit/auth-app';
 import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
@@ -221,7 +221,7 @@ export class GithubCredentialsProvider {
    * const { token, headers } = await getCredentials({url: 'github.com/backstage/foobar'})
    */
   async getCredentials(opts: { url: string }): Promise<GithubCredentials> {
-    const parsed = gitUrlParse(opts.url);
+    const parsed = parseGitUrl(opts.url);
 
     const owner = parsed.owner || parsed.name;
     const repo = parsed.owner ? parsed.name : undefined;

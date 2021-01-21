@@ -16,62 +16,90 @@
 
 import { PublisherBase, PublisherOptions, PublisherResult } from './types';
 import { initRepoAndPush } from './helpers';
-import { RequiredTemplateValues } from '../templater';
-import { JsonValue } from '../../../../../../packages/config/src';
 import fetch from 'cross-fetch';
+import { BitbucketIntegrationConfig } from '@backstage/integration';
+import parseGitUrl from 'git-url-parse';
 
+// TODO(blam): We should probably start to use a bitbucket client here that we can change
+// the baseURL to point at on-prem or public bitbucket versions like we do for
+// github and ghe. There's to much logic and not enough types here for us to say that this way is better than using
+// a supported bitbucket client if one exists.
 export class BitbucketPublisher implements PublisherBase {
-  private readonly host: string;
-  private readonly username: string;
-  private readonly token: string;
-
-  constructor(host: string, username: string, token: string) {
-    this.host = host;
-    this.username = username;
-    this.token = token;
+  static async fromConfig(config: BitbucketIntegrationConfig) {
+    return new BitbucketPublisher({
+      host: config.host,
+      token: config.token,
+      appPassword: config.appPassword,
+      username: config.username,
+    });
   }
+
+  constructor(
+    private readonly config: {
+      host: string;
+      token?: string;
+      appPassword?: string;
+      username?: string;
+    },
+  ) {}
 
   async publish({
     values,
     directory,
     logger,
   }: PublisherOptions): Promise<PublisherResult> {
-    const result = await this.createRemote(values);
+    const { owner: project, name } = parseGitUrl(values.storePath);
+
+    const description = values.description as string;
+    const result = await this.createRemote({
+      project,
+      name,
+      description,
+    });
 
     await initRepoAndPush({
       dir: directory,
       remoteUrl: result.remoteUrl,
       auth: {
-        username: this.username,
-        password: this.token,
+        username: this.config.username ? this.config.username : 'x-token-auth',
+        password: this.config.appPassword
+          ? this.config.appPassword
+          : this.config.token ?? '',
       },
       logger,
     });
     return result;
   }
 
-  private async createRemote(
-    values: RequiredTemplateValues & Record<string, JsonValue>,
-  ): Promise<PublisherResult> {
-    if (this.host === 'https://bitbucket.org') {
-      return this.createBitbucketCloudRepository(values);
+  private async createRemote(opts: {
+    project: string;
+    name: string;
+    description: string;
+  }): Promise<PublisherResult> {
+    if (this.config.host === 'bitbucket.org') {
+      return this.createBitbucketCloudRepository(opts);
     }
-    return this.createBitbucketServerRepository(values);
+    return this.createBitbucketServerRepository(opts);
   }
 
-  private async createBitbucketCloudRepository(
-    values: RequiredTemplateValues & Record<string, JsonValue>,
-  ): Promise<PublisherResult> {
-    const [project, name] = values.storePath.split('/');
+  private async createBitbucketCloudRepository(opts: {
+    project: string;
+    name: string;
+    description: string;
+  }): Promise<PublisherResult> {
+    const { project, name, description } = opts;
 
     let response: Response;
-    const buffer = Buffer.from(`${this.username}:${this.token}`, 'utf8');
+    const buffer = Buffer.from(
+      `${this.config.username}:${this.config.appPassword}`,
+      'utf8',
+    );
 
     const options: RequestInit = {
       method: 'POST',
       body: JSON.stringify({
         scm: 'git',
-        description: values.description,
+        description: description,
       }),
       headers: {
         Authorization: `Basic ${buffer.toString('base64')}`,
@@ -102,26 +130,28 @@ export class BitbucketPublisher implements PublisherBase {
     throw new Error(`Not a valid response code ${await response.text()}`);
   }
 
-  private async createBitbucketServerRepository(
-    values: RequiredTemplateValues & Record<string, JsonValue>,
-  ): Promise<PublisherResult> {
-    const [project, name] = values.storePath.split('/');
+  private async createBitbucketServerRepository(opts: {
+    project: string;
+    name: string;
+    description: string;
+  }): Promise<PublisherResult> {
+    const { project, name, description } = opts;
 
     let response: Response;
     const options: RequestInit = {
       method: 'POST',
       body: JSON.stringify({
         name: name,
-        description: values.description,
+        description: description,
       }),
       headers: {
-        Authorization: `Bearer ${this.token}`,
+        Authorization: `Bearer ${this.config.token}`,
         'Content-Type': 'application/json',
       },
     };
     try {
       response = await fetch(
-        `${this.host}/rest/api/1.0/projects/${project}/repos`,
+        `https://${this.config.host}/rest/api/1.0/projects/${project}/repos`,
         options,
       );
     } catch (e) {
