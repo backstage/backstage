@@ -3,4 +3,4 @@
 '@backstage/plugin-kafka-backend': patch
 ---
 
-Added support for multiple kafka clusters and multiple consumers per component.
+Added support for multiple Kafka clusters and multiple consumers per component.
