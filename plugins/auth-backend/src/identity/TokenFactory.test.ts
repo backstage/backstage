@@ -13,23 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TextDecoder, TextEncoder } from 'util';
-
-// These two statements are structured like this because Jest doesn't include these in the default
-// test environment, even though they exist in Node.
-global.TextEncoder = TextEncoder;
-// @ts-ignore
-global.TextDecoder = TextDecoder;
 
 import { utc } from 'moment';
 import { TokenFactory } from './TokenFactory';
 import { getVoidLogger } from '@backstage/backend-common';
-import { AnyJWK, KeyStore, StoredKey } from './types';
-import jwtVerify from 'jose/jwt/verify';
-import parseJwk from 'jose/jwk/parse';
-import decodeProtectedHeader, {
-  ProtectedHeaderParameters,
-} from 'jose/util/decode_protected_header';
+import { KeyStore, AnyJWK, StoredKey } from './types';
+import { JWKS, JSONWebKey, JWT } from 'jose';
 
 const logger = getVoidLogger();
 
@@ -63,8 +52,10 @@ class MemoryKeyStore implements KeyStore {
 }
 
 function jwtKid(jwt: string): string {
-  const header = decodeProtectedHeader(jwt) as ProtectedHeaderParameters;
-  return header.kid as string;
+  const { header } = JWT.decode(jwt, { complete: true }) as {
+    header: { kid: string };
+  };
+  return header.kid;
 }
 
 describe('TokenFactory', () => {
@@ -81,14 +72,14 @@ describe('TokenFactory', () => {
     const token = await factory.issueToken({ claims: { sub: 'foo' } });
 
     const { keys } = await factory.listPublicKeys();
-    const keyMap = Object.fromEntries(keys.map(key => [key.kid, key]));
+    const keyStore = JWKS.asKeyStore({
+      keys: keys.map(key => key as JSONWebKey),
+    });
 
-    const payload = (
-      await jwtVerify(token, async header => {
-        const kid = header.kid as string;
-        return await parseJwk(keyMap[kid]);
-      })
-    ).payload;
+    const payload = JWT.verify(token, keyStore) as object & {
+      iat: number;
+      exp: number;
+    };
     expect(payload).toEqual({
       iss: 'my-issuer',
       aud: 'backstage',
@@ -96,7 +87,7 @@ describe('TokenFactory', () => {
       iat: expect.any(Number),
       exp: expect.any(Number),
     });
-    expect(payload.exp).toBe(Number(payload.iat) + keyDurationSeconds);
+    expect(payload.exp).toBe(payload.iat + keyDurationSeconds);
   });
 
   it('should generate new signing keys when the current one expires', async () => {

@@ -24,7 +24,7 @@ import * as crypto from 'crypto';
 import { KeyObject } from 'crypto';
 import { Logger } from 'winston';
 import NodeCache from 'node-cache';
-import jwtVerify from 'jose/jwt/verify';
+import { JWT } from 'jose';
 import { CatalogApi } from '@backstage/catalog-client';
 
 const ALB_JWT_HEADER = 'x-amzn-oidc-data';
@@ -68,7 +68,7 @@ export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
       try {
         const headers = getJWTHeaders(jwt);
         const key = await this.getKey(headers.kid);
-        const verifiedToken = await jwtVerify(jwt, key, {});
+        const payload = JWT.verify(jwt, key);
 
         if (
           this.options.issuer !== '' &&
@@ -78,7 +78,7 @@ export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
         }
 
         const resolvedEntity = await this.options.identityResolutionCallback(
-          verifiedToken.payload,
+          payload,
           this.catalogClient,
         );
         res.send(resolvedEntity);
