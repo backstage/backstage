@@ -89,6 +89,7 @@ describe('GitLabPreparer', () => {
     expect(mockGitClient.clone).toHaveBeenCalledWith({
       url: 'https://gitlab.com/benjdlambert/backstage-graphql-template',
       dir: expect.any(String),
+      ref: expect.any(String),
     });
   });
 
@@ -113,6 +114,7 @@ describe('GitLabPreparer', () => {
     expect(mockGitClient.clone).toHaveBeenCalledWith({
       url: 'https://gitlab.com/benjdlambert/backstage-graphql-template',
       dir: expect.any(String),
+      ref: expect.any(String),
     });
   });
 
