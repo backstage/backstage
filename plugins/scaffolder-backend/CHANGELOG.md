@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.5.1
+
+### Patch Changes
+
+- 0ea002378: Fixing issues with templating and full URL's as `storePath`'s
+
 ## 0.5.0
 
 ### Minor Changes

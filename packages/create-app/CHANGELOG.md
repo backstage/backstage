@@ -1,5 +1,17 @@
 # @backstage/create-app
 
+## 0.3.6
+
+### Patch Changes
+
+- d3947caf3: Fix accidental dependency on non-existent dependencies.
+- Updated dependencies [a4e636c8f]
+- Updated dependencies [099c5cf4f]
+- Updated dependencies [0ea002378]
+- Updated dependencies [a08db734c]
+  - @backstage/plugin-catalog@0.2.13
+  - @backstage/plugin-scaffolder-backend@0.5.1
+
 ## 1.0.0
 
 ### Minor Changes

@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog
 
+## 0.2.13
+
+### Patch Changes
+
+- a4e636c8f: Hide the kind of owners in the about card if it's the default kind (group)
+- 099c5cf4f: Show the parent component in the about card (via partOf relationship)
+- a08db734c: Remove the `WelcomeBanner` that links to a plugin that is not longer wired into Backstage instances
+
 ## 0.2.12
 
 ### Patch Changes
