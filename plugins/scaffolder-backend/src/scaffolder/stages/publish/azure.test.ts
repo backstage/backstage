@@ -17,7 +17,7 @@ jest.mock('./helpers');
 
 jest.mock('azure-devops-node-api', () => ({
   WebApi: jest.fn(),
-  getPersonalAccessTokenHandler: jest.fn(),
+  getPersonalAccessTokenHandler: jest.fn().mockReturnValue(() => {}),
 }));
 
 import { AzurePublisher } from './azure';
@@ -50,12 +50,17 @@ describe('Azure Publisher', () => {
 
       const result = await publisher!.publish({
         values: {
-          storePath: 'project/repo',
+          storePath: 'https://dev.azure.com/organisation/project/_git/repo',
           owner: 'bob',
         },
         directory: '/tmp/test',
         logger,
       });
+
+      expect(WebApi).toHaveBeenCalledWith(
+        'https://dev.azure.com/organisation',
+        expect.any(Function),
+      );
 
       expect(result).toEqual({
         remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
