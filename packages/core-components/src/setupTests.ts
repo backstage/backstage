@@ -14,7 +14,4 @@
  * limitations under the License.
  */
 
-export * from '@backstage/core-api';
-export * from '@backstage/core-components';
-
-export * from './api-wrappers';
+import '@testing-library/jest-dom';

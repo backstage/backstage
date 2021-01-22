@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Table, SubvalueCell, TableColumn } from './';
+import { Table, SubvalueCell, TableColumn } from '.';
 import { TableFilter } from './Table';
 
 export default {

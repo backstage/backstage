@@ -25,7 +25,7 @@ import {
   HeaderTabs,
   InfoCard,
   Page,
-} from '../';
+} from '..';
 import {
   GaugeCard,
   StatusOK,

@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
-import { HeaderTabs } from './';
+import { HeaderTabs } from '.';
 
 const mockTabs = [
   { id: 'overview', label: 'Overview' },

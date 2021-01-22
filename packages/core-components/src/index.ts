@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-export * from '@backstage/core-api';
-export * from '@backstage/core-components';
-
-export * from './api-wrappers';
+export * from './components';
+export * from './layout';
+export * from './hooks';

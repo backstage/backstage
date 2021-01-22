@@ -21,11 +21,10 @@ import privateExports, {
   BootErrorPageProps,
   AppConfigLoader,
 } from '@backstage/core-api';
+import { ErrorPage, Progress } from '@backstage/core-components';
 import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 import LightIcon from '@material-ui/icons/WbSunny';
 import DarkIcon from '@material-ui/icons/Brightness2';
-import { ErrorPage } from '../layout/ErrorPage';
-import { Progress } from '../components/Progress';
 import { defaultApis } from './defaultApis';
 import { lightTheme, darkTheme } from '@backstage/theme';
 import { AppConfig, JsonObject } from '@backstage/config';

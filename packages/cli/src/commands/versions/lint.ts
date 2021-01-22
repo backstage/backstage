@@ -29,6 +29,7 @@ export const includedFilter = (name: string) =>
 const FORBID_DUPLICATES = [
   /^@backstage\/core$/,
   /^@backstage\/core-api$/,
+  /^@backstage\/core-components$/,
   /^@backstage\/plugin-/,
 ];
 

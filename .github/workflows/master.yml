@@ -81,6 +81,7 @@ jobs:
           # Upload code coverage for some specific flags. Also see .codecov.yml
           bash <(curl -s https://codecov.io/bash) -f packages/core/coverage/* -F core
           bash <(curl -s https://codecov.io/bash) -f packages/core-api/coverage/* -F core-api
+          bash <(curl -s https://codecov.io/bash) -f packages/core-components/coverage/* -F core-components
 
       - name: Discord notification
         if: ${{ failure() }}

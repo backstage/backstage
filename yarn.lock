@@ -2413,7 +2413,7 @@
     to-fast-properties "^2.0.0"
 
 "@backstage/catalog-model@^0.2.0":
-  version "0.6.1"
+  version "0.7.0"
   dependencies:
     "@backstage/config" "^0.1.2"
     "@types/json-schema" "^7.0.5"
@@ -2424,7 +2424,7 @@
     yup "^0.29.3"
 
 "@backstage/catalog-model@^0.3.0":
-  version "0.6.1"
+  version "0.7.0"
   dependencies:
     "@backstage/config" "^0.1.2"
     "@types/json-schema" "^7.0.5"
@@ -2435,42 +2435,18 @@
     yup "^0.29.3"
 
 "@backstage/core@^0.3.0":
-  version "0.4.4"
+  version "0.5.0"
   dependencies:
     "@backstage/config" "^0.1.2"
     "@backstage/core-api" "^0.2.8"
+    "@backstage/core-components" "^0.1.0"
     "@backstage/theme" "^0.2.2"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
-    "@material-ui/lab" "4.0.0-alpha.45"
-    "@types/dagre" "^0.7.44"
-    "@types/prop-types" "^15.7.3"
-    "@types/react" "^16.9"
-    "@types/react-sparklines" "^1.7.0"
-    classnames "^2.2.6"
-    clsx "^1.1.0"
-    d3-selection "^2.0.0"
-    d3-shape "^2.0.0"
-    d3-zoom "^2.0.0"
-    dagre "^0.8.5"
-    immer "^8.0.1"
-    lodash "^4.17.15"
-    material-table "^1.69.1"
-    prop-types "^15.7.2"
-    qs "^6.9.4"
-    rc-progress "^3.0.0"
     react "^16.12.0"
     react-dom "^16.12.0"
-    react-helmet "6.1.0"
-    react-hook-form "^6.6.0"
-    react-markdown "^5.0.2"
     react-router "6.0.0-beta.0"
     react-router-dom "6.0.0-beta.0"
-    react-sparklines "^1.7.0"
-    react-syntax-highlighter "^13.5.1"
-    react-use "^15.3.3"
-    remark-gfm "^1.0.0"
-    zen-observable "^0.8.15"
 
 "@bcoe/v8-coverage@^0.2.3":
   version "0.2.3"
@@ -6539,11 +6515,6 @@
   dependencies:
     "@types/minimatch" "*"
     "@types/node" "*"
-
-"@types/google-protobuf@^3.7.2":
-  version "3.7.3"
-  resolved "https://registry.npmjs.org/@types/google-protobuf/-/google-protobuf-3.7.3.tgz#429512e541bbd777f2c867692e6335ee08d1f6d4"
-  integrity sha512-FRwj40euE2bYkG+0X5w2nEA8yAzgJRcEa7RBd0Gsdkb9/tPM2pctVVAvnOUTbcXo2VmIHPo0Ae94Gl9vRHfKzg==
 
 "@types/graceful-fs@^4.1.2":
   version "4.1.3"
