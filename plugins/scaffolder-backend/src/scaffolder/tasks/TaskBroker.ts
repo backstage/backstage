@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  CompletedTaskState,
-  Task,
-  TaskSpec,
-  TaskBroker,
-  Status,
-} from './types';
-import { v4 as uuid } from 'uuid';
+import { CompletedTaskState, Task, TaskSpec, TaskBroker } from './types';
 import { InMemoryDatabase } from './database';
 
 export class TaskAgent implements Task {
@@ -48,20 +41,25 @@ export class TaskAgent implements Task {
   }
 
   async complete(result: CompletedTaskState): Promise<void> {
-    this.state.status = result === 'FAILED' ? 'COMPLETED' : 'FAILED';
+    this.db.setStatus(
+      this.state.taskId,
+      result === 'FAILED' ? 'COMPLETED' : 'FAILED',
+    );
   }
 
   private start() {
     this.heartbeartInterval = setInterval(() => {
-      const runId = 'iiiid';
-      this.db.heartBeat(runId);
-    }, 4269);
+      if (!this.state.runId) {
+        throw new Error('no run id provided');
+      }
+      this.db.heartBeat(this.state.runId);
+    }, 1000);
   }
 }
 
 interface TaskState {
   spec: TaskSpec;
-  status: Status;
+  taskId: string;
   runId: string | undefined;
 }
 
@@ -75,14 +73,20 @@ function defer() {
 
 export class MemoryTaskBroker implements TaskBroker {
   private readonly db = new InMemoryDatabase();
-  private readonly tasks = new Array<TaskState>();
   private deferredDispatch = defer();
 
   async claim(): Promise<Task> {
     for (;;) {
       const pendingTask = await this.db.claimTask();
       if (pendingTask) {
-        return TaskAgent.create(pendingTask, this.db);
+        return TaskAgent.create(
+          {
+            runId: pendingTask.runId,
+            taskId: pendingTask.taskId,
+            spec: pendingTask.spec,
+          },
+          this.db,
+        );
       }
 
       await this.waitForDispatch();
@@ -90,11 +94,7 @@ export class MemoryTaskBroker implements TaskBroker {
   }
 
   async dispatch(spec: TaskSpec): Promise<void> {
-    this.tasks.push({
-      spec,
-      status: 'OPEN',
-      runId: undefined,
-    });
+    await this.db.createTask(spec);
     this.signalDispatch();
   }
 

@@ -20,7 +20,9 @@ describe('MemoryTaskBroker', () => {
   it('should claim a dispatched work item', async () => {
     const broker = new MemoryTaskBroker();
 
-    await broker.dispatch({});
+    await broker.dispatch({
+      metadata: '',
+    });
     await expect(broker.claim()).resolves.toEqual(expect.any(TaskAgent));
   });
 
@@ -31,16 +33,16 @@ describe('MemoryTaskBroker', () => {
 
     await expect(Promise.race([promise, 'waiting'])).resolves.toBe('waiting');
 
-    await broker.dispatch({});
+    await broker.dispatch({ metadata: 'foo' });
     await expect(promise).resolves.toEqual(expect.any(TaskAgent));
   });
 
   it('should dispatch multiple items and claim them in order', async () => {
     const broker = new MemoryTaskBroker();
 
-    await broker.dispatch({ name: 'a' });
-    await broker.dispatch({ name: 'b' });
-    await broker.dispatch({ name: 'c' });
+    await broker.dispatch({ metadata: 'a' });
+    await broker.dispatch({ metadata: 'b' });
+    await broker.dispatch({ metadata: 'c' });
 
     const taskA = await broker.claim();
     const taskB = await broker.claim();
@@ -48,9 +50,9 @@ describe('MemoryTaskBroker', () => {
     await expect(taskA).toEqual(expect.any(TaskAgent));
     await expect(taskB).toEqual(expect.any(TaskAgent));
     await expect(taskC).toEqual(expect.any(TaskAgent));
-    await expect(taskA.spec.name).toBe('a');
-    await expect(taskB.spec.name).toBe('b');
-    await expect(taskC.spec.name).toBe('c');
+    await expect(taskA.spec.metadata).toBe('a');
+    await expect(taskB.spec.metadata).toBe('b');
+    await expect(taskC.spec.metadata).toBe('c');
   });
 
   it('should complete a task', async () => {
