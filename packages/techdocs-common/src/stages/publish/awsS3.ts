@@ -150,10 +150,8 @@ export class AwsS3Publish implements PublisherBase {
           Body: fileContent,
         };
 
-        // Rate limit the concurrent execution of file uploads to batches of 10
-        const uploadFile = limiter(async () =>
-          this.storageClient.putObject(params),
-        );
+        // Rate limit the concurrent execution of file uploads to batches of 10 (per publish)
+        const uploadFile = limiter(() => this.storageClient.putObject(params));
         uploadPromises.push(uploadFile);
       }
       await Promise.all(uploadPromises);

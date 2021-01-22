@@ -113,8 +113,8 @@ export class GoogleGCSPublish implements PublisherBase {
         const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
         const destination = `${entityRootDir}/${relativeFilePath}`; // GCS Bucket file relative path
 
-        // Rate limit the concurrent execution of file uploads to batches of 10
-        const uploadFile = limiter(async () =>
+        // Rate limit the concurrent execution of file uploads to batches of 10 (per publish)
+        const uploadFile = limiter(() =>
           this.storageClient
             .bucket(this.bucketName)
             .upload(filePath, { destination }),
