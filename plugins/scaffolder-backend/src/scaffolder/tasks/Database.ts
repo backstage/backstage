@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DbTaskRow, TaskSpec } from './types';
+import { DbTaskRow, Status, TaskSpec } from './types';
 import { v4 as uuid } from 'uuid';
 import { DateTime } from 'luxon';
 
 export interface Database {
   get(taskId: string): Promise<DbTaskRow>;
-  // updateTask(task: Task): Promise<DbTaskRow>;
   createTask(task: TaskSpec): Promise<DbTaskRow>;
   claimTask(): Promise<DbTaskRow>;
   heartBeat(runId: string): Promise<void>;
+  setStatus(taskId: string, status: Status): Promise<void>;
 }
 
 export class InMemoryDatabase implements Database {
@@ -63,13 +63,15 @@ export class InMemoryDatabase implements Database {
   }
 
   async createTask(spec: TaskSpec): Promise<DbTaskRow> {
-    return {
+    const taskRow = {
       taskId: uuid(),
       spec,
-      status: 'OPEN',
+      status: 'OPEN' as Status,
       retryCount: 0,
       createdAt: new Date().toISOString(),
     };
+    this.store.set(taskRow.taskId, taskRow);
+    return taskRow;
   }
 
   async get(taskId: string): Promise<DbTaskRow> {
@@ -80,12 +82,11 @@ export class InMemoryDatabase implements Database {
     throw new Error(`could not found task ${taskId}`);
   }
 
-  // async updateTask(task: Task): Promise<Task> {
-  //   if (!task.taskId) {
-  //     throw new Error('Task must contain id');
-  //   }
-
-  //   this.store.set(task.taskId, task);
-  //   return task;
-  // }
+  async setStatus(taskId: string, status: Status): Promise<void> {
+    const task = this.store.get(taskId);
+    if (!task) {
+      throw new Error(`no task found`);
+    }
+    this.store.set(task.taskId, { ...task, status });
+  }
 }
