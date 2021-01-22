@@ -48,7 +48,10 @@ export class CatalogIdentityClient {
       filter[`metadata.annotations.${key}`] = value;
     }
 
-    const { items } = await this.catalogClient.getEntities(token, { filter });
+    const { items } = await this.catalogClient.getEntities(
+      { filter },
+      { token },
+    );
 
     if (items.length !== 1) {
       if (items.length > 1) {

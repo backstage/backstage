@@ -35,6 +35,21 @@ describe('<RegisterComponentForm />', () => {
     error$: jest.fn(),
   };
 
+  const identityApi = {
+    getUserId: () => {
+      return 'user';
+    },
+    getProfile: () => {
+      return {};
+    },
+    getIdToken: () => {
+      return Promise.resolve('token');
+    },
+    signOut: () => {
+      return Promise.resolve();
+    },
+  };
+
   beforeEach(() => {
     apis = ApiRegistry.from([
       [catalogApiRef, new CatalogClient({ discoveryApi: {} as DiscoveryApi })],
@@ -45,6 +60,7 @@ describe('<RegisterComponentForm />', () => {
           githubAuthApi: {
             getAccessToken: (_, __) => Promise.resolve('token'),
           },
+          identityApi,
           configApi: {} as any,
         }),
       ],

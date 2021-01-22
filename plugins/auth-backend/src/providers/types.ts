@@ -122,7 +122,7 @@ export type ExperimentalIdentityResolver = (
    * An object containing information specific to the auth provider.
    */
   payload: object,
-  catalogApi: CatalogApi,
+  catalogClient: CatalogClient,
 ) => Promise<AuthResponse<any>>;
 
 export type AuthProviderFactoryOptions = {

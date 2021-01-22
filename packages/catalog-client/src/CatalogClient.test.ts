@@ -72,7 +72,7 @@ describe('CatalogClient', () => {
     });
 
     it('should entities from correct endpoint', async () => {
-      const response = await client.getEntities(token);
+      const response = await client.getEntities({}, { token });
       expect(response).toEqual(defaultResponse);
     });
 
@@ -86,13 +86,16 @@ describe('CatalogClient', () => {
         }),
       );
 
-      const response = await client.getEntities(token, {
-        filter: {
-          a: '1',
-          b: ['2', '3'],
-          ö: '=',
+      const response = await client.getEntities(
+        {
+          filter: {
+            a: '1',
+            b: ['2', '3'],
+            ö: '=',
+          },
         },
-      });
+        { token },
+      );
 
       expect(response.items).toEqual([]);
     });
@@ -107,9 +110,12 @@ describe('CatalogClient', () => {
         }),
       );
 
-      const response = await client.getEntities(token, {
-        fields: ['a.b', 'ö'],
-      });
+      const response = await client.getEntities(
+        {
+          fields: ['a.b', 'ö'],
+        },
+        { token },
+      );
 
       expect(response.items).toEqual([]);
     });

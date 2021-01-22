@@ -36,33 +36,33 @@ export class CatalogClientWrapper implements CatalogApi {
 
   async getLocationById(id: String): Promise<Location | undefined> {
     const token = await this.identityApi.getIdToken();
-    return await this.client.getLocationById(token, id);
+    return await this.client.getLocationById(id, { token });
   }
 
   async getEntities(
     request?: CatalogEntitiesRequest,
   ): Promise<CatalogListResponse<Entity>> {
     const token = await this.identityApi.getIdToken();
-    return await this.client.getEntities(token, request);
+    return await this.client.getEntities(request, { token });
   }
 
   async getEntityByName(compoundName: EntityName): Promise<Entity | undefined> {
     const token = await this.identityApi.getIdToken();
-    return await this.client.getEntityByName(token, compoundName);
+    return await this.client.getEntityByName(compoundName, { token });
   }
 
   async addLocation(request: AddLocationRequest): Promise<AddLocationResponse> {
     const token = await this.identityApi.getIdToken();
-    return await this.client.addLocation(token, request);
+    return await this.client.addLocation(request, { token });
   }
 
   async getLocationByEntity(entity: Entity): Promise<Location | undefined> {
     const token = await this.identityApi.getIdToken();
-    return await this.client.getLocationByEntity(token, entity);
+    return await this.client.getLocationByEntity(entity, { token });
   }
 
   async removeEntityByUid(uid: string): Promise<void> {
     const token = await this.identityApi.getIdToken();
-    return await this.client.removeEntityByUid(token, uid);
+    return await this.client.removeEntityByUid(uid, { token });
   }
 }

@@ -70,6 +70,21 @@ describe('<ImportComponentPage />', () => {
   const server = setupServer();
   msw.setupDefaultHandlers(server);
 
+  const identityApi = {
+    getUserId: () => {
+      return 'user';
+    },
+    getProfile: () => {
+      return {};
+    },
+    getIdToken: () => {
+      return Promise.resolve('token');
+    },
+    signOut: () => {
+      return Promise.resolve();
+    },
+  };
+
   beforeEach(() => {
     server.use(
       rest.post('https://backend.localhost/locations', (_, res, ctx) => {
@@ -112,6 +127,7 @@ describe('<ImportComponentPage />', () => {
           githubAuthApi: {
             getAccessToken: (_, __) => Promise.resolve('token'),
           },
+          identityApi,
           configApi: {} as any,
         }),
       ],

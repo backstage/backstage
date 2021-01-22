@@ -45,10 +45,25 @@ jest.mock('@octokit/rest', () => ({
 }));
 
 describe('CatalogImportClient', () => {
+  const identityApi = {
+    getUserId: () => {
+      return 'user';
+    },
+    getProfile: () => {
+      return {};
+    },
+    getIdToken: () => {
+      return Promise.resolve('token');
+    },
+    signOut: () => {
+      return Promise.resolve();
+    },
+  };
   describe('checkForExistingCatalogInfo', () => {
     const cic = new CatalogImportClient({
       discoveryApi: { getBaseUrl: () => Promise.resolve('base') },
       githubAuthApi: { getAccessToken: (_, __) => Promise.resolve('token') },
+      identityApi,
       configApi: {} as any,
     });
     it('should return the closest-to-root catalog-info from multiple responses', async () => {

@@ -37,12 +37,15 @@ export class CatalogEntityClient {
     token: string | undefined,
     templateName: string,
   ): Promise<TemplateEntityV1alpha1> {
-    const { items: templates } = (await this.catalogClient.getEntities(token, {
-      filter: {
-        kind: 'template',
-        'metadata.name': templateName,
+    const { items: templates } = (await this.catalogClient.getEntities(
+      {
+        filter: {
+          kind: 'template',
+          'metadata.name': templateName,
+        },
       },
-    })) as { items: TemplateEntityV1alpha1[] };
+      { token },
+    )) as { items: TemplateEntityV1alpha1[] };
 
     if (templates.length !== 1) {
       if (templates.length > 1) {

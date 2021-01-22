@@ -25,7 +25,7 @@ import { KeyObject } from 'crypto';
 import { Logger } from 'winston';
 import NodeCache from 'node-cache';
 import { JWT } from 'jose';
-import { CatalogApi } from '@backstage/catalog-client';
+import { CatalogClient } from '@backstage/catalog-client';
 
 const ALB_JWT_HEADER = 'x-amzn-oidc-data';
 /**
@@ -44,13 +44,13 @@ export const getJWTHeaders = (input: string) => {
 
 export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
   private logger: Logger;
-  private readonly catalogClient: CatalogApi;
+  private readonly catalogClient: CatalogClient;
   private options: AwsAlbAuthProviderOptions;
   private readonly keyCache: NodeCache;
 
   constructor(
     logger: Logger,
-    catalogClient: CatalogApi,
+    catalogClient: CatalogClient,
     options: AwsAlbAuthProviderOptions,
   ) {
     this.logger = logger;
@@ -108,14 +108,14 @@ export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
 
 export const createAwsAlbProvider = ({
   logger,
-  catalogApi,
+  catalogClient,
   config,
   identityResolver,
 }: AuthProviderFactoryOptions) => {
   const region = config.getString('region');
   const issuer = config.getOptionalString('iss');
   if (identityResolver !== undefined) {
-    return new AwsAlbAuthProvider(logger, catalogApi, {
+    return new AwsAlbAuthProvider(logger, catalogClient, {
       region,
       issuer,
       identityResolutionCallback: identityResolver,
