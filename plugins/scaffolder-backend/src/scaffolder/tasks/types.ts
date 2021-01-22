@@ -44,6 +44,10 @@ export type TaskSpec = {
   metadata: string;
 };
 
+export type DispatchResult = {
+  taskId: string;
+};
+
 export interface Task {
   spec: TaskSpec;
   emitLog(message: string): Promise<void>;
@@ -52,5 +56,5 @@ export interface Task {
 
 export interface TaskBroker {
   claim(): Promise<Task>;
-  dispatch(spec: TaskSpec): Promise<void>;
+  dispatch(spec: TaskSpec): Promise<DispatchResult>;
 }

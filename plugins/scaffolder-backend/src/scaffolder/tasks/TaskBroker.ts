@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-import { CompletedTaskState, Task, TaskSpec, TaskBroker } from './types';
-import { InMemoryDatabase } from './database';
+import {
+  CompletedTaskState,
+  Task,
+  TaskSpec,
+  TaskBroker,
+  DispatchResult,
+} from './types';
+import { InMemoryDatabase } from './Database';
 
 export class TaskAgent implements Task {
   private heartbeartInterval?: ReturnType<typeof setInterval>;
 
-  static create(state: TaskState, db: InMemoryDatabase) {
-    const agent = new TaskAgent(state, db);
+  static create(state: TaskState, storage: InMemoryDatabase) {
+    const agent = new TaskAgent(state, storage);
     agent.start();
     return agent;
   }
@@ -29,7 +35,7 @@ export class TaskAgent implements Task {
   // Runs heartbeat internally
   private constructor(
     private readonly state: TaskState,
-    private readonly db: InMemoryDatabase,
+    private readonly storage: InMemoryDatabase,
   ) {}
 
   get spec() {
@@ -41,9 +47,9 @@ export class TaskAgent implements Task {
   }
 
   async complete(result: CompletedTaskState): Promise<void> {
-    this.db.setStatus(
+    this.storage.setStatus(
       this.state.taskId,
-      result === 'FAILED' ? 'COMPLETED' : 'FAILED',
+      result === 'FAILED' ? 'FAILED' : 'COMPLETED',
     );
   }
 
@@ -52,7 +58,7 @@ export class TaskAgent implements Task {
       if (!this.state.runId) {
         throw new Error('no run id provided');
       }
-      this.db.heartBeat(this.state.runId);
+      this.storage.heartBeat(this.state.runId);
     }, 1000);
   }
 }
@@ -72,12 +78,12 @@ function defer() {
 }
 
 export class MemoryTaskBroker implements TaskBroker {
-  private readonly db = new InMemoryDatabase();
+  constructor(private readonly storage: InMemoryDatabase) {}
   private deferredDispatch = defer();
 
   async claim(): Promise<Task> {
     for (;;) {
-      const pendingTask = await this.db.claimTask();
+      const pendingTask = await this.storage.claimTask();
       if (pendingTask) {
         return TaskAgent.create(
           {
@@ -85,7 +91,7 @@ export class MemoryTaskBroker implements TaskBroker {
             taskId: pendingTask.taskId,
             spec: pendingTask.spec,
           },
-          this.db,
+          this.storage,
         );
       }
 
@@ -93,9 +99,12 @@ export class MemoryTaskBroker implements TaskBroker {
     }
   }
 
-  async dispatch(spec: TaskSpec): Promise<void> {
-    await this.db.createTask(spec);
+  async dispatch(spec: TaskSpec): Promise<DispatchResult> {
+    const taskRow = await this.storage.createTask(spec);
     this.signalDispatch();
+    return {
+      taskId: taskRow.taskId,
+    };
   }
 
   private waitForDispatch() {

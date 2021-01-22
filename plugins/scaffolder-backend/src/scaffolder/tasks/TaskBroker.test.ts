@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import { InMemoryDatabase } from './Database';
 import { MemoryTaskBroker, TaskAgent } from './TaskBroker';
 
 describe('MemoryTaskBroker', () => {
-  it('should claim a dispatched work item', async () => {
-    const broker = new MemoryTaskBroker();
+  const storage = new InMemoryDatabase();
+  const broker = new MemoryTaskBroker(storage);
 
+  it('should claim a dispatched work item', async () => {
     await broker.dispatch({
       metadata: '',
     });
@@ -27,8 +29,6 @@ describe('MemoryTaskBroker', () => {
   });
 
   it('should wait for a dispatched work item', async () => {
-    const broker = new MemoryTaskBroker();
-
     const promise = broker.claim();
 
     await expect(Promise.race([promise, 'waiting'])).resolves.toBe('waiting');
@@ -38,8 +38,6 @@ describe('MemoryTaskBroker', () => {
   });
 
   it('should dispatch multiple items and claim them in order', async () => {
-    const broker = new MemoryTaskBroker();
-
     await broker.dispatch({ metadata: 'a' });
     await broker.dispatch({ metadata: 'b' });
     await broker.dispatch({ metadata: 'c' });
@@ -56,10 +54,18 @@ describe('MemoryTaskBroker', () => {
   });
 
   it('should complete a task', async () => {
-    const broker = new MemoryTaskBroker();
-
-    await broker.dispatch({});
+    const dispatchResult = await broker.dispatch({ metadata: 'foo' });
     const task = await broker.claim();
     await task.complete('COMPLETED');
+    const taskRow = await storage.get(dispatchResult.taskId);
+    expect(taskRow.status).toBe('COMPLETED');
+  });
+
+  it('should fail a task', async () => {
+    const dispatchResult = await broker.dispatch({ metadata: 'foo' });
+    const task = await broker.claim();
+    await task.complete('FAILED');
+    const taskRow = await storage.get(dispatchResult.taskId);
+    expect(taskRow.status).toBe('FAILED');
   });
 });
