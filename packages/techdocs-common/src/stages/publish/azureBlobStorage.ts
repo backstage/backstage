@@ -20,6 +20,7 @@ import {
   BlobUploadCommonResponse,
   StorageSharedKeyCredential,
 } from '@azure/storage-blob';
+import { DefaultAzureCredential } from '@azure/identity';
 import { Logger } from 'winston';
 import { Entity, EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
@@ -43,29 +44,39 @@ export class AzureBlobStoragePublish implements PublisherBase {
       );
     } catch (error) {
       throw new Error(
-        "Since techdocs.publisher.type is set to 'awsS3' in your app config, " +
-          'techdocs.publisher.awsS3.bucketName is required.',
+        "Since techdocs.publisher.type is set to 'azureBlobStorage' in your app config, " +
+          'techdocs.publisher.azureBlobStorage.containerName is required.',
       );
     }
 
-    // Credentials is an optional config. If missing, default AWS environment variables
-    // or AWS shared credentials file at ~/.aws/credentials will be used to authenticate
-    // https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-environment.html
-    // https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-shared.html
-    let account = '';
-    let accountKey = '';
-    account =
-      config.getOptionalString(
-        'techdocs.publisher.azureBlobStorage.credentials.account',
-      ) || '';
-    accountKey =
-      config.getOptionalString(
-        'techdocs.publisher.azureBlobStorage.credentials.accountKey',
-      ) || '';
+    let accountName = '';
+    try {
+      accountName = config.getString(
+        'techdocs.publisher.azureBlobStorage.credentials.accountName',
+      );
+    } catch (error) {
+      throw new Error(
+        "Since techdocs.publisher.type is set to 'azureBlobStorage' in your app config, " +
+          'techdocs.publisher.azureBlobStorage.credentials.accountName is required.',
+      );
+    }
 
-    const credential = new StorageSharedKeyCredential(account, accountKey);
+    // Credentials is an optional config. If missing, default Azure Blob Storage environment variables
+    // https://docs.microsoft.com/pt-br/azure/storage/common/storage-auth-aad-app
+    const accountKey = config.getOptionalString(
+      'techdocs.publisher.azureBlobStorage.credentials.accountKey',
+    );
+
+    let credential;
+    if (accountKey) {
+      console.log('accountKey =>', accountKey);
+      credential = new StorageSharedKeyCredential(accountName, accountKey);
+    } else {
+      credential = new DefaultAzureCredential();
+    }
+
     const storageClient = new BlobServiceClient(
-      `https://${account}.blob.core.windows.net`,
+      `https://${accountName}.blob.core.windows.net`,
       credential,
     );
 
@@ -129,7 +140,6 @@ export class AzureBlobStoragePublish implements PublisherBase {
           `${entityRootDir}/${relativeFilePath}`,
         ); // Azure Blob Storage Container file relative path
 
-        // TODO: Upload in chunks of ~10 files instead of all files at once.
         return limiter(async () => {
           await uploadPromises.push(
             this.storageClient

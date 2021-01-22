@@ -128,24 +128,24 @@ export interface Config {
            */
           azureBlobStorage?: {
             /**
-             * (Optional) Credentials used to access a storage container.
-             * If not set, environment variables will be used to authenticate.
-             * https://docs.microsoft.com/en-us/azure/storage/common/storage-auth?toc=/azure/storage/blobs/toc.json
+             * (Required) Credentials used to access a storage container.
              * @visibility secret
              */
-            credentials?: {
+            credentials: {
               /**
                * Account access name
                * attr: 'account' - accepts a string value
                * @visibility secret
                */
-              account: string;
+              accountName: string;
               /**
-               * Account secret primary key
+               * (Optional) Account secret primary key
+               * If not set, environment variables will be used to authenticate.
+               * https://docs.microsoft.com/en-us/azure/storage/common/storage-auth?toc=/azure/storage/blobs/toc.json
                * attr: 'accountKey' - accepts a string value
                * @visibility secret
                */
-              accountKey: string;
+              accountKey?: string;
             };
             /**
              * (Required) Cloud Storage Container Name
