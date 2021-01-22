@@ -15,14 +15,33 @@
  */
 
 import { useApi } from '@backstage/core';
+import { useEntity } from '@backstage/plugin-catalog';
 import * as React from 'react';
 import { useAsync } from 'react-use';
 import { linkerdPluginRef } from '../plugin';
 
-export const Tab = ({ entity }) => {
+export const Tab = () => {
   const l5d = useApi(linkerdPluginRef);
-  const test = useAsync(() => l5d.getStatsForEntity(entity));
+  const { entity } = useEntity();
+  const { loading, value } = useAsync(() => l5d.getStatsForEntity(entity));
 
-  console.warn(test);
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (value) {
+    if (
+      !Object.values(value.incoming).length &&
+      !Object.values(value.outgoing).length
+    ) {
+      return (
+        <p>
+          This service doesn't look like it's tagged with the right service, or
+          linkerd is not injected.
+        </p>
+      );
+    }
+  }
+
   return <p>Hello</p>;
 };

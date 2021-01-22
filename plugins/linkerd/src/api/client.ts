@@ -26,9 +26,9 @@ export class L5dClient {
 
   async getStatsForEntity(entity: Entity) {
     return await fetch(
-      `${this.discoveryApi.getBaseUrl('linkerd')}/namespace/${
+      `${await this.discoveryApi.getBaseUrl('linkerd')}/namespace/${
         entity.metadata.namespace
       }/deployment/${entity.metadata.name}/stats`,
-    ).then(b => b.text());
+    ).then(r => r.json());
   }
 }
