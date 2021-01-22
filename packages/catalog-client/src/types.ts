@@ -25,6 +25,10 @@ export type CatalogListResponse<T> = {
   items: T[];
 };
 
+export type CatalogRequestOptions = {
+  token: string | undefined;
+};
+
 export interface CatalogApi {
   getLocationById(id: String): Promise<Location | undefined>;
   getEntityByName(name: EntityName): Promise<Entity | undefined>;

@@ -26,6 +26,7 @@ import {
   AddLocationResponse,
   CatalogEntitiesRequest,
   CatalogListResponse,
+  CatalogRequestOptions,
   DiscoveryApi,
 } from './types';
 
@@ -37,15 +38,15 @@ export class CatalogClient {
   }
 
   async getLocationById(
-    token: string | undefined,
     id: String,
+    options?: CatalogRequestOptions,
   ): Promise<Location | undefined> {
-    return await this.getOptional(token, `/locations/${id}`);
+    return await this.getOptional(`/locations/${id}`, options);
   }
 
   async getEntities(
-    token: string | undefined,
     request?: CatalogEntitiesRequest,
+    options?: CatalogRequestOptions,
   ): Promise<CatalogListResponse<Entity>> {
     const { filter = {}, fields = [] } = request ?? {};
     const params: string[] = [];
@@ -66,36 +67,39 @@ export class CatalogClient {
 
     const query = params.length ? `?${params.join('&')}` : '';
     const entities: Entity[] = await this.getRequired(
-      token,
       `/entities${query}`,
+      options,
     );
     return { items: entities };
   }
 
   async getEntityByName(
-    token: string | undefined,
     compoundName: EntityName,
+    options?: CatalogRequestOptions,
   ): Promise<Entity | undefined> {
     const { kind, namespace = 'default', name } = compoundName;
     return this.getOptional(
-      token,
       `/entities/by-name/${kind}/${namespace}/${name}`,
+      options,
     );
   }
 
   async addLocation(
-    token: string | undefined,
     { type = 'url', target, dryRun }: AddLocationRequest,
+    options?: CatalogRequestOptions,
   ): Promise<AddLocationResponse> {
+    const headers = {
+      'Content-Type': 'application/json',
+    } as { [header: string]: string };
+    if (options?.token) {
+      headers.authorization = `Bearer ${options.token}`;
+    }
     const response = await fetch(
       `${await this.discoveryApi.getBaseUrl('catalog')}/locations${
         dryRun ? '?dryRun=true' : ''
       }`,
       {
-        headers: {
-          authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
+        headers,
         method: 'POST',
         body: JSON.stringify({ type, target }),
       },
@@ -123,13 +127,13 @@ export class CatalogClient {
   }
 
   async getLocationByEntity(
-    token: string | undefined,
     entity: Entity,
+    options?: CatalogRequestOptions,
   ): Promise<Location | undefined> {
     const locationCompound = entity.metadata.annotations?.[LOCATION_ANNOTATION];
     const all: { data: Location }[] = await this.getRequired(
-      token,
       '/locations',
+      options,
     );
     return all
       .map(r => r.data)
@@ -137,15 +141,15 @@ export class CatalogClient {
   }
 
   async removeEntityByUid(
-    token: string | undefined,
     uid: string,
+    options?: CatalogRequestOptions,
   ): Promise<void> {
     const response = await fetch(
       `${await this.discoveryApi.getBaseUrl('catalog')}/entities/by-uid/${uid}`,
       {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
+        headers: options?.token
+          ? { authorization: `Bearer ${options.token}` }
+          : {},
         method: 'DELETE',
       },
     );
@@ -163,12 +167,14 @@ export class CatalogClient {
   //
 
   private async getRequired(
-    token: string | undefined,
     path: string,
+    options?: CatalogRequestOptions,
   ): Promise<any> {
     const url = `${await this.discoveryApi.getBaseUrl('catalog')}${path}`;
     const response = await fetch(url, {
-      headers: token ? { authorization: `Bearer ${token}` } : {},
+      headers: options?.token
+        ? { authorization: `Bearer ${options.token}` }
+        : {},
     });
 
     if (!response.ok) {
@@ -181,12 +187,14 @@ export class CatalogClient {
   }
 
   private async getOptional(
-    token: string | undefined,
     path: string,
+    options?: CatalogRequestOptions,
   ): Promise<any | undefined> {
     const url = `${await this.discoveryApi.getBaseUrl('catalog')}${path}`;
     const response = await fetch(url, {
-      headers: token ? { authorization: `Bearer ${token}` } : {},
+      headers: options?.token
+        ? { authorization: `Bearer ${options.token}` }
+        : {},
     });
 
     if (!response.ok) {
