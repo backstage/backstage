@@ -16,7 +16,13 @@
 import React, { useState } from 'react';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import { useTheme, Box, Typography } from '@material-ui/core';
+import {
+  useTheme,
+  Box,
+  Typography,
+  Divider,
+  emphasize,
+} from '@material-ui/core';
 import { default as FullScreenIcon } from '@material-ui/icons/Fullscreen';
 import {
   AreaChart,
@@ -182,9 +188,17 @@ export const CostOverviewByProductChart = ({
       fill: p.fill!,
     }));
     const expandText = (
-      <Box display="flex" justifyContent="space-between" alignItems="center">
-        <FullScreenIcon />
-        <Typography>Click to expand</Typography>
+      <Box>
+        <Divider
+          style={{
+            backgroundColor: emphasize(theme.palette.divider, 1),
+            margin: '10px 0',
+          }}
+        />
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <FullScreenIcon />
+          <Typography>Click to expand</Typography>
+        </Box>
       </Box>
     );
     return (
