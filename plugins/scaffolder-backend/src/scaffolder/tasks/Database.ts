@@ -20,7 +20,7 @@ import { DateTime } from 'luxon';
 export interface Database {
   get(taskId: string): Promise<DbTaskRow>;
   createTask(task: TaskSpec): Promise<DbTaskRow>;
-  claimTask(): Promise<DbTaskRow>;
+  claimTask(): Promise<DbTaskRow | undefined>;
   heartBeat(runId: string): Promise<void>;
   setStatus(taskId: string, status: Status): Promise<void>;
 }
@@ -47,7 +47,7 @@ export class InMemoryDatabase implements Database {
     });
   }
 
-  async claimTask(): Promise<DbTaskRow> {
+  async claimTask(): Promise<DbTaskRow | undefined> {
     for (const t of this.store.values()) {
       if (t.status === 'OPEN') {
         const task: DbTaskRow = {
@@ -59,7 +59,7 @@ export class InMemoryDatabase implements Database {
         return task;
       }
     }
-    throw new Error('No task found');
+    return undefined;
   }
 
   async createTask(spec: TaskSpec): Promise<DbTaskRow> {
