@@ -36,7 +36,7 @@ jest.mock('cross-fetch', () => ({
   __esModule: true,
   default: async () => {
     return {
-      json: async () => {
+      text: async () => {
         return mockKey();
       },
     };
