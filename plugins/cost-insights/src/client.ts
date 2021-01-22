@@ -33,11 +33,12 @@ import {
   UnlabeledDataflowAlert,
 } from '../src/utils/alerts';
 import {
-  trendlineOf,
+  aggregationFor,
   changeOf,
   entityOf,
   getGroupedProducts,
-  aggregationFor,
+  getGroupedProjects,
+  trendlineOf,
 } from './utils/mockData';
 
 export class ExampleCostInsightsClient implements CostInsightsApi {
@@ -101,7 +102,10 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
         trendline: trendlineOf(aggregation),
         // Optional field on Cost which needs to be supplied in order to see
         // the product breakdown view in the top panel.
-        groupedCosts: getGroupedProducts(intervals),
+        groupedCosts: {
+          product: getGroupedProducts(intervals),
+          project: getGroupedProjects(intervals),
+        },
       },
     );
 
@@ -119,7 +123,9 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
         trendline: trendlineOf(aggregation),
         // Optional field on Cost which needs to be supplied in order to see
         // the product breakdown view in the top panel.
-        groupedCosts: getGroupedProducts(intervals),
+        groupedCosts: {
+          product: getGroupedProducts(intervals),
+        },
       },
     );
 
