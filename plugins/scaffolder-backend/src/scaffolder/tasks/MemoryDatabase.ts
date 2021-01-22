@@ -25,7 +25,7 @@ export interface Database {
   setStatus(taskId: string, status: Status): Promise<void>;
 }
 
-export class InMemoryDatabase implements Database {
+export class MemoryDatabase implements Database {
   private readonly store = new Map<string, DbTaskRow>();
 
   async heartBeat(runId: string): Promise<void> {

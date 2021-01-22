@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { InMemoryDatabase } from './Database';
-import { MemoryTaskBroker, TaskAgent } from './TaskBroker';
+import { MemoryDatabase } from './MemoryDatabase';
+import { MemoryTaskBroker, TaskAgent } from './MemoryTaskBroker';
 
 describe('MemoryTaskBroker', () => {
-  const storage = new InMemoryDatabase();
+  const storage = new MemoryDatabase();
   const broker = new MemoryTaskBroker(storage);
 
   it('should claim a dispatched work item', async () => {

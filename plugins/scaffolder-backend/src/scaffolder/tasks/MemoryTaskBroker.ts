@@ -21,12 +21,12 @@ import {
   TaskBroker,
   DispatchResult,
 } from './types';
-import { InMemoryDatabase } from './Database';
+import { MemoryDatabase } from './MemoryDatabase';
 
 export class TaskAgent implements Task {
   private heartbeartInterval?: ReturnType<typeof setInterval>;
 
-  static create(state: TaskState, storage: InMemoryDatabase) {
+  static create(state: TaskState, storage: MemoryDatabase) {
     const agent = new TaskAgent(state, storage);
     agent.start();
     return agent;
@@ -35,7 +35,7 @@ export class TaskAgent implements Task {
   // Runs heartbeat internally
   private constructor(
     private readonly state: TaskState,
-    private readonly storage: InMemoryDatabase,
+    private readonly storage: MemoryDatabase,
   ) {}
 
   get spec() {
