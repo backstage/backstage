@@ -17,7 +17,7 @@ import React from 'react';
 import { TechDocsPage } from './TechDocsPage';
 import { render, act } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
-import { ApiRegistry, ApiProvider } from '@backstage/core-api';
+import { ApiRegistry, ApiProvider } from '@backstage/core';
 import {
   techdocsApiRef,
   TechDocsApi,

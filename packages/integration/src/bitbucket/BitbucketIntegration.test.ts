@@ -20,27 +20,23 @@ import { BitbucketIntegration } from './BitbucketIntegration';
 describe('BitbucketIntegration', () => {
   it('has a working factory', () => {
     const integrations = BitbucketIntegration.factory({
-      config: ConfigReader.fromConfigs([
-        {
-          context: '',
-          data: {
-            integrations: {
-              bitbucket: [
-                {
-                  host: 'h.com',
-                  apiBaseUrl: 'a',
-                  token: 't',
-                  username: 'u',
-                  appPassword: 'p',
-                },
-              ],
+      config: new ConfigReader({
+        integrations: {
+          bitbucket: [
+            {
+              host: 'h.com',
+              apiBaseUrl: 'a',
+              token: 't',
+              username: 'u',
+              appPassword: 'p',
             },
-          },
+          ],
         },
-      ]),
+      }),
     });
-    expect(integrations.length).toBe(2); // including default
-    expect(integrations[0].predicate(new URL('https://h.com/a'))).toBe(true);
+    expect(integrations.list().length).toBe(2); // including default
+    expect(integrations.list()[0].config.host).toBe('h.com');
+    expect(integrations.list()[1].config.host).toBe('bitbucket.org');
   });
 
   it('returns the basics', () => {

@@ -1,8 +1,8 @@
 ---
 id: project-structure
 title: Backstage Project Structure
-description:
-  Introduction to files and folders in the Backstage Project repository
+# prettier-ignore
+description: Introduction to files and folders in the Backstage Project repository
 ---
 
 Backstage is a complex project, and the GitHub repository contains many
@@ -32,17 +32,13 @@ the code.
   better control over our `yarn.lock` file and hopefully avoid problems due to
   yarn versioning differences.
 
-- [`docker/`](https://github.com/backstage/backstage/tree/master/docker) - Files
-  related to our root Dockerfile. We are planning to refactor this, so expect
-  this folder to be moved in the future.
-
 - [`contrib/`](https://github.com/backstage/backstage/tree/master/contrib) -
   Collection of examples or resources provided by the community. We really
   appreciate contributions in here and encourage them being kept up to date.
 
 - [`docs/`](https://github.com/backstage/backstage/tree/master/docs) - This is
-  where we keep all of our documentation Markdown files. These ends up on
-  http://backstage.io/docs. Just keep in mind that changes to the
+  where we keep all of our documentation Markdown files. These end up on
+  https://backstage.io/docs. Just keep in mind that changes to the
   [`sidebars.json`](https://github.com/backstage/backstage/blob/master/microsite/sidebars.json)
   file may be needed as sections are added/removed.
 
@@ -169,10 +165,18 @@ are separated out into their own folder, see further down.
   packages, publish them, created a new app, and the run it. CI uses this for
   e2e-tests.
 
+- [`integration/`](https://github.com/backstage/backstage/tree/master/packages/integration) -
+  Common functionalities of integrations like GitHub, GitLab, etc.
+
 - [`storybook/`](https://github.com/backstage/backstage/tree/master/packages/storybook) -
   This folder contains only the storybook config. Stories are within the core
   package. The Backstage Storybook is found
   [here](https://backstage.io/storybook)
+
+- [`techdocs-common/`](https://github.com/backstage/backstage/tree/master/packages/techdocs-common) -
+  Common functionalities for TechDocs, to be shared between
+  [techdocs-backend](https://github.com/backstage/backstage/tree/master/plugins/techdocs-backend)
+  plugin and [techdocs-cli](https://github.com/backstage/techdocs-cli).
 
 - [`test-utils-core/`](https://github.com/backstage/backstage/tree/master/packages/test-utils-core)
 

@@ -1,5 +1,142 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.5.1
+
+### Patch Changes
+
+- 0ea002378: Fixing issues with templating and full URL's as `storePath`'s
+
+## 0.5.0
+
+### Minor Changes
+
+- ed6baab66: - Deprecating the `scaffolder.${provider}.token` auth duplication and favoring `integrations.${provider}` instead. If you receive deprecation warnings your config should change like the following:
+
+  ```yaml
+  scaffolder:
+    github:
+      token:
+        $env: GITHUB_TOKEN
+      visibility: public
+  ```
+
+  To something that looks like this:
+
+  ```yaml
+  integration:
+    github:
+      - host: github.com
+        token:
+          $env: GITHUB_TOKEN
+  scaffolder:
+    github:
+      visibility: public
+  ```
+
+  You can also configure multiple different hosts under the `integration` config like the following:
+
+  ```yaml
+  integration:
+    github:
+      - host: github.com
+        token:
+          $env: GITHUB_TOKEN
+      - host: ghe.mycompany.com
+        token:
+          $env: GITHUB_ENTERPRISE_TOKEN
+  ```
+
+  This of course is the case for all the providers respectively.
+
+  - Adding support for cross provider scaffolding, you can now create repositories in for example Bitbucket using a template residing in GitHub.
+
+  - Fix GitLab scaffolding so that it returns a `catalogInfoUrl` which automatically imports the project into the catalog.
+
+  - The `Store Path` field on the `scaffolder` frontend has now changed so that you require the full URL to the desired destination repository.
+
+  `backstage/new-repository` would become `https://github.com/backstage/new-repository` if provider was GitHub for example.
+
+### Patch Changes
+
+- Updated dependencies [def2307f3]
+- Updated dependencies [0b135e7e0]
+- Updated dependencies [294a70cab]
+- Updated dependencies [fa8ba330a]
+- Updated dependencies [0ea032763]
+- Updated dependencies [5345a1f98]
+- Updated dependencies [ed6baab66]
+- Updated dependencies [09a370426]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/backend-common@0.5.0
+  - @backstage/integration@0.3.0
+
+## 0.4.1
+
+### Patch Changes
+
+- 94fdf4955: Get rid of all usages of @octokit/types, and bump the rest of the octokit dependencies to the latest version
+- cc068c0d6: Bump the gitbeaker dependencies to 28.x.
+
+  To update your own installation, go through the `package.json` files of all of
+  your packages, and ensure that all dependencies on `@gitbeaker/node` or
+  `@gitbeaker/core` are at version `^28.0.2`. Then run `yarn install` at the root
+  of your repo.
+
+- 711ba55a2: Export all preparers and publishers properly
+- Updated dependencies [466354aaa]
+- Updated dependencies [f3b064e1c]
+- Updated dependencies [abbee6fff]
+- Updated dependencies [147fadcb9]
+  - @backstage/integration@0.2.0
+  - @backstage/catalog-model@0.6.1
+  - @backstage/backend-common@0.4.3
+
+## 0.4.0
+
+### Minor Changes
+
+- 5eb8c9b9e: Fix GitLab scaffolder publisher
+
+### Patch Changes
+
+- 7e3451700: bug(scaffolder): Ignore the .git folder when adding dot-files to the index
+
+## 0.3.7
+
+### Patch Changes
+
+- 37a5244ef: Add scaffolding support for Bitbucket Cloud and Server.
+- 00042e73c: Moving the Git actions to isomorphic-git instead of the node binding version of nodegit
+- 9efbc5585: Add config schema for Bitbucket scaffolder
+- Updated dependencies [5ecd50f8a]
+- Updated dependencies [00042e73c]
+- Updated dependencies [0829ff126]
+- Updated dependencies [036a84373]
+  - @backstage/backend-common@0.4.2
+  - @backstage/integration@0.1.5
+
+## 0.3.6
+
+### Patch Changes
+
+- 19554f6d6: Added GitHub Actions for Create React App, and allow better imports of files inside a module when they're exposed using `files` in `package.json`
+- 33a82a713: GitLab preparer uses the right token (primarily the same one as the publisher, falling back to the integrations token)
+- aed8f7f12: Clearer error message when preparer or publisher type can't be determined.
+
+## 0.3.5
+
+### Patch Changes
+
+- 94c65a9d4: Added configuration schema for the commonly used properties
+- Updated dependencies [c911061b7]
+- Updated dependencies [1d1c2860f]
+- Updated dependencies [0e6298f7e]
+- Updated dependencies [4eafdec4a]
+- Updated dependencies [ac3560b42]
+  - @backstage/catalog-model@0.6.0
+  - @backstage/backend-common@0.4.1
+
 ## 0.3.4
 
 ### Patch Changes

@@ -15,6 +15,7 @@
  */
 
 export * from './AlertDisplay';
+export * from './Avatar';
 export * from './Button';
 export * from './CodeSnippet';
 export * from './CopyTextButton';
@@ -37,3 +38,4 @@ export * from './TrendLine';
 export * from './WarningPanel';
 export * from './EmptyState';
 export * from './MarkdownContent';
+export * from './HeaderIconLinkRow';

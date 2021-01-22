@@ -21,4 +21,6 @@ export type {
   ConcreteRoute,
   MutableRouteRef,
 } from './types';
+export { FlatRoutes } from './FlatRoutes';
 export { createRouteRef } from './RouteRef';
+export { useRouteRef } from './hooks';

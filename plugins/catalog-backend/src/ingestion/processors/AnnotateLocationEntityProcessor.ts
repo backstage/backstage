@@ -14,20 +14,28 @@
  * limitations under the License.
  */
 
-import { Entity, LocationSpec } from '@backstage/catalog-model';
+import {
+  Entity,
+  LOCATION_ANNOTATION,
+  LocationSpec,
+  ORIGIN_LOCATION_ANNOTATION,
+} from '@backstage/catalog-model';
 import lodash from 'lodash';
-import { CatalogProcessor } from './types';
+import { CatalogProcessor, CatalogProcessorEmit } from './types';
 
 export class AnnotateLocationEntityProcessor implements CatalogProcessor {
   async preProcessEntity(
     entity: Entity,
     location: LocationSpec,
+    _: CatalogProcessorEmit,
+    originLocation: LocationSpec,
   ): Promise<Entity> {
     return lodash.merge(
       {
         metadata: {
           annotations: {
-            'backstage.io/managed-by-location': `${location.type}:${location.target}`,
+            [LOCATION_ANNOTATION]: `${location.type}:${location.target}`,
+            [ORIGIN_LOCATION_ANNOTATION]: `${originLocation.type}:${originLocation.target}`,
           },
         },
       },

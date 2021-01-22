@@ -46,7 +46,7 @@ export class PagerDutyClient implements PagerDutyApi {
   constructor(private readonly config: ClientApiConfig) {}
 
   async getServiceByIntegrationKey(integrationKey: string): Promise<Service[]> {
-    const params = `include[]=integrations&include[]=escalation_policies&query=${integrationKey}`;
+    const params = `time_zone=UTC&include[]=integrations&include[]=escalation_policies&query=${integrationKey}`;
     const url = `${await this.config.discoveryApi.getBaseUrl(
       'proxy',
     )}/pagerduty/services?${params}`;
@@ -56,7 +56,7 @@ export class PagerDutyClient implements PagerDutyApi {
   }
 
   async getIncidentsByServiceId(serviceId: string): Promise<Incident[]> {
-    const params = `statuses[]=triggered&statuses[]=acknowledged&service_ids[]=${serviceId}`;
+    const params = `time_zone=UTC&sort_by=created_at&statuses[]=triggered&statuses[]=acknowledged&service_ids[]=${serviceId}`;
     const url = `${await this.config.discoveryApi.getBaseUrl(
       'proxy',
     )}/pagerduty/incidents?${params}`;
@@ -66,7 +66,7 @@ export class PagerDutyClient implements PagerDutyApi {
   }
 
   async getOnCallByPolicyId(policyId: string): Promise<OnCall[]> {
-    const params = `include[]=users&escalation_policy_ids[]=${policyId}`;
+    const params = `time_zone=UTC&include[]=users&escalation_policy_ids[]=${policyId}`;
     const url = `${await this.config.discoveryApi.getBaseUrl(
       'proxy',
     )}/pagerduty/oncalls?${params}`;

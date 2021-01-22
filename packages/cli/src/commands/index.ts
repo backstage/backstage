@@ -45,9 +45,12 @@ export function registerCommands(program: CommanderStatic) {
     .action(lazy(() => import('./backend/build').then(m => m.default)));
 
   program
-    .command('backend:__experimental__bundle__', { hidden: true })
-    .description('Bundle all backend packages into dist-workspace')
-    .option('--build', 'Build packages before packing them into the image')
+    .command('backend:bundle')
+    .description('Bundle the backend into a deployment archive')
+    .option(
+      '--build-dependencies',
+      'Build all local package dependencies before bundling the backend',
+    )
     .action(lazy(() => import('./backend/bundle').then(m => m.default)));
 
   program
@@ -202,6 +205,13 @@ export function registerCommands(program: CommanderStatic) {
     .command('build-workspace <workspace-dir> ...<packages>')
     .description('Builds a temporary dist workspace from the provided packages')
     .action(lazy(() => import('./buildWorkspace').then(m => m.default)));
+
+  program
+    .command('create-github-app <github-org>', { hidden: true })
+    .description(
+      'Create new GitHub App in your organization. This command is experimental and may change in the future.',
+    )
+    .action(lazy(() => import('./create-github-app').then(m => m.default)));
 }
 
 // Wraps an action function so that it always exits and handles errors
@@ -212,6 +222,7 @@ function lazy(
     try {
       const actionFunc = await getActionFunc();
       await actionFunc(...args);
+
       process.exit(0);
     } catch (error) {
       exitWithError(error);

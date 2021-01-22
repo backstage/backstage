@@ -15,14 +15,13 @@
  */
 import type { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { Logger } from 'winston';
-import { RemoteProtocol } from '../types';
 
 export type PreparerOptions = {
-  logger: Logger;
   workingDirectory?: string;
+  logger: Logger;
 };
 
-export type PreparerBase = {
+export interface PreparerBase {
   /**
    * Given an Entity definition from the Service Catalog, go and prepare a directory
    * with contents from the remote location in temporary storage and return the path
@@ -30,11 +29,11 @@ export type PreparerBase = {
    */
   prepare(
     template: TemplateEntityV1alpha1,
-    opts: PreparerOptions,
+    opts?: PreparerOptions,
   ): Promise<string>;
-};
+}
 
 export type PreparerBuilder = {
-  register(protocol: RemoteProtocol, preparer: PreparerBase): void;
-  get(template: TemplateEntityV1alpha1): PreparerBase;
+  register(host: string, preparer: PreparerBase): void;
+  get(url: string): PreparerBase;
 };

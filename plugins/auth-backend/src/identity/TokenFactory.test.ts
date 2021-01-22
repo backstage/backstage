@@ -14,42 +14,12 @@
  * limitations under the License.
  */
 
-import { utc } from 'moment';
+import { MemoryKeyStore } from './MemoryKeyStore';
 import { TokenFactory } from './TokenFactory';
 import { getVoidLogger } from '@backstage/backend-common';
-import { KeyStore, AnyJWK, StoredKey } from './types';
 import { JWKS, JSONWebKey, JWT } from 'jose';
 
 const logger = getVoidLogger();
-
-class MemoryKeyStore implements KeyStore {
-  private readonly keys = new Map<
-    string,
-    { createdAt: moment.Moment; key: string }
-  >();
-
-  async addKey(key: AnyJWK): Promise<void> {
-    this.keys.set(key.kid, {
-      createdAt: utc(),
-      key: JSON.stringify(key),
-    });
-  }
-
-  async removeKeys(kids: string[]): Promise<void> {
-    for (const kid of kids) {
-      this.keys.delete(kid);
-    }
-  }
-
-  async listKeys(): Promise<{ items: StoredKey[] }> {
-    return {
-      items: Array.from(this.keys).map(([, { createdAt, key: keyStr }]) => ({
-        createdAt,
-        key: JSON.parse(keyStr),
-      })),
-    };
-  }
-}
 
 function jwtKid(jwt: string): string {
   const { header } = JWT.decode(jwt, { complete: true }) as {
@@ -87,7 +57,7 @@ describe('TokenFactory', () => {
       iat: expect.any(Number),
       exp: expect.any(Number),
     });
-    expect(payload.exp).toBe(payload.iat + keyDurationSeconds * 1000);
+    expect(payload.exp).toBe(payload.iat + keyDurationSeconds);
   });
 
   it('should generate new signing keys when the current one expires', async () => {

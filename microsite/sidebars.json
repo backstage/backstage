@@ -34,7 +34,13 @@
         ]
       }
     ],
+    "CLI": ["cli/index", "cli/commands"],
     "Core Features": [
+      {
+        "type": "subcategory",
+        "label": "Kubernetes",
+        "ids": ["features/kubernetes/overview"]
+      },
       {
         "type": "subcategory",
         "label": "Software Catalog",
@@ -49,6 +55,7 @@
           "features/software-catalog/well-known-relations",
           "features/software-catalog/extending-the-model",
           "features/software-catalog/external-integrations",
+          "features/software-catalog/kubernetes-in-backstage",
           "features/software-catalog/software-catalog-api"
         ]
       },
@@ -67,6 +74,14 @@
       },
       {
         "type": "subcategory",
+        "label": "Backstage Search",
+        "ids": [
+          "features/search/search-overview",
+          "features/search/architecture"
+        ]
+      },
+      {
+        "type": "subcategory",
         "label": "TechDocs",
         "ids": [
           "features/techdocs/techdocs-overview",
@@ -74,6 +89,10 @@
           "features/techdocs/concepts",
           "features/techdocs/architecture",
           "features/techdocs/creating-and-publishing",
+          "features/techdocs/configuration",
+          "features/techdocs/using-cloud-storage",
+          "features/techdocs/configuring-ci-cd",
+          "features/techdocs/how-to-guides",
           "features/techdocs/troubleshooting",
           "features/techdocs/faqs"
         ]
@@ -86,6 +105,7 @@
       "plugins/plugin-development",
       "plugins/structure-of-a-plugin",
       "plugins/integrating-plugin-into-service-catalog",
+      "plugins/composability",
       {
         "type": "subcategory",
         "label": "Backends and APIs",
@@ -163,10 +183,12 @@
       "architecture-decisions/adrs-adr006",
       "architecture-decisions/adrs-adr007",
       "architecture-decisions/adrs-adr008",
-      "architecture-decisions/adrs-adr009"
+      "architecture-decisions/adrs-adr009",
+      "architecture-decisions/adrs-adr010"
     ],
     "Contribute": ["../CONTRIBUTING"],
     "Support": ["support/support", "support/project-structure"],
+    "Glossary": ["glossary"],
     "FAQ": ["FAQ"]
   }
 }

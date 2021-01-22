@@ -16,7 +16,7 @@
 
 import fs from 'fs-extra';
 import { resolve as resolvePath, dirname, isAbsolute } from 'path';
-import { AppConfig, JsonObject } from '@backstage/config';
+import { AppConfig, JsonObject, JsonValue } from '@backstage/config';
 import { readConfigFile, readEnvConfig, readSecret } from './lib';
 
 export type LoadConfigOptions = {
@@ -49,7 +49,7 @@ class Context {
   async readSecret(
     _path: string,
     desc: JsonObject,
-  ): Promise<string | undefined> {
+  ): Promise<JsonValue | undefined> {
     return readSecret(desc, this);
   }
 }

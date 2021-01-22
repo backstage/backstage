@@ -142,6 +142,7 @@ export function createApp(options?: AppOptions) {
     themes,
     configLoader,
     defaultApis,
+    bindRoutes: options?.bindRoutes,
   });
 
   app.verify();

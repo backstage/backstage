@@ -45,7 +45,9 @@ export type User = {
 export type Team = {
   slug: string;
   combinedSlug: string;
+  name?: string;
   description?: string;
+  avatarUrl?: string;
   parentTeam?: Team;
   members: Connection<User>;
 };
@@ -137,6 +139,9 @@ export async function getOrganizationTeams(
           nodes {
             slug
             combinedSlug
+            name
+            description
+            avatarUrl
             parentTeam { slug }
             members(first: 100, membership: IMMEDIATE) {
               pageInfo { hasNextPage }
@@ -162,12 +167,23 @@ export async function getOrganizationTeams(
       },
       spec: {
         type: 'team',
+        profile: {},
         children: [],
       },
     };
 
-    if (team.description) entity.metadata.description = team.description;
-    if (team.parentTeam) entity.spec.parent = team.parentTeam.slug;
+    if (team.description) {
+      entity.metadata.description = team.description;
+    }
+    if (team.name) {
+      entity.spec.profile!.displayName = team.name;
+    }
+    if (team.avatarUrl) {
+      entity.spec.profile!.picture = team.avatarUrl;
+    }
+    if (team.parentTeam) {
+      entity.spec.parent = team.parentTeam.slug;
+    }
 
     const memberNames: string[] = [];
     groupMemberUsers.set(team.slug, memberNames);

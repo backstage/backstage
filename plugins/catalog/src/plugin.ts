@@ -21,6 +21,7 @@ import {
   createPlugin,
   discoveryApiRef,
 } from '@backstage/core';
+import { catalogRouteRef, entityRouteRef } from './routes';
 
 export const catalogApiRef = createApiRef<CatalogApi>({
   id: 'plugin.catalog.service',
@@ -37,4 +38,8 @@ export const plugin = createPlugin({
       factory: ({ discoveryApi }) => new CatalogClient({ discoveryApi }),
     }),
   ],
+  routes: {
+    catalogIndex: catalogRouteRef,
+    catalogEntity: entityRouteRef,
+  },
 });

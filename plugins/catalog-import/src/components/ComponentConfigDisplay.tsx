@@ -33,13 +33,13 @@ import {
   StructuredMetadataTable,
   useApi,
 } from '@backstage/core';
-import parseGitUri from 'git-url-parse';
 import { PartialEntity } from '../util/types';
 import { generatePath, resolvePath } from 'react-router';
 import { entityRoute, entityRouteParams } from '@backstage/plugin-catalog';
 import { Entity } from '@backstage/catalog-model';
 import { Link as RouterLink } from 'react-router-dom';
 import * as YAML from 'yaml';
+import { urlType } from '../util/urls';
 
 const getEntityCatalogPath = ({
   entity,
@@ -74,14 +74,14 @@ const ComponentConfigDisplay = ({
   savePRLink,
   catalogRouteRef,
 }: Props) => {
-  const [errorOccured, setErrorOccured] = useState(false);
+  const [errorOccurred, setErrorOccurred] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const errorApi = useApi(errorApiRef);
   const { submitPrToRepo, addLocation } = useGithubRepos();
   const onNext = useCallback(async () => {
     try {
       setSubmitting(true);
-      if (!parseGitUri(configFile.location).filepathtype) {
+      if (urlType(configFile.location) === 'tree') {
         const result = await submitPrToRepo(configFile);
         savePRLink(result.link);
         setSubmitting(false);
@@ -92,7 +92,7 @@ const ComponentConfigDisplay = ({
         nextStep();
       }
     } catch (e) {
-      setErrorOccured(true);
+      setErrorOccurred(true);
       setSubmitting(false);
       errorApi.post(e);
     }
@@ -100,7 +100,7 @@ const ComponentConfigDisplay = ({
 
   return (
     <Grid container direction="column" spacing={1}>
-      {!parseGitUri(configFile.location).filepathtype ? (
+      {urlType(configFile.location) === 'tree' ? (
         <Typography>
           Following config object will be submitted in a pull request to the
           repository{' '}
@@ -127,7 +127,7 @@ const ComponentConfigDisplay = ({
       )}
 
       <Grid item>
-        {!parseGitUri(configFile.location).filepathtype ? (
+        {urlType(configFile.location) === 'tree' ? (
           <pre>{YAML.stringify(configFile.config)}</pre>
         ) : (
           <List>
@@ -178,7 +178,7 @@ const ComponentConfigDisplay = ({
           >
             Next
           </Button>
-          {errorOccured ? (
+          {errorOccurred ? (
             <Button
               style={{ marginLeft: '8px' }}
               variant="outlined"

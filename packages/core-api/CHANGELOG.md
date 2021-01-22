@@ -1,5 +1,34 @@
 # @backstage/core-api
 
+## 0.2.9
+
+### Patch Changes
+
+- ab0892358: Remove test dependencies from production package list
+
+## 0.2.8
+
+### Patch Changes
+
+- a08c32ced: Add `FlatRoutes` component to replace the top-level `Routes` component from `react-router` within apps, removing the need for manually appending `/*` to paths or sorting routes.
+- 86c3c652a: Deprecate `RouteRef` path parameter and member, and remove deprecated `routeRef.createSubRouteRef`.
+- 27f2af935: Delay auth loginPopup close to avoid race condition with callers of authFlowHelpers.
+
+## 0.2.7
+
+### Patch Changes
+
+- d681db2b5: Fix for GitHub and SAML auth not properly updating session state when already logged in.
+- 1dc445e89: Introduce new plugin extension API
+- Updated dependencies [1dc445e89]
+  - @backstage/test-utils@0.1.6
+
+## 0.2.6
+
+### Patch Changes
+
+- 7dd2ef7d1: Use auth provider ID to create unique session storage keys for GitHub and SAML Auth.
+
 ## 0.2.5
 
 ### Patch Changes

@@ -17,6 +17,7 @@ import React, { useEffect } from 'react';
 import { useWorkflowRuns } from '../useWorkflowRuns';
 import { WorkflowRun, WorkflowRunsTable } from '../WorkflowRunsTable';
 import { Entity } from '@backstage/catalog-model';
+import { readGitHubIntegrationConfigs } from '@backstage/integration';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import {
   Link,
@@ -28,6 +29,7 @@ import {
 import {
   InfoCard,
   StructuredMetadataTable,
+  configApiRef,
   errorApiRef,
   useApi,
 } from '@backstage/core';
@@ -84,11 +86,17 @@ export const LatestWorkflowRunCard = ({
   // Display the card full height suitable for
   variant,
 }: Props) => {
+  const config = useApi(configApiRef);
   const errorApi = useApi(errorApiRef);
+  // TODO: Get github hostname from metadata annotation
+  const hostname = readGitHubIntegrationConfigs(
+    config.getOptionalConfigArray('integrations.github') ?? [],
+  )[0].host;
   const [owner, repo] = (
     entity?.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION] ?? '/'
   ).split('/');
   const [{ runs, loading, error }] = useWorkflowRuns({
+    hostname,
     owner,
     repo,
     branch,

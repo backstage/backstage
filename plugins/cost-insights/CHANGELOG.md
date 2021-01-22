@@ -1,5 +1,55 @@
 # @backstage/plugin-cost-insights
 
+## 0.5.7
+
+### Patch Changes
+
+- 8c2437c15: bug(cost-insights): Remove entity count when none present
+- Updated dependencies [efd6ef753]
+- Updated dependencies [a187b8ad0]
+  - @backstage/core@0.5.0
+
+## 0.5.6
+
+### Patch Changes
+
+- 9e9504ce4: Minor wording change in UI
+
+## 0.5.5
+
+### Patch Changes
+
+- ab0892358: Remove test dependencies from production package list
+
+## 0.5.4
+
+### Patch Changes
+
+- 3fca9adb9: Fix links in sample instructions
+- Updated dependencies [a08c32ced]
+  - @backstage/core@0.4.3
+
+## 0.5.3
+
+### Patch Changes
+
+- c02defd57: Make alert url field optional
+
+## 0.5.2
+
+### Patch Changes
+
+- 48c305e69: pin all projects selection to the top of menu list
+- Updated dependencies [8ef71ed32]
+  - @backstage/core@0.4.1
+
+## 0.5.1
+
+### Patch Changes
+
+- 64c9fd84c: fix breakdown sorting
+- Fix bar chart legend label bug for unlabeled dataflow alerts
+
 ## 0.5.0
 
 ### Minor Changes

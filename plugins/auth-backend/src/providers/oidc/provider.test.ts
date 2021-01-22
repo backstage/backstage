@@ -71,6 +71,7 @@ describe('OidcAuthProvider', () => {
     const jwt = {
       sub: 'alice',
       iss: 'https://oidc.test',
+      iat: Date.now(),
       aud: clientMetadata.clientId,
       exp: Date.now() + 10000,
     };

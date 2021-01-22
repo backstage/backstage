@@ -16,6 +16,7 @@
 
 import { createApiRef } from '@backstage/core';
 import { EntityName } from '@backstage/catalog-model';
+import { TechDocsMetadata } from './types';
 
 export const techdocsStorageApiRef = createApiRef<TechDocsStorageApi>({
   id: 'plugin.techdocs.storageservice',
@@ -33,7 +34,7 @@ export interface TechDocsStorage {
 }
 
 export interface TechDocs {
-  getTechDocsMetadata(entityId: EntityName): Promise<string>;
+  getTechDocsMetadata(entityId: EntityName): Promise<TechDocsMetadata>;
   getEntityMetadata(entityId: EntityName): Promise<string>;
 }
 

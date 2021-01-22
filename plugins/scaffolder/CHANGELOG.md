@@ -1,5 +1,99 @@
 # @backstage/plugin-scaffolder
 
+## 0.4.0
+
+### Minor Changes
+
+- ed6baab66: - Deprecating the `scaffolder.${provider}.token` auth duplication and favoring `integrations.${provider}` instead. If you receive deprecation warnings your config should change like the following:
+
+  ```yaml
+  scaffolder:
+    github:
+      token:
+        $env: GITHUB_TOKEN
+      visibility: public
+  ```
+
+  To something that looks like this:
+
+  ```yaml
+  integration:
+    github:
+      - host: github.com
+        token:
+          $env: GITHUB_TOKEN
+  scaffolder:
+    github:
+      visibility: public
+  ```
+
+  You can also configure multiple different hosts under the `integration` config like the following:
+
+  ```yaml
+  integration:
+    github:
+      - host: github.com
+        token:
+          $env: GITHUB_TOKEN
+      - host: ghe.mycompany.com
+        token:
+          $env: GITHUB_ENTERPRISE_TOKEN
+  ```
+
+  This of course is the case for all the providers respectively.
+
+  - Adding support for cross provider scaffolding, you can now create repositories in for example Bitbucket using a template residing in GitHub.
+
+  - Fix GitLab scaffolding so that it returns a `catalogInfoUrl` which automatically imports the project into the catalog.
+
+  - The `Store Path` field on the `scaffolder` frontend has now changed so that you require the full URL to the desired destination repository.
+
+  `backstage/new-repository` would become `https://github.com/backstage/new-repository` if provider was GitHub for example.
+
+### Patch Changes
+
+- Updated dependencies [def2307f3]
+- Updated dependencies [efd6ef753]
+- Updated dependencies [593632f07]
+- Updated dependencies [33846acfc]
+- Updated dependencies [a187b8ad0]
+- Updated dependencies [f04db53d7]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/core@0.5.0
+  - @backstage/plugin-catalog@0.2.12
+
+## 0.3.6
+
+### Patch Changes
+
+- 8e083f41f: Bug fix: User can retry creating a new component if an error occurs, without having to reload the page.
+- 947d3c269: You can now maximize the logs into full-screen by clicking the button under each step of the job
+- Updated dependencies [9c09a364f]
+  - @backstage/plugin-catalog@0.2.10
+
+## 0.3.5
+
+### Patch Changes
+
+- 19554f6d6: Added GitHub Actions for Create React App, and allow better imports of files inside a module when they're exposed using `files` in `package.json`
+- Updated dependencies [1dc445e89]
+- Updated dependencies [342270e4d]
+  - @backstage/core@0.4.2
+  - @backstage/plugin-catalog@0.2.8
+
+## 0.3.4
+
+### Patch Changes
+
+- Updated dependencies [c911061b7]
+- Updated dependencies [8ef71ed32]
+- Updated dependencies [0e6298f7e]
+- Updated dependencies [ac3560b42]
+  - @backstage/catalog-model@0.6.0
+  - @backstage/core@0.4.1
+  - @backstage/plugin-catalog@0.2.7
+
 ## 0.3.3
 
 ### Patch Changes

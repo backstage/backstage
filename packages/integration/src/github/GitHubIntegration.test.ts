@@ -20,31 +20,33 @@ import { GitHubIntegration } from './GitHubIntegration';
 describe('GitHubIntegration', () => {
   it('has a working factory', () => {
     const integrations = GitHubIntegration.factory({
-      config: ConfigReader.fromConfigs([
-        {
-          context: '',
-          data: {
-            integrations: {
-              github: [
-                {
-                  host: 'h.com',
-                  apiBaseUrl: 'a',
-                  rawBaseUrl: 'r',
-                  token: 't',
-                },
-              ],
+      config: new ConfigReader({
+        integrations: {
+          github: [
+            {
+              host: 'h.com',
+              apiBaseUrl: 'a',
+              rawBaseUrl: 'r',
+              token: 't',
             },
-          },
+          ],
         },
-      ]),
+      }),
     });
-    expect(integrations.length).toBe(2); // including default
-    expect(integrations[0].predicate(new URL('https://h.com/a'))).toBe(true);
+    expect(integrations.list().length).toBe(2); // including default
+    expect(integrations.list()[0].config.host).toBe('h.com');
+    expect(integrations.list()[1].config.host).toBe('github.com');
   });
 
   it('returns the basics', () => {
-    const integration = new GitHubIntegration({ host: 'h.com' } as any);
+    const integration = new GitHubIntegration({
+      host: 'h.com',
+      apiBaseUrl: 'a',
+      rawBaseUrl: 'r',
+      token: 't',
+    });
     expect(integration.type).toBe('github');
     expect(integration.title).toBe('h.com');
+    expect(integration.config.host).toBe('h.com');
   });
 });

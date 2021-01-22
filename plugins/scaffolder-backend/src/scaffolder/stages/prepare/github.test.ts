@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-const mocks = {
-  Clone: { clone: jest.fn() },
-  CheckoutOptions: jest.fn(() => {}),
-};
-jest.doMock('nodegit', () => mocks);
 jest.doMock('fs-extra', () => ({
   promises: {
     mkdtemp: jest.fn(dir => `${dir}-static`),
@@ -30,10 +25,17 @@ import {
   TemplateEntityV1alpha1,
   LOCATION_ANNOTATION,
 } from '@backstage/catalog-model';
-import { getVoidLogger } from '@backstage/backend-common';
+import { getVoidLogger, Git } from '@backstage/backend-common';
 
 describe('GitHubPreparer', () => {
   let mockEntity: TemplateEntityV1alpha1;
+  const mockGitClient = {
+    clone: jest.fn(),
+  };
+  const logger = getVoidLogger();
+
+  jest.spyOn(Git, 'fromAuth').mockReturnValue(mockGitClient as any);
+
   beforeEach(() => {
     jest.clearAllMocks();
     mockEntity = {
@@ -75,50 +77,56 @@ describe('GitHubPreparer', () => {
       },
     };
   });
-  it('calls the clone command with the correct arguments for a repository', async () => {
-    const preparer = new GithubPreparer();
-    await preparer.prepare(mockEntity, { logger: getVoidLogger() });
-    expect(mocks.Clone.clone).toHaveBeenNthCalledWith(
-      1,
-      'https://github.com/benjdlambert/backstage-graphql-template',
-      expect.any(String),
-      {
-        checkoutBranch: 'master',
-      },
-    );
+
+  const preparer = GithubPreparer.fromConfig({
+    host: 'github.com',
+    token: 'fake-token',
   });
-  it('calls the clone command with the correct arguments for a repository when no path is provided', async () => {
-    const preparer = new GithubPreparer();
-    delete mockEntity.spec.path;
+
+  it('calls the clone command with the correct arguments for a repository', async () => {
     await preparer.prepare(mockEntity, { logger: getVoidLogger() });
-    expect(mocks.Clone.clone).toHaveBeenNthCalledWith(
-      1,
-      'https://github.com/benjdlambert/backstage-graphql-template',
-      expect.any(String),
-      {
-        checkoutBranch: 'master',
-      },
-    );
+
+    expect(mockGitClient.clone).toHaveBeenCalledWith({
+      url: 'https://github.com/benjdlambert/backstage-graphql-template',
+      dir: expect.any(String),
+    });
+  });
+
+  it('calls the clone command with the correct arguments for a repository when no path is provided', async () => {
+    delete mockEntity.spec.path;
+
+    await preparer.prepare(mockEntity, { logger: getVoidLogger() });
+
+    expect(mockGitClient.clone).toHaveBeenCalledWith({
+      url: 'https://github.com/benjdlambert/backstage-graphql-template',
+      dir: expect.any(String),
+    });
   });
 
   it('return the temp directory with the path to the folder if it is specified', async () => {
-    const preparer = new GithubPreparer();
+    const preparer = GithubPreparer.fromConfig({
+      host: 'github.com',
+      token: 'fake-token',
+    });
     mockEntity.spec.path = './template/test/1/2/3';
     const response = await preparer.prepare(mockEntity, {
       logger: getVoidLogger(),
     });
-
     expect(response.split('\\').join('/')).toMatch(
       /\/template\/test\/1\/2\/3$/,
     );
   });
 
   it('return the working directory with the path to the folder if it is specified', async () => {
-    const preparer = new GithubPreparer();
+    const preparer = GithubPreparer.fromConfig({
+      host: 'github.com',
+      token: 'fake-token',
+    });
+
     mockEntity.spec.path = './template/test/1/2/3';
     const response = await preparer.prepare(mockEntity, {
-      logger: getVoidLogger(),
       workingDirectory: '/workDir',
+      logger: getVoidLogger(),
     });
 
     expect(response.split('\\').join('/')).toMatch(
@@ -126,21 +134,13 @@ describe('GitHubPreparer', () => {
     );
   });
 
-  it('calls the clone command with the token when provided', async () => {
-    const preparer = new GithubPreparer({ token: 'abc' });
-    await preparer.prepare(mockEntity, { logger: getVoidLogger() });
-    expect(mocks.Clone.clone).toHaveBeenNthCalledWith(
-      1,
-      'https://github.com/benjdlambert/backstage-graphql-template',
-      expect.any(String),
-      {
-        checkoutBranch: 'master',
-        fetchOpts: {
-          callbacks: {
-            credentials: expect.any(Function),
-          },
-        },
-      },
-    );
+  it('calls the clone command with token', async () => {
+    await preparer.prepare(mockEntity, { logger });
+
+    expect(Git.fromAuth).toHaveBeenCalledWith({
+      logger,
+      username: 'fake-token',
+      password: 'x-oauth-basic',
+    });
   });
 });

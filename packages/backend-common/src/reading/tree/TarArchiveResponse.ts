@@ -41,6 +41,7 @@ export class TarArchiveResponse implements ReadTreeResponse {
     private readonly stream: Readable,
     private readonly subPath: string,
     private readonly workDir: string,
+    public readonly etag: string,
     private readonly filter?: (path: string) => boolean,
   ) {
     if (subPath) {
@@ -53,6 +54,8 @@ export class TarArchiveResponse implements ReadTreeResponse {
         );
       }
     }
+
+    this.etag = etag;
   }
 
   // Make sure the input stream is only read once

@@ -15,4 +15,19 @@
  */
 
 export { createPlugin } from './Plugin';
-export * from './types';
+export type {
+  BackstagePlugin,
+  Extension,
+  FeatureFlagOutput,
+  FeatureFlagsHooks,
+  LegacyRedirectRouteOutput,
+  LegacyRouteOutput,
+  PluginConfig,
+  PluginHooks,
+  PluginOutput,
+  RedirectRouteOutput,
+  RouteOptions,
+  RouteOutput,
+  RoutePath,
+  RouterHooks,
+} from './types';

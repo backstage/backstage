@@ -36,7 +36,6 @@ import { CatalogTable } from '../CatalogTable/CatalogTable';
 import { ResultsFilter } from '../ResultsFilter/ResultsFilter';
 import CatalogLayout from './CatalogLayout';
 import { CatalogTabs, LabeledComponentType } from './CatalogTabs';
-import { WelcomeBanner } from './WelcomeBanner';
 import { useOwnUser } from '../useOwnUser';
 import { isOwnerOf } from '../isOwnerOf';
 
@@ -157,7 +156,6 @@ const CatalogPageContents = () => {
         onChange={({ label }) => setSelectedTab(label)}
       />
       <Content>
-        <WelcomeBanner />
         <ContentHeader title={selectedTab ?? ''}>
           <Button
             component={RouterLink}

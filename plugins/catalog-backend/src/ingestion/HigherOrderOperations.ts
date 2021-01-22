@@ -186,14 +186,12 @@ export class HigherOrderOperations implements HigherOrderOperation {
       throw e;
     }
 
-    this.logger.info(`Posting update success markers`);
+    this.logger.debug(`Posting update success markers`);
 
-    for (const entity of readerOutput.entities) {
-      await this.locationsCatalog.logUpdateSuccess(
-        location.id,
-        entity.entity.metadata.name,
-      );
-    }
+    await this.locationsCatalog.logUpdateSuccess(
+      location.id,
+      readerOutput.entities.map(e => e.entity.metadata.name),
+    );
 
     this.logger.info(
       `Wrote ${readerOutput.entities.length} entities from location ${

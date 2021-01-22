@@ -1,5 +1,102 @@
 # @backstage/plugin-catalog
 
+## 0.2.13
+
+### Patch Changes
+
+- a4e636c8f: Hide the kind of owners in the about card if it's the default kind (group)
+- 099c5cf4f: Show the parent component in the about card (via partOf relationship)
+- a08db734c: Remove the `WelcomeBanner` that links to a plugin that is not longer wired into Backstage instances
+
+## 0.2.12
+
+### Patch Changes
+
+- 593632f07: Derive the list of to-delete entities in the `UnregisterEntityDialog` from the `backstage.io/managed-by-origin-location` annotation.
+  The dialog also rejects deleting entities that are created by the `bootstrap:bootstrap` location.
+- 33846acfc: Display the owner, system, and domain as links to the entity pages in the about card.
+  Only display fields in the about card that are applicable to the entity kind.
+- f04db53d7: Display systems in catalog table and make both owner and system link to the entity pages.
+  The owner field is now taken from the relations of the entity instead of its spec.
+- Updated dependencies [def2307f3]
+- Updated dependencies [efd6ef753]
+- Updated dependencies [a187b8ad0]
+- Updated dependencies [ed6baab66]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/core@0.5.0
+  - @backstage/plugin-scaffolder@0.4.0
+  - @backstage/catalog-client@0.3.5
+
+## 0.2.11
+
+### Patch Changes
+
+- c00488983: Enable catalog table actions for all location types.
+
+  The edit button has had support for other providers for a while and there is
+  no specific reason the View in GitHub cannot work for all locations. This
+  change also replaces the GitHub icon with the OpenInNew icon.
+
+- Updated dependencies [f3b064e1c]
+- Updated dependencies [265a7ab30]
+- Updated dependencies [abbee6fff]
+- Updated dependencies [147fadcb9]
+  - @backstage/catalog-model@0.6.1
+  - @backstage/core@0.4.4
+
+## 0.2.10
+
+### Patch Changes
+
+- 9c09a364f: Remove the unused dependency to `@backstage/plugin-techdocs`.
+- Updated dependencies [8e083f41f]
+- Updated dependencies [947d3c269]
+  - @backstage/plugin-scaffolder@0.3.6
+
+## 0.2.9
+
+### Patch Changes
+
+- 7e0b8cac5: Add `CatalogIndexPage` and `CatalogEntityPage`, two new extensions that replace the existing `Router` component.
+
+  Add `EntityLayout` to replace `EntityPageLayout`, using children instead of an element property, and allowing for collection of all `RouteRef` mount points used within tabs.
+
+  Add `EntitySwitch` to be used to select components based on entity data, along with accompanying `isKind`, `isNamespace`, and `isComponentType` filters.
+
+- 87c0c53c2: Add new `EntityProvider` component, which can be used to provide an entity for the `useEntity` hook.
+- Updated dependencies [a08c32ced]
+- Updated dependencies [359f9d2d8]
+  - @backstage/core@0.4.3
+  - @backstage/plugin-techdocs@0.5.2
+
+## 0.2.8
+
+### Patch Changes
+
+- 342270e4d: Create AboutCard in core and use it in pagerduty and catalog plugin
+- Updated dependencies [19554f6d6]
+- Updated dependencies [1dc445e89]
+- Updated dependencies [342270e4d]
+  - @backstage/plugin-scaffolder@0.3.5
+  - @backstage/core@0.4.2
+  - @backstage/plugin-techdocs@0.5.1
+
+## 0.2.7
+
+### Patch Changes
+
+- Updated dependencies [c911061b7]
+- Updated dependencies [dae4f3983]
+- Updated dependencies [8ef71ed32]
+- Updated dependencies [0e6298f7e]
+- Updated dependencies [ac3560b42]
+  - @backstage/catalog-model@0.6.0
+  - @backstage/plugin-techdocs@0.5.0
+  - @backstage/core@0.4.1
+  - @backstage/catalog-client@0.3.4
+  - @backstage/plugin-scaffolder@0.3.4
+
 ## 0.2.6
 
 ### Patch Changes

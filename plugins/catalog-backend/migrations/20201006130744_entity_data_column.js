@@ -40,10 +40,7 @@ exports.up = async function up(knex) {
     table.dropColumn('spec');
   });
 
-  // SQLite does not support ALTER COLUMN. Note that we do not use the try/
-  // catch method as in other migrations, because if the transaction is
-  // partially failed, it will further mess up the already messed-up
-  // statement below this.
+  // SQLite does not support ALTER COLUMN.
   if (knex.client.config.client !== 'sqlite3') {
     await knex.schema.alterTable('entities', table => {
       table.text('data').notNullable().alter();

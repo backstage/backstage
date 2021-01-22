@@ -54,7 +54,7 @@ const DEFAULT_CSP = {
   'frame-ancestors': ["'self'"],
   'img-src': ["'self'", 'data:'],
   'object-src': ["'none'"],
-  'script-src': ["'self'"],
+  'script-src': ["'self'", "'unsafe-eval'"],
   'script-src-attr': ["'none'"],
   'style-src': ["'self'", 'https:', "'unsafe-inline'"],
   'upgrade-insecure-requests': [] as string[],
@@ -152,7 +152,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     return this;
   }
 
-  start(): Promise<http.Server> {
+  async start(): Promise<http.Server> {
     const app = express();
     const {
       port,
@@ -175,14 +175,14 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     app.use(notFoundHandler());
     app.use(errorHandler());
 
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       app.on('error', e => {
         logger.error(`Failed to start up on port ${port}, ${e}`);
         reject(e);
       });
 
       const server: http.Server = httpsSettings
-        ? createHttpsServer(app, httpsSettings, logger)
+        ? await createHttpsServer(app, httpsSettings, logger)
         : createHttpServer(app, logger);
 
       if (this.webSockets.length) {

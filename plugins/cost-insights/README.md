@@ -110,4 +110,4 @@ The CostInsightsApi `getAlerts` method may return any type of alert or recommend
 
 The Alert type includes an `element` field to supply the JSX Element that will be rendered in the Cost Insights "Action Items" section; we recommend using Backstage's [InfoCard](https://backstage.io/storybook/?path=/story/layout-information-card--default) and [Recharts](http://recharts.org/en-US/) to show actionable visualizations.
 
-The Alert `url` should link to documentation or instructions for resolving the alert.
+The Alert `url` should link to documentation or instructions for resolving the alert. This may be omitted if no external link is needed.
