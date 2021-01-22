@@ -91,12 +91,14 @@ techdocs:
       # (Required) Azure Blob Storage Container Name
       containerName: 'techdocs-storage'
 
-      # (Optional) An API key is required to write to a storage container.
-      # If not set, environment variables will be used to authenticate.
-      #https://docs.microsoft.com/en-us/azure/storage/common/storage-auth?toc=/azure/storage/blobs/toc.json
+      # (Required) An account name is required to write to a storage blob container.
+      # https://docs.microsoft.com/pt-br/rest/api/storageservices/authorize-with-shared-key
       credentials:
-        account:
-          $env: TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT
+        accountName:
+          $env: TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_NAME
+        # (Optional) An account key is required to write to a storage container.
+        # If missing,AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET environment variable will be used.
+        # https://docs.microsoft.com/en-us/azure/storage/common/storage-auth?toc=/azure/storage/blobs/toc.json
         accountKey:
           $env: TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_KEY
 ```

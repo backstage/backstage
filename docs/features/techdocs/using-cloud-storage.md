@@ -212,33 +212,17 @@ techdocs:
     type: 'azureBlobStorage'
 ```
 
-**2. Service account credentials**
+**2. Create an Azure Blob Storage Container**
 
-To get credentials, access the Azure Portal and go to "Settings > Access Keys",
-and get your Storage account name and Primary Key.
+Create a dedicated container for TechDocs sites.
+[Refer to the official documentation](https://docs.microsoft.com/pt-br/azure/storage/blobs/storage-quickstart-blobs-portal).
 
-```yaml
-techdocs:
-  publisher:
-    type: 'azureBlobStorage'
-    azureBlobStorage:
-      credentials:
-        account:
-          $env: TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT
-        accountKey:
-          $env: TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_KEY
-```
+TechDocs will publish documentation to this container and will fetch files from
+here to serve documentation in Backstage. Note that the container names are
+globally unique.
 
-**3. Azure Blob Storage Container**
-
-Create a dedicated container for TechDocs sites. techdocs-backend will publish
-documentation to this container. TechDocs will fetch files from here to serve
-documentation in Backstage.
-
-To create a new container, access "Blob Service > Containers > New Container".
-
-Set the name of the container to
-`techdocs.publisher.azureBlobStorage.containerName`.
+Set the config `techdocs.publisher.azureBlobStorage.containerName` in your
+`app-config.yaml` to the name of the container you just created.
 
 ```yaml
 techdocs:
@@ -246,9 +230,49 @@ techdocs:
     type: 'azureBlobStorage'
     azureBlobStorage:
       containerName: 'name-of-techdocs-storage-container'
+```
+
+**3a. (Recommended) Authentication using environment variable**
+
+Set the config `techdocs.publisher.azureBlobStorage.credentials.accountName` in
+your `app-config.yaml` to the your account name.
+
+The storage blob client will automatically use the environment variable
+`AZURE_TENANT_ID`, `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET` to authenticate with
+Azure Blob Storage.
+https://docs.microsoft.com/pt-br/azure/storage/common/storage-auth-aad for more
+details.
+
+```yaml
+techdocs:
+  publisher:
+    type: 'azureBlobStorage'
+    azureBlobStorage:
+      containerName: 'name-of-techdocs-storage-bucket'
       credentials:
-        account:
-          $env: TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT
+        accountName:
+          $env: TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_NAME
+```
+
+**3b. Authentication using app-config.yaml**
+
+If you do not prefer (3a) and optionally like to use a service account, you can
+follow these steps.
+
+To get credentials, access the Azure Portal and go to "Settings > Access Keys",
+and get your Storage account name and Primary Key.
+https://docs.microsoft.com/pt-br/rest/api/storageservices/authorize-with-shared-key
+for more details.
+
+```yaml
+techdocs:
+  publisher:
+    type: 'azureBlobStorage'
+    azureBlobStorage:
+      containerName: 'name-of-techdocs-storage-bucket'
+      credentials:
+        accountName:
+          $env: TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_NAME
         accountKey:
           $env: TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_KEY
 ```

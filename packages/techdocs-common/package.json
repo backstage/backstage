@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1.0",
+    "@azure/identity": "^1.2.2",
     "@azure/storage-blob": "^12.4.0",
     "@backstage/backend-common": "^0.5.1",
     "@backstage/catalog-model": "^0.7.0",

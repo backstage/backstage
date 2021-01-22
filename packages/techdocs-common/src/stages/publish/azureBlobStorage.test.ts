@@ -57,7 +57,7 @@ beforeEach(async () => {
         type: 'azureBlobStorage',
         azureBlobStorage: {
           credentials: {
-            account: 'account',
+            accountName: 'accountName',
             accountKey: 'accountKey',
           },
           containerName: 'containerName',
