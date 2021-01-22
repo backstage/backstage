@@ -26,7 +26,7 @@ module.exports = {
     'plugin:monorepo/recommended',
   ],
   parser: '@typescript-eslint/parser',
-  plugins: ['import', 'react'],
+  plugins: ['import'],
   env: {
     jest: true,
   },
@@ -36,7 +36,7 @@ module.exports = {
       jsx: true,
     },
     sourceType: 'module',
-    lib: ['DOM', 'DOM.Iterable', 'ScriptHost', 'ES2020', 'ESNext.Promise'],
+    lib: require('./tsconfig.json').compilerOptions.lib,
   },
   settings: {
     react: {

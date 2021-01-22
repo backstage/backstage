@@ -34,7 +34,7 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 2018,
     sourceType: 'module',
-    lib: ['DOM', 'DOM.Iterable', 'ScriptHost', 'ES2020', 'ESNext.Promise'],
+    lib: require('./tsconfig.json').compilerOptions.lib,
   },
   ignorePatterns: ['.eslintrc.js', '**/dist/**', '**/dist-types/**'],
   rules: {
