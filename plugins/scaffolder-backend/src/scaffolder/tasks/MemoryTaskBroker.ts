@@ -78,7 +78,7 @@ function defer() {
 }
 
 export class MemoryTaskBroker implements TaskBroker {
-  constructor(private readonly storage: InMemoryDatabase) {}
+  constructor(private readonly storage: MemoryDatabase) {}
   private deferredDispatch = defer();
 
   async claim(): Promise<Task> {
