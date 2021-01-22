@@ -31,8 +31,6 @@ export const Router = ({ entity }: { entity: Entity }) => {
     return <MissingAnnotationEmptyState annotation={KUBERNETES_ANNOTATION} />;
   }
 
-  console.warn(entity);
-
   return (
     <Routes>
       <Route

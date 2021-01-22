@@ -19,6 +19,7 @@ import { useEntity } from '@backstage/plugin-catalog';
 import * as React from 'react';
 import { useAsync } from 'react-use';
 import { linkerdPluginRef } from '../plugin';
+import ReactFlow from 'react-flow-renderer';
 
 export const Tab = () => {
   const l5d = useApi(linkerdPluginRef);
@@ -43,5 +44,16 @@ export const Tab = () => {
     }
   }
 
-  return <p>Hello</p>;
+  const elements = [
+    { id: '1', data: { label: 'Node 1' }, position: { x: 250, y: 5 } },
+    // you can also pass a React component as a label
+    {
+      id: '2',
+      data: { label: <div>Node 2</div> },
+      position: { x: 100, y: 100 },
+    },
+    { id: 'e1-2', source: '1', target: '2', animated: true },
+  ];
+
+  return <ReactFlow elements={elements} />;
 };

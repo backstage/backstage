@@ -31,6 +31,7 @@
     "@material-ui/lab": "4.0.0-alpha.45",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-flow-renderer": "^8.5.0",
     "react-router-dom": "6.0.0-beta.0",
     "react-use": "^15.3.3"
   },
@@ -43,10 +44,10 @@
     "@testing-library/user-event": "^12.0.7",
     "@types/jest": "^26.0.7",
     "@types/node": "^12.0.0",
+    "cross-fetch": "^3.0.6",
     "jest-fetch-mock": "^3.0.3",
     "msw": "^0.21.2",
-    "node-fetch": "^2.6.1",
-    "cross-fetch": "^3.0.6"
+    "node-fetch": "^2.6.1"
   },
   "files": [
     "dist"
