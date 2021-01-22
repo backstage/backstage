@@ -13,22 +13,62 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DbTaskRow, Status, TaskSpec } from './types';
+
+import { DbTaskRow, DbTaskEventRow, Status, TaskSpec } from './types';
 import { v4 as uuid } from 'uuid';
-import { DateTime } from 'luxon';
 
 export interface Database {
   get(taskId: string): Promise<DbTaskRow>;
   createTask(task: TaskSpec): Promise<DbTaskRow>;
   claimTask(): Promise<DbTaskRow | undefined>;
-  heartBeat(runId: string): Promise<void>;
+  heartbeat(runId: string): Promise<void>;
   setStatus(taskId: string, status: Status): Promise<void>;
 }
 
+type EmitOptions = {
+  taskId: string;
+  runId: string;
+  event: string;
+};
+
+type ReadOptions = {
+  taskId: string;
+  after?: number | undefined;
+};
+
 export class MemoryDatabase implements Database {
   private readonly store = new Map<string, DbTaskRow>();
+  private readonly events = new Array<DbTaskEventRow>();
 
-  async heartBeat(runId: string): Promise<void> {
+  async emit({ taskId, runId, event }: EmitOptions) {
+    this.events.push({
+      id: this.events.length,
+      taskId,
+      runId,
+      event,
+      createdAt: new Date().toISOString(),
+    });
+  }
+
+  async getEvents({
+    taskId,
+    after,
+  }: ReadOptions): Promise<{ events: DbTaskEventRow[] }> {
+    const events = this.events.filter(event => {
+      if (event.taskId !== taskId) {
+        return false;
+      }
+      if (after !== undefined) {
+        if (event.id <= after) {
+          return false;
+        }
+      }
+      return true;
+    });
+    return { events };
+  }
+
+  async heartbeat(runId: string): Promise<void> {
     let task: DbTaskRow | undefined;
 
     for (const t of this.store.values()) {
@@ -43,7 +83,7 @@ export class MemoryDatabase implements Database {
 
     this.store.set(task.taskId, {
       ...task,
-      lastHeartbeat: DateTime.local().toString(),
+      lastHeartbeat: new Date().toISOString(),
     });
   }
 

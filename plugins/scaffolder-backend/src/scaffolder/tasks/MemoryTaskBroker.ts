@@ -20,6 +20,7 @@ import {
   TaskSpec,
   TaskBroker,
   DispatchResult,
+  DbTaskEventRow,
 } from './types';
 import { MemoryDatabase } from './MemoryDatabase';
 
@@ -43,14 +44,22 @@ export class TaskAgent implements Task {
   }
 
   async emitLog(message: string): Promise<void> {
-    throw new Error('Method not implemented.');
+    await this.storage.emit({
+      taskId: this.state.taskId,
+      runId: this.state.runId,
+      event: message,
+    });
   }
 
   async complete(result: CompletedTaskState): Promise<void> {
-    this.storage.setStatus(
+    await this.storage.setStatus(
       this.state.taskId,
       result === 'FAILED' ? 'FAILED' : 'COMPLETED',
     );
+
+    if (this.heartbeartInterval) {
+      clearInterval(this.heartbeartInterval);
+    }
   }
 
   private start() {
@@ -58,7 +67,7 @@ export class TaskAgent implements Task {
       if (!this.state.runId) {
         throw new Error('no run id provided');
       }
-      this.storage.heartBeat(this.state.runId);
+      this.storage.heartbeat(this.state.runId);
     }, 1000);
   }
 }
@@ -66,7 +75,7 @@ export class TaskAgent implements Task {
 interface TaskState {
   spec: TaskSpec;
   taskId: string;
-  runId: string | undefined;
+  runId: string;
 }
 
 function defer() {
@@ -87,7 +96,7 @@ export class MemoryTaskBroker implements TaskBroker {
       if (pendingTask) {
         return TaskAgent.create(
           {
-            runId: pendingTask.runId,
+            runId: pendingTask.runId!,
             taskId: pendingTask.taskId,
             spec: pendingTask.spec,
           },
@@ -105,6 +114,41 @@ export class MemoryTaskBroker implements TaskBroker {
     return {
       taskId: taskRow.taskId,
     };
+  }
+
+  observe(
+    options: {
+      taskId: string;
+      after: number | undefined;
+    },
+    callback: (result: { events: DbTaskEventRow[] }) => void,
+  ): () => void {
+    const { taskId } = options;
+
+    let cancelled = false;
+    const unsubscribe = () => {
+      cancelled = true;
+    };
+
+    (async () => {
+      let after = options.after;
+      while (!cancelled) {
+        const result = await this.storage.getEvents({ taskId, after: after });
+        const { events } = result;
+        if (events.length) {
+          after = events[events.length - 1].id;
+          try {
+            callback(result);
+          } catch (error) {
+            console.log('DEBUG: error =', error);
+          }
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+    })();
+
+    return unsubscribe;
   }
 
   private waitForDispatch() {

@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
+import { TemplaterValues } from '..';
+
 export type Status =
   | 'OPEN'
   | 'PROCESSING'
@@ -35,13 +38,15 @@ export type DbTaskRow = {
 
 export type DbTaskEventRow = {
   id: number;
-  runId?: number;
-  stageName: string;
+  runId: string;
+  taskId: string;
+  event: string;
   createdAt: string;
 };
 
 export type TaskSpec = {
-  metadata: string;
+  template: TemplateEntityV1alpha1;
+  values: TemplaterValues;
 };
 
 export type DispatchResult = {
