@@ -72,26 +72,6 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
 }));
 
-const JobsList = ({ jobs, entity }: { jobs?: Jobs; entity: Entity }) => {
-  const classes = useStyles();
-  return (
-    <Box>
-      {jobs &&
-        jobs.total_count > 0 &&
-        jobs.jobs.map(job => (
-          <JobListItem
-            key={job.id}
-            job={job}
-            className={
-              job.status !== 'success' ? classes.failed : classes.success
-            }
-            entity={entity}
-          />
-        ))}
-    </Box>
-  );
-};
-
 const getElapsedTime = (start: string, end: string) => {
   const diff = moment(moment(end || moment()).diff(moment(start)));
   const timeElapsed = diff.format('m [minutes] s [seconds]');
@@ -156,6 +136,26 @@ const JobListItem = ({
         <WorkflowRunLogs runId={job.id} inProgress={false} entity={entity} />
       )}
     </Accordion>
+  );
+};
+
+const JobsList = ({ jobs, entity }: { jobs?: Jobs; entity: Entity }) => {
+  const classes = useStyles();
+  return (
+    <Box>
+      {jobs &&
+        jobs.total_count > 0 &&
+        jobs.jobs.map(job => (
+          <JobListItem
+            key={job.id}
+            job={job}
+            className={
+              job.status !== 'success' ? classes.failed : classes.success
+            }
+            entity={entity}
+          />
+        ))}
+    </Box>
   );
 };
 

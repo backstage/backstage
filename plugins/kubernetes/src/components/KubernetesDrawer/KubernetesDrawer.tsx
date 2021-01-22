@@ -77,65 +77,6 @@ interface KubernetesDrawerable {
   metadata?: V1ObjectMeta;
 }
 
-interface KubernetesDrawerProps<T extends KubernetesDrawerable> {
-  object: T;
-  renderObject: (obj: T) => object;
-  buttonVariant?: 'h5' | 'subtitle2';
-  kind: string;
-  expanded?: boolean;
-  children?: React.ReactNode;
-}
-
-export const KubernetesDrawer = <T extends KubernetesDrawerable>({
-  object,
-  renderObject,
-  kind,
-  buttonVariant = 'subtitle2',
-  expanded = false,
-  children,
-}: KubernetesDrawerProps<T>) => {
-  const [isOpen, setIsOpen] = useState(expanded);
-  const classes = useDrawerStyles();
-
-  const toggleDrawer = (e: ChangeEvent<{}>, newValue: boolean) => {
-    e.stopPropagation();
-    setIsOpen(newValue);
-  };
-
-  return (
-    <>
-      <PodDrawerButton
-        onClick={e => toggleDrawer(e, true)}
-        onFocus={event => event.stopPropagation()}
-      >
-        {children === undefined ? (
-          <Typography variant={buttonVariant}>
-            {object.metadata?.name ?? 'unknown object'}
-          </Typography>
-        ) : (
-          children
-        )}
-      </PodDrawerButton>
-      <Drawer
-        classes={{
-          paper: classes.paper,
-        }}
-        anchor="right"
-        open={isOpen}
-        onClose={(e: any) => toggleDrawer(e, false)}
-        onClick={event => event.stopPropagation()}
-      >
-        <KubernetesDrawerContent
-          kind={kind}
-          toggleDrawer={toggleDrawer}
-          object={object}
-          renderObject={renderObject}
-        />
-      </Drawer>
-    </>
-  );
-};
-
 interface KubernetesDrawerContentProps<T extends KubernetesDrawerable> {
   toggleDrawer: (e: ChangeEvent<{}>, isOpen: boolean) => void;
   object: T;
@@ -200,6 +141,64 @@ const KubernetesDrawerContent = <T extends KubernetesDrawerable>({
         {isYaml && <CodeSnippet language="yaml" text={jsYaml.dump(object)} />}
         {!isYaml && <StructuredMetadataTable metadata={renderObject(object)} />}
       </div>
+    </>
+  );
+};
+interface KubernetesDrawerProps<T extends KubernetesDrawerable> {
+  object: T;
+  renderObject: (obj: T) => object;
+  buttonVariant?: 'h5' | 'subtitle2';
+  kind: string;
+  expanded?: boolean;
+  children?: React.ReactNode;
+}
+
+export const KubernetesDrawer = <T extends KubernetesDrawerable>({
+  object,
+  renderObject,
+  kind,
+  buttonVariant = 'subtitle2',
+  expanded = false,
+  children,
+}: KubernetesDrawerProps<T>) => {
+  const [isOpen, setIsOpen] = useState(expanded);
+  const classes = useDrawerStyles();
+
+  const toggleDrawer = (e: ChangeEvent<{}>, newValue: boolean) => {
+    e.stopPropagation();
+    setIsOpen(newValue);
+  };
+
+  return (
+    <>
+      <PodDrawerButton
+        onClick={e => toggleDrawer(e, true)}
+        onFocus={event => event.stopPropagation()}
+      >
+        {children === undefined ? (
+          <Typography variant={buttonVariant}>
+            {object.metadata?.name ?? 'unknown object'}
+          </Typography>
+        ) : (
+          children
+        )}
+      </PodDrawerButton>
+      <Drawer
+        classes={{
+          paper: classes.paper,
+        }}
+        anchor="right"
+        open={isOpen}
+        onClose={(e: any) => toggleDrawer(e, false)}
+        onClick={event => event.stopPropagation()}
+      >
+        <KubernetesDrawerContent
+          kind={kind}
+          toggleDrawer={toggleDrawer}
+          object={object}
+          renderObject={renderObject}
+        />
+      </Drawer>
     </>
   );
 };

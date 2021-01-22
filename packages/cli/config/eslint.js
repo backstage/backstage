@@ -26,13 +26,17 @@ module.exports = {
     'plugin:monorepo/recommended',
   ],
   parser: '@typescript-eslint/parser',
-  plugins: ['import'],
+  plugins: ['import', 'react'],
   env: {
     jest: true,
   },
   parserOptions: {
     ecmaVersion: 2018,
+    ecmaFeatures: {
+      jsx: true,
+    },
     sourceType: 'module',
+    lib: ['DOM', 'DOM.Iterable', 'ScriptHost', 'ES2020', 'ESNext.Promise'],
   },
   settings: {
     react: {
@@ -41,10 +45,9 @@ module.exports = {
   },
   ignorePatterns: ['.eslintrc.js', '**/dist/**', '**/dist-types/**'],
   rules: {
-    // TODO(Rugvip): We need to bump @typescript-eslint to v4 to enable these
-    '@typescript-eslint/no-shadow': 0,
-    '@typescript-eslint/no-redeclare': 0,
-
+    '@typescript-eslint/no-shadow': 'off',
+    '@typescript-eslint/no-redeclare': 'off',
+    'no-undef': 'off',
     'import/newline-after-import': 'error',
     'import/no-duplicates': 'warn',
     'import/no-extraneous-dependencies': [
@@ -90,6 +93,8 @@ module.exports = {
       rules: {
         // Default to not enforcing prop-types in typescript
         'react/prop-types': 0,
+        '@typescript-eslint/no-unused-vars': 'off',
+        'no-undef': 'off',
       },
     },
     {

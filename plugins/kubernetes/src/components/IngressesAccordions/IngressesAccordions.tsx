@@ -32,40 +32,8 @@ type IngressesAccordionsProps = {
   deploymentResources: GroupedResponses;
 };
 
-export const IngressesAccordions = ({
-  deploymentResources,
-}: IngressesAccordionsProps) => {
-  return (
-    <Grid
-      container
-      direction="row"
-      justify="flex-start"
-      alignItems="flex-start"
-    >
-      {deploymentResources.ingresses.map((ingress, i) => (
-        <Grid item key={i} xs>
-          <IngressAccordion ingress={ingress} />
-        </Grid>
-      ))}
-    </Grid>
-  );
-};
-
 type IngressAccordionProps = {
   ingress: ExtensionsV1beta1Ingress;
-};
-
-const IngressAccordion = ({ ingress }: IngressAccordionProps) => {
-  return (
-    <Accordion TransitionProps={{ unmountOnExit: true }}>
-      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <IngressSummary ingress={ingress} />
-      </AccordionSummary>
-      <AccordionDetails>
-        <IngressCard ingress={ingress} />
-      </AccordionDetails>
-    </Accordion>
-  );
 };
 
 type IngressSummaryProps = {
@@ -97,5 +65,36 @@ const IngressCard = ({ ingress }: IngressCardProps) => {
         ...ingress.spec,
       }}
     />
+  );
+};
+
+const IngressAccordion = ({ ingress }: IngressAccordionProps) => {
+  return (
+    <Accordion TransitionProps={{ unmountOnExit: true }}>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+        <IngressSummary ingress={ingress} />
+      </AccordionSummary>
+      <AccordionDetails>
+        <IngressCard ingress={ingress} />
+      </AccordionDetails>
+    </Accordion>
+  );
+};
+export const IngressesAccordions = ({
+  deploymentResources,
+}: IngressesAccordionsProps) => {
+  return (
+    <Grid
+      container
+      direction="row"
+      justify="flex-start"
+      alignItems="flex-start"
+    >
+      {deploymentResources.ingresses.map((ingress, i) => (
+        <Grid item key={i} xs>
+          <IngressAccordion ingress={ingress} />
+        </Grid>
+      ))}
+    </Grid>
   );
 };

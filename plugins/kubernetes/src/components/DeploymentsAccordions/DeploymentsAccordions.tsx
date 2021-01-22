@@ -43,100 +43,12 @@ type DeploymentsAccordionsProps = {
   children?: React.ReactNode;
 };
 
-export const DeploymentsAccordions = ({
-  deploymentResources,
-  clusterPodNamesWithErrors,
-}: DeploymentsAccordionsProps) => {
-  const isOwnedBy = (
-    ownerReferences: V1OwnerReference[],
-    obj: V1Pod | V1ReplicaSet | V1Deployment,
-  ): boolean => {
-    return ownerReferences?.some(or => or.name === obj.metadata?.name);
-  };
-
-  return (
-    <Grid
-      container
-      direction="column"
-      justify="flex-start"
-      alignItems="flex-start"
-    >
-      {deploymentResources.deployments.map((deployment, i) => (
-        <Grid container item key={i} xs>
-          {deploymentResources.replicaSets
-            // Filter out replica sets with no replicas
-            .filter(rs => rs.status && rs.status.replicas > 0)
-            // Find the replica sets this deployment owns
-            .filter(rs =>
-              isOwnedBy(rs.metadata?.ownerReferences ?? [], deployment),
-            )
-            .map((rs, j) => {
-              // Find the pods this replica set owns and render them in the table
-              const ownedPods = deploymentResources.pods.filter(pod =>
-                isOwnedBy(pod.metadata?.ownerReferences ?? [], rs),
-              );
-
-              const matchingHpa = deploymentResources.horizontalPodAutoscalers.find(
-                (hpa: V1HorizontalPodAutoscaler) => {
-                  return (
-                    (hpa.spec?.scaleTargetRef?.kind ?? '').toLowerCase() ===
-                      'deployment' &&
-                    (hpa.spec?.scaleTargetRef?.name ?? '') ===
-                      (deployment.metadata?.name ?? 'unknown-deployment')
-                  );
-                },
-              );
-
-              return (
-                <Grid item key={j} xs>
-                  <DeploymentAccordion
-                    deployment={deployment}
-                    ownedPods={ownedPods}
-                    matchingHpa={matchingHpa}
-                    clusterPodNamesWithErrors={clusterPodNamesWithErrors}
-                  />
-                </Grid>
-              );
-            })}
-        </Grid>
-      ))}
-    </Grid>
-  );
-};
-
 type DeploymentAccordionProps = {
   deployment: V1Deployment;
   ownedPods: V1Pod[];
   matchingHpa?: V1HorizontalPodAutoscaler;
   clusterPodNamesWithErrors: Set<string>;
   children?: React.ReactNode;
-};
-
-const DeploymentAccordion = ({
-  deployment,
-  ownedPods,
-  matchingHpa,
-  clusterPodNamesWithErrors,
-}: DeploymentAccordionProps) => {
-  const podsWithErrors = ownedPods.filter(p =>
-    clusterPodNamesWithErrors.has(p.metadata?.name ?? ''),
-  );
-
-  return (
-    <Accordion TransitionProps={{ unmountOnExit: true }}>
-      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <DeploymentSummary
-          deployment={deployment}
-          numberOfCurrentPods={ownedPods.length}
-          numberOfPodsWithErrors={podsWithErrors.length}
-          hpa={matchingHpa}
-        />
-      </AccordionSummary>
-      <AccordionDetails>
-        <PodsTable pods={ownedPods} />
-      </AccordionDetails>
-    </Accordion>
-  );
 };
 
 type DeploymentSummaryProps = {
@@ -216,6 +128,94 @@ const DeploymentSummary = ({
           )}
         </Grid>
       </Grid>
+    </Grid>
+  );
+};
+
+const DeploymentAccordion = ({
+  deployment,
+  ownedPods,
+  matchingHpa,
+  clusterPodNamesWithErrors,
+}: DeploymentAccordionProps) => {
+  const podsWithErrors = ownedPods.filter(p =>
+    clusterPodNamesWithErrors.has(p.metadata?.name ?? ''),
+  );
+
+  return (
+    <Accordion TransitionProps={{ unmountOnExit: true }}>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+        <DeploymentSummary
+          deployment={deployment}
+          numberOfCurrentPods={ownedPods.length}
+          numberOfPodsWithErrors={podsWithErrors.length}
+          hpa={matchingHpa}
+        />
+      </AccordionSummary>
+      <AccordionDetails>
+        <PodsTable pods={ownedPods} />
+      </AccordionDetails>
+    </Accordion>
+  );
+};
+
+export const DeploymentsAccordions = ({
+  deploymentResources,
+  clusterPodNamesWithErrors,
+}: DeploymentsAccordionsProps) => {
+  const isOwnedBy = (
+    ownerReferences: V1OwnerReference[],
+    obj: V1Pod | V1ReplicaSet | V1Deployment,
+  ): boolean => {
+    return ownerReferences?.some(or => or.name === obj.metadata?.name);
+  };
+
+  return (
+    <Grid
+      container
+      direction="column"
+      justify="flex-start"
+      alignItems="flex-start"
+    >
+      {deploymentResources.deployments.map((deployment, i) => (
+        <Grid container item key={i} xs>
+          {deploymentResources.replicaSets
+            // Filter out replica sets with no replicas
+            .filter(rs => rs.status && rs.status.replicas > 0)
+            // Find the replica sets this deployment owns
+            .filter(rs =>
+              isOwnedBy(rs.metadata?.ownerReferences ?? [], deployment),
+            )
+            .map((rs, j) => {
+              // Find the pods this replica set owns and render them in the table
+              const ownedPods = deploymentResources.pods.filter(pod =>
+                isOwnedBy(pod.metadata?.ownerReferences ?? [], rs),
+              );
+
+              const matchingHpa = deploymentResources.horizontalPodAutoscalers.find(
+                (hpa: V1HorizontalPodAutoscaler) => {
+                  return (
+                    (hpa.spec?.scaleTargetRef?.kind ?? '').toLowerCase() ===
+                      'deployment' &&
+                    (hpa.spec?.scaleTargetRef?.name ?? '') ===
+                      (deployment.metadata?.name ?? 'unknown-deployment')
+                  );
+                },
+              );
+
+              return (
+                <Grid item key={j} xs>
+                  <DeploymentAccordion
+                    deployment={deployment}
+                    ownedPods={ownedPods}
+                    matchingHpa={matchingHpa}
+                    clusterPodNamesWithErrors={clusterPodNamesWithErrors}
+                  />
+                </Grid>
+              );
+            })}
+        </Grid>
+      ))}
     </Grid>
   );
 };
