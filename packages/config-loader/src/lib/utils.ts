@@ -24,8 +24,3 @@ export function isObject(obj: JsonValue | undefined): obj is JsonObject {
   }
   return obj !== null;
 }
-
-// A thing to make sure we've narrowed the type down to never
-export function isNever<T extends never>() {
-  return void 0 as T;
-}

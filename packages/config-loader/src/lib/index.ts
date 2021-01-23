@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export { readConfigFile } from './reader';
+export { applyConfigTransforms } from './transform';
 export { readEnvConfig } from './env';
-export { readSecret } from './secrets';
+export { createIncludeTransform } from './include';
 export * from './schema';

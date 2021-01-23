@@ -15,9 +15,14 @@
  */
 
 import fs from 'fs-extra';
-import { resolve as resolvePath, dirname, isAbsolute } from 'path';
-import { AppConfig, JsonObject, JsonValue } from '@backstage/config';
-import { readConfigFile, readEnvConfig, readSecret } from './lib';
+import yaml from 'yaml';
+import { resolve as resolvePath, dirname, isAbsolute, basename } from 'path';
+import { AppConfig } from '@backstage/config';
+import {
+  applyConfigTransforms,
+  readEnvConfig,
+  createIncludeTransform,
+} from './lib';
 
 export type LoadConfigOptions = {
   // The root directory of the config loading context. Used to find default configs.
@@ -29,30 +34,6 @@ export type LoadConfigOptions = {
   // TODO(Rugvip): This will be removed in the future, but for now we use it to warn about possible mistakes.
   env: string;
 };
-
-class Context {
-  constructor(
-    private readonly options: {
-      env: { [name in string]?: string };
-      rootPath: string;
-    },
-  ) {}
-
-  get env() {
-    return this.options.env;
-  }
-
-  async readFile(path: string): Promise<string> {
-    return fs.readFile(resolvePath(this.options.rootPath, path), 'utf8');
-  }
-
-  async readSecret(
-    _path: string,
-    desc: JsonObject,
-  ): Promise<JsonValue | undefined> {
-    return readSecret(desc, this);
-  }
-}
 
 export async function loadConfig(
   options: LoadConfigOptions,
@@ -82,24 +63,28 @@ export async function loadConfig(
     }
   }
 
+  const env = async (name: string) => process.env[name];
+
   try {
     for (const configPath of configPaths) {
       if (!isAbsolute(configPath)) {
         throw new Error(`Config load path is not absolute: '${configPath}'`);
       }
-      const config = await readConfigFile(
-        configPath,
-        new Context({
-          env: process.env,
-          rootPath: dirname(configPath),
-        }),
-      );
 
-      configs.push(config);
+      const dir = dirname(configPath);
+      const readFile = (path: string) =>
+        fs.readFile(resolvePath(dir, path), 'utf8');
+
+      const input = yaml.parse(await readFile(configPath));
+      const data = await applyConfigTransforms(input, [
+        createIncludeTransform(env, readFile),
+      ]);
+
+      configs.push({ data, context: basename(configPath) });
     }
   } catch (error) {
     throw new Error(
-      `Failed to read static configuration file: ${error.message}`,
+      `Failed to read static configuration file, ${error.message}`,
     );
   }
 

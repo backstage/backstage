@@ -14,29 +14,39 @@
  * limitations under the License.
  */
 
-import { AppConfig, JsonObject, JsonValue } from '@backstage/config';
-import { basename } from 'path';
-import yaml from 'yaml';
-import { ReaderContext } from './types';
+import { JsonObject, JsonValue } from '@backstage/config';
+import { TransformFunc } from './types';
 import { isObject } from './utils';
 
 /**
  * Reads and parses, and validates, and transforms a single config file.
  * The transformation rewrites any special values, like the $secret key.
  */
-export async function readConfigFile(
-  filePath: string,
-  ctx: ReaderContext,
-): Promise<AppConfig> {
-  const configYaml = await ctx.readFile(filePath);
-  const config = yaml.parse(configYaml);
-
-  const context = basename(filePath);
-
+export async function applyConfigTransforms(
+  input: JsonValue,
+  transforms: TransformFunc[],
+): Promise<JsonObject> {
   async function transform(
-    obj: JsonValue,
+    inputObj: JsonValue,
     path: string,
   ): Promise<JsonValue | undefined> {
+    let obj = inputObj;
+
+    for (const tf of transforms) {
+      try {
+        const [applied, newObj] = await tf(inputObj);
+        if (applied) {
+          if (newObj === undefined) {
+            return newObj;
+          }
+          obj = newObj;
+          break;
+        }
+      } catch (error) {
+        throw new Error(`error at ${path}, ${error.message}`);
+      }
+    }
+
     if (typeof obj !== 'object') {
       return obj;
     } else if (obj === null) {
@@ -54,24 +64,6 @@ export async function readConfigFile(
       return arr;
     }
 
-    // Check if there's any key that starts with a '$', in that case we treat
-    // this entire object as a secret.
-    const [secretKey] = Object.keys(obj).filter(key => key.startsWith('$'));
-    if (secretKey) {
-      if (Object.keys(obj).length !== 1) {
-        throw new Error(
-          `Secret key '${secretKey}' has adjacent keys at ${path}`,
-        );
-      }
-      try {
-        return await ctx.readSecret(path, {
-          [secretKey.slice(1)]: obj[secretKey],
-        });
-      } catch (error) {
-        throw new Error(`Invalid secret at ${path}: ${error.message}`);
-      }
-    }
-
     const out: JsonObject = {};
 
     for (const [key, value] of Object.entries(obj)) {
@@ -87,9 +79,9 @@ export async function readConfigFile(
     return out;
   }
 
-  const finalConfig = await transform(config, '');
-  if (!isObject(finalConfig)) {
-    throw new TypeError('Expected object at config root');
+  const finalData = await transform(input, '');
+  if (!isObject(finalData)) {
+    throw new TypeError('expected object at config root');
   }
-  return { data: finalConfig, context };
+  return finalData;
 }

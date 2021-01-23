@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-import { JsonObject, JsonValue } from '@backstage/config';
+import { JsonValue } from '@backstage/config';
+
+export type EnvFunc = (name: string) => Promise<string | undefined>;
 
 export type ReadFileFunc = (path: string) => Promise<string>;
-export type ReadSecretFunc = (
-  path: string,
-  desc: JsonObject,
-) => Promise<JsonValue | undefined>;
-export type SkipFunc = (path: string) => boolean;
 
-/**
- * Common context that provides all the necessary hooks for reading configuration files.
- */
-export type ReaderContext = {
-  env: { [name in string]?: string };
-  readFile: ReadFileFunc;
-  readSecret: ReadSecretFunc;
-};
+export type TransformFunc = (
+  value: JsonValue,
+) => Promise<[boolean, JsonValue | undefined]>;
