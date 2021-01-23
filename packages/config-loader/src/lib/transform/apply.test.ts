@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { applyConfigTransforms } from './transform';
+import { applyConfigTransforms } from './apply';
 
 describe('applyConfigTransforms', () => {
   it('should apply not transforms to input', async () => {
