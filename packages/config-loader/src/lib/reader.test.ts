@@ -123,50 +123,9 @@ describe('readConfigFile', () => {
     expect(readSecret).not.toHaveBeenCalled();
   });
 
-  it('should read deprecated secrets', async () => {
-    const readFile = memoryFiles({
-      './app-config.yaml': 'app: { $secret: { file: "./my-secret" } }',
-    });
-    const readSecret = jest.fn().mockResolvedValue('secret');
-
-    const config = readConfigFile('./app-config.yaml', {
-      ...mockContext,
-      readFile,
-      readSecret: readSecret as ReadSecretFunc,
-    });
-
-    await expect(config).resolves.toEqual({
-      data: {
-        app: 'secret',
-      },
-      context: 'app-config.yaml',
-    });
-    expect(readSecret).toHaveBeenCalledWith('.app', {
-      file: './my-secret',
-    });
-  });
-
-  it('should require deprecated secrets to be objects', async () => {
-    const readFile = memoryFiles({
-      './app-config.yaml': 'app: { $secret: ["wrong-type"] }',
-    });
-    const readSecret = jest.fn().mockResolvedValue('secret');
-
-    const config = readConfigFile('./app-config.yaml', {
-      ...mockContext,
-      readFile,
-      readSecret: readSecret as ReadSecretFunc,
-    });
-
-    expect(readSecret).not.toHaveBeenCalled();
-    await expect(config).rejects.toThrow(
-      'Expected object at secret .app.$secret',
-    );
-  });
-
   it('should forward secret reading errors', async () => {
     const readFile = memoryFiles({
-      './app-config.yaml': 'app: { $secret: {} }',
+      './app-config.yaml': 'app: { $file: {} }',
     });
     const readSecret = jest.fn().mockRejectedValue(new Error('NOPE'));
 
