@@ -16,3 +16,5 @@ catalog:
     - type: url
       target: https://github.com/backstage/backstage/blob/other/plugins/scaffolder-backend/sample-templates/docs-template/template.yaml
 ```
+
+This also fixes a 404 in the prepare stage for GitLab URLs.
