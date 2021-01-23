@@ -33,21 +33,12 @@ type EnvSecret = {
   env: string;
 };
 
-// Reads a secret from a json-like file and extracts a value at a path.
-// The supported extensions are define in dataSecretParser below.
-type DataSecret = {
-  // Path to the data secret file, relative to the config file.
-  data: string;
-  // The path to the value inside the data file, each element separated by '.'.
-  path?: string;
-};
-
 // TODO(Rugvip): Move this out of secret reading when we remove the deprecated DataSecret and $secret format
 type IncludeSecret = {
   include: string;
 };
 
-type Secret = FileSecret | EnvSecret | DataSecret | IncludeSecret;
+type Secret = FileSecret | EnvSecret | IncludeSecret;
 
 // Schema for each type of secret description
 const secretLoaderSchemas = {
@@ -56,9 +47,6 @@ const secretLoaderSchemas = {
   }),
   env: yup.object({
     env: yup.string().required(),
-  }),
-  data: yup.object({
-    data: yup.string().required(),
   }),
   include: yup.object({
     include: yup.string().required(),
@@ -110,40 +98,6 @@ export async function readSecret(
   }
   if ('env' in secret) {
     return ctx.env[secret.env];
-  }
-  if ('data' in secret) {
-    console.warn(
-      `Configuration uses deprecated $data key, use $include instead.`,
-    );
-    const url =
-      'path' in secret ? `${secret.data}#${secret.path}` : secret.data;
-    const [filePath, dataPath] = url.split(/#(.*)/);
-    if (!dataPath) {
-      throw new Error(
-        `Invalid format for data secret value, must be of the form <filepath>#<datapath>, got '${url}'`,
-      );
-    }
-
-    const ext = extname(filePath);
-    const parser = dataSecretParser[ext];
-    if (!parser) {
-      throw new Error(`No data secret parser available for extension ${ext}`);
-    }
-
-    const content = await ctx.readFile(filePath);
-
-    const parts = dataPath.split('.');
-
-    let value: JsonValue | undefined = await parser(content);
-    for (const [index, part] of parts.entries()) {
-      if (!isObject(value)) {
-        const errPath = parts.slice(0, index).join('.');
-        throw new Error(`Value is not an object at ${errPath} in ${filePath}`);
-      }
-      value = value[part];
-    }
-
-    return String(value);
   }
   if ('include' in secret) {
     const [filePath, dataPath] = secret.include.split(/#(.*)/);

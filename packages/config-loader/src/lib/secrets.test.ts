@@ -55,36 +55,6 @@ describe('readSecret', () => {
     );
   });
 
-  it('should read data secrets', async () => {
-    // Deprecated object form
-    await expect(
-      readSecret({ data: 'my-data.json', path: 'a.b.c' }, ctx),
-    ).resolves.toBe('42');
-    await expect(
-      readSecret({ data: 'my-data.yaml', path: 'some.yaml.key' }, ctx),
-    ).resolves.toBe('7');
-    await expect(
-      readSecret({ data: 'my-data.yml', path: 'different.key' }, ctx),
-    ).resolves.toBe('hello');
-    await expect(
-      readSecret({ data: 'no-data.yml', path: 'different.key' }, ctx),
-    ).rejects.toThrow('File not found!');
-
-    // New format with path in fragment
-    await expect(readSecret({ data: 'my-data.json#a.b.c' }, ctx)).resolves.toBe(
-      '42',
-    );
-    await expect(
-      readSecret({ data: 'my-data.yaml#some.yaml.key' }, ctx),
-    ).resolves.toBe('7');
-    await expect(
-      readSecret({ data: 'my-data.yml#different.key' }, ctx),
-    ).resolves.toBe('hello');
-    await expect(
-      readSecret({ data: 'no-data.yml#different.key' }, ctx),
-    ).rejects.toThrow('File not found!');
-  });
-
   it('should include extra files', async () => {
     // New format with path in fragment
     await expect(
@@ -125,19 +95,16 @@ describe('readSecret', () => {
       'secret must be a `object` type, but the final value was: `"hello"`.',
     );
     await expect(readSecret({}, ctx)).rejects.toThrow(
-      "Secret must contain one of 'file', 'env', 'data'",
+      "Secret must contain one of 'file', 'env', 'include'",
     );
     await expect(readSecret({ unknown: 'derp' }, ctx)).rejects.toThrow(
-      "Secret must contain one of 'file', 'env', 'data'",
+      "Secret must contain one of 'file', 'env', 'include'",
     );
-    await expect(readSecret({ data: 'no-data.yml' }, ctx)).rejects.toThrow(
-      "Invalid format for data secret value, must be of the form <filepath>#<datapath>, got 'no-data.yml'",
+    await expect(readSecret({ include: 'no-parser.js' }, ctx)).rejects.toThrow(
+      'No data secret parser available for extension .js',
     );
     await expect(
-      readSecret({ data: 'no-parser.js', path: '.' }, ctx),
-    ).rejects.toThrow('No data secret parser available for extension .js');
-    await expect(
-      readSecret({ data: 'my-data.yaml', path: 'some.wrong.yaml.key' }, ctx),
+      readSecret({ include: 'my-data.yaml#some.wrong.yaml.key' }, ctx),
     ).rejects.toThrow('Value is not an object at some.wrong in my-data.yaml');
   });
 
