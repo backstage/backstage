@@ -24,11 +24,11 @@ const env = jest.fn(async (name: string) => {
 
 const readFile = jest.fn(async (path: string) => {
   const content = ({
-    'my-secret': 'secret',
-    'my-data.json': '{"a":{"b":{"c":42}}}',
-    'my-data.yaml': 'some:\n yaml:\n  key: 7',
-    'my-data.yml': 'different: { key: hello }',
-    'invalid.yaml': 'foo: [}',
+    '/my-secret': 'secret',
+    '/my-data.json': '{"a":{"b":{"c":42}}}',
+    '/my-data.yaml': 'some:\n yaml:\n  key: 7',
+    '/my-data.yml': 'different: { key: hello }',
+    '/invalid.yaml': 'foo: [}',
   } as { [key: string]: string })[path];
 
   if (!content) {
@@ -41,92 +41,89 @@ const includeTransform = createIncludeTransform(env, readFile);
 
 describe('includeTransform', () => {
   it('should not transform unknown values', async () => {
-    await expect(includeTransform('foo')).resolves.toEqual([
-      false,
-      expect.anything(),
-    ]);
-    await expect(includeTransform([1])).resolves.toEqual([
-      false,
-      expect.anything(),
-    ]);
-    await expect(includeTransform(1)).resolves.toEqual([
-      false,
-      expect.anything(),
-    ]);
-    await expect(includeTransform({ x: 'y' })).resolves.toEqual([
-      false,
-      expect.anything(),
-    ]);
-    await expect(includeTransform(null)).resolves.toEqual([false, null]);
+    await expect(includeTransform('foo', '/')).resolves.toEqual({
+      applied: false,
+    });
+    await expect(includeTransform([1], '/')).resolves.toEqual({
+      applied: false,
+    });
+    await expect(includeTransform(1, '/')).resolves.toEqual({ applied: false });
+    await expect(includeTransform({ x: 'y' }, '/')).resolves.toEqual({
+      applied: false,
+    });
+    await expect(includeTransform(null, '/')).resolves.toEqual({
+      applied: false,
+    });
   });
 
   it('should include text files', async () => {
-    await expect(includeTransform({ $file: 'my-secret' })).resolves.toEqual([
-      true,
-      'secret',
-    ]);
-    await expect(includeTransform({ $file: 'no-secret' })).rejects.toThrow(
+    await expect(
+      includeTransform({ $file: 'my-secret' }, '/'),
+    ).resolves.toEqual({ applied: true, value: 'secret' });
+    await expect(includeTransform({ $file: 'no-secret' }, '/')).rejects.toThrow(
       'File not found!',
     );
   });
 
   it('should include env vars', async () => {
-    await expect(includeTransform({ $env: 'SECRET' })).resolves.toEqual([
-      true,
-      'my-secret',
-    ]);
-    await expect(includeTransform({ $env: 'NO_SECRET' })).resolves.toEqual([
-      true,
-      undefined,
-    ]);
+    await expect(includeTransform({ $env: 'SECRET' }, '/')).resolves.toEqual({
+      applied: true,
+      value: 'my-secret',
+    });
+    await expect(includeTransform({ $env: 'NO_SECRET' }, '/')).resolves.toEqual(
+      {
+        applied: true,
+        value: undefined,
+      },
+    );
   });
 
   it('should include config files', async () => {
     // New format with path in fragment
     await expect(
-      includeTransform({ $include: 'my-data.json#a.b.c' }),
-    ).resolves.toEqual([true, 42]);
+      includeTransform({ $include: 'my-data.json#a.b.c' }, '/'),
+    ).resolves.toEqual({ applied: true, value: 42 });
     await expect(
-      includeTransform({ $include: 'my-data.json#a.b' }),
-    ).resolves.toEqual([true, { c: 42 }]);
+      includeTransform({ $include: 'my-data.json#a.b' }, '/'),
+    ).resolves.toEqual({ applied: true, value: { c: 42 } });
     await expect(
-      includeTransform({ $include: 'my-data.yaml#some.yaml.key' }),
-    ).resolves.toEqual([true, 7]);
+      includeTransform({ $include: 'my-data.yaml#some.yaml.key' }, '/'),
+    ).resolves.toEqual({ applied: true, value: 7 });
     await expect(
-      includeTransform({ $include: 'my-data.yaml' }),
-    ).resolves.toEqual([
-      true,
-      {
+      includeTransform({ $include: 'my-data.yaml' }, '/'),
+    ).resolves.toEqual({
+      applied: true,
+      value: {
         some: { yaml: { key: 7 } },
       },
-    ]);
+    });
     await expect(
-      includeTransform({ $include: 'my-data.yaml#' }),
-    ).resolves.toEqual([
-      true,
-      {
+      includeTransform({ $include: 'my-data.yaml#' }, '/'),
+    ).resolves.toEqual({
+      applied: true,
+      value: {
         some: { yaml: { key: 7 } },
       },
-    ]);
+    });
     await expect(
-      includeTransform({ $include: 'my-data.yml#different.key' }),
-    ).resolves.toEqual([true, 'hello']);
+      includeTransform({ $include: 'my-data.yml#different.key' }, '/'),
+    ).resolves.toEqual({ applied: true, value: 'hello' });
   });
 
   it('should reject invalid includes', async () => {
     await expect(
-      includeTransform({ $include: 'no-parser.js' }),
+      includeTransform({ $include: 'no-parser.js' }, '/'),
     ).rejects.toThrow('no configuration parser available for extension .js');
     await expect(
-      includeTransform({ $include: 'no-data.yml#different.key' }),
+      includeTransform({ $include: 'no-data.yml#different.key' }, '/'),
     ).rejects.toThrow('File not found!');
     await expect(
-      includeTransform({ $include: 'my-data.yml#missing.key' }),
+      includeTransform({ $include: 'my-data.yml#missing.key' }, '/'),
     ).rejects.toThrow(
       "value at 'missing' in included file my-data.yml is not an object",
     );
     await expect(
-      includeTransform({ $include: 'invalid.yaml' }),
+      includeTransform({ $include: 'invalid.yaml' }, '/'),
     ).rejects.toThrow(
       'failed to parse included file invalid.yaml, YAMLSyntaxError: Flow sequence contains an unexpected }',
     );

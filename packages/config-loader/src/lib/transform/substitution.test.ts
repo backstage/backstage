@@ -27,42 +27,40 @@ const substituteTransform = createSubstitutionTransform(env);
 
 describe('substituteTransform', () => {
   it('should not transform unknown values', async () => {
-    await expect(substituteTransform(false)).resolves.toEqual([
-      false,
-      expect.anything(),
-    ]);
-    await expect(substituteTransform([1])).resolves.toEqual([
-      false,
-      expect.anything(),
-    ]);
-    await expect(substituteTransform(1)).resolves.toEqual([
-      false,
-      expect.anything(),
-    ]);
-    await expect(substituteTransform({ x: 'y' })).resolves.toEqual([
-      false,
-      expect.anything(),
-    ]);
-    await expect(substituteTransform(null)).resolves.toEqual([false, null]);
+    await expect(substituteTransform(false, '/')).resolves.toEqual({
+      applied: false,
+    });
+    await expect(substituteTransform([1], '/')).resolves.toEqual({
+      applied: false,
+    });
+    await expect(substituteTransform(1, '/')).resolves.toEqual({
+      applied: false,
+    });
+    await expect(substituteTransform({ x: 'y' }, '/')).resolves.toEqual({
+      applied: false,
+    });
+    await expect(substituteTransform(null, '/')).resolves.toEqual({
+      applied: false,
+    });
   });
 
   it('should substitute env var', async () => {
-    await expect(substituteTransform('hello ${SECRET}')).resolves.toEqual([
-      true,
-      'hello my-secret',
-    ]);
+    await expect(substituteTransform('hello ${SECRET}', '/')).resolves.toEqual({
+      applied: true,
+      value: 'hello my-secret',
+    });
     await expect(
-      substituteTransform('${SECRET      } $${} ${TOKEN }'),
-    ).resolves.toEqual([true, 'my-secret $${} my-token']);
-    await expect(substituteTransform('foo ${MISSING}')).resolves.toEqual([
-      true,
-      undefined,
-    ]);
+      substituteTransform('${SECRET      } $${} ${TOKEN }', '/'),
+    ).resolves.toEqual({ applied: true, value: 'my-secret $${} my-token' });
+    await expect(substituteTransform('foo ${MISSING}', '/')).resolves.toEqual({
+      applied: true,
+      value: undefined,
+    });
     await expect(
-      substituteTransform('foo ${MISSING} ${SECRET}'),
-    ).resolves.toEqual([true, undefined]);
+      substituteTransform('foo ${MISSING} ${SECRET}', '/'),
+    ).resolves.toEqual({ applied: true, value: undefined });
     await expect(
-      substituteTransform('foo ${SECRET} ${SECRET}'),
-    ).resolves.toEqual([true, 'foo my-secret my-secret']);
+      substituteTransform('foo ${SECRET} ${SECRET}', '/'),
+    ).resolves.toEqual({ applied: true, value: 'foo my-secret my-secret' });
   });
 });

@@ -25,7 +25,7 @@ import { TransformFunc, EnvFunc } from './types';
 export function createSubstitutionTransform(env: EnvFunc): TransformFunc {
   return async (input: JsonValue) => {
     if (typeof input !== 'string') {
-      return [false, input];
+      return { applied: false };
     }
 
     const parts: (string | undefined)[] = input.split(/(?<!\$)\$\{([^{}]+)\}/);
@@ -33,8 +33,8 @@ export function createSubstitutionTransform(env: EnvFunc): TransformFunc {
       parts[i] = await env(parts[i]!.trim());
     }
     if (parts.some(part => part === undefined)) {
-      return [true, undefined];
+      return { applied: true, value: undefined };
     }
-    return [true, parts.join('')];
+    return { applied: true, value: parts.join('') };
   };
 }

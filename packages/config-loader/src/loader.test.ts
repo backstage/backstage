@@ -33,8 +33,14 @@ describe('loadConfig', () => {
           sessionKey: development-key
         backend:
           $include: ./included.yaml
+        other:
+          $include: secrets/included.yaml
       `,
       '/root/secrets/session-key.txt': 'abc123',
+      '/root/secrets/included.yaml': `
+        secret:
+          $file: session-key.txt
+      `,
       '/root/included.yaml': `
         foo:
           bar: token \${MY_SECRET}
@@ -116,6 +122,9 @@ describe('loadConfig', () => {
             foo: {
               bar: 'token is-secret',
             },
+          },
+          other: {
+            secret: 'abc123',
           },
         },
       },

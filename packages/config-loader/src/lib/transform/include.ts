@@ -15,7 +15,7 @@
  */
 
 import yaml from 'yaml';
-import { extname } from 'path';
+import { extname, dirname, resolve as resolvePath } from 'path';
 import { JsonObject, JsonValue } from '@backstage/config';
 import { isObject } from './utils';
 import { TransformFunc, EnvFunc, ReadFileFunc } from './types';
@@ -36,9 +36,9 @@ export function createIncludeTransform(
   env: EnvFunc,
   readFile: ReadFileFunc,
 ): TransformFunc {
-  return async (input: JsonValue) => {
+  return async (input: JsonValue, baseDir: string) => {
     if (!isObject(input)) {
-      return [false, input];
+      return { applied: false };
     }
     // Check if there's any key that starts with a '$', in that case we treat
     // this entire object as a secret.
@@ -50,7 +50,7 @@ export function createIncludeTransform(
         );
       }
     } else {
-      return [false, input];
+      return { applied: false };
     }
 
     const secretValue = input[secretKey];
@@ -61,13 +61,14 @@ export function createIncludeTransform(
     switch (secretKey) {
       case '$file':
         try {
-          return [true, await readFile(secretValue)];
+          const value = await readFile(resolvePath(baseDir, secretValue));
+          return { applied: true, value };
         } catch (error) {
           throw new Error(`failed to read file ${secretValue}, ${error}`);
         }
       case '$env':
         try {
-          return [true, await env(secretValue)];
+          return { applied: true, value: await env(secretValue) };
         } catch (error) {
           throw new Error(`failed to read env ${secretValue}, ${error}`);
         }
@@ -83,7 +84,9 @@ export function createIncludeTransform(
           );
         }
 
-        const content = await readFile(filePath);
+        const path = resolvePath(baseDir, filePath);
+        const content = await readFile(path);
+        const newBaseDir = dirname(path);
 
         const parts = dataPath ? dataPath.split('.') : [];
 
@@ -107,7 +110,11 @@ export function createIncludeTransform(
           value = value[part];
         }
 
-        return [true, value];
+        return {
+          applied: true,
+          value,
+          newBaseDir: newBaseDir !== baseDir ? newBaseDir : undefined,
+        };
       }
 
       default:

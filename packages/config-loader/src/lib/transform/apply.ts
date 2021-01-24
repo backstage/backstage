@@ -23,23 +23,27 @@ import { isObject } from './utils';
  * The transformation rewrites any special values, like the $secret key.
  */
 export async function applyConfigTransforms(
+  initialDir: string,
   input: JsonValue,
   transforms: TransformFunc[],
 ): Promise<JsonObject> {
   async function transform(
     inputObj: JsonValue,
     path: string,
+    baseDir: string,
   ): Promise<JsonValue | undefined> {
     let obj = inputObj;
+    let dir = baseDir;
 
     for (const tf of transforms) {
       try {
-        const [applied, newObj] = await tf(inputObj);
-        if (applied) {
-          if (newObj === undefined) {
-            return newObj;
+        const result = await tf(inputObj, baseDir);
+        if (result.applied) {
+          if (result.value === undefined) {
+            return undefined;
           }
-          obj = newObj;
+          obj = result.value;
+          dir = result.newBaseDir ?? dir;
           break;
         }
       } catch (error) {
@@ -55,7 +59,7 @@ export async function applyConfigTransforms(
       const arr = new Array<JsonValue>();
 
       for (const [index, value] of obj.entries()) {
-        const out = await transform(value, `${path}[${index}]`);
+        const out = await transform(value, `${path}[${index}]`, dir);
         if (out !== undefined) {
           arr.push(out);
         }
@@ -69,7 +73,7 @@ export async function applyConfigTransforms(
     for (const [key, value] of Object.entries(obj)) {
       // undefined covers optional fields
       if (value !== undefined) {
-        const result = await transform(value, `${path}.${key}`);
+        const result = await transform(value, `${path}.${key}`, dir);
         if (result !== undefined) {
           out[key] = result;
         }
@@ -79,7 +83,7 @@ export async function applyConfigTransforms(
     return out;
   }
 
-  const finalData = await transform(input, '');
+  const finalData = await transform(input, '', initialDir);
   if (!isObject(finalData)) {
     throw new TypeError('expected object at config root');
   }

@@ -75,7 +75,7 @@ export async function loadConfig(
         fs.readFile(resolvePath(dir, path), 'utf8');
 
       const input = yaml.parse(await readFile(configPath));
-      const data = await applyConfigTransforms(input, [
+      const data = await applyConfigTransforms(dir, input, [
         createIncludeTransform(env, readFile),
         createSubstitutionTransform(env),
       ]);
