@@ -23,7 +23,6 @@ import { Entity, EntityName } from '@backstage/catalog-model';
 import {
   resolvePackagePath,
   PluginEndpointDiscovery,
-  SingleHostDiscovery,
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import {
@@ -143,10 +142,9 @@ export class LocalPublish implements PublisherBase {
   }
 
   async getStorageUrl() {
-    const discoveryApi = SingleHostDiscovery.fromConfig(this.config);
     return (
       this.config.getOptionalString('techdocs.storageUrl') ??
-      (await discoveryApi.getBaseUrl('techdocs'))
+      (await this.discovery.getBaseUrl('techdocs'))
     );
   }
 
