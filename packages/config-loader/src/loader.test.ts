@@ -19,6 +19,8 @@ import mockFs from 'mock-fs';
 
 describe('loadConfig', () => {
   beforeAll(() => {
+    process.env.MY_SECRET = 'is-secret';
+
     mockFs({
       '/root/app-config.yaml': `
         app:
@@ -29,8 +31,14 @@ describe('loadConfig', () => {
       '/root/app-config.development.yaml': `
         app:
           sessionKey: development-key
+        backend:
+          $include: ./included.yaml
       `,
       '/root/secrets/session-key.txt': 'abc123',
+      '/root/included.yaml': `
+        foo:
+          bar: token \${MY_SECRET}
+      `,
     });
   });
 
@@ -103,6 +111,11 @@ describe('loadConfig', () => {
         data: {
           app: {
             sessionKey: 'development-key',
+          },
+          backend: {
+            foo: {
+              bar: 'token is-secret',
+            },
           },
         },
       },

@@ -22,6 +22,7 @@ import {
   applyConfigTransforms,
   readEnvConfig,
   createIncludeTransform,
+  createSubstitutionTransform,
 } from './lib';
 
 export type LoadConfigOptions = {
@@ -78,6 +79,7 @@ export async function loadConfig(
       const input = yaml.parse(await readFile(configPath));
       const data = await applyConfigTransforms(input, [
         createIncludeTransform(env, readFile),
+        createSubstitutionTransform(env),
       ]);
 
       configs.push({ data, context: basename(configPath) });
