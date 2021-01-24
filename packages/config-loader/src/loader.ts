@@ -24,6 +24,7 @@ import {
   createIncludeTransform,
   createSubstitutionTransform,
 } from './lib';
+import { EnvFunc } from './lib/transform/types';
 
 export type LoadConfigOptions = {
   // The root directory of the config loading context. Used to find default configs.
@@ -34,13 +35,20 @@ export type LoadConfigOptions = {
 
   /** @deprecated This option has been removed */
   env?: string;
+
+  /**
+   * Custom environment variable loading function
+   *
+   * @experimental This API is not stable and may change at any point
+   */
+  experimentalEnvFunc?: EnvFunc;
 };
 
 export async function loadConfig(
   options: LoadConfigOptions,
 ): Promise<AppConfig[]> {
   const configs = [];
-  const { configRoot } = options;
+  const { configRoot, experimentalEnvFunc: envFunc } = options;
   const configPaths = options.configPaths.slice();
 
   // If no paths are provided, we default to reading
@@ -54,7 +62,7 @@ export async function loadConfig(
     }
   }
 
-  const env = async (name: string) => process.env[name];
+  const env = envFunc ?? (async (name: string) => process.env[name]);
 
   try {
     for (const configPath of configPaths) {
