@@ -113,7 +113,9 @@ describe('includeTransform', () => {
   it('should reject invalid includes', async () => {
     await expect(
       includeTransform({ $include: 'no-parser.js' }, '/'),
-    ).rejects.toThrow('no configuration parser available for extension .js');
+    ).rejects.toThrow(
+      'no configuration parser available for included file no-parser.js',
+    );
     await expect(
       includeTransform({ $include: 'no-data.yml#different.key' }, '/'),
     ).rejects.toThrow('File not found!');

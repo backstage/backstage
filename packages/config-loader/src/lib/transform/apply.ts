@@ -19,8 +19,7 @@ import { TransformFunc } from './types';
 import { isObject } from './utils';
 
 /**
- * Reads and parses, and validates, and transforms a single config file.
- * The transformation rewrites any special values, like the $secret key.
+ * Applies a set of transforms to raw configuration data.
  */
 export async function applyConfigTransforms(
   initialDir: string,
