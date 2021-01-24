@@ -58,7 +58,9 @@ describe('CatalogClientWrapper', () => {
       expect.assertions(2);
       await client.getEntities();
       const getEntities = MockedCatalogClient.mock.instances[0].getEntities;
-      expect(getEntities).toHaveBeenCalledWith('fake-id-token', undefined);
+      expect(getEntities).toHaveBeenCalledWith(undefined, {
+        token: 'fake-id-token',
+      });
       expect(getEntities).toHaveBeenCalledTimes(1);
     });
   });
