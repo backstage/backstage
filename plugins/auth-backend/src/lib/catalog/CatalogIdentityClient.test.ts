@@ -33,12 +33,15 @@ describe('CatalogIdentityClient', () => {
     client.findUser(token, { annotations: { key: 'value' } });
 
     const getEntities = MockedCatalogClient.mock.instances[0].getEntities;
-    expect(getEntities).toHaveBeenCalledWith(token, {
-      filter: {
-        kind: 'user',
-        'metadata.annotations.key': 'value',
+    expect(getEntities).toHaveBeenCalledWith(
+      {
+        filter: {
+          kind: 'user',
+          'metadata.annotations.key': 'value',
+        },
       },
-    });
+      { token },
+    );
     expect(getEntities).toHaveBeenCalledTimes(1);
   });
 });
