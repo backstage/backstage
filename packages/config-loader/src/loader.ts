@@ -32,8 +32,8 @@ export type LoadConfigOptions = {
   // Absolute paths to load config files from. Configs from earlier paths have lower priority.
   configPaths: string[];
 
-  // TODO(Rugvip): This will be removed in the future, but for now we use it to warn about possible mistakes.
-  env: string;
+  /** @deprecated This option has been removed */
+  env?: string;
 };
 
 export async function loadConfig(
@@ -51,16 +51,6 @@ export async function loadConfig(
     const localConfig = resolvePath(configRoot, 'app-config.local.yaml');
     if (await fs.pathExists(localConfig)) {
       configPaths.push(localConfig);
-    }
-
-    const envFile = `app-config.${options.env}.yaml`;
-    if (await fs.pathExists(resolvePath(configRoot, envFile))) {
-      console.error(
-        `Env config file '${envFile}' is not loaded as APP_ENV and NODE_ENV-based config loading has been removed`,
-      );
-      console.error(
-        `To load the config file, use --config <path>, listing every config file that you want to load`,
-      );
     }
   }
 
