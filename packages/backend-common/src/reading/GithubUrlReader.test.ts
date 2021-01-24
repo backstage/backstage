@@ -17,7 +17,8 @@
 import { ConfigReader } from '@backstage/config';
 import { GithubCredentialsProvider } from '@backstage/integration';
 import { msw } from '@backstage/test-utils';
-import fs from 'fs';
+import fs from 'fs-extra';
+import mockFs from 'mock-fs';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import path from 'path';
@@ -107,6 +108,16 @@ describe('GithubUrlReader', () => {
   });
 
   describe('readTree', () => {
+    beforeEach(() => {
+      mockFs({
+        '/tmp': mockFs.directory(),
+      });
+    });
+
+    afterEach(() => {
+      mockFs.restore();
+    });
+
     const repoBuffer = fs.readFileSync(
       path.resolve(
         'src',
@@ -227,6 +238,21 @@ describe('GithubUrlReader', () => {
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
     });
 
+    it('creates a directory with the wanted files', async () => {
+      const response = await githubProcessor.readTree(
+        'https://github.com/backstage/mock',
+      );
+
+      const dir = await response.dir({ targetDir: '/tmp' });
+
+      await expect(
+        fs.readFile(path.join(dir, 'mkdocs.yml'), 'utf8'),
+      ).resolves.toBe('site_name: Test\n');
+      await expect(
+        fs.readFile(path.join(dir, 'docs', 'index.md'), 'utf8'),
+      ).resolves.toBe('# Test\n');
+    });
+
     it('should use the headers from the credentials provider to the fetch request', async () => {
       expect.assertions(2);
 
@@ -291,6 +317,18 @@ describe('GithubUrlReader', () => {
       const indexMarkdownFile = await files[0].content();
 
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
+    });
+
+    it('creates a directory with the wanted files with subpath', async () => {
+      const response = await githubProcessor.readTree(
+        'https://github.com/backstage/mock/tree/main/docs',
+      );
+
+      const dir = await response.dir({ targetDir: '/tmp' });
+
+      await expect(
+        fs.readFile(path.join(dir, 'index.md'), 'utf8'),
+      ).resolves.toBe('# Test\n');
     });
 
     it('throws a NotModifiedError when given a etag in options', async () => {
