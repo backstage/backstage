@@ -47,7 +47,7 @@ describe('createRouter - working directory', () => {
     const mockPreparer = {
       prepare: mockPrepare,
     };
-    mockPreparers.register('azure/api', mockPreparer);
+    mockPreparers.register('dev.azure.com', mockPreparer);
   });
 
   beforeEach(() => {
@@ -65,7 +65,7 @@ describe('createRouter - working directory', () => {
     kind: 'Template',
     metadata: {
       annotations: {
-        'backstage.io/managed-by-location': 'azure/api:dev.azure.com',
+        'backstage.io/managed-by-location': 'url:https://dev.azure.com',
       },
     },
     spec: {
@@ -107,10 +107,14 @@ describe('createRouter - working directory', () => {
     });
 
     const app = express().use(router);
-    await request(app).post('/v1/jobs').send({
-      templateName: '',
-      values: {},
-    });
+    await request(app)
+      .post('/v1/jobs')
+      .send({
+        templateName: '',
+        values: {
+          storePath: 'https://github.com/backstage/good',
+        },
+      });
 
     expect(mockPrepare).toBeCalledWith(expect.anything(), {
       logger: expect.anything(),
@@ -130,10 +134,14 @@ describe('createRouter - working directory', () => {
     });
 
     const app = express().use(router);
-    await request(app).post('/v1/jobs').send({
-      templateName: '',
-      values: {},
-    });
+    await request(app)
+      .post('/v1/jobs')
+      .send({
+        templateName: '',
+        values: {
+          storePath: 'https://github.com/backstage/goodrepo',
+        },
+      });
 
     expect(mockPrepare).toBeCalledWith(expect.anything(), {
       logger: expect.anything(),
@@ -200,10 +208,14 @@ describe('createRouter', () => {
 
   describe('POST /v1/jobs', () => {
     it('rejects template values which do not match the template schema definition', async () => {
-      const response = await request(app).post('/v1/jobs').send({
-        templateName: '',
-        values: {},
-      });
+      const response = await request(app)
+        .post('/v1/jobs')
+        .send({
+          templateName: '',
+          values: {
+            storePath: 'https://github.com/backstage/backstage',
+          },
+        });
 
       expect(response.status).toEqual(400);
     });

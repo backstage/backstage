@@ -32,6 +32,7 @@ describe('GitHubPreparer', () => {
   const mockGitClient = {
     clone: jest.fn(),
   };
+  const logger = getVoidLogger();
 
   jest.spyOn(Git, 'fromAuth').mockReturnValue(mockGitClient as any);
 
@@ -76,9 +77,13 @@ describe('GitHubPreparer', () => {
       },
     };
   });
-  it('calls the clone command with the correct arguments for a repository', async () => {
-    const preparer = new GithubPreparer();
 
+  const preparer = GithubPreparer.fromConfig({
+    host: 'github.com',
+    token: 'fake-token',
+  });
+
+  it('calls the clone command with the correct arguments for a repository', async () => {
     await preparer.prepare(mockEntity, { logger: getVoidLogger() });
 
     expect(mockGitClient.clone).toHaveBeenCalledWith({
@@ -86,8 +91,8 @@ describe('GitHubPreparer', () => {
       dir: expect.any(String),
     });
   });
+
   it('calls the clone command with the correct arguments for a repository when no path is provided', async () => {
-    const preparer = new GithubPreparer();
     delete mockEntity.spec.path;
 
     await preparer.prepare(mockEntity, { logger: getVoidLogger() });
@@ -99,23 +104,29 @@ describe('GitHubPreparer', () => {
   });
 
   it('return the temp directory with the path to the folder if it is specified', async () => {
-    const preparer = new GithubPreparer();
+    const preparer = GithubPreparer.fromConfig({
+      host: 'github.com',
+      token: 'fake-token',
+    });
     mockEntity.spec.path = './template/test/1/2/3';
     const response = await preparer.prepare(mockEntity, {
       logger: getVoidLogger(),
     });
-
     expect(response.split('\\').join('/')).toMatch(
       /\/template\/test\/1\/2\/3$/,
     );
   });
 
   it('return the working directory with the path to the folder if it is specified', async () => {
-    const preparer = new GithubPreparer();
+    const preparer = GithubPreparer.fromConfig({
+      host: 'github.com',
+      token: 'fake-token',
+    });
+
     mockEntity.spec.path = './template/test/1/2/3';
     const response = await preparer.prepare(mockEntity, {
-      logger: getVoidLogger(),
       workingDirectory: '/workDir',
+      logger: getVoidLogger(),
     });
 
     expect(response.split('\\').join('/')).toMatch(
@@ -123,15 +134,12 @@ describe('GitHubPreparer', () => {
     );
   });
 
-  it('calls the clone command with the token when provided', async () => {
-    const preparer = new GithubPreparer({ token: 'abc' });
-    const logger = getVoidLogger();
-
+  it('calls the clone command with token', async () => {
     await preparer.prepare(mockEntity, { logger });
 
     expect(Git.fromAuth).toHaveBeenCalledWith({
       logger,
-      username: 'abc',
+      username: 'fake-token',
       password: 'x-oauth-basic',
     });
   });

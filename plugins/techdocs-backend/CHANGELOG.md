@@ -1,5 +1,26 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.5.4
+
+### Patch Changes
+
+- a5e27d5c1: Create type for TechDocsMetadata (#3716)
+
+  This change introduces a new type (TechDocsMetadata) in packages/techdocs-common. This type is then introduced in the endpoint response in techdocs-backend and in the api interface in techdocs (frontend).
+
+- Updated dependencies [def2307f3]
+- Updated dependencies [0b135e7e0]
+- Updated dependencies [294a70cab]
+- Updated dependencies [0ea032763]
+- Updated dependencies [5345a1f98]
+- Updated dependencies [53c9c51f2]
+- Updated dependencies [a5e27d5c1]
+- Updated dependencies [09a370426]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/backend-common@0.5.0
+  - @backstage/techdocs-common@0.3.5
+
 ## 0.5.3
 
 ### Patch Changes

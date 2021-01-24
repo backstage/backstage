@@ -13,10 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { useState } from 'react';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import { useTheme, Box } from '@material-ui/core';
+import {
+  useTheme,
+  Box,
+  Typography,
+  Divider,
+  emphasize,
+} from '@material-ui/core';
+import { default as FullScreenIcon } from '@material-ui/icons/Fullscreen';
 import {
   AreaChart,
   ContentRenderer,
@@ -59,9 +66,10 @@ export const CostOverviewByProductChart = ({
   costsByProduct,
 }: CostOverviewByProductChartProps) => {
   const theme = useTheme<CostInsightsTheme>();
-  const styles = useStyles(theme);
+  const classes = useStyles(theme);
   const lastCompleteBillingDate = useLastCompleteBillingDate();
   const { duration } = useFilters(mapFiltersToProps);
+  const [isExpanded, setExpanded] = useState(false);
 
   if (!costsByProduct) {
     return null;
@@ -79,23 +87,27 @@ export const CostOverviewByProductChart = ({
     lastCompleteBillingDate,
   );
   const currentPeriodTotal = totalCost - previousPeriodTotal;
+  const otherProducts: string[] = [];
+
   const productsByDate = costsByProduct.reduce((prodByDate, product) => {
     const productTotal = aggregationSum(product.aggregation);
     // Group products with less than 10% of the total cost into "Other" category
-    // when there we have >= 5 products.
+    // when we have >= 8 products.
     const isOtherProduct =
-      costsByProduct.length >= 5 &&
+      costsByProduct.length >= 8 &&
       productTotal < totalCost * LOW_COST_THRESHOLD;
-    const productName = isOtherProduct ? 'Other' : product.id;
-    const updatedProdByDate = { ...prodByDate };
 
+    const updatedProdByDate = { ...prodByDate };
+    if (isOtherProduct) {
+      otherProducts.push(product.id);
+    }
     product.aggregation.forEach(curAggregation => {
       const productCostsForDate = updatedProdByDate[curAggregation.date] || {};
 
       updatedProdByDate[curAggregation.date] = {
         ...productCostsForDate,
-        [productName]:
-          (productCostsForDate[productName] || 0) + curAggregation.amount,
+        [product.id]:
+          (productCostsForDate[product.id] || 0) + curAggregation.amount,
       };
     });
 
@@ -104,38 +116,63 @@ export const CostOverviewByProductChart = ({
 
   const chartData: Record<string, number>[] = Object.keys(productsByDate).map(
     date => {
+      const costsForDate = Object.keys(productsByDate[date]).reduce(
+        (dateCosts, product) => {
+          // Group costs for products that belong to 'Other' in the chart.
+          const cost = productsByDate[date][product];
+          const productCost =
+            !isExpanded && otherProducts.includes(product)
+              ? { Other: (dateCosts.Other || 0) + cost }
+              : { [product]: cost };
+          return { ...dateCosts, ...productCost };
+        },
+        {} as Record<string, number>,
+      );
       return {
-        ...productsByDate[date],
+        ...costsForDate,
         date: Date.parse(date),
       };
     },
   );
 
+  const sortedProducts = costsByProduct.sort(
+    (a, b) => aggregationSum(a.aggregation) - aggregationSum(b.aggregation),
+  );
+
   const renderAreas = () => {
-    const productGroupNames = new Set(
-      Object.values(productsByDate)
-        .map(d => Object.keys(d))
-        .flat(),
-    );
-    const sortedProducts = costsByProduct
+    const separatedProducts = sortedProducts
       // Check that product is a separate group and hasn't been added to 'Other'
       .filter(
-        product => product.id !== 'Other' && productGroupNames.has(product.id),
-      )
-      .sort(
-        (a, b) => aggregationSum(a.aggregation) - aggregationSum(b.aggregation),
+        product =>
+          product.id !== 'Other' && !otherProducts.includes(product.id),
       )
       .map(product => product.id);
     // Keep 'Other' category at the bottom of the stack
-    return ['Other', ...sortedProducts].map((product, i) => (
-      <Area
-        dataKey={product}
-        isAnimationActive={false}
-        stackId="1"
-        stroke={theme.palette.dataViz[sortedProducts.length - i]}
-        fill={theme.palette.dataViz[sortedProducts.length - i]}
-      />
-    ));
+    const productsToDisplay = isExpanded
+      ? sortedProducts.map(product => product.id)
+      : ['Other', ...separatedProducts];
+
+    return productsToDisplay.map((product, i) => {
+      // Logic to handle case where there are more products than data viz colors.
+      const productColor =
+        theme.palette.dataViz[
+          (productsToDisplay.length - 1 - i) %
+            (theme.palette.dataViz.length - 1)
+        ];
+      return (
+        <Area
+          dataKey={product}
+          isAnimationActive={false}
+          stackId="1"
+          stroke={productColor}
+          fill={productColor}
+          onClick={() => setExpanded(true)}
+          style={{
+            cursor: product === 'Other' && !isExpanded ? 'pointer' : null,
+          }}
+        />
+      );
+    });
   };
 
   const tooltipRenderer: ContentRenderer<TooltipProps> = ({
@@ -144,18 +181,32 @@ export const CostOverviewByProductChart = ({
   }) => {
     if (isInvalid({ label, payload })) return null;
 
-    const title = dayjs(label).utc().format(DEFAULT_DATE_FORMAT);
+    const dateTitle = dayjs(label).utc().format(DEFAULT_DATE_FORMAT);
     const items = payload.map(p => ({
       label: p.dataKey as string,
       value: formatGraphValue(p.value as number),
       fill: p.fill!,
     }));
-
+    const expandText = (
+      <Box>
+        <Divider
+          style={{
+            backgroundColor: emphasize(theme.palette.divider, 1),
+            margin: '10px 0',
+          }}
+        />
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <FullScreenIcon />
+          <Typography>Click to expand</Typography>
+        </Box>
+      </Box>
+    );
     return (
-      <Tooltip title={title}>
+      <Tooltip title={dateTitle}>
         {items.reverse().map((item, index) => (
           <TooltipItem key={`${item.label}-${index}`} item={item} />
         ))}
+        {!isExpanded ? expandText : null}
       </Tooltip>
     );
   };
@@ -176,8 +227,8 @@ export const CostOverviewByProductChart = ({
         />
       </Box>
       <ResponsiveContainer
-        width={styles.container.width}
-        height={styles.container.height}
+        width={classes.container.width}
+        height={classes.container.height}
       >
         <AreaChart
           data={chartData}
@@ -187,20 +238,20 @@ export const CostOverviewByProductChart = ({
             bottom: 40,
           }}
         >
-          <CartesianGrid stroke={styles.cartesianGrid.stroke} />
+          <CartesianGrid stroke={classes.cartesianGrid.stroke} />
           <XAxis
             dataKey="date"
             domain={['dataMin', 'dataMax']}
             tickFormatter={overviewGraphTickFormatter}
             tickCount={6}
             type="number"
-            stroke={styles.axis.fill}
+            stroke={classes.axis.fill}
           />
           <YAxis
             domain={[() => 0, 'dataMax']}
-            tick={{ fill: styles.axis.fill }}
+            tick={{ fill: classes.axis.fill }}
             tickFormatter={formatGraphValue}
-            width={styles.yAxis.width}
+            width={classes.yAxis.width}
           />
           {renderAreas()}
           <RechartsTooltip content={tooltipRenderer} animationDuration={100} />

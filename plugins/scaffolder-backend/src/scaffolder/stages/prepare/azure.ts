@@ -18,32 +18,26 @@ import fs from 'fs-extra';
 import path from 'path';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { parseLocationAnnotation } from '../helpers';
-import { InputError, Git } from '@backstage/backend-common';
+import { Git } from '@backstage/backend-common';
 import { PreparerBase, PreparerOptions } from './types';
 import parseGitUrl from 'git-url-parse';
-import { Config } from '@backstage/config';
+import { AzureIntegrationConfig } from '@backstage/integration';
 
 export class AzurePreparer implements PreparerBase {
-  private readonly privateToken: string;
-
-  constructor(config: Config) {
-    this.privateToken =
-      config.getOptionalString('scaffolder.azure.api.token') ?? '';
+  static fromConfig(config: AzureIntegrationConfig) {
+    return new AzurePreparer({ token: config.token });
   }
+
+  constructor(private readonly config: { token?: string }) {}
 
   async prepare(
     template: TemplateEntityV1alpha1,
     opts: PreparerOptions,
   ): Promise<string> {
-    const { protocol, location } = parseLocationAnnotation(template);
-    const workingDirectory = opts?.workingDirectory ?? os.tmpdir();
-    const { logger } = opts;
+    const { location } = parseLocationAnnotation(template);
+    const workingDirectory = opts.workingDirectory ?? os.tmpdir();
+    const logger = opts.logger;
 
-    if (!['azure/api', 'url'].includes(protocol)) {
-      throw new InputError(
-        `Wrong location protocol: ${protocol}, should be 'url'`,
-      );
-    }
     const templateId = template.metadata.name;
 
     const parsedGitLocation = parseGitUrl(location);
@@ -59,9 +53,9 @@ export class AzurePreparer implements PreparerBase {
 
     // Username can be anything but the empty string according to:
     // https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=preview-page#use-a-pat
-    const git = this.privateToken
+    const git = this.config.token
       ? Git.fromAuth({
-          password: this.privateToken,
+          password: this.config.token,
           username: 'notempty',
           logger,
         })

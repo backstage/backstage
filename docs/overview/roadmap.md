@@ -57,8 +57,10 @@ guidelines to get started.
   see and manage their services running in K8s, regardless if that's locally, in
   AWS, GCS, Azure, or elsewhere.
 
-- **Global search** - Extend the basic search functionality currently available
-  in the Backstage Service Catalog to become a global search experience.
+- **[Search platform](../features/search/README.md)** - Evolve the basic search
+  functionality currently available into a platform that **a)** enables search
+  across the software catalog, TechDocs, and any other information exposed by
+  plugins, and **b)** supports a variety of search engine technologies.
 
 - **[Software Templates V2](https://github.com/backstage/backstage/issues/2771)** -
   Expand the templates to make the steps more composable by adding the ability

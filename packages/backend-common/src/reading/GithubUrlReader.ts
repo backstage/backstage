@@ -23,7 +23,7 @@ import {
 import fetch from 'cross-fetch';
 import parseGitUrl from 'git-url-parse';
 import { Readable } from 'stream';
-import { InputError, NotFoundError } from '../errors';
+import { NotFoundError, NotModifiedError } from '../errors';
 import { ReadTreeResponseFactory } from './tree';
 import {
   ReaderFactory,
@@ -98,51 +98,106 @@ export class GithubUrlReader implements UrlReader {
     url: string,
     options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
-    const {
-      name: repoName,
-      ref,
-      protocol,
-      resource,
-      full_name,
-      filepath,
-    } = parseGitUrl(url);
-
-    if (!ref) {
-      // TODO(Rugvip): We should add support for defaulting to the default branch
-      throw new InputError(
-        'GitHub URL must contain branch to be able to fetch tree',
-      );
-    }
+    const { ref, filepath, full_name } = parseGitUrl(url);
+    // Caveat: The ref will totally be incorrect if the branch name includes a /
+    // Thus, readTree can not work on url containing branch name that has a /
 
     const { headers } = await this.deps.credentialsProvider.getCredentials({
       url,
     });
-    // TODO(Rugvip): use API to fetch URL instead
-    const response = await fetch(
-      new URL(
-        `${protocol}://${resource}/${full_name}/archive/${ref}.tar.gz`,
-      ).toString(),
+
+    // Get GitHub API urls for the repository
+    const repoGitHubResponse = await fetch(
+      new URL(`${this.config.apiBaseUrl}/repos/${full_name}`).toString(),
       {
-        headers: {
-          ...headers,
-        },
+        headers,
       },
     );
-    if (!response.ok) {
-      const message = `Failed to read tree from ${url}, ${response.status} ${response.statusText}`;
-      if (response.status === 404) {
+    if (!repoGitHubResponse.ok) {
+      const message = `Failed to read tree (repository) from ${url}, ${repoGitHubResponse.status} ${repoGitHubResponse.statusText}`;
+      if (repoGitHubResponse.status === 404) {
         throw new NotFoundError(message);
       }
       throw new Error(message);
     }
 
-    const path = `${repoName}-${ref}/${filepath}`;
+    const repoResponseJson = await repoGitHubResponse.json();
 
-    return this.deps.treeResponseFactory.fromTarArchive({
+    // ref is an empty string if no branch is set in provided url to readTree.
+    // Use GitHub API to get the default branch of the repository.
+    const branch = ref || repoResponseJson.default_branch;
+    const branchesApiUrl = repoResponseJson.branches_url;
+    const archiveApiUrl = repoResponseJson.archive_url;
+
+    // Fetch the latest commit in the provided or default branch to compare against
+    // the provided sha.
+    const branchGitHubResponse = await fetch(
+      // branchesApiUrl looks like "https://api.github.com/repos/owner/repo/branches{/branch}"
+      branchesApiUrl.replace('{/branch}', `/${branch}`),
+      {
+        headers,
+      },
+    );
+    if (!branchGitHubResponse.ok) {
+      const message = `Failed to read tree (branch) from ${url}, ${branchGitHubResponse.status} ${branchGitHubResponse.statusText}`;
+      if (branchGitHubResponse.status === 404) {
+        throw new NotFoundError(message);
+      }
+      throw new Error(message);
+    }
+    const commitSha = (await branchGitHubResponse.json()).commit.sha;
+
+    if (options?.etag && options.etag === commitSha) {
+      throw new NotModifiedError();
+    }
+
+    const archive = await fetch(
+      // archiveApiUrl looks like "https://api.github.com/repos/owner/repo/{archive_format}{/ref}"
+      archiveApiUrl
+        .replace('{archive_format}', 'tarball')
+        .replace('{/ref}', `/${commitSha}`),
+      { headers },
+    );
+    if (!archive.ok) {
+      const message = `Failed to read tree (archive) from ${url}, ${archive.status} ${archive.statusText}`;
+      if (archive.status === 404) {
+        throw new NotFoundError(message);
+      }
+      throw new Error(message);
+    }
+
+    // Get the filename of archive from the header of the response
+    const contentDispositionHeader = archive.headers.get(
+      'content-disposition',
+    ) as string;
+    if (!contentDispositionHeader) {
+      throw new Error(
+        `Failed to read tree from ${url}. ` +
+          'GitHub API response for downloading archive does not contain content-disposition header ',
+      );
+    }
+    const fileNameRegEx = new RegExp(
+      /^attachment; filename=(?<fileName>.*).tar.gz$/,
+    );
+    const archiveFileName = contentDispositionHeader.match(fileNameRegEx)
+      ?.groups?.fileName;
+    if (!archiveFileName) {
+      throw new Error(
+        `Failed to read tree from ${url}. GitHub API response for downloading archive has an unexpected ` +
+          `format of content-disposition header ${contentDispositionHeader} `,
+      );
+    }
+
+    // The path includes the name of the directory inside the tarball and a sub path
+    // if requested in readTree.
+    const path = `${archiveFileName}/${filepath}`;
+
+    return await this.deps.treeResponseFactory.fromTarArchive({
       // TODO(Rugvip): Underlying implementation of fetch will be node-fetch, we probably want
       //               to stick to using that in exclusively backend code.
-      stream: (response.body as unknown) as Readable,
+      stream: (archive.body as unknown) as Readable,
       path,
+      etag: commitSha,
       filter: options?.filter,
     });
   }

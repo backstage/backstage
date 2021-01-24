@@ -39,6 +39,7 @@ import { rootRoute } from '../../routes';
 import { JobStatusModal } from '../JobStatusModal';
 import { MultistepJsonForm } from '../MultistepJsonForm';
 import { useJobPolling } from '../hooks/useJobPolling';
+import parseGitUrl from 'git-url-parse';
 
 const useTemplate = (
   templateName: string,
@@ -63,10 +64,10 @@ const OWNER_REPO_SCHEMA = {
       description: 'Who is going to own this component',
     },
     storePath: {
-      format: 'GitHub user or org / Repo name',
       type: 'string' as const,
       title: 'Store path',
-      description: 'GitHub store path in org/repo format',
+      description:
+        'A full URL to the repository that should be created. e.g https://github.com/backstage/new-repo',
     },
     access: {
       type: 'string' as const,
@@ -75,11 +76,6 @@ const OWNER_REPO_SCHEMA = {
     },
   },
 };
-
-const REPO_FORMAT = {
-  'GitHub user or org / Repo name': /[^\/]*\/[^\/]*/,
-};
-
 export const TemplatePage = () => {
   const errorApi = useApi(errorApiRef);
   const catalogApi = useApi(catalogApiRef);
@@ -182,7 +178,34 @@ export const TemplatePage = () => {
                 {
                   label: 'Choose owner and repo',
                   schema: OWNER_REPO_SCHEMA,
-                  customFormats: REPO_FORMAT,
+                  validate: (formData, errors) => {
+                    const { storePath } = formData;
+                    try {
+                      const parsedUrl = parseGitUrl(storePath);
+
+                      if (
+                        !parsedUrl.resource ||
+                        !parsedUrl.owner ||
+                        !parsedUrl.name
+                      ) {
+                        if (parsedUrl.resource === 'dev.azure.com') {
+                          errors.storePath.addError(
+                            "The store path should be formatted like https://dev.azure.com/{org}/{project}/_git/{repo} for Azure URL's",
+                          );
+                        } else {
+                          errors.storePath.addError(
+                            'The store path should be a complete Git URL to the new repository location. For example: https://github.com/{owner}/{repo}',
+                          );
+                        }
+                      }
+                    } catch (ex) {
+                      errors.storePath.addError(
+                        `Failed validation of the store pathn with message ${ex.message}`,
+                      );
+                    }
+
+                    return errors;
+                  },
                 },
               ]}
             />

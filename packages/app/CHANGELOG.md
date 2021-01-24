@@ -1,5 +1,56 @@
 # example-app
 
+## 0.2.12
+
+### Patch Changes
+
+- Updated dependencies [def2307f3]
+- Updated dependencies [46bba09ea]
+- Updated dependencies [efd6ef753]
+- Updated dependencies [593632f07]
+- Updated dependencies [8c2437c15]
+- Updated dependencies [2b514d532]
+- Updated dependencies [33846acfc]
+- Updated dependencies [b604a9d41]
+- Updated dependencies [d014185db]
+- Updated dependencies [a187b8ad0]
+- Updated dependencies [8855f61f6]
+- Updated dependencies [ed6baab66]
+- Updated dependencies [f04db53d7]
+- Updated dependencies [a5e27d5c1]
+- Updated dependencies [debf359b5]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/plugin-github-actions@0.3.0
+  - @backstage/core@0.5.0
+  - @backstage/plugin-catalog@0.2.12
+  - @backstage/plugin-cost-insights@0.5.7
+  - @backstage/plugin-catalog-import@0.3.5
+  - @backstage/cli@0.4.7
+  - @backstage/plugin-kubernetes@0.3.6
+  - @backstage/plugin-api-docs@0.4.3
+  - @backstage/plugin-scaffolder@0.4.0
+  - @backstage/plugin-techdocs@0.5.4
+  - @backstage/plugin-lighthouse@0.2.8
+  - @backstage/plugin-circleci@0.2.6
+  - @backstage/plugin-cloudbuild@0.2.7
+  - @backstage/plugin-jenkins@0.3.6
+  - @backstage/plugin-kafka@0.1.1
+  - @backstage/plugin-org@0.3.4
+  - @backstage/plugin-pagerduty@0.2.6
+  - @backstage/plugin-register-component@0.2.7
+  - @backstage/plugin-rollbar@0.2.8
+  - @backstage/plugin-search@0.2.6
+  - @backstage/plugin-sentry@0.3.3
+  - @backstage/plugin-explore@0.2.3
+  - @backstage/plugin-gcp-projects@0.2.3
+  - @backstage/plugin-gitops-profiles@0.2.3
+  - @backstage/plugin-graphiql@0.2.6
+  - @backstage/plugin-newrelic@0.2.3
+  - @backstage/plugin-tech-radar@0.3.3
+  - @backstage/plugin-user-settings@0.2.4
+  - @backstage/plugin-welcome@0.2.4
+
 ## 0.2.9
 
 ### Patch Changes

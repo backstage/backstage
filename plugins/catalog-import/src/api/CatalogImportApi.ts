@@ -30,6 +30,11 @@ export interface CatalogImportApi {
     fileContent: string;
     githubIntegrationConfig: GitHubIntegrationConfig;
   }): Promise<{ link: string; location: string }>;
+  checkForExistingCatalogInfo(options: {
+    owner: string;
+    repo: string;
+    githubIntegrationConfig: GitHubIntegrationConfig;
+  }): Promise<{ exists: boolean; url?: string }>;
   createRepositoryLocation(options: { location: string }): Promise<void>;
   generateEntityDefinitions(options: {
     repo: string;

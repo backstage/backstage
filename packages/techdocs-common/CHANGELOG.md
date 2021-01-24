@@ -1,5 +1,27 @@
 # @backstage/techdocs-common
 
+## 0.3.5
+
+### Patch Changes
+
+- 53c9c51f2: TechDocs backend now streams files through from Google Cloud Storage to the browser, improving memory usage.
+- a5e27d5c1: Create type for TechDocsMetadata (#3716)
+
+  This change introduces a new type (TechDocsMetadata) in packages/techdocs-common. This type is then introduced in the endpoint response in techdocs-backend and in the api interface in techdocs (frontend).
+
+- Updated dependencies [def2307f3]
+- Updated dependencies [0b135e7e0]
+- Updated dependencies [294a70cab]
+- Updated dependencies [fa8ba330a]
+- Updated dependencies [0ea032763]
+- Updated dependencies [5345a1f98]
+- Updated dependencies [ed6baab66]
+- Updated dependencies [09a370426]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/backend-common@0.5.0
+  - @backstage/integration@0.3.0
+
 ## 0.3.4
 
 ### Patch Changes

@@ -1,5 +1,76 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.5.1
+
+### Patch Changes
+
+- 0ea002378: Fixing issues with templating and full URL's as `storePath`'s
+
+## 0.5.0
+
+### Minor Changes
+
+- ed6baab66: - Deprecating the `scaffolder.${provider}.token` auth duplication and favoring `integrations.${provider}` instead. If you receive deprecation warnings your config should change like the following:
+
+  ```yaml
+  scaffolder:
+    github:
+      token:
+        $env: GITHUB_TOKEN
+      visibility: public
+  ```
+
+  To something that looks like this:
+
+  ```yaml
+  integration:
+    github:
+      - host: github.com
+        token:
+          $env: GITHUB_TOKEN
+  scaffolder:
+    github:
+      visibility: public
+  ```
+
+  You can also configure multiple different hosts under the `integration` config like the following:
+
+  ```yaml
+  integration:
+    github:
+      - host: github.com
+        token:
+          $env: GITHUB_TOKEN
+      - host: ghe.mycompany.com
+        token:
+          $env: GITHUB_ENTERPRISE_TOKEN
+  ```
+
+  This of course is the case for all the providers respectively.
+
+  - Adding support for cross provider scaffolding, you can now create repositories in for example Bitbucket using a template residing in GitHub.
+
+  - Fix GitLab scaffolding so that it returns a `catalogInfoUrl` which automatically imports the project into the catalog.
+
+  - The `Store Path` field on the `scaffolder` frontend has now changed so that you require the full URL to the desired destination repository.
+
+  `backstage/new-repository` would become `https://github.com/backstage/new-repository` if provider was GitHub for example.
+
+### Patch Changes
+
+- Updated dependencies [def2307f3]
+- Updated dependencies [0b135e7e0]
+- Updated dependencies [294a70cab]
+- Updated dependencies [fa8ba330a]
+- Updated dependencies [0ea032763]
+- Updated dependencies [5345a1f98]
+- Updated dependencies [ed6baab66]
+- Updated dependencies [09a370426]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/backend-common@0.5.0
+  - @backstage/integration@0.3.0
+
 ## 0.4.1
 
 ### Patch Changes

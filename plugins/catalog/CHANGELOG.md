@@ -1,5 +1,33 @@
 # @backstage/plugin-catalog
 
+## 0.2.13
+
+### Patch Changes
+
+- a4e636c8f: Hide the kind of owners in the about card if it's the default kind (group)
+- 099c5cf4f: Show the parent component in the about card (via partOf relationship)
+- a08db734c: Remove the `WelcomeBanner` that links to a plugin that is not longer wired into Backstage instances
+
+## 0.2.12
+
+### Patch Changes
+
+- 593632f07: Derive the list of to-delete entities in the `UnregisterEntityDialog` from the `backstage.io/managed-by-origin-location` annotation.
+  The dialog also rejects deleting entities that are created by the `bootstrap:bootstrap` location.
+- 33846acfc: Display the owner, system, and domain as links to the entity pages in the about card.
+  Only display fields in the about card that are applicable to the entity kind.
+- f04db53d7: Display systems in catalog table and make both owner and system link to the entity pages.
+  The owner field is now taken from the relations of the entity instead of its spec.
+- Updated dependencies [def2307f3]
+- Updated dependencies [efd6ef753]
+- Updated dependencies [a187b8ad0]
+- Updated dependencies [ed6baab66]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/core@0.5.0
+  - @backstage/plugin-scaffolder@0.4.0
+  - @backstage/catalog-client@0.3.5
+
 ## 0.2.11
 
 ### Patch Changes

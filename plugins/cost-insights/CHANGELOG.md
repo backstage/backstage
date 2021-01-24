@@ -1,5 +1,14 @@
 # @backstage/plugin-cost-insights
 
+## 0.5.7
+
+### Patch Changes
+
+- 8c2437c15: bug(cost-insights): Remove entity count when none present
+- Updated dependencies [efd6ef753]
+- Updated dependencies [a187b8ad0]
+  - @backstage/core@0.5.0
+
 ## 0.5.6
 
 ### Patch Changes

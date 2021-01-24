@@ -45,7 +45,7 @@ describe('AwsOrganizationCloudAccountProcessor', () => {
         location,
         entity: {
           apiVersion: 'backstage.io/v1alpha1',
-          kind: 'Component',
+          kind: 'Resource',
           metadata: {
             annotations: {
               'amazonaws.com/arn':
@@ -58,7 +58,6 @@ describe('AwsOrganizationCloudAccountProcessor', () => {
           },
           spec: {
             type: 'cloud-account',
-            lifecycle: 'unknown',
             owner: 'unknown',
           },
         },
@@ -91,7 +90,7 @@ describe('AwsOrganizationCloudAccountProcessor', () => {
         location,
         entity: {
           apiVersion: 'backstage.io/v1alpha1',
-          kind: 'Component',
+          kind: 'Resource',
           metadata: {
             annotations: {
               'amazonaws.com/arn':
@@ -104,7 +103,6 @@ describe('AwsOrganizationCloudAccountProcessor', () => {
           },
           spec: {
             type: 'cloud-account',
-            lifecycle: 'unknown',
             owner: 'unknown',
           },
         },

@@ -67,8 +67,10 @@ Dominik
 dtuite
 dzolotusky
 Ek
+etag
 env
 Env
+esbuild
 eslint
 Expedia
 facto
@@ -84,6 +86,7 @@ GitHub
 GitLab
 Grafana
 GraphQL
+graphql
 graphviz
 Gustavsson
 Hackathons
@@ -92,6 +95,7 @@ Henneke
 Heroku
 horizontalpodautoscalers
 Hostname
+hotspots
 html
 http
 https

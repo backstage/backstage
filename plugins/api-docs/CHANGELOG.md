@@ -1,5 +1,21 @@
 # @backstage/plugin-api-docs
 
+## 0.4.3
+
+### Patch Changes
+
+- 8855f61f6: Update `@asyncapi/react-component` to 0.18.2
+- Updated dependencies [def2307f3]
+- Updated dependencies [efd6ef753]
+- Updated dependencies [593632f07]
+- Updated dependencies [33846acfc]
+- Updated dependencies [a187b8ad0]
+- Updated dependencies [f04db53d7]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/core@0.5.0
+  - @backstage/plugin-catalog@0.2.12
+
 ## 0.4.2
 
 ### Patch Changes

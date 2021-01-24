@@ -185,33 +185,46 @@ catalog:
       #    groupFilter: securityEnabled eq false and mailEnabled eq true and groupTypes/any(c:c+eq+'Unified')
 
   locations:
+    # Add a location here to ingest it, for example from an URL:
+    #
+    #     - type: url
+    #       target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
+    #
+    # For local development you can use a file location instead:
+    #
+    #     - type: file
+    #       target: ../catalog-model/examples/all-components.yaml
+    #
+    # File locations are relative to the current working directory of the
+    # backend, for example packages/backend/.
+
     # Backstage example components
-    - type: url
-      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
+    - type: file
+      target: ../catalog-model/examples/all-components.yaml
     # Example component for github-actions
-    - type: url
-      target: https://github.com/backstage/backstage/blob/master/plugins/github-actions/examples/sample.yaml
+    - type: file
+      target: ../../plugins/github-actions/examples/sample.yaml
     # Example component for TechDocs
-    - type: url
-      target: https://github.com/backstage/backstage/blob/master/plugins/techdocs-backend/examples/documented-component/catalog-info.yaml
+    - type: file
+      target: ../../plugins/techdocs-backend/examples/documented-component/catalog-info.yaml
     # Backstage example APIs
-    - type: url
-      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
+    - type: file
+      target: ../catalog-model/examples/all-apis.yaml
     # Backstage example resources
-    - type: url
-      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-resources.yaml
+    - type: file
+      target: ../catalog-model/examples/all-resources.yaml
     # Backstage example systems
-    - type: url
-      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-systems.yaml
+    - type: file
+      target: ../catalog-model/examples/all-systems.yaml
     # Backstage example domains
-    - type: url
-      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-domains.yaml
+    - type: file
+      target: ../catalog-model/examples/all-domains.yaml
     # Backstage example templates
-    - type: url
-      target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/all-templates.yaml
+    - type: file
+      target: ../../plugins/scaffolder-backend/sample-templates/all-templates.yaml
     # Backstage example groups and users
-    - type: url
-      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme-corp.yaml
+    - type: file
+      target: ../catalog-model/examples/acme-corp.yaml
 
 scaffolder:
   github:
@@ -359,3 +372,8 @@ homepage:
       timezone: 'Asia/Tokyo'
 pagerduty:
   eventsBaseUrl: 'https://events.pagerduty.com/v2'
+
+kafka:
+  clientId: backstage
+  brokers:
+    - localhost:9092

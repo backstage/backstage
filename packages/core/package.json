@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core",
   "description": "Core API used by Backstage plugins and apps",
-  "version": "0.4.4",
+  "version": "0.5.0",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -46,7 +46,7 @@
     "d3-zoom": "^2.0.0",
     "dagre": "^0.8.5",
     "qs": "^6.9.4",
-    "immer": "^7.0.9",
+    "immer": "^8.0.1",
     "lodash": "^4.17.15",
     "material-table": "^1.69.1",
     "prop-types": "^15.7.2",
@@ -65,7 +65,7 @@
     "zen-observable": "^0.8.15"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.4.6",
+    "@backstage/cli": "^0.4.7",
     "@backstage/test-utils": "^0.1.6",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^10.4.1",

@@ -43,3 +43,4 @@ export { plugin as PagerDuty } from '@backstage/plugin-pagerduty';
 export { plugin as Buildkite } from '@roadiehq/backstage-plugin-buildkite';
 export { plugin as Search } from '@backstage/plugin-search';
 export { plugin as Org } from '@backstage/plugin-org';
+export { plugin as Kafka } from '@backstage/plugin-kafka';

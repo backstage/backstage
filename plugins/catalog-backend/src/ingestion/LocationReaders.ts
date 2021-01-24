@@ -78,13 +78,17 @@ export class LocationReaders implements LocationReader {
           if (rulesEnforcer.isAllowed(item.entity, item.location)) {
             const relations = Array<EntityRelationSpec>();
 
-            const entity = await this.handleEntity(item, emitResult => {
-              if (emitResult.type === 'relation') {
-                relations.push(emitResult.relation);
-                return;
-              }
-              emit(emitResult);
-            });
+            const entity = await this.handleEntity(
+              item,
+              emitResult => {
+                if (emitResult.type === 'relation') {
+                  relations.push(emitResult.relation);
+                  return;
+                }
+                emit(emitResult);
+              },
+              location,
+            );
 
             if (entity) {
               output.entities.push({
@@ -165,6 +169,7 @@ export class LocationReaders implements LocationReader {
   private async handleEntity(
     item: CatalogProcessorEntityResult,
     emit: CatalogProcessorEmit,
+    originLocation: LocationSpec,
   ): Promise<Entity | undefined> {
     const { processors, logger } = this.options;
 
@@ -185,6 +190,7 @@ export class LocationReaders implements LocationReader {
             current,
             item.location,
             emit,
+            originLocation,
           );
         } catch (e) {
           const message = `Processor ${processor.constructor.name} threw an error while preprocessing entity ${kind}:${namespace}/${name} at ${item.location.type} ${item.location.target}, ${e}`;
