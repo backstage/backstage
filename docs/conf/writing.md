@@ -161,3 +161,19 @@ Example `my-secrets.json` file:
   }
 }
 ```
+
+## Environment Variable Substitution
+
+Configuration files support environment variable substitution via a `${MY_VAR}`
+syntax. For example:
+
+```yaml
+app:
+  baseUrl: https://${HOST}
+```
+
+Note that all environment variables must be available, or the entire
+configuration value will evaluate to `undefined`.
+
+The substitution syntax can be escaped using `$${...}`, which will be resolved
+as `${...}`.
