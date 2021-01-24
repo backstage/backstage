@@ -121,31 +121,9 @@ export class BitbucketUrlReader implements UrlReader {
       throw new Error(message);
     }
 
-    // Get the filename of archive from the header of the response
-    const contentDispositionHeader = archiveBitbucketResponse.headers.get(
-      'content-disposition',
-    ) as string;
-    if (!contentDispositionHeader) {
-      throw new Error(
-        `Failed to read tree from ${url}. ` +
-          'Bitbucket API response for downloading archive does not contain content-disposition header ',
-      );
-    }
-    const fileNameRegEx = new RegExp(
-      /^attachment; filename=(?<fileName>.*).zip$/,
-    );
-    const archiveFileName = contentDispositionHeader.match(fileNameRegEx)
-      ?.groups?.fileName;
-    if (!archiveFileName) {
-      throw new Error(
-        `Failed to read tree from ${url}. Bitbucket API response for downloading archive has an unexpected ` +
-          `format of content-disposition header ${contentDispositionHeader} `,
-      );
-    }
-
     return await this.treeResponseFactory.fromZipArchive({
       stream: (archiveBitbucketResponse.body as unknown) as Readable,
-      path: `${archiveFileName}/${filepath}`,
+      subpath: filepath,
       etag: lastCommitShortHash,
       filter: options?.filter,
     });
