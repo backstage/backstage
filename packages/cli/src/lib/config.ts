@@ -21,6 +21,7 @@ import { paths } from './paths';
 type Options = {
   args: string[];
   fromPackage?: string;
+  mockEnv?: boolean;
 };
 
 export async function loadCliConfig(options: Options) {
@@ -40,7 +41,9 @@ export async function loadCliConfig(options: Options) {
   });
 
   const appConfigs = await loadConfig({
-    env: process.env.APP_ENV ?? process.env.NODE_ENV ?? 'production',
+    experimentalEnvFunc: options.mockEnv
+      ? async name => process.env[name] || 'x'
+      : undefined,
     configRoot: paths.targetRoot,
     configPaths,
   });
