@@ -215,7 +215,7 @@ techdocs:
 **2. Create an Azure Blob Storage Container**
 
 Create a dedicated container for TechDocs sites.
-[Refer to the official documentation](https://docs.microsoft.com/pt-br/azure/storage/blobs/storage-quickstart-blobs-portal).
+[Refer to the official documentation](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-portal).
 
 TechDocs will publish documentation to this container and will fetch files from
 here to serve documentation in Backstage. Note that the container names are
@@ -240,7 +240,9 @@ your `app-config.yaml` to the your account name.
 The storage blob client will automatically use the environment variable
 `AZURE_TENANT_ID`, `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET` to authenticate with
 Azure Blob Storage.
-https://docs.microsoft.com/pt-br/azure/storage/common/storage-auth-aad for more
+[Steps to create the service where the variables can be retrieved from](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal).
+
+https://docs.microsoft.com/en-us/azure/storage/common/storage-auth-aad for more
 details.
 
 ```yaml
