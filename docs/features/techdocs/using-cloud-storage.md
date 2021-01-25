@@ -263,7 +263,7 @@ follow these steps.
 
 To get credentials, access the Azure Portal and go to "Settings > Access Keys",
 and get your Storage account name and Primary Key.
-https://docs.microsoft.com/pt-br/rest/api/storageservices/authorize-with-shared-key
+https://docs.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key
 for more details.
 
 ```yaml

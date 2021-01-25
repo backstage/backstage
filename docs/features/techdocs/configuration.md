@@ -92,7 +92,7 @@ techdocs:
       containerName: 'techdocs-storage'
 
       # (Required) An account name is required to write to a storage blob container.
-      # https://docs.microsoft.com/pt-br/rest/api/storageservices/authorize-with-shared-key
+      # https://docs.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key
       credentials:
         accountName:
           $env: TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_NAME
