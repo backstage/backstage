@@ -18,13 +18,13 @@ import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { TemplaterValues } from '..';
 
 export type Status =
-  | 'OPEN'
-  | 'PROCESSING'
-  | 'FAILED'
-  | 'CANCELLED'
-  | 'COMPLETED';
+  | 'open'
+  | 'processing'
+  | 'failed'
+  | 'cancelled'
+  | 'completed';
 
-export type CompletedTaskState = 'FAILED' | 'COMPLETED';
+export type CompletedTaskState = 'failed' | 'completed';
 
 export type DbTaskRow = {
   taskId: string;
@@ -36,11 +36,13 @@ export type DbTaskRow = {
   runId?: string;
 };
 
+export type TaskEventType = 'completion' | 'log';
 export type DbTaskEventRow = {
   id: number;
   runId: string;
   taskId: string;
-  event: string;
+  body: string;
+  type: TaskEventType;
   createdAt: string;
 };
 

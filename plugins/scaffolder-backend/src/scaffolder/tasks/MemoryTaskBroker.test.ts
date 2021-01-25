@@ -70,16 +70,16 @@ describe('MemoryTaskBroker', () => {
   it('should complete a task', async () => {
     const dispatchResult = await broker.dispatch(taskSpec);
     const task = await broker.claim();
-    await task.complete('COMPLETED');
+    await task.complete('completed');
     const taskRow = await storage.get(dispatchResult.taskId);
-    expect(taskRow.status).toBe('COMPLETED');
+    expect(taskRow.status).toBe('completed');
   });
 
   it('should fail a task', async () => {
     const dispatchResult = await broker.dispatch(taskSpec);
     const task = await broker.claim();
-    await task.complete('FAILED');
+    await task.complete('failed');
     const taskRow = await storage.get(dispatchResult.taskId);
-    expect(taskRow.status).toBe('FAILED');
+    expect(taskRow.status).toBe('failed');
   });
 });

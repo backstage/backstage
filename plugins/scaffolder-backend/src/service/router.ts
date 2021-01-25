@@ -150,6 +150,10 @@ export async function createRouter(
         ({ events }) => {
           for (const event of events) {
             res.write(`event:${JSON.stringify(event)}\n\n`);
+            if (event.type === 'completion') {
+              unsubscribe();
+              res.end();
+            }
           }
         },
       );

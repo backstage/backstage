@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { DbTaskRow, DbTaskEventRow, Status, TaskSpec } from './types';
+import {
+  DbTaskRow,
+  DbTaskEventRow,
+  Status,
+  TaskSpec,
+  TaskEventType,
+} from './types';
 import { v4 as uuid } from 'uuid';
 
 export interface Database {
@@ -28,7 +34,8 @@ export interface Database {
 type EmitOptions = {
   taskId: string;
   runId: string;
-  event: string;
+  body: string;
+  type: TaskEventType;
 };
 
 type ReadOptions = {
@@ -40,12 +47,13 @@ export class MemoryDatabase implements Database {
   private readonly store = new Map<string, DbTaskRow>();
   private readonly events = new Array<DbTaskEventRow>();
 
-  async emit({ taskId, runId, event }: EmitOptions) {
+  async emit({ taskId, runId, body, type }: EmitOptions) {
     this.events.push({
       id: this.events.length,
       taskId,
       runId,
-      event,
+      body,
+      type,
       createdAt: new Date().toISOString(),
     });
   }
@@ -89,10 +97,10 @@ export class MemoryDatabase implements Database {
 
   async claimTask(): Promise<DbTaskRow | undefined> {
     for (const t of this.store.values()) {
-      if (t.status === 'OPEN') {
+      if (t.status === 'open') {
         const task: DbTaskRow = {
           ...t,
-          status: 'PROCESSING',
+          status: 'processing',
           runId: uuid(),
         };
         this.store.set(t.taskId, task);
@@ -106,7 +114,7 @@ export class MemoryDatabase implements Database {
     const taskRow = {
       taskId: uuid(),
       spec,
-      status: 'OPEN' as Status,
+      status: 'open' as Status,
       retryCount: 0,
       createdAt: new Date().toISOString(),
     };

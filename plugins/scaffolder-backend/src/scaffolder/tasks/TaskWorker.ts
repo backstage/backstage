@@ -102,9 +102,9 @@ export class TaskWorker {
 
       task.emitLog(`Completely done now!`);
 
-      await task.complete('COMPLETED');
+      await task.complete('completed');
     } catch (error) {
-      await task.complete('FAILED');
+      await task.complete('failed');
     }
   }
 }

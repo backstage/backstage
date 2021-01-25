@@ -47,16 +47,22 @@ export class TaskAgent implements Task {
     await this.storage.emit({
       taskId: this.state.taskId,
       runId: this.state.runId,
-      event: message,
+      body: message,
+      type: 'log',
     });
   }
 
   async complete(result: CompletedTaskState): Promise<void> {
     await this.storage.setStatus(
       this.state.taskId,
-      result === 'FAILED' ? 'FAILED' : 'COMPLETED',
+      result === 'failed' ? 'failed' : 'completed',
     );
-
+    this.storage.emit({
+      taskId: this.state.taskId,
+      runId: this.state.runId,
+      body: `Run completed with status: ${result}`,
+      type: 'completion',
+    });
     if (this.heartbeartInterval) {
       clearInterval(this.heartbeartInterval);
     }
