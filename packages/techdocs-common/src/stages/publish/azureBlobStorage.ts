@@ -61,15 +61,14 @@ export class AzureBlobStoragePublish implements PublisherBase {
       );
     }
 
-    // Credentials is an optional config. If missing, default Azure Blob Storage environment variables
-    // https://docs.microsoft.com/pt-br/azure/storage/common/storage-auth-aad-app
+    // Credentials is an optional config. If missing, default Azure Blob Storage environment variables will be used.
+    // https://docs.microsoft.com/en-us/azure/storage/common/storage-auth-aad-app
     const accountKey = config.getOptionalString(
       'techdocs.publisher.azureBlobStorage.credentials.accountKey',
     );
 
     let credential;
     if (accountKey) {
-      console.log('accountKey =>', accountKey);
       credential = new StorageSharedKeyCredential(accountName, accountKey);
     } else {
       credential = new DefaultAzureCredential();
@@ -91,8 +90,8 @@ export class AzureBlobStoragePublish implements PublisherBase {
       .catch(reason => {
         logger.error(
           `Could not retrieve metadata about the Azure Blob Storage container ${containerName}. ` +
-            'Make sure the Azure project and the container exists and the access key located at the path ' +
-            "techdocs.publisher.azureBlobStorage.credentials defined in app config has the role 'Storage Object Creator'. " +
+            'Make sure that the Azure project and container exist and the access key is setup correctly ' +
+            'techdocs.publisher.azureBlobStorage.credentials defined in app config has correct permissions. ' +
             'Refer to https://backstage.io/docs/features/techdocs/using-cloud-storage',
         );
         throw new Error(
