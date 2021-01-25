@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
+import { TemplaterValues } from '../stages/templater/types';
 import { MemoryDatabase } from './MemoryDatabase';
 import { MemoryTaskBroker, TaskAgent } from './MemoryTaskBroker';
 
@@ -21,10 +23,13 @@ describe('MemoryTaskBroker', () => {
   const storage = new MemoryDatabase();
   const broker = new MemoryTaskBroker(storage);
 
+  const taskSpec = {
+    values: {} as TemplaterValues,
+    template: {} as TemplateEntityV1alpha1,
+  };
+
   it('should claim a dispatched work item', async () => {
-    await broker.dispatch({
-      metadata: '',
-    });
+    await broker.dispatch(taskSpec);
     await expect(broker.claim()).resolves.toEqual(expect.any(TaskAgent));
   });
 
@@ -33,14 +38,23 @@ describe('MemoryTaskBroker', () => {
 
     await expect(Promise.race([promise, 'waiting'])).resolves.toBe('waiting');
 
-    await broker.dispatch({ metadata: 'foo' });
+    await broker.dispatch(taskSpec);
     await expect(promise).resolves.toEqual(expect.any(TaskAgent));
   });
 
   it('should dispatch multiple items and claim them in order', async () => {
-    await broker.dispatch({ metadata: 'a' });
-    await broker.dispatch({ metadata: 'b' });
-    await broker.dispatch({ metadata: 'c' });
+    await broker.dispatch({
+      values: { owner: 'a' } as TemplaterValues,
+      template: {} as TemplateEntityV1alpha1,
+    });
+    await broker.dispatch({
+      values: { owner: 'b' } as TemplaterValues,
+      template: {} as TemplateEntityV1alpha1,
+    });
+    await broker.dispatch({
+      values: { owner: 'c' } as TemplaterValues,
+      template: {} as TemplateEntityV1alpha1,
+    });
 
     const taskA = await broker.claim();
     const taskB = await broker.claim();
@@ -48,13 +62,13 @@ describe('MemoryTaskBroker', () => {
     await expect(taskA).toEqual(expect.any(TaskAgent));
     await expect(taskB).toEqual(expect.any(TaskAgent));
     await expect(taskC).toEqual(expect.any(TaskAgent));
-    await expect(taskA.spec.metadata).toBe('a');
-    await expect(taskB.spec.metadata).toBe('b');
-    await expect(taskC.spec.metadata).toBe('c');
+    await expect(taskA.spec.values.owner).toBe('a');
+    await expect(taskB.spec.values.owner).toBe('b');
+    await expect(taskC.spec.values.owner).toBe('c');
   });
 
   it('should complete a task', async () => {
-    const dispatchResult = await broker.dispatch({ metadata: 'foo' });
+    const dispatchResult = await broker.dispatch(taskSpec);
     const task = await broker.claim();
     await task.complete('COMPLETED');
     const taskRow = await storage.get(dispatchResult.taskId);
@@ -62,7 +76,7 @@ describe('MemoryTaskBroker', () => {
   });
 
   it('should fail a task', async () => {
-    const dispatchResult = await broker.dispatch({ metadata: 'foo' });
+    const dispatchResult = await broker.dispatch(taskSpec);
     const task = await broker.claim();
     await task.complete('FAILED');
     const taskRow = await storage.get(dispatchResult.taskId);
