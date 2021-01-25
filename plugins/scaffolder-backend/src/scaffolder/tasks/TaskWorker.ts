@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import { TaskBroker, Task } from './types';
+import { PassThrough } from 'stream';
 import { Logger } from 'winston';
+import * as winston from 'winston';
 import Docker from 'dockerode';
+import { TaskBroker, Task } from './types';
 import { CatalogEntityClient } from '../../lib/catalog';
 import {
   FilePreparer,
@@ -59,6 +61,24 @@ export class TaskWorker {
       logger,
     } = this.options;
 
+    const taskLogger = winston.createLogger({
+      level: process.env.LOG_LEVEL || 'info',
+      format: winston.format.combine(
+        winston.format.colorize(),
+        winston.format.timestamp(),
+        winston.format.simple(),
+      ),
+      defaultMeta: {},
+    });
+
+    const stream = new PassThrough();
+    stream.on('data', data => {
+      const message = data.toString().trim();
+      if (message?.length > 1) task.emitLog(message);
+    });
+
+    taskLogger.add(new winston.transports.Stream({ stream }));
+
     try {
       task.emitLog('Task claimed, waiting ...');
       // Give us some time to curl observe
@@ -76,7 +96,7 @@ export class TaskWorker {
       const publisher = publishers.get(values.storePath);
 
       const skeletonDir = await preparer.prepare(task.spec.template, {
-        logger,
+        logger: taskLogger,
         workingDirectory: workingDirectory,
       });
 
@@ -84,7 +104,7 @@ export class TaskWorker {
       const { resultDir } = await templater.run({
         directory: skeletonDir,
         dockerClient,
-        logStream: process.stdout, // yay
+        logStream: stream,
         values: values,
       });
 
@@ -99,8 +119,6 @@ export class TaskWorker {
       //   logger,
       // });
       // task.emitLog(`Result: ${JSON.stringify(result)}`);
-
-      task.emitLog(`Completely done now!`);
 
       await task.complete('completed');
     } catch (error) {
