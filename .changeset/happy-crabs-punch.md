@@ -2,7 +2,7 @@
 '@backstage/config-loader': patch
 ---
 
-Added support for environment variable substitutions in string configuration values using a `${VAR}` placeholder. All environment variables much be available, or the entire expression will be evaluated to `undefined`. To escape a substitution, use `$${...}`, which will end up as `${...}`.
+Added support for environment variable substitutions in string configuration values using a `${VAR}` placeholder. All environment variables must be available, or the entire expression will be evaluated to `undefined`. To escape a substitution, use `$${...}`, which will end up as `${...}`.
 
 For example:
 
