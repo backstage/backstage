@@ -172,12 +172,13 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
       ],
     };
 
+    const today = dayjs();
     const alerts: Alert[] = await this.request({ group }, [
       new ProjectGrowthAlert(projectGrowthData),
       new UnlabeledDataflowAlert(unlabeledDataflowData),
       new KubernetesMigrationAlert(this, {
-        startDate: '2021-01-24',
-        endDate: '2020-02-24',
+        startDate: today.format(DEFAULT_DATE_FORMAT),
+        endDate: today.add(30, 'day').format(DEFAULT_DATE_FORMAT),
         change: {
           ratio: 0,
           amount: 0,
@@ -187,7 +188,7 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
             id: 'service-a',
             aggregation: [20_000, 10_000],
             change: {
-              ratio: -1,
+              ratio: -0.5,
               amount: -10_000,
             },
             entities: {},
@@ -196,8 +197,8 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
             id: 'service-b',
             aggregation: [30_000, 15_000],
             change: {
-              ratio: -1,
-              amount: 15_000,
+              ratio: -0.5,
+              amount: -15_000,
             },
             entities: {},
           },

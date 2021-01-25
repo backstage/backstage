@@ -75,8 +75,8 @@ describe('<AlertDialog />', () => {
         snoozed={snoozableAlert}
         accepted={null}
         dismissed={null}
-        onClose={jest.fn}
-        onSubmit={jest.fn}
+        onClose={jest.fn()}
+        onSubmit={jest.fn()}
       />,
     );
     expect(getByText('For how long?')).toBeInTheDocument();
@@ -97,8 +97,8 @@ describe('<AlertDialog />', () => {
         snoozed={customSnoozeAlert}
         accepted={null}
         dismissed={null}
-        onClose={jest.fn}
-        onSubmit={jest.fn}
+        onClose={jest.fn()}
+        onSubmit={jest.fn()}
       />,
     );
     expect(getByText('You. Complete. Me.')).toBeInTheDocument();
@@ -116,8 +116,8 @@ describe('<AlertDialog />', () => {
         snoozed={null}
         accepted={null}
         dismissed={dimissableAlert}
-        onClose={jest.fn}
-        onSubmit={jest.fn}
+        onClose={jest.fn()}
+        onSubmit={jest.fn()}
       />,
     );
     expect(getByText('Dismiss this action item?')).toBeInTheDocument();
@@ -137,8 +137,8 @@ describe('<AlertDialog />', () => {
         snoozed={null}
         accepted={null}
         dismissed={customDismissAlert}
-        onClose={jest.fn}
-        onSubmit={jest.fn}
+        onClose={jest.fn()}
+        onSubmit={jest.fn()}
       />,
     );
     expect(getByText('Dismiss this action item?')).toBeInTheDocument();
@@ -156,8 +156,8 @@ describe('<AlertDialog />', () => {
         snoozed={null}
         accepted={customAcceptAlert}
         dismissed={null}
-        onClose={jest.fn}
-        onSubmit={jest.fn}
+        onClose={jest.fn()}
+        onSubmit={jest.fn()}
       />,
     );
     expect(getByText('Accept this action item?')).toBeInTheDocument();

@@ -42,18 +42,19 @@ export interface MigrationAlert extends Alert {
 }
 
 /**
- * The alert below is an example of an Alert implementation using event hooks.
+ * This is an example of an Alert implementation using optional event hooks.
  *
- * Alerts can be customized to be accepted, dismissed snoozed or any combination
- * by defining a corresponding hook on the alert instance.
+ * Event hooks can be used to enable users to dismiss, snooze, or accept an action item
+ * - or any combination thereof. Defining a hook will generate default UI - button, dialog and
+ * form. Cost Insights does not preserve client side alert state - each hook is expected to return a new set of alerts.
  *
- * For example, defining an onDismissed hook will render a dismiss button that, when clicked, will
- * generate a dialog prompting the user to provide a reason for dismissing the alert.
- * Dismiss form data will be passed to the hook, which must eventually return a new set of alerts.
- * Errors thrown within hooks will generate a snackbar, which can be used to display a
- * user-friendly error message.
+ * Snoozed, accepted, etc. alerts should define a corresponding status property. Alerts will be aggregated
+ * by status in a collapsed view below Alert Insights section and a badge will appear in Action Items
+ * showing the total alerts of that status.
  *
- * Cost Insights provides default forms for each hook, which can be overriden by providing a custom form component.
+ * Default forms can be overriden by providing a valid React form component. Form components
+ * must return valid form elements, and accept a ref and onSubmit event handler. See /forms
+ * for example implementations. Custom forms must implement a corresponding event hook.
  */
 
 export class KubernetesMigrationAlert implements MigrationAlert {
@@ -63,9 +64,7 @@ export class KubernetesMigrationAlert implements MigrationAlert {
   subtitle =
     'Services running on Kubernetes are estimated to save 50% or more compared to Compute Engine.';
 
-  // Override default dismiss form with custom form component.
-  // SnoozeForm: AlertForm<MigrationAlert, MigrationSnoozeFormData> = MigrationSnoozeForm;
-  // AcceptForm: AlertForm<MigrationAlert, MigrationAcceptFormData> = MigrationAcceptForm;
+  // Override default dismiss form with a custom form component.
   DismissForm: AlertForm<
     MigrationAlert,
     MigrationDismissFormData
@@ -101,7 +100,7 @@ export class KubernetesMigrationAlert implements MigrationAlert {
     );
   }
 
-  /* Displays a custom dismiss form. */
+  /* Fires when the onSubmit event is raised on a DismissAlert form. Displays a custom dismiss form. */
   async onDismissed(
     options: AlertOptions<MigrationDismissFormData>,
   ): Promise<Alert[]> {
@@ -112,17 +111,13 @@ export class KubernetesMigrationAlert implements MigrationAlert {
         {
           title: this.title,
           subtitle: this.subtitle,
-          /**
-           * If a status property is defined, the alert will be filtered from the action items list
-           * but still appear grouped with other action items of the same status in the Hidden Action Items section.
-           */
           status: AlertStatus.Dismissed,
         },
       ]),
     );
   }
 
-  /* Displays default accept form. */
+  /* Fires when the onSubmit event is raised on an SnoozeAlert form. Displays default snooze form. */
   async onSnoozed(
     options: AlertOptions<AlertSnoozeFormData>,
   ): Promise<Alert[]> {
@@ -139,8 +134,8 @@ export class KubernetesMigrationAlert implements MigrationAlert {
     );
   }
 
-  /* Displays default accept form. */
-  async onAccepted(options: AlertOptions): Promise<Alert[]> {
+  /* Fires when the onSubmit event is raised on an AcceptAlert form. Displays default accept form. */
+  async onAccepted(options: AlertOptions<null>): Promise<Alert[]> {
     const alerts = await this.api.getAlerts(options.group);
     return new Promise(resolve =>
       setTimeout(resolve, 750, [

@@ -32,6 +32,32 @@ import { Alert, AlertStatus } from '../../types';
 import { useScroll, ScrollType } from '../../hooks';
 import { useActionItemCardStyles as useStyles } from '../../utils/styles';
 
+type AlertStatusButtonProps = {
+  title: string;
+  amount: number;
+  icon: JSX.Element;
+  onClick: MouseEventHandler;
+} & IconButtonProps;
+
+const AlertStatusButton = ({
+  title,
+  amount,
+  icon,
+  onClick,
+  ...buttonProps
+}: AlertStatusButtonProps) => (
+  <Tooltip title={title}>
+    <IconButton
+      onClick={onClick}
+      role="button"
+      aria-hidden={false}
+      {...buttonProps}
+    >
+      <Badge badgeContent={amount}>{icon}</Badge>
+    </IconButton>
+  </Tooltip>
+);
+
 type ActionItemsProps = {
   active: Alert[];
   snoozed: Alert[];
@@ -104,29 +130,3 @@ export const ActionItems = ({
     </>
   );
 };
-
-type AlertStatusButtonProps = {
-  title: string;
-  amount: number;
-  icon: JSX.Element;
-  onClick: MouseEventHandler;
-} & IconButtonProps;
-
-const AlertStatusButton = ({
-  title,
-  amount,
-  icon,
-  onClick,
-  ...buttonProps
-}: AlertStatusButtonProps) => (
-  <Tooltip title={title}>
-    <IconButton
-      onClick={onClick}
-      role="button"
-      aria-hidden={false}
-      {...buttonProps}
-    >
-      <Badge badgeContent={amount}>{icon}</Badge>
-    </IconButton>
-  </Tooltip>
-);

@@ -55,17 +55,13 @@ export const AlertDismissForm = forwardRef<
   );
 
   const onFormSubmit: FormEventHandler = e => {
-    function submit() {
+    e.preventDefault();
+    if (reason) {
       onSubmit({
         other: other,
         reason: reason,
         feedback: feedback,
       });
-    }
-
-    e.preventDefault();
-    if (reason) {
-      submit();
     }
   };
 
