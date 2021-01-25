@@ -126,12 +126,12 @@ describe('BitbucketUrlReader', () => {
             ),
         ),
         rest.get(
-          'https://api.bitbucket.mycompany.net/rest/api/1.0/repositories/backstage/mock/commits/some-branch',
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/commits',
           (_, res, ctx) =>
             res(
               ctx.status(200),
               ctx.json({
-                values: [{ hash: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st' }],
+                values: [{ id: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st' }],
               }),
             ),
         ),
