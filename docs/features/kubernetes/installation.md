@@ -1,7 +1,7 @@
 ---
 id: installation
 title: Installation
-description: Installing Kubernetes plugin
+description: Installing Kubernetes plugin into Backstage
 ---
 
 The Kubernetes feature is a plugin to Backstage, and it is exposed as a tab when

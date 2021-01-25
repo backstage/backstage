@@ -2,7 +2,8 @@
 id: configuration
 title: Configuring Kubernetes integration
 sidebar_label: Configuration
-description: Monitoring Kubernetes based services with the service catalog
+# prettier-ignore
+description: Configuring the Kubernetes integration for Backstage expose your entity's objects
 ---
 
 Configuring the Backstage Kubernetes integration involves two steps:
