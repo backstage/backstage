@@ -129,6 +129,7 @@ microsite
 middleware
 minikube
 Minikube
+misconfiguration
 misgendering
 mkdocs
 Mkdocs
