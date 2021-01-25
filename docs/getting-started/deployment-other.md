@@ -13,7 +13,7 @@ Run the following commands if you have Docker environment
 ```bash
 $ yarn install
 $ yarn docker-build
-$ docker run --rm -it -p 7000:7000 -e APP_ENV=production -e NODE_ENV=development example-backend:latest
+$ docker run --rm -it -p 7000:7000 -e NODE_ENV=development example-backend:latest
 ```
 
 Then open http://localhost:7000 on your browser.
