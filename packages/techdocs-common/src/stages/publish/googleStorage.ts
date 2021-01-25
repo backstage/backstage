@@ -26,7 +26,7 @@ import { Config } from '@backstage/config';
 import { getHeadersForFileExtension, getFileTreeRecursively } from './helpers';
 import { PublisherBase, PublishRequest, TechDocsMetadata } from './types';
 import JSON5 from 'json5';
-import limitFactory from 'p-limit';
+import createLimiter from 'p-limit';
 
 export class GoogleGCSPublish implements PublisherBase {
   static async fromConfig(
@@ -103,7 +103,7 @@ export class GoogleGCSPublish implements PublisherBase {
       // So collecting path of only the files is good enough.
       const allFilesToUpload = await getFileTreeRecursively(directory);
 
-      const limiter = limitFactory(10);
+      const limiter = createLimiter(10);
       const uploadPromises: Array<Promise<UploadResponse>> = [];
       allFilesToUpload.forEach(filePath => {
         // Remove the absolute path prefix of the source directory

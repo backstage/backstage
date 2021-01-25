@@ -24,7 +24,7 @@ import { PublisherBase, PublishRequest, TechDocsMetadata } from './types';
 import fs from 'fs-extra';
 import { Readable } from 'stream';
 import JSON5 from 'json5';
-import limiterFactory from 'p-limit';
+import createLimiter from 'p-limit';
 
 const streamToBuffer = (stream: Readable): Promise<Buffer> => {
   return new Promise((resolve, reject) => {
@@ -132,7 +132,7 @@ export class AwsS3Publish implements PublisherBase {
       // So collecting path of only the files is good enough.
       const allFilesToUpload = await getFileTreeRecursively(directory);
 
-      const limiter = limiterFactory(10);
+      const limiter = createLimiter(10);
       const uploadPromises: Array<Promise<PutObjectCommandOutput>> = [];
       for (const filePath of allFilesToUpload) {
         // Remove the absolute path prefix of the source directory
