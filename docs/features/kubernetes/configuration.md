@@ -9,7 +9,7 @@ description: Configuring the Kubernetes integration for Backstage expose your en
 Configuring the Backstage Kubernetes integration involves two steps:
 
 1. Enabling the backend to collect objects from your Kubernetes cluster(s).
-2. Surfacing your Kubernetes as part of a catalog entity
+2. Surfacing your Kubernetes objects in catalog entities
 
 ## Configuring Kubernetes Clusters
 
