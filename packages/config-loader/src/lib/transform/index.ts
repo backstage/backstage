@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export { readEnvConfig } from './env';
-export * from './transform';
-export * from './schema';
+export { applyConfigTransforms } from './apply';
+export { createIncludeTransform } from './include';
+export { createSubstitutionTransform } from './substitution';
