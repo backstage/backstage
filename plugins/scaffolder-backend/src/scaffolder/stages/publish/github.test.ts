@@ -19,7 +19,7 @@ jest.mock('./helpers');
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
-import { GithubPublisher } from './github';
+import { GithubPublisher, GithubPublisherConfig } from './github';
 import { initRepoAndPush } from './helpers';
 
 const { mockGithubClient } = require('@octokit/rest') as {
@@ -29,6 +29,22 @@ const { mockGithubClient } = require('@octokit/rest') as {
     teams: jest.Mocked<Octokit['teams']>;
   };
 };
+
+const createPublishConfig = ({
+  repoVisibility = 'public',
+  enableAutomatedSecurityFixes = false,
+  enableVulnerabilityAlerts = false,
+  readers = [],
+  writers = [],
+  branchConfig = {},
+}: Partial<GithubPublisherConfig>): GithubPublisherConfig => ({
+  repoVisibility,
+  enableAutomatedSecurityFixes,
+  enableVulnerabilityAlerts,
+  readers,
+  writers,
+  branchConfig,
+});
 
 describe('GitHub Publisher', () => {
   const logger = getVoidLogger();
@@ -44,7 +60,7 @@ describe('GitHub Publisher', () => {
             token: 'fake-token',
             host: 'github.com',
           },
-          { repoVisibility: 'public' },
+          createPublishConfig({ repoVisibility: 'public' }),
         );
 
         mockGithubClient.repos.createInOrg.mockResolvedValue({
@@ -102,7 +118,7 @@ describe('GitHub Publisher', () => {
             token: 'fake-token',
             host: 'github.com',
           },
-          { repoVisibility: 'public' },
+          createPublishConfig({ repoVisibility: 'public' }),
         );
 
         mockGithubClient.repos.createForAuthenticatedUser.mockResolvedValue({
@@ -154,7 +170,7 @@ describe('GitHub Publisher', () => {
           token: 'fake-token',
           host: 'github.com',
         },
-        { repoVisibility: 'public' },
+        createPublishConfig({ repoVisibility: 'public' }),
       );
 
       mockGithubClient.repos.createForAuthenticatedUser.mockResolvedValue({
@@ -213,7 +229,7 @@ describe('GitHub Publisher', () => {
           token: 'fake-token',
           host: 'github.com',
         },
-        { repoVisibility: 'internal' },
+        createPublishConfig({ repoVisibility: 'internal' }),
       );
 
       mockGithubClient.repos.createInOrg.mockResolvedValue({
@@ -264,7 +280,7 @@ describe('GitHub Publisher', () => {
           token: 'fake-token',
           host: 'github.com',
         },
-        { repoVisibility: 'private' },
+        createPublishConfig({ repoVisibility: 'private' }),
       );
 
       mockGithubClient.repos.createForAuthenticatedUser.mockResolvedValue({

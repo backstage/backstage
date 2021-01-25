@@ -16,7 +16,11 @@
 
 import { Config } from '@backstage/config';
 import { PublisherBase, PublisherBuilder } from './types';
-import { GithubPublisher, RepoVisibilityOptions } from './github';
+import {
+  GithubPublisher,
+  GithubBranchConfig,
+  RepoVisibilityOptions,
+} from './github';
 import { GitlabPublisher } from './gitlab';
 import { AzurePublisher } from './azure';
 import { BitbucketPublisher } from './bitbucket';
@@ -75,9 +79,30 @@ export class Publishers implements PublisherBuilder {
       const repoVisibility = (config.getOptionalString(
         'scaffolder.github.visibility',
       ) ?? 'public') as RepoVisibilityOptions;
+      const writers =
+        config.getOptionalStringArray('scaffolder.github.writers') ?? [];
+      const readers =
+        config.getOptionalStringArray('scaffolder.github.readers') ?? [];
+      const enableAutomatedSecurityFixes =
+        config.getOptionalBoolean(
+          'scaffolder.github.enableAutomatedSecurityFixes',
+        ) ?? false;
+      const enableVulnerabilityAlerts =
+        config.getOptionalBoolean(
+          'scaffolder.github.enableVulnerabilityAlerts',
+        ) ?? false;
+      const branchConfig =
+        (config.getOptional(
+          'scaffolder.github.branchConfig',
+        ) as GithubBranchConfig) ?? {};
 
       const publisher = await GithubPublisher.fromConfig(integration.config, {
         repoVisibility,
+        writers,
+        readers,
+        enableAutomatedSecurityFixes,
+        enableVulnerabilityAlerts,
+        branchConfig,
       });
       if (publisher) {
         publishers.register(integration.config.host, publisher);
@@ -91,7 +116,13 @@ export class Publishers implements PublisherBuilder {
               token: config.getOptionalString('scaffolder.github.token') ?? '',
               host: integration.config.host,
             },
-            { repoVisibility },
+            {
+              repoVisibility,
+              readers,
+              writers,
+              enableVulnerabilityAlerts,
+              enableAutomatedSecurityFixes,
+            },
           ),
         );
       }

@@ -238,6 +238,33 @@ scaffolder:
     token:
       $env: GITHUB_TOKEN
     visibility: public # or 'internal' or 'private'
+    # # Customize created repos:
+    # readers:
+    #   - 'myorg/developers'
+    # writers:
+    #   - 'myorg/ci'
+    # enableAutomatedSecurityFixes: true
+    # enableVulnerabilityAlerts: true
+    # branchConfig:
+    #   # key/value for each branch to configure
+    #   master:
+    #     allowForcePush: false
+    #     allowDeletions: false
+    #     requireSignedCommits: true
+    #     enforceAdmins: true
+    #     # requirePRReviews must be enabled when setting dismissStaleReviews,
+    #     #  requireCodeOwnerReviews or requiredApprovingReviewCount
+    #     requirePRReview: true
+    #     dismissStaleReviews: false
+    #     requireCodeOwnerReviews: true
+    #     requiredApprovingReviewCount: 1
+    #     # Enforce status checks.
+    #     #  Must be enabled to enforce requiredUpToDateBeforeMerging or requiredContexts
+    #     requireStatusChecksBeforeMerging: true
+    #     requireUpToDateBeforeMerge: false
+    #     requiredContexts:
+    #       - 'tests'
+
   gitlab:
     api:
       baseUrl: https://gitlab.com

@@ -21,10 +21,49 @@ import parseGitUrl from 'git-url-parse';
 import { Octokit } from '@octokit/rest';
 
 export type RepoVisibilityOptions = 'private' | 'internal' | 'public';
+export type GithubBranchConfig = {
+  [branchName: string]: {
+    allowForcePush?: boolean;
+    allowDeletions?: boolean;
+    requireSignedCommits?: boolean;
+    enforceAdmins?: boolean;
+    /**
+     * Enforce Pull request reviews. Required when specifying any of
+     *  dismmissStaleReviews, requireCodeOwnerReviews or
+     *  requiredApprovingReviewCount
+     */
+    requirePRReviews?: boolean; // TODO
+    dismissStaleReviews?: boolean;
+    requireCodeOwnerReviews?: boolean;
+    requiredApprovingReviewCount?: number;
+    /**
+     * Enforce status checks. Required when specifying any of
+     *  requireUpToDateBeforeMerging or requiredContexts
+     */
+    requireStatusChecksBeforeMerging?: boolean; // TODO
+    requireUpToDateBeforeMerging?: boolean;
+    requiredContexts?: string[];
+  };
+};
+export type GithubPublisherConfig = {
+  repoVisibility: RepoVisibilityOptions;
+  readers: string[];
+  writers: string[];
+  enableAutomatedSecurityFixes?: boolean;
+  enableVulnerabilityAlerts?: boolean;
+  branchConfig?: GithubBranchConfig;
+};
 export class GithubPublisher implements PublisherBase {
   static async fromConfig(
     config: GitHubIntegrationConfig,
-    { repoVisibility }: { repoVisibility: RepoVisibilityOptions },
+    {
+      repoVisibility,
+      readers,
+      writers,
+      enableVulnerabilityAlerts,
+      enableAutomatedSecurityFixes,
+      branchConfig,
+    }: GithubPublisherConfig,
   ) {
     if (!config.token) {
       return undefined;
@@ -39,14 +78,18 @@ export class GithubPublisher implements PublisherBase {
       token: config.token,
       client: githubClient,
       repoVisibility,
+      readers,
+      writers,
+      enableAutomatedSecurityFixes,
+      enableVulnerabilityAlerts,
+      branchConfig,
     });
   }
   constructor(
     private readonly config: {
       token: string;
       client: Octokit;
-      repoVisibility: RepoVisibilityOptions;
-    },
+    } & GithubPublisherConfig,
   ) {}
 
   async publish({
@@ -63,6 +106,12 @@ export class GithubPublisher implements PublisherBase {
       access,
       name,
       owner,
+    });
+
+    await this.configureBranches({
+      owner,
+      name,
+      branchConfig: this.config.branchConfig,
     });
 
     await initRepoAndPush({
@@ -131,6 +180,129 @@ export class GithubPublisher implements PublisherBase {
       });
     }
 
+    for (const team of this.config.readers) {
+      await this.config.client.teams.addOrUpdateRepoPermissionsInOrg({
+        org: owner,
+        team_slug: team,
+        owner,
+        repo: name,
+        permission: 'pull',
+      });
+    }
+
+    for (const team of this.config.writers) {
+      await this.config.client.teams.addOrUpdateRepoPermissionsInOrg({
+        org: owner,
+        team_slug: team,
+        owner,
+        repo: name,
+        permission: 'push',
+      });
+    }
+
+    if (this.config.enableAutomatedSecurityFixes) {
+      this.config.client.repos.enableAutomatedSecurityFixes({
+        owner,
+        repo: name,
+      });
+    }
+
+    if (this.config.enableVulnerabilityAlerts) {
+      this.config.client.repos.enableVulnerabilityAlerts({
+        owner,
+        repo: name,
+      });
+    }
+
     return data?.clone_url;
+  }
+
+  private async configureBranches(opts: {
+    name: string;
+    owner: string;
+    branchConfig: GithubPublisherConfig['branchConfig'];
+  }) {
+    const { owner, name, branchConfig: branches = {} } = opts;
+
+    for (const branchName of Object.keys(branches)) {
+      const branchConfig = {
+        ...branches[branchName as keyof typeof branches],
+      };
+
+      if (branchConfig.requireSignedCommits) {
+        await this.config.client.repos.createCommitSignatureProtection({
+          owner,
+          repo: name,
+          branch: branchName,
+        });
+        delete branchConfig.requireSignedCommits;
+      }
+
+      const hasBranchProtectionChanges = Object.keys(branchConfig).length > 0;
+      if (hasBranchProtectionChanges) {
+        const {
+          data: existingConfig,
+        } = await this.config.client.repos.getBranchProtection({
+          owner,
+          repo: name,
+          branch: branchName,
+        });
+
+        // Set all values to the existing value unless specified in config:
+        await this.config.client.repos.updateBranchProtection({
+          owner,
+          repo: name,
+          branch: branchName,
+
+          required_status_checks: branchConfig.requireStatusChecksBeforeMerging
+            ? {
+                contexts:
+                  branchConfig.requiredContexts ??
+                  existingConfig.required_status_checks.contexts,
+                // this value is not returned from API "existingConfig". default false?
+                strict: branchConfig.requireUpToDateBeforeMerging ?? false,
+              }
+            : null,
+          required_pull_request_reviews:
+            branchConfig.requirePRReviews ??
+            existingConfig.required_pull_request_reviews
+              ? {
+                  dismiss_stale_reviews:
+                    branchConfig.dismissStaleReviews ??
+                    existingConfig.required_pull_request_reviews
+                      ?.dismiss_stale_reviews,
+                  require_code_owner_reviews:
+                    branchConfig.requireCodeOwnerReviews ??
+                    existingConfig.required_pull_request_reviews
+                      ?.require_code_owner_reviews,
+                  required_approving_review_count:
+                    branchConfig.requiredApprovingReviewCount ??
+                    existingConfig.required_pull_request_reviews
+                      ?.required_approving_review_count,
+                }
+              : null,
+          enforce_admins:
+            branchConfig.enforceAdmins ??
+            !!existingConfig.enforce_admins?.enabled,
+          allow_deletions:
+            branchConfig.allowDeletions ??
+            !!existingConfig.allow_deletions?.enabled,
+          allow_force_pushes:
+            branchConfig.allowForcePush ??
+            !!existingConfig.allow_force_pushes?.enabled,
+          // required field, just keep existing values
+          restrictions: {
+            teams:
+              existingConfig.restrictions?.teams
+                .map(team => team.slug || '')
+                .filter(Boolean) ?? [],
+            users:
+              existingConfig.restrictions?.users
+                .map(user => user.login || '')
+                .filter(Boolean) ?? [],
+          },
+        });
+      }
+    }
   }
 }
