@@ -18,33 +18,29 @@ import fs from 'fs-extra';
 import path from 'path';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { parseLocationAnnotation } from '../helpers';
-import { InputError, Git } from '@backstage/backend-common';
+import { Git } from '@backstage/backend-common';
 import { PreparerBase, PreparerOptions } from './types';
-import GitUriParser from 'git-url-parse';
+import parseGitUrl from 'git-url-parse';
+import { GitHubIntegrationConfig } from '@backstage/integration';
 
 export class GithubPreparer implements PreparerBase {
-  token?: string;
-
-  constructor(params: { token?: string } = {}) {
-    this.token = params.token;
+  static fromConfig(config: GitHubIntegrationConfig) {
+    return new GithubPreparer({ token: config.token });
   }
+
+  constructor(private readonly config: { token?: string }) {}
 
   async prepare(
     template: TemplateEntityV1alpha1,
     opts: PreparerOptions,
   ): Promise<string> {
-    const { protocol, location } = parseLocationAnnotation(template);
-    const workingDirectory = opts?.workingDirectory ?? os.tmpdir();
-    const { logger } = opts;
+    const { location } = parseLocationAnnotation(template);
+    const workingDirectory = opts.workingDirectory ?? os.tmpdir();
+    const logger = opts.logger;
 
-    if (!['github', 'url'].includes(protocol)) {
-      throw new InputError(
-        `Wrong location protocol: ${protocol}, should be 'url'`,
-      );
-    }
     const templateId = template.metadata.name;
 
-    const parsedGitLocation = GitUriParser(location);
+    const parsedGitLocation = parseGitUrl(location);
     const repositoryCheckoutUrl = parsedGitLocation.toString('https');
     const tempDir = await fs.promises.mkdtemp(
       path.join(workingDirectory, templateId),
@@ -57,9 +53,9 @@ export class GithubPreparer implements PreparerBase {
 
     const checkoutLocation = path.resolve(tempDir, templateDirectory);
 
-    const git = this.token
+    const git = this.config.token
       ? Git.fromAuth({
-          username: this.token,
+          username: this.config.token,
           password: 'x-oauth-basic',
           logger,
         })

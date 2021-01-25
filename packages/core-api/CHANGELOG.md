@@ -1,5 +1,11 @@
 # @backstage/core-api
 
+## 0.2.9
+
+### Patch Changes
+
+- ab0892358: Remove test dependencies from production package list
+
 ## 0.2.8
 
 ### Patch Changes

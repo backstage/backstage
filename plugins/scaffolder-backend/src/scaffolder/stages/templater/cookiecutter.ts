@@ -18,6 +18,7 @@ import { JsonValue } from '@backstage/config';
 import { runDockerContainer, runCommand } from './helpers';
 import { TemplaterBase, TemplaterRunOptions } from '.';
 import path from 'path';
+
 import { TemplaterRunResult } from './types';
 
 const commandExists = require('command-exists-promise');

@@ -17,6 +17,7 @@ import { JobProcessor } from './processor';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { StageInput } from './types';
 import { RequiredTemplateValues } from '../stages/templater';
+import parseGitUrl from 'git-url-parse';
 
 describe('JobProcessor', () => {
   const mockEntity: TemplateEntityV1alpha1 = {
@@ -61,7 +62,10 @@ describe('JobProcessor', () => {
 
   const mockValues: RequiredTemplateValues = {
     owner: 'blobby',
-    storePath: 'backstage/mock-repo',
+    storePath: 'https://github.com/backstage/mock-repo',
+    destination: {
+      git: parseGitUrl('https://github.com/backstage/mock-repo'),
+    },
   };
 
   describe('create', () => {

@@ -27,5 +27,8 @@ export interface Config {
       baseUrl: string;
       api: { [key: string]: string };
     };
+    bitbucket?: {
+      api: { [key: string]: string };
+    };
   };
 }

@@ -4,10 +4,6 @@ title: ADR004: Module Export Structure
 description: Architecture Decision Record (ADR) log on Module Export Structure
 ---
 
-| Created    | Status |
-| ---------- | ------ |
-| 2020-05-27 | Open   |
-
 ## Context
 
 With a growing number of exports of packages like `@backstage/core`, it is

@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import { errorApiRef, useApi } from '@backstage/core-api';
+import {
+  configApiRef,
+  EmptyState,
+  errorApiRef,
+  InfoCard,
+  Table,
+  useApi,
+} from '@backstage/core';
+import { readGitHubIntegrationConfigs } from '@backstage/integration';
+import { Button, Link } from '@material-ui/core';
+import React, { useEffect } from 'react';
+import { generatePath, Link as RouterLink } from 'react-router-dom';
 import { GITHUB_ACTIONS_ANNOTATION } from '../useProjectName';
 import { useWorkflowRuns } from '../useWorkflowRuns';
-import React, { useEffect } from 'react';
-import { EmptyState, InfoCard, Table } from '@backstage/core';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
-import { Button, Link } from '@material-ui/core';
-import { generatePath, Link as RouterLink } from 'react-router-dom';
 
 const firstLine = (message: string): string => message.split('\n')[0];
 
@@ -40,11 +47,17 @@ export const RecentWorkflowRunsCard = ({
   limit = 5,
   variant,
 }: Props) => {
+  const config = useApi(configApiRef);
   const errorApi = useApi(errorApiRef);
+  // TODO: Get github hostname from metadata annotation
+  const hostname = readGitHubIntegrationConfigs(
+    config.getOptionalConfigArray('integrations.github') ?? [],
+  )[0].host;
   const [owner, repo] = (
     entity?.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION] ?? '/'
   ).split('/');
   const [{ runs = [], loading, error }] = useWorkflowRuns({
+    hostname,
     owner,
     repo,
     branch,

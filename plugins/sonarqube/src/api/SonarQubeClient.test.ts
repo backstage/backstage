@@ -46,7 +46,7 @@ describe('SonarQubeClient', () => {
     server.use(
       rest.get(`${mockBaseUrl}/sonarqube/measures/search`, (req, res, ctx) => {
         expect(req.url.searchParams.toString()).toBe(
-          'projectKeys=our-service&metricKeys=alert_status%2Cbugs%2Creliability_rating%2Cvulnerabilities%2Csecurity_rating%2Ccode_smells%2Csqale_rating%2Ccoverage%2Cduplicated_lines_density',
+          'projectKeys=our-service&metricKeys=alert_status%2Cbugs%2Creliability_rating%2Cvulnerabilities%2Csecurity_rating%2Csecurity_hotspots_reviewed%2Csecurity_review_rating%2Ccode_smells%2Csqale_rating%2Ccoverage%2Cduplicated_lines_density',
         );
         return res(
           ctx.json({
@@ -78,6 +78,16 @@ describe('SonarQubeClient', () => {
               },
               {
                 metric: 'security_rating',
+                value: '1.0',
+                component: 'our-service',
+              },
+              {
+                metric: 'security_hotspots_reviewed',
+                value: '100',
+                component: 'our-service',
+              },
+              {
+                metric: 'security_review_rating',
                 value: '1.0',
                 component: 'our-service',
               },
@@ -123,6 +133,8 @@ describe('SonarQubeClient', () => {
           reliability_rating: '3.0',
           vulnerabilities: '4',
           security_rating: '1.0',
+          security_hotspots_reviewed: '100',
+          security_review_rating: '1.0',
           code_smells: '100',
           sqale_rating: '2.0',
           coverage: '55.5',
@@ -158,6 +170,8 @@ describe('SonarQubeClient', () => {
           reliability_rating: '3.0',
           vulnerabilities: '4',
           security_rating: '1.0',
+          security_hotspots_reviewed: '100',
+          security_review_rating: '1.0',
           code_smells: '100',
           sqale_rating: '2.0',
           coverage: '55.5',

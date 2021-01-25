@@ -20,10 +20,11 @@ import {
   getAzureFileFetchUrl,
   getAzureDownloadUrl,
   getAzureRequestOptions,
+  getAzureCommitsUrl,
 } from '@backstage/integration';
 import fetch from 'cross-fetch';
 import { Readable } from 'stream';
-import { NotFoundError } from '../errors';
+import { NotFoundError, NotModifiedError } from '../errors';
 import {
   ReaderFactory,
   ReadTreeOptions,
@@ -75,20 +76,42 @@ export class AzureUrlReader implements UrlReader {
     url: string,
     options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
-    const response = await fetch(
-      getAzureDownloadUrl(url),
-      getAzureRequestOptions(this.options, { Accept: 'application/zip' }),
+    // TODO: Support filepath based reading tree feature like other providers
+
+    // Get latest commit SHA
+
+    const commitsAzureResponse = await fetch(
+      getAzureCommitsUrl(url),
+      getAzureRequestOptions(this.options),
     );
-    if (!response.ok) {
-      const message = `Failed to read tree from ${url}, ${response.status} ${response.statusText}`;
-      if (response.status === 404) {
+    if (!commitsAzureResponse.ok) {
+      const message = `Failed to read tree from ${url}, ${commitsAzureResponse.status} ${commitsAzureResponse.statusText}`;
+      if (commitsAzureResponse.status === 404) {
         throw new NotFoundError(message);
       }
       throw new Error(message);
     }
 
-    return this.deps.treeResponseFactory.fromZipArchive({
-      stream: (response.body as unknown) as Readable,
+    const commitSha = (await commitsAzureResponse.json()).value[0].commitId;
+    if (options?.etag && options.etag === commitSha) {
+      throw new NotModifiedError();
+    }
+
+    const archiveAzureResponse = await fetch(
+      getAzureDownloadUrl(url),
+      getAzureRequestOptions(this.options, { Accept: 'application/zip' }),
+    );
+    if (!archiveAzureResponse.ok) {
+      const message = `Failed to read tree from ${url}, ${archiveAzureResponse.status} ${archiveAzureResponse.statusText}`;
+      if (archiveAzureResponse.status === 404) {
+        throw new NotFoundError(message);
+      }
+      throw new Error(message);
+    }
+
+    return await this.deps.treeResponseFactory.fromZipArchive({
+      stream: (archiveAzureResponse.body as unknown) as Readable,
+      etag: commitSha,
       filter: options?.filter,
     });
   }

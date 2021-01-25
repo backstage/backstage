@@ -61,6 +61,8 @@ export type CostInsightsApi = {
    * if a user has multiple groups, they are able to switch between groups to see costs for each.
    *
    * This method should be removed once the Backstage identity plugin provides the same concept.
+   *
+   * @param userId The login id for the current user
    */
   getUserGroups(userId: string): Promise<Group[]>;
 
@@ -68,11 +70,13 @@ export type CostInsightsApi = {
    * Get a list of cloud billing entities that belong to this group (projects in GCP, AWS has a
    * similar concept in billing accounts). These act as filters for the displayed costs, users can
    * choose whether they see all costs for a group, or those from a particular owned project.
+   *
+   * @param group The group id from getUserGroups or query parameters
    */
   getGroupProjects(group: string): Promise<Project[]>;
 
   /**
-   * Get daily cost aggregations for a given group and interval timeframe.
+   * Get daily cost aggregations for a given group and interval time frame.
    *
    * The return type includes an array of daily cost aggregations as well as statistics about the
    * change in cost over the intervals. Calculating these statistics requires us to bucket costs
@@ -90,7 +94,7 @@ export type CostInsightsApi = {
 
   /**
    * Get daily cost aggregations for a given billing entity (project in GCP, AWS has a similar
-   * concept in billing accounts) and interval timeframe.
+   * concept in billing accounts) and interval time frame.
    *
    * The return type includes an array of daily cost aggregations as well as statistics about the
    * change in cost over the intervals. Calculating these statistics requires us to bucket costs
@@ -107,7 +111,7 @@ export type CostInsightsApi = {
   getProjectDailyCost(project: string, intervals: string): Promise<Cost>;
 
   /**
-   * Get aggregations for a particular metric and interval timeframe. Teams
+   * Get aggregations for a particular metric and interval time frame. Teams
    * can see metrics important to their business in comparison to the growth
    * (or reduction) of a project or group's daily costs.
    *
@@ -118,7 +122,7 @@ export type CostInsightsApi = {
   getDailyMetricData(metric: string, intervals: string): Promise<MetricData>;
 
   /**
-   * Get cost aggregations for a particular cloud product and interval timeframe. This includes
+   * Get cost aggregations for a particular cloud product and interval time frame. This includes
    * total cost for the product, as well as a breakdown of particular entities that incurred cost
    * in this product. The type of entity depends on the product - it may be deployed services,
    * storage buckets, managed database instances, etc.
@@ -129,7 +133,8 @@ export type CostInsightsApi = {
    * The time period is supplied as a Duration rather than intervals, since this is always expected
    * to return data for two bucketed time period (e.g. month vs month, or quarter vs quarter).
    *
-   * @param options Options to use when fetching insights for a particular cloud product and interval timeframe.
+   * @param options Options to use when fetching insights for a particular cloud product and
+   *                interval time frame.
    */
   getProductInsights(options: ProductInsightsOptions): Promise<Entity>;
 

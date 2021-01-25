@@ -1,5 +1,63 @@
 # @backstage/plugin-techdocs
 
+## 0.5.4
+
+### Patch Changes
+
+- a5e27d5c1: Create type for TechDocsMetadata (#3716)
+
+  This change introduces a new type (TechDocsMetadata) in packages/techdocs-common. This type is then introduced in the endpoint response in techdocs-backend and in the api interface in techdocs (frontend).
+
+- Updated dependencies [def2307f3]
+- Updated dependencies [efd6ef753]
+- Updated dependencies [593632f07]
+- Updated dependencies [33846acfc]
+- Updated dependencies [a187b8ad0]
+- Updated dependencies [f04db53d7]
+- Updated dependencies [53c9c51f2]
+- Updated dependencies [a5e27d5c1]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/core@0.5.0
+  - @backstage/plugin-catalog@0.2.12
+  - @backstage/techdocs-common@0.3.5
+
+## 0.5.3
+
+### Patch Changes
+
+- dbe4450c3: Google Cloud authentication in TechDocs has been improved.
+
+  1. `techdocs.publisher.googleGcs.credentials` is now optional. If it is missing, `GOOGLE_APPLICATION_CREDENTIALS`
+     environment variable (and some other methods) will be used to authenticate.
+     Read more here https://cloud.google.com/docs/authentication/production
+
+  2. `techdocs.publisher.googleGcs.projectId` is no longer used. You can remove it from your `app-config.yaml`.
+
+- a6f9dca0d: Remove dependency on `@backstage/core-api`. No plugin should ever depend on that package; it's an internal concern whose important bits are re-exported by `@backstage/core` which is the public facing dependency to use.
+- b3b9445df: AWS S3 authentication in TechDocs has been improved.
+
+  1. `techdocs.publisher.awsS3.bucketName` is now the only required config. `techdocs.publisher.awsS3.credentials` and `techdocs.publisher.awsS3.region` are optional.
+
+  2. If `techdocs.publisher.awsS3.credentials` and `techdocs.publisher.awsS3.region` are missing, the AWS environment variables `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and `AWS_REGION` will be used. There are more better ways of setting up AWS authentication. Read the guide at https://backstage.io/docs/features/techdocs/using-cloud-storage
+
+- e5d12f705: Use `history.pushState` for hash link navigation.
+- Updated dependencies [68ad5af51]
+- Updated dependencies [f3b064e1c]
+- Updated dependencies [371f67ecd]
+- Updated dependencies [f1e74777a]
+- Updated dependencies [dbe4450c3]
+- Updated dependencies [c00488983]
+- Updated dependencies [265a7ab30]
+- Updated dependencies [5826d0973]
+- Updated dependencies [b3b9445df]
+- Updated dependencies [abbee6fff]
+- Updated dependencies [147fadcb9]
+  - @backstage/techdocs-common@0.3.3
+  - @backstage/catalog-model@0.6.1
+  - @backstage/plugin-catalog@0.2.11
+  - @backstage/core@0.4.4
+
 ## 0.5.2
 
 ### Patch Changes

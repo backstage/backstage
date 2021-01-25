@@ -1,5 +1,34 @@
 # @backstage/plugin-cloudbuild
 
+## 0.2.7
+
+### Patch Changes
+
+- Updated dependencies [def2307f3]
+- Updated dependencies [efd6ef753]
+- Updated dependencies [593632f07]
+- Updated dependencies [33846acfc]
+- Updated dependencies [a187b8ad0]
+- Updated dependencies [f04db53d7]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/core@0.5.0
+  - @backstage/plugin-catalog@0.2.12
+
+## 0.2.6
+
+### Patch Changes
+
+- 94fdf4955: Get rid of all usages of @octokit/types, and bump the rest of the octokit dependencies to the latest version
+- Updated dependencies [f3b064e1c]
+- Updated dependencies [c00488983]
+- Updated dependencies [265a7ab30]
+- Updated dependencies [abbee6fff]
+- Updated dependencies [147fadcb9]
+  - @backstage/catalog-model@0.6.1
+  - @backstage/plugin-catalog@0.2.11
+  - @backstage/core@0.4.4
+
 ## 0.2.5
 
 ### Patch Changes

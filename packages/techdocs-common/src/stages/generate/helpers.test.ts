@@ -80,14 +80,14 @@ describe('helpers', () => {
     const imageName = 'spotify/techdocs';
     const args = ['build', '-d', '/result'];
     const docsDir = os.tmpdir();
-    const resultDir = os.tmpdir();
+    const outputDir = os.tmpdir();
 
     it('should pull the techdocs docker container', async () => {
       await runDockerContainer({
         imageName,
         args,
         docsDir,
-        resultDir,
+        outputDir,
         dockerClient: mockDocker,
       });
 
@@ -103,7 +103,7 @@ describe('helpers', () => {
         imageName,
         args,
         docsDir,
-        resultDir,
+        outputDir,
         dockerClient: mockDocker,
       });
 
@@ -118,7 +118,7 @@ describe('helpers', () => {
           },
           WorkingDir: '/content',
           HostConfig: {
-            Binds: [`${docsDir}:/content`, `${resultDir}:/result`],
+            Binds: [`${docsDir}:/content`, `${outputDir}:/result`],
           },
         },
       );
@@ -129,7 +129,7 @@ describe('helpers', () => {
         imageName,
         args,
         docsDir,
-        resultDir,
+        outputDir,
         dockerClient: mockDocker,
       });
 
@@ -151,7 +151,7 @@ describe('helpers', () => {
             imageName,
             args,
             docsDir,
-            resultDir,
+            outputDir,
             dockerClient: mockDocker,
           }),
         ).rejects.toThrow(new RegExp(`.+: ${dockerError}`));
@@ -303,7 +303,7 @@ describe('helpers', () => {
       const updatedMkdocsYml = await fs.readFile('/mkdocs.yml');
 
       expect(updatedMkdocsYml.toString()).toContain(
-        "repo_url: 'https://github.com/backstage/backstage'",
+        'repo_url: https://github.com/backstage/backstage',
       );
     });
 
@@ -322,10 +322,10 @@ describe('helpers', () => {
       const updatedMkdocsYml = await fs.readFile('/mkdocs_with_repo_url.yml');
 
       expect(updatedMkdocsYml.toString()).toContain(
-        "repo_url: 'https://github.com/backstage/backstage'",
+        'repo_url: https://github.com/backstage/backstage',
       );
       expect(updatedMkdocsYml.toString()).not.toContain(
-        "repo_url: 'https://github.com/neworg/newrepo'",
+        'repo_url: https://github.com/neworg/newrepo',
       );
     });
   });

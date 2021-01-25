@@ -1,5 +1,305 @@
 # @backstage/create-app
 
+## 0.3.6
+
+### Patch Changes
+
+- d3947caf3: Fix accidental dependency on non-existent dependencies.
+- Updated dependencies [a4e636c8f]
+- Updated dependencies [099c5cf4f]
+- Updated dependencies [0ea002378]
+- Updated dependencies [a08db734c]
+  - @backstage/plugin-catalog@0.2.13
+  - @backstage/plugin-scaffolder-backend@0.5.1
+
+## 1.0.0
+
+### Minor Changes
+
+- ed6baab66: - Deprecating the `scaffolder.${provider}.token` auth duplication and favoring `integrations.${provider}` instead. If you receive deprecation warnings your config should change like the following:
+
+  ```yaml
+  scaffolder:
+    github:
+      token:
+        $env: GITHUB_TOKEN
+      visibility: public
+  ```
+
+  To something that looks like this:
+
+  ```yaml
+  integration:
+    github:
+      - host: github.com
+        token:
+          $env: GITHUB_TOKEN
+  scaffolder:
+    github:
+      visibility: public
+  ```
+
+  You can also configure multiple different hosts under the `integration` config like the following:
+
+  ```yaml
+  integration:
+    github:
+      - host: github.com
+        token:
+          $env: GITHUB_TOKEN
+      - host: ghe.mycompany.com
+        token:
+          $env: GITHUB_ENTERPRISE_TOKEN
+  ```
+
+  This of course is the case for all the providers respectively.
+
+  - Adding support for cross provider scaffolding, you can now create repositories in for example Bitbucket using a template residing in GitHub.
+
+  - Fix GitLab scaffolding so that it returns a `catalogInfoUrl` which automatically imports the project into the catalog.
+
+  - The `Store Path` field on the `scaffolder` frontend has now changed so that you require the full URL to the desired destination repository.
+
+  `backstage/new-repository` would become `https://github.com/backstage/new-repository` if provider was GitHub for example.
+
+### Patch Changes
+
+- a284f5bc1: Due to a package name change from `@kyma-project/asyncapi-react` to
+  `@asyncapi/react-component` the jest configuration in the root `package.json`
+  has to be updated:
+
+  ```diff
+     "jest": {
+       "transformModules": [
+  -      "@kyma-project/asyncapi-react
+  +      "@asyncapi/react-component"
+       ]
+     }
+  ```
+
+- 89278acab: Migrate to using `FlatRoutes` from `@backstage/core` for the root app routes.
+
+  This is the first step in migrating applications as mentioned here: https://backstage.io/docs/plugins/composability#porting-existing-apps.
+
+  To apply this change to an existing app, switch out the `Routes` component from `react-router` to `FlatRoutes` from `@backstage/core`.
+  This also allows you to remove any `/*` suffixes on the route paths. For example:
+
+  ```diff
+  import {
+     OAuthRequestDialog,
+     SidebarPage,
+     createRouteRef,
+  +  FlatRoutes,
+   } from '@backstage/core';
+   import { AppSidebar } from './sidebar';
+  -import { Route, Routes, Navigate } from 'react-router';
+  +import { Route, Navigate } from 'react-router';
+   import { Router as CatalogRouter } from '@backstage/plugin-catalog';
+  ...
+           <AppSidebar />
+  -        <Routes>
+  +        <FlatRoutes>
+  ...
+             <Route
+  -            path="/catalog/*"
+  +            path="/catalog"
+               element={<CatalogRouter EntityPage={EntityPage} />}
+             />
+  -          <Route path="/docs/*" element={<DocsRouter />} />
+  +          <Route path="/docs" element={<DocsRouter />} />
+  ...
+             <Route path="/settings" element={<SettingsRouter />} />
+  -        </Routes>
+  +        </FlatRoutes>
+         </SidebarPage>
+  ```
+
+- 26d3b24f3: fix routing and config for user-settings plugin
+
+  To make the corresponding change in your local app, add the following in your App.tsx
+
+  ```
+  import { Router as SettingsRouter } from '@backstage/plugin-user-settings';
+  ...
+  <Route path="/settings" element={<SettingsRouter />} />
+  ```
+
+  and the following to your plugins.ts:
+
+  ```
+  export { plugin as UserSettings } from '@backstage/plugin-user-settings';
+  ```
+
+- 92dbbcedd: Add `*-credentials.yaml` to gitignore to prevent accidental commits of sensitive credential information.
+
+  To apply this change to an existing installation, add these lines to your `.gitignore`
+
+  ```gitignore
+  # Sensitive credentials
+  *-credentials.yaml
+  ```
+
+- d176671d1: use `fromConfig` for all scaffolder helpers, and use the url protocol for app-config location entries.
+
+  To apply this change to your local installation, replace the contents of your `packages/backend/src/plugins/scaffolder.ts` with the following contents:
+
+  ```ts
+  import {
+    CookieCutter,
+    createRouter,
+    Preparers,
+    Publishers,
+    CreateReactAppTemplater,
+    Templaters,
+    CatalogEntityClient,
+  } from '@backstage/plugin-scaffolder-backend';
+  import { SingleHostDiscovery } from '@backstage/backend-common';
+  import type { PluginEnvironment } from '../types';
+  import Docker from 'dockerode';
+
+  export default async function createPlugin({
+    logger,
+    config,
+  }: PluginEnvironment) {
+    const cookiecutterTemplater = new CookieCutter();
+    const craTemplater = new CreateReactAppTemplater();
+    const templaters = new Templaters();
+    templaters.register('cookiecutter', cookiecutterTemplater);
+    templaters.register('cra', craTemplater);
+
+    const preparers = await Preparers.fromConfig(config, { logger });
+    const publishers = await Publishers.fromConfig(config, { logger });
+
+    const dockerClient = new Docker();
+
+    const discovery = SingleHostDiscovery.fromConfig(config);
+    const entityClient = new CatalogEntityClient({ discovery });
+
+    return await createRouter({
+      preparers,
+      templaters,
+      publishers,
+      logger,
+      config,
+      dockerClient,
+      entityClient,
+    });
+  }
+  ```
+
+  This will ensure that the `scaffolder-backend` package can add handlers for the `url` protocol which is becoming the standard when registering entities in the `catalog`
+
+- 9d1d1138e: Ensured that versions bumps of packages used in the app template trigger a release of this package when needed.
+- db05f7a35: Remove the `@types/helmet` dev dependency from the app template. This
+  dependency is now unused as the package `helmet` brings its own types.
+
+  To update your existing app, simply remove the `@types/helmet` dependency from
+  the `package.json` of your backend package.
+
+- Updated dependencies [def2307f3]
+- Updated dependencies [46bba09ea]
+- Updated dependencies [efd6ef753]
+- Updated dependencies [0b135e7e0]
+- Updated dependencies [593632f07]
+- Updated dependencies [2b514d532]
+- Updated dependencies [318a6af9f]
+- Updated dependencies [33846acfc]
+- Updated dependencies [294a70cab]
+- Updated dependencies [b604a9d41]
+- Updated dependencies [ac7be581a]
+- Updated dependencies [a187b8ad0]
+- Updated dependencies [0ea032763]
+- Updated dependencies [8855f61f6]
+- Updated dependencies [5345a1f98]
+- Updated dependencies [ed6baab66]
+- Updated dependencies [ad838c02f]
+- Updated dependencies [f04db53d7]
+- Updated dependencies [a5e27d5c1]
+- Updated dependencies [0643a3336]
+- Updated dependencies [debf359b5]
+- Updated dependencies [a2291d7cc]
+- Updated dependencies [f9ba00a1c]
+- Updated dependencies [09a370426]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/plugin-catalog-backend@0.5.4
+  - @backstage/plugin-github-actions@0.3.0
+  - @backstage/core@0.5.0
+  - @backstage/backend-common@0.5.0
+  - @backstage/plugin-catalog@0.2.12
+  - @backstage/plugin-catalog-import@0.3.5
+  - @backstage/cli@0.4.7
+  - @backstage/plugin-api-docs@0.4.3
+  - @backstage/plugin-scaffolder@0.4.0
+  - @backstage/plugin-scaffolder-backend@0.5.0
+  - @backstage/plugin-techdocs@0.5.4
+  - @backstage/plugin-techdocs-backend@0.5.4
+  - @backstage/plugin-auth-backend@0.2.11
+  - @backstage/plugin-lighthouse@0.2.8
+  - @backstage/plugin-circleci@0.2.6
+  - @backstage/plugin-search@0.2.6
+  - @backstage/plugin-explore@0.2.3
+  - @backstage/plugin-tech-radar@0.3.3
+  - @backstage/plugin-user-settings@0.2.4
+  - @backstage/plugin-app-backend@0.3.4
+  - @backstage/plugin-proxy-backend@0.2.4
+  - @backstage/plugin-rollbar-backend@0.1.7
+
+## 0.3.5
+
+### Patch Changes
+
+- 94fdf4955: Get rid of all usages of @octokit/types, and bump the rest of the octokit dependencies to the latest version
+- cc068c0d6: Bump the gitbeaker dependencies to 28.x.
+
+  To update your own installation, go through the `package.json` files of all of
+  your packages, and ensure that all dependencies on `@gitbeaker/node` or
+  `@gitbeaker/core` are at version `^28.0.2`. Then run `yarn install` at the root
+  of your repo.
+
+## 0.3.4
+
+### Patch Changes
+
+- 643dcec7c: noop release for create-app to force re-deploy
+
+## 0.3.3
+
+### Patch Changes
+
+- bd9c6719f: Bumping the version for `create-app` so that we can use the latest versions of internal packages and rebuild the version which is passed to the package.json
+
+## 0.3.2
+
+### Patch Changes
+
+- c2b52d9c5: Replace `register-component` plugin with new `catalog-import` plugin
+- fc6839f13: Bump `sqlite3` to v5.
+
+  To apply this change to an existing app, change the version of `sqlite3` in the `dependencies` of `packages/backend/package.json`:
+
+  ```diff
+       "pg": "^8.3.0",
+  -    "sqlite3": "^4.2.0",
+  +    "sqlite3": "^5.0.0",
+       "winston": "^3.2.1"
+  ```
+
+  Note that the `sqlite3` dependency may not be preset if you chose to use PostgreSQL when creating the app.
+
+- 8d68e4cdc: Removed the Circle CI sidebar item, since the target page does not exist.
+
+  To apply this change to an existing app, remove `"CircleCI"` sidebar item from `packages/app/src/sidebar.tsx`, and the `BuildIcon` import if it is unused.
+
+- 1773a5182: Removed lighthouse plugin from the default set up plugins, as it requires a separate Backend to function.
+
+  To apply this change to an existing app, remove the following:
+
+  1. The `lighthouse` block from `app-config.yaml`.
+  2. The `@backstage/plugin-lighthouse` dependency from `packages/app/package.json`.
+  3. The `@backstage/plugin-lighthouse` re-export from `packages/app/src/plugins.ts`.
+  4. The Lighthouse sidebar item from `packages/app/src/sidebar.tsx`, and the `RuleIcon` import if it is unused.
+
 ## 0.3.1
 
 ### Patch Changes

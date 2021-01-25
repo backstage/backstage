@@ -45,7 +45,7 @@ export interface Config {
       /**
        * attr: 'techdocs' - accepts a string value
        * e.g. type: 'docker'
-       * aleternatives: 'local' etc.
+       * alternatives: 'local' etc.
        * @see http://backstage.io/docs/features/techdocs/configuration
        */
       techdocs: 'local' | 'docker';
@@ -59,16 +59,66 @@ export interface Config {
           /**
            * attr: 'type' - accepts a string value
            * e.g. type: 'local'
-           * aleternatives: 'googleGcs' etc.
+           * alternatives: 'googleGcs' etc.
            * @see http://backstage.io/docs/features/techdocs/configuration
            */
-          type: 'local' | 'awsS3';
+          type: 'local';
+        }
+      | {
+          /**
+           * attr: 'type' - accepts a string value
+           * e.g. type: 'awsS3'
+           * alternatives: 'googleGcs' etc.
+           * @see http://backstage.io/docs/features/techdocs/configuration
+           */
+          type: 'awsS3';
+
+          /**
+           * awsS3 required when 'type' is set to awsS3
+           */
+          awsS3?: {
+            /**
+             * (Optional) Credentials used to access a storage bucket.
+             * If not set, environment variables or aws config file will be used to authenticate.
+             * https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-environment.html
+             * https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-shared.html
+             * @visibility secret
+             */
+            credentials?: {
+              /**
+               * User access key id
+               * attr: 'accessKeyId' - accepts a string value
+               * @visibility secret
+               */
+              accessKeyId: string;
+              /**
+               * User secret access key
+               * attr: 'secretAccessKey' - accepts a string value
+               * @visibility secret
+               */
+              secretAccessKey: string;
+            };
+            /**
+             * (Required) Cloud Storage Bucket Name
+             * attr: 'bucketName' - accepts a string value
+             * @visibility backend
+             */
+            bucketName: string;
+            /**
+             * (Optional) AWS Region.
+             * If not set, AWS_REGION environment variable or aws config file will be used.
+             * https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-region.html
+             * attr: 'region' - accepts a string value
+             * @visibility secret
+             */
+            region?: string;
+          };
         }
       | {
           /**
            * attr: 'type' - accepts a string value
            * e.g. type: 'googleGcs'
-           * aleternatives: 'googleGcs' etc.
+           * alternatives: 'googleGcs' etc.
            * @see http://backstage.io/docs/features/techdocs/configuration
            */
           type: 'googleGcs';
@@ -78,23 +128,19 @@ export interface Config {
            */
           googleGcs?: {
             /**
-             * API key used to write to a storage bucket.
+             * (Required) Cloud Storage Bucket Name
+             * attr: 'bucketName' - accepts a string value
+             * @visibility backend
+             */
+            bucketName: string;
+            /**
+             * (Optional) API key used to write to a storage bucket.
+             * If not set, environment variables will be used to authenticate.
+             * Read more: https://cloud.google.com/docs/authentication/production
              * attr: 'credentials' - accepts a string value
              * @visibility secret
              */
-            credentials: string;
-            /**
-             * GCP Project ID where the Cloud Storage Bucket is hosted.
-             * attr: 'projectId' - accepts a string value
-             * @visibility secret
-             */
-            projectId: string;
-            /**
-             * Cloud Storage Bucket Name
-             * attr: 'bucketName' - accepts a string value
-             * @visibility secret
-             */
-            bucketName: string;
+            credentials?: string;
           };
         };
   };

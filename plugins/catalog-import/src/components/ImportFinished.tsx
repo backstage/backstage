@@ -19,7 +19,7 @@ import { Alert } from '@material-ui/lab';
 import { Button, Grid, Link } from '@material-ui/core';
 
 type Props = {
-  type: 'repo' | 'file';
+  type: 'tree' | 'file';
   nextStep: (options?: { reset: boolean }) => void;
   PRLink: string;
 };
@@ -29,13 +29,13 @@ export const ImportFinished = ({ nextStep, PRLink, type }: Props) => {
     <Grid container direction="column" spacing={1}>
       <Grid item>
         <Alert severity="success">
-          {type === 'repo'
+          {type === 'tree'
             ? 'Pull requests have been successfully opened. You can start again to import more repositories'
             : 'Entity added to catalog successfully'}
         </Alert>
       </Grid>
       <Grid item>
-        {type === 'repo' ? (
+        {type === 'tree' ? (
           <Link
             href={PRLink}
             style={{ marginRight: '8px' }}

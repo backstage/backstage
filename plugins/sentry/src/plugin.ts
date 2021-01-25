@@ -41,4 +41,7 @@ export const plugin = createPlugin({
         ),
     }),
   ],
+  routes: {
+    root: rootRouteRef,
+  },
 });

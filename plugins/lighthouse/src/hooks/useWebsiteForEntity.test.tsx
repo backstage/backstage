@@ -15,7 +15,7 @@
  */
 import React, { PropsWithChildren } from 'react';
 import { renderHook } from '@testing-library/react-hooks';
-import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core-api';
+import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
 import { lighthouseApiRef, WebsiteListResponse } from '../api';
 import { useWebsiteForEntity } from './useWebsiteForEntity';
 import { EntityContext } from '@backstage/plugin-catalog';

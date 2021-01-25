@@ -15,7 +15,7 @@
  */
 import { useEntity } from '@backstage/plugin-catalog';
 import { LIGHTHOUSE_WEBSITE_URL_ANNOTATION } from '../../constants';
-import { errorApiRef, useApi } from '@backstage/core-api';
+import { errorApiRef, useApi } from '@backstage/core';
 import { lighthouseApiRef } from '../api';
 import { useAsync } from 'react-use';
 

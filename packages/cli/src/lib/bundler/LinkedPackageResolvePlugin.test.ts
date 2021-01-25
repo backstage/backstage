@@ -84,6 +84,23 @@ describe('LinkedPackageResolvePlugin', () => {
     expect(callbackFalse).toHaveBeenCalledWith();
     expect(doResolve).toHaveBeenCalledTimes(0);
 
+    // Internal modules with a path prefix of an external module
+    const callbackY = jest.fn();
+    tap(
+      {
+        request: path.resolve(root, 'external-aa/src/module.ts'),
+        path: path.resolve(root, 'external-aa/src'),
+        context: {
+          issuer: path.resolve(root, 'external-aa/src/index.ts'),
+        },
+      },
+      'some-context',
+      callbackY,
+    );
+    expect(callbackY).toHaveBeenCalledTimes(1);
+    expect(callbackY).toHaveBeenCalledWith();
+    expect(doResolve).toHaveBeenCalledTimes(0);
+
     // External modules have their path and issuer context rewritten, but not the request
     const callbackA = jest.fn();
     tap(

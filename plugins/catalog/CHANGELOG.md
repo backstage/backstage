@@ -1,5 +1,59 @@
 # @backstage/plugin-catalog
 
+## 0.2.13
+
+### Patch Changes
+
+- a4e636c8f: Hide the kind of owners in the about card if it's the default kind (group)
+- 099c5cf4f: Show the parent component in the about card (via partOf relationship)
+- a08db734c: Remove the `WelcomeBanner` that links to a plugin that is not longer wired into Backstage instances
+
+## 0.2.12
+
+### Patch Changes
+
+- 593632f07: Derive the list of to-delete entities in the `UnregisterEntityDialog` from the `backstage.io/managed-by-origin-location` annotation.
+  The dialog also rejects deleting entities that are created by the `bootstrap:bootstrap` location.
+- 33846acfc: Display the owner, system, and domain as links to the entity pages in the about card.
+  Only display fields in the about card that are applicable to the entity kind.
+- f04db53d7: Display systems in catalog table and make both owner and system link to the entity pages.
+  The owner field is now taken from the relations of the entity instead of its spec.
+- Updated dependencies [def2307f3]
+- Updated dependencies [efd6ef753]
+- Updated dependencies [a187b8ad0]
+- Updated dependencies [ed6baab66]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/core@0.5.0
+  - @backstage/plugin-scaffolder@0.4.0
+  - @backstage/catalog-client@0.3.5
+
+## 0.2.11
+
+### Patch Changes
+
+- c00488983: Enable catalog table actions for all location types.
+
+  The edit button has had support for other providers for a while and there is
+  no specific reason the View in GitHub cannot work for all locations. This
+  change also replaces the GitHub icon with the OpenInNew icon.
+
+- Updated dependencies [f3b064e1c]
+- Updated dependencies [265a7ab30]
+- Updated dependencies [abbee6fff]
+- Updated dependencies [147fadcb9]
+  - @backstage/catalog-model@0.6.1
+  - @backstage/core@0.4.4
+
+## 0.2.10
+
+### Patch Changes
+
+- 9c09a364f: Remove the unused dependency to `@backstage/plugin-techdocs`.
+- Updated dependencies [8e083f41f]
+- Updated dependencies [947d3c269]
+  - @backstage/plugin-scaffolder@0.3.6
+
 ## 0.2.9
 
 ### Patch Changes

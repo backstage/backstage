@@ -39,6 +39,24 @@ type CostInsightsNavigationProps = {
   products: Maybe<Product[]>;
 };
 
+const NavigationMenuItem = ({ navigation, icon, title }: NavigationItem) => {
+  const classes = useStyles();
+  const [, setScroll] = useScroll();
+  return (
+    <MenuItem
+      button
+      data-testid={`menu-item-${navigation}`}
+      className={classes.menuItem}
+      onClick={() => setScroll(navigation)}
+    >
+      <ListItemIcon className={classes.listItemIcon}>{icon}</ListItemIcon>
+      <ListItemText
+        primary={<Typography className={classes.title}>{title}</Typography>}
+      />
+    </MenuItem>
+  );
+};
+
 export const CostInsightsNavigation = React.memo(
   ({ alerts, products }: CostInsightsNavigationProps) => {
     const classes = useStyles();
@@ -102,22 +120,3 @@ export const CostInsightsNavigation = React.memo(
     );
   },
 );
-
-const NavigationMenuItem = ({ navigation, icon, title }: NavigationItem) => {
-  const classes = useStyles();
-  const [, setScroll] = useScroll();
-
-  return (
-    <MenuItem
-      button
-      data-testid={`menu-item-${navigation}`}
-      className={classes.menuItem}
-      onClick={() => setScroll(navigation)}
-    >
-      <ListItemIcon className={classes.listItemIcon}>{icon}</ListItemIcon>
-      <ListItemText
-        primary={<Typography className={classes.title}>{title}</Typography>}
-      />
-    </MenuItem>
-  );
-};

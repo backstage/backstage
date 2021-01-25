@@ -36,6 +36,10 @@ export interface Config {
      * @visibility frontend
      */
     baseUrl: string;
+
+    // Use @items.<name> to assign annotations to primitive array items
+    /** @items.visibility frontend */
+    myItems: string[];
   };
 }
 ```

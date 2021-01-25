@@ -16,6 +16,8 @@
 import fetch from 'cross-fetch';
 import express from 'express';
 import fs from 'fs-extra';
+import path from 'path';
+import os from 'os';
 import { Logger } from 'winston';
 import { Entity, EntityName } from '@backstage/catalog-model';
 import {
@@ -23,12 +25,27 @@ import {
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
-import { PublisherBase, PublishRequest, PublishResponse } from './types';
+import {
+  PublisherBase,
+  PublishRequest,
+  PublishResponse,
+  TechDocsMetadata,
+} from './types';
 
-const staticDocsDir = resolvePackagePath(
-  '@backstage/plugin-techdocs-backend',
-  'static/docs',
-);
+// TODO: Use a more persistent storage than node_modules or /tmp directory.
+// Make it configurable with techdocs.publisher.local.publishDirectory
+let staticDocsDir = '';
+try {
+  staticDocsDir = resolvePackagePath(
+    '@backstage/plugin-techdocs-backend',
+    'static/docs',
+  );
+} catch (err) {
+  // This will most probably never be used.
+  // The try/catch is introduced so that techdocs-cli can import @backstage/techdocs-common
+  // on CI/CD without installing techdocs backend plugin.
+  staticDocsDir = os.tmpdir();
+}
 
 /**
  * Local publisher which uses the local filesystem to store the generated static files. It uses a directory
@@ -39,6 +56,9 @@ export class LocalPublish implements PublisherBase {
   private readonly logger: Logger;
   private readonly discovery: PluginEndpointDiscovery;
 
+  // TODO: Use a static fromConfig method to create a LocalPublish instance, similar to aws/gcs publishers.
+  // Move the logic of setting staticDocsDir based on config over to fromConfig,
+  // and set the value as a class parameter.
   constructor(
     config: Config,
     logger: Logger,
@@ -52,9 +72,8 @@ export class LocalPublish implements PublisherBase {
   publish({ entity, directory }: PublishRequest): Promise<PublishResponse> {
     const entityNamespace = entity.metadata.namespace ?? 'default';
 
-    const publishDir = resolvePackagePath(
-      '@backstage/plugin-techdocs-backend',
-      'static/docs',
+    const publishDir = path.join(
+      staticDocsDir,
       entityNamespace,
       entity.kind,
       entity.metadata.name,
@@ -88,7 +107,7 @@ export class LocalPublish implements PublisherBase {
     });
   }
 
-  fetchTechDocsMetadata(entityName: EntityName): Promise<string> {
+  fetchTechDocsMetadata(entityName: EntityName): Promise<TechDocsMetadata> {
     return new Promise((resolve, reject) => {
       this.discovery.getBaseUrl('techdocs').then(techdocsApiUrl => {
         const storageUrl = new URL(
@@ -102,7 +121,7 @@ export class LocalPublish implements PublisherBase {
           .then(response =>
             response
               .json()
-              .then(techdocsMetadataJson => resolve(techdocsMetadataJson))
+              .then(techdocsMetadata => resolve(techdocsMetadata))
               .catch(err => {
                 reject(
                   `Unable to parse metadata JSON for ${entityRootDir}. Error: ${err}`,

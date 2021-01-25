@@ -15,7 +15,7 @@
  */
 
 import { LocationSpec } from '@backstage/catalog-model';
-import gitUrlParse from 'git-url-parse';
+import parseGitUrl from 'git-url-parse';
 
 /**
  * Creates the edit link for components yaml file
@@ -26,7 +26,7 @@ import gitUrlParse from 'git-url-parse';
 
 export const createEditLink = (location: LocationSpec): string | undefined => {
   try {
-    const urlData = gitUrlParse(location.target);
+    const urlData = parseGitUrl(location.target);
     const url = new URL(location.target);
     switch (location.type) {
       case 'github':
@@ -64,7 +64,7 @@ export const createEditLink = (location: LocationSpec): string | undefined => {
  * @returns string representing type of icon to be used
  */
 export const determineUrlType = (url: string): string => {
-  const urlData = gitUrlParse(url);
+  const urlData = parseGitUrl(url);
 
   if (urlData.source === 'github.com') {
     return 'github';

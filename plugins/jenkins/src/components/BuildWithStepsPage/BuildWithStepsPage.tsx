@@ -47,12 +47,6 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const Page = () => (
-  <Content>
-    <BuildWithStepsView />
-  </Content>
-);
-
 const BuildWithStepsView = () => {
   const { owner, repo } = useProjectSlugFromEntity();
   const { branch, buildNumber } = useParams();
@@ -129,6 +123,11 @@ const BuildWithStepsView = () => {
     </div>
   );
 };
+const Page = () => (
+  <Content>
+    <BuildWithStepsView />
+  </Content>
+);
 
 export default Page;
 export { BuildWithStepsView as BuildWithSteps };

@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 import { Processor, Job, StageContext, StageInput } from './types';
-import { JsonValue } from '@backstage/config';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import * as uuid from 'uuid';
 import Docker from 'dockerode';
-import { RequiredTemplateValues, TemplaterBase } from '../stages/templater';
+import { TemplaterValues, TemplaterBase } from '../stages/templater';
 import { PreparerBuilder } from '../stages/prepare';
 import { makeLogStream } from './logger';
 
@@ -42,7 +41,7 @@ export class JobProcessor implements Processor {
     stages,
   }: {
     entity: TemplateEntityV1alpha1;
-    values: RequiredTemplateValues & Record<string, JsonValue>;
+    values: TemplaterValues;
     stages: StageInput[];
   }): Job {
     const id = uuid.v4();
@@ -120,7 +119,7 @@ export class JobProcessor implements Processor {
           // Log to the current stage the error that occurred and fail the stage.
           stage.status = 'FAILED';
           logger.error(`Stage failed with error: ${error.message}`);
-
+          logger.debug(error.stack);
           // Throw the error so the job can be failed too.
           throw error;
         } finally {

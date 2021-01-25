@@ -68,9 +68,6 @@ export class PluginImpl<
             options,
           });
         },
-        registerRoute(path, component, options) {
-          outputs.push({ type: 'legacy-route', path, component, options });
-        },
       },
       featureFlags: {
         register(name) {

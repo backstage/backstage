@@ -101,6 +101,8 @@ function getStatusCode(error: Error): number {
 
   // Handle well-known error types
   switch (error.name) {
+    case errors.NotModifiedError.name:
+      return 304;
     case errors.InputError.name:
       return 400;
     case errors.AuthenticationError.name:

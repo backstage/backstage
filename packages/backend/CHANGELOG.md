@@ -1,5 +1,77 @@
 # example-backend
 
+## 0.2.12
+
+### Patch Changes
+
+- Updated dependencies [def2307f3]
+- Updated dependencies [d54857099]
+- Updated dependencies [0b135e7e0]
+- Updated dependencies [318a6af9f]
+- Updated dependencies [294a70cab]
+- Updated dependencies [ac7be581a]
+- Updated dependencies [0ea032763]
+- Updated dependencies [5345a1f98]
+- Updated dependencies [ed6baab66]
+- Updated dependencies [ad838c02f]
+- Updated dependencies [a5e27d5c1]
+- Updated dependencies [0643a3336]
+- Updated dependencies [a2291d7cc]
+- Updated dependencies [f9ba00a1c]
+- Updated dependencies [09a370426]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/plugin-catalog-backend@0.5.4
+  - @backstage/plugin-kubernetes-backend@0.2.5
+  - @backstage/backend-common@0.5.0
+  - @backstage/plugin-scaffolder-backend@0.5.0
+  - @backstage/plugin-techdocs-backend@0.5.4
+  - @backstage/plugin-auth-backend@0.2.11
+  - example-app@0.2.12
+  - @backstage/plugin-kafka-backend@0.1.1
+  - @backstage/plugin-app-backend@0.3.4
+  - @backstage/plugin-graphql-backend@0.1.5
+  - @backstage/plugin-proxy-backend@0.2.4
+  - @backstage/plugin-rollbar-backend@0.1.7
+
+## 0.2.11
+
+### Patch Changes
+
+- cc068c0d6: Bump the gitbeaker dependencies to 28.x.
+
+  To update your own installation, go through the `package.json` files of all of
+  your packages, and ensure that all dependencies on `@gitbeaker/node` or
+  `@gitbeaker/core` are at version `^28.0.2`. Then run `yarn install` at the root
+  of your repo.
+
+- Updated dependencies [68ad5af51]
+- Updated dependencies [5a9a7e7c2]
+- Updated dependencies [f3b064e1c]
+- Updated dependencies [94fdf4955]
+- Updated dependencies [cc068c0d6]
+- Updated dependencies [ade6b3bdf]
+- Updated dependencies [468579734]
+- Updated dependencies [cb7af51e7]
+- Updated dependencies [abbee6fff]
+- Updated dependencies [147fadcb9]
+- Updated dependencies [711ba55a2]
+  - @backstage/plugin-techdocs-backend@0.5.3
+  - @backstage/plugin-kubernetes-backend@0.2.4
+  - @backstage/catalog-model@0.6.1
+  - @backstage/plugin-catalog-backend@0.5.3
+  - @backstage/plugin-scaffolder-backend@0.4.1
+  - @backstage/plugin-auth-backend@0.2.10
+  - @backstage/backend-common@0.4.3
+
+## 0.2.10
+
+### Patch Changes
+
+- Updated dependencies [5eb8c9b9e]
+- Updated dependencies [7e3451700]
+  - @backstage/plugin-scaffolder-backend@0.4.0
+
 ## 0.2.8
 
 ### Patch Changes

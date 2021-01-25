@@ -63,6 +63,7 @@ import {
   UserProfileCard,
 } from '@backstage/plugin-org';
 import { Router as SentryRouter } from '@backstage/plugin-sentry';
+import { Router as KafkaRouter } from '@backstage/plugin-kafka';
 import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
 import { Button, Grid } from '@material-ui/core';
 import {
@@ -242,6 +243,11 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
       path="/code-insights"
       title="Code Insights"
       element={<GitHubInsightsRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/kafka/*"
+      title="Kafka"
+      element={<KafkaRouter entity={entity} />}
     />
   </EntityPageLayout>
 );

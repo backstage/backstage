@@ -17,7 +17,10 @@
 import {
   ApiEntity,
   ComponentEntity,
+  DomainEntity,
   GroupEntity,
+  ResourceEntity,
+  SystemEntity,
   UserEntity,
 } from '@backstage/catalog-model';
 import { BuiltinKindsEntityProcessor } from './BuiltinKindsEntityProcessor';
@@ -38,15 +41,17 @@ describe('BuiltinKindsEntityProcessor', () => {
         spec: {
           type: 'service',
           owner: 'o',
+          subcomponentOf: 's',
           lifecycle: 'l',
           providesApis: ['b'],
           consumesApis: ['c'],
+          system: 's',
         },
       };
 
       await processor.postProcessEntity(entity, location, emit);
 
-      expect(emit).toBeCalledTimes(6);
+      expect(emit).toBeCalledTimes(10);
       expect(emit).toBeCalledWith({
         type: 'relation',
         relation: {
@@ -95,6 +100,38 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'API', namespace: 'default', name: 'c' },
         },
       });
+      expect(emit).toBeCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Component', namespace: 'default', name: 's' },
+          type: 'hasPart',
+          target: { kind: 'Component', namespace: 'default', name: 'n' },
+        },
+      });
+      expect(emit).toBeCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Component', namespace: 'default', name: 'n' },
+          type: 'partOf',
+          target: { kind: 'Component', namespace: 'default', name: 's' },
+        },
+      });
+      expect(emit).toBeCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'System', namespace: 'default', name: 's' },
+          type: 'hasPart',
+          target: { kind: 'Component', namespace: 'default', name: 'n' },
+        },
+      });
+      expect(emit).toBeCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Component', namespace: 'default', name: 'n' },
+          type: 'partOf',
+          target: { kind: 'System', namespace: 'default', name: 's' },
+        },
+      });
     });
 
     it('generates relations for api entities', async () => {
@@ -107,12 +144,13 @@ describe('BuiltinKindsEntityProcessor', () => {
           owner: 'o',
           lifecycle: 'l',
           definition: 'd',
+          system: 's',
         },
       };
 
       await processor.postProcessEntity(entity, location, emit);
 
-      expect(emit).toBeCalledTimes(2);
+      expect(emit).toBeCalledTimes(4);
       expect(emit).toBeCalledWith({
         type: 'relation',
         relation: {
@@ -125,6 +163,150 @@ describe('BuiltinKindsEntityProcessor', () => {
         type: 'relation',
         relation: {
           source: { kind: 'API', namespace: 'default', name: 'n' },
+          type: 'ownedBy',
+          target: { kind: 'Group', namespace: 'default', name: 'o' },
+        },
+      });
+      expect(emit).toBeCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'System', namespace: 'default', name: 's' },
+          type: 'hasPart',
+          target: { kind: 'API', namespace: 'default', name: 'n' },
+        },
+      });
+      expect(emit).toBeCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'API', namespace: 'default', name: 'n' },
+          type: 'partOf',
+          target: { kind: 'System', namespace: 'default', name: 's' },
+        },
+      });
+    });
+
+    it('generates relations for resource entities', async () => {
+      const entity: ResourceEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Resource',
+        metadata: { name: 'n' },
+        spec: {
+          type: 'database',
+          owner: 'o',
+          system: 's',
+        },
+      };
+
+      await processor.postProcessEntity(entity, location, emit);
+
+      expect(emit).toBeCalledTimes(4);
+      expect(emit).toBeCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Group', namespace: 'default', name: 'o' },
+          type: 'ownerOf',
+          target: { kind: 'Resource', namespace: 'default', name: 'n' },
+        },
+      });
+      expect(emit).toBeCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Resource', namespace: 'default', name: 'n' },
+          type: 'ownedBy',
+          target: { kind: 'Group', namespace: 'default', name: 'o' },
+        },
+      });
+      expect(emit).toBeCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'System', namespace: 'default', name: 's' },
+          type: 'hasPart',
+          target: { kind: 'Resource', namespace: 'default', name: 'n' },
+        },
+      });
+      expect(emit).toBeCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Resource', namespace: 'default', name: 'n' },
+          type: 'partOf',
+          target: { kind: 'System', namespace: 'default', name: 's' },
+        },
+      });
+    });
+
+    it('generates relations for system entities', async () => {
+      const entity: SystemEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'System',
+        metadata: { name: 'n' },
+        spec: {
+          owner: 'o',
+          domain: 'd',
+        },
+      };
+
+      await processor.postProcessEntity(entity, location, emit);
+
+      expect(emit).toBeCalledTimes(4);
+      expect(emit).toBeCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Group', namespace: 'default', name: 'o' },
+          type: 'ownerOf',
+          target: { kind: 'System', namespace: 'default', name: 'n' },
+        },
+      });
+      expect(emit).toBeCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'System', namespace: 'default', name: 'n' },
+          type: 'ownedBy',
+          target: { kind: 'Group', namespace: 'default', name: 'o' },
+        },
+      });
+      expect(emit).toBeCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Domain', namespace: 'default', name: 'd' },
+          type: 'hasPart',
+          target: { kind: 'System', namespace: 'default', name: 'n' },
+        },
+      });
+      expect(emit).toBeCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'System', namespace: 'default', name: 'n' },
+          type: 'partOf',
+          target: { kind: 'Domain', namespace: 'default', name: 'd' },
+        },
+      });
+    });
+
+    it('generates relations for domain entities', async () => {
+      const entity: DomainEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Domain',
+        metadata: { name: 'n' },
+        spec: {
+          owner: 'o',
+        },
+      };
+
+      await processor.postProcessEntity(entity, location, emit);
+
+      expect(emit).toBeCalledTimes(2);
+      expect(emit).toBeCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Group', namespace: 'default', name: 'o' },
+          type: 'ownerOf',
+          target: { kind: 'Domain', namespace: 'default', name: 'n' },
+        },
+      });
+      expect(emit).toBeCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Domain', namespace: 'default', name: 'n' },
           type: 'ownedBy',
           target: { kind: 'Group', namespace: 'default', name: 'o' },
         },

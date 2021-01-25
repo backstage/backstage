@@ -55,6 +55,7 @@ jobs:
 
       - name: tsc
         run: yarn tsc
+
       - name: build
         run: yarn build
 

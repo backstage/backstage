@@ -32,6 +32,19 @@ export type ReadTreeOptions = {
    * If no filter is provided all files are extracted.
    */
   filter?(path: string): boolean;
+
+  /**
+   * An etag can be provided to check whether readTree's response has changed from a previous execution.
+   *
+   * In the readTree() response, an etag is returned along with the tree blob. The etag is a unique identifer
+   * of the tree blob, usually the commit SHA or etag from the target.
+   *
+   * When a etag is given in ReadTreeOptions, readTree will first compare the etag against the etag
+   * on the target branch. If they match, readTree will throw a NotModifiedError indicating that the readTree
+   * response will not differ from the previous response which included this particular etag. If they mismatch,
+   * readTree will return the rest of ReadTreeResponse along with a new etag.
+   */
+  etag?: string;
 };
 
 /**
@@ -70,5 +83,14 @@ export type ReadTreeResponseDirOptions = {
 export type ReadTreeResponse = {
   files(): Promise<ReadTreeResponseFile[]>;
   archive(): Promise<NodeJS.ReadableStream>;
+
+  /**
+   * dir() extracts the tree response into a directory and returns the path of the directory.
+   */
   dir(options?: ReadTreeResponseDirOptions): Promise<string>;
+
+  /**
+   * A unique identifer of the tree blob, usually the commit SHA or etag from the target.
+   */
+  etag: string;
 };

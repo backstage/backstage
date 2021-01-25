@@ -23,9 +23,9 @@ import {
   readBitbucketIntegrationConfigs,
 } from '@backstage/integration';
 import fetch from 'cross-fetch';
-import parseGitUri from 'git-url-parse';
+import parseGitUrl from 'git-url-parse';
 import { Readable } from 'stream';
-import { NotFoundError } from '../errors';
+import { NotFoundError, NotModifiedError } from '../errors';
 import { ReadTreeResponseFactory } from './tree';
 import {
   ReaderFactory,
@@ -101,33 +101,52 @@ export class BitbucketUrlReader implements UrlReader {
     url: string,
     options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
-    const gitUrl: parseGitUri.GitUrl = parseGitUri(url);
-    const { name: repoName, owner: project, resource, filepath } = gitUrl;
+    const { filepath } = parseGitUrl(url);
 
-    const isHosted = resource === 'bitbucket.org';
+    const lastCommitShortHash = await this.getLastCommitShortHash(url);
+    if (options?.etag && options.etag === lastCommitShortHash) {
+      throw new NotModifiedError();
+    }
 
     const downloadUrl = await getBitbucketDownloadUrl(url, this.config);
-    const response = await fetch(
+    const archiveBitbucketResponse = await fetch(
       downloadUrl,
       getBitbucketRequestOptions(this.config),
     );
-    if (!response.ok) {
-      const message = `Failed to read tree from ${url}, ${response.status} ${response.statusText}`;
-      if (response.status === 404) {
+    if (!archiveBitbucketResponse.ok) {
+      const message = `Failed to read tree from ${url}, ${archiveBitbucketResponse.status} ${archiveBitbucketResponse.statusText}`;
+      if (archiveBitbucketResponse.status === 404) {
         throw new NotFoundError(message);
       }
       throw new Error(message);
     }
 
-    let folderPath = `${project}-${repoName}`;
-    if (isHosted) {
-      const lastCommitShortHash = await this.getLastCommitShortHash(url);
-      folderPath = `${project}-${repoName}-${lastCommitShortHash}`;
+    // Get the filename of archive from the header of the response
+    const contentDispositionHeader = archiveBitbucketResponse.headers.get(
+      'content-disposition',
+    ) as string;
+    if (!contentDispositionHeader) {
+      throw new Error(
+        `Failed to read tree from ${url}. ` +
+          'Bitbucket API response for downloading archive does not contain content-disposition header ',
+      );
+    }
+    const fileNameRegEx = new RegExp(
+      /^attachment; filename=(?<fileName>.*).zip$/,
+    );
+    const archiveFileName = contentDispositionHeader.match(fileNameRegEx)
+      ?.groups?.fileName;
+    if (!archiveFileName) {
+      throw new Error(
+        `Failed to read tree from ${url}. Bitbucket API response for downloading archive has an unexpected ` +
+          `format of content-disposition header ${contentDispositionHeader} `,
+      );
     }
 
-    return this.treeResponseFactory.fromZipArchive({
-      stream: (response.body as unknown) as Readable,
-      path: `${folderPath}/${filepath}`,
+    return await this.treeResponseFactory.fromZipArchive({
+      stream: (archiveBitbucketResponse.body as unknown) as Readable,
+      path: `${archiveFileName}/${filepath}`,
+      etag: lastCommitShortHash,
       filter: options?.filter,
     });
   }
@@ -141,8 +160,8 @@ export class BitbucketUrlReader implements UrlReader {
     return `bitbucket{host=${host},authed=${authed}}`;
   }
 
-  private async getLastCommitShortHash(url: string): Promise<String> {
-    const { name: repoName, owner: project, ref } = parseGitUri(url);
+  private async getLastCommitShortHash(url: string): Promise<string> {
+    const { name: repoName, owner: project, ref } = parseGitUrl(url);
 
     let branch = ref;
     if (!branch) {

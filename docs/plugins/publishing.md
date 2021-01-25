@@ -7,7 +7,7 @@ description: Documentation on Publishing npm packages
 ## npm
 
 npm packages are published through CI/CD in the
-[.github/workflows/master.yml](https://github.com/backstage/backstage/blob/master/.github/workflows/master.yml)
+[`.github/workflows/master.yml`](https://github.com/backstage/backstage/blob/master/.github/workflows/master.yml)
 workflow. Every commit that is merged to master will be checked for new versions
 of all public packages, and any new versions will automatically be published to
 npm.

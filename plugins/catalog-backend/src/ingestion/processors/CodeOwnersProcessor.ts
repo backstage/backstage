@@ -20,7 +20,7 @@ import * as codeowners from 'codeowners-utils';
 import { CodeOwnersEntry } from 'codeowners-utils';
 // NOTE: This can be removed when ES2021 is implemented
 import 'core-js/features/promise';
-import parseGitUri from 'git-url-parse';
+import parseGitUrl from 'git-url-parse';
 import { filter, get, head, pipe, reverse } from 'lodash/fp';
 import { Logger } from 'winston';
 import { CatalogProcessor } from './types';
@@ -123,7 +123,7 @@ export function buildCodeOwnerUrl(
   basePath: string,
   codeOwnersPath: string,
 ): string {
-  return buildUrl({ ...parseGitUri(basePath), codeOwnersPath });
+  return buildUrl({ ...parseGitUrl(basePath), codeOwnersPath });
 }
 
 export function parseCodeOwners(ownersText: string) {

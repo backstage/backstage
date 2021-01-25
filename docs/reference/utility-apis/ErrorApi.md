@@ -29,7 +29,7 @@ These types are part of the API declaration, but may not be unique to this API.
 
 ### Error
 
-Mirrors the javascript Error class, for the purpose of providing documentation
+Mirrors the JavaScript Error class, for the purpose of providing documentation
 and optional fields.
 
 <pre>
