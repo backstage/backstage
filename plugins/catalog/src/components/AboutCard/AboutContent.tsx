@@ -21,7 +21,7 @@ import {
 } from '@backstage/catalog-model';
 import { Chip, Grid, makeStyles, Typography } from '@material-ui/core';
 import React from 'react';
-import { EntityRefLink } from '../EntityRefLink';
+import { EntityRefLinks } from '../EntityRefLink';
 import { getEntityRelations } from '../getEntityRelations';
 import { AboutField } from './AboutField';
 
@@ -41,17 +41,17 @@ export const AboutContent = ({ entity }: Props) => {
   const isDomain = entity.kind.toLowerCase() === 'domain';
   const isResource = entity.kind.toLowerCase() === 'resource';
   const isComponent = entity.kind.toLowerCase() === 'component';
-  const [partOfSystemRelation] = getEntityRelations(entity, RELATION_PART_OF, {
+  const partOfSystemRelations = getEntityRelations(entity, RELATION_PART_OF, {
     kind: 'system',
   });
-  const [partOfComponentRelation] = getEntityRelations(
+  const partOfComponentRelations = getEntityRelations(
     entity,
     RELATION_PART_OF,
     {
       kind: 'component',
     },
   );
-  const [partOfDomainRelation] = getEntityRelations(entity, RELATION_PART_OF, {
+  const partOfDomainRelations = getEntityRelations(entity, RELATION_PART_OF, {
     kind: 'domain',
   });
   const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
@@ -64,12 +64,7 @@ export const AboutContent = ({ entity }: Props) => {
         </Typography>
       </AboutField>
       <AboutField label="Owner" gridSizes={{ xs: 12, sm: 6, lg: 4 }}>
-        {ownedByRelations.map((t, i) => (
-          <React.Fragment key={i}>
-            {i > 0 && ', '}
-            <EntityRefLink entityRef={t} defaultKind="group" />
-          </React.Fragment>
-        ))}
+        <EntityRefLinks entityRefs={ownedByRelations} />
       </AboutField>
       {isSystem && (
         <AboutField
@@ -77,12 +72,10 @@ export const AboutContent = ({ entity }: Props) => {
           value="No Domain"
           gridSizes={{ xs: 12, sm: 6, lg: 4 }}
         >
-          {partOfDomainRelation && (
-            <EntityRefLink
-              entityRef={partOfDomainRelation}
-              defaultKind="domain"
-            />
-          )}
+          <EntityRefLinks
+            entityRefs={partOfDomainRelations}
+            defaultKind="domain"
+          />
         </AboutField>
       )}
       {!isSystem && !isDomain && (
@@ -91,22 +84,20 @@ export const AboutContent = ({ entity }: Props) => {
           value="No System"
           gridSizes={{ xs: 12, sm: 6, lg: 4 }}
         >
-          {partOfSystemRelation && (
-            <EntityRefLink
-              entityRef={partOfSystemRelation}
-              defaultKind="system"
-            />
-          )}
+          <EntityRefLinks
+            entityRefs={partOfSystemRelations}
+            defaultKind="system"
+          />
         </AboutField>
       )}
-      {isComponent && partOfComponentRelation && (
+      {isComponent && partOfComponentRelations.length > 0 && (
         <AboutField
           label="Parent Component"
           value="No Parent Component"
           gridSizes={{ xs: 12, sm: 6, lg: 4 }}
         >
-          <EntityRefLink
-            entityRef={partOfComponentRelation}
+          <EntityRefLinks
+            entityRefs={partOfComponentRelations}
             defaultKind="component"
           />
         </AboutField>
