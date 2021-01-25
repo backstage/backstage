@@ -115,5 +115,5 @@ Start the frontend and the backend app by
 
 ## Configuration
 
-After installing the plugins in the code, you'll need to them
+After installing the plugins in the code, you'll need to then
 [configure them](configuration.md).
