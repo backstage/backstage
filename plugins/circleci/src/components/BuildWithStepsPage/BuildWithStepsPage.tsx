@@ -99,18 +99,6 @@ const pickClassName = (
   return classes.neutral;
 };
 
-const BuildsList = ({ build }: { build?: BuildWithSteps }) => (
-  <Box>
-    {build &&
-      build.steps &&
-      build.steps.map(
-        ({ name, actions }: { name: string; actions: BuildStepAction[] }) => (
-          <ActionsList key={name} name={name} actions={actions} />
-        ),
-      )}
-  </Box>
-);
-
 const ActionsList = ({
   actions,
 }: {
@@ -131,6 +119,18 @@ const ActionsList = ({
     </>
   );
 };
+
+const BuildsList = ({ build }: { build?: BuildWithSteps }) => (
+  <Box>
+    {build &&
+      build.steps &&
+      build.steps.map(
+        ({ name, actions }: { name: string; actions: BuildStepAction[] }) => (
+          <ActionsList key={name} name={name} actions={actions} />
+        ),
+      )}
+  </Box>
+);
 
 export const BuildWithStepsPage = () => {
   const { buildId = '' } = useParams();

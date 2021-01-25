@@ -86,29 +86,6 @@ const sortBySeverity = (a: DetectedError, b: DetectedError) => {
   return 0;
 };
 
-export const ErrorReporting = ({ detectedErrors }: ErrorReportingProps) => {
-  const errors = Array.from(detectedErrors.values())
-    .flat()
-    .sort(sortBySeverity);
-
-  return (
-    <>
-      {errors.length === 0 ? (
-        <InfoCard title="Error Reporting">
-          <ErrorEmptyState />
-        </InfoCard>
-      ) : (
-        <Table
-          title="Error Reporting"
-          data={errors}
-          columns={columns}
-          options={{ paging: true, search: false }}
-        />
-      )}
-    </>
-  );
-};
-
 export const ErrorEmptyState = () => {
   return (
     <Grid
@@ -131,5 +108,28 @@ export const ErrorEmptyState = () => {
         />
       </Grid>
     </Grid>
+  );
+};
+
+export const ErrorReporting = ({ detectedErrors }: ErrorReportingProps) => {
+  const errors = Array.from(detectedErrors.values())
+    .flat()
+    .sort(sortBySeverity);
+
+  return (
+    <>
+      {errors.length === 0 ? (
+        <InfoCard title="Error Reporting">
+          <ErrorEmptyState />
+        </InfoCard>
+      ) : (
+        <Table
+          title="Error Reporting"
+          data={errors}
+          columns={columns}
+          options={{ paging: true, search: false }}
+        />
+      )}
+    </>
   );
 };
