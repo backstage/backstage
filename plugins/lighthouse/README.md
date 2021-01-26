@@ -2,9 +2,7 @@
 
 A frontend for [lighthouse-audit-service](https://github.com/spotify/lighthouse-audit-service), this plugin allows you to trigger Lighthouse audits on websites and track them over time.
 
-## Getting Started
-
-### Use cases
+## Introduction
 
 Google's [Lighthouse](https://developers.google.com/web/tools/lighthouse) auditing tool for websites
 is a great open-source resource for benchmarking and improving the accessibility, performance, SEO, and best practices of your site.
@@ -13,55 +11,59 @@ At Spotify, we keep track of Lighthouse audit scores over time to look at trends
 This plugin allows you to generate on-demand Lighthouse audits for websites, and to track the trends for the
 top-level categories of Lighthouse at a glance.
 
+You can learn more in our blog post [Introducing Lighthouse for Backstage](https://backstage.io/blog/2020/04/06/lighthouse-plugin).
+
+| List of audits                                                                | Specific audit                                                                        |
+| ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| ![Screen shot of the main Lighthouse plugin page](images/lighthouse-page.png) | ![Screen shot of the resulting audit in the Lighthouse plugin](images/audit-view.png) |
+
 In the future, we hope to add support for scheduling audits (which we do internally), as well as allowing
 custom runs of Lighthouse to be ingested (for auditing sites that require authentication or some session state).
 
-### Installation
+## Getting Started
 
-To get started, you will need a running instance of [lighthouse-audit-service](https://github.com/spotify/lighthouse-audit-service).
-_It's likely you will need to enable CORS when running lighthouse-audit-service. Initialize the app
-with the environment variable `LAS_CORS` set to `true`._
+To get started, you will need a running instance of [`lighthouse-audit-service`](https://github.com/spotify/lighthouse-audit-service).
+_It's likely you will need to [enable CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) to integrate with Backstage, so initialize the `lighthouse-audit-service` with the environment variable `LAS_CORS` set to `true`._
 
-When you have an instance running that Backstage can hook into, make sure to export the plugin in
+When you have an instance running that Backstage can hook into, first install the plugin into your app:
+
+```sh
+$ yarn add @backstage/plugin-lighthouse
+```
+
+Then make sure to export the plugin in
 your app's [`plugins.ts`](https://github.com/backstage/backstage/blob/master/packages/app/src/plugins.ts)
 to enable the plugin:
 
 ```js
-import { default as LighthousePlugin } from '@backstage/plugin-lighthouse';
-export LighthousePlugin;
+export { plugin as LighthousePlugin } from '@backstage/plugin-lighthouse';
 ```
 
-Then, you need to use the `lighthouseApiRef` exported from the plugin to initialize the Rest API in
-your [`apis.ts`](https://github.com/backstage/backstage/blob/master/packages/app/src/apis.ts).
+Modify your app routes in `App.tsx` to include the Router component exported from the plugin, for example:
 
-```js
-import { ApiHolder, ApiRegistry } from '@backstage/core';
-import { Config } from '@backstage/config';
-import {
-  lighthouseApiRef,
-  LighthouseRestApi,
-} from '@backstage/plugin-lighthouse';
+```tsx
+// At the top imports
+import { Router as LighthouseRouter } from '@backstage/plugin-lighthouse';
 
-export const apis = (config: ConfigApi) => {
-  const builder = ApiRegistry.builder();
-
-  builder.add(lighthouseApiRef, LighthouseRestApi.fromConfig(config));
-
-  return builder.build() as ApiHolder;
-}
+// Inside App component
+<Routes>
+  // ...
+  <Route path="/lighthouse/*" element={<LighthouseRouter />} />
+  // ...
+</Routes>;
 ```
 
-Then configure the lighthouse service url in your [`app-config.yaml`](https://github.com/backstage/backstage/blob/master/app-config.yaml).
+Then configure the `lighthouse-audit-service` URL in your [`app-config.yaml`](https://github.com/backstage/backstage/blob/master/app-config.yaml).
 
 ```yaml
 lighthouse:
   baseUrl: http://your-service-url
 ```
 
-### Integration with the Catalog
+## Integration with the Catalog
 
-The lighthouse plugin can be integrated into the catalog so that lighthouse audit information relating to a component
-can be displayed within that component's entity page. In order to link an Entity to its lighthouse audits the entity
+The Lighthouse plugin can be integrated into the catalog so that Lighthouse audit information relating to a component
+can be displayed within that component's entity page. In order to link an Entity to its Lighthouse audits, the entity
 must be annotated as follows:
 
 ```yaml
@@ -74,9 +76,9 @@ metadata:
     lighthouse.com/website-url: # A single website url e.g. https://backstage.io/
 ```
 
-> NOTE: The lighthouse plugin only supports one website url per component at this time.
+> NOTE: The plugin only supports one website URL per component at this time.
 
-Add a lighthouse tab to the EntityPage:
+Add a **Lighthouse tab** to the EntityPage:
 
 ```tsx
 // packages/app/src/components/catalog/EntityPage.tsx
@@ -87,7 +89,7 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
   <EntityPageLayout>
     // ...
     <EntityPageLayout.Content
-      path="/lighthouse"
+      path="/lighthouse/*"
       title="Lighthouse"
       element={<LighthouseRouter entity={entity} />}
     />
@@ -98,7 +100,7 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
 > NOTE: The embedded router renders page content without a header section allowing it to be rendered within a
 > catalog plugin page.
 
-Add a Lighthouse card to the overview tab on the EntityPage:
+Add a **Lighthouse card** to the overview tab on the EntityPage:
 
 ```tsx
 // packages/app/src/components/catalog/EntityPage.tsx
@@ -120,3 +122,5 @@ const OverviewContent = ({ entity }: { entity: Entity }) => (
   </Grid>
 );
 ```
+
+Link Lighthouse

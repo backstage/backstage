@@ -16,12 +16,8 @@
 
 import * as results from './results';
 
-export { results };
-export * from './types';
-
-export { parseEntityYaml } from './util/parse';
-
 export { AnnotateLocationEntityProcessor } from './AnnotateLocationEntityProcessor';
+export { AwsOrganizationCloudAccountProcessor } from './AwsOrganizationCloudAccountProcessor';
 export { BuiltinKindsEntityProcessor } from './BuiltinKindsEntityProcessor';
 export { CodeOwnersProcessor } from './CodeOwnersProcessor';
 export { FileReaderProcessor } from './FileReaderProcessor';
@@ -32,4 +28,7 @@ export { MicrosoftGraphOrgReaderProcessor } from './MicrosoftGraphOrgReaderProce
 export { PlaceholderProcessor } from './PlaceholderProcessor';
 export type { PlaceholderResolver } from './PlaceholderProcessor';
 export { StaticLocationProcessor } from './StaticLocationProcessor';
+export * from './types';
 export { UrlReaderProcessor } from './UrlReaderProcessor';
+export { parseEntityYaml } from './util/parse';
+export { results };

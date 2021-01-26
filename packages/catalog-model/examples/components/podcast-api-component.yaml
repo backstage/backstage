@@ -8,4 +8,5 @@ metadata:
 spec:
   type: service
   lifecycle: experimental
-  owner: players@example.com
+  owner: team-b
+  system: podcast

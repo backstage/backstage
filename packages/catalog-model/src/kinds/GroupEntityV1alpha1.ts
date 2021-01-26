@@ -27,24 +27,21 @@ const schema = yup.object<Partial<GroupEntityV1alpha1>>({
   spec: yup
     .object({
       type: yup.string().required().min(1),
+      profile: yup
+        .object({
+          displayName: yup.string().min(1).notRequired(),
+          email: yup.string().min(1).notRequired(),
+          picture: yup.string().min(1).notRequired(),
+        })
+        .notRequired(),
       parent: yup.string().notRequired().min(1),
       // Use these manual tests because yup .required() requires at least
       // one element and there is no simple workaround -_-
       // the cast is there to convince typescript that the array itself is
       // required without using .required()
-      ancestors: yup.array(yup.string().required()).test({
-        name: 'isDefined',
-        message: 'ancestors must be defined',
-        test: v => Boolean(v),
-      }) as yup.ArraySchema<string, object>,
       children: yup.array(yup.string().required()).test({
         name: 'isDefined',
         message: 'children must be defined',
-        test: v => Boolean(v),
-      }) as yup.ArraySchema<string, object>,
-      descendants: yup.array(yup.string().required()).test({
-        name: 'isDefined',
-        message: 'descendants must be defined',
         test: v => Boolean(v),
       }) as yup.ArraySchema<string, object>,
     })
@@ -56,24 +53,13 @@ export interface GroupEntityV1alpha1 extends Entity {
   kind: typeof KIND;
   spec: {
     type: string;
+    profile?: {
+      displayName?: string;
+      email?: string;
+      picture?: string;
+    };
     parent?: string;
-    /**
-     * @deprecated This field will disappear on Dec 6th, 2020. Please remove
-     *             any consuming code. Producers can stop producing this field
-     *             before that date, as long as the catalog backend uses the
-     *             BuiltinKindsEntityProcessor which inserts the fields in the
-     *             mean time.
-     */
-    ancestors: string[];
     children: string[];
-    /**
-     * @deprecated This field will disappear on Dec 6th, 2020. Please remove
-     *             any consuming code. Producers can stop producing this field
-     *             before that date, as long as the catalog backend uses the
-     *             BuiltinKindsEntityProcessor which inserts the fields in the
-     *             mean time.
-     */
-    descendants: string[];
   };
 }
 

@@ -43,7 +43,15 @@ export class KubernetesBackendClient implements KubernetesApi {
 
     if (!response.ok) {
       const payload = await response.text();
-      const message = `Request failed with ${response.status} ${response.statusText}, ${payload}`;
+      let message;
+      switch (response.status) {
+        case 404:
+          message =
+            'Could not find the Kubernetes Backend (HTTP 404). Make sure the plugin has been fully installed.';
+          break;
+        default:
+          message = `Request failed with ${response.status} ${response.statusText}, ${payload}`;
+      }
       throw new Error(message);
     }
 

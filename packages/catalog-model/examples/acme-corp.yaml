@@ -4,6 +4,5 @@ metadata:
   name: acme-corp
   description: A collection of all Backstage example Groups
 spec:
-  type: github
   targets:
-    - https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme/org.yaml
+    - ./acme/org.yaml

@@ -103,7 +103,7 @@ export const Filters = ({
           >
             {filterOptions.kind.map(filter => (
               <MenuItem
-                selected={filter === 'All'}
+                selected={filter === ''}
                 dense
                 key={filter}
                 value={filter}

@@ -10,7 +10,7 @@ you're planning to do.
 
 Creating a standalone instance makes it simpler to customize the application for
 your needs whilst staying up to date with the project. You will also depend on
-`@backstage` packages from NPM, making the project much smaller. This is the
+`@backstage` packages from npm, making the project much smaller. This is the
 recommended approach if you want to kick the tyres of Backstage or setup your
 own instance.
 

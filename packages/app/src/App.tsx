@@ -20,8 +20,9 @@ import {
   OAuthRequestDialog,
   SignInPage,
   createRouteRef,
+  FlatRoutes,
 } from '@backstage/core';
-import React, { FC } from 'react';
+import React from 'react';
 import Root from './components/Root';
 import * as plugins from './plugins';
 import { apis } from './apis';
@@ -35,7 +36,7 @@ import { Router as LighthouseRouter } from '@backstage/plugin-lighthouse';
 import { Router as RegisterComponentRouter } from '@backstage/plugin-register-component';
 import { Router as SettingsRouter } from '@backstage/plugin-user-settings';
 import { Router as ImportComponentRouter } from '@backstage/plugin-catalog-import';
-import { Route, Routes, Navigate } from 'react-router';
+import { Route, Navigate } from 'react-router';
 
 import { EntityPage } from './components/catalog/EntityPage';
 
@@ -65,41 +66,39 @@ const catalogRouteRef = createRouteRef({
   title: 'Service Catalog',
 });
 
-const AppRoutes = () => (
-  <Routes>
+const routes = (
+  <FlatRoutes>
     <Navigate key="/" to="/catalog" />
     <Route
-      path="/catalog-import/*"
+      path="/catalog-import"
       element={<ImportComponentRouter catalogRouteRef={catalogRouteRef} />}
     />
     <Route
-      path={`${catalogRouteRef.path}/*`}
+      path={`${catalogRouteRef.path}`}
       element={<CatalogRouter EntityPage={EntityPage} />}
     />
-    <Route path="/docs/*" element={<DocsRouter />} />
+    <Route path="/docs" element={<DocsRouter />} />
     <Route
       path="/tech-radar"
       element={<TechRadarRouter width={1500} height={800} />}
     />
     <Route path="/graphiql" element={<GraphiQLRouter />} />
-    <Route path="/lighthouse/*" element={<LighthouseRouter />} />
+    <Route path="/lighthouse" element={<LighthouseRouter />} />
     <Route
       path="/register-component"
       element={<RegisterComponentRouter catalogRouteRef={catalogRouteRef} />}
     />
     <Route path="/settings" element={<SettingsRouter />} />
     {...deprecatedAppRoutes}
-  </Routes>
+  </FlatRoutes>
 );
 
-const App: FC<{}> = () => (
+const App = () => (
   <AppProvider>
     <AlertDisplay />
     <OAuthRequestDialog />
     <AppRouter>
-      <Root>
-        <AppRoutes />
-      </Root>
+      <Root>{routes}</Root>
     </AppRouter>
   </AppProvider>
 );

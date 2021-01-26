@@ -20,9 +20,10 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '../logging';
-import { AzureUrlReader, getDownloadUrl } from './AzureUrlReader';
+import { AzureUrlReader } from './AzureUrlReader';
 import { msw } from '@backstage/test-utils';
 import { ReadTreeResponseFactory } from './tree';
+import { NotModifiedError } from '../errors';
 
 const logger = getVoidLogger();
 
@@ -111,13 +112,13 @@ describe('AzureUrlReader', () => {
         url: 'https://api.com/a/b/blob/master/path/to/c.yaml',
         config: createConfig(),
         error:
-          'Incorrect url: https://api.com/a/b/blob/master/path/to/c.yaml, Error: Wrong Azure Devops URL or Invalid file path',
+          'Incorrect URL: https://api.com/a/b/blob/master/path/to/c.yaml, Error: Wrong Azure Devops URL or Invalid file path',
       },
       {
         url: 'com/a/b/blob/master/path/to/c.yaml',
         config: createConfig(),
         error:
-          'Incorrect url: com/a/b/blob/master/path/to/c.yaml, TypeError: Invalid URL: com/a/b/blob/master/path/to/c.yaml',
+          'Incorrect URL: com/a/b/blob/master/path/to/c.yaml, TypeError: Invalid URL: com/a/b/blob/master/path/to/c.yaml',
       },
       {
         url: '',
@@ -139,7 +140,12 @@ describe('AzureUrlReader', () => {
 
   describe('readTree', () => {
     const repoBuffer = fs.readFileSync(
-      path.resolve('src', 'reading', '__fixtures__', 'repo.zip'),
+      path.resolve('src', 'reading', '__fixtures__', 'mock-main.zip'),
+    );
+
+    const processor = new AzureUrlReader(
+      { host: 'dev.azure.com' },
+      { treeResponseFactory },
     );
 
     beforeEach(() => {
@@ -153,46 +159,73 @@ describe('AzureUrlReader', () => {
               ctx.body(repoBuffer),
             ),
         ),
+        rest.get(
+          // https://docs.microsoft.com/en-us/rest/api/azure/devops/git/commits/get%20commits?view=azure-devops-rest-6.0#on-a-branch
+          'https://dev.azure.com/organization/project/_apis/git/repositories/repository/commits',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.json({
+                count: 2,
+                value: [
+                  {
+                    commitId: '123abc2',
+                    comment: 'second commit',
+                  },
+                  {
+                    commitId: '123abc1',
+                    comment: 'first commit',
+                  },
+                ],
+              }),
+            ),
+        ),
       );
     });
 
     it('returns the wanted files from an archive', async () => {
-      const processor = new AzureUrlReader(
-        {
-          host: 'dev.azure.com',
-        },
-        { treeResponseFactory },
-      );
-
       const response = await processor.readTree(
         'https://dev.azure.com/organization/project/_git/repository',
       );
 
+      expect(response.etag).toBe('123abc2');
+
       const files = await response.files();
 
       expect(files.length).toBe(2);
-      const mkDocsFile = await files[1].content();
-      const indexMarkdownFile = await files[0].content();
+      const mkDocsFile = await files[0].content();
+      const indexMarkdownFile = await files[1].content();
 
       expect(mkDocsFile.toString()).toBe('site_name: Test\n');
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
     });
-  });
 
-  describe('getDownloadUrl', () => {
-    it('do not add scopePath if no path is specified', async () => {
-      const result = getDownloadUrl(
-        'https://dev.azure.com/organization/project/_git/repository',
-      );
+    it('throws a NotModifiedError when given a etag in options', async () => {
+      const fnAzure = async () => {
+        await processor.readTree(
+          'https://dev.azure.com/organization/project/_git/repository',
+          { etag: '123abc2' },
+        );
+      };
 
-      expect(result.searchParams.get('scopePath')).toBeNull();
+      await expect(fnAzure).rejects.toThrow(NotModifiedError);
     });
 
-    it('add scopePath if a path is specified', async () => {
-      const result = getDownloadUrl(
-        'https://dev.azure.com/organization/project/_git/repository?path=%2Fdocs',
+    it('should not throw a NotModifiedError when given an outdated etag in options', async () => {
+      const response = await processor.readTree(
+        'https://dev.azure.com/organization/project/_git/repository',
+        { etag: 'outdated123abc' },
       );
-      expect(result.searchParams.get('scopePath')).toEqual('docs');
+
+      expect(response.etag).toBe('123abc2');
+      const files = await response.files();
+
+      expect(files.length).toBe(2);
+      const mkDocsFile = await files[0].content();
+      const indexMarkdownFile = await files[1].content();
+
+      expect(mkDocsFile.toString()).toBe('site_name: Test\n');
+      expect(indexMarkdownFile.toString()).toBe('# Test\n');
     });
   });
 });

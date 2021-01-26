@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React from 'react';
 import { Grid } from '@material-ui/core';
 import {
   Header,
@@ -26,7 +26,7 @@ import {
 } from '@backstage/core';
 import NewRelicFetchComponent from '../NewRelicFetchComponent';
 
-const NewRelicComponent: FC<{}> = () => (
+const NewRelicComponent = () => (
   <Page themeId="tool">
     <Header title="New Relic">
       <HeaderLabel label="Owner" value="Engineering" />

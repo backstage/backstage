@@ -13,43 +13,69 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity } from '@backstage/catalog-model';
+import {
+  Entity,
+  EntityName,
+  RELATION_OWNED_BY,
+  RELATION_PART_OF,
+} from '@backstage/catalog-model';
 import { Table, TableColumn, TableProps } from '@backstage/core';
-import { Chip, Link } from '@material-ui/core';
+import { Chip } from '@material-ui/core';
 import Edit from '@material-ui/icons/Edit';
-import GitHub from '@material-ui/icons/GitHub';
+import OpenInNew from '@material-ui/icons/OpenInNew';
 import { Alert } from '@material-ui/lab';
 import React from 'react';
-import { generatePath, Link as RouterLink } from 'react-router-dom';
 import { findLocationForEntityMeta } from '../../data/utils';
-import { createEditLink } from '../createEditLink';
 import { useStarredEntities } from '../../hooks/useStarredEntities';
-import { entityRoute, entityRouteParams } from '../../routes';
+import { createEditLink } from '../createEditLink';
+import {
+  EntityRefLink,
+  EntityRefLinks,
+  formatEntityRefTitle,
+} from '../EntityRefLink';
 import {
   favouriteEntityIcon,
   favouriteEntityTooltip,
 } from '../FavouriteEntity/FavouriteEntity';
+import { getEntityRelations } from '../getEntityRelations';
 
-const columns: TableColumn<Entity>[] = [
+type EntityRow = Entity & {
+  row: {
+    partOfSystemRelationTitle?: string;
+    partOfSystemRelations: EntityName[];
+    ownedByRelationsTitle?: string;
+    ownedByRelations: EntityName[];
+  };
+};
+
+const columns: TableColumn<EntityRow>[] = [
   {
     title: 'Name',
     field: 'metadata.name',
     highlight: true,
-    render: (entity: any) => (
-      <Link
-        component={RouterLink}
-        to={generatePath(entityRoute.path, {
-          ...entityRouteParams(entity),
-          selectedTabId: 'overview',
-        })}
-      >
-        {entity.metadata.name}
-      </Link>
+    render: entity => (
+      <EntityRefLink entityRef={entity}>{entity.metadata.name}</EntityRefLink>
+    ),
+  },
+  {
+    title: 'System',
+    field: 'row.partOfSystemRelationTitle',
+    render: entity => (
+      <EntityRefLinks
+        entityRefs={entity.row.partOfSystemRelations}
+        defaultKind="system"
+      />
     ),
   },
   {
     title: 'Owner',
-    field: 'spec.owner',
+    field: 'row.ownedByRelationsTitle',
+    render: entity => (
+      <EntityRefLinks
+        entityRefs={entity.row.ownedByRelations}
+        defaultKind="group"
+      />
+    ),
   },
   {
     title: 'Lifecycle',
@@ -65,7 +91,7 @@ const columns: TableColumn<Entity>[] = [
     cellStyle: {
       padding: '0px 16px 0px 20px',
     },
-    render: (entity: Entity) => (
+    render: entity => (
       <>
         {entity.metadata.tags &&
           entity.metadata.tags.map(t => (
@@ -111,13 +137,12 @@ export const CatalogTable = ({
     (rowData: Entity) => {
       const location = findLocationForEntityMeta(rowData.metadata);
       return {
-        icon: () => <GitHub fontSize="small" />,
-        tooltip: 'View on GitHub',
+        icon: () => <OpenInNew fontSize="small" />,
+        tooltip: 'View',
         onClick: () => {
           if (!location) return;
           window.open(location.target, '_blank');
         },
-        hidden: location?.type !== 'github',
       };
     },
     (rowData: Entity) => {
@@ -129,7 +154,6 @@ export const CatalogTable = ({
           if (!location) return;
           window.open(createEditLink(location), '_blank');
         },
-        hidden: location?.type !== 'github',
       };
     },
     (rowData: Entity) => {
@@ -143,8 +167,32 @@ export const CatalogTable = ({
     },
   ];
 
+  const rows = entities.map(e => {
+    const partOfSystemRelations = getEntityRelations(e, RELATION_PART_OF, {
+      kind: 'system',
+    });
+    const ownedByRelations = getEntityRelations(e, RELATION_OWNED_BY);
+
+    return {
+      ...e,
+      row: {
+        ownedByRelationsTitle: ownedByRelations
+          .map(r => formatEntityRefTitle(r, { defaultKind: 'group' }))
+          .join(', '),
+        ownedByRelations,
+        partOfSystemRelationTitle:
+          partOfSystemRelations.length > 0
+            ? formatEntityRefTitle(partOfSystemRelations[0], {
+                defaultKind: 'system',
+              })
+            : undefined,
+        partOfSystemRelations,
+      },
+    };
+  });
+
   return (
-    <Table<Entity>
+    <Table<EntityRow>
       isLoading={loading}
       columns={columns}
       options={{
@@ -157,7 +205,7 @@ export const CatalogTable = ({
         pageSizeOptions: [20, 50, 100],
       }}
       title={`${titlePreamble} (${(entities && entities.length) || 0})`}
-      data={entities}
+      data={rows}
       actions={actions}
     />
   );

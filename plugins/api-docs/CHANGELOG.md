@@ -1,5 +1,84 @@
 # @backstage/plugin-api-docs
 
+## 0.4.3
+
+### Patch Changes
+
+- 8855f61f6: Update `@asyncapi/react-component` to 0.18.2
+- Updated dependencies [def2307f3]
+- Updated dependencies [efd6ef753]
+- Updated dependencies [593632f07]
+- Updated dependencies [33846acfc]
+- Updated dependencies [a187b8ad0]
+- Updated dependencies [f04db53d7]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/core@0.5.0
+  - @backstage/plugin-catalog@0.2.12
+
+## 0.4.2
+
+### Patch Changes
+
+- 9161531b2: Link register API to catalog-import plugin
+- Updated dependencies [a08c32ced]
+- Updated dependencies [7e0b8cac5]
+- Updated dependencies [87c0c53c2]
+  - @backstage/core@0.4.3
+  - @backstage/plugin-catalog@0.2.9
+
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies [c911061b7]
+- Updated dependencies [8ef71ed32]
+- Updated dependencies [0e6298f7e]
+- Updated dependencies [ac3560b42]
+  - @backstage/catalog-model@0.6.0
+  - @backstage/core@0.4.1
+  - @backstage/plugin-catalog@0.2.7
+
+## 0.4.0
+
+### Minor Changes
+
+- 246799c7f: Stop exposing a custom router from the `api-docs` plugin. Instead, use the
+  widgets exported by the plugin to compose your custom entity pages.
+
+  Instead of displaying the API definitions directly in the API tab of the
+  component, it now contains tables linking to the API entities. This also adds
+  new widgets to display relationships (bot provides & consumes relationships)
+  between components and APIs.
+
+  See the changelog of `create-app` for a migration guide.
+
+### Patch Changes
+
+- Updated dependencies [2527628e1]
+- Updated dependencies [6011b7d3e]
+- Updated dependencies [1c69d4716]
+- Updated dependencies [83b6e0c1f]
+- Updated dependencies [1665ae8bb]
+- Updated dependencies [04f26f88d]
+- Updated dependencies [ff243ce96]
+  - @backstage/core@0.4.0
+  - @backstage/plugin-catalog@0.2.6
+  - @backstage/catalog-model@0.5.0
+  - @backstage/theme@0.2.2
+
+## 0.3.1
+
+### Patch Changes
+
+- 7eb8bfe4a: Update swagger-ui-react to 3.37.2
+- Updated dependencies [08835a61d]
+- Updated dependencies [a9fd599f7]
+- Updated dependencies [bcc211a08]
+- Updated dependencies [ebf37bbae]
+  - @backstage/catalog-model@0.4.0
+  - @backstage/plugin-catalog@0.2.5
+
 ## 0.3.0
 
 ### Minor Changes

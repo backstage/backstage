@@ -15,8 +15,10 @@
  */
 
 import { Config } from '@backstage/config';
+import { isValidHost } from '../helpers';
 
 const GITLAB_HOST = 'gitlab.com';
+const GITLAB_API_BASE_URL = 'https://gitlab.com/api/v4';
 
 /**
  * The configuration parameters for a single GitLab integration.
@@ -28,11 +30,30 @@ export type GitLabIntegrationConfig = {
   host: string;
 
   /**
+   * The base URL of the API of this provider, e.g. "https://gitlab.com/api/v4",
+   * with no trailing slash.
+   *
+   * May be omitted specifically for GitLab; then it will be deduced.
+   *
+   * The API will always be preferred if both its base URL and a token are
+   * present.
+   */
+  apiBaseUrl?: string;
+
+  /**
    * The authorization token to use for requests this provider.
    *
    * If no token is specified, anonymous access is used.
    */
   token?: string;
+
+  /**
+   * The baseUrl of this provider, e.g "https://gitlab.com",
+   * which is passed into the gitlab client.
+   *
+   * If no baseUrl is provided, it will default to https://${host}
+   */
+  baseUrl?: string;
 };
 
 /**
@@ -44,8 +65,23 @@ export function readGitLabIntegrationConfig(
   config: Config,
 ): GitLabIntegrationConfig {
   const host = config.getOptionalString('host') ?? GITLAB_HOST;
+  let apiBaseUrl = config.getOptionalString('apiBaseUrl');
   const token = config.getOptionalString('token');
-  return { host, token };
+  const baseUrl = config.getOptionalString('baseUrl') ?? `https://${host}`;
+
+  if (!isValidHost(host)) {
+    throw new Error(
+      `Invalid GitLab integration config, '${host}' is not a valid host`,
+    );
+  }
+
+  if (apiBaseUrl) {
+    apiBaseUrl = apiBaseUrl.replace(/\/+$/, '');
+  } else if (host === GITLAB_HOST) {
+    apiBaseUrl = GITLAB_API_BASE_URL;
+  }
+
+  return { host, token, apiBaseUrl, baseUrl };
 }
 
 /**
@@ -63,7 +99,7 @@ export function readGitLabIntegrationConfigs(
   // As a convenience we always make sure there's at least an unauthenticated
   // reader for public gitlab repos.
   if (!result.some(c => c.host === GITLAB_HOST)) {
-    result.push({ host: GITLAB_HOST });
+    result.push({ host: GITLAB_HOST, apiBaseUrl: GITLAB_API_BASE_URL });
   }
 
   return result;

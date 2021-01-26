@@ -27,7 +27,7 @@ To inspect the state of a feature flag inside your plugin, you can use the
 `FeatureFlagsApi`, accessed via the `featureFlagsApiRef`. For example:
 
 ```tsx
-import React, { FC } from 'react';
+import React from 'react';
 import { Button } from '@material-ui/core';
 import { featureFlagsApiRef, useApi } from '@backstage/core';
 

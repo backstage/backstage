@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Avatar,
   Card,
@@ -66,7 +66,7 @@ interface Props {
   selections: Set<number>;
 }
 
-const ProfileCard: FC<Props> = props => {
+const ProfileCard = (props: Props) => {
   const [selection, setSelection] = useState(false);
 
   const handleSelect = () => {

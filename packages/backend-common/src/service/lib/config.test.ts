@@ -20,9 +20,7 @@ import { readCspOptions } from './config';
 describe('config', () => {
   describe('readCspOptions', () => {
     it('reads valid values', () => {
-      const config = ConfigReader.fromConfigs([
-        { context: '', data: { csp: { key: ['value'] } } },
-      ]);
+      const config = new ConfigReader({ csp: { key: ['value'] } });
       expect(readCspOptions(config)).toEqual(
         expect.objectContaining({
           key: ['value'],
@@ -31,9 +29,7 @@ describe('config', () => {
     });
 
     it('accepts false', () => {
-      const config = ConfigReader.fromConfigs([
-        { context: '', data: { csp: { key: false } } },
-      ]);
+      const config = new ConfigReader({ csp: { key: false } });
       expect(readCspOptions(config)).toEqual(
         expect.objectContaining({
           key: false,
@@ -42,9 +38,7 @@ describe('config', () => {
     });
 
     it('rejects invalid value types', () => {
-      const config = ConfigReader.fromConfigs([
-        { context: '', data: { csp: { key: [4] } } },
-      ]);
+      const config = new ConfigReader({ csp: { key: [4] } });
       expect(() => readCspOptions(config)).toThrow(/wanted string-array/);
     });
   });

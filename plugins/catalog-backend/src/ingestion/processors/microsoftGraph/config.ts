@@ -16,13 +16,46 @@
 
 import { Config } from '@backstage/config';
 
+/**
+ * The configuration parameters for a single Microsoft Graph provider.
+ */
 export type MicrosoftGraphProviderConfig = {
+  /**
+   * The prefix of the target that this matches on, e.g.
+   * "https://graph.microsoft.com/v1.0", with no trailing slash.
+   */
   target: string;
-  authority: string;
+  /**
+   * The auth authority used.
+   *
+   * E.g. "https://login.microsoftonline.com"
+   */
+  authority?: string;
+  /**
+   * The tenant whose org data we are interested in.
+   */
   tenantId: string;
+  /**
+   * The OAuth client ID to use for authenticating requests.
+   */
   clientId: string;
+  /**
+   * The OAuth client secret to use for authenticating requests.
+   *
+   * @visibility secret
+   */
   clientSecret: string;
+  /**
+   * The filter to apply to extract users.
+   *
+   * E.g. "accountEnabled eq true and userType eq 'member'"
+   */
   userFilter?: string;
+  /**
+   * The filter to apply to extract groups.
+   *
+   * E.g. "securityEnabled eq false and mailEnabled eq true"
+   */
   groupFilter?: string;
 };
 

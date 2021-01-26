@@ -59,7 +59,7 @@ import GitHubIcon from '@material-ui/icons/GitHub';
 ```
 
 Simple! The App will reload with your changes automatically. You should now see
-a github icon displayed in the sidebar. Clicking that will link to our new
+a GitHub icon displayed in the sidebar. Clicking that will link to our new
 plugin. And now, the API fun begins.
 
 # The Identity
@@ -72,8 +72,7 @@ Our first modification will be to extract information from the Identity API.
 
 ```tsx
 // Add identityApiRef to the list of imported from core
-import { identityApiRef } from '@backstage/core';
-import { useApi } from '@backstage/core-api';
+import { identityApiRef, useApi } from '@backstage/core';
 ```
 
 3. Adjust the ExampleComponent from inline to block
@@ -81,13 +80,13 @@ import { useApi } from '@backstage/core-api';
 _from inline:_
 
 ```tsx
-const ExampleComponent: FC<{}> = () => ( ... )
+const ExampleComponent = () => ( ... )
 ```
 
 _to block:_
 
 ```tsx
-const ExampleComponent: FC<{}> = () => {
+const ExampleComponent = () => {
 
     return (
         ...
@@ -135,7 +134,7 @@ changes, let's start by wiping this component clean.
 1. Replace everything in the file with the following:
 
 ```tsx
-import React, { FC } from 'react';
+import React from 'react';
 import { useAsync } from 'react-use';
 import Alert from '@material-ui/lab/Alert';
 import {
@@ -143,11 +142,11 @@ import {
   TableColumn,
   Progress,
   githubAuthApiRef,
+  useApi,
 } from '@backstage/core';
-import { useApi } from '@backstage/core-api';
 import { graphql } from '@octokit/graphql';
 
-const ExampleFetchComponent: FC<{}> = () => {
+const ExampleFetchComponent = () => {
   return <div>Nothing to see yet</div>;
 };
 
@@ -223,7 +222,7 @@ type DenseTableProps = {
   viewer: Viewer;
 };
 
-export const DenseTable: FC<DenseTableProps> = ({ viewer }) => {
+export const DenseTable = ({ viewer }: DenseTableProps) => {
   const columns: TableColumn[] = [
     { title: 'Name', field: 'name' },
     { title: 'Created', field: 'createdAt' },

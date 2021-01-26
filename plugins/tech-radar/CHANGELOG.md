@@ -1,5 +1,34 @@
 # @backstage/plugin-tech-radar
 
+## 0.3.3
+
+### Patch Changes
+
+- Updated dependencies [efd6ef753]
+- Updated dependencies [a187b8ad0]
+  - @backstage/core@0.5.0
+
+## 0.3.2
+
+### Patch Changes
+
+- ab0892358: Remove test dependencies from production package list
+- bc909178d: Updated example data in `README`.
+
+## 0.3.1
+
+### Patch Changes
+
+- Updated dependencies [2527628e1]
+- Updated dependencies [e1f4e24ef]
+- Updated dependencies [1c69d4716]
+- Updated dependencies [1665ae8bb]
+- Updated dependencies [04f26f88d]
+- Updated dependencies [ff243ce96]
+  - @backstage/core@0.4.0
+  - @backstage/test-utils@0.1.5
+  - @backstage/theme@0.2.2
+
 ## 0.3.0
 
 ### Minor Changes

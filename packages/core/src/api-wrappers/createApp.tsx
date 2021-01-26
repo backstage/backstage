@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React from 'react';
 import privateExports, {
   AppOptions,
   defaultSystemIcons,
@@ -93,7 +93,7 @@ export function createApp(options?: AppOptions) {
   const DefaultNotFoundPage = () => (
     <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />
   );
-  const DefaultBootErrorPage: FC<BootErrorPageProps> = ({ step, error }) => {
+  const DefaultBootErrorPage = ({ step, error }: BootErrorPageProps) => {
     let message = '';
     if (step === 'load-config') {
       message = `The configuration failed to load, someone should have a look at this error: ${error.message}`;
@@ -142,6 +142,7 @@ export function createApp(options?: AppOptions) {
     themes,
     configLoader,
     defaultApis,
+    bindRoutes: options?.bindRoutes,
   });
 
   app.verify();

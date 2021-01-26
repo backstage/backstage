@@ -41,7 +41,7 @@ setup for free.
 
 ### Manually add documentation setup to already existing repository
 
-Prerequisities:
+Prerequisites:
 
 - An existing component
   [registered in backstage](../software-catalog/index.md#adding-components-to-the-catalog)

@@ -13,41 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import os from 'os';
-import fs from 'fs-extra';
-import path from 'path';
+import { Git } from '@backstage/backend-common';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
+import { GitLabIntegrationConfig } from '@backstage/integration';
+import fs from 'fs-extra';
+import parseGitUrl from 'git-url-parse';
+import os from 'os';
+import path from 'path';
 import { parseLocationAnnotation } from '../helpers';
-import { InputError } from '@backstage/backend-common';
 import { PreparerBase, PreparerOptions } from './types';
-import GitUriParser from 'git-url-parse';
-import { Clone, Cred } from 'nodegit';
-import { Config } from '@backstage/config';
 
 export class GitlabPreparer implements PreparerBase {
-  private readonly privateToken: string;
-
-  constructor(config: Config) {
-    this.privateToken =
-      config.getOptionalString('catalog.processors.gitlabApi.privateToken') ??
-      '';
+  static fromConfig(config: GitLabIntegrationConfig) {
+    return new GitlabPreparer({ token: config.token });
   }
+
+  constructor(private readonly config: { token?: string }) {}
 
   async prepare(
     template: TemplateEntityV1alpha1,
     opts: PreparerOptions,
   ): Promise<string> {
-    const { protocol, location } = parseLocationAnnotation(template);
-    const workingDirectory = opts?.workingDirectory ?? os.tmpdir();
+    const { location } = parseLocationAnnotation(template);
+    const logger = opts.logger;
+    const workingDirectory = opts.workingDirectory ?? os.tmpdir();
 
-    if (!['gitlab', 'gitlab/api', 'url'].includes(protocol)) {
-      throw new InputError(
-        `Wrong location protocol: ${protocol}, should be 'url'`,
-      );
-    }
     const templateId = template.metadata.name;
 
-    const parsedGitLocation = GitUriParser(location);
+    const parsedGitLocation = parseGitUrl(location);
     const repositoryCheckoutUrl = parsedGitLocation.toString('https');
     const tempDir = await fs.promises.mkdtemp(
       path.join(workingDirectory, templateId),
@@ -58,18 +51,18 @@ export class GitlabPreparer implements PreparerBase {
       template.spec.path ?? '.',
     );
 
-    const options = this.privateToken
-      ? {
-          fetchOpts: {
-            callbacks: {
-              credentials: () =>
-                Cred.userpassPlaintextNew('oauth2', this.privateToken),
-            },
-          },
-        }
-      : {};
+    const git = this.config.token
+      ? Git.fromAuth({
+          password: this.config.token,
+          username: 'oauth2',
+          logger,
+        })
+      : Git.fromAuth({ logger });
 
-    await Clone.clone(repositoryCheckoutUrl, tempDir, options);
+    await git.clone({
+      url: repositoryCheckoutUrl,
+      dir: tempDir,
+    });
 
     return path.resolve(tempDir, templateDirectory);
   }

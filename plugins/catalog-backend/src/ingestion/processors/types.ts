@@ -27,12 +27,15 @@ export type CatalogProcessor = {
    * @param location The location to read
    * @param optional Whether a missing target should trigger an error
    * @param emit A sink for items resulting from the read
+   * @param parser A parser, that is able to take the raw catalog descriptor
+   *               data and turn it into the actual result pieces.
    * @returns True if handled by this processor, false otherwise
    */
   readLocation?(
     location: LocationSpec,
     optional: boolean,
     emit: CatalogProcessorEmit,
+    parser: CatalogProcessorParser,
   ): Promise<boolean>;
 
   /**
@@ -46,12 +49,16 @@ export type CatalogProcessor = {
    * @param entity The (possibly partial) entity to process
    * @param location The location that the entity came from
    * @param emit A sink for auxiliary items resulting from the processing
+   * @param originLocation The location that the entity originally came from.
+   *   While location resolves to the direct parent location, originLocation
+   *   tells which location was used to start the ingestion loop.
    * @returns The same entity or a modified version of it
    */
   preProcessEntity?(
     entity: Entity,
     location: LocationSpec,
     emit: CatalogProcessorEmit,
+    originLocation: LocationSpec,
   ): Promise<Entity>;
 
   /**
@@ -95,6 +102,16 @@ export type CatalogProcessor = {
     emit: CatalogProcessorEmit,
   ): Promise<void>;
 };
+
+/**
+ * A parser, that is able to take the raw catalog descriptor data and turn it
+ * into the actual result pieces. The default implementation performs a YAML
+ * document parsing.
+ */
+export type CatalogProcessorParser = (options: {
+  data: Buffer;
+  location: LocationSpec;
+}) => AsyncIterable<CatalogProcessorResult>;
 
 export type CatalogProcessorEmit = (generated: CatalogProcessorResult) => void;
 

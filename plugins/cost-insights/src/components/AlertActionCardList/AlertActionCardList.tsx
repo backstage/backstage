@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import { Paper, Divider } from '@material-ui/core';
 import { AlertActionCard } from './AlertActionCard';
 import { Alert } from '../../types';
@@ -22,7 +22,7 @@ type AlertActionCardList = {
   alerts: Array<Alert>;
 };
 
-export const AlertActionCardList: FC<AlertActionCardList> = ({ alerts }) => (
+export const AlertActionCardList = ({ alerts }: AlertActionCardList) => (
   <Paper>
     {alerts.map((alert, index) => (
       <Fragment key={`alert-${index}`}>

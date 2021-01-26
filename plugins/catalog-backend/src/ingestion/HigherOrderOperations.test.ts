@@ -372,10 +372,9 @@ describe('HigherOrderOperations', () => {
         '123',
         undefined,
       );
-      expect(locationsCatalog.logUpdateSuccess).toHaveBeenCalledWith(
-        '123',
+      expect(locationsCatalog.logUpdateSuccess).toHaveBeenCalledWith('123', [
         'c1',
-      );
+      ]);
     });
 
     it('logs unsuccessful updates when reader fails', async () => {

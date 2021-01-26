@@ -18,8 +18,11 @@ import { UrlReader } from '@backstage/backend-common';
 import { LocationSpec } from '@backstage/catalog-model';
 import { Logger } from 'winston';
 import * as result from './results';
-import { CatalogProcessor, CatalogProcessorEmit } from './types';
-import { parseEntityYaml } from './util/parse';
+import {
+  CatalogProcessor,
+  CatalogProcessorEmit,
+  CatalogProcessorParser,
+} from './types';
 
 // TODO(Rugvip): Added for backwards compatibility when moving to UrlReader, this
 // can be removed in a bit
@@ -43,13 +46,14 @@ export class UrlReaderProcessor implements CatalogProcessor {
     location: LocationSpec,
     optional: boolean,
     emit: CatalogProcessorEmit,
+    parser: CatalogProcessorParser,
   ): Promise<boolean> {
     if (deprecatedTypes.includes(location.type)) {
-      // TODO(Rugvip): Let's not enable this warning yet, as we want to move over the example YAMLs
-      //               in this repo to use the 'url' type first.
-      // this.options.logger.warn(
-      //   `Using deprecated location type '${location.type}' for '${location.target}', use 'url' instead`,
-      // );
+      // TODO(Rugvip): Remove this warning a month or two into 2021, and remove support for the deprecated types.
+      this.options.logger.warn(
+        `Location '${location.target}' uses deprecated location type '${location.type}', use 'url' instead. ` +
+          'Use "scripts/migrate-location-types.js" in the Backstage repo to migrate existing locations.',
+      );
     } else if (location.type !== 'url') {
       return false;
     }
@@ -57,7 +61,7 @@ export class UrlReaderProcessor implements CatalogProcessor {
     try {
       const data = await this.options.reader.read(location.target);
 
-      for (const parseResult of parseEntityYaml(data, location)) {
+      for await (const parseResult of parser({ data, location })) {
         emit(parseResult);
       }
     } catch (error) {

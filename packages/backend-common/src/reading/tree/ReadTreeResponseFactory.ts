@@ -26,6 +26,8 @@ type FromArchiveOptions = {
   stream: Readable;
   // If set, the root of the tree will be set to the given directory path.
   path?: string;
+  // etag of the blob
+  etag: string;
   // Filter passed on from the ReadTreeOptions
   filter?: (path: string) => boolean;
 };
@@ -45,6 +47,7 @@ export class ReadTreeResponseFactory {
       options.stream,
       options.path ?? '',
       this.workDir,
+      options.etag,
       options.filter,
     );
   }
@@ -54,6 +57,7 @@ export class ReadTreeResponseFactory {
       options.stream,
       options.path ?? '',
       this.workDir,
+      options.etag,
       options.filter,
     );
   }

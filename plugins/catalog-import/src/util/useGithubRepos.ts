@@ -15,15 +15,51 @@
  */
 
 import * as YAML from 'yaml';
-import { useApi } from '@backstage/core';
+import { useApi, configApiRef } from '@backstage/core';
 import { catalogImportApiRef } from '../api/CatalogImportApi';
 import { ConfigSpec } from '../components/ImportComponentPage';
+import parseGitUrl from 'git-url-parse';
+
+// TODO: (O5ten) Refactor into a core API instead of direct usage like this
+// https://github.com/backstage/backstage/pull/3613#issuecomment-7408929430
+import {
+  GitHubIntegrationConfig,
+  readGitHubIntegrationConfigs,
+} from '@backstage/integration';
 
 export function useGithubRepos() {
   const api = useApi(catalogImportApiRef);
+  const config = useApi(configApiRef);
+
+  const getGithubIntegrationConfig = (location: string) => {
+    const {
+      name: repoName,
+      owner: ownerName,
+      resource: hostname,
+    } = parseGitUrl(location);
+
+    const configs = readGitHubIntegrationConfigs(
+      config.getOptionalConfigArray('integrations.github') ?? [],
+    );
+    const githubIntegrationConfig = configs.find(v => v.host === hostname);
+    if (!githubIntegrationConfig) {
+      throw new Error(
+        `Unable to locate github-integration for repo-location, ${location}`,
+      );
+    }
+    return {
+      repoName,
+      ownerName,
+      githubIntegrationConfig,
+    };
+  };
 
   const submitPrToRepo = async (selectedRepo: ConfigSpec) => {
-    const [ownerName, repoName] = selectedRepo.location.split('/').slice(-2);
+    const {
+      repoName,
+      ownerName,
+      githubIntegrationConfig,
+    } = getGithubIntegrationConfig(selectedRepo.location);
     const submitPRResponse = await api
       .submitPrToRepo({
         owner: ownerName,
@@ -31,9 +67,10 @@ export function useGithubRepos() {
         fileContent: selectedRepo.config
           .map(entity => `---\n${YAML.stringify(entity)}`)
           .join('\n'),
+        githubIntegrationConfig,
       })
       .catch(e => {
-        throw new Error(`Failed to submit PR to repo:\n${e.message}`);
+        throw new Error(`Failed to submit PR to repo, ${e.message}`);
       });
 
     await api
@@ -41,14 +78,41 @@ export function useGithubRepos() {
         location: submitPRResponse.location,
       })
       .catch(e => {
-        throw new Error(`Failed to create repository location:\n${e.message}`);
+        throw new Error(`Failed to create repository location, ${e.message}`);
       });
 
     return submitPRResponse;
   };
 
+  const checkForExistingCatalogInfo = async (
+    location: string,
+  ): Promise<{ exists: boolean; url?: string }> => {
+    let githubConfig: {
+      repoName: string;
+      ownerName: string;
+      githubIntegrationConfig: GitHubIntegrationConfig;
+    };
+    try {
+      githubConfig = getGithubIntegrationConfig(location);
+    } catch (e) {
+      return { exists: false };
+    }
+    return await api
+      .checkForExistingCatalogInfo({
+        owner: githubConfig.ownerName,
+        repo: githubConfig.repoName,
+        githubIntegrationConfig: githubConfig.githubIntegrationConfig,
+      })
+      .catch(e => {
+        throw new Error(
+          `Failed to inspect repository for existing catalog-info.yaml, ${e.message}`,
+        );
+      });
+  };
+
   return {
     submitPrToRepo,
+    checkForExistingCatalogInfo,
     generateEntityDefinitions: (repo: string) =>
       api.generateEntityDefinitions({ repo }),
     addLocation: (location: string) =>

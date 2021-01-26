@@ -18,8 +18,27 @@
 /* eslint-disable import/no-extraneous-dependencies */
 
 const { resolve: resolvePath, join: joinPath, dirname } = require('path');
-const fs = require('fs-extra');
-const recursive = require('recursive-readdir');
+const fs = require('fs').promises;
+const { existsSync } = require('fs');
+
+const IGNORED_DIRS = ['node_modules', 'dist', 'bin', '.git'];
+
+async function listFiles(dir) {
+  const files = await fs.readdir(dir);
+  const paths = await Promise.all(
+    files
+      .filter(file => !IGNORED_DIRS.includes(file))
+      .map(async file => {
+        const path = joinPath(dir, file);
+
+        if ((await fs.stat(path)).isDirectory()) {
+          return listFiles(path);
+        }
+        return path;
+      }),
+  );
+  return paths.flat();
+}
 
 const projectRoot = resolvePath(__dirname, '..');
 
@@ -65,7 +84,7 @@ async function verifyUrl(basePath, absUrl, docPages) {
     }
 
     const staticPath = resolvePath(projectRoot, 'microsite/static', `.${url}`);
-    if (await fs.pathExists(staticPath)) {
+    if (existsSync(staticPath)) {
       return undefined;
     }
 
@@ -74,8 +93,15 @@ async function verifyUrl(basePath, absUrl, docPages) {
     path = resolvePath(dirname(resolvePath(projectRoot, basePath)), url);
   }
 
-  const exists = await fs.pathExists(path);
-  if (!exists) {
+  if (
+    absUrl === url &&
+    basePath.match(/^(?:docs)\//) &&
+    !path.startsWith(resolvePath(projectRoot, 'docs'))
+  ) {
+    return { url, basePath, problem: 'out-of-docs' };
+  }
+
+  if (!existsSync(path)) {
     return { url, basePath, problem: 'missing' };
   }
 
@@ -102,7 +128,7 @@ async function verifyFile(filePath, docPages) {
 // It is used to validate microsite links from outside /docs/, as those
 // are not transformed from the markdown file representation by docusaurus.
 async function findExternalDocsLinks(dir) {
-  const allFiles = await recursive(dir);
+  const allFiles = await listFiles(dir);
   const mdFiles = allFiles.filter(p => p.endsWith('.md'));
 
   const paths = new Map();
@@ -130,14 +156,15 @@ async function findExternalDocsLinks(dir) {
 async function main() {
   process.chdir(projectRoot);
 
-  const files = await recursive('.', ['node_modules', 'dist', 'bin']);
+  const files = await listFiles('.');
   const mdFiles = files.filter(f => f.endsWith('.md'));
   const badUrls = [];
 
   const docPages = await findExternalDocsLinks('docs');
+  const docPageSet = new Set(docPages.values());
 
   for (const mdFile of mdFiles) {
-    const badFileUrls = await verifyFile(mdFile, new Set(docPages.values()));
+    const badFileUrls = await verifyFile(mdFile, docPageSet);
     badUrls.push(...badFileUrls);
   }
 
@@ -147,6 +174,18 @@ async function main() {
       if (problem === 'missing') {
         console.error(
           `Unable to reach ${url} from root or microsite/static/, linked from ${basePath}`,
+        );
+      } else if (problem === 'out-of-docs') {
+        console.error(
+          'Links in docs must use absolute URLs for targets outside of docs',
+        );
+        console.error(`  From: ${basePath}`);
+        console.error(`  To: ${url}`);
+        console.error(
+          `  Likely replace with: https://github.com/backstage/backstage/blob/master/${url.replace(
+            /^[./]+/,
+            '',
+          )}`,
         );
       } else if (problem === 'doc-missing') {
         const suggestion =

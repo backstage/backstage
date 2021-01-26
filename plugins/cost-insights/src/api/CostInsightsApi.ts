@@ -18,7 +18,6 @@ import { createApiRef } from '@backstage/core';
 import {
   Alert,
   Cost,
-  Duration,
   Entity,
   Group,
   Project,
@@ -38,15 +37,9 @@ export type ProductInsightsOptions = {
   group: string;
 
   /**
-   * A time duration, such as P1M. See the Duration type for a detailed explanation
-   * of how the durations are interpreted in Cost Insights.
+   * An ISO 8601 repeating interval string, such as R2/P3M/2020-09-01
    */
-  duration: Duration;
-
-  /**
-   * The most current date for which billing data is complete, in YYYY-MM-DD format.
-   */
-  lastCompleteBillingDate: string;
+  intervals: string;
 
   /**
    * (optional) The project id from getGroupProjects or query parameters
@@ -68,6 +61,8 @@ export type CostInsightsApi = {
    * if a user has multiple groups, they are able to switch between groups to see costs for each.
    *
    * This method should be removed once the Backstage identity plugin provides the same concept.
+   *
+   * @param userId The login id for the current user
    */
   getUserGroups(userId: string): Promise<Group[]>;
 
@@ -75,11 +70,13 @@ export type CostInsightsApi = {
    * Get a list of cloud billing entities that belong to this group (projects in GCP, AWS has a
    * similar concept in billing accounts). These act as filters for the displayed costs, users can
    * choose whether they see all costs for a group, or those from a particular owned project.
+   *
+   * @param group The group id from getUserGroups or query parameters
    */
   getGroupProjects(group: string): Promise<Project[]>;
 
   /**
-   * Get daily cost aggregations for a given group and interval timeframe.
+   * Get daily cost aggregations for a given group and interval time frame.
    *
    * The return type includes an array of daily cost aggregations as well as statistics about the
    * change in cost over the intervals. Calculating these statistics requires us to bucket costs
@@ -90,14 +87,14 @@ export type CostInsightsApi = {
    * reduction) and compare it to metrics important to the business.
    *
    * @param group The group id from getUserGroups or query parameters
-   * @param intervals An ISO 8601 repeating interval string, such as R2/P1M/2020-09-01
+   * @param intervals An ISO 8601 repeating interval string, such as R2/P30D/2020-09-01
    *   https://en.wikipedia.org/wiki/ISO_8601#Repeating_intervals
    */
   getGroupDailyCost(group: string, intervals: string): Promise<Cost>;
 
   /**
    * Get daily cost aggregations for a given billing entity (project in GCP, AWS has a similar
-   * concept in billing accounts) and interval timeframe.
+   * concept in billing accounts) and interval time frame.
    *
    * The return type includes an array of daily cost aggregations as well as statistics about the
    * change in cost over the intervals. Calculating these statistics requires us to bucket costs
@@ -108,24 +105,24 @@ export type CostInsightsApi = {
    * (or reduction) and compare it to metrics important to the business.
    *
    * @param project The project id from getGroupProjects or query parameters
-   * @param intervals An ISO 8601 repeating interval string, such as R2/P1M/2020-09-01
+   * @param intervals An ISO 8601 repeating interval string, such as R2/P30D/2020-09-01
    *   https://en.wikipedia.org/wiki/ISO_8601#Repeating_intervals
    */
   getProjectDailyCost(project: string, intervals: string): Promise<Cost>;
 
   /**
-   * Get aggregations for a particular metric and interval timeframe. Teams
+   * Get aggregations for a particular metric and interval time frame. Teams
    * can see metrics important to their business in comparison to the growth
    * (or reduction) of a project or group's daily costs.
    *
    * @param metric A metric from the cost-insights configuration in app-config.yaml.
-   * @param intervals An ISO 8601 repeating interval string, such as R2/P1M/2020-09-01
+   * @param intervals An ISO 8601 repeating interval string, such as R2/P30D/2020-09-01
    *   https://en.wikipedia.org/wiki/ISO_8601#Repeating_intervals
    */
   getDailyMetricData(metric: string, intervals: string): Promise<MetricData>;
 
   /**
-   * Get cost aggregations for a particular cloud product and interval timeframe. This includes
+   * Get cost aggregations for a particular cloud product and interval time frame. This includes
    * total cost for the product, as well as a breakdown of particular entities that incurred cost
    * in this product. The type of entity depends on the product - it may be deployed services,
    * storage buckets, managed database instances, etc.
@@ -136,9 +133,11 @@ export type CostInsightsApi = {
    * The time period is supplied as a Duration rather than intervals, since this is always expected
    * to return data for two bucketed time period (e.g. month vs month, or quarter vs quarter).
    *
-   * @param options Options to use when fetching insights for a particular cloud product and interval timeframe.
+   * @param options Options to use when fetching insights for a particular cloud product and
+   *                interval time frame.
    */
   getProductInsights(options: ProductInsightsOptions): Promise<Entity>;
+
   /**
    * Get current cost alerts for a given group. These show up as Action Items for the group on the
    * Cost Insights page. Alerts may include cost-saving recommendations, such as infrastructure

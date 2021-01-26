@@ -28,13 +28,13 @@ export const addLinkClickListener = ({
   return dom => {
     Array.from(dom.getElementsByTagName('a')).forEach(elem => {
       elem.addEventListener('click', (e: MouseEvent) => {
-        const target = e.target as HTMLAnchorElement;
-        const href = target?.getAttribute('href');
+        const target = elem as HTMLAnchorElement;
+        const href = target.getAttribute('href');
 
         if (!href) return;
         if (href.startsWith(baseUrl)) {
           e.preventDefault();
-          onClick(e, target.getAttribute('href')!);
+          onClick(e, href);
         }
       });
     });

@@ -72,8 +72,12 @@ export const isInvalid = ({ label, payload }: TooltipProps) => {
   return label === undefined || !payload || !payload.length;
 };
 
-export const isActiveLabel = (
+export const isLabeled = (data?: Record<'activeLabel', string | undefined>) => {
+  return data?.activeLabel && data?.activeLabel !== '';
+};
+
+export const isUnlabeled = (
   data?: Record<'activeLabel', string | undefined>,
 ) => {
-  return data?.activeLabel && data.activeLabel !== '';
+  return data?.activeLabel === '';
 };

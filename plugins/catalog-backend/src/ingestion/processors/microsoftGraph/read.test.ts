@@ -49,9 +49,7 @@ function group(data: RecursivePartial<GroupEntity>): GroupEntity {
         name: 'name',
       },
       spec: {
-        ancestors: [],
         children: [],
-        descendants: [],
         type: 'team',
       },
     } as GroupEntity,
@@ -65,6 +63,7 @@ describe('read microsoft graph', () => {
     getGroups: jest.fn(),
     getGroupMembers: jest.fn(),
     getUserPhotoWithSizeLimit: jest.fn(),
+    getGroupPhotoWithSizeLimit: jest.fn(),
     getOrganization: jest.fn(),
   } as any;
 
@@ -152,6 +151,9 @@ describe('read microsoft graph', () => {
           },
           spec: {
             type: 'root',
+            profile: {
+              displayName: 'Organization Name',
+            },
           },
         }),
       );
@@ -167,6 +169,8 @@ describe('read microsoft graph', () => {
         yield {
           id: 'groupid',
           displayName: 'Group Name',
+          description: 'Group Description',
+          mail: 'group@example.com',
         };
       }
 
@@ -187,6 +191,9 @@ describe('read microsoft graph', () => {
         id: 'tenantid',
         displayName: 'Organization Name',
       });
+      client.getGroupPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
 
       const {
         groups,
@@ -207,6 +214,9 @@ describe('read microsoft graph', () => {
         },
         spec: {
           type: 'root',
+          profile: {
+            displayName: 'Organization Name',
+          },
         },
       });
       expect(groups).toEqual([
@@ -217,10 +227,17 @@ describe('read microsoft graph', () => {
               'graph.microsoft.com/group-id': 'groupid',
             },
             name: 'group_name',
-            description: 'Group Name',
+            description: 'Group Description',
           },
           spec: {
             type: 'team',
+            profile: {
+              displayName: 'Group Name',
+              email: 'group@example.com',
+              // TODO: Loading groups doesn't work right now as Microsoft Graph
+              // doesn't allows this yet
+              /* picture: 'data:image/jpeg;base64,...',*/
+            },
           },
         }),
       ]);
@@ -232,10 +249,14 @@ describe('read microsoft graph', () => {
       expect(client.getGroups).toBeCalledTimes(1);
       expect(client.getGroups).toBeCalledWith({
         filter: 'securityEnabled eq false',
-        select: ['id', 'displayName', 'mailNickname'],
+        select: ['id', 'displayName', 'description', 'mail', 'mailNickname'],
       });
       expect(client.getGroupMembers).toBeCalledTimes(1);
       expect(client.getGroupMembers).toBeCalledWith('groupid');
+      // TODO: Loading groups doesn't work right now as Microsoft Graph
+      // doesn't allows this yet
+      // expect(client.getGroupPhotoWithSizeLimit).toBeCalledTimes(1);
+      // expect(client.getGroupPhotoWithSizeLimit).toBeCalledWith('groupid', 120);
     });
   });
 
@@ -306,33 +327,20 @@ describe('read microsoft graph', () => {
       resolveRelations(rootGroup, groups, users, groupMember, groupMemberOf);
 
       expect(rootGroup.spec.parent).toBeUndefined();
-      expect(rootGroup.spec.ancestors).toEqual(expect.arrayContaining([]));
       expect(rootGroup.spec.children).toEqual(
         expect.arrayContaining(['a', 'b']),
       );
-      expect(rootGroup.spec.descendants).toEqual(
-        expect.arrayContaining(['a', 'b', 'c']),
-      );
 
       expect(groupA.spec.parent).toEqual('root');
-      expect(groupA.spec.ancestors).toEqual(expect.arrayContaining(['root']));
       expect(groupA.spec.children).toEqual(expect.arrayContaining([]));
-      expect(groupA.spec.descendants).toEqual(expect.arrayContaining([]));
 
       expect(groupB.spec.parent).toEqual('root');
-      expect(groupB.spec.ancestors).toEqual(expect.arrayContaining(['root']));
       expect(groupB.spec.children).toEqual(expect.arrayContaining(['c']));
-      expect(groupB.spec.descendants).toEqual(expect.arrayContaining(['c']));
 
       expect(groupC.spec.parent).toEqual('b');
-      expect(groupC.spec.ancestors).toEqual(
-        expect.arrayContaining(['root', 'b']),
-      );
       expect(groupC.spec.children).toEqual(expect.arrayContaining([]));
-      expect(groupC.spec.descendants).toEqual(expect.arrayContaining([]));
 
       expect(user1.spec.memberOf).toEqual(expect.arrayContaining(['a']));
-
       expect(user2.spec.memberOf).toEqual(expect.arrayContaining(['b', 'c']));
     });
   });

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import { Link } from '@backstage/core';
+import { configApiRef, Link, useApi } from '@backstage/core';
+import { readGitHubIntegrationConfigs } from '@backstage/integration';
 import {
   Accordion,
   AccordionDetails,
@@ -70,26 +71,6 @@ const useStyles = makeStyles<Theme>(theme => ({
     verticalAlign: 'bottom',
   },
 }));
-
-const JobsList = ({ jobs, entity }: { jobs?: Jobs; entity: Entity }) => {
-  const classes = useStyles();
-  return (
-    <Box>
-      {jobs &&
-        jobs.total_count > 0 &&
-        jobs.jobs.map(job => (
-          <JobListItem
-            key={job.id}
-            job={job}
-            className={
-              job.status !== 'success' ? classes.failed : classes.success
-            }
-            entity={entity}
-          />
-        ))}
-    </Box>
-  );
-};
 
 const getElapsedTime = (start: string, end: string) => {
   const diff = moment(moment(end || moment()).diff(moment(start)));
@@ -158,11 +139,36 @@ const JobListItem = ({
   );
 };
 
+const JobsList = ({ jobs, entity }: { jobs?: Jobs; entity: Entity }) => {
+  const classes = useStyles();
+  return (
+    <Box>
+      {jobs &&
+        jobs.total_count > 0 &&
+        jobs.jobs.map(job => (
+          <JobListItem
+            key={job.id}
+            job={job}
+            className={
+              job.status !== 'success' ? classes.failed : classes.success
+            }
+            entity={entity}
+          />
+        ))}
+    </Box>
+  );
+};
+
 export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
+  const config = useApi(configApiRef);
   const projectName = useProjectName(entity);
 
+  // TODO: Get github hostname from metadata annotation
+  const hostname = readGitHubIntegrationConfigs(
+    config.getOptionalConfigArray('integrations.github') ?? [],
+  )[0].host;
   const [owner, repo] = projectName.value ? projectName.value.split('/') : [];
-  const details = useWorkflowRunsDetails(repo, owner);
+  const details = useWorkflowRunsDetails({ hostname, owner, repo });
   const jobs = useWorkflowRunJobs(details.value?.jobs_url);
 
   const error = projectName.error || (projectName.value && details.error);
@@ -209,8 +215,8 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
               </TableCell>
               <TableCell>
                 <WorkflowRunStatus
-                  status={details.value?.status}
-                  conclusion={details.value?.conclusion}
+                  status={details.value?.status || undefined}
+                  conclusion={details.value?.conclusion || undefined}
                 />
               </TableCell>
             </TableRow>
@@ -218,7 +224,7 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
               <TableCell>
                 <Typography noWrap>Author</Typography>
               </TableCell>
-              <TableCell>{`${details.value?.head_commit.author.name} (${details.value?.head_commit.author.email})`}</TableCell>
+              <TableCell>{`${details.value?.head_commit.author?.name} (${details.value?.head_commit.author?.email})`}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>

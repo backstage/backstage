@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
+import limiterFactory from 'p-limit';
 import { buildMemberOf, buildOrgHierarchy } from '../util/org';
 import { MicrosoftGraphClient } from './client';
 import {
@@ -21,7 +22,6 @@ import {
   MICROSOFT_GRAPH_TENANT_ID_ANNOTATION,
   MICROSOFT_GRAPH_USER_ID_ANNOTATION,
 } from './constants';
-import limiterFactory from 'p-limit';
 
 export function normalizeEntityName(name: string): string {
   return name
@@ -37,7 +37,7 @@ export async function readMicrosoftGraphUsers(
   users: UserEntity[]; // With all relations empty
 }> {
   const entities: UserEntity[] = [];
-  const picturePromises: Promise<void>[] = [];
+  const promises: Promise<void>[] = [];
   const limiter = limiterFactory(10);
 
   for await (const user of client.getUsers({
@@ -82,12 +82,12 @@ export async function readMicrosoftGraphUsers(
       );
     });
 
-    picturePromises.push(loadPhoto);
+    promises.push(loadPhoto);
     entities.push(entity);
   }
 
   // Wait for all photos to be downloaded
-  await Promise.all(picturePromises);
+  await Promise.all(promises);
 
   return { users: entities };
 }
@@ -98,7 +98,7 @@ export async function readMicrosoftGraphOrganization(
 ): Promise<{
   rootGroup: GroupEntity; // With all relations empty
 }> {
-  // For now we expect a single root orgranization
+  // For now we expect a single root organization
   const organization = await client.getOrganization(tenantId);
   const name = normalizeEntityName(organization.displayName!);
   const rootGroup: GroupEntity = {
@@ -113,9 +113,10 @@ export async function readMicrosoftGraphOrganization(
     },
     spec: {
       type: 'root',
-      ancestors: [],
+      profile: {
+        displayName: organization.displayName!,
+      },
       children: [],
-      descendants: [],
     },
   };
 
@@ -141,11 +142,11 @@ export async function readMicrosoftGraphGroups(
   groupMember.set(rootGroup.metadata.name, new Set<string>());
   groups.push(rootGroup);
 
-  const groupMemberPromises: Promise<void>[] = [];
+  const promises: Promise<void>[] = [];
 
   for await (const group of client.getGroups({
     filter: options?.groupFilter,
-    select: ['id', 'displayName', 'mailNickname'],
+    select: ['id', 'displayName', 'description', 'mail', 'mailNickname'],
   })) {
     if (!group.id || !group.displayName) {
       continue;
@@ -157,19 +158,26 @@ export async function readMicrosoftGraphGroups(
       kind: 'Group',
       metadata: {
         name: name,
-        description: group.displayName,
         annotations: {
           [MICROSOFT_GRAPH_GROUP_ID_ANNOTATION]: group.id,
         },
       },
       spec: {
         type: 'team',
-        // TODO: We could include a group email and picture
-        ancestors: [],
+        profile: {},
         children: [],
-        descendants: [],
       },
     };
+
+    if (group.description) {
+      entity.metadata.description = group.description;
+    }
+    if (group.displayName) {
+      entity.spec.profile!.displayName = group.displayName;
+    }
+    if (group.mail) {
+      entity.spec.profile!.email = group.mail;
+    }
 
     // Download the members in parallel, otherwise it can take quite some time
     const loadGroupMembers = limiter(async () => {
@@ -188,12 +196,25 @@ export async function readMicrosoftGraphGroups(
       }
     });
 
-    groupMemberPromises.push(loadGroupMembers);
+    // TODO: Loading groups doesn't work right now as Microsoft Graph doesn't
+    // allows this yet: https://microsoftgraph.uservoice.com/forums/920506-microsoft-graph-feature-requests/suggestions/37884922-allow-application-to-set-or-update-a-group-s-photo
+    /*/ / Download the photos in parallel, otherwise it can take quite some time
+    const loadPhoto = limiter(async () => {
+      entity.spec.profile!.picture = await client.getGroupPhotoWithSizeLimit(
+        group.id!,
+        // We are limiting the photo size, as groups with full resolution photos
+        // can make the Backstage API slow
+        120,
+      );
+    });
+
+    promises.push(loadPhoto);*/
+    promises.push(loadGroupMembers);
     groups.push(entity);
   }
 
-  // Wait for all group members to be loaded
-  await Promise.all(groupMemberPromises);
+  // Wait for all group members and photos to be loaded
+  await Promise.all(promises);
 
   return {
     groups,
@@ -278,7 +299,7 @@ export function resolveRelations(
     });
   });
 
-  // Make sure that all groups have proper ancestors and descendants
+  // Make sure that all groups have proper parents and children
   buildOrgHierarchy(groups);
 
   // Set relations for all users

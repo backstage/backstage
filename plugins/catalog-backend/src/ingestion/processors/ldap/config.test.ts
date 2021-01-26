@@ -32,9 +32,7 @@ describe('readLdapConfig', () => {
         },
       ],
     };
-    const actual = readLdapConfig(
-      ConfigReader.fromConfigs([{ context: '', data: config }]),
-    );
+    const actual = readLdapConfig(new ConfigReader(config));
     const expected = [
       {
         target: 'target',
@@ -66,6 +64,7 @@ describe('readLdapConfig', () => {
             name: 'cn',
             description: 'description',
             type: 'groupType',
+            displayName: 'cn',
             memberOf: 'memberOf',
             members: 'member',
           },
@@ -114,6 +113,9 @@ describe('readLdapConfig', () => {
               name: 'v',
               description: 'd',
               type: 't',
+              displayName: 'c',
+              email: 'm',
+              picture: 'p',
               memberOf: 'm',
               members: 'n',
             },
@@ -121,9 +123,7 @@ describe('readLdapConfig', () => {
         },
       ],
     };
-    const actual = readLdapConfig(
-      ConfigReader.fromConfigs([{ context: '', data: config }]),
-    );
+    const actual = readLdapConfig(new ConfigReader(config));
     const expected = [
       {
         target: 'target',
@@ -161,6 +161,9 @@ describe('readLdapConfig', () => {
             name: 'v',
             description: 'd',
             type: 't',
+            displayName: 'c',
+            email: 'm',
+            picture: 'p',
             memberOf: 'm',
             members: 'n',
           },

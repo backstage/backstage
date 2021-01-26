@@ -1,5 +1,40 @@
 # @backstage/config-loader
 
+## 0.4.1
+
+### Patch Changes
+
+- ad5c56fd9: Deprecate `$data` and replace it with `$include` which allows for any type of json value to be read from external files. In addition, `$include` can be used without a path, which causes the value at the root of the file to be loaded.
+
+  Most usages of `$data` can be directly replaced with `$include`, except if the referenced value is not a string, in which case the value needs to be changed. For example:
+
+  ```yaml
+  # app-config.yaml
+  foo:
+    $data: foo.yaml#myValue # replacing with $include will turn the value into a number
+    $data: bar.yaml#myValue # replacing with $include is safe
+
+  # foo.yaml
+  myValue: 0xf00
+
+  # bar.yaml
+  myValue: bar
+  ```
+
+## 0.4.0
+
+### Minor Changes
+
+- 4e7091759: Fix typo of "visibility" in config schema reference
+
+  If you have defined a config element named `visiblity`, you
+  will need to fix the spelling to `visibility`. For more info,
+  see https://backstage.io/docs/conf/defining#visibility.
+
+### Patch Changes
+
+- b4488ddb0: Added a type alias for PositionError = GeolocationPositionError
+
 ## 0.3.0
 
 ### Minor Changes

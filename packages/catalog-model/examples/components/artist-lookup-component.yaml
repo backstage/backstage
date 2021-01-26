@@ -9,4 +9,5 @@ metadata:
 spec:
   type: service
   lifecycle: experimental
-  owner: artists@example.com
+  owner: team-a
+  system: artist-engagement-portal

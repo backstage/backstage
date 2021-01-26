@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ApiProvider, ApiRegistry } from '@backstage/core-api';
+import { ApiProvider, ApiRegistry } from '@backstage/core';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { render } from '@testing-library/react';

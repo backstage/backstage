@@ -42,7 +42,7 @@ kubernetes:
 Mac copy to clipboard:
 
 ```
-kubectl get secret $(kubectl get sa dice-roller -o=json | jq -r .secrets[0].name) -o=json | jq -r '.data["token"]' | base64 --decode | pbcopy
+kubectl get secret $(kubectl get sa dice-roller -o=json | jq -r '.secrets[0].name') -o=json | jq -r '.data["token"]' | base64 --decode | pbcopy
 ```
 
 Paste into `app-config.local.yaml` `kubernetes.clusters[0].serviceAccountToken`

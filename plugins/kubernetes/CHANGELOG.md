@@ -1,5 +1,82 @@
 # @backstage/plugin-kubernetes
 
+## 0.3.6
+
+### Patch Changes
+
+- d014185db: Show Kubernetes Service manifests.
+  Show Kubernetes Ingress manifests.
+- Updated dependencies [def2307f3]
+- Updated dependencies [d54857099]
+- Updated dependencies [efd6ef753]
+- Updated dependencies [a187b8ad0]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/plugin-kubernetes-backend@0.2.5
+  - @backstage/core@0.5.0
+
+## 0.3.5
+
+### Patch Changes
+
+- 1fea88fd0: Fixed an issue where assets weren't properly bundled in the published package.
+
+## 0.3.4
+
+### Patch Changes
+
+- 5a9a7e7c2: Revamped Kubernetes UI and added error reporting/detection
+- 3e7c09c84: Minor updates to display of errors
+- Updated dependencies [5a9a7e7c2]
+- Updated dependencies [f3b064e1c]
+- Updated dependencies [265a7ab30]
+- Updated dependencies [abbee6fff]
+- Updated dependencies [147fadcb9]
+  - @backstage/plugin-kubernetes-backend@0.2.4
+  - @backstage/catalog-model@0.6.1
+  - @backstage/core@0.4.4
+
+## 0.3.3
+
+### Patch Changes
+
+- Updated dependencies [c911061b7]
+- Updated dependencies [8ef71ed32]
+- Updated dependencies [0e6298f7e]
+- Updated dependencies [ac3560b42]
+  - @backstage/catalog-model@0.6.0
+  - @backstage/core@0.4.1
+  - @backstage/plugin-kubernetes-backend@0.2.3
+
+## 0.3.2
+
+### Patch Changes
+
+- Updated dependencies [2527628e1]
+- Updated dependencies [e3bd9fc2f]
+- Updated dependencies [1c69d4716]
+- Updated dependencies [83b6e0c1f]
+- Updated dependencies [1665ae8bb]
+- Updated dependencies [04f26f88d]
+- Updated dependencies [ff243ce96]
+- Updated dependencies [e3bd9fc2f]
+  - @backstage/core@0.4.0
+  - @backstage/config@0.1.2
+  - @backstage/catalog-model@0.5.0
+  - @backstage/theme@0.2.2
+  - @backstage/plugin-kubernetes-backend@0.2.2
+
+## 0.3.1
+
+### Patch Changes
+
+- bcc211a08: k8s-plugin: refactor approach to use annotation based label-selector
+- Updated dependencies [08835a61d]
+- Updated dependencies [a9fd599f7]
+- Updated dependencies [bcc211a08]
+  - @backstage/catalog-model@0.4.0
+  - @backstage/plugin-kubernetes-backend@0.2.1
+
 ## 0.3.0
 
 ### Minor Changes

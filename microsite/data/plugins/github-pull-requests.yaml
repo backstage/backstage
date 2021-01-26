@@ -2,7 +2,7 @@
 title: GitHub Pull Requests
 author: roadie.io
 authorUrl: https://roadie.io/
-category: CI
+category: Source Control Mgmt
 description: View GitHub pull requests for your service in Backstage.
 documentation: https://roadie.io/backstage/plugins/github-pull-requests
 iconUrl: https://roadie.io/images/logos/github.png

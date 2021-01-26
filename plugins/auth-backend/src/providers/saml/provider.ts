@@ -15,6 +15,7 @@
  */
 
 import express from 'express';
+import { SamlConfig } from 'passport-saml/lib/passport-saml/types';
 import {
   Strategy as SamlStrategy,
   Profile as SamlProfile,
@@ -112,13 +113,12 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
   }
 }
 
-type SAMLProviderOptions = {
-  entryPoint: string;
-  issuer: string;
-  path: string;
+type SAMLProviderOptions = SamlConfig & {
   tokenIssuer: TokenIssuer;
   appUrl: string;
 };
+
+type SignatureAlgorithm = 'sha1' | 'sha256' | 'sha512';
 
 export const createSamlProvider: AuthProviderFactory = ({
   providerId,
@@ -126,16 +126,27 @@ export const createSamlProvider: AuthProviderFactory = ({
   config,
   tokenIssuer,
 }) => {
-  const url = new URL(globalConfig.baseUrl);
-  const entryPoint = config.getString('entryPoint');
-  const issuer = config.getString('issuer');
   const opts = {
-    entryPoint,
-    issuer,
-    path: `${url.pathname}/${providerId}/handler/frame`,
+    callbackUrl: `${globalConfig.baseUrl}/${providerId}/handler/frame`,
+    entryPoint: config.getString('entryPoint'),
+    logoutUrl: config.getOptionalString('logoutUrl'),
+    issuer: config.getString('issuer'),
+    cert: config.getOptionalString('cert'),
+    privateCert: config.getOptionalString('privateKey'),
+    decryptionPvk: config.getOptionalString('decryptionPvk'),
+    signatureAlgorithm: config.getOptionalString('signatureAlgorithm') as
+      | SignatureAlgorithm
+      | undefined,
+    digestAlgorithm: config.getOptionalString('digestAlgorithm'),
+
     tokenIssuer,
     appUrl: globalConfig.appUrl,
   };
 
+  // passport-saml will return an error if the `cert` key is set, and the value is empty.
+  // Since we read from config (such as environment variables) an empty string should be equal to being unset.
+  if (!opts.cert) {
+    delete opts.cert;
+  }
   return new SamlAuthProvider(opts);
 };

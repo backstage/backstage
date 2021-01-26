@@ -24,3 +24,4 @@ export * from './reading';
 export * from './service';
 export * from './paths';
 export * from './hot';
+export * from './scm';
