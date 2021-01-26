@@ -11,6 +11,7 @@ services:
         - yarn build
       update:
         - yarn install
-        - env
+        - yarn tsc
+        - yarn build
       start:
         - node packages/backend --config app-config.yaml --config .tugboat/tugboat.app-config.production.yaml &
