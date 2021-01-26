@@ -62,14 +62,21 @@ COPY app-config.yaml app-config.production.yaml ./
 CMD ["node", "packages/backend", "--config", "app-config.yaml", "--config", "app-config.production.yaml"]
 ```
 
-You can add the Dockerfile to the root of your project, and run the following:
+You can add the Dockerfile to the root of your project, and run the following to
+build the container under a specified tag.
 
 ```sh
 $ docker build -t example-deployment .
-$ docker run -p 7000:7000 example-deployment
 ```
 
-Once complete, open your browser at `http://localhost:7000` if running locally.
+To run the image locally you can run:
+
+```sh
+$ docker run -p -it 7000:7000 example-deployment
+```
+
+You should then start to get logs in your terminal, and then you can open your
+browser at `http://localhost:7000`
 
 ## Heroku
 
