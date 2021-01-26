@@ -14,27 +14,10 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core';
+import { ConnectionOptions } from 'tls';
 
-export const kafkaApiRef = createApiRef<KafkaApi>({
-  id: 'plugin.kafka.service',
-  description:
-    'Used by the Kafka plugin to make requests to accompanying backend',
-});
-
-export type ConsumerGroupOffsetsResponse = {
-  consumerId: string;
-  offsets: {
-    topic: string;
-    partitionId: number;
-    topicOffset: string;
-    groupOffset: string;
-  }[];
-};
-
-export interface KafkaApi {
-  getConsumerGroupOffsets(
-    clusterId: string,
-    consumerGroup: string,
-  ): Promise<ConsumerGroupOffsetsResponse>;
+export interface ClusterDetails {
+  name: string;
+  brokers: string[];
+  ssl?: ConnectionOptions;
 }

@@ -65,8 +65,10 @@ import { Router as KafkaRouter } from '@backstage/plugin-kafka';
 ```yaml
 kafka:
   clientId: backstage
-  brokers:
-    - localhost:9092
+  clusters:
+    - name: cluster-name
+      brokers:
+        - localhost:9092
 ```
 
 6. Add `kafka.apache.org/consumer-groups` annotation to your services:
@@ -77,7 +79,7 @@ kind: Component
 metadata:
   # ...
   annotations:
-    kafka.apache.org/consumer-groups: consumer-group-name
+    kafka.apache.org/consumer-groups: cluster-name/consumer-group-name
 spec:
   type: service
 ```
