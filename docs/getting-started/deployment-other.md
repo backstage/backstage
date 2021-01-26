@@ -13,6 +13,9 @@ in one container. This Dockerfile uses multi-stage builds, and a
 It also provides caching on the `yarn install`'s so that you don't have to do it
 unless absolutely necessary.
 
+> Note: This Dockerfile assumes that you're running SQLite, or your
+> configuration is setup to connect to an external PostgreSQL Database.
+
 ```Dockerfile
 # Stage 1 - Create yarn install skeleton layer
 FROM node:14-buster AS packages
@@ -65,6 +68,8 @@ You can add the Dockerfile to the root of your project, and run the following:
 $ docker build -t example-deployment .
 $ docker run -p 7000:7000 example-deployment
 ```
+
+Once complete, open your browser at `http://localhost:7000` if running locally.
 
 ## Heroku
 
