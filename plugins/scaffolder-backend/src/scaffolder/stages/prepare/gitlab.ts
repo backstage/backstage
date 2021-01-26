@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 import { Git } from '@backstage/backend-common';
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { GitLabIntegrationConfig } from '@backstage/integration';
 import fs from 'fs-extra';
 import parseGitUrl from 'git-url-parse';
-import os from 'os';
 import path from 'path';
-import { parseLocationAnnotation } from '../helpers';
 import { PreparerBase, PreparerOptions } from './types';
 
 export class GitlabPreparer implements PreparerBase {
@@ -30,25 +27,13 @@ export class GitlabPreparer implements PreparerBase {
 
   constructor(private readonly config: { token?: string }) {}
 
-  async prepare(
-    template: TemplateEntityV1alpha1,
-    opts: PreparerOptions,
-  ): Promise<string> {
-    const { location } = parseLocationAnnotation(template);
-    const logger = opts.logger;
-    const workingDirectory = opts.workingDirectory ?? os.tmpdir();
-
-    const templateId = template.metadata.name;
-
-    const parsedGitLocation = parseGitUrl(location);
-    const repositoryCheckoutUrl = parsedGitLocation.toString('https');
-    const tempDir = await fs.promises.mkdtemp(
-      path.join(workingDirectory, templateId),
-    );
-
-    const templateDirectory = path.join(
-      `${path.dirname(parsedGitLocation.filepath)}`,
-      template.spec.path ?? '.',
+  async prepare({ url, workspacePath, logger }: PreparerOptions) {
+    const parsedGitUrl = parseGitUrl(url);
+    const checkoutPath = path.join(workspacePath, 'checkout');
+    const targetPath = path.join(workspacePath, 'template');
+    const fullPathToTemplate = path.resolve(
+      checkoutPath,
+      parsedGitUrl.filepath,
     );
 
     const git = this.config.token
@@ -60,10 +45,16 @@ export class GitlabPreparer implements PreparerBase {
       : Git.fromAuth({ logger });
 
     await git.clone({
-      url: repositoryCheckoutUrl,
-      dir: tempDir,
+      url: parsedGitUrl.toString('https'),
+      dir: checkoutPath,
     });
 
-    return path.resolve(tempDir, templateDirectory);
+    await fs.move(fullPathToTemplate, targetPath);
+
+    try {
+      await fs.rmdir(path.join(targetPath, '.git'));
+    } catch {
+      // Ignore intentionally
+    }
   }
 }
