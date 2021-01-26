@@ -15,7 +15,6 @@
  */
 
 import { Config } from '@backstage/config';
-import { BackstageIdentity } from '@backstage/core';
 import Docker from 'dockerode';
 import express from 'express';
 import { resolve as resolvePath } from 'path';
@@ -45,6 +44,11 @@ export interface RouterOptions {
   dockerClient: Docker;
   entityClient: CatalogEntityClient;
 }
+
+// Avoid import of @backstage/core
+type BackstageIdentity = {
+  idToken: string;
+};
 
 export async function createRouter(
   options: RouterOptions,
