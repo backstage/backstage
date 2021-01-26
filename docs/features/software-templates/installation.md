@@ -177,7 +177,7 @@ Apps integration further down the line by using the existing `integrations`
 config.
 
 > Note: Some of this config may already be setup part of your `app-config.yaml`.
-> We're moving away from the duplciated config for authentication in the
+> We're moving away from the duplicated config for authentication in the
 > `scaffolder` section and using `integrations` instead.
 
 #### GitHub
