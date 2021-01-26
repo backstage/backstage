@@ -32,6 +32,7 @@ import {
   CatalogProcessorEntityResult,
   CatalogProcessorErrorResult,
   CatalogProcessorLocationResult,
+  CatalogProcessorParser,
   CatalogProcessorResult,
 } from './processors/types';
 import { LocationReader, ReadLocationResult } from './types';
@@ -41,6 +42,7 @@ const MAX_DEPTH = 10;
 
 type Options = {
   reader: UrlReader;
+  parser: CatalogProcessorParser;
   logger: Logger;
   config: Config;
   processors: CatalogProcessor[];
@@ -137,7 +139,6 @@ export class LocationReaders implements LocationReader {
       if (emitResult.type === 'relation') {
         throw new Error('readLocation may not emit entity relations');
       }
-
       emit(emitResult);
     };
 
@@ -149,6 +150,7 @@ export class LocationReaders implements LocationReader {
               item.location,
               item.optional,
               validatedEmit,
+              this.options.parser,
             )
           ) {
             return;
