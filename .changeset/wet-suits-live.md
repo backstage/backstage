@@ -16,4 +16,4 @@
 '@backstage/plugin-techdocs': patch
 ---
 
-Switch dependency from `@backstage/plugin-catalog` to `@backstage/plugin-catalog-common-react`.
+Switch dependency from `@backstage/plugin-catalog` to `@backstage/plugin-catalog-react`.

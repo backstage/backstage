@@ -19,7 +19,7 @@ import { RouteRef, StructuredMetadataTable } from '@backstage/core';
 import {
   entityRoute,
   entityRouteParams,
-} from '@backstage/plugin-catalog-common-react';
+} from '@backstage/plugin-catalog-react';
 import {
   Button,
   Dialog,

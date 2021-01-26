@@ -16,7 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
-import { EntityContext } from '@backstage/plugin-catalog-common-react';
+import { EntityContext } from '@backstage/plugin-catalog-react';
 import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core';
 import { render } from '@testing-library/react';

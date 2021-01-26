@@ -15,7 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { EntityContext } from '@backstage/plugin-catalog-common-react';
+import { EntityContext } from '@backstage/plugin-catalog-react';
 import { render } from '@testing-library/react';
 import React from 'react';
 import { isKind } from './conditions';

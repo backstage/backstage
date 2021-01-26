@@ -21,10 +21,7 @@ import {
   ApiProvider,
   ApiRegistry,
 } from '@backstage/core';
-import {
-  catalogApiRef,
-  EntityContext,
-} from '@backstage/plugin-catalog-common-react';
+import { catalogApiRef, EntityContext } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, withLogCollector } from '@backstage/test-utils';
 import { fireEvent } from '@testing-library/react';
 import React from 'react';

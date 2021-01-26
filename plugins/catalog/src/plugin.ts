@@ -24,7 +24,7 @@ import {
   catalogApiRef,
   catalogRouteRef,
   entityRouteRef,
-} from '@backstage/plugin-catalog-common-react';
+} from '@backstage/plugin-catalog-react';
 
 export const plugin = createPlugin({
   id: 'catalog',

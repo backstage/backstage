@@ -23,7 +23,7 @@ import { Avatar, InfoCard, Progress, useApi } from '@backstage/core';
 import {
   catalogApiRef,
   entityRouteParams,
-} from '@backstage/plugin-catalog-common-react';
+} from '@backstage/plugin-catalog-react';
 import {
   Box,
   createStyles,

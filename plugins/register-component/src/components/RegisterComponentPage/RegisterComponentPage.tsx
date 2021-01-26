@@ -26,7 +26,7 @@ import {
   SupportButton,
   useApi,
 } from '@backstage/core';
-import { catalogApiRef } from '@backstage/plugin-catalog-common-react';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { Grid, makeStyles } from '@material-ui/core';
 import React, { useState } from 'react';
 import { useMountedState } from 'react-use';

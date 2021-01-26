@@ -19,7 +19,7 @@ import { alertApiRef, configApiRef, Progress, useApi } from '@backstage/core';
 import {
   catalogApiRef,
   formatEntityRefTitle,
-} from '@backstage/plugin-catalog-common-react';
+} from '@backstage/plugin-catalog-react';
 import {
   Button,
   Dialog,

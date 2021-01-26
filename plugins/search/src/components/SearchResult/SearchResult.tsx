@@ -21,7 +21,7 @@ import {
   TableColumn,
   useApi,
 } from '@backstage/core';
-import { catalogApiRef } from '@backstage/plugin-catalog-common-react';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { Divider, Grid, makeStyles, Typography } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { useEffect, useState } from 'react';

@@ -18,7 +18,7 @@ import { createRoutableExtension } from '@backstage/core';
 import {
   catalogRouteRef,
   entityRouteRef,
-} from '@backstage/plugin-catalog-common-react';
+} from '@backstage/plugin-catalog-react';
 import { plugin } from './plugin';
 
 export const CatalogIndexPage = plugin.provide(

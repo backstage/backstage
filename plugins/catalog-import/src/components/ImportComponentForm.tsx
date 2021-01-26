@@ -15,7 +15,7 @@
  */
 
 import { errorApiRef, useApi } from '@backstage/core';
-import { catalogApiRef } from '@backstage/plugin-catalog-common-react';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { BackstageTheme } from '@backstage/theme';
 import {
   Button,

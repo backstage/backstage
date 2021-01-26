@@ -26,7 +26,7 @@ import {
 import {
   EntityContext,
   useEntityCompoundName,
-} from '@backstage/plugin-catalog-common-react';
+} from '@backstage/plugin-catalog-react';
 import { Box } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, {

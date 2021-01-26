@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEntity } from '@backstage/plugin-catalog-common-react';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import { useMemo } from 'react';
 import { KAFKA_CONSUMER_GROUP_ANNOTATION } from '../../constants';
 

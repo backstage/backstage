@@ -15,7 +15,7 @@
  */
 
 import { errorApiRef, useApi } from '@backstage/core';
-import { useEntity } from '@backstage/plugin-catalog-common-react';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import { BuildSummary, GitType } from 'circleci-api';
 import { getOr } from 'lodash/fp';
 import { useCallback, useEffect, useState } from 'react';

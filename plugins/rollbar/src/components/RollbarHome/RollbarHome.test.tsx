@@ -21,10 +21,7 @@ import {
   ConfigApi,
   configApiRef,
 } from '@backstage/core';
-import {
-  catalogApiRef,
-  CatalogApi,
-} from '@backstage/plugin-catalog-common-react';
+import { catalogApiRef, CatalogApi } from '@backstage/plugin-catalog-react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { render } from '@testing-library/react';
 import { RollbarApi, rollbarApiRef } from '../../api/RollbarApi';
