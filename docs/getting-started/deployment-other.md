@@ -62,7 +62,7 @@ CMD ["node", "packages/backend", "--config", "app-config.yaml", "--config", "app
 You can add the Dockerfile to the root of your project, and run the following:
 
 ```sh
-$ docker build -t eaxmple-deployment .
+$ docker build -t example-deployment .
 $ docker run -p 7000:7000 example-deployment
 ```
 
