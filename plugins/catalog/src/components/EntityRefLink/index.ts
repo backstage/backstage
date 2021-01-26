@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 export { EntityRefLink } from './EntityRefLink';
+export { EntityRefLinks } from './EntityRefLinks';
 export { formatEntityRefTitle } from './format';

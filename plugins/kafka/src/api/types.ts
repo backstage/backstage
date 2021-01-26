@@ -34,6 +34,7 @@ export type ConsumerGroupOffsetsResponse = {
 
 export interface KafkaApi {
   getConsumerGroupOffsets(
+    clusterId: string,
     consumerGroup: string,
   ): Promise<ConsumerGroupOffsetsResponse>;
 }

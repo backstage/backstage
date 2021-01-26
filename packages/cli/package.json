@@ -125,7 +125,7 @@
     "@types/html-webpack-plugin": "^3.2.2",
     "@types/http-proxy": "^1.17.4",
     "@types/inquirer": "^7.3.1",
-    "@types/mini-css-extract-plugin": "^0.9.1",
+    "@types/mini-css-extract-plugin": "^1.2.2",
     "@types/mock-fs": "^4.13.0",
     "@types/node": "^13.7.2",
     "@types/react-dev-utils": "^9.0.4",

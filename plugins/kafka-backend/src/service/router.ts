@@ -20,31 +20,43 @@ import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 import { KafkaApi, KafkaJsApiImpl } from './KafkaApi';
 import _ from 'lodash';
-import { ConnectionOptions } from 'tls';
+import { getClusterDetails } from '../config/ClusterReader';
 
 export interface RouterOptions {
   logger: Logger;
   config: Config;
 }
 
+export interface ClusterApi {
+  name: string;
+  api: KafkaApi;
+}
+
 export const makeRouter = (
   logger: Logger,
-  kafkaApi: KafkaApi,
+  kafkaApis: ClusterApi[],
 ): express.Router => {
   const router = Router();
   router.use(express.json());
 
-  router.get('/consumer/:consumerId/offsets', async (req, res) => {
+  const kafkaApiByClusterName = _.keyBy(kafkaApis, item => item.name);
+
+  router.get('/consumers/:clusterId/:consumerId/offsets', async (req, res) => {
+    const clusterId = req.params.clusterId;
     const consumerId = req.params.consumerId;
 
-    logger.debug(`Fetch consumer group ${consumerId} offsets`);
+    logger.info(
+      `Fetch consumer group ${consumerId} offsets from cluster ${clusterId}`,
+    );
 
-    const groupOffsets = await kafkaApi.fetchGroupOffsets(consumerId);
+    const kafkaApi = kafkaApiByClusterName[clusterId];
+
+    const groupOffsets = await kafkaApi.api.fetchGroupOffsets(consumerId);
 
     const groupWithTopicOffsets = await Promise.all(
       groupOffsets.map(async ({ topic, partitions }) => {
         const topicOffsets = _.keyBy(
-          await kafkaApi.fetchTopicOffsets(topic),
+          await kafkaApi.api.fetchTopicOffsets(topic),
           partition => partition.id,
         );
 
@@ -70,12 +82,15 @@ export async function createRouter(
   logger.info('Initializing Kafka backend');
 
   const clientId = options.config.getString('kafka.clientId');
-  const brokers = options.config.getStringArray('kafka.brokers');
 
-  const sslConfig = options.config.getOptional('kafka.ssl');
-  const ssl = sslConfig ? (sslConfig as ConnectionOptions) : undefined;
+  const clusters = getClusterDetails(
+    options.config.getConfigArray('kafka.clusters'),
+  );
 
-  const kafkaApi = new KafkaJsApiImpl({ clientId, brokers, logger, ssl });
+  const kafkaApis = clusters.map(cluster => ({
+    name: cluster.name,
+    api: new KafkaJsApiImpl({ clientId, logger, ...cluster }),
+  }));
 
-  return makeRouter(logger, kafkaApi);
+  return makeRouter(logger, kafkaApis);
 }

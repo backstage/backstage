@@ -17,6 +17,7 @@
 import { KubernetesAuthTranslator } from './types';
 import { GoogleKubernetesAuthTranslator } from './GoogleKubernetesAuthTranslator';
 import { ServiceAccountKubernetesAuthTranslator } from './ServiceAccountKubernetesAuthTranslator';
+import { AwsIamKubernetesAuthTranslator } from './AwsIamKubernetesAuthTranslator';
 
 export class KubernetesAuthTranslatorGenerator {
   static getKubernetesAuthTranslatorInstance(
@@ -25,6 +26,9 @@ export class KubernetesAuthTranslatorGenerator {
     switch (authProvider) {
       case 'google': {
         return new GoogleKubernetesAuthTranslator();
+      }
+      case 'aws': {
+        return new AwsIamKubernetesAuthTranslator();
       }
       case 'serviceAccount': {
         return new ServiceAccountKubernetesAuthTranslator();

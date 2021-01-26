@@ -20,6 +20,7 @@ import { ConfigReader } from '@backstage/config';
 import Knex from 'knex';
 import yaml from 'yaml';
 import { DatabaseManager } from '../database';
+import { CatalogProcessorParser } from '../ingestion';
 import * as result from '../ingestion/processors/results';
 import { CatalogBuilder, CatalogEnvironment } from './CatalogBuilder';
 
@@ -208,5 +209,27 @@ describe('CatalogBuilder', () => {
         }),
       }),
     ]);
+  });
+
+  it('setEntityDataParser works', async () => {
+    const mockParser: CatalogProcessorParser = jest
+      .fn()
+      .mockImplementation(() => {});
+
+    const builder = new CatalogBuilder(env)
+      .setEntityDataParser(mockParser)
+      .replaceProcessors([
+        {
+          async readLocation(_location, _optional, _emit, parser) {
+            expect(parser).toBe(mockParser);
+            return true;
+          },
+        },
+      ]);
+
+    const { higherOrderOperation } = await builder.build();
+    await higherOrderOperation.addLocation({ type: 'x', target: 'y' });
+
+    expect.assertions(1);
   });
 });

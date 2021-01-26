@@ -20,8 +20,8 @@ export interface Config {
     clusters: {
       url: string;
       name: string;
-      serviceAccountToken: string;
-      authProvider: 'serviceAccount';
+      serviceAccountToken: string | undefined;
+      authProvider: 'aws' | 'google' | 'serviceAccount';
     }[];
   };
 }

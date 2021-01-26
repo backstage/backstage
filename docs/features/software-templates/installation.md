@@ -173,7 +173,12 @@ and access to a running Docker daemon. You can create a GitHub access token
 docs on creating private GitHub access tokens is available
 [here](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token).
 Note that the need for private GitHub access tokens will be replaced with GitHub
-Apps integration further down the line.
+Apps integration further down the line by using the existing `integrations`
+config.
+
+> Note: Some of this configuration may already be set up as part of your
+> `app-config.yaml`. We're moving away from the duplicated config for
+> authentication in the `scaffolder` section and using `integrations` instead.
 
 #### GitHub
 
@@ -187,10 +192,14 @@ by specifying `visibility` option. Valid options are `public`, `private` and
 public within the enterprise.
 
 ```yaml
+integrations:
+  github:
+    - host: github.com
+      token:
+        $env: GITHUB_TOKEN
+
 scaffolder:
   github:
-    token:
-      $env: GITHUB_TOKEN
     visibility: public # or 'internal' or 'private'
 ```
 
@@ -201,10 +210,9 @@ allows to configure the private access token and the base URL of a GitLab
 instance:
 
 ```yaml
-scaffolder:
+integrations:
   gitlab:
-    api:
-      baseUrl: https://gitlab.com
+    - host: gitlab.com
       token:
         $env: GITLAB_TOKEN
 ```
@@ -218,10 +226,9 @@ will hopefully support on-prem installations as well but that has not been
 verified.
 
 ```yaml
-scaffolder:
+integrations:
   azure:
-    baseUrl: https://dev.azure.com/{your-organization}
-    api:
+    - host: dev.azure.com
       token:
         $env: AZURE_TOKEN
 ```
