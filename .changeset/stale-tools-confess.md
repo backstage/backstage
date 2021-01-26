@@ -2,4 +2,4 @@
 '@backstage/plugin-auth-backend': patch
 ---
 
-Fix issuer check
+Fix AWS ALB issuer check
