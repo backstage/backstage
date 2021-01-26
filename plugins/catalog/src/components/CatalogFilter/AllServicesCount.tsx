@@ -15,10 +15,10 @@
  */
 
 import { useApi } from '@backstage/core';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { CircularProgress, useTheme } from '@material-ui/core';
 import React from 'react';
 import { useAsync } from 'react-use';
-import { catalogApiRef } from '../../plugin';
 
 export const AllServicesCount = () => {
   const theme = useTheme();

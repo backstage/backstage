@@ -28,11 +28,11 @@ import {
   ProfileInfo,
   storageApiRef,
 } from '@backstage/core';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { MockStorageApi, wrapInTestApp } from '@backstage/test-utils';
 import { fireEvent, render } from '@testing-library/react';
 import React from 'react';
 import { EntityFilterGroupsProvider } from '../../filter';
-import { catalogApiRef } from '../../plugin';
 import { CatalogPage } from './CatalogPage';
 
 describe('CatalogPage', () => {

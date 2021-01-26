@@ -15,10 +15,10 @@
  */
 
 import { ApiProvider, ApiRegistry, storageApiRef } from '@backstage/core';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { MockStorageApi } from '@backstage/test-utils';
 import { act, renderHook } from '@testing-library/react-hooks';
 import React from 'react';
-import { catalogApiRef } from '../plugin';
 import { EntityFilterGroupsProvider } from './EntityFilterGroupsProvider';
 import { FilterGroup, FilterGroupStatesReady } from './types';
 import { useEntityFilterGroup } from './useEntityFilterGroup';
