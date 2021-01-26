@@ -33,7 +33,7 @@ import {
 } from '../../forms';
 import { useAlertDialogStyles as useStyles } from '../../utils/styles';
 import { choose } from '../../utils/alerts';
-import { Alert, Maybe } from '../../types';
+import { Alert, AlertForm, Maybe } from '../../types';
 
 const DEFAULT_FORM_ID = 'alert-form';
 
@@ -79,19 +79,40 @@ export const AlertDialog = ({
     setDisabled(true);
   }
 
-  const SnoozeForm = snoozed?.SnoozeForm ?? AlertSnoozeForm;
-  const AcceptForm = accepted?.AcceptForm ?? AlertAcceptForm;
-  const DismissForm = dismissed?.DismissForm ?? AlertDismissForm;
+  const SnoozeForm: Maybe<AlertForm> = snoozed?.SnoozeForm ?? AlertSnoozeForm;
+  const AcceptForm: Maybe<AlertForm> = accepted?.AcceptForm ?? AlertAcceptForm;
+  const DismissForm: Maybe<AlertForm> =
+    dismissed?.DismissForm ?? AlertDismissForm;
 
-  const isSnoozeFormDisplayed = !!snoozed?.onSnoozed;
-  const isAcceptFormDisplayed = !!accepted?.onAccepted;
-  const isDismissFormDisplayed = !!dismissed?.onDismissed;
+  const isSnoozingEnabled = !!snoozed?.onSnoozed;
+  const isAcceptingEnabled = !!accepted?.onAccepted;
+  const isDismissingEnabled = !!dismissed?.onDismissed;
+
+  const isSnoozeFormDisabled = snoozed?.SnoozeForm === null;
+  const isAcceptFormDisabled = accepted?.AcceptForm === null;
+  const isDismissFormDisabled = dismissed?.DismissForm === null;
+  const isFormDisabled =
+    isSnoozeFormDisabled || isAcceptFormDisabled || isDismissFormDisabled;
 
   const status = [
-    isAcceptFormDisplayed,
-    isSnoozeFormDisplayed,
-    isDismissFormDisplayed,
+    isSnoozingEnabled,
+    isAcceptingEnabled,
+    isDismissingEnabled,
   ] as const;
+
+  const [Action, action, actioned] =
+    choose(status, [
+      ['Snooze', 'snooze', 'snoozed'],
+      ['Accept', 'accept', 'accepted'],
+      ['Dismiss', 'dismiss', 'dismissed'],
+    ]) ?? [];
+
+  const [title, subtitle] =
+    choose(status, [
+      [snoozed?.title, snoozed?.subtitle],
+      [accepted?.title, accepted?.subtitle],
+      [dismissed?.title, dismissed?.subtitle],
+    ]) ?? [];
 
   const TransitionProps = {
     mountOnEnter: true,
@@ -122,24 +143,20 @@ export const AlertDialog = ({
         <IconButton
           className={classes.icon}
           disableRipple
+          aria-label="close dialog"
           onClick={onDialogClose}
         >
-          <CloseIcon aria-label="close dialog" />
+          <CloseIcon />
         </IconButton>
       </Box>
       <DialogContent className={classes.content}>
         <Box mb={1.5}>
           <Typography variant="h5">
-            <b>
-              {choose(status, ['Accept', 'Snooze', 'Dismiss'])} this action
-              item?
-            </b>
+            <b>{Action} this action item?</b>
           </Typography>
           <Typography variant="h6" color="textSecondary">
             <b>
-              This action item will be{' '}
-              {choose(status, ['accepted', 'snoozed', 'dismissed'])} for all of{' '}
-              {group}.
+              This action item will be {actioned} for all of {group}.
             </b>
           </Typography>
         </Box>
@@ -152,23 +169,11 @@ export const AlertDialog = ({
           borderRadius={4}
         >
           <Typography>
-            <b>
-              {choose(status, [
-                accepted?.title,
-                snoozed?.title,
-                dismissed?.title,
-              ])}
-            </b>
+            <b>{title}</b>
           </Typography>
-          <Typography color="textSecondary">
-            {choose(status, [
-              accepted?.subtitle,
-              snoozed?.subtitle,
-              dismissed?.subtitle,
-            ])}
-          </Typography>
+          <Typography color="textSecondary">{subtitle}</Typography>
         </Box>
-        {isSnoozeFormDisplayed && (
+        {isSnoozingEnabled && !isSnoozeFormDisabled && (
           <SnoozeForm
             ref={snoozeRef}
             alert={snoozed!}
@@ -176,7 +181,7 @@ export const AlertDialog = ({
             disableSubmit={disableSubmit}
           />
         )}
-        {isDismissFormDisplayed && (
+        {isDismissingEnabled && !isDismissFormDisabled && (
           <DismissForm
             ref={dismissRef}
             alert={dismissed!}
@@ -184,7 +189,7 @@ export const AlertDialog = ({
             disableSubmit={disableSubmit}
           />
         )}
-        {isAcceptFormDisplayed && (
+        {isAcceptingEnabled && !isAcceptFormDisabled && (
           <AcceptForm
             ref={acceptRef}
             alert={accepted!}
@@ -195,15 +200,28 @@ export const AlertDialog = ({
       </DialogContent>
       <Divider />
       <DialogActions className={classes.actions} disableSpacing>
-        <Button
-          disabled={isButtonDisabled}
-          type="submit"
-          form={DEFAULT_FORM_ID}
-          variant="contained"
-          color="primary"
-        >
-          {choose(status, ['Accept', 'Snooze', 'Dismiss'])}
-        </Button>
+        {isFormDisabled ? (
+          <Button
+            type="button"
+            color="primary"
+            variant="contained"
+            aria-label={action}
+            onClick={() => onSubmit(null)}
+          >
+            {Action}
+          </Button>
+        ) : (
+          <Button
+            type="submit"
+            color="primary"
+            variant="contained"
+            form={DEFAULT_FORM_ID}
+            aria-label={action}
+            disabled={isButtonDisabled}
+          >
+            {Action}
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );

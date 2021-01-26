@@ -16,154 +16,169 @@
 import React from 'react';
 import { AlertDialog } from './AlertDialog';
 import { render } from '@testing-library/react';
-import {
-  Alert,
-  AlertFormProps,
-  AlertSnoozeOptions,
-  AlertDismissOptions,
-} from '../../types';
+import { Alert, AlertFormProps } from '../../types';
 
 type MockFormDataProps = AlertFormProps<Alert>;
 
-const MockForm = React.forwardRef<HTMLFormElement, MockFormDataProps>(
-  (props, ref) => (
+function createForm(title: string) {
+  return React.forwardRef<HTMLFormElement, MockFormDataProps>((props, ref) => (
     <form ref={ref} onSubmit={props.onSubmit}>
-      You. Complete. Me.
+      You. {title}. Me.
     </form>
-  ),
-);
+  ));
+}
 
+const snoozableAlert: Alert = {
+  title: 'title',
+  subtitle: 'test-subtitle',
+  onSnoozed: jest.fn(),
+};
+
+const dimissableAlert: Alert = {
+  title: 'title',
+  subtitle: 'subtitle',
+  onDismissed: jest.fn(),
+};
+
+const acceptAlert: Alert = {
+  title: 'title',
+  subtitle: 'subtitle',
+  onAccepted: jest.fn(),
+};
+
+const customSnoozeAlert: Alert = {
+  title: 'title',
+  subtitle: 'subtitle',
+  onSnoozed: jest.fn(),
+  SnoozeForm: createForm('Snooze'),
+};
+
+const customDismissAlert: Alert = {
+  title: 'title',
+  subtitle: 'subtitle',
+  onDismissed: jest.fn(),
+  DismissForm: createForm('Dismiss'),
+};
+
+const customAcceptAlert: Alert = {
+  title: 'title',
+  subtitle: 'test-subtitle',
+  onAccepted: jest.fn(),
+  AcceptForm: createForm('Accept'),
+};
+
+const nullAcceptAlert: Alert = {
+  title: 'title',
+  subtitle: 'test-subtitle',
+  onAccepted: jest.fn(),
+  AcceptForm: null,
+};
+
+const nullDismissAlert: Alert = {
+  title: 'title',
+  subtitle: 'test-subtitle',
+  onDismissed: jest.fn(),
+  DismissForm: null,
+};
+
+const nullSnoozeAlert: Alert = {
+  title: 'title',
+  subtitle: 'test-subtitle',
+  onSnoozed: jest.fn(),
+  SnoozeForm: null,
+};
 describe('<AlertDialog />', () => {
-  const snoozableAlert: Alert = {
-    title: 'title',
-    subtitle: 'test-subtitle',
-    onSnoozed: jest.fn(),
-  };
+  describe.each`
+    accepted       | dismissed          | snoozed           | action                      | text
+    ${acceptAlert} | ${null}            | ${null}           | ${['Accept', 'accepted']}   | ${'My team can commit to making this change soon, or has already.'}
+    ${null}        | ${dimissableAlert} | ${null}           | ${['Dismiss', 'dismissed']} | ${'Reason for dismissing?'}
+    ${null}        | ${null}            | ${snoozableAlert} | ${['Snooze', 'snoozed']}    | ${'For how long?'}
+  `(
+    'Default forms',
+    ({ accepted, dismissed, snoozed, action: [action, actioned], text }) => {
+      it(`Displays a default ${action} form`, () => {
+        const { getByText } = render(
+          <AlertDialog
+            open
+            group="Ramones"
+            snoozed={snoozed}
+            accepted={accepted}
+            dismissed={dismissed}
+            onClose={jest.fn()}
+            onSubmit={jest.fn()}
+          />,
+        );
+        expect(getByText(text)).toBeInTheDocument();
+        expect(getByText(`${action} this action item?`)).toBeInTheDocument();
+        expect(
+          getByText(`This action item will be ${actioned} for all of Ramones.`),
+        ).toBeInTheDocument();
+      });
+    },
+  );
 
-  const dimissableAlert: Alert = {
-    title: 'title',
-    subtitle: 'subtitle',
-    onDismissed: jest.fn(),
-  };
+  describe.each`
+    accepted             | dismissed             | snoozed              | action
+    ${customAcceptAlert} | ${null}               | ${null}              | ${['Accept', 'accepted']}
+    ${null}              | ${customDismissAlert} | ${null}              | ${['Dismiss', 'dismissed']}
+    ${null}              | ${null}               | ${customSnoozeAlert} | ${['Snooze', 'snoozed']}
+  `(
+    'Custom forms',
+    ({ accepted, dismissed, snoozed, action: [Action, actioned] }) => {
+      it(`Displays a custom ${Action} form`, () => {
+        const { getByText } = render(
+          <AlertDialog
+            open
+            group="Ramones"
+            snoozed={snoozed}
+            accepted={accepted}
+            dismissed={dismissed}
+            onClose={jest.fn()}
+            onSubmit={jest.fn()}
+          />,
+        );
+        expect(getByText(`You. ${Action}. Me.`)).toBeInTheDocument();
+        expect(getByText(`${Action} this action item?`)).toBeInTheDocument();
+        expect(
+          getByText(`This action item will be ${actioned} for all of Ramones.`),
+        ).toBeInTheDocument();
+      });
+    },
+  );
 
-  const customSnoozeAlert: Alert = {
-    title: 'title',
-    subtitle: 'subtitle',
-    onSnoozed: jest.fn(),
-    SnoozeForm: MockForm,
-  };
-
-  const customDismissAlert: Alert = {
-    title: 'title',
-    subtitle: 'subtitle',
-    onDismissed: jest.fn(),
-    DismissForm: MockForm,
-  };
-
-  const customAcceptAlert: Alert = {
-    title: 'title',
-    subtitle: 'test-subtitle',
-    onAccepted: jest.fn(),
-    AcceptForm: MockForm,
-  };
-
-  it('Displays a default snooze form', () => {
-    const { getByText } = render(
-      <AlertDialog
-        open
-        group="Ramones"
-        snoozed={snoozableAlert}
-        accepted={null}
-        dismissed={null}
-        onClose={jest.fn()}
-        onSubmit={jest.fn()}
-      />,
-    );
-    expect(getByText('For how long?')).toBeInTheDocument();
-    expect(getByText('Snooze this action item?')).toBeInTheDocument();
-    expect(
-      getByText('This action item will be snoozed for all of Ramones.'),
-    ).toBeInTheDocument();
-    AlertSnoozeOptions.forEach(a =>
-      expect(getByText(a.label)).toBeInTheDocument(),
-    );
-  });
-
-  it('Displays a custom snooze form', () => {
-    const { getByText } = render(
-      <AlertDialog
-        open
-        group="Ramones"
-        snoozed={customSnoozeAlert}
-        accepted={null}
-        dismissed={null}
-        onClose={jest.fn()}
-        onSubmit={jest.fn()}
-      />,
-    );
-    expect(getByText('You. Complete. Me.')).toBeInTheDocument();
-    expect(getByText('Snooze this action item?')).toBeInTheDocument();
-    expect(
-      getByText('This action item will be snoozed for all of Ramones.'),
-    ).toBeInTheDocument();
-  });
-
-  it('Displays a default dismiss form', () => {
-    const { getByText } = render(
-      <AlertDialog
-        open
-        group="Ramones"
-        snoozed={null}
-        accepted={null}
-        dismissed={dimissableAlert}
-        onClose={jest.fn()}
-        onSubmit={jest.fn()}
-      />,
-    );
-    expect(getByText('Dismiss this action item?')).toBeInTheDocument();
-    expect(
-      getByText('This action item will be dismissed for all of Ramones.'),
-    ).toBeInTheDocument();
-    AlertDismissOptions.forEach(a =>
-      expect(getByText(a.label)).toBeInTheDocument(),
-    );
-  });
-
-  it('Displays a custom dismiss form', () => {
-    const { getByText } = render(
-      <AlertDialog
-        open
-        group="Ramones"
-        snoozed={null}
-        accepted={null}
-        dismissed={customDismissAlert}
-        onClose={jest.fn()}
-        onSubmit={jest.fn()}
-      />,
-    );
-    expect(getByText('Dismiss this action item?')).toBeInTheDocument();
-    expect(getByText('You. Complete. Me.')).toBeInTheDocument();
-    expect(
-      getByText('This action item will be dismissed for all of Ramones.'),
-    ).toBeInTheDocument();
-  });
-
-  it('Displays a custom accept form', () => {
-    const { getByText } = render(
-      <AlertDialog
-        open
-        group="Ramones"
-        snoozed={null}
-        accepted={customAcceptAlert}
-        dismissed={null}
-        onClose={jest.fn()}
-        onSubmit={jest.fn()}
-      />,
-    );
-    expect(getByText('Accept this action item?')).toBeInTheDocument();
-    expect(getByText('You. Complete. Me.')).toBeInTheDocument();
-    expect(
-      getByText('This action item will be accepted for all of Ramones.'),
-    ).toBeInTheDocument();
-  });
+  describe.each`
+    accepted           | dismissed           | snoozed            | action                                 | text
+    ${nullAcceptAlert} | ${null}             | ${null}            | ${['Accept', 'accept', 'accepted']}    | ${'My team can commit to making this change soon, or has already.'}
+    ${null}            | ${nullDismissAlert} | ${null}            | ${['Dismiss', 'dismiss', 'dismissed']} | ${'Reason for dismissing?'}
+    ${null}            | ${null}             | ${nullSnoozeAlert} | ${['Snooze', 'snooze', 'snoozed']}     | ${'For how long?'}
+  `(
+    'Null forms',
+    ({
+      accepted,
+      dismissed,
+      snoozed,
+      action: [Action, action, actioned],
+      text,
+    }) => {
+      it(`Does NOT display a ${Action} form`, () => {
+        const { getByText, getByRole, queryByText } = render(
+          <AlertDialog
+            open
+            group="Ramones"
+            snoozed={snoozed}
+            accepted={accepted}
+            dismissed={dismissed}
+            onClose={jest.fn()}
+            onSubmit={jest.fn()}
+          />,
+        );
+        expect(queryByText(text)).not.toBeInTheDocument();
+        expect(getByRole('button', { name: action })).toBeInTheDocument();
+        expect(getByText(`${Action} this action item?`)).toBeInTheDocument();
+        expect(
+          getByText(`This action item will be ${actioned} for all of Ramones.`),
+        ).toBeInTheDocument();
+      });
+    },
+  );
 });

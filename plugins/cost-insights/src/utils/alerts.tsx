@@ -29,7 +29,7 @@ export const sumOfAllAlerts = (sum: number, alerts: Alert[]) =>
 export function choose<T>(
   status: readonly [boolean, boolean, boolean],
   values: [T, T, T],
-): T | null {
+): T | undefined {
   const i = status.indexOf(true);
-  return i < 0 ? null : values[i];
+  return values[i];
 }

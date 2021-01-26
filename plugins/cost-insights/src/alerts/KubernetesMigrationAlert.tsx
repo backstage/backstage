@@ -52,9 +52,15 @@ export interface MigrationAlert extends Alert {
  * by status in a collapsed view below Alert Insights section and a badge will appear in Action Items
  * showing the total alerts of that status.
  *
- * Default forms can be overridden by providing a valid React form component. Form components
- * must return valid form elements, and accept a ref and onSubmit event handler. See /forms
- * for example implementations. Custom forms must implement a corresponding event hook.
+ * Customizing Alerts
+ * Default forms can be overridden in two ways - by setting a form property to null or defining a custom component.
+ *
+ * If a form property is set to null, the Dialog will not render a form. This can be useful in scenarios
+ * where data isn't needed from the user such as when a user accepts an action item's recommendation.
+ *
+ * If a form property is set to a React component, the Dialog will render the form component in place of the default form.
+ * Form components must return valid form elements, and accept a ref and onSubmit event handler.
+ * Custom forms must implement the corresponding event hook. See /forms for example implementations.
  */
 
 export class KubernetesMigrationAlert implements MigrationAlert {
@@ -64,7 +70,10 @@ export class KubernetesMigrationAlert implements MigrationAlert {
   subtitle =
     'Services running on Kubernetes are estimated to save 50% or more compared to Compute Engine.';
 
-  // Override default dismiss form with a custom form component.
+  // Dialog will not render a form if form property set to null.
+  AcceptForm = null;
+
+  // Overrides default Dismiss form with a custom form component.
   DismissForm: AlertForm<
     MigrationAlert,
     MigrationDismissFormData
@@ -100,7 +109,7 @@ export class KubernetesMigrationAlert implements MigrationAlert {
     );
   }
 
-  /* Fires when the onSubmit event is raised on a DismissAlert form. Displays a custom dismiss form. */
+  /* Fires when the onSubmit event is raised on a Dismiss form. Displays custom dismiss form. */
   async onDismissed(
     options: AlertOptions<MigrationDismissFormData>,
   ): Promise<Alert[]> {
@@ -117,7 +126,7 @@ export class KubernetesMigrationAlert implements MigrationAlert {
     );
   }
 
-  /* Fires when the onSubmit event is raised on an SnoozeAlert form. Displays default snooze form. */
+  /* Fires when the onSubmit event is raised on a Snooze form. Displays default snooze form. */
   async onSnoozed(
     options: AlertOptions<AlertSnoozeFormData>,
   ): Promise<Alert[]> {
@@ -134,7 +143,7 @@ export class KubernetesMigrationAlert implements MigrationAlert {
     );
   }
 
-  /* Fires when the onSubmit event is raised on an AcceptAlert form. Displays default accept form. */
+  /* Fires when the Accept button is clicked. Dialog does not render a form. See KubernetesMigrationAlert.AcceptForm */
   async onAccepted(options: AlertOptions<null>): Promise<Alert[]> {
     const alerts = await this.api.getAlerts(options.group);
     return new Promise(resolve =>

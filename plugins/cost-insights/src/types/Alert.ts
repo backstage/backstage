@@ -40,9 +40,9 @@ export type Alert = {
   status?: AlertStatus;
   url?: string;
   buttonText?: string; // Default: View Instructions
-  SnoozeForm?: AlertForm;
-  AcceptForm?: AlertForm;
-  DismissForm?: AlertForm;
+  SnoozeForm?: Maybe<AlertForm>;
+  AcceptForm?: Maybe<AlertForm>;
+  DismissForm?: Maybe<AlertForm>;
   onSnoozed?(options: AlertOptions): Promise<Alert[]>;
   onAccepted?(options: AlertOptions): Promise<Alert[]>;
   onDismissed?(options: AlertOptions): Promise<Alert[]>;
