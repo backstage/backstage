@@ -22,7 +22,7 @@ import {
   Progress,
   useApi,
 } from '@backstage/core';
-import { catalogApiRef } from '@backstage/plugin-catalog';
+import { catalogApiRef } from '@backstage/plugin-catalog-common-react';
 import { Grid } from '@material-ui/core';
 import React from 'react';
 import { generatePath, useNavigate } from 'react-router-dom';

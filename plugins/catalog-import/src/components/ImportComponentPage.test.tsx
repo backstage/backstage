@@ -13,22 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { msw, renderInTestApp } from '@backstage/test-utils';
-import { ImportComponentPage } from './ImportComponentPage';
 import {
   ApiProvider,
   ApiRegistry,
   configApiRef,
   errorApiRef,
 } from '@backstage/core';
-import { catalogApiRef, CatalogClient } from '@backstage/plugin-catalog';
-import { catalogImportApiRef, CatalogImportClient } from '../api';
-
+import {
+  catalogApiRef,
+  CatalogClient,
+} from '@backstage/plugin-catalog-common-react';
+import { msw, renderInTestApp } from '@backstage/test-utils';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
-
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
+import React from 'react';
+import { catalogImportApiRef, CatalogImportClient } from '../api';
+import { ImportComponentPage } from './ImportComponentPage';
 
 let codeSearchMockResponse: () => Promise<{
   data: {

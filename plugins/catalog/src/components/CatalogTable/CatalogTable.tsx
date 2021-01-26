@@ -19,12 +19,12 @@ import {
   RELATION_OWNED_BY,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
+import { Table, TableColumn, TableProps } from '@backstage/core';
 import {
-  Table,
-  TableColumn,
-  TableProps,
-  OverflowTooltip,
-} from '@backstage/core';
+  EntityRefLink,
+  EntityRefLinks,
+  formatEntityRefTitle,
+} from '@backstage/plugin-catalog-common-react';
 import { Chip } from '@material-ui/core';
 import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
@@ -33,11 +33,6 @@ import React from 'react';
 import { findLocationForEntityMeta } from '../../data/utils';
 import { useStarredEntities } from '../../hooks/useStarredEntities';
 import { createEditLink } from '../createEditLink';
-import {
-  EntityRefLink,
-  EntityRefLinks,
-  formatEntityRefTitle,
-} from '../EntityRefLink';
 import {
   favouriteEntityIcon,
   favouriteEntityTooltip,
@@ -89,11 +84,6 @@ const columns: TableColumn<EntityRow>[] = [
   {
     title: 'Description',
     field: 'metadata.description',
-    render: entity => (
-      <OverflowTooltip title={entity.metadata.description as string}>
-        {entity.metadata.description}
-      </OverflowTooltip>
-    ),
   },
   {
     title: 'Tags',

@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 
-import * as React from 'react';
 import {
   ApiProvider,
   ApiRegistry,
   ConfigApi,
   configApiRef,
 } from '@backstage/core';
+import {
+  CatalogApi,
+  catalogApiRef,
+} from '@backstage/plugin-catalog-common-react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { render } from '@testing-library/react';
+import * as React from 'react';
 import { RollbarApi, rollbarApiRef } from '../../api/RollbarApi';
 import { RollbarTopActiveItem } from '../../api/types';
 import { RollbarProjectPage } from './RollbarProjectPage';
-import { catalogApiRef, CatalogApi } from '@backstage/plugin-catalog';
 
 describe('RollbarProjectPage component', () => {
   const items: RollbarTopActiveItem[] = [

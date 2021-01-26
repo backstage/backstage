@@ -21,7 +21,7 @@ import {
   RELATION_PARENT_OF,
 } from '@backstage/catalog-model';
 import { Avatar, InfoCard } from '@backstage/core';
-import { entityRouteParams } from '@backstage/plugin-catalog';
+import { entityRouteParams } from '@backstage/plugin-catalog-common-react';
 import { Box, Grid, Link, Tooltip, Typography } from '@material-ui/core';
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import EmailIcon from '@material-ui/icons/Email';

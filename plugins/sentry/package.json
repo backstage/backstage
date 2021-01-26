@@ -33,7 +33,7 @@
   "dependencies": {
     "@backstage/catalog-model": "^0.7.0",
     "@backstage/core": "^0.5.0",
-    "@backstage/plugin-catalog": "^0.2.14",
+    "@backstage/plugin-catalog-common-react": "^0.0.1",
     "@backstage/theme": "^0.2.2",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",

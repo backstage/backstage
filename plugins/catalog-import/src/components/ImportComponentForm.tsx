@@ -15,6 +15,7 @@
  */
 
 import { errorApiRef, useApi } from '@backstage/core';
+import { catalogApiRef } from '@backstage/plugin-catalog-common-react';
 import { BackstageTheme } from '@backstage/theme';
 import {
   Button,
@@ -26,11 +27,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useMountedState } from 'react-use';
-import { ComponentIdValidators } from '../util/validate';
-import { useGithubRepos } from '../util/useGithubRepos';
-import { ConfigSpec } from './ImportComponentPage';
-import { catalogApiRef } from '@backstage/plugin-catalog';
 import { urlType } from '../util/urls';
+import { useGithubRepos } from '../util/useGithubRepos';
+import { ComponentIdValidators } from '../util/validate';
+import { ConfigSpec } from './ImportComponentPage';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   form: {

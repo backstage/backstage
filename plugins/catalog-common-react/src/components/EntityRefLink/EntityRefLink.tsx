@@ -31,9 +31,6 @@ type EntityRefLinkProps = {
   children?: React.ReactNode;
 };
 
-// TODO: This component is private for now, as it should probably belong into
-// some kind of helper module for the catalog plugin to avoid a dependency on
-// the catalog plugin itself.
 export const EntityRefLink = ({
   entityRef,
   defaultKind,

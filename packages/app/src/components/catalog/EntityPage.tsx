@@ -27,11 +27,8 @@ import {
   ProvidedApisCard,
   ProvidingComponentsCard,
 } from '@backstage/plugin-api-docs';
-import {
-  AboutCard,
-  EntityPageLayout,
-  useEntity,
-} from '@backstage/plugin-catalog';
+import { AboutCard, EntityPageLayout } from '@backstage/plugin-catalog';
+import { useEntity } from '@backstage/plugin-catalog-common-react';
 import {
   isPluginApplicableToEntity as isCircleCIAvailable,
   Router as CircleCIRouter,
@@ -50,6 +47,7 @@ import {
   LatestRunCard as JenkinsLatestRunCard,
   Router as JenkinsRouter,
 } from '@backstage/plugin-jenkins';
+import { Router as KafkaRouter } from '@backstage/plugin-kafka';
 import { Router as KubernetesRouter } from '@backstage/plugin-kubernetes';
 import {
   EmbeddedRouter as LighthouseRouter,
@@ -57,13 +55,16 @@ import {
   LastLighthouseAuditCard,
 } from '@backstage/plugin-lighthouse';
 import {
-  OwnershipCard,
-  MembersListCard,
   GroupProfileCard,
+  MembersListCard,
+  OwnershipCard,
   UserProfileCard,
 } from '@backstage/plugin-org';
+import {
+  isPluginApplicableToEntity as isPagerDutyAvailable,
+  PagerDutyCard,
+} from '@backstage/plugin-pagerduty';
 import { Router as SentryRouter } from '@backstage/plugin-sentry';
-import { Router as KafkaRouter } from '@backstage/plugin-kafka';
 import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
 import { Button, Grid } from '@material-ui/core';
 import {
@@ -82,10 +83,6 @@ import {
   PullRequestsStatsCard,
   Router as PullRequestsRouter,
 } from '@roadiehq/backstage-plugin-github-pull-requests';
-import {
-  isPluginApplicableToEntity as isPagerDutyAvailable,
-  PagerDutyCard,
-} from '@backstage/plugin-pagerduty';
 import {
   isPluginApplicableToEntity as isTravisCIAvailable,
   RecentTravisCIBuildsWidget,
