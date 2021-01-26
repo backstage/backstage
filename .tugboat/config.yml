@@ -4,13 +4,13 @@ services:
     expose: 7000
     default: true
     commands:
-      build:
+      init:
         - yarn install
+      build:
         - yarn tsc
         - yarn build
       update:
         - yarn install
-        - yarn tsc
-        - yarn build
+        - env
       start:
-        - yarn start-backend &
+        - node packages/backend --config app-config.yaml --config .tugboat/tugboat.app-config.production.yaml &
