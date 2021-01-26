@@ -18,7 +18,7 @@ import {
   createComponentExtension,
   createRoutableExtension,
 } from '@backstage/core';
-import { useEntity } from '@backstage/plugin-catalog-common-react';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import React from 'react';
 import { plugin, rootRouteRef } from './plugin';
 

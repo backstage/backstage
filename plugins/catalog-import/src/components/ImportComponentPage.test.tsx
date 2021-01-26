@@ -19,10 +19,7 @@ import {
   configApiRef,
   errorApiRef,
 } from '@backstage/core';
-import {
-  catalogApiRef,
-  CatalogClient,
-} from '@backstage/plugin-catalog-common-react';
+import { catalogApiRef, CatalogClient } from '@backstage/plugin-catalog-react';
 import { msw, renderInTestApp } from '@backstage/test-utils';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { rest } from 'msw';

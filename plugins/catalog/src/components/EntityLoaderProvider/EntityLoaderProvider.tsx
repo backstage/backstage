@@ -16,7 +16,7 @@
 import {
   EntityContext,
   useEntityFromUrl,
-} from '@backstage/plugin-catalog-common-react';
+} from '@backstage/plugin-catalog-react';
 import React, { ReactNode } from 'react';
 
 export const EntityLoaderProvider = ({ children }: { children: ReactNode }) => {

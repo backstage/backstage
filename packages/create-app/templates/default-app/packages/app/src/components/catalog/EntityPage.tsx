@@ -27,7 +27,7 @@ import {
 } from '@backstage/plugin-catalog';
 import {
   useEntity
-} from '@backstage/plugin-catalog-common-react';
+} from '@backstage/plugin-catalog-react';
 import {
   isPluginApplicableToEntity as isCircleCIAvailable, Router as CircleCIRouter
 } from '@backstage/plugin-circleci';

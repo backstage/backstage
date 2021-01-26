@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import { EntityContext } from '@backstage/plugin-catalog-common-react';
+import { EntityContext } from '@backstage/plugin-catalog-react';
 import { renderHook } from '@testing-library/react-hooks';
 import React, { PropsWithChildren } from 'react';
 import { useConsumerGroupsForEntity } from './useConsumerGroupsForEntity';

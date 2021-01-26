@@ -20,10 +20,7 @@ import {
   ConfigApi,
   configApiRef,
 } from '@backstage/core';
-import {
-  CatalogApi,
-  catalogApiRef,
-} from '@backstage/plugin-catalog-common-react';
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { render } from '@testing-library/react';
 import * as React from 'react';

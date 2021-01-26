@@ -27,7 +27,7 @@ import {
   catalogApiRef,
   entityRoute,
   entityRouteParams,
-} from '@backstage/plugin-catalog-common-react';
+} from '@backstage/plugin-catalog-react';
 import { LinearProgress } from '@material-ui/core';
 import { IChangeEvent } from '@rjsf/core';
 import parseGitUrl from 'git-url-parse';

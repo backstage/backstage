@@ -16,10 +16,7 @@
 
 import { Entity, GroupEntity } from '@backstage/catalog-model';
 import { ApiProvider, ApiRegistry } from '@backstage/core';
-import {
-  CatalogApi,
-  catalogApiRef,
-} from '@backstage/plugin-catalog-common-react';
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import React from 'react';
 import { MembersListCard } from './MembersListCard';

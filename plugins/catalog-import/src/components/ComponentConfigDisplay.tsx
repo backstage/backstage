@@ -24,7 +24,7 @@ import {
 import {
   entityRoute,
   entityRouteParams,
-} from '@backstage/plugin-catalog-common-react';
+} from '@backstage/plugin-catalog-react';
 import {
   Button,
   CircularProgress,

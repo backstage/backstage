@@ -15,7 +15,7 @@
  */
 
 import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
-import { CatalogApi } from '@backstage/plugin-catalog-common-react';
+import { CatalogApi } from '@backstage/plugin-catalog-react';
 
 export type Result = {
   name: string;

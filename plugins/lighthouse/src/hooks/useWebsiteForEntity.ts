@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { errorApiRef, useApi } from '@backstage/core';
-import { useEntity } from '@backstage/plugin-catalog-common-react';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import { useAsync } from 'react-use';
 import { LIGHTHOUSE_WEBSITE_URL_ANNOTATION } from '../../constants';
 import { lighthouseApiRef } from '../api';

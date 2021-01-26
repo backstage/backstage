@@ -15,7 +15,7 @@
  */
 import { Entity } from '@backstage/catalog-model';
 import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
-import { EntityContext } from '@backstage/plugin-catalog-common-react';
+import { EntityContext } from '@backstage/plugin-catalog-react';
 import { renderHook } from '@testing-library/react-hooks';
 import React, { PropsWithChildren } from 'react';
 import { lighthouseApiRef, WebsiteListResponse } from '../api';

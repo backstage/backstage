@@ -22,7 +22,7 @@ import {
   SupportButton,
   useApi,
 } from '@backstage/core';
-import { catalogApiRef } from '@backstage/plugin-catalog-common-react';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
 import { Button, makeStyles } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';

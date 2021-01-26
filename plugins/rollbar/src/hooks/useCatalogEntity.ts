@@ -18,7 +18,7 @@ import { useApi } from '@backstage/core';
 import {
   catalogApiRef,
   useEntityCompoundName,
-} from '@backstage/plugin-catalog-common-react';
+} from '@backstage/plugin-catalog-react';
 import { useAsync } from 'react-use';
 
 export function useCatalogEntity() {

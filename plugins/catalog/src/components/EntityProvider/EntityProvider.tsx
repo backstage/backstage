@@ -15,7 +15,7 @@
  */
 import { Entity } from '@backstage/catalog-model';
 import React, { ReactNode } from 'react';
-import { EntityContext } from '@backstage/plugin-catalog-common-react';
+import { EntityContext } from '@backstage/plugin-catalog-react';
 
 type EntityProviderProps = {
   entity: Entity;

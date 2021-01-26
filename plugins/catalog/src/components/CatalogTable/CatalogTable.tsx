@@ -24,7 +24,7 @@ import {
   EntityRefLink,
   EntityRefLinks,
   formatEntityRefTitle,
-} from '@backstage/plugin-catalog-common-react';
+} from '@backstage/plugin-catalog-react';
 import { Chip } from '@material-ui/core';
 import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';

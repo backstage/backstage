@@ -19,7 +19,7 @@ import {
   entityRoute,
   rootRoute,
   useEntity,
-} from '@backstage/plugin-catalog-common-react';
+} from '@backstage/plugin-catalog-react';
 import { Link, Typography } from '@material-ui/core';
 import React, { ComponentType } from 'react';
 import { Navigate, Route, Routes, useParams } from 'react-router';
