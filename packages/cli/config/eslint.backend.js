@@ -38,8 +38,8 @@ module.exports = {
   },
   ignorePatterns: ['.eslintrc.js', '**/dist/**', '**/dist-types/**'],
   rules: {
-    '@typescript-eslint/no-shadow': 'off',
-    '@typescript-eslint/no-redeclare': 'off',
+    '@typescript-eslint/no-shadow': 'error',
+    '@typescript-eslint/no-redeclare': 'error',
 
     'no-console': 0, // Permitted in console programs
     'new-cap': ['error', { capIsNew: false }], // Because Express constructs things e.g. like 'const r = express.Router()'

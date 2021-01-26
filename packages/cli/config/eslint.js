@@ -45,9 +45,9 @@ module.exports = {
   },
   ignorePatterns: ['.eslintrc.js', '**/dist/**', '**/dist-types/**'],
   rules: {
-    '@typescript-eslint/no-shadow': 'off',
-    '@typescript-eslint/no-redeclare': 'off',
-    'no-undef': 'off',
+    '@typescript-eslint/no-shadow': 'error',
+    '@typescript-eslint/no-redeclare': 'error',
+
     'import/newline-after-import': 'error',
     'import/no-duplicates': 'warn',
     'import/no-extraneous-dependencies': [
