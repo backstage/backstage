@@ -199,7 +199,8 @@ integrations:
         $env: GITHUB_TOKEN
 
 scaffolder:
-  visibility: public # or 'internal' or 'private'
+  github:
+    visibility: public # or 'internal' or 'private'
 ```
 
 #### GitLab
