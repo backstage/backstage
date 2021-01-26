@@ -19,7 +19,7 @@ import { Box } from '@material-ui/core';
 import { InfoCard } from '@backstage/core';
 import { MigrationBarChartLegend } from './MigrationBarChartLegend';
 import { MigrationBarChart } from './MigrationBarChart';
-import { MigrationData } from '../../types';
+import { MigrationData } from '../../alerts';
 
 type MigrationAlertProps = {
   data: MigrationData;
