@@ -8,5 +8,9 @@ services:
         - yarn install
         - yarn tsc
         - yarn build
+      update:
+        - yarn install
+        - yarn tsc
+        - yarn build
       start:
         - yarn start-backend &
