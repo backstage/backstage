@@ -32,6 +32,7 @@ export const addBaseUrl = ({
     const updateDom = <T extends Element>(
       list: HTMLCollectionOf<T> | NodeListOf<T>,
       attributeName: string,
+      noPath?: boolean,
     ): void => {
       Array.from(list)
         .filter(elem => !!elem.getAttribute(attributeName))
@@ -40,12 +41,16 @@ export const addBaseUrl = ({
           if (!elemAttribute) return;
           elem.setAttribute(
             attributeName,
-            techdocsStorageApi.getBaseUrl(elemAttribute, entityId, path),
+            techdocsStorageApi.getBaseUrl(
+              elemAttribute,
+              entityId,
+              noPath ? '' : path,
+            ),
           );
         });
     };
 
-    updateDom<HTMLImageElement>(dom.querySelectorAll('img'), 'src');
+    updateDom<HTMLImageElement>(dom.querySelectorAll('img'), 'src', true);
     updateDom<HTMLScriptElement>(dom.querySelectorAll('script'), 'src');
     updateDom<HTMLLinkElement>(dom.querySelectorAll('link'), 'href');
 

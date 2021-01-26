@@ -50,7 +50,7 @@ describe('addBaseUrl', () => {
         addBaseUrl({
           techdocsStorageApi,
           entityId: mockEntityId,
-          path: '',
+          path: 'testPath',
         }),
       ],
       postTransformers: [],
@@ -66,13 +66,13 @@ describe('addBaseUrl', () => {
       2,
       'script.js',
       mockEntityId,
-      '',
+      'testPath',
     );
     expect(techdocsStorageApi.getBaseUrl).toHaveBeenNthCalledWith(
       3,
       'astyle.css',
       mockEntityId,
-      '',
+      'testPath',
     );
   });
 });
