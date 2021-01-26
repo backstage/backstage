@@ -8,249 +8,249 @@ cli:
   project: git@github.com:backstage/backstage
 analyze:
   modules:
-  - name: microsite
-    type: npm
-    target: microsite
-    path: microsite
-  - name: monorepo
-    type: npm
-    target: .
-    path: .
-  - name: example-app
-    type: npm
-    target: packages/app
-    path: packages/app
-  - name: example-backend
-    type: npm
-    target: packages/backend
-    path: packages/backend
-  - name: backend-common
-    type: npm
-    target: packages/backend-common
-    path: packages/backend-common
-  - name: catalog-client
-    type: npm
-    target: packages/catalog-client
-    path: packages/catalog-client
-  - name: catalog-model
-    type: npm
-    target: packages/catalog-model
-    path: packages/catalog-model
-  # asset-types does not contain dependencies
-  #- name: asset-types
-  #  type: npm
-  #  target: packages/cli/asset-types
-  #  path: packages/cli/asset-types
-  - name: cli
-    type: npm
-    target: packages/cli
-    path: packages/cli
-  # Has no dependencies, so excluding
-  #- name: cli-common
-  #  type: npm
-  #  target: packages/cli-common
-  #  path: packages/cli-common
-  - name: config
-    type: npm
-    target: packages/config
-    path: packages/config
-  - name: config-loader
-    type: npm
-    target: packages/config-loader
-    path: packages/config-loader
-  - name: core
-    type: npm
-    target: packages/core
-    path: packages/core
-  - name: core-api
-    type: npm
-    target: packages/core-api
-    path: packages/core-api
-  - name: create-app
-    type: npm
-    target: packages/create-app
-    path: packages/create-app
-  - name: dev-utils
-    type: npm
-    target: packages/dev-utils
-    path: packages/dev-utils
-  - name: docgen
-    type: npm
-    target: packages/docgen
-    path: packages/docgen
-  - name: integration
-    type: npm
-    target: packages/integration
-    path: packages/integration
-  - name: storybook
-    type: npm
-    target: packages/storybook
-    path: packages/storybook
-  - name: techdocs-common
-    type: npm
-    target: packages/techdocs-common
-    path: packages/techdocs-common
-  - name: theme
-    type: npm
-    target: packages/theme
-    path: packages/theme
-  - name: plugin-api-docs
-    type: npm
-    target: plugins/api-docs
-    path: plugins/api-docs
-  - name: plugin-app-backend
-    type: npm
-    target: plugins/app-backend
-    path: plugins/app-backend
-  - name: plugin-auth-backend
-    type: npm
-    target: plugins/auth-backend
-    path: plugins/auth-backend
-  - name: plugin-catalog
-    type: npm
-    target: plugins/catalog
-    path: plugins/catalog
-  - name: plugin-catalog-backend
-    type: npm
-    target: plugins/catalog-backend
-    path: plugins/catalog-backend
-  - name: plugin-catalog-graphql
-    type: npm
-    target: plugins/catalog-graphql
-    path: plugins/catalog-graphql
-  - name: plugin-catalog-import
-    type: npm
-    target: plugins/catalog-import
-    path: plugins/catalog-import
-  - name: plugin-circleci
-    type: npm
-    target: plugins/circleci
-    path: plugins/circleci
-  - name: plugin-cloudbuild
-    type: npm
-    target: plugins/cloudbuild
-    path: plugins/cloudbuild
-  - name: plugin-cost-insights
-    type: npm
-    target: plugins/cost-insights
-    path: plugins/cost-insights
-  - name: plugin-explore
-    type: npm
-    target: plugins/explore
-    path: plugins/explore
-  - name: plugin-fossa
-    type: npm
-    target: plugins/fossa
-    path: plugins/fossa
-  - name: plugin-gcp-projects
-    type: npm
-    target: plugins/gcp-projects
-    path: plugins/gcp-projects
-  - name: plugin-github-actions
-    type: npm
-    target: plugins/github-actions
-    path: plugins/github-actions
-  - name: plugin-gitops-profiles
-    type: npm
-    target: plugins/gitops-profiles
-    path: plugins/gitops-profiles
-  - name: plugin-graphiql
-    type: npm
-    target: plugins/graphiql
-    path: plugins/graphiql
-  - name: plugin-graphql
-    type: npm
-    target: plugins/graphql
-    path: plugins/graphql
-  - name: plugin-jenkins
-    type: npm
-    target: plugins/jenkins
-    path: plugins/jenkins
-  - name: plugin-kafka
-    type: npm
-    target: plugins/kafka
-    path: plugins/kafka
-  - name: plugin-kafka-backend
-    type: npm
-    target: plugins/kafka-backend
-    path: plugins/kafka-backend
-  - name: plugin-kubernetes
-    type: npm
-    target: plugins/kubernetes
-    path: plugins/kubernetes
-  - name: plugin-kubernetes-backend
-    type: npm
-    target: plugins/kubernetes-backend
-    path: plugins/kubernetes-backend
-  - name: plugin-lighthouse
-    type: npm
-    target: plugins/lighthouse
-    path: plugins/lighthouse
-  - name: plugin-newrelic
-    type: npm
-    target: plugins/newrelic
-    path: plugins/newrelic
-  - name: plugin-org
-    type: npm
-    target: plugins/org
-    path: plugins/org
-  - name: plugin-pagerduty
-    type: npm
-    target: plugins/pagerduty
-    path: plugins/pagerduty
-  - name: plugin-proxy-backend
-    type: npm
-    target: plugins/proxy-backend
-    path: plugins/proxy-backend
-  - name: plugin-register-component
-    type: npm
-    target: plugins/register-component
-    path: plugins/register-component
-  - name: plugin-rollbar
-    type: npm
-    target: plugins/rollbar
-    path: plugins/rollbar
-  - name: plugin-rollbar-backend
-    type: npm
-    target: plugins/rollbar-backend
-    path: plugins/rollbar-backend
-  - name: plugin-scaffolder
-    type: npm
-    target: plugins/scaffolder
-    path: plugins/scaffolder
-  - name: plugin-scaffolder-backend
-    type: npm
-    target: plugins/scaffolder-backend
-    path: plugins/scaffolder-backend
-  - name: plugin-search
-    type: npm
-    target: plugins/search
-    path: plugins/search
-  - name: plugin-sentry
-    type: npm
-    target: plugins/sentry
-    path: plugins/sentry
-  - name: plugin-sonarqube
-    type: npm
-    target: plugins/sonarqube
-    path: plugins/sonarqube
-  - name: plugin-tech-radar
-    type: npm
-    target: plugins/tech-radar
-    path: plugins/tech-radar
-  - name: plugin-techdocs
-    type: npm
-    target: plugins/techdocs
-    path: plugins/techdocs
-  - name: plugin-techdocs-backend
-    type: npm
-    target: plugins/techdocs-backend
-    path: plugins/techdocs-backend
-  - name: plugin-user-settings
-    type: npm
-    target: plugins/user-settings
-    path: plugins/user-settings
-  - name: plugin-welcome
-    type: npm
-    target: plugins/welcome
-    path: plugins/welcome
+    - name: microsite
+      type: npm
+      target: microsite
+      path: microsite
+    - name: monorepo
+      type: npm
+      target: .
+      path: .
+    - name: example-app
+      type: npm
+      target: packages/app
+      path: packages/app
+    - name: example-backend
+      type: npm
+      target: packages/backend
+      path: packages/backend
+    - name: backend-common
+      type: npm
+      target: packages/backend-common
+      path: packages/backend-common
+    - name: catalog-client
+      type: npm
+      target: packages/catalog-client
+      path: packages/catalog-client
+    - name: catalog-model
+      type: npm
+      target: packages/catalog-model
+      path: packages/catalog-model
+    # asset-types does not contain dependencies
+    #- name: asset-types
+    #  type: npm
+    #  target: packages/cli/asset-types
+    #  path: packages/cli/asset-types
+    - name: cli
+      type: npm
+      target: packages/cli
+      path: packages/cli
+    # Has no dependencies, so excluding
+    #- name: cli-common
+    #  type: npm
+    #  target: packages/cli-common
+    #  path: packages/cli-common
+    - name: config
+      type: npm
+      target: packages/config
+      path: packages/config
+    - name: config-loader
+      type: npm
+      target: packages/config-loader
+      path: packages/config-loader
+    - name: core
+      type: npm
+      target: packages/core
+      path: packages/core
+    - name: core-api
+      type: npm
+      target: packages/core-api
+      path: packages/core-api
+    - name: create-app
+      type: npm
+      target: packages/create-app
+      path: packages/create-app
+    - name: dev-utils
+      type: npm
+      target: packages/dev-utils
+      path: packages/dev-utils
+    - name: docgen
+      type: npm
+      target: packages/docgen
+      path: packages/docgen
+    - name: integration
+      type: npm
+      target: packages/integration
+      path: packages/integration
+    - name: storybook
+      type: npm
+      target: packages/storybook
+      path: packages/storybook
+    - name: techdocs-common
+      type: npm
+      target: packages/techdocs-common
+      path: packages/techdocs-common
+    - name: theme
+      type: npm
+      target: packages/theme
+      path: packages/theme
+    - name: plugin-api-docs
+      type: npm
+      target: plugins/api-docs
+      path: plugins/api-docs
+    - name: plugin-app-backend
+      type: npm
+      target: plugins/app-backend
+      path: plugins/app-backend
+    - name: plugin-auth-backend
+      type: npm
+      target: plugins/auth-backend
+      path: plugins/auth-backend
+    - name: plugin-catalog
+      type: npm
+      target: plugins/catalog
+      path: plugins/catalog
+    - name: plugin-catalog-backend
+      type: npm
+      target: plugins/catalog-backend
+      path: plugins/catalog-backend
+    - name: plugin-catalog-graphql
+      type: npm
+      target: plugins/catalog-graphql
+      path: plugins/catalog-graphql
+    - name: plugin-catalog-import
+      type: npm
+      target: plugins/catalog-import
+      path: plugins/catalog-import
+    - name: plugin-circleci
+      type: npm
+      target: plugins/circleci
+      path: plugins/circleci
+    - name: plugin-cloudbuild
+      type: npm
+      target: plugins/cloudbuild
+      path: plugins/cloudbuild
+    - name: plugin-cost-insights
+      type: npm
+      target: plugins/cost-insights
+      path: plugins/cost-insights
+    - name: plugin-explore
+      type: npm
+      target: plugins/explore
+      path: plugins/explore
+    - name: plugin-fossa
+      type: npm
+      target: plugins/fossa
+      path: plugins/fossa
+    - name: plugin-gcp-projects
+      type: npm
+      target: plugins/gcp-projects
+      path: plugins/gcp-projects
+    - name: plugin-github-actions
+      type: npm
+      target: plugins/github-actions
+      path: plugins/github-actions
+    - name: plugin-gitops-profiles
+      type: npm
+      target: plugins/gitops-profiles
+      path: plugins/gitops-profiles
+    - name: plugin-graphiql
+      type: npm
+      target: plugins/graphiql
+      path: plugins/graphiql
+    - name: plugin-graphql
+      type: npm
+      target: plugins/graphql
+      path: plugins/graphql
+    - name: plugin-jenkins
+      type: npm
+      target: plugins/jenkins
+      path: plugins/jenkins
+    - name: plugin-kafka
+      type: npm
+      target: plugins/kafka
+      path: plugins/kafka
+    - name: plugin-kafka-backend
+      type: npm
+      target: plugins/kafka-backend
+      path: plugins/kafka-backend
+    - name: plugin-kubernetes
+      type: npm
+      target: plugins/kubernetes
+      path: plugins/kubernetes
+    - name: plugin-kubernetes-backend
+      type: npm
+      target: plugins/kubernetes-backend
+      path: plugins/kubernetes-backend
+    - name: plugin-lighthouse
+      type: npm
+      target: plugins/lighthouse
+      path: plugins/lighthouse
+    - name: plugin-newrelic
+      type: npm
+      target: plugins/newrelic
+      path: plugins/newrelic
+    - name: plugin-org
+      type: npm
+      target: plugins/org
+      path: plugins/org
+    - name: plugin-pagerduty
+      type: npm
+      target: plugins/pagerduty
+      path: plugins/pagerduty
+    - name: plugin-proxy-backend
+      type: npm
+      target: plugins/proxy-backend
+      path: plugins/proxy-backend
+    - name: plugin-register-component
+      type: npm
+      target: plugins/register-component
+      path: plugins/register-component
+    - name: plugin-rollbar
+      type: npm
+      target: plugins/rollbar
+      path: plugins/rollbar
+    - name: plugin-rollbar-backend
+      type: npm
+      target: plugins/rollbar-backend
+      path: plugins/rollbar-backend
+    - name: plugin-scaffolder
+      type: npm
+      target: plugins/scaffolder
+      path: plugins/scaffolder
+    - name: plugin-scaffolder-backend
+      type: npm
+      target: plugins/scaffolder-backend
+      path: plugins/scaffolder-backend
+    - name: plugin-search
+      type: npm
+      target: plugins/search
+      path: plugins/search
+    - name: plugin-sentry
+      type: npm
+      target: plugins/sentry
+      path: plugins/sentry
+    - name: plugin-sonarqube
+      type: npm
+      target: plugins/sonarqube
+      path: plugins/sonarqube
+    - name: plugin-tech-radar
+      type: npm
+      target: plugins/tech-radar
+      path: plugins/tech-radar
+    - name: plugin-techdocs
+      type: npm
+      target: plugins/techdocs
+      path: plugins/techdocs
+    - name: plugin-techdocs-backend
+      type: npm
+      target: plugins/techdocs-backend
+      path: plugins/techdocs-backend
+    - name: plugin-user-settings
+      type: npm
+      target: plugins/user-settings
+      path: plugins/user-settings
+    - name: plugin-welcome
+      type: npm
+      target: plugins/welcome
+      path: plugins/welcome
