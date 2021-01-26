@@ -1,6 +1,6 @@
 services:
   backstage:
-    image: tugboatqa/node:lts
+    image: node:lts-alpine
     expose: 7000
     default: true
     commands:
