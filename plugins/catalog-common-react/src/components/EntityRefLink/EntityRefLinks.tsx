@@ -22,7 +22,6 @@ type EntityRefLinksProps = {
   defaultKind?: string;
 };
 
-// TODO: Move into a shared helper package
 export const EntityRefLinks = ({
   entityRefs,
   defaultKind,

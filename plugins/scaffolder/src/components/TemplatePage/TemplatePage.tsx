@@ -27,19 +27,19 @@ import {
   catalogApiRef,
   entityRoute,
   entityRouteParams,
-} from '@backstage/plugin-catalog';
+} from '@backstage/plugin-catalog-common-react';
 import { LinearProgress } from '@material-ui/core';
 import { IChangeEvent } from '@rjsf/core';
-import React, { useState, useCallback } from 'react';
+import parseGitUrl from 'git-url-parse';
+import React, { useCallback, useState } from 'react';
 import { generatePath, Navigate } from 'react-router';
 import { useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { scaffolderApiRef } from '../../api';
 import { rootRoute } from '../../routes';
+import { useJobPolling } from '../hooks/useJobPolling';
 import { JobStatusModal } from '../JobStatusModal';
 import { MultistepJsonForm } from '../MultistepJsonForm';
-import { useJobPolling } from '../hooks/useJobPolling';
-import parseGitUrl from 'git-url-parse';
 
 const useTemplate = (
   templateName: string,
