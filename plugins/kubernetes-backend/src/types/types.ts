@@ -148,4 +148,4 @@ export interface KubernetesFetchError {
 
 export type ServiceLocatorMethod = 'multiTenant' | 'http'; // TODO implement http
 export type ClusterLocatorMethod = 'config';
-export type AuthProviderType = 'google' | 'serviceAccount';
+export type AuthProviderType = 'google' | 'serviceAccount' | 'aws';

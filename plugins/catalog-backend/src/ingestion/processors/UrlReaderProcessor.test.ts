@@ -25,6 +25,7 @@ import {
   CatalogProcessorErrorResult,
   CatalogProcessorResult,
 } from './types';
+import { defaultEntityDataParser } from './util/parse';
 
 describe('UrlReaderProcessor', () => {
   const mockApiOrigin = 'http://localhost';
@@ -52,7 +53,7 @@ describe('UrlReaderProcessor', () => {
     );
 
     const generated = (await new Promise<CatalogProcessorResult>(emit =>
-      processor.readLocation(spec, false, emit),
+      processor.readLocation(spec, false, emit, defaultEntityDataParser),
     )) as CatalogProcessorEntityResult;
 
     expect(generated.type).toBe('entity');
@@ -81,7 +82,7 @@ describe('UrlReaderProcessor', () => {
     );
 
     const generated = (await new Promise<CatalogProcessorResult>(emit =>
-      processor.readLocation(spec, false, emit),
+      processor.readLocation(spec, false, emit, defaultEntityDataParser),
     )) as CatalogProcessorErrorResult;
 
     expect(generated.type).toBe('error');

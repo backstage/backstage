@@ -13,28 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Entity, EntityName } from '@backstage/catalog-model';
+import React from 'react';
+import { EntityRefLink } from './EntityRefLink';
 
-import { createApiRef } from '@backstage/core';
-
-export const kafkaApiRef = createApiRef<KafkaApi>({
-  id: 'plugin.kafka.service',
-  description:
-    'Used by the Kafka plugin to make requests to accompanying backend',
-});
-
-export type ConsumerGroupOffsetsResponse = {
-  consumerId: string;
-  offsets: {
-    topic: string;
-    partitionId: number;
-    topicOffset: string;
-    groupOffset: string;
-  }[];
+type EntityRefLinksProps = {
+  entityRefs: (Entity | EntityName)[];
+  defaultKind?: string;
 };
 
-export interface KafkaApi {
-  getConsumerGroupOffsets(
-    clusterId: string,
-    consumerGroup: string,
-  ): Promise<ConsumerGroupOffsetsResponse>;
-}
+// TODO: Move into a shared helper package
+export const EntityRefLinks = ({
+  entityRefs,
+  defaultKind,
+}: EntityRefLinksProps) => {
+  return (
+    <>
+      {entityRefs.map((r, i) => (
+        <React.Fragment key={i}>
+          {i > 0 && ', '}
+          <EntityRefLink entityRef={r} defaultKind={defaultKind} />
+        </React.Fragment>
+      ))}
+    </>
+  );
+};

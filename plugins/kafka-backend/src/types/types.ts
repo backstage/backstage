@@ -13,15 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export interface Config {
-  kubernetes?: {
-    serviceLocatorMethod: 'multiTenant';
-    clusterLocatorMethods: 'config'[];
-    clusters: {
-      url: string;
-      name: string;
-      serviceAccountToken: string | undefined;
-      authProvider: 'aws' | 'google' | 'serviceAccount';
-    }[];
-  };
+
+import { ConnectionOptions } from 'tls';
+
+export interface ClusterDetails {
+  name: string;
+  brokers: string[];
+  ssl?: ConnectionOptions;
 }

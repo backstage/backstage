@@ -39,7 +39,11 @@
       {
         "type": "subcategory",
         "label": "Kubernetes",
-        "ids": ["features/kubernetes/overview"]
+        "ids": [
+          "features/kubernetes/overview",
+          "features/kubernetes/installation",
+          "features/kubernetes/configuration"
+        ]
       },
       {
         "type": "subcategory",

@@ -23,6 +23,8 @@ Example:
 ```yaml
 kafka:
   clientId: backstage
-  brokers:
-    - localhost:9092
+  clusters:
+    name: prod
+    brokers:
+      - localhost:9092
 ```
