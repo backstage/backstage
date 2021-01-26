@@ -52,7 +52,7 @@ export interface MigrationAlert extends Alert {
  * by status in a collapsed view below Alert Insights section and a badge will appear in Action Items
  * showing the total alerts of that status.
  *
- * Default forms can be overriden by providing a valid React form component. Form components
+ * Default forms can be overridden by providing a valid React form component. Form components
  * must return valid form elements, and accept a ref and onSubmit event handler. See /forms
  * for example implementations. Custom forms must implement a corresponding event hook.
  */
