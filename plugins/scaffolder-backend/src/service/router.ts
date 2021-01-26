@@ -38,6 +38,8 @@ import {
   MemoryDatabase,
   TaskWorker,
 } from '../scaffolder/tasks';
+import { TemplateActionRegistry } from '../scaffolder/tasks/TemplateConverter';
+import { LOCATION_ANNOTATION } from '@backstage/catalog-model';
 
 export interface RouterOptions {
   preparers: PreparerBuilder;

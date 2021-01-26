@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { TemplaterValues } from '..';
+import { JsonObject } from '@backstage/config';
 
 export type Status =
   | 'open'
@@ -47,8 +46,12 @@ export type DbTaskEventRow = {
 };
 
 export type TaskSpec = {
-  template: TemplateEntityV1alpha1;
-  values: TemplaterValues;
+  steps: Array<{
+    id: string;
+    name: string;
+    action: string;
+    parameters?: JsonObject;
+  }>;
 };
 
 export type DispatchResult = {

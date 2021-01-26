@@ -15,7 +15,7 @@
  */
 
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { TemplaterValues } from '../stages/templater/types';
+import { TemplaterValues } from './actions/templater/types';
 import { MemoryDatabase } from './MemoryDatabase';
 import { MemoryTaskBroker, TaskAgent } from './MemoryTaskBroker';
 
