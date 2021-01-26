@@ -17,6 +17,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Box,
+  capitalize,
   Card,
   CardContent,
   Divider,
@@ -72,7 +73,7 @@ export const CostOverviewCard = ({
     key => ({
       id: key,
       label: `Breakdown by ${key}`,
-      title: `Cloud Cost By ${key.charAt(0).toUpperCase() + key.slice(1)}`,
+      title: `Cloud Cost By ${capitalize(key)}`,
     }),
   );
   const tabs = [

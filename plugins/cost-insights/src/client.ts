@@ -100,8 +100,8 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
         aggregation: aggregation,
         change: changeOf(aggregation),
         trendline: trendlineOf(aggregation),
-        // Optional field on Cost which needs to be supplied in order to see
-        // the product breakdown view in the top panel.
+        // Optional field providing cost groupings / breakdowns keyed by the type. In this example,
+        // daily cost grouped by cloud product OR by project / billing account.
         groupedCosts: {
           product: getGroupedProducts(intervals),
           project: getGroupedProjects(intervals),
@@ -121,8 +121,8 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
         aggregation: aggregation,
         change: changeOf(aggregation),
         trendline: trendlineOf(aggregation),
-        // Optional field on Cost which needs to be supplied in order to see
-        // the product breakdown view in the top panel.
+        // Optional field providing cost groupings / breakdowns keyed by the type. In this example,
+        // daily project cost grouped by cloud product.
         groupedCosts: {
           product: getGroupedProducts(intervals),
         },
