@@ -2,4 +2,4 @@
 '@backstage/catalog-model': patch
 ---
 
-Introduce jsonschema variants of the yup vlidation schemas
+Introduce json schema variants of the `yup` validation schemas

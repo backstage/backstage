@@ -32,6 +32,7 @@
     "@backstage/config": "^0.1.2",
     "@types/json-schema": "^7.0.5",
     "@types/yup": "^0.29.8",
+    "ajv": "^7.0.3",
     "json-schema": "^0.2.5",
     "lodash": "^4.17.15",
     "uuid": "^8.0.0",
@@ -45,7 +46,6 @@
     "yaml": "^1.9.2"
   },
   "files": [
-    "dist",
-    "schema"
+    "dist"
   ]
 }
