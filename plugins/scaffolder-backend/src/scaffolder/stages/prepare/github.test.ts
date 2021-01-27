@@ -15,17 +15,18 @@
  */
 
 import fs from 'fs-extra';
+import os from 'os';
+import { resolve } from 'path';
 import { GithubPreparer } from './github';
-import {
-  TemplateEntityV1alpha1,
-  LOCATION_ANNOTATION,
-} from '@backstage/catalog-model';
 import { getVoidLogger, Git } from '@backstage/backend-common';
 
 jest.mock('fs-extra');
 
 describe('GitHubPreparer', () => {
-  let mockEntity: TemplateEntityV1alpha1;
+  const workspacePath = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
+  const checkoutPath = resolve(workspacePath, 'checkout');
+  const templatePath = resolve(workspacePath, 'template');
+
   const mockGitClient = {
     clone: jest.fn(),
   };
@@ -47,16 +48,16 @@ describe('GitHubPreparer', () => {
       url:
         'https://github.com/benjdlambert/backstage-graphql-template/blob/master/templates/graphql-starter/template',
       logger,
-      workspacePath: '/tmp',
+      workspacePath,
     });
 
     expect(mockGitClient.clone).toHaveBeenCalledWith({
       url: 'https://github.com/benjdlambert/backstage-graphql-template',
-      dir: expect.any(String),
+      dir: checkoutPath,
     });
     expect(fs.move).toHaveBeenCalledWith(
-      '/tmp/checkout/templates/graphql-starter/template',
-      '/tmp/template',
+      resolve(checkoutPath, 'templates', 'graphql-starter', 'template'),
+      templatePath,
     );
     expect(fs.rmdir).toHaveBeenCalledWith('/tmp/template/.git');
   });
@@ -66,15 +67,15 @@ describe('GitHubPreparer', () => {
       url:
         'https://github.com/benjdlambert/backstage-graphql-template/blob/master',
       logger,
-      workspacePath: '/tmp',
+      workspacePath,
     });
 
     expect(mockGitClient.clone).toHaveBeenCalledWith({
       url: 'https://github.com/benjdlambert/backstage-graphql-template',
-      dir: expect.any(String),
+      dir: checkoutPath,
     });
-    expect(fs.move).toHaveBeenCalledWith('/tmp/checkout', '/tmp/template');
-    expect(fs.rmdir).toHaveBeenCalledWith('/tmp/template/.git');
+    expect(fs.move).toHaveBeenCalledWith(checkoutPath, templatePath);
+    expect(fs.rmdir).toHaveBeenCalledWith(resolve(templatePath, '.git'));
   });
 
   it('calls the clone command with token', async () => {
@@ -82,7 +83,7 @@ describe('GitHubPreparer', () => {
       url:
         'https://github.com/benjdlambert/backstage-graphql-template/blob/master',
       logger,
-      workspacePath: '/tmp',
+      workspacePath,
     });
 
     expect(Git.fromAuth).toHaveBeenCalledWith({
