@@ -72,6 +72,10 @@ export interface Config {
       onelogin?: {
         development: { [key: string]: string };
       };
+      awsalb?: {
+        issuer?: string;
+        region: string;
+      };
     };
   };
 }
