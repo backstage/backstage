@@ -17,6 +17,7 @@
 import { ConflictError, NotFoundError } from '@backstage/backend-common';
 import { CatalogClient } from '@backstage/catalog-client';
 import { UserEntity } from '@backstage/catalog-model';
+import { CatalogIdentityRequestOptions } from './types';
 
 type UserQuery = {
   annotations: Record<string, string>;
@@ -38,9 +39,10 @@ export class CatalogIdentityClient {
    * Throws a NotFoundError or ConflictError if 0 or multiple users are found.
    */
   async findUser(
-    token: string | undefined,
     query: UserQuery,
+    options?: CatalogIdentityRequestOptions,
   ): Promise<UserEntity> {
+    const token = options?.token;
     const filter: Record<string, string> = {
       kind: 'user',
     };

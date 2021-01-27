@@ -30,7 +30,7 @@ describe('CatalogIdentityClient', () => {
       catalogClient: new MockedCatalogClient(),
     });
 
-    client.findUser(token, { annotations: { key: 'value' } });
+    client.findUser({ annotations: { key: 'value' } }, { token });
 
     const getEntities = MockedCatalogClient.mock.instances[0].getEntities;
     expect(getEntities).toHaveBeenCalledWith(

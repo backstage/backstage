@@ -157,11 +157,14 @@ export class GoogleAuthProvider implements OAuthHandlers {
       const token = await this.tokenIssuer.issueToken({
         claims: { sub: 'backstage.io/auth-backend' },
       });
-      const user = await this.identityClient.findUser(token, {
-        annotations: {
-          'google.com/email': profile.email,
+      const user = await this.identityClient.findUser(
+        {
+          annotations: {
+            'google.com/email': profile.email,
+          },
         },
-      });
+        { token },
+      );
 
       return {
         ...response,
