@@ -17,10 +17,10 @@
 import { Entity } from '@backstage/catalog-model';
 import { createDevApp } from '@backstage/dev-utils';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog';
-import { plugin } from '../src/plugin';
+import React from 'react';
+import { ExplorePage } from '../src/extensions';
 
 createDevApp()
-  .registerPlugin(plugin)
   .registerApi({
     api: catalogApiRef,
     deps: {},
@@ -56,4 +56,5 @@ createDevApp()
         },
       } as CatalogApi),
   })
+  .addPage({ element: <ExplorePage />, title: 'Explore' })
   .render();

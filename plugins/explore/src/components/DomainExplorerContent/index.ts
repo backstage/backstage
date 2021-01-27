@@ -13,22 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { configApiRef, Header, Page, useApi } from '@backstage/core';
-import React from 'react';
-import { DomainExplorerContent } from './DomainExplorerContent';
-
-export const DomainExplorerPage = () => {
-  const configApi = useApi(configApiRef);
-  const organizationName =
-    configApi.getOptionalString('organization.name') ?? 'Backstage';
-
-  return (
-    <Page themeId="home">
-      <Header
-        title={`Explore the ${organizationName} ecosystem`}
-        subtitle="Discover the domains in your ecosystem"
-      />
-      <DomainExplorerContent />
-    </Page>
-  );
-};
+export { DomainExplorerContent } from './DomainExplorerContent';

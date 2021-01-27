@@ -20,6 +20,5 @@ const NoIcon = () => null;
 
 export const exploreRouteRef = createRouteRef({
   icon: NoIcon,
-  path: '',
   title: 'Explore',
 });

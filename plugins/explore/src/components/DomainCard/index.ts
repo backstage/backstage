@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export { DomainCard } from './DomainCard';
+export { DomainCardGrid } from './DomainCardGrid';

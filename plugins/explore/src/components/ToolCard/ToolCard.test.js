@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { render } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
-
-import ExploreCard from './ExploreCard';
+import { render } from '@testing-library/react';
+import React from 'react';
+import { ToolCard } from './ToolCard';
 
 const minProps = {
   card: {
@@ -30,20 +29,20 @@ const minProps = {
   },
 };
 
-describe('<ExploreCard />', () => {
+describe('<ToolCard />', () => {
   it('renders without exploding', () => {
-    const { getByText } = render(wrapInTestApp(<ExploreCard {...minProps} />));
+    const { getByText } = render(wrapInTestApp(<ToolCard {...minProps} />));
     expect(getByText('Explore')).toBeInTheDocument();
   });
 
   it('renders props correctly', () => {
-    const { getByText } = render(wrapInTestApp(<ExploreCard {...minProps} />));
+    const { getByText } = render(wrapInTestApp(<ToolCard {...minProps} />));
     expect(getByText(minProps.card.title)).toBeInTheDocument();
     expect(getByText(minProps.card.description)).toBeInTheDocument();
   });
 
   it('should link out', () => {
-    const rendered = render(wrapInTestApp(<ExploreCard {...minProps} />));
+    const rendered = render(wrapInTestApp(<ToolCard {...minProps} />));
     const anchor = rendered.container.querySelector('a');
     expect(anchor.href).toBe(minProps.card.url);
   });
@@ -59,7 +58,7 @@ describe('<ExploreCard />', () => {
       },
     };
     const { getByText } = render(
-      wrapInTestApp(<ExploreCard {...propsWithoutDescription} />),
+      wrapInTestApp(<ToolCard {...propsWithoutDescription} />),
     );
     expect(getByText('Description missing')).toBeInTheDocument();
   });
@@ -74,13 +73,13 @@ describe('<ExploreCard />', () => {
       },
     };
     const { queryByText } = render(
-      wrapInTestApp(<ExploreCard {...propsWithLifecycle} />),
+      wrapInTestApp(<ToolCard {...propsWithLifecycle} />),
     );
     expect(queryByText('GA')).not.toBeInTheDocument();
   });
 
   it('renders tags correctly', () => {
-    const { getByText } = render(wrapInTestApp(<ExploreCard {...minProps} />));
+    const { getByText } = render(wrapInTestApp(<ToolCard {...minProps} />));
     expect(getByText(minProps.card.tags[0])).toBeInTheDocument();
     expect(getByText(minProps.card.tags[1])).toBeInTheDocument();
   });

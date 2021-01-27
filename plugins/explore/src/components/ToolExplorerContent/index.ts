@@ -13,21 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DomainEntity } from '@backstage/catalog-model';
-import { Grid } from '@material-ui/core';
-import React from 'react';
-import { DomainCard } from '../DomainCard';
-
-type DomainExplorerProps = {
-  entities: DomainEntity[];
-};
-
-export const DomainExplorer = ({ entities }: DomainExplorerProps) => (
-  <Grid container spacing={4}>
-    {entities.map((e, i) => (
-      <Grid item xs={12} md={3} key={i}>
-        <DomainCard entity={e} />
-      </Grid>
-    ))}
-  </Grid>
-);
+export { ToolExplorerContent } from './ToolExplorerContent';

@@ -26,7 +26,7 @@ import { catalogApiRef } from '@backstage/plugin-catalog';
 import { Button } from '@material-ui/core';
 import React from 'react';
 import { useAsync } from 'react-use';
-import { DomainExplorer } from '../DomainExplorer/DomainExplorer';
+import { DomainCardGrid } from '../DomainCard';
 
 export const DomainExplorerContent = () => {
   const catalogApi = useApi(catalogApiRef);
@@ -39,7 +39,7 @@ export const DomainExplorerContent = () => {
   }, [catalogApi]);
 
   return (
-    <Content>
+    <Content noPadding>
       <ContentHeader title="Domains">
         <SupportButton>Discover the domains in your ecosystem.</SupportButton>
       </ContentHeader>
@@ -60,7 +60,7 @@ export const DomainExplorerContent = () => {
           }
         />
       )}
-      {!loading && entities && <DomainExplorer entities={entities} />}
+      {!loading && entities && <DomainCardGrid entities={entities} />}
     </Content>
   );
 };

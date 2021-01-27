@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2020 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,37 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Tabs } from '@backstage/core';
+
+import { BackstageTheme } from '@backstage/theme';
 import { makeStyles } from '@material-ui/core';
 import React from 'react';
-import { DomainExplorerContent } from '../DomainExplorerContent';
-import { ToolExplorerContent } from '../ToolExplorerContent';
+import { ToolCard } from './ToolCard';
+import { CardData } from './types';
 
-// TODO: Support sub routes for these tabs in the future
-
-const useStyles = makeStyles({
-  layout: {
-    gridArea: 'pageContent',
+const useStyles = makeStyles<BackstageTheme>(theme => ({
+  container: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, 296px)',
+    gridGap: theme.spacing(3),
+    marginBottom: theme.spacing(6),
   },
-});
+}));
 
-export const ExploreTabs = () => {
+type ToolCardGridProps = {
+  tools: CardData[];
+};
+
+export const ToolCardGrid = ({ tools }: ToolCardGridProps) => {
   const classes = useStyles();
 
   return (
-    <div className={classes.layout}>
-      <Tabs
-        tabs={[
-          {
-            label: `Domains`,
-            content: <DomainExplorerContent />,
-          },
-          {
-            label: `Tools`,
-            content: <ToolExplorerContent />,
-          },
-        ]}
-      />
+    <div className={classes.container}>
+      {tools.map((card: CardData, ix: any) => (
+        <ToolCard card={card} key={ix} />
+      ))}
     </div>
   );
 };

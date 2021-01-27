@@ -1,7 +1,7 @@
 # explore
 
 Welcome to the explore plugin!
-This plugin helps to visualize the domains and in your ecosystem.
+This plugin helps to visualize the domains and tools in your ecosystem.
 
 ## Getting started
 

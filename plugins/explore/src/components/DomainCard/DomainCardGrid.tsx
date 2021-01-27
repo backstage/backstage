@@ -13,22 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { configApiRef, Header, Page, useApi } from '@backstage/core';
+import { DomainEntity } from '@backstage/catalog-model';
+import { Grid } from '@material-ui/core';
 import React from 'react';
-import { ExploreTabs } from './ExploreTabs';
+import { DomainCard } from '.';
 
-export const ExplorePage = () => {
-  const configApi = useApi(configApiRef);
-  const organizationName =
-    configApi.getOptionalString('organization.name') ?? 'Backstage';
-  return (
-    <Page themeId="home">
-      <Header
-        title={`Explore the ${organizationName} ecosystem`}
-        subtitle="Discover solutions available in your ecosystem"
-      />
-
-      <ExploreTabs />
-    </Page>
-  );
+type DomainCardGridProps = {
+  entities: DomainEntity[];
 };
+
+export const DomainCardGrid = ({ entities }: DomainCardGridProps) => (
+  <Grid container spacing={4}>
+    {entities.map((e, i) => (
+      <Grid item xs={12} md={3} key={i}>
+        <DomainCard entity={e} />
+      </Grid>
+    ))}
+  </Grid>
+);

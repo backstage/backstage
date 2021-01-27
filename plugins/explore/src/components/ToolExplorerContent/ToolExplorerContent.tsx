@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,27 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { Content, ContentHeader, SupportButton } from '@backstage/core';
 import React from 'react';
-import { makeStyles, Typography } from '@material-ui/core';
-import {
-  Content,
-  ContentHeader,
-  Header,
-  Page,
-  SupportButton,
-} from '@backstage/core';
-import ExploreCard, { CardData } from './ExploreCard';
-import { BackstageTheme } from '@backstage/theme';
+import { ToolCardGrid } from '../ToolCard';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
-  container: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, 296px)',
-    gridGap: theme.spacing(3),
-    marginBottom: theme.spacing(6),
-  },
-}));
+// TODO: Provide API to configure the toolsCards
 
 const toolsCards = [
   {
@@ -113,27 +97,13 @@ const toolsCards = [
   },
 ];
 
-export const ExplorePluginPage = () => {
-  const classes = useStyles();
-
+export const ToolExplorerContent = () => {
   return (
-    <Page themeId="home">
-      <Header
-        title="Explore"
-        subtitle="Tools and services available in Backstage"
-      />
-      <Content>
-        <ContentHeader title="Tools">
-          <SupportButton>
-            <Typography>Explore tools available in Backstage</Typography>
-          </SupportButton>
-        </ContentHeader>
-        <div className={classes.container}>
-          {toolsCards.map((card: CardData, ix: any) => (
-            <ExploreCard card={card} key={ix} />
-          ))}
-        </div>
-      </Content>
-    </Page>
+    <Content noPadding>
+      <ContentHeader title="Tools">
+        <SupportButton>Discover the tools in your ecosystem.</SupportButton>
+      </ContentHeader>
+      <ToolCardGrid tools={toolsCards} />
+    </Content>
   );
 };
