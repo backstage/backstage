@@ -24,7 +24,7 @@ function renderInContext(children: JSX.Element) {
 }
 
 describe('<ActionItems/>', () => {
-  it('should not display status buttons if there no active alerts', () => {
+  it('should not display status buttons if there are no active alerts', () => {
     const { queryByRole } = renderInContext(
       <ActionItems active={[]} snoozed={[]} accepted={[]} dismissed={[]} />,
     );
