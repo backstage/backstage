@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import * as os from 'os';
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
 import path from 'path';
@@ -31,6 +32,8 @@ const logger = getVoidLogger();
 const treeResponseFactory = ReadTreeResponseFactory.create({
   config: new ConfigReader({}),
 });
+
+const tmpDir = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
 
 describe('AzureUrlReader', () => {
   const worker = setupServer();
@@ -142,7 +145,7 @@ describe('AzureUrlReader', () => {
   describe('readTree', () => {
     beforeEach(() => {
       mockFs({
-        '/tmp': mockFs.directory(),
+        [tmpDir]: mockFs.directory(),
       });
     });
 
@@ -216,7 +219,7 @@ describe('AzureUrlReader', () => {
         'https://dev.azure.com/organization/project/_git/repository',
       );
 
-      const dir = await response.dir({ targetDir: '/tmp' });
+      const dir = await response.dir({ targetDir: tmpDir });
 
       await expect(
         fs.readFile(path.join(dir, 'mkdocs.yml'), 'utf8'),
