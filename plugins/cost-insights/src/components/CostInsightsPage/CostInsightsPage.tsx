@@ -78,10 +78,18 @@ export const CostInsightsPage = () => {
 
   const { pageFilters, setPageFilters } = useFilters(p => p);
 
-  const snoozed = useMemo(() => alerts.alerts.filter(isSnoozed), [alerts]);
-  const accepted = useMemo(() => alerts.alerts.filter(isAccepted), [alerts]);
-  const dismissed = useMemo(() => alerts.alerts.filter(isDismissed), [alerts]);
-  const activeAlerts = useMemo(() => alerts.alerts.filter(isActive), [alerts]);
+  const snoozed = useMemo(() => alerts.alerts.filter(isSnoozed), [
+    alerts.alerts,
+  ]);
+  const accepted = useMemo(() => alerts.alerts.filter(isAccepted), [
+    alerts.alerts,
+  ]);
+  const dismissed = useMemo(() => alerts.alerts.filter(isDismissed), [
+    alerts.alerts,
+  ]);
+  const activeAlerts = useMemo(() => alerts.alerts.filter(isActive), [
+    alerts.alerts,
+  ]);
 
   const isActionItemsDisplayed = !!activeAlerts.length;
   const isAlertInsightsDisplayed = !!alerts.alerts.length;
