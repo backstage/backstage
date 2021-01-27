@@ -62,8 +62,26 @@ COPY app-config.yaml app-config.production.yaml ./
 CMD ["node", "packages/backend", "--config", "app-config.yaml", "--config", "app-config.production.yaml"]
 ```
 
-You can add the Dockerfile to the root of your project, and run the following to
-build the container under a specified tag.
+Before building you should also include a `.dockerignore`. This will greatly
+improve the context boot up time of Docker as we are no longer sending all of
+the `node_modules` into the context. It also helps us avoid some limitations and
+errors that may occur when trying to share the `node_modules` folder to inside
+the build.
+
+You can add the following contents to the root of your repository at
+`.dockerignore` and it might look something like the following:
+
+```dockerignore
+.git
+node_modules
+packages/*/node_modules
+plugins/*/node_modules
+plugins/*/dist
+```
+
+Once you have added both the `Dockerfile` and `.dockerignore` to the root of
+your project, and run the following to build the container under a specified
+tag.
 
 ```sh
 $ docker build -t example-deployment .
