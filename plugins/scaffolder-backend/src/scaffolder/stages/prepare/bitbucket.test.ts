@@ -14,21 +14,13 @@
  * limitations under the License.
  */
 
-jest.doMock('fs-extra', () => ({
-  promises: {
-    mkdtemp: jest.fn(dir => `${dir}-static`),
-  },
-}));
-
+import fs from 'fs-extra';
 import { BitbucketPreparer } from './bitbucket';
-import {
-  TemplateEntityV1alpha1,
-  LOCATION_ANNOTATION,
-} from '@backstage/catalog-model';
 import { getVoidLogger, Git } from '@backstage/backend-common';
 
+jest.mock('fs-extra');
+
 describe('BitbucketPreparer', () => {
-  let mockEntity: TemplateEntityV1alpha1;
   const logger = getVoidLogger();
   const mockGitClient = {
     clone: jest.fn(),
@@ -38,44 +30,6 @@ describe('BitbucketPreparer', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockEntity = {
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'Template',
-      metadata: {
-        annotations: {
-          [LOCATION_ANNOTATION]:
-            'bitbucket:https://bitbucket.org/backstage-project/backstage-repo',
-        },
-        name: 'graphql-starter',
-        title: 'GraphQL Service',
-        description:
-          'A GraphQL starter template for backstage to get you up and running\nthe best pracices with GraphQL\n',
-        uid: '9cf16bad-16e0-4213-b314-c4eec773c50b',
-        etag: 'ZTkxMjUxMjUtYWY3Yi00MjU2LWFkYWMtZTZjNjU5ZjJhOWM2',
-        generation: 1,
-      },
-      spec: {
-        type: 'website',
-        templater: 'cookiecutter',
-        path: './template',
-        schema: {
-          $schema: 'http://json-schema.org/draft-07/schema#',
-          required: ['storePath', 'owner'],
-          properties: {
-            owner: {
-              type: 'string',
-              title: 'Owner',
-              description: 'Who is going to own this component',
-            },
-            storePath: {
-              type: 'string',
-              title: 'Store path',
-              description: 'GitHub store path in org/repo format',
-            },
-          },
-        },
-      },
-    };
   });
 
   const preparer = BitbucketPreparer.fromConfig({
@@ -84,12 +38,20 @@ describe('BitbucketPreparer', () => {
     appPassword: 'fake-password',
   });
 
+  const prepareOptions = {
+    url: 'https://bitbucket.org/backstage-project/backstage-repo',
+    logger,
+    workspacePath: '/tmp',
+  };
+
   it('calls the clone command with the correct arguments for a repository', async () => {
-    await preparer.prepare(mockEntity, { logger: getVoidLogger() });
+    await preparer.prepare(prepareOptions);
     expect(mockGitClient.clone).toHaveBeenCalledWith({
       url: 'https://bitbucket.org/backstage-project/backstage-repo',
-      dir: expect.any(String),
+      dir: '/tmp/checkout',
     });
+    expect(fs.move).toHaveBeenCalledWith('/tmp/checkout', '/tmp/template');
+    expect(fs.rmdir).toHaveBeenCalledWith('/tmp/template/.git');
   });
 
   it('calls the clone command with the correct arguments if an app password is provided for a repository', async () => {
@@ -98,7 +60,7 @@ describe('BitbucketPreparer', () => {
       username: 'fake-user',
       appPassword: 'fake-password',
     });
-    await preparer.prepare(mockEntity, { logger });
+    await preparer.prepare(prepareOptions);
 
     expect(Git.fromAuth).toHaveBeenCalledWith({
       logger,
@@ -108,22 +70,22 @@ describe('BitbucketPreparer', () => {
   });
 
   it('calls the clone command with the correct arguments for a repository when no path is provided', async () => {
-    delete mockEntity.spec.path;
-    await preparer.prepare(mockEntity, { logger: getVoidLogger() });
+    await preparer.prepare(prepareOptions);
     expect(mockGitClient.clone).toHaveBeenCalledWith({
       url: 'https://bitbucket.org/backstage-project/backstage-repo',
-      dir: expect.any(String),
+      dir: '/tmp/checkout',
     });
   });
 
-  it('return the temp directory with the path to the folder if it is specified', async () => {
-    mockEntity.spec.path = './template/test/1/2/3';
-    const response = await preparer.prepare(mockEntity, {
-      logger: getVoidLogger(),
+  it('moves a template subdirectory to checkout if specified', async () => {
+    await preparer.prepare({
+      url: 'https://bitbucket.org/foo/bar/src/master/1/2/3',
+      logger,
+      workspacePath: '/tmp',
     });
-
-    expect(response.split('\\').join('/')).toMatch(
-      /\/template\/test\/1\/2\/3$/,
+    expect(fs.move).toHaveBeenCalledWith(
+      '/tmp/checkout/1/2/3',
+      '/tmp/template',
     );
   });
 
@@ -133,24 +95,12 @@ describe('BitbucketPreparer', () => {
       token: 'fake-token',
     });
 
-    await preparer.prepare(mockEntity, { logger });
+    await preparer.prepare(prepareOptions);
 
     expect(Git.fromAuth).toHaveBeenCalledWith({
       logger,
       username: 'x-token-auth',
       password: 'fake-token',
     });
-  });
-
-  it('return the working directory with the path to the folder if it is specified', async () => {
-    mockEntity.spec.path = './template/test/1/2/3';
-    const response = await preparer.prepare(mockEntity, {
-      workingDirectory: '/workDir',
-      logger: getVoidLogger(),
-    });
-
-    expect(response.split('\\').join('/')).toMatch(
-      /\/workDir\/graphql-starter-static\/template\/test\/1\/2\/3$/,
-    );
   });
 });
