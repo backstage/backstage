@@ -1,17 +1,14 @@
-# Catalog Client
+# Catalog React
 
-Contains a frontend and backend compatible client for communicating with the
-Backstage Catalog.
+WORK IN PROGRESS
 
-Backend code may import and use this package directly.
+This is shared code of the frontend part of the default catalog plugin.
 
-However, frontend code will not want to import this package directly - use the
-`@backstage/plugin-catalog` package instead, which re-exports all of the types
-and classes from this package. Thereby, you will also gain access to its
-`catalogApiRef`.
+It will implement the core API for handling your catalog of software, and
+supplies components that can be reused by third-party plugins.
 
 ## Links
 
-- [Default frontend part of the catalog](https://github.com/spotify/backstage/tree/master/plugins/catalog)
-- [Default backend part of the catalog](https://github.com/spotify/backstage/tree/master/plugins/catalog-backend)
+- [Frontend part of the plugin](https://github.com/backstage/backstage/tree/master/plugins/catalog)
+- [Backend part of the plugin](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend)
 - [The Backstage homepage](https://backstage.io)
