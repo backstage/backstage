@@ -57,8 +57,8 @@ const guestIdentityApi: IdentityApi = {
 };
 
 describe('CatalogClientWrapper', () => {
-  let client;
-  let guestClient;
+  let client: CatalogClientWrapper;
+  let guestClient: CatalogClientWrapper;
 
   beforeEach(() => {
     MockedCatalogClient.mockClear();
