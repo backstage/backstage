@@ -41,15 +41,34 @@ const identityApi: IdentityApi = {
     return Promise.resolve();
   },
 };
+const guestIdentityApi: IdentityApi = {
+  getUserId() {
+    return 'guest';
+  },
+  getProfile() {
+    return {};
+  },
+  async getIdToken() {
+    return Promise.resolve(undefined);
+  },
+  async signOut() {
+    return Promise.resolve();
+  },
+};
 
 describe('CatalogClientWrapper', () => {
-  let client: CatalogClientWrapper;
+  let client;
+  let guestClient;
 
   beforeEach(() => {
     MockedCatalogClient.mockClear();
     client = new CatalogClientWrapper({
       client: new MockedCatalogClient({ discoveryApi }),
       identityApi,
+    });
+    guestClient = new CatalogClientWrapper({
+      client: new MockedCatalogClient({ discoveryApi }),
+      identityApi: guestIdentityApi,
     });
   });
 
@@ -62,6 +81,82 @@ describe('CatalogClientWrapper', () => {
         token: 'fake-id-token',
       });
       expect(getEntities).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('getLocationById', () => {
+    it('omits authorization token when guest', async () => {
+      expect.assertions(2);
+      await guestClient.getLocationById('42');
+      const getLocationById =
+        MockedCatalogClient.mock.instances[0].getLocationById;
+      expect(getLocationById).toHaveBeenCalledWith('42', {});
+      expect(getLocationById).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('getEntityByName', () => {
+    const name = {
+      kind: 'kind',
+      namespace: 'namespace',
+      name: 'name',
+    };
+    it('injects authorization token', async () => {
+      expect.assertions(2);
+      await client.getEntityByName(name);
+      const getEntityByName =
+        MockedCatalogClient.mock.instances[0].getEntityByName;
+      expect(getEntityByName).toHaveBeenCalledWith(name, {
+        token: 'fake-id-token',
+      });
+      expect(getEntityByName).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('addLocation', () => {
+    const location = { target: 'target' };
+    it('injects authorization token', async () => {
+      expect.assertions(2);
+      await client.addLocation(location);
+      const addLocation = MockedCatalogClient.mock.instances[0].addLocation;
+      expect(addLocation).toHaveBeenCalledWith(location, {
+        token: 'fake-id-token',
+      });
+      expect(addLocation).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('getLocationByEntity', () => {
+    const entity = {
+      apiVersion: 'apiVersion',
+      kind: 'kind',
+      metadata: {
+        name: 'name',
+      },
+    };
+    it('injects authorization token', async () => {
+      expect.assertions(2);
+      await client.getLocationByEntity(entity);
+      const getLocationByEntity =
+        MockedCatalogClient.mock.instances[0].getLocationByEntity;
+      expect(getLocationByEntity).toHaveBeenCalledWith(entity, {
+        token: 'fake-id-token',
+      });
+      expect(getLocationByEntity).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('removeEntityByUid', () => {
+    it('injects authorization token', async () => {
+      const uid = 'uid';
+      expect.assertions(2);
+      await client.removeEntityByUid(uid);
+      const removeEntityByUid =
+        MockedCatalogClient.mock.instances[0].removeEntityByUid;
+      expect(removeEntityByUid).toHaveBeenCalledWith(uid, {
+        token: 'fake-id-token',
+      });
+      expect(removeEntityByUid).toHaveBeenCalledTimes(1);
     });
   });
 });

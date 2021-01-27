@@ -120,4 +120,51 @@ describe('CatalogClient', () => {
       expect(response.items).toEqual([]);
     });
   });
+
+  describe('getLocationById', () => {
+    const defaultResponse = {
+      data: {
+        id: '42',
+      },
+    };
+
+    beforeEach(() => {
+      server.use(
+        rest.get(`${mockBaseUrl}/locations/42`, (_, res, ctx) => {
+          return res(ctx.json(defaultResponse));
+        }),
+      );
+    });
+
+    it('should locations from correct endpoint', async () => {
+      const response = await client.getLocationById('42', { token });
+      expect(response).toEqual(defaultResponse);
+    });
+
+    it('forwards authorization token', async () => {
+      expect.assertions(1);
+
+      server.use(
+        rest.get(`${mockBaseUrl}/locations/42`, (req, res, ctx) => {
+          expect(req.headers.get('authorization')).toBe(`Bearer ${token}`);
+          return res(ctx.json(defaultResponse));
+        }),
+      );
+
+      await client.getLocationById('42', { token });
+    });
+
+    it('skips authorization header if token is omitted', async () => {
+      expect.assertions(1);
+
+      server.use(
+        rest.get(`${mockBaseUrl}/locations/42`, (req, res, ctx) => {
+          expect(req.headers.get('authorization')).toBeNull();
+          return res(ctx.json(defaultResponse));
+        }),
+      );
+
+      await client.getLocationById('42');
+    });
+  });
 });
