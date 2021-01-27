@@ -39,7 +39,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
     "@octokit/rest": "^18.0.12",
-    "git-url-parse": "^11.4.3",
+    "git-url-parse": "^11.4.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-hook-form": "^6.6.0",
