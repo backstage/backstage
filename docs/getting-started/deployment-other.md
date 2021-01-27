@@ -63,8 +63,8 @@ CMD ["node", "packages/backend", "--config", "app-config.yaml", "--config", "app
 ```
 
 Before building you should also include a `.dockerignore`. This will greatly
-improve the context bootup of Docker as we are no longer sending all of the
-`node_modules` into the context. It also helps us avoid some limitations and
+improve the context boot up time of Docker as we are no longer sending all of
+the `node_modules` into the context. It also helps us avoid some limitations and
 errors that may occur when trying to share the `node_modules` folder to inside
 the build.
 
