@@ -15,8 +15,8 @@
  */
 
 import * as yup from 'yup';
-import { EntityPolicy } from '../../types';
 import { Entity, EntityLink } from '../Entity';
+import { EntityPolicy } from './types';
 
 const DEFAULT_ENTITY_SCHEMA = yup
   .object({
