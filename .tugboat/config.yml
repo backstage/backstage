@@ -12,4 +12,4 @@ services:
         - yarn install
       start:
         # This should be production, but we need to run backend:bundle like the dockerfile does.
-        - cd packages/backend && node_modules/.bin/backstage-cli backend:dev --config ../../app-config.yaml --config ../../.tugboat/tugboat.app-config.production.yaml &
+        - cd packages/backend && node_modules/.bin/backstage-cli backend:dev --config ../../app-config.yaml --config ../../.tugboat/tugboat.app-config.production.yaml
