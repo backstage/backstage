@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { parseLocationAnnotation } from './helpers';
+import { parseLocationAnnotation, joinGitUrlPath } from './helpers';
 import {
   TemplateEntityV1alpha1,
   LOCATION_ANNOTATION,
@@ -73,7 +73,7 @@ describe('Helpers', () => {
         metadata: {
           annotations: {
             [LOCATION_ANNOTATION]:
-              ':https://github.com/benjdlambert/backstage-graphql-template/blob/master/template.yaml',
+              ':https://github.com/o/r/blob/master/template.yaml',
           },
           name: 'graphql-starter',
           title: 'GraphQL Service',
@@ -248,6 +248,78 @@ describe('Helpers', () => {
         protocol: 'github',
         location: 'https://lol.com/:something/shello',
       });
+    });
+  });
+
+  describe('joinGitUrlPath', () => {
+    it.each([
+      [
+        'https://github.com/o/r/blob/master/template.yaml',
+        'template',
+        'https://github.com/o/r/blob/master/template',
+      ],
+      [
+        'https://dev.azure.com/o/p/_git/template-repo?path=%2Ftemplate.yaml',
+        undefined,
+        'https://dev.azure.com/o/p/_git/template-repo?path=%2F',
+      ],
+      [
+        'https://dev.azure.com/o/p/_git/template-repo?path=%2Ftemplate.yaml',
+        'a',
+        'https://dev.azure.com/o/p/_git/template-repo?path=%2Fa',
+      ],
+      [
+        'https://dev.azure.com/o/p/_git/template-repo?path=%2Fa%2Ftemplate.yaml',
+        'b',
+        'https://dev.azure.com/o/p/_git/template-repo?path=%2Fa%2Fb',
+      ],
+      [
+        'https://github.com/o/r/blob/master/template.yaml',
+        undefined,
+        'https://github.com/o/r/blob/master',
+      ],
+      [
+        'https://github.com/o/r/blob/master/template.yaml',
+        'template',
+        'https://github.com/o/r/blob/master/template',
+      ],
+      [
+        'https://github.com/o/r/blob/master/templates/graphql-starter/template.yaml',
+        'template',
+        'https://github.com/o/r/blob/master/templates/graphql-starter/template',
+      ],
+      [
+        'https://gitlab.com/o/r/-/blob/master/template.yaml',
+        undefined,
+        'https://gitlab.com/o/r/-/blob/master',
+      ],
+      [
+        'https://gitlab.com/o/r/-/blob/master/template.yaml',
+        'template',
+        'https://gitlab.com/o/r/-/blob/master/template',
+      ],
+      [
+        'https://gitlab.com/o/r/-/blob/master/a/b/c/template.yaml',
+        '../../c',
+        'https://gitlab.com/o/r/-/blob/master/a/c',
+      ],
+      [
+        'https://bitbucket.org/p/r/src/master/a/b/template.yaml',
+        undefined,
+        'https://bitbucket.org/p/r/src/master/a/b',
+      ],
+      [
+        'https://bitbucket.org/p/r/src/master/a/b/template.yaml',
+        'c',
+        'https://bitbucket.org/p/r/src/master/a/b/c',
+      ],
+      [
+        'https://bitbucket.org/p/r/src/master/a/b/template.yaml',
+        '../c',
+        'https://bitbucket.org/p/r/src/master/a/c',
+      ],
+    ])('should join git url %s with path %s', (url, path, result) => {
+      expect(joinGitUrlPath(url, path)).toBe(result);
     });
   });
 });
