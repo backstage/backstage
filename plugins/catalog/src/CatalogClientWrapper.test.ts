@@ -57,24 +57,17 @@ const guestIdentityApi: IdentityApi = {
 };
 
 describe('CatalogClientWrapper', () => {
-  let client: CatalogClientWrapper;
-  let guestClient: CatalogClientWrapper;
-
   beforeEach(() => {
     MockedCatalogClient.mockClear();
-    client = new CatalogClientWrapper({
-      client: new MockedCatalogClient({ discoveryApi }),
-      identityApi,
-    });
-    guestClient = new CatalogClientWrapper({
-      client: new MockedCatalogClient({ discoveryApi }),
-      identityApi: guestIdentityApi,
-    });
   });
 
   describe('getEntities', () => {
     it('injects authorization token', async () => {
       expect.assertions(2);
+      const client = new CatalogClientWrapper({
+        client: new MockedCatalogClient({ discoveryApi }),
+        identityApi,
+      });
       await client.getEntities();
       const getEntities = MockedCatalogClient.mock.instances[0].getEntities;
       expect(getEntities).toHaveBeenCalledWith(undefined, {
@@ -87,9 +80,13 @@ describe('CatalogClientWrapper', () => {
   describe('getLocationById', () => {
     it('omits authorization token when guest', async () => {
       expect.assertions(2);
-      await guestClient.getLocationById('42');
+      const client = new CatalogClientWrapper({
+        client: new MockedCatalogClient({ discoveryApi }),
+        identityApi: guestIdentityApi,
+      });
+      await client.getLocationById('42');
       const getLocationById =
-        MockedCatalogClient.mock.instances[1].getLocationById;
+        MockedCatalogClient.mock.instances[0].getLocationById;
       expect(getLocationById).toHaveBeenCalledWith('42', {});
       expect(getLocationById).toHaveBeenCalledTimes(1);
     });
@@ -103,6 +100,10 @@ describe('CatalogClientWrapper', () => {
     };
     it('injects authorization token', async () => {
       expect.assertions(2);
+      const client = new CatalogClientWrapper({
+        client: new MockedCatalogClient({ discoveryApi }),
+        identityApi,
+      });
       await client.getEntityByName(name);
       const getEntityByName =
         MockedCatalogClient.mock.instances[0].getEntityByName;
@@ -117,6 +118,10 @@ describe('CatalogClientWrapper', () => {
     const location = { target: 'target' };
     it('injects authorization token', async () => {
       expect.assertions(2);
+      const client = new CatalogClientWrapper({
+        client: new MockedCatalogClient({ discoveryApi }),
+        identityApi,
+      });
       await client.addLocation(location);
       const addLocation = MockedCatalogClient.mock.instances[0].addLocation;
       expect(addLocation).toHaveBeenCalledWith(location, {
@@ -136,6 +141,10 @@ describe('CatalogClientWrapper', () => {
     };
     it('injects authorization token', async () => {
       expect.assertions(2);
+      const client = new CatalogClientWrapper({
+        client: new MockedCatalogClient({ discoveryApi }),
+        identityApi,
+      });
       await client.getLocationByEntity(entity);
       const getLocationByEntity =
         MockedCatalogClient.mock.instances[0].getLocationByEntity;
@@ -150,6 +159,10 @@ describe('CatalogClientWrapper', () => {
     it('injects authorization token', async () => {
       const uid = 'uid';
       expect.assertions(2);
+      const client = new CatalogClientWrapper({
+        client: new MockedCatalogClient({ discoveryApi }),
+        identityApi,
+      });
       await client.removeEntityByUid(uid);
       const removeEntityByUid =
         MockedCatalogClient.mock.instances[0].removeEntityByUid;
