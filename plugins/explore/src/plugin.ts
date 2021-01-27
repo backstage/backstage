@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import { createPlugin, createRouteRef } from '@backstage/core';
+import { createPlugin } from '@backstage/core';
+import { exploreRouteRef } from './routes';
 
-export const rootRouteRef = createRouteRef({ path: '', title: 'Explore' });
-export const plugin = createPlugin({
+export const explorePlugin = createPlugin({
   id: 'explore',
+  routes: {
+    explore: exploreRouteRef,
+  },
 });

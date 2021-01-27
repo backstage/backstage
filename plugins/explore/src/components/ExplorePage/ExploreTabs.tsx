@@ -13,4 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { plugin } from './plugin';
+import { Tabs } from '@backstage/core';
+import React from 'react';
+import { DomainExplorerContent } from '../DomainExplorerPage/DomainExplorerContent';
+
+export const ExploreTabs = () => {
+  return (
+    <Tabs
+      tabs={[
+        {
+          label: `Domains`,
+          content: <DomainExplorerContent />,
+        },
+        {
+          label: `Tools`,
+          content: <DomainExplorerContent />,
+        },
+      ]}
+    />
+  );
+};

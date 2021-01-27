@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
-export * from './extensions';
-export { explorePlugin } from './plugin';
-export * from './routes';
+import { createRoutableExtension } from '@backstage/core';
+import { explorePlugin } from './plugin';
+import { exploreRouteRef } from './routes';
+
+export const ExplorePage = explorePlugin.provide(
+  createRoutableExtension({
+    component: () =>
+      import('./components/ExplorePage').then(m => m.ExplorePage),
+    mountPoint: exploreRouteRef,
+  }),
+);

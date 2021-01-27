@@ -15,12 +15,9 @@
  */
 import { DomainEntity } from '@backstage/catalog-model';
 import {
-  configApiRef,
   Content,
   ContentHeader,
   EmptyState,
-  Header,
-  Page,
   Progress,
   SupportButton,
   useApi,
@@ -31,10 +28,7 @@ import React from 'react';
 import { useAsync } from 'react-use';
 import { DomainExplorer } from '../DomainExplorer/DomainExplorer';
 
-export const DomainExplorerPage = () => {
-  const configApi = useApi(configApiRef);
-  const organizationName =
-    configApi.getOptionalString('organization.name') ?? 'Backstage';
+export const DomainExplorerContent = () => {
   const catalogApi = useApi(catalogApiRef);
   const { value: entities, loading } = useAsync(async () => {
     const response = await catalogApi.getEntities({
@@ -45,34 +39,28 @@ export const DomainExplorerPage = () => {
   }, [catalogApi]);
 
   return (
-    <Page themeId="home">
-      <Header
-        title={`Explore the ${organizationName} ecosystem`}
-        subtitle="Discover the domains in your ecosystem"
-      />
-      <Content>
-        <ContentHeader title="Domains">
-          <SupportButton>Discover the domains in your ecosystem.</SupportButton>
-        </ContentHeader>
-        {loading && <Progress />}
-        {!loading && (!entities || entities.length === 0) && (
-          <EmptyState
-            missing="info"
-            title="No domains to display"
-            description={`You haven't added any domains yet.`}
-            action={
-              <Button
-                variant="contained"
-                color="primary"
-                href="https://backstage.io/docs/features/software-catalog/descriptor-format#kind-domain"
-              >
-                Read more
-              </Button>
-            }
-          />
-        )}
-        {!loading && entities && <DomainExplorer entities={entities} />}
-      </Content>
-    </Page>
+    <Content>
+      <ContentHeader title="Domains">
+        <SupportButton>Discover the domains in your ecosystem.</SupportButton>
+      </ContentHeader>
+      {loading && <Progress />}
+      {!loading && (!entities || entities.length === 0) && (
+        <EmptyState
+          missing="info"
+          title="No domains to display"
+          description={`You haven't added any domains yet.`}
+          action={
+            <Button
+              variant="contained"
+              color="primary"
+              href="https://backstage.io/docs/features/software-catalog/descriptor-format#kind-domain"
+            >
+              Read more
+            </Button>
+          }
+        />
+      )}
+      {!loading && entities && <DomainExplorer entities={entities} />}
+    </Content>
   );
 };

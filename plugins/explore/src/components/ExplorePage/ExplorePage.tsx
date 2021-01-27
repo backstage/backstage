@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { configApiRef, Header, Page, useApi } from '@backstage/core';
 import React from 'react';
-import { Route, Routes } from 'react-router';
-import { ExplorePluginPage } from './ExplorePluginPage';
-import { rootRouteRef } from '../plugin';
+import { ExploreTabs } from './ExploreTabs';
 
-export const Router = () => (
-  <Routes>
-    <Route path={`/${rootRouteRef.path}`} element={<ExplorePluginPage />} />
-  </Routes>
-);
+export const ExplorePage = () => {
+  const configApi = useApi(configApiRef);
+  const organizationName =
+    configApi.getOptionalString('organization.name') ?? 'Backstage';
+  return (
+    <Page themeId="home">
+      <Header
+        title={`Explore the ${organizationName} ecosystem`}
+        subtitle="Discover available solutions in your ecosystem"
+      />
+
+      <ExploreTabs />
+    </Page>
+  );
+};

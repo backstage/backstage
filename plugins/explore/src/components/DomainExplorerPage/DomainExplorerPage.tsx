@@ -13,17 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createPlugin, createRouteRef } from '@backstage/core';
-import { DomainExplorerPage } from './components/DomainExplorerPage';
+import { configApiRef, Header, Page, useApi } from '@backstage/core';
+import React from 'react';
+import { DomainExplorerContent } from './DomainExplorerContent';
 
-export const rootRouteRef = createRouteRef({
-  path: '/ecosystem',
-  title: 'ecosystem',
-});
+export const DomainExplorerPage = () => {
+  const configApi = useApi(configApiRef);
+  const organizationName =
+    configApi.getOptionalString('organization.name') ?? 'Backstage';
 
-export const plugin = createPlugin({
-  id: 'ecosystem',
-  register({ router }) {
-    router.addRoute(rootRouteRef, DomainExplorerPage);
-  },
-});
+  return (
+    <Page themeId="home">
+      <Header
+        title={`Explore the ${organizationName} ecosystem`}
+        subtitle="Discover the domains in your ecosystem"
+      />
+      <DomainExplorerContent />
+    </Page>
+  );
+};

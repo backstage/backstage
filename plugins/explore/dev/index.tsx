@@ -14,7 +14,46 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
 import { createDevApp } from '@backstage/dev-utils';
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog';
 import { plugin } from '../src/plugin';
 
-createDevApp().registerPlugin(plugin).render();
+createDevApp()
+  .registerPlugin(plugin)
+  .registerApi({
+    api: catalogApiRef,
+    deps: {},
+    factory: () =>
+      ({
+        async getEntities() {
+          const domainNames = [
+            'playback',
+            'artists',
+            'payments',
+            'analytics',
+            'songs',
+            'devops',
+          ];
+
+          return {
+            items: domainNames.map(
+              (n, i) =>
+                ({
+                  apiVersion: 'backstage.io/v1alpha1',
+                  kind: 'Domain',
+                  metadata: {
+                    name: n,
+                    description: `Everything about ${n}`,
+                    tags: i % 2 === 0 ? [n] : undefined,
+                  },
+                  spec: {
+                    owner: `${n}@example.com`,
+                  },
+                } as Entity),
+            ),
+          };
+        },
+      } as CatalogApi),
+  })
+  .render();
