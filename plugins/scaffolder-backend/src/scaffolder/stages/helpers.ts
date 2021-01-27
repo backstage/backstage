@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { posix as posixPath } from 'path';
 import {
   TemplateEntityV1alpha1,
   LOCATION_ANNOTATION,
@@ -53,3 +55,20 @@ export const parseLocationAnnotation = (
     location,
   };
 };
+
+export function joinGitUrlPath(repoUrl: string, path?: string): string {
+  const parsed = new URL(repoUrl);
+
+  if (parsed.hostname.endsWith('azure.com')) {
+    const templatePath = posixPath.normalize(
+      posixPath.join(
+        posixPath.dirname(parsed.searchParams.get('path') || '/'),
+        path || '.',
+      ),
+    );
+    parsed.searchParams.set('path', templatePath);
+    return parsed.toString();
+  }
+
+  return new URL(path || '.', repoUrl).toString().replace(/\/$/, '');
+}

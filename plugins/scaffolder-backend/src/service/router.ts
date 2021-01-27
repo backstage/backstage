@@ -27,6 +27,7 @@ import {
   TemplaterValues,
   PublisherBuilder,
   parseLocationAnnotation,
+  joinGitUrlPath,
   FilePreparer,
 } from '../scaffolder';
 import { CatalogEntityClient } from '../lib/catalog';
@@ -138,12 +139,10 @@ export async function createRouter(
 
               const preparer = preparers.get(templateEntityLocation);
 
-              const url = new URL(
-                template.spec.path || '.',
+              const url = joinGitUrlPath(
                 templateEntityLocation,
-              )
-                .toString()
-                .replace(/\/$/, '');
+                template.spec.path,
+              );
 
               await preparer.prepare({
                 url,
