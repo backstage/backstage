@@ -3,7 +3,7 @@ on: deployment_status
 jobs:
   set-pending:
     if: github.event.deployment_status.state != 'success' && github.event.deployment_status.state != 'failed'
-    name: Run tests against Tugboat
+    name: Set pending waiting for Tugboat
     runs-on: ubuntu-latest
     steps:
       # Set an initial commit status message to indicate that the tests are
@@ -20,14 +20,14 @@ jobs:
               sha: context.sha,
               state: 'pending',
               context: 'Backstage Tugboat E2E Tests',
-              description: 'Running tests',
+              description: 'Waiting for Tugboat to complete deployment',
               target_url: "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}"
             });
 
   run-tests:
     # Only run after a successful Tugboat deployment.
     if: github.event.deployment_status.state == 'success'
-    name: Run tests against Tugboat
+    name: Run tests against Tugboat deployment
     runs-on: ubuntu-latest
     steps:
       # Set an initial commit status message to indicate that the tests are
@@ -44,7 +44,7 @@ jobs:
               sha: context.sha,
               state: 'pending',
               context: 'Backstage Tugboat E2E Tests',
-              description: 'Running tests',
+              description: 'Running against tugboat preview',
               target_url: "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}"
             });
 
@@ -79,8 +79,4 @@ jobs:
             return result.data.environment_url;
       - name: echo tugboat preview url
         run: |
-          echo ${{steps.get-status-env.outputs.result}}
-          # The first time you hit a Tugboat URL it can take a while to load, so
-          # we visit it once here to prime it. Otherwise the very first test
-          # will often timeout.
           curl ${{steps.get-status-env.outputs.result}}
