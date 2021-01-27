@@ -17,6 +17,8 @@
 import fs from 'fs-extra';
 import { BitbucketPreparer } from './bitbucket';
 import { getVoidLogger, Git } from '@backstage/backend-common';
+import { resolve } from 'path';
+import os from 'os';
 
 jest.mock('fs-extra');
 
@@ -38,20 +40,24 @@ describe('BitbucketPreparer', () => {
     appPassword: 'fake-password',
   });
 
+  const workspacePath = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
+  const checkoutPath = resolve(workspacePath, 'checkout');
+  const templatePath = resolve(workspacePath, 'template');
+
   const prepareOptions = {
     url: 'https://bitbucket.org/backstage-project/backstage-repo',
     logger,
-    workspacePath: '/tmp',
+    workspacePath,
   };
 
   it('calls the clone command with the correct arguments for a repository', async () => {
     await preparer.prepare(prepareOptions);
     expect(mockGitClient.clone).toHaveBeenCalledWith({
       url: 'https://bitbucket.org/backstage-project/backstage-repo',
-      dir: '/tmp/checkout',
+      dir: checkoutPath,
     });
-    expect(fs.move).toHaveBeenCalledWith('/tmp/checkout', '/tmp/template');
-    expect(fs.rmdir).toHaveBeenCalledWith('/tmp/template/.git');
+    expect(fs.move).toHaveBeenCalledWith(checkoutPath, templatePath);
+    expect(fs.rmdir).toHaveBeenCalledWith(resolve(templatePath, '.git'));
   });
 
   it('calls the clone command with the correct arguments if an app password is provided for a repository', async () => {
@@ -73,7 +79,7 @@ describe('BitbucketPreparer', () => {
     await preparer.prepare(prepareOptions);
     expect(mockGitClient.clone).toHaveBeenCalledWith({
       url: 'https://bitbucket.org/backstage-project/backstage-repo',
-      dir: '/tmp/checkout',
+      dir: checkoutPath,
     });
   });
 
@@ -81,11 +87,11 @@ describe('BitbucketPreparer', () => {
     await preparer.prepare({
       url: 'https://bitbucket.org/foo/bar/src/master/1/2/3',
       logger,
-      workspacePath: '/tmp',
+      workspacePath,
     });
     expect(fs.move).toHaveBeenCalledWith(
-      '/tmp/checkout/1/2/3',
-      '/tmp/template',
+      resolve(checkoutPath, '1', '2', '3'),
+      templatePath,
     );
   });
 

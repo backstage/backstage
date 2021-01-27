@@ -15,6 +15,8 @@
  */
 
 import fs from 'fs-extra';
+import os from 'os';
+import { resolve } from 'path';
 import { AzurePreparer } from './azure';
 import { getVoidLogger, Git } from '@backstage/backend-common';
 
@@ -34,23 +36,25 @@ describe('AzurePreparer', () => {
     token: 'fake-azure-token',
   });
 
+  const workspacePath = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
+  const checkoutPath = resolve(workspacePath, 'checkout');
+  const templatePath = resolve(workspacePath, 'template');
   const prepareOptions = {
     url:
       'https://dev.azure.com/backstage-org/backstage-project/_git/template-repo',
-    workspacePath: '/tmp',
+    workspacePath,
     logger,
   };
 
   it('calls the clone command with token from integrations config', async () => {
     await preparer.prepare(prepareOptions);
-
     expect(Git.fromAuth).toHaveBeenCalledWith({
       logger,
       password: 'fake-azure-token',
       username: 'notempty',
     });
-    expect(fs.move).toHaveBeenCalledWith('/tmp/checkout', '/tmp/template');
-    expect(fs.rmdir).toHaveBeenCalledWith('/tmp/template/.git');
+    expect(fs.move).toHaveBeenCalledWith(checkoutPath, templatePath);
+    expect(fs.rmdir).toHaveBeenCalledWith(resolve(templatePath, '.git'));
   });
 
   it('calls the clone command with the correct arguments for a repository', async () => {
@@ -59,7 +63,7 @@ describe('AzurePreparer', () => {
     expect(mockGitClient.clone).toHaveBeenCalledWith({
       url:
         'https://dev.azure.com/backstage-org/backstage-project/_git/template-repo',
-      dir: '/tmp/checkout',
+      dir: checkoutPath,
     });
   });
 
@@ -67,31 +71,31 @@ describe('AzurePreparer', () => {
     await preparer.prepare({
       url:
         'https://dev.azure.com/backstage-org/backstage-project/_git/template-repo',
-      workspacePath: '/tmp',
+      workspacePath,
       logger,
     });
 
     expect(mockGitClient.clone).toHaveBeenCalledWith({
       url:
         'https://dev.azure.com/backstage-org/backstage-project/_git/template-repo',
-      dir: '/tmp/checkout',
+      dir: checkoutPath,
     });
-    expect(fs.move).toHaveBeenCalledWith('/tmp/checkout', '/tmp/template');
+    expect(fs.move).toHaveBeenCalledWith(checkoutPath, templatePath);
   });
 
   it('moves the template from path if it is specified', async () => {
-    const path = './template/test/1/2/3';
+    const path = './subdir';
     await preparer.prepare({
       url: `https://dev.azure.com/backstage-org/backstage-project/_git/template-repo?path=${encodeURIComponent(
         path,
       )}`,
       logger,
-      workspacePath: '/tmp',
+      workspacePath,
     });
 
     expect(fs.move).toHaveBeenCalledWith(
-      '/tmp/checkout/template/test/1/2/3',
-      '/tmp/template',
+      resolve(checkoutPath, 'subdir'),
+      templatePath,
     );
   });
 });
