@@ -1,6 +1,6 @@
 services:
   backstage:
-    image: node:lts-alpine
+    image: tugboatqa/node:lts
     expose: 7000
     default: true
     commands:
@@ -14,4 +14,5 @@ services:
         - yarn tsc
         - yarn build
       start:
-        - node packages/backend/dist/main --config app-config.yaml --config .tugboat/tugboat.app-config.production.yaml &
+        # This should be production, but we need to run backend:bundle like the dockerfile does.
+        - yarn start-backend --config app-config.yaml --config .tugboat/tugboat.app-config.production.yaml &
