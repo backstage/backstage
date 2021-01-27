@@ -8,11 +8,9 @@ services:
         - yarn install
       build:
         - yarn tsc
-        - yarn build
+        - yarn build --config app-config.yaml --config .tugboat/tugboat.app-config.production.yaml
       update:
         - yarn install
-        - yarn tsc
-        - yarn build
       start:
         # This should be production, but we need to run backend:bundle like the dockerfile does.
         - yarn start-backend --config app-config.yaml --config .tugboat/tugboat.app-config.production.yaml &
