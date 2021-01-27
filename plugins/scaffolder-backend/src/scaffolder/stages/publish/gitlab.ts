@@ -19,7 +19,7 @@ import { Gitlab } from '@gitbeaker/node';
 import { Gitlab as GitlabClient } from '@gitbeaker/core';
 import { initRepoAndPush } from './helpers';
 import parseGitUrl from 'git-url-parse';
-
+import path from 'path';
 import { GitLabIntegrationConfig } from '@backstage/integration';
 
 export class GitlabPublisher implements PublisherBase {
@@ -38,7 +38,7 @@ export class GitlabPublisher implements PublisherBase {
 
   async publish({
     values,
-    directory,
+    workspacePath,
     logger,
   }: PublisherOptions): Promise<PublisherResult> {
     const { owner, name } = parseGitUrl(values.storePath);
@@ -49,7 +49,7 @@ export class GitlabPublisher implements PublisherBase {
     });
 
     await initRepoAndPush({
-      dir: directory,
+      dir: path.join(workspacePath, 'result'),
       remoteUrl,
       auth: {
         username: 'oauth2',

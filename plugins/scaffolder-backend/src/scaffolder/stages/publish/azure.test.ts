@@ -53,7 +53,7 @@ describe('Azure Publisher', () => {
           storePath: 'https://dev.azure.com/organisation/project/_git/repo',
           owner: 'bob',
         },
-        directory: '/tmp/test',
+        workspacePath: '/tmp/test',
         logger,
       });
 
@@ -74,7 +74,7 @@ describe('Azure Publisher', () => {
         'project',
       );
       expect(helpers.initRepoAndPush).toHaveBeenCalledWith({
-        dir: '/tmp/test',
+        dir: '/tmp/test/result',
         remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
         auth: { username: 'notempty', password: 'fake-azure-token' },
         logger,
