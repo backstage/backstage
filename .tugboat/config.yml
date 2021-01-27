@@ -5,11 +5,11 @@ services:
     default: true
     commands:
       init:
-        - yarn install
+        - mkdir -p /etc/service/node
+        - echo "#!/bin/sh" > /etc/service/node/run
+        - echo "yarn --cwd ${TUGBOAT_ROOT} start-backend --config ${TUGBOAT_ROOT}/app-config.yaml --config ${TUGBOAT_ROOT}/.tugboat/tugboat.app-config.production.yaml" >> /etc/service/node/run
+        - chmod +x /etc/service/node/run
       build:
         - yarn workspace example-app build
       update:
         - yarn install
-      start:
-        # This should be production, but we need to run backend:bundle like the dockerfile does.
-        - cd packages/backend && node_modules/.bin/backstage-cli backend:dev --config ../../app-config.yaml --config ../../.tugboat/tugboat.app-config.production.yaml
