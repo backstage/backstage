@@ -17,12 +17,12 @@
 import { Config } from '@backstage/config';
 import Docker from 'dockerode';
 import express from 'express';
+import { resolve as resolvePath } from 'path';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import {
   JobProcessor,
   PreparerBuilder,
-  StageContext,
   TemplaterBuilder,
   TemplaterValues,
   PublisherBuilder,
@@ -32,7 +32,6 @@ import {
 import { CatalogEntityClient } from '../lib/catalog';
 import { validate, ValidatorResult } from 'jsonschema';
 import parseGitUrl from 'git-url-parse';
-import { PreparerBase } from '../scaffolder/stages/prepare';
 
 export interface RouterOptions {
   preparers: PreparerBuilder;
@@ -122,30 +121,22 @@ export async function createRouter(
               } = parseLocationAnnotation(ctx.entity);
 
               if (protocol === 'file') {
-                const preparer: PreparerBase =
-                  protocol === 'file'
-                    ? new FilePreparer()
-                    : preparers.get(templateEntityLocation);
+                const preparer = new FilePreparer();
 
-                const url = new URL(
-                  template.spec.path || '.',
+                const path = resolvePath(
                   templateEntityLocation,
-                )
-                  .toString()
-                  .replace(/\/$/, '');
+                  template.spec.path || '.',
+                );
 
                 await preparer.prepare({
-                  url,
+                  url: `file://${path}`,
                   logger: ctx.logger,
                   workspacePath: ctx.workspacePath,
                 });
                 return;
               }
 
-              const preparer: PreparerBase =
-                protocol === 'file'
-                  ? new FilePreparer()
-                  : preparers.get(templateEntityLocation);
+              const preparer = preparers.get(templateEntityLocation);
 
               const url = new URL(
                 template.spec.path || '.',
