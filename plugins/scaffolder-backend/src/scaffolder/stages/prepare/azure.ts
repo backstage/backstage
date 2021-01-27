@@ -33,7 +33,7 @@ export class AzurePreparer implements PreparerBase {
     const targetPath = path.join(workspacePath, 'template');
     const fullPathToTemplate = path.resolve(
       checkoutPath,
-      parsedGitUrl.filepath,
+      parsedGitUrl.filepath ?? '',
     );
 
     // Username can be anything but the empty string according to:
