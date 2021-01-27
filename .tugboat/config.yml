@@ -14,4 +14,4 @@ services:
         - yarn tsc
         - yarn build
       start:
-        - node packages/backend --config app-config.yaml --config .tugboat/tugboat.app-config.production.yaml &
+        - node packages/backend/dist/main --config app-config.yaml --config .tugboat/tugboat.app-config.production.yaml &
