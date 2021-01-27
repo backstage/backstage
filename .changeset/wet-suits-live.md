@@ -14,6 +14,7 @@
 '@backstage/plugin-search': patch
 '@backstage/plugin-sentry': patch
 '@backstage/plugin-techdocs': patch
+'@backstage/dev-utils': patch
 ---
 
 Switch dependency from `@backstage/plugin-catalog` to `@backstage/plugin-catalog-react`.
