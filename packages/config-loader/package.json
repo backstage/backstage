@@ -32,7 +32,7 @@
   "dependencies": {
     "@backstage/cli-common": "^0.1.1",
     "@backstage/config": "^0.1.1",
-    "ajv": "^6.12.5",
+    "ajv": "^7.0.3",
     "fs-extra": "^9.0.0",
     "json-schema": "^0.2.5",
     "json-schema-merge-allof": "^0.7.0",
