@@ -7,8 +7,7 @@ services:
       init:
         - yarn install
       build:
-        - yarn tsc
-        - yarn build
+        - yarn workspace example-app build
       update:
         - yarn install
       start:
