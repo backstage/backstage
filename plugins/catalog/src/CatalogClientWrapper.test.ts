@@ -89,7 +89,7 @@ describe('CatalogClientWrapper', () => {
       expect.assertions(2);
       await guestClient.getLocationById('42');
       const getLocationById =
-        MockedCatalogClient.mock.instances[0].getLocationById;
+        MockedCatalogClient.mock.instances[1].getLocationById;
       expect(getLocationById).toHaveBeenCalledWith('42', {});
       expect(getLocationById).toHaveBeenCalledTimes(1);
     });
