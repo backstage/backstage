@@ -6,6 +6,8 @@ metadata:
   links:
     - url: http://www.acme.com/
       name: Website
+    - url: https://meta.wikimedia.org/wiki/
+      name: Intranet
 spec:
   type: organization
   profile:
