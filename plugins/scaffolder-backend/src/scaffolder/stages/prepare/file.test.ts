@@ -17,28 +17,37 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import fs from 'fs-extra';
 import { FilePreparer } from './file';
+import os from 'os';
+import { resolve } from 'path';
 
 jest.mock('fs-extra');
 
 describe('File preparer', () => {
-  const logger = getVoidLogger();
-  const preparer = new FilePreparer();
   it('prepares templates from a file path', async () => {
+    const logger = getVoidLogger();
+    const preparer = new FilePreparer();
+    const workspacePath = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
+    const checkoutPath = resolve(workspacePath, 'checkout');
+
     await preparer.prepare({
       url: 'file:///path/to/template',
       logger,
-      workspacePath: '/tmp',
+      workspacePath,
     });
-    expect(fs.copy).toHaveBeenCalledWith('/path/to/template', '/tmp/checkout', {
-      recursive: true,
-    });
-    expect(fs.ensureDir).toHaveBeenCalledWith('/tmp/checkout');
+    expect(fs.copy).toHaveBeenCalledWith(
+      resolve('/path', 'to', 'template'),
+      checkoutPath,
+      {
+        recursive: true,
+      },
+    );
+    expect(fs.ensureDir).toHaveBeenCalledWith(checkoutPath);
 
     await expect(
       preparer.prepare({
         url: 'file://not/full/path',
         logger,
-        workspacePath: '/tmp',
+        workspacePath,
       }),
     ).rejects.toThrow(
       "Wrong location protocol, should be 'file', file://not/full/path",
