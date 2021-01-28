@@ -43,6 +43,7 @@ export const DomainExplorerContent = () => {
       <ContentHeader title="Domains">
         <SupportButton>Discover the domains in your ecosystem.</SupportButton>
       </ContentHeader>
+
       {loading && <Progress />}
       {!loading && (!entities || entities.length === 0) && (
         <EmptyState

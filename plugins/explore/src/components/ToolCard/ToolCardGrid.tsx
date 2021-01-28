@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { ExploreTool } from '@backstage/plugin-explore-react';
 import { BackstageTheme } from '@backstage/theme';
 import { makeStyles } from '@material-ui/core';
 import React from 'react';
 import { ToolCard } from './ToolCard';
-import { CardData } from './types';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   container: {
@@ -30,7 +30,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
 }));
 
 type ToolCardGridProps = {
-  tools: CardData[];
+  tools: ExploreTool[];
 };
 
 export const ToolCardGrid = ({ tools }: ToolCardGridProps) => {
@@ -38,7 +38,7 @@ export const ToolCardGrid = ({ tools }: ToolCardGridProps) => {
 
   return (
     <div className={classes.container}>
-      {tools.map((card: CardData, ix: any) => (
+      {tools.map((card: ExploreTool, ix: any) => (
         <ToolCard card={card} key={ix} />
       ))}
     </div>

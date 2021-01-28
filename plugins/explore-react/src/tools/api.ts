@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-export type CardData = {
+import { createApiRef } from '@backstage/core';
+
+export const exploreToolsConfigRef = createApiRef<ExploreToolsConfig>({
+  id: 'plugin.explore.toolsconfig',
+  description: 'Used to configure tools displayed in the explore plugin',
+});
+
+export type ExploreTool = {
   title: string;
   description: string;
   url: string;
@@ -23,3 +30,7 @@ export type CardData = {
   lifecycle?: string;
   newsTag?: string;
 };
+
+export interface ExploreToolsConfig {
+  getTools: () => Promise<ExploreTool[]>;
+}

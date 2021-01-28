@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ExploreTool } from '@backstage/plugin-explore-react';
 import { BackstageTheme } from '@backstage/theme';
 import {
   Button,
@@ -27,7 +28,6 @@ import {
 } from '@material-ui/core';
 import classNames from 'classnames';
 import React from 'react';
-import { CardData } from './types';
 
 // TODO: Align styling between Domain and ToolCard
 
@@ -69,7 +69,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
 }));
 
 type Props = {
-  card: CardData;
+  card: ExploreTool;
   objectFit?: 'cover' | 'contain';
 };
 
