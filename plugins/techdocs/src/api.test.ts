@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useApi, configApiRef, UrlPatternDiscovery } from '@backstage/core';
+import { Config } from '@backstage/config';
+import { UrlPatternDiscovery } from '@backstage/core';
 import { TechDocsStorageApi } from './api';
 
 const mockEntity = {
@@ -24,21 +25,29 @@ const mockEntity = {
 
 describe('TechDocsStorageApi', () => {
   const mockBaseUrl = 'http://backstage:9191/api/techdocs';
-  const configApi = useApi(configApiRef);
+  const configApi = {
+    getOptionalString: () => 'http://backstage:9191/api/techdocs',
+  } as Partial<Config>;
   const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);
 
-  it('should return correct base url based on defined storage', () => {
+  it('should return correct base url based on defined storage', async () => {
+    // @ts-ignore Partial<Config> not assignable to Config.
     const storageApi = new TechDocsStorageApi({ configApi, discoveryApi });
 
-    expect(storageApi.getBaseUrl('test.js', mockEntity, '')).toEqual(
+    await expect(
+      storageApi.getBaseUrl('test.js', mockEntity, ''),
+    ).resolves.toEqual(
       `${mockBaseUrl}/docs/${mockEntity.namespace}/${mockEntity.kind}/${mockEntity.name}/test.js`,
     );
   });
 
-  it('should return base url with correct entity structure', () => {
+  it('should return base url with correct entity structure', async () => {
+    // @ts-ignore Partial<Config> not assignable to Config.
     const storageApi = new TechDocsStorageApi({ configApi, discoveryApi });
 
-    expect(storageApi.getBaseUrl('test/', mockEntity, '')).toEqual(
+    await expect(
+      storageApi.getBaseUrl('test/', mockEntity, ''),
+    ).resolves.toEqual(
       `${mockBaseUrl}/docs/${mockEntity.namespace}/${mockEntity.kind}/${mockEntity.name}/test/`,
     );
   });
