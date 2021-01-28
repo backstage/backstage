@@ -104,8 +104,9 @@ export class CommonValidatorFunctions {
     }
 
     try {
-      const url = new URL(value);
-      return !!url;
+      // eslint-disable-next-line no-new
+      new URL(value);
+      return true;
     } catch {
       return false;
     }
