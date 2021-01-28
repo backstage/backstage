@@ -17,8 +17,7 @@ import React from 'react';
 import { AlertInsightsSection } from './AlertInsightsSection';
 import { render } from '@testing-library/react';
 import { Alert } from '../../types';
-import { AlertState } from '../../hooks';
-import { MockScrollProvider, MockAlertsProvider } from '../../utils/tests';
+import { MockScrollProvider } from '../../utils/tests';
 
 const mockAlert: Alert = {
   subtitle:
@@ -27,14 +26,20 @@ const mockAlert: Alert = {
   url: '/cost-insights/test',
 };
 
+function renderInContext(children: JSX.Element) {
+  return render(<MockScrollProvider>{children}</MockScrollProvider>);
+}
+
 describe('<AlertInsightsSection/>', () => {
   it('Renders alert without exploding', () => {
-    const { getByText, queryByText } = render(
-      <MockAlertsProvider>
-        <MockScrollProvider>
-          <AlertInsightsSection alert={mockAlert} number={1} />
-        </MockScrollProvider>
-      </MockAlertsProvider>,
+    const { getByText, queryByText } = renderInContext(
+      <AlertInsightsSection
+        alert={mockAlert}
+        number={1}
+        onSnooze={jest.fn()}
+        onDismiss={jest.fn()}
+        onAccept={jest.fn()}
+      />,
     );
     expect(getByText(mockAlert.title)).toBeInTheDocument();
     expect(getByText(mockAlert.subtitle)).toBeInTheDocument();
@@ -49,12 +54,14 @@ describe('<AlertInsightsSection/>', () => {
       ...mockAlert,
       url: undefined,
     };
-    const { queryByText } = render(
-      <MockAlertsProvider>
-        <MockScrollProvider>
-          <AlertInsightsSection alert={alert} number={1} />
-        </MockScrollProvider>
-      </MockAlertsProvider>,
+    const { queryByText } = renderInContext(
+      <AlertInsightsSection
+        alert={alert}
+        number={1}
+        onSnooze={jest.fn()}
+        onDismiss={jest.fn()}
+        onAccept={jest.fn()}
+      />,
     );
     expect(queryByText('View Instructions')).not.toBeInTheDocument();
   });
@@ -65,19 +72,14 @@ describe('<AlertInsightsSection/>', () => {
       onSnoozed: jest.fn(),
     };
 
-    const context: AlertState = {
-      alerts: [],
-      snoozed: alert,
-      dismissed: null,
-      accepted: null,
-    };
-
-    const { queryByText, getByText } = render(
-      <MockAlertsProvider alerts={context}>
-        <MockScrollProvider>
-          <AlertInsightsSection alert={alert} number={1} />
-        </MockScrollProvider>
-      </MockAlertsProvider>,
+    const { queryByText, getByText } = renderInContext(
+      <AlertInsightsSection
+        alert={alert}
+        number={1}
+        onSnooze={jest.fn()}
+        onDismiss={jest.fn()}
+        onAccept={jest.fn()}
+      />,
     );
 
     expect(getByText('Snooze')).toBeInTheDocument();
@@ -90,19 +92,15 @@ describe('<AlertInsightsSection/>', () => {
       ...mockAlert,
       onDismissed: jest.fn(),
     };
-    const context: AlertState = {
-      alerts: [],
-      snoozed: null,
-      dismissed: alert,
-      accepted: null,
-    };
 
-    const { queryByText, getByText } = render(
-      <MockAlertsProvider alerts={context}>
-        <MockScrollProvider>
-          <AlertInsightsSection alert={alert} number={1} />
-        </MockScrollProvider>
-      </MockAlertsProvider>,
+    const { queryByText, getByText } = renderInContext(
+      <AlertInsightsSection
+        alert={alert}
+        number={1}
+        onSnooze={jest.fn()}
+        onDismiss={jest.fn()}
+        onAccept={jest.fn()}
+      />,
     );
 
     expect(getByText('Dismiss')).toBeInTheDocument();
@@ -116,19 +114,14 @@ describe('<AlertInsightsSection/>', () => {
       onAccepted: jest.fn(),
     };
 
-    const context: AlertState = {
-      alerts: [],
-      snoozed: null,
-      dismissed: null,
-      accepted: alert,
-    };
-
-    const { queryByText, getByText } = render(
-      <MockAlertsProvider alerts={context}>
-        <MockScrollProvider>
-          <AlertInsightsSection alert={alert} number={1} />
-        </MockScrollProvider>
-      </MockAlertsProvider>,
+    const { queryByText, getByText } = renderInContext(
+      <AlertInsightsSection
+        alert={alert}
+        number={1}
+        onSnooze={jest.fn()}
+        onDismiss={jest.fn()}
+        onAccept={jest.fn()}
+      />,
     );
 
     expect(getByText('Accept')).toBeInTheDocument();

@@ -17,7 +17,7 @@
 import React from 'react';
 import { Avatar, Box, Button, Grid, Typography } from '@material-ui/core';
 import { useAlertInsightsSectionStyles as useStyles } from '../../utils/styles';
-import { useScroll } from '../../hooks';
+import { ScrollAnchor } from '../../utils/scroll';
 import { Alert } from '../../types';
 
 type AlertInsightsSectionHeaderProps = {
@@ -29,7 +29,6 @@ export const AlertInsightsSectionHeader = ({
   alert,
   number,
 }: AlertInsightsSectionHeaderProps) => {
-  const [, , ScrollAnchor] = useScroll();
   const classes = useStyles();
 
   const isViewInstructionsButtonDisplayed = !!alert.url;

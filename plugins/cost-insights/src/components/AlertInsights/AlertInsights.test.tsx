@@ -17,18 +17,12 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import { AlertInsights } from './AlertInsights';
-import {
-  MockScrollProvider,
-  MockAlertsProvider,
-  MockLoadingProvider,
-} from '../../utils/tests';
+import { MockScrollProvider, MockLoadingProvider } from '../../utils/tests';
 
 function renderInContext(children: JSX.Element) {
   return render(
     <MockLoadingProvider>
-      <MockScrollProvider>
-        <MockAlertsProvider>{children}</MockAlertsProvider>
-      </MockScrollProvider>
+      <MockScrollProvider>{children}</MockScrollProvider>
     </MockLoadingProvider>,
   );
 }
@@ -47,6 +41,7 @@ describe('<AlertInsights />', () => {
         snoozed={[]}
         accepted={[]}
         dismissed={[]}
+        onChange={jest.fn()}
       />,
     );
     expect(
@@ -70,6 +65,7 @@ describe('<AlertInsights />', () => {
         ]}
         accepted={[]}
         dismissed={[]}
+        onChange={jest.fn()}
       />,
     );
 

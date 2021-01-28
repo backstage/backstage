@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 import React from 'react';
+import { capitalize } from '@material-ui/core';
 import { AlertDialog } from './AlertDialog';
 import { render } from '@testing-library/react';
-import { Alert, AlertFormProps } from '../../types';
+import { Alert, AlertFormProps, AlertStatus } from '../../types';
 
 type MockFormDataProps = AlertFormProps<Alert>;
 
@@ -40,7 +41,7 @@ const dimissableAlert: Alert = {
   onDismissed: jest.fn(),
 };
 
-const acceptAlert: Alert = {
+const acceptableAlert: Alert = {
   title: 'title',
   subtitle: 'subtitle',
   onAccepted: jest.fn(),
@@ -87,98 +88,87 @@ const nullSnoozeAlert: Alert = {
   onSnoozed: jest.fn(),
   SnoozeForm: null,
 };
+
 describe('<AlertDialog />', () => {
   describe.each`
-    accepted       | dismissed          | snoozed           | action                      | text
-    ${acceptAlert} | ${null}            | ${null}           | ${['Accept', 'accepted']}   | ${'My team can commit to making this change soon, or has already.'}
-    ${null}        | ${dimissableAlert} | ${null}           | ${['Dismiss', 'dismissed']} | ${'Reason for dismissing?'}
-    ${null}        | ${null}            | ${snoozableAlert} | ${['Snooze', 'snoozed']}    | ${'For how long?'}
-  `(
-    'Default forms',
-    ({ accepted, dismissed, snoozed, action: [action, actioned], text }) => {
-      it(`Displays a default ${action} form`, () => {
-        const { getByText } = render(
-          <AlertDialog
-            open
-            group="Ramones"
-            snoozed={snoozed}
-            accepted={accepted}
-            dismissed={dismissed}
-            onClose={jest.fn()}
-            onSubmit={jest.fn()}
-          />,
-        );
-        expect(getByText(text)).toBeInTheDocument();
-        expect(getByText(`${action} this action item?`)).toBeInTheDocument();
-        expect(
-          getByText(`This action item will be ${actioned} for all of Ramones.`),
-        ).toBeInTheDocument();
-      });
-    },
-  );
+    alert              | status                   | action                      | text
+    ${acceptableAlert} | ${AlertStatus.Accepted}  | ${['accept', 'accepted']}   | ${'My team can commit to making this change soon, or has already.'}
+    ${dimissableAlert} | ${AlertStatus.Dismissed} | ${['dismiss', 'dismissed']} | ${'Reason for dismissing?'}
+    ${snoozableAlert}  | ${AlertStatus.Snoozed}   | ${['snooze', 'snoozed']}    | ${'For how long?'}
+  `('Default forms', ({ alert, status, action: [action, actioned], text }) => {
+    it(`Displays a default ${action} form`, () => {
+      const { getByText } = render(
+        <AlertDialog
+          open
+          group="Ramones"
+          alert={alert}
+          status={status}
+          onClose={jest.fn()}
+          onSubmit={jest.fn()}
+        />,
+      );
+      expect(getByText(text)).toBeInTheDocument();
+      expect(
+        getByText(`${capitalize(action)} this action item?`),
+      ).toBeInTheDocument();
+      expect(
+        getByText(`This action item will be ${actioned} for all of Ramones.`),
+      ).toBeInTheDocument();
+    });
+  });
 
   describe.each`
-    accepted             | dismissed             | snoozed              | action
-    ${customAcceptAlert} | ${null}               | ${null}              | ${['Accept', 'accepted']}
-    ${null}              | ${customDismissAlert} | ${null}              | ${['Dismiss', 'dismissed']}
-    ${null}              | ${null}               | ${customSnoozeAlert} | ${['Snooze', 'snoozed']}
-  `(
-    'Custom forms',
-    ({ accepted, dismissed, snoozed, action: [Action, actioned] }) => {
-      it(`Displays a custom ${Action} form`, () => {
-        const { getByText } = render(
-          <AlertDialog
-            open
-            group="Ramones"
-            snoozed={snoozed}
-            accepted={accepted}
-            dismissed={dismissed}
-            onClose={jest.fn()}
-            onSubmit={jest.fn()}
-          />,
-        );
-        expect(getByText(`You. ${Action}. Me.`)).toBeInTheDocument();
-        expect(getByText(`${Action} this action item?`)).toBeInTheDocument();
-        expect(
-          getByText(`This action item will be ${actioned} for all of Ramones.`),
-        ).toBeInTheDocument();
-      });
-    },
-  );
+    alert                 | status                   | action                      | text
+    ${customAcceptAlert}  | ${AlertStatus.Accepted}  | ${['accept', 'accepted']}   | ${'My team can commit to making this change soon, or has already.'}
+    ${customDismissAlert} | ${AlertStatus.Dismissed} | ${['dismiss', 'dismissed']} | ${'Reason for dismissing?'}
+    ${customSnoozeAlert}  | ${AlertStatus.Snoozed}   | ${['snooze', 'snoozed']}    | ${'For how long?'}
+  `('Custom forms', ({ alert, status, action: [action, actioned] }) => {
+    it(`Displays a custom ${capitalize(action)} form`, () => {
+      const { getByText } = render(
+        <AlertDialog
+          open
+          group="Ramones"
+          alert={alert}
+          status={status}
+          onClose={jest.fn()}
+          onSubmit={jest.fn()}
+        />,
+      );
+      expect(getByText(`You. ${capitalize(action)}. Me.`)).toBeInTheDocument();
+      expect(
+        getByText(`${capitalize(action)} this action item?`),
+      ).toBeInTheDocument();
+      expect(
+        getByText(`This action item will be ${actioned} for all of Ramones.`),
+      ).toBeInTheDocument();
+    });
+  });
 
   describe.each`
-    accepted           | dismissed           | snoozed            | action                                 | text
-    ${nullAcceptAlert} | ${null}             | ${null}            | ${['Accept', 'accept', 'accepted']}    | ${'My team can commit to making this change soon, or has already.'}
-    ${null}            | ${nullDismissAlert} | ${null}            | ${['Dismiss', 'dismiss', 'dismissed']} | ${'Reason for dismissing?'}
-    ${null}            | ${null}             | ${nullSnoozeAlert} | ${['Snooze', 'snooze', 'snoozed']}     | ${'For how long?'}
-  `(
-    'Null forms',
-    ({
-      accepted,
-      dismissed,
-      snoozed,
-      action: [Action, action, actioned],
-      text,
-    }) => {
-      it(`Does NOT display a ${Action} form`, () => {
-        const { getByText, getByRole, queryByText } = render(
-          <AlertDialog
-            open
-            group="Ramones"
-            snoozed={snoozed}
-            accepted={accepted}
-            dismissed={dismissed}
-            onClose={jest.fn()}
-            onSubmit={jest.fn()}
-          />,
-        );
-        expect(queryByText(text)).not.toBeInTheDocument();
-        expect(getByRole('button', { name: action })).toBeInTheDocument();
-        expect(getByText(`${Action} this action item?`)).toBeInTheDocument();
-        expect(
-          getByText(`This action item will be ${actioned} for all of Ramones.`),
-        ).toBeInTheDocument();
-      });
-    },
-  );
+    alert               | status                   | action                      | text
+    ${nullAcceptAlert}  | ${AlertStatus.Accepted}  | ${['accept', 'accepted']}   | ${'My team can commit to making this change soon, or has already.'}
+    ${nullDismissAlert} | ${AlertStatus.Dismissed} | ${['dismiss', 'dismissed']} | ${'Reason for dismissing?'}
+    ${nullSnoozeAlert}  | ${AlertStatus.Snoozed}   | ${['snooze', 'snoozed']}    | ${'For how long?'}
+  `('Null forms', ({ alert, status, action: [action, actioned], text }) => {
+    it(`Does NOT display a ${capitalize(action)} form`, () => {
+      const { getByText, getByRole, queryByText } = render(
+        <AlertDialog
+          open
+          group="Ramones"
+          alert={alert}
+          status={status}
+          onClose={jest.fn()}
+          onSubmit={jest.fn()}
+        />,
+      );
+      expect(queryByText(text)).not.toBeInTheDocument();
+      expect(getByRole('button', { name: action })).toBeInTheDocument();
+      expect(
+        getByText(`${capitalize(action)} this action item?`),
+      ).toBeInTheDocument();
+      expect(
+        getByText(`This action item will be ${actioned} for all of Ramones.`),
+      ).toBeInTheDocument();
+    });
+  });
 });

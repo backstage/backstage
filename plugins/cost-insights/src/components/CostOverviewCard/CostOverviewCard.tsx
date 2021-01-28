@@ -30,12 +30,13 @@ import { CostOverviewBreakdownChart } from './CostOverviewBreakdownChart';
 import { CostOverviewHeader } from './CostOverviewHeader';
 import { MetricSelect } from '../MetricSelect';
 import { PeriodSelect } from '../PeriodSelect';
-import { useConfig, useFilters, useScroll } from '../../hooks';
+import { useConfig, useFilters } from '../../hooks';
 import { mapFiltersToProps } from './selector';
 import { DefaultNavigation } from '../../utils/navigation';
 import { findAlways } from '../../utils/assert';
 import { Cost, CostInsightsTheme, Maybe, MetricData } from '../../types';
 import { useOverviewTabsStyles } from '../../utils/styles';
+import { ScrollAnchor } from '../../utils/scroll';
 
 export type CostOverviewCardProps = {
   dailyCostData: Cost;
@@ -49,7 +50,6 @@ export const CostOverviewCard = ({
   const theme = useTheme<CostInsightsTheme>();
   const styles = useOverviewTabsStyles(theme);
   const config = useConfig();
-  const [, , ScrollAnchor] = useScroll();
   const [tabIndex, setTabIndex] = useState(0);
   const { setDuration, setProject, setMetric, ...filters } = useFilters(
     mapFiltersToProps,

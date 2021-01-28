@@ -15,13 +15,42 @@
  */
 
 import React, { Fragment } from 'react';
-import { Avatar, Box, Collapse, Divider } from '@material-ui/core';
+import { Avatar, Box, Collapse, Divider, Tooltip } from '@material-ui/core';
 import { default as AcceptIcon } from '@material-ui/icons/Check';
 import { default as DismissIcon } from '@material-ui/icons/Delete';
 import { default as SnoozeIcon } from '@material-ui/icons/AccessTime';
 import { ActionItemCard } from '../ActionItems';
 import { Alert, AlertStatus } from '../../types';
 import { useActionItemCardStyles as useStyles } from '../../utils/styles';
+
+type AlertGroupProps = {
+  alerts: Alert[];
+  status: AlertStatus;
+  title: string;
+  icon: JSX.Element;
+};
+
+const AlertGroup = ({ alerts, status, title, icon }: AlertGroupProps) => {
+  const classes = useStyles();
+  return (
+    <Box p={1}>
+      {alerts.map((alert, index) => (
+        <Fragment key={`alert-${status}-${index}`}>
+          <ActionItemCard
+            disableScroll
+            alert={alert}
+            avatar={
+              <Tooltip title={title}>
+                <Avatar className={classes.avatar}>{icon}</Avatar>
+              </Tooltip>
+            }
+          />
+          {index < alerts.length - 1 && <Divider />}
+        </Fragment>
+      ))}
+    </Box>
+  );
+};
 
 type AlertStatusSummaryProps = {
   open: boolean;
@@ -36,8 +65,6 @@ export const AlertStatusSummary = ({
   accepted,
   dismissed,
 }: AlertStatusSummaryProps) => {
-  const classes = useStyles();
-
   const isSnoozedListDisplayed = !!snoozed.length;
   const isAcceptedListDisplayed = !!accepted.length;
   const isDismissedListDisplayed = !!dismissed.length;
@@ -45,71 +72,46 @@ export const AlertStatusSummary = ({
   return (
     <Collapse in={open}>
       {isAcceptedListDisplayed && (
-        <Box p={1}>
-          {accepted.map((alert, index) => (
-            <Fragment key={`alert-accepted-${index}`}>
-              <ActionItemCard
-                disableScroll
-                alert={alert}
-                avatar={
-                  <Avatar className={classes.avatar}>
-                    {/* Icons indicate alert status. Do not hide from accesibility tree */}
-                    <AcceptIcon
-                      aria-hidden={false}
-                      role="img"
-                      aria-label={AlertStatus.Accepted}
-                    />
-                  </Avatar>
-                }
-              />
-              {index < accepted.length - 1 && <Divider />}
-            </Fragment>
-          ))}
-        </Box>
+        <AlertGroup
+          title="Accepted"
+          alerts={accepted}
+          status={AlertStatus.Accepted}
+          icon={
+            <AcceptIcon
+              role="img"
+              aria-hidden={false}
+              aria-label={AlertStatus.Accepted}
+            />
+          }
+        />
       )}
       {isSnoozedListDisplayed && (
-        <Box p={1}>
-          {snoozed.map((alert, index) => (
-            <Fragment key={`alert-accepted-${index}`}>
-              <ActionItemCard
-                disableScroll
-                alert={alert}
-                avatar={
-                  <Avatar className={classes.avatar}>
-                    <SnoozeIcon
-                      aria-hidden={false}
-                      role="img"
-                      aria-label={AlertStatus.Snoozed}
-                    />
-                  </Avatar>
-                }
-              />
-              {index < snoozed.length - 1 && <Divider />}
-            </Fragment>
-          ))}
-        </Box>
+        <AlertGroup
+          title="Snoozed"
+          alerts={snoozed}
+          status={AlertStatus.Snoozed}
+          icon={
+            <SnoozeIcon
+              role="img"
+              aria-hidden={false}
+              aria-label={AlertStatus.Snoozed}
+            />
+          }
+        />
       )}
       {isDismissedListDisplayed && (
-        <Box p={1}>
-          {dismissed.map((alert, index) => (
-            <Fragment key={`alert-dismissed-${index}`}>
-              <ActionItemCard
-                disableScroll
-                alert={alert}
-                avatar={
-                  <Avatar className={classes.avatar}>
-                    <DismissIcon
-                      aria-hidden={false}
-                      role="img"
-                      aria-label={AlertStatus.Dismissed}
-                    />
-                  </Avatar>
-                }
-              />
-              {index < dismissed.length - 1 && <Divider />}
-            </Fragment>
-          ))}
-        </Box>
+        <AlertGroup
+          title="Dismissed"
+          alerts={dismissed}
+          status={AlertStatus.Dismissed}
+          icon={
+            <DismissIcon
+              role="img"
+              aria-hidden={false}
+              aria-label={AlertStatus.Dismissed}
+            />
+          }
+        />
       )}
     </Collapse>
   );

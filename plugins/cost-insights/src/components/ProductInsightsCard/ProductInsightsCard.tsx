@@ -34,9 +34,9 @@ import {
   MapLoadingToProps,
   useLastCompleteBillingDate,
   useLoading,
-  useScroll,
 } from '../../hooks';
 import { findAnyKey } from '../../utils/assert';
+import { ScrollAnchor } from '../../utils/scroll';
 
 type LoadingProps = (isLoading: boolean) => void;
 
@@ -60,7 +60,6 @@ export const ProductInsightsCard = ({
 }: PropsWithChildren<ProductInsightsCardProps>) => {
   const classes = useStyles();
   const mountedRef = useRef(false);
-  const [, , ScrollAnchor] = useScroll();
   const [error, setError] = useState<Maybe<Error>>(null);
   const dispatchLoading = useLoading(mapLoadingToProps);
   const lastCompleteBillingDate = useLastCompleteBillingDate();

@@ -20,7 +20,6 @@ import { FilterProvider } from '../../hooks/useFilters';
 import { LoadingProvider } from '../../hooks/useLoading';
 import { GroupsProvider } from '../../hooks/useGroups';
 import { CurrencyProvider } from '../../hooks/useCurrency';
-import { AlertsProvider } from '../../hooks/useAlerts';
 import { ScrollProvider } from '../../hooks/useScroll';
 import { ConfigProvider } from '../../hooks/useConfig';
 import { BillingDateProvider } from '../../hooks/useLastCompleteBillingDate';
@@ -35,9 +34,7 @@ export const CostInsightsPageRoot = () => (
             <FilterProvider>
               <ScrollProvider>
                 <CurrencyProvider>
-                  <AlertsProvider>
-                    <CostInsightsPage />
-                  </AlertsProvider>
+                  <CostInsightsPage />
                 </CurrencyProvider>
               </ScrollProvider>
             </FilterProvider>

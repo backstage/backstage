@@ -183,8 +183,8 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
       new ProjectGrowthAlert(projectGrowthData),
       new UnlabeledDataflowAlert(unlabeledDataflowData),
       new KubernetesMigrationAlert(this, {
-        startDate: today.format(DEFAULT_DATE_FORMAT),
-        endDate: today.add(30, 'day').format(DEFAULT_DATE_FORMAT),
+        startDate: today.subtract(30, 'day').format(DEFAULT_DATE_FORMAT),
+        endDate: today.format(DEFAULT_DATE_FORMAT),
         change: {
           ratio: 0,
           amount: 0,

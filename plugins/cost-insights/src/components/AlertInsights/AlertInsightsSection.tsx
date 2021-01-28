@@ -19,23 +19,31 @@ import { default as SnoozeIcon } from '@material-ui/icons/AccessTime';
 import { default as AcceptIcon } from '@material-ui/icons/Check';
 import { default as DismissIcon } from '@material-ui/icons/Delete';
 import { AlertInsightsSectionHeader } from './AlertInsightsSectionHeader';
-import { useAlerts } from '../../hooks';
 import { Alert } from '../../types';
+import {
+  isSnoozeEnabled,
+  isAcceptEnabled,
+  isDismissEnabled,
+} from '../../utils/alerts';
 
 type AlertInsightsSectionProps = {
   alert: Alert;
   number: number;
+  onSnooze: (alert: Alert) => void;
+  onAccept: (alert: Alert) => void;
+  onDismiss: (alert: Alert) => void;
 };
 
 export const AlertInsightsSection = ({
   alert,
   number,
+  onSnooze,
+  onAccept,
+  onDismiss,
 }: AlertInsightsSectionProps) => {
-  const [, setAlerts] = useAlerts();
-
-  const isSnoozeButtonDisplayed = !!alert.onSnoozed;
-  const isAcceptButtonDisplayed = !!alert.onAccepted;
-  const isDismissButtonDisplayed = !!alert.onDismissed;
+  const isSnoozeButtonDisplayed = isSnoozeEnabled(alert);
+  const isAcceptButtonDisplayed = isAcceptEnabled(alert);
+  const isDismissButtonDisplayed = isDismissEnabled(alert);
   const isButtonGroupDisplayed =
     isSnoozeButtonDisplayed ||
     isAcceptButtonDisplayed ||
@@ -52,7 +60,7 @@ export const AlertInsightsSection = ({
                 color="primary"
                 variant="contained"
                 aria-label="accept"
-                onClick={() => setAlerts({ accepted: alert })}
+                onClick={() => onAccept(alert)}
                 startIcon={<AcceptIcon />}
               >
                 Accept
@@ -66,7 +74,7 @@ export const AlertInsightsSection = ({
                 variant="outlined"
                 aria-label="snooze"
                 disableElevation
-                onClick={() => setAlerts({ snoozed: alert })}
+                onClick={() => onSnooze(alert)}
                 startIcon={<SnoozeIcon />}
               >
                 Snooze
@@ -79,7 +87,7 @@ export const AlertInsightsSection = ({
               variant="outlined"
               aria-label="dismiss"
               disableElevation
-              onClick={() => setAlerts({ dismissed: alert })}
+              onClick={() => onDismiss(alert)}
               startIcon={<DismissIcon />}
             >
               Dismiss

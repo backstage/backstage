@@ -44,22 +44,21 @@ import { ProductInsights } from '../ProductInsights';
 import {
   useConfig,
   useCurrency,
-  useAlerts,
   useFilters,
   useGroups,
   useLastCompleteBillingDate,
   useLoading,
 } from '../../hooks';
-import { Cost, Maybe, MetricData, Product, Project } from '../../types';
+import { Alert, Cost, Maybe, MetricData, Product, Project } from '../../types';
 import { mapLoadingToProps } from './selector';
 import { ProjectSelect } from '../ProjectSelect';
 import { intervalsOf } from '../../utils/duration';
 import { useSubtleTypographyStyles } from '../../utils/styles';
 import {
-  isActive,
-  isAccepted,
-  isDismissed,
-  isSnoozed,
+  isAlertActive,
+  isAlertAccepted,
+  isAlertDismissed,
+  isAlertSnoozed,
 } from '../../utils/alerts';
 
 export const CostInsightsPage = () => {
@@ -68,7 +67,7 @@ export const CostInsightsPage = () => {
   const config = useConfig();
   const groups = useGroups();
   const lastCompleteBillingDate = useLastCompleteBillingDate();
-  const [alerts, setAlerts] = useAlerts();
+  const [alerts, setAlerts] = useState<Alert[]>([]);
   const [currency, setCurrency] = useCurrency();
   const [projects, setProjects] = useState<Maybe<Project[]>>(null);
   const [products, setProducts] = useState<Maybe<Product[]>>(null);
@@ -78,21 +77,13 @@ export const CostInsightsPage = () => {
 
   const { pageFilters, setPageFilters } = useFilters(p => p);
 
-  const snoozed = useMemo(() => alerts.alerts.filter(isSnoozed), [
-    alerts.alerts,
-  ]);
-  const accepted = useMemo(() => alerts.alerts.filter(isAccepted), [
-    alerts.alerts,
-  ]);
-  const dismissed = useMemo(() => alerts.alerts.filter(isDismissed), [
-    alerts.alerts,
-  ]);
-  const activeAlerts = useMemo(() => alerts.alerts.filter(isActive), [
-    alerts.alerts,
-  ]);
+  const active = useMemo(() => alerts.filter(isAlertActive), [alerts]);
+  const snoozed = useMemo(() => alerts.filter(isAlertSnoozed), [alerts]);
+  const accepted = useMemo(() => alerts.filter(isAlertAccepted), [alerts]);
+  const dismissed = useMemo(() => alerts.filter(isAlertDismissed), [alerts]);
 
-  const isActionItemsDisplayed = !!activeAlerts.length;
-  const isAlertInsightsDisplayed = !!alerts.alerts.length;
+  const isActionItemsDisplayed = !!active.length;
+  const isAlertInsightsDisplayed = !!alerts.length;
 
   const {
     loadingActions,
@@ -150,7 +141,7 @@ export const CostInsightsPage = () => {
               : client.getGroupDailyCost(pageFilters.group, intervals),
           ]);
           setProjects(fetchedProjects);
-          setAlerts({ alerts: fetchedAlerts });
+          setAlerts(fetchedAlerts);
           setMetricData(fetchedMetricData);
           setDailyCost(fetchedDailyCost);
         } else {
@@ -175,7 +166,6 @@ export const CostInsightsPage = () => {
     loadingActions,
     loadingGroups,
     loadingBillingDate,
-    setAlerts,
     dispatchLoadingInsights,
     dispatchLoadingInitial,
     dispatchLoadingNone,
@@ -259,7 +249,7 @@ export const CostInsightsPage = () => {
           <Box position="sticky" top={20}>
             <CostInsightsNavigation
               products={products}
-              alerts={activeAlerts.length}
+              alerts={active.length}
             />
           </Box>
         </Grid>
@@ -280,14 +270,14 @@ export const CostInsightsPage = () => {
                   owner={pageFilters.group}
                   groups={groups}
                   hasCostData={!!dailyCost.aggregation.length}
-                  alerts={activeAlerts.length}
+                  alerts={active.length}
                 />
               </Grid>
               <Collapse in={isActionItemsDisplayed} enter={false}>
                 <Grid item xs>
                   <Box px={3} py={6}>
                     <ActionItems
-                      active={activeAlerts}
+                      active={active}
                       snoozed={snoozed}
                       accepted={accepted}
                       dismissed={dismissed}
@@ -315,10 +305,11 @@ export const CostInsightsPage = () => {
                   <Box px={6} py={6} mx={-3} bgcolor="alertBackground">
                     <AlertInsights
                       group={pageFilters.group}
-                      active={activeAlerts}
+                      active={active}
                       snoozed={snoozed}
                       accepted={accepted}
                       dismissed={dismissed}
+                      onChange={setAlerts}
                     />
                   </Box>
                 </Grid>

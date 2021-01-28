@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import pluralize from 'pluralize';
 import { Box, Grid, Snackbar } from '@material-ui/core';
 import { default as MuiAlert } from '@material-ui/lab/Alert';
@@ -24,15 +24,20 @@ import { AlertStatusSummaryButton } from './AlertStatusSummaryButton';
 import { AlertInsightsHeader } from './AlertInsightsHeader';
 import { AlertInsightsSection } from './AlertInsightsSection';
 import {
-  useAlerts,
   useScroll,
   useLoading,
   ScrollType,
   MapLoadingToProps,
 } from '../../hooks';
 import { DefaultLoadingAction } from '../../utils/loading';
-import { Alert, AlertOptions, Maybe } from '../../types';
-import { sumOfAllAlerts } from '../../utils/alerts';
+import { Alert, AlertOptions, AlertStatus, Maybe } from '../../types';
+import {
+  isStatusSnoozed,
+  isStatusAccepted,
+  isStatusDismissed,
+  sumOfAllAlerts,
+} from '../../utils/alerts';
+import { ScrollAnchor } from '../../utils/scroll';
 
 type MapLoadingtoAlerts = (isLoading: boolean) => void;
 
@@ -47,6 +52,7 @@ type AlertInsightsProps = {
   snoozed: Alert[];
   accepted: Alert[];
   dismissed: Alert[];
+  onChange: (alerts: Alert[]) => void;
 };
 
 export const AlertInsights = ({
@@ -55,10 +61,12 @@ export const AlertInsights = ({
   snoozed,
   accepted,
   dismissed,
+  onChange,
 }: AlertInsightsProps) => {
-  const [alerts, setAlerts] = useAlerts();
-  const [scroll, , ScrollAnchor] = useScroll();
+  const [scroll] = useScroll();
+  const [alert, setAlert] = useState<Maybe<Alert>>(null);
   const dispatchLoadingAlerts = useLoading(mapLoadingToAlerts);
+  const [status, setStatus] = useState<Maybe<AlertStatus>>(null);
   // Allow users to pass null values for data.
   const [data, setData] = useState<Maybe<any>>(undefined);
   const [error, setError] = useState<Maybe<Error>>(null);
@@ -66,22 +74,19 @@ export const AlertInsights = ({
   const [isSummaryOpen, setSummaryOpen] = useState(false);
   const [isSnackbarOpen, setSnackbarOpen] = useState(false);
 
-  const closeDialog = useCallback(() => {
-    setData(undefined);
-    setDialogOpen(false);
-    setAlerts({ dismissed: null, snoozed: null, accepted: null });
-  }, [setAlerts]);
-
   useEffect(() => {
-    async function callHandler(
+    async function callAlertHook(
       options: AlertOptions,
       callback: (options: AlertOptions) => Promise<Alert[]>,
     ) {
-      closeDialog();
+      setAlert(null);
+      setStatus(null);
+      setData(undefined);
+      setDialogOpen(false);
       dispatchLoadingAlerts(true);
       try {
-        const a: Alert[] = await callback(options);
-        setAlerts({ alerts: a });
+        const alerts: Alert[] = await callback(options);
+        onChange(alerts);
       } catch (e) {
         setError(e);
       } finally {
@@ -90,22 +95,20 @@ export const AlertInsights = ({
     }
 
     const options: AlertOptions = { data, group };
-    const onSnoozed = alerts.snoozed?.onSnoozed?.bind(alerts.snoozed) ?? null;
-    const onAccepted =
-      alerts.accepted?.onAccepted?.bind(alerts.accepted) ?? null;
-    const onDismissed =
-      alerts.dismissed?.onDismissed?.bind(alerts.dismissed) ?? null;
+    const onSnoozed = alert?.onSnoozed?.bind(alert);
+    const onAccepted = alert?.onAccepted?.bind(alert);
+    const onDismissed = alert?.onDismissed?.bind(alert);
 
     if (data !== undefined) {
-      if (onSnoozed) {
-        callHandler(options, onSnoozed);
-      } else if (onAccepted) {
-        callHandler(options, onAccepted);
-      } else if (onDismissed) {
-        callHandler(options, onDismissed);
+      if (isStatusSnoozed(status) && onSnoozed) {
+        callAlertHook(options, onSnoozed);
+      } else if (isStatusAccepted(status) && onAccepted) {
+        callAlertHook(options, onAccepted);
+      } else if (isStatusDismissed(status) && onDismissed) {
+        callAlertHook(options, onDismissed);
       }
     }
-  }, [group, data, alerts, setAlerts, closeDialog, dispatchLoadingAlerts]);
+  }, [group, data, alert, status, onChange, dispatchLoadingAlerts]);
 
   useEffect(() => {
     if (scroll === ScrollType.AlertSummary) {
@@ -114,34 +117,38 @@ export const AlertInsights = ({
   }, [scroll]);
 
   useEffect(() => {
-    if (error) {
-      setSnackbarOpen(true);
-    } else {
-      setSnackbarOpen(false);
-    }
-  }, [error]);
+    setDialogOpen(!!status);
+  }, [status]);
 
   useEffect(() => {
-    function toggleDialogOnStatusChange() {
-      const isAlertSnoozed = !!alerts.snoozed;
-      const isAlertAccepted = !!alerts.accepted;
-      const isAlertDismissed = !!alerts.dismissed;
+    setSnackbarOpen(!!error);
+  }, [error]);
 
-      if (isAlertSnoozed || isAlertDismissed || isAlertAccepted) {
-        setDialogOpen(true);
-      } else {
-        setDialogOpen(false);
-      }
-    }
+  function onSnooze(alert: Alert) {
+    setAlert(alert);
+    setStatus(AlertStatus.Snoozed);
+  }
 
-    toggleDialogOnStatusChange();
-  }, [alerts.snoozed, alerts.dismissed, alerts.accepted]);
+  function onAccept(alert: Alert) {
+    setAlert(alert);
+    setStatus(AlertStatus.Accepted);
+  }
+
+  function onDismiss(alert: Alert) {
+    setAlert(alert);
+    setStatus(AlertStatus.Dismissed);
+  }
 
   function onSnackbarClose() {
     setError(null);
   }
 
-  function onDialogSubmit(data: any) {
+  function onDialogClose() {
+    setAlert(null);
+    setStatus(null);
+  }
+
+  function onDialogFormSubmit(data: any) {
     setData(data);
   }
 
@@ -153,7 +160,6 @@ export const AlertInsights = ({
 
   const isAlertStatusSummaryDisplayed = !!total;
   const isAlertInsightSectionDisplayed = !!active.length;
-  // AlertInsights will not display if there aren't any active or hidden items.
 
   return (
     <Grid container direction="column" spacing={2}>
@@ -171,7 +177,13 @@ export const AlertInsights = ({
         <Grid item container direction="column" spacing={4}>
           {active.map((alert, index) => (
             <Grid item key={`alert-insights-section-${index}`}>
-              <AlertInsightsSection alert={alert} number={index + 1} />
+              <AlertInsightsSection
+                alert={alert}
+                number={index + 1}
+                onSnooze={onSnooze}
+                onAccept={onAccept}
+                onDismiss={onDismiss}
+              />
             </Grid>
           ))}
         </Grid>
@@ -195,11 +207,10 @@ export const AlertInsights = ({
       <AlertDialog
         group={group}
         open={isDialogOpen}
-        snoozed={alerts.snoozed}
-        accepted={alerts.accepted}
-        dismissed={alerts.dismissed}
-        onClose={closeDialog}
-        onSubmit={onDialogSubmit}
+        alert={alert}
+        status={status}
+        onClose={onDialogClose}
+        onSubmit={onDialogFormSubmit}
       />
       <Snackbar
         open={isSnackbarOpen}

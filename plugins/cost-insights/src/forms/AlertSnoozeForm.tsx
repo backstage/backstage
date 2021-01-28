@@ -24,7 +24,6 @@ import React, {
 import dayjs from 'dayjs';
 import {
   Box,
-  Collapse,
   FormControl,
   FormControlLabel,
   RadioGroup,
@@ -50,19 +49,18 @@ export const AlertSnoozeForm = forwardRef<
   AlertSnoozeFormProps
 >(({ onSubmit, disableSubmit }, ref) => {
   const classes = useStyles();
-  const [error, setError] = useState<Maybe<Error>>(null);
   const [duration, setDuration] = useState<Maybe<Duration>>(Duration.P7D);
+
+  useEffect(() => disableSubmit(false), [disableSubmit]);
 
   const onFormSubmit: FormEventHandler = e => {
     e.preventDefault();
     if (duration) {
       const repeatInterval = 1;
-      const inclusiveEndDate = dayjs().format(DEFAULT_DATE_FORMAT);
+      const today = dayjs().format(DEFAULT_DATE_FORMAT);
       onSubmit({
-        intervals: intervalsOf(duration, inclusiveEndDate, repeatInterval),
+        intervals: intervalsOf(duration, today, repeatInterval),
       });
-    } else {
-      setError(new Error('Please select an option.'));
     }
   };
 
@@ -73,26 +71,12 @@ export const AlertSnoozeForm = forwardRef<
     setDuration(value as Duration);
   };
 
-  useEffect(() => {
-    function clearErrorOnFormDataChange() {
-      disableSubmit(false);
-      setError(prevError => (prevError ? null : prevError));
-    }
-
-    clearErrorOnFormDataChange();
-  }, [duration, disableSubmit]);
-
-  const isErrorMessageDisplayed = !!error;
-
   return (
     <form ref={ref} onSubmit={onFormSubmit}>
-      <FormControl component="fieldset" error={!!error} fullWidth>
+      <FormControl component="fieldset" fullWidth>
         <Typography color="textPrimary">
           <b>For how long?</b>
         </Typography>
-        <Collapse in={isErrorMessageDisplayed}>
-          <Typography color="error">{error?.message}</Typography>
-        </Collapse>
         <Box mb={1}>
           <RadioGroup
             name="snooze-alert-options"

@@ -72,7 +72,6 @@ export class KubernetesMigrationAlert implements MigrationAlert {
 
   // Dialog will not render a form if form property set to null.
   AcceptForm = null;
-
   // Overrides default Dismiss form with a custom form component.
   DismissForm: AlertForm<
     MigrationAlert,
@@ -94,7 +93,7 @@ export class KubernetesMigrationAlert implements MigrationAlert {
 
   get element() {
     const subheader = `${pluralize(
-      'Compute Engine role',
+      'Service',
       this.data.services.length,
       true,
     )}, sorted by cost`;
@@ -116,7 +115,7 @@ export class KubernetesMigrationAlert implements MigrationAlert {
     const alerts = await this.api.getAlerts(options.group);
     return new Promise(resolve =>
       setTimeout(resolve, 750, [
-        ...alerts.slice(0, 2),
+        ...alerts.filter(a => a.title !== this.title),
         {
           title: this.title,
           subtitle: this.subtitle,
@@ -133,7 +132,7 @@ export class KubernetesMigrationAlert implements MigrationAlert {
     const alerts = await this.api.getAlerts(options.group);
     return new Promise(resolve =>
       setTimeout(resolve, 750, [
-        ...alerts.slice(0, 2),
+        ...alerts.filter(a => a.title !== this.title),
         {
           title: this.title,
           subtitle: this.subtitle,
@@ -148,7 +147,7 @@ export class KubernetesMigrationAlert implements MigrationAlert {
     const alerts = await this.api.getAlerts(options.group);
     return new Promise(resolve =>
       setTimeout(resolve, 750, [
-        ...alerts.slice(0, 2),
+        ...alerts.filter(a => a.title !== this.title),
         {
           title: this.title,
           subtitle: this.subtitle,
