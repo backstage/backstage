@@ -83,8 +83,7 @@ type Props = {
   children?: React.ReactNode;
 };
 
-const capitalize = s => {
-  if (typeof s !== 'string') return '';
+const capitalize = (s: string) => {
   return s.charAt(0).toUpperCase() + s.slice(1);
 };
 
