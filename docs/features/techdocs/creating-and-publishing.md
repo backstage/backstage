@@ -66,7 +66,9 @@ Update your component's entity description by adding the following lines to its
 ```yaml
 metadata:
   annotations:
-    backstage.io/techdocs-ref: dir:./
+    backstage.io/techdocs-ref: url:https://github.com/org/repo
+    # Or
+    # backstage.io/techdocs-ref: url:https://github.com/org/repo/tree/branchName/subFolder
 ```
 
 Create a `/docs` folder in the root of the project with at least an `index.md`
