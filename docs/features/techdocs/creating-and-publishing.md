@@ -71,6 +71,11 @@ metadata:
     # backstage.io/techdocs-ref: url:https://github.com/org/repo/tree/branchName/subFolder
 ```
 
+The
+[`backstage.io/techdocs-ref` annotation](../software-catalog/well-known-annotations.md#backstageiotechdocs-ref)
+is used by TechDocs to download the documentation source files for generating an
+Entity's TechDocs site.
+
 Create a `/docs` folder in the root of the project with at least an `index.md`
 file. _(If you add more markdown files, make sure to update the nav in the
 mkdocs.yml file to get a proper navigation for your documentation.)_
