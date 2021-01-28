@@ -24,7 +24,4 @@ export type Validators = {
   isValidAnnotationKey(value: unknown): boolean;
   isValidAnnotationValue(value: unknown): boolean;
   isValidTag(value: unknown): boolean;
-  isValidLinkUrl(value: unknown): boolean;
-  isValidLinkTitle(value: unknown): boolean;
-  isValidLinkIcon(value: unknown): boolean;
 };

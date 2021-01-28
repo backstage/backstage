@@ -143,9 +143,18 @@ export class FieldFormatEntityPolicy implements EntityPolicy {
     const links = entity.metadata.links ?? [];
 
     for (let i = 0; i < links.length; ++i) {
-      require(`links.${i}`, links[i]?.url, this.validators.isValidLinkUrl);
-      optional(`links.${i}`, links[i]?.title, this.validators.isValidLinkTitle);
-      optional(`links.${i}`, links[i]?.icon, this.validators.isValidLinkIcon);
+      require(`links.${i}.url`, links[i]
+        ?.url, CommonValidatorFunctions.isValidUrl);
+      optional(
+        `links.${i}.title`,
+        links[i]?.title,
+        CommonValidatorFunctions.isValidString,
+      );
+      optional(
+        `links.${i}.icon`,
+        links[i]?.icon,
+        KubernetesValidatorFunctions.isValidObjectName,
+      );
     }
 
     return entity;

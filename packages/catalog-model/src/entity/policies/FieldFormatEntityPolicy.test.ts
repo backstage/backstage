@@ -132,22 +132,26 @@ describe('FieldFormatEntityPolicy', () => {
 
   it('rejects missing link url value', async () => {
     data.metadata.links = [{}];
-    await expect(policy.enforce(data)).rejects.toThrow(/links.0/);
+    await expect(policy.enforce(data)).rejects.toThrow(/links.0.url/i);
   });
 
-  it('rejects a single bad missing url value', async () => {
+  it('rejects a single bad missing link url value', async () => {
     data.metadata.links = [{ url: 'http://good' }, { url: '' }];
-    await expect(policy.enforce(data)).rejects.toThrow(/links.1/);
+    await expect(policy.enforce(data)).rejects.toThrow(
+      /links.1.url.*valid url/i,
+    );
   });
 
   it('rejects empty link url value', async () => {
     data.metadata.links = [{ url: '' }];
-    await expect(policy.enforce(data)).rejects.toThrow(/links.0/);
+    await expect(policy.enforce(data)).rejects.toThrow(/links.0.url.*/i);
   });
 
   it('rejects bad link url value', async () => {
     data.metadata.links = [{ url: 'invalid' }];
-    await expect(policy.enforce(data)).rejects.toThrow(/links.0/);
+    await expect(policy.enforce(data)).rejects.toThrow(
+      /links.0.url.*"invalid"/i,
+    );
   });
 
   it('accepts missing link title', async () => {
@@ -157,14 +161,19 @@ describe('FieldFormatEntityPolicy', () => {
 
   it('rejects empty link title', async () => {
     data.metadata.links = [{ url: 'http://foo', title: '' }];
-    await expect(policy.enforce(data)).rejects.toThrow(/links.0/);
+    await expect(policy.enforce(data)).rejects.toThrow(/links.0.title.*""/i);
+  });
+
+  it('rejects bad link title', async () => {
+    data.metadata.links = [{ url: 'http://foo', title: 123 }];
+    await expect(policy.enforce(data)).rejects.toThrow(/links.0.title.*"123"/i);
   });
 
   it.each([[123], [{}], [[]]])(
     'rejects bad link title %s',
     async (title: unknown) => {
       data.metadata.links = [{ url: 'http://foo', title }];
-      await expect(policy.enforce(data)).rejects.toThrow(/links.0/);
+      await expect(policy.enforce(data)).rejects.toThrow(/links.0.title.*/i);
     },
   );
 
@@ -173,7 +182,7 @@ describe('FieldFormatEntityPolicy', () => {
       { url: 'http://foo', title: 'good' },
       { url: 'http://foo', title: '' },
     ];
-    await expect(policy.enforce(data)).rejects.toThrow(/links.1/);
+    await expect(policy.enforce(data)).rejects.toThrow(/links.1.title.*""/i);
   });
 
   it('accepts missing link icon', async () => {
@@ -183,7 +192,7 @@ describe('FieldFormatEntityPolicy', () => {
 
   it('rejects empty link icon', async () => {
     data.metadata.links = [{ url: 'http://foo', icon: '' }];
-    await expect(policy.enforce(data)).rejects.toThrow(/links.0/);
+    await expect(policy.enforce(data)).rejects.toThrow(/links.0.icon.*""/i);
   });
 
   it.each([['dashboard'], ['admin-dashboard'], ['foo_dashboard']])(
@@ -198,7 +207,7 @@ describe('FieldFormatEntityPolicy', () => {
     'rejects bad link icon value %s',
     async (icon: unknown) => {
       data.metadata.links = [{ url: 'http://foo', icon }];
-      await expect(policy.enforce(data)).rejects.toThrow(/links.0/);
+      await expect(policy.enforce(data)).rejects.toThrow(/links.0.icon.*/i);
     },
   );
 
@@ -207,6 +216,8 @@ describe('FieldFormatEntityPolicy', () => {
       { url: 'http://foo', icon: 'good' },
       { url: 'http://foo', icon: 'not good' },
     ];
-    await expect(policy.enforce(data)).rejects.toThrow(/links.1/);
+    await expect(policy.enforce(data)).rejects.toThrow(
+      /links.1.icon.*"not good"/i,
+    );
   });
 });
