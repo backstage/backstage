@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  GroupEntity,
-  LocationEntity,
-  UserEntity,
-} from '@backstage/catalog-model';
+import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { graphql } from '@octokit/graphql';
-import { xorWith } from 'lodash/fp';
 
 // Graphql types
 
