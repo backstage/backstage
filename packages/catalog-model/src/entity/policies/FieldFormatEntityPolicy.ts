@@ -134,6 +134,12 @@ export class FieldFormatEntityPolicy implements EntityPolicy {
       require(`tags.${i}`, tags[i], this.validators.isValidTag);
     }
 
+    const links = entity.metadata.links ?? [];
+
+    for (let i = 0; i < links.length; ++i) {
+      optional(`links.${i}`, links[i]?.icon, this.validators.isValidEntityName);
+    }
+
     return entity;
   }
 }

@@ -3,6 +3,9 @@ kind: Group
 metadata:
   name: acme-corp
   description: The acme-corp organization
+  links:
+    - url: http://www.acme.com/
+      name: Website
 spec:
   type: organization
   profile:

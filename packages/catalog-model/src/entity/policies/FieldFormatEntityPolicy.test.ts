@@ -38,6 +38,10 @@ describe('FieldFormatEntityPolicy', () => {
         tags:
           - java
           - data-service
+        links:
+          - url: https://example.org
+            title: Website
+            icon: website
       spec:
         custom: stuff
     `);
@@ -109,5 +113,10 @@ describe('FieldFormatEntityPolicy', () => {
   it('rejects bad tag value', async () => {
     data.metadata.tags.push('Hello World');
     await expect(policy.enforce(data)).rejects.toThrow(/tags.*"Hello World"/i);
+  });
+
+  it('rejects bad link icon value', async () => {
+    data.metadata.links.push({ url: 'https://foo', icon: 'some icon' });
+    await expect(policy.enforce(data)).rejects.toThrow(/links.*"some icon"/i);
   });
 });

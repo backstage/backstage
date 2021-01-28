@@ -314,6 +314,34 @@ This field is optional, and currently has no special semantics.
 Each tag must be sequences of `[a-z0-9]` separated by `-`, at most 63 characters
 in total.
 
+### `links` [optional]
+
+A list of external hyperlinks related to the entity. Links can provide
+additional contextual information that may be located outside of backstage
+itself. For example, an admin dashboard or external CMS page.
+
+Users may add links to descriptor YAML files to provide additional reference
+information to external content & resources. Links are not intended to drive any
+additional functionality within backstage, which is best left to `annotations`
+and `labels`. It is recommended to use links only when an equivalent well-known
+`annotation` does not cover a similar use case.
+
+Fields of a link are:
+
+| Field   | Type   | Description                                                                          |
+| ------- | ------ | ------------------------------------------------------------------------------------ |
+| `url`   | String | [Required] A `url` in a standard `uri` format (e.g. `https://example.com/some/page`) |
+| `title` | String | [Optional] A user friendly display name for the link.                                |
+| `icon`  | String | [Optional] A key representing a visual icon to be displayed in the UI.               |
+
+_NOTE_: The `icon` field value is meant to be a semantic key that will map to a
+specific icon that may be provided by an icon library (e.g. `material-ui`
+icons). These keys should a sequence of `[a-z0-9A-Z]` and possibly separated by
+one of `[-_.]`. Backstage may support some basic icons out of the box, but the
+backstage integrator will ultimately be left to provide the appropriate icon
+component mappings. A generic fallback icon would be provided if a mapping
+cannot be resolved.
+
 ## Common to All Kinds: Relations
 
 The `relations` root field is a read-only list of relations, between the current

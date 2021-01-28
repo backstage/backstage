@@ -3,5 +3,8 @@ kind: Domain
 metadata:
   name: artists
   description: Everything related to artists
+  links:
+    - url: http://example.com/domain/readme
+      title: Artists Domain Readme
 spec:
   owner: team-a
