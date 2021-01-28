@@ -39,6 +39,7 @@ import {
   AnnotateLocationEntityProcessor,
   BuiltinKindsEntityProcessor,
   CatalogProcessor,
+  CatalogProcessorParser,
   CodeOwnersProcessor,
   FileReaderProcessor,
   GithubOrgReaderProcessor,
@@ -60,6 +61,7 @@ import {
   textPlaceholderResolver,
   yamlPlaceholderResolver,
 } from '../ingestion/processors/PlaceholderProcessor';
+import { defaultEntityDataParser } from '../ingestion/processors/util/parse';
 import { LocationAnalyzer } from '../ingestion/types';
 
 export type CatalogEnvironment = {
@@ -96,6 +98,7 @@ export class CatalogBuilder {
   private fieldFormatValidators: Partial<Validators>;
   private processors: CatalogProcessor[];
   private processorsReplace: boolean;
+  private parser: CatalogProcessorParser | undefined;
 
   constructor(env: CatalogEnvironment) {
     this.env = env;
@@ -105,6 +108,7 @@ export class CatalogBuilder {
     this.fieldFormatValidators = {};
     this.processors = [];
     this.processorsReplace = false;
+    this.parser = undefined;
   }
 
   /**
@@ -198,6 +202,20 @@ export class CatalogBuilder {
   }
 
   /**
+   * Sets up the catalog to use a custom parser for entity data.
+   *
+   * This is the function that gets called immediately after some raw entity
+   * specification data has been read from a remote source, and needs to be
+   * parsed and emitted as structured data.
+   *
+   * @param parser The custom parser
+   */
+  setEntityDataParser(parser: CatalogProcessorParser): CatalogBuilder {
+    this.parser = parser;
+    return this;
+  }
+
+  /**
    * Wires up and returns all of the component parts of the catalog
    */
   async build(): Promise<{
@@ -211,9 +229,11 @@ export class CatalogBuilder {
     const policy = this.buildEntityPolicy();
     const processors = this.buildProcessors();
     const rulesEnforcer = CatalogRulesEnforcer.fromConfig(config);
+    const parser = this.parser || defaultEntityDataParser;
 
     const locationReader = new LocationReaders({
       ...this.env,
+      parser,
       processors,
       rulesEnforcer,
       policy,

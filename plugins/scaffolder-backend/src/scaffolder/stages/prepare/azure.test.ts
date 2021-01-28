@@ -67,6 +67,22 @@ describe('AzurePreparer', () => {
     });
   });
 
+  it('calls the clone command with the correct arguments for a repository with a specified branch', async () => {
+    await preparer.prepare({
+      url:
+        'https://dev.azure.com/backstage-org/backstage-project/_git/template-repo?path=%2Ftemplate.yaml&version=GBmaster',
+      logger,
+      workspacePath,
+    });
+
+    expect(mockGitClient.clone).toHaveBeenCalledWith({
+      url:
+        'https://dev.azure.com/backstage-org/backstage-project/_git/template-repo',
+      dir: checkoutPath,
+      ref: 'master',
+    });
+  });
+
   it('calls the clone command with the correct arguments for a repository when no path is provided', async () => {
     await preparer.prepare({
       url:

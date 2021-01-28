@@ -1064,3 +1064,18 @@ export const getGroupedProducts = (intervals: string) => [
     aggregation: aggregationFor(intervals, 250),
   },
 ];
+
+export const getGroupedProjects = (intervals: string) => [
+  {
+    id: 'project-a',
+    aggregation: aggregationFor(intervals, 1_700),
+  },
+  {
+    id: 'project-b',
+    aggregation: aggregationFor(intervals, 350),
+  },
+  {
+    id: 'project-c',
+    aggregation: aggregationFor(intervals, 1_300),
+  },
+];

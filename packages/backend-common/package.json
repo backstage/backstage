@@ -43,7 +43,7 @@
     "express": "^4.17.1",
     "express-promise-router": "^3.0.3",
     "fs-extra": "^9.0.1",
-    "git-url-parse": "^11.4.3",
+    "git-url-parse": "^11.4.4",
     "helmet": "^4.0.0",
     "isomorphic-git": "^1.8.0",
     "knex": "^0.21.6",

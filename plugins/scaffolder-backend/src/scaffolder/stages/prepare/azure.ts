@@ -48,6 +48,7 @@ export class AzurePreparer implements PreparerBase {
 
     await git.clone({
       url: parsedGitUrl.toString('https'),
+      ref: parsedGitUrl.ref,
       dir: checkoutPath,
     });
 

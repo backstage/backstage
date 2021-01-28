@@ -35,6 +35,7 @@ export class GitlabPreparer implements PreparerBase {
       checkoutPath,
       parsedGitUrl.filepath,
     );
+    parsedGitUrl.git_suffix = true;
 
     const git = this.config.token
       ? Git.fromAuth({
@@ -47,6 +48,7 @@ export class GitlabPreparer implements PreparerBase {
     await git.clone({
       url: parsedGitUrl.toString('https'),
       dir: checkoutPath,
+      ref: parsedGitUrl.ref,
     });
 
     await fs.move(fullPathToTemplate, targetPath);

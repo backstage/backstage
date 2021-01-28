@@ -54,6 +54,7 @@ describe('GitHubPreparer', () => {
     expect(mockGitClient.clone).toHaveBeenCalledWith({
       url: 'https://github.com/benjdlambert/backstage-graphql-template',
       dir: checkoutPath,
+      ref: expect.any(String),
     });
     expect(fs.move).toHaveBeenCalledWith(
       resolve(checkoutPath, 'templates', 'graphql-starter', 'template'),
@@ -73,6 +74,7 @@ describe('GitHubPreparer', () => {
     expect(mockGitClient.clone).toHaveBeenCalledWith({
       url: 'https://github.com/benjdlambert/backstage-graphql-template',
       dir: checkoutPath,
+      ref: 'master',
     });
     expect(fs.move).toHaveBeenCalledWith(checkoutPath, templatePath);
     expect(fs.rmdir).toHaveBeenCalledWith(resolve(templatePath, '.git'));

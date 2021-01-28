@@ -55,6 +55,7 @@ describe('BitbucketPreparer', () => {
     expect(mockGitClient.clone).toHaveBeenCalledWith({
       url: 'https://bitbucket.org/backstage-project/backstage-repo',
       dir: checkoutPath,
+      ref: expect.any(String),
     });
     expect(fs.move).toHaveBeenCalledWith(checkoutPath, templatePath);
     expect(fs.rmdir).toHaveBeenCalledWith(resolve(templatePath, '.git'));
@@ -80,6 +81,7 @@ describe('BitbucketPreparer', () => {
     expect(mockGitClient.clone).toHaveBeenCalledWith({
       url: 'https://bitbucket.org/backstage-project/backstage-repo',
       dir: checkoutPath,
+      ref: expect.any(String),
     });
   });
 

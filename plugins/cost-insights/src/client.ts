@@ -33,11 +33,12 @@ import {
   UnlabeledDataflowAlert,
 } from '../src/utils/alerts';
 import {
-  trendlineOf,
+  aggregationFor,
   changeOf,
   entityOf,
   getGroupedProducts,
-  aggregationFor,
+  getGroupedProjects,
+  trendlineOf,
 } from './utils/mockData';
 
 export class ExampleCostInsightsClient implements CostInsightsApi {
@@ -99,9 +100,12 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
         aggregation: aggregation,
         change: changeOf(aggregation),
         trendline: trendlineOf(aggregation),
-        // Optional field on Cost which needs to be supplied in order to see
-        // the product breakdown view in the top panel.
-        groupedCosts: getGroupedProducts(intervals),
+        // Optional field providing cost groupings / breakdowns keyed by the type. In this example,
+        // daily cost grouped by cloud product OR by project / billing account.
+        groupedCosts: {
+          product: getGroupedProducts(intervals),
+          project: getGroupedProjects(intervals),
+        },
       },
     );
 
@@ -117,9 +121,11 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
         aggregation: aggregation,
         change: changeOf(aggregation),
         trendline: trendlineOf(aggregation),
-        // Optional field on Cost which needs to be supplied in order to see
-        // the product breakdown view in the top panel.
-        groupedCosts: getGroupedProducts(intervals),
+        // Optional field providing cost groupings / breakdowns keyed by the type. In this example,
+        // daily project cost grouped by cloud product.
+        groupedCosts: {
+          product: getGroupedProducts(intervals),
+        },
       },
     );
 

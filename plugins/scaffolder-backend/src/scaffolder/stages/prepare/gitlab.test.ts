@@ -50,8 +50,9 @@ describe('GitLabPreparer', () => {
     });
 
     expect(mockGitClient.clone).toHaveBeenCalledWith({
-      url: 'https://gitlab.com/benjdlambert/backstage-graphql-template',
+      url: 'https://gitlab.com/benjdlambert/backstage-graphql-template.git',
       dir: checkoutPath,
+      ref: expect.any(String),
     });
 
     expect(Git.fromAuth).toHaveBeenCalledWith({

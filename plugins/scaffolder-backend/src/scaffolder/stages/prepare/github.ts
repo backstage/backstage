@@ -47,6 +47,7 @@ export class GithubPreparer implements PreparerBase {
     await git.clone({
       url: parsedGitUrl.toString('https'),
       dir: checkoutPath,
+      ref: parsedGitUrl.ref,
     });
 
     await fs.move(fullPathToTemplate, targetPath);

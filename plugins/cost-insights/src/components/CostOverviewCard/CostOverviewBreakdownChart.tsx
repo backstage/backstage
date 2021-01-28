@@ -56,26 +56,26 @@ import { BarChartLegendOptions } from '../BarChart/BarChartLegend';
 
 dayjs.extend(utc);
 
-export type CostOverviewByProductChartProps = {
-  costsByProduct: Cost[];
+export type CostOverviewBreakdownChartProps = {
+  costBreakdown: Cost[];
 };
 
 const LOW_COST_THRESHOLD = 0.1;
 
-export const CostOverviewByProductChart = ({
-  costsByProduct,
-}: CostOverviewByProductChartProps) => {
+export const CostOverviewBreakdownChart = ({
+  costBreakdown,
+}: CostOverviewBreakdownChartProps) => {
   const theme = useTheme<CostInsightsTheme>();
   const classes = useStyles(theme);
   const lastCompleteBillingDate = useLastCompleteBillingDate();
   const { duration } = useFilters(mapFiltersToProps);
   const [isExpanded, setExpanded] = useState(false);
 
-  if (!costsByProduct) {
+  if (!costBreakdown) {
     return null;
   }
 
-  const flattenedAggregation = costsByProduct
+  const flattenedAggregation = costBreakdown
     .map(cost => cost.aggregation)
     .flat();
 
@@ -87,44 +87,46 @@ export const CostOverviewByProductChart = ({
     lastCompleteBillingDate,
   );
   const currentPeriodTotal = totalCost - previousPeriodTotal;
-  const otherProducts: string[] = [];
+  const canExpand = costBreakdown.length >= 8;
+  const otherCategoryIds: string[] = [];
 
-  const productsByDate = costsByProduct.reduce((prodByDate, product) => {
-    const productTotal = aggregationSum(product.aggregation);
-    // Group products with less than 10% of the total cost into "Other" category
-    // when we have >= 8 products.
-    const isOtherProduct =
-      costsByProduct.length >= 8 &&
-      productTotal < totalCost * LOW_COST_THRESHOLD;
+  const breakdownsByDate = costBreakdown.reduce(
+    (breakdownByDate, breakdown) => {
+      const breakdownTotal = aggregationSum(breakdown.aggregation);
+      // Group breakdown items with less than 10% of the total cost into "Other" category if needed
+      const isOtherCategory =
+        canExpand && breakdownTotal < totalCost * LOW_COST_THRESHOLD;
 
-    const updatedProdByDate = { ...prodByDate };
-    if (isOtherProduct) {
-      otherProducts.push(product.id);
-    }
-    product.aggregation.forEach(curAggregation => {
-      const productCostsForDate = updatedProdByDate[curAggregation.date] || {};
+      const updatedBreakdownByDate = { ...breakdownByDate };
+      if (isOtherCategory) {
+        otherCategoryIds.push(breakdown.id);
+      }
+      breakdown.aggregation.forEach(curAggregation => {
+        const costsForDate = updatedBreakdownByDate[curAggregation.date] || {};
 
-      updatedProdByDate[curAggregation.date] = {
-        ...productCostsForDate,
-        [product.id]:
-          (productCostsForDate[product.id] || 0) + curAggregation.amount,
-      };
-    });
+        updatedBreakdownByDate[curAggregation.date] = {
+          ...costsForDate,
+          [breakdown.id]:
+            (costsForDate[breakdown.id] || 0) + curAggregation.amount,
+        };
+      });
 
-    return updatedProdByDate;
-  }, {} as Record<string, Record<string, number>>);
+      return updatedBreakdownByDate;
+    },
+    {} as Record<string, Record<string, number>>,
+  );
 
-  const chartData: Record<string, number>[] = Object.keys(productsByDate).map(
+  const chartData: Record<string, number>[] = Object.keys(breakdownsByDate).map(
     date => {
-      const costsForDate = Object.keys(productsByDate[date]).reduce(
-        (dateCosts, product) => {
-          // Group costs for products that belong to 'Other' in the chart.
-          const cost = productsByDate[date][product];
-          const productCost =
-            !isExpanded && otherProducts.includes(product)
+      const costsForDate = Object.keys(breakdownsByDate[date]).reduce(
+        (dateCosts, breakdown) => {
+          // Group costs for items that belong to 'Other' in the chart.
+          const cost = breakdownsByDate[date][breakdown];
+          const breakdownCost =
+            !isExpanded && otherCategoryIds.includes(breakdown)
               ? { Other: (dateCosts.Other || 0) + cost }
-              : { [product]: cost };
-          return { ...dateCosts, ...productCost };
+              : { [breakdown]: cost };
+          return { ...dateCosts, ...breakdownCost };
         },
         {} as Record<string, number>,
       );
@@ -135,40 +137,41 @@ export const CostOverviewByProductChart = ({
     },
   );
 
-  const sortedProducts = costsByProduct.sort(
+  const sortedBreakdowns = costBreakdown.sort(
     (a, b) => aggregationSum(a.aggregation) - aggregationSum(b.aggregation),
   );
 
   const renderAreas = () => {
-    const separatedProducts = sortedProducts
-      // Check that product is a separate group and hasn't been added to 'Other'
+    const separatedBreakdowns = sortedBreakdowns
+      // Check that the breakdown is a separate group and hasn't been added to 'Other'
       .filter(
-        product =>
-          product.id !== 'Other' && !otherProducts.includes(product.id),
+        breakdown =>
+          breakdown.id !== 'Other' && !otherCategoryIds.includes(breakdown.id),
       )
-      .map(product => product.id);
+      .map(breakdown => breakdown.id);
     // Keep 'Other' category at the bottom of the stack
-    const productsToDisplay = isExpanded
-      ? sortedProducts.map(product => product.id)
-      : ['Other', ...separatedProducts];
+    const breakdownsToDisplay = isExpanded
+      ? sortedBreakdowns.map(breakdown => breakdown.id)
+      : ['Other', ...separatedBreakdowns];
 
-    return productsToDisplay.map((product, i) => {
-      // Logic to handle case where there are more products than data viz colors.
-      const productColor =
+    return breakdownsToDisplay.map((breakdown, i) => {
+      // Logic to handle case where there are more items than data viz colors.
+      const color =
         theme.palette.dataViz[
-          (productsToDisplay.length - 1 - i) %
+          (breakdownsToDisplay.length - 1 - i) %
             (theme.palette.dataViz.length - 1)
         ];
       return (
         <Area
-          dataKey={product}
+          key={breakdown}
+          dataKey={breakdown}
           isAnimationActive={false}
           stackId="1"
-          stroke={productColor}
-          fill={productColor}
+          stroke={color}
+          fill={color}
           onClick={() => setExpanded(true)}
           style={{
-            cursor: product === 'Other' && !isExpanded ? 'pointer' : null,
+            cursor: breakdown === 'Other' && !isExpanded ? 'pointer' : null,
           }}
         />
       );
@@ -206,7 +209,7 @@ export const CostOverviewByProductChart = ({
         {items.reverse().map((item, index) => (
           <TooltipItem key={`${item.label}-${index}`} item={item} />
         ))}
-        {!isExpanded ? expandText : null}
+        {canExpand && !isExpanded ? expandText : null}
       </Tooltip>
     );
   };
