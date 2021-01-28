@@ -31,9 +31,10 @@ export async function getBitbucketDefaultBranch(
   const { name: repoName, owner: project, resource } = parseGitUrl(url);
 
   const isHosted = resource === 'bitbucket.org';
+  // Bitbucket Server https://docs.atlassian.com/bitbucket-server/rest/7.9.0/bitbucket-rest.html#idp184
   const branchUrl = isHosted
     ? `${config.apiBaseUrl}/repositories/${project}/${repoName}`
-    : `${config.apiBaseUrl}/projects/${project}/repos/${repoName}/branches/default`;
+    : `${config.apiBaseUrl}/projects/${project}/repos/${repoName}/default-branch`;
 
   const response = await fetch(branchUrl, getBitbucketRequestOptions(config));
   if (!response.ok) {
@@ -50,7 +51,10 @@ export async function getBitbucketDefaultBranch(
     defaultBranch = displayId;
   }
   if (!defaultBranch) {
-    throw new Error(`Failed to read default branch from ${branchUrl}`);
+    throw new Error(
+      `Failed to read default branch from ${branchUrl}. ` +
+        `Response ${response.status} ${response.json()}`,
+    );
   }
   return defaultBranch;
 }
