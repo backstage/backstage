@@ -173,7 +173,9 @@
             "type": "string",
             "visibility": "frontend",
             "description": "Tracking ID for Google Analytics",
-            "example": "UA-000000-0"
+            "examples": [
+              "UA-000000-0"
+            ]
           },
           "listen": {
             "type": "object",
