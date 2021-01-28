@@ -80,7 +80,20 @@ jobs:
       - name: echo tugboat preview url
         run: |
           curl ${{steps.get-status-env.outputs.result}}
-          # Update the commit status with a fail or success.
+      - name: set status
+        if: ${{ failure() }}
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GH_SERVICE_ACCOUNT_TOKEN}}
+          script: |
+            return github.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.sha,
+              state: "error",
+              context: 'Backstage Tugboat E2E Tests',
+              target_url: "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}"
+            });
       - name: set status
         if: ${{ success() }}
         uses: actions/github-script@v3
@@ -92,20 +105,6 @@ jobs:
               repo: context.repo.repo,
               sha: context.sha,
               state: "success",
-              context: 'Backstage Tugboat E2E Tests',
-              target_url: "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}"
-            });
-      - name: set status
-        if: ${{ failure() }} || ${{ cancelled() }}
-        uses: actions/github-script@v3
-        with:
-          github-token: ${{secrets.GH_SERVICE_ACCOUNT_TOKEN}}
-          script: |
-            return github.repos.createCommitStatus({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              sha: context.sha,
-              state: "error",
               context: 'Backstage Tugboat E2E Tests',
               target_url: "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}"
             });
