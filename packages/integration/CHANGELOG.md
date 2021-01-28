@@ -1,5 +1,12 @@
 # @backstage/integration
 
+## 0.3.1
+
+### Patch Changes
+
+- 6800da78d: Fix default branch API url for custom hosted Bitbucket server
+- 9dd057662: Upgrade [git-url-parse](https://www.npmjs.com/package/git-url-parse) to [v11.4.4](https://github.com/IonicaBizau/git-url-parse/pull/125) which fixes parsing an Azure DevOps branch ref.
+
 ## 0.3.0
 
 ### Minor Changes

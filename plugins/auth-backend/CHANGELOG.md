@@ -1,5 +1,17 @@
 # @backstage/plugin-auth-backend
 
+## 0.2.12
+
+### Patch Changes
+
+- d7b1d317f: Fixed serialization issue with caching of public keys in AWS ALB auth provider
+- 39b05b9ae: Use .text instead of .json for ALB key response
+- 4eaa06057: Fix AWS ALB issuer check
+- Updated dependencies [26a3a6cf0]
+- Updated dependencies [664dd08c9]
+- Updated dependencies [9dd057662]
+  - @backstage/backend-common@0.5.1
+
 ## 0.2.11
 
 ### Patch Changes
