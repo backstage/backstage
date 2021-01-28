@@ -331,7 +331,7 @@ itself. For example, an admin dashboard or external CMS page.
 
 Users may add links to descriptor YAML files to provide additional reference
 information to external content & resources. Links are not intended to drive any
-additional functionality within backstage, which is best left to `annotations`
+additional functionality within Backstage, which is best left to `annotations`
 and `labels`. It is recommended to use links only when an equivalent well-known
 `annotation` does not cover a similar use case.
 
