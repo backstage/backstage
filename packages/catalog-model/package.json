@@ -38,7 +38,7 @@
     "yup": "^0.29.3"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.4.7",
+    "@backstage/cli": "^0.5.0",
     "@types/express": "^4.17.6",
     "@types/jest": "^26.0.7",
     "@types/lodash": "^4.14.151",

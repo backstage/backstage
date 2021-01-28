@@ -1,5 +1,14 @@
 # @backstage/plugin-scaffolder
 
+## 0.4.1
+
+### Patch Changes
+
+- 9dd057662: Upgrade [git-url-parse](https://www.npmjs.com/package/git-url-parse) to [v11.4.4](https://github.com/IonicaBizau/git-url-parse/pull/125) which fixes parsing an Azure DevOps branch ref.
+- Updated dependencies [9dd057662]
+- Updated dependencies [0b1182346]
+  - @backstage/plugin-catalog@0.2.14
+
 ## 0.4.0
 
 ### Minor Changes

@@ -42,7 +42,7 @@
     "zen-observable": "^0.8.15"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.4.5",
+    "@backstage/cli": "^0.5.0",
     "@backstage/test-utils": "^0.1.6",
     "@backstage/test-utils-core": "^0.1.1",
     "@testing-library/jest-dom": "^5.10.1",

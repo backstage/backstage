@@ -28,7 +28,7 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.5.0",
+    "@backstage/backend-common": "^0.5.1",
     "@backstage/config": "^0.1.2",
     "@types/express": "^4.17.6",
     "express": "^4.17.1",
@@ -42,7 +42,7 @@
     "yup": "^0.29.3"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.4.7",
+    "@backstage/cli": "^0.5.0",
     "@types/http-proxy-middleware": "^0.19.3",
     "@types/supertest": "^2.0.8",
     "@types/uuid": "^8.0.0",
