@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-import
 
+## 0.3.6
+
+### Patch Changes
+
+- 9dd057662: Upgrade [git-url-parse](https://www.npmjs.com/package/git-url-parse) to [v11.4.4](https://github.com/IonicaBizau/git-url-parse/pull/125) which fixes parsing an Azure DevOps branch ref.
+- Updated dependencies [6800da78d]
+- Updated dependencies [9dd057662]
+- Updated dependencies [0b1182346]
+  - @backstage/integration@0.3.1
+  - @backstage/plugin-catalog@0.2.14
+
 ## 0.3.5
 
 ### Patch Changes
