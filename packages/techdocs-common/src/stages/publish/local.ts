@@ -55,6 +55,7 @@ export class LocalPublish implements PublisherBase {
   // Move the logic of setting staticDocsDir based on config over to fromConfig,
   // and set the value as a class parameter.
   constructor(
+    // @ts-ignore
     private readonly config: Config,
     private readonly logger: Logger,
     private readonly discovery: PluginEndpointDiscovery,
