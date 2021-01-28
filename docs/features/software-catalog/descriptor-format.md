@@ -326,7 +326,7 @@ in total.
 ### `links` [optional]
 
 A list of external hyperlinks related to the entity. Links can provide
-additional contextual information that may be located outside of backstage
+additional contextual information that may be located outside of Backstage
 itself. For example, an admin dashboard or external CMS page.
 
 Users may add links to descriptor YAML files to provide additional reference
