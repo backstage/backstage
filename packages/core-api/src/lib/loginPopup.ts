@@ -82,7 +82,9 @@ export function showLoginPopup(options: LoginPopupOptions): Promise<any> {
     let targetOrigin = '';
 
     if (!popup || typeof popup.closed === 'undefined' || popup.closed) {
-      reject(new Error('Failed to open auth popup.'));
+      const error = new Error('Failed to open auth popup.');
+      error.name = 'PopupRejectedError';
+      reject(error);
       return;
     }
 
