@@ -20,6 +20,7 @@ export {
 } from './constants';
 export type {
   Entity,
+  EntityLink,
   EntityMeta,
   EntityRelation,
   EntityRelationSpec,

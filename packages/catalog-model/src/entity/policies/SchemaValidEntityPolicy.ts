@@ -16,7 +16,7 @@
 
 import * as yup from 'yup';
 import { EntityPolicy } from '../../types';
-import { Entity } from '../Entity';
+import { Entity, EntityLink } from '../Entity';
 
 const DEFAULT_ENTITY_SCHEMA = yup
   .object({
@@ -33,6 +33,7 @@ const DEFAULT_ENTITY_SCHEMA = yup
         labels: yup.object<Record<string, string>>().notRequired(),
         annotations: yup.object<Record<string, string>>().notRequired(),
         tags: yup.array<string>().notRequired(),
+        links: yup.array<EntityLink>().notRequired(),
       })
       .required(),
     spec: yup.object({}).notRequired(),
