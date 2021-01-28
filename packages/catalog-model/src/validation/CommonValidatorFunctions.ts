@@ -106,7 +106,7 @@ export class CommonValidatorFunctions {
     try {
       const url = new URL(value);
       return !!url;
-    } catch (_) {
+    } catch {
       return false;
     }
   }
@@ -117,10 +117,6 @@ export class CommonValidatorFunctions {
    * @param value The value to check
    */
   static isValidString(value: unknown): boolean {
-    return (
-      typeof value === 'string' &&
-      value.length >= 1 &&
-      /^(?!\s*$).+/.test(value)
-    );
+    return typeof value === 'string' && value?.trim()?.length >= 1;
   }
 }
