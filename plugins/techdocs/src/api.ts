@@ -178,6 +178,7 @@ export class TechDocsStorageApi implements TechDocsStorage {
     const { kind, namespace, name } = entityId;
 
     const apiOrigin = await this.getApiOrigin();
+
     return new URL(
       oldBaseUrl,
       `${apiOrigin}/docs/${namespace}/${kind}/${name}/${path}`,
