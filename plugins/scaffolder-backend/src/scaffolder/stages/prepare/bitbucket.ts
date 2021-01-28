@@ -49,15 +49,15 @@ export class BitbucketPreparer implements PreparerBase {
     const logger = opts.logger;
     const templateId = template.metadata.name;
 
-    const repo = parseGitUrl(location);
-    const repositoryCheckoutUrl = repo.toString('https');
-
+    const parsedGitLocation = parseGitUrl(location);
+    const repositoryCheckoutUrl = parsedGitLocation.toString('https');
+    const ref = parsedGitLocation.ref;
     const tempDir = await fs.promises.mkdtemp(
       path.join(workingDirectory, templateId),
     );
 
     const templateDirectory = path.join(
-      `${path.dirname(repo.filepath)}`,
+      `${path.dirname(parsedGitLocation.filepath)}`,
       template.spec.path ?? '.',
     );
 
@@ -73,6 +73,7 @@ export class BitbucketPreparer implements PreparerBase {
 
     await git.clone({
       url: repositoryCheckoutUrl,
+      ref: ref,
       dir: tempDir,
     });
 
