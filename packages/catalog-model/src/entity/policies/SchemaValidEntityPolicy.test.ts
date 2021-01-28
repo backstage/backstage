@@ -214,7 +214,7 @@ describe('SchemaValidEntityPolicy', () => {
 
   it.each([['invalid type'], [123], [{}], [{ url: 'https://foo' }]])(
     'rejects bad links type %s',
-    async (val: any) => {
+    async (val: unknown) => {
       data.metadata.links = val;
       await expect(policy.enforce(data)).rejects.toThrow(/links/);
     },

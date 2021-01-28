@@ -83,6 +83,12 @@ export class FieldFormatEntityPolicy implements EntityPolicy {
             expectation =
               'a string that is a sequence of [a-zA-Z][a-z0-9A-Z], at most 63 characters in total';
             break;
+          case 'isValidUrl':
+            expectation = 'a string that is a valid url';
+            break;
+          case 'isValidString':
+            expectation = 'a non empty string';
+            break;
           default:
             expectation = undefined;
             break;
@@ -137,7 +143,9 @@ export class FieldFormatEntityPolicy implements EntityPolicy {
     const links = entity.metadata.links ?? [];
 
     for (let i = 0; i < links.length; ++i) {
-      optional(`links.${i}`, links[i]?.icon, this.validators.isValidEntityName);
+      require(`links.${i}`, links[i]?.url, this.validators.isValidLinkUrl);
+      optional(`links.${i}`, links[i]?.title, this.validators.isValidLinkTitle);
+      optional(`links.${i}`, links[i]?.icon, this.validators.isValidLinkIcon);
     }
 
     return entity;

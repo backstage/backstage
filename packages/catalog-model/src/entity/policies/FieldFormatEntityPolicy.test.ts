@@ -115,8 +115,98 @@ describe('FieldFormatEntityPolicy', () => {
     await expect(policy.enforce(data)).rejects.toThrow(/tags.*"Hello World"/i);
   });
 
-  it('rejects bad link icon value', async () => {
-    data.metadata.links.push({ url: 'https://foo', icon: 'some icon' });
-    await expect(policy.enforce(data)).rejects.toThrow(/links.*"some icon"/i);
+  it('accepts missing links', async () => {
+    delete data.metadata.links;
+    await expect(policy.enforce(data)).resolves.toBe(data);
+  });
+
+  it('accepts empty links array', async () => {
+    data.metadata.links = [];
+    await expect(policy.enforce(data)).resolves.toBe(data);
+  });
+
+  it('accepts multiple links', async () => {
+    data.metadata.links = [{ url: 'http://foo' }, { url: 'https://bar' }];
+    await expect(policy.enforce(data)).resolves.toBe(data);
+  });
+
+  it('rejects missing link url value', async () => {
+    data.metadata.links = [{}];
+    await expect(policy.enforce(data)).rejects.toThrow(/links.0/);
+  });
+
+  it('rejects a single bad missing url value', async () => {
+    data.metadata.links = [{ url: 'http://good' }, { url: '' }];
+    await expect(policy.enforce(data)).rejects.toThrow(/links.1/);
+  });
+
+  it('rejects empty link url value', async () => {
+    data.metadata.links = [{ url: '' }];
+    await expect(policy.enforce(data)).rejects.toThrow(/links.0/);
+  });
+
+  it('rejects bad link url value', async () => {
+    data.metadata.links = [{ url: 'invalid' }];
+    await expect(policy.enforce(data)).rejects.toThrow(/links.0/);
+  });
+
+  it('accepts missing link title', async () => {
+    data.metadata.links = [{ url: 'http://foo', icon: 'dashboard' }];
+    await expect(policy.enforce(data)).resolves.toBe(data);
+  });
+
+  it('rejects empty link title', async () => {
+    data.metadata.links = [{ url: 'http://foo', title: '' }];
+    await expect(policy.enforce(data)).rejects.toThrow(/links.0/);
+  });
+
+  it.each([[123], [{}], [[]]])(
+    'rejects bad link title %s',
+    async (title: unknown) => {
+      data.metadata.links = [{ url: 'http://foo', title }];
+      await expect(policy.enforce(data)).rejects.toThrow(/links.0/);
+    },
+  );
+
+  it('rejects a single bad link title', async () => {
+    data.metadata.links = [
+      { url: 'http://foo', title: 'good' },
+      { url: 'http://foo', title: '' },
+    ];
+    await expect(policy.enforce(data)).rejects.toThrow(/links.1/);
+  });
+
+  it('accepts missing link icon', async () => {
+    data.metadata.links = [{ url: 'http://foo', title: 'foo' }];
+    await expect(policy.enforce(data)).resolves.toBe(data);
+  });
+
+  it('rejects empty link icon', async () => {
+    data.metadata.links = [{ url: 'http://foo', icon: '' }];
+    await expect(policy.enforce(data)).rejects.toThrow(/links.0/);
+  });
+
+  it.each([['dashboard'], ['admin-dashboard'], ['foo_dashboard']])(
+    'accepts valid link icon',
+    async icon => {
+      data.metadata.links = [{ url: 'http://foo', icon }];
+      await expect(policy.enforce(data)).resolves.toBe(data);
+    },
+  );
+
+  it.each([[123], [{}], [[]], ['abc xyz']])(
+    'rejects bad link icon value %s',
+    async (icon: unknown) => {
+      data.metadata.links = [{ url: 'http://foo', icon }];
+      await expect(policy.enforce(data)).rejects.toThrow(/links.0/);
+    },
+  );
+
+  it('rejects a single bad link icon value', async () => {
+    data.metadata.links = [
+      { url: 'http://foo', icon: 'good' },
+      { url: 'http://foo', icon: 'not good' },
+    ];
+    await expect(policy.enforce(data)).rejects.toThrow(/links.1/);
   });
 });
