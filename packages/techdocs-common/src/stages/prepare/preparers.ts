@@ -35,16 +35,21 @@ export class Preparers implements PreparerBuilder {
   ): Promise<PreparerBuilder> {
     const preparers = new Preparers();
 
-    const directoryPreparer = new DirectoryPreparer(config, logger);
+    const urlPreparer = new UrlPreparer(reader, logger);
+    preparers.register('url', urlPreparer);
+
+    /**
+     * Dir preparer is a syntactic sugar for users to define techdocs-ref annotation.
+     * When using dir preparer, the docs will be fetched using URL Reader.
+     */
+    const directoryPreparer = new DirectoryPreparer(config, logger, reader);
     preparers.register('dir', directoryPreparer);
 
+    // Common git preparers will be deprecated soon.
     const commonGitPreparer = new CommonGitPreparer(config, logger);
     preparers.register('github', commonGitPreparer);
     preparers.register('gitlab', commonGitPreparer);
     preparers.register('azure/api', commonGitPreparer);
-
-    const urlPreparer = new UrlPreparer(reader, logger);
-    preparers.register('url', urlPreparer);
 
     return preparers;
   }
