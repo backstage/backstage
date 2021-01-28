@@ -54,6 +54,11 @@ software catalog API.
     "labels": {
       "system": "public-websites"
     },
+    "links": [{
+      "url": "https://admin.example-org.com",
+      "title": "Admin Dashboard",
+      "icon": "dashboard"
+    }],
     "tags": ["java"],
     "name": "artist-web",
     "uid": "2152f463-549d-4d8d-a94d-ce2b7676c6e2"
