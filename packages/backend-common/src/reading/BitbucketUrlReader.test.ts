@@ -16,7 +16,8 @@
 
 import { ConfigReader } from '@backstage/config';
 import { msw } from '@backstage/test-utils';
-import fs from 'fs';
+import fs from 'fs-extra';
+import mockFs from 'mock-fs';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import path from 'path';
@@ -53,6 +54,16 @@ describe('BitbucketUrlReader', () => {
   });
 
   describe('readTree', () => {
+    beforeEach(() => {
+      mockFs({
+        '/tmp': mockFs.directory(),
+      });
+    });
+
+    afterEach(() => {
+      mockFs.restore();
+    });
+
     const worker = setupServer();
     msw.setupDefaultHandlers(worker);
 
@@ -155,6 +166,21 @@ describe('BitbucketUrlReader', () => {
       expect(mkDocsFile.toString()).toBe('site_name: Test\n');
     });
 
+    it('creates a directory with the wanted files', async () => {
+      const response = await bitbucketProcessor.readTree(
+        'https://bitbucket.org/backstage/mock',
+      );
+
+      const dir = await response.dir({ targetDir: '/tmp' });
+
+      await expect(
+        fs.readFile(path.join(dir, 'mkdocs.yml'), 'utf8'),
+      ).resolves.toBe('site_name: Test\n');
+      await expect(
+        fs.readFile(path.join(dir, 'docs', 'index.md'), 'utf8'),
+      ).resolves.toBe('# Test\n');
+    });
+
     it('uses private bitbucket host', async () => {
       const response = await hostedBitbucketProcessor.readTree(
         'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/docs?at=some-branch',
@@ -183,6 +209,18 @@ describe('BitbucketUrlReader', () => {
       const indexMarkdownFile = await files[0].content();
 
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
+    });
+
+    it('creates a directory with the wanted files with a subpath', async () => {
+      const response = await bitbucketProcessor.readTree(
+        'https://bitbucket.org/backstage/mock/src/master/docs',
+      );
+
+      const dir = await response.dir({ targetDir: '/tmp' });
+
+      await expect(
+        fs.readFile(path.join(dir, 'index.md'), 'utf8'),
+      ).resolves.toBe('# Test\n');
     });
 
     it('throws a NotModifiedError when given a etag in options', async () => {

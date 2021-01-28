@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import fs from 'fs';
+import * as os from 'os';
+import fs from 'fs-extra';
+import mockFs from 'mock-fs';
 import path from 'path';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -30,6 +32,8 @@ const logger = getVoidLogger();
 const treeResponseFactory = ReadTreeResponseFactory.create({
   config: new ConfigReader({}),
 });
+
+const tmpDir = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
 
 describe('AzureUrlReader', () => {
   const worker = setupServer();
@@ -139,6 +143,16 @@ describe('AzureUrlReader', () => {
   });
 
   describe('readTree', () => {
+    beforeEach(() => {
+      mockFs({
+        [tmpDir]: mockFs.directory(),
+      });
+    });
+
+    afterEach(() => {
+      mockFs.restore();
+    });
+
     const repoBuffer = fs.readFileSync(
       path.resolve('src', 'reading', '__fixtures__', 'mock-main.zip'),
     );
@@ -198,6 +212,21 @@ describe('AzureUrlReader', () => {
 
       expect(mkDocsFile.toString()).toBe('site_name: Test\n');
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
+    });
+
+    it('creates a directory with the wanted files', async () => {
+      const response = await processor.readTree(
+        'https://dev.azure.com/organization/project/_git/repository',
+      );
+
+      const dir = await response.dir({ targetDir: tmpDir });
+
+      await expect(
+        fs.readFile(path.join(dir, 'mkdocs.yml'), 'utf8'),
+      ).resolves.toBe('site_name: Test\n');
+      await expect(
+        fs.readFile(path.join(dir, 'docs', 'index.md'), 'utf8'),
+      ).resolves.toBe('# Test\n');
     });
 
     it('throws a NotModifiedError when given a etag in options', async () => {
