@@ -87,9 +87,9 @@ metadata:
   tags:
     - java
   links:
-    url: https://admin.example-org.com
-    title: Admin Dashboard
-    icon: dashboard
+    - url: https://admin.example-org.com
+      title: Admin Dashboard
+      icon: dashboard
 spec:
   type: website
   lifecycle: production

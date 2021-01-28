@@ -12,7 +12,7 @@ metadata:
       icon: github
     - url: https://github.com/OAI/OpenAPI-Specification/blob/master/examples/v3.0/petstore.yaml
       title: API Spec
-      code: code
+      icon: code
 spec:
   type: openapi
   lifecycle: experimental

@@ -5,9 +5,9 @@ metadata:
   description: The acme-corp organization
   links:
     - url: http://www.acme.com/
-      name: Website
+      title: Website
     - url: https://meta.wikimedia.org/wiki/
-      name: Intranet
+      title: Intranet
 spec:
   type: organization
   profile:
