@@ -16,7 +16,7 @@
 
 import fs from 'fs-extra';
 import os from 'os';
-import { resolve } from 'path';
+import path from 'path';
 import { AzurePreparer } from './azure';
 import { getVoidLogger, Git } from '@backstage/backend-common';
 
@@ -37,8 +37,8 @@ describe('AzurePreparer', () => {
   });
 
   const workspacePath = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
-  const checkoutPath = resolve(workspacePath, 'checkout');
-  const templatePath = resolve(workspacePath, 'template');
+  const checkoutPath = path.resolve(workspacePath, 'checkout');
+  const templatePath = path.resolve(workspacePath, 'template');
   const prepareOptions = {
     url:
       'https://dev.azure.com/backstage-org/backstage-project/_git/template-repo',
@@ -54,7 +54,7 @@ describe('AzurePreparer', () => {
       username: 'notempty',
     });
     expect(fs.move).toHaveBeenCalledWith(checkoutPath, templatePath);
-    expect(fs.rmdir).toHaveBeenCalledWith(resolve(templatePath, '.git'));
+    expect(fs.rmdir).toHaveBeenCalledWith(path.resolve(templatePath, '.git'));
   });
 
   it('calls the clone command with the correct arguments for a repository', async () => {
@@ -100,17 +100,16 @@ describe('AzurePreparer', () => {
   });
 
   it('moves the template from path if it is specified', async () => {
-    const path = './subdir';
     await preparer.prepare({
       url: `https://dev.azure.com/backstage-org/backstage-project/_git/template-repo?path=${encodeURIComponent(
-        path,
+        './subdir',
       )}`,
       logger,
       workspacePath,
     });
 
     expect(fs.move).toHaveBeenCalledWith(
-      resolve(checkoutPath, 'subdir'),
+      path.resolve(checkoutPath, 'subdir'),
       templatePath,
     );
   });

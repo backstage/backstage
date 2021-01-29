@@ -17,7 +17,7 @@
 import fs from 'fs-extra';
 import { BitbucketPreparer } from './bitbucket';
 import { getVoidLogger, Git } from '@backstage/backend-common';
-import { resolve } from 'path';
+import path from 'path';
 import os from 'os';
 
 jest.mock('fs-extra');
@@ -41,8 +41,8 @@ describe('BitbucketPreparer', () => {
   });
 
   const workspacePath = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
-  const checkoutPath = resolve(workspacePath, 'checkout');
-  const templatePath = resolve(workspacePath, 'template');
+  const checkoutPath = path.resolve(workspacePath, 'checkout');
+  const templatePath = path.resolve(workspacePath, 'template');
 
   const prepareOptions = {
     url: 'https://bitbucket.org/backstage-project/backstage-repo',
@@ -58,7 +58,7 @@ describe('BitbucketPreparer', () => {
       ref: expect.any(String),
     });
     expect(fs.move).toHaveBeenCalledWith(checkoutPath, templatePath);
-    expect(fs.rmdir).toHaveBeenCalledWith(resolve(templatePath, '.git'));
+    expect(fs.rmdir).toHaveBeenCalledWith(path.resolve(templatePath, '.git'));
   });
 
   it('calls the clone command with the correct arguments if an app password is provided for a repository', async () => {
@@ -92,7 +92,7 @@ describe('BitbucketPreparer', () => {
       workspacePath,
     });
     expect(fs.move).toHaveBeenCalledWith(
-      resolve(checkoutPath, '1', '2', '3'),
+      path.resolve(checkoutPath, '1', '2', '3'),
       templatePath,
     );
   });
