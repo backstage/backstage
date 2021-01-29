@@ -40,17 +40,15 @@ export function registerLegacyActions(
       console.log(ctx);
       logger.info('Task claimed, waiting ...');
       // Give us some time to curl observe
-      await new Promise(resolve => setTimeout(resolve, 5000));
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       logger.info('Prepare the skeleton');
-
-      const { protocol, pullPath } = ctx.parameters;
-      const url = pullPath as string;
+      const { protocol, url } = ctx.parameters;
       const preparer =
-        protocol === 'file' ? new FilePreparer() : preparers.get(url);
+        protocol === 'file' ? new FilePreparer() : preparers.get(url as string);
 
       await preparer.prepare({
-        url,
+        url: url as string,
         logger: ctx.logger,
         workspacePath: ctx.workspacePath,
       });
