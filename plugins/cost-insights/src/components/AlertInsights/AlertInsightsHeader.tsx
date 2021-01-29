@@ -17,7 +17,7 @@
 import React from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { useCostInsightsStyles as useStyles } from '../../utils/styles';
-import { useScroll } from '../../hooks';
+import { ScrollAnchor } from '../../utils/scroll';
 import { DefaultNavigation } from '../../utils/navigation';
 
 type AlertInsightsHeaderProps = {
@@ -30,10 +30,10 @@ export const AlertInsightsHeader = ({
   subtitle,
 }: AlertInsightsHeaderProps) => {
   const classes = useStyles();
-  const { ScrollAnchor } = useScroll(DefaultNavigation.AlertInsightsHeader);
+
   return (
     <Box mb={6} position="relative">
-      <ScrollAnchor top={-20} behavior="smooth" />
+      <ScrollAnchor id={DefaultNavigation.AlertInsightsHeader} />
       <Typography variant="h4" align="center">
         {title}{' '}
         <span role="img" aria-label="direct-hit">

@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { AlertActionCardList } from './AlertActionCardList';
+export { MigrationAlertCard } from './MigrationAlertCard';

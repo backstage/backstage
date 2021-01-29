@@ -18,105 +18,44 @@ import React, {
   SetStateAction,
   useState,
   useContext,
-  useEffect,
-  useRef,
   PropsWithChildren,
 } from 'react';
-import { CSSProperties } from '@material-ui/styles';
 import { Maybe } from '../types';
 
 export type ScrollTo = Maybe<string>;
 
 export type ScrollContextProps = {
-  scrollTo: ScrollTo;
-  setScrollTo: Dispatch<SetStateAction<ScrollTo>>;
+  scroll: ScrollTo;
+  setScroll: Dispatch<SetStateAction<ScrollTo>>;
 };
-
-export type ScrollUtils = {
-  ScrollAnchor: (props: Omit<ScrollAnchorProps, 'id'>) => JSX.Element;
-  scrollIntoView: () => void;
-};
-
-export interface ScrollAnchorProps extends ScrollIntoViewOptions {
-  id: ScrollTo;
-  top?: number;
-  left?: number;
-}
 
 export const ScrollContext = React.createContext<
   ScrollContextProps | undefined
 >(undefined);
 
-export const ScrollAnchor = ({
-  id,
-  top,
-  left,
-  behavior,
-  block,
-  inline,
-}: ScrollAnchorProps) => {
-  const divRef = useRef<HTMLDivElement>(null);
-  const context = useContext(ScrollContext);
-
-  if (!context) {
-    assertNever();
-  }
-
-  const { scrollTo, setScrollTo } = context;
-
-  const styles: CSSProperties = {
-    position: 'absolute',
-    height: 0,
-    width: 0,
-    top: top || 0,
-    left: left || 0,
-  };
-
-  useEffect(() => {
-    function scrollIntoView() {
-      const options = {
-        behavior: behavior || 'auto',
-        block: block || 'start',
-        inline: inline || 'nearest',
-      };
-
-      if (divRef.current && scrollTo === id) {
-        divRef.current.scrollIntoView(options);
-        setScrollTo(null);
-      }
-    }
-
-    scrollIntoView();
-  }, [scrollTo, setScrollTo, id, behavior, block, inline]);
-
-  return <div ref={divRef} style={styles} data-testid={`scroll-test-${id}`} />;
-};
-
 export const ScrollProvider = ({ children }: PropsWithChildren<{}>) => {
-  const [scrollTo, setScrollTo] = useState<ScrollTo>(null);
-
+  const [scroll, setScroll] = useState<ScrollTo>(null);
   return (
-    <ScrollContext.Provider value={{ scrollTo, setScrollTo }}>
+    <ScrollContext.Provider value={{ scroll, setScroll }}>
       {children}
     </ScrollContext.Provider>
   );
 };
 
-export function useScroll(id: ScrollTo): ScrollUtils {
+export enum ScrollType {
+  AlertSummary = 'alert-status-summary',
+}
+
+export function useScroll() {
   const context = useContext(ScrollContext);
 
   if (!context) {
     assertNever();
   }
 
-  return {
-    ScrollAnchor: props => <ScrollAnchor id={id} {...props} />,
-    scrollIntoView: () => context.setScrollTo(id),
-  };
+  return [context.scroll, context.setScroll] as const;
 }
 
 function assertNever(): never {
-  throw new Error(
-    `Cannot use useScroll or ScrollAnchor outside ScrollProvider`,
-  );
+  throw new Error(`Cannot use useScroll outside ScrollProvider`);
 }

@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
-export * from './client';
-export * from './api';
-export { ProjectGrowthAlert, UnlabeledDataflowAlert } from './alerts';
-export * from './components';
-export { useCurrency } from './hooks';
-export * from './types';
-export * from './utils/tests';
+export { ProjectGrowthAlert } from './ProjectGrowthAlert';
+export { UnlabeledDataflowAlert } from './UnlabeledDataflowAlert';
+export { KubernetesMigrationAlert } from './KubernetesMigrationAlert';
+export type { MigrationAlert } from './KubernetesMigrationAlert';
+export type { MigrationData } from './KubernetesMigrationAlert';
