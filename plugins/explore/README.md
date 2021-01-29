@@ -8,7 +8,7 @@ This plugin helps to visualize the domains and tools in your ecosystem.
 To install the plugin, include the following import your `plugins.ts`:
 
 ```typescript
-export { plugin as Ecosystem } from '@backstage/plugin-explore';
+export { explorePlugin } from '@backstage/plugin-explore';
 ```
 
 Add a link to the sidebar in `Root.tsx`:

@@ -21,9 +21,9 @@ import {
   SupportButton,
   useApi,
 } from '@backstage/core';
+import { exploreToolsConfigRef } from '@backstage/plugin-explore-react';
 import React from 'react';
 import { useAsync } from 'react-use';
-import { exploreToolsConfigRef } from '../../../../explore-react/src';
 import { ToolCardGrid } from '../ToolCard';
 
 export const ToolExplorerContent = () => {

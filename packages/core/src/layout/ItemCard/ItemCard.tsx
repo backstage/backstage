@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { Button, Card, Chip, makeStyles, Typography } from '@material-ui/core';
+import clsx from 'clsx';
 import React from 'react';
 import { Link } from '../../components';
 
@@ -74,9 +75,10 @@ export const ItemCard = ({
         <Typography
           variant="body2"
           paragraph
-          className={`${classes.description} ${
-            tags && tags.length > 0 ? classes.withTags : ''
-          }`}
+          className={clsx(
+            classes.description,
+            tags && tags.length > 0 && classes.withTags,
+          )}
         >
           {description}
         </Typography>
@@ -86,7 +88,11 @@ export const ItemCard = ({
               {label}
             </Button>
           )}
-          {href && <Link to={href}>{label}</Link>}
+          {href && (
+            <Button component={Link} to={href} color="primary">
+              {label}
+            </Button>
+          )}
         </div>
       </div>
     </Card>

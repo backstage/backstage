@@ -82,7 +82,7 @@ export const Link = () => (
           title="Backstage"
           description="This is the description of an Item Card with link"
           label="Read More"
-          href="https://www.backstage.io"
+          href="https://backstage.io"
         />
       </Grid>
       <Grid item xs={12} md={3}>
