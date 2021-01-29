@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { fireEvent } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { Typography } from '@material-ui/core';
 
@@ -27,49 +27,41 @@ const propsMessage = { message: 'Some more info' };
 
 describe('<WarningPanel />', () => {
   it('renders without exploding', async () => {
-    const { getByText } = await renderInTestApp(
-      <WarningPanel {...propsTitleMessage} />,
-    );
-    expect(getByText('Warning: Mock title')).toBeInTheDocument();
+    await renderInTestApp(<WarningPanel {...propsTitleMessage} />);
+    expect(screen.getByText('Warning: Mock title')).toBeInTheDocument();
   });
 
   it('renders title', async () => {
-    const { getByText } = await renderInTestApp(
-      <WarningPanel {...propsTitleMessage} />,
-    );
-    const expandIcon = await getByText('Warning: Mock title');
+    await renderInTestApp(<WarningPanel {...propsTitleMessage} />);
+    const expandIcon = await screen.getByText('Warning: Mock title');
     fireEvent.click(expandIcon);
-    expect(getByText('Warning: Mock title')).toBeInTheDocument();
-    expect(getByText('Some more info')).toBeInTheDocument();
+    expect(screen.getByText('Warning: Mock title')).toBeInTheDocument();
+    expect(screen.getByText('Some more info')).toBeInTheDocument();
   });
 
   it('renders title and children', async () => {
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <WarningPanel {...propsTitle}>
         <Typography>Java stacktrace</Typography>
       </WarningPanel>,
     );
-    expect(getByText('Java stacktrace')).toBeInTheDocument();
+    expect(screen.getByText('Java stacktrace')).toBeInTheDocument();
   });
 
   it('renders message', async () => {
-    const { getByText } = await renderInTestApp(
-      <WarningPanel {...propsMessage} />,
-    );
-    expect(getByText('Warning')).toBeInTheDocument();
-    expect(getByText('Some more info')).toBeInTheDocument();
+    await renderInTestApp(<WarningPanel {...propsMessage} />);
+    expect(screen.getByText('Warning')).toBeInTheDocument();
+    expect(screen.getByText('Some more info')).toBeInTheDocument();
   });
 
   it('renders title, message, and children', async () => {
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <WarningPanel {...propsTitleMessage}>
         <Typography>Java stacktrace</Typography>
       </WarningPanel>,
     );
-    expect(getByText('Warning: Mock title')).toBeInTheDocument();
-    expect(getByText('Some more info')).toBeInTheDocument();
-    expect(getByText('Java stacktrace')).toBeInTheDocument();
-    // expect(getByText(/Some more info/)).toBeTruthy();
-    // expect(getByText(/Java stacktrace/)).toBeTruthy();
+    expect(screen.getByText('Warning: Mock title')).toBeInTheDocument();
+    expect(screen.getByText('Some more info')).toBeInTheDocument();
+    expect(screen.getByText('Java stacktrace')).toBeInTheDocument();
   });
 });
