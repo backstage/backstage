@@ -54,11 +54,14 @@ describe('GitLab Publisher', () => {
 
   describe('publish: createRemoteInGitLab', () => {
     it('should use gitbeaker to create a repo in a namespace if the namespace property is set', async () => {
-      const publisher = await GitlabPublisher.fromConfig({
-        host: 'gitlab.com',
-        token: 'fake-token',
-        baseUrl: 'https://gitlab.hosted.com',
-      });
+      const publisher = await GitlabPublisher.fromConfig(
+        {
+          host: 'gitlab.com',
+          token: 'fake-token',
+          baseUrl: 'https://gitlab.hosted.com',
+        },
+        { repoVisibility: 'public' },
+      );
 
       mockGitlabClient.Namespaces.show.mockResolvedValue({
         id: 42,
@@ -88,6 +91,7 @@ describe('GitLab Publisher', () => {
       expect(mockGitlabClient.Projects.create).toHaveBeenCalledWith({
         namespace_id: 42,
         name: 'test',
+        visibility: 'public',
       });
       expect(initRepoAndPush).toHaveBeenCalledWith({
         dir: resultPath,
@@ -98,10 +102,13 @@ describe('GitLab Publisher', () => {
     });
 
     it('should use gitbeaker to create a repo in the authed user if the namespace property is not set', async () => {
-      const publisher = await GitlabPublisher.fromConfig({
-        host: 'gitlab.com',
-        token: 'fake-token',
-      });
+      const publisher = await GitlabPublisher.fromConfig(
+        {
+          host: 'gitlab.com',
+          token: 'fake-token',
+        },
+        { repoVisibility: 'public' },
+      );
 
       mockGitlabClient.Namespaces.show.mockResolvedValue({});
       mockGitlabClient.Users.current.mockResolvedValue({
@@ -128,6 +135,7 @@ describe('GitLab Publisher', () => {
       expect(mockGitlabClient.Projects.create).toHaveBeenCalledWith({
         namespace_id: 21,
         name: 'test',
+        visibility: 'public',
       });
       expect(initRepoAndPush).toHaveBeenCalledWith({
         dir: resultPath,

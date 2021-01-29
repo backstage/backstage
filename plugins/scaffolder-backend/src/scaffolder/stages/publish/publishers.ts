@@ -98,7 +98,13 @@ export class Publishers implements PublisherBuilder {
     }
 
     for (const integration of scm.gitlab.list()) {
-      const publisher = await GitlabPublisher.fromConfig(integration.config);
+      const repoVisibility = (config.getOptionalString(
+        'scaffolder.gitlab.visibility',
+      ) ?? 'public') as RepoVisibilityOptions;
+
+      const publisher = await GitlabPublisher.fromConfig(integration.config, {
+        repoVisibility,
+      });
 
       if (publisher) {
         publishers.register(integration.config.host, publisher);
@@ -107,10 +113,13 @@ export class Publishers implements PublisherBuilder {
 
         publishers.register(
           integration.config.host,
-          await GitlabPublisher.fromConfig({
-            token: config.getOptionalString('scaffolder.gitlab.token') ?? '',
-            host: integration.config.host,
-          }),
+          await GitlabPublisher.fromConfig(
+            {
+              token: config.getOptionalString('scaffolder.gitlab.token') ?? '',
+              host: integration.config.host,
+            },
+            { repoVisibility },
+          ),
         );
       }
     }
