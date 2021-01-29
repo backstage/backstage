@@ -68,7 +68,7 @@ describe('GitLab Publisher', () => {
           storePath: 'https://gitlab.com/blam/test',
           owner: 'bob',
         },
-        directory: '/tmp/test',
+        workspacePath: '/tmp/test',
         logger,
       });
 
@@ -85,7 +85,7 @@ describe('GitLab Publisher', () => {
         name: 'test',
       });
       expect(initRepoAndPush).toHaveBeenCalledWith({
-        dir: '/tmp/test',
+        dir: '/tmp/test/result',
         remoteUrl: 'mockclone',
         auth: { username: 'oauth2', password: 'fake-token' },
         logger,
@@ -111,7 +111,7 @@ describe('GitLab Publisher', () => {
           storePath: 'https://gitlab.com/blam/test',
           owner: 'bob',
         },
-        directory: '/tmp/test',
+        workspacePath: '/tmp/test',
         logger,
       });
 
@@ -125,7 +125,7 @@ describe('GitLab Publisher', () => {
         name: 'test',
       });
       expect(initRepoAndPush).toHaveBeenCalledWith({
-        dir: '/tmp/test',
+        dir: '/tmp/test/result',
         remoteUrl: 'mockclone',
         auth: { username: 'oauth2', password: 'fake-token' },
         logger,

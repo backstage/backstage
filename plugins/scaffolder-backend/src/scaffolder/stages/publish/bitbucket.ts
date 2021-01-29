@@ -19,6 +19,7 @@ import { initRepoAndPush } from './helpers';
 import fetch from 'cross-fetch';
 import { BitbucketIntegrationConfig } from '@backstage/integration';
 import parseGitUrl from 'git-url-parse';
+import path from 'path';
 
 // TODO(blam): We should probably start to use a bitbucket client here that we can change
 // the baseURL to point at on-prem or public bitbucket versions like we do for
@@ -45,7 +46,7 @@ export class BitbucketPublisher implements PublisherBase {
 
   async publish({
     values,
-    directory,
+    workspacePath,
     logger,
   }: PublisherOptions): Promise<PublisherResult> {
     const { owner: project, name } = parseGitUrl(values.storePath);
@@ -58,7 +59,7 @@ export class BitbucketPublisher implements PublisherBase {
     });
 
     await initRepoAndPush({
-      dir: directory,
+      dir: path.join(workspacePath, 'result'),
       remoteUrl: result.remoteUrl,
       auth: {
         username: this.config.username ? this.config.username : 'x-token-auth',

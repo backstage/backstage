@@ -70,7 +70,7 @@ describe('JobProcessor', () => {
 
   describe('create', () => {
     it('creates should create a new job with a unique id', async () => {
-      const processor = new JobProcessor();
+      const processor = new JobProcessor('/tmp');
 
       const job = processor.create({
         entity: mockEntity,
@@ -84,7 +84,7 @@ describe('JobProcessor', () => {
     });
 
     it('should setup the correct context for the job', async () => {
-      const processor = new JobProcessor();
+      const processor = new JobProcessor('/tmp');
 
       const job = processor.create({
         entity: mockEntity,
@@ -97,7 +97,7 @@ describe('JobProcessor', () => {
     });
 
     it('should set the status as pending', async () => {
-      const processor = new JobProcessor();
+      const processor = new JobProcessor('/tmp');
 
       const job = processor.create({
         entity: mockEntity,
@@ -120,7 +120,7 @@ describe('JobProcessor', () => {
         },
       ];
 
-      const processor = new JobProcessor();
+      const processor = new JobProcessor('/tmp');
 
       const job = processor.create({
         entity: mockEntity,
@@ -139,12 +139,12 @@ describe('JobProcessor', () => {
 
   describe('get', () => {
     it('return undefined for when the job does not exist', () => {
-      const processor = new JobProcessor();
+      const processor = new JobProcessor('/tmp');
       expect(processor.get('123')).not.toBeDefined();
     });
 
     it('should return the exact same instance of the job when one is created', async () => {
-      const processor = new JobProcessor();
+      const processor = new JobProcessor('/tmp');
       const job = processor.create({
         entity: mockEntity,
         values: mockValues,
@@ -156,7 +156,7 @@ describe('JobProcessor', () => {
   });
   describe('process', () => {
     it('throws an error when the status of the job is not in pending state', async () => {
-      const processor = new JobProcessor();
+      const processor = new JobProcessor('/tmp');
       const job = processor.create({
         entity: mockEntity,
         values: mockValues,
@@ -182,7 +182,7 @@ describe('JobProcessor', () => {
         },
       ];
 
-      const processor = new JobProcessor();
+      const processor = new JobProcessor('/tmp');
       const job = processor.create({
         entity: mockEntity,
         values: mockValues,
@@ -208,7 +208,7 @@ describe('JobProcessor', () => {
         },
       ];
 
-      const processor = new JobProcessor();
+      const processor = new JobProcessor('/tmp');
       const job = processor.create({
         entity: mockEntity,
         values: mockValues,
@@ -244,7 +244,7 @@ describe('JobProcessor', () => {
         },
       ];
 
-      const processor = new JobProcessor();
+      const processor = new JobProcessor('/tmp');
       const job = processor.create({
         entity: mockEntity,
         values: mockValues,
@@ -283,7 +283,7 @@ describe('JobProcessor', () => {
         },
       ];
 
-      const processor = new JobProcessor();
+      const processor = new JobProcessor('/tmp');
       const job = processor.create({
         entity: mockEntity,
         values: mockValues,

@@ -69,7 +69,7 @@ describe('Bitbucket Publisher', () => {
           storePath: 'https://bitbucket.org/project/repo',
           owner: 'bob',
         },
-        directory: '/tmp/test',
+        workspacePath: '/tmp/test',
         logger: logger,
       });
 
@@ -80,7 +80,7 @@ describe('Bitbucket Publisher', () => {
       });
 
       expect(initRepoAndPush).toHaveBeenCalledWith({
-        dir: '/tmp/test',
+        dir: '/tmp/test/result',
         remoteUrl: 'https://bitbucket.org/project/repo',
         auth: { username: 'fake-user', password: 'fake-token' },
         logger: logger,
@@ -127,7 +127,7 @@ describe('Bitbucket Publisher', () => {
           storePath: 'https://bitbucket.mycompany.com/project/repo',
           owner: 'bob',
         },
-        directory: '/tmp/test',
+        workspacePath: '/tmp/test',
         logger: logger,
       });
 
@@ -138,7 +138,7 @@ describe('Bitbucket Publisher', () => {
       });
 
       expect(initRepoAndPush).toHaveBeenCalledWith({
-        dir: '/tmp/test',
+        dir: '/tmp/test/result',
         remoteUrl: 'https://bitbucket.mycompany.com/scm/project/repo',
         auth: { username: 'x-token-auth', password: 'fake-token' },
         logger: logger,
