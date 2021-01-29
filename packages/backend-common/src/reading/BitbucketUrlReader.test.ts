@@ -242,5 +242,17 @@ describe('BitbucketUrlReader', () => {
 
       expect(response.etag).toBe('12ab34cd56ef');
     });
+
+    it('should throw error when apiBaseUrl is missing', () => {
+      expect(() => {
+        /* eslint-disable no-new */
+        new BitbucketUrlReader(
+          {
+            host: 'bitbucket.mycompany.net',
+          },
+          { treeResponseFactory },
+        );
+      }).toThrowError('must configure an explicit apiBaseUrl');
+    });
   });
 });
