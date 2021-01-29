@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export { ProjectGrowthAlert } from './ProjectGrowthAlert';
+export {
+  ProjectGrowthAlert,
+  CustomProjectGrowthAlert,
+} from './ProjectGrowthAlert';
 export { UnlabeledDataflowAlert } from './UnlabeledDataflowAlert';
 export { KubernetesMigrationAlert } from './KubernetesMigrationAlert';
 export type { MigrationAlert } from './KubernetesMigrationAlert';

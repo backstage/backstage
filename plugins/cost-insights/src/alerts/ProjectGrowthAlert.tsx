@@ -15,30 +15,37 @@
  */
 
 import React from 'react';
+import { CostInsightsApi } from '../api';
 import { ProjectGrowthAlertCard } from '../components/ProjectGrowthAlertCard';
-import { Alert, AlertOptions, ProjectGrowthData } from '../types';
+import {
+  Alert,
+  AlertOptions,
+  AlertDismissFormData,
+  BaseAlert,
+  BaseAlertOptions,
+  ProjectGrowthData,
+} from '../types';
 
-// Override abstract classes defaults via options
-interface ProjectGrowthAlertOptions {
-  data: ProjectGrowthData; // abstract class requires data to render default UI
-  title?: string;
-  subtitle?: string;
-}
-
-// Convert ProjectGrowthAlert to an abstract class
-abstract class AbstractProjectGrowthAlert implements Alert {
-  data: ProjectGrowthData;
+export abstract class BaseProjectGrowthAlert implements BaseAlert {
+  url: string;
   title: string;
   subtitle: string;
+  data: ProjectGrowthData;
 
-  constructor(options: ProjectGrowthAlertOptions) {
-    this.data = options.data;
+  static url = '/cost-insights/investigating-growth';
+  static subtitle =
+    'Cost growth outpacing business growth is unsustainable long-term.';
+
+  constructor(
+    data: ProjectGrowthData,
+    options: Partial<BaseAlertOptions> = {},
+  ) {
+    this.data = data;
+    this.url = options.url ?? BaseProjectGrowthAlert.url;
     this.title =
       options.title ??
-      `Investigate project cost growth in ${options.data.project}`;
-    this.subtitle =
-      options.subtitle ??
-      'Cost growth outpacing business growth is unsustainable long-term.';
+      `Investigate project cost growth in ${this.data.project}`;
+    this.subtitle = options.subtitle ?? BaseProjectGrowthAlert.subtitle;
   }
 
   get element() {
@@ -46,9 +53,19 @@ abstract class AbstractProjectGrowthAlert implements Alert {
   }
 }
 
-// Hmm. Losing type safety here since the class doesn't directly extend Alert :(
-export class ProjectGrowthAlert extends AbstractProjectGrowthAlert {
-  async onDismissed(options: AlertOptions): Promise<Alert[]> {
+export class ProjectGrowthAlert extends BaseProjectGrowthAlert
+  implements Alert {}
+
+export class CustomProjectGrowthAlert extends BaseProjectGrowthAlert
+  implements Alert {
+  api: CostInsightsApi;
+
+  constructor(api: CostInsightsApi, data: ProjectGrowthData) {
+    super(data);
+    this.api = api;
+  }
+
+  async onDismissed(_: AlertOptions<AlertDismissFormData>): Promise<Alert[]> {
     return Promise.resolve([]);
   }
 }

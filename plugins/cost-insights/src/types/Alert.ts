@@ -33,20 +33,27 @@ import { Maybe } from './Maybe';
  * Errors thrown within hooks will generate a snackbar error notification.
  */
 
-export type Alert = {
+export type Alert = BaseAlert & AlertActions;
+
+export interface BaseAlert {
   title: string;
   subtitle: string;
   element?: JSX.Element;
   status?: AlertStatus;
   url?: string;
   buttonText?: string; // Default: View Instructions
+}
+
+export interface AlertActions {
   SnoozeForm?: Maybe<AlertForm>;
   AcceptForm?: Maybe<AlertForm>;
   DismissForm?: Maybe<AlertForm>;
   onSnoozed?(options: AlertOptions): Promise<Alert[]>;
   onAccepted?(options: AlertOptions): Promise<Alert[]>;
   onDismissed?(options: AlertOptions): Promise<Alert[]>;
-};
+}
+
+export type BaseAlertOptions = Pick<BaseAlert, 'url' | 'title' | 'subtitle'>;
 
 export type AlertForm<
   A extends Alert = any,

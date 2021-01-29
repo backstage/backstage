@@ -29,6 +29,7 @@ import {
   UnlabeledDataflowData,
 } from '../src/types';
 import {
+  CustomProjectGrowthAlert,
   ProjectGrowthAlert,
   UnlabeledDataflowAlert,
   KubernetesMigrationAlert,
@@ -180,11 +181,13 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
 
     const today = dayjs();
     const alerts: Alert[] = await this.request({ group }, [
-      new ProjectGrowthAlert({
-        data: projectGrowthData,
-        title: 'This title overrides the default',
+      new ProjectGrowthAlert(projectGrowthData, {
+        title: 'I am overriding the default title!',
       }),
-      new UnlabeledDataflowAlert(unlabeledDataflowData),
+      new CustomProjectGrowthAlert(this, projectGrowthData),
+      new UnlabeledDataflowAlert(unlabeledDataflowData, {
+        subtitle: 'I am overriding the default subtitle!',
+      }),
       new KubernetesMigrationAlert(this, {
         startDate: today.subtract(30, 'day').format(DEFAULT_DATE_FORMAT),
         endDate: today.format(DEFAULT_DATE_FORMAT),

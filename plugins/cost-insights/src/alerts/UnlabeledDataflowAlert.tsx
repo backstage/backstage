@@ -16,28 +16,63 @@
 
 import React from 'react';
 import { UnlabeledDataflowAlertCard } from '../components/UnlabeledDataflowAlertCard';
-import { Alert, AlertStatus, UnlabeledDataflowData } from '../types';
+import {
+  Alert,
+  BaseAlert,
+  BaseAlertOptions,
+  UnlabeledDataflowData,
+} from '../types';
 
-/**
- * The alert below is an example of an Alert implementation; the CostInsightsApi permits returning
- * any implementation of the Alert type, so adopters can create their own. The CostInsightsApi
- * fetches alert data from the backend, then creates Alert classes with the data.
- */
-
-export class UnlabeledDataflowAlert implements Alert {
+export abstract class BaseUnlabeledDataflowAlert implements BaseAlert {
+  url: string;
+  title: string;
+  subtitle: string;
   data: UnlabeledDataflowData;
-  status?: AlertStatus;
 
-  url = '/cost-insights/labeling-jobs';
-  title = 'Add labels to workflows';
-  subtitle =
+  static url = '/cost-insights/labeling-jobs';
+  static title = 'Add labels to workflows';
+  static subtitle =
     'Labels show in billing data, enabling cost insights for each workflow.';
 
-  constructor(data: UnlabeledDataflowData) {
+  constructor(
+    data: UnlabeledDataflowData,
+    options: Partial<BaseAlertOptions> = {},
+  ) {
     this.data = data;
+    this.url = options.url ?? BaseUnlabeledDataflowAlert.url;
+    this.title = options.title ?? BaseUnlabeledDataflowAlert.title;
+    this.subtitle = options.subtitle ?? BaseUnlabeledDataflowAlert.subtitle;
   }
 
   get element() {
     return <UnlabeledDataflowAlertCard alert={this.data} />;
   }
 }
+/**
+ * /**
+ * The CostInsightsApi permits returning any implementation of the Alert type,
+ * so adopters can create their own. The CostInsightsApi fetches alert data from the backend,
+ * then creates Alert classes with the data.
+ *
+ * Quick Setup:
+ * const dfAlert = new UnlabeledDataflowAlert(data);
+ *
+ * Simple Override w/o hooks:
+ * const dfAlert = new UnlabeledDataflowAlert(data, { title: 'My Custom title' });
+ *
+ * Advanced Override w/ hooks:
+ * class MyDataflowAlert extends BaseUnlabeledDataflowAlert implements Alert {
+ *  title = 'My Custom Title';
+ *
+ *  async onDismissed(options: AlertOptions<AlertDismissFormData>){ ... }
+ *
+ *  async onAccepted(options: AlertOptions<AlertAcceptFormData>) { ... }
+ *
+ *  async onSnoozed(options: AlertOptions<AlertSnoozeFormData>) { ... }
+ * }
+ *
+ * const dfAlert = new MyDataflowAlert(data);
+ *
+ */
+export class UnlabeledDataflowAlert extends BaseUnlabeledDataflowAlert
+  implements Alert {}
