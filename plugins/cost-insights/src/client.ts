@@ -180,7 +180,10 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
 
     const today = dayjs();
     const alerts: Alert[] = await this.request({ group }, [
-      new ProjectGrowthAlert(projectGrowthData),
+      new ProjectGrowthAlert({
+        data: projectGrowthData,
+        title: 'This title overrides the default',
+      }),
       new UnlabeledDataflowAlert(unlabeledDataflowData),
       new KubernetesMigrationAlert(this, {
         startDate: today.subtract(30, 'day').format(DEFAULT_DATE_FORMAT),

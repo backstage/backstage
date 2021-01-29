@@ -16,30 +16,39 @@
 
 import React from 'react';
 import { ProjectGrowthAlertCard } from '../components/ProjectGrowthAlertCard';
-import { Alert, ProjectGrowthData } from '../types';
+import { Alert, AlertOptions, ProjectGrowthData } from '../types';
 
-/**
- * The alert below is an example of an Alert implementation; the CostInsightsApi permits returning
- * any implementation of the Alert type, so adopters can create their own. The CostInsightsApi
- * fetches alert data from the backend, then creates Alert classes with the data.
- */
+// Override abstract classes defaults via options
+interface ProjectGrowthAlertOptions {
+  data: ProjectGrowthData; // abstract class requires data to render default UI
+  title?: string;
+  subtitle?: string;
+}
 
-export class ProjectGrowthAlert implements Alert {
+// Convert ProjectGrowthAlert to an abstract class
+abstract class AbstractProjectGrowthAlert implements Alert {
   data: ProjectGrowthData;
+  title: string;
+  subtitle: string;
 
-  url = '/cost-insights/investigating-growth';
-  subtitle =
-    'Cost growth outpacing business growth is unsustainable long-term.';
-
-  constructor(data: ProjectGrowthData) {
-    this.data = data;
-  }
-
-  get title() {
-    return `Investigate cost growth in project ${this.data.project}`;
+  constructor(options: ProjectGrowthAlertOptions) {
+    this.data = options.data;
+    this.title =
+      options.title ??
+      `Investigate project cost growth in ${options.data.project}`;
+    this.subtitle =
+      options.subtitle ??
+      'Cost growth outpacing business growth is unsustainable long-term.';
   }
 
   get element() {
     return <ProjectGrowthAlertCard alert={this.data} />;
+  }
+}
+
+// Hmm. Losing type safety here since the class doesn't directly extend Alert :(
+export class ProjectGrowthAlert extends AbstractProjectGrowthAlert {
+  async onDismissed(options: AlertOptions): Promise<Alert[]> {
+    return Promise.resolve([]);
   }
 }
