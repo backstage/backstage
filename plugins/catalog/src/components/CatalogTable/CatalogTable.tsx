@@ -24,6 +24,7 @@ import {
   EntityRefLink,
   EntityRefLinks,
   formatEntityRefTitle,
+  getEntityRelations,
 } from '@backstage/plugin-catalog-react';
 import { Chip } from '@material-ui/core';
 import Edit from '@material-ui/icons/Edit';
@@ -37,7 +38,6 @@ import {
   favouriteEntityIcon,
   favouriteEntityTooltip,
 } from '../FavouriteEntity/FavouriteEntity';
-import { getEntityRelations } from '../getEntityRelations';
 
 type EntityRow = Entity & {
   row: {
