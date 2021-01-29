@@ -40,14 +40,6 @@ import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
 import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
 
-type SubRoute = {
-  path: string;
-  title: string;
-  children: JSX.Element;
-};
-
-const Route = (props: SubRoute) => <TabbedLayout.Route {...props} />;
-
 const EntityLayoutTitle = ({
   entity,
   title,
@@ -164,4 +156,4 @@ export const EntityLayout = ({ children }: PropsWithChildren<{}>) => {
   );
 };
 
-EntityLayout.Route = Route;
+EntityLayout.Route = TabbedLayout.Route;

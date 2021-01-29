@@ -41,7 +41,7 @@ describe('<DomainCard />', () => {
     expect(getByText('artists')).toBeInTheDocument();
     expect(getByText('Everything about artists')).toBeInTheDocument();
     expect(getByText('a-tag')).toBeInTheDocument();
-    expect(getByText('Explore')).toHaveAttribute(
+    expect(getByText('Explore').parentElement).toHaveAttribute(
       'href',
       '/catalog/default/domain/artists',
     );

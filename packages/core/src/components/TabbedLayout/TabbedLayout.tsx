@@ -36,8 +36,8 @@ const Route: (props: SubRoute) => null = () => null;
 attachComponentData(Route, 'core.gatherMountPoints', true);
 
 export function createSubRoutesFromChildren(children: ReactNode): SubRoute[] {
-  // Directly comparing child.type with Route will not work with
-  // react-hot-loader for example in storybook
+  // Directly comparing child.type with Route will not work with in
+  // combination with react-hot-loader in storybook
   // https://github.com/gaearon/react-hot-loader/issues/304
   const routeType = (
     <Route path="" title="">
