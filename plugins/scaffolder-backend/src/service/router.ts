@@ -38,8 +38,13 @@ import {
   MemoryDatabase,
   TaskWorker,
 } from '../scaffolder/tasks';
-import { TemplateActionRegistry } from '../scaffolder/tasks/TemplateConverter';
+import {
+  TemplateActionRegistry,
+  templateEntityToSpec,
+} from '../scaffolder/tasks/TemplateConverter';
 import { LOCATION_ANNOTATION } from '@backstage/catalog-model';
+import { registerLegacyActions } from '../scaffolder/stages/legacy';
+import { getWorkingDirectory } from './helpers';
 
 export interface RouterOptions {
   preparers: PreparerBuilder;
@@ -69,18 +74,24 @@ export async function createRouter(
   } = options;
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
+  const workingDirectory = await getWorkingDirectory(config, logger);
   const jobProcessor = await JobProcessor.fromConfig({ config, logger });
   const taskBroker = new MemoryTaskBroker(new MemoryDatabase());
+  const actionRegistry = new TemplateActionRegistry();
   const worker = new TaskWorker({
     logger,
     taskBroker,
-    workingDirectory: 'todo',
+    actionRegistry,
+    workingDirectory,
+  });
+
+  registerLegacyActions(actionRegistry, {
     dockerClient,
-    entityClient,
     preparers,
     publishers,
     templaters,
   });
+
   worker.start();
 
   router
@@ -127,10 +138,8 @@ export async function createRouter(
         res.status(400).json({ errors: validationResult.errors });
         return;
       }
-      const result = await taskBroker.dispatch({
-        template,
-        values,
-      });
+      const taskSpec = templateEntityToSpec(template, values);
+      const result = await taskBroker.dispatch(taskSpec);
 
       res.status(201).json({ id: result.taskId });
     })

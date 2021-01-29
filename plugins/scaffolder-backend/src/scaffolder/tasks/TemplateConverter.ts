@@ -14,25 +14,37 @@
  * limitations under the License.
  */
 
+import { resolve as resolvePath } from 'path';
 import { JsonValue } from '@backstage/config';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { Logger } from 'winston';
 import type { Writable } from 'stream';
-import {
-  getTemplaterKey,
-  parseLocationAnnotation,
-  TemplaterValues,
-} from '../jobs/actions';
+
 import { TaskSpec } from './types';
 import { ConflictError, NotFoundError } from '@backstage/backend-common';
+import {
+  getTemplaterKey,
+  joinGitUrlPath,
+  parseLocationAnnotation,
+  TemplaterValues,
+} from '../stages';
 
-function templateEntityToSpec(
+export function templateEntityToSpec(
   template: TemplateEntityV1alpha1,
   values: TemplaterValues,
 ): TaskSpec {
   const steps: TaskSpec['steps'] = [];
 
-  const { protocol, location: pullPath } = parseLocationAnnotation(template);
+  const { protocol, location } = parseLocationAnnotation(template);
+
+  let url: string;
+  if (protocol === 'file') {
+    const path = resolvePath(location, template.spec.path || '.');
+
+    url = `file://${path}`;
+  } else {
+    url = joinGitUrlPath(location, template.spec.path);
+  }
   const templater = getTemplaterKey(template);
 
   steps.push({
@@ -41,7 +53,7 @@ function templateEntityToSpec(
     action: 'legacy:prepare',
     parameters: {
       protocol,
-      pullPath,
+      url,
     },
   });
 
@@ -61,7 +73,6 @@ function templateEntityToSpec(
     action: 'publish',
     parameters: {
       values,
-      directory,
     },
   });
 
@@ -72,7 +83,7 @@ type ActionContext = {
   logger: Logger;
   logStream: Writable;
 
-  workspaceDir: string;
+  workspacePath: string;
   parameters: { [name: string]: JsonValue };
   output(name: string, value: JsonValue): void;
 };

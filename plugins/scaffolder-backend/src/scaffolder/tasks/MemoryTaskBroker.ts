@@ -43,6 +43,14 @@ export class TaskAgent implements Task {
     return this.state.spec;
   }
 
+  get runId() {
+    return this.state.runId;
+  }
+
+  get taskId() {
+    return this.state.taskId;
+  }
+
   async emitLog(message: string): Promise<void> {
     await this.storage.emit({
       taskId: this.state.taskId,

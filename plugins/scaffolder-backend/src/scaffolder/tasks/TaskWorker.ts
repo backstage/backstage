@@ -17,26 +17,17 @@
 import { PassThrough } from 'stream';
 import { Logger } from 'winston';
 import * as winston from 'winston';
-import Docker from 'dockerode';
+import { JsonValue } from '@backstage/config';
 import { TaskBroker, Task } from './types';
-import { CatalogEntityClient } from '../../lib/catalog';
-import {
-  FilePreparer,
-  parseLocationAnnotation,
-  PreparerBuilder,
-  TemplaterBuilder,
-  PublisherBuilder,
-} from '../stages';
+import { TemplateActionRegistry } from './TemplateConverter';
+import fs from 'fs-extra';
+import path from 'path';
 
 type Options = {
   logger: Logger;
   taskBroker: TaskBroker;
   workingDirectory: string;
-  dockerClient: Docker;
-  entityClient: CatalogEntityClient;
-  preparers: PreparerBuilder;
-  templaters: TemplaterBuilder;
-  publishers: PublisherBuilder;
+  actionRegistry: TemplateActionRegistry;
 };
 
 export class TaskWorker {
@@ -52,66 +43,90 @@ export class TaskWorker {
   }
 
   async runOneTask(task: Task) {
-    const {
-      dockerClient,
-      preparers,
-      templaters,
-      publishers,
-      workingDirectory,
-      logger,
-    } = this.options;
-
-    const taskLogger = winston.createLogger({
-      level: process.env.LOG_LEVEL || 'info',
-      format: winston.format.combine(
-        winston.format.colorize(),
-        winston.format.timestamp(),
-        winston.format.simple(),
-      ),
-      defaultMeta: {},
-    });
-
-    const stream = new PassThrough();
-    stream.on('data', data => {
-      const message = data.toString().trim();
-      if (message?.length > 1) task.emitLog(message);
-    });
-
-    taskLogger.add(new winston.transports.Stream({ stream }));
-
     try {
-      task.emitLog('Task claimed, waiting ...');
+      const { actionRegistry, logger } = this.options;
+
+      // bbl LUUUNCH
+      // taskID and runId not part of task? O_o
+      const workspacePath = await this.createWorkPath(task.taskId, task.runId);
+
+      const taskLogger = winston.createLogger({
+        level: process.env.LOG_LEVEL || 'info',
+        format: winston.format.combine(
+          winston.format.colorize(),
+          winston.format.timestamp(),
+          winston.format.simple(),
+        ),
+        defaultMeta: {},
+      });
+
+      const stream = new PassThrough();
+      stream.on('data', data => {
+        const message = data.toString().trim();
+        if (message?.length > 1) task.emitLog(message);
+      });
+
+      taskLogger.add(new winston.transports.Stream({ stream }));
+
       // Give us some time to curl observe
+      task.emitLog('Task claimed, waiting ...');
       await new Promise(resolve => setTimeout(resolve, 5000));
+      task.emitLog(`Starting up work with ${task.spec.steps.length} steps`);
 
-      const { values, template } = task.spec;
-      task.emitLog('Prepare the skeleton');
-      const { protocol, location: pullPath } = parseLocationAnnotation(
-        task.spec.template,
-      );
+      const outputs: { [name: string]: JsonValue } = {};
 
-      const preparer =
-        protocol === 'file' ? new FilePreparer() : preparers.get(pullPath);
-      const templater = templaters.get(template);
-      const publisher = publishers.get(values.storePath);
+      for (const step of task.spec.steps) {
+        task.emitLog(`Beginning step ${step.name}`);
 
-      const skeletonDir = await preparer.prepare(task.spec.template, {
-        logger: taskLogger,
-        workingDirectory: workingDirectory,
-      });
+        const action = actionRegistry.get(step.action);
+        if (!action) {
+          throw new Error(`Action '${step.action}' does not exist`);
+        }
 
-      task.emitLog('Run the templater');
-      const { resultDir } = await templater.run({
-        directory: skeletonDir,
-        dockerClient,
-        logStream: stream,
-        values: values,
-      });
+        // TODO: substitute any placeholders with output from previous steps
+        const parameters = step.parameters!;
 
-      task.emitLog('Publish template');
-      logger.info('Will now store the template');
+        await action.handler({
+          logger,
+          logStream: stream,
+          parameters,
+          workspacePath,
+          output(name: string, value: JsonValue) {
+            outputs[name] = value;
+          },
+        });
 
-      logger.info('Totally storing the template now');
+        task.emitLog(`Finished step ${step.name}`);
+      }
+
+      // const { values, template } = task.spec;
+      // task.emitLog('Prepare the skeleton');
+      // const { protocol, location: pullPath } = parseLocationAnnotation(
+      //   task.spec.template,
+      // );
+
+      // const preparer =
+      //   protocol === 'file' ? new FilePreparer() : preparers.get(pullPath);
+      // const templater = templaters.get(template);
+      // const publisher = publishers.get(values.storePath);
+
+      // const skeletonDir = await preparer.prepare(task.spec.template, {
+      //   logger: taskLogger,
+      //   workingDirectory: workingDirectory,
+      // });
+
+      // task.emitLog('Run the templater');
+      // const { resultDir } = await templater.run({
+      //   directory: skeletonDir,
+      //   dockerClient,
+      //   logStream: stream,
+      //   values: values,
+      // });
+
+      // task.emitLog('Publish template');
+      // logger.info('Will now store the template');
+
+      logger.info('So done right now');
       await new Promise(resolve => setTimeout(resolve, 5000));
       // const result = await publisher.publish({
       //   values: values,
@@ -124,5 +139,15 @@ export class TaskWorker {
     } catch (error) {
       await task.complete('failed');
     }
+  }
+
+  async createWorkPath(taskId: string, runId: string): Promise<string> {
+    const workspacePath = path.join(
+      this.options.workingDirectory,
+      taskId,
+      runId,
+    );
+    fs.ensureDir(workspacePath);
+    return workspacePath;
   }
 }

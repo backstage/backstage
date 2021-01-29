@@ -14,21 +14,25 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
-import { TemplateActionRegistry } from '../TemplateConverter';
-import { FilePreparer } from './prepare';
+import { TemplateActionRegistry } from '../tasks/TemplateConverter';
+import { FilePreparer, PreparerBuilder } from './prepare';
 import Docker from 'dockerode';
+import { TemplaterBuilder, TemplaterValues } from './templater';
+import { PublisherBuilder } from './publish';
 
 type Options = {
-  logger: Logger;
-  config: Config;
   dockerClient: Docker;
+  preparers: PreparerBuilder;
+  templaters: TemplaterBuilder;
+  publishers: PublisherBuilder;
 };
 
 export function registerLegacyActions(
   registry: TemplateActionRegistry,
   options: Options,
 ) {
+  const { dockerClient, preparers, templaters, publishers } = options;
+
   registry.register({
     id: 'legacy:prepare',
     async handler(ctx) {
@@ -41,35 +45,17 @@ export function registerLegacyActions(
       logger.info('Prepare the skeleton');
 
       const { protocol, pullPath } = ctx.parameters;
-
+      const url = pullPath as string;
       const preparer =
-        protocol === 'file'
-          ? new FilePreparer()
-          : preparers.get(pullPath as string);
+        protocol === 'file' ? new FilePreparer() : preparers.get(url);
 
-      await preparer.prepare(task.spec.template, {
-        logger,
-        ctx.workspaceDir,
+      await preparer.prepare({
+        url,
+        logger: ctx.logger,
+        workspacePath: ctx.workspacePath,
       });
-      ctx.output('catalogInfoUrl', 'httpderp://asdasd');
     },
   });
-
-  // try {
-  //   const { values, template } = task.spec;
-  //   task.emitLog('Prepare the skeleton');
-  //   const { protocol, location: pullPath } = parseLocationAnnotation(
-  //     task.spec.template,
-  //   );
-  //   const preparer =
-  //     protocol === 'file' ? new FilePreparer() : preparers.get(pullPath);
-  //   const templater = templaters.get(template);
-  //   const publisher = publishers.get(values.storePath);
-
-  //   const skeletonDir = await preparer.prepare(task.spec.template, {
-  //     logger: taskLogger,
-  //     workingDirectory: workingDirectory,
-  //   });
 
   registry.register({
     id: 'legacy:template',
@@ -79,28 +65,55 @@ export function registerLegacyActions(
       const templater = templaters.get(ctx.parameters.templater as string);
 
       logger.info('Run the templater');
-      const { resultDir } = await templater.run({
-        directory: ctx.workspaceDir,
+      await templater.run({
+        workspacePath: ctx.workspacePath,
         dockerClient,
         logStream: ctx.logStream,
         values: ctx.parameters.values as TemplaterValues,
       });
     },
   });
-  //   task.emitLog('Publish template');
-  //   logger.info('Will now store the template');
 
-  //   logger.info('Totally storing the template now');
-  //   await new Promise(resolve => setTimeout(resolve, 5000));
-  //   // const result = await publisher.publish({
-  //   //   values: values,
-  //   //   directory: resultDir,
-  //   //   logger,
-  //   // });
-  //   // task.emitLog(`Result: ${JSON.stringify(result)}`);
-
-  //   await task.complete('completed');
-  // } catch (error) {
-  //   await task.complete('failed');
-  // }
+  registry.register({
+    id: 'legacy:publish',
+    async handler(ctx) {
+      const { values } = ctx.parameters;
+      if (
+        typeof values !== 'object' ||
+        values === null ||
+        Array.isArray(values)
+      ) {
+        throw new Error(
+          `Invalid values passed to publish, got ${typeof values}`,
+        );
+      }
+      const storePath = values.storePath as unknown;
+      if (typeof storePath !== 'string') {
+        throw new Error(
+          `Invalid store path passed to publish, got ${typeof storePath}`,
+        );
+      }
+      const owner = values.owner as unknown;
+      if (typeof owner !== 'string') {
+        throw new Error(
+          `Invalid store path passed to publish, got ${typeof owner}`,
+        );
+      }
+      const publisher = publishers.get(storePath);
+      ctx.logger.info('Will now store the template');
+      const { remoteUrl, catalogInfoUrl } = await publisher.publish({
+        values: {
+          ...values,
+          owner,
+          storePath,
+        },
+        workspacePath: ctx.workspacePath,
+        logger: ctx.logger,
+      });
+      ctx.output('remoteUrl', remoteUrl);
+      if (catalogInfoUrl) {
+        ctx.output('catalogInfoUrl', catalogInfoUrl);
+      }
+    },
+  });
 }

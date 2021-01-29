@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JsonObject } from '@backstage/config';
+import { JsonValue } from '@backstage/config';
 
 export type Status =
   | 'open'
@@ -50,7 +50,7 @@ export type TaskSpec = {
     id: string;
     name: string;
     action: string;
-    parameters?: JsonObject;
+    parameters?: { [name: string]: JsonValue };
   }>;
 };
 
@@ -60,6 +60,8 @@ export type DispatchResult = {
 
 export interface Task {
   spec: TaskSpec;
+  taskId: string;
+  runId: string;
   emitLog(message: string): Promise<void>;
   complete(result: CompletedTaskState): Promise<void>;
 }
