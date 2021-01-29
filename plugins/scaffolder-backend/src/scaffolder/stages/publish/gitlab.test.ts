@@ -21,7 +21,7 @@ jest.mock('@gitbeaker/node', () => ({
 jest.mock('./helpers');
 
 import os from 'os';
-import { resolve } from 'path';
+import path from 'path';
 import { GitlabPublisher } from './gitlab';
 import { Gitlab } from '@gitbeaker/node';
 import { initRepoAndPush } from './helpers';
@@ -50,7 +50,7 @@ describe('GitLab Publisher', () => {
   });
 
   const workspacePath = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
-  const resultPath = resolve(workspacePath, 'result');
+  const resultPath = path.resolve(workspacePath, 'result');
 
   describe('publish: createRemoteInGitLab', () => {
     it('should use gitbeaker to create a repo in a namespace if the namespace property is set', async () => {
