@@ -17,6 +17,9 @@
 jest.mock('@octokit/rest');
 jest.mock('./helpers');
 
+import os from 'os';
+import { resolve } from 'path';
+
 import { getVoidLogger } from '@backstage/backend-common';
 import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
 import { GithubPublisher } from './github';
@@ -35,6 +38,9 @@ describe('GitHub Publisher', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
+
+  const workspacePath = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
+  const resultPath = resolve(workspacePath, 'result');
 
   describe('with public repo visibility', () => {
     describe('publish: createRemoteInGithub', () => {
@@ -64,7 +70,7 @@ describe('GitHub Publisher', () => {
             owner: 'bob',
             access: 'blam/team',
           },
-          workspacePath: '/tmp/test',
+          workspacePath,
           logger,
         });
 
@@ -89,7 +95,7 @@ describe('GitHub Publisher', () => {
           permission: 'admin',
         });
         expect(initRepoAndPush).toHaveBeenCalledWith({
-          dir: '/tmp/test/result',
+          dir: resultPath,
           remoteUrl: 'https://github.com/backstage/backstage.git',
           auth: { username: 'fake-token', password: 'x-oauth-basic' },
           logger,
@@ -122,7 +128,7 @@ describe('GitHub Publisher', () => {
             owner: 'bob',
             access: 'blam',
           },
-          workspacePath: '/tmp/test',
+          workspacePath,
           logger,
         });
 
@@ -140,7 +146,7 @@ describe('GitHub Publisher', () => {
         expect(mockGithubClient.repos.addCollaborator).not.toHaveBeenCalled();
 
         expect(initRepoAndPush).toHaveBeenCalledWith({
-          dir: '/tmp/test/result',
+          dir: resultPath,
           remoteUrl: 'https://github.com/backstage/backstage.git',
           auth: { username: 'fake-token', password: 'x-oauth-basic' },
           logger,
@@ -175,7 +181,7 @@ describe('GitHub Publisher', () => {
           access: 'bob',
           description: 'description',
         },
-        workspacePath: '/tmp/test',
+        workspacePath,
         logger,
       });
 
@@ -198,7 +204,7 @@ describe('GitHub Publisher', () => {
         permission: 'admin',
       });
       expect(initRepoAndPush).toHaveBeenCalledWith({
-        dir: '/tmp/test/result',
+        dir: resultPath,
         remoteUrl: 'https://github.com/backstage/backstage.git',
         auth: { username: 'fake-token', password: 'x-oauth-basic' },
         logger,
@@ -233,7 +239,7 @@ describe('GitHub Publisher', () => {
           storePath: 'https://github.com/blam/test',
           owner: 'bob',
         },
-        workspacePath: '/tmp/test',
+        workspacePath,
         logger,
       });
 
@@ -249,7 +255,7 @@ describe('GitHub Publisher', () => {
         visibility: 'internal',
       });
       expect(initRepoAndPush).toHaveBeenCalledWith({
-        dir: '/tmp/test/result',
+        dir: resultPath,
         remoteUrl: 'https://github.com/backstage/backstage.git',
         auth: { username: 'fake-token', password: 'x-oauth-basic' },
         logger,
@@ -283,7 +289,7 @@ describe('GitHub Publisher', () => {
           storePath: 'https://github.com/blam/test',
           owner: 'bob',
         },
-        workspacePath: '/tmp/test',
+        workspacePath,
         logger,
       });
 
@@ -299,7 +305,7 @@ describe('GitHub Publisher', () => {
         private: true,
       });
       expect(initRepoAndPush).toHaveBeenCalledWith({
-        dir: '/tmp/test/result',
+        dir: resultPath,
         remoteUrl: 'https://github.com/backstage/backstage.git',
         auth: { username: 'fake-token', password: 'x-oauth-basic' },
         logger,

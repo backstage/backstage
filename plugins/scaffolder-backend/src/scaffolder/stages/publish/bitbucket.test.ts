@@ -16,6 +16,8 @@
 
 jest.mock('./helpers');
 
+import os from 'os';
+import { resolve } from 'path';
 import { BitbucketPublisher } from './bitbucket';
 import { initRepoAndPush } from './helpers';
 import { getVoidLogger } from '@backstage/backend-common';
@@ -31,6 +33,9 @@ describe('Bitbucket Publisher', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
+
+  const workspacePath = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
+  const resultPath = resolve(workspacePath, 'result');
 
   describe('publish: createRemoteInBitbucketCloud', () => {
     it('should create repo in bitbucket cloud', async () => {
@@ -69,7 +74,7 @@ describe('Bitbucket Publisher', () => {
           storePath: 'https://bitbucket.org/project/repo',
           owner: 'bob',
         },
-        workspacePath: '/tmp/test',
+        workspacePath,
         logger: logger,
       });
 
@@ -80,7 +85,7 @@ describe('Bitbucket Publisher', () => {
       });
 
       expect(initRepoAndPush).toHaveBeenCalledWith({
-        dir: '/tmp/test/result',
+        dir: resultPath,
         remoteUrl: 'https://bitbucket.org/project/repo',
         auth: { username: 'fake-user', password: 'fake-token' },
         logger: logger,
@@ -127,7 +132,7 @@ describe('Bitbucket Publisher', () => {
           storePath: 'https://bitbucket.mycompany.com/project/repo',
           owner: 'bob',
         },
-        workspacePath: '/tmp/test',
+        workspacePath,
         logger: logger,
       });
 
@@ -138,7 +143,7 @@ describe('Bitbucket Publisher', () => {
       });
 
       expect(initRepoAndPush).toHaveBeenCalledWith({
-        dir: '/tmp/test/result',
+        dir: resultPath,
         remoteUrl: 'https://bitbucket.mycompany.com/scm/project/repo',
         auth: { username: 'x-token-auth', password: 'fake-token' },
         logger: logger,
