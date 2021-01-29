@@ -44,9 +44,6 @@ const ExpandMoreIconStyled = () => {
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   panel: {
-    // display: 'flex',
-    // flexDirection: 'column',
-    // padding: theme.spacing(1.5),
     backgroundColor: theme.palette.warningBackground,
     color: theme.palette.warningText,
     verticalAlign: 'middle',
