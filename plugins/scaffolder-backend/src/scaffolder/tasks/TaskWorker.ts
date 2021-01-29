@@ -19,9 +19,9 @@ import { Logger } from 'winston';
 import * as winston from 'winston';
 import { JsonValue } from '@backstage/config';
 import { TaskBroker, Task } from './types';
-import { TemplateActionRegistry } from './TemplateConverter';
 import fs from 'fs-extra';
 import path from 'path';
+import { TemplateActionRegistry } from './TemplateConverter';
 
 type Options = {
   logger: Logger;
@@ -46,9 +46,11 @@ export class TaskWorker {
     try {
       const { actionRegistry, logger } = this.options;
 
-      // bbl LUUUNCH
-      // taskID and runId not part of task? O_o
-      const workspacePath = await this.createWorkPath(task.taskId, task.runId);
+      const workspacePath = path.join(
+        this.options.workingDirectory,
+        await task.getWorkspaceName(),
+      );
+      await fs.ensureDir(workspacePath);
 
       const taskLogger = winston.createLogger({
         level: process.env.LOG_LEVEL || 'info',
@@ -99,55 +101,13 @@ export class TaskWorker {
         task.emitLog(`Finished step ${step.name}`);
       }
 
-      // const { values, template } = task.spec;
-      // task.emitLog('Prepare the skeleton');
-      // const { protocol, location: pullPath } = parseLocationAnnotation(
-      //   task.spec.template,
-      // );
-
-      // const preparer =
-      //   protocol === 'file' ? new FilePreparer() : preparers.get(pullPath);
-      // const templater = templaters.get(template);
-      // const publisher = publishers.get(values.storePath);
-
-      // const skeletonDir = await preparer.prepare(task.spec.template, {
-      //   logger: taskLogger,
-      //   workingDirectory: workingDirectory,
-      // });
-
-      // task.emitLog('Run the templater');
-      // const { resultDir } = await templater.run({
-      //   directory: skeletonDir,
-      //   dockerClient,
-      //   logStream: stream,
-      //   values: values,
-      // });
-
-      // task.emitLog('Publish template');
-      // logger.info('Will now store the template');
-
       logger.info('So done right now');
       await new Promise(resolve => setTimeout(resolve, 5000));
-      // const result = await publisher.publish({
-      //   values: values,
-      //   directory: resultDir,
-      //   logger,
-      // });
-      // task.emitLog(`Result: ${JSON.stringify(result)}`);
 
       await task.complete('completed');
     } catch (error) {
+      task.emitLog(error);
       await task.complete('failed');
     }
-  }
-
-  async createWorkPath(taskId: string, runId: string): Promise<string> {
-    const workspacePath = path.join(
-      this.options.workingDirectory,
-      taskId,
-      runId,
-    );
-    fs.ensureDir(workspacePath);
-    return workspacePath;
   }
 }

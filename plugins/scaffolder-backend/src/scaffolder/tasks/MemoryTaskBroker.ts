@@ -43,12 +43,8 @@ export class TaskAgent implements Task {
     return this.state.spec;
   }
 
-  get runId() {
-    return this.state.runId;
-  }
-
-  get taskId() {
-    return this.state.taskId;
+  async getWorkspaceName() {
+    return `${this.state.taskId}_${this.state.runId}`;
   }
 
   async emitLog(message: string): Promise<void> {

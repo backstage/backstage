@@ -60,10 +60,9 @@ export type DispatchResult = {
 
 export interface Task {
   spec: TaskSpec;
-  taskId: string;
-  runId: string;
   emitLog(message: string): Promise<void>;
   complete(result: CompletedTaskState): Promise<void>;
+  getWorkspaceName(): Promise<string>;
 }
 
 export interface TaskBroker {
