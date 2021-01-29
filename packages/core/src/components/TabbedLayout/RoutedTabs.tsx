@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import React, { useMemo } from 'react';
-import { useParams, useNavigate, matchRoutes, useRoutes } from 'react-router';
-import { HeaderTabs, Content as LayoutContent } from '@backstage/core';
 import { Helmet } from 'react-helmet';
+import { matchRoutes, useNavigate, useParams, useRoutes } from 'react-router';
+import { Content, HeaderTabs } from '../../layout';
 import { SubRoute } from './types';
 
 export function useSelectedSubRoute(
@@ -44,7 +44,7 @@ export function useSelectedSubRoute(
   };
 }
 
-export const TabbedLayout = ({ routes }: { routes: SubRoute[] }) => {
+export const RoutedTabs = ({ routes }: { routes: SubRoute[] }) => {
   const navigate = useNavigate();
   const { index, route, element } = useSelectedSubRoute(routes);
   const headerTabs = useMemo(
@@ -66,10 +66,10 @@ export const TabbedLayout = ({ routes }: { routes: SubRoute[] }) => {
         selectedIndex={index}
         onChange={onTabChange}
       />
-      <LayoutContent>
+      <Content>
         <Helmet title={route.title} />
         {element}
-      </LayoutContent>
+      </Content>
     </>
   );
 };

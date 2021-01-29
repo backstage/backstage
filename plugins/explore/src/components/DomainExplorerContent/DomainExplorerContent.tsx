@@ -22,7 +22,7 @@ import {
   SupportButton,
   useApi,
 } from '@backstage/core';
-import { catalogApiRef } from '@backstage/plugin-catalog';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { Button } from '@material-ui/core';
 import React from 'react';
 import { useAsync } from 'react-use';
