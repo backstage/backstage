@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getVoidLogger } from '@backstage/backend-common';
+import { getVoidLogger, UrlReader } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { DirectoryPreparer } from './dir';
 import { checkoutGitRepository } from '../../helpers';
@@ -46,10 +46,18 @@ const createMockEntity = (annotations: {}) => {
 };
 
 const mockConfig = new ConfigReader({});
+const mockUrlReader: jest.Mocked<UrlReader> = {
+  read: jest.fn(),
+  readTree: jest.fn(),
+};
 
 describe('directory preparer', () => {
   it('should merge managed-by-location and techdocs-ref when techdocs-ref is relative', async () => {
-    const directoryPreparer = new DirectoryPreparer(mockConfig, logger);
+    const directoryPreparer = new DirectoryPreparer(
+      mockConfig,
+      logger,
+      mockUrlReader,
+    );
 
     const mockEntity = createMockEntity({
       'backstage.io/managed-by-location':
@@ -63,7 +71,11 @@ describe('directory preparer', () => {
   });
 
   it('should merge managed-by-location and techdocs-ref when techdocs-ref is absolute', async () => {
-    const directoryPreparer = new DirectoryPreparer(mockConfig, logger);
+    const directoryPreparer = new DirectoryPreparer(
+      mockConfig,
+      logger,
+      mockUrlReader,
+    );
 
     const mockEntity = createMockEntity({
       'backstage.io/managed-by-location':
@@ -77,7 +89,11 @@ describe('directory preparer', () => {
   });
 
   it('should merge managed-by-location and techdocs-ref when managed-by-location is a git repository', async () => {
-    const directoryPreparer = new DirectoryPreparer(mockConfig, logger);
+    const directoryPreparer = new DirectoryPreparer(
+      mockConfig,
+      logger,
+      mockUrlReader,
+    );
 
     const mockEntity = createMockEntity({
       'backstage.io/managed-by-location':
