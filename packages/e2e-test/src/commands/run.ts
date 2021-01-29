@@ -104,11 +104,11 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
         {
           helpers: {
             version(name: string) {
-              const pkg = require(`${name}/package.json`);
-              if (!pkg) {
+              const pkge = require(`${name}/package.json`);
+              if (!pkge) {
                 throw new Error(`No version available for package ${name}`);
               }
-              return pkg.version;
+              return pkge.version;
             },
           },
         },

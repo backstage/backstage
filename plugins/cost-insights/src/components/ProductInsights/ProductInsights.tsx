@@ -83,28 +83,31 @@ export const ProductInsights = ({
 
   useEffect(() => {
     async function getAllProductInsights(
-      group: string,
-      project: Maybe<string>,
-      products: Product[],
-      lastCompleteBillingDate: string,
+      groupId: string,
+      projectId: Maybe<string>,
+      productsId: Product[],
+      lastCompleteBillingDateId: string,
     ) {
       try {
         dispatchLoadingProducts(true);
         const responses = await Promise.allSettled(
-          products.map(product =>
+          productsId.map(product =>
             client.getProductInsights({
-              group: group,
-              project: project,
+              group: groupId,
+              project: projectId,
               product: product.kind,
-              intervals: intervalsOf(DEFAULT_DURATION, lastCompleteBillingDate),
+              intervals: intervalsOf(
+                DEFAULT_DURATION,
+                lastCompleteBillingDateId,
+              ),
             }),
           ),
         ).then(settledResponseOf);
 
-        const initialStates = initialStatesOf(products, responses).sort(
+        const initialStatesNow = initialStatesOf(productsId, responses).sort(
           totalAggregationSort,
         );
-        setStates(initialStates);
+        setStates(initialStatesNow);
       } catch (e) {
         setError(e);
       } finally {
@@ -125,8 +128,8 @@ export const ProductInsights = ({
   useEffect(
     function handleOnLoaded() {
       if (onceRef.current) {
-        const products = initialStates.map(state => state.product);
-        onLoaded(products);
+        const currentProducts = initialStates.map(state => state.product);
+        onLoaded(currentProducts);
       } else {
         onceRef.current = true;
       }

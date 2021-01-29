@@ -38,13 +38,13 @@ export function isOwnerOf(owner: Entity, owned: Entity) {
 
   const owners = getEntityRelations(owned, RELATION_OWNED_BY);
 
-  for (const owner of owners) {
+  for (const ownerItem of owners) {
     if (
       possibleOwners.find(
         o =>
-          owner.kind.toLowerCase() === o.kind.toLowerCase() &&
-          owner.namespace.toLowerCase() === o.namespace.toLowerCase() &&
-          owner.name.toLowerCase() === o.name.toLowerCase(),
+          ownerItem.kind.toLowerCase() === o.kind.toLowerCase() &&
+          ownerItem.namespace.toLowerCase() === o.namespace.toLowerCase() &&
+          ownerItem.name.toLowerCase() === o.name.toLowerCase(),
       ) !== undefined
     ) {
       return true;

@@ -18,11 +18,11 @@ import { Paper, Divider } from '@material-ui/core';
 import { AlertActionCard } from './AlertActionCard';
 import { Alert } from '../../types';
 
-type AlertActionCardList = {
+type AlertActionCardListType = {
   alerts: Array<Alert>;
 };
 
-export const AlertActionCardList = ({ alerts }: AlertActionCardList) => (
+export const AlertActionCardList = ({ alerts }: AlertActionCardListType) => (
   <Paper>
     {alerts.map((alert, index) => (
       <Fragment key={`alert-${index}`}>

@@ -38,13 +38,13 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export type Tab = {
+export type objectTab = {
   id: string;
   label: string;
 };
 
 type HeaderTabsProps = {
-  tabs: Tab[];
+  tabs: objectTab[];
   onChange?: (index: number) => void;
   selectedIndex?: number;
 };

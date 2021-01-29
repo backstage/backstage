@@ -27,11 +27,11 @@ type Options = {
   provider: AuthProvider & { id: string };
 };
 
-export type DirectAuthResponse = {
-  userId: string;
-  profile: ProfileInfo;
-  backstageIdentity: BackstageIdentity;
-};
+// export type DirectAuthResponse = {
+//   userId: string;
+//   profile: ProfileInfo;
+//   backstageIdentity: BackstageIdentity;
+// };
 
 export class DirectAuthConnector<DirectAuthResponse> {
   private readonly discoveryApi: DiscoveryApi;

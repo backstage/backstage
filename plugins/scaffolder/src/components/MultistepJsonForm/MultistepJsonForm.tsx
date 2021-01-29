@@ -30,7 +30,7 @@ import { Theme as MuiTheme } from '@rjsf/material-ui';
 import React, { useState } from 'react';
 
 const Form = withTheme(MuiTheme);
-type Step = {
+type StepType = {
   schema: JSONSchema;
   label: string;
 } & Partial<Omit<FormProps<any>, 'schema'>>;
@@ -39,7 +39,7 @@ type Props = {
   /**
    * Steps for the form, each contains label and form schema
    */
-  steps: Step[];
+  steps: StepType[];
   formData: Record<string, any>;
   onChange: (e: IChangeEvent) => void;
   onReset: () => void;

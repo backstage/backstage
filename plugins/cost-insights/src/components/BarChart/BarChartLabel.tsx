@@ -18,7 +18,7 @@ import React, { PropsWithChildren } from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { useBarChartLabelStyles } from '../../utils/styles';
 
-type BarChartLabel = {
+type BarChartLabelType = {
   x: number;
   y: number;
   height: number;
@@ -33,7 +33,7 @@ export const BarChartLabel = ({
   width,
   details,
   children,
-}: PropsWithChildren<BarChartLabel>) => {
+}: PropsWithChildren<BarChartLabelType>) => {
   const classes = useBarChartLabelStyles();
   const translateX = width * -0.5;
 

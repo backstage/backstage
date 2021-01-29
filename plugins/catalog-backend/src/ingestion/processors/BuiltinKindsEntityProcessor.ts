@@ -66,8 +66,8 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
 
   async validateEntityKind(entity: Entity): Promise<boolean> {
     for (const validator of this.validators) {
-      const result = await validator.check(entity);
-      if (result) {
+      const results = await validator.check(entity);
+      if (results) {
         return true;
       }
     }

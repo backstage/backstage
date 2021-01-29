@@ -104,12 +104,12 @@ describe('GitHubPreparer', () => {
   });
 
   it('return the temp directory with the path to the folder if it is specified', async () => {
-    const preparer = GithubPreparer.fromConfig({
+    const preparerCheck = GithubPreparer.fromConfig({
       host: 'github.com',
       token: 'fake-token',
     });
     mockEntity.spec.path = './template/test/1/2/3';
-    const response = await preparer.prepare(mockEntity, {
+    const response = await preparerCheck.prepare(mockEntity, {
       logger: getVoidLogger(),
     });
     expect(response.split('\\').join('/')).toMatch(
@@ -118,13 +118,13 @@ describe('GitHubPreparer', () => {
   });
 
   it('return the working directory with the path to the folder if it is specified', async () => {
-    const preparer = GithubPreparer.fromConfig({
+    const preparerCheck = GithubPreparer.fromConfig({
       host: 'github.com',
       token: 'fake-token',
     });
 
     mockEntity.spec.path = './template/test/1/2/3';
-    const response = await preparer.prepare(mockEntity, {
+    const response = await preparerCheck.prepare(mockEntity, {
       workingDirectory: '/workDir',
       logger: getVoidLogger(),
     });

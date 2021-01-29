@@ -18,7 +18,7 @@ import React from 'react';
 import { ButtonBase } from '@material-ui/core';
 import { useBarChartStepperStyles as useStyles } from '../../utils/styles';
 
-export type BarChartSteps = {
+export type BarChartStepsType = {
   steps: number;
   activeStep: number;
   onClick: (index: number) => void;
@@ -28,7 +28,7 @@ export const BarChartSteps = ({
   steps,
   activeStep,
   onClick,
-}: BarChartSteps) => {
+}: BarChartStepsType) => {
   const classes = useStyles();
   const handleOnClick = (index: number) => (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,

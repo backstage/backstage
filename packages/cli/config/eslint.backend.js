@@ -38,6 +38,8 @@ module.exports = {
   },
   ignorePatterns: ['.eslintrc.js', '**/dist/**', '**/dist-types/**'],
   rules: {
+    'no-shadow': 'off',
+    'no-redeclare': 'off',
     '@typescript-eslint/no-shadow': 'error',
     '@typescript-eslint/no-redeclare': 'error',
 

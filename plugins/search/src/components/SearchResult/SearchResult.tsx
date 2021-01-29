@@ -59,10 +59,10 @@ type TableHeaderProps = {
   handleToggleFilters: () => void;
 };
 
-type Filters = {
-  selected: string;
-  checked: Array<string | null>;
-};
+// type Filters = {
+//   selected: string;
+//   checked: Array<string | null>;
+// };
 
 // TODO: move out column to make the search result component more generic
 const columns: TableColumn[] = [

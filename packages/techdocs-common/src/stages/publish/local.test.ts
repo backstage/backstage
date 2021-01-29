@@ -28,9 +28,9 @@ jest.mock('fs-extra', () => {
   const fsOriginal = jest.requireActual('fs-extra');
   return {
     ...fsOriginal,
-    access: jest.fn().mockImplementation((path, checkType, callback) => {
+    access: jest.fn().mockImplementation((paths, checkType, callback) => {
       if (
-        path.includes('http://localhost:7000/static') &&
+        paths.includes('http://localhost:7000/static') &&
         checkType === fs.constants.F_OK
       ) {
         callback();

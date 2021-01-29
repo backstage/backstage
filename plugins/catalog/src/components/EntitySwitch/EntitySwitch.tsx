@@ -35,8 +35,8 @@ type SwitchCase = {
   children: JSX.Element;
 };
 
-function createSwitchCasesFromChildren(children: ReactNode): SwitchCase[] {
-  return Children.toArray(children).flatMap(child => {
+function createSwitchCasesFromChildren(childrenNode: ReactNode): SwitchCase[] {
+  return Children.toArray(childrenNode).flatMap(child => {
     if (!isValidElement(child)) {
       return [];
     }

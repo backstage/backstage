@@ -71,8 +71,8 @@ export const RegisterComponentForm = ({
 
   const onSubmit = async (formData: Record<string, string>) => {
     const { componentLocation: target } = formData;
-    async function saveCatalogFileConfig(target: string) {
-      const data = await catalogApi.addLocation({ target });
+    async function saveCatalogFileConfig(targetString: string) {
+      const data = await catalogApi.addLocation({ target: targetString });
       saveConfig({
         type: 'file',
         location: data.location.target,
@@ -80,12 +80,12 @@ export const RegisterComponentForm = ({
       });
     }
 
-    async function trySaveRepositoryConfig(target: string) {
-      const existingCatalog = await checkForExistingCatalogInfo(target);
+    async function trySaveRepositoryConfig(targetString: string) {
+      const existingCatalog = await checkForExistingCatalogInfo(targetString);
       if (existingCatalog.exists) {
-        const targetUrl = target.endsWith('/')
-          ? `${target}${existingCatalog.url}`
-          : `${target}/${existingCatalog.url}`;
+        const targetUrl = targetString.endsWith('/')
+          ? `${targetString}${existingCatalog.url}`
+          : `${targetString}/${existingCatalog.url}`;
         await saveCatalogFileConfig(targetUrl);
       } else {
         saveConfig({

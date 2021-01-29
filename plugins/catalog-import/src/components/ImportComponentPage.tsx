@@ -46,20 +46,20 @@ function manifestGenerationAvailable(configApi: ConfigApi): boolean {
 
 function repositories(configApi: ConfigApi): string[] {
   const integrations = configApi.getConfig('integrations');
-  const repositories = [];
+  const repos = [];
   if (integrations.has('github')) {
-    repositories.push('GitHub');
+    repos.push('GitHub');
   }
   if (integrations.has('bitbucket')) {
-    repositories.push('Bitbucket');
+    repos.push('Bitbucket');
   }
   if (integrations.has('gitlab')) {
-    repositories.push('GitLab');
+    repos.push('GitLab');
   }
   if (integrations.has('azure')) {
-    repositories.push('Azure');
+    repos.push('Azure');
   }
-  return repositories;
+  return repos;
 }
 
 export const ImportComponentPage = ({

@@ -53,8 +53,10 @@ const Route: (props: SubRoute) => null = () => null;
 // This causes all mount points that are discovered within this route to use the path of the route itself
 attachComponentData(Route, 'core.gatherMountPoints', true);
 
-export function createSubRoutesFromChildren(children: ReactNode): SubRoute[] {
-  return Children.toArray(children).flatMap(child => {
+export function createSubRoutesFromChildren(
+  childrenNode: ReactNode,
+): SubRoute[] {
+  return Children.toArray(childrenNode).flatMap(child => {
     if (!isValidElement(child)) {
       return [];
     }
