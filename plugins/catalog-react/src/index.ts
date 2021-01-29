@@ -24,3 +24,4 @@ export {
   entityRouteRef,
   rootRoute,
 } from './routes';
+export * from './utils';
