@@ -19,8 +19,10 @@ import { initRepoAndPush } from './helpers';
 import { GitHubIntegrationConfig } from '@backstage/integration';
 import parseGitUrl from 'git-url-parse';
 import { Octokit } from '@octokit/rest';
+import path from 'path';
 
 export type RepoVisibilityOptions = 'private' | 'internal' | 'public';
+
 export class GithubPublisher implements PublisherBase {
   static async fromConfig(
     config: GitHubIntegrationConfig,
@@ -41,6 +43,7 @@ export class GithubPublisher implements PublisherBase {
       repoVisibility,
     });
   }
+
   constructor(
     private readonly config: {
       token: string;
@@ -51,7 +54,7 @@ export class GithubPublisher implements PublisherBase {
 
   async publish({
     values,
-    directory,
+    workspacePath,
     logger,
   }: PublisherOptions): Promise<PublisherResult> {
     const { owner, name } = parseGitUrl(values.storePath);
@@ -66,7 +69,7 @@ export class GithubPublisher implements PublisherBase {
     });
 
     await initRepoAndPush({
-      dir: directory,
+      dir: path.join(workspacePath, 'result'),
       remoteUrl,
       auth: {
         username: this.config.token,
@@ -79,7 +82,6 @@ export class GithubPublisher implements PublisherBase {
       /\.git$/,
       '/blob/master/catalog-info.yaml',
     );
-
     return { remoteUrl, catalogInfoUrl };
   }
 

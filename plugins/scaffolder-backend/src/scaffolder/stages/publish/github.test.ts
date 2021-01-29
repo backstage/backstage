@@ -64,7 +64,7 @@ describe('GitHub Publisher', () => {
             owner: 'bob',
             access: 'blam/team',
           },
-          directory: '/tmp/test',
+          workspacePath: '/tmp/test',
           logger,
         });
 
@@ -89,7 +89,7 @@ describe('GitHub Publisher', () => {
           permission: 'admin',
         });
         expect(initRepoAndPush).toHaveBeenCalledWith({
-          dir: '/tmp/test',
+          dir: '/tmp/test/result',
           remoteUrl: 'https://github.com/backstage/backstage.git',
           auth: { username: 'fake-token', password: 'x-oauth-basic' },
           logger,
@@ -122,7 +122,7 @@ describe('GitHub Publisher', () => {
             owner: 'bob',
             access: 'blam',
           },
-          directory: '/tmp/test',
+          workspacePath: '/tmp/test',
           logger,
         });
 
@@ -140,7 +140,7 @@ describe('GitHub Publisher', () => {
         expect(mockGithubClient.repos.addCollaborator).not.toHaveBeenCalled();
 
         expect(initRepoAndPush).toHaveBeenCalledWith({
-          dir: '/tmp/test',
+          dir: '/tmp/test/result',
           remoteUrl: 'https://github.com/backstage/backstage.git',
           auth: { username: 'fake-token', password: 'x-oauth-basic' },
           logger,
@@ -175,7 +175,7 @@ describe('GitHub Publisher', () => {
           access: 'bob',
           description: 'description',
         },
-        directory: '/tmp/test',
+        workspacePath: '/tmp/test',
         logger,
       });
 
@@ -198,7 +198,7 @@ describe('GitHub Publisher', () => {
         permission: 'admin',
       });
       expect(initRepoAndPush).toHaveBeenCalledWith({
-        dir: '/tmp/test',
+        dir: '/tmp/test/result',
         remoteUrl: 'https://github.com/backstage/backstage.git',
         auth: { username: 'fake-token', password: 'x-oauth-basic' },
         logger,
@@ -233,7 +233,7 @@ describe('GitHub Publisher', () => {
           storePath: 'https://github.com/blam/test',
           owner: 'bob',
         },
-        directory: '/tmp/test',
+        workspacePath: '/tmp/test',
         logger,
       });
 
@@ -249,7 +249,7 @@ describe('GitHub Publisher', () => {
         visibility: 'internal',
       });
       expect(initRepoAndPush).toHaveBeenCalledWith({
-        dir: '/tmp/test',
+        dir: '/tmp/test/result',
         remoteUrl: 'https://github.com/backstage/backstage.git',
         auth: { username: 'fake-token', password: 'x-oauth-basic' },
         logger,
@@ -283,7 +283,7 @@ describe('GitHub Publisher', () => {
           storePath: 'https://github.com/blam/test',
           owner: 'bob',
         },
-        directory: '/tmp/test',
+        workspacePath: '/tmp/test',
         logger,
       });
 
@@ -299,7 +299,7 @@ describe('GitHub Publisher', () => {
         private: true,
       });
       expect(initRepoAndPush).toHaveBeenCalledWith({
-        dir: '/tmp/test',
+        dir: '/tmp/test/result',
         remoteUrl: 'https://github.com/backstage/backstage.git',
         auth: { username: 'fake-token', password: 'x-oauth-basic' },
         logger,
