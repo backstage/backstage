@@ -81,6 +81,9 @@ export type ReadTreeResponseDirOptions = {
 };
 
 export type ReadTreeResponse = {
+  /**
+   * files() returns an array of all the files inside the tree and corresponding functions to read their content.
+   */
   files(): Promise<ReadTreeResponseFile[]>;
   archive(): Promise<NodeJS.ReadableStream>;
 

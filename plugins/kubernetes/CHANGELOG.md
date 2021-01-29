@@ -1,5 +1,14 @@
 # @backstage/plugin-kubernetes
 
+## 0.3.7
+
+### Patch Changes
+
+- 681111228: Add AWS auth provider for Kubernetes
+- a6e3b9596: Improve error reporting for plugin misconfiguration.
+- Updated dependencies [681111228]
+  - @backstage/plugin-kubernetes-backend@0.2.6
+
 ## 0.3.6
 
 ### Patch Changes

@@ -1,5 +1,45 @@
 # @backstage/create-app
 
+## 0.3.7
+
+### Patch Changes
+
+- Updated dependencies [26a3a6cf0]
+- Updated dependencies [12a56cdfe]
+- Updated dependencies [664dd08c9]
+- Updated dependencies [9dd057662]
+- Updated dependencies [ef7957be4]
+- Updated dependencies [0b1182346]
+- Updated dependencies [d7b1d317f]
+- Updated dependencies [a91aa6bf2]
+- Updated dependencies [39b05b9ae]
+- Updated dependencies [4eaa06057]
+  - @backstage/backend-common@0.5.1
+  - @backstage/plugin-scaffolder-backend@0.5.2
+  - @backstage/cli@0.5.0
+  - @backstage/plugin-catalog@0.2.14
+  - @backstage/plugin-catalog-backend@0.5.5
+  - @backstage/plugin-catalog-import@0.3.6
+  - @backstage/plugin-scaffolder@0.4.1
+  - @backstage/plugin-auth-backend@0.2.12
+  - @backstage/catalog-model@0.7.0
+  - @backstage/core@0.5.0
+  - @backstage/test-utils@0.1.6
+  - @backstage/theme@0.2.2
+  - @backstage/plugin-api-docs@0.4.3
+  - @backstage/plugin-app-backend@0.3.5
+  - @backstage/plugin-circleci@0.2.6
+  - @backstage/plugin-explore@0.2.3
+  - @backstage/plugin-github-actions@0.3.0
+  - @backstage/plugin-lighthouse@0.2.8
+  - @backstage/plugin-proxy-backend@0.2.4
+  - @backstage/plugin-rollbar-backend@0.1.7
+  - @backstage/plugin-search@0.2.6
+  - @backstage/plugin-tech-radar@0.3.3
+  - @backstage/plugin-techdocs@0.5.4
+  - @backstage/plugin-techdocs-backend@0.5.4
+  - @backstage/plugin-user-settings@0.2.4
+
 ## 0.3.6
 
 ### Patch Changes

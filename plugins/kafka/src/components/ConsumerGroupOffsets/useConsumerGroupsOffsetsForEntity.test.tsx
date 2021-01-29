@@ -45,7 +45,7 @@ describe('useConsumerGroupOffsets', () => {
     metadata: {
       name: 'test',
       annotations: {
-        'kafka.apache.org/consumer-groups': consumerGroupOffsets.consumerId,
+        'kafka.apache.org/consumer-groups': `prod/${consumerGroupOffsets.consumerId}`,
       },
     },
     spec: {
@@ -74,16 +74,24 @@ describe('useConsumerGroupOffsets', () => {
     renderHook(useConsumerGroupsOffsetsForEntity, { wrapper });
 
   it('returns correct consumer group for annotation', async () => {
+    mockKafkaApi.getConsumerGroupOffsets.mockResolvedValue(
+      consumerGroupOffsets,
+    );
     when(mockKafkaApi.getConsumerGroupOffsets)
-      .calledWith(consumerGroupOffsets.consumerId)
+      .calledWith('prod', consumerGroupOffsets.consumerId)
       .mockResolvedValue(consumerGroupOffsets);
 
     const { result, waitForNextUpdate } = subject();
     await waitForNextUpdate();
     const [tableProps] = result.current;
 
-    expect(tableProps.consumerGroup).toBe(consumerGroupOffsets.consumerId);
-    expect(tableProps.topics).toBe(consumerGroupOffsets.offsets);
+    expect(tableProps.consumerGroupsTopics).toStrictEqual([
+      {
+        clusterId: 'prod',
+        consumerGroup: consumerGroupOffsets.consumerId,
+        topics: consumerGroupOffsets.offsets,
+      },
+    ]);
   });
 
   it('posts an error to the error api', async () => {

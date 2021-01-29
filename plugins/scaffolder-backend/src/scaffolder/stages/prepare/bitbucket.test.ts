@@ -89,6 +89,7 @@ describe('BitbucketPreparer', () => {
     expect(mockGitClient.clone).toHaveBeenCalledWith({
       url: 'https://bitbucket.org/backstage-project/backstage-repo',
       dir: expect.any(String),
+      ref: expect.any(String),
     });
   });
 
@@ -113,6 +114,7 @@ describe('BitbucketPreparer', () => {
     expect(mockGitClient.clone).toHaveBeenCalledWith({
       url: 'https://bitbucket.org/backstage-project/backstage-repo',
       dir: expect.any(String),
+      ref: expect.any(String),
     });
   });
 

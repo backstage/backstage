@@ -20,17 +20,19 @@ import {
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
 import { Table, TableColumn, TableProps } from '@backstage/core';
-import { Chip, Link } from '@material-ui/core';
+import { Chip } from '@material-ui/core';
 import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import { Alert } from '@material-ui/lab';
 import React from 'react';
-import { generatePath, Link as RouterLink } from 'react-router-dom';
 import { findLocationForEntityMeta } from '../../data/utils';
 import { useStarredEntities } from '../../hooks/useStarredEntities';
-import { entityRoute, entityRouteParams } from '../../routes';
 import { createEditLink } from '../createEditLink';
-import { EntityRefLink, formatEntityRefTitle } from '../EntityRefLink';
+import {
+  EntityRefLink,
+  EntityRefLinks,
+  formatEntityRefTitle,
+} from '../EntityRefLink';
 import {
   favouriteEntityIcon,
   favouriteEntityTooltip,
@@ -40,7 +42,7 @@ import { getEntityRelations } from '../getEntityRelations';
 type EntityRow = Entity & {
   row: {
     partOfSystemRelationTitle?: string;
-    partOfSystemRelation?: EntityName;
+    partOfSystemRelations: EntityName[];
     ownedByRelationsTitle?: string;
     ownedByRelations: EntityName[];
   };
@@ -52,43 +54,27 @@ const columns: TableColumn<EntityRow>[] = [
     field: 'metadata.name',
     highlight: true,
     render: entity => (
-      <Link
-        component={RouterLink}
-        to={generatePath(entityRoute.path, {
-          ...entityRouteParams(entity),
-          selectedTabId: 'overview',
-        })}
-      >
-        {entity.metadata.name}
-      </Link>
+      <EntityRefLink entityRef={entity}>{entity.metadata.name}</EntityRefLink>
     ),
   },
   {
     title: 'System',
     field: 'row.partOfSystemRelationTitle',
     render: entity => (
-      <>
-        {entity.row.partOfSystemRelation && (
-          <EntityRefLink
-            entityRef={entity.row.partOfSystemRelation}
-            defaultKind="system"
-          />
-        )}
-      </>
+      <EntityRefLinks
+        entityRefs={entity.row.partOfSystemRelations}
+        defaultKind="system"
+      />
     ),
   },
   {
     title: 'Owner',
     field: 'row.ownedByRelationsTitle',
     render: entity => (
-      <>
-        {entity.row.ownedByRelations.map((t, i) => (
-          <React.Fragment key={i}>
-            {i > 0 && ', '}
-            <EntityRefLink entityRef={t} defaultKind="group" />
-          </React.Fragment>
-        ))}
-      </>
+      <EntityRefLinks
+        entityRefs={entity.row.ownedByRelations}
+        defaultKind="group"
+      />
     ),
   },
   {
@@ -182,7 +168,7 @@ export const CatalogTable = ({
   ];
 
   const rows = entities.map(e => {
-    const [partOfSystemRelation] = getEntityRelations(e, RELATION_PART_OF, {
+    const partOfSystemRelations = getEntityRelations(e, RELATION_PART_OF, {
       kind: 'system',
     });
     const ownedByRelations = getEntityRelations(e, RELATION_OWNED_BY);
@@ -194,12 +180,13 @@ export const CatalogTable = ({
           .map(r => formatEntityRefTitle(r, { defaultKind: 'group' }))
           .join(', '),
         ownedByRelations,
-        partOfSystemRelationTitle: partOfSystemRelation
-          ? formatEntityRefTitle(partOfSystemRelation, {
-              defaultKind: 'system',
-            })
-          : undefined,
-        partOfSystemRelation,
+        partOfSystemRelationTitle:
+          partOfSystemRelations.length > 0
+            ? formatEntityRefTitle(partOfSystemRelations[0], {
+                defaultKind: 'system',
+              })
+            : undefined,
+        partOfSystemRelations,
       },
     };
   });

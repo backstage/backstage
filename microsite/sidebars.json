@@ -39,7 +39,11 @@
       {
         "type": "subcategory",
         "label": "Kubernetes",
-        "ids": ["features/kubernetes/overview"]
+        "ids": [
+          "features/kubernetes/overview",
+          "features/kubernetes/installation",
+          "features/kubernetes/configuration"
+        ]
       },
       {
         "type": "subcategory",
@@ -184,7 +188,8 @@
       "architecture-decisions/adrs-adr007",
       "architecture-decisions/adrs-adr008",
       "architecture-decisions/adrs-adr009",
-      "architecture-decisions/adrs-adr010"
+      "architecture-decisions/adrs-adr010",
+      "architecture-decisions/adrs-adr011"
     ],
     "Contribute": ["../CONTRIBUTING"],
     "Support": ["support/support", "support/project-structure"],

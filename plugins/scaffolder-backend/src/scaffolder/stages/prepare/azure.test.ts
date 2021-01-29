@@ -45,7 +45,7 @@ describe('AzurePreparer', () => {
       metadata: {
         annotations: {
           [LOCATION_ANNOTATION]:
-            'url:https://dev.azure.com/backstage-org/backstage-project/_git/template-repo?path=%2Ftemplate.yaml',
+            'url:https://dev.azure.com/backstage-org/backstage-project/_git/template-repo?path=%2Ftemplate.yaml&version=GBmaster',
         },
         name: 'graphql-starter',
         title: 'GraphQL Service',
@@ -112,6 +112,7 @@ describe('AzurePreparer', () => {
       url:
         'https://dev.azure.com/backstage-org/backstage-project/_git/template-repo',
       dir: expect.any(String),
+      ref: 'master',
     });
   });
 
@@ -124,6 +125,7 @@ describe('AzurePreparer', () => {
       url:
         'https://dev.azure.com/backstage-org/backstage-project/_git/template-repo',
       dir: expect.any(String),
+      ref: 'master',
     });
   });
 

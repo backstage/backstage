@@ -166,37 +166,11 @@ export class GithubUrlReader implements UrlReader {
       throw new Error(message);
     }
 
-    // Get the filename of archive from the header of the response
-    const contentDispositionHeader = archive.headers.get(
-      'content-disposition',
-    ) as string;
-    if (!contentDispositionHeader) {
-      throw new Error(
-        `Failed to read tree from ${url}. ` +
-          'GitHub API response for downloading archive does not contain content-disposition header ',
-      );
-    }
-    const fileNameRegEx = new RegExp(
-      /^attachment; filename=(?<fileName>.*).tar.gz$/,
-    );
-    const archiveFileName = contentDispositionHeader.match(fileNameRegEx)
-      ?.groups?.fileName;
-    if (!archiveFileName) {
-      throw new Error(
-        `Failed to read tree from ${url}. GitHub API response for downloading archive has an unexpected ` +
-          `format of content-disposition header ${contentDispositionHeader} `,
-      );
-    }
-
-    // The path includes the name of the directory inside the tarball and a sub path
-    // if requested in readTree.
-    const path = `${archiveFileName}/${filepath}`;
-
     return await this.deps.treeResponseFactory.fromTarArchive({
       // TODO(Rugvip): Underlying implementation of fetch will be node-fetch, we probably want
       //               to stick to using that in exclusively backend code.
       stream: (archive.body as unknown) as Readable,
-      path,
+      subpath: filepath,
       etag: commitSha,
       filter: options?.filter,
     });

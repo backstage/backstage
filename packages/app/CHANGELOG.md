@@ -1,5 +1,26 @@
 # example-app
 
+## 0.2.13
+
+### Patch Changes
+
+- Updated dependencies [681111228]
+- Updated dependencies [12a56cdfe]
+- Updated dependencies [8b7ef9f8b]
+- Updated dependencies [fac91bcc5]
+- Updated dependencies [9dd057662]
+- Updated dependencies [234e7d985]
+- Updated dependencies [ef7957be4]
+- Updated dependencies [0b1182346]
+- Updated dependencies [a6e3b9596]
+  - @backstage/plugin-kubernetes@0.3.7
+  - @backstage/cli@0.5.0
+  - @backstage/plugin-cost-insights@0.6.0
+  - @backstage/plugin-catalog@0.2.14
+  - @backstage/plugin-catalog-import@0.3.6
+  - @backstage/plugin-scaffolder@0.4.1
+  - @backstage/plugin-kafka@0.2.0
+
 ## 0.2.12
 
 ### Patch Changes

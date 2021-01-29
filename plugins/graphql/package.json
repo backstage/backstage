@@ -29,7 +29,7 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.5.0",
+    "@backstage/backend-common": "^0.5.1",
     "@backstage/config": "^0.1.2",
     "@backstage/plugin-catalog-graphql": "^0.2.6",
     "@graphql-modules/core": "^0.7.17",
@@ -45,7 +45,7 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.4.7",
+    "@backstage/cli": "^0.5.0",
     "@types/supertest": "^2.0.8",
     "eslint-plugin-graphql": "^4.0.0",
     "msw": "^0.20.5",
