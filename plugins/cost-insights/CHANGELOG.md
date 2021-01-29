@@ -1,5 +1,11 @@
 # @backstage/plugin-cost-insights
 
+## 0.7.0
+
+### Minor Changes
+
+- 19172f5a9: add alert hooks
+
 ## 0.6.0
 
 ### Minor Changes
