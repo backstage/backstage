@@ -376,5 +376,20 @@ describe('GithubUrlReader', () => {
       };
       await expect(fnGithub).rejects.toThrow(NotFoundError);
     });
+
+    it('should throw error when apiBaseUrl is missing', () => {
+      expect(() => {
+        /* eslint-disable no-new */
+        new GithubUrlReader(
+          {
+            host: 'ghe.mycompany.net',
+          },
+          {
+            treeResponseFactory,
+            credentialsProvider: mockCredentialsProvider,
+          },
+        );
+      }).toThrowError('must configure an explicit apiBaseUrl');
+    });
   });
 });
