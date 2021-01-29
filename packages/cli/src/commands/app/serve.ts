@@ -16,6 +16,7 @@
 
 import fs from 'fs-extra';
 import chalk from 'chalk';
+import uniq from 'lodash/uniq';
 import { Command } from 'commander';
 import { serveBundle } from '../../lib/bundler';
 import { loadCliConfig } from '../../lib/config';
@@ -28,20 +29,22 @@ export default async (cmd: Command) => {
   const result = lockfile.analyze({
     filter: includedFilter,
   });
-  const problemPackages = result.newVersions.map(({ name }) => name);
+  const problemPackages = [...result.newVersions, ...result.newRanges].map(
+    ({ name }) => name,
+  );
 
   if (problemPackages.length > 1) {
     console.log(
       chalk.yellow(
-        `The following packages may be outdated or have duplicate installations:
+        `⚠️ Some of the following packages may be outdated or have duplicate installations:
 
-          ${problemPackages.join(', ')}
+          ${uniq(problemPackages).join(', ')}
         `,
       ),
     );
     console.log(
       chalk.yellow(
-        `This can be resolved using the following command:
+        `⚠️ This can be resolved using the following command:
 
           yarn backstage-cli versions:check --fix
       `,
