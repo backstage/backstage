@@ -39,13 +39,13 @@ internally.
 ![Enter some variables](../../assets/software-templates/template-picked.png)
 
 After filling in these variables, you'll get some more fields to fill out which
-are required for backstage usage: the owner (which is a `user` in the backstage
+are required for Backstage usage: the owner (which is a `user` in the backstage
 system), the `storePath` (which right now must be a GitHub Organisation or
 GitHub user and a non-existing GitHub repository name in the format
 `organisation/reponame`), and a GitHub team or user account which should be
 granted admin access to the repository.
 
-![Enter backstage vars](../../assets/software-templates/template-picked-2.png)
+![Enter Backstage vars](../../assets/software-templates/template-picked-2.png)
 
 ### Run!
 
