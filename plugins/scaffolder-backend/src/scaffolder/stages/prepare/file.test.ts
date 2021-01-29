@@ -18,7 +18,7 @@ import { getVoidLogger } from '@backstage/backend-common';
 import fs from 'fs-extra';
 import { FilePreparer } from './file';
 import os from 'os';
-import { resolve } from 'path';
+import path, { resolve } from 'path';
 
 jest.mock('fs-extra');
 
@@ -35,7 +35,7 @@ describe('File preparer', () => {
       workspacePath,
     });
     expect(fs.copy).toHaveBeenCalledWith(
-      resolve('/path', 'to', 'template'),
+      path.join('/path', 'to', 'template'),
       checkoutPath,
       {
         recursive: true,
