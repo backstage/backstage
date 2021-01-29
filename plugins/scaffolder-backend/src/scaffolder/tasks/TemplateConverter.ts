@@ -70,7 +70,7 @@ export function templateEntityToSpec(
   steps.push({
     id: 'publish',
     name: 'Publishing',
-    action: 'publish',
+    action: 'legacy:publish',
     parameters: {
       values,
     },
@@ -104,10 +104,6 @@ export class TemplateActionRegistry {
     }
     this.actions.set(action.id, action);
   }
-
-  // validate
-  // ensure that action exist.
-  // template variables exist.
 
   get(actionId: string): TemplateAction {
     const action = this.actions.get(actionId);
