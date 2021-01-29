@@ -10,5 +10,5 @@ services:
         - echo "yarn --cwd ${TUGBOAT_ROOT} start-backend --config ${TUGBOAT_ROOT}/app-config.yaml --config ${TUGBOAT_ROOT}/.tugboat/tugboat.app-config.production.yaml" >> /etc/service/node/run
         - chmod +x /etc/service/node/run
       build:
-        - yarn install
+        - yarn install --frozen-lockfile
         - yarn workspace example-app build
