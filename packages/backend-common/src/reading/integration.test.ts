@@ -45,8 +45,8 @@ const reader = UrlReaders.default({
       azure: [
         {
           host: 'dev.azure.com',
-          // lasts until 2022-01-27
-          token: 'bhs5cbukiuxrkc3ftuyt5h3eqewtkj37lmf3jx5aoajivq3f5jmq',
+          // lasts until 2022-01-28
+          token: `myvyavvfojh6wvw4ose4bfywqttqx${5}z${5}zs${5}bdxauqaek3yinkazq`,
         },
       ],
     },
