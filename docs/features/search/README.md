@@ -67,7 +67,7 @@ more to come...
 - As a contributor I should be able to integrate plugin data to the indexing
   process of Backstage Search by using the standardized API.
 - As a software engineer I should be able to search for all content (for
-  example, entities, metadata, documentation) in backstage search.
+  example, entities, metadata, documentation) in Backstage search.
 
 more to come...
 

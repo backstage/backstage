@@ -79,7 +79,7 @@ Referenced by: [getBackstageIdentity](#getbackstageidentity).
 <pre>
 export type BackstageIdentity = {
   /**
-   * The backstage user ID.
+   * The Backstage user ID.
    */
   id: string;
 

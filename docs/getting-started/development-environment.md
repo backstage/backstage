@@ -31,7 +31,7 @@ $ yarn start
 This should open a local instance of Backstage in your browser, otherwise open
 one of the URLs printed in the terminal.
 
-By default, backstage will start on port 3000, however you can override this by
+By default, Backstage will start on port 3000, however you can override this by
 setting an environment variable `PORT` on your local machine. e.g.
 `export PORT=8080` then running `yarn start`. Or `PORT=8080 yarn start`.
 
