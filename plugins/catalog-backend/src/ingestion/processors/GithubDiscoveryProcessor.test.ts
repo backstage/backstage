@@ -56,12 +56,15 @@ describe('GithubOrgReaderProcessor', () => {
   describe('reject unrelated entries', () => {
     it('rejects unknown types', async () => {
       const processor = new GithubDiscoveryProcessor({
-        providers: [
-          {
-            target: 'https://github.com',
-            apiBaseUrl: 'https://api.github.com',
-          },
-        ],
+        gitHubConfigMap: new Map([
+          [
+            'github.com',
+            {
+              host: 'github.com',
+              apiBaseUrl: 'https://api.github.com',
+            },
+          ],
+        ]),
         logger: getVoidLogger(),
       });
       const location: LocationSpec = {
@@ -75,12 +78,22 @@ describe('GithubOrgReaderProcessor', () => {
 
     it('rejects unknown targets', async () => {
       const processor = new GithubDiscoveryProcessor({
-        providers: [
-          {
-            target: 'https://github.com',
-            apiBaseUrl: 'https://api.github.com',
-          },
-        ],
+        gitHubConfigMap: new Map([
+          [
+            'github.com',
+            {
+              host: 'github.com',
+              apiBaseUrl: 'https://api.github.com',
+            },
+          ],
+          [
+            'ghe.example.net',
+            {
+              host: 'ghe.example.net',
+              apiBaseUrl: 'https://ghe.example.net/api/v3',
+            },
+          ],
+        ]),
         logger: getVoidLogger(),
       });
       const location: LocationSpec = {
@@ -90,19 +103,22 @@ describe('GithubOrgReaderProcessor', () => {
       await expect(
         processor.readLocation(location, false, () => {}),
       ).rejects.toThrow(
-        /There is no GitHub Org provider that matches https:\/\/not.github.com\/apa/,
+        /There is no GitHub integration that matches https:\/\/not.github.com\/apa/,
       );
     });
   });
 
   describe('handles repositories', () => {
     const processor = new GithubDiscoveryProcessor({
-      providers: [
-        {
-          target: 'https://github.com',
-          apiBaseUrl: 'https://api.github.com',
-        },
-      ],
+      gitHubConfigMap: new Map([
+        [
+          'github.com',
+          {
+            host: 'github.com',
+            apiBaseUrl: 'https://api.github.com',
+          },
+        ],
+      ]),
       logger: getVoidLogger(),
     });
 

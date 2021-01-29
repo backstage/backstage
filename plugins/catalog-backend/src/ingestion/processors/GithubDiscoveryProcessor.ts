@@ -16,32 +16,41 @@
 
 import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
+import {
+  GithubCredentialsProvider,
+  GitHubIntegrationConfig,
+  readGitHubIntegrationConfigs,
+} from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
 import { Logger } from 'winston';
-import {
-  getOrganizationRepositories,
-  ProviderConfig,
-  readGithubConfig,
-} from './github';
+import { getOrganizationRepositories } from './github';
 import * as results from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
 
 /**
- * Extracts teams and users out of a GitHub org.
+ * Extracts repositories out of a GitHub org.
  */
 export class GithubDiscoveryProcessor implements CatalogProcessor {
-  private readonly providers: ProviderConfig[];
+  private readonly gitHubConfigMap: Map<string, GitHubIntegrationConfig>;
   private readonly logger: Logger;
 
   static fromConfig(config: Config, options: { logger: Logger }) {
+    const configs = readGitHubIntegrationConfigs(
+      config.getOptionalConfigArray('integrations.github') ?? [],
+    );
+    const gitHubConfigMap = new Map(configs.map(c => [c.host, c]));
+
     return new GithubDiscoveryProcessor({
       ...options,
-      providers: readGithubConfig(config),
+      gitHubConfigMap,
     });
   }
 
-  constructor(options: { providers: ProviderConfig[]; logger: Logger }) {
-    this.providers = options.providers;
+  constructor(options: {
+    gitHubConfigMap: Map<string, GitHubIntegrationConfig>;
+    logger: Logger;
+  }) {
+    this.gitHubConfigMap = options.gitHubConfigMap;
     this.logger = options.logger;
   }
 
@@ -54,24 +63,23 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
       return false;
     }
 
-    const provider = this.providers.find(p =>
-      location.target.startsWith(`${p.target}/`),
+    const gitHubConfig = this.gitHubConfigMap.get(
+      new URL(location.target).hostname,
     );
-    if (!provider) {
+    if (!gitHubConfig) {
       throw new Error(
-        `There is no GitHub Org provider that matches ${location.target}. Please add a configuration entry for it under catalog.processors.githubOrg.providers.`,
+        `There is no GitHub integration that matches ${location.target}. Please add a configuration entry for it under integrations.github`,
       );
     }
-
+    const { headers } = await GithubCredentialsProvider.create(
+      gitHubConfig,
+    ).getCredentials({ url: location.target });
     const { org, repoSearchPath, catalogPath } = parseUrl(location.target);
-    const client = !provider.token
-      ? graphql
-      : graphql.defaults({
-          baseUrl: provider.apiBaseUrl,
-          headers: {
-            authorization: `token ${provider.token}`,
-          },
-        });
+
+    const client = graphql.defaults({
+      baseUrl: gitHubConfig.apiBaseUrl,
+      headers,
+    });
 
     // Read out all of the raw data
     const startTimestamp = Date.now();
