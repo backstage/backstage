@@ -1,6 +1,7 @@
 name: Main Master Build
 
 on:
+  workflow_dispatch:
   push:
     branches: [master]
 
