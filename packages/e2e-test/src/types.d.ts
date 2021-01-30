@@ -14,5 +14,25 @@
  * limitations under the License.
  */
 
+/// <reference types="cypress" />
+/// <reference types="chai" />
+
 declare module 'zombie';
 declare module 'pgtools';
+declare namespace Cypress {
+  // add custom Cypress command to the interface Chainable<Subject>
+  interface Chainable<Subject = any> {
+    /**
+    Logs in as a guest to backstage
+    */
+    guesty(): void;
+  }
+
+  // add properties the application adds to its "window" object
+  // by adding them to the interface ApplicationWindow
+  interface ApplicationWindow {
+    // let TS know the application's code will add
+    // method window.add with the following signature
+    add(a: number, b: number): number;
+  }
+}
