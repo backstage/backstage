@@ -31,6 +31,7 @@ export function inclusiveStartDateOf(
   exclusiveEndDate: string,
 ): string {
   switch (duration) {
+    case Duration.P7D:
     case Duration.P30D:
     case Duration.P90D:
       return moment(exclusiveEndDate)
@@ -53,6 +54,7 @@ export function exclusiveEndDateOf(
   inclusiveEndDate: string,
 ): string {
   switch (duration) {
+    case Duration.P7D:
     case Duration.P30D:
     case Duration.P90D:
       return moment(inclusiveEndDate)
@@ -80,8 +82,15 @@ export function inclusiveEndDateOf(
 }
 
 // https://en.wikipedia.org/wiki/ISO_8601#Repeating_intervals
-export function intervalsOf(duration: Duration, inclusiveEndDate: string) {
-  return `R2/${duration}/${exclusiveEndDateOf(duration, inclusiveEndDate)}`;
+export function intervalsOf(
+  duration: Duration,
+  inclusiveEndDate: string,
+  repeating: number = 2,
+) {
+  return `R${repeating}/${duration}/${exclusiveEndDateOf(
+    duration,
+    inclusiveEndDate,
+  )}`;
 }
 
 export function quarterEndDate(inclusiveEndDate: string): string {

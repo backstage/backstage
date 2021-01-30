@@ -7,8 +7,8 @@ description: Installing Kubernetes plugin into Backstage
 The Kubernetes feature is a plugin to Backstage, and it is exposed as a tab when
 viewing entities in the software catalog.
 
-If you haven't setup Backstage already, start
-[here](../../getting-started/index.md).
+If you haven't setup Backstage already, read the
+[Getting Started](../../getting-started/index.md).
 
 ## Adding the Kubernetes frontend plugin
 
@@ -111,7 +111,7 @@ Backstage app.
 ## Running Backstage locally
 
 Start the frontend and the backend app by
-[running backstage locally](../../getting-started/running-backstage-locally.md).
+[running Backstage locally](../../getting-started/running-backstage-locally.md).
 
 ## Configuration
 

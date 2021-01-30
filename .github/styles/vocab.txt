@@ -130,6 +130,7 @@ middleware
 minikube
 Minikube
 misconfiguration
+misconfigured
 misgendering
 mkdocs
 Mkdocs

@@ -349,22 +349,18 @@ const app = createApp({
   apis,
   plugins: Object.values(plugins),
   components: {
-    SignInPage: props => {
-      return (
-        <SignInPage
-          {...props}
-          providers={[
-            {
-              id: 'github-auth-provider',
-              title: 'GitHub',
-              message: 'Simple Backstage Application Login',
-              apiRef: githubAuthApiRef,
-            },
-          ]}
-          align="center"
-        />
-      );
-    },
+    SignInPage: props => (
+      <SignInPage
+        {...props}
+        auto
+        provider={{
+          id: 'github-auth-provider',
+          title: 'GitHub',
+          message: 'Simple Backstage Application Login',
+          apiRef: githubAuthApiRef,
+        }}
+      />
+    ),
   },
 });
 ```

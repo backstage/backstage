@@ -16,7 +16,7 @@
 
 import fs from 'fs-extra';
 import os from 'os';
-import { resolve } from 'path';
+import path from 'path';
 import { GithubPreparer } from './github';
 import { getVoidLogger, Git } from '@backstage/backend-common';
 
@@ -24,8 +24,8 @@ jest.mock('fs-extra');
 
 describe('GitHubPreparer', () => {
   const workspacePath = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
-  const checkoutPath = resolve(workspacePath, 'checkout');
-  const templatePath = resolve(workspacePath, 'template');
+  const checkoutPath = path.resolve(workspacePath, 'checkout');
+  const templatePath = path.resolve(workspacePath, 'template');
 
   const mockGitClient = {
     clone: jest.fn(),
@@ -57,7 +57,7 @@ describe('GitHubPreparer', () => {
       ref: expect.any(String),
     });
     expect(fs.move).toHaveBeenCalledWith(
-      resolve(checkoutPath, 'templates', 'graphql-starter', 'template'),
+      path.resolve(checkoutPath, 'templates', 'graphql-starter', 'template'),
       templatePath,
     );
     expect(fs.rmdir).toHaveBeenCalledWith('/tmp/template/.git');
@@ -77,7 +77,7 @@ describe('GitHubPreparer', () => {
       ref: 'master',
     });
     expect(fs.move).toHaveBeenCalledWith(checkoutPath, templatePath);
-    expect(fs.rmdir).toHaveBeenCalledWith(resolve(templatePath, '.git'));
+    expect(fs.rmdir).toHaveBeenCalledWith(path.resolve(templatePath, '.git'));
   });
 
   it('calls the clone command with token', async () => {

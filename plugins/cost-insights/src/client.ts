@@ -31,7 +31,8 @@ import {
 import {
   ProjectGrowthAlert,
   UnlabeledDataflowAlert,
-} from '../src/utils/alerts';
+  KubernetesMigrationAlert,
+} from '../src/alerts';
 import {
   aggregationFor,
   changeOf,
@@ -177,9 +178,38 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
       ],
     };
 
+    const today = dayjs();
     const alerts: Alert[] = await this.request({ group }, [
       new ProjectGrowthAlert(projectGrowthData),
       new UnlabeledDataflowAlert(unlabeledDataflowData),
+      new KubernetesMigrationAlert(this, {
+        startDate: today.subtract(30, 'day').format(DEFAULT_DATE_FORMAT),
+        endDate: today.format(DEFAULT_DATE_FORMAT),
+        change: {
+          ratio: 0,
+          amount: 0,
+        },
+        services: [
+          {
+            id: 'service-a',
+            aggregation: [20_000, 10_000],
+            change: {
+              ratio: -0.5,
+              amount: -10_000,
+            },
+            entities: {},
+          },
+          {
+            id: 'service-b',
+            aggregation: [30_000, 15_000],
+            change: {
+              ratio: -0.5,
+              amount: -15_000,
+            },
+            entities: {},
+          },
+        ],
+      }),
     ]);
 
     return alerts;

@@ -13,22 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { Fragment } from 'react';
-import { Paper, Divider } from '@material-ui/core';
-import { AlertActionCard } from './AlertActionCard';
-import { Alert } from '../../types';
 
-type AlertActionCardList = {
-  alerts: Array<Alert>;
-};
-
-export const AlertActionCardList = ({ alerts }: AlertActionCardList) => (
-  <Paper>
-    {alerts.map((alert, index) => (
-      <Fragment key={`alert-${index}`}>
-        <AlertActionCard alert={alert} number={index + 1} />
-        {index < alerts.length - 1 && <Divider variant="fullWidth" />}
-      </Fragment>
-    ))}
-  </Paper>
-);
+export { AlertAcceptForm } from './AlertAcceptForm';
+export { AlertSnoozeForm } from './AlertSnoozeForm';
+export { AlertDismissForm } from './AlertDismissForm';
+export { MigrationDismissForm } from './MigrationDismissForm';
+export type { MigrationDismissFormData } from './MigrationDismissForm';

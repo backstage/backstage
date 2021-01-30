@@ -30,16 +30,17 @@ import { CostOverviewBreakdownChart } from './CostOverviewBreakdownChart';
 import { CostOverviewHeader } from './CostOverviewHeader';
 import { MetricSelect } from '../MetricSelect';
 import { PeriodSelect } from '../PeriodSelect';
-import { useConfig, useFilters, useScroll } from '../../hooks';
+import { useConfig, useFilters } from '../../hooks';
 import { mapFiltersToProps } from './selector';
 import { DefaultNavigation } from '../../utils/navigation';
 import { findAlways } from '../../utils/assert';
-import { Cost, CostInsightsTheme, MetricData } from '../../types';
+import { Cost, CostInsightsTheme, Maybe, MetricData } from '../../types';
 import { useOverviewTabsStyles } from '../../utils/styles';
+import { ScrollAnchor } from '../../utils/scroll';
 
 export type CostOverviewCardProps = {
   dailyCostData: Cost;
-  metricData: MetricData | null;
+  metricData: Maybe<MetricData>;
 };
 
 export const CostOverviewCard = ({
@@ -47,8 +48,12 @@ export const CostOverviewCard = ({
   metricData,
 }: CostOverviewCardProps) => {
   const theme = useTheme<CostInsightsTheme>();
+  const styles = useOverviewTabsStyles(theme);
   const config = useConfig();
   const [tabIndex, setTabIndex] = useState(0);
+  const { setDuration, setProject, setMetric, ...filters } = useFilters(
+    mapFiltersToProps,
+  );
 
   // Reset tabIndex if breakdowns available change
   useEffect(() => {
@@ -59,15 +64,9 @@ export const CostOverviewCard = ({
     }
   }, [dailyCostData, tabIndex, setTabIndex]);
 
-  const { ScrollAnchor } = useScroll(DefaultNavigation.CostOverviewCard);
-  const { setDuration, setProject, setMetric, ...filters } = useFilters(
-    mapFiltersToProps,
-  );
-
   const metric = filters.metric
     ? findAlways(config.metrics, m => m.kind === filters.metric)
     : null;
-  const styles = useOverviewTabsStyles(theme);
 
   const breakdownTabs = Object.keys(dailyCostData.groupedCosts ?? {}).map(
     key => ({
@@ -109,7 +108,7 @@ export const CostOverviewCard = ({
 
   return (
     <Card style={{ position: 'relative' }}>
-      <ScrollAnchor behavior="smooth" top={-20} />
+      <ScrollAnchor id={DefaultNavigation.CostOverviewCard} />
       <CardContent>
         {dailyCostData.groupedCosts && <OverviewTabs />}
         <CostOverviewHeader title={tabs[safeTabIndex].title}>
