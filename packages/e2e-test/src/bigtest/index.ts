@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Page, test } from 'bigtest';
 
-import { CommanderStatic } from 'commander';
-import { run } from './run';
-import { run as bigtest } from './bigtest';
-
-export function registerCommands(program: CommanderStatic) {
-  program.command('run').description('Run e2e tests').action(run);
-  program.command('bigtest').description('Run e2e bigtests').action(bigtest);
-}
+export default test('bigtest todomvc').step(Page.visit('/catalog'));

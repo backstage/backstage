@@ -1,0 +1,8 @@
+{
+  "port": 28000,
+  "launch": ["chrome.headless"],
+  "app": {
+    "url": "http://localhost:7000"
+  },
+  "testFiles": ["./src/bigtest/**/*.ts"]
+}

@@ -24,9 +24,11 @@
     "e2e-test": "bin/e2e-test"
   },
   "devDependencies": {
+    "@babel/plugin-transform-runtime": "^7.12.10",
     "@backstage/cli-common": "^0.1.1",
     "@types/fs-extra": "^9.0.1",
     "@types/node": "^13.7.2",
+    "bigtest": "^0.7.0",
     "chalk": "^4.0.0",
     "commander": "^6.1.0",
     "cross-fetch": "^3.0.6",
