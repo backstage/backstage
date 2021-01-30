@@ -1,6 +1,7 @@
 name: Master Build Windows
 
 on:
+  workflow_dispatch:
   push:
     branches: [master]
 
