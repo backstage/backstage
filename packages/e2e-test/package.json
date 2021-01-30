@@ -41,5 +41,9 @@
     "watch": "./src",
     "exec": "bin/e2e-test",
     "ext": "ts"
+  },
+  "dependencies": {
+    "@types/cypress": "^1.1.3",
+    "cypress": "^6.4.0"
   }
 }

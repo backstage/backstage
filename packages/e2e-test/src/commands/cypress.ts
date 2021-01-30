@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
-import { CommanderStatic } from 'commander';
-import { run } from './run';
-import { run as cypress } from './cypress';
+import cypress from 'cypress';
+import path from 'path';
 
-export function registerCommands(program: CommanderStatic) {
-  program.command('run').description('Run e2e tests').action(run);
-  program
-    .command('cypress')
-    .description('Run cypress e2e tests')
-    .action(cypress);
+export async function run() {
+  await cypress.run({
+    reporter: 'junit',
+    browser: 'chrome',
+    config: {
+      watchForFileChanges: true,
+      baseUrl: process.env.BACKSTAGE_TEST_URL || 'http://localhost:7000',
+      integrationFolder: path.resolve(__dirname, '../cypress/integration'),
+      supportFile: path.resolve(__dirname, '../cypress/support'),
+      fixturesFolder: false,
+      defaultCommandTimeout: 10000,
+    },
+    configFile: false,
+  });
 }
