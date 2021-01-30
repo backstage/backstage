@@ -21,6 +21,7 @@ import {
   TableFilter,
   TableState,
   useQueryParamState,
+  OverflowTooltip,
 } from '@backstage/core';
 import { Chip } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
@@ -55,6 +56,11 @@ const columns: TableColumn<Entity>[] = [
   {
     title: 'Description',
     field: 'metadata.description',
+    render: (entity: Entity) => (
+      <OverflowTooltip title={entity.metadata.description as string}>
+        {entity.metadata.description}
+      </OverflowTooltip>
+    ),
   },
   {
     title: 'Tags',

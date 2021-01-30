@@ -19,7 +19,12 @@ import {
   RELATION_OWNED_BY,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
-import { Table, TableColumn, TableProps } from '@backstage/core';
+import {
+  Table,
+  TableColumn,
+  TableProps,
+  OverflowTooltip,
+} from '@backstage/core';
 import { Chip } from '@material-ui/core';
 import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
@@ -84,6 +89,11 @@ const columns: TableColumn<EntityRow>[] = [
   {
     title: 'Description',
     field: 'metadata.description',
+    render: entity => (
+      <OverflowTooltip title={entity.metadata.description as string}>
+        {entity.metadata.description}
+      </OverflowTooltip>
+    ),
   },
   {
     title: 'Tags',

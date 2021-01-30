@@ -26,6 +26,7 @@ export * from './HorizontalScrollGrid';
 export * from './Lifecycle';
 export * from './Link';
 export * from './OAuthRequestDialog';
+export * from './OverflowTooltip';
 export * from './Progress';
 export * from './ProgressBars';
 export * from './SimpleStepper';
