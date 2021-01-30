@@ -63,11 +63,14 @@ describe('Bitbucket Publisher', () => {
         ),
       );
 
-      const publisher = await BitbucketPublisher.fromConfig({
-        host: 'bitbucket.org',
-        username: 'fake-user',
-        appPassword: 'fake-token',
-      });
+      const publisher = await BitbucketPublisher.fromConfig(
+        {
+          host: 'bitbucket.org',
+          username: 'fake-user',
+          appPassword: 'fake-token',
+        },
+        { repoVisibility: 'private' },
+      );
 
       const result = await publisher.publish({
         values: {
@@ -122,10 +125,13 @@ describe('Bitbucket Publisher', () => {
         ),
       );
 
-      const publisher = await BitbucketPublisher.fromConfig({
-        host: 'bitbucket.mycompany.com',
-        token: 'fake-token',
-      });
+      const publisher = await BitbucketPublisher.fromConfig(
+        {
+          host: 'bitbucket.mycompany.com',
+          token: 'fake-token',
+        },
+        { repoVisibility: 'private' },
+      );
 
       const result = await publisher.publish({
         values: {
