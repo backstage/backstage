@@ -131,7 +131,7 @@ export class JobProcessor implements Processor {
 
     try {
       for (const stage of job.stages) {
-        // Create a logger for each stage so we can create seperate
+        // Create a logger for each stage so we can create separate
         // Streams for each step.
         const { logger, log, stream } = makeLogStream({
           id: job.id,
@@ -151,8 +151,8 @@ export class JobProcessor implements Processor {
             logStream: stream,
           });
 
-          // If the handler returns something, then let's merge this onto the ontext
-          // For the next stage to use as it might be relevant.
+          // If the handler returns something, then let's merge this onto the
+          // context for the next stage to use as it might be relevant.
           if (handlerResponse) {
             job.context = {
               ...job.context,

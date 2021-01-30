@@ -227,8 +227,8 @@ describe('CookieCutter Templater', () => {
         args: expect.arrayContaining([
           '--no-input',
           '-o',
-          'tempdir/intermediate',
-          'tempdir/template',
+          path.join('tempdir', 'intermediate'),
+          path.join('tempdir', 'template'),
           '--verbose',
         ]),
         logStream: stream,

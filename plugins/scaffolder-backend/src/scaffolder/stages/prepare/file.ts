@@ -15,6 +15,7 @@
  */
 import fs from 'fs-extra';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import { InputError } from '@backstage/backend-common';
 import { PreparerBase, PreparerOptions } from './types';
 
@@ -27,7 +28,7 @@ export class FilePreparer implements PreparerBase {
     const checkoutDir = path.join(workspacePath, 'checkout');
     await fs.ensureDir(checkoutDir);
 
-    const templatePath = url.slice('file://'.length);
+    const templatePath = fileURLToPath(url);
 
     await fs.copy(templatePath, checkoutDir, {
       recursive: true,
