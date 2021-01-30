@@ -21,17 +21,23 @@ import { BitbucketIntegrationConfig } from '@backstage/integration';
 import parseGitUrl from 'git-url-parse';
 import path from 'path';
 
+export type RepoVisibilityOptions = 'private' | 'public';
+
 // TODO(blam): We should probably start to use a bitbucket client here that we can change
 // the baseURL to point at on-prem or public bitbucket versions like we do for
 // github and ghe. There's to much logic and not enough types here for us to say that this way is better than using
 // a supported bitbucket client if one exists.
 export class BitbucketPublisher implements PublisherBase {
-  static async fromConfig(config: BitbucketIntegrationConfig) {
+  static async fromConfig(
+    config: BitbucketIntegrationConfig,
+    { repoVisibility }: { repoVisibility: RepoVisibilityOptions },
+  ) {
     return new BitbucketPublisher({
       host: config.host,
       token: config.token,
       appPassword: config.appPassword,
       username: config.username,
+      repoVisibility,
     });
   }
 
@@ -41,6 +47,7 @@ export class BitbucketPublisher implements PublisherBase {
       token?: string;
       appPassword?: string;
       username?: string;
+      repoVisibility: RepoVisibilityOptions;
     },
   ) {}
 
@@ -101,6 +108,7 @@ export class BitbucketPublisher implements PublisherBase {
       body: JSON.stringify({
         scm: 'git',
         description: description,
+        is_private: this.config.repoVisibility === 'private',
       }),
       headers: {
         Authorization: `Basic ${buffer.toString('base64')}`,
@@ -144,6 +152,7 @@ export class BitbucketPublisher implements PublisherBase {
       body: JSON.stringify({
         name: name,
         description: description,
+        is_private: this.config.repoVisibility === 'private',
       }),
       headers: {
         Authorization: `Bearer ${this.config.token}`,
