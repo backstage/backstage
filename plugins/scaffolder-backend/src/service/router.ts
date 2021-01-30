@@ -104,10 +104,9 @@ export async function createRouter(
 
       // Forward authorization from client
       const user = req.user as BackstageIdentity;
-      const template = await entityClient.findTemplate(
-        user?.idToken,
-        templateName,
-      );
+      const template = await entityClient.findTemplate(templateName, {
+        token: user?.idToken,
+      });
 
       const validationResult: ValidatorResult = validate(
         values,

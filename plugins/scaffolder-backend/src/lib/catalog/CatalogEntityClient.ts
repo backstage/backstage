@@ -21,6 +21,7 @@ import {
   NotFoundError,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
+import { CatalogEntityRequestOptions } from './types';
 
 /**
  * A catalog client tailored for reading out entity data from the catalog.
@@ -40,9 +41,10 @@ export class CatalogEntityClient {
    * Throws a NotFoundError or ConflictError if 0 or multiple templates are found.
    */
   async findTemplate(
-    token: string | undefined,
     templateName: string,
+    options?: CatalogEntityRequestOptions,
   ): Promise<TemplateEntityV1alpha1> {
+    const token = options?.token;
     const { items: templates } = (await this.catalogClient.getEntities(
       {
         filter: {
