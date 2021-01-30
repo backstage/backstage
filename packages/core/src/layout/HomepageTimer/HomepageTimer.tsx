@@ -51,10 +51,10 @@ function getTimes(configApi: ConfigApi) {
       } catch (e) {
         // eslint-disable-next-line no-console
         console.warn(
-          `The timezone ${options.timeZone} is invalid. Defaulting to America/Los Angeles`,
+          `The timezone ${options.timeZone} is invalid. Defaulting to GMT`,
         );
-        options.timeZone = 'America/Los_Angeles';
-        label = 'Los Angeles';
+        options.timeZone = 'GMT';
+        label = 'GMT';
       }
 
       const time = d.toLocaleTimeString(lang, options);
