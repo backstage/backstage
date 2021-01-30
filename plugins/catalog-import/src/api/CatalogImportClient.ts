@@ -49,13 +49,16 @@ export class CatalogImportClient implements CatalogImportApi {
     repo: string;
   }): Promise<PartialEntity[]> {
     const idToken = await this.identityApi.getIdToken();
+    const headers = {
+      'Content-Type': 'application/json',
+    } as { [header: string]: string };
+    if (idToken) {
+      headers.authorization = `Bearer ${idToken}`;
+    }
     const response = await fetch(
       `${await this.discoveryApi.getBaseUrl('catalog')}/analyze-location`,
       {
-        headers: {
-          authorization: `Bearer ${idToken}`,
-          'Content-Type': 'application/json',
-        },
+        headers,
         method: 'POST',
         body: JSON.stringify({
           location: { type: 'url', target: repo },
@@ -80,13 +83,16 @@ export class CatalogImportClient implements CatalogImportApi {
     location: string;
   }): Promise<void> {
     const idToken = await this.identityApi.getIdToken();
+    const headers = {
+      'Content-Type': 'application/json',
+    } as { [header: string]: string };
+    if (idToken) {
+      headers.authorization = `Bearer ${idToken}`;
+    }
     const response = await fetch(
       `${await this.discoveryApi.getBaseUrl('catalog')}/locations`,
       {
-        headers: {
-          authorization: `Bearer ${idToken}`,
-          'Content-Type': 'application/json',
-        },
+        headers,
         method: 'POST',
         body: JSON.stringify({
           type: 'url',
