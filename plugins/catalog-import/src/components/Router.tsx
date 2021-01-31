@@ -17,12 +17,27 @@
 import { RouteRef } from '@backstage/core';
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { ImportComponentPage } from './ImportComponentPage';
+import {
+  ImportComponentPage,
+  IntegrationsSpec,
+  DefaultIntegrationsSpec,
+} from './ImportComponentPage';
 
-export const Router = ({ catalogRouteRef }: { catalogRouteRef: RouteRef }) => (
+export const Router = ({
+  catalogRouteRef,
+  integrations = DefaultIntegrationsSpec,
+}: {
+  catalogRouteRef: RouteRef;
+  integrations?: IntegrationsSpec;
+}) => (
   <Routes>
     <Route
-      element={<ImportComponentPage catalogRouteRef={catalogRouteRef} />}
+      element={
+        <ImportComponentPage
+          catalogRouteRef={catalogRouteRef}
+          integrations={integrations}
+        />
+      }
     />
   </Routes>
 );

@@ -40,8 +40,29 @@ export type ConfigSpec = {
   config: PartialEntity[];
 };
 
-function manifestGenerationAvailable(configApi: ConfigApi): boolean {
-  return configApi.has('integrations.github');
+export type IntegrationSpec = {
+  enabledPullRequest: boolean;
+};
+
+export type IntegrationsSpec = {
+  [key: string]: IntegrationSpec;
+};
+
+export const DefaultIntegrationsSpec = {} as IntegrationsSpec;
+
+function manifestGenerationAvailable(
+  configApi: ConfigApi,
+  integrationsSpec: IntegrationsSpec,
+): boolean {
+  let isGithubPREnabled = true;
+  if (integrationsSpec) {
+    const integration = integrationsSpec.github ?? false;
+    if (integration) {
+      isGithubPREnabled = integrationsSpec.github.enabledPullRequest;
+    }
+  }
+
+  return configApi.has('integrations.github') && isGithubPREnabled;
 }
 
 function repositories(configApi: ConfigApi): string[] {
@@ -64,8 +85,10 @@ function repositories(configApi: ConfigApi): string[] {
 
 export const ImportComponentPage = ({
   catalogRouteRef,
+  integrations,
 }: {
   catalogRouteRef: RouteRef;
+  integrations: IntegrationsSpec;
 }) => {
   const [activeStep, setActiveStep] = useState(0);
   const [configFile, setConfigFile] = useState<ConfigSpec>({
@@ -105,7 +128,7 @@ export const ImportComponentPage = ({
                 Ways to register an existing component
               </Typography>
 
-              {manifestGenerationAvailable(configApi) && (
+              {manifestGenerationAvailable(configApi, integrations) && (
                 <React.Fragment>
                   <Typography variant="h6">GitHub Repo</Typography>
                   <Typography variant="body2" paragraph>
@@ -133,7 +156,7 @@ export const ImportComponentPage = ({
               <ImportStepper
                 steps={[
                   {
-                    step: manifestGenerationAvailable(configApi)
+                    step: manifestGenerationAvailable(configApi, integrations)
                       ? 'Insert GitHub repo URL or Entity File URL'
                       : 'Insert Entity File URL',
                     content: (
