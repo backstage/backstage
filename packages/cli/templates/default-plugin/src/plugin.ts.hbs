@@ -9,7 +9,7 @@ export const {{ pluginVar }} = createPlugin({
   },
 });
 
-export const ExamplePage = {{ pluginVar }}.provide(
+export const {{ extensionName }} = {{ pluginVar }}.provide(
   createRoutableExtension({
     component: () =>
       import('./components/ExampleComponent').then(m => m.ExampleComponent),
