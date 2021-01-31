@@ -217,27 +217,23 @@ export class AwsS3Publish implements PublisherBase {
       const fileExtension = path.extname(filePath);
       const responseHeaders = getHeadersForFileExtension(fileExtension);
 
+      // Pipe file chunks directly from storage to client.
       this.storageClient
         .getObject({ Bucket: this.bucketName, Key: filePath })
-        .then(async object => {
-          const fileContent = await streamToBuffer(object.Body as Readable);
-          if (!fileContent) {
-            throw new Error(`Unable to parse the file ${filePath}.`);
-          }
-
-          // Inject response headers
-          for (const [headerKey, headerValue] of Object.entries(
-            responseHeaders,
-          )) {
-            res.setHeader(headerKey, headerValue);
-          }
-
-          res.send(fileContent);
+        .createReadStream()
+        .on('pipe', () => {
+          res.writeHead(200, responseHeaders);
         })
-        .catch(err => {
+        .on('error', (err: { message: string }) => {
           this.logger.warn(err.message);
-          res.status(404).send(err.message);
-        });
+          // Send a 404 with a meaningful message if possible.
+          if (!res.headersSent) {
+            res.status(404).send(err.message);
+          } else {
+            res.destroy();
+          }
+        })
+        .pipe(res);
     };
   }
 
