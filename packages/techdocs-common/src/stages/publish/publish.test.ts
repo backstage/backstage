@@ -22,6 +22,7 @@ import { Publisher } from './publish';
 import { LocalPublish } from './local';
 import { GoogleGCSPublish } from './googleStorage';
 import { AwsS3Publish } from './awsS3';
+import { AzureBlobStoragePublish } from './azureBlobStorage';
 
 const logger = getVoidLogger();
 const discovery: jest.Mocked<PluginEndpointDiscovery> = {
@@ -30,6 +31,10 @@ const discovery: jest.Mocked<PluginEndpointDiscovery> = {
 };
 
 describe('Publisher', () => {
+  beforeEach(() => {
+    jest.resetModules(); // clear the cache
+  });
+
   it('should create local publisher by default', async () => {
     const mockConfig = new ConfigReader({
       techdocs: {
@@ -104,5 +109,56 @@ describe('Publisher', () => {
       discovery,
     });
     expect(publisher).toBeInstanceOf(AwsS3Publish);
+  });
+
+  it('should create Azure Blob Storage publisher from config', async () => {
+    const mockConfig = new ConfigReader({
+      techdocs: {
+        requestUrl: 'http://localhost:7000',
+        publisher: {
+          type: 'azureBlobStorage',
+          azureBlobStorage: {
+            credentials: {
+              accountName: 'accountName',
+              accountKey: 'accountKey',
+            },
+            containerName: 'containerName',
+          },
+        },
+      },
+    });
+
+    const publisher = await Publisher.fromConfig(mockConfig, {
+      logger,
+      discovery,
+    });
+    expect(publisher).toBeInstanceOf(AzureBlobStoragePublish);
+  });
+
+  it('should create Azure Blob Storage publisher from environment variables', async () => {
+    process.env.AZURE_TENANT_ID = 'AZURE_TENANT_ID';
+    process.env.AZURE_CLIENT_ID = 'AZURE_CLIENT_ID';
+    process.env.AZURE_CLIENT_SECRET = 'AZURE_CLIENT_SECRET';
+
+    const mockConfig = new ConfigReader({
+      techdocs: {
+        requestUrl: 'http://localhost:7000',
+        publisher: {
+          type: 'azureBlobStorage',
+          azureBlobStorage: {
+            credentials: {
+              accountName: 'accountName',
+            },
+            containerName: 'containerName',
+          },
+        },
+      },
+    });
+
+    const publisher = await Publisher.fromConfig(mockConfig, {
+      logger,
+      discovery,
+    });
+    expect(publisher).toBeInstanceOf(AzureBlobStoragePublish);
   });
 });
