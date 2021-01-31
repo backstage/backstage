@@ -26,16 +26,17 @@ describe('File preparer', () => {
   it('prepares templates from a file path', async () => {
     const logger = getVoidLogger();
     const preparer = new FilePreparer();
-    const workspacePath = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
+    const root = os.platform() === 'win32' ? 'C:\\' : '/';
+    const workspacePath = path.join(root, 'tmp');
     const checkoutPath = path.resolve(workspacePath, 'checkout');
 
     await preparer.prepare({
-      url: 'file:///path/to/template',
+      url: `file:///${root}path/to/template`,
       logger,
       workspacePath,
     });
     expect(fs.copy).toHaveBeenCalledWith(
-      path.join('/path', 'to', 'template'),
+      path.join(root, 'path', 'to', 'template'),
       checkoutPath,
       {
         recursive: true,
