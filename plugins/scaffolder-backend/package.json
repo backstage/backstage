@@ -34,6 +34,7 @@
     "@backstage/catalog-model": "^0.7.0",
     "@backstage/config": "^0.1.2",
     "@backstage/integration": "^0.3.1",
+    "@backstage/plugin-auth-backend": "^0.2.12",
     "@gitbeaker/core": "^28.0.2",
     "@gitbeaker/node": "^28.0.2",
     "@octokit/rest": "^18.0.12",

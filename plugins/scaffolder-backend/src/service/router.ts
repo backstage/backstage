@@ -15,6 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
+import { IdentityClient } from '@backstage/plugin-auth-backend';
 import Docker from 'dockerode';
 import express from 'express';
 import { resolve as resolvePath } from 'path';
@@ -44,11 +45,6 @@ export interface RouterOptions {
   dockerClient: Docker;
   entityClient: CatalogEntityClient;
 }
-
-// Avoid import of @backstage/core
-type BackstageIdentity = {
-  idToken: string;
-};
 
 export async function createRouter(
   options: RouterOptions,
@@ -103,9 +99,8 @@ export async function createRouter(
       };
 
       // Forward authorization from client
-      const user = req.user as BackstageIdentity;
       const template = await entityClient.findTemplate(templateName, {
-        token: user?.idToken,
+        token: IdentityClient.getBearerToken(req.headers.authorization),
       });
 
       const validationResult: ValidatorResult = validate(
