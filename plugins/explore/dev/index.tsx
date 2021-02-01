@@ -16,11 +16,23 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { createDevApp } from '@backstage/dev-utils';
-import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog';
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
+import { exploreToolsConfigRef } from '@backstage/plugin-explore-react';
 import React from 'react';
-import { ExplorePage } from '../src/extensions';
+import { ExplorePage, explorePlugin } from '../src';
+import { exampleTools } from '../src/util/examples';
 
 createDevApp()
+  .registerPlugin(explorePlugin)
+  .registerApi({
+    api: exploreToolsConfigRef,
+    deps: {},
+    factory: () => ({
+      async getTools() {
+        return exampleTools;
+      },
+    }),
+  })
   .registerApi({
     api: catalogApiRef,
     deps: {},
