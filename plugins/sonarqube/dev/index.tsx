@@ -15,13 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import {
-  Content,
-  createPlugin,
-  createRouteRef,
-  Header,
-  Page,
-} from '@backstage/core';
+import { Content, Header, Page } from '@backstage/core';
 import { createDevApp, EntityGridItem } from '@backstage/dev-utils';
 import { Grid } from '@material-ui/core';
 import React from 'react';
