@@ -17,32 +17,24 @@ type PluginConfig = {
 };
 
 type PluginHooks = {
-  router: RouterHooks;
+  featureFlags: FeatureFlagsHooks;
 };
 ```
 
-- [Read more about the router here](createPlugin-router.md)
 - [Read more about feature flags here](createPlugin-feature-flags.md)
 
 ## Example Uses
 
 ### Creating a basic plugin
 
-Showcasing adding a route and a feature flag.
+Showcasing adding a feature flag.
 
 ```jsx
-import { createPlugin, createRouteRef } from '@backstage/core';
-import ExampleComponent from './components/ExampleComponent';
-
-export const rootRouteRef = createRouteRef({
-  path: '/new-plugin',
-  title: 'New Plugin',
-});
+import { createPlugin } from '@backstage/core';
 
 export default createPlugin({
   id: 'new-plugin',
   register({ router, featureFlags }) {
-    router.addRoute(rootRouteRef, ExampleComponent);
     featureFlags.register('enable-example-component');
   },
 });
