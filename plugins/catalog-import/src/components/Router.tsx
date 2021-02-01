@@ -19,23 +19,23 @@ import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import {
   ImportComponentPage,
-  IntegrationsSpec,
-  DefaultIntegrationsSpec,
+  IntegrationConfig,
+  DefaultIntegrationsConfig,
 } from './ImportComponentPage';
 
 export const Router = ({
   catalogRouteRef,
-  integrations = DefaultIntegrationsSpec,
+  integrationConfig = DefaultIntegrationsConfig,
 }: {
   catalogRouteRef: RouteRef;
-  integrations?: IntegrationsSpec;
+  integrationConfig?: IntegrationConfig;
 }) => (
   <Routes>
     <Route
       element={
         <ImportComponentPage
           catalogRouteRef={catalogRouteRef}
-          integrations={integrations}
+          integrationConfig={integrationConfig}
         />
       }
     />

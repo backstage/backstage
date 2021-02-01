@@ -40,29 +40,24 @@ export type ConfigSpec = {
   config: PartialEntity[];
 };
 
-export type IntegrationSpec = {
+export type IntegrationConfig = {
+  // enabledPullRequest is globally enabling/disabling
+  // the Pull Request feature of catalog-import
   enabledPullRequest: boolean;
 };
 
-export type IntegrationsSpec = {
-  [key: string]: IntegrationSpec;
+export const DefaultIntegrationsConfig: IntegrationConfig = {
+  enabledPullRequest: true,
 };
-
-export const DefaultIntegrationsSpec = {} as IntegrationsSpec;
 
 function manifestGenerationAvailable(
   configApi: ConfigApi,
-  integrationsSpec: IntegrationsSpec,
+  integrationsConfig: IntegrationConfig,
 ): boolean {
-  let isGithubPREnabled = true;
-  if (integrationsSpec) {
-    const integration = integrationsSpec.github ?? false;
-    if (integration) {
-      isGithubPREnabled = integrationsSpec.github.enabledPullRequest;
-    }
-  }
-
-  return configApi.has('integrations.github') && isGithubPREnabled;
+  return (
+    configApi.has('integrations.github') &&
+    integrationsConfig.enabledPullRequest
+  );
 }
 
 function repositories(configApi: ConfigApi): string[] {
@@ -85,10 +80,10 @@ function repositories(configApi: ConfigApi): string[] {
 
 export const ImportComponentPage = ({
   catalogRouteRef,
-  integrations,
+  integrationConfig,
 }: {
   catalogRouteRef: RouteRef;
-  integrations: IntegrationsSpec;
+  integrationConfig: IntegrationConfig;
 }) => {
   const [activeStep, setActiveStep] = useState(0);
   const [configFile, setConfigFile] = useState<ConfigSpec>({
@@ -128,7 +123,7 @@ export const ImportComponentPage = ({
                 Ways to register an existing component
               </Typography>
 
-              {manifestGenerationAvailable(configApi, integrations) && (
+              {manifestGenerationAvailable(configApi, integrationConfig) && (
                 <React.Fragment>
                   <Typography variant="h6">GitHub Repo</Typography>
                   <Typography variant="body2" paragraph>
@@ -156,7 +151,10 @@ export const ImportComponentPage = ({
               <ImportStepper
                 steps={[
                   {
-                    step: manifestGenerationAvailable(configApi, integrations)
+                    step: manifestGenerationAvailable(
+                      configApi,
+                      integrationConfig,
+                    )
                       ? 'Insert GitHub repo URL or Entity File URL'
                       : 'Insert Entity File URL',
                     content: (

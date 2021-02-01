@@ -16,12 +16,5 @@
 
 export { plugin } from './plugin';
 export { Router } from './components/Router';
-<<<<<<< HEAD
 export * from './api';
-=======
-export {
-  IntegrationsSpec,
-  IntegrationSpec,
-} from './components/ImportComponentPage';
->>>>>>> Add props to catalog-import for integrations
-e  
+export type { IntegrationConfig } from './components/ImportComponentPage';

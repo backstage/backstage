@@ -35,11 +35,7 @@ import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
 import { Router as LighthouseRouter } from '@backstage/plugin-lighthouse';
 import { Router as RegisterComponentRouter } from '@backstage/plugin-register-component';
 import { Router as SettingsRouter } from '@backstage/plugin-user-settings';
-import {
-  Router as ImportComponentRouter,
-  IntegrationsSpec,
-  IntegrationSpec,
-} from '@backstage/plugin-catalog-import';
+import { Router as ImportComponentRouter } from '@backstage/plugin-catalog-import';
 import { Route, Navigate } from 'react-router';
 
 import { EntityPage } from './components/catalog/EntityPage';
@@ -70,26 +66,12 @@ const catalogRouteRef = createRouteRef({
   title: 'Service Catalog',
 });
 
-// Create your Catalog Import spec for the integrations here, etc...
-const catalogImportIntegrationGithub: IntegrationSpec = {
-  enabledPullRequest: false,
-};
-
-const catalogImportIntegrations: IntegrationsSpec = {
-  github: catalogImportIntegrationGithub,
-};
-
 const routes = (
   <FlatRoutes>
     <Navigate key="/" to="/catalog" />
     <Route
       path="/catalog-import"
-      element={
-        <ImportComponentRouter
-          catalogRouteRef={catalogRouteRef}
-          integrations={catalogImportIntegrations}
-        />
-      }
+      element={<ImportComponentRouter catalogRouteRef={catalogRouteRef} />}
     />
     <Route
       path={`${catalogRouteRef.path}`}

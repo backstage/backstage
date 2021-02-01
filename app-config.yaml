@@ -121,20 +121,20 @@ integrations:
     #   rawBaseUrl: https://ghe.example.net/raw
     #   token:
     #     $env: GHE_TOKEN
-#  gitlab:
-#    - host: gitlab.com
-#      token:
-#        $env: GITLAB_TOKEN
-#  bitbucket:
-#    - host: bitbucket.org
-#      username:
-#        $env: BITBUCKET_USERNAME
-#      appPassword:
-#        $env: BITBUCKET_APP_PASSWORD
-#  azure:
-#    - host: dev.azure.com
-#      token:
-#        $env: AZURE_TOKEN
+  gitlab:
+    - host: gitlab.com
+      token:
+        $env: GITLAB_TOKEN
+  bitbucket:
+    - host: bitbucket.org
+      username:
+        $env: BITBUCKET_USERNAME
+      appPassword:
+        $env: BITBUCKET_APP_PASSWORD
+  azure:
+    - host: dev.azure.com
+      token:
+        $env: AZURE_TOKEN
 
 catalog:
   rules:
