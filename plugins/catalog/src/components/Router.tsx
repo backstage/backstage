@@ -15,15 +15,18 @@
  */
 import { ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { Content } from '@backstage/core';
+import {
+  entityRoute,
+  rootRoute,
+  useEntity,
+} from '@backstage/plugin-catalog-react';
 import { Link, Typography } from '@material-ui/core';
 import React, { ComponentType } from 'react';
 import { Navigate, Route, Routes, useParams } from 'react-router';
-import { useEntity } from '../hooks/useEntity';
-import { entityRoute, rootRoute } from '../routes';
 import { CatalogPage } from './CatalogPage';
+import { EntityLoaderProvider } from './EntityLoaderProvider';
 import { EntityNotFound } from './EntityNotFound';
 import { EntityPageLayout } from './EntityPageLayout';
-import { EntityLoaderProvider } from './EntityLoaderProvider';
 
 const DefaultEntityPage = () => (
   <EntityPageLayout>

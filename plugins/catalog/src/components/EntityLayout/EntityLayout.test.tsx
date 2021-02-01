@@ -13,22 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { EntityLayout } from './EntityLayout';
+import { CatalogApi } from '@backstage/catalog-client';
+import { Entity } from '@backstage/catalog-model';
 import {
   AlertApi,
   alertApiRef,
   ApiProvider,
   ApiRegistry,
 } from '@backstage/core';
+import { catalogApiRef, EntityContext } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, withLogCollector } from '@backstage/test-utils';
 import { fireEvent } from '@testing-library/react';
+import React from 'react';
 import { act } from 'react-dom/test-utils';
-import { Routes, Route } from 'react-router';
-import { Entity } from '@backstage/catalog-model';
-import { EntityContext } from '../../hooks/useEntity';
-import { catalogApiRef } from '../../plugin';
-import { CatalogApi } from '@backstage/catalog-client';
+import { Route, Routes } from 'react-router';
+import { EntityLayout } from './EntityLayout';
 
 const mockEntityData = {
   loading: false,

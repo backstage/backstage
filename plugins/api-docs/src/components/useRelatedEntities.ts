@@ -15,7 +15,7 @@
  */
 import { Entity } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core';
-import { catalogApiRef } from '@backstage/plugin-catalog';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { useAsyncRetry } from 'react-use';
 
 // TODO: Maybe this hook is interesting for others too?

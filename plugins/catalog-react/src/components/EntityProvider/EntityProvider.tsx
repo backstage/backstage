@@ -13,28 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity, EntityName } from '@backstage/catalog-model';
-import React from 'react';
-import { EntityRefLink } from './EntityRefLink';
+import { Entity } from '@backstage/catalog-model';
+import React, { ReactNode } from 'react';
+import { EntityContext } from '../../hooks';
 
-type EntityRefLinksProps = {
-  entityRefs: (Entity | EntityName)[];
-  defaultKind?: string;
+type EntityProviderProps = {
+  entity: Entity;
+  children: ReactNode;
 };
 
-// TODO: Move into a shared helper package
-export const EntityRefLinks = ({
-  entityRefs,
-  defaultKind,
-}: EntityRefLinksProps) => {
-  return (
-    <>
-      {entityRefs.map((r, i) => (
-        <React.Fragment key={i}>
-          {i > 0 && ', '}
-          <EntityRefLink entityRef={r} defaultKind={defaultKind} />
-        </React.Fragment>
-      ))}
-    </>
-  );
-};
+export const EntityProvider = ({ entity, children }: EntityProviderProps) => (
+  <EntityContext.Provider
+    value={{
+      entity,
+      loading: Boolean(entity),
+      error: undefined,
+    }}
+  >
+    {children}
+  </EntityContext.Provider>
+);

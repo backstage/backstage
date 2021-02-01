@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { PropsWithChildren } from 'react';
-import { renderHook } from '@testing-library/react-hooks';
-import { useConsumerGroupsForEntity } from './useConsumerGroupsForEntity';
-import { EntityContext } from '@backstage/plugin-catalog';
 import { Entity } from '@backstage/catalog-model';
+import { EntityContext } from '@backstage/plugin-catalog-react';
+import { renderHook } from '@testing-library/react-hooks';
+import React, { PropsWithChildren } from 'react';
+import { useConsumerGroupsForEntity } from './useConsumerGroupsForEntity';
 
 describe('useConsumerGroupOffsets', () => {
   let entity: Entity;

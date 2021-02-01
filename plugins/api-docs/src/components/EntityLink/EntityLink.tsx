@@ -15,7 +15,10 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { entityRoute, entityRouteParams } from '@backstage/plugin-catalog';
+import {
+  entityRoute,
+  entityRouteParams,
+} from '@backstage/plugin-catalog-react';
 import { Link } from '@material-ui/core';
 import React, { PropsWithChildren } from 'react';
 import { generatePath, Link as RouterLink } from 'react-router-dom';

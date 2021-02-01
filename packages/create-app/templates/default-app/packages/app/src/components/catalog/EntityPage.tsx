@@ -24,8 +24,10 @@ import {
 } from '@backstage/plugin-api-docs';
 import {
   AboutCard, EntityPageLayout,
-  useEntity
 } from '@backstage/plugin-catalog';
+import {
+  useEntity
+} from '@backstage/plugin-catalog-react';
 import {
   isPluginApplicableToEntity as isCircleCIAvailable, Router as CircleCIRouter
 } from '@backstage/plugin-circleci';

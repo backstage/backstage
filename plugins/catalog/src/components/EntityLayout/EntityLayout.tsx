@@ -14,15 +14,6 @@
  * limitations under the License.
  */
 
-import React, {
-  Children,
-  Fragment,
-  PropsWithChildren,
-  ReactNode,
-  isValidElement,
-  useContext,
-  useState,
-} from 'react';
 import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import {
   attachComponentData,
@@ -32,14 +23,25 @@ import {
   Page,
   Progress,
 } from '@backstage/core';
+import {
+  EntityContext,
+  useEntityCompoundName,
+} from '@backstage/plugin-catalog-react';
 import { Box } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
+import React, {
+  Children,
+  Fragment,
+  isValidElement,
+  PropsWithChildren,
+  ReactNode,
+  useContext,
+  useState,
+} from 'react';
 import { useNavigate } from 'react-router';
-import { EntityContext } from '../../hooks/useEntity';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
 import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
-import { useEntityCompoundName } from '../useEntityCompoundName';
 import { TabbedLayout } from './TabbedLayout';
 
 type SubRoute = {

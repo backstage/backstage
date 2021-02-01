@@ -17,7 +17,7 @@
 import React from 'react';
 import { InfoCard, useApi, Progress } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
-import { catalogApiRef } from '@backstage/plugin-catalog';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { useAsync } from 'react-use';
 import Alert from '@material-ui/lab/Alert';
 import {
