@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-export { MemoryTaskStore } from './MemoryTaskStore';
 export { DatabaseTaskStore } from './DatabaseTaskStore';
 export { StorageTaskBroker } from './StorageTaskBroker';
 export { TaskWorker } from './TaskWorker';
