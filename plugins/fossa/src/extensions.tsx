@@ -15,21 +15,12 @@
  */
 
 import { createComponentExtension } from '@backstage/core';
-import { useEntity } from '@backstage/plugin-catalog-react';
-import React from 'react';
 import { fossaPlugin } from './plugin';
 
 export const EntityFossaCard = fossaPlugin.provide(
   createComponentExtension({
     component: {
-      lazy: () =>
-        import('./components/FossaCard').then(({ FossaCard }) => {
-          const EntityFossaCard = () => {
-            const { entity } = useEntity();
-            return <FossaCard entity={entity} />;
-          };
-          return EntityFossaCard;
-        }),
+      lazy: () => import('./components/FossaCard').then(m => m.FossaCard),
     },
   }),
 );
