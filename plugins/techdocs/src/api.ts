@@ -130,7 +130,8 @@ export class TechDocsStorageApi implements TechDocsStorage {
         }
         throw new Error(errorMessage);
       case 500:
-        errorMessage = 'Could not generate documentation. ';
+        errorMessage =
+          'Could not generate documentation or an error in the TechDocs backend. ';
         throw new Error(errorMessage);
       default:
         // Do nothing
