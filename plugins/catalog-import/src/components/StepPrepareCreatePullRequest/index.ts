@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-export const ComponentIdValidators = {
-  httpsValidator: (value: any) =>
-    (typeof value === 'string' && value.match(/^https:\/\//) !== null) ||
-    'Must start with https://.',
-};
+export { AutocompleteTextField } from './AutocompleteTextField';
+export { PreparePullRequestForm } from './PreparePullRequestForm';
+export { PreviewCatalogInfoComponent } from './PreviewCatalogInfoComponent';
+export { PreviewPullRequestComponent } from './PreviewPullRequestComponent';
+export { StepPrepareCreatePullRequest } from './StepPrepareCreatePullRequest';

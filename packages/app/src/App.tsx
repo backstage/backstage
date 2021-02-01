@@ -69,10 +69,7 @@ const catalogRouteRef = createRouteRef({
 const routes = (
   <FlatRoutes>
     <Navigate key="/" to="/catalog" />
-    <Route
-      path="/catalog-import"
-      element={<ImportComponentRouter catalogRouteRef={catalogRouteRef} />}
-    />
+    <Route path="/catalog-import" element={<ImportComponentRouter />} />
     <Route
       path={`${catalogRouteRef.path}`}
       element={<CatalogRouter EntityPage={EntityPage} />}

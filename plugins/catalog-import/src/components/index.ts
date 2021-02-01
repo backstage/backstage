@@ -14,18 +14,7 @@
  * limitations under the License.
  */
 
-import parseGitUrl from 'git-url-parse';
-
-export type UrlType = 'file' | 'tree';
-
-export function urlType(url: string): UrlType {
-  const { filepathtype, filepath } = parseGitUrl(url);
-
-  if (filepathtype === 'tree' || filepathtype === 'file') {
-    return filepathtype;
-  } else if (filepath?.match(/\.ya?ml$/)) {
-    return 'file';
-  }
-
-  return 'tree';
-}
+export * from './ImportStepper';
+export * from './EntityListComponent';
+export * from './StepInitAnalyzeUrl';
+export * from './StepPrepareCreatePullRequest';
