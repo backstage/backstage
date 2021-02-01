@@ -116,12 +116,13 @@ export const ApisTable = ({ entities, title, variant = 'gridItem' }: Props) => {
             .map(r => formatEntityRefTitle(r, { defaultKind: 'group' }))
             .join(', '),
           ownedByRelations,
-          partOfSystemRelationTitle:
-            partOfSystemRelations.length > 0
-              ? formatEntityRefTitle(partOfSystemRelations[0], {
-                  defaultKind: 'system',
-                })
-              : undefined,
+          partOfSystemRelationTitle: partOfSystemRelations
+            .map(r =>
+              formatEntityRefTitle(r, {
+                defaultKind: 'system',
+              }),
+            )
+            .join(', '),
           partOfSystemRelations,
         },
       };
