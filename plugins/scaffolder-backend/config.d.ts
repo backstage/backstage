@@ -19,9 +19,11 @@ export interface Config {
   scaffolder?: {
     github?: {
       [key: string]: string;
+      visiblity?: string;
     };
     gitlab?: {
       api: { [key: string]: string };
+      visiblity?: string;
     };
     azure?: {
       baseUrl: string;
@@ -29,6 +31,7 @@ export interface Config {
     };
     bitbucket?: {
       api: { [key: string]: string };
+      visiblity?: string;
     };
   };
 }
