@@ -34,17 +34,17 @@ import { CatalogEntityClient } from '../lib/catalog';
 import { validate, ValidatorResult } from 'jsonschema';
 import parseGitUrl from 'git-url-parse';
 import {
-  MemoryTaskBroker,
-  MemoryDatabase,
+  DatabaseTaskStore,
+  StorageTaskBroker,
   TaskWorker,
 } from '../scaffolder/tasks';
 import {
   TemplateActionRegistry,
   templateEntityToSpec,
 } from '../scaffolder/tasks/TemplateConverter';
-import { LOCATION_ANNOTATION } from '@backstage/catalog-model';
 import { registerLegacyActions } from '../scaffolder/stages/legacy';
 import { getWorkingDirectory } from './helpers';
+import { PluginDatabaseManager } from '@backstage/backend-common';
 
 export interface RouterOptions {
   preparers: PreparerBuilder;
@@ -55,6 +55,7 @@ export interface RouterOptions {
   config: Config;
   dockerClient: Docker;
   entityClient: CatalogEntityClient;
+  database: PluginDatabaseManager;
 }
 
 export async function createRouter(
@@ -71,12 +72,17 @@ export async function createRouter(
     config,
     dockerClient,
     entityClient,
+    database,
   } = options;
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
   const workingDirectory = await getWorkingDirectory(config, logger);
   const jobProcessor = await JobProcessor.fromConfig({ config, logger });
-  const taskBroker = new MemoryTaskBroker(new MemoryDatabase());
+
+  const databaseTaskStore = await DatabaseTaskStore.create(
+    await database.getClient(),
+  );
+  const taskBroker = new StorageTaskBroker(databaseTaskStore);
   const actionRegistry = new TemplateActionRegistry();
   const worker = new TaskWorker({
     logger,

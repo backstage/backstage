@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JsonValue } from '@backstage/config';
+import { JsonValue, JsonObject } from '@backstage/config';
 
 export type Status =
   | 'open'
@@ -26,7 +26,7 @@ export type Status =
 export type CompletedTaskState = 'failed' | 'completed';
 
 export type DbTaskRow = {
-  taskId: string;
+  id: string;
   spec: TaskSpec;
   status: Status;
   lastHeartbeat?: string;
@@ -40,7 +40,7 @@ export type DbTaskEventRow = {
   id: number;
   runId: string;
   taskId: string;
-  body: string;
+  body: JsonObject;
   type: TaskEventType;
   createdAt: string;
 };
@@ -68,4 +68,28 @@ export interface Task {
 export interface TaskBroker {
   claim(): Promise<Task>;
   dispatch(spec: TaskSpec): Promise<DispatchResult>;
+}
+
+export type TaskStoreEmitOptions = {
+  taskId: string;
+  runId: string;
+  body: JsonObject;
+  type: TaskEventType;
+};
+
+export type TaskStoreGetEventsOptions = {
+  taskId: string;
+  after?: number | undefined;
+};
+export interface TaskStore {
+  get(taskId: string): Promise<DbTaskRow>;
+  createTask(task: TaskSpec): Promise<{ taskId: string }>;
+  claimTask(): Promise<DbTaskRow | undefined>;
+  heartbeat(runId: string): Promise<void>;
+  setStatus(runId: string, status: Status): Promise<void>;
+  emit({ taskId, runId, body, type }: TaskStoreEmitOptions): Promise<void>;
+  getEvents({
+    taskId,
+    after,
+  }: TaskStoreGetEventsOptions): Promise<{ events: DbTaskEventRow[] }>;
 }

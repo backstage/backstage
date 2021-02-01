@@ -18,16 +18,16 @@ import {
   CompletedTaskState,
   Task,
   TaskSpec,
+  TaskStore,
   TaskBroker,
   DispatchResult,
   DbTaskEventRow,
 } from './types';
-import { MemoryDatabase } from './MemoryDatabase';
 
 export class TaskAgent implements Task {
   private heartbeartInterval?: ReturnType<typeof setInterval>;
 
-  static create(state: TaskState, storage: MemoryDatabase) {
+  static create(state: TaskState, storage: TaskStore) {
     const agent = new TaskAgent(state, storage);
     agent.start();
     return agent;
@@ -36,7 +36,7 @@ export class TaskAgent implements Task {
   // Runs heartbeat internally
   private constructor(
     private readonly state: TaskState,
-    private readonly storage: MemoryDatabase,
+    private readonly storage: TaskStore,
   ) {}
 
   get spec() {
@@ -51,20 +51,20 @@ export class TaskAgent implements Task {
     await this.storage.emit({
       taskId: this.state.taskId,
       runId: this.state.runId,
-      body: message,
+      body: { message },
       type: 'log',
     });
   }
 
   async complete(result: CompletedTaskState): Promise<void> {
     await this.storage.setStatus(
-      this.state.taskId,
+      this.state.runId,
       result === 'failed' ? 'failed' : 'completed',
     );
     this.storage.emit({
       taskId: this.state.taskId,
       runId: this.state.runId,
-      body: `Run completed with status: ${result}`,
+      body: { message: `Run completed with status: ${result}` },
       type: 'completion',
     });
     if (this.heartbeartInterval) {
@@ -96,8 +96,8 @@ function defer() {
   return { promise, resolve };
 }
 
-export class MemoryTaskBroker implements TaskBroker {
-  constructor(private readonly storage: MemoryDatabase) {}
+export class StorageTaskBroker implements TaskBroker {
+  constructor(private readonly storage: TaskStore) {}
   private deferredDispatch = defer();
 
   async claim(): Promise<Task> {
@@ -107,7 +107,7 @@ export class MemoryTaskBroker implements TaskBroker {
         return TaskAgent.create(
           {
             runId: pendingTask.runId!,
-            taskId: pendingTask.taskId,
+            taskId: pendingTask.id,
             spec: pendingTask.spec,
           },
           this.storage,

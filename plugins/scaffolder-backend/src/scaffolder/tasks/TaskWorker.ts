@@ -73,6 +73,7 @@ export class TaskWorker {
       // Give us some time to curl observe
       task.emitLog('Task claimed, waiting ...');
       await new Promise(resolve => setTimeout(resolve, 5000));
+      console.log('DEBUG: task.spec =', JSON.stringify(task.spec, null, 2));
       task.emitLog(`Starting up work with ${task.spec.steps.length} steps`);
 
       const outputs: { [name: string]: JsonValue } = {};
@@ -106,7 +107,7 @@ export class TaskWorker {
 
       await task.complete('completed');
     } catch (error) {
-      task.emitLog(error);
+      task.emitLog(String(error.stack));
       await task.complete('failed');
     }
   }

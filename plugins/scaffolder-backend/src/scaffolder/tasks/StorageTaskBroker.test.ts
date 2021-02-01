@@ -15,13 +15,13 @@
  */
 
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { TemplaterValues } from './actions/templater/types';
-import { MemoryDatabase } from './MemoryDatabase';
-import { MemoryTaskBroker, TaskAgent } from './MemoryTaskBroker';
+import { TemplaterValues } from '../stages';
+import { MemoryTaskStore } from './MemoryTaskStore';
+import { StorageTaskBroker, TaskAgent } from './StorageTaskBroker';
 
-describe('MemoryTaskBroker', () => {
-  const storage = new MemoryDatabase();
-  const broker = new MemoryTaskBroker(storage);
+describe('StorageTaskBroker', () => {
+  const storage = new MemoryTaskStore();
+  const broker = new StorageTaskBroker(storage);
 
   const taskSpec = {
     values: {} as TemplaterValues,

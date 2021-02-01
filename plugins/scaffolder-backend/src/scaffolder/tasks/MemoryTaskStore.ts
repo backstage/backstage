@@ -19,35 +19,17 @@ import {
   DbTaskEventRow,
   Status,
   TaskSpec,
-  TaskEventType,
+  TaskStore,
+  TaskStoreGetEventsOptions,
+  TaskStoreEmitOptions,
 } from './types';
 import { v4 as uuid } from 'uuid';
 
-export interface Database {
-  get(taskId: string): Promise<DbTaskRow>;
-  createTask(task: TaskSpec): Promise<DbTaskRow>;
-  claimTask(): Promise<DbTaskRow | undefined>;
-  heartbeat(runId: string): Promise<void>;
-  setStatus(taskId: string, status: Status): Promise<void>;
-}
-
-type EmitOptions = {
-  taskId: string;
-  runId: string;
-  body: string;
-  type: TaskEventType;
-};
-
-type ReadOptions = {
-  taskId: string;
-  after?: number | undefined;
-};
-
-export class MemoryDatabase implements Database {
+export class MemoryTaskStore implements TaskStore {
   private readonly store = new Map<string, DbTaskRow>();
   private readonly events = new Array<DbTaskEventRow>();
 
-  async emit({ taskId, runId, body, type }: EmitOptions) {
+  async emit({ taskId, runId, body, type }: TaskStoreEmitOptions) {
     this.events.push({
       id: this.events.length,
       taskId,
@@ -61,7 +43,7 @@ export class MemoryDatabase implements Database {
   async getEvents({
     taskId,
     after,
-  }: ReadOptions): Promise<{ events: DbTaskEventRow[] }> {
+  }: TaskStoreGetEventsOptions): Promise<{ events: DbTaskEventRow[] }> {
     const events = this.events.filter(event => {
       if (event.taskId !== taskId) {
         return false;
@@ -89,7 +71,7 @@ export class MemoryDatabase implements Database {
       throw new Error('No task with matching runId found');
     }
 
-    this.store.set(task.taskId, {
+    this.store.set(task.id, {
       ...task,
       lastHeartbeat: new Date().toISOString(),
     });
@@ -103,23 +85,23 @@ export class MemoryDatabase implements Database {
           status: 'processing',
           runId: uuid(),
         };
-        this.store.set(t.taskId, task);
+        this.store.set(t.id, task);
         return task;
       }
     }
     return undefined;
   }
 
-  async createTask(spec: TaskSpec): Promise<DbTaskRow> {
+  async createTask(spec: TaskSpec): Promise<{ taskId: string }> {
     const taskRow = {
-      taskId: uuid(),
+      id: uuid(),
       spec,
       status: 'open' as Status,
       retryCount: 0,
       createdAt: new Date().toISOString(),
     };
-    this.store.set(taskRow.taskId, taskRow);
-    return taskRow;
+    this.store.set(taskRow.id, taskRow);
+    return { taskId: taskRow.id };
   }
 
   async get(taskId: string): Promise<DbTaskRow> {
@@ -135,6 +117,6 @@ export class MemoryDatabase implements Database {
     if (!task) {
       throw new Error(`no task found`);
     }
-    this.store.set(task.taskId, { ...task, status });
+    this.store.set(task.id, { ...task, status });
   }
 }

@@ -24,10 +24,6 @@ exports.up = async function up(knex) {
     table.comment('The table of scaffolder tasks');
     table.uuid('id').primary().notNullable().comment('The ID of the task');
     table
-      .text('context')
-      .notNullable()
-      .comment('A JSON object with task specific context information');
-    table
       .text('spec')
       .notNullable()
       .comment('A JSON encoded task specification');
@@ -41,6 +37,7 @@ exports.up = async function up(knex) {
       .comment('The current run ID of the task');
     table
       .dateTime('created_at')
+      .defaultTo(knex.fn.now())
       .notNullable()
       .comment('The timestamp when this task was created');
     table
@@ -53,6 +50,7 @@ exports.up = async function up(knex) {
       .defaultTo(0)
       .comment('The number of times that this task has been attempted');
   });
+
   await knex.schema.createTable('task_events', table => {
     table.comment('The event stream a given task');
     table
@@ -72,16 +70,16 @@ exports.up = async function up(knex) {
       .nullable()
       .comment('The run ID of the task that this event applies to');
     table
-      .text('stage_name')
-      .nullable()
-      .comment('The stage of the task that this event applies to');
+      .text('body')
+      .notNullable()
+      .comment('The JSON encoded body of the event');
     table.text('event_type').notNullable().comment('The type of event');
     table
       .dateTime('created_at')
       .defaultTo(knex.fn.now())
       .notNullable()
       .comment('The timestamp when this event was generated');
-    table.text('text').notNullable().comment('The text of the event');
+
     table.index(['task_id'], 'task_events_task_id_idx');
   });
 };

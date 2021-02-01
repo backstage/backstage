@@ -30,6 +30,7 @@ import Docker from 'dockerode';
 export default async function createPlugin({
   logger,
   config,
+  database,
 }: PluginEnvironment) {
   const cookiecutterTemplater = new CookieCutter();
   const craTemplater = new CreateReactAppTemplater();
@@ -54,5 +55,6 @@ export default async function createPlugin({
     config,
     dockerClient,
     entityClient,
+    database,
   });
 }
