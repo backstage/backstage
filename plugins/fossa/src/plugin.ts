@@ -22,7 +22,7 @@ import {
 } from '@backstage/core';
 import { fossaApiRef, FossaClient } from './api';
 
-export const plugin = createPlugin({
+export const fossaPlugin = createPlugin({
   id: 'fossa',
   apis: [
     createApiFactory({
