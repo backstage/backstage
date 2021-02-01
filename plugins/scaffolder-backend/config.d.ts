@@ -19,11 +19,17 @@ export interface Config {
   scaffolder?: {
     github?: {
       [key: string]: string;
-      visiblity?: string;
+      /**
+       * The visibility to set on created repositories.
+       */
+      visiblity?: 'public' | 'internal' | 'private';
     };
     gitlab?: {
       api: { [key: string]: string };
-      visiblity?: string;
+      /**
+       * The visibility to set on created repositories.
+       */
+      visiblity?: 'public' | 'internal' | 'private';
     };
     azure?: {
       baseUrl: string;
@@ -31,7 +37,10 @@ export interface Config {
     };
     bitbucket?: {
       api: { [key: string]: string };
-      visiblity?: string;
+      /**
+       * The visibility to set on created repositories.
+       */
+      visiblity?: 'public' | 'private';
     };
   };
 }
