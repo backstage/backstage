@@ -14,18 +14,28 @@
  * limitations under the License.
  */
 
-import { createPlugin, createRouteRef } from '@backstage/core';
-import WelcomePage from './components/WelcomePage';
+import {
+  createPlugin,
+  createRoutableExtension,
+  createRouteRef,
+} from '@backstage/core';
+import WelcomePageComponent from './components/WelcomePage';
 
 export const rootRouteRef = createRouteRef({
-  path: '/welcome',
   title: 'Welcome',
 });
 
-export const plugin = createPlugin({
+export const welcomePlugin = createPlugin({
   id: 'welcome',
   register({ router, featureFlags }) {
-    router.addRoute(rootRouteRef, WelcomePage);
+    router.addRoute(rootRouteRef, WelcomePageComponent);
     featureFlags.register('enable-welcome-box');
   },
 });
+
+export const WelcomePage = welcomePlugin.provide(
+  createRoutableExtension({
+    component: () => import('./components/WelcomePage').then(m => m.default),
+    mountPoint: rootRouteRef,
+  }),
+);
