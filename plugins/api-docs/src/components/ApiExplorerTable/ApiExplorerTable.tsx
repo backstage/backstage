@@ -42,6 +42,7 @@ import { ApiTypeTitle } from '../ApiDefinitionCard';
 type EntityRow = {
   entity: ApiEntityV1alpha1;
   resolved: {
+    name: string;
     partOfSystemRelationTitle?: string;
     partOfSystemRelations: EntityName[];
     ownedByRelationsTitle?: string;
@@ -52,10 +53,10 @@ type EntityRow = {
 const columns: TableColumn<EntityRow>[] = [
   {
     title: 'Name',
-    field: 'entity.metadata.name',
+    field: 'resolved.name',
     highlight: true,
     render: ({ entity }) => (
-      <EntityRefLink entityRef={entity}>{entity.metadata.name}</EntityRefLink>
+      <EntityRefLink entityRef={entity} defaultKind="API" />
     ),
   },
   {
@@ -167,6 +168,9 @@ export const ApiExplorerTable = ({
     return {
       entity: entity as ApiEntityV1alpha1,
       resolved: {
+        name: formatEntityRefTitle(entity, {
+          defaultKind: 'API',
+        }),
         ownedByRelationsTitle: ownedByRelations
           .map(r => formatEntityRefTitle(r, { defaultKind: 'group' }))
           .join(', '),
