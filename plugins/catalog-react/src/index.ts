@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from '@backstage/catalog-client';
+export type { CatalogApi } from '@backstage/catalog-client';
 export { catalogApiRef } from './api';
 export * from './components';
 export * from './hooks';
