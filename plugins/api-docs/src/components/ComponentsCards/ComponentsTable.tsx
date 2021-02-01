@@ -29,8 +29,9 @@ import {
 } from '@backstage/plugin-catalog-react';
 import React from 'react';
 
-type EntityRow = ComponentEntity & {
-  row: {
+type EntityRow = {
+  entity: ComponentEntity;
+  resolved: {
     partOfSystemRelationTitle?: string;
     partOfSystemRelations: EntityName[];
     ownedByRelationsTitle?: string;
@@ -41,43 +42,43 @@ type EntityRow = ComponentEntity & {
 const columns: TableColumn<EntityRow>[] = [
   {
     title: 'Name',
-    field: 'metadata.name',
+    field: 'entity.metadata.name',
     highlight: true,
-    render: entity => (
+    render: ({ entity }) => (
       <EntityRefLink entityRef={entity}>{entity.metadata.name}</EntityRefLink>
     ),
   },
   {
     title: 'System',
-    field: 'row.partOfSystemRelationTitle',
-    render: entity => (
+    field: 'resolved.partOfSystemRelationTitle',
+    render: ({ resolved }) => (
       <EntityRefLinks
-        entityRefs={entity.row.partOfSystemRelations}
+        entityRefs={resolved.partOfSystemRelations}
         defaultKind="system"
       />
     ),
   },
   {
     title: 'Owner',
-    field: 'row.ownedByRelationsTitle',
-    render: entity => (
+    field: 'resolved.ownedByRelationsTitle',
+    render: ({ resolved }) => (
       <EntityRefLinks
-        entityRefs={entity.row.ownedByRelations}
+        entityRefs={resolved.ownedByRelations}
         defaultKind="group"
       />
     ),
   },
   {
     title: 'Lifecycle',
-    field: 'spec.lifecycle',
+    field: 'entity.spec.lifecycle',
   },
   {
     title: 'Type',
-    field: 'spec.type',
+    field: 'entity.spec.type',
   },
   {
     title: 'Description',
-    field: 'metadata.description',
+    field: 'entity.metadata.description',
     width: 'auto',
   },
 ];
@@ -106,15 +107,19 @@ export const ComponentsTable = ({
   const rows = entities
     // TODO: For now we skip all Components that we can't find without a warning!
     .filter(e => e !== undefined)
-    .map(e => {
-      const partOfSystemRelations = getEntityRelations(e, RELATION_PART_OF, {
-        kind: 'system',
-      });
-      const ownedByRelations = getEntityRelations(e, RELATION_OWNED_BY);
+    .map(entity => {
+      const partOfSystemRelations = getEntityRelations(
+        entity,
+        RELATION_PART_OF,
+        {
+          kind: 'system',
+        },
+      );
+      const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
 
       return {
-        ...(e as ComponentEntity),
-        row: {
+        entity: entity as ComponentEntity,
+        resolved: {
           ownedByRelationsTitle: ownedByRelations
             .map(r => formatEntityRefTitle(r, { defaultKind: 'group' }))
             .join(', '),
