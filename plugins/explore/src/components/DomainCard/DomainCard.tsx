@@ -15,7 +15,10 @@
  */
 import { DomainEntity } from '@backstage/catalog-model';
 import { ItemCard } from '@backstage/core';
-import { entityRoute, entityRouteParams } from '@backstage/plugin-catalog-react';
+import {
+  entityRoute,
+  entityRouteParams,
+} from '@backstage/plugin-catalog-react';
 import React from 'react';
 import { generatePath } from 'react-router-dom';
 
