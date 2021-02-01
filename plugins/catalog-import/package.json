@@ -49,6 +49,7 @@
     "yaml": "^1.10.0"
   },
   "devDependencies": {
+    "@backstage/catalog-client": "^0.3.5",
     "@backstage/cli": "^0.5.0",
     "@backstage/dev-utils": "^0.1.8",
     "@backstage/test-utils": "^0.1.6",

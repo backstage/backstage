@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { CatalogClient } from '@backstage/catalog-client';
 import {
   ApiProvider,
   ApiRegistry,
   configApiRef,
   errorApiRef,
 } from '@backstage/core';
-import { catalogApiRef, CatalogClient } from '@backstage/plugin-catalog-react';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { msw, renderInTestApp } from '@backstage/test-utils';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { rest } from 'msw';
