@@ -5,6 +5,36 @@ sidebar_label: "HOW TO" guides
 description: TechDocs "HOW TO" guides related to TechDocs
 ---
 
+## How to migrate from TechDocs Basic to Recommended deployment approach?
+
+The main difference between TechDocs Basic and Recommended deployment approach
+is where the docs are generated and stored. In Basic or the out-of-the-box
+setup, docs are generated and stored at the server running your Backstage
+instance. But the recommended setup is to generate docs on CI/CD and store the
+generated sites to an external storage (e.g. AWS S3 or GCS). TechDocs in your
+Backstage instance should turn into read-only mode. Read more details and the
+benefits in the [TechDocs Architecture](architecture.md).
+
+Here are the steps needed to switch from the Basic to Recommended setup -
+
+### 1. Prepare a cloud storage
+
+Choose a cloud storage provider like AWS, Google Cloud or Microsoft Azure.
+Follow the detailed instructions for
+[using cloud storage](using-cloud-storage.md) in TechDocs.
+
+### 2. Publish to storage from CI/CD
+
+Start publishing your TechDocs sites from the CI/CD workflow of each repository
+containing the source markdown files. Read the detailed instructions for
+[configuring CI/CD](configuring-ci-cd.md).
+
+### 3. Switch TechDocs to read-only mode
+
+In your Backstage instance's `app-config.yaml`, set `techdocs.builder` from
+`'local'` to `'external'`. By doing this, TechDocs will not try to generate
+docs. Look at [TechDocs configuration](configuration.md) for reference.
+
 ## How to use URL Reader in TechDocs Prepare step?
 
 If TechDocs is configured to generate docs, it will first download the
