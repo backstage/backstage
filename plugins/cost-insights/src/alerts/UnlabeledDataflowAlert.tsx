@@ -37,6 +37,28 @@ export class UnlabeledDataflowAlert implements Alert {
     this.data = data;
   }
 
+  static create<T>(
+    data: UnlabeledDataflowData,
+    options: Partial<Alert> = {},
+    props?: T,
+  ): Alert {
+    const {
+      url = '/cost-insights/labeling-jobs',
+      title = 'Add labels to workflows',
+      subtitle = 'Labels show in billing data, enabling cost insights for each workflow.',
+      element = <UnlabeledDataflowAlertCard alert={data} />,
+      ...opts
+    } = options;
+    return {
+      title: title,
+      subtitle: subtitle,
+      url: url,
+      element: element,
+      ...opts,
+      ...props,
+    };
+  }
+
   get element() {
     return <UnlabeledDataflowAlertCard alert={this.data} />;
   }

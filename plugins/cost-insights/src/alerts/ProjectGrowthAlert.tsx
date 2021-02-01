@@ -35,6 +35,34 @@ export class ProjectGrowthAlert implements Alert {
     this.data = data;
   }
 
+  /**
+   * Create a custom instance of a ProjectGrowth Alert.
+   * @param data
+   * @param options
+   * @param props
+   */
+  static create<T>(
+    data: ProjectGrowthData,
+    options: Partial<Alert> = {},
+    props?: T,
+  ): Alert {
+    const {
+      title = `Investigate cost growth in project ${data.project}`,
+      subtitle = 'Cost growth outpacing business growth is unsustainable long-term.',
+      url = '/cost-insights/investigating-growth',
+      element = <ProjectGrowthAlertCard alert={data} />,
+      ...opts
+    } = options;
+    return {
+      title: title,
+      subtitle: subtitle,
+      url: url,
+      element: element,
+      ...opts,
+      ...props,
+    };
+  }
+
   get title() {
     return `Investigate cost growth in project ${this.data.project}`;
   }
