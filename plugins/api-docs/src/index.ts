@@ -19,4 +19,9 @@ export {
   apiDocsPlugin,
   apiDocsPlugin as plugin,
   ApiExplorerPage,
+  EntityApiDefinitionCard,
+  EntityConsumedApisCard,
+  EntityConsumingComponentsCard,
+  EntityProvidedApisCard,
+  EntityProvidingComponentsCard,
 } from './plugin';
