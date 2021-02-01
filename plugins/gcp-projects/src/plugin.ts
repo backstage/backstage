@@ -26,7 +26,7 @@ import { ProjectDetailsPage } from './components/ProjectDetailsPage';
 import { ProjectListPage } from './components/ProjectListPage';
 import { rootRouteRef, projectRouteRef, newProjectRouteRef } from './routes';
 
-export const plugin = createPlugin({
+export const gcpProjectsPlugin = createPlugin({
   id: 'gcp-projects',
   routes: {
     root: rootRouteRef,
@@ -47,7 +47,7 @@ export const plugin = createPlugin({
   },
 });
 
-export const GcpProjectsPage = plugin.provide(
+export const GcpProjectsPage = gcpProjectsPlugin.provide(
   createRoutableExtension({
     component: () =>
       import('./components/GcpProjectsPage').then(m => m.GcpProjectsPage),
