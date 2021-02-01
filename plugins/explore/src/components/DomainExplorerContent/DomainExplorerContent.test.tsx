@@ -16,7 +16,7 @@
 
 import { DomainEntity } from '@backstage/catalog-model';
 import { ApiProvider, ApiRegistry } from '@backstage/core';
-import { catalogApiRef } from '@backstage/plugin-catalog';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { render, waitFor } from '@testing-library/react';
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
