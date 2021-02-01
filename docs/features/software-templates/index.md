@@ -42,7 +42,7 @@ After filling in these variables, you'll get some more fields to fill out which
 are required for Backstage usage: the owner (which is a `user` in the backstage
 system), and the `storePath` which is a destination URL to create for the
 provider, for instance `https://github.com/backstage/my-new-repository`, or
-https://gitlab.com/myorg/myrepo.
+`https://gitlab.com/myorg/myrepo`.
 
 ![Enter Backstage vars](../../assets/software-templates/template-picked-2.png)
 
