@@ -60,7 +60,7 @@ describe('GitHubPreparer', () => {
       path.resolve(checkoutPath, 'templates', 'graphql-starter', 'template'),
       templatePath,
     );
-    expect(fs.rmdir).toHaveBeenCalledWith('/tmp/template/.git');
+    expect(fs.rmdir).toHaveBeenCalledWith(path.resolve(templatePath, '.git'));
   });
 
   it('calls the clone command with the correct arguments for a repository when no path is provided', async () => {
