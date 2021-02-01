@@ -16,8 +16,8 @@
 
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { ApiExplorerPage, plugin } from '../src/plugin';
-import { catalogApiRef } from '@backstage/plugin-catalog';
+import { ApiExplorerPage, apiDocsPlugin } from '../src/plugin';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import petstoreApiEntity from './example-api.yaml';
 
 createDevApp()
@@ -31,6 +31,6 @@ createDevApp()
         },
       } as unknown) as typeof catalogApiRef.T),
   })
-  .registerPlugin(plugin)
+  .registerPlugin(apiDocsPlugin)
   .addPage({ element: <ApiExplorerPage /> })
   .render();

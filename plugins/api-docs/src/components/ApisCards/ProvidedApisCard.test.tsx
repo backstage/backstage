@@ -16,7 +16,11 @@
 
 import { Entity, RELATION_PROVIDES_API } from '@backstage/catalog-model';
 import { ApiProvider, ApiRegistry } from '@backstage/core';
-import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
+import {
+  CatalogApi,
+  catalogApiRef,
+  EntityProvider,
+} from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
@@ -63,7 +67,9 @@ describe('<ProvidedApisCard />', () => {
 
     const { getByText } = await renderInTestApp(
       <Wrapper>
-        <ProvidedApisCard entity={entity} />
+        <EntityProvider entity={entity}>
+          <ProvidedApisCard />
+        </EntityProvider>
       </Wrapper>,
     );
 
@@ -112,7 +118,9 @@ describe('<ProvidedApisCard />', () => {
 
     const { getByText } = await renderInTestApp(
       <Wrapper>
-        <ProvidedApisCard entity={entity} />
+        <EntityProvider entity={entity}>
+          <ProvidedApisCard />
+        </EntityProvider>
       </Wrapper>,
     );
 

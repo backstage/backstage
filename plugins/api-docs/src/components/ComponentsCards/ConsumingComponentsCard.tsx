@@ -19,6 +19,7 @@ import {
   Entity,
   RELATION_API_CONSUMED_BY,
 } from '@backstage/catalog-model';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import { EmptyState, InfoCard, Progress } from '@backstage/core';
 import React, { PropsWithChildren } from 'react';
 import { MissingConsumesApisEmptyState } from '../EmptyState';
@@ -37,14 +38,13 @@ const ComponentsCard = ({
 };
 
 type Props = {
-  entity: Entity;
+  /** @deprecated The entity is now grabbed from context instead */
+  entity?: Entity;
   variant?: string;
 };
 
-export const ConsumingComponentsCard = ({
-  entity,
-  variant = 'gridItem',
-}: Props) => {
+export const ConsumingComponentsCard = ({ variant = 'gridItem' }: Props) => {
+  const { entity } = useEntity();
   const { entities, loading, error } = useRelatedEntities(
     entity,
     RELATION_API_CONSUMED_BY,
