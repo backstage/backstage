@@ -42,6 +42,7 @@ import {
 type EntityRow = {
   entity: Entity;
   resolved: {
+    name: string;
     partOfSystemRelationTitle?: string;
     partOfSystemRelations: EntityName[];
     ownedByRelationsTitle?: string;
@@ -52,10 +53,10 @@ type EntityRow = {
 const columns: TableColumn<EntityRow>[] = [
   {
     title: 'Name',
-    field: 'entity.metadata.name',
+    field: 'resolved.name',
     highlight: true,
     render: ({ entity }) => (
-      <EntityRefLink entityRef={entity}>{entity.metadata.name}</EntityRefLink>
+      <EntityRefLink entityRef={entity} defaultKind="Component" />
     ),
   },
   {
@@ -177,6 +178,9 @@ export const CatalogTable = ({
     return {
       entity,
       resolved: {
+        name: formatEntityRefTitle(entity, {
+          defaultKind: 'Component',
+        }),
         ownedByRelationsTitle: ownedByRelations
           .map(r => formatEntityRefTitle(r, { defaultKind: 'group' }))
           .join(', '),
