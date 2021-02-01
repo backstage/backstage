@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
+import { createComponentExtension } from '@backstage/core';
 import { fossaPlugin } from './plugin';
 
-describe('fossa', () => {
-  it('should export plugin', () => {
-    expect(fossaPlugin).toBeDefined();
-  });
-});
+export const EntityFossaCard = fossaPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () => import('./components/FossaCard').then(m => m.FossaCard),
+    },
+  }),
+);
