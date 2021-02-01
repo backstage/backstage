@@ -4,7 +4,6 @@ import {
   AlertDisplay,
   OAuthRequestDialog,
   SidebarPage,
-  createRouteRef,
   FlatRoutes,
 } from '@backstage/core';
 import { apis } from './apis';
@@ -29,12 +28,6 @@ const AppProvider = app.getProvider();
 const AppRouter = app.getRouter();
 const deprecatedAppRoutes = app.getRoutes();
 
-const catalogRouteRef = createRouteRef({
-  path: '/catalog',
-  title: 'Service Catalog',
-});
-
-
 const App = () => (
   <AppProvider>
     <AlertDisplay />
@@ -55,7 +48,7 @@ const App = () => (
           />
           <Route
             path="/catalog-import"
-            element={<ImportComponentRouter catalogRouteRef={catalogRouteRef} />}
+            element={<ImportComponentRouter />}
           />
           <Route
             path="/search"

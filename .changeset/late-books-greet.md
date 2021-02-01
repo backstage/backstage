@@ -1,5 +1,6 @@
 ---
 'example-app': patch
+'@backstage/create-app': patch
 '@backstage/plugin-catalog-import': minor
 ---
 
