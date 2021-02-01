@@ -16,7 +16,13 @@
 
 import React from 'react';
 import { ProjectGrowthAlertCard } from '../components/ProjectGrowthAlertCard';
-import { Alert, ProjectGrowthData } from '../types';
+import {
+  Alert,
+  AlertForm,
+  AlertOptions,
+  Maybe,
+  ProjectGrowthData,
+} from '../types';
 
 /**
  * The alert below is an example of an Alert implementation; the CostInsightsApi permits returning
@@ -26,20 +32,35 @@ import { Alert, ProjectGrowthData } from '../types';
 
 export class ProjectGrowthAlert implements Alert {
   data: ProjectGrowthData;
+  url: string;
+  title: string;
+  subtitle: string;
+  SnoozeForm?: Maybe<AlertForm>;
+  AcceptForm?: Maybe<AlertForm>;
+  DismissForm?: Maybe<AlertForm>;
+  onSnoozed?(options: AlertOptions): Promise<Alert[]>;
+  onAccepted?(options: AlertOptions): Promise<Alert[]>;
+  onDismissed?(options: AlertOptions): Promise<Alert[]>;
 
-  url = '/cost-insights/investigating-growth';
-  subtitle =
-    'Cost growth outpacing business growth is unsustainable long-term.';
+  // Simple constructor override. No support for additional props on on defaults.
+  constructor(data: ProjectGrowthData, options: Partial<Alert> = {}) {
+    const {
+      title = `Investigate cost growth in project ${data.project}`,
+      subtitle = 'Cost growth outpacing business growth is unsustainable long-term.',
+      url = '/cost-insights/investigating-growth',
+      element = <ProjectGrowthAlertCard alert={data} />,
+      ...opts
+    } = options;
 
-  constructor(data: ProjectGrowthData) {
     this.data = data;
-  }
-
-  get title() {
-    return `Investigate cost growth in project ${this.data.project}`;
-  }
-
-  get element() {
-    return <ProjectGrowthAlertCard alert={this.data} />;
+    this.url = url;
+    this.title = title;
+    this.subtitle = subtitle;
+    this.SnoozeForm = opts.SnoozeForm;
+    this.AcceptForm = opts.AcceptForm;
+    this.DismissForm = opts.DismissForm;
+    this.onSnoozed = opts.onSnoozed;
+    this.onAccepted = opts.onAccepted;
+    this.onDismissed = opts.onDismissed;
   }
 }
