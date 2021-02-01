@@ -44,22 +44,16 @@ describe('<ToolCard />', () => {
   it('should link out', () => {
     const rendered = render(wrapInTestApp(<ToolCard {...minProps} />));
     const anchor = rendered.container.querySelector('a');
-    expect(anchor.href).toBe(minProps.card.url);
+    expect(anchor).toHaveAttribute('href', minProps.card.url);
   });
 
   it('renders default description when missing', () => {
-    const propsWithoutDescription = {
-      card: {
-        card: {
-          title: 'Title',
-          url: 'http://spotify.com/',
-          image: 'https://developer.spotify.com/assets/WebAPI_intro.png',
-        },
-      },
+    const card = {
+      title: 'Title',
+      url: 'http://spotify.com/',
+      image: 'https://developer.spotify.com/assets/WebAPI_intro.png',
     };
-    const { getByText } = render(
-      wrapInTestApp(<ToolCard {...propsWithoutDescription} />),
-    );
+    const { getByText } = render(wrapInTestApp(<ToolCard card={card} />));
     expect(getByText('Description missing')).toBeInTheDocument();
   });
 

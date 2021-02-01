@@ -23,7 +23,7 @@ export const exploreToolsConfigRef = createApiRef<ExploreToolsConfig>({
 
 export type ExploreTool = {
   title: string;
-  description: string;
+  description?: string;
   url: string;
   image: string;
   tags?: string[];
