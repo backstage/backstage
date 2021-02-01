@@ -115,10 +115,8 @@ describe('AzureBlobStoragePublish', () => {
           directory: wrongPathToGeneratedDirectory,
         })
         .catch(error =>
-          expect(error).toEqual(
-            new Error(
-              `Unable to upload file(s) to Azure Blob Storage. Error Failed to read template directory: ENOENT, no such file or directory '${wrongPathToGeneratedDirectory}'`,
-            ),
+          expect(error.message).toContain(
+            'Unable to upload file(s) to Azure Blob Storage. Error Failed to read template directory: ENOENT, no such file or directory',
           ),
         );
       mockFs.restore();
