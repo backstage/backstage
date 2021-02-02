@@ -18,7 +18,7 @@ import { getVoidLogger } from '@backstage/backend-common';
 import fs from 'fs-extra';
 import { FilePreparer } from './file';
 import os from 'os';
-import { resolve } from 'path';
+import path from 'path';
 
 jest.mock('fs-extra');
 
@@ -26,16 +26,17 @@ describe('File preparer', () => {
   it('prepares templates from a file path', async () => {
     const logger = getVoidLogger();
     const preparer = new FilePreparer();
-    const workspacePath = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
-    const checkoutPath = resolve(workspacePath, 'checkout');
+    const root = os.platform() === 'win32' ? 'C:\\' : '/';
+    const workspacePath = path.join(root, 'tmp');
+    const checkoutPath = path.resolve(workspacePath, 'checkout');
 
     await preparer.prepare({
-      url: 'file:///path/to/template',
+      url: `file:///${root}path/to/template`,
       logger,
       workspacePath,
     });
     expect(fs.copy).toHaveBeenCalledWith(
-      resolve('/path', 'to', 'template'),
+      path.join(root, 'path', 'to', 'template'),
       checkoutPath,
       {
         recursive: true,

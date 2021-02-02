@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { UrlReader } from '@backstage/backend-common';
+import { NotAllowedError, UrlReader } from '@backstage/backend-common';
 import {
   Entity,
   EntityPolicy,
@@ -102,7 +102,7 @@ export class LocationReaders implements LocationReader {
           } else {
             output.errors.push({
               location: item.location,
-              error: new Error(
+              error: new NotAllowedError(
                 `Entity of kind ${item.entity.kind} is not allowed from location ${item.location.type} ${item.location.target}`,
               ),
             });

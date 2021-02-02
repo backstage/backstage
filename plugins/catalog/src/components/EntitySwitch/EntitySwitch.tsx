@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import {
-  ReactNode,
-  PropsWithChildren,
   Children,
   Fragment,
-  useMemo,
   isValidElement,
+  PropsWithChildren,
+  ReactNode,
+  useMemo,
 } from 'react';
-import { useEntity } from '../../hooks/useEntity';
-import { Entity } from '@backstage/catalog-model';
 
 const EntitySwitchCase = (_: {
   if?: (entity: Entity) => boolean;

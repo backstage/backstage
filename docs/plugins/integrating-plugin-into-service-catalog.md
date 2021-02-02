@@ -59,7 +59,7 @@ accordingly inside `Router.tsx`)
 ### Import and use router in the APP
 
 In the `app/src/components/catalog/EntityPage.tsx` (app === your folder,
-containing backstage app) import your created Router:
+containing Backstage app) import your created Router:
 
 ```tsx
 import { Router as MyPluginRouter } from '@backstage/plugin-my-plugin;

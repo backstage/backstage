@@ -15,7 +15,7 @@
  */
 import fs from 'fs-extra';
 import os from 'os';
-import { resolve } from 'path';
+import path from 'path';
 import { GitlabPreparer } from './gitlab';
 import { getVoidLogger, Git } from '@backstage/backend-common';
 
@@ -23,8 +23,8 @@ jest.mock('fs-extra');
 
 describe('GitLabPreparer', () => {
   const workspacePath = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
-  const checkoutPath = resolve(workspacePath, 'checkout');
-  const templatePath = resolve(workspacePath, 'template');
+  const checkoutPath = path.resolve(workspacePath, 'checkout');
+  const templatePath = path.resolve(workspacePath, 'template');
 
   const mockGitClient = {
     clone: jest.fn(),
@@ -62,7 +62,7 @@ describe('GitLabPreparer', () => {
     });
 
     expect(fs.move).toHaveBeenCalledWith(checkoutPath, templatePath);
-    expect(fs.rmdir).toHaveBeenCalledWith(resolve(templatePath, '.git'));
+    expect(fs.rmdir).toHaveBeenCalledWith(path.resolve(templatePath, '.git'));
   });
 
   it(`clones the template from a sub directory if specified`, async () => {
@@ -73,7 +73,7 @@ describe('GitLabPreparer', () => {
       workspacePath,
     });
     expect(fs.move).toHaveBeenCalledWith(
-      resolve(checkoutPath, '1', '2', '3'),
+      path.resolve(checkoutPath, '1', '2', '3'),
       templatePath,
     );
   });

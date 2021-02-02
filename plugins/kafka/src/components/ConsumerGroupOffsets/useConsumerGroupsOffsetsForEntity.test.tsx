@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { PropsWithChildren } from 'react';
-import { renderHook } from '@testing-library/react-hooks';
-import { EntityContext } from '@backstage/plugin-catalog';
 import { Entity } from '@backstage/catalog-model';
-import * as data from './__fixtures__/consumer-group-offsets.json';
+import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
+import { EntityContext } from '@backstage/plugin-catalog-react';
+import { renderHook } from '@testing-library/react-hooks';
+import { when } from 'jest-when';
+import React, { PropsWithChildren } from 'react';
 import {
   ConsumerGroupOffsetsResponse,
   KafkaApi,
   kafkaApiRef,
 } from '../../api/types';
-import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
 import { useConsumerGroupsOffsetsForEntity } from './useConsumerGroupsOffsetsForEntity';
-import { when } from 'jest-when';
+import * as data from './__fixtures__/consumer-group-offsets.json';
 
 const consumerGroupOffsets = data as ConsumerGroupOffsetsResponse;
 

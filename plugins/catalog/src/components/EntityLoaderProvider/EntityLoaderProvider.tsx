@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {
+  EntityContext,
+  useEntityFromUrl,
+} from '@backstage/plugin-catalog-react';
 import React, { ReactNode } from 'react';
-import { useEntityFromUrl, EntityContext } from '../../hooks/useEntity';
 
 export const EntityLoaderProvider = ({ children }: { children: ReactNode }) => {
   const { entity, loading, error } = useEntityFromUrl();

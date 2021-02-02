@@ -15,7 +15,10 @@
  */
 
 import { createRoutableExtension } from '@backstage/core';
-import { catalogRouteRef, entityRouteRef } from './routes';
+import {
+  catalogRouteRef,
+  entityRouteRef,
+} from '@backstage/plugin-catalog-react';
 import { plugin } from './plugin';
 
 export const CatalogIndexPage = plugin.provide(

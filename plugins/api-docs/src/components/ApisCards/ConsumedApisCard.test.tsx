@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-import { Entity, RELATION_CONSUMES_API } from '@backstage/catalog-model';
+import {
+  Entity,
+  RELATION_CONSUMES_API,
+  RELATION_OWNED_BY,
+  RELATION_PART_OF,
+} from '@backstage/catalog-model';
 import { ApiProvider, ApiRegistry } from '@backstage/core';
-import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog';
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
@@ -99,10 +104,27 @@ describe('<ConsumedApisCard />', () => {
       },
       spec: {
         type: 'openapi',
-        owner: 'Test',
         lifecycle: 'production',
         definition: '...',
       },
+      relations: [
+        {
+          type: RELATION_PART_OF,
+          target: {
+            kind: 'System',
+            name: 'MySystem',
+            namespace: 'default',
+          },
+        },
+        {
+          type: RELATION_OWNED_BY,
+          target: {
+            kind: 'Group',
+            name: 'Test',
+            namespace: 'default',
+          },
+        },
+      ],
     });
     apiDocsConfig.getApiDefinitionWidget.mockReturnValue({
       type: 'openapi',
@@ -121,6 +143,7 @@ describe('<ConsumedApisCard />', () => {
       expect(getByText(/target-name/i)).toBeInTheDocument();
       expect(getByText(/OpenAPI/)).toBeInTheDocument();
       expect(getByText(/Test/i)).toBeInTheDocument();
+      expect(getByText(/MySystem/i)).toBeInTheDocument();
       expect(getByText(/production/i)).toBeInTheDocument();
     });
   });

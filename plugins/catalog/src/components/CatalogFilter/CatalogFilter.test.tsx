@@ -23,11 +23,11 @@ import {
   identityApiRef,
   storageApiRef,
 } from '@backstage/core';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { MockStorageApi, wrapInTestApp } from '@backstage/test-utils';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import React from 'react';
 import { EntityFilterGroupsProvider } from '../../filter';
-import { catalogApiRef } from '../../plugin';
 import { ButtonGroup, CatalogFilter } from './CatalogFilter';
 
 describe('Catalog Filter', () => {

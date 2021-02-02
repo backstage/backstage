@@ -53,7 +53,7 @@ entries.push({
 entries.push({
   timeline: [
     {
-      moved: 0,
+      moved: -1,
       ringId: 'use',
       date: new Date('2020-08-06'),
       description:
@@ -69,7 +69,7 @@ entries.push({
 entries.push({
   timeline: [
     {
-      moved: 0,
+      moved: 1,
       ringId: 'use',
       date: new Date('2020-08-06'),
     },
@@ -88,7 +88,7 @@ entries.push({
       date: new Date('2020-08-06'),
     },
   ],
-  url: '#',
+  url: 'https://reactjs.org/',
   key: 'react',
   id: 'react',
   title: 'React',

@@ -80,7 +80,7 @@ techdocs:
   generators:
     techdocs: 'docker' # Alternatives - 'local'
   publisher:
-    type: 'local' # Alternatives - 'googleGcs' or 'awsS3'. Read documentation for using alternatives.
+    type: 'local' # Alternatives - 'googleGcs' or 'awsS3' or 'azureBlobStorage'. Read documentation for using alternatives.
 
 sentry:
   organization: my-company
@@ -243,6 +243,7 @@ scaffolder:
       baseUrl: https://gitlab.com
       token:
         $env: GITLAB_TOKEN
+    visibility: public # or 'internal' or 'private'
   azure:
     baseUrl: https://dev.azure.com/{your-organization}
     api:
@@ -255,6 +256,7 @@ scaffolder:
         $env: BITBUCKET_USERNAME
       token:
         $env: BITBUCKET_TOKEN
+    visibility: public # or or 'private'
 
 auth:
   environment: development

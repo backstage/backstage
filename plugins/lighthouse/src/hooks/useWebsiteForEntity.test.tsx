@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { PropsWithChildren } from 'react';
-import { renderHook } from '@testing-library/react-hooks';
-import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
-import { lighthouseApiRef, WebsiteListResponse } from '../api';
-import { useWebsiteForEntity } from './useWebsiteForEntity';
-import { EntityContext } from '@backstage/plugin-catalog';
 import { Entity } from '@backstage/catalog-model';
+import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
+import { EntityContext } from '@backstage/plugin-catalog-react';
+import { renderHook } from '@testing-library/react-hooks';
+import React, { PropsWithChildren } from 'react';
+import { lighthouseApiRef, WebsiteListResponse } from '../api';
 import * as data from '../__fixtures__/website-list-response.json';
+import { useWebsiteForEntity } from './useWebsiteForEntity';
 
 const websiteListResponse = data as WebsiteListResponse;
 const website = websiteListResponse.items[0];

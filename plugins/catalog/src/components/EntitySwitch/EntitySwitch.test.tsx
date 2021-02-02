@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { render } from '@testing-library/react';
-import { EntityContext } from '../../hooks/useEntity';
 import { Entity } from '@backstage/catalog-model';
-import { EntitySwitch } from './EntitySwitch';
+import { EntityContext } from '@backstage/plugin-catalog-react';
+import { render } from '@testing-library/react';
+import React from 'react';
 import { isKind } from './conditions';
+import { EntitySwitch } from './EntitySwitch';
 
 describe('EntitySwitch', () => {
   it('should switch child when entity switches', () => {

@@ -42,6 +42,7 @@ import { version as pluginApiDocs } from '../../../../plugins/api-docs/package.j
 import { version as pluginAppBackend } from '../../../../plugins/app-backend/package.json';
 import { version as pluginAuthBackend } from '../../../../plugins/auth-backend/package.json';
 import { version as pluginCatalog } from '../../../../plugins/catalog/package.json';
+import { version as pluginCatalogReact } from '../../../../plugins/catalog-react/package.json';
 import { version as pluginCatalogBackend } from '../../../../plugins/catalog-backend/package.json';
 import { version as pluginCatalogImport } from '../../../../plugins/catalog-import/package.json';
 import { version as pluginCircleci } from '../../../../plugins/circleci/package.json';
@@ -68,6 +69,7 @@ export const packageVersions = {
   '@backstage/plugin-app-backend': pluginAppBackend,
   '@backstage/plugin-auth-backend': pluginAuthBackend,
   '@backstage/plugin-catalog': pluginCatalog,
+  '@backstage/plugin-catalog-react': pluginCatalogReact,
   '@backstage/plugin-catalog-backend': pluginCatalogBackend,
   '@backstage/plugin-catalog-import': pluginCatalogImport,
   '@backstage/plugin-circleci': pluginCircleci,

@@ -24,6 +24,7 @@ jest.mock('fs-extra');
 
 import { CookieCutter } from './cookiecutter';
 import fs from 'fs-extra';
+import path from 'path';
 import { PassThrough } from 'stream';
 import Docker from 'dockerode';
 import parseGitUrl from 'git-url-parse';
@@ -56,7 +57,7 @@ describe('CookieCutter Templater', () => {
     });
 
     expect(fs.writeJson).toBeCalledWith(
-      'tempdir/template/cookiecutter.json',
+      path.join('tempdir', 'template', 'cookiecutter.json'),
       expect.objectContaining(values),
     );
   });
@@ -87,13 +88,16 @@ describe('CookieCutter Templater', () => {
       dockerClient: mockDocker,
     });
 
-    expect(fs.writeJSON).toBeCalledWith('tempdir/template/cookiecutter.json', {
-      ...existingJson,
-      ...values,
-      destination: {
-        git: expect.objectContaining({ organization: 'org', name: 'repo' }),
+    expect(fs.writeJSON).toBeCalledWith(
+      path.join('tempdir', 'template', 'cookiecutter.json'),
+      {
+        ...existingJson,
+        ...values,
+        destination: {
+          git: expect.objectContaining({ organization: 'org', name: 'repo' }),
+        },
       },
-    });
+    );
   });
 
   it('should throw an error if the cookiecutter json is malformed and not missing', async () => {
@@ -148,8 +152,8 @@ describe('CookieCutter Templater', () => {
         '/template',
         '--verbose',
       ],
-      templateDir: 'tempdir/template',
-      resultDir: 'tempdir/intermediate',
+      templateDir: path.join('tempdir', 'template'),
+      resultDir: path.join('tempdir', 'intermediate'),
       logStream: undefined,
       dockerClient: mockDocker,
     });
@@ -187,8 +191,8 @@ describe('CookieCutter Templater', () => {
         '/template',
         '--verbose',
       ],
-      templateDir: 'tempdir/template',
-      resultDir: 'tempdir/intermediate',
+      templateDir: path.join('tempdir', 'template'),
+      resultDir: path.join('tempdir', 'intermediate'),
       logStream: stream,
       dockerClient: mockDocker,
     });
@@ -223,8 +227,8 @@ describe('CookieCutter Templater', () => {
         args: expect.arrayContaining([
           '--no-input',
           '-o',
-          'tempdir/intermediate',
-          'tempdir/template',
+          path.join('tempdir', 'intermediate'),
+          path.join('tempdir', 'template'),
           '--verbose',
         ]),
         logStream: stream,

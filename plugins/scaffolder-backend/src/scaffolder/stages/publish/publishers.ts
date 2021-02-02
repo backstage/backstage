@@ -16,10 +16,19 @@
 
 import { Config } from '@backstage/config';
 import { PublisherBase, PublisherBuilder } from './types';
-import { GithubPublisher, RepoVisibilityOptions } from './github';
-import { GitlabPublisher } from './gitlab';
+import {
+  GithubPublisher,
+  RepoVisibilityOptions as GithubRepoVisibilityOptions,
+} from './github';
+import {
+  GitlabPublisher,
+  RepoVisibilityOptions as GitlabRepoVisibilityOptions,
+} from './gitlab';
 import { AzurePublisher } from './azure';
-import { BitbucketPublisher } from './bitbucket';
+import {
+  BitbucketPublisher,
+  RepoVisibilityOptions as BitbucketRepoVisibilityOptions,
+} from './bitbucket';
 import { Logger } from 'winston';
 import { ScmIntegrations } from '@backstage/integration';
 
@@ -74,7 +83,7 @@ export class Publishers implements PublisherBuilder {
     for (const integration of scm.github.list()) {
       const repoVisibility = (config.getOptionalString(
         'scaffolder.github.visibility',
-      ) ?? 'public') as RepoVisibilityOptions;
+      ) ?? 'public') as GithubRepoVisibilityOptions;
 
       const publisher = await GithubPublisher.fromConfig(integration.config, {
         repoVisibility,
@@ -98,7 +107,13 @@ export class Publishers implements PublisherBuilder {
     }
 
     for (const integration of scm.gitlab.list()) {
-      const publisher = await GitlabPublisher.fromConfig(integration.config);
+      const repoVisibility = (config.getOptionalString(
+        'scaffolder.gitlab.visibility',
+      ) ?? 'public') as GitlabRepoVisibilityOptions;
+
+      const publisher = await GitlabPublisher.fromConfig(integration.config, {
+        repoVisibility,
+      });
 
       if (publisher) {
         publishers.register(integration.config.host, publisher);
@@ -107,16 +122,28 @@ export class Publishers implements PublisherBuilder {
 
         publishers.register(
           integration.config.host,
-          await GitlabPublisher.fromConfig({
-            token: config.getOptionalString('scaffolder.gitlab.token') ?? '',
-            host: integration.config.host,
-          }),
+          await GitlabPublisher.fromConfig(
+            {
+              token: config.getOptionalString('scaffolder.gitlab.token') ?? '',
+              host: integration.config.host,
+            },
+            { repoVisibility },
+          ),
         );
       }
     }
 
     for (const integration of scm.bitbucket.list()) {
-      const publisher = await BitbucketPublisher.fromConfig(integration.config);
+      const repoVisibility = (config.getOptionalString(
+        'scaffolder.bitbucket.visibility',
+      ) ?? 'public') as BitbucketRepoVisibilityOptions;
+
+      const publisher = await BitbucketPublisher.fromConfig(
+        integration.config,
+        {
+          repoVisibility,
+        },
+      );
 
       if (publisher) {
         publishers.register(integration.config.host, publisher);
@@ -125,15 +152,19 @@ export class Publishers implements PublisherBuilder {
 
         publishers.register(
           integration.config.host,
-          await BitbucketPublisher.fromConfig({
-            token: config.getOptionalString('scaffolder.bitbucket.token') ?? '',
-            username:
-              config.getOptionalString('scaffolder.bitbucket.username') ?? '',
-            appPassword:
-              config.getOptionalString('scaffolder.bitbucket.appPassword') ??
-              '',
-            host: integration.config.host,
-          }),
+          await BitbucketPublisher.fromConfig(
+            {
+              token:
+                config.getOptionalString('scaffolder.bitbucket.token') ?? '',
+              username:
+                config.getOptionalString('scaffolder.bitbucket.username') ?? '',
+              appPassword:
+                config.getOptionalString('scaffolder.bitbucket.appPassword') ??
+                '',
+              host: integration.config.host,
+            },
+            { repoVisibility },
+          ),
         );
       }
     }

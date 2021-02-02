@@ -19,7 +19,7 @@ import {
   UserEntity,
 } from '@backstage/catalog-model';
 import { Avatar, InfoCard } from '@backstage/core';
-import { entityRouteParams } from '@backstage/plugin-catalog';
+import { entityRouteParams } from '@backstage/plugin-catalog-react';
 import { Box, Grid, Link, Tooltip, Typography } from '@material-ui/core';
 import EmailIcon from '@material-ui/icons/Email';
 import GroupIcon from '@material-ui/icons/Group';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
-import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog';
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, renderWithEffects } from '@backstage/test-utils';
 import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core';

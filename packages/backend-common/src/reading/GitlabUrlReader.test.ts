@@ -379,5 +379,17 @@ describe('GitlabUrlReader', () => {
       };
       await expect(fnGithub).rejects.toThrow(NotFoundError);
     });
+
+    it('should throw error when apiBaseUrl is missing', () => {
+      expect(() => {
+        /* eslint-disable no-new */
+        new GitlabUrlReader(
+          {
+            host: 'gitlab.mycompany.com',
+          },
+          { treeResponseFactory },
+        );
+      }).toThrowError('must configure an explicit apiBaseUrl');
+    });
   });
 });

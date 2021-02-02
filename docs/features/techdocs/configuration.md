@@ -44,7 +44,7 @@ techdocs:
   # or you want to use External storage providers like Google Cloud Storage, AWS S3, etc.
 
   publisher:
-    # techdocs.publisher.type can be - 'local' or 'googleGcs' or 'awsS3' (azureStorage to be available in future).
+    # techdocs.publisher.type can be - 'local' or 'googleGcs' or 'awsS3' or 'azureBlobStorage'.
     # When set to 'local', techdocs-backend will create a 'static' directory at its root to store generated documentation files.
     # When set to 'googleGcs', techdocs-backend will use a Google Cloud Storage Bucket to store generated documentation files.
     # When set to 'awsS3', techdocs-backend will use an Amazon Web Service (AWS) S3 bucket to store generated documentation files.
@@ -84,4 +84,21 @@ techdocs:
       # https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-region.html
       region:
         $env: AWS_REGION
+
+    # Required when techdocs.publisher.type is set to 'azureBlobStorage'. Skip otherwise.
+
+    azureBlobStorage:
+      # (Required) Azure Blob Storage Container Name
+      containerName: 'techdocs-storage'
+
+      # (Required) An account name is required to write to a storage blob container.
+      # https://docs.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key
+      credentials:
+        accountName:
+          $env: TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_NAME
+        # (Optional) An account key is required to write to a storage container.
+        # If missing,AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET environment variable will be used.
+        # https://docs.microsoft.com/en-us/azure/storage/common/storage-auth?toc=/azure/storage/blobs/toc.json
+        accountKey:
+          $env: TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_KEY
 ```

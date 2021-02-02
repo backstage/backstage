@@ -69,6 +69,14 @@ export function compileConfigSchemas(
     },
   });
 
+  for (const schema of schemas) {
+    try {
+      ajv.compile(schema.value);
+    } catch (error) {
+      throw new Error(`Schema at ${schema.path} is invalid, ${error}`);
+    }
+  }
+
   const merged = mergeAllOf(
     { allOf: schemas.map(_ => _.value) },
     {

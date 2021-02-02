@@ -51,6 +51,12 @@ export class GitlabUrlReader implements UrlReader {
     deps: { treeResponseFactory: ReadTreeResponseFactory },
   ) {
     this.treeResponseFactory = deps.treeResponseFactory;
+
+    if (!config.apiBaseUrl) {
+      throw new Error(
+        `GitLab integration for '${config.host}' must configure an explicit apiBaseUrl`,
+      );
+    }
   }
 
   async read(url: string): Promise<Buffer> {
