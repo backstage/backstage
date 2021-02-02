@@ -97,7 +97,7 @@ class DevAppBuilder {
    * Adds a page component along with accompanying sidebar item.
    *
    * If no path is provided one will be generated.
-   * If no title is provider no sidebar item will be created.
+   * If no title is provided, no sidebar item will be created.
    */
   addPage(opts: RegisterPageOptions): DevAppBuilder {
     const path = opts.path ?? `/page-${this.routes.length + 1}`;
