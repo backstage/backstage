@@ -15,6 +15,7 @@
  */
 import React from 'react';
 import { Entity } from '@backstage/catalog-model';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import { Routes, Route } from 'react-router';
 import { rootRouteRef, buildRouteRef } from '../plugin';
 import { WorkflowRunDetails } from './WorkflowRunDetails';
@@ -25,11 +26,19 @@ import { MissingAnnotationEmptyState } from '@backstage/core';
 export const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[CLOUDBUILD_ANNOTATION]);
 
-export const Router = ({ entity }: { entity: Entity }) =>
-  // TODO(shmidt-i): move warning to a separate standardized component
-  !isPluginApplicableToEntity(entity) ? (
-    <MissingAnnotationEmptyState annotation={CLOUDBUILD_ANNOTATION} />
-  ) : (
+type Props = {
+  /** @deprecated The entity is now grabbed from context instead */
+  entity?: Entity;
+};
+
+export const Router = (_props: Props) => {
+  const { entity } = useEntity();
+
+  if (!isPluginApplicableToEntity(entity)) {
+    // TODO(shmidt-i): move warning to a separate standardized component
+    return <MissingAnnotationEmptyState annotation={CLOUDBUILD_ANNOTATION} />;
+  }
+  return (
     <Routes>
       <Route
         path={`/${rootRouteRef.path}`}
@@ -42,3 +51,4 @@ export const Router = ({ entity }: { entity: Entity }) =>
       )
     </Routes>
   );
+};
