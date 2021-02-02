@@ -43,14 +43,11 @@ export type RawDbTaskRow = {
   spec: string;
   status: Status;
   last_heartbeat_at?: string;
-  retry_count: number;
   created_at: string;
-  run_id?: string;
 };
 
 export type RawDbTaskEventRow = {
   id: number;
-  run_id: string;
   task_id: string;
   body: string;
   event_type: TaskEventType;
@@ -80,10 +77,8 @@ export class DatabaseTaskStore implements TaskStore {
         id: result.id,
         spec,
         status: result.status,
-        lastHeartbeat: result.last_heartbeat_at,
-        retryCount: result.retry_count,
+        lastHeartbeatAt: result.last_heartbeat_at,
         createdAt: result.created_at,
-        runId: result.run_id,
       };
     } catch (error) {
       throw new Error(`Failed to parse spec of task '${taskId}', ${error}`);
@@ -96,7 +91,6 @@ export class DatabaseTaskStore implements TaskStore {
       id: taskId,
       spec: JSON.stringify(spec),
       status: 'open',
-      retry_count: 0,
     });
     return { taskId };
   }
@@ -114,12 +108,10 @@ export class DatabaseTaskStore implements TaskStore {
         return undefined;
       }
 
-      const runId = uuid();
       const updateCount = await tx<RawDbTaskRow>('tasks')
         .where({ id: task.id, status: 'open' })
         .update({
           status: 'processing',
-          run_id: runId,
           last_heartbeat_at: this.db.fn.now(),
         });
 
@@ -133,10 +125,8 @@ export class DatabaseTaskStore implements TaskStore {
           id: task.id,
           spec,
           status: 'processing',
-          lastHeartbeat: task.last_heartbeat_at,
-          retryCount: task.retry_count,
+          lastHeartbeatAt: task.last_heartbeat_at,
           createdAt: task.created_at,
-          runId: runId,
         };
       } catch (error) {
         throw new Error(`Failed to parse spec of task '${task.id}', ${error}`);
@@ -144,58 +134,76 @@ export class DatabaseTaskStore implements TaskStore {
     });
   }
 
-  async heartbeat(runId: string): Promise<void> {
+  async heartbeatTask(taskId: string): Promise<void> {
     const updateCount = await this.db<RawDbTaskRow>('tasks')
-      .where({ run_id: runId, status: 'processing' })
+      .where({ id: taskId, status: 'processing' })
       .update({
         last_heartbeat_at: this.db.fn.now(),
       });
     if (updateCount === 0) {
-      throw new Error(`No running task with runId ${runId} found`);
+      throw new Error(`No running task with taskId ${taskId} found`);
     }
   }
 
-  async listStaleTasks(): Promise<{ tasks: DbTaskRow }> {
-    const rows = await this.db<RawDbTaskRow>('tasks')
+  async listStaleTasks({
+    timeoutS,
+  }: {
+    timeoutS: number;
+  }): Promise<{
+    tasks: { taskId: string }[];
+  }> {
+    const rawRows = await this.db<RawDbTaskRow>('tasks')
       .where('status', 'processing')
       .andWhere(
         'last_heartbeat_at',
-        '<',
-        this.db.type === 'sqlite'
-          ? this.db.raw("datetime('now', '-2 seconds')")
-          : this.db.raw("dateadd('second', -2, now())"),
+        '<=',
+        this.db.client.config.client === 'sqlite3'
+          ? this.db.raw(`datetime('now', '-${Number(timeoutS)} seconds')`)
+          : this.db.raw(`dateadd('second', -${Number(timeoutS)}, now())`),
       );
+    const tasks = rawRows.map(row => ({
+      taskId: row.id,
+    }));
+    return { tasks };
   }
 
-  async setStatus(runId: string, status: Status): Promise<void> {
+  async completeTask({
+    taskId,
+    status,
+    eventBody,
+  }: {
+    taskId: string;
+    status: Status;
+    eventBody: JsonObject;
+  }): Promise<void> {
     let oldStatus: string;
     if (status === 'failed' || status === 'completed') {
       oldStatus = 'processing';
     } else {
       throw new Error(
-        `Invalid status update of run '${runId}' to status '${status}'`,
+        `Invalid status update of run '${taskId}' to status '${status}'`,
       );
     }
     await this.db.transaction(async tx => {
       const [task] = await tx<RawDbTaskRow>('tasks')
         .where({
-          run_id: runId,
+          id: taskId,
         })
         .limit(1)
         .select();
 
       if (!task) {
-        throw new Error(`No task with runId ${runId} found`);
+        throw new Error(`No task with taskId ${taskId} found`);
       }
       if (task.status !== oldStatus) {
         throw new ConflictError(
-          `Refusing to update status of run '${runId}' to status '${status}' ` +
+          `Refusing to update status of run '${taskId}' to status '${status}' ` +
             `as it is currently '${task.status}', expected '${oldStatus}'`,
         );
       }
       const updateCount = await tx<RawDbTaskRow>('tasks')
         .where({
-          run_id: runId,
+          id: taskId,
           status: oldStatus,
         })
         .update({
@@ -203,28 +211,28 @@ export class DatabaseTaskStore implements TaskStore {
         });
       if (updateCount !== 1) {
         throw new Error(
-          `Failed to update status to '${status}' for runId ${runId}`,
+          `Failed to update status to '${status}' for taskId ${taskId}`,
         );
       }
+
+      await tx<RawDbTaskEventRow>('task_events').insert({
+        task_id: taskId,
+        event_type: 'completion',
+        body: JSON.stringify(eventBody),
+      });
     });
   }
 
-  async emit({
-    taskId,
-    runId,
-    body,
-    type,
-  }: TaskStoreEmitOptions): Promise<void> {
+  async emitLogEvent({ taskId, body }: TaskStoreEmitOptions): Promise<void> {
     const serliazedBody = JSON.stringify(body);
     await this.db<RawDbTaskEventRow>('task_events').insert({
       task_id: taskId,
-      run_id: runId,
-      event_type: type,
+      event_type: 'log',
       body: serliazedBody,
     });
   }
 
-  async getEvents({
+  async listEvents({
     taskId,
     after,
   }: TaskStoreGetEventsOptions): Promise<{ events: DbTaskEventRow[] }> {
@@ -244,8 +252,7 @@ export class DatabaseTaskStore implements TaskStore {
         const body = JSON.parse(event.body) as JsonObject;
         return {
           id: event.id,
-          runId: event.run_id,
-          taskId: event.task_id,
+          taskId,
           body,
           type: event.event_type,
           createdAt: event.created_at,

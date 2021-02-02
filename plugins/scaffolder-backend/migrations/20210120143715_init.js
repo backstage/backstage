@@ -32,10 +32,6 @@ exports.up = async function up(knex) {
       .notNullable()
       .comment('The current status of the task');
     table
-      .integer('run_id')
-      .nullable()
-      .comment('The current run ID of the task');
-    table
       .dateTime('created_at')
       .defaultTo(knex.fn.now())
       .notNullable()
@@ -44,11 +40,6 @@ exports.up = async function up(knex) {
       .dateTime('last_heartbeat_at')
       .nullable()
       .comment('The last timestamp when a heartbeat was received');
-    table
-      .integer('retry_count')
-      .notNullable()
-      .defaultTo(0)
-      .comment('The number of times that this task has been attempted');
   });
 
   await knex.schema.createTable('task_events', table => {
@@ -66,16 +57,12 @@ exports.up = async function up(knex) {
       .onDelete('CASCADE')
       .comment('The task that generated the event');
     table
-      .integer('run_id')
-      .nullable()
-      .comment('The run ID of the task that this event applies to');
-    table
       .text('body')
       .notNullable()
       .comment('The JSON encoded body of the event');
     table.text('event_type').notNullable().comment('The type of event');
     table
-      .dateTime('created_at')
+      .timestamp('created_at', { precision: 9 })
       .defaultTo(knex.fn.now())
       .notNullable()
       .comment('The timestamp when this event was generated');
@@ -90,7 +77,7 @@ exports.up = async function up(knex) {
 exports.down = async function down(knex) {
   if (knex.client.config.client !== 'sqlite3') {
     await knex.schema.alterTable('task_events', table => {
-      table.dropIndex([], 'task_events_task_id_idx');
+      table.dropIndex([], 'ctask_events_task_id_idx');
     });
   }
   await knex.schema.dropTable('task_events');

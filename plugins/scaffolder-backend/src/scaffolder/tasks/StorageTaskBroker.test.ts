@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-import { SingleConnectionDatabaseManager } from '@backstage/backend-common';
+import {
+  getVoidLogger,
+  SingleConnectionDatabaseManager,
+} from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { DatabaseTaskStore } from './DatabaseTaskStore';
 import { StorageTaskBroker, TaskAgent } from './StorageTaskBroker';
-import { TaskStore, TaskSpec, DbTaskEventRow } from './types';
+import { TaskSpec, DbTaskEventRow } from './types';
 
-async function createStore(): Promise<TaskStore> {
+async function createStore(): Promise<DatabaseTaskStore> {
   const manager = SingleConnectionDatabaseManager.fromConfig(
     new ConfigReader({
       backend: {
@@ -35,20 +38,21 @@ async function createStore(): Promise<TaskStore> {
 }
 
 describe('StorageTaskBroker', () => {
-  let storage: TaskStore;
+  let storage: DatabaseTaskStore;
 
   beforeAll(async () => {
     storage = await createStore();
   });
 
+  const logger = getVoidLogger();
   it('should claim a dispatched work item', async () => {
-    const broker = new StorageTaskBroker(storage);
+    const broker = new StorageTaskBroker(storage, logger);
     await broker.dispatch({ steps: [] });
     await expect(broker.claim()).resolves.toEqual(expect.any(TaskAgent));
   });
 
   it('should wait for a dispatched work item', async () => {
-    const broker = new StorageTaskBroker(storage);
+    const broker = new StorageTaskBroker(storage, logger);
     const promise = broker.claim();
 
     await expect(Promise.race([promise, 'waiting'])).resolves.toBe('waiting');
@@ -58,7 +62,7 @@ describe('StorageTaskBroker', () => {
   });
 
   it('should dispatch multiple items and claim them in order', async () => {
-    const broker = new StorageTaskBroker(storage);
+    const broker = new StorageTaskBroker(storage, logger);
     await broker.dispatch({ steps: [{ id: 'a' }] } as TaskSpec);
     await broker.dispatch({ steps: [{ id: 'b' }] } as TaskSpec);
     await broker.dispatch({ steps: [{ id: 'c' }] } as TaskSpec);
@@ -75,16 +79,16 @@ describe('StorageTaskBroker', () => {
   });
 
   it('should complete a task', async () => {
-    const broker = new StorageTaskBroker(storage);
+    const broker = new StorageTaskBroker(storage, logger);
     const dispatchResult = await broker.dispatch({ steps: [] });
     const task = await broker.claim();
     await task.complete('completed');
     const taskRow = await storage.get(dispatchResult.taskId);
     expect(taskRow.status).toBe('completed');
-  });
+  }, 10000);
 
   it('should fail a task', async () => {
-    const broker = new StorageTaskBroker(storage);
+    const broker = new StorageTaskBroker(storage, logger);
     const dispatchResult = await broker.dispatch({ steps: [] });
     const task = await broker.claim();
     await task.complete('failed');
@@ -93,8 +97,8 @@ describe('StorageTaskBroker', () => {
   });
 
   it('multiple brokers should be able to observe a single task', async () => {
-    const broker1 = new StorageTaskBroker(storage);
-    const broker2 = new StorageTaskBroker(storage);
+    const broker1 = new StorageTaskBroker(storage, logger);
+    const broker2 = new StorageTaskBroker(storage, logger);
 
     const { taskId } = await broker1.dispatch({ steps: [] });
 
@@ -115,7 +119,7 @@ describe('StorageTaskBroker', () => {
     await task.complete('completed');
 
     const logs = await logPromise;
-    expect(logs.map(l => l.body.message)).toEqual([
+    expect(logs.map(l => l.body.message, logger)).toEqual([
       'log 1',
       'log 2',
       'log 3',
@@ -134,7 +138,7 @@ describe('StorageTaskBroker', () => {
   });
 
   it('should heartbeat', async () => {
-    const broker = new StorageTaskBroker(storage);
+    const broker = new StorageTaskBroker(storage, logger);
     const { taskId } = await broker.dispatch({ steps: [] });
     const task = await broker.claim();
 
@@ -142,7 +146,7 @@ describe('StorageTaskBroker', () => {
 
     for (;;) {
       const maybeTask = await storage.get(taskId);
-      if (maybeTask.lastHeartbeat !== initialTask.lastHeartbeat) {
+      if (maybeTask.lastHeartbeatAt !== initialTask.lastHeartbeatAt) {
         break;
       }
       await new Promise(resolve => setTimeout(resolve, 50));
@@ -151,24 +155,29 @@ describe('StorageTaskBroker', () => {
     expect.assertions(0);
   });
 
-  it('should be cancelled if heartbeat stops', async () => {
-    const broker = new StorageTaskBroker(storage);
+  it('should be update the status to failed if heartbeat fails', async () => {
+    const broker = new StorageTaskBroker(storage, logger);
     const { taskId } = await broker.dispatch({ steps: [] });
-    console.log('DEBUG: taskId =', taskId);
     const task = await broker.claim();
-    clearInterval((task as any).heartbeatInterval);
 
-    setTimeout(() => {
-      storage.listStaleTasks();
-    }, 4000);
+    jest
+      .spyOn((task as any).storage, 'heartbeatTask')
+      .mockRejectedValue(new Error('nah m8'));
+
+    const intervalId = setInterval(() => {
+      broker.vacuumTasks({ timeoutS: 2 }).catch(fail);
+    }, 500);
 
     for (;;) {
       const maybeTask = await storage.get(taskId);
-      if (maybeTask.status === 'cancelled') {
+      if (maybeTask.status === 'failed') {
         break;
       }
       await new Promise(resolve => setTimeout(resolve, 50));
     }
-    expect.assertions(0);
+
+    clearInterval(intervalId);
+
+    expect(task.done).toBe(true);
   });
 });

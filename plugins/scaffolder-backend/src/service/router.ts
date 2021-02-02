@@ -82,7 +82,7 @@ export async function createRouter(
   const databaseTaskStore = await DatabaseTaskStore.create(
     await database.getClient(),
   );
-  const taskBroker = new StorageTaskBroker(databaseTaskStore);
+  const taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
   const actionRegistry = new TemplateActionRegistry();
   const worker = new TaskWorker({
     logger,
@@ -124,7 +124,7 @@ export async function createRouter(
         error: job.error,
       });
     })
-    // curl -X POST -d '{"templateName":"springboot-template","values": {"storePath":"https://github.com/jhaals/foo", "component_id":"woop", "description": "apa", "owner": "me" }}' -H 'Content-Type: application/json' localhost:7000/api/scaffolder/v2/tasks
+
     .post('/v2/tasks', async (req, res) => {
       const templateName: string = req.body.templateName;
       const values: TemplaterValues = {

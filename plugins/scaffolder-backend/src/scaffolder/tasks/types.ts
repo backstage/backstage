@@ -29,16 +29,13 @@ export type DbTaskRow = {
   id: string;
   spec: TaskSpec;
   status: Status;
-  lastHeartbeat?: string;
-  retryCount: number;
   createdAt: string;
-  runId?: string;
+  lastHeartbeatAt?: string;
 };
 
 export type TaskEventType = 'completion' | 'log';
 export type DbTaskEventRow = {
   id: number;
-  runId: string;
   taskId: string;
   body: JsonObject;
   type: TaskEventType;
@@ -60,6 +57,7 @@ export type DispatchResult = {
 
 export interface Task {
   spec: TaskSpec;
+  done: boolean;
   emitLog(message: string): Promise<void>;
   complete(result: CompletedTaskState): Promise<void>;
   getWorkspaceName(): Promise<string>;
@@ -68,13 +66,22 @@ export interface Task {
 export interface TaskBroker {
   claim(): Promise<Task>;
   dispatch(spec: TaskSpec): Promise<DispatchResult>;
+  vacuumTasks(timeoutS: { timeoutS: number }): Promise<void>;
+  observe(
+    options: {
+      taskId: string;
+      after: number | undefined;
+    },
+    callback: (
+      error: Error | undefined,
+      result: { events: DbTaskEventRow[] },
+    ) => void,
+  ): () => void;
 }
 
 export type TaskStoreEmitOptions = {
   taskId: string;
-  runId: string;
   body: JsonObject;
-  type: TaskEventType;
 };
 
 export type TaskStoreGetEventsOptions = {
@@ -82,14 +89,22 @@ export type TaskStoreGetEventsOptions = {
   after?: number | undefined;
 };
 export interface TaskStore {
-  get(taskId: string): Promise<DbTaskRow>;
   createTask(task: TaskSpec): Promise<{ taskId: string }>;
   claimTask(): Promise<DbTaskRow | undefined>;
-  heartbeat(runId: string): Promise<void>;
-  listStaleTasks(): Promise<{ tasks: DbTaskRow }>;
-  setStatus(runId: string, status: Status): Promise<void>;
-  emit({ taskId, runId, body, type }: TaskStoreEmitOptions): Promise<void>;
-  getEvents({
+  completeTask(options: {
+    taskId: string;
+    status: Status;
+    eventBody: JsonObject;
+  }): Promise<void>;
+  heartbeatTask(taskId: string): Promise<void>;
+  listStaleTasks(options: {
+    timeoutS: number;
+  }): Promise<{
+    tasks: { taskId: string }[];
+  }>;
+
+  emitLogEvent({ taskId, body }: TaskStoreEmitOptions): Promise<void>;
+  listEvents({
     taskId,
     after,
   }: TaskStoreGetEventsOptions): Promise<{ events: DbTaskEventRow[] }>;

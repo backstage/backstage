@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { Logger } from 'winston';
 import {
   CompletedTaskState,
   Task,
@@ -25,11 +25,13 @@ import {
 } from './types';
 
 export class TaskAgent implements Task {
-  private heartbeatInterval?: ReturnType<typeof setInterval>;
+  private isDone = false;
 
-  static create(state: TaskState, storage: TaskStore) {
-    const agent = new TaskAgent(state, storage);
-    agent.start();
+  private heartbeatTimeoutId?: ReturnType<typeof setInterval>;
+
+  static create(state: TaskState, storage: TaskStore, logger: Logger) {
+    const agent = new TaskAgent(state, storage, logger);
+    agent.startTimeout();
     return agent;
   }
 
@@ -37,6 +39,7 @@ export class TaskAgent implements Task {
   private constructor(
     private readonly state: TaskState,
     private readonly storage: TaskStore,
+    private readonly logger: Logger,
   ) {}
 
   get spec() {
@@ -44,40 +47,45 @@ export class TaskAgent implements Task {
   }
 
   async getWorkspaceName() {
-    return `${this.state.taskId}_${this.state.runId}`;
+    return this.state.taskId;
+  }
+
+  get done() {
+    return this.isDone;
   }
 
   async emitLog(message: string): Promise<void> {
-    await this.storage.emit({
+    await this.storage.emitLogEvent({
       taskId: this.state.taskId,
-      runId: this.state.runId,
       body: { message },
-      type: 'log',
     });
   }
 
   async complete(result: CompletedTaskState): Promise<void> {
-    await this.storage.setStatus(
-      this.state.runId,
-      result === 'failed' ? 'failed' : 'completed',
-    );
-    this.storage.emit({
+    await this.storage.completeTask({
       taskId: this.state.taskId,
-      runId: this.state.runId,
-      body: { message: `Run completed with status: ${result}` },
-      type: 'completion',
+      status: result === 'failed' ? 'failed' : 'completed',
+      eventBody: { message: `Run completed with status: ${result}` },
     });
-    if (this.heartbeatInterval) {
-      clearInterval(this.heartbeatInterval);
+    this.isDone = true;
+    if (this.heartbeatTimeoutId) {
+      clearTimeout(this.heartbeatTimeoutId);
     }
   }
 
-  private start() {
-    this.heartbeatInterval = setInterval(() => {
-      if (!this.state.runId) {
-        throw new Error('no run id provided');
+  private startTimeout() {
+    this.heartbeatTimeoutId = setTimeout(async () => {
+      try {
+        await this.storage.heartbeatTask(this.state.taskId);
+        this.startTimeout();
+      } catch (error) {
+        this.isDone = true;
+
+        this.logger.error(
+          `Heartbeat for task ${this.state.taskId} failed`,
+          error,
+        );
       }
-      this.storage.heartbeat(this.state.runId);
     }, 1000);
   }
 }
@@ -85,7 +93,6 @@ export class TaskAgent implements Task {
 interface TaskState {
   spec: TaskSpec;
   taskId: string;
-  runId: string;
 }
 
 function defer() {
@@ -97,7 +104,10 @@ function defer() {
 }
 
 export class StorageTaskBroker implements TaskBroker {
-  constructor(private readonly storage: TaskStore) {}
+  constructor(
+    private readonly storage: TaskStore,
+    private readonly logger: Logger,
+  ) {}
   private deferredDispatch = defer();
 
   async claim(): Promise<Task> {
@@ -106,11 +116,11 @@ export class StorageTaskBroker implements TaskBroker {
       if (pendingTask) {
         return TaskAgent.create(
           {
-            runId: pendingTask.runId!,
             taskId: pendingTask.id,
             spec: pendingTask.spec,
           },
           this.storage,
+          this.logger,
         );
       }
 
@@ -146,7 +156,7 @@ export class StorageTaskBroker implements TaskBroker {
     (async () => {
       let after = options.after;
       while (!cancelled) {
-        const result = await this.storage.getEvents({ taskId, after: after });
+        const result = await this.storage.listEvents({ taskId, after: after });
         const { events } = result;
         if (events.length) {
           after = events[events.length - 1].id;
@@ -162,6 +172,26 @@ export class StorageTaskBroker implements TaskBroker {
     })();
 
     return unsubscribe;
+  }
+
+  async vacuumTasks(timeoutS: { timeoutS: number }): Promise<void> {
+    const { tasks } = await this.storage.listStaleTasks(timeoutS);
+    await Promise.all(
+      tasks.map(async task => {
+        try {
+          await this.storage.completeTask({
+            taskId: task.taskId,
+            status: 'failed',
+            eventBody: {
+              message:
+                'The task was cancelled because the task worker lost connection to the task broker',
+            },
+          });
+        } catch (error) {
+          this.logger.warn(`Failed to cancel task '${task.taskId}', ${error}`);
+        }
+      }),
+    );
   }
 
   private waitForDispatch() {
