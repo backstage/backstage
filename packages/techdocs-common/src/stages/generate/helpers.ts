@@ -133,10 +133,6 @@ export const runCommand = async ({
 
     process.stderr.on('data', stream => {
       logStream.write(stream);
-      // added below change to make OS ( child process) exception to the backend logs
-      const bufferbase64 = Buffer.from(stream, 'base64');
-      const textAscii = bufferbase64.toString('ascii');
-      console.log(' Process Stderror trace: ', textAscii);
     });
 
     process.on('error', error => {
