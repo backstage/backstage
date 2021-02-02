@@ -124,68 +124,6 @@ export async function createRouter(
         error: job.error,
       });
     })
-
-    .post('/v2/tasks', async (req, res) => {
-      const templateName: string = req.body.templateName;
-      const values: TemplaterValues = {
-        ...req.body.values,
-        destination: {
-          git: parseGitUrl(req.body.values.storePath),
-        },
-      };
-      const template = await entityClient.findTemplate(templateName);
-
-      const validationResult: ValidatorResult = validate(
-        values,
-        template.spec.schema,
-      );
-
-      if (!validationResult.valid) {
-        res.status(400).json({ errors: validationResult.errors });
-        return;
-      }
-      const taskSpec = templateEntityToSpec(template, values);
-      const result = await taskBroker.dispatch(taskSpec);
-
-      res.status(201).json({ id: result.taskId });
-    })
-
-    .get('/v2/tasks/:taskId/eventstream', async (req, res) => {
-      const { taskId } = req.params;
-      const after = Number(req.query.after) || undefined;
-      logger.info('event stream opened');
-
-      // Mandatory headers and http status to keep connection open
-      res.writeHead(200, {
-        Connection: 'keep-alive',
-        'Cache-Control': 'no-cache',
-        'Content-Type': 'text/event-stream',
-      });
-      // After client opens connection send all nests as string
-      const unsubscribe = taskBroker.observe(
-        { taskId, after },
-        (error, { events }) => {
-          logger.error(
-            `Received error from event stream when observing task ${taskId}`,
-            error,
-          );
-          for (const event of events) {
-            res.write(`event:${JSON.stringify(event)}\n\n`);
-            if (event.type === 'completion') {
-              unsubscribe();
-              res.end();
-            }
-          }
-        },
-      );
-      // When client closes connection we update the clients list
-      // avoiding the disconnected one
-      req.on('close', () => {
-        unsubscribe();
-        logger.info('event stream closed');
-      });
-    })
-
     .post('/v1/jobs', async (req, res) => {
       const templateName: string = req.body.templateName;
       const values: TemplaterValues = {
@@ -280,6 +218,68 @@ export async function createRouter(
       jobProcessor.run(job);
 
       res.status(201).json({ id: job.id });
+    });
+
+  // NOTE: The v2 API is unstable
+  router
+    .post('/v2/tasks', async (req, res) => {
+      const templateName: string = req.body.templateName;
+      const values: TemplaterValues = {
+        ...req.body.values,
+        destination: {
+          git: parseGitUrl(req.body.values.storePath),
+        },
+      };
+      const template = await entityClient.findTemplate(templateName);
+
+      const validationResult: ValidatorResult = validate(
+        values,
+        template.spec.schema,
+      );
+
+      if (!validationResult.valid) {
+        res.status(400).json({ errors: validationResult.errors });
+        return;
+      }
+      const taskSpec = templateEntityToSpec(template, values);
+      const result = await taskBroker.dispatch(taskSpec);
+
+      res.status(201).json({ id: result.taskId });
+    })
+    .get('/v2/tasks/:taskId/eventstream', async (req, res) => {
+      const { taskId } = req.params;
+      const after = Number(req.query.after) || undefined;
+      logger.info('event stream opened');
+
+      // Mandatory headers and http status to keep connection open
+      res.writeHead(200, {
+        Connection: 'keep-alive',
+        'Cache-Control': 'no-cache',
+        'Content-Type': 'text/event-stream',
+      });
+      // After client opens connection send all nests as string
+      const unsubscribe = taskBroker.observe(
+        { taskId, after },
+        (error, { events }) => {
+          logger.error(
+            `Received error from event stream when observing task ${taskId}`,
+            error,
+          );
+          for (const event of events) {
+            res.write(`event:${JSON.stringify(event)}\n\n`);
+            if (event.type === 'completion') {
+              unsubscribe();
+              res.end();
+            }
+          }
+        },
+      );
+      // When client closes connection we update the clients list
+      // avoiding the disconnected one
+      req.on('close', () => {
+        unsubscribe();
+        logger.info('event stream closed');
+      });
     });
 
   const app = express();
