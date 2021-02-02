@@ -19,6 +19,7 @@ import { createRouteRef } from '@backstage/core';
 
 const NoIcon = () => null;
 
+// TODO(Rugvip): Move these route refs back to the catalog plugin once we're all ported to using external routes
 export const rootRoute = createRouteRef({
   icon: NoIcon,
   path: '',

@@ -19,5 +19,9 @@ export { EntityLayout } from './components/EntityLayout';
 export { EntityPageLayout } from './components/EntityPageLayout';
 export * from './components/EntitySwitch';
 export { Router } from './components/Router';
-export * from './extensions';
-export { plugin } from './plugin';
+export {
+  catalogPlugin,
+  catalogPlugin as plugin,
+  CatalogIndexPage,
+  CatalogEntityPage,
+} from './plugin';

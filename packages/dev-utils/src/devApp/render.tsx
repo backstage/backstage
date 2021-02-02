@@ -38,6 +38,7 @@ import SentimentDissatisfiedIcon from '@material-ui/icons/SentimentDissatisfied'
 const GatheringRoute: (props: {
   path: string;
   element: JSX.Element;
+  children?: ReactNode;
 }) => JSX.Element = ({ element }) => element;
 
 attachComponentData(GatheringRoute, 'core.gatherMountPoints', true);
@@ -45,6 +46,7 @@ attachComponentData(GatheringRoute, 'core.gatherMountPoints', true);
 type RegisterPageOptions = {
   path?: string;
   element: JSX.Element;
+  children?: JSX.Element;
   title?: string;
   icon?: IconComponent;
 };
@@ -112,7 +114,12 @@ class DevAppBuilder {
       );
     }
     this.routes.push(
-      <GatheringRoute key={path} path={path} element={opts.element} />,
+      <GatheringRoute
+        key={path}
+        path={path}
+        element={opts.element}
+        children={opts.children}
+      />,
     );
     return this;
   }
