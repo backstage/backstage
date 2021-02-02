@@ -24,31 +24,27 @@ export const Profile = () => {
   const { profile, displayName } = useUserProfile();
 
   return (
-    <Grid container spacing={3}>
-      <Grid item md={12}>
-        <InfoCard title="Profile">
-          <Grid container spacing={6}>
-            <Grid item>
-              <SignInAvatar size={96} />
-            </Grid>
-            <Grid item xs={12} sm container>
-              <Grid item xs container direction="column" spacing={2}>
-                <Grid item xs>
-                  <Typography variant="subtitle1" gutterBottom>
-                    {displayName}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {profile.email}
-                  </Typography>
-                </Grid>
-              </Grid>
-              <Grid item>
-                <UserSettingsMenu />
-              </Grid>
+    <InfoCard title="Profile">
+      <Grid container spacing={6}>
+        <Grid item>
+          <SignInAvatar size={96} />
+        </Grid>
+        <Grid item xs={12} sm container>
+          <Grid item xs container direction="column" spacing={2}>
+            <Grid item xs>
+              <Typography variant="subtitle1" gutterBottom>
+                {displayName}
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                {profile.email}
+              </Typography>
             </Grid>
           </Grid>
-        </InfoCard>
+          <Grid item>
+            <UserSettingsMenu />
+          </Grid>
+        </Grid>
       </Grid>
-    </Grid>
+    </InfoCard>
   );
 };
