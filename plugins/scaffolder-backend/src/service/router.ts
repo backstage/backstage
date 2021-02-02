@@ -164,7 +164,11 @@ export async function createRouter(
       // After client opens connection send all nests as string
       const unsubscribe = taskBroker.observe(
         { taskId, after },
-        ({ events }) => {
+        (error, { events }) => {
+          logger.error(
+            `Received error from event stream when observing task ${taskId}`,
+            error,
+          );
           for (const event of events) {
             res.write(`event:${JSON.stringify(event)}\n\n`);
             if (event.type === 'completion') {

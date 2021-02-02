@@ -20,8 +20,7 @@ import {
   NotFoundError,
   resolvePackagePath,
 } from '@backstage/backend-common';
-import Knex, { Transaction } from 'knex';
-import { Logger } from 'winston';
+import Knex from 'knex';
 import { v4 as uuid } from 'uuid';
 import {
   DbTaskEventRow,
@@ -121,6 +120,7 @@ export class DatabaseTaskStore implements TaskStore {
         .update({
           status: 'processing',
           run_id: runId,
+          last_heartbeat_at: this.db.fn.now(),
         });
 
       if (updateCount < 1) {
@@ -153,6 +153,18 @@ export class DatabaseTaskStore implements TaskStore {
     if (updateCount === 0) {
       throw new Error(`No running task with runId ${runId} found`);
     }
+  }
+
+  async listStaleTasks(): Promise<{ tasks: DbTaskRow }> {
+    const rows = await this.db<RawDbTaskRow>('tasks')
+      .where('status', 'processing')
+      .andWhere(
+        'last_heartbeat_at',
+        '<',
+        this.db.type === 'sqlite'
+          ? this.db.raw("datetime('now', '-2 seconds')")
+          : this.db.raw("dateadd('second', -2, now())"),
+      );
   }
 
   async setStatus(runId: string, status: Status): Promise<void> {
@@ -216,16 +228,17 @@ export class DatabaseTaskStore implements TaskStore {
     taskId,
     after,
   }: TaskStoreGetEventsOptions): Promise<{ events: DbTaskEventRow[] }> {
-    let query = this.db<RawDbTaskEventRow>('task_events').where({
-      task_id: taskId,
-    });
-    if (typeof after === 'number') {
-      query = query
-        .where('task_events.id', '>', after)
-        .orWhere({ event_type: 'completion' });
-    }
+    const rawEvents = await this.db<RawDbTaskEventRow>('task_events')
+      .where({
+        task_id: taskId,
+      })
+      .andWhere(builder => {
+        if (typeof after === 'number') {
+          builder.where('id', '>', after).orWhere('event_type', 'completion');
+        }
+      })
+      .select();
 
-    const rawEvents = await query.select();
     const events = rawEvents.map(event => {
       try {
         const body = JSON.parse(event.body) as JsonObject;

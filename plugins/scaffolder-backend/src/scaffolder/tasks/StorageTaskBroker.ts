@@ -25,7 +25,7 @@ import {
 } from './types';
 
 export class TaskAgent implements Task {
-  private heartbeartInterval?: ReturnType<typeof setInterval>;
+  private heartbeatInterval?: ReturnType<typeof setInterval>;
 
   static create(state: TaskState, storage: TaskStore) {
     const agent = new TaskAgent(state, storage);
@@ -67,13 +67,13 @@ export class TaskAgent implements Task {
       body: { message: `Run completed with status: ${result}` },
       type: 'completion',
     });
-    if (this.heartbeartInterval) {
-      clearInterval(this.heartbeartInterval);
+    if (this.heartbeatInterval) {
+      clearInterval(this.heartbeatInterval);
     }
   }
 
   private start() {
-    this.heartbeartInterval = setInterval(() => {
+    this.heartbeatInterval = setInterval(() => {
       if (!this.state.runId) {
         throw new Error('no run id provided');
       }
@@ -131,7 +131,10 @@ export class StorageTaskBroker implements TaskBroker {
       taskId: string;
       after: number | undefined;
     },
-    callback: (result: { events: DbTaskEventRow[] }) => void,
+    callback: (
+      error: Error | undefined,
+      result: { events: DbTaskEventRow[] },
+    ) => void,
   ): () => void {
     const { taskId } = options;
 
@@ -148,9 +151,9 @@ export class StorageTaskBroker implements TaskBroker {
         if (events.length) {
           after = events[events.length - 1].id;
           try {
-            callback(result);
+            callback(undefined, result);
           } catch (error) {
-            console.log('DEBUG: error =', error);
+            callback(error, { events: [] });
           }
         }
 

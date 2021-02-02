@@ -86,6 +86,7 @@ export interface TaskStore {
   createTask(task: TaskSpec): Promise<{ taskId: string }>;
   claimTask(): Promise<DbTaskRow | undefined>;
   heartbeat(runId: string): Promise<void>;
+  listStaleTasks(): Promise<{ tasks: DbTaskRow }>;
   setStatus(runId: string, status: Status): Promise<void>;
   emit({ taskId, runId, body, type }: TaskStoreEmitOptions): Promise<void>;
   getEvents({
