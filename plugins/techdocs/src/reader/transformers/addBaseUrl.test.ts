@@ -21,7 +21,7 @@ import { TechDocsStorage } from '../../api';
 const DOC_STORAGE_URL = 'https://example-host.storage.googleapis.com';
 
 const techdocsStorageApi: TechDocsStorage = {
-  getBaseUrl: jest.fn(() => DOC_STORAGE_URL),
+  getBaseUrl: jest.fn(() => Promise.resolve(DOC_STORAGE_URL)),
   getEntityDocs: () => new Promise(resolve => resolve('yes!')),
 };
 

@@ -129,7 +129,7 @@ export const Reader = ({ entityId, onReady }: Props) => {
         },
       }),
       onCssReady({
-        docStorageUrl: techdocsStorageApi.apiOrigin,
+        docStorageUrl: techdocsStorageApi.getApiOrigin(),
         onLoading: (dom: Element) => {
           (dom as HTMLElement).style.setProperty('opacity', '0');
         },
