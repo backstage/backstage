@@ -129,7 +129,8 @@
         "ids": [
           "plugins/publishing",
           "plugins/publish-private",
-          "plugins/add-to-marketplace"
+          "plugins/add-to-marketplace",
+          "plugins/observability"
         ]
       }
     ],

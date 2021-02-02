@@ -80,6 +80,7 @@ nav:
       - Publishing:
           - Open source and npm: 'plugins/publishing.md'
           - Private/internal (non-open source): 'plugins/publish-private.md'
+          - Observability: 'plugins/observability.md'
   - Configuration:
       - Overview: 'conf/index.md'
       - Reading Configuration: 'conf/reading.md'
