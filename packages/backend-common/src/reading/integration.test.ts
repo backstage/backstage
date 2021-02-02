@@ -69,6 +69,8 @@ function withRetries(count: number, fn: () => Promise<void>) {
 }
 
 describe('UrlReaders', () => {
+  jest.setTimeout(30_000);
+
   it(
     'should read data from azure',
     withRetries(3, async () => {
