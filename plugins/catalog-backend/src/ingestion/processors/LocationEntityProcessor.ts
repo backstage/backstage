@@ -15,11 +15,16 @@
  */
 
 import { Entity, LocationEntity, LocationSpec } from '@backstage/catalog-model';
+import { ScmIntegrationRegistry } from '@backstage/integration';
+import path from 'path';
 import * as result from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
-import path from 'path';
 
-export function toAbsoluteUrl(base: LocationSpec, target: string): string {
+export function toAbsoluteUrl(
+  integrations: ScmIntegrationRegistry,
+  base: LocationSpec,
+  target: string,
+): string {
   try {
     if (base.type === 'file') {
       if (target.startsWith('.')) {
@@ -27,13 +32,19 @@ export function toAbsoluteUrl(base: LocationSpec, target: string): string {
       }
       return target;
     }
-    return new URL(target, base.target).toString();
+    return integrations.resolveUrl({ url: target, base: base.target });
   } catch (e) {
     return target;
   }
 }
 
-export class LocationRefProcessor implements CatalogProcessor {
+type Options = {
+  integrations: ScmIntegrationRegistry;
+};
+
+export class LocationEntityProcessor implements CatalogProcessor {
+  constructor(private readonly options: Options) {}
+
   async postProcessEntity(
     entity: Entity,
     location: LocationSpec,
@@ -47,7 +58,7 @@ export class LocationRefProcessor implements CatalogProcessor {
         emit(
           result.inputError(
             location,
-            `LocationRefProcessor cannot handle ${type} type location with target ${location.target} that ends with a path separator`,
+            `LocationEntityProcessor cannot handle ${type} type location with target ${location.target} that ends with a path separator`,
           ),
         );
       }
@@ -61,7 +72,11 @@ export class LocationRefProcessor implements CatalogProcessor {
       }
 
       for (const maybeRelativeTarget of targets) {
-        const target = toAbsoluteUrl(location, maybeRelativeTarget);
+        const target = toAbsoluteUrl(
+          this.options.integrations,
+          location,
+          maybeRelativeTarget,
+        );
         emit(result.location({ type, target }, false));
       }
     }
