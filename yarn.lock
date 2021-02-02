@@ -16438,9 +16438,9 @@ jake@^10.6.1:
     minimatch "^3.0.4"
 
 jenkins@^0.28.0:
-  version "0.28.0"
-  resolved "https://registry.npmjs.org/jenkins/-/jenkins-0.28.0.tgz#72d6fcc452145403b34f6d4ecbd877ee1ab77fca"
-  integrity sha512-EGzzZcyFwXBCPZZoDNvZTPmZOqaHALfAStNfCF37oh+Mc6G/e0MwIuQjx5kMEynTXR9bF5EwLiuMTiTf5kHk5g==
+  version "0.28.1"
+  resolved "https://registry.npmjs.org/jenkins/-/jenkins-0.28.1.tgz#f7951798ee5d2bb501a831979b6b5ecc1a922a64"
+  integrity sha512-gcC4QUrP4VzdqOMHoVzh36XlJprxJkI2HGLQSY7w84KoCTVNDcR/8O00tYyXp9vrZOx4wl5zCXLVKMgH2IoyJQ==
   dependencies:
     papi "^0.29.0"
 
