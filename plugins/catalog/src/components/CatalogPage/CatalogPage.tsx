@@ -22,7 +22,7 @@ import {
   SupportButton,
   useApi,
 } from '@backstage/core';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { catalogApiRef, isOwnerOf } from '@backstage/plugin-catalog-react';
 import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
 import { Button, makeStyles } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
@@ -33,7 +33,6 @@ import { EntityFilterGroupsProvider, useFilteredEntities } from '../../filter';
 import { useStarredEntities } from '../../hooks/useStarredEntities';
 import { ButtonGroup, CatalogFilter } from '../CatalogFilter/CatalogFilter';
 import { CatalogTable } from '../CatalogTable/CatalogTable';
-import { isOwnerOf } from '../isOwnerOf';
 import { ResultsFilter } from '../ResultsFilter/ResultsFilter';
 import { useOwnUser } from '../useOwnUser';
 import CatalogLayout from './CatalogLayout';
