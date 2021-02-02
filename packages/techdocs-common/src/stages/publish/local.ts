@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {
+  PluginEndpointDiscovery,
+  resolvePackagePath,
+} from '@backstage/backend-common';
+import { Entity, EntityName } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
 import express from 'express';
 import fs from 'fs-extra';
-import path from 'path';
 import os from 'os';
+import path from 'path';
 import { Logger } from 'winston';
-import { Entity, EntityName } from '@backstage/catalog-model';
-import {
-  resolvePackagePath,
-  PluginEndpointDiscovery,
-} from '@backstage/backend-common';
-import { Config } from '@backstage/config';
 import {
   PublisherBase,
   PublishRequest,
