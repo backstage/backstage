@@ -17,29 +17,20 @@
 import {
   createApiFactory,
   createPlugin,
-  createRouteRef,
+  createRoutableExtension,
   googleAuthApiRef,
 } from '@backstage/core';
 import { gcpApiRef, GcpClient } from './api';
 import { NewProjectPage } from './components/NewProjectPage';
 import { ProjectDetailsPage } from './components/ProjectDetailsPage';
 import { ProjectListPage } from './components/ProjectListPage';
+import { rootRouteRef, projectRouteRef, newProjectRouteRef } from './routes';
 
-export const rootRouteRef = createRouteRef({
-  path: '/gcp-projects',
-  title: 'GCP Projects',
-});
-export const projectRouteRef = createRouteRef({
-  path: '/gcp-projects/project',
-  title: 'GCP Project Page',
-});
-export const newProjectRouteRef = createRouteRef({
-  path: '/gcp-projects/new',
-  title: 'GCP Project Page',
-});
-
-export const plugin = createPlugin({
+export const gcpProjectsPlugin = createPlugin({
   id: 'gcp-projects',
+  routes: {
+    root: rootRouteRef,
+  },
   apis: [
     createApiFactory({
       api: gcpApiRef,
@@ -55,3 +46,11 @@ export const plugin = createPlugin({
     router.addRoute(newProjectRouteRef, NewProjectPage);
   },
 });
+
+export const GcpProjectsPage = gcpProjectsPlugin.provide(
+  createRoutableExtension({
+    component: () =>
+      import('./components/GcpProjectsPage').then(m => m.GcpProjectsPage),
+    mountPoint: rootRouteRef,
+  }),
+);

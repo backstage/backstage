@@ -15,13 +15,15 @@
  */
 
 import React from 'react';
-import { createDevApp } from '@backstage/dev-utils';
-import { userSettingsPlugin, UserSettingsPage } from '../src/plugin';
+import { Route, Routes } from 'react-router-dom';
+import { NewProjectPage } from '../NewProjectPage';
+import { ProjectDetailsPage } from '../ProjectDetailsPage';
+import { ProjectListPage } from '../ProjectListPage';
 
-createDevApp()
-  .registerPlugin(userSettingsPlugin)
-  .addPage({
-    title: 'Settings',
-    element: <UserSettingsPage />,
-  })
-  .render();
+export const GcpProjectsPage = () => (
+  <Routes>
+    <Route path="/" element={<ProjectListPage />} />
+    <Route path="/new" element={<NewProjectPage />} />
+    <Route path="/project" element={<ProjectDetailsPage />} />
+  </Routes>
+);

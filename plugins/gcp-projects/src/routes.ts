@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { createDevApp } from '@backstage/dev-utils';
-import { userSettingsPlugin, UserSettingsPage } from '../src/plugin';
+import { createRouteRef } from '@backstage/core';
 
-createDevApp()
-  .registerPlugin(userSettingsPlugin)
-  .addPage({
-    title: 'Settings',
-    element: <UserSettingsPage />,
-  })
-  .render();
+export const rootRouteRef = createRouteRef({
+  path: '/gcp-projects',
+  title: 'GCP Projects',
+});
+export const projectRouteRef = createRouteRef({
+  path: '/gcp-projects/project',
+  title: 'GCP Project Page',
+});
+export const newProjectRouteRef = createRouteRef({
+  path: '/gcp-projects/new',
+  title: 'GCP Project Page',
+});

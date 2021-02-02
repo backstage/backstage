@@ -14,14 +14,4 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { createDevApp } from '@backstage/dev-utils';
-import { userSettingsPlugin, UserSettingsPage } from '../src/plugin';
-
-createDevApp()
-  .registerPlugin(userSettingsPlugin)
-  .addPage({
-    title: 'Settings',
-    element: <UserSettingsPage />,
-  })
-  .render();
+export { GcpProjectsPage } from './GcpProjectsPage';

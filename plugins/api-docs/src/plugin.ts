@@ -15,14 +15,22 @@
  */
 
 import { ApiEntity } from '@backstage/catalog-model';
-import { createApiFactory, createPlugin } from '@backstage/core';
-import { ApiExplorerPage } from './components/ApiExplorerPage/ApiExplorerPage';
+import {
+  createApiFactory,
+  createPlugin,
+  createRoutableExtension,
+  createComponentExtension,
+} from '@backstage/core';
+import { ApiExplorerPage as Page } from './components/ApiExplorerPage/ApiExplorerPage';
 import { defaultDefinitionWidgets } from './components/ApiDefinitionCard';
 import { rootRoute } from './routes';
 import { apiDocsConfigRef } from './config';
 
-export const plugin = createPlugin({
+export const apiDocsPlugin = createPlugin({
   id: 'api-docs',
+  routes: {
+    root: rootRoute,
+  },
   apis: [
     createApiFactory({
       api: apiDocsConfigRef,
@@ -38,6 +46,63 @@ export const plugin = createPlugin({
     }),
   ],
   register({ router }) {
-    router.addRoute(rootRoute, ApiExplorerPage);
+    router.addRoute(rootRoute, Page);
   },
 });
+
+export const ApiExplorerPage = apiDocsPlugin.provide(
+  createRoutableExtension({
+    component: () =>
+      import('./components/ApiExplorerPage').then(m => m.ApiExplorerPage),
+    mountPoint: rootRoute,
+  }),
+);
+
+export const EntityApiDefinitionCard = apiDocsPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/ApiDefinitionCard').then(m => m.ApiDefinitionCard),
+    },
+  }),
+);
+
+export const EntityConsumedApisCard = apiDocsPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/ApisCards').then(m => m.ConsumedApisCard),
+    },
+  }),
+);
+
+export const EntityConsumingComponentsCard = apiDocsPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/ComponentsCards').then(
+          m => m.ConsumingComponentsCard,
+        ),
+    },
+  }),
+);
+
+export const EntityProvidedApisCard = apiDocsPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/ApisCards').then(m => m.ProvidedApisCard),
+    },
+  }),
+);
+
+export const EntityProvidingComponentsCard = apiDocsPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/ComponentsCards').then(
+          m => m.ProvidingComponentsCard,
+        ),
+    },
+  }),
+);
