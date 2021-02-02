@@ -19,7 +19,7 @@ import {
   Box,
   Button,
   Paper,
-  Step,
+  Step as StepUI,
   StepContent,
   StepLabel,
   Stepper,
@@ -30,7 +30,7 @@ import { Theme as MuiTheme } from '@rjsf/material-ui';
 import React, { useState } from 'react';
 
 const Form = withTheme(MuiTheme);
-type StepType = {
+type Step = {
   schema: JSONSchema;
   label: string;
 } & Partial<Omit<FormProps<any>, 'schema'>>;
@@ -39,7 +39,7 @@ type Props = {
   /**
    * Steps for the form, each contains label and form schema
    */
-  steps: StepType[];
+  steps: Step[];
   formData: Record<string, any>;
   onChange: (e: IChangeEvent) => void;
   onReset: () => void;
@@ -67,7 +67,7 @@ export const MultistepJsonForm = ({
     <>
       <Stepper activeStep={activeStep} orientation="vertical">
         {steps.map(({ label, schema, ...formProps }) => (
-          <Step key={label}>
+          <StepUI key={label}>
             <StepLabel>{label}</StepLabel>
             <StepContent key={label}>
               <Form
@@ -89,7 +89,7 @@ export const MultistepJsonForm = ({
                 </Button>
               </Form>
             </StepContent>
-          </Step>
+          </StepUI>
         ))}
       </Stepper>
       {activeStep === steps.length && (

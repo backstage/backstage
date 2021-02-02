@@ -215,21 +215,21 @@ describe('GithubCredentialsProvider tests', () => {
   });
 
   it('should return the default token if no app is configured', async () => {
-    const githubID = GithubCredentialsProvider.create({
+    const githubProvider = GithubCredentialsProvider.create({
       host: 'github.com',
       apps: [],
       token: 'fallback_token',
     });
 
     await expect(
-      githubID.getCredentials({
+      githubProvider.getCredentials({
         url: 'https://github.com/404/foobar',
       }),
     ).resolves.toEqual(expect.objectContaining({ token: 'fallback_token' }));
   });
 
   it('should return the configured token if listing installations throws', async () => {
-    const githubID = GithubCredentialsProvider.create({
+    const githubProvider = GithubCredentialsProvider.create({
       host: 'github.com',
       apps: [
         {
@@ -245,19 +245,19 @@ describe('GithubCredentialsProvider tests', () => {
     octokit.apps.listInstallations.mockRejectedValue({ status: 304 });
 
     await expect(
-      githubID.getCredentials({
+      githubProvider.getCredentials({
         url: 'https://github.com/backstage',
       }),
     ).resolves.toEqual(expect.objectContaining({ token: 'hardcoded_token' }));
   });
 
   it('should return undefined if no token or apps are configured', async () => {
-    const githubID = GithubCredentialsProvider.create({
+    const githubProvider = GithubCredentialsProvider.create({
       host: 'github.com',
     });
 
     await expect(
-      githubID.getCredentials({
+      githubProvider.getCredentials({
         url: 'https://github.com/backstage',
       }),
     ).resolves.toEqual({ headers: undefined, token: undefined });

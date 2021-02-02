@@ -85,26 +85,26 @@ export const ProductInsights = ({
     async function getAllProductInsights(
       groupId: string,
       projectId: Maybe<string>,
-      productsId: Product[],
-      lastCompleteBillingDateId: string,
+      productIds: Product[],
+      lastCompleteBillingDateString: string,
     ) {
       try {
         dispatchLoadingProducts(true);
         const responses = await Promise.allSettled(
-          productsId.map(product =>
+          productIds.map(product =>
             client.getProductInsights({
               group: groupId,
               project: projectId,
               product: product.kind,
               intervals: intervalsOf(
                 DEFAULT_DURATION,
-                lastCompleteBillingDateId,
+                lastCompleteBillingDateString,
               ),
             }),
           ),
         ).then(settledResponseOf);
 
-        const initialStatesNow = initialStatesOf(productsId, responses).sort(
+        const initialStatesNow = initialStatesOf(productIds, responses).sort(
           totalAggregationSort,
         );
         setStates(initialStatesNow);

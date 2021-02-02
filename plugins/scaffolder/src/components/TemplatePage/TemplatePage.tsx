@@ -124,8 +124,8 @@ export const TemplatePage = () => {
 
   const handleCreate = async () => {
     try {
-      const Id = await scaffolderApi.scaffold(templateName, formState);
-      setJobId(Id);
+      const id = await scaffolderApi.scaffold(templateName, formState);
+      setJobId(id);
       setModalOpen(true);
     } catch (e) {
       errorApi.post(e);
