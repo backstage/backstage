@@ -34,17 +34,19 @@ import {
   attachComponentData,
 } from '@backstage/core';
 import SentimentDissatisfiedIcon from '@material-ui/icons/SentimentDissatisfied';
-import { Outlet } from 'react-router';
 
 const GatheringRoute: (props: {
   path: string;
-  children: JSX.Element;
-}) => JSX.Element = () => <Outlet />;
+  element: JSX.Element;
+  children?: ReactNode;
+}) => JSX.Element = ({ element }) => element;
 
 attachComponentData(GatheringRoute, 'core.gatherMountPoints', true);
 
 type RegisterPageOptions = {
+  path?: string;
   element: JSX.Element;
+  children?: JSX.Element;
   title?: string;
   icon?: IconComponent;
 };
@@ -93,21 +95,35 @@ class DevAppBuilder {
     return this;
   }
 
-  addPage({ element, title, icon }: RegisterPageOptions): DevAppBuilder {
-    const path = `/page-${this.routes.length + 1}`;
-    this.sidebarItems.push(
-      <SidebarItem
-        key={path}
-        to={path}
-        text={title ?? path}
-        icon={icon ?? BookmarkIcon}
-      />,
-    );
+  /**
+   * Adds a page component along with accompanying sidebar item.
+   *
+   * If no path is provided one will be generated.
+   * If no title is provided, no sidebar item will be created.
+   */
+  addPage(opts: RegisterPageOptions): DevAppBuilder {
+    const path = opts.path ?? `/page-${this.routes.length + 1}`;
+    if (opts.title) {
+      this.sidebarItems.push(
+        <SidebarItem
+          key={path}
+          to={path}
+          text={opts.title}
+          icon={opts.icon ?? BookmarkIcon}
+        />,
+      );
+    }
     this.routes.push(
-      <GatheringRoute key={path} path={path} children={element} />,
+      <GatheringRoute
+        key={path}
+        path={path}
+        element={opts.element}
+        children={opts.children}
+      />,
     );
     return this;
   }
+
   /**
    * Build a DevApp component using the resources registered so far
    */
