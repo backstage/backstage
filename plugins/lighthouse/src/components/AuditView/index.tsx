@@ -47,7 +47,6 @@ import { lighthouseApiRef, Website, Audit } from '../../api';
 import AuditStatusIcon from '../AuditStatusIcon';
 import LighthouseSupportButton from '../SupportButton';
 import { formatTime } from '../../utils';
-import { viewAuditRouteRef, createAuditRouteRef } from '../../plugin';
 
 const useStyles = makeStyles({
   contentGrid: {
@@ -78,12 +77,7 @@ const AuditLinkList = ({ audits = [], selectedId }: AuditLinkListProps) => (
         button
         component={Link}
         replace
-        to={resolvePath(
-          generatePath(viewAuditRouteRef.path, {
-            id: audit.id,
-          }),
-          '../../',
-        )}
+        to={resolvePath(generatePath('audit/:id', { id: audit.id }), '../../')}
       >
         <ListItemIcon>
           <AuditStatusIcon audit={audit} />
@@ -163,7 +157,7 @@ export const AuditViewContent = () => {
     );
   }
 
-  let createAuditButtonUrl = createAuditRouteRef.path;
+  let createAuditButtonUrl = 'create-audit';
   if (value?.url) {
     createAuditButtonUrl += `?url=${encodeURIComponent(value.url)}`;
   }
