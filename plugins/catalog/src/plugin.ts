@@ -19,6 +19,7 @@ import {
   createApiFactory,
   createPlugin,
   discoveryApiRef,
+  createRoutableExtension,
 } from '@backstage/core';
 import {
   catalogApiRef,
@@ -26,7 +27,7 @@ import {
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 
-export const plugin = createPlugin({
+export const catalogPlugin = createPlugin({
   id: 'catalog',
   apis: [
     createApiFactory({
@@ -40,3 +41,21 @@ export const plugin = createPlugin({
     catalogEntity: entityRouteRef,
   },
 });
+
+export const CatalogIndexPage = catalogPlugin.provide(
+  createRoutableExtension({
+    component: () =>
+      import('./components/CatalogPage').then(m => m.CatalogPage),
+    mountPoint: catalogRouteRef,
+  }),
+);
+
+export const CatalogEntityPage = catalogPlugin.provide(
+  createRoutableExtension({
+    component: () =>
+      import('./components/CatalogEntityPage/CatalogEntityPage').then(
+        m => m.CatalogEntityPage,
+      ),
+    mountPoint: entityRouteRef,
+  }),
+);
