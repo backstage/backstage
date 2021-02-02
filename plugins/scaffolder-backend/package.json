@@ -55,11 +55,9 @@
     "jsonschema": "^1.2.6",
     "knex": "^0.21.6",
     "morgan": "^1.10.0",
-    "p-queue": "^6.3.0",
     "uuid": "^8.2.0",
     "winston": "^3.2.1",
-    "yaml": "^1.10.0",
-    "luxon": "^1.25.0"
+    "yaml": "^1.10.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.5.0",
