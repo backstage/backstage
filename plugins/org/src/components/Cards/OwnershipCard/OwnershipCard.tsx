@@ -16,7 +16,11 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { InfoCard, Progress, useApi } from '@backstage/core';
-import { catalogApiRef, isOwnerOf } from '@backstage/plugin-catalog-react';
+import {
+  catalogApiRef,
+  isOwnerOf,
+  useEntity,
+} from '@backstage/plugin-catalog-react';
 import { pageTheme } from '@backstage/theme';
 import {
   Box,
@@ -113,12 +117,13 @@ const EntityCountTile = ({
 };
 
 export const OwnershipCard = ({
-  entity,
   variant,
 }: {
-  entity: Entity;
+  /** @deprecated The entity is now grabbed from context instead */
+  entity?: Entity;
   variant: string;
 }) => {
+  const { entity } = useEntity();
   const catalogApi = useApi(catalogApiRef);
   const {
     loading,
