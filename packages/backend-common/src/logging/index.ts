@@ -14,5 +14,6 @@
  * limitations under the License.
  */
 
+export * from './formats';
 export * from './rootLogger';
 export * from './voidLogger';
