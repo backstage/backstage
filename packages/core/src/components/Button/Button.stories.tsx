@@ -15,16 +15,14 @@
  */
 import React, { FunctionComponentFactory } from 'react';
 import { Button } from './Button';
-import { MemoryRouter, Route, useLocation } from 'react-router-dom';
+import { MemoryRouter, useLocation } from 'react-router-dom';
 import { createRouteRef } from '@backstage/core-api';
 import {
   Divider,
-  Grid,
   Link,
   List,
   ListItem,
   ListItemText,
-  ListSubheader,
   Typography,
   Button as MaterialButton,
 } from '@material-ui/core';
