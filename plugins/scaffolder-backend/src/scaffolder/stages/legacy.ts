@@ -37,7 +37,6 @@ export function registerLegacyActions(
     id: 'legacy:prepare',
     async handler(ctx) {
       const { logger } = ctx;
-      console.log(ctx);
       logger.info('Task claimed, waiting ...');
       // Give us some time to curl observe
       await new Promise(resolve => setTimeout(resolve, 1000));
