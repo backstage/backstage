@@ -62,7 +62,7 @@ exports.up = async function up(knex) {
       .comment('The JSON encoded body of the event');
     table.text('event_type').notNullable().comment('The type of event');
     table
-      .timestamp('created_at', { precision: 9 })
+      .timestamp('created_at')
       .defaultTo(knex.fn.now())
       .notNullable()
       .comment('The timestamp when this event was generated');
