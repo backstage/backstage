@@ -21,6 +21,7 @@ import {
   Page,
   Progress,
   useApi,
+  WarningPanel,
 } from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { Grid } from '@material-ui/core';
@@ -62,7 +63,12 @@ export const TechDocsHome = () => {
           subtitle="Documentation available in Backstage"
         />
         <Content>
-          <p>{error.message}</p>
+          <WarningPanel
+            severity="error"
+            title="Could not load available documentation"
+          >
+            {error.message}
+          </WarningPanel>
         </Content>
       </Page>
     );
