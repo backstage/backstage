@@ -11,6 +11,16 @@ To install the plugin, include the following import your `plugins.ts`:
 export { explorePlugin } from '@backstage/plugin-explore';
 ```
 
+Register the route in `App.tsx`:
+
+```typescript
+import { ExplorePage } from '@backstage/plugin-explore';
+
+...
+
+<Route path="/explore" element={<ExplorePage />} />
+```
+
 Add a link to the sidebar in `Root.tsx`:
 
 ```typescript
