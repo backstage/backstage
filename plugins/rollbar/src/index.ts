@@ -22,4 +22,8 @@ export {
   Router,
 } from './components/Router';
 export { ROLLBAR_ANNOTATION } from './constants';
-export { rollbarPlugin as plugin, rollbarPlugin } from './plugin';
+export {
+  EntityRollbarContent,
+  rollbarPlugin as plugin,
+  rollbarPlugin,
+} from './plugin';

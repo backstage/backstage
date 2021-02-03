@@ -21,7 +21,7 @@ import { RollbarProject } from '../RollbarProject/RollbarProject';
 
 type Props = {
   /** @deprecated The entity is now grabbed from context instead */
-  entity: Entity;
+  entity?: Entity;
 };
 
 export const EntityPageRollbar = (_props: Props) => {
