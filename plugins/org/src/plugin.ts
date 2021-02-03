@@ -13,8 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createPlugin } from '@backstage/core';
+import { createComponentExtension, createPlugin } from '@backstage/core';
 
-export const plugin = createPlugin({
+export const orgPlugin = createPlugin({
   id: 'org',
 });
+
+export const EntityGroupProfileCard = orgPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () => import('./components').then(m => m.GroupProfileCard),
+    },
+  }),
+);
+export const EntityMembersListCard = orgPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () => import('./components').then(m => m.MembersListCard),
+    },
+  }),
+);
+export const EntityOwnershipCard = orgPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () => import('./components').then(m => m.OwnershipCard),
+    },
+  }),
+);
+export const EntityUserProfileCard = orgPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () => import('./components').then(m => m.UserProfileCard),
+    },
+  }),
+);

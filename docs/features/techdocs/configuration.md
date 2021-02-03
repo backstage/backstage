@@ -13,15 +13,6 @@ configuration options for TechDocs.
 # File: app-config.yaml
 
 techdocs:
-  # TechDocs makes API calls to techdocs-backend using this URL. e.g. get docs of an entity, get metadata, etc.
-
-  requestUrl: http://localhost:7000/api/techdocs
-
-  # Just another route in techdocs-backend where TechDocs requests the static files from. This URL uses an HTTP middleware
-  # to serve files from either a local directory or an External storage provider.
-
-  storageUrl: http://localhost:7000/api/techdocs/static/docs
-
   # generators.techdocs can have two values: 'docker' or 'local'. This is to determine how to run the generator - whether to
   # spin up the techdocs-container docker image or to run mkdocs locally (assuming all the dependencies are taken care of).
   # You want to change this to 'local' if you are running Backstage using your own custom Docker setup and want to avoid running
@@ -101,4 +92,15 @@ techdocs:
         # https://docs.microsoft.com/en-us/azure/storage/common/storage-auth?toc=/azure/storage/blobs/toc.json
         accountKey:
           $env: TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_KEY
+
+  # (Optional and Legacy) TechDocs makes API calls to techdocs-backend using this URL. e.g. get docs of an entity, get metadata, etc.
+  # You don't have to specify this anymore.
+
+  requestUrl: http://localhost:7000/api/techdocs
+
+  # (Optional and Legacy) Just another route in techdocs-backend where TechDocs requests the static files from. This URL uses an HTTP middleware
+  # to serve files from either a local directory or an External storage provider.
+  # You don't have to specify this anymore.
+
+  storageUrl: http://localhost:7000/api/techdocs/static/docs
 ```

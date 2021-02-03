@@ -56,14 +56,13 @@ proxy:
     target: 'https://example.com'
     changeOrigin: true
 
+# Reference documentation http://backstage.io/docs/features/techdocs/configuration
 techdocs:
-  requestUrl: http://localhost:7000/api/techdocs
-  storageUrl: http://localhost:7000/api/techdocs/static/docs
-  builder: 'local'
+  builder: 'local' # Alternatives - 'external'
   generators:
-    techdocs: 'docker'
+    techdocs: 'docker' # Alternatives - 'local'
   publisher:
-    type: 'local'
+    type: 'local' # Alternatives - 'googleGcs' or 'awsS3'. Read documentation for using alternatives.
 
 auth:
   # see https://backstage.io/docs/tutorials/quickstart-app-auth to know more about enabling auth providers
