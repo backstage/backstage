@@ -20,7 +20,7 @@ import { OverflowTooltip } from './OverflowTooltip';
 
 const minProps = {
   title: 'Short Text',
-  children: 'Short Text',
+  text: 'Short Text',
 };
 
 describe('<OverflowTooltip />', () => {

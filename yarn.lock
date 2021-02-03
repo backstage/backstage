@@ -2583,41 +2583,43 @@
     to-fast-properties "^2.0.0"
 
 "@backstage/catalog-model@^0.2.0":
-  version "0.7.0"
+  version "0.2.0"
+  resolved "https://registry.npmjs.org/@backstage/catalog-model/-/catalog-model-0.2.0.tgz#e3fe2a4ddeb6a9b6ec480c80cb2b9c39cb245576"
+  integrity sha512-Y1ocdRpBlxK/VrJQjHlQd0bgADECd1B2NRjwd8ss46ibT5hwLvMOfD80+Fa7oPLu0ktJrH4lq0pNIIJIml48zA==
   dependencies:
-    "@backstage/config" "^0.1.2"
+    "@backstage/config" "^0.1.1"
     "@types/json-schema" "^7.0.5"
     "@types/yup" "^0.29.8"
-    ajv "^7.0.3"
     json-schema "^0.2.5"
     lodash "^4.17.15"
     uuid "^8.0.0"
     yup "^0.29.3"
 
 "@backstage/catalog-model@^0.3.0":
-  version "0.7.0"
+  version "0.3.1"
+  resolved "https://registry.npmjs.org/@backstage/catalog-model/-/catalog-model-0.3.1.tgz#45d08e2f333c9c566b2bf2629fd707fe989bb404"
+  integrity sha512-9XhV7c4rmVW+Yzj2PiwTQ7DsegWGB3C4ELsDRExuEVZONdqNcC02cyJtrt3fT5F31ZS3tHkB9bMUymFOBLqUSA==
   dependencies:
-    "@backstage/config" "^0.1.2"
+    "@backstage/config" "^0.1.1"
     "@types/json-schema" "^7.0.5"
     "@types/yup" "^0.29.8"
-    ajv "^7.0.3"
     json-schema "^0.2.5"
     lodash "^4.17.15"
     uuid "^8.0.0"
     yup "^0.29.3"
 
 "@backstage/core@^0.3.0":
-  version "0.5.0"
+  version "0.3.2"
+  resolved "https://registry.npmjs.org/@backstage/core/-/core-0.3.2.tgz#a8209126d5076cf4a8b9bd632fe4e5e2edb62916"
+  integrity sha512-i5d+Wh8js4qEWoAsPY5L7HVSWpumr1OhfF2dUCGYdyW6AMqVJPca6+n6zp1Rg2CO+J9norp44XAVVCbyhtUpig==
   dependencies:
-    "@backstage/config" "^0.1.2"
-    "@backstage/core-api" "^0.2.8"
-    "@backstage/theme" "^0.2.2"
+    "@backstage/config" "^0.1.1"
+    "@backstage/core-api" "^0.2.1"
+    "@backstage/theme" "^0.2.1"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "4.0.0-alpha.45"
-    "@testing-library/react-hooks" "^3.4.2"
     "@types/dagre" "^0.7.44"
-    "@types/prop-types" "^15.7.3"
     "@types/react" "^16.9"
     "@types/react-sparklines" "^1.7.0"
     classnames "^2.2.6"
@@ -2626,7 +2628,7 @@
     d3-shape "^2.0.0"
     d3-zoom "^2.0.0"
     dagre "^0.8.5"
-    immer "^8.0.1"
+    immer "^7.0.9"
     lodash "^4.17.15"
     material-table "^1.69.1"
     prop-types "^15.7.2"
@@ -7297,6 +7299,13 @@
   version "16.9.2"
   resolved "https://registry.npmjs.org/@types/react-test-renderer/-/react-test-renderer-16.9.2.tgz#e1c408831e8183e5ad748fdece02214a7c2ab6c5"
   integrity sha512-4eJr1JFLIAlWhzDkBCkhrOIWOvOxcCAfQh+jiKg7l/nNZcCIL2MHl2dZhogIFKyHzedVWHaVP1Yydq/Ruu4agw==
+  dependencies:
+    "@types/react" "*"
+
+"@types/react-text-truncate@^0.14.0":
+  version "0.14.0"
+  resolved "https://registry.npmjs.org/@types/react-text-truncate/-/react-text-truncate-0.14.0.tgz#588bbabbc7f2a13815e805f3a48942db73fe65fe"
+  integrity sha512-XZNmx8mMPFjRLFjFqIF5uLPXEZ4THKxoEv1yU63JzInV3ES42PD+DaQOK6+Rd+cRolzrNoY4YIY9rrW8kh4ikw==
   dependencies:
     "@types/react" "*"
 
@@ -15469,6 +15478,11 @@ immer@1.10.0:
   resolved "https://registry.npmjs.org/immer/-/immer-1.10.0.tgz#bad67605ba9c810275d91e1c2a47d4582e98286d"
   integrity sha512-O3sR1/opvCDGLEVcvrGTMtLac8GJ5IwZC4puPrLuRj3l7ICKvkmA0vGuU9OW8mV9WIBRnaxp5GJh9IEAaNOoYg==
 
+immer@^7.0.9:
+  version "7.0.15"
+  resolved "https://registry.npmjs.org/immer/-/immer-7.0.15.tgz#dc3bc6db87401659d2e737c67a21b227c484a4ad"
+  integrity sha512-yM7jo9+hvYgvdCQdqvhCNRRio0SCXc8xDPzA25SvKWa7b1WVPjLwQs1VYU5JPXjcJPTqAa5NP5dqpORGYBQ2AA==
+
 immer@^8.0.1:
   version "8.0.1"
   resolved "https://registry.npmjs.org/immer/-/immer-8.0.1.tgz#9c73db683e2b3975c424fb0572af5889877ae656"
@@ -21424,7 +21438,7 @@ promzard@^0.3.0:
   dependencies:
     read "1"
 
-prop-types@^15.5.10, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
+prop-types@^15.5.10, prop-types@^15.5.7, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.npmjs.org/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
@@ -22171,6 +22185,13 @@ react-test-renderer@^16.13.1:
     prop-types "^15.6.2"
     react-is "^16.8.6"
     scheduler "^0.19.1"
+
+react-text-truncate@^0.16.0:
+  version "0.16.0"
+  resolved "https://registry.npmjs.org/react-text-truncate/-/react-text-truncate-0.16.0.tgz#03bbb942437dfba5cc0faf614f1339f888926f80"
+  integrity sha512-hMFXhUHgIBCCDaOfOsZAFeO4DGfG/paLyaS/F+X11CXseuScpxmMBUW6Luwjk9/FlGrVJWNGy1FSfK6b4yyiIg==
+  dependencies:
+    prop-types "^15.5.7"
 
 react-textarea-autosize@^8.1.1:
   version "8.2.0"

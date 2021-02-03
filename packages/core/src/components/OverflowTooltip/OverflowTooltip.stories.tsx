@@ -16,22 +16,11 @@
 import React from 'react';
 import { OverflowTooltip } from './OverflowTooltip';
 
-export default {
-  title: 'Data Display/OverflowTooltip',
-  component: OverflowTooltip,
-};
+const text =
+  'Lorem Ipsum is simply dummy text of the printing and typesetting industry.';
 
-export const Default = () => (
-  <OverflowTooltip title="This is truncated Text, hover me for a tooltip">
-    This is truncated Text, hover me for a tooltip
-  </OverflowTooltip>
-);
+export const Default = () => <OverflowTooltip title={text} text={text} />;
 
-export const CustomWidth = () => (
-  <OverflowTooltip
-    title="This is truncated at custom width (15rem), default is 12rem"
-    width="15rem"
-  >
-    This is truncated Text, hover me for a tooltip
-  </OverflowTooltip>
+export const MultiLine = () => (
+  <OverflowTooltip title={text} text={text} line={2} />
 );

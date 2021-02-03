@@ -14,60 +14,37 @@
  * limitations under the License.
  */
 
-import { Tooltip } from '@material-ui/core';
-import React, { useEffect, useRef, useState } from 'react';
+import { Tooltip, TooltipProps } from '@material-ui/core';
+import React, { useState } from 'react';
+import TextTruncate, { TextTruncateProps } from 'react-text-truncate';
 
 type Props = {
-  title: string | number | boolean;
-  width?: string;
-  children?: React.ReactNode;
+  title: TooltipProps['title'];
+  placement?: TooltipProps['placement'];
+  text?: TextTruncateProps['text'];
+  line?: TextTruncateProps['line'];
+  element?: TextTruncateProps['element'];
 };
 
 export const OverflowTooltip = (props: Props) => {
-  const { title, width, children } = props;
+  const [hover, setHover] = useState(false);
 
-  const divElementRef = useRef<HTMLDivElement>(null);
-  const [hoverStatus, setHover] = useState(false);
-
-  const compareSize = () => {
-    const textElement = divElementRef.current;
-    if (textElement) {
-      const compare = textElement.scrollWidth > textElement.clientWidth;
-      setHover(compare);
-    }
+  const handleToggled = (truncated: boolean) => {
+    const hover = truncated ? true : false;
+    setHover(hover);
   };
-
-  // compare once and add resize listener on "componentDidMount"
-  useEffect(() => {
-    compareSize();
-    window.addEventListener('resize', compareSize);
-  }, []);
-
-  // remove resize listener again on "componentWillUnmount"
-  useEffect(
-    () => () => {
-      window.removeEventListener('resize', compareSize);
-    },
-    [],
-  );
 
   return (
     <Tooltip
-      title={title}
-      placement="bottom-start"
-      disableHoverListener={!hoverStatus}
+      title={props.title}
+      placement={props.placement}
+      disableHoverListener={!hover}
     >
-      <div
-        ref={divElementRef}
-        style={{
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          width: width ?? '12rem',
-        }}
-      >
-        {children}
-      </div>
+      <TextTruncate
+        text={props.text}
+        line={props.line}
+        onToggled={handleToggled}
+      />
     </Tooltip>
   );
 };

@@ -22,6 +22,7 @@ import {
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
 import {
+  OverflowTooltip,
   Table,
   TableColumn,
   TableFilter,
@@ -91,6 +92,12 @@ const columns: TableColumn<EntityRow>[] = [
   {
     title: 'Description',
     field: 'entity.metadata.description',
+    render: ({ entity }) => (
+      <OverflowTooltip
+        title={entity.metadata.description as string}
+        text={entity.metadata.description}
+      />
+    ),
   },
   {
     title: 'Tags',

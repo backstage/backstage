@@ -19,7 +19,12 @@ import {
   RELATION_OWNED_BY,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
-import { Table, TableColumn, TableProps } from '@backstage/core';
+import {
+  OverflowTooltip,
+  Table,
+  TableColumn,
+  TableProps,
+} from '@backstage/core';
 import {
   EntityRefLink,
   EntityRefLinks,
@@ -86,6 +91,12 @@ const columns: TableColumn<EntityRow>[] = [
   {
     title: 'Description',
     field: 'entity.metadata.description',
+    render: ({ entity }) => (
+      <OverflowTooltip
+        title={entity.metadata.description as string}
+        text={entity.metadata.description}
+      />
+    ),
   },
   {
     title: 'Tags',
