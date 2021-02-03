@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   ApiEntity,
   Entity,
@@ -64,6 +65,10 @@ import {
   isPluginApplicableToEntity as isPagerDutyAvailable,
   PagerDutyCard,
 } from '@backstage/plugin-pagerduty';
+import {
+  isRollbarAvailable,
+  Router as RollbarRouter,
+} from '@backstage/plugin-rollbar';
 import { Router as SentryRouter } from '@backstage/plugin-sentry';
 import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
 import { Button, Grid } from '@material-ui/core';
@@ -153,6 +158,15 @@ const RecentCICDRunsSwitcher = ({ entity }: { entity: Entity }) => {
   );
 };
 
+export const ErrorsSwitcher = ({ entity }: { entity: Entity }) => {
+  switch (true) {
+    case isRollbarAvailable(entity):
+      return <RollbarRouter entity={entity} />;
+    default:
+      return <SentryRouter entity={entity} />;
+  }
+};
+
 const ComponentOverviewContent = ({ entity }: { entity: Entity }) => (
   <Grid container spacing={3} alignItems="stretch">
     <Grid item md={6}>
@@ -212,9 +226,9 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
       element={<CICDSwitcher entity={entity} />}
     />
     <EntityPageLayout.Content
-      path="/sentry"
-      title="Sentry"
-      element={<SentryRouter entity={entity} />}
+      path="/errors/*"
+      title="Errors"
+      element={<ErrorsSwitcher entity={entity} />}
     />
     <EntityPageLayout.Content
       path="/api/*"
@@ -267,9 +281,9 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
       element={<LighthouseRouter entity={entity} />}
     />
     <EntityPageLayout.Content
-      path="/sentry"
-      title="Sentry"
-      element={<SentryRouter entity={entity} />}
+      path="/errors/*"
+      title="Errors"
+      element={<ErrorsSwitcher entity={entity} />}
     />
     <EntityPageLayout.Content
       path="/docs/*"
