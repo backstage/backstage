@@ -111,7 +111,6 @@ describe('bitbucket core', () => {
 
   describe('getBitbucketDownloadUrl', () => {
     it('add path param if a path is specified for Bitbucket Server', async () => {
-   
       const defaultBranchResponse = {
         displayId: 'main',
       };
@@ -126,7 +125,7 @@ describe('bitbucket core', () => {
             ),
         ),
       );
-   
+
       const config: BitbucketIntegrationConfig = {
         host: 'bitbucket.mycompany.net',
         apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
@@ -251,42 +250,41 @@ describe('bitbucket core', () => {
         config,
       );
       expect(defaultBranch).toEqual('main');
-      });
+    });
 
-      it('return default branch for Bitbucket Server for bitbucket version 5.11', async () => {
-        const defaultBranchResponse = {
-          displayId: 'main',
-        };
-        worker.use(
-          rest.get(
-            'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/default-branch',
-            (_, res, ctx) =>
-              res(
-                ctx.status(404),
-                ctx.set('Content-Type', 'application/json'),
-                ctx.json(defaultBranchResponse),
-              ),
-          ),
-          rest.get(
-            'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches/default',
-            (_, res, ctx) =>
-              res(
-                ctx.status(200),
-                ctx.set('Content-Type', 'application/json'),
-                ctx.json(defaultBranchResponse),
-              ),
-          ),
-        );
-        const config: BitbucketIntegrationConfig = {
-          host: 'bitbucket.mycompany.net',
-          apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
-        };
-        const defaultBranch = await getBitbucketDefaultBranch(
-          'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/README.md',
-          config,
-        );
-        expect(defaultBranch).toEqual('main');
-      });
-      
+    it('return default branch for Bitbucket Server for bitbucket version 5.11', async () => {
+      const defaultBranchResponse = {
+        displayId: 'main',
+      };
+      worker.use(
+        rest.get(
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/default-branch',
+          (_, res, ctx) =>
+            res(
+              ctx.status(404),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(defaultBranchResponse),
+            ),
+        ),
+        rest.get(
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches/default',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(defaultBranchResponse),
+            ),
+        ),
+      );
+      const config: BitbucketIntegrationConfig = {
+        host: 'bitbucket.mycompany.net',
+        apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
+      };
+      const defaultBranch = await getBitbucketDefaultBranch(
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/README.md',
+        config,
+      );
+      expect(defaultBranch).toEqual('main');
+    });
   });
 });
