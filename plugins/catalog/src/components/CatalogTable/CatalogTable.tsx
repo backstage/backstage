@@ -25,6 +25,7 @@ import {
   TableColumn,
   TableProps,
   WarningPanel,
+  OverflowTooltip,
 } from '@backstage/core';
 import {
   EntityRefLink,
@@ -91,6 +92,12 @@ const columns: TableColumn<EntityRow>[] = [
   {
     title: 'Description',
     field: 'entity.metadata.description',
+    render: ({ entity }) => (
+      <OverflowTooltip
+        title={entity.metadata.description as string}
+        text={entity.metadata.description}
+      />
+    ),
   },
   {
     title: 'Tags',
