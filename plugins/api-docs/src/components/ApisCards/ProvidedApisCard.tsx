@@ -19,12 +19,11 @@ import {
   Entity,
   RELATION_PROVIDES_API,
 } from '@backstage/catalog-model';
-import { useEntity } from '@backstage/plugin-catalog-react';
 import { EmptyState, InfoCard, Progress } from '@backstage/core';
+import { useEntity, useRelatedEntities } from '@backstage/plugin-catalog-react';
 import React, { PropsWithChildren } from 'react';
-import { ApisTable } from './ApisTable';
 import { MissingProvidesApisEmptyState } from '../EmptyState';
-import { useRelatedEntities } from '../useRelatedEntities';
+import { ApisTable } from './ApisTable';
 
 const ApisCard = ({
   children,
@@ -45,10 +44,9 @@ type Props = {
 
 export const ProvidedApisCard = ({ variant = 'gridItem' }: Props) => {
   const { entity } = useEntity();
-  const { entities, loading, error } = useRelatedEntities(
-    entity,
-    RELATION_PROVIDES_API,
-  );
+  const { entities, loading, error } = useRelatedEntities(entity, {
+    type: RELATION_PROVIDES_API,
+  });
 
   if (loading) {
     return (

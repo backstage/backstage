@@ -19,11 +19,10 @@ import {
   Entity,
   RELATION_API_CONSUMED_BY,
 } from '@backstage/catalog-model';
-import { useEntity } from '@backstage/plugin-catalog-react';
 import { EmptyState, InfoCard, Progress } from '@backstage/core';
+import { useEntity, useRelatedEntities } from '@backstage/plugin-catalog-react';
 import React, { PropsWithChildren } from 'react';
 import { MissingConsumesApisEmptyState } from '../EmptyState';
-import { useRelatedEntities } from '../useRelatedEntities';
 import { ComponentsTable } from './ComponentsTable';
 
 const ComponentsCard = ({
@@ -45,10 +44,9 @@ type Props = {
 
 export const ConsumingComponentsCard = ({ variant = 'gridItem' }: Props) => {
   const { entity } = useEntity();
-  const { entities, loading, error } = useRelatedEntities(
-    entity,
-    RELATION_API_CONSUMED_BY,
-  );
+  const { entities, loading, error } = useRelatedEntities(entity, {
+    type: RELATION_API_CONSUMED_BY,
+  });
 
   if (loading) {
     return (
