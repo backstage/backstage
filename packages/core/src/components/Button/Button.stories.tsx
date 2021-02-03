@@ -132,7 +132,7 @@ export const ButtonLinks = () => {
           // TODO: Refactor to use new routing mechanisms
         }
         <ListItem>
-          <Button to={routeRef.path} color="tertiary" variant="outlined">
+          <Button to={routeRef.path} color="default" variant="outlined">
             Route Ref
           </Button>
           &nbsp; has props for both Material-UI's component as well as for
@@ -140,7 +140,7 @@ export const ButtonLinks = () => {
         </ListItem>
 
         <ListItem>
-          <Button to="/staticpath" color="tertiary" variant="outlined">
+          <Button to="/staticpath" color="default" variant="outlined">
             Static Path
           </Button>
           &nbsp; links to a statically defined route. In general, this should be
@@ -150,7 +150,7 @@ export const ButtonLinks = () => {
         <ListItem>
           <MaterialButton
             href="https://backstage.io"
-            color="tertiary"
+            color="default"
             variant="outlined"
           >
             View URL
@@ -161,7 +161,7 @@ export const ButtonLinks = () => {
         <ListItem>
           <MaterialButton
             onClick={handleClick}
-            color="tertiary"
+            color="default"
             variant="outlined"
           >
             Trigger Event
