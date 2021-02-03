@@ -24,13 +24,14 @@ import fetch from 'cross-fetch';
 import {
   AddLocationRequest,
   AddLocationResponse,
+  ApiContext,
+  CatalogApi,
   CatalogEntitiesRequest,
   CatalogListResponse,
-  CatalogRequestOptions,
   DiscoveryApi,
 } from './types';
 
-export class CatalogClient {
+export class CatalogClient implements CatalogApi {
   private readonly discoveryApi: DiscoveryApi;
 
   constructor(options: { discoveryApi: DiscoveryApi }) {
@@ -39,14 +40,14 @@ export class CatalogClient {
 
   async getLocationById(
     id: String,
-    options?: CatalogRequestOptions,
+    context?: ApiContext,
   ): Promise<Location | undefined> {
-    return await this.getOptional(`/locations/${id}`, options);
+    return await this.getOptional(`/locations/${id}`, context);
   }
 
   async getEntities(
     request?: CatalogEntitiesRequest,
-    options?: CatalogRequestOptions,
+    context?: ApiContext,
   ): Promise<CatalogListResponse<Entity>> {
     const { filter = {}, fields = [] } = request ?? {};
     const params: string[] = [];
@@ -68,31 +69,31 @@ export class CatalogClient {
     const query = params.length ? `?${params.join('&')}` : '';
     const entities: Entity[] = await this.getRequired(
       `/entities${query}`,
-      options,
+      context,
     );
     return { items: entities };
   }
 
   async getEntityByName(
     compoundName: EntityName,
-    options?: CatalogRequestOptions,
+    context?: ApiContext,
   ): Promise<Entity | undefined> {
     const { kind, namespace = 'default', name } = compoundName;
     return this.getOptional(
       `/entities/by-name/${kind}/${namespace}/${name}`,
-      options,
+      context,
     );
   }
 
   async addLocation(
     { type = 'url', target, dryRun }: AddLocationRequest,
-    options?: CatalogRequestOptions,
+    context?: ApiContext,
   ): Promise<AddLocationResponse> {
     const headers = {
       'Content-Type': 'application/json',
     } as { [header: string]: string };
-    if (options?.token) {
-      headers.authorization = `Bearer ${options.token}`;
+    if (context?.token) {
+      headers.authorization = `Bearer ${context.token}`;
     }
     const response = await fetch(
       `${await this.discoveryApi.getBaseUrl('catalog')}/locations${
@@ -128,27 +129,24 @@ export class CatalogClient {
 
   async getLocationByEntity(
     entity: Entity,
-    options?: CatalogRequestOptions,
+    context?: ApiContext,
   ): Promise<Location | undefined> {
     const locationCompound = entity.metadata.annotations?.[LOCATION_ANNOTATION];
     const all: { data: Location }[] = await this.getRequired(
       '/locations',
-      options,
+      context,
     );
     return all
       .map(r => r.data)
       .find(l => locationCompound === `${l.type}:${l.target}`);
   }
 
-  async removeEntityByUid(
-    uid: string,
-    options?: CatalogRequestOptions,
-  ): Promise<void> {
+  async removeEntityByUid(uid: string, context?: ApiContext): Promise<void> {
     const response = await fetch(
       `${await this.discoveryApi.getBaseUrl('catalog')}/entities/by-uid/${uid}`,
       {
-        headers: options?.token
-          ? { authorization: `Bearer ${options.token}` }
+        headers: context?.token
+          ? { authorization: `Bearer ${context.token}` }
           : {},
         method: 'DELETE',
       },
@@ -166,14 +164,11 @@ export class CatalogClient {
   // Private methods
   //
 
-  private async getRequired(
-    path: string,
-    options?: CatalogRequestOptions,
-  ): Promise<any> {
+  private async getRequired(path: string, context?: ApiContext): Promise<any> {
     const url = `${await this.discoveryApi.getBaseUrl('catalog')}${path}`;
     const response = await fetch(url, {
-      headers: options?.token
-        ? { authorization: `Bearer ${options.token}` }
+      headers: context?.token
+        ? { authorization: `Bearer ${context.token}` }
         : {},
     });
 
@@ -188,12 +183,12 @@ export class CatalogClient {
 
   private async getOptional(
     path: string,
-    options?: CatalogRequestOptions,
+    context?: ApiContext,
   ): Promise<any | undefined> {
     const url = `${await this.discoveryApi.getBaseUrl('catalog')}${path}`;
     const response = await fetch(url, {
-      headers: options?.token
-        ? { authorization: `Bearer ${options.token}` }
+      headers: context?.token
+        ? { authorization: `Bearer ${context.token}` }
         : {},
     });
 

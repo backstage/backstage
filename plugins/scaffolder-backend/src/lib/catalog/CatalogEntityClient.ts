@@ -15,13 +15,12 @@
  */
 
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { CatalogClient } from '@backstage/catalog-client';
+import { ApiContext, CatalogClient } from '@backstage/catalog-client';
 import {
   ConflictError,
   NotFoundError,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
-import { CatalogEntityRequestOptions } from './types';
 
 /**
  * A catalog client tailored for reading out entity data from the catalog.
@@ -42,9 +41,8 @@ export class CatalogEntityClient {
    */
   async findTemplate(
     templateName: string,
-    options?: CatalogEntityRequestOptions,
+    context?: ApiContext,
   ): Promise<TemplateEntityV1alpha1> {
-    const token = options?.token;
     const { items: templates } = (await this.catalogClient.getEntities(
       {
         filter: {
@@ -52,7 +50,7 @@ export class CatalogEntityClient {
           'metadata.name': templateName,
         },
       },
-      { token },
+      context,
     )) as { items: TemplateEntityV1alpha1[] };
 
     if (templates.length !== 1) {

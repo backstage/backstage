@@ -25,19 +25,32 @@ export type CatalogListResponse<T> = {
   items: T[];
 };
 
-export type CatalogRequestOptions = {
-  token: string | undefined;
+export type ApiContext = {
+  token?: string;
 };
 
 export interface CatalogApi {
-  getLocationById(id: String): Promise<Location | undefined>;
-  getEntityByName(name: EntityName): Promise<Entity | undefined>;
+  getLocationById(
+    id: String,
+    context?: ApiContext,
+  ): Promise<Location | undefined>;
+  getEntityByName(
+    name: EntityName,
+    context?: ApiContext,
+  ): Promise<Entity | undefined>;
   getEntities(
     request?: CatalogEntitiesRequest,
+    context?: ApiContext,
   ): Promise<CatalogListResponse<Entity>>;
-  addLocation(location: AddLocationRequest): Promise<AddLocationResponse>;
-  getLocationByEntity(entity: Entity): Promise<Location | undefined>;
-  removeEntityByUid(uid: string): Promise<void>;
+  addLocation(
+    location: AddLocationRequest,
+    context?: ApiContext,
+  ): Promise<AddLocationResponse>;
+  getLocationByEntity(
+    entity: Entity,
+    context?: ApiContext,
+  ): Promise<Location | undefined>;
+  removeEntityByUid(uid: string, context?: ApiContext): Promise<void>;
 }
 
 export type AddLocationRequest = {

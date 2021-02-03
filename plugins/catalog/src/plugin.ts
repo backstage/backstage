@@ -27,7 +27,6 @@ import {
   catalogRouteRef,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
-import { catalogRouteRef, entityRouteRef } from './routes';
 import { CatalogClientWrapper } from './CatalogClientWrapper';
 
 export const catalogPlugin = createPlugin({

@@ -66,7 +66,7 @@ export async function createRouter({
     keyDurationSeconds,
     logger: logger.child({ component: 'token-factory' }),
   });
-  const catalogClient = new CatalogClient({ discoveryApi: discovery });
+  const catalogApi = new CatalogClient({ discoveryApi: discovery });
 
   const secret = config.getOptionalString('auth.session.secret');
   if (secret) {
@@ -103,7 +103,7 @@ export async function createRouter({
         logger,
         tokenIssuer,
         discovery,
-        catalogClient,
+        catalogApi,
       });
 
       const r = Router();

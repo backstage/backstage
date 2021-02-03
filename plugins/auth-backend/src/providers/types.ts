@@ -15,7 +15,7 @@
  */
 
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { CatalogClient } from '@backstage/catalog-client';
+import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import express from 'express';
 import { Logger } from 'winston';
@@ -122,7 +122,7 @@ export type ExperimentalIdentityResolver = (
    * An object containing information specific to the auth provider.
    */
   payload: object,
-  catalogClient: CatalogClient,
+  catalogApi: CatalogApi,
 ) => Promise<AuthResponse<any>>;
 
 export type AuthProviderFactoryOptions = {
@@ -132,8 +132,8 @@ export type AuthProviderFactoryOptions = {
   logger: Logger;
   tokenIssuer: TokenIssuer;
   discovery: PluginEndpointDiscovery;
+  catalogApi: CatalogApi;
   identityResolver?: ExperimentalIdentityResolver;
-  catalogClient: CatalogClient;
 };
 
 export type AuthProviderFactory = (

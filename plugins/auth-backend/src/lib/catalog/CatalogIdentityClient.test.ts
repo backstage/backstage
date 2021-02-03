@@ -14,34 +14,38 @@
  * limitations under the License.
  */
 
-import { CatalogClient } from '@backstage/catalog-client';
+import { CatalogApi } from '@backstage/catalog-client';
+import { UserEntity } from '@backstage/catalog-model';
 import { CatalogIdentityClient } from './CatalogIdentityClient';
 
-jest.mock('@backstage/catalog-client');
-const MockedCatalogClient = CatalogClient as jest.Mock<CatalogClient>;
-
 describe('CatalogIdentityClient', () => {
-  const token = 'fake-id-token';
+  const catalogApi: jest.Mocked<CatalogApi> = {
+    getLocationById: jest.fn(),
+    getEntityByName: jest.fn(),
+    getEntities: jest.fn(),
+    addLocation: jest.fn(),
+    getLocationByEntity: jest.fn(),
+    removeEntityByUid: jest.fn(),
+  };
 
   afterEach(() => jest.resetAllMocks());
 
   it('passes through the correct search params', async () => {
+    catalogApi.getEntities.mockResolvedValueOnce({ items: [{} as UserEntity] });
     const client = new CatalogIdentityClient({
-      catalogClient: new MockedCatalogClient(),
+      catalogApi: catalogApi as CatalogApi,
     });
 
-    client.findUser({ annotations: { key: 'value' } }, { token });
+    client.findUser({ annotations: { key: 'value' } });
 
-    const getEntities = MockedCatalogClient.mock.instances[0].getEntities;
-    expect(getEntities).toHaveBeenCalledWith(
+    expect(catalogApi.getEntities).toBeCalledWith(
       {
         filter: {
           kind: 'user',
           'metadata.annotations.key': 'value',
         },
       },
-      { token },
+      undefined,
     );
-    expect(getEntities).toHaveBeenCalledTimes(1);
   });
 });

@@ -15,9 +15,8 @@
  */
 
 import { ConflictError, NotFoundError } from '@backstage/backend-common';
-import { CatalogClient } from '@backstage/catalog-client';
+import { ApiContext, CatalogApi } from '@backstage/catalog-client';
 import { UserEntity } from '@backstage/catalog-model';
-import { CatalogIdentityRequestOptions } from './types';
 
 type UserQuery = {
   annotations: Record<string, string>;
@@ -27,10 +26,10 @@ type UserQuery = {
  * A catalog client tailored for reading out identity data from the catalog.
  */
 export class CatalogIdentityClient {
-  private readonly catalogClient: CatalogClient;
+  private readonly catalogApi: CatalogApi;
 
-  constructor(options: { catalogClient: CatalogClient }) {
-    this.catalogClient = options.catalogClient;
+  constructor(options: { catalogApi: CatalogApi }) {
+    this.catalogApi = options.catalogApi;
   }
 
   /**
@@ -38,11 +37,7 @@ export class CatalogIdentityClient {
    *
    * Throws a NotFoundError or ConflictError if 0 or multiple users are found.
    */
-  async findUser(
-    query: UserQuery,
-    options?: CatalogIdentityRequestOptions,
-  ): Promise<UserEntity> {
-    const token = options?.token;
+  async findUser(query: UserQuery, context?: ApiContext): Promise<UserEntity> {
     const filter: Record<string, string> = {
       kind: 'user',
     };
@@ -50,10 +45,7 @@ export class CatalogIdentityClient {
       filter[`metadata.annotations.${key}`] = value;
     }
 
-    const { items } = await this.catalogClient.getEntities(
-      { filter },
-      { token },
-    );
+    const { items } = await this.catalogApi.getEntities({ filter }, context);
 
     if (items.length !== 1) {
       if (items.length > 1) {

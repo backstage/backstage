@@ -190,7 +190,7 @@ export const createGoogleProvider: AuthProviderFactory = ({
   config,
   logger,
   tokenIssuer,
-  catalogClient,
+  catalogApi,
 }) =>
   OAuthEnvironmentHandler.mapConfig(config, envConfig => {
     const clientId = envConfig.getString('clientId');
@@ -203,7 +203,7 @@ export const createGoogleProvider: AuthProviderFactory = ({
       callbackUrl,
       logger,
       tokenIssuer,
-      identityClient: new CatalogIdentityClient({ catalogClient }),
+      identityClient: new CatalogIdentityClient({ catalogApi }),
     });
 
     return OAuthAdapter.fromConfig(globalConfig, provider, {
