@@ -38,7 +38,7 @@ export async function getBitbucketDefaultBranch(
     
   var response = await fetch(branchUrl, getBitbucketRequestOptions(config));
   
-  if (response.status === 404) {
+  if (response.status === 404  && !isHosted) {
     // First try the new format, and then if it gets specifically a 404 it should try the old format 
     // (to support old  Atlassian Bitbucket v5.11.1 format ) 
     branchUrl = `${config.apiBaseUrl}/projects/${project}/repos/${repoName}/branches/default`;
