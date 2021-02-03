@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { TabbedLayout } from '@backstage/core';
 import React from 'react';
-import { Route, Routes } from 'react-router';
-import { ExplorePluginPage } from './ExplorePluginPage';
-import { rootRouteRef } from '../plugin';
+import { DomainExplorerContent } from '../DomainExplorerContent';
+import { ToolExplorerContent } from '../ToolExplorerContent';
 
-export const Router = () => (
-  <Routes>
-    <Route path={`/${rootRouteRef.path}`} element={<ExplorePluginPage />} />
-  </Routes>
+export const ExploreTabs = () => (
+  <TabbedLayout>
+    <TabbedLayout.Route path="domains" title="Domains">
+      <DomainExplorerContent />
+    </TabbedLayout.Route>
+    <TabbedLayout.Route path="tools" title="Tools">
+      <ToolExplorerContent />
+    </TabbedLayout.Route>
+  </TabbedLayout>
 );

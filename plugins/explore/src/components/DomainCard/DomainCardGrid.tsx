@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { DomainEntity } from '@backstage/catalog-model';
+import { Grid } from '@material-ui/core';
+import React from 'react';
+import { DomainCard } from '.';
 
-import { explorePlugin } from './plugin';
+type DomainCardGridProps = {
+  entities: DomainEntity[];
+};
 
-describe('explore', () => {
-  it('should export plugin', () => {
-    expect(explorePlugin).toBeDefined();
-  });
-});
+export const DomainCardGrid = ({ entities }: DomainCardGridProps) => (
+  <Grid container spacing={4}>
+    {entities.map((e, i) => (
+      <Grid item xs={12} md={3} key={i}>
+        <DomainCard entity={e} />
+      </Grid>
+    ))}
+  </Grid>
+);

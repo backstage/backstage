@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { exploreToolsConfigRef } from './api';
 
-import { explorePlugin } from './plugin';
-
-describe('explore', () => {
-  it('should export plugin', () => {
-    expect(explorePlugin).toBeDefined();
+describe('api', () => {
+  // This is a dummy test to have at least one test in the package.
+  it('api ref exists', () => {
+    expect(exploreToolsConfigRef.id).toBe('plugin.explore.toolsconfig');
   });
 });

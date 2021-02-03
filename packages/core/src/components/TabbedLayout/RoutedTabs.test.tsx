@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { TabbedLayout } from './TabbedLayout';
 import { renderInTestApp } from '@backstage/test-utils';
 import { fireEvent } from '@testing-library/react';
+import React from 'react';
 import { act } from 'react-dom/test-utils';
-import { Routes, Route } from 'react-router';
+import { Route, Routes } from 'react-router';
+import { RoutedTabs } from './RoutedTabs';
 
 const testRoute1 = {
   path: '',
@@ -31,10 +31,10 @@ const testRoute2 = {
   children: <div>tabbed-test-content-2</div>,
 };
 
-describe('TabbedLayout', () => {
+describe('RoutedTabs', () => {
   it('renders simplest case', async () => {
     const rendered = await renderInTestApp(
-      <TabbedLayout routes={[testRoute1]} />,
+      <RoutedTabs routes={[testRoute1]} />,
     );
 
     expect(rendered.getByText('tabbed-test-title')).toBeInTheDocument();
@@ -46,7 +46,7 @@ describe('TabbedLayout', () => {
       <Routes>
         <Route
           path="/*"
-          element={<TabbedLayout routes={[testRoute1, testRoute2]} />}
+          element={<RoutedTabs routes={[testRoute1, testRoute2]} />}
         />
       </Routes>,
     );
@@ -70,7 +70,7 @@ describe('TabbedLayout', () => {
           <Route
             path="/*"
             element={
-              <TabbedLayout
+              <RoutedTabs
                 routes={[
                   testRoute1,
                   {
@@ -122,7 +122,7 @@ describe('TabbedLayout', () => {
 
   it('shows only one tab contents at a time', async () => {
     const rendered = await renderInTestApp(
-      <TabbedLayout routes={[testRoute1, testRoute2]} />,
+      <RoutedTabs routes={[testRoute1, testRoute2]} />,
       { routeEntries: ['/some-other-path'] },
     );
 
@@ -135,7 +135,7 @@ describe('TabbedLayout', () => {
 
   it('redirects to the top level when no route is matching the url', async () => {
     const rendered = await renderInTestApp(
-      <TabbedLayout routes={[testRoute1, testRoute2]} />,
+      <RoutedTabs routes={[testRoute1, testRoute2]} />,
       { routeEntries: ['/non-existing-path'] },
     );
 

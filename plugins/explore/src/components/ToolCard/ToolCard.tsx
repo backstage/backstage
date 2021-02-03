@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import classNames from 'classnames';
+import { ExploreTool } from '@backstage/plugin-explore-react';
+import { BackstageTheme } from '@backstage/theme';
 import {
   Button,
   Card,
@@ -23,10 +23,13 @@ import {
   CardContent,
   CardMedia,
   Chip,
-  Typography,
   makeStyles,
+  Typography,
 } from '@material-ui/core';
-import { BackstageTheme } from '@backstage/theme';
+import classNames from 'classnames';
+import React from 'react';
+
+// TODO: Align styling between Domain and ToolCard
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   card: {
@@ -65,22 +68,12 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-export type CardData = {
-  title: string;
-  description: string;
-  url: string;
-  image: string;
-  tags?: string[];
-  lifecycle?: string;
-  newsTag?: string;
-};
-
 type Props = {
-  card: CardData;
+  card: ExploreTool;
   objectFit?: 'cover' | 'contain';
 };
 
-const ExploreCard = ({ card, objectFit }: Props) => {
+export const ToolCard = ({ card, objectFit }: Props) => {
   const classes = useStyles();
 
   const { title, description, url, image, lifecycle, newsTag, tags } = card;
@@ -130,5 +123,3 @@ const ExploreCard = ({ card, objectFit }: Props) => {
     </Card>
   );
 };
-
-export default ExploreCard;

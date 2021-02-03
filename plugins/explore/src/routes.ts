@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { explorePlugin } from './plugin';
+import { createRouteRef } from '@backstage/core';
 
-describe('explore', () => {
-  it('should export plugin', () => {
-    expect(explorePlugin).toBeDefined();
-  });
+const NoIcon = () => null;
+
+export const exploreRouteRef = createRouteRef({
+  icon: NoIcon,
+  title: 'Explore',
 });
