@@ -22,7 +22,7 @@ import {
   ApiRegistry,
 } from '@backstage/core';
 import { catalogApiRef, EntityContext } from '@backstage/plugin-catalog-react';
-import { renderInTestApp, withLogCollector } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 import { fireEvent } from '@testing-library/react';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
@@ -59,32 +59,9 @@ describe('EntityLayout', () => {
       </ApiProvider>,
     );
 
+    expect(rendered.getByText('my-entity')).toBeInTheDocument();
     expect(rendered.getByText('tabbed-test-title')).toBeInTheDocument();
     expect(rendered.getByText('tabbed-test-content')).toBeInTheDocument();
-  });
-
-  it('throws if any other component is a child of TabbedLayout', async () => {
-    const { error } = await withLogCollector(async () => {
-      await expect(
-        renderInTestApp(
-          <EntityLayout>
-            <EntityLayout.Route path="/" title="tabbed-test-title">
-              <div>tabbed-test-content</div>
-            </EntityLayout.Route>
-            <div>This will cause app to throw</div>
-          </EntityLayout>,
-        ),
-      ).rejects.toThrow(/Child of EntityLayout must be an EntityLayout.Route/);
-    });
-
-    expect(error).toEqual([
-      expect.stringMatching(
-        /Child of EntityLayout must be an EntityLayout.Route/,
-      ),
-      expect.stringMatching(
-        /The above error occurred in the <EntityLayout> component/,
-      ),
-    ]);
   });
 
   it('navigates when user clicks different tab', async () => {

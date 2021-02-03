@@ -14,10 +14,4 @@
  * limitations under the License.
  */
 
-import { explorePlugin } from './plugin';
-
-describe('explore', () => {
-  it('should export plugin', () => {
-    expect(explorePlugin).toBeDefined();
-  });
-});
+export * from './tools';

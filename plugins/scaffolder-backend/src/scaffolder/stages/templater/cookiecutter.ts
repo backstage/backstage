@@ -44,6 +44,7 @@ export class CookieCutter implements TemplaterBase {
   }: TemplaterRunOptions): Promise<void> {
     const templateDir = path.join(workspacePath, 'template');
     const intermediateDir = path.join(workspacePath, 'intermediate');
+    await fs.ensureDir(intermediateDir);
     const resultDir = path.join(workspacePath, 'result');
 
     // First lets grab the default cookiecutter.json file

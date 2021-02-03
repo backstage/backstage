@@ -14,28 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { makeStyles, Typography } from '@material-ui/core';
-import {
-  Content,
-  ContentHeader,
-  Header,
-  Page,
-  SupportButton,
-} from '@backstage/core';
-import ExploreCard, { CardData } from './ExploreCard';
-import { BackstageTheme } from '@backstage/theme';
-
-const useStyles = makeStyles<BackstageTheme>(theme => ({
-  container: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, 296px)',
-    gridGap: theme.spacing(3),
-    marginBottom: theme.spacing(6),
-  },
-}));
-
-const toolsCards = [
+export const exampleTools = [
   {
     title: 'New Relic',
     description:
@@ -112,28 +91,3 @@ const toolsCards = [
     tags: ['rollbar', 'monitoring', 'errors'],
   },
 ];
-
-export const ExplorePluginPage = () => {
-  const classes = useStyles();
-
-  return (
-    <Page themeId="home">
-      <Header
-        title="Explore"
-        subtitle="Tools and services available in Backstage"
-      />
-      <Content>
-        <ContentHeader title="Tools">
-          <SupportButton>
-            <Typography>Explore tools available in Backstage</Typography>
-          </SupportButton>
-        </ContentHeader>
-        <div className={classes.container}>
-          {toolsCards.map((card: CardData, ix: any) => (
-            <ExploreCard card={card} key={ix} />
-          ))}
-        </div>
-      </Content>
-    </Page>
-  );
-};
