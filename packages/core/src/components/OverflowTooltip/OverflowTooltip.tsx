@@ -19,11 +19,11 @@ import React, { useState } from 'react';
 import TextTruncate, { TextTruncateProps } from 'react-text-truncate';
 
 type Props = {
-  title: TooltipProps['title'];
-  placement?: TooltipProps['placement'];
-  text?: TextTruncateProps['text'];
+  text: TextTruncateProps['text'];
   line?: TextTruncateProps['line'];
   element?: TextTruncateProps['element'];
+  title?: TooltipProps['title'];
+  placement?: TooltipProps['placement'];
 };
 
 export const OverflowTooltip = (props: Props) => {
@@ -36,7 +36,7 @@ export const OverflowTooltip = (props: Props) => {
 
   return (
     <Tooltip
-      title={props.title}
+      title={props.title ?? (props.text as string)}
       placement={props.placement}
       disableHoverListener={!hover}
     >

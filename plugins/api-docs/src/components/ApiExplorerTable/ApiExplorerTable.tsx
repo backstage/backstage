@@ -95,8 +95,8 @@ const columns: TableColumn<EntityRow>[] = [
     field: 'entity.metadata.description',
     render: ({ entity }) => (
       <OverflowTooltip
-        title={entity.metadata.description as string}
         text={entity.metadata.description}
+        placement="bottom-start"
       />
     ),
   },

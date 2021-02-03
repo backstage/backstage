@@ -13,14 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Box } from '@material-ui/core';
 import React from 'react';
 import { OverflowTooltip } from './OverflowTooltip';
+
+export default {
+  title: 'Data Display/OverflowTooltip',
+  component: OverflowTooltip,
+};
 
 const text =
   'Lorem Ipsum is simply dummy text of the printing and typesetting industry.';
 
-export const Default = () => <OverflowTooltip title={text} text={text} />;
+export const Default = () => (
+  <Box maxWidth="200px">
+    <OverflowTooltip text={text} />
+  </Box>
+);
 
 export const MultiLine = () => (
-  <OverflowTooltip title={text} text={text} line={2} />
+  <Box maxWidth="200px">
+    <OverflowTooltip text={text} line={2} />
+  </Box>
+);
+
+export const DifferentTitle = () => (
+  <Box maxWidth="200px">
+    <OverflowTooltip
+      title="Visit loremipsum.io for more info"
+      text={text}
+      line={2}
+    />
+  </Box>
 );
