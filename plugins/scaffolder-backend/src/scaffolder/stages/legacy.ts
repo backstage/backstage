@@ -36,16 +36,11 @@ export function registerLegacyActions(
   registry.register({
     id: 'legacy:prepare',
     async handler(ctx) {
-      const { logger } = ctx;
-      logger.info('Task claimed, waiting ...');
-      // Give us some time to curl observe
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      logger.info('Prepare the skeleton');
       const { protocol, url } = ctx.parameters;
       const preparer =
         protocol === 'file' ? new FilePreparer() : preparers.get(url as string);
 
+      ctx.logger.info('Prepare the skeleton');
       await preparer.prepare({
         url: url as string,
         logger: ctx.logger,
