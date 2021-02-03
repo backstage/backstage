@@ -100,7 +100,7 @@
     "style-loader": "^1.2.1",
     "sucrase": "^3.16.0",
     "tar": "^6.0.1",
-    "terser-webpack-plugin": "^1.4.3",
+    "terser-webpack-plugin": "^5.1.1",
     "ts-jest": "^26.4.3",
     "ts-loader": "^7.0.4",
     "typescript": "^4.0.3",
