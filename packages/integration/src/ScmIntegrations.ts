@@ -81,4 +81,13 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
       .map(i => i.byHost(host))
       .find(Boolean);
   }
+
+  resolveUrl(options: { url: string; base: string }): string {
+    const resolve = this.byUrl(options.base)?.resolveUrl;
+    if (!resolve) {
+      return new URL(options.url, options.base).toString();
+    }
+
+    return resolve(options);
+  }
 }
