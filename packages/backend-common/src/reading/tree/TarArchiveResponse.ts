@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import tar, { Parse, ParseStream, ReadEntry } from 'tar';
-import platformPath from 'path';
-import fs from 'fs-extra';
-import { Readable, pipeline as pipelineCb } from 'stream';
-import { promisify } from 'util';
 import concatStream from 'concat-stream';
+import fs from 'fs-extra';
+import platformPath from 'path';
+import { pipeline as pipelineCb, Readable } from 'stream';
+import tar, { Parse, ParseStream, ReadEntry } from 'tar';
+import { promisify } from 'util';
 import {
   ReadTreeResponse,
-  ReadTreeResponseFile,
   ReadTreeResponseDirOptions,
+  ReadTreeResponseFile,
 } from '../types';
 
 // Tar types for `Parse` is not a proper constructor, but it should be

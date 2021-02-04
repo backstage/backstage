@@ -53,7 +53,7 @@ class Cache {
 
 /**
  * This accept header is required when calling App APIs in GitHub Enterprise.
- * It has no effect on calls to github.com and can probably be removed entierly
+ * It has no effect on calls to github.com and can probably be removed entirely
  * once GitHub Apps is out of preview.
  */
 const HEADERS = {
