@@ -118,6 +118,7 @@ jobs:
           config-file: ./cypress.json
           working-directory: ./packages/e2e-test/src
           browser: chrome
+          install: false
           headless: true
   
       - name: set status
