@@ -42,6 +42,7 @@ import MTable, {
   Column,
   Icons,
   MaterialTableProps,
+  MTableBody,
   MTableHeader,
   MTableToolbar,
   Options,
@@ -202,6 +203,7 @@ export interface TableProps<T extends object = {}>
   subtitle?: string;
   filters?: TableFilter[];
   initialState?: TableState;
+  emptyComponent?: JSX.Element;
   onStateChange?: (state: TableState) => any;
 }
 
@@ -212,6 +214,7 @@ export function Table<T extends object = {}>({
   subtitle,
   filters,
   initialState,
+  emptyComponent,
   onStateChange,
   ...props
 }: TableProps<T>) {
@@ -423,6 +426,23 @@ export function Table<T extends object = {}>({
     ],
   );
 
+  const Body = useCallback(
+    bodyProps => {
+      if (emptyComponent && data.length === 0) {
+        return (
+          <tbody>
+            <tr>
+              <td colSpan={columns.length}>{emptyComponent}</td>
+            </tr>
+          </tbody>
+        );
+      }
+
+      return <MTableBody {...bodyProps} />;
+    },
+    [data, emptyComponent, columns],
+  );
+
   return (
     <div className={tableClasses.root}>
       {filtersOpen && data && filters?.length && (
@@ -438,6 +458,7 @@ export function Table<T extends object = {}>({
             <MTableHeader classes={headerClasses} {...headerProps} />
           ),
           Toolbar,
+          Body,
         }}
         options={{ ...defaultOptions, ...options }}
         columns={MTColumns}
