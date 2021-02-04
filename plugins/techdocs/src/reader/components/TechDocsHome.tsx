@@ -67,7 +67,7 @@ export const TechDocsHome = () => {
             severity="error"
             title="Could not load available documentation."
           >
-            {error.message}
+            <code>{error.message}</code>
           </WarningPanel>
         </Content>
       </Page>

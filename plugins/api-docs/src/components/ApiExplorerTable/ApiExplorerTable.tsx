@@ -152,7 +152,7 @@ export const ApiExplorerTable = ({
   if (error) {
     return (
       <WarningPanel severity="error" title="Could not fetch catalog entities.">
-        {error.toString()}
+        <code>{error.toString()}</code>
       </WarningPanel>
     );
   }

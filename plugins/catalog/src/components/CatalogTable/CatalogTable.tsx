@@ -131,7 +131,7 @@ export const CatalogTable = ({
           severity="error"
           title="Could not fetch catalog entities."
         >
-          {error.toString()}
+          <code>{error.toString()}</code>
         </WarningPanel>
       </div>
     );
