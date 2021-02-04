@@ -22,7 +22,7 @@ describe('Catalog', () => {
 
       cy.visit('/catalog');
 
-      cy.get('table').should('be.visible');
+      cy.contains('Owned (7)').should('be.visible');
     });
   });
 });
