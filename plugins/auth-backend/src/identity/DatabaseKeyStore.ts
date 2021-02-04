@@ -15,9 +15,9 @@
  */
 
 import Knex from 'knex';
-import { utc } from 'moment';
 import { resolvePackagePath } from '@backstage/backend-common';
 import { AnyJWK, KeyStore, StoredKey } from './types';
+import { DateTime } from 'luxon';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-auth-backend',
@@ -62,12 +62,11 @@ export class DatabaseKeyStore implements KeyStore {
 
   async listKeys(): Promise<{ items: StoredKey[] }> {
     const rows = await this.database<Row>(TABLE).select();
-
     return {
       items: rows.map(row => ({
-        key: JSON.parse(row.key),
-        createdAt: utc(row.created_at),
-      })),
+          key: JSON.parse(row.key),
+          createdAt: DateTime.fromFormat(row.created_at, 'yyyy-MM-dd HH:mm:ss', {zone: 'UTC'}),
+        })),
     };
   }
 

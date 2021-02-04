@@ -15,7 +15,6 @@
  */
 
 import Knex from 'knex';
-import moment from 'moment';
 import { DatabaseKeyStore } from './DatabaseKeyStore';
 
 function createDB() {
@@ -51,7 +50,7 @@ describe('DatabaseKeyStore', () => {
 
     const { items } = await store.listKeys();
     expect(items).toEqual([{ createdAt: expect.anything(), key }]);
-    expect(Math.abs(items[0].createdAt.diff(moment(), 's'))).toBeLessThan(10);
+    expect(Math.abs(items[0].createdAt.diffNow('seconds').seconds)).toBeLessThan(10);
   });
 
   it('should remove stored keys', async () => {
