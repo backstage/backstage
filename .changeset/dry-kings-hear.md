@@ -2,4 +2,4 @@
 '@backstage/integration': patch
 ---
 
-Fix gitlab handling of paths with spaces
+Fix GitLab handling of paths with spaces
