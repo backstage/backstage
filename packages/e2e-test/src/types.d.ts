@@ -13,6 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/// <reference types="cypress" />
 
 declare module 'zombie';
 declare module 'pgtools';
+declare namespace Cypress {
+  interface Chainable {
+    /**
+     * Login as guest
+     * @example cy.loginAsGuests
+     */
+    loginAsGuest(): Chainable<Element>;
+  }
+}

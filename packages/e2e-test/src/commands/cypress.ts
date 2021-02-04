@@ -15,16 +15,16 @@
  */
 
 import cypress from 'cypress';
-import path from 'path';
 import config from '../cypress.json';
 
-export async function run() {
-  await cypress.run({
+export async function run({ watch }: { watch: boolean }) {
+  const command = watch ? cypress.open : cypress.run;
+  await command({
     reporter: 'junit',
     browser: 'chrome',
     config: {
-      watchForFileChanges: true,
-      ...config,
+      watchForFileChanges: watch,
     },
+    configFile: `${__dirname}/../cypress.json`,
   });
 }

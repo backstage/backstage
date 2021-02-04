@@ -23,5 +23,6 @@ export function registerCommands(program: CommanderStatic) {
   program
     .command('cypress')
     .description('Run cypress e2e tests')
+    .option('-w, --watch', 'watch/open mode')
     .action(cypress);
 }

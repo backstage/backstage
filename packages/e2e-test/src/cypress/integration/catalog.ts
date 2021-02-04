@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// in cypress/support/index.d.ts
-// load type definitions that come with Cypress module
-/// <reference types="cypress" />
+import 'os';
 
-declare namespace Cypress {
-  interface Chainable {
-    /**
-     * Login as guest
-     * @example cy.loginAsGuests
-     */
-    loginAsGuest(value: string): Chainable<Element>;
-  }
-}
+describe('Catalog', () => {
+  describe('default entities', () => {
+    it('displays the correct amount of entities from default config', () => {
+      cy.loginAsGuest();
+
+      cy.visit('/catalog');
+
+      cy.get('table').should('be.visible');
+    });
+  });
+});
