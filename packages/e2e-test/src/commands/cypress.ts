@@ -15,7 +15,7 @@
  */
 
 import cypress from 'cypress';
-import config from '../cypress.json';
+import path from 'path';
 
 export async function run({ watch }: { watch: boolean }) {
   const command = watch ? cypress.open : cypress.run;
@@ -24,7 +24,12 @@ export async function run({ watch }: { watch: boolean }) {
     browser: 'chrome',
     config: {
       watchForFileChanges: watch,
+      baseUrl: process.env.BACKSTAGE_TEST_URL ?? 'http://localhost:7000',
+      integrationFolder: path.resolve(__dirname, '../cypress/integration'),
+      supportFile: path.resolve(__dirname, '../cypress/support'),
+      fixturesFolder: path.resolve(__dirname, '../cypress/fixtures'),
+      pluginsFile: path.resolve(__dirname, '../cypress/plugins'),
+      defaultCommandTimeout: 10000,
     },
-    configFile: `${__dirname}/../cypress.json`,
   });
 }
