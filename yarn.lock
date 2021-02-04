@@ -2583,7 +2583,7 @@
     to-fast-properties "^2.0.0"
 
 "@backstage/catalog-model@^0.2.0":
-  version "0.7.0"
+  version "0.7.1"
   dependencies:
     "@backstage/config" "^0.1.2"
     "@types/json-schema" "^7.0.5"
@@ -2595,7 +2595,7 @@
     yup "^0.29.3"
 
 "@backstage/catalog-model@^0.3.0":
-  version "0.7.0"
+  version "0.7.1"
   dependencies:
     "@backstage/config" "^0.1.2"
     "@types/json-schema" "^7.0.5"
@@ -2607,11 +2607,11 @@
     yup "^0.29.3"
 
 "@backstage/core@^0.3.0":
-  version "0.5.0"
+  version "0.6.0"
   dependencies:
     "@backstage/config" "^0.1.2"
     "@backstage/core-api" "^0.2.8"
-    "@backstage/theme" "^0.2.2"
+    "@backstage/theme" "^0.2.3"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "4.0.0-alpha.45"
@@ -2645,17 +2645,69 @@
     remark-gfm "^1.0.0"
     zen-observable "^0.8.15"
 
-"@backstage/integration@^0.3.1":
-  version "0.3.1"
-  resolved "https://registry.npmjs.org/@backstage/integration/-/integration-0.3.1.tgz#4bdf1883b7149f7d4866bf1732d8e371f37ed143"
-  integrity sha512-aHfZ83z3XmO3R1SPG3r3W9KjSab/aFJ+51LjvRr6OCthfFTIusEmFq4cro5RUn7IPTn/0L8qpBSW2xH6FlRuVw==
+"@backstage/core@^0.5.0":
+  version "0.6.0"
   dependencies:
     "@backstage/config" "^0.1.2"
-    "@octokit/auth-app" "^2.10.5"
-    "@octokit/rest" "^18.0.12"
-    cross-fetch "^3.0.6"
+    "@backstage/core-api" "^0.2.8"
+    "@backstage/theme" "^0.2.3"
+    "@material-ui/core" "^4.11.0"
+    "@material-ui/icons" "^4.9.1"
+    "@material-ui/lab" "4.0.0-alpha.45"
+    "@testing-library/react-hooks" "^3.4.2"
+    "@types/dagre" "^0.7.44"
+    "@types/prop-types" "^15.7.3"
+    "@types/react" "^16.9"
+    "@types/react-sparklines" "^1.7.0"
+    classnames "^2.2.6"
+    clsx "^1.1.0"
+    d3-selection "^2.0.0"
+    d3-shape "^2.0.0"
+    d3-zoom "^2.0.0"
+    dagre "^0.8.5"
+    immer "^8.0.1"
+    lodash "^4.17.15"
+    material-table "^1.69.1"
+    prop-types "^15.7.2"
+    qs "^6.9.4"
+    rc-progress "^3.0.0"
+    react "^16.12.0"
+    react-dom "^16.12.0"
+    react-helmet "6.1.0"
+    react-hook-form "^6.6.0"
+    react-markdown "^5.0.2"
+    react-router "6.0.0-beta.0"
+    react-router-dom "6.0.0-beta.0"
+    react-sparklines "^1.7.0"
+    react-syntax-highlighter "^13.5.1"
+    react-use "^15.3.3"
+    remark-gfm "^1.0.0"
+    zen-observable "^0.8.15"
+
+"@backstage/plugin-catalog@^0.2.0", "@backstage/plugin-catalog@^0.2.1":
+  version "0.2.14"
+  resolved "https://registry.npmjs.org/@backstage/plugin-catalog/-/plugin-catalog-0.2.14.tgz#50a4176a55ffa543a426ec78cbc9deaecdbcf2b7"
+  integrity sha512-lDmNcC+m1zbbzYATUp5yIZ5PUp+YyBc1KKu3CCgqjLWSbJ1aJrU1N4g59euel1l2+qSW+lH76Kkp6ZYpZbSO9A==
+  dependencies:
+    "@backstage/catalog-client" "^0.3.5"
+    "@backstage/catalog-model" "^0.7.0"
+    "@backstage/core" "^0.5.0"
+    "@backstage/plugin-scaffolder" "^0.4.1"
+    "@backstage/theme" "^0.2.2"
+    "@material-ui/core" "^4.11.0"
+    "@material-ui/icons" "^4.9.1"
+    "@material-ui/lab" "4.0.0-alpha.45"
+    "@types/react" "^16.9"
+    classnames "^2.2.6"
     git-url-parse "^11.4.4"
-    luxon "^1.25.0"
+    moment "^2.26.0"
+    react "^16.13.1"
+    react-dom "^16.13.1"
+    react-helmet "6.1.0"
+    react-router "6.0.0-beta.0"
+    react-router-dom "6.0.0-beta.0"
+    react-use "^15.3.3"
+    swr "^0.3.0"
 
 "@bcoe/v8-coverage@^0.2.3":
   version "0.2.3"
@@ -14350,13 +14402,6 @@ git-url-parse@^11.1.2:
   version "11.1.3"
   resolved "https://registry.npmjs.org/git-url-parse/-/git-url-parse-11.1.3.tgz#03625b6fc09905e9ad1da7bb2b84be1bf9123143"
   integrity sha512-GPsfwticcu52WQ+eHp0IYkAyaOASgYdtsQDIt4rUp6GbiNt1P9ddrh3O0kQB0eD4UJZszVqNT3+9Zwcg40fywA==
-  dependencies:
-    git-up "^4.0.0"
-
-git-url-parse@^11.4.4:
-  version "11.4.4"
-  resolved "https://registry.npmjs.org/git-url-parse/-/git-url-parse-11.4.4.tgz#5d747debc2469c17bc385719f7d0427802d83d77"
-  integrity sha512-Y4o9o7vQngQDIU9IjyCmRJBin5iYjI5u9ZITnddRZpD7dcCFQj2sL2XuMNbLRE4b4B/4ENPsp2Q8P44fjAZ0Pw==
   dependencies:
     git-up "^4.0.0"
 
