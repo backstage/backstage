@@ -2,4 +2,4 @@
 '@backstage/plugin-auth-backend': minor
 ---
 
-Migrated the package from using moment to luxon. #4278
+Migrated the package from using moment to Luxon. #4278
