@@ -20,6 +20,12 @@ import {
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
 import { Table, TableColumn, TableProps } from '@backstage/core';
+import {
+  EntityRefLink,
+  EntityRefLinks,
+  formatEntityRefTitle,
+  getEntityRelations,
+} from '@backstage/plugin-catalog-react';
 import { Chip } from '@material-ui/core';
 import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
@@ -29,18 +35,14 @@ import { findLocationForEntityMeta } from '../../data/utils';
 import { useStarredEntities } from '../../hooks/useStarredEntities';
 import { createEditLink } from '../createEditLink';
 import {
-  EntityRefLink,
-  EntityRefLinks,
-  formatEntityRefTitle,
-} from '../EntityRefLink';
-import {
   favouriteEntityIcon,
   favouriteEntityTooltip,
 } from '../FavouriteEntity/FavouriteEntity';
-import { getEntityRelations } from '../getEntityRelations';
 
-type EntityRow = Entity & {
-  row: {
+type EntityRow = {
+  entity: Entity;
+  resolved: {
+    name: string;
     partOfSystemRelationTitle?: string;
     partOfSystemRelations: EntityName[];
     ownedByRelationsTitle?: string;
@@ -51,47 +53,47 @@ type EntityRow = Entity & {
 const columns: TableColumn<EntityRow>[] = [
   {
     title: 'Name',
-    field: 'metadata.name',
+    field: 'resolved.name',
     highlight: true,
-    render: entity => (
-      <EntityRefLink entityRef={entity}>{entity.metadata.name}</EntityRefLink>
+    render: ({ entity }) => (
+      <EntityRefLink entityRef={entity} defaultKind="Component" />
     ),
   },
   {
     title: 'System',
-    field: 'row.partOfSystemRelationTitle',
-    render: entity => (
+    field: 'resolved.partOfSystemRelationTitle',
+    render: ({ resolved }) => (
       <EntityRefLinks
-        entityRefs={entity.row.partOfSystemRelations}
+        entityRefs={resolved.partOfSystemRelations}
         defaultKind="system"
       />
     ),
   },
   {
     title: 'Owner',
-    field: 'row.ownedByRelationsTitle',
-    render: entity => (
+    field: 'resolved.ownedByRelationsTitle',
+    render: ({ resolved }) => (
       <EntityRefLinks
-        entityRefs={entity.row.ownedByRelations}
+        entityRefs={resolved.ownedByRelations}
         defaultKind="group"
       />
     ),
   },
   {
     title: 'Lifecycle',
-    field: 'spec.lifecycle',
+    field: 'entity.spec.lifecycle',
   },
   {
     title: 'Description',
-    field: 'metadata.description',
+    field: 'entity.metadata.description',
   },
   {
     title: 'Tags',
-    field: 'metadata.tags',
+    field: 'entity.metadata.tags',
     cellStyle: {
       padding: '0px 16px 0px 20px',
     },
-    render: entity => (
+    render: ({ entity }) => (
       <>
         {entity.metadata.tags &&
           entity.metadata.tags.map(t => (
@@ -133,9 +135,9 @@ export const CatalogTable = ({
     );
   }
 
-  const actions: TableProps<Entity>['actions'] = [
-    (rowData: Entity) => {
-      const location = findLocationForEntityMeta(rowData.metadata);
+  const actions: TableProps<EntityRow>['actions'] = [
+    ({ entity }) => {
+      const location = findLocationForEntityMeta(entity.metadata);
       return {
         icon: () => <OpenInNew fontSize="small" />,
         tooltip: 'View',
@@ -145,8 +147,8 @@ export const CatalogTable = ({
         },
       };
     },
-    (rowData: Entity) => {
-      const location = findLocationForEntityMeta(rowData.metadata);
+    ({ entity }) => {
+      const location = findLocationForEntityMeta(entity.metadata);
       return {
         icon: () => <Edit fontSize="small" />,
         tooltip: 'Edit',
@@ -156,36 +158,40 @@ export const CatalogTable = ({
         },
       };
     },
-    (rowData: Entity) => {
-      const isStarred = isStarredEntity(rowData);
+    ({ entity }) => {
+      const isStarred = isStarredEntity(entity);
       return {
         cellStyle: { paddingLeft: '1em' },
         icon: () => favouriteEntityIcon(isStarred),
         tooltip: favouriteEntityTooltip(isStarred),
-        onClick: () => toggleStarredEntity(rowData),
+        onClick: () => toggleStarredEntity(entity),
       };
     },
   ];
 
-  const rows = entities.map(e => {
-    const partOfSystemRelations = getEntityRelations(e, RELATION_PART_OF, {
+  const rows = entities.map(entity => {
+    const partOfSystemRelations = getEntityRelations(entity, RELATION_PART_OF, {
       kind: 'system',
     });
-    const ownedByRelations = getEntityRelations(e, RELATION_OWNED_BY);
+    const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
 
     return {
-      ...e,
-      row: {
+      entity,
+      resolved: {
+        name: formatEntityRefTitle(entity, {
+          defaultKind: 'Component',
+        }),
         ownedByRelationsTitle: ownedByRelations
           .map(r => formatEntityRefTitle(r, { defaultKind: 'group' }))
           .join(', '),
         ownedByRelations,
-        partOfSystemRelationTitle:
-          partOfSystemRelations.length > 0
-            ? formatEntityRefTitle(partOfSystemRelations[0], {
-                defaultKind: 'system',
-              })
-            : undefined,
+        partOfSystemRelationTitle: partOfSystemRelations
+          .map(r =>
+            formatEntityRefTitle(r, {
+              defaultKind: 'system',
+            }),
+          )
+          .join(', '),
         partOfSystemRelations,
       },
     };

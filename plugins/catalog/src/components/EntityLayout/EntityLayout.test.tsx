@@ -13,22 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { EntityLayout } from './EntityLayout';
+import { CatalogApi } from '@backstage/catalog-client';
+import { Entity } from '@backstage/catalog-model';
 import {
   AlertApi,
   alertApiRef,
   ApiProvider,
   ApiRegistry,
 } from '@backstage/core';
-import { renderInTestApp, withLogCollector } from '@backstage/test-utils';
+import { catalogApiRef, EntityContext } from '@backstage/plugin-catalog-react';
+import { renderInTestApp } from '@backstage/test-utils';
 import { fireEvent } from '@testing-library/react';
+import React from 'react';
 import { act } from 'react-dom/test-utils';
-import { Routes, Route } from 'react-router';
-import { Entity } from '@backstage/catalog-model';
-import { EntityContext } from '../../hooks/useEntity';
-import { catalogApiRef } from '../../plugin';
-import { CatalogApi } from '@backstage/catalog-client';
+import { Route, Routes } from 'react-router';
+import { EntityLayout } from './EntityLayout';
 
 const mockEntityData = {
   loading: false,
@@ -60,32 +59,9 @@ describe('EntityLayout', () => {
       </ApiProvider>,
     );
 
+    expect(rendered.getByText('my-entity')).toBeInTheDocument();
     expect(rendered.getByText('tabbed-test-title')).toBeInTheDocument();
     expect(rendered.getByText('tabbed-test-content')).toBeInTheDocument();
-  });
-
-  it('throws if any other component is a child of TabbedLayout', async () => {
-    const { error } = await withLogCollector(async () => {
-      await expect(
-        renderInTestApp(
-          <EntityLayout>
-            <EntityLayout.Route path="/" title="tabbed-test-title">
-              <div>tabbed-test-content</div>
-            </EntityLayout.Route>
-            <div>This will cause app to throw</div>
-          </EntityLayout>,
-        ),
-      ).rejects.toThrow(/Child of EntityLayout must be an EntityLayout.Route/);
-    });
-
-    expect(error).toEqual([
-      expect.stringMatching(
-        /Child of EntityLayout must be an EntityLayout.Route/,
-      ),
-      expect.stringMatching(
-        /The above error occurred in the <EntityLayout> component/,
-      ),
-    ]);
   });
 
   it('navigates when user clicks different tab', async () => {

@@ -1,5 +1,35 @@
 # @backstage/backend-common
 
+## 0.5.1
+
+### Patch Changes
+
+- 26a3a6cf0: Honor the branch ref in the url when cloning.
+
+  This fixes a bug in the scaffolder prepare stage where a non-default branch
+  was specified in the scaffolder URL but the default branch was cloned.
+  For example, even though the `other` branch is specified in this example, the
+  `master` branch was actually cloned:
+
+  ```yaml
+  catalog:
+    locations:
+      - type: url
+        target: https://github.com/backstage/backstage/blob/other/plugins/scaffolder-backend/sample-templates/docs-template/template.yaml
+  ```
+
+  This also fixes a 404 in the prepare stage for GitLab URLs.
+
+- 664dd08c9: URL Reader's readTree: Fix bug with github.com URLs.
+- 9dd057662: Upgrade [git-url-parse](https://www.npmjs.com/package/git-url-parse) to [v11.4.4](https://github.com/IonicaBizau/git-url-parse/pull/125) which fixes parsing an Azure DevOps branch ref.
+- Updated dependencies [6800da78d]
+- Updated dependencies [9dd057662]
+- Updated dependencies [ef7957be4]
+- Updated dependencies [ef7957be4]
+- Updated dependencies [ef7957be4]
+  - @backstage/integration@0.3.1
+  - @backstage/config-loader@0.5.0
+
 ## 0.5.0
 
 ### Minor Changes

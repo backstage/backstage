@@ -41,7 +41,7 @@ export class LinkedPackageResolvePlugin implements ResolvePlugin {
         callback: () => void,
       ) => {
         const pkg = this.packages.find(
-          pkg => data.path && isChildPath(pkg.location, data.path),
+          pkge => data.path && isChildPath(pkge.location, data.path),
         );
         if (!pkg) {
           callback();

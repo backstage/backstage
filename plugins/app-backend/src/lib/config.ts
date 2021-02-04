@@ -84,13 +84,21 @@ export async function readConfigs(options: ReadOptions): Promise<AppConfig[]> {
   const schemaPath = resolvePath(appDistDir, '.config-schema.json');
   if (await fs.pathExists(schemaPath)) {
     const serializedSchema = await fs.readJson(schemaPath);
-    const schema = await loadConfigSchema({ serialized: serializedSchema });
 
-    const frontendConfigs = await schema.process(
-      [{ data: config.get() as JsonObject, context: 'app' }],
-      { visibility: ['frontend'] },
-    );
-    appConfigs.push(...frontendConfigs);
+    try {
+      const schema = await loadConfigSchema({ serialized: serializedSchema });
+
+      const frontendConfigs = await schema.process(
+        [{ data: config.get() as JsonObject, context: 'app' }],
+        { visibility: ['frontend'] },
+      );
+      appConfigs.push(...frontendConfigs);
+    } catch (error) {
+      throw new Error(
+        'Invalid schema embedded in the app bundle, to fix this issue you need ' +
+          `to correct the schema and then rebuild the app bundle. ${error}`,
+      );
+    }
   }
 
   return appConfigs;

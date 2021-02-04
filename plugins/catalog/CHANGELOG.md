@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog
 
+## 0.2.14
+
+### Patch Changes
+
+- 9dd057662: Upgrade [git-url-parse](https://www.npmjs.com/package/git-url-parse) to [v11.4.4](https://github.com/IonicaBizau/git-url-parse/pull/125) which fixes parsing an Azure DevOps branch ref.
+- 0b1182346: Add `EntityRefLinks` that shows one or multiple entity ref links.
+
+  Change the about card and catalog table to use `EntityRefLinks` due to the
+  nature of relations to support multiple relations per type.
+
+- Updated dependencies [9dd057662]
+  - @backstage/plugin-scaffolder@0.4.1
+
 ## 0.2.13
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @backstage/plugin-sonarqube
 
+## 0.1.9
+
+### Patch Changes
+
+- 49a67732f: Ask the SonarQube server for all support metrics prior to querying them for a project.
+
 ## 0.1.8
 
 ### Patch Changes

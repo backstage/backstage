@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
   EmptyState,
   InfoCard,
@@ -22,15 +21,16 @@ import {
   Progress,
   useApi,
 } from '@backstage/core';
-import { useAsync } from 'react-use';
-import { Entity } from '@backstage/catalog-model';
-import { fossaApiRef } from '../../api';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { Grid, Tooltip } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import React from 'react';
+import { useAsync } from 'react-use';
+import { fossaApiRef } from '../../api';
 import {
   FOSSA_PROJECT_NAME_ANNOTATION,
   useProjectName,
 } from '../useProjectName';
-import { Grid, Tooltip } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
   numberError: {
@@ -65,13 +65,8 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const FossaCard = ({
-  entity,
-  variant = 'gridItem',
-}: {
-  entity: Entity;
-  variant?: string;
-}) => {
+export const FossaCard = () => {
+  const { entity } = useEntity();
   const fossaApi = useApi(fossaApiRef);
 
   const projectTitle = useProjectName(entity);
@@ -96,7 +91,7 @@ export const FossaCard = ({
       <InfoCard
         title="License Findings"
         deepLink={deepLink}
-        variant={variant}
+        variant="gridItem"
         className={
           !loading && (!projectTitle || !value) ? classes.disabled : undefined
         }

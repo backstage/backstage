@@ -13,7 +13,6 @@
     "Getting Started": [
       "getting-started/index",
       "getting-started/running-backstage-locally",
-      "getting-started/installation",
       "getting-started/development-environment",
       "getting-started/create-an-app",
       {
@@ -130,7 +129,8 @@
         "ids": [
           "plugins/publishing",
           "plugins/publish-private",
-          "plugins/add-to-marketplace"
+          "plugins/add-to-marketplace",
+          "plugins/observability"
         ]
       }
     ],

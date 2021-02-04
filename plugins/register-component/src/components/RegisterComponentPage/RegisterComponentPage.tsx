@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
-import { Grid, makeStyles } from '@material-ui/core';
+import { Entity, Location } from '@backstage/catalog-model';
 import {
-  InfoCard,
-  Page,
   Content,
-  useApi,
+  ContentHeader,
   errorApiRef,
   Header,
-  SupportButton,
-  ContentHeader,
+  InfoCard,
+  Page,
   RouteRef,
+  SupportButton,
+  useApi,
 } from '@backstage/core';
-import { RegisterComponentForm } from '../RegisterComponentForm';
-import { catalogApiRef } from '@backstage/plugin-catalog';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { Grid, makeStyles } from '@material-ui/core';
+import React, { useState } from 'react';
 import { useMountedState } from 'react-use';
-import { Entity, Location } from '@backstage/catalog-model';
+import { RegisterComponentForm } from '../RegisterComponentForm';
 import { RegisterComponentResultDialog } from '../RegisterComponentResultDialog';
 
 const useStyles = makeStyles(theme => ({

@@ -14,63 +14,31 @@
  * limitations under the License.
  */
 
-import React, {
-  Children,
-  Fragment,
-  PropsWithChildren,
-  ReactNode,
-  isValidElement,
-  useContext,
-  useState,
-} from 'react';
 import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import {
-  attachComponentData,
   Content,
   Header,
   HeaderLabel,
   Page,
   Progress,
+  TabbedLayout,
 } from '@backstage/core';
+import {
+  EntityContext,
+  useEntityCompoundName,
+} from '@backstage/plugin-catalog-react';
 import { Box } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
+import {
+  default as React,
+  PropsWithChildren,
+  useContext,
+  useState,
+} from 'react';
 import { useNavigate } from 'react-router';
-import { EntityContext } from '../../hooks/useEntity';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
 import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
-import { useEntityCompoundName } from '../useEntityCompoundName';
-import { TabbedLayout } from './TabbedLayout';
-
-type SubRoute = {
-  path: string;
-  title: string;
-  children: JSX.Element;
-};
-
-const Route: (props: SubRoute) => null = () => null;
-
-// This causes all mount points that are discovered within this route to use the path of the route itself
-attachComponentData(Route, 'core.gatherMountPoints', true);
-
-export function createSubRoutesFromChildren(children: ReactNode): SubRoute[] {
-  return Children.toArray(children).flatMap(child => {
-    if (!isValidElement(child)) {
-      return [];
-    }
-
-    if (child.type === Fragment) {
-      return createSubRoutesFromChildren(child.props.children);
-    }
-
-    if (child.type !== Route) {
-      throw new Error('Child of EntityLayout must be an EntityLayout.Route');
-    }
-
-    const { path, title, children } = child.props;
-    return [{ path, title, children }];
-  });
-}
 
 const EntityLayoutTitle = ({
   entity,
@@ -130,7 +98,6 @@ export const EntityLayout = ({ children }: PropsWithChildren<{}>) => {
   const { kind, namespace, name } = useEntityCompoundName();
   const { entity, loading, error } = useContext(EntityContext);
 
-  const routes = createSubRoutesFromChildren(children);
   const { headerTitle, headerType } = headerProps(
     kind,
     namespace,
@@ -172,7 +139,7 @@ export const EntityLayout = ({ children }: PropsWithChildren<{}>) => {
 
       {loading && <Progress />}
 
-      {entity && <TabbedLayout routes={routes} />}
+      {entity && <TabbedLayout>{children}</TabbedLayout>}
 
       {error && (
         <Content>
@@ -189,4 +156,4 @@ export const EntityLayout = ({ children }: PropsWithChildren<{}>) => {
   );
 };
 
-EntityLayout.Route = Route;
+EntityLayout.Route = TabbedLayout.Route;

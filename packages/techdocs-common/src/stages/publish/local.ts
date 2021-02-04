@@ -13,18 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import fetch from 'cross-fetch';
+import {
+  PluginEndpointDiscovery,
+  resolvePackagePath,
+} from '@backstage/backend-common';
+import { Entity, EntityName } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
 import express from 'express';
 import fs from 'fs-extra';
-import path from 'path';
 import os from 'os';
+import path from 'path';
 import { Logger } from 'winston';
-import { Entity, EntityName } from '@backstage/catalog-model';
-import {
-  resolvePackagePath,
-  PluginEndpointDiscovery,
-} from '@backstage/backend-common';
-import { Config } from '@backstage/config';
 import {
   PublisherBase,
   PublishRequest,
@@ -52,17 +51,14 @@ try {
  * called "static" at the root of techdocs-backend plugin.
  */
 export class LocalPublish implements PublisherBase {
-  private readonly config: Config;
-  private readonly logger: Logger;
-  private readonly discovery: PluginEndpointDiscovery;
-
   // TODO: Use a static fromConfig method to create a LocalPublish instance, similar to aws/gcs publishers.
   // Move the logic of setting staticDocsDir based on config over to fromConfig,
   // and set the value as a class parameter.
   constructor(
-    config: Config,
-    logger: Logger,
-    discovery: PluginEndpointDiscovery,
+    // @ts-ignore
+    private readonly config: Config,
+    private readonly logger: Logger,
+    private readonly discovery: PluginEndpointDiscovery,
   ) {
     this.config = config;
     this.logger = logger;
@@ -107,34 +103,25 @@ export class LocalPublish implements PublisherBase {
     });
   }
 
-  fetchTechDocsMetadata(entityName: EntityName): Promise<TechDocsMetadata> {
-    return new Promise((resolve, reject) => {
-      this.discovery.getBaseUrl('techdocs').then(techdocsApiUrl => {
-        const storageUrl = new URL(
-          new URL(this.config.getString('techdocs.storageUrl')).pathname,
-          techdocsApiUrl,
-        ).toString();
+  async fetchTechDocsMetadata(
+    entityName: EntityName,
+  ): Promise<TechDocsMetadata> {
+    const metadataPath = path.join(
+      staticDocsDir,
+      entityName.namespace,
+      entityName.kind,
+      entityName.name,
+      'techdocs_metadata.json',
+    );
 
-        const entityRootDir = `${entityName.namespace}/${entityName.kind}/${entityName.name}`;
-        const metadataURL = `${storageUrl}/${entityRootDir}/techdocs_metadata.json`;
-        fetch(metadataURL)
-          .then(response =>
-            response
-              .json()
-              .then(techdocsMetadata => resolve(techdocsMetadata))
-              .catch(err => {
-                reject(
-                  `Unable to parse metadata JSON for ${entityRootDir}. Error: ${err}`,
-                );
-              }),
-          )
-          .catch(err => {
-            reject(
-              `Unable to fetch metadata for ${entityRootDir}. Error ${err}`,
-            );
-          });
-      });
-    });
+    try {
+      return await fs.readJson(metadataPath);
+    } catch (err) {
+      this.logger.error(
+        `Unable to read techdocs_metadata.json at ${metadataPath}. Error: ${err}`,
+      );
+      throw new Error(err.message);
+    }
   }
 
   docsRouter(): express.Handler {
@@ -143,24 +130,21 @@ export class LocalPublish implements PublisherBase {
 
   async hasDocsBeenGenerated(entity: Entity): Promise<boolean> {
     const namespace = entity.metadata.namespace ?? 'default';
-    return new Promise(resolve => {
-      this.discovery.getBaseUrl('techdocs').then(techdocsApiUrl => {
-        const storageUrl = new URL(
-          new URL(this.config.getString('techdocs.storageUrl')).pathname,
-          techdocsApiUrl,
-        ).toString();
 
-        const entityRootDir = `${namespace}/${entity.kind}/${entity.metadata.name}`;
-        const indexHtmlUrl = `${storageUrl}/${entityRootDir}/index.html`;
-        // Check if the file exists
-        fs.access(indexHtmlUrl, fs.constants.F_OK, err => {
-          if (err) {
-            resolve(false);
-          } else {
-            resolve(true);
-          }
-        });
-      });
-    });
+    const indexHtmlPath = path.join(
+      staticDocsDir,
+      namespace,
+      entity.kind,
+      entity.metadata.name,
+      'index.html',
+    );
+
+    // Check if the file exists
+    try {
+      fs.access(indexHtmlPath, fs.constants.F_OK);
+      return true;
+    } catch (err) {
+      return false;
+    }
   }
 }

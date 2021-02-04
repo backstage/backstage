@@ -1,5 +1,15 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.2.6
+
+### Patch Changes
+
+- 681111228: Add AWS auth provider for Kubernetes
+- Updated dependencies [26a3a6cf0]
+- Updated dependencies [664dd08c9]
+- Updated dependencies [9dd057662]
+  - @backstage/backend-common@0.5.1
+
 ## 0.2.5
 
 ### Patch Changes

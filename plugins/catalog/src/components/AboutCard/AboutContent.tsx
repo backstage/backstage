@@ -19,10 +19,12 @@ import {
   RELATION_OWNED_BY,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
+import {
+  EntityRefLinks,
+  getEntityRelations,
+} from '@backstage/plugin-catalog-react';
 import { Chip, Grid, makeStyles, Typography } from '@material-ui/core';
 import React from 'react';
-import { EntityRefLinks } from '../EntityRefLink';
-import { getEntityRelations } from '../getEntityRelations';
 import { AboutField } from './AboutField';
 
 const useStyles = makeStyles({

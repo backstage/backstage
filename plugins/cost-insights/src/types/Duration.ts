@@ -21,6 +21,7 @@
  * September 15.
  */
 export enum Duration {
+  P7D = 'P7D',
   P30D = 'P30D',
   P90D = 'P90D',
   P3M = 'P3M',

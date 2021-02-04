@@ -16,7 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { ApiProvider, ApiRegistry, storageApiRef } from '@backstage/core';
-import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog';
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { MockStorageApi, wrapInTestApp } from '@backstage/test-utils';
 import { render } from '@testing-library/react';
 import React from 'react';

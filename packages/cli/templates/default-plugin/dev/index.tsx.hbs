@@ -1,0 +1,11 @@
+import React from 'react';
+import { createDevApp } from '@backstage/dev-utils';
+import { {{ pluginVar }}, {{ extensionName }} } from '../src/plugin';
+
+createDevApp()
+  .registerPlugin({{ pluginVar }})
+  .addPage({
+    element: <{{ extensionName }} />,
+    title: 'Root Page',
+  })
+  .render();

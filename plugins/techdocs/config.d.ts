@@ -18,17 +18,6 @@ export interface Config {
   /** Configuration options for the techdocs plugin */
   techdocs: {
     /**
-     * attr: 'requestUrl' - accepts a string value
-     * e.g. requestUrl: http://localhost:7000/api/techdocs
-     * @visibility frontend
-     */
-    requestUrl: string;
-    /**
-     * attr: 'storageUrl' - accepts a string value
-     * e.g. storageUrl: http://localhost:7000/api/techdocs/static/docs
-     */
-    storageUrl: string;
-    /**
      * documentation building process depends on the builder attr
      * attr: 'builder' - accepts a string value
      * e.g. builder: 'local'
@@ -117,6 +106,47 @@ export interface Config {
       | {
           /**
            * attr: 'type' - accepts a string value
+           * e.g. type: 'azureBlobStorage'
+           * alternatives: 'azureBlobStorage' etc.
+           * @see http://backstage.io/docs/features/techdocs/configuration
+           */
+          type: 'azureBlobStorage';
+
+          /**
+           * azureBlobStorage required when 'type' is set to azureBlobStorage
+           */
+          azureBlobStorage?: {
+            /**
+             * (Required) Credentials used to access a storage container.
+             * @visibility secret
+             */
+            credentials: {
+              /**
+               * Account access name
+               * attr: 'account' - accepts a string value
+               * @visibility secret
+               */
+              accountName: string;
+              /**
+               * (Optional) Account secret primary key
+               * If not set, environment variables will be used to authenticate.
+               * https://docs.microsoft.com/en-us/azure/storage/common/storage-auth?toc=/azure/storage/blobs/toc.json
+               * attr: 'accountKey' - accepts a string value
+               * @visibility secret
+               */
+              accountKey?: string;
+            };
+            /**
+             * (Required) Cloud Storage Container Name
+             * attr: 'containerName' - accepts a string value
+             * @visibility backend
+             */
+            containerName: string;
+          };
+        }
+      | {
+          /**
+           * attr: 'type' - accepts a string value
            * e.g. type: 'googleGcs'
            * alternatives: 'googleGcs' etc.
            * @see http://backstage.io/docs/features/techdocs/configuration
@@ -143,5 +173,18 @@ export interface Config {
             credentials?: string;
           };
         };
+    /**
+     * attr: 'requestUrl' - accepts a string value
+     * e.g. requestUrl: http://localhost:7000/api/techdocs
+     * @visibility frontend
+     * @deprecated
+     */
+    requestUrl?: string;
+    /**
+     * attr: 'storageUrl' - accepts a string value
+     * e.g. storageUrl: http://localhost:7000/api/techdocs/static/docs
+     * @deprecated
+     */
+    storageUrl?: string;
   };
 }

@@ -71,12 +71,12 @@ const useStyles = makeStyles<Theme>(theme => ({
     'font-feature-settings': 'pnum',
   },
   entry: {
-    pointerEvents: 'none',
+    pointerEvents: 'visiblePainted',
     userSelect: 'none',
     fontSize: '11px',
   },
   entryLink: {
-    pointerEvents: 'none',
+    pointerEvents: 'visiblePainted',
   },
 }));
 

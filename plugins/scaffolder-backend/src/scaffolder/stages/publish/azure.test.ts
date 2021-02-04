@@ -20,6 +20,8 @@ jest.mock('azure-devops-node-api', () => ({
   getPersonalAccessTokenHandler: jest.fn().mockReturnValue(() => {}),
 }));
 
+import os from 'os';
+import { resolve } from 'path';
 import { AzurePublisher } from './azure';
 import { WebApi } from 'azure-devops-node-api';
 import * as helpers from './helpers';
@@ -27,6 +29,9 @@ import { getVoidLogger } from '@backstage/backend-common';
 
 describe('Azure Publisher', () => {
   const logger = getVoidLogger();
+
+  const workspacePath = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
+  const resultPath = resolve(workspacePath, 'result');
 
   describe('publish: createRemoteInAzure', () => {
     it('should use azure-devops-node-api to create a repo in the given project', async () => {
@@ -53,7 +58,7 @@ describe('Azure Publisher', () => {
           storePath: 'https://dev.azure.com/organisation/project/_git/repo',
           owner: 'bob',
         },
-        directory: '/tmp/test',
+        workspacePath,
         logger,
       });
 
@@ -74,7 +79,7 @@ describe('Azure Publisher', () => {
         'project',
       );
       expect(helpers.initRepoAndPush).toHaveBeenCalledWith({
-        dir: '/tmp/test',
+        dir: resultPath,
         remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
         auth: { username: 'notempty', password: 'fake-azure-token' },
         logger,

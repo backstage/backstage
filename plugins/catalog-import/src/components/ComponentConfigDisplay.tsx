@@ -14,32 +14,35 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useState } from 'react';
-import {
-  Button,
-  CircularProgress,
-  Grid,
-  Link,
-  List,
-  ListItem,
-  Typography,
-  Divider,
-} from '@material-ui/core';
-import { useGithubRepos } from '../util/useGithubRepos';
-import { ConfigSpec } from './ImportComponentPage';
+import { Entity } from '@backstage/catalog-model';
 import {
   errorApiRef,
   RouteRef,
   StructuredMetadataTable,
   useApi,
 } from '@backstage/core';
-import { PartialEntity } from '../util/types';
+import {
+  entityRoute,
+  entityRouteParams,
+} from '@backstage/plugin-catalog-react';
+import {
+  Button,
+  CircularProgress,
+  Divider,
+  Grid,
+  Link,
+  List,
+  ListItem,
+  Typography,
+} from '@material-ui/core';
+import React, { useCallback, useState } from 'react';
 import { generatePath, resolvePath } from 'react-router';
-import { entityRoute, entityRouteParams } from '@backstage/plugin-catalog';
-import { Entity } from '@backstage/catalog-model';
 import { Link as RouterLink } from 'react-router-dom';
 import * as YAML from 'yaml';
+import { PartialEntity } from '../util/types';
 import { urlType } from '../util/urls';
+import { useGithubRepos } from '../util/useGithubRepos';
+import { ConfigSpec } from './ImportComponentPage';
 
 const getEntityCatalogPath = ({
   entity,

@@ -42,7 +42,7 @@
     "react-use": "^15.3.3"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.4.7",
+    "@backstage/cli": "^0.5.0",
     "@backstage/dev-utils": "^0.1.8",
     "@backstage/test-utils": "^0.1.6",
     "@testing-library/jest-dom": "^5.10.1",

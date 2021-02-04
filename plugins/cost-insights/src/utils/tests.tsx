@@ -163,8 +163,8 @@ export type MockScrollProviderProps = PropsWithChildren<{}>;
 
 export const MockScrollProvider = ({ children }: MockScrollProviderProps) => {
   const defaultContext: ScrollContextProps = {
-    scrollTo: null,
-    setScrollTo: jest.fn(),
+    scroll: null,
+    setScroll: jest.fn(),
   };
   return (
     <ScrollContext.Provider value={defaultContext}>

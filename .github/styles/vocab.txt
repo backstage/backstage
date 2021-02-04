@@ -130,6 +130,7 @@ middleware
 minikube
 Minikube
 misconfiguration
+misconfigured
 misgendering
 mkdocs
 Mkdocs
@@ -217,6 +218,7 @@ Spotify
 sqlite
 squidfunk
 src
+stdout
 stefanalund
 subkey
 subtree
@@ -257,6 +259,7 @@ Voi
 Wealthsimple
 Weaveworks
 Webpack
+winston
 www
 WWW
 xyz

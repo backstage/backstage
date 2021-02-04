@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
   createComponentExtension,
   createRoutableExtension,
 } from '@backstage/core';
-import { useEntity } from '@backstage/plugin-catalog';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import React from 'react';
 import { plugin, rootRouteRef } from './plugin';
 
 export const EntitySentryContent = plugin.provide(

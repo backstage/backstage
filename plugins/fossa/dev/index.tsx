@@ -14,20 +14,27 @@
  * limitations under the License.
  */
 
-import { createDevApp } from '@backstage/dev-utils';
-import {
-  Content,
-  createPlugin,
-  createRouteRef,
-  Header,
-  Page,
-} from '@backstage/core';
-import React from 'react';
-import { Grid } from '@material-ui/core';
-import { FossaApi, fossaApiRef } from '../src/api';
-import { FossaCard } from '../src';
 import { Entity } from '@backstage/catalog-model';
+import { Content, Header, Page } from '@backstage/core';
+import { createDevApp } from '@backstage/dev-utils';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
+import { Grid } from '@material-ui/core';
+import React from 'react';
+import { EntityFossaCard } from '../src';
+import { FossaApi, fossaApiRef } from '../src/api';
 import { FOSSA_PROJECT_NAME_ANNOTATION } from '../src/components/useProjectName';
+
+const entity = (name?: string) =>
+  ({
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Component',
+    metadata: {
+      annotations: {
+        [FOSSA_PROJECT_NAME_ANNOTATION]: name,
+      },
+      name: name,
+    },
+  } as Entity);
 
 createDevApp()
   .registerApi({
@@ -76,58 +83,51 @@ createDevApp()
         },
       } as FossaApi),
   })
-  .registerPlugin(
-    createPlugin({
-      id: 'fossa-demo',
-      register({ router }) {
-        const entity = (name?: string) =>
-          ({
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'Component',
-            metadata: {
-              annotations: {
-                [FOSSA_PROJECT_NAME_ANNOTATION]: name,
-              },
-              name: name,
-            },
-          } as Entity);
-
-        const ExamplePage = () => (
-          <Page themeId="home">
-            <Header title="Fossa" />
-            <Content>
-              <Grid container>
-                <Grid item xs={12} sm={6} md={4}>
-                  <FossaCard entity={entity('empty')} />
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <FossaCard entity={entity('error')} />
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <FossaCard entity={entity('never')} />
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <FossaCard entity={entity('zero-deps')} />
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <FossaCard entity={entity('issues')} />
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <FossaCard entity={entity('no-issues')} />
-                </Grid>
-                <Grid item xs={12}>
-                  <FossaCard entity={entity(undefined)} />
-                </Grid>
-              </Grid>
-            </Content>
-          </Page>
-        );
-
-        router.addRoute(
-          createRouteRef({ path: '/', title: 'Fossa' }),
-          ExamplePage,
-        );
-      },
-    }),
-  )
+  .addPage({
+    title: 'Entity Content',
+    element: (
+      <Page themeId="home">
+        <Header title="Fossa" />
+        <Content>
+          <Grid container>
+            <Grid item xs={12} sm={6} md={4}>
+              <EntityProvider entity={entity('empty')}>
+                <EntityFossaCard />
+              </EntityProvider>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <EntityProvider entity={entity('error')}>
+                <EntityFossaCard />
+              </EntityProvider>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <EntityProvider entity={entity('never')}>
+                <EntityFossaCard />
+              </EntityProvider>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <EntityProvider entity={entity('zero-deps')}>
+                <EntityFossaCard />
+              </EntityProvider>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <EntityProvider entity={entity('issues')}>
+                <EntityFossaCard />
+              </EntityProvider>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <EntityProvider entity={entity('no-issues')}>
+                <EntityFossaCard />
+              </EntityProvider>
+            </Grid>
+            <Grid item xs={12}>
+              <EntityProvider entity={entity(undefined)}>
+                <EntityFossaCard />
+              </EntityProvider>
+            </Grid>
+          </Grid>
+        </Content>
+      </Page>
+    ),
+  })
   .render();
