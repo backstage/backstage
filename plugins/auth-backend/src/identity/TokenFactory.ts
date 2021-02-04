@@ -117,7 +117,7 @@ export class TokenFactory implements TokenIssuer {
   }
 
   private async getKey(): Promise<JSONWebKey> {
-    // Make sure that we only generate one key at a time¨
+    // Make sure that we only generate one key at a time
     if (this.privateKeyPromise) {
       if (this.keyExpiry && this.keyExpiry > DateTime.local()) {
         return this.privateKeyPromise;
