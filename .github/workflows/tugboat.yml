@@ -53,7 +53,7 @@ jobs:
         with:
           node-version: '14'
       - name: fetch branch master
-  
+
       - name: yarn install
         run: yarn workspace e2e-test install
 
@@ -93,14 +93,14 @@ jobs:
           install: false
           headless: true
 
-       # Test run video was always captured, so this action uses "always()" condition
+        # Test run video was always captured, so this action uses "always()" condition
       - uses: actions/upload-artifact@v1
         if: always()
         with:
           working-directory: ./packages/e2e-test/src
           name: cypress-videos
           path: cypress/videos
-  
+
       - name: set status
         if: ${{ failure() }}
         uses: actions/github-script@v3
@@ -115,7 +115,7 @@ jobs:
               context: 'Backstage Tugboat E2E Tests',
               target_url: "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}"
             });
-            
+
       - name: set status
         if: ${{ success() }}
         uses: actions/github-script@v3
