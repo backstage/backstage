@@ -90,7 +90,7 @@ $ docker build -t example-deployment .
 To run the image locally you can run:
 
 ```sh
-$ docker run -p -it 7000:7000 example-deployment
+$ docker run -it -p 7000:7000 example-deployment
 ```
 
 You should then start to get logs in your terminal, and then you can open your
