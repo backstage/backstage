@@ -115,7 +115,8 @@ jobs:
         env:
           CYPRESS_baseUrl: ${{steps.get-status-env.outputs.result}}
         with:
-          config-file: ./packages/e2e-test/src/cypress.json
+          config-file: ./cypress.json
+          working-directory: ./packages/e2e-test/src
           browser: chrome
           headless: true
   
