@@ -249,7 +249,7 @@ export async function createRouter(
     .get('/v2/tasks/:taskId/eventstream', async (req, res) => {
       const { taskId } = req.params;
       const after = Number(req.query.after) || undefined;
-      logger.info('event stream opened');
+      logger.debug(`Event stream observing taskId '${taskId}' opened`);
 
       // Mandatory headers and http status to keep connection open
       res.writeHead(200, {
@@ -257,28 +257,35 @@ export async function createRouter(
         'Cache-Control': 'no-cache',
         'Content-Type': 'text/event-stream',
       });
+
       // After client opens connection send all nests as string
       const unsubscribe = taskBroker.observe(
         { taskId, after },
         (error, { events }) => {
-          logger.error(
-            `Received error from event stream when observing task ${taskId}`,
-            error,
-          );
+          if (error) {
+            logger.error(
+              `Received error from event stream when observing taskId '${taskId}', ${error}`,
+            );
+          }
+
           for (const event of events) {
-            res.write(`event:${JSON.stringify(event)}\n\n`);
+            res.write(
+              `event: ${event.type}\ndata: ${JSON.stringify(event)}\n\n`,
+            );
             if (event.type === 'completion') {
               unsubscribe();
-              res.end();
+              // Closing the event stream here would cause the frontend
+              // to automatically reconnect because it lost connection.
             }
           }
+          res.flush();
         },
       );
       // When client closes connection we update the clients list
       // avoiding the disconnected one
       req.on('close', () => {
         unsubscribe();
-        logger.info('event stream closed');
+        logger.debug(`Event stream observing taskId '${taskId}' closed`);
       });
     });
 
