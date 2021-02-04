@@ -80,6 +80,7 @@ const routes = (
       path="/tech-radar"
       element={<TechRadarRouter width={1500} height={800} />}
     />
+    <Route path="/splunk-on-call" element={<SplunkOnCallRouter />} />
     <Route path="/graphiql" element={<GraphiQLRouter />} />
     <Route path="/lighthouse" element={<LighthouseRouter />} />
     <Route
