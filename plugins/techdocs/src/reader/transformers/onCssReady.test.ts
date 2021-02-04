@@ -22,8 +22,9 @@ import {
 } from '../../test-utils';
 import { onCssReady } from '../transformers';
 
-const docStorageUrl: string =
-  'https://techdocs-mock-sites.storage.googleapis.com';
+const docStorageUrl: Promise<string> = Promise.resolve(
+  'https://techdocs-mock-sites.storage.googleapis.com',
+);
 
 const fixture = `
   <link rel="stylesheet" href="${docStorageUrl}/test.css" />

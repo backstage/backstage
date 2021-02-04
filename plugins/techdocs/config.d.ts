@@ -18,17 +18,6 @@ export interface Config {
   /** Configuration options for the techdocs plugin */
   techdocs: {
     /**
-     * attr: 'requestUrl' - accepts a string value
-     * e.g. requestUrl: http://localhost:7000/api/techdocs
-     * @visibility frontend
-     */
-    requestUrl: string;
-    /**
-     * attr: 'storageUrl' - accepts a string value
-     * e.g. storageUrl: http://localhost:7000/api/techdocs/static/docs
-     */
-    storageUrl: string;
-    /**
      * documentation building process depends on the builder attr
      * attr: 'builder' - accepts a string value
      * e.g. builder: 'local'
@@ -184,5 +173,18 @@ export interface Config {
             credentials?: string;
           };
         };
+    /**
+     * attr: 'requestUrl' - accepts a string value
+     * e.g. requestUrl: http://localhost:7000/api/techdocs
+     * @visibility frontend
+     * @deprecated
+     */
+    requestUrl?: string;
+    /**
+     * attr: 'storageUrl' - accepts a string value
+     * e.g. storageUrl: http://localhost:7000/api/techdocs/static/docs
+     * @deprecated
+     */
+    storageUrl?: string;
   };
 }

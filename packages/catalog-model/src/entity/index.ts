@@ -27,6 +27,7 @@ export type {
 } from './Entity';
 export * from './policies';
 export {
+  compareEntityToRef,
   getEntityName,
   parseEntityName,
   parseEntityRef,

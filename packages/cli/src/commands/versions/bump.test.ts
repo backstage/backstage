@@ -108,7 +108,7 @@ describe('bump', () => {
     paths.targetDir = '/';
     jest
       .spyOn(paths, 'resolveTargetRoot')
-      .mockImplementation((...paths) => resolvePath('/', ...paths));
+      .mockImplementation((...path) => resolvePath('/', ...path));
     jest.spyOn(runObj, 'runPlain').mockImplementation(async (...[, , , name]) =>
       JSON.stringify({
         type: 'inspect',
@@ -204,7 +204,7 @@ describe('bump', () => {
     paths.targetDir = '/';
     jest
       .spyOn(paths, 'resolveTargetRoot')
-      .mockImplementation((...paths) => resolvePath('/', ...paths));
+      .mockImplementation((...path) => resolvePath('/', ...path));
     jest.spyOn(runObj, 'runPlain').mockImplementation(async () => '');
     jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
 
