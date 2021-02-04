@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, RELATION_CONSUMES_API } from '@backstage/catalog-model';
+import { Entity, RELATION_HAS_PART } from '@backstage/catalog-model';
 import { ApiProvider, ApiRegistry } from '@backstage/core';
 import {
   CatalogApi,
@@ -25,9 +25,9 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
 import { ApiDocsConfig, apiDocsConfigRef } from '../../config';
-import { ConsumedApisCard } from './ConsumedApisCard';
+import { HasApisCard } from './HasApisCard';
 
-describe('<ConsumedApisCard />', () => {
+describe('<HasApisCard />', () => {
   const apiDocsConfig: jest.Mocked<ApiDocsConfig> = {
     getApiDefinitionWidget: jest.fn(),
   } as any;
@@ -57,9 +57,9 @@ describe('<ConsumedApisCard />', () => {
   it('shows empty list if no relations', async () => {
     const entity: Entity = {
       apiVersion: 'v1',
-      kind: 'Component',
+      kind: 'System',
       metadata: {
-        name: 'my-name',
+        name: 'my-system',
         namespace: 'my-namespace',
       },
       relations: [],
@@ -68,21 +68,21 @@ describe('<ConsumedApisCard />', () => {
     const { getByText } = await renderInTestApp(
       <Wrapper>
         <EntityProvider entity={entity}>
-          <ConsumedApisCard />
+          <HasApisCard />
         </EntityProvider>
       </Wrapper>,
     );
 
-    expect(getByText(/Consumed APIs/i)).toBeInTheDocument();
-    expect(getByText(/No Component consumes this API/i)).toBeInTheDocument();
+    expect(getByText('APIs')).toBeInTheDocument();
+    expect(getByText(/No API is part of this system/i)).toBeInTheDocument();
   });
 
-  it('shows consumed APIs', async () => {
+  it('shows related APIs', async () => {
     const entity: Entity = {
       apiVersion: 'v1',
-      kind: 'Component',
+      kind: 'System',
       metadata: {
-        name: 'my-name',
+        name: 'my-system',
         namespace: 'my-namespace',
       },
       relations: [
@@ -92,7 +92,7 @@ describe('<ConsumedApisCard />', () => {
             namespace: 'my-namespace',
             name: 'target-name',
           },
-          type: RELATION_CONSUMES_API,
+          type: RELATION_HAS_PART,
         },
       ],
     };
@@ -109,13 +109,13 @@ describe('<ConsumedApisCard />', () => {
     const { getByText } = await renderInTestApp(
       <Wrapper>
         <EntityProvider entity={entity}>
-          <ConsumedApisCard />
+          <HasApisCard />
         </EntityProvider>
       </Wrapper>,
     );
 
     await waitFor(() => {
-      expect(getByText('Consumed APIs')).toBeInTheDocument();
+      expect(getByText('APIs')).toBeInTheDocument();
       expect(getByText(/target-name/i)).toBeInTheDocument();
     });
   });

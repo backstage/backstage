@@ -15,25 +15,27 @@
  */
 
 import {
-  ComponentEntity,
   EntityName,
   RELATION_OWNED_BY,
   RELATION_PART_OF,
+  SystemEntity,
 } from '@backstage/catalog-model';
 import { Table, TableColumn } from '@backstage/core';
+import { makeStyles } from '@material-ui/core';
+import React from 'react';
+import { getEntityRelations } from '../../utils';
 import {
   EntityRefLink,
   EntityRefLinks,
   formatEntityRefTitle,
-  getEntityRelations,
-} from '@backstage/plugin-catalog-react';
-import React from 'react';
+} from '../EntityRefLink';
 
 type EntityRow = {
-  entity: ComponentEntity;
+  entity: SystemEntity;
   resolved: {
-    partOfSystemRelationTitle?: string;
-    partOfSystemRelations: EntityName[];
+    name: string;
+    partOfDomainRelationTitle?: string;
+    partOfDomainRelations: EntityName[];
     ownedByRelationsTitle?: string;
     ownedByRelations: EntityName[];
   };
@@ -42,19 +44,19 @@ type EntityRow = {
 const columns: TableColumn<EntityRow>[] = [
   {
     title: 'Name',
-    field: 'entity.metadata.name',
+    field: 'resolved.name',
     highlight: true,
     render: ({ entity }) => (
-      <EntityRefLink entityRef={entity}>{entity.metadata.name}</EntityRefLink>
+      <EntityRefLink entityRef={entity} defaultKind="System" />
     ),
   },
   {
-    title: 'System',
-    field: 'resolved.partOfSystemRelationTitle',
+    title: 'Domain',
+    field: 'resolved.partOfDomainRelationTitle',
     render: ({ resolved }) => (
       <EntityRefLinks
-        entityRefs={resolved.partOfSystemRelations}
-        defaultKind="system"
+        entityRefs={resolved.partOfDomainRelations}
+        defaultKind="domain"
       />
     ),
   },
@@ -69,14 +71,6 @@ const columns: TableColumn<EntityRow>[] = [
     ),
   },
   {
-    title: 'Lifecycle',
-    field: 'entity.spec.lifecycle',
-  },
-  {
-    title: 'Type',
-    field: 'entity.spec.type',
-  },
-  {
     title: 'Description',
     field: 'entity.metadata.description',
     width: 'auto',
@@ -86,15 +80,25 @@ const columns: TableColumn<EntityRow>[] = [
 type Props = {
   title: string;
   variant?: string;
-  entities: (ComponentEntity | undefined)[];
+  entities: SystemEntity[];
+  emptyComponent?: JSX.Element;
 };
 
-// TODO: In theory this could also be systems!
-export const ComponentsTable = ({
+const useStyles = makeStyles(theme => ({
+  empty: {
+    padding: theme.spacing(2),
+    display: 'flex',
+    justifyContent: 'center',
+  },
+}));
+
+export const SystemsTable = ({
   entities,
   title,
+  emptyComponent,
   variant = 'gridItem',
 }: Props) => {
+  const classes = useStyles();
   const tableStyle: React.CSSProperties = {
     minWidth: '0',
     width: '100%',
@@ -104,43 +108,42 @@ export const ComponentsTable = ({
     tableStyle.height = 'calc(100% - 10px)';
   }
 
-  const rows = entities
-    // TODO: For now we skip all Components that we can't find without a warning!
-    .filter(e => e !== undefined)
-    .map(entity => {
-      const partOfSystemRelations = getEntityRelations(
-        entity,
-        RELATION_PART_OF,
-        {
-          kind: 'system',
-        },
-      );
-      const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
-
-      return {
-        entity: entity as ComponentEntity,
-        resolved: {
-          ownedByRelationsTitle: ownedByRelations
-            .map(r => formatEntityRefTitle(r, { defaultKind: 'group' }))
-            .join(', '),
-          ownedByRelations,
-          partOfSystemRelationTitle: partOfSystemRelations
-            .map(r =>
-              formatEntityRefTitle(r, {
-                defaultKind: 'system',
-              }),
-            )
-            .join(', '),
-          partOfSystemRelations,
-        },
-      };
+  const rows = entities.map(entity => {
+    const partOfDomainRelations = getEntityRelations(entity, RELATION_PART_OF, {
+      kind: 'domain',
     });
+    const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
+
+    return {
+      entity,
+      resolved: {
+        name: formatEntityRefTitle(entity, {
+          defaultKind: 'System',
+        }),
+        ownedByRelationsTitle: ownedByRelations
+          .map(r => formatEntityRefTitle(r, { defaultKind: 'group' }))
+          .join(', '),
+        ownedByRelations,
+        partOfDomainRelationTitle: partOfDomainRelations
+          .map(r =>
+            formatEntityRefTitle(r, {
+              defaultKind: 'domain',
+            }),
+          )
+          .join(', '),
+        partOfDomainRelations,
+      },
+    };
+  });
 
   return (
     <Table<EntityRow>
       columns={columns}
       title={title}
       style={tableStyle}
+      emptyComponent={
+        emptyComponent && <div className={classes.empty}>{emptyComponent}</div>
+      }
       options={{
         // TODO: Toolbar padding if off compared to other cards, should be: padding: 16px 24px;
         search: false,

@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  ComponentEntity,
-  Entity,
-  RELATION_API_PROVIDED_BY,
-} from '@backstage/catalog-model';
+import { ComponentEntity, RELATION_HAS_PART } from '@backstage/catalog-model';
 import {
   CodeSnippet,
   InfoCard,
@@ -33,58 +29,57 @@ import {
 } from '@backstage/plugin-catalog-react';
 import React, { PropsWithChildren } from 'react';
 
-const ComponentsCard = ({
+const SubcomponentsCard = ({
   children,
   variant = 'gridItem',
 }: PropsWithChildren<{ variant?: string }>) => {
   return (
-    <InfoCard variant={variant} title="Providers">
+    <InfoCard variant={variant} title="Subcomponents">
       {children}
     </InfoCard>
   );
 };
 
 type Props = {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
   variant?: string;
 };
 
-export const ProvidingComponentsCard = ({ variant = 'gridItem' }: Props) => {
+export const HasSubcomponentsCard = ({ variant = 'gridItem' }: Props) => {
   const { entity } = useEntity();
   const { entities, loading, error } = useRelatedEntities(entity, {
-    type: RELATION_API_PROVIDED_BY,
+    type: RELATION_HAS_PART,
+    kind: 'Component',
   });
 
   if (loading) {
     return (
-      <ComponentsCard variant={variant}>
+      <SubcomponentsCard variant={variant}>
         <Progress />
-      </ComponentsCard>
+      </SubcomponentsCard>
     );
   }
 
   if (error || !entities) {
     return (
-      <ComponentsCard variant={variant}>
+      <SubcomponentsCard variant={variant}>
         <WarningPanel
           severity="error"
-          title="Could not load components"
+          title="Could not load subcomponents"
           message={<CodeSnippet text={`${error}`} language="text" />}
         />
-      </ComponentsCard>
+      </SubcomponentsCard>
     );
   }
 
   return (
     <ComponentsTable
-      title="Providers"
+      title="Subcomponents"
       variant={variant}
       emptyComponent={
         <div>
-          No component provides this API.{' '}
-          <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specprovidesapis-optional">
-            Learn how to provide APIs.
+          No subcomponent is part of this component.{' '}
+          <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specsubcomponentof-optional">
+            Learn how to add subcomponents.
           </Link>
         </div>
       }

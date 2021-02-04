@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  ComponentEntity,
-  Entity,
-  RELATION_API_PROVIDED_BY,
-} from '@backstage/catalog-model';
+import { ComponentEntity, RELATION_HAS_PART } from '@backstage/catalog-model';
 import {
   CodeSnippet,
   InfoCard,
@@ -38,22 +34,21 @@ const ComponentsCard = ({
   variant = 'gridItem',
 }: PropsWithChildren<{ variant?: string }>) => {
   return (
-    <InfoCard variant={variant} title="Providers">
+    <InfoCard variant={variant} title="Components">
       {children}
     </InfoCard>
   );
 };
 
 type Props = {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
   variant?: string;
 };
 
-export const ProvidingComponentsCard = ({ variant = 'gridItem' }: Props) => {
+export const HasComponentsCard = ({ variant = 'gridItem' }: Props) => {
   const { entity } = useEntity();
   const { entities, loading, error } = useRelatedEntities(entity, {
-    type: RELATION_API_PROVIDED_BY,
+    type: RELATION_HAS_PART,
+    kind: 'Component',
   });
 
   if (loading) {
@@ -78,13 +73,13 @@ export const ProvidingComponentsCard = ({ variant = 'gridItem' }: Props) => {
 
   return (
     <ComponentsTable
-      title="Providers"
+      title="Components"
       variant={variant}
       emptyComponent={
         <div>
-          No component provides this API.{' '}
-          <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specprovidesapis-optional">
-            Learn how to provide APIs.
+          No component is part of this system.{' '}
+          <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component">
+            Learn how to add components.
           </Link>
         </div>
       }

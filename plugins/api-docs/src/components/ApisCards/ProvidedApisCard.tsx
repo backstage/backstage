@@ -19,10 +19,15 @@ import {
   Entity,
   RELATION_PROVIDES_API,
 } from '@backstage/catalog-model';
-import { EmptyState, InfoCard, Progress } from '@backstage/core';
+import {
+  CodeSnippet,
+  InfoCard,
+  Link,
+  Progress,
+  WarningPanel,
+} from '@backstage/core';
 import { useEntity, useRelatedEntities } from '@backstage/plugin-catalog-react';
 import React, { PropsWithChildren } from 'react';
-import { MissingProvidesApisEmptyState } from '../EmptyState';
 import { ApisTable } from './ApisTable';
 
 const ApisCard = ({
@@ -56,22 +61,14 @@ export const ProvidedApisCard = ({ variant = 'gridItem' }: Props) => {
     );
   }
 
-  if (error) {
+  if (error || !entities) {
     return (
       <ApisCard variant={variant}>
-        <EmptyState
-          missing="info"
-          title="No information to display"
-          description="There was an error while loading the provided APIs."
+        <WarningPanel
+          severity="error"
+          title="Could not load APIs"
+          message={<CodeSnippet text={`${error}`} language="text" />}
         />
-      </ApisCard>
-    );
-  }
-
-  if (!entities || entities.length === 0) {
-    return (
-      <ApisCard variant={variant}>
-        <MissingProvidesApisEmptyState />
       </ApisCard>
     );
   }
@@ -80,7 +77,15 @@ export const ProvidedApisCard = ({ variant = 'gridItem' }: Props) => {
     <ApisTable
       title="Provided APIs"
       variant={variant}
-      entities={entities as (ApiEntity | undefined)[]}
+      emptyComponent={
+        <div>
+          No Component provides this API.{' '}
+          <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specprovidesapis-optional">
+            Learn how to provide APIs.
+          </Link>
+        </div>
+      }
+      entities={entities as ApiEntity[]}
     />
   );
 };

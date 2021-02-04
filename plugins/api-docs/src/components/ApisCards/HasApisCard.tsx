@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  ComponentEntity,
-  Entity,
-  RELATION_API_PROVIDED_BY,
-} from '@backstage/catalog-model';
+import { ApiEntity, RELATION_HAS_PART } from '@backstage/catalog-model';
 import {
   CodeSnippet,
   InfoCard,
@@ -26,69 +22,65 @@ import {
   Progress,
   WarningPanel,
 } from '@backstage/core';
-import {
-  ComponentsTable,
-  useEntity,
-  useRelatedEntities,
-} from '@backstage/plugin-catalog-react';
+import { useEntity, useRelatedEntities } from '@backstage/plugin-catalog-react';
 import React, { PropsWithChildren } from 'react';
+import { ApisTable } from './ApisTable';
 
-const ComponentsCard = ({
+const ApisCard = ({
   children,
   variant = 'gridItem',
 }: PropsWithChildren<{ variant?: string }>) => {
   return (
-    <InfoCard variant={variant} title="Providers">
+    <InfoCard variant={variant} title="APIs">
       {children}
     </InfoCard>
   );
 };
 
 type Props = {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
   variant?: string;
 };
 
-export const ProvidingComponentsCard = ({ variant = 'gridItem' }: Props) => {
+export const HasApisCard = ({ variant = 'gridItem' }: Props) => {
   const { entity } = useEntity();
   const { entities, loading, error } = useRelatedEntities(entity, {
-    type: RELATION_API_PROVIDED_BY,
+    type: RELATION_HAS_PART,
+    kind: 'API',
   });
 
   if (loading) {
     return (
-      <ComponentsCard variant={variant}>
+      <ApisCard variant={variant}>
         <Progress />
-      </ComponentsCard>
+      </ApisCard>
     );
   }
 
   if (error || !entities) {
     return (
-      <ComponentsCard variant={variant}>
+      <ApisCard variant={variant}>
         <WarningPanel
           severity="error"
-          title="Could not load components"
+          title="Could not load APIs"
           message={<CodeSnippet text={`${error}`} language="text" />}
         />
-      </ComponentsCard>
+      </ApisCard>
     );
   }
 
   return (
-    <ComponentsTable
-      title="Providers"
+    <ApisTable
+      title="APIs"
       variant={variant}
       emptyComponent={
         <div>
-          No component provides this API.{' '}
-          <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specprovidesapis-optional">
-            Learn how to provide APIs.
+          No API is part of this system.{' '}
+          <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#kind-api">
+            Learn how to add APIs.
           </Link>
         </div>
       }
-      entities={entities as ComponentEntity[]}
+      entities={entities as ApiEntity[]}
     />
   );
 };

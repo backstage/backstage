@@ -15,24 +15,23 @@
  */
 
 import {
-  ApiEntity,
+  ComponentEntity,
   EntityName,
   RELATION_OWNED_BY,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
 import { Table, TableColumn } from '@backstage/core';
+import { makeStyles } from '@material-ui/core';
+import React from 'react';
+import { getEntityRelations } from '../../utils';
 import {
   EntityRefLink,
   EntityRefLinks,
   formatEntityRefTitle,
-  getEntityRelations,
-} from '@backstage/plugin-catalog-react';
-import { makeStyles } from '@material-ui/core';
-import React from 'react';
-import { ApiTypeTitle } from '../ApiDefinitionCard';
+} from '../EntityRefLink';
 
 type EntityRow = {
-  entity: ApiEntity;
+  entity: ComponentEntity;
   resolved: {
     name: string;
     partOfSystemRelationTitle?: string;
@@ -48,7 +47,7 @@ const columns: TableColumn<EntityRow>[] = [
     field: 'resolved.name',
     highlight: true,
     render: ({ entity }) => (
-      <EntityRefLink entityRef={entity} defaultKind="API" />
+      <EntityRefLink entityRef={entity} defaultKind="Component" />
     ),
   },
   {
@@ -78,7 +77,6 @@ const columns: TableColumn<EntityRow>[] = [
   {
     title: 'Type',
     field: 'entity.spec.type',
-    render: ({ entity }) => <ApiTypeTitle apiEntity={entity} />,
   },
   {
     title: 'Description',
@@ -90,7 +88,7 @@ const columns: TableColumn<EntityRow>[] = [
 type Props = {
   title: string;
   variant?: string;
-  entities: ApiEntity[];
+  entities: ComponentEntity[];
   emptyComponent?: JSX.Element;
 };
 
@@ -102,7 +100,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const ApisTable = ({
+export const ComponentsTable = ({
   entities,
   title,
   emptyComponent,
@@ -125,10 +123,10 @@ export const ApisTable = ({
     const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
 
     return {
-      entity,
+      entity: entity,
       resolved: {
         name: formatEntityRefTitle(entity, {
-          defaultKind: 'API',
+          defaultKind: 'Component',
         }),
         ownedByRelationsTitle: ownedByRelations
           .map(r => formatEntityRefTitle(r, { defaultKind: 'group' }))

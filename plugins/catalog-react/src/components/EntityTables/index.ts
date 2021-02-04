@@ -13,6 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './EntityProvider';
-export * from './EntityRefLink';
-export * from './EntityTables';
+export { ComponentsTable } from './ComponentsTable';
+export { SystemsTable } from './SystemsTable';

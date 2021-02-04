@@ -19,11 +19,20 @@ import {
   Entity,
   RELATION_API_CONSUMED_BY,
 } from '@backstage/catalog-model';
-import { EmptyState, InfoCard, Progress } from '@backstage/core';
-import { useEntity, useRelatedEntities } from '@backstage/plugin-catalog-react';
+import {
+  CodeSnippet,
+  InfoCard,
+  Link,
+  Progress,
+  WarningPanel,
+} from '@backstage/core';
+import {
+  ComponentsTable,
+  useEntity,
+  useRelatedEntities,
+} from '@backstage/plugin-catalog-react';
+
 import React, { PropsWithChildren } from 'react';
-import { MissingConsumesApisEmptyState } from '../EmptyState';
-import { ComponentsTable } from './ComponentsTable';
 
 const ComponentsCard = ({
   children,
@@ -56,22 +65,14 @@ export const ConsumingComponentsCard = ({ variant = 'gridItem' }: Props) => {
     );
   }
 
-  if (error) {
+  if (error || !entities) {
     return (
       <ComponentsCard variant={variant}>
-        <EmptyState
-          missing="info"
-          title="No information to display"
-          description="There was an error while loading the consumers."
+        <WarningPanel
+          severity="error"
+          title="Could not load components"
+          message={<CodeSnippet text={`${error}`} language="text" />}
         />
-      </ComponentsCard>
-    );
-  }
-
-  if (!entities || entities.length === 0) {
-    return (
-      <ComponentsCard variant={variant}>
-        <MissingConsumesApisEmptyState />
       </ComponentsCard>
     );
   }
@@ -80,7 +81,15 @@ export const ConsumingComponentsCard = ({ variant = 'gridItem' }: Props) => {
     <ComponentsTable
       title="Consumers"
       variant={variant}
-      entities={entities as (ComponentEntity | undefined)[]}
+      emptyComponent={
+        <div>
+          No component consumes this API.{' '}
+          <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specconsumesapis-optional">
+            Learn how to consume APIs.
+          </Link>
+        </div>
+      }
+      entities={entities as ComponentEntity[]}
     />
   );
 };

@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  ComponentEntity,
-  Entity,
-  RELATION_API_PROVIDED_BY,
-} from '@backstage/catalog-model';
+import { RELATION_HAS_PART, SystemEntity } from '@backstage/catalog-model';
 import {
   CodeSnippet,
   InfoCard,
@@ -27,68 +23,66 @@ import {
   WarningPanel,
 } from '@backstage/core';
 import {
-  ComponentsTable,
+  SystemsTable,
   useEntity,
   useRelatedEntities,
 } from '@backstage/plugin-catalog-react';
 import React, { PropsWithChildren } from 'react';
 
-const ComponentsCard = ({
+const SystemsCard = ({
   children,
   variant = 'gridItem',
 }: PropsWithChildren<{ variant?: string }>) => {
   return (
-    <InfoCard variant={variant} title="Providers">
+    <InfoCard variant={variant} title="Systems">
       {children}
     </InfoCard>
   );
 };
 
 type Props = {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
   variant?: string;
 };
 
-export const ProvidingComponentsCard = ({ variant = 'gridItem' }: Props) => {
+export const HasSystemsCard = ({ variant = 'gridItem' }: Props) => {
   const { entity } = useEntity();
   const { entities, loading, error } = useRelatedEntities(entity, {
-    type: RELATION_API_PROVIDED_BY,
+    type: RELATION_HAS_PART,
   });
 
   if (loading) {
     return (
-      <ComponentsCard variant={variant}>
+      <SystemsCard variant={variant}>
         <Progress />
-      </ComponentsCard>
+      </SystemsCard>
     );
   }
 
   if (error || !entities) {
     return (
-      <ComponentsCard variant={variant}>
+      <SystemsCard variant={variant}>
         <WarningPanel
           severity="error"
-          title="Could not load components"
+          title="Could not load systems"
           message={<CodeSnippet text={`${error}`} language="text" />}
         />
-      </ComponentsCard>
+      </SystemsCard>
     );
   }
 
   return (
-    <ComponentsTable
-      title="Providers"
+    <SystemsTable
+      title="Systems"
       variant={variant}
       emptyComponent={
         <div>
-          No component provides this API.{' '}
-          <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specprovidesapis-optional">
-            Learn how to provide APIs.
+          No system is part of this domain.{' '}
+          <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#kind-system">
+            Learn how to add systems.
           </Link>
         </div>
       }
-      entities={entities as ComponentEntity[]}
+      entities={entities as SystemEntity[]}
     />
   );
 };

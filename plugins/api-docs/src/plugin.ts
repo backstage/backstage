@@ -106,3 +106,11 @@ export const EntityProvidingComponentsCard = apiDocsPlugin.provide(
     },
   }),
 );
+
+export const EntityHasApisCard = apiDocsPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () => import('./components/ApisCards').then(m => m.HasApisCard),
+    },
+  }),
+);
