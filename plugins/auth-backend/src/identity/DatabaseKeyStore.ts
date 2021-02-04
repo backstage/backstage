@@ -66,9 +66,8 @@ export class DatabaseKeyStore implements KeyStore {
     return {
       items: rows.map(row => ({
         key: JSON.parse(row.key),
-        createdAt: DateTime.fromFormat(
+        createdAt: DateTime.fromSQL(
           (row.created_at as unknown) as string,
-          'yyyy-MM-dd HH:mm:ss',
           {
             zone: 'UTC',
           },
