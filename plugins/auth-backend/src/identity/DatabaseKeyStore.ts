@@ -27,7 +27,7 @@ const migrationsDir = resolvePackagePath(
 const TABLE = 'signing_keys';
 
 type Row = {
-  created_at: Date; //row.created_at is a string after being returned from the database
+  created_at: Date; // row.created_at is a string after being returned from the database
   kid: string;
   key: string;
 };
