@@ -1,5 +1,12 @@
 # @backstage/config-loader
 
+## 0.5.1
+
+### Patch Changes
+
+- 062df71db: Bump `config-loader` to `ajv` 7, to enable v7 feature use elsewhere
+- e9aab60c7: Each piece of the configuration schema is now validated upfront, in order to produce more informative errors.
+
 ## 0.5.0
 
 ### Minor Changes

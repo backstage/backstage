@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 /**
- * techdocs schema below is an abstract of what's used within techdocs-backend and for its visibility
- * to view the complete techdoc schema please refer: plugins/techdocs/config.d.ts
+ * TechDocs schema below is an abstract of what's used within techdocs-backend and for its visibility
+ * to view the complete TechDocs schema please refer: plugins/techdocs/config.d.ts
  * */
 export interface Config {
   /** Configuration options for the techdocs-backend plugin */
   techdocs: {
-    /**
-     * attr: 'storageUrl' - accepts a string value
-     * e.g. storageUrl: http://localhost:7000/api/techdocs/static/docs
-     */
-    storageUrl: string;
     /**
      * documentation building process depends on the builder attr
      * attr: 'builder' - accepts a string value
@@ -45,5 +40,11 @@ export interface Config {
        */
       type: 'local' | 'googleGcs' | 'awsS3';
     };
+    /**
+     * attr: 'storageUrl' - accepts a string value
+     * e.g. storageUrl: http://localhost:7000/api/techdocs/static/docs
+     * @deprecated
+     */
+    storageUrl?: string;
   };
 }

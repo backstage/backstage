@@ -102,7 +102,9 @@ export async function createRouter({
 
   router.get('/docs/:namespace/:kind/:name/*', async (req, res) => {
     const { kind, namespace, name } = req.params;
-    const storageUrl = config.getString('techdocs.storageUrl');
+    const storageUrl =
+      config.getOptionalString('techdocs.storageUrl') ??
+      `${await discovery.getBaseUrl('techdocs')}/static/docs`;
 
     const catalogUrl = await discovery.getBaseUrl('catalog');
     const triple = [kind, namespace, name].map(encodeURIComponent).join('/');

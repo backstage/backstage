@@ -77,12 +77,12 @@ export const GroupProfileCard = ({
   } = group;
   const parent = group?.relations
     ?.filter(r => r.type === RELATION_CHILD_OF)
-    ?.map(group => group.target.name)
+    ?.map(groupItem => groupItem.target.name)
     .toString();
 
   const childrens = group?.relations
     ?.filter(r => r.type === RELATION_PARENT_OF)
-    ?.map(group => group.target.name);
+    ?.map(groupItem => groupItem.target.name);
 
   const displayName = profile?.displayName ?? name;
 

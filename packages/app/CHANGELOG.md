@@ -1,5 +1,81 @@
 # example-app
 
+## 0.2.14
+
+### Patch Changes
+
+- 9d6ef14bc: Migrated to new composability API, exporting the plugin instance as `rollbarPlugin`, the entity page content as `EntityRollbarContent`, and entity conditional as `isRollbarAvailable`. Updated the `EntityPage` for the `example-app` to include a composite `ErrorsSwitcher` component that works with both `Sentry` & `Rollbar`. Also removed the unused and undocumented `RollbarHome` related components.
+- Updated dependencies [ceef4dd89]
+- Updated dependencies [720149854]
+- Updated dependencies [19172f5a9]
+- Updated dependencies [4c6a6dddd]
+- Updated dependencies [398e1f83e]
+- Updated dependencies [87b189d00]
+- Updated dependencies [12ece98cd]
+- Updated dependencies [d82246867]
+- Updated dependencies [7fc89bae2]
+- Updated dependencies [c810082ae]
+- Updated dependencies [b712841d6]
+- Updated dependencies [a5628df40]
+- Updated dependencies [5fa3bdb55]
+- Updated dependencies [bc5082a00]
+- Updated dependencies [6e612ce25]
+- Updated dependencies [e44925723]
+- Updated dependencies [b37501a3d]
+- Updated dependencies [9d6ef14bc]
+- Updated dependencies [025e122c3]
+- Updated dependencies [e9aab60c7]
+- Updated dependencies [21e624ba9]
+- Updated dependencies [0269f4fd9]
+- Updated dependencies [19fe61c27]
+- Updated dependencies [da9f53c60]
+- Updated dependencies [a08c4b0b0]
+- Updated dependencies [bc5082a00]
+- Updated dependencies [bc5082a00]
+- Updated dependencies [b37501a3d]
+- Updated dependencies [90c8f20b9]
+- Updated dependencies [32c95605f]
+- Updated dependencies [7881f2117]
+- Updated dependencies [8dfdec613]
+- Updated dependencies [54c7d02f7]
+- Updated dependencies [de98c32ed]
+- Updated dependencies [806929fe2]
+- Updated dependencies [019fe39a0]
+- Updated dependencies [019fe39a0]
+- Updated dependencies [11cb5ef94]
+  - @backstage/plugin-catalog-import@0.3.7
+  - @backstage/plugin-scaffolder@0.4.2
+  - @backstage/plugin-cost-insights@0.8.0
+  - @backstage/cli@0.6.0
+  - @backstage/plugin-graphiql@0.2.7
+  - @backstage/core@0.6.0
+  - @backstage/plugin-api-docs@0.4.4
+  - @backstage/plugin-catalog@0.3.0
+  - @backstage/plugin-catalog-react@0.0.2
+  - @backstage/plugin-org@0.3.5
+  - @backstage/theme@0.2.3
+  - @backstage/plugin-lighthouse@0.2.9
+  - @backstage/plugin-techdocs@0.5.5
+  - @backstage/plugin-user-settings@0.2.5
+  - @backstage/catalog-model@0.7.1
+  - @backstage/plugin-rollbar@0.2.9
+  - @backstage/plugin-gcp-projects@0.2.4
+  - @backstage/plugin-tech-radar@0.3.4
+  - @backstage/plugin-welcome@0.2.5
+  - @backstage/plugin-explore@0.2.4
+  - @backstage/plugin-circleci@0.2.7
+  - @backstage/plugin-cloudbuild@0.2.8
+  - @backstage/plugin-github-actions@0.3.1
+  - @backstage/plugin-jenkins@0.3.8
+  - @backstage/plugin-kafka@0.2.1
+  - @backstage/plugin-register-component@0.2.8
+  - @backstage/plugin-search@0.2.7
+  - @backstage/plugin-sentry@0.3.4
+  - @backstage/plugin-gitops-profiles@0.2.4
+  - @backstage/plugin-kubernetes@0.3.8
+  - @backstage/plugin-newrelic@0.2.4
+  - @backstage/plugin-pagerduty@0.2.7
+
 ## 0.2.13
 
 ### Patch Changes

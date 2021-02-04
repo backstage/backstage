@@ -15,7 +15,7 @@
  */
 
 import tar, { Parse, ParseStream, ReadEntry } from 'tar';
-import path from 'path';
+import platformPath from 'path';
 import fs from 'fs-extra';
 import { Readable, pipeline as pipelineCb } from 'stream';
 import { promisify } from 'util';
@@ -147,7 +147,7 @@ export class TarArchiveResponse implements ReadTreeResponse {
 
     const dir =
       options?.targetDir ??
-      (await fs.mkdtemp(path.join(this.workDir, 'backstage-')));
+      (await fs.mkdtemp(platformPath.join(this.workDir, 'backstage-')));
 
     // Equivalent of tar --strip-components=N
     // When no subPath is given, remove just 1 top level directory

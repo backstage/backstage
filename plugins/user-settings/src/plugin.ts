@@ -21,6 +21,7 @@ import {
 } from '@backstage/core';
 
 export const settingsRouteRef = createRouteRef({
+  path: '/settings',
   title: 'Settings',
 });
 
