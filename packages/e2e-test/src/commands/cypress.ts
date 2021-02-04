@@ -31,5 +31,6 @@ export async function run({ watch }: { watch: boolean }) {
       pluginsFile: path.resolve(__dirname, '../cypress/plugins'),
       defaultCommandTimeout: 10000,
     },
+    configFile: false,
   });
 }
