@@ -58,7 +58,7 @@ export const isPluginApplicableToEntity = (entity: Entity) =>
 
 type Props = {
   /** @deprecated The entity is now grabbed from context instead */
-  entity: Entity;
+  entity?: Entity;
 };
 
 export const PagerDutyCard = (_props: Props) => {
