@@ -52,7 +52,6 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '14'
-      - name: fetch branch master
 
       - name: yarn install
         run: yarn workspace e2e-test install
