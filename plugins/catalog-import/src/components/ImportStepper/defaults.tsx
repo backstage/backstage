@@ -15,14 +15,7 @@
  */
 
 import { ConfigApi } from '@backstage/core';
-import {
-  Box,
-  Step,
-  StepContent,
-  StepLabel,
-  TextField,
-  Typography,
-} from '@material-ui/core';
+import { Box, StepLabel, TextField, Typography } from '@material-ui/core';
 import React from 'react';
 import { BackButton } from '../Buttons';
 import { StepFinishImportLocation } from '../StepFinishImportLocation';
@@ -46,23 +39,28 @@ type StepperApis = {
   configApi: ConfigApi;
 };
 
+export type StepConfiguration = {
+  stepLabel: React.ReactElement;
+  content: React.ReactElement;
+};
+
 export type StepperProvider = {
   analyze: (
     s: Extract<ImportState, { activeState: 'analyze' }>,
     opts: { apis: StepperApis; opts?: StepperProviderOpts },
-  ) => React.ReactElement;
+  ) => StepConfiguration;
   prepare: (
     s: Extract<ImportState, { activeState: 'prepare' }>,
     opts: { apis: StepperApis; opts?: StepperProviderOpts },
-  ) => React.ReactElement;
+  ) => StepConfiguration;
   review: (
     s: Extract<ImportState, { activeState: 'review' }>,
     opts: { apis: StepperApis; opts?: StepperProviderOpts },
-  ) => React.ReactElement;
+  ) => StepConfiguration;
   finish: (
     s: Extract<ImportState, { activeState: 'finish' }>,
     opts: { apis: StepperApis; opts?: StepperProviderOpts },
-  ) => React.ReactElement;
+  ) => StepConfiguration;
 };
 
 function defaultPreparePullRequest(apis: StepperApis) {
@@ -97,8 +95,8 @@ export function defaultGenerateStepper(
     case 'single-location':
       return {
         ...defaults,
-        prepare: () => (
-          <Step>
+        prepare: () => ({
+          stepLabel: (
             <StepLabel
               optional={
                 <Typography variant="caption">
@@ -108,8 +106,9 @@ export function defaultGenerateStepper(
             >
               Select Locations
             </StepLabel>
-          </Step>
-        ),
+          ),
+          content: <></>,
+        }),
       };
 
     // let the user select one or more of the discovered locations in the prepare step
@@ -121,8 +120,8 @@ export function defaultGenerateStepper(
             return defaults.prepare(state, opts);
           }
 
-          return (
-            <Step>
+          return {
+            stepLabel: (
               <StepLabel
                 optional={
                   <Typography variant="caption">
@@ -132,16 +131,16 @@ export function defaultGenerateStepper(
               >
                 Select Locations
               </StepLabel>
-              <StepContent>
-                <StepPrepareSelectLocations
-                  analyzeResult={state.analyzeResult}
-                  prepareResult={state.prepareResult}
-                  onPrepare={state.onPrepare}
-                  onGoBack={state.onGoBack}
-                />
-              </StepContent>
-            </Step>
-          );
+            ),
+            content: (
+              <StepPrepareSelectLocations
+                analyzeResult={state.analyzeResult}
+                prepareResult={state.prepareResult}
+                onPrepare={state.onPrepare}
+                onGoBack={state.onGoBack}
+              />
+            ),
+          };
         },
       };
 
@@ -158,96 +157,89 @@ export function defaultGenerateStepper(
             defaultPreparePullRequest
           )(opts.apis);
 
-          return (
-            <Step>
-              <StepLabel>Create Pull Request</StepLabel>
+          return {
+            stepLabel: <StepLabel>Create Pull Request</StepLabel>,
+            content: (
+              <StepPrepareCreatePullRequest
+                analyzeResult={state.analyzeResult}
+                onPrepare={state.onPrepare}
+                onGoBack={state.onGoBack}
+                defaultTitle={title}
+                defaultBody={body}
+                renderFormFields={({
+                  control,
+                  errors,
+                  groupsLoading,
+                  groups,
+                  register,
+                }) => (
+                  <>
+                    <Box marginTop={2}>
+                      <Typography variant="h6">Pull Request Details</Typography>
+                    </Box>
 
-              <StepContent>
-                <StepPrepareCreatePullRequest
-                  analyzeResult={state.analyzeResult}
-                  onPrepare={state.onPrepare}
-                  onGoBack={state.onGoBack}
-                  defaultTitle={title}
-                  defaultBody={body}
-                  renderFormFields={({
-                    control,
-                    errors,
-                    groupsLoading,
-                    groups,
-                    register,
-                  }) => (
-                    <>
-                      <Box marginTop={2}>
-                        <Typography variant="h6">
-                          Pull Request Details
-                        </Typography>
-                      </Box>
+                    <TextField
+                      name="title"
+                      label="Pull Request Title"
+                      placeholder="Add catalog files for the Backstage"
+                      margin="normal"
+                      variant="outlined"
+                      fullWidth
+                      inputRef={register({ required: true })}
+                      error={Boolean(errors.title)}
+                      required
+                    />
 
-                      <TextField
-                        name="title"
-                        label="Pull Request Title"
-                        placeholder="Add catalog files for the Backstage"
-                        margin="normal"
-                        variant="outlined"
-                        fullWidth
-                        inputRef={register({ required: true })}
-                        error={Boolean(errors.title)}
-                        required
-                      />
+                    <TextField
+                      name="body"
+                      label="Pull Request Body"
+                      placeholder="A decsribing text with Markdown support"
+                      margin="normal"
+                      variant="outlined"
+                      fullWidth
+                      inputRef={register({ required: true })}
+                      error={Boolean(errors.body)}
+                      multiline
+                      required
+                    />
 
-                      <TextField
-                        name="body"
-                        label="Pull Request Body"
-                        placeholder="A decsribing text with Markdown support"
-                        margin="normal"
-                        variant="outlined"
-                        fullWidth
-                        inputRef={register({ required: true })}
-                        error={Boolean(errors.body)}
-                        multiline
-                        required
-                      />
+                    <Box marginTop={2}>
+                      <Typography variant="h6">Entity Configuration</Typography>
+                    </Box>
 
-                      <Box marginTop={2}>
-                        <Typography variant="h6">
-                          Entity Configuration
-                        </Typography>
-                      </Box>
+                    <TextField
+                      name="componentName"
+                      label="Name of the created component"
+                      placeholder="my-component"
+                      margin="normal"
+                      variant="outlined"
+                      fullWidth
+                      inputRef={register({ required: true })}
+                      error={Boolean(errors.componentName)}
+                      required
+                    />
 
-                      <TextField
-                        name="componentName"
-                        label="Name of the created component"
-                        placeholder="my-component"
-                        margin="normal"
-                        variant="outlined"
-                        fullWidth
-                        inputRef={register({ required: true })}
-                        error={Boolean(errors.componentName)}
-                        required
-                      />
-
-                      <AutocompleteTextField
-                        name="owner"
-                        control={control}
-                        errors={errors}
-                        options={groups || []}
-                        loading={groupsLoading}
-                        loadingText="Loading groups…"
-                        helperText="Select an owner from the list or enter a reference to a Group or a User"
-                        errorHelperText="required value"
-                        textFieldProps={{
-                          label: 'Entity Owner',
-                          placeholder: 'Group:default/my-group',
-                        }}
-                        rules={{ required: true }}
-                        required
-                      />
-                    </>
-                  )}
-                />
-              </StepContent>
-            </Step>
-          );
+                    <AutocompleteTextField
+                      name="owner"
+                      control={control}
+                      errors={errors}
+                      options={groups || []}
+                      loading={groupsLoading}
+                      loadingText="Loading groups…"
+                      helperText="Select an owner from the list or enter a reference to a Group or a User"
+                      errorHelperText="required value"
+                      textFieldProps={{
+                        label: 'Entity Owner',
+                        placeholder: 'Group:default/my-group',
+                      }}
+                      rules={{ required: true }}
+                      required
+                    />
+                  </>
+                )}
+              />
+            ),
+          };
         },
       };
 
@@ -257,53 +249,45 @@ export function defaultGenerateStepper(
 }
 
 export const defaultStepper: StepperProvider = {
-  analyze: (state, { opts }) => (
-    <Step>
-      <StepLabel>Select URL</StepLabel>
-      <StepContent>
-        <StepInitAnalyzeUrl
-          key="analyze"
-          analysisUrl={state.analysisUrl}
-          onAnalysis={state.onAnalysis}
-          disablePullRequest={opts?.pullRequest?.disable}
-        />
-      </StepContent>
-    </Step>
-  ),
+  analyze: (state, { opts }) => ({
+    stepLabel: <StepLabel>Select URL</StepLabel>,
+    content: (
+      <StepInitAnalyzeUrl
+        key="analyze"
+        analysisUrl={state.analysisUrl}
+        onAnalysis={state.onAnalysis}
+        disablePullRequest={opts?.pullRequest?.disable}
+      />
+    ),
+  }),
 
-  prepare: state => (
-    <Step>
+  prepare: state => ({
+    stepLabel: (
       <StepLabel optional={<Typography variant="caption">Optional</Typography>}>
         Import Actions
       </StepLabel>
-      <StepContent>
-        <BackButton onClick={state.onGoBack} />
-      </StepContent>
-    </Step>
-  ),
+    ),
+    content: <BackButton onClick={state.onGoBack} />,
+  }),
 
-  review: state => (
-    <Step>
-      <StepLabel>Review</StepLabel>
-      <StepContent>
-        <StepReviewLocation
-          prepareResult={state.prepareResult}
-          onReview={state.onReview}
-          onGoBack={state.onGoBack}
-        />
-      </StepContent>
-    </Step>
-  ),
+  review: state => ({
+    stepLabel: <StepLabel>Review</StepLabel>,
+    content: (
+      <StepReviewLocation
+        prepareResult={state.prepareResult}
+        onReview={state.onReview}
+        onGoBack={state.onGoBack}
+      />
+    ),
+  }),
 
-  finish: state => (
-    <Step>
-      <StepLabel>Finish</StepLabel>
-      <StepContent>
-        <StepFinishImportLocation
-          reviewResult={state.reviewResult}
-          onReset={state.onReset}
-        />
-      </StepContent>
-    </Step>
-  ),
+  finish: state => ({
+    stepLabel: <StepLabel>Finish</StepLabel>,
+    content: (
+      <StepFinishImportLocation
+        reviewResult={state.reviewResult}
+        onReset={state.onReset}
+      />
+    ),
+  }),
 };

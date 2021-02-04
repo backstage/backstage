@@ -15,13 +15,14 @@
  */
 
 import { configApiRef, InfoCard, useApi } from '@backstage/core';
-import { Stepper } from '@material-ui/core';
+import { Step, StepContent, Stepper } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useMemo } from 'react';
 import { ImportFlows, ImportState, useImportState } from '../useImportState';
 import {
   defaultGenerateStepper,
   defaultStepper,
+  StepConfiguration,
   StepperProvider,
   StepperProviderOpts,
 } from './defaults';
@@ -55,6 +56,15 @@ export const ImportStepper = ({
     [generateStepper, state.activeFlow],
   );
 
+  const render = (step: StepConfiguration) => {
+    return (
+      <Step>
+        {step.stepLabel}
+        <StepContent>{step.content}</StepContent>
+      </Step>
+    );
+  };
+
   return (
     <InfoCard variant={variant}>
       <Stepper
@@ -62,21 +72,29 @@ export const ImportStepper = ({
         activeStep={state.activeStepNumber}
         orientation="vertical"
       >
-        {states.analyze(
-          state as Extract<ImportState, { activeState: 'analyze' }>,
-          { apis: { configApi }, opts },
+        {render(
+          states.analyze(
+            state as Extract<ImportState, { activeState: 'analyze' }>,
+            { apis: { configApi }, opts },
+          ),
         )}
-        {states.prepare(
-          state as Extract<ImportState, { activeState: 'prepare' }>,
-          { apis: { configApi }, opts },
+        {render(
+          states.prepare(
+            state as Extract<ImportState, { activeState: 'prepare' }>,
+            { apis: { configApi }, opts },
+          ),
         )}
-        {states.review(
-          state as Extract<ImportState, { activeState: 'review' }>,
-          { apis: { configApi }, opts },
+        {render(
+          states.review(
+            state as Extract<ImportState, { activeState: 'review' }>,
+            { apis: { configApi }, opts },
+          ),
         )}
-        {states.finish(
-          state as Extract<ImportState, { activeState: 'finish' }>,
-          { apis: { configApi }, opts },
+        {render(
+          states.finish(
+            state as Extract<ImportState, { activeState: 'finish' }>,
+            { apis: { configApi }, opts },
+          ),
         )}
       </Stepper>
     </InfoCard>
