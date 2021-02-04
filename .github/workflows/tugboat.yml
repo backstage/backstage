@@ -120,6 +120,14 @@ jobs:
           browser: chrome
           install: false
           headless: true
+
+       # Test run video was always captured, so this action uses "always()" condition
+      - uses: actions/upload-artifact@v1
+        if: always()
+        with:
+          working-directory: ./packages/e2e-test/src
+          name: cypress-videos
+          path: cypress/videos
   
       - name: set status
         if: ${{ failure() }}
