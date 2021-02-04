@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { DateTime } from 'luxon';
 
 /** Represents any form of serializable JWK */
 export interface AnyJWK extends Record<string, string> {
@@ -52,7 +53,7 @@ export type TokenIssuer = {
  */
 export type StoredKey = {
   key: AnyJWK;
-  createdAt: luxon.DateTime;
+  createdAt: DateTime;
 };
 
 /**

@@ -27,7 +27,7 @@ const migrationsDir = resolvePackagePath(
 const TABLE = 'signing_keys';
 
 type Row = {
-  created_at: Date;
+  created_at: Date; //row.created_at is a string after being returned from the database
   kid: string;
   key: string;
 };
@@ -62,11 +62,18 @@ export class DatabaseKeyStore implements KeyStore {
 
   async listKeys(): Promise<{ items: StoredKey[] }> {
     const rows = await this.database<Row>(TABLE).select();
+
     return {
       items: rows.map(row => ({
-          key: JSON.parse(row.key),
-          createdAt: DateTime.fromFormat(row.created_at, 'yyyy-MM-dd HH:mm:ss', {zone: 'UTC'}),
-        })),
+        key: JSON.parse(row.key),
+        createdAt: DateTime.fromFormat(
+          (row.created_at as unknown) as string,
+          'yyyy-MM-dd HH:mm:ss',
+          {
+            zone: 'UTC',
+          },
+        ),
+      })),
     };
   }
 
