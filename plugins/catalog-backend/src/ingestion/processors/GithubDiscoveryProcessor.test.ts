@@ -18,27 +18,28 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { LocationSpec } from '@backstage/catalog-model';
 import { GithubDiscoveryProcessor, parseUrl } from './GithubDiscoveryProcessor';
 import { getOrganizationRepositories } from './github';
+import { ConfigReader } from '@backstage/config';
 
 jest.mock('./github');
 const mockGetOrganizationRepositories = getOrganizationRepositories as jest.MockedFunction<
   typeof getOrganizationRepositories
 >;
 
-describe('GithubOrgReaderProcessor', () => {
+describe('GithubDiscoveryProcessor', () => {
   describe('parseUrl', () => {
     it('parses well formed URLs', () => {
       expect(
         parseUrl('https://github.com/foo/proj/blob/master/catalog.yaml'),
       ).toEqual({
         org: 'foo',
-        repoSearchPath: /proj/,
+        repoSearchPath: /^proj$/,
         catalogPath: 'blob/master/catalog.yaml',
       });
       expect(
         parseUrl('https://github.com/foo/proj*/blob/master/catalog.yaml'),
       ).toEqual({
         org: 'foo',
-        repoSearchPath: /proj.*/,
+        repoSearchPath: /^proj.*$/,
         catalogPath: 'blob/master/catalog.yaml',
       });
     });
@@ -55,18 +56,14 @@ describe('GithubOrgReaderProcessor', () => {
 
   describe('reject unrelated entries', () => {
     it('rejects unknown types', async () => {
-      const processor = new GithubDiscoveryProcessor({
-        gitHubConfigMap: new Map([
-          [
-            'github.com',
-            {
-              host: 'github.com',
-              apiBaseUrl: 'https://api.github.com',
-            },
-          ],
-        ]),
-        logger: getVoidLogger(),
-      });
+      const processor = GithubDiscoveryProcessor.fromConfig(
+        new ConfigReader({
+          integrations: {
+            github: [{ host: 'github.com', token: 'blob' }],
+          },
+        }),
+        { logger: getVoidLogger() },
+      );
       const location: LocationSpec = {
         type: 'not-github-discovery',
         target: 'https://github.com',
@@ -77,25 +74,17 @@ describe('GithubOrgReaderProcessor', () => {
     });
 
     it('rejects unknown targets', async () => {
-      const processor = new GithubDiscoveryProcessor({
-        gitHubConfigMap: new Map([
-          [
-            'github.com',
-            {
-              host: 'github.com',
-              apiBaseUrl: 'https://api.github.com',
-            },
-          ],
-          [
-            'ghe.example.net',
-            {
-              host: 'ghe.example.net',
-              apiBaseUrl: 'https://ghe.example.net/api/v3',
-            },
-          ],
-        ]),
-        logger: getVoidLogger(),
-      });
+      const processor = GithubDiscoveryProcessor.fromConfig(
+        new ConfigReader({
+          integrations: {
+            github: [
+              { host: 'github.com', token: 'blob' },
+              { host: 'ghe.example.net', token: 'blob' },
+            ],
+          },
+        }),
+        { logger: getVoidLogger() },
+      );
       const location: LocationSpec = {
         type: 'github-discovery',
         target: 'https://not.github.com/apa',
@@ -109,18 +98,14 @@ describe('GithubOrgReaderProcessor', () => {
   });
 
   describe('handles repositories', () => {
-    const processor = new GithubDiscoveryProcessor({
-      gitHubConfigMap: new Map([
-        [
-          'github.com',
-          {
-            host: 'github.com',
-            apiBaseUrl: 'https://api.github.com',
-          },
-        ],
-      ]),
-      logger: getVoidLogger(),
-    });
+    const processor = GithubDiscoveryProcessor.fromConfig(
+      new ConfigReader({
+        integrations: {
+          github: [{ host: 'github.com', token: 'blob' }],
+        },
+      }),
+      { logger: getVoidLogger() },
+    );
 
     beforeEach(() => {
       mockGetOrganizationRepositories.mockClear();
@@ -160,7 +145,7 @@ describe('GithubOrgReaderProcessor', () => {
       });
     });
 
-    it('filter unrelated repositories', async () => {
+    it('output repositories with wildcards', async () => {
       const location: LocationSpec = {
         type: 'github-discovery',
         target:
@@ -198,6 +183,37 @@ describe('GithubOrgReaderProcessor', () => {
           type: 'url',
           target:
             'https://github.com/backstage/techdocs-container/blob/master/catalog.yaml',
+        },
+        optional: false,
+      });
+    });
+    it('filter unrelated repositories', async () => {
+      const location: LocationSpec = {
+        type: 'github-discovery',
+        target: 'https://github.com/backstage/test/blob/master/catalog.yaml',
+      };
+      mockGetOrganizationRepositories.mockResolvedValueOnce({
+        repositories: [
+          { name: 'abstest', url: 'https://github.com/backstage/abctest' },
+          {
+            name: 'test',
+            url: 'https://github.com/backstage/test',
+          },
+          {
+            name: 'testxyz',
+            url: 'https://github.com/backstage/testxyz',
+          },
+        ],
+      });
+      const emitter = jest.fn();
+
+      await processor.readLocation(location, false, emitter);
+
+      expect(emitter).toHaveBeenCalledWith({
+        type: 'location',
+        location: {
+          type: 'url',
+          target: 'https://github.com/backstage/test/blob/master/catalog.yaml',
         },
         optional: false,
       });

@@ -18,8 +18,7 @@ import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   GithubCredentialsProvider,
-  GitHubIntegrationConfig,
-  readGitHubIntegrationConfigs,
+  ScmIntegrations,
 } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
 import { Logger } from 'winston';
@@ -31,26 +30,20 @@ import { CatalogProcessor, CatalogProcessorEmit } from './types';
  * Extracts repositories out of a GitHub org.
  */
 export class GithubDiscoveryProcessor implements CatalogProcessor {
-  private readonly gitHubConfigMap: Map<string, GitHubIntegrationConfig>;
+  private readonly integrations: ScmIntegrations;
   private readonly logger: Logger;
 
   static fromConfig(config: Config, options: { logger: Logger }) {
-    const configs = readGitHubIntegrationConfigs(
-      config.getOptionalConfigArray('integrations.github') ?? [],
-    );
-    const gitHubConfigMap = new Map(configs.map(c => [c.host, c]));
+    const integrations = ScmIntegrations.fromConfig(config);
 
     return new GithubDiscoveryProcessor({
       ...options,
-      gitHubConfigMap,
+      integrations,
     });
   }
 
-  constructor(options: {
-    gitHubConfigMap: Map<string, GitHubIntegrationConfig>;
-    logger: Logger;
-  }) {
-    this.gitHubConfigMap = options.gitHubConfigMap;
+  constructor(options: { integrations: ScmIntegrations; logger: Logger }) {
+    this.integrations = options.integrations;
     this.logger = options.logger;
   }
 
@@ -63,9 +56,8 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
       return false;
     }
 
-    const gitHubConfig = this.gitHubConfigMap.get(
-      new URL(location.target).hostname,
-    );
+    const gitHubConfig = this.integrations.github.byUrl(location.target)
+      ?.config;
     if (!gitHubConfig) {
       throw new Error(
         `There is no GitHub integration that matches ${location.target}. Please add a configuration entry for it under integrations.github`,
@@ -83,7 +75,7 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
 
     // Read out all of the raw data
     const startTimestamp = Date.now();
-    this.logger.info('Reading GitHub repositories');
+    this.logger.info(`Reading GitHub repositories from ${location.target}`);
 
     const { repositories } = await getOrganizationRepositories(client, org);
 
@@ -134,5 +126,5 @@ export function parseUrl(
 }
 
 export function escapeRegExp(str: string): RegExp {
-  return new RegExp(str.replace(/\*/g, '.*'));
+  return new RegExp(`^${str.replace(/\*/g, '.*')}$`);
 }
