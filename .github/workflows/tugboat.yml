@@ -93,9 +93,9 @@ jobs:
           install: false
           headless: true
 
-        # Test run video was always captured, so this action uses "always()" condition
-      - uses: actions/upload-artifact@v1
-        if: always()
+      - name: update artifact
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v1
         with:
           working-directory: ./packages/e2e-test/src
           name: cypress-videos
