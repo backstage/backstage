@@ -110,11 +110,15 @@ jobs:
             console.log(result);
             return result.data.environment_url;
 
-      - name: echo tugboat preview url
+      - name: Cypress run
+        uses: cypress-io/github-action@v2
         env:
-          BACKSTAGE_TEST_URL: ${{steps.get-status-env.outputs.result}}
-        run: yarn e2e-test cypress
-
+          CYPRESS_baseUrl: ${{steps.get-status-env.outputs.result}}
+        with:
+          config-file: ./packages/e2e-test/src/cypress.json
+          browser: chrome
+          headless: true
+  
       - name: set status
         if: ${{ failure() }}
         uses: actions/github-script@v3
