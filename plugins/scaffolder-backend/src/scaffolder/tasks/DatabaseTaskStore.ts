@@ -245,6 +245,7 @@ export class DatabaseTaskStore implements TaskStore {
           builder.where('id', '>', after).orWhere('event_type', 'completion');
         }
       })
+      .orderBy('id')
       .select();
 
     const events = rawEvents.map(event => {
