@@ -50,6 +50,7 @@
     "knex": "^0.21.6",
     "lodash": "^4.17.15",
     "logform": "^2.1.1",
+    "minimatch": "^3.0.4",
     "minimist": "^1.2.5",
     "morgan": "^1.10.0",
     "selfsigned": "^1.10.7",
