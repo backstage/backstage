@@ -1,5 +1,118 @@
 # @backstage/create-app
 
+## 0.3.8
+
+### Patch Changes
+
+- 019fe39a0: `@backstage/plugin-catalog` stopped exporting hooks and helpers for other
+  plugins. They are migrated to `@backstage/plugin-catalog-react`.
+  Change both your dependencies and imports to the new package.
+- 436ca3f62: Remove techdocs.requestUrl and techdocs.storageUrl from app-config.yaml
+- Updated dependencies [ceef4dd89]
+- Updated dependencies [720149854]
+- Updated dependencies [c777df180]
+- Updated dependencies [398e1f83e]
+- Updated dependencies [12ece98cd]
+- Updated dependencies [d82246867]
+- Updated dependencies [7fc89bae2]
+- Updated dependencies [c810082ae]
+- Updated dependencies [b712841d6]
+- Updated dependencies [a5628df40]
+- Updated dependencies [2430ee7c2]
+- Updated dependencies [3149bfe63]
+- Updated dependencies [5fa3bdb55]
+- Updated dependencies [bc5082a00]
+- Updated dependencies [6e612ce25]
+- Updated dependencies [e44925723]
+- Updated dependencies [b37501a3d]
+- Updated dependencies [a26668913]
+- Updated dependencies [025e122c3]
+- Updated dependencies [e9aab60c7]
+- Updated dependencies [21e624ba9]
+- Updated dependencies [19fe61c27]
+- Updated dependencies [e9aab60c7]
+- Updated dependencies [da9f53c60]
+- Updated dependencies [a08c4b0b0]
+- Updated dependencies [24e47ef1e]
+- Updated dependencies [bc5082a00]
+- Updated dependencies [b37501a3d]
+- Updated dependencies [90c8f20b9]
+- Updated dependencies [32c95605f]
+- Updated dependencies [7881f2117]
+- Updated dependencies [529d16d27]
+- Updated dependencies [54c7d02f7]
+- Updated dependencies [de98c32ed]
+- Updated dependencies [806929fe2]
+- Updated dependencies [019fe39a0]
+- Updated dependencies [cdea0baf1]
+- Updated dependencies [019fe39a0]
+- Updated dependencies [11cb5ef94]
+  - @backstage/plugin-catalog-import@0.3.7
+  - @backstage/plugin-scaffolder@0.4.2
+  - @backstage/plugin-techdocs-backend@0.5.5
+  - @backstage/cli@0.6.0
+  - @backstage/core@0.6.0
+  - @backstage/plugin-api-docs@0.4.4
+  - @backstage/plugin-catalog@0.3.0
+  - @backstage/theme@0.2.3
+  - @backstage/plugin-lighthouse@0.2.9
+  - @backstage/backend-common@0.5.2
+  - @backstage/plugin-catalog-backend@0.6.0
+  - @backstage/plugin-techdocs@0.5.5
+  - @backstage/plugin-user-settings@0.2.5
+  - @backstage/catalog-model@0.7.1
+  - @backstage/plugin-scaffolder-backend@0.6.0
+  - @backstage/plugin-app-backend@0.3.6
+  - @backstage/plugin-tech-radar@0.3.4
+  - @backstage/plugin-explore@0.2.4
+  - @backstage/plugin-circleci@0.2.7
+  - @backstage/plugin-github-actions@0.3.1
+  - @backstage/plugin-search@0.2.7
+  - @backstage/test-utils@0.1.6
+  - @backstage/plugin-auth-backend@0.2.12
+  - @backstage/plugin-proxy-backend@0.2.4
+  - @backstage/plugin-rollbar-backend@0.1.7
+
+## 0.3.7
+
+### Patch Changes
+
+- Updated dependencies [26a3a6cf0]
+- Updated dependencies [12a56cdfe]
+- Updated dependencies [664dd08c9]
+- Updated dependencies [9dd057662]
+- Updated dependencies [ef7957be4]
+- Updated dependencies [0b1182346]
+- Updated dependencies [d7b1d317f]
+- Updated dependencies [a91aa6bf2]
+- Updated dependencies [39b05b9ae]
+- Updated dependencies [4eaa06057]
+  - @backstage/backend-common@0.5.1
+  - @backstage/plugin-scaffolder-backend@0.5.2
+  - @backstage/cli@0.5.0
+  - @backstage/plugin-catalog@0.2.14
+  - @backstage/plugin-catalog-backend@0.5.5
+  - @backstage/plugin-catalog-import@0.3.6
+  - @backstage/plugin-scaffolder@0.4.1
+  - @backstage/plugin-auth-backend@0.2.12
+  - @backstage/catalog-model@0.7.0
+  - @backstage/core@0.5.0
+  - @backstage/test-utils@0.1.6
+  - @backstage/theme@0.2.2
+  - @backstage/plugin-api-docs@0.4.3
+  - @backstage/plugin-app-backend@0.3.5
+  - @backstage/plugin-circleci@0.2.6
+  - @backstage/plugin-explore@0.2.3
+  - @backstage/plugin-github-actions@0.3.0
+  - @backstage/plugin-lighthouse@0.2.8
+  - @backstage/plugin-proxy-backend@0.2.4
+  - @backstage/plugin-rollbar-backend@0.1.7
+  - @backstage/plugin-search@0.2.6
+  - @backstage/plugin-tech-radar@0.3.3
+  - @backstage/plugin-techdocs@0.5.4
+  - @backstage/plugin-techdocs-backend@0.5.4
+  - @backstage/plugin-user-settings@0.2.4
+
 ## 0.3.6
 
 ### Patch Changes
@@ -12,7 +125,7 @@
   - @backstage/plugin-catalog@0.2.13
   - @backstage/plugin-scaffolder-backend@0.5.1
 
-## 1.0.0
+## 0.3.6
 
 ### Minor Changes
 

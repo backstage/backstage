@@ -80,7 +80,7 @@ describe('AwsALBAuthProvider', () => {
   const mockResponseSend = jest.fn();
   const mockRequest = ({
     header: jest.fn(() => {
-      return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImZvbyIsImlzc3VlciI6ImZvbyJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.zUkMYAuMwC1T0tyHMpxXrkbFDa4aGhB8d9um_tI2hsI';
+      return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImZvbyIsImlzcyI6ImZvbyJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.T2BNS4G-6RoiFnXc8Q8TiwdWzTpNitY8jcsGM3N3-Yo';
     }),
   } as unknown) as express.Request;
   const mockRequestWithoutJwt = ({

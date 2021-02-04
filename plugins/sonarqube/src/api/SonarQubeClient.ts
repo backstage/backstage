@@ -43,6 +43,13 @@ export class SonarQubeClient implements SonarQubeApi {
     return undefined;
   }
 
+  private async getSupportedMetrics(): Promise<string[]> {
+    const result = await this.callApi<{ metrics: Array<{ key: string }> }>(
+      'metrics/search',
+    );
+    return result?.metrics?.map(m => m.key) ?? [];
+  }
+
   async getFindingSummary(
     componentKey?: string,
   ): Promise<FindingSummary | undefined> {
@@ -71,10 +78,16 @@ export class SonarQubeClient implements SonarQubeApi {
       duplicated_lines_density: undefined,
     };
 
+    // select the metrics that are supported by the SonarQube instance
+    const supportedMetrics = await this.getSupportedMetrics();
+    const metricKeys = Object.keys(metrics).filter(m =>
+      supportedMetrics.includes(m),
+    );
+
     const measures = await this.callApi<MeasuresWrapper>(
-      `measures/search?projectKeys=${componentKey}&metricKeys=${Object.keys(
-        metrics,
-      ).join(',')}`,
+      `measures/search?projectKeys=${componentKey}&metricKeys=${metricKeys.join(
+        ',',
+      )}`,
     );
     if (!measures) {
       return undefined;

@@ -13,33 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/* eslint-disable no-restricted-syntax */
-import fs from 'fs-extra';
-import path from 'path';
 import {
   getVoidLogger,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
+import mockFs from 'mock-fs';
+import * as os from 'os';
 import { LocalPublish } from './local';
-
-jest.mock('fs-extra', () => {
-  const fsOriginal = jest.requireActual('fs-extra');
-  return {
-    ...fsOriginal,
-    access: jest.fn().mockImplementation((path, checkType, callback) => {
-      if (
-        path.includes('http://localhost:7000/static') &&
-        checkType === fs.constants.F_OK
-      ) {
-        callback();
-      } else {
-        callback(new Error());
-      }
-    }),
-  };
-});
 
 const createMockEntity = (annotations = {}) => {
   return {
@@ -56,43 +37,33 @@ const createMockEntity = (annotations = {}) => {
 
 const logger = getVoidLogger();
 
+const tmpDir =
+  os.platform() === 'win32' ? 'C:\\tmp\\generatedDir' : '/tmp/generatedDir';
+
 describe('local publisher', () => {
   it('should publish generated documentation dir', async () => {
-    const testDiscovery: jest.Mocked<PluginEndpointDiscovery> = {
-      getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7000'),
-      getExternalBaseUrl: jest.fn(),
-    };
-
-    const mockConfig = new ConfigReader({
-      techdocs: {
-        requestUrl: 'http://localhost:7000',
-        storageUrl: 'http://localhost:7000/static/docs',
+    mockFs({
+      [tmpDir]: {
+        'index.html': '',
       },
     });
 
+    const testDiscovery: jest.Mocked<PluginEndpointDiscovery> = {
+      getBaseUrl: jest
+        .fn()
+        .mockResolvedValue('http://localhost:7000/api/techdocs'),
+      getExternalBaseUrl: jest.fn(),
+    };
+
+    const mockConfig = new ConfigReader({});
+
     const publisher = new LocalPublish(mockConfig, logger, testDiscovery);
     const mockEntity = createMockEntity();
-    const tempDir = fs.mkdtempSync(`${__dirname}/test-component-folder-`);
-    expect(tempDir).toBeTruthy();
 
-    fs.closeSync(fs.openSync(path.join(tempDir, '/mock-file'), 'w'));
-    await publisher.publish({ entity: mockEntity, directory: tempDir });
-
-    const publishDir = path.resolve(
-      __dirname,
-      `../../../../../plugins/techdocs-backend/static/docs/${mockEntity.metadata.name}`,
-    );
-    const resultDir = path.resolve(
-      __dirname,
-      `../../../../../plugins/techdocs-backend/static/docs/default/${mockEntity.kind}/${mockEntity.metadata.name}`,
-    );
-
-    expect(fs.existsSync(resultDir)).toBeTruthy();
-    expect(fs.existsSync(path.join(resultDir, '/mock-file'))).toBeTruthy();
+    await publisher.publish({ entity: mockEntity, directory: tmpDir });
 
     expect(await publisher.hasDocsBeenGenerated(mockEntity)).toBe(true);
 
-    fs.removeSync(publishDir);
-    fs.removeSync(tempDir);
+    mockFs.restore();
   });
 });

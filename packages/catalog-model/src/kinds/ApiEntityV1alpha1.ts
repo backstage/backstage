@@ -14,26 +14,15 @@
  * limitations under the License.
  */
 
-import * as yup from 'yup';
 import type { Entity } from '../entity/Entity';
-import { schemaValidator } from './util';
+import schema from '../schema/kinds/API.v1alpha1.schema.json';
+import entitySchema from '../schema/Entity.schema.json';
+import entityMetaSchema from '../schema/EntityMeta.schema.json';
+import commonSchema from '../schema/shared/common.schema.json';
+import { ajvCompiledJsonSchemaValidator } from './util';
 
 const API_VERSION = ['backstage.io/v1alpha1', 'backstage.io/v1beta1'] as const;
 const KIND = 'API' as const;
-
-const schema = yup.object<Partial<ApiEntityV1alpha1>>({
-  apiVersion: yup.string().required().oneOf(API_VERSION),
-  kind: yup.string().required().equals([KIND]),
-  spec: yup
-    .object({
-      type: yup.string().required().min(1),
-      lifecycle: yup.string().required().min(1),
-      owner: yup.string().required().min(1),
-      definition: yup.string().required().min(1),
-      system: yup.string().notRequired().min(1),
-    })
-    .required(),
-});
 
 export interface ApiEntityV1alpha1 extends Entity {
   apiVersion: typeof API_VERSION[number];
@@ -47,8 +36,9 @@ export interface ApiEntityV1alpha1 extends Entity {
   };
 }
 
-export const apiEntityV1alpha1Validator = schemaValidator(
+export const apiEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(
   KIND,
   API_VERSION,
   schema,
+  [commonSchema, entityMetaSchema, entitySchema],
 );

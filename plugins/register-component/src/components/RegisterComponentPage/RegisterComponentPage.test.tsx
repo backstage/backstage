@@ -20,7 +20,7 @@ import {
   createRouteRef,
   errorApiRef,
 } from '@backstage/core';
-import { catalogApiRef } from '@backstage/plugin-catalog';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core';
 import { render, screen } from '@testing-library/react';

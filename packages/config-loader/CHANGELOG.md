@@ -1,5 +1,30 @@
 # @backstage/config-loader
 
+## 0.5.1
+
+### Patch Changes
+
+- 062df71db: Bump `config-loader` to `ajv` 7, to enable v7 feature use elsewhere
+- e9aab60c7: Each piece of the configuration schema is now validated upfront, in order to produce more informative errors.
+
+## 0.5.0
+
+### Minor Changes
+
+- ef7957be4: Removed support for the deprecated `$data` placeholder.
+- ef7957be4: Enable further processing of configuration files included using the `$include` placeholder. Meaning that for example for example `$env` includes will be processed as usual in included files.
+
+### Patch Changes
+
+- ef7957be4: Added support for environment variable substitutions in string configuration values using a `${VAR}` placeholder. All environment variables must be available, or the entire expression will be evaluated to `undefined`. To escape a substitution, use `${...}`, which will end up as `${...}`.
+
+  For example:
+
+  ```yaml
+  app:
+    baseUrl: https://${BASE_HOST}
+  ```
+
 ## 0.4.1
 
 ### Patch Changes

@@ -14,7 +14,23 @@
  * limitations under the License.
  */
 
+import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { plugin } from '../src/plugin';
+import { ApiExplorerPage, apiDocsPlugin } from '../src/plugin';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import petstoreApiEntity from './example-api.yaml';
 
-createDevApp().registerPlugin(plugin).render();
+createDevApp()
+  .registerApi({
+    api: catalogApiRef,
+    deps: {},
+    factory: () =>
+      (({
+        async getEntities() {
+          return { items: [petstoreApiEntity] };
+        },
+      } as unknown) as typeof catalogApiRef.T),
+  })
+  .registerPlugin(apiDocsPlugin)
+  .addPage({ element: <ApiExplorerPage /> })
+  .render();

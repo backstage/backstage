@@ -14,22 +14,20 @@
  * limitations under the License.
  */
 
-import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
+import { CatalogClient } from '@backstage/catalog-client';
 import {
   createApiFactory,
-  createApiRef,
   createPlugin,
   discoveryApiRef,
+  createRoutableExtension,
 } from '@backstage/core';
-import { catalogRouteRef, entityRouteRef } from './routes';
+import {
+  catalogApiRef,
+  catalogRouteRef,
+  entityRouteRef,
+} from '@backstage/plugin-catalog-react';
 
-export const catalogApiRef = createApiRef<CatalogApi>({
-  id: 'plugin.catalog.service',
-  description:
-    'Used by the Catalog plugin to make requests to accompanying backend',
-});
-
-export const plugin = createPlugin({
+export const catalogPlugin = createPlugin({
   id: 'catalog',
   apis: [
     createApiFactory({
@@ -43,3 +41,21 @@ export const plugin = createPlugin({
     catalogEntity: entityRouteRef,
   },
 });
+
+export const CatalogIndexPage = catalogPlugin.provide(
+  createRoutableExtension({
+    component: () =>
+      import('./components/CatalogPage').then(m => m.CatalogPage),
+    mountPoint: catalogRouteRef,
+  }),
+);
+
+export const CatalogEntityPage = catalogPlugin.provide(
+  createRoutableExtension({
+    component: () =>
+      import('./components/CatalogEntityPage/CatalogEntityPage').then(
+        m => m.CatalogEntityPage,
+      ),
+    mountPoint: entityRouteRef,
+  }),
+);

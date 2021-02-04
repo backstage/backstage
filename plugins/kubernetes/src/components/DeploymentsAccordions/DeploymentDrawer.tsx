@@ -32,8 +32,8 @@ export const DeploymentDrawer = ({
       object={deployment}
       expanded={expanded}
       kind="Deployment"
-      renderObject={(deployment: V1Deployment) => {
-        const conditions = (deployment.status?.conditions ?? [])
+      renderObject={(deploymentObj: V1Deployment) => {
+        const conditions = (deploymentObj.status?.conditions ?? [])
           .map(renderCondition)
           .reduce((accum, next) => {
             accum[next[0]] = next[1];
@@ -41,10 +41,10 @@ export const DeploymentDrawer = ({
           }, {} as { [key: string]: React.ReactNode });
 
         return {
-          strategy: deployment.spec?.strategy ?? '???',
-          minReadySeconds: deployment.spec?.minReadySeconds ?? '???',
+          strategy: deploymentObj.spec?.strategy ?? '???',
+          minReadySeconds: deploymentObj.spec?.minReadySeconds ?? '???',
           progressDeadlineSeconds:
-            deployment.spec?.progressDeadlineSeconds ?? '???',
+            deploymentObj.spec?.progressDeadlineSeconds ?? '???',
           ...conditions,
         };
       }}

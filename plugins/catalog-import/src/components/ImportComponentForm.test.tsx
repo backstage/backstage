@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { renderInTestApp } from '@backstage/test-utils';
-import { RegisterComponentForm } from './ImportComponentForm';
+import { CatalogClient } from '@backstage/catalog-client';
 import {
   ApiProvider,
   ApiRegistry,
   DiscoveryApi,
   errorApiRef,
 } from '@backstage/core';
-import { catalogApiRef, CatalogClient } from '@backstage/plugin-catalog';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { renderInTestApp } from '@backstage/test-utils';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
+import React from 'react';
 import { catalogImportApiRef, CatalogImportClient } from '../api';
-import { fireEvent, waitFor, screen } from '@testing-library/react';
+import { RegisterComponentForm } from './ImportComponentForm';
 
 describe('<RegisterComponentForm />', () => {
   let apis: ApiRegistry;

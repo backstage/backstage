@@ -20,7 +20,10 @@ import {
   UserEntity,
 } from '@backstage/catalog-model';
 import { Avatar, InfoCard, Progress, useApi } from '@backstage/core';
-import { catalogApiRef, entityRouteParams } from '@backstage/plugin-catalog';
+import {
+  catalogApiRef,
+  entityRouteParams,
+} from '@backstage/plugin-catalog-react';
 import {
   Box,
   createStyles,

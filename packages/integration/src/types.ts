@@ -34,6 +34,18 @@ export interface ScmIntegration {
    * differentiate between different integrations.
    */
   title: string;
+
+  /**
+   * Works like the two-argument form of the URL constructor, resolving an
+   * absolute or relative URL in relation to a base URL.
+   *
+   * If this method is not implemented, the URL constructor is used instead for
+   * URLs that match this integration.
+   *
+   * @param options.url The (absolute or relative) URL or path to resolve
+   * @param options.base The base URL onto which this resolution happens
+   */
+  resolveUrl?(options: { url: string; base: string }): string;
 }
 
 /**
@@ -69,6 +81,15 @@ export interface ScmIntegrationRegistry
   bitbucket: ScmIntegrationsGroup<BitbucketIntegration>;
   github: ScmIntegrationsGroup<GitHubIntegration>;
   gitlab: ScmIntegrationsGroup<GitLabIntegration>;
+
+  /**
+   * Works like the two-argument form of the URL constructor, resolving an
+   * absolute or relative URL in relation to a base URL.
+   *
+   * @param options.url The (absolute or relative) URL or path to resolve
+   * @param options.base The base URL onto which this resolution happens
+   */
+  resolveUrl(options: { url: string; base: string }): string;
 }
 
 export type ScmIntegrationsFactory<T extends ScmIntegration> = (options: {

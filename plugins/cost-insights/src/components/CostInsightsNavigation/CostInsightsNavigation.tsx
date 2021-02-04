@@ -41,13 +41,13 @@ type CostInsightsNavigationProps = {
 
 const NavigationMenuItem = ({ navigation, icon, title }: NavigationItem) => {
   const classes = useStyles();
-  const { scrollIntoView } = useScroll(navigation);
+  const [, setScroll] = useScroll();
   return (
     <MenuItem
       button
       data-testid={`menu-item-${navigation}`}
       className={classes.menuItem}
-      onClick={scrollIntoView}
+      onClick={() => setScroll(navigation)}
     >
       <ListItemIcon className={classes.listItemIcon}>{icon}</ListItemIcon>
       <ListItemText

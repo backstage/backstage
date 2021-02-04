@@ -31,8 +31,8 @@ export const ServiceDrawer = ({
       object={service}
       expanded={expanded}
       kind="Service"
-      renderObject={(service: V1Service) => {
-        return service.spec || {};
+      renderObject={(serviceObject: V1Service) => {
+        return serviceObject.spec || {};
       }}
     >
       <Grid

@@ -80,6 +80,7 @@ nav:
       - Publishing:
           - Open source and npm: 'plugins/publishing.md'
           - Private/internal (non-open source): 'plugins/publish-private.md'
+          - Observability: 'plugins/observability.md'
   - Configuration:
       - Overview: 'conf/index.md'
       - Reading Configuration: 'conf/reading.md'
@@ -119,6 +120,7 @@ nav:
       - ADR008 - Default Catalog File Name: 'architecture-decisions/adr008-default-catalog-file-name.md'
       - ADR009 - Entity References: 'architecture-decisions/adr009-entity-references.md'
       - ADR010 - Luxon Date Library: 'architecture-decisions/adr010-luxon-date-library.md'
+      - ADR011 - Plugin Package Structure: 'architecture-decisions/adr011-plugin-package-structure.md'
   - Contribute: '../CONTRIBUTING.md'
   - Support:
       - 'support/support.md'

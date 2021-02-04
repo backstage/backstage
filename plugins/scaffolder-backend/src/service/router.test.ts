@@ -23,6 +23,8 @@ jest.doMock('fs-extra', () => ({
     F_OK: 0,
     W_OK: 1,
   },
+  mkdir: jest.fn(),
+  remove: jest.fn(),
 }));
 
 import { getVoidLogger } from '@backstage/backend-common';
@@ -116,9 +118,10 @@ describe('createRouter - working directory', () => {
         },
       });
 
-    expect(mockPrepare).toBeCalledWith(expect.anything(), {
+    expect(mockPrepare).toBeCalledWith({
       logger: expect.anything(),
-      workingDirectory: '/path',
+      workspacePath: expect.stringContaining('path'),
+      url: expect.anything(),
     });
   });
 
@@ -143,8 +146,10 @@ describe('createRouter - working directory', () => {
         },
       });
 
-    expect(mockPrepare).toBeCalledWith(expect.anything(), {
+    expect(mockPrepare).toBeCalledWith({
       logger: expect.anything(),
+      workspacePath: expect.anything(),
+      url: expect.anything(),
     });
   });
 });

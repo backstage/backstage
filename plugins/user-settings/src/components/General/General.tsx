@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 import { InfoCard } from '@backstage/core';
-import { Grid, List, useMediaQuery, useTheme } from '@material-ui/core';
+import { Grid, List } from '@material-ui/core';
 import React from 'react';
 import { PinButton } from './PinButton';
 import { Profile } from './Profile';
 import { ThemeToggle } from './ThemeToggle';
 
 export const General = () => {
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   return (
     <Grid container direction="row" spacing={3}>
       <Grid item sm={12} md={6}>
@@ -32,7 +30,7 @@ export const General = () => {
         <InfoCard title="Appearance">
           <List dense>
             <ThemeToggle />
-            {!fullScreen && <PinButton />}
+            <PinButton />
           </List>
         </InfoCard>
       </Grid>

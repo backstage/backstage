@@ -21,6 +21,7 @@ import {
   discoveryApiRef,
   githubAuthApiRef,
   configApiRef,
+  createRoutableExtension,
 } from '@backstage/core';
 import { catalogImportApiRef } from './api/CatalogImportApi';
 import { CatalogImportClient } from './api/CatalogImportClient';
@@ -30,7 +31,7 @@ export const rootRouteRef = createRouteRef({
   title: 'catalog-import',
 });
 
-export const plugin = createPlugin({
+export const catalogImportPlugin = createPlugin({
   id: 'catalog-import',
   apis: [
     createApiFactory({
@@ -44,4 +45,14 @@ export const plugin = createPlugin({
         new CatalogImportClient({ discoveryApi, githubAuthApi, configApi }),
     }),
   ],
+  routes: {
+    importPage: rootRouteRef,
+  },
 });
+
+export const CatalogImportPage = catalogImportPlugin.provide(
+  createRoutableExtension({
+    component: () => import('./components/Router').then(m => m.Router),
+    mountPoint: rootRouteRef,
+  }),
+);

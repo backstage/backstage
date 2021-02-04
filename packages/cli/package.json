@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.4.7",
+  "version": "0.6.0",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -30,12 +30,12 @@
   "dependencies": {
     "@backstage/cli-common": "^0.1.1",
     "@backstage/config": "^0.1.2",
-    "@backstage/config-loader": "^0.4.1",
+    "@backstage/config-loader": "^0.5.1",
     "@hot-loader/react-dom": "^16.13.0",
     "@lerna/package-graph": "^3.18.5",
     "@lerna/project": "^3.18.0",
     "@octokit/request": "^5.4.12",
-    "@rollup/plugin-commonjs": "^16.0.0",
+    "@rollup/plugin-commonjs": "^17.1.0",
     "@rollup/plugin-json": "^4.0.2",
     "@rollup/plugin-node-resolve": "^9.0.0",
     "@rollup/plugin-yaml": "^2.1.1",
@@ -113,12 +113,12 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/backend-common": "^0.5.0",
+    "@backstage/backend-common": "^0.5.2",
     "@backstage/config": "^0.1.2",
-    "@backstage/core": "^0.5.0",
-    "@backstage/dev-utils": "^0.1.8",
+    "@backstage/core": "^0.6.0",
+    "@backstage/dev-utils": "^0.1.9",
     "@backstage/test-utils": "^0.1.6",
-    "@backstage/theme": "^0.2.2",
+    "@backstage/theme": "^0.2.3",
     "@types/diff": "^4.0.2",
     "@types/express": "^4.17.6",
     "@types/fs-extra": "^9.0.1",
@@ -173,7 +173,9 @@
             "type": "string",
             "visibility": "frontend",
             "description": "Tracking ID for Google Analytics",
-            "example": "UA-000000-0"
+            "examples": [
+              "UA-000000-0"
+            ]
           },
           "listen": {
             "type": "object",

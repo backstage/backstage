@@ -14,31 +14,214 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Grid } from '@material-ui/core';
-import { AlertInsightsSection } from './AlertInsightsSection';
+import React, { useEffect, useState } from 'react';
+import pluralize from 'pluralize';
+import { Box, Grid, Snackbar } from '@material-ui/core';
+import { default as MuiAlert } from '@material-ui/lab/Alert';
+import { AlertDialog } from './AlertDialog';
+import { AlertStatusSummary } from './AlertStatusSummary';
+import { AlertStatusSummaryButton } from './AlertStatusSummaryButton';
 import { AlertInsightsHeader } from './AlertInsightsHeader';
-import { Alert } from '../../types';
+import { AlertInsightsSection } from './AlertInsightsSection';
+import {
+  useScroll,
+  useLoading,
+  ScrollType,
+  MapLoadingToProps,
+} from '../../hooks';
+import { DefaultLoadingAction } from '../../utils/loading';
+import { Alert, AlertOptions, AlertStatus, Maybe } from '../../types';
+import {
+  isStatusSnoozed,
+  isStatusAccepted,
+  isStatusDismissed,
+  sumOfAllAlerts,
+} from '../../utils/alerts';
+import { ScrollAnchor } from '../../utils/scroll';
 
-const title = "Your team's action items";
-const subtitle =
-  'This section outlines suggested action items your team can address to improve cloud costs.';
+type MapLoadingtoAlerts = (isLoading: boolean) => void;
+
+const mapLoadingToAlerts: MapLoadingToProps<MapLoadingtoAlerts> = ({
+  dispatch,
+}) => (isLoading: boolean) =>
+  dispatch({ [DefaultLoadingAction.CostInsightsAlerts]: isLoading });
 
 type AlertInsightsProps = {
-  alerts: Array<Alert>;
+  group: string;
+  active: Alert[];
+  snoozed: Alert[];
+  accepted: Alert[];
+  dismissed: Alert[];
+  onChange: (alerts: Alert[]) => void;
 };
 
-export const AlertInsights = ({ alerts }: AlertInsightsProps) => (
-  <Grid container direction="column" spacing={2}>
-    <Grid item>
-      <AlertInsightsHeader title={title} subtitle={subtitle} />
-    </Grid>
-    <Grid item container direction="column" spacing={4}>
-      {alerts.map((alert, index) => (
-        <Grid item key={`alert-card-${index}`}>
-          <AlertInsightsSection alert={alert} number={index + 1} />
+export const AlertInsights = ({
+  group,
+  active,
+  snoozed,
+  accepted,
+  dismissed,
+  onChange,
+}: AlertInsightsProps) => {
+  const [scroll] = useScroll();
+  const [alert, setAlert] = useState<Maybe<Alert>>(null);
+  const dispatchLoadingAlerts = useLoading(mapLoadingToAlerts);
+  const [status, setStatus] = useState<Maybe<AlertStatus>>(null);
+  // Allow users to pass null values for data.
+  const [data, setData] = useState<Maybe<any>>(undefined);
+  const [error, setError] = useState<Maybe<Error>>(null);
+  const [isDialogOpen, setDialogOpen] = useState(false);
+  const [isSummaryOpen, setSummaryOpen] = useState(false);
+  const [isSnackbarOpen, setSnackbarOpen] = useState(false);
+
+  useEffect(() => {
+    async function callAlertHook(
+      options: AlertOptions,
+      callback: (options: AlertOptions) => Promise<Alert[]>,
+    ) {
+      setAlert(null);
+      setStatus(null);
+      setData(undefined);
+      setDialogOpen(false);
+      dispatchLoadingAlerts(true);
+      try {
+        const alerts: Alert[] = await callback(options);
+        onChange(alerts);
+      } catch (e) {
+        setError(e);
+      } finally {
+        dispatchLoadingAlerts(false);
+      }
+    }
+
+    const options: AlertOptions = { data, group };
+    const onSnoozed = alert?.onSnoozed?.bind(alert);
+    const onAccepted = alert?.onAccepted?.bind(alert);
+    const onDismissed = alert?.onDismissed?.bind(alert);
+
+    if (data !== undefined) {
+      if (isStatusSnoozed(status) && onSnoozed) {
+        callAlertHook(options, onSnoozed);
+      } else if (isStatusAccepted(status) && onAccepted) {
+        callAlertHook(options, onAccepted);
+      } else if (isStatusDismissed(status) && onDismissed) {
+        callAlertHook(options, onDismissed);
+      }
+    }
+  }, [group, data, alert, status, onChange, dispatchLoadingAlerts]);
+
+  useEffect(() => {
+    if (scroll === ScrollType.AlertSummary) {
+      setSummaryOpen(true);
+    }
+  }, [scroll]);
+
+  useEffect(() => {
+    setDialogOpen(!!status);
+  }, [status]);
+
+  useEffect(() => {
+    setSnackbarOpen(!!error);
+  }, [error]);
+
+  function onSnooze(alertToSnooze: Alert) {
+    setAlert(alertToSnooze);
+    setStatus(AlertStatus.Snoozed);
+  }
+
+  function onAccept(alertToAccept: Alert) {
+    setAlert(alertToAccept);
+    setStatus(AlertStatus.Accepted);
+  }
+
+  function onDismiss(alertToDismiss: Alert) {
+    setAlert(alertToDismiss);
+    setStatus(AlertStatus.Dismissed);
+  }
+
+  function onSnackbarClose() {
+    setError(null);
+  }
+
+  function onDialogClose() {
+    setAlert(null);
+    setStatus(null);
+  }
+
+  function onDialogFormSubmit(formData: any) {
+    setData(formData);
+  }
+
+  function onSummaryButtonClick() {
+    setSummaryOpen(prevOpen => !prevOpen);
+  }
+
+  const total = [accepted, snoozed, dismissed].reduce(sumOfAllAlerts, 0);
+
+  const isAlertStatusSummaryDisplayed = !!total;
+  const isAlertInsightSectionDisplayed = !!active.length;
+
+  return (
+    <Grid container direction="column" spacing={2}>
+      <Grid item>
+        <AlertInsightsHeader
+          title="Your team's action items"
+          subtitle={
+            isAlertInsightSectionDisplayed
+              ? 'This section outlines suggested action items your team can address to improve cloud costs.'
+              : "All of your team's action items are hidden. Maybe it's time to give them another look?"
+          }
+        />
+      </Grid>
+      {isAlertInsightSectionDisplayed && (
+        <Grid item container direction="column" spacing={4}>
+          {active.map((activeAlert, index) => (
+            <Grid item key={`alert-insights-section-${index}`}>
+              <AlertInsightsSection
+                alert={activeAlert}
+                number={index + 1}
+                onSnooze={onSnooze}
+                onAccept={onAccept}
+                onDismiss={onDismiss}
+              />
+            </Grid>
+          ))}
         </Grid>
-      ))}
+      )}
+      {isAlertStatusSummaryDisplayed && (
+        <Grid item>
+          <Box position="relative" display="flex" justifyContent="flex-end">
+            <ScrollAnchor id={ScrollType.AlertSummary} />
+            <AlertStatusSummaryButton onClick={onSummaryButtonClick}>
+              {pluralize('Hidden Action Item', total)}
+            </AlertStatusSummaryButton>
+          </Box>
+          <AlertStatusSummary
+            open={isSummaryOpen}
+            snoozed={snoozed}
+            accepted={accepted}
+            dismissed={dismissed}
+          />
+        </Grid>
+      )}
+      <AlertDialog
+        group={group}
+        open={isDialogOpen}
+        alert={alert}
+        status={status}
+        onClose={onDialogClose}
+        onSubmit={onDialogFormSubmit}
+      />
+      <Snackbar
+        open={isSnackbarOpen}
+        autoHideDuration={6_000}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        onClose={onSnackbarClose}
+      >
+        <MuiAlert onClose={onSnackbarClose} severity="error">
+          {error?.message}
+        </MuiAlert>
+      </Snackbar>
     </Grid>
-  </Grid>
-);
+  );
+};
