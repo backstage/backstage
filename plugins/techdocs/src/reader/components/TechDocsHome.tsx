@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import React, { useState } from 'react';
+
 import {
   Button,
   CodeSnippet,
@@ -21,6 +23,7 @@ import {
   Header,
   ItemCardGrid,
   ItemCardHeader,
+  HeaderTabs,
   Page,
   Progress,
   useApi,
@@ -30,10 +33,14 @@ import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { Card, CardActions, CardContent, CardMedia } from '@material-ui/core';
 import React from 'react';
 import { generatePath } from 'react-router-dom';
+
 import { useAsync } from 'react-use';
-import { rootDocsRouteRef } from '../../plugin';
+
+import { OverviewContent } from './OverviewContent';
+import { OwnedContent } from './OwnedContent';
 
 export const TechDocsHome = () => {
+  const [selectedTab, setSelectedTab] = useState<number>(0);
   const catalogApi = useApi(catalogApiRef);
 
   const { value, loading, error } = useAsync(async () => {
@@ -75,6 +82,7 @@ export const TechDocsHome = () => {
       </Page>
     );
   }
+  const tabs = [{ label: 'Overview' }, { label: 'Owned Documents' }];
 
   return (
     <Page themeId="documentation">
@@ -82,32 +90,19 @@ export const TechDocsHome = () => {
         title="Documentation"
         subtitle="Documentation available in Backstage"
       />
-      <Content>
-        <ItemCardGrid data-testid="docs-explore">
-          {!value?.length
-            ? null
-            : value.map((entity, index: number) => (
-                <Card key={index}>
-                  <CardMedia>
-                    <ItemCardHeader title={entity.metadata.name} />
-                  </CardMedia>
-                  <CardContent>{entity.metadata.description}</CardContent>
-                  <CardActions>
-                    <Button
-                      to={generatePath(rootDocsRouteRef.path, {
-                        namespace: entity.metadata.namespace ?? 'default',
-                        kind: entity.kind,
-                        name: entity.metadata.name,
-                      })}
-                      color="primary"
-                    >
-                      Read Docs
-                    </Button>
-                  </CardActions>
-                </Card>
-              ))}
-        </ItemCardGrid>
-      </Content>
+      <HeaderTabs
+        selectedIndex={selectedTab}
+        onChange={index => setSelectedTab(index)}
+        tabs={tabs.map(({ label }, index) => ({
+          id: index.toString(),
+          label,
+        }))}
+      />
+      {selectedTab === 0 ? (
+        <OverviewContent value={value} />
+      ) : (
+        <OwnedContent value={value} />
+      )}
     </Page>
   );
 };
