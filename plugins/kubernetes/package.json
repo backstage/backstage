@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@backstage/catalog-model": "^0.7.1",
+    "@backstage/plugin-catalog-react": "^0.0.2",
     "@backstage/config": "^0.1.2",
     "@backstage/core": "^0.6.0",
     "@backstage/plugin-kubernetes-backend": "^0.2.6",
