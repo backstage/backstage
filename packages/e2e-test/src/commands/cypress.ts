@@ -16,6 +16,7 @@
 
 import cypress from 'cypress';
 import path from 'path';
+import config from '../cypress.json';
 
 export async function run() {
   await cypress.run({
@@ -23,12 +24,7 @@ export async function run() {
     browser: 'chrome',
     config: {
       watchForFileChanges: true,
-      baseUrl: process.env.BACKSTAGE_TEST_URL || 'http://localhost:7000',
-      integrationFolder: path.resolve(__dirname, '../cypress/integration'),
-      supportFile: path.resolve(__dirname, '../cypress/support'),
-      fixturesFolder: false,
-      defaultCommandTimeout: 10000,
+      ...config,
     },
-    configFile: false,
   });
 }
