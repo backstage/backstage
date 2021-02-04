@@ -1,15 +1,12 @@
 # @backstage/create-app
 
-## 1.0.0
+## 0.3.8
 
-### Minor Changes
+### Patch Changes
 
 - 019fe39a0: `@backstage/plugin-catalog` stopped exporting hooks and helpers for other
   plugins. They are migrated to `@backstage/plugin-catalog-react`.
   Change both your dependencies and imports to the new package.
-
-### Patch Changes
-
 - 436ca3f62: Remove techdocs.requestUrl and techdocs.storageUrl from app-config.yaml
 - Updated dependencies [ceef4dd89]
 - Updated dependencies [720149854]
@@ -128,7 +125,7 @@
   - @backstage/plugin-catalog@0.2.13
   - @backstage/plugin-scaffolder-backend@0.5.1
 
-## 1.0.0
+## 0.3.6
 
 ### Minor Changes
 
