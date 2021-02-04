@@ -36,17 +36,17 @@ export function useBuilds(owner: string, repo: string, branch?: string) {
 
   const { loading, value: builds, retry } = useAsyncRetry(async () => {
     try {
-      let builds;
+      let build;
       if (branch) {
-        builds = await api.getLastBuild(`${owner}/${repo}/${branch}`);
+        build = await api.getLastBuild(`${owner}/${repo}/${branch}`);
       } else {
-        builds = await api.getFolder(`${owner}/${repo}`);
+        build = await api.getFolder(`${owner}/${repo}`);
       }
 
-      const size = Array.isArray(builds) ? builds?.[0].build_num! : 1;
+      const size = Array.isArray(build) ? build?.[0].build_num! : 1;
       setTotal(size);
 
-      return builds || [];
+      return build || [];
     } catch (e) {
       errorApi.post(e);
       throw e;

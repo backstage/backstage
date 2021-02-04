@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import path from 'path';
+import platformPath from 'path';
 import fs from 'fs-extra';
 import unzipper, { Entry } from 'unzipper';
 import archiver from 'archiver';
@@ -144,7 +144,7 @@ export class ZipArchiveResponse implements ReadTreeResponse {
 
     const dir =
       options?.targetDir ??
-      (await fs.mkdtemp(path.join(this.workDir, 'backstage-')));
+      (await fs.mkdtemp(platformPath.join(this.workDir, 'backstage-')));
 
     await this.stream
       .pipe(unzipper.Parse())
@@ -155,11 +155,11 @@ export class ZipArchiveResponse implements ReadTreeResponse {
           const entryPath = this.getInnerPath(
             this.stripTopDirectory(entry.path),
           );
-          const dirname = path.dirname(entryPath);
+          const dirname = platformPath.dirname(entryPath);
           if (dirname) {
-            await fs.mkdirp(path.join(dir, dirname));
+            await fs.mkdirp(platformPath.join(dir, dirname));
           }
-          entry.pipe(fs.createWriteStream(path.join(dir, entryPath)));
+          entry.pipe(fs.createWriteStream(platformPath.join(dir, entryPath)));
         } else {
           entry.autodrain();
         }

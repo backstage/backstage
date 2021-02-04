@@ -25,10 +25,10 @@ import {
   DateAggregation,
 } from '../types';
 import dayjs, { OpUnitType } from 'dayjs';
-import duration from 'dayjs/plugin/duration';
+import durationPlugin from 'dayjs/plugin/duration';
 import { inclusiveStartDateOf } from './duration';
 
-dayjs.extend(duration);
+dayjs.extend(durationPlugin);
 
 // Used for displaying status colors
 export function growthOf(ratio: number, amount?: number) {

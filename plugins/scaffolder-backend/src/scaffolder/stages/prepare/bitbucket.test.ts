@@ -62,12 +62,12 @@ describe('BitbucketPreparer', () => {
   });
 
   it('calls the clone command with the correct arguments if an app password is provided for a repository', async () => {
-    const preparer = BitbucketPreparer.fromConfig({
+    const preparerCheck = BitbucketPreparer.fromConfig({
       host: 'bitbucket.org',
       username: 'fake-user',
       appPassword: 'fake-password',
     });
-    await preparer.prepare(prepareOptions);
+    await preparerCheck.prepare(prepareOptions);
 
     expect(Git.fromAuth).toHaveBeenCalledWith({
       logger,
@@ -98,12 +98,11 @@ describe('BitbucketPreparer', () => {
   });
 
   it('calls the clone command with with token for auth method', async () => {
-    const preparer = BitbucketPreparer.fromConfig({
+    const preparerCheck = BitbucketPreparer.fromConfig({
       host: 'bitbucket.org',
       token: 'fake-token',
     });
-
-    await preparer.prepare(prepareOptions);
+    await preparerCheck.prepare(prepareOptions);
 
     expect(Git.fromAuth).toHaveBeenCalledWith({
       logger,

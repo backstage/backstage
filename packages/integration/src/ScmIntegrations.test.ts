@@ -43,10 +43,10 @@ describe('ScmIntegrations', () => {
   } as GitLabIntegrationConfig);
 
   const i = new ScmIntegrations({
-    azure: basicIntegrations([azure], i => i.config.host),
-    bitbucket: basicIntegrations([bitbucket], i => i.config.host),
-    github: basicIntegrations([github], i => i.config.host),
-    gitlab: basicIntegrations([gitlab], i => i.config.host),
+    azure: basicIntegrations([azure], item => item.config.host),
+    bitbucket: basicIntegrations([bitbucket], item => item.config.host),
+    github: basicIntegrations([github], item => item.config.host),
+    gitlab: basicIntegrations([gitlab], item => item.config.host),
   });
 
   it('can get the specifics', () => {

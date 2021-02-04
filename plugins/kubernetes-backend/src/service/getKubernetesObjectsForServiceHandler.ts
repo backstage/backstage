@@ -85,18 +85,18 @@ export const handleGetKubernetesObjectsForService: GetKubernetesObjectsForServic
     ] || `backstage.io/kubernetes-id=${requestBody.entity.metadata.name}`;
 
   return Promise.all(
-    clusterDetailsDecoratedForAuth.map(clusterDetails => {
+    clusterDetailsDecoratedForAuth.map(clusterDetailsItem => {
       return fetcher
         .fetchObjectsForService({
           serviceId,
-          clusterDetails,
+          clusterDetails: clusterDetailsItem,
           objectTypesToFetch,
           labelSelector,
         } as ObjectFetchParams)
         .then(result => {
           return {
             cluster: {
-              name: clusterDetails.name,
+              name: clusterDetailsItem.name,
             },
             resources: result.responses,
             errors: result.errors,

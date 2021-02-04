@@ -52,12 +52,12 @@ export const RoutedTabs = ({ routes }: { routes: SubRoute[] }) => {
     [routes],
   );
 
-  const onTabChange = (index: number) =>
+  const onTabChange = (tabIndex: number) =>
     // Remove trailing /*
     // And remove leading / for relative navigation
     // Note! route resolves relative to the position in the React tree,
     // not relative to current location
-    navigate(routes[index].path.replace(/\/\*$/, '').replace(/^\//, ''));
+    navigate(routes[tabIndex].path.replace(/\/\*$/, '').replace(/^\//, ''));
 
   return (
     <>

@@ -92,8 +92,8 @@ export const TemplatePage = () => {
   );
 
   const [jobId, setJobId] = useState<string | null>(null);
-  const job = useJobPolling(jobId, async job => {
-    if (!job.metadata.catalogInfoUrl) {
+  const job = useJobPolling(jobId, async jobItem => {
+    if (!jobItem.metadata.catalogInfoUrl) {
       errorApi.post(
         new Error(`No catalogInfoUrl returned from the scaffolder`),
       );
@@ -103,7 +103,9 @@ export const TemplatePage = () => {
     try {
       const {
         entities: [createdEntity],
-      } = await catalogApi.addLocation({ target: job.metadata.catalogInfoUrl });
+      } = await catalogApi.addLocation({
+        target: jobItem.metadata.catalogInfoUrl,
+      });
 
       const resolvedPath = generatePath(
         `/catalog/${entityRoute.path}`,
@@ -122,8 +124,8 @@ export const TemplatePage = () => {
 
   const handleCreate = async () => {
     try {
-      const jobId = await scaffolderApi.scaffold(templateName, formState);
-      setJobId(jobId);
+      const id = await scaffolderApi.scaffold(templateName, formState);
+      setJobId(id);
       setModalOpen(true);
     } catch (e) {
       errorApi.post(e);

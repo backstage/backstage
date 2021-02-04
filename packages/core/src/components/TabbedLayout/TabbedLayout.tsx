@@ -35,7 +35,9 @@ const Route: (props: SubRoute) => null = () => null;
 // This causes all mount points that are discovered within this route to use the path of the route itself
 attachComponentData(Route, 'core.gatherMountPoints', true);
 
-export function createSubRoutesFromChildren(children: ReactNode): SubRoute[] {
+export function createSubRoutesFromChildren(
+  childrenProps: ReactNode,
+): SubRoute[] {
   // Directly comparing child.type with Route will not work with in
   // combination with react-hot-loader in storybook
   // https://github.com/gaearon/react-hot-loader/issues/304
@@ -45,7 +47,7 @@ export function createSubRoutesFromChildren(children: ReactNode): SubRoute[] {
     </Route>
   ).type;
 
-  return Children.toArray(children).flatMap(child => {
+  return Children.toArray(childrenProps).flatMap(child => {
     if (!isValidElement(child)) {
       return [];
     }
