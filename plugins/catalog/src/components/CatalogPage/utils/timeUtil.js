@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import goodMorning from './locales/goodMorning.locales.json';
 import goodAfternoon from './locales/goodAfternoon.locales.json';
 import goodEvening from './locales/goodEvening.locales.json';
@@ -26,22 +26,22 @@ import goodEvening from './locales/goodEvening.locales.json';
  * @returns {bool} Whether the date is valid or not.
  */
 export function isValidDate(date) {
-  return moment(date).isValid();
+  return DateTime.fromISO(date).isValid;
 }
 
 /**
  * Validates that a date is a valid ISO string and a specific format.
  *
  * @param date A date string
- * @param format A format string or an array of format strings to validate against.
+ * @param format A format string to validate against. See https://moment.github.io/luxon/docs/manual/parsing.html#table-of-tokens for reference.
  * @returns {bool} Whether the date is valid or not according to the format.
  */
 export function isValidDateAndFormat(date, format) {
-  return moment(date, format, true).isValid();
+  return DateTime.fromFormat(date, format).isValid;
 }
 
 export function relativeTime(timestamp) {
-  return moment(timestamp).fromNow();
+  return DateTime.fromISO(timestamp).toRelative();
 }
 
 // Select a large random integer at startup, to prevent the greetings to change every time the user
