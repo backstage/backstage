@@ -14,7 +14,16 @@
  * limitations under the License.
  */
 
-import { RouteRefConfig, RouteRef } from './types';
+import { RouteRef } from './types';
+import { IconComponent } from '../icons';
+
+export type RouteRefConfig<Params extends { [param in string]: string }> = {
+  params?: Array<keyof Params>;
+  /** @deprecated Route refs no longer decide their own path */
+  path?: string;
+  icon?: IconComponent;
+  title: string;
+};
 
 export class AbsoluteRouteRef<Params extends { [param in string]: string }> {
   constructor(private readonly config: RouteRefConfig<Params>) {}
@@ -38,9 +47,15 @@ export class AbsoluteRouteRef<Params extends { [param in string]: string }> {
 }
 
 export function createRouteRef<
-  ParamKeys extends string,
-  Params extends { [param in string]: string } = { [name in ParamKeys]: string }
->(config: RouteRefConfig<Params>): RouteRef<Params> {
+  Params extends { [param in ParamKey]: string },
+  ParamKey extends string = never
+>(config: {
+  params?: ParamKey[];
+  /** @deprecated Route refs no longer decide their own path */
+  path?: string;
+  icon?: IconComponent;
+  title: string;
+}): RouteRef<Params> {
   return new AbsoluteRouteRef<Params>(config);
 }
 
