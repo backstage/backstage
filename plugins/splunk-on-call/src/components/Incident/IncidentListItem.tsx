@@ -24,7 +24,6 @@ import {
   makeStyles,
   IconButton,
   Typography,
-  withStyles,
 } from '@material-ui/core';
 import DoneIcon from '@material-ui/icons/Done';
 import DoneAllIcon from '@material-ui/icons/DoneAll';
@@ -61,12 +60,6 @@ const useStyles = makeStyles({
     paddingRight: 48,
   },
 });
-
-const ListItemWithWiderSecondaryAction = withStyles({
-  secondaryAction: {
-    paddingRight: 96,
-  },
-})(ListItem);
 
 type Props = {
   incident: Incident;

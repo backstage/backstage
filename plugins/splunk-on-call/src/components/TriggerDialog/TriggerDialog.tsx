@@ -35,7 +35,6 @@ import {
   InputLabel,
 } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import { useApi, alertApiRef, identityApiRef } from '@backstage/core';
 import { useAsync, useAsyncFn } from 'react-use';
@@ -203,6 +202,7 @@ export const TriggerDialog = ({
                 id="user-targets"
                 multiple
                 value={userTargets}
+                inputProps={{ 'data-testid': 'trigger-select-user-target' }}
                 onChange={handleUserTargets}
                 input={<Input />}
                 renderValue={selected => (
@@ -238,6 +238,7 @@ export const TriggerDialog = ({
                 value={policyTargets}
                 onChange={handlePolicyTargets}
                 input={<Input />}
+                inputProps={{ 'data-testid': 'trigger-select-policies-target' }}
                 renderValue={selected => (
                   <div className={classes.chips}>
                     {(selected as string[]).map(value => {
@@ -277,6 +278,7 @@ export const TriggerDialog = ({
             id="multi-responder"
             value={isMultiResponder}
             onChange={isMultiResponderChanged}
+            inputProps={{ 'data-testid': 'trigger-select-behavior' }}
           >
             <MenuItem value="1">
               Stop paging after a single Acknowledge from an escalation policy
@@ -290,7 +292,7 @@ export const TriggerDialog = ({
         </FormControl>
         <TextField
           required
-          inputProps={{ 'data-testid': 'trigger-input' }}
+          inputProps={{ 'data-testid': 'trigger-summary-input' }}
           id="summary"
           multiline
           fullWidth
@@ -302,7 +304,7 @@ export const TriggerDialog = ({
         />
         <TextField
           required
-          inputProps={{ 'data-testid': 'trigger-input' }}
+          inputProps={{ 'data-testid': 'trigger-body-input' }}
           id="details"
           multiline
           fullWidth

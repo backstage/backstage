@@ -45,7 +45,7 @@ export type Team = {
   name?: string;
   slug?: string;
   memberCount?: number;
-  version?: string;
+  version?: number;
   isDefaultTeam?: boolean;
   _selfUrl?: string;
   _policiesUrl?: string;
@@ -86,6 +86,7 @@ export type OnCallUser = {
 export type User = {
   firstName?: string;
   lastName?: string;
+  displayName?: string;
   username?: string;
   email?: string;
   createdAt?: string;
@@ -108,6 +109,9 @@ export type Incident = {
   incidentNumber?: string;
   startTime?: string;
   currentPhase?: string;
+  entityState?: string;
+  entityType?: string;
+  routingKey?: string;
   alertCount?: number;
   lastAlertTime?: string;
   lastAlertId?: string;
@@ -127,7 +131,7 @@ export type Incident = {
 
 export type EscalationPolicyInfo = {
   policy: EscalationPolicySummary;
-  team: EscalationPolicyTeam;
+  team?: EscalationPolicyTeam;
 };
 
 export type IncidentTransition = {

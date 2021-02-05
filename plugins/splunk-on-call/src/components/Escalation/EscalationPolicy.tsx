@@ -43,7 +43,6 @@ export const EscalationPolicy = ({ users, team }: Props) => {
           });
         });
       });
-
     return users;
   });
 
