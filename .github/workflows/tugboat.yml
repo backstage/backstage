@@ -96,9 +96,8 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@v1
         with:
-          working-directory: ./packages/e2e-test/src
           name: cypress-videos
-          path: cypress/videos
+          path: ./packages/e2e-test/src/cypress/videos
 
       - name: set status
         if: ${{ failure() }}
