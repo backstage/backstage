@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { Entity, EntityName } from '@backstage/catalog-model';
+import { EntityName } from '@backstage/catalog-model';
 import { createApiRef } from '@backstage/core';
+import { PartialEntity } from '../types';
 
 export const catalogImportApiRef = createApiRef<CatalogImportApi>({
   id: 'plugin.catalog-import.service',
@@ -35,7 +36,7 @@ export type AnalyzeResult =
       type: 'repository';
       url: string;
       integrationType: string;
-      generatedEntities: Entity[];
+      generatedEntities: PartialEntity[];
     };
 
 export interface CatalogImportApi {
@@ -43,7 +44,6 @@ export interface CatalogImportApi {
 
   submitPullRequest(options: {
     repositoryUrl: string;
-    integrationType: string;
     fileContent: string;
     title: string;
     body: string;

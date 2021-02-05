@@ -181,7 +181,7 @@ export function defaultGenerateStepper(
                     <TextField
                       name="title"
                       label="Pull Request Title"
-                      placeholder="Add catalog files for the Backstage"
+                      placeholder="Add Backstage catalog entity descriptor files"
                       margin="normal"
                       variant="outlined"
                       fullWidth
@@ -193,7 +193,7 @@ export function defaultGenerateStepper(
                     <TextField
                       name="body"
                       label="Pull Request Body"
-                      placeholder="A decsribing text with Markdown support"
+                      placeholder="A describing text with Markdown support"
                       margin="normal"
                       variant="outlined"
                       fullWidth

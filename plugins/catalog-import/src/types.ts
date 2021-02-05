@@ -14,26 +14,14 @@
  * limitations under the License.
  */
 
-import { ConfigApi } from '@backstage/core';
-import { ScmIntegrations } from '@backstage/integration';
-import parseGitUrl from 'git-url-parse';
+import { Entity } from '@backstage/catalog-model';
 
-export const getGithubIntegrationConfig = (
-  config: ConfigApi,
-  location: string,
-) => {
-  const { name: repo, owner } = parseGitUrl(location);
-
-  const scmIntegrations = ScmIntegrations.fromConfig(config);
-  const githubIntegrationConfig = scmIntegrations.github.byUrl(location);
-
-  if (!githubIntegrationConfig) {
-    return undefined;
-  }
-
-  return {
-    repo,
-    owner,
-    githubIntegrationConfig: githubIntegrationConfig.config,
-  };
+export type RecursivePartial<T> = {
+  [P in keyof T]?: T[P] extends (infer U)[]
+    ? RecursivePartial<U>[]
+    : T[P] extends object
+    ? RecursivePartial<T[P]>
+    : T[P];
 };
+
+export type PartialEntity = RecursivePartial<Entity>;

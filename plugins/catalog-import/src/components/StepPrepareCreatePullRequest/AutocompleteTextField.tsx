@@ -84,7 +84,7 @@ export const AutocompleteTextField = <TFieldValue extends string>({
                 endAdornment: (
                   <React.Fragment>
                     {loading ? (
-                      <CircularProgress color="inherit" size={20} />
+                      <CircularProgress color="inherit" size="1em" />
                     ) : null}
                     {params.InputProps.endAdornment}
                   </React.Fragment>

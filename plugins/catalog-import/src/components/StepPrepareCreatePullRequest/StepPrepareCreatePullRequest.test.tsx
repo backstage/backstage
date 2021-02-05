@@ -169,7 +169,6 @@ metadata:
 spec:
   owner: my-owner-changed
 `,
-        integrationType: 'github',
         repositoryUrl: 'https://my-repository',
         title: 'My title',
       },

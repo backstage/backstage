@@ -24,6 +24,7 @@ import { UseFormMethods } from 'react-hook-form';
 import { useAsync } from 'react-use';
 import YAML from 'yaml';
 import { AnalyzeResult, catalogImportApiRef } from '../../api';
+import { PartialEntity } from '../../types';
 import { BackButton, NextButton } from '../Buttons';
 import { PrepareResult } from '../useImportState';
 import { PreparePullRequestForm } from './PreparePullRequestForm';
@@ -66,7 +67,7 @@ type Props = {
 };
 
 function generateEntities(
-  entities: Entity[],
+  entities: PartialEntity[],
   componentName: string,
   owner: string,
 ): Entity[] {
@@ -117,7 +118,6 @@ export const StepPrepareCreatePullRequest = ({
       try {
         const pr = await catalogInfoApi.submitPullRequest({
           repositoryUrl: analyzeResult.url,
-          integrationType: analyzeResult.integrationType,
           title: data.title,
           body: data.body,
           fileContent: generateEntities(
@@ -177,7 +177,7 @@ export const StepPrepareCreatePullRequest = ({
         <code>catalog-info.yaml</code>.
       </Typography>
 
-      <PreparePullRequestForm
+      <PreparePullRequestForm<FormData>
         onSubmit={handleResult}
         defaultValues={{
           title: defaultTitle,
@@ -230,7 +230,9 @@ export const StepPrepareCreatePullRequest = ({
             {error && <FormHelperText error>{error}</FormHelperText>}
 
             <Grid container spacing={0}>
-              {onGoBack && <BackButton onClick={onGoBack} />}
+              {onGoBack && (
+                <BackButton onClick={onGoBack} disabled={submitted} />
+              )}
               <NextButton
                 type="submit"
                 disabled={Boolean(errors.title || errors.body || errors.owner)}

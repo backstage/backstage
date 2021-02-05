@@ -15,7 +15,7 @@
  */
 
 import { Entity, EntityName } from '@backstage/catalog-model';
-import { useCallback, useState } from 'react';
+import { useReducer } from 'react';
 import { AnalyzeResult } from '../api';
 
 // the configuration of the stepper
@@ -25,15 +25,8 @@ export type ImportFlows =
   | 'multiple-locations'
   | 'no-location';
 
+// the available states of the stepper
 type ImportStateTypes = 'analyze' | 'prepare' | 'review' | 'finish';
-
-// a list that shows the order of states
-const importStates: ImportStateTypes[] = [
-  'analyze',
-  'prepare',
-  'review',
-  'finish',
-];
 
 // result of the prepare state
 export type PrepareResult =
@@ -79,32 +72,41 @@ export type ReviewResult =
       }>;
     };
 
+// function type for the 'analysis' -> 'prepare'/'review' transition
+type onAnalysisFn = (
+  flow: ImportFlows,
+  url: string,
+  result: AnalyzeResult,
+  opts?: { prepareResult?: PrepareResult },
+) => void;
+
+// function type for the 'prepare' -> 'review' transition
+type onPrepareFn = (
+  result: PrepareResult,
+  opts?: { notRepeatable?: boolean },
+) => void;
+
+// function type for the 'review' -> 'finish' transition
+type onReviewFn = (result: ReviewResult) => void;
+
 // the type interfaces that are available in each state. every state provides
 // already known information and means to go to the next, or the previous step.
 type State =
   | {
       activeState: 'analyze';
-      onAnalysis: (
-        flow: ImportFlows,
-        url: string,
-        result: AnalyzeResult,
-        opts?: { prepareResult?: PrepareResult },
-      ) => void;
+      onAnalysis: onAnalysisFn;
     }
   | {
       activeState: 'prepare';
       analyzeResult: AnalyzeResult;
       prepareResult?: PrepareResult;
-      onPrepare: (
-        result: PrepareResult,
-        opts?: { notRepeatable?: boolean },
-      ) => void;
+      onPrepare: onPrepareFn;
     }
   | {
       activeState: 'review';
       analyzeResult: AnalyzeResult;
       prepareResult: PrepareResult;
-      onReview: (result: ReviewResult) => void;
+      onReview: onReviewFn;
     }
   | {
       activeState: 'finish';
@@ -122,6 +124,119 @@ export type ImportState = State & {
   onReset: () => void;
 };
 
+type ReducerActions =
+  | { type: 'onAnalysis'; args: Parameters<onAnalysisFn> }
+  | { type: 'onPrepare'; args: Parameters<onPrepareFn> }
+  | { type: 'onReview'; args: Parameters<onReviewFn> }
+  | { type: 'onGoBack' }
+  | { type: 'onReset'; initialUrl?: string };
+
+type ReducerState = {
+  activeFlow: ImportFlows;
+  activeState: ImportStateTypes;
+  analysisUrl?: string;
+  analyzeResult?: AnalyzeResult;
+  prepareResult?: PrepareResult;
+  reviewResult?: ReviewResult;
+
+  previousStates: ImportStateTypes[];
+};
+
+function init(initialUrl?: string): ReducerState {
+  return {
+    activeFlow: 'unknown',
+    activeState: 'analyze',
+    analysisUrl: initialUrl,
+    previousStates: [],
+  };
+}
+
+function reducer(state: ReducerState, action: ReducerActions): ReducerState {
+  switch (action.type) {
+    case 'onAnalysis': {
+      if (state.activeState !== 'analyze') {
+        return state;
+      }
+
+      const { activeState, previousStates } = state;
+      const [activeFlow, analysisUrl, analyzeResult, opts] = action.args;
+
+      return {
+        ...state,
+        analysisUrl,
+        activeFlow,
+        analyzeResult,
+        prepareResult: opts?.prepareResult,
+
+        activeState: opts?.prepareResult === undefined ? 'prepare' : 'review',
+        previousStates: previousStates.concat(activeState),
+      };
+    }
+
+    case 'onPrepare': {
+      if (state.activeState !== 'prepare') {
+        return state;
+      }
+
+      const { activeState, previousStates } = state;
+      const [prepareResult, opts] = action.args;
+
+      return {
+        ...state,
+        prepareResult,
+
+        activeState: 'review',
+        previousStates: opts?.notRepeatable
+          ? []
+          : previousStates.concat(activeState),
+      };
+    }
+
+    case 'onReview': {
+      if (state.activeState !== 'review') {
+        return state;
+      }
+
+      const { activeState, previousStates } = state;
+      const [reviewResult] = action.args;
+
+      return {
+        ...state,
+        reviewResult,
+
+        activeState: 'finish',
+        previousStates: previousStates.concat(activeState),
+      };
+    }
+
+    case 'onGoBack': {
+      const { activeState, previousStates } = state;
+
+      return {
+        ...state,
+
+        activeState:
+          previousStates.length > 0
+            ? previousStates[previousStates.length - 1]
+            : activeState,
+        previousStates: previousStates.slice(0, previousStates.length - 1),
+      };
+    }
+
+    case 'onReset':
+      return {
+        ...init(action.initialUrl),
+
+        // we keep the old reviewResult since the form is animated and an
+        // undefined value might crash the last step.
+        reviewResult: state.reviewResult,
+      };
+
+    default:
+      throw new Error();
+  }
+}
+
 /**
  * A hook that manages the state machine of the form. It handles different flows
  * which each can implement up to four states:
@@ -133,130 +248,41 @@ export type ImportState = State & {
  * @param opts options
  */
 export const useImportState = (opts?: { initialUrl?: string }): ImportState => {
-  // state management for the results of the individual states
-  const [results, setResults] = useState<{
-    activeFlow: ImportFlows;
-    activeState: ImportStateTypes;
-    analysisUrl?: string;
-    analyzeResult?: AnalyzeResult;
-    prepareResult?: PrepareResult;
-    reviewResult?: ReviewResult;
-  }>({
-    activeFlow: 'unknown',
-    activeState: importStates[0],
-    analysisUrl: opts?.initialUrl,
-  });
+  const [state, dispatch] = useReducer(reducer, opts?.initialUrl, init);
 
-  // for going back
-  const [previewsSteps, setPreviousSteps] = useState<ImportStateTypes[]>([]);
-
-  // compute the next state to use
-  const prepareNextStep = useCallback(
-    (
-      fromState: ImportStateTypes,
-      opts?: { skip?: boolean; clearHistory?: boolean },
-    ) => {
-      if (opts?.clearHistory) {
-        setPreviousSteps([]);
-      } else {
-        setPreviousSteps(s => s.concat(fromState));
-      }
-      return importStates[
-        importStates.indexOf(fromState) + (opts?.skip ? 2 : 1)
-      ];
-    },
-    [],
-  );
-
-  const onGoBack = useCallback(() => {
-    if (previewsSteps.length > 0) {
-      setResults(old => ({
-        ...old,
-        activeState: previewsSteps[previewsSteps.length - 1],
-      }));
-      setPreviousSteps(previewsSteps.slice(0, previewsSteps.length - 1));
-    }
-  }, [previewsSteps]);
-
-  const onAnalysis = (
-    flow: ImportFlows,
-    url: string,
-    result: AnalyzeResult,
-    opts?: { prepareResult?: PrepareResult },
-  ) => {
-    if (results.activeState !== 'analyze') {
-      throw new Error("Can't analyze!");
-    }
-
-    setResults(old => ({
-      ...old,
-      analysisUrl: url,
-      activeFlow: flow,
-      activeState: prepareNextStep('analyze', {
-        skip: opts?.prepareResult !== undefined,
-      }),
-      analyzeResult: result,
-      prepareResult: opts?.prepareResult,
-    }));
-  };
-
-  const onPrepare = (
-    result: PrepareResult,
-    opts?: { notRepeatable?: boolean },
-  ) => {
-    if (results.activeState !== 'prepare') {
-      throw new Error("Can't prepare!");
-    }
-
-    setResults(old => ({
-      ...old,
-      prepareResult: result,
-      activeState: prepareNextStep('prepare', {
-        clearHistory: opts?.notRepeatable,
-      }),
-    }));
-  };
-
-  const onReview = (result: ReviewResult) => {
-    if (results.activeState !== 'review') {
-      throw new Error("Can't prepare!");
-    }
-
-    setResults(old => ({
-      ...old,
-      reviewResult: result,
-      activeState: prepareNextStep('review'),
-    }));
-  };
-
-  const onReset = useCallback(() => {
-    setResults(old => ({
-      activeFlow: 'unknown',
-      activeState: importStates[0],
-      analysisUrl: opts?.initialUrl,
-
-      // we keep the old reviewResult since the form is animated and an
-      // undefined value might crash the last step.
-      reviewResult: old.reviewResult,
-    }));
-    setPreviousSteps([]);
-  }, [opts?.initialUrl]);
+  const { activeFlow, activeState, analysisUrl, previousStates } = state;
 
   return {
-    activeFlow: results.activeFlow,
-    activeStepNumber: importStates.indexOf(results.activeState),
-    analysisUrl: results.analysisUrl,
+    activeFlow,
+    activeState,
+    activeStepNumber: ['analyze', 'prepare', 'review', 'finish'].indexOf(
+      activeState,
+    ),
+    analysisUrl: analysisUrl,
 
-    activeState: results.activeState,
-    analyzeResult: results.analyzeResult!,
-    prepareResult: results.prepareResult!,
-    reviewResult: results.reviewResult!,
+    analyzeResult: state.analyzeResult!,
+    prepareResult: state.prepareResult!,
+    reviewResult: state.reviewResult!,
 
-    onAnalysis,
-    onPrepare,
-    onReview,
+    onAnalysis: (flow, url, result, opts) =>
+      dispatch({
+        type: 'onAnalysis',
+        args: [flow, url, result, opts],
+      }),
 
-    onGoBack: previewsSteps.length > 0 ? onGoBack : undefined,
-    onReset,
+    onPrepare: (result, opts) =>
+      dispatch({
+        type: 'onPrepare',
+        args: [result, opts],
+      }),
+
+    onReview: result => dispatch({ type: 'onReview', args: [result] }),
+
+    onGoBack:
+      previousStates.length > 0
+        ? () => dispatch({ type: 'onGoBack' })
+        : undefined,
+
+    onReset: () => dispatch({ type: 'onReset', initialUrl: opts?.initialUrl }),
   };
 };

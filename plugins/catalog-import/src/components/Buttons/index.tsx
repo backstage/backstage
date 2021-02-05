@@ -40,6 +40,7 @@ const useStyles = makeStyles(theme => ({
 export const NextButton = (
   props: ComponentProps<typeof Button> & { loading?: boolean },
 ) => {
+  const { loading, ...buttonProps } = props;
   const classes = useStyles();
 
   return (
@@ -47,11 +48,11 @@ export const NextButton = (
       <Button
         color="primary"
         variant="contained"
-        {...{ ...props, loading: undefined }}
+        {...buttonProps}
         disabled={props.disabled || props.loading}
       />
       {props.loading && (
-        <CircularProgress size={24} className={classes.buttonProgress} />
+        <CircularProgress size="1.5rem" className={classes.buttonProgress} />
       )}
       {props.loading}
     </div>

@@ -193,17 +193,18 @@ describe('useImportState', () => {
       });
     });
 
-    it('should throw on invalid state', async () => {
+    it('should ignore on invalid state', async () => {
       const { result } = renderHook(() => useImportState());
       await cleanup();
 
       // state 'analyze'
-      await expect(
-        act(async () => as(result.current, 'prepare').onPrepare(locationAP)),
-      ).rejects.toThrow();
-      await expect(
-        act(async () => as(result.current, 'review').onReview(locationR)),
-      ).rejects.toThrow();
+      act(() => {
+        as(result.current, 'prepare').onPrepare(locationAP);
+        as(result.current, 'review').onReview(locationR);
+      });
+
+      expect(result.current.activeState).toBe('analyze');
+      expect(result.current.activeFlow).toBe('unknown');
 
       // switch state to 'prepare'
       act(() =>
@@ -214,33 +215,46 @@ describe('useImportState', () => {
         ),
       );
 
-      await expect(async () =>
+      // state 'prepare'
+      act(() => {
         as(result.current, 'analyze').onAnalysis(
-          'single-location',
+          'multiple-locations',
           'http://my-url',
           locationAP,
-        ),
-      ).rejects.toThrow();
-      await expect(
-        act(async () => as(result.current, 'review').onReview(locationR)),
-      ).rejects.toThrow();
+        );
+        as(result.current, 'review').onReview(locationR);
+      });
+
+      expect(result.current.activeState).toBe('prepare');
+      expect(result.current.activeFlow).toBe('single-location');
 
       // switch to 'review'
       act(() => as(result.current, 'prepare').onPrepare(locationAP));
 
-      await expect(async () =>
+      // state 'review'
+      act(() => {
         as(result.current, 'analyze').onAnalysis(
-          'single-location',
+          'multiple-locations',
           'http://my-url',
           locationAP,
-        ),
-      ).rejects.toThrow();
-      await expect(
-        act(async () => as(result.current, 'prepare').onPrepare(locationAP)),
-      ).rejects.toThrow();
+        );
+        as(result.current, 'prepare').onPrepare({
+          type: 'locations',
+          locations: [],
+        });
+      });
+
+      expect(result.current.activeState).toBe('review');
+      expect(result.current.activeFlow).toBe('single-location');
+      expect(
+        as(result.current, 'prepare').prepareResult!.locations,
+      ).not.toEqual([]);
 
       // switch to 'finish'
       act(() => as(result.current, 'review').onReview(locationR));
+
+      expect(result.current.activeState).toBe('finish');
+      expect(result.current.activeFlow).toBe('single-location');
     });
   });
 

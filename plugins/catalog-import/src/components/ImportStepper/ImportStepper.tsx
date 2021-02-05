@@ -33,12 +33,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export const ImportStepper = ({
-  initialUrl,
-  generateStepper = defaultGenerateStepper,
-  variant,
-  opts,
-}: {
+type Props = {
   initialUrl?: string;
   generateStepper?: (
     flow: ImportFlows,
@@ -46,7 +41,14 @@ export const ImportStepper = ({
   ) => StepperProvider;
   variant?: string;
   opts?: StepperProviderOpts;
-}) => {
+};
+
+export const ImportStepper = ({
+  initialUrl,
+  generateStepper = defaultGenerateStepper,
+  variant,
+  opts,
+}: Props) => {
   const configApi = useApi(configApiRef);
   const classes = useStyles();
   const state = useImportState({ initialUrl });

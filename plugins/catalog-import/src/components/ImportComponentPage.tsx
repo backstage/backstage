@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
 import {
   ConfigApi,
   configApiRef,
@@ -30,12 +29,6 @@ import { Grid, Typography } from '@material-ui/core';
 import React from 'react';
 import { ImportStepper } from './ImportStepper';
 import { StepperProviderOpts } from './ImportStepper/defaults';
-
-export type ConfigSpec = {
-  type: 'tree' | 'file';
-  location: string;
-  config: Entity[];
-};
 
 function repositories(configApi: ConfigApi): string[] {
   const integrations = configApi.getConfig('integrations');
@@ -116,7 +109,7 @@ export const ImportComponentPage = ({
                     Example: <code>https://github.com/backstage/backstage</code>
                   </Typography>
                   <Typography variant="body2" paragraph>
-                    The wizard discovery all <code>catalog-info.yaml</code>{' '}
+                    The wizard discovers all <code>catalog-info.yaml</code>{' '}
                     files in the repository, previews the entities, and adds
                     them to the {appTitle} catalog.
                   </Typography>

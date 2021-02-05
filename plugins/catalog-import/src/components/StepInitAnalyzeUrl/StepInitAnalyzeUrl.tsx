@@ -38,7 +38,7 @@ type Props = {
 };
 
 /**
- * A form that lets the user input an url and analyze it for existing locations or potential entities.
+ * A form that lets the user input a url and analyze it for existing locations or potential entities.
  *
  * @param onAnalysis is called when the analysis was successful
  * @param analysisUrl a url that can be used as a default value
@@ -118,10 +118,11 @@ export const StepInitAnalyzeUrl = ({
   return (
     <form onSubmit={handleSubmit(handleResult)}>
       <TextField
+        fullWidth
         id="url"
         name="url"
         label="Repository URL"
-        placeholder="https://github.com/backstage/backstage"
+        placeholder="https://github.com/backstage/backstage/blob/master/catalog-info.yaml"
         helperText="Enter the full path to your entity file to start tracking your component"
         margin="normal"
         variant="outlined"

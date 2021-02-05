@@ -7,7 +7,7 @@ It also assists by creating pull requests in repositories where no `catalog-info
 
 Current features:
 
-- Import `catalog-info.yaml` files from a URL in a repository of one of the supported Git integrations (example `https://github.com/backstage/backstage/catalog.info`).
+- Import `catalog-info.yaml` files from a URL in a repository of one of the supported Git integrations (example `https://github.com/backstage/backstage/catalog-info.yaml`).
 - _[GitHub only]_ Search for all `catalog-info.yaml` files in a Git repository (example: `https://github.com/backstage/backstage`).
 - _[GitHub only]_ Analyze a repository, generate a Component entity, and create a Pull Request to onboard the repository.
 
@@ -28,40 +28,38 @@ yarn add @backstage/plugin-catalog-import
 ```ts
 // packages/app/src/plugins.ts
 
-export { plugin as CatalogImportPlugin } from '@backstage/plugin-catalog-import';
+export { catalogImportPlugin } from '@backstage/plugin-catalog-import';
 ```
 
-3. Register the `ImportComponentRouter` at the `/catalog-import` path:
+3. Register the `CatalogImportPage` at the `/catalog-import` path:
 
 ```tsx
 // packages/app/src/App.tsx
 
-import { Router as ImportComponentRouter } from '@backstage/plugin-catalog-import';
+import { CatalogImportPage } from '@backstage/plugin-catalog-import';
 
-<Route path="/catalog-import" element={<ImportComponentRouter />} />;
+<Route path="/catalog-import" element={<CatalogImportPage />} />;
 ```
 
 ## Customizations
 
 ### Disable the creation of Pull Requests
 
-The pull request feature can be disabled by options that are passed to the `ImportComponentRouter`:
+The pull request feature can be disabled by options that are passed to the `CatalogImportPage`:
 
 ```tsx
 // packages/app/src/App.tsx
 
 <Route
   path="/catalog-import"
-  element={
-    <ImportComponentRouter options={{ pullRequest: { disable: true } }} />
-  }
+  element={<CatalogImportPage options={{ pullRequest: { disable: true } }} />}
 />
 ```
 
 ### Customize the title and body of the Pull Request
 
 The pull request form is filled with a default title and body.
-This can be configured by options that are passed to the `ImportComponentRouter`:
+This can be configured by options that are passed to the `CatalogImportPage`:
 
 ```tsx
 // packages/app/src/App.tsx
@@ -69,7 +67,7 @@ This can be configured by options that are passed to the `ImportComponentRouter`
 <Route
   path="/catalog-import"
   element={
-    <ImportComponentRouter
+    <CatalogImportPage
       options={{
         pullRequest: {
           preparePullRequest: () => ({

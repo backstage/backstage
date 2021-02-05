@@ -19,7 +19,6 @@ import { Entity, EntityName } from '@backstage/catalog-model';
 import { ConfigApi, DiscoveryApi, OAuthApi } from '@backstage/core';
 import { GitHubIntegrationConfig } from '@backstage/integration';
 import { Octokit } from '@octokit/rest';
-import fetch from 'cross-fetch';
 import { AnalyzeResult, CatalogImportApi } from './CatalogImportApi';
 import { getGithubIntegrationConfig } from './GitHub';
 
@@ -94,20 +93,19 @@ export class CatalogImportClient implements CatalogImportApi {
   }
 
   async submitPullRequest({
-    integrationType,
     repositoryUrl,
     fileContent,
     title,
     body,
   }: {
     repositoryUrl: string;
-    integrationType: string;
     fileContent: string;
     title: string;
     body: string;
   }): Promise<{ link: string; location: string }> {
     const ghConfig = getGithubIntegrationConfig(this.configApi, repositoryUrl);
-    if (integrationType === 'github' && ghConfig) {
+
+    if (ghConfig) {
       return await this.submitGitHubPrToRepo({
         ...ghConfig,
         fileContent,

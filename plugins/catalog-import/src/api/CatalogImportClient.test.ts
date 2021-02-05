@@ -284,7 +284,6 @@ describe('CatalogImportClient', () => {
 
       await expect(
         catalogImportClient.submitPullRequest({
-          integrationType: 'github',
           repositoryUrl: 'https://github.com/backstage/backstage',
           fileContent: 'some content',
           title: 'A title',

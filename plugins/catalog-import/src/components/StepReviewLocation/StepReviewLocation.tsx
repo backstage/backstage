@@ -120,7 +120,7 @@ export const StepReviewLocation = ({
       {error && <FormHelperText error>{error}</FormHelperText>}
 
       <Grid container spacing={0}>
-        {onGoBack && <BackButton onClick={onGoBack} />}
+        {onGoBack && <BackButton onClick={onGoBack} disabled={submitted} />}
         <NextButton
           disabled={submitted}
           loading={submitted}

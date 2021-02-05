@@ -64,11 +64,11 @@ function getEntityIcon(entity: { kind: string }): React.ReactElement {
     case 'domain':
       return <ApartmentIcon />;
 
-    case 'location':
-      return <LocationOnIcon />;
-
     case 'group':
       return <GroupIcon />;
+
+    case 'location':
+      return <LocationOnIcon />;
 
     case 'system':
       return <CategoryIcon />;
@@ -81,6 +81,15 @@ function getEntityIcon(entity: { kind: string }): React.ReactElement {
   }
 }
 
+type Props = {
+  locations: Array<{ target: string; entities: (Entity | EntityName)[] }>;
+  locationListItemIcon: (target: string) => React.ReactElement;
+  collapsed?: boolean;
+  firstListItem?: React.ReactElement;
+  onItemClick?: (target: string) => void;
+  withLinks?: boolean;
+};
+
 export const EntityListComponent = ({
   locations,
   collapsed = false,
@@ -88,14 +97,7 @@ export const EntityListComponent = ({
   onItemClick,
   firstListItem,
   withLinks = false,
-}: {
-  locations: Array<{ target: string; entities: (Entity | EntityName)[] }>;
-  locationListItemIcon: (target: string) => React.ReactElement;
-  collapsed?: boolean;
-  firstListItem?: React.ReactElement;
-  onItemClick?: (target: string) => void;
-  withLinks?: boolean;
-}) => {
+}: Props) => {
   const classes = useStyles();
 
   const [expandedUrls, setExpandedUrls] = useState<string[]>([]);
@@ -144,7 +146,7 @@ export const EntityListComponent = ({
             <List component="div" disablePadding dense>
               {sortEntities(r.entities).map(entity => (
                 <ListItem
-                  component={withLinks ? EntityRefLink : 'li'}
+                  component={withLinks ? EntityRefLink : 'div'}
                   entityRef={withLinks ? entity : undefined}
                   button={withLinks as any}
                   key={formatEntityRefTitle(entity)}

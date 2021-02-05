@@ -16,15 +16,18 @@
 
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity, EntityName } from '@backstage/catalog-model';
-import { Content, Header, Page } from '@backstage/core';
+import { Content, Header, InfoCard, Page } from '@backstage/core';
 import { createDevApp } from '@backstage/dev-utils';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { Grid } from '@material-ui/core';
+import { Grid, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
+import AlarmIcon from '@material-ui/icons/Alarm';
+import LocationOnIcon from '@material-ui/icons/LocationOn';
 import React from 'react';
 import {
   AnalyzeResult,
   CatalogImportApi,
   catalogImportApiRef,
+  EntityListComponent,
   ImportStepper,
 } from '../src';
 import { ImportComponentPage } from '../src/components/ImportComponentPage';
@@ -58,6 +61,59 @@ const getEntities = (url: string): Entity[] => [
       namespace: url.replace(/^.*(folder-[^/]+).*|.*()$/, '$1') || 'default',
       name: 'api-a',
     },
+  },
+];
+
+const locations = [
+  {
+    target: 'https://my-location-1',
+    entities: [
+      {
+        kind: 'Domain',
+        namespace: 'default',
+        name: 'my-domain',
+      },
+      {
+        kind: 'Group',
+        namespace: 'groups',
+        name: 'my-group',
+      },
+      {
+        kind: 'Location',
+        namespace: 'default',
+        name: 'my-location',
+      },
+      {
+        kind: 'System',
+        namespace: 'default',
+        name: 'my-system',
+      },
+      {
+        kind: 'User',
+        namespace: 'users',
+        name: 'my-api',
+      },
+    ],
+  },
+  {
+    target: 'https://my-location-2',
+    entities: [
+      {
+        kind: 'API',
+        namespace: 'default',
+        name: 'my-api',
+      },
+      {
+        kind: 'Component',
+        namespace: 'default',
+        name: 'my-component',
+      },
+      {
+        kind: 'Location',
+        namespace: 'default',
+        name: 'my-location',
+      },
+    ],
   },
 ];
 
@@ -219,6 +275,73 @@ createDevApp()
             </Grid>
             <Grid item xs={12} md={6}>
               <ImportStepper />
+            </Grid>
+          </Grid>
+        </Content>
+      </Page>
+    ),
+  })
+  .addPage({
+    title: 'Components',
+    element: (
+      <Page themeId="home">
+        <Header title="Components" />
+        <Content>
+          <Grid container>
+            <Grid item xs={12} md={6} lg={4}>
+              <InfoCard
+                title="EntityListComponent (default)"
+                variant="gridItem"
+              >
+                <EntityListComponent
+                  locations={locations}
+                  locationListItemIcon={() => <LocationOnIcon />}
+                />
+              </InfoCard>
+            </Grid>
+            <Grid item xs={12} md={6} lg={4}>
+              <InfoCard
+                title="EntityListComponent (clickable locations)"
+                variant="gridItem"
+              >
+                <EntityListComponent
+                  firstListItem={
+                    <ListItem dense>
+                      <ListItemIcon>
+                        <AlarmIcon />
+                      </ListItemIcon>
+                      <ListItemText primary="A custom first item" />
+                    </ListItem>
+                  }
+                  locations={locations}
+                  locationListItemIcon={() => <LocationOnIcon />}
+                  onItemClick={() => {}}
+                />
+              </InfoCard>
+            </Grid>
+            <Grid item xs={12} md={6} lg={4}>
+              <InfoCard
+                title="EntityListComponent (collapsed)"
+                variant="gridItem"
+              >
+                <EntityListComponent
+                  collapsed
+                  locations={locations}
+                  locationListItemIcon={() => <LocationOnIcon />}
+                />
+              </InfoCard>
+            </Grid>
+            <Grid item xs={12} md={6} lg={4}>
+              <InfoCard
+                title="EntityListComponent (clickable)"
+                variant="gridItem"
+              >
+                <EntityListComponent
+                  locations={locations}
+                  locationListItemIcon={() => <LocationOnIcon />}
+                  withLinks
+                />
+              </InfoCard>
             </Grid>
           </Grid>
         </Content>
