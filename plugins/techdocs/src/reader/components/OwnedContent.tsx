@@ -40,7 +40,7 @@ export const OwnedContent = ({ value }: { value: Entity[] }) => {
   const identityApi = useApi(identityApiRef);
   const userId = identityApi.getUserId();
 
-  if (!value) return null;
+  if (!value || !userId) return null;
 
   const ownedDocuments = value
     .filter((entity: Entity) => entity?.spec?.owner === userId)
@@ -96,7 +96,7 @@ export const OwnedContent = ({ value }: { value: Entity[] }) => {
       >
         <SupportButton>Discover documentation you own.</SupportButton>
       </ContentHeader>
-      {ownedDocuments ? (
+      {ownedDocuments && ownedDocuments.length > 0 ? (
         <Table
           options={{ paging: true, pageSize: 20, search: false }}
           data={ownedDocuments}
