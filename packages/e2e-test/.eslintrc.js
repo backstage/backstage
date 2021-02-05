@@ -17,14 +17,14 @@ module.exports = {
     {
       files: ['**/cypress/integration/**'],
       rules: {
-        'jest/expect-expect': 'off'
+        'jest/expect-expect': 'off',
       },
     },
     {
       files: ['src/commands/cypress.ts'],
       rules: {
-        'no-restricted-syntax': 'off'
-      }
-    }
-  ]
+        'no-restricted-syntax': 'off',
+      },
+    },
+  ],
 };
