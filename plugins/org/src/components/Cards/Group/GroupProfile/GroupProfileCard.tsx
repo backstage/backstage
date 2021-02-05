@@ -22,7 +22,16 @@ import {
 } from '@backstage/catalog-model';
 import { Avatar, InfoCard } from '@backstage/core';
 import { entityRouteParams } from '@backstage/plugin-catalog-react';
-import { Box, Grid, Link, Tooltip, Typography } from '@material-ui/core';
+import {
+  Box,
+  Grid,
+  Link,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Tooltip,
+} from '@material-ui/core';
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import EmailIcon from '@material-ui/icons/Email';
 import GroupIcon from '@material-ui/icons/Group';
@@ -76,66 +85,57 @@ export const GroupProfileCard = ({
     ?.map(groupItem => groupItem.target.name)
     .toString();
 
-  const childrens = group?.relations
+  const childRelations = group?.relations
     ?.filter(r => r.type === RELATION_PARENT_OF)
     ?.map(groupItem => groupItem.target.name);
 
   const displayName = profile?.displayName ?? name;
+  const descriptionHeading = description ?? name;
 
   if (!group) return <Alert severity="error">User not found</Alert>;
 
   return (
     <InfoCard
-      title={<CardTitle title={displayName} />}
-      subheader={description}
+      title={<CardTitle title={descriptionHeading} />}
       variant={variant}
     >
       <Grid container spacing={3}>
         <Grid item xs={12} sm={2} xl={1}>
-          <Box
-            display="flex"
-            alignItems="flex-start"
-            justifyContent="center"
-            height="100%"
-            width="100%"
-          >
-            <Avatar displayName={displayName} picture={profile?.picture} />
-          </Box>
+          <Avatar displayName={displayName} picture={profile?.picture} />
         </Grid>
         <Grid item md={10} xl={11}>
-          {profile?.email && (
-            <Typography variant="subtitle1">
-              <Box display="flex" alignItems="center">
-                <Tooltip title="Email">
-                  <EmailIcon fontSize="inherit" />
-                </Tooltip>
-
-                <Box ml={1} display="inline">
-                  {profile.email}
-                </Box>
-              </Box>
-            </Typography>
-          )}
-          {parent ? (
-            <Typography variant="subtitle1">
-              <Box display="flex" alignItems="center">
-                <Tooltip title="Group Parent">
-                  <AccountTreeIcon fontSize="inherit" />
-                </Tooltip>
-                <Box ml={1} display="inline">
+          <List>
+            {profile?.email && (
+              <ListItem>
+                <ListItemIcon>
+                  <Tooltip title="Email">
+                    <EmailIcon fontSize="inherit" />
+                  </Tooltip>
+                </ListItemIcon>
+                <ListItemText>{profile.email}</ListItemText>
+              </ListItem>
+            )}
+            {parent ? (
+              <ListItem>
+                <ListItemIcon>
+                  <Tooltip title="Parent Group">
+                    <AccountTreeIcon />
+                  </Tooltip>
+                </ListItemIcon>
+                <ListItemText>
                   <GroupLink groupName={parent} entity={group} />
-                </Box>
-              </Box>
-            </Typography>
-          ) : null}
-          {childrens?.length ? (
-            <Typography variant="subtitle1">
-              <Box display="flex" alignItems="center">
-                <Tooltip title="Parent of">
-                  <GroupIcon fontSize="inherit" />
-                </Tooltip>
-                <Box ml={1} display="inline">
-                  {childrens.map((children, index) => (
+                </ListItemText>
+              </ListItem>
+            ) : null}
+            {childRelations?.length ? (
+              <ListItem>
+                <ListItemIcon>
+                  <Tooltip title="Child Groups">
+                    <GroupIcon />
+                  </Tooltip>
+                </ListItemIcon>
+                <ListItemText>
+                  {childRelations.map((children, index) => (
                     <GroupLink
                       groupName={children}
                       entity={group}
@@ -143,10 +143,10 @@ export const GroupProfileCard = ({
                       key={children}
                     />
                   ))}
-                </Box>
-              </Box>
-            </Typography>
-          ) : null}
+                </ListItemText>
+              </ListItem>
+            ) : null}
+          </List>
         </Grid>
       </Grid>
     </InfoCard>
