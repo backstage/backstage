@@ -40,21 +40,18 @@ export type SubHeaderLink = {
   action?: React.ReactNode;
 };
 
-// GET Escalation Policies
-
-// export type EscalationPolicyInfo = {
-//   policy: EscalationPolicySummary;
-//   team: Team;
-// }
-// export type EscalationPolicySummary = {
-//   name: string;
-//   slug: string;
-//   _selfUrl: string;
-// }
-// export type Team = {
-//   name: string;
-//   slug: string;
-// }
+// GET Teams
+export type Team = {
+  name?: string;
+  slug?: string;
+  memberCount?: number;
+  version?: string;
+  isDefaultTeam?: boolean;
+  _selfUrl?: string;
+  _policiesUrl?: string;
+  _membersUrl?: string;
+  _adminsUrl?: string;
+};
 
 // GET oncall
 export type OnCall = {
@@ -130,7 +127,7 @@ export type Incident = {
 
 export type EscalationPolicyInfo = {
   policy: EscalationPolicySummary;
-  team: Team;
+  team: EscalationPolicyTeam;
 };
 
 export type IncidentTransition = {
@@ -149,7 +146,7 @@ export type EscalationPolicySummary = {
   _selfUrl: string;
 };
 
-export type Team = {
+export type EscalationPolicyTeam = {
   name: string;
   slug: string;
 };

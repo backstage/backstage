@@ -20,6 +20,7 @@ import {
   OnCall,
   User,
   EscalationPolicyInfo,
+  Team,
 } from '../components/types';
 import {
   SplunkOnCallApi,
@@ -68,6 +69,15 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
     const { teamsOnCall } = await this.getByUrl<OnCallsResponse>(url);
 
     return teamsOnCall;
+  }
+
+  async getTeams(): Promise<Team[]> {
+    const url = `${await this.config.discoveryApi.getBaseUrl(
+      'proxy',
+    )}/splunk-on-call/v1/team`;
+    const teams = await this.getByUrl<Team[]>(url);
+
+    return teams;
   }
 
   async acknowledgeIncident({

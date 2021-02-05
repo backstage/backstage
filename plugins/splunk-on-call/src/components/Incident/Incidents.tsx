@@ -25,13 +25,22 @@ import { Alert } from '@material-ui/lab';
 
 type Props = {
   refreshIncidents: boolean;
+  team: string;
 };
 
-export const Incidents = ({ refreshIncidents }: Props) => {
+export const Incidents = ({ refreshIncidents, team }: Props) => {
   const api = useApi(splunkOnCallApiRef);
 
   const [{ value: incidents, loading, error }, getIncidents] = useAsyncFn(
-    async () => await api.getIncidents(),
+    async () => {
+      const incidents = await api.getIncidents();
+      const teams = await api.getTeams();
+      const teamSlug = teams.find(teamValue => teamValue.name === team)?.slug;
+      const filteredIncidents = teamSlug
+        ? incidents.filter(incident => incident.pagedTeams?.includes(teamSlug))
+        : [];
+      return filteredIncidents;
+    },
   );
 
   useEffect(() => {

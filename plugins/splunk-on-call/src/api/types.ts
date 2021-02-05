@@ -19,6 +19,7 @@ import {
   Incident,
   OnCall,
   Service,
+  Team,
   User,
 } from '../components/types';
 import { DiscoveryApi } from '@backstage/core';
@@ -76,6 +77,11 @@ export interface SplunkOnCallApi {
 
   /**
    * Get a list of users for your organization.
+   */
+  getTeams(): Promise<Team[]>;
+
+  /**
+   * Get a list of escalation policies for your organization.
    */
   getEscalationPolicies(): Promise<EscalationPolicyInfo[]>;
 }

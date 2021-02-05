@@ -127,7 +127,7 @@ export const SplunkOnCallCard = ({ entity }: Props) => {
       />
       <Divider />
       <CardContent>
-        <Incidents refreshIncidents={refreshIncidents} />
+        <Incidents team={team} refreshIncidents={refreshIncidents} />
         {users?.usersHashMap && (
           <EscalationPolicy team={team} users={users.usersHashMap} />
         )}
