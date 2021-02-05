@@ -90,13 +90,13 @@ export const GroupProfileCard = ({
     ?.map(groupItem => groupItem.target.name);
 
   const displayName = profile?.displayName ?? name;
-  const descriptionHeading = description ?? name;
 
   if (!group) return <Alert severity="error">User not found</Alert>;
 
   return (
     <InfoCard
-      title={<CardTitle title={descriptionHeading} />}
+      title={<CardTitle title={displayName} />}
+      subheader={description}
       variant={variant}
     >
       <Grid container spacing={3}>
