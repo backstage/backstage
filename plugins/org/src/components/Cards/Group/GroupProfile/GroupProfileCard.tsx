@@ -21,7 +21,10 @@ import {
   RELATION_PARENT_OF,
 } from '@backstage/catalog-model';
 import { Avatar, InfoCard } from '@backstage/core';
-import { entityRouteParams } from '@backstage/plugin-catalog-react';
+import {
+  getEntityRelations,
+  entityRouteParams,
+} from '@backstage/plugin-catalog-react';
 import {
   Box,
   Grid,
@@ -85,9 +88,9 @@ export const GroupProfileCard = ({
     ?.map(groupItem => groupItem.target.name)
     .toString();
 
-  const childRelations = group?.relations
-    ?.filter(r => r.type === RELATION_PARENT_OF)
-    ?.map(groupItem => groupItem.target.name);
+  const childRelations = getEntityRelations(group, RELATION_PARENT_OF, {
+    kind: 'group',
+  });
 
   const displayName = profile?.displayName ?? name;
 
@@ -137,10 +140,9 @@ export const GroupProfileCard = ({
                 <ListItemText>
                   {childRelations.map((children, index) => (
                     <GroupLink
-                      groupName={children}
+                      groupName={children.name}
                       entity={group}
                       index={index}
-                      key={children}
                     />
                   ))}
                 </ListItemText>
