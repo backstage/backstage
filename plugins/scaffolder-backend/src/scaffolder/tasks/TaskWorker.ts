@@ -101,9 +101,6 @@ export class TaskWorker {
         task.emitLog(`Finished step ${step.name}`);
       }
 
-      logger.info('So done right now');
-      await new Promise(resolve => setTimeout(resolve, 5000));
-
       await task.complete('completed');
     } catch (error) {
       task.emitLog(String(error.stack));
