@@ -141,7 +141,7 @@ export class DatabaseTaskStore implements TaskStore {
         last_heartbeat_at: this.db.fn.now(),
       });
     if (updateCount === 0) {
-      throw new Error(`No running task with taskId ${taskId} found`);
+      throw new ConflictError(`No running task with taskId ${taskId} found`);
     }
   }
 
@@ -210,7 +210,7 @@ export class DatabaseTaskStore implements TaskStore {
           status,
         });
       if (updateCount !== 1) {
-        throw new Error(
+        throw new ConflictError(
           `Failed to update status to '${status}' for taskId ${taskId}`,
         );
       }
