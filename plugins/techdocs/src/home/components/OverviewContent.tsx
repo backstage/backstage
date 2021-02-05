@@ -50,7 +50,7 @@ export const OverviewContent = ({ value }: { value: Entity[] | undefined }) => {
                   })}
                   title={entity.metadata.name}
                   label="Read Docs"
-                  description={entity.metadata.description}
+                  description={entity.metadata.description ?? ''}
                 />
               </Grid>
             ))
