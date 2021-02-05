@@ -16,6 +16,7 @@
 import { Entity } from '@backstage/catalog-model';
 import { DiscoveryApi } from '@backstage/core';
 import fetch from 'cross-fetch';
+import { DeploymentResponse } from './types';
 
 export class L5dClient {
   private readonly discoveryApi: DiscoveryApi;
@@ -24,7 +25,7 @@ export class L5dClient {
     this.discoveryApi = options.discoveryApi;
   }
 
-  async getStatsForEntity(entity: Entity) {
+  async getStatsForEntity(entity: Entity): Promise<DeploymentResponse> {
     return await fetch(
       `${await this.discoveryApi.getBaseUrl('linkerd')}/namespace/${
         entity.metadata.namespace

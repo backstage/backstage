@@ -153,7 +153,6 @@ export async function createRouter(
       `/api/tps-reports?${qs.stringify(actualOptions)}`,
     );
 
-    JSON.stringify(requests, null, 2);
     return requests.ok.statTables
       .filter((table: any) => table.podGroup.rows.length)
       .map((table: any) =>
@@ -212,32 +211,32 @@ export async function createRouter(
   );
 
   // TODO(blam): Get a breakdown for a deployment in a namespace
-  router.get(
-    '/namespace/:namespace/deployment/:deployment/stats',
-    async ({ params: { deployment, namespace } }, response) => {
-      const fromOptions = {
-        from_name: deployment,
-        from_namespace: namespace,
-        // from_type: 'deployment',
-      };
+  // router.get(
+  //   '/namespace/:namespace/deployment/:deployment/stats',
+  //   async ({ params: { deployment, namespace } }, response) => {
+  //     const fromOptions = {
+  //       from_name: deployment,
+  //       from_namespace: namespace,
+  //       // from_type: 'deployment',
+  //     };
 
-      const toOptions = {
-        to_name: deployment,
-        to_namespace: namespace,
-        // to_type: 'deployment',
-      };
+  //     const toOptions = {
+  //       to_name: deployment,
+  //       to_namespace: namespace,
+  //       // to_type: 'deployment',
+  //     };
 
-      const [incoming, outgoing] = await Promise.all([
-        generateTpsStats(toOptions),
-        generateTpsStats(fromOptions),
-      ]);
+  //     const [incoming, outgoing] = await Promise.all([
+  //       generateTpsStats(toOptions),
+  //       generateTpsStats(fromOptions),
+  //     ]);
 
-      response.send({
-        incoming,
-        outgoing,
-      });
-    },
-  );
+  //     response.send({
+  //       incoming,
+  //       outgoing,
+  //     });
+  //   },
+  // );
 
   router.get('/health', (_, response) => {
     logger.info('PONG!');

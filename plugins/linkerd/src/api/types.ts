@@ -50,8 +50,8 @@ export interface Metrics {
 type MetricType = Partial<'deployment' | 'service' | 'authority' | 'pod'>;
 
 export interface DeploymentResponse {
-  inbound: Record<MetricType, Metrics>;
-  outbound: Record<MetricType, Metrics>;
+  incoming: Record<MetricType, Metrics>;
+  outgoing: Record<MetricType, Metrics>;
 }
 
 export interface L5dClient {

@@ -15,25 +15,30 @@
  */
 
 import { useApi } from '@backstage/core';
-import { useEntity } from '@backstage/plugin-catalog';
-import * as React from 'react';
-import { useAsync } from 'react-use';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import React, { useState } from 'react';
+import { useInterval } from 'react-use';
+import { OctopusGraph } from './OctopusGraph';
 import { linkerdPluginRef } from '../plugin';
 import ReactFlow from 'react-flow-renderer';
+import { DeploymentResponse } from '../api/types';
 
 export const Tab = () => {
   const l5d = useApi(linkerdPluginRef);
   const { entity } = useEntity();
-  const { loading, value } = useAsync(() => l5d.getStatsForEntity(entity));
+  const [stats, setStats] = useState<null | DeploymentResponse>(null);
 
-  if (loading) {
+  useInterval(async () => {
+    setStats(await l5d.getStatsForEntity(entity));
+  }, 1000);
+
+  if (!stats) {
     return <p>Loading...</p>;
   }
-
-  if (value) {
+  if (stats) {
     if (
-      !Object.values(value.incoming).length &&
-      !Object.values(value.outgoing).length
+      !Object.values(stats.incoming).length &&
+      !Object.values(stats.outgoing).length
     ) {
       return (
         <p>
@@ -44,16 +49,9 @@ export const Tab = () => {
     }
   }
 
-  const elements = [
-    { id: '1', data: { label: 'Node 1' }, position: { x: 250, y: 5 } },
-    // you can also pass a React component as a label
-    {
-      id: '2',
-      data: { label: <div>Node 2</div> },
-      position: { x: 100, y: 100 },
-    },
-    { id: 'e1-2', source: '1', target: '2', animated: true },
-  ];
-
-  return <ReactFlow elements={elements} />;
+  return (
+    <>
+      <OctopusGraph stats={stats} entity={entity} />
+    </>
+  );
 };
