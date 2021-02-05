@@ -87,7 +87,7 @@ jobs:
           CYPRESS_baseUrl: ${{steps.get-status-env.outputs.result}}
         with:
           config-file: ./cypress.json
-          working-directory: ./packages/e2e-test/src
+          working-directory: ./packages/e2e-test
           browser: chrome
           install: false
           headless: true
@@ -97,7 +97,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: cypress-videos
-          path: ./packages/e2e-test/src/cypress/videos
+          path: ./packages/e2e-test/cypress/videos
 
       - name: set status
         if: ${{ failure() }}
