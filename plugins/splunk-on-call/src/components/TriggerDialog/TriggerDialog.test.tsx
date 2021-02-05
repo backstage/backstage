@@ -26,19 +26,7 @@ import {
 } from '@backstage/core';
 import { splunkOnCallApiRef } from '../../api';
 import { TriggerDialog } from './TriggerDialog';
-import { User } from '../types';
-
-const MOCKED_USER: User = {
-  createdAt: '2021-02-01T23:38:38Z',
-  displayName: 'Test User',
-  email: 'remi.d45@gmail.com',
-  firstName: 'FirstNameTest',
-  lastName: 'LastNameTest',
-  passwordLastUpdated: '2021-02-01T23:38:38Z',
-  username: 'test_user',
-  verified: true,
-  _selfUrl: '/api-public/v1/user/test_user',
-};
+import { MOCKED_USER } from '../../api/mocks';
 
 describe('TriggerDialog', () => {
   const mockIdentityApi: Partial<IdentityApi> = {
@@ -48,18 +36,16 @@ describe('TriggerDialog', () => {
   const mockTriggerAlarmFn = jest.fn();
   const mockSplunkOnCallApi = {
     triggerAlarm: mockTriggerAlarmFn,
-    getEscalationPolicies: async () => ({
-      policies: [
-        {
-          policy: {
-            name: 'Example',
-            slug: 'team-zEalMCgwYSA0Lt40',
-            _selfUrl: '/api-public/v1/policies/team-zEalMCgwYSA0Lt40',
-          },
-          team: { name: 'Example', slug: 'team-zEalMCgwYSA0Lt40' },
+    getEscalationPolicies: async () => [
+      {
+        policy: {
+          name: 'Example',
+          slug: 'team-zEalMCgwYSA0Lt40',
+          _selfUrl: '/api-public/v1/policies/team-zEalMCgwYSA0Lt40',
         },
-      ],
-    }),
+        team: { name: 'Example', slug: 'team-zEalMCgwYSA0Lt40' },
+      },
+    ],
   };
 
   const apis = ApiRegistry.from([
@@ -103,8 +89,8 @@ describe('TriggerDialog', () => {
     await act(async () => {
       fireEvent.change(summary, { target: { value: description } });
       fireEvent.change(body, { target: { value: description } });
-      fireEvent.change(userTarget, { target: { value: ['test_user'] } });
       fireEvent.change(behavior, { target: { value: '0' } });
+      fireEvent.change(userTarget, { target: { value: ['test_user'] } });
       fireEvent.change(policiesTarget, {
         target: { value: ['team-zEalMCgwYSA0Lt40'] },
       });

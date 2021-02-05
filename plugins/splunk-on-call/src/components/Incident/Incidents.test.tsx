@@ -18,56 +18,15 @@ import { render, waitFor } from '@testing-library/react';
 import { Incidents } from './Incidents';
 import { wrapInTestApp } from '@backstage/test-utils';
 import {
+  alertApiRef,
   ApiProvider,
   ApiRegistry,
+  createApiRef,
   IdentityApi,
   identityApiRef,
 } from '@backstage/core';
 import { splunkOnCallApiRef } from '../../api';
-import { Incident, Team } from '../types';
-
-const MOCK_INCIDENT: Incident = {
-  alertCount: 1,
-  currentPhase: 'ACKED',
-  entityDisplayName: 'test-incident',
-  entityId: 'entityId',
-  entityState: 'CRITICAL',
-  entityType: 'SERVICE',
-  incidentNumber: '1',
-  lastAlertId: 'lastAlertId',
-  lastAlertTime: '2021-02-03T00:13:11Z',
-  routingKey: 'routingdefault',
-  service: 'test',
-  startTime: '2021-02-03T00:13:11Z',
-  pagedTeams: ['team-O9SqT13fsnCstjMi'],
-  pagedUsers: [],
-  pagedPolicies: [
-    {
-      policy: {
-        name: 'Generated Direct User Policy for test',
-        slug: 'directUserPolicySlug-test',
-        _selfUrl: '/test',
-      },
-    },
-  ],
-  transitions: [{ name: 'ACKED', at: '2021-02-03T01:20:00Z', by: 'test' }],
-  monitorName: 'vouser-user',
-  monitorType: 'Manual',
-  firstAlertUuid: 'firstAlertUuid',
-  incidentLink: 'https://portal.victorops.com/example',
-};
-
-const MOCK_TEAM: Team = {
-  _selfUrl: '/api-public/v1/team/team-O9SqT13fsnCstjMi',
-  _membersUrl: '/api-public/v1/team/team-O9SqT13fsnCstjMi/members',
-  _policiesUrl: '/api-public/v1/team/team-O9SqT13fsnCstjMi/policies',
-  _adminsUrl: '/api-public/v1/team/team-O9SqT13fsnCstjMi/admins',
-  name: 'test',
-  slug: 'team-O9SqT13fsnCstjMi',
-  memberCount: 1,
-  version: 1,
-  isDefaultTeam: false,
-};
+import { MOCK_TEAM, MOCK_INCIDENT } from '../../api/mocks';
 
 const mockIdentityApi: Partial<IdentityApi> = {
   getUserId: () => 'test',
@@ -78,6 +37,13 @@ const mockSplunkOnCallApi = {
   getTeams: () => [],
 };
 const apis = ApiRegistry.from([
+  [
+    alertApiRef,
+    createApiRef({
+      id: 'core.alert',
+      description: 'Used to report alerts and forward them to the app',
+    }),
+  ],
   [identityApiRef, mockIdentityApi],
   [splunkOnCallApiRef, mockSplunkOnCallApi],
 ]);
@@ -121,7 +87,11 @@ describe('Incidents', () => {
       ),
     );
     await waitFor(() => !queryByTestId('progress'));
-    expect(getByText('user')).toBeInTheDocument();
+    expect(
+      getByText('user', {
+        exact: false,
+      }),
+    ).toBeInTheDocument();
     expect(getByText('test-incident')).toBeInTheDocument();
     expect(getByTitle('ACKED')).toBeInTheDocument();
     expect(getByLabelText('Status warning')).toBeInTheDocument();

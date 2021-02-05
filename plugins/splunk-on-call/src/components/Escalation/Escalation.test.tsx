@@ -17,33 +17,9 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { EscalationPolicy } from './EscalationPolicy';
 import { wrapInTestApp } from '@backstage/test-utils';
-import { User } from '../types';
 import { ApiProvider, ApiRegistry } from '@backstage/core';
 import { splunkOnCallApiRef } from '../../api';
-
-const MOCKED_USER: User = {
-  createdAt: '2021-02-01T23:38:38Z',
-  displayName: 'Test User',
-  email: 'test@example.com',
-  firstName: 'FirstNameTest',
-  lastName: 'LastNameTest',
-  passwordLastUpdated: '2021-02-01T23:38:38Z',
-  username: 'test_user',
-  verified: true,
-  _selfUrl: '/api-public/v1/user/test_user',
-};
-
-const MOCKED_ON_CALL = [
-  {
-    team: { name: 'team_example', slug: 'team-zEalMCgwYSA0Lt40' },
-    oncallNow: [
-      {
-        escalationPolicy: { name: 'Example', slug: 'team-zEalMCgwYSA0Lt40' },
-        users: [{ onCalluser: { username: 'test_user' } }],
-      },
-    ],
-  },
-];
+import { MOCKED_ON_CALL, MOCKED_USER } from '../../api/mocks';
 
 const mockSplunkOnCallApi = {
   getOnCallUsers: () => [],

@@ -29,22 +29,18 @@ import {
   UnauthorizedError,
   SplunkOnCallClient,
 } from '../api';
-import { User } from './types';
-
-const MOCKED_USER: User = {
-  createdAt: '2021-02-01T23:38:38Z',
-  displayName: 'Test User',
-  email: 'remi.d45@gmail.com',
-  firstName: 'FirstNameTest',
-  lastName: 'LastNameTest',
-  passwordLastUpdated: '2021-02-01T23:38:38Z',
-  username: 'test_user',
-  verified: true,
-  _selfUrl: '/api-public/v1/user/test_user',
-};
+import {
+  MOCKED_ON_CALL,
+  MOCKED_USER,
+  MOCK_INCIDENT,
+  MOCK_TEAM,
+} from '../api/mocks';
 
 const mockSplunkOnCallApi: Partial<SplunkOnCallClient> = {
   getUsers: async () => [],
+  getIncidents: async () => [MOCK_INCIDENT],
+  getOnCallUsers: async () => MOCKED_ON_CALL,
+  getTeams: async () => [MOCK_TEAM],
 };
 
 const apis = ApiRegistry.from([
