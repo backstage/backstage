@@ -1,7 +1,7 @@
 # OAuthRequestApi
 
 The OAuthRequestApi type is defined at
-[packages/core-api/src/apis/definitions/OAuthRequestApi.ts:99](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/OAuthRequestApi.ts#L99).
+[packages/core-api/src/apis/definitions/OAuthRequestApi.ts:99](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/OAuthRequestApi.ts#L99).
 
 The following Utility API implements this type:
 [oauthRequestApiRef](./README.md#oauthrequest)
@@ -73,7 +73,7 @@ export type AuthProvider = {
 </pre>
 
 Defined at
-[packages/core-api/src/apis/definitions/OAuthRequestApi.ts:27](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/OAuthRequestApi.ts#L27).
+[packages/core-api/src/apis/definitions/OAuthRequestApi.ts:27](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/OAuthRequestApi.ts#L27).
 
 Referenced by: [AuthRequesterOptions](#authrequesteroptions),
 [PendingAuthRequest](#pendingauthrequest).
@@ -97,7 +97,7 @@ export type AuthRequester&lt;AuthResponse&gt; = (
 </pre>
 
 Defined at
-[packages/core-api/src/apis/definitions/OAuthRequestApi.ts:66](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/OAuthRequestApi.ts#L66).
+[packages/core-api/src/apis/definitions/OAuthRequestApi.ts:66](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/OAuthRequestApi.ts#L66).
 
 Referenced by: [createAuthRequester](#createauthrequester).
 
@@ -122,7 +122,7 @@ export type AuthRequesterOptions&lt;AuthResponse&gt; = {
 </pre>
 
 Defined at
-[packages/core-api/src/apis/definitions/OAuthRequestApi.ts:43](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/OAuthRequestApi.ts#L43).
+[packages/core-api/src/apis/definitions/OAuthRequestApi.ts:43](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/OAuthRequestApi.ts#L43).
 
 Referenced by: [createAuthRequester](#createauthrequester).
 
@@ -151,13 +151,13 @@ export type Observable&lt;T&gt; = {
 </pre>
 
 Defined at
-[packages/core-api/src/types.ts:53](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/types.ts#L53).
+[packages/core-api/src/types.ts:53](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/types.ts#L53).
 
 Referenced by: [authRequest\$](#authrequest).
 
 ### Observer
 
-This file contains non-react related core types used through Backstage.
+This file contains non-react related core types used throughout Backstage.
 
 Observer interface for consuming an Observer, see TC39.
 
@@ -170,7 +170,7 @@ export type Observer&lt;T&gt; = {
 </pre>
 
 Defined at
-[packages/core-api/src/types.ts:24](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/types.ts#L24).
+[packages/core-api/src/types.ts:24](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/types.ts#L24).
 
 Referenced by: [Observable](#observable).
 
@@ -205,7 +205,7 @@ export type PendingAuthRequest = {
 </pre>
 
 Defined at
-[packages/core-api/src/apis/definitions/OAuthRequestApi.ts:77](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/apis/definitions/OAuthRequestApi.ts#L77).
+[packages/core-api/src/apis/definitions/OAuthRequestApi.ts:77](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/OAuthRequestApi.ts#L77).
 
 Referenced by: [authRequest\$](#authrequest).
 
@@ -228,6 +228,6 @@ export type Subscription = {
 </pre>
 
 Defined at
-[packages/core-api/src/types.ts:33](https://github.com/spotify/backstage/blob/0406ace29aba7332a98ff9ef9feedd65adc75223/packages/core-api/src/types.ts#L33).
+[packages/core-api/src/types.ts:33](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/types.ts#L33).
 
 Referenced by: [Observable](#observable).

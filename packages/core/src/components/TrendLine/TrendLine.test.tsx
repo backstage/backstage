@@ -17,24 +17,24 @@
 /* eslint-disable jest/no-disabled-tests */
 import React from 'react';
 import { render } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, wrapInTestApp } from '@backstage/test-utils';
 
 import { TrendLine } from './TrendLine';
 
 describe('TrendLine', () => {
   describe('when no data is present', () => {
-    it('renders null without throwing', () => {
-      const rendered = render(
-        wrapInTestApp(<TrendLine data={[]} title="sparkline" />),
+    it('renders null without throwing', async () => {
+      const rendered = await renderInTestApp(
+        <TrendLine data={[]} title="sparkline" />,
       );
       expect(rendered.queryByTitle('sparkline')).not.toBeInTheDocument();
     });
   });
 
   describe('when one datapoint is present', () => {
-    it('renders as a straight line', () => {
-      const rendered = render(
-        wrapInTestApp(<TrendLine data={[0.5]} title="sparkline" />),
+    it('renders as a straight line', async () => {
+      const rendered = await renderInTestApp(
+        <TrendLine data={[0.5]} title="sparkline" />,
       );
       expect(rendered.getByTitle('sparkline')).toBeInTheDocument();
     });

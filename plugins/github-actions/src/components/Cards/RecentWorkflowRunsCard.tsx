@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import { errorApiRef, useApi } from '@backstage/core-api';
+import {
+  configApiRef,
+  EmptyState,
+  errorApiRef,
+  InfoCard,
+  Table,
+  useApi,
+} from '@backstage/core';
+import { readGitHubIntegrationConfigs } from '@backstage/integration';
+import { Button, Link } from '@material-ui/core';
+import React, { useEffect } from 'react';
+import { generatePath, Link as RouterLink } from 'react-router-dom';
 import { GITHUB_ACTIONS_ANNOTATION } from '../useProjectName';
 import { useWorkflowRuns } from '../useWorkflowRuns';
-import React, { useEffect } from 'react';
-import { EmptyState, Table } from '@backstage/core';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
-import { Button, Card, Link, TableContainer } from '@material-ui/core';
-import { generatePath, Link as RouterLink } from 'react-router-dom';
 
 const firstLine = (message: string): string => message.split('\n')[0];
 
@@ -30,6 +37,7 @@ export type Props = {
   branch?: string;
   dense?: boolean;
   limit?: number;
+  variant?: string;
 };
 
 export const RecentWorkflowRunsCard = ({
@@ -37,12 +45,19 @@ export const RecentWorkflowRunsCard = ({
   branch,
   dense = false,
   limit = 5,
+  variant,
 }: Props) => {
+  const config = useApi(configApiRef);
   const errorApi = useApi(errorApiRef);
+  // TODO: Get github hostname from metadata annotation
+  const hostname = readGitHubIntegrationConfigs(
+    config.getOptionalConfigArray('integrations.github') ?? [],
+  )[0].host;
   const [owner, repo] = (
     entity?.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION] ?? '/'
   ).split('/');
   const [{ runs = [], loading, error }] = useWorkflowRuns({
+    hostname,
     owner,
     repo,
     branch,
@@ -58,7 +73,7 @@ export const RecentWorkflowRunsCard = ({
     <EmptyState
       missing="data"
       title="No Workflow Data"
-      description="This component has Github Actions enabled, but no data was found. Have you created any Workflows? Click the button below to create a new Workflow."
+      description="This component has GitHub Actions enabled, but no data was found. Have you created any Workflows? Click the button below to create a new Workflow."
       action={
         <Button
           variant="contained"
@@ -70,15 +85,19 @@ export const RecentWorkflowRunsCard = ({
       }
     />
   ) : (
-    <TableContainer component={Card}>
+    <InfoCard
+      title="Recent Workflow Runs"
+      subheader={branch ? `Branch: ${branch}` : 'All Branches'}
+      noPadding
+      variant={variant}
+    >
       <Table
-        title="Recent Workflow Runs"
-        subtitle={branch ? `Branch: ${branch}` : 'All Branches'}
         isLoading={loading}
         options={{
           search: false,
           paging: false,
           padding: dense ? 'dense' : 'default',
+          toolbar: false,
         }}
         columns={[
           {
@@ -98,6 +117,6 @@ export const RecentWorkflowRunsCard = ({
         ]}
         data={runs}
       />
-    </TableContainer>
+    </InfoCard>
   );
 };

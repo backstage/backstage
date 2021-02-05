@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ComponentClass, Component, SFC, ErrorInfo } from 'react';
+import React, { ComponentClass, Component, ErrorInfo } from 'react';
 
 type Props = {
   slackChannel?: string;
@@ -24,6 +24,21 @@ type Props = {
 type State = {
   error?: Error;
   errorInfo?: ErrorInfo;
+};
+
+type EProps = {
+  error?: Error;
+  slackChannel?: string;
+  children?: React.ReactNode;
+};
+
+const Error = ({ slackChannel }: EProps) => {
+  return (
+    <div role="alert">
+      Something went wrong here.{' '}
+      {slackChannel && <>Please contact {slackChannel} for help.</>}
+    </div>
+  );
 };
 
 export const ErrorBoundary: ComponentClass<
@@ -55,18 +70,4 @@ export const ErrorBoundary: ComponentClass<
 
     return <Error error={error} slackChannel={slackChannel} />;
   }
-};
-
-type EProps = {
-  error?: Error;
-  slackChannel?: string;
-};
-
-const Error: SFC<EProps> = ({ slackChannel }) => {
-  return (
-    <div>
-      Something went wrong here.{' '}
-      {slackChannel && <>Please contact {slackChannel} for help.</>}
-    </div>
-  );
 };

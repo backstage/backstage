@@ -2,8 +2,8 @@
 id: software-templates-index
 title: Backstage Software Templates
 sidebar_label: Overview
-description: The Software Templates part of Backstage is a tool that can help
-you create Components inside Backstage
+# prettier-ignore
+description: The Software Templates part of Backstage is a tool that can help you create Components inside Backstage
 ---
 
 The Software Templates part of Backstage is a tool that can help you create
@@ -39,17 +39,16 @@ internally.
 ![Enter some variables](../../assets/software-templates/template-picked.png)
 
 After filling in these variables, you'll get some more fields to fill out which
-are required for backstage usage: the owner, (which is a `user` in the backstage
-system), the `storePath` (which right now must be a GitHub Organisation or
-GitHub user), a non-existing github repository name in the format
-`organisation/reponame`, and a GitHub team or user account which should be
-granted admin access to the repository.
+are required for Backstage usage: the owner (which is a `user` in the backstage
+system), and the `storePath` which is a destination URL to create for the
+provider, for instance `https://github.com/backstage/my-new-repository`, or
+`https://gitlab.com/myorg/myrepo`.
 
-![Enter backstage vars](../../assets/software-templates/template-picked-2.png)
+![Enter Backstage vars](../../assets/software-templates/template-picked-2.png)
 
 ### Run!
 
-Once you've entered values and confirmed, you'll then get a modal with live
+Once you've entered values and confirmed, you'll then get a popup box with live
 progress of what is currently happening with the creation of your template.
 
 ![Templating Running](../../assets/software-templates/running.png)
@@ -70,6 +69,6 @@ you to the registered component in the catalog:
 
 ![Catalog](../../assets/software-templates/go-to-catalog.png)
 
-And then you'll also be able to see it in the Catalog View table
+And then you'll also be able to see it in the Catalog View table:
 
 ![Catalog](../../assets/software-templates/added-to-the-catalog-list.png)

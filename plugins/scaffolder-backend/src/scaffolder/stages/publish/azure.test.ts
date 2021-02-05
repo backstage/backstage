@@ -13,167 +13,77 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+jest.mock('./helpers');
 
-jest.mock('nodegit');
-jest.mock('azure-devops-node-api/GitApi');
-jest.mock('azure-devops-node-api/interfaces/GitInterfaces');
+jest.mock('azure-devops-node-api', () => ({
+  WebApi: jest.fn(),
+  getPersonalAccessTokenHandler: jest.fn().mockReturnValue(() => {}),
+}));
 
+import os from 'os';
+import { resolve } from 'path';
 import { AzurePublisher } from './azure';
-import { GitApi } from 'azure-devops-node-api/GitApi';
-import * as NodeGit from 'nodegit';
-
-const { mockGitApi } = require('azure-devops-node-api/GitApi') as {
-  mockGitApi: {
-    createRepository: jest.MockedFunction<GitApi['createRepository']>;
-  };
-};
-
-const {
-  Repository,
-  mockRepo,
-  mockIndex,
-  Signature,
-  Remote,
-  mockRemote,
-  Cred,
-} = require('nodegit') as {
-  Repository: jest.Mocked<{ init: any }>;
-  Signature: jest.Mocked<{ now: any }>;
-  Cred: jest.Mocked<{ userpassPlaintextNew: any }>;
-  Remote: jest.Mocked<{ create: any }>;
-
-  mockIndex: jest.Mocked<NodeGit.Index>;
-  mockRepo: jest.Mocked<NodeGit.Repository>;
-  mockRemote: jest.Mocked<NodeGit.Remote>;
-};
+import { WebApi } from 'azure-devops-node-api';
+import * as helpers from './helpers';
+import { getVoidLogger } from '@backstage/backend-common';
 
 describe('Azure Publisher', () => {
-  const publisher = new AzurePublisher(new GitApi('', []), 'fake-token');
+  const logger = getVoidLogger();
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
+  const workspacePath = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
+  const resultPath = resolve(workspacePath, 'result');
 
   describe('publish: createRemoteInAzure', () => {
     it('should use azure-devops-node-api to create a repo in the given project', async () => {
-      mockGitApi.createRepository.mockResolvedValue({
-        remoteUrl: 'mockclone',
-      } as { remoteUrl: string });
+      const mockGitClient = {
+        createRepository: jest.fn(),
+      };
+      const mockGitApi = {
+        getGitApi: jest.fn().mockReturnValue(mockGitClient),
+      };
 
-      await publisher.publish({
-        values: {
-          storePath: 'project/repo',
-          owner: 'bob',
-        },
-        directory: '/tmp/test',
+      ((WebApi as unknown) as jest.Mock).mockImplementation(() => mockGitApi);
+
+      const publisher = await AzurePublisher.fromConfig({
+        host: 'dev.azure.com',
+        token: 'fake-azure-token',
       });
 
-      expect(mockGitApi.createRepository).toHaveBeenCalledWith(
+      mockGitClient.createRepository.mockResolvedValue({
+        remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+      } as { remoteUrl: string });
+
+      const result = await publisher!.publish({
+        values: {
+          storePath: 'https://dev.azure.com/organisation/project/_git/repo',
+          owner: 'bob',
+        },
+        workspacePath,
+        logger,
+      });
+
+      expect(WebApi).toHaveBeenCalledWith(
+        'https://dev.azure.com/organisation',
+        expect.any(Function),
+      );
+
+      expect(result).toEqual({
+        remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+        catalogInfoUrl:
+          'https://dev.azure.com/organization/project/_git/repo?path=%2Fcatalog-info.yaml',
+      });
+      expect(mockGitClient.createRepository).toHaveBeenCalledWith(
         {
           name: 'repo',
         },
         'project',
       );
-    });
-  });
-
-  describe('publish: createGitDirectory', () => {
-    const values = {
-      isOrg: true,
-      storePath: 'blam/test',
-      owner: 'lols',
-    };
-
-    const mockDir = '/tmp/test/dir';
-
-    mockGitApi.createRepository.mockResolvedValue({
-      remoteUrl: 'mockclone',
-    } as { remoteUrl: string });
-
-    it('should call init on the repo with the directory', async () => {
-      await publisher.publish({
-        values,
-        directory: mockDir,
+      expect(helpers.initRepoAndPush).toHaveBeenCalledWith({
+        dir: resultPath,
+        remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+        auth: { username: 'notempty', password: 'fake-azure-token' },
+        logger,
       });
-
-      expect(Repository.init).toHaveBeenCalledWith(mockDir, 0);
-    });
-
-    it('should call refresh index on the index and write the new files', async () => {
-      await publisher.publish({
-        values,
-        directory: mockDir,
-      });
-
-      expect(mockRepo.refreshIndex).toHaveBeenCalled();
-    });
-
-    it('should call add all files and write', async () => {
-      await publisher.publish({
-        values,
-        directory: mockDir,
-      });
-
-      expect(mockIndex.addAll).toHaveBeenCalled();
-      expect(mockIndex.write).toHaveBeenCalled();
-      expect(mockIndex.writeTree).toHaveBeenCalled();
-    });
-
-    it('should create a commit with on head with the right name and commiter', async () => {
-      const mockSignature = { mockSignature: 'bloblly' };
-      Signature.now.mockReturnValue(mockSignature);
-
-      await publisher.publish({
-        values,
-        directory: mockDir,
-      });
-
-      expect(Signature.now).toHaveBeenCalledTimes(2);
-      expect(Signature.now).toHaveBeenCalledWith(
-        'Scaffolder',
-        'scaffolder@backstage.io',
-      );
-
-      expect(mockRepo.createCommit).toHaveBeenCalledWith(
-        'HEAD',
-        mockSignature,
-        mockSignature,
-        'initial commit',
-        'mockoid',
-        [],
-      );
-    });
-
-    it('creates a remote with the repo and remote', async () => {
-      await publisher.publish({
-        values,
-        directory: mockDir,
-      });
-
-      expect(Remote.create).toHaveBeenCalledWith(
-        mockRepo,
-        'origin',
-        'mockclone',
-      );
-    });
-
-    it('shoud push to the remote repo', async () => {
-      await publisher.publish({
-        values,
-        directory: mockDir,
-      });
-
-      const [remotes, { callbacks }] = mockRemote.push.mock
-        .calls[0] as NodeGit.PushOptions[];
-
-      expect(remotes).toEqual(['refs/heads/master:refs/heads/master']);
-
-      callbacks?.credentials?.();
-
-      expect(Cred.userpassPlaintextNew).toHaveBeenCalledWith(
-        'notempty',
-        'fake-token',
-      );
     });
   });
 });

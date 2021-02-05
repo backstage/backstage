@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { wrapInTestApp, msw } from '@backstage/test-utils';
 import { ApiRegistry, ApiProvider } from '@backstage/core';
 
 import AuditListTable from './AuditListTable';
@@ -26,7 +26,7 @@ import {
   LighthouseRestApi,
 } from '../../api';
 import { formatTime } from '../../utils';
-import mockFetch from 'jest-fetch-mock';
+import { setupServer } from 'msw/node';
 
 import * as data from '../../__fixtures__/website-list-response.json';
 
@@ -35,11 +35,13 @@ const websiteListResponse = data as WebsiteListResponse;
 describe('AuditListTable', () => {
   let apis: ApiRegistry;
 
+  const server = setupServer();
+  msw.setupDefaultHandlers(server);
+
   beforeEach(() => {
     apis = ApiRegistry.from([
       [lighthouseApiRef, new LighthouseRestApi('http://lighthouse')],
     ]);
-    mockFetch.mockResponse(JSON.stringify(websiteListResponse));
   });
 
   const auditList = (websiteList: WebsiteListResponse) => {

@@ -27,29 +27,36 @@ jest.mock('react-router-dom', () => {
 });
 
 import React from 'react';
-import mockFetch from 'jest-fetch-mock';
-import { render, fireEvent } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { render } from '@testing-library/react';
+import { wrapInTestApp, msw } from '@backstage/test-utils';
 import { ApiRegistry, ApiProvider } from '@backstage/core';
-
 import AuditView from '.';
 import { lighthouseApiRef, LighthouseRestApi, Audit, Website } from '../../api';
 import { formatTime } from '../../utils';
 import * as data from '../../__fixtures__/website-response.json';
-import { act } from 'react-dom/test-utils';
+
+import { setupServer } from 'msw/node';
+import { rest } from 'msw';
 
 const { useParams }: { useParams: jest.Mock } = jest.requireMock(
   'react-router-dom',
 );
 const websiteResponse = data as Website;
-const { useNavigate } = jest.requireMock('react-router-dom');
 
 describe('AuditView', () => {
   let apis: ApiRegistry;
   let id: string;
 
+  const server = setupServer();
+  msw.setupDefaultHandlers(server);
+
   beforeEach(() => {
-    mockFetch.mockResponse(JSON.stringify(websiteResponse));
+    server.use(
+      rest.get('https://lighthouse/*', async (_req, res, ctx) =>
+        res(ctx.json(websiteResponse)),
+      ),
+    );
+
     apis = ApiRegistry.from([
       [lighthouseApiRef, new LighthouseRestApi('https://lighthouse')],
     ]);
@@ -72,27 +79,6 @@ describe('AuditView', () => {
     );
     expect(iframe).toBeInTheDocument();
     expect(iframe).toHaveAttribute('src', `https://lighthouse/v1/audits/${id}`);
-  });
-
-  it('renders a button to click to create a new audit for this website', async () => {
-    const rendered = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <AuditView />
-        </ApiProvider>,
-      ),
-    );
-
-    const button = await rendered.findByText('Create New Audit');
-    expect(button).toBeInTheDocument();
-
-    act(() => {
-      fireEvent.click(button);
-    });
-
-    expect(useNavigate()).toHaveBeenCalledWith(
-      `../../create-audit?url=${encodeURIComponent('https://spotify.com')}`,
-    );
   });
 
   describe('sidebar', () => {
@@ -163,8 +149,8 @@ describe('AuditView', () => {
   });
 
   describe('when the request for the website by id is pending', () => {
-    it('it shows the loading', async () => {
-      mockFetch.mockImplementationOnce(() => new Promise(() => {}));
+    it('shows the loading', async () => {
+      server.use(rest.get('*', (_req, res, ctx) => res(ctx.delay(20000))));
       const rendered = render(
         wrapInTestApp(
           <ApiProvider apis={apis}>
@@ -177,8 +163,12 @@ describe('AuditView', () => {
   });
 
   describe('when the request for the website by id fails', () => {
-    it('it shows an error', async () => {
-      mockFetch.mockRejectOnce(new Error('failed to fetch'));
+    it('shows an error', async () => {
+      server.use(
+        rest.get('*', (_req, res, ctx) =>
+          res(ctx.status(500), ctx.body('failed to fetch')),
+        ),
+      );
       const rendered = render(
         wrapInTestApp(
           <ApiProvider apis={apis}>
@@ -186,7 +176,7 @@ describe('AuditView', () => {
           </ApiProvider>,
         ),
       );
-      expect(await rendered.findByText('failed to fetch')).toBeInTheDocument();
+      expect(await rendered.findByText(/failed to fetch/)).toBeInTheDocument();
     });
   });
 

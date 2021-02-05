@@ -26,7 +26,7 @@ import {
 
 const builder = ApiRegistry.builder();
 
-builder.add(configApiRef, ConfigReader.fromConfigs([]));
+builder.add(configApiRef, new ConfigReader({}));
 
 const alertApi = builder.add(alertApiRef, new AlertApiForwarder());
 

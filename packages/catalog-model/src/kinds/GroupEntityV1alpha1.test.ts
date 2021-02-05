@@ -16,10 +16,10 @@
 
 import {
   GroupEntityV1alpha1,
-  groupEntityV1alpha1Policy as policy,
+  groupEntityV1alpha1Validator as validator,
 } from './GroupEntityV1alpha1';
 
-describe('GroupV1alpha1Policy', () => {
+describe('GroupV1alpha1Validator', () => {
   let entity: GroupEntityV1alpha1;
 
   beforeEach(() => {
@@ -28,105 +28,148 @@ describe('GroupV1alpha1Policy', () => {
       kind: 'Group',
       metadata: {
         name: 'doe-squad',
-        title: 'Doe Squad',
         description: 'A squad for John and Jane',
       },
       spec: {
         type: 'squad',
+        profile: {
+          displayName: 'Doe Squad',
+          email: 'doe@doe.org',
+          picture: 'https://doe.org/doe',
+        },
         parent: 'group-a',
-        ancestors: ['group-a', 'global-synergies', 'acme-corp'],
         children: ['child-a', 'child-b'],
-        descendants: ['desc-a', 'desc-b'],
       },
     };
   });
 
   it('happy path: accepts valid data', async () => {
-    await expect(policy.enforce(entity)).resolves.toBe(entity);
+    await expect(validator.check(entity)).resolves.toBe(true);
   });
 
   it('silently accepts v1beta1 as well', async () => {
     (entity as any).apiVersion = 'backstage.io/v1beta1';
-    await expect(policy.enforce(entity)).resolves.toBe(entity);
+    await expect(validator.check(entity)).resolves.toBe(true);
   });
 
   it('ignores unknown apiVersion', async () => {
     (entity as any).apiVersion = 'backstage.io/v1beta0';
-    await expect(policy.enforce(entity)).resolves.toBeUndefined();
+    await expect(validator.check(entity)).resolves.toBe(false);
   });
 
   it('ignores unknown kind', async () => {
     (entity as any).kind = 'Wizard';
-    await expect(policy.enforce(entity)).resolves.toBeUndefined();
+    await expect(validator.check(entity)).resolves.toBe(false);
   });
 
   it('rejects missing type', async () => {
     delete (entity as any).spec.type;
-    await expect(policy.enforce(entity)).rejects.toThrow(/type/);
+    await expect(validator.check(entity)).rejects.toThrow(/type/);
   });
 
   it('rejects wrong type', async () => {
     (entity as any).spec.type = 7;
-    await expect(policy.enforce(entity)).rejects.toThrow(/type/);
+    await expect(validator.check(entity)).rejects.toThrow(/type/);
   });
 
   it('rejects empty type', async () => {
     (entity as any).spec.type = '';
-    await expect(policy.enforce(entity)).rejects.toThrow(/type/);
+    await expect(validator.check(entity)).rejects.toThrow(/type/);
   });
+
+  // profile
+
+  it('accepts missing profile', async () => {
+    delete (entity as any).spec.profile;
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects wrong profile', async () => {
+    (entity as any).spec.profile = 7;
+    await expect(validator.check(entity)).rejects.toThrow(/profile/);
+  });
+
+  it('profile accepts missing displayName', async () => {
+    delete (entity as any).spec.profile.displayName;
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('profile rejects wrong displayName', async () => {
+    (entity as any).spec.profile.displayName = 7;
+    await expect(validator.check(entity)).rejects.toThrow(/displayName/);
+  });
+
+  it('profile rejects empty displayName', async () => {
+    (entity as any).spec.profile.displayName = '';
+    await expect(validator.check(entity)).rejects.toThrow(/displayName/);
+  });
+
+  it('profile accepts missing email', async () => {
+    delete (entity as any).spec.profile.email;
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('profile rejects wrong email', async () => {
+    (entity as any).spec.profile.email = 7;
+    await expect(validator.check(entity)).rejects.toThrow(/email/);
+  });
+
+  it('profile rejects empty email', async () => {
+    (entity as any).spec.profile.email = '';
+    await expect(validator.check(entity)).rejects.toThrow(/email/);
+  });
+
+  it('profile accepts missing picture', async () => {
+    delete (entity as any).spec.profile.picture;
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('profile rejects wrong picture', async () => {
+    (entity as any).spec.profile.picture = 7;
+    await expect(validator.check(entity)).rejects.toThrow(/picture/);
+  });
+
+  it('profile rejects empty picture', async () => {
+    (entity as any).spec.profile.picture = '';
+    await expect(validator.check(entity)).rejects.toThrow(/picture/);
+  });
+
+  it('profile accepts unknown additional fields', async () => {
+    (entity as any).spec.profile.foo = 'data';
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  // parent
 
   it('accepts missing parent', async () => {
     delete (entity as any).spec.parent;
-    await expect(policy.enforce(entity)).resolves.toBe(entity);
+    await expect(validator.check(entity)).resolves.toBe(true);
   });
 
   it('rejects empty parent', async () => {
     (entity as any).spec.parent = '';
-    await expect(policy.enforce(entity)).rejects.toThrow(/parent/);
+    await expect(validator.check(entity)).rejects.toThrow(/parent/);
   });
 
-  it('rejects missing ancestors', async () => {
-    delete (entity as any).spec.ancestors;
-    await expect(policy.enforce(entity)).rejects.toThrow(/ancestor/);
-  });
-
-  it('accepts empty ancestors', async () => {
-    (entity as any).spec.ancestors = [''];
-    await expect(policy.enforce(entity)).resolves.toBe(entity);
-  });
-
-  it('accepts no ancestors', async () => {
-    (entity as any).spec.ancestors = [];
-    await expect(policy.enforce(entity)).resolves.toBe(entity);
-  });
+  // children
 
   it('rejects missing children', async () => {
     delete (entity as any).spec.children;
-    await expect(policy.enforce(entity)).rejects.toThrow(/children/);
+    await expect(validator.check(entity)).rejects.toThrow(/children/);
   });
 
-  it('accepts empty children', async () => {
+  it('rejects empty children', async () => {
     (entity as any).spec.children = [''];
-    await expect(policy.enforce(entity)).resolves.toBe(entity);
+    await expect(validator.check(entity)).rejects.toThrow(/children/);
+  });
+
+  it('rejects undefined children', async () => {
+    (entity as any).spec.children = [undefined];
+    await expect(validator.check(entity)).rejects.toThrow(/children/);
   });
 
   it('accepts no children', async () => {
     (entity as any).spec.children = [];
-    await expect(policy.enforce(entity)).resolves.toBe(entity);
-  });
-
-  it('rejects missing descendants', async () => {
-    delete (entity as any).spec.descendants;
-    await expect(policy.enforce(entity)).rejects.toThrow(/descendants/);
-  });
-
-  it('accepts empty descendants', async () => {
-    (entity as any).spec.descendants = [''];
-    await expect(policy.enforce(entity)).resolves.toBe(entity);
-  });
-
-  it('accepts no descendants', async () => {
-    (entity as any).spec.descendants = [];
-    await expect(policy.enforce(entity)).resolves.toBe(entity);
+    await expect(validator.check(entity)).resolves.toBe(true);
   });
 });

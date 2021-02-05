@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
-import { PageTheme, pageTheme } from './PageThemeProvider';
-import { makeStyles } from '@material-ui/core';
-
-export const PageThemeContext = React.createContext<PageTheme>(pageTheme.home);
+import React, { PropsWithChildren } from 'react';
+import { BackstageTheme } from '@backstage/theme';
+import { makeStyles, ThemeProvider } from '@material-ui/core';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -32,14 +30,19 @@ const useStyles = makeStyles(() => ({
 }));
 
 type Props = {
-  theme?: PageTheme;
+  themeId: string;
 };
 
-export const Page: FC<Props> = ({ theme = pageTheme.home, children }) => {
+export const Page = ({ themeId, children }: PropsWithChildren<Props>) => {
   const classes = useStyles();
   return (
-    <PageThemeContext.Provider value={theme}>
+    <ThemeProvider
+      theme={(baseTheme: BackstageTheme) => ({
+        ...baseTheme,
+        page: baseTheme.getPageTheme({ themeId }),
+      })}
+    >
       <div className={classes.root}>{children}</div>
-    </PageThemeContext.Provider>
+    </ThemeProvider>
   );
 };

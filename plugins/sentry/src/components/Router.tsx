@@ -13,32 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { Entity } from '@backstage/catalog-model';
-import { Routes, Route } from 'react-router';
-import { WarningPanel } from '@backstage/core';
-import { SentryPluginWidget } from './SentryPluginWidget/SentryPluginWidget';
-
-const SENTRY_ANNOTATION = 'sentry.io/project-slug';
+import { Route, Routes } from 'react-router';
+import { SentryIssuesWidget } from './SentryIssuesWidget';
 
 export const Router = ({ entity }: { entity: Entity }) => {
-  const projectId = entity.metadata.annotations?.[SENTRY_ANNOTATION];
-
-  if (!projectId) {
-    return (
-      <WarningPanel title="Sentry plugin:">
-        <pre>{SENTRY_ANNOTATION}</pre> annotation is missing on the entity.
-      </WarningPanel>
-    );
-  }
-
   return (
     <Routes>
       <Route
         path="/"
-        element={
-          <SentryPluginWidget sentryProjectId={projectId} statsFor="24h" />
-        }
+        element={<SentryIssuesWidget entity={entity} statsFor="24h" />}
       />
       )
     </Routes>

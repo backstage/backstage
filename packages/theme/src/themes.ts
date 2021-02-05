@@ -15,6 +15,7 @@
  */
 
 import { createTheme } from './baseTheme';
+import { pageTheme } from './pageTheme';
 import { yellow } from '@material-ui/core/colors';
 
 export const lightTheme = createTheme({
@@ -57,13 +58,15 @@ export const lightTheme = createTheme({
     infoBackground: '#ebf5ff',
     errorText: '#CA001B',
     infoText: '#004e8a',
-    warningText: '#FEFEFE',
+    warningText: '#000000',
     linkHover: '#2196F3',
     link: '#0A6EBE',
     gold: yellow.A700,
     navigation: {
       background: '#171717',
       indicator: '#9BF0E1',
+      color: '#b5b5b5',
+      selectedColor: '#FFF',
     },
     pinSidebarButton: {
       icon: '#181818',
@@ -73,6 +76,8 @@ export const lightTheme = createTheme({
       indicator: '#9BF0E1',
     },
   },
+  defaultPageTheme: 'home',
+  pageTheme,
 });
 
 export const darkTheme = createTheme({
@@ -115,13 +120,15 @@ export const darkTheme = createTheme({
     infoBackground: '#ebf5ff',
     errorText: '#CA001B',
     infoText: '#004e8a',
-    warningText: '#FEFEFE',
+    warningText: '#000000',
     linkHover: '#2196F3',
     link: '#0A6EBE',
     gold: yellow.A700,
     navigation: {
       background: '#424242',
       indicator: '#9BF0E1',
+      color: '#b5b5b5',
+      selectedColor: '#FFF',
     },
     pinSidebarButton: {
       icon: '#404040',
@@ -131,4 +138,6 @@ export const darkTheme = createTheme({
       indicator: '#9BF0E1',
     },
   },
+  defaultPageTheme: 'home',
+  pageTheme,
 });

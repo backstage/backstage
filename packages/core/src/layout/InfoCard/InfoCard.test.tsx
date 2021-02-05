@@ -15,8 +15,7 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 import { InfoCard } from './InfoCard';
 
 const minProps = {
@@ -28,13 +27,13 @@ const minProps = {
 };
 
 describe('<InfoCard />', () => {
-  it('renders without exploding', () => {
-    const rendered = render(wrapInTestApp(<InfoCard {...minProps} />));
+  it('renders without exploding', async () => {
+    const rendered = await renderInTestApp(<InfoCard {...minProps} />);
     expect(rendered.getByText('Some title')).toBeInTheDocument();
   });
 
-  it('renders a deepLink when prop is set', () => {
-    const rendered = render(wrapInTestApp(<InfoCard {...minProps} />));
+  it('renders a deepLink when prop is set', async () => {
+    const rendered = await renderInTestApp(<InfoCard {...minProps} />);
     expect(rendered.getByText('A deepLink title')).toBeInTheDocument();
   });
 });

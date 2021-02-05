@@ -15,7 +15,6 @@
  */
 
 //  NEEDS WORK
-
 import {
   Content,
   ContentHeader,
@@ -23,7 +22,6 @@ import {
   HeaderLabel,
   Link,
   Page,
-  pageTheme,
   SupportButton,
   useApi,
   WarningPanel,
@@ -134,21 +132,19 @@ const PageContents = () => {
   );
 };
 
-export const ProjectListPage = () => {
-  return (
-    <Page theme={pageTheme.service}>
-      <Header title="GCP Projects" type="tool">
-        {labels}
-      </Header>
-      <Content>
-        <ContentHeader title="">
-          <Button variant="contained" color="primary" href="/gcp-projects/new">
-            New Project
-          </Button>
-          <SupportButton>All your software catalog entities</SupportButton>
-        </ContentHeader>
-        <PageContents />
-      </Content>
-    </Page>
-  );
-};
+export const ProjectListPage = () => (
+  <Page themeId="service">
+    <Header title="GCP Projects" type="tool">
+      {labels}
+    </Header>
+    <Content>
+      <ContentHeader title="">
+        <Button variant="contained" color="primary" href="/gcp-projects/new">
+          New Project
+        </Button>
+        <SupportButton>All your software catalog entities</SupportButton>
+      </ContentHeader>
+      <PageContents />
+    </Content>
+  </Page>
+);

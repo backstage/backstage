@@ -4,7 +4,7 @@ This package provides the core API used by Backstage plugins and apps.
 
 ## Installation
 
-Install the package via npm or yarn:
+Install the package via npm or Yarn:
 
 ```sh
 $ npm install --save @backstage/core
@@ -18,5 +18,5 @@ $ yarn add @backstage/core
 
 ## Documentation
 
-- [Backstage Readme](https://github.com/spotify/backstage/blob/master/README.md)
-- [Backstage Documentation](https://github.com/spotify/backstage/blob/master/docs/README.md)
+- [Backstage Readme](https://github.com/backstage/backstage/blob/master/README.md)
+- [Backstage Documentation](https://github.com/backstage/backstage/blob/master/docs/README.md)

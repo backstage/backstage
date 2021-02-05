@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { default } from './CostInsightsSupportButton';
+export { CostInsightsSupportButton } from './CostInsightsSupportButton';

@@ -14,22 +14,20 @@
  * limitations under the License.
  */
 
-import { Header, Page, pageTheme } from '@backstage/core';
+import { Header, Page } from '@backstage/core';
 import React from 'react';
 
 type Props = {
   children?: React.ReactNode;
 };
 
-export const ApiExplorerLayout = ({ children }: Props) => {
-  return (
-    <Page theme={pageTheme.home}>
-      <Header
-        title="APIs"
-        subtitle="Backstage API Explorer"
-        pageTitleOverride="APIs"
-      />
-      {children}
-    </Page>
-  );
-};
+export const ApiExplorerLayout = ({ children }: Props) => (
+  <Page themeId="home">
+    <Header
+      title="APIs"
+      subtitle="Backstage API Explorer"
+      pageTitleOverride="APIs"
+    />
+    {children}
+  </Page>
+);

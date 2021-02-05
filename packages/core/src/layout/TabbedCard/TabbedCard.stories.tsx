@@ -13,14 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState } from 'react';
+import React, { useState, PropsWithChildren } from 'react';
 import { TabbedCard, CardTab } from '.';
 import { Grid } from '@material-ui/core';
+import { MemoryRouter } from 'react-router';
 
 const cardContentStyle = { height: 200, width: 500 };
 
+const Wrapper = ({ children }: PropsWithChildren<{}>) => (
+  <MemoryRouter>{children}</MemoryRouter>
+);
+
 export default {
-  title: 'Tabbed Card',
+  title: 'Layout/Tabbed Card',
   component: TabbedCard,
   decorators: [
     (storyFn: () => JSX.Element) => (
@@ -33,20 +38,22 @@ export default {
 
 export const Default = () => {
   return (
-    <TabbedCard title="Default Example Header">
-      <CardTab label="Option 1">
-        <div style={cardContentStyle}>Some content</div>
-      </CardTab>
-      <CardTab label="Option 2">
-        <div style={cardContentStyle}>Some content 2</div>
-      </CardTab>
-      <CardTab label="Option 3">
-        <div style={cardContentStyle}>Some content 3</div>
-      </CardTab>
-      <CardTab label="Option 4">
-        <div style={cardContentStyle}>Some content 4</div>
-      </CardTab>
-    </TabbedCard>
+    <Wrapper>
+      <TabbedCard title="Default Example Header">
+        <CardTab label="Option 1">
+          <div style={cardContentStyle}>Some content</div>
+        </CardTab>
+        <CardTab label="Option 2">
+          <div style={cardContentStyle}>Some content 2</div>
+        </CardTab>
+        <CardTab label="Option 3">
+          <div style={cardContentStyle}>Some content 3</div>
+        </CardTab>
+        <CardTab label="Option 4">
+          <div style={cardContentStyle}>Some content 4</div>
+        </CardTab>
+      </TabbedCard>
+    </Wrapper>
   );
 };
 
@@ -54,20 +61,22 @@ const linkInfo = { title: 'Go to XYZ Location', link: '#' };
 
 export const WithFooterLink = () => {
   return (
-    <TabbedCard title="Footer Link Example Header" deepLink={linkInfo}>
-      <CardTab label="Option 1">
-        <div style={cardContentStyle}>Some content</div>
-      </CardTab>
-      <CardTab label="Option 2">
-        <div style={cardContentStyle}>Some content 2</div>
-      </CardTab>
-      <CardTab label="Option 3">
-        <div style={cardContentStyle}>Some content 3</div>
-      </CardTab>
-      <CardTab label="Option 4">
-        <div style={cardContentStyle}>Some content 4</div>
-      </CardTab>
-    </TabbedCard>
+    <Wrapper>
+      <TabbedCard title="Footer Link Example Header" deepLink={linkInfo}>
+        <CardTab label="Option 1">
+          <div style={cardContentStyle}>Some content</div>
+        </CardTab>
+        <CardTab label="Option 2">
+          <div style={cardContentStyle}>Some content 2</div>
+        </CardTab>
+        <CardTab label="Option 3">
+          <div style={cardContentStyle}>Some content 3</div>
+        </CardTab>
+        <CardTab label="Option 4">
+          <div style={cardContentStyle}>Some content 4</div>
+        </CardTab>
+      </TabbedCard>
+    </Wrapper>
   );
 };
 
@@ -78,7 +87,7 @@ export const WithControlledTabValue = () => {
     setSelectedTab(newSelectedTab);
 
   return (
-    <>
+    <Wrapper>
       <span>Selected tab is {selectedTab}</span>
 
       <TabbedCard
@@ -99,6 +108,6 @@ export const WithControlledTabValue = () => {
           <div style={cardContentStyle}>Some content 4</div>
         </CardTab>
       </TabbedCard>
-    </>
+    </Wrapper>
   );
 };

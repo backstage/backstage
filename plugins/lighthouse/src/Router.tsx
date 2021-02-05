@@ -15,16 +15,35 @@
  */
 
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import { rootRouteRef, viewAuditRouteRef, createAuditRouteRef } from './plugin';
+import { Route, Routes } from 'react-router-dom';
 import AuditList from './components/AuditList';
-import AuditView from './components/AuditView';
-import CreateAudit from './components/CreateAudit';
+import AuditView, { AuditViewContent } from './components/AuditView';
+import CreateAudit, { CreateAuditContent } from './components/CreateAudit';
+import { Entity } from '@backstage/catalog-model';
+import { LIGHTHOUSE_WEBSITE_URL_ANNOTATION } from '../constants';
+import { AuditListForEntity } from './components/AuditList/AuditListForEntity';
+import { MissingAnnotationEmptyState } from '@backstage/core';
+
+export const isLighthouseAvailable = (entity: Entity) =>
+  Boolean(entity.metadata.annotations?.[LIGHTHOUSE_WEBSITE_URL_ANNOTATION]);
 
 export const Router = () => (
   <Routes>
-    <Route path={`/${rootRouteRef.path}`} element={<AuditList />} />
-    <Route path={`/${viewAuditRouteRef.path}`} element={<AuditView />} />
-    <Route path={`/${createAuditRouteRef.path}`} element={<CreateAudit />} />
+    <Route path="/" element={<AuditList />} />
+    <Route path="/audit/:id" element={<AuditView />} />
+    <Route path="/create-audit" element={<CreateAudit />} />
   </Routes>
 );
+
+export const EmbeddedRouter = ({ entity }: { entity: Entity }) =>
+  !isLighthouseAvailable(entity) ? (
+    <MissingAnnotationEmptyState
+      annotation={LIGHTHOUSE_WEBSITE_URL_ANNOTATION}
+    />
+  ) : (
+    <Routes>
+      <Route path="/" element={<AuditListForEntity />} />
+      <Route path="/audit/:id" element={<AuditViewContent />} />
+      <Route path="/create-audit" element={<CreateAuditContent />} />
+    </Routes>
+  );

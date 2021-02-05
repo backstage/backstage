@@ -34,9 +34,15 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 2018,
     sourceType: 'module',
+    lib: require('./tsconfig.json').compilerOptions.lib,
   },
   ignorePatterns: ['.eslintrc.js', '**/dist/**', '**/dist-types/**'],
   rules: {
+    'no-shadow': 'off',
+    'no-redeclare': 'off',
+    '@typescript-eslint/no-shadow': 'error',
+    '@typescript-eslint/no-redeclare': 'error',
+
     'no-console': 0, // Permitted in console programs
     'new-cap': ['error', { capIsNew: false }], // Because Express constructs things e.g. like 'const r = express.Router()'
     'import/newline-after-import': 'error',
@@ -67,9 +73,21 @@ module.exports = {
         selector:
           'ImportDeclaration[source.value="winston"] ImportDefaultSpecifier',
       },
+      {
+        message:
+          "`__dirname` doesn't refer to the same dir in production builds, try `resolvePackagePath()` from `@backstage/backend-common` instead.",
+        selector: 'Identifier[name="__dirname"]',
+      },
     ],
   },
   overrides: [
+    {
+      files: ['**/*.ts?(x)'],
+      rules: {
+        '@typescript-eslint/no-unused-vars': 'off',
+        'no-undef': 'off',
+      },
+    },
     {
       files: ['*.test.*', 'src/setupTests.*', 'dev/**'],
       rules: {

@@ -17,10 +17,10 @@ Currently we provide the following templaters:
 - `cookiecutter`
 
 This templater is added to the `TemplaterBuilder` and then passed into the
-`createRouter` function of the `@spotify/plugin-scaffolder-backend`
+`createRouter` function of the `@backstage/plugin-scaffolder-backend`
 
 An full example backend can be found
-[here](https://github.com/spotify/backstage/blob/d91c10f654475a60829fa33a5c81018e517a319a/packages/backend/src/plugins/scaffolder.ts),
+[here](https://github.com/backstage/backstage/blob/d91c10f654475a60829fa33a5c81018e517a319a/packages/backend/src/plugins/scaffolder.ts),
 but it looks something like the following
 
 ```ts
@@ -61,7 +61,7 @@ That type looks like the following:
 ```ts
 export type TemplaterRunOptions = {
   directory: string;
-  values: RequiredTemplateValues & Record<string, JsonValue>;
+  values: TemplaterValues;
   logStream?: Writable;
   dockerClient: Docker;
 };
@@ -86,17 +86,18 @@ follows:
 
 _note_ Currently the templaters that we provide are basically Docker action
 containers that are run on top of the skeleton folder. This keeps dependencies
-to a minimal for running backstage scaffolder, but you don't /have/ to use
-Docker. You could create your own templater that spins up an EC2 instance and
-downloads the folder and does everything using an AMI if you want. It's entirely
-up to you!
+to a minimum for running Backstage scaffolder, but you don't _have_ to use
+Docker. You can `pip install cookiecutter` to run it locally in your backend.
+You could create your own templater that spins up an EC2 instance and downloads
+the folder and does everything using an AMI if you want. It's entirely up to
+you!
 
 Now it's up to you to implement the `run` function, and then return a
 `TemplaterRunResult` which is `{ resultDir: string }`.
 
 Some good examples exist here:
 
-- https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/src/scaffolder/stages/templater/cookiecutter.ts
+- https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/src/scaffolder/stages/templater/cookiecutter.ts
 
 ### Registering your own Templater
 

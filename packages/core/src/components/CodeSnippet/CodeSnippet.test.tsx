@@ -15,15 +15,16 @@
  */
 
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { fireEvent } from '@testing-library/react';
+import { act } from 'react-dom/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 
 import { CodeSnippet } from './CodeSnippet';
 
-const JAVASCRIPT = `const greeting = "Hello";
-const world = "World";
-
-const greet = person => gretting + " " + person + "!";
+const JAVASCRIPT = `
+  const greeting = "Hello";
+  const world = "World";
+  const greet = person => gretting + " " + person + "!";
 `;
 
 const minProps = {
@@ -32,37 +33,42 @@ const minProps = {
 };
 
 describe('<CodeSnippet />', () => {
-  it('renders text without exploding', () => {
-    const { getByText } = render(wrapInTestApp(<CodeSnippet {...minProps} />));
+  it('renders text without exploding', async () => {
+    const { getByText } = await renderInTestApp(<CodeSnippet {...minProps} />);
     expect(getByText(/"Hello"/)).toBeInTheDocument();
     expect(getByText(/"World"/)).toBeInTheDocument();
   });
 
-  it('renders without line numbers', () => {
-    const { queryByText } = render(
-      wrapInTestApp(<CodeSnippet {...minProps} />),
+  it('renders without line numbers', async () => {
+    const { queryByText } = await renderInTestApp(
+      <CodeSnippet {...minProps} />,
     );
     expect(queryByText('1')).not.toBeInTheDocument();
     expect(queryByText('2')).not.toBeInTheDocument();
     expect(queryByText('3')).not.toBeInTheDocument();
   });
 
-  it('renders with line numbers', () => {
-    const { queryByText } = render(
-      wrapInTestApp(<CodeSnippet {...minProps} showLineNumbers />),
+  it('renders with line numbers', async () => {
+    const { getByText } = await renderInTestApp(
+      <CodeSnippet {...minProps} showLineNumbers />,
     );
-    expect(queryByText(/1/)).toBeInTheDocument();
-    expect(queryByText(/2/)).toBeInTheDocument();
-    expect(queryByText(/3/)).toBeInTheDocument();
+    expect(getByText('1')).toBeInTheDocument();
+    expect(getByText('2')).toBeInTheDocument();
+    expect(getByText('3')).toBeInTheDocument();
   });
 
   it('copy code using button', async () => {
+    jest.useFakeTimers();
     document.execCommand = jest.fn();
-    const rendered = render(
-      wrapInTestApp(<CodeSnippet {...minProps} showCopyCodeButton />),
+    const { getByTitle } = await renderInTestApp(
+      <CodeSnippet {...minProps} showCopyCodeButton />,
     );
-    const button = rendered.getByTitle('Text copied to clipboard');
+    const button = getByTitle('Text copied to clipboard');
     fireEvent.click(button);
+    act(() => {
+      jest.runAllTimers();
+    });
     expect(document.execCommand).toHaveBeenCalled();
+    jest.useRealTimers();
   });
 });

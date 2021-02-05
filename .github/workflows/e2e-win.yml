@@ -32,7 +32,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.0.1
+        uses: microsoft/setup-msbuild@v1.0.2
       - name: yarn install
         run: yarn install --frozen-lockfile
 
@@ -40,4 +40,4 @@ jobs:
       - name: yarn build
         run: yarn build --ignore example-app --ignore example-backend --ignore @techdocs/cli
       - name: run E2E test
-        run: yarn workspace e2e-test start
+        run: yarn e2e-test run

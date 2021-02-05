@@ -18,16 +18,20 @@ import {
   createPlugin,
   createRouteRef,
   discoveryApiRef,
+  googleAuthApiRef,
+  createRoutableExtension,
 } from '@backstage/core';
 import { KubernetesBackendClient } from './api/KubernetesBackendClient';
 import { kubernetesApiRef } from './api/types';
+import { kubernetesAuthProvidersApiRef } from './kubernetes-auth-provider/types';
+import { KubernetesAuthProviders } from './kubernetes-auth-provider/KubernetesAuthProviders';
 
 export const rootCatalogKubernetesRouteRef = createRouteRef({
   path: '*',
   title: 'Kubernetes',
 });
 
-export const plugin = createPlugin({
+export const kubernetesPlugin = createPlugin({
   id: 'kubernetes',
   apis: [
     createApiFactory({
@@ -36,5 +40,22 @@ export const plugin = createPlugin({
       factory: ({ discoveryApi }) =>
         new KubernetesBackendClient({ discoveryApi }),
     }),
+    createApiFactory({
+      api: kubernetesAuthProvidersApiRef,
+      deps: { googleAuthApi: googleAuthApiRef },
+      factory: ({ googleAuthApi }) => {
+        return new KubernetesAuthProviders({ googleAuthApi });
+      },
+    }),
   ],
+  routes: {
+    entityContent: rootCatalogKubernetesRouteRef,
+  },
 });
+
+export const EntityKubernetesContent = kubernetesPlugin.provide(
+  createRoutableExtension({
+    component: () => import('./Router').then(m => m.Router),
+    mountPoint: rootCatalogKubernetesRouteRef,
+  }),
+);

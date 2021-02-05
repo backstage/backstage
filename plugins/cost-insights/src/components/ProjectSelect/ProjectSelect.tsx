@@ -24,10 +24,14 @@ type ProjectSelectProps = {
   onSelect: (project: Maybe<string>) => void;
 };
 
-const ProjectSelect = ({ project, projects, onSelect }: ProjectSelectProps) => {
+export const ProjectSelect = ({
+  project,
+  projects,
+  onSelect,
+}: ProjectSelectProps) => {
   const classes = useStyles();
 
-  const projectOptions = [{ id: 'all' } as Project, ...projects]
+  const projectOptions = projects
     .filter(p => p.id)
     .sort((a, b) => (a.id as string).localeCompare(b.id as string));
 
@@ -48,12 +52,12 @@ const ProjectSelect = ({ project, projects, onSelect }: ProjectSelectProps) => {
     <Select
       className={classes.select}
       variant="outlined"
-      value={project}
+      value={project || 'all'}
       renderValue={renderValue}
       onChange={handleOnChange}
       data-testid="project-filter-select"
     >
-      {projectOptions.map(proj => (
+      {[{ id: 'all' }, ...projectOptions].map(proj => (
         <MenuItem
           className={`${classes.menuItem} compact`}
           key={proj.id}
@@ -66,5 +70,3 @@ const ProjectSelect = ({ project, projects, onSelect }: ProjectSelectProps) => {
     </Select>
   );
 };
-
-export default ProjectSelect;

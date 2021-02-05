@@ -14,7 +14,31 @@
  * limitations under the License.
  */
 
+import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { plugin } from '../src/plugin';
+import {
+  catalogPlugin,
+  CatalogIndexPage,
+  CatalogEntityPage,
+  EntityLayout,
+} from '../src';
 
-createDevApp().registerPlugin(plugin).render();
+createDevApp()
+  .registerPlugin(catalogPlugin)
+  .addPage({
+    path: '/catalog',
+    title: 'Catalog',
+    element: <CatalogIndexPage />,
+  })
+  .addPage({
+    path: '/catalog/:namespace/:kind/:name',
+    element: <CatalogEntityPage />,
+    children: (
+      <EntityLayout>
+        <EntityLayout.Route path="/" title="Overview">
+          <h1>Overview</h1>
+        </EntityLayout.Route>
+      </EntityLayout>
+    ),
+  })
+  .render();

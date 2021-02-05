@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import CostInsightsHeader from './CostInsightsHeader';
+import { CostInsightsHeader } from './CostInsightsHeader';
 import { renderInTestApp } from '@backstage/test-utils';
 import {
   ApiProvider,

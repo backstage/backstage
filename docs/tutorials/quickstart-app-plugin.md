@@ -20,7 +20,7 @@ title: Adding Custom Plugin to Existing Monorepo App
 > functionality, extend the Sidebar to make our life easy. Finally, we add
 > custom code to display GitHub repository information.
 >
-> This document assumes you have NodeJS 12 active along with Yarn and Python.
+> This document assumes you have Node.js 12 active along with Yarn and Python.
 > Please note, that at the time of this writing, the current version is
 > 0.1.1-alpha.21. This guide can still be used with future versions, just,
 > verify as you go. If you run into issues, you can compare your setup with mine
@@ -59,7 +59,7 @@ import GitHubIcon from '@material-ui/icons/GitHub';
 ```
 
 Simple! The App will reload with your changes automatically. You should now see
-a github icon displayed in the sidebar. Clicking that will link to our new
+a GitHub icon displayed in the sidebar. Clicking that will link to our new
 plugin. And now, the API fun begins.
 
 # The Identity
@@ -72,8 +72,7 @@ Our first modification will be to extract information from the Identity API.
 
 ```tsx
 // Add identityApiRef to the list of imported from core
-import { identityApiRef } from '@backstage/core';
-import { useApi } from '@backstage/core-api';
+import { identityApiRef, useApi } from '@backstage/core';
 ```
 
 3. Adjust the ExampleComponent from inline to block
@@ -81,13 +80,13 @@ import { useApi } from '@backstage/core-api';
 _from inline:_
 
 ```tsx
-const ExampleComponent: FC<{}> = () => ( ... )
+const ExampleComponent = () => ( ... )
 ```
 
 _to block:_
 
 ```tsx
-const ExampleComponent: FC<{}> = () => {
+const ExampleComponent = () => {
 
     return (
         ...
@@ -120,10 +119,10 @@ If everything is saved, you should see your name, id, and email on the
 github-playground page. Our data accessed is synchronous. So we just grab and
 go.
 
-https://github.com/spotify/backstage/tree/master/contrib
+https://github.com/backstage/backstage/tree/master/contrib
 
 6. Here is the entire file for reference
-   [ExampleComponent.tsx](https://github.com/spotify/backstage/tree/master/contrib/docs/tutorials/quickstart-app-plugin/ExampleComponent.md)
+   [ExampleComponent.tsx](https://github.com/backstage/backstage/tree/master/contrib/docs/tutorials/quickstart-app-plugin/ExampleComponent.md)
 
 # The Wipe
 
@@ -135,7 +134,7 @@ changes, let's start by wiping this component clean.
 1. Replace everything in the file with the following:
 
 ```tsx
-import React, { FC } from 'react';
+import React from 'react';
 import { useAsync } from 'react-use';
 import Alert from '@material-ui/lab/Alert';
 import {
@@ -143,11 +142,11 @@ import {
   TableColumn,
   Progress,
   githubAuthApiRef,
+  useApi,
 } from '@backstage/core';
-import { useApi } from '@backstage/core-api';
 import { graphql } from '@octokit/graphql';
 
-const ExampleFetchComponent: FC<{}> = () => {
+const ExampleFetchComponent = () => {
   return <div>Nothing to see yet</div>;
 };
 
@@ -161,7 +160,7 @@ export default ExampleFetchComponent;
 
 # The Graph Model
 
-GitHub has a graphql API available for interacting. Let's start by adding our
+GitHub has a GraphQL API available for interacting. Let's start by adding our
 basic repository query
 
 1. Add the query const statement outside ExampleFetchComponent
@@ -223,7 +222,7 @@ type DenseTableProps = {
   viewer: Viewer;
 };
 
-export const DenseTable: FC<DenseTableProps> = ({ viewer }) => {
+export const DenseTable = ({ viewer }: DenseTableProps) => {
   const columns: TableColumn[] = [
     { title: 'Name', field: 'name' },
     { title: 'Created', field: 'createdAt' },
@@ -302,7 +301,7 @@ return (
 8. After saving that, and given we don't have any errors, you should see a table
    with basic information on your repositories.
 9. Here is the entire file for reference
-   [ExampleFetchComponent.tsx](https://github.com/spotify/backstage/tree/master/contrib/docs/tutorials/quickstart-app-plugin/ExampleFetchComponent.md)
+   [ExampleFetchComponent.tsx](https://github.com/backstage/backstage/tree/master/contrib/docs/tutorials/quickstart-app-plugin/ExampleFetchComponent.md)
 10. We finished! You should see your own GitHub repository's information
     displayed in a basic table. If you run into issues, you can compare the repo
     that backs this document,

@@ -21,8 +21,10 @@ export const locationSpecSchema = yup
   .object<LocationSpec>({
     type: yup.string().required(),
     target: yup.string().required(),
+    presence: yup.string(),
   })
-  .noUnknown();
+  .noUnknown()
+  .required();
 
 export const locationSchema = yup
   .object<Location>({
@@ -30,4 +32,12 @@ export const locationSchema = yup
     type: yup.string().required(),
     target: yup.string().required(),
   })
-  .noUnknown();
+  .noUnknown()
+  .required();
+
+export const analyzeLocationSchema = yup
+  .object<{ location: LocationSpec }>({
+    location: locationSpecSchema,
+  })
+  .noUnknown()
+  .required();

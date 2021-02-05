@@ -11,7 +11,7 @@ While the spec for the catalog file format is well described in
 to the name of the catalog file.
 
 Following discussion in
-[Issue 1822](https://github.com/spotify/backstage/pull/1822#pullrequestreview-461253670),
+[Issue 1822](https://github.com/backstage/backstage/pull/1822#pullrequestreview-461253670),
 a decision was made.
 
 ## Name

@@ -16,29 +16,17 @@
 
 import { Maybe } from './Maybe';
 import { Duration } from './Duration';
-import { Group } from './Group';
 
 export interface PageFilters {
   group: Maybe<string>;
   project: Maybe<string>;
   duration: Duration;
-  metric: Maybe<string>;
+  metric: string | null;
 }
 
 export type ProductFilters = Array<ProductPeriod>;
 
-export type QueryParams = PageFilters & { products: ProductFilters };
-
 export interface ProductPeriod {
   duration: Duration;
   productType: string;
-}
-
-export function getDefaultPageFilters(groups: Group[]): PageFilters {
-  return {
-    group: groups.length ? groups[0].id : null,
-    project: null,
-    duration: Duration.P90D,
-    metric: null,
-  };
 }

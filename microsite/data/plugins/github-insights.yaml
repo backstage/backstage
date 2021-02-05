@@ -1,0 +1,9 @@
+---
+title: GitHub Insights
+author: roadie.io
+authorUrl: https://roadie.io
+category: Source Control Mgmt
+description: View GitHub Insights for your components in Backstage.
+documentation: https://roadie.io/backstage/plugins/github-insights
+iconUrl: https://roadie.io/images/logos/insights.png
+npmPackageName: '@roadiehq/backstage-plugin-github-insights'

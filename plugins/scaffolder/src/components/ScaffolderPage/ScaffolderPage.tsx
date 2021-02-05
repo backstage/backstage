@@ -22,13 +22,12 @@ import {
   Header,
   Lifecycle,
   Page,
-  pageTheme,
   Progress,
   SupportButton,
   useApi,
   WarningPanel,
 } from '@backstage/core';
-import { catalogApiRef } from '@backstage/plugin-catalog';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { Button, Grid, Link, Typography } from '@material-ui/core';
 import React, { useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
@@ -54,10 +53,12 @@ export const ScaffolderPage = () => {
 
   const { data: templates, isValidating, error } = useStaleWhileRevalidate(
     'templates/all',
-    async () =>
-      catalogApi.getEntities({ kind: 'Template' }) as Promise<
-        TemplateEntityV1alpha1[]
-      >,
+    async () => {
+      const response = await catalogApi.getEntities({
+        filter: { kind: 'Template' },
+      });
+      return response.items as TemplateEntityV1alpha1[];
+    },
   );
 
   useEffect(() => {
@@ -66,7 +67,7 @@ export const ScaffolderPage = () => {
   }, [error, errorApi]);
 
   return (
-    <Page theme={pageTheme.home}>
+    <Page themeId="home">
       <Header
         pageTitleOverride="Create a New Component"
         title={
@@ -82,7 +83,7 @@ export const ScaffolderPage = () => {
             variant="contained"
             color="primary"
             component={RouterLink}
-            to="/register-component"
+            to="/catalog-import"
           >
             Register Existing Component
           </Button>

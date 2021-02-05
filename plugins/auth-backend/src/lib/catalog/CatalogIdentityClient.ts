@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-import fetch from 'node-fetch';
+import { ConflictError, NotFoundError } from '@backstage/backend-common';
+import { CatalogApi } from '@backstage/catalog-client';
 import { UserEntity } from '@backstage/catalog-model';
-import {
-  ConflictError,
-  NotFoundError,
-  PluginEndpointDiscovery,
-} from '@backstage/backend-common';
 
 type UserQuery = {
   annotations: Record<string, string>;
@@ -30,10 +26,10 @@ type UserQuery = {
  * A catalog client tailored for reading out identity data from the catalog.
  */
 export class CatalogIdentityClient {
-  private readonly discovery: PluginEndpointDiscovery;
+  private readonly catalogApi: CatalogApi;
 
-  constructor(options: { discovery: PluginEndpointDiscovery }) {
-    this.discovery = options.discovery;
+  constructor(options: { catalogApi: CatalogApi }) {
+    this.catalogApi = options.catalogApi;
   }
 
   /**
@@ -42,33 +38,23 @@ export class CatalogIdentityClient {
    * Throws a NotFoundError or ConflictError if 0 or multiple users are found.
    */
   async findUser(query: UserQuery): Promise<UserEntity> {
-    const params = new URLSearchParams();
-    params.append('kind', 'User');
-
+    const filter: Record<string, string> = {
+      kind: 'user',
+    };
     for (const [key, value] of Object.entries(query.annotations)) {
-      params.append(`metadata.annotations.${key}`, value);
+      filter[`metadata.annotations.${key}`] = value;
     }
 
-    const baseUrl = await this.discovery.getBaseUrl('catalog');
-    const response = await fetch(`${baseUrl}/entities?${params}`);
+    const { items } = await this.catalogApi.getEntities({ filter });
 
-    if (!response.ok) {
-      const text = await response.text();
-      throw new Error(
-        `Request failed with ${response.status} ${response.statusText}, ${text}`,
-      );
-    }
-
-    const users: UserEntity[] = await response.json();
-
-    if (users.length !== 1) {
-      if (users.length > 1) {
+    if (items.length !== 1) {
+      if (items.length > 1) {
         throw new ConflictError('User lookup resulted in multiple matches');
       } else {
         throw new NotFoundError('User not found');
       }
     }
 
-    return users[0];
+    return items[0] as UserEntity;
   }
 }

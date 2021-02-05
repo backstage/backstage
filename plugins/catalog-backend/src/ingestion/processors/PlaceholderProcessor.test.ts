@@ -13,20 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import {
   jsonPlaceholderResolver,
   PlaceholderProcessor,
   PlaceholderResolver,
   ResolverParams,
+  ResolverRead,
+  textPlaceholderResolver,
   yamlPlaceholderResolver,
 } from './PlaceholderProcessor';
-import { LocationProcessorEmit, LocationProcessorRead } from './types';
 
 describe('PlaceholderProcessor', () => {
-  const emit: LocationProcessorEmit = jest.fn();
-  const read: jest.MockedFunction<LocationProcessorRead> = jest.fn();
+  const read: jest.MockedFunction<ResolverRead> = jest.fn();
+  const reader: UrlReader = { read, readTree: jest.fn() };
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -39,10 +40,13 @@ describe('PlaceholderProcessor', () => {
       metadata: { name: 'n' },
     };
     const processor = new PlaceholderProcessor({
-      foo: async () => 'replaced',
+      resolvers: {
+        foo: async () => 'replaced',
+      },
+      reader,
     });
     await expect(
-      processor.processEntity(input, { type: 't', target: 'l' }, emit, read),
+      processor.preProcessEntity(input, { type: 't', target: 'l' }),
     ).resolves.toBe(input);
   });
 
@@ -51,11 +55,14 @@ describe('PlaceholderProcessor', () => {
       value!.toString().toUpperCase(),
     );
     const processor = new PlaceholderProcessor({
-      upper: upperResolver,
+      resolvers: {
+        upper: upperResolver,
+      },
+      reader,
     });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',
@@ -63,8 +70,6 @@ describe('PlaceholderProcessor', () => {
           spec: { a: [{ b: { $upper: 'text' } }] },
         },
         { type: 'fake', target: 'http://example.com' },
-        emit,
-        read,
       ),
     ).resolves.toEqual({
       apiVersion: 'a',
@@ -73,69 +78,66 @@ describe('PlaceholderProcessor', () => {
       spec: { a: [{ b: 'TEXT' }] },
     });
 
-    expect(emit).not.toBeCalled();
     expect(read).not.toBeCalled();
-    expect(upperResolver).toBeCalledWith({
-      key: 'upper',
-      value: 'text',
-      location: { type: 'fake', target: 'http://example.com' },
-      read,
-    });
-  });
-
-  it('rejects multiple placeholders', async () => {
-    const processor = new PlaceholderProcessor({
-      foo: jest.fn(),
-      bar: jest.fn(),
-    });
-
-    await expect(
-      processor.processEntity(
-        {
-          apiVersion: 'a',
-          kind: 'k',
-          metadata: { name: 'n', x: { $foo: 'a', $bar: 'b' } },
-        },
-        { type: 'a', target: 'b' },
-        emit,
-        read,
-      ),
-    ).rejects.toThrow(
-      'Placeholders have to be on the form of a single $-prefixed key in an object',
+    expect(upperResolver).toBeCalledWith(
+      expect.objectContaining({
+        key: 'upper',
+        value: 'text',
+        baseUrl: 'http://example.com',
+      }),
     );
+  });
 
-    expect(emit).not.toBeCalled();
+  it('ignores multiple placeholders', async () => {
+    const processor = new PlaceholderProcessor({
+      resolvers: {
+        foo: jest.fn(),
+        bar: jest.fn(),
+      },
+      reader,
+    });
+    const entity: Entity = {
+      apiVersion: 'a',
+      kind: 'k',
+      metadata: { name: 'n', x: { $foo: 'a', $bar: 'b' } },
+    };
+
+    await expect(
+      processor.preProcessEntity(entity, { type: 'a', target: 'b' }),
+    ).resolves.toEqual(entity);
+
     expect(read).not.toBeCalled();
   });
 
-  it('rejects unknown placeholders', async () => {
+  it('ignores unknown placeholders', async () => {
     const processor = new PlaceholderProcessor({
-      bar: jest.fn(),
+      resolvers: {
+        bar: jest.fn(),
+      },
+      reader,
+    });
+    const entity: Entity = {
+      apiVersion: 'a',
+      kind: 'k',
+      metadata: { name: 'n', x: { $foo: 'a' } },
+    };
+
+    await expect(
+      processor.preProcessEntity(entity, { type: 'a', target: 'b' }),
+    ).resolves.toEqual(entity);
+
+    expect(read).not.toBeCalled();
+  });
+
+  it('works with the text resolver', async () => {
+    read.mockResolvedValue(Buffer.from('TEXT', 'utf-8'));
+    const processor = new PlaceholderProcessor({
+      resolvers: { text: textPlaceholderResolver },
+      reader,
     });
 
     await expect(
-      processor.processEntity(
-        {
-          apiVersion: 'a',
-          kind: 'k',
-          metadata: { name: 'n', x: { $foo: 'a' } },
-        },
-        { type: 'a', target: 'b' },
-        emit,
-        read,
-      ),
-    ).rejects.toThrow('Encountered unknown placeholder $foo');
-
-    expect(emit).not.toBeCalled();
-    expect(read).not.toBeCalled();
-  });
-
-  it('has builtin text support', async () => {
-    read.mockResolvedValue(Buffer.from('TEXT', 'utf-8'));
-    const processor = PlaceholderProcessor.default();
-
-    await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',
@@ -144,10 +146,9 @@ describe('PlaceholderProcessor', () => {
         },
         {
           type: 'github',
-          target: 'https://github.com/spotify/backstage/a/b/catalog-info.yaml',
+          target:
+            'https://github.com/backstage/backstage/a/b/catalog-info.yaml',
         },
-        emit,
-        read,
       ),
     ).resolves.toEqual({
       apiVersion: 'a',
@@ -156,21 +157,22 @@ describe('PlaceholderProcessor', () => {
       spec: { data: 'TEXT' },
     });
 
-    expect(emit).not.toBeCalled();
-    expect(read).toBeCalledWith({
-      type: 'github',
-      target: 'https://github.com/spotify/backstage/a/file.txt',
-    });
+    expect(read).toBeCalledWith(
+      'https://github.com/backstage/backstage/a/file.txt',
+    );
   });
 
-  it('has builtin json support', async () => {
+  it('works with the json resolver', async () => {
     read.mockResolvedValue(
       Buffer.from(JSON.stringify({ a: ['b', 7] }), 'utf-8'),
     );
-    const processor = PlaceholderProcessor.default();
+    const processor = new PlaceholderProcessor({
+      resolvers: { json: jsonPlaceholderResolver },
+      reader,
+    });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',
@@ -179,10 +181,9 @@ describe('PlaceholderProcessor', () => {
         },
         {
           type: 'github',
-          target: 'https://github.com/spotify/backstage/a/b/catalog-info.yaml',
+          target:
+            'https://github.com/backstage/backstage/a/b/catalog-info.yaml',
         },
-        emit,
-        read,
       ),
     ).resolves.toEqual({
       apiVersion: 'a',
@@ -191,19 +192,20 @@ describe('PlaceholderProcessor', () => {
       spec: { data: { a: ['b', 7] } },
     });
 
-    expect(emit).not.toBeCalled();
-    expect(read).toBeCalledWith({
-      type: 'github',
-      target: 'https://github.com/spotify/backstage/a/b/file.json',
-    });
+    expect(read).toBeCalledWith(
+      'https://github.com/backstage/backstage/a/b/file.json',
+    );
   });
 
-  it('has builtin yaml support', async () => {
+  it('works with the yaml resolver', async () => {
     read.mockResolvedValue(Buffer.from('foo:\n  - bar: 7', 'utf-8'));
-    const processor = PlaceholderProcessor.default();
+    const processor = new PlaceholderProcessor({
+      resolvers: { yaml: yamlPlaceholderResolver },
+      reader,
+    });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',
@@ -212,10 +214,9 @@ describe('PlaceholderProcessor', () => {
         },
         {
           type: 'github',
-          target: 'https://github.com/spotify/backstage/a/b/catalog-info.yaml',
+          target:
+            'https://github.com/backstage/backstage/a/b/catalog-info.yaml',
         },
-        emit,
-        read,
       ),
     ).resolves.toEqual({
       apiVersion: 'a',
@@ -224,35 +225,35 @@ describe('PlaceholderProcessor', () => {
       spec: { data: { foo: [{ bar: 7 }] } },
     });
 
-    expect(emit).not.toBeCalled();
-    expect(read).toBeCalledWith({
-      type: 'github',
-      target: 'https://github.com/spotify/backstage/a/file.yaml',
-    });
+    expect(read).toBeCalledWith(
+      'https://github.com/backstage/backstage/a/file.yaml',
+    );
   });
 
   it('resolves absolute path for absolute location', async () => {
     read.mockResolvedValue(Buffer.from('TEXT', 'utf-8'));
-    const processor = PlaceholderProcessor.default();
+    const processor = new PlaceholderProcessor({
+      resolvers: { text: textPlaceholderResolver },
+      reader,
+    });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',
           metadata: { name: 'n' },
           spec: {
             data: {
-              $text: 'https://github.com/spotify/backstage/catalog-info.yaml',
+              $text: 'https://github.com/backstage/backstage/catalog-info.yaml',
             },
           },
         },
         {
           type: 'github',
-          target: 'https://github.com/spotify/backstage/a/b/catalog-info.yaml',
+          target:
+            'https://github.com/backstage/backstage/a/b/catalog-info.yaml',
         },
-        emit,
-        read,
       ),
     ).resolves.toEqual({
       apiVersion: 'a',
@@ -261,26 +262,27 @@ describe('PlaceholderProcessor', () => {
       spec: { data: 'TEXT' },
     });
 
-    expect(emit).not.toBeCalled();
-    expect(read).toBeCalledWith({
-      type: 'github',
-      target: 'https://github.com/spotify/backstage/catalog-info.yaml',
-    });
+    expect(read).toBeCalledWith(
+      'https://github.com/backstage/backstage/catalog-info.yaml',
+    );
   });
 
   it('resolves absolute path for relative file location', async () => {
     read.mockResolvedValue(Buffer.from('TEXT', 'utf-8'));
-    const processor = PlaceholderProcessor.default();
+    const processor = new PlaceholderProcessor({
+      resolvers: { text: textPlaceholderResolver },
+      reader,
+    });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',
           metadata: { name: 'n' },
           spec: {
             data: {
-              $text: 'https://github.com/spotify/backstage/catalog-info.yaml',
+              $text: 'https://github.com/backstage/backstage/catalog-info.yaml',
             },
           },
         },
@@ -288,8 +290,6 @@ describe('PlaceholderProcessor', () => {
           type: 'github',
           target: './a/b/catalog-info.yaml',
         },
-        emit,
-        read,
       ),
     ).resolves.toEqual({
       apiVersion: 'a',
@@ -298,22 +298,23 @@ describe('PlaceholderProcessor', () => {
       spec: { data: 'TEXT' },
     });
 
-    expect(emit).not.toBeCalled();
-    expect(read).toBeCalledWith({
-      type: 'github',
-      target: 'https://github.com/spotify/backstage/catalog-info.yaml',
-    });
+    expect(read).toBeCalledWith(
+      'https://github.com/backstage/backstage/catalog-info.yaml',
+    );
   });
 
   it('not resolves relative file path for relative file location', async () => {
     // We explicitly don't support this case, as it would allow for file system
-    // traversel attacks. If we want to implement this, we need to have additional
+    // traversal attacks. If we want to implement this, we need to have additional
     // security measures in place!
     read.mockResolvedValue(Buffer.from('TEXT', 'utf-8'));
-    const processor = PlaceholderProcessor.default();
+    const processor = new PlaceholderProcessor({
+      resolvers: { text: textPlaceholderResolver },
+      reader,
+    });
 
     await expect(
-      processor.processEntity(
+      processor.preProcessEntity(
         {
           apiVersion: 'a',
           kind: 'k',
@@ -328,27 +329,21 @@ describe('PlaceholderProcessor', () => {
           type: 'github',
           target: './a/b/catalog-info.yaml',
         },
-        emit,
-        read,
       ),
     ).rejects.toThrow(
       'Placeholder $text could not form an URL out of ./a/b/catalog-info.yaml and ../c/catalog-info.yaml',
     );
 
-    expect(emit).not.toBeCalled();
     expect(read).not.toBeCalled();
   });
 });
 
 describe('yamlPlaceholderResolver', () => {
-  const read: jest.MockedFunction<LocationProcessorRead> = jest.fn();
+  const read: jest.MockedFunction<ResolverRead> = jest.fn();
   const params: ResolverParams = {
     key: 'a',
     value: './file.yaml',
-    location: {
-      type: 'github',
-      target: 'https://github.com/spotify/backstage/a/b/catalog-info.yaml',
-    },
+    baseUrl: 'https://github.com/backstage/backstage/a/b/catalog-info.yaml',
     read,
   };
 
@@ -388,14 +383,11 @@ describe('yamlPlaceholderResolver', () => {
 });
 
 describe('jsonPlaceholderResolver', () => {
-  const read: jest.MockedFunction<LocationProcessorRead> = jest.fn();
+  const read: jest.MockedFunction<ResolverRead> = jest.fn();
   const params: ResolverParams = {
     key: 'a',
     value: './file.json',
-    location: {
-      type: 'github',
-      target: 'https://github.com/spotify/backstage/a/b/catalog-info.yaml',
-    },
+    baseUrl: 'https://github.com/backstage/backstage/a/b/catalog-info.yaml',
     read,
   };
 

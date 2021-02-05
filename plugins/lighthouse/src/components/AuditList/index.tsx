@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React, { useState, useMemo, FC, ReactNode } from 'react';
+import React, { useState, useMemo, ReactNode } from 'react';
 import { useLocalStorage, useAsync } from 'react-use';
 import { useNavigate } from 'react-router-dom';
 import { Grid, Button } from '@material-ui/core';
@@ -28,7 +27,6 @@ import {
   ContentHeader,
   HeaderLabel,
   Progress,
-  pageTheme,
   useApi,
 } from '@backstage/core';
 
@@ -37,11 +35,10 @@ import { useQuery } from '../../utils';
 import LighthouseSupportButton from '../SupportButton';
 import LighthouseIntro, { LIGHTHOUSE_INTRO_LOCAL_STORAGE } from '../Intro';
 import AuditListTable from './AuditListTable';
-import { createAuditRouteRef } from '../../plugin';
 
 export const LIMIT = 10;
 
-const AuditList: FC<{}> = () => {
+const AuditList = () => {
   const [dismissedStored] = useLocalStorage(LIGHTHOUSE_INTRO_LOCAL_STORAGE);
   const [dismissed, setDismissed] = useState(dismissedStored);
 
@@ -95,7 +92,7 @@ const AuditList: FC<{}> = () => {
   }
 
   return (
-    <Page theme={pageTheme.tool}>
+    <Page themeId="tool">
       <Header
         title="Lighthouse"
         subtitle="Website audits powered by Lighthouse"
@@ -112,7 +109,7 @@ const AuditList: FC<{}> = () => {
           <Button
             variant="contained"
             color="primary"
-            onClick={() => navigate(createAuditRouteRef.path)}
+            onClick={() => navigate('create-audit')}
           >
             Create Audit
           </Button>
@@ -120,7 +117,7 @@ const AuditList: FC<{}> = () => {
         </ContentHeader>
         <Grid container spacing={3} direction="column">
           <Grid item>
-            <InfoCard>{content}</InfoCard>
+            <InfoCard noPadding>{content}</InfoCard>
           </Grid>
         </Grid>
       </Content>

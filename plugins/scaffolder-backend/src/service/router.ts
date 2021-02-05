@@ -14,21 +14,25 @@
  * limitations under the License.
  */
 
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { JsonValue } from '@backstage/config';
+import { Config } from '@backstage/config';
 import Docker from 'dockerode';
 import express from 'express';
+import { resolve as resolvePath } from 'path';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import {
   JobProcessor,
   PreparerBuilder,
-  RequiredTemplateValues,
-  StageContext,
   TemplaterBuilder,
+  TemplaterValues,
   PublisherBuilder,
+  parseLocationAnnotation,
+  joinGitUrlPath,
+  FilePreparer,
 } from '../scaffolder';
+import { CatalogEntityClient } from '../lib/catalog';
 import { validate, ValidatorResult } from 'jsonschema';
+import parseGitUrl from 'git-url-parse';
 
 export interface RouterOptions {
   preparers: PreparerBuilder;
@@ -36,7 +40,9 @@ export interface RouterOptions {
   publishers: PublisherBuilder;
 
   logger: Logger;
+  config: Config;
   dockerClient: Docker;
+  entityClient: CatalogEntityClient;
 }
 
 export async function createRouter(
@@ -50,11 +56,13 @@ export async function createRouter(
     templaters,
     publishers,
     logger: parentLogger,
+    config,
     dockerClient,
+    entityClient,
   } = options;
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
-  const jobProcessor = new JobProcessor();
+  const jobProcessor = await JobProcessor.fromConfig({ config, logger });
 
   router
     .get('/v1/job/:jobId', ({ params }, res) => {
@@ -81,14 +89,21 @@ export async function createRouter(
       });
     })
     .post('/v1/jobs', async (req, res) => {
-      const template: TemplateEntityV1alpha1 = req.body.template;
-      const values: RequiredTemplateValues & Record<string, JsonValue> =
-        req.body.values;
+      const templateName: string = req.body.templateName;
+      const values: TemplaterValues = {
+        ...req.body.values,
+        destination: {
+          git: parseGitUrl(req.body.values.storePath),
+        },
+      };
+
+      const template = await entityClient.findTemplate(templateName);
 
       const validationResult: ValidatorResult = validate(
         values,
         template.spec.schema,
       );
+
       if (!validationResult.valid) {
         res.status(400).json({ errors: validationResult.errors });
         return;
@@ -100,47 +115,73 @@ export async function createRouter(
         stages: [
           {
             name: 'Prepare the skeleton',
-            handler: async ctx => {
-              const preparer = preparers.get(ctx.entity);
-              const skeletonDir = await preparer.prepare(ctx.entity, {
+            async handler(ctx) {
+              const {
+                protocol,
+                location: templateEntityLocation,
+              } = parseLocationAnnotation(ctx.entity);
+
+              if (protocol === 'file') {
+                const preparer = new FilePreparer();
+
+                const path = resolvePath(
+                  templateEntityLocation,
+                  template.spec.path || '.',
+                );
+
+                await preparer.prepare({
+                  url: `file://${path}`,
+                  logger: ctx.logger,
+                  workspacePath: ctx.workspacePath,
+                });
+                return;
+              }
+
+              const preparer = preparers.get(templateEntityLocation);
+
+              const url = joinGitUrlPath(
+                templateEntityLocation,
+                template.spec.path,
+              );
+
+              await preparer.prepare({
+                url,
                 logger: ctx.logger,
+                workspacePath: ctx.workspacePath,
               });
-              return { skeletonDir };
             },
           },
           {
             name: 'Run the templater',
-            handler: async (ctx: StageContext<{ skeletonDir: string }>) => {
-              const templater = templaters.get(ctx.entity);
-              const { resultDir } = await templater.run({
-                directory: ctx.skeletonDir,
+            async handler(ctx) {
+              const templater = templaters.get(ctx.entity.spec.templater);
+              await templater.run({
+                workspacePath: ctx.workspacePath,
                 dockerClient,
                 logStream: ctx.logStream,
                 values: ctx.values,
               });
-
-              return { resultDir };
             },
           },
           {
             name: 'Publish template',
-            handler: async (ctx: StageContext<{ resultDir: string }>) => {
-              const publisher = publishers.get(ctx.entity);
+            handler: async ctx => {
+              const publisher = publishers.get(ctx.values.storePath);
               ctx.logger.info('Will now store the template');
-              const { remoteUrl } = await publisher.publish({
-                entity: ctx.entity,
+              const result = await publisher.publish({
                 values: ctx.values,
-                directory: ctx.resultDir,
+                workspacePath: ctx.workspacePath,
+                logger: ctx.logger,
               });
-              return { remoteUrl };
+              return result;
             },
           },
         ],
       });
 
-      res.status(201).json({ id: job.id });
-
       jobProcessor.run(job);
+
+      res.status(201).json({ id: job.id });
     });
 
   const app = express();

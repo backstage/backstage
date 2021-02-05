@@ -28,7 +28,7 @@ import {
 } from '@backstage/core-api';
 
 export default {
-  title: 'DismissableBanner',
+  title: 'Feedback/DismissableBanner',
   component: DismissableBanner,
 };
 

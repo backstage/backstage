@@ -1,26 +1,22 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
+/*
+ * Copyright 2020 Backstage Project Authors.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 const React = require('react');
 
 class Footer extends React.Component {
-  docUrl(doc, language) {
-    const baseUrl = this.props.config.baseUrl;
-    const docsUrl = this.props.config.docsUrl;
-    const docsPart = `${docsUrl ? `${docsUrl}/` : ''}`;
-    const langPart = `${language ? `${language}/` : ''}`;
-    return `${baseUrl}${docsPart}${langPart}${doc}`;
-  }
-
-  pageUrl(doc, language) {
-    const baseUrl = this.props.config.baseUrl;
-    return baseUrl + (language ? `${language}/` : '') + doc;
-  }
-
   render() {
     return (
       <footer className="nav-footer" id="footer">
@@ -45,7 +41,7 @@ class Footer extends React.Component {
           <div>
             <h5>Community</h5>
             <a href="https://discord.gg/MUpMjP2">Support chatroom</a>
-            <a href="https://github.com/spotify/backstage/blob/master/CONTRIBUTING.md">
+            <a href="https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md">
               Contributing
             </a>
             <a href="https://mailchi.mp/spotify/backstage-community">
@@ -58,12 +54,18 @@ class Footer extends React.Component {
             <a href={this.props.config.fossWebsite}>
               Open Source @ {this.props.config.organizationName}
             </a>
+
+            <a href="https://engineering.atspotify.com/">
+              Spotify Engineering Blog
+            </a>
+            <a href="https://developer.spotify.com/">Spotify for Developers</a>
+
             <a href={this.props.config.repoUrl}>GitHub</a>
             <a
               className="github-button"
               href={this.props.config.repoUrl}
               data-icon="octicon-star"
-              data-count-href="/spotify/backstage/stargazers"
+              data-count-href="/backstage/backstage/stargazers"
               data-show-count="true"
               data-count-aria-label="# stargazers on GitHub"
               aria-label="Star this project on GitHub"
@@ -82,15 +84,9 @@ class Footer extends React.Component {
             )}
           </div>
         </section>
-
-        <a
-          href={this.props.config.fossWebsite}
-          target="_blank"
-          rel="noreferrer noopener"
-          className="spotifyOpenSource"
-        >
-          Made with <span>❤</span> at {this.props.config.organizationName}
-        </a>
+        <p style={{ textAlign: 'center' }}>
+          <a href="https://spotify.github.io">Made with ❤️&nbsp; at Spotify</a>
+        </p>
         <p className="copyright">{this.props.config.copyright}</p>
       </footer>
     );

@@ -13,74 +13,221 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { Dispatch, ReactNode, SetStateAction } from 'react';
+
+import React, { PropsWithChildren } from 'react';
+import { costInsightsApiRef, CostInsightsApi } from '../api';
 import {
-  getDefaultPageFilters,
-  PageFilters,
-  ProductFilters,
-  Group,
-} from '../types';
-import { FilterContext } from '../hooks/useFilters';
+  ApiProvider,
+  ApiRegistry,
+  IdentityApi,
+  identityApiRef,
+} from '@backstage/core';
+import { LoadingContext, LoadingContextProps } from '../hooks/useLoading';
+import { GroupsContext, GroupsContextProps } from '../hooks/useGroups';
+import { FilterContext, FilterContextProps } from '../hooks/useFilters';
 import { ConfigContext, ConfigContextProps } from '../hooks/useConfig';
 import { CurrencyContext, CurrencyContextProps } from '../hooks/useCurrency';
-import { ScrollContext, ScrollProviderProps } from '../hooks/useScroll';
-import { MockProductFilters } from './mockData';
+import {
+  BillingDateContext,
+  BillingDateContextProps,
+} from '../hooks/useLastCompleteBillingDate';
+import { ScrollContext, ScrollContextProps } from '../hooks/useScroll';
+import { Group, Duration } from '../types';
+
+/* 
+  Mock Providers and types are exposed publicly to allow users to test custom implementations
+  such as alerts, which may require context. 
+  
+  Utility functions such as getDefaultPageFilters, etc. are intentionally
+  omitted as we do not want to expose explictly or implicitly internal implementations 
+  that may be subject to change.
+
+  Each Mock Provider provides minimal defaults which can be overridden, allowing users to define
+  context props only when necessary.
+*/
+
+type PartialPropsWithChildren<T> = PropsWithChildren<Partial<T>>;
 
 export const MockGroups: Group[] = [{ id: 'tech' }, { id: 'mock-group' }];
 
-type MockFilterProviderProps = {
-  setPageFilters: Dispatch<SetStateAction<PageFilters>>;
-  setProductFilters: Dispatch<SetStateAction<ProductFilters>>;
-  children: ReactNode;
-};
+export type MockFilterProviderProps = PartialPropsWithChildren<
+  FilterContextProps
+>;
 
 export const MockFilterProvider = ({
-  setPageFilters,
-  setProductFilters,
   children,
+  ...context
 }: MockFilterProviderProps) => {
-  const pageFilters = getDefaultPageFilters(MockGroups);
+  const defaultContext: FilterContextProps = {
+    pageFilters: {
+      group: 'tech',
+      project: null,
+      duration: Duration.P90D,
+      metric: null,
+    },
+    productFilters: [],
+    setPageFilters: jest.fn(),
+    setProductFilters: jest.fn(),
+  };
   return (
-    <FilterContext.Provider
-      value={{
-        pageFilters: pageFilters,
-        productFilters: MockProductFilters,
-        setPageFilters: setPageFilters,
-        setProductFilters: setProductFilters,
-      }}
-    >
+    <FilterContext.Provider value={{ ...defaultContext, ...context }}>
       {children}
     </FilterContext.Provider>
   );
 };
 
-export const MockConfigProvider = ({
-  metrics,
-  products,
-  icons,
-  engineerCost,
-  currencies,
+export type MockLoadingProviderProps = PartialPropsWithChildren<
+  LoadingContextProps
+>;
+
+export const MockLoadingProvider = ({
   children,
-}: ConfigContextProps & { children: React.ReactNode }) => (
-  <ConfigContext.Provider
-    value={{ metrics, products, icons, engineerCost, currencies }}
-  >
-    {children}
-  </ConfigContext.Provider>
-);
+  ...context
+}: MockLoadingProviderProps) => {
+  const defaultContext: LoadingContextProps = {
+    state: {},
+    actions: [],
+    dispatch: jest.fn(),
+  };
+  return (
+    <LoadingContext.Provider value={{ ...defaultContext, ...context }}>
+      {children}
+    </LoadingContext.Provider>
+  );
+};
+
+export type MockConfigProviderProps = PartialPropsWithChildren<
+  ConfigContextProps
+>;
+
+export const MockConfigProvider = ({
+  children,
+  ...context
+}: MockConfigProviderProps) => {
+  const defaultContext: ConfigContextProps = {
+    metrics: [],
+    products: [],
+    icons: [],
+    engineerCost: 0,
+    currencies: [],
+  };
+  return (
+    <ConfigContext.Provider value={{ ...defaultContext, ...context }}>
+      {children}
+    </ConfigContext.Provider>
+  );
+};
+
+export type MockCurrencyProviderProps = PartialPropsWithChildren<
+  CurrencyContextProps
+>;
 
 export const MockCurrencyProvider = ({
-  currency,
-  setCurrency,
   children,
-}: CurrencyContextProps & { children: React.ReactNode }) => (
-  <CurrencyContext.Provider value={{ currency, setCurrency }}>
-    {children}
-  </CurrencyContext.Provider>
-);
+  ...context
+}: MockCurrencyProviderProps) => {
+  const defaultContext: CurrencyContextProps = {
+    currency: {
+      kind: null,
+      label: 'Engineers 🛠',
+      unit: 'engineer',
+    },
+    setCurrency: jest.fn(),
+  };
+  return (
+    <CurrencyContext.Provider value={{ ...defaultContext, ...context }}>
+      {children}
+    </CurrencyContext.Provider>
+  );
+};
 
-export const MockScrollProvider = ({ children }: ScrollProviderProps) => (
-  <ScrollContext.Provider value={{ scrollTo: null, setScrollTo: jest.fn() }}>
-    {children}
-  </ScrollContext.Provider>
-);
+export type MockBillingDateProviderProps = PartialPropsWithChildren<
+  BillingDateContextProps
+>;
+
+export const MockBillingDateProvider = ({
+  children,
+  ...context
+}: MockBillingDateProviderProps) => {
+  const defaultContext: BillingDateContextProps = {
+    lastCompleteBillingDate: '2020-10-01',
+  };
+  return (
+    <BillingDateContext.Provider value={{ ...defaultContext, ...context }}>
+      {children}
+    </BillingDateContext.Provider>
+  );
+};
+
+export type MockScrollProviderProps = PropsWithChildren<{}>;
+
+export const MockScrollProvider = ({ children }: MockScrollProviderProps) => {
+  const defaultContext: ScrollContextProps = {
+    scroll: null,
+    setScroll: jest.fn(),
+  };
+  return (
+    <ScrollContext.Provider value={defaultContext}>
+      {children}
+    </ScrollContext.Provider>
+  );
+};
+
+export type MockGroupsProviderProps = PartialPropsWithChildren<
+  GroupsContextProps
+>;
+
+export const MockGroupsProvider = ({
+  children,
+  ...context
+}: MockGroupsProviderProps) => {
+  const defaultContext: GroupsContextProps = {
+    groups: [],
+  };
+  return (
+    <GroupsContext.Provider value={{ ...defaultContext, ...context }}>
+      {children}
+    </GroupsContext.Provider>
+  );
+};
+
+export type MockCostInsightsApiProviderProps = PartialPropsWithChildren<{
+  identityApi: Partial<IdentityApi>;
+  costInsightsApi: Partial<CostInsightsApi>;
+}>;
+
+export const MockCostInsightsApiProvider = ({
+  children,
+  ...context
+}: MockCostInsightsApiProviderProps) => {
+  const defaultIdentityApi: IdentityApi = {
+    getProfile: jest.fn(),
+    getIdToken: jest.fn(),
+    getUserId: jest.fn(),
+    signOut: jest.fn(),
+  };
+
+  const defaultCostInsightsApi: CostInsightsApi = {
+    getAlerts: jest.fn(),
+    getDailyMetricData: jest.fn(),
+    getGroupDailyCost: jest.fn(),
+    getGroupProjects: jest.fn(),
+    getLastCompleteBillingDate: jest.fn(),
+    getProductInsights: jest.fn(),
+    getProjectDailyCost: jest.fn(),
+    getUserGroups: jest.fn(),
+  };
+
+  // TODO: defaultConfigApiRef: ConfigApiRef
+
+  const defaultContext = ApiRegistry.from([
+    [identityApiRef, { ...defaultIdentityApi, ...context.identityApi }],
+    [
+      costInsightsApiRef,
+      { ...defaultCostInsightsApi, ...context.costInsightsApi },
+    ],
+    // [configApiRef, { ...defaultConfigApiRef, ...context.configApiRef }]
+  ]);
+
+  return <ApiProvider apis={defaultContext}>{children}</ApiProvider>;
+};

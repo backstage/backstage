@@ -2,8 +2,8 @@
 id: techdocs-overview
 title: TechDocs Documentation
 sidebar_label: Overview
-description: TechDocs is Spotify’s homegrown docs-like-code solution built
-directly into Backstage
+# prettier-ignore
+description: TechDocs is Spotify’s homegrown docs-like-code solution built directly into Backstage
 ---
 
 ## What is it?
@@ -40,12 +40,10 @@ about TechDocs and the philosophy in its
 | [TechDocs V.2 🔮⌛][v2] | Easy adoption of TechDocs (whatever environment you have) [See V.2 Use Cases.](#techdocs-v2)                                                                |
 | [TechDocs V.3 🔮⌛][v3] | Build a widget (plugin) framework so that contributors can easily contribute features to TechDocs - that others can use. [See V.3 Use Cases.](#techdocs-v3) |
 
-[v0]: https://github.com/spotify/backstage/milestone/15
-[v1]: https://github.com/spotify/backstage/milestone/16
-[v2]: https://github.com/spotify/backstage/milestone/22
-[v3]: https://github.com/spotify/backstage/milestone/17
-
-<!-- TODO: Add link to milestone for v3 -->
+[v0]: https://github.com/backstage/backstage/milestone/15
+[v1]: https://github.com/backstage/backstage/milestone/16
+[v2]: https://github.com/backstage/backstage/milestone/22
+[v3]: https://github.com/backstage/backstage/milestone/17
 
 ## Use Cases
 
@@ -82,7 +80,9 @@ for companies to adopt. This involves (something like) the following work items.
 - “Solidify” work and “Mkdocs stabilization” work that has come out of our Q3
   end-to-end work.
 - Improve/simplify the get up and running process.
-- Introduce doc template Software Templates.
+- Introduce new documentation templates.
+- Extend the already existing docs-template to have options of different
+  documentation types.
 - Enable companies to choose their own storage (S3 for example).
 - Enable companies to choose their own source code hosting provider (GitHub,
   GitLab, and so).
@@ -94,31 +94,53 @@ Build a widget (plugin) framework so that contributors can easily contribute
 features to TechDocs - that others can use. And, also, so that we can easily
 migrate Spotify's existing TechDocs features to open source.
 
-## Structure
+## Platforms Supported
 
-- [Getting Started]
-- [Concepts]
-- [Creating and Publishing Documentation]
-- [FAQ]
+See [TechDocs Architecture](architecture.md) to get an overview of where these
+providers are used.
+
+| Source Code Hosting Provider | Support Status |
+| ---------------------------- | -------------- |
+| GitHub                       | Yes ✅         |
+| GitHub Enterprise            | Yes ✅         |
+| BitBucket                    | Yes ✅         |
+| Azure DevOps                 | Yes ✅         |
+| GitLab                       | Yes ✅         |
+| GitLab Enterprise            | Yes ✅         |
+
+| File Storage Provider             | Support Status |
+| --------------------------------- | -------------- |
+| Local Filesystem of Backstage app | Yes ✅         |
+| Google Cloud Storage (GCS)        | Yes ✅         |
+| Amazon Web Services (AWS) S3      | Yes ✅         |
+| Azure Blob Storage                | Yes ✅         |
+
+[Reach out to us](#feedback) if you want to request more platforms.
 
 ## Tech Stack
 
-| Stack                                       | Location                                                 |
-| ------------------------------------------- | -------------------------------------------------------- |
-| Frontend                                    | [`@backstage/plugin-techdocs`][techdocs/frontend]        |
-| Backend                                     | [`@backstage/plugin-techdocs-backend`][techdocs/backend] |
-| Docker Container (for generating doc sites) | [`packages/techdocs-container`][techdocs/container]      |
-| CLI (for local development)                 | [`packages/techdocs-cli`][techdocs/cli]                  |
+| Stack                                           | Location                                                 |
+| ----------------------------------------------- | -------------------------------------------------------- |
+| Frontend Plugin                                 | [`@backstage/plugin-techdocs`][techdocs/frontend]        |
+| Backend Plugin                                  | [`@backstage/plugin-techdocs-backend`][techdocs/backend] |
+| CLI (for local development and generating docs) | [`@techdocs/cli`][techdocs/cli]                          |
+| Docker Container (for generating docs)          | [`techdocs-container`][techdocs/container]               |
 
-[getting started]: getting-started.md
-[concepts]: concepts.md
-[creating and publishing documentation]: creating-and-publishing.md
-[faq]: FAQ.md 'Frequently asked questions'
 [techdocs/frontend]:
-  https://github.com/spotify/backstage/blob/master/plugins/techdocs
+  https://github.com/backstage/backstage/blob/master/plugins/techdocs
 [techdocs/backend]:
-  https://github.com/spotify/backstage/blob/master/plugins/techdocs-backend
-[techdocs/container]:
-  https://github.com/spotify/backstage/blob/master/packages/techdocs-container
-[techdocs/cli]:
-  https://github.com/spotify/backstage/blob/master/packages/techdocs-cli
+  https://github.com/backstage/backstage/blob/master/plugins/techdocs-backend
+[techdocs/container]: https://github.com/backstage/techdocs-container
+[techdocs/cli]: https://github.com/backstage/techdocs-cli
+
+## Feedback
+
+We have created a sweet and short TechDocs user survey -
+https://docs.google.com/forms/d/e/1FAIpQLSdn5Vn3MQhCdyYRuW8cMzZkMQF0bFxXYN168gZRvESLfJWVVg/viewform
+
+This is to gather inputs from you (the Backstage community) which will help us
+best serve TechDocs adopters and existing users. Your inputs will shape our
+roadmap and we will share it in the open.
+
+For any other general queries, reach out to us in the `#docs-like-code` channel
+of our [Discord chatroom](https://github.com/backstage/backstage#community).

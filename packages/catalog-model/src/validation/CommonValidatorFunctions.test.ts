@@ -113,7 +113,7 @@ describe('CommonValidatorFunctions', () => {
     [{}, true],
     [{ a: 1 }, true],
     [{ a: undefined }, false],
-  ] as [any, boolean][])(`isJsonSafe %p ? %p`, (value, result) => {
+  ] as [unknown, boolean][])(`isJsonSafe %p ? %p`, (value, result) => {
     expect(CommonValidatorFunctions.isJsonSafe(value)).toBe(result);
   });
 
@@ -163,16 +163,42 @@ describe('CommonValidatorFunctions', () => {
   });
 
   it.each([
-    ['', ''],
-    ['a', 'a'],
-    ['a-b', 'ab'],
-    ['-a-b', 'ab'],
-    ['a_b', 'ab'],
-    [`${'a'.repeat(6000)}`, `${'a'.repeat(6000)}`],
-    ['_:;>!"#€', ''],
-  ])(`normalizeToLowercaseAlphanum %p ? %p`, (value, result) => {
-    expect(CommonValidatorFunctions.normalizeToLowercaseAlphanum(value)).toBe(
-      result,
-    );
+    [null, false],
+    [7, false],
+    ['', false],
+    ['abc', false],
+    ['   abc', false],
+    ['', false],
+    [{}, false],
+    ['http://foo', true],
+    ['https://www.foo.com/', true],
+    ['https://foo.com:8080', true],
+    ['https://foo:8080/page', true],
+    ['https://foo:8080/sub/page', true],
+    ['https://foo:8080/sub/page?query', true],
+    ['https://foo:8080/sub/page/?query=value', true],
+    ['https://foo:8080/sub/page/?query=value&', true],
+    ['https://foo:8080/sub/page/?query=value&another=val', true],
+    ['https://foo.com/page#fragment', true],
+    ['ftp://ftp.some.domain.com/path', true],
+    ['xyz://custom-protocol:4444/path', true],
+  ])(`isValidUrl %p ? %p`, (value, result) => {
+    expect(CommonValidatorFunctions.isValidUrl(value)).toBe(result);
+  });
+
+  it.each([
+    [null, false],
+    [true, false],
+    [7, false],
+    [{}, false],
+    ['', false],
+    [' ', false],
+    ['    ', false],
+    ['abc', true],
+    [' abc ', true],
+    ['abc xyz', true],
+    ['abc xyz abc.', true],
+  ])(`isValidString %p ? %p`, (value, result) => {
+    expect(CommonValidatorFunctions.isValidString(value)).toBe(result);
   });
 });

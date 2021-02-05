@@ -14,22 +14,28 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Box } from '@material-ui/core';
+import React, { PropsWithChildren } from 'react';
+import { Box, Typography } from '@material-ui/core';
 import { useBarChartLabelStyles } from '../../utils/styles';
 
-type BarChartLabel = {
+type BarChartLabelProps = {
   x: number;
   y: number;
   height: number;
   width: number;
-  children?: React.ReactNode;
+  details?: JSX.Element;
 };
 
-const BarChartLabel = ({ x, y, height, width, children }: BarChartLabel) => {
+export const BarChartLabel = ({
+  x,
+  y,
+  height,
+  width,
+  details,
+  children,
+}: PropsWithChildren<BarChartLabelProps>) => {
   const classes = useBarChartLabelStyles();
   const translateX = width * -0.5;
-  const childArray = React.Children.toArray(children);
 
   return (
     <foreignObject
@@ -41,11 +47,11 @@ const BarChartLabel = ({ x, y, height, width, children }: BarChartLabel) => {
       width={width}
     >
       <Box display="flex" flexDirection="column" justifyContent="center">
-        <b className={classes.label}>{childArray[0]}</b>
-        {childArray.slice(1)}
+        <Typography className={classes.label} gutterBottom>
+          {children}
+        </Typography>
+        {details}
       </Box>
     </foreignObject>
   );
 };
-
-export default BarChartLabel;

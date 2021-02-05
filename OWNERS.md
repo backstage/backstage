@@ -1,19 +1,27 @@
-# Owners
-
 - See [CONTRIBUTING.md](CONTRIBUTING.md) for general contribution guidelines.
+- See [GOVERNANCE.md](GOVERNANCE.md) for governance guidelines and responsibilities.
 
-## Maintainers 🏓
+This page lists all active sponsors and maintainers.
 
-- Patrik Oldsberg (@Rugvip, Spotify)
-- Fredrik Adelöw (@freben, Spotify)
-- Raghunandan Balachandran (@soapraj, Spotify)
-- Ben Lambert (@benjdlambert, Spotify)
-- Marcus Eide (@marcuseide, Spotify)
-- Niklas Ek (@nikek, Spotify)
-- Stefan Ålund (@stefanalund, Spotify)
-- Kat Zhou (@katz95, Spotify)
+# Sponsors
 
-## Hall of Fame 👏
+- Niklas Gustavsson ([protocol7](https://github.com/protocol7)) (ngn@spotify.com)
+- Dave Zolotusky ([dzolotusky](https://github.com/dzolotusky)) (dzolo@spotify.com)
+- Lee Mills ([leemills83](https://github.com/leemills83)) (leem@spotify.com)
 
-- Andrew Thauer (@andrewthauer, Wealthsimple)
-- Oliver Sand (@Fox32, SDA-SE)
+# Maintainers
+
+- Patrik Oldsberg ([rugvip](https://github.com/rugvip)) (Discord: @Rugvip)
+- Fredrik Adelöw ([freben](https://github.com/freben)) (Discord: @freben)
+- Ben Lambert ([benjdlambert](https://github.com/benjdlambert)) (Discord: @blam)
+- Stefan Ålund ([stefanalund](https://github.com/stefanalund)) (Discord: @stalund)
+
+# Friends of Backstage
+
+People that have made significant contributions to the project and earned write access.
+
+- Andrew Thauer - Wealthsimple (GitHub: [andrewthauer](https://github.com/andrewthauer))
+- Oliver Sand - SDA SE (GitHub: [Fox32](https://github.com/Fox32))
+- David Tuite - Roadie (GitHub: [dtuite](https://github.com/dtuite))
+- Adam Harvey - DXC Technology (GitHub: [adamdmharvey](https://github.com/adamdmharvey))
+- Dominik Henneke - SDA SE (GitHub: [dhenneke](https://github.com/dhenneke))

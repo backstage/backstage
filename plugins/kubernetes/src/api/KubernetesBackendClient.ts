@@ -16,7 +16,10 @@
 
 import { DiscoveryApi } from '@backstage/core';
 import { KubernetesApi } from './types';
-import { ObjectsByServiceIdResponse } from '@backstage/plugin-kubernetes-backend';
+import {
+  KubernetesRequestBody,
+  ObjectsByEntityResponse,
+} from '@backstage/plugin-kubernetes-backend';
 
 export class KubernetesBackendClient implements KubernetesApi {
   private readonly discoveryApi: DiscoveryApi;
@@ -25,22 +28,42 @@ export class KubernetesBackendClient implements KubernetesApi {
     this.discoveryApi = options.discoveryApi;
   }
 
-  private async getRequired(path: string): Promise<any> {
+  private async getRequired(
+    path: string,
+    requestBody: KubernetesRequestBody,
+  ): Promise<any> {
     const url = `${await this.discoveryApi.getBaseUrl('kubernetes')}${path}`;
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody),
+    });
 
     if (!response.ok) {
       const payload = await response.text();
-      const message = `Request failed with ${response.status} ${response.statusText}, ${payload}`;
+      let message;
+      switch (response.status) {
+        case 404:
+          message =
+            'Could not find the Kubernetes Backend (HTTP 404). Make sure the plugin has been fully installed.';
+          break;
+        default:
+          message = `Request failed with ${response.status} ${response.statusText}, ${payload}`;
+      }
       throw new Error(message);
     }
 
     return await response.json();
   }
 
-  async getObjectsByServiceId(
-    serviceId: String,
-  ): Promise<ObjectsByServiceIdResponse> {
-    return await this.getRequired(`/services/${serviceId}`);
+  async getObjectsByEntity(
+    requestBody: KubernetesRequestBody,
+  ): Promise<ObjectsByEntityResponse> {
+    return await this.getRequired(
+      `/services/${requestBody.entity.metadata.name}`,
+      requestBody,
+    );
   }
 }

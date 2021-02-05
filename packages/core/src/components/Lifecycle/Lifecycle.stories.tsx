@@ -17,7 +17,7 @@ import React from 'react';
 import { Lifecycle } from './Lifecycle';
 
 export default {
-  title: 'Lifecycle',
+  title: 'Feedback/Lifecycle',
   component: Lifecycle,
 };
 

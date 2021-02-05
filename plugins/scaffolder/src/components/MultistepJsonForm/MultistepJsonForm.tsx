@@ -19,7 +19,7 @@ import {
   Box,
   Button,
   Paper,
-  Step,
+  Step as StepUI,
   StepContent,
   StepLabel,
   Stepper,
@@ -67,10 +67,11 @@ export const MultistepJsonForm = ({
     <>
       <Stepper activeStep={activeStep} orientation="vertical">
         {steps.map(({ label, schema, ...formProps }) => (
-          <Step key={label}>
+          <StepUI key={label}>
             <StepLabel>{label}</StepLabel>
-            <StepContent>
+            <StepContent key={label}>
               <Form
+                key={label}
                 noHtml5Validate
                 formData={formData}
                 onChange={onChange}
@@ -88,7 +89,7 @@ export const MultistepJsonForm = ({
                 </Button>
               </Form>
             </StepContent>
-          </Step>
+          </StepUI>
         ))}
       </Stepper>
       {activeStep === steps.length && (

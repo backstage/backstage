@@ -16,6 +16,7 @@
 
 import express from 'express';
 import passport from 'passport';
+import { InternalOAuthError } from 'passport-oauth2';
 import {
   executeRedirectStrategy,
   executeFrameHandlerStrategy,
@@ -58,7 +59,11 @@ describe('PassportStrategyHelper', () => {
     }
     class MyCustomAuthErrorStrategy extends passport.Strategy {
       authenticate() {
-        this.error(new Error('MyCustomAuth error'));
+        this.error(
+          new InternalOAuthError('MyCustomAuth error', {
+            data: '{ "message": "Custom message" }',
+          }),
+        );
       }
     }
     class MyCustomAuthRedirectStrategy extends passport.Strategy {
@@ -97,7 +102,7 @@ describe('PassportStrategyHelper', () => {
       );
       expect(spyAuthenticate).toBeCalledTimes(1);
       await expect(frameHandlerStrategyPromise).rejects.toThrow(
-        'Authentication failed, Error: MyCustomAuth error',
+        'Authentication failed, MyCustomAuth error - Custom message',
       );
     });
 

@@ -15,46 +15,63 @@
  */
 
 import React from 'react';
-import { Button, Typography } from '@material-ui/core';
+import { Button, makeStyles, Typography } from '@material-ui/core';
+import { BackstageTheme } from '@backstage/theme';
 import { EmptyState } from './EmptyState';
 import { CodeSnippet } from '../CodeSnippet';
 
-const COMPONENT_YAML = `# Example
-apiVersion: backstage.io/v1alpha1
+const COMPONENT_YAML = `apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: backstage
-  description: backstage.io
+  name: example
+  description: example.com
   annotations:
     ANNOTATION: value
 spec:
   type: website
   lifecycle: production
-  owner: guest
-`;
+  owner: guest`;
 
 type Props = {
   annotation: string;
 };
 
+const useStyles = makeStyles<BackstageTheme>(theme => ({
+  code: {
+    borderRadius: 6,
+    margin: `${theme.spacing(2)}px 0px`,
+    background: theme.palette.type === 'dark' ? '#444' : '#fff',
+  },
+}));
+
 export const MissingAnnotationEmptyState = ({ annotation }: Props) => {
+  const classes = useStyles();
+  const description = (
+    <>
+      The <code>{annotation}</code> annotation is missing. You need to add the
+      annotation to your component if you want to enable this tool.
+    </>
+  );
   return (
     <EmptyState
       missing="field"
       title="Missing Annotation"
-      description={`The "${annotation}" annotation is missing. You need to add the annotation to your component if you want to enable this tool for it.`}
+      description={description}
       action={
         <>
           <Typography variant="body1">
-            Add the annotation to your component YAML as per the highlighted
-            example below:
+            Add the annotation to your component YAML as shown in the
+            highlighted example below:
           </Typography>
-          <CodeSnippet
-            text={COMPONENT_YAML.replace('ANNOTATION', annotation)}
-            language="yaml"
-            showLineNumbers
-            highlightedNumbers={[7, 8]}
-          />
+          <div className={classes.code}>
+            <CodeSnippet
+              text={COMPONENT_YAML.replace('ANNOTATION', annotation)}
+              language="yaml"
+              showLineNumbers
+              highlightedNumbers={[6, 7]}
+              customStyle={{ background: 'inherit', fontSize: '115%' }}
+            />
+          </div>
           <Button
             variant="contained"
             color="primary"

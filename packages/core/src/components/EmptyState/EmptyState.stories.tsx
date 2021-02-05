@@ -20,19 +20,15 @@ import { Button } from '@material-ui/core';
 import { MissingAnnotationEmptyState } from './MissingAnnotationEmptyState';
 
 export default {
-  title: 'EmptyState',
+  title: 'Feedback/EmptyState',
   component: EmptyState,
 };
 
 const containerStyle = { width: '100%', height: '100vh' };
 
-export const Field = () => (
+export const MissingAnnotation = () => (
   <div style={containerStyle}>
-    <EmptyState
-      missing="field"
-      title="Your plugin is missing an annotation"
-      description="Add a description here."
-    />
+    <MissingAnnotationEmptyState annotation="backstage.io/example" />
   </div>
 );
 
@@ -78,11 +74,5 @@ export const WithAction = () => (
         </Button>
       }
     />
-  </div>
-);
-
-export const MissingAnnotation = () => (
-  <div style={containerStyle}>
-    <MissingAnnotationEmptyState annotation="backstage.io/example" />
   </div>
 );

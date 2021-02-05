@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
 import {
@@ -23,13 +23,9 @@ import {
 } from '../../utils/styles';
 import { CostInsightsTheme } from '../../types';
 
-interface CostInsightsThemeProviderProps {
-  children?: React.ReactNode;
-}
-
 export const CostInsightsThemeProvider = ({
   children,
-}: CostInsightsThemeProviderProps) => {
+}: PropsWithChildren<{}>) => {
   return (
     <ThemeProvider
       theme={(theme: BackstageTheme) =>

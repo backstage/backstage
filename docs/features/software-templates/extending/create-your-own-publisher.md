@@ -18,11 +18,11 @@ Currently we provide the following `publishers`:
 - `github`
 
 This publisher is passed through to the `createRouter` function of the
-`@spotify/plugin-scaffolder-backend`. Currently, only one publisher is
+`@backstage/plugin-scaffolder-backend`. Currently, only one publisher is
 supported, but PR's are always welcome.
 
 An full example backend can be found
-[here](https://github.com/spotify/backstage/blob/d91c10f654475a60829fa33a5c81018e517a319a/packages/backend/src/plugins/scaffolder.ts),
+[here](https://github.com/backstage/backstage/blob/d91c10f654475a60829fa33a5c81018e517a319a/packages/backend/src/plugins/scaffolder.ts),
 but it looks something like the following
 
 ```ts
@@ -34,7 +34,7 @@ import { Octokit } from '@octokit/rest';
 import type { PluginEnvironment } from '../types';
 
 export default async function createPlugin({ logger }: PluginEnvironment) {
-  const githubClient = new Octokit({ auth: process.env.GITHUB_ACCESS_TOKEN });
+  const githubClient = new Octokit({ auth: process.env.GITHUB_TOKEN });
   const publisher = new GithubPublisher({ client: githubClient });
 
   return await createRouter({
@@ -57,7 +57,7 @@ That type looks like the following:
 export type PublisherBase = {
   publish(opts: {
     entity: TemplateEntityV1alpha1;
-    values: RequiredTemplateValues & Record<string, JsonValue>;
+    values: TemplaterValues;
     directory: string;
   }): Promise<{ remoteUrl: string }>;
 };
@@ -82,7 +82,7 @@ Now it's up to you to implement the `publish` function and return
 
 Some good examples exist here:
 
-- https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/src/scaffolder/stages/publish/github.ts
+- https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/src/scaffolder/stages/publish/github.ts
 
 ### Registering your own Publisher
 

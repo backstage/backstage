@@ -15,8 +15,7 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 import { Header } from './Header';
 
 jest.mock('react-helmet', () => {
@@ -26,36 +25,43 @@ jest.mock('react-helmet', () => {
 });
 
 describe('<Header/>', () => {
-  it('should render with title', () => {
-    const rendered = render(wrapInTestApp(<Header title="Title" />));
+  it('should render with title', async () => {
+    const rendered = await renderInTestApp(<Header title="Title" />);
     rendered.getByText('Title');
   });
 
-  it('should set document title', () => {
-    const rendered = render(wrapInTestApp(<Header title="Title1" />));
+  it('should set document title', async () => {
+    const rendered = await renderInTestApp(<Header title="Title1" />);
     rendered.getByText('Title1');
     rendered.getByText('defaultTitle: Title1 | Backstage');
   });
 
-  it('should override document title', () => {
-    const rendered = render(
-      wrapInTestApp(<Header title="Title1" pageTitleOverride="Title2" />),
+  it('should override document title', async () => {
+    const rendered = await renderInTestApp(
+      <Header title="Title1" pageTitleOverride="Title2" />,
     );
     rendered.getByText('Title1');
     rendered.getByText('defaultTitle: Title2 | Backstage');
   });
 
-  it('should have subtitle', () => {
-    const rendered = render(
-      wrapInTestApp(<Header title="Title" subtitle="Subtitle" />),
+  it('should have subtitle', async () => {
+    const rendered = await renderInTestApp(
+      <Header title="Title" subtitle="Subtitle" />,
     );
     rendered.getByText('Subtitle');
   });
 
-  it('should have type rendered', () => {
-    const rendered = render(
-      wrapInTestApp(<Header title="Title" type="tool" />),
+  it('should have type rendered', async () => {
+    const rendered = await renderInTestApp(
+      <Header title="Title" type="tool" />,
     );
     rendered.getByText('tool');
+  });
+
+  it('should have breadcrumb rendered', async () => {
+    const rendered = await renderInTestApp(
+      <Header title="Title" type="tool" typeLink="/tool" />,
+    );
+    rendered.getAllByText('Title');
   });
 });

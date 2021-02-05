@@ -46,6 +46,8 @@ type PaletteAdditions = {
   navigation: {
     background: string;
     indicator: string;
+    color: string;
+    selectedColor: string;
   };
   tabbar: {
     indicator: string;
@@ -72,12 +74,20 @@ type PaletteAdditions = {
 export type BackstagePalette = Palette & PaletteAdditions;
 export type BackstagePaletteOptions = PaletteOptions & PaletteAdditions;
 
+export type PageThemeSelector = {
+  themeId: string;
+};
+
 export interface BackstageTheme extends Theme {
   palette: BackstagePalette;
+  page: PageTheme;
+  getPageTheme: ({ themeId }: PageThemeSelector) => PageTheme;
 }
 
 export interface BackstageThemeOptions extends ThemeOptions {
   palette: BackstagePaletteOptions;
+  page: PageTheme;
+  getPageTheme: ({ themeId }: PageThemeSelector) => PageTheme;
 }
 
 /**
@@ -85,5 +95,13 @@ export interface BackstageThemeOptions extends ThemeOptions {
  */
 export type SimpleThemeOptions = {
   palette: BackstagePaletteOptions;
+  defaultPageTheme: string;
+  pageTheme?: Record<string, PageTheme>;
   fontFamily?: string;
+};
+
+export type PageTheme = {
+  colors: string[];
+  shape: string;
+  backgroundImage: string;
 };

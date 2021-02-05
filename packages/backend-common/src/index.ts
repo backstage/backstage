@@ -20,6 +20,8 @@ export * from './discovery';
 export * from './errors';
 export * from './logging';
 export * from './middleware';
+export * from './reading';
 export * from './service';
 export * from './paths';
 export * from './hot';
+export * from './scm';

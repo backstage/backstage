@@ -15,48 +15,87 @@
  */
 import React from 'react';
 import { Box, Button } from '@material-ui/core';
-import AlertInsightsSectionHeader from './AlertInsightsSectionHeader';
+import { default as SnoozeIcon } from '@material-ui/icons/AccessTime';
+import { default as AcceptIcon } from '@material-ui/icons/Check';
+import { default as DismissIcon } from '@material-ui/icons/Delete';
+import { AlertInsightsSectionHeader } from './AlertInsightsSectionHeader';
+import { Alert } from '../../types';
 import {
-  getAlertButtonText,
-  getAlertText,
-  getAlertUrl,
+  isSnoozeEnabled,
+  isAcceptEnabled,
+  isDismissEnabled,
 } from '../../utils/alerts';
-import { Alert, Currency } from '../../types';
-import { useCurrency } from '../../hooks';
 
 type AlertInsightsSectionProps = {
   alert: Alert;
   number: number;
-  render: (alert: Alert, currency: Currency) => JSX.Element;
+  onSnooze: (alert: Alert) => void;
+  onAccept: (alert: Alert) => void;
+  onDismiss: (alert: Alert) => void;
 };
 
-const AlertInsightsSection = ({
+export const AlertInsightsSection = ({
   alert,
   number,
-  render,
+  onSnooze,
+  onAccept,
+  onDismiss,
 }: AlertInsightsSectionProps) => {
-  const [currency] = useCurrency();
-  const text = getAlertText(alert);
-  const url = getAlertUrl(alert);
-  const buttonText = getAlertButtonText(alert);
+  const isSnoozeButtonDisplayed = isSnoozeEnabled(alert);
+  const isAcceptButtonDisplayed = isAcceptEnabled(alert);
+  const isDismissButtonDisplayed = isDismissEnabled(alert);
+  const isButtonGroupDisplayed =
+    isSnoozeButtonDisplayed ||
+    isAcceptButtonDisplayed ||
+    isDismissButtonDisplayed;
 
   return (
-    <Box display="flex" flexDirection="column">
-      <AlertInsightsSectionHeader
-        alert={alert}
-        title={text.title}
-        subtitle={text.subtitle}
-        number={number}
-      />
-      <Box textAlign="left" mt={0} mb={4}>
-        <Button variant="contained" color="primary" href={url}>
-          {buttonText}
-        </Button>
-        {/* <Button color="primary">Dismiss notification</Button> */}
-      </Box>
-      {render(alert, currency)}
+    <Box display="flex" flexDirection="column" mb={6}>
+      <AlertInsightsSectionHeader alert={alert} number={number} />
+      {isButtonGroupDisplayed && (
+        <Box display="flex" alignItems="center" mb={4}>
+          {isAcceptButtonDisplayed && (
+            <Box mr={1}>
+              <Button
+                color="primary"
+                variant="contained"
+                aria-label="accept"
+                onClick={() => onAccept(alert)}
+                startIcon={<AcceptIcon />}
+              >
+                Accept
+              </Button>
+            </Box>
+          )}
+          {isSnoozeButtonDisplayed && (
+            <Box mr={1}>
+              <Button
+                color="default"
+                variant="outlined"
+                aria-label="snooze"
+                disableElevation
+                onClick={() => onSnooze(alert)}
+                startIcon={<SnoozeIcon />}
+              >
+                Snooze
+              </Button>
+            </Box>
+          )}
+          {isDismissButtonDisplayed && (
+            <Button
+              color="secondary"
+              variant="outlined"
+              aria-label="dismiss"
+              disableElevation
+              onClick={() => onDismiss(alert)}
+              startIcon={<DismissIcon />}
+            >
+              Dismiss
+            </Button>
+          )}
+        </Box>
+      )}
+      {alert.element}
     </Box>
   );
 };
-
-export default AlertInsightsSection;

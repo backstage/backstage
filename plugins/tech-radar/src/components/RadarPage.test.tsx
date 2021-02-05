@@ -22,6 +22,7 @@ import { ApiRegistry, ApiProvider, errorApiRef } from '@backstage/core';
 
 import GetBBoxPolyfill from '../utils/polyfills/getBBox';
 import { RadarPage } from './RadarPage';
+import { act } from 'react-dom/test-utils';
 import { MockErrorApi, wrapInTestApp } from '@backstage/test-utils';
 
 describe('RadarPage', () => {
@@ -34,6 +35,8 @@ describe('RadarPage', () => {
   });
 
   it('should render a progress bar', async () => {
+    jest.useFakeTimers();
+
     const techRadarProps = {
       width: 1200,
       height: 800,
@@ -48,9 +51,13 @@ describe('RadarPage', () => {
       ),
     );
 
+    act(() => {
+      jest.advanceTimersByTime(250);
+    });
     expect(getByTestId('progress')).toBeInTheDocument();
 
     await waitForElement(() => queryByTestId('tech-radar-svg'));
+    jest.useRealTimers();
   });
 
   it('should render a header with a svg', async () => {

@@ -40,7 +40,7 @@ export default class ApiDocPrinter {
       'The following is a list of all Utility APIs defined by `@backstage/core`.',
       'They are available to use by plugins and components, and can be accessed ',
       'using the `useApi` hook, also provided by `@backstage/core`.',
-      'For more information, see https://github.com/spotify/backstage/blob/master/docs/api/utility-apis.md.',
+      'For more information, see https://github.com/backstage/backstage/blob/master/docs/api/utility-apis.md.',
     );
 
     for (const api of apiDocs) {

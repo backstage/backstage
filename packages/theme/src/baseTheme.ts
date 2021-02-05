@@ -23,6 +23,7 @@ import {
   BackstageThemeOptions,
   SimpleThemeOptions,
 } from './types';
+import { pageTheme as defaultPageThemes } from './pageTheme';
 
 const DEFAULT_FONT_FAMILY =
   '"Helvetica Neue", Helvetica, Roboto, Arial, sans-serif';
@@ -30,7 +31,16 @@ const DEFAULT_FONT_FAMILY =
 export function createThemeOptions(
   options: SimpleThemeOptions,
 ): BackstageThemeOptions {
-  const { palette, fontFamily = DEFAULT_FONT_FAMILY } = options;
+  const {
+    palette,
+    fontFamily = DEFAULT_FONT_FAMILY,
+    defaultPageTheme,
+    pageTheme = defaultPageThemes,
+  } = options;
+
+  if (!pageTheme[defaultPageTheme]) {
+    throw new Error(`${defaultPageTheme} is not defined in pageTheme.`);
+  }
 
   return {
     palette,
@@ -68,6 +78,9 @@ export function createThemeOptions(
         marginBottom: 10,
       },
     },
+    page: pageTheme[defaultPageTheme],
+    getPageTheme: ({ themeId }) =>
+      pageTheme[themeId] ?? pageTheme[defaultPageTheme],
   };
 }
 
@@ -122,7 +135,7 @@ export function createThemeOverrides(theme: BackstageTheme): Overrides {
         borderBottom: 0,
       },
       sizeSmall: {
-        padding: theme.spacing(1, 2, 1, 2.5),
+        padding: theme.spacing(1.5, 2, 1.5, 2.5),
       },
       head: {
         wordBreak: 'break-word',
@@ -196,9 +209,12 @@ export function createThemeOverrides(theme: BackstageTheme): Overrides {
         // By default there's no margin, but it's usually wanted, so we add some trailing margin
         marginRight: theme.spacing(1),
         marginBottom: theme.spacing(1),
+        color: theme.palette.grey[900],
+      },
+      outlined: {
+        color: theme.palette.text.primary,
       },
       label: {
-        color: theme.palette.grey[900],
         lineHeight: `${theme.spacing(2.5)}px`,
         fontWeight: theme.typography.fontWeightMedium,
         fontSize: `${theme.spacing(1.75)}px`,

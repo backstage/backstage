@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createApiRef } from '../ApiRef';
+import { ApiRef, createApiRef } from '../system';
 
 /**
  * The discovery API is used to provide a mechanism for plugins to
@@ -31,7 +31,7 @@ export type DiscoveryApi = {
   /**
    * Returns the HTTP base backend URL for a given plugin, without a trailing slash.
    *
-   * This method must always be called just before making a request. as opposed to
+   * This method must always be called just before making a request, as opposed to
    * fetching the URL when constructing an API client. That is to ensure that more
    * flexible routing patterns can be supported.
    *
@@ -41,7 +41,7 @@ export type DiscoveryApi = {
   getBaseUrl(pluginId: string): Promise<string>;
 };
 
-export const discoveryApiRef = createApiRef<DiscoveryApi>({
+export const discoveryApiRef: ApiRef<DiscoveryApi> = createApiRef({
   id: 'core.discovery',
   description: 'Provides service discovery of backend plugins',
 });

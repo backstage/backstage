@@ -17,7 +17,7 @@
 import React from 'react';
 import { Typography, Box, Grid, Container, Divider } from '@material-ui/core';
 
-const WhyCostsMatter = () => {
+export const WhyCostsMatter = () => {
   return (
     <Box mt={10} mb={4}>
       <Container maxWidth="md">
@@ -73,5 +73,3 @@ const WhyCostsMatter = () => {
     </Box>
   );
 };
-
-export default WhyCostsMatter;

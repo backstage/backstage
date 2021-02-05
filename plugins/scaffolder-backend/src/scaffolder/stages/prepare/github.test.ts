@@ -14,90 +14,84 @@
  * limitations under the License.
  */
 
-const mocks = {
-  Clone: { clone: jest.fn() },
-  CheckoutOptions: jest.fn(() => {}),
-};
-jest.doMock('nodegit', () => mocks);
-
+import fs from 'fs-extra';
+import os from 'os';
+import path from 'path';
 import { GithubPreparer } from './github';
-import {
-  TemplateEntityV1alpha1,
-  LOCATION_ANNOTATION,
-} from '@backstage/catalog-model';
+import { getVoidLogger, Git } from '@backstage/backend-common';
+
+jest.mock('fs-extra');
 
 describe('GitHubPreparer', () => {
-  let mockEntity: TemplateEntityV1alpha1;
+  const workspacePath = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
+  const checkoutPath = path.resolve(workspacePath, 'checkout');
+  const templatePath = path.resolve(workspacePath, 'template');
+
+  const mockGitClient = {
+    clone: jest.fn(),
+  };
+  const logger = getVoidLogger();
+
+  jest.spyOn(Git, 'fromAuth').mockReturnValue(mockGitClient as any);
+
   beforeEach(() => {
     jest.clearAllMocks();
-    mockEntity = {
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'Template',
-      metadata: {
-        annotations: {
-          [LOCATION_ANNOTATION]:
-            'github:https://github.com/benjdlambert/backstage-graphql-template/blob/master/template.yaml',
-        },
-        name: 'graphql-starter',
-        title: 'GraphQL Service',
-        description:
-          'A GraphQL starter template for backstage to get you up and running\nthe best pracices with GraphQL\n',
-        uid: '9cf16bad-16e0-4213-b314-c4eec773c50b',
-        etag: 'ZTkxMjUxMjUtYWY3Yi00MjU2LWFkYWMtZTZjNjU5ZjJhOWM2',
-        generation: 1,
-      },
-      spec: {
-        type: 'website',
-        templater: 'cookiecutter',
-        path: './template',
-        schema: {
-          $schema: 'http://json-schema.org/draft-07/schema#',
-          required: ['storePath', 'owner'],
-          properties: {
-            owner: {
-              type: 'string',
-              title: 'Owner',
-              description: 'Who is going to own this component',
-            },
-            storePath: {
-              type: 'string',
-              title: 'Store path',
-              description: 'GitHub store path in org/repo format',
-            },
-          },
-        },
-      },
-    };
   });
+
+  const preparer = GithubPreparer.fromConfig({
+    host: 'github.com',
+    token: 'fake-token',
+  });
+
   it('calls the clone command with the correct arguments for a repository', async () => {
-    const preparer = new GithubPreparer();
-    await preparer.prepare(mockEntity);
-    expect(mocks.Clone.clone).toHaveBeenNthCalledWith(
-      1,
-      'https://github.com/benjdlambert/backstage-graphql-template',
-      expect.any(String),
-      {},
+    await preparer.prepare({
+      url:
+        'https://github.com/benjdlambert/backstage-graphql-template/blob/master/templates/graphql-starter/template',
+      logger,
+      workspacePath,
+    });
+
+    expect(mockGitClient.clone).toHaveBeenCalledWith({
+      url: 'https://github.com/benjdlambert/backstage-graphql-template',
+      dir: checkoutPath,
+      ref: expect.any(String),
+    });
+    expect(fs.move).toHaveBeenCalledWith(
+      path.resolve(checkoutPath, 'templates', 'graphql-starter', 'template'),
+      templatePath,
     );
+    expect(fs.rmdir).toHaveBeenCalledWith(path.resolve(templatePath, '.git'));
   });
+
   it('calls the clone command with the correct arguments for a repository when no path is provided', async () => {
-    const preparer = new GithubPreparer();
-    delete mockEntity.spec.path;
-    await preparer.prepare(mockEntity);
-    expect(mocks.Clone.clone).toHaveBeenNthCalledWith(
-      1,
-      'https://github.com/benjdlambert/backstage-graphql-template',
-      expect.any(String),
-      {},
-    );
+    await preparer.prepare({
+      url:
+        'https://github.com/benjdlambert/backstage-graphql-template/blob/master',
+      logger,
+      workspacePath,
+    });
+
+    expect(mockGitClient.clone).toHaveBeenCalledWith({
+      url: 'https://github.com/benjdlambert/backstage-graphql-template',
+      dir: checkoutPath,
+      ref: 'master',
+    });
+    expect(fs.move).toHaveBeenCalledWith(checkoutPath, templatePath);
+    expect(fs.rmdir).toHaveBeenCalledWith(path.resolve(templatePath, '.git'));
   });
 
-  it('return the temp directory with the path to the folder if it is specified', async () => {
-    const preparer = new GithubPreparer();
-    mockEntity.spec.path = './template/test/1/2/3';
-    const response = await preparer.prepare(mockEntity);
+  it('calls the clone command with token', async () => {
+    await preparer.prepare({
+      url:
+        'https://github.com/benjdlambert/backstage-graphql-template/blob/master',
+      logger,
+      workspacePath,
+    });
 
-    expect(response.split('\\').join('/')).toMatch(
-      /\/template\/test\/1\/2\/3$/,
-    );
+    expect(Git.fromAuth).toHaveBeenCalledWith({
+      logger,
+      username: 'fake-token',
+      password: 'x-oauth-basic',
+    });
   });
 });

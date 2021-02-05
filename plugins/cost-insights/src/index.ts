@@ -15,5 +15,10 @@
  */
 
 export { plugin } from './plugin';
+export * from './client';
 export * from './api';
+export { ProjectGrowthAlert, UnlabeledDataflowAlert } from './alerts';
+export * from './components';
+export { useCurrency } from './hooks';
 export * from './types';
+export * from './utils/tests';

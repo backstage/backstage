@@ -15,40 +15,47 @@
  */
 import fs from 'fs-extra';
 import path from 'path';
-import os from 'os';
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { parseLocationAnnotation } from '../helpers';
-import { InputError } from '@backstage/backend-common';
-import { PreparerBase } from './types';
-import GitUriParser from 'git-url-parse';
-import { Clone } from 'nodegit';
+import { Git } from '@backstage/backend-common';
+import { PreparerBase, PreparerOptions } from './types';
+import parseGitUrl from 'git-url-parse';
+import { GitHubIntegrationConfig } from '@backstage/integration';
 
 export class GithubPreparer implements PreparerBase {
-  async prepare(template: TemplateEntityV1alpha1): Promise<string> {
-    const { protocol, location } = parseLocationAnnotation(template);
+  static fromConfig(config: GitHubIntegrationConfig) {
+    return new GithubPreparer({ token: config.token });
+  }
 
-    if (protocol !== 'github') {
-      throw new InputError(
-        `Wrong location protocol: ${protocol}, should be 'github'`,
-      );
-    }
-    const templateId = template.metadata.name;
+  constructor(private readonly config: { token?: string }) {}
 
-    const parsedGitLocation = GitUriParser(location);
-    const repositoryCheckoutUrl = parsedGitLocation.toString('https');
-    const tempDir = await fs.promises.mkdtemp(
-      path.join(os.tmpdir(), templateId),
+  async prepare({ url, workspacePath, logger }: PreparerOptions) {
+    const parsedGitUrl = parseGitUrl(url);
+    const checkoutPath = path.join(workspacePath, 'checkout');
+    const targetPath = path.join(workspacePath, 'template');
+    const fullPathToTemplate = path.resolve(
+      checkoutPath,
+      parsedGitUrl.filepath,
     );
 
-    const templateDirectory = path.join(
-      `${path.dirname(parsedGitLocation.filepath)}`,
-      template.spec.path ?? '.',
-    );
+    const git = this.config.token
+      ? Git.fromAuth({
+          username: this.config.token,
+          password: 'x-oauth-basic',
+          logger,
+        })
+      : Git.fromAuth({ logger });
 
-    await Clone.clone(repositoryCheckoutUrl, tempDir, {
-      // TODO(blam): Maybe need some auth here?
+    await git.clone({
+      url: parsedGitUrl.toString('https'),
+      dir: checkoutPath,
+      ref: parsedGitUrl.ref,
     });
 
-    return path.resolve(tempDir, templateDirectory);
+    await fs.move(fullPathToTemplate, targetPath);
+
+    try {
+      await fs.rmdir(path.join(targetPath, '.git'));
+    } catch {
+      // Ignore intentionally
+    }
   }
 }

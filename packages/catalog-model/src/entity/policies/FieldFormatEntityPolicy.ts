@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-import { EntityPolicy } from '../../types';
-import { makeValidator, Validators } from '../../validation';
+import { EntityPolicy } from './types';
+import {
+  CommonValidatorFunctions,
+  KubernetesValidatorFunctions,
+  makeValidator,
+  Validators,
+} from '../../validation';
 import { Entity } from '../Entity';
 
 /**
@@ -50,7 +55,53 @@ export class FieldFormatEntityPolicy implements EntityPolicy {
       }
 
       if (!isValid) {
-        throw new Error(`${field} "${value}" is not valid`);
+        let expectation;
+        switch (
+          validator.name as
+            | keyof typeof KubernetesValidatorFunctions
+            | keyof typeof CommonValidatorFunctions
+        ) {
+          case 'isValidLabelValue':
+          case 'isValidObjectName':
+            expectation =
+              'a string that is sequences of [a-zA-Z0-9] separated by any of [-_.], at most 63 characters in total';
+            break;
+          case 'isValidLabelKey':
+          case 'isValidApiVersion':
+          case 'isValidAnnotationKey':
+            expectation = 'a valid prefix and/or suffix';
+            break;
+          case 'isValidNamespace':
+          case 'isValidDnsLabel':
+            expectation =
+              'a string that is sequences of [a-z0-9] separated by [-], at most 63 characters in total';
+            break;
+          case 'isValidAnnotationValue':
+            expectation = 'a string';
+            break;
+          case 'isValidKind':
+            expectation =
+              'a string that is a sequence of [a-zA-Z][a-z0-9A-Z], at most 63 characters in total';
+            break;
+          case 'isValidUrl':
+            expectation = 'a string that is a valid url';
+            break;
+          case 'isValidString':
+            expectation = 'a non empty string';
+            break;
+          default:
+            expectation = undefined;
+            break;
+        }
+
+        // ensure that if there are other/future validators, the error message defaults to a general "is not valid, visit link"
+        const message = expectation
+          ? ` expected ${expectation} but found "${value}".`
+          : '';
+
+        throw new Error(
+          `"${field}" is not valid;${message} To learn more about catalog file format, visit: https://github.com/backstage/backstage/blob/master/docs/architecture-decisions/adr002-default-catalog-file-format.md`,
+        );
       }
     }
 
@@ -87,6 +138,23 @@ export class FieldFormatEntityPolicy implements EntityPolicy {
 
     for (let i = 0; i < tags.length; ++i) {
       require(`tags.${i}`, tags[i], this.validators.isValidTag);
+    }
+
+    const links = entity.metadata.links ?? [];
+
+    for (let i = 0; i < links.length; ++i) {
+      require(`links.${i}.url`, links[i]
+        ?.url, CommonValidatorFunctions.isValidUrl);
+      optional(
+        `links.${i}.title`,
+        links[i]?.title,
+        CommonValidatorFunctions.isValidString,
+      );
+      optional(
+        `links.${i}.icon`,
+        links[i]?.icon,
+        KubernetesValidatorFunctions.isValidObjectName,
+      );
     }
 
     return entity;

@@ -1,8 +1,8 @@
 ---
 id: development-environment
 title: Development Environment
-description: Documentation on how to get set up for doing development on
-the Backstage repository
+# prettier-ignore
+description: Documentation on how to get set up for doing development on the Backstage repository
 ---
 
 This section describes how to get set up for doing development on the Backstage
@@ -31,7 +31,7 @@ $ yarn start
 This should open a local instance of Backstage in your browser, otherwise open
 one of the URLs printed in the terminal.
 
-By default, backstage will start on port 3000, however you can override this by
+By default, Backstage will start on port 3000, however you can override this by
 setting an environment variable `PORT` on your local machine. e.g.
 `export PORT=8080` then running `yarn start`. Or `PORT=8080 yarn start`.
 
@@ -56,7 +56,7 @@ system resources and slow things down.
 ## Package Scripts
 
 There are many commands to be found in the root
-[package.json](https://github.com/spotify/backstage/blob/master/package.json),
+[package.json](https://github.com/backstage/backstage/blob/master/package.json),
 here are some useful ones:
 
 ```python
@@ -86,5 +86,19 @@ yarn create-plugin # Create a new plugin
 ```
 
 > See
-> [package.json](https://github.com/spotify/backstage/blob/master/package.json)
+> [package.json](https://github.com/backstage/backstage/blob/master/package.json)
 > for other yarn commands/options.
+
+## Local configuration
+
+Backstage allows you to specify the configuration used while running the
+application on your computer. Local configuration is read from
+`app-config.local.yaml`. This file is ignored by Git, which means that you can
+safely use it to reference secrets like GitHub tokens without worrying about
+these secrets, inadvertently ending up in the Git repository. You do not need to
+copy everything from the default config to the local config.
+`app-config.local.yaml` will be merged with `app-config.yaml` and overwrite the
+default app configs.
+
+You can learn more about the local configuration in
+[Static Configuration in Backstage](../conf/) section.

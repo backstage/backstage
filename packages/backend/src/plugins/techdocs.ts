@@ -13,16 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import {
   createRouter,
-  DirectoryPreparer,
   Preparers,
   Generators,
-  LocalPublish,
-  TechdocsGenerator,
-  GithubPreparer,
-  GitlabPreparer,
+  Publisher,
 } from '@backstage/plugin-techdocs-backend';
 import { PluginEnvironment } from '../types';
 import Docker from 'dockerode';
@@ -31,21 +26,28 @@ export default async function createPlugin({
   logger,
   config,
   discovery,
+  reader,
 }: PluginEnvironment) {
-  const generators = new Generators();
-  const techdocsGenerator = new TechdocsGenerator(logger, config);
-  generators.register('techdocs', techdocsGenerator);
+  // Preparers are responsible for fetching source files for documentation.
+  const preparers = await Preparers.fromConfig(config, {
+    logger,
+    reader,
+  });
 
-  const preparers = new Preparers();
-  const githubPreparer = new GithubPreparer(logger);
-  const gitlabPreparer = new GitlabPreparer(logger);
-  const directoryPreparer = new DirectoryPreparer(logger);
-  preparers.register('dir', directoryPreparer);
-  preparers.register('github', githubPreparer);
-  preparers.register('gitlab', gitlabPreparer);
+  // Generators are used for generating documentation sites.
+  const generators = await Generators.fromConfig(config, {
+    logger,
+  });
 
-  const publisher = new LocalPublish(logger);
+  // Publisher is used for
+  // 1. Publishing generated files to storage
+  // 2. Fetching files from storage and passing them to TechDocs frontend.
+  const publisher = await Publisher.fromConfig(config, {
+    logger,
+    discovery,
+  });
 
+  // Docker client (conditionally) used by the generators, based on techdocs.generators config.
   const dockerClient = new Docker();
 
   return await createRouter({

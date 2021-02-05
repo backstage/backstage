@@ -19,7 +19,7 @@ import { CodeSnippet } from './CodeSnippet';
 import { InfoCard } from '../../layout/InfoCard';
 
 export default {
-  title: 'CodeSnippet',
+  title: 'Data Display/CodeSnippet',
   component: CodeSnippet,
 };
 

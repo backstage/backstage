@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { makeStyles } from '@material-ui/core';
-import { Header, Page, pageTheme } from '@backstage/core';
+import { Header, Page } from '@backstage/core';
 import { Group } from '../../types';
-import CostInsightsTabs from '../CostInsightsTabs';
+import { CostInsightsTabs } from '../CostInsightsTabs';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -35,13 +34,15 @@ const useStyles = makeStyles(theme => ({
 type CostInsightsLayoutProps = {
   title?: string;
   groups: Group[];
-  children?: React.ReactNode;
 };
 
-const CostInsightsLayout = ({ groups, children }: CostInsightsLayoutProps) => {
+export const CostInsightsLayout = ({
+  groups,
+  children,
+}: PropsWithChildren<CostInsightsLayoutProps>) => {
   const classes = useStyles();
   return (
-    <Page theme={pageTheme.tool}>
+    <Page themeId="tool">
       <Header
         style={{ boxShadow: 'none' }}
         title="Cost Insights"
@@ -55,5 +56,3 @@ const CostInsightsLayout = ({ groups, children }: CostInsightsLayoutProps) => {
     </Page>
   );
 };
-
-export default CostInsightsLayout;

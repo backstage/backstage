@@ -13,68 +13,97 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity, LocationSpec } from '@backstage/catalog-model';
+import {
+  Entity,
+  EntityName,
+  RELATION_OWNED_BY,
+  RELATION_PART_OF,
+} from '@backstage/catalog-model';
 import { Table, TableColumn, TableProps } from '@backstage/core';
-import { Chip, Link } from '@material-ui/core';
+import {
+  EntityRefLink,
+  EntityRefLinks,
+  formatEntityRefTitle,
+  getEntityRelations,
+} from '@backstage/plugin-catalog-react';
+import { Chip } from '@material-ui/core';
 import Edit from '@material-ui/icons/Edit';
-import GitHub from '@material-ui/icons/GitHub';
+import OpenInNew from '@material-ui/icons/OpenInNew';
 import { Alert } from '@material-ui/lab';
 import React from 'react';
-import { generatePath, Link as RouterLink } from 'react-router-dom';
 import { findLocationForEntityMeta } from '../../data/utils';
-import { useStarredEntities } from '../../hooks/useStarredEntites';
-import { entityRoute } from '../../routes';
+import { useStarredEntities } from '../../hooks/useStarredEntities';
+import { createEditLink } from '../createEditLink';
 import {
   favouriteEntityIcon,
   favouriteEntityTooltip,
 } from '../FavouriteEntity/FavouriteEntity';
 
-const columns: TableColumn<Entity>[] = [
+type EntityRow = {
+  entity: Entity;
+  resolved: {
+    name: string;
+    partOfSystemRelationTitle?: string;
+    partOfSystemRelations: EntityName[];
+    ownedByRelationsTitle?: string;
+    ownedByRelations: EntityName[];
+  };
+};
+
+const columns: TableColumn<EntityRow>[] = [
   {
     title: 'Name',
-    field: 'metadata.name',
+    field: 'resolved.name',
     highlight: true,
-    render: (entity: any) => (
-      <Link
-        component={RouterLink}
-        to={generatePath(entityRoute.path, {
-          optionalNamespaceAndName: [
-            entity.metadata.namespace,
-            entity.metadata.name,
-          ]
-            .filter(Boolean)
-            .join(':'),
-          kind: entity.kind,
-          selectedTabId: 'overview',
-        })}
-      >
-        {entity.metadata.name}
-      </Link>
+    render: ({ entity }) => (
+      <EntityRefLink entityRef={entity} defaultKind="Component" />
+    ),
+  },
+  {
+    title: 'System',
+    field: 'resolved.partOfSystemRelationTitle',
+    render: ({ resolved }) => (
+      <EntityRefLinks
+        entityRefs={resolved.partOfSystemRelations}
+        defaultKind="system"
+      />
     ),
   },
   {
     title: 'Owner',
-    field: 'spec.owner',
+    field: 'resolved.ownedByRelationsTitle',
+    render: ({ resolved }) => (
+      <EntityRefLinks
+        entityRefs={resolved.ownedByRelations}
+        defaultKind="group"
+      />
+    ),
   },
   {
     title: 'Lifecycle',
-    field: 'spec.lifecycle',
+    field: 'entity.spec.lifecycle',
   },
   {
     title: 'Description',
-    field: 'metadata.description',
+    field: 'entity.metadata.description',
   },
   {
     title: 'Tags',
-    field: 'metadata.tags',
+    field: 'entity.metadata.tags',
     cellStyle: {
       padding: '0px 16px 0px 20px',
     },
-    render: (entity: Entity) => (
+    render: ({ entity }) => (
       <>
         {entity.metadata.tags &&
           entity.metadata.tags.map(t => (
-            <Chip key={t} label={t} style={{ marginBottom: '0px' }} />
+            <Chip
+              key={t}
+              label={t}
+              size="small"
+              variant="outlined"
+              style={{ marginBottom: '0px' }}
+            />
           ))}
       </>
     ),
@@ -106,29 +135,20 @@ export const CatalogTable = ({
     );
   }
 
-  const actions: TableProps<Entity>['actions'] = [
-    (rowData: Entity) => {
-      const location = findLocationForEntityMeta(rowData.metadata);
+  const actions: TableProps<EntityRow>['actions'] = [
+    ({ entity }) => {
+      const location = findLocationForEntityMeta(entity.metadata);
       return {
-        icon: () => <GitHub fontSize="small" />,
-        tooltip: 'View on GitHub',
+        icon: () => <OpenInNew fontSize="small" />,
+        tooltip: 'View',
         onClick: () => {
           if (!location) return;
           window.open(location.target, '_blank');
         },
-        hidden: location?.type !== 'github',
       };
     },
-    (rowData: Entity) => {
-      const createEditLink = (location: LocationSpec): string => {
-        switch (location.type) {
-          case 'github':
-            return location.target.replace('/blob/', '/edit/');
-          default:
-            return location.target;
-        }
-      };
-      const location = findLocationForEntityMeta(rowData.metadata);
+    ({ entity }) => {
+      const location = findLocationForEntityMeta(entity.metadata);
       return {
         icon: () => <Edit fontSize="small" />,
         tooltip: 'Edit',
@@ -136,32 +156,62 @@ export const CatalogTable = ({
           if (!location) return;
           window.open(createEditLink(location), '_blank');
         },
-        hidden: location?.type !== 'github',
       };
     },
-    (rowData: Entity) => {
-      const isStarred = isStarredEntity(rowData);
+    ({ entity }) => {
+      const isStarred = isStarredEntity(entity);
       return {
         cellStyle: { paddingLeft: '1em' },
         icon: () => favouriteEntityIcon(isStarred),
         tooltip: favouriteEntityTooltip(isStarred),
-        onClick: () => toggleStarredEntity(rowData),
+        onClick: () => toggleStarredEntity(entity),
       };
     },
   ];
 
+  const rows = entities.map(entity => {
+    const partOfSystemRelations = getEntityRelations(entity, RELATION_PART_OF, {
+      kind: 'system',
+    });
+    const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
+
+    return {
+      entity,
+      resolved: {
+        name: formatEntityRefTitle(entity, {
+          defaultKind: 'Component',
+        }),
+        ownedByRelationsTitle: ownedByRelations
+          .map(r => formatEntityRefTitle(r, { defaultKind: 'group' }))
+          .join(', '),
+        ownedByRelations,
+        partOfSystemRelationTitle: partOfSystemRelations
+          .map(r =>
+            formatEntityRefTitle(r, {
+              defaultKind: 'system',
+            }),
+          )
+          .join(', '),
+        partOfSystemRelations,
+      },
+    };
+  });
+
   return (
-    <Table<Entity>
+    <Table<EntityRow>
       isLoading={loading}
       columns={columns}
       options={{
-        paging: false,
+        paging: true,
+        pageSize: 20,
         actionsColumnIndex: -1,
         loadingType: 'linear',
         showEmptyDataSourceMessage: !loading,
+        padding: 'dense',
+        pageSizeOptions: [20, 50, 100],
       }}
       title={`${titlePreamble} (${(entities && entities.length) || 0})`}
-      data={entities}
+      data={rows}
       actions={actions}
     />
   );

@@ -15,14 +15,15 @@
  */
 
 import { ConflictError } from '@backstage/backend-common';
-import type { Entity, Location } from '@backstage/catalog-model';
+import { Entity, Location, parseEntityRef } from '@backstage/catalog-model';
+import { EntityFilters } from '../service/EntityFilters';
 import { DatabaseManager } from './DatabaseManager';
-import { Database, DatabaseLocationUpdateLogStatus } from './types';
 import type {
   DbEntityRequest,
   DbEntityResponse,
   DbLocationsRowWithStatus,
 } from './types';
+import { Database, DatabaseLocationUpdateLogStatus } from './types';
 
 const bootstrapLocation = {
   id: expect.any(String),
@@ -53,6 +54,7 @@ describe('CommonDatabase', () => {
         },
         spec: { i: 'j' },
       },
+      relations: [],
     };
 
     entityResponse = {
@@ -91,7 +93,7 @@ describe('CommonDatabase', () => {
       timestamp: null,
     };
 
-    await db.addLocation(input);
+    await db.transaction(async tx => await db.addLocation(tx, input));
 
     const locations = await db.locations();
     expect(locations).toEqual(
@@ -124,7 +126,7 @@ describe('CommonDatabase', () => {
         {
           ...output,
           status: DatabaseLocationUpdateLogStatus.FAIL,
-          timestamp: expect.any(String),
+          timestamp: expect.anything(),
         },
       ]),
     );
@@ -135,54 +137,121 @@ describe('CommonDatabase', () => {
     await expect(db.location(location.id)).rejects.toThrow(/Found no location/);
   });
 
-  describe('addEntity', () => {
-    it('happy path: adds entity to empty database', async () => {
-      const added = await db.transaction(tx => db.addEntity(tx, entityRequest));
-      expect(added).toStrictEqual(entityResponse);
-      expect(added.entity.metadata.generation).toBe(1);
+  it('refuses to remove the bootstrap location', async () => {
+    const input: Location = {
+      id: 'dd12620d-0436-422f-93bd-929aa0788123',
+      type: 'bootstrap',
+      target: 'bootstrap',
+    };
+
+    const output = await db.transaction(
+      async tx => await db.addLocation(tx, input),
+    );
+
+    await expect(
+      db.transaction(async tx => await db.removeLocation(tx, output.id)),
+    ).rejects.toThrow(ConflictError);
+  });
+
+  describe('addEntities', () => {
+    it('happy path: adds entities to empty database', async () => {
+      const result = await db.transaction(tx =>
+        db.addEntities(tx, [entityRequest]),
+      );
+      expect(result).toEqual([entityResponse]);
     });
 
     it('rejects adding the same-named entity twice', async () => {
-      await db.transaction(tx => db.addEntity(tx, entityRequest));
+      const req: DbEntityRequest[] = [
+        {
+          entity: {
+            apiVersion: 'av1',
+            kind: 'k1',
+            metadata: { name: 'n1', namespace: 'ns1' },
+          },
+          relations: [],
+        },
+        {
+          entity: {
+            apiVersion: 'av1',
+            kind: 'k1',
+            metadata: { name: 'n1', namespace: 'ns1' },
+          },
+          relations: [],
+        },
+      ];
       await expect(
-        db.transaction(tx => db.addEntity(tx, entityRequest)),
-      ).rejects.toThrow(ConflictError);
-    });
-
-    it('rejects adding the almost-same-kind entity twice', async () => {
-      entityRequest.entity.kind = 'some-kind';
-      await db.transaction(tx => db.addEntity(tx, entityRequest));
-      entityRequest.entity.kind = 'SomeKind';
-      await expect(
-        db.transaction(tx => db.addEntity(tx, entityRequest)),
-      ).rejects.toThrow(ConflictError);
-    });
-
-    it('rejects adding the almost-same-named entity twice', async () => {
-      entityRequest.entity.metadata.name = 'some-name';
-      await db.transaction(tx => db.addEntity(tx, entityRequest));
-      entityRequest.entity.metadata.name = 'SomeName';
-      await expect(
-        db.transaction(tx => db.addEntity(tx, entityRequest)),
+        db.transaction(tx => db.addEntities(tx, req)),
       ).rejects.toThrow(ConflictError);
     });
 
     it('rejects adding the almost-same-namespace entity twice', async () => {
-      entityRequest.entity.metadata.namespace = undefined;
-      await db.transaction(tx => db.addEntity(tx, entityRequest));
-      entityRequest.entity.metadata.namespace = '';
+      const req: DbEntityRequest[] = [
+        {
+          entity: {
+            apiVersion: 'av1',
+            kind: 'k1',
+            metadata: { name: 'n1', namespace: 'ns1' },
+          },
+          relations: [],
+        },
+        {
+          entity: {
+            apiVersion: 'av1',
+            kind: 'k1',
+            metadata: { name: 'n1', namespace: 'nS1' },
+          },
+          relations: [],
+        },
+      ];
       await expect(
-        db.transaction(tx => db.addEntity(tx, entityRequest)),
+        db.transaction(tx => db.addEntities(tx, req)),
       ).rejects.toThrow(ConflictError);
     });
 
     it('accepts adding the same-named entity twice if on different namespaces', async () => {
-      entityRequest.entity.metadata.namespace = 'namespace1';
-      await db.transaction(tx => db.addEntity(tx, entityRequest));
-      entityRequest.entity.metadata.namespace = 'namespace2';
+      const req: DbEntityRequest[] = [
+        {
+          entity: {
+            apiVersion: 'av1',
+            kind: 'k1',
+            metadata: { name: 'n1', namespace: 'ns1' },
+          },
+          relations: [],
+        },
+        {
+          entity: {
+            apiVersion: 'av1',
+            kind: 'k1',
+            metadata: { name: 'n1', namespace: 'ns2' },
+          },
+          relations: [],
+        },
+      ];
       await expect(
-        db.transaction(tx => db.addEntity(tx, entityRequest)),
-      ).resolves.toBeDefined();
+        db.transaction(tx => db.addEntities(tx, req)),
+      ).resolves.toEqual([
+        {
+          entity: expect.objectContaining({
+            metadata: expect.objectContaining({
+              namespace: 'ns1',
+              uid: expect.any(String),
+              etag: expect.any(String),
+              generation: expect.any(Number),
+            }),
+          }),
+        },
+        {
+          entity: expect.objectContaining({
+            metadata: expect.objectContaining({
+              namespace: 'ns2',
+              uid: expect.any(String),
+              etag: expect.any(String),
+              generation: expect.any(Number),
+            }),
+          }),
+        },
+      ]);
     });
   });
 
@@ -193,7 +262,8 @@ describe('CommonDatabase', () => {
         type: 'a',
         target: 'b',
       };
-      await db.addLocation(location);
+
+      await db.transaction(async tx => await db.addLocation(tx, location));
 
       await db.addLocationUpdateLogEvent(
         'dd12620d-0436-422f-93bd-929aa0788123',
@@ -209,32 +279,36 @@ describe('CommonDatabase', () => {
       const result = await db.locationHistory(
         'dd12620d-0436-422f-93bd-929aa0788123',
       );
-      expect(result).toEqual([
-        {
-          created_at: expect.anything(),
-          entity_name: null,
-          id: expect.anything(),
-          location_id: 'dd12620d-0436-422f-93bd-929aa0788123',
-          message: null,
-          status: DatabaseLocationUpdateLogStatus.SUCCESS,
-        },
-        {
-          created_at: expect.anything(),
-          entity_name: null,
-          id: expect.anything(),
-          location_id: 'dd12620d-0436-422f-93bd-929aa0788123',
-          message: 'Something went wrong',
-          status: DatabaseLocationUpdateLogStatus.FAIL,
-        },
-      ]);
+      expect(result).toEqual(
+        expect.arrayContaining([
+          {
+            created_at: expect.anything(),
+            entity_name: null,
+            id: expect.anything(),
+            location_id: 'dd12620d-0436-422f-93bd-929aa0788123',
+            message: null,
+            status: DatabaseLocationUpdateLogStatus.SUCCESS,
+          },
+          {
+            created_at: expect.anything(),
+            entity_name: null,
+            id: expect.anything(),
+            location_id: 'dd12620d-0436-422f-93bd-929aa0788123',
+            message: 'Something went wrong',
+            status: DatabaseLocationUpdateLogStatus.FAIL,
+          },
+        ]),
+      );
     });
   });
 
   describe('updateEntity', () => {
     it('can read and no-op-update an entity', async () => {
-      const added = await db.transaction(tx => db.addEntity(tx, entityRequest));
+      const [added] = await db.transaction(tx =>
+        db.addEntities(tx, [entityRequest]),
+      );
       const updated = await db.transaction(tx =>
-        db.updateEntity(tx, { entity: added.entity }),
+        db.updateEntity(tx, { entity: added.entity, relations: [] }),
       );
       expect(updated.entity.apiVersion).toEqual(added.entity.apiVersion);
       expect(updated.entity.kind).toEqual(added.entity.kind);
@@ -249,28 +323,43 @@ describe('CommonDatabase', () => {
     });
 
     it('can update name if uid matches', async () => {
-      const added = await db.transaction(tx => db.addEntity(tx, entityRequest));
+      const [added] = await db.transaction(tx =>
+        db.addEntities(tx, [entityRequest]),
+      );
       added.entity.metadata.name! = 'new!';
       const updated = await db.transaction(tx =>
-        db.updateEntity(tx, { entity: added.entity }),
+        db.updateEntity(tx, { entity: added.entity, relations: [] }),
       );
       expect(updated.entity.metadata.name).toEqual('new!');
     });
 
     it('fails to update an entity if etag does not match', async () => {
-      const added = await db.transaction(tx => db.addEntity(tx, entityRequest));
+      const [added] = await db.transaction(tx =>
+        db.addEntities(tx, [entityRequest]),
+      );
       await expect(
         db.transaction(tx =>
-          db.updateEntity(tx, { entity: added.entity }, 'garbage'),
+          db.updateEntity(
+            tx,
+            { entity: added.entity, relations: [] },
+            'garbage',
+          ),
         ),
       ).rejects.toThrow(ConflictError);
     });
 
     it('fails to update an entity if generation does not match', async () => {
-      const added = await db.transaction(tx => db.addEntity(tx, entityRequest));
+      const [added] = await db.transaction(tx =>
+        db.addEntities(tx, [entityRequest]),
+      );
       await expect(
         db.transaction(tx =>
-          db.updateEntity(tx, { entity: added.entity }, undefined, 1e20),
+          db.updateEntity(
+            tx,
+            { entity: added.entity, relations: [] },
+            undefined,
+            1e20,
+          ),
         ),
       ).rejects.toThrow(ConflictError);
     });
@@ -290,10 +379,12 @@ describe('CommonDatabase', () => {
         spec: { c: null },
       };
       await db.transaction(async tx => {
-        await db.addEntity(tx, { entity: e1 });
-        await db.addEntity(tx, { entity: e2 });
+        await db.addEntities(tx, [
+          { entity: e1, relations: [] },
+          { entity: e2, relations: [] },
+        ]);
       });
-      const result = await db.transaction(async tx => db.entities(tx, []));
+      const result = await db.transaction(async tx => db.entities(tx));
       expect(result.length).toEqual(2);
       expect(result).toEqual(
         expect.arrayContaining([
@@ -327,17 +418,15 @@ describe('CommonDatabase', () => {
       ];
 
       await db.transaction(async tx => {
-        for (const entity of entities) {
-          await db.addEntity(tx, { entity });
-        }
+        await db.addEntities(
+          tx,
+          entities.map(entity => ({ entity, relations: [] })),
+        );
       });
 
       await expect(
         db.transaction(async tx =>
-          db.entities(tx, [
-            { key: 'kind', values: ['k2'] },
-            { key: 'spec.c', values: ['some'] },
-          ]),
+          db.entities(tx, EntityFilters.ofFilterString('kind=k2,spec.c=some')),
         ),
       ).resolves.toEqual([
         {
@@ -347,58 +436,14 @@ describe('CommonDatabase', () => {
       ]);
     });
 
-    it('can get all specific entities for matching filters with nulls (both missing and literal null value)', async () => {
+    it('can get all specific entities for matching filters case insensitively', async () => {
       const entities: Entity[] = [
-        { apiVersion: 'a', kind: 'k1', metadata: { name: 'n' } },
         {
-          apiVersion: 'a',
-          kind: 'k2',
-          metadata: { name: 'n' },
-          spec: { c: 'some' },
+          apiVersion: 'A',
+          kind: 'K1',
+          metadata: { name: 'N' },
+          spec: { c: 'SOME' },
         },
-        {
-          apiVersion: 'a',
-          kind: 'k3',
-          metadata: { name: 'n' },
-          spec: { c: null },
-        },
-      ];
-
-      await db.transaction(async tx => {
-        for (const entity of entities) {
-          await db.addEntity(tx, { entity });
-        }
-      });
-
-      const rows = await db.transaction(async tx =>
-        db.entities(tx, [
-          { key: 'apiVersion', values: ['a'] },
-          { key: 'spec.c', values: [null, 'some'] },
-        ]),
-      );
-
-      expect(rows.length).toEqual(3);
-      expect(rows).toEqual(
-        expect.arrayContaining([
-          {
-            locationId: undefined,
-            entity: expect.objectContaining({ kind: 'k1' }),
-          },
-          {
-            locationId: undefined,
-            entity: expect.objectContaining({ kind: 'k2' }),
-          },
-          {
-            locationId: undefined,
-            entity: expect.objectContaining({ kind: 'k3' }),
-          },
-        ]),
-      );
-    });
-
-    it('can get all specific entities for matching filters case insensitively)', async () => {
-      const entities: Entity[] = [
-        { apiVersion: 'A', kind: 'K1', metadata: { name: 'N' } },
         {
           apiVersion: 'a',
           kind: 'k2',
@@ -409,21 +454,22 @@ describe('CommonDatabase', () => {
           apiVersion: 'a',
           kind: 'k3',
           metadata: { name: 'n' },
-          spec: { c: null },
+          spec: { c: 'somE' },
         },
       ];
 
       await db.transaction(async tx => {
-        for (const entity of entities) {
-          await db.addEntity(tx, { entity });
-        }
+        await db.addEntities(
+          tx,
+          entities.map(entity => ({ entity, relations: [] })),
+        );
       });
 
       const rows = await db.transaction(async tx =>
-        db.entities(tx, [
-          { key: 'ApiVersioN', values: ['A'] },
-          { key: 'spEc.C', values: [null, 'some'] },
-        ]),
+        db.entities(
+          tx,
+          EntityFilters.ofFilterString('ApiVersioN=A,spEc.C=some'),
+        ),
       );
 
       expect(rows.length).toEqual(3);
@@ -446,6 +492,196 @@ describe('CommonDatabase', () => {
     });
   });
 
+  describe('setRelations', () => {
+    it('adds a relation for an entity', async () => {
+      const mockRelations = [
+        {
+          source: {
+            kind: entityRequest.entity.kind,
+            namespace: entityRequest.entity.metadata.namespace!,
+            name: entityRequest.entity.metadata.name,
+          },
+          target: {
+            kind: 'component',
+            namespace: 'asd',
+            name: 'bleb',
+          },
+          type: 'child',
+        },
+      ];
+
+      const entityId = await db.transaction(async tx => {
+        const [{ entity }] = await db.addEntities(tx, [entityRequest]);
+
+        await db.setRelations(tx, entity?.metadata?.uid!, mockRelations);
+        return entity.metadata.uid;
+      });
+
+      const returnedEntity1 = await db.transaction(tx =>
+        db.entityByUid(tx, entityId!),
+      );
+      expect(returnedEntity1?.entity.relations).toEqual([
+        { target: mockRelations[0].target, type: 'child' },
+      ]);
+
+      const returnedEntity2 = await db.transaction(tx =>
+        db.entityByName(tx, mockRelations[0].source),
+      );
+      expect(returnedEntity2?.entity.relations).toEqual([
+        { target: mockRelations[0].target, type: 'child' },
+      ]);
+
+      const [returnedEntity3] = await db.transaction(tx => db.entities(tx));
+      expect(returnedEntity3?.entity.relations).toEqual([
+        { target: mockRelations[0].target, type: 'child' },
+      ]);
+    });
+
+    function makeRelation(source: string, type: string, target: string) {
+      return {
+        source: parseEntityRef(source, {
+          defaultKind: 'x',
+          defaultNamespace: 'x',
+        }),
+        type,
+        target: parseEntityRef(target, {
+          defaultKind: 'x',
+          defaultNamespace: 'x',
+        }),
+      };
+    }
+
+    it('should not allow setting relations on nonexistent entities', async () => {
+      await expect(
+        db.transaction(async tx => {
+          await db.setRelations(tx, 'nonexistent', [
+            makeRelation('a:b/c', 'rel1', 'x:y/z'),
+          ]);
+        }),
+      ).rejects.toThrow(/constraint failed/);
+    });
+
+    it('should allow setting relations on nonexistent entities without any relations', async () => {
+      await expect(
+        db.transaction(async tx => {
+          await db.setRelations(tx, 'nonexistent', []);
+        }),
+      ).resolves.toBeUndefined();
+    });
+
+    it('adds multiple relations for entities', async () => {
+      const entity1 = {
+        apiVersion: 'v1',
+        kind: 'a',
+        metadata: {
+          name: 'c',
+          namespace: 'b',
+        },
+      };
+      const entity2 = {
+        apiVersion: 'v1',
+        kind: 'x',
+        metadata: {
+          name: 'z',
+          namespace: 'y',
+        },
+      };
+      const fromEntity1 = [
+        makeRelation('a:b/c', 'rel1', 'x:y/z'),
+        makeRelation('x:y/z', 'rel2', 'a:b/c'),
+        makeRelation('a:b/c', 'rel2', 'x:y/z'),
+      ];
+      const fromEntity2 = [
+        makeRelation('a:b/c', 'rel4', 'x:y/z'),
+        makeRelation('a:b/c', 'rel5', 'x:y/z'),
+        makeRelation('x:y/z', 'rel6', 'a:b/c'),
+        // relations don't have to reference the originating entity, so this should be fine, but not show up
+        makeRelation('g:h/i', 'rel8', 'd:e/f'),
+      ];
+
+      const { id2: secondEntityId } = await db.transaction(async tx => {
+        const [{ entity: e1 }, { entity: e2 }] = await db.addEntities(tx, [
+          { entity: entity1, relations: [] },
+          { entity: entity2, relations: [] },
+        ]);
+        const id1 = e1?.metadata?.uid!;
+        const id2 = e2?.metadata?.uid!;
+
+        await db.setRelations(tx, id1, fromEntity1);
+        await db.setRelations(tx, id2, fromEntity2);
+
+        return { id1, id2 };
+      });
+
+      const res = await db.transaction(tx => db.entities(tx));
+      expect(
+        res.map(r => ({
+          name: r.entity.metadata.name,
+          relations: r.entity.relations,
+        })),
+      ).toEqual([
+        {
+          name: 'c',
+          relations: [
+            {
+              type: 'rel1',
+              target: { kind: 'x', namespace: 'y', name: 'z' },
+            },
+            {
+              type: 'rel2',
+              target: { kind: 'x', namespace: 'y', name: 'z' },
+            },
+            {
+              type: 'rel4',
+              target: { kind: 'x', namespace: 'y', name: 'z' },
+            },
+            {
+              type: 'rel5',
+              target: { kind: 'x', namespace: 'y', name: 'z' },
+            },
+          ],
+        },
+        {
+          name: 'z',
+          relations: [
+            {
+              type: 'rel2',
+              target: { kind: 'a', namespace: 'b', name: 'c' },
+            },
+            {
+              type: 'rel6',
+              target: { kind: 'a', namespace: 'b', name: 'c' },
+            },
+          ],
+        },
+      ]);
+
+      await db.transaction(tx => db.removeEntityByUid(tx, secondEntityId));
+
+      const res2 = await db.transaction(tx => db.entities(tx));
+      expect(
+        res2.map(r => ({
+          name: r.entity.metadata.name,
+          relations: r.entity.relations,
+        })),
+      ).toEqual([
+        {
+          name: 'c',
+          relations: [
+            {
+              type: 'rel1',
+              target: { kind: 'x', namespace: 'y', name: 'z' },
+            },
+            {
+              type: 'rel2',
+              target: { kind: 'x', namespace: 'y', name: 'z' },
+            },
+          ],
+        },
+      ]);
+    });
+  });
+
   describe('entityByName', () => {
     it('can get entities case insensitively', async () => {
       const entities: Entity[] = [
@@ -462,9 +698,10 @@ describe('CommonDatabase', () => {
       ];
 
       await db.transaction(async tx => {
-        for (const entity of entities) {
-          await db.addEntity(tx, { entity });
-        }
+        await db.addEntities(
+          tx,
+          entities.map(entity => ({ entity, relations: [] })),
+        );
       });
 
       const e1 = await db.transaction(async tx =>

@@ -139,7 +139,7 @@ export class Auth0AuthProvider implements OAuthHandlers {
     const { profile } = response;
 
     if (!profile.email) {
-      throw new Error('Profile does not contain a profile');
+      throw new Error('Profile does not contain an email');
     }
 
     const id = profile.email.split('@')[0];
@@ -149,12 +149,12 @@ export class Auth0AuthProvider implements OAuthHandlers {
 }
 
 export const createAuth0Provider: AuthProviderFactory = ({
+  providerId,
   globalConfig,
   config,
   tokenIssuer,
 }) =>
   OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-    const providerId = 'auth0';
     const clientId = envConfig.getString('clientId');
     const clientSecret = envConfig.getString('clientSecret');
     const domain = envConfig.getString('domain');

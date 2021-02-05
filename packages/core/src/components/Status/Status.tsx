@@ -17,7 +17,7 @@
 import { makeStyles } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
 import classNames from 'classnames';
-import React, { FC } from 'react';
+import React, { PropsWithChildren } from 'react';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   status: {
@@ -63,26 +63,40 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-export const StatusOK: FC<{}> = props => {
-  const classes = useStyles(props);
-  return <span className={classNames(classes.status, classes.ok)} {...props} />;
-};
-
-export const StatusWarning: FC<{}> = props => {
+export const StatusOK = (props: PropsWithChildren<{}>) => {
   const classes = useStyles(props);
   return (
-    <span className={classNames(classes.status, classes.warning)} {...props} />
+    <span
+      className={classNames(classes.status, classes.ok)}
+      aria-label="Status ok"
+      {...props}
+    />
   );
 };
 
-export const StatusError: FC<{}> = props => {
+export const StatusWarning = (props: PropsWithChildren<{}>) => {
   const classes = useStyles(props);
   return (
-    <span className={classNames(classes.status, classes.error)} {...props} />
+    <span
+      className={classNames(classes.status, classes.warning)}
+      aria-label="Status warning"
+      {...props}
+    />
   );
 };
 
-export const StatusPending: FC<{}> = props => {
+export const StatusError = (props: PropsWithChildren<{}>) => {
+  const classes = useStyles(props);
+  return (
+    <span
+      className={classNames(classes.status, classes.error)}
+      aria-label="Status error"
+      {...props}
+    />
+  );
+};
+
+export const StatusPending = (props: PropsWithChildren<{}>) => {
   const classes = useStyles(props);
   return (
     <span
@@ -93,7 +107,7 @@ export const StatusPending: FC<{}> = props => {
   );
 };
 
-export const StatusRunning: FC<{}> = props => {
+export const StatusRunning = (props: PropsWithChildren<{}>) => {
   const classes = useStyles(props);
   return (
     <span
@@ -104,7 +118,7 @@ export const StatusRunning: FC<{}> = props => {
   );
 };
 
-export const StatusAborted: FC<{}> = props => {
+export const StatusAborted = (props: PropsWithChildren<{}>) => {
   const classes = useStyles(props);
   return (
     <span

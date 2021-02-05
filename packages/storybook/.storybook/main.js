@@ -5,6 +5,7 @@ module.exports = {
   stories: [
     '../../core/src/layout/**/*.stories.tsx',
     '../../core/src/components/**/*.stories.tsx',
+    '../../../plugins/**/src/**/*.stories.tsx',
   ],
   addons: [
     '@storybook/addon-actions',
@@ -13,6 +14,7 @@ module.exports = {
     'storybook-dark-mode/register',
   ],
   webpackFinal: async config => {
+    /* eslint-disable-next-line no-restricted-syntax */
     const coreSrc = path.resolve(__dirname, '../../core/src');
 
     // Mirror config in packages/cli/src/lib/bundler
@@ -20,7 +22,7 @@ module.exports = {
 
     // Remove the default babel-loader for js files, we're using sucrase instead
     const [jsLoader] = config.module.rules.splice(0, 1);
-    if (jsLoader.use[0].loader !== 'babel-loader') {
+    if (!jsLoader.use[0].loader.includes('babel-loader')) {
       throw new Error(
         `Unexpected loader removed from storybook config, ${jsLoader.use[0].loader}`,
       );

@@ -15,62 +15,49 @@
  */
 import fs from 'fs-extra';
 import path from 'path';
-import os from 'os';
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { parseLocationAnnotation } from '../helpers';
-import { InputError } from '@backstage/backend-common';
-import { PreparerBase } from './types';
-import GitUriParser from 'git-url-parse';
-import { Clone, Cred } from 'nodegit';
-import { Config } from '@backstage/config';
+import { Git } from '@backstage/backend-common';
+import { PreparerBase, PreparerOptions } from './types';
+import parseGitUrl from 'git-url-parse';
+import { AzureIntegrationConfig } from '@backstage/integration';
 
 export class AzurePreparer implements PreparerBase {
-  private readonly privateToken: string;
-
-  constructor(config: Config) {
-    this.privateToken =
-      config.getOptionalString('scaffolder.azure.api.token') ?? '';
+  static fromConfig(config: AzureIntegrationConfig) {
+    return new AzurePreparer({ token: config.token });
   }
 
-  async prepare(template: TemplateEntityV1alpha1): Promise<string> {
-    const { protocol, location } = parseLocationAnnotation(template);
+  constructor(private readonly config: { token?: string }) {}
 
-    if (protocol !== 'azure/api') {
-      throw new InputError(
-        `Wrong location protocol: ${protocol}, should be 'azure/api'`,
-      );
+  async prepare({ url, workspacePath, logger }: PreparerOptions) {
+    const parsedGitUrl = parseGitUrl(url);
+    const checkoutPath = path.join(workspacePath, 'checkout');
+    const targetPath = path.join(workspacePath, 'template');
+    const fullPathToTemplate = path.resolve(
+      checkoutPath,
+      parsedGitUrl.filepath ?? '',
+    );
+
+    // Username can be anything but the empty string according to:
+    // https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=preview-page#use-a-pat
+    const git = this.config.token
+      ? Git.fromAuth({
+          password: this.config.token,
+          username: 'notempty',
+          logger,
+        })
+      : Git.fromAuth({ logger });
+
+    await git.clone({
+      url: parsedGitUrl.toString('https'),
+      ref: parsedGitUrl.ref,
+      dir: checkoutPath,
+    });
+
+    await fs.move(fullPathToTemplate, targetPath);
+
+    try {
+      await fs.rmdir(path.join(targetPath, '.git'));
+    } catch {
+      // Ignore intentionally
     }
-    const templateId = template.metadata.name;
-
-    const url = new URL(location); // Need to extract filepath from search parameter
-    const parsedGitLocation = GitUriParser(location);
-    const repositoryCheckoutUrl = parsedGitLocation.toString('https');
-
-    const tempDir = await fs.promises.mkdtemp(
-      path.join(os.tmpdir(), templateId),
-    );
-
-    const templateDirectory = path.join(
-      `${path
-        .dirname(url.searchParams.get('path') || '')
-        .replace(/^\/+/g, '')}`, // Strip leading slash
-      template.spec.path ?? '.',
-    );
-
-    const options = this.privateToken
-      ? {
-          fetchOpts: {
-            callbacks: {
-              credentials: () =>
-                // Username can anything but the empty string according to: https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=preview-page#use-a-pat
-                Cred.userpassPlaintextNew('notempty', this.privateToken),
-            },
-          },
-        }
-      : {};
-
-    await Clone.clone(repositoryCheckoutUrl, tempDir, options);
-
-    return path.resolve(tempDir, templateDirectory);
   }
 }

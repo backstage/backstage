@@ -25,12 +25,14 @@ jest.useFakeTimers();
 describe('<TechDocsProgressBar />', () => {
   it('should render a message if techdocs page takes more time to load', () => {
     const rendered = render(wrapInTestApp(<TechDocsProgressBar />));
-
-    expect(rendered.getByTestId('progress')).toBeDefined();
+    act(() => {
+      jest.advanceTimersByTime(250);
+    });
+    expect(rendered.getByTestId('progress')).toBeInTheDocument();
     expect(rendered.queryByTestId('delay-reason')).toBeNull();
     act(() => {
       jest.advanceTimersByTime(5000);
     });
-    expect(rendered.getByTestId('delay-reason')).toBeDefined();
+    expect(rendered.getByTestId('delay-reason')).toBeInTheDocument();
   });
 });

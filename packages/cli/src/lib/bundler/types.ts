@@ -16,27 +16,45 @@
 
 import { AppConfig, Config } from '@backstage/config';
 import { BundlingPathsOptions } from './paths';
+import { ParallelOption } from '../parallel';
+import { ConfigSchema } from '@backstage/config-loader';
 
 export type BundlingOptions = {
   checksEnabled: boolean;
   isDev: boolean;
-  config: Config;
-  appConfigs: AppConfig[];
+  frontendConfig: Config;
+  frontendAppConfigs: AppConfig[];
   baseUrl: URL;
-};
-
-export type BackendBundlingOptions = Omit<BundlingOptions, 'baseUrl'> & {
-  inspectEnabled: boolean;
+  parallel?: ParallelOption;
 };
 
 export type ServeOptions = BundlingPathsOptions & {
   checksEnabled: boolean;
-  config: Config;
-  appConfigs: AppConfig[];
+  frontendConfig: Config;
+  frontendAppConfigs: AppConfig[];
 };
 
 export type BuildOptions = BundlingPathsOptions & {
   statsJsonEnabled: boolean;
-  config: Config;
-  appConfigs: AppConfig[];
+  parallel?: ParallelOption;
+  schema?: ConfigSchema;
+  frontendConfig: Config;
+  frontendAppConfigs: AppConfig[];
+};
+
+export type BackendBundlingOptions = {
+  checksEnabled: boolean;
+  isDev: boolean;
+  parallel?: ParallelOption;
+  inspectEnabled: boolean;
+};
+
+export type BackendServeOptions = BundlingPathsOptions & {
+  checksEnabled: boolean;
+  inspectEnabled: boolean;
+};
+
+export type LernaPackage = {
+  name: string;
+  location: string;
 };

@@ -2,8 +2,8 @@
 id: software-catalog-overview
 title: Backstage Service Catalog (alpha)
 sidebar_label: Overview
-description: The Backstage Service Catalog — actually, a software catalog, since
-it includes more than just services
+# prettier-ignore
+description: The Backstage Service Catalog — actually, a software catalog, since it includes more than just services
 ---
 
 ## What is a Service Catalog?
@@ -19,7 +19,7 @@ are then harvested and visualized in Backstage.
 
 ## How it works
 
-Backstage and the Backstage Service Catalog makes it easy for one team to manage
+Backstage and the Backstage Service Catalog make it easy for one team to manage
 10 services — and makes it possible for your company to manage thousands of
 them.
 
@@ -33,10 +33,10 @@ More specifically, the Service Catalog enables two main use-cases:
 
 ## Getting Started
 
-The Software Catalog is available to browse on the start page at `/`. If you've
-followed [Installing in your Backstage App](./installation.md) in your separate
-App or [Getting Started with Backstage](../../getting-started) for this repo,
-you should be able to browse the catalog at `http://localhost:3000`.
+The Software Catalog is available to browse at `/catalog`. If you've followed
+[Installing in your Backstage App](./installation.md) in your separate App or
+[Getting Started with Backstage](../../getting-started) for this repo, you
+should be able to browse the catalog at `http://localhost:3000`.
 
 ![](../../assets/software-catalog/service-catalog-home.png)
 
@@ -62,11 +62,11 @@ Users can register new components by going to `/create` and clicking the
 Backstage expects the full URL to the YAML in your source control. Example:
 
 ```bash
-https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
+https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/artist-lookup-component.yaml
 ```
 
 _More examples can be found
-[here](https://github.com/spotify/backstage/tree/master/packages/catalog-model/examples)._
+[here](https://github.com/backstage/backstage/tree/master/packages/catalog-model/examples)._
 
 ![](../../assets/software-catalog/bsc-register-2.png)
 
@@ -90,8 +90,8 @@ above example can be added using the following configuration:
 ```yaml
 catalog:
   locations:
-    - type: github
-      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
+    - type: url
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/artist-lookup-component.yaml
 ```
 
 More information about catalog configuration can be found
@@ -135,7 +135,7 @@ in the catalog.
 ![tools](https://backstage.io/blog/assets/20-05-20/tabs.png)
 
 The Backstage platform can be customized by incorporating
-[existing open source plugins](https://github.com/spotify/backstage/tree/master/plugins),
+[existing open source plugins](https://github.com/backstage/backstage/tree/master/plugins),
 or by [building your own](../../plugins/index.md).
 
 ## Links

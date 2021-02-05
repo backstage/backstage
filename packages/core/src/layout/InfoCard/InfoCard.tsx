@@ -70,36 +70,19 @@ const VARIANT_STYLES = {
       flexDirection: 'column',
       height: '100%',
     },
-    height100: {
+    gridItem: {
       display: 'flex',
       flexDirection: 'column',
       height: 'calc(100% - 10px)', // for pages without content header
       marginBottom: '10px',
-    },
-    contentheader: {
-      height: 'calc(100% - 40px)', // for pages with content header
-    },
-    contentheadertabs: {
-      height: 'calc(100% - 97px)', // for pages with content header and tabs (Tingle)
-    },
-    noShrink: {
-      flexShrink: 0,
-    },
-    minheight300: {
-      minHeight: 300,
-      overflow: 'initial',
     },
   },
   cardContent: {
     fullHeight: {
       flex: 1,
     },
-    height100: {
+    gridItem: {
       flex: 1,
-    },
-    contentRow: {
-      display: 'flex',
-      flexDirection: 'row',
     },
   },
 };
@@ -117,13 +100,10 @@ const VARIANT_STYLES = {
  * By default the InfoCard has no custom layout of its children, but is treated as a block element. A
  * couple common variants are provided and can be specified via the variant property:
  *
- * Display the card full height suitable for DataGrid:
+ * When the InfoCard is displayed as a grid item within a grid, you may want items to have the same height for all items.
+ * Set to the 'gridItem' variant to display the InfoCard with full height suitable for Grid:
  *
- *   <InfoCard variant="height100">...</InfoCard>
- *
- * Variants can be combined in a whitespace delimited list like so:
- *
- *   <InfoCard variant="noShrink">...</InfoCard>
+ *   <InfoCard variant="gridItem">...</InfoCard>
  */
 type Props = {
   title?: ReactNode;
@@ -148,7 +128,7 @@ type Props = {
 export const InfoCard = ({
   title,
   subheader,
-  divider,
+  divider = true,
   deepLink,
   slackChannel = '#backstage',
   variant,
@@ -163,14 +143,12 @@ export const InfoCard = ({
   noPadding,
 }: Props): JSX.Element => {
   const classes = useStyles();
-
   /**
    * If variant is specified, we build up styles for that particular variant for both
    * the Card and the CardContent (since these need to be synced)
    */
   let calculatedStyle = {};
   let calculatedCardStyle = {};
-
   if (variant) {
     const variants = variant.split(/[\s]+/g);
     variants.forEach(name => {
@@ -191,23 +169,20 @@ export const InfoCard = ({
     <Card style={calculatedStyle} className={className}>
       <ErrorBoundary slackChannel={slackChannel}>
         {title && (
-          <>
-            <CardHeader
-              classes={{
-                root: classes.header,
-                title: classes.headerTitle,
-                subheader: classes.headerSubheader,
-                avatar: classes.headerAvatar,
-                action: classes.headerAction,
-                content: classes.headerContent,
-              }}
-              title={title}
-              subheader={subheader}
-              style={{ ...headerStyle }}
-              {...headerProps}
-            />
-            <Divider />
-          </>
+          <CardHeader
+            classes={{
+              root: classes.header,
+              title: classes.headerTitle,
+              subheader: classes.headerSubheader,
+              avatar: classes.headerAvatar,
+              action: classes.headerAction,
+              content: classes.headerContent,
+            }}
+            title={title}
+            subheader={subheader}
+            style={{ ...headerStyle }}
+            {...headerProps}
+          />
         )}
         {actionsTopRight && (
           <CardActionsTopRight>{actionsTopRight}</CardActionsTopRight>

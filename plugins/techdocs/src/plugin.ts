@@ -34,6 +34,7 @@ import {
   createRouteRef,
   createApiFactory,
   configApiRef,
+  discoveryApiRef,
 } from '@backstage/core';
 import {
   techdocsStorageApiRef,
@@ -48,7 +49,7 @@ export const rootRouteRef = createRouteRef({
 });
 
 export const rootDocsRouteRef = createRouteRef({
-  path: ':entityId/*',
+  path: ':namespace/:kind/:name/*',
   title: 'Docs',
 });
 
@@ -62,18 +63,20 @@ export const plugin = createPlugin({
   apis: [
     createApiFactory({
       api: techdocsStorageApiRef,
-      deps: { configApi: configApiRef },
-      factory: ({ configApi }) =>
+      deps: { configApi: configApiRef, discoveryApi: discoveryApiRef },
+      factory: ({ configApi, discoveryApi }) =>
         new TechDocsStorageApi({
-          apiOrigin: configApi.getString('techdocs.requestUrl'),
+          configApi,
+          discoveryApi,
         }),
     }),
     createApiFactory({
       api: techdocsApiRef,
-      deps: { configApi: configApiRef },
-      factory: ({ configApi }) =>
+      deps: { configApi: configApiRef, discoveryApi: discoveryApiRef },
+      factory: ({ configApi, discoveryApi }) =>
         new TechDocsApi({
-          apiOrigin: configApi.getString('techdocs.requestUrl'),
+          configApi,
+          discoveryApi,
         }),
     }),
   ],

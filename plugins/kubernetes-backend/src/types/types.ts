@@ -23,12 +23,20 @@ import {
   V1ReplicaSet,
   V1Service,
 } from '@kubernetes/client-node';
+import { Entity } from '@backstage/catalog-model';
 
 export interface ClusterDetails {
   name: string;
   url: string;
-  // TODO this will eventually be configured by the auth translation work
-  serviceAccountToken: string | undefined;
+  authProvider: string;
+  serviceAccountToken?: string | undefined;
+}
+
+export interface KubernetesRequestBody {
+  auth?: {
+    google?: string;
+  };
+  entity: Entity;
 }
 
 export interface ClusterObjects {
@@ -37,7 +45,7 @@ export interface ClusterObjects {
   errors: KubernetesFetchError[];
 }
 
-export interface ObjectsByServiceIdResponse {
+export interface ObjectsByEntityResponse {
   items: ClusterObjects[];
 }
 
@@ -101,22 +109,33 @@ export interface IngressesFetchResponse {
   resources: Array<ExtensionsV1beta1Ingress>;
 }
 
+export interface ObjectFetchParams {
+  serviceId: string;
+  clusterDetails: ClusterDetails;
+  objectTypesToFetch: Set<KubernetesObjectTypes>;
+  labelSelector: string;
+}
+
 // Fetches information from a kubernetes cluster using the cluster details object
 // to target a specific cluster
 export interface KubernetesFetcher {
-  fetchObjectsByServiceId(
-    serviceId: string,
-    clusterDetails: ClusterDetails,
-    objectTypesToFetch: Set<KubernetesObjectTypes>,
+  fetchObjectsForService(
+    params: ObjectFetchParams,
   ): Promise<FetchResponseWrapper>;
 }
 
 // Used to locate which cluster(s) a service is running on
-export interface KubernetesClusterLocator {
-  getClusterByServiceId(serviceId: string): Promise<ClusterDetails[]>;
+export interface KubernetesServiceLocator {
+  getClustersByServiceId(serviceId: string): Promise<ClusterDetails[]>;
+}
+
+// Used to load cluster details from different sources
+export interface KubernetesClustersSupplier {
+  getClusters(): Promise<ClusterDetails[]>;
 }
 
 export type KubernetesErrorTypes =
+  | 'BAD_REQUEST'
   | 'UNAUTHORIZED_ERROR'
   | 'SYSTEM_ERROR'
   | 'UNKNOWN_ERROR';
@@ -126,3 +145,7 @@ export interface KubernetesFetchError {
   statusCode?: number;
   resourcePath?: string;
 }
+
+export type ServiceLocatorMethod = 'multiTenant' | 'http'; // TODO implement http
+export type ClusterLocatorMethod = 'config';
+export type AuthProviderType = 'google' | 'serviceAccount' | 'aws';

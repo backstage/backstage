@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { EntityName } from '@backstage/catalog-model';
 import type { Transformer } from './index';
 import { TechDocsStorage } from '../../api';
-import { ParsedEntityId } from '../../types';
 
 type AddBaseUrlOptions = {
   techdocsStorageApi: TechDocsStorage;
-  entityId: ParsedEntityId;
+  entityId: EntityName;
   path: string;
 };
 
@@ -36,12 +35,12 @@ export const addBaseUrl = ({
     ): void => {
       Array.from(list)
         .filter(elem => !!elem.getAttribute(attributeName))
-        .forEach((elem: T) => {
+        .forEach(async (elem: T) => {
           const elemAttribute = elem.getAttribute(attributeName);
           if (!elemAttribute) return;
           elem.setAttribute(
             attributeName,
-            techdocsStorageApi.getBaseUrl(elemAttribute, entityId, path),
+            await techdocsStorageApi.getBaseUrl(elemAttribute, entityId, path),
           );
         });
     };

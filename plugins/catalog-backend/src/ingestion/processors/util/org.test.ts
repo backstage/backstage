@@ -15,16 +15,7 @@
  */
 
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
-import { buildOrgHierarchy } from './org';
-
-function u(name: string): UserEntity {
-  return {
-    apiVersion: 'backstage.io/v1alpha1',
-    kind: 'User',
-    metadata: { name },
-    spec: { memberOf: [] },
-  };
-}
+import { buildMemberOf, buildOrgHierarchy } from './org';
 
 function g(
   name: string,
@@ -35,58 +26,51 @@ function g(
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'Group',
     metadata: { name },
-    spec: { type: 'team', parent, children, ancestors: [], descendants: [] },
+    spec: { type: 'team', parent, children },
   };
 }
 
 describe('buildOrgHierarchy', () => {
-  it('puts users in the respective groups', () => {
-    const a = g('a', undefined, []);
-    const b = g('b', undefined, []);
-    const x = u('x');
-    const y = u('y');
-    const groupMemberUsers: Map<string, string[]> = new Map([
-      ['a', ['x', 'y']],
-      ['b', ['y']],
-    ]);
-    buildOrgHierarchy([a, b], [x, y], groupMemberUsers);
-    expect(x.spec.memberOf).toEqual(['a']);
-    expect(y.spec.memberOf).toEqual(['a', 'b']);
-  });
-
   it('adds groups to their parent.children', () => {
     const a = g('a', undefined, []);
     const b = g('b', 'a', []);
     const c = g('c', 'b', []);
     const d = g('d', 'a', []);
-    buildOrgHierarchy([a, b, c, d], [], new Map());
+    buildOrgHierarchy([a, b, c, d]);
     expect(a.spec.children).toEqual(expect.arrayContaining(['b', 'd']));
     expect(b.spec.children).toEqual(expect.arrayContaining(['c']));
     expect(c.spec.children).toEqual([]);
     expect(d.spec.children).toEqual([]);
   });
 
-  it('fills out descendants', () => {
-    const a = g('a', undefined, []);
-    const b = g('b', 'a', []);
-    const c = g('c', 'b', []);
-    const d = g('d', 'a', []);
-    buildOrgHierarchy([a, b, c, d], [], new Map());
-    expect(a.spec.descendants).toEqual(expect.arrayContaining(['b', 'c', 'd']));
-    expect(b.spec.descendants).toEqual(expect.arrayContaining(['c']));
-    expect(c.spec.descendants).toEqual([]);
-    expect(d.spec.descendants).toEqual([]);
+  it('sets parent of groups children', () => {
+    const a = g('a', undefined, ['b', 'd']);
+    const b = g('b', undefined, ['c']);
+    const c = g('c', undefined, []);
+    const d = g('d', undefined, []);
+    buildOrgHierarchy([a, b, c, d]);
+    expect(a.spec.parent).toBeUndefined();
+    expect(b.spec.parent).toBe('a');
+    expect(c.spec.parent).toBe('b');
+    expect(d.spec.parent).toBe('a');
   });
+});
 
-  it('fills out ancestors', () => {
+describe('buildMemberOf', () => {
+  it('fills indirect member of groups', () => {
     const a = g('a', undefined, []);
     const b = g('b', 'a', []);
     const c = g('c', 'b', []);
-    const d = g('d', 'a', []);
-    buildOrgHierarchy([a, b, c, d], [], new Map());
-    expect(a.spec.ancestors).toEqual([]);
-    expect(b.spec.ancestors).toEqual(expect.arrayContaining(['a']));
-    expect(c.spec.ancestors).toEqual(expect.arrayContaining(['a', 'b']));
-    expect(d.spec.ancestors).toEqual(expect.arrayContaining(['a']));
+    const u: UserEntity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'User',
+      metadata: { name: 'n' },
+      spec: { profile: {}, memberOf: ['c'] },
+    };
+
+    const groups = [a, b, c];
+    buildOrgHierarchy(groups);
+    buildMemberOf(groups, [u]);
+    expect(u.spec.memberOf).toEqual(expect.arrayContaining(['a', 'b', 'c']));
   });
 });

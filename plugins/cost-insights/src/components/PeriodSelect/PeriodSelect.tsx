@@ -16,41 +16,35 @@
 
 import React from 'react';
 import { MenuItem, Select, SelectProps } from '@material-ui/core';
-import {
-  formatLastTwoLookaheadQuarters,
-  formatLastTwoMonths,
-} from '../../utils/formatters';
-import { Duration, findAlways } from '../../types';
+import { Duration } from '../../types';
+import { formatLastTwoLookaheadQuarters } from '../../utils/formatters';
+import { findAlways } from '../../utils/assert';
 import { useSelectStyles as useStyles } from '../../utils/styles';
+import { useLastCompleteBillingDate } from '../../hooks';
 
 export type PeriodOption = {
   value: Duration;
   label: string;
 };
 
-const LAST_6_MONTHS = 'Past 6 Months';
-const LAST_60_DAYS = 'Past 60 Days';
-const LAST_2_COMPLETED_MONTHS = formatLastTwoMonths();
-const LAST_2_LOOKAHEAD_QUARTERS = formatLastTwoLookaheadQuarters();
-
-export const DEFAULT_OPTIONS: PeriodOption[] = [
-  {
-    value: Duration.P90D,
-    label: LAST_6_MONTHS,
-  },
-  {
-    value: Duration.P30D,
-    label: LAST_60_DAYS,
-  },
-  {
-    value: Duration.P1M,
-    label: LAST_2_COMPLETED_MONTHS,
-  },
-  {
-    value: Duration.P3M,
-    label: LAST_2_LOOKAHEAD_QUARTERS,
-  },
-];
+export function getDefaultOptions(
+  lastCompleteBillingDate: string,
+): PeriodOption[] {
+  return [
+    {
+      value: Duration.P90D,
+      label: 'Past 6 Months',
+    },
+    {
+      value: Duration.P30D,
+      label: 'Past 60 Days',
+    },
+    {
+      value: Duration.P3M,
+      label: formatLastTwoLookaheadQuarters(lastCompleteBillingDate),
+    },
+  ];
+}
 
 type PeriodSelectProps = {
   duration: Duration;
@@ -58,19 +52,22 @@ type PeriodSelectProps = {
   options?: PeriodOption[];
 };
 
-const PeriodSelect = ({
+export const PeriodSelect = ({
   duration,
   onSelect,
-  options = DEFAULT_OPTIONS,
+  options,
 }: PeriodSelectProps) => {
   const classes = useStyles();
+  const lastCompleteBillingDate = useLastCompleteBillingDate();
+  const optionsOrDefault =
+    options ?? getDefaultOptions(lastCompleteBillingDate);
 
   const handleOnChange: SelectProps['onChange'] = e => {
     onSelect(e.target.value as Duration);
   };
 
   const renderValue: SelectProps['renderValue'] = value => {
-    const option = findAlways(DEFAULT_OPTIONS, o => o.value === value);
+    const option = findAlways(optionsOrDefault, o => o.value === value);
     return <b>{option.label}</b>;
   };
 
@@ -83,7 +80,7 @@ const PeriodSelect = ({
       renderValue={renderValue}
       data-testid="period-select"
     >
-      {options.map(option => (
+      {optionsOrDefault.map(option => (
         <MenuItem
           className={classes.menuItem}
           key={option.value}
@@ -96,5 +93,3 @@ const PeriodSelect = ({
     </Select>
   );
 };
-
-export default PeriodSelect;

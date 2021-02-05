@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { errorApiRef, useApi } from '@backstage/core';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import { BuildSummary, GitType } from 'circleci-api';
+import { getOr } from 'lodash/fp';
 import { useCallback, useEffect, useState } from 'react';
 import { useAsyncRetry } from 'react-use';
-import { circleCIApiRef } from '../api/index';
+import { circleCIApiRef } from '../api';
 import type { CITableBuildInfo } from '../components/BuildsPage/lib/CITable';
-import { useEntity } from '@backstage/plugin-catalog';
 import { CIRCLECI_ANNOTATION } from '../constants';
 
 const makeReadableStatus = (status: string | undefined) => {
@@ -41,6 +43,39 @@ const makeReadableStatus = (status: string | undefined) => {
   } as Record<string, string>)[status];
 };
 
+const mapWorkflowDetails = (buildData: BuildSummary) => {
+  // Workflows should be an object: fixed in https://github.com/worldturtlemedia/circleci-api/pull/787
+  const { workflows } = (buildData as any) ?? {};
+
+  return {
+    id: workflows?.workflow_id,
+    url: `${buildData.build_url}/workflows/${workflows?.workflow_id}`,
+    jobName: workflows?.job_name,
+    name: workflows?.workflow_name,
+  };
+};
+
+const mapSourceDetails = (buildData: BuildSummary) => {
+  const commitDetails = getOr({}, 'all_commit_details[0]', buildData);
+
+  return {
+    branchName: String(buildData.branch),
+    commit: {
+      hash: String(buildData.vcs_revision),
+      shortHash: String(buildData.vcs_revision).substr(0, 7),
+      committerName: buildData.committer_name,
+      url: commitDetails.commit_url,
+    },
+  };
+};
+
+const mapUser = (buildData: BuildSummary) => ({
+  isUser: buildData?.user?.is_user || false,
+  login: buildData?.user?.login || 'none',
+  name: (buildData?.user as any)?.name,
+  avatarUrl: (buildData?.user as any)?.avatar_url,
+});
+
 export const transform = (
   buildsData: BuildSummary[],
   restartBuild: { (buildId: number): Promise<void> },
@@ -52,16 +87,14 @@ export const transform = (
         ? buildData.subject +
           (buildData.retry_of ? ` (retry of #${buildData.retry_of})` : '')
         : '',
+      startTime: buildData.start_time,
+      stopTime: buildData.stop_time,
       onRestartClick: () =>
         typeof buildData.build_num !== 'undefined' &&
         restartBuild(buildData.build_num),
-      source: {
-        branchName: String(buildData.branch),
-        commit: {
-          hash: String(buildData.vcs_revision),
-          url: 'todo',
-        },
-      },
+      source: mapSourceDetails(buildData),
+      workflow: mapWorkflowDetails(buildData),
+      user: mapUser(buildData),
       status: makeReadableStatus(buildData.status),
       buildUrl: buildData.build_url,
     };
@@ -79,6 +112,7 @@ export const useProjectSlugFromEntity = () => {
 
 export function mapVcsType(vcs: string): GitType {
   switch (vcs) {
+    case 'gh':
     case 'github':
       return GitType.GITHUB;
     default:
@@ -93,7 +127,7 @@ export function useBuilds() {
 
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(10);
 
   const getBuilds = useCallback(
     async ({ limit, offset }: { limit: number; offset: number }) => {

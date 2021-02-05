@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React from 'react';
 import {
-  Link,
   ListItem,
   ListItemIcon,
   Divider,
@@ -26,6 +25,7 @@ import {
 import ArrowIcon from '@material-ui/icons/ArrowForward';
 import { BackstageTheme } from '@backstage/theme';
 import Box from '@material-ui/core/Box';
+import { Link } from '../../components/Link';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
@@ -47,13 +47,13 @@ export type BottomLinkProps = {
   onClick?: (event: React.MouseEvent<HTMLAnchorElement>) => void;
 };
 
-export const BottomLink: FC<BottomLinkProps> = ({ link, title, onClick }) => {
+export const BottomLink = ({ link, title, onClick }: BottomLinkProps) => {
   const classes = useStyles();
 
   return (
     <div>
       <Divider />
-      <Link href={link} onClick={onClick} underline="none">
+      <Link to={link} onClick={onClick} underline="none">
         <ListItem className={classes.root}>
           <ListItemText>
             <Box className={classes.boxTitle} fontWeight="fontWeightBold" m={1}>

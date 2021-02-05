@@ -1,8 +1,8 @@
 ---
 id: call-existing-api
 title: Call Existing API
-description: Describes the various options that Backstage frontend plugins have,
-in communicating with service APIs that already exist
+# prettier-ignore
+description: Describes the various options that Backstage frontend plugins have, in communicating with service APIs that already exist
 ---
 
 This article describes the various options that Backstage frontend plugins have,
@@ -88,7 +88,7 @@ The proxy is powered by the `http-proxy-middleware` package. See
 [Proxying](proxying.md) for a full description of its configuration options.
 
 Internally at Spotify, the proxy option has been the overwhelmingly most popular
-choice for plugin makers. Since we have DNS based service discovery in place and
+choice for plugin makers. Since we have DNS-based service discovery in place and
 a microservices framework that made it trivial to expose plain HTTP, it has been
 a matter of just adding a few lines of Backstage config to get the benefit of
 being easily and robustly reachable from users' web browsers as well.
@@ -137,7 +137,7 @@ router.use('/summary', async (req, res) => {
 ```
 
 For a more detailed example, see
-[the lighthouse plugin](https://github.com/spotify/backstage/tree/master/plugins/lighthouse)
+[the lighthouse plugin](https://github.com/backstage/backstage/tree/master/plugins/lighthouse)
 that stores some state in a database and adds new capabilities to the underlying
 API.
 

@@ -74,11 +74,11 @@ export class CatalogRulesEnforcer {
    *   - allow: [Component, API]
    *
    *   locations:
-   *   - type: github
+   *   - type: url
    *     target: https://github.com/org/repo/blob/master/users.yaml
    *     rules:
    *       - allow: [User, Group]
-   *   - type: github
+   *   - type: url
    *     target: https://github.com/org/repo/blob/master/systems.yaml
    *     rules:
    *       - allow: [System]
@@ -147,10 +147,10 @@ export class CatalogRulesEnforcer {
     }
 
     for (const matcher of matchers) {
-      if (matcher.type !== location.type) {
+      if (matcher.type !== location?.type) {
         continue;
       }
-      if (matcher.target && matcher.target !== location.target) {
+      if (matcher.target && matcher.target !== location?.target) {
         continue;
       }
       return true;
@@ -165,7 +165,7 @@ export class CatalogRulesEnforcer {
     }
 
     for (const matcher of matchers) {
-      if (entity.kind.toLowerCase() !== matcher.kind.toLowerCase()) {
+      if (entity?.kind?.toLowerCase() !== matcher.kind.toLowerCase()) {
         continue;
       }
 

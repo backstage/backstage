@@ -15,9 +15,45 @@
  */
 
 import qs from 'qs';
-import { QueryParams } from '../types';
+import * as yup from 'yup';
+import { Duration, Group, PageFilters } from '../types';
+import { getDefaultPageFilters } from '../utils/filters';
+import { ConfigContextProps } from '../hooks/useConfig';
 
-export const stringify = (queryParams: Partial<QueryParams>) =>
+const schema = yup
+  .object()
+  .shape({
+    group: yup.string(),
+    project: yup.string().nullable(),
+  })
+  .required();
+
+export const stringify = (queryParams: Partial<PageFilters>) =>
   qs.stringify(queryParams, { strictNullHandling: true });
-export const parse = (queryString: string): Partial<QueryParams> =>
+
+export const parse = (queryString: string): Partial<PageFilters> =>
   qs.parse(queryString, { ignoreQueryPrefix: true, strictNullHandling: true });
+
+export const validate = (queryString: string): Promise<PageFilters> => {
+  return schema.validate(parse(queryString), {
+    stripUnknown: true,
+    strict: true,
+  }) as Promise<PageFilters>;
+};
+
+export const getInitialPageState = (
+  groups: Group[],
+  queryParams: Partial<PageFilters> = {},
+) => {
+  return {
+    ...getDefaultPageFilters(groups),
+    ...(queryParams.project ? { project: queryParams.project } : {}),
+    ...(queryParams.group ? { group: queryParams.group } : {}),
+  };
+};
+
+export const getInitialProductState = (config: ConfigContextProps) =>
+  config.products.map(product => ({
+    productType: product.kind,
+    duration: Duration.P30D,
+  }));

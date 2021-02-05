@@ -51,7 +51,7 @@ passed through to the scaffolder backend.
 ### How it works
 
 Most of the heavy lifting is done in the
-[router.ts](https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/src/service/router.ts#L93)
+[router.ts](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/src/service/router.ts#L93)
 file in the `scaffolder-backend` plugin.
 
 There are two routes defined in the router: `POST /v1/jobs` and

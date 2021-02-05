@@ -17,5 +17,5 @@
 export { DefaultNamespaceEntityPolicy } from './DefaultNamespaceEntityPolicy';
 export { FieldFormatEntityPolicy } from './FieldFormatEntityPolicy';
 export { NoForeignRootFieldsEntityPolicy } from './NoForeignRootFieldsEntityPolicy';
-export { ReservedFieldsEntityPolicy } from './ReservedFieldsEntityPolicy';
 export { SchemaValidEntityPolicy } from './SchemaValidEntityPolicy';
+export type { EntityPolicy } from './types';

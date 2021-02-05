@@ -14,18 +14,24 @@
  * limitations under the License.
  */
 
+import { IconComponent } from '@backstage/core-api';
+import { BackstageTheme } from '@backstage/theme';
 import {
+  Badge,
   makeStyles,
   styled,
   TextField,
   Typography,
-  Badge,
 } from '@material-ui/core';
-import { BackstageTheme } from '@backstage/theme';
-import { IconComponent } from '@backstage/core-api';
 import SearchIcon from '@material-ui/icons/Search';
 import clsx from 'clsx';
-import React, { FC, useContext, useState, KeyboardEventHandler } from 'react';
+import React, {
+  forwardRef,
+  KeyboardEventHandler,
+  ReactNode,
+  useContext,
+  useState,
+} from 'react';
 import { NavLink } from 'react-router-dom';
 import { sidebarConfig, SidebarContext } from './config';
 
@@ -40,12 +46,21 @@ const useStyles = makeStyles<BackstageTheme>(theme => {
 
   return {
     root: {
-      color: '#b5b5b5',
+      color: theme.palette.navigation.color,
       display: 'flex',
       flexFlow: 'row nowrap',
       alignItems: 'center',
       height: 48,
       cursor: 'pointer',
+    },
+    buttonItem: {
+      background: 'none',
+      border: 'none',
+      width: 'auto',
+      margin: 0,
+      padding: 0,
+      textAlign: 'inherit',
+      font: 'inherit',
     },
     closed: {
       width: drawerWidthClosed,
@@ -96,7 +111,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => {
     selected: {
       '&$root': {
         borderLeft: `solid ${selectedIndicatorWidth}px ${theme.palette.navigation.indicator}`,
-        color: '#ffffff',
+        color: theme.palette.navigation.selectedColor,
       },
       '&$closed': {
         width: drawerWidthClosed - selectedIndicatorWidth,
@@ -108,23 +123,40 @@ const useStyles = makeStyles<BackstageTheme>(theme => {
   };
 });
 
-type SidebarItemProps = {
+type SidebarItemBaseProps = {
   icon: IconComponent;
   text?: string;
-  // If 'to' is set the item will act as a nav link with highlight, otherwise it's just a button
-  to?: string;
   hasNotifications?: boolean;
-  onClick?: () => void;
+  children?: ReactNode;
+  className?: string;
 };
 
-export const SidebarItem: FC<SidebarItemProps> = ({
-  icon: Icon,
-  text,
-  to,
-  hasNotifications = false,
-  onClick,
-  children,
-}) => {
+type SidebarItemButtonProps = SidebarItemBaseProps & {
+  onClick: (ev: React.MouseEvent) => void;
+};
+
+type SidebarItemLinkProps = SidebarItemBaseProps & {
+  to: string;
+  onClick?: (ev: React.MouseEvent) => void;
+};
+
+type SidebarItemProps = SidebarItemButtonProps | SidebarItemLinkProps;
+
+function isButtonItem(
+  props: SidebarItemProps,
+): props is SidebarItemButtonProps {
+  return (props as SidebarItemLinkProps).to === undefined;
+}
+
+export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
+  const {
+    icon: Icon,
+    text,
+    hasNotifications = false,
+    onClick,
+    children,
+    className,
+  } = props;
   const classes = useStyles();
   // XXX (@koroeskohr): unsure this is optimal. But I just really didn't want to have the item component
   // depend on the current location, and at least have it being optionally forced to selected.
@@ -142,24 +174,9 @@ export const SidebarItem: FC<SidebarItemProps> = ({
     </Badge>
   );
 
-  const childProps = {
-    onClick,
-    className: clsx(classes.root, isOpen ? classes.open : classes.closed),
-  };
+  const closedContent = itemIcon;
 
-  if (!isOpen) {
-    if (to === undefined) {
-      return <div {...childProps}>{itemIcon}</div>;
-    }
-
-    return (
-      <NavLink {...childProps} activeClassName={classes.selected} to={to} end>
-        {itemIcon}
-      </NavLink>
-    );
-  }
-
-  const content = (
+  const openContent = (
     <>
       <div data-testid="login-button" className={classes.iconContainer}>
         {itemIcon}
@@ -173,28 +190,56 @@ export const SidebarItem: FC<SidebarItemProps> = ({
     </>
   );
 
-  if (to === undefined) {
-    return <div {...childProps}>{content}</div>;
+  const content = isOpen ? openContent : closedContent;
+
+  const childProps = {
+    onClick,
+    className: clsx(
+      className,
+      classes.root,
+      isOpen ? classes.open : classes.closed,
+      isButtonItem(props) && classes.buttonItem,
+    ),
+  };
+
+  if (isButtonItem(props)) {
+    return (
+      <button {...childProps} ref={ref}>
+        {content}
+      </button>
+    );
   }
 
   return (
-    <NavLink {...childProps} activeClassName={classes.selected} to={to} end>
+    <NavLink
+      {...childProps}
+      activeClassName={classes.selected}
+      to={props.to}
+      end
+      ref={ref}
+    >
       {content}
     </NavLink>
   );
-};
+});
 
 type SidebarSearchFieldProps = {
   onSearch: (input: string) => void;
+  to?: string;
 };
 
-export const SidebarSearchField: FC<SidebarSearchFieldProps> = props => {
+export const SidebarSearchField = (props: SidebarSearchFieldProps) => {
   const [input, setInput] = useState('');
   const classes = useStyles();
 
+  const search = () => {
+    props.onSearch(input);
+    setInput('');
+  };
+
   const handleEnter: KeyboardEventHandler = ev => {
     if (ev.key === 'Enter') {
-      props.onSearch(input);
+      search();
     }
   };
 
@@ -202,11 +247,25 @@ export const SidebarSearchField: FC<SidebarSearchFieldProps> = props => {
     setInput(ev.target.value);
   };
 
+  const handleInputClick = (ev: React.MouseEvent<HTMLInputElement>) => {
+    // Clicking into the search fields shouldn't navigate to the search page
+    ev.preventDefault();
+    ev.stopPropagation();
+  };
+
+  const handleItemClick = (ev: React.MouseEvent) => {
+    // Clicking on the search icon while should execute a query with the current field content
+    search();
+    ev.preventDefault();
+  };
+
   return (
     <div className={classes.searchRoot}>
-      <SidebarItem icon={SearchIcon}>
+      <SidebarItem icon={SearchIcon} to={props.to} onClick={handleItemClick}>
         <TextField
           placeholder="Search"
+          value={input}
+          onClick={handleInputClick}
           onChange={handleInput}
           onKeyDown={handleEnter}
           className={classes.searchContainer}

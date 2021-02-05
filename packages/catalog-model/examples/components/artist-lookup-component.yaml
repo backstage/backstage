@@ -1,0 +1,19 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: artist-lookup
+  description: Artist Lookup
+  tags:
+    - java
+    - data
+  links:
+    - url: https://example.com/apm/artists-lookup
+      title: APM
+      icon: dashboard
+    - url: https://example.com/logs/artists-lookup
+      title: Logs
+spec:
+  type: service
+  lifecycle: experimental
+  owner: team-a
+  system: artist-engagement-portal

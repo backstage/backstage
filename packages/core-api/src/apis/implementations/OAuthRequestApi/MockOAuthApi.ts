@@ -31,7 +31,7 @@ export default class MockOAuthApi implements OAuthRequestApi {
   async triggerAll() {
     await Promise.resolve(); // Wait a tick to allow new requests to get forwarded
 
-    return new Promise(resolve => {
+    return new Promise<void>(resolve => {
       const subscription = this.authRequest$().subscribe(requests => {
         subscription.unsubscribe();
         Promise.all(requests.map(request => request.trigger())).then(() =>
@@ -44,7 +44,7 @@ export default class MockOAuthApi implements OAuthRequestApi {
   async rejectAll() {
     await Promise.resolve(); // Wait a tick to allow new requests to get forwarded
 
-    return new Promise(resolve => {
+    return new Promise<void>(resolve => {
       const subscription = this.authRequest$().subscribe(requests => {
         subscription.unsubscribe();
         requests.map(request => request.reject());

@@ -15,37 +15,23 @@
  */
 import fs from 'fs-extra';
 import path from 'path';
-import os from 'os';
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { parseLocationAnnotation } from '../helpers';
+import { fileURLToPath } from 'url';
 import { InputError } from '@backstage/backend-common';
-import { PreparerBase } from './types';
+import { PreparerBase, PreparerOptions } from './types';
 
 export class FilePreparer implements PreparerBase {
-  async prepare(template: TemplateEntityV1alpha1): Promise<string> {
-    const { protocol, location } = parseLocationAnnotation(template);
-
-    if (protocol !== 'file') {
-      throw new InputError(
-        `Wrong location protocol: ${protocol}, should be 'file'`,
-      );
+  async prepare({ url, workspacePath }: PreparerOptions) {
+    if (!url.startsWith('file:///')) {
+      throw new InputError(`Wrong location protocol, should be 'file', ${url}`);
     }
-    const templateId = template.metadata.name;
 
-    const tempDir = await fs.promises.mkdtemp(
-      path.join(os.tmpdir(), templateId),
-    );
+    const checkoutDir = path.join(workspacePath, 'checkout');
+    await fs.ensureDir(checkoutDir);
 
-    const parentDirectory = path.resolve(
-      path.dirname(location),
-      template.spec.path ?? '.',
-    );
+    const templatePath = fileURLToPath(url);
 
-    await fs.copy(parentDirectory, tempDir, {
-      filter: src => src !== location,
+    await fs.copy(templatePath, checkoutDir, {
       recursive: true,
     });
-
-    return tempDir;
   }
 }

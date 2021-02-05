@@ -13,22 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { Box, Typography } from '@material-ui/core';
 
 type CostOverviewHeaderProps = {
   title: string;
   subtitle?: string;
-  children?: React.ReactNode;
 };
 
-const CostOverviewHeader = ({
+export const CostOverviewHeader = ({
   title,
   subtitle,
   children,
-}: CostOverviewHeaderProps) => (
+}: PropsWithChildren<CostOverviewHeaderProps>) => (
   <Box
-    marginY={1}
+    mt={2}
+    ml={1}
+    mb={1}
     display="flex"
     flexDirection="row"
     justifyContent="space-between"
@@ -49,5 +50,3 @@ const CostOverviewHeader = ({
     </Box>
   </Box>
 );
-
-export default CostOverviewHeader;

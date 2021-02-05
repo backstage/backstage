@@ -28,7 +28,7 @@ const ClipboardMessage = {
   error: "Couldn't copy to clipboard",
 };
 
-const CopyUrlToClipboard = () => {
+export const CopyUrlToClipboard = () => {
   const location = useLocation();
   const [state, copyToClipboard] = useCopyToClipboard();
   const [copied, setCopied] = useState(false);
@@ -66,5 +66,3 @@ const CopyUrlToClipboard = () => {
     </Tooltip>
   );
 };
-
-export default CopyUrlToClipboard;

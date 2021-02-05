@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { default } from './CostInsightsPageRoot';
+export { CostInsightsPageRoot as CostInsightsPage } from './CostInsightsPageRoot';

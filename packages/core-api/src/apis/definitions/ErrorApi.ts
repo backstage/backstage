@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '../ApiRef';
+import { ApiRef, createApiRef } from '../system';
 import { Observable } from '../../types';
 
 /**
- * Mirrors the javascript Error class, for the purpose of
+ * Mirrors the JavaScript Error class, for the purpose of
  * providing documentation and optional fields.
  */
 type Error = {
@@ -42,10 +42,10 @@ export type ErrorContext = {
  * to report errors for collection by error reporting services.
  *
  * If an error can be displayed inline, e.g. as feedback in a form, that should be
- * preferred over relying on this API to display the error. The main use of this api
+ * preferred over relying on this API to display the error. The main use of this API
  * for displaying errors should be for asynchronous errors, such as a failing background process.
  *
- * Even if an error is displayed inline, it should still be reported through this api
+ * Even if an error is displayed inline, it should still be reported through this API
  * if it would be useful to collect or log it for debugging purposes, but with
  * the hidden flag set. For example, an error arising from form field validation
  * should probably not be reported, while a failed REST call would be useful to report.
@@ -62,7 +62,7 @@ export type ErrorApi = {
   error$(): Observable<{ error: Error; context?: ErrorContext }>;
 };
 
-export const errorApiRef = createApiRef<ErrorApi>({
+export const errorApiRef: ApiRef<ErrorApi> = createApiRef({
   id: 'core.error',
   description: 'Used to report errors and forward them to the app',
 });

@@ -33,7 +33,7 @@ describe('ErrorPanel', () => {
     // title
     expect(
       getByText(
-        'There was an error retrieving some Kubernetes resources for the entity: THIS_ENTITY',
+        'There was a problem retrieving some Kubernetes resources for the entity: THIS_ENTITY. This could mean that the Error Reporting card is not completely accurate.',
       ),
     ).toBeInTheDocument();
 
@@ -67,7 +67,7 @@ describe('ErrorPanel', () => {
     // title
     expect(
       getByText(
-        'There was an error retrieving some Kubernetes resources for the entity: THIS_ENTITY',
+        'There was a problem retrieving some Kubernetes resources for the entity: THIS_ENTITY. This could mean that the Error Reporting card is not completely accurate.',
       ),
     ).toBeInTheDocument();
 
@@ -76,7 +76,7 @@ describe('ErrorPanel', () => {
     expect(getByText('Cluster: THIS_CLUSTER')).toBeInTheDocument();
     expect(
       getByText(
-        "Error fetching Kubernetes resource: 'some/resource', error: SYSTEM_ERROR",
+        "Error fetching Kubernetes resource: 'some/resource', error: SYSTEM_ERROR, status code: 500",
       ),
     ).toBeInTheDocument();
   });

@@ -39,6 +39,10 @@ describe('SchemaValidEntityPolicy', () => {
         tags:
           - java
           - data
+        links:
+          - url: https://example.com
+            title: Website
+            icon: website
       spec:
         custom: stuff
     `);
@@ -197,6 +201,24 @@ describe('SchemaValidEntityPolicy', () => {
     data.metadata.tags = 7;
     await expect(policy.enforce(data)).rejects.toThrow(/tags/);
   });
+
+  it('accepts missing links', async () => {
+    delete data.metadata.links;
+    await expect(policy.enforce(data)).resolves.toBe(data);
+  });
+
+  it('accepts empty links array', async () => {
+    data.metadata.links = [];
+    await expect(policy.enforce(data)).resolves.toBe(data);
+  });
+
+  it.each([['invalid type'], [123], [{}], [{ url: 'https://foo' }]])(
+    'rejects bad links type %s',
+    async (val: unknown) => {
+      data.metadata.links = val;
+      await expect(policy.enforce(data)).rejects.toThrow(/links/);
+    },
+  );
 
   //
   // spec

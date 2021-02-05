@@ -15,18 +15,19 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
 import { ErrorPage } from './ErrorPage';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 
 describe('<ErrorPage/>', () => {
-  it('should render with status code, status message and go back link', () => {
-    const rendered = render(
-      wrapInTestApp(<ErrorPage status="404" statusMessage="PAGE NOT FOUND" />),
+  it('should render with status code, status message and go back link', async () => {
+    const { getByText, getByTestId } = await renderInTestApp(
+      <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />,
     );
-    rendered.getByText(/page not found/i);
-    rendered.getByText(/404/i);
-    rendered.getByText(/Looks like someone dropped the mic!/i);
-    expect(rendered.getByTestId('go-back-link')).toBeDefined();
+    expect(getByText(/page not found/i)).toBeInTheDocument();
+    expect(getByText(/404/i)).toBeInTheDocument();
+    expect(
+      getByText(/looks like someone dropped the mic!/i),
+    ).toBeInTheDocument();
+    expect(getByTestId('go-back-link')).toBeInTheDocument();
   });
 });

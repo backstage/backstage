@@ -14,17 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity } from './Entity';
-import { ChangeStatistic } from './ChangeStatistic';
-import { Maybe } from './Maybe';
-
 export interface Product {
   kind: string;
   name: string;
-}
-
-export interface ProductCost {
-  entities?: Array<Entity>;
-  aggregation: [number, number];
-  change?: Maybe<ChangeStatistic>;
 }

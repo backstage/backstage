@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
-import { Button, Card, Chip, Typography, makeStyles } from '@material-ui/core';
+import { Button, Card, Chip, makeStyles, Typography } from '@material-ui/core';
+import clsx from 'clsx';
+import React from 'react';
+import { Link } from '../../components';
 
 const useStyles = makeStyles(theme => ({
   header: {
     color: theme.palette.common.white,
     padding: theme.spacing(2, 2, 6),
-    backgroundImage:
-      'linear-gradient(-137deg, rgb(25, 230, 140) 0%, rgb(29, 127, 110) 100%)',
+    backgroundImage: 'linear-gradient(-137deg,  #4BB8A5 0%,  #187656 100%)',
   },
   content: {
     padding: theme.spacing(2),
@@ -30,6 +31,9 @@ const useStyles = makeStyles(theme => ({
     height: 175,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
+  },
+  withTags: {
+    height: 'calc(175px - 32px - 8px)',
   },
   footer: {
     display: 'flex',
@@ -44,15 +48,18 @@ type ItemCardProps = {
   type?: string;
   label: string;
   onClick?: () => void;
+  href?: string;
 };
-export const ItemCard: FC<ItemCardProps> = ({
+
+export const ItemCard = ({
   description,
   tags,
   title,
   type,
   label,
   onClick,
-}) => {
+  href,
+}: ItemCardProps) => {
   const classes = useStyles();
 
   return (
@@ -62,16 +69,30 @@ export const ItemCard: FC<ItemCardProps> = ({
         <Typography variant="h6">{title}</Typography>
       </div>
       <div className={classes.content}>
-        {tags?.map(tag => (
-          <Chip label={tag} key={tag} />
+        {tags?.map((tag, i) => (
+          <Chip label={tag} key={`tag-${i}`} />
         ))}
-        <Typography variant="body2" paragraph className={classes.description}>
+        <Typography
+          variant="body2"
+          paragraph
+          className={clsx(
+            classes.description,
+            tags && tags.length > 0 && classes.withTags,
+          )}
+        >
           {description}
         </Typography>
         <div className={classes.footer}>
-          <Button onClick={onClick} color="primary">
-            {label}
-          </Button>
+          {!href && (
+            <Button onClick={onClick} color="primary">
+              {label}
+            </Button>
+          )}
+          {href && (
+            <Button component={Link} to={href} color="primary">
+              {label}
+            </Button>
+          )}
         </div>
       </div>
     </Card>

@@ -19,7 +19,9 @@ import { promisify } from 'util';
 import chalk from 'chalk';
 import inquirer, { Answers, Question } from 'inquirer';
 import { exec as execCb } from 'child_process';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath, join as joinPath } from 'path';
+import camelCase from 'lodash/camelCase';
+import upperFirst from 'lodash/upperFirst';
 import os from 'os';
 import { Command } from 'commander';
 import {
@@ -28,8 +30,8 @@ import {
   getCodeownersFilePath,
 } from '../../lib/codeowners';
 import { paths } from '../../lib/paths';
+import { packageVersions } from '../../lib/version';
 import { Task, templatingTask } from '../../lib/tasks';
-import { version as backstageVersion } from '../../lib/version';
 
 const exec = promisify(execCb);
 
@@ -41,18 +43,6 @@ async function checkExists(destination: string) {
       );
       throw new Error(
         `A plugin with the same name already exists: ${existing}\nPlease try again with a different plugin ID`,
-      );
-    }
-  });
-}
-
-export async function createTemporaryPluginFolder(tempDir: string) {
-  await Task.forItem('creating', 'temporary directory', async () => {
-    try {
-      await fs.mkdir(tempDir);
-    } catch (error) {
-      throw new Error(
-        `Failed to create temporary plugin directory: ${error.message}`,
       );
     }
   });
@@ -116,16 +106,12 @@ export async function addPluginDependencyToApp(
   });
 }
 
-export async function addPluginToApp(
+export async function addPluginImportToApp(
   rootDir: string,
-  pluginName: string,
+  pluginVar: string,
   pluginPackage: string,
 ) {
-  const pluginNameCapitalized = pluginName
-    .split('-')
-    .map(name => capitalize(name))
-    .join('');
-  const pluginExport = `export { plugin as ${pluginNameCapitalized} } from '${pluginPackage}';`;
+  const pluginExport = `export { ${pluginVar} } from '${pluginPackage}';`;
   const pluginsFilePath = 'packages/app/src/plugins.ts';
   const pluginsFile = resolvePath(rootDir, pluginsFilePath);
 
@@ -135,6 +121,46 @@ export async function addPluginToApp(
         `Failed to import plugin in app: ${pluginsFile}: ${error.message}`,
       );
     });
+  });
+}
+
+export async function addPluginExtensionToApp(
+  pluginId: string,
+  extensionName: string,
+  pluginPackage: string,
+) {
+  const pluginsFilePath = paths.resolveTargetRoot('packages/app/src/App.tsx');
+  if (!(await fs.pathExists(pluginsFilePath))) {
+    return;
+  }
+
+  await Task.forItem('processing', pluginsFilePath, async () => {
+    const content = await fs.readFile(pluginsFilePath, 'utf8');
+    const revLines = content.split('\n').reverse();
+
+    const lastImportIndex = revLines.findIndex(line =>
+      line.match(/ from ("|').*("|')/),
+    );
+    const lastRouteIndex = revLines.findIndex(line =>
+      line.match(/<\/FlatRoutes/),
+    );
+
+    if (lastImportIndex !== -1 && lastRouteIndex !== -1) {
+      revLines.splice(
+        lastImportIndex,
+        0,
+        `import { ${extensionName} } from '${pluginPackage}';`,
+      );
+      const [indentation] = revLines[lastRouteIndex + 1].match(/^\s*/) ?? [];
+      revLines.splice(
+        lastRouteIndex + 1,
+        0,
+        `${indentation}<Route path="/${pluginId}" element={<${extensionName} />}/>`,
+      );
+
+      const newContent = revLines.reverse().join('\n');
+      await fs.writeFile(pluginsFilePath, newContent, 'utf8');
+    }
   });
 }
 
@@ -152,15 +178,21 @@ async function buildPlugin(pluginFolder: string) {
     'yarn build',
   ];
   for (const command of commands) {
-    await Task.forItem('executing', command, async () => {
-      process.chdir(pluginFolder);
-
-      await exec(command).catch(error => {
+    try {
+      await Task.forItem('executing', command, async () => {
+        process.chdir(pluginFolder);
+        await exec(command);
+      }).catch(error => {
         process.stdout.write(error.stderr);
         process.stdout.write(error.stdout);
-        throw new Error(`Could not execute command ${chalk.cyan(command)}`);
+        throw new Error(
+          `Warning: Could not execute command ${chalk.cyan(command)}`,
+        );
       });
-    });
+    } catch (error) {
+      Task.error(error.message);
+      break;
+    }
   }
 }
 
@@ -224,9 +256,13 @@ export default async (cmd: Command) => {
   }
 
   const answers: Answers = await inquirer.prompt(questions);
+  const pluginId = cmd.backend ? `${answers.id}-backend` : answers.id;
+
   const name = cmd.scope
-    ? `@${cmd.scope.replace(/^@/, '')}/plugin-${answers.id}`
-    : `plugin-${answers.id}`;
+    ? `@${cmd.scope.replace(/^@/, '')}/plugin-${pluginId}`
+    : `plugin-${pluginId}`;
+  const pluginVar = `${camelCase(answers.id)}Plugin`;
+  const extensionName = `${upperFirst(camelCase(answers.id))}Page`;
   const npmRegistry = cmd.npmRegistry && cmd.scope ? cmd.npmRegistry : '';
   const privatePackage = cmd.private === false ? false : true;
   const isMonoRepo = await fs.pathExists(paths.resolveTargetRoot('lerna.json'));
@@ -236,54 +272,62 @@ export default async (cmd: Command) => {
       ? 'templates/default-backend-plugin'
       : 'templates/default-plugin',
   );
-  const tempDir = resolvePath(os.tmpdir(), answers.id);
   const pluginDir = isMonoRepo
-    ? paths.resolveTargetRoot('plugins', answers.id)
-    : paths.resolveTargetRoot(answers.id);
+    ? paths.resolveTargetRoot('plugins', pluginId)
+    : paths.resolveTargetRoot(pluginId);
   const ownerIds = parseOwnerIds(answers.owner);
-  const { version } = isMonoRepo
+  const { version: pluginVersion } = isMonoRepo
     ? await fs.readJson(paths.resolveTargetRoot('lerna.json'))
     : { version: '0.1.0' };
 
   Task.log();
   Task.log('Creating the plugin...');
 
+  Task.section('Checking if the plugin ID is available');
+  await checkExists(pluginDir);
+
+  Task.section('Creating a temporary plugin directory');
+  const tempDir = await fs.mkdtemp(
+    joinPath(os.tmpdir(), `backstage-plugin-${pluginId}`),
+  );
+
   try {
-    Task.section('Checking if the plugin ID is available');
-    await checkExists(pluginDir);
-
-    Task.section('Creating a temporary plugin directory');
-    await createTemporaryPluginFolder(tempDir);
-
     Task.section('Preparing files');
 
-    await templatingTask(templateDir, tempDir, {
-      ...answers,
-      version,
-      backstageVersion,
-      name,
-      privatePackage,
-      npmRegistry,
-    });
+    await templatingTask(
+      templateDir,
+      tempDir,
+      {
+        ...answers,
+        pluginVar,
+        pluginVersion,
+        extensionName,
+        name,
+        privatePackage,
+        npmRegistry,
+      },
+      packageVersions,
+    );
 
     Task.section('Moving to final location');
-    await movePlugin(tempDir, pluginDir, answers.id);
+    await movePlugin(tempDir, pluginDir, pluginId);
 
     Task.section('Building the plugin');
     await buildPlugin(pluginDir);
 
     if ((await fs.pathExists(appPackage)) && !cmd.backend) {
       Task.section('Adding plugin as dependency in app');
-      await addPluginDependencyToApp(paths.targetRoot, name, version);
+      await addPluginDependencyToApp(paths.targetRoot, name, pluginVersion);
 
       Task.section('Import plugin in app');
-      await addPluginToApp(paths.targetRoot, answers.id, name);
+      await addPluginImportToApp(paths.targetRoot, pluginVar, name);
+      await addPluginExtensionToApp(pluginId, extensionName, name);
     }
 
     if (ownerIds && ownerIds.length) {
       await addCodeownersEntry(
         codeownersPath!,
-        `/plugins/${answers.id}`,
+        `/plugins/${pluginId}`,
         ownerIds,
       );
     }

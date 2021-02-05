@@ -34,17 +34,9 @@ describe('postgres', () => {
     'postgresql://foo:bar@acme:5432/foodb';
 
   const createConfig = (connection: any): Config =>
-    ConfigReader.fromConfigs([
-      {
-        context: '',
-        data: {
-          client: 'pg',
-          connection,
-        },
-      },
-    ]);
+    new ConfigReader({ client: 'pg', connection });
 
-  describe(buildPgDatabaseConfig, () => {
+  describe('buildPgDatabaseConfig', () => {
     it('builds a postgres config', () => {
       const mockConnection = createMockConnection();
 
@@ -125,7 +117,7 @@ describe('postgres', () => {
     });
   });
 
-  describe(getPgConnectionConfig, () => {
+  describe('getPgConnectionConfig', () => {
     it('returns the connection object back', () => {
       const mockConnection = createMockConnection();
       const config = createConfig(mockConnection);
@@ -163,7 +155,7 @@ describe('postgres', () => {
     });
   });
 
-  describe(createPgDatabaseClient, () => {
+  describe('createPgDatabaseClient', () => {
     it('creates a postgres knex instance', () => {
       expect(
         createPgDatabaseClient(
@@ -188,8 +180,8 @@ describe('postgres', () => {
     });
   });
 
-  describe(parsePgConnectionString, () => {
-    it('parses a connection string uri ', () => {
+  describe('parsePgConnectionString', () => {
+    it('parses a connection string uri', () => {
       expect(
         parsePgConnectionString(
           'postgresql://postgres:pass@foobar:5432/dbname?ssl=true',

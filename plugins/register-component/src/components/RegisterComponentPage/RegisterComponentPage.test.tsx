@@ -20,7 +20,7 @@ import {
   createRouteRef,
   errorApiRef,
 } from '@backstage/core';
-import { catalogApiRef } from '@backstage/plugin-catalog';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core';
 import { render, screen } from '@testing-library/react';
@@ -35,7 +35,7 @@ const errorApi: jest.Mocked<typeof errorApiRef.T> = {
 
 const catalogApi: jest.Mocked<typeof catalogApiRef.T> = {
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-  addLocation: jest.fn((_a, _b) => new Promise(() => {})),
+  addLocation: jest.fn(_a => new Promise(() => {})),
   getEntities: jest.fn(),
   getLocationByEntity: jest.fn(),
   getLocationById: jest.fn(),

@@ -31,7 +31,7 @@ export class CommonValidatorFunctions {
    * @param isValidSuffix Checks that the part after the separator (or the entire value if there is no separator) is valid
    */
   static isValidPrefixAndOrSuffix(
-    value: any,
+    value: unknown,
     separator: string,
     isValidPrefix: (value: string) => boolean,
     isValidSuffix: (value: string) => boolean,
@@ -55,7 +55,7 @@ export class CommonValidatorFunctions {
    *
    * @param value The value to check
    */
-  static isJsonSafe(value: any): boolean {
+  static isJsonSafe(value: unknown): boolean {
     try {
       return lodash.isEqual(value, JSON.parse(JSON.stringify(value)));
     } catch {
@@ -69,7 +69,7 @@ export class CommonValidatorFunctions {
    * @param value The value to check
    * @see https://tools.ietf.org/html/rfc1123
    */
-  static isValidDnsSubdomain(value: any): boolean {
+  static isValidDnsSubdomain(value: unknown): boolean {
     return (
       typeof value === 'string' &&
       value.length >= 1 &&
@@ -84,7 +84,7 @@ export class CommonValidatorFunctions {
    * @param value The value to check
    * @see https://tools.ietf.org/html/rfc1123
    */
-  static isValidDnsLabel(value: any): boolean {
+  static isValidDnsLabel(value: unknown): boolean {
     return (
       typeof value === 'string' &&
       value.length >= 1 &&
@@ -94,15 +94,30 @@ export class CommonValidatorFunctions {
   }
 
   /**
-   * Normalizes by keeping only a-z, A-Z, and 0-9; and converts to lowercase.
+   * Checks that the value is a valid URL.
    *
-   * @param value The value to normalize
+   * @param value The value to check
    */
-  static normalizeToLowercaseAlphanum(value: string): string {
-    return value
-      .split('')
-      .filter(x => /[a-zA-Z0-9]/.test(x))
-      .join('')
-      .toLowerCase();
+  static isValidUrl(value: unknown): boolean {
+    if (typeof value !== 'string') {
+      return false;
+    }
+
+    try {
+      // eslint-disable-next-line no-new
+      new URL(value);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Checks that the value is a non empty string value.
+   *
+   * @param value The value to check
+   */
+  static isValidString(value: unknown): boolean {
+    return typeof value === 'string' && value?.trim()?.length >= 1;
   }
 }

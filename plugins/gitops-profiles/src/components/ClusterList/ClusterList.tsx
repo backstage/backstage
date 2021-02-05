@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import React, { FC, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Content,
   ContentHeader,
   Header,
   SupportButton,
   Page,
-  pageTheme,
   Progress,
   HeaderLabel,
   useApi,
@@ -34,7 +33,7 @@ import { useAsync } from 'react-use';
 import { gitOpsApiRef } from '../../api';
 import { Alert } from '@material-ui/lab';
 
-const ClusterList: FC<{}> = () => {
+const ClusterList = () => {
   const api = useApi(gitOpsApiRef);
   const githubAuth = useApi(githubAuthApiRef);
   const [githubUsername, setGithubUsername] = useState(String);
@@ -91,7 +90,7 @@ const ClusterList: FC<{}> = () => {
   }
 
   return (
-    <Page theme={pageTheme.home}>
+    <Page themeId="home">
       <Header title="GitOps-managed Clusters">
         <HeaderLabel label="Welcome" value={githubUsername} />
       </Header>

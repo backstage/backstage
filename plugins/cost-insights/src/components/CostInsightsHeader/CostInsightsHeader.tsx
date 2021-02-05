@@ -31,16 +31,6 @@ type CostInsightsHeaderProps = {
   alerts: number;
 };
 
-const CostInsightsHeader = (props: CostInsightsHeaderProps) => {
-  if (!props.hasCostData) {
-    return <CostInsightsHeaderNoData {...props} />;
-  }
-  if (props.alerts) {
-    return <CostInsightsHeaderAlerts {...props} />;
-  }
-  return <CostInsightsHeaderNoAlerts {...props} />;
-};
-
 const CostInsightsHeaderNoData = ({
   owner,
   groups,
@@ -133,4 +123,12 @@ export const CostInsightsHeaderNoGroups = () => {
   );
 };
 
-export default CostInsightsHeader;
+export const CostInsightsHeader = (props: CostInsightsHeaderProps) => {
+  if (!props.hasCostData) {
+    return <CostInsightsHeaderNoData {...props} />;
+  }
+  if (props.alerts) {
+    return <CostInsightsHeaderAlerts {...props} />;
+  }
+  return <CostInsightsHeaderNoAlerts {...props} />;
+};

@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
-import { Box, IconButton, Link, Typography } from '@material-ui/core';
+import React from 'react';
+import { Box, IconButton, Link, Typography, Tooltip } from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
@@ -179,9 +179,11 @@ const generatedColumns: TableColumn[] = [
     title: 'Actions',
     sorting: false,
     render: (row: Partial<CITableBuildInfo>) => (
-      <IconButton onClick={row.onRestartClick}>
-        <RetryIcon />
-      </IconButton>
+      <Tooltip title="Rerun build">
+        <IconButton onClick={row.onRestartClick}>
+          <RetryIcon />
+        </IconButton>
+      </Tooltip>
     ),
     width: '10%',
   },
@@ -199,7 +201,7 @@ type Props = {
   onChangePageSize: (pageSize: number) => void;
 };
 
-export const CITableView: FC<Props> = ({
+export const CITableView = ({
   projectName,
   loading,
   pageSize,
@@ -209,7 +211,7 @@ export const CITableView: FC<Props> = ({
   onChangePage,
   onChangePageSize,
   total,
-}) => {
+}: Props) => {
   return (
     <Table
       isLoading={loading}

@@ -7,23 +7,10 @@ Website: [https://circleci.com/](https://circleci.com/)
 
 ## Setup
 
-0. If you have standalone app (you didn't clone this repo), then do
+1. If you have standalone app (you didn't clone this repo), then do
 
 ```bash
 yarn add @backstage/plugin-circleci
-```
-
-1. Add plugin API to your Backstage instance:
-
-```js
-// packages/app/src/api.ts
-import { ApiHolder } from '@backstage/core';
-import { CircleCIApi, circleCIApiRef } from '@backstage/plugin-circleci';
-
-const builder = ApiRegistry.builder();
-builder.add(circleCIApiRef, new CircleCIApi(/* optional custom url for your own CircleCI instance */));
-
-export default builder.build() as ApiHolder;
 ```
 
 2. Add plugin itself:
@@ -50,19 +37,31 @@ import { Router as CircleCIRouter } from '@backstage/plugin-circleci';
 
 4. Add proxy config:
 
-```
+```yaml
 // app-config.yaml
 proxy:
   '/circleci/api':
     target: https://circleci.com/api/v1.1
     headers:
       Circle-Token:
-        $secret:
-          env: CIRCLECI_AUTH_TOKEN
+        $env: CIRCLECI_AUTH_TOKEN
 ```
 
 5. Get and provide `CIRCLECI_AUTH_TOKEN` as env variable (https://circleci.com/docs/api/#add-an-api-token)
-6. Add `circleci.com/project-slug` annotation to your component-info.yaml file in format <git-provider>/<owner>/<project> (https://backstage.io/docs/architecture-decisions/adrs-adr002#format)
+6. Add `circleci.com/project-slug` annotation to your catalog-info.yaml file in format <git-provider>/<owner>/<project> (https://backstage.io/docs/architecture-decisions/adrs-adr002#format)
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  # ...
+  annotations:
+    # This also supports bitbucket/xxx/yyy
+    circleci.com/project-slug: github/my-org/my-repo
+spec:
+  type: service
+  # ...
+```
 
 ## Features
 
@@ -76,4 +75,4 @@ proxy:
 ## Limitations
 
 - CircleCI has pretty strict rate limits per token, be careful with opened tabs
-- CircelCI doesn't provide a way to auth by 3rd party (e.g. GitHub) token, nor by calling their OAuth endpoints, which currently stands in the way of better auth integration with Backstage (https://discuss.circleci.com/t/circleci-api-authorization-with-github-token/5356)
+- CircleCI doesn't provide a way to auth by 3rd party (e.g. GitHub) token, nor by calling their OAuth endpoints, which currently stands in the way of better auth integration with Backstage (https://discuss.circleci.com/t/circleci-api-authorization-with-github-token/5356)

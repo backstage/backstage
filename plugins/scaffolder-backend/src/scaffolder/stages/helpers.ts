@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { posix as posixPath } from 'path';
 import {
   TemplateEntityV1alpha1,
   LOCATION_ANNOTATION,
 } from '@backstage/catalog-model';
 import { InputError } from '@backstage/backend-common';
-import { RemoteProtocol } from './types';
 
 export type ParsedLocationAnnotation = {
-  protocol: RemoteProtocol;
+  protocol: 'file' | 'url';
   location: string;
 };
 
@@ -39,7 +40,7 @@ export const parseLocationAnnotation = (
   // split on the first colon for the protocol and the rest after the first split
   // is the location.
   const [protocol, location] = annotation.split(/:(.+)/) as [
-    RemoteProtocol?,
+    ('file' | 'url')?,
     string?,
   ];
 
@@ -54,3 +55,20 @@ export const parseLocationAnnotation = (
     location,
   };
 };
+
+export function joinGitUrlPath(repoUrl: string, path?: string): string {
+  const parsed = new URL(repoUrl);
+
+  if (parsed.hostname.endsWith('azure.com')) {
+    const templatePath = posixPath.normalize(
+      posixPath.join(
+        posixPath.dirname(parsed.searchParams.get('path') || '/'),
+        path || '.',
+      ),
+    );
+    parsed.searchParams.set('path', templatePath);
+    return parsed.toString();
+  }
+
+  return new URL(path || '.', repoUrl).toString().replace(/\/$/, '');
+}

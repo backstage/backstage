@@ -18,9 +18,16 @@ export {
   ENTITY_DEFAULT_NAMESPACE,
   ENTITY_META_GENERATED_FIELDS,
 } from './constants';
-export type { Entity, EntityMeta } from './Entity';
+export type {
+  Entity,
+  EntityLink,
+  EntityMeta,
+  EntityRelation,
+  EntityRelationSpec,
+} from './Entity';
 export * from './policies';
 export {
+  compareEntityToRef,
   getEntityName,
   parseEntityName,
   parseEntityRef,

@@ -42,7 +42,7 @@ describe('<TechDocsPageHeader />', () => {
                   },
                 },
               },
-              mkdocs: {
+              techdocs: {
                 loading: false,
                 value: {
                   site_name: 'test-site-name',
@@ -54,7 +54,7 @@ describe('<TechDocsPageHeader />', () => {
         ),
       );
       expect(rendered.container.innerHTML).toContain('header');
-      expect(rendered.getByText('test-site-name')).toBeDefined();
+      expect(rendered.getAllByText('test-site-name')).toHaveLength(2);
       expect(rendered.getByText('test-site-desc')).toBeDefined();
     });
   });
@@ -73,7 +73,7 @@ describe('<TechDocsPageHeader />', () => {
               entity: {
                 loading: false,
               },
-              mkdocs: {
+              techdocs: {
                 loading: false,
               },
             }}

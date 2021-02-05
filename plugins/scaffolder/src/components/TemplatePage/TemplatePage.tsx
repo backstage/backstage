@@ -22,34 +22,36 @@ import {
   Lifecycle,
   Page,
   useApi,
-  pageTheme,
 } from '@backstage/core';
-import { catalogApiRef } from '@backstage/plugin-catalog';
+import {
+  catalogApiRef,
+  entityRoute,
+  entityRouteParams,
+} from '@backstage/plugin-catalog-react';
 import { LinearProgress } from '@material-ui/core';
 import { IChangeEvent } from '@rjsf/core';
-import React, { useState } from 'react';
+import parseGitUrl from 'git-url-parse';
+import React, { useCallback, useState } from 'react';
+import { generatePath, Navigate } from 'react-router';
 import { useParams } from 'react-router-dom';
-import useStaleWhileRevalidate from 'swr';
+import { useAsync } from 'react-use';
 import { scaffolderApiRef } from '../../api';
-import { JobStatusModal } from '../JobStatusModal';
-import { Job } from '../../types';
-import { MultistepJsonForm } from '../MultistepJsonForm';
-import { Navigate } from 'react-router';
 import { rootRoute } from '../../routes';
+import { useJobPolling } from '../hooks/useJobPolling';
+import { JobStatusModal } from '../JobStatusModal';
+import { MultistepJsonForm } from '../MultistepJsonForm';
 
 const useTemplate = (
   templateName: string,
   catalogApi: typeof catalogApiRef.T,
 ) => {
-  const { data, error } = useStaleWhileRevalidate(
-    `templates/${templateName}`,
-    async () =>
-      catalogApi.getEntities({
-        kind: 'Template',
-        'metadata.name': templateName,
-      }) as Promise<TemplateEntityV1alpha1[]>,
-  );
-  return { template: data?.[0], loading: !error && !data, error };
+  const { value, loading, error } = useAsync(async () => {
+    const response = await catalogApi.getEntities({
+      filter: { kind: 'Template', 'metadata.name': templateName },
+    });
+    return response.items as TemplateEntityV1alpha1[];
+  });
+  return { template: value?.[0], loading, error };
 };
 
 const OWNER_REPO_SCHEMA = {
@@ -62,10 +64,10 @@ const OWNER_REPO_SCHEMA = {
       description: 'Who is going to own this component',
     },
     storePath: {
-      format: 'GitHub user or org / Repo name',
       type: 'string' as const,
       title: 'Store path',
-      description: 'GitHub store path in org/repo format',
+      description:
+        'A full URL to the repository that should be created. e.g https://github.com/backstage/new-repo',
     },
     access: {
       type: 'string' as const,
@@ -74,60 +76,60 @@ const OWNER_REPO_SCHEMA = {
     },
   },
 };
-
-const REPO_FORMAT = {
-  'GitHub user or org / Repo name': /[^\/]*\/[^\/]*/,
-};
-
 export const TemplatePage = () => {
   const errorApi = useApi(errorApiRef);
   const catalogApi = useApi(catalogApiRef);
   const scaffolderApi = useApi(scaffolderApiRef);
   const { templateName } = useParams();
+  const [catalogLink, setCatalogLink] = useState<string | undefined>();
   const { template, loading } = useTemplate(templateName, catalogApi);
-
   const [formState, setFormState] = useState({});
-
+  const [modalOpen, setModalOpen] = useState(false);
   const handleFormReset = () => setFormState({});
-  const handleChange = (e: IChangeEvent) =>
-    setFormState({ ...formState, ...e.formData });
-
-  const [jobId, setJobId] = useState<string | null>(null);
-  const handleClose = () => setJobId(null);
-
-  const handleCreate = async () => {
-    try {
-      const job = await scaffolderApi.scaffold(template!, formState);
-      setJobId(job);
-    } catch (e) {
-      errorApi.post(e);
-    }
-  };
-
-  const [entity, setEntity] = React.useState<TemplateEntityV1alpha1 | null>(
-    null,
+  const handleChange = useCallback(
+    (e: IChangeEvent) => setFormState({ ...formState, ...e.formData }),
+    [setFormState, formState],
   );
 
-  const handleCreateComplete = async (job: Job) => {
-    const componentYaml = job.metadata.remoteUrl?.replace(
-      /\.git$/,
-      '/blob/master/component-info.yaml',
-    );
-
-    if (!componentYaml) {
+  const [jobId, setJobId] = useState<string | null>(null);
+  const job = useJobPolling(jobId, async jobItem => {
+    if (!jobItem.metadata.catalogInfoUrl) {
       errorApi.post(
-        new Error(
-          `Failed to find component-info.yaml file in ${job.metadata.remoteUrl}.`,
-        ),
+        new Error(`No catalogInfoUrl returned from the scaffolder`),
       );
       return;
     }
 
-    const {
-      entities: [createdEntity],
-    } = await catalogApi.addLocation('github', componentYaml);
+    try {
+      const {
+        entities: [createdEntity],
+      } = await catalogApi.addLocation({
+        target: jobItem.metadata.catalogInfoUrl,
+      });
 
-    setEntity((createdEntity as any) as TemplateEntityV1alpha1);
+      const resolvedPath = generatePath(
+        `/catalog/${entityRoute.path}`,
+        entityRouteParams(createdEntity),
+      );
+
+      setCatalogLink(resolvedPath);
+    } catch (ex) {
+      errorApi.post(
+        new Error(
+          `Something went wrong trying to add the new 'catalog-info.yaml' to the catalog`,
+        ),
+      );
+    }
+  });
+
+  const handleCreate = async () => {
+    try {
+      const id = await scaffolderApi.scaffold(templateName, formState);
+      setJobId(id);
+      setModalOpen(true);
+    } catch (e) {
+      errorApi.post(e);
+    }
   };
 
   if (!loading && !template) {
@@ -145,7 +147,7 @@ export const TemplatePage = () => {
   }
 
   return (
-    <Page theme={pageTheme.home}>
+    <Page themeId="home">
       <Header
         pageTitleOverride="Create a new component"
         title={
@@ -157,14 +159,12 @@ export const TemplatePage = () => {
       />
       <Content>
         {loading && <LinearProgress data-testid="loading-progress" />}
-        {jobId && (
-          <JobStatusModal
-            onComplete={handleCreateComplete}
-            jobId={jobId}
-            onClose={handleClose}
-            entity={entity}
-          />
-        )}
+        <JobStatusModal
+          job={job}
+          toCatalogLink={catalogLink}
+          open={modalOpen}
+          onModalClose={() => setModalOpen(false)}
+        />
         {template && (
           <InfoCard title={template.metadata.title} noPadding>
             <MultistepJsonForm
@@ -180,7 +180,34 @@ export const TemplatePage = () => {
                 {
                   label: 'Choose owner and repo',
                   schema: OWNER_REPO_SCHEMA,
-                  customFormats: REPO_FORMAT,
+                  validate: (formData, errors) => {
+                    const { storePath } = formData;
+                    try {
+                      const parsedUrl = parseGitUrl(storePath);
+
+                      if (
+                        !parsedUrl.resource ||
+                        !parsedUrl.owner ||
+                        !parsedUrl.name
+                      ) {
+                        if (parsedUrl.resource === 'dev.azure.com') {
+                          errors.storePath.addError(
+                            "The store path should be formatted like https://dev.azure.com/{org}/{project}/_git/{repo} for Azure URL's",
+                          );
+                        } else {
+                          errors.storePath.addError(
+                            'The store path should be a complete Git URL to the new repository location. For example: https://github.com/{owner}/{repo}',
+                          );
+                        }
+                      }
+                    } catch (ex) {
+                      errors.storePath.addError(
+                        `Failed validation of the store pathn with message ${ex.message}`,
+                      );
+                    }
+
+                    return errors;
+                  },
                 },
               ]}
             />

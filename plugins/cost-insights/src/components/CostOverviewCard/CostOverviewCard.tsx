@@ -14,80 +14,130 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Box, Card, CardContent, Divider } from '@material-ui/core';
-import CostOverviewChart from '../CostOverviewChart';
-import CostOverviewChartLegend from '../CostOverviewChartLegend';
-import CostOverviewHeader from './CostOverviewHeader';
-import CostOverviewFooter from './CostOverviewFooter';
-import MetricSelect from '../MetricSelect';
-import PeriodSelect from '../PeriodSelect';
-import ProjectSelect from '../ProjectSelect';
-import { useScroll, useFilters, useConfig } from '../../hooks';
+import React, { useEffect, useState } from 'react';
+import {
+  Box,
+  capitalize,
+  Card,
+  CardContent,
+  Divider,
+  Tab,
+  Tabs,
+  useTheme,
+} from '@material-ui/core';
+import { CostOverviewChart } from './CostOverviewChart';
+import { CostOverviewBreakdownChart } from './CostOverviewBreakdownChart';
+import { CostOverviewHeader } from './CostOverviewHeader';
+import { MetricSelect } from '../MetricSelect';
+import { PeriodSelect } from '../PeriodSelect';
+import { useConfig, useFilters } from '../../hooks';
 import { mapFiltersToProps } from './selector';
 import { DefaultNavigation } from '../../utils/navigation';
-import {
-  ChangeStatistic,
-  DateAggregation,
-  Project,
-  Trendline,
-  findAlways,
-} from '../../types';
+import { findAlways } from '../../utils/assert';
+import { Cost, CostInsightsTheme, Maybe, MetricData } from '../../types';
+import { useOverviewTabsStyles } from '../../utils/styles';
+import { ScrollAnchor } from '../../utils/scroll';
 
-type CostOverviewCardProps = {
-  change: ChangeStatistic;
-  aggregation: Array<DateAggregation>;
-  trendline: Trendline;
-  projects: Array<Project>;
+export type CostOverviewCardProps = {
+  dailyCostData: Cost;
+  metricData: Maybe<MetricData>;
 };
 
-const CostOverviewCard = ({
-  change,
-  aggregation,
-  trendline,
-  projects,
+export const CostOverviewCard = ({
+  dailyCostData,
+  metricData,
 }: CostOverviewCardProps) => {
-  const { metrics } = useConfig();
-  const { ScrollAnchor } = useScroll(DefaultNavigation.CostOverviewCard);
-  const { setDuration, setProject, metric, setMetric, ...filters } = useFilters(
+  const theme = useTheme<CostInsightsTheme>();
+  const styles = useOverviewTabsStyles(theme);
+  const config = useConfig();
+  const [tabIndex, setTabIndex] = useState(0);
+  const { setDuration, setProject, setMetric, ...filters } = useFilters(
     mapFiltersToProps,
   );
 
-  const { name } = findAlways(metrics, m => m.kind === metric);
+  // Reset tabIndex if breakdowns available change
+  useEffect(() => {
+    // Intentionally off-by-one to account for the overview tab
+    const lastIndex = Object.keys(dailyCostData.groupedCosts ?? {}).length;
+    if (tabIndex > lastIndex) {
+      setTabIndex(0);
+    }
+  }, [dailyCostData, tabIndex, setTabIndex]);
+
+  const metric = filters.metric
+    ? findAlways(config.metrics, m => m.kind === filters.metric)
+    : null;
+
+  const breakdownTabs = Object.keys(dailyCostData.groupedCosts ?? {}).map(
+    key => ({
+      id: key,
+      label: `Breakdown by ${key}`,
+      title: `Cloud Cost By ${capitalize(key)}`,
+    }),
+  );
+  const tabs = [
+    { id: 'overview', label: 'Total cost', title: 'Cloud Cost' },
+  ].concat(breakdownTabs);
+  // tabIndex can temporarily be invalid while the useEffect above processes
+  const safeTabIndex = tabIndex > tabs.length - 1 ? 0 : tabIndex;
+
+  const OverviewTabs = () => {
+    return (
+      <>
+        <Tabs
+          indicatorColor="primary"
+          onChange={(_, index) => setTabIndex(index)}
+          value={safeTabIndex}
+        >
+          {tabs.map((tab, index) => (
+            <Tab
+              className={styles.default}
+              label={tab.label}
+              key={tab.id}
+              value={index}
+              classes={{ selected: styles.selected }}
+            />
+          ))}
+        </Tabs>
+      </>
+    );
+  };
+
+  // Metrics can only be selected on the total cost graph
+  const showMetricSelect = config.metrics.length && safeTabIndex === 0;
 
   return (
     <Card style={{ position: 'relative' }}>
-      <ScrollAnchor behavior="smooth" top={-20} />
+      <ScrollAnchor id={DefaultNavigation.CostOverviewCard} />
       <CardContent>
-        <CostOverviewHeader title="Cloud Cost">
+        {dailyCostData.groupedCosts && <OverviewTabs />}
+        <CostOverviewHeader title={tabs[safeTabIndex].title}>
           <PeriodSelect duration={filters.duration} onSelect={setDuration} />
         </CostOverviewHeader>
         <Divider />
-        <Box marginY={1} display="flex" flexDirection="column">
-          <CostOverviewChartLegend change={change} title={name} />
-          <CostOverviewChart
-            responsive
-            metric={metric}
-            tooltip={name}
-            aggregation={aggregation}
-            trendline={trendline}
-          />
+        <Box ml={2} my={1} display="flex" flexDirection="column">
+          {safeTabIndex === 0 ? (
+            <CostOverviewChart
+              dailyCostData={dailyCostData}
+              metric={metric}
+              metricData={metricData}
+            />
+          ) : (
+            <CostOverviewBreakdownChart
+              costBreakdown={dailyCostData.groupedCosts![tabs[safeTabIndex].id]}
+            />
+          )}
         </Box>
-        <CostOverviewFooter>
-          <ProjectSelect
-            project={filters.project}
-            projects={projects}
-            onSelect={setProject}
-          />
-          <MetricSelect
-            metric={metric}
-            metrics={metrics}
-            onSelect={setMetric}
-          />
-        </CostOverviewFooter>
+        <Box display="flex" justifyContent="flex-end" alignItems="center">
+          {showMetricSelect && (
+            <MetricSelect
+              metric={filters.metric}
+              metrics={config.metrics}
+              onSelect={setMetric}
+            />
+          )}
+        </Box>
       </CardContent>
     </Card>
   );
 };
-
-export default CostOverviewCard;

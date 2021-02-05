@@ -15,9 +15,9 @@
  */
 
 import { LocationSpec } from '@backstage/catalog-model';
-import * as result from './results';
 import { Config } from '@backstage/config';
-import { LocationProcessorEmit } from './types';
+import * as result from './results';
+import { CatalogProcessorEmit } from './types';
 
 export class StaticLocationProcessor implements StaticLocationProcessor {
   static fromConfig(config: Config): StaticLocationProcessor {
@@ -38,7 +38,7 @@ export class StaticLocationProcessor implements StaticLocationProcessor {
   async readLocation(
     location: LocationSpec,
     _optional: boolean,
-    emit: LocationProcessorEmit,
+    emit: CatalogProcessorEmit,
   ): Promise<boolean> {
     if (location.type !== 'bootstrap') {
       return false;

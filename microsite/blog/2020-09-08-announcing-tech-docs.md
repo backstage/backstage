@@ -1,12 +1,12 @@
 ---
 title: Announcing TechDocs: Spotify’s docs-like-code plugin for Backstage
-author: Gary Niemen
+author: Gary Niemen, Spotify
 authorURL: https://github.com/garyniemen
 ---
 
 Since we [open sourced Backstage](https://backstage.io/blog/2020/03/16/announcing-backstage), one of the most requested features has been for a technical documentation plugin. Well, good news. The first open source version of TechDocs is here. Now let’s start collaborating and making it better, together.
 
-<iframe width="780" height="440" src="https://www.youtube.com/embed/mOLCgdPw1iA" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+<iframe width="780" height="440" src="https://www.youtube.com/embed/mOLCgdPw1iA" frameBorder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowFullScreen>
 </iframe>
 
 <!--truncate-->
@@ -21,11 +21,11 @@ But this is just one way to do it. Today we’re most excited for what the open 
 
 ## Okay, let’s start collaborating
 
-If you go to [GitHub](https://github.com/spotify/backstage/tree/master/plugins) now, you’ll find everything you need to start collaborating with us to build out the docs-like-code Backstage plugin — we’ll call it TechDocs in the open as well.
+If you go to [GitHub](https://github.com/backstage/backstage/tree/master/plugins) now, you’ll find everything you need to start collaborating with us to build out the docs-like-code Backstage plugin — we’ll call it TechDocs in the open as well.
 
-You’ll find the code in [techdocs](https://github.com/spotify/backstage/tree/master/plugins/techdocs) (frontend) and [techdocs-backend](https://github.com/spotify/backstage/tree/master/plugins/techdocs-backend). (There are also two separate packages [techdocs-cli](https://github.com/spotify/backstage/tree/master/packages/techdocs-cli) and [techdocs-container](https://github.com/spotify/backstage/tree/master/packages/techdocs-container).)
+You’ll find the code in [techdocs](https://github.com/backstage/backstage/tree/master/plugins/techdocs) (frontend) and [techdocs-backend](https://github.com/backstage/backstage/tree/master/plugins/techdocs-backend). (There are also two separate packages [techdocs-cli](https://github.com/backstage/techdocs-cli) and [techdocs-container](https://github.com/backstage/techdocs-container).)
 
-You’ll find issues to work on in the [issues queue](https://github.com/spotify/backstage/issues?q=is%3Aissue+is%3Aopen+label%3A%22docs-like-code%22+label%3A%22help+wanted%22), typically starting with TechDocs: and labeled with docs-like-code, some labeled good first issue. Feel free to add your own issues, of course.
+You’ll find issues to work on in the [issues queue](https://github.com/backstage/backstage/issues?q=is%3Aissue+is%3Aopen+label%3A%22docs-like-code%22+label%3A%22help+wanted%22), typically starting with TechDocs: and labeled with docs-like-code, some labeled good first issue. Feel free to add your own issues, of course.
 
 ![available-templates](assets/announcing-techdocs/github-issues.png)
 

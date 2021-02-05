@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState, useEffect, ReactNode, FC } from 'react';
+import React, { useState, useEffect, ReactNode } from 'react';
 import {
   Link,
   useParams,
@@ -34,7 +34,6 @@ import {
 import Alert from '@material-ui/lab/Alert';
 import {
   useApi,
-  pageTheme,
   InfoCard,
   Header,
   Page,
@@ -48,7 +47,6 @@ import { lighthouseApiRef, Website, Audit } from '../../api';
 import AuditStatusIcon from '../AuditStatusIcon';
 import LighthouseSupportButton from '../SupportButton';
 import { formatTime } from '../../utils';
-import { viewAuditRouteRef, createAuditRouteRef } from '../../plugin';
 
 const useStyles = makeStyles({
   contentGrid: {
@@ -66,10 +64,7 @@ interface AuditLinkListProps {
   audits?: Audit[];
   selectedId: string;
 }
-const AuditLinkList: FC<AuditLinkListProps> = ({
-  audits = [],
-  selectedId,
-}: AuditLinkListProps) => (
+const AuditLinkList = ({ audits = [], selectedId }: AuditLinkListProps) => (
   <List
     data-testid="audit-sidebar"
     component="nav"
@@ -82,12 +77,7 @@ const AuditLinkList: FC<AuditLinkListProps> = ({
         button
         component={Link}
         replace
-        to={resolvePath(
-          generatePath(viewAuditRouteRef.path, {
-            id: audit.id,
-          }),
-          '../../',
-        )}
+        to={resolvePath(generatePath('audit/:id', { id: audit.id }), '../../')}
       >
         <ListItemIcon>
           <AuditStatusIcon audit={audit} />
@@ -98,7 +88,7 @@ const AuditLinkList: FC<AuditLinkListProps> = ({
   </List>
 );
 
-const AuditView: FC<{ audit?: Audit }> = ({ audit }: { audit?: Audit }) => {
+const AuditView = ({ audit }: { audit?: Audit }) => {
   const classes = useStyles();
   const params = useParams() as { id: string };
   const { url: lighthouseUrl } = useApi(lighthouseApiRef);
@@ -124,7 +114,7 @@ const AuditView: FC<{ audit?: Audit }> = ({ audit }: { audit?: Audit }) => {
   );
 };
 
-const ConnectedAuditView: FC<{}> = () => {
+export const AuditViewContent = () => {
   const lighthouseApi = useApi(lighthouseApiRef);
   const params = useParams() as { id: string };
   const classes = useStyles();
@@ -167,38 +157,41 @@ const ConnectedAuditView: FC<{}> = () => {
     );
   }
 
-  let createAuditButtonUrl = createAuditRouteRef.path;
+  let createAuditButtonUrl = 'create-audit';
   if (value?.url) {
     createAuditButtonUrl += `?url=${encodeURIComponent(value.url)}`;
   }
 
   return (
-    <Page theme={pageTheme.tool}>
-      <Header
-        title="Lighthouse"
-        subtitle="Website audits powered by Lighthouse"
+    <>
+      <ContentHeader
+        title={value?.url || 'Audit'}
+        description="See a history of all Lighthouse audits for your website run through Backstage."
       >
-        <HeaderLabel label="Owner" value="Spotify" />
-        <HeaderLabel label="Lifecycle" value="Alpha" />
-      </Header>
-      <Content stretch>
-        <ContentHeader
-          title={value?.url || 'Audit'}
-          description="See a history of all Lighthouse audits for your website run through Backstage."
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => navigate(`../../${createAuditButtonUrl}`)}
         >
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => navigate(`../../${createAuditButtonUrl}`)}
-          >
-            Create New Audit
-          </Button>
-          <LighthouseSupportButton />
-        </ContentHeader>
-        {content}
-      </Content>
-    </Page>
+          Create New Audit
+        </Button>
+        <LighthouseSupportButton />
+      </ContentHeader>
+      {content}
+    </>
   );
 };
+
+const ConnectedAuditView = () => (
+  <Page themeId="tool">
+    <Header title="Lighthouse" subtitle="Website audits powered by Lighthouse">
+      <HeaderLabel label="Owner" value="Spotify" />
+      <HeaderLabel label="Lifecycle" value="Alpha" />
+    </Header>
+    <Content stretch>
+      <AuditViewContent />
+    </Content>
+  </Page>
+);
 
 export default ConnectedAuditView;

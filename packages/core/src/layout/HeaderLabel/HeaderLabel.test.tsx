@@ -15,38 +15,37 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 import { HeaderLabel } from './HeaderLabel';
 
 describe('<HeaderLabel />', () => {
-  it('should have a label', () => {
-    const rendered = render(wrapInTestApp(<HeaderLabel label="Label" />));
+  it('should have a label', async () => {
+    const rendered = await renderInTestApp(<HeaderLabel label="Label" />);
     expect(rendered.getByText('Label')).toBeInTheDocument();
   });
 
-  it('should say unknown', () => {
-    const rendered = render(wrapInTestApp(<HeaderLabel label="Label" />));
+  it('should say unknown', async () => {
+    const rendered = await renderInTestApp(<HeaderLabel label="Label" />);
     expect(rendered.getByText('<Unknown>')).toBeInTheDocument();
   });
 
-  it('should say unknown when passing null as value prop', () => {
-    const rendered = render(
-      wrapInTestApp(<HeaderLabel label="Label" value={null} />),
+  it('should say unknown when passing null as value prop', async () => {
+    const rendered = await renderInTestApp(
+      <HeaderLabel label="Label" value={null} />,
     );
     expect(rendered.getByText('<Unknown>')).toBeInTheDocument();
   });
 
-  it('should have value', () => {
-    const rendered = render(
-      wrapInTestApp(<HeaderLabel label="Label" value="Value" />),
+  it('should have value', async () => {
+    const rendered = await renderInTestApp(
+      <HeaderLabel label="Label" value="Value" />,
     );
     expect(rendered.getByText('Value')).toBeInTheDocument();
   });
 
-  it('should have a link', () => {
-    const rendered = render(
-      wrapInTestApp(<HeaderLabel label="Label" value="Value" url="/test" />),
+  it('should have a link', async () => {
+    const rendered = await renderInTestApp(
+      <HeaderLabel label="Label" value="Value" url="/test" />,
     );
     const anchor = rendered.container.querySelector('a') as HTMLAnchorElement;
     expect(rendered.getByText('Value')).toBeInTheDocument();

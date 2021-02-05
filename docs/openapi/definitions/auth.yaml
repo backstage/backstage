@@ -12,14 +12,14 @@ info:
     The API is supplied with a list of providers - such as `Google` or `Github` - and will add the endpoints
     described below to each of those providers.
 
-    Read more about [User Authentication and Authorization in Backstage](https://github.com/spotify/backstage/blob/master/docs/auth/overview.md).
+    Read more about [User Authentication and Authorization in Backstage](https://github.com/backstage/backstage/blob/master/docs/auth/overview.md).
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   version: 0.1.1-alpha.8
 externalDocs:
   description: Backstage official documentation
-  url: https://github.com/spotify/backstage/blob/master/docs/README.md
+  url: https://github.com/backstage/backstage/blob/master/docs/README.md
 servers:
   - url: http://localhost:7000/api/auth/
 tags:

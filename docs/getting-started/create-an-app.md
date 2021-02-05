@@ -13,8 +13,8 @@ need to run Backstage in your own environment.
 ## Create an app
 
 To create a Backstage app, you will need to have
-[NodeJS](https://nodejs.org/en/download/) Active LTS Release installed
-(currently v12).
+[Node.js](https://nodejs.org/en/download/) Active LTS Release installed
+(currently v14).
 
 Backstage provides a utility for creating new apps. It guides you through the
 initial setup of selecting the name of the app and a database for the backend.
@@ -38,6 +38,58 @@ app-folder is the name that was provided when prompted.
 Inside that directory, it will generate all the files and folder structure
 needed for you to run your app.
 
+### Linking in local Backstage packages
+
+It can often be useful to try out changes to the packages in the main Backstage
+repo within your own app. For example if you want to make modifications to
+`@backstage/core` and try them out in your app.
+
+To link in external packages, add them to your `package.json` and `lerna.json`
+workspace paths. These can be either relative or absolute paths with or without
+globs. For example:
+
+```json
+"packages": [
+  "packages/*",
+  "plugins/*",
+  "../backstage/packages/core", // New path added to work on @backstage/core
+],
+```
+
+Then reinstall packages to make yarn set up symlinks:
+
+```bash
+yarn install
+```
+
+With this in place you can now modify the `@backstage/core` package within the
+main repo, and have those changes be reflected and tested in your app. Simply
+run your app using `yarn start` as normal.
+
+Note that for backend packages you need to make sure that linked packages are
+not dependencies of any non-linked package. If you for example want to work on
+`@backstage/backend-common`, you need to also link in other backend plugins and
+packages that depend on `@backstage/backend-common`, or temporarily disable
+those plugins in your backend. This is because the transformation of backend
+module tree stops whenever a non-local package is encountered, and from that
+point node will `require` packages directly for that entire module subtree.
+
+Type checking can also have issues when linking in external packages, since the
+linked in packages will use the types in the external project and dependency
+version mismatches between the two projects may cause errors. To fix any of
+those errors you need to sync versions of the dependencies in the two projects.
+A simple way to do this can be to copy over `yarn.lock` from the external
+project and run `yarn install`, although this is quite intrusive and can cause
+other issues in existing projects, so use this method with care. It can often be
+best to simply ignore the type errors, as app serving will work just fine
+anyway.
+
+Another issue with type checking is that the incremental type cache doesn't
+invalidate correctly for the linked in packages, causing type checking to not
+reflect changes made to types. You can work around this by either setting
+`compilerOptions.incremental = false` in `tsconfig.json`, or by deleting the
+types cache folder `dist-types` before running `yarn tsc`.
+
 ### Troubleshooting
 
 The create app command doesn't always work as expected, this is a collection of
@@ -51,7 +103,7 @@ You may encounter the following error message:
 Couldn't find any versions for "file-saver" that matches "eligrey-FileSaver.js-1.3.8.tar.gz-art-external"
 ```
 
-This is likely because you have a globally configured NPM proxy, which breaks
+This is likely because you have a globally configured npm proxy, which breaks
 the installation of the `material-table` dependency. This is a known issue and
 being worked on in `material-table`, but for now you can work around it using
 the following:
@@ -74,6 +126,7 @@ app.
 ```
 app
 ├── app-config.yaml
+├── catalog-info.yaml
 ├── lerna.json
 ├── package.json
 └── packages
@@ -83,6 +136,9 @@ app
 
 - **app-config.yaml**: Main configuration file for the app. See
   [Configuration](https://backstage.io/docs/conf/) for more information.
+- **catalog-info.yaml**: Catalog Entities descriptors. See
+  [Descriptor Format of Catalog Entities](https://backstage.io/docs/features/software-catalog/descriptor-format)
+  to get started.
 - **lerna.json**: Contains information about workspaces and other lerna
   configuration needed for the monorepo setup.
 - **package.json**: Root package.json for the project. _Note: Be sure that you
@@ -120,3 +176,21 @@ the root directory:
 ```bash
 yarn workspace backend start
 ```
+
+### Troubleshooting
+
+#### Cannot find module
+
+You may encounter an error similar to below:
+
+```
+internal/modules/cjs/loader.js:968
+  throw err;
+  ^
+
+Error: Cannot find module '../build/Debug/nodegit.node'
+```
+
+This can occur if an npm dependency is not completely installed. Because some
+dependencies run a post-install script, ensure that both your npm and yarn
+configs have the `ignore-scripts` flag set to `false`.

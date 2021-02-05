@@ -22,17 +22,9 @@ import {
 
 describe('sqlite3', () => {
   const createConfig = (connection: any) =>
-    ConfigReader.fromConfigs([
-      {
-        context: '',
-        data: {
-          client: 'sqlite3',
-          connection,
-        },
-      },
-    ]);
+    new ConfigReader({ client: 'sqlite3', connection });
 
-  describe(buildSqliteDatabaseConfig, () => {
+  describe('buildSqliteDatabaseConfig', () => {
     it('buidls a string connection', () => {
       expect(buildSqliteDatabaseConfig(createConfig(':memory:'))).toEqual({
         client: 'sqlite3',
@@ -72,7 +64,7 @@ describe('sqlite3', () => {
     });
   });
 
-  describe(createSqliteDatabaseClient, () => {
+  describe('createSqliteDatabaseClient', () => {
     it('creates an in memory knex instance', () => {
       expect(
         createSqliteDatabaseClient(

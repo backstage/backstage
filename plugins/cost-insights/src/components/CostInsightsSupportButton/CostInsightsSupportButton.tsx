@@ -17,12 +17,10 @@
 import React from 'react';
 import { SupportButton } from '@backstage/core';
 
-const CostInsightsSupportButton = () => {
+export const CostInsightsSupportButton = () => {
   return (
     <SupportButton>
       Insights into cloud costs for your organization
     </SupportButton>
   );
 };
-
-export default CostInsightsSupportButton;

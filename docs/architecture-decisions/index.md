@@ -18,16 +18,17 @@ Records should be stored under the `architecture-decisions` directory.
 
 ### Creating an ADR
 
-- Copy `0000-template.md` to `docs/architecture-decisions/0000-my-decision.md`
-  (my-decision should be descriptive. Do not assign an ADR number.)
+- Copy `docs/architecture-decisions/adr000-template.md` to
+  `docs/architecture-decisions/adr000-my-decision.md` (my-decision should be
+  descriptive. Do not assign an ADR number.)
 - Fill in the ADR following the guidelines in the template
 - Submit a pull request
 - Address and integrate feedback from the community
 - Eventually, assign a number
 - Add the path of the ADR to the microsite sidebar in
-  [`sidebars.json`](https://github.com/spotify/backstage/blob/master/microsite/sidebars.json)
+  [`sidebars.json`](https://github.com/backstage/backstage/blob/master/microsite/sidebars.json)
 - Add the path of the ADR to the
-  [`mkdocs.yml`](https://github.com/spotify/backstage/blob/master/mkdocs.yml)
+  [`mkdocs.yml`](https://github.com/backstage/backstage/blob/master/mkdocs.yml)
 - Merge the pull request
 
 ## Superseding an ADR

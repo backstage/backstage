@@ -17,7 +17,7 @@
 import React from 'react';
 import { WarningPanel } from '@backstage/core';
 import { Typography } from '@material-ui/core';
-import { ClusterObjects } from '../../../../kubernetes-backend/src';
+import { ClusterObjects } from '@backstage/plugin-kubernetes-backend';
 
 const clustersWithErrorsToErrorMessage = (
   clustersWithErrors: ClusterObjects[],
@@ -29,7 +29,7 @@ const clustersWithErrorsToErrorMessage = (
         {c.errors.map((e, j) => {
           return (
             <Typography variant="body2" key={j}>
-              {`Error fetching Kubernetes resource: '${e.resourcePath}', error: ${e.errorType}`}
+              {`Error fetching Kubernetes resource: '${e.resourcePath}', error: ${e.errorType}, status code: ${e.statusCode}`}
             </Typography>
           );
         })}
@@ -52,8 +52,8 @@ export const ErrorPanel = ({
   clustersWithErrors,
 }: ErrorPanelProps) => (
   <WarningPanel
-    title="There was an error retrieving kubernetes objects"
-    message={`There was an error retrieving some Kubernetes resources for the entity: ${entityName}`}
+    title="There was a problem retrieving Kubernetes objects"
+    message={`There was a problem retrieving some Kubernetes resources for the entity: ${entityName}. This could mean that the Error Reporting card is not completely accurate.`}
   >
     {clustersWithErrors && (
       <div>Errors: {clustersWithErrorsToErrorMessage(clustersWithErrors)}</div>

@@ -15,90 +15,76 @@
  */
 
 import fs from 'fs-extra';
-import { resolve as resolvePath, dirname } from 'path';
-import { AppConfig, JsonObject } from '@backstage/config';
+import yaml from 'yaml';
+import { resolve as resolvePath, dirname, isAbsolute, basename } from 'path';
+import { AppConfig } from '@backstage/config';
 import {
-  resolveStaticConfig,
-  readConfigFile,
+  applyConfigTransforms,
   readEnvConfig,
-  readSecret,
+  createIncludeTransform,
+  createSubstitutionTransform,
 } from './lib';
+import { EnvFunc } from './lib/transform/types';
 
 export type LoadConfigOptions = {
-  // Root paths to search for config files. Config from earlier paths has lower priority.
-  rootPaths: string[];
+  // The root directory of the config loading context. Used to find default configs.
+  configRoot: string;
 
-  // The environment that we're loading config for, e.g. 'development', 'production'.
-  env: string;
+  // Absolute paths to load config files from. Configs from earlier paths have lower priority.
+  configPaths: string[];
 
-  // Whether to read secrets or omit them, defaults to false.
-  shouldReadSecrets?: boolean;
+  /** @deprecated This option has been removed */
+  env?: string;
+
+  /**
+   * Custom environment variable loading function
+   *
+   * @experimental This API is not stable and may change at any point
+   */
+  experimentalEnvFunc?: EnvFunc;
 };
-
-class Context {
-  constructor(
-    private readonly options: {
-      secretPaths: Set<string>;
-      env: { [name in string]?: string };
-      rootPath: string;
-      shouldReadSecrets: boolean;
-    },
-  ) {}
-
-  get env() {
-    return this.options.env;
-  }
-
-  skip(path: string): boolean {
-    if (this.options.shouldReadSecrets) {
-      return false;
-    }
-    return this.options.secretPaths.has(path);
-  }
-
-  async readFile(path: string): Promise<string> {
-    return fs.readFile(resolvePath(this.options.rootPath, path), 'utf8');
-  }
-
-  async readSecret(
-    path: string,
-    desc: JsonObject,
-  ): Promise<string | undefined> {
-    this.options.secretPaths.add(path);
-    if (!this.options.shouldReadSecrets) {
-      return undefined;
-    }
-
-    return readSecret(desc, this);
-  }
-}
 
 export async function loadConfig(
   options: LoadConfigOptions,
 ): Promise<AppConfig[]> {
   const configs = [];
+  const { configRoot, experimentalEnvFunc: envFunc } = options;
+  const configPaths = options.configPaths.slice();
 
-  const configPaths = await resolveStaticConfig(options);
+  // If no paths are provided, we default to reading
+  // `app-config.yaml` and, if it exists, `app-config.local.yaml`
+  if (configPaths.length === 0) {
+    configPaths.push(resolvePath(configRoot, 'app-config.yaml'));
+
+    const localConfig = resolvePath(configRoot, 'app-config.local.yaml');
+    if (await fs.pathExists(localConfig)) {
+      configPaths.push(localConfig);
+    }
+  }
+
+  const env = envFunc ?? (async (name: string) => process.env[name]);
 
   try {
-    const secretPaths = new Set<string>();
-
     for (const configPath of configPaths) {
-      const config = await readConfigFile(
-        configPath,
-        new Context({
-          secretPaths,
-          env: process.env,
-          rootPath: dirname(configPath),
-          shouldReadSecrets: Boolean(options.shouldReadSecrets),
-        }),
-      );
+      if (!isAbsolute(configPath)) {
+        throw new Error(`Config load path is not absolute: '${configPath}'`);
+      }
 
-      configs.push(config);
+      const dir = dirname(configPath);
+      const readFile = (path: string) =>
+        fs.readFile(resolvePath(dir, path), 'utf8');
+
+      const input = yaml.parse(await readFile(configPath));
+      const data = await applyConfigTransforms(dir, input, [
+        createIncludeTransform(env, readFile),
+        createSubstitutionTransform(env),
+      ]);
+
+      configs.push({ data, context: basename(configPath) });
     }
   } catch (error) {
     throw new Error(
-      `Failed to read static configuration file: ${error.message}`,
+      `Failed to read static configuration file, ${error.message}`,
     );
   }
 

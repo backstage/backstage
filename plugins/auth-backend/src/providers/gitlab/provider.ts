@@ -140,12 +140,12 @@ export class GitlabAuthProvider implements OAuthHandlers {
 }
 
 export const createGitlabProvider: AuthProviderFactory = ({
+  providerId,
   globalConfig,
   config,
   tokenIssuer,
 }) =>
   OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-    const providerId = 'gitlab';
     const clientId = envConfig.getString('clientId');
     const clientSecret = envConfig.getString('clientSecret');
     const audience = envConfig.getString('audience');

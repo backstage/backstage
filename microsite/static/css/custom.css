@@ -15,9 +15,6 @@ table tr:nth-child(2n) {
   background-color: #2b2b2b;
 }
 
-@media only screen and (min-device-width: 360px) and (max-device-width: 736px) {
-}
-
 @media only screen and (min-width: 1024px) and (max-width: 1500px) {
   /* Experience */
   .content-experience {
@@ -49,6 +46,19 @@ h5,
 h6 {
   font-family: Helvetica Neue, sans-serif;
   color: $textColor;
+}
+
+summary {
+  color: $textColor;
+  cursor: pointer;
+}
+
+h2:hover .hash-link {
+  opacity: 1;
+}
+
+.hash-link {
+  fill: white;
 }
 
 /* body elements  */
@@ -857,7 +867,6 @@ code {
   position: relative;
   padding-top: 75%;
   width: 100%;
-  /* border: 1px dotted #f00; */
 }
 
 .Block__Graphic {
@@ -1026,6 +1035,55 @@ code {
   }
 }
 
+.Banner {
+  position: relative;
+  padding: 14px;
+  margin: 14px 20px;
+  border-radius: 4px;
+  background-color: $primaryColor;
+  font-family: Helvetica Neue, sans-serif;
+  color: #000;
+}
+
+.Banner--hidden {
+  opacity: 0;
+  transition: opacity 200ms ease-in-out;
+}
+
+.Banner a {
+  color: #000;
+  text-decoration: underline;
+}
+
+.Banner__Container {
+  position: relative;
+  overflow: visible;
+  z-index: 100;
+
+  max-width: 1430px;
+  height: 0;
+  margin: -14px auto 14px auto;
+}
+
+.Banner__DismissButton {
+  position: absolute;
+  display: flex;
+  right: 8px;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+
+  border-radius: 50%;
+  padding: 6px;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+}
+
+.Banner__DismissButton:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
 .logos-mobile-background {
   position: absolute;
   width: 200vw;
@@ -1083,4 +1141,23 @@ code {
   height: 100px;
   margin-bottom: 40px;
   margin-top: 20px;
+}
+
+.nav-footer .copyright {
+  width: 600px;
+  color: #fff;
+  margin: 0 auto;
+  font-size: 10pt;
+}
+
+@media only screen and (max-width: 485px) {
+  .nav-footer .copyright {
+    width: auto;
+    margin: 0 1.5em;
+  }
+}
+
+/* Zoomed images using the medium-zoom library should be on top of screen. */
+.medium-zoom-image {
+  z-index: 10000;
 }

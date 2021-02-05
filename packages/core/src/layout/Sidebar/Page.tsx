@@ -15,7 +15,12 @@
  */
 
 import { makeStyles } from '@material-ui/core';
-import React, { createContext, FC, useEffect, useState } from 'react';
+import React, {
+  createContext,
+  PropsWithChildren,
+  useEffect,
+  useState,
+} from 'react';
 import { sidebarConfig } from './config';
 import { BackstageTheme } from '@backstage/theme';
 import { LocalStorage } from './localStorage';
@@ -44,8 +49,10 @@ export const SidebarPinStateContext = createContext<SidebarPinStateContextType>(
   },
 );
 
-export const SidebarPage: FC<{}> = props => {
-  const [isPinned, setIsPinned] = useState(LocalStorage.getSidebarPinState());
+export const SidebarPage = (props: PropsWithChildren<{}>) => {
+  const [isPinned, setIsPinned] = useState(() =>
+    LocalStorage.getSidebarPinState(),
+  );
 
   useEffect(() => {
     LocalStorage.setSidebarPinState(isPinned);

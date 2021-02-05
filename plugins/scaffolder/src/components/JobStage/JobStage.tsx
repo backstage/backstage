@@ -18,10 +18,12 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  AccordionActions,
   Box,
   CircularProgress,
   LinearProgress,
   Typography,
+  Button,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -29,6 +31,7 @@ import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import cn from 'classnames';
 import moment from 'moment';
 import React, { Suspense, useEffect, useState } from 'react';
+import { LogModal } from './LogModal';
 import { Job } from '../../types';
 
 const LazyLog = React.lazy(() => import('react-lazylog/build/LazyLog'));
@@ -73,6 +76,18 @@ const useStyles = makeStyles(theme => ({
       boxShadow: `inset 4px 0px 0px ${theme.palette.success.main}`,
     },
   },
+  jobStatusTitle: {
+    display: 'flex',
+    width: '100%',
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    [theme.breakpoints.down('xs')]: {
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+      justifyContent: 'flex-start',
+    },
+  },
 }));
 
 type Props = {
@@ -99,6 +114,9 @@ export const JobStage = ({ endedAt, startedAt, name, log, status }: Props) => {
           .humanize()
       : null;
 
+  const [logsFullScreen, setLogsFullScreen] = useState(false);
+  const toggleLogsFullScreen = () => setLogsFullScreen(!logsFullScreen);
+
   return (
     <Accordion
       TransitionProps={{ unmountOnExit: true }}
@@ -118,22 +136,34 @@ export const JobStage = ({ endedAt, startedAt, name, log, status }: Props) => {
           className: classes.button,
         }}
       >
-        <Typography variant="button">
+        <Typography variant="button" className={classes.jobStatusTitle}>
           {name} {timeElapsed && `(${timeElapsed})`}{' '}
           {startedAt && !endedAt && <CircularProgress size="1em" />}
         </Typography>
       </AccordionSummary>
       <AccordionDetails className={classes.accordionDetails}>
         {log.length === 0 ? (
-          <Box px={4}>No logs available for this step</Box>
+          <Box px={9} pb={2} width="100%">
+            No logs available for this step
+          </Box>
         ) : (
           <Suspense fallback={<LinearProgress />}>
+            <LogModal
+              open={logsFullScreen}
+              onClose={toggleLogsFullScreen}
+              log={log}
+            />
             <div style={{ height: '20vh', width: '100%' }}>
-              <LazyLog text={log.join('\n')} extraLines={1} follow />
+              <LazyLog text={`${log.join('\n')}`} extraLines={1} follow />
             </div>
           </Suspense>
         )}
       </AccordionDetails>
+      <AccordionActions>
+        <Button color="primary" onClick={toggleLogsFullScreen}>
+          Open in fullscreen
+        </Button>
+      </AccordionActions>
     </Accordion>
   );
 };

@@ -15,7 +15,7 @@
  */
 
 import { Content, ContentHeader, SupportButton, useApi } from '@backstage/core';
-import { catalogApiRef } from '@backstage/plugin-catalog';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { Button } from '@material-ui/core';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
@@ -25,8 +25,8 @@ import { ApiExplorerLayout } from './ApiExplorerLayout';
 
 export const ApiExplorerPage = () => {
   const catalogApi = useApi(catalogApiRef);
-  const { loading, error, value: matchingEntities } = useAsync(() => {
-    return catalogApi.getEntities({ kind: 'API' });
+  const { loading, error, value: catalogResponse } = useAsync(() => {
+    return catalogApi.getEntities({ filter: { kind: 'API' } });
   }, [catalogApi]);
 
   return (
@@ -37,15 +37,14 @@ export const ApiExplorerPage = () => {
             variant="contained"
             color="primary"
             component={RouterLink}
-            to="/register-component"
+            to="/catalog-import"
           >
             Register Existing API
           </Button>
           <SupportButton>All your APIs</SupportButton>
         </ContentHeader>
         <ApiExplorerTable
-          titlePreamble="APIs"
-          entities={matchingEntities!}
+          entities={catalogResponse?.items ?? []}
           loading={loading}
           error={error}
         />

@@ -20,14 +20,14 @@ import { MarkdownPrinter, TypeLink } from './types';
 import { execSync } from 'child_process';
 
 // TODO(Rugvip): provide through options?
-const GH_BASE_URL = 'https://github.com/spotify/backstage';
+const GH_BASE_URL = 'https://github.com/backstage/backstage';
 
 const COMMIT_SHA =
   process.env.COMMIT_SHA ||
   execSync('git rev-parse HEAD').toString('utf8').trim();
 
 /**
- * The GithubMarkdownPrinter is a MarkdownPrinter for printing Github-flavored markdown documents.
+ * The GithubMarkdownPrinter is a MarkdownPrinter for printing GitHub Flavored Markdown documents.
  */
 export default class GithubMarkdownPrinter implements MarkdownPrinter {
   private str: string = '';

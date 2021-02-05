@@ -14,175 +14,122 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
-  Grid,
-  Typography,
-  makeStyles,
-  Chip,
-  IconButton,
+  Entity,
+  ENTITY_DEFAULT_NAMESPACE,
+  RELATION_PROVIDES_API,
+} from '@backstage/catalog-model';
+import {
   Card,
   CardContent,
   CardHeader,
   Divider,
+  IconButton,
+  makeStyles,
 } from '@material-ui/core';
-import { Entity } from '@backstage/catalog-model';
-
-import GitHubIcon from '@material-ui/icons/GitHub';
-import { IconLinkVertical } from './IconLinkVertical';
-import EditIcon from '@material-ui/icons/Edit';
+import ExtensionIcon from '@material-ui/icons/Extension';
 import DocsIcon from '@material-ui/icons/Description';
+import EditIcon from '@material-ui/icons/Edit';
+import GitHubIcon from '@material-ui/icons/GitHub';
+import React from 'react';
+import { findLocationForEntityMeta } from '../../data/utils';
+import { createEditLink, determineUrlType } from '../createEditLink';
+import { HeaderIconLinkRow } from '@backstage/core';
+import { AboutContent } from './AboutContent';
 
-const useStyles = makeStyles(theme => ({
-  links: {
-    margin: theme.spacing(2, 0),
-    display: 'grid',
-    gridAutoFlow: 'column',
-    gridAutoColumns: 'min-content',
-    gridGap: theme.spacing(3),
+const useStyles = makeStyles({
+  gridItemCard: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: 'calc(100% - 10px)', // for pages without content header
+    marginBottom: '10px',
   },
-  label: {
-    color: theme.palette.text.secondary,
-    textTransform: 'uppercase',
-    fontSize: '10px',
-    fontWeight: 'bold',
-    letterSpacing: 0.5,
-    overflow: 'hidden',
-    whiteSpace: 'nowrap',
+  gridItemCardContent: {
+    flex: 1,
   },
-  value: {
-    fontWeight: 'bold',
-    overflow: 'hidden',
-    lineHeight: '24px',
-    wordBreak: 'break-word',
-  },
-  description: {
-    wordBreak: 'break-word',
-  },
-}));
+});
 
 const iconMap: Record<string, React.ReactNode> = {
   github: <GitHubIcon />,
 };
 
-type CodeLinkInfo = { icon?: React.ReactNode; href?: string };
+type CodeLinkInfo = {
+  icon?: React.ReactNode;
+  edithref?: string;
+  href?: string;
+};
 
 function getCodeLinkInfo(entity: Entity): CodeLinkInfo {
-  const location =
-    entity?.metadata?.annotations?.['backstage.io/managed-by-location'];
-
+  const location = findLocationForEntityMeta(entity?.metadata);
   if (location) {
-    // split by first `:`
-    // e.g. "github:https://github.com/spotify/backstage/blob/master/software.yaml"
-    const [type, target] = location.split(/:(.+)/);
-
-    return { icon: iconMap[type], href: target };
+    const type =
+      location.type === 'url'
+        ? determineUrlType(location.target)
+        : location.type;
+    return {
+      icon: iconMap[type],
+      edithref: createEditLink(location),
+      href: location.target,
+    };
   }
   return {};
 }
 
 type AboutCardProps = {
   entity: Entity;
+  variant?: string;
 };
 
-export function AboutCard({ entity }: AboutCardProps) {
+export function AboutCard({ entity, variant }: AboutCardProps) {
   const classes = useStyles();
   const codeLink = getCodeLinkInfo(entity);
+  // TODO: Also support RELATION_CONSUMES_API here
+  const hasApis = entity.relations?.some(r => r.type === RELATION_PROVIDES_API);
+  const viewInSource = {
+    label: 'View Source',
+    ...codeLink,
+  };
+  const viewInTechDocs = {
+    label: 'View TechDocs',
+    disabled: !entity.metadata.annotations?.['backstage.io/techdocs-ref'],
+    icon: <DocsIcon />,
+    href: `/docs/${entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE}/${
+      entity.kind
+    }/${entity.metadata.name}`,
+  };
+  const viewApi = {
+    title: hasApis ? '' : 'No APIs available',
+    label: 'View API',
+    disabled: !hasApis,
+    icon: <ExtensionIcon />,
+    href: 'api',
+  };
 
   return (
-    <Card>
+    <Card className={variant === 'gridItem' ? classes.gridItemCard : ''}>
       <CardHeader
         title="About"
         action={
-          <IconButton href={codeLink.href || '#'} aria-label="Edit">
+          <IconButton
+            aria-label="Edit"
+            title="Edit Metadata"
+            onClick={() => {
+              window.open(codeLink.edithref || '#', '_blank');
+            }}
+          >
             <EditIcon />
           </IconButton>
         }
         subheader={
-          <nav className={classes.links}>
-            <IconLinkVertical label="View Source" {...codeLink} />
-            <IconLinkVertical
-              disabled={
-                !entity.metadata.annotations?.['backstage.io/techdocs-ref']
-              }
-              label="View Techdocs"
-              icon={<DocsIcon />}
-              href={`/docs/${entity.kind}:${entity.metadata.namespace ?? ''}:${
-                entity.metadata.name
-              }`}
-            />
-          </nav>
+          <HeaderIconLinkRow links={[viewInSource, viewInTechDocs, viewApi]} />
         }
       />
       <Divider />
-      <CardContent>
-        <Grid container>
-          <AboutField label="Description" gridSizes={{ xs: 12 }}>
-            <Typography
-              variant="body2"
-              paragraph
-              className={classes.description}
-            >
-              {entity?.metadata?.description || 'No description'}
-            </Typography>
-          </AboutField>
-          <AboutField
-            label="Owner"
-            value={entity?.spec?.owner as string}
-            gridSizes={{ xs: 12, sm: 6, lg: 4 }}
-          />
-          <AboutField
-            label="Type"
-            value={entity?.spec?.type as string}
-            gridSizes={{ xs: 12, sm: 6, lg: 4 }}
-          />
-          <AboutField
-            label="Lifecycle"
-            value={entity?.spec?.lifecycle as string}
-            gridSizes={{ xs: 12, sm: 6, lg: 4 }}
-          />
-          <AboutField
-            label="Tags"
-            value="No Tags"
-            gridSizes={{ xs: 12, sm: 6, lg: 4 }}
-          >
-            {(entity?.metadata?.tags || []).map(t => (
-              <Chip key={t} size="small" label={t} />
-            ))}
-          </AboutField>
-        </Grid>
+      <CardContent
+        className={variant === 'gridItem' ? classes.gridItemCardContent : ''}
+      >
+        <AboutContent entity={entity} />
       </CardContent>
     </Card>
-  );
-}
-
-function AboutField({
-  label,
-  value,
-  gridSizes,
-  children,
-}: {
-  label: string;
-  value?: string;
-  gridSizes?: Record<string, number>;
-  children?: React.ReactNode;
-}) {
-  const classes = useStyles();
-
-  // Content is either children or a string prop `value`
-  const content = React.Children.count(children) ? (
-    children
-  ) : (
-    <Typography variant="body2" className={classes.value}>
-      {value || `unknown`}
-    </Typography>
-  );
-  return (
-    <Grid item {...gridSizes}>
-      <Typography variant="subtitle2" className={classes.label}>
-        {label}
-      </Typography>
-      {content}
-    </Grid>
   );
 }

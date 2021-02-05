@@ -20,26 +20,20 @@ import {
   TemplaterBuilder,
 } from './types';
 
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { getTemplaterKey } from './helpers';
-
 export class Templaters implements TemplaterBuilder {
-  private preparerMap = new Map<SupportedTemplatingKey, TemplaterBase>();
+  private templaterMap = new Map<SupportedTemplatingKey, TemplaterBase>();
 
   register(templaterKey: SupportedTemplatingKey, templater: TemplaterBase) {
-    this.preparerMap.set(templaterKey, templater);
+    this.templaterMap.set(templaterKey, templater);
   }
 
-  get(template: TemplateEntityV1alpha1): TemplaterBase {
-    const templaterKey = getTemplaterKey(template);
-    const preparer = this.preparerMap.get(templaterKey);
+  get(templaterId: string): TemplaterBase {
+    const templater = this.templaterMap.get(templaterId);
 
-    if (!preparer) {
-      throw new Error(
-        `No templater registered for template: "${templaterKey}"`,
-      );
+    if (!templater) {
+      throw new Error(`No templater registered for template: "${templaterId}"`);
     }
 
-    return preparer;
+    return templater;
   }
 }

@@ -24,56 +24,51 @@
 
 import Router from 'express-promise-router';
 import {
-  ensureDatabaseExists,
-  createDatabaseClient,
   createServiceBuilder,
-  loadBackendConfig,
   getRootLogger,
-  useHotMemoize,
+  loadBackendConfig,
   notFoundHandler,
+  SingleConnectionDatabaseManager,
   SingleHostDiscovery,
+  UrlReaders,
+  useHotMemoize,
 } from '@backstage/backend-common';
-import { ConfigReader, AppConfig } from '@backstage/config';
+import { Config } from '@backstage/config';
 import healthcheck from './plugins/healthcheck';
 import auth from './plugins/auth';
 import catalog from './plugins/catalog';
 import kubernetes from './plugins/kubernetes';
+import kafka from './plugins/kafka';
 import rollbar from './plugins/rollbar';
 import scaffolder from './plugins/scaffolder';
-import sentry from './plugins/sentry';
 import proxy from './plugins/proxy';
 import techdocs from './plugins/techdocs';
 import graphql from './plugins/graphql';
 import app from './plugins/app';
 import { PluginEnvironment } from './types';
 
-function makeCreateEnv(loadedConfigs: AppConfig[]) {
-  const config = ConfigReader.fromConfigs(loadedConfigs);
+function makeCreateEnv(config: Config) {
+  const root = getRootLogger();
+  const reader = UrlReaders.default({ logger: root, config });
+  const discovery = SingleHostDiscovery.fromConfig(config);
+
+  root.info(`Created UrlReader ${reader}`);
+
+  const databaseManager = SingleConnectionDatabaseManager.fromConfig(config);
 
   return (plugin: string): PluginEnvironment => {
-    const logger = getRootLogger().child({ type: 'plugin', plugin });
-    const database = createDatabaseClient(
-      config.getConfig('backend.database'),
-      {
-        connection: {
-          database: `backstage_plugin_${plugin}`,
-        },
-      },
-    );
-    const discovery = SingleHostDiscovery.fromConfig(config);
-    return { logger, database, config, discovery };
+    const logger = root.child({ type: 'plugin', plugin });
+    const database = databaseManager.forPlugin(plugin);
+    return { logger, database, config, reader, discovery };
   };
 }
 
 async function main() {
-  const configs = await loadBackendConfig();
-  const configReader = ConfigReader.fromConfigs(configs);
-  const createEnv = makeCreateEnv(configs);
-  await ensureDatabaseExists(
-    configReader.getConfig('backend.database'),
-    'backstage_plugin_catalog',
-    'backstage_plugin_auth',
-  );
+  const config = await loadBackendConfig({
+    argv: process.argv,
+    logger: getRootLogger(),
+  });
+  const createEnv = makeCreateEnv(config);
 
   const healthcheckEnv = useHotMemoize(module, () => createEnv('healthcheck'));
   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
@@ -81,9 +76,9 @@ async function main() {
   const authEnv = useHotMemoize(module, () => createEnv('auth'));
   const proxyEnv = useHotMemoize(module, () => createEnv('proxy'));
   const rollbarEnv = useHotMemoize(module, () => createEnv('rollbar'));
-  const sentryEnv = useHotMemoize(module, () => createEnv('sentry'));
   const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
   const kubernetesEnv = useHotMemoize(module, () => createEnv('kubernetes'));
+  const kafkaEnv = useHotMemoize(module, () => createEnv('kafka'));
   const graphqlEnv = useHotMemoize(module, () => createEnv('graphql'));
   const appEnv = useHotMemoize(module, () => createEnv('app'));
 
@@ -91,16 +86,16 @@ async function main() {
   apiRouter.use('/catalog', await catalog(catalogEnv));
   apiRouter.use('/rollbar', await rollbar(rollbarEnv));
   apiRouter.use('/scaffolder', await scaffolder(scaffolderEnv));
-  apiRouter.use('/sentry', await sentry(sentryEnv));
   apiRouter.use('/auth', await auth(authEnv));
   apiRouter.use('/techdocs', await techdocs(techdocsEnv));
   apiRouter.use('/kubernetes', await kubernetes(kubernetesEnv));
+  apiRouter.use('/kafka', await kafka(kafkaEnv));
   apiRouter.use('/proxy', await proxy(proxyEnv));
   apiRouter.use('/graphql', await graphql(graphqlEnv));
   apiRouter.use(notFoundHandler());
 
   const service = createServiceBuilder(module)
-    .loadConfig(configReader)
+    .loadConfig(config)
     .addRouter('', await healthcheck(healthcheckEnv))
     .addRouter('/api', apiRouter)
     .addRouter('', await app(appEnv));

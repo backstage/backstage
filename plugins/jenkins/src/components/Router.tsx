@@ -19,7 +19,7 @@ import { buildRouteRef, rootRouteRef } from '../plugin';
 import { DetailedViewPage } from './BuildWithStepsPage/';
 import { JENKINS_ANNOTATION } from '../constants';
 import { Entity } from '@backstage/catalog-model';
-import { WarningPanel } from '@backstage/core';
+import { MissingAnnotationEmptyState } from '@backstage/core';
 import { CITable } from './BuildsPage/lib/CITable';
 
 export const isPluginApplicableToEntity = (entity: Entity) =>
@@ -27,10 +27,7 @@ export const isPluginApplicableToEntity = (entity: Entity) =>
 
 export const Router = ({ entity }: { entity: Entity }) => {
   return !isPluginApplicableToEntity(entity) ? (
-    <WarningPanel title="Jenkins plugin:">
-      <pre>entity.metadata.annotations['{JENKINS_ANNOTATION}']</pre>
-      key is missing on the entity.
-    </WarningPanel>
+    <MissingAnnotationEmptyState annotation={JENKINS_ANNOTATION} />
   ) : (
     <Routes>
       <Route path={`/${rootRouteRef.path}`} element={<CITable />} />

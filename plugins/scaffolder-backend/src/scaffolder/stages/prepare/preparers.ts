@@ -14,26 +14,68 @@
  * limitations under the License.
  */
 
+import { Config } from '@backstage/config';
 import { PreparerBase, PreparerBuilder } from './types';
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { parseLocationAnnotation } from '../helpers';
-import { RemoteProtocol } from '../types';
+import { Logger } from 'winston';
+
+import { GitlabPreparer } from './gitlab';
+import { AzurePreparer } from './azure';
+import { GithubPreparer } from './github';
+import { BitbucketPreparer } from './bitbucket';
+import { ScmIntegrations } from '@backstage/integration';
 
 export class Preparers implements PreparerBuilder {
-  private preparerMap = new Map<RemoteProtocol, PreparerBase>();
+  private preparerMap = new Map<string, PreparerBase>();
 
-  register(protocol: RemoteProtocol, preparer: PreparerBase) {
-    this.preparerMap.set(protocol, preparer);
+  register(host: string, preparer: PreparerBase) {
+    this.preparerMap.set(host, preparer);
   }
 
-  get(template: TemplateEntityV1alpha1): PreparerBase {
-    const { protocol } = parseLocationAnnotation(template);
-    const preparer = this.preparerMap.get(protocol);
-
+  get(url: string): PreparerBase {
+    const preparer = this.preparerMap.get(new URL(url).host);
     if (!preparer) {
-      throw new Error(`No preparer registered for type: "${protocol}"`);
+      throw new Error(
+        `Unable to find a preparer for URL: ${url}. Please make sure to register this host under an integration in app-config`,
+      );
+    }
+    return preparer;
+  }
+
+  static async fromConfig(
+    config: Config,
+    // eslint-disable-next-line
+    _: { logger: Logger },
+  ): Promise<PreparerBuilder> {
+    const preparers = new Preparers();
+    const scm = ScmIntegrations.fromConfig(config);
+    for (const integration of scm.azure.list()) {
+      preparers.register(
+        integration.config.host,
+        AzurePreparer.fromConfig(integration.config),
+      );
     }
 
-    return preparer;
+    for (const integration of scm.github.list()) {
+      preparers.register(
+        integration.config.host,
+        GithubPreparer.fromConfig(integration.config),
+      );
+    }
+
+    for (const integration of scm.gitlab.list()) {
+      preparers.register(
+        integration.config.host,
+        GitlabPreparer.fromConfig(integration.config),
+      );
+    }
+
+    for (const integration of scm.bitbucket.list()) {
+      preparers.register(
+        integration.config.host,
+        BitbucketPreparer.fromConfig(integration.config),
+      );
+    }
+
+    return preparers;
   }
 }

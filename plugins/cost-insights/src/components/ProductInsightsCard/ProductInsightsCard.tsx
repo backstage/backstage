@@ -14,134 +14,128 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
-import { InfoCard, useApi } from '@backstage/core';
-import { Box } from '@material-ui/core';
-import Alert from '@material-ui/lab/Alert';
-import { costInsightsApiRef } from '../../api';
-import PeriodSelect from '../PeriodSelect';
-import ResourceGrowthBarChart from '../ResourceGrowthBarChart';
-import ResourceGrowthBarChartLegend from '../ResourceGrowthBarChartLegend';
-import { useFilters, useLoading, useScroll } from '../../hooks';
+import React, {
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import pluralize from 'pluralize';
+import { InfoCard } from '@backstage/core';
+import { Typography } from '@material-ui/core';
+import { default as Alert } from '@material-ui/lab/Alert';
+import { PeriodSelect } from '../PeriodSelect';
+import { ProductInsightsChart } from './ProductInsightsChart';
 import { useProductInsightsCardStyles as useStyles } from '../../utils/styles';
-import { mapFiltersToProps, mapLoadingToProps } from './selector';
-import { Duration, Maybe, Product, ProductCost } from '../../types';
-import { pluralOf } from '../../utils/grammar';
+import { DefaultLoadingAction } from '../../utils/loading';
+import { Duration, Entity, Maybe, Product } from '../../types';
+import {
+  MapLoadingToProps,
+  useLastCompleteBillingDate,
+  useLoading,
+} from '../../hooks';
+import { findAnyKey } from '../../utils/assert';
+import { ScrollAnchor } from '../../utils/scroll';
 
-type ProductInsightsCardProps = {
+type LoadingProps = (isLoading: boolean) => void;
+
+export type ProductInsightsCardProps = {
   product: Product;
+  initialState: {
+    entity: Maybe<Entity>;
+    duration: Duration;
+  };
+  onSelectAsync: (product: Product, duration: Duration) => Promise<Entity>;
 };
 
-const ProductInsightsCard = ({ product }: ProductInsightsCardProps) => {
-  const client = useApi(costInsightsApiRef);
+const mapLoadingToProps: MapLoadingToProps<LoadingProps> = ({ dispatch }) => (
+  isLoading: boolean,
+) => dispatch({ [DefaultLoadingAction.CostInsightsProducts]: isLoading });
+
+export const ProductInsightsCard = ({
+  initialState,
+  product,
+  onSelectAsync,
+}: PropsWithChildren<ProductInsightsCardProps>) => {
   const classes = useStyles();
-  const { ScrollAnchor } = useScroll(product.kind);
-  const [resource, setResource] = useState<Maybe<ProductCost>>(null);
+  const mountedRef = useRef(false);
   const [error, setError] = useState<Maybe<Error>>(null);
+  const dispatchLoading = useLoading(mapLoadingToProps);
+  const lastCompleteBillingDate = useLastCompleteBillingDate();
+  const [entity, setEntity] = useState<Maybe<Entity>>(initialState.entity);
+  const [duration, setDuration] = useState<Duration>(initialState.duration);
 
-  const { group, product: productFilter, setProduct } = useFilters(
-    mapFiltersToProps(product.kind),
-  );
-  const { loadingProduct, dispatchLoading } = useLoading(
-    mapLoadingToProps(product.kind),
-  );
-
-  // @see CostInsightsPage
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const dispatchLoadingProduct = useCallback(dispatchLoading, [product.kind]);
-
-  const amount = resource?.entities?.length || 0;
-  const hasCostsWithinTimeframe = resource?.change && amount;
-
-  const subheader = amount
-    ? `${amount} ${pluralOf(amount, 'entity', 'entities')}, sorted by cost`
-    : `There are no ${product.name} costs within this timeframe for your team's projects.`;
-
-  const costStart = resource?.aggregation[0] || 0;
-  const costEnd = resource?.aggregation[1] || 0;
+  /* eslint-disable react-hooks/exhaustive-deps */
+  const dispatchLoadingProduct = useCallback(dispatchLoading, []);
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   useEffect(() => {
-    async function load() {
-      if (loadingProduct) {
-        try {
-          const p: ProductCost = await client.getProductInsights(
-            product.kind,
-            group!,
-            productFilter!.duration,
-          );
-          setResource(p);
-        } catch (e) {
-          setError(e);
-        } finally {
-          dispatchLoadingProduct(false);
-        }
+    async function handleOnSelectAsync() {
+      dispatchLoadingProduct(true);
+      try {
+        const e = await onSelectAsync(product, duration);
+        setEntity(e);
+      } catch (e) {
+        setEntity(null);
+        setError(e);
+      } finally {
+        dispatchLoadingProduct(false);
       }
     }
-    load();
-  }, [
-    client,
-    product,
-    setResource,
-    loadingProduct,
-    dispatchLoadingProduct,
-    productFilter,
-    group,
-    product.kind,
-  ]);
 
-  const onPeriodSelect = (duration: Duration) => {
-    dispatchLoadingProduct(true);
-    setProduct(duration);
+    if (mountedRef.current) {
+      handleOnSelectAsync();
+    } else {
+      mountedRef.current = true;
+    }
+  }, [product, duration, onSelectAsync, dispatchLoadingProduct]);
+
+  // Only a single entities Record for the root product entity is supported
+  const entityKey = findAnyKey(entity?.entities);
+  const entities = entityKey ? entity!.entities[entityKey] : [];
+
+  const subheader =
+    entityKey && entities.length
+      ? `${pluralize(entityKey, entities.length, true)}, sorted by cost`
+      : null;
+  const headerProps = {
+    classes: classes,
+    action: <PeriodSelect duration={duration} onSelect={setDuration} />,
   };
 
-  const infoCardProps = {
-    headerProps: {
-      classes: classes,
-      action: (
-        <PeriodSelect
-          duration={productFilter.duration}
-          onSelect={onPeriodSelect}
-        />
-      ),
-    },
-  };
-
-  if (error) {
+  if (error || !entity) {
     return (
-      <InfoCard title={product.name} {...infoCardProps}>
-        <ScrollAnchor behavior="smooth" top={-12} />
-        <Alert severity="error">{`Error: Could not fetch product insights for ${product.name}`}</Alert>
+      <InfoCard title={product.name} headerProps={headerProps}>
+        <ScrollAnchor id={product.kind} />
+        <Alert severity="error">
+          {error
+            ? error.message
+            : `Error: Could not fetch product insights for ${product.name}`}
+        </Alert>
       </InfoCard>
     );
   }
 
-  if (!resource) {
-    return null;
-  }
-
   return (
-    <InfoCard title={product.name} subheader={subheader} {...infoCardProps}>
-      <ScrollAnchor behavior="smooth" top={-12} />
-      {hasCostsWithinTimeframe && (
-        <>
-          <Box display="flex" flexDirection="column">
-            <Box pb={2}>
-              <ResourceGrowthBarChartLegend
-                duration={productFilter.duration}
-                change={resource.change!}
-                costStart={costStart}
-                costEnd={costEnd}
-              />
-            </Box>
-            <ResourceGrowthBarChart
-              duration={productFilter.duration}
-              resources={resource.entities || []}
-            />
-          </Box>
-        </>
+    <InfoCard
+      title={product.name}
+      subheader={subheader}
+      headerProps={headerProps}
+    >
+      <ScrollAnchor id={product.kind} />
+      {entities.length ? (
+        <ProductInsightsChart
+          entity={entity}
+          duration={duration}
+          billingDate={lastCompleteBillingDate}
+        />
+      ) : (
+        <Typography>
+          There are no {product.name} costs within this time frame for your
+          team's projects.
+        </Typography>
       )}
     </InfoCard>
   );
 };
-
-export default ProductInsightsCard;

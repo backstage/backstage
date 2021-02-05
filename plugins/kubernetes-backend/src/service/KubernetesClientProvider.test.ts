@@ -33,6 +33,7 @@ describe('KubernetesClientProvider', () => {
       name: 'cluster-name',
       url: 'http://localhost:9999',
       serviceAccountToken: 'TOKEN',
+      authProvider: 'serviceAccount',
     });
 
     expect(result.basePath).toBe('http://localhost:9999');
@@ -55,12 +56,14 @@ describe('KubernetesClientProvider', () => {
       name: 'cluster-name',
       url: 'http://localhost:9999',
       serviceAccountToken: 'TOKEN',
+      authProvider: 'serviceAccount',
     });
 
     const result2 = sut.getCoreClientByClusterDetails({
       name: 'cluster-name',
       url: 'http://localhost:9999',
       serviceAccountToken: 'TOKEN',
+      authProvider: 'serviceAccount',
     });
 
     expect(result1.basePath).toBe('http://localhost:9999');
@@ -89,6 +92,7 @@ describe('KubernetesClientProvider', () => {
       name: 'cluster-name',
       url: 'http://localhost:9999',
       serviceAccountToken: 'TOKEN',
+      authProvider: 'serviceAccount',
     });
 
     expect(result.basePath).toBe('http://localhost:9999');
@@ -111,12 +115,14 @@ describe('KubernetesClientProvider', () => {
       name: 'cluster-name',
       url: 'http://localhost:9999',
       serviceAccountToken: 'TOKEN',
+      authProvider: 'serviceAccount',
     });
 
     const result2 = sut.getAppsClientByClusterDetails({
       name: 'cluster-name',
       url: 'http://localhost:9999',
       serviceAccountToken: 'TOKEN',
+      authProvider: 'serviceAccount',
     });
 
     expect(result1.basePath).toBe('http://localhost:9999');

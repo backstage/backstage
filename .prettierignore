@@ -1,8 +1,9 @@
 .yarn
 dist
-microsite/build
+microsite
 coverage
 *.hbs
 templates
 plugins/scaffolder-backend/sample-templates
 .vscode
+dist-types

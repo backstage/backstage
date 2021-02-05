@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
+import { getVoidLogger } from '@backstage/backend-common';
 import { LocationSpec } from '@backstage/catalog-model';
 import { CodeOwnersEntry } from 'codeowners-utils';
 import {
-  buildCodeOwnerLocation,
+  buildCodeOwnerUrl,
   buildUrl,
   CodeOwnersProcessor,
   findPrimaryCodeOwner,
@@ -27,24 +28,26 @@ import {
   resolveCodeOwner,
 } from './CodeOwnersProcessor';
 
-describe(CodeOwnersProcessor, () => {
+const logger = getVoidLogger();
+
+describe('CodeOwnersProcessor', () => {
+  const mockUrl = ({ basePath = '' } = {}): string =>
+    `https://github.com/backstage/backstage/blob/master/${basePath}catalog-info.yaml`;
   const mockLocation = ({
     basePath = '',
     type = 'github',
   } = {}): LocationSpec => ({
     type,
-    target: `https://github.com/spotify/backstage/blob/master/${basePath}catalog-info.yaml`,
+    target: mockUrl({ basePath }),
   });
 
-  const mockReadLocation = (basePath = '') => ({
-    type: 'github',
-    target: `https://github.com/spotify/backstage/blob/master/${basePath}CODEOWNERS`,
-  });
+  const mockReadUrl = (basePath = '') =>
+    `https://github.com/backstage/backstage/blob/master/${basePath}CODEOWNERS`;
 
   const mockGitUri = (codeOwnersPath: string = '') => {
     return {
       source: 'github.com',
-      owner: 'spotify',
+      owner: 'backstage',
       name: 'backstage',
       codeOwnersPath,
     };
@@ -79,7 +82,7 @@ describe(CodeOwnersProcessor, () => {
     return data;
   };
 
-  describe(buildUrl, () => {
+  describe('buildUrl', () => {
     it.each([['azure.com'], ['dev.azure.com']])(
       'should throw not implemented error',
       source => {
@@ -94,42 +97,41 @@ describe(CodeOwnersProcessor, () => {
           codeOwnersPath: '/.github/CODEOWNERS',
         }),
       ).toBe(
-        'https://github.com/spotify/backstage/blob/master/.github/CODEOWNERS',
+        'https://github.com/backstage/backstage/blob/master/.github/CODEOWNERS',
       );
     });
   });
 
-  describe(buildCodeOwnerLocation, () => {
-    it('should builds a location spec to the codeowners', () => {
-      expect(
-        buildCodeOwnerLocation(mockLocation(), '/docs/CODEOWNERS'),
-      ).toEqual({
-        type: 'github',
-        target:
-          'https://github.com/spotify/backstage/blob/master/docs/CODEOWNERS',
-      });
+  describe('buildCodeOwnerUrl', () => {
+    it('should build a location spec to the codeowners', () => {
+      expect(buildCodeOwnerUrl(mockUrl(), '/docs/CODEOWNERS')).toEqual(
+        'https://github.com/backstage/backstage/blob/master/docs/CODEOWNERS',
+      );
     });
 
     it('should handle nested paths from original location spec', () => {
       expect(
-        buildCodeOwnerLocation(
-          mockLocation({ basePath: 'packages/foo/' }),
+        buildCodeOwnerUrl(
+          mockUrl({ basePath: 'packages/foo/' }),
           '/CODEOWNERS',
         ),
-      ).toEqual({
-        type: 'github',
-        target: 'https://github.com/spotify/backstage/blob/master/CODEOWNERS',
-      });
+      ).toEqual(
+        'https://github.com/backstage/backstage/blob/master/CODEOWNERS',
+      );
     });
   });
 
-  describe(parseCodeOwners, () => {
+  describe('parseCodeOwners', () => {
     it('should parse the codeowners file', () => {
       expect(parseCodeOwners(mockCodeOwnersText())).toEqual(mockCodeOwners());
     });
   });
 
-  describe(normalizeCodeOwner, () => {
+  describe('normalizeCodeOwner', () => {
+    it('should remove the @ symbol', () => {
+      expect(normalizeCodeOwner('@yoda')).toBe('yoda');
+    });
+
     it('should remove org from org/team format', () => {
       expect(normalizeCodeOwner('@acme/foo')).toBe('foo');
     });
@@ -146,28 +148,33 @@ describe(CodeOwnersProcessor, () => {
     );
   });
 
-  describe(findPrimaryCodeOwner, () => {
+  describe('findPrimaryCodeOwner', () => {
     it('should return the primary owner', () => {
       expect(findPrimaryCodeOwner(mockCodeOwners())).toBe('backstage-core');
     });
   });
 
-  describe(findRawCodeOwners, () => {
+  describe('findRawCodeOwners', () => {
     it('should return found codeowner', async () => {
       const ownersText = mockCodeOwnersText();
       const read = jest
         .fn()
         .mockResolvedValue(mockReadResult({ data: ownersText }));
-      const result = await findRawCodeOwners(mockLocation(), read);
+      const reader = { read, readTree: jest.fn() };
+      const result = await findRawCodeOwners(mockLocation(), {
+        reader,
+        logger,
+      });
       expect(result).toEqual(ownersText);
     });
 
-    it('should raise error when no codeowner', async () => {
+    it('should return undefined when no codeowner', async () => {
       const read = jest.fn().mockRejectedValue(mockReadResult());
+      const reader = { read, readTree: jest.fn() };
 
       await expect(
-        findRawCodeOwners(mockLocation(), read),
-      ).rejects.toBeInstanceOf(Error);
+        findRawCodeOwners(mockLocation(), { reader, logger }),
+      ).resolves.toBeUndefined();
     });
 
     it('should look at known codeowner locations', async () => {
@@ -177,44 +184,54 @@ describe(CodeOwnersProcessor, () => {
         .mockImplementationOnce(() => mockReadResult({ error: 'foo' }))
         .mockImplementationOnce(() => mockReadResult({ error: 'bar' }))
         .mockResolvedValue(mockReadResult({ data: ownersText }));
+      const reader = { read, readTree: jest.fn() };
 
-      const result = await findRawCodeOwners(mockLocation(), read);
+      const result = await findRawCodeOwners(mockLocation(), {
+        reader,
+        logger,
+      });
 
-      expect(read.mock.calls.length).toBe(3);
-      expect(read.mock.calls[0]).toEqual([mockReadLocation('.github/')]);
-      expect(read.mock.calls[1]).toEqual([mockReadLocation('')]);
-      expect(read.mock.calls[2]).toEqual([mockReadLocation('docs/')]);
+      expect(read.mock.calls.length).toBe(5);
+      expect(read.mock.calls[0]).toEqual([mockReadUrl('')]);
+      expect(read.mock.calls[1]).toEqual([mockReadUrl('docs/')]);
+      expect(read.mock.calls[2]).toEqual([mockReadUrl('.bitbucket/')]);
+      expect(read.mock.calls[3]).toEqual([mockReadUrl('.github/')]);
+      expect(read.mock.calls[4]).toEqual([mockReadUrl('.gitlab/')]);
       expect(result).toEqual(ownersText);
     });
   });
 
-  describe(resolveCodeOwner, () => {
+  describe('resolveCodeOwner', () => {
     it('should return found codeowner', async () => {
       const read = jest
         .fn()
         .mockResolvedValue(mockReadResult({ data: mockCodeOwnersText() }));
-      const owner = await resolveCodeOwner(mockLocation(), read);
+      const reader = { read, readTree: jest.fn() };
+
+      const owner = await resolveCodeOwner(mockLocation(), { reader, logger });
       expect(owner).toBe('backstage-core');
     });
 
-    it('should raise an error when no codeowner', async () => {
+    it('should return undefined when no codeowner', async () => {
       const read = jest
         .fn()
         .mockImplementation(() => mockReadResult({ error: 'error: foo' }));
+      const reader = { read, readTree: jest.fn() };
 
       await expect(
-        resolveCodeOwner(mockLocation(), read),
-      ).rejects.toBeInstanceOf(Error);
+        resolveCodeOwner(mockLocation(), { reader, logger }),
+      ).resolves.toBeUndefined();
     });
   });
 
-  describe(CodeOwnersProcessor, () => {
+  describe('CodeOwnersProcessor', () => {
     const setupTest = ({ kind = 'Component', spec = {} } = {}) => {
       const entity = { kind, spec };
-      const processor = new CodeOwnersProcessor();
       const read = jest
         .fn()
         .mockResolvedValue(mockReadResult({ data: mockCodeOwnersText() }));
+      const reader = { read, readTree: jest.fn() };
+      const processor = new CodeOwnersProcessor({ reader, logger });
 
       return { entity, processor, read };
     };
@@ -224,50 +241,45 @@ describe(CodeOwnersProcessor, () => {
         spec: { owner: '@acme/foo-team' },
       });
 
-      const result = await processor.processEntity(
+      const result = await processor.preProcessEntity(
         entity as any,
         mockLocation(),
-        null as any,
-        null as any,
       );
 
       expect(result).toEqual(entity);
     });
 
-    it('should ignore url locations', async () => {
+    it('should handle url locations', async () => {
       const { entity, processor } = setupTest();
 
-      const result = await processor.processEntity(
+      const result = await processor.preProcessEntity(
         entity as any,
         mockLocation({ type: 'url' }),
-        null as any,
-        null as any,
       );
 
-      expect(result).toEqual(entity);
+      expect(result).toEqual({
+        ...entity,
+        spec: { owner: 'backstage-core' },
+      });
     });
 
     it('should ignore invalid kinds', async () => {
       const { entity, processor } = setupTest({ kind: 'Group' });
 
-      const result = await processor.processEntity(
+      const result = await processor.preProcessEntity(
         entity as any,
         mockLocation(),
-        null as any,
-        null as any,
       );
 
       expect(result).toEqual(entity);
     });
 
     it('should set owner from codeowner', async () => {
-      const { entity, processor, read } = setupTest();
+      const { entity, processor } = setupTest();
 
-      const result = await processor.processEntity(
+      const result = await processor.preProcessEntity(
         entity as any,
         mockLocation(),
-        null as any,
-        read,
       );
 
       expect(result).toEqual({

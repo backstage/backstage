@@ -14,78 +14,109 @@
  * limitations under the License.
  */
 
-import { PublisherBase } from './types';
+import { PublisherBase, PublisherOptions, PublisherResult } from './types';
+import { initRepoAndPush } from './helpers';
+import { GitHubIntegrationConfig } from '@backstage/integration';
+import parseGitUrl from 'git-url-parse';
 import { Octokit } from '@octokit/rest';
-
-import { JsonValue } from '@backstage/config';
-import { RequiredTemplateValues } from '../templater';
-import { Repository, Remote, Signature, Cred } from 'nodegit';
+import path from 'path';
 
 export type RepoVisibilityOptions = 'private' | 'internal' | 'public';
 
-interface GithubPublisherParams {
-  client: Octokit;
-  token: string;
-  repoVisibility: RepoVisibilityOptions;
-}
-
 export class GithubPublisher implements PublisherBase {
-  private client: Octokit;
-  private token: string;
-  private repoVisibility: RepoVisibilityOptions;
+  static async fromConfig(
+    config: GitHubIntegrationConfig,
+    { repoVisibility }: { repoVisibility: RepoVisibilityOptions },
+  ) {
+    if (!config.token) {
+      return undefined;
+    }
 
-  constructor({
-    client,
-    token,
-    repoVisibility = 'public',
-  }: GithubPublisherParams) {
-    this.client = client;
-    this.token = token;
-    this.repoVisibility = repoVisibility;
+    const githubClient = new Octokit({
+      auth: config.token,
+      baseUrl: config.apiBaseUrl,
+    });
+
+    return new GithubPublisher({
+      token: config.token,
+      client: githubClient,
+      repoVisibility,
+    });
   }
+
+  constructor(
+    private readonly config: {
+      token: string;
+      client: Octokit;
+      repoVisibility: RepoVisibilityOptions;
+    },
+  ) {}
 
   async publish({
     values,
-    directory,
-  }: {
-    values: RequiredTemplateValues & Record<string, JsonValue>;
-    directory: string;
-  }): Promise<{ remoteUrl: string }> {
-    const remoteUrl = await this.createRemote(values);
-    await this.pushToRemote(directory, remoteUrl);
+    workspacePath,
+    logger,
+  }: PublisherOptions): Promise<PublisherResult> {
+    const { owner, name } = parseGitUrl(values.storePath);
 
-    return { remoteUrl };
+    const description = values.description as string;
+    const access = values.access as string;
+    const remoteUrl = await this.createRemote({
+      description,
+      access,
+      name,
+      owner,
+    });
+
+    await initRepoAndPush({
+      dir: path.join(workspacePath, 'result'),
+      remoteUrl,
+      auth: {
+        username: this.config.token,
+        password: 'x-oauth-basic',
+      },
+      logger,
+    });
+
+    const catalogInfoUrl = remoteUrl.replace(
+      /\.git$/,
+      '/blob/master/catalog-info.yaml',
+    );
+    return { remoteUrl, catalogInfoUrl };
   }
 
-  private async createRemote(
-    values: RequiredTemplateValues & Record<string, JsonValue>,
-  ) {
-    const [owner, name] = values.storePath.split('/');
-    const description = values.description as string;
+  private async createRemote(opts: {
+    access: string;
+    name: string;
+    owner: string;
+    description: string;
+  }) {
+    const { access, description, owner, name } = opts;
 
-    const user = await this.client.users.getByUsername({ username: owner });
+    const user = await this.config.client.users.getByUsername({
+      username: owner,
+    });
 
     const repoCreationPromise =
       user.data.type === 'Organization'
-        ? this.client.repos.createInOrg({
+        ? this.config.client.repos.createInOrg({
             name,
             org: owner,
-            private: this.repoVisibility !== 'public',
-            visibility: this.repoVisibility,
+            private: this.config.repoVisibility !== 'public',
+            visibility: this.config.repoVisibility,
             description,
           })
-        : this.client.repos.createForAuthenticatedUser({
+        : this.config.client.repos.createForAuthenticatedUser({
             name,
-            private: this.repoVisibility === 'private',
+            private: this.config.repoVisibility === 'private',
             description,
           });
 
     const { data } = await repoCreationPromise;
 
-    const access = values.access as string;
     if (access?.startsWith(`${owner}/`)) {
       const [, team] = access.split('/');
-      await this.client.teams.addOrUpdateRepoPermissionsInOrg({
+      await this.config.client.teams.addOrUpdateRepoPermissionsInOrg({
         org: owner,
         team_slug: team,
         owner,
@@ -94,7 +125,7 @@ export class GithubPublisher implements PublisherBase {
       });
       // no need to add access if it's the person who own's the personal account
     } else if (access && access !== owner) {
-      await this.client.repos.addCollaborator({
+      await this.config.client.repos.addCollaborator({
         owner,
         repo: name,
         username: access,
@@ -103,30 +134,5 @@ export class GithubPublisher implements PublisherBase {
     }
 
     return data?.clone_url;
-  }
-
-  private async pushToRemote(directory: string, remote: string): Promise<void> {
-    const repo = await Repository.init(directory, 0);
-    const index = await repo.refreshIndex();
-    await index.addAll();
-    await index.write();
-    const oid = await index.writeTree();
-    await repo.createCommit(
-      'HEAD',
-      Signature.now('Scaffolder', 'scaffolder@backstage.io'),
-      Signature.now('Scaffolder', 'scaffolder@backstage.io'),
-      'initial commit',
-      oid,
-      [],
-    );
-
-    const remoteRepo = await Remote.create(repo, 'origin', remote);
-    await remoteRepo.push(['refs/heads/master:refs/heads/master'], {
-      callbacks: {
-        credentials: () => {
-          return Cred.userpassPlaintextNew(this.token, 'x-oauth-basic');
-        },
-      },
-    });
   }
 }

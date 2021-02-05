@@ -15,65 +15,34 @@
  */
 
 import React from 'react';
-import ProductInsightsCard from './ProductInsightsCard';
+import { renderInTestApp } from '@backstage/test-utils';
+import { ProductInsightsCard } from './ProductInsightsCard';
+import { CostInsightsApi } from '../../api';
 import {
-  MockComputeEngine,
   createMockEntity,
-  mockDefaultState,
-  createMockProductCost,
+  mockDefaultLoadingState,
+  MockComputeEngine,
 } from '../../utils/mockData';
 import {
-  IdentityApi,
-  ApiRegistry,
-  identityApiRef,
-  ApiProvider,
-} from '@backstage/core';
-import { costInsightsApiRef, CostInsightsApi } from '../../api';
-import { renderInTestApp } from '@backstage/test-utils';
-import { GroupsContext } from '../../hooks/useGroups';
-import { LoadingContext } from '../../hooks/useLoading';
-import {
-  Product,
-  ProductCost,
-  defaultCurrencies,
-  findAlways,
-} from '../../types';
-import {
   MockConfigProvider,
-  MockFilterProvider,
+  MockCostInsightsApiProvider,
   MockCurrencyProvider,
+  MockBillingDateProvider,
   MockScrollProvider,
+  MockLoadingProvider,
 } from '../../utils/tests';
+import { Duration, Entity, Product } from '../../types';
 
-const mockLoadingDispatch = jest.fn();
-const mockSetPageFilters = jest.fn();
-const mockSetProductFilters = jest.fn();
-const mockSetCurrency = jest.fn();
-const engineers = findAlways(defaultCurrencies, c => c.kind === null);
+// suppress recharts componentDidUpdate warnings
+jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-const identityApi: Partial<IdentityApi> = {
-  getProfile: () => ({
-    email: 'test-email@example.com',
-    displayName: 'User 1',
-  }),
-};
-
-const costInsightsApi = (
-  productCost: ProductCost,
-): Partial<CostInsightsApi> => ({
-  getProductInsights: () =>
-    Promise.resolve(productCost) as Promise<ProductCost>,
+const costInsightsApi = (entity: Entity): Partial<CostInsightsApi> => ({
+  getProductInsights: () => Promise.resolve(entity),
 });
 
-const getApis = (productCost: ProductCost) => {
-  return ApiRegistry.from([
-    [identityApiRef, identityApi],
-    [costInsightsApiRef, costInsightsApi(productCost)],
-  ]);
-};
-
-const mockProductCost = createMockProductCost(() => ({
-  entities: [],
+const mockProductCost = createMockEntity(() => ({
+  id: 'test-id',
+  entities: {},
   aggregation: [3000, 4000],
   change: {
     ratio: 0.23,
@@ -82,81 +51,62 @@ const mockProductCost = createMockProductCost(() => ({
 }));
 
 const renderProductInsightsCardInTestApp = async (
-  productCost: ProductCost,
+  entity: Entity,
   product: Product,
+  duration = Duration.P30D,
+  onSelectAsync = jest.fn(() => Promise.resolve(mockProductCost)),
 ) =>
   await renderInTestApp(
-    <ApiProvider apis={getApis(productCost)}>
-      <MockConfigProvider
-        metrics={[]}
-        products={[]}
-        icons={[]}
-        engineerCost={0}
-        currencies={[]}
-      >
-        <LoadingContext.Provider
-          value={{
-            state: mockDefaultState,
-            actions: [],
-            dispatch: mockLoadingDispatch,
-          }}
-        >
-          <GroupsContext.Provider value={{ groups: [{ id: 'test-group' }] }}>
-            <MockFilterProvider
-              setPageFilters={mockSetPageFilters}
-              setProductFilters={mockSetProductFilters}
-            >
+    <MockCostInsightsApiProvider costInsightsApi={costInsightsApi(entity)}>
+      <MockConfigProvider>
+        <MockCurrencyProvider>
+          <MockLoadingProvider state={mockDefaultLoadingState}>
+            <MockBillingDateProvider>
               <MockScrollProvider>
-                <MockCurrencyProvider
-                  currency={engineers}
-                  setCurrency={mockSetCurrency}
-                >
-                  <ProductInsightsCard product={product} />
-                </MockCurrencyProvider>
+                <ProductInsightsCard
+                  product={product}
+                  initialState={{ entity, duration }}
+                  onSelectAsync={onSelectAsync}
+                />
               </MockScrollProvider>
-            </MockFilterProvider>
-          </GroupsContext.Provider>
-        </LoadingContext.Provider>
+            </MockBillingDateProvider>
+          </MockLoadingProvider>
+        </MockCurrencyProvider>
       </MockConfigProvider>
-    </ApiProvider>,
+    </MockCostInsightsApiProvider>,
   );
 
 describe('<ProductInsightsCard/>', () => {
-  it('Renders the scroll anchors', async () => {
+  it('Should render the right subheader for products with cost data', async () => {
+    const entity = {
+      ...mockProductCost,
+      entities: { entity: [...Array(1000)].map(createMockEntity) },
+    };
     const rendered = await renderProductInsightsCardInTestApp(
-      mockProductCost,
+      entity,
       MockComputeEngine,
     );
     expect(
-      rendered.queryByTestId(`scroll-test-compute-engine`),
+      rendered.getByText(/1000 entities, sorted by cost/),
     ).toBeInTheDocument();
   });
 
-  it('Should render the right subheader for products with cost data', async () => {
-    const productCost = {
-      ...mockProductCost,
-      entities: [...Array(1000)].map(createMockEntity),
-    };
-    const rendered = await renderProductInsightsCardInTestApp(
-      productCost,
-      MockComputeEngine,
-    );
-    const subheader = 'entities, sorted by cost';
-    const subheaderRgx = new RegExp(
-      `${productCost.entities.length} ${subheader}`,
-    );
-    expect(rendered.getByText(subheaderRgx)).toBeInTheDocument();
-  });
-
   it('Should render the right subheader if there is no cost data or change data', async () => {
-    const productCost = { entities: [], aggregation: [0, 0] } as ProductCost;
-    const subheader = `There are no ${MockComputeEngine.name} costs within this timeframe for your team's projects.`;
+    const entity: Entity = {
+      id: 'test-id',
+      entities: {},
+      aggregation: [0, 0],
+      change: { ratio: 0, amount: 0 },
+    };
+    const subheader = `There are no ${MockComputeEngine.name} costs within this time frame for your team's projects.`;
     const rendered = await renderProductInsightsCardInTestApp(
-      productCost,
+      entity,
       MockComputeEngine,
+      Duration.P30D,
     );
     const subheaderRgx = new RegExp(subheader);
     expect(rendered.getByText(subheaderRgx)).toBeInTheDocument();
+    expect(rendered.queryByText(/sorted by cost/)).not.toBeInTheDocument();
     expect(
       rendered.queryByTestId('.resource-growth-chart-legend'),
     ).not.toBeInTheDocument();
@@ -164,4 +114,27 @@ describe('<ProductInsightsCard/>', () => {
       rendered.queryByTestId('.insights-bar-chart'),
     ).not.toBeInTheDocument();
   });
+
+  describe.each`
+    duration         | periodStartText    | periodEndText
+    ${Duration.P30D} | ${'First 30 Days'} | ${'Last 30 Days'}
+    ${Duration.P90D} | ${'First 90 Days'} | ${'Last 90 Days'}
+  `(
+    'Should display the correct relative time',
+    ({ duration, periodStartText, periodEndText }) => {
+      it(`Should display the correct relative time for ${duration}`, async () => {
+        const entity = {
+          ...mockProductCost,
+          entities: { entity: [...Array(3)].map(createMockEntity) },
+        };
+        const rendered = await renderProductInsightsCardInTestApp(
+          entity,
+          MockComputeEngine,
+          duration,
+        );
+        expect(rendered.getByText(periodStartText)).toBeInTheDocument();
+        expect(rendered.getByText(periodEndText)).toBeInTheDocument();
+      });
+    },
+  );
 });

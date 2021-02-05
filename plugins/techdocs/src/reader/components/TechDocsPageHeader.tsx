@@ -15,17 +15,17 @@
  */
 
 import React from 'react';
-import GitHubIcon from '@material-ui/icons/GitHub';
-import { Header, HeaderLabel, Link } from '@backstage/core';
-import { CircularProgress } from '@material-ui/core';
-import { ParsedEntityId } from '../../types';
 import { AsyncState } from 'react-use/lib/useAsync';
+import CodeIcon from '@material-ui/icons/Code';
+import { EntityName } from '@backstage/catalog-model';
+import { Header, HeaderLabel, Link } from '@backstage/core';
+import { TechDocsMetadata } from '../../types';
 
 type TechDocsPageHeaderProps = {
-  entityId: ParsedEntityId;
+  entityId: EntityName;
   metadataRequest: {
     entity: AsyncState<any>;
-    mkdocs: AsyncState<any>;
+    techdocs: AsyncState<TechDocsMetadata>;
   };
 };
 
@@ -33,27 +33,32 @@ export const TechDocsPageHeader = ({
   entityId,
   metadataRequest,
 }: TechDocsPageHeaderProps) => {
-  const { mkdocs: mkdocsMetadata, entity: entityMetadata } = metadataRequest;
+  const {
+    techdocs: techdocsMetadata,
+    entity: entityMetadata,
+  } = metadataRequest;
 
-  const { value: mkDocsMetadataValues } = mkdocsMetadata;
+  const { value: techdocsMetadataValues } = techdocsMetadata;
   const { value: entityMetadataValues } = entityMetadata;
 
   const { kind, name } = entityId;
 
   const { site_name: siteName, site_description: siteDescription } =
-    mkDocsMetadataValues || {};
+    techdocsMetadataValues || {};
 
   const {
     locationMetadata,
     spec: { owner, lifecycle },
   } = entityMetadataValues || { spec: {} };
 
+  const componentLink = `/catalog/${kind}/${name}`;
+
   const labels = (
     <>
       <HeaderLabel
         label="Component"
         value={
-          <Link style={{ color: '#fff' }} to={`/catalog/${kind}/${name}`}>
+          <Link style={{ color: '#fff' }} to={componentLink}>
             {name}
           </Link>
         }
@@ -66,8 +71,12 @@ export const TechDocsPageHeader = ({
         <HeaderLabel
           label=""
           value={
-            <a href={locationMetadata.target} target="_blank">
-              <GitHubIcon style={{ marginTop: '-25px', fill: '#fff' }} />
+            <a
+              href={locationMetadata.target}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <CodeIcon style={{ marginTop: '-25px', fill: '#fff' }} />
             </a>
           }
         />
@@ -77,10 +86,13 @@ export const TechDocsPageHeader = ({
 
   return (
     <Header
-      title={siteName ? siteName : <CircularProgress />}
+      title={siteName ? siteName : '.'}
+      pageTitleOverride={siteName || name}
       subtitle={
         siteDescription && siteDescription !== 'None' ? siteDescription : ''
       }
+      type={name}
+      typeLink={componentLink}
     >
       {labels}
     </Header>

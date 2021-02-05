@@ -14,77 +14,93 @@
  * limitations under the License.
  */
 
-import { PublisherBase } from './types';
-import { Gitlab } from '@gitbeaker/core';
+import { PublisherBase, PublisherOptions, PublisherResult } from './types';
+import { Gitlab } from '@gitbeaker/node';
+import { Gitlab as GitlabClient } from '@gitbeaker/core';
+import { initRepoAndPush } from './helpers';
+import parseGitUrl from 'git-url-parse';
+import path from 'path';
+import { GitLabIntegrationConfig } from '@backstage/integration';
 
-import { JsonValue } from '@backstage/config';
-import { RequiredTemplateValues } from '../templater';
-import { Repository, Remote, Signature, Cred } from 'nodegit';
+export type RepoVisibilityOptions = 'private' | 'internal' | 'public';
 
 export class GitlabPublisher implements PublisherBase {
-  private readonly client: Gitlab;
-  private readonly token: string;
+  static async fromConfig(
+    config: GitLabIntegrationConfig,
+    { repoVisibility }: { repoVisibility: RepoVisibilityOptions },
+  ) {
+    if (!config.token) {
+      return undefined;
+    }
 
-  constructor(client: Gitlab, token: string) {
-    this.client = client;
-    this.token = token;
+    const client = new Gitlab({ host: config.baseUrl, token: config.token });
+    return new GitlabPublisher({
+      token: config.token,
+      client,
+      repoVisibility,
+    });
   }
+
+  constructor(
+    private readonly config: {
+      token: string;
+      client: GitlabClient;
+      repoVisibility: RepoVisibilityOptions;
+    },
+  ) {}
 
   async publish({
     values,
-    directory,
-  }: {
-    values: RequiredTemplateValues & Record<string, JsonValue>;
-    directory: string;
-  }): Promise<{ remoteUrl: string }> {
-    const remoteUrl = await this.createRemote(values);
-    await this.pushToRemote(directory, remoteUrl);
+    workspacePath,
+    logger,
+  }: PublisherOptions): Promise<PublisherResult> {
+    const { owner, name } = parseGitUrl(values.storePath);
 
-    return { remoteUrl };
+    const remoteUrl = await this.createRemote({
+      owner,
+      name,
+    });
+
+    await initRepoAndPush({
+      dir: path.join(workspacePath, 'result'),
+      remoteUrl,
+      auth: {
+        username: 'oauth2',
+        password: this.config.token,
+      },
+      logger,
+    });
+
+    const catalogInfoUrl = remoteUrl.replace(
+      /\.git$/,
+      '/-/blob/master/catalog-info.yaml',
+    );
+    return { remoteUrl, catalogInfoUrl };
   }
 
-  private async createRemote(
-    values: RequiredTemplateValues & Record<string, JsonValue>,
-  ) {
-    const [owner, name] = values.storePath.split('/');
+  private async createRemote(opts: { name: string; owner: string }) {
+    const { owner, name } = opts;
 
-    let targetNamespace = ((await this.client.Namespaces.show(owner)) as {
+    // TODO(blam): this needs cleaning up to be nicer. The amount of brackets is too damn high!
+    // Shouldn't have to cast things now
+    let targetNamespace = ((await this.config.client.Namespaces.show(
+      owner,
+    )) as {
       id: number;
     }).id;
+
     if (!targetNamespace) {
-      targetNamespace = ((await this.client.Users.current()) as { id: number })
-        .id;
+      targetNamespace = ((await this.config.client.Users.current()) as {
+        id: number;
+      }).id;
     }
 
-    const project = (await this.client.Projects.create({
+    const project = (await this.config.client.Projects.create({
       namespace_id: targetNamespace,
       name: name,
+      visibility: this.config.repoVisibility,
     })) as { http_url_to_repo: string };
 
     return project?.http_url_to_repo;
-  }
-
-  private async pushToRemote(directory: string, remote: string): Promise<void> {
-    const repo = await Repository.init(directory, 0);
-    const index = await repo.refreshIndex();
-    await index.addAll();
-    await index.write();
-    const oid = await index.writeTree();
-    await repo.createCommit(
-      'HEAD',
-      Signature.now('Scaffolder', 'scaffolder@backstage.io'),
-      Signature.now('Scaffolder', 'scaffolder@backstage.io'),
-      'initial commit',
-      oid,
-      [],
-    );
-
-    const remoteRepo = await Remote.create(repo, 'origin', remote);
-
-    await remoteRepo.push(['refs/heads/master:refs/heads/master'], {
-      callbacks: {
-        credentials: () => Cred.userpassPlaintextNew('oauth2', this.token),
-      },
-    });
   }
 }

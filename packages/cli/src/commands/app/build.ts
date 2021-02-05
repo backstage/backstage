@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
+import fs from 'fs-extra';
 import { Command } from 'commander';
-import { loadConfig } from '@backstage/config-loader';
-import { ConfigReader } from '@backstage/config';
-import { paths } from '../../lib/paths';
 import { buildBundle } from '../../lib/bundler';
+import { parseParallel, PARALLEL_ENV_VAR } from '../../lib/parallel';
+import { loadCliConfig } from '../../lib/config';
+import { paths } from '../../lib/paths';
 
 export default async (cmd: Command) => {
-  const appConfigs = await loadConfig({
-    env: process.env.NODE_ENV ?? 'production',
-    rootPaths: [paths.targetRoot, paths.targetDir],
-  });
+  const { name } = await fs.readJson(paths.resolveTarget('package.json'));
   await buildBundle({
     entry: 'src/index',
+    parallel: parseParallel(process.env[PARALLEL_ENV_VAR]),
     statsJsonEnabled: cmd.stats,
-    config: ConfigReader.fromConfigs(appConfigs),
-    appConfigs,
+    ...(await loadCliConfig({
+      args: cmd.config,
+      fromPackage: name,
+    })),
   });
 };

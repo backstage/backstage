@@ -1,0 +1,44 @@
+name: FOSSA
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.4
+
+        # We use this to modify the generated .fossa.yml
+      - name: Install yq
+        run: sudo snap install yq
+
+      - name: Install Fossa
+        run: "curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | bash"
+
+      - name: Configure Fossa
+        # The --option flag for fossa init does not work yet, see https://github.com/fossas/fossa-cli/issues/614
+        run: |
+          fossa init
+          yq eval -i '.analyze.modules[].options.strategy = "yarn-list"' .fossa.yml
+
+          # This deletes entries for template and example packages found within packages and plugins
+          # Seems like yq has a bug that causes only a subset of all matches to be deleted each run
+          yq eval -i 'del(.analyze.modules[] | select(.path == "*/*/**"))' .fossa.yml
+          yq eval -i 'del(.analyze.modules[] | select(.path == "*/*/**"))' .fossa.yml
+          yq eval -i 'del(.analyze.modules[] | select(.path == "*/*/**"))' .fossa.yml
+          yq eval -i 'del(.analyze.modules[] | select(.path == "*/*/**"))' .fossa.yml
+          yq eval -i 'del(.analyze.modules[] | select(.path == "*/*/**"))' .fossa.yml
+
+      - name: Show config
+        run: cat .fossa.yml
+
+      - name: Fossa Analyze
+        env:
+          # FOSSA Push-Only API Token
+          FOSSA_API_KEY: 9ee7e8893660832a7387dcc32377fb61
+        run: fossa analyze --branch "$GITHUB_REF"

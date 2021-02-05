@@ -28,6 +28,7 @@ new-plugin/
         index.ts
         plugin.test.ts
         plugin.ts
+        routes.ts
     jest.config.js
     jest.setup.ts
     package.json
@@ -56,26 +57,30 @@ package.json to declare the plugin dependencies, metadata and scripts.
 In the `src` folder we get to the interesting bits. Check out the `plugin.ts`:
 
 ```jsx
-import { createPlugin, createRouteRef } from '@backstage/core';
-import ExampleComponent from './components/ExampleComponent';
+import { createPlugin, createRoutableExtension } from '@backstage/core';
 
-export const rootRouteRef = createRouteRef({
-  path: '/new-plugin',
-  title: 'New plugin',
-});
+import { rootRouteRef } from './routes';
 
-export const plugin = createPlugin({
-  id: 'new-plugin',
-  register({ router }) {
-    router.addRoute(rootRouteRef, ExampleComponent);
+export const examplePlugin = createPlugin({
+  id: 'example',
+  routes: {
+    root: rootRouteRef,
   },
 });
+
+export const ExamplePage = examplePlugin.provide(
+  createRoutableExtension({
+    component: () =>
+      import('./components/ExampleComponent').then(m => m.ExampleComponent),
+    mountPoint: rootRouteRef,
+  }),
+);
 ```
 
-This is where the plugin is created and where it hooks into the app by declaring
-what component should be shown on what url. See reference docs for
-[createPlugin](../reference/createPlugin.md) or
-[router](../reference/createPlugin-router.md).
+This is where the plugin is created and where it creates and exports extensions
+that can be imported and used the app. See reference docs for
+[createPlugin](../reference/createPlugin.md) or introduction to the new
+[Composability System](./composability.md).
 
 ## Components
 
@@ -91,21 +96,24 @@ You may tweak these components, rename them and/or replace them completely.
 
 ## Connecting the plugin to the Backstage app
 
-There are two things needed for a Backstage app to start making use of a plugin.
+There are three things needed for a Backstage app to start making use of a
+plugin.
 
 1. Add plugin as dependency in `app/package.json`
 2. `import` plugin in `app/src/plugins.ts`
+3. Import and use one or more plugin extensions, for example in
+   `app/src/App.tsx`.
 
-Luckily these two steps happen automatically when you create a plugin with the
+Luckily these three steps happen automatically when you create a plugin with the
 Backstage CLI.
 
 ## Talking to the outside world
 
-If your plugin needs to communicate with services outside the backstage
+If your plugin needs to communicate with services outside the Backstage
 environment you will probably face challenges like CORS policies and/or
 backend-side authorization. To smooth this process out you can use proxy -
-either the one you already have (like nginx/haproxy/etc) or the proxy-backend
-plugin that we provide for the backstage backend.
-[Read more](https://github.com/spotify/backstage/blob/master/plugins/proxy-backend/README.md)
+either the one you already have (like Nginx, HAProxy, etc.) or the proxy-backend
+plugin that we provide for the Backstage backend.
+[Read more](https://github.com/backstage/backstage/blob/master/plugins/proxy-backend/README.md)
 
 [Back to Getting Started](../README.md)

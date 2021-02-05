@@ -24,7 +24,7 @@ const Location = () => {
 };
 
 export default {
-  title: 'Button',
+  title: 'Inputs/Button',
   component: Button,
   decorators: [
     (storyFn: FunctionComponentFactory<{}>) => (

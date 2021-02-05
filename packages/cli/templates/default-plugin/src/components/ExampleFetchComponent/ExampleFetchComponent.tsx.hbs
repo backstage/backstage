@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Table, TableColumn, Progress } from '@backstage/core';
 import Alert from '@material-ui/lab/Alert';
@@ -38,7 +38,7 @@ type DenseTableProps = {
   users: User[];
 };
 
-export const DenseTable: FC<DenseTableProps> = ({ users }) => {
+export const DenseTable = ({ users }: DenseTableProps) => {
   const classes = useStyles();
 
   const columns: TableColumn[] = [
@@ -48,7 +48,7 @@ export const DenseTable: FC<DenseTableProps> = ({ users }) => {
     { title: 'Nationality', field: 'nationality' },
   ];
 
-  const data = users.map((user) => {
+  const data = users.map(user => {
     return {
       avatar: (
         <img
@@ -73,7 +73,7 @@ export const DenseTable: FC<DenseTableProps> = ({ users }) => {
   );
 };
 
-const ExampleFetchComponent: FC<{}> = () => {
+export const ExampleFetchComponent = () => {
   const { value, loading, error } = useAsync(async (): Promise<User[]> => {
     const response = await fetch('https://randomuser.me/api/?results=20');
     const data = await response.json();
@@ -88,5 +88,3 @@ const ExampleFetchComponent: FC<{}> = () => {
 
   return <DenseTable users={value || []} />;
 };
-
-export default ExampleFetchComponent;

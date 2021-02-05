@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { lengthyCurrencyFormatter, quarterOf } from './formatters';
+import {
+  formatPeriod,
+  formatPercent,
+  lengthyCurrencyFormatter,
+  quarterOf,
+} from './formatters';
+import { Duration } from '../types';
 
 Date.now = jest.fn(() => new Date(Date.parse('2019-12-07')).valueOf());
 
@@ -46,5 +52,33 @@ describe('date formatters', () => {
       '$0.41',
       '$0.0000023',
     ]);
+  });
+});
+
+describe.each`
+  duration         | date            | isEndDate | output
+  ${Duration.P3M}  | ${'2020-10-11'} | ${true}   | ${'Q3 2020'}
+  ${Duration.P3M}  | ${'2020-10-11'} | ${false}  | ${'Q2 2020'}
+  ${Duration.P30D} | ${'2020-10-11'} | ${true}   | ${'Last 30 Days'}
+  ${Duration.P30D} | ${'2020-10-11'} | ${false}  | ${'First 30 Days'}
+  ${Duration.P90D} | ${'2020-10-11'} | ${true}   | ${'Last 90 Days'}
+  ${Duration.P90D} | ${'2020-10-11'} | ${false}  | ${'First 90 Days'}
+`('formatPeriod', ({ duration, date, isEndDate, output }) => {
+  it(`Correctly formats ${duration} with date ${date}`, async () => {
+    expect(formatPeriod(duration, date, isEndDate)).toBe(output);
+  });
+});
+
+describe.each`
+  ratio             | expected
+  ${0.0}            | ${'0%'}
+  ${0.000000000001} | ${'0%'}
+  ${-0.00000000001} | ${'0%'}
+  ${0.123123}       | ${'12%'}
+  ${1.123}          | ${'112%'}
+  ${10.123}         | ${'>1000%'}
+`('formatPercent', ({ ratio, expected }) => {
+  it(`correctly formats ${ratio} as ${expected}`, () => {
+    expect(formatPercent(ratio)).toBe(expected);
   });
 });

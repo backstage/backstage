@@ -15,14 +15,19 @@
  */
 
 export * from './AlertDisplay';
+export * from './Avatar';
 export * from './Button';
 export * from './CodeSnippet';
 export * from './CopyTextButton';
+export * from './DependencyGraph';
 export * from './DismissableBanner';
+export * from './EmptyState';
 export * from './FeatureDiscovery';
+export * from './HeaderIconLinkRow';
 export * from './HorizontalScrollGrid';
 export * from './Lifecycle';
 export * from './Link';
+export * from './MarkdownContent';
 export * from './OAuthRequestDialog';
 export * from './Progress';
 export * from './ProgressBars';
@@ -30,8 +35,8 @@ export * from './SimpleStepper';
 export * from './Status';
 export * from './StructuredMetadataTable';
 export * from './SupportButton';
+export * from './TabbedLayout';
 export * from './Table';
 export * from './Tabs';
 export * from './TrendLine';
 export * from './WarningPanel';
-export * from './EmptyState';

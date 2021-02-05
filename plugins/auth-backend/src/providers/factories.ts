@@ -18,13 +18,16 @@ import { createGithubProvider } from './github';
 import { createGitlabProvider } from './gitlab';
 import { createGoogleProvider } from './google';
 import { createOAuth2Provider } from './oauth2';
+import { createOidcProvider } from './oidc';
 import { createOktaProvider } from './okta';
 import { createSamlProvider } from './saml';
 import { createAuth0Provider } from './auth0';
 import { createMicrosoftProvider } from './microsoft';
-import { AuthProviderFactory, AuthProviderFactoryOptions } from './types';
+import { createOneLoginProvider } from './onelogin';
+import { AuthProviderFactory } from './types';
+import { createAwsAlbProvider } from './aws-alb';
 
-const factories: { [providerId: string]: AuthProviderFactory } = {
+export const factories: { [providerId: string]: AuthProviderFactory } = {
   google: createGoogleProvider,
   github: createGithubProvider,
   gitlab: createGitlabProvider,
@@ -33,16 +36,7 @@ const factories: { [providerId: string]: AuthProviderFactory } = {
   auth0: createAuth0Provider,
   microsoft: createMicrosoftProvider,
   oauth2: createOAuth2Provider,
+  oidc: createOidcProvider,
+  onelogin: createOneLoginProvider,
+  awsalb: createAwsAlbProvider,
 };
-
-export function createAuthProvider(
-  providerId: string,
-  options: AuthProviderFactoryOptions,
-) {
-  const factory = factories[providerId];
-  if (!factory) {
-    throw Error(`No auth provider available for '${providerId}'`);
-  }
-
-  return factory(options);
-}

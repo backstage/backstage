@@ -17,22 +17,18 @@ const Background = props => {
       <Block small className="stripe-bottom bg-black-grey">
         <Block.Container style={{ justifyContent: 'flex-start' }}>
           <Block.TextBox>
-            <Block.Title>See us in action.</Block.Title>
+            <Block.Title>See us in action</Block.Title>
             <Block.Paragraph>
-              To illustrate the potential of Backstage, we’re showing you{' '}
-              <a href="https://labs.spotify.com/2020/04/21/how-we-use-backstage-at-spotify/">
-                how we use it here at Spotify
+              To explore the UI and basic features of Backstage firsthand, go
+              to: <a href="https://demo.backstage.io">demo.backstage.io</a>.
+            </Block.Paragraph>
+            <Block.Paragraph>
+              Watch the videos below to get an introduction to Backstage and to
+              see how we use different plugins to customize{' '}
+              <a href="https://engineering.atspotify.com/2020/04/21/how-we-use-backstage-at-spotify/">
+                our internal version of Backstage at Spotify
               </a>
-              . The videos below feature the custom plugins and templates that
-              we built for our internal version of Backstage. You can use
-              Backstage to build the developer portal you want — integrating the
-              tools that you use in your own infrastructure ecosystem. (Or get
-              started by building an open source plugin for Backstage that
-              everyone can use, like our{' '}
-              <a href="https://backstage.io/blog/2020/04/06/lighthouse-plugin">
-                Lighthouse Plugin
-              </a>
-              .)
+              .
             </Block.Paragraph>
           </Block.TextBox>
           <Block.Graphics>
@@ -78,7 +74,41 @@ const Background = props => {
         </Block.Container>
       </Block>
 
-      <Block className="stripe-bottom bg-black-grey">
+      <Block className="stripe bg-black-grey">
+        <Block.Container style={{ justifyContent: 'flex-start' }}>
+          <Block.TextBox>
+            <Block.Title>Control cloud costs</Block.Title>
+            <Block.Paragraph>
+              How do you control cloud costs while maintaining the speed and
+              independence of your development teams? With the{' '}
+              <a href="https://backstage.io/plugins">Cost Insights plugin</a>{' '}
+              for Backstage, managing cloud costs becomes just another part of
+              an engineer’s daily development process. They get a clear view of
+              their spending — and can decide for themselves how they want to
+              optimize it. Learn more about the{' '}
+              <a href="https://backstage.io/blog/2020/10/22/cost-insights-plugin">
+                Cost Insights plugin
+              </a>
+              .
+            </Block.Paragraph>
+            <Block.LinkButton href="https://youtu.be/YLAd5hdXR_Q">
+              Watch now
+            </Block.LinkButton>
+          </Block.TextBox>
+          <Block.MediaFrame>
+            <iframe
+              width="560"
+              height="315"
+              src="https://www.youtube.com/embed/YLAd5hdXR_Q"
+              frameBorder="0"
+              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            ></iframe>
+          </Block.MediaFrame>
+        </Block.Container>
+      </Block>
+
+      <Block className="stripe bg-black">
         <Block.Container style={{ justifyContent: 'flex-start' }}>
           <Block.TextBox>
             <Block.Title id="techdocs-demo">
@@ -96,7 +126,7 @@ const Background = props => {
               </a>
               .
             </Block.Paragraph>
-            <Block.LinkButton href={'https://youtu.be/mOLCgdPw1iA'}>
+            <Block.LinkButton href="https://youtu.be/mOLCgdPw1iA">
               Watch now
             </Block.LinkButton>
           </Block.TextBox>
@@ -105,9 +135,9 @@ const Background = props => {
               width="560"
               height="315"
               src="https://www.youtube.com/embed/mOLCgdPw1iA"
-              frameborder="0"
+              frameBorder="0"
               allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen
+              allowFullScreen
             ></iframe>
           </Block.MediaFrame>
         </Block.Container>

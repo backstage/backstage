@@ -15,23 +15,25 @@
  */
 
 import React from 'react';
+import moment from 'moment';
 import { Box, Typography } from '@material-ui/core';
 import { InfoCard } from '@backstage/core';
-import AlertInstructionsLayout from '../AlertInstructionsLayout';
-import ProjectGrowthAlertCard from '../ProjectGrowthAlertCard';
+import { AlertInstructionsLayout } from '../AlertInstructionsLayout';
+import { ProductInsightsChart } from '../ProductInsightsCard';
 import {
-  AlertType,
+  Alert,
+  DEFAULT_DATE_FORMAT,
   Duration,
   Entity,
   Product,
-  ProjectGrowthAlert,
+  ProjectGrowthData,
 } from '../../types';
-import ResourceGrowthBarChartLegend from '../ResourceGrowthBarChartLegend';
-import ResourceGrowthBarChart from '../ResourceGrowthBarChart';
+import { ProjectGrowthAlert } from '../../alerts';
 
-const ProjectGrowthInstructionsPage = () => {
-  const projectGrowthAlert: ProjectGrowthAlert = {
-    id: AlertType.ProjectGrowth,
+const today = moment().format(DEFAULT_DATE_FORMAT);
+
+export const ProjectGrowthInstructionsPage = () => {
+  const alertData: ProjectGrowthData = {
     project: 'example-project',
     periodStart: 'Q1 2020',
     periodEnd: 'Q2 2020',
@@ -56,25 +58,43 @@ const ProjectGrowthInstructionsPage = () => {
     ],
   };
 
+  const projectGrowthAlert: Alert = new ProjectGrowthAlert(alertData);
+
   const product: Product = {
     kind: 'ComputeEngine',
     name: 'Compute Engine',
   };
 
-  const entities: Entity[] = [
-    {
-      id: 'service-one',
-      aggregation: [18200, 58500],
+  const entity: Entity = {
+    id: 'example-id',
+    aggregation: [20_000, 60_000],
+    change: {
+      ratio: 3,
+      amount: 40_000,
     },
-    {
-      id: 'service-two',
-      aggregation: [1200, 1300],
+    entities: {
+      service: [
+        {
+          id: 'service-one',
+          aggregation: [18_200, 58_500],
+          entities: {},
+          change: { ratio: 2.21, amount: 40_300 },
+        },
+        {
+          id: 'service-two',
+          aggregation: [1200, 1300],
+          entities: {},
+          change: { ratio: 0.083, amount: 100 },
+        },
+        {
+          id: 'service-three',
+          aggregation: [600, 200],
+          entities: {},
+          change: { ratio: -0.666, amount: -400 },
+        },
+      ],
     },
-    {
-      id: 'service-three',
-      aggregation: [600, 200],
-    },
-  ];
+  };
 
   return (
     <AlertInstructionsLayout title="Investigating Growth">
@@ -115,7 +135,7 @@ const ProjectGrowthInstructionsPage = () => {
         <Typography paragraph>
           Next, evaluate whether the growth is significant. This helps avoid
           premature optimization, where cost in engineering time is more than
-          would be saved from the optimization over a reasonable timeframe.
+          would be saved from the optimization over a reasonable time frame.
         </Typography>
         <Typography paragraph>
           We recommend reframing the cost growth itself in terms of engineering
@@ -135,7 +155,7 @@ const ProjectGrowthInstructionsPage = () => {
           comparison of cloud products over the examined time period:
         </Typography>
         <Box mt={2} mb={2}>
-          <ProjectGrowthAlertCard alert={projectGrowthAlert} />
+          {projectGrowthAlert.element}
         </Box>
         <Typography paragraph>
           This allows you to quickly see which cloud products contributed to the
@@ -153,24 +173,12 @@ const ProjectGrowthInstructionsPage = () => {
           ) that has grown in cost:
         </Typography>
         <Box mt={2} mb={2}>
-          {/* ProductInsightsCard without API query / PeriodSelect */}
           <InfoCard title={product.name} subheader="3 entities, sorted by cost">
-            <Box display="flex" flexDirection="column">
-              <Box paddingY={1}>
-                <ResourceGrowthBarChartLegend
-                  duration={Duration.P3M}
-                  change={{ ratio: 3, amount: 40000 }}
-                  costStart={20000}
-                  costEnd={60000}
-                />
-              </Box>
-              <Box paddingY={1}>
-                <ResourceGrowthBarChart
-                  duration={Duration.P3M}
-                  resources={entities}
-                />
-              </Box>
-            </Box>
+            <ProductInsightsChart
+              billingDate={today}
+              duration={Duration.P3M}
+              entity={entity}
+            />
           </InfoCard>
         </Box>
         <Typography paragraph>
@@ -197,7 +205,7 @@ const ProjectGrowthInstructionsPage = () => {
           Is the workload using cloud resources efficiently? For compute
           resources, do the utilization metrics look reasonable? Autoscaling
           infrastructure, such as Kubernetes, can run workloads more efficiently
-          without comprimising reliability.
+          without compromising reliability.
         </Typography>
         <Typography variant="h5">Lifecycle</Typography>
         <Typography paragraph>
@@ -208,5 +216,3 @@ const ProjectGrowthInstructionsPage = () => {
     </AlertInstructionsLayout>
   );
 };
-
-export default ProjectGrowthInstructionsPage;

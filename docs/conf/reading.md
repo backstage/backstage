@@ -117,7 +117,7 @@ The [ConfigApi](../reference/utility-apis/Config.md) in the frontend is a
 Depending on the config api in another API is slightly different though, as the
 `ConfigApi` implementation is supplied via the App itself and not instantiated
 like other APIs. See
-[packages/app/src/apis.ts](https://github.com/spotify/backstage/blob/244eef851f5aa19f91c7c9b5c12d5df95cf482ca/packages/app/src/apis.ts#L66)
+[packages/app/src/apis.ts](https://github.com/backstage/backstage/blob/244eef851f5aa19f91c7c9b5c12d5df95cf482ca/packages/app/src/apis.ts#L66)
 for an example of how this wiring is done.
 
 For standalone plugin setups in `dev/index.ts`, register a factory with a
@@ -129,4 +129,4 @@ from `@backstage/core`.
 
 In backend plugins the configuration is passed in via options from the main
 backend package. See for example
-[packages/backend/src/plugins/auth.ts](https://github.com/spotify/backstage/blob/244eef851f5aa19f91c7c9b5c12d5df95cf482ca/packages/backend/src/plugins/auth.ts#L23).
+[packages/backend/src/plugins/auth.ts](https://github.com/backstage/backstage/blob/244eef851f5aa19f91c7c9b5c12d5df95cf482ca/packages/backend/src/plugins/auth.ts#L23).

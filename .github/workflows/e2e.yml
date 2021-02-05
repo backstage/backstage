@@ -3,6 +3,7 @@ name: E2E Test Linux
 on:
   pull_request:
     paths-ignore:
+      - '.changeset/**'
       - 'contrib/**'
       - 'docs/**'
       - 'microsite/**'
@@ -70,7 +71,7 @@ jobs:
       - name: run E2E test
         run: |
           sudo sysctl fs.inotify.max_user_watches=524288
-          yarn workspace e2e-test start
+          yarn e2e-test run
         env:
           POSTGRES_HOST: localhost
           POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}

@@ -17,6 +17,7 @@ import React, { useEffect } from 'react';
 import { useWorkflowRuns } from '../useWorkflowRuns';
 import { WorkflowRun, WorkflowRunsTable } from '../WorkflowRunsTable';
 import { Entity } from '@backstage/catalog-model';
+import { readGitHubIntegrationConfigs } from '@backstage/integration';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import {
   Link,
@@ -28,6 +29,7 @@ import {
 import {
   InfoCard,
   StructuredMetadataTable,
+  configApiRef,
   errorApiRef,
   useApi,
 } from '@backstage/core';
@@ -60,7 +62,10 @@ const WidgetContent = ({
       metadata={{
         status: (
           <>
-            <WorkflowRunStatus status={lastRun.status} />
+            <WorkflowRunStatus
+              status={lastRun.status}
+              conclusion={lastRun.conclusion}
+            />
           </>
         ),
         message: lastRun.message,
@@ -78,15 +83,20 @@ const WidgetContent = ({
 export const LatestWorkflowRunCard = ({
   entity,
   branch = 'master',
-}: {
-  entity: Entity;
-  branch: string;
-}) => {
+  // Display the card full height suitable for
+  variant,
+}: Props) => {
+  const config = useApi(configApiRef);
   const errorApi = useApi(errorApiRef);
+  // TODO: Get github hostname from metadata annotation
+  const hostname = readGitHubIntegrationConfigs(
+    config.getOptionalConfigArray('integrations.github') ?? [],
+  )[0].host;
   const [owner, repo] = (
     entity?.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION] ?? '/'
   ).split('/');
   const [{ runs, loading, error }] = useWorkflowRuns({
+    hostname,
     owner,
     repo,
     branch,
@@ -99,7 +109,7 @@ export const LatestWorkflowRunCard = ({
   }, [error, errorApi]);
 
   return (
-    <InfoCard title={`Last ${branch} build`}>
+    <InfoCard title={`Last ${branch} build`} variant={variant}>
       <WidgetContent
         error={error}
         loading={loading}
@@ -110,14 +120,18 @@ export const LatestWorkflowRunCard = ({
   );
 };
 
+type Props = {
+  entity: Entity;
+  branch: string;
+  variant?: string;
+};
+
 export const LatestWorkflowsForBranchCard = ({
   entity,
   branch = 'master',
-}: {
-  entity: Entity;
-  branch: string;
-}) => (
-  <InfoCard title={`Last ${branch} build`}>
+  variant,
+}: Props) => (
+  <InfoCard title={`Last ${branch} build`} variant={variant}>
     <WorkflowRunsTable branch={branch} entity={entity} />
   </InfoCard>
 );

@@ -1,7 +1,7 @@
 {
   "name": "@backstage/config-loader",
   "description": "Config loading functionality used by Backstage backend, and CLI",
-  "version": "0.1.1-alpha.23",
+  "version": "0.5.1",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -12,7 +12,7 @@
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
-    "url": "https://github.com/spotify/backstage",
+    "url": "https://github.com/backstage/backstage",
     "directory": "packages/config-loader"
   },
   "keywords": [
@@ -30,16 +30,23 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/config": "^0.1.1-alpha.23",
+    "@backstage/cli-common": "^0.1.1",
+    "@backstage/config": "^0.1.1",
+    "ajv": "^7.0.3",
     "fs-extra": "^9.0.0",
+    "json-schema": "^0.2.5",
+    "json-schema-merge-allof": "^0.7.0",
+    "typescript-json-schema": "^0.47.0",
     "yaml": "^1.9.2",
-    "yup": "^0.29.1"
+    "yup": "^0.29.3"
   },
   "devDependencies": {
     "@types/jest": "^26.0.7",
+    "@types/json-schema": "^7.0.6",
+    "@types/json-schema-merge-allof": "^0.6.0",
     "@types/mock-fs": "^4.10.0",
     "@types/node": "^12.0.0",
-    "@types/yup": "^0.28.2",
+    "@types/yup": "^0.29.8",
     "mock-fs": "^4.13.0"
   },
   "files": [

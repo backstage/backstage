@@ -24,10 +24,9 @@ jest.mock('react-router-dom', () => {
 });
 
 import React from 'react';
-import mockFetch from 'jest-fetch-mock';
 import { render, fireEvent } from '@testing-library/react';
 import { ApiRegistry, ApiProvider } from '@backstage/core';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { wrapInTestApp, msw } from '@backstage/test-utils';
 
 import {
   lighthouseApiRef,
@@ -40,18 +39,23 @@ import * as data from '../../__fixtures__/website-list-response.json';
 
 const { useNavigate } = jest.requireMock('react-router-dom');
 const websiteListResponse = data as WebsiteListResponse;
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
 
 describe('AuditList', () => {
   let apis: ApiRegistry;
+
+  const server = setupServer();
+  msw.setupDefaultHandlers(server);
 
   beforeEach(() => {
     apis = ApiRegistry.from([
       [lighthouseApiRef, new LighthouseRestApi('http://lighthouse')],
     ]);
-    mockFetch.mockResponse(JSON.stringify(websiteListResponse));
   });
 
   it('should render the table', async () => {
+    server.use(rest.get('*', (_req, res, ctx) => res(ctx.json(data))));
     const rendered = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
@@ -76,22 +80,6 @@ describe('AuditList', () => {
   });
 
   describe('pagination', () => {
-    it('requests the correct limit and offset from the api based on the query', () => {
-      mockFetch.mockClear();
-      render(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <AuditList />
-          </ApiProvider>,
-          { routeEntries: ['?page=2'] },
-        ),
-      );
-      expect(mockFetch).toHaveBeenLastCalledWith(
-        'http://lighthouse/v1/websites?limit=10&offset=10',
-        undefined,
-      );
-    });
-
     describe('when only one page is needed', () => {
       it('hides pagination elements', () => {
         const rendered = render(
@@ -111,7 +99,8 @@ describe('AuditList', () => {
         response.limit = 5;
         response.offset = 5;
         response.total = 7;
-        mockFetch.mockResponseOnce(JSON.stringify(response));
+        server.use(rest.get('*', (_req, res, ctx) => res(ctx.json(response))));
+        server.use(rest.post('*', (_req, res, ctx) => res(ctx.json(response))));
       });
 
       it('shows pagination elements', async () => {
@@ -146,7 +135,7 @@ describe('AuditList', () => {
 
   describe('when waiting on the request', () => {
     it('should render the loader', async () => {
-      mockFetch.mockResponseOnce(() => new Promise(() => {}));
+      server.use(rest.get('*', (_req, res, ctx) => res(ctx.delay(20000))));
       const rendered = render(
         wrapInTestApp(
           <ApiProvider apis={apis}>
@@ -161,7 +150,11 @@ describe('AuditList', () => {
 
   describe('when the audits fail', () => {
     it('should render an error', async () => {
-      mockFetch.mockRejectOnce(new Error('failed to fetch'));
+      server.use(
+        rest.get('*', (_req, res, ctx) =>
+          res(ctx.status(500, 'something broke')),
+        ),
+      );
       const rendered = render(
         wrapInTestApp(
           <ApiProvider apis={apis}>

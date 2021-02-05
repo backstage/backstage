@@ -13,22 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { ParsedEntityId } from '../src/types';
-
+import { DiscoveryApi } from '@backstage/core';
+import { Config } from '@backstage/config';
+import { EntityName } from '@backstage/catalog-model';
 import { TechDocsStorage } from '../src/api';
 
 export class TechDocsDevStorageApi implements TechDocsStorage {
-  public apiOrigin: string;
+  public configApi: Config;
+  public discoveryApi: DiscoveryApi;
 
-  constructor({ apiOrigin }: { apiOrigin: string }) {
-    this.apiOrigin = apiOrigin;
+  constructor({
+    configApi,
+    discoveryApi,
+  }: {
+    configApi: Config;
+    discoveryApi: DiscoveryApi;
+  }) {
+    this.configApi = configApi;
+    this.discoveryApi = discoveryApi;
   }
 
-  async getEntityDocs(entityId: ParsedEntityId, path: string) {
+  async getApiOrigin() {
+    return (
+      this.configApi.getOptionalString('techdocs.requestUrl') ??
+      (await this.discoveryApi.getBaseUrl('techdocs'))
+    );
+  }
+
+  async getEntityDocs(entityId: EntityName, path: string) {
     const { name } = entityId;
 
-    const url = `${this.apiOrigin}/${name}/${path}`;
+    const apiOrigin = await this.getApiOrigin();
+    const url = `${apiOrigin}/${name}/${path}`;
 
     const request = await fetch(
       `${url.endsWith('/') ? url : `${url}/`}index.html`,
@@ -41,12 +57,13 @@ export class TechDocsDevStorageApi implements TechDocsStorage {
     return request.text();
   }
 
-  getBaseUrl(
+  async getBaseUrl(
     oldBaseUrl: string,
-    entityId: ParsedEntityId,
+    entityId: EntityName,
     path: string,
-  ): string {
+  ): Promise<string> {
     const { name } = entityId;
-    return new URL(oldBaseUrl, `${this.apiOrigin}/${name}/${path}`).toString();
+    const apiOrigin = await this.getApiOrigin();
+    return new URL(oldBaseUrl, `${apiOrigin}/${name}/${path}`).toString();
   }
 }

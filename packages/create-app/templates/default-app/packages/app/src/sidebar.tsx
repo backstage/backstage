@@ -1,14 +1,14 @@
-import React, { FC, useContext } from 'react';
+import React, { useContext } from 'react';
 import HomeIcon from '@material-ui/icons/Home';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
+import ExtensionIcon from '@material-ui/icons/Extension';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
-import BuildIcon from '@material-ui/icons/BuildRounded';
-import RuleIcon from '@material-ui/icons/AssignmentTurnedIn';
 import MapIcon from '@material-ui/icons/MyLocation';
 import { Link, makeStyles } from '@material-ui/core';
 import { NavLink } from 'react-router-dom';
 import LogoFull from './LogoFull';
 import LogoIcon from './LogoIcon';
+import { Settings as SidebarSettings } from '@backstage/plugin-user-settings';
 
 import {
   Sidebar,
@@ -17,29 +17,9 @@ import {
   sidebarConfig,
   SidebarContext,
   SidebarSpace,
-  SidebarUserSettings,
-  DefaultProviderSettings,
 } from '@backstage/core';
+import { SidebarSearch } from '@backstage/plugin-search';
 
-export const AppSidebar = () => (
-  <Sidebar>
-    <SidebarLogo />
-    <SidebarDivider />
-    {/* Global nav, not org-specific */}
-    <SidebarItem icon={HomeIcon} to="./" text="Home" />
-    <SidebarItem icon={LibraryBooks} to="/docs" text="Docs" />
-    <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
-    <SidebarDivider />
-    <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
-    <SidebarItem icon={RuleIcon} to="lighthouse" text="Lighthouse" />
-    <SidebarItem icon={BuildIcon} to="circleci" text="CircleCI" />
-    {/* End global nav */}
-    <SidebarDivider />
-    <SidebarSpace />
-    <SidebarDivider />
-    <SidebarUserSettings providerSettings={<DefaultProviderSettings />} />
-  </Sidebar>
-);
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -56,7 +36,7 @@ const useSidebarLogoStyles = makeStyles({
   },
 });
 
-const SidebarLogo: FC<{}> = () => {
+const SidebarLogo = () => {
   const classes = useSidebarLogoStyles();
   const { isOpen } = useContext(SidebarContext);
 
@@ -73,3 +53,23 @@ const SidebarLogo: FC<{}> = () => {
     </div>
   );
 };
+
+export const AppSidebar = () => (
+  <Sidebar>
+    <SidebarLogo />
+    <SidebarSearch />
+    <SidebarDivider />
+    {/* Global nav, not org-specific */}
+    <SidebarItem icon={HomeIcon} to="./" text="Home" />
+    <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
+    <SidebarItem icon={LibraryBooks} to="/docs" text="Docs" />
+    <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
+    <SidebarDivider />
+    <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
+    {/* End global nav */}
+    <SidebarDivider />
+    <SidebarSpace />
+    <SidebarDivider />
+    <SidebarSettings />
+  </Sidebar>
+);

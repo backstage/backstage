@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import React, { FC, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Header,
   Page,
-  pageTheme,
   Content,
   ContentHeader,
   HeaderLabel,
@@ -80,7 +79,7 @@ export const transformRunStatus = (x: Status[]) => {
   });
 };
 
-const ProfileCatalog: FC<{}> = () => {
+const ProfileCatalog = () => {
   // TODO: get data from REST API
   const [clusterTemplates] = React.useState([
     {
@@ -259,7 +258,7 @@ const ProfileCatalog: FC<{}> = () => {
   ];
 
   return (
-    <Page theme={pageTheme.tool}>
+    <Page themeId="tool">
       <Header
         title="Create GitOps-managed Cluster"
         subtitle="Kubernetes cluster with ready-to-use profiles"

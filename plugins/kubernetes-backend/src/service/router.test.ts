@@ -19,24 +19,24 @@ import express from 'express';
 import request from 'supertest';
 import { makeRouter } from './router';
 import {
-  KubernetesClusterLocator,
+  KubernetesServiceLocator,
   KubernetesFetcher,
-  ObjectsByServiceIdResponse,
+  ObjectsByEntityResponse,
 } from '..';
 
 describe('router', () => {
   let app: express.Express;
   let kubernetesFetcher: jest.Mocked<KubernetesFetcher>;
-  let kubernetesClusterLocator: jest.Mocked<KubernetesClusterLocator>;
-  let handleGetByServiceId: jest.Mock<Promise<ObjectsByServiceIdResponse>>;
+  let kubernetesServiceLocator: jest.Mocked<KubernetesServiceLocator>;
+  let handleGetByServiceId: jest.Mock<Promise<ObjectsByEntityResponse>>;
 
   beforeAll(async () => {
     kubernetesFetcher = {
-      fetchObjectsByServiceId: jest.fn(),
+      fetchObjectsForService: jest.fn(),
     };
 
-    kubernetesClusterLocator = {
-      getClusterByServiceId: jest.fn(),
+    kubernetesServiceLocator = {
+      getClustersByServiceId: jest.fn(),
     };
 
     handleGetByServiceId = jest.fn();
@@ -44,7 +44,7 @@ describe('router', () => {
     const router = makeRouter(
       getVoidLogger(),
       kubernetesFetcher,
-      kubernetesClusterLocator,
+      kubernetesServiceLocator,
       handleGetByServiceId as any,
     );
     app = express().use(router);
@@ -54,8 +54,8 @@ describe('router', () => {
     jest.resetAllMocks();
   });
 
-  describe('GET /services/:serviceId', () => {
-    it('happy path: lists kubernetes objects', async () => {
+  describe('post /services/:serviceId', () => {
+    it('happy path: lists kubernetes objects without auth in request body', async () => {
       const result = {
         clusterOne: {
           pods: [
@@ -69,7 +69,34 @@ describe('router', () => {
       } as any;
       handleGetByServiceId.mockReturnValueOnce(Promise.resolve(result));
 
-      const response = await request(app).get('/services/test-service');
+      const response = await request(app).post('/services/test-service');
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual(result);
+    });
+
+    it('happy path: lists kubernetes objects with auth in request body', async () => {
+      const result = {
+        clusterOne: {
+          pods: [
+            {
+              metadata: {
+                name: 'pod1',
+              },
+            },
+          ],
+        },
+      } as any;
+      handleGetByServiceId.mockReturnValueOnce(Promise.resolve(result));
+
+      const response = await request(app)
+        .post('/services/test-service')
+        .send({
+          auth: {
+            google: 'google_token_123',
+          },
+        })
+        .set('Content-Type', 'application/json');
 
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(result);
@@ -78,7 +105,7 @@ describe('router', () => {
     it('internal error: lists kubernetes objects', async () => {
       handleGetByServiceId.mockRejectedValue(Error('some internal error'));
 
-      const response = await request(app).get('/services/test-service');
+      const response = await request(app).post('/services/test-service');
 
       expect(response.status).toEqual(500);
       expect(response.body).toEqual({ error: 'some internal error' });

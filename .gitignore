@@ -1,5 +1,11 @@
-.idea/
+# macOS
 .DS_Store
+
+# IntelliJ
+.idea/
+*.iml
+
+# Visual Studio Code
 .vscode/
 .vsls.json
 
@@ -90,6 +96,7 @@ typings/
 .nuxt
 dist
 dist-types
+dist-workspace
 
 # Gatsby files
 .cache/
@@ -123,3 +130,6 @@ site
 
 # Local configuration files
 *.local.yaml
+
+# Sensitive credentials
+*-credentials.yaml

@@ -31,5 +31,3 @@ export {
   sidebarConfig,
 } from './config';
 export type { SidebarContextType } from './config';
-export { DefaultProviderSettings } from './DefaultProviderSettings';
-export * from './Settings';

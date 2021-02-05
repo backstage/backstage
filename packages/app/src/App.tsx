@@ -15,27 +15,30 @@
  */
 
 import {
-  createApp,
   AlertDisplay,
+  createApp,
+  createRouteRef,
+  FlatRoutes,
   OAuthRequestDialog,
   SignInPage,
-  createRouteRef,
 } from '@backstage/core';
-import React, { FC } from 'react';
-import Root from './components/Root';
-import * as plugins from './plugins';
-import { apis } from './apis';
-import { hot } from 'react-hot-loader/root';
-import { providers } from './identityProviders';
 import { Router as CatalogRouter } from '@backstage/plugin-catalog';
-import { Router as DocsRouter } from '@backstage/plugin-techdocs';
+import { Router as ImportComponentRouter } from '@backstage/plugin-catalog-import';
+import { ExplorePage } from '@backstage/plugin-explore';
 import { Router as GraphiQLRouter } from '@backstage/plugin-graphiql';
-import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
 import { Router as LighthouseRouter } from '@backstage/plugin-lighthouse';
 import { Router as RegisterComponentRouter } from '@backstage/plugin-register-component';
-import { Route, Routes, Navigate } from 'react-router';
-
+import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
+import { Router as DocsRouter } from '@backstage/plugin-techdocs';
+import { Router as SettingsRouter } from '@backstage/plugin-user-settings';
+import React from 'react';
+import { hot } from 'react-hot-loader/root';
+import { Navigate, Route } from 'react-router';
+import { apis } from './apis';
 import { EntityPage } from './components/catalog/EntityPage';
+import Root from './components/Root';
+import { providers } from './identityProviders';
+import * as plugins from './plugins';
 
 const app = createApp({
   apis,
@@ -63,36 +66,40 @@ const catalogRouteRef = createRouteRef({
   title: 'Service Catalog',
 });
 
-const AppRoutes = () => (
-  <Routes>
+const routes = (
+  <FlatRoutes>
     <Navigate key="/" to="/catalog" />
     <Route
-      path={`${catalogRouteRef.path}/*`}
+      path="/catalog-import"
+      element={<ImportComponentRouter catalogRouteRef={catalogRouteRef} />}
+    />
+    <Route
+      path={`${catalogRouteRef.path}`}
       element={<CatalogRouter EntityPage={EntityPage} />}
     />
-    <Route path="/docs/*" element={<DocsRouter />} />
+    <Route path="/docs" element={<DocsRouter />} />
+    <Route path="/explore" element={<ExplorePage />} />
     <Route
       path="/tech-radar"
       element={<TechRadarRouter width={1500} height={800} />}
     />
     <Route path="/graphiql" element={<GraphiQLRouter />} />
-    <Route path="/lighthouse/*" element={<LighthouseRouter />} />
+    <Route path="/lighthouse" element={<LighthouseRouter />} />
     <Route
       path="/register-component"
       element={<RegisterComponentRouter catalogRouteRef={catalogRouteRef} />}
     />
+    <Route path="/settings" element={<SettingsRouter />} />
     {...deprecatedAppRoutes}
-  </Routes>
+  </FlatRoutes>
 );
 
-const App: FC<{}> = () => (
+const App = () => (
   <AppProvider>
     <AlertDisplay />
     <OAuthRequestDialog />
     <AppRouter>
-      <Root>
-        <AppRoutes />
-      </Root>
+      <Root>{routes}</Root>
     </AppRouter>
   </AppProvider>
 );

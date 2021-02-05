@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
+import React, { PropsWithChildren } from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
-import CostGrowth from './CostGrowth';
-import {
-  defaultCurrencies,
-  Currency,
-  CurrencyType,
-  Duration,
-  findAlways,
-} from '../../types';
+import { CostGrowth } from './CostGrowth';
+import { Currency, CurrencyType, Duration } from '../../types';
+import { findAlways } from '../../utils/assert';
 import { MockConfigProvider, MockCurrencyProvider } from '../../utils/tests';
+import { defaultCurrencies } from '../../utils/currency';
 
 const engineers = findAlways(defaultCurrencies, c => c.kind === null);
 const usd = findAlways(defaultCurrencies, c => c.kind === CurrencyType.USD);
@@ -37,21 +33,12 @@ const MockContext = ({
   children,
   currency,
   engineerCost,
-}: {
-  children: ReactNode;
+}: PropsWithChildren<{
   currency: Currency;
   engineerCost: number;
-}) => (
-  <MockConfigProvider
-    engineerCost={engineerCost}
-    currencies={defaultCurrencies}
-    metrics={[]}
-    products={[]}
-    icons={[]}
-  >
-    <MockCurrencyProvider currency={currency} setCurrency={jest.fn()}>
-      {children}
-    </MockCurrencyProvider>
+}>) => (
+  <MockConfigProvider engineerCost={engineerCost}>
+    <MockCurrencyProvider currency={currency}>{children}</MockCurrencyProvider>
   </MockConfigProvider>
 );
 
@@ -67,7 +54,7 @@ describe.each`
   it(`formats ${engineers.unit}s correctly for ${expected}`, async () => {
     const { getByText } = await renderInTestApp(
       <MockContext engineerCost={engineerCost} currency={engineers}>
-        <CostGrowth change={{ ratio, amount }} duration={Duration.P1M} />
+        <CostGrowth change={{ ratio, amount }} duration={Duration.P30D} />
       </MockContext>,
     );
     expect(getByText(expected)).toBeInTheDocument();
@@ -86,7 +73,7 @@ describe.each`
   it(`formats ${usd.unit}s correctly for ${expected}`, async () => {
     const { getByText } = await renderInTestApp(
       <MockContext engineerCost={engineerCost} currency={usd}>
-        <CostGrowth change={{ ratio, amount }} duration={Duration.P1M} />
+        <CostGrowth change={{ ratio, amount }} duration={Duration.P30D} />
       </MockContext>,
     );
     expect(getByText(expected)).toBeInTheDocument();
@@ -105,7 +92,7 @@ describe.each`
   it(`formats ${carbon.unit}s correctly for ${expected}`, async () => {
     const { getByText } = await renderInTestApp(
       <MockContext engineerCost={engineerCost} currency={carbon}>
-        <CostGrowth change={{ ratio, amount }} duration={Duration.P1M} />
+        <CostGrowth change={{ ratio, amount }} duration={Duration.P30D} />
       </MockContext>,
     );
     expect(getByText(expected)).toBeInTheDocument();

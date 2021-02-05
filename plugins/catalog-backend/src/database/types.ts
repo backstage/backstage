@@ -14,29 +14,38 @@
  * limitations under the License.
  */
 
-import type { Entity, EntityName, Location } from '@backstage/catalog-model';
+import type {
+  Entity,
+  EntityName,
+  EntityRelationSpec,
+  Location,
+} from '@backstage/catalog-model';
 
 export type DbEntitiesRow = {
   id: string;
   location_id: string | null;
-  api_version: string;
-  kind: string;
-  name: string | null;
-  namespace: string | null;
   etag: string;
   generation: number;
-  metadata: string;
-  spec: string | null;
+  full_name: string;
+  data: string;
 };
 
 export type DbEntityRequest = {
   locationId?: string;
   entity: Entity;
+  relations: EntityRelationSpec[];
 };
 
 export type DbEntityResponse = {
   locationId?: string;
   entity: Entity;
+};
+
+export type DbEntitiesRelationsRow = {
+  originating_entity_id: string;
+  source_full_name: string;
+  type: string;
+  target_full_name: string;
 };
 
 export type DbEntitiesSearchRow = {
@@ -71,11 +80,43 @@ export type DatabaseLocationUpdateLogEvent = {
   message?: string;
 };
 
-export type EntityFilter = {
+/**
+ * Matches rows in the entities_search table.
+ */
+export type EntitiesSearchFilter = {
+  /**
+   * The key to match on.
+   *
+   * Matches are always case insensitive.
+   */
   key: string;
-  values: (string | null)[];
+
+  /**
+   * Match on plain equality of values.
+   *
+   * If undefined, this factor is not taken into account. Otherwise, match on
+   * values that are equal to any of the given array items. Matches are always
+   * case insensitive.
+   */
+  matchValueIn?: string[];
 };
-export type EntityFilters = EntityFilter[];
+
+/**
+ * A filter expression for entities.
+ *
+ * Any (at least one) of the outer sets must match, within which all of the
+ * individual filters must match.
+ */
+export type EntityFilter = {
+  anyOf: { allOf: EntitiesSearchFilter[] }[];
+};
+
+/**
+ * An abstraction for transactions of the underlying database technology.
+ */
+export type Transaction = {
+  rollback(): Promise<void>;
+};
 
 /**
  * An abstraction on top of the underlying database, wrapping the basic CRUD
@@ -90,16 +131,18 @@ export type Database = {
    *
    * @param fn The callback that implements the transaction
    */
-  transaction<T>(fn: (tx: unknown) => Promise<T>): Promise<T>;
+  transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T>;
 
   /**
-   * Adds a new entity to the catalog.
+   * Adds a set of new entities to the catalog.
    *
    * @param tx An ongoing transaction
-   * @param request The entity being added
-   * @returns The added entity, with uid, etag and generation set
+   * @param request The entities being added
    */
-  addEntity(tx: unknown, request: DbEntityRequest): Promise<DbEntityResponse>;
+  addEntities(
+    tx: Transaction,
+    request: DbEntityRequest[],
+  ): Promise<DbEntityResponse[]>;
 
   /**
    * Updates an existing entity in the catalog.
@@ -121,26 +164,43 @@ export type Database = {
    * @returns The updated entity
    */
   updateEntity(
-    tx: unknown,
+    tx: Transaction,
     request: DbEntityRequest,
     matchingEtag?: string,
     matchingGeneration?: number,
   ): Promise<DbEntityResponse>;
 
-  entities(tx: unknown, filters?: EntityFilters): Promise<DbEntityResponse[]>;
+  entities(tx: Transaction, filter?: EntityFilter): Promise<DbEntityResponse[]>;
 
   entityByName(
-    tx: unknown,
+    tx: Transaction,
     name: EntityName,
   ): Promise<DbEntityResponse | undefined>;
 
-  entityByUid(tx: unknown, uid: string): Promise<DbEntityResponse | undefined>;
+  entityByUid(
+    tx: Transaction,
+    uid: string,
+  ): Promise<DbEntityResponse | undefined>;
 
-  removeEntity(tx: unknown, uid: string): Promise<void>;
+  removeEntityByUid(tx: Transaction, uid: string): Promise<void>;
 
-  addLocation(location: Location): Promise<DbLocationsRow>;
+  /**
+   * Remove current relations for the entity and replace them with the new
+   * relations array.
+   *
+   * @param tx An ongoing transaction
+   * @param entityUid The entity uid
+   * @param relations The relationships to be set
+   */
+  setRelations(
+    tx: Transaction,
+    entityUid: string,
+    relations: EntityRelationSpec[],
+  ): Promise<void>;
 
-  removeLocation(tx: unknown, id: string): Promise<void>;
+  addLocation(tx: Transaction, location: Location): Promise<DbLocationsRow>;
+
+  removeLocation(tx: Transaction, id: string): Promise<void>;
 
   location(id: string): Promise<DbLocationsRowWithStatus>;
 
@@ -151,7 +211,7 @@ export type Database = {
   addLocationUpdateLogEvent(
     locationId: string,
     status: DatabaseLocationUpdateLogStatus,
-    entityName?: string,
+    entityName?: string | string[],
     message?: string,
   ): Promise<void>;
 };

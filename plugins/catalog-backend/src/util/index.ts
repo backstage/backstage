@@ -15,3 +15,5 @@
  */
 
 export * from './runPeriodically';
+export * from './RecursivePartial';
+export * from './timing';

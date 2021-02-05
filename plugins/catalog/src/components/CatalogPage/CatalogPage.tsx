@@ -19,25 +19,24 @@ import {
   Content,
   ContentHeader,
   errorApiRef,
-  identityApiRef,
   SupportButton,
   useApi,
 } from '@backstage/core';
+import { catalogApiRef, isOwnerOf } from '@backstage/plugin-catalog-react';
 import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
 import { Button, makeStyles } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
 import StarIcon from '@material-ui/icons/Star';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { catalogApiRef } from '../../api/types';
 import { EntityFilterGroupsProvider, useFilteredEntities } from '../../filter';
-import { useStarredEntities } from '../../hooks/useStarredEntites';
+import { useStarredEntities } from '../../hooks/useStarredEntities';
 import { ButtonGroup, CatalogFilter } from '../CatalogFilter/CatalogFilter';
 import { CatalogTable } from '../CatalogTable/CatalogTable';
 import { ResultsFilter } from '../ResultsFilter/ResultsFilter';
+import { useOwnUser } from '../useOwnUser';
 import CatalogLayout from './CatalogLayout';
 import { CatalogTabs, LabeledComponentType } from './CatalogTabs';
-import { WelcomeBanner } from './WelcomeBanner';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -65,7 +64,6 @@ const CatalogPageContents = () => {
   const catalogApi = useApi(catalogApiRef);
   const errorApi = useApi(errorApiRef);
   const { isStarredEntity } = useStarredEntities();
-  const userId = useApi(identityApiRef).getUserId();
   const [selectedTab, setSelectedTab] = useState<string>();
   const [selectedSidebarItem, setSelectedSidebarItem] = useState<string>();
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
@@ -76,7 +74,7 @@ const CatalogPageContents = () => {
       const root = configApi.getConfig('catalog.exampleEntityLocations');
       for (const type of root.keys()) {
         for (const target of root.getStringArray(type)) {
-          promises.push(catalogApi.addLocation(type, target));
+          promises.push(catalogApi.addLocation({ target }));
         }
       }
       await Promise.all(promises);
@@ -112,6 +110,8 @@ const CatalogPageContents = () => {
     [],
   );
 
+  const { value: user } = useOwnUser();
+
   const filterGroups = useMemo<ButtonGroup[]>(
     () => [
       {
@@ -121,7 +121,7 @@ const CatalogPageContents = () => {
             id: 'owned',
             label: 'Owned',
             icon: SettingsIcon,
-            filterFn: entity => entity.spec?.owner === userId,
+            filterFn: entity => user !== undefined && isOwnerOf(user, entity),
           },
           {
             id: 'starred',
@@ -142,7 +142,7 @@ const CatalogPageContents = () => {
         ],
       },
     ],
-    [isStarredEntity, userId, orgName],
+    [isStarredEntity, orgName, user],
   );
 
   const showAddExampleEntities =
@@ -155,7 +155,6 @@ const CatalogPageContents = () => {
         onChange={({ label }) => setSelectedTab(label)}
       />
       <Content>
-        <WelcomeBanner />
         <ContentHeader title={selectedTab ?? ''}>
           <Button
             component={RouterLink}

@@ -56,11 +56,11 @@ to its comprehensive set of supported authentication
 [strategies](http://www.passportjs.org/packages/).
 
 Read more about the
-[auth-backend](https://github.com/spotify/backstage/blob/master/plugins/auth-backend/README.md)
+[auth-backend](https://github.com/backstage/backstage/blob/master/plugins/auth-backend/README.md)
 and
-[how to add a new provider](https://github.com/spotify/backstage/blob/master/docs/auth/add-auth-provider.md)
+[how to add a new provider](https://github.com/backstage/backstage/blob/master/docs/auth/add-auth-provider.md)
 
 ## Documentation
 
-- [Backstage Readme](https://github.com/spotify/backstage/blob/master/README.md)
-- [Backstage Documentation](https://github.com/spotify/backstage/blob/master/docs/README.md)
+- [Backstage Readme](https://github.com/backstage/backstage/blob/master/README.md)
+- [Backstage Documentation](https://github.com/backstage/backstage/blob/master/docs/README.md)

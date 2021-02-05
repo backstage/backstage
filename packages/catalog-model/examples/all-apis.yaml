@@ -4,9 +4,11 @@ metadata:
   name: example-apis
   description: A collection of all Backstage example APIs
 spec:
-  type: github
   targets:
-    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/hello-world-api.yaml
-    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/streetlights-api.yaml
-    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/spotify-api.yaml
-    - https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/swapi-graphql.yaml
+    - ./apis/hello-world-api.yaml
+    - ./apis/petstore-api.yaml
+    - ./apis/spotify-api.yaml
+    - ./apis/streetlights-api.yaml
+    - ./apis/swapi-graphql.yaml
+    - ./apis/wayback-archive-api.yaml
+    - ./apis/wayback-search-api.yaml

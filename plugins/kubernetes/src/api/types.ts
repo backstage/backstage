@@ -15,7 +15,10 @@
  */
 
 import { createApiRef } from '@backstage/core';
-import { ObjectsByServiceIdResponse } from '@backstage/plugin-kubernetes-backend';
+import {
+  KubernetesRequestBody,
+  ObjectsByEntityResponse,
+} from '@backstage/plugin-kubernetes-backend';
 
 export const kubernetesApiRef = createApiRef<KubernetesApi>({
   id: 'plugin.kubernetes.service',
@@ -24,5 +27,7 @@ export const kubernetesApiRef = createApiRef<KubernetesApi>({
 });
 
 export interface KubernetesApi {
-  getObjectsByServiceId(serviceId: String): Promise<ObjectsByServiceIdResponse>;
+  getObjectsByEntity(
+    requestBody: KubernetesRequestBody,
+  ): Promise<ObjectsByEntityResponse>;
 }

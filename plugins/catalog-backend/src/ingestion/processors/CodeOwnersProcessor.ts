@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
+import { NotFoundError, UrlReader } from '@backstage/backend-common';
 import { Entity, LocationSpec } from '@backstage/catalog-model';
-import {
-  LocationProcessor,
-  LocationProcessorEmit,
-  LocationProcessorRead,
-} from './types';
 import * as codeowners from 'codeowners-utils';
 import { CodeOwnersEntry } from 'codeowners-utils';
-import parseGitUri from 'git-url-parse';
-import { filter, head, get, pipe, reverse } from 'lodash/fp';
-
 // NOTE: This can be removed when ES2021 is implemented
 import 'core-js/features/promise';
+import parseGitUrl from 'git-url-parse';
+import { filter, get, head, pipe, reverse } from 'lodash/fp';
+import { Logger } from 'winston';
+import { CatalogProcessor } from './types';
 
 const ALLOWED_LOCATION_TYPES = [
+  'url',
   'azure/api',
   'bitbucket/api',
   'github',
@@ -37,12 +35,22 @@ const ALLOWED_LOCATION_TYPES = [
   'gitlab/api',
 ];
 
-export class CodeOwnersProcessor implements LocationProcessor {
-  async processEntity(
+// TODO(Rugvip): We want to properly detect out repo provider, but for now it's
+//               best to wait for GitHub Apps to be properly introduced and see
+//               what kind of APIs that integrations will expose.
+const KNOWN_LOCATIONS = ['', '/docs', '/.bitbucket', '/.github', '/.gitlab'];
+
+type Options = {
+  reader: UrlReader;
+  logger: Logger;
+};
+
+export class CodeOwnersProcessor implements CatalogProcessor {
+  constructor(private readonly options: Options) {}
+
+  async preProcessEntity(
     entity: Entity,
     location: LocationSpec,
-    _emit: LocationProcessorEmit,
-    read: LocationProcessorRead,
   ): Promise<Entity> {
     // Only continue if the owner is not set
     if (
@@ -54,7 +62,10 @@ export class CodeOwnersProcessor implements LocationProcessor {
       return entity;
     }
 
-    const owner = await resolveCodeOwner(location, read);
+    const owner = await resolveCodeOwner(location, this.options);
+    if (!owner) {
+      return entity;
+    }
 
     return {
       ...entity,
@@ -65,12 +76,11 @@ export class CodeOwnersProcessor implements LocationProcessor {
 
 export async function resolveCodeOwner(
   location: LocationSpec,
-  read: LocationProcessorRead,
+  options: Options,
 ): Promise<string | undefined> {
-  const ownersText = await findRawCodeOwners(location, read);
-
+  const ownersText = await findRawCodeOwners(location, options);
   if (!ownersText) {
-    throw Error(`Unable to find codeowners file for: ${location.target}`);
+    return undefined;
   }
 
   const owners = parseCodeOwners(ownersText);
@@ -80,25 +90,40 @@ export async function resolveCodeOwner(
 
 export async function findRawCodeOwners(
   location: LocationSpec,
-  read: LocationProcessorRead,
+  options: Options,
 ): Promise<string | undefined> {
   const readOwnerLocation = async (basePath: string): Promise<string> => {
-    const ownerLocation = buildCodeOwnerLocation(
-      location,
+    const ownerUrl = buildCodeOwnerUrl(
+      location.target,
       `${basePath}/CODEOWNERS`,
     );
-
-    const data = await read(ownerLocation);
+    const data = await options.reader.read(ownerUrl);
     return data.toString();
   };
 
-  const gitProvider = location.type.split('/')[0];
+  const candidates = KNOWN_LOCATIONS.map(readOwnerLocation);
+  return Promise.any(candidates).catch((aggregateError: AggregateError) => {
+    const hardError = aggregateError.errors.find(
+      error => !(error instanceof NotFoundError),
+    );
+    if (hardError) {
+      options.logger.warn(
+        `Failed to read codeowners for location ${location.type}:${location.target}, ${hardError}`,
+      );
+    } else {
+      options.logger.debug(
+        `Failed to find codeowners for location ${location.type}:${location.target}`,
+      );
+    }
+    return undefined;
+  });
+}
 
-  return Promise.any([
-    readOwnerLocation(`/.${gitProvider}`),
-    readOwnerLocation(''),
-    readOwnerLocation('/docs'),
-  ]);
+export function buildCodeOwnerUrl(
+  basePath: string,
+  codeOwnersPath: string,
+): string {
+  return buildUrl({ ...parseGitUrl(basePath), codeOwnersPath });
 }
 
 export function parseCodeOwners(ownersText: string) {
@@ -121,20 +146,13 @@ export function findPrimaryCodeOwner(
 export function normalizeCodeOwner(owner: string) {
   if (owner.match(/^@.*\/.*/)) {
     return owner.split('/')[1];
+  } else if (owner.match(/^@.*/)) {
+    return owner.substring(1);
   } else if (owner.match(/^.*@.*\..*$/)) {
     return owner.split('@')[0];
   }
 
   return owner;
-}
-
-export function buildCodeOwnerLocation(
-  location: LocationSpec,
-  codeOwnersPath: string,
-): LocationSpec {
-  const { type, target } = location;
-
-  return { type, target: buildUrl({ ...parseGitUri(target), codeOwnersPath }) };
 }
 
 export function buildUrl({
