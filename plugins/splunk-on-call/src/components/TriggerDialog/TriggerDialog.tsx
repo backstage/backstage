@@ -207,13 +207,18 @@ export const TriggerDialog = ({
                 input={<Input />}
                 renderValue={selected => (
                   <div className={classes.chips}>
-                    {(selected as string[]).map(value => (
-                      <Chip
-                        key={value}
-                        label={value}
-                        className={classes.chip}
-                      />
-                    ))}
+                    {(selected as string[]).map(value => {
+                      const element = users.find(
+                        user => user.username === value,
+                      );
+                      return (
+                        <Chip
+                          key={value}
+                          label={`${element?.firstName} ${element?.lastName}`}
+                          className={classes.chip}
+                        />
+                      );
+                    })}
                   </div>
                 )}
                 MenuProps={MenuProps}
@@ -235,13 +240,18 @@ export const TriggerDialog = ({
                 input={<Input />}
                 renderValue={selected => (
                   <div className={classes.chips}>
-                    {(selected as string[]).map(value => (
-                      <Chip
-                        key={value}
-                        label={value}
-                        className={classes.chip}
-                      />
-                    ))}
+                    {(selected as string[]).map(value => {
+                      const element = policies?.find(
+                        policy => policy.policy.slug === value,
+                      );
+                      return (
+                        <Chip
+                          key={value}
+                          label={element?.policy.name}
+                          className={classes.chip}
+                        />
+                      );
+                    })}
                   </div>
                 )}
                 MenuProps={MenuProps}
