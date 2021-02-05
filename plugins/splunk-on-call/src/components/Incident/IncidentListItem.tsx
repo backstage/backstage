@@ -225,7 +225,7 @@ export const IncidentListItem = ({ incident, onIncidentAction }: Props) => {
             resolveAction={handleResolveIncident}
             aknowledgeAction={handleAcknowledgeIncident}
           />
-          <Tooltip title="View in SplunkOnCall" placement="top">
+          <Tooltip title="View in Splunk On-Call" placement="top">
             <IconButton
               href={incident.incidentLink}
               target="_blank"

@@ -34,6 +34,9 @@ import {
   FormControl,
   InputLabel,
 } from '@material-ui/core';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
 import { useApi, alertApiRef, identityApiRef } from '@backstage/core';
 import { useAsync, useAsyncFn } from 'react-use';
 import { splunkOnCallApiRef } from '../../api';
@@ -189,57 +192,75 @@ export const TriggerDialog = ({
           automatically be amended to the alarm so that the receiver can reach
           out to you if necessary.
         </Typography>
-        <FormControl className={classes.formControl}>
-          <InputLabel>Select users</InputLabel>
-          <Select
-            id="user-targets"
-            multiple
-            value={userTargets}
-            onChange={handleUserTargets}
-            input={<Input />}
-            renderValue={selected => (
-              <div className={classes.chips}>
-                {(selected as string[]).map(value => (
-                  <Chip key={value} label={value} className={classes.chip} />
+        <Card>
+          <CardContent>
+            <Typography color="textPrimary" gutterBottom>
+              Select the targets
+            </Typography>
+            <FormControl className={classes.formControl}>
+              <InputLabel>Select users</InputLabel>
+              <Select
+                id="user-targets"
+                multiple
+                value={userTargets}
+                onChange={handleUserTargets}
+                input={<Input />}
+                renderValue={selected => (
+                  <div className={classes.chips}>
+                    {(selected as string[]).map(value => (
+                      <Chip
+                        key={value}
+                        label={value}
+                        className={classes.chip}
+                      />
+                    ))}
+                  </div>
+                )}
+                MenuProps={MenuProps}
+              >
+                {users.map(user => (
+                  <MenuItem key={user.email} value={user.username}>
+                    {user.firstName} {user.lastName}
+                  </MenuItem>
                 ))}
-              </div>
-            )}
-            MenuProps={MenuProps}
-          >
-            {users.map(user => (
-              <MenuItem key={user.email} value={user.username}>
-                {user.firstName} {user.lastName}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl className={classes.formControl}>
-          <InputLabel>Select an escalation poilicy</InputLabel>
-          <Select
-            id="policy-targets"
-            multiple
-            value={policyTargets}
-            onChange={handlePolicyTargets}
-            input={<Input />}
-            renderValue={selected => (
-              <div className={classes.chips}>
-                {(selected as string[]).map(value => (
-                  <Chip key={value} label={value} className={classes.chip} />
-                ))}
-              </div>
-            )}
-            MenuProps={MenuProps}
-          >
-            {!error &&
-              !loading &&
-              policies &&
-              policies.map(policy => (
-                <MenuItem key={policy.policy.slug} value={policy.policy.slug}>
-                  {policy.policy.name}
-                </MenuItem>
-              ))}
-          </Select>
-        </FormControl>
+              </Select>
+            </FormControl>
+            <FormControl className={classes.formControl}>
+              <InputLabel>Select an escalation poilicy</InputLabel>
+              <Select
+                id="policy-targets"
+                multiple
+                value={policyTargets}
+                onChange={handlePolicyTargets}
+                input={<Input />}
+                renderValue={selected => (
+                  <div className={classes.chips}>
+                    {(selected as string[]).map(value => (
+                      <Chip
+                        key={value}
+                        label={value}
+                        className={classes.chip}
+                      />
+                    ))}
+                  </div>
+                )}
+                MenuProps={MenuProps}
+              >
+                {!error &&
+                  !loading &&
+                  policies &&
+                  policies.map(policy => (
+                    <MenuItem
+                      key={policy.policy.slug}
+                      value={policy.policy.slug}
+                    >
+                      {policy.policy.name}
+                    </MenuItem>
+                  ))}
+              </Select>
+            </FormControl>
+          </CardContent>
+        </Card>
         <FormControl className={classes.formControl}>
           <InputLabel>Acknowledge Behavior</InputLabel>
           <Select
@@ -247,8 +268,14 @@ export const TriggerDialog = ({
             value={isMultiResponder}
             onChange={isMultiResponderChanged}
           >
-            <MenuItem value="1">Stop paging</MenuItem>
-            <MenuItem value="0">Continue paging</MenuItem>
+            <MenuItem value="1">
+              Stop paging after a single Acknowledge from an escalation policy
+              or user
+            </MenuItem>
+            <MenuItem value="0">
+              Continue paging until each escalation policy or user above has
+              acknowledged
+            </MenuItem>
           </Select>
         </FormControl>
         <TextField
@@ -259,7 +286,7 @@ export const TriggerDialog = ({
           fullWidth
           rows="4"
           margin="normal"
-          label="Problem summary"
+          label="Incident summary"
           variant="outlined"
           onChange={summaryChanged}
         />
@@ -271,7 +298,7 @@ export const TriggerDialog = ({
           fullWidth
           rows="2"
           margin="normal"
-          label="Problem details"
+          label="Incident body"
           variant="outlined"
           onChange={detailsChanged}
         />

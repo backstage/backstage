@@ -50,20 +50,21 @@ const useStyles = makeStyles({
   },
 });
 
-export const SPLUNK_ON_CALL_INTEGRATION_KEY = '';
+export const SPLUNK_ON_CALL_TEAM = 'splunk-on-call.com/team';
 
 export const isPluginApplicableToEntity = (entity: Entity) =>
-  Boolean(entity.metadata.annotations?.[SPLUNK_ON_CALL_INTEGRATION_KEY]);
+  Boolean(entity.metadata.annotations?.[SPLUNK_ON_CALL_TEAM]);
 
 type Props = {
   entity: Entity;
 };
 
-export const SplunkOnCallCard = () => {
+export const SplunkOnCallCard = ({ entity }: Props) => {
   const classes = useStyles();
   const api = useApi(splunkOnCallApiRef);
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [refreshIncidents, setRefreshIncidents] = useState<boolean>(false);
+  const team = entity.metadata.annotations![SPLUNK_ON_CALL_TEAM];
 
   const handleRefresh = useCallback(() => {
     setRefreshIncidents(x => !x);
@@ -127,7 +128,9 @@ export const SplunkOnCallCard = () => {
       <Divider />
       <CardContent>
         <Incidents refreshIncidents={refreshIncidents} />
-        {users?.usersHashMap && <EscalationPolicy users={users.usersHashMap} />}
+        {users?.usersHashMap && (
+          <EscalationPolicy team={team} users={users.usersHashMap} />
+        )}
         {users && (
           <TriggerDialog
             users={users?.userList}

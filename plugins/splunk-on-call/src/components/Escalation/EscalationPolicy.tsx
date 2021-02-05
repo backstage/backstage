@@ -26,20 +26,23 @@ import { User } from '../types';
 
 type Props = {
   users: { [key: string]: User };
+  team: string;
 };
 
-export const EscalationPolicy = ({ users }: Props) => {
+export const EscalationPolicy = ({ users, team }: Props) => {
   const api = useApi(splunkOnCallApiRef);
 
   const { value: userNames, loading, error } = useAsync(async () => {
     const oncalls = await api.getOnCallUsers();
-    const users = oncalls.flatMap(oncall => {
-      return oncall.oncallNow?.flatMap(oncallNow => {
-        return oncallNow.users?.flatMap(user => {
-          return user?.onCalluser?.username;
+    const users = oncalls
+      .filter(oncall => oncall.team?.name === team)
+      .flatMap(oncall => {
+        return oncall.oncallNow?.flatMap(oncallNow => {
+          return oncallNow.users?.flatMap(user => {
+            return user?.onCalluser?.username;
+          });
         });
       });
-    });
 
     return users;
   });
