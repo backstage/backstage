@@ -18,6 +18,8 @@ import React from 'react';
 import { useCopyToClipboard } from 'react-use';
 import { generatePath } from 'react-router-dom';
 
+import { IconButton, Tooltip } from '@material-ui/core';
+import ShareIcon from '@material-ui/icons/Share';
 import {
   Content,
   ContentHeader,
@@ -28,11 +30,10 @@ import {
   EmptyState,
   Button,
   SubvalueCell,
+  Link,
 } from '@backstage/core';
-
-import { IconButton, Tooltip } from '@material-ui/core';
-import ShareIcon from '@material-ui/icons/Share';
 import { Entity } from '@backstage/catalog-model';
+
 import { rootDocsRouteRef } from '../../plugin';
 
 export const OwnedContent = ({ value }: { value: Entity[] }) => {
@@ -49,7 +50,7 @@ export const OwnedContent = ({ value }: { value: Entity[] }) => {
         name: entity.metadata.name,
         description: entity.metadata.description,
         owner: entity?.spec?.owner,
-        type: entity?.spec?.type === 'documentation' || 'docs with code',
+        type: entity?.spec?.type,
         docsUrl: generatePath(rootDocsRouteRef.path, {
           namespace: entity.metadata.namespace ?? 'default',
           kind: entity.kind,
@@ -64,7 +65,10 @@ export const OwnedContent = ({ value }: { value: Entity[] }) => {
       field: 'name',
       highlight: true,
       render: (row: any): React.ReactNode => (
-        <SubvalueCell value={row.name} subvalue={row.description} />
+        <SubvalueCell
+          value={<Link to={row.docsUrl}>{row.name}</Link>}
+          subvalue={row.description}
+        />
       ),
     },
     {
@@ -80,7 +84,11 @@ export const OwnedContent = ({ value }: { value: Entity[] }) => {
       width: '10%',
       render: (row: any) => (
         <Tooltip title="Click to copy documentation link to clipboard">
-          <IconButton onClick={() => copyToClipboard(row.docsUrl)}>
+          <IconButton
+            onClick={() =>
+              copyToClipboard(`${window.location.origin}/${row.docsUrl}`)
+            }
+          >
             <ShareIcon />
           </IconButton>
         </Tooltip>
