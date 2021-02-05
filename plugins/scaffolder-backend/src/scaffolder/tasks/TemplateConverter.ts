@@ -99,7 +99,7 @@ export class TemplateActionRegistry {
   register(action: TemplateAction) {
     if (this.actions.has(action.id)) {
       throw new ConflictError(
-        `Template action with id ${action.id} as already been registered`,
+        `Template action with ID '${action.id}' has already been registered`,
       );
     }
     this.actions.set(action.id, action);
@@ -109,7 +109,7 @@ export class TemplateActionRegistry {
     const action = this.actions.get(actionId);
     if (!action) {
       throw new NotFoundError(
-        `Template action with id ${actionId} is not registered.`,
+        `Template action with ID '${actionId}' is not registered.`,
       );
     }
     return action;

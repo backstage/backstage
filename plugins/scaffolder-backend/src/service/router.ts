@@ -258,7 +258,7 @@ export async function createRouter(
         'Content-Type': 'text/event-stream',
       });
 
-      // After client opens connection send all nests as string
+      // After client opens connection send all events as string
       const unsubscribe = taskBroker.observe(
         { taskId, after },
         (error, { events }) => {
