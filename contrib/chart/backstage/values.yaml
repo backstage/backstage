@@ -251,3 +251,5 @@ auth:
   newRelicRestApiKey: r
   travisciAuthToken: fake-travis-ci-auth-token
   pagerdutyToken: h
+  splunkOnCallApiId: h
+  splunkOnCallApiKey: h
