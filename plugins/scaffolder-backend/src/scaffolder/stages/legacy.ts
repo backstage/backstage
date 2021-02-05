@@ -87,10 +87,9 @@ export function registerLegacyActions(
       }
       const owner = values.owner as unknown;
       if (typeof owner !== 'string') {
-        throw new Error(
-          `Invalid store path passed to publish, got ${typeof owner}`,
-        );
+        throw new Error(`Invalid owner passed to publish, got ${typeof owner}`);
       }
+
       const publisher = publishers.get(storePath);
       ctx.logger.info('Will now store the template');
       const { remoteUrl, catalogInfoUrl } = await publisher.publish({
