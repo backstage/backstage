@@ -94,7 +94,7 @@ The recommended way of instantiating the catalog backend classes is to use the
 as illustrated in the
 [example backend here](https://github.com/backstage/backstage/blob/master/packages/backend/src/plugins/catalog.ts).
 We will create a new
-[`CatalogProcessor`](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/src/ingestion/types.ts)
+[`CatalogProcessor`](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/src/ingestion/processors/types.ts)
 subclass that can be added to this catalog builder.
 
 It is up to you where you put the code for this new processor class. For quick

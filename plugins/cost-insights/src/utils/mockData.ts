@@ -36,7 +36,7 @@ import {
   getDefaultState as getDefaultLoadingState,
 } from '../utils/loading';
 import { findAlways } from '../utils/assert';
-import { inclusiveStartDateOf } from './duration';
+import { inclusiveEndDateOf, inclusiveStartDateOf } from './duration';
 
 type mockAlertRenderer<T> = (alert: T) => T;
 type mockEntityRenderer<T> = (entity: T) => T;
@@ -228,8 +228,9 @@ export function aggregationFor(
   baseline: number,
 ): DateAggregation[] {
   const { duration, endDate } = parseIntervals(intervals);
+  const inclusiveEndDate = inclusiveEndDateOf(duration, endDate);
   const days = dayjs(endDate).diff(
-    inclusiveStartDateOf(duration, endDate),
+    inclusiveStartDateOf(duration, inclusiveEndDate),
     'day',
   );
 
@@ -244,7 +245,7 @@ export function aggregationFor(
   return [...Array(days).keys()].reduce(
     (values: DateAggregation[], i: number): DateAggregation[] => {
       const last = values.length ? values[values.length - 1].amount : baseline;
-      const date = dayjs(inclusiveStartDateOf(duration, endDate))
+      const date = dayjs(inclusiveStartDateOf(duration, inclusiveEndDate))
         .add(i, 'day')
         .format(DEFAULT_DATE_FORMAT);
       const amount = Math.max(0, last + nextDelta());
@@ -1062,5 +1063,20 @@ export const getGroupedProducts = (intervals: string) => [
   {
     id: 'Cloud Bigtable',
     aggregation: aggregationFor(intervals, 250),
+  },
+];
+
+export const getGroupedProjects = (intervals: string) => [
+  {
+    id: 'project-a',
+    aggregation: aggregationFor(intervals, 1_700),
+  },
+  {
+    id: 'project-b',
+    aggregation: aggregationFor(intervals, 350),
+  },
+  {
+    id: 'project-c',
+    aggregation: aggregationFor(intervals, 1_300),
   },
 ];

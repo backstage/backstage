@@ -14,37 +14,73 @@
  * limitations under the License.
  */
 
-import { ApiEntity } from '@backstage/catalog-model';
+import {
+  ApiEntity,
+  EntityName,
+  RELATION_OWNED_BY,
+  RELATION_PART_OF,
+} from '@backstage/catalog-model';
 import { Table, TableColumn } from '@backstage/core';
+import {
+  EntityRefLink,
+  EntityRefLinks,
+  formatEntityRefTitle,
+  getEntityRelations,
+} from '@backstage/plugin-catalog-react';
 import React from 'react';
 import { ApiTypeTitle } from '../ApiDefinitionCard';
-import { EntityLink } from '../EntityLink';
 
-const columns: TableColumn<ApiEntity>[] = [
+type EntityRow = {
+  entity: ApiEntity;
+  resolved: {
+    partOfSystemRelationTitle?: string;
+    partOfSystemRelations: EntityName[];
+    ownedByRelationsTitle?: string;
+    ownedByRelations: EntityName[];
+  };
+};
+
+const columns: TableColumn<EntityRow>[] = [
   {
     title: 'Name',
-    field: 'metadata.name',
+    field: 'entity.metadata.name',
     highlight: true,
-    render: (entity: any) => (
-      <EntityLink entity={entity}>{entity.metadata.name}</EntityLink>
+    render: ({ entity }) => (
+      <EntityRefLink entityRef={entity}>{entity.metadata.name}</EntityRefLink>
+    ),
+  },
+  {
+    title: 'System',
+    field: 'resolved.partOfSystemRelationTitle',
+    render: ({ resolved }) => (
+      <EntityRefLinks
+        entityRefs={resolved.partOfSystemRelations}
+        defaultKind="system"
+      />
     ),
   },
   {
     title: 'Owner',
-    field: 'spec.owner',
+    field: 'resolved.ownedByRelationsTitle',
+    render: ({ resolved }) => (
+      <EntityRefLinks
+        entityRefs={resolved.ownedByRelations}
+        defaultKind="group"
+      />
+    ),
   },
   {
     title: 'Lifecycle',
-    field: 'spec.lifecycle',
+    field: 'entity.spec.lifecycle',
   },
   {
     title: 'Type',
-    field: 'spec.type',
-    render: (entity: ApiEntity) => <ApiTypeTitle apiEntity={entity} />,
+    field: 'entity.spec.type',
+    render: ({ entity }) => <ApiTypeTitle apiEntity={entity} />,
   },
   {
     title: 'Description',
-    field: 'metadata.description',
+    field: 'entity.metadata.description',
     width: 'auto',
   },
 ];
@@ -65,8 +101,40 @@ export const ApisTable = ({ entities, title, variant = 'gridItem' }: Props) => {
     tableStyle.height = 'calc(100% - 10px)';
   }
 
+  const rows = entities
+    // TODO: For now we skip all APIs that we can't find without a warning!
+    .filter(e => e !== undefined)
+    .map(entity => {
+      const partOfSystemRelations = getEntityRelations(
+        entity,
+        RELATION_PART_OF,
+        {
+          kind: 'system',
+        },
+      );
+      const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
+
+      return {
+        entity: entity as ApiEntity,
+        resolved: {
+          ownedByRelationsTitle: ownedByRelations
+            .map(r => formatEntityRefTitle(r, { defaultKind: 'group' }))
+            .join(', '),
+          ownedByRelations,
+          partOfSystemRelationTitle: partOfSystemRelations
+            .map(r =>
+              formatEntityRefTitle(r, {
+                defaultKind: 'system',
+              }),
+            )
+            .join(', '),
+          partOfSystemRelations,
+        },
+      };
+    });
+
   return (
-    <Table<ApiEntity>
+    <Table<EntityRow>
       columns={columns}
       title={title}
       style={tableStyle}
@@ -77,8 +145,7 @@ export const ApisTable = ({ entities, title, variant = 'gridItem' }: Props) => {
         actionsColumnIndex: -1,
         padding: 'dense',
       }}
-      // TODO: For now we skip all APIs that we can't find without a warning!
-      data={entities.filter(e => e !== undefined) as ApiEntity[]}
+      data={rows}
     />
   );
 };

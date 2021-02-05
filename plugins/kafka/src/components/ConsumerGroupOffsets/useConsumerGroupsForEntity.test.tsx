@@ -13,28 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { PropsWithChildren } from 'react';
-import { renderHook } from '@testing-library/react-hooks';
-import { useConsumerGroupsForEntity } from './useConsumerGroupsForEntity';
-import { EntityContext } from '@backstage/plugin-catalog';
 import { Entity } from '@backstage/catalog-model';
+import { EntityContext } from '@backstage/plugin-catalog-react';
+import { renderHook } from '@testing-library/react-hooks';
+import React, { PropsWithChildren } from 'react';
+import { useConsumerGroupsForEntity } from './useConsumerGroupsForEntity';
 
 describe('useConsumerGroupOffsets', () => {
-  const entity: Entity = {
-    apiVersion: 'v1',
-    kind: 'Component',
-    metadata: {
-      name: 'test',
-      annotations: {
-        'kafka.apache.org/consumer-groups': 'consumer',
-      },
-    },
-    spec: {
-      owner: 'guest',
-      type: 'Website',
-      lifecycle: 'development',
-    },
-  };
+  let entity: Entity;
 
   const wrapper = ({ children }: PropsWithChildren<{}>) => {
     return (
@@ -46,8 +32,107 @@ describe('useConsumerGroupOffsets', () => {
 
   const subject = () => renderHook(useConsumerGroupsForEntity, { wrapper });
 
-  it('returns correct consumer group for annotation', async () => {
+  it('returns correct cluster and consumer group for annotation', async () => {
+    entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'test',
+        annotations: {
+          'kafka.apache.org/consumer-groups': 'prod/consumer',
+        },
+      },
+      spec: {
+        owner: 'guest',
+        type: 'Website',
+        lifecycle: 'development',
+      },
+    };
     const { result } = subject();
-    expect(result.current).toBe('consumer');
+    expect(result.current).toStrictEqual([
+      {
+        clusterId: 'prod',
+        consumerGroup: 'consumer',
+      },
+    ]);
+  });
+
+  it('returns correct cluster and consumer group for multiple consumers', async () => {
+    entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'test',
+        annotations: {
+          'kafka.apache.org/consumer-groups':
+            'prod/consumer,dev/another-consumer',
+        },
+      },
+      spec: {
+        owner: 'guest',
+        type: 'Website',
+        lifecycle: 'development',
+      },
+    };
+    const { result } = subject();
+    expect(result.current).toStrictEqual([
+      { clusterId: 'prod', consumerGroup: 'consumer' },
+      {
+        clusterId: 'dev',
+        consumerGroup: 'another-consumer',
+      },
+    ]);
+  });
+
+  it('returns correct cluster and consumer group for annotation with extra spaces', async () => {
+    entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'test',
+        annotations: {
+          'kafka.apache.org/consumer-groups':
+            '   prod/consumer   ,   dev/another-consumer   ',
+        },
+      },
+      spec: {
+        owner: 'guest',
+        type: 'Website',
+        lifecycle: 'development',
+      },
+    };
+    const { result } = subject();
+    expect(result.current).toStrictEqual([
+      { clusterId: 'prod', consumerGroup: 'consumer' },
+      {
+        clusterId: 'dev',
+        consumerGroup: 'another-consumer',
+      },
+    ]);
+  });
+
+  it('fails on missing cluster', async () => {
+    entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'test',
+        annotations: {
+          'kafka.apache.org/consumer-groups': 'dev/another,consumer',
+        },
+      },
+      spec: {
+        owner: 'guest',
+        type: 'Website',
+        lifecycle: 'development',
+      },
+    };
+    const { result } = subject();
+    expect(() => result.current).toThrowError();
+    expect(result.error).toStrictEqual(
+      new Error(
+        `Failed to parse kafka consumer group annotation: got "dev/another,consumer"`,
+      ),
+    );
   });
 });

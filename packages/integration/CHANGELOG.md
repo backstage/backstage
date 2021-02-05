@@ -1,5 +1,27 @@
 # @backstage/integration
 
+## 0.3.2
+
+### Patch Changes
+
+- c4abcdb60: Fix GitLab handling of paths with spaces
+- 064c513e1: Properly forward errors that occur when looking up GitLab project IDs.
+- 3149bfe63: Add a `resolveUrl` method to integrations, that works like the two-argument URL
+  constructor. The reason for using this is that Azure have their paths in a
+  query parameter, rather than the pathname of the URL.
+
+  The implementation is optional (when not present, the URL constructor is used),
+  so this does not imply a breaking change.
+
+- 2e62aea6f: #4322 Bitbucket own hosted v5.11.1 branchUrl fix and enabled error tracing… #4347
+
+## 0.3.1
+
+### Patch Changes
+
+- 6800da78d: Fix default branch API url for custom hosted Bitbucket server
+- 9dd057662: Upgrade [git-url-parse](https://www.npmjs.com/package/git-url-parse) to [v11.4.4](https://github.com/IonicaBizau/git-url-parse/pull/125) which fixes parsing an Azure DevOps branch ref.
+
 ## 0.3.0
 
 ### Minor Changes

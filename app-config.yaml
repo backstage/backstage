@@ -74,13 +74,11 @@ organization:
 
 # Reference documentation http://backstage.io/docs/features/techdocs/configuration
 techdocs:
-  requestUrl: http://localhost:7000/api/techdocs
-  storageUrl: http://localhost:7000/api/techdocs/static/docs
   builder: 'local' # Alternatives - 'external'
   generators:
     techdocs: 'docker' # Alternatives - 'local'
   publisher:
-    type: 'local' # Alternatives - 'googleGcs' or 'awsS3'. Read documentation for using alternatives.
+    type: 'local' # Alternatives - 'googleGcs' or 'awsS3' or 'azureBlobStorage'. Read documentation for using alternatives.
 
 sentry:
   organization: my-company
@@ -97,11 +95,15 @@ kubernetes:
   serviceLocatorMethod: multiTenant
   clusterLocatorMethods:
     - config
+  clusters: []
+  
+kafka:
+  clientId: backstage
   clusters:
-    - url: 'https://kubernetes.docker.internal:6443'
-      name: kind
-      authProvider: serviceAccount
-      serviceAccountToken: eyJhbGciOiJSUzI1NiIsImtpZCI6ImNIYWRJaEc4cGFSZnRiN3JFUDFoNTVwNEtvUHN6QTFPbjlmem9TYW0zM2cifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImxpbmtlcmQtYmFja2VuZC10b2tlbi01Mjk3ZiIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50Lm5hbWUiOiJsaW5rZXJkLWJhY2tlbmQiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiJkMjQ0MmZhZS1mNzhhLTQ3MmUtYjkxMi02NjM3MDZmMzE2MjMiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6ZGVmYXVsdDpsaW5rZXJkLWJhY2tlbmQifQ.AmJAr_UhCuwop7V-ZB4z1BPzk7ta4GMitfFTInQfKN1dJ5Avc4rp8u-cIqbfhef_26b8UzkeU8RwCYvwSJ6K7aZ1jhW4cd_swqfn-boVZayufd8nV0GRWLPzw7Vm98Jvru4Zw-FJ330ESB38pV6bFPbtxxgXIBYmgalMKBdCYVo9Mkgvj6Dun1N2nf2ee4yjKwVRv02myRsJwhswYwnez0tZRX0scBIPz0PwBmsbiqkxImhjJrBkajVesGBK2hDyPaLQvDL_EfbRCRh1FW0W4iFEyM1jz__z0aOkGtsHWhPtS6hSuUYoG8b3v1MWvJS7N59CBMf8gwl5qD5WMxKLew
+    - name: cluster
+      brokers:
+        - localhost:9092
+
 integrations:
   github:
     - host: github.com
@@ -204,7 +206,7 @@ catalog:
     # Backstage example components
     - type: file
       target: ../catalog-model/examples/all-components.yaml
-    # Example component for github-actions
+    # Example component for github-actions and TechDocs
     - type: file
       target: ../../plugins/github-actions/examples/sample.yaml
     # Example component for TechDocs
@@ -239,6 +241,7 @@ scaffolder:
       baseUrl: https://gitlab.com
       token:
         $env: GITLAB_TOKEN
+    visibility: public # or 'internal' or 'private'
   azure:
     baseUrl: https://dev.azure.com/{your-organization}
     api:
@@ -251,6 +254,7 @@ scaffolder:
         $env: BITBUCKET_USERNAME
       token:
         $env: BITBUCKET_TOKEN
+    visibility: public # or or 'private'
 
 auth:
   environment: development
@@ -375,8 +379,3 @@ homepage:
       timezone: 'Asia/Tokyo'
 pagerduty:
   eventsBaseUrl: 'https://events.pagerduty.com/v2'
-
-kafka:
-  clientId: backstage
-  brokers:
-    - localhost:9092

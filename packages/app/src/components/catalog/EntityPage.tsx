@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   ApiEntity,
   Entity,
@@ -27,11 +28,8 @@ import {
   ProvidedApisCard,
   ProvidingComponentsCard,
 } from '@backstage/plugin-api-docs';
-import {
-  AboutCard,
-  EntityPageLayout,
-  useEntity,
-} from '@backstage/plugin-catalog';
+import { AboutCard, EntityPageLayout } from '@backstage/plugin-catalog';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import {
   isPluginApplicableToEntity as isCircleCIAvailable,
   Router as CircleCIRouter,
@@ -50,6 +48,7 @@ import {
   LatestRunCard as JenkinsLatestRunCard,
   Router as JenkinsRouter,
 } from '@backstage/plugin-jenkins';
+import { Router as KafkaRouter } from '@backstage/plugin-kafka';
 import { Router as KubernetesRouter } from '@backstage/plugin-kubernetes';
 import {
   EmbeddedRouter as LighthouseRouter,
@@ -57,13 +56,20 @@ import {
   LastLighthouseAuditCard,
 } from '@backstage/plugin-lighthouse';
 import {
-  OwnershipCard,
-  MembersListCard,
   GroupProfileCard,
+  MembersListCard,
+  OwnershipCard,
   UserProfileCard,
 } from '@backstage/plugin-org';
+import {
+  isPluginApplicableToEntity as isPagerDutyAvailable,
+  PagerDutyCard,
+} from '@backstage/plugin-pagerduty';
+import {
+  isRollbarAvailable,
+  Router as RollbarRouter,
+} from '@backstage/plugin-rollbar';
 import { Router as SentryRouter } from '@backstage/plugin-sentry';
-import { Router as KafkaRouter } from '@backstage/plugin-kafka';
 import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
 import { Router as LinkerdRouter } from '@backstage/plugin-linkerd';
 import { Button, Grid } from '@material-ui/core';
@@ -83,10 +89,6 @@ import {
   PullRequestsStatsCard,
   Router as PullRequestsRouter,
 } from '@roadiehq/backstage-plugin-github-pull-requests';
-import {
-  isPluginApplicableToEntity as isPagerDutyAvailable,
-  PagerDutyCard,
-} from '@backstage/plugin-pagerduty';
 import {
   isPluginApplicableToEntity as isTravisCIAvailable,
   RecentTravisCIBuildsWidget,
@@ -157,6 +159,15 @@ const RecentCICDRunsSwitcher = ({ entity }: { entity: Entity }) => {
   );
 };
 
+export const ErrorsSwitcher = ({ entity }: { entity: Entity }) => {
+  switch (true) {
+    case isRollbarAvailable(entity):
+      return <RollbarRouter entity={entity} />;
+    default:
+      return <SentryRouter entity={entity} />;
+  }
+};
+
 const ComponentOverviewContent = ({ entity }: { entity: Entity }) => (
   <Grid container spacing={3} alignItems="stretch">
     <Grid item md={6}>
@@ -216,9 +227,9 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
       element={<CICDSwitcher entity={entity} />}
     />
     <EntityPageLayout.Content
-      path="/sentry"
-      title="Sentry"
-      element={<SentryRouter entity={entity} />}
+      path="/errors/*"
+      title="Errors"
+      element={<ErrorsSwitcher entity={entity} />}
     />
     <EntityPageLayout.Content
       path="/api/*"
@@ -276,9 +287,9 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
       element={<LighthouseRouter entity={entity} />}
     />
     <EntityPageLayout.Content
-      path="/sentry"
-      title="Sentry"
-      element={<SentryRouter entity={entity} />}
+      path="/errors/*"
+      title="Errors"
+      element={<ErrorsSwitcher entity={entity} />}
     />
     <EntityPageLayout.Content
       path="/docs/*"

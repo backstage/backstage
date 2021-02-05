@@ -14,50 +14,118 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Alert, UnlabeledDataflowData, ProjectGrowthData } from '../types';
-import { UnlabeledDataflowAlertCard } from '../components/UnlabeledDataflowAlertCard';
-import { ProjectGrowthAlertCard } from '../components/ProjectGrowthAlertCard';
+import { Alert, AlertForm, AlertStatus, Maybe } from '../types';
+import { AlertAcceptForm, AlertDismissForm, AlertSnoozeForm } from '../forms';
+
+const createAlertHandler = (status?: AlertStatus) => (alert: Alert) =>
+  alert.status === status;
+export const isAlertActive = (alert: Alert) => !hasProperty(alert, 'status');
+export const isAlertSnoozed = createAlertHandler(AlertStatus.Snoozed);
+export const isAlertAccepted = createAlertHandler(AlertStatus.Accepted);
+export const isAlertDismissed = createAlertHandler(AlertStatus.Dismissed);
+
+const createStatusHandler = (status: AlertStatus) => (s: Maybe<AlertStatus>) =>
+  s === status;
+export const isStatusSnoozed = createStatusHandler(AlertStatus.Snoozed);
+export const isStatusAccepted = createStatusHandler(AlertStatus.Accepted);
+export const isStatusDismissed = createStatusHandler(AlertStatus.Dismissed);
+
+const createAlertEventHandler = (
+  onEvent: 'onSnoozed' | 'onAccepted' | 'onDismissed',
+) => (alert: Maybe<Alert>): boolean => hasProperty(alert, onEvent);
+export const isSnoozeEnabled = createAlertEventHandler('onSnoozed');
+export const isAcceptEnabled = createAlertEventHandler('onAccepted');
+export const isDismissEnabled = createAlertEventHandler('onDismissed');
+
+const createFormEnabledHandler = (
+  Form: 'SnoozeForm' | 'AcceptForm' | 'DismissForm',
+) => (alert: Maybe<Alert>): boolean => {
+  if (!alert) return false;
+  if (alert[Form] === null) return false;
+  switch (Form) {
+    case 'SnoozeForm':
+      return isSnoozeEnabled(alert);
+    case 'AcceptForm':
+      return isAcceptEnabled(alert);
+    case 'DismissForm':
+      return isDismissEnabled(alert);
+    default:
+      return false;
+  }
+};
+export const isSnoozeFormEnabled = createFormEnabledHandler('SnoozeForm');
+export const isAcceptFormEnabled = createFormEnabledHandler('AcceptForm');
+export const isDismissFormEnabled = createFormEnabledHandler('DismissForm');
 
 /**
- * The alerts below are examples of Alert implementation; the CostInsightsApi permits returning
- * any implementation of the Alert type, so adopters can create their own. The CostInsightsApi
- * fetches alert data from the backend, then creates Alert classes with the data.
+ * Utility for determining if a form is disabled.
+ * When a form is disabled, the dialog button's type should convert from submit to button.
+ * @param alert
+ * @param status
  */
-
-export class UnlabeledDataflowAlert implements Alert {
-  data: UnlabeledDataflowData;
-
-  constructor(data: UnlabeledDataflowData) {
-    this.data = data;
+export const isFormDisabled = (
+  alert: Maybe<Alert>,
+  status: Maybe<AlertStatus>,
+): boolean => {
+  switch (status) {
+    case AlertStatus.Snoozed:
+      return alert?.SnoozeForm === null;
+    case AlertStatus.Accepted:
+      return alert?.AcceptForm === null;
+    case AlertStatus.Dismissed:
+      return alert?.DismissForm === null;
+    default:
+      return false;
   }
+};
 
-  title = 'Add labels to workflows';
-  subtitle =
-    'Labels show in billing data, enabling cost insights for each workflow.';
-  url = '/cost-insights/labeling-jobs';
-
-  get element() {
-    return <UnlabeledDataflowAlertCard alert={this.data} />;
+export function formOf(
+  alert: Maybe<Alert>,
+  status: Maybe<AlertStatus>,
+): Maybe<AlertForm> {
+  switch (status) {
+    case AlertStatus.Snoozed: {
+      const SnoozeForm = alert?.SnoozeForm ?? AlertSnoozeForm;
+      return isSnoozeFormEnabled(alert) ? SnoozeForm : null;
+    }
+    case AlertStatus.Accepted: {
+      const AcceptForm = alert?.AcceptForm ?? AlertAcceptForm;
+      return isAcceptFormEnabled(alert) ? AcceptForm : null;
+    }
+    case AlertStatus.Dismissed: {
+      const DismissForm = alert?.DismissForm ?? AlertDismissForm;
+      return isDismissFormEnabled(alert) ? DismissForm : null;
+    }
+    default:
+      return null;
   }
 }
 
-export class ProjectGrowthAlert implements Alert {
-  data: ProjectGrowthData;
-
-  constructor(data: ProjectGrowthData) {
-    this.data = data;
-  }
-
-  get title() {
-    return `Investigate cost growth in project ${this.data.project}`;
-  }
-
-  subtitle =
-    'Cost growth outpacing business growth is unsustainable long-term.';
-  url = '/cost-insights/investigating-growth';
-
-  get element() {
-    return <ProjectGrowthAlertCard alert={this.data} />;
+/**
+ * Utility for choosing from a fixed set of values for a given alert status.
+ * @param status
+ * @param values
+ */
+export function choose<T>(
+  status: Maybe<AlertStatus>,
+  values: [T, T, T],
+  none: T,
+): T {
+  switch (status) {
+    case AlertStatus.Snoozed:
+      return values[0];
+    case AlertStatus.Accepted:
+      return values[1];
+    case AlertStatus.Dismissed:
+      return values[2];
+    default:
+      return none;
   }
 }
+
+export function hasProperty(alert: Maybe<Alert>, prop: keyof Alert): boolean {
+  return prop in (alert ?? {});
+}
+
+export const sumOfAllAlerts = (sum: number, alerts: Alert[]) =>
+  sum + alerts.length;

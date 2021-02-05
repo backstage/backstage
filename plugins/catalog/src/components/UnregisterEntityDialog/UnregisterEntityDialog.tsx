@@ -17,6 +17,10 @@
 import { Entity, ORIGIN_LOCATION_ANNOTATION } from '@backstage/catalog-model';
 import { alertApiRef, configApiRef, Progress, useApi } from '@backstage/core';
 import {
+  catalogApiRef,
+  formatEntityRefTitle,
+} from '@backstage/plugin-catalog-react';
+import {
   Button,
   Dialog,
   DialogActions,
@@ -31,8 +35,6 @@ import Alert from '@material-ui/lab/Alert';
 import React from 'react';
 import { useAsync } from 'react-use';
 import { AsyncState } from 'react-use/lib/useAsync';
-import { catalogApiRef } from '../../plugin';
-import { formatEntityRefTitle } from '../EntityRefLink';
 
 type Props = {
   open: boolean;

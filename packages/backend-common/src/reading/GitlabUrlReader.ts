@@ -51,6 +51,12 @@ export class GitlabUrlReader implements UrlReader {
     deps: { treeResponseFactory: ReadTreeResponseFactory },
   ) {
     this.treeResponseFactory = deps.treeResponseFactory;
+
+    if (!config.apiBaseUrl) {
+      throw new Error(
+        `GitLab integration for '${config.host}' must configure an explicit apiBaseUrl`,
+      );
+    }
   }
 
   async read(url: string): Promise<Buffer> {
@@ -140,33 +146,9 @@ export class GitlabUrlReader implements UrlReader {
       throw new Error(message);
     }
 
-    // Get the filename of archive from the header of the response
-    const contentDispositionHeader = archiveGitLabResponse.headers.get(
-      'content-disposition',
-    ) as string;
-    if (!contentDispositionHeader) {
-      throw new Error(
-        `Failed to read tree from ${url}. ` +
-          'GitLab API response for downloading archive does not contain content-disposition header ',
-      );
-    }
-    const fileNameRegEx = new RegExp(
-      /^attachment; filename="(?<fileName>.*).zip"$/,
-    );
-    const archiveFileName = contentDispositionHeader.match(fileNameRegEx)
-      ?.groups?.fileName;
-    if (!archiveFileName) {
-      throw new Error(
-        `Failed to read tree from ${url}. GitLab API response for downloading archive has an unexpected ` +
-          `format of content-disposition header ${contentDispositionHeader} `,
-      );
-    }
-
-    const path = filepath ? `${archiveFileName}/${filepath}/` : '';
-
     return await this.treeResponseFactory.fromZipArchive({
       stream: (archiveGitLabResponse.body as unknown) as Readable,
-      path,
+      subpath: filepath,
       etag: commitSha,
       filter: options?.filter,
     });

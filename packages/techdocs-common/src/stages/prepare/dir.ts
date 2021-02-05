@@ -18,17 +18,19 @@ import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import path from 'path';
 import { parseReferenceAnnotation, checkoutGitRepository } from '../../helpers';
-import { InputError } from '@backstage/backend-common';
+import { UrlReader, InputError } from '@backstage/backend-common';
 import parseGitUrl from 'git-url-parse';
 import { Logger } from 'winston';
 
 export class DirectoryPreparer implements PreparerBase {
-  private readonly config: Config;
-  private readonly logger: Logger;
-
-  constructor(config: Config, logger: Logger) {
+  constructor(
+    private readonly config: Config,
+    private readonly logger: Logger,
+    private readonly reader: UrlReader,
+  ) {
     this.config = config;
     this.logger = logger;
+    this.reader = reader;
   }
 
   private async resolveManagedByLocationToDir(entity: Entity) {
@@ -41,9 +43,12 @@ export class DirectoryPreparer implements PreparerBase {
       `Building docs for entity with type 'dir' and managed-by-location '${type}'`,
     );
     switch (type) {
+      case 'url': {
+        const response = await this.reader.readTree(target);
+        return await response.dir();
+      }
       case 'github':
       case 'gitlab':
-      case 'url':
       case 'azure/api': {
         const parsedGitLocation = parseGitUrl(target);
         const repoLocation = await checkoutGitRepository(
@@ -56,7 +61,6 @@ export class DirectoryPreparer implements PreparerBase {
           path.join(repoLocation, parsedGitLocation.filepath),
         );
       }
-
       case 'file':
         return path.dirname(target);
       default:

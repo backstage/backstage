@@ -177,7 +177,7 @@ export class GithubAppCredentialsMux {
       ),
     );
 
-    const result = results.find(result => result.credentials);
+    const result = results.find(resultItem => resultItem.credentials);
     if (result) {
       return result.credentials!.accessToken;
     }

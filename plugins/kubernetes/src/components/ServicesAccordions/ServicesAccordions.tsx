@@ -29,46 +29,6 @@ import { V1Service } from '@kubernetes/client-node';
 import { StructuredMetadataTable } from '@backstage/core';
 import { ServiceDrawer } from './ServiceDrawer';
 
-type ServicesAccordionsProps = {
-  deploymentResources: GroupedResponses;
-};
-
-export const ServicesAccordions = ({
-  deploymentResources,
-}: ServicesAccordionsProps) => {
-  return (
-    <Grid
-      container
-      direction="row"
-      justify="flex-start"
-      alignItems="flex-start"
-    >
-      {deploymentResources.services.map((service, i) => (
-        <Grid item key={i} xs>
-          <ServiceAccordion service={service} />
-        </Grid>
-      ))}
-    </Grid>
-  );
-};
-
-type ServiceAccordionProps = {
-  service: V1Service;
-};
-
-const ServiceAccordion = ({ service }: ServiceAccordionProps) => {
-  return (
-    <Accordion TransitionProps={{ unmountOnExit: true }}>
-      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <ServiceSummary service={service} />
-      </AccordionSummary>
-      <AccordionDetails>
-        <ServiceCard service={service} />
-      </AccordionDetails>
-    </Accordion>
-  );
-};
-
 type ServiceSummaryProps = {
   service: V1Service;
 };
@@ -119,5 +79,45 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
         ...metadata,
       }}
     />
+  );
+};
+
+type ServicesAccordionsProps = {
+  deploymentResources: GroupedResponses;
+};
+
+type ServiceAccordionProps = {
+  service: V1Service;
+};
+
+const ServiceAccordion = ({ service }: ServiceAccordionProps) => {
+  return (
+    <Accordion TransitionProps={{ unmountOnExit: true }}>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+        <ServiceSummary service={service} />
+      </AccordionSummary>
+      <AccordionDetails>
+        <ServiceCard service={service} />
+      </AccordionDetails>
+    </Accordion>
+  );
+};
+
+export const ServicesAccordions = ({
+  deploymentResources,
+}: ServicesAccordionsProps) => {
+  return (
+    <Grid
+      container
+      direction="row"
+      justify="flex-start"
+      alignItems="flex-start"
+    >
+      {deploymentResources.services.map((service, i) => (
+        <Grid item key={i} xs>
+          <ServiceAccordion service={service} />
+        </Grid>
+      ))}
+    </Grid>
   );
 };

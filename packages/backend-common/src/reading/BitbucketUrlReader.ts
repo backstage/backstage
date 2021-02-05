@@ -121,31 +121,9 @@ export class BitbucketUrlReader implements UrlReader {
       throw new Error(message);
     }
 
-    // Get the filename of archive from the header of the response
-    const contentDispositionHeader = archiveBitbucketResponse.headers.get(
-      'content-disposition',
-    ) as string;
-    if (!contentDispositionHeader) {
-      throw new Error(
-        `Failed to read tree from ${url}. ` +
-          'Bitbucket API response for downloading archive does not contain content-disposition header ',
-      );
-    }
-    const fileNameRegEx = new RegExp(
-      /^attachment; filename=(?<fileName>.*).zip$/,
-    );
-    const archiveFileName = contentDispositionHeader.match(fileNameRegEx)
-      ?.groups?.fileName;
-    if (!archiveFileName) {
-      throw new Error(
-        `Failed to read tree from ${url}. Bitbucket API response for downloading archive has an unexpected ` +
-          `format of content-disposition header ${contentDispositionHeader} `,
-      );
-    }
-
     return await this.treeResponseFactory.fromZipArchive({
       stream: (archiveBitbucketResponse.body as unknown) as Readable,
-      path: `${archiveFileName}/${filepath}`,
+      subpath: filepath,
       etag: lastCommitShortHash,
       filter: options?.filter,
     });
@@ -161,13 +139,18 @@ export class BitbucketUrlReader implements UrlReader {
   }
 
   private async getLastCommitShortHash(url: string): Promise<string> {
-    const { name: repoName, owner: project, ref } = parseGitUrl(url);
+    const { resource, name: repoName, owner: project, ref } = parseGitUrl(url);
 
     let branch = ref;
     if (!branch) {
       branch = await getBitbucketDefaultBranch(url, this.config);
     }
-    const commitsApiUrl = `${this.config.apiBaseUrl}/repositories/${project}/${repoName}/commits/${branch}`;
+
+    const isHosted = resource === 'bitbucket.org';
+    // Bitbucket Server https://docs.atlassian.com/bitbucket-server/rest/7.9.0/bitbucket-rest.html#idp222
+    const commitsApiUrl = isHosted
+      ? `${this.config.apiBaseUrl}/repositories/${project}/${repoName}/commits/${branch}`
+      : `${this.config.apiBaseUrl}/projects/${project}/repos/${repoName}/commits`;
 
     const commitsResponse = await fetch(
       commitsApiUrl,
@@ -182,14 +165,26 @@ export class BitbucketUrlReader implements UrlReader {
     }
 
     const commits = await commitsResponse.json();
-    if (
-      commits &&
-      commits.values &&
-      commits.values.length > 0 &&
-      commits.values[0].hash
-    ) {
-      return commits.values[0].hash.substring(0, 12);
+    if (isHosted) {
+      if (
+        commits &&
+        commits.values &&
+        commits.values.length > 0 &&
+        commits.values[0].hash
+      ) {
+        return commits.values[0].hash.substring(0, 12);
+      }
+    } else {
+      if (
+        commits &&
+        commits.values &&
+        commits.values.length > 0 &&
+        commits.values[0].id
+      ) {
+        return commits.values[0].id.substring(0, 12);
+      }
     }
+
     throw new Error(`Failed to read response from ${commitsApiUrl}`);
   }
 }

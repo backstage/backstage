@@ -1,5 +1,68 @@
 # @backstage/plugin-catalog
 
+## 0.3.0
+
+### Minor Changes
+
+- 019fe39a0: `@backstage/plugin-catalog` stopped exporting hooks and helpers for other
+  plugins. They are migrated to `@backstage/plugin-catalog-react`.
+  Change both your dependencies and imports to the new package.
+
+### Patch Changes
+
+- 7fc89bae2: Display owner and system as entity page links in the tables of the `api-docs`
+  plugin.
+
+  Move `isOwnerOf` and `getEntityRelations` from `@backstage/plugin-catalog` to
+  `@backstage/plugin-catalog-react` and export it from there to use it by other
+  plugins.
+
+- b37501a3d: Add `children` option to `addPage`, which will be rendered as the children of the `Route`.
+- b37501a3d: Finalize migration to new composability API, with the plugin instance now exported `catalogPlugin`.
+- 54c7d02f7: Introduce `TabbedLayout` for creating tabs that are routed.
+
+  ```typescript
+  <TabbedLayout>
+    <TabbedLayout.Route path="/example" title="Example tab">
+      <div>This is rendered under /example/anything-here route</div>
+    </TabbedLayout.Route>
+  </TabbedLayout>
+  ```
+
+- Updated dependencies [720149854]
+- Updated dependencies [12ece98cd]
+- Updated dependencies [d82246867]
+- Updated dependencies [7fc89bae2]
+- Updated dependencies [c810082ae]
+- Updated dependencies [5fa3bdb55]
+- Updated dependencies [6e612ce25]
+- Updated dependencies [025e122c3]
+- Updated dependencies [21e624ba9]
+- Updated dependencies [da9f53c60]
+- Updated dependencies [32c95605f]
+- Updated dependencies [7881f2117]
+- Updated dependencies [54c7d02f7]
+- Updated dependencies [019fe39a0]
+- Updated dependencies [11cb5ef94]
+  - @backstage/plugin-scaffolder@0.4.2
+  - @backstage/core@0.6.0
+  - @backstage/plugin-catalog-react@0.0.2
+  - @backstage/theme@0.2.3
+  - @backstage/catalog-model@0.7.1
+
+## 0.2.14
+
+### Patch Changes
+
+- 9dd057662: Upgrade [git-url-parse](https://www.npmjs.com/package/git-url-parse) to [v11.4.4](https://github.com/IonicaBizau/git-url-parse/pull/125) which fixes parsing an Azure DevOps branch ref.
+- 0b1182346: Add `EntityRefLinks` that shows one or multiple entity ref links.
+
+  Change the about card and catalog table to use `EntityRefLinks` due to the
+  nature of relations to support multiple relations per type.
+
+- Updated dependencies [9dd057662]
+  - @backstage/plugin-scaffolder@0.4.1
+
 ## 0.2.13
 
 ### Patch Changes

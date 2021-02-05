@@ -13,24 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { Logger } from 'winston';
 
 export type PreparerOptions = {
-  workingDirectory?: string;
+  /**
+   * Full URL to the directory containg template data
+   */
+  url: string;
+  /**
+   * The workspace path that will eventually be the the root of the new repo
+   */
+  workspacePath: string;
   logger: Logger;
 };
 
 export interface PreparerBase {
   /**
-   * Given an Entity definition from the Service Catalog, go and prepare a directory
-   * with contents from the remote location in temporary storage and return the path
-   * @param template The template entity from the Service Catalog
+   * Prepare a directory with contents from the remote location
    */
-  prepare(
-    template: TemplateEntityV1alpha1,
-    opts?: PreparerOptions,
-  ): Promise<string>;
+  prepare(opts: PreparerOptions): Promise<void>;
 }
 
 export type PreparerBuilder = {

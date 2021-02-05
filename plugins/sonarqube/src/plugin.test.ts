@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { plugin } from './plugin';
+import { sonarQubePlugin } from './plugin';
 
 describe('sonarqube', () => {
   it('should export plugin', () => {
-    expect(plugin).toBeDefined();
+    expect(sonarQubePlugin).toBeDefined();
   });
 });

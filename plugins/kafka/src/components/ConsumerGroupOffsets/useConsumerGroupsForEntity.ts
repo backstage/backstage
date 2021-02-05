@@ -14,11 +14,30 @@
  * limitations under the License.
  */
 
-import { useEntity } from '@backstage/plugin-catalog';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { useMemo } from 'react';
 import { KAFKA_CONSUMER_GROUP_ANNOTATION } from '../../constants';
 
 export const useConsumerGroupsForEntity = () => {
   const { entity } = useEntity();
+  const annotation =
+    entity.metadata.annotations?.[KAFKA_CONSUMER_GROUP_ANNOTATION] ?? '';
 
-  return entity.metadata.annotations?.[KAFKA_CONSUMER_GROUP_ANNOTATION] ?? '';
+  const consumerList = useMemo(() => {
+    return annotation.split(',').map(consumer => {
+      const [clusterId, consumerGroup] = consumer.split('/');
+
+      if (!clusterId || !consumerGroup) {
+        throw new Error(
+          `Failed to parse kafka consumer group annotation: got "${annotation}"`,
+        );
+      }
+      return {
+        clusterId: clusterId.trim(),
+        consumerGroup: consumerGroup.trim(),
+      };
+    });
+  }, [annotation]);
+
+  return consumerList;
 };

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity } from './entity';
-import { EntityPolicy } from './types';
+import { Entity, EntityPolicy } from './entity';
 
 // Helper that requires that all of a set of policies can be successfully
 // applied

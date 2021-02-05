@@ -42,23 +42,25 @@ export function compileConfigSchemas(
 
   const ajv = new Ajv({
     allErrors: true,
+    allowUnionTypes: true,
     schemas: {
       'https://backstage.io/schema/config-v1': true,
     },
-  }).addKeyword('visibility', {
+  }).addKeyword({
+    keyword: 'visibility',
     metaSchema: {
       type: 'string',
       enum: CONFIG_VISIBILITIES,
     },
     compile(visibility: ConfigVisibility) {
-      return (_data, dataPath) => {
-        if (!dataPath) {
+      return (_data, context) => {
+        if (context?.dataPath === undefined) {
           return false;
         }
         if (visibility && visibility !== 'backend') {
-          const normalizedPath = dataPath.replace(
+          const normalizedPath = context.dataPath.replace(
             /\['?(.*?)'?\]/g,
-            (_, segment) => `.${segment}`,
+            (_, segment) => `/${segment}`,
           );
           visibilityByPath.set(normalizedPath, visibility);
         }
@@ -66,6 +68,14 @@ export function compileConfigSchemas(
       };
     },
   });
+
+  for (const schema of schemas) {
+    try {
+      ajv.compile(schema.value);
+    } catch (error) {
+      throw new Error(`Schema at ${schema.path} is invalid, ${error}`);
+    }
+  }
 
   const merged = mergeAllOf(
     { allOf: schemas.map(_ => _.value) },

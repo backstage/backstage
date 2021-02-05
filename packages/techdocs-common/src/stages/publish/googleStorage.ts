@@ -26,6 +26,7 @@ import { Config } from '@backstage/config';
 import { getHeadersForFileExtension, getFileTreeRecursively } from './helpers';
 import { PublisherBase, PublishRequest, TechDocsMetadata } from './types';
 import JSON5 from 'json5';
+import createLimiter from 'p-limit';
 
 export class GoogleGCSPublish implements PublisherBase {
   static async fromConfig(
@@ -102,6 +103,7 @@ export class GoogleGCSPublish implements PublisherBase {
       // So collecting path of only the files is good enough.
       const allFilesToUpload = await getFileTreeRecursively(directory);
 
+      const limiter = createLimiter(10);
       const uploadPromises: Array<Promise<UploadResponse>> = [];
       allFilesToUpload.forEach(filePath => {
         // Remove the absolute path prefix of the source directory
@@ -110,12 +112,14 @@ export class GoogleGCSPublish implements PublisherBase {
         const relativeFilePath = filePath.replace(`${directory}/`, '');
         const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
         const destination = `${entityRootDir}/${relativeFilePath}`; // GCS Bucket file relative path
-        // TODO: Upload in chunks of ~10 files instead of all files at once.
-        uploadPromises.push(
-          this.storageClient.bucket(this.bucketName).upload(filePath, {
-            destination,
-          }),
+
+        // Rate limit the concurrent execution of file uploads to batches of 10 (per publish)
+        const uploadFile = limiter(() =>
+          this.storageClient
+            .bucket(this.bucketName)
+            .upload(filePath, { destination }),
         );
+        uploadPromises.push(uploadFile);
       });
 
       Promise.all(uploadPromises)

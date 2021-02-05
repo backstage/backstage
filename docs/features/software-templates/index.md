@@ -39,13 +39,12 @@ internally.
 ![Enter some variables](../../assets/software-templates/template-picked.png)
 
 After filling in these variables, you'll get some more fields to fill out which
-are required for backstage usage: the owner (which is a `user` in the backstage
-system), the `storePath` (which right now must be a GitHub Organisation or
-GitHub user and a non-existing GitHub repository name in the format
-`organisation/reponame`), and a GitHub team or user account which should be
-granted admin access to the repository.
+are required for Backstage usage: the owner (which is a `user` in the backstage
+system), and the `storePath` which is a destination URL to create for the
+provider, for instance `https://github.com/backstage/my-new-repository`, or
+`https://gitlab.com/myorg/myrepo`.
 
-![Enter backstage vars](../../assets/software-templates/template-picked-2.png)
+![Enter Backstage vars](../../assets/software-templates/template-picked-2.png)
 
 ### Run!
 

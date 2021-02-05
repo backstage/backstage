@@ -32,7 +32,7 @@ export type PublisherBase = {
 
 export type PublisherOptions = {
   values: TemplaterValues;
-  directory: string;
+  workspacePath: string;
   logger: Logger;
 };
 

@@ -20,7 +20,7 @@ import { LinearGauge } from './LinearGauge';
 const containerStyle = { width: 300 };
 
 export default {
-  title: 'Feedback/LinearGauge',
+  title: 'Data Display/LinearGauge',
   component: LinearGauge,
 };
 

@@ -15,10 +15,10 @@
  */
 
 import { UserEntity } from '@backstage/catalog-model';
+import { identityApiRef, useApi } from '@backstage/core';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { useAsync } from 'react-use';
 import { AsyncState } from 'react-use/lib/useAsync';
-import { identityApiRef, useApi } from '@backstage/core';
-import { catalogApiRef } from '../plugin';
 
 /**
  * Get the catalog User entity (if any) that matches the logged-in user.

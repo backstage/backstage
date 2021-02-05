@@ -102,7 +102,9 @@ export async function createRouter({
 
   router.get('/docs/:namespace/:kind/:name/*', async (req, res) => {
     const { kind, namespace, name } = req.params;
-    const storageUrl = config.getString('techdocs.storageUrl');
+    const storageUrl =
+      config.getOptionalString('techdocs.storageUrl') ??
+      `${await discovery.getBaseUrl('techdocs')}/static/docs`;
 
     const catalogUrl = await discovery.getBaseUrl('catalog');
     const triple = [kind, namespace, name].map(encodeURIComponent).join('/');
@@ -148,6 +150,7 @@ export async function createRouter({
           }
           break;
         case 'awsS3':
+        case 'azureBlobStorage':
         case 'googleGcs':
           // This block should be valid for all external storage implementations. So no need to duplicate in future,
           // add the publisher type in the list here.

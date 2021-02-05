@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { PropsWithChildren } from 'react';
-import { renderHook } from '@testing-library/react-hooks';
-import { EntityContext } from '@backstage/plugin-catalog';
 import { Entity } from '@backstage/catalog-model';
-import * as data from './__fixtures__/consumer-group-offsets.json';
+import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
+import { EntityContext } from '@backstage/plugin-catalog-react';
+import { renderHook } from '@testing-library/react-hooks';
+import { when } from 'jest-when';
+import React, { PropsWithChildren } from 'react';
 import {
   ConsumerGroupOffsetsResponse,
   KafkaApi,
   kafkaApiRef,
 } from '../../api/types';
-import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
 import { useConsumerGroupsOffsetsForEntity } from './useConsumerGroupsOffsetsForEntity';
-import { when } from 'jest-when';
+import * as data from './__fixtures__/consumer-group-offsets.json';
 
 const consumerGroupOffsets = data as ConsumerGroupOffsetsResponse;
 
@@ -45,7 +45,7 @@ describe('useConsumerGroupOffsets', () => {
     metadata: {
       name: 'test',
       annotations: {
-        'kafka.apache.org/consumer-groups': consumerGroupOffsets.consumerId,
+        'kafka.apache.org/consumer-groups': `prod/${consumerGroupOffsets.consumerId}`,
       },
     },
     spec: {
@@ -74,16 +74,24 @@ describe('useConsumerGroupOffsets', () => {
     renderHook(useConsumerGroupsOffsetsForEntity, { wrapper });
 
   it('returns correct consumer group for annotation', async () => {
+    mockKafkaApi.getConsumerGroupOffsets.mockResolvedValue(
+      consumerGroupOffsets,
+    );
     when(mockKafkaApi.getConsumerGroupOffsets)
-      .calledWith(consumerGroupOffsets.consumerId)
+      .calledWith('prod', consumerGroupOffsets.consumerId)
       .mockResolvedValue(consumerGroupOffsets);
 
     const { result, waitForNextUpdate } = subject();
     await waitForNextUpdate();
     const [tableProps] = result.current;
 
-    expect(tableProps.consumerGroup).toBe(consumerGroupOffsets.consumerId);
-    expect(tableProps.topics).toBe(consumerGroupOffsets.offsets);
+    expect(tableProps.consumerGroupsTopics).toStrictEqual([
+      {
+        clusterId: 'prod',
+        consumerGroup: consumerGroupOffsets.consumerId,
+        topics: consumerGroupOffsets.offsets,
+      },
+    ]);
   });
 
   it('posts an error to the error api', async () => {

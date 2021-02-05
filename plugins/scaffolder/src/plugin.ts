@@ -18,13 +18,14 @@ import {
   createPlugin,
   createApiFactory,
   discoveryApiRef,
+  createRoutableExtension,
 } from '@backstage/core';
-import { ScaffolderPage } from './components/ScaffolderPage';
-import { TemplatePage } from './components/TemplatePage';
+import { ScaffolderPage as ScaffolderPageComponent } from './components/ScaffolderPage';
+import { TemplatePage as TemplatePageComponent } from './components/TemplatePage';
 import { rootRoute, templateRoute } from './routes';
 import { scaffolderApiRef, ScaffolderApi } from './api';
 
-export const plugin = createPlugin({
+export const scaffolderPlugin = createPlugin({
   id: 'scaffolder',
   apis: [
     createApiFactory({
@@ -34,7 +35,27 @@ export const plugin = createPlugin({
     }),
   ],
   register({ router }) {
-    router.addRoute(rootRoute, ScaffolderPage);
-    router.addRoute(templateRoute, TemplatePage);
+    router.addRoute(rootRoute, ScaffolderPageComponent);
+    router.addRoute(templateRoute, TemplatePageComponent);
+  },
+  routes: {
+    templateIndex: rootRoute,
+    template: templateRoute,
   },
 });
+
+export const TemplateIndexPage = scaffolderPlugin.provide(
+  createRoutableExtension({
+    component: () =>
+      import('./components/ScaffolderPage').then(m => m.ScaffolderPage),
+    mountPoint: rootRoute,
+  }),
+);
+
+export const TemplatePage = scaffolderPlugin.provide(
+  createRoutableExtension({
+    component: () =>
+      import('./components/TemplatePage').then(m => m.TemplatePage),
+    mountPoint: templateRoute,
+  }),
+);

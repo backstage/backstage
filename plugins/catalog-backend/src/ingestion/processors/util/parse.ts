@@ -18,7 +18,7 @@ import { Entity, LocationSpec } from '@backstage/catalog-model';
 import lodash from 'lodash';
 import yaml from 'yaml';
 import * as result from '../results';
-import { CatalogProcessorResult } from '../types';
+import { CatalogProcessorParser, CatalogProcessorResult } from '../types';
 
 export function* parseEntityYaml(
   data: Buffer,
@@ -50,3 +50,12 @@ export function* parseEntityYaml(
     }
   }
 }
+
+export const defaultEntityDataParser: CatalogProcessorParser = async function* defaultEntityDataParser({
+  data,
+  location,
+}) {
+  for (const e of parseEntityYaml(data, location)) {
+    yield e;
+  }
+};

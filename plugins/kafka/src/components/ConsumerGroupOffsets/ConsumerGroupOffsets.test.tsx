@@ -27,6 +27,7 @@ describe('ConsumerGroupOffsets', () => {
     const rendered = await renderInTestApp(
       <ConsumerGroupOffsets
         consumerGroup={consumerGroupOffsets.consumerId}
+        clusterId="prod"
         topics={consumerGroupOffsets.offsets}
         loading={false}
         retry={() => {}}

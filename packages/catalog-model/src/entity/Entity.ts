@@ -125,6 +125,11 @@ export type EntityMeta = JsonObject & {
    * various ways.
    */
   tags?: string[];
+
+  /**
+   * A list of external hyperlinks related to the entity.
+   */
+  links?: EntityLink[];
 };
 
 /**
@@ -160,4 +165,24 @@ export type EntityRelationSpec = {
    * The target entity of this relation.
    */
   target: EntityName;
+};
+
+/**
+ * A link to external information that is related to the entity.
+ */
+export type EntityLink = {
+  /**
+   * The url to the external site, document, etc.
+   */
+  url: string;
+
+  /**
+   * An optional descriptive title for the link.
+   */
+  title?: string;
+
+  /**
+   * An optional semantic key that represents a visual icon.
+   */
+  icon?: string;
 };

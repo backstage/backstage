@@ -24,6 +24,7 @@ import { PublisherBase, PublishRequest, TechDocsMetadata } from './types';
 import fs from 'fs-extra';
 import { Readable } from 'stream';
 import JSON5 from 'json5';
+import createLimiter from 'p-limit';
 
 const streamToBuffer = (stream: Readable): Promise<Buffer> => {
   return new Promise((resolve, reject) => {
@@ -131,8 +132,8 @@ export class AwsS3Publish implements PublisherBase {
       // So collecting path of only the files is good enough.
       const allFilesToUpload = await getFileTreeRecursively(directory);
 
+      const limiter = createLimiter(10);
       const uploadPromises: Array<Promise<PutObjectCommandOutput>> = [];
-
       for (const filePath of allFilesToUpload) {
         // Remove the absolute path prefix of the source directory
         // Path of all files to upload, relative to the root of the source directory
@@ -149,7 +150,9 @@ export class AwsS3Publish implements PublisherBase {
           Body: fileContent,
         };
 
-        uploadPromises.push(this.storageClient.putObject(params));
+        // Rate limit the concurrent execution of file uploads to batches of 10 (per publish)
+        const uploadFile = limiter(() => this.storageClient.putObject(params));
+        uploadPromises.push(uploadFile);
       }
       await Promise.all(uploadPromises);
       this.logger.info(

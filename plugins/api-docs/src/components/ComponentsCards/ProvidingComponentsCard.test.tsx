@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
-import { Entity, RELATION_API_PROVIDED_BY } from '@backstage/catalog-model';
+import {
+  Entity,
+  RELATION_API_PROVIDED_BY,
+  RELATION_OWNED_BY,
+  RELATION_PART_OF,
+} from '@backstage/catalog-model';
 import { ApiProvider, ApiRegistry } from '@backstage/core';
-import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog';
+import {
+  CatalogApi,
+  catalogApiRef,
+  EntityProvider,
+} from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
@@ -62,7 +71,9 @@ describe('<ProvidingComponentsCard />', () => {
 
     const { getByText } = await renderInTestApp(
       <Wrapper>
-        <ProvidingComponentsCard entity={entity} />
+        <EntityProvider entity={entity}>
+          <ProvidingComponentsCard />
+        </EntityProvider>
       </Wrapper>,
     );
 
@@ -104,14 +115,33 @@ describe('<ProvidingComponentsCard />', () => {
       },
       spec: {
         type: 'service',
-        owner: 'Test',
         lifecycle: 'production',
       },
+      relations: [
+        {
+          type: RELATION_PART_OF,
+          target: {
+            kind: 'System',
+            name: 'MySystem',
+            namespace: 'default',
+          },
+        },
+        {
+          type: RELATION_OWNED_BY,
+          target: {
+            kind: 'Group',
+            name: 'Test',
+            namespace: 'default',
+          },
+        },
+      ],
     });
 
     const { getByText } = await renderInTestApp(
       <Wrapper>
-        <ProvidingComponentsCard entity={entity} />
+        <EntityProvider entity={entity}>
+          <ProvidingComponentsCard />
+        </EntityProvider>
       </Wrapper>,
     );
 
@@ -119,6 +149,7 @@ describe('<ProvidingComponentsCard />', () => {
       expect(getByText(/Providers/i)).toBeInTheDocument();
       expect(getByText(/target-name/i)).toBeInTheDocument();
       expect(getByText(/Test/i)).toBeInTheDocument();
+      expect(getByText(/MySystem/i)).toBeInTheDocument();
       expect(getByText(/production/i)).toBeInTheDocument();
     });
   });

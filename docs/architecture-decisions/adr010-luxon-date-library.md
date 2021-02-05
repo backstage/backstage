@@ -4,8 +4,6 @@ title: ADR010: Use the Luxon Date Library
 description: Architecture Decision Record (ADR) for Luxon Date Library
 ---
 
-# ADR010: Use the Luxon Date Library
-
 ## Context
 
 Date formatting (e.g. `a day ago`) and calculations are common within Backstage.

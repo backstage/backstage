@@ -15,4 +15,13 @@
  */
 
 export * from './components';
-export { plugin } from './plugin';
+export {
+  apiDocsPlugin,
+  apiDocsPlugin as plugin,
+  ApiExplorerPage,
+  EntityApiDefinitionCard,
+  EntityConsumedApisCard,
+  EntityConsumingComponentsCard,
+  EntityProvidedApisCard,
+  EntityProvidingComponentsCard,
+} from './plugin';

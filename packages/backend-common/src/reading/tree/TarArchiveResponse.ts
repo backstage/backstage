@@ -15,7 +15,7 @@
  */
 
 import tar, { Parse, ParseStream, ReadEntry } from 'tar';
-import path from 'path';
+import platformPath from 'path';
 import fs from 'fs-extra';
 import { Readable, pipeline as pipelineCb } from 'stream';
 import { promisify } from 'util';
@@ -30,6 +30,10 @@ import {
 const TarParseStream = (Parse as unknown) as { new (): ParseStream };
 
 const pipeline = promisify(pipelineCb);
+// Matches a directory name + one `/` at the start of any string,
+// containing any character except `/` one or more times, and ending with a `/`
+// e.g. Will match `dirA/` in `dirA/dirB/file.ext`
+const directoryNameRegex = /^[^\/]+\//;
 
 /**
  * Wraps a tar archive stream into a tree response reader.
@@ -78,14 +82,18 @@ export class TarArchiveResponse implements ReadTreeResponse {
         return;
       }
 
+      // File path relative to the root extracted directory. Will remove the
+      // top level dir name from the path since its name is hard to predetermine.
+      const relativePath = entry.path.replace(directoryNameRegex, '');
+
       if (this.subPath) {
-        if (!entry.path.startsWith(this.subPath)) {
+        if (!relativePath.startsWith(this.subPath)) {
           entry.resume();
           return;
         }
       }
 
-      const path = entry.path.slice(this.subPath.length);
+      const path = relativePath.slice(this.subPath.length);
       if (this.filter) {
         if (!this.filter(path)) {
           entry.resume();
@@ -97,7 +105,10 @@ export class TarArchiveResponse implements ReadTreeResponse {
         await pipeline(entry, concatStream(resolve));
       });
 
-      files.push({ path, content: () => content });
+      files.push({
+        path,
+        content: () => content,
+      });
 
       entry.resume();
     });
@@ -136,9 +147,11 @@ export class TarArchiveResponse implements ReadTreeResponse {
 
     const dir =
       options?.targetDir ??
-      (await fs.mkdtemp(path.join(this.workDir, 'backstage-')));
+      (await fs.mkdtemp(platformPath.join(this.workDir, 'backstage-')));
 
-    const strip = this.subPath ? this.subPath.split('/').length - 1 : 0;
+    // Equivalent of tar --strip-components=N
+    // When no subPath is given, remove just 1 top level directory
+    const strip = this.subPath ? this.subPath.split('/').length : 1;
 
     await pipeline(
       this.stream,
@@ -146,7 +159,10 @@ export class TarArchiveResponse implements ReadTreeResponse {
         strip,
         cwd: dir,
         filter: path => {
-          if (this.subPath && !path.startsWith(this.subPath)) {
+          // File path relative to the root extracted directory. Will remove the
+          // top level dir name from the path since its name is hard to predetermine.
+          const relativePath = path.replace(directoryNameRegex, '');
+          if (this.subPath && !relativePath.startsWith(this.subPath)) {
             return false;
           }
           if (this.filter) {

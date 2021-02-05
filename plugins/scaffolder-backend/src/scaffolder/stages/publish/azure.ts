@@ -21,6 +21,7 @@ import { initRepoAndPush } from './helpers';
 import { AzureIntegrationConfig } from '@backstage/integration';
 import parseGitUrl from 'git-url-parse';
 import { getPersonalAccessTokenHandler, WebApi } from 'azure-devops-node-api';
+import path from 'path';
 
 export class AzurePublisher implements PublisherBase {
   static async fromConfig(config: AzureIntegrationConfig) {
@@ -34,7 +35,7 @@ export class AzurePublisher implements PublisherBase {
 
   async publish({
     values,
-    directory,
+    workspacePath,
     logger,
   }: PublisherOptions): Promise<PublisherResult> {
     const { owner, name, organization, resource } = parseGitUrl(
@@ -56,7 +57,7 @@ export class AzurePublisher implements PublisherBase {
     const catalogInfoUrl = `${remoteUrl}?path=%2Fcatalog-info.yaml`;
 
     await initRepoAndPush({
-      dir: directory,
+      dir: path.join(workspacePath, 'result'),
       remoteUrl,
       auth: {
         username: 'notempty',

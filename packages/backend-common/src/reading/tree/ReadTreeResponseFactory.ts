@@ -24,8 +24,9 @@ import { ZipArchiveResponse } from './ZipArchiveResponse';
 type FromArchiveOptions = {
   // A binary stream of a tar archive.
   stream: Readable;
-  // If set, the root of the tree will be set to the given directory path.
-  path?: string;
+  // If unset, the files at the root of the tree will be read.
+  // subpath must not contain the name of the top level directory.
+  subpath?: string;
   // etag of the blob
   etag: string;
   // Filter passed on from the ReadTreeOptions
@@ -45,7 +46,7 @@ export class ReadTreeResponseFactory {
   async fromTarArchive(options: FromArchiveOptions): Promise<ReadTreeResponse> {
     return new TarArchiveResponse(
       options.stream,
-      options.path ?? '',
+      options.subpath ?? '',
       this.workDir,
       options.etag,
       options.filter,
@@ -55,7 +56,7 @@ export class ReadTreeResponseFactory {
   async fromZipArchive(options: FromArchiveOptions): Promise<ReadTreeResponse> {
     return new ZipArchiveResponse(
       options.stream,
-      options.path ?? '',
+      options.subpath ?? '',
       this.workDir,
       options.etag,
       options.filter,

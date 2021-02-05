@@ -34,7 +34,7 @@ const ALB_JWT_HEADER = 'x-amzn-oidc-data';
  */
 type AwsAlbAuthProviderOptions = {
   region: string;
-  issuer: string;
+  issuer?: string;
   identityResolutionCallback: ExperimentalIdentityResolver;
 };
 export const getJWTHeaders = (input: string) => {
@@ -70,10 +70,7 @@ export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
         const key = await this.getKey(headers.kid);
         const payload = JWT.verify(jwt, key);
 
-        if (
-          this.options.issuer !== '' &&
-          headers.issuer !== this.options.issuer
-        ) {
+        if (this.options.issuer && headers.iss !== this.options.issuer) {
           throw new Error('issuer mismatch on JWT');
         }
 
@@ -98,13 +95,13 @@ export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
   async getKey(keyId: string): Promise<KeyObject> {
     const optionalCacheKey = this.keyCache.get<KeyObject>(keyId);
     if (optionalCacheKey) {
-      return optionalCacheKey;
+      return crypto.createPublicKey(optionalCacheKey);
     }
     const keyText: string = await fetch(
       `https://public-keys.auth.elb.${this.options.region}.amazonaws.com/${keyId}`,
-    ).then(response => response.json());
+    ).then(response => response.text());
     const keyValue = crypto.createPublicKey(keyText);
-    this.keyCache.set(keyId, keyValue);
+    this.keyCache.set(keyId, keyValue.export({ format: 'pem', type: 'spki' }));
     return keyValue;
   }
 }
@@ -116,7 +113,7 @@ export const createAwsAlbProvider = ({
   identityResolver,
 }: AuthProviderFactoryOptions) => {
   const region = config.getString('region');
-  const issuer = config.getString('iss');
+  const issuer = config.getOptionalString('iss');
   if (identityResolver !== undefined) {
     return new AwsAlbAuthProvider(logger, catalogApi, {
       region,
