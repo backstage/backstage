@@ -28,7 +28,7 @@ import {
 
 import { rootDocsRouteRef } from '../../plugin';
 
-export const OverviewContent = ({ value }: { value: Entity[] }) => {
+export const OverviewContent = ({ value }: { value: Entity[] | undefined }) => {
   if (!value) return null;
   return (
     <Content>

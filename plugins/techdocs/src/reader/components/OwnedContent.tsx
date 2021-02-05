@@ -36,7 +36,7 @@ import { Entity } from '@backstage/catalog-model';
 
 import { rootDocsRouteRef } from '../../plugin';
 
-export const OwnedContent = ({ value }: { value: Entity[] }) => {
+export const OwnedContent = ({ value }: { value: Entity[] | undefined }) => {
   const [, copyToClipboard] = useCopyToClipboard();
   const identityApi = useApi(identityApiRef);
   const userId = identityApi.getUserId();
