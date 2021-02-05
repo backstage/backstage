@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { plugin } from './plugin';
+import { searchPlugin } from './plugin';
 
 describe('search', () => {
   it('should export plugin', () => {
-    expect(plugin).toBeDefined();
+    expect(searchPlugin).toBeDefined();
   });
 });
