@@ -13,13 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { InputError, UrlReader } from '@backstage/backend-common';
+import {
+  InputError,
+  NotModifiedError,
+  UrlReader,
+} from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import parseGitUrl from 'git-url-parse';
 import path from 'path';
 import { Logger } from 'winston';
-import { checkoutGitRepository, parseReferenceAnnotation } from '../../helpers';
+import {
+  checkoutGitRepository,
+  getLastCommitTimestamp,
+  parseReferenceAnnotation,
+} from '../../helpers';
 import { PreparerBase, PreparerResponse } from './types';
 
 export class DirectoryPreparer implements PreparerBase {
@@ -33,7 +41,10 @@ export class DirectoryPreparer implements PreparerBase {
     this.reader = reader;
   }
 
-  private async resolveManagedByLocationToDir(entity: Entity) {
+  private async resolveManagedByLocationToDir(
+    entity: Entity,
+    options?: { etag?: string },
+  ): Promise<PreparerResponse> {
     const { type, target } = parseReferenceAnnotation(
       'backstage.io/managed-by-location',
       entity,
@@ -44,8 +55,14 @@ export class DirectoryPreparer implements PreparerBase {
     );
     switch (type) {
       case 'url': {
-        const response = await this.reader.readTree(target);
-        return await response.dir();
+        const response = await this.reader.readTree(target, {
+          etag: options?.etag,
+        });
+        const preparedDir = await response.dir();
+        return {
+          preparedDir,
+          etag: response.etag,
+        };
       }
       case 'github':
       case 'gitlab':
@@ -57,12 +74,24 @@ export class DirectoryPreparer implements PreparerBase {
           this.logger,
         );
 
-        return path.dirname(
-          path.join(repoLocation, parsedGitLocation.filepath),
-        );
+        // Check if etag has changed for cache invalidation.
+        const etag = await getLastCommitTimestamp(repoLocation, this.logger);
+        if (options?.etag === etag.toString()) {
+          throw new NotModifiedError();
+        }
+        return {
+          preparedDir: path.dirname(
+            path.join(repoLocation, parsedGitLocation.filepath),
+          ),
+          etag: etag.toString(),
+        };
       }
       case 'file':
-        return path.dirname(target);
+        return {
+          preparedDir: path.dirname(target),
+          // Instead of supporting caching on local sources, use techdocs-cli for local development and debugging.
+          etag: '',
+        };
       default:
         throw new InputError(`Unable to resolve location type ${type}`);
     }
@@ -80,16 +109,12 @@ export class DirectoryPreparer implements PreparerBase {
       entity,
     );
 
-    const managedByLocationDirectory = await this.resolveManagedByLocationToDir(
-      entity,
-    );
-
-    // TODO: etag will be returned as a commit sha from resolveManagedByLocationToDir.
-    const etag = '';
+    // This will throw NotModified error if etag has not changed.
+    const response = await this.resolveManagedByLocationToDir(entity);
 
     return {
-      preparedDir: path.resolve(managedByLocationDirectory, target),
-      etag,
+      preparedDir: path.resolve(response.preparedDir, target),
+      etag: response.etag,
     };
   }
 }
