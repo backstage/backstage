@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import os from 'os';
-import path from 'path';
-import parseGitUrl from 'git-url-parse';
-import fs from 'fs-extra';
-import { InputError, UrlReader, Git } from '@backstage/backend-common';
+import { Git, InputError, UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
+import fs from 'fs-extra';
+import parseGitUrl from 'git-url-parse';
+import os from 'os';
+import path from 'path';
+import { Logger } from 'winston';
 import { getDefaultBranch } from './default-branch';
 import { getGitRepoType, getTokenForGitRepo } from './git-auth';
-import { RemoteProtocol } from './stages/prepare/types';
-import { Logger } from 'winston';
+import { PreparerResponse, RemoteProtocol } from './stages/prepare/types';
 
 export type ParsedLocationAnnotation = {
   type: RemoteProtocol;
@@ -216,13 +216,19 @@ export const getLastCommitTimestamp = async (
 export const getDocFilesFromRepository = async (
   reader: UrlReader,
   entity: Entity,
-): Promise<any> => {
+  opts?: { etag?: string },
+): Promise<PreparerResponse> => {
   const { target } = parseReferenceAnnotation(
     'backstage.io/techdocs-ref',
     entity,
   );
 
-  const response = await reader.readTree(target);
+  // readTree will throw NotModifiedError if etag has not changed.
+  const readTreeResponse = await reader.readTree(target, { etag: opts?.etag });
+  const preparedDir = await readTreeResponse.dir();
 
-  return await response.dir();
+  return {
+    preparedDir,
+    etag: readTreeResponse.etag,
+  };
 };

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { UrlReader } from '@backstage/backend-common';
+import { NotModifiedError, UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Logger } from 'winston';
 import { getDocFilesFromRepository } from '../../helpers';
@@ -28,19 +28,24 @@ export class UrlPreparer implements PreparerBase {
     this.reader = reader;
   }
 
-  async prepare(entity: Entity): Promise<PreparerResponse> {
+  async prepare(
+    entity: Entity,
+    options?: { etag?: string },
+  ): Promise<PreparerResponse> {
     try {
-      const preparedDir = await getDocFilesFromRepository(this.reader, entity);
-      // TODO: This will be actual etag from URL Reader.
-      const etag = '';
-      return {
-        preparedDir,
-        etag,
-      };
+      return await getDocFilesFromRepository(this.reader, entity, {
+        etag: options?.etag,
+      });
     } catch (error) {
-      this.logger.debug(
-        `Unable to fetch files for building docs ${error.message}`,
-      );
+      // NotModifiedError means that etag based cache is still valid.
+      if (error instanceof NotModifiedError) {
+        this.logger.debug(`Cache is valid for etag ${options?.etag}`);
+      } else {
+        this.logger.debug(
+          `Unable to fetch files for building docs ${error.message}`,
+        );
+      }
+
       throw error;
     }
   }

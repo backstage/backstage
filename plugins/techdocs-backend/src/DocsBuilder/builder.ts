@@ -74,14 +74,40 @@ export class DocsBuilder {
     this.config = config;
   }
 
-  public async build() {
-    this.logger.info(`Running preparer on entity ${getEntityId(this.entity)}`);
-    // TODO: This will throw an error if no further build is required, site is cached.
-    // TODO: Use etag from here and store in memory.
-    const { preparedDir } = await this.preparer.prepare(this.entity);
+  public async build(): Promise<void> {
+    if (!this.entity.metadata.uid) {
+      throw new Error(
+        'Trying to build documentation for entity not in service catalog',
+      );
+    }
 
-    const parsedLocationAnnotation = getLocationForEntity(this.entity);
+    // Use the in-memory storage for setting and getting etag for this entity.
+    const buildMetadataStorage = new BuildMetadataStorage(
+      this.entity.metadata.uid,
+    );
 
+    // TODO: As of now, this happens on each and every request to TechDocs.
+    // In a high traffic environment, this will cause a lot of requests to the source code provider.
+    // After Async build is implemented https://github.com/backstage/backstage/issues/3717,
+    // make sure to limit checking for cache invalidation to once per minute or so.
+    let preparedDir: string;
+    let etag: string;
+    try {
+      const preparerResponse = await this.preparer.prepare(this.entity, {
+        etag: buildMetadataStorage.getEtag(),
+      });
+
+      preparedDir = preparerResponse.preparedDir;
+      etag = preparerResponse.etag;
+    } catch (NotModifiedError) {
+      // No need to prepare anymore since cache is valid.
+      return;
+    }
+
+    this.logger.info(
+      `TechDocs prepare step completed for entity ${getEntityId(this.entity)}.`,
+    );
+    this.logger.debug(`Prepared files temporarily stored at ${preparedDir}`);
     this.logger.info(`Running generator on entity ${getEntityId(this.entity)}`);
     // Create a temporary directory to store the generated files in.
     const tmpdirPath = os.tmpdir();
@@ -91,6 +117,7 @@ export class DocsBuilder {
       path.join(tmpdirResolvedPath, 'techdocs-tmp-'),
     );
 
+    const parsedLocationAnnotation = getLocationForEntity(this.entity);
     await this.generator.run({
       inputDir: preparedDir,
       outputDir,
@@ -98,21 +125,35 @@ export class DocsBuilder {
       parsedLocationAnnotation,
     });
 
+    this.logger.debug(`Generated files temporarily stored at ${outputDir}`);
+    // Remove Prepared directory
+    this.logger.debug(
+      `Removing prepared directory ${preparedDir} since the site has been generated.`,
+    );
+    try {
+      // Not a blocker hence no need to await this.
+      fs.remove(preparedDir);
+    } catch (error) {
+      this.logger.debug(`Error removing prepared directory ${error.message}`);
+    }
+
     this.logger.info(`Running publisher on entity ${getEntityId(this.entity)}`);
     await this.publisher.publish({
       entity: this.entity,
       directory: outputDir,
     });
-
-    // TODO: Remove the generated directory once published.
-
-    if (!this.entity.metadata.uid) {
-      throw new Error(
-        'Trying to build documentation for entity not in service catalog',
-      );
+    this.logger.debug(
+      `Removing generated directory ${outputDir} since the site has been published`,
+    );
+    try {
+      // Not a blocker hence no need to await this.
+      fs.remove(outputDir);
+    } catch (error) {
+      this.logger.debug(`Error removing generated directory ${error.message}`);
     }
 
-    new BuildMetadataStorage(this.entity.metadata.uid).storeBuildTimestamp();
+    // Store the latest build etag for the entity
+    new BuildMetadataStorage(this.entity.metadata.uid).setEtag(etag);
   }
 
   public async docsUpToDate() {

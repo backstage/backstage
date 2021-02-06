@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 type buildInfo = {
-  // uid: timestamp
-  [key: string]: number;
+  // Entity uid: etag
+  [key: string]: string;
 };
 
 // TODO: Build info should be part of TechDocs storage, inside `techdocs_metadata.json`
@@ -39,11 +39,11 @@ export class BuildMetadataStorage {
     this.builds = builds;
   }
 
-  storeBuildTimestamp() {
-    this.builds[this.entityUid] = Date.now();
+  setEtag(etag: string): void {
+    this.builds[this.entityUid] = etag;
   }
 
-  getTimestamp() {
+  getEtag(): string | undefined {
     return this.builds[this.entityUid];
   }
 }
