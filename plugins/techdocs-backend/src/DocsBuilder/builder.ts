@@ -76,6 +76,10 @@ export class DocsBuilder {
       );
     }
 
+    /**
+     * Prepare and cache check
+     */
+
     // Use the in-memory storage for setting and getting etag for this entity.
     const buildMetadataStorage = new BuildMetadataStorage(
       this.entity.metadata.uid,
@@ -103,6 +107,11 @@ export class DocsBuilder {
       `TechDocs prepare step completed for entity ${getEntityId(this.entity)}.`,
     );
     this.logger.debug(`Prepared files temporarily stored at ${preparedDir}`);
+
+    /**
+     * Generate
+     */
+
     this.logger.info(`Running generator on entity ${getEntityId(this.entity)}`);
     // Create a temporary directory to store the generated files in.
     const tmpdirPath = os.tmpdir();
@@ -111,7 +120,6 @@ export class DocsBuilder {
     const outputDir = await fs.mkdtemp(
       path.join(tmpdirResolvedPath, 'techdocs-tmp-'),
     );
-
     const parsedLocationAnnotation = getLocationForEntity(this.entity);
     await this.generator.run({
       inputDir: preparedDir,
@@ -121,9 +129,9 @@ export class DocsBuilder {
     });
 
     this.logger.debug(`Generated files temporarily stored at ${outputDir}`);
-    // Remove Prepared directory
-    // Can not remove prepared directory in case of git preparer since the local git repository
-    // is used to get etag on subsequent requests.
+    // Remove Prepared directory since it is no longer needed.
+    // Caveat: Can not remove prepared directory in case of git preparer since the
+    // local git repository is used to get etag on subsequent requests.
     if (this.preparer instanceof UrlPreparer) {
       this.logger.debug(
         `Removing prepared directory ${preparedDir} since the site has been generated.`,
@@ -135,6 +143,10 @@ export class DocsBuilder {
         this.logger.debug(`Error removing prepared directory ${error.message}`);
       }
     }
+
+    /**
+     * Publish
+     */
 
     this.logger.info(`Running publisher on entity ${getEntityId(this.entity)}`);
     await this.publisher.publish({
