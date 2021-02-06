@@ -56,7 +56,7 @@ export interface SplunkOnCallApi {
   getOnCallUsers(): Promise<OnCall[]>;
 
   /**
-   * Triggers an incident to whoever is on-call.
+   * Triggers an incident to specific users and/or specific teams.
    */
   triggerAlarm(request: TriggerAlarmRequest): Promise<Response>;
 
@@ -66,7 +66,7 @@ export interface SplunkOnCallApi {
   resolveIncident(request: PatchIncidentRequest): Promise<Response>;
 
   /**
-   * Acknowledge an incident to whoever is on-call.
+   * Acknowledge an incident.
    */
   acknowledgeIncident(request: PatchIncidentRequest): Promise<Response>;
 
@@ -76,7 +76,7 @@ export interface SplunkOnCallApi {
   getUsers(): Promise<User[]>;
 
   /**
-   * Get a list of users for your organization.
+   * Get a list of teams for your organization.
    */
   getTeams(): Promise<Team[]>;
 

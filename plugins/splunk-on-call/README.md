@@ -1,6 +1,19 @@
-# Splunk-On-Call
+# Splunk On-Call
 
 ## Overview
+
+This plugin displays Splunk On-Call information about an entity.
+
+There is a way to trigger an new incident directly to specific users or/and specific teams.
+
+This plugin requires that entities are annotated with a team name. See more further down in this document.
+
+This plugin provides:
+
+- A list of incidents
+- A way to trigger a new incident to specific users or/and teams
+- A way to acknowledge/resolve an incident
+- Information details about the persons on-call
 
 ## Setup instructions
 
@@ -13,7 +26,7 @@ yarn add @backstage/plugin-splunkoncall
 Add it to the app in `plugins.ts`:
 
 ```ts
-export { plugin as Pagerduty } from '@backstage/plugin-splunkoncall';
+export { plugin as SplunkOnCall } from '@backstage/plugin-splunk-on-call';
 ```
 
 Add it to the `EntityPage.ts`:
@@ -22,7 +35,7 @@ Add it to the `EntityPage.ts`:
 import {
   isPluginApplicableToEntity as isSplunkOnCallAvailable,
   SplunkOnCallCard,
-} from '@backstage/plugin-splunkoncall';
+} from '@backstage/plugin-splunk-on-call';
 // add to code
 {
   isSplunkOnCallAvailable(entity) && (
@@ -35,11 +48,33 @@ import {
 
 ## Client configuration
 
-## Providing the API Token
+In order to be able to perform certain action (create-acknowledge-resolve an action), you need to provide the username of the user making the action.
+The user supplied must be a valid Splunk On-Call user and a member of your organization.
 
-In order for the client to make requests to the [SplunkOnCall API](https://developer.splunkoncall.com/docs/rest-api-v2/rest-api/) it needs an [API Token](https://support.splunkoncall.com/docs/generating-api-keys#generating-a-general-access-rest-api-key).
+In `app-config.yaml`:
 
-Then start the backend passing the token as an environment variable:
+```yaml
+splunkoncall:
+  username: <SPLUNK_ON_CALL_USERNAME>
+```
+
+The user supplied must be a valid Splunk On-Call user and a member of your organization.
+
+### Adding your team name to the entity annotation
+
+The information displayed for each entity is based on the team name.
+If you want to use this plugin for an entity, you need to label it with the below annotation:
+
+```yaml
+annotations:
+  splunk-on-call.com/team: <SPLUNK_ON_CALL_TEAM_NAME>
+```
+
+## Providing the API key and API id
+
+In order for the client to make requests to the [Splunk On-Call API](https://portal.victorops.com/public/api-docs.html#/) it needs an [API ID and an API Key](https://help.victorops.com/knowledge-base/api/).
+
+Then start the backend passing the values as an environment variable:
 
 ```bash
 $ SPLUNK_ON_CALL_API_KEY='' SPLUNK_ON_CALL_API_ID='' yarn start

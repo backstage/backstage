@@ -23,5 +23,3 @@ export {
   splunkOnCallApiRef,
   UnauthorizedError,
 } from './api/client';
-
-export { SplunkOnCallPage as Router } from './components/SplunkOnCallPage';
