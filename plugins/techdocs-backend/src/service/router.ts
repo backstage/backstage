@@ -184,7 +184,7 @@ export async function createRouter({
             );
             // TODO: re-trigger build for cache invalidation.
             // Add build info in techdocs_metadata.json and compare it against
-            // the eTag/commit in the repository.
+            // the etag/commit in the repository.
             // Without this, docs will not be re-built once they have been generated.
             // Although it is unconventional that anyone will face this issue - because
             // if you have an external storage, you should be using CI/CD to build and publish docs.
