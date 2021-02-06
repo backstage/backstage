@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import path from 'path';
-import parseGitUrl from 'git-url-parse';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { PreparerBase } from './types';
-import { parseReferenceAnnotation, checkoutGitRepository } from '../../helpers';
-
+import parseGitUrl from 'git-url-parse';
+import path from 'path';
 import { Logger } from 'winston';
+import { checkoutGitRepository, parseReferenceAnnotation } from '../../helpers';
+import { PreparerBase, PreparerResponse } from './types';
 
 export class CommonGitPreparer implements PreparerBase {
   private readonly config: Config;
@@ -31,7 +30,7 @@ export class CommonGitPreparer implements PreparerBase {
     this.logger = logger;
   }
 
-  async prepare(entity: Entity): Promise<string> {
+  async prepare(entity: Entity): Promise<PreparerResponse> {
     const { target } = parseReferenceAnnotation(
       'backstage.io/techdocs-ref',
       entity,
@@ -45,7 +44,13 @@ export class CommonGitPreparer implements PreparerBase {
       );
       const parsedGitLocation = parseGitUrl(target);
 
-      return path.join(repoPath, parsedGitLocation.filepath);
+      // TODO: Return git commit sha
+      const etag = '';
+
+      return {
+        preparedDir: path.join(repoPath, parsedGitLocation.filepath),
+        etag,
+      };
     } catch (error) {
       this.logger.debug(`Repo checkout failed with error ${error.message}`);
       throw error;

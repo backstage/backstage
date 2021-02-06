@@ -13,22 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import fs from 'fs-extra';
-import os from 'os';
-import path from 'path';
-import Docker from 'dockerode';
-import { Logger } from 'winston';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
+  GeneratorBase,
+  GeneratorBuilder,
+  getLastCommitTimestamp,
+  getLocationForEntity,
+  PreparerBase,
   PreparerBuilder,
   PublisherBase,
-  GeneratorBuilder,
-  PreparerBase,
-  GeneratorBase,
-  getLocationForEntity,
-  getLastCommitTimestamp,
 } from '@backstage/techdocs-common';
+import Docker from 'dockerode';
+import fs from 'fs-extra';
+import os from 'os';
+import path from 'path';
+import { Logger } from 'winston';
 import { BuildMetadataStorage } from '.';
 
 const getEntityId = (entity: Entity) => {
@@ -76,7 +76,9 @@ export class DocsBuilder {
 
   public async build() {
     this.logger.info(`Running preparer on entity ${getEntityId(this.entity)}`);
-    const preparedDir = await this.preparer.prepare(this.entity);
+    // TODO: This will throw an error if no further build is required, site is cached.
+    // TODO: Use etag from here and store in memory.
+    const { preparedDir } = await this.preparer.prepare(this.entity);
 
     const parsedLocationAnnotation = getLocationForEntity(this.entity);
 

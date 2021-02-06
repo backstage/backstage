@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PreparerBase } from './types';
+import { InputError, UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import path from 'path';
-import { parseReferenceAnnotation, checkoutGitRepository } from '../../helpers';
-import { UrlReader, InputError } from '@backstage/backend-common';
 import parseGitUrl from 'git-url-parse';
+import path from 'path';
 import { Logger } from 'winston';
+import { checkoutGitRepository, parseReferenceAnnotation } from '../../helpers';
+import { PreparerBase, PreparerResponse } from './types';
 
 export class DirectoryPreparer implements PreparerBase {
   constructor(
@@ -68,7 +68,7 @@ export class DirectoryPreparer implements PreparerBase {
     }
   }
 
-  async prepare(entity: Entity): Promise<string> {
+  async prepare(entity: Entity): Promise<PreparerResponse> {
     const { target } = parseReferenceAnnotation(
       'backstage.io/techdocs-ref',
       entity,
@@ -78,8 +78,12 @@ export class DirectoryPreparer implements PreparerBase {
       entity,
     );
 
-    return new Promise(resolve => {
-      resolve(path.resolve(managedByLocationDirectory, target));
-    });
+    // TODO: etag will be returned as a commit sha from resolveManagedByLocationToDir.
+    const etag = '';
+
+    return {
+      preparedDir: path.resolve(managedByLocationDirectory, target),
+      etag,
+    };
   }
 }

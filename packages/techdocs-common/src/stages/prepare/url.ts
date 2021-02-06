@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Logger } from 'winston';
-import { Entity } from '@backstage/catalog-model';
 import { UrlReader } from '@backstage/backend-common';
-import { PreparerBase } from './types';
+import { Entity } from '@backstage/catalog-model';
+import { Logger } from 'winston';
 import { getDocFilesFromRepository } from '../../helpers';
+import { PreparerBase, PreparerResponse } from './types';
 
 export class UrlPreparer implements PreparerBase {
   private readonly logger: Logger;
@@ -28,9 +28,15 @@ export class UrlPreparer implements PreparerBase {
     this.reader = reader;
   }
 
-  async prepare(entity: Entity): Promise<string> {
+  async prepare(entity: Entity): Promise<PreparerResponse> {
     try {
-      return getDocFilesFromRepository(this.reader, entity);
+      const preparedDir = await getDocFilesFromRepository(this.reader, entity);
+      // TODO: This will be actual etag from URL Reader.
+      const etag = '';
+      return {
+        preparedDir,
+        etag,
+      };
     } catch (error) {
       this.logger.debug(
         `Unable to fetch files for building docs ${error.message}`,
