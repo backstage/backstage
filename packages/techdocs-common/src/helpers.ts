@@ -196,16 +196,9 @@ export const checkoutGitRepository = async (
 };
 
 export const getLastCommitTimestamp = async (
-  repositoryUrl: string,
-  config: Config,
+  repositoryLocation: string,
   logger: Logger,
 ): Promise<number> => {
-  const repositoryLocation = await checkoutGitRepository(
-    repositoryUrl,
-    config,
-    logger,
-  );
-
   const git = Git.fromAuth({ logger });
   const sha = await git.resolveRef({ dir: repositoryLocation, ref: 'HEAD' });
   const commit = await git.readCommit({ dir: repositoryLocation, sha });

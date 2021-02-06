@@ -29,6 +29,7 @@ function normalizePath(path: string) {
 jest.mock('../../helpers', () => ({
   ...jest.requireActual<{}>('../../helpers'),
   checkoutGitRepository: jest.fn(() => '/tmp/backstage-repo/org/name/branch'),
+  getLastCommitTimestamp: jest.fn(() => 12345678),
 }));
 
 const createMockEntity = (annotations = {}) => {
