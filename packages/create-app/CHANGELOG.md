@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- 019fe39a0: **BREAKING CHANGE**: The `useEntity` hooks has been moved from `@backstage/plugin-catalog` to `@backstage/plugin-catalog-react`.
+- 019fe39a0: **BREAKING CHANGE**: The `useEntity` hook has been moved from `@backstage/plugin-catalog` to `@backstage/plugin-catalog-react`.
   To apply this change to an existing app, add `@backstage/plugin-catalog-react` to your dependencies in `packages/app/package.json`, and update
   the import inside `packages/app/src/components/catalog/EntityPage.tsx` as well as any other places you were using `useEntity` or any other functions that were moved to `@backstage/plugin-catalog-react`.
 - 436ca3f62: Remove techdocs.requestUrl and techdocs.storageUrl from app-config.yaml
