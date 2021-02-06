@@ -13,12 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { NotModifiedError } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import parseGitUrl from 'git-url-parse';
 import path from 'path';
 import { Logger } from 'winston';
-import { checkoutGitRepository, parseReferenceAnnotation } from '../../helpers';
+import {
+  checkoutGitRepository,
+  getLastCommitTimestamp,
+  parseReferenceAnnotation,
+} from '../../helpers';
 import { PreparerBase, PreparerResponse } from './types';
 
 export class CommonGitPreparer implements PreparerBase {
@@ -30,29 +35,44 @@ export class CommonGitPreparer implements PreparerBase {
     this.logger = logger;
   }
 
-  async prepare(entity: Entity): Promise<PreparerResponse> {
+  async prepare(
+    entity: Entity,
+    options?: { etag?: string },
+  ): Promise<PreparerResponse> {
     const { target } = parseReferenceAnnotation(
       'backstage.io/techdocs-ref',
       entity,
     );
 
     try {
+      // Update repository or do a fresh clone.
       const repoPath = await checkoutGitRepository(
         target,
         this.config,
         this.logger,
       );
+
+      // Check if etag has changed for cache invalidation.
+      const etag = await getLastCommitTimestamp(
+        target,
+        this.config,
+        this.logger,
+      );
+      if (options?.etag === etag.toString()) {
+        throw new NotModifiedError();
+      }
+
       const parsedGitLocation = parseGitUrl(target);
-
-      // TODO: Return git commit sha
-      const etag = '';
-
       return {
         preparedDir: path.join(repoPath, parsedGitLocation.filepath),
-        etag,
+        etag: etag.toString(),
       };
     } catch (error) {
-      this.logger.debug(`Repo checkout failed with error ${error.message}`);
+      if (error instanceof NotModifiedError) {
+        this.logger.debug(`Cache is valid for etag ${options?.etag}`);
+      } else {
+        this.logger.debug(`Repo checkout failed with error ${error.message}`);
+      }
       throw error;
     }
   }

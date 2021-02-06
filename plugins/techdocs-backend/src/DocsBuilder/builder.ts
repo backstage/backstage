@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import { Config } from '@backstage/config';
 import {
   GeneratorBase,
   GeneratorBuilder,
-  getLastCommitTimestamp,
   getLocationForEntity,
   PreparerBase,
   PreparerBuilder,
   PublisherBase,
+  UrlPreparer,
 } from '@backstage/techdocs-common';
 import Docker from 'dockerode';
 import fs from 'fs-extra';
@@ -44,7 +43,6 @@ type DocsBuilderArguments = {
   entity: Entity;
   logger: Logger;
   dockerClient: Docker;
-  config: Config;
 };
 
 export class DocsBuilder {
@@ -54,7 +52,6 @@ export class DocsBuilder {
   private entity: Entity;
   private logger: Logger;
   private dockerClient: Docker;
-  private config: Config;
 
   constructor({
     preparers,
@@ -63,7 +60,6 @@ export class DocsBuilder {
     entity,
     logger,
     dockerClient,
-    config,
   }: DocsBuilderArguments) {
     this.preparer = preparers.get(entity);
     this.generator = generators.get(entity);
@@ -71,7 +67,6 @@ export class DocsBuilder {
     this.entity = entity;
     this.logger = logger;
     this.dockerClient = dockerClient;
-    this.config = config;
   }
 
   public async build(): Promise<void> {
@@ -127,14 +122,18 @@ export class DocsBuilder {
 
     this.logger.debug(`Generated files temporarily stored at ${outputDir}`);
     // Remove Prepared directory
-    this.logger.debug(
-      `Removing prepared directory ${preparedDir} since the site has been generated.`,
-    );
-    try {
-      // Not a blocker hence no need to await this.
-      fs.remove(preparedDir);
-    } catch (error) {
-      this.logger.debug(`Error removing prepared directory ${error.message}`);
+    // Can not remove prepared directory in case of git preparer since the local git repository
+    // is used to get etag on subsequent requests.
+    if (this.preparer instanceof UrlPreparer) {
+      this.logger.debug(
+        `Removing prepared directory ${preparedDir} since the site has been generated.`,
+      );
+      try {
+        // Not a blocker hence no need to await this.
+        fs.remove(preparedDir);
+      } catch (error) {
+        this.logger.debug(`Error removing prepared directory ${error.message}`);
+      }
     }
 
     this.logger.info(`Running publisher on entity ${getEntityId(this.entity)}`);
@@ -154,54 +153,5 @@ export class DocsBuilder {
 
     // Store the latest build etag for the entity
     new BuildMetadataStorage(this.entity.metadata.uid).setEtag(etag);
-  }
-
-  public async docsUpToDate() {
-    if (!this.entity.metadata.uid) {
-      throw new Error(
-        'Trying to build documentation for entity not in service catalog',
-      );
-    }
-
-    const buildMetadataStorage = new BuildMetadataStorage(
-      this.entity.metadata.uid,
-    );
-    const { type, target } = getLocationForEntity(this.entity);
-
-    // Unless docs are stored locally
-    const nonAgeCheckTypes = ['dir', 'file', 'url'];
-    if (!nonAgeCheckTypes.includes(type)) {
-      const lastCommit = await getLastCommitTimestamp(
-        target,
-        this.config,
-        this.logger,
-      );
-      const storageTimeStamp = buildMetadataStorage.getTimestamp();
-
-      // Check if documentation source is newer than what we have
-      if (storageTimeStamp && storageTimeStamp >= lastCommit) {
-        this.logger.debug(
-          `Docs for entity ${getEntityId(this.entity)} is up to date.`,
-        );
-        return true;
-      }
-    }
-
-    // Cache downloaded source files for 30 minutes.
-    // TODO: When urlReader/readTree supports some way to get latest commit timestamp,
-    // it should be used to invalidate cache.
-    if (type === 'url') {
-      const builtAt = buildMetadataStorage.getTimestamp();
-      const now = Date.now();
-
-      if (builtAt > now - 1800000) {
-        return true;
-      }
-    }
-
-    this.logger.debug(
-      `Docs for entity ${getEntityId(this.entity)} was outdated.`,
-    );
-    return false;
   }
 }

@@ -141,7 +141,6 @@ export async function createRouter({
         dockerClient,
         logger,
         entity,
-        config,
       });
       switch (publisherType) {
         case 'local':
