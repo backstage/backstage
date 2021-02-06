@@ -76,8 +76,9 @@ export async function createRouter(
         );
         if (!entities.length) {
           res.status(404).send(`No entity with uid ${uid}`);
+        } else {
+          res.status(200).send(entities[0]);
         }
-        res.status(200).send(entities[0]);
       })
       .delete('/entities/by-uid/:uid', async (req, res) => {
         const { uid } = req.params;
@@ -99,8 +100,9 @@ export async function createRouter(
             .send(
               `No entity with kind ${kind} namespace ${namespace} name ${name}`,
             );
+        } else {
+          res.status(200).send(entities[0]);
         }
-        res.status(200).send(entities[0]);
       });
   }
 
