@@ -100,8 +100,8 @@ export const SplunkOnCallCard = ({ entity }: Props) => {
   }, []);
 
   const { value: users, loading, error } = useAsync(async () => {
-    const users = await api.getUsers();
-    const usersHashMap = users.reduce(
+    const allUsers = await api.getUsers();
+    const usersHashMap = allUsers.reduce(
       (map: Record<string, User>, obj: User) => {
         if (obj.username) {
           map[obj.username] = obj;
@@ -110,7 +110,7 @@ export const SplunkOnCallCard = ({ entity }: Props) => {
       },
       {},
     );
-    return { usersHashMap, userList: users };
+    return { usersHashMap, userList: allUsers };
   });
 
   const incidentCreator =
