@@ -133,7 +133,7 @@ export const SplunkOnCallCard = ({ entity }: Props) => {
         )}
         {users && (
           <TriggerDialog
-            users={users?.userList}
+            users={users.userList}
             showDialog={showDialog}
             handleDialog={handleDialog}
             onIncidentCreated={handleRefresh}

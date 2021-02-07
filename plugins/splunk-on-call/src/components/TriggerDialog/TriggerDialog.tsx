@@ -70,7 +70,12 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     formControl: {
       margin: theme.spacing(1),
-      minWidth: '100%',
+      minWidth: `calc(100% - ${theme.spacing(2)}px)`,
+    },
+    targets: {
+      display: 'flex',
+      flexDirection: 'column',
+      width: '100%',
     },
   }),
 );
@@ -91,7 +96,7 @@ export const TriggerDialog = ({
   const [policyTargets, setPolicyTargets] = useState<string[]>([]);
   const [details, setDetails] = useState<string>('');
   const [summary, setSummary] = useState<string>('');
-  const [isMultiResponder, setIsMultiResponder] = useState<string>('');
+  const [isMultiResponder, setIsMultiResponder] = useState<string>('1');
 
   const [
     { value, loading: triggerLoading, error: triggerError },
@@ -113,7 +118,11 @@ export const TriggerDialog = ({
       }),
   );
 
-  const { value: policies, loading, error } = useAsync(async () => {
+  const {
+    value: policies,
+    loading: policiesLoaading,
+    error: policiesError,
+  } = useAsync(async () => {
     const policies = await api.getEscalationPolicies();
     return policies;
   });
@@ -191,13 +200,13 @@ export const TriggerDialog = ({
           automatically be amended to the alarm so that the receiver can reach
           out to you if necessary.
         </Typography>
-        <Card>
-          <CardContent>
-            <Typography color="textPrimary" gutterBottom>
-              Select the targets
-            </Typography>
+        <div style={{ marginTop: '1em' }}>
+          <Typography color="textSecondary" gutterBottom>
+            Select the targets
+          </Typography>
+          <div className={classes.targets}>
             <FormControl className={classes.formControl}>
-              <InputLabel>Select users</InputLabel>
+              <InputLabel>Select Users</InputLabel>
               <Select
                 id="user-targets"
                 multiple
@@ -231,7 +240,7 @@ export const TriggerDialog = ({
               </Select>
             </FormControl>
             <FormControl className={classes.formControl}>
-              <InputLabel>Select an escalation poilicy</InputLabel>
+              <InputLabel>Select Teams / Policies</InputLabel>
               <Select
                 id="policy-targets"
                 multiple
@@ -257,8 +266,8 @@ export const TriggerDialog = ({
                 )}
                 MenuProps={MenuProps}
               >
-                {!error &&
-                  !loading &&
+                {!policiesError &&
+                  !policiesLoaading &&
                   policies &&
                   policies.map(policy => (
                     <MenuItem
@@ -270,10 +279,16 @@ export const TriggerDialog = ({
                   ))}
               </Select>
             </FormControl>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
+        <Typography
+          style={{ marginTop: '1em' }}
+          color="textSecondary"
+          gutterBottom
+        >
+          Acknowledge Behavior
+        </Typography>
         <FormControl className={classes.formControl}>
-          <InputLabel>Acknowledge Behavior</InputLabel>
           <Select
             id="multi-responder"
             value={isMultiResponder}
