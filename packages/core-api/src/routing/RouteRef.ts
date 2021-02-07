@@ -47,7 +47,12 @@ export class AbsoluteRouteRef<Params extends { [param in string]: string }> {
 }
 
 export function createRouteRef<
+  // Params is the type that we care about and the one to be embedded in the route ref.
+  // For example, given the params ['name', 'kind'], Params will be {name: string, kind: string}
   Params extends { [param in ParamKey]: string },
+  // ParamKey is here to make sure the Params type properly has its keys narrowed down
+  // to only the elements of params. Defaulting to never makes sure we end up with
+  // Param = {} if the params array is empty.
   ParamKey extends string = never
 >(config: {
   params?: ParamKey[];
