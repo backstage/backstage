@@ -27,7 +27,6 @@ import {
 } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import EmailIcon from '@material-ui/icons/Email';
-import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
 import { User } from '../types';
 
 const useStyles = makeStyles({
@@ -62,18 +61,6 @@ export const EscalationUser = ({ user }: Props) => {
             <EmailIcon color="primary" />
           </IconButton>
         </Tooltip>
-        {/* {user._selfUrl && (
-          <Tooltip title="View in SplunkOnCall" placement="top">
-            <IconButton
-              href={`https://api.victorops.com${user._selfUrl.replace('/api-public', '')}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              color="primary"
-            >
-              <OpenInBrowserIcon />
-            </IconButton>
-          </Tooltip>
-        )} */}
       </ListItemSecondaryAction>
     </ListItem>
   );

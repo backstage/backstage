@@ -31,7 +31,6 @@ import {
   StatusError,
   StatusWarning,
   StatusOK,
-  identityApiRef,
   useApi,
   alertApiRef,
 } from '@backstage/core';
@@ -138,7 +137,7 @@ export const IncidentListItem = ({ incident, onIncidentAction }: Props) => {
     : incident.monitorName;
 
   const [
-    { value: resolveValue, loading: _resolveLoading, error: resolveError },
+    { value: resolveValue, error: resolveError },
     handleResolveIncident,
   ] = useAsyncFn(
     async ({ incidentNames }: PatchIncidentRequest) =>
@@ -148,11 +147,7 @@ export const IncidentListItem = ({ incident, onIncidentAction }: Props) => {
   );
 
   const [
-    {
-      value: acknowledgeValue,
-      loading: _acknowledgeLoading,
-      error: acknowledgeError,
-    },
+    { value: acknowledgeValue, error: acknowledgeError },
     handleAcknowledgeIncident,
   ] = useAsyncFn(
     async ({ incidentNames }: PatchIncidentRequest) =>
