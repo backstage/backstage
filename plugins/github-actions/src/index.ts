@@ -17,16 +17,16 @@
 export {
   githubActionsPlugin,
   githubActionsPlugin as plugin,
-  EntityGitHubActionsContent,
-  EntityLatestGitHubActionRunCard,
-  EntityLatestGitHubActionsForBranchCard,
-  EntityRecentGitHubActionsRunsCard,
+  EntityGithubActionsContent,
+  EntityLatestGithubActionRunCard,
+  EntityLatestGithubActionsForBranchCard,
+  EntityRecentGithubActionsRunsCard,
 } from './plugin';
 export * from './api';
 export {
   Router,
   isPluginApplicableToEntity,
-  isPluginApplicableToEntity as isGitHubActionsAvailable,
+  isPluginApplicableToEntity as isGithubActionsAvailable,
 } from './components/Router';
 export * from './components/Cards';
 export { GITHUB_ACTIONS_ANNOTATION } from './components/useProjectName';

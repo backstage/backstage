@@ -51,14 +51,14 @@ export const githubActionsPlugin = createPlugin({
   },
 });
 
-export const EntityGitHubActionsContent = githubActionsPlugin.provide(
+export const EntityGithubActionsContent = githubActionsPlugin.provide(
   createRoutableExtension({
     component: () => import('./components/Router').then(m => m.Router),
     mountPoint: rootRouteRef,
   }),
 );
 
-export const EntityLatestGitHubActionRunCard = githubActionsPlugin.provide(
+export const EntityLatestGithubActionRunCard = githubActionsPlugin.provide(
   createComponentExtension({
     component: {
       lazy: () =>
@@ -67,7 +67,7 @@ export const EntityLatestGitHubActionRunCard = githubActionsPlugin.provide(
   }),
 );
 
-export const EntityLatestGitHubActionsForBranchCard = githubActionsPlugin.provide(
+export const EntityLatestGithubActionsForBranchCard = githubActionsPlugin.provide(
   createComponentExtension({
     component: {
       lazy: () =>
@@ -76,7 +76,7 @@ export const EntityLatestGitHubActionsForBranchCard = githubActionsPlugin.provid
   }),
 );
 
-export const EntityRecentGitHubActionsRunsCard = githubActionsPlugin.provide(
+export const EntityRecentGithubActionsRunsCard = githubActionsPlugin.provide(
   createComponentExtension({
     component: {
       lazy: () =>
