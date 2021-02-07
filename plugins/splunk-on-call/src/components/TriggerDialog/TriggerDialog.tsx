@@ -118,6 +118,10 @@ export const TriggerDialog = ({
       }),
   );
 
+  const username = api.getUsername();
+
+  const currentUser = users.find(user => user.username === username);
+
   const {
     value: policies,
     loading: policiesLoaading,
@@ -180,6 +184,12 @@ export const TriggerDialog = ({
     <Dialog maxWidth="md" open={showDialog} onClose={handleDialog} fullWidth>
       <DialogTitle>This action will trigger an incident.</DialogTitle>
       <DialogContent>
+        <Typography variant="subtitle1" gutterBottom align="justify">
+          Created by:{' '}
+          <b>
+            {currentUser?.firstName} {currentUser?.lastName}
+          </b>
+        </Typography>
         <Alert severity="info">
           <Typography variant="body1" align="justify">
             If the issue you are seeing does not need urgent attention, please

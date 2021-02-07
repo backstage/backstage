@@ -52,6 +52,10 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
   }
   constructor(private readonly config: ClientApiConfig) {}
 
+  getUsername(): string | undefined {
+    return this.config.username as string;
+  }
+
   async getIncidents(): Promise<Incident[]> {
     const url = `${await this.config.discoveryApi.getBaseUrl(
       'proxy',

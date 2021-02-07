@@ -60,6 +60,15 @@ splunkoncall:
 
 The user supplied must be a valid Splunk On-Call user and a member of your organization.
 
+In order to be able to make certain API calls you need to add the `PATCH` method to the backend cors methods list.
+
+```yaml
+backend:
+  # ...
+  cors:
+    methods: [GET, POST, PUT, DELETE, PATCH]
+```
+
 ### Adding your team name to the entity annotation
 
 The information displayed for each entity is based on the team name.

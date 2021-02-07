@@ -16,31 +16,6 @@
 
 import { IncidentTarget } from '../api/types';
 
-export type Service = {
-  id: string;
-  name: string;
-  html_url: string;
-  integrationKey: string;
-  escalation_policy: {
-    id: string;
-    user: User;
-  };
-};
-
-export type Assignee = {
-  id: string;
-  summary: string;
-  html_url: string;
-};
-
-export type SubHeaderLink = {
-  title: string;
-  href?: string;
-  icon: React.ReactNode;
-  action?: React.ReactNode;
-};
-
-// GET Teams
 export type Team = {
   name?: string;
   slug?: string;
@@ -53,7 +28,6 @@ export type Team = {
   _adminsUrl?: string;
 };
 
-// GET oncall
 export type OnCall = {
   team?: OnCallTeamResource;
   oncallNow?: OnCallNowResource[];
@@ -82,7 +56,6 @@ export type OnCallUser = {
   username?: string;
 };
 
-// GET /api-public/v2/user
 export type User = {
   firstName?: string;
   lastName?: string;
@@ -95,7 +68,6 @@ export type User = {
   _selfUrl?: string;
 };
 
-// Incident creation
 export type CreateIncidentRequest = {
   summary: string;
   details: string;
@@ -104,11 +76,12 @@ export type CreateIncidentRequest = {
   isMultiResponder: boolean;
 };
 
-// GET incidents
+export type IncidentPhase = 'UNACKED' | 'ACKED' | 'RESOLVED';
+
 export type Incident = {
   incidentNumber?: string;
   startTime?: string;
-  currentPhase?: string;
+  currentPhase: IncidentPhase;
   entityState?: string;
   entityType?: string;
   routingKey?: string;

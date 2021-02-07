@@ -46,6 +46,7 @@ configmaps
 configs
 const
 cookiecutter
+cors
 css
 dariddler
 dataflow

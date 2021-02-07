@@ -18,7 +18,6 @@ import {
   EscalationPolicyInfo,
   Incident,
   OnCall,
-  Service,
   Team,
   User,
 } from '../components/types';
@@ -84,6 +83,11 @@ export interface SplunkOnCallApi {
    * Get a list of escalation policies for your organization.
    */
   getEscalationPolicies(): Promise<EscalationPolicyInfo[]>;
+
+  /**
+   * Get the current user username.
+   */
+  getUsername(): string | undefined;
 }
 
 export type PatchIncidentRequest = {
@@ -99,10 +103,6 @@ export type EscalationPolicyResponse = {
 export type ListUserResponse = {
   users: User[];
   _selfUrl?: string;
-};
-
-export type ServicesResponse = {
-  services: Service[];
 };
 
 export type IncidentsResponse = {

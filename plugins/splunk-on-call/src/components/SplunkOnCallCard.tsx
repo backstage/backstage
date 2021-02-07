@@ -23,6 +23,7 @@ import {
   CardHeader,
   Divider,
   CardContent,
+  Typography,
 } from '@material-ui/core';
 import { Incidents } from './Incident';
 import { EscalationPolicy } from './Escalation';
@@ -122,8 +123,11 @@ export const SplunkOnCallCard = ({ entity }: Props) => {
   return (
     <Card>
       <CardHeader
-        title="Incidents"
-        subheader={<HeaderIconLinkRow links={[triggerLink]} />}
+        title="Splunk On-Call"
+        subheader={[
+          <Typography key="team_name">Team: {team}</Typography>,
+          <HeaderIconLinkRow key="incident_trigger" links={[triggerLink]} />,
+        ]}
       />
       <Divider />
       <CardContent>

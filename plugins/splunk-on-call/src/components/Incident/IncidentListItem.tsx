@@ -36,7 +36,7 @@ import {
   alertApiRef,
 } from '@backstage/core';
 import { formatDistanceToNowStrict } from 'date-fns';
-import { Incident } from '../types';
+import { Incident, IncidentPhase } from '../types';
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
 import { splunkOnCallApiRef } from '../../api/client';
 import { useAsyncFn } from 'react-use';
@@ -66,7 +66,11 @@ type Props = {
   onIncidentAction: () => void;
 };
 
-const IncidentPhase = ({ currentPhase }: { currentPhase: string }) => {
+const IncidentPhaseStatus = ({
+  currentPhase,
+}: {
+  currentPhase: IncidentPhase;
+}) => {
   switch (currentPhase) {
     case 'UNACKED':
       return <StatusError />;
@@ -74,6 +78,17 @@ const IncidentPhase = ({ currentPhase }: { currentPhase: string }) => {
       return <StatusWarning />;
     default:
       return <StatusOK />;
+  }
+};
+
+const incidentPhaseTooltip = (currentPhase: IncidentPhase) => {
+  switch (currentPhase) {
+    case 'UNACKED':
+      return 'Triggered';
+    case 'ACKED':
+      return 'Acknowledged';
+    default:
+      return 'Resolved';
   }
 };
 
@@ -190,9 +205,12 @@ export const IncidentListItem = ({ incident, onIncidentAction }: Props) => {
   return (
     <ListItem dense key={incident.entityId}>
       <ListItemIcon className={classes.listItemIcon}>
-        <Tooltip title={incident.currentPhase || ''} placement="top">
+        <Tooltip
+          title={incidentPhaseTooltip(incident.currentPhase)}
+          placement="top"
+        >
           <div className={classes.denseListIcon}>
-            <IncidentPhase currentPhase={incident.currentPhase || ''} />
+            <IncidentPhaseStatus currentPhase={incident.currentPhase} />
           </div>
         </Tooltip>
       </ListItemIcon>
