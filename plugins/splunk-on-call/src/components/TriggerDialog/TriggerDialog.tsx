@@ -34,7 +34,7 @@ import {
   FormControl,
   InputLabel,
 } from '@material-ui/core';
-import { useApi, alertApiRef, identityApiRef } from '@backstage/core';
+import { useApi, alertApiRef } from '@backstage/core';
 import { useAsync, useAsyncFn } from 'react-use';
 import { splunkOnCallApiRef } from '../../api';
 import { Alert } from '@material-ui/lab';
@@ -86,8 +86,6 @@ export const TriggerDialog = ({
   onIncidentCreated: onIncidentCreated,
 }: Props) => {
   const alertApi = useApi(alertApiRef);
-  const identityApi = useApi(identityApiRef);
-  const userName = identityApi.getUserId();
   const api = useApi(splunkOnCallApiRef);
   const classes = useStyles();
 
@@ -166,7 +164,7 @@ export const TriggerDialog = ({
       onIncidentCreated();
       handleDialog();
     }
-  }, [value, alertApi, handleDialog, userName, onIncidentCreated]);
+  }, [value, alertApi, handleDialog, onIncidentCreated]);
 
   if (triggerError) {
     alertApi.post({
@@ -216,7 +214,6 @@ export const TriggerDialog = ({
                 id="user-targets"
                 multiple
                 value={userTargets}
-                inputProps={{ 'data-testid': 'trigger-select-user-target' }}
                 onChange={handleUserTargets}
                 input={<Input />}
                 renderValue={selected => (
@@ -252,9 +249,6 @@ export const TriggerDialog = ({
                 value={policyTargets}
                 onChange={handlePolicyTargets}
                 input={<Input />}
-                inputProps={{
-                  'data-testid': 'trigger-select-policies-target',
-                }}
                 renderValue={selected => (
                   <div className={classes.chips}>
                     {(selected as string[]).map(value => {
@@ -353,7 +347,7 @@ export const TriggerDialog = ({
             handleTriggerAlarm(
               summary,
               details,
-              userName,
+              incidentCreator.username!,
               targets(),
               !!Number(isMultiResponder),
             )

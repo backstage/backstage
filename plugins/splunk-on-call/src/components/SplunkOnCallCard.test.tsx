@@ -33,6 +33,7 @@ import {
   SplunkOnCallClient,
 } from '../api';
 import {
+  ESCALATION_POLICIES,
   MOCKED_ON_CALL,
   MOCKED_USER,
   MOCK_INCIDENT,
@@ -44,6 +45,7 @@ const mockSplunkOnCallApi: Partial<SplunkOnCallClient> = {
   getIncidents: async () => [MOCK_INCIDENT],
   getOnCallUsers: async () => MOCKED_ON_CALL,
   getTeams: async () => [MOCK_TEAM],
+  getEscalationPolicies: async () => ESCALATION_POLICIES,
 };
 
 const configApi: ConfigApi = new ConfigReader({

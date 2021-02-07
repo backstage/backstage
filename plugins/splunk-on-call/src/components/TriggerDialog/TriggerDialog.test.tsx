@@ -21,31 +21,16 @@ import {
   alertApiRef,
   createApiRef,
   ApiProvider,
-  IdentityApi,
-  identityApiRef,
 } from '@backstage/core';
 import { splunkOnCallApiRef } from '../../api';
 import { TriggerDialog } from './TriggerDialog';
-import { MOCKED_USER } from '../../api/mocks';
+import { ESCALATION_POLICIES, MOCKED_USER } from '../../api/mocks';
 
 describe('TriggerDialog', () => {
-  const mockIdentityApi: Partial<IdentityApi> = {
-    getUserId: () => 'guest@example.com',
-  };
-
   const mockTriggerAlarmFn = jest.fn();
   const mockSplunkOnCallApi = {
     triggerAlarm: mockTriggerAlarmFn,
-    getEscalationPolicies: async () => [
-      {
-        policy: {
-          name: 'Example',
-          slug: 'team-zEalMCgwYSA0Lt40',
-          _selfUrl: '/api-public/v1/policies/team-zEalMCgwYSA0Lt40',
-        },
-        team: { name: 'Example', slug: 'team-zEalMCgwYSA0Lt40' },
-      },
-    ],
+    getEscalationPolicies: async () => ESCALATION_POLICIES,
   };
 
   const apis = ApiRegistry.from([
@@ -56,12 +41,11 @@ describe('TriggerDialog', () => {
         description: 'Used to report alerts and forward them to the app',
       }),
     ],
-    [identityApiRef, mockIdentityApi],
     [splunkOnCallApiRef, mockSplunkOnCallApi],
   ]);
 
   it('open the dialog and trigger an alarm', async () => {
-    const { getByText, getByRole, getByTestId } = render(
+    const { getByText, getByRole, getAllByRole, getByTestId } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
           <TriggerDialog
@@ -83,19 +67,37 @@ describe('TriggerDialog', () => {
     ).toBeInTheDocument();
     const summary = getByTestId('trigger-summary-input');
     const body = getByTestId('trigger-body-input');
-    const userTarget = getByTestId('trigger-select-user-target');
     const behavior = getByTestId('trigger-select-behavior');
-    const policiesTarget = getByTestId('trigger-select-policies-target');
     const description = 'Test Trigger Alarm';
     await act(async () => {
       fireEvent.change(summary, { target: { value: description } });
       fireEvent.change(body, { target: { value: description } });
       fireEvent.change(behavior, { target: { value: '0' } });
-      fireEvent.change(userTarget, { target: { value: ['test_user'] } });
-      fireEvent.change(policiesTarget, {
-        target: { value: ['team-zEalMCgwYSA0Lt40'] },
+      fireEvent.mouseDown(getAllByRole('button')[0]);
+    });
+
+    // Trigger user targets select
+    const options = getAllByRole('option');
+    await act(async () => {
+      fireEvent.click(options[0]);
+      fireEvent.keyDown(options[0], {
+        key: 'Escape',
+        code: 'Escape',
+        keyCode: 27,
+        charCode: 27,
       });
     });
+
+    // Trigger policy targets select
+    await act(async () => {
+      fireEvent.mouseDown(getAllByRole('button')[1]);
+    });
+    const policiesOptions = getAllByRole('option');
+    await act(async () => {
+      fireEvent.click(policiesOptions[0]);
+    });
+
+    // Trigger incident creation button
     const triggerButton = getByTestId('trigger-button');
     await act(async () => {
       fireEvent.click(triggerButton);
@@ -104,7 +106,7 @@ describe('TriggerDialog', () => {
     expect(mockTriggerAlarmFn).toHaveBeenCalledWith({
       summary: description,
       details: description,
-      userName: 'guest@example.com',
+      userName: 'test_user',
       targets: [
         { slug: 'test_user', type: 'User' },
         { slug: 'team-zEalMCgwYSA0Lt40', type: 'EscalationPolicy' },

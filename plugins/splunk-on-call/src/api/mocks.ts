@@ -1,4 +1,9 @@
-import { Incident, Team, User } from '../components/types';
+import {
+  EscalationPolicyInfo,
+  Incident,
+  Team,
+  User,
+} from '../components/types';
 
 /*
  * Copyright 2021 Spotify AB
@@ -57,7 +62,7 @@ export const MOCK_INCIDENT: Incident = {
   pagedPolicies: [
     {
       policy: {
-        name: 'Generated Direct User Policy for test',
+        name: 'Generated Direct User Policy for test_user',
         slug: 'directUserPolicySlug-test',
         _selfUrl: '/test',
       },
@@ -81,3 +86,14 @@ export const MOCK_TEAM: Team = {
   version: 1,
   isDefaultTeam: false,
 };
+
+export const ESCALATION_POLICIES: EscalationPolicyInfo[] = [
+  {
+    policy: {
+      name: 'Example',
+      slug: 'team-zEalMCgwYSA0Lt40',
+      _selfUrl: '/api-public/v1/policies/team-zEalMCgwYSA0Lt40',
+    },
+    team: { name: 'Example', slug: 'team-zEalMCgwYSA0Lt40' },
+  },
+];
