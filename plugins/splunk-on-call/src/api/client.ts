@@ -38,7 +38,7 @@ export class UnauthorizedError extends Error {}
 
 export const splunkOnCallApiRef = createApiRef<SplunkOnCallApi>({
   id: 'plugin.splunk-on-call.api',
-  description: 'Used to fetch data from SplunkOnCall API',
+  description: 'Used to fetch data from Splunk On-Call API',
 });
 
 export class SplunkOnCallClient implements SplunkOnCallApi {
@@ -190,7 +190,7 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
     options: RequestOptions,
   ): Promise<Response> {
     const response = await fetch(url, options);
-    if (response.status === 401) {
+    if (response.status === 403) {
       throw new UnauthorizedError();
     }
     if (!response.ok) {

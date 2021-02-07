@@ -69,7 +69,7 @@ export const MissingUsername = () => (
     <EmptyState
       title="No Splunk On-Call user available."
       missing="info"
-      description="You need to add a valid username to your 'app.config.yml' if you want to enable Splunk On-Call."
+      description="You need to add a valid username to your 'app.config.yml' if you want to enable Splunk On-Call. Make sure that the user is a member of your organization."
     />
   </CardContent>
 );

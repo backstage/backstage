@@ -34,7 +34,7 @@ export const EscalationPolicy = ({ users, team }: Props) => {
 
   const { value: userNames, loading, error } = useAsync(async () => {
     const oncalls = await api.getOnCallUsers();
-    const users = oncalls
+    const teamUsernames = oncalls
       .filter(oncall => oncall.team?.name === team)
       .flatMap(oncall => {
         return oncall.oncallNow?.flatMap(oncallNow => {
@@ -43,7 +43,7 @@ export const EscalationPolicy = ({ users, team }: Props) => {
           });
         });
       });
-    return users;
+    return teamUsernames;
   });
 
   if (error) {

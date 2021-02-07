@@ -33,11 +33,13 @@ export const Incidents = ({ refreshIncidents, team }: Props) => {
 
   const [{ value: incidents, loading, error }, getIncidents] = useAsyncFn(
     async () => {
-      const incidents = await api.getIncidents();
+      const allIncidents = await api.getIncidents();
       const teams = await api.getTeams();
       const teamSlug = teams.find(teamValue => teamValue.name === team)?.slug;
       const filteredIncidents = teamSlug
-        ? incidents.filter(incident => incident.pagedTeams?.includes(teamSlug))
+        ? allIncidents.filter(incident =>
+            incident.pagedTeams?.includes(teamSlug),
+          )
         : [];
       return filteredIncidents;
     },

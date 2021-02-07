@@ -91,9 +91,9 @@ export const TriggerDialog = ({
 
   const [userTargets, setUserTargets] = useState<string[]>([]);
   const [policyTargets, setPolicyTargets] = useState<string[]>([]);
-  const [details, setDetails] = useState<string>('');
-  const [summary, setSummary] = useState<string>('');
-  const [isMultiResponder, setIsMultiResponder] = useState<string>('1');
+  const [detailsValue, setDetails] = useState<string>('');
+  const [summaryValue, setSummary] = useState<string>('');
+  const [isMultiResponderValue, setIsMultiResponder] = useState<string>('1');
 
   const [
     { value, loading: triggerLoading, error: triggerError },
@@ -120,8 +120,8 @@ export const TriggerDialog = ({
     loading: policiesLoaading,
     error: policiesError,
   } = useAsync(async () => {
-    const policies = await api.getEscalationPolicies();
-    return policies;
+    const allPolicies = await api.getEscalationPolicies();
+    return allPolicies;
   });
 
   const handleUserTargets = (event: React.ChangeEvent<{ value: unknown }>) => {
@@ -149,10 +149,10 @@ export const TriggerDialog = ({
   };
 
   const targets = (): IncidentTarget[] => [
-    ...userTargets.map(user => ({ slug: user, type: TargetType.User })),
+    ...userTargets.map(user => ({ slug: user, type: TargetType.UserValue })),
     ...policyTargets.map(user => ({
       slug: user,
-      type: TargetType.EscalationPolicy,
+      type: TargetType.EscalationPolicyValue,
     })),
   ];
 
@@ -175,7 +175,7 @@ export const TriggerDialog = ({
 
   return (
     <Dialog maxWidth="md" open={showDialog} onClose={handleDialog} fullWidth>
-      <DialogTitle>This action will trigger an incident.</DialogTitle>
+      <DialogTitle>This action will trigger an incident</DialogTitle>
       <DialogContent>
         <Typography variant="subtitle1" gutterBottom align="justify">
           Created by:{' '}
@@ -218,13 +218,13 @@ export const TriggerDialog = ({
                 input={<Input />}
                 renderValue={selected => (
                   <div className={classes.chips}>
-                    {(selected as string[]).map(value => {
+                    {(selected as string[]).map(selectedUser => {
                       const element = users.find(
-                        user => user.username === value,
+                        user => user.username === selectedUser,
                       );
                       return (
                         <Chip
-                          key={value}
+                          key={selectedUser}
                           label={`${element?.firstName} ${element?.lastName}`}
                           className={classes.chip}
                         />
@@ -251,13 +251,13 @@ export const TriggerDialog = ({
                 input={<Input />}
                 renderValue={selected => (
                   <div className={classes.chips}>
-                    {(selected as string[]).map(value => {
+                    {(selected as string[]).map(selectedPolicy => {
                       const element = policies?.find(
-                        policy => policy.policy.slug === value,
+                        policy => policy.policy.slug === selectedPolicy,
                       );
                       return (
                         <Chip
-                          key={value}
+                          key={selectedPolicy}
                           label={element?.policy.name}
                           className={classes.chip}
                         />
@@ -292,7 +292,7 @@ export const TriggerDialog = ({
         <FormControl className={classes.formControl}>
           <Select
             id="multi-responder"
-            value={isMultiResponder}
+            value={isMultiResponderValue}
             onChange={isMultiResponderChanged}
             inputProps={{ 'data-testid': 'trigger-select-behavior' }}
           >
@@ -337,19 +337,19 @@ export const TriggerDialog = ({
           id="trigger"
           color="secondary"
           disabled={
-            !details ||
-            !summary ||
+            !detailsValue ||
+            !summaryValue ||
             (!userTargets.length && !policyTargets.length) ||
             triggerLoading
           }
           variant="contained"
           onClick={() =>
             handleTriggerAlarm(
-              summary,
-              details,
+              summaryValue,
+              detailsValue,
               incidentCreator.username!,
               targets(),
-              !!Number(isMultiResponder),
+              !!Number(isMultiResponderValue),
             )
           }
           endIcon={triggerLoading && <CircularProgress size={16} />}

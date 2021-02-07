@@ -24,8 +24,8 @@ import {
 import { DiscoveryApi } from '@backstage/core';
 
 export enum TargetType {
-  User = 'User',
-  EscalationPolicy = 'EscalationPolicy',
+  UserValue = 'User',
+  EscalationPolicyValue = 'EscalationPolicy',
 }
 
 export type IncidentTarget = {
