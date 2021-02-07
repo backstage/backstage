@@ -6,8 +6,6 @@ metadata:
   tags:
     - java
     - playback
-  annotations:
-    splunk-on-call.com/team: Example
 spec:
   type: service
   lifecycle: production
