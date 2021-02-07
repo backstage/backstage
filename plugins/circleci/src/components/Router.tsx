@@ -24,7 +24,7 @@ import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { MissingAnnotationEmptyState } from '@backstage/core';
 
-export const isPluginApplicableToEntity = (entity: Entity) =>
+export const isCircleCIAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[CIRCLECI_ANNOTATION]);
 
 type Props = {
@@ -35,7 +35,7 @@ type Props = {
 export const Router = (_props: Props) => {
   const { entity } = useEntity();
 
-  if (!isPluginApplicableToEntity(entity)) {
+  if (!isCircleCIAvailable(entity)) {
     return <MissingAnnotationEmptyState annotation={CIRCLECI_ANNOTATION} />;
   }
 

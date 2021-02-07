@@ -23,8 +23,8 @@ export {
 export * from './api';
 export {
   Router,
-  isPluginApplicableToEntity,
-  isPluginApplicableToEntity as isCloudbuildAvailable,
+  isCloudbuildAvailable,
+  isCloudbuildAvailable as isPluginApplicableToEntity,
 } from './components/Router';
 export * from './components/Cards';
 export { CLOUDBUILD_ANNOTATION } from './components/useProjectName';

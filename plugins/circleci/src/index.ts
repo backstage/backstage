@@ -23,7 +23,7 @@ export * from './api';
 export * from './route-refs';
 export {
   Router,
-  isPluginApplicableToEntity,
-  isPluginApplicableToEntity as isCircleCIAvailable,
+  isCircleCIAvailable,
+  isCircleCIAvailable as isPluginApplicableToEntity,
 } from './components/Router';
 export { CIRCLECI_ANNOTATION } from './constants';

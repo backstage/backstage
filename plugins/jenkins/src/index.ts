@@ -23,8 +23,8 @@ export {
 export { LatestRunCard } from './components/Cards';
 export {
   Router,
-  isPluginApplicableToEntity,
-  isPluginApplicableToEntity as isJenkinsAvailable,
+  isJenkinsAvailable,
+  isJenkinsAvailable as isPluginApplicableToEntity,
 } from './components/Router';
 export { JENKINS_ANNOTATION } from './constants';
 export * from './api';

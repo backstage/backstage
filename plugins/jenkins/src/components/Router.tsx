@@ -23,7 +23,7 @@ import { Entity } from '@backstage/catalog-model';
 import { MissingAnnotationEmptyState } from '@backstage/core';
 import { CITable } from './BuildsPage/lib/CITable';
 
-export const isPluginApplicableToEntity = (entity: Entity) =>
+export const isJenkinsAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[JENKINS_ANNOTATION]);
 
 type Props = {
@@ -34,7 +34,7 @@ type Props = {
 export const Router = (_props: Props) => {
   const { entity } = useEntity();
 
-  if (!isPluginApplicableToEntity(entity)) {
+  if (!isJenkinsAvailable(entity)) {
     return <MissingAnnotationEmptyState annotation={JENKINS_ANNOTATION} />;
   }
 

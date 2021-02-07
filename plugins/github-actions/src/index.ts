@@ -25,8 +25,8 @@ export {
 export * from './api';
 export {
   Router,
-  isPluginApplicableToEntity,
-  isPluginApplicableToEntity as isGithubActionsAvailable,
+  isGithubActionsAvailable,
+  isGithubActionsAvailable as isPluginApplicableToEntity,
 } from './components/Router';
 export * from './components/Cards';
 export { GITHUB_ACTIONS_ANNOTATION } from './components/useProjectName';
