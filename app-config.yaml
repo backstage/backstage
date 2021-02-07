@@ -394,5 +394,5 @@ homepage:
       timezone: 'Asia/Tokyo'
 pagerduty:
   eventsBaseUrl: 'https://events.pagerduty.com/v2'
-splunkoncall:
+splunkOnCall:
   username: 'guest'

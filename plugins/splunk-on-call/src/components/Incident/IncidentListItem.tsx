@@ -94,13 +94,11 @@ const incidentPhaseTooltip = (currentPhase: IncidentPhase) => {
 
 const IncidentAction = ({
   currentPhase,
-  userName,
   incidentNames,
   resolveAction,
   aknowledgeAction,
 }: {
   currentPhase: string;
-  userName: string;
   incidentNames: string[];
   resolveAction: (args: PatchIncidentRequest) => void;
   aknowledgeAction: (args: PatchIncidentRequest) => void;
@@ -109,9 +107,7 @@ const IncidentAction = ({
     case 'UNACKED':
       return (
         <Tooltip title="Aknowledge" placement="top">
-          <IconButton
-            onClick={() => aknowledgeAction({ userName, incidentNames })}
-          >
+          <IconButton onClick={() => aknowledgeAction({ incidentNames })}>
             <DoneIcon />
           </IconButton>
         </Tooltip>
@@ -119,9 +115,7 @@ const IncidentAction = ({
     case 'ACKED':
       return (
         <Tooltip title="Resolve" placement="top">
-          <IconButton
-            onClick={() => resolveAction({ userName, incidentNames })}
-          >
+          <IconButton onClick={() => resolveAction({ incidentNames })}>
             <DoneAllIcon />
           </IconButton>
         </Tooltip>
@@ -135,8 +129,6 @@ export const IncidentListItem = ({ incident, onIncidentAction }: Props) => {
   const classes = useStyles();
   const createdAt = formatDistanceToNowStrict(new Date(incident.startTime!));
   const alertApi = useApi(alertApiRef);
-  const identityApi = useApi(identityApiRef);
-  const userName = identityApi.getUserId();
   const api = useApi(splunkOnCallApiRef);
 
   const hasBeenManuallyTriggered = incident.monitorName?.includes('vouser-');
@@ -149,9 +141,8 @@ export const IncidentListItem = ({ incident, onIncidentAction }: Props) => {
     { value: resolveValue, loading: _resolveLoading, error: resolveError },
     handleResolveIncident,
   ] = useAsyncFn(
-    async ({ userName, incidentNames }: PatchIncidentRequest) =>
+    async ({ incidentNames }: PatchIncidentRequest) =>
       await api.resolveIncident({
-        userName,
         incidentNames,
       }),
   );
@@ -164,9 +155,8 @@ export const IncidentListItem = ({ incident, onIncidentAction }: Props) => {
     },
     handleAcknowledgeIncident,
   ] = useAsyncFn(
-    async ({ userName, incidentNames }: PatchIncidentRequest) =>
+    async ({ incidentNames }: PatchIncidentRequest) =>
       await api.acknowledgeIncident({
-        userName,
         incidentNames,
       }),
   );
@@ -230,7 +220,6 @@ export const IncidentListItem = ({ incident, onIncidentAction }: Props) => {
       {incident.incidentLink && incident.incidentNumber && (
         <ListItemSecondaryAction>
           <IncidentAction
-            userName={userName}
             currentPhase={incident.currentPhase || ''}
             incidentNames={[incident.incidentNumber]}
             resolveAction={handleResolveIncident}

@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 import React, { useState, useCallback } from 'react';
-import { useApi, Progress, HeaderIconLinkRow } from '@backstage/core';
+import {
+  useApi,
+  Progress,
+  HeaderIconLinkRow,
+  MissingAnnotationEmptyState,
+  configApiRef,
+  EmptyState,
+} from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
 import {
   Button,
@@ -53,6 +60,20 @@ const useStyles = makeStyles({
 
 export const SPLUNK_ON_CALL_TEAM = 'splunk-on-call.com/team';
 
+export const MissingTeamAnnotation = () => (
+  <MissingAnnotationEmptyState annotation={SPLUNK_ON_CALL_TEAM} />
+);
+
+export const MissingUsername = () => (
+  <CardContent>
+    <EmptyState
+      title="No Splunk On-Call user available."
+      missing="info"
+      description="You need to add a username to your 'app.config.yml' if you want to enable Splunk On-Call."
+    />
+  </CardContent>
+);
+
 export const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[SPLUNK_ON_CALL_TEAM]);
 
@@ -62,10 +83,13 @@ type Props = {
 
 export const SplunkOnCallCard = ({ entity }: Props) => {
   const classes = useStyles();
+  const config = useApi(configApiRef);
   const api = useApi(splunkOnCallApiRef);
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [refreshIncidents, setRefreshIncidents] = useState<boolean>(false);
   const team = entity.metadata.annotations![SPLUNK_ON_CALL_TEAM];
+
+  const username = config.getOptionalString('splunkOnCall.username');
 
   const handleRefresh = useCallback(() => {
     setRefreshIncidents(x => !x);
@@ -89,6 +113,9 @@ export const SplunkOnCallCard = ({ entity }: Props) => {
     return { usersHashMap, userList: users };
   });
 
+  const incidentCreator =
+    username && users?.userList.find(user => user.username === username);
+
   if (error instanceof UnauthorizedError) {
     return <MissingTokenError />;
   }
@@ -104,6 +131,33 @@ export const SplunkOnCallCard = ({ entity }: Props) => {
   if (loading) {
     return <Progress />;
   }
+
+  const Content = () => {
+    if (!team) {
+      return <MissingTeamAnnotation />;
+    }
+    if (!username) {
+      return <MissingUsername />;
+    }
+
+    return (
+      <>
+        <Incidents team={team} refreshIncidents={refreshIncidents} />
+        {users?.usersHashMap && team && (
+          <EscalationPolicy team={team} users={users.usersHashMap} />
+        )}
+        {users && incidentCreator && (
+          <TriggerDialog
+            users={users.userList}
+            incidentCreator={incidentCreator}
+            showDialog={showDialog}
+            handleDialog={handleDialog}
+            onIncidentCreated={handleRefresh}
+          />
+        )}
+      </>
+    );
+  };
 
   const triggerLink = {
     label: 'Create Incident',
@@ -126,23 +180,14 @@ export const SplunkOnCallCard = ({ entity }: Props) => {
         title="Splunk On-Call"
         subheader={[
           <Typography key="team_name">Team: {team}</Typography>,
-          <HeaderIconLinkRow key="incident_trigger" links={[triggerLink]} />,
+          username && (
+            <HeaderIconLinkRow key="incident_trigger" links={[triggerLink]} />
+          ),
         ]}
       />
       <Divider />
       <CardContent>
-        <Incidents team={team} refreshIncidents={refreshIncidents} />
-        {users?.usersHashMap && (
-          <EscalationPolicy team={team} users={users.usersHashMap} />
-        )}
-        {users && (
-          <TriggerDialog
-            users={users.userList}
-            showDialog={showDialog}
-            handleDialog={handleDialog}
-            onIncidentCreated={handleRefresh}
-          />
-        )}
+        <Content />
       </CardContent>
     </Card>
   );

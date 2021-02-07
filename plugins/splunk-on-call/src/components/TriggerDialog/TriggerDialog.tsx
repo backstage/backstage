@@ -34,8 +34,6 @@ import {
   FormControl,
   InputLabel,
 } from '@material-ui/core';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
 import { useApi, alertApiRef, identityApiRef } from '@backstage/core';
 import { useAsync, useAsyncFn } from 'react-use';
 import { splunkOnCallApiRef } from '../../api';
@@ -52,8 +50,8 @@ const MenuProps = {
 };
 
 type Props = {
-  // name: string;
   users: User[];
+  incidentCreator: User;
   showDialog: boolean;
   handleDialog: () => void;
   onIncidentCreated: () => void;
@@ -82,6 +80,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const TriggerDialog = ({
   users,
+  incidentCreator,
   showDialog,
   handleDialog,
   onIncidentCreated: onIncidentCreated,
@@ -117,10 +116,6 @@ export const TriggerDialog = ({
         isMultiResponder,
       }),
   );
-
-  const username = api.getUsername();
-
-  const currentUser = users.find(user => user.username === username);
 
   const {
     value: policies,
@@ -187,7 +182,7 @@ export const TriggerDialog = ({
         <Typography variant="subtitle1" gutterBottom align="justify">
           Created by:{' '}
           <b>
-            {currentUser?.firstName} {currentUser?.lastName}
+            {incidentCreator?.firstName} {incidentCreator?.lastName}
           </b>
         </Typography>
         <Alert severity="info">
@@ -257,7 +252,9 @@ export const TriggerDialog = ({
                 value={policyTargets}
                 onChange={handlePolicyTargets}
                 input={<Input />}
-                inputProps={{ 'data-testid': 'trigger-select-policies-target' }}
+                inputProps={{
+                  'data-testid': 'trigger-select-policies-target',
+                }}
                 renderValue={selected => (
                   <div className={classes.chips}>
                     {(selected as string[]).map(value => {

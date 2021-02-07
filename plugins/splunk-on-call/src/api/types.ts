@@ -83,15 +83,9 @@ export interface SplunkOnCallApi {
    * Get a list of escalation policies for your organization.
    */
   getEscalationPolicies(): Promise<EscalationPolicyInfo[]>;
-
-  /**
-   * Get the current user username.
-   */
-  getUsername(): string | undefined;
 }
 
 export type PatchIncidentRequest = {
-  userName: string;
   incidentNames: string[];
   message?: string;
 };

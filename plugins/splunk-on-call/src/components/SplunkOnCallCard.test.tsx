@@ -59,7 +59,7 @@ const entity: Entity = {
   metadata: {
     name: 'splunkoncall-test',
     annotations: {
-      'splunkoncall.com/integration-key': 'abc123',
+      'splunk-on-call.com/team': 'Example',
     },
   },
 };

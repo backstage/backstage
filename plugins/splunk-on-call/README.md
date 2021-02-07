@@ -54,7 +54,7 @@ The user supplied must be a valid Splunk On-Call user and a member of your organ
 In `app-config.yaml`:
 
 ```yaml
-splunkoncall:
+splunkOnCall:
   username: <SPLUNK_ON_CALL_USERNAME>
 ```
 

@@ -44,17 +44,13 @@ export const splunkOnCallApiRef = createApiRef<SplunkOnCallApi>({
 export class SplunkOnCallClient implements SplunkOnCallApi {
   static fromConfig(configApi: ConfigApi, discoveryApi: DiscoveryApi) {
     const usernameFromConfig: string | null =
-      configApi.getOptionalString('splunkoncall.username') || 'ayshiff';
+      configApi.getOptionalString('splunkoncall.username') || null;
     return new SplunkOnCallClient({
       username: usernameFromConfig,
       discoveryApi,
     });
   }
   constructor(private readonly config: ClientApiConfig) {}
-
-  getUsername(): string | undefined {
-    return this.config.username as string;
-  }
 
   async getIncidents(): Promise<Incident[]> {
     const url = `${await this.config.discoveryApi.getBaseUrl(
@@ -85,7 +81,6 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
   }
 
   async acknowledgeIncident({
-    userName,
     incidentNames,
   }: PatchIncidentRequest): Promise<Response> {
     const options = {
@@ -95,7 +90,7 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        userName: this.config.username || userName,
+        userName: this.config.username,
         incidentNames,
       }),
     };
@@ -108,7 +103,6 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
   }
 
   async resolveIncident({
-    userName,
     incidentNames,
   }: PatchIncidentRequest): Promise<Response> {
     const options = {
@@ -118,7 +112,7 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        userName: this.config.username || userName,
+        userName: this.config.username,
         incidentNames,
       }),
     };
