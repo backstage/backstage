@@ -66,6 +66,7 @@ describe('TriggerDialog', () => {
         <ApiProvider apis={apis}>
           <TriggerDialog
             showDialog
+            incidentCreator={MOCKED_USER}
             handleDialog={() => {}}
             users={[MOCKED_USER]}
             onIncidentCreated={() => {}}

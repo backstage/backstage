@@ -22,6 +22,9 @@ import {
   alertApiRef,
   ApiProvider,
   ApiRegistry,
+  ConfigApi,
+  configApiRef,
+  ConfigReader,
   createApiRef,
 } from '@backstage/core';
 import {
@@ -43,8 +46,15 @@ const mockSplunkOnCallApi: Partial<SplunkOnCallClient> = {
   getTeams: async () => [MOCK_TEAM],
 };
 
+const configApi: ConfigApi = new ConfigReader({
+  splunkOnCall: {
+    username: MOCKED_USER.username,
+  },
+});
+
 const apis = ApiRegistry.from([
   [splunkOnCallApiRef, mockSplunkOnCallApi],
+  [configApiRef, configApi],
   [
     alertApiRef,
     createApiRef({
@@ -64,7 +74,7 @@ const entity: Entity = {
   },
 };
 
-describe('PageDutyCard', () => {
+describe('SplunkOnCallCard', () => {
   it('Render splunkoncall', async () => {
     mockSplunkOnCallApi.getUsers = jest
       .fn()
@@ -97,7 +107,7 @@ describe('PageDutyCard', () => {
     );
     await waitFor(() => !queryByTestId('progress'));
     expect(
-      getByText('Missing or invalid SplunkOnCall Token'),
+      getByText('Missing or invalid Splunk On-Call API key and/or API id'),
     ).toBeInTheDocument();
   });
 

@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { MissingTokenError } from './MissingTokenError';
+export { MissingApiKeyOrApiIdError } from './MissingApiKeyOrApiIdError';

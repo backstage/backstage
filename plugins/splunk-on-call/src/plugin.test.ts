@@ -15,7 +15,7 @@
  */
 import { plugin } from './plugin';
 
-describe('splunkoncall', () => {
+describe('splunk-on-call', () => {
   it('should export plugin', () => {
     expect(plugin).toBeDefined();
   });

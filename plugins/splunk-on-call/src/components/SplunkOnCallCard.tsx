@@ -39,7 +39,7 @@ import { Alert } from '@material-ui/lab';
 import { splunkOnCallApiRef, UnauthorizedError } from '../api';
 import AlarmAddIcon from '@material-ui/icons/AlarmAdd';
 import { TriggerDialog } from './TriggerDialog';
-import { MissingTokenError } from './Errors/MissingTokenError';
+import { MissingApiKeyOrApiIdError } from './Errors/MissingApiKeyOrApiIdError';
 import { User } from './types';
 
 const useStyles = makeStyles({
@@ -69,7 +69,7 @@ export const MissingUsername = () => (
     <EmptyState
       title="No Splunk On-Call user available."
       missing="info"
-      description="You need to add a username to your 'app.config.yml' if you want to enable Splunk On-Call."
+      description="You need to add a valid username to your 'app.config.yml' if you want to enable Splunk On-Call."
     />
   </CardContent>
 );
@@ -117,7 +117,7 @@ export const SplunkOnCallCard = ({ entity }: Props) => {
     username && users?.userList.find(user => user.username === username);
 
   if (error instanceof UnauthorizedError) {
-    return <MissingTokenError />;
+    return <MissingApiKeyOrApiIdError />;
   }
 
   if (error) {
@@ -136,7 +136,7 @@ export const SplunkOnCallCard = ({ entity }: Props) => {
     if (!team) {
       return <MissingTeamAnnotation />;
     }
-    if (!username) {
+    if (!username || !incidentCreator) {
       return <MissingUsername />;
     }
 

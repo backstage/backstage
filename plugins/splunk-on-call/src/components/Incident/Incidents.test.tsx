@@ -93,7 +93,7 @@ describe('Incidents', () => {
       }),
     ).toBeInTheDocument();
     expect(getByText('test-incident')).toBeInTheDocument();
-    expect(getByTitle('ACKED')).toBeInTheDocument();
+    expect(getByTitle('Acknowledged')).toBeInTheDocument();
     expect(getByLabelText('Status warning')).toBeInTheDocument();
 
     // assert links, mailto and hrefs, date calculation
