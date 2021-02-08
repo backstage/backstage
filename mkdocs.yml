@@ -102,7 +102,6 @@ nav:
           - Utilities: 'api/utility-apis.md'
           - createPlugin: 'reference/createPlugin.md'
           - createPlugin-feature-flags: 'reference/createPlugin-feature-flags.md'
-          - createPlugin-router: 'reference/createPlugin-router.md'
       - Backend APIs:
           - Backend: 'api/backend.md'
   - Tutorials:
@@ -120,7 +119,6 @@ nav:
       - ADR009 - Entity References: 'architecture-decisions/adr009-entity-references.md'
       - ADR010 - Luxon Date Library: 'architecture-decisions/adr010-luxon-date-library.md'
       - ADR011 - Plugin Package Structure: 'architecture-decisions/adr011-plugin-package-structure.md'
-  - Contribute: '../CONTRIBUTING.md'
   - Support:
       - 'support/support.md'
       - 'support/project-structure.md'

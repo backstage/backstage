@@ -58,7 +58,6 @@
           "features/software-catalog/well-known-relations",
           "features/software-catalog/extending-the-model",
           "features/software-catalog/external-integrations",
-          "features/software-catalog/kubernetes-in-backstage",
           "features/software-catalog/software-catalog-api"
         ]
       },
@@ -161,8 +160,7 @@
           "api/utility-apis",
           "reference/utility-apis/README",
           "reference/createPlugin",
-          "reference/createPlugin-feature-flags",
-          "reference/createPlugin-router"
+          "reference/createPlugin-feature-flags"
         ]
       },
       {
@@ -190,7 +188,6 @@
       "architecture-decisions/adrs-adr010",
       "architecture-decisions/adrs-adr011"
     ],
-    "Contribute": ["../CONTRIBUTING"],
     "Support": ["support/support", "support/project-structure"],
     "Glossary": ["glossary"],
     "FAQ": ["FAQ"]
