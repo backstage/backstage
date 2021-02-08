@@ -25,7 +25,7 @@ export class MemoryKeyStore implements KeyStore {
 
   async addKey(key: AnyJWK): Promise<void> {
     this.keys.set(key.kid, {
-      createdAt: DateTime.local().toUTC(),
+      createdAt: DateTime.utc(),
       key: JSON.stringify(key),
     });
   }
