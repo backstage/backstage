@@ -15,6 +15,7 @@
  */
 
 import {
+  CodeSnippet,
   Content,
   Header,
   ItemCard,
@@ -67,7 +68,7 @@ export const TechDocsHome = () => {
             severity="error"
             title="Could not load available documentation."
           >
-            <code>{error.message}</code>
+            <CodeSnippet language="text" text={error.toString()} />
           </WarningPanel>
         </Content>
       </Page>

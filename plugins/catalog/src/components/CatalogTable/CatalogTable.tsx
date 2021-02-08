@@ -19,7 +19,13 @@ import {
   RELATION_OWNED_BY,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
-import { Table, TableColumn, TableProps, WarningPanel } from '@backstage/core';
+import {
+  CodeSnippet,
+  Table,
+  TableColumn,
+  TableProps,
+  WarningPanel,
+} from '@backstage/core';
 import {
   EntityRefLink,
   EntityRefLinks,
@@ -131,7 +137,7 @@ export const CatalogTable = ({
           severity="error"
           title="Could not fetch catalog entities."
         >
-          <code>{error.toString()}</code>
+          <CodeSnippet language="text" text={error.toString()} />
         </WarningPanel>
       </div>
     );

@@ -22,6 +22,7 @@ import {
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
 import {
+  CodeSnippet,
   Table,
   TableColumn,
   TableFilter,
@@ -152,7 +153,7 @@ export const ApiExplorerTable = ({
   if (error) {
     return (
       <WarningPanel severity="error" title="Could not fetch catalog entities.">
-        <code>{error.toString()}</code>
+        <CodeSnippet language="text" text={error.toString()} />
       </WarningPanel>
     );
   }
