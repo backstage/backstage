@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Button } from '@backstage/core';
+import { Button, Observable, Subscription, useApi } from '@backstage/core';
 import {
   Button as Action,
   Dialog,
@@ -23,64 +23,192 @@ import {
   LinearProgress,
 } from '@material-ui/core';
 
-import React, { useCallback } from 'react';
-import { Job } from '../../types';
-import { JobStage } from '../JobStage/JobStage';
+import React, { useCallback, useEffect, useReducer } from 'react';
+import { scaffolderApiRef } from '../../api';
+import { ScaffolderV2Task } from '../../types';
 
 type Props = {
-  job: Job | null;
+  task: ScaffolderV2Task | null;
   toCatalogLink?: string;
   open: boolean;
   onModalClose: () => void;
 };
 
+type Step = {
+  id: string;
+  status: 'open' | 'processing' | 'failed' | 'completed';
+};
+
+type ReducerState = {
+  loading: boolean;
+  error?: Error;
+  completed: boolean;
+
+  task: ScaffolderV2Task;
+
+  step: [{ [stepId in string]: Step }];
+};
+
+type ReducerAction =
+  | {
+      type: 'INIT';
+      data: ScaffolderV2Task;
+    }
+  | { type: 'EVENT'; data: { body: { stepId: string } } }
+  | { type: 'COMPLETED' }
+  | { type: 'ERROR'; data: Error };
+
+function reducer(state: ReducerState, action: ReducerAction) {
+  const stepId = action.type === 'EVENT' ? action.data.body.stepId : 'global';
+  const currentStep = state[stepId] ?? { log: [], status: 'open' };
+
+  switch (action.type) {
+    case 'INIT':
+      return {
+        ...state,
+        ...action.data,
+      };
+    case 'EVENT':
+      return {
+        ...state,
+        [stepId]: {
+          ...currentStep,
+          log: [...currentStep.log, event],
+        },
+      };
+    case 'COMPLETED':
+      return {
+        ...state,
+        progress: 'done',
+      };
+    case 'ERROR':
+      return {
+        error: action.error,
+        loading: false,
+        completed: false,
+      };
+    default:
+      return state;
+  }
+}
+
+/*
+
+{}
+
+{
+  id: as'das
+  spec: {
+    steps: [
+      { id, log: []}
+    ]
+  }
+}
+
+*/
+const useTaskEventStream = (taskId: string) => {
+  // fetch task
+
+  const scaffolderApi = useApi(scaffolderApiRef);
+  const [state, dispatch] = useReducer(reducer, {
+    loading: true,
+  });
+  useEffect(() => {
+    let didCancel = false;
+    let subscription: Subscription | undefined;
+
+    scaffolderApi.getTask(taskId).then(
+      task => {
+        if (didCancel) {
+          return;
+        }
+        dispatch({ type: 'INIT', data: task });
+        const observable = scaffolderApi.streamLogs({ taskId });
+        subscription = observable.subscribe({
+          next: event => dispatch({ type: 'EVENT', data: event }),
+          error: error => dispatch({ type: 'ERROR', data: error }),
+          complete: () => dispatch({ type: 'COMPLETED' }),
+        });
+      },
+      error => {
+        if (!didCancel) {
+          dispatch({ type: 'ERROR', data: error });
+        }
+      },
+    );
+
+    return () => {
+      didCancel = true;
+      if (subscription) {
+        subscription.unsubscribe();
+      }
+    };
+  });
+
+  return state;
+
+  // subscribe to observable,
+
+  // on observer change update the step logs etc + status
+
+  // return {
+  //   steps: {
+  //     stepId: {
+  //       log: [],
+  //       status:
+  //     }
+  //   }
+  // }
+};
+
 export const JobStatusModal = ({
-  job,
+  task,
   toCatalogLink,
   open,
   onModalClose,
 }: Props) => {
+  const model = useTaskEventStream(task?.id!);
+  console.warn(model);
   const renderTitle = () => {
-    switch (job?.status) {
-      case 'COMPLETED':
+    switch (task?.status) {
+      case 'completed':
         return 'Successfully created component';
-      case 'FAILED':
+      case 'failed':
         return 'Failed to create component';
       default:
         return 'Create component';
     }
   };
-
   const onClose = useCallback(() => {
-    if (!job) {
+    if (!task) {
       return;
     }
     // Disallow closing modal if the job is in progress.
-    if (job.status === 'COMPLETED' || job.status === 'FAILED') {
+    if (task.status !== 'processing') {
       onModalClose();
     }
-  }, [job, onModalClose]);
+  }, [task, onModalClose]);
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth>
       <DialogTitle id="responsive-dialog-title">{renderTitle()}</DialogTitle>
       <DialogContent>
-        {!job ? (
-          <LinearProgress />
-        ) : (
-          (job?.stages ?? []).map(step => (
-            <JobStage
-              log={step.log}
-              name={step.name}
-              key={step.name}
-              startedAt={step.startedAt}
-              endedAt={step.endedAt}
-              status={step.status}
-            />
-          ))
-        )}
+        {/* {!task ? ( */}
+        <LinearProgress />
+        {/* ) : ( */}
+        {/* (task?.spec.steps ?? []).map(step => ( */}
+        {/* <JobStage */}
+        {/* log={step.log} */}
+        {/* name={step.name} */}
+        {/* key={step.name} */}
+        {/* startedAt={step.startedAt} */}
+        {/* endedAt={step.endedAt} */}
+        {/* status={step.status} */}
+        {/* /> */}
+        {/* )) */}
+        {/*   )} */}
       </DialogContent>
-      {job?.status && toCatalogLink && (
+      {/* {job?.status && toCatalogLink && (
         <DialogActions>
           <Button to={toCatalogLink}>View in catalog</Button>
         </DialogActions>
@@ -89,7 +217,7 @@ export const JobStatusModal = ({
         <DialogActions>
           <Action onClick={onClose}>Close</Action>
         </DialogActions>
-      )}
+      )} */}
     </Dialog>
   );
 };

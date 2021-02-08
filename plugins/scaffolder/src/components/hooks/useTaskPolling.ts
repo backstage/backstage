@@ -14,49 +14,37 @@
  * limitations under the License.
  */
 import { useEffect, useState } from 'react';
-import { Job } from '../../types';
+import { ScaffolderV2Task } from '../../types';
 import { useApi } from '@backstage/core';
 import { scaffolderApiRef } from '../../api';
 import { useInterval } from 'react-use';
 
 const DEFAULT_POLLING_INTERVAL = 1000;
 
-export const useJobPolling = (
-  jobId: string | null,
-  onFinish?: (j: Job) => void,
+export const useTaskPolling = (
+  taskId: string | null,
+  onFinish?: (t: ScaffolderV2Task) => void,
   pollingInterval = DEFAULT_POLLING_INTERVAL,
 ) => {
   const scaffolderApi = useApi(scaffolderApiRef);
-  const [currentJob, setCurrentJob] = useState<Job | null>(null);
+  const [currentTask, setCurrentTask] = useState<ScaffolderV2Task | null>(null);
+
+  useInterval(async () => {
+    if (taskId) {
+      setCurrentTask(await scaffolderApi.getTask(taskId));
+    }
+  }, pollingInterval);
 
   useEffect(() => {
-    const resetCurrentJob = async () => {
-      if (jobId) {
-        const job = await scaffolderApi.getJob(jobId);
-        setCurrentJob(job);
-      }
-    };
+    switch (currentTask?.status) {
+      case 'failed':
+      case 'cancelled':
+      case 'completed':
+        return onFinish?.(currentTask);
+      default:
+        return undefined;
+    }
+  }, [currentTask, onFinish]);
 
-    resetCurrentJob();
-  }, [jobId, scaffolderApi]);
-
-  const shouldBeRunningInterval =
-    jobId &&
-    currentJob?.status !== 'COMPLETED' &&
-    currentJob?.status !== 'FAILED';
-
-  useInterval(
-    async () => {
-      if (jobId) {
-        const job = await scaffolderApi.getJob(jobId);
-        if (job?.status === 'COMPLETED' || job?.status === 'FAILED') {
-          onFinish?.(job);
-        }
-        setCurrentJob(job);
-      }
-    },
-    shouldBeRunningInterval ? pollingInterval : null,
-  );
-
-  return currentJob;
+  return currentTask;
 };

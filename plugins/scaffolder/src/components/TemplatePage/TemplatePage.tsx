@@ -20,6 +20,7 @@ import {
   Header,
   InfoCard,
   Lifecycle,
+  Observable,
   Page,
   useApi,
 } from '@backstage/core';
@@ -37,7 +38,7 @@ import { useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { scaffolderApiRef } from '../../api';
 import { rootRoute } from '../../routes';
-import { useJobPolling } from '../hooks/useJobPolling';
+import { useTaskPolling } from '../hooks/useTaskPolling';
 import { JobStatusModal } from '../JobStatusModal';
 import { MultistepJsonForm } from '../MultistepJsonForm';
 
@@ -91,41 +92,39 @@ export const TemplatePage = () => {
     [setFormState, formState],
   );
 
-  const [jobId, setJobId] = useState<string | null>(null);
-  const job = useJobPolling(jobId, async jobItem => {
-    if (!jobItem.metadata.catalogInfoUrl) {
-      errorApi.post(
-        new Error(`No catalogInfoUrl returned from the scaffolder`),
-      );
-      return;
-    }
-
-    try {
-      const {
-        entities: [createdEntity],
-      } = await catalogApi.addLocation({
-        target: jobItem.metadata.catalogInfoUrl,
-      });
-
-      const resolvedPath = generatePath(
-        `/catalog/${entityRoute.path}`,
-        entityRouteParams(createdEntity),
-      );
-
-      setCatalogLink(resolvedPath);
-    } catch (ex) {
-      errorApi.post(
-        new Error(
-          `Something went wrong trying to add the new 'catalog-info.yaml' to the catalog`,
-        ),
-      );
-    }
+  const [taskId, setTaskId] = useState<string | null>(null);
+  const task = useTaskPolling(taskId, async task => {
+    console.warn('onFinish is called');
+    // if (!jobItem.metadata.catalogInfoUrl) {
+    //   errorApi.post(
+    //     new Error(`No catalogInfoUrl returned from the scaffolder`),
+    //   );
+    //   return;
+    // }
+    // try {
+    //   const {
+    //     entities: [createdEntity],
+    //   } = await catalogApi.addLocation({
+    //     target: jobItem.metadata.catalogInfoUrl,
+    //   });
+    //   const resolvedPath = generatePath(
+    //     `/catalog/${entityRoute.path}`,
+    //     entityRouteParams(createdEntity),
+    //   );
+    //   setCatalogLink(resolvedPath);
+    // } catch (ex) {
+    //   errorApi.post(
+    //     new Error(
+    //       `Something went wrong trying to add the new 'catalog-info.yaml' to the catalog`,
+    //     ),
+    //   );
+    // }
   });
 
   const handleCreate = async () => {
     try {
       const id = await scaffolderApi.scaffold(templateName, formState);
-      setJobId(id);
+      setTaskId(id);
       setModalOpen(true);
     } catch (e) {
       errorApi.post(e);
@@ -159,12 +158,15 @@ export const TemplatePage = () => {
       />
       <Content>
         {loading && <LinearProgress data-testid="loading-progress" />}
-        <JobStatusModal
-          job={job}
-          toCatalogLink={catalogLink}
-          open={modalOpen}
-          onModalClose={() => setModalOpen(false)}
-        />
+        {task && (
+          <JobStatusModal
+            task={task}
+            toCatalogLink={catalogLink}
+            open={modalOpen}
+            onModalClose={() => setModalOpen(false)}
+          />
+        )}
+        )
         {template && (
           <InfoCard title={template.metadata.title} noPadding>
             <MultistepJsonForm

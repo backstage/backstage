@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { JsonValue } from '@backstage/config';
 
 export type JobStatus = 'PENDING' | 'STARTED' | 'COMPLETED' | 'FAILED';
 export type Job = {
@@ -34,4 +35,21 @@ export type Stage = {
   status: JobStatus;
   startedAt: string;
   endedAt?: string;
+};
+
+export type ScaffolderV2Step = {
+  id: string;
+  name: string;
+  action: string;
+  parameters?: { [name: string]: JsonValue };
+};
+
+export type ScaffolderV2Task = {
+  id: string;
+  spec: {
+    steps: ScaffolderV2Step[];
+  };
+  status: 'failed' | 'completed' | 'processing' | 'open' | 'cancelled';
+  lastHeartbeatAt: string;
+  createdAt: string;
 };

@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-import { createApiRef, DiscoveryApi } from '@backstage/core';
+import { JsonObject } from '@backstage/config';
+import { createApiRef, DiscoveryApi, Observable } from '@backstage/core';
+import ObservableImpl from 'zen-observable';
+import { ScaffolderV2Task } from './types';
 
 export const scaffolderApiRef = createApiRef<ScaffolderApi>({
   id: 'plugin.scaffolder.service',
   description: 'Used to make requests towards the scaffolder backend',
 });
+
+type LogEvent = {
+  type: 'log' | 'completion';
+  body: JsonObject;
+};
 
 export class ScaffolderApi {
   private readonly discoveryApi: DiscoveryApi;
@@ -36,7 +44,7 @@ export class ScaffolderApi {
    * @param values Parameters for the template, e.g. name, description
    */
   async scaffold(templateName: string, values: Record<string, any>) {
-    const url = `${await this.discoveryApi.getBaseUrl('scaffolder')}/v1/jobs`;
+    const url = `${await this.discoveryApi.getBaseUrl('scaffolder')}/v2/tasks`;
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -52,12 +60,75 @@ export class ScaffolderApi {
     }
 
     const { id } = await response.json();
+
+    // 859d6b78-7c19-4d1a-abe0-9396ab3bd686
+    // this.streamLogs({
+    //   taskId: id,
+    // }).then(observable => {
+    //   console.log('DEBUG: observable =', observable);
+    //   observable.subscribe({
+    //     next: thing => console.warn('next', thing),
+    //     error: thing => console.warn('error', thing),
+    //     complete: () => console.warn('complete'),
+    //   });
+    // });
+
     return id;
   }
 
-  async getJob(jobId: string) {
+  async getTask(taskId: string): Promise<ScaffolderV2Task> {
     const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
-    const url = `${baseUrl}/v1/job/${encodeURIComponent(jobId)}`;
+    const url = `${baseUrl}/v2/tasks/${encodeURIComponent(taskId)}`;
     return fetch(url).then(x => x.json());
+  }
+
+  streamLogs({
+    taskId,
+    after,
+  }: {
+    taskId: string;
+    after?: number;
+  }): Observable<LogEvent> {
+    return new ObservableImpl(subscriber => {
+      const params = new URLSearchParams();
+      if (after !== undefined) {
+        params.set('after', String(Number(after)));
+      }
+
+      this.discoveryApi.getBaseUrl('scaffolder').then(
+        baseUrl => {
+          const url = `${baseUrl}/v2/tasks/${encodeURIComponent(
+            taskId,
+          )}/eventstream`;
+          const eventSource = new EventSource(url);
+          eventSource.addEventListener('log', event => {
+            if (event.data) {
+              try {
+                subscriber.next(JSON.parse(event.data));
+              } catch (ex) {
+                subscriber.error(ex);
+              }
+            }
+          });
+          eventSource.addEventListener('completion', event => {
+            eventSource.close();
+            if (event.data) {
+              try {
+                subscriber.next(JSON.parse(event.data));
+              } catch (ex) {
+                subscriber.error(ex);
+              }
+            }
+            subscriber.complete();
+          });
+          eventSource.addEventListener('error', event => {
+            subscriber.error(event);
+          });
+        },
+        error => {
+          subscriber.error(error);
+        },
+      );
+    });
   }
 }
