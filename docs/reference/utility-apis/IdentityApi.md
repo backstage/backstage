@@ -1,7 +1,7 @@
 # IdentityApi
 
 The IdentityApi type is defined at
-[packages/core-api/src/apis/definitions/IdentityApi.ts:22](https://github.com/backstage/backstage/blob/master/packages/core-api/src/apis/definitions/IdentityApi.ts#L22).
+[packages/core-api/src/apis/definitions/IdentityApi.ts:22](https://github.com/backstage/backstage/blob/abd85269fbea466c18a71fa661335c0713a32c07/packages/core-api/src/apis/definitions/IdentityApi.ts#L22).
 
 The following Utility API implements this type:
 [identityApiRef](./README.md#identity)
