@@ -66,7 +66,7 @@ export const AutocompleteTextField = <TFieldValue extends string>({
           loading={loading}
           loadingText={loadingText}
           options={options || []}
-          onChange={(_: any, value: string | null) => onChange(value || '')}
+          onChange={(_: any, v: string | null) => onChange(v || '')}
           onBlur={onBlur}
           value={value}
           autoSelect

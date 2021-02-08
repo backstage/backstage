@@ -245,10 +245,12 @@ function reducer(state: ReducerState, action: ReducerActions): ReducerState {
  * 3. review
  * 4. finish
  *
- * @param opts options
+ * @param options options
  */
-export const useImportState = (opts?: { initialUrl?: string }): ImportState => {
-  const [state, dispatch] = useReducer(reducer, opts?.initialUrl, init);
+export const useImportState = (options?: {
+  initialUrl?: string;
+}): ImportState => {
+  const [state, dispatch] = useReducer(reducer, options?.initialUrl, init);
 
   const { activeFlow, activeState, analysisUrl, previousStates } = state;
 
@@ -283,6 +285,7 @@ export const useImportState = (opts?: { initialUrl?: string }): ImportState => {
         ? () => dispatch({ type: 'onGoBack' })
         : undefined,
 
-    onReset: () => dispatch({ type: 'onReset', initialUrl: opts?.initialUrl }),
+    onReset: () =>
+      dispatch({ type: 'onReset', initialUrl: options?.initialUrl }),
   };
 };

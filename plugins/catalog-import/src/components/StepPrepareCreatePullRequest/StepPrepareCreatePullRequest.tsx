@@ -103,12 +103,12 @@ export const StepPrepareCreatePullRequest = ({
   const [error, setError] = useState<string>();
 
   const { loading: groupsLoading, value: groups } = useAsync(async () => {
-    const groups = await catalogApi.getEntities({
+    const groupEntities = await catalogApi.getEntities({
       filter: { kind: 'group' },
     });
 
     // TODO: defaultKind (=group), defaultNamespace (=same as entity)
-    return groups.items.map(e => serializeEntityRef(e) as string).sort();
+    return groupEntities.items.map(e => serializeEntityRef(e) as string).sort();
   });
 
   const handleResult = useCallback(
