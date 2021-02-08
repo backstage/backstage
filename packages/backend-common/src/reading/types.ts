@@ -18,6 +18,32 @@ import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 import { ReadTreeResponseFactory } from './tree';
 
+/**
+ * A generic interface for fetching plain data from URLs.
+ */
+export type UrlReader = {
+  read(url: string): Promise<Buffer>;
+  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
+};
+
+export type UrlReaderPredicateTuple = {
+  predicate: (url: URL) => boolean;
+  reader: UrlReader;
+};
+
+/**
+ * A factory function that can read config to construct zero or more
+ * UrlReaders along with a predicate for when it should be used.
+ */
+export type ReaderFactory = (options: {
+  config: Config;
+  logger: Logger;
+  treeResponseFactory: ReadTreeResponseFactory;
+}) => UrlReaderPredicateTuple[];
+
+/**
+ * An options object for readTree operations.
+ */
 export type ReadTreeOptions = {
   /**
    * A filter that can be used to select which files should be included.
@@ -47,39 +73,6 @@ export type ReadTreeOptions = {
   etag?: string;
 };
 
-/**
- * A generic interface for fetching plain data from URLs.
- */
-export type UrlReader = {
-  read(url: string): Promise<Buffer>;
-  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
-};
-
-export type UrlReaderPredicateTuple = {
-  predicate: (url: URL) => boolean;
-  reader: UrlReader;
-};
-
-/**
- * A factory function that can read config to construct zero or more
- * UrlReaders along with a predicate for when it should be used.
- */
-export type ReaderFactory = (options: {
-  config: Config;
-  logger: Logger;
-  treeResponseFactory: ReadTreeResponseFactory;
-}) => UrlReaderPredicateTuple[];
-
-export type ReadTreeResponseFile = {
-  path: string;
-  content(): Promise<Buffer>;
-};
-
-export type ReadTreeResponseDirOptions = {
-  /** The directory to write files to. Defaults to the OS tmpdir or `backend.workingDirectory` if set in config */
-  targetDir?: string;
-};
-
 export type ReadTreeResponse = {
   /**
    * files() returns an array of all the files inside the tree and corresponding functions to read their content.
@@ -96,4 +89,17 @@ export type ReadTreeResponse = {
    * A unique identifer of the tree blob, usually the commit SHA or etag from the target.
    */
   etag: string;
+};
+
+export type ReadTreeResponseDirOptions = {
+  /** The directory to write files to. Defaults to the OS tmpdir or `backend.workingDirectory` if set in config */
+  targetDir?: string;
+};
+
+/**
+ * Represents a single file in a readTree response.
+ */
+export type ReadTreeResponseFile = {
+  path: string;
+  content(): Promise<Buffer>;
 };

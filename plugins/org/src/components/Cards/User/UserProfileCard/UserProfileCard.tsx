@@ -19,7 +19,7 @@ import {
   UserEntity,
 } from '@backstage/catalog-model';
 import { Avatar, InfoCard } from '@backstage/core';
-import { entityRouteParams } from '@backstage/plugin-catalog-react';
+import { entityRouteParams, useEntity } from '@backstage/plugin-catalog-react';
 import {
   Box,
   Grid,
@@ -69,12 +69,13 @@ const CardTitle = ({ title }: { title?: string }) =>
   ) : null;
 
 export const UserProfileCard = ({
-  entity: user,
   variant,
 }: {
-  entity: UserEntity;
+  /** @deprecated The entity is now grabbed from context instead */
+  entity?: UserEntity;
   variant: string;
 }) => {
+  const user = useEntity().entity as UserEntity;
   const {
     metadata: { name: metaName },
     spec: { profile },

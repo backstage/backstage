@@ -16,6 +16,7 @@
 
 const mockAccess = jest.fn();
 jest.doMock('fs-extra', () => ({
+  access: mockAccess,
   promises: {
     access: mockAccess,
   },
@@ -27,7 +28,11 @@ jest.doMock('fs-extra', () => ({
   remove: jest.fn(),
 }));
 
-import { getVoidLogger } from '@backstage/backend-common';
+import {
+  SingleConnectionDatabaseManager,
+  PluginDatabaseManager,
+  getVoidLogger,
+} from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import request from 'supertest';
@@ -40,6 +45,19 @@ jest.mock('dockerode');
 const generateEntityClient: any = (template: any) => ({
   findTemplate: () => Promise.resolve(template),
 });
+
+function createDatabase(): PluginDatabaseManager {
+  return SingleConnectionDatabaseManager.fromConfig(
+    new ConfigReader({
+      backend: {
+        database: {
+          client: 'sqlite3',
+          connection: ':memory:',
+        },
+      },
+    }),
+  ).forPlugin('scaffolder');
+}
 
 describe('createRouter - working directory', () => {
   const mockPrepare = jest.fn();
@@ -78,7 +96,6 @@ describe('createRouter - working directory', () => {
   };
 
   const mockedEntityClient = generateEntityClient(template);
-
   it('should throw an error when working directory does not exist or is not writable', async () => {
     mockAccess.mockImplementation(() => {
       throw new Error('access error');
@@ -93,6 +110,7 @@ describe('createRouter - working directory', () => {
         config: new ConfigReader(workDirConfig('/path')),
         dockerClient: new Docker(),
         entityClient: mockedEntityClient,
+        database: createDatabase(),
       }),
     ).rejects.toThrow('access error');
   });
@@ -106,6 +124,7 @@ describe('createRouter - working directory', () => {
       config: new ConfigReader(workDirConfig('/path')),
       dockerClient: new Docker(),
       entityClient: mockedEntityClient,
+      database: createDatabase(),
     });
 
     const app = express().use(router);
@@ -134,6 +153,7 @@ describe('createRouter - working directory', () => {
       config: new ConfigReader({}),
       dockerClient: new Docker(),
       entityClient: mockedEntityClient,
+      database: createDatabase(),
     });
 
     const app = express().use(router);
@@ -203,6 +223,7 @@ describe('createRouter', () => {
       config: new ConfigReader({}),
       dockerClient: new Docker(),
       entityClient: generateEntityClient(template),
+      database: createDatabase(),
     });
     app = express().use(router);
   });
