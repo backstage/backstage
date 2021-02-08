@@ -1,10 +1,3 @@
-import {
-  EscalationPolicyInfo,
-  Incident,
-  Team,
-  User,
-} from '../components/types';
-
 /*
  * Copyright 2021 Spotify AB
  *
@@ -20,6 +13,14 @@ import {
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import {
+  EscalationPolicyInfo,
+  Incident,
+  Team,
+  User,
+} from '../components/types';
+
 export const MOCKED_USER: User = {
   createdAt: '2021-02-01T23:38:38Z',
   displayName: 'Test User',
