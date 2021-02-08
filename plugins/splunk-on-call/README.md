@@ -2,7 +2,7 @@
 
 ## Overview
 
-This plugin displays Splunk On-Call information about an entity.
+This plugin displays Splunk On-Call, formerly VictorOps, information about an entity.
 
 There is a way to trigger an new incident directly to specific users or/and specific teams.
 
@@ -20,7 +20,7 @@ This plugin provides:
 Install the plugin:
 
 ```bash
-yarn add @backstage/plugin-splunkoncall
+yarn add @backstage/plugin-splunk-on-call
 ```
 
 Add it to the app in `plugins.ts`:
@@ -36,7 +36,7 @@ import {
   isPluginApplicableToEntity as isSplunkOnCallAvailable,
   SplunkOnCallCard,
 } from '@backstage/plugin-splunk-on-call';
-// add to code
+// ...
 {
   isSplunkOnCallAvailable(entity) && (
     <Grid item md={6}>
@@ -60,9 +60,25 @@ splunkOnCall:
 
 The user supplied must be a valid Splunk On-Call user and a member of your organization.
 
-In order to be able to make certain API calls you need to add the `PATCH` method to the backend cors methods list.
+In order to make the API calls, you need to provide a new proxy config which will redirect to the Splunk On-Call API endpoint and add authentication information in the headers:
 
 ```yaml
+# app-config.yaml
+proxy:
+  # ...
+  '/splunk-on-call':
+    target: https://api.victorops.com/api-public
+    headers:
+      X-VO-Api-Id:
+        $env: SPLUNK_ON_CALL_API_ID
+      X-VO-Api-Key:
+        $env: SPLUNK_ON_CALL_API_KEY
+```
+
+In addition, to make certain API calls (trigger-resolve-acknowledge an incident) you need to add the `PATCH` method to the backend cors methods list.
+
+```yaml
+# app-config.yaml
 backend:
   # ...
   cors:
@@ -90,3 +106,23 @@ $ SPLUNK_ON_CALL_API_KEY='' SPLUNK_ON_CALL_API_ID='' yarn start
 ```
 
 This will proxy the request by adding `X-VO-Api-Id` and `X-VO-Api-Key` headers with the provided values.
+
+You can also add the values in your helm template:
+
+```yaml
+# backend-secret.yaml
+stringData:
+  # ...
+  SPLUNK_ON_CALL_API_ID: { { .Values.auth.splunkOnCallApiId } }
+  SPLUNK_ON_CALL_API_KEY: { { .Values.auth.splunkOnCallApiKey } }
+```
+
+To enable it you need to provide them in the chart's values:
+
+```yaml
+# values.yaml
+auth:
+  # ...
+  splunkOnCallApiId: h
+  splunkOnCallApiKey: h
+```

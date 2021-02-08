@@ -93,10 +93,6 @@ import {
   Router as PullRequestsRouter,
 } from '@roadiehq/backstage-plugin-github-pull-requests';
 import {
-  isPluginApplicableToEntity as isSplunkOnCallAvailable,
-  SplunkOnCallCard,
-} from '@backstage/plugin-splunk-on-call';
-import {
   isPluginApplicableToEntity as isTravisCIAvailable,
   RecentTravisCIBuildsWidget,
   Router as TravisCIRouter,

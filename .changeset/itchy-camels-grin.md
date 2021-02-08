@@ -1,5 +1,4 @@
 ---
-'@backstage/plugin-catalog': patch
 '@backstage/plugin-splunk-on-call': patch
 ---
 
