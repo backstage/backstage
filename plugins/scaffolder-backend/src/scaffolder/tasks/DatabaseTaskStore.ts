@@ -158,8 +158,11 @@ export class DatabaseTaskStore implements TaskStore {
         'last_heartbeat_at',
         '<=',
         this.db.client.config.client === 'sqlite3'
-          ? this.db.raw(`datetime('now', '-${Number(timeoutS)} seconds')`)
-          : this.db.raw(`dateadd('second', -${Number(timeoutS)}, now())`),
+          ? this.db.raw(`datetime('now', ?)`, [`-${timeoutS} seconds`])
+          : this.db.raw(`dateadd('second', ?, ?)`, [
+              `-${timeoutS}`,
+              this.db.fn.now(),
+            ]),
       );
     const tasks = rawRows.map(row => ({
       taskId: row.id,
