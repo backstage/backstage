@@ -215,7 +215,6 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
       {...childProps}
       activeClassName={classes.selected}
       to={props.to}
-      end
       ref={ref}
     >
       {content}
