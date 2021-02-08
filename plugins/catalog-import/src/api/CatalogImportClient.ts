@@ -15,10 +15,11 @@
  */
 
 import { CatalogApi } from '@backstage/catalog-client';
-import { Entity, EntityName } from '@backstage/catalog-model';
+import { EntityName } from '@backstage/catalog-model';
 import { ConfigApi, DiscoveryApi, OAuthApi } from '@backstage/core';
 import { GitHubIntegrationConfig } from '@backstage/integration';
 import { Octokit } from '@octokit/rest';
+import { PartialEntity } from '../types';
 import { AnalyzeResult, CatalogImportApi } from './CatalogImportApi';
 import { getGithubIntegrationConfig } from './GitHub';
 
@@ -122,7 +123,7 @@ export class CatalogImportClient implements CatalogImportApi {
     repo,
   }: {
     repo: string;
-  }): Promise<Entity[]> {
+  }): Promise<PartialEntity[]> {
     const response = await fetch(
       `${await this.discoveryApi.getBaseUrl('catalog')}/analyze-location`,
       {
