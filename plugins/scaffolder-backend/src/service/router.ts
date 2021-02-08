@@ -44,7 +44,10 @@ import {
 } from '../scaffolder/tasks/TemplateConverter';
 import { registerLegacyActions } from '../scaffolder/stages/legacy';
 import { getWorkingDirectory } from './helpers';
-import { PluginDatabaseManager } from '@backstage/backend-common';
+import {
+  NotFoundError,
+  PluginDatabaseManager,
+} from '@backstage/backend-common';
 
 export interface RouterOptions {
   preparers: PreparerBuilder;
@@ -245,6 +248,16 @@ export async function createRouter(
       const result = await taskBroker.dispatch(taskSpec);
 
       res.status(201).json({ id: result.taskId });
+    })
+    .get('/v2/tasks/:taskId', async (req, res) => {
+      const { taskId } = req.params;
+      console.warn('getting task');
+      const task = await taskBroker.get(taskId);
+      console.warn('got task', task);
+      if (!task) {
+        throw new NotFoundError(`task with id ${taskId} does not exist`);
+      }
+      res.status(200).json(task);
     })
     .get('/v2/tasks/:taskId/eventstream', async (req, res) => {
       const { taskId } = req.params;
