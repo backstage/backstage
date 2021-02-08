@@ -76,6 +76,6 @@ export type ProfileInfo = {
 </pre>
 
 Defined at
-[packages/core-api/src/apis/definitions/auth.ts:162](https://github.com/backstage/backstage/blob/master/packages/core-api/src/apis/definitions/auth.ts#L162).
+[packages/core-api/src/apis/definitions/auth.ts:162](https://github.com/backstage/backstage/blob/abd85269fbea466c18a71fa661335c0713a32c07/packages/core-api/src/apis/definitions/auth.ts#L162).
 
 Referenced by: [getProfile](#getprofile).
