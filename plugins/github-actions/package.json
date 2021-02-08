@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "@backstage/catalog-model": "^0.7.1",
+    "@backstage/plugin-catalog-react": "^0.0.2",
     "@backstage/core": "^0.6.0",
     "@backstage/integration": "^0.3.2",
     "@backstage/theme": "^0.2.3",

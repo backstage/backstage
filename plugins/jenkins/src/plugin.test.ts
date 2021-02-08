@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { plugin } from './plugin';
+import { jenkinsPlugin } from './plugin';
 
 describe('jenkins', () => {
   it('should export plugin', () => {
-    expect(plugin).toBeDefined();
+    expect(jenkinsPlugin).toBeDefined();
   });
 });

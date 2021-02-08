@@ -16,6 +16,7 @@
 
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import AuditList from './components/AuditList';
 import AuditView, { AuditViewContent } from './components/AuditView';
 import CreateAudit, { CreateAuditContent } from './components/CreateAudit';
@@ -35,15 +36,27 @@ export const Router = () => (
   </Routes>
 );
 
-export const EmbeddedRouter = ({ entity }: { entity: Entity }) =>
-  !isLighthouseAvailable(entity) ? (
-    <MissingAnnotationEmptyState
-      annotation={LIGHTHOUSE_WEBSITE_URL_ANNOTATION}
-    />
-  ) : (
+type Props = {
+  /** @deprecated The entity is now grabbed from context instead */
+  entity?: Entity;
+};
+
+export const EmbeddedRouter = (_props: Props) => {
+  const { entity } = useEntity();
+
+  if (!isLighthouseAvailable(entity)) {
+    return (
+      <MissingAnnotationEmptyState
+        annotation={LIGHTHOUSE_WEBSITE_URL_ANNOTATION}
+      />
+    );
+  }
+
+  return (
     <Routes>
       <Route path="/" element={<AuditListForEntity />} />
       <Route path="/audit/:id" element={<AuditViewContent />} />
       <Route path="/create-audit" element={<CreateAuditContent />} />
     </Routes>
   );
+};
