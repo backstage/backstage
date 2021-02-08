@@ -25,8 +25,8 @@ type RouteObject = {
 
 // Similar to the same function from react-router, this collects routes from the
 // children, but only the first level of routes
-function createRoutesFromChildren(children: ReactNode): RouteObject[] {
-  return Children.toArray(children)
+function createRoutesFromChildren(childrenNode: ReactNode): RouteObject[] {
+  return Children.toArray(childrenNode)
     .flatMap(child => {
       if (!isValidElement(child)) {
         return [];

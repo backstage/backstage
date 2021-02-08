@@ -19,9 +19,10 @@ import { ErrorPage, useApi, configApiRef } from '@backstage/core';
 
 type Props = {
   errorMessage?: string;
+  statusCode?: number;
 };
 
-export const TechDocsNotFound = ({ errorMessage }: Props) => {
+export const TechDocsNotFound = ({ errorMessage, statusCode }: Props) => {
   const techdocsBuilder = useApi(configApiRef).getOptionalString(
     'techdocs.builder',
   );
@@ -37,7 +38,7 @@ export const TechDocsNotFound = ({ errorMessage }: Props) => {
 
   return (
     <ErrorPage
-      status="404"
+      status={statusCode ? statusCode.toString() : '404'}
       statusMessage={errorMessage || 'Documentation not found'}
       additionalInfo={additionalInfo}
     />

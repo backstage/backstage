@@ -14,4 +14,8 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
+export {
+  newRelicPlugin,
+  newRelicPlugin as plugin,
+  NewRelicPage,
+} from './plugin';

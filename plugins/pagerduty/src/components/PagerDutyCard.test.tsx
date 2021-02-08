@@ -17,6 +17,7 @@ import React from 'react';
 import { render, waitFor, fireEvent, act } from '@testing-library/react';
 import { PagerDutyCard } from './PagerDutyCard';
 import { Entity } from '@backstage/catalog-model';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import {
   alertApiRef,
@@ -80,7 +81,9 @@ describe('PageDutyCard', () => {
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <PagerDutyCard entity={entity} />
+          <EntityProvider entity={entity}>
+            <PagerDutyCard />
+          </EntityProvider>
         </ApiProvider>,
       ),
     );
@@ -99,7 +102,9 @@ describe('PageDutyCard', () => {
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <PagerDutyCard entity={entity} />
+          <EntityProvider entity={entity}>
+            <PagerDutyCard />
+          </EntityProvider>
         </ApiProvider>,
       ),
     );
@@ -114,7 +119,9 @@ describe('PageDutyCard', () => {
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <PagerDutyCard entity={entity} />
+          <EntityProvider entity={entity}>
+            <PagerDutyCard />
+          </EntityProvider>
         </ApiProvider>,
       ),
     );
@@ -134,7 +141,9 @@ describe('PageDutyCard', () => {
     const { getByText, queryByTestId, getByTestId, getByRole } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <PagerDutyCard entity={entity} />
+          <EntityProvider entity={entity}>
+            <PagerDutyCard />
+          </EntityProvider>
         </ApiProvider>,
       ),
     );

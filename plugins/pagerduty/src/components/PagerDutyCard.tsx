@@ -16,6 +16,7 @@
 import React, { useState, useCallback } from 'react';
 import { useApi, Progress, HeaderIconLinkRow } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import {
   Button,
   makeStyles,
@@ -56,11 +57,13 @@ export const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[PAGERDUTY_INTEGRATION_KEY]);
 
 type Props = {
-  entity: Entity;
+  /** @deprecated The entity is now grabbed from context instead */
+  entity?: Entity;
 };
 
-export const PagerDutyCard = ({ entity }: Props) => {
+export const PagerDutyCard = (_props: Props) => {
   const classes = useStyles();
+  const { entity } = useEntity();
   const api = useApi(pagerDutyApiRef);
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [refreshIncidents, setRefreshIncidents] = useState<boolean>(false);
