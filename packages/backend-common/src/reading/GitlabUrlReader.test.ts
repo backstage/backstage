@@ -36,6 +36,7 @@ const gitlabProcessor = new GitlabUrlReader(
   {
     host: 'gitlab.com',
     apiBaseUrl: 'https://gitlab.com/api/v4',
+    baseUrl: 'https://gitlab.com',
   },
   { treeResponseFactory },
 );
@@ -44,6 +45,7 @@ const hostedGitlabProcessor = new GitlabUrlReader(
   {
     host: 'gitlab.mycompany.com',
     apiBaseUrl: 'https://gitlab.mycompany.com/api/v4',
+    baseUrl: 'https://gitlab.mycompany.com',
   },
   { treeResponseFactory },
 );
@@ -378,18 +380,6 @@ describe('GitlabUrlReader', () => {
         );
       };
       await expect(fnGithub).rejects.toThrow(NotFoundError);
-    });
-
-    it('should throw error when apiBaseUrl is missing', () => {
-      expect(() => {
-        /* eslint-disable no-new */
-        new GitlabUrlReader(
-          {
-            host: 'gitlab.mycompany.com',
-          },
-          { treeResponseFactory },
-        );
-      }).toThrowError('must configure an explicit apiBaseUrl');
     });
   });
 });
