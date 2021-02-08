@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { plugin } from './plugin';
+import { newRelicPlugin } from './plugin';
 
 describe('newrelic', () => {
   it('should export plugin', () => {
-    expect(plugin).toBeDefined();
+    expect(newRelicPlugin).toBeDefined();
   });
 });

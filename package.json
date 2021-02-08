@@ -37,6 +37,7 @@
   },
   "resolutions": {
     "**/@roadiehq/**/@backstage/core": "*",
+    "**/@roadiehq/**/@backstage/plugin-catalog": "*",
     "**/@roadiehq/**/@backstage/catalog-model": "*"
   },
   "version": "1.0.0",

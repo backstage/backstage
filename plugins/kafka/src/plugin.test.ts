@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { plugin } from './plugin';
+import { kafkaPlugin } from './plugin';
 
 describe('kafka', () => {
   it('should export plugin', () => {
-    expect(plugin).toBeDefined();
+    expect(kafkaPlugin).toBeDefined();
   });
 });

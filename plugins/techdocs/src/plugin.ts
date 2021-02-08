@@ -35,6 +35,7 @@ import {
   createApiFactory,
   configApiRef,
   discoveryApiRef,
+  createRoutableExtension,
 } from '@backstage/core';
 import {
   techdocsStorageApiRef,
@@ -58,7 +59,7 @@ export const rootCatalogDocsRouteRef = createRouteRef({
   title: 'Docs',
 });
 
-export const plugin = createPlugin({
+export const techdocsPlugin = createPlugin({
   id: 'techdocs',
   apis: [
     createApiFactory({
@@ -80,4 +81,22 @@ export const plugin = createPlugin({
         }),
     }),
   ],
+  routes: {
+    root: rootRouteRef,
+    entityContent: rootCatalogDocsRouteRef,
+  },
 });
+
+export const TechdocsPage = techdocsPlugin.provide(
+  createRoutableExtension({
+    component: () => import('./Router').then(m => m.Router),
+    mountPoint: rootRouteRef,
+  }),
+);
+
+export const EntityTechdocsContent = techdocsPlugin.provide(
+  createRoutableExtension({
+    component: () => import('./Router').then(m => m.EmbeddedDocsRouter),
+    mountPoint: rootCatalogDocsRouteRef,
+  }),
+);

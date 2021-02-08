@@ -16,15 +16,22 @@
 
 import React from 'react';
 import { Entity } from '@backstage/catalog-model';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import { Route, Routes } from 'react-router-dom';
-
 import { rootCatalogKubernetesRouteRef } from './plugin';
 import { KubernetesContent } from './components/KubernetesContent';
 import { MissingAnnotationEmptyState } from '@backstage/core';
 
 const KUBERNETES_ANNOTATION = 'backstage.io/kubernetes-id';
 
-export const Router = ({ entity }: { entity: Entity }) => {
+type Props = {
+  /** @deprecated The entity is now grabbed from context instead */
+  entity?: Entity;
+};
+
+export const Router = (_props: Props) => {
+  const { entity } = useEntity();
+
   const kubernetesAnnotationValue =
     entity.metadata.annotations?.[KUBERNETES_ANNOTATION];
 

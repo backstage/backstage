@@ -13,17 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createPlugin, createRouteRef } from '@backstage/core';
-import { SearchPage } from './components/SearchPage';
+import {
+  createPlugin,
+  createRouteRef,
+  createRoutableExtension,
+} from '@backstage/core';
+import { SearchPage as SearchPageComponent } from './components/SearchPage';
 
 export const rootRouteRef = createRouteRef({
   path: '/search',
   title: 'search',
 });
 
-export const plugin = createPlugin({
+export const searchPlugin = createPlugin({
   id: 'search',
   register({ router }) {
-    router.addRoute(rootRouteRef, SearchPage);
+    router.addRoute(rootRouteRef, SearchPageComponent);
+  },
+  routes: {
+    root: rootRouteRef,
   },
 });
+
+export const SearchPage = searchPlugin.provide(
+  createRoutableExtension({
+    component: () => import('./components/SearchPage').then(m => m.SearchPage),
+    mountPoint: rootRouteRef,
+  }),
+);
