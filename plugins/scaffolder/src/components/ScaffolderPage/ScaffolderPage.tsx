@@ -29,8 +29,27 @@ import {
   WarningPanel,
 } from '@backstage/core';
 import { catalogApiRef, isOwnerOf } from '@backstage/plugin-catalog-react';
-import { Button, Grid, Link, makeStyles, Typography } from '@material-ui/core';
-import React, { useEffect, useMemo, useState } from 'react';
+import {
+  Button,
+  FormControl,
+  Grid,
+  IconButton,
+  Input,
+  InputAdornment,
+  InputLabel,
+  Link,
+  makeStyles,
+  TextField,
+  Toolbar,
+  Typography,
+} from '@material-ui/core';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import useStaleWhileRevalidate from 'swr';
 import { EntityFilterGroupsProvider, useFilteredEntities } from '../../filter';
@@ -42,6 +61,8 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import StarIcon from '@material-ui/icons/Star';
 import { useOwnUser } from '../useOwnUser';
 import { useStarredEntities } from '../../hooks/useStarredEntities';
+import Search from '@material-ui/icons/Search';
+import Clear from '@material-ui/icons/Clear';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -49,6 +70,10 @@ const useStyles = makeStyles(theme => ({
     gridTemplateAreas: "'filters' 'grid'",
     gridTemplateColumns: '250px 1fr',
     gridColumnGap: theme.spacing(2),
+  },
+  searchToolbar: {
+    paddingLeft: 0,
+    paddingRight: 0,
   },
 }));
 
@@ -78,6 +103,7 @@ export const ScaffolderPageContents = () => {
   } = useFilteredEntities();
   // TODO: use Selected Sidebar Item
   const [selectedSidebarItem, setSelectedSidebarItem] = useState<string>();
+
   const catalogApi = useApi(catalogApiRef);
   const errorApi = useApi(errorApiRef);
   const {
@@ -104,6 +130,16 @@ export const ScaffolderPageContents = () => {
   const filterGroups = useMemo<ButtonGroup[]>(
     () => [
       {
+        name: orgName,
+        items: [
+          {
+            id: 'all',
+            label: 'All',
+            filterFn: () => true,
+          },
+        ],
+      },
+      {
         name: 'Personal', // TODO: Do we need owner?
         items: [
           {
@@ -120,19 +156,27 @@ export const ScaffolderPageContents = () => {
           },
         ],
       },
-      {
-        name: orgName,
-        items: [
-          {
-            id: 'all',
-            label: 'All',
-            filterFn: () => true,
-          },
-        ],
-      },
     ],
     [isStarredEntity, orgName, user],
   );
+
+  const [search, setSearch] = useState('');
+  const [filteredTemplates, setFilteredTemplates] = useState([] as Entity[]); // TODO: Should I use Entity?
+  useEffect(() => {
+    const searchUppercase = search.toUpperCase();
+    if (search.length === 0) {
+      return setFilteredTemplates(matchingEntities);
+    }
+    return setFilteredTemplates(
+      matchingEntities.filter(template => {
+        const { title, tags } = template.metadata;
+        return (
+          `${title}`.toUpperCase().indexOf(searchUppercase) !== -1 ||
+          `${tags}`.toUpperCase().indexOf(searchUppercase) !== -1
+        );
+      }),
+    );
+  }, [search, matchingEntities]);
 
   return (
     <Page themeId="home">
@@ -164,16 +208,45 @@ export const ScaffolderPageContents = () => {
 
         <div className={styles.contentWrapper}>
           <div>
+            <Toolbar className={styles.searchToolbar}>
+              <FormControl>
+                <Input
+                  id="input-with-icon-adornment"
+                  placeholder="Search"
+                  autoComplete="off"
+                  onChange={event => setSearch(event.target.value)}
+                  value={search}
+                  startAdornment={
+                    <InputAdornment position="start">
+                      <Search />
+                    </InputAdornment>
+                  }
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="clear search"
+                        onClick={() => setSearch('')}
+                        edge="end"
+                        disabled={search.length === 0}
+                      >
+                        <Clear />
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                />
+              </FormControl>
+            </Toolbar>
+
             <CatalogFilter
               buttonGroups={filterGroups} // TODO: filterGroups??
               onChange={({ label }) => setSelectedSidebarItem(label)} // TODO: setSelecteSidebarItem
-              initiallySelected="owned"
+              initiallySelected="all"
             />
             <ResultsFilter availableTags={availableTags} />
           </div>
           <div>
-            {!matchingEntities && loading && <Progress />}
-            {matchingEntities && !matchingEntities.length && (
+            {!filteredTemplates && loading && <Progress />}
+            {filteredTemplates && !filteredTemplates.length && (
               <Typography variant="body2">
                 Shoot! Looks like you don't have any templates. Check out the
                 documentation{' '}
@@ -189,9 +262,9 @@ export const ScaffolderPageContents = () => {
               </WarningPanel>
             )}
             <Grid container>
-              {matchingEntities &&
-                matchingEntities?.length > 0 &&
-                matchingEntities.map(template => {
+              {filteredTemplates &&
+                filteredTemplates?.length > 0 &&
+                filteredTemplates.map(template => {
                   return (
                     <Grid
                       key={template.metadata.uid}
