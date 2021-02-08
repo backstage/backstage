@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { basicIntegrations } from '../helpers';
+import { basicIntegrations, defaultScmResolveUrl } from '../helpers';
 import { ScmIntegration, ScmIntegrationsFactory } from '../types';
 import {
   BitbucketIntegrationConfig,
@@ -46,5 +46,9 @@ export class BitbucketIntegration implements ScmIntegration {
 
   get config(): BitbucketIntegrationConfig {
     return this.integrationConfig;
+  }
+
+  resolveUrl(options: { url: string; base: string }): string {
+    return defaultScmResolveUrl(options);
   }
 }

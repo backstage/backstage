@@ -24,11 +24,7 @@ import {
   ReadTreeResponseDirOptions,
   ReadTreeResponseFile,
 } from '../types';
-
-// Matches a directory name + one `/` at the start of any string,
-// containing any character except / one or more times, and ending with a `/`
-// e.g. Will match `dirA/` in `dirA/dirB/file.ext`
-const directoryNameRegex = /^[^\/]+\//;
+import { stripFirstDirectoryFromPath } from './util';
 
 /**
  * Wraps a zip archive stream into a tree response reader.
@@ -65,18 +61,13 @@ export class ZipArchiveResponse implements ReadTreeResponse {
     this.read = true;
   }
 
-  // Will remove the top level dir name from the path since its name is hard to predetermine.
-  private stripTopDirectory(path: string): string {
-    return path.replace(directoryNameRegex, '');
-  }
-
   // File path relative to the root extracted directory or a sub directory if subpath is set.
   private getInnerPath(path: string): string {
     return path.slice(this.subPath.length);
   }
 
   private shouldBeIncluded(entry: Entry): boolean {
-    const strippedPath = this.stripTopDirectory(entry.path);
+    const strippedPath = stripFirstDirectoryFromPath(entry.path);
 
     if (this.subPath) {
       if (!strippedPath.startsWith(this.subPath)) {
@@ -104,7 +95,7 @@ export class ZipArchiveResponse implements ReadTreeResponse {
 
         if (this.shouldBeIncluded(entry)) {
           files.push({
-            path: this.getInnerPath(this.stripTopDirectory(entry.path)),
+            path: this.getInnerPath(stripFirstDirectoryFromPath(entry.path)),
             content: () => entry.buffer(),
           });
         } else {
@@ -153,7 +144,7 @@ export class ZipArchiveResponse implements ReadTreeResponse {
         // as a zip can have files with directories without directory entries
         if (entry.type === 'File' && this.shouldBeIncluded(entry)) {
           const entryPath = this.getInnerPath(
-            this.stripTopDirectory(entry.path),
+            stripFirstDirectoryFromPath(entry.path),
           );
           const dirname = platformPath.dirname(entryPath);
           if (dirname) {
