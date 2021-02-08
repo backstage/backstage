@@ -19,7 +19,6 @@ import {
   configApiRef,
   Content,
   ContentHeader,
-  errorApiRef,
   Header,
   Lifecycle,
   Page,
@@ -28,7 +27,7 @@ import {
   useApi,
   WarningPanel,
 } from '@backstage/core';
-import { catalogApiRef, isOwnerOf } from '@backstage/plugin-catalog-react';
+import { isOwnerOf } from '@backstage/plugin-catalog-react';
 import {
   Button,
   FormControl,
@@ -36,27 +35,18 @@ import {
   IconButton,
   Input,
   InputAdornment,
-  InputLabel,
   Link,
   makeStyles,
-  TextField,
   Toolbar,
   Typography,
 } from '@material-ui/core';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import useStaleWhileRevalidate from 'swr';
 import { EntityFilterGroupsProvider, useFilteredEntities } from '../../filter';
 import { TemplateCard, TemplateCardProps } from '../TemplateCard';
 import { ResultsFilter } from '../ResultsFilter/ResultsFilter';
-import { CatalogFilter } from '../CatalogFilter';
-import { ButtonGroup } from '../CatalogFilter/CatalogFilter';
+import { ScaffolderFilter } from '../ScaffolderFilter';
+import { ButtonGroup } from '../ScaffolderFilter/ScaffolderFilter';
 import SettingsIcon from '@material-ui/icons/Settings';
 import StarIcon from '@material-ui/icons/Star';
 import { useOwnUser } from '../useOwnUser';
@@ -96,28 +86,13 @@ export const ScaffolderPageContents = () => {
   const {
     loading,
     error,
-    reload,
+    reload, // TODO: Configure reload
     matchingEntities,
-    availableTags, // TODO: Change  tags to Categories
+    availableCategories, // TODO: Change  tags to Categories
     isCatalogEmpty,
   } = useFilteredEntities();
   // TODO: use Selected Sidebar Item
   const [selectedSidebarItem, setSelectedSidebarItem] = useState<string>();
-
-  const catalogApi = useApi(catalogApiRef);
-  const errorApi = useApi(errorApiRef);
-  const {
-    data: templates /* isValidating*/ /* , error */,
-  } = useStaleWhileRevalidate('templates/all', async () => {
-    const response = await catalogApi.getEntities({
-      filter: { kind: 'Template' },
-    });
-    return response.items as TemplateEntityV1alpha1[];
-  });
-  useEffect(() => {
-    if (!error) return;
-    errorApi.post(error);
-  }, [error, errorApi]);
 
   const { value: user } = useOwnUser();
 
@@ -237,12 +212,12 @@ export const ScaffolderPageContents = () => {
               </FormControl>
             </Toolbar>
 
-            <CatalogFilter
+            <ScaffolderFilter
               buttonGroups={filterGroups} // TODO: filterGroups??
               onChange={({ label }) => setSelectedSidebarItem(label)} // TODO: setSelecteSidebarItem
               initiallySelected="all"
             />
-            <ResultsFilter availableTags={availableTags} />
+            <ResultsFilter availableCategories={availableCategories} />
           </div>
           <div>
             {!filteredTemplates && loading && <Progress />}

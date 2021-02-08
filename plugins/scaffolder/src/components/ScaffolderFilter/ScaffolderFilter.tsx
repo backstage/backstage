@@ -83,7 +83,7 @@ type Props = {
 /**
  * The main filter group in the sidebar, toggling owned/starred/all.
  */
-export const CatalogFilter = ({
+export const ScaffolderFilter = ({
   buttonGroups,
   onChange,
   initiallySelected,

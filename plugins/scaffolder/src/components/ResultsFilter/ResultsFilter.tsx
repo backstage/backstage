@@ -50,28 +50,28 @@ const useStyles = makeStyles<Theme>(theme => ({
 }));
 
 type Props = {
-  availableTags: string[];
+  availableCategories: string[];
 };
 
 /**
  * The additional results filter in the sidebar.
  */
-export const ResultsFilter = ({ availableTags }: Props) => {
+export const ResultsFilter = ({ availableCategories }: Props) => {
   const classes = useStyles();
 
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const context = useContext(filterGroupsContext);
   if (!context) {
     throw new Error(`Must be used inside an EntityFilterGroupsProvider`);
   }
-  const setSelectedTagsFilter = context?.setSelectedTags;
+  const setSelectedCatgoriesFilter = context?.setSelectedCategories;
 
-  const updateSelectedTags = useCallback(
-    (tags: string[]) => {
-      setSelectedTags(tags);
-      setSelectedTagsFilter(tags);
+  const updateSelectedCategories = useCallback(
+    (categories: string[]) => {
+      setSelectedCategories(categories);
+      setSelectedCatgoriesFilter(categories);
     },
-    [setSelectedTags, setSelectedTagsFilter],
+    [setSelectedCategories, setSelectedCatgoriesFilter],
   );
 
   return (
@@ -80,14 +80,14 @@ export const ResultsFilter = ({ availableTags }: Props) => {
         <Typography variant="subtitle2" className={classes.filterBoxTitle}>
           Refine Results
         </Typography>{' '}
-        <Button onClick={() => updateSelectedTags([])}>Clear</Button>
+        <Button onClick={() => updateSelectedCategories([])}>Clear</Button>
       </div>
       <Divider />
       <Typography variant="subtitle2" className={classes.title}>
-        Tags
+        Categories
       </Typography>
       <List disablePadding dense>
-        {availableTags.map(t => {
+        {availableCategories.map(t => {
           const labelId = `checkbox-list-label-${t}`;
           return (
             <ListItem
@@ -95,23 +95,26 @@ export const ResultsFilter = ({ availableTags }: Props) => {
               dense
               button
               onClick={() =>
-                updateSelectedTags(
-                  selectedTags.includes(t)
-                    ? selectedTags.filter(s => s !== t)
-                    : [...selectedTags, t],
+                updateSelectedCategories(
+                  selectedCategories.includes(t)
+                    ? selectedCategories.filter(s => s !== t)
+                    : [...selectedCategories, t],
                 )
               }
             >
               <Checkbox
                 edge="start"
                 color="primary"
-                checked={selectedTags.includes(t)}
+                checked={selectedCategories.includes(t)}
                 tabIndex={-1}
                 disableRipple
                 className={classes.checkbox}
                 inputProps={{ 'aria-labelledby': labelId }}
               />
-              <ListItemText id={labelId} primary={t} />
+              <ListItemText
+                id={labelId}
+                primary={t.charAt(0).toUpperCase() + t.slice(1)}
+              />
             </ListItem>
           );
         })}

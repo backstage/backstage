@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import { Entity, TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -59,12 +59,12 @@ function useProvideEntityFilters(): FilterGroupsContext {
   const selectedFilterKeys = useRef<{
     [filterGroupId: string]: Set<string>;
   }>({});
-  const selectedTags = useRef<string[]>([]);
+  const selectedCategories = useRef<string[]>([]);
   const [filterGroupStates, setFilterGroupStates] = useState<{
     [filterGroupId: string]: FilterGroupStates;
   }>({});
   const [matchingEntities, setMatchingEntities] = useState<Entity[]>([]);
-  const [availableTags, setAvailableTags] = useState<string[]>([]);
+  const [availableCategories, setAvailableCategories] = useState<string[]>([]);
   const [isCatalogEmpty, setCatalogEmpty] = useState<boolean>(false);
 
   useEffect(() => {
@@ -76,7 +76,7 @@ function useProvideEntityFilters(): FilterGroupsContext {
       buildStates(
         filterGroups.current,
         selectedFilterKeys.current,
-        selectedTags.current,
+        selectedCategories.current,
         entities,
         error,
       ),
@@ -85,11 +85,11 @@ function useProvideEntityFilters(): FilterGroupsContext {
       buildMatchingEntities(
         filterGroups.current,
         selectedFilterKeys.current,
-        selectedTags.current,
+        selectedCategories.current,
         entities,
       ),
     );
-    setAvailableTags(collectTags(entities));
+    setAvailableCategories(collectCategories(entities));
     setCatalogEmpty(entities !== undefined && entities.length === 0);
   }, [entities, error]);
 
@@ -125,9 +125,9 @@ function useProvideEntityFilters(): FilterGroupsContext {
     [rebuild],
   );
 
-  const setSelectedTags = useCallback(
-    (tags: string[]) => {
-      selectedTags.current = tags;
+  const setSelectedCategories = useCallback(
+    (categories: string[]) => {
+      selectedCategories.current = categories;
       rebuild();
     },
     [rebuild],
@@ -141,13 +141,13 @@ function useProvideEntityFilters(): FilterGroupsContext {
     register,
     unregister,
     setGroupSelectedFilters,
-    setSelectedTags,
+    setSelectedCategories,
     reload,
     loading: !error && !entities,
     error,
     filterGroupStates,
     matchingEntities,
-    availableTags,
+    availableCategories,
     isCatalogEmpty,
   };
 }
@@ -157,7 +157,7 @@ function useProvideEntityFilters(): FilterGroupsContext {
 function buildStates(
   filterGroups: { [filterGroupId: string]: FilterGroup },
   selectedFilterKeys: { [filterGroupId: string]: Set<string> },
-  selectedTags: string[],
+  selectedCategories: string[],
   entities?: Entity[],
   error?: Error,
 ): { [filterGroupId: string]: FilterGroupStates } {
@@ -186,7 +186,7 @@ function buildStates(
     const otherMatchingEntities = buildMatchingEntities(
       filterGroups,
       selectedFilterKeys,
-      selectedTags,
+      selectedCategories,
       entities,
       filterGroupId,
     );
@@ -204,15 +204,15 @@ function buildStates(
   return result;
 }
 
-// Given all entites, find all possible tags and provide them in a sorted list.
-function collectTags(entities?: Entity[]): string[] {
-  const tags = new Set<string>();
+// Given all entites, find all possible categories and provide them in a sorted list.
+function collectCategories(entities?: Entity[]): string[] {
+  const categories = new Set<string>();
   (entities || []).forEach(e => {
-    if (e.metadata.tags) {
-      e.metadata.tags.forEach(t => tags.add(t));
+    if (e.spec?.type) {
+      categories.add(e.spec.type as string);
     }
   });
-  return Array.from(tags).sort();
+  return Array.from(categories).sort();
 }
 
 // Given all filter groups and what filters are actually selected, extract all
@@ -220,7 +220,7 @@ function collectTags(entities?: Entity[]): string[] {
 function buildMatchingEntities(
   filterGroups: { [filterGroupId: string]: FilterGroup },
   selectedFilterKeys: { [filterGroupId: string]: Set<string> },
-  selectedTags: string[],
+  selectedCategories: string[],
   entities?: Entity[],
   excludeFilterGroupId?: string,
 ): Entity[] {
@@ -247,13 +247,10 @@ function buildMatchingEntities(
     }
   }
 
-  // Filter by tags, if at least one tag is selected. Include all entities
-  // that have at least one of the selected tags
-  if (selectedTags.length > 0) {
-    allFilters.push(
-      entity =>
-        !!entity.metadata.tags &&
-        entity.metadata.tags.some(t => selectedTags.includes(t)),
+  // Filter by categories, if at least one category is selected.
+  if (selectedCategories.length > 0) {
+    allFilters.push(entity =>
+      selectedCategories.some(c => entity.spec?.type === c),
     );
   }
 

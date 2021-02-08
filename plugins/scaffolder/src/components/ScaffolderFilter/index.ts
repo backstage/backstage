@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { CatalogFilter } from './CatalogFilter';
+export { ScaffolderFilter } from './ScaffolderFilter';

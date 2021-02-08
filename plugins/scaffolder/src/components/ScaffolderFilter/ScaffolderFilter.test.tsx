@@ -28,7 +28,7 @@ import { MockStorageApi, wrapInTestApp } from '@backstage/test-utils';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import React from 'react';
 import { EntityFilterGroupsProvider } from '../../filter';
-import { ButtonGroup, CatalogFilter } from './CatalogFilter';
+import { ButtonGroup, ScaffolderFilter } from './ScaffolderFilter';
 
 describe('Catalog Filter', () => {
   const catalogApi: Partial<CatalogApi> = {
@@ -86,7 +86,7 @@ describe('Catalog Filter', () => {
       { name: 'Test Group 2', items: [] },
     ];
     const { findByText } = renderWrapped(
-      <CatalogFilter buttonGroups={mockGroups} initiallySelected="" />,
+      <ScaffolderFilter buttonGroups={mockGroups} initiallySelected="" />,
     );
     for (const group of mockGroups) {
       expect(await findByText(group.name)).toBeInTheDocument();
@@ -113,7 +113,7 @@ describe('Catalog Filter', () => {
     ];
 
     const { findByText } = renderWrapped(
-      <CatalogFilter buttonGroups={mockGroups} initiallySelected="all" />,
+      <ScaffolderFilter buttonGroups={mockGroups} initiallySelected="all" />,
     );
 
     for (const item of mockGroups[0].items) {
@@ -143,7 +143,7 @@ describe('Catalog Filter', () => {
     const onChange = jest.fn();
 
     renderWrapped(
-      <CatalogFilter
+      <ScaffolderFilter
         buttonGroups={mockGroups}
         initiallySelected="all"
         onChange={onChange}
@@ -180,7 +180,7 @@ describe('Catalog Filter', () => {
     const onChange = jest.fn();
 
     renderWrapped(
-      <CatalogFilter
+      <ScaffolderFilter
         buttonGroups={mockGroups}
         onChange={onChange}
         initiallySelected="starred"
@@ -217,7 +217,7 @@ describe('Catalog Filter', () => {
     const onChange = jest.fn();
 
     const { findByText } = renderWrapped(
-      <CatalogFilter
+      <ScaffolderFilter
         buttonGroups={mockGroups}
         initiallySelected="all"
         onChange={onChange}
@@ -256,7 +256,7 @@ describe('Catalog Filter', () => {
     ];
 
     const { findByText } = renderWrapped(
-      <CatalogFilter buttonGroups={mockGroups} initiallySelected="owned" />,
+      <ScaffolderFilter buttonGroups={mockGroups} initiallySelected="owned" />,
     );
 
     expect(await findByText('1')).toBeInTheDocument();
