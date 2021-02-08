@@ -51,59 +51,60 @@ export class TaskWorker {
         await task.getWorkspaceName(),
       );
       await fs.ensureDir(workspacePath);
-
-      const taskLogger = winston.createLogger({
-        level: process.env.LOG_LEVEL || 'info',
-        format: winston.format.combine(
-          winston.format.colorize(),
-          winston.format.timestamp(),
-          winston.format.simple(),
-        ),
-        defaultMeta: {},
-      });
-
-      const stream = new PassThrough();
-      stream.on('data', data => {
-        const message = data.toString().trim();
-        if (message?.length > 1) task.emitLog(message);
-      });
-
-      taskLogger.add(new winston.transports.Stream({ stream }));
-
-      // Give us some time to curl observe
-      task.emitLog('Task claimed, waiting ...');
-      await new Promise(resolve => setTimeout(resolve, 5000));
-      task.emitLog(`Starting up work with ${task.spec.steps.length} steps`);
+      await task.emitLog(
+        `Starting up work with ${task.spec.steps.length} steps`,
+      );
 
       const outputs: { [name: string]: JsonValue } = {};
 
       for (const step of task.spec.steps) {
-        task.emitLog(`Beginning step ${step.name}`);
+        const metadata = { stepId: step.id };
+        try {
+          const taskLogger = winston.createLogger({
+            level: process.env.LOG_LEVEL || 'info',
+            format: winston.format.combine(
+              winston.format.colorize(),
+              winston.format.timestamp(),
+              winston.format.simple(),
+            ),
+            defaultMeta: {},
+          });
 
-        const action = actionRegistry.get(step.action);
-        if (!action) {
-          throw new Error(`Action '${step.action}' does not exist`);
+          const stream = new PassThrough();
+          stream.on('data', data => {
+            const message = data.toString().trim();
+            if (message?.length > 1) task.emitLog(message, metadata);
+          });
+
+          taskLogger.add(new winston.transports.Stream({ stream }));
+          await task.emitLog(`Beginning step ${step.name}`, metadata);
+
+          const action = actionRegistry.get(step.action);
+          if (!action) {
+            throw new Error(`Action '${step.action}' does not exist`);
+          }
+
+          // TODO: substitute any placeholders with output from previous steps
+          const parameters = step.parameters!;
+
+          await action.handler({
+            logger,
+            logStream: stream,
+            parameters,
+            workspacePath,
+            output(name: string, value: JsonValue) {
+              outputs[name] = value;
+            },
+          });
+
+          await task.emitLog(`Finished step ${step.name}`, metadata);
+        } catch (error) {
+          await task.emitLog(String(error.stack), metadata);
+          throw error;
         }
-
-        // TODO: substitute any placeholders with output from previous steps
-        const parameters = step.parameters!;
-
-        await action.handler({
-          logger,
-          logStream: stream,
-          parameters,
-          workspacePath,
-          output(name: string, value: JsonValue) {
-            outputs[name] = value;
-          },
-        });
-
-        task.emitLog(`Finished step ${step.name}`);
       }
-
       await task.complete('completed');
     } catch (error) {
-      task.emitLog(String(error.stack));
       await task.complete('failed');
     }
   }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { JsonObject } from '@backstage/config';
 import { Logger } from 'winston';
 import {
   CompletedTaskState,
@@ -22,6 +23,7 @@ import {
   TaskBroker,
   DispatchResult,
   DbTaskEventRow,
+  DbTaskRow,
 } from './types';
 
 export class TaskAgent implements Task {
@@ -54,10 +56,10 @@ export class TaskAgent implements Task {
     return this.isDone;
   }
 
-  async emitLog(message: string): Promise<void> {
+  async emitLog(message: string, metadata?: JsonObject): Promise<void> {
     await this.storage.emitLogEvent({
       taskId: this.state.taskId,
-      body: { message },
+      body: { message, ...metadata },
     });
   }
 
@@ -134,6 +136,10 @@ export class StorageTaskBroker implements TaskBroker {
     return {
       taskId: taskRow.taskId,
     };
+  }
+
+  async get(taskId: string): Promise<DbTaskRow> {
+    return this.storage.getTask(taskId);
   }
 
   observe(

@@ -83,7 +83,7 @@ describe('StorageTaskBroker', () => {
     const dispatchResult = await broker.dispatch({ steps: [] });
     const task = await broker.claim();
     await task.complete('completed');
-    const taskRow = await storage.get(dispatchResult.taskId);
+    const taskRow = await storage.getTask(dispatchResult.taskId);
     expect(taskRow.status).toBe('completed');
   }, 10000);
 
@@ -92,7 +92,7 @@ describe('StorageTaskBroker', () => {
     const dispatchResult = await broker.dispatch({ steps: [] });
     const task = await broker.claim();
     await task.complete('failed');
-    const taskRow = await storage.get(dispatchResult.taskId);
+    const taskRow = await storage.getTask(dispatchResult.taskId);
     expect(taskRow.status).toBe('failed');
   });
 
@@ -142,10 +142,10 @@ describe('StorageTaskBroker', () => {
     const { taskId } = await broker.dispatch({ steps: [] });
     const task = await broker.claim();
 
-    const initialTask = await storage.get(taskId);
+    const initialTask = await storage.getTask(taskId);
 
     for (;;) {
-      const maybeTask = await storage.get(taskId);
+      const maybeTask = await storage.getTask(taskId);
       if (maybeTask.lastHeartbeatAt !== initialTask.lastHeartbeatAt) {
         break;
       }
@@ -169,7 +169,7 @@ describe('StorageTaskBroker', () => {
     }, 500);
 
     for (;;) {
-      const maybeTask = await storage.get(taskId);
+      const maybeTask = await storage.getTask(taskId);
       if (maybeTask.status === 'failed') {
         break;
       }

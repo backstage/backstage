@@ -58,7 +58,7 @@ export type DispatchResult = {
 export interface Task {
   spec: TaskSpec;
   done: boolean;
-  emitLog(message: string): Promise<void>;
+  emitLog(message: string, metadata?: JsonValue): Promise<void>;
   complete(result: CompletedTaskState): Promise<void>;
   getWorkspaceName(): Promise<string>;
 }
@@ -90,6 +90,7 @@ export type TaskStoreGetEventsOptions = {
 };
 export interface TaskStore {
   createTask(task: TaskSpec): Promise<{ taskId: string }>;
+  getTask(taskId: string): Promise<DbTaskRow>;
   claimTask(): Promise<DbTaskRow | undefined>;
   completeTask(options: {
     taskId: string;

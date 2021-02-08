@@ -64,7 +64,7 @@ export class DatabaseTaskStore implements TaskStore {
 
   constructor(private readonly db: Knex) {}
 
-  async get(taskId: string): Promise<DbTaskRow> {
+  async getTask(taskId: string): Promise<DbTaskRow> {
     const [result] = await this.db<RawDbTaskRow>('tasks')
       .where({ id: taskId })
       .select();
