@@ -80,6 +80,10 @@ Create a `/docs` folder in the root of the project with at least an `index.md`
 file. _(If you add more markdown files, make sure to update the nav in the
 mkdocs.yml file to get a proper navigation for your documentation.)_
 
+> Note - Although `docs` is a popular directory name for storing documentation,
+> it can be renamed to something else and can be configured by `mkdocs.yml`. See
+> https://www.mkdocs.org/user-guide/configuration/#docs_dir
+
 The `docs/index.md` can for example have the following content:
 
 ```md

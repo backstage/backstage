@@ -71,11 +71,17 @@ function withRetries(count: number, fn: () => Promise<void>) {
         error = err;
       }
     }
-    throw error;
+    if (!error.message.match(/rate limit|Too Many Requests/)) {
+      throw error;
+    } else {
+      console.warn('Request was rate limited', error);
+    }
   };
 }
 
 describe('UrlReaders', () => {
+  jest.setTimeout(30_000);
+
   it(
     'should read data from azure',
     withRetries(3, async () => {
