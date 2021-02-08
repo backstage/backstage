@@ -95,18 +95,18 @@ const IncidentAction = ({
   currentPhase,
   incidentNames,
   resolveAction,
-  aknowledgeAction,
+  acknowledgeAction,
 }: {
   currentPhase: string;
   incidentNames: string[];
   resolveAction: (args: PatchIncidentRequest) => void;
-  aknowledgeAction: (args: PatchIncidentRequest) => void;
+  acknowledgeAction: (args: PatchIncidentRequest) => void;
 }) => {
   switch (currentPhase) {
     case 'UNACKED':
       return (
         <Tooltip title="Aknowledge" placement="top">
-          <IconButton onClick={() => aknowledgeAction({ incidentNames })}>
+          <IconButton onClick={() => acknowledgeAction({ incidentNames })}>
             <DoneIcon />
           </IconButton>
         </Tooltip>
@@ -218,7 +218,7 @@ export const IncidentListItem = ({ incident, onIncidentAction }: Props) => {
             currentPhase={incident.currentPhase || ''}
             incidentNames={[incident.incidentNumber]}
             resolveAction={handleResolveIncident}
-            aknowledgeAction={handleAcknowledgeIncident}
+            acknowledgeAction={handleAcknowledgeIncident}
           />
           <Tooltip title="View in Splunk On-Call" placement="top">
             <IconButton
