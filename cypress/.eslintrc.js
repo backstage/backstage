@@ -11,20 +11,7 @@ module.exports = {
         bundledDependencies: false,
       },
     ],
+    'jest/expect-expect': 'off',
+    'no-restricted-syntax': 'off',
   },
-
-  overrides: [
-    {
-      files: ['**/cypress/integration/**'],
-      rules: {
-        'jest/expect-expect': 'off',
-      },
-    },
-    {
-      files: ['src/commands/cypress.ts'],
-      rules: {
-        'no-restricted-syntax': 'off',
-      },
-    },
-  ],
 };

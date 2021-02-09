@@ -16,13 +16,7 @@
 
 import { CommanderStatic } from 'commander';
 import { run } from './run';
-import { run as cypress } from './cypress';
 
 export function registerCommands(program: CommanderStatic) {
   program.command('run').description('Run e2e tests').action(run);
-  program
-    .command('cypress')
-    .description('Run cypress e2e tests')
-    .option('-w, --watch', 'watch/open mode')
-    .action(cypress);
 }

@@ -12,19 +12,4 @@ module.exports = {
       },
     ],
   },
-
-  overrides: [
-    {
-      files: ['**/cypress/integration/**'],
-      rules: {
-        'jest/expect-expect': 'off',
-      },
-    },
-    {
-      files: ['src/commands/cypress.ts'],
-      rules: {
-        'no-restricted-syntax': 'off',
-      },
-    },
-  ],
 };
