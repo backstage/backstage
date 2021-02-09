@@ -16,7 +16,11 @@
 
 import { Entity, GroupEntity } from '@backstage/catalog-model';
 import { ApiProvider, ApiRegistry } from '@backstage/core';
-import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
+import {
+  CatalogApi,
+  catalogApiRef,
+  EntityProvider,
+} from '@backstage/plugin-catalog-react';
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import React from 'react';
 import { MembersListCard } from './MembersListCard';
@@ -78,7 +82,10 @@ describe('MemberTab Test', () => {
     const rendered = await renderWithEffects(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <MembersListCard entity={groupEntity} />
+          <EntityProvider entity={groupEntity}>
+            <MembersListCard />
+          </EntityProvider>
+          ,
         </ApiProvider>,
       ),
     );

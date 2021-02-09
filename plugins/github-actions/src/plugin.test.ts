@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { plugin } from './plugin';
+import { githubActionsPlugin } from './plugin';
 
 describe('github-actions', () => {
   it('should export plugin', () => {
-    expect(plugin).toBeDefined();
+    expect(githubActionsPlugin).toBeDefined();
   });
 });

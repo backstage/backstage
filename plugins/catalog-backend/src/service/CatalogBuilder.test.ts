@@ -44,6 +44,7 @@ describe('CatalogBuilder', () => {
   const reader: jest.Mocked<UrlReader> = {
     read: jest.fn(),
     readTree: jest.fn(),
+    search: jest.fn(),
   };
   const env: CatalogEnvironment = {
     logger: getVoidLogger(),

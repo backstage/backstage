@@ -17,6 +17,7 @@ import React, { useEffect } from 'react';
 import { useWorkflowRuns } from '../useWorkflowRuns';
 import { WorkflowRun, WorkflowRunsTable } from '../WorkflowRunsTable';
 import { Entity } from '@backstage/catalog-model';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import { readGitHubIntegrationConfigs } from '@backstage/integration';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import {
@@ -81,11 +82,11 @@ const WidgetContent = ({
 };
 
 export const LatestWorkflowRunCard = ({
-  entity,
   branch = 'master',
   // Display the card full height suitable for
   variant,
 }: Props) => {
+  const { entity } = useEntity();
   const config = useApi(configApiRef);
   const errorApi = useApi(errorApiRef);
   // TODO: Get github hostname from metadata annotation
@@ -121,17 +122,21 @@ export const LatestWorkflowRunCard = ({
 };
 
 type Props = {
-  entity: Entity;
+  /** @deprecated The entity is now grabbed from context instead */
+  entity?: Entity;
   branch: string;
   variant?: string;
 };
 
 export const LatestWorkflowsForBranchCard = ({
-  entity,
   branch = 'master',
   variant,
-}: Props) => (
-  <InfoCard title={`Last ${branch} build`} variant={variant}>
-    <WorkflowRunsTable branch={branch} entity={entity} />
-  </InfoCard>
-);
+}: Props) => {
+  const { entity } = useEntity();
+
+  return (
+    <InfoCard title={`Last ${branch} build`} variant={variant}>
+      <WorkflowRunsTable branch={branch} entity={entity} />
+    </InfoCard>
+  );
+};
