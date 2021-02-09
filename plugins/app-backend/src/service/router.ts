@@ -26,7 +26,22 @@ import fs from 'fs-extra';
 export interface RouterOptions {
   config: Config;
   logger: Logger;
+
+  /**
+   * The name of the app package that content should be served from. The same app package should be
+   * added as a dependency to the backend package in order for it to be accessible at runtime.
+   *
+   * In a typical setup with a single app package this would be set to 'app'.
+   */
   appPackageName: string;
+
+  /**
+   * A request handler to handle requests for static content that are not present in the app bundle.
+   *
+   * This can be used to avoid issues with clients on older deployment versions trying to access lazy
+   * loaded content that is no longer present. Typically the requests would fall back to a long-term
+   * object store where all recently deployed versions of the app are present.
+   */
   staticFallbackHandler?: express.Handler;
 }
 
