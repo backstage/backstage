@@ -20,6 +20,8 @@ import chalk from 'chalk';
 import inquirer, { Answers, Question } from 'inquirer';
 import { exec as execCb } from 'child_process';
 import { resolve as resolvePath, join as joinPath } from 'path';
+import camelCase from 'lodash/camelCase';
+import upperFirst from 'lodash/upperFirst';
 import os from 'os';
 import { Command } from 'commander';
 import {
@@ -104,16 +106,12 @@ export async function addPluginDependencyToApp(
   });
 }
 
-export async function addPluginToApp(
+export async function addPluginImportToApp(
   rootDir: string,
-  pluginName: string,
+  pluginVar: string,
   pluginPackage: string,
 ) {
-  const pluginNameCapitalized = pluginName
-    .split('-')
-    .map(name => capitalize(name))
-    .join('');
-  const pluginExport = `export { plugin as ${pluginNameCapitalized} } from '${pluginPackage}';`;
+  const pluginExport = `export { ${pluginVar} } from '${pluginPackage}';`;
   const pluginsFilePath = 'packages/app/src/plugins.ts';
   const pluginsFile = resolvePath(rootDir, pluginsFilePath);
 
@@ -123,6 +121,46 @@ export async function addPluginToApp(
         `Failed to import plugin in app: ${pluginsFile}: ${error.message}`,
       );
     });
+  });
+}
+
+export async function addPluginExtensionToApp(
+  pluginId: string,
+  extensionName: string,
+  pluginPackage: string,
+) {
+  const pluginsFilePath = paths.resolveTargetRoot('packages/app/src/App.tsx');
+  if (!(await fs.pathExists(pluginsFilePath))) {
+    return;
+  }
+
+  await Task.forItem('processing', pluginsFilePath, async () => {
+    const content = await fs.readFile(pluginsFilePath, 'utf8');
+    const revLines = content.split('\n').reverse();
+
+    const lastImportIndex = revLines.findIndex(line =>
+      line.match(/ from ("|').*("|')/),
+    );
+    const lastRouteIndex = revLines.findIndex(line =>
+      line.match(/<\/FlatRoutes/),
+    );
+
+    if (lastImportIndex !== -1 && lastRouteIndex !== -1) {
+      revLines.splice(
+        lastImportIndex,
+        0,
+        `import { ${extensionName} } from '${pluginPackage}';`,
+      );
+      const [indentation] = revLines[lastRouteIndex + 1].match(/^\s*/) ?? [];
+      revLines.splice(
+        lastRouteIndex + 1,
+        0,
+        `${indentation}<Route path="/${pluginId}" element={<${extensionName} />}/>`,
+      );
+
+      const newContent = revLines.reverse().join('\n');
+      await fs.writeFile(pluginsFilePath, newContent, 'utf8');
+    }
   });
 }
 
@@ -223,6 +261,8 @@ export default async (cmd: Command) => {
   const name = cmd.scope
     ? `@${cmd.scope.replace(/^@/, '')}/plugin-${pluginId}`
     : `plugin-${pluginId}`;
+  const pluginVar = `${camelCase(answers.id)}Plugin`;
+  const extensionName = `${upperFirst(camelCase(answers.id))}Page`;
   const npmRegistry = cmd.npmRegistry && cmd.scope ? cmd.npmRegistry : '';
   const privatePackage = cmd.private === false ? false : true;
   const isMonoRepo = await fs.pathExists(paths.resolveTargetRoot('lerna.json'));
@@ -259,7 +299,9 @@ export default async (cmd: Command) => {
       tempDir,
       {
         ...answers,
+        pluginVar,
         pluginVersion,
+        extensionName,
         name,
         privatePackage,
         npmRegistry,
@@ -278,7 +320,8 @@ export default async (cmd: Command) => {
       await addPluginDependencyToApp(paths.targetRoot, name, pluginVersion);
 
       Task.section('Import plugin in app');
-      await addPluginToApp(paths.targetRoot, pluginId, name);
+      await addPluginImportToApp(paths.targetRoot, pluginVar, name);
+      await addPluginExtensionToApp(pluginId, extensionName, name);
     }
 
     if (ownerIds && ownerIds.length) {

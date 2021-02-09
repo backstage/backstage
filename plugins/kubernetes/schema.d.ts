@@ -35,11 +35,11 @@ export interface Config {
       /**
        * @visibility secret
        */
-      serviceAccountToken: string;
+      serviceAccountToken: string | undefined;
       /**
        * @visibility frontend
        */
-      authProvider: 'serviceAccount';
+      authProvider: 'aws' | 'google' | 'serviceAccount';
     }[];
   };
 }

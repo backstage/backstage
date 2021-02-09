@@ -1,10 +1,252 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.6.0
+
+### Minor Changes
+
+- cdea0baf1: The scaffolder is updated to generate a unique workspace directory inside the temp folder. This directory is cleaned up by the job processor after each run.
+
+  The prepare/template/publish steps have been refactored to operate on known directories, `template/` and `result/`, inside the temporary workspace path.
+
+  Updated preparers to accept the template url instead of the entire template. This is done primarily to allow for backwards compatibility between v1 and v2 scaffolder templates.
+
+  Fixes broken GitHub actions templating in the Create React App template.
+
+  #### For those with **custom** preparers, templates, or publishers
+
+  The preparer interface has changed, the prepare method now only takes a single argument, and doesn't return anything. As part of this change the preparers were refactored to accept a URL pointing to the target directory, rather than computing that from the template entity.
+
+  The `workingDirectory` option was also removed, and replaced with a `workspacePath` option. The difference between the two is that `workingDirectory` was a place for the preparer to create temporary directories, while the `workspacePath` is the specific folder were the entire templating process for a single template job takes place. Instead of returning a path to the folder were the prepared contents were placed, the contents are put at the `<workspacePath>/template` path.
+
+  ```diff
+  type PreparerOptions = {
+  -  workingDirectory?: string;
+  +  /**
+  +   * Full URL to the directory containg template data
+  +   */
+  +  url: string;
+  +  /**
+  +   * The workspace path that will eventually be the the root of the new repo
+  +   */
+  +  workspacePath: string;
+    logger: Logger;
+  };
+
+  -prepare(template: TemplateEntityV1alpha1, opts?: PreparerOptions): Promise<string>
+  +prepare(opts: PreparerOptions): Promise<void>;
+  ```
+
+  Instead of returning a path to the folder were the templaters contents were placed, the contents are put at the `<workspacePath>/result` path. All templaters now also expect the source template to be present in the `template` directory within the `workspacePath`.
+
+  ```diff
+  export type TemplaterRunOptions = {
+  -  directory: string;
+  +  workspacePath: string;
+    values: TemplaterValues;
+    logStream?: Writable;
+    dockerClient: Docker;
+  };
+
+  -public async run(options: TemplaterRunOptions): Promise<TemplaterRunResult>
+  +public async run(options: TemplaterRunOptions): Promise<void>
+  ```
+
+  Just like the preparer and templaters, the publishers have also switched to using `workspacePath`. The root of the new repo is expected to be located at `<workspacePath>/result`.
+
+  ```diff
+  export type PublisherOptions = {
+    values: TemplaterValues;
+  -  directory: string;
+  +  workspacePath: string;
+    logger: Logger;
+  };
+  ```
+
+### Patch Changes
+
+- a26668913: Attempt to fix windows test errors in master
+- 529d16d27: # Repo visibility for GitLab and BitBucket repos
+
+  **NOTE: This changes default repo visibility from `private` to `public` for GitLab and BitBucket** which
+  is consistent with the GitHub default. If you were counting on `private` visibility, you'll need to update
+  your scaffolder config to use `private`.
+
+  This adds repo visibility feature parity with GitHub for GitLab and BitBucket.
+
+  To configure the repo visibility, set scaffolder._type_.visibility as in this example:
+
+  ```yaml
+  scaffolder:
+    github:
+      visibility: private # 'public' or 'internal' or 'private' (default is 'public')
+    gitlab:
+      visibility: public # 'public' or 'internal' or 'private' (default is 'public')
+    bitbucket:
+      visibility: public # 'public' or 'private' (default is 'public')
+  ```
+
+- Updated dependencies [c4abcdb60]
+- Updated dependencies [2430ee7c2]
+- Updated dependencies [6e612ce25]
+- Updated dependencies [025e122c3]
+- Updated dependencies [064c513e1]
+- Updated dependencies [7881f2117]
+- Updated dependencies [3149bfe63]
+- Updated dependencies [2e62aea6f]
+- Updated dependencies [11cb5ef94]
+  - @backstage/integration@0.3.2
+  - @backstage/backend-common@0.5.2
+  - @backstage/catalog-model@0.7.1
+
+## 0.5.2
+
+### Patch Changes
+
+- 26a3a6cf0: Honor the branch ref in the url when cloning.
+
+  This fixes a bug in the scaffolder prepare stage where a non-default branch
+  was specified in the scaffolder URL but the default branch was cloned.
+  For example, even though the `other` branch is specified in this example, the
+  `master` branch was actually cloned:
+
+  ```yaml
+  catalog:
+    locations:
+      - type: url
+        target: https://github.com/backstage/backstage/blob/other/plugins/scaffolder-backend/sample-templates/docs-template/template.yaml
+  ```
+
+  This also fixes a 404 in the prepare stage for GitLab URLs.
+
+- 9dd057662: Upgrade [git-url-parse](https://www.npmjs.com/package/git-url-parse) to [v11.4.4](https://github.com/IonicaBizau/git-url-parse/pull/125) which fixes parsing an Azure DevOps branch ref.
+- Updated dependencies [26a3a6cf0]
+- Updated dependencies [664dd08c9]
+- Updated dependencies [6800da78d]
+- Updated dependencies [9dd057662]
+  - @backstage/backend-common@0.5.1
+  - @backstage/integration@0.3.1
+
+## 0.5.1
+
+### Patch Changes
+
+- 0ea002378: Fixing issues with templating and full URL's as `storePath`'s
+
+## 0.5.0
+
+### Minor Changes
+
+- ed6baab66: - Deprecating the `scaffolder.${provider}.token` auth duplication and favoring `integrations.${provider}` instead. If you receive deprecation warnings your config should change like the following:
+
+  ```yaml
+  scaffolder:
+    github:
+      token:
+        $env: GITHUB_TOKEN
+      visibility: public
+  ```
+
+  To something that looks like this:
+
+  ```yaml
+  integration:
+    github:
+      - host: github.com
+        token:
+          $env: GITHUB_TOKEN
+  scaffolder:
+    github:
+      visibility: public
+  ```
+
+  You can also configure multiple different hosts under the `integration` config like the following:
+
+  ```yaml
+  integration:
+    github:
+      - host: github.com
+        token:
+          $env: GITHUB_TOKEN
+      - host: ghe.mycompany.com
+        token:
+          $env: GITHUB_ENTERPRISE_TOKEN
+  ```
+
+  This of course is the case for all the providers respectively.
+
+  - Adding support for cross provider scaffolding, you can now create repositories in for example Bitbucket using a template residing in GitHub.
+
+  - Fix GitLab scaffolding so that it returns a `catalogInfoUrl` which automatically imports the project into the catalog.
+
+  - The `Store Path` field on the `scaffolder` frontend has now changed so that you require the full URL to the desired destination repository.
+
+  `backstage/new-repository` would become `https://github.com/backstage/new-repository` if provider was GitHub for example.
+
+### Patch Changes
+
+- Updated dependencies [def2307f3]
+- Updated dependencies [0b135e7e0]
+- Updated dependencies [294a70cab]
+- Updated dependencies [fa8ba330a]
+- Updated dependencies [0ea032763]
+- Updated dependencies [5345a1f98]
+- Updated dependencies [ed6baab66]
+- Updated dependencies [09a370426]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/backend-common@0.5.0
+  - @backstage/integration@0.3.0
+
+## 0.4.1
+
+### Patch Changes
+
+- 94fdf4955: Get rid of all usages of @octokit/types, and bump the rest of the octokit dependencies to the latest version
+- cc068c0d6: Bump the gitbeaker dependencies to 28.x.
+
+  To update your own installation, go through the `package.json` files of all of
+  your packages, and ensure that all dependencies on `@gitbeaker/node` or
+  `@gitbeaker/core` are at version `^28.0.2`. Then run `yarn install` at the root
+  of your repo.
+
+- 711ba55a2: Export all preparers and publishers properly
+- Updated dependencies [466354aaa]
+- Updated dependencies [f3b064e1c]
+- Updated dependencies [abbee6fff]
+- Updated dependencies [147fadcb9]
+  - @backstage/integration@0.2.0
+  - @backstage/catalog-model@0.6.1
+  - @backstage/backend-common@0.4.3
+
+## 0.4.0
+
+### Minor Changes
+
+- 5eb8c9b9e: Fix GitLab scaffolder publisher
+
+### Patch Changes
+
+- 7e3451700: bug(scaffolder): Ignore the .git folder when adding dot-files to the index
+
+## 0.3.7
+
+### Patch Changes
+
+- 37a5244ef: Add scaffolding support for Bitbucket Cloud and Server.
+- 00042e73c: Moving the Git actions to isomorphic-git instead of the node binding version of nodegit
+- 9efbc5585: Add config schema for Bitbucket scaffolder
+- Updated dependencies [5ecd50f8a]
+- Updated dependencies [00042e73c]
+- Updated dependencies [0829ff126]
+- Updated dependencies [036a84373]
+  - @backstage/backend-common@0.4.2
+  - @backstage/integration@0.1.5
+
 ## 0.3.6
 
 ### Patch Changes
 
-- 19554f6d6: Added Github Actions for Create React App, and allow better imports of files inside a module when they're exposed using `files` in `package.json`
+- 19554f6d6: Added GitHub Actions for Create React App, and allow better imports of files inside a module when they're exposed using `files` in `package.json`
 - 33a82a713: GitLab preparer uses the right token (primarily the same one as the publisher, falling back to the integrations token)
 - aed8f7f12: Clearer error message when preparer or publisher type can't be determined.
 

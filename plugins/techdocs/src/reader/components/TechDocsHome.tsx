@@ -15,23 +15,24 @@
  */
 
 import {
+  CodeSnippet,
   Content,
   Header,
   ItemCard,
   Page,
   Progress,
   useApi,
+  WarningPanel,
 } from '@backstage/core';
-import { catalogApiRef } from '@backstage/plugin-catalog';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { Grid } from '@material-ui/core';
 import React from 'react';
-import { generatePath, useNavigate } from 'react-router-dom';
+import { generatePath } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { rootDocsRouteRef } from '../../plugin';
 
 export const TechDocsHome = () => {
   const catalogApi = useApi(catalogApiRef);
-  const navigate = useNavigate();
 
   const { value, loading, error } = useAsync(async () => {
     const response = await catalogApi.getEntities();
@@ -62,7 +63,12 @@ export const TechDocsHome = () => {
           subtitle="Documentation available in Backstage"
         />
         <Content>
-          <p>{error.message}</p>
+          <WarningPanel
+            severity="error"
+            title="Could not load available documentation."
+          >
+            <CodeSnippet language="text" text={error.toString()} />
+          </WarningPanel>
         </Content>
       </Page>
     );
@@ -80,15 +86,11 @@ export const TechDocsHome = () => {
             ? value.map((entity, index: number) => (
                 <Grid key={index} item xs={12} sm={6} md={3}>
                   <ItemCard
-                    onClick={() =>
-                      navigate(
-                        generatePath(rootDocsRouteRef.path, {
-                          namespace: entity.metadata.namespace ?? 'default',
-                          kind: entity.kind,
-                          name: entity.metadata.name,
-                        }),
-                      )
-                    }
+                    href={generatePath(rootDocsRouteRef.path, {
+                      namespace: entity.metadata.namespace ?? 'default',
+                      kind: entity.kind,
+                      name: entity.metadata.name,
+                    })}
                     title={entity.metadata.name}
                     label="Read Docs"
                     description={entity.metadata.description}

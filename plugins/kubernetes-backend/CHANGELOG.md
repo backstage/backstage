@@ -1,5 +1,41 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.2.6
+
+### Patch Changes
+
+- 681111228: Add AWS auth provider for Kubernetes
+- Updated dependencies [26a3a6cf0]
+- Updated dependencies [664dd08c9]
+- Updated dependencies [9dd057662]
+  - @backstage/backend-common@0.5.1
+
+## 0.2.5
+
+### Patch Changes
+
+- d54857099: Support HTTP 400 Bad Request from Kubernetes API
+- Updated dependencies [def2307f3]
+- Updated dependencies [0b135e7e0]
+- Updated dependencies [294a70cab]
+- Updated dependencies [0ea032763]
+- Updated dependencies [5345a1f98]
+- Updated dependencies [09a370426]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/backend-common@0.5.0
+
+## 0.2.4
+
+### Patch Changes
+
+- 5a9a7e7c2: Revamped Kubernetes UI and added error reporting/detection
+- Updated dependencies [f3b064e1c]
+- Updated dependencies [abbee6fff]
+- Updated dependencies [147fadcb9]
+  - @backstage/catalog-model@0.6.1
+  - @backstage/backend-common@0.4.3
+
 ## 0.2.3
 
 ### Patch Changes

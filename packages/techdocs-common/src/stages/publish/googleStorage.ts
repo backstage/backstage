@@ -24,60 +24,61 @@ import { Logger } from 'winston';
 import { Entity, EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { getHeadersForFileExtension, getFileTreeRecursively } from './helpers';
-import { PublisherBase, PublishRequest } from './types';
+import { PublisherBase, PublishRequest, TechDocsMetadata } from './types';
+import JSON5 from 'json5';
+import createLimiter from 'p-limit';
 
 export class GoogleGCSPublish implements PublisherBase {
-  static fromConfig(config: Config, logger: Logger): PublisherBase {
-    let credentials = '';
-    let projectId = '';
+  static async fromConfig(
+    config: Config,
+    logger: Logger,
+  ): Promise<PublisherBase> {
     let bucketName = '';
     try {
-      credentials = config.getString(
-        'techdocs.publisher.googleGcs.credentials',
-      );
-      projectId = config.getString('techdocs.publisher.googleGcs.projectId');
       bucketName = config.getString('techdocs.publisher.googleGcs.bucketName');
     } catch (error) {
       throw new Error(
         "Since techdocs.publisher.type is set to 'googleGcs' in your app config, " +
-          'credentials, projectId and bucketName are required in techdocs.publisher.googleGcs ' +
-          'required to authenticate with Google Cloud Storage.',
+          'techdocs.publisher.googleGcs.bucketName is required.',
       );
     }
 
+    // Credentials is an optional config. If missing, default GCS environment variables will be used.
+    // Read more here https://cloud.google.com/docs/authentication/production
+    const credentials = config.getOptionalString(
+      'techdocs.publisher.googleGcs.credentials',
+    );
     let credentialsJson = {};
-    try {
-      credentialsJson = JSON.parse(credentials);
-    } catch (err) {
-      throw new Error(
-        'Error in parsing techdocs.publisher.googleGcs.credentials config to JSON.',
-      );
+    if (credentials) {
+      try {
+        credentialsJson = JSON.parse(credentials);
+      } catch (err) {
+        throw new Error(
+          'Error in parsing techdocs.publisher.googleGcs.credentials config to JSON.',
+        );
+      }
     }
 
     const storageClient = new Storage({
-      credentials: credentialsJson,
-      projectId: projectId,
+      ...(credentials && {
+        credentials: credentialsJson,
+      }),
     });
 
     // Check if the defined bucket exists. Being able to connect means the configuration is good
     // and the storage client will work.
-    storageClient
-      .bucket(bucketName)
-      .getMetadata()
-      .then(() => {
-        logger.info(
-          `Successfully connected to the GCS bucket ${bucketName} in the GCP project ${projectId}.`,
-        );
-      })
-      .catch(reason => {
-        logger.error(
-          `Could not retrieve metadata about the GCS bucket ${bucketName} in the GCP project ${projectId}. ` +
-            'Make sure the GCP project and the bucket exists and the access key located at the path ' +
-            "techdocs.publisher.googleGcs.credentials defined in app config has the role 'Storage Object Creator'. " +
-            'Refer to https://backstage.io/docs/features/techdocs/using-cloud-storage',
-        );
-        throw new Error(`from GCS client library: ${reason.message}`);
-      });
+    try {
+      await storageClient.bucket(bucketName).getMetadata();
+      logger.info(`Successfully connected to the GCS bucket ${bucketName}.`);
+    } catch (err) {
+      logger.error(
+        `Could not retrieve metadata about the GCS bucket ${bucketName}. ` +
+          'Make sure the bucket exists. Also make sure that authentication is setup either by explicitly defining ' +
+          'techdocs.publisher.googleGcs.credentials in app config or by using environment variables. ' +
+          'Refer to https://backstage.io/docs/features/techdocs/using-cloud-storage',
+      );
+      throw new Error(err.message);
+    }
 
     return new GoogleGCSPublish(storageClient, bucketName, logger);
   }
@@ -102,6 +103,7 @@ export class GoogleGCSPublish implements PublisherBase {
       // So collecting path of only the files is good enough.
       const allFilesToUpload = await getFileTreeRecursively(directory);
 
+      const limiter = createLimiter(10);
       const uploadPromises: Array<Promise<UploadResponse>> = [];
       allFilesToUpload.forEach(filePath => {
         // Remove the absolute path prefix of the source directory
@@ -110,12 +112,14 @@ export class GoogleGCSPublish implements PublisherBase {
         const relativeFilePath = filePath.replace(`${directory}/`, '');
         const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
         const destination = `${entityRootDir}/${relativeFilePath}`; // GCS Bucket file relative path
-        // TODO: Upload in chunks of ~10 files instead of all files at once.
-        uploadPromises.push(
-          this.storageClient.bucket(this.bucketName).upload(filePath, {
-            destination,
-          }),
+
+        // Rate limit the concurrent execution of file uploads to batches of 10 (per publish)
+        const uploadFile = limiter(() =>
+          this.storageClient
+            .bucket(this.bucketName)
+            .upload(filePath, { destination }),
         );
+        uploadPromises.push(uploadFile);
       });
 
       Promise.all(uploadPromises)
@@ -133,7 +137,7 @@ export class GoogleGCSPublish implements PublisherBase {
     });
   }
 
-  fetchTechDocsMetadata(entityName: EntityName): Promise<string> {
+  fetchTechDocsMetadata(entityName: EntityName): Promise<TechDocsMetadata> {
     return new Promise((resolve, reject) => {
       const entityRootDir = `${entityName.namespace}/${entityName.kind}/${entityName.name}`;
 
@@ -153,7 +157,7 @@ export class GoogleGCSPublish implements PublisherBase {
           const techdocsMetadataJson = Buffer.concat(
             fileStreamChunks,
           ).toString();
-          resolve(techdocsMetadataJson);
+          resolve(JSON5.parse(techdocsMetadataJson));
         });
     });
   }
@@ -171,29 +175,24 @@ export class GoogleGCSPublish implements PublisherBase {
       const fileExtension = path.extname(filePath);
       const responseHeaders = getHeadersForFileExtension(fileExtension);
 
-      const fileStreamChunks: Array<any> = [];
+      // Pipe file chunks directly from storage to client.
       this.storageClient
         .bucket(this.bucketName)
         .file(filePath)
         .createReadStream()
+        .on('pipe', () => {
+          res.writeHead(200, responseHeaders);
+        })
         .on('error', err => {
           this.logger.warn(err.message);
-          res.status(404).send(err.message);
-        })
-        .on('data', chunk => {
-          fileStreamChunks.push(chunk);
-        })
-        .on('end', () => {
-          const fileContent = Buffer.concat(fileStreamChunks).toString();
-          // Inject response headers
-          for (const [headerKey, headerValue] of Object.entries(
-            responseHeaders,
-          )) {
-            res.setHeader(headerKey, headerValue);
+          // Send a 404 with a meaningful message if possible.
+          if (!res.headersSent) {
+            res.status(404).send(err.message);
+          } else {
+            res.destroy();
           }
-
-          res.send(fileContent);
-        });
+        })
+        .pipe(res);
     };
   }
 

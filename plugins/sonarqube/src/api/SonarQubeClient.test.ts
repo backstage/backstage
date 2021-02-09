@@ -29,7 +29,31 @@ describe('SonarQubeClient', () => {
   const mockBaseUrl = 'http://backstage:9191/api/proxy';
   const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);
 
-  const setupHandlers = () => {
+  const setupHandlers = (
+    metricKeys = [
+      'alert_status',
+      'bugs',
+      'reliability_rating',
+      'vulnerabilities',
+      'security_rating',
+      'security_hotspots_reviewed',
+      'security_review_rating',
+      'code_smells',
+      'sqale_rating',
+      'coverage',
+      'duplicated_lines_density',
+    ],
+  ) => {
+    server.use(
+      rest.get(`${mockBaseUrl}/sonarqube/metrics/search`, (_, res, ctx) => {
+        return res(
+          ctx.json({
+            metrics: metricKeys.map(k => ({ key: k })),
+          }),
+        );
+      }),
+    );
+
     server.use(
       rest.get(`${mockBaseUrl}/sonarqube/components/show`, (req, res, ctx) => {
         expect(req.url.searchParams.toString()).toBe('component=our-service');
@@ -46,8 +70,9 @@ describe('SonarQubeClient', () => {
     server.use(
       rest.get(`${mockBaseUrl}/sonarqube/measures/search`, (req, res, ctx) => {
         expect(req.url.searchParams.toString()).toBe(
-          'projectKeys=our-service&metricKeys=alert_status%2Cbugs%2Creliability_rating%2Cvulnerabilities%2Csecurity_rating%2Ccode_smells%2Csqale_rating%2Ccoverage%2Cduplicated_lines_density',
+          `projectKeys=our-service&metricKeys=${metricKeys.join('%2C')}`,
         );
+
         return res(
           ctx.json({
             measures: [
@@ -82,6 +107,16 @@ describe('SonarQubeClient', () => {
                 component: 'our-service',
               },
               {
+                metric: 'security_hotspots_reviewed',
+                value: '100',
+                component: 'our-service',
+              },
+              {
+                metric: 'security_review_rating',
+                value: '1.0',
+                component: 'our-service',
+              },
+              {
                 metric: 'code_smells',
                 value: '100',
                 component: 'our-service',
@@ -101,7 +136,7 @@ describe('SonarQubeClient', () => {
                 value: '1.0',
                 component: 'our-service',
               },
-            ],
+            ].filter(m => metricKeys.includes(m.metric)),
           } as MeasuresWrapper),
         );
       }),
@@ -123,6 +158,8 @@ describe('SonarQubeClient', () => {
           reliability_rating: '3.0',
           vulnerabilities: '4',
           security_rating: '1.0',
+          security_hotspots_reviewed: '100',
+          security_review_rating: '1.0',
           code_smells: '100',
           sqale_rating: '2.0',
           coverage: '55.5',
@@ -158,10 +195,40 @@ describe('SonarQubeClient', () => {
           reliability_rating: '3.0',
           vulnerabilities: '4',
           security_rating: '1.0',
+          security_hotspots_reviewed: '100',
+          security_review_rating: '1.0',
           code_smells: '100',
           sqale_rating: '2.0',
           coverage: '55.5',
           duplicated_lines_density: '1.0',
+        },
+        projectUrl: 'http://a.instance.local/dashboard?id=our-service',
+      }) as FindingSummary,
+    );
+    expect(summary?.getIssuesUrl('CODE_SMELL')).toEqual(
+      'http://a.instance.local/project/issues?id=our-service&types=CODE_SMELL&resolved=false',
+    );
+    expect(summary?.getComponentMeasuresUrl('COVERAGE')).toEqual(
+      'http://a.instance.local/component_measures?id=our-service&metric=coverage&resolved=false&view=list',
+    );
+  });
+
+  it('should only request selected metrics', async () => {
+    setupHandlers(['alert_status', 'bugs']);
+
+    const client = new SonarQubeClient({
+      discoveryApi,
+      baseUrl: 'http://a.instance.local',
+    });
+
+    const summary = await client.getFindingSummary('our-service');
+
+    expect(summary).toEqual(
+      expect.objectContaining({
+        lastAnalysis: '2020-01-01T00:00:00Z',
+        metrics: {
+          alert_status: 'OK',
+          bugs: '2',
         },
         projectUrl: 'http://a.instance.local/dashboard?id=our-service',
       }) as FindingSummary,

@@ -1,5 +1,113 @@
 # @backstage/techdocs-common
 
+## 0.3.7
+
+### Patch Changes
+
+- c777df180: 1. Added option to use Azure Blob Storage as a choice to store the static generated files for TechDocs.
+- e44925723: `techdocs.requestUrl` and `techdocs.storageUrl` are now optional configs and the discovery API will be used to get the URL where techdocs plugin is hosted.
+- f0320190d: dir preparer will use URL Reader in its implementation.
+- Updated dependencies [c4abcdb60]
+- Updated dependencies [2430ee7c2]
+- Updated dependencies [6e612ce25]
+- Updated dependencies [025e122c3]
+- Updated dependencies [064c513e1]
+- Updated dependencies [7881f2117]
+- Updated dependencies [3149bfe63]
+- Updated dependencies [2e62aea6f]
+- Updated dependencies [11cb5ef94]
+  - @backstage/integration@0.3.2
+  - @backstage/backend-common@0.5.2
+  - @backstage/catalog-model@0.7.1
+
+## 0.3.6
+
+### Patch Changes
+
+- 9dd057662: Upgrade [git-url-parse](https://www.npmjs.com/package/git-url-parse) to [v11.4.4](https://github.com/IonicaBizau/git-url-parse/pull/125) which fixes parsing an Azure DevOps branch ref.
+- db2328c88: Add rate limiter for concurrent execution of file uploads in AWS and Google publishers
+- Updated dependencies [26a3a6cf0]
+- Updated dependencies [664dd08c9]
+- Updated dependencies [6800da78d]
+- Updated dependencies [9dd057662]
+  - @backstage/backend-common@0.5.1
+  - @backstage/integration@0.3.1
+
+## 0.3.5
+
+### Patch Changes
+
+- 53c9c51f2: TechDocs backend now streams files through from Google Cloud Storage to the browser, improving memory usage.
+- a5e27d5c1: Create type for TechDocsMetadata (#3716)
+
+  This change introduces a new type (TechDocsMetadata) in packages/techdocs-common. This type is then introduced in the endpoint response in techdocs-backend and in the api interface in techdocs (frontend).
+
+- Updated dependencies [def2307f3]
+- Updated dependencies [0b135e7e0]
+- Updated dependencies [294a70cab]
+- Updated dependencies [fa8ba330a]
+- Updated dependencies [0ea032763]
+- Updated dependencies [5345a1f98]
+- Updated dependencies [ed6baab66]
+- Updated dependencies [09a370426]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/backend-common@0.5.0
+  - @backstage/integration@0.3.0
+
+## 0.3.4
+
+### Patch Changes
+
+- a594a7257: @backstage/techdocs-common can now be imported in an environment without @backstage/plugin-techdocs-backend being installed.
+
+## 0.3.3
+
+### Patch Changes
+
+- 68ad5af51: Improve techdocs-common Generator API for it to be used by techdocs-cli. TechDocs generator.run function now takes
+  an input AND an output directory. Most probably you use techdocs-common via plugin-techdocs-backend, and so there
+  is no breaking change for you.
+  But if you use techdocs-common separately, you need to create an output directory and pass into the generator.
+- 371f67ecd: fix to-string breakage of binary files
+- f1e74777a: Fix bug where binary files (`png`, etc.) could not load when using AWS or GCS publisher.
+- dbe4450c3: Google Cloud authentication in TechDocs has been improved.
+
+  1. `techdocs.publisher.googleGcs.credentials` is now optional. If it is missing, `GOOGLE_APPLICATION_CREDENTIALS`
+     environment variable (and some other methods) will be used to authenticate.
+     Read more here https://cloud.google.com/docs/authentication/production
+
+  2. `techdocs.publisher.googleGcs.projectId` is no longer used. You can remove it from your `app-config.yaml`.
+
+- 5826d0973: AWS SDK version bump for TechDocs.
+- b3b9445df: AWS S3 authentication in TechDocs has been improved.
+
+  1. `techdocs.publisher.awsS3.bucketName` is now the only required config. `techdocs.publisher.awsS3.credentials` and `techdocs.publisher.awsS3.region` are optional.
+
+  2. If `techdocs.publisher.awsS3.credentials` and `techdocs.publisher.awsS3.region` are missing, the AWS environment variables `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and `AWS_REGION` will be used. There are more better ways of setting up AWS authentication. Read the guide at https://backstage.io/docs/features/techdocs/using-cloud-storage
+
+- Updated dependencies [466354aaa]
+- Updated dependencies [f3b064e1c]
+- Updated dependencies [abbee6fff]
+- Updated dependencies [147fadcb9]
+  - @backstage/integration@0.2.0
+  - @backstage/catalog-model@0.6.1
+  - @backstage/backend-common@0.4.3
+
+## 0.3.2
+
+### Patch Changes
+
+- 7ec525481: 1. Added option to use AWS S3 as a choice to store the static generated files for TechDocs.
+- f8ba88ded: Fix for `integration.github.apiBaseUrl` configuration not properly overriding apiBaseUrl used by techdocs
+- 00042e73c: Moving the Git actions to isomorphic-git instead of the node binding version of nodegit
+- Updated dependencies [5ecd50f8a]
+- Updated dependencies [00042e73c]
+- Updated dependencies [0829ff126]
+- Updated dependencies [036a84373]
+  - @backstage/backend-common@0.4.2
+  - @backstage/integration@0.1.5
+
 ## 0.3.1
 
 ### Patch Changes

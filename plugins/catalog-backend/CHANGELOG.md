@@ -1,5 +1,111 @@
 # @backstage/plugin-catalog-backend
 
+## 0.6.0
+
+### Minor Changes
+
+- 3149bfe63: Make use of the `resolveUrl` facility of the `integration` package.
+
+  Also rename the `LocationRefProcessor` to `LocationEntityProcessor`, to match the file name. This constitutes an interface change since the class is exported, but it is unlikely to be consumed outside of the package since it sits comfortably with the other default processors inside the catalog builder.
+
+### Patch Changes
+
+- 24e47ef1e: Throw `NotAllowedError` when registering locations with entities of disallowed kinds
+- Updated dependencies [c4abcdb60]
+- Updated dependencies [2430ee7c2]
+- Updated dependencies [6e612ce25]
+- Updated dependencies [025e122c3]
+- Updated dependencies [064c513e1]
+- Updated dependencies [7881f2117]
+- Updated dependencies [3149bfe63]
+- Updated dependencies [2e62aea6f]
+- Updated dependencies [11cb5ef94]
+  - @backstage/integration@0.3.2
+  - @backstage/backend-common@0.5.2
+  - @backstage/catalog-model@0.7.1
+
+## 0.5.5
+
+### Patch Changes
+
+- 9dd057662: Upgrade [git-url-parse](https://www.npmjs.com/package/git-url-parse) to [v11.4.4](https://github.com/IonicaBizau/git-url-parse/pull/125) which fixes parsing an Azure DevOps branch ref.
+- a91aa6bf2: Support supplying a custom catalog descriptor file parser
+- Updated dependencies [26a3a6cf0]
+- Updated dependencies [664dd08c9]
+- Updated dependencies [9dd057662]
+  - @backstage/backend-common@0.5.1
+
+## 0.5.4
+
+### Patch Changes
+
+- def2307f3: Adds a `backstage.io/managed-by-origin-location` annotation to all entities. It links to the
+  location that was registered to the catalog and which emitted this entity. It has a different
+  semantic than the existing `backstage.io/managed-by-location` annotation, which tells the direct
+  parent location that created this entity.
+
+  Consider this example: The Backstage operator adds a location of type `github-org` in the
+  `app-config.yaml`. This setting will be added to a `bootstrap:boostrap` location. The processor
+  discovers the entities in the following branch
+  `Location bootstrap:bootstrap -> Location github-org:… -> User xyz`. The user `xyz` will be:
+
+  ```yaml
+  apiVersion: backstage.io/v1alpha1
+  kind: User
+  metadata:
+    name: xyz
+    annotations:
+      # This entity was added by the 'github-org:…' location
+      backstage.io/managed-by-location: github-org:…
+      # The entity was added because the 'bootstrap:boostrap' was added to the catalog
+      backstage.io/managed-by-origin-location: bootstrap:bootstrap
+      # ...
+  spec:
+    # ...
+  ```
+
+- 318a6af9f: Change AWS Account type from Component to Resource
+- ac7be581a: Refuse to remove the bootstrap location
+- ad838c02f: Reduce log noise on locations refresh
+- f9ba00a1c: Update the @azure/msal-node dependency to 1.0.0-beta.3.
+- Updated dependencies [def2307f3]
+- Updated dependencies [0b135e7e0]
+- Updated dependencies [294a70cab]
+- Updated dependencies [0ea032763]
+- Updated dependencies [5345a1f98]
+- Updated dependencies [09a370426]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/backend-common@0.5.0
+
+## 0.5.3
+
+### Patch Changes
+
+- 94fdf4955: Get rid of all usages of @octokit/types, and bump the rest of the octokit dependencies to the latest version
+- ade6b3bdf: AWS SDK version bump for Catalog Backend.
+- abbee6fff: Implement System, Domain and Resource entity kinds.
+- 147fadcb9: Add subcomponentOf to Component kind to represent subsystems of larger components.
+- Updated dependencies [f3b064e1c]
+- Updated dependencies [abbee6fff]
+- Updated dependencies [147fadcb9]
+  - @backstage/catalog-model@0.6.1
+  - @backstage/backend-common@0.4.3
+
+## 0.5.2
+
+### Patch Changes
+
+- 99be3057c: Fixed a bug where the catalog would read back all entities when adding a location that already exists.
+- 49d2016a4: Change `location_update_log` columns from `nvarchar(255)` to `text`
+- 73e75ea0a: Add processor for ingesting AWS accounts from AWS Organizations
+- 071711d70: Remove `sqlite3` as a dependency. You may need to add `sqlite3` as a dependency of your backend if you were relying on this indirect dependency.
+- Updated dependencies [5ecd50f8a]
+- Updated dependencies [00042e73c]
+- Updated dependencies [0829ff126]
+- Updated dependencies [036a84373]
+  - @backstage/backend-common@0.4.2
+
 ## 0.5.1
 
 ### Patch Changes
@@ -40,7 +146,7 @@
 
 ### Patch Changes
 
-- c6eeefa35: Add support for Github Enterprise in GitHubOrgReaderProcessor so you can properly ingest users of a GHE organization.
+- c6eeefa35: Add support for GitHub Enterprise in GitHubOrgReaderProcessor so you can properly ingest users of a GHE organization.
 - fb386b760: Break the refresh loop into several smaller transactions
 - 7c3ffc0cd: Support `profile` of groups including `displayName`, `email`, and `picture` in
   `LdapOrgReaderProcessor`. The source fields for them can be configured in the

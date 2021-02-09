@@ -137,6 +137,22 @@ describe('CommonDatabase', () => {
     await expect(db.location(location.id)).rejects.toThrow(/Found no location/);
   });
 
+  it('refuses to remove the bootstrap location', async () => {
+    const input: Location = {
+      id: 'dd12620d-0436-422f-93bd-929aa0788123',
+      type: 'bootstrap',
+      target: 'bootstrap',
+    };
+
+    const output = await db.transaction(
+      async tx => await db.addLocation(tx, input),
+    );
+
+    await expect(
+      db.transaction(async tx => await db.removeLocation(tx, output.id)),
+    ).rejects.toThrow(ConflictError);
+  });
+
   describe('addEntities', () => {
     it('happy path: adds entities to empty database', async () => {
       const result = await db.transaction(tx =>

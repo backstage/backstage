@@ -21,9 +21,11 @@ import { Route, Routes } from 'react-router';
 import { withLogCollector } from '@backstage/test-utils-core';
 import {
   useApi,
+  useRouteRef,
   errorApiRef,
   ApiProvider,
   ApiRegistry,
+  createRouteRef,
 } from '@backstage/core-api';
 import { MockErrorApi } from './apis';
 
@@ -112,5 +114,30 @@ describe('wrapInTestApp', () => {
 
     expect(rendered.getByText('foo')).toBeInTheDocument();
     expect(mockErrorApi.getErrors()).toEqual([{ error: new Error('NOPE') }]);
+  });
+
+  it('should allow route refs to be mounted on specific paths', async () => {
+    const aRouteRef = createRouteRef({ title: 'A' });
+    const bRouteRef = createRouteRef({ title: 'B', params: ['name'] });
+
+    const MyComponent = () => {
+      const a = useRouteRef(aRouteRef);
+      const b = useRouteRef(bRouteRef);
+      return (
+        <div>
+          <div>Link A: {a()}</div>
+          <div>Link B: {b({ name: 'x' })}</div>
+        </div>
+      );
+    };
+
+    const rendered = await renderInTestApp(<MyComponent />, {
+      mountedRoutes: {
+        '/my-a-path': aRouteRef,
+        '/my-b-path/:name': bRouteRef,
+      },
+    });
+    expect(rendered.getByText('Link A: /my-a-path')).toBeInTheDocument();
+    expect(rendered.getByText('Link B: /my-b-path/x')).toBeInTheDocument();
   });
 });

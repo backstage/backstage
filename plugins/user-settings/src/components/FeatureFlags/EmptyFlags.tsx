@@ -21,7 +21,7 @@ import { Button, Typography } from '@material-ui/core';
 const EXAMPLE = `import { createPlugin } from '@backstage/core';
 
 export default createPlugin({
-  id: 'welcome',
+  id: 'plugin-name',
   register({ router, featureFlags }) {
     featureFlags.register('enable-example-feature');
   },
@@ -32,11 +32,11 @@ export const EmptyFlags = () => (
   <EmptyState
     missing="content"
     title="No Feature Flags"
-    description="Feature Flags makes it possible for plugins to register features in Backstage for users to opt into. You      can use this to split out logic in your code for manual A/B testing, etc."
+    description="Feature Flags make it possible for plugins to register features in Backstage for users to opt into. You can use this to split out logic in your code for manual A/B testing, etc."
     action={
       <>
         <Typography variant="body1">
-          An example how how to add a feature flags is highlighted below:
+          An example for how to add a feature flag is highlighted below:
         </Typography>
         <CodeSnippet
           text={EXAMPLE}

@@ -82,6 +82,8 @@ const siteConfig = {
     'https://buttons.github.io/buttons.js',
     'https://unpkg.com/medium-zoom@1.0.6/dist/medium-zoom.min.js',
     '/js/medium-zoom.js',
+    '/js/dismissable-banner.js',
+    '/js/scroll-nav-to-view-in-docs.js',
   ],
 
   // On page navigation for the current documentation page.

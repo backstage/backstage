@@ -58,14 +58,22 @@ export async function createRouter({
     const { '0': path } = req.params;
     const entityName = getEntityNameFromUrlPath(path);
 
-    publisher
-      .fetchTechDocsMetadata(entityName)
-      .then(techdocsMetadataJson => {
-        res.send(techdocsMetadataJson);
-      })
-      .catch(reason => {
-        res.status(500).send(`Unable to get Metadata. Reason: ${reason}`);
-      });
+    try {
+      const techdocsMetadata = await publisher.fetchTechDocsMetadata(
+        entityName,
+      );
+
+      res.send(techdocsMetadata);
+    } catch (err) {
+      logger.error(
+        `Unable to get metadata for ${entityName.namespace}/${entityName.name} with error ${err}`,
+      );
+      res
+        .status(500)
+        .send(
+          `Unable to get metadata for $${entityName.namespace}/${entityName.name}, reason: ${err}`,
+        );
+    }
   });
 
   router.get('/metadata/entity/:namespace/:kind/:name', async (req, res) => {
@@ -94,7 +102,9 @@ export async function createRouter({
 
   router.get('/docs/:namespace/:kind/:name/*', async (req, res) => {
     const { kind, namespace, name } = req.params;
-    const storageUrl = config.getString('techdocs.storageUrl');
+    const storageUrl =
+      config.getOptionalString('techdocs.storageUrl') ??
+      `${await discovery.getBaseUrl('techdocs')}/static/docs`;
 
     const catalogUrl = await discovery.getBaseUrl('catalog');
     const triple = [kind, namespace, name].map(encodeURIComponent).join('/');
@@ -140,6 +150,7 @@ export async function createRouter({
           }
           break;
         case 'awsS3':
+        case 'azureBlobStorage':
         case 'googleGcs':
           // This block should be valid for all external storage implementations. So no need to duplicate in future,
           // add the publisher type in the list here.

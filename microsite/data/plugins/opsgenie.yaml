@@ -1,0 +1,13 @@
+---
+title: Opsgenie
+author: K-Phoen
+authorUrl: https://github.com/K-Phoen
+category: Monitoring
+description: Opsgenie offers a simple way to associate alerts to components and vizualize incidents.
+documentation: https://github.com/K-Phoen/backstage-plugin-opsgenie/
+iconUrl: https://avatars.githubusercontent.com/u/1818843?s=200&v=4
+npmPackageName: '@k-phoen/backstage-plugin-opsgenie'
+tags:
+  - monitoring
+  - errors
+  - alerting

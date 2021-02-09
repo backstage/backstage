@@ -35,9 +35,10 @@ async function main() {
   const octokit = new Octokit({ auth: GITHUB_TOKEN });
 
   const date = new Date();
-  const baseTagName = `release-${date.getUTCFullYear()}-${
-    date.getUTCMonth() + 1
-  }-${date.getUTCDate()}`;
+  const yyyy = date.getUTCFullYear();
+  const mm = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const dd = String(date.getUTCDate()).padStart(2, '0');
+  const baseTagName = `release-${yyyy}-${mm}-${dd}`;
 
   console.log('Requesting existing tags');
 

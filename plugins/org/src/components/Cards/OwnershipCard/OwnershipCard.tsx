@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { InfoCard, useApi, Progress } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
-import { catalogApiRef } from '@backstage/plugin-catalog';
-import { useAsync } from 'react-use';
-import Alert from '@material-ui/lab/Alert';
+import { InfoCard, Progress, useApi } from '@backstage/core';
+import {
+  catalogApiRef,
+  isOwnerOf,
+  useEntity,
+} from '@backstage/plugin-catalog-react';
+import { pageTheme } from '@backstage/theme';
 import {
   Box,
   createStyles,
@@ -28,8 +30,9 @@ import {
   Theme,
   Typography,
 } from '@material-ui/core';
-import { pageTheme } from '@backstage/theme';
-import { isOwnerOf } from '../../isOwnerOf';
+import Alert from '@material-ui/lab/Alert';
+import React from 'react';
+import { useAsync } from 'react-use';
 
 type EntitiesKinds = 'Component' | 'API';
 type EntitiesTypes =
@@ -114,12 +117,13 @@ const EntityCountTile = ({
 };
 
 export const OwnershipCard = ({
-  entity,
   variant,
 }: {
-  entity: Entity;
+  /** @deprecated The entity is now grabbed from context instead */
+  entity?: Entity;
   variant: string;
 }) => {
+  const { entity } = useEntity();
   const catalogApi = useApi(catalogApiRef);
   const {
     loading,

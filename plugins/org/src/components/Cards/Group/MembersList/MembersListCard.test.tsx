@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
+import { Entity, GroupEntity } from '@backstage/catalog-model';
+import { ApiProvider, ApiRegistry } from '@backstage/core';
+import {
+  CatalogApi,
+  catalogApiRef,
+  EntityProvider,
+} from '@backstage/plugin-catalog-react';
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import React from 'react';
-import { ApiProvider, ApiRegistry } from '@backstage/core';
-import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog';
-import { Entity, GroupEntity } from '@backstage/catalog-model';
 import { MembersListCard } from './MembersListCard';
 
 describe('MemberTab Test', () => {
@@ -78,7 +82,10 @@ describe('MemberTab Test', () => {
     const rendered = await renderWithEffects(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <MembersListCard entity={groupEntity} />
+          <EntityProvider entity={groupEntity}>
+            <MembersListCard />
+          </EntityProvider>
+          ,
         </ApiProvider>,
       ),
     );

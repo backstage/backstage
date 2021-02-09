@@ -86,7 +86,8 @@ to a `guest` identity for all users, without any ID token. To enable sign-in, a
 `SignInPage` needs to be configured, which in turn has to supply a user to the
 app. The `@backstage/core` package provides a basic sign-in page that allows
 both the user and the app developer to choose between a couple of different
-sign-in methods.
+sign-in methods, or to designate a single provider that may also be logged in to
+automatically.
 
 ## Further Reading
 

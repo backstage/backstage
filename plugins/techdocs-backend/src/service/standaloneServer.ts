@@ -17,6 +17,7 @@
 import {
   createServiceBuilder,
   SingleHostDiscovery,
+  UrlReader,
 } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
@@ -49,10 +50,19 @@ export async function startStandaloneServer(
     },
   });
   const discovery = SingleHostDiscovery.fromConfig(config);
+  const mockUrlReader: jest.Mocked<UrlReader> = {
+    read: jest.fn(),
+    readTree: jest.fn(),
+    search: jest.fn(),
+  };
 
   logger.debug('Creating application...');
   const preparers = new Preparers();
-  const directoryPreparer = new DirectoryPreparer(config, logger);
+  const directoryPreparer = new DirectoryPreparer(
+    config,
+    logger,
+    mockUrlReader,
+  );
   preparers.register('dir', directoryPreparer);
 
   const generators = new Generators();

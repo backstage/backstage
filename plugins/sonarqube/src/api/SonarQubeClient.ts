@@ -43,6 +43,13 @@ export class SonarQubeClient implements SonarQubeApi {
     return undefined;
   }
 
+  private async getSupportedMetrics(): Promise<string[]> {
+    const result = await this.callApi<{ metrics: Array<{ key: string }> }>(
+      'metrics/search',
+    );
+    return result?.metrics?.map(m => m.key) ?? [];
+  }
+
   async getFindingSummary(
     componentKey?: string,
   ): Promise<FindingSummary | undefined> {
@@ -63,16 +70,24 @@ export class SonarQubeClient implements SonarQubeApi {
       reliability_rating: undefined,
       vulnerabilities: undefined,
       security_rating: undefined,
+      security_hotspots_reviewed: undefined,
+      security_review_rating: undefined,
       code_smells: undefined,
       sqale_rating: undefined,
       coverage: undefined,
       duplicated_lines_density: undefined,
     };
 
+    // select the metrics that are supported by the SonarQube instance
+    const supportedMetrics = await this.getSupportedMetrics();
+    const metricKeys = Object.keys(metrics).filter(m =>
+      supportedMetrics.includes(m),
+    );
+
     const measures = await this.callApi<MeasuresWrapper>(
-      `measures/search?projectKeys=${componentKey}&metricKeys=${Object.keys(
-        metrics,
-      ).join(',')}`,
+      `measures/search?projectKeys=${componentKey}&metricKeys=${metricKeys.join(
+        ',',
+      )}`,
     );
     if (!measures) {
       return undefined;
@@ -92,10 +107,12 @@ export class SonarQubeClient implements SonarQubeApi {
         `${
           this.baseUrl
         }project/issues?id=${componentKey}&types=${identifier.toUpperCase()}&resolved=false`,
-      getComponentMeasuresUrl: (identifier: string) =>
+      getComponentMeasuresUrl: identifier =>
         `${
           this.baseUrl
         }component_measures?id=${componentKey}&metric=${identifier.toLowerCase()}&resolved=false&view=list`,
+      getSecurityHotspotsUrl: () =>
+        `${this.baseUrl}project/security_hotspots?id=${componentKey}`,
     };
   }
 }

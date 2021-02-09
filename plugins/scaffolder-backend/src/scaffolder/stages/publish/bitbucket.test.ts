@@ -16,6 +16,8 @@
 
 jest.mock('./helpers');
 
+import os from 'os';
+import { resolve } from 'path';
 import { BitbucketPublisher } from './bitbucket';
 import { initRepoAndPush } from './helpers';
 import { getVoidLogger } from '@backstage/backend-common';
@@ -31,6 +33,9 @@ describe('Bitbucket Publisher', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
+
+  const workspacePath = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
+  const resultPath = resolve(workspacePath, 'result');
 
   describe('publish: createRemoteInBitbucketCloud', () => {
     it('should create repo in bitbucket cloud', async () => {
@@ -58,18 +63,21 @@ describe('Bitbucket Publisher', () => {
         ),
       );
 
-      const publisher = new BitbucketPublisher(
-        'https://bitbucket.org',
-        'fake-user',
-        'fake-token',
+      const publisher = await BitbucketPublisher.fromConfig(
+        {
+          host: 'bitbucket.org',
+          username: 'fake-user',
+          appPassword: 'fake-token',
+        },
+        { repoVisibility: 'private' },
       );
 
       const result = await publisher.publish({
         values: {
-          storePath: 'project/repo',
+          storePath: 'https://bitbucket.org/project/repo',
           owner: 'bob',
         },
-        directory: '/tmp/test',
+        workspacePath,
         logger: logger,
       });
 
@@ -80,13 +88,14 @@ describe('Bitbucket Publisher', () => {
       });
 
       expect(initRepoAndPush).toHaveBeenCalledWith({
-        dir: '/tmp/test',
+        dir: resultPath,
         remoteUrl: 'https://bitbucket.org/project/repo',
         auth: { username: 'fake-user', password: 'fake-token' },
         logger: logger,
       });
     });
   });
+
   describe('publish: createRemoteInBitbucketServer', () => {
     it('should create repo in bitbucket server', async () => {
       server.use(
@@ -116,18 +125,20 @@ describe('Bitbucket Publisher', () => {
         ),
       );
 
-      const publisher = new BitbucketPublisher(
-        'https://bitbucket.mycompany.com',
-        'fake-user',
-        'fake-token',
+      const publisher = await BitbucketPublisher.fromConfig(
+        {
+          host: 'bitbucket.mycompany.com',
+          token: 'fake-token',
+        },
+        { repoVisibility: 'private' },
       );
 
       const result = await publisher.publish({
         values: {
-          storePath: 'project/repo',
+          storePath: 'https://bitbucket.mycompany.com/project/repo',
           owner: 'bob',
         },
-        directory: '/tmp/test',
+        workspacePath,
         logger: logger,
       });
 
@@ -138,9 +149,9 @@ describe('Bitbucket Publisher', () => {
       });
 
       expect(initRepoAndPush).toHaveBeenCalledWith({
-        dir: '/tmp/test',
+        dir: resultPath,
         remoteUrl: 'https://bitbucket.mycompany.com/scm/project/repo',
-        auth: { username: 'fake-user', password: 'fake-token' },
+        auth: { username: 'x-token-auth', password: 'fake-token' },
         logger: logger,
       });
     });

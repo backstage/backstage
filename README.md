@@ -10,10 +10,6 @@
 [![Codecov](https://img.shields.io/codecov/c/github/backstage/backstage)](https://codecov.io/gh/backstage/backstage)
 [![](https://img.shields.io/npm/v/@backstage/core?label=Version)](https://github.com/backstage/backstage/releases)
 
-> We recently moved from `spotify/backstage`, update your remotes!
->
-> `git remote set-url origin git@github.com:backstage/backstage.git`
-
 ## What is Backstage?
 
 [Backstage](https://backstage.io/) is an open platform for building developer portals. Powered by a centralized service catalog, Backstage restores order to your microservices and infrastructure and enables your product teams to ship high-quality code quickly — without compromising autonomy.
@@ -43,7 +39,7 @@ Check out [the documentation](https://backstage.io/docs/getting-started) on how 
 
 - [Main documentation](https://backstage.io/docs)
 - [Service Catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview)
-- [Architecture](https://backstage.io/docs/overview/architecture-terminology) ([Decisions](https://backstage.io/docs/architecture-decisions/adrs-overview))
+- [Architecture](https://backstage.io/docs/overview/architecture-overview) ([Decisions](https://backstage.io/docs/architecture-decisions/adrs-overview))
 - [Designing for Backstage](https://backstage.io/docs/dls/design)
 - [Storybook - UI components](https://backstage.io/storybook)
 
@@ -61,6 +57,6 @@ Check out [the documentation](https://backstage.io/docs/getting-started) on how 
 
 ## License
 
-Copyright 2020 © Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage
+Copyright 2020-2021 © Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage
 
 Licensed under the Apache License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0

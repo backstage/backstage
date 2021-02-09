@@ -20,12 +20,14 @@ export {
 } from './constants';
 export type {
   Entity,
+  EntityLink,
   EntityMeta,
   EntityRelation,
   EntityRelationSpec,
 } from './Entity';
 export * from './policies';
 export {
+  compareEntityToRef,
   getEntityName,
   parseEntityName,
   parseEntityRef,

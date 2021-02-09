@@ -18,17 +18,6 @@ export interface Config {
   /** Configuration options for the techdocs plugin */
   techdocs: {
     /**
-     * attr: 'requestUrl' - accepts a string value
-     * e.g. requestUrl: http://localhost:7000/api/techdocs
-     * @visibility frontend
-     */
-    requestUrl: string;
-    /**
-     * attr: 'storageUrl' - accepts a string value
-     * e.g. storageUrl: http://localhost:7000/api/techdocs/static/docs
-     */
-    storageUrl: string;
-    /**
      * documentation building process depends on the builder attr
      * attr: 'builder' - accepts a string value
      * e.g. builder: 'local'
@@ -78,10 +67,13 @@ export interface Config {
            */
           awsS3?: {
             /**
-             * Credentials used to access a storage bucket
+             * (Optional) Credentials used to access a storage bucket.
+             * If not set, environment variables or aws config file will be used to authenticate.
+             * https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-environment.html
+             * https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-shared.html
              * @visibility secret
              */
-            credentials: {
+            credentials?: {
               /**
                * User access key id
                * attr: 'accessKeyId' - accepts a string value
@@ -96,17 +88,60 @@ export interface Config {
               secretAccessKey: string;
             };
             /**
-             * Cloud Storage Bucket Name
+             * (Required) Cloud Storage Bucket Name
              * attr: 'bucketName' - accepts a string value
-             * @visibility secret
+             * @visibility backend
              */
             bucketName: string;
             /**
-             * AWS Region
+             * (Optional) AWS Region.
+             * If not set, AWS_REGION environment variable or aws config file will be used.
+             * https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-region.html
              * attr: 'region' - accepts a string value
              * @visibility secret
              */
             region?: string;
+          };
+        }
+      | {
+          /**
+           * attr: 'type' - accepts a string value
+           * e.g. type: 'azureBlobStorage'
+           * alternatives: 'azureBlobStorage' etc.
+           * @see http://backstage.io/docs/features/techdocs/configuration
+           */
+          type: 'azureBlobStorage';
+
+          /**
+           * azureBlobStorage required when 'type' is set to azureBlobStorage
+           */
+          azureBlobStorage?: {
+            /**
+             * (Required) Credentials used to access a storage container.
+             * @visibility secret
+             */
+            credentials: {
+              /**
+               * Account access name
+               * attr: 'account' - accepts a string value
+               * @visibility secret
+               */
+              accountName: string;
+              /**
+               * (Optional) Account secret primary key
+               * If not set, environment variables will be used to authenticate.
+               * https://docs.microsoft.com/en-us/azure/storage/common/storage-auth?toc=/azure/storage/blobs/toc.json
+               * attr: 'accountKey' - accepts a string value
+               * @visibility secret
+               */
+              accountKey?: string;
+            };
+            /**
+             * (Required) Cloud Storage Container Name
+             * attr: 'containerName' - accepts a string value
+             * @visibility backend
+             */
+            containerName: string;
           };
         }
       | {
@@ -123,24 +158,33 @@ export interface Config {
            */
           googleGcs?: {
             /**
-             * API key used to write to a storage bucket.
+             * (Required) Cloud Storage Bucket Name
+             * attr: 'bucketName' - accepts a string value
+             * @visibility backend
+             */
+            bucketName: string;
+            /**
+             * (Optional) API key used to write to a storage bucket.
+             * If not set, environment variables will be used to authenticate.
+             * Read more: https://cloud.google.com/docs/authentication/production
              * attr: 'credentials' - accepts a string value
              * @visibility secret
              */
-            credentials: string;
-            /**
-             * GCP Project ID where the Cloud Storage Bucket is hosted.
-             * attr: 'projectId' - accepts a string value
-             * @visibility secret
-             */
-            projectId: string;
-            /**
-             * Cloud Storage Bucket Name
-             * attr: 'bucketName' - accepts a string value
-             * @visibility secret
-             */
-            bucketName: string;
+            credentials?: string;
           };
         };
+    /**
+     * attr: 'requestUrl' - accepts a string value
+     * e.g. requestUrl: http://localhost:7000/api/techdocs
+     * @visibility frontend
+     * @deprecated
+     */
+    requestUrl?: string;
+    /**
+     * attr: 'storageUrl' - accepts a string value
+     * e.g. storageUrl: http://localhost:7000/api/techdocs/static/docs
+     * @deprecated
+     */
+    storageUrl?: string;
   };
 }

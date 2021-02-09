@@ -1,5 +1,69 @@
 # @backstage/plugin-auth-backend
 
+## 0.2.12
+
+### Patch Changes
+
+- d7b1d317f: Fixed serialization issue with caching of public keys in AWS ALB auth provider
+- 39b05b9ae: Use .text instead of .json for ALB key response
+- 4eaa06057: Fix AWS ALB issuer check
+- Updated dependencies [26a3a6cf0]
+- Updated dependencies [664dd08c9]
+- Updated dependencies [9dd057662]
+  - @backstage/backend-common@0.5.1
+
+## 0.2.11
+
+### Patch Changes
+
+- 0643a3336: Add AWS ALB OIDC reverse proxy authentication provider
+- a2291d7cc: Optional identity token authorization of api requests
+- Updated dependencies [def2307f3]
+- Updated dependencies [0b135e7e0]
+- Updated dependencies [294a70cab]
+- Updated dependencies [0ea032763]
+- Updated dependencies [5345a1f98]
+- Updated dependencies [09a370426]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/backend-common@0.5.0
+  - @backstage/catalog-client@0.3.5
+
+## 0.2.10
+
+### Patch Changes
+
+- 468579734: Allow blank certificates and support logout URLs in the SAML provider.
+- Updated dependencies [f3b064e1c]
+- Updated dependencies [abbee6fff]
+- Updated dependencies [147fadcb9]
+  - @backstage/catalog-model@0.6.1
+  - @backstage/backend-common@0.4.3
+
+## 0.2.9
+
+### Patch Changes
+
+- 0289a059c: Add support for the majority of the Core configurations for Passport-SAML.
+
+  These configuration keys are supported:
+
+  - entryPoint
+  - issuer
+  - cert
+  - privateKey
+  - decryptionPvk
+  - signatureAlgorithm
+  - digestAlgorithm
+
+  As part of this change, there is also a fix to the redirection behaviour when doing load balancing and HTTPS termination - the application's baseUrl is used to generate the callback URL. For properly configured Backstage installations, no changes are necessary, and the baseUrl is respected.
+
+- Updated dependencies [5ecd50f8a]
+- Updated dependencies [00042e73c]
+- Updated dependencies [0829ff126]
+- Updated dependencies [036a84373]
+  - @backstage/backend-common@0.4.2
+
 ## 0.2.8
 
 ### Patch Changes

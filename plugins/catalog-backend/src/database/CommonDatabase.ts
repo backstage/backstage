@@ -330,15 +330,21 @@ export class CommonDatabase implements Database {
   async removeLocation(txOpaque: Transaction, id: string): Promise<void> {
     const tx = txOpaque as Knex.Transaction<any, any>;
 
+    const locations = await tx<DbLocationsRow>('locations')
+      .where({ id })
+      .select();
+    if (!locations.length) {
+      throw new NotFoundError(`Found no location with ID ${id}`);
+    }
+
+    if (locations[0].type === 'bootstrap') {
+      throw new ConflictError('You may not delete the bootstrap location.');
+    }
+
     await tx<DbEntitiesRow>('entities')
       .where({ location_id: id })
       .update({ location_id: null });
-
-    const result = await tx<DbLocationsRow>('locations').where({ id }).del();
-
-    if (!result) {
-      throw new NotFoundError(`Found no location with ID ${id}`);
-    }
+    await tx<DbLocationsRow>('locations').where({ id }).del();
   }
 
   async location(id: string): Promise<DbLocationsRowWithStatus> {

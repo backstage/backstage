@@ -19,6 +19,7 @@ import {
   Entity,
   RELATION_PROVIDES_API,
 } from '@backstage/catalog-model';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import { EmptyState, InfoCard, Progress } from '@backstage/core';
 import React, { PropsWithChildren } from 'react';
 import { ApisTable } from './ApisTable';
@@ -37,11 +38,13 @@ const ApisCard = ({
 };
 
 type Props = {
-  entity: Entity;
+  /** @deprecated The entity is now grabbed from context instead */
+  entity?: Entity;
   variant?: string;
 };
 
-export const ProvidedApisCard = ({ entity, variant = 'gridItem' }: Props) => {
+export const ProvidedApisCard = ({ variant = 'gridItem' }: Props) => {
+  const { entity } = useEntity();
   const { entities, loading, error } = useRelatedEntities(
     entity,
     RELATION_PROVIDES_API,

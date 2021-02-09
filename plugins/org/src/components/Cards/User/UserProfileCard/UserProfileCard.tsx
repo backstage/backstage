@@ -19,7 +19,7 @@ import {
   UserEntity,
 } from '@backstage/catalog-model';
 import { Avatar, InfoCard } from '@backstage/core';
-import { entityRouteParams } from '@backstage/plugin-catalog';
+import { useEntity, entityRouteParams } from '@backstage/plugin-catalog-react';
 import { Box, Grid, Link, Tooltip, Typography } from '@material-ui/core';
 import EmailIcon from '@material-ui/icons/Email';
 import GroupIcon from '@material-ui/icons/Group';
@@ -60,12 +60,13 @@ const CardTitle = ({ title }: { title?: string }) =>
   ) : null;
 
 export const UserProfileCard = ({
-  entity: user,
   variant,
 }: {
-  entity: UserEntity;
+  /** @deprecated The entity is now grabbed from context instead */
+  entity?: UserEntity;
   variant: string;
 }) => {
+  const user = useEntity().entity as UserEntity;
   const {
     metadata: { name: metaName },
     spec: { profile },

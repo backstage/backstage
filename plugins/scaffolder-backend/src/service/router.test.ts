@@ -16,6 +16,7 @@
 
 const mockAccess = jest.fn();
 jest.doMock('fs-extra', () => ({
+  access: mockAccess,
   promises: {
     access: mockAccess,
   },
@@ -23,9 +24,15 @@ jest.doMock('fs-extra', () => ({
     F_OK: 0,
     W_OK: 1,
   },
+  mkdir: jest.fn(),
+  remove: jest.fn(),
 }));
 
-import { getVoidLogger } from '@backstage/backend-common';
+import {
+  SingleConnectionDatabaseManager,
+  PluginDatabaseManager,
+  getVoidLogger,
+} from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import request from 'supertest';
@@ -39,6 +46,19 @@ const generateEntityClient: any = (template: any) => ({
   findTemplate: () => Promise.resolve(template),
 });
 
+function createDatabase(): PluginDatabaseManager {
+  return SingleConnectionDatabaseManager.fromConfig(
+    new ConfigReader({
+      backend: {
+        database: {
+          client: 'sqlite3',
+          connection: ':memory:',
+        },
+      },
+    }),
+  ).forPlugin('scaffolder');
+}
+
 describe('createRouter - working directory', () => {
   const mockPrepare = jest.fn();
   const mockPreparers = new Preparers();
@@ -47,7 +67,7 @@ describe('createRouter - working directory', () => {
     const mockPreparer = {
       prepare: mockPrepare,
     };
-    mockPreparers.register('azure/api', mockPreparer);
+    mockPreparers.register('dev.azure.com', mockPreparer);
   });
 
   beforeEach(() => {
@@ -65,7 +85,7 @@ describe('createRouter - working directory', () => {
     kind: 'Template',
     metadata: {
       annotations: {
-        'backstage.io/managed-by-location': 'azure/api:dev.azure.com',
+        'backstage.io/managed-by-location': 'url:https://dev.azure.com',
       },
     },
     spec: {
@@ -76,7 +96,6 @@ describe('createRouter - working directory', () => {
   };
 
   const mockedEntityClient = generateEntityClient(template);
-
   it('should throw an error when working directory does not exist or is not writable', async () => {
     mockAccess.mockImplementation(() => {
       throw new Error('access error');
@@ -91,6 +110,7 @@ describe('createRouter - working directory', () => {
         config: new ConfigReader(workDirConfig('/path')),
         dockerClient: new Docker(),
         entityClient: mockedEntityClient,
+        database: createDatabase(),
       }),
     ).rejects.toThrow('access error');
   });
@@ -104,17 +124,23 @@ describe('createRouter - working directory', () => {
       config: new ConfigReader(workDirConfig('/path')),
       dockerClient: new Docker(),
       entityClient: mockedEntityClient,
+      database: createDatabase(),
     });
 
     const app = express().use(router);
-    await request(app).post('/v1/jobs').send({
-      templateName: '',
-      values: {},
-    });
+    await request(app)
+      .post('/v1/jobs')
+      .send({
+        templateName: '',
+        values: {
+          storePath: 'https://github.com/backstage/good',
+        },
+      });
 
-    expect(mockPrepare).toBeCalledWith(expect.anything(), {
+    expect(mockPrepare).toBeCalledWith({
       logger: expect.anything(),
-      workingDirectory: '/path',
+      workspacePath: expect.stringContaining('path'),
+      url: expect.anything(),
     });
   });
 
@@ -127,16 +153,23 @@ describe('createRouter - working directory', () => {
       config: new ConfigReader({}),
       dockerClient: new Docker(),
       entityClient: mockedEntityClient,
+      database: createDatabase(),
     });
 
     const app = express().use(router);
-    await request(app).post('/v1/jobs').send({
-      templateName: '',
-      values: {},
-    });
+    await request(app)
+      .post('/v1/jobs')
+      .send({
+        templateName: '',
+        values: {
+          storePath: 'https://github.com/backstage/goodrepo',
+        },
+      });
 
-    expect(mockPrepare).toBeCalledWith(expect.anything(), {
+    expect(mockPrepare).toBeCalledWith({
       logger: expect.anything(),
+      workspacePath: expect.anything(),
+      url: expect.anything(),
     });
   });
 });
@@ -190,6 +223,7 @@ describe('createRouter', () => {
       config: new ConfigReader({}),
       dockerClient: new Docker(),
       entityClient: generateEntityClient(template),
+      database: createDatabase(),
     });
     app = express().use(router);
   });
@@ -200,10 +234,14 @@ describe('createRouter', () => {
 
   describe('POST /v1/jobs', () => {
     it('rejects template values which do not match the template schema definition', async () => {
-      const response = await request(app).post('/v1/jobs').send({
-        templateName: '',
-        values: {},
-      });
+      const response = await request(app)
+        .post('/v1/jobs')
+        .send({
+          templateName: '',
+          values: {
+            storePath: 'https://github.com/backstage/backstage',
+          },
+        });
 
       expect(response.status).toEqual(400);
     });

@@ -21,16 +21,17 @@ import {
   readGitLabIntegrationConfigs,
 } from '@backstage/integration';
 import fetch from 'cross-fetch';
-import { InputError, NotFoundError } from '../errors';
+import parseGitUrl from 'git-url-parse';
+import { Readable } from 'stream';
+import { NotFoundError, NotModifiedError } from '../errors';
 import { ReadTreeResponseFactory } from './tree';
 import {
   ReaderFactory,
   ReadTreeOptions,
   ReadTreeResponse,
+  SearchResponse,
   UrlReader,
 } from './types';
-import parseGitUri from 'git-url-parse';
-import { Readable } from 'stream';
 
 export class GitlabUrlReader implements UrlReader {
   private readonly treeResponseFactory: ReadTreeResponseFactory;
@@ -39,26 +40,32 @@ export class GitlabUrlReader implements UrlReader {
     const configs = readGitLabIntegrationConfigs(
       config.getOptionalConfigArray('integrations.gitlab') ?? [],
     );
-    return configs.map(options => {
-      const reader = new GitlabUrlReader(options, { treeResponseFactory });
-      const predicate = (url: URL) => url.host === options.host;
+    return configs.map(provider => {
+      const reader = new GitlabUrlReader(provider, { treeResponseFactory });
+      const predicate = (url: URL) => url.host === provider.host;
       return { reader, predicate };
     });
   };
 
   constructor(
-    private readonly options: GitLabIntegrationConfig,
+    private readonly config: GitLabIntegrationConfig,
     deps: { treeResponseFactory: ReadTreeResponseFactory },
   ) {
     this.treeResponseFactory = deps.treeResponseFactory;
+
+    if (!config.apiBaseUrl) {
+      throw new Error(
+        `GitLab integration for '${config.host}' must configure an explicit apiBaseUrl`,
+      );
+    }
   }
 
   async read(url: string): Promise<Buffer> {
-    const builtUrl = await getGitLabFileFetchUrl(url, this.options);
+    const builtUrl = await getGitLabFileFetchUrl(url, this.config);
 
     let response: Response;
     try {
-      response = await fetch(builtUrl, getGitLabRequestOptions(this.options));
+      response = await fetch(builtUrl, getGitLabRequestOptions(this.config));
     } catch (e) {
       throw new Error(`Unable to read ${url}, ${e}`);
     }
@@ -78,45 +85,82 @@ export class GitlabUrlReader implements UrlReader {
     url: string,
     options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
-    const {
-      name: repoName,
-      ref,
-      protocol,
-      resource,
-      full_name,
-      filepath,
-    } = parseGitUri(url);
+    const { ref, full_name, filepath } = parseGitUrl(url);
 
-    if (!ref) {
-      throw new InputError(
-        'GitLab URL must contain a branch to be able to fetch its tree',
-      );
-    }
-
-    const archive = `${protocol}://${resource}/${full_name}/-/archive/${ref}/${repoName}-${ref}.zip`;
-    const response = await fetch(
-      archive,
-      getGitLabRequestOptions(this.options),
+    // Use GitLab API to get the default branch
+    // encodeURIComponent is required for GitLab API
+    // https://docs.gitlab.com/ee/api/README.html#namespaced-path-encoding
+    const projectGitlabResponse = await fetch(
+      new URL(
+        `${this.config.apiBaseUrl}/projects/${encodeURIComponent(full_name)}`,
+      ).toString(),
+      getGitLabRequestOptions(this.config),
     );
-    if (!response.ok) {
-      const msg = `Failed to read tree from ${url}, ${response.status} ${response.statusText}`;
-      if (response.status === 404) {
+    if (!projectGitlabResponse.ok) {
+      const msg = `Failed to read tree from ${url}, ${projectGitlabResponse.status} ${projectGitlabResponse.statusText}`;
+      if (projectGitlabResponse.status === 404) {
         throw new NotFoundError(msg);
       }
       throw new Error(msg);
     }
+    const projectGitlabResponseJson = await projectGitlabResponse.json();
 
-    const path = filepath ? `${repoName}-${ref}/${filepath}/` : '';
+    // ref is an empty string if no branch is set in provided url to readTree.
+    const branch = ref || projectGitlabResponseJson.default_branch;
 
-    return this.treeResponseFactory.fromZipArchive({
-      stream: (response.body as unknown) as Readable,
-      path,
+    // Fetch the latest commit in the provided or default branch to compare against
+    // the provided sha.
+    const branchGitlabResponse = await fetch(
+      new URL(
+        `${this.config.apiBaseUrl}/projects/${encodeURIComponent(
+          full_name,
+        )}/repository/branches/${branch}`,
+      ).toString(),
+      getGitLabRequestOptions(this.config),
+    );
+    if (!branchGitlabResponse.ok) {
+      const message = `Failed to read tree (branch) from ${url}, ${branchGitlabResponse.status} ${branchGitlabResponse.statusText}`;
+      if (branchGitlabResponse.status === 404) {
+        throw new NotFoundError(message);
+      }
+      throw new Error(message);
+    }
+
+    const commitSha = (await branchGitlabResponse.json()).commit.id;
+
+    if (options?.etag && options.etag === commitSha) {
+      throw new NotModifiedError();
+    }
+
+    // https://docs.gitlab.com/ee/api/repositories.html#get-file-archive
+    const archiveGitLabResponse = await fetch(
+      `${this.config.apiBaseUrl}/projects/${encodeURIComponent(
+        full_name,
+      )}/repository/archive.zip?sha=${branch}`,
+      getGitLabRequestOptions(this.config),
+    );
+    if (!archiveGitLabResponse.ok) {
+      const message = `Failed to read tree (archive) from ${url}, ${archiveGitLabResponse.status} ${archiveGitLabResponse.statusText}`;
+      if (archiveGitLabResponse.status === 404) {
+        throw new NotFoundError(message);
+      }
+      throw new Error(message);
+    }
+
+    return await this.treeResponseFactory.fromZipArchive({
+      stream: (archiveGitLabResponse.body as unknown) as Readable,
+      subpath: filepath,
+      etag: commitSha,
       filter: options?.filter,
     });
   }
 
+  async search(): Promise<SearchResponse> {
+    throw new Error('GitlabUrlReader does not implement search');
+  }
+
   toString() {
-    const { host, token } = this.options;
+    const { host, token } = this.config;
     return `gitlab{host=${host},authed=${Boolean(token)}}`;
   }
 }

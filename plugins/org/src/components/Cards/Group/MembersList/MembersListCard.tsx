@@ -20,7 +20,11 @@ import {
   UserEntity,
 } from '@backstage/catalog-model';
 import { Avatar, InfoCard, Progress, useApi } from '@backstage/core';
-import { catalogApiRef, entityRouteParams } from '@backstage/plugin-catalog';
+import {
+  useEntity,
+  catalogApiRef,
+  entityRouteParams,
+} from '@backstage/plugin-catalog-react';
 import {
   Box,
   createStyles,
@@ -102,11 +106,11 @@ const MemberComponent = ({
   );
 };
 
-export const MembersListCard = ({
-  entity: groupEntity,
-}: {
-  entity: GroupEntity;
+export const MembersListCard = (_props: {
+  /** @deprecated The entity is now grabbed from context instead */
+  entity?: GroupEntity;
 }) => {
+  const groupEntity = useEntity().entity as GroupEntity;
   const {
     metadata: { name: groupName },
     spec: { profile },
@@ -125,7 +129,9 @@ export const MembersListCard = ({
       UserEntity
     >).filter(member =>
       member?.relations?.some(
-        r => r.type === RELATION_MEMBER_OF && r.target.name === groupName,
+        r =>
+          r.type === RELATION_MEMBER_OF &&
+          r.target.name.toLowerCase() === groupName.toLowerCase(),
       ),
     );
     return groupMembersList;

@@ -19,11 +19,14 @@ import { Box } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { PropsWithChildren, useContext, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { EntityContext } from '../../hooks/useEntity';
+import {
+  EntityContext,
+  useEntityCompoundName,
+} from '@backstage/plugin-catalog-react';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
 import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
-import { useEntityCompoundName } from '../useEntityCompoundName';
+
 import { Tabbed } from './Tabbed';
 
 const EntityPageTitle = ({

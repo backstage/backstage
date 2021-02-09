@@ -1,5 +1,70 @@
 # @backstage/plugin-kubernetes
 
+## 0.3.8
+
+### Patch Changes
+
+- Updated dependencies [12ece98cd]
+- Updated dependencies [d82246867]
+- Updated dependencies [c810082ae]
+- Updated dependencies [5fa3bdb55]
+- Updated dependencies [6e612ce25]
+- Updated dependencies [025e122c3]
+- Updated dependencies [21e624ba9]
+- Updated dependencies [da9f53c60]
+- Updated dependencies [32c95605f]
+- Updated dependencies [7881f2117]
+- Updated dependencies [54c7d02f7]
+- Updated dependencies [11cb5ef94]
+  - @backstage/core@0.6.0
+  - @backstage/theme@0.2.3
+  - @backstage/catalog-model@0.7.1
+
+## 0.3.7
+
+### Patch Changes
+
+- 681111228: Add AWS auth provider for Kubernetes
+- a6e3b9596: Improve error reporting for plugin misconfiguration.
+- Updated dependencies [681111228]
+  - @backstage/plugin-kubernetes-backend@0.2.6
+
+## 0.3.6
+
+### Patch Changes
+
+- d014185db: Show Kubernetes Service manifests.
+  Show Kubernetes Ingress manifests.
+- Updated dependencies [def2307f3]
+- Updated dependencies [d54857099]
+- Updated dependencies [efd6ef753]
+- Updated dependencies [a187b8ad0]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/plugin-kubernetes-backend@0.2.5
+  - @backstage/core@0.5.0
+
+## 0.3.5
+
+### Patch Changes
+
+- 1fea88fd0: Fixed an issue where assets weren't properly bundled in the published package.
+
+## 0.3.4
+
+### Patch Changes
+
+- 5a9a7e7c2: Revamped Kubernetes UI and added error reporting/detection
+- 3e7c09c84: Minor updates to display of errors
+- Updated dependencies [5a9a7e7c2]
+- Updated dependencies [f3b064e1c]
+- Updated dependencies [265a7ab30]
+- Updated dependencies [abbee6fff]
+- Updated dependencies [147fadcb9]
+  - @backstage/plugin-kubernetes-backend@0.2.4
+  - @backstage/catalog-model@0.6.1
+  - @backstage/core@0.4.4
+
 ## 0.3.3
 
 ### Patch Changes

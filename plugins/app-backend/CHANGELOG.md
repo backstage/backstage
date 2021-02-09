@@ -1,5 +1,40 @@
 # @backstage/plugin-app-backend
 
+## 0.3.6
+
+### Patch Changes
+
+- e9aab60c7: Failures to load the frontend configuration schema now throws an error that includes more context and instructions for how to fix the issue.
+- Updated dependencies [2430ee7c2]
+- Updated dependencies [062df71db]
+- Updated dependencies [e9aab60c7]
+  - @backstage/backend-common@0.5.2
+  - @backstage/config-loader@0.5.1
+
+## 0.3.5
+
+### Patch Changes
+
+- Updated dependencies [26a3a6cf0]
+- Updated dependencies [664dd08c9]
+- Updated dependencies [9dd057662]
+- Updated dependencies [ef7957be4]
+- Updated dependencies [ef7957be4]
+- Updated dependencies [ef7957be4]
+  - @backstage/backend-common@0.5.1
+  - @backstage/config-loader@0.5.0
+
+## 0.3.4
+
+### Patch Changes
+
+- Updated dependencies [0b135e7e0]
+- Updated dependencies [294a70cab]
+- Updated dependencies [0ea032763]
+- Updated dependencies [5345a1f98]
+- Updated dependencies [09a370426]
+  - @backstage/backend-common@0.5.0
+
 ## 0.3.3
 
 ### Patch Changes

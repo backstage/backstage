@@ -24,6 +24,9 @@ import {
   SupportButton,
   ContentHeader,
   RouteRef,
+  useApi,
+  configApiRef,
+  ConfigApi,
 } from '@backstage/core';
 import { RegisterComponentForm } from './ImportComponentForm';
 import ImportStepper from './ImportStepper';
@@ -32,10 +35,32 @@ import { ImportFinished } from './ImportFinished';
 import { PartialEntity } from '../util/types';
 
 export type ConfigSpec = {
-  type: 'repo' | 'file';
+  type: 'tree' | 'file';
   location: string;
   config: PartialEntity[];
 };
+
+function manifestGenerationAvailable(configApi: ConfigApi): boolean {
+  return configApi.has('integrations.github');
+}
+
+function repositories(configApi: ConfigApi): string[] {
+  const integrations = configApi.getConfig('integrations');
+  const repos = [];
+  if (integrations.has('github')) {
+    repos.push('GitHub');
+  }
+  if (integrations.has('bitbucket')) {
+    repos.push('Bitbucket');
+  }
+  if (integrations.has('gitlab')) {
+    repos.push('GitLab');
+  }
+  if (integrations.has('azure')) {
+    repos.push('Azure');
+  }
+  return repos;
+}
 
 export const ImportComponentPage = ({
   catalogRouteRef,
@@ -44,7 +69,7 @@ export const ImportComponentPage = ({
 }) => {
   const [activeStep, setActiveStep] = useState(0);
   const [configFile, setConfigFile] = useState<ConfigSpec>({
-    type: 'repo',
+    type: 'tree',
     location: '',
     config: [],
   });
@@ -53,13 +78,17 @@ export const ImportComponentPage = ({
     setActiveStep(step => (options?.reset ? 0 : step + 1));
   };
 
+  const configApi = useApi(configApiRef);
+  const appTitle = configApi.getOptional('app.title') || 'Backstage';
+  const repos = repositories(configApi);
+  const repositoryString = repos.join(', ').replace(/, (\w*)$/, ' or $1');
   return (
     <Page themeId="home">
       <Header title="Register an existing component" />
       <Content>
-        <ContentHeader title="Start tracking your component in Backstage">
+        <ContentHeader title={`Start tracking your component in ${appTitle}`}>
           <SupportButton>
-            Start tracking your component in Backstage by adding it to the
+            Start tracking your component in {appTitle} by adding it to the
             software catalog.
           </SupportButton>
         </ContentHeader>
@@ -73,21 +102,29 @@ export const ImportComponentPage = ({
               }}
             >
               <Typography variant="body2" paragraph>
-                There are two ways to register an existing component.
+                Ways to register an existing component
               </Typography>
-              <Typography variant="h6">GitHub Repo</Typography>
-              <Typography variant="body2" paragraph>
-                If you already have code in a GitHub repository, enter the full
-                URL to your repo and a new pull request with a sample Backstage
-                metadata Entity File (<code>catalog-info.yaml</code>) will be
-                opened for you.
-              </Typography>
+
+              {manifestGenerationAvailable(configApi) && (
+                <React.Fragment>
+                  <Typography variant="h6">GitHub Repo</Typography>
+                  <Typography variant="body2" paragraph>
+                    If you already have code in a GitHub repository without
+                    Backstage metadata file set up for it, enter the full URL to
+                    your repo and a new pull request with a sample Backstage
+                    metadata Entity File (<code>catalog-info.yaml</code>) will
+                    be opened for you.
+                  </Typography>
+                </React.Fragment>
+              )}
               <Typography variant="h6">
-                GitHub Repo &amp; Entity File
+                {repos.length === 1 ? `${repos[0]} ` : ''} Repository &amp;
+                Entity File
               </Typography>
               <Typography variant="body2" paragraph>
-                If you've already created a Backstage metadata file and put it
-                in your repo, you can enter the full URL to that Entity File.
+                If you've already created a {appTitle} metadata file and put it
+                in your {repositoryString} repository, you can enter the full
+                URL to that Entity File.
               </Typography>
             </InfoCard>
           </Grid>
@@ -96,11 +133,14 @@ export const ImportComponentPage = ({
               <ImportStepper
                 steps={[
                   {
-                    step: 'Insert GitHub repo URL or Entity File URL',
+                    step: manifestGenerationAvailable(configApi)
+                      ? 'Insert GitHub repo URL or Entity File URL'
+                      : 'Insert Entity File URL',
                     content: (
                       <RegisterComponentForm
                         nextStep={nextStep}
                         saveConfig={setConfigFile}
+                        repository={repositoryString}
                       />
                     ),
                   },

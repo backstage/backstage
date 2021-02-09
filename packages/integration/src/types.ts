@@ -15,11 +15,15 @@
  */
 
 import { Config } from '@backstage/config';
+import { AzureIntegration } from './azure/AzureIntegration';
+import { BitbucketIntegration } from './bitbucket/BitbucketIntegration';
+import { GitHubIntegration } from './github/GitHubIntegration';
+import { GitLabIntegration } from './gitlab/GitLabIntegration';
 
 /**
  * Encapsulates a single SCM integration.
  */
-export type ScmIntegration = {
+export interface ScmIntegration {
   /**
    * The type of integration, e.g. "github".
    */
@@ -30,30 +34,64 @@ export type ScmIntegration = {
    * differentiate between different integrations.
    */
   title: string;
-};
+
+  /**
+   * Works like the two-argument form of the URL constructor, resolving an
+   * absolute or relative URL in relation to a base URL.
+   *
+   * If this method is not implemented, the URL constructor is used instead for
+   * URLs that match this integration.
+   *
+   * @param options.url The (absolute or relative) URL or path to resolve
+   * @param options.base The base URL onto which this resolution happens
+   */
+  resolveUrl?(options: { url: string; base: string }): string;
+}
 
 /**
- * Holds all registered SCM integrations.
+ * Encapsulates several integrations, that are all of the same type.
  */
-export type ScmIntegrationRegistry = {
+export interface ScmIntegrationsGroup<T extends ScmIntegration> {
   /**
-   * Lists all registered integrations.
+   * Lists all registered integrations of this type.
    */
-  list(): ScmIntegration[];
+  list(): T[];
 
   /**
-   * Fetches an integration by URL.
+   * Fetches an integration of this type by URL.
    *
-   * @param url A URL that matches a registered integration
+   * @param url A URL that matches a registered integration of this type
    */
-  byUrl(url: string): ScmIntegration | undefined;
-};
+  byUrl(url: string | URL): T | undefined;
 
-export type ScmIntegrationPredicateTuple = {
-  predicate: (url: URL) => boolean;
-  integration: ScmIntegration;
-};
+  /**
+   * Fetches an integration of this type by host name.
+   *
+   * @param url A host name that matches a registered integration of this type
+   */
+  byHost(host: string): T | undefined;
+}
 
-export type ScmIntegrationFactory = (options: {
+/**
+ * Holds all registered SCM integrations, of all types.
+ */
+export interface ScmIntegrationRegistry
+  extends ScmIntegrationsGroup<ScmIntegration> {
+  azure: ScmIntegrationsGroup<AzureIntegration>;
+  bitbucket: ScmIntegrationsGroup<BitbucketIntegration>;
+  github: ScmIntegrationsGroup<GitHubIntegration>;
+  gitlab: ScmIntegrationsGroup<GitLabIntegration>;
+
+  /**
+   * Works like the two-argument form of the URL constructor, resolving an
+   * absolute or relative URL in relation to a base URL.
+   *
+   * @param options.url The (absolute or relative) URL or path to resolve
+   * @param options.base The base URL onto which this resolution happens
+   */
+  resolveUrl(options: { url: string; base: string }): string;
+}
+
+export type ScmIntegrationsFactory<T extends ScmIntegration> = (options: {
   config: Config;
-}) => ScmIntegrationPredicateTuple[];
+}) => ScmIntegrationsGroup<T>;

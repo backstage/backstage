@@ -15,6 +15,7 @@
  */
 
 import { runPlain } from '../../lib/run';
+import { NotFoundError } from '../errors';
 
 const PREFIX = '@backstage';
 
@@ -49,6 +50,11 @@ export async function fetchPackageInfo(
   name: string,
 ): Promise<YarnInfoInspectData> {
   const output = await runPlain('yarn', 'info', '--json', name);
+
+  if (!output) {
+    throw new NotFoundError(`No package information found for package ${name}`);
+  }
+
   const info = JSON.parse(output) as YarnInfo;
   if (info.type !== 'inspect') {
     throw new Error(`Received unknown yarn info for ${name}, ${output}`);

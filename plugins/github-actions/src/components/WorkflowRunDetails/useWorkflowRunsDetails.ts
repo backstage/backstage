@@ -13,20 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useApi, githubAuthApiRef } from '@backstage/core';
+import { useApi } from '@backstage/core';
 import { useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { githubActionsApiRef } from '../../api';
 
-export const useWorkflowRunsDetails = (repo: string, owner: string) => {
+export const useWorkflowRunsDetails = ({
+  hostname,
+  owner,
+  repo,
+}: {
+  hostname?: string;
+  owner: string;
+  repo: string;
+}) => {
   const api = useApi(githubActionsApiRef);
-  const auth = useApi(githubAuthApiRef);
   const { id } = useParams();
   const details = useAsync(async () => {
-    const token = await auth.getAccessToken(['repo']);
     return repo && owner
       ? api.getWorkflowRun({
-          token,
+          hostname,
           owner,
           repo,
           id: parseInt(id, 10),

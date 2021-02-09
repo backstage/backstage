@@ -14,27 +14,68 @@
  * limitations under the License.
  */
 
-import { ScmIntegration, ScmIntegrationFactory } from '../types';
+import parseGitUrl from 'git-url-parse';
+import { basicIntegrations } from '../helpers';
+import { ScmIntegration, ScmIntegrationsFactory } from '../types';
 import { AzureIntegrationConfig, readAzureIntegrationConfigs } from './config';
 
 export class AzureIntegration implements ScmIntegration {
-  static factory: ScmIntegrationFactory = ({ config }) => {
+  static factory: ScmIntegrationsFactory<AzureIntegration> = ({ config }) => {
     const configs = readAzureIntegrationConfigs(
       config.getOptionalConfigArray('integrations.azure') ?? [],
     );
-    return configs.map(integration => ({
-      predicate: (url: URL) => url.host === integration.host,
-      integration: new AzureIntegration(integration),
-    }));
+    return basicIntegrations(
+      configs.map(c => new AzureIntegration(c)),
+      i => i.config.host,
+    );
   };
 
-  constructor(private readonly config: AzureIntegrationConfig) {}
+  constructor(private readonly integrationConfig: AzureIntegrationConfig) {}
 
   get type(): string {
     return 'azure';
   }
 
   get title(): string {
-    return this.config.host;
+    return this.integrationConfig.host;
+  }
+
+  get config(): AzureIntegrationConfig {
+    return this.integrationConfig;
+  }
+
+  /*
+   * Azure repo URLs on the form with a `path` query param are treated specially.
+   *
+   * Example base URL: https://dev.azure.com/organization/project/_git/repository?path=%2Fcatalog-info.yaml
+   */
+  resolveUrl(options: { url: string; base: string }): string {
+    const { url, base } = options;
+
+    // If we can parse the url, it is absolute - then return it verbatim
+    try {
+      // eslint-disable-next-line no-new
+      new URL(url);
+      return url;
+    } catch {
+      // Ignore intentionally - looks like a relative path
+    }
+
+    const parsed = parseGitUrl(base);
+    const { organization, owner, name, filepath } = parsed;
+
+    // If not an actual file path within a repo, treat the URL as raw
+    if (!organization || !owner || !name) {
+      return new URL(url, base).toString();
+    }
+
+    const path = filepath?.replace(/^\//, '') || '';
+    const mockBaseUrl = new URL(`https://a.com/${path}`);
+    const updatedPath = new URL(url, mockBaseUrl).pathname;
+
+    const newUrl = new URL(base);
+    newUrl.searchParams.set('path', updatedPath);
+
+    return newUrl.toString();
   }
 }

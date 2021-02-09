@@ -1,4 +1,3 @@
-import { Entity } from './entity';
 /*
  * Copyright 2020 Spotify AB
  *
@@ -15,8 +14,8 @@ import { Entity } from './entity';
  * limitations under the License.
  */
 
+import { Entity, EntityPolicy } from './entity';
 import { EntityPolicies } from './EntityPolicies';
-import { EntityPolicy } from './types';
 
 describe('EntityPolicies', () => {
   const p1: jest.Mocked<EntityPolicy> = { enforce: jest.fn() };

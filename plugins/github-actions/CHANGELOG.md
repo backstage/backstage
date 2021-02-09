@@ -1,10 +1,74 @@
 # @backstage/plugin-github-actions
 
+## 0.3.1
+
+### Patch Changes
+
+- 019fe39a0: Switch dependency from `@backstage/plugin-catalog` to `@backstage/plugin-catalog-react`.
+- Updated dependencies [12ece98cd]
+- Updated dependencies [c4abcdb60]
+- Updated dependencies [d82246867]
+- Updated dependencies [c810082ae]
+- Updated dependencies [5fa3bdb55]
+- Updated dependencies [6e612ce25]
+- Updated dependencies [025e122c3]
+- Updated dependencies [21e624ba9]
+- Updated dependencies [064c513e1]
+- Updated dependencies [da9f53c60]
+- Updated dependencies [32c95605f]
+- Updated dependencies [7881f2117]
+- Updated dependencies [3149bfe63]
+- Updated dependencies [54c7d02f7]
+- Updated dependencies [2e62aea6f]
+- Updated dependencies [11cb5ef94]
+  - @backstage/core@0.6.0
+  - @backstage/integration@0.3.2
+  - @backstage/theme@0.2.3
+  - @backstage/catalog-model@0.7.1
+
+## 0.3.0
+
+### Minor Changes
+
+- 46bba09ea: Support GHE
+
+### Patch Changes
+
+- Updated dependencies [def2307f3]
+- Updated dependencies [efd6ef753]
+- Updated dependencies [0b135e7e0]
+- Updated dependencies [593632f07]
+- Updated dependencies [33846acfc]
+- Updated dependencies [fa8ba330a]
+- Updated dependencies [a187b8ad0]
+- Updated dependencies [ed6baab66]
+- Updated dependencies [f04db53d7]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/core@0.5.0
+  - @backstage/integration@0.3.0
+  - @backstage/plugin-catalog@0.2.12
+
+## 0.2.7
+
+### Patch Changes
+
+- 94fdf4955: Get rid of all usages of @octokit/types, and bump the rest of the octokit dependencies to the latest version
+- a6f9dca0d: Remove dependency on `@backstage/core-api`. No plugin should ever depend on that package; it's an internal concern whose important bits are re-exported by `@backstage/core` which is the public facing dependency to use.
+- Updated dependencies [f3b064e1c]
+- Updated dependencies [c00488983]
+- Updated dependencies [265a7ab30]
+- Updated dependencies [abbee6fff]
+- Updated dependencies [147fadcb9]
+  - @backstage/catalog-model@0.6.1
+  - @backstage/plugin-catalog@0.2.11
+  - @backstage/core@0.4.4
+
 ## 0.2.6
 
 ### Patch Changes
 
-- 19554f6d6: Added Github Actions for Create React App, and allow better imports of files inside a module when they're exposed using `files` in `package.json`
+- 19554f6d6: Added GitHub Actions for Create React App, and allow better imports of files inside a module when they're exposed using `files` in `package.json`
 - Updated dependencies [d681db2b5]
 - Updated dependencies [1dc445e89]
 - Updated dependencies [342270e4d]
@@ -94,7 +158,7 @@
 ### Minor Changes
 
 - 28edd7d29: Create backend plugin through CLI
-- d67c529ab: Adds a widget to show recent git workflow runs to the github actions plugin. The default setting is the last 5 runs across all branches but both branch and the number of runs are configurable.
+- d67c529ab: Adds a widget to show recent git workflow runs to the GitHub actions plugin. The default setting is the last 5 runs across all branches but both branch and the number of runs are configurable.
 - 6d97d2d6f: The InfoCard variant `'height100'` is deprecated. Use variant `'gridItem'` instead.
 
   When the InfoCard is displayed as a grid item within a grid, you may want items to have the same height for all items.

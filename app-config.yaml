@@ -16,6 +16,10 @@ backend:
     credentials: true
   csp:
     connect-src: ["'self'", 'http:', 'https:']
+  reading:
+    allow:
+      - host: example.com
+      - host: '*.mozilla.org'
   # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
 
 # See README.md in the proxy-backend plugin for information on the configuration format
@@ -70,13 +74,11 @@ organization:
 
 # Reference documentation http://backstage.io/docs/features/techdocs/configuration
 techdocs:
-  requestUrl: http://localhost:7000/api/techdocs
-  storageUrl: http://localhost:7000/api/techdocs/static/docs
   builder: 'local' # Alternatives - 'external'
   generators:
     techdocs: 'docker' # Alternatives - 'local'
   publisher:
-    type: 'local' # Alternatives - 'googleGcs' or 'awsS3'. Read documentation for using alternatives.
+    type: 'local' # Alternatives - 'googleGcs' or 'awsS3' or 'azureBlobStorage'. Read documentation for using alternatives.
 
 sentry:
   organization: my-company
@@ -94,6 +96,13 @@ kubernetes:
   clusterLocatorMethods:
     - 'config'
   clusters: []
+
+kafka:
+  clientId: backstage
+  clusters:
+    - name: cluster
+      brokers:
+        - localhost:9092
 
 integrations:
   github:
@@ -127,7 +136,16 @@ integrations:
 
 catalog:
   rules:
-    - allow: [Component, API, Group, User, Template, Location]
+    - allow:
+        - Component
+        - API
+        - Resource
+        - Group
+        - User
+        - Template
+        - System
+        - Domain
+        - Location
 
   processors:
     githubOrg:
@@ -172,24 +190,46 @@ catalog:
       #    groupFilter: securityEnabled eq false and mailEnabled eq true and groupTypes/any(c:c+eq+'Unified')
 
   locations:
+    # Add a location here to ingest it, for example from an URL:
+    #
+    #     - type: url
+    #       target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
+    #
+    # For local development you can use a file location instead:
+    #
+    #     - type: file
+    #       target: ../catalog-model/examples/all-components.yaml
+    #
+    # File locations are relative to the current working directory of the
+    # backend, for example packages/backend/.
+
     # Backstage example components
-    - type: url
-      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
-    # Example component for github-actions
-    - type: url
-      target: https://github.com/backstage/backstage/blob/master/plugins/github-actions/examples/sample.yaml
-    # Example component for techdocs
-    - type: url
-      target: https://github.com/backstage/backstage/blob/master/plugins/techdocs-backend/examples/documented-component/documented-component.yaml
+    - type: file
+      target: ../catalog-model/examples/all-components.yaml
+    # Example component for github-actions and TechDocs
+    - type: file
+      target: ../../plugins/github-actions/examples/sample.yaml
+    # Example component for TechDocs
+    - type: file
+      target: ../../plugins/techdocs-backend/examples/documented-component/catalog-info.yaml
     # Backstage example APIs
-    - type: url
-      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
+    - type: file
+      target: ../catalog-model/examples/all-apis.yaml
+    # Backstage example resources
+    - type: file
+      target: ../catalog-model/examples/all-resources.yaml
+    # Backstage example systems
+    - type: file
+      target: ../catalog-model/examples/all-systems.yaml
+    # Backstage example domains
+    - type: file
+      target: ../catalog-model/examples/all-domains.yaml
     # Backstage example templates
-    - type: url
-      target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/all-templates.yaml
+    - type: file
+      target: ../../plugins/scaffolder-backend/sample-templates/all-templates.yaml
     # Backstage example groups and users
-    - type: url
-      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme-corp.yaml
+    - type: file
+      target: ../catalog-model/examples/acme-corp.yaml
 
 scaffolder:
   github:
@@ -201,6 +241,7 @@ scaffolder:
       baseUrl: https://gitlab.com
       token:
         $env: GITLAB_TOKEN
+    visibility: public # or 'internal' or 'private'
   azure:
     baseUrl: https://dev.azure.com/{your-organization}
     api:
@@ -213,6 +254,8 @@ scaffolder:
         $env: BITBUCKET_USERNAME
       token:
         $env: BITBUCKET_TOKEN
+    visibility: public # or or 'private'
+
 auth:
   environment: development
   ### Providing an auth.session.secret will enable session support in the auth-backend

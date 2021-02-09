@@ -21,27 +21,73 @@ import { GitHubIntegration } from './github/GitHubIntegration';
 import { GitLabIntegration } from './gitlab/GitLabIntegration';
 import {
   ScmIntegration,
-  ScmIntegrationPredicateTuple,
   ScmIntegrationRegistry,
+  ScmIntegrationsGroup,
 } from './types';
 
+type IntegrationsByType = {
+  azure: ScmIntegrationsGroup<AzureIntegration>;
+  bitbucket: ScmIntegrationsGroup<BitbucketIntegration>;
+  github: ScmIntegrationsGroup<GitHubIntegration>;
+  gitlab: ScmIntegrationsGroup<GitLabIntegration>;
+};
+
 export class ScmIntegrations implements ScmIntegrationRegistry {
+  private readonly byType: IntegrationsByType;
+
   static fromConfig(config: Config): ScmIntegrations {
-    return new ScmIntegrations([
-      ...AzureIntegration.factory({ config }),
-      ...BitbucketIntegration.factory({ config }),
-      ...GitHubIntegration.factory({ config }),
-      ...GitLabIntegration.factory({ config }),
-    ]);
+    return new ScmIntegrations({
+      azure: AzureIntegration.factory({ config }),
+      bitbucket: BitbucketIntegration.factory({ config }),
+      github: GitHubIntegration.factory({ config }),
+      gitlab: GitLabIntegration.factory({ config }),
+    });
   }
 
-  constructor(private readonly integrations: ScmIntegrationPredicateTuple[]) {}
+  constructor(integrationsByType: IntegrationsByType) {
+    this.byType = integrationsByType;
+  }
+
+  get azure(): ScmIntegrationsGroup<AzureIntegration> {
+    return this.byType.azure;
+  }
+
+  get bitbucket(): ScmIntegrationsGroup<BitbucketIntegration> {
+    return this.byType.bitbucket;
+  }
+
+  get github(): ScmIntegrationsGroup<GitHubIntegration> {
+    return this.byType.github;
+  }
+
+  get gitlab(): ScmIntegrationsGroup<GitLabIntegration> {
+    return this.byType.gitlab;
+  }
 
   list(): ScmIntegration[] {
-    return this.integrations.map(i => i.integration);
+    return Object.values(this.byType).flatMap(
+      i => i.list() as ScmIntegration[],
+    );
   }
 
-  byUrl(url: string): ScmIntegration | undefined {
-    return this.integrations.find(i => i.predicate(new URL(url)))?.integration;
+  byUrl(url: string | URL): ScmIntegration | undefined {
+    return Object.values(this.byType)
+      .map(i => i.byUrl(url))
+      .find(Boolean);
+  }
+
+  byHost(host: string): ScmIntegration | undefined {
+    return Object.values(this.byType)
+      .map(i => i.byHost(host))
+      .find(Boolean);
+  }
+
+  resolveUrl(options: { url: string; base: string }): string {
+    const resolve = this.byUrl(options.base)?.resolveUrl;
+    if (!resolve) {
+      return new URL(options.url, options.base).toString();
+    }
+
+    return resolve(options);
   }
 }

@@ -15,7 +15,24 @@
  */
 
 import fs from 'fs-extra';
+import path from 'path';
 import { paths } from '../paths';
+
+/**
+ * Checks if dir is the same as or a child of base.
+ */
+export function isChildPath(base: string, dir: string): boolean {
+  const relativePath = path.relative(base, dir);
+  if (relativePath === '') {
+    // The same directory
+    return true;
+  }
+
+  const outsideBase = relativePath.startsWith('..'); // not outside base
+  const differentDrive = path.isAbsolute(relativePath); // on Windows, this means dir is on a different drive from base.
+
+  return !outsideBase && !differentDrive;
+}
 
 export type BundlingPathsOptions = {
   // bundle entrypoint, e.g. 'src/index'
@@ -25,14 +42,14 @@ export type BundlingPathsOptions = {
 export function resolveBundlingPaths(options: BundlingPathsOptions) {
   const { entry } = options;
 
-  const resolveTargetModule = (path: string) => {
+  const resolveTargetModule = (pathString: string) => {
     for (const ext of ['mjs', 'js', 'ts', 'tsx', 'jsx']) {
-      const filePath = paths.resolveTarget(`${path}.${ext}`);
+      const filePath = paths.resolveTarget(`${pathString}.${ext}`);
       if (fs.pathExistsSync(filePath)) {
         return filePath;
       }
     }
-    return paths.resolveTarget(`${path}.js`);
+    return paths.resolveTarget(`${pathString}.js`);
   };
 
   let targetPublic = undefined;

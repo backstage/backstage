@@ -23,14 +23,15 @@ import {
   readBitbucketIntegrationConfigs,
 } from '@backstage/integration';
 import fetch from 'cross-fetch';
-import parseGitUri from 'git-url-parse';
+import parseGitUrl from 'git-url-parse';
 import { Readable } from 'stream';
-import { NotFoundError } from '../errors';
+import { NotFoundError, NotModifiedError } from '../errors';
 import { ReadTreeResponseFactory } from './tree';
 import {
   ReaderFactory,
   ReadTreeOptions,
   ReadTreeResponse,
+  SearchResponse,
   UrlReader,
 } from './types';
 
@@ -101,35 +102,36 @@ export class BitbucketUrlReader implements UrlReader {
     url: string,
     options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
-    const gitUrl: parseGitUri.GitUrl = parseGitUri(url);
-    const { name: repoName, owner: project, resource, filepath } = gitUrl;
+    const { filepath } = parseGitUrl(url);
 
-    const isHosted = resource === 'bitbucket.org';
+    const lastCommitShortHash = await this.getLastCommitShortHash(url);
+    if (options?.etag && options.etag === lastCommitShortHash) {
+      throw new NotModifiedError();
+    }
 
     const downloadUrl = await getBitbucketDownloadUrl(url, this.config);
-    const response = await fetch(
+    const archiveBitbucketResponse = await fetch(
       downloadUrl,
       getBitbucketRequestOptions(this.config),
     );
-    if (!response.ok) {
-      const message = `Failed to read tree from ${url}, ${response.status} ${response.statusText}`;
-      if (response.status === 404) {
+    if (!archiveBitbucketResponse.ok) {
+      const message = `Failed to read tree from ${url}, ${archiveBitbucketResponse.status} ${archiveBitbucketResponse.statusText}`;
+      if (archiveBitbucketResponse.status === 404) {
         throw new NotFoundError(message);
       }
       throw new Error(message);
     }
 
-    let folderPath = `${project}-${repoName}`;
-    if (isHosted) {
-      const lastCommitShortHash = await this.getLastCommitShortHash(url);
-      folderPath = `${project}-${repoName}-${lastCommitShortHash}`;
-    }
-
-    return this.treeResponseFactory.fromZipArchive({
-      stream: (response.body as unknown) as Readable,
-      path: `${folderPath}/${filepath}`,
+    return await this.treeResponseFactory.fromZipArchive({
+      stream: (archiveBitbucketResponse.body as unknown) as Readable,
+      subpath: filepath,
+      etag: lastCommitShortHash,
       filter: options?.filter,
     });
+  }
+
+  async search(): Promise<SearchResponse> {
+    throw new Error('BitbucketUrlReader does not implement search');
   }
 
   toString() {
@@ -141,14 +143,19 @@ export class BitbucketUrlReader implements UrlReader {
     return `bitbucket{host=${host},authed=${authed}}`;
   }
 
-  private async getLastCommitShortHash(url: string): Promise<String> {
-    const { name: repoName, owner: project, ref } = parseGitUri(url);
+  private async getLastCommitShortHash(url: string): Promise<string> {
+    const { resource, name: repoName, owner: project, ref } = parseGitUrl(url);
 
     let branch = ref;
     if (!branch) {
       branch = await getBitbucketDefaultBranch(url, this.config);
     }
-    const commitsApiUrl = `${this.config.apiBaseUrl}/repositories/${project}/${repoName}/commits/${branch}`;
+
+    const isHosted = resource === 'bitbucket.org';
+    // Bitbucket Server https://docs.atlassian.com/bitbucket-server/rest/7.9.0/bitbucket-rest.html#idp222
+    const commitsApiUrl = isHosted
+      ? `${this.config.apiBaseUrl}/repositories/${project}/${repoName}/commits/${branch}`
+      : `${this.config.apiBaseUrl}/projects/${project}/repos/${repoName}/commits`;
 
     const commitsResponse = await fetch(
       commitsApiUrl,
@@ -163,14 +170,26 @@ export class BitbucketUrlReader implements UrlReader {
     }
 
     const commits = await commitsResponse.json();
-    if (
-      commits &&
-      commits.values &&
-      commits.values.length > 0 &&
-      commits.values[0].hash
-    ) {
-      return commits.values[0].hash.substring(0, 12);
+    if (isHosted) {
+      if (
+        commits &&
+        commits.values &&
+        commits.values.length > 0 &&
+        commits.values[0].hash
+      ) {
+        return commits.values[0].hash.substring(0, 12);
+      }
+    } else {
+      if (
+        commits &&
+        commits.values &&
+        commits.values.length > 0 &&
+        commits.values[0].id
+      ) {
+        return commits.values[0].id.substring(0, 12);
+      }
     }
+
     throw new Error(`Failed to read response from ${commitsApiUrl}`);
   }
 }

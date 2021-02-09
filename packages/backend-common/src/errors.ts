@@ -75,3 +75,8 @@ export class NotFoundError extends CustomErrorBase {}
  * resource.
  */
 export class ConflictError extends CustomErrorBase {}
+
+/**
+ * The requested resource has not changed since last request.
+ */
+export class NotModifiedError extends CustomErrorBase {}

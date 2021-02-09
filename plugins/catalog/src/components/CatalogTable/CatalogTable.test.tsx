@@ -50,7 +50,7 @@ describe('CatalogTable component', () => {
       ),
     );
     const errorMessage = await rendered.findByText(
-      /Error encountered while fetching catalog entities./,
+      /Could not fetch catalog entities./,
     );
     expect(errorMessage).toBeInTheDocument();
   });

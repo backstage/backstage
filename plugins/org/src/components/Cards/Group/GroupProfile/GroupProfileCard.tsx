@@ -21,7 +21,7 @@ import {
   RELATION_PARENT_OF,
 } from '@backstage/catalog-model';
 import { Avatar, InfoCard } from '@backstage/core';
-import { entityRouteParams } from '@backstage/plugin-catalog';
+import { useEntity, entityRouteParams } from '@backstage/plugin-catalog-react';
 import { Box, Grid, Link, Tooltip, Typography } from '@material-ui/core';
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import EmailIcon from '@material-ui/icons/Email';
@@ -33,26 +33,29 @@ import { generatePath, Link as RouterLink } from 'react-router-dom';
 const GroupLink = ({
   groupName,
   index = 0,
-  entity,
 }: {
   groupName: string;
   index?: number;
-  entity: Entity;
-}) => (
-  <>
-    {index >= 1 ? ', ' : ''}
-    <Link
-      component={RouterLink}
-      to={generatePath(
-        `/catalog/:namespace/group/${groupName}`,
-        entityRouteParams(entity),
-      )}
-    >
-      [{groupName}]
-    </Link>
-  </>
-);
+  /** @deprecated The entity is now grabbed from context instead */
+  entity?: Entity;
+}) => {
+  const { entity } = useEntity();
 
+  return (
+    <>
+      {index >= 1 ? ', ' : ''}
+      <Link
+        component={RouterLink}
+        to={generatePath(
+          `/catalog/:namespace/group/${groupName}`,
+          entityRouteParams(entity),
+        )}
+      >
+        [{groupName}]
+      </Link>
+    </>
+  );
+};
 const CardTitle = ({ title }: { title: string }) => (
   <Box display="flex" alignItems="center">
     <GroupIcon fontSize="inherit" />
@@ -61,24 +64,25 @@ const CardTitle = ({ title }: { title: string }) => (
 );
 
 export const GroupProfileCard = ({
-  entity: group,
   variant,
 }: {
-  entity: GroupEntity;
+  /** @deprecated The entity is now grabbed from context instead */
+  entity?: GroupEntity;
   variant: string;
 }) => {
+  const group = useEntity().entity as GroupEntity;
   const {
     metadata: { name, description },
     spec: { profile },
   } = group;
   const parent = group?.relations
     ?.filter(r => r.type === RELATION_CHILD_OF)
-    ?.map(group => group.target.name)
+    ?.map(groupItem => groupItem.target.name)
     .toString();
 
   const childrens = group?.relations
     ?.filter(r => r.type === RELATION_PARENT_OF)
-    ?.map(group => group.target.name);
+    ?.map(groupItem => groupItem.target.name);
 
   const displayName = profile?.displayName ?? name;
 

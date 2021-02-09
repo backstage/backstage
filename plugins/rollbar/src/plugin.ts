@@ -15,17 +15,21 @@
  */
 
 import {
-  createPlugin,
   createApiFactory,
+  createPlugin,
+  createRoutableExtension,
+  createRouteRef,
   discoveryApiRef,
 } from '@backstage/core';
-import { rootRouteRef, entityRouteRef } from './routes';
-import { RollbarHome } from './components/RollbarHome/RollbarHome';
-import { RollbarProjectPage } from './components/RollbarProjectPage/RollbarProjectPage';
 import { rollbarApiRef } from './api/RollbarApi';
 import { RollbarClient } from './api/RollbarClient';
 
-export const plugin = createPlugin({
+export const rootRouteRef = createRouteRef({
+  path: '',
+  title: 'Rollbar',
+});
+
+export const rollbarPlugin = createPlugin({
   id: 'rollbar',
   apis: [
     createApiFactory({
@@ -34,8 +38,14 @@ export const plugin = createPlugin({
       factory: ({ discoveryApi }) => new RollbarClient({ discoveryApi }),
     }),
   ],
-  register({ router }) {
-    router.addRoute(rootRouteRef, RollbarHome);
-    router.addRoute(entityRouteRef, RollbarProjectPage);
+  routes: {
+    entityContent: rootRouteRef,
   },
 });
+
+export const EntityRollbarContent = rollbarPlugin.provide(
+  createRoutableExtension({
+    component: () => import('./components/Router').then(m => m.Router),
+    mountPoint: rootRouteRef,
+  }),
+);

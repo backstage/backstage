@@ -15,7 +15,7 @@
  */
 
 import lodash from 'lodash';
-import { EntityPolicy } from '../../types';
+import { EntityPolicy } from './types';
 import { ENTITY_DEFAULT_NAMESPACE } from '../constants';
 import { Entity } from '../Entity';
 

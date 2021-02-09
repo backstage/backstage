@@ -2,8 +2,8 @@
 id: techdocs-overview
 title: TechDocs Documentation
 sidebar_label: Overview
-description: TechDocs is Spotify’s homegrown docs-like-code solution built
-directly into Backstage
+# prettier-ignore
+description: TechDocs is Spotify’s homegrown docs-like-code solution built directly into Backstage
 ---
 
 ## What is it?
@@ -113,7 +113,7 @@ providers are used.
 | Local Filesystem of Backstage app | Yes ✅         |
 | Google Cloud Storage (GCS)        | Yes ✅         |
 | Amazon Web Services (AWS) S3      | Yes ✅         |
-| Azure Storage                     | No ❌          |
+| Azure Blob Storage                | Yes ✅         |
 
 [Reach out to us](#feedback) if you want to request more platforms.
 

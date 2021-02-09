@@ -153,6 +153,7 @@ export function registerCommands(program: CommanderStatic) {
       '--package <name>',
       'Only load config schema that applies to the given package',
     )
+    .option('--lax', 'Do not require environment variables to be set')
     .option('--frontend', 'Print only the frontend configuration')
     .option('--with-secrets', 'Include secrets in the printed configuration')
     .option(
@@ -169,6 +170,7 @@ export function registerCommands(program: CommanderStatic) {
       '--package <name>',
       'Only load config schema that applies to the given package',
     )
+    .option('--lax', 'Do not require environment variables to be set')
     .option(...configOption)
     .description(
       'Validate that the given configuration loads and matches schema',
@@ -205,6 +207,13 @@ export function registerCommands(program: CommanderStatic) {
     .command('build-workspace <workspace-dir> ...<packages>')
     .description('Builds a temporary dist workspace from the provided packages')
     .action(lazy(() => import('./buildWorkspace').then(m => m.default)));
+
+  program
+    .command('create-github-app <github-org>', { hidden: true })
+    .description(
+      'Create new GitHub App in your organization. This command is experimental and may change in the future.',
+    )
+    .action(lazy(() => import('./create-github-app').then(m => m.default)));
 }
 
 // Wraps an action function so that it always exits and handles errors
@@ -215,6 +224,7 @@ function lazy(
     try {
       const actionFunc = await getActionFunc();
       await actionFunc(...args);
+
       process.exit(0);
     } catch (error) {
       exitWithError(error);

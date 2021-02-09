@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import fs from 'fs';
+import * as os from 'os';
+import fs from 'fs-extra';
+import mockFs from 'mock-fs';
 import path from 'path';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -23,12 +25,15 @@ import { getVoidLogger } from '../logging';
 import { AzureUrlReader } from './AzureUrlReader';
 import { msw } from '@backstage/test-utils';
 import { ReadTreeResponseFactory } from './tree';
+import { NotModifiedError } from '../errors';
 
 const logger = getVoidLogger();
 
 const treeResponseFactory = ReadTreeResponseFactory.create({
   config: new ConfigReader({}),
 });
+
+const tmpDir = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
 
 describe('AzureUrlReader', () => {
   const worker = setupServer();
@@ -138,8 +143,23 @@ describe('AzureUrlReader', () => {
   });
 
   describe('readTree', () => {
+    beforeEach(() => {
+      mockFs({
+        [tmpDir]: mockFs.directory(),
+      });
+    });
+
+    afterEach(() => {
+      mockFs.restore();
+    });
+
     const repoBuffer = fs.readFileSync(
-      path.resolve('src', 'reading', '__fixtures__', 'repo.zip'),
+      path.resolve('src', 'reading', '__fixtures__', 'mock-main.zip'),
+    );
+
+    const processor = new AzureUrlReader(
+      { host: 'dev.azure.com' },
+      { treeResponseFactory },
     );
 
     beforeEach(() => {
@@ -153,24 +173,85 @@ describe('AzureUrlReader', () => {
               ctx.body(repoBuffer),
             ),
         ),
+        rest.get(
+          // https://docs.microsoft.com/en-us/rest/api/azure/devops/git/commits/get%20commits?view=azure-devops-rest-6.0#on-a-branch
+          'https://dev.azure.com/organization/project/_apis/git/repositories/repository/commits',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.json({
+                count: 2,
+                value: [
+                  {
+                    commitId: '123abc2',
+                    comment: 'second commit',
+                  },
+                  {
+                    commitId: '123abc1',
+                    comment: 'first commit',
+                  },
+                ],
+              }),
+            ),
+        ),
       );
     });
 
     it('returns the wanted files from an archive', async () => {
-      const processor = new AzureUrlReader(
-        { host: 'dev.azure.com' },
-        { treeResponseFactory },
-      );
-
       const response = await processor.readTree(
         'https://dev.azure.com/organization/project/_git/repository',
       );
 
+      expect(response.etag).toBe('123abc2');
+
       const files = await response.files();
 
       expect(files.length).toBe(2);
-      const mkDocsFile = await files[1].content();
-      const indexMarkdownFile = await files[0].content();
+      const mkDocsFile = await files[0].content();
+      const indexMarkdownFile = await files[1].content();
+
+      expect(mkDocsFile.toString()).toBe('site_name: Test\n');
+      expect(indexMarkdownFile.toString()).toBe('# Test\n');
+    });
+
+    it('creates a directory with the wanted files', async () => {
+      const response = await processor.readTree(
+        'https://dev.azure.com/organization/project/_git/repository',
+      );
+
+      const dir = await response.dir({ targetDir: tmpDir });
+
+      await expect(
+        fs.readFile(path.join(dir, 'mkdocs.yml'), 'utf8'),
+      ).resolves.toBe('site_name: Test\n');
+      await expect(
+        fs.readFile(path.join(dir, 'docs', 'index.md'), 'utf8'),
+      ).resolves.toBe('# Test\n');
+    });
+
+    it('throws a NotModifiedError when given a etag in options', async () => {
+      const fnAzure = async () => {
+        await processor.readTree(
+          'https://dev.azure.com/organization/project/_git/repository',
+          { etag: '123abc2' },
+        );
+      };
+
+      await expect(fnAzure).rejects.toThrow(NotModifiedError);
+    });
+
+    it('should not throw a NotModifiedError when given an outdated etag in options', async () => {
+      const response = await processor.readTree(
+        'https://dev.azure.com/organization/project/_git/repository',
+        { etag: 'outdated123abc' },
+      );
+
+      expect(response.etag).toBe('123abc2');
+      const files = await response.files();
+
+      expect(files.length).toBe(2);
+      const mkDocsFile = await files[0].content();
+      const indexMarkdownFile = await files[1].content();
 
       expect(mkDocsFile.toString()).toBe('site_name: Test\n');
       expect(indexMarkdownFile.toString()).toBe('# Test\n');

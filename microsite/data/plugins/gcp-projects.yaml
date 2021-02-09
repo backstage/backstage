@@ -2,7 +2,7 @@
 title: GCP Project Creator
 author: Trivago
 authorUrl: https://www.trivago.com
-category: Cloud
+category: Infrastructure
 description: Create, list and manage your Google Cloud Projects.
 documentation: https://github.com/backstage/backstage/tree/master/plugins/gcp-projects
 iconUrl: https://avatars1.githubusercontent.com/u/2810941?s=280&v=4

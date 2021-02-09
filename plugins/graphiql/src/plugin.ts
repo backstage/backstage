@@ -22,10 +22,11 @@ import {
 import { graphQlBrowseApiRef, GraphQLEndpoints } from './lib/api';
 import { graphiQLRouteRef } from './route-refs';
 
-export const plugin = createPlugin({
+export const graphiqlPlugin = createPlugin({
   id: 'graphiql',
   apis: [
-    // GitLab is used as an example endpoint, but most plug
+    // GitLab is used as an example endpoint, but most will want to plug in
+    // their own instead.
     createApiFactory(
       graphQlBrowseApiRef,
       GraphQLEndpoints.from([
@@ -39,7 +40,7 @@ export const plugin = createPlugin({
   ],
 });
 
-export const GraphiQLPage = plugin.provide(
+export const GraphiQLPage = graphiqlPlugin.provide(
   createRoutableExtension({
     component: () => import('./components').then(m => m.GraphiQLPage),
     mountPoint: graphiQLRouteRef,
