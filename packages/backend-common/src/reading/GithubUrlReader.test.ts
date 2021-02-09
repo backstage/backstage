@@ -23,7 +23,13 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import path from 'path';
 import { NotFoundError, NotModifiedError } from '../errors';
-import { GithubUrlReader } from './GithubUrlReader';
+import {
+  GhBlobResponse,
+  GhBranchResponse,
+  GhRepoResponse,
+  GhTreeResponse,
+  GithubUrlReader,
+} from './GithubUrlReader';
 import { ReadTreeResponseFactory } from './tree';
 
 const treeResponseFactory = ReadTreeResponseFactory.create({
@@ -69,6 +75,10 @@ describe('GithubUrlReader', () => {
     });
   });
 
+  /*
+   * read
+   */
+
   describe('read', () => {
     it('should use the headers from the credentials provider to the fetch request when doing read', async () => {
       expect.assertions(2);
@@ -107,6 +117,10 @@ describe('GithubUrlReader', () => {
     });
   });
 
+  /*
+   * readTree
+   */
+
   describe('readTree', () => {
     beforeEach(() => {
       mockFs({
@@ -128,29 +142,31 @@ describe('GithubUrlReader', () => {
     );
 
     const reposGithubApiResponse = {
-      id: '123',
+      id: 123,
       full_name: 'backstage/mock',
       default_branch: 'main',
       branches_url:
         'https://api.github.com/repos/backstage/mock/branches{/branch}',
       archive_url:
         'https://api.github.com/repos/backstage/mock/{archive_format}{/ref}',
-    };
+    } as Partial<GhRepoResponse>;
 
     const reposGheApiResponse = {
-      ...reposGithubApiResponse,
+      id: 123,
+      full_name: 'backstage/mock',
+      default_branch: 'main',
       branches_url:
         'https://ghe.github.com/api/v3/repos/backstage/mock/branches{/branch}',
       archive_url:
         'https://ghe.github.com/api/v3/repos/backstage/mock/{archive_format}{/ref}',
-    };
+    } as Partial<GhRepoResponse>;
 
     const branchesApiResponse = {
       name: 'main',
       commit: {
         sha: 'etag123abc',
       },
-    };
+    } as Partial<GhBranchResponse>;
 
     beforeEach(() => {
       worker.use(
@@ -390,6 +406,361 @@ describe('GithubUrlReader', () => {
           },
         );
       }).toThrowError('must configure an explicit apiBaseUrl');
+    });
+  });
+
+  /*
+   * search
+   */
+
+  describe('search', () => {
+    beforeEach(() => {
+      mockFs({ '/tmp': mockFs.directory() });
+    });
+
+    afterEach(() => {
+      mockFs.restore();
+    });
+
+    const repoBuffer = fs.readFileSync(
+      path.resolve(
+        'src',
+        'reading',
+        '__fixtures__',
+        'backstage-mock-etag123.tar.gz',
+      ),
+    );
+
+    const githubTreeContents: GhTreeResponse['tree'] = [
+      {
+        path: 'mkdocs.yml',
+        type: 'blob',
+        url: 'https://api.github.com/repos/backstage/mock/git/blobs/1',
+      },
+      {
+        path: 'docs',
+        type: 'tree',
+        url: 'https://api.github.com/repos/backstage/mock/git/trees/2',
+      },
+      {
+        path: 'docs/index.md',
+        type: 'blob',
+        url: 'https://api.github.com/repos/backstage/mock/git/blobs/3',
+      },
+    ];
+
+    const gheTreeContents: GhTreeResponse['tree'] = [
+      {
+        path: 'mkdocs.yml',
+        type: 'blob',
+        url: 'https://ghe.github.com/api/v3/repos/backstage/mock/git/blobs/1',
+      },
+      {
+        path: 'docs',
+        type: 'tree',
+        url: 'https://ghe.github.com/api/v3/repos/backstage/mock/git/trees/2',
+      },
+      {
+        path: 'docs/index.md',
+        type: 'blob',
+        url: 'https://ghe.github.com/api/v3/repos/backstage/mock/git/blobs/3',
+      },
+    ];
+
+    // Tarballs
+    beforeEach(() => {
+      worker.use(
+        rest.get(
+          'https://api.github.com/repos/backstage/mock/tarball/etag123abc',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/x-gzip'),
+              ctx.set(
+                'content-disposition',
+                'attachment; filename=backstage-mock-etag123.tar.gz',
+              ),
+              ctx.body(repoBuffer),
+            ),
+        ),
+        rest.get(
+          'https://ghe.github.com/api/v3/repos/backstage/mock/tarball/etag123abc',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/x-gzip'),
+              ctx.set(
+                'content-disposition',
+                'attachment; filename=backstage-mock-etag123.tar.gz',
+              ),
+              ctx.body(repoBuffer),
+            ),
+        ),
+      );
+    });
+
+    // Repo details
+    beforeEach(() => {
+      const githubResponse = {
+        id: 123,
+        full_name: 'backstage/mock',
+        default_branch: 'main',
+        branches_url:
+          'https://api.github.com/repos/backstage/mock/branches{/branch}',
+        archive_url:
+          'https://api.github.com/repos/backstage/mock/{archive_format}{/ref}',
+        trees_url:
+          'https://api.github.com/repos/backstage/mock/git/trees{/sha}',
+      } as Partial<GhRepoResponse>;
+
+      const gheResponse = {
+        id: 123,
+        full_name: 'backstage/mock',
+        default_branch: 'main',
+        branches_url:
+          'https://ghe.github.com/api/v3/repos/backstage/mock/branches{/branch}',
+        archive_url:
+          'https://ghe.github.com/api/v3/repos/backstage/mock/{archive_format}{/ref}',
+        trees_url:
+          'https://ghe.github.com/api/v3/repos/backstage/mock/git/trees{/sha}',
+      } as Partial<GhRepoResponse>;
+
+      worker.use(
+        rest.get('https://api.github.com/repos/backstage/mock', (_, res, ctx) =>
+          res(
+            ctx.status(200),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json(githubResponse),
+          ),
+        ),
+        rest.get(
+          'https://ghe.github.com/api/v3/repos/backstage/mock',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(gheResponse),
+            ),
+        ),
+      );
+    });
+
+    // Branch details
+    beforeEach(() => {
+      const response = {
+        name: 'main',
+        commit: {
+          sha: 'etag123abc',
+        },
+      } as Partial<GhBranchResponse>;
+
+      worker.use(
+        rest.get(
+          'https://api.github.com/repos/backstage/mock/branches/main',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(response),
+            ),
+        ),
+        rest.get(
+          'https://ghe.github.com/api/v3/repos/backstage/mock/branches/main',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(response),
+            ),
+        ),
+        rest.get(
+          'https://api.github.com/repos/backstage/mock/branches/branchDoesNotExist',
+          (_, res, ctx) => res(ctx.status(404)),
+        ),
+      );
+    });
+
+    // Blobs
+    beforeEach(() => {
+      const blob1Response = {
+        content: Buffer.from('site_name: Test\n').toString('base64'),
+      } as Partial<GhBlobResponse>;
+
+      const blob3Response = {
+        content: Buffer.from('# Test\n').toString('base64'),
+      } as Partial<GhBlobResponse>;
+
+      worker.use(
+        rest.get(
+          'https://api.github.com/repos/backstage/mock/git/blobs/1',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(blob1Response),
+            ),
+        ),
+        rest.get(
+          'https://api.github.com/repos/backstage/mock/git/blobs/3',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(blob3Response),
+            ),
+        ),
+        rest.get(
+          'https://ghe.github.com/api/v3/repos/backstage/mock/git/blobs/1',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(blob1Response),
+            ),
+        ),
+        rest.get(
+          'https://ghe.github.com/api/v3/repos/backstage/mock/git/blobs/3',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(blob3Response),
+            ),
+        ),
+      );
+    });
+
+    async function runTests(reader: GithubUrlReader, baseUrl: string) {
+      const r1 = await reader.search(
+        `${baseUrl}/backstage/mock/tree/main/**/*`,
+      );
+      expect(r1.etag).toBe('etag123abc');
+      expect(r1.files.length).toBe(2);
+
+      const r2 = await reader.search(
+        `${baseUrl}/backstage/mock/tree/main/**/*`,
+        { etag: 'somethingElse' },
+      );
+      expect(r2.etag).toBe('etag123abc');
+      expect(r2.files.length).toBe(2);
+
+      const r3 = await reader.search(`${baseUrl}/backstage/mock/tree/main/o`);
+      expect(r3.files.length).toBe(0);
+
+      const r4 = await reader.search(
+        `${baseUrl}/backstage/mock/tree/main/*docs*`,
+      );
+      expect(r4.files.length).toBe(1);
+      expect(r4.files[0].url).toBe(
+        `${baseUrl}/backstage/mock/tree/main/mkdocs.yml`,
+      );
+      await expect(r4.files[0].content()).resolves.toEqual(
+        Buffer.from('site_name: Test\n'),
+      );
+
+      const r5 = await reader.search(
+        `${baseUrl}/backstage/mock/tree/main/*/index.*`,
+      );
+      expect(r5.files.length).toBe(1);
+      expect(r5.files[0].url).toBe(
+        `${baseUrl}/backstage/mock/tree/main/docs/index.md`,
+      );
+      await expect(r5.files[0].content()).resolves.toEqual(
+        Buffer.from('# Test\n'),
+      );
+    }
+
+    // eslint-disable-next-line jest/expect-expect
+    it('succeeds on github when going via repo listing', async () => {
+      worker.use(
+        rest.get(
+          'https://api.github.com/repos/backstage/mock/git/trees/etag123abc',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json({
+                truncated: false,
+                tree: githubTreeContents,
+              } as Partial<GhTreeResponse>),
+            ),
+        ),
+      );
+      await runTests(githubProcessor, 'https://github.com');
+    });
+
+    // eslint-disable-next-line jest/expect-expect
+    it('succeeds on github when going via readTree', async () => {
+      worker.use(
+        rest.get(
+          'https://api.github.com/repos/backstage/mock/git/trees/etag123abc',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json({
+                truncated: true,
+                tree: [],
+              } as Partial<GhTreeResponse>),
+            ),
+        ),
+      );
+      await runTests(githubProcessor, 'https://github.com');
+    });
+
+    // eslint-disable-next-line jest/expect-expect
+    it('succeeds on ghe when going via repo listing', async () => {
+      worker.use(
+        rest.get(
+          'https://ghe.github.com/api/v3/repos/backstage/mock/git/trees/etag123abc',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json({
+                truncated: false,
+                tree: gheTreeContents,
+              } as Partial<GhTreeResponse>),
+            ),
+        ),
+      );
+      await runTests(gheProcessor, 'https://ghe.github.com');
+    });
+
+    // eslint-disable-next-line jest/expect-expect
+    it('succeeds on ghe when going via readTree', async () => {
+      worker.use(
+        rest.get(
+          'https://ghe.github.com/api/v3/repos/backstage/mock/git/trees/etag123abc',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json({
+                truncated: true,
+                tree: [],
+              } as Partial<GhTreeResponse>),
+            ),
+        ),
+      );
+      await runTests(gheProcessor, 'https://ghe.github.com');
+    });
+
+    it('throws NotModifiedError when same etag', async () => {
+      await expect(
+        githubProcessor.search(
+          'https://githib.com/backstage/mock/tree/main/**/*',
+          { etag: 'etag123abc' },
+        ),
+      ).rejects.toThrow(NotModifiedError);
+    });
+
+    it('throws NotFoundError when missing branch', async () => {
+      await expect(
+        githubProcessor.search(
+          'https://githib.com/backstage/mock/tree/branchDoesNotExist/**/*',
+        ),
+      ).rejects.toThrow(NotFoundError);
     });
   });
 });

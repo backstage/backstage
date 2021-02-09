@@ -16,7 +16,12 @@
 
 import fetch from 'cross-fetch';
 import { NotFoundError } from '../errors';
-import { ReaderFactory, ReadTreeResponse, UrlReader } from './types';
+import {
+  ReaderFactory,
+  ReadTreeResponse,
+  SearchResponse,
+  UrlReader,
+} from './types';
 
 /**
  * A UrlReader that does a plain fetch of the URL.
@@ -68,8 +73,12 @@ export class FetchUrlReader implements UrlReader {
     throw new Error(message);
   }
 
-  readTree(): Promise<ReadTreeResponse> {
+  async readTree(): Promise<ReadTreeResponse> {
     throw new Error('FetchUrlReader does not implement readTree');
+  }
+
+  async search(): Promise<SearchResponse> {
+    throw new Error('FetchUrlReader does not implement search');
   }
 
   toString() {
