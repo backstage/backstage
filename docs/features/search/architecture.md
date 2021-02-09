@@ -6,9 +6,8 @@ description: Documentation on Search Architecture
 
 # Search Architecture
 
-> _This is a proposed architecture which has not been implemented yet. We are
-> still looking for feedback to improve the architecture to fit your use-case,
-> see [this open issue](https://github.com/backstage/backstage/issues/4078)._
+> _This is a proposed architecture which has not been implemented yet. Find our
+> milestones to follow our progress [here](./README.md)._
 
 Below you can explore the Search Architecture. Our aim with this architecture is
 to support a wide variety of search engines, while providing a simple developer
