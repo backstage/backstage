@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-catalog-backend': minor
+'@backstage/plugin-catalog-backend': patch
 ---
 
 Added an option to scan GitHub for repositories using a new location type `github-discovery`.
