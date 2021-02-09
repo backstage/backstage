@@ -34,7 +34,7 @@ import {
   useApi,
   alertApiRef,
 } from '@backstage/core';
-import { formatDistanceToNowStrict } from 'date-fns';
+import { DateTime, Duration } from 'luxon';
 import { Incident, IncidentPhase } from '../types';
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
 import { splunkOnCallApiRef } from '../../api/client';
@@ -126,7 +126,11 @@ const IncidentAction = ({
 
 export const IncidentListItem = ({ incident, onIncidentAction }: Props) => {
   const classes = useStyles();
-  const createdAt = formatDistanceToNowStrict(new Date(incident.startTime!));
+  const duration =
+    new Date().getTime() - new Date(incident.startTime!).getTime();
+  const createdAt = DateTime.local()
+    .minus(Duration.fromMillis(duration))
+    .toRelative();
   const alertApi = useApi(alertApiRef);
   const api = useApi(splunkOnCallApiRef);
 

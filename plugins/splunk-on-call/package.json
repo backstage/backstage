@@ -31,14 +31,15 @@
   },
   "dependencies": {
     "@backstage/catalog-model": "^0.7.1",
-    "@backstage/plugin-catalog-react": "^0.0.2",
     "@backstage/core": "^0.6.0",
+    "@backstage/plugin-catalog-react": "^0.0.2",
     "@backstage/theme": "^0.2.3",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
     "classnames": "^2.2.6",
     "date-fns": "^2.15.0",
+    "luxon": "^1.25.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "6.0.0-beta.0",
@@ -52,10 +53,11 @@
     "@testing-library/react": "^10.4.1",
     "@testing-library/user-event": "^12.0.7",
     "@types/jest": "^26.0.7",
+    "@types/luxon": "^1.25.0",
     "@types/node": "^12.0.0",
+    "cross-fetch": "^3.0.6",
     "msw": "^0.21.2",
-    "node-fetch": "^2.6.1",
-    "cross-fetch": "^3.0.6"
+    "node-fetch": "^2.6.1"
   },
   "files": [
     "dist"
