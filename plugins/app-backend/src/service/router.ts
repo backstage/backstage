@@ -43,6 +43,17 @@ export interface RouterOptions {
    * object store where all recently deployed versions of the app are present.
    */
   staticFallbackHandler?: express.Handler;
+
+  /**
+   * Disables the configuration injection. This can be useful if you're running in an environment
+   * with a read-only filesystem, or for some other reason don't want configuration to be injected.
+   *
+   * Note that this will cause the configuration used when building the app bundle to be used, unless
+   * a separate configuration loading strategy is set up.
+   *
+   * This also disables configuration injection though `APP_CONFIG_` environment variables.
+   */
+  disableConfigInjection?: boolean;
 }
 
 export async function createRouter(
@@ -63,13 +74,15 @@ export async function createRouter(
 
   logger.info(`Serving static app content from ${appDistDir}`);
 
-  const appConfigs = await readConfigs({
-    config,
-    appDistDir,
-    env: process.env,
-  });
+  if (!options.disableConfigInjection) {
+    const appConfigs = await readConfigs({
+      config,
+      appDistDir,
+      env: process.env,
+    });
 
-  await injectConfig({ appConfigs, logger, staticDir });
+    await injectConfig({ appConfigs, logger, staticDir });
+  }
 
   const router = Router();
 
