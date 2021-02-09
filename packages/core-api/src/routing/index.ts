@@ -16,11 +16,11 @@
 
 export type {
   RouteRef,
-  RouteRefConfig,
   AbsoluteRouteRef,
   ConcreteRoute,
   MutableRouteRef,
 } from './types';
 export { FlatRoutes } from './FlatRoutes';
 export { createRouteRef } from './RouteRef';
+export type { RouteRefConfig } from './RouteRef';
 export { useRouteRef } from './hooks';

@@ -1,5 +1,78 @@
 # @backstage/create-app
 
+## 0.3.8
+
+### Patch Changes
+
+- 019fe39a0: **BREAKING CHANGE**: The `useEntity` hook has been moved from `@backstage/plugin-catalog` to `@backstage/plugin-catalog-react`.
+  To apply this change to an existing app, add `@backstage/plugin-catalog-react` to your dependencies in `packages/app/package.json`, and update
+  the import inside `packages/app/src/components/catalog/EntityPage.tsx` as well as any other places you were using `useEntity` or any other functions that were moved to `@backstage/plugin-catalog-react`.
+- 436ca3f62: Remove techdocs.requestUrl and techdocs.storageUrl from app-config.yaml
+- Updated dependencies [ceef4dd89]
+- Updated dependencies [720149854]
+- Updated dependencies [c777df180]
+- Updated dependencies [398e1f83e]
+- Updated dependencies [12ece98cd]
+- Updated dependencies [d82246867]
+- Updated dependencies [7fc89bae2]
+- Updated dependencies [c810082ae]
+- Updated dependencies [b712841d6]
+- Updated dependencies [a5628df40]
+- Updated dependencies [2430ee7c2]
+- Updated dependencies [3149bfe63]
+- Updated dependencies [5fa3bdb55]
+- Updated dependencies [bc5082a00]
+- Updated dependencies [6e612ce25]
+- Updated dependencies [e44925723]
+- Updated dependencies [b37501a3d]
+- Updated dependencies [a26668913]
+- Updated dependencies [025e122c3]
+- Updated dependencies [e9aab60c7]
+- Updated dependencies [21e624ba9]
+- Updated dependencies [19fe61c27]
+- Updated dependencies [e9aab60c7]
+- Updated dependencies [da9f53c60]
+- Updated dependencies [a08c4b0b0]
+- Updated dependencies [24e47ef1e]
+- Updated dependencies [bc5082a00]
+- Updated dependencies [b37501a3d]
+- Updated dependencies [90c8f20b9]
+- Updated dependencies [32c95605f]
+- Updated dependencies [7881f2117]
+- Updated dependencies [529d16d27]
+- Updated dependencies [54c7d02f7]
+- Updated dependencies [de98c32ed]
+- Updated dependencies [806929fe2]
+- Updated dependencies [019fe39a0]
+- Updated dependencies [cdea0baf1]
+- Updated dependencies [019fe39a0]
+- Updated dependencies [11cb5ef94]
+  - @backstage/plugin-catalog-import@0.3.7
+  - @backstage/plugin-scaffolder@0.4.2
+  - @backstage/plugin-techdocs-backend@0.5.5
+  - @backstage/cli@0.6.0
+  - @backstage/core@0.6.0
+  - @backstage/plugin-api-docs@0.4.4
+  - @backstage/plugin-catalog@0.3.0
+  - @backstage/theme@0.2.3
+  - @backstage/plugin-lighthouse@0.2.9
+  - @backstage/backend-common@0.5.2
+  - @backstage/plugin-catalog-backend@0.6.0
+  - @backstage/plugin-techdocs@0.5.5
+  - @backstage/plugin-user-settings@0.2.5
+  - @backstage/catalog-model@0.7.1
+  - @backstage/plugin-scaffolder-backend@0.6.0
+  - @backstage/plugin-app-backend@0.3.6
+  - @backstage/plugin-tech-radar@0.3.4
+  - @backstage/plugin-explore@0.2.4
+  - @backstage/plugin-circleci@0.2.7
+  - @backstage/plugin-github-actions@0.3.1
+  - @backstage/plugin-search@0.2.7
+  - @backstage/test-utils@0.1.6
+  - @backstage/plugin-auth-backend@0.2.12
+  - @backstage/plugin-proxy-backend@0.2.4
+  - @backstage/plugin-rollbar-backend@0.1.7
+
 ## 0.3.7
 
 ### Patch Changes
@@ -52,7 +125,7 @@
   - @backstage/plugin-catalog@0.2.13
   - @backstage/plugin-scaffolder-backend@0.5.1
 
-## 1.0.0
+## 0.3.6
 
 ### Minor Changes
 

@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
+import {
+  ReadTreeResponse,
+  SearchResponse,
+  UrlReader,
+} from '@backstage/backend-common';
+import { Entity } from '@backstage/catalog-model';
 import { Readable } from 'stream';
 import {
   getDocFilesFromRepository,
   getLocationForEntity,
   parseReferenceAnnotation,
 } from './helpers';
-import { UrlReader, ReadTreeResponse } from '@backstage/backend-common';
-import { Entity } from '@backstage/catalog-model';
 
 const entityBase: Entity = {
   metadata: {
@@ -136,6 +140,13 @@ describe('getDocFilesFromRepository', () => {
             return Readable.from('');
           },
           etag: '',
+        };
+      }
+
+      async search(): Promise<SearchResponse> {
+        return {
+          etag: '',
+          files: [],
         };
       }
     }

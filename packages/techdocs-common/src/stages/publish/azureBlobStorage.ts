@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import path from 'path';
+import platformPath from 'path';
 import express from 'express';
 import {
   BlobServiceClient,
@@ -135,7 +135,7 @@ export class AzureBlobStoragePublish implements PublisherBase {
         // e.g. ['index.html', 'sub-page/index.html', 'assets/images/favicon.png']
         const relativeFilePath = filePath.replace(`${directory}/`, '');
         const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
-        const destination = path.normalize(
+        const destination = platformPath.normalize(
           `${entityRootDir}/${relativeFilePath}`,
         ); // Azure Blob Storage Container file relative path
 
@@ -217,7 +217,7 @@ export class AzureBlobStoragePublish implements PublisherBase {
       // filePath example - /default/Component/documented-component/index.html
       const filePath = req.path.replace(/^\//, '');
       // Files with different extensions (CSS, HTML) need to be served with different headers
-      const fileExtension = path.extname(filePath);
+      const fileExtension = platformPath.extname(filePath);
       const responseHeaders = getHeadersForFileExtension(fileExtension);
 
       try {

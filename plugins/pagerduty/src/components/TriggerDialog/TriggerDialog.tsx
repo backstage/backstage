@@ -52,11 +52,11 @@ export const TriggerDialog = ({
   const [description, setDescription] = useState<string>('');
 
   const [{ value, loading, error }, handleTriggerAlarm] = useAsyncFn(
-    async (description: string) =>
+    async (descriptions: string) =>
       await api.triggerAlarm({
         integrationKey,
         source: window.location.toString(),
-        description,
+        description: descriptions,
         userName,
       }),
   );

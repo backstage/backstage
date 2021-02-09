@@ -53,6 +53,7 @@ export async function startStandaloneServer(
   const mockUrlReader: jest.Mocked<UrlReader> = {
     read: jest.fn(),
     readTree: jest.fn(),
+    search: jest.fn(),
   };
 
   logger.debug('Creating application...');

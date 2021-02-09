@@ -45,14 +45,6 @@ export type AbsoluteRouteRef = RouteRef<{}>;
  */
 export type MutableRouteRef = RouteRef<{}>;
 
-export type RouteRefConfig<Params extends { [param in string]: string }> = {
-  params?: Array<keyof Params>;
-  /** @deprecated Route refs no longer decide their own path */
-  path?: string;
-  icon?: IconComponent;
-  title: string;
-};
-
 // A duplicate of the react-router RouteObject, but with routeRef added
 export interface BackstageRouteObject {
   caseSensitive: boolean;

@@ -124,18 +124,18 @@ export const AlertInsights = ({
     setSnackbarOpen(!!error);
   }, [error]);
 
-  function onSnooze(alert: Alert) {
-    setAlert(alert);
+  function onSnooze(alertToSnooze: Alert) {
+    setAlert(alertToSnooze);
     setStatus(AlertStatus.Snoozed);
   }
 
-  function onAccept(alert: Alert) {
-    setAlert(alert);
+  function onAccept(alertToAccept: Alert) {
+    setAlert(alertToAccept);
     setStatus(AlertStatus.Accepted);
   }
 
-  function onDismiss(alert: Alert) {
-    setAlert(alert);
+  function onDismiss(alertToDismiss: Alert) {
+    setAlert(alertToDismiss);
     setStatus(AlertStatus.Dismissed);
   }
 
@@ -148,8 +148,8 @@ export const AlertInsights = ({
     setStatus(null);
   }
 
-  function onDialogFormSubmit(data: any) {
-    setData(data);
+  function onDialogFormSubmit(formData: any) {
+    setData(formData);
   }
 
   function onSummaryButtonClick() {
@@ -175,10 +175,10 @@ export const AlertInsights = ({
       </Grid>
       {isAlertInsightSectionDisplayed && (
         <Grid item container direction="column" spacing={4}>
-          {active.map((alert, index) => (
+          {active.map((activeAlert, index) => (
             <Grid item key={`alert-insights-section-${index}`}>
               <AlertInsightsSection
-                alert={alert}
+                alert={activeAlert}
                 number={index + 1}
                 onSnooze={onSnooze}
                 onAccept={onAccept}

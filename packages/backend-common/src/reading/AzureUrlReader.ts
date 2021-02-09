@@ -29,6 +29,7 @@ import {
   ReaderFactory,
   ReadTreeOptions,
   ReadTreeResponse,
+  SearchResponse,
   UrlReader,
 } from './types';
 import { ReadTreeResponseFactory } from './tree';
@@ -114,6 +115,10 @@ export class AzureUrlReader implements UrlReader {
       etag: commitSha,
       filter: options?.filter,
     });
+  }
+
+  async search(): Promise<SearchResponse> {
+    throw new Error('AzureUrlReader does not implement search');
   }
 
   toString() {

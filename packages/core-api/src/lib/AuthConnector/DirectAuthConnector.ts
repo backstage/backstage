@@ -13,12 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  AuthProvider,
-  ProfileInfo,
-  BackstageIdentity,
-  DiscoveryApi,
-} from '../../apis/definitions';
+import { AuthProvider, DiscoveryApi } from '../../apis/definitions';
 import { showLoginPopup } from '../loginPopup';
 
 type Options = {
@@ -26,13 +21,6 @@ type Options = {
   environment?: string;
   provider: AuthProvider & { id: string };
 };
-
-export type DirectAuthResponse = {
-  userId: string;
-  profile: ProfileInfo;
-  backstageIdentity: BackstageIdentity;
-};
-
 export class DirectAuthConnector<DirectAuthResponse> {
   private readonly discoveryApi: DiscoveryApi;
   private readonly environment: string | undefined;

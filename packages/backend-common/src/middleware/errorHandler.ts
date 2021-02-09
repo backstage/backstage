@@ -63,10 +63,10 @@ export function errorHandler(
   return (
     error: Error,
     _request: Request,
-    response: Response,
+    res: Response,
     next: NextFunction,
   ) => {
-    if (response.headersSent) {
+    if (res.headersSent) {
       // If the headers have already been sent, do not send the response again
       // as this will throw an error in the backend.
       next(error);
@@ -80,7 +80,9 @@ export function errorHandler(
       logger.error(error);
     }
 
-    response.status(status).send(message);
+    res.status(status);
+    res.setHeader('content-type', 'text/plain');
+    res.send(message);
   };
 }
 
