@@ -90,4 +90,17 @@ describe('<DomainExplorerContent />', () => {
       expect(getByText('No domains to display')).toBeInTheDocument(),
     );
   });
+
+  it('renders a friendly error if it cannot collect domains', async () => {
+    const catalogError = new Error('Network timeout');
+    catalogApi.getEntities.mockRejectedValueOnce(catalogError);
+
+    const { getByText } = render(<DomainExplorerContent />, {
+      wrapper: Wrapper,
+    });
+
+    await waitFor(() =>
+      expect(getByText(/Could not load domains/)).toBeInTheDocument(),
+    );
+  });
 });

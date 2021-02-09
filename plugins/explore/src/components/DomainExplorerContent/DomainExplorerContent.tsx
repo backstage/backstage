@@ -21,6 +21,7 @@ import {
   Progress,
   SupportButton,
   useApi,
+  WarningPanel,
 } from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { Button } from '@material-ui/core';
@@ -30,7 +31,7 @@ import { DomainCardGrid } from '../DomainCard';
 
 export const DomainExplorerContent = () => {
   const catalogApi = useApi(catalogApiRef);
-  const { value: entities, loading } = useAsync(async () => {
+  const { value: entities, loading, error } = useAsync(async () => {
     const response = await catalogApi.getEntities({
       filter: { kind: 'domain' },
     });
@@ -45,7 +46,12 @@ export const DomainExplorerContent = () => {
       </ContentHeader>
 
       {loading && <Progress />}
-      {!loading && (!entities || entities.length === 0) && (
+      {error && (
+        <WarningPanel severity="error" title="Could not load domains.">
+          {error.message}
+        </WarningPanel>
+      )}
+      {!loading && !error && (!entities || entities.length === 0) && (
         <EmptyState
           missing="info"
           title="No domains to display"
