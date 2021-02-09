@@ -7,7 +7,8 @@ description: Documentation on Search Architecture
 # Search Architecture
 
 > _This is a proposed architecture which has not been implemented yet. Find our
-> milestones to follow our progress on the [Search Roadmap](./README.md#project-roadmap)._
+> milestones to follow our progress on the
+> [Search Roadmap](./README.md#project-roadmap)._
 
 Below you can explore the Search Architecture. Our aim with this architecture is
 to support a wide variety of search engines, while providing a simple developer
