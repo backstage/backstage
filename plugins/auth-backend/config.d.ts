@@ -58,7 +58,14 @@ export interface Config {
         development: { [key: string]: string };
       };
       oauth2?: {
-        development: { [key: string]: string };
+        development: {
+          clientId: string;
+          clientSecret: string;
+          callbackUrl: string;
+          authorizationUrl: string;
+          tokenUrl: string;
+          scope?: string;
+        };
       };
       oidc?: {
         development: { [key: string]: string };

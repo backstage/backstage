@@ -305,6 +305,8 @@ auth:
           $env: AUTH_OAUTH2_AUTH_URL
         tokenUrl:
           $env: AUTH_OAUTH2_TOKEN_URL
+        scope:
+          $env: AUTH_OAUTH2_SCOPE
     oidc:
       development:
         metadataUrl:
