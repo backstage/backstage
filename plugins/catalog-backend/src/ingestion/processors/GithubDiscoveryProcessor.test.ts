@@ -33,14 +33,14 @@ describe('GithubDiscoveryProcessor', () => {
       ).toEqual({
         org: 'foo',
         repoSearchPath: /^proj$/,
-        catalogPath: 'blob/master/catalog.yaml',
+        catalogPath: '/blob/master/catalog.yaml',
       });
       expect(
         parseUrl('https://github.com/foo/proj*/blob/master/catalog.yaml'),
       ).toEqual({
         org: 'foo',
         repoSearchPath: /^proj.*$/,
-        catalogPath: 'blob/master/catalog.yaml',
+        catalogPath: '/blob/master/catalog.yaml',
       });
     });
 

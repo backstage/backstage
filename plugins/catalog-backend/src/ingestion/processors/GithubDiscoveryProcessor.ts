@@ -92,7 +92,7 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
         results.location(
           {
             type: 'url',
-            target: `${repository.url}/${catalogPath}`,
+            target: `${repository.url}${catalogPath}`,
           },
           false,
         ),
@@ -118,7 +118,7 @@ export function parseUrl(
     return {
       org: decodeURIComponent(path[0]),
       repoSearchPath: escapeRegExp(decodeURIComponent(path[1])),
-      catalogPath: decodeURIComponent(path.slice(2).join('/')),
+      catalogPath: `/${decodeURIComponent(path.slice(2).join('/'))}`,
     };
   }
 
