@@ -17,25 +17,21 @@
 import { RouteRef } from '@backstage/core';
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import {
-  ImportComponentPage,
-  IntegrationConfig,
-  DefaultIntegrationsConfig,
-} from './ImportComponentPage';
+import { ImportComponentPage } from './ImportComponentPage';
 
 export const Router = ({
   catalogRouteRef,
-  integrationConfig = DefaultIntegrationsConfig,
+  enablePullRequest = true,
 }: {
   catalogRouteRef: RouteRef;
-  integrationConfig?: IntegrationConfig;
+  enablePullRequest?: boolean;
 }) => (
   <Routes>
     <Route
       element={
         <ImportComponentPage
           catalogRouteRef={catalogRouteRef}
-          integrationConfig={integrationConfig}
+          enablePullRequest={enablePullRequest}
         />
       }
     />

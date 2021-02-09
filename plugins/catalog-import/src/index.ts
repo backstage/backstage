@@ -17,4 +17,3 @@
 export { plugin } from './plugin';
 export { Router } from './components/Router';
 export * from './api';
-export type { IntegrationConfig } from './components/ImportComponentPage';

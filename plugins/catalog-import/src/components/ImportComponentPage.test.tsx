@@ -27,10 +27,7 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import React from 'react';
 import { catalogImportApiRef, CatalogImportClient } from '../api';
-import {
-  DefaultIntegrationsConfig,
-  ImportComponentPage,
-} from './ImportComponentPage';
+import { ImportComponentPage } from './ImportComponentPage';
 
 let codeSearchMockResponse: () => Promise<{
   data: {
@@ -136,10 +133,7 @@ describe('<ImportComponentPage />', () => {
   async function renderSUT() {
     return await renderInTestApp(
       <ApiProvider apis={apis}>
-        <ImportComponentPage
-          catalogRouteRef={{ path: 'path', title: 'ttl' }}
-          integrationConfig={DefaultIntegrationsConfig}
-        />
+        <ImportComponentPage catalogRouteRef={{ path: 'path', title: 'ttl' }} />
       </ApiProvider>,
     );
   }

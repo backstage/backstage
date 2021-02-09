@@ -40,24 +40,11 @@ export type ConfigSpec = {
   config: PartialEntity[];
 };
 
-export type IntegrationConfig = {
-  // enabledPullRequest is globally enabling/disabling
-  // the Pull Request feature of catalog-import
-  enabledPullRequest: boolean;
-};
-
-export const DefaultIntegrationsConfig: IntegrationConfig = {
-  enabledPullRequest: true,
-};
-
 function manifestGenerationAvailable(
   configApi: ConfigApi,
-  integrationsConfig: IntegrationConfig,
+  enablePullRequest: boolean,
 ): boolean {
-  return (
-    configApi.has('integrations.github') &&
-    integrationsConfig.enabledPullRequest
-  );
+  return configApi.has('integrations.github') && enablePullRequest;
 }
 
 function repositories(configApi: ConfigApi): string[] {
@@ -80,10 +67,10 @@ function repositories(configApi: ConfigApi): string[] {
 
 export const ImportComponentPage = ({
   catalogRouteRef,
-  integrationConfig,
+  enablePullRequest = true,
 }: {
   catalogRouteRef: RouteRef;
-  integrationConfig: IntegrationConfig;
+  enablePullRequest?: boolean;
 }) => {
   const [activeStep, setActiveStep] = useState(0);
   const [configFile, setConfigFile] = useState<ConfigSpec>({
@@ -123,7 +110,7 @@ export const ImportComponentPage = ({
                 Ways to register an existing component
               </Typography>
 
-              {manifestGenerationAvailable(configApi, integrationConfig) && (
+              {manifestGenerationAvailable(configApi, enablePullRequest) && (
                 <React.Fragment>
                   <Typography variant="h6">GitHub Repo</Typography>
                   <Typography variant="body2" paragraph>
@@ -153,7 +140,7 @@ export const ImportComponentPage = ({
                   {
                     step: manifestGenerationAvailable(
                       configApi,
-                      integrationConfig,
+                      enablePullRequest,
                     )
                       ? 'Insert GitHub repo URL or Entity File URL'
                       : 'Insert Entity File URL',

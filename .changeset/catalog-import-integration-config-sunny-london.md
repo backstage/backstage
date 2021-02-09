@@ -1,7 +1,6 @@
 ---
-'@backstage/plugin-catalog-import': minor
+'@backstage/plugin-catalog-import': patch
 ---
 
-Add an integrations config prop to manage what feature of the catalog-import are enabled.
-If the config is not set, it defaults to the previous behaviour. We can only manage if the
-Open Pull Request feature is enabled or not in this release (its enabled by default where applicable).
+Add an `enablePullRequest` config prop to manage if the open Pull Request features of
+the catalog-import is enabled. If it is not set, it defaults to the previous behaviour(that is enabled).
