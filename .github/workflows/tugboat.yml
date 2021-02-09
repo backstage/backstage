@@ -54,7 +54,7 @@ jobs:
           node-version: '14'
 
       - name: yarn install
-        run: yarn workspace e2e-test install
+        run: yarn --cwd cypress install
 
       # This is required because the environment_url param that Tugboat uses
       # to tell us where the preview is located isn't supported unless you
@@ -87,7 +87,7 @@ jobs:
           CYPRESS_baseUrl: ${{steps.get-status-env.outputs.result}}
         with:
           config-file: ./cypress.json
-          working-directory: ./packages/e2e-test
+          working-directory: ./cypress
           browser: chrome
           install: false
           headless: true
@@ -97,7 +97,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: cypress-videos
-          path: ./packages/e2e-test/cypress/videos
+          path: ./cypress/videos
 
       - name: set status
         if: ${{ failure() }}
