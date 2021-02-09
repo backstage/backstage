@@ -104,11 +104,11 @@ export const JobStage = ({ endedAt, startedAt, name, log, status }: Props) => {
 
   const [expanded, setExpanded] = useState(false);
   useEffect(() => {
-    if (status === 'FAILED') setExpanded(true);
+    if (status === 'failed') setExpanded(true);
   }, [status, setExpanded]);
 
   const timeElapsed =
-    status !== 'PENDING'
+    status === 'processing'
       ? moment
           .duration(moment(endedAt ?? moment()).diff(moment(startedAt)))
           .humanize()
@@ -143,9 +143,13 @@ export const JobStage = ({ endedAt, startedAt, name, log, status }: Props) => {
       </AccordionSummary>
       <AccordionDetails className={classes.accordionDetails}>
         {log.length === 0 ? (
-          <Box px={9} pb={2} width="100%">
-            No logs available for this step
-          </Box>
+          <div style={{ height: '20vh', width: '100%' }}>
+            <LazyLog
+              text="No logs available for this step..."
+              extraLines={1}
+              follow
+            />
+          </div>
         ) : (
           <Suspense fallback={<LinearProgress />}>
             <LogModal

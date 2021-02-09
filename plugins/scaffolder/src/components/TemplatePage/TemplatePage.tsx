@@ -20,15 +20,10 @@ import {
   Header,
   InfoCard,
   Lifecycle,
-  Observable,
   Page,
   useApi,
 } from '@backstage/core';
-import {
-  catalogApiRef,
-  entityRoute,
-  entityRouteParams,
-} from '@backstage/plugin-catalog-react';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { LinearProgress } from '@material-ui/core';
 import { IChangeEvent } from '@rjsf/core';
 import parseGitUrl from 'git-url-parse';
@@ -38,6 +33,7 @@ import { useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { scaffolderApiRef } from '../../api';
 import { rootRoute } from '../../routes';
+import { ScaffolderTask } from '../../types';
 import { useTaskPolling } from '../hooks/useTaskPolling';
 import { JobStatusModal } from '../JobStatusModal';
 import { MultistepJsonForm } from '../MultistepJsonForm';
@@ -77,6 +73,7 @@ const OWNER_REPO_SCHEMA = {
     },
   },
 };
+
 export const TemplatePage = () => {
   const errorApi = useApi(errorApiRef);
   const catalogApi = useApi(catalogApiRef);
@@ -92,39 +89,13 @@ export const TemplatePage = () => {
     [setFormState, formState],
   );
 
-  const [taskId, setTaskId] = useState<string | null>(null);
-  const task = useTaskPolling(taskId, async task => {
-    console.warn('onFinish is called');
-    // if (!jobItem.metadata.catalogInfoUrl) {
-    //   errorApi.post(
-    //     new Error(`No catalogInfoUrl returned from the scaffolder`),
-    //   );
-    //   return;
-    // }
-    // try {
-    //   const {
-    //     entities: [createdEntity],
-    //   } = await catalogApi.addLocation({
-    //     target: jobItem.metadata.catalogInfoUrl,
-    //   });
-    //   const resolvedPath = generatePath(
-    //     `/catalog/${entityRoute.path}`,
-    //     entityRouteParams(createdEntity),
-    //   );
-    //   setCatalogLink(resolvedPath);
-    // } catch (ex) {
-    //   errorApi.post(
-    //     new Error(
-    //       `Something went wrong trying to add the new 'catalog-info.yaml' to the catalog`,
-    //     ),
-    //   );
-    // }
-  });
+  const [task, setTask] = useState<ScaffolderTask | undefined>(undefined);
 
   const handleCreate = async () => {
     try {
       const id = await scaffolderApi.scaffold(templateName, formState);
-      setTaskId(id);
+      const returned = await scaffolderApi.getTask(id);
+      setTask(returned);
       setModalOpen(true);
     } catch (e) {
       errorApi.post(e);
@@ -166,7 +137,6 @@ export const TemplatePage = () => {
             onModalClose={() => setModalOpen(false)}
           />
         )}
-        )
         {template && (
           <InfoCard title={template.metadata.title} noPadding>
             <MultistepJsonForm

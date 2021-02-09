@@ -19,6 +19,7 @@ export {
   scaffolderPlugin as plugin,
   TemplateIndexPage,
   TemplatePage,
+  TaskPage,
 } from './plugin';
 export { ScaffolderApi, scaffolderApiRef } from './api';
-export { rootRoute, templateRoute } from './routes';
+export { rootRoute, templateRoute, taskRoute } from './routes';

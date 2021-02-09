@@ -17,7 +17,7 @@
 import { JsonObject } from '@backstage/config';
 import { createApiRef, DiscoveryApi, Observable } from '@backstage/core';
 import ObservableImpl from 'zen-observable';
-import { ScaffolderV2Task } from './types';
+import { ScaffolderTask } from './types';
 
 export const scaffolderApiRef = createApiRef<ScaffolderApi>({
   id: 'plugin.scaffolder.service',
@@ -27,6 +27,9 @@ export const scaffolderApiRef = createApiRef<ScaffolderApi>({
 type LogEvent = {
   type: 'log' | 'completion';
   body: JsonObject;
+  createdAt: string;
+  id: string;
+  taskId: string;
 };
 
 export class ScaffolderApi {
@@ -60,23 +63,10 @@ export class ScaffolderApi {
     }
 
     const { id } = await response.json();
-
-    // 859d6b78-7c19-4d1a-abe0-9396ab3bd686
-    // this.streamLogs({
-    //   taskId: id,
-    // }).then(observable => {
-    //   console.log('DEBUG: observable =', observable);
-    //   observable.subscribe({
-    //     next: thing => console.warn('next', thing),
-    //     error: thing => console.warn('error', thing),
-    //     complete: () => console.warn('complete'),
-    //   });
-    // });
-
     return id;
   }
 
-  async getTask(taskId: string): Promise<ScaffolderV2Task> {
+  async getTask(taskId: string): Promise<ScaffolderTask> {
     const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
     const url = `${baseUrl}/v2/tasks/${encodeURIComponent(taskId)}`;
     return fetch(url).then(x => x.json());
@@ -101,7 +91,7 @@ export class ScaffolderApi {
             taskId,
           )}/eventstream`;
           const eventSource = new EventSource(url);
-          eventSource.addEventListener('log', event => {
+          eventSource.addEventListener('log', (event: any) => {
             if (event.data) {
               try {
                 subscriber.next(JSON.parse(event.data));
@@ -110,8 +100,7 @@ export class ScaffolderApi {
               }
             }
           });
-          eventSource.addEventListener('completion', event => {
-            eventSource.close();
+          eventSource.addEventListener('completion', (event: any) => {
             if (event.data) {
               try {
                 subscriber.next(JSON.parse(event.data));

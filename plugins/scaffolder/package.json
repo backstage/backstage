@@ -50,7 +50,8 @@
     "react-router-dom": "6.0.0-beta.0",
     "react-use": "^15.3.3",
     "swr": "^0.3.0",
-    "zen-observable": "^0.8.15"
+    "zen-observable": "^0.8.15",
+    "use-immer": "^0.4.2"
   },
   "devDependencies": {
     "@backstage/cli": "^0.6.0",

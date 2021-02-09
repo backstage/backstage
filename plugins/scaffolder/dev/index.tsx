@@ -21,6 +21,7 @@ import { CatalogClient } from '@backstage/catalog-client';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { TemplateIndexPage, TemplatePage } from '../src/plugin';
 import { ScaffolderApi, scaffolderApiRef } from '../src';
+import { TaskPage } from '../src/components/TaskPage';
 
 createDevApp()
   .registerApi({
@@ -41,5 +42,9 @@ createDevApp()
   .addPage({
     path: '/create/:templateName',
     element: <TemplatePage />,
+  })
+  .addPage({
+    path: '/scaffolder/tasks/:taskId',
+    element: <TaskPage />,
   })
   .render();

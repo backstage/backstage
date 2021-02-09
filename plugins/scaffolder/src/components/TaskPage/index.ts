@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createRouteRef } from '@backstage/core';
-
-export const rootRoute = createRouteRef({
-  path: '/create',
-  title: 'Create new entity',
-});
-
-export const templateRoute = createRouteRef({
-  path: '/create/:templateName',
-  title: 'Entity creation',
-});
-
-export const taskRoute = createRouteRef({
-  path: '/scaffolder/task/:taskId',
-  title: 'Task information',
-});
+export { TaskPage } from './TaskPage';

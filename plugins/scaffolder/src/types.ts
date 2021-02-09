@@ -37,17 +37,17 @@ export type Stage = {
   endedAt?: string;
 };
 
-export type ScaffolderV2Step = {
+export type ScaffolderStep = {
   id: string;
   name: string;
   action: string;
   parameters?: { [name: string]: JsonValue };
 };
 
-export type ScaffolderV2Task = {
+export type ScaffolderTask = {
   id: string;
   spec: {
-    steps: ScaffolderV2Step[];
+    steps: ScaffolderStep[];
   };
   status: 'failed' | 'completed' | 'processing' | 'open' | 'cancelled';
   lastHeartbeatAt: string;

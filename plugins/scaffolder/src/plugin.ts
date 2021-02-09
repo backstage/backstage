@@ -22,7 +22,8 @@ import {
 } from '@backstage/core';
 import { ScaffolderPage as ScaffolderPageComponent } from './components/ScaffolderPage';
 import { TemplatePage as TemplatePageComponent } from './components/TemplatePage';
-import { rootRoute, templateRoute } from './routes';
+import { TaskPage as TaskPageComponent } from './components/TaskPage';
+import { rootRoute, templateRoute, taskRoute } from './routes';
 import { scaffolderApiRef, ScaffolderApi } from './api';
 
 export const scaffolderPlugin = createPlugin({
@@ -37,10 +38,12 @@ export const scaffolderPlugin = createPlugin({
   register({ router }) {
     router.addRoute(rootRoute, ScaffolderPageComponent);
     router.addRoute(templateRoute, TemplatePageComponent);
+    router.addRoute(taskRoute, TaskPageComponent);
   },
   routes: {
     templateIndex: rootRoute,
     template: templateRoute,
+    task: taskRoute,
   },
 });
 
@@ -57,5 +60,12 @@ export const TemplatePage = scaffolderPlugin.provide(
     component: () =>
       import('./components/TemplatePage').then(m => m.TemplatePage),
     mountPoint: templateRoute,
+  }),
+);
+
+export const TaskPage = scaffolderPlugin.provide(
+  createRoutableExtension({
+    component: () => import('./components/TaskPage').then(m => m.TaskPage),
+    mountPoint: taskRoute,
   }),
 );
