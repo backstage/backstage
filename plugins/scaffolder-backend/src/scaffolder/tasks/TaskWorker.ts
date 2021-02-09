@@ -77,7 +77,10 @@ export class TaskWorker {
           });
 
           taskLogger.add(new winston.transports.Stream({ stream }));
-          await task.emitLog(`Beginning step ${step.name}`, metadata);
+          await task.emitLog(`Beginning step ${step.name}`, {
+            ...metadata,
+            status: 'processing',
+          });
 
           const action = actionRegistry.get(step.action);
           if (!action) {
@@ -97,9 +100,15 @@ export class TaskWorker {
             },
           });
 
-          await task.emitLog(`Finished step ${step.name}`, metadata);
+          await task.emitLog(`Finished step ${step.name}`, {
+            ...metadata,
+            status: 'completed',
+          });
         } catch (error) {
-          await task.emitLog(String(error.stack), metadata);
+          await task.emitLog(String(error.stack), {
+            ...metadata,
+            status: 'failed',
+          });
           throw error;
         }
       }
