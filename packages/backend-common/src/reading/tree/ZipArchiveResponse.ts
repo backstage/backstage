@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import platformPath from 'path';
-import fs from 'fs-extra';
-import unzipper, { Entry } from 'unzipper';
 import archiver from 'archiver';
+import fs from 'fs-extra';
+import platformPath from 'path';
 import { Readable } from 'stream';
+import unzipper, { Entry } from 'unzipper';
 import {
   ReadTreeResponse,
-  ReadTreeResponseFile,
   ReadTreeResponseDirOptions,
+  ReadTreeResponseFile,
 } from '../types';
 
 // Matches a directory name + one `/` at the start of any string,

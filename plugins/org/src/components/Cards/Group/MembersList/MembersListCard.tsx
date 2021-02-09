@@ -21,6 +21,7 @@ import {
 } from '@backstage/catalog-model';
 import { Avatar, InfoCard, Progress, useApi } from '@backstage/core';
 import {
+  useEntity,
   catalogApiRef,
   entityRouteParams,
 } from '@backstage/plugin-catalog-react';
@@ -105,11 +106,11 @@ const MemberComponent = ({
   );
 };
 
-export const MembersListCard = ({
-  entity: groupEntity,
-}: {
-  entity: GroupEntity;
+export const MembersListCard = (_props: {
+  /** @deprecated The entity is now grabbed from context instead */
+  entity?: GroupEntity;
 }) => {
+  const groupEntity = useEntity().entity as GroupEntity;
   const {
     metadata: { name: groupName },
     spec: { profile },

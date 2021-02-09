@@ -15,6 +15,7 @@
  */
 
 import { UserEntity } from '@backstage/catalog-model';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import React from 'react';
 import { UserProfileCard } from './UserProfileCard';
@@ -48,7 +49,11 @@ describe('UserSummary Test', () => {
 
   it('Display Profile Card', async () => {
     const rendered = await renderWithEffects(
-      wrapInTestApp(<UserProfileCard entity={userEntity} variant="gridItem" />),
+      wrapInTestApp(
+        <EntityProvider entity={userEntity}>
+          <UserProfileCard entity={userEntity} variant="gridItem" />
+        </EntityProvider>,
+      ),
     );
 
     expect(rendered.getByText('calum-leavy@example.com')).toBeInTheDocument();

@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { createPlugin, createApiFactory } from '@backstage/core';
+import {
+  createPlugin,
+  createApiFactory,
+  createRoutableExtension,
+} from '@backstage/core';
 import ProfileCatalog from './components/ProfileCatalog';
 import ClusterPage from './components/ClusterPage';
 import ClusterList from './components/ClusterList';
@@ -25,7 +29,7 @@ import {
 } from './routes';
 import { gitOpsApiRef, GitOpsRestApi } from './api';
 
-export const plugin = createPlugin({
+export const gitopsProfilesPlugin = createPlugin({
   id: 'gitops-profiles',
   apis: [
     createApiFactory(gitOpsApiRef, new GitOpsRestApi('http://localhost:3008')),
@@ -35,4 +39,30 @@ export const plugin = createPlugin({
     router.addRoute(gitOpsClusterDetailsRoute, ClusterPage);
     router.addRoute(gitOpsClusterCreateRoute, ProfileCatalog);
   },
+  routes: {
+    listPage: gitOpsClusterListRoute,
+    detailsPage: gitOpsClusterDetailsRoute,
+    createPage: gitOpsClusterCreateRoute,
+  },
 });
+
+export const GitopsProfilesClusterListPage = gitopsProfilesPlugin.provide(
+  createRoutableExtension({
+    component: () => import('./components/ClusterList').then(m => m.default),
+    mountPoint: gitOpsClusterListRoute,
+  }),
+);
+
+export const GitopsProfilesClusterPage = gitopsProfilesPlugin.provide(
+  createRoutableExtension({
+    component: () => import('./components/ClusterPage').then(m => m.default),
+    mountPoint: gitOpsClusterDetailsRoute,
+  }),
+);
+
+export const GitopsProfilesCreatePage = gitopsProfilesPlugin.provide(
+  createRoutableExtension({
+    component: () => import('./components/ProfileCatalog').then(m => m.default),
+    mountPoint: gitOpsClusterCreateRoute,
+  }),
+);

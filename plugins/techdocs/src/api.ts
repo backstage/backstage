@@ -157,14 +157,23 @@ export class TechDocsStorageApi implements TechDocsStorage {
       `${url.endsWith('/') ? url : `${url}/`}index.html`,
     );
 
-    if (request.status === 404) {
-      let errorMessage = 'Page not found. ';
-      // path is empty for the home page of an entity's docs site
-      if (!path) {
-        errorMessage +=
-          'This could be because there is no index.md file in the root of the docs directory of this repository.';
-      }
-      throw new Error(errorMessage);
+    let errorMessage = '';
+    switch (request.status) {
+      case 404:
+        errorMessage = 'Page not found. ';
+        // path is empty for the home page of an entity's docs site
+        if (!path) {
+          errorMessage +=
+            'This could be because there is no index.md file in the root of the docs directory of this repository.';
+        }
+        throw new Error(errorMessage);
+      case 500:
+        errorMessage =
+          'Could not generate documentation or an error in the TechDocs backend. ';
+        throw new Error(errorMessage);
+      default:
+        // Do nothing
+        break;
     }
 
     return request.text();

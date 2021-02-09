@@ -1,5 +1,14 @@
 # @backstage/catalog-model
 
+## 0.7.1
+
+### Patch Changes
+
+- 6e612ce25: Adds a new optional `links` metadata field to the Entity class within the `catalog-model` package (as discussed in [[RFC] Entity Links](https://github.com/backstage/backstage/issues/3787)). This PR adds support for the entity links only. Follow up PR's will introduce the UI component to display them.
+- 025e122c3: Replace `yup` with `ajv`, for validation of catalog entities.
+- 7881f2117: Introduce json schema variants of the `yup` validation schemas
+- 11cb5ef94: Implement matchEntityWithRef for client side filtering of entities by ref matching
+
 ## 0.7.0
 
 ### Minor Changes
