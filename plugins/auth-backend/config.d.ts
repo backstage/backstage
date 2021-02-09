@@ -61,7 +61,6 @@ export interface Config {
         development: {
           clientId: string;
           clientSecret: string;
-          callbackUrl: string;
           authorizationUrl: string;
           tokenUrl: string;
           scope?: string;
