@@ -29,7 +29,7 @@ export function useFilteredEntities() {
   return {
     loading: context.loading,
     error: context.error,
-    matchingEntities: context.matchingEntities,
+    filteredEntities: context.filteredEntities,
     availableCategories: context.availableCategories,
     isCatalogEmpty: context.isCatalogEmpty,
     reload: context.reload,

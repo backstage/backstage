@@ -93,13 +93,15 @@ describe('Results Filter', () => {
       ),
     );
 
-  it('should render all available tags', async () => {
-    const tags = ['test', 'java'];
+  it('should render all available categories', async () => {
+    const categories = ['test', 'java'];
     const { findByText } = renderWrapped(
-      <ResultsFilter availableTags={tags} />,
+      <ResultsFilter availableCategories={categories} />,
     );
-    for (const tag of tags) {
-      expect(await findByText(tag)).toBeInTheDocument();
+    for (const category of categories) {
+      expect(
+        await findByText(category.charAt(0).toUpperCase() + category.slice(1)),
+      ).toBeInTheDocument();
     }
   });
 });

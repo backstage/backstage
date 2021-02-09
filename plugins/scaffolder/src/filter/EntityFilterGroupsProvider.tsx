@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, TemplateEntityV1alpha1 } from '@backstage/catalog-model';
+import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -50,7 +50,7 @@ function useProvideEntityFilters(): FilterGroupsContext {
     const response = await catalogApi.getEntities({
       filter: { kind: 'Template' },
     });
-    return response.items;
+    return response.items as TemplateEntityV1alpha1[];
   });
 
   const filterGroups = useRef<{
@@ -63,7 +63,9 @@ function useProvideEntityFilters(): FilterGroupsContext {
   const [filterGroupStates, setFilterGroupStates] = useState<{
     [filterGroupId: string]: FilterGroupStates;
   }>({});
-  const [matchingEntities, setMatchingEntities] = useState<Entity[]>([]);
+  const [filteredEntities, setFilteredEntities] = useState<
+    TemplateEntityV1alpha1[]
+  >([]);
   const [availableCategories, setAvailableCategories] = useState<string[]>([]);
   const [isCatalogEmpty, setCatalogEmpty] = useState<boolean>(false);
 
@@ -81,7 +83,7 @@ function useProvideEntityFilters(): FilterGroupsContext {
         error,
       ),
     );
-    setMatchingEntities(
+    setFilteredEntities(
       buildMatchingEntities(
         filterGroups.current,
         selectedFilterKeys.current,
@@ -146,7 +148,7 @@ function useProvideEntityFilters(): FilterGroupsContext {
     loading: !error && !entities,
     error,
     filterGroupStates,
-    matchingEntities,
+    filteredEntities,
     availableCategories,
     isCatalogEmpty,
   };
@@ -158,7 +160,7 @@ function buildStates(
   filterGroups: { [filterGroupId: string]: FilterGroup },
   selectedFilterKeys: { [filterGroupId: string]: Set<string> },
   selectedCategories: string[],
-  entities?: Entity[],
+  entities?: TemplateEntityV1alpha1[],
   error?: Error,
 ): { [filterGroupId: string]: FilterGroupStates } {
   // On error - all entries are an error state
@@ -205,7 +207,7 @@ function buildStates(
 }
 
 // Given all entites, find all possible categories and provide them in a sorted list.
-function collectCategories(entities?: Entity[]): string[] {
+function collectCategories(entities?: TemplateEntityV1alpha1[]): string[] {
   const categories = new Set<string>();
   (entities || []).forEach(e => {
     if (e.spec?.type) {
@@ -221,9 +223,9 @@ function buildMatchingEntities(
   filterGroups: { [filterGroupId: string]: FilterGroup },
   selectedFilterKeys: { [filterGroupId: string]: Set<string> },
   selectedCategories: string[],
-  entities?: Entity[],
+  entities?: TemplateEntityV1alpha1[],
   excludeFilterGroupId?: string,
-): Entity[] {
+): TemplateEntityV1alpha1[] {
   // Build one filter fn per filter group
   const allFilters: EntityFilterFn[] = [];
   for (const [filterGroupId, filterGroup] of Object.entries(filterGroups)) {
