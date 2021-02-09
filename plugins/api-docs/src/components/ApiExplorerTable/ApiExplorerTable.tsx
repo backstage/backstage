@@ -22,11 +22,13 @@ import {
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
 import {
+  CodeSnippet,
   Table,
   TableColumn,
   TableFilter,
   TableState,
   useQueryParamState,
+  WarningPanel,
 } from '@backstage/core';
 import {
   EntityRefLink,
@@ -35,7 +37,6 @@ import {
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
 import { Chip } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
 import React from 'react';
 import { ApiTypeTitle } from '../ApiDefinitionCard';
 
@@ -151,11 +152,9 @@ export const ApiExplorerTable = ({
 
   if (error) {
     return (
-      <div>
-        <Alert severity="error">
-          Error encountered while fetching catalog entities. {error.toString()}
-        </Alert>
-      </div>
+      <WarningPanel severity="error" title="Could not fetch catalog entities.">
+        <CodeSnippet language="text" text={error.toString()} />
+      </WarningPanel>
     );
   }
 
