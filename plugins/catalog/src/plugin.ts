@@ -19,6 +19,7 @@ import {
   createApiFactory,
   createPlugin,
   discoveryApiRef,
+  createComponentExtension,
   createRoutableExtension,
   identityApiRef,
 } from '@backstage/core';
@@ -63,5 +64,14 @@ export const CatalogEntityPage = catalogPlugin.provide(
         m => m.CatalogEntityPage,
       ),
     mountPoint: entityRouteRef,
+  }),
+);
+
+export const EntityLinksCard = catalogPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/EntityLinksCard').then(m => m.EntityLinksCard),
+    },
   }),
 );

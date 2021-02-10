@@ -14,15 +14,6 @@
  * limitations under the License.
  */
 
-export { AboutCard } from './components/AboutCard';
-export { EntityLayout } from './components/EntityLayout';
-export { EntityPageLayout } from './components/EntityPageLayout';
-export * from './components/EntitySwitch';
-export { Router } from './components/Router';
-export {
-  catalogPlugin,
-  catalogPlugin as plugin,
-  CatalogIndexPage,
-  CatalogEntityPage,
-  EntityLinksCard,
-} from './plugin';
+export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+
+export type ColumnBreakpoints = Record<Breakpoint, number>;
