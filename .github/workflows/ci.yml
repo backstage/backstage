@@ -69,6 +69,12 @@ jobs:
       - name: verify doc links
         run: node scripts/verify-links.js
 
+      - name: Prettify docs
+        uses: creyD/prettier_action@v3.1
+        with:
+          prettier_options: --config docs/prettier.config.js --write docs/**/*.md 
+          same_commit: true  
+
       - name: prettier
         run: yarn prettier:check
 
@@ -117,3 +123,9 @@ jobs:
             echo ""
             exit 1
           fi
+      - name: Prettify code
+        uses: creyD/prettier_action@v3.1
+        with:
+          prettier_options: --config docs/prettier.config.js --write docs/**/*.md 
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
