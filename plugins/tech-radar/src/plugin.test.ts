@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { plugin } from './plugin';
+import { techRadarPlugin } from './plugin';
 
 describe('tech-radar', () => {
   it('should export plugin', () => {
-    expect(plugin).toBeDefined();
+    expect(techRadarPlugin).toBeDefined();
   });
 });
