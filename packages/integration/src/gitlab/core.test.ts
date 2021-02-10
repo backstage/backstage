@@ -37,10 +37,14 @@ describe('gitlab core', () => {
   const configWithToken: GitLabIntegrationConfig = {
     host: 'g.com',
     token: '0123456789',
+    apiBaseUrl: '<ignored>',
+    baseUrl: '<ignored>',
   };
 
   const configWithNoToken: GitLabIntegrationConfig = {
     host: 'g.com',
+    apiBaseUrl: '<ignored>',
+    baseUrl: '<ignored>',
   };
 
   describe('getGitLabFileFetchUrl', () => {
