@@ -30,8 +30,7 @@ export const OverflowTooltip = (props: Props) => {
   const [hover, setHover] = useState(false);
 
   const handleToggled = (truncated: boolean) => {
-    const hover = truncated ? true : false;
-    setHover(hover);
+    setHover(truncated);
   };
 
   return (
