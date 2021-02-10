@@ -15,7 +15,7 @@
  */
 
 import { Page, Header, Lifecycle, Content } from '@backstage/core';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import {
   makeStyles,
   Theme,
@@ -34,7 +34,11 @@ import Check from '@material-ui/icons/Check';
 import Cancel from '@material-ui/icons/Cancel';
 import Typography from '@material-ui/core/Typography';
 import { useParams } from 'react-router';
-import { useTaskEventStream, TaskStream } from '../hooks/useEventStream';
+import {
+  useTaskEventStream,
+  TaskStream,
+  Status,
+} from '../hooks/useEventStream';
 import LazyLog from 'react-lazylog/build/LazyLog';
 import { StepButton, StepIconProps } from '@material-ui/core';
 
@@ -130,36 +134,29 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export const TaskStepper = ({ taskStream }: { taskStream: TaskStream }) => {
+type Steps = {
+  log: string[];
+  id: string;
+  name: string;
+  status: Status;
+};
+
+export const TaskStepper = ({ steps }: { steps: Steps[] }) => {
   const classes = useStyles();
   const [activeStep, setActiveStep] = useState(0);
   const [expandAll, setExpandAll] = useState(false);
-
-  const steps = taskStream?.task?.spec.steps ?? [];
-
-  const handleNext = () => {
-    setActiveStep(prevActiveStep => prevActiveStep + 1);
-  };
-
-  const handleBack = () => {
-    setActiveStep(prevActiveStep => prevActiveStep - 1);
-  };
 
   const handleStep = (step: number) => {
     setExpandAll(false);
     setActiveStep(step);
   };
 
-  const handleReset = () => {
-    setActiveStep(0);
-  };
-
   useEffect(() => {
-    const activeIndex = Object.values(taskStream?.steps ?? {}).findIndex(step =>
+    const activeIndex = steps.findIndex(step =>
       ['failed', 'processing'].includes(step.status),
     );
-    setActiveStep(activeIndex);
-  }, [taskStream]);
+    setActiveStep(2);
+  }, [steps]);
 
   return (
     <div className={classes.root}>
@@ -170,12 +167,24 @@ export const TaskStepper = ({ taskStream }: { taskStream: TaskStream }) => {
       <Button variant="outlined">Raw Log</Button>
       <Stepper activeStep={activeStep} orientation="vertical" nonLinear>
         {steps.map((step, index) => {
-          const isCompleted =
-            taskStream.steps?.[step.id].status === 'completed';
-          const isFailed = taskStream.steps?.[step.id].status === 'failed';
+          const isCompleted = step.status === 'completed';
+          const isFailed = step.status === 'failed';
+          // return (
+          //   <TaskStep
+          //     key={String(index)}
+          //     log={step.log.length ? step.log.join('\n') : 'please wait'}
+          //     expanded={expandAll}
+          //     name={step.name}
+          //     isFailed={isFailed}
+          //     isCompleted={isCompleted}
+          //     handleStep={handleStep}
+          //     index={index}
+          //   />
+          // );
+
           return (
-            <Step key={String(index)} expanded={expandAll}>
-              <StepButton onClick={() => handleStep(index)}>
+            <Step key={String(index)} expanded>
+              <StepButton onClick={() => {}}>
                 <StepLabel
                   StepIconProps={{ completed: isCompleted, error: isFailed }}
                   StepIconComponent={QontoStepIcon}
@@ -188,11 +197,7 @@ export const TaskStepper = ({ taskStream }: { taskStream: TaskStream }) => {
                 <div style={{ height: '50vh' }}>
                   <LazyLog
                     extraLines={1}
-                    text={
-                      taskStream.steps?.[step.id]?.log.length
-                        ? taskStream.steps?.[step.id]?.log.join('\n')
-                        : 'fetching...'
-                    }
+                    text={step.log.length ? step.log.join('\n') : 'please wait'}
                   />
                 </div>
               </StepContent>
@@ -200,21 +205,62 @@ export const TaskStepper = ({ taskStream }: { taskStream: TaskStream }) => {
           );
         })}
       </Stepper>
-      {activeStep === steps.length && (
-        <Paper square elevation={0} className={classes.resetContainer}>
-          <Typography>All steps completed - you&apos;re finished</Typography>
-          <Button onClick={handleReset} className={classes.button}>
-            Reset
-          </Button>
-        </Paper>
-      )}
     </div>
   );
 };
 
+type TaskStepOptions = {
+  name: string;
+  isCompleted: boolean;
+  isFailed: boolean;
+  expanded: boolean;
+  handleStep: () => void;
+  index: number;
+  log: string;
+};
+
+export const TaskStep = memo(
+  ({
+    log,
+    name,
+    isCompleted,
+    isFailed,
+    handleStep,
+    index,
+    expanded,
+  }: TaskStepOptions) => {
+    const onClick = React.useCallback(() => handleStep(index), [
+      handleStep,
+      index,
+    ]);
+    return (
+      <Step key={String(index)} expanded={expanded}>
+        <StepButton onClick={onClick}>
+          <StepLabel
+            StepIconProps={{ completed: isCompleted, error: isFailed }}
+            StepIconComponent={QontoStepIcon}
+          >
+            {name}
+          </StepLabel>
+        </StepButton>
+
+        <StepContent>
+          <div style={{ height: '50vh' }}>
+            <LazyLog extraLines={1} text={log} />
+          </div>
+        </StepContent>
+      </Step>
+    );
+  },
+);
 export const TaskPage = () => {
   const { taskId } = useParams();
   const taskStream = useTaskEventStream(taskId);
+  const steps =
+    taskStream.task?.spec.steps.map(step => ({
+      ...step,
+      ...taskStream?.steps?.[step.id],
+    })) ?? [];
 
   return (
     <Page themeId="home">
@@ -228,7 +274,7 @@ export const TaskPage = () => {
         subtitle={`Activity for task: ${taskId}`}
       />
       <Content>
-        <TaskStepper taskStream={taskStream} />
+        <TaskStepper steps={steps} />
       </Content>
     </Page>
   );

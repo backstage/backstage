@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 import { useImmerReducer } from 'use-immer';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { scaffolderApiRef } from '../../api';
 import { ScaffolderTask } from '../../types';
+import { useDebounce } from 'react-use';
 import { Subscription, useApi } from '@backstage/core';
 
-type Status = 'open' | 'processing' | 'failed' | 'completed';
+export type Status = 'open' | 'processing' | 'failed' | 'completed';
 type Step = {
   id: string;
   status: Status;
-  log: string[];
   endedAt?: string;
   startedAt?: string;
 };
@@ -34,7 +34,7 @@ export type TaskStream = {
   log: string[];
   completed: boolean;
   task?: ScaffolderTask;
-  steps?: { [stepId in string]: Step };
+  steps: { [stepId in string]: Step };
 };
 
 type ReducerAction =
@@ -56,7 +56,7 @@ function reducer(draft: TaskStream, action: ReducerAction) {
   switch (action.type) {
     case 'INIT': {
       draft.steps = action.data.spec.steps.reduce((current, next) => {
-        current[next.id] = { log: [], status: 'open', id: next.id };
+        current[next.id] = { status: 'open', id: next.id };
         return current;
       }, {} as { [stepId in string]: Step });
       draft.loading = false;
@@ -72,12 +72,7 @@ function reducer(draft: TaskStream, action: ReducerAction) {
       const currentStep = draft.steps?.[stepId];
       const logLine = `${action.data.createdAt} ${action.data.body.message}`;
 
-      if (!currentStep) {
-        draft.log.push(logLine);
-        return;
-      }
-
-      currentStep.log.push(logLine);
+      draft.log.push(logLine);
 
       if (
         action.data.body.status &&
@@ -89,9 +84,7 @@ function reducer(draft: TaskStream, action: ReducerAction) {
           currentStep.startedAt = action.data.createdAt;
         }
 
-        if (
-          ['zcancelled', 'failed', 'completed'].includes(currentStep.status)
-        ) {
+        if (['cancelled', 'failed', 'completed'].includes(currentStep.status)) {
           currentStep.endedAt = action.data.createdAt;
         }
       }
@@ -124,7 +117,14 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
     log: [],
     steps: {} as { [stepId in string]: Step },
   });
-
+  // const [debouncedState, setDebouncedState] = useState(state);
+  // useDebounce(
+  //   () => {
+  //     setDebouncedState(state);
+  //   },
+  //   1000,
+  //   [state],
+  // );
   useEffect(() => {
     let didCancel = false;
     let subscription: Subscription | undefined;
@@ -167,4 +167,5 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
   }, [scaffolderApi, dispatch, taskId]);
 
   return state;
+  // return debouncedState;
 };
