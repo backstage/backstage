@@ -48,11 +48,7 @@ function repositories(configApi: ConfigApi): string[] {
   return repos;
 }
 
-export const ImportComponentPage = ({
-  opts,
-}: {
-  opts?: StepperProviderOpts;
-}) => {
+export const ImportComponentPage = (opts: StepperProviderOpts) => {
   const configApi = useApi(configApiRef);
   const appTitle = configApi.getOptional('app.title') || 'Backstage';
 
