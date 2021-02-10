@@ -123,9 +123,3 @@ jobs:
             echo ""
             exit 1
           fi
-      - name: Prettify code
-        uses: creyD/prettier_action@v3.1
-        with:
-          prettier_options: --config docs/prettier.config.js --write docs/**/*.md 
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
