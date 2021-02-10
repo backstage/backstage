@@ -255,7 +255,7 @@ export class DatabaseTaskStore implements TaskStore {
       try {
         const body = JSON.parse(event.body) as JsonObject;
         return {
-          id: event.id,
+          id: Number(event.id),
           taskId,
           body,
           type: event.event_type,
