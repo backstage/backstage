@@ -32,5 +32,5 @@ export const apis = [
         environment: configApi.getOptionalString('auth.environment'),
       }),
   }),
-]
+];
 ```
