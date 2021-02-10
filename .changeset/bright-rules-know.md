@@ -6,6 +6,7 @@
 '@backstage/plugin-fossa': patch
 '@backstage/plugin-kubernetes': patch
 '@backstage/plugin-rollbar': minor
+'@backstage/plugin-scaffolder': minor
 '@backstage/plugin-scaffolder-backend': patch
 ---
 
