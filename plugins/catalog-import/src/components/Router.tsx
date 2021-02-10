@@ -19,8 +19,8 @@ import { Route, Routes } from 'react-router-dom';
 import { ImportComponentPage } from './ImportComponentPage';
 import { StepperProviderOpts } from './ImportStepper/defaults';
 
-export const Router = ({ options }: { options?: StepperProviderOpts }) => (
+export const Router = (opts: StepperProviderOpts) => (
   <Routes>
-    <Route element={<ImportComponentPage opts={options} />} />
+    <Route element={<ImportComponentPage {...opts} />} />
   </Routes>
 );

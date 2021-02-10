@@ -52,7 +52,7 @@ The pull request feature can be disabled by options that are passed to the `Cata
 
 <Route
   path="/catalog-import"
-  element={<CatalogImportPage options={{ pullRequest: { disable: true } }} />}
+  element={<CatalogImportPage pullRequest={{ disable: true }} />}
 />
 ```
 
@@ -68,13 +68,11 @@ This can be configured by options that are passed to the `CatalogImportPage`:
   path="/catalog-import"
   element={
     <CatalogImportPage
-      options={{
-        pullRequest: {
-          preparePullRequest: () => ({
-            title: 'My title',
-            body: 'My **markdown** body',
-          }),
-        },
+      pullRequest={{
+        preparePullRequest: () => ({
+          title: 'My title',
+          body: 'My **markdown** body',
+        }),
       }}
     />
   }
