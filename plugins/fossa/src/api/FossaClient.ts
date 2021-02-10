@@ -41,7 +41,7 @@ export class FossaClient implements FossaApi {
     const apiUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/fossa`;
     const idToken = await this.identityApi.getIdToken();
     const response = await fetch(`${apiUrl}/${path}`, {
-      headers: idToken ? { authorization: `Bearer ${idToken}` } : {},
+      headers: idToken ? { Authorization: `Bearer ${idToken}` } : {},
     });
     if (response.status === 200) {
       return await response.json();

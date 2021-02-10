@@ -57,7 +57,7 @@ describe('<ImportComponentPage />', () => {
         new CatalogImportClient({
           discoveryApi: {} as any,
           githubAuthApi: {
-            getAccessToken: (_, __) => Promise.resolve('token'),
+            getAccessToken: async () => 'token',
           },
           identityApi,
           configApi: {} as any,

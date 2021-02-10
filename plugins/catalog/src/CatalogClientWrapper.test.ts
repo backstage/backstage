@@ -63,7 +63,6 @@ describe('CatalogClientWrapper', () => {
 
   describe('getEntities', () => {
     it('injects authorization token', async () => {
-      expect.assertions(2);
       const client = new CatalogClientWrapper({
         client: new MockedCatalogClient({ discoveryApi }),
         identityApi,
@@ -79,7 +78,6 @@ describe('CatalogClientWrapper', () => {
 
   describe('getLocationById', () => {
     it('omits authorization token when guest', async () => {
-      expect.assertions(2);
       const client = new CatalogClientWrapper({
         client: new MockedCatalogClient({ discoveryApi }),
         identityApi: guestIdentityApi,
@@ -99,7 +97,6 @@ describe('CatalogClientWrapper', () => {
       name: 'name',
     };
     it('injects authorization token', async () => {
-      expect.assertions(2);
       const client = new CatalogClientWrapper({
         client: new MockedCatalogClient({ discoveryApi }),
         identityApi,
@@ -117,7 +114,6 @@ describe('CatalogClientWrapper', () => {
   describe('addLocation', () => {
     const location = { target: 'target' };
     it('injects authorization token', async () => {
-      expect.assertions(2);
       const client = new CatalogClientWrapper({
         client: new MockedCatalogClient({ discoveryApi }),
         identityApi,
@@ -140,7 +136,6 @@ describe('CatalogClientWrapper', () => {
       },
     };
     it('injects authorization token', async () => {
-      expect.assertions(2);
       const client = new CatalogClientWrapper({
         client: new MockedCatalogClient({ discoveryApi }),
         identityApi,
@@ -158,7 +153,6 @@ describe('CatalogClientWrapper', () => {
   describe('removeEntityByUid', () => {
     it('injects authorization token', async () => {
       const uid = 'uid';
-      expect.assertions(2);
       const client = new CatalogClientWrapper({
         client: new MockedCatalogClient({ discoveryApi }),
         identityApi,

@@ -146,7 +146,7 @@ export class CatalogClient implements CatalogApi {
       `${await this.discoveryApi.getBaseUrl('catalog')}/entities/by-uid/${uid}`,
       {
         headers: options?.token
-          ? { authorization: `Bearer ${options.token}` }
+          ? { Authorization: `Bearer ${options.token}` }
           : {},
         method: 'DELETE',
       },
@@ -171,7 +171,7 @@ export class CatalogClient implements CatalogApi {
     const url = `${await this.discoveryApi.getBaseUrl('catalog')}${path}`;
     const response = await fetch(url, {
       headers: options?.token
-        ? { authorization: `Bearer ${options.token}` }
+        ? { Authorization: `Bearer ${options.token}` }
         : {},
     });
 
@@ -191,7 +191,7 @@ export class CatalogClient implements CatalogApi {
     const url = `${await this.discoveryApi.getBaseUrl('catalog')}${path}`;
     const response = await fetch(url, {
       headers: options?.token
-        ? { authorization: `Bearer ${options.token}` }
+        ? { Authorization: `Bearer ${options.token}` }
         : {},
     });
 
