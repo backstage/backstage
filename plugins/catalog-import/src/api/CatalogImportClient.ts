@@ -133,16 +133,13 @@ export class CatalogImportClient implements CatalogImportApi {
     repo: string;
   }): Promise<PartialEntity[]> {
     const idToken = await this.identityApi.getIdToken();
-    const headers = {
-      'Content-Type': 'application/json',
-    } as { [header: string]: string };
-    if (idToken) {
-      headers.authorization = `Bearer ${idToken}`;
-    }
     const response = await fetch(
       `${await this.discoveryApi.getBaseUrl('catalog')}/analyze-location`,
       {
-        headers,
+        headers: {
+          'Content-Type': 'application/json',
+          ...(idToken && { Authorization: `Bearer ${idToken}` }),
+        },
         method: 'POST',
         body: JSON.stringify({
           location: { type: 'url', target: repo },

@@ -89,18 +89,15 @@ export class CatalogClient implements CatalogApi {
     { type = 'url', target, dryRun, presence }: AddLocationRequest,
     options?: CatalogRequestOptions,
   ): Promise<AddLocationResponse> {
-    const headers = {
-      'Content-Type': 'application/json',
-    } as { [header: string]: string };
-    if (options?.token) {
-      headers.authorization = `Bearer ${options.token}`;
-    }
     const response = await fetch(
       `${await this.discoveryApi.getBaseUrl('catalog')}/locations${
         dryRun ? '?dryRun=true' : ''
       }`,
       {
-        headers,
+        headers: {
+          'Content-Type': 'application/json',
+          ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        },
         method: 'POST',
         body: JSON.stringify({ type, target, presence }),
       },

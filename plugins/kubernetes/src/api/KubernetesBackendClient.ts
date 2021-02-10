@@ -39,15 +39,12 @@ export class KubernetesBackendClient implements KubernetesApi {
   ): Promise<any> {
     const url = `${await this.discoveryApi.getBaseUrl('kubernetes')}${path}`;
     const idToken = await this.identityApi.getIdToken();
-    const headers = {
-      'Content-Type': 'application/json',
-    } as { [header: string]: string };
-    if (idToken) {
-      headers.authorization = `Bearer ${idToken}`;
-    }
     const response = await fetch(url, {
       method: 'POST',
-      headers,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(idToken && { Authorization: `Bearer ${idToken}` }),
+      },
       body: JSON.stringify(requestBody),
     });
 
