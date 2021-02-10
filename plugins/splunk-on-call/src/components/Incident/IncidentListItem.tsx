@@ -130,7 +130,7 @@ export const IncidentListItem = ({ incident, onIncidentAction }: Props) => {
     new Date().getTime() - new Date(incident.startTime!).getTime();
   const createdAt = DateTime.local()
     .minus(Duration.fromMillis(duration))
-    .toRelative();
+    .toRelative({ locale: 'en' });
   const alertApi = useApi(alertApiRef);
   const api = useApi(splunkOnCallApiRef);
 
@@ -211,7 +211,7 @@ export const IncidentListItem = ({ incident, onIncidentAction }: Props) => {
         }}
         secondary={
           <Typography noWrap variant="body2" color="textSecondary">
-            Created {createdAt} ago {user && `by ${user}`}
+            Created {createdAt} {user && `by ${user}`}
           </Typography>
         }
       />
