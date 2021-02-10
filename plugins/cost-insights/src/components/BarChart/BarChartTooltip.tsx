@@ -21,6 +21,7 @@ import { useTooltipStyles as useStyles } from '../../utils/styles';
 
 export type BarChartTooltipProps = {
   title: string;
+  truncateTitle?: boolean;
   content?: ReactNode | string;
   subtitle?: ReactNode;
   topRight?: ReactNode;
@@ -29,6 +30,7 @@ export type BarChartTooltipProps = {
 
 export const BarChartTooltip = ({
   title,
+  truncateTitle = false,
   content,
   subtitle,
   topRight,
@@ -36,9 +38,11 @@ export const BarChartTooltip = ({
   children,
 }: PropsWithChildren<BarChartTooltipProps>) => {
   const classes = useStyles();
-  const titleClassName = classnames(classes.truncate, {
-    [classes.maxWidth]: topRight === undefined,
-  });
+  const titleClassName = classnames(
+    classes.maxWidth,
+    { [classes.fullTitle]: !truncateTitle },
+    { [classes.truncate]: truncateTitle },
+  );
 
   return (
     <Box className={classes.tooltip} display="flex" flexDirection="column">

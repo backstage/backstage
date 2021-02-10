@@ -146,6 +146,7 @@ export const ProductInsightsChart = ({
       return (
         <BarChartTooltip
           title={title}
+          truncateTitle
           subtitle={subtitle}
           topRight={
             <CostGrowthIndicator
