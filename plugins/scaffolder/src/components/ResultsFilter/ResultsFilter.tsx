@@ -87,25 +87,27 @@ export const ResultsFilter = ({ availableCategories }: Props) => {
         Categories
       </Typography>
       <List disablePadding dense>
-        {availableCategories.map(t => {
-          const labelId = `checkbox-list-label-${t}`;
+        {availableCategories.map(category => {
+          const labelId = `checkbox-list-label-${category}`;
           return (
             <ListItem
-              key={t}
+              key={category}
               dense
               button
               onClick={() =>
                 updateSelectedCategories(
-                  selectedCategories.includes(t)
-                    ? selectedCategories.filter(s => s !== t)
-                    : [...selectedCategories, t],
+                  selectedCategories.includes(category)
+                    ? selectedCategories.filter(
+                        selectedCategory => selectedCategory !== category,
+                      )
+                    : [...selectedCategories, category],
                 )
               }
             >
               <Checkbox
                 edge="start"
                 color="primary"
-                checked={selectedCategories.includes(t)}
+                checked={selectedCategories.includes(category)}
                 tabIndex={-1}
                 disableRipple
                 className={classes.checkbox}
@@ -113,7 +115,7 @@ export const ResultsFilter = ({ availableCategories }: Props) => {
               />
               <ListItemText
                 id={labelId}
-                primary={t.charAt(0).toUpperCase() + t.slice(1)}
+                primary={category.charAt(0).toUpperCase() + category.slice(1)}
               />
             </ListItem>
           );

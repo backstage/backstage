@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { CatalogApi } from '@backstage/catalog-client';
-import { Entity } from '@backstage/catalog-model';
+import React from 'react';
+import { MockStorageApi, wrapInTestApp } from '@backstage/test-utils';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 import {
   ApiProvider,
   ApiRegistry,
@@ -23,10 +24,9 @@ import {
   identityApiRef,
   storageApiRef,
 } from '@backstage/core';
+import { CatalogApi } from '@backstage/catalog-client';
+import { Entity } from '@backstage/catalog-model';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { MockStorageApi, wrapInTestApp } from '@backstage/test-utils';
-import { fireEvent, render, waitFor } from '@testing-library/react';
-import React from 'react';
 import { EntityFilterGroupsProvider } from '../../filter';
 import { ButtonGroup, ScaffolderFilter } from './ScaffolderFilter';
 
@@ -80,185 +80,192 @@ describe('Catalog Filter', () => {
       ),
     );
 
-  it('should render the different groups', async () => {
-    const mockGroups: ButtonGroup[] = [
-      { name: 'Test Group 1', items: [] },
-      { name: 'Test Group 2', items: [] },
-    ];
-    const { findByText } = renderWrapped(
-      <ScaffolderFilter buttonGroups={mockGroups} initiallySelected="" />,
-    );
-    for (const group of mockGroups) {
-      expect(await findByText(group.name)).toBeInTheDocument();
-    }
-  });
-
-  it('should render the different items and their names', async () => {
-    const mockGroups: ButtonGroup[] = [
-      {
-        name: 'Test Group 1',
-        items: [
-          {
-            id: 'all',
-            label: 'First Label',
-            filterFn: () => true,
-          },
-          {
-            id: 'starred',
-            label: 'Second Label',
-            filterFn: () => false,
-          },
-        ],
-      },
-    ];
-
-    const { findByText } = renderWrapped(
-      <ScaffolderFilter buttonGroups={mockGroups} initiallySelected="all" />,
-    );
-
-    for (const item of mockGroups[0].items) {
-      expect(await findByText(item.label)).toBeInTheDocument();
-    }
-  });
-
-  it('selects the first item if no desired initial one is set', async () => {
-    const mockGroups: ButtonGroup[] = [
-      {
-        name: 'Test Group 1',
-        items: [
-          {
-            id: 'all',
-            label: 'First Label',
-            filterFn: () => true,
-          },
-          {
-            id: 'starred',
-            label: 'Second Label',
-            filterFn: () => false,
-          },
-        ],
-      },
-    ];
-
-    const onChange = jest.fn();
-
-    renderWrapped(
-      <ScaffolderFilter
-        buttonGroups={mockGroups}
-        initiallySelected="all"
-        onChange={onChange}
-      />,
-    );
-
-    await waitFor(() => {
-      expect(onChange).toHaveBeenLastCalledWith({
-        id: 'all',
-        label: 'First Label',
-      });
+  describe('filter groups', () => {
+    it('should render the different groups', async () => {
+      const mockGroups: ButtonGroup[] = [
+        { name: 'Test Group 1', items: [] },
+        { name: 'Test Group 2', items: [] },
+      ];
+      const { findByText } = renderWrapped(
+        <ScaffolderFilter buttonGroups={mockGroups} initiallySelected="" />,
+      );
+      for (const group of mockGroups) {
+        expect(await findByText(group.name)).toBeInTheDocument();
+      }
     });
   });
 
-  it('selects the initial item', async () => {
-    const mockGroups: ButtonGroup[] = [
-      {
-        name: 'Test Group 1',
-        items: [
-          {
-            id: 'all',
-            label: 'First Label',
-            filterFn: () => true,
-          },
-          {
-            id: 'starred',
-            label: 'Second Label',
-            filterFn: () => false,
-          },
-        ],
-      },
-    ];
+  describe('filter items', () => {
+    it('should render the different items and their names', async () => {
+      const mockGroups: ButtonGroup[] = [
+        {
+          name: 'Test Group 1',
+          items: [
+            {
+              id: 'all',
+              label: 'First Label',
+              filterFn: () => true,
+            },
+            {
+              id: 'starred',
+              label: 'Second Label',
+              filterFn: () => false,
+            },
+          ],
+        },
+      ];
 
-    const onChange = jest.fn();
+      const { findByText } = renderWrapped(
+        <ScaffolderFilter buttonGroups={mockGroups} initiallySelected="all" />,
+      );
 
-    renderWrapped(
-      <ScaffolderFilter
-        buttonGroups={mockGroups}
-        onChange={onChange}
-        initiallySelected="starred"
-      />,
-    );
-
-    await waitFor(() => {
-      expect(onChange).toHaveBeenLastCalledWith({
-        id: 'starred',
-        label: 'Second Label',
-      });
+      for (const item of mockGroups[0].items) {
+        expect(await findByText(item.label)).toBeInTheDocument();
+      }
     });
-  });
 
-  it('can change the selected item', async () => {
-    const mockGroups: ButtonGroup[] = [
-      {
-        name: 'Test Group 1',
-        items: [
-          {
-            id: 'all',
-            label: 'First Label',
-            filterFn: () => true,
-          },
-          {
-            id: 'starred',
-            label: 'Second Label',
-            filterFn: () => false,
-          },
-        ],
-      },
-    ];
+    it('selects the first item if no desired initial one is set', async () => {
+      const mockGroups: ButtonGroup[] = [
+        {
+          name: 'Test Group 1',
+          items: [
+            {
+              id: 'all',
+              label: 'First Label',
+              filterFn: () => true,
+            },
+            {
+              id: 'starred',
+              label: 'Second Label',
+              filterFn: () => false,
+            },
+          ],
+        },
+      ];
 
-    const onChange = jest.fn();
+      const onChange = jest.fn();
 
-    const { findByText } = renderWrapped(
-      <ScaffolderFilter
-        buttonGroups={mockGroups}
-        initiallySelected="all"
-        onChange={onChange}
-      />,
-    );
+      renderWrapped(
+        <ScaffolderFilter
+          buttonGroups={mockGroups}
+          initiallySelected="all"
+          onChange={onChange}
+        />,
+      );
 
-    await waitFor(() => {
-      expect(onChange).toHaveBeenLastCalledWith({
-        id: 'all',
-        label: 'First Label',
+      await waitFor(() => {
+        expect(onChange).toHaveBeenLastCalledWith({
+          id: 'all',
+          label: 'First Label',
+        });
       });
     });
 
-    fireEvent.click(await findByText('Second Label'));
+    it('selects the initial item', async () => {
+      const mockGroups: ButtonGroup[] = [
+        {
+          name: 'Test Group 1',
+          items: [
+            {
+              id: 'all',
+              label: 'First Label',
+              filterFn: () => true,
+            },
+            {
+              id: 'starred',
+              label: 'Second Label',
+              filterFn: () => false,
+            },
+          ],
+        },
+      ];
 
-    await waitFor(() => {
-      expect(onChange).toHaveBeenLastCalledWith({
-        id: 'starred',
-        label: 'Second Label',
+      const onChange = jest.fn();
+
+      renderWrapped(
+        <ScaffolderFilter
+          buttonGroups={mockGroups}
+          onChange={onChange}
+          initiallySelected="starred"
+        />,
+      );
+
+      await waitFor(() => {
+        expect(onChange).toHaveBeenLastCalledWith({
+          id: 'starred',
+          label: 'Second Label',
+        });
       });
     });
-  });
 
-  it('displays match counts properly', async () => {
-    const mockGroups: ButtonGroup[] = [
-      {
-        name: 'Test Group 1',
-        items: [
-          {
-            id: 'owned',
-            label: 'First Label',
-            filterFn: entity => entity.spec?.owner === 'tools@example.com',
-          },
-        ],
-      },
-    ];
+    it('can change the selected item', async () => {
+      const mockGroups: ButtonGroup[] = [
+        {
+          name: 'Test Group 1',
+          items: [
+            {
+              id: 'all',
+              label: 'First Label',
+              filterFn: () => true,
+            },
+            {
+              id: 'starred',
+              label: 'Second Label',
+              filterFn: () => false,
+            },
+          ],
+        },
+      ];
 
-    const { findByText } = renderWrapped(
-      <ScaffolderFilter buttonGroups={mockGroups} initiallySelected="owned" />,
-    );
+      const onChange = jest.fn();
 
-    expect(await findByText('1')).toBeInTheDocument();
+      const { findByText } = renderWrapped(
+        <ScaffolderFilter
+          buttonGroups={mockGroups}
+          initiallySelected="all"
+          onChange={onChange}
+        />,
+      );
+
+      await waitFor(() => {
+        expect(onChange).toHaveBeenLastCalledWith({
+          id: 'all',
+          label: 'First Label',
+        });
+      });
+
+      fireEvent.click(await findByText('Second Label'));
+
+      await waitFor(() => {
+        expect(onChange).toHaveBeenLastCalledWith({
+          id: 'starred',
+          label: 'Second Label',
+        });
+      });
+    });
+
+    it('displays match counts properly', async () => {
+      const mockGroups: ButtonGroup[] = [
+        {
+          name: 'Test Group 1',
+          items: [
+            {
+              id: 'owned',
+              label: 'First Label',
+              filterFn: entity => entity.spec?.owner === 'tools@example.com',
+            },
+          ],
+        },
+      ];
+
+      const { findByText } = renderWrapped(
+        <ScaffolderFilter
+          buttonGroups={mockGroups}
+          initiallySelected="owned"
+        />,
+      );
+
+      expect(await findByText('1')).toBeInTheDocument();
+    });
   });
 });

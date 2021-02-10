@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
+import React, { useEffect, useMemo, useState } from 'react';
+import { EntityMeta, TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import {
   configApiRef,
   Content,
@@ -28,7 +29,6 @@ import {
   WarningPanel,
 } from '@backstage/core';
 import { Button, Grid, Link, makeStyles, Typography } from '@material-ui/core';
-import React, { useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { EntityFilterGroupsProvider, useFilteredEntities } from '../../filter';
 import { TemplateCard, TemplateCardProps } from '../TemplateCard';
@@ -36,7 +36,6 @@ import { ResultsFilter } from '../ResultsFilter/ResultsFilter';
 import { ScaffolderFilter } from '../ScaffolderFilter';
 import { ButtonGroup } from '../ScaffolderFilter/ScaffolderFilter';
 import StarIcon from '@material-ui/icons/Star';
-import { useOwnUser } from '../useOwnUser';
 import { useStarredEntities } from '../../hooks/useStarredEntities';
 import SearchToolbar from '../SearchToolbar/SearchToolbar';
 
@@ -104,21 +103,18 @@ export const ScaffolderPageContents = () => {
     [] as TemplateEntityV1alpha1[],
   );
 
-  // Match templates by search input value
+  const matchesQuery = (metadata: EntityMeta, query: string) =>
+    `${metadata.title}`.toUpperCase().indexOf(query) !== -1 ||
+    metadata.tags?.join('').toUpperCase().indexOf(query) !== -1;
+
   useEffect(() => {
-    const searchUppercase = search.toUpperCase();
     if (search.length === 0) {
       return setMatchingEntities(filteredEntities);
     }
-    // Match search by title|tags
     return setMatchingEntities(
-      filteredEntities.filter(template => {
-        const { title, tags } = template.metadata;
-        return (
-          `${title}`.toUpperCase().indexOf(searchUppercase) !== -1 ||
-          tags?.join('').toUpperCase().indexOf(searchUppercase) !== -1
-        );
-      }),
+      filteredEntities.filter(template =>
+        matchesQuery(template.metadata, search.toUpperCase()),
+      ),
     );
   }, [search, filteredEntities]);
 
