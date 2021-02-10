@@ -20,6 +20,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: fetch branch master
         run: git fetch origin master
+        with:
+          ref: ${{ github.head_ref }}
 
       # Beginning of yarn setup, keep in sync between all workflows.
       # TODO(Rugvip): move this to composite action once all features we use are supported
