@@ -65,7 +65,7 @@ export class OidcAuthProvider implements OAuthHandlers {
     return await executeRedirectStrategy(req, strategy, {
       accessType: 'offline',
       prompt: 'none',
-      scope: `${req.scope} default`,
+      scope: req.scope,
       state: encodeState(req.state),
     });
   }
