@@ -161,37 +161,6 @@ export class CatalogImportClient implements CatalogImportApi {
     return payload.generateEntities.map((x: any) => x.entity);
   }
 
-  async createRepositoryLocation({
-    location,
-  }: {
-    location: string;
-  }): Promise<void> {
-    const idToken = await this.identityApi.getIdToken();
-    const headers = {
-      'Content-Type': 'application/json',
-    } as { [header: string]: string };
-    if (idToken) {
-      headers.authorization = `Bearer ${idToken}`;
-    }
-    const response = await fetch(
-      `${await this.discoveryApi.getBaseUrl('catalog')}/locations`,
-      {
-        headers,
-        method: 'POST',
-        body: JSON.stringify({
-          type: 'url',
-          target: location,
-          presence: 'optional',
-        }),
-      },
-    );
-    if (!response.ok) {
-      throw new Error(
-        `Received http response ${response.status}: ${response.statusText}`,
-      );
-    }
-  }
-
   // TODO: this response should better be part of the analyze-locations response and scm-independent / implemented per scm
   private async checkGitHubForExistingCatalogInfo({
     url,
