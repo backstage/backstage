@@ -35,6 +35,7 @@ export class UrlPreparer implements PreparerBase {
     try {
       return await getDocFilesFromRepository(this.reader, entity, {
         etag: options?.etag,
+        logger: this.logger,
       });
     } catch (error) {
       // NotModifiedError means that etag based cache is still valid.

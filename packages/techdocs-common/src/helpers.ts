@@ -209,16 +209,19 @@ export const getLastCommitTimestamp = async (
 export const getDocFilesFromRepository = async (
   reader: UrlReader,
   entity: Entity,
-  opts?: { etag?: string },
+  opts?: { etag?: string; logger?: Logger },
 ): Promise<PreparerResponse> => {
   const { target } = parseReferenceAnnotation(
     'backstage.io/techdocs-ref',
     entity,
   );
 
+  opts?.logger?.info(`Reading files from ${target}`);
   // readTree will throw NotModifiedError if etag has not changed.
   const readTreeResponse = await reader.readTree(target, { etag: opts?.etag });
   const preparedDir = await readTreeResponse.dir();
+
+  opts?.logger?.info(`Tree downloaded and stored at ${preparedDir}`);
 
   return {
     preparedDir,
