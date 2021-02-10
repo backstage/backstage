@@ -72,6 +72,20 @@ describe('CatalogImportClient', () => {
   const githubAuthApi: jest.Mocked<OAuthApi> = {
     getAccessToken: jest.fn(),
   };
+  const identityApi = {
+    getUserId: () => {
+      return 'user';
+    },
+    getProfile: () => {
+      return {};
+    },
+    getIdToken: () => {
+      return Promise.resolve('token');
+    },
+    signOut: () => {
+      return Promise.resolve();
+    },
+  };
 
   const configApi = new ConfigReader({});
 
@@ -92,6 +106,7 @@ describe('CatalogImportClient', () => {
       discoveryApi,
       githubAuthApi,
       configApi,
+      identityApi,
       catalogApi,
     });
 

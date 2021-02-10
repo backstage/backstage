@@ -20,20 +20,26 @@ import {
   createPlugin,
   discoveryApiRef,
   createRoutableExtension,
+  identityApiRef,
 } from '@backstage/core';
 import {
   catalogApiRef,
   catalogRouteRef,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
+import { CatalogClientWrapper } from './CatalogClientWrapper';
 
 export const catalogPlugin = createPlugin({
   id: 'catalog',
   apis: [
     createApiFactory({
       api: catalogApiRef,
-      deps: { discoveryApi: discoveryApiRef },
-      factory: ({ discoveryApi }) => new CatalogClient({ discoveryApi }),
+      deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
+      factory: ({ discoveryApi, identityApi }) =>
+        new CatalogClientWrapper({
+          client: new CatalogClient({ discoveryApi }),
+          identityApi,
+        }),
     }),
   ],
   routes: {

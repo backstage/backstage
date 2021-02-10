@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createApiRef, DiscoveryApi } from '@backstage/core';
+import { createApiRef, DiscoveryApi, IdentityApi } from '@backstage/core';
 
 export const scaffolderApiRef = createApiRef<ScaffolderApi>({
   id: 'plugin.scaffolder.service',
@@ -23,9 +23,14 @@ export const scaffolderApiRef = createApiRef<ScaffolderApi>({
 
 export class ScaffolderApi {
   private readonly discoveryApi: DiscoveryApi;
+  private readonly identityApi: IdentityApi;
 
-  constructor(options: { discoveryApi: DiscoveryApi }) {
+  constructor(options: {
+    discoveryApi: DiscoveryApi;
+    identityApi: IdentityApi;
+  }) {
     this.discoveryApi = options.discoveryApi;
+    this.identityApi = options.identityApi;
   }
 
   /**
@@ -36,11 +41,13 @@ export class ScaffolderApi {
    * @param values Parameters for the template, e.g. name, description
    */
   async scaffold(templateName: string, values: Record<string, any>) {
+    const token = await this.identityApi.getIdToken();
     const url = `${await this.discoveryApi.getBaseUrl('scaffolder')}/v1/jobs`;
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       body: JSON.stringify({ templateName, values: { ...values } }),
     });
@@ -56,8 +63,11 @@ export class ScaffolderApi {
   }
 
   async getJob(jobId: string) {
+    const token = await this.identityApi.getIdToken();
     const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
     const url = `${baseUrl}/v1/job/${encodeURIComponent(jobId)}`;
-    return fetch(url).then(x => x.json());
+    return fetch(url, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    }).then(x => x.json());
   }
 }

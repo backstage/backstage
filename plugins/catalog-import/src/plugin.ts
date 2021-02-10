@@ -15,6 +15,7 @@
  */
 
 import {
+  identityApiRef,
   configApiRef,
   createApiFactory,
   createPlugin,
@@ -39,14 +40,22 @@ export const catalogImportPlugin = createPlugin({
       deps: {
         discoveryApi: discoveryApiRef,
         githubAuthApi: githubAuthApiRef,
+        identityApi: identityApiRef,
         configApi: configApiRef,
         catalogApi: catalogApiRef,
       },
-      factory: ({ discoveryApi, githubAuthApi, configApi, catalogApi }) =>
+      factory: ({
+        discoveryApi,
+        githubAuthApi,
+        identityApi,
+        configApi,
+        catalogApi,
+      }) =>
         new CatalogImportClient({
           discoveryApi,
           githubAuthApi,
           configApi,
+          identityApi,
           catalogApi,
         }),
     }),

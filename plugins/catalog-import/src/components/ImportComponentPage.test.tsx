@@ -29,6 +29,21 @@ import { catalogImportApiRef, CatalogImportClient } from '../api';
 import { ImportComponentPage } from './ImportComponentPage';
 
 describe('<ImportComponentPage />', () => {
+  const identityApi = {
+    getUserId: () => {
+      return 'user';
+    },
+    getProfile: () => {
+      return {};
+    },
+    getIdToken: () => {
+      return Promise.resolve('token');
+    },
+    signOut: () => {
+      return Promise.resolve();
+    },
+  };
+
   let apis: ApiRegistry;
 
   beforeEach(() => {
@@ -41,7 +56,10 @@ describe('<ImportComponentPage />', () => {
         catalogImportApiRef,
         new CatalogImportClient({
           discoveryApi: {} as any,
-          githubAuthApi: {} as any,
+          githubAuthApi: {
+            getAccessToken: async () => 'token',
+          },
+          identityApi,
           configApi: {} as any,
           catalogApi: {} as any,
         }),

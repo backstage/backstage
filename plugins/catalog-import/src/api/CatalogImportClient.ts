@@ -16,7 +16,12 @@
 
 import { CatalogApi } from '@backstage/catalog-client';
 import { EntityName } from '@backstage/catalog-model';
-import { ConfigApi, DiscoveryApi, OAuthApi } from '@backstage/core';
+import {
+  ConfigApi,
+  DiscoveryApi,
+  IdentityApi,
+  OAuthApi,
+} from '@backstage/core';
 import { GitHubIntegrationConfig } from '@backstage/integration';
 import { Octokit } from '@octokit/rest';
 import { PartialEntity } from '../types';
@@ -25,6 +30,7 @@ import { getGithubIntegrationConfig } from './GitHub';
 
 export class CatalogImportClient implements CatalogImportApi {
   private readonly discoveryApi: DiscoveryApi;
+  private readonly identityApi: IdentityApi;
   private readonly githubAuthApi: OAuthApi;
   private readonly configApi: ConfigApi;
   private readonly catalogApi: CatalogApi;
@@ -32,11 +38,13 @@ export class CatalogImportClient implements CatalogImportApi {
   constructor(options: {
     discoveryApi: DiscoveryApi;
     githubAuthApi: OAuthApi;
+    identityApi: IdentityApi;
     configApi: ConfigApi;
     catalogApi: CatalogApi;
   }) {
     this.discoveryApi = options.discoveryApi;
     this.githubAuthApi = options.githubAuthApi;
+    this.identityApi = options.identityApi;
     this.configApi = options.configApi;
     this.catalogApi = options.catalogApi;
   }
@@ -124,11 +132,13 @@ export class CatalogImportClient implements CatalogImportApi {
   }: {
     repo: string;
   }): Promise<PartialEntity[]> {
+    const idToken = await this.identityApi.getIdToken();
     const response = await fetch(
       `${await this.discoveryApi.getBaseUrl('catalog')}/analyze-location`,
       {
         headers: {
           'Content-Type': 'application/json',
+          ...(idToken && { Authorization: `Bearer ${idToken}` }),
         },
         method: 'POST',
         body: JSON.stringify({
