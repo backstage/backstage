@@ -11,9 +11,9 @@ Here is an example usage within an `EntityPage.tsx`.
 const ComponentOverviewContent = ({ entity }: { entity: Entity }) => (
   <Grid container spacing={3} alignItems="stretch">
     <Grid item md={4} sm={6}>
-      <EntityLinksCard entity={entity} />
+      <EntityLinksCard />
       // or ...
-      <EntityLinksCard entity={entity} cols={{ md: 2, lg: 3, xl: 4 }} />
+      <EntityLinksCard cols={{ md: 2, lg: 3, xl: 4 }} />
     </Grid>
   </Grid>
 );
