@@ -24,7 +24,7 @@ import { ScaffolderPage as ScaffolderPageComponent } from './components/Scaffold
 import { TemplatePage as TemplatePageComponent } from './components/TemplatePage';
 import { TaskPage as TaskPageComponent } from './components/TaskPage';
 import { rootRoute, templateRoute, taskRoute } from './routes';
-import { scaffolderApiRef, ScaffolderApi } from './api';
+import { scaffolderApiRef, ScaffolderClient } from './api';
 
 export const scaffolderPlugin = createPlugin({
   id: 'scaffolder',
@@ -32,7 +32,7 @@ export const scaffolderPlugin = createPlugin({
     createApiFactory({
       api: scaffolderApiRef,
       deps: { discoveryApi: discoveryApiRef },
-      factory: ({ discoveryApi }) => new ScaffolderApi({ discoveryApi }),
+      factory: ({ discoveryApi }) => new ScaffolderClient({ discoveryApi }),
     }),
   ],
   register({ router }) {

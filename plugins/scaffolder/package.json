@@ -31,8 +31,8 @@
   },
   "dependencies": {
     "@backstage/catalog-model": "^0.7.1",
-    "@backstage/core": "^0.6.0",
     "@backstage/config": "^0.1.2",
+    "@backstage/core": "^0.6.0",
     "@backstage/plugin-catalog-react": "^0.0.2",
     "@backstage/theme": "^0.2.3",
     "@material-ui/core": "^4.11.0",
@@ -41,6 +41,7 @@
     "@rjsf/core": "^2.4.0",
     "@rjsf/material-ui": "^2.4.0",
     "classnames": "^2.2.6",
+    "clsx": "^1.1.1",
     "git-url-parse": "^11.4.4",
     "moment": "^2.26.0",
     "react": "^16.13.1",
@@ -50,8 +51,8 @@
     "react-router-dom": "6.0.0-beta.0",
     "react-use": "^15.3.3",
     "swr": "^0.3.0",
-    "zen-observable": "^0.8.15",
-    "use-immer": "^0.4.2"
+    "use-immer": "^0.4.2",
+    "zen-observable": "^0.8.15"
   },
   "devDependencies": {
     "@backstage/cli": "^0.6.0",

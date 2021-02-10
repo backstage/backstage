@@ -21,5 +21,6 @@ export {
   TemplatePage,
   TaskPage,
 } from './plugin';
-export { ScaffolderApi, scaffolderApiRef } from './api';
+export type { ScaffolderApi } from './api';
+export { ScaffolderClient, scaffolderApiRef } from './api';
 export { rootRoute, templateRoute, taskRoute } from './routes';

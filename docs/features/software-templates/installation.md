@@ -36,25 +36,6 @@ Add the following entry to the head of your `packages/app/src/plugins.ts`:
 export { plugin as ScaffolderPlugin } from '@backstage/plugin-scaffolder';
 ```
 
-Add the following to your `packages/app/src/apis.ts`:
-
-```ts
-import { scaffolderApiRef, ScaffolderApi } from '@backstage/plugin-scaffolder';
-
-// Inside the ApiRegistry builder function ...
-
-builder.add(
-  scaffolderApiRef,
-  new ScaffolderApi({
-    apiOrigin: backendUrl,
-    basePath: '/scaffolder/v1',
-  }),
-);
-```
-
-Where `backendUrl` is the `backend.baseUrl` from config, i.e.
-`const backendUrl = config.getString('backend.baseUrl')`.
-
 This is all that is needed for the frontend part of the Scaffolder plugin to
 work!
 

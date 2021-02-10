@@ -32,7 +32,27 @@ type LogEvent = {
   taskId: string;
 };
 
-export class ScaffolderApi {
+export interface ScaffolderApi {
+  /**
+   * Executes the scaffolding of a component, given a template and its
+   * parameter values.
+   *
+   * @param templateName Template name for the scaffolder to use. New project is going to be created out of this template.
+   * @param values Parameters for the template, e.g. name, description
+   */
+  scaffold(templateName: string, values: Record<string, any>): Promise<string>;
+
+  getTask(taskId: string): Promise<ScaffolderTask>;
+
+  streamLogs({
+    taskId,
+    after,
+  }: {
+    taskId: string;
+    after?: number;
+  }): Observable<LogEvent>;
+}
+export class ScaffolderClient implements ScaffolderApi {
   private readonly discoveryApi: DiscoveryApi;
 
   constructor(options: { discoveryApi: DiscoveryApi }) {
@@ -46,7 +66,10 @@ export class ScaffolderApi {
    * @param templateName Template name for the scaffolder to use. New project is going to be created out of this template.
    * @param values Parameters for the template, e.g. name, description
    */
-  async scaffold(templateName: string, values: Record<string, any>) {
+  async scaffold(
+    templateName: string,
+    values: Record<string, any>,
+  ): Promise<string> {
     const url = `${await this.discoveryApi.getBaseUrl('scaffolder')}/v2/tasks`;
     const response = await fetch(url, {
       method: 'POST',
@@ -62,7 +85,7 @@ export class ScaffolderApi {
       throw new Error(`Backend request failed, ${status} ${body.trim()}`);
     }
 
-    const { id } = await response.json();
+    const { id } = (await response.json()) as { id: string };
     return id;
   }
 

@@ -22,20 +22,19 @@ import {
   Lifecycle,
   Page,
   useApi,
+  useRouteRef,
 } from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { LinearProgress } from '@material-ui/core';
 import { IChangeEvent } from '@rjsf/core';
 import parseGitUrl from 'git-url-parse';
 import React, { useCallback, useState } from 'react';
-import { generatePath, Navigate } from 'react-router';
+import { Navigate } from 'react-router';
 import { useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { scaffolderApiRef } from '../../api';
-import { rootRoute } from '../../routes';
-import { ScaffolderTask } from '../../types';
-import { useTaskPolling } from '../hooks/useTaskPolling';
-import { JobStatusModal } from '../JobStatusModal';
+import { rootRoute, taskRoute } from '../../routes';
+import { useNavigate } from 'react-router';
 import { MultistepJsonForm } from '../MultistepJsonForm';
 
 const useTemplate = (
@@ -79,24 +78,24 @@ export const TemplatePage = () => {
   const catalogApi = useApi(catalogApiRef);
   const scaffolderApi = useApi(scaffolderApiRef);
   const { templateName } = useParams();
-  const [catalogLink, setCatalogLink] = useState<string | undefined>();
+  const navigate = useNavigate();
+  const tasks = useRouteRef(taskRoute);
   const { template, loading } = useTemplate(templateName, catalogApi);
   const [formState, setFormState] = useState({});
-  const [modalOpen, setModalOpen] = useState(false);
   const handleFormReset = () => setFormState({});
+
   const handleChange = useCallback(
     (e: IChangeEvent) => setFormState({ ...formState, ...e.formData }),
     [setFormState, formState],
   );
 
-  const [task, setTask] = useState<ScaffolderTask | undefined>(undefined);
+  const [taskId, setTaskId] = useState<string | undefined>(undefined);
 
   const handleCreate = async () => {
     try {
       const id = await scaffolderApi.scaffold(templateName, formState);
-      const returned = await scaffolderApi.getTask(id);
-      setTask(returned);
-      setModalOpen(true);
+      setTaskId(id);
+      navigate(tasks({ taskId: id }));
     } catch (e) {
       errorApi.post(e);
     }
@@ -129,14 +128,6 @@ export const TemplatePage = () => {
       />
       <Content>
         {loading && <LinearProgress data-testid="loading-progress" />}
-        {task && (
-          <JobStatusModal
-            task={task}
-            toCatalogLink={catalogLink}
-            open={modalOpen}
-            onModalClose={() => setModalOpen(false)}
-          />
-        )}
         {template && (
           <InfoCard title={template.metadata.title} noPadding>
             <MultistepJsonForm
