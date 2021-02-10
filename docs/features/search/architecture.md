@@ -6,9 +6,9 @@ description: Documentation on Search Architecture
 
 # Search Architecture
 
-> _This is a proposed architecture which has not been implemented yet. We are
-> still looking for feedback to improve the architecture to fit your use-case,
-> see [this open issue](https://github.com/backstage/backstage/issues/4078)._
+> _This is a proposed architecture which has not been implemented yet. Find our
+> milestones to follow our progress on the
+> [Search Roadmap](./README.md#project-roadmap)._
 
 Below you can explore the Search Architecture. Our aim with this architecture is
 to support a wide variety of search engines, while providing a simple developer
@@ -29,11 +29,11 @@ At a base-level, we want to support the following:
 
 More advanced use-cases we hope to support with this architecture include:
 
-- It should be easy for any plugin to expose new content to search. (e.g. entity
-  metadata, documentation from TechDocs)
-- It should be easy for any plugin to append relevant metadata to existing
+- It should be possible for any plugin to expose new content to search. (e.g.
+  entity metadata, documentation from TechDocs)
+- It should be possible for any plugin to append relevant metadata to existing
   content in search. (e.g. location (path) for TechDocs page)
-- It should be easy to refine search queries (e.g. ranking, scoring, etc.)
-- It should be easy to customize the search UI
-- It should be easy to add search functionality to any Backstage plugin or
+- It should be possible to refine search queries (e.g. ranking, scoring, etc.)
+- It should be possible to customize the search UI
+- It should be possible to add search functionality to any Backstage plugin or
   deployment
