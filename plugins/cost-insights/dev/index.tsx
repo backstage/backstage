@@ -16,10 +16,10 @@
 import { createDevApp } from '@backstage/dev-utils';
 import { costInsightsApiRef } from '../src/api';
 import { ExampleCostInsightsClient } from '../src/client';
-import { plugin } from '../src/plugin';
+import { costInsightsPlugin } from '../src/plugin';
 
 createDevApp()
-  .registerPlugin(plugin)
+  .registerPlugin(costInsightsPlugin)
   .registerApi({
     api: costInsightsApiRef,
     deps: {},
