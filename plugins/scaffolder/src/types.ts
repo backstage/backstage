@@ -15,6 +15,7 @@
  */
 import { JsonValue } from '@backstage/config';
 
+export type Status = 'open' | 'processing' | 'failed' | 'completed';
 export type JobStatus = 'PENDING' | 'STARTED' | 'COMPLETED' | 'FAILED';
 export type Job = {
   id: string;

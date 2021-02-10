@@ -27,6 +27,7 @@ import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import StepContent from '@material-ui/core/StepContent';
 import StepConnector from '@material-ui/core/StepConnector';
+import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import clsx from 'clsx';
@@ -41,80 +42,6 @@ import {
 } from '../hooks/useEventStream';
 import LazyLog from 'react-lazylog/build/LazyLog';
 import { StepButton, StepIconProps } from '@material-ui/core';
-
-const QontoConnector = withStyles({
-  active: {
-    '& $line': {
-      borderColor: '#784af4',
-    },
-  },
-  completed: {
-    '& $line': {
-      borderColor: '#784af4',
-    },
-  },
-  line: {
-    borderColor: '#eaeaf0',
-    borderTopWidth: 3,
-    borderRadius: 1,
-  },
-})(StepConnector);
-
-const useQontoStepIconStyles = makeStyles({
-  root: {
-    color: '#eaeaf0',
-    display: 'flex',
-    height: 22,
-    alignItems: 'center',
-  },
-  active: {
-    color: 'grey',
-  },
-  error: {
-    color: 'red',
-  },
-  circle: {
-    width: 8,
-    height: 8,
-    borderRadius: '50%',
-    backgroundColor: 'currentColor',
-  },
-  completed: {
-    color: 'green',
-    zIndex: 1,
-    fontSize: 18,
-  },
-});
-
-function QontoStepIcon(props: StepIconProps) {
-  const classes = useQontoStepIconStyles();
-  const { active, completed, error } = props;
-
-  const getComponent = () => {
-    if (error) {
-      return <Cancel className={classes.error} />;
-    }
-
-    if (completed) {
-      return <Check className={classes.completed} />;
-    }
-
-    if (active) {
-      return <div className={classes.circle} />;
-    }
-    return undefined;
-  };
-  return (
-    <div
-      className={clsx(classes.root, {
-        [classes.active]: active,
-        [classes.error]: error,
-      })}
-    >
-      {getComponent()}
-    </div>
-  );
-}
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -141,13 +68,11 @@ type Steps = {
   status: Status;
 };
 
-export const TaskStepper = ({ steps }: { steps: Steps[] }) => {
+export const TaskStatusStepper = memo(({ steps }: { steps: Steps[] }) => {
   const classes = useStyles();
   const [activeStep, setActiveStep] = useState(0);
-  const [expandAll, setExpandAll] = useState(false);
 
   const handleStep = (step: number) => {
-    setExpandAll(false);
     setActiveStep(step);
   };
 
@@ -155,104 +80,50 @@ export const TaskStepper = ({ steps }: { steps: Steps[] }) => {
     const activeIndex = steps.findIndex(step =>
       ['failed', 'processing'].includes(step.status),
     );
-    setActiveStep(2);
+    setActiveStep(activeIndex);
   }, [steps]);
 
   return (
     <div className={classes.root}>
-      <Button variant="outlined" onClick={() => setExpandAll(true)}>
-        Expand All
-      </Button>
-      <Button variant="outlined">Retry</Button>
-      <Button variant="outlined">Raw Log</Button>
       <Stepper activeStep={activeStep} orientation="vertical" nonLinear>
         {steps.map((step, index) => {
           const isCompleted = step.status === 'completed';
           const isFailed = step.status === 'failed';
-          // return (
-          //   <TaskStep
-          //     key={String(index)}
-          //     log={step.log.length ? step.log.join('\n') : 'please wait'}
-          //     expanded={expandAll}
-          //     name={step.name}
-          //     isFailed={isFailed}
-          //     isCompleted={isCompleted}
-          //     handleStep={handleStep}
-          //     index={index}
-          //   />
-          // );
-
           return (
             <Step key={String(index)} expanded>
               <StepButton onClick={() => {}}>
                 <StepLabel
                   StepIconProps={{ completed: isCompleted, error: isFailed }}
-                  StepIconComponent={QontoStepIcon}
                 >
                   {step.name}
                 </StepLabel>
               </StepButton>
-
-              <StepContent>
-                <div style={{ height: '50vh' }}>
-                  <LazyLog
-                    extraLines={1}
-                    text={step.log.length ? step.log.join('\n') : 'please wait'}
-                  />
-                </div>
-              </StepContent>
             </Step>
           );
         })}
       </Stepper>
     </div>
   );
+});
+
+const TaskLogger = memo(({ log }: { log: string }) => {
+  console.log('rendering my log');
+  return (
+    <div style={{ height: '80vh' }}>
+      <LazyLog text={log} extraLines={1} follow />
+    </div>
+  );
+});
+
+const TaskActionsBar = () => {
+  return (
+    <>
+      <Button variant="outlined">Retry</Button>
+      <Button variant="outlined">Raw Log</Button>
+    </>
+  );
 };
 
-type TaskStepOptions = {
-  name: string;
-  isCompleted: boolean;
-  isFailed: boolean;
-  expanded: boolean;
-  handleStep: () => void;
-  index: number;
-  log: string;
-};
-
-export const TaskStep = memo(
-  ({
-    log,
-    name,
-    isCompleted,
-    isFailed,
-    handleStep,
-    index,
-    expanded,
-  }: TaskStepOptions) => {
-    const onClick = React.useCallback(() => handleStep(index), [
-      handleStep,
-      index,
-    ]);
-    return (
-      <Step key={String(index)} expanded={expanded}>
-        <StepButton onClick={onClick}>
-          <StepLabel
-            StepIconProps={{ completed: isCompleted, error: isFailed }}
-            StepIconComponent={QontoStepIcon}
-          >
-            {name}
-          </StepLabel>
-        </StepButton>
-
-        <StepContent>
-          <div style={{ height: '50vh' }}>
-            <LazyLog extraLines={1} text={log} />
-          </div>
-        </StepContent>
-      </Step>
-    );
-  },
-);
 export const TaskPage = () => {
   const { taskId } = useParams();
   const taskStream = useTaskEventStream(taskId);
@@ -274,7 +145,19 @@ export const TaskPage = () => {
         subtitle={`Activity for task: ${taskId}`}
       />
       <Content>
-        <TaskStepper steps={steps} />
+        <TaskActionsBar />
+        <Grid container>
+          <Grid item xs={2}>
+            <TaskStatusStepper steps={steps} />
+          </Grid>
+          <Grid item xs={10}>
+            <TaskLogger
+              log={
+                taskStream.log.length ? taskStream.log.join('\n') : 'loading...'
+              }
+            />
+          </Grid>
+        </Grid>
       </Content>
     </Page>
   );

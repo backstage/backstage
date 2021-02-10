@@ -89,12 +89,9 @@ export const TemplatePage = () => {
     [setFormState, formState],
   );
 
-  const [taskId, setTaskId] = useState<string | undefined>(undefined);
-
   const handleCreate = async () => {
     try {
       const id = await scaffolderApi.scaffold(templateName, formState);
-      setTaskId(id);
       navigate(tasks({ taskId: id }));
     } catch (e) {
       errorApi.post(e);

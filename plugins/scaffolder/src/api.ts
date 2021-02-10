@@ -17,16 +17,20 @@
 import { JsonObject } from '@backstage/config';
 import { createApiRef, DiscoveryApi, Observable } from '@backstage/core';
 import ObservableImpl from 'zen-observable';
-import { ScaffolderTask } from './types';
+import { ScaffolderTask, Status } from './types';
 
 export const scaffolderApiRef = createApiRef<ScaffolderApi>({
   id: 'plugin.scaffolder.service',
   description: 'Used to make requests towards the scaffolder backend',
 });
 
-type LogEvent = {
+export type LogEvent = {
   type: 'log' | 'completion';
-  body: JsonObject;
+  body: {
+    message: string;
+    stepId?: string;
+    status?: Status;
+  };
   createdAt: string;
   id: string;
   taskId: string;
