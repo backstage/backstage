@@ -11,6 +11,6 @@ Introduce new cards to `@backstage/plugin-catalog` that can be added to entity p
 - `EntityHasSubcomponentsCard` to display subcomponents of a subcomponent.
 - In addition, `EntityHasApisCard` to display APIs of a system is added to `@backstage/plugin-api-docs`.
 
-`@backstage/plugin-catalog-react` now provides `and` to build own cards for components and systems.
+`@backstage/plugin-catalog-react` now provides `ComponentsTable` and `SystemsTable` to build own cards for components and systems.
 The styling of the tables and new cards was also applied to the existing `EntityConsumedApisCard`,
 `EntityConsumingComponentsCard`, `EntityProvidedApisCard`, and `EntityProvidingComponentsCard`.
