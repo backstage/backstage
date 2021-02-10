@@ -13,19 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
+import { Breadcrumbs } from '.';
 
-export * from './Content';
-export * from './ContentHeader';
-export * from './ErrorBoundary';
-export * from './ErrorPage';
-export * from './Header';
-export * from './HeaderLabel';
-export * from './HeaderTabs';
-export * from './HomepageTimer';
-export * from './InfoCard';
-export * from './ItemCard';
-export * from './Page';
-export * from './Sidebar';
-export * from './SignInPage';
-export * from './TabbedCard';
-export * from './Breadcrumbs';
+export default {
+  title: 'Layout/Breadcrumbs',
+  component: Breadcrumbs,
+};
+
+const pages = [
+  {
+    href: '/',
+    name: 'A',
+  },
+  {
+    href: '/',
+    name: 'B',
+  },
+  {
+    href: '/',
+    name: 'C',
+  },
+  {
+    href: '/',
+    name: 'D',
+  },
+];
+
+// export const InHeader = () => <Breadcrumbs pages={pages} />;
+export const OutsideOfHeader = () => <Breadcrumbs pages={pages} />;
+// export const ExampleUsage = () => <Breadcrumbs pages={pages} />;
