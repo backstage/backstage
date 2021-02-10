@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { NotModifiedError } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import {
   GeneratorBase,
@@ -98,9 +99,12 @@ export class DocsBuilder {
 
       preparedDir = preparerResponse.preparedDir;
       etag = preparerResponse.etag;
-    } catch (NotModifiedError) {
-      // No need to prepare anymore since cache is valid.
-      return;
+    } catch (err) {
+      if (err instanceof NotModifiedError) {
+        // No need to prepare anymore since cache is valid.
+        return;
+      }
+      throw new Error(err.message);
     }
 
     this.logger.info(
