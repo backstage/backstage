@@ -44,7 +44,7 @@ const WidgetContent = ({
     (latestRun.building ? 'Running for ' : '') +
     DateTime.local()
       .minus(Duration.fromMillis(latestRun.duration))
-      .toRelative()
+      .toRelative({ locale: "en" })
       ?.replace(' ago', '');
 
   return (
