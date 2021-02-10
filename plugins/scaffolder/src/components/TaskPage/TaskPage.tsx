@@ -15,7 +15,7 @@
  */
 
 import { Page, Header, Lifecycle, Content } from '@backstage/core';
-import React, { useState, useEffect, memo } from 'react';
+import React, { useState, useEffect, memo, useMemo } from 'react';
 import {
   makeStyles,
   Theme,
@@ -62,52 +62,52 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 type Steps = {
-  log: string[];
   id: string;
   name: string;
   status: Status;
 };
 
-export const TaskStatusStepper = memo(({ steps }: { steps: Steps[] }) => {
-  const classes = useStyles();
-  const [activeStep, setActiveStep] = useState(0);
+export const TaskStatusStepper = memo(
+  ({
+    steps,
+    currentStepId,
+    onUserStepChange,
+  }: {
+    steps: Steps[];
+    currentStepId: string | undefined;
+    onUserStepChange: (id: string) => void;
+  }) => {
+    const classes = useStyles();
 
-  const handleStep = (step: number) => {
-    setActiveStep(step);
-  };
-
-  useEffect(() => {
-    const activeIndex = steps.findIndex(step =>
-      ['failed', 'processing'].includes(step.status),
+    return (
+      <div className={classes.root}>
+        <Stepper
+          activeStep={steps.findIndex(s => s.id === currentStepId)}
+          orientation="vertical"
+          nonLinear
+        >
+          {steps.map((step, index) => {
+            const isCompleted = step.status === 'completed';
+            const isFailed = step.status === 'failed';
+            return (
+              <Step key={String(index)} expanded>
+                <StepButton onClick={() => onUserStepChange(step.id)}>
+                  <StepLabel
+                    StepIconProps={{ completed: isCompleted, error: isFailed }}
+                  >
+                    {step.name}
+                  </StepLabel>
+                </StepButton>
+              </Step>
+            );
+          })}
+        </Stepper>
+      </div>
     );
-    setActiveStep(activeIndex);
-  }, [steps]);
-
-  return (
-    <div className={classes.root}>
-      <Stepper activeStep={activeStep} orientation="vertical" nonLinear>
-        {steps.map((step, index) => {
-          const isCompleted = step.status === 'completed';
-          const isFailed = step.status === 'failed';
-          return (
-            <Step key={String(index)} expanded>
-              <StepButton onClick={() => {}}>
-                <StepLabel
-                  StepIconProps={{ completed: isCompleted, error: isFailed }}
-                >
-                  {step.name}
-                </StepLabel>
-              </StepButton>
-            </Step>
-          );
-        })}
-      </Stepper>
-    </div>
-  );
-});
+  },
+);
 
 const TaskLogger = memo(({ log }: { log: string }) => {
-  console.log('rendering my log');
   return (
     <div style={{ height: '80vh' }}>
       <LazyLog text={log} extraLines={1} follow />
@@ -125,13 +125,43 @@ const TaskActionsBar = () => {
 };
 
 export const TaskPage = () => {
+  const [userSelectedStepId, setUserSelectedStepId] = useState<
+    string | undefined
+  >(undefined);
+  const [lastActiveStepId, setLastActiveStepId] = useState<string | undefined>(
+    undefined,
+  );
   const { taskId } = useParams();
   const taskStream = useTaskEventStream(taskId);
-  const steps =
-    taskStream.task?.spec.steps.map(step => ({
-      ...step,
-      ...taskStream?.steps?.[step.id],
-    })) ?? [];
+
+  const steps = useMemo(
+    () =>
+      taskStream.task?.spec.steps.map(step => ({
+        ...step,
+        ...taskStream?.steps?.[step.id],
+      })) ?? [],
+    [taskStream],
+  );
+  useEffect(() => {
+    const activeStep = steps.find(step =>
+      ['failed', 'processing'].includes(step.status),
+    );
+    setLastActiveStepId(activeStep?.id);
+  }, [steps]);
+
+  const currentStepId = userSelectedStepId ?? lastActiveStepId;
+
+  const logAsString = useMemo(() => {
+    if (!currentStepId) {
+      return 'Loading...';
+    }
+    const log = taskStream.stepLogs[currentStepId];
+
+    if (!log?.length) {
+      return 'Waiting for logs...';
+    }
+    return log.join('\n');
+  }, [taskStream.stepLogs, currentStepId]);
 
   return (
     <Page themeId="home">
@@ -145,17 +175,16 @@ export const TaskPage = () => {
         subtitle={`Activity for task: ${taskId}`}
       />
       <Content>
-        <TaskActionsBar />
         <Grid container>
           <Grid item xs={2}>
-            <TaskStatusStepper steps={steps} />
+            <TaskStatusStepper
+              steps={steps}
+              currentStepId={currentStepId}
+              onUserStepChange={setUserSelectedStepId}
+            />
           </Grid>
           <Grid item xs={10}>
-            <TaskLogger
-              log={
-                taskStream.log.length ? taskStream.log.join('\n') : 'loading...'
-              }
-            />
+            <TaskLogger log={logAsString} />
           </Grid>
         </Grid>
       </Content>

@@ -29,7 +29,7 @@ type Step = {
 export type TaskStream = {
   loading: boolean;
   error?: Error;
-  log: string[];
+  stepLogs: { [stepId in string]: string[] };
   completed: boolean;
   task?: ScaffolderTask;
   steps: { [stepId in string]: Step };
@@ -53,17 +53,21 @@ function reducer(draft: TaskStream, action: ReducerAction) {
         current[next.id] = { status: 'open', id: next.id };
         return current;
       }, {} as { [stepId in string]: Step });
+      draft.stepLogs = action.data.spec.steps.reduce((current, next) => {
+        current[next.id] = [];
+        return current;
+      }, {} as { [stepId in string]: string[] });
       draft.loading = false;
       draft.error = undefined;
       draft.completed = false;
       draft.task = action.data;
-      draft.log = [];
       return;
     }
 
     case 'LOGS': {
       const entries = action.data;
       const logLines = [];
+
       for (const entry of entries) {
         const logLine = `${entry.createdAt} ${entry.body.message}`;
         logLines.push(logLine);
@@ -72,6 +76,7 @@ function reducer(draft: TaskStream, action: ReducerAction) {
           continue;
         }
 
+        const currentStepLog = draft.stepLogs?.[entry.body.stepId];
         const currentStep = draft.steps?.[entry.body.stepId];
 
         if (entry.body.status && entry.body.status !== currentStep.status) {
@@ -87,9 +92,10 @@ function reducer(draft: TaskStream, action: ReducerAction) {
             currentStep.endedAt = entry.createdAt;
           }
         }
+
+        currentStepLog?.push(logLine);
       }
 
-      draft.log.push(...logLines);
       return;
     }
 
@@ -115,7 +121,7 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
   const [state, dispatch] = useImmerReducer(reducer, {
     loading: true,
     completed: false,
-    log: [],
+    stepLogs: {} as { [stepId in string]: string[] },
     steps: {} as { [stepId in string]: Step },
   });
 
@@ -130,6 +136,13 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
           return;
         }
         dispatch({ type: 'INIT', data: task });
+
+        // TODO(blam): Use a normal fetch to fetch the current log for the event stream
+        // and use that for an INIT_EVENTs dispatch event, and then
+        // use the last event ID to subscribe using after option to
+        // stream logs. Without this, if you have a lot of logs, it can look like the
+        // task is being rebuilt on load as it progresses through the steps at a slower
+        // rate whilst it builds the status from the event logs
         const observable = scaffolderApi.streamLogs({ taskId });
 
         const collectedLogEvents = new Array<LogEvent>();
