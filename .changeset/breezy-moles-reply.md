@@ -1,5 +1,4 @@
 ---
-'@backstage/core': patch
 '@backstage/plugin-auth-backend': minor
 ---
 

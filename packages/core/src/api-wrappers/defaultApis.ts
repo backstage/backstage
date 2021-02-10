@@ -214,7 +214,6 @@ export const defaultApis = [
           title: 'Your Identity Provider',
           icon: OAuth2Icon,
         },
-        defaultScopes: ['openid'],
         environment: configApi.getOptionalString('auth.environment'),
       }),
   }),
