@@ -119,7 +119,7 @@ Plugins supply their APIs through the `apis` option of `createPlugin`, for
 example:
 
 ```ts
-export const plugin = createPlugin({
+export const techdocsPlugin = createPlugin({
   id: 'techdocs',
   apis: [
     createApiFactory({
