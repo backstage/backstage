@@ -18,7 +18,6 @@ export { CatalogClient } from './CatalogClient';
 export type {
   AddLocationRequest,
   AddLocationResponse,
-  ApiContext,
   CatalogApi,
   CatalogEntitiesRequest,
   CatalogListResponse,
