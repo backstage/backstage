@@ -446,6 +446,7 @@ export const useTooltipStyles = makeStyles<CostInsightsTheme>(
         textOverflow: 'ellipsis',
       },
       fullTitle: {
+        maxWidth: 200,
         overflowWrap: 'anywhere',
       },
       subtitle: {

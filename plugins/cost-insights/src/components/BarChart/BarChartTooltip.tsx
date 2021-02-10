@@ -38,12 +38,12 @@ export const BarChartTooltip = ({
   children,
 }: PropsWithChildren<BarChartTooltipProps>) => {
   const classes = useStyles();
-  const titleClassName = classnames(
-    classes.maxWidth,
-    { [classes.fullTitle]: !truncateTitle },
-    { [classes.truncate]: truncateTitle },
-  );
-
+  const truncateClassName = truncateTitle
+    ? classes.truncate
+    : classes.fullTitle;
+  const titleClassName = classnames(truncateClassName, {
+    [classes.maxWidth]: topRight === undefined,
+  });
   return (
     <Box className={classes.tooltip} display="flex" flexDirection="column">
       <Box
