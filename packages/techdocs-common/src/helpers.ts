@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import os from 'os';
-import path from 'path';
-import parseGitUrl from 'git-url-parse';
-import fs from 'fs-extra';
-import { InputError, UrlReader, Git } from '@backstage/backend-common';
+import { Git, InputError, UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
+import fs from 'fs-extra';
+import parseGitUrl from 'git-url-parse';
+import os from 'os';
+import path from 'path';
+import { Logger } from 'winston';
 import { getDefaultBranch } from './default-branch';
 import { getGitRepoType, getTokenForGitRepo } from './git-auth';
-import { RemoteProtocol } from './stages/prepare/types';
-import { Logger } from 'winston';
+import { PreparerResponse, RemoteProtocol } from './stages/prepare/types';
 
 export type ParsedLocationAnnotation = {
   type: RemoteProtocol;
@@ -196,16 +196,9 @@ export const checkoutGitRepository = async (
 };
 
 export const getLastCommitTimestamp = async (
-  repositoryUrl: string,
-  config: Config,
+  repositoryLocation: string,
   logger: Logger,
 ): Promise<number> => {
-  const repositoryLocation = await checkoutGitRepository(
-    repositoryUrl,
-    config,
-    logger,
-  );
-
   const git = Git.fromAuth({ logger });
   const sha = await git.resolveRef({ dir: repositoryLocation, ref: 'HEAD' });
   const commit = await git.readCommit({ dir: repositoryLocation, sha });
@@ -216,13 +209,22 @@ export const getLastCommitTimestamp = async (
 export const getDocFilesFromRepository = async (
   reader: UrlReader,
   entity: Entity,
-): Promise<any> => {
+  opts?: { etag?: string; logger?: Logger },
+): Promise<PreparerResponse> => {
   const { target } = parseReferenceAnnotation(
     'backstage.io/techdocs-ref',
     entity,
   );
 
-  const response = await reader.readTree(target);
+  opts?.logger?.info(`Reading files from ${target}`);
+  // readTree will throw NotModifiedError if etag has not changed.
+  const readTreeResponse = await reader.readTree(target, { etag: opts?.etag });
+  const preparedDir = await readTreeResponse.dir();
 
-  return await response.dir();
+  opts?.logger?.info(`Tree downloaded and stored at ${preparedDir}`);
+
+  return {
+    preparedDir,
+    etag: readTreeResponse.etag,
+  };
 };

@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 type buildInfo = {
-  // uid: timestamp
-  [key: string]: number;
+  // Entity uid: etag
+  [key: string]: string;
 };
 
+// TODO: Build info should be part of TechDocs storage, inside `techdocs_metadata.json`
+// instead of in-memory storage of the Backstage instance.
+// In case of multi-region Backstage deployments, or even using multiple Kubernetes pods,
+// if each instance creates its separate build info in-memory, it will result in duplicate
+// builds per instance. Also if the pod restarts, all the sites will have to be re-built.
 const builds = {} as buildInfo;
 
 /**
@@ -34,11 +39,11 @@ export class BuildMetadataStorage {
     this.builds = builds;
   }
 
-  storeBuildTimestamp() {
-    this.builds[this.entityUid] = Date.now();
+  setEtag(etag: string): void {
+    this.builds[this.entityUid] = etag;
   }
 
-  getTimestamp() {
+  getEtag(): string | undefined {
     return this.builds[this.entityUid];
   }
 }
