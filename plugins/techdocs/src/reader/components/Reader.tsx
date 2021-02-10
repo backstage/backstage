@@ -155,7 +155,9 @@ export const Reader = ({ entityId, onReady }: Props) => {
   ]);
 
   if (error) {
-    return <TechDocsNotFound errorMessage={error.message} />;
+    // TODO Enhance API call to return customize error objects so we can identify which we ran into
+    // For now this defaults to display error code 404
+    return <TechDocsNotFound statusCode={404} errorMessage={error.message} />;
   }
 
   return (

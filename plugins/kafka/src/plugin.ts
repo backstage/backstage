@@ -16,6 +16,7 @@
 import {
   createApiFactory,
   createPlugin,
+  createRoutableExtension,
   createRouteRef,
   discoveryApiRef,
 } from '@backstage/core';
@@ -27,7 +28,7 @@ export const rootCatalogKafkaRouteRef = createRouteRef({
   title: 'Kafka',
 });
 
-export const plugin = createPlugin({
+export const kafkaPlugin = createPlugin({
   id: 'kafka',
   apis: [
     createApiFactory({
@@ -36,4 +37,14 @@ export const plugin = createPlugin({
       factory: ({ discoveryApi }) => new KafkaBackendClient({ discoveryApi }),
     }),
   ],
+  routes: {
+    entityContent: rootCatalogKafkaRouteRef,
+  },
 });
+
+export const EntityKafkaContent = kafkaPlugin.provide(
+  createRoutableExtension({
+    component: () => import('./Router').then(m => m.Router),
+    mountPoint: rootCatalogKafkaRouteRef,
+  }),
+);

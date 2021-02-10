@@ -63,8 +63,8 @@ function serializeConfigData(
   }
 
   const sanitizedConfigs = schema.process(appConfigs, {
-    valueTransform: (value, { visibility }) =>
-      visibility === 'secret' ? '<secret>' : value,
+    valueTransform: (value, context) =>
+      context.visibility === 'secret' ? '<secret>' : value,
   });
 
   return ConfigReader.fromConfigs(sanitizedConfigs).get();

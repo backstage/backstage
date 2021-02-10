@@ -21,7 +21,7 @@ import { Button, Typography } from '@material-ui/core';
 const EXAMPLE = `import { createPlugin } from '@backstage/core';
 
 export default createPlugin({
-  id: 'welcome',
+  id: 'plugin-name',
   register({ router, featureFlags }) {
     featureFlags.register('enable-example-feature');
   },

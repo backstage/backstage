@@ -1,5 +1,29 @@
 # @backstage/plugin-rollbar
 
+## 0.2.9
+
+### Patch Changes
+
+- 9d6ef14bc: Migrated to new composability API, exporting the plugin instance as `rollbarPlugin`, the entity page content as `EntityRollbarContent`, and entity conditional as `isRollbarAvailable`. Updated the `EntityPage` for the `example-app` to include a composite `ErrorsSwitcher` component that works with both `Sentry` & `Rollbar`. Also removed the unused and undocumented `RollbarHome` related components.
+- 019fe39a0: Switch dependency from `@backstage/plugin-catalog` to `@backstage/plugin-catalog-react`.
+- Updated dependencies [12ece98cd]
+- Updated dependencies [d82246867]
+- Updated dependencies [7fc89bae2]
+- Updated dependencies [c810082ae]
+- Updated dependencies [5fa3bdb55]
+- Updated dependencies [6e612ce25]
+- Updated dependencies [025e122c3]
+- Updated dependencies [21e624ba9]
+- Updated dependencies [da9f53c60]
+- Updated dependencies [32c95605f]
+- Updated dependencies [7881f2117]
+- Updated dependencies [54c7d02f7]
+- Updated dependencies [11cb5ef94]
+  - @backstage/core@0.6.0
+  - @backstage/plugin-catalog-react@0.0.2
+  - @backstage/theme@0.2.3
+  - @backstage/catalog-model@0.7.1
+
 ## 0.2.8
 
 ### Patch Changes

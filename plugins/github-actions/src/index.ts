@@ -14,8 +14,19 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
+export {
+  githubActionsPlugin,
+  githubActionsPlugin as plugin,
+  EntityGithubActionsContent,
+  EntityLatestGithubActionRunCard,
+  EntityLatestGithubActionsForBranchCard,
+  EntityRecentGithubActionsRunsCard,
+} from './plugin';
 export * from './api';
-export { Router, isPluginApplicableToEntity } from './components/Router';
+export {
+  Router,
+  isGithubActionsAvailable,
+  isGithubActionsAvailable as isPluginApplicableToEntity,
+} from './components/Router';
 export * from './components/Cards';
 export { GITHUB_ACTIONS_ANNOTATION } from './components/useProjectName';

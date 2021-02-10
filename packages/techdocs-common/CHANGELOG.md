@@ -1,5 +1,25 @@
 # @backstage/techdocs-common
 
+## 0.3.7
+
+### Patch Changes
+
+- c777df180: 1. Added option to use Azure Blob Storage as a choice to store the static generated files for TechDocs.
+- e44925723: `techdocs.requestUrl` and `techdocs.storageUrl` are now optional configs and the discovery API will be used to get the URL where techdocs plugin is hosted.
+- f0320190d: dir preparer will use URL Reader in its implementation.
+- Updated dependencies [c4abcdb60]
+- Updated dependencies [2430ee7c2]
+- Updated dependencies [6e612ce25]
+- Updated dependencies [025e122c3]
+- Updated dependencies [064c513e1]
+- Updated dependencies [7881f2117]
+- Updated dependencies [3149bfe63]
+- Updated dependencies [2e62aea6f]
+- Updated dependencies [11cb5ef94]
+  - @backstage/integration@0.3.2
+  - @backstage/backend-common@0.5.2
+  - @backstage/catalog-model@0.7.1
+
 ## 0.3.6
 
 ### Patch Changes

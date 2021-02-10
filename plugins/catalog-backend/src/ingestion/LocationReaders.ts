@@ -139,6 +139,16 @@ export class LocationReaders implements LocationReader {
       if (emitResult.type === 'relation') {
         throw new Error('readLocation may not emit entity relations');
       }
+      if (
+        emitResult.type === 'location' &&
+        emitResult.location.type === item.location.type &&
+        emitResult.location.target === item.location.target
+      ) {
+        // Ignore self-referential locations silently (this can happen for
+        // example if you use a glob target like "**/*.yaml" in a Location
+        // entity)
+        return;
+      }
       emit(emitResult);
     };
 

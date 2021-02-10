@@ -109,7 +109,7 @@ export function buildProjectUrl(target: string, projectID: Number): URL {
       '/api/v4/projects',
       projectID,
       'repository/files',
-      encodeURIComponent(filePath.join('/')),
+      encodeURIComponent(decodeURIComponent(filePath.join('/'))),
       'raw',
     ].join('/');
     url.search = `?ref=${branch}`;

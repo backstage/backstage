@@ -14,7 +14,7 @@ Here's a code sample:
 import { createPlugin } from '@backstage/core';
 
 export default createPlugin({
-  id: 'welcome',
+  id: 'plugin-name',
   register({ featureFlags }) {
     featureFlags.register('enable-example-feature');
   },

@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import tar, { Parse, ParseStream, ReadEntry } from 'tar';
-import path from 'path';
-import fs from 'fs-extra';
-import { Readable, pipeline as pipelineCb } from 'stream';
-import { promisify } from 'util';
 import concatStream from 'concat-stream';
+import fs from 'fs-extra';
+import platformPath from 'path';
+import { pipeline as pipelineCb, Readable } from 'stream';
+import tar, { Parse, ParseStream, ReadEntry } from 'tar';
+import { promisify } from 'util';
 import {
   ReadTreeResponse,
-  ReadTreeResponseFile,
   ReadTreeResponseDirOptions,
+  ReadTreeResponseFile,
 } from '../types';
 
 // Tar types for `Parse` is not a proper constructor, but it should be
@@ -147,7 +147,7 @@ export class TarArchiveResponse implements ReadTreeResponse {
 
     const dir =
       options?.targetDir ??
-      (await fs.mkdtemp(path.join(this.workDir, 'backstage-')));
+      (await fs.mkdtemp(platformPath.join(this.workDir, 'backstage-')));
 
     // Equivalent of tar --strip-components=N
     // When no subPath is given, remove just 1 top level directory

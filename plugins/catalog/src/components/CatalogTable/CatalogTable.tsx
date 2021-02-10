@@ -19,7 +19,13 @@ import {
   RELATION_OWNED_BY,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
-import { Table, TableColumn, TableProps } from '@backstage/core';
+import {
+  CodeSnippet,
+  Table,
+  TableColumn,
+  TableProps,
+  WarningPanel,
+} from '@backstage/core';
 import {
   EntityRefLink,
   EntityRefLinks,
@@ -29,7 +35,6 @@ import {
 import { Chip } from '@material-ui/core';
 import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
-import { Alert } from '@material-ui/lab';
 import React from 'react';
 import { findLocationForEntityMeta } from '../../data/utils';
 import { useStarredEntities } from '../../hooks/useStarredEntities';
@@ -128,9 +133,12 @@ export const CatalogTable = ({
   if (error) {
     return (
       <div>
-        <Alert severity="error">
-          Error encountered while fetching catalog entities. {error.toString()}
-        </Alert>
+        <WarningPanel
+          severity="error"
+          title="Could not fetch catalog entities."
+        >
+          <CodeSnippet language="text" text={error.toString()} />
+        </WarningPanel>
       </div>
     );
   }

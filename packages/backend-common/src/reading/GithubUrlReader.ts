@@ -15,13 +15,15 @@
  */
 
 import {
-  GitHubIntegrationConfig,
-  readGitHubIntegrationConfigs,
   getGitHubFileFetchUrl,
   GithubCredentialsProvider,
+  GitHubIntegrationConfig,
+  readGitHubIntegrationConfigs,
 } from '@backstage/integration';
+import { RestEndpointMethodTypes } from '@octokit/rest';
 import fetch from 'cross-fetch';
 import parseGitUrl from 'git-url-parse';
+import { Minimatch } from 'minimatch';
 import { Readable } from 'stream';
 import { NotFoundError, NotModifiedError } from '../errors';
 import { ReadTreeResponseFactory } from './tree';
@@ -29,8 +31,16 @@ import {
   ReaderFactory,
   ReadTreeOptions,
   ReadTreeResponse,
+  SearchOptions,
+  SearchResponse,
+  SearchResponseFile,
   UrlReader,
 } from './types';
+
+export type GhRepoResponse = RestEndpointMethodTypes['repos']['get']['response']['data'];
+export type GhBranchResponse = RestEndpointMethodTypes['repos']['getBranch']['response']['data'];
+export type GhTreeResponse = RestEndpointMethodTypes['git']['getTree']['response']['data'];
+export type GhBlobResponse = RestEndpointMethodTypes['git']['getBlob']['response']['data'];
 
 /**
  * A processor that adds the ability to read files from GitHub v3 APIs, such as
@@ -98,86 +108,190 @@ export class GithubUrlReader implements UrlReader {
     url: string,
     options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
-    const { ref, filepath, full_name } = parseGitUrl(url);
-    // Caveat: The ref will totally be incorrect if the branch name includes a /
-    // Thus, readTree can not work on url containing branch name that has a /
-
-    const { headers } = await this.deps.credentialsProvider.getCredentials({
-      url,
-    });
-
-    // Get GitHub API urls for the repository
-    const repoGitHubResponse = await fetch(
-      new URL(`${this.config.apiBaseUrl}/repos/${full_name}`).toString(),
-      {
-        headers,
-      },
-    );
-    if (!repoGitHubResponse.ok) {
-      const message = `Failed to read tree (repository) from ${url}, ${repoGitHubResponse.status} ${repoGitHubResponse.statusText}`;
-      if (repoGitHubResponse.status === 404) {
-        throw new NotFoundError(message);
-      }
-      throw new Error(message);
-    }
-
-    const repoResponseJson = await repoGitHubResponse.json();
-
-    // ref is an empty string if no branch is set in provided url to readTree.
-    // Use GitHub API to get the default branch of the repository.
-    const branch = ref || repoResponseJson.default_branch;
-    const branchesApiUrl = repoResponseJson.branches_url;
-    const archiveApiUrl = repoResponseJson.archive_url;
-
-    // Fetch the latest commit in the provided or default branch to compare against
-    // the provided sha.
-    const branchGitHubResponse = await fetch(
-      // branchesApiUrl looks like "https://api.github.com/repos/owner/repo/branches{/branch}"
-      branchesApiUrl.replace('{/branch}', `/${branch}`),
-      {
-        headers,
-      },
-    );
-    if (!branchGitHubResponse.ok) {
-      const message = `Failed to read tree (branch) from ${url}, ${branchGitHubResponse.status} ${branchGitHubResponse.statusText}`;
-      if (branchGitHubResponse.status === 404) {
-        throw new NotFoundError(message);
-      }
-      throw new Error(message);
-    }
-    const commitSha = (await branchGitHubResponse.json()).commit.sha;
+    const repoDetails = await this.getRepoDetails(url);
+    const commitSha = repoDetails.branch.commit.sha!;
 
     if (options?.etag && options.etag === commitSha) {
       throw new NotModifiedError();
     }
 
-    const archive = await fetch(
-      // archiveApiUrl looks like "https://api.github.com/repos/owner/repo/{archive_format}{/ref}"
-      archiveApiUrl
-        .replace('{archive_format}', 'tarball')
-        .replace('{/ref}', `/${commitSha}`),
+    const { filepath } = parseGitUrl(url);
+    const { headers } = await this.deps.credentialsProvider.getCredentials({
+      url,
+    });
+
+    return this.doReadTree(
+      repoDetails.repo.archive_url,
+      commitSha,
+      filepath,
       { headers },
+      options,
     );
-    if (!archive.ok) {
-      const message = `Failed to read tree (archive) from ${url}, ${archive.status} ${archive.statusText}`;
-      if (archive.status === 404) {
-        throw new NotFoundError(message);
-      }
-      throw new Error(message);
+  }
+
+  async search(url: string, options?: SearchOptions): Promise<SearchResponse> {
+    const repoDetails = await this.getRepoDetails(url);
+    const commitSha = repoDetails.branch.commit.sha!;
+
+    if (options?.etag && options.etag === commitSha) {
+      throw new NotModifiedError();
     }
 
-    return await this.deps.treeResponseFactory.fromTarArchive({
-      // TODO(Rugvip): Underlying implementation of fetch will be node-fetch, we probably want
-      //               to stick to using that in exclusively backend code.
-      stream: (archive.body as unknown) as Readable,
-      subpath: filepath,
-      etag: commitSha,
-      filter: options?.filter,
+    const { filepath } = parseGitUrl(url);
+    const { headers } = await this.deps.credentialsProvider.getCredentials({
+      url,
     });
+
+    const files = await this.doSearch(
+      url,
+      repoDetails.repo.trees_url,
+      repoDetails.repo.archive_url,
+      commitSha,
+      filepath,
+      { headers },
+    );
+
+    return { files, etag: commitSha };
   }
 
   toString() {
     const { host, token } = this.config;
     return `github{host=${host},authed=${Boolean(token)}}`;
+  }
+
+  private async doReadTree(
+    archiveUrl: string,
+    sha: string,
+    subpath: string,
+    init: RequestInit,
+    options?: ReadTreeOptions,
+  ): Promise<ReadTreeResponse> {
+    // archive_url looks like "https://api.github.com/repos/owner/repo/{archive_format}{/ref}"
+    const archive = await this.fetchResponse(
+      archiveUrl
+        .replace('{archive_format}', 'tarball')
+        .replace('{/ref}', `/${sha}`),
+      init,
+    );
+
+    return await this.deps.treeResponseFactory.fromTarArchive({
+      // TODO(Rugvip): Underlying implementation of fetch will be node-fetch, we probably want
+      //               to stick to using that in exclusively backend code.
+      stream: (archive.body as unknown) as Readable,
+      subpath,
+      etag: sha,
+      filter: options?.filter,
+    });
+  }
+
+  private async doSearch(
+    url: string,
+    treesUrl: string,
+    archiveUrl: string,
+    sha: string,
+    query: string,
+    init: RequestInit,
+  ): Promise<SearchResponseFile[]> {
+    function pathToUrl(path: string): string {
+      // TODO(freben): Use the integration package facility for this instead
+      // pathname starts as /backstage/backstage/blob/master/<path>
+      const updated = new URL(url);
+      const base = updated.pathname.split('/').slice(1, 5).join('/');
+      updated.pathname = `${base}/${path}`;
+      return updated.toString();
+    }
+
+    const matcher = new Minimatch(query.replace(/^\/+/, ''));
+
+    // trees_url looks like "https://api.github.com/repos/octocat/Hello-World/git/trees{/sha}"
+    const recursiveTree: GhTreeResponse = await this.fetchJson(
+      treesUrl.replace('{/sha}', `/${sha}?recursive=true`),
+      init,
+    );
+
+    // The simple case is that we got the entire tree in a single operation.
+    if (!recursiveTree.truncated) {
+      const matching = recursiveTree.tree.filter(
+        item =>
+          item.type === 'blob' &&
+          item.path &&
+          item.url &&
+          matcher.match(item.path),
+      );
+
+      return matching.map(item => ({
+        url: pathToUrl(item.path!),
+        content: async () => {
+          const blob: GhBlobResponse = await this.fetchJson(item.url!, init);
+          return Buffer.from(blob.content, 'base64');
+        },
+      }));
+    }
+
+    // For larger repos, we leverage readTree and filter through that instead
+    const tree = await this.doReadTree(archiveUrl, sha, '', init, {
+      filter: path => matcher.match(path),
+    });
+    const files = await tree.files();
+
+    return files.map(file => ({
+      url: pathToUrl(file.path),
+      content: file.content,
+    }));
+  }
+
+  private async getRepoDetails(
+    url: string,
+  ): Promise<{
+    repo: GhRepoResponse;
+    branch: GhBranchResponse;
+  }> {
+    const parsed = parseGitUrl(url);
+    const { ref, full_name } = parsed;
+
+    // Caveat: The ref will totally be incorrect if the branch name includes a
+    // slash. Thus, some operations can not work on URLs containing branch
+    // names that have a slash in them.
+
+    const { headers } = await this.deps.credentialsProvider.getCredentials({
+      url,
+    });
+
+    const repo: GhRepoResponse = await this.fetchJson(
+      `${this.config.apiBaseUrl}/repos/${full_name}`,
+      { headers },
+    );
+
+    // branches_url looks like "https://api.github.com/repos/owner/repo/branches{/branch}"
+    const branch: GhBranchResponse = await this.fetchJson(
+      repo.branches_url.replace('{/branch}', `/${ref || repo.default_branch}`),
+      { headers },
+    );
+
+    return { repo, branch };
+  }
+
+  private async fetchResponse(
+    url: string | URL,
+    init: RequestInit,
+  ): Promise<Response> {
+    const urlAsString = url.toString();
+
+    const response = await fetch(urlAsString, init);
+
+    if (!response.ok) {
+      const message = `Request failed for ${urlAsString}, ${response.status} ${response.statusText}`;
+      if (response.status === 404) {
+        throw new NotFoundError(message);
+      }
+      throw new Error(message);
+    }
+
+    return response;
+  }
+
+  private async fetchJson(url: string | URL, init: RequestInit): Promise<any> {
+    const response = await this.fetchResponse(url, init);
+    return await response.json();
   }
 }
