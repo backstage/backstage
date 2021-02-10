@@ -18,13 +18,16 @@ import { Entity, EntityName, Location } from '@backstage/catalog-model';
 import {
   AddLocationRequest,
   AddLocationResponse,
-  ApiContext,
   CatalogApi,
   CatalogEntitiesRequest,
   CatalogListResponse,
   CatalogClient,
 } from '@backstage/catalog-client';
 import { IdentityApi } from '@backstage/core';
+
+type CatalogRequestOptions = {
+  token?: string;
+};
 
 /**
  * CatalogClient wrapper that injects identity token for all requests
@@ -38,69 +41,57 @@ export class CatalogClientWrapper implements CatalogApi {
     this.identityApi = options.identityApi;
   }
 
-  private async injectToken(context?: ApiContext) {
-    const result: ApiContext = context ?? {};
-    // Inject identity token if not provided
-    if (!result.token) {
-      result.token = await this.identityApi.getIdToken();
-    }
-    return result;
-  }
-
   async getLocationById(
     id: String,
-    context?: ApiContext,
+    options?: CatalogRequestOptions,
   ): Promise<Location | undefined> {
-    return await this.client.getLocationById(
-      id,
-      await this.injectToken(context),
-    );
+    return await this.client.getLocationById(id, {
+      token: options?.token ?? (await this.identityApi.getIdToken()),
+    });
   }
 
   async getEntities(
     request?: CatalogEntitiesRequest,
-    context?: ApiContext,
+    options?: CatalogRequestOptions,
   ): Promise<CatalogListResponse<Entity>> {
-    return await this.client.getEntities(
-      request,
-      await this.injectToken(context),
-    );
+    return await this.client.getEntities(request, {
+      token: options?.token ?? (await this.identityApi.getIdToken()),
+    });
   }
 
   async getEntityByName(
     compoundName: EntityName,
-    context?: ApiContext,
+    options?: CatalogRequestOptions,
   ): Promise<Entity | undefined> {
-    return await this.client.getEntityByName(
-      compoundName,
-      await this.injectToken(context),
-    );
+    return await this.client.getEntityByName(compoundName, {
+      token: options?.token ?? (await this.identityApi.getIdToken()),
+    });
   }
 
   async addLocation(
     request: AddLocationRequest,
-    context?: ApiContext,
+    options?: CatalogRequestOptions,
   ): Promise<AddLocationResponse> {
-    return await this.client.addLocation(
-      request,
-      await this.injectToken(context),
-    );
+    return await this.client.addLocation(request, {
+      token: options?.token ?? (await this.identityApi.getIdToken()),
+    });
   }
 
   async getLocationByEntity(
     entity: Entity,
-    context?: ApiContext,
+    options?: CatalogRequestOptions,
   ): Promise<Location | undefined> {
-    return await this.client.getLocationByEntity(
-      entity,
-      await this.injectToken(context),
-    );
+    return await this.client.getLocationByEntity(entity, {
+      token: options?.token ?? (await this.identityApi.getIdToken()),
+    });
   }
 
-  async removeEntityByUid(uid: string, context?: ApiContext): Promise<void> {
-    return await this.client.removeEntityByUid(
-      uid,
-      await this.injectToken(context),
-    );
+  async removeEntityByUid(
+    uid: string,
+    options?: CatalogRequestOptions,
+  ): Promise<void> {
+    return await this.client.removeEntityByUid(uid, {
+      token: options?.token ?? (await this.identityApi.getIdToken()),
+    });
   }
 }

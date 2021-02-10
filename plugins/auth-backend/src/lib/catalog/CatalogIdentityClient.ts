@@ -15,7 +15,7 @@
  */
 
 import { ConflictError, NotFoundError } from '@backstage/backend-common';
-import { ApiContext, CatalogApi } from '@backstage/catalog-client';
+import { CatalogApi } from '@backstage/catalog-client';
 import { UserEntity } from '@backstage/catalog-model';
 
 type UserQuery = {
@@ -37,7 +37,10 @@ export class CatalogIdentityClient {
    *
    * Throws a NotFoundError or ConflictError if 0 or multiple users are found.
    */
-  async findUser(query: UserQuery, context?: ApiContext): Promise<UserEntity> {
+  async findUser(
+    query: UserQuery,
+    options?: { token?: string },
+  ): Promise<UserEntity> {
     const filter: Record<string, string> = {
       kind: 'user',
     };
@@ -45,7 +48,7 @@ export class CatalogIdentityClient {
       filter[`metadata.annotations.${key}`] = value;
     }
 
-    const { items } = await this.catalogApi.getEntities({ filter }, context);
+    const { items } = await this.catalogApi.getEntities({ filter }, options);
 
     if (items.length !== 1) {
       if (items.length > 1) {

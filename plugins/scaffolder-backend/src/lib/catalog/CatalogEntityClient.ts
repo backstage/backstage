@@ -15,7 +15,7 @@
  */
 
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { ApiContext, CatalogClient } from '@backstage/catalog-client';
+import { CatalogClient } from '@backstage/catalog-client';
 import {
   ConflictError,
   NotFoundError,
@@ -41,7 +41,7 @@ export class CatalogEntityClient {
    */
   async findTemplate(
     templateName: string,
-    context?: ApiContext,
+    options?: { token?: string },
   ): Promise<TemplateEntityV1alpha1> {
     const { items: templates } = (await this.catalogClient.getEntities(
       {
@@ -50,7 +50,7 @@ export class CatalogEntityClient {
           'metadata.name': templateName,
         },
       },
-      context,
+      options,
     )) as { items: TemplateEntityV1alpha1[] };
 
     if (templates.length !== 1) {
