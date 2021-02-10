@@ -40,3 +40,9 @@ More advanced use-cases we hope to support with this architecture include:
 - It should be easy to customize the search UI
 - It should be easy to add search functionality to any Backstage plugin or
   deployment
+
+Architecture non-goals:
+
+- At this time, we do not intend to directly support event-driven or incremental
+  index management. Instead, we'll be focused on scheduled, bulk index
+  management.
