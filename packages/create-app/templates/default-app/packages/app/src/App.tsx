@@ -12,7 +12,7 @@ import { AppSidebar } from './sidebar';
 import { Route, Navigate } from 'react-router';
 import { Router as CatalogRouter } from '@backstage/plugin-catalog';
 import { Router as DocsRouter } from '@backstage/plugin-techdocs';
-import { Router as ImportComponentRouter } from '@backstage/plugin-catalog-import';
+import { CatalogImportPage } from '@backstage/plugin-catalog-import';
 import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
 import { SearchPage as SearchRouter } from '@backstage/plugin-search';
 import { Router as SettingsRouter } from '@backstage/plugin-user-settings';
@@ -46,10 +46,7 @@ const App = () => (
             path="/tech-radar"
             element={<TechRadarRouter width={1500} height={800} />}
           />
-          <Route
-            path="/catalog-import"
-            element={<ImportComponentRouter />}
-          />
+          <Route path="/catalog-import" element={<CatalogImportPage />} />
           <Route
             path="/search"
             element={<SearchRouter/>}
