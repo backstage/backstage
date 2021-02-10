@@ -15,7 +15,6 @@
  */
 
 import { Config } from '@backstage/config';
-import { IdentityClient } from '@backstage/plugin-auth-backend';
 import Docker from 'dockerode';
 import express from 'express';
 import { resolve as resolvePath } from 'path';
@@ -136,7 +135,7 @@ export async function createRouter(
 
       // Forward authorization from client
       const template = await entityClient.findTemplate(templateName, {
-        token: IdentityClient.getBearerToken(req.headers.authorization),
+        token: getBearerToken(req.headers.authorization),
       });
 
       const validationResult: ValidatorResult = validate(
@@ -298,4 +297,8 @@ export async function createRouter(
   app.use('/', router);
 
   return app;
+}
+
+function getBearerToken(header?: string): string | undefined {
+  return header?.match(/Bearer\s+(\S+)/i)?.[1];
 }
