@@ -3,7 +3,7 @@
 '@backstage/plugin-auth-backend': minor
 ---
 
-Remove undocumented scope (default) from the OIDC auth provider which was breaking some identity services. If your app relied on this scope, you can readd it by adding a new factory in `packages/app/src/apis.ts`:
+Remove undocumented scope (default) from the OIDC auth provider which was breaking some identity services. If your app relied on this scope, you can manually specify it by adding a new factory in `packages/app/src/apis.ts`:
 
 ```
 export const apis = [
