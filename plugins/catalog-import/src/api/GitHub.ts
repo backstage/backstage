@@ -14,13 +14,26 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Route, Routes } from 'react-router-dom';
-import { ImportComponentPage } from './ImportComponentPage';
-import { StepperProviderOpts } from './ImportStepper/defaults';
+import { ConfigApi } from '@backstage/core';
+import { ScmIntegrations } from '@backstage/integration';
+import parseGitUrl from 'git-url-parse';
 
-export const Router = ({ options }: { options?: StepperProviderOpts }) => (
-  <Routes>
-    <Route element={<ImportComponentPage opts={options} />} />
-  </Routes>
-);
+export const getGithubIntegrationConfig = (
+  config: ConfigApi,
+  location: string,
+) => {
+  const { name: repo, owner } = parseGitUrl(location);
+
+  const scmIntegrations = ScmIntegrations.fromConfig(config);
+  const githubIntegrationConfig = scmIntegrations.github.byUrl(location);
+
+  if (!githubIntegrationConfig) {
+    return undefined;
+  }
+
+  return {
+    repo,
+    owner,
+    githubIntegrationConfig: githubIntegrationConfig.config,
+  };
+};

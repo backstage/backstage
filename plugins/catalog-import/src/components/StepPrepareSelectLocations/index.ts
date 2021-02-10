@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,4 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Route, Routes } from 'react-router-dom';
-import { ImportComponentPage } from './ImportComponentPage';
-import { StepperProviderOpts } from './ImportStepper/defaults';
-
-export const Router = ({ options }: { options?: StepperProviderOpts }) => (
-  <Routes>
-    <Route element={<ImportComponentPage opts={options} />} />
-  </Routes>
-);
+export { StepPrepareSelectLocations } from './StepPrepareSelectLocations';

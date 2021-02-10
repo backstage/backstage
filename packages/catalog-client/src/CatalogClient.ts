@@ -86,7 +86,7 @@ export class CatalogClient implements CatalogApi {
   }
 
   async addLocation(
-    { type = 'url', target, dryRun }: AddLocationRequest,
+    { type = 'url', target, dryRun, presence }: AddLocationRequest,
     options?: CatalogRequestOptions,
   ): Promise<AddLocationResponse> {
     const headers = {
@@ -102,7 +102,7 @@ export class CatalogClient implements CatalogApi {
       {
         headers,
         method: 'POST',
-        body: JSON.stringify({ type, target }),
+        body: JSON.stringify({ type, target, presence }),
       },
     );
 

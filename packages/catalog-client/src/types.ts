@@ -60,6 +60,7 @@ export type AddLocationRequest = {
   type?: string;
   target: string;
   dryRun?: boolean;
+  presence?: 'optional' | 'required';
 };
 
 export type AddLocationResponse = {
