@@ -16,7 +16,7 @@
 import { createRouteRef } from '@backstage/core';
 
 export const rootRoute = createRouteRef({
-  path: '/create',
+  path: '/create/docs-template',
   title: 'Create new entity',
 });
 
