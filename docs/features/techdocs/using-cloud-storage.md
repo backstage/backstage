@@ -207,7 +207,8 @@ techdocs:
 ```
 
 Note: Assuming a role requires that primary credentials are already configured
-at `AWS.config.credentials`. Read more about [assuming roles in AWS](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html).
+at `AWS.config.credentials`. Read more about
+[assuming roles in AWS](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html).
 
 **4. That's it!**
 
