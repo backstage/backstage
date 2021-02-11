@@ -31,6 +31,7 @@ export * from './MarkdownContent';
 export * from './OAuthRequestDialog';
 export * from './Progress';
 export * from './ProgressBars';
+export * from './Select';
 export * from './SimpleStepper';
 export * from './Status';
 export * from './StructuredMetadataTable';
