@@ -95,11 +95,7 @@ export class AwsS3Publish implements PublisherBase {
     const region = config.getOptionalString('techdocs.publisher.awsS3.region');
 
     const storageClient = new aws.S3({
-      ...(credentials &&
-        accessKeyId &&
-        secretAccessKey && {
-          credentials: awsCredentials,
-        }),
+      credentials,
       ...(region && {
         region,
       }),
