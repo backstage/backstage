@@ -91,7 +91,7 @@ export interface Config {
                * attr: 'roleArn' - accepts a string value
                * @visibility secret
                */
-              roleArn: string;
+              roleArn?: string;
             };
             /**
              * (Required) Cloud Storage Bucket Name
