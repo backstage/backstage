@@ -15,7 +15,8 @@
  */
 import path from 'path';
 import express from 'express';
-import { PutObjectCommandOutput, S3 } from '@aws-sdk/client-s3';
+import aws from 'aws-sdk';
+import { ManagedUpload } from 'aws-sdk/clients/s3';
 import { Logger } from 'winston';
 import { Entity, EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
@@ -71,7 +72,7 @@ export class AwsS3Publish implements PublisherBase {
     // https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-region.html
     const region = config.getOptionalString('techdocs.publisher.awsS3.region');
 
-    const storageClient = new S3({
+    const storageClient = new aws.S3({
       ...(credentials &&
         accessKeyId &&
         secretAccessKey && {
@@ -113,7 +114,7 @@ export class AwsS3Publish implements PublisherBase {
   }
 
   constructor(
-    private readonly storageClient: S3,
+    private readonly storageClient: aws.S3,
     private readonly bucketName: string,
     private readonly logger: Logger,
   ) {
@@ -133,7 +134,7 @@ export class AwsS3Publish implements PublisherBase {
       const allFilesToUpload = await getFileTreeRecursively(directory);
 
       const limiter = createLimiter(10);
-      const uploadPromises: Array<Promise<PutObjectCommandOutput>> = [];
+      const uploadPromises: Array<Promise<ManagedUpload.SendData>> = [];
       for (const filePath of allFilesToUpload) {
         // Remove the absolute path prefix of the source directory
         // Path of all files to upload, relative to the root of the source directory
@@ -151,7 +152,9 @@ export class AwsS3Publish implements PublisherBase {
         };
 
         // Rate limit the concurrent execution of file uploads to batches of 10 (per publish)
-        const uploadFile = limiter(() => this.storageClient.putObject(params));
+        const uploadFile = limiter(() =>
+          this.storageClient.upload(params).promise(),
+        );
         uploadPromises.push(uploadFile);
       }
       await Promise.all(uploadPromises);
@@ -170,34 +173,33 @@ export class AwsS3Publish implements PublisherBase {
     entityName: EntityName,
   ): Promise<TechDocsMetadata> {
     try {
-      return await new Promise<TechDocsMetadata>((resolve, reject) => {
+      return await new Promise<TechDocsMetadata>(async (resolve, reject) => {
         const entityRootDir = `${entityName.namespace}/${entityName.kind}/${entityName.name}`;
 
-        this.storageClient
+        const stream = this.storageClient
           .getObject({
             Bucket: this.bucketName,
             Key: `${entityRootDir}/techdocs_metadata.json`,
           })
-          .then(async file => {
-            const techdocsMetadataJson = await streamToBuffer(
-              file.Body as Readable,
-            );
+          .createReadStream();
 
-            if (!techdocsMetadataJson) {
-              throw new Error(
-                `Unable to parse the techdocs metadata file ${entityRootDir}/techdocs_metadata.json.`,
-              );
-            }
-            const techdocsMetadata = JSON5.parse(
-              techdocsMetadataJson.toString('utf-8'),
+        try {
+          const techdocsMetadataJson = await streamToBuffer(stream);
+          if (!techdocsMetadataJson) {
+            throw new Error(
+              `Unable to parse the techdocs metadata file ${entityRootDir}/techdocs_metadata.json.`,
             );
+          }
 
-            resolve(techdocsMetadata);
-          })
-          .catch(err => {
-            this.logger.error(err.message);
-            reject(new Error(err.message));
-          });
+          const techdocsMetadata = JSON5.parse(
+            techdocsMetadataJson.toString('utf-8'),
+          );
+
+          resolve(techdocsMetadata);
+        } catch (err) {
+          this.logger.error(err.message);
+          reject(new Error(err.message));
+        }
       });
     } catch (e) {
       throw new Error(`TechDocs metadata fetch failed, ${e.message}`);
@@ -208,7 +210,7 @@ export class AwsS3Publish implements PublisherBase {
    * Express route middleware to serve static files on a route in techdocs-backend.
    */
   docsRouter(): express.Handler {
-    return (req, res) => {
+    return async (req, res) => {
       // Trim the leading forward slash
       // filePath example - /default/Component/documented-component/index.html
       const filePath = req.path.replace(/^\//, '');
@@ -217,27 +219,22 @@ export class AwsS3Publish implements PublisherBase {
       const fileExtension = path.extname(filePath);
       const responseHeaders = getHeadersForFileExtension(fileExtension);
 
-      this.storageClient
+      const stream = this.storageClient
         .getObject({ Bucket: this.bucketName, Key: filePath })
-        .then(async object => {
-          const fileContent = await streamToBuffer(object.Body as Readable);
-          if (!fileContent) {
-            throw new Error(`Unable to parse the file ${filePath}.`);
-          }
+        .createReadStream();
+      try {
+        // Inject response headers
+        for (const [headerKey, headerValue] of Object.entries(
+          responseHeaders,
+        )) {
+          res.setHeader(headerKey, headerValue);
+        }
 
-          // Inject response headers
-          for (const [headerKey, headerValue] of Object.entries(
-            responseHeaders,
-          )) {
-            res.setHeader(headerKey, headerValue);
-          }
-
-          res.send(fileContent);
-        })
-        .catch(err => {
-          this.logger.warn(err.message);
-          res.status(404).send(err.message);
-        });
+        res.send(await streamToBuffer(stream));
+      } catch (err) {
+        this.logger.warn(err.message);
+        res.status(404).send(err.message);
+      }
     };
   }
 
@@ -248,10 +245,12 @@ export class AwsS3Publish implements PublisherBase {
   async hasDocsBeenGenerated(entity: Entity): Promise<boolean> {
     try {
       const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
-      await this.storageClient.headObject({
-        Bucket: this.bucketName,
-        Key: `${entityRootDir}/index.html`,
-      });
+      await this.storageClient
+        .headObject({
+          Bucket: this.bucketName,
+          Key: `${entityRootDir}/index.html`,
+        })
+        .promise();
       return Promise.resolve(true);
     } catch (e) {
       return Promise.resolve(false);

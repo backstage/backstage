@@ -102,182 +102,6 @@
   resolved "https://registry.npmjs.org/@asyncapi/specs/-/specs-2.7.5.tgz#3a516d198fc41a1103695bd889fdd4fbbebe7f5d"
   integrity sha512-T1Ham9sqZKCtSowXRPaBCRy2oz3KHglqqrKiaO7lEudpP6lwH5SwXaq4qliyKzWaqd22srJHE4szdsorbFZKlw==
 
-"@aws-crypto/crc32@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/@aws-crypto/crc32/-/crc32-1.0.0.tgz#6a0164fd92bb365860ba6afb5dfef449701eb8ca"
-  integrity sha512-wr4EyCv3ZfLH3Sg7FErV6e/cLhpk9rUP/l5322y8PRgpQsItdieaLbtE4aDOR+dxl8U7BG9FIwWXH4TleTDZ9A==
-  dependencies:
-    tslib "^1.11.1"
-
-"@aws-crypto/ie11-detection@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/@aws-crypto/ie11-detection/-/ie11-detection-1.0.0.tgz#d3a6af29ba7f15458f79c41d1cd8cac3925e726a"
-  integrity sha512-kCKVhCF1oDxFYgQrxXmIrS5oaWulkvRcPz+QBDMsUr2crbF4VGgGT6+uQhSwJFdUAQ2A//Vq+uT83eJrkzFgXA==
-  dependencies:
-    tslib "^1.11.1"
-
-"@aws-crypto/sha256-browser@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/@aws-crypto/sha256-browser/-/sha256-browser-1.0.0.tgz#9c34d3b829d922b2c8e077b30a60db53d6befcb1"
-  integrity sha512-uSufui4ZktC5lYX6bDxgBgNboxGyw9V9V+rlcNsNTxh4YPhOdCslwJMGntiWOBRGAgXhhvWi7FqnTS2SaT3cpg==
-  dependencies:
-    "@aws-crypto/ie11-detection" "^1.0.0"
-    "@aws-crypto/sha256-js" "^1.0.0"
-    "@aws-crypto/supports-web-crypto" "^1.0.0"
-    "@aws-sdk/types" "^1.0.0-rc.1"
-    "@aws-sdk/util-locate-window" "^1.0.0-rc.1"
-    "@aws-sdk/util-utf8-browser" "^1.0.0-rc.1"
-    tslib "^1.11.1"
-
-"@aws-crypto/sha256-js@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/@aws-crypto/sha256-js/-/sha256-js-1.0.0.tgz#ca788a3242a4024c386e6b9985da28f290a79ad7"
-  integrity sha512-89kqtFs/tdHBFHEBXZ4UXlCISswvEor3BVVOriR68Tbk1Qe1zBOZtfbSOt3CDT69z88x5uM558YW9k8I1xei5A==
-  dependencies:
-    "@aws-sdk/types" "^1.0.0-rc.1"
-    "@aws-sdk/util-utf8-browser" "^1.0.0-rc.1"
-    tslib "^1.11.1"
-
-"@aws-crypto/supports-web-crypto@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/@aws-crypto/supports-web-crypto/-/supports-web-crypto-1.0.0.tgz#c40901bc17ac1e875e248df16a2b47ad8bfd9a93"
-  integrity sha512-IHLfv+WmVH89EW4n6a5eE8/hUlz6qkWGMn/v4r5ZgzcXdTC5nolii2z3k46y01hWRiC2PPhOdeSLzMUCUMco7g==
-  dependencies:
-    tslib "^1.11.1"
-
-"@aws-sdk/abort-controller@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/abort-controller/-/abort-controller-3.1.0.tgz#6b1e6cfe7410ff38ff5efdfc2e16c309d7c4e233"
-  integrity sha512-rqE/+BBEvF4ZxT+J1hqaSDUzXTcdnyeHQ7vqEyB1UuAmMcq6nIi1rAQKqBXneaIC4WVER3K5f00NKZGLzzqnRg==
-  dependencies:
-    tslib "^1.8.0"
-
-"@aws-sdk/chunked-blob-reader-native@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/chunked-blob-reader-native/-/chunked-blob-reader-native-3.1.0.tgz#49573fe4087f07894deef7a1bf184517c3fb8f24"
-  integrity sha512-ghBtZkhUWgy51/651l/GUR/qhdqjFR3GSCsz0B7qisrXc8ZNsd7OlXfnTfYNoySxD3XKpbcxsncytH4Hkxgi4A==
-  dependencies:
-    "@aws-sdk/util-base64-browser" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/chunked-blob-reader@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/chunked-blob-reader/-/chunked-blob-reader-3.1.0.tgz#0a17272040760ce54ee6cd5b7e56efaca81e07aa"
-  integrity sha512-/2fxbKwta8ZiSj59B8F3FyVRszo1/VOhpCeL16gmRRNV73rM3IqJD+xOaDdkc/sFYyBeWn/UhwgD98kxae9XsQ==
-  dependencies:
-    tslib "^1.8.0"
-
-"@aws-sdk/client-organizations@^3.2.0":
-  version "3.2.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/client-organizations/-/client-organizations-3.2.0.tgz#f9fc15ecc61fdf31d1cc1eb5590e526b60bc83c0"
-  integrity sha512-zIFHW5tETCeoSkmLh227eG25B4HnngVDktXhbPmp1NJjT2pcZzL5QIXuNcPz3PTbkaDNRdB04uRdDqryK4kY/g==
-  dependencies:
-    "@aws-crypto/sha256-browser" "^1.0.0"
-    "@aws-crypto/sha256-js" "^1.0.0"
-    "@aws-sdk/config-resolver" "3.2.0"
-    "@aws-sdk/credential-provider-node" "3.1.0"
-    "@aws-sdk/fetch-http-handler" "3.2.0"
-    "@aws-sdk/hash-node" "3.1.0"
-    "@aws-sdk/invalid-dependency" "3.2.0"
-    "@aws-sdk/middleware-content-length" "3.2.0"
-    "@aws-sdk/middleware-host-header" "3.2.0"
-    "@aws-sdk/middleware-logger" "3.2.0"
-    "@aws-sdk/middleware-retry" "3.2.0"
-    "@aws-sdk/middleware-serde" "3.2.0"
-    "@aws-sdk/middleware-signing" "3.2.0"
-    "@aws-sdk/middleware-stack" "3.1.0"
-    "@aws-sdk/middleware-user-agent" "3.2.0"
-    "@aws-sdk/node-config-provider" "3.1.0"
-    "@aws-sdk/node-http-handler" "3.2.0"
-    "@aws-sdk/protocol-http" "3.2.0"
-    "@aws-sdk/smithy-client" "3.2.0"
-    "@aws-sdk/url-parser-browser" "3.1.0"
-    "@aws-sdk/url-parser-node" "3.1.0"
-    "@aws-sdk/util-base64-browser" "3.1.0"
-    "@aws-sdk/util-base64-node" "3.1.0"
-    "@aws-sdk/util-body-length-browser" "3.1.0"
-    "@aws-sdk/util-body-length-node" "3.1.0"
-    "@aws-sdk/util-user-agent-browser" "3.2.0"
-    "@aws-sdk/util-user-agent-node" "3.2.0"
-    "@aws-sdk/util-utf8-browser" "3.1.0"
-    "@aws-sdk/util-utf8-node" "3.1.0"
-    tslib "^2.0.0"
-
-"@aws-sdk/client-s3@^3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/client-s3/-/client-s3-3.1.0.tgz#9c39f4588420696e1a4920f8315f778a7896b858"
-  integrity sha512-RX/eBi3mHoJGkS146tA4ScSdOwSLEkHWlETFkcqVYdH6IP5FT9CiwRqSf6aNRE+LQiZXoBxeOdvGFXg2jWg83w==
-  dependencies:
-    "@aws-crypto/sha256-browser" "^1.0.0"
-    "@aws-crypto/sha256-js" "^1.0.0"
-    "@aws-sdk/config-resolver" "3.1.0"
-    "@aws-sdk/credential-provider-node" "3.1.0"
-    "@aws-sdk/eventstream-serde-browser" "3.1.0"
-    "@aws-sdk/eventstream-serde-config-resolver" "3.1.0"
-    "@aws-sdk/eventstream-serde-node" "3.1.0"
-    "@aws-sdk/fetch-http-handler" "3.1.0"
-    "@aws-sdk/hash-blob-browser" "3.1.0"
-    "@aws-sdk/hash-node" "3.1.0"
-    "@aws-sdk/hash-stream-node" "3.1.0"
-    "@aws-sdk/invalid-dependency" "3.1.0"
-    "@aws-sdk/md5-js" "3.1.0"
-    "@aws-sdk/middleware-apply-body-checksum" "3.1.0"
-    "@aws-sdk/middleware-bucket-endpoint" "3.1.0"
-    "@aws-sdk/middleware-content-length" "3.1.0"
-    "@aws-sdk/middleware-expect-continue" "3.1.0"
-    "@aws-sdk/middleware-host-header" "3.1.0"
-    "@aws-sdk/middleware-location-constraint" "3.1.0"
-    "@aws-sdk/middleware-logger" "3.1.0"
-    "@aws-sdk/middleware-retry" "3.1.0"
-    "@aws-sdk/middleware-sdk-s3" "3.1.0"
-    "@aws-sdk/middleware-serde" "3.1.0"
-    "@aws-sdk/middleware-signing" "3.1.0"
-    "@aws-sdk/middleware-ssec" "3.1.0"
-    "@aws-sdk/middleware-stack" "3.1.0"
-    "@aws-sdk/middleware-user-agent" "3.1.0"
-    "@aws-sdk/node-config-provider" "3.1.0"
-    "@aws-sdk/node-http-handler" "3.1.0"
-    "@aws-sdk/protocol-http" "3.1.0"
-    "@aws-sdk/smithy-client" "3.1.0"
-    "@aws-sdk/url-parser-browser" "3.1.0"
-    "@aws-sdk/url-parser-node" "3.1.0"
-    "@aws-sdk/util-base64-browser" "3.1.0"
-    "@aws-sdk/util-base64-node" "3.1.0"
-    "@aws-sdk/util-body-length-browser" "3.1.0"
-    "@aws-sdk/util-body-length-node" "3.1.0"
-    "@aws-sdk/util-user-agent-browser" "3.1.0"
-    "@aws-sdk/util-user-agent-node" "3.1.0"
-    "@aws-sdk/util-utf8-browser" "3.1.0"
-    "@aws-sdk/util-utf8-node" "3.1.0"
-    "@aws-sdk/util-waiter" "3.1.0"
-    "@aws-sdk/xml-builder" "3.1.0"
-    fast-xml-parser "^3.16.0"
-    tslib "^2.0.0"
-
-"@aws-sdk/config-resolver@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/config-resolver/-/config-resolver-3.1.0.tgz#36987002c18884847aa1c96e0daf546b5f9caff6"
-  integrity sha512-/8hNlmeUPd1Ey9WqaZsydjWpDh1rcZpzOiiIhszOj3gGhUhsGsYGqP5oCwR9vMJf0Z5+o9diGT1QLMy9Rno6pw==
-  dependencies:
-    "@aws-sdk/signature-v4" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/config-resolver@3.2.0":
-  version "3.2.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/config-resolver/-/config-resolver-3.2.0.tgz#c83de904f155282c91e0972b5053937ea1f05160"
-  integrity sha512-+PRjXpWq8JlN/ilO2F5sh/HAOkoCJkGnu/e8rfnND88tghVVauFPm7xTR2LHOGp1ugpUJm8lG/iEzpYP1EUcpA==
-  dependencies:
-    "@aws-sdk/signature-v4" "3.2.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/credential-provider-env@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/credential-provider-env/-/credential-provider-env-3.1.0.tgz#eaa3ed04960faafd4536e9fbb051d5007985ba03"
-  integrity sha512-WUSrtg/on6bP6rjOPdjhFMkPZgDoFZZL2FST4y9K6TkRxcDHejgPZmP13L74RBGIOYlcflZAxE/936OpzpsAAA==
-  dependencies:
-    "@aws-sdk/property-provider" "3.1.0"
-    tslib "^1.8.0"
-
 "@aws-sdk/credential-provider-env@3.3.0":
   version "3.3.0"
   resolved "https://registry.npmjs.org/@aws-sdk/credential-provider-env/-/credential-provider-env-3.3.0.tgz#7930e504a7a79ab98a9fd34befc5c84b8c4df679"
@@ -285,14 +109,6 @@
   dependencies:
     "@aws-sdk/property-provider" "3.3.0"
     "@aws-sdk/types" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/credential-provider-imds@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/credential-provider-imds/-/credential-provider-imds-3.1.0.tgz#33d48753dc00bddce79d2aa8076a7cb5bf8562df"
-  integrity sha512-I8P0ASEjuYpcDMfU2QKlT8vE3nIo803ct4y5Q54Osh5K7+H8Y+raYK9mxxhjycriDXhcQrOe2Rfj+1ARXjdvGw==
-  dependencies:
-    "@aws-sdk/property-provider" "3.1.0"
     tslib "^1.8.0"
 
 "@aws-sdk/credential-provider-imds@3.3.0":
@@ -304,15 +120,6 @@
     "@aws-sdk/types" "3.1.0"
     tslib "^1.8.0"
 
-"@aws-sdk/credential-provider-ini@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/credential-provider-ini/-/credential-provider-ini-3.1.0.tgz#1a6cf9ab9fa1450d4472b9e371099b0c0283349b"
-  integrity sha512-6kPFcsnCR1tEaVQPJGY6z58XvbeVtjsdC2srYG/0y87zyWd9awGuvRN4OV6aOr24QmEVaFNyWuE5QBQJ1/7hkA==
-  dependencies:
-    "@aws-sdk/property-provider" "3.1.0"
-    "@aws-sdk/shared-ini-file-loader" "3.1.0"
-    tslib "^1.8.0"
-
 "@aws-sdk/credential-provider-ini@3.3.0":
   version "3.3.0"
   resolved "https://registry.npmjs.org/@aws-sdk/credential-provider-ini/-/credential-provider-ini-3.3.0.tgz#55fe8f391b72d30e650ba8bc680e82bbeacbbfe5"
@@ -321,18 +128,6 @@
     "@aws-sdk/property-provider" "3.3.0"
     "@aws-sdk/shared-ini-file-loader" "3.1.0"
     "@aws-sdk/types" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/credential-provider-node@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/credential-provider-node/-/credential-provider-node-3.1.0.tgz#89bc8803752a3e580c6f2410306c7edad6be7fa2"
-  integrity sha512-/HNq75cNiXzxm6F+ZeJ3awuqUofUtcr89ZnSnwB1pkicz81yrqAH8EN2dEj90eDo1MdBQHx6rhaKg4SJUaBy3Q==
-  dependencies:
-    "@aws-sdk/credential-provider-env" "3.1.0"
-    "@aws-sdk/credential-provider-imds" "3.1.0"
-    "@aws-sdk/credential-provider-ini" "3.1.0"
-    "@aws-sdk/credential-provider-process" "3.1.0"
-    "@aws-sdk/property-provider" "3.1.0"
     tslib "^1.8.0"
 
 "@aws-sdk/credential-provider-node@^3.3.0":
@@ -348,16 +143,6 @@
     "@aws-sdk/types" "3.1.0"
     tslib "^1.8.0"
 
-"@aws-sdk/credential-provider-process@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/credential-provider-process/-/credential-provider-process-3.1.0.tgz#ff817b29a9760c463b77be3ce49375eaeb753ef3"
-  integrity sha512-pecJk5W9LYLk9KOwT5A3X6ECHoakQMvXL/whqDsKdXQ4c5C1pVoV67Jnp3ilMNfr6CauxU8gQs53iPS5LUHH4A==
-  dependencies:
-    "@aws-sdk/credential-provider-ini" "3.1.0"
-    "@aws-sdk/property-provider" "3.1.0"
-    "@aws-sdk/shared-ini-file-loader" "3.1.0"
-    tslib "^1.8.0"
-
 "@aws-sdk/credential-provider-process@3.3.0":
   version "3.3.0"
   resolved "https://registry.npmjs.org/@aws-sdk/credential-provider-process/-/credential-provider-process-3.3.0.tgz#9de0984bd6dd0f5e40cff3672d7dd19e8cd43074"
@@ -369,338 +154,6 @@
     "@aws-sdk/types" "3.1.0"
     tslib "^1.8.0"
 
-"@aws-sdk/eventstream-marshaller@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/eventstream-marshaller/-/eventstream-marshaller-3.1.0.tgz#65a217e37abcaa162276ccb1d4487d42431d1534"
-  integrity sha512-ZfWK+QPB+nuKfd90ZWpkJtK4wSKYv5qzA59jP1wwEWZ2XzUyTs2FWq4rns4af2UHnd+r5+92V2r/AZUCzT9U8w==
-  dependencies:
-    "@aws-crypto/crc32" "^1.0.0"
-    "@aws-sdk/util-hex-encoding" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/eventstream-serde-browser@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/eventstream-serde-browser/-/eventstream-serde-browser-3.1.0.tgz#e62f745ecb5336a957fe645f6d596501051ab73a"
-  integrity sha512-a7P8JzJhHTFAc6sY2uBVMr8RpLap58LXOgWUEQmozFOK6Klu2NxsdzfNGJAURsc1tK6cw126fidA9UMH/NR20Q==
-  dependencies:
-    "@aws-sdk/eventstream-marshaller" "3.1.0"
-    "@aws-sdk/eventstream-serde-universal" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/eventstream-serde-config-resolver@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/eventstream-serde-config-resolver/-/eventstream-serde-config-resolver-3.1.0.tgz#f4f95c4770ea34b06d79ef61eb8cbd73ac8403bc"
-  integrity sha512-OxgQNKNKOuXAy4ID77EC7glHALGOGdDt+fDteeajEEZ+XXQ2q4maIAbQ8N44bZcy4E8D20YEesaHDAtsDiUvPA==
-  dependencies:
-    tslib "^1.8.0"
-
-"@aws-sdk/eventstream-serde-node@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/eventstream-serde-node/-/eventstream-serde-node-3.1.0.tgz#23d6630385d7023d3da9c905174ee391b5d9e5d6"
-  integrity sha512-xn3SwHhi9UDi6gE9fQxD8j+fxRzfnMWiu688sneoGSSzZl4e5lZtrRbMGWKdtT840dp+GrEXE6BVobUelOyVHA==
-  dependencies:
-    "@aws-sdk/eventstream-marshaller" "3.1.0"
-    "@aws-sdk/eventstream-serde-universal" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/eventstream-serde-universal@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/eventstream-serde-universal/-/eventstream-serde-universal-3.1.0.tgz#c48f51c92711cf0ec3a8e93b466d4dde8128d936"
-  integrity sha512-dnrsnLqBnFddxLtFGzDE9SBNl7+xJmgsL7SI9ALqxgvJkK7MVVj9+kzCEyypNHcRCG6OUTypvY+wjgMXJAtHUg==
-  dependencies:
-    "@aws-sdk/eventstream-marshaller" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/fetch-http-handler@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/fetch-http-handler/-/fetch-http-handler-3.1.0.tgz#2e495cbd5a633c3a5f9935b59faa9c8c0ed8b5e2"
-  integrity sha512-QCYGCdQuV3XLgqvKoJD3C/GO+cEZQOazII/rPfaeVXquv8Xrn85UJ3PZ3uFCzVVmjnm1RidwseRQoYrSsjmRhQ==
-  dependencies:
-    "@aws-sdk/protocol-http" "3.1.0"
-    "@aws-sdk/querystring-builder" "3.1.0"
-    "@aws-sdk/util-base64-browser" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/fetch-http-handler@3.2.0":
-  version "3.2.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/fetch-http-handler/-/fetch-http-handler-3.2.0.tgz#116bfc06b3de797d4c746962874ef00e66fda024"
-  integrity sha512-Y8cw7+HNhxSpYZmd78Bq46rYUUCqnRH9AgHXkLifsigt4RsEAfYhODhEUQhEhJ/zwgadvj/fIKJWKdSiCbiC1A==
-  dependencies:
-    "@aws-sdk/protocol-http" "3.2.0"
-    "@aws-sdk/querystring-builder" "3.1.0"
-    "@aws-sdk/util-base64-browser" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/hash-blob-browser@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/hash-blob-browser/-/hash-blob-browser-3.1.0.tgz#5c6548b05d155d3141b47da958be13043a96a17f"
-  integrity sha512-A/iLk2P/15G//YPlB9DwNPR3J3QlrmJSrHKKYLj/t1DnxiIu3DZNCZjhLmBuQpx14O1GcolmewqJRaAq1qtVcw==
-  dependencies:
-    "@aws-sdk/chunked-blob-reader" "3.1.0"
-    "@aws-sdk/chunked-blob-reader-native" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/hash-node@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/hash-node/-/hash-node-3.1.0.tgz#2d9eb6c0a5b65c179d2e60db941ba921a83e1861"
-  integrity sha512-zcXjzPuraq6EEEC0N2DI/ng554XiHtLsWGYK2TkW5yS6+2xXiJFny3V5wZHWXsidHOgwgML92r/pU0PeVcTCbg==
-  dependencies:
-    "@aws-sdk/util-buffer-from" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/hash-stream-node@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/hash-stream-node/-/hash-stream-node-3.1.0.tgz#05424ef3873be626091b55617fe1df135ee34dcd"
-  integrity sha512-GQ7EsdH9yIYIVPhtcuwpYaTS3MNq+3jo6mUF06m8YxlG58GNIVz9gG8oMy9ezP5rpIjJX9YhXKN8GgERNxfpvQ==
-  dependencies:
-    tslib "^1.8.0"
-
-"@aws-sdk/invalid-dependency@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/invalid-dependency/-/invalid-dependency-3.1.0.tgz#834c4e4a34d481bd3d4467437441ab035634710d"
-  integrity sha512-PNKFfIC9w25MA/fV5FnjFfFpbNiLaojgS2RtT/+L5pyic2NJ3spGNlF0pMrnPPtbrFFHaOy/E7bRa0qVtNWEyw==
-  dependencies:
-    tslib "^1.8.0"
-
-"@aws-sdk/invalid-dependency@3.2.0":
-  version "3.2.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/invalid-dependency/-/invalid-dependency-3.2.0.tgz#2c2c19cbec17ff28333c68e28420db6902a4374b"
-  integrity sha512-8hlqE4pWo2DoM6pAqjL+A3zYwUMaxP/RCGO+0zKbZHVw2stdRDzpO+jUfzZHR+mPJ+L/2wPwhK8D9n3yBriNBQ==
-  dependencies:
-    tslib "^1.8.0"
-
-"@aws-sdk/is-array-buffer@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/is-array-buffer/-/is-array-buffer-3.1.0.tgz#7ac296d6408e34083ac007630541a1cdf67387fd"
-  integrity sha512-wE6Am+/FKuINc/aypXiBiLAatlSyxYQ9wGGQHf2iYOX5d5bHLOVKPoRwcqSCaiaR32aRcS7R+IhgxeBy+ajsMQ==
-  dependencies:
-    tslib "^1.8.0"
-
-"@aws-sdk/md5-js@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/md5-js/-/md5-js-3.1.0.tgz#ae0799f9d9eeab01f4dd72baaa6bbb63cd45ffed"
-  integrity sha512-QB8D7EdxjOih9NWL/NoJRkgE0RSSJTXQLuQGH9UMj66rUQfGpwvLJDL+PbvoSUJgM8+McEBGyvjLCrDCK5r+qA==
-  dependencies:
-    "@aws-sdk/util-utf8-browser" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/middleware-apply-body-checksum@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/middleware-apply-body-checksum/-/middleware-apply-body-checksum-3.1.0.tgz#85504e7e7883830ffa06954a07f57b1fdb003408"
-  integrity sha512-q1Jx8HhC7fQjfrCUjbdlRw5F0Vr+gwjHf4sKd+S+FYO+15+PVtukBiKfP3lEW4KKREjTv1h/qPEjhv+CK4nN7w==
-  dependencies:
-    "@aws-sdk/is-array-buffer" "3.1.0"
-    "@aws-sdk/protocol-http" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/middleware-bucket-endpoint@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/middleware-bucket-endpoint/-/middleware-bucket-endpoint-3.1.0.tgz#38fb980fe99c42ddc264db40b93f28f84b3cc1e2"
-  integrity sha512-/NZuSbqSNARgsZqrRZ8yDXGqF0MSdA/vhNwXAk8BVz/oav4fveJ4KiMMO7Pq5918ZWJ3v//4bSezTnKLDzKmAw==
-  dependencies:
-    "@aws-sdk/protocol-http" "3.1.0"
-    "@aws-sdk/util-arn-parser" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/middleware-content-length@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/middleware-content-length/-/middleware-content-length-3.1.0.tgz#af100e6f724a188bb2963372de8d40868905be51"
-  integrity sha512-+QGIYkAch0q3a8LrbCS21MEKlE0WgtZBOJl76M3LZtvnbvgKkAmL4oDc+HjGD1jYuNRSt+hQZgqofuBDe8fyyw==
-  dependencies:
-    "@aws-sdk/protocol-http" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/middleware-content-length@3.2.0":
-  version "3.2.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/middleware-content-length/-/middleware-content-length-3.2.0.tgz#876943c7498e930595621395e5928fc59cf8ed68"
-  integrity sha512-xS7zdcRcubv7WKs5L/RG69EuuatuPxYNQT4O9epQyUaOpTHKzdVd1wnBK+otWYxI9qnCjIXwwmMyGbJXD9OHhw==
-  dependencies:
-    "@aws-sdk/protocol-http" "3.2.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/middleware-expect-continue@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/middleware-expect-continue/-/middleware-expect-continue-3.1.0.tgz#3453aeb345ea852ebeefe392f7706b7573dd3c23"
-  integrity sha512-NCuF3BMf5QqXv4iYr4eGnmg7BfIpFjPvjxapB5cQbzUOXIyUtlYWUu7QrsdBxCsqgOhVJ4mAiqliVsdxML5yZA==
-  dependencies:
-    "@aws-sdk/middleware-header-default" "3.1.0"
-    "@aws-sdk/protocol-http" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/middleware-header-default@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/middleware-header-default/-/middleware-header-default-3.1.0.tgz#0b41d113f878d95132e10a48ca4c9667c28cf325"
-  integrity sha512-BJFQXxkkuIkN679bqqTo9hBUuTFtO4izzSY3WPnnYYcQwYTIH/4JSifCpJWw+AjbvTZ2rA2DrWaTNGz3zuiBGA==
-  dependencies:
-    "@aws-sdk/protocol-http" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/middleware-host-header@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/middleware-host-header/-/middleware-host-header-3.1.0.tgz#61f22f7d7ce8907d0dbc817ff67ec5545012dc51"
-  integrity sha512-x86fAcqhtK6ObgPJHFLRaZP+cC4gI185QwxqP72balLgIsJJ6InS7441sOMPr5AZ9xgLJyPPKXouQ5zFBYjwpw==
-  dependencies:
-    "@aws-sdk/protocol-http" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/middleware-host-header@3.2.0":
-  version "3.2.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/middleware-host-header/-/middleware-host-header-3.2.0.tgz#cf5d0868f939834fb45c4490c1118eaf25317505"
-  integrity sha512-URRRaqO74DSdhqYyKbyCyadJ9No17KBMmgwz2OKecdwp6/pUVNQmlxhj1cG9leWUkBuOHo6weRvWc5zXwvfy1Q==
-  dependencies:
-    "@aws-sdk/protocol-http" "3.2.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/middleware-location-constraint@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/middleware-location-constraint/-/middleware-location-constraint-3.1.0.tgz#181007815ca9167b333666eb073b131e17d86fe7"
-  integrity sha512-NR8us/ZVJlxg/10h+dyu6xnKofSBWTp+Ai4yvkEFBsxr9kruVqGMP/2IFXl6iZAY5uy/H+TUJzyYtd4/DUgNgg==
-  dependencies:
-    tslib "^1.8.0"
-
-"@aws-sdk/middleware-logger@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/middleware-logger/-/middleware-logger-3.1.0.tgz#6356f6d79524493a0485bfd86f621d7a882daa1a"
-  integrity sha512-RYJbms7ECg1FgYmN/IyK9U9nzWZtUmt2ZPBunUqvab/ldjaXpAtJq3IYdl1E/rgbc0LSTRDjyGC4erMDOT8IJg==
-  dependencies:
-    tslib "^1.8.0"
-
-"@aws-sdk/middleware-logger@3.2.0":
-  version "3.2.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/middleware-logger/-/middleware-logger-3.2.0.tgz#9d4bf84fbf7a0ddc144e6c660f1b806a23a42a6e"
-  integrity sha512-vkex6bsYqafdvrLe4MXJDJrEfvRb5Z8z01lVlaEV2bzXFqw7WNuFVDRC80GE/YB+r2ds/n9QU4EYUSX9wewoJQ==
-  dependencies:
-    tslib "^1.8.0"
-
-"@aws-sdk/middleware-retry@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/middleware-retry/-/middleware-retry-3.1.0.tgz#4df049c73121a83e19f5078e90a411b93a8cf7de"
-  integrity sha512-jNewsmLhuSHCtwpuQlsOuQ/Cig7BE4BIF7cfpWaczqYaG1F/rdTlAmb69ugg5pVby7ccj2jgA4aw+achjuzqSw==
-  dependencies:
-    "@aws-sdk/protocol-http" "3.1.0"
-    "@aws-sdk/service-error-classification" "3.1.0"
-    react-native-get-random-values "^1.4.0"
-    tslib "^1.8.0"
-    uuid "^3.0.0"
-
-"@aws-sdk/middleware-retry@3.2.0":
-  version "3.2.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/middleware-retry/-/middleware-retry-3.2.0.tgz#72bf988d90d9b0192aa7b290fc340b9f2e57a193"
-  integrity sha512-roecjUD9di1kqyCewk8pGXcsiHyi8kte5Is5bo9kCPfqHhtDN9L/efOhC+rhT0N9nKplC4rZGE4aopxNhMbLtQ==
-  dependencies:
-    "@aws-sdk/protocol-http" "3.2.0"
-    "@aws-sdk/service-error-classification" "3.2.0"
-    react-native-get-random-values "^1.4.0"
-    tslib "^1.8.0"
-    uuid "^3.0.0"
-
-"@aws-sdk/middleware-sdk-s3@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/middleware-sdk-s3/-/middleware-sdk-s3-3.1.0.tgz#e602bde5b9b5abe33e9087f61cf0f0cae9157bad"
-  integrity sha512-qH2RBt9EdDIO/2PGl7/QyIt9C4WuY6kVfx/S1Bh26wSY9s11VU73CDanZtgNQwIiX20v8DaPlg5dp2hse7Nr7w==
-  dependencies:
-    "@aws-sdk/protocol-http" "3.1.0"
-    "@aws-sdk/util-arn-parser" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/middleware-serde@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/middleware-serde/-/middleware-serde-3.1.0.tgz#a80b96dc0008546d9e9e9bce7e9b1ec134edbc6d"
-  integrity sha512-vXdYlzeBoJCqe+xhlFE9J62EyREvU1MVC6p3m3QPtfXuYlQwRb8WhlFFDFrDdA7V2usBjx5aM67OZnapplyUfg==
-  dependencies:
-    tslib "^1.8.0"
-
-"@aws-sdk/middleware-serde@3.2.0":
-  version "3.2.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/middleware-serde/-/middleware-serde-3.2.0.tgz#aff46b0457f44738cdc542ea4bea01160d437300"
-  integrity sha512-dWTL5lIjosKCUDyaNtEolaGpo/KwoM1Zx4NdMUBLYBy9v0vKSnpRLPXxyM2EREVJYHTVrvm6UoW8dM+5RFiN7A==
-  dependencies:
-    tslib "^1.8.0"
-
-"@aws-sdk/middleware-signing@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/middleware-signing/-/middleware-signing-3.1.0.tgz#d48c18f159f867ca5efe34c4993880e6820cc11e"
-  integrity sha512-3zNsonJ/nkBL8gUWr2v1vQ/NKIQQgSjmrxIa4xUxRcqOOO1qgZgjablxYHQlX07B6defhaOS2/p/EDmF+LfPqQ==
-  dependencies:
-    "@aws-sdk/protocol-http" "3.1.0"
-    "@aws-sdk/signature-v4" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/middleware-signing@3.2.0":
-  version "3.2.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/middleware-signing/-/middleware-signing-3.2.0.tgz#2ad5288d6543281a7e704102f6d446acdb9efaaa"
-  integrity sha512-XkDu0lMkdlf95nE2aYyAFmXOzBD+noVebyB1dlJDQCZWNzGkefc+8Nez3lCgyd2+KuEyHXMmQsqZwnmygpRvLQ==
-  dependencies:
-    "@aws-sdk/protocol-http" "3.2.0"
-    "@aws-sdk/signature-v4" "3.2.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/middleware-ssec@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/middleware-ssec/-/middleware-ssec-3.1.0.tgz#af57795facc29673568277d1d9aa090e57d69669"
-  integrity sha512-RGHWxNEMyYHv3et23XjMVS+9HhJIPR+oO21h82Eur4WhA6u3EuiZ+TKuoXZ9DA5V2wVJvPg33NHi0/uu1mah5w==
-  dependencies:
-    tslib "^1.8.0"
-
-"@aws-sdk/middleware-stack@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/middleware-stack/-/middleware-stack-3.1.0.tgz#31a69784ff31d70e1176d948f94294563b23b36e"
-  integrity sha512-lin0C0xPspT/orPMWWHMYG/7Z128NsSj6Khs4G6TH+2rIixXxQtHLen8H2dSPNIYXnLaxvtUDl5VuqjRt+s2Ow==
-  dependencies:
-    tslib "^1.8.0"
-
-"@aws-sdk/middleware-user-agent@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/middleware-user-agent/-/middleware-user-agent-3.1.0.tgz#b35ce7fae8f672aa9922bc28082137fa8c2f0486"
-  integrity sha512-ghUD5ZhGdvPEctacO+INnQpdpQUV8N9hC9We7ftAE75PGBG/aB8qnVWYV8uKAxx8ruNAi+iU4j+4B4qLFNMx2A==
-  dependencies:
-    "@aws-sdk/protocol-http" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/middleware-user-agent@3.2.0":
-  version "3.2.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/middleware-user-agent/-/middleware-user-agent-3.2.0.tgz#19e64961feb6a41721e3164538031e21858ad7ee"
-  integrity sha512-rME49AFlVZSwgxTLQo/5Ok012HRcg9xhSFK4oOEkPJiYyGedvsF+Qy6sz3VjQRL2SvUvoAp03Wqbxe/Keewdbw==
-  dependencies:
-    "@aws-sdk/protocol-http" "3.2.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/node-config-provider@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/node-config-provider/-/node-config-provider-3.1.0.tgz#74b37f65faa90fa6b4acb640e0f215f50aaa4904"
-  integrity sha512-zbV5Va40elco6IBddbDmhMQDWazQxHAk4trWFj3MrH36rpWZzWwsRbgjgGv0CcvSy5zP6PLHjdcBPeHS/KmViQ==
-  dependencies:
-    "@aws-sdk/property-provider" "3.1.0"
-    "@aws-sdk/shared-ini-file-loader" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/node-http-handler@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/node-http-handler/-/node-http-handler-3.1.0.tgz#b7fdbc3a1928127b2eb2064177502e11324f7bb8"
-  integrity sha512-T1yLundJ4tPeIt9IaOk24kBNBCe54UhCXXrh/0SSZZ26DLINPV5mF22wZKxgMpvKTbtJ6vlag+DhJe/ldqJ2qQ==
-  dependencies:
-    "@aws-sdk/abort-controller" "3.1.0"
-    "@aws-sdk/protocol-http" "3.1.0"
-    "@aws-sdk/querystring-builder" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/node-http-handler@3.2.0":
-  version "3.2.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/node-http-handler/-/node-http-handler-3.2.0.tgz#cf6b12b021d61933202522179e5bd5710e565afa"
-  integrity sha512-C6bwM9RNINF2r7wTjQ7esjwlTnEIUZkJ+hyMGwOUxc4AqHCdc1PGEFwuMjQWhiyUtvR3hd7hfPj5GWvFP/PUTQ==
-  dependencies:
-    "@aws-sdk/abort-controller" "3.1.0"
-    "@aws-sdk/protocol-http" "3.2.0"
-    "@aws-sdk/querystring-builder" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/property-provider@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/property-provider/-/property-provider-3.1.0.tgz#19cf1da802a09be429e26f8eafec9b4c3473f8b0"
-  integrity sha512-NDCI7T8ytbzlXW8axDdtjMhJYRMVbOoPupM+HwR81hT7QoWWNrpCrjFqIv/gJet+ms5i4k80CWrBJd0L0kNl/Q==
-  dependencies:
-    tslib "^1.8.0"
-
 "@aws-sdk/property-provider@3.3.0":
   version "3.3.0"
   resolved "https://registry.npmjs.org/@aws-sdk/property-provider/-/property-provider-3.3.0.tgz#49979cb1a3e5562d51807c7403c5fd48cb9f2cdc"
@@ -709,45 +162,6 @@
     "@aws-sdk/types" "3.1.0"
     tslib "^1.8.0"
 
-"@aws-sdk/protocol-http@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/protocol-http/-/protocol-http-3.1.0.tgz#7da0ebcf02a40a8300f3bd52f9206f25fdf1ca7f"
-  integrity sha512-61qInY/AESslV6ZYTAgwoB172K/H+5EiXeWnmWExOGH3vkfkkxQBYCTcATdtasP6QYTfYiePhyjJ8eUyQL3C0w==
-  dependencies:
-    tslib "^1.8.0"
-
-"@aws-sdk/protocol-http@3.2.0":
-  version "3.2.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/protocol-http/-/protocol-http-3.2.0.tgz#0d352045bae38c66a2c97611983bfb545351c4e0"
-  integrity sha512-7FA23ABTZ18MsQD0GcICj6dU9HRInf6l6XvtnlPUS6ZvjDbsNRqEROUtvjl8dkDDP1mFpEQuHJ5e9MO5peEm7g==
-  dependencies:
-    tslib "^1.8.0"
-
-"@aws-sdk/querystring-builder@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/querystring-builder/-/querystring-builder-3.1.0.tgz#6cb859cfd906faa21de32641a960f080be78f0f3"
-  integrity sha512-rfVJWrAT+PJ5Dx0arxK5RBMfETezAjKGHxXWf7/9rcxSqoEz8s3tYhZ7/CqcOQqN89X6gJ4veQwGprraIhOZIg==
-  dependencies:
-    "@aws-sdk/util-uri-escape" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/querystring-parser@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/querystring-parser/-/querystring-parser-3.1.0.tgz#eec9fcbfc1c907e19909b4436f93a6c9fb063041"
-  integrity sha512-tqwHKLKplyv940+cR8uW6w2K3IEcGOskJ/8oP1R3RSyyidONSVEShNlpApTQlccfYriieDuEDLVCo4pT7S55kw==
-  dependencies:
-    tslib "^1.8.0"
-
-"@aws-sdk/service-error-classification@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/service-error-classification/-/service-error-classification-3.1.0.tgz#9471f761f36ebe3efeb0791d7e2af517f87ef4a2"
-  integrity sha512-zUNV9Fyguto8VOhinKvzIoQxwfYMSSLO6xTKJLyTB+cDv51SX5sh+lqX6IKGhuqz2Wse1ynuoLGOnmVoe4aUpQ==
-
-"@aws-sdk/service-error-classification@3.2.0":
-  version "3.2.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/service-error-classification/-/service-error-classification-3.2.0.tgz#286ba27368276132db89f21b79724bf95cbd8d97"
-  integrity sha512-ZzeSZ0HnJq5zUkA466zVEZAE1SVqYuvGzxRGTEszbMW2eWPLonJgUwiT5nDScmJQcDju044iP//2KnBvn62Rhg==
-
 "@aws-sdk/shared-ini-file-loader@3.1.0":
   version "3.1.0"
   resolved "https://registry.npmjs.org/@aws-sdk/shared-ini-file-loader/-/shared-ini-file-loader-3.1.0.tgz#b1bc7ed4e16535f20c788915060a121e457efdfb"
@@ -755,204 +169,10 @@
   dependencies:
     tslib "^1.8.0"
 
-"@aws-sdk/signature-v4@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/signature-v4/-/signature-v4-3.1.0.tgz#b5d480af74629e86163ffe86a3f13a37f1f1b250"
-  integrity sha512-TFbe/Xf02a4baU1tg/S/w1A5AKaD7YHuqQg4Ak+HbRvAFe77/C/rbqWGnl66BDcukMvx13Ywd5ZkraAVSaTlzg==
-  dependencies:
-    "@aws-sdk/is-array-buffer" "3.1.0"
-    "@aws-sdk/util-hex-encoding" "3.1.0"
-    "@aws-sdk/util-uri-escape" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/signature-v4@3.2.0":
-  version "3.2.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/signature-v4/-/signature-v4-3.2.0.tgz#9eb5c4c3f5c3d448f3929f310baa4ad3682d1ddc"
-  integrity sha512-Fb81gqaSnuCwO9HFYnztksyFud5X6/Ikr95X3pfrtLcHlHe/S079woWmlDUEgy7lw2X2GY94TcX9jlXuMhTfhA==
-  dependencies:
-    "@aws-sdk/is-array-buffer" "3.1.0"
-    "@aws-sdk/util-hex-encoding" "3.1.0"
-    "@aws-sdk/util-uri-escape" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/smithy-client@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/smithy-client/-/smithy-client-3.1.0.tgz#dc60223b9af1e99d076871e8138ea9b6ecbf737b"
-  integrity sha512-l/xCyQ0xLvIX/VZDYC3CGAphXtV7/t1gqfxfATbx1TD3E23PS0XvaV8JAmMWF+Q+rShk+otuYpdaRjGrygTK5w==
-  dependencies:
-    "@aws-sdk/middleware-stack" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/smithy-client@3.2.0":
-  version "3.2.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/smithy-client/-/smithy-client-3.2.0.tgz#ba93d125f83f385ce6a4600e47339bf036fc7d0a"
-  integrity sha512-LpBGQ5m/oQ6QkMPQl7yxvBll/NRww4GUCEwpEXw412SUbX7aVTu+CNoUmF2lg8Gwp2XM3NgOkJ9DQ94YwZ/dug==
-  dependencies:
-    "@aws-sdk/middleware-stack" "3.1.0"
-    tslib "^1.8.0"
-
 "@aws-sdk/types@3.1.0":
   version "3.1.0"
   resolved "https://registry.npmjs.org/@aws-sdk/types/-/types-3.1.0.tgz#04d77c37a80b422e8123f296338d129e51f3e1fc"
   integrity sha512-4Az7cemXCN4Qp8EheNkZTJJqIG0dvCT2KAreJLoclcVTcEFw2rzlATUnSeia1YTRsVd6aNxD001Ug7f3vYcQkw==
-
-"@aws-sdk/types@^1.0.0-rc.1":
-  version "1.0.0-rc.10"
-  resolved "https://registry.npmjs.org/@aws-sdk/types/-/types-1.0.0-rc.10.tgz#729127fbfac5da1a3368ffe6ec2e90acc9ad69c3"
-  integrity sha512-9gwhYnkTNuYZ+etCtM4T8gjpZ0SWSXbzQxY34UjSS+dt3C/UnbX0J22tMahp/9Z1yCa9pihtXrkD+nO2xn7nVQ==
-
-"@aws-sdk/url-parser-browser@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/url-parser-browser/-/url-parser-browser-3.1.0.tgz#8e657d9e6cbde454df3b6e597e4fa4b690fe47af"
-  integrity sha512-XtiorfIxhbJuU1TLp7rL7qMzNY/+9FYisFtCFcrcy7/fsvXUTjjB2u3O4J01m/T6/HVmenV+SFQvs+fYC9U7dA==
-  dependencies:
-    "@aws-sdk/querystring-parser" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/url-parser-node@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/url-parser-node/-/url-parser-node-3.1.0.tgz#f49690405195f80157997fd48f99e1e036de3a3f"
-  integrity sha512-pDQekV4RK2hoiDB4YkMi00oTgU8MoHg+Sve9HaLYCtTuirHMVBswxzGg6MVDWo0tM6WSFbnQRXNZtioUo7ExVA==
-  dependencies:
-    "@aws-sdk/querystring-parser" "3.1.0"
-    tslib "^1.8.0"
-    url "^0.11.0"
-
-"@aws-sdk/util-arn-parser@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/util-arn-parser/-/util-arn-parser-3.1.0.tgz#56c462b2ef6d7cfa098e1a22e44fb3b52da0718c"
-  integrity sha512-xXL/nadq5mqEw6Mrv1ghoODuyWWsAxvr+rRNgDJOav6mypgEOiLb0ybkqinrH1ogTkAYbegs+uaWxgSPBe9ZSA==
-  dependencies:
-    tslib "^1.8.0"
-
-"@aws-sdk/util-base64-browser@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/util-base64-browser/-/util-base64-browser-3.1.0.tgz#756253a3fc1ad58c38ad28ed664b701d850d3aa9"
-  integrity sha512-xkodj0VnkHl1gdYI9Nl4E2Ed+atM3xBTNaedoGnmqoyosMjPRJCpU8uFBmdiF4e+GGPsXlYe9oA/hLyJFxmeSQ==
-  dependencies:
-    tslib "^1.8.0"
-
-"@aws-sdk/util-base64-node@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/util-base64-node/-/util-base64-node-3.1.0.tgz#027a9e854d204adda56d5f43f8ef4a20532b7ac9"
-  integrity sha512-FEtnINw2MeD3LAtyGcofah5D8j6OjpmwNKibr7mIgosRO++iVyXe2xa6iOoptZFn5pIU0C4fkJn5o+kjBhRafA==
-  dependencies:
-    "@aws-sdk/util-buffer-from" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/util-body-length-browser@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/util-body-length-browser/-/util-body-length-browser-3.1.0.tgz#b68018860cd5d63c9327c7a42323c5c75cf514bf"
-  integrity sha512-vzKDD/p1gcA05jeLmn6+6HdOY4G6Axyp6dj1R1nVeFpPPx6KkFsNGL9/CoaRT2TGv1fHBoDXsve9JRaCxrER4Q==
-  dependencies:
-    tslib "^1.8.0"
-
-"@aws-sdk/util-body-length-node@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/util-body-length-node/-/util-body-length-node-3.1.0.tgz#c280223066f0ce8fadb002a668a5f5e6ee4de12b"
-  integrity sha512-MfJoU2wFWkOmbjWDepq5bDGYZlpvtBi2Vs8ZeTcm/4+q+3L9tJ/Zb/Ofx5oeRg9VhCsAjvceQTdX+CAyP8byXA==
-  dependencies:
-    tslib "^1.8.0"
-
-"@aws-sdk/util-buffer-from@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/util-buffer-from/-/util-buffer-from-3.1.0.tgz#a68b2e191f3737bcd85c33af5a6b0e3e9f974f0e"
-  integrity sha512-UeC4VKmWYgTXjNdLVHfurrdhznnoxWLUFx8xspyRd58BhSZ5vc5HiiKTPX/CGxzAP/qZG668PaoOJucwmEam4g==
-  dependencies:
-    "@aws-sdk/is-array-buffer" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/util-hex-encoding@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/util-hex-encoding/-/util-hex-encoding-3.1.0.tgz#937440d60333c1b3e4fbe06012dfdc65c9e297bc"
-  integrity sha512-MPOsUY3USCUBaqZ3ifgE9il/liVxEKsz6dYQ08pdtWRzZx2CT7kWslQeNAT565pMvktnvdLjfzBw2FwnSI6nqg==
-  dependencies:
-    tslib "^1.8.0"
-
-"@aws-sdk/util-locate-window@^1.0.0-rc.1":
-  version "1.0.0-rc.8"
-  resolved "https://registry.npmjs.org/@aws-sdk/util-locate-window/-/util-locate-window-1.0.0-rc.8.tgz#d28175aeb9c8ad3940242e615b1503632d3be33d"
-  integrity sha512-TvqeA4fgmZ0A0x3K+qVj/OSWEFHGZjzpVuyXlm1EYOf7NQ9VWRlokEn1MYKuL+t7al9ZeQyi16D8Dn7DW1eidw==
-  dependencies:
-    tslib "^1.8.0"
-
-"@aws-sdk/util-uri-escape@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/util-uri-escape/-/util-uri-escape-3.1.0.tgz#1e4450c8e047b542f87172407e2fe0ade7c55227"
-  integrity sha512-1ZcXVJpsA6uW3tDTQI+Rpawqh76fyHpFc55ST8VGyMgmCzlJzBpYG0ck1kqVRSUP7YyvkJQvHfcm+U6doL5Xkw==
-  dependencies:
-    tslib "^1.8.0"
-
-"@aws-sdk/util-user-agent-browser@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/util-user-agent-browser/-/util-user-agent-browser-3.1.0.tgz#471dec78305f39ac9a05968970917b5c66e4312b"
-  integrity sha512-w31WYjRTXbBn9z/sRy/4IyjIyEeTOon1JvRzlKDbEWm4JXarVbiJcZKs1U3q+9fS9la5uLM1NEQCsgdI1iYERA==
-  dependencies:
-    "@aws-sdk/types" "3.1.0"
-    bowser "^2.11.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/util-user-agent-browser@3.2.0":
-  version "3.2.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/util-user-agent-browser/-/util-user-agent-browser-3.2.0.tgz#f6fdee45817d80a637d7bd66985f516182b6f550"
-  integrity sha512-ugkLsntS2wpLWCjPs49wnAGhuIAFyHYzTznp0v+Qj/uOkm0ddq4kWp+FwtMxeQMRY0eoBdfqXJAbJLz8w4xlUQ==
-  dependencies:
-    bowser "^2.11.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/util-user-agent-node@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/util-user-agent-node/-/util-user-agent-node-3.1.0.tgz#3fa66564a5fdb0e2851554688dc507127356f941"
-  integrity sha512-VyyZUR4vrHyT4aLH+ufoaTxFy65K9OtoCEdH1X748HinLZY9JObCCO6lZVNr5b26fGJrbqzoAqaXWgHkmEUpoQ==
-  dependencies:
-    "@aws-sdk/node-config-provider" "3.1.0"
-    "@aws-sdk/types" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/util-user-agent-node@3.2.0":
-  version "3.2.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/util-user-agent-node/-/util-user-agent-node-3.2.0.tgz#9190f69afdd81bacde16e253af2545a0e3f443cd"
-  integrity sha512-Ovyq6yc7SL0NWZWBrPKRc0D38xkMH2ulslcnukdNOitv0s8V2Ge09R4T63U0I8IJ7nrKa75Uus6A8vC8Zko3yg==
-  dependencies:
-    "@aws-sdk/node-config-provider" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/util-utf8-browser@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/util-utf8-browser/-/util-utf8-browser-3.1.0.tgz#7be17b545af101c320d34aace47139cf9987d796"
-  integrity sha512-vJP20me+Wc1RJHq+Y+gFD25aWhbQte+Qkyh3SOKQ+YvNaMcaeVwOV7b3Y3ItBuMdutHLJWmbJ2wF6dhhpy1kOA==
-  dependencies:
-    tslib "^1.8.0"
-
-"@aws-sdk/util-utf8-browser@^1.0.0-rc.1":
-  version "1.0.0-rc.8"
-  resolved "https://registry.npmjs.org/@aws-sdk/util-utf8-browser/-/util-utf8-browser-1.0.0-rc.8.tgz#bf1f1cfed8c024f43a7c43b643fdf2b4523b5973"
-  integrity sha512-clncPMJ23rxCIkZ9LoUC8SowwZGxWyN2TwRb0XvW/Cv9EavkRgRCOrCpneGyC326lqtMKx36onnpaSRHxErUYw==
-  dependencies:
-    tslib "^1.8.0"
-
-"@aws-sdk/util-utf8-node@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/util-utf8-node/-/util-utf8-node-3.1.0.tgz#fd7e506b5fdf404fbbdd9bc46429afeea8114b25"
-  integrity sha512-lrBLkROMh9kTjHOguusqLvTX5+5O5CVpAGeISZlW6CCx2pMHtVRyE9cdNuRI8aJpyZsU12j8SoaKDUPGD+ixzw==
-  dependencies:
-    "@aws-sdk/util-buffer-from" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/util-waiter@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/util-waiter/-/util-waiter-3.1.0.tgz#e01dbd6bc903e03101152f65ab9d2e0613f08c2f"
-  integrity sha512-nMaE3aGCZGVQw10IUXBxIbCXkyaX8T1Fn7GvJxeFJflKcXuKFKBfvkhzimSe/hJDC6Ykn7gNuI+EY+ZoCVXqtQ==
-  dependencies:
-    "@aws-sdk/abort-controller" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/xml-builder@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/xml-builder/-/xml-builder-3.1.0.tgz#ad7113075416436d8c822199674c45fc6ef42441"
-  integrity sha512-F6liCbWPMbnJq8d0qgzuXwG5O7jg1hhgiG71TTn83rnc6vFzyw2o0C+ztiqSZsbAq7r2PlEfBPWVD32gTFIXXw==
-  dependencies:
-    tslib "^1.8.0"
 
 "@azure/abort-controller@^1.0.0":
   version "1.0.2"
@@ -8835,6 +8055,21 @@ autoprefixer@^9.7.2:
     postcss "^7.0.32"
     postcss-value-parser "^4.1.0"
 
+aws-sdk@^2.840.0:
+  version "2.840.0"
+  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.840.0.tgz#f5529c9bd3bf0be7f8e855a23ff9c12b1705418f"
+  integrity sha512-ngesHJqb0PXYjJNnCsAX4yLkR6JFQJB+3eDGwh3mYRjcq9voix5RfbCFQT1lwWu7bcMBPCrRIA2lJkkTMYXq+A==
+  dependencies:
+    buffer "4.9.2"
+    events "1.1.1"
+    ieee754 "1.1.13"
+    jmespath "0.15.0"
+    querystring "0.2.0"
+    sax "1.2.1"
+    url "0.10.3"
+    uuid "3.3.2"
+    xml2js "0.4.19"
+
 aws-sign2@~0.7.0:
   version "0.7.0"
   resolved "https://registry.npmjs.org/aws-sign2/-/aws-sign2-0.7.0.tgz#b46e890934a9591f2d2f6f86d7e6a9f1b3fe76a8"
@@ -9484,11 +8719,6 @@ bowser@^1.7.3:
   resolved "https://registry.npmjs.org/bowser/-/bowser-1.9.4.tgz#890c58a2813a9d3243704334fa81b96a5c150c9a"
   integrity sha512-9IdMmj2KjigRq6oWhmwv1W36pDuA4STQZ8q6YO9um+x07xgYNCD3Oou+WP/3L1HNz7iqythGet3/p4wvc8AAwQ==
 
-bowser@^2.11.0:
-  version "2.11.0"
-  resolved "https://registry.npmjs.org/bowser/-/bowser-2.11.0.tgz#5ca3c35757a7aa5771500c70a73a9f91ef420a8f"
-  integrity sha512-AlcaJBi/pqqJBIQ8U9Mcpc9i8Aqxn88Skv5d+xBX006BY5u8N3mGLHa5Lgppa7L/HfwgwLgZ6NYs+Ag6uUmJRA==
-
 boxen@^1.3.0:
   version "1.3.0"
   resolved "https://registry.npmjs.org/boxen/-/boxen-1.3.0.tgz#55c6c39a8ba58d9c61ad22cd877532deb665a20b"
@@ -9718,7 +8948,7 @@ buffer-xor@^1.0.3:
   resolved "https://registry.npmjs.org/buffer-xor/-/buffer-xor-1.0.3.tgz#26e61ed1422fb70dd42e6e36729ed51d855fe8d9"
   integrity sha1-JuYe0UIvtw3ULm42cp7VHYVf6Nk=
 
-buffer@^4.3.0:
+buffer@4.9.2, buffer@^4.3.0:
   version "4.9.2"
   resolved "https://registry.npmjs.org/buffer/-/buffer-4.9.2.tgz#230ead344002988644841ab0244af8c44bbe3ef8"
   integrity sha512-xq+q3SRMOxGivLhBNaUdC64hDTQwejJ+H0T/NB1XMtTVEwNTrfFF3gAxiyW0Bu/xWEGhjVKgUcMhCrUy2+uCWg==
@@ -13166,6 +12396,11 @@ eventemitter3@^4.0.0:
   resolved "https://registry.npmjs.org/eventemitter3/-/eventemitter3-4.0.0.tgz#d65176163887ee59f386d64c82610b696a4a74eb"
   integrity sha512-qerSRB0p+UDEssxTtm6EDKcE7W4OaoisfIMl4CngyEhjpYglocpNg6UEqCvemdGhosAsg4sO2dXJOdyBifPGCg==
 
+events@1.1.1:
+  version "1.1.1"
+  resolved "https://registry.npmjs.org/events/-/events-1.1.1.tgz#9ebdb7635ad099c70dcc4c2a1f5004288e8bd924"
+  integrity sha1-nr23Y1rQmccNzEwqH1AEKI6L2SQ=
+
 events@3.1.0, events@^3.0.0:
   version "3.1.0"
   resolved "https://registry.npmjs.org/events/-/events-3.1.0.tgz#84279af1b34cb75aa88bf5ff291f6d0bd9b31a59"
@@ -13463,11 +12698,6 @@ extsprintf@^1.2.0:
   resolved "https://registry.npmjs.org/extsprintf/-/extsprintf-1.4.0.tgz#e2689f8f356fad62cca65a3a91c5df5f9551692f"
   integrity sha1-4mifjzVvrWLMplo6kcXfX5VRaS8=
 
-fast-base64-decode@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/fast-base64-decode/-/fast-base64-decode-1.0.0.tgz#b434a0dd7d92b12b43f26819300d2dafb83ee418"
-  integrity sha512-qwaScUgUGBYeDNRnbc/KyllVU88Jk1pRHPStuF/lO7B0/RTRLj7U0lkdTAutlBblY08rwZDff6tNU9cjv6j//Q==
-
 fast-deep-equal@2.0.1:
   version "2.0.1"
   resolved "https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-2.0.1.tgz#7b05218ddf9667bf7f370bf7fdb2cb15fdd0aa49"
@@ -13536,11 +12766,6 @@ fast-text-encoding@^1.0.0:
   version "1.0.3"
   resolved "https://registry.npmjs.org/fast-text-encoding/-/fast-text-encoding-1.0.3.tgz#ec02ac8e01ab8a319af182dae2681213cfe9ce53"
   integrity sha512-dtm4QZH9nZtcDt8qJiOH9fcQd1NAgi+K1O2DbE6GG1PPCK/BWfOH3idCTRQ4ImXRUOyopDEgDEnVEE7Y/2Wrig==
-
-fast-xml-parser@^3.16.0:
-  version "3.17.6"
-  resolved "https://registry.npmjs.org/fast-xml-parser/-/fast-xml-parser-3.17.6.tgz#4f5df8cf927c3e59a10362abcfb7335c34bc5c5f"
-  integrity sha512-40WHI/5d2MOzf1sD2bSaTXlPn1lueJLAX6j1xH5dSAr6tNeut8B9ktEL6sjAK9yVON4uNj9//axOdBJUuruCzw==
 
 fastest-stable-stringify@^1.0.1:
   version "1.0.1"
@@ -15443,6 +14668,11 @@ identity-obj-proxy@3.0.0:
   dependencies:
     harmony-reflect "^1.4.6"
 
+ieee754@1.1.13:
+  version "1.1.13"
+  resolved "https://registry.npmjs.org/ieee754/-/ieee754-1.1.13.tgz#ec168558e95aa181fd87d37f55c32bbcb6708b84"
+  integrity sha512-4vf7I2LYV/HaWerSo3XmlMkp5eZ83i+/CDluXi/IGTs/O1sejBNhTtnxzmRZfvOUqj7lZjqHkeTvpgSFDlWZTg==
+
 ieee754@^1.1.13, ieee754@^1.1.4, ieee754@^1.2.1:
   version "1.2.1"
   resolved "https://registry.npmjs.org/ieee754/-/ieee754-1.2.1.tgz#8eb7a10a63fff25d15a57b001586d177d1b0d352"
@@ -16913,6 +16143,11 @@ jest@^26.0.1:
     "@jest/core" "^26.6.3"
     import-local "^3.0.2"
     jest-cli "^26.6.3"
+
+jmespath@0.15.0:
+  version "0.15.0"
+  resolved "https://registry.npmjs.org/jmespath/-/jmespath-0.15.0.tgz#a3f222a9aae9f966f5d27c796510e28091764217"
+  integrity sha1-o/Iiqarp+Wb10nx5ZRDigJF2Qhc=
 
 jose@^1.27.1:
   version "1.28.0"
@@ -22036,13 +21271,6 @@ react-motion@^0.5.2:
     prop-types "^15.5.8"
     raf "^3.1.0"
 
-react-native-get-random-values@^1.4.0:
-  version "1.5.0"
-  resolved "https://registry.npmjs.org/react-native-get-random-values/-/react-native-get-random-values-1.5.0.tgz#91cda18f0e66e3d9d7660ba80c61c914030c1e05"
-  integrity sha512-LK+Wb8dEimJkd/dub7qziDmr9Tw4chhpzVeQ6JDo4czgfG4VXbptRyOMdu8503RiMF6y9pTH6ZUTkrrpprqT7w==
-  dependencies:
-    fast-base64-decode "^1.0.0"
-
 react-popper-tooltip@^3.1.1:
   version "3.1.1"
   resolved "https://registry.npmjs.org/react-popper-tooltip/-/react-popper-tooltip-3.1.1.tgz#329569eb7b287008f04fcbddb6370452ad3f9eac"
@@ -23279,6 +22507,11 @@ sanitize-html@^1.27.0:
     postcss "^7.0.27"
     srcset "^2.0.1"
     xtend "^4.0.1"
+
+sax@1.2.1:
+  version "1.2.1"
+  resolved "https://registry.npmjs.org/sax/-/sax-1.2.1.tgz#7b8e656190b228e81a66aea748480d828cd2d37a"
+  integrity sha1-e45lYZCyKOgaZq6nSEgNgozS03o=
 
 sax@>=0.6.0, sax@^1.2.4, sax@~1.2.4:
   version "1.2.4"
@@ -25835,6 +25068,14 @@ url-parse@^1.4.3, url-parse@^1.4.7:
     querystringify "^2.1.1"
     requires-port "^1.0.0"
 
+url@0.10.3:
+  version "0.10.3"
+  resolved "https://registry.npmjs.org/url/-/url-0.10.3.tgz#021e4d9c7705f21bbf37d03ceb58767402774c64"
+  integrity sha1-Ah5NnHcF8hu/N9A861h2dAJ3TGQ=
+  dependencies:
+    punycode "1.3.2"
+    querystring "0.2.0"
+
 url@^0.11.0, url@~0.11.0:
   version "0.11.0"
   resolved "https://registry.npmjs.org/url/-/url-0.11.0.tgz#3838e97cfc60521eb73c525a8e55bfdd9e2e28f1"
@@ -25933,7 +25174,12 @@ utils-merge@1.0.1, utils-merge@1.x.x:
   resolved "https://registry.npmjs.org/utils-merge/-/utils-merge-1.0.1.tgz#9f95710f50a267947b2ccc124741c1028427e713"
   integrity sha1-n5VxD1CiZ5R7LMwSR0HBAoQn5xM=
 
-uuid@^3.0.0, uuid@^3.0.1, uuid@^3.1.0, uuid@^3.3.2, uuid@^3.4.0:
+uuid@3.3.2:
+  version "3.3.2"
+  resolved "https://registry.npmjs.org/uuid/-/uuid-3.3.2.tgz#1b4af4955eb3077c501c23872fc6513811587131"
+  integrity sha512-yXJmeNaw3DnnKAOKJE51sL/ZaYfWJRl1pK9dr19YFCu0ObS231AB1/LbqTKRAQ5kw8A90rA6fr4riOUpTZvQZA==
+
+uuid@^3.0.1, uuid@^3.1.0, uuid@^3.3.2, uuid@^3.4.0:
   version "3.4.0"
   resolved "https://registry.npmjs.org/uuid/-/uuid-3.4.0.tgz#b23e4358afa8a202fe7a100af1f5f883f02007ee"
   integrity sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==
@@ -26654,6 +25900,14 @@ xml-name-validator@^3.0.0:
   resolved "https://registry.npmjs.org/xml-name-validator/-/xml-name-validator-3.0.0.tgz#6ae73e06de4d8c6e47f9fb181f78d648ad457c6a"
   integrity sha512-A5CUptxDsvxKJEU3yO6DuWBSJz/qizqzJKOMIfUJHETbBw/sFaDxgd6fxm1ewUaM0jZ444Fc5vC5ROYurg/4Pw==
 
+xml2js@0.4.19:
+  version "0.4.19"
+  resolved "https://registry.npmjs.org/xml2js/-/xml2js-0.4.19.tgz#686c20f213209e94abf0d1bcf1efaa291c7827a7"
+  integrity sha512-esZnJZJOiJR9wWKMyuvSE1y6Dq5LCuJanqhxslH2bxM6duahNZ+HMpCLhBQGZkbX6xRf8x1Y2eJlgt2q3qo49Q==
+  dependencies:
+    sax ">=0.6.0"
+    xmlbuilder "~9.0.1"
+
 xml2js@^0.4.19, xml2js@^0.4.23:
   version "0.4.23"
   resolved "https://registry.npmjs.org/xml2js/-/xml2js-0.4.23.tgz#a0c69516752421eb2ac758ee4d4ccf58843eac66"
@@ -26666,6 +25920,11 @@ xmlbuilder@^11.0.0, xmlbuilder@~11.0.0:
   version "11.0.1"
   resolved "https://registry.npmjs.org/xmlbuilder/-/xmlbuilder-11.0.1.tgz#be9bae1c8a046e76b31127726347d0ad7002beb3"
   integrity sha512-fDlsI/kFEx7gLvbecc0/ohLG50fugQp8ryHzMTuW9vSa1GJ0XYWKnhsUx7oie3G98+r56aTQIUB4kht42R3JvA==
+
+xmlbuilder@~9.0.1:
+  version "9.0.7"
+  resolved "https://registry.npmjs.org/xmlbuilder/-/xmlbuilder-9.0.7.tgz#132ee63d2ec5565c557e20f4c22df9aca686b10d"
+  integrity sha1-Ey7mPS7FVlxVfiD0wi35rKaGsQ0=
 
 xmlchars@^2.2.0:
   version "2.2.0"
