@@ -26,6 +26,12 @@ import { useParams } from 'react-router';
 import { useTaskEventStream } from '../hooks/useEventStream';
 import LazyLog from 'react-lazylog/build/LazyLog';
 import { StepButton, StepIconProps } from '@material-ui/core';
+import { Status } from '../../types';
+import { DateTime, Interval } from 'luxon';
+import { useInterval } from 'react-use';
+
+// typings are wrong for this library, so fallback to not parsing types.
+const humanizeDuration = require('humanize-duration');
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -42,13 +48,48 @@ const useStyles = makeStyles((theme: Theme) =>
     resetContainer: {
       padding: theme.spacing(3),
     },
+    labelWrapper: {
+      display: 'flex',
+      flex: 1,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    stepWrapper: {
+      width: '100%',
+    },
   }),
 );
 
-type Steps = {
+type TaskS = {
   id: string;
   name: string;
   status: Status;
+  startedAt?: string;
+  endedAt?: string;
+};
+
+const StepTimeTicker = ({ step }: { step: TaskS }) => {
+  const [time, setTime] = useState('');
+
+  useInterval(() => {
+    if (!step.startedAt) {
+      setTime('');
+      return;
+    }
+
+    const end = step.endedAt
+      ? DateTime.fromISO(step.endedAt)
+      : DateTime.local();
+
+    const startedAt = DateTime.fromISO(step.startedAt);
+    const formatted = Interval.fromDateTimes(startedAt, end)
+      .toDuration()
+      .valueOf();
+
+    setTime(humanizeDuration(formatted, { round: true }));
+  }, 1000);
+
+  return <Typography variant="caption">{time}</Typography>;
 };
 
 export const TaskStatusStepper = memo(
@@ -57,7 +98,7 @@ export const TaskStatusStepper = memo(
     currentStepId,
     onUserStepChange,
   }: {
-    steps: Steps[];
+    steps: TaskS[];
     currentStepId: string | undefined;
     onUserStepChange: (id: string) => void;
   }) => {
@@ -78,8 +119,12 @@ export const TaskStatusStepper = memo(
                 <StepButton onClick={() => onUserStepChange(step.id)}>
                   <StepLabel
                     StepIconProps={{ completed: isCompleted, error: isFailed }}
+                    className={classes.stepWrapper}
                   >
-                    <Typography>{step.name}</Typography>
+                    <div className={classes.labelWrapper}>
+                      <Typography variant="subtitle2">{step.name}</Typography>
+                      <StepTimeTicker step={step} />
+                    </div>
                   </StepLabel>
                 </StepButton>
               </Step>
@@ -108,6 +153,7 @@ export const TaskPage = () => {
   );
   const { taskId } = useParams();
   const taskStream = useTaskEventStream(taskId);
+  const completed = taskStream.completed;
 
   const steps = useMemo(
     () =>
@@ -121,8 +167,14 @@ export const TaskPage = () => {
     const activeStep = steps.find(step =>
       ['failed', 'processing'].includes(step.status),
     );
+
+    if (completed) {
+      setLastActiveStepId(steps[steps.length - 1]?.id);
+      return;
+    }
+
     setLastActiveStepId(activeStep?.id);
-  }, [steps]);
+  }, [steps, completed]);
 
   const currentStepId = userSelectedStepId ?? lastActiveStepId;
 
@@ -151,14 +203,14 @@ export const TaskPage = () => {
       />
       <Content>
         <Grid container>
-          <Grid item xs={2}>
+          <Grid item xs={4}>
             <TaskStatusStepper
               steps={steps}
               currentStepId={currentStepId}
               onUserStepChange={setUserSelectedStepId}
             />
           </Grid>
-          <Grid item xs={10}>
+          <Grid item xs={8}>
             <TaskLogger log={logAsString} />
           </Grid>
         </Grid>
