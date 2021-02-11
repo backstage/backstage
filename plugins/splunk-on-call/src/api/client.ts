@@ -44,7 +44,7 @@ export const splunkOnCallApiRef = createApiRef<SplunkOnCallApi>({
 export class SplunkOnCallClient implements SplunkOnCallApi {
   static fromConfig(configApi: ConfigApi, discoveryApi: DiscoveryApi) {
     const usernameFromConfig: string | null =
-      configApi.getOptionalString('splunkoncall.username') || null;
+      configApi.getOptionalString('splunkOnCall.username') || null;
     return new SplunkOnCallClient({
       username: usernameFromConfig,
       discoveryApi,
