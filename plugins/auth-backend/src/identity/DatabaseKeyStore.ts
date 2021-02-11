@@ -36,6 +36,21 @@ type Options = {
   database: Knex;
 };
 
+const parseDate = (date: string | Date) => {
+  const parsedDate =
+    typeof date === 'string'
+      ? DateTime.fromSQL(date, { locale: 'UTC' })
+      : DateTime.fromJSDate(date);
+
+  if (!parsedDate.isValid) {
+    throw new Error(
+      `Failed to parse date, reason: ${parsedDate.invalidReason}, explanation: ${parsedDate.invalidExplanation}`,
+    );
+  }
+
+  return parsedDate.toJSDate();
+};
+
 export class DatabaseKeyStore implements KeyStore {
   static async create(options: Options): Promise<DatabaseKeyStore> {
     const { database } = options;
@@ -75,18 +90,3 @@ export class DatabaseKeyStore implements KeyStore {
     await this.database(TABLE).delete().whereIn('kid', kids);
   }
 }
-
-const parseDate = (date: string | Date) => {
-  const parsedDate =
-    typeof date === 'string'
-      ? DateTime.fromSQL(date, { locale: 'UTC' })
-      : DateTime.fromJSDate(date);
-
-  if (!parsedDate.isValid) {
-    throw new Error(
-      `Failed to parse date, reason: ${parsedDate.invalidReason}, explanation: ${parsedDate.invalidExplanation}`,
-    );
-  }
-
-  return parsedDate.toJSDate();
-};
