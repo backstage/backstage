@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog': patch
 ---
 
-Migrated the package from using moment to Luxon. #4278
+Removed unused functions and the moment library. #4278

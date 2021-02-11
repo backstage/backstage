@@ -19,25 +19,6 @@ import {
   isValidDateAndFormat,
   getTimeBasedGreeting,
 } from './timeUtil';
-import { DateTime } from 'luxon';
-
-it('validate isValidDate', () => {
-  expect(isValidDate(DateTime.local().toISO())).toBeTruthy();
-  expect(isValidDate('2021-02-04 15:00:10')).toBeFalsy();
-});
-
-it('validates time format', () => {
-  const valid = isValidDateAndFormat(
-    '1970-01-01 00:00:00',
-    'yyyy-MM-dd hh:mm:ss',
-  );
-  const invalid = isValidDateAndFormat(
-    '1970-01-01T00:00:00',
-    'yyyy-MM-ddThh:mm:ss',
-  );
-  expect(valid).toBeTruthy();
-  expect(invalid).toBeFalsy();
-});
 
 it('has greeting and language', () => {
   const greeting = getTimeBasedGreeting();
