@@ -28,7 +28,11 @@ import {
   ProvidedApisCard,
   ProvidingComponentsCard,
 } from '@backstage/plugin-api-docs';
-import { AboutCard, EntityPageLayout } from '@backstage/plugin-catalog';
+import {
+  AboutCard,
+  EntityLinksCard,
+  EntityPageLayout,
+} from '@backstage/plugin-catalog';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import {
   isPluginApplicableToEntity as isCircleCIAvailable,
@@ -177,6 +181,9 @@ const ComponentOverviewContent = ({ entity }: { entity: Entity }) => (
         <PagerDutyCard entity={entity} />
       </Grid>
     )}
+    <Grid item md={4} sm={6}>
+      <EntityLinksCard entity={entity} />
+    </Grid>
     <RecentCICDRunsSwitcher entity={entity} />
     {isGitHubAvailable(entity) && (
       <>
