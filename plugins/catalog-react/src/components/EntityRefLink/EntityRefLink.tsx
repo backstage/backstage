@@ -32,7 +32,7 @@ type EntityRefLinkProps = {
 
 export const EntityRefLink = React.forwardRef<any, EntityRefLinkProps>(
   (props, ref) => {
-    const { entityRef, defaultKind, children } = props;
+    const { entityRef, defaultKind, children, ...linkProps } = props;
 
     let kind;
     let namespace;
@@ -61,7 +61,7 @@ export const EntityRefLink = React.forwardRef<any, EntityRefLinkProps>(
       <Link
         ref={ref}
         to={generatePath(`/catalog/${entityRoute.path}`, routeParams)}
-        {...props}
+        {...linkProps}
       >
         {children}
         {!children && formatEntityRefTitle(entityRef, { defaultKind })}
