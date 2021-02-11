@@ -29,7 +29,7 @@ import {
   ProvidingComponentsCard,
 } from '@backstage/plugin-api-docs';
 import {
-  EntityAboutCard,
+  AboutCard,
   EntityLinksCard,
   EntityPageLayout,
 } from '@backstage/plugin-catalog';
@@ -174,7 +174,7 @@ export const ErrorsSwitcher = ({ entity }: { entity: Entity }) => {
 const ComponentOverviewContent = ({ entity }: { entity: Entity }) => (
   <Grid container spacing={3} alignItems="stretch">
     <Grid item md={6}>
-      <EntityAboutCard entity={entity} variant="gridItem" />
+      <AboutCard entity={entity} variant="gridItem" />
     </Grid>
     {isPagerDutyAvailable(entity) && (
       <Grid item md={6}>
@@ -344,7 +344,7 @@ export const ComponentEntityPage = ({ entity }: { entity: Entity }) => {
 const ApiOverviewContent = ({ entity }: { entity: Entity }) => (
   <Grid container spacing={3}>
     <Grid item md={6}>
-      <EntityAboutCard entity={entity} />
+      <AboutCard entity={entity} />
     </Grid>
     <Grid container item md={12}>
       <Grid item md={6}>
