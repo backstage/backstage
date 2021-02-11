@@ -23,7 +23,7 @@ import {
   WarningPanel,
 } from '@backstage/core';
 import {
-  SystemsTable,
+  EntityTable,
   useEntity,
   useRelatedEntities,
 } from '@backstage/plugin-catalog-react';
@@ -71,7 +71,7 @@ export const HasSystemsCard = ({ variant = 'gridItem' }: Props) => {
   }
 
   return (
-    <SystemsTable
+    <EntityTable
       title="Systems"
       variant={variant}
       emptyComponent={
@@ -82,6 +82,7 @@ export const HasSystemsCard = ({ variant = 'gridItem' }: Props) => {
           </Link>
         </div>
       }
+      columns={EntityTable.systemEntityColumns}
       entities={entities as SystemEntity[]}
     />
   );

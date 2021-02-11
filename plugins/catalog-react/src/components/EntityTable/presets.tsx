@@ -13,7 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './EntityProvider';
-export * from './EntityRefLink';
-export * from './EntityTable';
-export * from './EntityTables';
+
+import { SystemEntity } from '@backstage/catalog-model';
+import { TableColumn } from '@backstage/core';
+import {
+  createEntityRefColumn,
+  createMetadataDescriptionColumn,
+  createOwnerColumn,
+  createDomainColumn,
+} from './columns';
+
+export const systemEntityColumns: TableColumn<SystemEntity>[] = [
+  createEntityRefColumn({ defaultKind: 'system' }),
+  createOwnerColumn(),
+  createDomainColumn(),
+  createMetadataDescriptionColumn(),
+];
