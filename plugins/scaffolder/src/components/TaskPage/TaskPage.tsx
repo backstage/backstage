@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-type TaskS = {
+type TaskStep = {
   id: string;
   name: string;
   status: Status;
@@ -68,7 +68,7 @@ type TaskS = {
   endedAt?: string;
 };
 
-const StepTimeTicker = ({ step }: { step: TaskS }) => {
+const StepTimeTicker = ({ step }: { step: TaskStep }) => {
   const [time, setTime] = useState('');
 
   useInterval(() => {
@@ -98,7 +98,7 @@ export const TaskStatusStepper = memo(
     currentStepId,
     onUserStepChange,
   }: {
-    steps: TaskS[];
+    steps: TaskStep[];
     currentStepId: string | undefined;
     onUserStepChange: (id: string) => void;
   }) => {
