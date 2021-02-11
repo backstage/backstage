@@ -77,6 +77,8 @@ jobs:
         with:
           prettier_options: --config docs/prettier.config.js --write docs/**/*.md 
           same_commit: true  
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}  
 
       - name: prettier
         run: yarn prettier:check
