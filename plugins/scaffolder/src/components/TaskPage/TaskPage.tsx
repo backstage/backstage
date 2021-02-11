@@ -25,10 +25,14 @@ import Typography from '@material-ui/core/Typography';
 import { useParams } from 'react-router';
 import { useTaskEventStream } from '../hooks/useEventStream';
 import LazyLog from 'react-lazylog/build/LazyLog';
-import { StepButton, StepIconProps } from '@material-ui/core';
+import { CircularProgress, StepButton, StepIconProps } from '@material-ui/core';
 import { Status } from '../../types';
 import { DateTime, Interval } from 'luxon';
 import { useInterval } from 'react-use';
+import clsx from 'clsx';
+import Check from '@material-ui/icons/Check';
+import Cancel from '@material-ui/icons/Cancel';
+import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 
 // typings are wrong for this library, so fallback to not parsing types.
 const humanizeDuration = require('humanize-duration');
@@ -92,6 +96,54 @@ const StepTimeTicker = ({ step }: { step: TaskStep }) => {
   return <Typography variant="caption">{time}</Typography>;
 };
 
+const useQontoStepIconStyles = makeStyles({
+  root: {
+    color: '#eaeaf0',
+    display: 'flex',
+    height: 22,
+    alignItems: 'center',
+  },
+  active: {
+    color: 'gray',
+  },
+  completed: {
+    color: 'green',
+  },
+  error: {
+    color: 'red',
+  },
+});
+
+function TaskStepIconComponent(props: StepIconProps) {
+  const classes = useQontoStepIconStyles();
+  const { active, completed, error } = props;
+
+  const getMiddle = () => {
+    if (active) {
+      return <CircularProgress size="24px" />;
+    }
+    if (completed) {
+      return <Check />;
+    }
+    if (error) {
+      return <Cancel />;
+    }
+    return <FiberManualRecordIcon />;
+  };
+
+  return (
+    <div
+      className={clsx(classes.root, {
+        [classes.active]: active,
+        [classes.completed]: completed,
+        [classes.error]: error,
+      })}
+    >
+      {getMiddle()}
+    </div>
+  );
+}
+
 export const TaskStatusStepper = memo(
   ({
     steps,
@@ -114,11 +166,17 @@ export const TaskStatusStepper = memo(
           {steps.map((step, index) => {
             const isCompleted = step.status === 'completed';
             const isFailed = step.status === 'failed';
+            const isActive = step.status === 'processing';
             return (
               <Step key={String(index)} expanded>
                 <StepButton onClick={() => onUserStepChange(step.id)}>
                   <StepLabel
-                    StepIconProps={{ completed: isCompleted, error: isFailed }}
+                    StepIconProps={{
+                      completed: isCompleted,
+                      error: isFailed,
+                      active: isActive,
+                    }}
+                    StepIconComponent={TaskStepIconComponent}
                     className={classes.stepWrapper}
                   >
                     <div className={classes.labelWrapper}>
@@ -203,14 +261,14 @@ export const TaskPage = () => {
       />
       <Content>
         <Grid container>
-          <Grid item xs={4}>
+          <Grid item xs={3}>
             <TaskStatusStepper
               steps={steps}
               currentStepId={currentStepId}
               onUserStepChange={setUserSelectedStepId}
             />
           </Grid>
-          <Grid item xs={8}>
+          <Grid item xs={9}>
             <TaskLogger log={logAsString} />
           </Grid>
         </Grid>
