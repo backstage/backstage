@@ -38,6 +38,7 @@ import {
   EntityHasSystemsCard,
   EntityLinksCard,
   EntityPageLayout,
+  SystemDiagram,
 } from '@backstage/plugin-catalog';
 import { EntityProvider, useEntity } from '@backstage/plugin-catalog-react';
 import {
@@ -441,6 +442,9 @@ const SystemOverviewContent = ({ entity }: { entity: SystemEntity }) => (
     <Grid item md={6}>
       <AboutCard entity={entity} variant="gridItem" />
     </Grid>
+    <Grid item xs={12} md={8}>
+      <SystemDiagram entity={entity} />
+    </Grid>
     <Grid item md={6}>
       <EntityHasComponentsCard variant="gridItem" />
     </Grid>
@@ -457,6 +461,11 @@ const SystemEntityPage = ({ entity }: { entity: Entity }) => (
       title="Overview"
       element={<SystemOverviewContent entity={entity as SystemEntity} />}
     />
+    <EntityPageLayout.Content
+      path="/docs/*"
+      title="Docs"
+      element={<DocsRouter entity={entity} />}
+      />
   </EntityPageLayout>
 );
 
@@ -477,6 +486,11 @@ const DomainEntityPage = ({ entity }: { entity: Entity }) => (
       path="/*"
       title="Overview"
       element={<DomainOverviewContent entity={entity as DomainEntity} />}
+    />
+    <EntityPageLayout.Content
+      path="/docs/*"
+      title="Docs"
+      element={<DocsRouter entity={entity} />}
     />
   </EntityPageLayout>
 );
