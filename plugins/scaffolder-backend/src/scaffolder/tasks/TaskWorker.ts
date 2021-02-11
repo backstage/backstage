@@ -22,6 +22,7 @@ import { TaskBroker, Task } from './types';
 import fs from 'fs-extra';
 import path from 'path';
 import { TemplateActionRegistry } from './TemplateConverter';
+import * as handlebars from 'handlebars';
 
 type Options = {
   logger: Logger;
@@ -55,7 +56,11 @@ export class TaskWorker {
         `Starting up work with ${task.spec.steps.length} steps`,
       );
 
-      const outputs: { [name: string]: JsonValue } = {};
+      const templateCtx: {
+        steps: {
+          [stepName: string]: { output: { [outputName: string]: JsonValue } };
+        };
+      } = { steps: {} };
 
       for (const step of task.spec.steps) {
         const metadata = { stepId: step.id };
@@ -87,8 +92,24 @@ export class TaskWorker {
             throw new Error(`Action '${step.action}' does not exist`);
           }
 
-          // TODO: substitute any placeholders with output from previous steps
-          const parameters = step.parameters!;
+          const parameters: { [name: string]: JsonValue } = {};
+          for (const [name, maybeTemplateStr] of Object.entries(
+            step.parameters ?? {},
+          )) {
+            if (typeof maybeTemplateStr === 'string') {
+              const value = handlebars.compile(maybeTemplateStr, {
+                noEscape: true,
+                strict: true,
+                data: false,
+                preventIndent: true,
+              })(templateCtx);
+              parameters[name] = value;
+            } else {
+              parameters[name] = maybeTemplateStr;
+            }
+          }
+
+          const stepOutputs: { [name: string]: JsonValue } = {};
 
           await action.handler({
             logger,
@@ -96,9 +117,11 @@ export class TaskWorker {
             parameters,
             workspacePath,
             output(name: string, value: JsonValue) {
-              outputs[name] = value;
+              stepOutputs[name] = value;
             },
           });
+
+          templateCtx.steps[step.id] = { output: stepOutputs };
 
           await task.emitLog(`Finished step ${step.name}`, {
             ...metadata,
@@ -112,9 +135,24 @@ export class TaskWorker {
           throw error;
         }
       }
-      await task.complete('completed');
+
+      const output = Object.fromEntries(
+        Object.entries(task.spec.output).map(([name, templateStr]) => {
+          const value = handlebars.compile(templateStr, {
+            noEscape: true,
+            strict: true,
+            data: false,
+            preventIndent: true,
+          })(templateCtx);
+          return [name, value];
+        }),
+      );
+
+      await task.complete('completed', { output });
     } catch (error) {
-      await task.complete('failed');
+      await task.complete('failed', {
+        error: { name: error.name, message: error.message },
+      });
     }
   }
 }

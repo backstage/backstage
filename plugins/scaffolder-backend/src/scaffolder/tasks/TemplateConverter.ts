@@ -76,7 +76,13 @@ export function templateEntityToSpec(
     },
   });
 
-  return { steps };
+  return {
+    steps,
+    output: {
+      remoteUrl: '{{ steps.publish.output.remoteUrl }}',
+      catalogInfoUrl: '{{ steps.publish.output.catalogInfoUrl }}',
+    },
+  };
 }
 
 type ActionContext = {

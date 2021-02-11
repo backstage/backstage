@@ -63,11 +63,17 @@ export class TaskAgent implements Task {
     });
   }
 
-  async complete(result: CompletedTaskState): Promise<void> {
+  async complete(
+    result: CompletedTaskState,
+    metadata?: JsonObject,
+  ): Promise<void> {
     await this.storage.completeTask({
       taskId: this.state.taskId,
       status: result === 'failed' ? 'failed' : 'completed',
-      eventBody: { message: `Run completed with status: ${result}` },
+      eventBody: {
+        message: `Run completed with status: ${result}`,
+        ...metadata,
+      },
     });
     this.isDone = true;
     if (this.heartbeatTimeoutId) {

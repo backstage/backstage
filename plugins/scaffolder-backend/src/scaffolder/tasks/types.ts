@@ -49,6 +49,7 @@ export type TaskSpec = {
     action: string;
     parameters?: { [name: string]: JsonValue };
   }>;
+  output: { [name: string]: string };
 };
 
 export type DispatchResult = {
@@ -59,7 +60,7 @@ export interface Task {
   spec: TaskSpec;
   done: boolean;
   emitLog(message: string, metadata?: JsonValue): Promise<void>;
-  complete(result: CompletedTaskState): Promise<void>;
+  complete(result: CompletedTaskState, metadata?: JsonValue): Promise<void>;
   getWorkspaceName(): Promise<string>;
 }
 
