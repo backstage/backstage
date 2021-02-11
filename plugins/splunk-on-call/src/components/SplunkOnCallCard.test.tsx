@@ -71,7 +71,7 @@ const entity: Entity = {
   metadata: {
     name: 'splunkoncall-test',
     annotations: {
-      'splunk-on-call.com/team': 'Example',
+      'splunk.com/on-call-team': 'Example',
     },
   },
 };

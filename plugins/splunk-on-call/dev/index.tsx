@@ -13,7 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { plugin } from '../src/plugin';
+import { splunkOnCallPlugin, SplunkOnCallPage } from '../src/plugin';
 
-createDevApp().registerPlugin(plugin).render();
+createDevApp()
+  .registerPlugin(splunkOnCallPlugin)
+  .addPage({
+    title: 'Splunk On-Call',
+    element: <SplunkOnCallPage />,
+  })
+  .render();

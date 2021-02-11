@@ -75,15 +75,7 @@ proxy:
         $env: SPLUNK_ON_CALL_API_KEY
 ```
 
-In addition, to make certain API calls (trigger-resolve-acknowledge an incident) you need to add the `PATCH` method to the backend cors methods list.
-
-```yaml
-# app-config.yaml
-backend:
-  # ...
-  cors:
-    methods: [GET, POST, PUT, DELETE, PATCH]
-```
+In addition, to make certain API calls (trigger-resolve-acknowledge an incident) you need to add the `PATCH` method to the backend `cors` methods list: `[GET, POST, PUT, DELETE, PATCH]`.
 
 ### Adding your team name to the entity annotation
 
@@ -92,7 +84,7 @@ If you want to use this plugin for an entity, you need to label it with the belo
 
 ```yaml
 annotations:
-  splunk-on-call.com/team: <SPLUNK_ON_CALL_TEAM_NAME>
+  splunk.com/on-call-team': <SPLUNK_ON_CALL_TEAM_NAME>
 ```
 
 ## Providing the API key and API id

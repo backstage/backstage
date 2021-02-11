@@ -19,15 +19,15 @@ import {
   createRouteRef,
   discoveryApiRef,
   configApiRef,
+  createRoutableExtension,
 } from '@backstage/core';
 import { splunkOnCallApiRef, SplunkOnCallClient } from './api';
 
 export const rootRouteRef = createRouteRef({
-  path: '/splunk-on-call',
   title: 'splunk-on-call',
 });
 
-export const plugin = createPlugin({
+export const splunkOnCallPlugin = createPlugin({
   id: 'splunk-on-call',
   apis: [
     createApiFactory({
@@ -37,4 +37,15 @@ export const plugin = createPlugin({
         SplunkOnCallClient.fromConfig(configApi, discoveryApi),
     }),
   ],
+  routes: {
+    root: rootRouteRef,
+  },
 });
+
+export const SplunkOnCallPage = splunkOnCallPlugin.provide(
+  createRoutableExtension({
+    component: () =>
+      import('./components/SplunkOnCallPage').then(m => m.SplunkOnCallPage),
+    mountPoint: rootRouteRef,
+  }),
+);

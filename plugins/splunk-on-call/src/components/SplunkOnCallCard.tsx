@@ -58,7 +58,7 @@ const useStyles = makeStyles({
   },
 });
 
-export const SPLUNK_ON_CALL_TEAM = 'splunk-on-call.com/team';
+export const SPLUNK_ON_CALL_TEAM = 'splunk.com/on-call-team';
 
 export const MissingTeamAnnotation = () => (
   <MissingAnnotationEmptyState annotation={SPLUNK_ON_CALL_TEAM} />

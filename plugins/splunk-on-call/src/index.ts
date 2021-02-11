@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { plugin } from './plugin';
+export {
+  splunkOnCallPlugin,
+  splunkOnCallPlugin as plugin,
+  SplunkOnCallPage,
+} from './plugin';
 export {
   isPluginApplicableToEntity,
   SplunkOnCallCard,
