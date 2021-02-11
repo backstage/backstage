@@ -119,16 +119,21 @@ export class TokenFactory implements TokenIssuer {
   private async getKey(): Promise<JSONWebKey> {
     // Make sure that we only generate one key at a time
     if (this.privateKeyPromise) {
-      if (this.keyExpiry && DateTime.fromJSDate(this.keyExpiry) > DateTime.local()) {
+      if (
+        this.keyExpiry &&
+        DateTime.fromJSDate(this.keyExpiry) > DateTime.local()
+      ) {
         return this.privateKeyPromise;
       }
       this.logger.info(`Signing key has expired, generating new key`);
       delete this.privateKeyPromise;
     }
 
-    this.keyExpiry = DateTime.utc().plus({
-      seconds: this.keyDurationSeconds,
-    }).toJSDate();
+    this.keyExpiry = DateTime.utc()
+      .plus({
+        seconds: this.keyDurationSeconds,
+      })
+      .toJSDate();
     const promise = (async () => {
       // This generates a new signing key to be used to sign tokens until the next key rotation
       const key = await JWK.generate('EC', 'P-256', {

@@ -18,10 +18,7 @@ import { KeyStore, AnyJWK, StoredKey } from './types';
 import { DateTime } from 'luxon';
 
 export class MemoryKeyStore implements KeyStore {
-  private readonly keys = new Map<
-    string,
-    { createdAt: Date; key: string }
-  >();
+  private readonly keys = new Map<string, { createdAt: Date; key: string }>();
 
   async addKey(key: AnyJWK): Promise<void> {
     this.keys.set(key.kid, {

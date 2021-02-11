@@ -77,7 +77,10 @@ export class DatabaseKeyStore implements KeyStore {
 }
 
 const parseDate = (date: string | Date) => {
-  const parsedDate = typeof date === 'string' ?  DateTime.fromSQL(date, {locale: 'UTC'}) : DateTime.fromJSDate(date)
+  const parsedDate =
+    typeof date === 'string'
+      ? DateTime.fromSQL(date, { locale: 'UTC' })
+      : DateTime.fromJSDate(date);
 
   if (!parsedDate.isValid) {
     throw new Error(
@@ -85,5 +88,5 @@ const parseDate = (date: string | Date) => {
     );
   }
 
-  return parsedDate.toJSDate()
-}
+  return parsedDate.toJSDate();
+};
