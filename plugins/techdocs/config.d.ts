@@ -86,6 +86,12 @@ export interface Config {
                * @visibility secret
                */
               secretAccessKey: string;
+              /**
+               * ARN of role to be assumed
+               * attr: 'roleArn' - accepts a string value
+               * @visibility secret
+               */
+              roleArn: string;
             };
             /**
              * (Required) Cloud Storage Bucket Name

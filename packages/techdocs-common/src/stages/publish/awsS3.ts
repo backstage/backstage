@@ -15,7 +15,7 @@
  */
 import path from 'path';
 import express from 'express';
-import aws from 'aws-sdk';
+import aws, { Credentials } from 'aws-sdk';
 import { ManagedUpload } from 'aws-sdk/clients/s3';
 import { Logger } from 'winston';
 import { Entity, EntityName } from '@backstage/catalog-model';
@@ -26,6 +26,7 @@ import fs from 'fs-extra';
 import { Readable } from 'stream';
 import JSON5 from 'json5';
 import createLimiter from 'p-limit';
+import { CredentialsOptions } from 'aws-sdk/lib/credentials';
 
 const streamToBuffer = (stream: Readable): Promise<Buffer> => {
   return new Promise((resolve, reject) => {
@@ -61,9 +62,30 @@ export class AwsS3Publish implements PublisherBase {
     );
     let accessKeyId = undefined;
     let secretAccessKey = undefined;
+    let awsCredentials:
+      | Credentials
+      | CredentialsOptions
+      | undefined = undefined;
     if (credentials) {
-      accessKeyId = credentials.getOptionalString('accessKeyId');
-      secretAccessKey = credentials.getOptionalString('secretAccessKey');
+      const roleArn = credentials.getOptionalString('roleArn');
+      if (roleArn && aws.config.credentials instanceof Credentials) {
+        awsCredentials = new aws.ChainableTemporaryCredentials({
+          masterCredentials: aws.config.credentials as Credentials,
+          params: {
+            RoleSessionName: 'backstage-aws-organization-processor',
+            RoleArn: roleArn,
+          },
+        });
+      } else {
+        accessKeyId = credentials.getOptionalString('accessKeyId');
+        secretAccessKey = credentials.getOptionalString('secretAccessKey');
+        if (accessKeyId && secretAccessKey) {
+          awsCredentials = {
+            accessKeyId,
+            secretAccessKey,
+          };
+        }
+      }
     }
 
     // AWS Region is an optional config. If missing, default AWS env variable AWS_REGION
@@ -76,10 +98,7 @@ export class AwsS3Publish implements PublisherBase {
       ...(credentials &&
         accessKeyId &&
         secretAccessKey && {
-          credentials: {
-            accessKeyId,
-            secretAccessKey,
-          },
+          credentials: awsCredentials,
         }),
       ...(region && {
         region,

@@ -335,6 +335,19 @@ export interface Config {
       };
 
       /**
+       * AwsOrganizationCloudAccountProcessor configuration
+       */
+      awsOrganization?: {
+        providers: Array<{
+          /**
+           * The role to be assumed by this processor
+           *
+           */
+          roleArn?: string;
+        }>;
+      };
+
+      /**
        * MicrosoftGraphOrgReaderProcessor configuration
        */
       microsoftGraphOrg?: {

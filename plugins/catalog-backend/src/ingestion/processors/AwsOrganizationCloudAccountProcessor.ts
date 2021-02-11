@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 import { LocationSpec, ResourceEntityV1alpha1 } from '@backstage/catalog-model';
-import AWS, { Organizations } from 'aws-sdk';
+import AWS, { Credentials, Organizations } from 'aws-sdk';
 import { Account, ListAccountsResponse } from 'aws-sdk/clients/organizations';
 
 import * as results from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
+import { Config } from '../../../../../packages/config/src';
+import { Logger } from 'winston';
+import {
+  AwsOrganizationProviderConfig,
+  readAwsOrganizationConfig,
+} from './awsOrganization/config';
 
 const AWS_ORGANIZATION_REGION = 'us-east-1';
 const LOCATION_TYPE = 'aws-cloud-accounts';
@@ -33,9 +39,40 @@ const ORGANIZATION_ANNOTATION: string = 'amazonaws.com/organization-id';
  * If custom authentication is needed, it can be achieved by configuring the global AWS.credentials object.
  */
 export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
+  logger: Logger;
   organizations: Organizations;
-  constructor() {
+  providers: AwsOrganizationProviderConfig[];
+
+  static fromConfig(config: Config, options: { logger: Logger }) {
+    const c = config.getOptionalConfig('catalog.processors.awsOrganization');
+    return new AwsOrganizationCloudAccountProcessor({
+      ...options,
+      providers: c ? readAwsOrganizationConfig(c) : [],
+    });
+  }
+
+  constructor(options: {
+    providers: AwsOrganizationProviderConfig[];
+    logger: Logger;
+  }) {
+    this.providers = options.providers;
+    this.logger = options.logger;
+    let credentials = undefined;
+    if (
+      this.providers.length > 0 &&
+      this.providers[0].roleArn !== undefined &&
+      AWS.config.credentials instanceof Credentials
+    ) {
+      credentials = new AWS.ChainableTemporaryCredentials({
+        masterCredentials: AWS.config.credentials as Credentials,
+        params: {
+          RoleSessionName: 'backstage-aws-organization-processor',
+          RoleArn: this.providers[0].roleArn,
+        },
+      });
+    }
     this.organizations = new AWS.Organizations({
+      credentials,
       region: AWS_ORGANIZATION_REGION,
     }); // Only available in us-east-1
   }
