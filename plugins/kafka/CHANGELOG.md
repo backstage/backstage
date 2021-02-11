@@ -1,5 +1,15 @@
 # @backstage/plugin-kafka
 
+## 0.2.2
+
+### Patch Changes
+
+- 7716d1d70: Migrate to new composability API, exporting the plugin instance as `kafkaPlugin`, entity content as `EntityKafkaContent`, and entity conditional as `isKafkaAvailable`.
+- Updated dependencies [19d354c78]
+- Updated dependencies [b51ee6ece]
+  - @backstage/plugin-catalog-react@0.0.3
+  - @backstage/core@0.6.1
+
 ## 0.2.1
 
 ### Patch Changes

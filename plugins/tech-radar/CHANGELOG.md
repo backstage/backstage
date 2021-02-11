@@ -1,5 +1,13 @@
 # @backstage/plugin-tech-radar
 
+## 0.3.5
+
+### Patch Changes
+
+- 804502a5c: Migrated to new composability API, exporting the plugin instance as `techRadarPlugin` and the page as `TechRadarPage`.
+- Updated dependencies [b51ee6ece]
+  - @backstage/core@0.6.1
+
 ## 0.3.4
 
 ### Patch Changes

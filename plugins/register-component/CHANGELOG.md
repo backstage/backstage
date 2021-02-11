@@ -1,5 +1,15 @@
 # @backstage/plugin-register-component
 
+## 0.2.9
+
+### Patch Changes
+
+- 9ec66c345: Migrated to new composability API, exporting the plugin instance as `registerComponentPlugin`, and page as `RegisterComponentPage`.
+- Updated dependencies [19d354c78]
+- Updated dependencies [b51ee6ece]
+  - @backstage/plugin-catalog-react@0.0.3
+  - @backstage/core@0.6.1
+
 ## 0.2.8
 
 ### Patch Changes
