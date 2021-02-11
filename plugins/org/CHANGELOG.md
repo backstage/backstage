@@ -1,5 +1,15 @@
 # @backstage/plugin-org
 
+## 0.3.6
+
+### Patch Changes
+
+- 14aef4b94: Visual updates to User and Group pages
+- Updated dependencies [19d354c78]
+- Updated dependencies [b51ee6ece]
+  - @backstage/plugin-catalog-react@0.0.3
+  - @backstage/core@0.6.1
+
 ## 0.3.5
 
 ### Patch Changes

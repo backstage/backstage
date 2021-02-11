@@ -21,16 +21,17 @@ import {
   readGitLabIntegrationConfigs,
 } from '@backstage/integration';
 import fetch from 'cross-fetch';
+import parseGitUrl from 'git-url-parse';
+import { Readable } from 'stream';
 import { NotFoundError, NotModifiedError } from '../errors';
 import { ReadTreeResponseFactory } from './tree';
 import {
   ReaderFactory,
   ReadTreeOptions,
   ReadTreeResponse,
+  SearchResponse,
   UrlReader,
 } from './types';
-import parseGitUrl from 'git-url-parse';
-import { Readable } from 'stream';
 
 export class GitlabUrlReader implements UrlReader {
   private readonly treeResponseFactory: ReadTreeResponseFactory;
@@ -51,12 +52,6 @@ export class GitlabUrlReader implements UrlReader {
     deps: { treeResponseFactory: ReadTreeResponseFactory },
   ) {
     this.treeResponseFactory = deps.treeResponseFactory;
-
-    if (!config.apiBaseUrl) {
-      throw new Error(
-        `GitLab integration for '${config.host}' must configure an explicit apiBaseUrl`,
-      );
-    }
   }
 
   async read(url: string): Promise<Buffer> {
@@ -152,6 +147,10 @@ export class GitlabUrlReader implements UrlReader {
       etag: commitSha,
       filter: options?.filter,
     });
+  }
+
+  async search(): Promise<SearchResponse> {
+    throw new Error('GitlabUrlReader does not implement search');
   }
 
   toString() {

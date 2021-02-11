@@ -15,16 +15,17 @@
  */
 
 import {
+  identityApiRef,
+  configApiRef,
   createApiFactory,
   createPlugin,
+  createRoutableExtension,
   createRouteRef,
   discoveryApiRef,
   githubAuthApiRef,
-  configApiRef,
-  createRoutableExtension,
 } from '@backstage/core';
-import { catalogImportApiRef } from './api/CatalogImportApi';
-import { CatalogImportClient } from './api/CatalogImportClient';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { catalogImportApiRef, CatalogImportClient } from './api';
 
 export const rootRouteRef = createRouteRef({
   path: '',
@@ -39,10 +40,24 @@ export const catalogImportPlugin = createPlugin({
       deps: {
         discoveryApi: discoveryApiRef,
         githubAuthApi: githubAuthApiRef,
+        identityApi: identityApiRef,
         configApi: configApiRef,
+        catalogApi: catalogApiRef,
       },
-      factory: ({ discoveryApi, githubAuthApi, configApi }) =>
-        new CatalogImportClient({ discoveryApi, githubAuthApi, configApi }),
+      factory: ({
+        discoveryApi,
+        githubAuthApi,
+        identityApi,
+        configApi,
+        catalogApi,
+      }) =>
+        new CatalogImportClient({
+          discoveryApi,
+          githubAuthApi,
+          configApi,
+          identityApi,
+          catalogApi,
+        }),
     }),
   ],
   routes: {

@@ -24,4 +24,5 @@ export {
   catalogPlugin as plugin,
   CatalogIndexPage,
   CatalogEntityPage,
+  EntityLinksCard,
 } from './plugin';

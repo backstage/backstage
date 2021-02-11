@@ -52,7 +52,7 @@ export type TokenIssuer = {
  */
 export type StoredKey = {
   key: AnyJWK;
-  createdAt: moment.Moment;
+  createdAt: Date;
 };
 
 /**

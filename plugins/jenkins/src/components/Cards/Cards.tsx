@@ -40,13 +40,13 @@ const WidgetContent = ({
   const classes = useStyles();
   if (loading || !latestRun) return <LinearProgress />;
   const displayDate = DateTime.fromMillis(latestRun.timestamp).toRelative();
-  // TODO This works, but hard codes as minutes. Would prefer something smarter/relative.
-  const durationInMinutes = Math.round(
-    Duration.fromMillis(latestRun.duration).as('minutes'),
-  );
-  const displayDuration = `${durationInMinutes} minute${
-    durationInMinutes > 1 ? 's' : ''
-  }`;
+  const displayDuration =
+    (latestRun.building ? 'Running for ' : '') +
+    DateTime.local()
+      .minus(Duration.fromMillis(latestRun.duration))
+      .toRelative({ locale: 'en' })
+      ?.replace(' ago', '');
+
   return (
     <StructuredMetadataTable
       metadata={{

@@ -1,5 +1,15 @@
 # @backstage/plugin-api-docs
 
+## 0.4.5
+
+### Patch Changes
+
+- f5e564cd6: Improve display of error messages
+- Updated dependencies [19d354c78]
+- Updated dependencies [b51ee6ece]
+  - @backstage/plugin-catalog-react@0.0.3
+  - @backstage/core@0.6.1
+
 ## 0.4.4
 
 ### Patch Changes

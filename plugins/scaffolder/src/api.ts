@@ -15,7 +15,12 @@
  */
 
 import { JsonObject } from '@backstage/config';
-import { createApiRef, DiscoveryApi, Observable } from '@backstage/core';
+import {
+  createApiRef,
+  DiscoveryApi,
+  Observable,
+  IdentityApi,
+} from '@backstage/core';
 import ObservableImpl from 'zen-observable';
 import { ScaffolderTask, Status } from './types';
 
@@ -58,9 +63,14 @@ export interface ScaffolderApi {
 }
 export class ScaffolderClient implements ScaffolderApi {
   private readonly discoveryApi: DiscoveryApi;
+  private readonly identityApi: IdentityApi;
 
-  constructor(options: { discoveryApi: DiscoveryApi }) {
+  constructor(options: {
+    discoveryApi: DiscoveryApi;
+    identityApi: IdentityApi;
+  }) {
     this.discoveryApi = options.discoveryApi;
+    this.identityApi = options.identityApi;
   }
 
   /**
@@ -74,11 +84,13 @@ export class ScaffolderClient implements ScaffolderApi {
     templateName: string,
     values: Record<string, any>,
   ): Promise<string> {
+    const token = await this.identityApi.getIdToken();
     const url = `${await this.discoveryApi.getBaseUrl('scaffolder')}/v2/tasks`;
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       body: JSON.stringify({ templateName, values: { ...values } }),
     });
@@ -93,10 +105,13 @@ export class ScaffolderClient implements ScaffolderApi {
     return id;
   }
 
-  async getTask(taskId: string): Promise<ScaffolderTask> {
+  async getTask(taskId: string) {
+    const token = await this.identityApi.getIdToken();
     const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
     const url = `${baseUrl}/v2/tasks/${encodeURIComponent(taskId)}`;
-    return fetch(url).then(x => x.json());
+    return fetch(url, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    }).then(x => x.json());
   }
 
   streamLogs({

@@ -31,6 +31,7 @@ import {
   ReaderFactory,
   ReadTreeOptions,
   ReadTreeResponse,
+  SearchResponse,
   UrlReader,
 } from './types';
 
@@ -127,6 +128,10 @@ export class BitbucketUrlReader implements UrlReader {
       etag: lastCommitShortHash,
       filter: options?.filter,
     });
+  }
+
+  async search(): Promise<SearchResponse> {
+    throw new Error('BitbucketUrlReader does not implement search');
   }
 
   toString() {

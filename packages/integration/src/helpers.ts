@@ -16,11 +16,22 @@
 
 import { ScmIntegration, ScmIntegrationsGroup } from './types';
 
-/** Checks whether the given url is a valid host */
-export function isValidHost(url: string): boolean {
+/** Checks whether the given argument is a valid URL hostname */
+export function isValidHost(host: string): boolean {
   const check = new URL('http://example.com');
-  check.host = url;
-  return check.host === url;
+  check.host = host;
+  return check.host === host;
+}
+
+/** Checks whether the given argument is a valid URL */
+export function isValidUrl(url: string): boolean {
+  try {
+    // eslint-disable-next-line no-new
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export function basicIntegrations<T extends ScmIntegration>(

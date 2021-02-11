@@ -1,5 +1,16 @@
 # @backstage/dev-utils
 
+## 0.1.10
+
+### Patch Changes
+
+- Updated dependencies [b51ee6ece]
+- Updated dependencies [19d354c78]
+- Updated dependencies [b51ee6ece]
+  - @backstage/test-utils@0.1.7
+  - @backstage/plugin-catalog-react@0.0.3
+  - @backstage/core@0.6.1
+
 ## 0.1.9
 
 ### Patch Changes
