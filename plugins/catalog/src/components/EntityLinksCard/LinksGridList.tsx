@@ -15,7 +15,7 @@
  */
 
 import { IconComponent } from '@backstage/core';
-import { Grid, GridList, GridListTile } from '@material-ui/core';
+import { GridList, GridListTile } from '@material-ui/core';
 import React from 'react';
 import { IconLink } from './IconLink';
 import { ColumnBreakpoints } from './types';
@@ -36,21 +36,12 @@ export const LinksGridList = ({ items, cols = undefined }: Props) => {
   const numOfCols = useDynamicColumns(cols);
 
   return (
-    <Grid
-      container
-      item
-      direction="column"
-      justify="space-evenly"
-      alignItems="flex-start"
-      spacing={0}
-    >
-      <GridList cellHeight="auto" cols={numOfCols}>
-        {items.map(({ text, href, Icon }, i) => (
-          <GridListTile key={i}>
-            <IconLink href={href} text={text ?? href} Icon={Icon} />
-          </GridListTile>
-        ))}
-      </GridList>
-    </Grid>
+    <GridList cellHeight="auto" cols={numOfCols}>
+      {items.map(({ text, href, Icon }, i) => (
+        <GridListTile key={i}>
+          <IconLink href={href} text={text ?? href} Icon={Icon} />
+        </GridListTile>
+      ))}
+    </GridList>
   );
 };
