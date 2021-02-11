@@ -150,7 +150,7 @@ If the environment variables
 
 are set and can be used to access the bucket you created in step 2, they will be
 used by the AWS SDK v2 Node.js client for authentication.
-[Refer to the official documentation.](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-environment.html)
+[Refer to the official documentation.](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-environment.html)
 
 If the environment variables are missing, the AWS SDK tries to read the
 `~/.aws/credentials` file for credentials.
