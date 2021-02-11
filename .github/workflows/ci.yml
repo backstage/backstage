@@ -18,6 +18,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          # Make sure the actual branch is checked out when running on pull requests
+          ref: ${{ github.head_ref }}
+          # This is important to fetch the changes to the previous commit
+          fetch-depth: 0
       - name: fetch branch master
         run: git fetch origin master
 
@@ -73,7 +78,6 @@ jobs:
         uses: creyD/prettier_action@v3.1
         with:
           prettier_options: --config docs/prettier.config.js --write docs/**/*.md 
-          branch: ${{ github.head_ref }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}  
 
