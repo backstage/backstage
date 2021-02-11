@@ -106,8 +106,8 @@ the TechDocs plugin in your Backstage app.
 ## Example: GitHub Actions CI and AWS S3
 
 Here is an example workflow using GitHub Actions CI and AWS S3 storage. You can
-use any CI and other cloud storage providers - Google Cloud Storage and Azure
-Blob Storage.
+use any CI and any other
+[TechDocs supported cloud storage providers](README.md#platforms-supported).
 
 Add a `.github/workflows/techdocs.yml` file in your
 [Software Template(s)](../software-templates/index.md) like this -
@@ -136,9 +136,10 @@ jobs:
       AWS_REGION: ${{ secrets.AWS_REGION }}
       ENTITY_NAMESPACE: 'default'
       ENTITY_KIND: 'Component'
+      ENTITY_NAME: 'my-doc-entity'
       # In a Software template, Scaffolder will replace {{cookiecutter.component_id | jsonify}}
       # with the correct entity name. This is same as metadata.name in the entity's catalog-info.yaml
-      ENTITY_NAME: '{{ cookiecutter.component_id | jsonify }}'
+      # ENTITY_NAME: '{{ cookiecutter.component_id | jsonify }}'
 
     steps:
       - name: Checkout code
@@ -163,5 +164,6 @@ jobs:
           $ENTITY_NAMESPACE/$ENTITY_KIND/$ENTITY_NAME
 ```
 
-When the new Software is created, the first GitHub Action workflow will publish
-the TechDocs site, which can be viewed in your Backstage app.
+When the new repository is scaffolded or new documentation updates are
+committed, the GitHub Action workflow will publish the TechDocs site, which can
+be viewed in your Backstage app.
