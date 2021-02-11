@@ -1827,7 +1827,7 @@
     yup "^0.29.3"
 
 "@backstage/core@^0.3.0":
-  version "0.6.0"
+  version "0.6.1"
   dependencies:
     "@backstage/config" "^0.1.2"
     "@backstage/core-api" "^0.2.8"
@@ -1866,13 +1866,13 @@
     zen-observable "^0.8.15"
 
 "@backstage/plugin-catalog@^0.2.0":
-  version "0.3.0"
+  version "0.3.1"
   dependencies:
-    "@backstage/catalog-client" "^0.3.5"
+    "@backstage/catalog-client" "^0.3.6"
     "@backstage/catalog-model" "^0.7.1"
-    "@backstage/core" "^0.6.0"
-    "@backstage/plugin-catalog-react" "^0.0.2"
-    "@backstage/plugin-scaffolder" "^0.4.2"
+    "@backstage/core" "^0.6.1"
+    "@backstage/plugin-catalog-react" "^0.0.3"
+    "@backstage/plugin-scaffolder" "^0.5.0"
     "@backstage/theme" "^0.2.3"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
@@ -1880,7 +1880,6 @@
     "@types/react" "^16.9"
     classnames "^2.2.6"
     git-url-parse "^11.4.4"
-    moment "^2.26.0"
     react "^16.13.1"
     react-dom "^16.13.1"
     react-helmet "6.1.0"
@@ -1890,13 +1889,13 @@
     swr "^0.3.0"
 
 "@backstage/plugin-catalog@^0.2.1":
-  version "0.3.0"
+  version "0.3.1"
   dependencies:
-    "@backstage/catalog-client" "^0.3.5"
+    "@backstage/catalog-client" "^0.3.6"
     "@backstage/catalog-model" "^0.7.1"
-    "@backstage/core" "^0.6.0"
-    "@backstage/plugin-catalog-react" "^0.0.2"
-    "@backstage/plugin-scaffolder" "^0.4.2"
+    "@backstage/core" "^0.6.1"
+    "@backstage/plugin-catalog-react" "^0.0.3"
+    "@backstage/plugin-scaffolder" "^0.5.0"
     "@backstage/theme" "^0.2.3"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
@@ -1904,7 +1903,6 @@
     "@types/react" "^16.9"
     classnames "^2.2.6"
     git-url-parse "^11.4.4"
-    moment "^2.26.0"
     react "^16.13.1"
     react-dom "^16.13.1"
     react-helmet "6.1.0"
@@ -17392,7 +17390,7 @@ lru-queue@0.1:
   dependencies:
     es5-ext "~0.10.2"
 
-luxon@^1.25.0:
+luxon@1.25.0, luxon@^1.25.0:
   version "1.25.0"
   resolved "https://registry.npmjs.org/luxon/-/luxon-1.25.0.tgz#d86219e90bc0102c0eb299d65b2f5e95efe1fe72"
   integrity sha512-hEgLurSH8kQRjY6i4YLey+mcKVAWXbDNlZRmM6AgWDJ1cY3atl8Ztf5wEY7VBReFbmGnwQPz7KYJblL8B2k0jQ==
