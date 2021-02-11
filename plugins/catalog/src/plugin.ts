@@ -67,6 +67,14 @@ export const CatalogEntityPage = catalogPlugin.provide(
   }),
 );
 
+export const EntityAboutCard = catalogPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () => import('./components/AboutCard').then(m => m.AboutCard),
+    },
+  }),
+);
+
 export const EntityLinksCard = catalogPlugin.provide(
   createComponentExtension({
     component: {
