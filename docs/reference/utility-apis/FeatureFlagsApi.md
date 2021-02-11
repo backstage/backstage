@@ -1,7 +1,7 @@
 # FeatureFlagsApi
 
 The FeatureFlagsApi type is defined at
-[packages/core-api/src/apis/definitions/FeatureFlagsApi.ts:60](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/FeatureFlagsApi.ts#L60).
+[packages/core-api/src/apis/definitions/FeatureFlagsApi.ts:60](https://github.com/backstage/backstage/blob/a4dbd8353cfa4d4d4334473e2c33afcda64e130d/packages/core-api/src/apis/definitions/FeatureFlagsApi.ts#L60).
 
 The following Utility API implements this type:
 [featureFlagsApiRef](./README.md#featureflags)
@@ -68,7 +68,7 @@ export type FeatureFlag = {
 </pre>
 
 Defined at
-[packages/core-api/src/apis/definitions/FeatureFlagsApi.ts:31](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/FeatureFlagsApi.ts#L31).
+[packages/core-api/src/apis/definitions/FeatureFlagsApi.ts:31](https://github.com/backstage/backstage/blob/a4dbd8353cfa4d4d4334473e2c33afcda64e130d/packages/core-api/src/apis/definitions/FeatureFlagsApi.ts#L31).
 
 Referenced by: [registerFlag](#registerflag),
 [getRegisteredFlags](#getregisteredflags).
@@ -83,7 +83,7 @@ export enum FeatureFlagState {
 </pre>
 
 Defined at
-[packages/core-api/src/apis/definitions/FeatureFlagsApi.ts:36](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/FeatureFlagsApi.ts#L36).
+[packages/core-api/src/apis/definitions/FeatureFlagsApi.ts:36](https://github.com/backstage/backstage/blob/a4dbd8353cfa4d4d4334473e2c33afcda64e130d/packages/core-api/src/apis/definitions/FeatureFlagsApi.ts#L36).
 
 Referenced by: [FeatureFlagsSaveOptions](#featureflagssaveoptions).
 
@@ -108,6 +108,6 @@ export type FeatureFlagsSaveOptions = {
 </pre>
 
 Defined at
-[packages/core-api/src/apis/definitions/FeatureFlagsApi.ts:44](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/FeatureFlagsApi.ts#L44).
+[packages/core-api/src/apis/definitions/FeatureFlagsApi.ts:44](https://github.com/backstage/backstage/blob/a4dbd8353cfa4d4d4334473e2c33afcda64e130d/packages/core-api/src/apis/definitions/FeatureFlagsApi.ts#L44).
 
 Referenced by: [save](#save).
