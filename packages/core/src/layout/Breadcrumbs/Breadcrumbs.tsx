@@ -14,75 +14,88 @@
  * limitations under the License.
  */
 
-import React, { Fragment } from 'react';
 import {
-  Typography,
-  Breadcrumbs as MUIBreadcrumbs,
+  Box,
+  Breadcrumbs as MaterialBreadcrumbs,
+  List,
+  ListItem,
   Popover,
+  Typography,
   withStyles,
 } from '@material-ui/core';
+import React, { ComponentProps, Fragment } from 'react';
 
-type BreadcrumbsProps = {
-  children?: React.ReactNode;
-};
+type Props = ComponentProps<typeof MaterialBreadcrumbs>;
 
-const UnderlinedText = withStyles({ root: { textDecoration: 'underline' } })(
-  Typography,
-);
+const ClickableText = withStyles({
+  root: {
+    textDecoration: 'underline',
+    cursor: 'pointer',
+  },
+})(Typography);
 
-const StyledBreadcrumbs = withStyles({
-  root: {},
-  li: { textDecoration: 'underline' },
-})(MUIBreadcrumbs);
+const StyledBox = withStyles(theme => ({
+  root: {
+    textDecoration: 'underline',
+    color: theme.palette.text.primary,
+  },
+}))(Box);
 
-export const Breadcrumbs = ({ children }: BreadcrumbsProps) => {
+export const Breadcrumbs = ({ children, ...props }: Props) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
     null,
   );
 
-  if (children instanceof Array) {
-    const [firstPage, secondPage, ...expandablePages] = children;
-    const currentPage = children[children.length - 1];
-    const hasHiddenBreadcrumbs = children.length > 3;
+  const childrenArray = React.Children.toArray(children);
 
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-      setAnchorEl(event.currentTarget);
-    };
+  const [firstPage, secondPage, ...expandablePages] = childrenArray;
+  const currentPage = expandablePages.length
+    ? expandablePages.pop()
+    : childrenArray[childrenArray.length - 1];
+  const hasHiddenBreadcrumbs = childrenArray.length > 3;
 
-    const handleClose = () => {
-      setAnchorEl(null);
-    };
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
 
-    const open = Boolean(anchorEl);
-    return (
-      <Fragment>
-        <StyledBreadcrumbs aria-label="breadcrumb">
-          {children.length > 1 && firstPage}
-          {children.length > 2 && secondPage}
-          {hasHiddenBreadcrumbs && (
-            <UnderlinedText onClick={handleClick}>...</UnderlinedText>
-          )}
-          {currentPage}
-        </StyledBreadcrumbs>
-        <Popover
-          open={open}
-          anchorEl={anchorEl}
-          onClose={handleClose}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'left',
-          }}
-        >
-          The content of the Popover.
-        </Popover>
-      </Fragment>
-    );
-  }
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
   return (
-    <StyledBreadcrumbs aria-label="breadcrumb">{children}</StyledBreadcrumbs>
+    <Fragment>
+      <MaterialBreadcrumbs aria-label="breadcrumb" {...props}>
+        {childrenArray.length > 1 && <StyledBox clone>{firstPage}</StyledBox>}
+        {childrenArray.length > 2 && <StyledBox clone>{secondPage}</StyledBox>}
+        {hasHiddenBreadcrumbs && (
+          <ClickableText onClick={handleClick}>...</ClickableText>
+        )}
+        <Box style={{ fontStyle: 'italic' }} color="text.primary">
+          {currentPage}
+        </Box>
+      </MaterialBreadcrumbs>
+      <Popover
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+        }}
+      >
+        <List>
+          {expandablePages.map(pageLink => (
+            <ListItem button>
+              <StyledBox clone>{pageLink}</StyledBox>
+            </ListItem>
+          ))}
+        </List>
+      </Popover>
+    </Fragment>
   );
 };
