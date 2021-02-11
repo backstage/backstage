@@ -167,8 +167,7 @@ export const ScaffolderPageContents = () => {
               </Typography>
             )}
             {error && (
-              <WarningPanel>
-                Oops! Something went wrong loading the templates:{' '}
+              <WarningPanel title="Oops! Something went wrong loading the templates">
                 {error.message}
               </WarningPanel>
             )}

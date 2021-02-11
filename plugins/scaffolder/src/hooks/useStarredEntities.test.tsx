@@ -65,7 +65,7 @@ describe('useStarredEntities', () => {
 
     expect(result.current.starredEntities.size).toBe(0);
   });
-  it('should return a set with the current items when there is items in storage', async () => {
+  it('should return a set with the current items when there are items in storage', async () => {
     const expectedIds = ['i', 'am', 'some', 'test', 'ids'];
     const store = mockStorage?.forBucket('settings');
     await store?.set('starredEntities', expectedIds);
@@ -95,7 +95,7 @@ describe('useStarredEntities', () => {
     expect(result.current.isStarredEntity(mockEntity)).toBeTruthy();
   });
 
-  it('should write new entries to the local store when adding a togglging entity', async () => {
+  it('should write new entries to the local store when adding a toggling entity', async () => {
     const { result } = renderHook(() => useStarredEntities(), { wrapper });
 
     act(() => {
