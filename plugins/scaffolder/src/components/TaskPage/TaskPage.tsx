@@ -16,30 +16,14 @@
 
 import { Page, Header, Lifecycle, Content } from '@backstage/core';
 import React, { useState, useEffect, memo, useMemo } from 'react';
-import {
-  makeStyles,
-  Theme,
-  createStyles,
-  withStyles,
-} from '@material-ui/core/styles';
+import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
-import StepContent from '@material-ui/core/StepContent';
-import StepConnector from '@material-ui/core/StepConnector';
 import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import Paper from '@material-ui/core/Paper';
-import clsx from 'clsx';
-import Check from '@material-ui/icons/Check';
-import Cancel from '@material-ui/icons/Cancel';
 import Typography from '@material-ui/core/Typography';
 import { useParams } from 'react-router';
-import {
-  useTaskEventStream,
-  TaskStream,
-  Status,
-} from '../hooks/useEventStream';
+import { useTaskEventStream } from '../hooks/useEventStream';
 import LazyLog from 'react-lazylog/build/LazyLog';
 import { StepButton, StepIconProps } from '@material-ui/core';
 
@@ -95,7 +79,7 @@ export const TaskStatusStepper = memo(
                   <StepLabel
                     StepIconProps={{ completed: isCompleted, error: isFailed }}
                   >
-                    {step.name}
+                    <Typography>{step.name}</Typography>
                   </StepLabel>
                 </StepButton>
               </Step>
@@ -114,15 +98,6 @@ const TaskLogger = memo(({ log }: { log: string }) => {
     </div>
   );
 });
-
-const TaskActionsBar = () => {
-  return (
-    <>
-      <Button variant="outlined">Retry</Button>
-      <Button variant="outlined">Raw Log</Button>
-    </>
-  );
-};
 
 export const TaskPage = () => {
   const [userSelectedStepId, setUserSelectedStepId] = useState<

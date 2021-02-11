@@ -29,12 +29,11 @@ import { LinearProgress } from '@material-ui/core';
 import { IChangeEvent } from '@rjsf/core';
 import parseGitUrl from 'git-url-parse';
 import React, { useCallback, useState } from 'react';
-import { Navigate } from 'react-router';
+import { Navigate, useNavigate } from 'react-router';
 import { useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { scaffolderApiRef } from '../../api';
 import { rootRoute, taskRoute } from '../../routes';
-import { useNavigate } from 'react-router';
 import { MultistepJsonForm } from '../MultistepJsonForm';
 
 const useTemplate = (
