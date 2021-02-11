@@ -66,9 +66,7 @@ export class DatabaseKeyStore implements KeyStore {
     return {
       items: rows.map(row => ({
         key: JSON.parse(row.key),
-        createdAt: DateTime.fromSQL((row.created_at as unknown) as string, {
-          zone: 'UTC',
-        }),
+        createdAt: parseDate(row.created_at),
       })),
     };
   }
@@ -76,4 +74,16 @@ export class DatabaseKeyStore implements KeyStore {
   async removeKeys(kids: string[]): Promise<void> {
     await this.database(TABLE).delete().whereIn('kid', kids);
   }
+}
+
+const parseDate = (date: string | Date) => {
+  const parsedDate = typeof date === 'string' ?  DateTime.fromSQL(date, {locale: 'UTC'}) : DateTime.fromJSDate(date)
+
+  if (!parsedDate.isValid) {
+    throw new Error(
+      `Failed to parse date, reason: ${parsedDate.invalidReason}, explanation: ${parsedDate.invalidExplanation}`,
+    );
+  }
+
+  return parsedDate.toJSDate()
 }

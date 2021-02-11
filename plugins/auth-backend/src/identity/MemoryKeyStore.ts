@@ -20,12 +20,12 @@ import { DateTime } from 'luxon';
 export class MemoryKeyStore implements KeyStore {
   private readonly keys = new Map<
     string,
-    { createdAt: DateTime; key: string }
+    { createdAt: Date; key: string }
   >();
 
   async addKey(key: AnyJWK): Promise<void> {
     this.keys.set(key.kid, {
-      createdAt: DateTime.utc(),
+      createdAt: DateTime.utc().toJSDate(),
       key: JSON.stringify(key),
     });
   }

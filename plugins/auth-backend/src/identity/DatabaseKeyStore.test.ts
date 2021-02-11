@@ -16,6 +16,7 @@
 
 import Knex from 'knex';
 import { DatabaseKeyStore } from './DatabaseKeyStore';
+import { DateTime } from 'luxon'
 
 function createDB() {
   const knex = Knex({
@@ -51,7 +52,7 @@ describe('DatabaseKeyStore', () => {
     const { items } = await store.listKeys();
     expect(items).toEqual([{ createdAt: expect.anything(), key }]);
     expect(
-      Math.abs(items[0].createdAt.diffNow('seconds').seconds),
+      Math.abs(DateTime.fromJSDate(items[0].createdAt).diffNow('seconds').seconds),
     ).toBeLessThan(10);
   });
 
