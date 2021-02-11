@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  isValidDate,
-  isValidDateAndFormat,
-  getTimeBasedGreeting,
-} from './timeUtil';
+import { getTimeBasedGreeting } from './timeUtil';
 
 it('has greeting and language', () => {
   const greeting = getTimeBasedGreeting();
