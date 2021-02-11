@@ -149,7 +149,7 @@ If the environment variables
 - `AWS_REGION`
 
 are set and can be used to access the bucket you created in step 2, they will be
-used by the AWS SDK v3 Node.js client for authentication.
+used by the AWS SDK v2 Node.js client for authentication.
 [Refer to the official documentation.](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-environment.html)
 
 If the environment variables are missing, the AWS SDK tries to read the
@@ -181,13 +181,34 @@ techdocs:
 ```
 
 Refer to the
-[official AWS documentation for obtaining the credentials](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/getting-your-credentials.html).
+[official AWS documentation for obtaining the credentials](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/getting-your-credentials.html).
 
 Note: If you are using Amazon EC2 instance to deploy Backstage, you do not need
 to obtain the access keys separately. They can be made available in the
 environment automatically by defining appropriate IAM role with access to the
 bucket. Read more
 [here](https://docs.aws.amazon.com/general/latest/gr/aws-access-keys-best-practices.html#use-roles).
+
+**3c. Authentication using an assumed role** Users with multiple AWS accounts
+may want to use a role for S3 storage that is in a different AWS account. Using
+the `roleArn` parameter as seen below, you can instruct the TechDocs publisher
+to assume a role before accessing S3.
+
+```yaml
+techdocs:
+  publisher:
+    type: 'awsS3'
+    awsS3:
+      bucketName: 'name-of-techdocs-storage-bucket'
+      region:
+        $env: AWS_REGION
+      credentials:
+        roleArn: arn:aws:iam::123456789012:role/my-backstage-role
+```
+
+Note: Assuming a role requires that primary credentials are already configured
+at `AWS.config.credentials`. Read more about assuming roles
+[here](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html)
 
 **4. That's it!**
 
