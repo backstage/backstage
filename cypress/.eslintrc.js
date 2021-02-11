@@ -11,5 +11,7 @@ module.exports = {
         bundledDependencies: false,
       },
     ],
+    'jest/expect-expect': 'off',
+    'no-restricted-syntax': 'off',
   },
 };

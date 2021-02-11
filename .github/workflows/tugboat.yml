@@ -48,10 +48,13 @@ jobs:
               target_url: "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}"
             });
 
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
           node-version: '14'
+
+      - name: yarn install
+        run: yarn --cwd cypress install
 
       # This is required because the environment_url param that Tugboat uses
       # to tell us where the preview is located isn't supported unless you
@@ -77,9 +80,25 @@ jobs:
             });
             console.log(result);
             return result.data.environment_url;
-      - name: echo tugboat preview url
-        run: |
-          curl ${{steps.get-status-env.outputs.result}}
+
+      - name: cypress run
+        uses: cypress-io/github-action@v2
+        env:
+          CYPRESS_baseUrl: ${{steps.get-status-env.outputs.result}}
+        with:
+          config-file: ./cypress.json
+          working-directory: ./cypress
+          browser: chrome
+          install: false
+          headless: true
+
+      - name: update artifact
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v1
+        with:
+          name: cypress-videos
+          path: ./cypress/cypress/videos
+
       - name: set status
         if: ${{ failure() }}
         uses: actions/github-script@v3
@@ -94,6 +113,7 @@ jobs:
               context: 'Backstage Tugboat E2E Tests',
               target_url: "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}"
             });
+
       - name: set status
         if: ${{ success() }}
         uses: actions/github-script@v3
