@@ -25,6 +25,9 @@ metadata:
     - url: https://example.com/web
       title: Website
       icon: web
+    - url: https://example.com/alert
+      title: Alerts
+      icon: alert
 spec:
   type: service
   lifecycle: experimental
