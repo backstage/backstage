@@ -1,5 +1,17 @@
 # @backstage/plugin-github-actions
 
+## 0.3.2
+
+### Patch Changes
+
+- f5f45744e: Migrate to new composability API, exporting the plugin instance as `githubActionsPlugin`, the entity content as `EntityGithubActionsContent`, entity conditional as `isGithubActionsAvailable`, and entity cards as `EntityLatestGithubActionRunCard`, `EntityLatestGithubActionsForBranchCard`, and `EntityRecentGithubActionsRunsCard`.
+- Updated dependencies [ffffea8e6]
+- Updated dependencies [19d354c78]
+- Updated dependencies [b51ee6ece]
+  - @backstage/integration@0.4.0
+  - @backstage/plugin-catalog-react@0.0.3
+  - @backstage/core@0.6.1
+
 ## 0.3.1
 
 ### Patch Changes

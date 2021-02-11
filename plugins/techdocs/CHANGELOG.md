@@ -1,5 +1,23 @@
 # @backstage/plugin-techdocs
 
+## 0.5.6
+
+### Patch Changes
+
+- f5e564cd6: Improve display of error messages
+- 41af18227: Migrated to new composability API, exporting the plugin instance as `techdocsPlugin`, the top-level page as `TechdocsPage`, and the entity content as `EntityTechdocsContent`.
+- 8f3443427: Enhance API calls to support trapping 500 errors from techdocs-backend
+- Updated dependencies [77ad0003a]
+- Updated dependencies [b51ee6ece]
+- Updated dependencies [19d354c78]
+- Updated dependencies [08142b256]
+- Updated dependencies [08142b256]
+- Updated dependencies [b51ee6ece]
+  - @backstage/techdocs-common@0.4.0
+  - @backstage/test-utils@0.1.7
+  - @backstage/plugin-catalog-react@0.0.3
+  - @backstage/core@0.6.1
+
 ## 0.5.5
 
 ### Patch Changes

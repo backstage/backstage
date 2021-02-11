@@ -1,5 +1,16 @@
 # @backstage/plugin-app-backend
 
+## 0.3.7
+
+### Patch Changes
+
+- 727f0deec: Added a new `disableConfigInjection` option, which can be used to disable the configuration injection in environments where it can't be used.
+- Updated dependencies [ffffea8e6]
+- Updated dependencies [82b2c11b6]
+- Updated dependencies [965e200c6]
+- Updated dependencies [5a5163519]
+  - @backstage/backend-common@0.5.3
+
 ## 0.3.6
 
 ### Patch Changes

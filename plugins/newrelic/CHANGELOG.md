@@ -1,5 +1,13 @@
 # @backstage/plugin-newrelic
 
+## 0.2.5
+
+### Patch Changes
+
+- c5ab91ce3: Migrate to new composability API, exporting the plugin instance as `newRelicPlugin`, and the root page as `NewRelicPage`.
+- Updated dependencies [b51ee6ece]
+  - @backstage/core@0.6.1
+
 ## 0.2.4
 
 ### Patch Changes
