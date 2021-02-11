@@ -15,31 +15,21 @@
  */
 import React from 'react';
 import { Breadcrumbs } from '.';
+import { MemoryRouter } from 'react-router-dom';
+import { Link } from '../../components/Link';
 
 export default {
   title: 'Layout/Breadcrumbs',
   component: Breadcrumbs,
 };
 
-const pages = [
-  {
-    href: '/',
-    name: 'A',
-  },
-  {
-    href: '/',
-    name: 'B',
-  },
-  {
-    href: '/',
-    name: 'C',
-  },
-  {
-    href: '/',
-    name: 'D',
-  },
-];
-
 // export const InHeader = () => <Breadcrumbs pages={pages} />;
-export const OutsideOfHeader = () => <Breadcrumbs pages={pages} />;
+export const OutsideOfHeader = () => (
+  <MemoryRouter>
+    <Breadcrumbs>
+      <Link to="/">Home</Link>
+      <Link to="/">Home</Link>
+    </Breadcrumbs>
+  </MemoryRouter>
+);
 // export const ExampleUsage = () => <Breadcrumbs pages={pages} />;
