@@ -57,19 +57,16 @@ export class AwsS3Publish implements PublisherBase {
     // or AWS shared credentials file at ~/.aws/credentials will be used to authenticate
     // https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-environment.html
     // https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-shared.html
-    const credentials = config.getOptionalConfig(
+    const credentialsConfig = config.getOptionalConfig(
       'techdocs.publisher.awsS3.credentials',
     );
     let accessKeyId = undefined;
     let secretAccessKey = undefined;
-    let awsCredentials:
-      | Credentials
-      | CredentialsOptions
-      | undefined = undefined;
-    if (credentials) {
-      const roleArn = credentials.getOptionalString('roleArn');
+    let credentials: Credentials | CredentialsOptions | undefined = undefined;
+    if (credentialsConfig) {
+      const roleArn = credentialsConfig.getOptionalString('roleArn');
       if (roleArn && aws.config.credentials instanceof Credentials) {
-        awsCredentials = new aws.ChainableTemporaryCredentials({
+        credentials = new aws.ChainableTemporaryCredentials({
           masterCredentials: aws.config.credentials as Credentials,
           params: {
             RoleSessionName: 'backstage-aws-organization-processor',
@@ -77,10 +74,12 @@ export class AwsS3Publish implements PublisherBase {
           },
         });
       } else {
-        accessKeyId = credentials.getOptionalString('accessKeyId');
-        secretAccessKey = credentials.getOptionalString('secretAccessKey');
+        accessKeyId = credentialsConfig.getOptionalString('accessKeyId');
+        secretAccessKey = credentialsConfig.getOptionalString(
+          'secretAccessKey',
+        );
         if (accessKeyId && secretAccessKey) {
-          awsCredentials = {
+          credentials = {
             accessKeyId,
             secretAccessKey,
           };
