@@ -17,6 +17,7 @@
 import { PublisherBase, PublisherOptions, PublisherResult } from './types';
 import { initRepoAndPush } from './helpers';
 import { GitHubIntegrationConfig } from '@backstage/integration';
+import { createAppAuth } from '@octokit/auth-app';
 import parseGitUrl from 'git-url-parse';
 import { Octokit } from '@octokit/rest';
 import path from 'path';
@@ -28,8 +29,23 @@ export class GithubPublisher implements PublisherBase {
     config: GitHubIntegrationConfig,
     { repoVisibility }: { repoVisibility: RepoVisibilityOptions },
   ) {
+    config.accessType = 'oAuth';
+
     if (!config.token) {
-      return undefined;
+      if (!config.apps) {
+        return undefined
+      }
+      const auth = createAppAuth({
+        appId: config.apps[0].appId,
+        privateKey: config.apps[0].privateKey,
+        installationId: process.env.GITHUB_INSTALLATION_ID,
+        clientId: config.apps[0].clientId,
+        clientSecret: config.apps[0].clientSecret,
+      });
+      const appAuthentication = await auth({ type: 'installation' });
+
+      config.token = appAuthentication.token;
+      config.accessType = 'githubApp'
     }
 
     const githubClient = new Octokit({
@@ -39,6 +55,7 @@ export class GithubPublisher implements PublisherBase {
 
     return new GithubPublisher({
       token: config.token,
+      accessType: config.accessType,
       client: githubClient,
       repoVisibility,
     });
@@ -47,6 +64,7 @@ export class GithubPublisher implements PublisherBase {
   constructor(
     private readonly config: {
       token: string;
+      accessType: string;
       client: Octokit;
       repoVisibility: RepoVisibilityOptions;
     },
@@ -68,15 +86,27 @@ export class GithubPublisher implements PublisherBase {
       owner,
     });
 
-    await initRepoAndPush({
+    if (this.config.accessType === 'githubApp') {
+     await initRepoAndPush({
       dir: path.join(workspacePath, 'result'),
       remoteUrl,
       auth: {
-        username: this.config.token,
-        password: 'x-oauth-basic',
+        username: 'x-access-token',
+        password: this.config.token,
       },
       logger,
     });
+    } else if (this.config.accessType === 'oAuth'){
+      await initRepoAndPush({
+        dir: path.join(workspacePath, 'result'),
+        remoteUrl,
+        auth: {
+          username: this.config.token,
+          password: 'x-oauth-basic',
+        },
+        logger,
+      });
+    }
 
     const catalogInfoUrl = remoteUrl.replace(
       /\.git$/,

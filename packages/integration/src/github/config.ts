@@ -60,6 +60,13 @@ export type GitHubIntegrationConfig = {
   token?: string;
 
   /**
+   * The accessType (oAuth|githubApp) to use for requests to this provider.
+   *
+   * If no user is specified, oAuth access is used.
+   */
+  accessType?: string;
+
+  /**
    * The GitHub Apps configuration to use for requests to this provider.
    *
    * If no apps are specified, token or anonymous is used.
