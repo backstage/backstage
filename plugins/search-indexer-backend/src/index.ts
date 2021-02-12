@@ -14,4 +14,8 @@
  * limitations under the License.
  */
 
-export {};
+import { Registry } from './registry';
+
+const registry = Registry.getInstance();
+export const registerCollator = registry.addCollator;
+export const registerDecorator = registry.addDecorator;
