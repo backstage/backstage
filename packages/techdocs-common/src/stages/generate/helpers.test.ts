@@ -334,6 +334,7 @@ describe('helpers', () => {
 
   describe('addBuildTimestampMetadata', () => {
     beforeEach(() => {
+      mockFs.restore();
       mockFs({
         [tmpDir]: {
           'invalid_techdocs_metadata.json': 'dsds',
