@@ -42,57 +42,61 @@ export function SystemDiagram({ entity }: SystemDiagramProps) {
     });
   }, [catalogApi]);
 
+  const currentSystemName = entity.metadata.name;
+  const currentSystemNode = `system:${entity.metadata.name}`.toLowerCase();
   const systemNodes = [];
   const systemEdges = [];
 
   if (catalogResponse && catalogResponse.items) {
-    // push the system knowing this was called with it
-    systemNodes.push({ id: `system:${entity.metadata.name}` });
-
-    // console.log('Found ' + catalogResponse.items.length + ' catalog items...');
-    // loop through and push any found elements into the graph arrays
     for (const catalogItem of catalogResponse.items) {
-      //      console.log('Checking ' + catalogItem.metadata.name + '...');
+      // pick out the system itself
+      if (catalogItem.metadata.name === entity.metadata.name) {
+        systemNodes.push({
+          id: currentSystemNode,
+        });
 
-      // Process anything assigned to the system
-      // if (catalogItem.spec?.system && catalogItem.spec.system === entity.metadata.name) {
-      //   systemNodes.push( { id: (catalogItem.kind + ':' + catalogItem.metadata.name).toLowerCase() } );
-      //   systemEdges.push( { from: (catalogItem.kind + ':' + catalogItem.metadata.name).toLowerCase(),
-      //   to: ('system:' + entity.metadata.name).toLowerCase(),
-      //   label: 'specd'})
-      // }
+        // check if the system it has an assigned domain
+        // even if the domain object doesn't exist in the catalog, display it in the map
+        if (catalogItem.spec?.domain) {
+          systemNodes.push({
+            id: `domain:${catalogItem.spec.domain}`.toLowerCase(),
+          });
+          systemEdges.push({
+            from: currentSystemNode,
+            to: `domain:${catalogItem.spec.domain}`.toLowerCase(),
+            label: 'part of',
+          });
+        }
+      }
 
-      // Process relationships
-      if (catalogItem.relations) {
-        // console.log(
-        //   'Checking relations for ' + catalogItem.metadata.name + '...',
-        // );
-        for (const relation of catalogItem.relations) {
-          // console.log(' - relation ' + relation.target.kind + '...');
-          if (
-            relation.target.kind === 'system' &&
-            relation.target.name === entity.metadata.name
-          ) {
-            // console.log(
-            //   ' + pushing a ' + catalogItem.kind + ' to the nodes...',
-            // );
-            systemNodes.push({
-              id: `${catalogItem.kind}:${catalogItem.metadata.name}`.toLowerCase(),
-            });
-            // this duplicates showing the relationship, which isn't valuable
-            // if (relation.type === 'partOf') {
-            //   systemEdges.push({
-            //     from: (catalogItem.kind + ':' + catalogItem.metadata.name).toLowerCase(),
-            //     to: (relation.target.kind + ':' + relation.target.name).toLowerCase(),
-            //     label: relation.type,
-            //   });
-            // }
-            if (relation.type === 'hasPart') {
-              systemEdges.push({
-                from: `${relation.target.kind}:${relation.target.name}`.toLowerCase(),
-                to: `${catalogItem.kind}:${catalogItem.metadata.name}`.toLowerCase(),
-                label: relation.type,
-              });
+      // process any component assigned to the system
+      if (catalogItem.spec?.system === currentSystemName) {
+        systemNodes.push({
+          id: `${catalogItem.kind}:${catalogItem.metadata.name}`.toLowerCase(),
+        });
+
+        // check relations of the entity to see if it maps to anything in our map
+        // note those elements which are relations may, or may not, be explicitly
+        // assigned to the system
+        if (catalogItem.relations) {
+          for (const relation of catalogItem.relations) {
+            switch (relation.type) {
+              case 'providesApi':
+                systemEdges.push({
+                  to: `${catalogItem.kind}:${catalogItem.metadata.name}`.toLowerCase(),
+                  from: `${relation.target.kind}:${relation.target.name}`.toLowerCase(),
+                  label: 'provides API',
+                });
+                break;
+              case 'partOf':
+                systemEdges.push({
+                  from: `${catalogItem.kind}:${catalogItem.metadata.name}`.toLowerCase(),
+                  to: `${relation.target.kind}:${relation.target.name}`.toLowerCase(),
+                  label: 'part of',
+                });
+                break;
+              default:
+                break;
             }
           }
         }
@@ -106,16 +110,11 @@ export function SystemDiagram({ entity }: SystemDiagramProps) {
     return <Alert severity="error">{error.message}</Alert>;
   }
 
-  // console.log('Resulting arrays:');
-  // console.log(systemNodes);
-  // console.log(systemEdges);
-
   return (
     <InfoCard title="System Diagram">
       <DependencyGraph
         nodes={systemNodes}
         edges={systemEdges}
-        align={DependencyGraphTypes.Alignment.DOWN_LEFT}
         direction={DependencyGraphTypes.Direction.BOTTOM_TOP}
       />
     </InfoCard>
