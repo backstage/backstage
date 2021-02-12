@@ -39,12 +39,17 @@ type SamlInfo = {
   profile: ProfileInfo;
 };
 
+type Options = SamlConfig & {
+  tokenIssuer: TokenIssuer;
+  appUrl: string;
+};
+
 export class SamlAuthProvider implements AuthProviderRouteHandlers {
   private readonly strategy: SamlStrategy;
   private readonly tokenIssuer: TokenIssuer;
   private readonly appUrl: string;
 
-  constructor(options: SAMLProviderOptions) {
+  constructor(options: Options) {
     this.appUrl = options.appUrl;
     this.tokenIssuer = options.tokenIssuer;
     this.strategy = new SamlStrategy({ ...options }, ((
@@ -113,40 +118,36 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
   }
 }
 
-type SAMLProviderOptions = SamlConfig & {
-  tokenIssuer: TokenIssuer;
-  appUrl: string;
-};
-
 type SignatureAlgorithm = 'sha1' | 'sha256' | 'sha512';
 
-export const createSamlProvider: AuthProviderFactory = ({
-  providerId,
-  globalConfig,
-  config,
-  tokenIssuer,
-}) => {
-  const opts = {
-    callbackUrl: `${globalConfig.baseUrl}/${providerId}/handler/frame`,
-    entryPoint: config.getString('entryPoint'),
-    logoutUrl: config.getOptionalString('logoutUrl'),
-    issuer: config.getString('issuer'),
-    cert: config.getOptionalString('cert'),
-    privateCert: config.getOptionalString('privateKey'),
-    decryptionPvk: config.getOptionalString('decryptionPvk'),
-    signatureAlgorithm: config.getOptionalString('signatureAlgorithm') as
-      | SignatureAlgorithm
-      | undefined,
-    digestAlgorithm: config.getOptionalString('digestAlgorithm'),
+export type SamlProviderOptions = {};
 
-    tokenIssuer,
-    appUrl: globalConfig.appUrl,
+export const createSamlProvider = (
+  _options?: SamlProviderOptions,
+): AuthProviderFactory => {
+  return ({ providerId, globalConfig, config, tokenIssuer }) => {
+    const opts = {
+      callbackUrl: `${globalConfig.baseUrl}/${providerId}/handler/frame`,
+      entryPoint: config.getString('entryPoint'),
+      logoutUrl: config.getOptionalString('logoutUrl'),
+      issuer: config.getString('issuer'),
+      cert: config.getOptionalString('cert'),
+      privateCert: config.getOptionalString('privateKey'),
+      decryptionPvk: config.getOptionalString('decryptionPvk'),
+      signatureAlgorithm: config.getOptionalString('signatureAlgorithm') as
+        | SignatureAlgorithm
+        | undefined,
+      digestAlgorithm: config.getOptionalString('digestAlgorithm'),
+
+      tokenIssuer,
+      appUrl: globalConfig.appUrl,
+    };
+
+    // passport-saml will return an error if the `cert` key is set, and the value is empty.
+    // Since we read from config (such as environment variables) an empty string should be equal to being unset.
+    if (!opts.cert) {
+      delete opts.cert;
+    }
+    return new SamlAuthProvider(opts);
   };
-
-  // passport-saml will return an error if the `cert` key is set, and the value is empty.
-  // Since we read from config (such as environment variables) an empty string should be equal to being unset.
-  if (!opts.cert) {
-    delete opts.cert;
-  }
-  return new SamlAuthProvider(opts);
 };

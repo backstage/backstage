@@ -41,14 +41,14 @@ type PrivateInfo = {
   refreshToken: string;
 };
 
-export type OneLoginProviderOptions = OAuthProviderOptions & {
+export type Options = OAuthProviderOptions & {
   issuer: string;
 };
 
 export class OneLoginProvider implements OAuthHandlers {
   private readonly _strategy: any;
 
-  constructor(options: OneLoginProviderOptions) {
+  constructor(options: Options) {
     this._strategy = new OneLoginStrategy(
       {
         issuer: options.issuer,
@@ -146,28 +146,29 @@ export class OneLoginProvider implements OAuthHandlers {
   }
 }
 
-export const createOneLoginProvider: AuthProviderFactory = ({
-  providerId,
-  globalConfig,
-  config,
-  tokenIssuer,
-}) =>
-  OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-    const clientId = envConfig.getString('clientId');
-    const clientSecret = envConfig.getString('clientSecret');
-    const issuer = envConfig.getString('issuer');
-    const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+export type OneLoginProviderOptions = {};
 
-    const provider = new OneLoginProvider({
-      clientId,
-      clientSecret,
-      callbackUrl,
-      issuer,
-    });
+export const createOneLoginProvider = (
+  _options?: OneLoginProviderOptions,
+): AuthProviderFactory => {
+  return ({ providerId, globalConfig, config, tokenIssuer }) =>
+    OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+      const clientId = envConfig.getString('clientId');
+      const clientSecret = envConfig.getString('clientSecret');
+      const issuer = envConfig.getString('issuer');
+      const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
 
-    return OAuthAdapter.fromConfig(globalConfig, provider, {
-      disableRefresh: false,
-      providerId,
-      tokenIssuer,
+      const provider = new OneLoginProvider({
+        clientId,
+        clientSecret,
+        callbackUrl,
+        issuer,
+      });
+
+      return OAuthAdapter.fromConfig(globalConfig, provider, {
+        disableRefresh: false,
+        providerId,
+        tokenIssuer,
+      });
     });
-  });
+};

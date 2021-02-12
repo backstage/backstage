@@ -158,32 +158,33 @@ export class OAuth2AuthProvider implements OAuthHandlers {
   }
 }
 
-export const createOAuth2Provider: AuthProviderFactory = ({
-  providerId,
-  globalConfig,
-  config,
-  tokenIssuer,
-}) =>
-  OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-    const clientId = envConfig.getString('clientId');
-    const clientSecret = envConfig.getString('clientSecret');
-    const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
-    const authorizationUrl = envConfig.getString('authorizationUrl');
-    const tokenUrl = envConfig.getString('tokenUrl');
-    const scope = envConfig.getOptionalString('scope');
+export type OAuth2ProviderOptions = {};
 
-    const provider = new OAuth2AuthProvider({
-      clientId,
-      clientSecret,
-      callbackUrl,
-      authorizationUrl,
-      tokenUrl,
-      scope,
-    });
+export const createOAuth2Provider = (
+  _options?: OAuth2ProviderOptions,
+): AuthProviderFactory => {
+  return ({ providerId, globalConfig, config, tokenIssuer }) =>
+    OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+      const clientId = envConfig.getString('clientId');
+      const clientSecret = envConfig.getString('clientSecret');
+      const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+      const authorizationUrl = envConfig.getString('authorizationUrl');
+      const tokenUrl = envConfig.getString('tokenUrl');
+      const scope = envConfig.getOptionalString('scope');
 
-    return OAuthAdapter.fromConfig(globalConfig, provider, {
-      disableRefresh: false,
-      providerId,
-      tokenIssuer,
+      const provider = new OAuth2AuthProvider({
+        clientId,
+        clientSecret,
+        callbackUrl,
+        authorizationUrl,
+        tokenUrl,
+        scope,
+      });
+
+      return OAuthAdapter.fromConfig(globalConfig, provider, {
+        disableRefresh: false,
+        providerId,
+        tokenIssuer,
+      });
     });
-  });
+};

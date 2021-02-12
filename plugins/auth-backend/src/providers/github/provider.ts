@@ -136,42 +136,43 @@ export class GithubAuthProvider implements OAuthHandlers {
   }
 }
 
-export const createGithubProvider: AuthProviderFactory = ({
-  providerId,
-  globalConfig,
-  config,
-  tokenIssuer,
-}) =>
-  OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-    const clientId = envConfig.getString('clientId');
-    const clientSecret = envConfig.getString('clientSecret');
-    const enterpriseInstanceUrl = envConfig.getOptionalString(
-      'enterpriseInstanceUrl',
-    );
-    const authorizationUrl = enterpriseInstanceUrl
-      ? `${enterpriseInstanceUrl}/login/oauth/authorize`
-      : undefined;
-    const tokenUrl = enterpriseInstanceUrl
-      ? `${enterpriseInstanceUrl}/login/oauth/access_token`
-      : undefined;
-    const userProfileUrl = enterpriseInstanceUrl
-      ? `${enterpriseInstanceUrl}/api/v3/user`
-      : undefined;
-    const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+export type GithubProviderOptions = {};
 
-    const provider = new GithubAuthProvider({
-      clientId,
-      clientSecret,
-      callbackUrl,
-      tokenUrl,
-      userProfileUrl,
-      authorizationUrl,
-    });
+export const createGithubProvider = (
+  _options?: GithubProviderOptions,
+): AuthProviderFactory => {
+  return ({ providerId, globalConfig, config, tokenIssuer }) =>
+    OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+      const clientId = envConfig.getString('clientId');
+      const clientSecret = envConfig.getString('clientSecret');
+      const enterpriseInstanceUrl = envConfig.getOptionalString(
+        'enterpriseInstanceUrl',
+      );
+      const authorizationUrl = enterpriseInstanceUrl
+        ? `${enterpriseInstanceUrl}/login/oauth/authorize`
+        : undefined;
+      const tokenUrl = enterpriseInstanceUrl
+        ? `${enterpriseInstanceUrl}/login/oauth/access_token`
+        : undefined;
+      const userProfileUrl = enterpriseInstanceUrl
+        ? `${enterpriseInstanceUrl}/api/v3/user`
+        : undefined;
+      const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
 
-    return OAuthAdapter.fromConfig(globalConfig, provider, {
-      disableRefresh: true,
-      persistScopes: true,
-      providerId,
-      tokenIssuer,
+      const provider = new GithubAuthProvider({
+        clientId,
+        clientSecret,
+        callbackUrl,
+        tokenUrl,
+        userProfileUrl,
+        authorizationUrl,
+      });
+
+      return OAuthAdapter.fromConfig(globalConfig, provider, {
+        disableRefresh: true,
+        persistScopes: true,
+        providerId,
+        tokenIssuer,
+      });
     });
-  });
+};

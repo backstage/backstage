@@ -205,32 +205,33 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
   }
 }
 
-export const createMicrosoftProvider: AuthProviderFactory = ({
-  providerId,
-  globalConfig,
-  config,
-  tokenIssuer,
-}) =>
-  OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-    const clientId = envConfig.getString('clientId');
-    const clientSecret = envConfig.getString('clientSecret');
-    const tenantID = envConfig.getString('tenantId');
+export type MicrosoftProviderOptions = {};
 
-    const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
-    const authorizationUrl = `https://login.microsoftonline.com/${tenantID}/oauth2/v2.0/authorize`;
-    const tokenUrl = `https://login.microsoftonline.com/${tenantID}/oauth2/v2.0/token`;
+export const createMicrosoftProvider = (
+  _options?: MicrosoftProviderOptions,
+): AuthProviderFactory => {
+  return ({ providerId, globalConfig, config, tokenIssuer }) =>
+    OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+      const clientId = envConfig.getString('clientId');
+      const clientSecret = envConfig.getString('clientSecret');
+      const tenantID = envConfig.getString('tenantId');
 
-    const provider = new MicrosoftAuthProvider({
-      clientId,
-      clientSecret,
-      callbackUrl,
-      authorizationUrl,
-      tokenUrl,
+      const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+      const authorizationUrl = `https://login.microsoftonline.com/${tenantID}/oauth2/v2.0/authorize`;
+      const tokenUrl = `https://login.microsoftonline.com/${tenantID}/oauth2/v2.0/token`;
+
+      const provider = new MicrosoftAuthProvider({
+        clientId,
+        clientSecret,
+        callbackUrl,
+        authorizationUrl,
+        tokenUrl,
+      });
+
+      return OAuthAdapter.fromConfig(globalConfig, provider, {
+        disableRefresh: false,
+        providerId,
+        tokenIssuer,
+      });
     });
-
-    return OAuthAdapter.fromConfig(globalConfig, provider, {
-      disableRefresh: false,
-      providerId,
-      tokenIssuer,
-    });
-  });
+};

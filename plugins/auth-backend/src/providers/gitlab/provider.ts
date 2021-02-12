@@ -139,29 +139,30 @@ export class GitlabAuthProvider implements OAuthHandlers {
   }
 }
 
-export const createGitlabProvider: AuthProviderFactory = ({
-  providerId,
-  globalConfig,
-  config,
-  tokenIssuer,
-}) =>
-  OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-    const clientId = envConfig.getString('clientId');
-    const clientSecret = envConfig.getString('clientSecret');
-    const audience = envConfig.getString('audience');
-    const baseUrl = audience || 'https://gitlab.com';
-    const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+export type GitlabProviderOptions = {};
 
-    const provider = new GitlabAuthProvider({
-      clientId,
-      clientSecret,
-      callbackUrl,
-      baseUrl,
-    });
+export const createGitlabProvider = (
+  _options?: GitlabProviderOptions,
+): AuthProviderFactory => {
+  return ({ providerId, globalConfig, config, tokenIssuer }) =>
+    OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+      const clientId = envConfig.getString('clientId');
+      const clientSecret = envConfig.getString('clientSecret');
+      const audience = envConfig.getString('audience');
+      const baseUrl = audience || 'https://gitlab.com';
+      const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
 
-    return OAuthAdapter.fromConfig(globalConfig, provider, {
-      disableRefresh: true,
-      providerId,
-      tokenIssuer,
+      const provider = new GitlabAuthProvider({
+        clientId,
+        clientSecret,
+        callbackUrl,
+        baseUrl,
+      });
+
+      return OAuthAdapter.fromConfig(globalConfig, provider, {
+        disableRefresh: true,
+        providerId,
+        tokenIssuer,
+      });
     });
-  });
+};

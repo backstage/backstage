@@ -121,7 +121,7 @@ describe('OidcAuthProvider', () => {
         })),
       } as any) as Config,
     } as AuthProviderFactoryOptions;
-    const provider = createOidcProvider(options) as OAuthAdapter;
+    const provider = createOidcProvider()(options) as OAuthAdapter;
     expect(provider.start).toBeDefined();
     await new Promise(resolve => process.nextTick(resolve)); // advance a tick to give nock a chance to intercept the request
     expect(scope.isDone()).toBeTruthy();

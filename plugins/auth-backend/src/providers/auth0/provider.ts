@@ -148,28 +148,29 @@ export class Auth0AuthProvider implements OAuthHandlers {
   }
 }
 
-export const createAuth0Provider: AuthProviderFactory = ({
-  providerId,
-  globalConfig,
-  config,
-  tokenIssuer,
-}) =>
-  OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-    const clientId = envConfig.getString('clientId');
-    const clientSecret = envConfig.getString('clientSecret');
-    const domain = envConfig.getString('domain');
-    const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+export type Auth0ProviderOptions = {};
 
-    const provider = new Auth0AuthProvider({
-      clientId,
-      clientSecret,
-      callbackUrl,
-      domain,
-    });
+export const createAuth0Provider = (
+  _options?: Auth0ProviderOptions,
+): AuthProviderFactory => {
+  return ({ providerId, globalConfig, config, tokenIssuer }) =>
+    OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+      const clientId = envConfig.getString('clientId');
+      const clientSecret = envConfig.getString('clientSecret');
+      const domain = envConfig.getString('domain');
+      const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
 
-    return OAuthAdapter.fromConfig(globalConfig, provider, {
-      disableRefresh: true,
-      providerId,
-      tokenIssuer,
+      const provider = new Auth0AuthProvider({
+        clientId,
+        clientSecret,
+        callbackUrl,
+        domain,
+      });
+
+      return OAuthAdapter.fromConfig(globalConfig, provider, {
+        disableRefresh: true,
+        providerId,
+        tokenIssuer,
+      });
     });
-  });
+};

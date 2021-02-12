@@ -48,7 +48,7 @@ type OidcImpl = {
   client: Client;
 };
 
-export type OidcAuthProviderOptions = OAuthProviderOptions & {
+export type Options = OAuthProviderOptions & {
   metadataUrl: string;
   tokenSignedResponseAlg?: string;
 };
@@ -56,7 +56,7 @@ export type OidcAuthProviderOptions = OAuthProviderOptions & {
 export class OidcAuthProvider implements OAuthHandlers {
   private readonly implementation: Promise<OidcImpl>;
 
-  constructor(options: OidcAuthProviderOptions) {
+  constructor(options: Options) {
     this.implementation = this.setupStrategy(options);
   }
 
@@ -105,9 +105,7 @@ export class OidcAuthProvider implements OAuthHandlers {
     });
   }
 
-  private async setupStrategy(
-    options: OidcAuthProviderOptions,
-  ): Promise<OidcImpl> {
+  private async setupStrategy(options: Options): Promise<OidcImpl> {
     const issuer = await Issuer.discover(options.metadataUrl);
     const client = new issuer.Client({
       client_id: options.clientId,
@@ -170,32 +168,33 @@ export class OidcAuthProvider implements OAuthHandlers {
   }
 }
 
-export const createOidcProvider: AuthProviderFactory = ({
-  providerId,
-  globalConfig,
-  config,
-  tokenIssuer,
-}) =>
-  OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-    const clientId = envConfig.getString('clientId');
-    const clientSecret = envConfig.getString('clientSecret');
-    const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
-    const metadataUrl = envConfig.getString('metadataUrl');
-    const tokenSignedResponseAlg = envConfig.getString(
-      'tokenSignedResponseAlg',
-    );
+export type OidcProviderOptions = {};
 
-    const provider = new OidcAuthProvider({
-      clientId,
-      clientSecret,
-      callbackUrl,
-      tokenSignedResponseAlg,
-      metadataUrl,
-    });
+export const createOidcProvider = (
+  _options?: OidcProviderOptions,
+): AuthProviderFactory => {
+  return ({ providerId, globalConfig, config, tokenIssuer }) =>
+    OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+      const clientId = envConfig.getString('clientId');
+      const clientSecret = envConfig.getString('clientSecret');
+      const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+      const metadataUrl = envConfig.getString('metadataUrl');
+      const tokenSignedResponseAlg = envConfig.getString(
+        'tokenSignedResponseAlg',
+      );
 
-    return OAuthAdapter.fromConfig(globalConfig, provider, {
-      disableRefresh: false,
-      providerId,
-      tokenIssuer,
+      const provider = new OidcAuthProvider({
+        clientId,
+        clientSecret,
+        callbackUrl,
+        tokenSignedResponseAlg,
+        metadataUrl,
+      });
+
+      return OAuthAdapter.fromConfig(globalConfig, provider, {
+        disableRefresh: false,
+        providerId,
+        tokenIssuer,
+      });
     });
-  });
+};

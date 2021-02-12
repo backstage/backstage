@@ -44,7 +44,7 @@ type PrivateInfo = {
   refreshToken: string;
 };
 
-export type GoogleAuthProviderOptions = OAuthProviderOptions & {
+type Options = OAuthProviderOptions & {
   logger: Logger;
   identityClient: CatalogIdentityClient;
   tokenIssuer: TokenIssuer;
@@ -56,7 +56,7 @@ export class GoogleAuthProvider implements OAuthHandlers {
   private readonly identityClient: CatalogIdentityClient;
   private readonly tokenIssuer: TokenIssuer;
 
-  constructor(options: GoogleAuthProviderOptions) {
+  constructor(options: Options) {
     this.logger = options.logger;
     this.identityClient = options.identityClient;
     this.tokenIssuer = options.tokenIssuer;
@@ -184,31 +184,37 @@ export class GoogleAuthProvider implements OAuthHandlers {
   }
 }
 
-export const createGoogleProvider: AuthProviderFactory = ({
-  providerId,
-  globalConfig,
-  config,
-  logger,
-  tokenIssuer,
-  catalogApi,
-}) =>
-  OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-    const clientId = envConfig.getString('clientId');
-    const clientSecret = envConfig.getString('clientSecret');
-    const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+export type GoogleProviderOptions = {};
 
-    const provider = new GoogleAuthProvider({
-      clientId,
-      clientSecret,
-      callbackUrl,
-      logger,
-      tokenIssuer,
-      identityClient: new CatalogIdentityClient({ catalogApi }),
-    });
+export const createGoogleProvider = (
+  _options?: GoogleProviderOptions,
+): AuthProviderFactory => {
+  return ({
+    providerId,
+    globalConfig,
+    config,
+    logger,
+    tokenIssuer,
+    catalogApi,
+  }) =>
+    OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+      const clientId = envConfig.getString('clientId');
+      const clientSecret = envConfig.getString('clientSecret');
+      const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
 
-    return OAuthAdapter.fromConfig(globalConfig, provider, {
-      disableRefresh: false,
-      providerId,
-      tokenIssuer,
+      const provider = new GoogleAuthProvider({
+        clientId,
+        clientSecret,
+        callbackUrl,
+        logger,
+        tokenIssuer,
+        identityClient: new CatalogIdentityClient({ catalogApi }),
+      });
+
+      return OAuthAdapter.fromConfig(globalConfig, provider, {
+        disableRefresh: false,
+        providerId,
+        tokenIssuer,
+      });
     });
-  });
+};

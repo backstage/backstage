@@ -167,28 +167,29 @@ export class OktaAuthProvider implements OAuthHandlers {
   }
 }
 
-export const createOktaProvider: AuthProviderFactory = ({
-  providerId,
-  globalConfig,
-  config,
-  tokenIssuer,
-}) =>
-  OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-    const clientId = envConfig.getString('clientId');
-    const clientSecret = envConfig.getString('clientSecret');
-    const audience = envConfig.getString('audience');
-    const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+export type OktaProviderOptions = {};
 
-    const provider = new OktaAuthProvider({
-      audience,
-      clientId,
-      clientSecret,
-      callbackUrl,
-    });
+export const createOktaProvider = (
+  _options?: OktaProviderOptions,
+): AuthProviderFactory => {
+  return ({ providerId, globalConfig, config, tokenIssuer }) =>
+    OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+      const clientId = envConfig.getString('clientId');
+      const clientSecret = envConfig.getString('clientSecret');
+      const audience = envConfig.getString('audience');
+      const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
 
-    return OAuthAdapter.fromConfig(globalConfig, provider, {
-      disableRefresh: false,
-      providerId,
-      tokenIssuer,
+      const provider = new OktaAuthProvider({
+        audience,
+        clientId,
+        clientSecret,
+        callbackUrl,
+      });
+
+      return OAuthAdapter.fromConfig(globalConfig, provider, {
+        disableRefresh: false,
+        providerId,
+        tokenIssuer,
+      });
     });
-  });
+};
