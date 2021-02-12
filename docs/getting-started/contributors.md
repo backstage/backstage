@@ -1,6 +1,6 @@
 ---
-id: development-environment
-title: Development Environment
+id: contributors
+title: Contributors
 # prettier-ignore
 description: Documentation on how to get set up for doing development on the Backstage repository
 ---
@@ -11,7 +11,12 @@ repository.
 ## Cloning the Repository
 
 Ok. So you're gonna want some code right? Go ahead and fork the repository into
-your own GitHub account and clone that code to your local machine!
+your own GitHub account and clone that code to your local machine or you can
+grab the one for the origin like so:
+
+```bash
+git clone git@github.com/backstage/backstage --depth 1
+```
 
 After you have cloned the Backstage repository, you should run the following
 commands once to set things up for development:
@@ -43,7 +48,7 @@ setting an environment variable `PORT` on your local machine. e.g.
 Once successfully started, you should see the following message in your terminal
 window:
 
-```
+```sh
 $ concurrently "yarn start" "yarn start-backend"
 $ yarn workspace example-app start
 $ yarn workspace example-backend start
