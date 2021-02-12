@@ -75,7 +75,7 @@ export async function loadCliConfig(options: Options) {
 }
 
 function findPackages(packages: any[], fromPackage: string): string[] {
-  const PackageGraph = require('@lerna/package-graph');
+  const { PackageGraph } = require('@lerna/package-graph');
 
   const graph = new PackageGraph(packages);
 
