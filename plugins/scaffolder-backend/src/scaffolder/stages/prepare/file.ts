@@ -25,12 +25,12 @@ export class FilePreparer implements PreparerBase {
       throw new InputError(`Wrong location protocol, should be 'file', ${url}`);
     }
 
-    const checkoutDir = path.join(workspacePath, 'checkout');
-    await fs.ensureDir(checkoutDir);
+    const templateDir = path.join(workspacePath, 'template');
+    await fs.ensureDir(templateDir);
 
     const templatePath = fileURLToPath(url);
 
-    await fs.copy(templatePath, checkoutDir, {
+    await fs.copy(templatePath, templateDir, {
       recursive: true,
     });
   }
