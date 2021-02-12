@@ -55,7 +55,7 @@ export function SystemDiagram({ entity }: SystemDiagramProps) {
           id: currentSystemNode,
         });
 
-        // check if the system it has an assigned domain
+        // check if the system has an assigned domain
         // even if the domain object doesn't exist in the catalog, display it in the map
         if (catalogItem.spec?.domain) {
           systemNodes.push({
@@ -69,14 +69,14 @@ export function SystemDiagram({ entity }: SystemDiagramProps) {
         }
       }
 
-      // process any component assigned to the system
+      // process any entity assigned to the system
       if (catalogItem.spec?.system === currentSystemName) {
         systemNodes.push({
           id: `${catalogItem.kind}:${catalogItem.metadata.name}`.toLowerCase(),
         });
 
-        // check relations of the entity to see if it maps to anything in our map
-        // note those elements which are relations may, or may not, be explicitly
+        // check relations of the entity to see if it relates to other entities
+        // note those relations may, or may not, be explicitly
         // assigned to the system
         if (catalogItem.relations) {
           for (const relation of catalogItem.relations) {
