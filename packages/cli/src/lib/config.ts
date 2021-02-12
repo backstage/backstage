@@ -48,8 +48,8 @@ export async function loadCliConfig(options: Options) {
     configPaths,
   });
 
-  console.log(
-    `Loaded config from ${appConfigs.map(c => c.context).join(', ')}`,
+  process.stderr.write(
+    `Loaded config from ${appConfigs.map(c => c.context).join(', ')}\n`,
   );
 
   try {
