@@ -22,9 +22,10 @@ import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import { useParams } from 'react-router';
+import { generatePath, useParams } from 'react-router';
 import { useTaskEventStream } from '../hooks/useEventStream';
 import LazyLog from 'react-lazylog/build/LazyLog';
+import { Link } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -40,8 +41,9 @@ import clsx from 'clsx';
 import Check from '@material-ui/icons/Check';
 import Cancel from '@material-ui/icons/Cancel';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
-import { EntityRefLink } from '@backstage/plugin-catalog-react';
+import { entityRoute } from '@backstage/plugin-catalog-react';
 import { parseEntityName } from '@backstage/catalog-model';
+import { TaskNotFound } from '../TaskNotFound/TaskNotFound';
 
 // typings are wrong for this library, so fallback to not parsing types.
 const humanizeDuration = require('humanize-duration');
@@ -262,6 +264,7 @@ export const TaskPage = () => {
     !taskStream.task;
 
   const entityRef = taskStream.output?.entityRef;
+  const remoteUrl = taskStream.output?.remoteUrl;
   return (
     <Page themeId="home">
       <Header
@@ -275,7 +278,7 @@ export const TaskPage = () => {
       />
       <Content>
         {taskNotFound ? (
-          <div>Task not found</div>
+          <TaskNotFound />
         ) : (
           <div>
             <Grid container>
@@ -286,13 +289,37 @@ export const TaskPage = () => {
                     currentStepId={currentStepId}
                     onUserStepChange={setUserSelectedStepId}
                   />
-                  {entityRef && (
-                    <Box px={3} pb={3}>
-                      <Button variant="outlined">
-                        <EntityRefLink entityRef={parseEntityName(entityRef)}>
+                  {(entityRef || remoteUrl) && (
+                    <Box
+                      px={3}
+                      pb={3}
+                      display="flex"
+                      flex={1}
+                      justifyContent="space-between"
+                      flexDirection="row"
+                    >
+                      {entityRef && (
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          component={Link}
+                          to={generatePath(
+                            `/catalog/${entityRoute.path}`,
+                            parseEntityName(entityRef),
+                          )}
+                        >
                           Open in catalog
-                        </EntityRefLink>
-                      </Button>
+                        </Button>
+                      )}
+                      {remoteUrl && (
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          href={remoteUrl}
+                        >
+                          Repo
+                        </Button>
+                      )}
                     </Box>
                   )}
                 </Paper>
