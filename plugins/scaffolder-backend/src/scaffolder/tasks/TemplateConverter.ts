@@ -76,6 +76,15 @@ export function templateEntityToSpec(
     },
   });
 
+  steps.push({
+    id: 'register',
+    name: 'Register',
+    action: 'catalog:register',
+    parameters: {
+      catalogInfoUrl: '{{ steps.publish.output.catalogInfoUrl }}',
+    },
+  });
+
   return {
     steps,
     output: {

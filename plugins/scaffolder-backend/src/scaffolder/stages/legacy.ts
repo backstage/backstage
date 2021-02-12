@@ -19,19 +19,28 @@ import { FilePreparer, PreparerBuilder } from './prepare';
 import Docker from 'dockerode';
 import { TemplaterBuilder, TemplaterValues } from './templater';
 import { PublisherBuilder } from './publish';
+import { CatalogApi } from '@backstage/catalog-client';
+import { getEntityName } from '@backstage/catalog-model';
 
 type Options = {
   dockerClient: Docker;
   preparers: PreparerBuilder;
   templaters: TemplaterBuilder;
   publishers: PublisherBuilder;
+  catalogClient: CatalogApi;
 };
 
 export function registerLegacyActions(
   registry: TemplateActionRegistry,
   options: Options,
 ) {
-  const { dockerClient, preparers, templaters, publishers } = options;
+  const {
+    dockerClient,
+    preparers,
+    templaters,
+    publishers,
+    catalogClient,
+  } = options;
 
   registry.register({
     id: 'legacy:prepare',
@@ -104,6 +113,24 @@ export function registerLegacyActions(
       ctx.output('remoteUrl', remoteUrl);
       if (catalogInfoUrl) {
         ctx.output('catalogInfoUrl', catalogInfoUrl);
+      }
+    },
+  });
+
+  registry.register({
+    id: 'catalog:register',
+    async handler(ctx) {
+      const { logger } = ctx;
+      const { catalogInfoUrl } = ctx.parameters; // TODO update schema
+
+      logger.info(`Registering ${catalogInfoUrl} in the catalog`);
+      const result = await catalogClient.addLocation({
+        type: 'url',
+        target: catalogInfoUrl as string,
+      });
+      if (result.entities.length === 1) {
+        const { kind, name, namespace } = getEntityName(result.entities[0]);
+        ctx.output('entityRef', `${kind}:${namespace}/${name}`);
       }
     },
   });

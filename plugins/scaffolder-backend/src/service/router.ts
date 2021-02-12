@@ -48,6 +48,7 @@ import {
   NotFoundError,
   PluginDatabaseManager,
 } from '@backstage/backend-common';
+import { CatalogClient } from '@backstage/catalog-client';
 
 export interface RouterOptions {
   preparers: PreparerBuilder;
@@ -59,6 +60,7 @@ export interface RouterOptions {
   dockerClient: Docker;
   entityClient: CatalogEntityClient;
   database: PluginDatabaseManager;
+  catalogClient: CatalogClient;
 }
 
 export async function createRouter(
@@ -76,6 +78,7 @@ export async function createRouter(
     dockerClient,
     entityClient,
     database,
+    catalogClient,
   } = options;
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
@@ -99,6 +102,7 @@ export async function createRouter(
     preparers,
     publishers,
     templaters,
+    catalogClient,
   });
 
   worker.start();
@@ -254,9 +258,7 @@ export async function createRouter(
     })
     .get('/v2/tasks/:taskId', async (req, res) => {
       const { taskId } = req.params;
-      console.warn('getting task');
       const task = await taskBroker.get(taskId);
-      console.warn('got task', task);
       if (!task) {
         throw new NotFoundError(`task with id ${taskId} does not exist`);
       }
