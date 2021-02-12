@@ -76,9 +76,11 @@ export class TaskWorker {
           });
 
           const stream = new PassThrough();
-          stream.on('data', data => {
+          stream.on('data', async data => {
             const message = data.toString().trim();
-            if (message?.length > 1) task.emitLog(message, metadata);
+            if (message?.length > 1) {
+              await task.emitLog(message, metadata);
+            }
           });
 
           taskLogger.add(new winston.transports.Stream({ stream }));
@@ -112,7 +114,7 @@ export class TaskWorker {
           const stepOutputs: { [name: string]: JsonValue } = {};
 
           await action.handler({
-            logger,
+            logger: taskLogger,
             logStream: stream,
             parameters,
             workspacePath,
