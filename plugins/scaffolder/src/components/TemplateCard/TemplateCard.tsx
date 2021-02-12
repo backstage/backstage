@@ -17,6 +17,8 @@ import { Button } from '@backstage/core';
 import { BackstageTheme, pageTheme } from '@backstage/theme';
 import {
   Card,
+  CardActions,
+  CardContent,
   Chip,
   makeStyles,
   Typography,
@@ -34,17 +36,10 @@ const useStyles = makeStyles(theme => ({
       props.backgroundImage,
     backgroundPosition: 0,
   },
-  content: {
-    padding: theme.spacing(2),
-  },
   description: {
     height: 175,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-  },
-  footer: {
-    display: 'flex',
-    flexDirection: 'row-reverse',
   },
 }));
 
@@ -76,19 +71,19 @@ export const TemplateCard = ({
         <Typography variant="subtitle2">{type}</Typography>
         <Typography variant="h6">{title}</Typography>
       </div>
-      <div className={classes.content}>
+      <CardContent>
         {tags?.map(tag => (
           <Chip label={tag} key={tag} />
         ))}
         <Typography variant="body2" paragraph className={classes.description}>
           {description}
         </Typography>
-        <div className={classes.footer}>
-          <Button color="primary" to={href}>
-            Choose
-          </Button>
-        </div>
-      </div>
+      </CardContent>
+      <CardActions>
+        <Button color="primary" to={href}>
+          Choose
+        </Button>
+      </CardActions>
     </Card>
   );
 };
