@@ -19,3 +19,5 @@ import { Registry } from './registry';
 const registry = Registry.getInstance();
 export const registerCollator = registry.addCollator;
 export const registerDecorator = registry.addDecorator;
+
+export type { IndexableDocument } from './types';
