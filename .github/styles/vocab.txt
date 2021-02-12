@@ -250,6 +250,7 @@ transpilation
 Tuite
 ui
 unmanaged
+unregister
 untracked
 upvote
 url

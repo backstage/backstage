@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 import { LocationSpec, ResourceEntityV1alpha1 } from '@backstage/catalog-model';
-import {
-  Account,
-  Organizations,
-  ListAccountsCommandOutput,
-} from '@aws-sdk/client-organizations';
+import AWS, { Organizations } from 'aws-sdk';
+import { Account, ListAccountsResponse } from 'aws-sdk/clients/organizations';
 
 import * as results from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
@@ -38,7 +35,7 @@ const ORGANIZATION_ANNOTATION: string = 'amazonaws.com/organization-id';
 export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
   organizations: Organizations;
   constructor() {
-    this.organizations = new Organizations({
+    this.organizations = new AWS.Organizations({
       region: AWS_ORGANIZATION_REGION,
     }); // Only available in us-east-1
   }
@@ -67,9 +64,9 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
     let nextToken = undefined;
     while (isInitialAttempt || nextToken) {
       isInitialAttempt = false;
-      const orgAccounts: ListAccountsCommandOutput = await this.organizations.listAccounts(
-        { NextToken: nextToken },
-      );
+      const orgAccounts: ListAccountsResponse = await this.organizations
+        .listAccounts({ NextToken: nextToken })
+        .promise();
       if (orgAccounts.Accounts) {
         awsAccounts = awsAccounts.concat(orgAccounts.Accounts);
       }

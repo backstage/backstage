@@ -1,5 +1,11 @@
 # @backstage/core
 
+## 0.6.1
+
+### Patch Changes
+
+- b51ee6ece: Fixed type inference of `createRouteRef`.
+
 ## 0.6.0
 
 ### Minor Changes

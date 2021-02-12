@@ -157,15 +157,17 @@ techdocs:
   builder: 'local'
 ```
 
-Set `techdocs.builder` to `'local'` if you want your TechDocs Backend to be
-responsible for generating documentation sites. If set to `'external'`,
-Backstage will assume that the sites are being generated on each entity's CI/CD
-pipeline, and are being stored in a storage somewhere.
+Note that we recommend generating docs on CI/CD instead. Read more in the
+"Basic" and "Recommended" sections of the
+[TechDocs Architecture](architecture.md). But if you want to get started quickly
+set `techdocs.builder` to `'local'` so that TechDocs Backend is responsible for
+generating documentation sites. If set to `'external'`, Backstage will assume
+that the sites are being generated on each entity's CI/CD pipeline, and are
+being stored in a storage somewhere.
 
 When `techdocs.builder` is set to `'external'`, TechDocs becomes more or less a
 read-only experience where it serves static files from a storage containing all
-the generated documentation. Read more in the "Basic" and "Recommended" sections
-of the [TechDocs Architecture](architecture.md).
+the generated documentation.
 
 ### Choosing storage (publisher)
 

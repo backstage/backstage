@@ -37,8 +37,10 @@ describe('GitLabPreparer', () => {
     jest.clearAllMocks();
   });
   const preparer = GitlabPreparer.fromConfig({
-    host: 'gitlab.com',
+    host: '<ignored>',
     token: 'fake-token',
+    apiBaseUrl: '<ignored>',
+    baseUrl: '<ignored>',
   });
 
   it(`calls the clone command with the correct arguments for a repository`, async () => {

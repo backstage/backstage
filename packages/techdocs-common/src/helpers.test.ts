@@ -139,7 +139,7 @@ describe('getDocFilesFromRepository', () => {
           archive: async () => {
             return Readable.from('');
           },
-          etag: '',
+          etag: 'etag123abc',
         };
       }
 
@@ -156,6 +156,7 @@ describe('getDocFilesFromRepository', () => {
       mockEntityWithAnnotation,
     );
 
-    expect(output).toBe('/tmp/testfolder');
+    expect(output.preparedDir).toBe('/tmp/testfolder');
+    expect(output.etag).toBe('etag123abc');
   });
 });

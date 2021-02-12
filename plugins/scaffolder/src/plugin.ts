@@ -18,6 +18,7 @@ import {
   createPlugin,
   createApiFactory,
   discoveryApiRef,
+  identityApiRef,
   createRoutableExtension,
 } from '@backstage/core';
 import { ScaffolderPage as ScaffolderPageComponent } from './components/ScaffolderPage';
@@ -30,8 +31,9 @@ export const scaffolderPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: scaffolderApiRef,
-      deps: { discoveryApi: discoveryApiRef },
-      factory: ({ discoveryApi }) => new ScaffolderApi({ discoveryApi }),
+      deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
+      factory: ({ discoveryApi, identityApi }) =>
+        new ScaffolderApi({ discoveryApi, identityApi }),
     }),
   ],
   register({ router }) {

@@ -110,7 +110,7 @@ export const UnregisterEntityDialog = ({
             {error.name === 'DeniedLocationException' ? (
               <>
                 You cannot unregister this entity, since it originates from a
-                protected Backstage configuration (location
+                protected Backstage configuration (location{' '}
                 {`"${(error as DeniedLocationException).locationName}"`}). If
                 you believe this is in error, please contact the{' '}
                 {configApi.getOptionalString('app.title') ?? 'Backstage'}{' '}

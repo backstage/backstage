@@ -26,6 +26,8 @@ describe('GitLabIntegration', () => {
             {
               host: 'h.com',
               token: 't',
+              apiBaseUrl: 'https://h.com/api/v4',
+              baseUrl: 'https://h.com',
             },
           ],
         },

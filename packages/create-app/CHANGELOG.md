@@ -1,5 +1,101 @@
 # @backstage/create-app
 
+## 0.3.9
+
+### Patch Changes
+
+- 615103a63: Pass on plugin database management instance that is now required by the scaffolder plugin.
+
+  To apply this change to an existing application, add the following to `src/plugins/scaffolder.ts`:
+
+  ```diff
+  export default async function createPlugin({
+    logger,
+    config,
+  +  database,
+  }: PluginEnvironment) {
+
+  // ...omitted...
+
+    return await createRouter({
+      preparers,
+      templaters,
+      publishers,
+      logger,
+      config,
+      dockerClient,
+      entityClient,
+  +    database,
+    });
+  }
+  ```
+
+- 30e200d12: `@backstage/plugin-catalog-import` has been refactored, so the `App.tsx` of the backstage apps need to be updated:
+
+  ```diff
+  // packages/app/src/App.tsx
+
+       <Route
+         path="/catalog-import"
+  -      element={<CatalogImportPage catalogRouteRef={catalogRouteRef} />}
+  +      element={<CatalogImportPage />}
+       />
+  ```
+
+- f4b576d0e: TechDocs: Add comments about migrating away from basic setup in app-config.yaml
+- Updated dependencies [753bb4c40]
+- Updated dependencies [1deb31141]
+- Updated dependencies [6ed2b47d6]
+- Updated dependencies [77ad0003a]
+- Updated dependencies [6b26c9f41]
+- Updated dependencies [b3f0c3811]
+- Updated dependencies [d2441aee3]
+- Updated dependencies [727f0deec]
+- Updated dependencies [fb53eb7cb]
+- Updated dependencies [07bafa248]
+- Updated dependencies [ca559171b]
+- Updated dependencies [ffffea8e6]
+- Updated dependencies [f5e564cd6]
+- Updated dependencies [f3fbfb452]
+- Updated dependencies [615103a63]
+- Updated dependencies [68dd79d83]
+- Updated dependencies [84364b35c]
+- Updated dependencies [41af18227]
+- Updated dependencies [82b2c11b6]
+- Updated dependencies [1df75733e]
+- Updated dependencies [965e200c6]
+- Updated dependencies [b51ee6ece]
+- Updated dependencies [e5da858d7]
+- Updated dependencies [9230d07e7]
+- Updated dependencies [f5f45744e]
+- Updated dependencies [0fe8ff5be]
+- Updated dependencies [5a5163519]
+- Updated dependencies [82b2c11b6]
+- Updated dependencies [8f3443427]
+- Updated dependencies [08142b256]
+- Updated dependencies [08142b256]
+- Updated dependencies [b51ee6ece]
+- Updated dependencies [804502a5c]
+  - @backstage/plugin-catalog-import@0.4.0
+  - @backstage/plugin-auth-backend@0.3.0
+  - @backstage/plugin-catalog@0.3.1
+  - @backstage/plugin-scaffolder@0.5.0
+  - @backstage/plugin-scaffolder-backend@0.7.0
+  - @backstage/plugin-catalog-backend@0.6.1
+  - @backstage/plugin-circleci@0.2.8
+  - @backstage/plugin-search@0.3.0
+  - @backstage/plugin-app-backend@0.3.7
+  - @backstage/backend-common@0.5.3
+  - @backstage/plugin-api-docs@0.4.5
+  - @backstage/plugin-lighthouse@0.2.10
+  - @backstage/plugin-techdocs@0.5.6
+  - @backstage/test-utils@0.1.7
+  - @backstage/plugin-github-actions@0.3.2
+  - @backstage/plugin-explore@0.2.5
+  - @backstage/plugin-techdocs-backend@0.6.0
+  - @backstage/core@0.6.1
+  - @backstage/plugin-tech-radar@0.3.5
+
 ## 0.3.8
 
 ### Patch Changes

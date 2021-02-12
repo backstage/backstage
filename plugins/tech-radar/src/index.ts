@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
+export {
+  techRadarPlugin,
+  techRadarPlugin as plugin,
+  TechRadarPage,
+} from './plugin';
 
 export { RadarPage as Router } from './components/RadarPage';
 
