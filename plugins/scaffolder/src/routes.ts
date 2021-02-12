@@ -26,7 +26,7 @@ export const templateRoute = createRouteRef({
 });
 
 export const taskRoute = createRouteRef({
-  path: '/scaffolder/task/:taskId',
+  path: '/scaffolder/tasks/:taskId',
   title: 'Task information',
   params: ['taskId'],
 });
