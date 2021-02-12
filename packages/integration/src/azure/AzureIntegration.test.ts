@@ -60,6 +60,16 @@ describe('AzureIntegration', () => {
 
       expect(
         integration.resolveUrl({
+          url: '/a.yaml',
+          base:
+            'https://dev.azure.com/organization/project/_git/repository?path=%2Ffolder%2Fcatalog-info.yaml',
+        }),
+      ).toBe(
+        'https://dev.azure.com/organization/project/_git/repository?path=%2Fa.yaml',
+      );
+
+      expect(
+        integration.resolveUrl({
           url: './a.yaml',
           base: 'https://dev.azure.com/organization/project/_git/repository',
         }),

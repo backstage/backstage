@@ -36,16 +36,21 @@ export interface ScmIntegration {
   title: string;
 
   /**
-   * Works like the two-argument form of the URL constructor, resolving an
-   * absolute or relative URL in relation to a base URL.
+   * Resolves an absolute or relative URL in relation to a base URL.
    *
-   * If this method is not implemented, the URL constructor is used instead for
-   * URLs that match this integration.
+   * This method is adapted for use within SCM systems, so relative URLs are
+   * within the context of the root of the hierarchy pointed to by the base
+   * URL.
+   *
+   * For example, if the base URL is  `<repo root url>/folder/a.yaml`, i.e.
+   * within the file tree of a certain repo, an absolute path of `/b.yaml` does
+   * not resolve to `https://hostname/b.yaml` but rather to
+   * `<repo root url>/b.yaml` inside the file tree of that same repo.
    *
    * @param options.url The (absolute or relative) URL or path to resolve
    * @param options.base The base URL onto which this resolution happens
    */
-  resolveUrl?(options: { url: string; base: string }): string;
+  resolveUrl(options: { url: string; base: string }): string;
 }
 
 /**
@@ -83,8 +88,16 @@ export interface ScmIntegrationRegistry
   gitlab: ScmIntegrationsGroup<GitLabIntegration>;
 
   /**
-   * Works like the two-argument form of the URL constructor, resolving an
-   * absolute or relative URL in relation to a base URL.
+   * Resolves an absolute or relative URL in relation to a base URL.
+   *
+   * This method is adapted for use within SCM systems, so relative URLs are
+   * within the context of the root of the hierarchy pointed to by the base
+   * URL.
+   *
+   * For example, if the base URL is  `<repo root url>/folder/a.yaml`, i.e.
+   * within the file tree of a certain repo, an absolute path of `/b.yaml` does
+   * not resolve to `https://hostname/b.yaml` but rather to
+   * `<repo root url>/b.yaml` inside the file tree of that same repo.
    *
    * @param options.url The (absolute or relative) URL or path to resolve
    * @param options.base The base URL onto which this resolution happens

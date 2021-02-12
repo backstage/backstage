@@ -25,15 +25,12 @@ import {
   ReadTreeResponseDirOptions,
   ReadTreeResponseFile,
 } from '../types';
+import { stripFirstDirectoryFromPath } from './util';
 
 // Tar types for `Parse` is not a proper constructor, but it should be
 const TarParseStream = (Parse as unknown) as { new (): ParseStream };
 
 const pipeline = promisify(pipelineCb);
-// Matches a directory name + one `/` at the start of any string,
-// containing any character except `/` one or more times, and ending with a `/`
-// e.g. Will match `dirA/` in `dirA/dirB/file.ext`
-const directoryNameRegex = /^[^\/]+\//;
 
 /**
  * Wraps a tar archive stream into a tree response reader.
@@ -84,7 +81,7 @@ export class TarArchiveResponse implements ReadTreeResponse {
 
       // File path relative to the root extracted directory. Will remove the
       // top level dir name from the path since its name is hard to predetermine.
-      const relativePath = entry.path.replace(directoryNameRegex, '');
+      const relativePath = stripFirstDirectoryFromPath(entry.path);
 
       if (this.subPath) {
         if (!relativePath.startsWith(this.subPath)) {
@@ -161,7 +158,7 @@ export class TarArchiveResponse implements ReadTreeResponse {
         filter: path => {
           // File path relative to the root extracted directory. Will remove the
           // top level dir name from the path since its name is hard to predetermine.
-          const relativePath = path.replace(directoryNameRegex, '');
+          const relativePath = stripFirstDirectoryFromPath(path);
           if (this.subPath && !relativePath.startsWith(this.subPath)) {
             return false;
           }

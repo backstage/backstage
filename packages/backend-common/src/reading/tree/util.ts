@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-export { BitbucketIntegration } from './BitbucketIntegration';
-export {
-  readBitbucketIntegrationConfig,
-  readBitbucketIntegrationConfigs,
-} from './config';
-export type { BitbucketIntegrationConfig } from './config';
-export {
-  getBitbucketDefaultBranch,
-  getBitbucketDownloadUrl,
-  getBitbucketFileFetchUrl,
-  getBitbucketRequestOptions,
-} from './core';
+// Matches a directory name + one `/` at the start of any string,
+// containing any character except `/` one or more times, and ending with a `/`
+// e.g. Will match `dirA/` in `dirA/dirB/file.ext`
+const directoryNameRegex = /^[^\/]+\//;
+
+// Removes the first segment of a forward-slash-separated path
+export function stripFirstDirectoryFromPath(path: string): string {
+  return path.replace(directoryNameRegex, '');
+}
