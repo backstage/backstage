@@ -48,7 +48,7 @@ const mkdocsYmlWithRepoUrl = fs.readFileSync(
   resolvePath(__filename, '../__fixtures__/mkdocs_with_repo_url.yml'),
 );
 const mockLogger = getVoidLogger();
-const tmpDir = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
+const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
 
 describe('helpers', () => {
   describe('getGeneratorKey', () => {
@@ -336,7 +336,7 @@ describe('helpers', () => {
     beforeEach(() => {
       mockFs.restore();
       mockFs({
-        [tmpDir]: {
+        [rootDir]: {
           'invalid_techdocs_metadata.json': 'dsds',
           'techdocs_metadata.json': '{"site_name": "Tech Docs"}',
         },
@@ -348,7 +348,7 @@ describe('helpers', () => {
     });
 
     it('should create the file if it does not exist', async () => {
-      const filePath = path.join(tmpDir, 'wrong_techdocs_metadata.json');
+      const filePath = path.join(rootDir, 'wrong_techdocs_metadata.json');
       await addBuildTimestampMetadata(filePath, mockLogger);
 
       // Check if the file exists
@@ -358,7 +358,7 @@ describe('helpers', () => {
     });
 
     it('should throw error when the JSON is invalid', async () => {
-      const filePath = path.join(tmpDir, 'invalid_techdocs_metadata.json');
+      const filePath = path.join(rootDir, 'invalid_techdocs_metadata.json');
 
       // Check if the file exists
       await expect(
@@ -367,7 +367,7 @@ describe('helpers', () => {
     });
 
     it('should add build timestamp to the metadata json', async () => {
-      const filePath = path.join(tmpDir, 'techdocs_metadata.json');
+      const filePath = path.join(rootDir, 'techdocs_metadata.json');
 
       await addBuildTimestampMetadata(filePath, mockLogger);
 
